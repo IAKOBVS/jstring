@@ -42,6 +42,7 @@ int joinStr(char **outStr, ...)
 	}
 	va_end(argp);
 	return mallocSize;
+
 ERR:
 	fprintf(stderr, "joinStr:(char **outStr) ...");
 	perror("");
@@ -54,9 +55,9 @@ ERR:
 int joinStrLarge(char **outStr, ...)
 {
 	/* *outStr must be freed */
+	int mallocSize = 1024;
 	va_list argp;
 	va_start(argp, outStr);
-	int mallocSize = 1024;
 	*outStr = malloc(mallocSize);
 	if (!*outStr)
 		goto ERR;
@@ -88,6 +89,7 @@ int joinStrLarge(char **outStr, ...)
 	}
 	va_end(argp);
 	return mallocSize;
+
 ERR:
 	fprintf(stderr, "joinStrLarge:(char **outStr) ...");
 	perror("");
