@@ -33,14 +33,15 @@ int joinStr(char **outStr, ...)
 	if (!argLen)
 		goto ERR;
 	if (mallocSize > (2 * argLen)) {
-		char *tmp = realloc(*outStr, argLen * 2);
+		mallocSize = argLen * 2;
+		char *tmp = realloc(*outStr, mallocSize);
 		if (!*outStr)
 			goto ERR;
 		*outStr = tmp;
 		free(tmp);
 	}
 	va_end(argp);
-	return MAX_MALLOC;
+	return mallocSize;
 ERR:
 	fprintf(stderr, "joinStr:(char **outStr) ...");
 	perror("");
@@ -76,14 +77,15 @@ int joinStrLarge(char **outStr, ...)
 	if (!argLen)
 		goto ERR;
 	if (mallocSize > (2 * argLen)) {
-		char *tmp = realloc(*outStr, argLen * 2);
+		mallocSize = argLen * 2;
+		char *tmp = realloc(*outStr, mallocSize);
 		if (!*outStr)
 			goto ERR;
 		*outStr = tmp;
 		free(tmp);
 	}
 	va_end(argp);
-	return argLen;
+	return mallocSize;
 ERR:
 	fprintf(stderr, "joinStrLarge:(char **outStr) ...");
 	perror("");
