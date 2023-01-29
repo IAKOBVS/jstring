@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "str.h"
 
 #define MAX_MALLOC 1024
 
