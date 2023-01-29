@@ -1,41 +1,38 @@
 #include <stdarg.h>
 #include <stdlib.h>
-#include <stdio.h>
 
-/* Use "\0" (with quotes) as the last parameter to mark where the strings end */
-int addStr(char **outStr, ...)
+/* Use "\0" (with quotes) as the last parameter to mark where the strings end
+int addStr(char **outStr, ..., "\0") */
+int joinStr(char **outStr, ...)
 {
 	char *tmp;
-	va_list ap;
-	va_start(ap, outStr);
+	va_list argp;
+	va_start(argp, outStr);
 	tmp = malloc(100);
 	if (!tmp)
 		goto ERR;
-	int i=0;
+	int argLen=0;
 	for (;;) {
-		char *argv = va_arg(ap, char*);
-		if (!argv[0])
+		char *strArgv = va_arg(argp, char*);
+		if (!strArgv[0])
 			break;
-		for (int j=0 ; argv[j]; ++i, ++j)
-			tmp[i] = argv[j];
+		for (int i=0 ; strArgv[i]; ++argLen, ++i)
+			tmp[argLen] = strArgv[i];
 	}
-	if (!i)
+	if (!argLen)
 		goto ERR;
-	*outStr = realloc(tmp, i);
+	*outStr = realloc(tmp, argLen);
 	if (!*outStr)
 		goto ERR;
-	va_end(ap);
-	return i;
+	va_end(argp);
+	return argLen;
 ERR:
 	free(tmp);
-	va_end(ap);
+	va_end(argp);
 	return 0;
 }
 
 int main(void)
 {
-	char *str;
-	addStr(&str, "what ", "the ", "hell ", "\0");
-	printf("%s\n", str);
 	return 0;
 }
