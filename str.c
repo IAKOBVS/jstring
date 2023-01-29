@@ -1,7 +1,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-/* Use "\0" (with quotes) as the last parameter to mark where the strings end
+/* Put "\0" (with quotes) as the last parameter
 int addStr(char **outStr, ..., "\0") */
 int joinStr(char **outStr, ...)
 {
