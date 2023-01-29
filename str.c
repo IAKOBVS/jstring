@@ -8,11 +8,11 @@
 int addStr(char **outStr, ..., "\0") */
 int joinStr(char **outStr, ...)
 {
-	char *tmp;
+	int mallocSize = 512;
 	va_list argp;
 	va_start(argp, outStr);
-	tmp = malloc(MAX_MALLOC);
-	if (!tmp)
+	*outStr = malloc(mallocSize);
+	if (!*outStr)
 		goto ERR;
 	int argLen=0;
 	for (;;) {
@@ -20,56 +20,74 @@ int joinStr(char **outStr, ...)
 		if (!strArgv[0])
 			break;
 		for (int i=0 ; strArgv[i]; ++argLen, ++i)
-			tmp[argLen] = strArgv[i];
+			*outStr[argLen] = strArgv[i];
+		if ((argLen * 2) > mallocSize) {
+			mallocSize = argLen * 2;
+			char *tmp = realloc(*outStr, mallocSize);
+			if (!*tmp)
+				goto ERR;
+			*outStr = tmp;
+			free(tmp);
+		}
 	}
 	if (!argLen)
 		goto ERR;
-	*outStr = realloc(tmp, argLen);
-	if (!*outStr)
-		goto ERR;
+	if (mallocSize > (2 * argLen)) {
+		char *tmp = realloc(*outStr, argLen * 2);
+		if (!*outStr)
+			goto ERR;
+		*outStr = tmp;
+		free(tmp);
+	}
 	va_end(argp);
-	return argLen;
+	return MAX_MALLOC;
 ERR:
 	fprintf(stderr, "joinStr:(char **outStr) ...");
 	perror("");
-	free(tmp);
+	free(*outStr);
 	va_end(argp);
 	return 0;
 }
 
 int joinStrLarge(char **outStr, ...)
 {
-	char *tmp;
 	va_list argp;
 	va_start(argp, outStr);
-	tmp = malloc(MAX_MALLOC);
-	if (!tmp)
+	int mallocSize = 1024;
+	*outStr = malloc(mallocSize);
+	if (!*outStr)
 		goto ERR;
 	int argLen=0;
-	for (;;) {
+	for (int mallocSize = MAX_MALLOC;;) {
 		char *strArgv = va_arg(argp, char*);
 		if (!strArgv[0])
 			break;
 		for (int i=0 ; strArgv[i]; ++argLen, ++i)
-			tmp[argLen] = strArgv[i];
-		if (MAX_MALLOC < argLen * 4) {
-			char* tmp2 = realloc(tmp, (argLen * 8));
-			if (!tmp2)
+			*outStr[argLen] = strArgv[i];
+		if ((argLen * 2) > mallocSize) {
+			mallocSize = argLen * 2;
+			char *tmp = realloc(*outStr, mallocSize);
+			if (!tmp)
 				goto ERR;
-			tmp = tmp2;
+			*outStr = tmp;
+			free(tmp);
 		}
 	}
 	if (!argLen)
 		goto ERR;
-	*outStr = realloc(tmp, argLen);
-	if (!*outStr)
-		goto ERR;
+	if (mallocSize > (2 * argLen)) {
+		char *tmp = realloc(*outStr, argLen * 2);
+		if (!*outStr)
+			goto ERR;
+		*outStr = tmp;
+		free(tmp);
+	}
 	va_end(argp);
 	return argLen;
 ERR:
 	fprintf(stderr, "joinStrLarge:(char **outStr) ...");
 	perror("");
-	free(tmp);
+	free(*outStr);
 	va_end(argp);
 	return 0;
 }
