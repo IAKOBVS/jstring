@@ -3,12 +3,11 @@
 #include <stdio.h>
 #include "str.h"
 
-#define MAX_MALLOC 1024
-
 /* Put "\0" (with quotes) as the last parameter
 int addStr(char **outStr, ..., "\0") */
 int joinStr(char **outStr, ...)
 {
+	/* *outStr must be freed */
 	int mallocSize = 512;
 	va_list argp;
 	va_start(argp, outStr);
@@ -51,8 +50,10 @@ ERR:
 	return 0;
 }
 
+/* int joinStrLarge(char **outStr, ..., "\0") */
 int joinStrLarge(char **outStr, ...)
 {
+	/* *outStr must be freed */
 	va_list argp;
 	va_start(argp, outStr);
 	int mallocSize = 1024;
@@ -60,7 +61,7 @@ int joinStrLarge(char **outStr, ...)
 	if (!*outStr)
 		goto ERR;
 	int argLen=0;
-	for (int mallocSize = MAX_MALLOC;;) {
+	for (;;) {
 		char *strArgv = va_arg(argp, char*);
 		if (!strArgv[0])
 			break;
