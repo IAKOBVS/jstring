@@ -10,6 +10,7 @@
 int joinStr(char **dest, ..., "\0") */
 int addStrings(char **dest, ...)
 {
+	/* **dest must be initialized as 0 if not terminated with '\0' */
 	int argLen=0;
 	va_list argp;
 	va_start(argp, dest);
@@ -60,6 +61,9 @@ ERR:
 
 int addStr(int destLen, char **dest, int srcLen, char *src)
 {
+	/* **dest must be initialized as 0 if not terminated with '\0' */
+	if (!*dest)
+		goto ERR;
 	if (!destLen) {
 		destLen = strlen(*dest);
 		if (!destLen)
