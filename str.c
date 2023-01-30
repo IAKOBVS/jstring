@@ -20,8 +20,10 @@ int joinStr(char **outStr, ...)
 		char *strArgv = va_arg(argp, char*);
 		if (!strArgv[0])
 			break;
-		for (int i=0 ; strArgv[i]; ++argLen, ++i)
-			(*outStr)[argLen] = strArgv[i];
+		int i=0;
+		do {
+			(*outStr)[argLen++] = strArgv[i++];
+		} while (strArgv[i]);
 		if ((argLen * 2) > mallocSize) {
 			mallocSize = argLen * 2;
 			*outStr = realloc(*outStr, mallocSize);
@@ -31,6 +33,7 @@ int joinStr(char **outStr, ...)
 	}
 	if (!argLen)
 		goto ERR;
+	(*outStr)[argLen + 1] = '\0';
 	if (mallocSize > (2 * argLen)) {
 		mallocSize = argLen * 2;
 		*outStr = realloc(*outStr, mallocSize);
@@ -63,8 +66,10 @@ int joinStrLarge(char **outStr, ...)
 		char *strArgv = va_arg(argp, char*);
 		if (!strArgv[0])
 			break;
-		for (int i=0 ; strArgv[i]; ++argLen, ++i)
-			(*outStr)[argLen] = strArgv[i];
+		int i=0;
+		do {
+			(*outStr)[argLen++] = strArgv[i++];
+		} while (strArgv[i]);
 		if ((argLen * 2) > mallocSize) {
 			mallocSize = argLen * 2;
 			*outStr = realloc(*outStr, mallocSize);
@@ -74,6 +79,7 @@ int joinStrLarge(char **outStr, ...)
 	}
 	if (!argLen)
 		goto ERR;
+	(*outStr)[argLen + 1] = '\0';
 	if (mallocSize > (2 * argLen)) {
 		mallocSize = argLen * 2;
 		*outStr = realloc(*outStr, mallocSize);
@@ -85,6 +91,50 @@ int joinStrLarge(char **outStr, ...)
 
 ERR:
 	fprintf(stderr, "joinStrLarge:(char **outStr) ...");
+	perror("");
+	free(*outStr);
+	va_end(argp);
+	return 0;
+}
+
+int joinStrProto(char **outStr, ...)
+{
+	/* *outStr must be freed */
+	va_list argp;
+	va_start(argp, outStr);
+	int argLen=0;
+	for (;;) {
+		char *strArgv = va_arg(argp, char*);
+		if (!strArgv[0])
+			break;
+		int i=0;
+		do {
+			++argLen;
+			++i;
+		} while (strArgv[i]);
+	}
+	if (!argLen)
+		goto ERR;
+	*outStr = malloc(argLen + 1);
+	if (!*outStr)
+		goto ERR;
+	va_end(argp);
+	va_start(argp, outStr);
+	for (;;) {
+		char *strArgv = va_arg(argp, char*);
+		if (!strArgv[0])
+			break;
+		int i=0;
+		do {
+			(*outStr)[argLen++] = strArgv[i++];
+		} while (strArgv[i]);
+	}
+	(*outStr)[argLen + 1] = '\0';
+	va_end(argp);
+	return (argLen + 1);
+
+ERR:
+	fprintf(stderr, "joinStr:(char **outStr) ...");
 	perror("");
 	free(*outStr);
 	va_end(argp);
