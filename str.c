@@ -1,10 +1,11 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "str.h"
 
 /* Put "\0" (with quotes) as the last parameter
-int addStr(char **outStr, ..., "\0") */
+int joinStr(char **outStr, ..., "\0") */
 int joinStr(char **outStr, ...)
 {
 	/* *outStr must be freed */
@@ -20,7 +21,7 @@ int joinStr(char **outStr, ...)
 		if (!strArgv[0])
 			break;
 		for (int i=0 ; strArgv[i]; ++argLen, ++i)
-			*outStr[argLen] = strArgv[i];
+			(*outStr)[argLen] = strArgv[i];
 		if ((argLen * 2) > mallocSize) {
 			mallocSize = argLen * 2;
 			*outStr = realloc(*outStr, mallocSize);
@@ -63,7 +64,7 @@ int joinStrLarge(char **outStr, ...)
 		if (!strArgv[0])
 			break;
 		for (int i=0 ; strArgv[i]; ++argLen, ++i)
-			*outStr[argLen] = strArgv[i];
+			(*outStr)[argLen] = strArgv[i];
 		if ((argLen * 2) > mallocSize) {
 			mallocSize = argLen * 2;
 			*outStr = realloc(*outStr, mallocSize);
