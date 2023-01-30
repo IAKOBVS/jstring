@@ -23,22 +23,18 @@ int joinStr(char **outStr, ...)
 			*outStr[argLen] = strArgv[i];
 		if ((argLen * 2) > mallocSize) {
 			mallocSize = argLen * 2;
-			char *tmp = realloc(*outStr, mallocSize);
-			if (!*tmp)
+			*outStr = realloc(*outStr, mallocSize);
+			if (!*outStr)
 				goto ERR;
-			*outStr = tmp;
-			free(tmp);
 		}
 	}
 	if (!argLen)
 		goto ERR;
 	if (mallocSize > (2 * argLen)) {
 		mallocSize = argLen * 2;
-		char *tmp = realloc(*outStr, mallocSize);
+		*outStr = realloc(*outStr, mallocSize);
 		if (!*outStr)
 			goto ERR;
-		*outStr = tmp;
-		free(tmp);
 	}
 	va_end(argp);
 	return mallocSize;
@@ -70,22 +66,18 @@ int joinStrLarge(char **outStr, ...)
 			*outStr[argLen] = strArgv[i];
 		if ((argLen * 2) > mallocSize) {
 			mallocSize = argLen * 2;
-			char *tmp = realloc(*outStr, mallocSize);
-			if (!tmp)
+			*outStr = realloc(*outStr, mallocSize);
+			if (!*outStr)
 				goto ERR;
-			*outStr = tmp;
-			free(tmp);
 		}
 	}
 	if (!argLen)
 		goto ERR;
 	if (mallocSize > (2 * argLen)) {
 		mallocSize = argLen * 2;
-		char *tmp = realloc(*outStr, mallocSize);
+		*outStr = realloc(*outStr, mallocSize);
 		if (!*outStr)
 			goto ERR;
-		*outStr = tmp;
-		free(tmp);
 	}
 	va_end(argp);
 	return mallocSize;
