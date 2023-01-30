@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 
 #include "str.h"
@@ -107,11 +108,7 @@ int joinStrProto(char **outStr, ...)
 		char *strArgv = va_arg(argp, char*);
 		if (!strArgv[0])
 			break;
-		int i=0;
-		do {
-			++argLen;
-			++i;
-		} while (strArgv[i]);
+		argLen += strlen(strArgv);
 	}
 	if (!argLen)
 		goto ERR;
