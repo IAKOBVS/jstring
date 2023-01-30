@@ -59,7 +59,7 @@ ERR:
 	return 0;
 }
 
-int addStr(int destLen, char **dest, int srcLen, char *src)
+int addStr(char *src, int srcLen, char **dest, int destLen)
 {
 	/* **dest must be initialized as 0 if not terminated with '\0' */
 	if (!*dest)
