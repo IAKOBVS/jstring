@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <string.h>
+
 #include "str.h"
 
 /* Put "\0" (with quotes) as the last parameter
