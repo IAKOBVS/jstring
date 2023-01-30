@@ -69,9 +69,9 @@ int addStr(int destLen, char **dest, int srcLen, char *src)
 		if (!srcLen)
 			goto ERR;
 	}
-	srcLen += destLen + 1;
+	srcLen += destLen;
 	char *tmp = *dest;
-	*dest = malloc(srcLen);
+	*dest = malloc(++srcLen);
 	if (!*dest)
 		goto ERR;
 	strcpy(*dest, tmp);
@@ -79,6 +79,7 @@ int addStr(int destLen, char **dest, int srcLen, char *src)
 	do {
 		(*dest)[destLen++] = src[i++];
 	} while (src[i]);
+	(*dest)[++destLen] = '\0';
 	return srcLen;
 ERR:;
 	fprintf(stderr, "joinStr(char **dest) ...):");
