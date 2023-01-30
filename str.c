@@ -25,6 +25,7 @@ int addStrings(char **dest, ...)
 		goto ERR;
 	if (!*dest) {
 		j=0;
+		printf("test");
 		*dest = malloc(++argLen);
 		if (!*dest)
 			goto ERR;
