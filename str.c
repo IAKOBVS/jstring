@@ -41,7 +41,7 @@ int joinStr(char **outStr, ...)
 	return argLen;
 
 ERR:
-	fprintf(stderr, "joinStrProto(char **outStr) ...):");
+	fprintf(stderr, "joinStr(char **outStr) ...):");
 	perror("");
 	return 0;
 }
