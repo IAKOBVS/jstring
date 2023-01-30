@@ -6,5 +6,6 @@ struct sizeOfPtr {
 };
 
 /* int joinStr(char **outStr, ..., "\0") */
-int joinStr(char **outStr, ...);
+int addStrings(char **outStr, ...);
+int addStr(int destLen, char **dest, int srcLen, char *src);
 #endif
