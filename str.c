@@ -7,7 +7,7 @@
 #include "str.h"
 
 /* Put "\0" (with quotes) as the last parameter
-int joinStr(char &dest, "hello", var, ..., "\0") */
+joinStr(char &dest, "hello", var, ..., "\0") */
 int addStrings(char **dest, ...)
 {
 	/* **dest must be initialized as 0 if not terminated with '\0' */
@@ -60,7 +60,7 @@ ERR:
 }
 
 /* use 0 if length unknown */
-/* int addStr(src, 0, &dest, 0) */
+/* addStr(src, 0, &dest, 0) */
 int addStr(char *src, int srcLen, char **dest, int destLen)
 {
 	/* **dest must be initialized as 0 if not terminated with '\0' */
