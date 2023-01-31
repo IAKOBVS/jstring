@@ -34,11 +34,21 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 		if (!ptrInfo->len)
 			ptrInfo->len = strlen(*dest);
 		i = ptrInfo->len;
-		mallocSize = 2 * (argLen + ptrInfo->len);
-		if (ptrInfo->size < mallocSize)
-			if (!(*dest = realloc(*dest, mallocSize)))
-				goto ERR;
 		ptrInfo->len += argLen;
+		mallocSize = 2 * (argLen + ptrInfo->len);
+		switch (ptrInfo->size) {
+		case 0:
+			{
+			char *tmp = *dest;
+			if (!(*dest = malloc(mallocSize)))
+				goto ERR;
+			memcpy(*dest, tmp, ptrInfo->len);
+			}
+			break;
+		default:
+			if (mallocSize > ptrInfo->size && !(*dest = realloc(*dest, mallocSize)))
+				goto ERR;
+		}
 	}
 	va_start(ap, dest);
 	for (;;) {
@@ -58,7 +68,7 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 	return ptrInfo->size;
 
 ERR:
-	fprintf(stderr, "addStringsPtr(char **dest) ...):");
+	fprintf(stderr, "addStringsPtr(char **dest) ...): ");
 	perror("");
 	return 0;
 }
@@ -117,4 +127,11 @@ int areDigits(char* src)
 			return 0;
 		}
 	return 1;
+}
+
+int structIsZero(struct ptrSize *ptrStruct)
+{
+	if (!*((unsigned char *)&*ptrStruct))
+		return 1;
+	return 0;
 }
