@@ -1,7 +1,7 @@
+#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "str.h"
 
@@ -36,16 +36,12 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 		i = ptrInfo->len;
 		ptrInfo->len += argLen;
 		mallocSize = 2 * (argLen + ptrInfo->len);
-		char *tmp = *dest;
-		switch (ptrInfo->size) {
-		case 0:
-			if (!(*dest = malloc(mallocSize)))
-				goto ERR;
+		if (1 > ptrInfo->size && !(*dest = malloc(mallocSize))) {
+			char *tmp = *dest;
+			goto ERR;
 			memcpy(*dest, tmp, ptrInfo->len);
-			break;
-		default:
-			if (mallocSize > ptrInfo->size && !(*dest = realloc(*dest, mallocSize)))
-				goto ERR;
+		} else if (mallocSize > ptrInfo->size && !(*dest = realloc(*dest, mallocSize))) {
+			goto ERR;
 		}
 	}
 	va_start(ap, dest);
@@ -63,8 +59,7 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 	return ptrInfo->size;
 
 ERR:
-	fprintf(stderr, "addStringsPtr(char **dest) ...): ");
-	perror("");
+	perror("addStringsPtr(char **dest) ...): ");
 	return 0;
 }
 
@@ -87,8 +82,7 @@ int addStr(char **dest, int destLen, const char *src, int srcLen, struct ptrSize
 	return ptrInfo->size;
 
 ERR:;
-	fprintf(stderr, "joinStr(char **dest) ...):");
-	perror("");
+	perror("int addStr(char **dest, int destLen, const char *src, int srcLen, struct ptrSize *ptrInfo): ");
 	return 0;
 }
 
