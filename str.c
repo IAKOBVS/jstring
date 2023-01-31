@@ -74,7 +74,7 @@ ERR:
 }
 
 /* DO NOT USE */
-int addStr(char *src, int srcLen, char **dest, int destLen)
+int addStr(char **dest, int destLen, char *src, int srcLen)
 {
 	/* **dest must be initialized with 0 if empty */
 	if (!*dest)
