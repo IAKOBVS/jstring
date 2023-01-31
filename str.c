@@ -38,7 +38,6 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 		mallocSize = 2 * (argLen + ptrInfo->len);
 		if (1 > ptrInfo->size) {
 			char *tmp = *dest;
-			printf("%s\n", tmp);
 			if (!(*dest = malloc(mallocSize)))
 				goto ERR;
 			memcpy(*dest, tmp, ptrInfo->len);
