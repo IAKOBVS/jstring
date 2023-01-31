@@ -1,12 +1,11 @@
 #ifndef STR_H_DEF
 #define STR_H_DEF
-struct sizeOfPtr {
-	void *ptr;
+struct ptrSize {
 	int size;
+	int len;
 };
 
-/* joinStr(char &dest, "hello", var, ..., "\0") *1/ */
-int addStrings(char **outStr, ...);
-/* addStr(src, 0, &dest, 0) */
+/* int addStringsPtr(struct ptrSize *ptrInfo, char **dest, ...); */
+int addStrings(struct ptrSize *ptrInfo, char **dest, ...);
 int addStr(char *src, int srcLen, char **dest, int destLen);
 #endif

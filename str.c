@@ -2,59 +2,63 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <string.h>
 
 #include "str.h"
 
-/* Put "\0" (with quotes) as the last parameter
-joinStr(char &dest, "hello", var, ..., "\0") */
-int addStrings(char **dest, ...)
+/* use 0 if length unknown */
+/* addStr(src, 0, &dest, 0) */
+int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 {
-	/* **dest must be initialized as 0 if not terminated with '\0' */
+	/* **dest must be initialized with 0 if empty */
 	int argLen=0;
-	va_list argp;
-	va_start(argp, dest);
+	va_list ap;
+	va_start(ap, dest);
 	for (;;) {
-		char *strArgv = va_arg(argp, char*);
+		char *strArgv = va_arg(ap, char*);
 		if (!strArgv[0])
 			break;
 		argLen += strlen(strArgv);
 	}
-	int j;
-	va_end(argp);
+	va_end(ap);
 	if (!argLen)
 		goto ERR;
+	int mallocSize;
+	int i;
 	if (!*dest) {
-		j=0;
-		printf("test");
-		*dest = malloc(++argLen);
-		if (!*dest)
+		mallocSize = 2 * argLen;
+		if (!(*dest = malloc(mallocSize)))
 			goto ERR;
+		i=0;
+		ptrInfo->len = argLen;
 	} else {
-		argLen += strlen(*dest);
-		j=argLen;
-		char *tmp = *dest;
-		*dest = malloc(++argLen);
-		if (!*dest)
-			goto ERR;
-		strcpy(*dest, tmp);
+		if (!ptrInfo->len)
+			ptrInfo->len = strlen(*dest);
+		i = ptrInfo->len;
+		mallocSize = 2 * (argLen + ptrInfo->len);
+		if (ptrInfo->size < mallocSize)
+			if (!(*dest = realloc(*dest, mallocSize)))
+				goto ERR;
+		ptrInfo->len += argLen;
 	}
-	va_start(argp, dest);
+	va_start(ap, dest);
 	for (;;) {
-		char *strArgv = va_arg(argp, char*);
+		char *strArgv = va_arg(ap, char*);
 		if (!strArgv[0])
 			break;
-		int i=0;
+		while ((*dest)[i])
+			++i;
+		int j=0;
 		do {
-			(*dest)[j++] = strArgv[i++];
-		} while (strArgv[i]);
+			(*dest)[i++] = strArgv[j++];
+		} while (strArgv[j]);
 	}
-	(*dest)[argLen] = '\0';
-	va_end(argp);
-	return argLen;
+	va_end(ap);
+	(*dest)[ptrInfo->len + 1] = '\0';
+	ptrInfo->size = mallocSize;
+	return ptrInfo->size;
 
 ERR:
-	fprintf(stderr, "joinStr(char **dest) ...):");
+	fprintf(stderr, "addStringsPtr(char **dest) ...):");
 	perror("");
 	return 0;
 }
@@ -63,7 +67,7 @@ ERR:
 /* addStr(src, 0, &dest, 0) */
 int addStr(char *src, int srcLen, char **dest, int destLen)
 {
-	/* **dest must be initialized as 0 if not terminated with '\0' */
+	/* **dest must be initialized with 0 if empty */
 	if (!*dest)
 		goto ERR;
 	if (!destLen) {
@@ -86,10 +90,31 @@ int addStr(char *src, int srcLen, char **dest, int destLen)
 	do {
 		(*dest)[destLen++] = src[i++];
 	} while (src[i]);
-	(*dest)[++destLen] = '\0';
+	(*dest)[++i] = '\0';
 	return srcLen;
 ERR:;
 	fprintf(stderr, "joinStr(char **dest) ...):");
 	perror("");
 	return 0;
+}
+
+int areDigits(char* src)
+{
+	while (*src)
+		switch (*src++){
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+			continue;
+		default:
+			return 0;
+		}
+	return 1;
 }
