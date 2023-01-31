@@ -36,14 +36,12 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 		i = ptrInfo->len;
 		ptrInfo->len += argLen;
 		mallocSize = 2 * (argLen + ptrInfo->len);
+		char *tmp = *dest;
 		switch (ptrInfo->size) {
 		case 0:
-			{
-			char *tmp = *dest;
 			if (!(*dest = malloc(mallocSize)))
 				goto ERR;
 			memcpy(*dest, tmp, ptrInfo->len);
-			}
 			break;
 		default:
 			if (mallocSize > ptrInfo->size && !(*dest = realloc(*dest, mallocSize)))
