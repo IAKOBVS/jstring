@@ -5,8 +5,7 @@
 
 #include "str.h"
 
-/* use 0 if length unknown */
-/* addStr(src, 0, &dest, 0) */
+/* addStrings(src, 0, &dest, 0) */
 int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 {
 	/* **dest must be initialized with 0 if empty */
@@ -73,6 +72,7 @@ ERR:
 	return 0;
 }
 
+/* DO NOT USE */
 /* use 0 if length unknown */
 /* addStr(src, 0, &dest, 0) */
 int addStr(char *src, int srcLen, char **dest, int destLen)
