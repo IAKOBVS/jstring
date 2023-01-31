@@ -55,10 +55,9 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 		char *strArgv = va_arg(ap, char*);
 		if (!strArgv[0])
 			break;
-		int j=0;
 		do {
-			(*dest)[i++] = strArgv[j++];
-		} while (strArgv[j]);
+			(*dest)[i++] = *strArgv++;
+		} while (*strArgv);
 	}
 	va_end(ap);
 	(*dest)[ptrInfo->len + 1] = '\0';
