@@ -36,9 +36,11 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 		i = ptrInfo->len;
 		ptrInfo->len += argLen;
 		mallocSize = 2 * (argLen + ptrInfo->len);
-		if (1 > ptrInfo->size && !(*dest = malloc(mallocSize))) {
+		if (1 > ptrInfo->size) {
 			char *tmp = *dest;
-			goto ERR;
+			printf("%s\n", tmp);
+			if (!(*dest = malloc(mallocSize)))
+				goto ERR;
 			memcpy(*dest, tmp, ptrInfo->len);
 		} else if (mallocSize > ptrInfo->size && !(*dest = realloc(*dest, mallocSize))) {
 			goto ERR;
@@ -59,7 +61,7 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 	return ptrInfo->size;
 
 ERR:
-	perror("addStringsPtr(char **dest) ...): ");
+	perror("addStrings(char **dest) ...): ");
 	return 0;
 }
 
