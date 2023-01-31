@@ -10,9 +10,9 @@
 int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 {
 	/* **dest must be initialized with 0 if empty */
-	int argLen=0;
 	va_list ap;
 	va_start(ap, dest);
+	int argLen=0;
 	for (;;) {
 		char *strArgv = va_arg(ap, char*);
 		if (!strArgv[0])
@@ -55,8 +55,6 @@ int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
 		char *strArgv = va_arg(ap, char*);
 		if (!strArgv[0])
 			break;
-		while ((*dest)[i])
-			++i;
 		int j=0;
 		do {
 			(*dest)[i++] = strArgv[j++];
@@ -74,32 +72,21 @@ ERR:
 }
 
 /* DO NOT USE */
-int addStr(char **dest, int destLen, char *src, int srcLen)
+int addStr(char **dest, int destLen, char *src, int srcLen, struct ptrSize *ptrInfo)
 {
-	/* **dest must be initialized with 0 if empty */
-	if (!*dest)
+	if ((!destLen && !(destLen = strlen(*dest))) || (!srcLen && !(srcLen = strlen(src))))
 		goto ERR;
-	if (!destLen) {
-		destLen = strlen(*dest);
-		if (!destLen)
-			goto ERR;
-	}
-	if (!srcLen) {
-		srcLen = strlen(src);
-		if (!srcLen)
-			goto ERR;
-	}
-	srcLen += destLen;
+	ptrInfo->len = srcLen + destLen;
 	char *tmp = *dest;
-	*dest = malloc(++srcLen);
-	if (!*dest)
+	ptrInfo->size = ptrInfo->len * 2;
+	if (!(*dest = malloc(ptrInfo->size)))
 		goto ERR;
-	strcpy(*dest, tmp);
-	int i=0;
+	memcpy(*dest, tmp, srcLen);
+	srcLen=0;
 	do {
-		(*dest)[destLen++] = src[i++];
-	} while (src[i]);
-	(*dest)[++i] = '\0';
+		(*dest)[++destLen] = src[srcLen++];
+	} while (src[srcLen]);
+	(*dest)[ptrInfo->len + 1] = '\0';
 	return srcLen;
 ERR:;
 	fprintf(stderr, "joinStr(char **dest) ...):");
