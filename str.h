@@ -6,5 +6,5 @@ struct ptrSize {
 };
 
 int addStrings(struct ptrSize *ptrInfo, char **dest, ...);
-int addStr(char **dest, int destLen, char *src, int srcLen, struct ptrSize *ptrInfo);
+int addStr(char **dest, int destLen, const char *src, int srcLen, struct ptrSize *ptrInfo);
 #endif

@@ -71,9 +71,8 @@ ERR:
 	return 0;
 }
 
-/* DO NOT USE */
 /* use 0 if length unknown */
-int addStr(char **dest, int destLen, char *src, int srcLen, struct ptrSize *ptrInfo)
+int addStr(char **dest, int destLen, const char *src, int srcLen, struct ptrSize *ptrInfo)
 {
 	if ((!destLen && !(destLen = strlen(*dest))) || (!srcLen && !(srcLen = strlen(src))))
 		goto ERR;
@@ -83,10 +82,10 @@ int addStr(char **dest, int destLen, char *src, int srcLen, struct ptrSize *ptrI
 	if (!(*dest = malloc(ptrInfo->size)))
 		goto ERR;
 	memcpy(*dest, tmp, srcLen);
-	srcLen=0;
+	int i=0;
 	do {
-		(*dest)[++destLen] = src[srcLen++];
-	} while (src[srcLen]);
+		(*dest)[destLen++] = src[i++];
+	} while (srcLen--);
 	(*dest)[ptrInfo->len + 1] = '\0';
 	return ptrInfo->size;
 
