@@ -88,6 +88,7 @@ int addStr(char **dest, int destLen, char *src, int srcLen, struct ptrSize *ptrI
 	} while (src[srcLen]);
 	(*dest)[ptrInfo->len + 1] = '\0';
 	return srcLen;
+
 ERR:;
 	fprintf(stderr, "joinStr(char **dest) ...):");
 	perror("");
