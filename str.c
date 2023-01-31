@@ -72,6 +72,7 @@ ERR:
 }
 
 /* DO NOT USE */
+/* use 0 if length unknown */
 int addStr(char **dest, int destLen, char *src, int srcLen, struct ptrSize *ptrInfo)
 {
 	if ((!destLen && !(destLen = strlen(*dest))) || (!srcLen && !(srcLen = strlen(src))))
@@ -87,7 +88,7 @@ int addStr(char **dest, int destLen, char *src, int srcLen, struct ptrSize *ptrI
 		(*dest)[++destLen] = src[srcLen++];
 	} while (src[srcLen]);
 	(*dest)[ptrInfo->len + 1] = '\0';
-	return srcLen;
+	return ptrInfo->size;
 
 ERR:;
 	fprintf(stderr, "joinStr(char **dest) ...):");
