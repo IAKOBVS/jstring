@@ -24,10 +24,10 @@ int jstr_cat(Jstr *dest, ...)
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len) {
 		if (!(dest->str = realloc(dest->str,
-		dest->size
-		= (dest->size *= 2 > 2 * dest->len)
-		? dest->size
-		: 2 * dest->len)))
+			dest->size
+			= (dest->size *= 2 > 2 * dest->len)
+			? dest->size
+			: 2 * dest->len)))
 			goto ERR;
 	}
 	/* while (dest->str[i]) */
@@ -79,21 +79,14 @@ int stradd(Jstr *dest, char *src)
 {
 	/* *dest->size must be initialized with 0 if empty */
 	size_t srcLen;
-	if ((!dest->len && !(dest->len = strlen(dest->str)))
-	|| (!(srcLen = strlen(src))))
+	if (!(srcLen = strlen(src)))
 		goto ERR;
-	if (!dest->size) {
-		char *tmp = dest->str;
-		dest->size
-		= (MIN_SIZE > 2 * dest->len)
-		? MIN_SIZE
-		: (2 * dest->len);
-		if (!(dest->str = malloc(dest->size)))
-			goto ERR;
-		memcpy(dest->str, tmp, dest->size);
-	} else if (dest->size < 2 * dest->len) {
-		dest->size *= 2;
-		if (!(dest->str = realloc(dest->str, dest->size)))
+	if (dest->size < 2 * dest->len) {
+		if (!(dest->str = realloc(dest->str,
+			dest->size
+			= (dest->size *= 2 > 2 * dest->len)
+			? dest->size
+			: 2 * dest->len)))
 			goto ERR;
 	}
 	int i = dest->len;
