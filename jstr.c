@@ -10,7 +10,7 @@
 
 /* end with "\0" or "" since the \0 is implicit */
 /* addStrings(&struct, &dest, ..., "") */
-int catJstr(jstr *dest, ...)
+int jstrCat(jstr *dest, ...)
 {
 	/* *dest->size must be initialized with 0 if empty */
 	va_list ap;
@@ -100,7 +100,7 @@ ERR:
 	return 0;
 }
 
-int addStr(jstr *dest, char *src)
+int jstrAdd(jstr *dest, char *src)
 {
 	/* *dest->size must be initialized with 0 if empty */
 	int srcLen;
