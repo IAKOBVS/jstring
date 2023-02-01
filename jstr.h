@@ -3,21 +3,21 @@
 
 #include <stdlib.h>
 
-#define freeJstr(JSTR_NAME) \
+#define freejstr(JSTR_NAME) \
 	do { \
 		if (JSTR_NAME.size) \
 			free(JSTR_NAME.str); \
 		JSTR_NAME.size = 0; \
 	} while (0)
-#define allocJstr(JSTR_NAME, JSTR) \
+#define allocjstr(JSTR_NAME, JSTR) \
 	JSTR_NAME.len = strlen(JSTR); \
 	JSTR_NAME.size = 2 * JSTR_NAME.len; \
 	JSTR_NAME.str = malloc(2 * JSTR_NAME.len); \
 	memcpy(JSTR_NAME.str, JSTR, JSTR_NAME.len)
-#define newJstr(JSTR_NAME, JSTR) \
-	Jstr JSTR_NAME = { \
+#define newjstr(JSTR_NAME, JSTR) \
+	jstr JSTR_NAME = { \
 	.str = JSTR}; \
-	allocJstr(JSTR_NAME, JSTR)
+	allocjstr(JSTR_NAME, JSTR)
 #define jstrcat(STR, ...) jstr_cat(STR, __VA_ARGS__, "")
 
 typedef struct Jstr {
