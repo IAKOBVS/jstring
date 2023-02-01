@@ -5,85 +5,101 @@
 
 #include "str.h"
 
+#define newJstr(_NAME_OF_STRING, _STRING) jstr _NAME_OF_STRING = {.str = _STRING, .size = 0}
+
 /* end with "\0" or "" since the \0 is implicit */
 /* addStrings(&struct, &dest, ..., "") */
-int addStrings(struct ptrSize *ptrInfo, char **dest, ...)
+int catJstr(jstr *dest, ...)
 {
-	/* **dest must be initialized with 0 if empty */
+	/* *dest->string must be initialized with 0 if empty */
 	va_list ap;
 	va_start(ap, dest);
 	int argLen=0;
 	for (;;) {
-		char *strArgv = va_arg(ap, char*);
-		if (!strArgv[0])
+		char *argvStr = va_arg(ap, char*);
+		if (!argvStr[0])
 			break;
-		argLen += strlen(strArgv);
+		argLen += strlen(argvStr);
 	}
 	va_end(ap);
 	if (!argLen)
 		goto ERR;
-	int mallocSize;
-	int i;
-	if (!*dest) {
-		mallocSize = 2 * argLen;
-		if (!(*dest = malloc(mallocSize)))
+	if (!dest->len)
+		dest->len = strlen(dest->str);
+	if (!dest->size) {
+		char *tmp = dest->str;
+		dest->size = 2 * (dest->len + argLen);
+		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
-		i=0;
-		ptrInfo->len = argLen;
-	} else {
-		if (!ptrInfo->len)
-			ptrInfo->len = strlen(*dest);
-		i = ptrInfo->len;
-		ptrInfo->len += argLen;
-		mallocSize = 2 * (argLen + ptrInfo->len);
-		if (1 > ptrInfo->size) {
-			char *tmp = *dest;
-			if (!(*dest = malloc(mallocSize)))
-				goto ERR;
-			memcpy(*dest, tmp, ptrInfo->len);
-		} else if (mallocSize > ptrInfo->size && !(*dest = realloc(*dest, mallocSize))) {
+		memcpy(dest->str, tmp, dest->len);
+	} else if (dest->size < 2 * dest->len) {
+		dest->size = 2 * (dest->len + argLen);
+		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
-		}
 	}
+	int i = dest->len;
 	va_start(ap, dest);
 	for (;;) {
-		char *strArgv = va_arg(ap, char*);
-		if (!strArgv[0])
+		char *argvStr = va_arg(ap, char*);
+		if (!argvStr[0])
 			break;
 		do {
-			(*dest)[i++] = *strArgv++;
-		} while (*strArgv);
+			(dest->str)[i++] = *argvStr++;
+		} while (*argvStr);
 	}
 	va_end(ap);
-	(*dest)[ptrInfo->len + 1] = '\0';
-	ptrInfo->size = mallocSize;
-	return ptrInfo->size;
+	dest->len += argLen;
+	(dest->str)[dest->len + 1] = '\0';
+	return dest->size;
 
 ERR:
-	perror("addStrings(char **dest) ...): ");
+	perror("catJstr(char *dest->string, ...): ");
+	return 0;
+}
+
+int addJstr(jstr *dest, jstr *src)
+{
+	if ((!dest->len && !(dest->len = strlen(dest->str))) || (!src->size && !(src->size = strlen(src->str))))
+		goto ERR;
+	dest->len = src->size + dest->len;
+	char *tmp = dest->str;
+	dest->size = 2 * (dest->len + src->len);
+	if (!(dest->str = malloc(dest->size)))
+		goto ERR;
+	memcpy(dest->str, tmp, src->size);
+	int i=0;
+	do {
+		(dest->str)[dest->len++] = (src->str)[i++];
+	} while (src->size--);
+	(dest->str)[dest->len + 1] = '\0';
+	return dest->size;
+
+ERR:;
+	perror("int addjtr(jstr *dest, jstr *src): ");
 	return 0;
 }
 
 /* use 0 if length unknown */
-int addStr(char **dest, int destLen, const char *src, int srcLen, struct ptrSize *ptrInfo)
+int addStr(jstr *dest, char *src)
 {
-	if ((!destLen && !(destLen = strlen(*dest))) || (!srcLen && !(srcLen = strlen(src))))
+	int srcLen;
+	if ((!dest->len && !(dest->len = strlen(dest->str))) || (!(srcLen = strlen(src))))
 		goto ERR;
-	ptrInfo->len = srcLen + destLen;
-	char *tmp = *dest;
-	ptrInfo->size = ptrInfo->len * 2;
-	if (!(*dest = malloc(ptrInfo->size)))
+	dest->len += srcLen;
+	char *tmp = dest->str;
+	dest->size = dest->len * 2;
+	if (!(dest->str = malloc(dest->size)))
 		goto ERR;
-	memcpy(*dest, tmp, srcLen);
+	memcpy(dest->str, tmp, srcLen);
 	int i=0;
 	do {
-		(*dest)[destLen++] = src[i++];
+		(dest->str)[dest->len++] = src[i++];
 	} while (srcLen--);
-	(*dest)[ptrInfo->len + 1] = '\0';
-	return ptrInfo->size;
+	(dest->str)[dest->len + 1] = '\0';
+	return dest->size;
 
 ERR:;
-	perror("int addStr(char **dest, int destLen, const char *src, int srcLen, struct ptrSize *ptrInfo): ");
+	perror("int addStr(jstr *dest, char *src): ");
 	return 0;
 }
 
@@ -107,9 +123,9 @@ int areDigits(char* src)
 	return 1;
 }
 
-int structIsZero(struct ptrSize *ptrStruct)
+int emptyStruct(jstr *structPtr)
 {
-	if (!*((unsigned char *)&*ptrStruct))
+	if (!*((unsigned char *)&*structPtr))
 		return 1;
 	return 0;
 }

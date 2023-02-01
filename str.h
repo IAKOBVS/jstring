@@ -1,10 +1,11 @@
 #ifndef STR_H_DEF
 #define STR_H_DEF
-struct ptrSize {
+typedef struct jstr {
+	char *str;
 	int size;
 	int len;
-};
+} jstr;
 
-int addStrings(struct ptrSize *ptrInfo, char **dest, ...);
-int addStr(char **dest, int destLen, const char *src, int srcLen, struct ptrSize *ptrInfo);
+/* end with "\0" or "" since the \0 is implicit */
+int catStr(struct jstr *dest, ...);
 #endif
