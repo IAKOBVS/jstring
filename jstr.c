@@ -31,7 +31,8 @@ int catJstr(jstr *dest, ...)
 	dest->len += argLen;
 	if (!dest->size) {
 		char *tmp = dest->str;
-		dest->size = (MIN_SIZE > 2 * dest->len)
+		dest->size
+			= (MIN_SIZE > 2 * dest->len)
 			? MIN_SIZE
 			: (2 * dest->len);
 		if (!(dest->str = malloc(dest->size)))
@@ -70,7 +71,8 @@ int addJstr(jstr *dest, jstr *src)
 		goto ERR;
 	if (!dest->size) {
 		char *tmp = dest->str;
-		dest->size = (MIN_SIZE > 2 * dest->len)
+		dest->size
+			= (MIN_SIZE > 2 * dest->len)
 			? MIN_SIZE
 			: (2 * dest->len);
 		if (!(dest->str = malloc(dest->size)))
