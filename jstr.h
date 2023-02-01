@@ -1,5 +1,5 @@
-#ifndef STR_H_DEF
-#define STR_H_DEF
+#ifndef JSTR_H_DEF
+#define JSTR_H_DEF
 
 #define newJstr(_NAME_OF_STRING, _STRING) jstr _NAME_OF_STRING = {.str = _STRING, .size = 0}
 
