@@ -5,7 +5,6 @@
 
 #include "jstr.h"
 
-#define newJstr(_NAME_OF_STRING, _STRING) jstr _NAME_OF_STRING = {.str = _STRING, .size = 0}
 #define MIN_SIZE 8
 
 /* end with "\0" or "" since the \0 is implicit */
