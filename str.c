@@ -100,7 +100,6 @@ int areDigits(char* src)
 		case 7:
 		case 8:
 		case 9:
-		case 10:
 			continue;
 		default:
 			return 0;
