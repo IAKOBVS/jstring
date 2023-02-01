@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "str.h"
+#include "jstr.h"
 
 #define newJstr(_NAME_OF_STRING, _STRING) jstr _NAME_OF_STRING = {.str = _STRING, .size = 0}
 

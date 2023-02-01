@@ -7,5 +7,9 @@ typedef struct jstr {
 } jstr;
 
 /* end with "\0" or "" since the \0 is implicit */
-int catStr(struct jstr *dest, ...);
+int catJstr(struct jstr *dest, ...);
+int addJstr(jstr *dest, jstr *src);
+int addStr(jstr *dest, char *src);
+int areDigits(char* src);
+int emptyStruct(jstr *structPtr);
 #endif
