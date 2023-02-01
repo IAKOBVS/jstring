@@ -10,9 +10,9 @@ typedef struct jstr {
 } jstr;
 
 /* end with "\0" or "" since the \0 is implicit */
-int catJstr(struct jstr *dest, ...);
-int addJstr(jstr *dest, jstr *src);
-int addStr(jstr *dest, char *src);
+int jstrCat(struct jstr *dest, ...);
+int jstrAdd(jstr *dest, jstr *src);
+int strAdd(jstr *dest, char *src);
 int areDigits(char* src);
 int isJstr(jstr *structPtr);
 #endif
