@@ -27,8 +27,8 @@ typedef struct Jstr {
 } Jstr;
 
 int jstrcat(struct Jstr *dest, ...);
-int jstrAdd(Jstr *dest, Jstr *src);
-int strAdd(Jstr *dest, char *src);
-int areDigits(char* src);
-int isJstr(Jstr *structPtr);
+int jstradd(Jstr *dest, Jstr *src);
+int stradd(Jstr *dest, char *src);
+int aredigits(char* src);
+int isjstr(Jstr *structPtr);
 #endif

@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "jstr.h"
 
@@ -25,12 +26,14 @@ int jstrcat(Jstr *dest, ...)
 	int i = dest->len;
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len) {
-		dest->size *= 2;
+		dest->size = (dest->size *= 2 > 2 * dest->len)
+		? dest->size
+		: 2 * dest->len;
 		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
-	while (dest->str[i])
-		++i;
+	/* while (dest->str[i]) */
+	/* 	++i; */
 	va_start(ap, dest);
 	for (;;) {
 		char *argvStr = va_arg(ap, char*);
@@ -49,24 +52,14 @@ ERR:
 	return 0;
 }
 
-int addjstr(Jstr *dest, Jstr *src)
+int jstradd(Jstr *dest, Jstr *src)
 {
 	/* *dest->size must be initialized with 0 if empty */
-	if ((!dest->len && !(dest->len = strlen(dest->str)))
-	|| (!src->len && !(src->len = strlen(src->str))))
-		goto ERR;
-	if (!dest->size) {
-		char *tmp = dest->str;
-		dest->size
-			= (MIN_SIZE > 2 * dest->len)
-			? MIN_SIZE
-			: (2 * dest->len);
-		if (!(dest->str = malloc(dest->size)))
-			goto ERR;
-		memcpy(dest->str, tmp, dest->size);
-	} else if (dest->size < 2 * dest->len) {
-		dest->size *= 2;
-		if (!(dest->str = realloc(dest->str, dest->size)))
+	if (dest->size < 2 * dest->len) {
+		if (!(dest->str = realloc(dest->str,
+		dest->size = (dest->size *= 2 > 2 * dest->len)
+		? dest->size
+		: 2 * dest->len)))
 			goto ERR;
 	}
 	int i = dest->len;
