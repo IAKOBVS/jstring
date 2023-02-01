@@ -74,7 +74,7 @@ int addJstr(jstr *dest, jstr *src)
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
 
-ERR:;
+ERR:
 	perror("int addjtr(jstr *dest, jstr *src): ");
 	return 0;
 }
@@ -98,7 +98,7 @@ int addStr(jstr *dest, char *src)
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
 
-ERR:;
+ERR:
 	perror("int addStr(jstr *dest, char *src): ");
 	return 0;
 }
@@ -123,9 +123,9 @@ int areDigits(char* src)
 	return 1;
 }
 
-int emptyStruct(jstr *structPtr)
+int isJstr(jstr *structPtr)
 {
 	if (!*((unsigned char *)&*structPtr))
-		return 1;
-	return 0;
+		return 0;
+	return 1;
 }
