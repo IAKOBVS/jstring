@@ -6,6 +6,7 @@
 #include "jstr.h"
 
 #define newJstr(_NAME_OF_STRING, _STRING) jstr _NAME_OF_STRING = {.str = _STRING, .size = 0}
+#define MIN_SIZE 8
 
 /* end with "\0" or "" since the \0 is implicit */
 /* addStrings(&struct, &dest, ..., "") */
@@ -30,7 +31,9 @@ int catJstr(jstr *dest, ...)
 	dest->len += argLen;
 	if (!dest->size) {
 		char *tmp = dest->str;
-		dest->size = 2 * dest->len;
+		dest->size = (MIN_SIZE > 2 * dest->len)
+			? MIN_SIZE
+			: (2 * dest->len);
 		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->len);
@@ -66,7 +69,9 @@ int addJstr(jstr *dest, jstr *src)
 		goto ERR;
 	if (!dest->size) {
 		char *tmp = dest->str;
-		dest->size = 2 * (dest->len + src->len);
+		dest->size = (MIN_SIZE > 2 * dest->len)
+			? MIN_SIZE
+			: (2 * dest->len);
 		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->size);
@@ -99,7 +104,9 @@ int addStr(jstr *dest, char *src)
 		goto ERR;
 	if (!dest->size) {
 		char *tmp = dest->str;
-		dest->size = 2 * (dest->len + srcLen);
+		dest->size = (MIN_SIZE > 2 * dest->len)
+			? MIN_SIZE
+			: (2 * dest->len);
 		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->size);
