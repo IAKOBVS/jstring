@@ -8,11 +8,8 @@
 
 #define MIN_SIZE 8
 
-/* end with "\0" or "" since the \0 is implicit */
-/* addStrings(&struct, &dest, ..., "") */
 int jstr_cat(Jstr *dest, ...)
 {
-	/* *dest->size must be initialized with 0 if empty */
 	va_list ap;
 	va_start(ap, dest);
 	int argLen=0;
@@ -26,10 +23,11 @@ int jstr_cat(Jstr *dest, ...)
 	int i = dest->len;
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len) {
-		dest->size = (dest->size *= 2 > 2 * dest->len)
+		if (!(dest->str = realloc(dest->str,
+		dest->size
+		= (dest->size *= 2 > 2 * dest->len)
 		? dest->size
-		: 2 * dest->len;
-		if (!(dest->str = realloc(dest->str, dest->size)))
+		: 2 * dest->len)))
 			goto ERR;
 	}
 	/* while (dest->str[i]) */
@@ -48,16 +46,16 @@ int jstr_cat(Jstr *dest, ...)
 	return dest->size;
 
 ERR:
-	perror("catJstr(char *dest->string, ...): ");
+	perror("int jstrcat(char *dest->string, ...): ");
 	return 0;
 }
 
 int jstradd(Jstr *dest, Jstr *src)
 {
-	/* *dest->size must be initialized with 0 if empty */
 	if (dest->size < 2 * dest->len) {
 		if (!(dest->str = realloc(dest->str,
-		dest->size = (dest->size *= 2 > 2 * dest->len)
+		dest->size
+		= (dest->size *= 2 > 2 * dest->len)
 		? dest->size
 		: 2 * dest->len)))
 			goto ERR;
@@ -72,9 +70,8 @@ int jstradd(Jstr *dest, Jstr *src)
 	dest->len += src->len;
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
-
 ERR:
-	perror("int addjtr(Jstr *dest, Jstr *src): ");
+	perror("int jstradd(Jstr *dest, Jstr *src): ");
 	return 0;
 }
 
@@ -87,9 +84,10 @@ int stradd(Jstr *dest, char *src)
 		goto ERR;
 	if (!dest->size) {
 		char *tmp = dest->str;
-		dest->size = (MIN_SIZE > 2 * dest->len)
-			? MIN_SIZE
-			: (2 * dest->len);
+		dest->size
+		= (MIN_SIZE > 2 * dest->len)
+		? MIN_SIZE
+		: (2 * dest->len);
 		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->size);
@@ -100,8 +98,8 @@ int stradd(Jstr *dest, char *src)
 	}
 	int i = dest->len;
 	int j = 0;
-	while (dest->str[i])
-		++i;
+	/* while (dest->str[i]) */
+	/* 	++i; */
 	do {
 		(dest->str)[i++] = (src)[j++];
 	} while (j < srcLen);
@@ -110,7 +108,7 @@ int stradd(Jstr *dest, char *src)
 	return dest->size;
 
 ERR:
-	perror("int addStr(Jstr *dest, char *src): ");
+	perror("int stradd(Jstr *dest, char *src): ");
 	return 0;
 }
 
