@@ -71,6 +71,7 @@ int addJstr(jstr *dest, jstr *src)
 			goto ERR;
 		memcpy(dest->str, tmp, dest->size);
 	} else if (dest->size < 2 * dest->len) {
+		dest->size = 2 * (dest->len + src->len);
 		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
