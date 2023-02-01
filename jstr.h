@@ -15,7 +15,7 @@
 	JSTR_NAME.str = malloc(2 * JSTR_NAME.len); \
 	memcpy(JSTR_NAME.str, JSTR, JSTR_NAME.len)
 #define newjstr(JSTR_NAME, JSTR) \
-	jstr JSTR_NAME = { \
+	Jstr JSTR_NAME = { \
 	.str = JSTR}; \
 	allocjstr(JSTR_NAME, JSTR)
 #define jstrcat(STR, ...) jstr_cat(STR, __VA_ARGS__, "")
