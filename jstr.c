@@ -24,8 +24,7 @@ int jstr_cat(Jstr *dest, ...)
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len) {
 		if (!(dest->str = realloc(dest->str,
-			dest->size
-			= (dest->size *= 2 > 2 * dest->len)
+			(dest->size *= 2 > 2 * dest->len)
 			? dest->size
 			: 2 * dest->len)))
 			goto ERR;
@@ -54,10 +53,9 @@ int jstradd(Jstr *dest, Jstr *src)
 {
 	if (dest->size < 2 * dest->len) {
 		if (!(dest->str = realloc(dest->str,
-		dest->size
-		= (dest->size *= 2 > 2 * dest->len)
-		? dest->size
-		: 2 * dest->len)))
+			(dest->size *= 2 > 2 * dest->len)
+			? dest->size
+			: 2 * dest->len)))
 			goto ERR;
 	}
 	int i = dest->len;
