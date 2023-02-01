@@ -3,16 +3,16 @@
 
 #define newJstr(_NAME_OF_STRING, _STRING) jstr _NAME_OF_STRING = {.str = _STRING, .size = 0}
 
-typedef struct jstr {
+typedef struct Jstr {
 	char *str;
 	int size;
 	int len;
-} jstr;
+} Jstr;
 
 /* end with "\0" or "" since the \0 is implicit */
-int jstrCat(struct jstr *dest, ...);
-int jstrAdd(jstr *dest, jstr *src);
-int strAdd(jstr *dest, char *src);
+int jstrCat(struct Jstr *dest, ...);
+int jstrAdd(Jstr *dest, Jstr *src);
+int strAdd(Jstr *dest, char *src);
 int areDigits(char* src);
-int isJstr(jstr *structPtr);
+int isJstr(Jstr *structPtr);
 #endif
