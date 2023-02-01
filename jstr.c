@@ -11,7 +11,7 @@
 /* addStrings(&struct, &dest, ..., "") */
 int catJstr(jstr *dest, ...)
 {
-	/* *dest->string must be initialized with 0 if empty */
+	/* *dest->size must be initialized with 0 if empty */
 	va_list ap;
 	va_start(ap, dest);
 	int argLen=0;
@@ -26,18 +26,18 @@ int catJstr(jstr *dest, ...)
 		goto ERR;
 	if (!dest->len)
 		dest->len = strlen(dest->str);
+	int i = dest->len;
+	dest->len += argLen;
 	if (!dest->size) {
 		char *tmp = dest->str;
-		dest->size = 2 * (dest->len + argLen);
 		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->len);
 	} else if (dest->size < 2 * dest->len) {
-		dest->size = 2 * (dest->len + argLen);
+		dest->size = 2 * dest->len;
 		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
-	int i = dest->len;
 	va_start(ap, dest);
 	for (;;) {
 		char *argvStr = va_arg(ap, char*);
@@ -48,7 +48,6 @@ int catJstr(jstr *dest, ...)
 		} while (*argvStr);
 	}
 	va_end(ap);
-	dest->len += argLen;
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
 
@@ -59,18 +58,25 @@ ERR:
 
 int addJstr(jstr *dest, jstr *src)
 {
-	if ((!dest->len && !(dest->len = strlen(dest->str))) || (!src->size && !(src->size = strlen(src->str))))
+	/* *dest->size must be initialized with 0 if empty */
+	if ((!dest->len && !(dest->len = strlen(dest->str))) || (!src->len && !(src->len = strlen(src->str))))
 		goto ERR;
-	dest->len = src->size + dest->len;
-	char *tmp = dest->str;
-	dest->size = 2 * (dest->len + src->len);
-	if (!(dest->str = malloc(dest->size)))
-		goto ERR;
-	memcpy(dest->str, tmp, src->size);
-	int i=0;
+	if (!dest->size) {
+		char *tmp = dest->str;
+		dest->size = 2 * (dest->len + src->len);
+		if (!(dest->str = malloc(dest->size)))
+			goto ERR;
+		memcpy(dest->str, tmp, dest->size);
+	} else if (dest->size < 2 * dest->len) {
+		if (!(dest->str = realloc(dest->str, dest->size)))
+			goto ERR;
+	}
+	int i = dest->len;
+	int j = 0;
 	do {
-		(dest->str)[dest->len++] = (src->str)[i++];
-	} while (src->size--);
+		(dest->str)[i++] = (src->str)[j++];
+	} while (j < src->len);
+	dest->len += src->len;
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
 
@@ -79,22 +85,28 @@ ERR:
 	return 0;
 }
 
-/* use 0 if length unknown */
 int addStr(jstr *dest, char *src)
 {
+	/* *dest->size must be initialized with 0 if empty */
 	int srcLen;
 	if ((!dest->len && !(dest->len = strlen(dest->str))) || (!(srcLen = strlen(src))))
 		goto ERR;
-	dest->len += srcLen;
-	char *tmp = dest->str;
-	dest->size = dest->len * 2;
-	if (!(dest->str = malloc(dest->size)))
-		goto ERR;
-	memcpy(dest->str, tmp, srcLen);
-	int i=0;
+	if (!dest->size) {
+		char *tmp = dest->str;
+		dest->size = 2 * (dest->len + srcLen);
+		if (!(dest->str = malloc(dest->size)))
+			goto ERR;
+		memcpy(dest->str, tmp, dest->size);
+	} else if (dest->size < 2 * dest->len) {
+		if (!(dest->str = realloc(dest->str, dest->size)))
+			goto ERR;
+	}
+	int i = dest->len;
+	int j = 0;
 	do {
-		(dest->str)[dest->len++] = src[i++];
-	} while (srcLen--);
+		(dest->str)[i++] = (src)[j++];
+	} while (j < srcLen);
+	dest->len += srcLen;
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
 
