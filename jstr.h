@@ -14,14 +14,11 @@
 	JSTR_NAME.size = 2 * JSTR_NAME.len; \
 	JSTR_NAME.str = malloc(2 * JSTR_NAME.len); \
 	memcpy(JSTR_NAME.str, JSTR, JSTR_NAME.len)
-#define initJstr(JSTR_NAME, JSTR) \
+#define newJstr(JSTR_NAME, JSTR) \
 	Jstr JSTR_NAME = { \
 	.str = JSTR}; \
 	allocJstr(JSTR_NAME, JSTR)
-#define newJstr(A, B) \
-	do { \
-	initJstr(A, B); \
-	} while (0)
+#define jstrCat(STR, ...) jstrcat(STR, __VA_ARGS__, "")
 
 typedef struct Jstr {
 	char *str;
@@ -29,8 +26,7 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-/* end with "\0" or "" since the \0 is implicit */
-int jstrCat(struct Jstr *dest, ...);
+int jstrcat(struct Jstr *dest, ...);
 int jstrAdd(Jstr *dest, Jstr *src);
 int strAdd(Jstr *dest, char *src);
 int areDigits(char* src);
