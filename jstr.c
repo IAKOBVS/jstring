@@ -35,7 +35,7 @@ int catJstr(jstr *dest, ...)
 			goto ERR;
 		memcpy(dest->str, tmp, dest->len);
 	} else if (dest->size < 2 * dest->len) {
-		dest->size = 2 * dest->len;
+		dest->size *= 2;
 		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
@@ -71,7 +71,7 @@ int addJstr(jstr *dest, jstr *src)
 			goto ERR;
 		memcpy(dest->str, tmp, dest->size);
 	} else if (dest->size < 2 * dest->len) {
-		dest->size = 2 * (dest->len + src->len);
+		dest->size *= 2;
 		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
@@ -104,6 +104,7 @@ int addStr(jstr *dest, char *src)
 			goto ERR;
 		memcpy(dest->str, tmp, dest->size);
 	} else if (dest->size < 2 * dest->len) {
+		dest->size *= 2;
 		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
