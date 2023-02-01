@@ -65,7 +65,8 @@ ERR:
 int addJstr(jstr *dest, jstr *src)
 {
 	/* *dest->size must be initialized with 0 if empty */
-	if ((!dest->len && !(dest->len = strlen(dest->str))) || (!src->len && !(src->len = strlen(src->str))))
+	if ((!dest->len && !(dest->len = strlen(dest->str)))
+	|| (!src->len && !(src->len = strlen(src->str))))
 		goto ERR;
 	if (!dest->size) {
 		char *tmp = dest->str;
@@ -100,7 +101,8 @@ int addStr(jstr *dest, char *src)
 {
 	/* *dest->size must be initialized with 0 if empty */
 	int srcLen;
-	if ((!dest->len && !(dest->len = strlen(dest->str))) || (!(srcLen = strlen(src))))
+	if ((!dest->len && !(dest->len = strlen(dest->str)))
+	|| (!(srcLen = strlen(src))))
 		goto ERR;
 	if (!dest->size) {
 		char *tmp = dest->str;
