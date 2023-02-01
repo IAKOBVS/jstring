@@ -26,7 +26,7 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int jstrcat(struct Jstr *dest, ...);
+int jstr_cat(struct Jstr *dest, ...);
 int jstradd(Jstr *dest, Jstr *src);
 int stradd(Jstr *dest, char *src);
 int aredigits(char* src);
