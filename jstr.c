@@ -100,10 +100,10 @@ ERR:
 	return 0;
 }
 
-int jstrAdd(Jstr *dest, char *src)
+int strAdd(Jstr *dest, char *src)
 {
 	/* *dest->size must be initialized with 0 if empty */
-	int srcLen;
+	size_t srcLen;
 	if ((!dest->len && !(dest->len = strlen(dest->str)))
 	|| (!(srcLen = strlen(src))))
 		goto ERR;
