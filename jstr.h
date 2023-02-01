@@ -18,7 +18,7 @@
 	Jstr JSTR_NAME = { \
 	.str = JSTR}; \
 	allocJstr(JSTR_NAME, JSTR)
-#define jstrCat(STR, ...) jstrcat(STR, __VA_ARGS__, "")
+#define jstrcat(STR, ...) jstrcat(STR, __VA_ARGS__, "")
 
 typedef struct Jstr {
 	char *str;
