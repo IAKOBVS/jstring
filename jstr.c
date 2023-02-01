@@ -39,6 +39,8 @@ int catJstr(jstr *dest, ...)
 		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
+	while (dest->str[i])
+		++i;
 	va_start(ap, dest);
 	for (;;) {
 		char *argvStr = va_arg(ap, char*);
@@ -74,6 +76,8 @@ int addJstr(jstr *dest, jstr *src)
 	}
 	int i = dest->len;
 	int j = 0;
+	while (dest->str[i])
+		++i;
 	do {
 		(dest->str)[i++] = (src->str)[j++];
 	} while (j < src->len);
@@ -104,6 +108,8 @@ int addStr(jstr *dest, char *src)
 	}
 	int i = dest->len;
 	int j = 0;
+	while (dest->str[i])
+		++i;
 	do {
 		(dest->str)[i++] = (src)[j++];
 	} while (j < srcLen);
