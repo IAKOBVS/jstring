@@ -30,6 +30,7 @@ int catJstr(jstr *dest, ...)
 	dest->len += argLen;
 	if (!dest->size) {
 		char *tmp = dest->str;
+		dest->size = 2 * dest->len;
 		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->len);
