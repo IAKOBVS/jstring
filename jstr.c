@@ -75,7 +75,6 @@ ERR:
 
 int stradd(Jstr *dest, char *src)
 {
-	/* *dest->size must be initialized with 0 if empty */
 	size_t srcLen;
 	if (!(srcLen = strlen(src)))
 		goto ERR;
