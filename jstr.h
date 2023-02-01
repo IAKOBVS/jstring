@@ -3,7 +3,25 @@
 
 #include <stdlib.h>
 
-#define newJstr(_NAME_OF_STRING, _STRING) jstr _NAME_OF_STRING = {.str = _STRING, .size = 0}
+#define freeJstr(JSTR_NAME) \
+	do { \
+		if (JSTR_NAME.size) \
+			free(JSTR_NAME.str); \
+		JSTR_NAME.size = 0; \
+	} while (0)
+#define allocJstr(JSTR_NAME, JSTR) \
+	JSTR_NAME.len = strlen(JSTR); \
+	JSTR_NAME.size = 2 * JSTR_NAME.len; \
+	JSTR_NAME.str = malloc(2 * JSTR_NAME.len); \
+	memcpy(JSTR_NAME.str, JSTR, JSTR_NAME.len)
+#define initJstr(JSTR_NAME, JSTR) \
+	Jstr JSTR_NAME = { \
+	.str = JSTR}; \
+	allocJstr(JSTR_NAME, JSTR)
+#define newJstr(A, B) \
+	do { \
+	initJstr(A, B); \
+	} while (0)
 
 typedef struct Jstr {
 	char *str;

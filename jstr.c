@@ -22,20 +22,9 @@ int jstrCat(Jstr *dest, ...)
 		argLen += strlen(argvStr);
 	}
 	va_end(ap);
-	if (!dest->len)
-		dest->len = strlen(dest->str);
 	int i = dest->len;
 	dest->len += argLen;
-	if (!dest->size) {
-		char *tmp = dest->str;
-		dest->size
-			= (MIN_SIZE > 2 * dest->len)
-			? MIN_SIZE
-			: (2 * dest->len);
-		if (!(dest->str = malloc(dest->size)))
-			goto ERR;
-		memcpy(dest->str, tmp, dest->len);
-	} else if (dest->size < 2 * dest->len) {
+	if (dest->size < 2 * dest->len) {
 		dest->size *= 2;
 		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
