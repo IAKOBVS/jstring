@@ -10,7 +10,7 @@
 
 /* end with "\0" or "" since the \0 is implicit */
 /* addStrings(&struct, &dest, ..., "") */
-int jstrCat(jstr *dest, ...)
+int jstrCat(Jstr *dest, ...)
 {
 	/* *dest->size must be initialized with 0 if empty */
 	va_list ap;
@@ -63,7 +63,7 @@ ERR:
 	return 0;
 }
 
-int addJstr(jstr *dest, jstr *src)
+int addJstr(Jstr *dest, Jstr *src)
 {
 	/* *dest->size must be initialized with 0 if empty */
 	if ((!dest->len && !(dest->len = strlen(dest->str)))
@@ -96,11 +96,11 @@ int addJstr(jstr *dest, jstr *src)
 	return dest->size;
 
 ERR:
-	perror("int addjtr(jstr *dest, jstr *src): ");
+	perror("int addjtr(Jstr *dest, Jstr *src): ");
 	return 0;
 }
 
-int jstrAdd(jstr *dest, char *src)
+int jstrAdd(Jstr *dest, char *src)
 {
 	/* *dest->size must be initialized with 0 if empty */
 	int srcLen;
@@ -132,7 +132,7 @@ int jstrAdd(jstr *dest, char *src)
 	return dest->size;
 
 ERR:
-	perror("int addStr(jstr *dest, char *src): ");
+	perror("int addStr(Jstr *dest, char *src): ");
 	return 0;
 }
 
@@ -156,7 +156,7 @@ int areDigits(char* src)
 	return 1;
 }
 
-int isJstr(jstr *structPtr)
+int isJstr(Jstr *structPtr)
 {
 	if (!*((unsigned char *)&*structPtr))
 		return 0;
