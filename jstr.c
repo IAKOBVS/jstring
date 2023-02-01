@@ -22,8 +22,6 @@ int jstrCat(Jstr *dest, ...)
 		argLen += strlen(argvStr);
 	}
 	va_end(ap);
-	if (!argLen)
-		goto ERR;
 	if (!dest->len)
 		dest->len = strlen(dest->str);
 	int i = dest->len;
@@ -74,8 +72,7 @@ int addJstr(Jstr *dest, Jstr *src)
 			= (MIN_SIZE > 2 * dest->len)
 			? MIN_SIZE
 			: (2 * dest->len);
-		if (!(dest->str
-		= malloc(dest->size)))
+		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->size);
 	} else if (dest->size < 2 * dest->len) {
