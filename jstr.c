@@ -35,14 +35,12 @@ int catJstr(jstr *dest, ...)
 			= (MIN_SIZE > 2 * dest->len)
 			? MIN_SIZE
 			: (2 * dest->len);
-		if (!(dest->str
-		= malloc(dest->size)))
+		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->len);
 	} else if (dest->size < 2 * dest->len) {
 		dest->size *= 2;
-		if (!(dest->str
-		= realloc(dest->str, dest->size)))
+		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
 	while (dest->str[i])
@@ -83,8 +81,7 @@ int addJstr(jstr *dest, jstr *src)
 		memcpy(dest->str, tmp, dest->size);
 	} else if (dest->size < 2 * dest->len) {
 		dest->size *= 2;
-		if (!(dest->str
-		= realloc(dest->str, dest->size)))
+		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
 	int i = dest->len;
@@ -115,14 +112,12 @@ int addStr(jstr *dest, char *src)
 		dest->size = (MIN_SIZE > 2 * dest->len)
 			? MIN_SIZE
 			: (2 * dest->len);
-		if (!(dest->str
-		= malloc(dest->size)))
+		if (!(dest->str = malloc(dest->size)))
 			goto ERR;
 		memcpy(dest->str, tmp, dest->size);
 	} else if (dest->size < 2 * dest->len) {
 		dest->size *= 2;
-		if (!(dest->str
-		= realloc(dest->str, dest->size)))
+		if (!(dest->str = realloc(dest->str, dest->size)))
 			goto ERR;
 	}
 	int i = dest->len;
