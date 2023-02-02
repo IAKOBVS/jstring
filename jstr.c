@@ -28,7 +28,7 @@ int private_jstrCat(Jstr *dest, ...)
 	int i = dest->len;
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len) {
-		ERROR_IF(!(dest->str
+		ERROR_IF( !(dest->str
 			= realloc(dest->str,
 				dest->size
 					= (dest->size * 2 > 2 * dest->len)
@@ -57,7 +57,7 @@ ERROR:
 int private_jstrJoin(Jstr *dest, Jstr *src)
 {
 	if (dest->size < 2 * dest->len) {
-		ERROR_IF(!(dest->str
+		ERROR_IF( !(dest->str
 			= realloc(dest->str,
 				dest->size
 					= (dest->size * 2 > 2 * dest->len)
@@ -81,9 +81,9 @@ ERROR:
 int private_jstrAdd(Jstr *dest, char *src)
 {
 	size_t srcLen;
-	ERROR_IF(!(srcLen = strlen(src)));
+	ERROR_IF( !(srcLen = strlen(src)));
 	if (dest->size < 2 * dest->len) {
-		ERROR_IF(!(dest->str
+		ERROR_IF( !(dest->str
 			= realloc(dest->str,
 				dest->size
 					= (dest->size * 2 > 2 * dest->len)
