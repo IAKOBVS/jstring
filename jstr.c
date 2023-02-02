@@ -45,7 +45,7 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	return dest->size;
 
 ERROR:
-	perror("int jstrcat(char *dest->string, int argc, ...): ");
+	perror("int jstrCat(char *dest->string, int argc, ...): ");
 	return 0;
 }
 
@@ -64,7 +64,7 @@ int _jstrJoin(Jstr *dest, Jstr *src)
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
 ERROR:
-	perror("int jstradd(Jstr *dest, Jstr *src): ");
+	perror("int jstJoin(Jstr *dest, Jstr *src): ");
 	return 0;
 }
 
@@ -86,7 +86,7 @@ int _jstrAdd(Jstr *dest, char *src)
 	return dest->size;
 
 ERROR:
-	perror("int stradd(Jstr *dest, char *src): ");
+	perror("int strAdd(Jstr *dest, char *src): ");
 	return 0;
 }
 
