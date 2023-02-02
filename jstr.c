@@ -6,14 +6,18 @@
 
 #include "jstr.h"
 
-#define MIN_SIZE 8
-
 #define ERROR_IF(STATE) \
 	if (STATE) { \
 		goto ERROR; \
 	}
+#define MAX(NUM1, NUM2) \
+	(NUM1 > NUM2) ? NUM1 : NUM2
+#define GET_SIZE(VAR1) \
+	VAR1 = MAX(2 * dest->size, 2 * dest->len)
+#define REALLOC_FAILS \
+	!(dest->str = realloc(dest->str, (GET_SIZE(dest->size))))
 
-int private_jstrCat(Jstr *dest, ...)
+int _jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
@@ -27,13 +31,8 @@ int private_jstrCat(Jstr *dest, ...)
 	va_end(ap);
 	int i = dest->len;
 	dest->len += argLen;
-	if (dest->size < 2 * dest->len) {
-		ERROR_IF( !(dest->str
-			= realloc(dest->str,
-				dest->size
-					= (dest->size * 2 > 2 * dest->len)
-					? dest->size : 2 * dest->len)));
-	}
+	if (dest->size < 2 * dest->len)
+		ERROR_IF(REALLOC_FAILS);
 	/* while (dest->str[i]) */
 	/* 	++i; */
 	va_start(ap, dest);
@@ -54,15 +53,10 @@ ERROR:
 	return 0;
 }
 
-int private_jstrJoin(Jstr *dest, Jstr *src)
+int _jstrJoin(Jstr *dest, Jstr *src)
 {
-	if (dest->size < 2 * dest->len) {
-		ERROR_IF( !(dest->str
-			= realloc(dest->str,
-				dest->size
-					= (dest->size * 2 > 2 * dest->len)
-					? dest->size : 2 * dest->len)));
-	}
+	if (dest->size < 2 * dest->len)
+		ERROR_IF(REALLOC_FAILS);
 	int i = dest->len;
 	int j = 0;
 	while (dest->str[i])
@@ -78,17 +72,12 @@ ERROR:
 	return 0;
 }
 
-int private_jstrAdd(Jstr *dest, char *src)
+int _jstrAdd(Jstr *dest, char *src)
 {
 	size_t srcLen;
 	ERROR_IF( !(srcLen = strlen(src)));
-	if (dest->size < 2 * dest->len) {
-		ERROR_IF( !(dest->str
-			= realloc(dest->str,
-				dest->size
-					= (dest->size * 2 > 2 * dest->len)
-					? dest->size : 2 * dest->len)));
-	}
+	if (dest->size < 2 * dest->len)
+		ERROR_IF(REALLOC_FAILS);
 	int i = dest->len;
 	int j = 0;
 	/* while (dest->str[i]) */
@@ -105,7 +94,7 @@ ERROR:
 	return 0;
 }
 
-int private_isJstr(Jstr *structPtr)
+int _isJstr(Jstr *structPtr)
 {
 	if (!*((unsigned char *)&*structPtr))
 		return 0;
