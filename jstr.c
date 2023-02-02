@@ -8,7 +8,7 @@
 
 #define MIN_SIZE 8
 
-int jstr_cat(Jstr *dest, ...)
+int private_jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
@@ -51,7 +51,7 @@ ERR:
 	return 0;
 }
 
-int jstr_add(Jstr *dest, Jstr *src)
+int private_jstrJoin(Jstr *dest, Jstr *src)
 {
 	if (dest->size < 2 * dest->len) {
 		if (!(dest->str = realloc(dest->str,
@@ -76,7 +76,7 @@ ERR:
 	return 0;
 }
 
-int jstr_add_str(Jstr *dest, char *src)
+int private_jstrAdd(Jstr *dest, char *src)
 {
 	size_t srcLen;
 	if (!(srcLen = strlen(src)))
@@ -106,7 +106,7 @@ ERR:
 	return 0;
 }
 
-int isJstr(Jstr *structPtr)
+int private_isJstr(Jstr *structPtr)
 {
 	if (!*((unsigned char *)&*structPtr))
 		return 0;
