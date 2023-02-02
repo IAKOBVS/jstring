@@ -17,10 +17,10 @@
 #define REALLOC_FAILS \
 	!(dest->str = realloc(dest->str, (GET_SIZE(dest->size))))
 
-int _jstrCat(Jstr *dest, ...)
+int _jstrCat(Jstr *dest, int argc, ...)
 {
 	va_list ap;
-	va_start(ap, dest);
+	va_start(ap, argc);
 	int argLen=0;
 	for (;;) {
 		char *argvStr = va_arg(ap, char*);
@@ -35,7 +35,7 @@ int _jstrCat(Jstr *dest, ...)
 		ERROR_IF(REALLOC_FAILS);
 	/* while (dest->str[i]) */
 	/* 	++i; */
-	va_start(ap, dest);
+	va_start(ap, argc);
 	for (;;) {
 		char *argvStr = va_arg(ap, char*);
 		if (!argvStr[0])
@@ -49,7 +49,7 @@ int _jstrCat(Jstr *dest, ...)
 	return dest->size;
 
 ERROR:
-	perror("int jstrcat(char *dest->string, ...): ");
+	perror("int jstrcat(char *dest->string, int argc, ...): ");
 	return 0;
 }
 

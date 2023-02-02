@@ -2,6 +2,7 @@
 #define JSTR_H_DEF
 
 #include <stdlib.h>
+#include "/home/james/c/vargc.h"
 
 #define JSTR_ALLOC(JSTR_NAME, JSTR) \
 	JSTR_NAME.len = strlen(JSTR); \
@@ -33,7 +34,7 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int _jstrCat(struct Jstr *dest, ...);
+int _jstrCat(struct Jstr *dest, int argc, ...);
 int _jstrJoin(Jstr *dest, Jstr *src);
 int _jstrAdd(Jstr *dest, char *src);
 int _isjstr(Jstr *structPtr);
