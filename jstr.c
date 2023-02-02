@@ -22,26 +22,22 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	va_list ap;
 	va_start(ap, argc);
 	int argLen=0;
-	for (;;) {
+	for (int i=0; i<argc; ++i) {
 		char *argvStr = va_arg(ap, char*);
-		if (!argvStr[0])
-			break;
 		argLen += strlen(argvStr);
 	}
 	va_end(ap);
-	int i = dest->len;
+	size_t j = dest->len;
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len)
 		ERROR_IF(REALLOC_FAILS);
 	/* while (dest->str[i]) */
 	/* 	++i; */
 	va_start(ap, argc);
-	for (;;) {
+	for (int i=0; i<argc; ++i) {
 		char *argvStr = va_arg(ap, char*);
-		if (!argvStr[0])
-			break;
 		do {
-			(dest->str)[i++] = *argvStr++;
+			(dest->str)[j++] = *argvStr++;
 		} while (*argvStr);
 	}
 	va_end(ap);
@@ -57,10 +53,10 @@ int _jstrJoin(Jstr *dest, Jstr *src)
 {
 	if (dest->size < 2 * dest->len)
 		ERROR_IF(REALLOC_FAILS);
-	int i = dest->len;
-	int j = 0;
-	while (dest->str[i])
-		++i;
+	size_t i = dest->len;
+	size_t j = 0;
+	/* while (dest->str[i]) */
+	/* 	++i; */
 	do {
 		(dest->str)[i++] = (src->str)[j++];
 	} while (j < src->len);
@@ -78,8 +74,8 @@ int _jstrAdd(Jstr *dest, char *src)
 	ERROR_IF( !(srcLen = strlen(src)));
 	if (dest->size < 2 * dest->len)
 		ERROR_IF(REALLOC_FAILS);
-	int i = dest->len;
-	int j = 0;
+	size_t i = dest->len;
+	size_t j = 0;
 	/* while (dest->str[i]) */
 	/* 	++i; */
 	do {
