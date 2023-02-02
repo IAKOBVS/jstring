@@ -23,8 +23,10 @@ int jstr_cat(Jstr *dest, ...)
 	int i = dest->len;
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len) {
-		if (!(dest->str = realloc(dest->str,
-			(dest->size *= 2 > 2 * dest->len)
+		if (!(dest->str
+		= realloc(dest->str,
+			dest->size
+			= (dest->size * 2 > 2 * dest->len)
 			? dest->size
 			: 2 * dest->len)))
 			goto ERR;
@@ -49,11 +51,12 @@ ERR:
 	return 0;
 }
 
-int jstradd(Jstr *dest, Jstr *src)
+int jstr_add(Jstr *dest, Jstr *src)
 {
 	if (dest->size < 2 * dest->len) {
 		if (!(dest->str = realloc(dest->str,
-			(dest->size *= 2 > 2 * dest->len)
+			dest->size
+			= (dest->size * 2 > 2 * dest->len)
 			? dest->size
 			: 2 * dest->len)))
 			goto ERR;
@@ -73,15 +76,16 @@ ERR:
 	return 0;
 }
 
-int stradd(Jstr *dest, char *src)
+int jstr_add_str(Jstr *dest, char *src)
 {
 	size_t srcLen;
 	if (!(srcLen = strlen(src)))
 		goto ERR;
 	if (dest->size < 2 * dest->len) {
-		if (!(dest->str = realloc(dest->str,
+		if (!(dest->str
+		= realloc(dest->str,
 			dest->size
-			= (dest->size *= 2 > 2 * dest->len)
+			= (dest->size * 2 > 2 * dest->len)
 			? dest->size
 			: 2 * dest->len)))
 			goto ERR;
@@ -102,27 +106,7 @@ ERR:
 	return 0;
 }
 
-int aredigits(char* src)
-{
-	while (*src)
-		switch (*src++){
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-		case 7:
-		case 8:
-		case 9:
-			continue;
-		default:
-			return 0;
-		}
-	return 1;
-}
-
-int isjstr(Jstr *structPtr)
+int isJstr(Jstr *structPtr)
 {
 	if (!*((unsigned char *)&*structPtr))
 		return 0;
