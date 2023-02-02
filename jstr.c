@@ -8,9 +8,9 @@
 
 #define MIN_SIZE 8
 
-#define GOTO_ERR_IF(STATE) \
+#define ERROR_IF(STATE) \
 	if (STATE) { \
-		goto ERR; \
+		goto ERROR; \
 	}
 
 int private_jstrCat(Jstr *dest, ...)
@@ -28,7 +28,7 @@ int private_jstrCat(Jstr *dest, ...)
 	int i = dest->len;
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len) {
-		GOTO_ERR_IF(!(dest->str
+		ERROR_IF(!(dest->str
 			= realloc(dest->str,
 				dest->size
 					= (dest->size * 2 > 2 * dest->len)
@@ -49,7 +49,7 @@ int private_jstrCat(Jstr *dest, ...)
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
 
-ERR:
+ERROR:
 	perror("int jstrcat(char *dest->string, ...): ");
 	return 0;
 }
@@ -57,7 +57,7 @@ ERR:
 int private_jstrJoin(Jstr *dest, Jstr *src)
 {
 	if (dest->size < 2 * dest->len) {
-		GOTO_ERR_IF(!(dest->str
+		ERROR_IF(!(dest->str
 			= realloc(dest->str,
 				dest->size
 					= (dest->size * 2 > 2 * dest->len)
@@ -73,7 +73,7 @@ int private_jstrJoin(Jstr *dest, Jstr *src)
 	dest->len += src->len;
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
-ERR:
+ERROR:
 	perror("int jstradd(Jstr *dest, Jstr *src): ");
 	return 0;
 }
@@ -81,9 +81,9 @@ ERR:
 int private_jstrAdd(Jstr *dest, char *src)
 {
 	size_t srcLen;
-	GOTO_ERR_IF(!(srcLen = strlen(src)));
+	ERROR_IF(!(srcLen = strlen(src)));
 	if (dest->size < 2 * dest->len) {
-		GOTO_ERR_IF(!(dest->str
+		ERROR_IF(!(dest->str
 			= realloc(dest->str,
 				dest->size
 					= (dest->size * 2 > 2 * dest->len)
@@ -100,7 +100,7 @@ int private_jstrAdd(Jstr *dest, char *src)
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
 
-ERR:
+ERROR:
 	perror("int stradd(Jstr *dest, char *src): ");
 	return 0;
 }
