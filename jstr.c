@@ -8,6 +8,11 @@
 
 #define MIN_SIZE 8
 
+#define GOTO_ERR_IF(STATE) \
+	if (STATE) { \
+		goto ERR; \
+	}
+
 int private_jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
@@ -23,13 +28,11 @@ int private_jstrCat(Jstr *dest, ...)
 	int i = dest->len;
 	dest->len += argLen;
 	if (dest->size < 2 * dest->len) {
-		if (!(dest->str
-		= realloc(dest->str,
-			dest->size
-			= (dest->size * 2 > 2 * dest->len)
-			? dest->size
-			: 2 * dest->len)))
-			goto ERR;
+		GOTO_ERR_IF(!(dest->str
+			= realloc(dest->str,
+				dest->size
+					= (dest->size * 2 > 2 * dest->len)
+					? dest->size : 2 * dest->len)));
 	}
 	/* while (dest->str[i]) */
 	/* 	++i; */
@@ -54,12 +57,11 @@ ERR:
 int private_jstrJoin(Jstr *dest, Jstr *src)
 {
 	if (dest->size < 2 * dest->len) {
-		if (!(dest->str = realloc(dest->str,
-			dest->size
-			= (dest->size * 2 > 2 * dest->len)
-			? dest->size
-			: 2 * dest->len)))
-			goto ERR;
+		GOTO_ERR_IF(!(dest->str
+			= realloc(dest->str,
+				dest->size
+					= (dest->size * 2 > 2 * dest->len)
+					? dest->size : 2 * dest->len)));
 	}
 	int i = dest->len;
 	int j = 0;
@@ -79,16 +81,13 @@ ERR:
 int private_jstrAdd(Jstr *dest, char *src)
 {
 	size_t srcLen;
-	if (!(srcLen = strlen(src)))
-		goto ERR;
+	GOTO_ERR_IF(!(srcLen = strlen(src)));
 	if (dest->size < 2 * dest->len) {
-		if (!(dest->str
-		= realloc(dest->str,
-			dest->size
-			= (dest->size * 2 > 2 * dest->len)
-			? dest->size
-			: 2 * dest->len)))
-			goto ERR;
+		GOTO_ERR_IF(!(dest->str
+			= realloc(dest->str,
+				dest->size
+					= (dest->size * 2 > 2 * dest->len)
+					? dest->size : 2 * dest->len)));
 	}
 	int i = dest->len;
 	int j = 0;

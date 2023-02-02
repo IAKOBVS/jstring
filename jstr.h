@@ -20,9 +20,12 @@
 
 #define jstrPr(JSTR_NAME) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR_NAME.str, JSTR_NAME.size, JSTR_NAME.len)
 
-#define jstrCat(JSTR, ...) private_jstrCat(&JSTR, __VA_ARGS__, "")
-#define jstrJoin(JSTR_DEST, JSTR_SRC) private_jstrJoin(&JSTR_DEST, &JSTR_SRC)
-#define jstrAdd(JSTR_DEST, JSTR_STR) private_jstrAdd(&JSTR_DEST, JSTR_SRC)
+#define jstrCat(JSTR, ...) \
+	private_jstrCat(&JSTR, __VA_ARGS__, "")
+#define jstrJoin(JSTR_DEST, JSTR_SRC) \
+	private_jstrJoin(&JSTR_DEST, &JSTR_SRC)
+#define jstrAdd(JSTR_DEST, JSTR_STR) \
+	private_jstrAdd(&JSTR_DEST, JSTR_SRC)
 
 typedef struct Jstr {
 	char *str;
