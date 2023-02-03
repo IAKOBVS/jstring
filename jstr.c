@@ -16,6 +16,8 @@
 	VAR1 = MAX(2 * dest->size, 2 * dest->len)
 #define REALLOC_FAILS \
 	!(dest->str = realloc(dest->str, (GET_SIZE(dest->size))))
+#define IF_NEED_MEM \
+	if (dest->size < 2 * dest->len)
 
 int _jstrCat(Jstr *dest, int argc, ...)
 {
@@ -29,7 +31,7 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	va_end(ap);
 	size_t j = dest->len;
 	dest->len += argLen;
-	if (dest->size < 2 * dest->len)
+	IF_NEED_MEM
 		ERROR_IF(REALLOC_FAILS);
 	/* while (dest->str[i]) */
 	/* 	++i; */
@@ -51,7 +53,7 @@ ERROR:
 
 int _jstrJoin(Jstr *dest, Jstr *src)
 {
-	if (dest->size < 2 * dest->len)
+	IF_NEED_MEM
 		ERROR_IF(REALLOC_FAILS);
 	size_t i = dest->len;
 	size_t j = 0;
@@ -72,8 +74,8 @@ ERROR:
 int _jstrAdd(Jstr *dest, char *src)
 {
 	size_t srcLen;
-	ERROR_IF( !(srcLen = strlen(src)));
-	if (dest->size < 2 * dest->len)
+	ERROR_IF(!(srcLen = strlen(src)));
+	IF_NEED_MEM
 		ERROR_IF(REALLOC_FAILS);
 	size_t i = dest->len;
 	size_t j = 0;
