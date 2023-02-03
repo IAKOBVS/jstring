@@ -43,7 +43,6 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	va_end(ap);
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
-
 ERROR:
 	perror("int jstrCat(char *dest->string, int argc, ...): ");
 	return 0;
@@ -84,7 +83,6 @@ int _jstrAdd(Jstr *dest, char *src)
 	dest->len += srcLen;
 	(dest->str)[dest->len + 1] = '\0';
 	return dest->size;
-
 ERROR:
 	perror("int strAdd(Jstr *dest, char *src): ");
 	return 0;
