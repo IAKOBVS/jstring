@@ -91,7 +91,7 @@ ERROR:
 	return 0;
 }
 
-int _isJstr(Jstr *structPtr)
+int isJstr(Jstr *structPtr)
 {
 	if (!*((unsigned char *)&*structPtr))
 		return 0;
