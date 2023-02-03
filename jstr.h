@@ -5,8 +5,10 @@
 #include "/home/james/c/vargc.h"
 
 #define MIN_SIZE 8
+
 #define MAX(NUM1, NUM2) \
 	(NUM1 > NUM2) ? NUM1 : NUM2
+
 #define JSTR_ALLOC(JSTR, CONST_STRING) \
 	JSTR.len = strlen(CONST_STRING); \
 	JSTR.size = MAX(JSTR.len, MIN_SIZE); \
@@ -14,15 +16,18 @@
 		perror(""); exit(EXIT_FAILURE); } \
 	JSTR.str = malloc(JSTR.size); \
 	memcpy(JSTR.str, CONST_STRING, JSTR.len)
+
 #define jstrNew(JSTR, CONST_STRING) \
 	Jstr JSTR; \
 	JSTR_ALLOC(JSTR, CONST_STRING)
+
 #define jstrFree(JSTR) \
 	do { \
 		if (JSTR.size) \
 			free(JSTR.str); \
 		JSTR.size = 0; \
 	} while (0)
+
 #define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.str, JSTR.size, JSTR.len)
 
 typedef struct Jstr {
