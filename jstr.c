@@ -23,7 +23,7 @@ int _jstrCat(Jstr *dest, int argc, ...)
 {
 	va_list ap;
 	va_start(ap, argc);
-	int argLen=0;
+	size_t argLen=0;
 	for (int i=0; i<argc; ++i) {
 		char *argvStr = va_arg(ap, char*);
 		argLen += strlen(argvStr);
@@ -35,7 +35,7 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	/* while (dest->str[i]) */
 	/* 	++i; */
 	va_start(ap, argc);
-	for (int i=0; i<argc; ++i) {
+	for (size_t i=0; i<argc; ++i) {
 		char *argvStr = va_arg(ap, char*);
 		do {
 			(dest->str)[j++] = *argvStr++;

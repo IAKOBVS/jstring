@@ -9,17 +9,15 @@
 #define MAX(NUM1, NUM2) \
 	((NUM1 > NUM2) ? (NUM1) : (NUM2))
 
-#define JSTR_ALLOC(JSTR, CONST_STRING) \
-	JSTR.len = strlen(CONST_STRING); \
-	JSTR.size = MAX(JSTR.len, MIN_SIZE); \
-	if (!(JSTR.str = malloc(JSTR.size))) { \
-		perror(""); exit(EXIT_FAILURE); } \
-	JSTR.str = malloc(JSTR.size); \
-	memcpy(JSTR.str, CONST_STRING, JSTR.len)
-
 #define jstrNew(JSTR, CONST_STRING) \
-	Jstr JSTR; \
-	JSTR_ALLOC(JSTR, CONST_STRING)
+	do { \
+		JSTR.len = strlen(CONST_STRING); \
+		JSTR.size = MAX(JSTR.len, MIN_SIZE); \
+		if (!(JSTR.str = malloc(JSTR.size))) { \
+			perror(""); exit(EXIT_FAILURE); } \
+		JSTR.str = malloc(JSTR.size); \
+		memcpy(JSTR.str, CONST_STRING, JSTR.len) \
+	} while (0)
 
 #define jstrFree(JSTR) \
 	do { \
@@ -37,10 +35,16 @@ typedef struct Jstr {
 } Jstr;
 
 int _jstrCat(struct Jstr *dest, int argc, ...);
-#define jstrCat(JSTR, ...) _jstrCat(&JSTR, PP_NARG(__VA_ARGS__), __VA_ARGS__, "")
+#define jstrCat(JSTR, ...) \
+	_jstrCat(&JSTR, PP_NARG(__VA_ARGS__), __VA_ARGS__, "")
+
 int _jstrJoin(Jstr *dest, Jstr *src);
-#define jstrJoin(JSTR_DEST, JSTR_SRC) _jstrJoin(&JSTR_DEST, &JSTR_SRC)
+#define jstrJoin(JSTR_DEST, JSTR_SRC) \
+	_jstrJoin(&JSTR_DEST, &JSTR_SRC)
+
 int _jstrAdd(Jstr *dest, char *src);
-#define jstrAdd(JSTR_DEST, JSTR_STR) _jstrAdd(&JSTR_DEST, JSTR_SRC)
+#define jstrAdd(JSTR_DEST, JSTR_STR) \
+	_jstrAdd(&JSTR_DEST, JSTR_SRC)
+
 int isjstr(Jstr *structPtr);
 #endif
