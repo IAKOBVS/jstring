@@ -19,7 +19,7 @@
 		memcpy(JSTR.str, CONST_STRING, JSTR.len) \
 	} while (0)
 
-#define jstrFree(JSTR) \
+#define jstrDelete(JSTR) \
 	do { \
 		if (JSTR.size) \
 			free(JSTR.str); \
