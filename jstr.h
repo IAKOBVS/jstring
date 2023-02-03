@@ -7,7 +7,7 @@
 #define MIN_SIZE 8
 
 #define MAX(NUM1, NUM2) \
-	(NUM1 > NUM2) ? NUM1 : NUM2
+	((NUM1 > NUM2) ? (NUM1) : (NUM2))
 
 #define JSTR_ALLOC(JSTR, CONST_STRING) \
 	JSTR.len = strlen(CONST_STRING); \
