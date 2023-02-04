@@ -78,7 +78,7 @@ int _jstrAdd(Jstr *dest, char *src)
 	/* while (dest->str[i]) */
 	/* 	++i; */
 	do {
-		dest->str[i++] = *src++;
+		dest->str[i++] = src[j++];
 	} while (j < srcLen);
 	dest->len += srcLen;
 	dest->str[dest->len + 1] = '\0';

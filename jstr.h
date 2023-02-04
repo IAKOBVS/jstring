@@ -49,7 +49,7 @@ int _jstrJoin(Jstr *dest, Jstr *src);
 	_jstrJoin(&JSTR_DEST, &JSTR_SRC)
 
 int _jstrAdd(Jstr *dest, char *src);
-#define jstrAdd(JSTR_DEST, JSTR_STR) \
+#define jstrAdd(JSTR_DEST, JSTR_SRC) \
 	_jstrAdd(&JSTR_DEST, JSTR_SRC)
 
 int isjstr(Jstr *structPtr);
