@@ -19,6 +19,12 @@
 		memcpy(JSTR.str, CONST_STRING, JSTR.len); \
 	} while (0)
 
+#define jstrInit(JSTR) \
+	Jstr JSTR = { \
+		.size = 0, \
+		.len = 0, \
+	}
+
 #define jstrDelete(JSTR) \
 	do { \
 		if (JSTR.size) \
