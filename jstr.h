@@ -25,6 +25,12 @@
 			free(JSTR.str); \
 		JSTR.size = 0; \
 	} while (0)
+#define jstrDeletePtr(JSTR) \
+	do { \
+		if (JSTR->size) \
+			free(JSTR->str); \
+		JSTR->size = 0; \
+	} while (0)
 
 #define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.str, JSTR.size, JSTR.len)
 
