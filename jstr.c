@@ -32,8 +32,6 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	size_t j = dest->len;
 	dest->len += argLen;
 	ERROR_IF(NEED_MEM && REALLOC_FAILS);
-	/* while (dest->str[i]) */
-	/* 	++i; */
 	va_start(ap, argc);
 	for (size_t i=0; i<argc; ++i) {
 		char *argvStr = va_arg(ap, char*);
@@ -55,8 +53,6 @@ int _jstrJoin(Jstr *dest, Jstr *src)
 	ERROR_IF(NEED_MEM && REALLOC_FAILS);
 	size_t i = dest->len;
 	size_t j = 0;
-	/* while (dest->str[i]) */
-	/* 	++i; */
 	do {
 		dest->str[i++] = src->str[j++];
 	} while (j < src->len);
@@ -75,8 +71,6 @@ int _jstrAdd(Jstr *dest, char *src)
 	ERROR_IF(!(srcLen = strlen(src)) || NEED_MEM && REALLOC_FAILS);
 	size_t i = dest->len;
 	size_t j = 0;
-	/* while (dest->str[i]) */
-	/* 	++i; */
 	do {
 		dest->str[i++] = src[j++];
 	} while (j < srcLen);
