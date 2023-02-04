@@ -16,7 +16,7 @@
 		if (!(JSTR.str = malloc(JSTR.size))) { \
 			perror(""); exit(EXIT_FAILURE); } \
 		JSTR.str = malloc(JSTR.size); \
-		memcpy(JSTR.str, CONST_STRING, JSTR.len) \
+		memcpy(JSTR.str, CONST_STRING, JSTR.len); \
 	} while (0)
 
 #define jstrDelete(JSTR) \

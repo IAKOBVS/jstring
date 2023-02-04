@@ -38,11 +38,11 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	for (size_t i=0; i<argc; ++i) {
 		char *argvStr = va_arg(ap, char*);
 		do {
-			(dest->str)[j++] = *argvStr++;
+			dest->str[j++] = *argvStr++;
 		} while (*argvStr);
 	}
 	va_end(ap);
-	(dest->str)[dest->len + 1] = '\0';
+	dest->str[dest->len + 1] = '\0';
 	return dest->size;
 
 ERROR:
@@ -58,10 +58,10 @@ int _jstrJoin(Jstr *dest, Jstr *src)
 	/* while (dest->str[i]) */
 	/* 	++i; */
 	do {
-		(dest->str)[i++] = (src->str)[j++];
+		dest->str[i++] = src->str[j++];
 	} while (j < src->len);
 	dest->len += src->len;
-	(dest->str)[dest->len + 1] = '\0';
+	dest->str[dest->len + 1] = '\0';
 	return dest->size;
 
 ERROR:
@@ -78,10 +78,10 @@ int _jstrAdd(Jstr *dest, char *src)
 	/* while (dest->str[i]) */
 	/* 	++i; */
 	do {
-		(dest->str)[i++] = (src)[j++];
+		dest->str[i++] = *src++;
 	} while (j < srcLen);
 	dest->len += srcLen;
-	(dest->str)[dest->len + 1] = '\0';
+	dest->str[dest->len + 1] = '\0';
 	return dest->size;
 
 ERROR:
