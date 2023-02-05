@@ -29,7 +29,7 @@ int _jstrCat(Jstr *dest, int argc, ...)
 		argLen += strlen(argv);
 	}
 	va_end(ap);
-	if (dest->size < 2 * argLen && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * dest->len)))))))
+	if (dest->size < 2 * (dest->len + argLen) && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * (dest->len + argLen))))))))
 		goto ERROR;
 	va_start(ap, argc);
 	for (size_t j = dest->len, i=0; i<argc; ++i) {
@@ -49,7 +49,7 @@ ERROR:
 
 int _jstrJoin(Jstr *dest, Jstr *src)
 {
-	if (dest->size < 2 * src->len && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * dest->len)))))))
+	if (dest->size < 2 * (dest->len + src->len) && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * (dest->len + src->len))))))))
 		goto ERROR;
 	size_t i = dest->len;
 	size_t j = 0;
@@ -68,7 +68,7 @@ int _jstrAdd(Jstr *dest, char *src)
 {
 	size_t srcLen;
 	if (!(srcLen = strlen(src))
-	|| (dest->size < 2 * dest->len && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * dest->len))))))))
+	|| (dest->size < 2 * (dest->len + srcLen) && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * (dest->len + srcLen)))))))))
 		goto ERROR;
 	size_t i = dest->len;
 	size_t j = 0;
