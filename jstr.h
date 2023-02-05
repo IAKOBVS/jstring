@@ -58,5 +58,5 @@ int _jstrAdd(Jstr *dest, char *src);
 #define jstrAdd(JSTR_DEST, JSTR_SRC) \
 	_jstrAdd(&JSTR_DEST, JSTR_SRC)
 
-int isjstr(Jstr *structPtr);
+int isJstr(Jstr *structPtr);
 #endif
