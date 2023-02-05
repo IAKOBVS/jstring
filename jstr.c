@@ -25,22 +25,21 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	va_start(ap, argc);
 	size_t argLen=0;
 	for (int i=0; i<argc; ++i) {
-		char *argvStr = va_arg(ap, char*);
-		argLen += strlen(argvStr);
+		char *argv = va_arg(ap, char*);
+		argLen += strlen(argv);
 	}
 	va_end(ap);
-	size_t j = dest->len;
-	dest->len += argLen;
-	ERROR_IF(NEED_MEM && REALLOC_FAILS);
+	if (dest->size < 2 * argLen && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * dest->len)))))))
+		goto ERROR;
 	va_start(ap, argc);
-	for (size_t i=0; i<argc; ++i) {
-		char *argvStr = va_arg(ap, char*);
+	for (size_t j = dest->len, i=0; i<argc; ++i) {
+		char *argv = va_arg(ap, char *);
 		do {
-			dest->str[j++] = *argvStr++;
-		} while (*argvStr);
+			dest->str[j++] = *argv++;
+		} while (*argv);
 	}
 	va_end(ap);
-	dest->str[dest->len + 1] = '\0';
+	dest->str[(dest->len += argLen) + 1] = '\0';
 	return dest->size;
 
 ERROR:
@@ -50,14 +49,14 @@ ERROR:
 
 int _jstrJoin(Jstr *dest, Jstr *src)
 {
-	ERROR_IF(NEED_MEM && REALLOC_FAILS);
+	if (dest->size < 2 * src->len && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * dest->len)))))))
+		goto ERROR;
 	size_t i = dest->len;
 	size_t j = 0;
 	do {
 		dest->str[i++] = src->str[j++];
 	} while (j < src->len);
-	dest->len += src->len;
-	dest->str[dest->len + 1] = '\0';
+	dest->str[(dest->len += src->len) + 1] = '\0';
 	return dest->size;
 
 ERROR:
@@ -68,14 +67,15 @@ ERROR:
 int _jstrAdd(Jstr *dest, char *src)
 {
 	size_t srcLen;
-	ERROR_IF(!(srcLen = strlen(src)) || NEED_MEM && REALLOC_FAILS);
+	if (!(srcLen = strlen(src))
+	|| (dest->size < 2 * dest->len && (!(dest->str = realloc(dest->str, (dest->size = (MAX(2 * dest->size, 2 * dest->len))))))))
+		goto ERROR;
 	size_t i = dest->len;
 	size_t j = 0;
 	do {
 		dest->str[i++] = src[j++];
 	} while (j < srcLen);
-	dest->len += srcLen;
-	dest->str[dest->len + 1] = '\0';
+	dest->str[(dest->len += srcLen) + 1] = '\0';
 	return dest->size;
 
 ERROR:
