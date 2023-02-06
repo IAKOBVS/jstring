@@ -10,15 +10,6 @@
 	if (STATE) \
 		goto ERROR
 
-#define GET_SIZE(VAR1) \
-	VAR1 = MAX(2 * dest->size, 2 * dest->len)
-
-#define REALLOC_FAILS \
-	(!(dest->str = realloc(dest->str, (GET_SIZE(dest->size)))))
-
-#define NEED_MEM \
-	(dest->size < 2 * dest->len)
-
 int _jstrCat(Jstr *dest, int argc, ...)
 {
 	va_list ap;
