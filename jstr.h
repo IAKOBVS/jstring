@@ -40,6 +40,9 @@
 
 #define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.str, JSTR.size, JSTR.len)
 
+#define jstrMinimize(JARR) \
+	JARR.str = realloc(JARR.str, JARR.len)
+
 typedef struct Jstr {
 	char *str;
 	size_t size;
