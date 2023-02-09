@@ -22,7 +22,7 @@
 #define jstrInit(JSTR) \
 	Jstr JSTR = { \
 		.size = 0, \
-		.len = 0, \
+		.len = 0 \
 	}
 
 #define jstrDelete(JSTR) \
@@ -42,6 +42,21 @@
 
 #define jstrMinimize(JARR) \
 	JARR.str = realloc(JARR.str, JARR.len)
+
+#define jstrReserve(JARR, ALLOC_SIZE) \
+	do { \
+		JARR.str = malloc(ALLOC_SIZE); \
+		JARR.size = ALLOC_SIZE; \
+	} while (0)
+
+#define jstrResize(ALLOC_SIZE) \
+	do { \
+		JARR.str = realloc(ALLOC_SIZE) \
+		JARR.size = ALLOC_SIZE; \
+		JARR.len = ALLOC_SIZE; \
+	} while (0)
+
+/* #define jstrMatch(JARR, DELIM) \ */
 
 typedef struct Jstr {
 	char *str;
