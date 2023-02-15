@@ -35,7 +35,7 @@ ERROR:
 	return 0;
 }
 
-int private_jstrAdd(Jstr *dest, char *src, size_t srcLen)
+int private_jstrPush(Jstr *dest, char *src, size_t srcLen)
 {
 	if (dest->size < 2 * (dest->len + srcLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
