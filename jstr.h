@@ -55,8 +55,6 @@
 		JARR.len = ALLOC_SIZE; \
 	} while (0)
 
-/* #define jstrMatch(JARR, DELIM) \ */
-
 typedef struct Jstr {
 	char *str;
 	size_t size;
@@ -67,8 +65,8 @@ int private_jstrCat(struct Jstr *dest, ...);
 #define jstrCat(JSTR, ...) \
 	private_jstrCat(&JSTR, __VA_ARGS__, NULL)
 
-int private_jstrPush(Jstr *dest, char *src, size_t srcLen);
-#define jstrAdd(JSTR_DEST, STR_SRC) \
+int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen);
+#define jstrPushStr(JSTR_DEST, STR_SRC) \
 	private_jstrPush(&JSTR_DEST, STR_SRC)
 #define jstrAddJstr(JSTR_DEST, JSTR_SRC) \
 	private_jstrPush(&JSTR_DEST, &JSTR_SRC, JSTR->len)
