@@ -67,11 +67,11 @@ int private_jstrCat(struct Jstr *dest, ...);
 #define jstrCat(JSTR, ...) \
 	private_jstrCat(&JSTR, __VA_ARGS__, NULL)
 
-int private_jstrAdd(Jstr *dest, char *src, size_t srcLen);
+int private_jstrPushBack(Jstr *dest, char *src, size_t srcLen);
 #define jstrAdd(JSTR_DEST, STR_SRC) \
-	private_jstrAdd(&JSTR_DEST, STR_SRC)
+	private_jstrPushBack(&JSTR_DEST, STR_SRC)
 #define jstrAddJstr(JSTR_DEST, JSTR_SRC) \
-	private_jstrAdd(&JSTR_DEST, &JSTR_SRC, JSTR->len)
+	private_jstrPushBack(&JSTR_DEST, &JSTR_SRC, JSTR->len)
 
 int isJstr(Jstr *structPtr);
 #endif
