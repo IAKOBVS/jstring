@@ -55,6 +55,23 @@ ERROR:
 	return 0;
 }
 
+int private_jstrPush(Jstr *dest, char c)
+{
+	size_t tmpLen = dest->len + 1;
+	if (dest->size < 2 * tmpLen) {
+		size_t tmpSize = MAX(2 * dest->size, 2 * tmpLen);
+		if (!(dest->str = realloc(dest->str, tmpSize))) goto ERROR;
+		dest->size = tmpSize;
+	}
+	dest->str[dest->len] = c;
+	dest->str[(dest->len += 1)] = '\0';
+	return 1;
+
+ERROR:
+	perror("");
+	return 0;
+}
+
 int isJstr(Jstr *structPtr)
 {
 	if (!*((unsigned char *)&*structPtr))
