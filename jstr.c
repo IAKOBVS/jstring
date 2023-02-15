@@ -2,7 +2,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-/* #include <assert.h> */
+#include <assert.h>
 
 #include "jstr.h"
 
@@ -11,7 +11,7 @@ int _jstrCat(Jstr *dest, ...)
 	va_list ap;
 	va_start(ap, dest);
 	size_t argLen = 0;
-	for (char *argv = va_arg(ap, char*); *argv; argv = va_arg(ap, char*))
+	for (char *argv = va_arg(ap, char*); argv != NULL; argv = va_arg(ap, char*))
 		argLen += strlen(argv);
 	va_end(ap);
 	if (dest->size < 2 * (dest->len + argLen)) {
@@ -21,7 +21,7 @@ int _jstrCat(Jstr *dest, ...)
 	}
 	va_start(ap, dest);
 	size_t i = dest->len;
-	for (char *argv = va_arg(ap, char*); *argv; argv = va_arg(ap, char*))
+	for (char *argv = va_arg(ap, char*); argv != NULL; argv = va_arg(ap, char*))
 		do {
 			dest->str[i] = *argv;
 			++i, ++argv;
