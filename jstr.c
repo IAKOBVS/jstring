@@ -35,10 +35,10 @@ ERROR:
 	return 0;
 }
 
-int private_jstrPushStr(Jstr *dest, char *src, size_t sLen)
+int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 {
-	if (dest->size < 2 * (dest->len + sLen)) {
-		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + sLen));
+	if (dest->size < 2 * (dest->len + srcLen)) {
+		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
 		if (!(dest->str = realloc(dest->str, tmpSize))) goto ERROR;
 		dest->size = tmpSize;
 	}
@@ -47,7 +47,7 @@ int private_jstrPushStr(Jstr *dest, char *src, size_t sLen)
 		dest->str[i] = *src;
 		++i, ++src;
 	}
-	dest->str[(dest->len += sLen)] = '\0';
+	dest->str[(dest->len += srcLen)] = '\0';
 	return 1;
 
 ERROR:
