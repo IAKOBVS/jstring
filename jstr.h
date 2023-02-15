@@ -64,9 +64,9 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int _jstrCat(struct Jstr *dest, int argc, ...);
+int _jstrCat(struct Jstr *dest, ...);
 #define jstrCat(JSTR, ...) \
-	_jstrCat(&JSTR, PP_NARG(__VA_ARGS__), __VA_ARGS__, "")
+	_jstrCat(&JSTR, __VA_ARGS__, NULL)
 
 int _jstrAdd(Jstr *dest, char *src, size_t srcLen);
 #define jstrAdd(JSTR_DEST, STR_SRC) \

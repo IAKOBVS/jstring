@@ -6,10 +6,10 @@
 
 #include "jstr.h"
 
-int _jstrCat(Jstr *dest, int argc, ...)
+int _jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
-	va_start(ap, argc);
+	va_start(ap, dest);
 	size_t argLen = 0;
 	for (char *argv = va_arg(ap, char*); *argv; argv = va_arg(ap, char*))
 		argLen += strlen(argv);
@@ -19,7 +19,7 @@ int _jstrCat(Jstr *dest, int argc, ...)
 		if (!(dest->str = realloc(dest->str, tmpSize))) goto ERROR;
 		dest->size = tmpSize;
 	}
-	va_start(ap, argc);
+	va_start(ap, dest);
 	size_t i = dest->len;
 	for (char *argv = va_arg(ap, char*); *argv; argv = va_arg(ap, char*))
 		do {
