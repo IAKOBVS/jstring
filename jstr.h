@@ -63,15 +63,15 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int _jstrCat(struct Jstr *dest, ...);
+int private_jstrCat(struct Jstr *dest, ...);
 #define jstrCat(JSTR, ...) \
-	_jstrCat(&JSTR, __VA_ARGS__, NULL)
+	private_jstrCat(&JSTR, __VA_ARGS__, NULL)
 
-int _jstrAdd(Jstr *dest, char *src, size_t srcLen);
+int private_jstrAdd(Jstr *dest, char *src, size_t srcLen);
 #define jstrAdd(JSTR_DEST, STR_SRC) \
-	_jstrAdd(&JSTR_DEST, STR_SRC)
+	private_jstrAdd(&JSTR_DEST, STR_SRC)
 #define jstrAddJstr(JSTR_DEST, JSTR_SRC) \
-	_jstrAdd(&JSTR_DEST, &JSTR_SRC, JSTR->len)
+	private_jstrAdd(&JSTR_DEST, &JSTR_SRC, JSTR->len)
 
 int isJstr(Jstr *structPtr);
 #endif

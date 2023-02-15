@@ -6,7 +6,7 @@
 
 #include "jstr.h"
 
-int _jstrCat(Jstr *dest, ...)
+int private_jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
@@ -35,7 +35,7 @@ ERROR:
 	return 0;
 }
 
-int _jstrAdd(Jstr *dest, char *src, size_t srcLen)
+int private_jstrAdd(Jstr *dest, char *src, size_t srcLen)
 {
 	if (dest->size < 2 * (dest->len + srcLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
