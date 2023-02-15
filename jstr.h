@@ -68,13 +68,11 @@ int _jstrCat(struct Jstr *dest, int argc, ...);
 #define jstrCat(JSTR, ...) \
 	_jstrCat(&JSTR, PP_NARG(__VA_ARGS__), __VA_ARGS__, "")
 
-int _jstrJoin(Jstr *dest, Jstr *src);
-#define jstrJoin(JSTR_DEST, JSTR_SRC) \
-	_jstrJoin(&JSTR_DEST, &JSTR_SRC)
-
-int _jstrAdd(Jstr *dest, char *src);
+int _jstrAdd(Jstr *dest, char *src, size_t srcLen);
 #define jstrAdd(JSTR_DEST, STR_SRC) \
 	_jstrAdd(&JSTR_DEST, STR_SRC)
+#define jstrAddJstr(JSTR_DEST, JSTR_SRC) \
+	_jstrAdd(&JSTR_DEST, &JSTR_SRC, JSTR->len)
 
 int isJstr(Jstr *structPtr);
 #endif

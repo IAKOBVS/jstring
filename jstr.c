@@ -11,59 +11,44 @@ int _jstrCat(Jstr *dest, int argc, ...)
 	va_list ap;
 	va_start(ap, argc);
 	size_t argLen = 0;
-	for (int i = 0; i<argc; ++i) {
-		char *argv = va_arg(ap, char*);
+	for (char *argv = va_arg(ap, char*); *argv; argv = va_arg(ap, char*))
 		argLen += strlen(argv);
-	}
 	va_end(ap);
-	if (dest->size < 2 * (dest->len + argLen) && (!(dest->str = realloc(dest->str, MAX(2 * dest->size, 2 * (dest->len + argLen))))))
-		goto ERROR;
-	va_start(ap, argc);
-	for (size_t j = dest->len, i = 0; i<argc; ++i) {
-		char *argv = va_arg(ap, char *);
-		do {
-			dest->str[j++] = *argv++;
-		} while (*argv);
+	if (dest->size < 2 * (dest->len + argLen)) {
+		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + argLen));
+		if (!(dest->str = realloc(dest->str, tmpSize))) goto ERROR;
+		dest->size = tmpSize;
 	}
+	va_start(ap, argc);
+	size_t i = dest->len;
+	for (char *argv = va_arg(ap, char*); *argv; argv = va_arg(ap, char*))
+		do {
+			dest->str[i] = *argv;
+			++i, ++argv;
+		} while (*argv);
 	va_end(ap);
 	dest->str[(dest->len += argLen)] = '\0';
-	return (dest->size = (MAX(2 * dest->size, 2 * (dest->len + argLen))));
+	return 1;
 
 ERROR:
 	perror("");
 	return 0;
 }
 
-int _jstrJoin(Jstr *dest, Jstr *src)
+int _jstrAdd(Jstr *dest, char *src, size_t srcLen)
 {
-	if (dest->size < 2 * (dest->len + src->len) && (!(dest->str = realloc(dest->str, MAX(2 * dest->size, 2 * (dest->len + src->len))))))
-		goto ERROR;
+	if (dest->size < 2 * (dest->len + srcLen)) {
+		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
+		if (!(dest->str = realloc(dest->str, tmpSize))) goto ERROR;
+		dest->size = tmpSize;
+	}
 	size_t i = dest->len;
-	size_t j = 0;
-	do {
-		dest->str[i++] = src->str[j++];
-	} while (j < src->len);
-	dest->str[(dest->len += src->len)] = '\0';
-	return (dest->size = MAX(2 * dest->size, 2 * (dest->len + src->len)));
-
-ERROR:
-	perror("");
-	return 0;
-}
-
-int _jstrAdd(Jstr *dest, char *src)
-{
-	size_t srcLen = strlen(src);
-	if (!srcLen
-	|| (dest->size < 2 * (dest->len + srcLen) && (!(dest->str = realloc(dest->str, MAX(2 * dest->size, 2 * (dest->len + srcLen)))))))
-		goto ERROR;
-	size_t i = dest->len;
-	size_t j = 0;
-	do {
-		dest->str[i++] = src[j++];
-	} while (j < srcLen);
+	while (*src) {
+		dest->str[i] = *src;
+		++i, ++src;
+	}
 	dest->str[(dest->len += srcLen)] = '\0';
-	return (dest->size = (MAX(2 * dest->size, 2 * (dest->len + srcLen))));
+	return 1;
 
 ERROR:
 	perror("");
