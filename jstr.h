@@ -68,7 +68,7 @@ int private_jstrCat(struct Jstr *dest, ...);
 int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen);
 #define jstrPushStr(JSTR_DEST, STR_SRC) \
 	private_jstrPush(&JSTR_DEST, STR_SRC)
-#define jstrAddJstr(JSTR_DEST, JSTR_SRC) \
+#define jstrPushJstr(JSTR_DEST, JSTR_SRC) \
 	private_jstrPush(&JSTR_DEST, &JSTR_SRC, JSTR->len)
 
 int isJstr(Jstr *structPtr);
