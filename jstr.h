@@ -5,9 +5,7 @@
 #include "/home/james/c/vargc.h"
 
 #define MIN_SIZE 8
-
-#define MAX(NUM1, NUM2) \
-	((NUM1 > NUM2) ? (NUM1) : (NUM2))
+#define MAX(a,b) ((a)>(b)?(a):(b))
 
 #define jstrNew(JSTR, CONST_STRING) \
 	do { \
@@ -72,4 +70,8 @@ int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen);
 	private_jstrPush(&JSTR_DEST, &JSTR_SRC, JSTR->len)
 
 int isJstr(Jstr *structPtr);
+
+#undef MIN_SIZE
+#undef MAX
+
 #endif
