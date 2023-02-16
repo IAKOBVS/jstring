@@ -12,21 +12,25 @@ int private_jstrCat(Jstr *dest, ...)
 	va_list ap;
 	va_start(ap, dest);
 	size_t argLen = 0;
-	for (char *argv = va_arg(ap, char *); argv != NULL; argv = va_arg(ap, char*))
+	for (char *argv = va_arg(ap, char *); argv; argv = va_arg(ap, char*))
 		argLen += strlen(argv);
 	va_end(ap);
 	if (dest->size < 2 * (dest->len + argLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + argLen));
-		if (!(dest->data = realloc(dest->data, tmpSize))) goto ERROR;
-		dest->size = tmpSize;
+		if ((dest->data = realloc(dest->data, tmpSize))) dest->size = tmpSize;
+		else goto ERROR;
 	}
 	va_start(ap, dest);
-	size_t i = dest->len;
-	for (char *argv = va_arg(ap, char *); argv != NULL; argv = va_arg(ap, char *))
-		do {
-			dest->data[i] = *argv;
-			++i, ++argv;
-		} while (*argv);
+	for (size_t i = dest->len;; ) {
+		char *argv = va_arg(ap, char *);
+		if (argv)
+			do {
+				dest->data[i] = *argv;
+				++i, ++argv;
+			} while (*argv);
+		else
+			break;
+	}
 	va_end(ap);
 	dest->data[(dest->len += argLen)] = '\0';
 	return 1;
@@ -40,8 +44,8 @@ int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 {
 	if (dest->size < 2 * (dest->len + srcLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
-		if (!(dest->data = realloc(dest->data, tmpSize))) goto ERROR;
-		dest->size = tmpSize;
+		if ((dest->data = realloc(dest->data, tmpSize))) dest->size = tmpSize;
+		else goto ERROR;
 	}
 	for (size_t i = dest->len; *src; ++i, ++src)
 		dest->data[i] = *src;
@@ -58,8 +62,8 @@ int private_jstrPush(Jstr *dest, char c)
 	size_t tmpLen = dest->len + 1;
 	if (dest->size < 2 * tmpLen) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * tmpLen);
-		if (!(dest->data = realloc(dest->data, tmpSize))) goto ERROR;
-		dest->size = tmpSize;
+		if ((dest->data = realloc(dest->data, tmpSize))) dest->size = tmpSize;
+		else goto ERROR;
 	}
 	dest->data[dest->len] = c;
 	dest->data[(dest->len += 1)] = '\0';
