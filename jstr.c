@@ -21,7 +21,7 @@ int private_jstrCat(Jstr *dest, ...)
 	}
 	va_start(ap, dest);
 	size_t i = dest->len;
-	for (char *argv = va_arg(ap, char*); argv != NULL; argv = va_arg(ap, char*))
+	for (char *argv = va_arg(ap, char *); argv != NULL; argv = va_arg(ap, char *))
 		do {
 			dest->str[i] = *argv;
 			++i, ++argv;
@@ -42,11 +42,8 @@ int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 		if (!(dest->str = realloc(dest->str, tmpSize))) goto ERROR;
 		dest->size = tmpSize;
 	}
-	size_t i = dest->len;
-	while (*src) {
+	for (size_t i = dest->len; *src; ++i, ++src)
 		dest->str[i] = *src;
-		++i, ++src;
-	}
 	dest->str[(dest->len += srcLen)] = '\0';
 	return 1;
 
