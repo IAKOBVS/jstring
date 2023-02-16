@@ -5,13 +5,14 @@
 #include <assert.h>
 
 #include "jstr.h"
+#define MAX(a,b) ((a)>(b)?(a):(b))
 
 int private_jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
 	size_t argLen = 0;
-	for (char *argv = va_arg(ap, char*); argv != NULL; argv = va_arg(ap, char*))
+	for (char *argv = va_arg(ap, char *); argv != NULL; argv = va_arg(ap, char*))
 		argLen += strlen(argv);
 	va_end(ap);
 	if (dest->size < 2 * (dest->len + argLen)) {
