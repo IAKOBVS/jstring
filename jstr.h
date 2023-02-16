@@ -11,8 +11,8 @@
 	do { \
 		JSTR.len = strlen(CONST_STRING); \
 		JSTR.size = MAX(JSTR.len, MIN_SIZE); \
-		if (!(JSTR.str = malloc(JSTR.size))) { \
-			perror(""); exit(EXIT_FAILURE); } \
+		if ((JSTR.str = malloc(JSTR.size))); \
+		else { perror(""); exit(EXIT_FAILURE); } \
 		memcpy(JSTR.str, CONST_STRING, JSTR.len); \
 	} while (0)
 
