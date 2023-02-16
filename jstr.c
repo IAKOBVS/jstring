@@ -23,13 +23,12 @@ int private_jstrCat(Jstr *dest, ...)
 	va_start(ap, dest);
 	for (size_t i = dest->len;; ) {
 		char *argv = va_arg(ap, char *);
-		if (argv)
-			do {
-				dest->data[i] = *argv;
-				++i, ++argv;
-			} while (*argv);
-		else
-			break;
+		if (argv);
+		else break;
+		do {
+			dest->data[i] = *argv;
+			++i, ++argv;
+		} while (*argv);
 	}
 	va_end(ap);
 	dest->data[(dest->len += argLen)] = '\0';
