@@ -40,23 +40,23 @@
 #define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.str, JSTR.size, JSTR.len)
 
 #define jstrMinimize(JARR) \
-	JARR.str = realloc(JARR.str, JARR.len)
+	JARR.data = realloc(JARR.data, JARR.len)
 
 #define jstrReserve(JARR, ALLOC_SIZE) \
 	do { \
-		JARR.str = malloc(ALLOC_SIZE); \
+		JARR.data = malloc(ALLOC_SIZE); \
 		JARR.size = ALLOC_SIZE; \
 	} while (0)
 
 #define jstrResize(ALLOC_SIZE) \
 	do { \
-		JARR.str = realloc(ALLOC_SIZE) \
+		JARR.data = realloc(ALLOC_SIZE) \
 		JARR.size = ALLOC_SIZE; \
 		JARR.len = ALLOC_SIZE; \
 	} while (0)
 
 typedef struct Jstr {
-	char *str;
+	char *data;
 	size_t size;
 	size_t len;
 } Jstr;
