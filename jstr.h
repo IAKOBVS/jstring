@@ -4,13 +4,13 @@
 #include <stdlib.h>
 #include "/home/james/c/vargc.h"
 
-#define MIN_SIZE 8
+#define JSTR_MIN_SIZE 8
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
 #define jstrNew(JSTR, CONST_STRING) \
 	do { \
 		JSTR.len = strlen(CONST_STRING); \
-		JSTR.size = MAX(JSTR.len, MIN_SIZE); \
+		JSTR.size = MAX(JSTR.len, JSTR_MIN_SIZE); \
 		if ((JSTR.str = malloc(JSTR.size))); \
 		else { perror(""); exit(EXIT_FAILURE); } \
 		memcpy(JSTR.str, CONST_STRING, JSTR.len); \
@@ -71,7 +71,6 @@ int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen);
 
 int isJstr(Jstr *structPtr);
 
-#undef MIN_SIZE
 #undef MAX
 
 #endif
