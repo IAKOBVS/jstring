@@ -11,9 +11,9 @@
 	do { \
 		JSTR.len = strlen(CONST_STRING); \
 		JSTR.size = MAX(JSTR.len, JSTR_MIN_SIZE); \
-		if ((JSTR.str = malloc(JSTR.size))); \
+		if ((JSTR.data = malloc(JSTR.size))); \
 		else { perror(""); exit(EXIT_FAILURE); } \
-		memcpy(JSTR.str, CONST_STRING, JSTR.len); \
+		memcpy(JSTR.data, CONST_STRING, JSTR.len); \
 	} while (0)
 
 #define jstrInit(JSTR) \
@@ -25,7 +25,7 @@
 #define jstrDelete(JSTR) \
 	do { \
 		if (JSTR.size) \
-			free(JSTR.str); \
+			free(JSTR.data); \
 		JSTR.size = 0; \
 	} while (0)
 #define jstrDeletePtr(JSTR) \
@@ -35,7 +35,7 @@
 		JSTR->size = 0; \
 	} while (0)
 
-#define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.str, JSTR.size, JSTR.len)
+#define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.data, JSTR.size, JSTR.len)
 
 #define jstrMinimize(JARR) \
 	JARR.data = realloc(JARR.data, JARR.len)
