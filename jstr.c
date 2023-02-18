@@ -4,6 +4,14 @@
 #include <string.h>
 #include <assert.h>
 
+#if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
+  #define likely(x) __builtin_expect(!!(x), 1)
+  #define unlikely(x) __builtin_expect(!!(x), 0)
+#else
+  #define likely(x) (x)
+  #define unlikely(x) (x)
+#endif
+
 #include "jstr.h"
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
@@ -17,8 +25,9 @@ int private_jstrCat(Jstr *dest, ...)
 	va_end(ap);
 	if (dest->size < 2 * (dest->len + argLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + argLen));
-		if ((dest->data = realloc(dest->data, tmpSize))) dest->size = tmpSize;
-		else goto ERROR;
+		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
+			goto ERROR;
+		dest->size = tmpSize;
 	}
 	va_start(ap, dest);
 	for (size_t i = dest->len;; ) {
@@ -43,8 +52,9 @@ int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 {
 	if (dest->size < 2 * (dest->len + srcLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
-		if ((dest->data = realloc(dest->data, tmpSize))) dest->size = tmpSize;
-		else goto ERROR;
+		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
+			goto ERROR;
+		dest->size = tmpSize;
 	}
 	for (size_t i = dest->len; *src; ++i, ++src)
 		dest->data[i] = *src;
@@ -61,8 +71,9 @@ int private_jstrPush(Jstr *dest, char c)
 	size_t tmpLen = dest->len + 1;
 	if (dest->size < 2 * tmpLen) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * tmpLen);
-		if ((dest->data = realloc(dest->data, tmpSize))) dest->size = tmpSize;
-		else goto ERROR;
+		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
+			goto ERROR;
+		dest->size = tmpSize;
 	}
 	dest->data[dest->len] = c;
 	dest->data[(dest->len += 1)] = '\0';
