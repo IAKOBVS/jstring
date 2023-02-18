@@ -4,6 +4,18 @@
 #include <string.h>
 #include <assert.h>
 
+#include "jstr.h"
+
+#if defined(__PRETTY_FUNCTION__)
+	#define CURR_FUNC __PRETTY_FUNCTION__
+#elif defined(__FUNCTION__)
+	#define CURR_FUNC __FUNCTION__
+#elif defined(__func__)
+	#define CURR_FUNC __func__
+#else
+	#define CURR_FUNC ""
+#endif
+
 #if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
   #define likely(x) __builtin_expect(!!(x), 1)
   #define unlikely(x) __builtin_expect(!!(x), 0)
@@ -12,10 +24,9 @@
   #define unlikely(x) (x)
 #endif
 
-#include "jstr.h"
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
-int private_jstrCat(Jstr *dest, ...)
+int jstrCat_(Jstr *dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
@@ -48,7 +59,7 @@ ERROR:
 	return 0;
 }
 
-int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
+int jstrPushStr_(Jstr *dest, char *src, size_t srcLen)
 {
 	if (dest->size < 2 * (dest->len + srcLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
@@ -66,7 +77,7 @@ ERROR:
 	return 0;
 }
 
-int private_jstrPush(Jstr *dest, char c)
+int jstrPush_(Jstr *dest, char c)
 {
 	size_t tmpLen = dest->len + 1;
 	if (dest->size < 2 * tmpLen) {
