@@ -71,13 +71,13 @@ typedef struct Jstr {
 
 int jstrCat_(struct Jstr *dest, ...);
 #define jstrCat(JSTR, ...) \
-	jstrCat_(&JSTR, __VA_ARGS__, NULL)
+	private_jstrCat_(&JSTR, __VA_ARGS__, NULL)
 
 int jstrPushStr_(Jstr *dest, char *src, size_t srcLen);
 #define jstrPushStr(JSTR_DEST, STR_SRC) \
-	jstrPush_(&JSTR_DEST, STR_SRC)
+	private_jstrPush_(&JSTR_DEST, STR_SRC)
 #define jstrPushJstr(JSTR_DEST, JSTR_SRC) \
-	jstrPush_(&JSTR_DEST, &JSTR_SRC, JSTR->len)
+	private_jstrPush_(&JSTR_DEST, &JSTR_SRC, JSTR->len)
 
 int isJstr(Jstr *structPtr);
 

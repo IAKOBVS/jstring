@@ -26,7 +26,7 @@
 
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
-int jstrCat_(Jstr *dest, ...)
+int private_jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
@@ -59,7 +59,7 @@ ERROR:
 	return 0;
 }
 
-int jstrPushStr_(Jstr *dest, char *src, size_t srcLen)
+int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 {
 	if (dest->size < 2 * (dest->len + srcLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
@@ -77,7 +77,7 @@ ERROR:
 	return 0;
 }
 
-int jstrPush_(Jstr *dest, char c)
+int private_jstrPush(Jstr *dest, char c)
 {
 	size_t tmpLen = dest->len + 1;
 	if (dest->size < 2 * tmpLen) {
