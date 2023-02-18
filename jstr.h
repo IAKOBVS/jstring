@@ -11,8 +11,8 @@
 	do { \
 		JSTR.len = strlen(CONST_STRING); \
 		JSTR.size = MAX(JSTR.len, JSTR_MIN_SIZE); \
-		if ((JSTR.data = malloc(JSTR.size))); \
-		else { perror(""); exit(EXIT_FAILURE); } \
+		if (unlikely(!(JSTR.data = malloc(JSTR.size)))) \
+			{ perror(""); return EXIT_FAILURE; } \
 		memcpy(JSTR.data, CONST_STRING, JSTR.len); \
 	} while (0)
 
@@ -42,13 +42,15 @@
 
 #define jstrReserve(JARR, ALLOC_SIZE) \
 	do { \
-		JARR.data = malloc(ALLOC_SIZE); \
+		if (unlikely(!(JARR.data = malloc(ALLOC_SIZE)))) \
+			{ perror(""); return EXIT_FAILURE; } \
 		JARR.size = ALLOC_SIZE; \
 	} while (0)
 
 #define jstrResize(ALLOC_SIZE) \
 	do { \
-		JARR.data = realloc(ALLOC_SIZE) \
+		if (unlikely(!(JARR.data = realloc(ALLOC_SIZE)))) \
+			{ perror(""); return EXIT_FAILURE; } \
 		JARR.size = ALLOC_SIZE; \
 		JARR.len = ALLOC_SIZE; \
 	} while (0)
