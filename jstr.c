@@ -89,7 +89,7 @@ ERROR:
 int jstrPush(Jstr *dest, char c)
 {
 	size_t tmpLen = dest->len + 1;
-	if (dest->size < 2 * tmpLen) {
+	if (unlikely(dest->size < 2 * tmpLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * tmpLen);
 		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
 			goto ERROR;
