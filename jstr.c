@@ -95,8 +95,9 @@ int jstrPush(Jstr *dest, char c)
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	dest->data[dest->len] = c;
-	dest->data[(dest->len += 1)] = '\0';
+	*(dest->data + dest->len) = c;
+	++dest->data;
+	*(dest->data + dest->len) = '\0';
 	return 1;
 
 ERROR:
