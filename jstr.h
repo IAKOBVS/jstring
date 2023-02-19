@@ -18,7 +18,7 @@
 #define jstrNew(JSTR, CONST_STRING) \
 	do { \
 		JSTR.len = strlen(CONST_STRING); \
-		JSTR.size = MAX(JSTR.len, JSTR_MIN_SIZE); \
+		JSTR.size = MAX(2 * JSTR.len, JSTR_MIN_SIZE); \
 		if (unlikely(!(JSTR.data = malloc(JSTR.size)))) \
 			{ perror(""); return EXIT_FAILURE; } \
 		memcpy(JSTR.data, CONST_STRING, JSTR.len); \
@@ -69,18 +69,13 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int jstrCat_(struct Jstr *dest, ...);
+int private_jstrCat(struct Jstr *dest, ...);
 #define jstrCat(JSTR, ...) \
-	private_jstrCat_(&JSTR, __VA_ARGS__, NULL)
+	private_jstrCat(JSTR, __VA_ARGS__, NULL)
 
-int jstrPushStr_(Jstr *dest, char *src, size_t srcLen);
-#define jstrPushStr(JSTR_DEST, STR_SRC) \
-	private_jstrPush_(&JSTR_DEST, STR_SRC)
-#define jstrPushJstr(JSTR_DEST, JSTR_SRC) \
-	private_jstrPush_(&JSTR_DEST, &JSTR_SRC, JSTR->len)
+int jstrPush(Jstr *dest, char c);
+int jstrPushStr(Jstr *dest, char *src, size_t srcLen);
 
 int isJstr(Jstr *structPtr);
-
-#undef MAX
 
 #endif

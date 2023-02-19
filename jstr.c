@@ -56,7 +56,6 @@ int private_jstrCat(Jstr *dest, ...)
 			break;
 	}
 	va_end(ap);
-	/* dest->data[(dest->len += argLen)] = '\0'; */
 	*tmpStr = '\0';
 	return 1;
 
@@ -65,7 +64,7 @@ ERROR:
 	return 0;
 }
 
-int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
+int jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 {
 	if (dest->size < 2 * (dest->len + srcLen)) {
 		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
@@ -79,7 +78,6 @@ int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 	*tmpStr = *src;
 	for (++tmpStr, ++src; *src; ++tmpStr, ++src)
 		*tmpStr = *src;
-	/* dest->data[(dest->len += srcLen)] = '\0'; */
 	*tmpStr = '\0';
 	return 1;
 
@@ -88,7 +86,7 @@ ERROR:
 	return 0;
 }
 
-int private_jstrPush(Jstr *dest, char c)
+int jstrPush(Jstr *dest, char c)
 {
 	size_t tmpLen = dest->len + 1;
 	if (dest->size < 2 * tmpLen) {
