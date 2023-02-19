@@ -30,8 +30,11 @@ int private_jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
-	size_t argLen = 0;
-	for (char *argv = va_arg(ap, char *); argv; argv = va_arg(ap, char*))
+	char *argv = va_arg(ap, char *);
+	size_t argLen = strlen(argv);
+	if (unlikely(!argv))
+		goto ERROR;
+	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		argLen += strlen(argv);
 	va_end(ap);
 	if (dest->size < 2 * (dest->len + argLen)) {
@@ -41,17 +44,20 @@ int private_jstrCat(Jstr *dest, ...)
 		dest->size = tmpSize;
 	}
 	va_start(ap, dest);
-	for (size_t i = dest->len;; ) {
-		char *argv = va_arg(ap, char *);
-		if (argv);
-		else break;
-		do {
-			dest->data[i] = *argv;
-			++i, ++argv;
-		} while (*argv);
+	char *tmpStr = dest->data + dest->len;
+	for (;;) {
+		argv = va_arg(ap, char *);
+		if (argv)
+			do {
+				*tmpStr = *argv;
+				++tmpStr, ++argv;
+			} while (*argv);
+		else
+			break;
 	}
 	va_end(ap);
-	dest->data[(dest->len += argLen)] = '\0';
+	/* dest->data[(dest->len += argLen)] = '\0'; */
+	*tmpStr = '\0';
 	return 1;
 
 ERROR:
@@ -67,9 +73,14 @@ int private_jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	for (size_t i = dest->len; *src; ++i, ++src)
-		dest->data[i] = *src;
-	dest->data[(dest->len += srcLen)] = '\0';
+	char *tmpStr = dest->data + dest->len;
+	if (unlikely(*src))
+		goto ERROR;
+	*tmpStr = *src;
+	for (++tmpStr, ++src; *src; ++tmpStr, ++src)
+		*tmpStr = *src;
+	/* dest->data[(dest->len += srcLen)] = '\0'; */
+	*tmpStr = '\0';
 	return 1;
 
 ERROR:
