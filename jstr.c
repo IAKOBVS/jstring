@@ -72,11 +72,8 @@ int jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	char *tmpStr = dest->data + dest->len;
-	if (unlikely(*src))
-		goto ERROR;
-	*tmpStr = *src;
-	for (++tmpStr, ++src; *src; ++tmpStr, ++src)
+	char *tmpStr;
+	for (tmpStr = dest->data + dest->len; *src; ++tmpStr, ++src)
 		*tmpStr = *src;
 	*tmpStr = '\0';
 	return 1;
