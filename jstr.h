@@ -4,6 +4,16 @@
 #include <stdlib.h>
 #include "/home/james/c/vargc.h"
 
+#if defined(__PRETTY_FUNCTION__)
+	#define CURR_FUNC __PRETTY_FUNCTION__
+#elif defined(__FUNCTION__)
+	#define CURR_FUNC __FUNCTION__
+#elif defined(__func__)
+	#define CURR_FUNC __func__
+#else
+	#define CURR_FUNC ""
+#endif
+
 #if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
   #define likely(x) __builtin_expect(!!(x), 1)
   #define unlikely(x) __builtin_expect(!!(x), 0)
@@ -19,8 +29,10 @@
 	do { \
 		JSTR.len = strlen(CONST_STRING); \
 		JSTR.size = MAX(2 * JSTR.len, JSTR_MIN_SIZE); \
-		if (unlikely(!(JSTR.data = malloc(JSTR.size)))) \
-			{ perror(""); return EXIT_FAILURE; } \
+		if (unlikely(!(JSTR.data = malloc(JSTR.size)))) { \
+			perror(""); \
+			return EXIT_FAILURE; \
+		} \
 		memcpy(JSTR.data, CONST_STRING, JSTR.len); \
 	} while (0)
 
@@ -46,19 +58,28 @@
 #define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.data, JSTR.size, JSTR.len)
 
 #define jstrMinimize(JARR) \
-	JARR.data = realloc(JARR.data, JARR.len)
+	do { \
+		if (unlikely(!(JARR.data = realloc(JARR.data, JARR.len)))) { \
+			perror(CURR_FUNC); \
+		} \
+		JARR.size = JARR.len; \
+	} while (0)
 
 #define jstrReserve(JARR, ALLOC_SIZE) \
 	do { \
-		if (unlikely(!(JARR.data = malloc(ALLOC_SIZE)))) \
-			{ perror(""); return EXIT_FAILURE; } \
+		if (unlikely(!(JARR.data = malloc(ALLOC_SIZE)))) { \
+			perror(CURR_FUNC); \
+			return EXIT_FAILURE; \
+		} \
 		JARR.size = ALLOC_SIZE; \
 	} while (0)
 
 #define jstrResize(ALLOC_SIZE) \
 	do { \
-		if (unlikely(!(JARR.data = realloc(ALLOC_SIZE)))) \
-			{ perror(""); return EXIT_FAILURE; } \
+		if (unlikely(!(JARR.data = realloc(ALLOC_SIZE)))) { \
+			perror(CURR_FUNC); \
+			return EXIT_FAILURE; \
+		} \
 		JARR.size = ALLOC_SIZE; \
 		JARR.len = ALLOC_SIZE; \
 	} while (0)
