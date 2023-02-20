@@ -30,33 +30,29 @@ int private_jstrCat(Jstr *dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
-	char *argv = va_arg(ap, char *);
-	size_t argLen = strlen(argv);
-	if (unlikely(!argv))
-		goto ERROR;
+	size_t newLen = dest->len;
+	char *argv;
 	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
-		argLen += strlen(argv);
+		newLen += strlen(argv);
 	va_end(ap);
-	if (dest->size < 2 * (dest->len + argLen)) {
-		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + argLen));
+	if (dest->size < newLen) {
+		size_t tmpSize = dest->size;
+		do {
+			tmpSize *= 2;
+		} while (tmpSize < newLen);
 		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
 			goto ERROR;
 		dest->size = tmpSize;
 	}
 	va_start(ap, dest);
 	char *tmpStr = dest->data + dest->len;
-	for (;;) {
-		argv = va_arg(ap, char *);
-		if (argv)
-			do {
-				*tmpStr = *argv;
-				++tmpStr, ++argv;
-			} while (*argv);
-		else
-			break;
-	}
+	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
+		do {
+			*tmpStr++ = *argv++;
+		} while (*argv);
 	va_end(ap);
 	*tmpStr = '\0';
+	dest->len = newLen;
 	return 1;
 
 ERROR:
@@ -66,8 +62,12 @@ ERROR:
 
 int jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 {
-	if (dest->size < 2 * (dest->len + srcLen)) {
-		size_t tmpSize = MAX(2 * dest->size, 2 * (dest->len + srcLen));
+	size_t newLen = dest->len + srcLen;
+	if (dest->size < newLen) {
+		size_t tmpSize = dest->size;
+		do {
+			tmpSize *= 2;
+		} while (tmpSize < newLen);
 		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
 			goto ERROR;
 		dest->size = tmpSize;
@@ -76,6 +76,7 @@ int jstrPushStr(Jstr *dest, char *src, size_t srcLen)
 	for (tmpStr = dest->data + dest->len; *src; ++tmpStr, ++src)
 		*tmpStr = *src;
 	*tmpStr = '\0';
+	dest->len = newLen;
 	return 1;
 
 ERROR:
@@ -85,16 +86,16 @@ ERROR:
 
 int jstrPush(Jstr *dest, char c)
 {
-	size_t tmpLen = dest->len + 1;
-	if (unlikely(dest->size < 2 * tmpLen)) {
-		size_t tmpSize = MAX(2 * dest->size, 2 * tmpLen);
+	size_t newLen = dest->len + 1;
+	if (unlikely(dest->size < newLen)) {
+		size_t tmpSize = dest->size * 2;
 		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	*(dest->data + dest->len) = c;
-	++dest->data;
+	*(dest->data + dest->len - 1) = c;
 	*(dest->data + dest->len) = '\0';
+	dest->len = newLen;
 	return 1;
 
 ERROR:
