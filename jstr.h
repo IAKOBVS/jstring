@@ -96,6 +96,4 @@ int private_jstrCat(Jstr *restrict dest, ...);
 int jstrPush(Jstr *dest, const char c);
 int jstrPushStr(Jstr *dest, const char *restrict src, const size_t srcLen);
 
-int isJstr(Jstr *structPtr);
-
 #endif
