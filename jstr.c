@@ -101,10 +101,3 @@ ERROR:
 	perror("");
 	return 0;
 }
-
-int isJstr(Jstr *structPtr)
-{
-	if (!*((unsigned char *)&*structPtr))
-		return 0;
-	return 1;
-}
