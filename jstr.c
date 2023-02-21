@@ -71,7 +71,7 @@ int jstrPushStr(Jstr *restrict dest, const char *restrict src, const size_t srcL
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	char *tmpStr;
+	char *restrict tmpStr;
 	for (tmpStr = dest->data + dest->len; *src; ++tmpStr, ++src)
 		*tmpStr = *src;
 	*tmpStr = '\0';
@@ -85,7 +85,7 @@ ERROR:
 
 int jstrPush(Jstr *restrict dest, const char c)
 {
-	size_t newLen = dest->len + 1;
+	const size_t newLen = dest->len + 1;
 	if (unlikely(dest->size < newLen)) {
 		size_t tmpSize = dest->size * 2;
 		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
