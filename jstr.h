@@ -89,12 +89,12 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int private_jstrCat(struct Jstr *dest, ...);
+int private_jstrCat(Jstr *restrict dest, ...);
 #define jstrCat(JSTR, ...) \
 	private_jstrCat(JSTR, __VA_ARGS__, NULL)
 
-int jstrPush(Jstr *dest, char c);
-int jstrPushStr(Jstr *dest, char *src, size_t srcLen);
+int jstrPush(Jstr *dest, const char c);
+int jstrPushStr(Jstr *dest, const char *restrict src, const size_t srcLen);
 
 int isJstr(Jstr *structPtr);
 
