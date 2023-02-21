@@ -87,7 +87,7 @@ int jstrPush(Jstr *restrict dest, const char c)
 {
 	const size_t newLen = dest->len + 1;
 	if (unlikely(dest->size < newLen)) {
-		size_t tmpSize = dest->size * 2;
+		const size_t tmpSize = dest->size * 2;
 		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
 			goto ERROR;
 		dest->size = tmpSize;
