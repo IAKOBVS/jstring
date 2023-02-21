@@ -1,7 +1,6 @@
 #ifndef JSTR_H_DEF
 #define JSTR_H_DEF
 
-#include <stdlib.h>
 #include "/home/james/c/vargc.h"
 
 #if defined(__PRETTY_FUNCTION__)
