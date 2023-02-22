@@ -5,6 +5,24 @@
 
 #include "jstr.h"
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+# define RESTRICT restrict
+#elif defined(__GNUC__) || defined(__clang__)
+# define RESTRICT __restrict__
+#elif defined(_MSC_VER)
+# define RESTRICT __restrict
+#else
+# define RESTRICT
+#endif
+
+#if defined(__GNUC__) || defined(__clang__)
+    #define ALWAYS_INLINE __attribute__((always_inline)) inline
+#elif defined(_MSC_VER)
+    #define ALWAYS_INLINE __forceinline inline
+#else
+    #define ALWAYS_INLINE inline
+#endif
+
 #if defined(__PRETTY_FUNCTION__)
 	#define CURR_FUNC __PRETTY_FUNCTION__
 #elif defined(__FUNCTION__)
@@ -24,13 +42,14 @@
 #endif
 
 #define MAX(a,b) ((a)>(b)?(a):(b))
+#define MIN(a,b) ((a)<(b)?(a):(b))
 
-int private_jstrCat(Jstr *restrict dest, ...)
+int private_jstrCat(Jstr *RESTRICT dest, ...)
 {
 	va_list ap;
 	va_start(ap, dest);
 	size_t newLen = dest->len;
-	char *restrict argv;
+	char *RESTRICT argv;
 	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		newLen += strlen(argv);
 	va_end(ap);
@@ -44,7 +63,7 @@ int private_jstrCat(Jstr *restrict dest, ...)
 		dest->size = tmpSize;
 	}
 	va_start(ap, dest);
-	char *restrict tmpStr = dest->data + dest->len;
+	char *RESTRICT tmpStr = dest->data + dest->len;
 	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		do {
 			*tmpStr++ = *argv++;
@@ -59,7 +78,7 @@ ERROR:
 	return 0;
 }
 
-int jstrPushStr(Jstr *restrict dest, const char *restrict src, const size_t srcLen)
+int jstrPushStr(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
 {
 	const size_t newLen = dest->len + srcLen;
 	if (dest->size < newLen) {
@@ -71,7 +90,7 @@ int jstrPushStr(Jstr *restrict dest, const char *restrict src, const size_t srcL
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	char *restrict tmpStr;
+	char *RESTRICT tmpStr;
 	for (tmpStr = dest->data + dest->len; *src; ++tmpStr, ++src)
 		*tmpStr = *src;
 	*tmpStr = '\0';
@@ -83,7 +102,7 @@ ERROR:
 	return 0;
 }
 
-int jstrPush(Jstr *restrict dest, const char c)
+int jstrPush(Jstr *RESTRICT dest, const char c)
 {
 	const size_t newLen = dest->len + 1;
 	if (unlikely(dest->size < newLen)) {
