@@ -2,6 +2,7 @@
 #define JSTR_H_DEF
 
 #include "/home/james/c/vargc.h"
+#include <stddef.h>
 
 #if defined(__PRETTY_FUNCTION__)
 	#define CURR_FUNC __PRETTY_FUNCTION__
