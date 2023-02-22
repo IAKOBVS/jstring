@@ -2,6 +2,7 @@
 #define JSTR_H_DEF
 
 #include "/home/james/c/vargc.h"
+
 #include <stddef.h>
 
 #if defined(__PRETTY_FUNCTION__)
@@ -23,13 +24,13 @@
 #endif
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-# define RESTRICT_KEYWORD restrict
+# define RESTRICT restrict
 #elif defined(__GNUC__) || defined(__clang__)
-# define RESTRICT_KEYWORD __restrict__
+# define RESTRICT __restrict__
 #elif defined(_MSC_VER)
-# define RESTRICT_KEYWORD __restrict
+# define RESTRICT __restrict
 #else
-# define RESTRICT_KEYWORD
+# define RESTRICT
 #endif
 
 #if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
@@ -108,11 +109,20 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int private_jstrCat(Jstr *RESTRICT_KEYWORD dest, ...);
+int private_jstrCat(Jstr *RESTRICT dest, ...);
 #define jstrCat(JSTR, ...) \
 	private_jstrCat(JSTR, __VA_ARGS__, NULL)
 
 int jstrPush(Jstr *dest, const char c);
-int jstrPushStr(Jstr *dest, const char *RESTRICT_KEYWORD src, const size_t srcLen);
+int jstrPushStr(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
+
+#undef CURR_FUNC
+#undef ALWAYS_INLINE
+#undef ALLOC_SIZE
+#undef RESTRICT
+#undef MAX
+#undef JSTR_MIN_SIZE
+#undef likely
+#undef unlikely
 
 #endif
