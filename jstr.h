@@ -13,6 +13,24 @@
 	#define CURR_FUNC ""
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+    #define ALWAYS_INLINE __attribute__((always_inline)) inline
+#elif defined(_MSC_VER)
+    #define ALWAYS_INLINE __forceinline inline
+#else
+    #define ALWAYS_INLINE inline
+#endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+# define RESTRICT_KEYWORD restrict
+#elif defined(__GNUC__) || defined(__clang__)
+# define RESTRICT_KEYWORD __restrict__
+#elif defined(_MSC_VER)
+# define RESTRICT_KEYWORD __restrict
+#else
+# define RESTRICT_KEYWORD
+#endif
+
 #if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
   #define likely(x) __builtin_expect(!!(x), 1)
   #define unlikely(x) __builtin_expect(!!(x), 0)
@@ -89,11 +107,11 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int private_jstrCat(Jstr *restrict dest, ...);
+int private_jstrCat(Jstr *RESTRICT_KEYWORD dest, ...);
 #define jstrCat(JSTR, ...) \
 	private_jstrCat(JSTR, __VA_ARGS__, NULL)
 
 int jstrPush(Jstr *dest, const char c);
-int jstrPushStr(Jstr *dest, const char *restrict src, const size_t srcLen);
+int jstrPushStr(Jstr *dest, const char *RESTRICT_KEYWORD src, const size_t srcLen);
 
 #endif
