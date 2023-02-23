@@ -50,7 +50,6 @@
 		JSTR.size = MAX(2 * JSTR.len, JSTR_MIN_SIZE); \
 		if (unlikely(!(JSTR.data = malloc(JSTR.size)))) { \
 			perror(""); \
-			return EXIT_FAILURE; \
 		} \
 		memcpy(JSTR.data, CONST_STRING, JSTR.len); \
 	} while (0)
@@ -76,31 +75,29 @@
 
 #define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.data, JSTR.size, JSTR.len)
 
-#define jstrMinimize(JARR) \
+#define jstrShrink(JARR) \
 	do { \
-		if (unlikely(!(JARR.data = realloc(JARR.data, JARR.len)))) { \
+		if (unlikely(!(JARR.data = realloc(JARR.data, JARR.len + 1)))) { \
 			perror(CURR_FUNC); \
 		} \
 		JARR.size = JARR.len; \
 	} while (0)
 
-#define jstrReserve(JARR, ALLOC_SIZE) \
+#define jstrReserve(JARR, JSTR_ALLOC_SIZE) \
 	do { \
-		if (unlikely(!(JARR.data = malloc(ALLOC_SIZE)))) { \
+		if (unlikely(!(JARR.data = malloc(JSTR_ALLOC_SIZE)))) { \
 			perror(CURR_FUNC); \
-			return EXIT_FAILURE; \
 		} \
-		JARR.size = ALLOC_SIZE; \
+		JARR.size = JSTR_ALLOC_SIZE; \
 	} while (0)
 
-#define jstrResize(ALLOC_SIZE) \
+#define jstrResize(JSTR_ALLOC_SIZE) \
 	do { \
-		if (unlikely(!(JARR.data = realloc(ALLOC_SIZE)))) { \
+		if (unlikely(!(JARR.data = realloc(JSTR_ALLOC_SIZE)))) { \
 			perror(CURR_FUNC); \
-			return EXIT_FAILURE; \
 		} \
-		JARR.size = ALLOC_SIZE; \
-		JARR.len = ALLOC_SIZE; \
+		if (JSTR_ALLOC_SIZE < JARR.len) JARR.len = JSTR_ALLOC_SIZE; \
+		JARR.size = JSTR_ALLOC_SIZE; \
 	} while (0)
 
 typedef struct Jstr {
@@ -114,13 +111,9 @@ int private_jstrCat(Jstr *RESTRICT dest, ...);
 
 int jstrPush(Jstr *dest, const char c);
 int jstrPushStr(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
+int jstrRev(Jstr *RESTRICT dest);
 
-#undef CURR_FUNC
 #undef ALWAYS_INLINE
-#undef ALLOC_SIZE
 #undef RESTRICT
-#undef MAX
-#undef likely
-#undef unlikely
 
 #endif

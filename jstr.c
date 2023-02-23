@@ -117,3 +117,16 @@ ERROR:
 	perror(CURR_FUNC);
 	return 0;
 }
+
+int jstrRev(Jstr *RESTRICT dest)
+{
+	char *src = malloc(dest->len);
+	memcpy(src, dest->data, dest->len);
+	const char *end = src + dest->len - 1;
+	char *tmpDest = dest->data;
+	while (end >= src)
+		*tmpDest++ = *end--;
+	free(src);
+	*tmpDest = '\0';
+	return 1;
+}
