@@ -109,8 +109,8 @@ typedef struct Jstr {
 	size_t len;
 } Jstr;
 
-int private_jstrCat(Jstr *RESTRICT dest, size_t totalLen, ...);
-#define jstrCat(JSTR, ...) private_jstrCat(dest, strlen(#__VA_ARGS__), __VA_ARGS__, NULL)
+int private_jstrCat(Jstr *RESTRICT dest, ...);
+#define jstrCat(JSTR, ...) private_jstrCat(dest, __VA_ARGS__, NULL)
 
 int jstrPush(Jstr *dest, const char c);
 int jstrPushStr(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
