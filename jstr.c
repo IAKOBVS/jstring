@@ -63,13 +63,13 @@ int private_jstrCat(Jstr *RESTRICT dest, ...)
 		dest->size = tmpSize;
 	}
 	va_start(ap, dest);
-	char *RESTRICT tmpStr = dest->data + dest->len;
+	char *RESTRICT tmpDest = dest->data + dest->len;
 	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		do {
-			*tmpStr++ = *argv++;
+			*tmpDest++ = *argv++;
 		} while (*argv);
 	va_end(ap);
-	*tmpStr = '\0';
+	*tmpDest = '\0';
 	dest->len = newLen;
 	return 1;
 
@@ -90,10 +90,8 @@ int jstrPushStr(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcL
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	char *RESTRICT tmpStr;
-	for (tmpStr = dest->data + dest->len; *src; ++tmpStr, ++src)
-		*tmpStr = *src;
-	*tmpStr = '\0';
+	char *RESTRICT tmpDest = dest->data + dest->len;
+	while ((*tmpDest++ = *src++));
 	dest->len = newLen;
 	return 1;
 
