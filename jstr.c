@@ -44,33 +44,27 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
-int private_jstrCat(Jstr *RESTRICT dest, ...)
+int private_jstrCat(Jstr *RESTRICT dest, size_t totalLen, ...)
 {
-	va_list ap;
-	va_start(ap, dest);
-	size_t newLen = dest->len;
-	char *RESTRICT argv;
-	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
-		newLen += strlen(argv);
-	va_end(ap);
-	if (dest->size < newLen) {
+	if (dest->size < (totalLen += dest->len)) {
 		size_t tmpSize = dest->size;
 		do {
 			tmpSize *= 2;
-		} while (tmpSize < newLen);
+		} while (tmpSize < totalLen);
 		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	va_start(ap, dest);
+	va_list ap;
+	va_start(ap, totalLen);
 	char *RESTRICT tmpDest = dest->data + dest->len;
-	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
+	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		do {
 			*tmpDest++ = *argv++;
 		} while (*argv);
 	va_end(ap);
 	*tmpDest = '\0';
-	dest->len = newLen;
+	dest->len = totalLen;
 	return 1;
 
 ERROR:
