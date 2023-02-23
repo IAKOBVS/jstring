@@ -68,7 +68,7 @@ int private_jstrCat(Jstr *RESTRICT dest, size_t totalLen, ...)
 	return 1;
 
 ERROR:
-	perror("");
+	perror(CURR_FUNC);
 	return 0;
 }
 
@@ -90,7 +90,7 @@ int jstrPushStr(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcL
 	return 1;
 
 ERROR:
-	perror("");
+	perror(CURR_FUNC);
 	return 0;
 }
 
@@ -109,6 +109,6 @@ int jstrPush(Jstr *RESTRICT dest, const char c)
 	return 1;
 
 ERROR:
-	perror("");
+	perror(CURR_FUNC);
 	return 0;
 }
