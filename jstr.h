@@ -121,7 +121,6 @@ int jstrPushStr(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
 #undef ALLOC_SIZE
 #undef RESTRICT
 #undef MAX
-#undef JSTR_MIN_SIZE
 #undef likely
 #undef unlikely
 
