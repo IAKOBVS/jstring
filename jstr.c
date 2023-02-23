@@ -57,8 +57,8 @@ int private_jstrCat(Jstr *RESTRICT dest, ...)
 		do {
 			tmpSize *= 2;
 		} while (tmpSize < totalLen);
-		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
-			goto ERROR;
+		if ((dest->data = realloc(dest->data, tmpSize)));
+		else goto ERROR;
 		dest->size = tmpSize;
 	}
 	va_start(ap, dest);
@@ -85,8 +85,8 @@ int jstrPushStr(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcL
 		do {
 			tmpSize *= 2;
 		} while (tmpSize < newLen);
-		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
-			goto ERROR;
+		if ((dest->data = realloc(dest->data, tmpSize)));
+		else goto ERROR;
 		dest->size = tmpSize;
 	}
 	char *RESTRICT tmpDest = dest->data + dest->len;
@@ -101,9 +101,11 @@ ERROR:
 
 int jstrPush(Jstr *RESTRICT dest, const char c)
 {
-	if (unlikely(dest->size < dest->len + 1)) {
+	if (dest->size > dest->len + 1);
+	else {
 		const size_t tmpSize = dest->size * 2;
-		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
+		if ((dest->data = realloc(dest->data, tmpSize)));
+		else
 			goto ERROR;
 		dest->size = tmpSize;
 	}
@@ -120,6 +122,8 @@ ERROR:
 inline int jstrRev(Jstr *RESTRICT dest)
 {
 	char *src = malloc(dest->len);
+	if (src);
+	else return 0;
 	memcpy(src, dest->data, dest->len);
 	const char *end = src + dest->len - 1;
 	char *tmpDest = dest->data;
