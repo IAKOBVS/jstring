@@ -123,7 +123,7 @@ inline int jstrRev(Jstr *RESTRICT dest)
 {
 	char *src = malloc(dest->len);
 	if (src);
-	else return 0;
+	else goto ERROR;
 	memcpy(src, dest->data, dest->len);
 	const char *end = src + dest->len - 1;
 	char *tmpDest = dest->data;
@@ -132,4 +132,8 @@ inline int jstrRev(Jstr *RESTRICT dest)
 	free(src);
 	*tmpDest = '\0';
 	return 1;
+
+ERROR:
+	perror("jstrRev");
+	return 0;
 }
