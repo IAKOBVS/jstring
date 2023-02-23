@@ -101,8 +101,7 @@ ERROR:
 
 int jstrPush(Jstr *RESTRICT dest, const char c)
 {
-	const size_t newLen = dest->len + 1;
-	if (unlikely(dest->size < newLen)) {
+	if (unlikely(dest->size < dest->len + 1)) {
 		const size_t tmpSize = dest->size * 2;
 		if (unlikely(!(dest->data = realloc(dest->data, tmpSize))))
 			goto ERROR;
@@ -110,7 +109,7 @@ int jstrPush(Jstr *RESTRICT dest, const char c)
 	}
 	*(dest->data + dest->len - 1) = c;
 	*(dest->data + dest->len) = '\0';
-	dest->len = newLen;
+	dest->len += 1;
 	return 1;
 
 ERROR:
@@ -118,7 +117,7 @@ ERROR:
 	return 0;
 }
 
-int jstrRev(Jstr *RESTRICT dest)
+inline int jstrRev(Jstr *RESTRICT dest)
 {
 	char *src = malloc(dest->len);
 	memcpy(src, dest->data, dest->len);
