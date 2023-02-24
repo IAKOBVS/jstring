@@ -125,10 +125,9 @@ inline int jstrRev(Jstr *RESTRICT dest)
 	if (src);
 	else goto ERROR;
 	memcpy(src, dest->data, dest->len);
-	const char *end = src + dest->len - 1;
 	char *tmpDest = dest->data;
-	while (end >= src)
-		*tmpDest++ = *end--;
+	for (const char *end = src + dest->len - 1; end >= src; ++tmpDest, --end)
+		*tmpDest = *end;
 	free(src);
 	*tmpDest = '\0';
 	return 1;
