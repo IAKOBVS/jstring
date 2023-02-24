@@ -49,8 +49,8 @@ int private_jstrCat(Jstr *RESTRICT dest, ...)
 	size_t totalLen = dest->len;
 	va_list ap;
 	va_start(ap, dest);
-	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
-		totalLen += strlen(argv);
+	char *RESTRICT argv;
+	while ((totalLen += (argv = va_arg(ap, char *)) ? strlen(argv) : 0), argv);
 	va_end(ap);
 	if (dest->size < (totalLen += dest->len)) {
 		size_t tmpSize = dest->size;
@@ -63,7 +63,7 @@ int private_jstrCat(Jstr *RESTRICT dest, ...)
 	}
 	va_start(ap, dest);
 	char *RESTRICT tmpDest = dest->data + dest->len;
-	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
+	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		do {
 			*tmpDest++ = *argv++;
 		} while (*argv);
