@@ -142,7 +142,7 @@ ALWAYS_INLINE int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src)
 	return (dest->len != src->len) ? 1 : memcmp(dest->data, src->data, dest->len);
 }
 
-inline int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen)
+ALWAYS_INLINE int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen)
 {
 	if (dest->size > srcLen + 1);
 	else
