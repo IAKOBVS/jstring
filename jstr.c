@@ -126,10 +126,8 @@ inline int jstrRev(Jstr *RESTRICT dest)
 	else goto ERROR;
 	memcpy(src, dest->data, dest->len);
 	char *tmpDest = dest->data;
-	for (const char *end = src + dest->len - 1; end >= src; ++tmpDest, --end)
-		*tmpDest = *end;
+	for (const char *end = src + dest->len - 1; (*tmpDest++ = end >= src ? *end-- : '\0'); );
 	free(src);
-	*tmpDest = '\0';
 	return 1;
 
 ERROR:
