@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "jstr.h"
 
@@ -133,4 +134,18 @@ inline int jstrRev(Jstr *RESTRICT dest)
 ERROR:
 	perror("jstrRev");
 	return 0;
+}
+
+ALWAYS_INLINE int jstrUpper(Jstr *RESTRICT dest)
+{
+	char *RESTRICT tmpDest = dest->data;
+	while ((*tmpDest = (isalpha(*tmpDest)) ? toupper(*tmpDest) : *tmpDest)) ++tmpDest;
+	return 1;
+}
+
+ALWAYS_INLINE int jstrLower(Jstr *RESTRICT dest)
+{
+	char *RESTRICT tmpDest = dest->data;
+	while ((*tmpDest = (isalpha(*tmpDest)) ? tolower(*tmpDest) : *tmpDest)) ++tmpDest;
+	return 1;
 }
