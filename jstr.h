@@ -112,6 +112,11 @@ int private_jstrCat(Jstr *RESTRICT dest, ...);
 int jstrPush(Jstr *dest, const char c);
 int jstrPushStr(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
 int jstrRev(Jstr *RESTRICT dest);
+void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
+inline int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen);
+int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src);
+void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src);
+ALWAYS_INLINE void jstrPop(Jstr *RESTRICT dest);
 
 #undef ALWAYS_INLINE
 #undef RESTRICT
