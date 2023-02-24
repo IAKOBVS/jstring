@@ -113,8 +113,14 @@ int jstrPush(Jstr *dest, const char c);
 int jstrPushStr(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
 int jstrRev(Jstr *RESTRICT dest);
 void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
+/*
+replaces dest->data with dest and reallocs if needed
+*/
 inline int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen);
 int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src);
+/*
+swaps dest with src and updates the Jstr struct members
+*/
 void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src);
 ALWAYS_INLINE void jstrPop(Jstr *RESTRICT dest);
 
