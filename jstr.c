@@ -154,6 +154,7 @@ inline int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t src
 
 ERROR_FREE:
 	free(dest->data);
+	perror(CURR_FUNC);
 	return 0;
 }
 
