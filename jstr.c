@@ -48,8 +48,8 @@ int private_jstrCat(Jstr *RESTRICT dest, ...)
 {
 	size_t totalLen = dest->len;
 	va_list ap;
-	va_start(ap, dest);
 	char *RESTRICT argv;
+	va_start(ap, dest);
 	while ((totalLen += (argv = va_arg(ap, char *)) ? strlen(argv) : 0), argv);
 	va_end(ap);
 	if (dest->size < (totalLen += dest->len)) {
@@ -101,7 +101,7 @@ ERROR:
 
 int jstrPush(Jstr *RESTRICT dest, const char c)
 {
-	if (dest->size > dest->len + 1);
+	if (dest->size >= dest->len + 1);
 	else {
 		const size_t tmpSize = dest->size * 2;
 		if ((dest->data = realloc(dest->data, tmpSize)));
