@@ -121,12 +121,12 @@ ERROR:
 
 inline int jstrRev(Jstr *RESTRICT dest)
 {
-	char *src = malloc(dest->len);
+	char *RESTRICT src = malloc(dest->len);
 	if (src);
 	else goto ERROR;
 	memcpy(src, dest->data, dest->len);
-	char *tmpDest = dest->data;
-	for (const char *end = src + dest->len - 1; (*tmpDest++ = end >= src ? *end-- : '\0'); );
+	char *RESTRICT tmpDest = dest->data;
+	for (const char *RESTRICT end = src + dest->len - 1; (*tmpDest++ = end >= src ? *end-- : '\0'); );
 	free(src);
 	return 1;
 
