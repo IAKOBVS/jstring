@@ -2,7 +2,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "jstr.h"
 
@@ -118,6 +117,57 @@ int jstrPush(Jstr *RESTRICT dest, const char c)
 ERROR:
 	perror(CURR_FUNC);
 	return 0;
+}
+
+ALWAYS_INLINE void jstrPop(Jstr *RESTRICT dest)
+{
+	dest->data[--dest->len] = '\0';
+}
+
+ALWAYS_INLINE void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src)
+{
+	char *RESTRICT tmpSrc = src->data;
+	const size_t srcSize = src->size;
+	const size_t srcLen = src->len;
+	src->data = dest->data;
+	src->size = dest->size;
+	src->len = dest->len;
+	dest->data = tmpSrc;
+	dest->size = srcSize;
+	dest->len = srcLen;
+}
+
+ALWAYS_INLINE int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src)
+{
+	return (dest->len != src->len) ? 1 : memcmp(dest->data, src->data, dest->len);
+}
+
+inline int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen)
+{
+	if (dest->size > srcLen + 1);
+	else
+		if ((dest->data = realloc(dest->data, srcLen + 1)));
+		else goto ERROR_FREE;
+	memcpy(dest->data, src, srcLen);
+	dest->data[(dest->len = srcLen)] = '\0';
+	return 1;
+
+ERROR_FREE:
+	free(dest->data);
+	return 0;
+}
+
+ALWAYS_INLINE void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize)
+{
+	char *tmpSrc = *src;
+	const size_t tmpSrcSize = *srcSize;
+	const size_t tmpSrcLen = *srcLen;
+	*src = dest->data;
+	*srcSize = dest->size;
+	*srcLen = dest->len;
+	dest->data = tmpSrc;
+	dest->size = tmpSrcSize;
+	dest->len = tmpSrcLen;
 }
 
 inline int jstrRev(Jstr *RESTRICT dest)
