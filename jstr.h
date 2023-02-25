@@ -110,7 +110,7 @@ int private_jstrCat(Jstr *RESTRICT dest, ...);
 #define jstrCat(JSTR, ...) private_jstrCat(dest, __VA_ARGS__, NULL)
 
 int jstrPush(Jstr *dest, const char c);
-int jstrPushStr(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
+int jstrAppend(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
 int jstrRev(Jstr *RESTRICT dest);
 void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
 /*

@@ -77,7 +77,7 @@ ERROR:
 	return 0;
 }
 
-int jstrPushStr(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
+int jstrAppend(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
 {
 	const size_t newLen = dest->len + srcLen;
 	if (dest->size < newLen) {
