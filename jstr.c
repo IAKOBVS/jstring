@@ -164,7 +164,7 @@ ALWAYS_INLINE int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const siz
 
 ERROR_FREE:
 	free(dest->data);
-	perror(CURR_FUNC);
+	perror("jstrReplace");
 	return 0;
 }
 inline int jstrRev(Jstr *RESTRICT dest)
