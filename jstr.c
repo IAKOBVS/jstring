@@ -136,6 +136,19 @@ ALWAYS_INLINE void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src)
 	dest->len = srcLen;
 }
 
+ALWAYS_INLINE void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize)
+{
+	char *tmpSrc = *src;
+	const size_t tmpSrcSize = *srcSize;
+	const size_t tmpSrcLen = *srcLen;
+	*src = dest->data;
+	*srcSize = dest->size;
+	*srcLen = dest->len;
+	dest->data = tmpSrc;
+	dest->size = tmpSrcSize;
+	dest->len = tmpSrcLen;
+}
+
 ALWAYS_INLINE int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src)
 {
 	return (dest->len != src->len) ? 1 : memcmp(dest->data, src->data, dest->len);
@@ -156,20 +169,6 @@ ERROR_FREE:
 	perror(CURR_FUNC);
 	return 0;
 }
-
-ALWAYS_INLINE void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize)
-{
-	char *tmpSrc = *src;
-	const size_t tmpSrcSize = *srcSize;
-	const size_t tmpSrcLen = *srcLen;
-	*src = dest->data;
-	*srcSize = dest->size;
-	*srcLen = dest->len;
-	dest->data = tmpSrc;
-	dest->size = tmpSrcSize;
-	dest->len = tmpSrcLen;
-}
-
 inline int jstrRev(Jstr *RESTRICT dest)
 {
 	char *RESTRICT src = malloc(dest->len);
