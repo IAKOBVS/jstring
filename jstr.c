@@ -44,22 +44,54 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
+ALWAYS_INLINE void jstrInit(Jstr *RESTRICT dest)
+{
+	dest->data = NULL;
+	dest->len = 0;
+	dest->size = 0;
+}
+
+ALWAYS_INLINE void jstrDeleteFast(Jstr *RESTRICT dest)
+{
+	free(dest->data);
+	jstrInit(dest);
+}
+
+ALWAYS_INLINE void jstrDelete(Jstr *RESTRICT dest)
+{
+	if (dest->data) {
+		free(dest->data);
+		jstrInit(dest);
+	}
+}
+
+ALWAYS_INLINE int jstrNew(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
+{
+	if (likely(dest->data = malloc((dest->size = MAX(JSTR_MIN_SIZE, 2 * srcLen)))));
+	else goto ERROR;
+	dest->len = srcLen;
+	memcpy(dest->data, src, srcLen + 1);
+	return 1;
+
+ERROR:
+	dest->size = 0;
+	return 0;
+}
+
 int private_jstrCat(Jstr *RESTRICT dest, ...)
 {
 	size_t totalLen = dest->len;
 	va_list ap;
-	char *RESTRICT argv;
 	va_start(ap, dest);
+	char *RESTRICT argv;
 	while ((totalLen += (argv = va_arg(ap, char *)) ? strlen(argv) : 0), argv);
 	va_end(ap);
 	if (dest->size < (totalLen += dest->len)) {
-		size_t tmpSize = dest->size;
 		do {
-			tmpSize *= 2;
-		} while (tmpSize < totalLen);
-		if (likely((dest->data = realloc(dest->data, tmpSize))));
-		else goto ERROR;
-		dest->size = tmpSize;
+			dest->size *= 2;
+		} while (dest->size < totalLen);
+		if (likely((dest->data = realloc(dest->data, dest->size))));
+		else goto ERROR_FREE;
 	}
 	va_start(ap, dest);
 	char *RESTRICT tmpDest = dest->data + dest->len;
@@ -72,47 +104,41 @@ int private_jstrCat(Jstr *RESTRICT dest, ...)
 	dest->len = totalLen;
 	return 1;
 
-ERROR:
-	perror(CURR_FUNC);
+ERROR_FREE:
+	jstrDeleteFast(dest);
 	return 0;
 }
 
-int jstrAppend(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
+inline int jstrAppend(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
 {
 	const size_t newLen = dest->len + srcLen;
 	if (dest->size < newLen) {
-		size_t tmpSize = dest->size;
 		do {
-			tmpSize *= 2;
-		} while (tmpSize < newLen);
-		if (likely((dest->data = realloc(dest->data, tmpSize))));
-		else goto ERROR;
-		dest->size = tmpSize;
+			dest->size *= 2;
+		} while (dest->size < newLen);
+		if (likely((dest->data = realloc(dest->data, dest->size))));
+		else goto ERROR_FREE;
 	}
-	memcpy(dest->data + dest->len, src, srcLen);
+	memcpy(dest->data + dest->len, src, srcLen + 1);
 	dest->len = newLen;
 	return 1;
 
-ERROR:
-	perror(CURR_FUNC);
+ERROR_FREE:
 	return 0;
 }
 
-int jstrPushback(Jstr *RESTRICT dest, const char c)
+inline int jstrPushback(Jstr *RESTRICT dest, const char c)
 {
 	if (likely(dest->size >= dest->len + 1));
-	else {
-		const size_t tmpSize = dest->size * 2;
-		if (likely((dest->data = realloc(dest->data, tmpSize))));
-		else goto ERROR;
-		dest->size = tmpSize;
-	}
+	else
+		if (likely((dest->data = realloc(dest->data, dest->size *= 2))));
+		else goto ERROR_FREE;
 	*(dest->data + dest->len) = c;
 	*(dest->data + ++dest->len) = '\0';
 	return 1;
 
-ERROR:
-	perror(CURR_FUNC);
+ERROR_FREE:
+	jstrDeleteFast(dest);
 	return 0;
 }
 
@@ -152,7 +178,7 @@ ALWAYS_INLINE int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src)
 	return (dest->len != src->len) ? 1 : memcmp(dest->data, src->data, dest->len);
 }
 
-ALWAYS_INLINE int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen)
+inline int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen)
 {
 	if (dest->size > srcLen + 1);
 	else
@@ -162,37 +188,33 @@ ALWAYS_INLINE int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const siz
 	return 1;
 
 ERROR_FREE:
-	free(dest->data);
-	perror("jstrReplace");
+	jstrDeleteFast(dest);
 	return 0;
 }
 
-ALWAYS_INLINE int jstrReserve(Jstr *RESTRICT dest, size_t size)
+inline int jstrReserve(Jstr *RESTRICT dest, size_t size)
 {
 	if (dest->size) {
-		if (likely((dest->data = realloc(dest->data, size * sizeof dest->data[0]))));
+		if (likely((dest->data = realloc(dest->data, (dest->size = size) * sizeof dest->data[0]))));
 		else goto ERROR_FREE;
 	} else {
-		if (likely((dest->data = malloc(size * sizeof dest->data[0]))));
+		if (likely((dest->data = malloc((dest->size = size) * sizeof dest->data[0]))));
 		else goto ERROR;
 	}
-	dest->size = size;
 	return 1;
 
 ERROR_FREE:
-	free(dest->data);
+	jstrDeleteFast(dest);
 ERROR:
-	perror("jstrReserve failed");
 	return 0;
 }
 
-ALWAYS_INLINE int jstrShrink(Jstr *RESTRICT dest)
+inline int jstrShrink(Jstr *RESTRICT dest)
 {
 	if (likely((dest->data = realloc(dest->data, dest->len + 1)))) {
 		dest->size = dest->len;
 		return 1;
 	}
-	free(dest->data);
-	perror("jstrShrink failed");
+	jstrDeleteFast(dest);
 	return 0;
 }
