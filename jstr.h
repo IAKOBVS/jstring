@@ -111,7 +111,6 @@ int private_jstrCat(Jstr *RESTRICT dest, ...);
 
 int jstrPush(Jstr *dest, const char c);
 int jstrAppend(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
-int jstrAppendRev(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
 void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
 /*
 replaces dest->data with dest and reallocs if needed
