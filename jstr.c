@@ -109,9 +109,8 @@ int jstrPush(Jstr *RESTRICT dest, const char c)
 			goto ERROR;
 		dest->size = tmpSize;
 	}
-	*(dest->data + dest->len - 1) = c;
-	*(dest->data + dest->len) = '\0';
-	dest->len += 1;
+	*(dest->data + dest->len) = c;
+	*(dest->data + ++dest->len) = '\0';
 	return 1;
 
 ERROR:
