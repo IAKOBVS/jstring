@@ -56,31 +56,31 @@
 
 #define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.data, JSTR.size, JSTR.len)
 
-typedef struct Jstr {
+typedef struct Jstring {
 	char *data;
 	size_t size;
 	size_t len;
-} Jstr;
+} Jstring;
 
-int private_jstrCat(Jstr *RESTRICT dest, ...);
+int private_jstrCat(Jstring *RESTRICT dest, ...);
 #define jstrCat(JSTR, ...) private_jstrCat(JSTR, __VA_ARGS__, NULL)
 
-void jstrInit(Jstr *RESTRICT dest);
-void jstrDeleteFast(Jstr *RESTRICT dest);
-void jstrDelete(Jstr *RESTRICT dest);
-int jstrNew(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen);
-int jstrPushback(Jstr *dest, const char c);
-void jstrPopback(Jstr *RESTRICT dest);
-int jstrAppend(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
-/* swaps dest with src and updates the Jstr struct members */
-void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src);
-void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
-int jstrShrink(Jstr *RESTRICT dest);
-int jstrReserve(Jstr *RESTRICT dest, size_t size);
+void jstrInit(Jstring *RESTRICT dest);
+void jstrDeleteFast(Jstring *RESTRICT dest);
+void jstrDelete(Jstring *RESTRICT dest);
+int jstrNew(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcLen);
+int jstrPushback(Jstring *dest, const char c);
+void jstrPopback(Jstring *RESTRICT dest);
+int jstrAppend(Jstring *dest, const char *RESTRICT src, const size_t srcLen);
+/* swaps dest with src and updates the Jstring struct members */
+void jstrSwap(Jstring *RESTRICT dest, Jstring *RESTRICT src);
+void jstrSwapStr(Jstring *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
+int jstrShrink(Jstring *RESTRICT dest);
+int jstrReserve(Jstring *RESTRICT dest, size_t size);
 /* replaces dest->data with dest and reallocs if needed */
-int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen);
-/* compares two Jstr, and if equal, returns 0 */
-int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src);
+int jstrReplace(Jstring *RESTRICT dest, char *RESTRICT src, const size_t srcLen);
+/* compares two Jstring, and if equal, returns 0 */
+int jstrCmp(Jstring *RESTRICT dest, Jstring *RESTRICT src);
 
 #undef ALWAYS_INLINE
 #undef RESTRICT
