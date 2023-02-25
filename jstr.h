@@ -1,9 +1,8 @@
 #ifndef JSTR_H_DEF
 #define JSTR_H_DEF
 
-#include "/home/james/c/vargc.h"
-
 #include <stddef.h>
+#include "/home/james/c/vargc.h"
 
 #if defined(__PRETTY_FUNCTION__)
 	#define CURR_FUNC __PRETTY_FUNCTION__
@@ -43,18 +42,6 @@
 
 #define JSTR_MIN_SIZE 8
 #define MAX(a,b) ((a)>(b)?(a):(b))
-
-/* #define jstrNew(JSTR, CONST_STRING) \ */
-/* 	do { \ */
-/* 		JSTR.len = strlen(CONST_STRING); \ */
-/* 		JSTR.size = MAX(2 * JSTR.len, JSTR_MIN_SIZE); \ */
-/* 		if (unlikely(!(JSTR.data = malloc(JSTR.size)))) { \ */
-/* 			perror(""); \ */
-/* 		} \ */
-/* 		memcpy(JSTR.data, CONST_STRING, JSTR.len); \ */
-/* 	} while (0) */
-
-#define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.data, JSTR.size, JSTR.len)
 
 typedef struct Jstring {
 	char *data;
