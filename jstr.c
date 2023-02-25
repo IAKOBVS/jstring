@@ -85,7 +85,7 @@ int private_jstrCat(Jstr *RESTRICT dest, ...)
 	char *RESTRICT argv;
 	while ((totalLen += (argv = va_arg(ap, char *)) ? strlen(argv) : 0), argv);
 	va_end(ap);
-	if (dest->size < (totalLen += dest->len)) {
+	if (dest->size < totalLen) {
 		do {
 			dest->size *= 2;
 		} while (dest->size < totalLen);
