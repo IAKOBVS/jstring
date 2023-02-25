@@ -66,7 +66,7 @@ ALWAYS_INLINE void jstrDelete(Jstr *RESTRICT dest)
 
 ALWAYS_INLINE int jstrNew(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
 {
-	if (likely(dest->data = malloc((dest->size = MAX(JSTR_MIN_SIZE, 2 * srcLen)))));
+	if (likely((dest->data = malloc((dest->size = MAX(JSTR_MIN_SIZE, 2 * srcLen))))));
 	else goto ERROR;
 	dest->len = srcLen;
 	memcpy(dest->data, src, srcLen + 1);
@@ -131,7 +131,7 @@ ERROR_FREE:
 
 inline int jstrPushback(Jstr *RESTRICT dest, const char c)
 {
-	if (likely(dest->size >= dest->len + 1));
+	if (likely((dest->size >= dest->len + 1)));
 	else
 		if (likely((dest->data = realloc(dest->data, (dest->size *= 2)))));
 		else goto ERROR_FREE;
