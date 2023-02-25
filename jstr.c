@@ -138,7 +138,7 @@ ALWAYS_INLINE void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src)
 
 ALWAYS_INLINE int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src)
 {
-	return (dest->len != src->len) ? 1 : memcmp(dest->data, src->data, dest->len);
+	return (dest->len == src->len) ? 0 : memcmp(dest->data, src->data, dest->len);
 }
 
 ALWAYS_INLINE int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen)
