@@ -63,26 +63,24 @@ typedef struct Jstr {
 } Jstr;
 
 int private_jstrCat(Jstr *RESTRICT dest, ...);
-#define jstrCat(JSTR, ...) private_jstrCat(dest, __VA_ARGS__, NULL)
+#define jstrCat(JSTR, ...) private_jstrCat(JSTR, __VA_ARGS__, NULL)
 
+void jstrInit(Jstr *RESTRICT dest);
+void jstrDeleteFast(Jstr *RESTRICT dest);
+void jstrDelete(Jstr *RESTRICT dest);
+int jstrNew(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLen);
 int jstrPushback(Jstr *dest, const char c);
 void jstrPopback(Jstr *RESTRICT dest);
 int jstrAppend(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
+/* swaps dest with src and updates the Jstr struct members */
+void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src);
 void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
 int jstrShrink(Jstr *RESTRICT dest);
 int jstrReserve(Jstr *RESTRICT dest, size_t size);
-/*
-replaces dest->data with dest and reallocs if needed
-*/
-inline int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen);
-/*
-compares two Jstr, and if equal, returns 0
-*/
+/* replaces dest->data with dest and reallocs if needed */
+int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen);
+/* compares two Jstr, and if equal, returns 0 */
 int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src);
-/*
-swaps dest with src and updates the Jstr struct members
-*/
-void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src);
 
 #undef ALWAYS_INLINE
 #undef RESTRICT

@@ -80,21 +80,22 @@ ERROR:
 int private_jstrCat(Jstr *RESTRICT dest, ...)
 {
 	size_t totalLen = dest->len;
+	char *RESTRICT tmpDest = dest->data + totalLen;
 	va_list ap;
 	va_start(ap, dest);
-	char *RESTRICT argv;
-	while ((totalLen += (argv = va_arg(ap, char *)) ? strlen(argv) : 0), argv);
+	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
+		totalLen += strlen(argv);
 	va_end(ap);
 	if (dest->size < totalLen) {
+		size_t tmpSize = dest->size;
 		do {
-			dest->size *= 2;
-		} while (dest->size < totalLen);
-		if (likely((dest->data = realloc(dest->data, dest->size))));
+			tmpSize *= 2;
+		} while (tmpSize < totalLen);
+		if (likely((dest->data = realloc(dest->data, (tmpSize = dest->size)))));
 		else goto ERROR_FREE;
 	}
 	va_start(ap, dest);
-	char *RESTRICT tmpDest = dest->data + dest->len;
-	for (argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
+	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		do {
 			*tmpDest++ = *argv++;
 		} while (*argv);
@@ -112,10 +113,11 @@ inline int jstrAppend(Jstr *RESTRICT dest, const char *RESTRICT src, const size_
 {
 	const size_t newLen = dest->len + srcLen;
 	if (dest->size < newLen) {
+		size_t tmpSize = dest->size;
 		do {
-			dest->size *= 2;
-		} while (dest->size < newLen);
-		if (likely((dest->data = realloc(dest->data, dest->size))));
+			tmpSize *= 2;
+		} while (tmpSize < newLen);
+		if (likely((dest->data = realloc(dest->data, (dest->size = tmpSize)))));
 		else goto ERROR_FREE;
 	}
 	memcpy(dest->data + dest->len, src, srcLen + 1);
