@@ -117,6 +117,9 @@ void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_
 replaces dest->data with dest and reallocs if needed
 */
 inline int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const size_t srcLen);
+/*
+compares two Jstr, and if equal, returns 0
+*/
 int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src);
 /*
 swaps dest with src and updates the Jstr struct members
