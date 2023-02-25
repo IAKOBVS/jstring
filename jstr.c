@@ -147,6 +147,7 @@ ALWAYS_INLINE void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t 
 	dest->size = tmpSrcSize;
 	dest->len = tmpSrcLen;
 }
+
 ALWAYS_INLINE int jstrCmp(Jstr *RESTRICT dest, Jstr *RESTRICT src)
 {
 	return (dest->len != src->len) ? 1 : memcmp(dest->data, src->data, dest->len);
@@ -164,20 +165,5 @@ ALWAYS_INLINE int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const siz
 ERROR_FREE:
 	free(dest->data);
 	perror("jstrReplace");
-	return 0;
-}
-inline int jstrRev(Jstr *RESTRICT dest)
-{
-	char *RESTRICT src = malloc(dest->len);
-	if (src);
-	else goto ERROR;
-	memcpy(src, dest->data, dest->len);
-	char *RESTRICT tmpDest = dest->data;
-	for (const char *RESTRICT end = src + dest->len - 1; (*tmpDest++ = end >= src ? *end-- : '\0'); );
-	free(src);
-	return 1;
-
-ERROR:
-	perror("jstrRev");
 	return 0;
 }
