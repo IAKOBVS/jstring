@@ -172,7 +172,7 @@ inline int jstrRev(Jstr *RESTRICT dest)
 	char *RESTRICT src = malloc(dest->len);
 	if (src);
 	else goto ERROR;
-	memcpy(src, dest->data, dest->len + 1);
+	memcpy(src, dest->data, dest->len);
 	char *RESTRICT tmpDest = dest->data;
 	for (const char *RESTRICT end = src + dest->len - 1; (*tmpDest++ = end >= src ? *end-- : '\0'); );
 	free(src);
