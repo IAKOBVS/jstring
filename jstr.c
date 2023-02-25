@@ -160,8 +160,7 @@ ALWAYS_INLINE int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const siz
 	else
 		if ((dest->data = realloc(dest->data, srcLen + 1)));
 		else goto ERROR_FREE;
-	memcpy(dest->data, src, srcLen);
-	dest->data[(dest->len = srcLen)] = '\0';
+	memcpy(dest->data, src, srcLen + 1);
 	return 1;
 
 ERROR_FREE:
@@ -174,7 +173,7 @@ inline int jstrRev(Jstr *RESTRICT dest)
 	char *RESTRICT src = malloc(dest->len);
 	if (src);
 	else goto ERROR;
-	memcpy(src, dest->data, dest->len);
+	memcpy(src, dest->data, dest->len + 1);
 	char *RESTRICT tmpDest = dest->data;
 	for (const char *RESTRICT end = src + dest->len - 1; (*tmpDest++ = end >= src ? *end-- : '\0'); );
 	free(src);
