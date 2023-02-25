@@ -134,9 +134,9 @@ ALWAYS_INLINE void jstrSwap(Jstr *RESTRICT dest, Jstr *RESTRICT src)
 	dest->len = srcLen;
 }
 
-ALWAYS_INLINE void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize)
+ALWAYS_INLINE void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *RESTRICT srcLen, size_t *RESTRICT srcSize)
 {
-	char *tmpSrc = *src;
+	char *RESTRICT tmpSrc = *src;
 	const size_t tmpSrcSize = *srcSize;
 	const size_t tmpSrcLen = *srcLen;
 	*src = dest->data;
