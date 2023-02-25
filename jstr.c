@@ -89,8 +89,7 @@ int jstrAppend(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLe
 		else goto ERROR;
 		dest->size = tmpSize;
 	}
-	char *RESTRICT tmpDest = dest->data + dest->len;
-	while ((*tmpDest++ = *src++));
+	memcpy(dest->data + dest->len, src, srcLen);
 	dest->len = newLen;
 	return 1;
 
