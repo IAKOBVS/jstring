@@ -57,7 +57,7 @@ int private_jstrCat(Jstr *RESTRICT dest, ...)
 		do {
 			tmpSize *= 2;
 		} while (tmpSize < totalLen);
-		if ((dest->data = realloc(dest->data, tmpSize)));
+		if (likely((dest->data = realloc(dest->data, tmpSize))));
 		else goto ERROR;
 		dest->size = tmpSize;
 	}
@@ -85,7 +85,7 @@ int jstrAppend(Jstr *RESTRICT dest, const char *RESTRICT src, const size_t srcLe
 		do {
 			tmpSize *= 2;
 		} while (tmpSize < newLen);
-		if ((dest->data = realloc(dest->data, tmpSize)));
+		if (likely((dest->data = realloc(dest->data, tmpSize))));
 		else goto ERROR;
 		dest->size = tmpSize;
 	}
@@ -100,12 +100,11 @@ ERROR:
 
 int jstrPush(Jstr *RESTRICT dest, const char c)
 {
-	if (dest->size >= dest->len + 1);
+	if (likely(dest->size >= dest->len + 1));
 	else {
 		const size_t tmpSize = dest->size * 2;
-		if ((dest->data = realloc(dest->data, tmpSize)));
-		else
-			goto ERROR;
+		if (likely((dest->data = realloc(dest->data, tmpSize))));
+		else goto ERROR;
 		dest->size = tmpSize;
 	}
 	*(dest->data + dest->len) = c;
@@ -157,7 +156,7 @@ ALWAYS_INLINE int jstrReplace(Jstr *RESTRICT dest, char *RESTRICT src, const siz
 {
 	if (dest->size > srcLen + 1);
 	else
-		if ((dest->data = realloc(dest->data, srcLen + 1)));
+		if (likely((dest->data = realloc(dest->data, srcLen + 1))));
 		else goto ERROR_FREE;
 	memcpy(dest->data, src, srcLen + 1);
 	return 1;
