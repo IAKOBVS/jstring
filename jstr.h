@@ -75,31 +75,6 @@
 
 #define jstrPr(JSTR) printf("string: %s: \nsize is %zu\nlen is %zu", JSTR.data, JSTR.size, JSTR.len)
 
-#define jstrShrink(JARR) \
-	do { \
-		if (unlikely(!(JARR.data = realloc(JARR.data, JARR.len + 1)))) { \
-			perror(CURR_FUNC); \
-		} \
-		JARR.size = JARR.len; \
-	} while (0)
-
-#define jstrReserve(JARR, JSTR_ALLOC_SIZE) \
-	do { \
-		if (unlikely(!(JARR.data = malloc(JSTR_ALLOC_SIZE)))) { \
-			perror(CURR_FUNC); \
-		} \
-		JARR.size = JSTR_ALLOC_SIZE; \
-	} while (0)
-
-#define jstrResize(JSTR_ALLOC_SIZE) \
-	do { \
-		if (unlikely(!(JARR.data = realloc(JSTR_ALLOC_SIZE)))) { \
-			perror(CURR_FUNC); \
-		} \
-		if (JSTR_ALLOC_SIZE < JARR.len) JARR.len = JSTR_ALLOC_SIZE; \
-		JARR.size = JSTR_ALLOC_SIZE; \
-	} while (0)
-
 typedef struct Jstr {
 	char *data;
 	size_t size;
@@ -113,6 +88,8 @@ int jstrPushback(Jstr *dest, const char c);
 void jstrPopback(Jstr *RESTRICT dest);
 int jstrAppend(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
 void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
+int jstrShrink(Jstr *RESTRICT dest);
+int jstrReserve(Jstr *RESTRICT dest, size_t size);
 /*
 replaces dest->data with dest and reallocs if needed
 */

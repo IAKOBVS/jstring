@@ -166,3 +166,33 @@ ERROR_FREE:
 	perror("jstrReplace");
 	return 0;
 }
+
+ALWAYS_INLINE int jstrReserve(Jstr *RESTRICT dest, size_t size)
+{
+	if (dest->size) {
+		if (likely((dest->data = realloc(dest->data, size * sizeof dest->data[0]))));
+		else goto ERROR_FREE;
+	} else {
+		if (likely((dest->data = malloc(size * sizeof dest->data[0]))));
+		else goto ERROR;
+	}
+	dest->size = size;
+	return 1;
+
+ERROR_FREE:
+	free(dest->data);
+ERROR:
+	perror("jstrReserve failed");
+	return 0;
+}
+
+ALWAYS_INLINE int jstrShrink(Jstr *RESTRICT dest)
+{
+	if (likely((dest->data = realloc(dest->data, dest->len + 1)))) {
+		dest->size = dest->len;
+		return 1;
+	}
+	free(dest->data);
+	perror("jstrShrink failed");
+	return 0;
+}
