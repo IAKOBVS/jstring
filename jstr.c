@@ -124,6 +124,7 @@ inline int jstrAppend(Jstr *RESTRICT dest, const char *RESTRICT src, const size_
 	return 1;
 
 ERROR_FREE:
+	jstrDeleteFast(dest);
 	return 0;
 }
 
@@ -131,10 +132,10 @@ inline int jstrPushback(Jstr *RESTRICT dest, const char c)
 {
 	if (likely(dest->size >= dest->len + 1));
 	else
-		if (likely((dest->data = realloc(dest->data, dest->size *= 2))));
+		if (likely((dest->data = realloc(dest->data, (dest->size *= 2)))));
 		else goto ERROR_FREE;
-	*(dest->data + dest->len) = c;
-	*(dest->data + ++dest->len) = '\0';
+	dest->data[dest->len] = c;
+	dest->data[dest->len + 1] = '\0';
 	return 1;
 
 ERROR_FREE:
