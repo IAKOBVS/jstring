@@ -98,7 +98,7 @@ ERROR:
 	return 0;
 }
 
-int jstrPush(Jstr *RESTRICT dest, const char c)
+int jstrPushback(Jstr *RESTRICT dest, const char c)
 {
 	if (likely(dest->size >= dest->len + 1));
 	else {
@@ -116,7 +116,7 @@ ERROR:
 	return 0;
 }
 
-ALWAYS_INLINE void jstrPop(Jstr *RESTRICT dest)
+ALWAYS_INLINE void jstrPopback(Jstr *RESTRICT dest)
 {
 	dest->data[--dest->len] = '\0';
 }

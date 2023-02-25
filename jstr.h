@@ -109,7 +109,8 @@ typedef struct Jstr {
 int private_jstrCat(Jstr *RESTRICT dest, ...);
 #define jstrCat(JSTR, ...) private_jstrCat(dest, __VA_ARGS__, NULL)
 
-int jstrPush(Jstr *dest, const char c);
+int jstrPushback(Jstr *dest, const char c);
+void jstrPopback(Jstr *RESTRICT dest);
 int jstrAppend(Jstr *dest, const char *RESTRICT src, const size_t srcLen);
 void jstrSwapStr(Jstr *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
 /*
