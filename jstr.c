@@ -64,33 +64,33 @@ ALWAYS_INLINE void jstrDelete(Jstring *RESTRICT dest)
 	}
 }
 
-ALWAYS_INLINE int jstrNew(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
+ALWAYS_INLINE int jstrNew(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcSize)
 {
-	if (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_SIZE, 2 * srcLen))))));
+	if ((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_SIZE, 2 * srcSize)))));
 	else goto ERROR;
-	dest->size = srcLen;
-	memcpy(dest->data, src, srcLen + 1);
+	dest->size = srcSize;
+	memcpy(dest->data, src, srcSize + 1);
 	return 1;
 
 ERROR:
-	dest->capacity = 0;
+	jstrInit(dest);
 	return 0;
 }
 
 int private_jstrCat(Jstring *RESTRICT dest, ...)
 {
-	size_t totalLen = dest->size;
-	char *RESTRICT tmpDest = dest->data + totalLen;
+	size_t totalSize = dest->size;
+	char *RESTRICT tmpDest = dest->data + totalSize;
 	va_list ap;
 	va_start(ap, dest);
 	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
-		totalLen += strlen(argv);
+		totalSize += strlen(argv);
 	va_end(ap);
-	if (dest->capacity < totalLen) {
+	if (dest->capacity < totalSize) {
 		size_t tmpCap = dest->capacity;
 		do {
 			tmpCap *= 2;
-		} while (tmpCap < totalLen);
+		} while (tmpCap < totalSize);
 		if (likely((dest->data = realloc(dest->data, (tmpCap = dest->capacity)))));
 		else goto ERROR_FREE;
 	}
@@ -101,7 +101,7 @@ int private_jstrCat(Jstring *RESTRICT dest, ...)
 		} while (*argv);
 	va_end(ap);
 	*tmpDest = '\0';
-	dest->size = totalLen;
+	dest->size = totalSize;
 	return 1;
 
 ERROR_FREE:
@@ -109,19 +109,19 @@ ERROR_FREE:
 	return 0;
 }
 
-inline int jstrAppend(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcLen)
+inline int jstrAppend(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcSize)
 {
-	const size_t newLen = dest->size + srcLen;
-	if (dest->capacity < newLen) {
+	const size_t totalSize = dest->size + srcSize;
+	if (dest->capacity < totalSize) {
 		size_t tmpCap = dest->capacity;
 		do {
 			tmpCap *= 2;
-		} while (tmpCap < newLen);
+		} while (tmpCap < totalSize);
 		if (likely((dest->data = realloc(dest->data, (dest->capacity = tmpCap)))));
 		else goto ERROR_FREE;
 	}
-	memcpy(dest->data + dest->size, src, srcLen + 1);
-	dest->size = newLen;
+	memcpy(dest->data + dest->size, src, srcSize + 1);
+	dest->size = totalSize;
 	return 1;
 
 ERROR_FREE:
@@ -152,27 +152,27 @@ ALWAYS_INLINE void jstrPopback(Jstring *RESTRICT dest)
 ALWAYS_INLINE void jstrSwap(Jstring *RESTRICT dest, Jstring *RESTRICT src)
 {
 	char *RESTRICT tmpSrc = src->data;
-	const size_t srcSize = src->capacity;
-	const size_t srcLen = src->size;
+	const size_t srcCap = src->capacity;
+	const size_t srcSize = src->size;
 	src->data = dest->data;
 	src->capacity = dest->capacity;
 	src->size = dest->size;
 	dest->data = tmpSrc;
 	dest->capacity = srcSize;
-	dest->size = srcLen;
+	dest->size = srcSize;
 }
 
-ALWAYS_INLINE void jstrSwapStr(Jstring *RESTRICT dest, char **RESTRICT src, size_t *RESTRICT srcLen, size_t *RESTRICT srcSize)
+ALWAYS_INLINE void jstrSwapStr(Jstring *RESTRICT dest, char **RESTRICT src, size_t *RESTRICT srcSize, size_t *RESTRICT srcCapacity)
 {
 	char *RESTRICT tmpSrc = *src;
 	const size_t tmpSrcSize = *srcSize;
-	const size_t tmpSrcLen = *srcLen;
+	const size_t tmpSrcCap = *srcCapacity;
 	*src = dest->data;
-	*srcSize = dest->capacity;
-	*srcLen = dest->size;
+	*srcSize = dest->size;
+	*srcCapacity = dest->capacity;
 	dest->data = tmpSrc;
-	dest->capacity = tmpSrcSize;
-	dest->size = tmpSrcLen;
+	dest->size = tmpSrcSize;
+	dest->capacity = tmpSrcCap;
 }
 
 ALWAYS_INLINE int jstrCmp(Jstring *RESTRICT dest, Jstring *RESTRICT src)
@@ -180,13 +180,13 @@ ALWAYS_INLINE int jstrCmp(Jstring *RESTRICT dest, Jstring *RESTRICT src)
 	return (dest->size != src->size) ? 1 : memcmp(dest->data, src->data, dest->size);
 }
 
-inline int jstrReplace(Jstring *RESTRICT dest, char *RESTRICT src, const size_t srcLen)
+inline int jstrReplace(Jstring *RESTRICT dest, char *RESTRICT src, const size_t srcSize)
 {
-	if (dest->capacity > srcLen + 1);
+	if (dest->capacity > srcSize + 1);
 	else
-		if (likely((dest->data = realloc(dest->data, srcLen + 1))));
+		if (likely((dest->data = realloc(dest->data, srcSize + 1))));
 		else goto ERROR_FREE;
-	memcpy(dest->data, src, srcLen + 1);
+	memcpy(dest->data, src, srcSize + 1);
 	return 1;
 
 ERROR_FREE:
@@ -194,13 +194,13 @@ ERROR_FREE:
 	return 0;
 }
 
-inline int jstrReserve(Jstring *RESTRICT dest, size_t size)
+inline int jstrReserve(Jstring *RESTRICT dest, size_t capacity)
 {
 	if (dest->capacity) {
-		if (likely((dest->data = realloc(dest->data, (dest->capacity = size) * sizeof dest->data[0]))));
+		if (likely((dest->data = realloc(dest->data, (dest->capacity = capacity) * sizeof dest->data[0]))));
 		else goto ERROR_FREE;
 	} else {
-		if (likely((dest->data = malloc((dest->capacity = size) * sizeof dest->data[0]))));
+		if (likely((dest->data = malloc((dest->capacity = capacity) * sizeof dest->data[0]))));
 		else goto ERROR;
 	}
 	return 1;

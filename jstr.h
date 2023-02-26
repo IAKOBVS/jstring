@@ -56,6 +56,7 @@ void jstrInit(Jstring *RESTRICT dest);
 void jstrDeleteFast(Jstring *RESTRICT dest);
 void jstrDelete(Jstring *RESTRICT dest);
 int jstrNew(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcLen);
+#define jstrNewAuto(dest, src) jstrNew(dest, src, strlen(src))
 int jstrPushback(Jstring *dest, const char c);
 void jstrPopback(Jstring *RESTRICT dest);
 int jstrAppend(Jstring *dest, const char *RESTRICT src, const size_t srcLen);
