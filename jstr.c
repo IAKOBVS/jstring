@@ -43,20 +43,20 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
-ALWAYS_INLINE void jstr_init(Jstring *RESTRICT dest)
+ALWAYS_INLINE void jstr_init(jstring *RESTRICT dest)
 {
 	dest->data = NULL;
 	dest->size = 0;
 	dest->capacity = 0;
 }
 
-ALWAYS_INLINE void jstr_delete_fast(Jstring *RESTRICT dest)
+ALWAYS_INLINE void jstr_delete_fast(jstring *RESTRICT dest)
 {
 	free(dest->data);
 	jstr_init(dest);
 }
 
-ALWAYS_INLINE void jstr_delete(Jstring *RESTRICT dest)
+ALWAYS_INLINE void jstr_delete(jstring *RESTRICT dest)
 {
 	if (dest->data) {
 		free(dest->data);
@@ -64,7 +64,7 @@ ALWAYS_INLINE void jstr_delete(Jstring *RESTRICT dest)
 	}
 }
 
-ALWAYS_INLINE int jstr_new(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
+ALWAYS_INLINE int jstr_new(jstring *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
 {
 	if ((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_SIZE, 2 * src_size)))));
 	else goto ERROR;
@@ -77,7 +77,7 @@ ERROR:
 	return 0;
 }
 
-int private_jstr_cat(Jstring *RESTRICT dest, ...)
+int private_jstr_cat(jstring *RESTRICT dest, ...)
 {
 	size_t total_size = dest->size;
 	char *RESTRICT tmp_dest = dest->data + total_size;
@@ -109,7 +109,7 @@ ERROR_FREE:
 	return 0;
 }
 
-inline int jstr_append(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
+inline int jstr_append(jstring *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
 {
 	const size_t total_size = dest->size + src_size;
 	if (dest->capacity < total_size) {
@@ -129,7 +129,7 @@ ERROR_FREE:
 	return 0;
 }
 
-inline int jstr_push_back(Jstring *RESTRICT dest, const char c)
+inline int jstr_push_back(jstring *RESTRICT dest, const char c)
 {
 	if (likely((dest->capacity > dest->size)));
 	else
@@ -144,12 +144,12 @@ ERROR_FREE:
 	return 0;
 }
 
-ALWAYS_INLINE void jstr_pop_back(Jstring *RESTRICT dest)
+ALWAYS_INLINE void jstr_pop_back(jstring *RESTRICT dest)
 {
 	dest->data[--dest->size] = '\0';
 }
 
-ALWAYS_INLINE void jstr_swap(Jstring *RESTRICT dest, Jstring *RESTRICT src)
+ALWAYS_INLINE void jstr_swap(jstring *RESTRICT dest, jstring *RESTRICT src)
 {
 	char *RESTRICT tmp_src = src->data;
 	const size_t src_cap = src->capacity;
@@ -162,7 +162,7 @@ ALWAYS_INLINE void jstr_swap(Jstring *RESTRICT dest, Jstring *RESTRICT src)
 	dest->size = src_size;
 }
 
-ALWAYS_INLINE void jstr_swap_str(Jstring *RESTRICT dest, char **RESTRICT src, size_t *RESTRICT src_size, size_t *RESTRICT src_capacity)
+ALWAYS_INLINE void jstr_swap_str(jstring *RESTRICT dest, char **RESTRICT src, size_t *RESTRICT src_size, size_t *RESTRICT src_capacity)
 {
 	char *RESTRICT tmp_src = *src;
 	const size_t tmp_src_size = *src_size;
@@ -175,12 +175,12 @@ ALWAYS_INLINE void jstr_swap_str(Jstring *RESTRICT dest, char **RESTRICT src, si
 	dest->capacity = tmp_src_cap;
 }
 
-ALWAYS_INLINE int jstr_cmp(Jstring *RESTRICT dest, Jstring *RESTRICT src)
+ALWAYS_INLINE int jstr_cmp(jstring *RESTRICT dest, jstring *RESTRICT src)
 {
 	return (dest->size != src->size) ? 1 : memcmp(dest->data, src->data, dest->size);
 }
 
-inline int jstr_replace(Jstring *RESTRICT dest, char *RESTRICT src, const size_t src_size)
+inline int jstr_replace(jstring *RESTRICT dest, char *RESTRICT src, const size_t src_size)
 {
 	if (dest->capacity > src_size);
 	else
@@ -194,7 +194,7 @@ ERROR_FREE:
 	return 0;
 }
 
-inline int jstr_reserve(Jstring *RESTRICT dest, size_t capacity)
+inline int jstr_reserve(jstring *RESTRICT dest, size_t capacity)
 {
 	if (dest->capacity) {
 		if (likely((dest->data = realloc(dest->data, (dest->capacity = capacity) * sizeof dest->data[0]))));
@@ -211,7 +211,7 @@ ERROR:
 	return 0;
 }
 
-inline int jstr_shrink(Jstring *RESTRICT dest)
+inline int jstr_shrink(jstring *RESTRICT dest)
 {
 	if (likely((dest->data = realloc(dest->data, dest->size + 1)))) {
 		dest->capacity = dest->size;
