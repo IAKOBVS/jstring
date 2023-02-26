@@ -53,21 +53,32 @@ int private_jstrCat(Jstring *RESTRICT dest, ...);
 #define jstrCat(JSTR, ...) private_jstrCat(JSTR, __VA_ARGS__, NULL)
 
 void jstrInit(Jstring *RESTRICT dest);
+
 void jstrDeleteFast(Jstring *RESTRICT dest);
 void jstrDelete(Jstring *RESTRICT dest);
-int jstrNew(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcLen);
+
+int jstrNew(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcSize);
 #define jstrNewAuto(dest, src) jstrNew(dest, src, strlen(src))
+
 int jstrPushback(Jstring *dest, const char c);
+
 void jstrPopback(Jstring *RESTRICT dest);
-int jstrAppend(Jstring *dest, const char *RESTRICT src, const size_t srcLen);
+
+int jstrAppend(Jstring *dest, const char *RESTRICT src, const size_t srcSize);
 #define jstrAppendAuto(dest, src) jstrAppend(dest, src, strlen(src))
+
 /* swaps dest with src and updates the Jstring struct members */
 void jstrSwap(Jstring *RESTRICT dest, Jstring *RESTRICT src);
-void jstrSwapStr(Jstring *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
+void jstrSwapStr(Jstring *RESTRICT dest, char **RESTRICT src, size_t *srcSize, size_t *srcCapacity);
+
 int jstrShrink(Jstring *RESTRICT dest);
-int jstrReserve(Jstring *RESTRICT dest, size_t size);
+
+int jstrReserve(Jstring *RESTRICT dest, size_t capacity);
+
 /* replaces dest->data with dest and reallocs if needed */
-int jstrReplace(Jstring *RESTRICT dest, char *RESTRICT src, const size_t srcLen);
+int jstrReplace(Jstring *RESTRICT dest, char *RESTRICT src, const size_t srcSize);
+#define jstrReplaceAuto(dest, src) jstrReplace(dest, src, strlen(src))
+
 /* compares two Jstr, and if equal, returns 0 */
 int jstrCmp(Jstring *RESTRICT dest, Jstring *RESTRICT src);
 
