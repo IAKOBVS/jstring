@@ -45,8 +45,8 @@
 
 typedef struct Jstring {
 	char *data;
-	size_t size;
-	size_t len;
+	size_t capacity;
+	size_t size; 
 } Jstring;
 
 int private_jstrCat(Jstring *RESTRICT dest, ...);
