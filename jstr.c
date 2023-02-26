@@ -131,7 +131,7 @@ ERROR_FREE:
 
 inline int jstrPushback(Jstring *RESTRICT dest, const char c)
 {
-	if (likely((dest->capacity >= dest->size + 1)));
+	if (likely((dest->capacity > dest->size)));
 	else
 		if (likely((dest->data = realloc(dest->data, (dest->capacity *= 2)))));
 		else goto ERROR_FREE;
@@ -182,7 +182,7 @@ ALWAYS_INLINE int jstrCmp(Jstring *RESTRICT dest, Jstring *RESTRICT src)
 
 inline int jstrReplace(Jstring *RESTRICT dest, char *RESTRICT src, const size_t srcSize)
 {
-	if (dest->capacity > srcSize + 1);
+	if (dest->capacity > srcSize);
 	else
 		if (likely((dest->data = realloc(dest->data, srcSize + 1))));
 		else goto ERROR_FREE;
