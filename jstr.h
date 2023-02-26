@@ -6,9 +6,6 @@
 #include "/home/james/c/vargc.h"
 #include "macros.h"
 
-#define JSTR_MIN_CAP 8
-#define MAX(a,b) ((a)>(b)?(a):(b))
-
 typedef struct jstring_t {
 	char *data;
 	size_t capacity;

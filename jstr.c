@@ -5,6 +5,7 @@
 #include "jstr.h"
 #include "macros.h"
 
+#define JSTR_MIN_CAP 8
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
@@ -31,7 +32,7 @@ ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT dest)
 
 ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
 {
-	if ((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_SIZE, 2 * src_size)))));
+	if ((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, 2 * src_size)))));
 	else goto ERROR;
 	dest->size = src_size;
 	memcpy(dest->data, src, src_size + 1);
