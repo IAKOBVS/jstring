@@ -43,44 +43,44 @@
 #define JSTR_MIN_SIZE 8
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
-typedef struct jstring {
+typedef struct jstring_t {
 	char *data;
 	size_t capacity;
 	size_t size; 
-} jstring;
+} jstring_t;
 
-int private_jstr_cat(jstring *RESTRICT dest, ...);
+int private_jstr_cat(jstring_t *RESTRICT dest, ...);
 #define jstr_cat(JSTR, ...) private_jstr_cat(JSTR, __VA_ARGS__, NULL)
 
-void jstr_init(jstring *RESTRICT dest);
+void jstr_init(jstring_t *RESTRICT dest);
 
-void jstr_delete_fast(jstring *RESTRICT dest);
-void jstr_delete(jstring *RESTRICT dest);
+void jstr_delete_fast(jstring_t *RESTRICT dest);
+void jstr_delete(jstring_t *RESTRICT dest);
 
-int jstr_new(jstring *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
+int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
 #define jstr_new_auto(dest, src) jstr_new(dest, src, strlen(src))
 
-int jstr_pushback(jstring *dest, const char c);
+int jstr_pushback(jstring_t *dest, const char c);
 
-void jstr_popback(jstring *RESTRICT dest);
+void jstr_popback(jstring_t *RESTRICT dest);
 
-int jstr_append(jstring *dest, const char *RESTRICT src, const size_t src_size);
+int jstr_append(jstring_t *dest, const char *RESTRICT src, const size_t src_size);
 #define jstr_append_auto(dest, src) jstr_append(dest, src, strlen(src))
 
-/* swaps dest with src and updates the jstring struct members */
-void jstr_swap(jstring *RESTRICT dest, jstring *RESTRICT src);
-void jstr_swap_str(jstring *RESTRICT dest, char **RESTRICT src, size_t *src_size, size_t *src_capacity);
+/* swaps dest with src and updates the jstring_t struct members */
+void jstr_swap(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
+void jstr_swap_str(jstring_t *RESTRICT dest, char **RESTRICT src, size_t *src_size, size_t *src_capacity);
 
-int jstr_shrink(jstring *RESTRICT dest);
+int jstr_shrink(jstring_t *RESTRICT dest);
 
-int jstr_reserve(jstring *RESTRICT dest, size_t capacity);
+int jstr_reserve(jstring_t *RESTRICT dest, size_t capacity);
 
 /* replaces dest->data with dest and reallocs if needed */
-int jstr_replace(jstring *RESTRICT dest, char *RESTRICT src, const size_t src_size);
+int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size);
 #define jstr_replace_auto(dest, src) jstr_replace(dest, src, strlen(src))
 
 /* compares two Jstr, and if equal, returns 0 */
-int jstr_cmp(jstring *RESTRICT dest, jstring *RESTRICT src);
+int jstr_cmp(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
 
 #undef ALWAYS_INLINE
 #undef RESTRICT
