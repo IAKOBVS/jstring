@@ -87,11 +87,11 @@ int private_jstrCat(Jstring *RESTRICT dest, ...)
 		totalLen += strlen(argv);
 	va_end(ap);
 	if (dest->capacity < totalLen) {
-		size_t tmpCapacity = dest->capacity;
+		size_t tmpCap = dest->capacity;
 		do {
-			tmpCapacity *= 2;
-		} while (tmpCapacity < totalLen);
-		if (likely((dest->data = realloc(dest->data, (tmpCapacity = dest->capacity)))));
+			tmpCap *= 2;
+		} while (tmpCap < totalLen);
+		if (likely((dest->data = realloc(dest->data, (tmpCap = dest->capacity)))));
 		else goto ERROR_FREE;
 	}
 	va_start(ap, dest);
@@ -113,11 +113,11 @@ inline int jstrAppend(Jstring *RESTRICT dest, const char *RESTRICT src, const si
 {
 	const size_t newLen = dest->size + srcLen;
 	if (dest->capacity < newLen) {
-		size_t tmpCapacity = dest->capacity;
+		size_t tmpCap = dest->capacity;
 		do {
-			tmpCapacity *= 2;
-		} while (tmpCapacity < newLen);
-		if (likely((dest->data = realloc(dest->data, (dest->capacity = tmpCapacity)))));
+			tmpCap *= 2;
+		} while (tmpCap < newLen);
+		if (likely((dest->data = realloc(dest->data, (dest->capacity = tmpCap)))));
 		else goto ERROR_FREE;
 	}
 	memcpy(dest->data + dest->size, src, srcLen + 1);
