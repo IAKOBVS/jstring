@@ -60,6 +60,7 @@ int jstrNew(Jstring *RESTRICT dest, const char *RESTRICT src, const size_t srcLe
 int jstrPushback(Jstring *dest, const char c);
 void jstrPopback(Jstring *RESTRICT dest);
 int jstrAppend(Jstring *dest, const char *RESTRICT src, const size_t srcLen);
+#define jstrAppendAuto(dest, src) jstrAppend(dest, src, strlen(src))
 /* swaps dest with src and updates the Jstring struct members */
 void jstrSwap(Jstring *RESTRICT dest, Jstring *RESTRICT src);
 void jstrSwapStr(Jstring *RESTRICT dest, char **RESTRICT src, size_t *srcLen, size_t *srcSize);
