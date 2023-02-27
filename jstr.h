@@ -23,9 +23,9 @@ void jstr_delete(jstring_t *RESTRICT dest);
 int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
 #define jstr_new_auto(dest, src) jstr_new(dest, src, strlen(src))
 
-int jstr_pushback(jstring_t *dest, const char c);
+int jstr_push_back(jstring_t *dest, const char c);
 
-void jstr_popback(jstring_t *RESTRICT dest);
+void jstr_pop_back(jstring_t *RESTRICT dest);
 
 int jstr_append(jstring_t *dest, const char *RESTRICT src, const size_t src_size);
 #define jstr_append_auto(dest, src) jstr_append(dest, src, strlen(src))
@@ -44,8 +44,5 @@ int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_
 
 /* compares two Jstr, and if equal, returns 0 */
 int jstr_cmp(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
-
-#undef ALWAYS_INLINE
-#undef RESTRICT
 
 #endif
