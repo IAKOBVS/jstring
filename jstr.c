@@ -167,14 +167,16 @@ ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT dest, size_t capacity)
 
 ALWAYS_INLINE int jstr_reserve_fast(jstring_t *RESTRICT dest, size_t capacity)
 {
-	return (likely((dest->data = realloc(dest->data, (dest->capacity = capacity) * sizeof *dest->data))))
-		? 1
-		: (jstr_delete_fast(dest), 0);
+	if (likely((dest->data = realloc(dest->data, (dest->capacity = capacity) * sizeof *dest->data))))
+		return 1;
+	jstr_delete_fast(dest);
+	return 0;
 }
 
 ALWAYS_INLINE int jstr_shrink(jstring_t *RESTRICT dest)
 {
-	return (likely((dest->data = realloc(dest->data, (dest->capacity = dest->size) + 1))))
-		? 1
-		: (jstr_delete_fast(dest), 0);
+	if (likely((dest->data = realloc(dest->data, (dest->capacity = dest->size) + 1))))
+		return 1;
+	jstr_delete_fast(dest);
+	return 0;
 }

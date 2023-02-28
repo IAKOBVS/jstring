@@ -6,6 +6,15 @@
 #include "/home/james/c/vargc.h"
 #include "macros.h"
 
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_STATIC_ASSERT__) && defined(_Static_assert)
+#define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
+#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_STATIC_ASSERT__)
+#define JSTR_ASSERT(expr, msg) static_assert(expr, msg)
+#else
+#define JSTR_ASSERT(expr, msg)
+/* #define JSTR_ASSERT(expr, msg) typedef char static_assertion_##__LINE__[(expr) ? 1 : -1] */
+#endif
+
 typedef struct jstring_t {
 	char *data;
 	size_t capacity;
@@ -19,8 +28,9 @@ void jstr_init(jstring_t *RESTRICT dest);
 
 void jstr_delete_fast(jstring_t *RESTRICT dest);
 void jstr_delete(jstring_t *RESTRICT dest);
+#define jstr_delete(dest)                                                                                                             \
 
-int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
+int private_jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
 #define jstr_new_auto(dest, src) jstr_new(dest, src, strlen(src))
 
 int jstr_push_back(jstring_t *dest, const char c);
@@ -46,7 +56,7 @@ int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_
 int jstr_cmp(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
 
 #define jstr_foreach(elem, jstr)                                                       \
-	for (char *elem = jstr.data, *end = jstr.data + jstr.size; elem < end; ++elem)
+	for (char *elem = jstr.data, *RESTRICT end = jstr.data + jstr.size; elem < end; ++elem)
 #define jstr_foreach_index(elem, jstr)                    \
 	for (size_t i = 0, end = jstr.size; i < end; ++i)
 
