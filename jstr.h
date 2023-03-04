@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#include "/home/james/c/vargc.h"
+#include "/home/james/c/macros/vargc.h"
 #include "macros.h"
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_STATIC_ASSERT__) && defined(_Static_assert)
@@ -28,9 +28,8 @@ void jstr_init(jstring_t *RESTRICT dest);
 
 void jstr_delete_fast(jstring_t *RESTRICT dest);
 void jstr_delete(jstring_t *RESTRICT dest);
-#define jstr_delete(dest)                                                                                                             \
 
-int private_jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
+int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
 #define jstr_new_auto(dest, src) jstr_new(dest, src, strlen(src))
 
 int jstr_push_back(jstring_t *dest, const char c);
