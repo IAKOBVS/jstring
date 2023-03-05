@@ -188,9 +188,9 @@ ALWAYS_INLINE int jstr_shrink_nocheck(jstring_t *RESTRICT dest)
 
 ALWAYS_INLINE int jstr_shrink(jstring_t *RESTRICT dest)
 {
-	return (likely(dest->capacity != dest->size))
-		? jstr_shrink_nocheck(dest)
-		: 1;
+	if (likely(dest->capacity != dest->size))
+		return jstr_shrink_nocheck(dest);
+	return 1;
 }
 
 ALWAYS_INLINE void jstr_push_back_noalloc(jstring_t *RESTRICT dest, const char c)
