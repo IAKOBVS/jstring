@@ -6,6 +6,7 @@
 #include "macros.h"
 
 #define JSTR_MIN_CAP 8
+
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
@@ -60,7 +61,7 @@ ERROR_FREE:
 	return 0;
 }
 
-inline int jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
+int jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
 {
 	const size_t total_size = dest->size + src_size;
 	if (dest->capacity < total_size) {
@@ -78,10 +79,19 @@ inline int jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT src, const
 
 ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
 {
-	return (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, 2 * src_size))))))
+	return (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, JARR_NEAR_POW2(2 * src_size)))))))
 		? 
 			(dest->size = src_size,
 			memcpy(dest->data, src, src_size + 1), 1)
+		:
+			(jstr_init(dest), 0);
+}
+
+ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT dest, const size_t cap)
+{
+	return (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, cap))))))
+		? 
+			(dest->capacity = cap, 1)
 		:
 			(jstr_init(dest), 0);
 }
@@ -192,3 +202,29 @@ inline int jstr_push_back(jstring_t *RESTRICT dest, const char c)
 		? (jstr_push_back_nocheck(dest, c))
 		: (jstr_push_back_noalloc(dest, c), 0);
 }
+
+#ifdef JSTR_DEBUG
+
+#include <assert.h>
+static ALWAYS_INLINE int debug()
+{
+	char a[100];
+	jstring_t s;
+	jstr_init(&s);
+	assert(jstr_new(&s, "aaa", 2));
+	assert(jstr_append(&s, a, 10));
+	assert(jstr_cat(&s, 1, 3, 4));
+	assert(jstr_push_back(&s, 3));
+	assert(jstr_reserve(&s, 100));
+	assert(jstr_shrink(&s));
+	(jstr_delete(&s), 0);
+	return 1;
+}
+
+int main()
+{
+	assert(debug);
+	return 0;
+}
+
+#endif
