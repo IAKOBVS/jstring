@@ -40,17 +40,13 @@ int private_jstr_cat(jstring_t *RESTRICT dest, ...)
 	va_end(ap);
 	if (dest->capacity < total_size) {
 		size_t tmp_cap = dest->capacity;
-		do {
-			tmp_cap *= 2;
-		} while (tmp_cap < total_size);
+		do { tmp_cap *= 2; } while (tmp_cap < total_size);
 		if (unlikely(!(dest->data = realloc(dest->data, (tmp_cap = dest->capacity)))))
 			goto ERROR_FREE;
 	}
 	va_start(ap, dest);
 	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
-		do {
-			*tmp_dest++ = *argv++;
-		} while (*argv);
+		do { *tmp_dest++ = *argv++; } while (*argv);
 	va_end(ap);
 	*tmp_dest = '\0';
 	dest->size = total_size;
@@ -79,21 +75,23 @@ int jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t
 
 ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
 {
-	return (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, JARR_NEAR_POW2(2 * src_size)))))))
-		? 
-			(dest->size = src_size,
-			memcpy(dest->data, src, src_size + 1), 1)
-		:
-			(jstr_init(dest), 0);
+	if (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, JARR_NEAR_POW2(2 * src_size))))))) {
+		dest->size = src_size;
+		memcpy(dest->data, src, src_size + 1);
+		return 1;
+	}
+	jstr_init(dest);
+	return 0;;
 }
 
 ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT dest, const size_t cap)
 {
-	return (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, cap))))))
-		? 
-			(dest->capacity = cap, 1)
-		:
-			(jstr_init(dest), 0);
+	if (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, cap)))))) {
+		dest->capacity = cap;
+		return 1;
+	}
+	jstr_init(dest);
+	return 0;
 }
 
 ALWAYS_INLINE void jstr_pop_back(jstring_t *RESTRICT dest)
@@ -137,7 +135,7 @@ ALWAYS_INLINE int jstr_cmp_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT
 	return memcmp(dest->data, src->data, dest->size);
 }
 
-ALWAYS_INLINE void jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size)
+ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size)
 {
 	memcpy(dest->data, src, src_size + 1);
 	dest->data[src_size] = '\0';
@@ -147,33 +145,45 @@ ALWAYS_INLINE void jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT
 ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT dest, size_t capacity)
 {
 	char *tmp;
-	return (likely((tmp = realloc(dest->data, (dest->capacity = capacity) * sizeof *dest->data))))
-		? (dest->data = tmp, 1)
-		: 0;
+	if (likely((tmp = realloc(dest->data, (dest->capacity = capacity) * sizeof *dest->data)))) {
+		dest->data = tmp;
+		return 1;
+	}
+	return 0;
+}
+
+ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size)
+{
+	if (likely(jstr_reserve_nocheck(dest, src_size))) {
+		jstr_replace_noalloc(dest, src, src_size);
+		return 1;
+	}
+	return 0;
 }
 
 ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size)
 {
 	if (dest->capacity < src_size)
-		if (!(unlikely(jstr_reserve_nocheck(dest, src_size))))
-			return 0;
-	jstr_replace_nocheck(dest, src, src_size);
+		return jstr_replace_nocheck(dest, src, src_size);
+	jstr_replace_noalloc(dest, src, src_size);
 	return 1;
 }
 
 ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT dest, size_t capacity)
 {
-	return (likely(capacity > dest->capacity))
-		? jstr_reserve_nocheck(dest, capacity)
-		: 1;
+	if (likely(capacity > dest->capacity))
+		return jstr_reserve_nocheck(dest, capacity);
+	return 1;
 }
 
 ALWAYS_INLINE int jstr_shrink_nocheck(jstring_t *RESTRICT dest)
 {
 	char *tmp;
-	return (likely((tmp = realloc(dest->data, (dest->capacity = dest->size) + 1))))
-		? (dest->data = tmp, 1)
-		: 0;
+	if (likely((tmp = realloc(dest->data, (dest->capacity = dest->size) + 1)))) {
+		dest->data = tmp;
+		return 1;
+	}
+	return 0;
 }
 
 ALWAYS_INLINE int jstr_shrink(jstring_t *RESTRICT dest)
@@ -191,16 +201,19 @@ ALWAYS_INLINE void jstr_push_back_noalloc(jstring_t *RESTRICT dest, const char c
 
 ALWAYS_INLINE int jstr_push_back_nocheck(jstring_t *RESTRICT dest, const char c)
 {
-	return (jstr_reserve_nocheck(dest, dest->size + 1))
-		? (jstr_push_back_noalloc(dest, c), 1)
-		: 0;
+	if (jstr_reserve_nocheck(dest, dest->size + 1)) {
+		jstr_push_back_noalloc(dest, c);
+		return 1;
+	}
+	return 0;
 }
 
 inline int jstr_push_back(jstring_t *RESTRICT dest, const char c)
 {
-	return (likely(dest->size == dest->capacity))
-		? (jstr_push_back_nocheck(dest, c))
-		: (jstr_push_back_noalloc(dest, c), 0);
+	if (likely(dest->size == dest->capacity))
+		return (jstr_push_back_nocheck(dest, c));
+	jstr_push_back_noalloc(dest, c);
+	return 1;
 }
 
 #ifdef JSTR_DEBUG

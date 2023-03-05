@@ -93,8 +93,8 @@ int jstr_reserve(jstring_t *RESTRICT dest, size_t capacity);
 int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size);
 #define jstr_replace_auto(dest, src) jstr_replace(dest, src, strlen(src))
 
-int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size);
-#define jstr_replace_nocheck_auto(dest, src) jstr_replace(dest, src, strlen(src))
+void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size);
+#define jstr_replace_noalloc_auto(dest, src) jstr_replace(dest, src, strlen(src))
 
 /* compares two Jstr, and if equal, returns 0 */
 int jstr_cmp(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
