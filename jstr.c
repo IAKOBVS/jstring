@@ -28,16 +28,6 @@ ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT dest)
 		jstr_delete_nocheck(dest);
 }
 
-ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
-{
-	return (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, 2 * src_size))))))
-	?
-		dest->size = src_size,
-		memcpy(dest->data, src, src_size + 1), 1
-	:
-		jstr_init(dest), 0;
-}
-
 int private_jstr_cat(jstring_t *RESTRICT dest, ...)
 {
 	size_t total_size = dest->size;
@@ -84,6 +74,16 @@ inline int jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT src, const
 	memcpy(dest->data + dest->size, src, src_size + 1);
 	dest->size = total_size;
 	return 1;
+}
+
+ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
+{
+	return (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, 2 * src_size))))))
+		? 
+			(dest->size = src_size,
+			memcpy(dest->data, src, src_size + 1), 1)
+		:
+			(jstr_init(dest), 0);
 }
 
 ALWAYS_INLINE void jstr_pop_back(jstring_t *RESTRICT dest)
@@ -138,7 +138,7 @@ ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT dest, size_t capacity
 {
 	char *tmp;
 	return (likely((tmp = realloc(dest->data, (dest->capacity = capacity) * sizeof *dest->data))))
-		? dest->data = tmp, 1
+		? (dest->data = tmp, 1)
 		: 0;
 }
 
@@ -162,7 +162,7 @@ ALWAYS_INLINE int jstr_shrink_nocheck(jstring_t *RESTRICT dest)
 {
 	char *tmp;
 	return (likely((tmp = realloc(dest->data, (dest->capacity = dest->size) + 1))))
-		? dest->data = tmp, 1
+		? (dest->data = tmp, 1)
 		: 0;
 }
 
@@ -182,13 +182,13 @@ ALWAYS_INLINE void jstr_push_back_noalloc(jstring_t *RESTRICT dest, const char c
 ALWAYS_INLINE int jstr_push_back_nocheck(jstring_t *RESTRICT dest, const char c)
 {
 	return (jstr_reserve_nocheck(dest, dest->size + 1))
-		? jstr_push_back_noalloc(dest, c), 1
+		? (jstr_push_back_noalloc(dest, c), 1)
 		: 0;
 }
 
 inline int jstr_push_back(jstring_t *RESTRICT dest, const char c)
 {
 	return (likely(dest->size == dest->capacity))
-		? jstr_push_back_nocheck(dest, c)
-		: jstr_push_back_noalloc(dest, c), 0;
+		? (jstr_push_back_nocheck(dest, c))
+		: (jstr_push_back_noalloc(dest, c), 0);
 }
