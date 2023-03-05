@@ -33,11 +33,9 @@ ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, c
 	return (likely((dest->data = malloc((dest->capacity = MAX(JSTR_MIN_CAP, 2 * src_size))))))
 	?
 		dest->size = src_size,
-		memcpy(dest->data, src, src_size + 1),
-		1
+		memcpy(dest->data, src, src_size + 1), 1
 	:
-		jstr_init(dest),
-		0;
+		jstr_init(dest), 0;
 }
 
 int private_jstr_cat(jstring_t *RESTRICT dest, ...)
