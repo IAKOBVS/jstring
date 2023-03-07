@@ -33,7 +33,7 @@ static ALWAYS_INLINE int jstr_cap_grow(jstring_t *RESTRICT dest, size_t size)
 {
 	if (dest->capacity < size) {
 		size_t tmp_cap = dest->capacity * 2;
-		while (dest->capacity < size)
+		while (tmp_cap < size)
 			tmp_cap *= 2;
 		if (unlikely(!(dest->data = realloc(dest->data, dest->capacity))))
 			return 0;
