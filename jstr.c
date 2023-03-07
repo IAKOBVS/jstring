@@ -29,6 +29,19 @@ ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT dest)
 		jstr_delete_nocheck(dest);
 }
 
+static ALWAYS_INLINE int jstr_cap_grow(jstring_t *RESTRICT dest, size_t size)
+{
+	if (dest->capacity < size) {
+		size_t tmp_cap = dest->capacity * 2;
+		while (dest->capacity < size)
+			tmp_cap *= 2;
+		if (unlikely(!(dest->data = realloc(dest->data, dest->capacity))))
+			return 0;
+		dest->capacity = tmp_cap;
+	}
+	return 1;
+}
+
 int private_jstr_cat(jstring_t *RESTRICT dest, ...)
 {
 	size_t total_size = dest->size;
@@ -38,12 +51,8 @@ int private_jstr_cat(jstring_t *RESTRICT dest, ...)
 	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		total_size += strlen(argv);
 	va_end(ap);
-	if (dest->capacity < total_size) {
-		size_t tmp_cap = dest->capacity;
-		do { tmp_cap *= 2; } while (tmp_cap < total_size);
-		if (unlikely(!(dest->data = realloc(dest->data, (tmp_cap = dest->capacity)))))
-			goto ERROR_FREE;
-	}
+	if (unlikely(!jstr_cap_grow(dest, total_size)))
+		return 0;
 	va_start(ap, dest);
 	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
 		do { *tmp_dest++ = *argv++; } while (*argv);
@@ -51,26 +60,17 @@ int private_jstr_cat(jstring_t *RESTRICT dest, ...)
 	*tmp_dest = '\0';
 	dest->size = total_size;
 	return 1;
-
-ERROR_FREE:
-	jstr_delete_nocheck(dest);
-	return 0;
 }
 
 int jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
 {
 	const size_t total_size = dest->size + src_size;
-	if (dest->capacity < total_size) {
-		size_t tmp_cap = dest->capacity;
-		do {
-			tmp_cap *= 2;
-		} while (tmp_cap < total_size);
-		if (unlikely((dest->data = realloc(dest->data, (dest->capacity = tmp_cap)))))
-			return 0;
+	if (likely(jstr_cap_grow(dest, total_size))) {
+		memcpy(dest->data + dest->size, src, src_size + 1);
+		dest->size = total_size;
+		return 1;
 	}
-	memcpy(dest->data + dest->size, src, src_size + 1);
-	dest->size = total_size;
-	return 1;
+	return 0;
 }
 
 ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size)
