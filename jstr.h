@@ -1,6 +1,8 @@
 #ifndef JSTR_H_DEF
 #define JSTR_H_DEF
 
+#define JSTR_RELEASE
+
 #ifdef JSTR_RELEASE
 	#undef JSTR_DEBUG
 #else
