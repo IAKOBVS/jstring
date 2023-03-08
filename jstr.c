@@ -210,7 +210,7 @@ ALWAYS_INLINE int jstr_push_back_nocheck(jstring_t *RESTRICT dest, const char c)
 
 inline int jstr_push_back(jstring_t *RESTRICT dest, const char c)
 {
-	if (likely(dest->size == dest->capacity))
+	if (unlikely(dest->size == dest->capacity))
 		return (jstr_push_back_nocheck(dest, c));
 	jstr_push_back_noalloc(dest, c);
 	return 1;
