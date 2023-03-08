@@ -171,7 +171,7 @@ ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, con
 
 ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT dest, size_t capacity)
 {
-	if (likely(capacity > dest->capacity))
+	if (capacity > dest->capacity)
 		return jstr_reserve_nocheck(dest, capacity);
 	return 1;
 }
