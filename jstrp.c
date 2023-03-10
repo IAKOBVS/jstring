@@ -21,12 +21,12 @@
 
 #define CASE_WHITESPACE case '\n': case '\t': case '\r': case ' '
 
-static ALWAYS_INLINE void jstrp_pop(char **RESTRICT s, const int shift_left)
+static ALWAYS_INLINE void jstrp_pop(char **RESTRICT s, const int n)
 {
 	char *RESTRICT start = *s;
-	char *RESTRICT end = start + strlen(*s);
-	for ( ; start + shift_left <= end; ++start)
-		*start = *(start + shift_left);
+	const char *RESTRICT end = strchr(start, '\0');
+	for ( ; start + n <= end; ++start)
+		*start = *(start + n);
 }
 
 int jstrp_cmp_greedy(char *s1, char *s2)
@@ -91,6 +91,6 @@ int main()
 {
 	char s[] = "Hello world. hww";
 	char *sp = s;
-	jstrp_capitalizer(&sp);
+	jstrp_pop(&sp, 2);
 	puts(sp);
 }
