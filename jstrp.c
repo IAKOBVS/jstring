@@ -21,17 +21,10 @@
 
 #define CASE_WHITESPACE case '\n': case '\t': case '\r': case ' '
 
-static ALWAYS_INLINE void jstrp_pop_index(char **RESTRICT s, const int shift_left)
-{
-	size_t len = strlen(*s);
-	for (size_t i = 0; i + shift_left <= len; ++i)
-		(*s)[i] = (*s)[i + shift_left];
-}
-
 static ALWAYS_INLINE void jstrp_pop(char **RESTRICT s, const int shift_left)
 {
-	char *start = *s;
-	char *end = *s + strlen(*s);
+	char *RESTRICT start = *s;
+	char *RESTRICT end = start + strlen(*s);
 	for ( ; start + shift_left <= end; ++start)
 		*start = *(start + shift_left);
 }
@@ -43,12 +36,10 @@ int jstrp_cmp_greedy(char *s1, char *s2)
 	for ( ; cns_dif != 2 & vw_dif != 2; ++s1, ++s2) {
 		switch (*s1) {
 		CASE_CONSONANT:
-			if (*s1 != *s2)
-				++cns_dif;
+			cns_dif += (*s1 != *s2) ? 1 : 0;
 			continue;
 		CASE_VOWEL:
-			if (*s1 != *s2)
-				++vw_dif;
+			vw_dif += (*s1 != *s2) ? 1 : 0;
 			continue;
 		case '\0':;
 		}
