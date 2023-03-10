@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "macros.h"
 
 #define CASE_VOWEL_LOWER case 'a': case 'i': case 'u': case 'e': case 'o'
@@ -20,36 +21,26 @@
 
 #define CASE_WHITESPACE case '\n': case '\t': case '\r': case ' '
 
-int jstrp_cmp_greedy(char *s1, char *s2)
+static ALWAYS_INLINE void jstrp_pop_index(char **RESTRICT s, const int shift_left)
 {
-	int cns1 = 0, vw1 = 0, cns2 = 0, vw2 = 0;
-	for ( ; cns1 == cns2 & vw1 == vw2; ++s1, ++s2) {
-		switch (*s1) {
-		CASE_CONSONANT:
-			++cns1;
-			break;
-		CASE_VOWEL:
-			++vw1;
-			break;
-		}
-		switch (*s2) {
-		CASE_CONSONANT:
-			++cns2;
-			continue;
-		CASE_VOWEL:
-			++vw2;
-			continue;
-		case '\0':;
-		}
-		if (cns1 == cns2 & vw1 == vw2)
-			return 0;
-	}
-	return -1;
+	size_t len = strlen(*s);
+	for (size_t i = 0; i + shift_left <= len; ++i)
+		(*s)[i] = (*s)[i + shift_left];
 }
 
-int jstrp_cmp_greedy_v2(char *s1, char *s2)
+static ALWAYS_INLINE void jstrp_pop(char **RESTRICT s, const int shift_left)
 {
-	for (int cns_dif = 0, vw_dif = 0 ; cns_dif != 2 & vw_dif != 2; ++s1, ++s2) {
+	char *start = *s;
+	char *end = *s + strlen(*s);
+	for ( ; start + shift_left <= end; ++start)
+		*start = *(start + shift_left);
+}
+
+int jstrp_cmp_greedy(char *s1, char *s2)
+{
+	int cns_dif = 0;
+	int vw_dif = 0;
+	for ( ; cns_dif != 2 & vw_dif != 2; ++s1, ++s2) {
 		switch (*s1) {
 		CASE_CONSONANT:
 			if (*s1 != *s2)
@@ -66,13 +57,49 @@ int jstrp_cmp_greedy_v2(char *s1, char *s2)
 	return -1;
 }
 
+void jstrp_capitalizer(char **s)
+{
+	int need_capital = 0;
+	for ( ;; ++s) {
+		switch (**s) {
+		CASE_CONSONANT_LOWER:
+		CASE_VOWEL_LOWER:
+			if (need_capital)
+				**s = toupper(**s);
+			continue;
+		case '.':
+			need_capital = 1;
+			continue;
+		case '\0':;
+		}
+		break;
+	}
+}
+
+void jstrp_spacer(char **s)
+{
+	int spc = 0;
+	for ( ;; ++s) {
+		switch (**s) {
+		CASE_ALPHANUM:
+			if (spc > 1) {
+				jstrp_pop(s, spc);
+				spc = 0;
+			}
+			continue;
+		case ' ':
+			++spc;
+			continue;
+		case '\0':;
+		}
+		break;
+	}
+}
+
 int main()
 {
-	char *s1 = "hillo";
-	char *s2 = "hello";
-
-	if (!jstrp_cmp_greedy_v2(s1, s2))
-		puts("greedy_equal");
-	else
-		puts("is not equal");
+	char s[] = "Hello world. hww";
+	char *sp = s;
+	jstrp_capitalizer(&sp);
+	puts(sp);
 }
