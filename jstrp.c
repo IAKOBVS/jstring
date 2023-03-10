@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <regex.h>
 #include "macros.h"
 
 #define CASE_VOWEL_LOWER case 'a': case 'i': case 'u': case 'e': case 'o'
@@ -21,6 +22,15 @@
 
 #define CASE_WHITESPACE case '\n': case '\t': case '\r': case ' '
 
+int private_jstrp_rgxcmp(const char *RESTRICT s, const char *RESTRICT ptrn)
+{
+	regex_t rgx;
+	regcomp(&rgx, ptrn, REG_EXTENDED);
+	int ret = regexec(&rgx, s, 0, NULL, 0);
+	regfree(&rgx);
+	return ret;
+}
+
 static ALWAYS_INLINE void jstrp_pop(char **RESTRICT s, const int n)
 {
 	char *RESTRICT start = *s;
@@ -29,17 +39,18 @@ static ALWAYS_INLINE void jstrp_pop(char **RESTRICT s, const int n)
 		*start = *(start + n);
 }
 
-int jstrp_cmp_greedy(char *s1, char *s2)
+#define CONSONANT 0b01
+#define VOWEL 0b10
+
+int jstrp_cmp_greedy(const char *RESTRICT s1, const char *RESTRICT s2)
 {
-	int cns_dif = 0;
-	int vw_dif = 0;
-	for ( ; cns_dif != 2 & vw_dif != 2; ++s1, ++s2) {
+	for (int dif = 0; dif ^ 0b11; ++s1, ++s2) {
 		switch (*s1) {
 		CASE_CONSONANT:
-			cns_dif += (*s1 != *s2) ? 1 : 0;
+			dif = (*s1 != *s2) ? dif | CONSONANT : dif;
 			continue;
 		CASE_VOWEL:
-			vw_dif += (*s1 != *s2) ? 1 : 0;
+			dif = (*s1 != *s2) ? dif | VOWEL : dif;
 			continue;
 		case '\0':;
 		}
@@ -89,8 +100,12 @@ void jstrp_spacer(char **s)
 
 int main()
 {
-	char s[] = "Hello world. hww";
+	char s[] = "Hallo";
 	char *sp = s;
-	jstrp_pop(&sp, 2);
-	puts(sp);
+	if (!jstrp_cmp_greedy(s, "hello"))
+		puts("greedy_match");
+	else
+		puts("not match");
+	/* jstrp_pop(&sp, 2); */
+	/* puts(sp); */
 }
