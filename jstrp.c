@@ -23,22 +23,22 @@ static ALWAYS_INLINE void jstrp_pop(char **RESTRICT s, const int n)
 		*start = *(start + n);
 }
 
-#define CONSONANT 0b01
-#define VOWEL 0b10
+#define CONSONANT 0x01
+#define VOWEL 0x10
 
 int jstrp_cmp_greedy(const char *RESTRICT s1, const char *RESTRICT s2)
 {
-	for (int dif = 0; dif ^ 0b11; ++s1, ++s2) {
+	for (int dif = 0; dif < 0x11; ++s1, ++s2) {
 		switch (*s1) {
 		CASE_CONSONANT
-			dif = (*s1 != *s2) ? dif | CONSONANT : dif;
+			dif += (*s1 != *s2) ? CONSONANT : 0;
 			continue;
 		CASE_VOWEL
-			dif = (*s1 != *s2) ? dif | VOWEL : dif;
+			dif += (*s1 != *s2) ? VOWEL : 0;
 			continue;
 		case '\0':;
 		}
-		return 0;
+		return dif;
 	}
 	return -1;
 }

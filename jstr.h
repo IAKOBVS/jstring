@@ -73,6 +73,7 @@ void jstr_delete_nocheck(jstring_t *RESTRICT dest);
 void jstr_delete(jstring_t *RESTRICT dest);
 
 int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
+int jstr_new_fit(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
 int jstr_new_alloc(jstring_t *RESTRICT dest, const size_t cap);
 #define jstr_new_auto(dest, src) jstr_new(dest, src, strlen(src))
 
