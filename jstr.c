@@ -153,10 +153,11 @@ ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT
 	dest->size = src_size;
 }
 
-ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT dest, size_t capacity)
+ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT dest, size_t cap)
 {
 	char *tmp;
-	if (likely((tmp = realloc(dest->data, (dest->capacity = capacity) * sizeof *dest->data)))) {
+	if (likely((tmp = realloc(dest->data, cap * sizeof *dest->data)))) {
+		dest->capacity = cap;
 		dest->data = tmp;
 		return 1;
 	}
@@ -180,10 +181,10 @@ ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, con
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT dest, size_t capacity)
+ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT dest, size_t cap)
 {
-	if (capacity > dest->capacity)
-		return jstr_reserve_nocheck(dest, capacity);
+	if (cap > dest->capacity)
+		return jstr_reserve_nocheck(dest, cap);
 	return 1;
 }
 
