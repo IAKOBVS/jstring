@@ -74,34 +74,34 @@ int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, c
 
 ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
-	if (likely((this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JARR_NEAR_POW2(2 * src_size))))))) {
-		this_jstr->size = src_size;
-		memcpy(this_jstr->data, src, src_size + 1);
-		return 1;
+	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JARR_NEAR_POW2(2 * src_size))))))) {
+		jstr_init(this_jstr);
+		return 0;
 	}
-	jstr_init(this_jstr);
-	return 0;
+	this_jstr->size = src_size;
+	memcpy(this_jstr->data, src, src_size + 1);
+	return 1;
 }
 
 ALWAYS_INLINE int jstr_new_fit(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
-	if (likely((this_jstr->data = malloc((this_jstr->capacity = src_size))))) {
-		this_jstr->size = src_size;
-		memcpy(this_jstr->data, src, src_size + 1);
-		return 1;
+	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = src_size))))) {
+		jstr_init(this_jstr);
+		return 0;
 	}
-	jstr_init(this_jstr);
-	return 0;
+	this_jstr->size = src_size;
+	memcpy(this_jstr->data, src, src_size + 1);
+	return 1;
 }
 
 ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap)
 {
-	if (likely((this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, cap)))))) {
-		this_jstr->capacity = cap;
-		return 1;
+	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, cap)))))) {
+		jstr_init(this_jstr);
+		return 0;
 	}
-	jstr_init(this_jstr);
-	return 0;
+	this_jstr->capacity = cap;
+	return 1;
 }
 
 ALWAYS_INLINE void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
@@ -191,9 +191,9 @@ ALWAYS_INLINE int jstr_shrink_nocheck(jstring_t *RESTRICT this_jstr)
 
 ALWAYS_INLINE int jstr_shrink(jstring_t *RESTRICT this_jstr)
 {
-	if (likely(this_jstr->capacity != this_jstr->size))
-		return jstr_shrink_nocheck(this_jstr);
-	return 1;
+	if (unlikely(!(this_jstr->capacity != this_jstr->size)))
+		return 1;
+	return jstr_shrink_nocheck(this_jstr);
 }
 
 ALWAYS_INLINE void jstr_push_back_noalloc(jstring_t *RESTRICT this_jstr, const char c)
