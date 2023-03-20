@@ -233,12 +233,8 @@ ALWAYS_INLINE void jstr_pop_back(jstring_t *RESTRICT this_jstr)
 
 ALWAYS_INLINE void jstr_push_front_noalloc(jstring_t *RESTRICT this_jstr, const char c)
 {
-	char *RESTRICT const start = this_jstr->data; 
-	char *RESTRICT end = start + this_jstr->size;
-	for ( ; start < end; --end)
-		*end = *(end - 1);
-	*start = c;
-	++this_jstr->size;
+	memmove(this_jstr->data + 1, this_jstr->data, this_jstr->size++);
+	*this_jstr->data = c;
 }
 
 ALWAYS_INLINE int jstr_push_front_nocheck(jstring_t *RESTRICT this_jstr, const char c)
@@ -259,11 +255,7 @@ ALWAYS_INLINE int jstr_push_front(jstring_t *RESTRICT this_jstr, const char c)
 
 ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
 {
-	const char *RESTRICT const end = this_jstr->data + this_jstr->size;
-	char *RESTRICT start = this_jstr->data;
-	for ( ; start < end; ++start)
-		*start = *(start + 1);
-	--this_jstr->size;
+	memmove(this_jstr->data, this_jstr->data + 1, --this_jstr->size);
 }
 
 #ifdef JSTR_DEBUG
