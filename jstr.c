@@ -32,12 +32,12 @@ ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT this_jstr)
 static ALWAYS_INLINE int jstr_cap_grow(jstring_t *RESTRICT this_jstr, size_t size)
 {
 	if (this_jstr->capacity < size) {
-		size_t tmp_cap = this_jstr->capacity * 2;
-		while (tmp_cap < size)
-			tmp_cap *= 2;
+		size_t tmp = this_jstr->capacity * 2;
+		while (tmp < size)
+			tmp *= 2;
 		if (unlikely(!(this_jstr->data = realloc(this_jstr->data, this_jstr->capacity))))
 			return 0;
-		this_jstr->capacity = tmp_cap;
+		this_jstr->capacity = tmp;
 	}
 	return 1;
 }
