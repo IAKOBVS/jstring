@@ -73,24 +73,32 @@ void jstr_delete_nocheck(jstring_t *RESTRICT dest);
 void jstr_delete(jstring_t *RESTRICT dest);
 
 int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
-int jstr_new_fit(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
-int jstr_new_alloc(jstring_t *RESTRICT dest, const size_t cap);
 #define jstr_new_auto(dest, src) jstr_new(dest, src, strlen(src))
+int jstr_new_alloc(jstring_t *RESTRICT dest, const size_t cap);
 
 int jstr_push_back(jstring_t *dest, const char c);
+int jstr_push_back_nocheck(jstring_t *dest, const char c);
+void jstr_push_back_noalloc(jstring_t *dest, const char c);
+
+void jstr_push_front_noalloc(jstring_t *RESTRICT this_jstr, const char c);
+int jstr_push_front_nocheck(jstring_t *RESTRICT this_jstr, const char c);
+int jstr_push_front(jstring_t *RESTRICT this_jstr, const char c);
 
 void jstr_pop_back(jstring_t *RESTRICT dest);
+void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c);
 
 int jstr_append(jstring_t *dest, const char *RESTRICT src, const size_t src_size);
+void jstr_append_noalloc(jstring_t *dest, const char *RESTRICT src, const size_t src_size);
 #define jstr_append_auto(dest, src) jstr_append(dest, src, strlen(src))
 
 /* swaps dest with src and updates the jstring_t struct members */
 void jstr_swap(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
 void jstr_swap_str(jstring_t *RESTRICT dest, char **RESTRICT src, size_t *src_size, size_t *src_capacity);
 
-int jstr_shrink(jstring_t *RESTRICT dest);
+int jstr_shrink_to_fit(jstring_t *RESTRICT dest);
 
 int jstr_reserve(jstring_t *RESTRICT dest, size_t capacity);
+int jstr_reserve_nocheck(jstring_t *RESTRICT dest, size_t capacity);
 
 /* replaces dest->data with dest and reallocs if needed */
 int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size);
