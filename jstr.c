@@ -147,7 +147,7 @@ ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RES
 ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, size_t cap)
 {
 	char *tmp;
-	if (unlikely(!(tmp = realloc(this_jstr->data, cap * sizeof *this_jstr->data))))
+	if (unlikely(!(tmp = realloc(this_jstr->data, cap))))
 		return 0;
 	this_jstr->capacity = cap;
 	this_jstr->data = tmp;
