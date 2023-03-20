@@ -83,17 +83,6 @@ ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT this_jstr, const char *RESTRICT c
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_new_fit(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
-{
-	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = src_size))))) {
-		jstr_init(this_jstr);
-		return 0;
-	}
-	this_jstr->size = src_size;
-	memcpy(this_jstr->data, src, src_size + 1);
-	return 1;
-}
-
 ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap)
 {
 	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, cap)))))) {
