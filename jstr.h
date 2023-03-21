@@ -13,13 +13,6 @@
 #include "/home/james/c/macros/vargc.h"
 #include "macros.h"
 
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_STATIC_ASSERT__) && defined(_Static_assert)
-#define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
-#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_STATIC_ASSERT__)
-#define JSTR_ASSERT(expr, msg) static_assert(expr, msg)
-#else
-#endif
-
 #define JSTR_ALIGN_POWER_OF_TWO
 #define JSTR_64_BIT
 
