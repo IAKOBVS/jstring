@@ -20,16 +20,16 @@
 #else
 #endif
 
-#define JARR_ALIGN_POWER_OF_TWO
-#define JARR_64_BIT
+#define JSTR_ALIGN_POWER_OF_TWO
+#define JSTR_64_BIT
 
-#ifdef JARR_ALIGN_POWER_OF_TWO
-	#ifdef JARR_64_BIT
-		#define JARR_NEAR_POW2(x) private_jstr_next_pow2_64(x)
-	#elif JARR_32_BIT
-		#define JARR_NEAR_POW2(x) private_jstr_next_pow2_32(x)
+#ifdef JSTR_ALIGN_POWER_OF_TWO
+	#ifdef JSTR_64_BIT
+		#define JSTR_NEAR_POW2(x) private_jstr_next_pow2_64(x)
+	#elif JSTR_32_BIT
+		#define JSTR_NEAR_POW2(x) private_jstr_next_pow2_32(x)
 	#else
-		#define JARR_NEAR_POW2(x) (x)
+		#define JSTR_NEAR_POW2(x) (x)
 	#endif
 #endif
 
