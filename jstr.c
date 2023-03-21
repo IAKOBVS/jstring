@@ -10,6 +10,29 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
+CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_32(size_t x)
+{
+	x--;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	return ++x;
+}
+
+CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_64(size_t x)
+{
+	x--;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	x |= x >> 32;
+	return ++x;
+}
+
 ALWAYS_INLINE void jstr_init(jstring_t *RESTRICT this_jstr)
 {
 	this_jstr->data = NULL;
@@ -79,7 +102,7 @@ int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, c
 
 ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
-	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JARR_NEAR_POW2(2 * src_size))))))) {
+	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * src_size))))))) {
 		jstr_init(this_jstr);
 		return 0;
 	}
@@ -91,7 +114,7 @@ ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT this_jstr, const char *RESTRICT c
 ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap)
 {
 	this_jstr->size = 0;
-	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JARR_NEAR_POW2(2 * cap))))))) {
+	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * cap))))))) {
 		this_jstr->capacity = 0;
 		this_jstr->data = NULL;
 		return 0;

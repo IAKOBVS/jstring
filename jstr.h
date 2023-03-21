@@ -33,29 +33,6 @@
 	#endif
 #endif
 
-CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_32(size_t x)
-{
-	x--;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	return ++x;
-}
-
-CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_64(size_t x)
-{
-	x--;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	x |= x >> 32;
-	return ++x;
-}
-
 typedef struct jstring_t {
 	char *data;
 	size_t capacity;
