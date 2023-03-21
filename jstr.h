@@ -23,40 +23,38 @@
 #define JARR_ALIGN_POWER_OF_TWO
 #define JARR_64_BIT
 
-#if defined(__GNUC__) || defined(__clang__)
-	#define JARR_NEAR_POW2_32(x)                                          \
-		((x) ? 1 : 1UL << (sizeof((x)) * 8 - __builtin_clz((x) - 1)))
-	#define JARR_NEAR_POW2_64(x)                                             \
-		((x) ? 1 : 1ULL << (sizeof((x)) * 8 - __builtin_clzll((x) - 1)))
-#else
-	#define JARR_NEAR_POW2_32(x) \
-		(x--,                \
-		x |= x >> 1,         \
-		x |= x >> 2,         \
-		x |= x >> 4,         \
-		x |= x >> 8,         \
-		x |= x >> 16,        \
-		++x)
-	#define JARR_NEAR_POW2_64(x) \
-		(x--,                \
-		x |= x >> 1,         \
-		x |= x >> 2,         \
-		x |= x >> 4,         \
-		x |= x >> 8,         \
-		x |= x >> 16,        \
-		x |= x >> 32,        \
-		++x)
-#endif
-
 #ifdef JARR_ALIGN_POWER_OF_TWO
 	#ifdef JARR_64_BIT
-		#define JARR_NEAR_POW2(x) JARR_NEAR_POW2_64(x)
+		#define JARR_NEAR_POW2(x) private_jstr_next_pow2_64(x)
 	#elif JARR_32_BIT
-		#define JARR_NEAR_POW2(x) JARR_NEAR_POW2_32(x)
+		#define JARR_NEAR_POW2(x) private_jstr_next_pow2_32(x)
 	#else
 		#define JARR_NEAR_POW2(x) (x)
 	#endif
 #endif
+
+CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_32(size_t x)
+{
+	x--;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	return ++x;
+}
+
+CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_64(size_t x)
+{
+	x--;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	x |= x >> 32;
+	return ++x;
+}
 
 typedef struct jstring_t {
 	char *data;

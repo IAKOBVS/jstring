@@ -262,6 +262,7 @@ ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
 #ifdef JSTR_DEBUG
 
 #include <assert.h>
+#include <stdio.h>
 static ALWAYS_INLINE int debug()
 {
 	char a[100];
@@ -280,7 +281,6 @@ static ALWAYS_INLINE int debug()
 int main()
 {
 	assert(debug);
-	jstring_t s;
 	return 0;
 }
 
