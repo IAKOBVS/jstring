@@ -79,7 +79,7 @@ void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, con
 int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);
 
 #define jstr_foreach(elem, jstr)                                                                \
-	for (char RESTRICT *elem = jstr.data, *RESTRICT end = jstr.data + jstr.size; elem < end; ++elem)
+	for (char *elem = jstr.data, *RESTRICT const end = jstr.data + jstr.size; elem < end; ++elem)
 #define jstr_foreach_index(elem, jstr)                    \
 	for (size_t i = 0, end = jstr.size; i < end; ++i)
 
