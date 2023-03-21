@@ -70,7 +70,7 @@ void jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char *RESTRICT con
 int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
 	const size_t total_size = this_jstr->size + src_size;
-	if (unlikely(!(jstr_cap_grow(this_jstr, total_size))))
+	if (unlikely(!jstr_cap_grow(this_jstr, total_size)))
 		return 0;
 	memcpy(this_jstr->data + this_jstr->size, src, src_size + 1);
 	this_jstr->size = total_size;
@@ -102,7 +102,7 @@ ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap
 
 ALWAYS_INLINE void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
 {
-	char *RESTRICT tmp_src = src->data;
+	char *RESTRICT const tmp_src = src->data;
 	const size_t src_cap = src->capacity;
 	const size_t src_size = src->size;
 	src->data = this_jstr->data;
@@ -115,7 +115,7 @@ ALWAYS_INLINE void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT 
 
 ALWAYS_INLINE void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT src, size_t *RESTRICT src_size, size_t *RESTRICT src_capacity)
 {
-	char *RESTRICT tmp_src = *src;
+	char *RESTRICT const tmp_src = *src;
 	const size_t tmp_src_size = *src_size;
 	const size_t tmp_src_cap = *src_capacity;
 	*src = this_jstr->data;
@@ -188,7 +188,7 @@ ALWAYS_INLINE int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_jstr)
 
 ALWAYS_INLINE int jstr_shrink_to_fit(jstring_t *RESTRICT this_jstr)
 {
-	if (unlikely(!(this_jstr->capacity != this_jstr->size)))
+	if (unlikely(this_jstr->capacity != this_jstr->size))
 		return 1;
 	return jstr_shrink_to_fit_nocheck(this_jstr);
 }
@@ -258,6 +258,7 @@ ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
 	memmove(this_jstr->data, this_jstr->data + 1, --this_jstr->size);
 }
 
+#define JSTR_DEBUG
 #ifdef JSTR_DEBUG
 
 #include <assert.h>
@@ -279,7 +280,8 @@ static ALWAYS_INLINE int debug()
 int main()
 {
 	assert(debug);
+	jstring_t s;
 	return 0;
 }
 
-#endif
+#endif // JSTR_DEBUG
