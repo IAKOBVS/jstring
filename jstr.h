@@ -64,51 +64,51 @@ typedef struct jstring_t {
 	size_t size; 
 } jstring_t;
 
-int private_jstr_cat(jstring_t *RESTRICT dest, ...);
+int private_jstr_cat(jstring_t *RESTRICT this_jstr, ...);
 #define jstr_cat(JSTR, ...) private_jstr_cat(JSTR, __VA_ARGS__, NULL)
 
-void jstr_init(jstring_t *RESTRICT dest);
+void jstr_init(jstring_t *RESTRICT this_jstr);
 
-void jstr_delete_nocheck(jstring_t *RESTRICT dest);
-void jstr_delete(jstring_t *RESTRICT dest);
+void jstr_delete_nocheck(jstring_t *RESTRICT this_jstr);
+void jstr_delete(jstring_t *RESTRICT this_jstr);
 
-int jstr_new(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t src_size);
-#define jstr_new_auto(dest, src) jstr_new(dest, src, strlen(src))
-int jstr_new_alloc(jstring_t *RESTRICT dest, const size_t cap);
+int jstr_new(jstring_t *RESTRICT this_jstr, const char *RESTRICT src, const size_t src_size);
+#define jstr_new_auto(this_jstr, src) jstr_new(this_jstr, src, strlen(src))
+int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap);
 
-int jstr_push_back(jstring_t *dest, const char c);
-int jstr_push_back_nocheck(jstring_t *dest, const char c);
-void jstr_push_back_noalloc(jstring_t *dest, const char c);
+int jstr_push_back(jstring_t *this_jstr, const char c);
+int jstr_push_back_nocheck(jstring_t *this_jstr, const char c);
+void jstr_push_back_noalloc(jstring_t *this_jstr, const char c);
 
 void jstr_push_front_noalloc(jstring_t *RESTRICT this_jstr, const char c);
 int jstr_push_front_nocheck(jstring_t *RESTRICT this_jstr, const char c);
 int jstr_push_front(jstring_t *RESTRICT this_jstr, const char c);
 
-void jstr_pop_back(jstring_t *RESTRICT dest);
+void jstr_pop_back(jstring_t *RESTRICT this_jstr);
 void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c);
 
-int jstr_append(jstring_t *dest, const char *RESTRICT src, const size_t src_size);
-void jstr_append_noalloc(jstring_t *dest, const char *RESTRICT src, const size_t src_size);
-#define jstr_append_auto(dest, src) jstr_append(dest, src, strlen(src))
+int jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size);
+void jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size);
+#define jstr_append_auto(this_jstr, src) jstr_append(this_jstr, src, strlen(src))
 
-/* swaps dest with src and updates the jstring_t struct members */
-void jstr_swap(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
-void jstr_swap_str(jstring_t *RESTRICT dest, char **RESTRICT src, size_t *src_size, size_t *src_capacity);
+/* swaps this_jstr with src and updates the jstring_t struct members */
+void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);
+void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT src, size_t *src_size, size_t *src_capacity);
 
-int jstr_shrink_to_fit(jstring_t *RESTRICT dest);
+int jstr_shrink_to_fit(jstring_t *RESTRICT this_jstr);
 
-int jstr_reserve(jstring_t *RESTRICT dest, size_t capacity);
-int jstr_reserve_nocheck(jstring_t *RESTRICT dest, size_t capacity);
+int jstr_reserve(jstring_t *RESTRICT this_jstr, const size_t capacity);
+int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t capacity);
 
-/* replaces dest->data with dest and reallocs if needed */
-int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size);
-#define jstr_replace_auto(dest, src) jstr_replace(dest, src, strlen(src))
+/* replaces this_jstr->data with this_jstr and reallocs if needed */
+int jstr_replace(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size);
+#define jstr_replace_auto(this_jstr, src) jstr_replace(this_jstr, src, strlen(src))
 
-void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t src_size);
-#define jstr_replace_noalloc_auto(dest, src) jstr_replace(dest, src, strlen(src))
+void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size);
+#define jstr_replace_noalloc_auto(this_jstr, src) jstr_replace(this_jstr, src, strlen(src))
 
 /* compares two Jstr, and if equal, returns 0 */
-int jstr_cmp(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
+int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);
 
 #define jstr_foreach(elem, jstr)                                                                \
 	for (char RESTRICT *elem = jstr.data, *RESTRICT end = jstr.data + jstr.size; elem < end; ++elem)

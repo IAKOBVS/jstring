@@ -29,15 +29,14 @@ ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT this_jstr)
 		jstr_delete_nocheck(this_jstr);
 }
 
-static ALWAYS_INLINE int jstr_cap_grow(jstring_t *RESTRICT this_jstr, size_t size)
+static ALWAYS_INLINE int jstr_cap_grow(jstring_t *RESTRICT this_jstr, const size_t size)
 {
 	if (this_jstr->capacity < size) {
-		size_t tmp = this_jstr->capacity * 2;
-		while (tmp < size)
-			tmp *= 2;
-		if (unlikely(!(this_jstr->data = realloc(this_jstr->data, this_jstr->capacity))))
+		size_t cap = this_jstr->capacity * 2;
+		while (cap < size)
+			cap *= 2;
+		if (unlikely(!(jstr_reserve_nocheck(this_jstr, cap))))
 			return 0;
-		this_jstr->capacity = tmp;
 	}
 	return 1;
 }
@@ -45,7 +44,7 @@ static ALWAYS_INLINE int jstr_cap_grow(jstring_t *RESTRICT this_jstr, size_t siz
 int private_jstr_cat(jstring_t *RESTRICT this_jstr, ...)
 {
 	size_t total_size = this_jstr->size;
-	char *RESTRICT tmp_this_jstr = this_jstr->data + total_size;
+	char *RESTRICT tmp = this_jstr->data + total_size;
 	va_list ap;
 	va_start(ap, this_jstr);
 	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
@@ -55,9 +54,9 @@ int private_jstr_cat(jstring_t *RESTRICT this_jstr, ...)
 		return 0;
 	va_start(ap, this_jstr);
 	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
-		do { *tmp_this_jstr++ = *argv++; } while (*argv);
+		do { *tmp++ = *argv++; } while (*argv);
 	va_end(ap);
-	*tmp_this_jstr = '\0';
+	*tmp = '\0';
 	this_jstr->size = total_size;
 	return 1;
 }
@@ -144,13 +143,13 @@ ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RES
 	this_jstr->size = src_size;
 }
 
-ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, size_t cap)
+ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap)
 {
 	char *tmp;
 	if (unlikely(!(tmp = realloc(this_jstr->data, cap))))
 		return 0;
-	this_jstr->capacity = cap;
 	this_jstr->data = tmp;
+	this_jstr->capacity = cap;
 	return 1;
 }
 
@@ -170,7 +169,7 @@ ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT this_jstr, char *RESTRICT src
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT this_jstr, size_t cap)
+ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT this_jstr, const size_t cap)
 {
 	if (cap > this_jstr->capacity)
 		return jstr_reserve_nocheck(this_jstr, cap);
@@ -180,8 +179,9 @@ ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT this_jstr, size_t cap)
 ALWAYS_INLINE int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_jstr)
 {
 	char *tmp;
-	if (unlikely(!(tmp = realloc(this_jstr->data, (this_jstr->capacity = this_jstr->size) + 1))))
+	if (unlikely(!(tmp = realloc(this_jstr->data, this_jstr->size + 1))))
 		return 0;
+	this_jstr->capacity = this_jstr->size + 1;
 	this_jstr->data = tmp;
 	return 1;
 }
@@ -221,7 +221,7 @@ ALWAYS_INLINE int jstr_push_back_nocheck(jstring_t *RESTRICT this_jstr, const ch
 ALWAYS_INLINE int jstr_push_back(jstring_t *RESTRICT this_jstr, const char c)
 {
 	if (unlikely(this_jstr->size == this_jstr->capacity))
-		return (jstr_push_back_nocheck(this_jstr, c));
+		return jstr_push_back_nocheck(this_jstr, c);
 	jstr_push_back_noalloc(this_jstr, c);
 	return 1;
 }
