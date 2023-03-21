@@ -281,7 +281,7 @@ ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
 	memmove(this_jstr->data, this_jstr->data + 1, --this_jstr->size);
 }
 
-#define JSTR_DEBUG
+/* #define JSTR_DEBUG */
 #ifdef JSTR_DEBUG
 
 #include <assert.h>
