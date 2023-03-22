@@ -7,7 +7,7 @@
 	#undef JSTR_DEBUG
 #else
 	#define JSTR_DEBUG
-#endif
+#endif // JSTR_RELEASE
 
 #include <stddef.h>
 #include "/home/james/c/macros/vargc.h"
@@ -24,7 +24,7 @@
 	#else
 		#define JSTR_NEAR_POW2(x) (x)
 	#endif
-#endif
+#endif // JSTR_ALIGN_POWER_OF_TWO
 
 typedef struct jstring_t {
 	char *data;
@@ -83,4 +83,4 @@ int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);
 #define jstr_foreach_index(elem, jstr)                    \
 	for (size_t i = 0, end = jstr.size; i < end; ++i)
 
-#endif
+#endif // JSTR_H_DEF
