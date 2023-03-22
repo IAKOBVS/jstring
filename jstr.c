@@ -7,32 +7,6 @@
 
 #define JSTR_MIN_CAP 8
 
-#define MAX(a,b) ((a)>(b)?(a):(b))
-#define MIN(a,b) ((a)<(b)?(a):(b))
-
-CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_32(size_t x)
-{
-	x--;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	return ++x;
-}
-
-CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_64(size_t x)
-{
-	x--;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	x |= x >> 32;
-	return ++x;
-}
-
 ALWAYS_INLINE void jstr_init(jstring_t *RESTRICT this_jstr)
 {
 	this_jstr->data = NULL;
