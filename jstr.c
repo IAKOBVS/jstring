@@ -26,7 +26,7 @@ ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT this_jstr)
 		jstr_delete_nocheck(this_jstr);
 }
 
-static ALWAYS_INLINE int jstr_cap_grow(jstring_t *RESTRICT this_jstr, const size_t size)
+ALWAYS_INLINE static int jstr_cap_grow(jstring_t *RESTRICT this_jstr, const size_t size)
 {
 	if (this_jstr->capacity < size) {
 		size_t cap = this_jstr->capacity * 2;
@@ -38,43 +38,39 @@ static ALWAYS_INLINE int jstr_cap_grow(jstring_t *RESTRICT this_jstr, const size
 	return 1;
 }
 
-int private_jstr_cat(jstring_t *RESTRICT this_jstr, ...)
+int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...)
 {
-	size_t total_size = this_jstr->size;
-	char *RESTRICT tmp = this_jstr->data + total_size;
-	va_list ap;
-	va_start(ap, this_jstr);
-	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
-		total_size += strlen(argv);
-	va_end(ap);
-	if (unlikely(!jstr_cap_grow(this_jstr, total_size)))
+	if (unlikely(!jstr_cap_grow(this_jstr, len)))
 		return 0;
-	va_start(ap, this_jstr);
+	char *RESTRICT tmp = this_jstr->data + len;
+	va_list ap;
+	va_start(ap, len);
 	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
-		do { *tmp++ = *argv++; } while (*argv);
-	va_end(ap);
+		do {
+			*tmp++ = *argv++;
+		} while (*argv);
 	*tmp = '\0';
-	this_jstr->size = total_size;
+	va_end(ap);
+	this_jstr->size = this_jstr->size + len;
 	return 1;
 }
 
-void jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
+ALWAYS_INLINE void jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
 	memcpy(this_jstr->data + this_jstr->size, src, src_size + 1);
 	this_jstr->size = this_jstr->size + src_size;
 }
 
-int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
+ALWAYS_INLINE int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
 	const size_t total_size = this_jstr->size + src_size;
 	if (unlikely(!jstr_cap_grow(this_jstr, total_size)))
 		return 0;
-	memcpy(this_jstr->data + this_jstr->size, src, src_size + 1);
-	this_jstr->size = total_size;
+	jstr_append_noalloc(this_jstr, src, src_size);
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_new(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
+ALWAYS_INLINE int jstr_new_wsize(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
 	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * src_size))))))) {
 		jstr_init(this_jstr);
