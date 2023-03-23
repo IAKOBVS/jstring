@@ -26,7 +26,7 @@ ALWAYS_INLINE static int jstr_cap_grow(jstring_t *RESTRICT this_jstr, const size
 		size_t cap = this_jstr->capacity * 2;
 		while (cap < size)
 			cap *= 2;
-		if (unlikely(!(jstr_reserve_nocheck(this_jstr, cap))))
+		if (unlikely(!jstr_reserve_nocheck(this_jstr, cap)))
 			return 0;
 	}
 	return 1;
