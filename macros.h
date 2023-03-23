@@ -105,7 +105,7 @@
 		x |= x >> 4;
 		x |= x >> 8;
 		x |= x >> 16;
-		return ++x;
+		return x + 1;
 	}
 
 	CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_64(size_t x)
@@ -117,7 +117,7 @@
 		x |= x >> 8;
 		x |= x >> 16;
 		x |= x >> 32;
-		return ++x;
+		return x + 1;
 	}
 #endif // __GNUC__ || __clang__
 
