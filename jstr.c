@@ -126,7 +126,6 @@ ALWAYS_INLINE int jstr_cmp_nocheck(jstring_t *RESTRICT this_jstr, jstring_t *RES
 ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size)
 {
 	memcpy(this_jstr->data, src, src_size + 1);
-	this_jstr->data[src_size] = '\0';
 	this_jstr->size = src_size;
 }
 
