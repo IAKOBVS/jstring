@@ -14,16 +14,10 @@ ALWAYS_INLINE void jstr_init(jstring_t *RESTRICT this_jstr)
 	this_jstr->capacity = 0;
 }
 
-ALWAYS_INLINE void jstr_delete_nocheck(jstring_t *RESTRICT this_jstr)
+ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT this_jstr)
 {
 	free(this_jstr->data);
 	jstr_init(this_jstr);
-}
-
-ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT this_jstr)
-{
-	if (this_jstr->data)
-		jstr_delete_nocheck(this_jstr);
 }
 
 ALWAYS_INLINE static int jstr_cap_grow(jstring_t *RESTRICT this_jstr, const size_t size)
