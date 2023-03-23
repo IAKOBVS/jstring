@@ -34,7 +34,8 @@ ALWAYS_INLINE static int jstr_cap_grow(jstring_t *RESTRICT this_jstr, const size
 
 int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...)
 {
-	if (unlikely(!jstr_cap_grow(this_jstr, len)))
+	this_jstr->size += len;
+	if (unlikely(!jstr_cap_grow(this_jstr, this_jstr->size)))
 		return 0;
 	char *RESTRICT tmp = this_jstr->data + len;
 	va_list ap;
@@ -45,7 +46,6 @@ int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...)
 		} while (*argv);
 	*tmp = '\0';
 	va_end(ap);
-	this_jstr->size = this_jstr->size + len;
 	return 1;
 }
 
