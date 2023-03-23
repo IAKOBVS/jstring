@@ -37,7 +37,6 @@ int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...);
 
 void jstr_init(jstring_t *RESTRICT this_jstr);
 
-void jstr_delete_nocheck(jstring_t *RESTRICT this_jstr);
 void jstr_delete(jstring_t *RESTRICT this_jstr);
 
 int jstr_new_wsize(jstring_t *RESTRICT this_jstr, const char *RESTRICT src, const size_t src_size);
