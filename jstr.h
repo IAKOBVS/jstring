@@ -11,7 +11,7 @@
 
 #include <stddef.h>
 #include "macros.h"
-#include "/home/james/c/macros/pp_va_args_macros.h"
+#include "/home/james/c/pp_macros/pp_va_args_macros.h"
 
 #define JSTR_ALIGN_POWER_OF_TWO
 #define JSTR_64_BIT
