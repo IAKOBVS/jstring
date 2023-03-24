@@ -259,7 +259,7 @@ ALWAYS_INLINE static int debug()
 	assert(jstr_push_back(&s, 3));
 	assert(jstr_reserve(&s, 100));
 	assert(jstr_shrink_to_fit(&s));
-	(jstr_delete(&s), 0);
+	jstr_delete(&s);
 	return 1;
 }
 
