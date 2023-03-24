@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <regex.h>
 #include "macros.h"
-#include "/home/james/c/macros/global_macros.h"
+#include "/home/james/c/pp_macros/global_macros.h"
 
 int private_jstrp_rgxcmp(const char *RESTRICT s, const char *RESTRICT ptrn)
 {
