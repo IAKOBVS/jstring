@@ -1,6 +1,5 @@
 ## Dependencies:
 <https://github.com/IAKOBVS/pp_macros>
-
 Change #include "/home/james/pp_macros/pp_va_args_macros.h" in jstr.h to "/path/to/pp_macros/pp_va_args_macros.h"
 <br/>
 Compile the jstr.c file into an object file with
