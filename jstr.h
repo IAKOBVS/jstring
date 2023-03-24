@@ -27,9 +27,9 @@
 #endif // JSTR_ALIGN_POWER_OF_TWO
 
 typedef struct jstring_t {
-	char *data;
-	size_t capacity;
 	size_t size; 
+	size_t capacity;
+	char *data;
 } jstring_t;
 
 int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...);
