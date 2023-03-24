@@ -20,6 +20,16 @@ ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT this_jstr)
 	jstr_init(this_jstr);
 }
 
+ALWAYS_INLINE int jstr_reserve_nocheck_exact(jstring_t *RESTRICT this_jstr, const size_t cap)
+{
+	char *RESTRICT tmp;
+	if (unlikely(!(tmp = realloc(this_jstr->data, cap))))
+		return 0;
+	this_jstr->data = tmp;
+	this_jstr->capacity = cap;
+	return 1;
+}
+
 ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap)
 {
 	size_t tmp_cap = this_jstr->capacity * 2;

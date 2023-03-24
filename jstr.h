@@ -4,9 +4,9 @@
 #define JSTR_RELEASE
 
 #ifdef JSTR_RELEASE
-	#undef JSTR_DEBUG
+#	undef JSTR_DEBUG
 #else
-	#define JSTR_DEBUG
+#	define JSTR_DEBUG
 #endif // JSTR_RELEASE
 
 #include <stddef.h>
@@ -17,13 +17,13 @@
 #define JSTR_64_BIT
 
 #ifdef JSTR_ALIGN_POWER_OF_TWO
-	#ifdef JSTR_64_BIT
-		#define JSTR_NEAR_POW2(x) private_jstr_next_pow2_64(x)
-	#elif JSTR_32_BIT
-		#define JSTR_NEAR_POW2(x) private_jstr_next_pow2_32(x)
-	#else
-		#define JSTR_NEAR_POW2(x) (x)
-	#endif
+#	ifdef JSTR_64_BIT
+#		define JSTR_NEAR_POW2(x) private_jstr_next_pow2_64(x)
+#	elif JSTR_32_BIT
+#		define JSTR_NEAR_POW2(x) private_jstr_next_pow2_32(x)
+#	else
+#		define JSTR_NEAR_POW2(x) (x)
+#	endif
 #endif // JSTR_ALIGN_POWER_OF_TWO
 
 typedef struct jstring_t {
@@ -60,12 +60,29 @@ void jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const s
 
 /* swaps this_jstr with src and updates the jstring_t struct members */
 void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);
-void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT src, size_t *src_size, size_t *src_capacity);
+void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT src, size_t *src_size, size_t *src_cap);
 
+int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_jstr);
 int jstr_shrink_to_fit(jstring_t *RESTRICT this_jstr);
 
-int jstr_reserve(jstring_t *RESTRICT this_jstr, const size_t capacity);
-int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t capacity);
+int jstr_shrink_to_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap);
+int jstr_shrink_to(jstring_t *RESTRICT this_jstr, const size_t cap);
+
+void jstr_shrink_to_size_nocheck(jstring_t *RESTRICT this_jstr, const size_t size);
+void jstr_shrink_to_size(jstring_t *RESTRICT this_jstr, const size_t size);
+
+int jstr_reserve(jstring_t *RESTRICT this_jstr, const size_t cap);
+int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap);
+
+#define private_jstr_reserve_x(this_jstr, multiplier)                                   \
+	jstr_reserve_nocheck_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
+
+#define jstr_reserve_2x(this_jstr) private_jstr_reserve_x(this_jstr, 2)
+#define jstr_reserve_4x(this_jstr) private_jstr_reserve_x(this_jstr, 4)
+#define jstr_reserve_8x(this_jstr) private_jstr_reserve_x(this_jstr, 8)
+#define jstr_reserve_16x(this_jstr) private_jstr_reserve_x(this_jstr, 16)
+#define jstr_reserve_32x(this_jstr) private_jstr_reserve_x(this_jstr, 32)
+#define jstr_reserve_64x(this_jstr) private_jstr_reserve_x(this_jstr, 64)
 
 /* replaces this_jstr->data with this_jstr and reallocs if needed */
 int jstr_replace(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size);
