@@ -46,7 +46,7 @@ ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size
 
 int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...)
 {
-	if (unlikely(!jstr_reserve_nocheck(this_jstr, this_jstr->size + len + 1)))
+	if (unlikely(!jstr_reserve(this_jstr, this_jstr->size + len + 1)))
 		return 0;
 	this_jstr->size += len;
 	char *RESTRICT tmp = this_jstr->data + len;
@@ -69,7 +69,7 @@ ALWAYS_INLINE void jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char
 
 ALWAYS_INLINE int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
-	if (unlikely(!jstr_reserve_nocheck(this_jstr, this_jstr->size + src_size)))
+	if (unlikely(!jstr_reserve(this_jstr, this_jstr->size + src_size)))
 		return 0;
 	jstr_append_noalloc(this_jstr, src, src_size);
 	return 1;
