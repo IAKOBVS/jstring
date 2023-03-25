@@ -186,7 +186,6 @@ ALWAYS_INLINE int jstr_shrink_to_nocheck(jstring_t *RESTRICT this_jstr, const si
 		return 0;
 	this_jstr->data = tmp;
 	this_jstr->data[this_jstr->size = cap] = '\0';
-	this_jstr->size = cap;
 	this_jstr->capacity = cap;
 	return 1;
 }
@@ -195,7 +194,7 @@ ALWAYS_INLINE int jstr_shrink_to(jstring_t *RESTRICT this_jstr, const size_t cap
 {
 	if (cap > this_jstr->capacity)
 		return 1;
-	return jstr_shrink_to_fit_nocheck(this_jstr);
+	return jstr_shrink_to_nocheck(this_jstr, cap);
 }
 
 ALWAYS_INLINE void jstr_shrink_to_size_nocheck(jstring_t *RESTRICT this_jstr, const size_t size)
@@ -263,18 +262,16 @@ ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
 	memmove(this_jstr->data, this_jstr->data + 1, this_jstr->size--);
 }
 
-/* #define JSTR_DEBUG */
+#define JSTR_DEBUG
 #ifdef JSTR_DEBUG
 
 #include <assert.h>
 #include <stdio.h>
 ALWAYS_INLINE static int debug()
 {
-	char a[100];
 	jstring_t s;
 	jstr_init(&s);
 	assert(jstr_new_wsize(&s, "aaa", 3));
-	assert(jstr_append(&s, a, 10));
 	assert(jstr_cat(&s, "hello", "world"));
 	assert(jstr_push_back(&s, 3));
 	assert(jstr_reserve(&s, 100));
