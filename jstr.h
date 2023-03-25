@@ -40,7 +40,7 @@ void jstr_init(jstring_t *RESTRICT this_jstr);
 void jstr_delete(jstring_t *RESTRICT this_jstr);
 
 int jstr_new_wsize(jstring_t *RESTRICT this_jstr, const char *RESTRICT src, const size_t src_size);
-#define jstr_new(this_jstr, src) jstr_new_wsize(this_jstr, src, strlen(src))
+#define jstr_new(this_jstr, src) jstr_new_wsize(this_jstr, src, strlen(src) + 1)
 int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap);
 
 int jstr_push_back(jstring_t *this_jstr, const char c);

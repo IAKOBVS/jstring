@@ -68,8 +68,7 @@ ALWAYS_INLINE void jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char
 
 ALWAYS_INLINE int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
-	const size_t total_size = this_jstr->size + src_size;
-	if (unlikely(!jstr_reserve_nocheck(this_jstr, total_size)))
+	if (unlikely(!jstr_reserve_nocheck(this_jstr, this_jstr->size + src_size)))
 		return 0;
 	jstr_append_noalloc(this_jstr, src, src_size);
 	return 1;
@@ -77,7 +76,7 @@ ALWAYS_INLINE int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRIC
 
 ALWAYS_INLINE int jstr_new_wsize(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
 {
-	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * src_size))))))) {
+	if (unlikely(!(this_jstr->data = malloc(this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * src_size)))))) {
 		jstr_init(this_jstr);
 		return 0;
 	}
@@ -264,6 +263,7 @@ ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
 	memmove(this_jstr->data, this_jstr->data + 1, this_jstr->size--);
 }
 
+/* #define JSTR_DEBUG */
 #ifdef JSTR_DEBUG
 
 #include <assert.h>
@@ -273,9 +273,9 @@ ALWAYS_INLINE static int debug()
 	char a[100];
 	jstring_t s;
 	jstr_init(&s);
-	assert(jstr_new(&s, "aaa", 2));
+	assert(jstr_new_wsize(&s, "aaa", 3));
 	assert(jstr_append(&s, a, 10));
-	assert(jstr_cat(&s, 1, 3, 4));
+	assert(jstr_cat(&s, "hello", "world"));
 	assert(jstr_push_back(&s, 3));
 	assert(jstr_reserve(&s, 100));
 	assert(jstr_shrink_to_fit(&s));
