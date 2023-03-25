@@ -46,9 +46,9 @@ ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size
 
 int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...)
 {
-	this_jstr->size += len;
-	if (unlikely(!jstr_reserve_nocheck(this_jstr, this_jstr->size)))
+	if (unlikely(!jstr_reserve_nocheck(this_jstr, this_jstr->size + len + 1)))
 		return 0;
+	this_jstr->size += len;
 	char *RESTRICT tmp = this_jstr->data + len;
 	va_list ap;
 	va_start(ap, len);
@@ -152,7 +152,7 @@ ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RES
 
 ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size)
 {
-	if (unlikely(!jstr_reserve_nocheck(this_jstr, src_size)))
+	if (unlikely(!jstr_reserve_nocheck(this_jstr, src_size + 1)))
 		return 0;
 	jstr_replace_noalloc(this_jstr, src, src_size);
 	return 1;
@@ -169,7 +169,7 @@ ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT this_jstr, char *RESTRICT src
 ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT this_jstr, const size_t cap)
 {
 	if (cap > this_jstr->capacity)
-		return jstr_reserve_nocheck(this_jstr, cap);
+		return jstr_reserve_nocheck(this_jstr, cap + 1);
 	return 1;
 }
 
