@@ -33,14 +33,16 @@ typedef struct jstring_t {
 } jstring_t;
 
 int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...);
-#define jstr_cat(this_jstr, ...) private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+#define jstr_cat(this_jstr, ...)                                                       \
+	private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
 void jstr_init(jstring_t *RESTRICT this_jstr);
 
 void jstr_delete(jstring_t *RESTRICT this_jstr);
 
 int jstr_new_wsize(jstring_t *RESTRICT this_jstr, const char *RESTRICT src, const size_t src_size);
-#define jstr_new(this_jstr, src) jstr_new_wsize(this_jstr, src, strlen(src) + 1)
+#define jstr_new(this_jstr, src)                        \
+	jstr_new_wsize(this_jstr, src, strlen(src) + 1)
 int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap);
 
 int jstr_push_back(jstring_t *this_jstr, const char c);
@@ -56,7 +58,8 @@ void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c);
 
 int jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size);
 void jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size);
-#define jstr_append_auto(this_jstr, src) jstr_append(this_jstr, src, strlen(src))
+#define jstr_append_auto(this_jstr, src)         \
+	jstr_append(this_jstr, src, strlen(src))
 
 /* swaps this_jstr with src and updates the jstring_t struct members */
 void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);
