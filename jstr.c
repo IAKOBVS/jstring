@@ -52,7 +52,7 @@ int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...)
 	char *RESTRICT tmp = this_jstr->data + len;
 	va_list ap;
 	va_start(ap, len);
-	for (char *RESTRICT argv = va_arg(ap, char *); argv; argv = va_arg(ap, char *))
+	for (const char *RESTRICT argv = va_arg(ap, const char *); argv; argv = va_arg(ap, const char *))
 		do {
 			*tmp++ = *argv++;
 		} while (*argv);
