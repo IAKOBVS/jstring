@@ -11,14 +11,6 @@
 #	define RESTRICT
 #endif // restrict
 
-#if defined(__GNUC__) || defined(__clang__)
-#	define ALWAYS_INLINE __attribute__((always_inline)) inline
-#elif defined(_MSC_VER)
-#	define ALWAYS_INLINE __forceinline inline
-#else
-#	define ALWAYS_INLINE inline
-#endif // inline
-
 #if defined(__PRETTY_FUNCTION__)
 #	define CURR_FUNC __PRETTY_FUNCTION__
 #elif defined(__FUNCTION__)
@@ -38,24 +30,24 @@
 #endif // __has_builtin(__builtin_expect)
 
 #if defined(__GNUC__) || defined(__clang__)
+#	define ALWAYS_INLINE __attribute__((always_inline)) inline
 #	if __has_attribute(pure)
 #		define PURE __attribute__((pure))
 #	else
 #		define PURE
-#	endif
-
+#	endif // PURE
 #	if __has_attribute(const)
 #		define CONST __attribute__((const))
 #	else
 #		define CONST
-#	endif
-
+#	endif // CONST
 #	if __has_attribute(flatten)
 #		define FLATTEN __attribute__((flatten))
 #	else
 #		define FLATTEN
-#	endif
+#	endif // FLATTEN
 #elif defined(_MSC_VER)
+#	define ALWAYS_INLINE __forceinline inline
 #	define PURE __declspec(noalias)
 #	define CONST __declspec(restrict)
 #	define FLATTEN
