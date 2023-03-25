@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/cdefs.h>
 
 #include "jstr.h"
 #include "macros.h"
