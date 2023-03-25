@@ -52,6 +52,7 @@
 #	define CONST __declspec(restrict)
 #	define FLATTEN
 #else
+#	define ALWAYS_INLINE inline
 #	define PURE
 #	define CONST
 #	define FLATTEN
