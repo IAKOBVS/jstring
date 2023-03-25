@@ -123,14 +123,24 @@ ALWAYS_INLINE void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT 
 	this_jstr->capacity = tmp_src_cap;
 }
 
-ALWAYS_INLINE int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
-{
-	return (this_jstr->size != src->size) ? 1 : memcmp(this_jstr->data, src->data, this_jstr->size);
-}
-
 ALWAYS_INLINE int jstr_cmp_nocheck(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
 {
 	return memcmp(this_jstr->data, src->data, this_jstr->size);
+}
+
+ALWAYS_INLINE int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
+{
+	return (this_jstr->size != src->size) ? 1 : jstr_cmp_nocheck(this_jstr, src);
+}
+
+ALWAYS_INLINE int jstr_case_cmp_nocheck(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
+{
+	return strcasecmp(this_jstr->data, src->data);
+}
+
+ALWAYS_INLINE int jstr_case_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
+{
+	return (this_jstr->size != src->size) ? 1 : jstr_case_cmp_nocheck(this_jstr, src);
 }
 
 ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size)
@@ -262,7 +272,7 @@ ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
 	memmove(this_jstr->data, this_jstr->data + 1, this_jstr->size--);
 }
 
-#define JSTR_DEBUG
+/* #define JSTR_DEBUG */
 #ifdef JSTR_DEBUG
 
 #include <assert.h>
