@@ -61,23 +61,25 @@ int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...)
 	return 1;
 }
 
-ALWAYS_INLINE void jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
+ALWAYS_INLINE void private_jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size, ...)
 {
 	memcpy(this_jstr->data + this_jstr->size, src, src_size + 1);
 	this_jstr->size = this_jstr->size + src_size;
 }
 
-ALWAYS_INLINE int jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
+ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size, ...)
 {
 	if (unlikely(!jstr_reserve(this_jstr, this_jstr->size + src_size)))
 		return 0;
-	jstr_append_noalloc(this_jstr, src, src_size);
+	private_jstr_append_noalloc(this_jstr, src, src_size);
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_new_wsize(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size)
+ALWAYS_INLINE int private_jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t src_size, const char *RESTRICT const src, ...)
 {
-	if (unlikely(!(this_jstr->data = malloc(this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * src_size)))))) {
+	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * src_size));
+	this_jstr->data = malloc(this_jstr->capacity);
+	if (unlikely(!this_jstr->data)) {
 		jstr_init(this_jstr);
 		return 0;
 	}
@@ -86,15 +88,16 @@ ALWAYS_INLINE int jstr_new_wsize(jstring_t *RESTRICT this_jstr, const char *REST
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap)
+ALWAYS_INLINE int private_jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size, ...)
 {
 	this_jstr->size = 0;
-	if (unlikely(!(this_jstr->data = malloc((this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * cap))))))) {
+	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * size));
+	this_jstr->data = malloc(this_jstr->capacity);
+	if (unlikely(!this_jstr->data)) {
 		this_jstr->capacity = 0;
 		this_jstr->data = NULL;
 		return 0;
 	}
-	this_jstr->capacity = cap;
 	return 1;
 }
 
@@ -273,7 +276,7 @@ ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
 	memmove(this_jstr->data, this_jstr->data + 1, this_jstr->size--);
 }
 
-/* #define JSTR_DEBUG */
+#define JSTR_DEBUG
 #ifdef JSTR_DEBUG
 
 #include <assert.h>
@@ -282,7 +285,7 @@ ALWAYS_INLINE static int debug()
 {
 	jstring_t s;
 	jstr_init(&s);
-	assert(jstr_new_wsize(&s, "aaa", 3));
+	assert(jstr_new(&s, 1, "hll"));
 	assert(jstr_cat(&s, "hello", "world"));
 	assert(jstr_push_back(&s, 3));
 	assert(jstr_reserve(&s, 100));
@@ -293,7 +296,8 @@ ALWAYS_INLINE static int debug()
 
 int main()
 {
-	assert(debug);
+	/* assert(debug); */
+	debug();
 	return 0;
 }
 

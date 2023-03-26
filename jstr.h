@@ -26,6 +26,7 @@
 #	endif
 #endif // JSTR_ALIGN_POWER_OF_TWO
 
+
 typedef struct jstring_t {
 	size_t size; 
 	size_t capacity;
@@ -33,17 +34,31 @@ typedef struct jstring_t {
 } jstring_t;
 
 int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...);
+
 #define jstr_cat(this_jstr, ...)                                                       \
-	private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+	generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+
+#define generic_jstr_cat(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
+	void *: jstr_append(this_jstr, arg1, len),                                        \
+	char *: private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__)                       \
+	)
 
 void jstr_init(jstring_t *RESTRICT this_jstr);
-
 void jstr_delete(jstring_t *RESTRICT this_jstr);
 
-int jstr_new_wsize(jstring_t *RESTRICT this_jstr, const char *RESTRICT src, const size_t src_size);
-#define jstr_new(this_jstr, src)                        \
-	jstr_new_wsize(this_jstr, src, strlen(src) + 1)
-int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t cap);
+int private_jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t src_size, const char *RESTRICT const src, ...);
+int private_jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size, ...);
+
+#define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                                          \
+	int: private_jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__)),                                                              \
+	const char *: PP_NARG(__VA_ARGS__) == 2                                                                                                 \
+		? private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0)                                                                    \
+		: private_jstr_new_append(this_jstr, strlen((const char *)PP_FIRST_ARG(__VA_ARGS__)), (const char *)PP_FIRST_ARG(__VA_ARGS__)), \
+	char *: PP_NARG(__VA_ARGS__) == 2                                                                                                       \
+		? private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0)                                                                    \
+		: private_jstr_new_append(this_jstr, strlen((const char *)PP_FIRST_ARG(__VA_ARGS__)), (const char *)PP_FIRST_ARG(__VA_ARGS__)), \
+	size_t: private_jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))                                                            \
+	)
 
 int jstr_push_back(jstring_t *this_jstr, const char c);
 int jstr_push_back_nocheck(jstring_t *this_jstr, const char c);
@@ -56,10 +71,22 @@ int jstr_push_front(jstring_t *RESTRICT this_jstr, const char c);
 void jstr_pop_back(jstring_t *RESTRICT this_jstr);
 void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c);
 
-int jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size);
-void jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size);
-#define jstr_append_auto(this_jstr, src)         \
-	jstr_append(this_jstr, src, strlen(src))
+int private_jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size, ...);
+void private_jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size, ...);
+
+#define jstr_append(this_jstr, ...)                                                                                        \
+(                                                                                                                          \
+	PP_NARG(__VA_ARGS__) == 2                                                                                          \
+		? private_jstr_append(this_jstr, __VA_ARGS__, 0)                                                           \
+		: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
+)
+
+#define jstr_append_noalloc(this_jstr, ...)                                                                            \
+(                                                                                                                      \
+	PP_NARG(__VA_ARGS__) == 2                                                                                      \
+		? private_jstr_append_noalloc(this_jstr, __VA_ARGS__, 0)                                               \
+		: private_jstr_append_noalloc(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
+)
 
 /* swaps this_jstr with src and updates the jstring_t struct members */
 void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);

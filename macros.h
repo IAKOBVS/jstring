@@ -61,13 +61,13 @@
 #if defined(__GNUC__) || defined(__clang__)
 #	include <stdint.h>
 #	if __has_builtin(__builtin_clzll)
-		CONST ALWAYS_INLINE static uint64_t private_jstr_next_pow2_64(uint64_t x)
+		CONST ALWAYS_INLINE uint64_t private_jstr_next_pow2_64(uint64_t x)
 		{
 			return 1ull << (64 - __builtin_clzll(x - 1));
 		}
 #	endif // __has_builtin(__builtin_clzll)
 #	if __has_builtin(__builtin_clz)
-		CONST ALWAYS_INLINE static uint32_t private_jstr_next_pow2_32(uint32_t x)
+		CONST ALWAYS_INLINE uint32_t private_jstr_next_pow2_32(uint32_t x)
 		{
 			return 1 << (32 - __builtin_clz(x - 1));
 		}
@@ -76,21 +76,21 @@
 #	include <stdint.h>
 #	include <intrin.h>
 #	pragma intrinsic(_BitScanReverse64)
-	CONST ALWAYS_INLINE static uint32_t private_jstr_next_pow2_32(uint32_t x)
+	CONST ALWAYS_INLINE uint32_t private_jstr_next_pow2_32(uint32_t x)
 	{
 		unsigned long index;
 		_BitScanReverse(&index, x - 1);
 		return 1 << (index + 1);
 	}
 
-	CONST ALWAYS_INLINE static uint64_t private_jstr_next_pow2_64(uint64_t x)
+	CONST ALWAYS_INLINE uint64_t private_jstr_next_pow2_64(uint64_t x)
 	{
 		unsigned long index;
 		_BitScanReverse64(&index, x - 1);
 		return 1ull << (index + 1);
 	}
 #else
-	CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_32(size_t x)
+	CONST ALWAYS_INLINE size_t private_jstr_next_pow2_32(size_t x)
 	{
 		--x;
 		x |= x >> 1;
@@ -101,7 +101,7 @@
 		return x + 1;
 	}
 
-	CONST ALWAYS_INLINE static size_t private_jstr_next_pow2_64(size_t x)
+	CONST ALWAYS_INLINE size_t private_jstr_next_pow2_64(size_t x)
 	{
 		--x;
 		x |= x >> 1;
