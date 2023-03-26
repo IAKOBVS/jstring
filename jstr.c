@@ -1,18 +1,18 @@
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/cdefs.h>
-
 #include "jstr.h"
 #include "macros.h"
 
 #define JSTR_MIN_CAP 8
 
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/cdefs.h>
+
 ALWAYS_INLINE void jstr_init(jstring_t *RESTRICT this_jstr)
 {
-	this_jstr->data = NULL;
-	this_jstr->size = 0;
 	this_jstr->capacity = 0;
+	this_jstr->size = 0;
+	this_jstr->data = NULL;
 }
 
 ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT this_jstr)
