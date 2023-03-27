@@ -16,9 +16,6 @@ ALWAYS_INLINE static int debug()
 
 int main()
 {
-	/* jstring_t s; */
-	/* jstr_new(&s, "hello"); */
-	void *p;
-	jstr_new(p, "hell");
+	assert(debug());
 	return 0;
 }
