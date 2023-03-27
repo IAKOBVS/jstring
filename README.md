@@ -9,7 +9,6 @@ in jstr.h to
 ```
 #include "/path/to/pp_macros/pp_va_args_macros.h"
 ```
-<br>
 Compile jstr.c into an object file with
 ```
 gcc -c jstr.c
