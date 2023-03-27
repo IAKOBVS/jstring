@@ -47,26 +47,26 @@ void jstr_init(jstring_t *RESTRICT this_jstr);
 void jstr_delete(jstring_t *RESTRICT this_jstr);
 
 int private_jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t src_size, const char *RESTRICT const src, ...);
-int private_jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size, ...);
+int private_jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size);
 int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...);
 
-#define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                                                 \
-	int: (PP_NARG(__VA_ARGS__) == 1)                                                                                                               \
-		? private_jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))                                                                 \
-		: private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0),                                                                          \
-	size_t: (PP_NARG(__VA_ARGS__) == 1)                                                                                                            \
-		? private_jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))                                                                 \
-		: private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0),                                                                          \
-	const char *: (PP_NARG(__VA_ARGS__) == 2)                                                                                                      \
-		? private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0)                                                                           \
-		: ((PP_NARG(__VA_ARGS__) == 1)                                                                                                         \
-			? private_jstr_new_append(this_jstr, strlen((const char *)PP_FIRST_ARG(__VA_ARGS__)), (const char *)PP_FIRST_ARG(__VA_ARGS__)) \
-			: private_jstr_new_cat(this_jstr, (size_t)PP_STRLEN_VA_ARGS((const char *)__VA_ARGS__), (const char *)__VA_ARGS__, NULL)),     \
-	char *: (PP_NARG(__VA_ARGS__) == 2)                                                                                                            \
-		? private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0)                                                                           \
-		: ((PP_NARG(__VA_ARGS__) == 1)                                                                                                         \
-			? private_jstr_new_append(this_jstr, strlen((const char *)PP_FIRST_ARG(__VA_ARGS__)), (const char *)PP_FIRST_ARG(__VA_ARGS__)) \
-			: private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS((const char *)__VA_ARGS__), (const char *)__VA_ARGS__, NULL))              \
+#define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                                           \
+	int: (PP_NARG(__VA_ARGS__) == 1)                                                                                                         \
+		? private_jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))                                                           \
+		: private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0),                                                                    \
+	size_t: (PP_NARG(__VA_ARGS__) == 1)                                                                                                      \
+		? private_jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))                                                           \
+		: private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0),                                                                    \
+	const char *: (PP_NARG(__VA_ARGS__) == 2)                                                                                                \
+		? private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0)                                                                     \
+		: ((PP_NARG(__VA_ARGS__) == 1)                                                                                                   \
+			? private_jstr_new_append(this_jstr, strlen((char *)PP_FIRST_ARG(__VA_ARGS__)), (const char *)PP_FIRST_ARG(__VA_ARGS__)) \
+			: private_jstr_new_cat(this_jstr, (size_t)PP_STRLEN_VA_ARGS((char *)__VA_ARGS__), (const char *)__VA_ARGS__, NULL)),     \
+	char *: (PP_NARG(__VA_ARGS__) == 2)                                                                                                      \
+		? private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0)                                                                     \
+		: ((PP_NARG(__VA_ARGS__) == 1)                                                                                                   \
+			? private_jstr_new_append(this_jstr, strlen((char *)PP_FIRST_ARG(__VA_ARGS__)), (const char *)PP_FIRST_ARG(__VA_ARGS__)) \
+			: private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS((char *)__VA_ARGS__), (const char *)__VA_ARGS__, NULL))              \
 	)
 
 int jstr_push_back(jstring_t *this_jstr, const char c);
