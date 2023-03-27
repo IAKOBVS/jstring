@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 /* ALWAYS_INLINE static int debug() */
 /* { */
@@ -18,6 +19,6 @@
 int main()
 {
 	jstring_t s;
-	jstr_new(&s, 1);
+	jstr_new(&s, strlen("hello"), "hello");
 	puts(s.data);
 }

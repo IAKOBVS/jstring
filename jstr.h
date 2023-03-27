@@ -52,10 +52,10 @@ int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...
 
 #define jstr_new_cat(this_jstr, ...) private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
-#define JSTR_FIRST_INT(this_jstr, ...)                       \
-	(PP_NARG(__VA_ARGS__) == 1)                          \
-	? JSTR_NEW_ALLOC(this_jstr, __VA_ARGS__)             \
-	: JSTR_NEW_ADD_STR_WITH_SIZE(this_jstr, __VA_ARGS__)
+#define JSTR_FIRST_INT(this_jstr, ...)                              \
+	(PP_NARG(__VA_ARGS__) == 1)                                 \
+		? JSTR_NEW_ALLOC(this_jstr, __VA_ARGS__)            \
+		: JSTR_NEW_ADD_STR_WITH_LEN(this_jstr, __VA_ARGS__)
 
 #define JSTR_NEW_ALLOC(this_jstr, ...)                               \
 	jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))
@@ -63,27 +63,27 @@ int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...
 #define JSTR_NEW_APPEND(this_jstr, ...)                                                                          \
 	jstr_new_append(this_jstr, strlen((char *)PP_FIRST_ARG(__VA_ARGS__)), (char *)PP_FIRST_ARG(__VA_ARGS__))
 
-#define JSTR_NEW_APPEND_WITH_SIZE(this_jstr, ...)             \
+#define JSTR_NEW_APPEND_WITH_LEN(this_jstr, ...)             \
 	jstr_new_append(this_jstr, (size_t)__VA_ARGS__, NULL)
 
 #define JSTR_NEW_CAT(this_jstr, ...)                                                               \
 	private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS((char *)__VA_ARGS__), __VA_ARGS__, NULL)
 
-#define JSTR_NEW_CAT_WITH_SIZE(this_jstr, ...)               \
+#define JSTR_NEW_CAT_WITH_LEN(this_jstr, ...)                      \
 	private_jstr_new_cat(this_jstr, (size_t)__VA_ARGS__, NULL)
 
-#define JSTR_NEW_ADD_STR(this_jstr, ...)                         \
-(                                                                \
-	(PP_NARG(__VA_ARGS__) == 1)                              \
-		? JSTR_NEW_APPEND(this_jstr, __VA_ARGS__)        \
-		: JSTR_NEW_CAT_WITH_SIZE(this_jstr, __VA_ARGS__) \
+#define JSTR_NEW_ADD_STR(this_jstr, ...)                  \
+(                                                         \
+	(PP_NARG(__VA_ARGS__) == 1)                       \
+		? JSTR_NEW_APPEND(this_jstr, __VA_ARGS__) \
+		: JSTR_NEW_CAT(this_jstr, __VA_ARGS__)    \
 )
 
-#define JSTR_NEW_ADD_STR_WITH_SIZE(this_jstr, ...)                  \
-(                                                                   \
-	(PP_NARG(__VA_ARGS__) == 2)                                 \
-		? JSTR_NEW_APPEND_WITH_SIZE(this_jstr, __VA_ARGS__) \
-		: JSTR_NEW_CAT_WITH_SIZE(this_jstr, __VA_ARGS__)    \
+#define JSTR_NEW_ADD_STR_WITH_LEN(this_jstr, ...)                  \
+(                                                                  \
+	(PP_NARG(__VA_ARGS__) == 2)                                \
+		? JSTR_NEW_APPEND_WITH_LEN(this_jstr, __VA_ARGS__) \
+		: JSTR_NEW_CAT_WITH_LEN(this_jstr, __VA_ARGS__)    \
 )
 
 #define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
