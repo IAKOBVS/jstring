@@ -48,6 +48,7 @@ void jstr_delete(jstring_t *RESTRICT this_jstr);
 
 int private_jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t src_size, const char *RESTRICT const src, ...);
 int private_jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size, ...);
+int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...);
 
 #define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                                                 \
 	int: (PP_NARG(__VA_ARGS__) == 1)                                                                                                               \
