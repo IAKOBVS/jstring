@@ -74,7 +74,7 @@ ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT this_jstr, const char 
 	return 1;
 }
 
-ALWAYS_INLINE int private_jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t src_size, const char *RESTRICT const src, ...)
+ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t src_size, const char *RESTRICT const src, ...)
 {
 	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * src_size));
 	this_jstr->data = malloc(this_jstr->capacity);
@@ -108,7 +108,7 @@ int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...
 	return 1;
 }
 
-ALWAYS_INLINE int private_jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size)
+ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size)
 {
 	this_jstr->size = 0;
 	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * size));
