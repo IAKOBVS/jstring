@@ -6,7 +6,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/cdefs.h>
 
 ALWAYS_INLINE void jstr_init(jstring_t *RESTRICT this_jstr)
 {
