@@ -53,10 +53,10 @@ int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...
 #define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                                                 \
 	int: (PP_NARG(__VA_ARGS__) == 1)                                                                                                               \
 		? private_jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))                                                                 \
-		: private_jstr_new_append(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__), (const char *)PP_OTHER_ARGS(__VA_ARGS__)),                     \
+		: private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0),                                                                          \
 	size_t: (PP_NARG(__VA_ARGS__) == 1)                                                                                                            \
 		? private_jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))                                                                 \
-		: private_jstr_new_append(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__), (const char *)PP_OTHER_ARGS(__VA_ARGS__)),                     \
+		: private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0),                                                                          \
 	const char *: (PP_NARG(__VA_ARGS__) == 2)                                                                                                      \
 		? private_jstr_new_append(this_jstr, (size_t)__VA_ARGS__, 0)                                                                           \
 		: ((PP_NARG(__VA_ARGS__) == 1)                                                                                                         \
