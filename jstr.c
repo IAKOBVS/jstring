@@ -291,7 +291,7 @@ ALWAYS_INLINE int jstr_push_front(jstring_t *RESTRICT this_jstr, const char c)
 	return 1;
 }
 
-ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c)
+ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr)
 {
 	memmove(this_jstr->data, this_jstr->data + 1, this_jstr->size--);
 }

@@ -78,7 +78,7 @@ int jstr_push_front_nocheck(jstring_t *RESTRICT this_jstr, const char c);
 int jstr_push_front(jstring_t *RESTRICT this_jstr, const char c);
 
 void jstr_pop_back(jstring_t *RESTRICT this_jstr);
-void jstr_pop_front(jstring_t *RESTRICT this_jstr, const char c);
+void jstr_pop_front(jstring_t *RESTRICT this_jstr);
 
 int private_jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size, ...);
 void private_jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size, ...);

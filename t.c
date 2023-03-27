@@ -1,4 +1,4 @@
-#include "jstr.h" // .c
+#include "jstr.h" /* .c */
 #include <assert.h>
 #include <string.h>
 
