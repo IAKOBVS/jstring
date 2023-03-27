@@ -88,6 +88,27 @@ ALWAYS_INLINE int private_jstr_new_append(jstring_t *RESTRICT this_jstr, const s
 	return 1;
 }
 
+int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...)
+{
+	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * arglen));
+	this_jstr->data = malloc(this_jstr->capacity);
+	if (unlikely(!this_jstr->data)) {
+		jstr_init(this_jstr);
+		return 0;
+	}
+	this_jstr->size = arglen;
+	char *tmp = this_jstr->data;
+	va_list ap;
+	va_start(ap, arglen);
+	for (const char *RESTRICT argv = va_arg(ap, const char *); argv; argv = va_arg(ap, const char *))
+		do {
+			*tmp++ = *argv++;
+		} while (*argv);
+	*tmp = '\0';
+	va_end(ap);
+	return 1;
+}
+
 ALWAYS_INLINE int private_jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size, ...)
 {
 	this_jstr->size = 0;
