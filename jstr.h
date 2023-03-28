@@ -2,6 +2,8 @@
 #define JSTR_H_DEF
 
 #define JSTR_RELEASE
+#define JSTR_ALIGN_POWER_OF_TWO
+#define JSTR_64_BIT
 
 #ifdef JSTR_RELEASE
 #	undef JSTR_DEBUG
@@ -12,19 +14,6 @@
 #include <stddef.h>
 #include "macros.h"
 #include "/home/james/c/pp_macros/pp_va_args_macros.h"
-
-#define JSTR_ALIGN_POWER_OF_TWO
-#define JSTR_64_BIT
-
-#ifdef JSTR_ALIGN_POWER_OF_TWO
-#	ifdef JSTR_64_BIT
-#		define JSTR_NEAR_POW2(x) private_jstr_next_pow2_64(x)
-#	elif JSTR_32_BIT
-#		define JSTR_NEAR_POW2(x) private_jstr_next_pow2_32(x)
-#	else
-#		define JSTR_NEAR_POW2(x) (x)
-#	endif
-#endif // JSTR_ALIGN_POWER_OF_TWO
 
 typedef struct jstring_t {
 	size_t size; 
@@ -103,10 +92,10 @@ void jstr_pop_front(jstring_t *RESTRICT this_jstr);
 int private_jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size, ...);
 void private_jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t src_size, ...);
 
-#define jstr_append(this_jstr, ...)                                                                                        \
-(                                                                                                                          \
-	PP_NARG(__VA_ARGS__) == 2                                                                                          \
-		? private_jstr_append(this_jstr, __VA_ARGS__, 0)                                                           \
+#define jstr_append(this_jstr, ...)                                                                            \
+(                                                                                                              \
+	PP_NARG(__VA_ARGS__) == 2                                                                              \
+		? private_jstr_append(this_jstr, __VA_ARGS__, 0)                                               \
 		: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
 )
 

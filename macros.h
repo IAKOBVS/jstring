@@ -1,6 +1,36 @@
 #ifndef JSTR_MACROS_H_DEF
 #define JSTR_MACROS_H_DEF
 
+#if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
+#	define JSTR_HAS_TYPEOF
+#endif // JSTR_HAS_TYPEOF
+
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
+#	define JSTR_HAS_GENERIC
+#endif // JSTR_HAS_GENERIC
+
+#if defined(static_assert)
+#	define JSTR_HAS_STATIC_ASSERT
+#elif __STDC_VERSION__ >= 201112L
+#	define JSTR_HAS__STATIC_ASSERT_
+#endif // static_assert
+
+#ifdef JSTR_HAS_STATIC_ASSERT
+#	define JSTR_ASSERT(expr, msg) static_assert(expr, msg)
+#elif defined(JSTR_HAS__STATIC_ASSERT_)
+#	define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
+#endif // JSTR_HAS_STATIC_ASSERT
+
+#ifdef JSTR_ALIGN_POWER_OF_TWO
+#	ifdef JSTR_64_BIT
+#		define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
+#	elif JSTR_32_BIT
+#		define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
+#	else
+#		define JSTR_NEXT_POW2(x) (x)
+#	endif // JSTR_64_BIT
+#endif // JSTR_ALIGN_POWER_OF_TWO
+
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #	define RESTRICT restrict
 #elif defined(__GNUC__) || defined(__clang__)
@@ -112,6 +142,52 @@
 		x |= x >> 32;
 		return x + 1;
 	}
+#endif // __GNUC__ || __clang__
+
+#if defined(JSTR_HAS_TYPEOF) && defined(JSTR_HAS_GENERIC)
+#	define JSTR_SAME_TYPE(x, y) _Generic((x), \
+		typeof(y): 1,                     \
+		default: 0                        \
+	)
+#	define JSTR_IS_TYPE(T, x) _Generic((x), \
+		T: 1,                           \
+		default: 0                      \
+	)
+#endif // JSTR_HAS_TYPEOF && JSTR_HAS_GENERIC
+
+#if defined(__GNUC__) || defined(__clang__)
+#	ifdef JSTR_HAS_GENERIC
+#		define JSTR_IS_SIZE(expr) _Generic((expr),     \
+					int: 1,                \
+					unsigned int: 1,       \
+					size_t: 1,             \
+					long: 1,               \
+					long long: 1,          \
+					unsigned long long: 1, \
+					default: 0)
+#		define JSTR_IS_STR(expr) _Generic((expr), \
+					char *: 1,        \
+					default: 0)
+#		define JSTR_IS_CHAR(expr) _Generic((expr), \
+					char: 1,           \
+					default: 0)
+#		define JSTR_ASSERT_SIZE(expr)                                                              \
+			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Not using a number where a number is required!");
+#		define JSTR_ASSERT_STR(expr)                                                              \
+			JSTR_ASSERT(JSTR_IS_STR(expr), "Not using a char * where a char * is required!");
+#		define JSTR_ASSERT_CHAR(expr)                                                          \
+			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Not using a char where a char is required!");
+#		define JSTR_ASSERT_TYPECHECK(Texpr, expr) JSTR_ASSERT(JSTR_SAME_TYPE(Texpr, expr), "Passing the wrong data type!");
+#	else
+#		define JSTR_IS_SIZE(expr)
+#		define JSTR_ASSERT_SIZE(expr)
+#	endif // JSTR_HAS_GENERIC
+#	define JSTR_MACRO_START ({
+#	define JSTR_MACRO_END ;})
+#else
+#	define JSTR_IS_SIZE(val)
+#	define JSTR_MACRO_START (
+#	define JSTR_MACRO_END )
 #endif // __GNUC__ || __clang__
 
 #define MAX(a,b) ((a)>(b)?(a):(b))

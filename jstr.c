@@ -76,7 +76,7 @@ ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT this_jstr, const char 
 
 ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t src_size, const char *RESTRICT const src, ...)
 {
-	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * src_size));
+	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * src_size));
 	this_jstr->data = malloc(this_jstr->capacity);
 	if (unlikely(!this_jstr->data)) {
 		jstr_init(this_jstr);
@@ -89,7 +89,7 @@ ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t sr
 
 int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...)
 {
-	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * arglen));
+	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * arglen));
 	this_jstr->data = malloc(this_jstr->capacity);
 	if (unlikely(!this_jstr->data)) {
 		jstr_init(this_jstr);
@@ -111,7 +111,7 @@ int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...
 ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size)
 {
 	this_jstr->size = 0;
-	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEAR_POW2(2 * size));
+	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
 	this_jstr->data = malloc(this_jstr->capacity);
 	if (unlikely(!this_jstr->data)) {
 		this_jstr->capacity = 0;
