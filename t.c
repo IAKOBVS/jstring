@@ -17,8 +17,4 @@
 /* } */
 
 int main()
-{
-	jstring_t s;
-	jstr_new(&s, strlen("hello"), "hello");
-	puts(s.data);
-}
+{}

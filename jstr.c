@@ -60,30 +60,30 @@ int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...)
 	return 1;
 }
 
-ALWAYS_INLINE void private_jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size, ...)
+ALWAYS_INLINE void private_jstr_append_noalloc(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t srclen, ...)
 {
-	memcpy(this_jstr->data + this_jstr->size, src, src_size + 1);
-	this_jstr->size = this_jstr->size + src_size;
+	memcpy(this_jstr->data + this_jstr->size, src, srclen + 1);
+	this_jstr->size = this_jstr->size + srclen;
 }
 
-ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t src_size, ...)
+ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT this_jstr, const char *RESTRICT const src, const size_t srclen, ...)
 {
-	if (unlikely(!jstr_reserve(this_jstr, this_jstr->size + src_size)))
+	if (unlikely(!jstr_reserve(this_jstr, this_jstr->size + srclen)))
 		return 0;
-	private_jstr_append_noalloc(this_jstr, src, src_size);
+	private_jstr_append_noalloc(this_jstr, src, srclen);
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t src_size, const char *RESTRICT const src, ...)
+ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t srclen, const char *RESTRICT const src, ...)
 {
-	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * src_size));
+	this_jstr->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * srclen));
 	this_jstr->data = malloc(this_jstr->capacity);
 	if (unlikely(!this_jstr->data)) {
 		jstr_init(this_jstr);
 		return 0;
 	}
-	this_jstr->size = src_size;
-	memcpy(this_jstr->data, src, src_size + 1);
+	this_jstr->size = srclen;
+	memcpy(this_jstr->data, src, srclen + 1);
 	return 1;
 }
 
@@ -125,25 +125,25 @@ ALWAYS_INLINE void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT 
 {
 	char *RESTRICT const tmp_src = src->data;
 	const size_t src_cap = src->capacity;
-	const size_t src_size = src->size;
+	const size_t srclen = src->size;
 	src->data = this_jstr->data;
 	src->capacity = this_jstr->capacity;
 	src->size = this_jstr->size;
 	this_jstr->data = tmp_src;
 	this_jstr->capacity = src_cap;
-	this_jstr->size = src_size;
+	this_jstr->size = srclen;
 }
 
-ALWAYS_INLINE void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT src, size_t *RESTRICT src_size, size_t *RESTRICT src_capacity)
+ALWAYS_INLINE void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT src, size_t *RESTRICT srclen, size_t *RESTRICT src_capacity)
 {
 	char *RESTRICT const tmp_src = *src;
-	const size_t tmp_src_size = *src_size;
+	const size_t tmp_srclen = *srclen;
 	const size_t tmp_src_cap = *src_capacity;
 	*src = this_jstr->data;
-	*src_size = this_jstr->size;
+	*srclen = this_jstr->size;
 	*src_capacity = this_jstr->capacity;
 	this_jstr->data = tmp_src;
-	this_jstr->size = tmp_src_size;
+	this_jstr->size = tmp_srclen;
 	this_jstr->capacity = tmp_src_cap;
 }
 
@@ -167,25 +167,25 @@ ALWAYS_INLINE int jstr_case_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRI
 	return (this_jstr->size != src->size) ? 1 : jstr_case_cmp_nocheck(this_jstr, src);
 }
 
-ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size)
+ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t srclen)
 {
-	memcpy(this_jstr->data, src, src_size + 1);
-	this_jstr->size = src_size;
+	memcpy(this_jstr->data, src, srclen + 1);
+	this_jstr->size = srclen;
 }
 
-ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size)
+ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t srclen)
 {
-	if (unlikely(!jstr_reserve_nocheck(this_jstr, src_size + 1)))
+	if (unlikely(!jstr_reserve_nocheck(this_jstr, srclen + 1)))
 		return 0;
-	jstr_replace_noalloc(this_jstr, src, src_size);
+	jstr_replace_noalloc(this_jstr, src, srclen);
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t src_size)
+ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t srclen)
 {
-	if (this_jstr->capacity < src_size)
-		return jstr_replace_nocheck(this_jstr, src, src_size);
-	jstr_replace_noalloc(this_jstr, src, src_size);
+	if (this_jstr->capacity < srclen)
+		return jstr_replace_nocheck(this_jstr, src, srclen);
+	jstr_replace_noalloc(this_jstr, src, srclen);
 	return 1;
 }
 
