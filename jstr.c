@@ -123,7 +123,7 @@ ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t siz
 
 ALWAYS_INLINE void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
 {
-	jstring_t tmp = *src;
+	const jstring_t tmp = *src;
 	*src = *this_jstr;
 	*this_jstr = tmp;
 }
