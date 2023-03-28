@@ -1,5 +1,5 @@
-#ifndef JSTR_H_DEF
-#define JSTR_H_DEF
+#ifndef JSTR_H_DEF__
+#define JSTR_H_DEF__
 
 #define JSTR_RELEASE
 #define JSTR_ALIGN_POWER_OF_TWO
@@ -146,4 +146,4 @@ int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);
 #define jstr_foreach_index(elem, jstr)                        \
 	for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
 
-#endif // JSTR_H_DEF
+#endif // JSTR_H_DEF__
