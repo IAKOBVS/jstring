@@ -1,6 +1,14 @@
 #ifndef JSTR_MACROS_H_DEF
 #define JSTR_MACROS_H_DEF
 
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) || defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
+#	define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
+#elif defined(__attribute_warn_unused_result__)
+#	define JSTR_WARN_UNUSED __attribute_warn_unused_result__
+#else
+#	define JSTR_WARN_UNUSED
+#endif // __attribute__unused
+
 #if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
 #	define JSTR_HAS_TYPEOF
 #endif // JSTR_HAS_TYPEOF
@@ -211,7 +219,12 @@
 #	define JSTR_MACRO_END )
 #endif // __GNUC__ || __clang__
 
-#define MAX(a,b) ((a)>(b)?(a):(b))
-#define MIN(a,b) ((a)<(b)?(a):(b))
+#ifndef MAX
+#	define MAX(a,b) ((a)>(b)?(a):(b))
+#endif // MAX
+
+#ifndef MIN
+#	define MIN(a,b) ((a)<(b)?(a):(b))
+#endif // MIN
 
 #endif // JSTR_MACROS_H_DEF

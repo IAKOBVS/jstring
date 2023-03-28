@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/cdefs.h>
 #include <unistd.h>
 
 /* ALWAYS_INLINE static int debug() */
@@ -15,6 +16,8 @@
 /* 	jstr_delete(&s); */
 /* 	return 1; */
 /* } */
+
+#define ADD(a, b) __attribute__((warn_unused_result)) (a + b)
 
 int main()
 {
