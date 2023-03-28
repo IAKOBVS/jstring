@@ -1,5 +1,6 @@
 #include "jstr.h" /* .c */
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/cdefs.h>
@@ -19,10 +20,7 @@
 
 #define ADD(a, b) __attribute__((warn_unused_result)) (a + b)
 
+
 int main()
 {
-	/* jstr_new(&s, "hello"); */
-	jstring_t s;
-	/* jstr_add(&s, 10, 9999); */
-	jstr_add(&s, 1);
 }

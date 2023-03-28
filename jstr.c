@@ -123,15 +123,9 @@ ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t siz
 
 ALWAYS_INLINE void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src)
 {
-	char *RESTRICT const tmp_src = src->data;
-	const size_t src_cap = src->capacity;
-	const size_t srclen = src->size;
-	src->data = this_jstr->data;
-	src->capacity = this_jstr->capacity;
-	src->size = this_jstr->size;
-	this_jstr->data = tmp_src;
-	this_jstr->capacity = src_cap;
-	this_jstr->size = srclen;
+	jstring_t tmp = *src;
+	*src = *this_jstr;
+	*this_jstr = tmp;
 }
 
 ALWAYS_INLINE void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT src, size_t *RESTRICT srclen, size_t *RESTRICT src_capacity)

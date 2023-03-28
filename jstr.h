@@ -1,7 +1,6 @@
 #ifndef JSTR_H_DEF__
 #define JSTR_H_DEF__
 
-#include <sys/cdefs.h>
 #define JSTR_RELEASE
 #define JSTR_ALIGN_POWER_OF_TWO
 #define JSTR_64_BIT
@@ -16,14 +15,6 @@
 #include <stddef.h>
 #include "macros.h"
 #include "/home/james/c/pp_macros/pp_va_args_macros.h"
-
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) || defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-#	define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
-#elif defined(__attribute_warn_unused_result__)
-#	define JSTR_WARN_UNUSED __attribute_warn_unused_result__
-#else
-#	define JSTR_WARN_UNUSED
-#endif
 
 typedef struct jstring_t {
 	size_t size; 
