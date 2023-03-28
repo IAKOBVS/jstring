@@ -63,11 +63,9 @@ int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...
 )
 
 #ifdef JSTR_HAS_GENERIC
-#	define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),   \
-		int: PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, __VA_ARGS__),        \
-		size_t: PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, __VA_ARGS__),     \
-		const char *: PRIVATE_JSTR_NEW_ADD_STR(this_jstr, __VA_ARGS__), \
-		char *: PRIVATE_JSTR_NEW_ADD_STR(this_jstr, __VA_ARGS__)        \
+#	define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),               \
+		JSTR_GENERIC_CASE_SIZE(PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, __VA_ARGS__)), \
+		JSTR_GENERIC_CASE_STR(PRIVATE_JSTR_NEW_ADD_STR(this_jstr, __VA_ARGS__))     \
 	)
 #else
 #	define jstr_new(this_jstr, size) jstr_new_alloc(this_jstr, size)
@@ -86,6 +84,13 @@ void jstr_pop_front(jstring_t *RESTRICT this_jstr);
 
 int private_jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const size_t srclen, ...);
 void private_jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t srclen, ...);
+
+#ifdef JSTR_HAS_GENERIC
+#	define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                             \
+		JSTR_GENERIC_CASE_SIZE(jstr_reserve_nocheck(this_jstr, ((this_jstr)->size) + PP_FIRST_ARG(__VA_ARGS__))), \
+		JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, __VA_ARGS__))                                                \
+	)
+#endif
 
 #define jstr_append(this_jstr, ...)                                                                            \
 (                                                                                                              \

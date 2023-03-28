@@ -157,20 +157,41 @@
 
 #if defined(__GNUC__) || defined(__clang__)
 #	ifdef JSTR_HAS_GENERIC
-#		define JSTR_IS_SIZE(expr) _Generic((expr),     \
-					int: 1,                \
-					unsigned int: 1,       \
-					size_t: 1,             \
-					long: 1,               \
-					long long: 1,          \
-					unsigned long long: 1, \
-					default: 0)
+#		define JSTR_GENERIC_CASE_SIZE(expr)        \
+			int: expr,                         \
+			unsigned int: expr,                \
+			size_t: expr,                      \
+			long: expr,                        \
+			long long: expr,                   \
+			unsigned long long: expr,          \
+						           \
+			const int: expr,                   \
+			const unsigned int: expr,          \
+			const size_t: expr,                \
+			const long: expr,                  \
+			const long long: expr,             \
+			const unsigned long long: expr
+
+#		define JSTR_GENERIC_CASE_STR(expr) \
+			char *: expr,              \
+			const char *: expr
+
+#		define JSTR_GENERIC_CASE_CHAR(expr) \
+			char: expr,                 \
+			const char: expr
+
+#		define JSTR_IS_SIZE(expr) _Generic((expr), \
+			JSTR_GENERIC_CASE_SIZE(1),         \
+			default: 0)
+
 #		define JSTR_IS_STR(expr) _Generic((expr), \
-					char *: 1,        \
+			JSTR_GENERIC_CASE_STR(1),         \
 					default: 0)
+
 #		define JSTR_IS_CHAR(expr) _Generic((expr), \
-					char: 1,           \
+			JSTR_GENERIC_CASE_CHAR(1),         \
 					default: 0)
+
 #		define JSTR_ASSERT_SIZE(expr)                                                              \
 			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Not using a number where a number is required!");
 #		define JSTR_ASSERT_STR(expr)                                                              \
