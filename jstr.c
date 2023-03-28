@@ -30,7 +30,7 @@ ALWAYS_INLINE int jstr_reserve_nocheck_exact(jstring_t *RESTRICT this_jstr, cons
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap)
+ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap, ...)
 {
 	size_t tmp_cap = this_jstr->capacity * 2;
 	while (tmp_cap < cap)

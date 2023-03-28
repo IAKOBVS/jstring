@@ -86,9 +86,9 @@ int private_jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const si
 void private_jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t srclen, ...);
 
 #ifdef JSTR_HAS_GENERIC
-#	define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                             \
-		JSTR_GENERIC_CASE_SIZE(jstr_reserve_nocheck(this_jstr, ((this_jstr)->size) + PP_FIRST_ARG(__VA_ARGS__))), \
-		JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, __VA_ARGS__))                                                \
+#	define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                    \
+		JSTR_GENERIC_CASE_SIZE(jstr_reserve_nocheck(this_jstr, ((this_jstr)->cap) + (size_t)PP_FIRST_ARG(__VA_ARGS__))), \
+		JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, (char *)__VA_ARGS__))                                               \
 	)
 #endif
 
@@ -120,7 +120,7 @@ void jstr_shrink_to_size_nocheck(jstring_t *RESTRICT this_jstr, const size_t siz
 void jstr_shrink_to_size(jstring_t *RESTRICT this_jstr, const size_t size);
 
 int jstr_reserve(jstring_t *RESTRICT this_jstr, const size_t cap);
-int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap);
+int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap, ...);
 
 #define private_jstr_reserve_x(this_jstr, multiplier)                                   \
 	jstr_reserve_nocheck_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))

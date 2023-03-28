@@ -16,41 +16,10 @@
 /* 	return 1; */
 /* } */
 
-#		define JSTR_GENERIC_CASE_SIZE1(...)            \
-			int: __VA_ARGS__,                      \
-			unsigned int: __VA_ARGS__,             \
-			size_t: __VA_ARGS__,                   \
-			long: __VA_ARGS__,                     \
-			long long: __VA_ARGS__,                \
-			unsigned long long: __VA_ARGS__,       \
-						               \
-			const int: __VA_ARGS__,                \
-			const unsigned int: __VA_ARGS__,       \
-			const size_t: __VA_ARGS__,             \
-			const long: __VA_ARGS__,               \
-			const long long: __VA_ARGS__,          \
-			const unsigned long long: __VA_ARGS__
-
-#		define JSTR_GENERIC_CASE_SIZE2(expr)            \
-			int: expr,                     \
-			unsigned int: expr,            \
-			size_t: expr,                  \
-			long: expr,                    \
-			long long: expr,               \
-			unsigned long long: expr,      \
-						              \
-			const int: expr,               \
-			const unsigned int: expr,      \
-			const size_t: expr,            \
-			const long: expr,              \
-			const long long: expr,         \
-			const unsigned long long: expr
-
-
 int main()
 {
 	/* jstr_new(&s, "hello"); */
 	jstring_t s;
 	/* jstr_add(&s, 10, 9999); */
-	JSTR_GENERIC_CASE_SIZE1(jstr_append(1, 3));
+	jstr_add(&s, 1);
 }
