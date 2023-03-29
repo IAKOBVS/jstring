@@ -73,7 +73,7 @@ int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JS
 /* if equals returns 0 */
 int jstr_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_WARN_UNUSED;
 
-/* strrchr that starts from end of string */
+/* finds first occurence of character from end of string */
 char *jstr_rchr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 /* memchr */
 char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
