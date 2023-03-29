@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <alloca.h>
 
 ALWAYS_INLINE void jstr_init(jstring_t *RESTRICT this_)
 {
@@ -331,6 +332,15 @@ ALWAYS_INLINE void jstr_rev(jstring_t *RESTRICT this_)
 		*begin = *end;
 		*end = tmp_begin;
 	}
+}
+
+ALWAYS_INLINE void jstr_rev_dup(jstring_t *RESTRICT this_)
+{
+	char s[this_->size + 1];
+	char *RESTRICT begin = s;
+	memcpy(s, this_->data, this_->size + 1);
+	char *RESTRICT end = this_->data + this_->size - 1;
+	while ((*end-- = *begin++));
 }
 
 ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c)
