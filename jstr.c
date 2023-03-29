@@ -62,6 +62,25 @@ int private_jstr_cat(jstring_t *RESTRICT this_, const size_t len, ...)
 	return 1;
 }
 
+int private_jstr_cat_s(jstring_t *RESTRICT this_, const size_t len, ...)
+{
+	if (unlikely(!this_->capacity))
+		return 0;
+	if (unlikely(!jstr_reserve(this_, this_->size + len + 1)))
+		return 0;
+	this_->size += len;
+	char *RESTRICT tmp = this_->data + len;
+	va_list ap;
+	va_start(ap, len);
+	for (const char *RESTRICT argv = va_arg(ap, const char *); argv; argv = va_arg(ap, const char *))
+		do {
+			*tmp++ = *argv++;
+		} while (*argv);
+	*tmp = '\0';
+	va_end(ap);
+	return 1;
+}
+
 ALWAYS_INLINE void private_jstr_append_noalloc(jstring_t *RESTRICT this_, const char *RESTRICT const other, const size_t otherlen, ...)
 {
 	memcpy(this_->data + this_->size, other, otherlen + 1);
@@ -74,6 +93,13 @@ ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT this_, const char *RES
 		return 0;
 	private_jstr_append_noalloc(this_, other, otherlen);
 	return 1;
+}
+
+ALWAYS_INLINE int private_jstr_append_s(jstring_t *RESTRICT this_, const char *RESTRICT const other_, const size_t otherlen, ...)
+{
+	if (unlikely(!this_->capacity))
+		return 0;
+	return jstr_append(this_, other_, otherlen);
 }
 
 ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT this_, const size_t otherlen, const char *RESTRICT const other, ...)
@@ -214,6 +240,13 @@ ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT this_, const size_t cap)
 	return 1;
 }
 
+ALWAYS_INLINE int jstr_reserve_s(jstring_t *RESTRICT this_, const size_t cap)
+{
+	if (unlikely(!this_->capacity))
+		return 0;
+	return jstr_reserve(this_, cap);
+}
+
 ALWAYS_INLINE int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_)
 {
 	char *RESTRICT tmp;
@@ -282,9 +315,23 @@ ALWAYS_INLINE int jstr_push_back(jstring_t *RESTRICT this_, const char c)
 	return 1;
 }
 
+ALWAYS_INLINE int jstr_push_back_s(jstring_t *RESTRICT this_, const char c)
+{
+	if (unlikely(!this_->capacity))
+		return 0;
+	return jstr_push_back(this_, c);
+}
+
 ALWAYS_INLINE void jstr_pop_back(jstring_t *RESTRICT this_)
 {
 	this_->data[--this_->size] = '\0';
+}
+
+ALWAYS_INLINE void jstr_pop_back_s(jstring_t *RESTRICT this_)
+{
+	if (unlikely(!this_->size))
+		return;
+	jstr_pop_back(this_);
 }
 
 ALWAYS_INLINE void jstr_push_front_noalloc(jstring_t *RESTRICT this_, const char c)
@@ -309,8 +356,22 @@ ALWAYS_INLINE int jstr_push_front(jstring_t *RESTRICT this_, const char c)
 	return 1;
 }
 
+ALWAYS_INLINE int jstr_push_front_s(jstring_t *RESTRICT this_, const char c)
+{
+	if (unlikely(!this_->capacity))
+		return 0;
+	return jstr_push_front(this_, c);
+}
+
 ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_)
 {
+	memmove(this_->data, this_->data + 1, this_->size--);
+}
+
+ALWAYS_INLINE void jstr_pop_front_s(jstring_t *RESTRICT this_)
+{
+	if (unlikely(!this_->size))
+		return;
 	memmove(this_->data, this_->data + 1, this_->size--);
 }
 
@@ -357,6 +418,13 @@ ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT this_)
 	return 1;
 }
 
+ALWAYS_INLINE int jstr_rev_dup_s(jstring_t *RESTRICT this_)
+{
+	if (unlikely(!this_->size))
+		return 0;
+	return jstr_rev_dup(this_);
+}
+
 ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c)
 {
 	return memchr(this_->data, c, this_->size);
@@ -364,8 +432,6 @@ ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c)
 
 ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_)
 {
-	if (unlikely(!this_->size))
-		return 0;
 	other_->data = malloc(this_->capacity);
 	if (unlikely(!other_))
 		return 0;
@@ -375,10 +441,16 @@ ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_
 	return 1;
 }
 
+ALWAYS_INLINE int jstr_dup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_)
+{
+	if (unlikely(!this_->size))
+		return 0;
+	return jstr_dup(this_, other_);
+}
+
 ALWAYS_INLINE int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_, const size_t n)
 {
-	if (unlikely(!this_->size
-	| (n > this_->size)))
+	if (n > this_->size)
 		return 0;
 	other_->data = malloc(n + 1);
 	if (unlikely(!other_))
@@ -388,4 +460,11 @@ ALWAYS_INLINE int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other
 	other_->capacity = n + 1;
 	other_->size = n;
 	return 1;
+}
+
+ALWAYS_INLINE int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_, const size_t n)
+{
+	if (unlikely(!this_->size))
+		return 0;
+	return jstr_ndup(this_, other_, n);
 }
