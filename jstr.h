@@ -1,15 +1,8 @@
 #ifndef JSTR_H_DEF__
 #define JSTR_H_DEF__
 
-#define JSTR_RELEASE
 #define JSTR_ALIGN_POWER_OF_TWO
 #define JSTR_64_BIT
-
-#ifdef JSTR_RELEASE
-#	undef JSTR_DEBUG
-#else
-#	define JSTR_DEBUG
-#endif // JSTR_RELEASE
 
 #include <sys/cdefs.h>
 #include <stddef.h>
@@ -77,10 +70,12 @@ void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src
 int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src) JSTR_WARN_UNUSED;
 int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JSTR_WARN_UNUSED;
 
-/* returns 0 if equals */
+/* if equals returns 0 */
 int jstr_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_WARN_UNUSED;
 
+/* strrchr that starts from end of string */
 char *jstr_rchr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
+/* memchr */
 char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 
 int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
@@ -92,6 +87,7 @@ int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr, const
 void jstr_rev(jstring_t *RESTRICT this_);
 
 int jstr_rev_dup(jstring_t *RESTRICT this_) JSTR_WARN_UNUSED;
+/* asserts that string fits in a stack array */
 void jstr_rev_dupa(jstring_t *RESTRICT this_);
 int jstr_rev_dup_s(jstring_t *RESTRICT this_) JSTR_WARN_UNUSED;
 
