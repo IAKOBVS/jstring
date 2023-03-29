@@ -375,7 +375,7 @@ ALWAYS_INLINE void jstr_pop_front_s(jstring_t *RESTRICT this_)
 	memmove(this_->data, this_->data + 1, this_->size--);
 }
 
-ALWAYS_INLINE CONST char *jstr_rchr(jstring_t *RESTRICT this_, int c)
+ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_, int c)
 {
 	const char *const begin = this_->data;
 	char *RESTRICT end = this_->data + this_->size - 1;
