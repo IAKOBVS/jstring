@@ -322,16 +322,6 @@ ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_, int c)
 	return NULL;
 }
 
-ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c)
-{
-	char *RESTRICT begin = this_->data;
-	const char *const end = this_->data + this_->size - 1;
-	while (begin != end)
-		if (*begin == c)
-			return begin;
-	return NULL;
-}
-
 ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_)
 {
 	if (unlikely(!this_->capacity))
