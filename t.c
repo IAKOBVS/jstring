@@ -18,9 +18,14 @@
 /* 	return 1; */
 /* } */
 
-#define ADD(a, b) __attribute__((warn_unused_result)) (a + b)
-
+#define __jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
+#define __jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
 
 int main()
 {
+	jstring_t s;
+	s.data = "hello";
+	__jstr_cbegin(&s) += 1;
+	puts(s.data);
+	int *x;
 }
