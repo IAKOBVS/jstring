@@ -75,6 +75,7 @@ int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JS
 int jstr_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_WARN_UNUSED;
 
 char *jstr_rchr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
+char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 
 int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
 

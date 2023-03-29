@@ -322,6 +322,11 @@ ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_, int c)
 	return NULL;
 }
 
+ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c)
+{
+	return memchr(this_->data, c, this_->size);
+}
+
 ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_)
 {
 	if (unlikely(!this_->capacity))
