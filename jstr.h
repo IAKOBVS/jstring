@@ -5,7 +5,7 @@
 #define JSTR_64_BIT
 
 #include <sys/cdefs.h>
-#include <stddef.h>
+#include <stdlib.h>
 #include "macros.h"
 #include "/home/james/c/pp_macros/pp_va_args_macros.h"
 
