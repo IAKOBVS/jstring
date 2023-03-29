@@ -316,7 +316,7 @@ ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_, int c)
 {
 	const char *const begin = this_->data;
 	char *RESTRICT end = this_->data + this_->size - 1;
-	while (end != begin)
+	for ( ; end != begin; --end)
 		if (*end == c)
 			return end;
 	return NULL;
