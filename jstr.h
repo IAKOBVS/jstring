@@ -79,6 +79,8 @@ char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 
 int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
 
+void jstr_rev(jstring_t *RESTRICT this_);
+
 #ifdef JSTR_HAS_GENERIC
 #	define jstr_replace(dest, ...) _Generic((PP_NARG(__VA_ARGS__)),                                                    \
 		jstring_t *: jstr_replace_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                              \
