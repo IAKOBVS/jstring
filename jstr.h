@@ -68,6 +68,11 @@ void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, con
 /* compares two Jstr, and if equal, returns 0 */
 int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src) JSTR_WARN_UNUSED;
 
+char *jstr_chr(jstring_t *RESTRICT this_jstr, int c) JSTR_WARN_UNUSED;
+char *jstr_rchr(jstring_t *RESTRICT this_jstr, int c) JSTR_WARN_UNUSED;
+
+int jstr_dup(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
+
 #define jstr_cat(this_jstr, ...)                                                       \
 	generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
@@ -154,6 +159,8 @@ int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src) JSTR_WARN_U
 
 #define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
 #define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
+
+#define jstr_typeof_data char *
 
 #define jstr_foreach_index(elem, jstr)                        \
 	for (size_t i = 0, end__ = jstr.size; i < end__; ++i)

@@ -289,3 +289,36 @@ ALWAYS_INLINE void jstr_pop_front(jstring_t *RESTRICT this_jstr)
 {
 	memmove(this_jstr->data, this_jstr->data + 1, this_jstr->size--);
 }
+
+ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_jstr, int c)
+{
+	const char *const begin = this_jstr->data;
+	char *RESTRICT end = this_jstr->data + this_jstr->size - 1;
+	while (end != begin)
+		if (*end == c)
+			return end;
+	return NULL;
+}
+
+ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_jstr, int c)
+{
+	char *RESTRICT begin = this_jstr->data;
+	const char *const end = this_jstr->data + this_jstr->size - 1;
+	while (begin != end)
+		if (*begin == c)
+			return begin;
+	return NULL;
+}
+
+ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT other_jstr)
+{
+	if (unlikely(!this_jstr->capacity))
+		return 0;
+	other_jstr->data = malloc(this_jstr->size);
+	if (unlikely(!other_jstr))
+		return 0;
+	memcpy(other_jstr->data, this_jstr->data, this_jstr->size + 1);
+	other_jstr->capacity = this_jstr->capacity;
+	other_jstr->size = this_jstr->size;
+	return 1;
+}
