@@ -364,7 +364,7 @@ ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c)
 
 ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_)
 {
-	if (unlikely(!this_->capacity))
+	if (unlikely(!this_->size))
 		return 0;
 	other_->data = malloc(this_->capacity);
 	if (unlikely(!other_))
@@ -372,5 +372,20 @@ ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_
 	memcpy(other_->data, this_->data, this_->size + 1);
 	other_->capacity = this_->capacity;
 	other_->size = this_->size;
+	return 1;
+}
+
+ALWAYS_INLINE int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_, const size_t n)
+{
+	if (unlikely(!this_->size
+	| (n > this_->size)))
+		return 0;
+	other_->data = malloc(n + 1);
+	if (unlikely(!other_))
+		return 0;
+	memcpy(other_->data, this_->data, n);
+	*(other_->data + n) = '\0';
+	other_->capacity = n + 1;
+	other_->size = n;
 	return 1;
 }
