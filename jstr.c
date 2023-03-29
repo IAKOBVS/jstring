@@ -6,7 +6,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <alloca.h>
+
+#define JSTR_MAX_STACK 2048
 
 ALWAYS_INLINE void jstr_init(jstring_t *RESTRICT this_)
 {
@@ -334,13 +335,26 @@ ALWAYS_INLINE void jstr_rev(jstring_t *RESTRICT this_)
 	}
 }
 
-ALWAYS_INLINE void jstr_rev_dup(jstring_t *RESTRICT this_)
+ALWAYS_INLINE void jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf)
 {
-	char s[this_->size + 1];
-	char *RESTRICT begin = s;
-	memcpy(s, this_->data, this_->size + 1);
+	memcpy(buf, this_->data, this_->size + 1);
 	char *RESTRICT end = this_->data + this_->size - 1;
-	while ((*end-- = *begin++));
+	while ((*end-- = *buf++));
+}
+
+ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT this_)
+{
+	if (this_->size < JSTR_MAX_STACK) {
+		char s[this_->size + 1];
+		jstr_rev_noalloc(this_, s);
+	} else {
+		char *s = malloc(this_->size + 1);
+		if (unlikely(!s))
+			return 0;
+		jstr_rev_noalloc(this_, s);
+		free(s);
+	}
+	return 1;
 }
 
 ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c)
