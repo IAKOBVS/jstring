@@ -189,7 +189,7 @@ ALWAYS_INLINE int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t 
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT other, const size_t srclen, ...)
+ALWAYS_INLINE int private_jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT other, const size_t srclen, ...)
 {
 	if (dest->capacity < srclen)
 		return jstr_replace_nocheck(dest, other, srclen);
@@ -197,7 +197,7 @@ ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT other, c
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src)
+ALWAYS_INLINE int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...)
 {
 	if (dest->capacity < src->capacity)
 		return jstr_replace_nocheck(dest, src->data, src->capacity);

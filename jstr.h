@@ -63,12 +63,12 @@ int jstr_reserve(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED;
 int jstr_reserve_nocheck(jstring_t *RESTRICT this_, const size_t cap, ...) JSTR_WARN_UNUSED;
 
 /* replaces this_->data with this_ and reallocs if needed */
-int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
-void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...);
-int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
+int private_jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
+void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen);
+int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen) JSTR_WARN_UNUSED;
 
-void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...);
-int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JSTR_WARN_UNUSED;
+void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
+int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src) JSTR_WARN_UNUSED;
 int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JSTR_WARN_UNUSED;
 
 /* compares two Jstr, and if equal, returns 0 */
@@ -83,9 +83,12 @@ int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr) JSTR_WAR
 #	define jstr_replace(dest, ...) _Generic((PP_NARG(__VA_ARGS__)),                                                    \
 		jstring_t *: jstr_replace_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                              \
 		char *: (PP_NARG(__VA_ARGS__) == 2)                                                                        \
-			? jstr_replace(dest, (char *)__VA_ARGS__, 0)                                                       \
-			: jstr_replace(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__))) \
+			? private_jstr_replace(dest, (char *)__VA_ARGS__, 0)                                                       \
+			: private_jstr_replace(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__))) \
 	)
+#else
+#	define jstr_replace(dest, src, srclen)          \
+		private_jstr_replace(dest, src, srclen)
 #endif // JSTR_HAS_GENERIC
 
 #ifdef JSTR_HAS_GENERIC
