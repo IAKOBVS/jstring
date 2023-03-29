@@ -92,6 +92,7 @@ int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr, const
 void jstr_rev(jstring_t *RESTRICT this_);
 
 int jstr_rev_dup(jstring_t *RESTRICT this_) JSTR_WARN_UNUSED;
+void jstr_rev_dupa(jstring_t *RESTRICT this_);
 int jstr_rev_dup_s(jstring_t *RESTRICT this_) JSTR_WARN_UNUSED;
 
 void jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf);
@@ -124,7 +125,7 @@ void jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf);
 #else
 #	define jstr_cat(this_jstr, ...)                                                          \
 		private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
-#	define jstr_cat_j(this_jstr, ...)                                                          \
+#	define jstr_cat_s(this_jstr, ...)                                                          \
 		private_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 #endif // JSTR_HAS_GENERIC
 

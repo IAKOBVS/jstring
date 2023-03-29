@@ -418,6 +418,12 @@ ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT this_)
 	return 1;
 }
 
+ALWAYS_INLINE void jstr_rev_dupa(jstring_t *RESTRICT this_)
+{
+	char s[this_->size + 1];
+	jstr_rev_noalloc(this_, s);
+}
+
 ALWAYS_INLINE int jstr_rev_dup_s(jstring_t *RESTRICT this_)
 {
 	if (unlikely(!this_->size))
