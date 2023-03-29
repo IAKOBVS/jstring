@@ -80,11 +80,11 @@ char *jstr_rchr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
 
 #ifdef JSTR_HAS_GENERIC
-#	define jstr_replace(this_jstr, ...) _Generic((PP_NARG(__VA_ARGS__)),                                                    \
-		jstring_t *: jstr_replace_jstr(this_jstr, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                              \
-		char *: (PP_NARG(__VA_ARGS__) == 2)                                                                             \
-			? jstr_replace(this_jstr, (char *)__VA_ARGS__, 0)                                                       \
-			: jstr_replace(this_jstr, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__))) \
+#	define jstr_replace(dest, ...) _Generic((PP_NARG(__VA_ARGS__)),                                                    \
+		jstring_t *: jstr_replace_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                              \
+		char *: (PP_NARG(__VA_ARGS__) == 2)                                                                        \
+			? jstr_replace(dest, (char *)__VA_ARGS__, 0)                                                       \
+			: jstr_replace(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__))) \
 	)
 #endif // JSTR_HAS_GENERIC
 
@@ -158,10 +158,6 @@ int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr) JSTR_WAR
 #define jstr_reserve_16x(this_jstr) private_jstr_reserve_x(this_jstr, 16)
 #define jstr_reserve_32x(this_jstr) private_jstr_reserve_x(this_jstr, 32)
 #define jstr_reserve_64x(this_jstr) private_jstr_reserve_x(this_jstr, 64)
-
-#define jstr_replace_auto(this_jstr, other_) jstr_replace(this_jstr, other_, strlen(other_))
-
-#define jstr_replace_noalloc_auto(this_jstr, other_) jstr_replace(this_jstr, other_, strlen(other_))
 
 #define jstr_foreach(elem, jstr)                   \
 	for (char *elem = jstr.data; elem; ++elem)
