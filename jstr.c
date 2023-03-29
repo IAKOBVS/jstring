@@ -464,7 +464,15 @@ ALWAYS_INLINE int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other
 
 ALWAYS_INLINE int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_, const size_t n)
 {
-	if (unlikely(!this_->size))
+	if (!this_->size
+	| (n > this_->size))
 		return 0;
-	return jstr_ndup(this_, other_, n);
+	other_->data = malloc(n + 1);
+	if (unlikely(!other_))
+		return 0;
+	memcpy(other_->data, this_->data, n);
+	*(other_->data + n) = '\0';
+	other_->capacity = n + 1;
+	other_->size = n;
+	return 1;
 }
