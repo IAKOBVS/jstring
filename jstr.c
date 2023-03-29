@@ -342,7 +342,7 @@ ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_
 {
 	if (unlikely(!this_->capacity))
 		return 0;
-	other_->data = malloc(this_->size);
+	other_->data = malloc(this_->capacity);
 	if (unlikely(!other_))
 		return 0;
 	memcpy(other_->data, this_->data, this_->size + 1);
