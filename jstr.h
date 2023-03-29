@@ -78,15 +78,16 @@ char *jstr_rchr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 
 int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
+int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr, const size_t n) JSTR_WARN_UNUSED;
 
 void jstr_rev(jstring_t *RESTRICT this_);
 int jstr_rev_dup(jstring_t *RESTRICT this_) JSTR_WARN_UNUSED;
 void jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf);
 
 #ifdef JSTR_HAS_GENERIC
-#	define jstr_replace(dest, ...) _Generic((PP_NARG(__VA_ARGS__)),                                                    \
-		jstring_t *: jstr_replace_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                              \
-		char *: (PP_NARG(__VA_ARGS__) == 2)                                                                        \
+#	define jstr_replace(dest, ...) _Generic((PP_NARG(__VA_ARGS__)),                                                            \
+		jstring_t *: jstr_replace_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                                      \
+		char *: (PP_NARG(__VA_ARGS__) == 2)                                                                                \
 			? private_jstr_replace(dest, (char *)__VA_ARGS__, 0)                                                       \
 			: private_jstr_replace(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__))) \
 	)
