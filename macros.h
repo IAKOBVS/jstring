@@ -165,28 +165,19 @@
 
 #if defined(__GNUC__) || defined(__clang__)
 #	ifdef JSTR_HAS_GENERIC
-#		define JSTR_GENERIC_CASE_SIZE(expr)        \
-			int: expr,                         \
-			unsigned int: expr,                \
-			size_t: expr,                      \
-			long: expr,                        \
-			long long: expr,                   \
-			unsigned long long: expr,          \
-						           \
-			const int: expr,                   \
-			const unsigned int: expr,          \
-			const size_t: expr,                \
-			const long: expr,                  \
-			const long long: expr,             \
-			const unsigned long long: expr
+#		define JSTR_GENERIC_CASE_SIZE(expr) \
+			int: expr,                  \
+			unsigned int: expr,         \
+			size_t: expr,               \
+			long: expr,                 \
+			long long: expr,            \
+			unsigned long long: expr    \
 
 #		define JSTR_GENERIC_CASE_STR(expr) \
-			char *: expr,              \
-			const char *: expr
+			char *: expr               \
 
 #		define JSTR_GENERIC_CASE_CHAR(expr) \
-			char: expr,                 \
-			const char: expr
+			char: expr                  \
 
 #		define JSTR_IS_SIZE(expr) _Generic((expr), \
 			JSTR_GENERIC_CASE_SIZE(1),         \
