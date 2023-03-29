@@ -152,6 +152,9 @@ int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src) JSTR_WARN_U
 #define jstr_begin(this_jstr) ((this_jstr)->data)
 #define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))
 
+#define jstr_cbegin(this_jstr) (const char *)((this_jstr)->data)
+#define jstr_cend(this_jstr) (const char *)(((this_jstr)->data) + ((this_jstr)->size))
+
 #define jstr_foreach_index(elem, jstr)                        \
 	for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
 
