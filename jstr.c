@@ -161,47 +161,47 @@ ALWAYS_INLINE int jstr_case_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT o
 	return (this_->size != other->size) ? 1 : jstr_case_cmp_nocheck(this_, other);
 }
 
-ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT this_, char *RESTRICT other, const size_t otherlen)
+ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT other, const size_t srclen)
 {
-	memcpy(this_->data, other, otherlen + 1);
-	this_->size = otherlen;
+	memcpy(dest->data, other, srclen + 1);
+	dest->size = srclen;
 }
 
-ALWAYS_INLINE void jstr_replace_jstr_noalloc(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_)
+ALWAYS_INLINE void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src)
 {
-	memcpy(this_->data, other_->data, other_->size);
-	this_->size = other_->size;
+	memcpy(dest->data, src->data, src->size);
+	dest->size = src->size;
 }
 
-ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT this_, char *RESTRICT other, const size_t otherlen)
+ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT other, const size_t srclen)
 {
-	if (unlikely(!jstr_reserve_nocheck(this_, otherlen + 1)))
+	if (unlikely(!jstr_reserve_nocheck(dest, srclen + 1)))
 		return 0;
-	jstr_replace_noalloc(this_, other, otherlen);
+	jstr_replace_noalloc(dest, other, srclen);
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_replace_jstr_nocheck(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_)
+ALWAYS_INLINE int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src)
 {
-	if (unlikely(!jstr_reserve_nocheck(this_, other_->size + 1)))
+	if (unlikely(!jstr_reserve_nocheck(dest, src->size + 1)))
 		return 0;
-	jstr_replace_jstr_noalloc(this_, other_);
+	jstr_replace_jstr_noalloc(dest, src);
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT this_, char *RESTRICT other, const size_t otherlen)
+ALWAYS_INLINE int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT other, const size_t srclen, ...)
 {
-	if (this_->capacity < otherlen)
-		return jstr_replace_nocheck(this_, other, otherlen);
-	jstr_replace_noalloc(this_, other, otherlen);
+	if (dest->capacity < srclen)
+		return jstr_replace_nocheck(dest, other, srclen);
+	jstr_replace_noalloc(dest, other, srclen);
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_replace_jstr(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_)
+ALWAYS_INLINE int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src)
 {
-	if (this_->capacity < other_->capacity)
-		return jstr_replace_nocheck(this_, other_->data, other_->capacity);
-	jstr_replace_jstr_noalloc(this_, other_);
+	if (dest->capacity < src->capacity)
+		return jstr_replace_nocheck(dest, src->data, src->capacity);
+	jstr_replace_jstr_noalloc(dest, src);
 	return 1;
 }
 

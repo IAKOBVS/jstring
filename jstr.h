@@ -22,75 +22,83 @@ typedef struct jstring_t {
 	char *data;
 } jstring_t;
 
-int private_jstr_cat(jstring_t *RESTRICT this_jstr, const size_t len, ...) JSTR_WARN_UNUSED;
+int private_jstr_cat(jstring_t *RESTRICT this_, const size_t len, ...) JSTR_WARN_UNUSED;
 
-void jstr_init(jstring_t *RESTRICT this_jstr);
-void jstr_delete(jstring_t *RESTRICT this_jstr);
+void jstr_init(jstring_t *RESTRICT this_);
+void jstr_delete(jstring_t *RESTRICT this_);
 
-int jstr_new_append(jstring_t *RESTRICT this_jstr, const size_t srclen, const char *RESTRICT const src, ...) JSTR_WARN_UNUSED;
-int jstr_new_alloc(jstring_t *RESTRICT this_jstr, const size_t size) JSTR_WARN_UNUSED;
+int jstr_new_append(jstring_t *RESTRICT this_, const size_t otherlen, const char *RESTRICT const other_, ...) JSTR_WARN_UNUSED;
+int jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) JSTR_WARN_UNUSED;
 
-int private_jstr_new_cat(jstring_t *RESTRICT this_jstr, const size_t arglen, ...) JSTR_WARN_UNUSED;
+int private_jstr_new_cat(jstring_t *RESTRICT this_, const size_t arglen, ...) JSTR_WARN_UNUSED;
 
-int jstr_push_back(jstring_t *this_jstr, const char c) JSTR_WARN_UNUSED;
-int jstr_push_back_nocheck(jstring_t *this_jstr, const char c) JSTR_WARN_UNUSED;
-void jstr_push_back_noalloc(jstring_t *this_jstr, const char c);
+int jstr_push_back(jstring_t *this_, const char c) JSTR_WARN_UNUSED;
+int jstr_push_back_nocheck(jstring_t *this_, const char c) JSTR_WARN_UNUSED;
+void jstr_push_back_noalloc(jstring_t *this_, const char c);
 
-void jstr_push_front_noalloc(jstring_t *RESTRICT this_jstr, const char c);
-int jstr_push_front_nocheck(jstring_t *RESTRICT this_jstr, const char c) JSTR_WARN_UNUSED;
-int jstr_push_front(jstring_t *RESTRICT this_jstr, const char c) JSTR_WARN_UNUSED;
+void jstr_push_front_noalloc(jstring_t *RESTRICT this_, const char c);
+int jstr_push_front_nocheck(jstring_t *RESTRICT this_, const char c) JSTR_WARN_UNUSED;
+int jstr_push_front(jstring_t *RESTRICT this_, const char c) JSTR_WARN_UNUSED;
 
-void jstr_pop_back(jstring_t *RESTRICT this_jstr);
-void jstr_pop_front(jstring_t *RESTRICT this_jstr);
+void jstr_pop_back(jstring_t *RESTRICT this_);
+void jstr_pop_front(jstring_t *RESTRICT this_);
 
-int private_jstr_append(jstring_t *this_jstr, const char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
-void private_jstr_append_noalloc(jstring_t *this_jstr, const char *RESTRICT src, const size_t srclen, ...);
+int private_jstr_append(jstring_t *this_, const char *RESTRICT other_, const size_t otherlen, ...) JSTR_WARN_UNUSED;
+void private_jstr_append_noalloc(jstring_t *this_, const char *RESTRICT other_, const size_t otherlen, ...);
 
-/* swaps this_jstr with src and updates the jstring_t struct members */
-void jstr_swap(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src);
-void jstr_swap_str(jstring_t *RESTRICT this_jstr, char **RESTRICT src, size_t *srclen, size_t *src_cap);
+/* swaps this_ with other and updates the jstring_t struct members */
+void jstr_swap(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_);
+void jstr_swap_str(jstring_t *RESTRICT this_, char **RESTRICT other_, size_t *otherlen, size_t *other_cap);
 
-int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_jstr) JSTR_WARN_UNUSED;
-int jstr_shrink_to_fit(jstring_t *RESTRICT this_jstr) JSTR_WARN_UNUSED;
+int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_) JSTR_WARN_UNUSED;
+int jstr_shrink_to_fit(jstring_t *RESTRICT this_) JSTR_WARN_UNUSED;
 
-int jstr_shrink_to_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap) JSTR_WARN_UNUSED;
-int jstr_shrink_to(jstring_t *RESTRICT this_jstr, const size_t cap) JSTR_WARN_UNUSED;
+int jstr_shrink_to_nocheck(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED;
+int jstr_shrink_to(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED;
 
-void jstr_shrink_to_size_nocheck(jstring_t *RESTRICT this_jstr, const size_t size);
-void jstr_shrink_to_size(jstring_t *RESTRICT this_jstr, const size_t size);
+void jstr_shrink_to_size_nocheck(jstring_t *RESTRICT this_, const size_t size);
+void jstr_shrink_to_size(jstring_t *RESTRICT this_, const size_t size);
 
-int jstr_reserve(jstring_t *RESTRICT this_jstr, const size_t cap) JSTR_WARN_UNUSED;
-int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap, ...) JSTR_WARN_UNUSED;
+int jstr_reserve(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED;
+int jstr_reserve_nocheck(jstring_t *RESTRICT this_, const size_t cap, ...) JSTR_WARN_UNUSED;
 
-/* replaces this_jstr->data with this_jstr and reallocs if needed */
-int jstr_replace(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t srclen) JSTR_WARN_UNUSED;
-void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t srclen);
-int jstr_replace_nocheck(jstring_t *RESTRICT this_, char *RESTRICT other, const size_t otherlen) JSTR_WARN_UNUSED;
+/* replaces this_->data with this_ and reallocs if needed */
+int jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
+void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...);
+int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
 
-void jstr_replace_jstr_noalloc(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_);
-int jstr_replace_jstr_nocheck(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_WARN_UNUSED;
-int jstr_replace_jstr(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_WARN_UNUSED;
+void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...);
+int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JSTR_WARN_UNUSED;
+int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JSTR_WARN_UNUSED;
 
 /* compares two Jstr, and if equal, returns 0 */
-int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src) JSTR_WARN_UNUSED;
+int jstr_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_WARN_UNUSED;
 
-char *jstr_chr(jstring_t *RESTRICT this_jstr, int c) JSTR_WARN_UNUSED;
-char *jstr_rchr(jstring_t *RESTRICT this_jstr, int c) JSTR_WARN_UNUSED;
+char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
+char *jstr_rchr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 
-int jstr_dup(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
+int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
 
-#define jstr_replace_(this_jstr, ...) _Generic((PP_NARG(__VA_ARGS__)),                     \
-	jstring_t *: jstr_replace_jstr(this_jstr, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)), \
-	char *: jstr_replace(this_jstr, (char *)__VA_ARGS__)                               \
-)
+#ifdef JSTR_HAS_GENERIC
+#	define jstr_replace(this_jstr, ...) _Generic((PP_NARG(__VA_ARGS__)),                                                    \
+		jstring_t *: jstr_replace_jstr(this_jstr, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                              \
+		char *: (PP_NARG(__VA_ARGS__) == 2)                                                                             \
+			? jstr_replace(this_jstr, (char *)__VA_ARGS__, 0)                                                       \
+			: jstr_replace(this_jstr, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__))) \
+	)
+#endif // JSTR_HAS_GENERIC
 
-#define jstr_cat(this_jstr, ...)                                                       \
-	generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
-
-#define generic_jstr_cat(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
-	void *: jstr_append(this_jstr, arg1, len),                                        \
-	char *: private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__)                       \
-)
+#ifdef JSTR_HAS_GENERIC
+#	define jstr_cat(this_jstr, ...)                                                          \
+		generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+#	define generic_jstr_cat(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
+		void *: jstr_append(this_jstr, arg1, len),                                       \
+		char *: private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__)                      \
+	)
+#else
+#	define jstr_cat(this_jstr, ...)                                                          \
+		private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+#endif // JSTR_HAS_GENERIC
 
 #define jstr_new_cat(this_jstr, ...) private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
@@ -132,20 +140,13 @@ int jstr_dup(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT other_jstr) JSTR
 		JSTR_GENERIC_CASE_SIZE(jstr_reserve_nocheck(this_jstr, ((this_jstr)->capacity) + (size_t)PP_FIRST_ARG(__VA_ARGS__))), \
 		JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, (char *)__VA_ARGS__))                                                    \
 	)
-#endif
+#endif // JSTR_HAS_GENERIC
 
 #define jstr_append(this_jstr, ...)                                                                            \
 (                                                                                                              \
 	PP_NARG(__VA_ARGS__) == 2                                                                              \
 		? private_jstr_append(this_jstr, __VA_ARGS__, 0)                                               \
 		: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
-)
-
-#define jstr_append_noalloc(this_jstr, ...)                                                                            \
-(                                                                                                                      \
-	PP_NARG(__VA_ARGS__) == 2                                                                                      \
-		? private_jstr_append_noalloc(this_jstr, __VA_ARGS__, 0)                                               \
-		: private_jstr_append_noalloc(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
 )
 
 #define private_jstr_reserve_x(this_jstr, multiplier)                                   \
@@ -158,9 +159,9 @@ int jstr_dup(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT other_jstr) JSTR
 #define jstr_reserve_32x(this_jstr) private_jstr_reserve_x(this_jstr, 32)
 #define jstr_reserve_64x(this_jstr) private_jstr_reserve_x(this_jstr, 64)
 
-#define jstr_replace_auto(this_jstr, src) jstr_replace(this_jstr, src, strlen(src))
+#define jstr_replace_auto(this_jstr, other_) jstr_replace(this_jstr, other_, strlen(other_))
 
-#define jstr_replace_noalloc_auto(this_jstr, src) jstr_replace(this_jstr, src, strlen(src))
+#define jstr_replace_noalloc_auto(this_jstr, other_) jstr_replace(this_jstr, other_, strlen(other_))
 
 #define jstr_foreach(elem, jstr)                   \
 	for (char *elem = jstr.data; elem; ++elem)
