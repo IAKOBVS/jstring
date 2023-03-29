@@ -65,6 +65,12 @@ int jstr_reserve_nocheck(jstring_t *RESTRICT this_jstr, const size_t cap, ...) J
 /* replaces this_jstr->data with this_jstr and reallocs if needed */
 int jstr_replace(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t srclen) JSTR_WARN_UNUSED;
 void jstr_replace_noalloc(jstring_t *RESTRICT this_jstr, char *RESTRICT src, const size_t srclen);
+int jstr_replace_nocheck(jstring_t *RESTRICT this_, char *RESTRICT other, const size_t otherlen) JSTR_WARN_UNUSED;
+
+void jstr_replace_jstr_noalloc(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_);
+int jstr_replace_jstr_nocheck(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_WARN_UNUSED;
+int jstr_replace_jstr(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_WARN_UNUSED;
+
 /* compares two Jstr, and if equal, returns 0 */
 int jstr_cmp(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT src) JSTR_WARN_UNUSED;
 
@@ -72,6 +78,11 @@ char *jstr_chr(jstring_t *RESTRICT this_jstr, int c) JSTR_WARN_UNUSED;
 char *jstr_rchr(jstring_t *RESTRICT this_jstr, int c) JSTR_WARN_UNUSED;
 
 int jstr_dup(jstring_t *RESTRICT this_jstr, jstring_t *RESTRICT other_jstr) JSTR_WARN_UNUSED;
+
+#define jstr_replace_(this_jstr, ...) _Generic((PP_NARG(__VA_ARGS__)),                     \
+	jstring_t *: jstr_replace_jstr(this_jstr, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)), \
+	char *: jstr_replace(this_jstr, (char *)__VA_ARGS__)                               \
+)
 
 #define jstr_cat(this_jstr, ...)                                                       \
 	generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
