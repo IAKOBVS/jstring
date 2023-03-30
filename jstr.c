@@ -438,7 +438,7 @@ ALWAYS_INLINE void jstr_rev(jstring_t *RESTRICT this_)
 	}
 }
 
-ALWAYS_INLINE void jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf)
+ALWAYS_INLINE void private_jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf)
 {
 	memcpy(buf, this_->data, this_->size + 1);
 	char *RESTRICT end = this_->data + this_->size - 1;
@@ -449,12 +449,12 @@ ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT this_)
 {
 	if (this_->size < JSTR_MAX_STACK) {
 		char s[this_->size + 1];
-		jstr_rev_noalloc(this_, s);
+		private_jstr_rev_noalloc(this_, s);
 	} else {
 		char *s = malloc(this_->size + 1);
 		if (unlikely(!s))
 			return 0;
-		jstr_rev_noalloc(this_, s);
+		private_jstr_rev_noalloc(this_, s);
 		free(s);
 	}
 	return 1;
@@ -463,7 +463,7 @@ ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT this_)
 ALWAYS_INLINE void jstr_rev_dupa(jstring_t *RESTRICT this_)
 {
 	char s[this_->size + 1];
-	jstr_rev_noalloc(this_, s);
+	private_jstr_rev_noalloc(this_, s);
 }
 
 ALWAYS_INLINE int jstr_rev_dup_s(jstring_t *RESTRICT this_)
