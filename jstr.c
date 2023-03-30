@@ -32,7 +32,7 @@ ALWAYS_INLINE int jstr_reserve_nocheck_exact(jstring_t *RESTRICT this_, const si
 
 ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_, const size_t cap, ...) JSTR_NOEXCEPT__
 {
-	size_t tmp_cap = this_->capacity * 2;
+	size_t tmp_cap = this_->capacity * JSTR_MULTIPLIER;
 	while (tmp_cap < cap)
 		tmp_cap *= 2;
 	char *RESTRICT tmp;
@@ -318,7 +318,7 @@ ALWAYS_INLINE void jstr_push_back_noalloc(jstring_t *RESTRICT this_, const char 
 
 ALWAYS_INLINE int jstr_push_back_nocheck(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
-	if (unlikely(!jstr_reserve_nocheck(this_, this_->size * 2)))
+	if (unlikely(!jstr_reserve_nocheck(this_, this_->size * JSTR_MULTIPLIER)))
 		return 0;
 	jstr_push_back_noalloc(this_, c);
 	return 1;
@@ -359,7 +359,7 @@ ALWAYS_INLINE void jstr_push_front_noalloc(jstring_t *RESTRICT this_, const char
 
 ALWAYS_INLINE int jstr_push_front_nocheck(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
-	if (unlikely(!jstr_reserve_nocheck(this_, this_->size * 2)))
+	if (unlikely(!jstr_reserve_nocheck(this_, this_->size * JSTR_MULTIPLIER)))
 		return 0;
 	jstr_push_front_noalloc(this_, c);
 	return 1;

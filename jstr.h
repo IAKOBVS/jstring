@@ -36,137 +36,9 @@ extern "C" {
 #endif // __cplusplus
 
 #define JSTR_MIN_CAP 8
+#define JSTR_MULTIPLIER 2
 
-typedef struct jstring_t {
-#ifndef __cplusplus
-	size_t size; 
-	size_t capacity;
-	char *data;
-#elif defined(__cplusplus)
-	std::size_t size;
-	std::size_t capacity;
-	char *data;
-	ALWAYS_INLINE jstring_t() JSTR_NOEXCEPT__
-	{
-		this->size = 0;
-		this->capacity = 0;
-		this->data = nullptr;
-	}
-
-	ALWAYS_INLINE ~jstring_t() JSTR_NOEXCEPT__
-	{
-		free(this->data);
-		this->data = nullptr;
-		this->capacity = 0;
-		this->size = 0;
-	}
-
-	ALWAYS_INLINE jstring_t(const char *RESTRICT s) JSTR_NOEXCEPT__
-	{
-		this->size = std::strlen(s);
-		this->capacity = MAX(JSTR_NEXT_POW2(this->size), JSTR_MIN_CAP);
-		this->data = (char *)std::malloc(this->capacity);
-		if (unlikely(!this->data)) {
-			this->capacity = 0;
-			return;
-		}
-		std::memcpy(this->data, s, this->size + 1);
-	}
-
-	template <std::size_t N>
-	ALWAYS_INLINE jstring_t(const char (&s)[N])
-	{
-		this->capacity = MAX(JSTR_NEXT_POW2(N - 1), JSTR_MIN_CAP);
-		this->data = (char *)std::malloc(this->capacity);
-		if (unlikely(!this->data)) {
-			this->capacity = 0;
-			return;
-		}
-		std::memcpy(this->data, s, N);
-		this->size = N;
-	}
-
-	ALWAYS_INLINE jstring_t(const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
-	{
-		this->capacity = MAX(JSTR_NEXT_POW2(slen), JSTR_MIN_CAP);
-		this->data = (char *)std::malloc(this->capacity);
-		if (unlikely(!this->data)) {
-			this->capacity = 0;
-			return;
-		}
-		std::memcpy(this->data, s, slen + 1);
-		this->size = slen;
-	}
-
-	ALWAYS_INLINE jstring_t(const std::size_t cap) JSTR_NOEXCEPT__
-	{
-		this->size = 0;
-		this->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
-		this->data = (char *)std::malloc(this->capacity);
-		if (unlikely(!this->data)) {
-			this->capacity = 0;
-			return;
-		}
-	}
-
-	ALWAYS_INLINE jstring_t(const std::size_t cap, const char *RESTRICT s) JSTR_NOEXCEPT__
-	{
-		this->size = std::strlen(s);
-		this->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
-		this->data = (char *)std::malloc(this->capacity);
-		if (unlikely(!this->data)) {
-			this->capacity = 0;
-			return;
-		}
-		std::memcpy(this->data, s, this->size + 1);
-	}
-
-	ALWAYS_INLINE jstring_t(const std::size_t cap, const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
-	{
-		this->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
-		this->data = (char *)std::malloc(this->capacity);
-		if (unlikely(!this->data)) {
-			this->capacity = 0;
-			this->size = 0;
-			return;
-		}
-		std::memcpy(this->data, s, slen + 1);
-		this->size = slen;
-	}
-
-	ALWAYS_INLINE jstring_t(jstring_t *RESTRICT other) JSTR_NOEXCEPT__
-	{
-		this->capacity = MAX(JSTR_NEXT_POW2(other->size), JSTR_MIN_CAP);
-		this->data = (char *)std::malloc(this->capacity);
-		if (unlikely(!this->data)) {
-			this->capacity = 0;
-			return;
-		}
-		std::memcpy(this->data, other->data, other->size + 1);
-		this->size = other->size;
-	}
-
-	ALWAYS_INLINE CONST char *begin()
-	{
-		return (char *const)this->data;
-	}
-
-	ALWAYS_INLINE CONST char *end()
-	{
-		return (char *const)this->data + this->size;
-	}
-
-	ALWAYS_INLINE CONST const char *cbegin()
-	{
-		return (const char *const)this->data;
-	}
-
-	ALWAYS_INLINE CONST const char *cend()
-	{
-		return (const char *const)this->data + this->size;
-	}
-#endif // __cplusplus
-} jstring_t;
+typedef struct jstring_t jstring_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -177,14 +49,17 @@ int private_jstr_cat_s(jstring_t *RESTRICT this_, const size_t len, ...) JSTR_NO
 
 void jstr_delete(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__;
 
-#ifndef __cplusplus
 void jstr_init(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__;
 
-int jstr_new_append(jstring_t *RESTRICT this_, const size_t srclen, const char *RESTRICT const src_, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+#ifdef __cplusplus
+void jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__;
+void jstr_new_append(jstring_t *RESTRICT this_, const size_t srclen, const char *RESTRICT const src_, ...) JSTR_NOEXCEPT__;
+void private_jstr_new_cat(jstring_t *RESTRICT this_, const size_t arglen, ...) JSTR_NOEXCEPT__;
+#else
 int jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
-
+int jstr_new_append(jstring_t *RESTRICT this_, const size_t srclen, const char *RESTRICT const src_, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 int private_jstr_new_cat(jstring_t *RESTRICT this_, const size_t arglen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
-#endif // ! __cplusplus
+#endif // __cplusplus
 
 void jstr_push_back_noalloc(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
 int jstr_push_back_nocheck(jstring_t *this_, const char c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
@@ -271,6 +146,229 @@ int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__ 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
+
+typedef struct jstring_t {
+#ifndef __cplusplus
+	size_t size; 
+	size_t capacity;
+	char *data;
+#elif defined(__cplusplus)
+	std::size_t size;
+	std::size_t capacity;
+	char *data;
+	ALWAYS_INLINE jstring_t() JSTR_NOEXCEPT__
+	{
+		this->size = 0;
+		this->capacity = 0;
+		this->data = nullptr;
+	}
+
+	ALWAYS_INLINE ~jstring_t() JSTR_NOEXCEPT__
+	{
+		free(this->data);
+		this->data = nullptr;
+		this->capacity = 0;
+		this->size = 0;
+	}
+
+	ALWAYS_INLINE jstring_t(const char *RESTRICT s) JSTR_NOEXCEPT__
+	{
+		jstr_new_append(this, strlen(s), s);
+	}
+
+	template <std::size_t N>
+	ALWAYS_INLINE jstring_t(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		jstr_new_append(this, N - 1, s);
+	}
+
+	ALWAYS_INLINE jstring_t(const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
+	{
+		jstr_new_append(this, slen, s);
+		*(this->data + slen) = '\0';
+	}
+
+	ALWAYS_INLINE jstring_t(const std::size_t size) JSTR_NOEXCEPT__
+	{
+		jstr_new_alloc(this, size);
+	}
+
+	ALWAYS_INLINE jstring_t(const std::size_t cap, const char *RESTRICT s) JSTR_NOEXCEPT__
+	{
+		this->size = std::strlen(s);
+		this->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
+		this->data = (char *)std::malloc(this->capacity);
+		if (unlikely(!this->data)) {
+			this->capacity = 0;
+			return;
+		}
+		std::memcpy(this->data, s, this->size + 1);
+	}
+
+	ALWAYS_INLINE jstring_t(const std::size_t cap, const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
+	{
+		this->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
+		this->data = (char *)std::malloc(this->capacity);
+		if (unlikely(!this->data)) {
+			this->capacity = 0;
+			this->size = 0;
+			return;
+		}
+		std::memcpy(this->data, s, slen + 1);
+		this->size = slen;
+	}
+
+	ALWAYS_INLINE jstring_t(jstring_t *RESTRICT other) JSTR_NOEXCEPT__
+	{
+		jstr_new_append(this, other->size, other->data);
+	}
+
+	ALWAYS_INLINE CONST char *begin() JSTR_NOEXCEPT__
+	{
+		return (char *const)this->data;
+	}
+
+	ALWAYS_INLINE CONST char *end() JSTR_NOEXCEPT__
+	{
+		return (char *const)this->data + this->size;
+	}
+
+	ALWAYS_INLINE CONST const char *cbegin() JSTR_NOEXCEPT__
+	{
+		return (const char *const)this->data;
+	}
+
+	ALWAYS_INLINE CONST const char *cend() JSTR_NOEXCEPT__
+	{
+		return (const char *const)this->data + this->size;
+	}
+
+	ALWAYS_INLINE void pop_back() JSTR_NOEXCEPT__
+	{
+		jstr_pop_back(this);
+	}
+
+	ALWAYS_INLINE void pop_back_s() JSTR_NOEXCEPT__
+	{
+		jstr_pop_back_s(this);
+	}
+
+	ALWAYS_INLINE void pop_front() JSTR_NOEXCEPT__
+	{
+		jstr_pop_front(this);
+	}
+
+	ALWAYS_INLINE void pop_front_s() JSTR_NOEXCEPT__
+	{
+		jstr_pop_front_s(this);
+	}
+
+	ALWAYS_INLINE int push_front(const char c) JSTR_NOEXCEPT__
+	{
+		return jstr_push_front(this, c);
+	}
+
+	ALWAYS_INLINE int push_front_s(const char c) JSTR_NOEXCEPT__
+	{
+		return jstr_push_front_s(this, c);
+	}
+
+	ALWAYS_INLINE int push_back(const char c) JSTR_NOEXCEPT__
+	{
+		return jstr_push_back(this, c);
+	}
+
+	ALWAYS_INLINE int push_back_s(const char c) JSTR_NOEXCEPT__
+	{
+		return jstr_push_back_s(this, c);
+	}
+
+	ALWAYS_INLINE int append(const char *RESTRICT const s, const size_t slen) JSTR_NOEXCEPT__
+	{
+		if (!private_jstr_append(this, s, slen))
+			return 0;
+		*(this->data + slen) = '\0';
+		return 1;
+	}
+
+	template <std::size_t N>
+	ALWAYS_INLINE int append(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return private_jstr_append(this, s, N - 1);
+	}
+
+	ALWAYS_INLINE int append(const char *RESTRICT const s) JSTR_NOEXCEPT__
+	{
+		return private_jstr_append(this, s, strlen(s));
+	}
+
+	ALWAYS_INLINE int append_s(const char *RESTRICT const s, const size_t slen) JSTR_NOEXCEPT__
+	{
+		if (!private_jstr_append_s(this, s, slen))
+			return 0;
+		*(this->data + slen) = '\0';
+		return 1;
+	}
+
+	template <std::size_t N>
+	ALWAYS_INLINE int append_s(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return private_jstr_append_s(this, s, N - 1);
+	}
+
+	ALWAYS_INLINE int append_s(const char *RESTRICT const s) JSTR_NOEXCEPT__
+	{
+		return private_jstr_append_s(this, s, strlen(s));
+	}
+
+	template <std::size_t N>
+	ALWAYS_INLINE int str(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return private_jstr_str(this, s, N - 1);
+	}
+
+	ALWAYS_INLINE char *str(const char *RESTRICT const s) JSTR_NOEXCEPT__
+	{
+		return private_jstr_str(this, s, strlen(s));
+	}
+
+	ALWAYS_INLINE char *chr(const int c) JSTR_NOEXCEPT__
+	{
+		return jstr_chr(this, c);
+	}
+
+	ALWAYS_INLINE char *rchr(const int c) JSTR_NOEXCEPT__
+	{
+		return jstr_rchr(this, c);
+	}
+
+	ALWAYS_INLINE void swap(jstring_t *other) JSTR_NOEXCEPT__
+	{
+		jstr_swap(this, other);
+	}
+
+	ALWAYS_INLINE int reserve(const std::size_t cap) JSTR_NOEXCEPT__
+	{
+		return jstr_reserve(this, cap);
+	}
+
+	ALWAYS_INLINE int reserve_add(const std::size_t add_cap) JSTR_NOEXCEPT__
+	{
+		return jstr_reserve(this, this->capacity + add_cap);
+	}
+
+	ALWAYS_INLINE int replace(const char *RESTRICT const s) JSTR_NOEXCEPT__
+	{
+		return private_jstr_replace(this, s, strlen(s));
+	}
+
+	template <std::size_t N>
+	ALWAYS_INLINE int replace(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return private_jstr_replace(this, s, N - 1);
+	}
+#endif // __cplusplus
+} jstring_t;
 
 #ifdef JSTR_HAS_GENERIC
 #	define jstr_replace(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                        \
