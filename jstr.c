@@ -1,7 +1,5 @@
 #include "jstr.h"
 
-#define JSTR_MIN_CAP 8
-
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>

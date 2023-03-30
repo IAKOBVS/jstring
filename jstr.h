@@ -36,6 +36,8 @@ extern "C" {
 #	include <cstdlib>
 #endif // __cplusplus
 
+#define JSTR_MIN_CAP 8
+
 typedef struct jstring_t {
 #ifndef __cplusplus
 	size_t size; 
@@ -63,7 +65,7 @@ typedef struct jstring_t {
 	ALWAYS_INLINE jstring_t(const char *RESTRICT s) JSTR_NOEXCEPT__
 	{
 		this->size = std::strlen(s);
-		this->capacity = JSTR_NEXT_POW2(this->size);
+		this->capacity = MAX(JSTR_NEXT_POW2(this->size), JSTR_MIN_CAP);
 		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
@@ -75,7 +77,7 @@ typedef struct jstring_t {
 	template <std::size_t N>
 	ALWAYS_INLINE jstring_t(const char (&s)[N])
 	{
-		this->capacity = JSTR_NEXT_POW2(N - 1);
+		this->capacity = MAX(JSTR_NEXT_POW2(N - 1), JSTR_MIN_CAP);
 		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
@@ -87,7 +89,7 @@ typedef struct jstring_t {
 
 	ALWAYS_INLINE jstring_t(const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
 	{
-		this->capacity = JSTR_NEXT_POW2(slen);
+		this->capacity = MAX(JSTR_NEXT_POW2(slen), JSTR_MIN_CAP);
 		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
@@ -100,7 +102,7 @@ typedef struct jstring_t {
 	ALWAYS_INLINE jstring_t(const std::size_t cap) JSTR_NOEXCEPT__
 	{
 		this->size = 0;
-		this->capacity = JSTR_NEXT_POW2(cap);
+		this->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
 		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
@@ -111,7 +113,7 @@ typedef struct jstring_t {
 	ALWAYS_INLINE jstring_t(const std::size_t cap, const char *RESTRICT s) JSTR_NOEXCEPT__
 	{
 		this->size = std::strlen(s);
-		this->capacity = JSTR_NEXT_POW2(cap);
+		this->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
 		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
@@ -122,7 +124,7 @@ typedef struct jstring_t {
 
 	ALWAYS_INLINE jstring_t(const std::size_t cap, const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
 	{
-		this->capacity = JSTR_NEXT_POW2(cap);
+		this->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
 		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
@@ -135,7 +137,7 @@ typedef struct jstring_t {
 
 	ALWAYS_INLINE jstring_t(jstring_t *RESTRICT other) JSTR_NOEXCEPT__
 	{
-		this->capacity = JSTR_NEXT_POW2(other->size);
+		this->capacity = MAX(JSTR_NEXT_POW2(other->size), JSTR_MIN_CAP);
 		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
