@@ -41,7 +41,7 @@ typedef struct jstring_t {
 	size_t size; 
 	size_t capacity;
 	char *data;
-#elif defined(cplusplus)
+#elif defined(__cplusplus)
 	std::size_t size;
 	std::size_t capacity;
 	char *data;
@@ -206,9 +206,9 @@ int private_jstr_replace(jstring_t *RESTRICT dest, const char *RESTRICT src, con
 void jstr_replace_noalloc(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen) JSTR_NOEXCEPT__;
 int jstr_replace_nocheck(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
-void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src) JSTR_NOEXCEPT__;
-int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
-int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src) JSTR_NOEXCEPT__;
+int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+int jstr_replace_jstr(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
 /* if equals returns 0 */
 int jstr_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
@@ -260,23 +260,26 @@ int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__ 
 	)
 #elif defined(__cplusplus)
 
-ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src, size_t srclen)
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src, const std::size_t srclen) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src, const std::size_t srclen) JSTR_NOEXCEPT__
 {
 	return private_jstr_replace(dest, src, srclen);
 }
 
-ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src)
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src) JSTR_NOEXCEPT__
 {
 	return private_jstr_replace(dest, src, strlen(src));
 }
 
-template <std::size_t N>
-ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char (&src)[N])
+template <const std::size_t N>
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char (&src)[N]) JSTR_NOEXCEPT__
 {
 	return private_jstr_replace(dest, src, N - 1);
 }
 
-ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, jstring_t *RESTRICT src)
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src) JSTR_NOEXCEPT__
 {
 	return jstr_replace_jstr(dest, src);
 }

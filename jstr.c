@@ -207,7 +207,7 @@ ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT dest, const char *RE
 	dest->size = srclen;
 }
 
-ALWAYS_INLINE void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src) JSTR_NOEXCEPT__
+ALWAYS_INLINE void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src) JSTR_NOEXCEPT__
 {
 	memcpy(dest->data, src->data, src->size + 1);
 	dest->size = src->size;
@@ -221,7 +221,7 @@ ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT dest, const char *RES
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src) JSTR_NOEXCEPT__
+ALWAYS_INLINE int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src) JSTR_NOEXCEPT__
 {
 	if (unlikely(!jstr_reserve_nocheck(dest, src->size)))
 		return 0;
