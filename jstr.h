@@ -16,12 +16,24 @@
 #	endif
 #endif
 
-#include <sys/cdefs.h>
-#include <stdlib.h>
-#include <string.h>
-#include <memory.h>
-#include "macros.h"
-#include "/home/james/c/pp_macros/pp_va_args_macros.h"
+#ifndef __cplusplus
+#	include <stddef.h>
+#endif // ! __cplusplus
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+#	 include "macros.h"
+#	 include <sys/cdefs.h>
+#	 include "/home/james/c/pp_macros/pp_va_args_macros.h"
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
+#ifdef __cplusplus
+#	include <cstring>
+#	include <cstdlib>
+#endif // __cplusplus
 
 typedef struct jstring_t {
 	size_t size; 
@@ -45,27 +57,25 @@ typedef struct jstring_t {
 
 	ALWAYS_INLINE jstring_t(const char *RESTRICT s) JSTR_NOEXCEPT__
 	{
-		size_t slen = strlen(s);
-		this->capacity = JSTR_NEXT_POW2(slen);
-		this->data = (char *)malloc(this->capacity);
+		this->size = std::strlen(s);
+		this->capacity = JSTR_NEXT_POW2(this->size);
+		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
 			return;
 		}
-		memcpy(this->data, s, size + 1);
-		this->size = slen;
+		std::memcpy(this->data, s, this->size + 1);
 	}
 
 	ALWAYS_INLINE jstring_t(const char *RESTRICT s, const size_t slen) JSTR_NOEXCEPT__
 	{
 		this->capacity = JSTR_NEXT_POW2(slen);
-		this->data = (char *)malloc(this->capacity);
+		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
 			return;
 		}
-		this->capacity = slen;
-		memcpy(this->data, s, size + 1);
+		std::memcpy(this->data, s, slen + 1);
 		this->size = slen;
 	}
 
@@ -73,7 +83,7 @@ typedef struct jstring_t {
 	{
 		this->size = 0;
 		this->capacity = JSTR_NEXT_POW2(cap);
-		this->data = (char *)malloc(this->capacity);
+		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
 			return;
@@ -82,38 +92,38 @@ typedef struct jstring_t {
 
 	ALWAYS_INLINE jstring_t(const size_t cap, const char *RESTRICT s) JSTR_NOEXCEPT__
 	{
-		this->size = strlen(s);
+		this->size = std::strlen(s);
 		this->capacity = JSTR_NEXT_POW2(cap);
-		this->data = (char *)malloc(this->capacity);
+		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
 			return;
 		}
-		memcpy(this->data, s, this->size + 1);
+		std::memcpy(this->data, s, this->size + 1);
 	}
 
 	ALWAYS_INLINE jstring_t(const size_t cap, const char *RESTRICT s, const size_t slen) JSTR_NOEXCEPT__
 	{
 		this->capacity = JSTR_NEXT_POW2(cap);
-		this->data = (char *)malloc(this->capacity);
+		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
 			this->size = 0;
 			return;
 		}
-		memcpy(this->data, s, size + 1);
+		std::memcpy(this->data, s, slen + 1);
 		this->size = slen;
 	}
 
 	ALWAYS_INLINE jstring_t(jstring_t *RESTRICT other) JSTR_NOEXCEPT__
 	{
 		this->capacity = JSTR_NEXT_POW2(other->size);
-		this->data = (char *)malloc(this->capacity);
+		this->data = (char *)std::malloc(this->capacity);
 		if (unlikely(!this->data)) {
 			this->capacity = 0;
 			return;
 		}
-		memcpy(this->data, other->data, other->size + 1);
+		std::memcpy(this->data, other->data, other->size + 1);
 		this->size = other->size;
 	}
 #endif // __cplusplus

@@ -49,8 +49,8 @@ int private_jstr_cat(jstring_t *RESTRICT this_, const size_t len, ...) JSTR_NOEX
 {
 	if (unlikely(!jstr_reserve(this_, this_->size + len + 1)))
 		return 0;
-	this_->size += len;
 	char *RESTRICT tmp = this_->data + len;
+	this_->size += len;
 	va_list ap;
 	va_start(ap, len);
 	for (const char *RESTRICT argv = va_arg(ap, const char *); argv; argv = va_arg(ap, const char *))
@@ -68,8 +68,8 @@ int private_jstr_cat_s(jstring_t *RESTRICT this_, const size_t len, ...) JSTR_NO
 		return 0;
 	if (unlikely(!jstr_reserve(this_, this_->size + len + 1)))
 		return 0;
-	this_->size += len;
 	char *RESTRICT tmp = this_->data + len;
+	this_->size += len;
 	va_list ap;
 	va_start(ap, len);
 	for (const char *RESTRICT argv = va_arg(ap, const char *); argv; argv = va_arg(ap, const char *))
@@ -101,6 +101,8 @@ ALWAYS_INLINE int private_jstr_append_s(jstring_t *RESTRICT dest, const char *RE
 		return 0;
 	return jstr_append(dest, src, srclen);
 }
+
+#ifndef __cplusplus
 
 ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT dest, const size_t srclen, const char *RESTRICT const src, ...) JSTR_NOEXCEPT__
 {
@@ -148,6 +150,8 @@ ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) J
 	}
 	return 1;
 }
+
+#endif
 
 ALWAYS_INLINE void jstr_swap(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
 {
