@@ -31,15 +31,20 @@ extern "C" {
 #endif // __cplusplus
 
 #ifdef __cplusplus
+#	include <type_traits>
 #	include <cstring>
 #	include <cstdlib>
 #endif // __cplusplus
 
 typedef struct jstring_t {
+#ifndef __cplusplus
 	size_t size; 
 	size_t capacity;
 	char *data;
-#ifdef __cplusplus
+#elif defined(cplusplus)
+	std::size_t size;
+	std::size_t capacity;
+	char *data;
 	ALWAYS_INLINE jstring_t() JSTR_NOEXCEPT__
 	{
 		this->size = 0;
@@ -67,7 +72,20 @@ typedef struct jstring_t {
 		std::memcpy(this->data, s, this->size + 1);
 	}
 
-	ALWAYS_INLINE jstring_t(const char *RESTRICT s, const size_t slen) JSTR_NOEXCEPT__
+	template <std::size_t N>
+	ALWAYS_INLINE jstring_t(const char (&s)[N])
+	{
+		this->capacity = JSTR_NEXT_POW2(N - 1);
+		this->data = (char *)std::malloc(this->capacity);
+		if (unlikely(!this->data)) {
+			this->capacity = 0;
+			return;
+		}
+		std::memcpy(this->data, s, N);
+		this->size = N;
+	}
+
+	ALWAYS_INLINE jstring_t(const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
 	{
 		this->capacity = JSTR_NEXT_POW2(slen);
 		this->data = (char *)std::malloc(this->capacity);
@@ -79,7 +97,7 @@ typedef struct jstring_t {
 		this->size = slen;
 	}
 
-	ALWAYS_INLINE jstring_t(const size_t cap) JSTR_NOEXCEPT__
+	ALWAYS_INLINE jstring_t(const std::size_t cap) JSTR_NOEXCEPT__
 	{
 		this->size = 0;
 		this->capacity = JSTR_NEXT_POW2(cap);
@@ -90,7 +108,7 @@ typedef struct jstring_t {
 		}
 	}
 
-	ALWAYS_INLINE jstring_t(const size_t cap, const char *RESTRICT s) JSTR_NOEXCEPT__
+	ALWAYS_INLINE jstring_t(const std::size_t cap, const char *RESTRICT s) JSTR_NOEXCEPT__
 	{
 		this->size = std::strlen(s);
 		this->capacity = JSTR_NEXT_POW2(cap);
@@ -102,7 +120,7 @@ typedef struct jstring_t {
 		std::memcpy(this->data, s, this->size + 1);
 	}
 
-	ALWAYS_INLINE jstring_t(const size_t cap, const char *RESTRICT s, const size_t slen) JSTR_NOEXCEPT__
+	ALWAYS_INLINE jstring_t(const std::size_t cap, const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
 	{
 		this->capacity = JSTR_NEXT_POW2(cap);
 		this->data = (char *)std::malloc(this->capacity);
@@ -163,9 +181,9 @@ void jstr_pop_back_s(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__;
 void jstr_pop_front(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__;
 void jstr_pop_front_s(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__;
 
-void private_jstr_append_noalloc(jstring_t *dest, const char *RESTRICT src, const size_t srclen, ...) JSTR_NOEXCEPT__;
-int private_jstr_append(jstring_t *dest, const char *RESTRICT src, const size_t srclen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
-int private_jstr_append_s(jstring_t *dest, const char *RESTRICT src, const size_t srclen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+void private_jstr_append_noalloc(jstring_t *dest, const char *RESTRICT src, const size_t srclen) JSTR_NOEXCEPT__;
+int private_jstr_append(jstring_t *dest, const char *RESTRICT src, const size_t srclen) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+int private_jstr_append_s(jstring_t *dest, const char *RESTRICT src, const size_t srclen) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
 void jstr_swap(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_NOEXCEPT__;
 void jstr_swap_str(jstring_t *RESTRICT this_, char **RESTRICT other_, size_t *otherlen, size_t *other_cap) JSTR_NOEXCEPT__;
@@ -229,6 +247,10 @@ void jstr_rev(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__;
 
 int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 #ifdef JSTR_HAS_GENERIC
 #	define jstr_replace(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                        \
 		jstring_t *: jstr_replace_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                                       \
@@ -236,13 +258,35 @@ int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__ 
 			? private_jstr_replace(dest, (char *)__VA_ARGS__, 0)                                                        \
 			: private_jstr_replace(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__)))) \
 	)
+#elif defined(__cplusplus)
+
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src, size_t srclen)
+{
+	return private_jstr_replace(dest, src, srclen);
+}
+
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src)
+{
+	return private_jstr_replace(dest, src, strlen(src));
+}
+
+template <std::size_t N>
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char (&src)[N])
+{
+	return private_jstr_replace(dest, src, N - 1);
+}
+
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, jstring_t *RESTRICT src)
+{
+	return jstr_replace_jstr(dest, src);
+}
+
 #else
 #	define jstr_replace(dest, src, srclen)          \
 		private_jstr_replace(dest, src, srclen)
 #endif // JSTR_HAS_GENERIC
 
 #ifdef JSTR_HAS_GENERIC
-
 #	define jstr_cat(this_jstr, ...)                                                          \
 		generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
@@ -258,12 +302,16 @@ int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__ 
 		void *: jstr_append_s(this_jstr, arg1, len),                                       \
 		JSTR_GENERIC_CASE_STR(private_jstr_cat_s(this_jstr, len, arg1, __VA_ARGS__))       \
 	)
-
 #else
-#	define jstr_cat(this_jstr, ...)                                                          \
-		private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
-#	define jstr_cat_s(this_jstr, ...)                                                          \
-		private_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+#	define jstr_cat(this_jstr, ...)                                                                                           \
+		(PP_NARG(__VA_ARGS__) > 1)                                                                                        \
+			? private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)                          \
+			: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), PP_STRLEN_VA_ARGS(PP_FIRST_ARG(__VA_ARGS__)))
+
+#	define jstr_cat_s(this_jstr, ...)                                                                                           \
+		(PP_NARG(__VA_ARGS__) > 1)                                                                                          \
+			? private_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)                          \
+			: private_jstr_append_s(this_jstr, PP_FIRST_ARG(__VA_ARGS__), PP_STRLEN_VA_ARGS(PP_FIRST_ARG(__VA_ARGS__)))
 #endif // JSTR_HAS_GENERIC
 
 #define jstr_new_cat(this_jstr, ...) private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
@@ -348,9 +396,5 @@ int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__ 
 
 #define jstr_foreach_index(elem, jstr)                        \
 	for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
-
-#ifdef __cplusplus
-}
-#endif // __cplusplus
 
 #endif // JSTR_H_DEF__

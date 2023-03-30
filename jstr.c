@@ -81,13 +81,13 @@ int private_jstr_cat_s(jstring_t *RESTRICT this_, const size_t len, ...) JSTR_NO
 	return 1;
 }
 
-ALWAYS_INLINE void private_jstr_append_noalloc(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen, ...) JSTR_NOEXCEPT__
+ALWAYS_INLINE void private_jstr_append_noalloc(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen) JSTR_NOEXCEPT__
 {
 	memcpy(dest->data + dest->size, src, srclen + 1);
 	dest->size = dest->size + srclen;
 }
 
-ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen, ...) JSTR_NOEXCEPT__
+ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen) JSTR_NOEXCEPT__
 {
 	if (unlikely(!jstr_reserve(dest, dest->size + srclen)))
 		return 0;
@@ -95,11 +95,11 @@ ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT dest, const char *REST
 	return 1;
 }
 
-ALWAYS_INLINE int private_jstr_append_s(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen, ...) JSTR_NOEXCEPT__
+ALWAYS_INLINE int private_jstr_append_s(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen) JSTR_NOEXCEPT__
 {
 	if (unlikely(!dest->capacity))
 		return 0;
-	return jstr_append(dest, src, srclen);
+	return private_jstr_append(dest, src, srclen);
 }
 
 #ifndef __cplusplus
