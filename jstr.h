@@ -90,9 +90,9 @@ char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_WARN_UNUSED;
 #ifdef __USE_GNU
 char *private_jstr_str(jstring_t *haystack, const char *RESTRICT const needle, size_t needlelen, ...) JSTR_WARN_UNUSED;
 
-#	define jstr_str(this_, ...)                                                                        \
-		(PP_NARG(__VA_ARGS__) == 1)                                                                \
-			? private_jstr_str(this_, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_NARG(__VA_ARGS__))) \
+#	define jstr_str(this_, ...)                                                                             \
+		(PP_NARG(__VA_ARGS__) == 1)                                                                     \
+			? private_jstr_str(this_, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
 			: private_jstr_str(this_, __VA_ARGS__, 0)
 
 #else
