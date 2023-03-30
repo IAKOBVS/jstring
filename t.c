@@ -9,7 +9,6 @@
 
 #define s_ jstring_t *
 
-
 deb_ d_jstr_init(s_ s)
 {
 	jstr_init(s);
