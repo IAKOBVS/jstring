@@ -183,11 +183,23 @@ ALWAYS_INLINE int jstr_cmp(const jstring_t *RESTRICT const this_, const jstring_
 	return jstr_cmp_nocheck(this_, other);
 }
 
+ALWAYS_INLINE int jstr_cmp_str(const jstring_t *RESTRICT const this_, const char *RESTRICT const s, const size_t slen) JSTR_NOEXCEPT__
+{
+	if (this_->size != slen)
+		return 1;
+	return memcmp(this_, s, slen);
+}
+
 #ifdef __USE_GNU
 
 ALWAYS_INLINE int jstr_case_cmp_nocheck(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	return strcasecmp(this_->data, other->data);
+}
+
+ALWAYS_INLINE int jstr_case_cmp_str(const jstring_t *RESTRICT const this_, const char *RESTRICT const s) JSTR_NOEXCEPT__
+{
+	return strcasecmp(this_->data, s);
 }
 
 ALWAYS_INLINE int jstr_case_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
