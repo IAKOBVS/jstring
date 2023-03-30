@@ -10,7 +10,6 @@
 
 #include <sys/cdefs.h>
 #include <stdlib.h>
-#include <features.h>
 #include "macros.h"
 #include "/home/james/c/pp_macros/pp_va_args_macros.h"
 
