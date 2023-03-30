@@ -268,7 +268,7 @@ ALWAYS_INLINE int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_)
 
 ALWAYS_INLINE int jstr_shrink_to_fit(jstring_t *RESTRICT this_)
 {
-	if (unlikely(this_->capacity != this_->size))
+	if (unlikely(this_->capacity == this_->size))
 		return 1;
 	return jstr_shrink_to_fit_nocheck(this_);
 }
@@ -299,6 +299,12 @@ ALWAYS_INLINE void jstr_shrink_to_size_nocheck(jstring_t *RESTRICT this_, const 
 ALWAYS_INLINE void jstr_shrink_to_size(jstring_t *RESTRICT this_, const size_t size)
 {
 	if (size < this_->size)
+		jstr_shrink_to_size_nocheck(this_, size);
+}
+
+ALWAYS_INLINE void jstr_shrink_to_size_s(jstring_t *RESTRICT this_, const size_t size)
+{
+	if (!!this_->size & (size < this_->size))
 		jstr_shrink_to_size_nocheck(this_, size);
 }
 

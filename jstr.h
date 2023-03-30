@@ -61,6 +61,7 @@ int jstr_shrink_to(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED
 
 void jstr_shrink_to_size_nocheck(jstring_t *RESTRICT this_, const size_t size);
 void jstr_shrink_to_size(jstring_t *RESTRICT this_, const size_t size);
+void jstr_shrink_to_size_s(jstring_t *RESTRICT this_, const size_t size);
 
 int jstr_reserve(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED;
 int jstr_reserve_s(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED;
