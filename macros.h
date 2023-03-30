@@ -174,10 +174,12 @@
 			unsigned long long: expr    \
 
 #		define JSTR_GENERIC_CASE_STR(expr) \
-			char *: expr               \
+			char *: expr,              \
+			const char *: expr         \
 
 #		define JSTR_GENERIC_CASE_CHAR(expr) \
-			char: expr                  \
+			char: expr,                 \
+			const char: expr            \
 
 #		define JSTR_IS_SIZE(expr) _Generic((expr), \
 			JSTR_GENERIC_CASE_SIZE(1),         \

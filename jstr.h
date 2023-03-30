@@ -118,11 +118,11 @@ int jstr_rev_dup_s(jstring_t *RESTRICT this_) JSTR_WARN_UNUSED;
 void jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf);
 
 #ifdef JSTR_HAS_GENERIC
-#	define jstr_replace(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                       \
-		jstring_t *: jstr_replace_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                                      \
-		char *: (PP_NARG(__VA_ARGS__) == 2)                                                                                \
-			? private_jstr_replace(dest, (char *)__VA_ARGS__, 0)                                                       \
-			: private_jstr_replace(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__))) \
+#	define jstr_replace(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                        \
+		jstring_t *: jstr_replace_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                                       \
+		JSTR_GENERIC_CASE_STR((PP_NARG(__VA_ARGS__) == 2)                                                                   \
+			? private_jstr_replace(dest, (char *)__VA_ARGS__, 0)                                                        \
+			: private_jstr_replace(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__)))) \
 	)
 #else
 #	define jstr_replace(dest, src, srclen)          \
@@ -130,18 +130,23 @@ void jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf);
 #endif // JSTR_HAS_GENERIC
 
 #ifdef JSTR_HAS_GENERIC
+
 #	define jstr_cat(this_jstr, ...)                                                          \
 		generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+
 #	define generic_jstr_cat(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
 		void *: jstr_append(this_jstr, arg1, len),                                       \
-		char *: private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__)                      \
+		JSTR_GENERIC_CASE_STR(private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__))       \
 	)
+
 #	define jstr_cat_s(this_jstr, ...)                                                          \
 		generic_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+
 #	define generic_jstr_cat_s(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
 		void *: jstr_append_s(this_jstr, arg1, len),                                       \
-		char *: private_jstr_cat_s(this_jstr, len, arg1, __VA_ARGS__)                      \
+		JSTR_GENERIC_CASE_STR(private_jstr_cat_s(this_jstr, len, arg1, __VA_ARGS__))       \
 	)
+
 #else
 #	define jstr_cat(this_jstr, ...)                                                          \
 		private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)

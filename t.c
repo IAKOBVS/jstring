@@ -5,29 +5,81 @@
 #include <assert.h>
 #include <stdio.h>
 
-ALWAYS_INLINE static int debug()
+#define deb_ ALWAYS_INLINE static int
+
+#define s_ jstring_t *
+
+
+deb_ d_jstr_init(s_ s)
+{
+	jstr_init(s);
+	assert(!s->size);
+	assert(!s->capacity);
+	assert(!s->data);
+	return 1;
+}
+
+const char *s_1 = "sample string";
+
+deb_ d_jstr_new(s_ s)
+{
+	assert(jstr_new(s, s_1));
+	assert(!strcmp(s->data, s_1));
+	assert(s->size == strlen(s_1));
+	return 1;
+}
+
+deb_ d_jstr_push_back(s_ s)
+{
+	size_t old_size = s->size;
+	assert(jstr_push_back(s, 'e'));
+	assert(!strcmp(s->data, "helloe"));
+	assert(s->size == old_size + 1);
+	return 1;
+}
+
+deb_ d_jstr_reserve(s_ s)
+{
+	assert(jstr_reserve(s, 100));
+	assert(s->capacity == JSTR_NEXT_POW2(100));
+	return 1;
+}
+
+deb_ d_jstr_shrink_to_fit(s_ s)
+{
+	assert(jstr_shrink_to_fit(s));
+	assert(s->capacity == s->size + 1);
+	return 1;
+}
+
+const char *s_2 = "hello world";
+
+deb_ d_jstr_replace(s_ s)
+{
+	assert(jstr_replace(s, s_2));
+	assert(!strcmp(s->data, s_2));
+	assert(s->size == strlen(s_2));
+}
+
+deb_ d_jstr_delete(s_ s)
+{
+	jstr_delete(s);
+	assert(!s->size);
+	assert(!s->capacity);
+	assert(!s->data);
+	return 1;
+}
+
+int debug()
 {
 	jstring_t s;
-	jstr_init(&s);
-		assert(!s.size);
-		assert(!s.capacity);
-		assert(!s.data);
-	size_t old_size = s.size;
-	assert(jstr_new(&s, "hello"));
-		assert(!strcmp(s.data, "hello"));
-		assert(s.size == strlen("hello"));
-	old_size = s.size;
-	assert(jstr_push_back(&s, 'e'));
-		assert(!strcmp(s.data, "helloe"));
-		assert(s.size == old_size + 1);
-	assert(jstr_reserve(&s, 100));
-		assert(s.capacity == JSTR_NEXT_POW2(100));
-	assert(jstr_shrink_to_fit(&s));
-		assert(s.capacity == s.size + 1);
-	jstr_delete(&s);
-		assert(!s.size);
-		assert(!s.capacity);
-		assert(!s.data);
+	assert(d_jstr_init(&s));
+	assert(d_jstr_new(&s));
+	assert(d_jstr_push_back(&s));
+	assert(d_jstr_reserve(&s));
+	assert(d_jstr_shrink_to_fit(&s));
+	assert(d_jstr_delete(&s));
+	assert(d_jstr_delete(&s));
 	return 1;
 }
 
