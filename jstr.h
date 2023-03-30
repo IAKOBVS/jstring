@@ -5,7 +5,9 @@
 #define JSTR_64_BIT
 
 #if defined(__GNUC__) || defined(__GLIBC__)
-#	define _GNU_SOURCE
+#	ifndef _GNU_SOURCE
+#		define _GNU_SOURCE
+#	endif
 #endif
 
 #include <sys/cdefs.h>
@@ -67,9 +69,9 @@ int jstr_reserve(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED;
 int jstr_reserve_s(jstring_t *RESTRICT this_, const size_t cap) JSTR_WARN_UNUSED;
 int jstr_reserve_nocheck(jstring_t *RESTRICT this_, const size_t cap, ...) JSTR_WARN_UNUSED;
 
-int private_jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
-void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen);
-int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen) JSTR_WARN_UNUSED;
+int private_jstr_replace(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
+void jstr_replace_noalloc(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen);
+int jstr_replace_nocheck(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen) JSTR_WARN_UNUSED;
 
 void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src);
 int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src) JSTR_WARN_UNUSED;
@@ -223,8 +225,8 @@ void jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf);
 #define jstr_reserve_s_32x(this_jstr) private_jstr_reserve_s_x(this_jstr, 32)
 #define jstr_reserve_s_64x(this_jstr) private_jstr_reserve_s_x(this_jstr, 64)
 
-#define jstr_foreach(elem, jstr)                   \
-	for (char *elem = jstr.data; elem; ++elem)
+#define jstr_foreach(elem, jstr)                         \
+	for (char *elem = ((jstr)->data); *elem; ++elem)
 
 #define jstr_begin(this_jstr) ((this_jstr)->data)
 #define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))

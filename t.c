@@ -19,6 +19,15 @@ deb_ d_jstr_init(s_ s)
 	return 1;
 }
 
+deb_ d_jstr_delete(s_ s)
+{
+	jstr_delete(s);
+	assert(!s->size);
+	assert(!s->capacity);
+	assert(!s->data);
+	return 1;
+}
+
 const char *s_1 = "sample string";
 
 deb_ d_jstr_new(s_ s)
@@ -29,11 +38,15 @@ deb_ d_jstr_new(s_ s)
 	return 1;
 }
 
+const char c_1 = 'e';
+
+const char *s_1_c_1 = "sample stringe";
+
 deb_ d_jstr_push_back(s_ s)
 {
-	size_t old_size = s->size;
+	const size_t old_size = s->size;
 	assert(jstr_push_back(s, 'e'));
-	assert(!strcmp(s->data, "helloe"));
+	assert(!strcmp(s->data, s_1_c_1));
 	assert(s->size == old_size + 1);
 	return 1;
 }
@@ -59,14 +72,6 @@ deb_ d_jstr_replace(s_ s)
 	assert(jstr_replace(s, s_2));
 	assert(!strcmp(s->data, s_2));
 	assert(s->size == strlen(s_2));
-}
-
-deb_ d_jstr_delete(s_ s)
-{
-	jstr_delete(s);
-	assert(!s->size);
-	assert(!s->capacity);
-	assert(!s->data);
 	return 1;
 }
 
@@ -78,7 +83,8 @@ int debug()
 	assert(d_jstr_push_back(&s));
 	assert(d_jstr_reserve(&s));
 	assert(d_jstr_shrink_to_fit(&s));
-	assert(d_jstr_delete(&s));
+	assert(d_jstr_replace(&s));
+	assert(puts(s.data));
 	assert(d_jstr_delete(&s));
 	return 1;
 }

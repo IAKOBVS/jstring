@@ -197,7 +197,7 @@ ALWAYS_INLINE int jstr_case_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT o
 
 #endif
 
-ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen)
+ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen)
 {
 	memcpy(dest->data, src, srclen + 1);
 	dest->size = srclen;
@@ -205,13 +205,13 @@ ALWAYS_INLINE void jstr_replace_noalloc(jstring_t *RESTRICT dest, char *RESTRICT
 
 ALWAYS_INLINE void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, jstring_t *RESTRICT src)
 {
-	memcpy(dest->data, src->data, src->size);
+	memcpy(dest->data, src->data, src->size + 1);
 	dest->size = src->size;
 }
 
-ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen)
+ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen)
 {
-	if (unlikely(!jstr_reserve_nocheck(dest, srclen + 1)))
+	if (unlikely(!jstr_reserve_nocheck(dest, srclen)))
 		return 0;
 	jstr_replace_noalloc(dest, src, srclen);
 	return 1;
@@ -219,14 +219,14 @@ ALWAYS_INLINE int jstr_replace_nocheck(jstring_t *RESTRICT dest, char *RESTRICT 
 
 ALWAYS_INLINE int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, jstring_t *RESTRICT src)
 {
-	if (unlikely(!jstr_reserve_nocheck(dest, src->size + 1)))
+	if (unlikely(!jstr_reserve_nocheck(dest, src->size)))
 		return 0;
 	jstr_replace_jstr_noalloc(dest, src);
 	return 1;
 }
 
 
-ALWAYS_INLINE int private_jstr_replace(jstring_t *RESTRICT dest, char *RESTRICT src, const size_t srclen, ...)
+ALWAYS_INLINE int private_jstr_replace(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen, ...)
 {
 	if (dest->capacity < srclen)
 		return jstr_replace_nocheck(dest, src, srclen);
@@ -245,7 +245,7 @@ ALWAYS_INLINE int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRIC
 ALWAYS_INLINE int jstr_reserve(jstring_t *RESTRICT this_, const size_t cap)
 {
 	if (cap > this_->capacity)
-		return jstr_reserve_nocheck(this_, cap + 1);
+		return jstr_reserve_nocheck(this_, cap);
 	return 1;
 }
 
@@ -503,7 +503,7 @@ ALWAYS_INLINE int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other
 	other->data = malloc(n + 1);
 	if (unlikely(!other))
 		return 0;
-	memcpy(other->data, this_->data, n);
+	memcpy(other->data, this_->data, n + 1);
 	*(other->data + n) = '\0';
 	other->capacity = n + 1;
 	other->size = n;
@@ -518,7 +518,7 @@ ALWAYS_INLINE int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT oth
 	other->data = malloc(n + 1);
 	if (unlikely(!other))
 		return 0;
-	memcpy(other->data, this_->data, n);
+	memcpy(other->data, this_->data, n + 1);
 	*(other->data + n) = '\0';
 	other->capacity = n + 1;
 	other->size = n;
