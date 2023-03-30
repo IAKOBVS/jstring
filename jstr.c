@@ -1,11 +1,11 @@
 #include "jstr.h"
-#include "macros.h"
 
 #define JSTR_MIN_CAP 8
 
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include "macros.h"
 
 #define JSTR_MAX_STACK 2048
 
@@ -375,15 +375,42 @@ ALWAYS_INLINE void jstr_pop_front_s(jstring_t *RESTRICT this_)
 	memmove(this_->data, this_->data + 1, this_->size--);
 }
 
+#ifdef __USE_GNU
+
+ALWAYS_INLINE char *private_jstr_str(jstring_t *haystack, const char *RESTRICT const needle, size_t needlelen, ...)
+{
+	return memmem(haystack->data, haystack->size, needle, needlelen);
+}
+
+#else
+
+ALWAYS_INLINE char *jstr_str(jstring_t *haystack, const char *RESTRICT needle)
+{
+	return strstr(haystack->data, needle);
+}
+
+#endif
+
+#ifdef __USE_GNU
+
 ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_, int c)
 {
-	const char *const begin = this_->data;
+	return memrchr(this_->data, c, this_->size);
+}
+
+#else
+
+ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_, const int c)
+{
+	const char *RESTRICT const begin = this_->data;
 	char *RESTRICT end = this_->data + this_->size - 1;
 	for ( ; end != begin; --end)
 		if (*end == c)
 			return end;
 	return NULL;
 }
+
+#endif // __USE_GNU
 
 ALWAYS_INLINE void jstr_rev(jstring_t *RESTRICT this_)
 {
