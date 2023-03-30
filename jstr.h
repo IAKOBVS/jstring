@@ -4,7 +4,7 @@
 #define JSTR_ALIGN_POWER_OF_TWO
 #define JSTR_64_BIT
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__GLIBC__)
 #	define _GNU_SOURCE
 #endif
 
