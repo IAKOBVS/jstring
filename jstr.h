@@ -31,7 +31,6 @@ extern "C" {
 #endif // __cplusplus
 
 #ifdef __cplusplus
-#	include <type_traits>
 #	include <cstring>
 #	include <cstdlib>
 #endif // __cplusplus
@@ -146,6 +145,26 @@ typedef struct jstring_t {
 		std::memcpy(this->data, other->data, other->size + 1);
 		this->size = other->size;
 	}
+
+	ALWAYS_INLINE CONST char *begin()
+	{
+		return (char *const)this->data;
+	}
+
+	ALWAYS_INLINE CONST char *end()
+	{
+		return (char *const)this->data + this->size;
+	}
+
+	ALWAYS_INLINE CONST const char *cbegin()
+	{
+		return (const char *const)this->data;
+	}
+
+	ALWAYS_INLINE CONST const char *cend()
+	{
+		return (const char *const)this->data + this->size;
+	}
 #endif // __cplusplus
 } jstring_t;
 
@@ -165,7 +184,7 @@ int jstr_new_append(jstring_t *RESTRICT this_, const size_t srclen, const char *
 int jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
 int private_jstr_new_cat(jstring_t *RESTRICT this_, const size_t arglen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
-#endif // __cplusplus
+#endif // ! __cplusplus
 
 void jstr_push_back_noalloc(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
 int jstr_push_back_nocheck(jstring_t *this_, const char c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
@@ -274,6 +293,8 @@ ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char *src)
 	return private_jstr_replace(dest, src, strlen(src));
 }
 
+template <const std::size_t N>
+ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char (&src)[N]) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 template <const std::size_t N>
 ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const char (&src)[N]) JSTR_NOEXCEPT__
 {
@@ -388,14 +409,15 @@ ALWAYS_INLINE static int jstr_replace(jstring_t *RESTRICT dest, const jstring_t 
 #define jstr_reserve_s_32x(this_jstr) private_jstr_reserve_s_x(this_jstr, 32)
 #define jstr_reserve_s_64x(this_jstr) private_jstr_reserve_s_x(this_jstr, 64)
 
-#define jstr_foreach(elem, jstr)                         \
-	for (char *elem = ((jstr)->data); *elem; ++elem)
+#ifndef __cplusplus
+#	define jstr_foreach(elem, jstr)                          \
+		for (char *elem = ((jstr)->data); *elem; ++elem)
+#	define jstr_begin(this_jstr) ((this_jstr)->data)
+#	define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))
 
-#define jstr_begin(this_jstr) ((this_jstr)->data)
-#define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))
-
-#define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
-#define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
+#	define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
+#	define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
+#endif // __cplusplus
 
 #define jstr_typeof_data char *
 
