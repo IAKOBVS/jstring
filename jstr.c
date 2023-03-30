@@ -238,7 +238,7 @@ ALWAYS_INLINE int private_jstr_replace(jstring_t *RESTRICT dest, const char *RES
 	return 1;
 }
 
-ALWAYS_INLINE int jstr_replace_jstr(jstring_t *RESTRICT dest, jstring_t *RESTRICT src, ...) JSTR_NOEXCEPT__
+ALWAYS_INLINE int jstr_replace_jstr(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src, ...) JSTR_NOEXCEPT__
 {
 	if (dest->capacity < src->capacity)
 		return jstr_replace_nocheck(dest, src->data, src->capacity);
