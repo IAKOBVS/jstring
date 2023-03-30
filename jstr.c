@@ -171,12 +171,12 @@ ALWAYS_INLINE void jstr_swap_str(jstring_t *RESTRICT this_, char **RESTRICT othe
 	this_->capacity = tmp_othercap;
 }
 
-ALWAYS_INLINE int jstr_cmp_nocheck(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
+ALWAYS_INLINE int jstr_cmp_nocheck(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	return memcmp(this_->data, other->data, this_->size);
 }
 
-ALWAYS_INLINE int jstr_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
+ALWAYS_INLINE int jstr_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	if (this_->size != other->size)
 		return 1;
@@ -185,12 +185,12 @@ ALWAYS_INLINE int jstr_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other)
 
 #ifdef __USE_GNU
 
-ALWAYS_INLINE int jstr_case_cmp_nocheck(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
+ALWAYS_INLINE int jstr_case_cmp_nocheck(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	return strcasecmp(this_->data, other->data);
 }
 
-ALWAYS_INLINE int jstr_case_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
+ALWAYS_INLINE int jstr_case_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	if (this_->size != other->size)
 		return 1;
@@ -410,14 +410,14 @@ ALWAYS_INLINE char *jstr_str(jstring_t *haystack, const char *RESTRICT needle) J
 
 #ifdef __USE_GNU
 
-ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_, int c) JSTR_NOEXCEPT__
+ALWAYS_INLINE char *jstr_rchr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__
 {
 	return memrchr(this_->data, c, this_->size);
 }
 
 #else
 
-ALWAYS_INLINE char *jstr_rchr(jstring_t *RESTRICT this_, const int c) JSTR_NOEXCEPT__
+ALWAYS_INLINE char *jstr_rchr(const jstring_t *RESTRICT const this_, const int c) JSTR_NOEXCEPT__
 {
 	const char *RESTRICT const begin = this_->data;
 	char *RESTRICT end = this_->data + this_->size - 1;
@@ -453,7 +453,7 @@ ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JS
 	return 1;
 }
 
-ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_NOEXCEPT__
+ALWAYS_INLINE char *jstr_chr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__
 {
 	return memchr(this_->data, c, this_->size);
 }

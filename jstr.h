@@ -107,17 +107,17 @@ int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, const jstring_t *RESTRIC
 int jstr_replace_jstr(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
 /* if equals returns 0 */
-int jstr_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+int jstr_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
 #ifdef __USE_GNU
-int jstr_case_cmp_nocheck(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
-int jstr_case_cmp(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+int jstr_case_cmp_nocheck(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+int jstr_case_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 #endif
 
 /* finds first occurence of character from end of string */
-char *jstr_rchr(jstring_t *RESTRICT this_, int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+char *jstr_rchr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 /* memchr */
-char *jstr_chr(jstring_t *RESTRICT this_, int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
+char *jstr_chr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
 #ifdef __USE_GNU
 char *private_jstr_str(jstring_t *haystack, const char *RESTRICT const needle, size_t needlelen, ...) JSTR_WARN_UNUSED;
@@ -283,6 +283,38 @@ typedef struct jstring_t {
 		return jstr_push_back_s(this, c);
 	}
 
+	ALWAYS_INLINE int operator+=(const char *RESTRICT const ) JSTR_NOEXCEPT__
+	{
+		return this->append(s);
+	}
+
+	ALWAYS_INLINE int operator+=(const char c) JSTR_NOEXCEPT__
+	{
+		return this->push_back(c);
+	}
+
+	template <std::size_t N>
+	ALWAYS_INLINE int operator+=(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return private_jstr_append(this, s, N - 1);
+	}
+
+	template <std::size_t N>
+	ALWAYS_INLINE int operator=(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return this->replace(s);
+	}
+
+	ALWAYS_INLINE int operator=(const char *RESTRICT const s) JSTR_NOEXCEPT__
+	{
+		return this->replace(s);
+	}
+
+	ALWAYS_INLINE int operator=(const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
+	{
+		return this->replace(other);
+	}
+	
 	ALWAYS_INLINE int append(const char *RESTRICT const s, const size_t slen) JSTR_NOEXCEPT__
 	{
 		if (!private_jstr_append(this, s, slen))
@@ -362,10 +394,20 @@ typedef struct jstring_t {
 		return private_jstr_replace(this, s, strlen(s));
 	}
 
+	ALWAYS_INLINE int replace(const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
+	{
+		return jstr_replace_jstr(this, other);
+	}
+
 	template <std::size_t N>
 	ALWAYS_INLINE int replace(const char (&s)[N]) JSTR_NOEXCEPT__
 	{
 		return private_jstr_replace(this, s, N - 1);
+	}
+
+	ALWAYS_INLINE int shrink_to_fit() JSTR_NOEXCEPT__
+	{
+		return jstr_shrink_to_fit(this);
 	}
 #endif // __cplusplus
 } jstring_t;
