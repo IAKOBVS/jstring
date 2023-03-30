@@ -25,7 +25,7 @@ int private_jstr_cat_s(jstring_t *RESTRICT this_, const size_t len, ...) JSTR_WA
 void jstr_init(jstring_t *RESTRICT this_);
 void jstr_delete(jstring_t *RESTRICT this_);
 
-int jstr_new_append(jstring_t *RESTRICT this_, const size_t otherlen, const char *RESTRICT const other_, ...) JSTR_WARN_UNUSED;
+int jstr_new_append(jstring_t *RESTRICT this_, const size_t srclen, const char *RESTRICT const src_, ...) JSTR_WARN_UNUSED;
 int jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) JSTR_WARN_UNUSED;
 
 int private_jstr_new_cat(jstring_t *RESTRICT this_, const size_t arglen, ...) JSTR_WARN_UNUSED;
@@ -46,9 +46,9 @@ void jstr_pop_back_s(jstring_t *RESTRICT this_);
 void jstr_pop_front(jstring_t *RESTRICT this_);
 void jstr_pop_front_s(jstring_t *RESTRICT this_);
 
-void private_jstr_append_noalloc(jstring_t *this_, const char *RESTRICT other_, const size_t otherlen, ...);
-int private_jstr_append(jstring_t *this_, const char *RESTRICT other_, const size_t otherlen, ...) JSTR_WARN_UNUSED;
-int private_jstr_append_s(jstring_t *this_, const char *RESTRICT other_, const size_t otherlen, ...) JSTR_WARN_UNUSED;
+void private_jstr_append_noalloc(jstring_t *dest, const char *RESTRICT src, const size_t srclen, ...);
+int private_jstr_append(jstring_t *dest, const char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
+int private_jstr_append_s(jstring_t *dest, const char *RESTRICT src, const size_t srclen, ...) JSTR_WARN_UNUSED;
 
 void jstr_swap(jstring_t *RESTRICT this_, jstring_t *RESTRICT other_);
 void jstr_swap_str(jstring_t *RESTRICT this_, char **RESTRICT other_, size_t *otherlen, size_t *other_cap);

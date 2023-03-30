@@ -81,37 +81,37 @@ int private_jstr_cat_s(jstring_t *RESTRICT this_, const size_t len, ...)
 	return 1;
 }
 
-ALWAYS_INLINE void private_jstr_append_noalloc(jstring_t *RESTRICT this_, const char *RESTRICT const other, const size_t otherlen, ...)
+ALWAYS_INLINE void private_jstr_append_noalloc(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen, ...)
 {
-	memcpy(this_->data + this_->size, other, otherlen + 1);
-	this_->size = this_->size + otherlen;
+	memcpy(dest->data + dest->size, src, srclen + 1);
+	dest->size = dest->size + srclen;
 }
 
-ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT this_, const char *RESTRICT const other, const size_t otherlen, ...)
+ALWAYS_INLINE int private_jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen, ...)
 {
-	if (unlikely(!jstr_reserve(this_, this_->size + otherlen)))
+	if (unlikely(!jstr_reserve(dest, dest->size + srclen)))
 		return 0;
-	private_jstr_append_noalloc(this_, other, otherlen);
+	private_jstr_append_noalloc(dest, src, srclen);
 	return 1;
 }
 
-ALWAYS_INLINE int private_jstr_append_s(jstring_t *RESTRICT this_, const char *RESTRICT const other, const size_t otherlen, ...)
+ALWAYS_INLINE int private_jstr_append_s(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen, ...)
 {
-	if (unlikely(!this_->capacity))
+	if (unlikely(!dest->capacity))
 		return 0;
-	return jstr_append(this_, other, otherlen);
+	return jstr_append(dest, src, srclen);
 }
 
-ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT this_, const size_t otherlen, const char *RESTRICT const other, ...)
+ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT dest, const size_t srclen, const char *RESTRICT const src, ...)
 {
-	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * otherlen));
-	this_->data = malloc(this_->capacity);
-	if (unlikely(!this_->data)) {
-		jstr_init(this_);
+	dest->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * srclen));
+	dest->data = malloc(dest->capacity);
+	if (unlikely(!dest->data)) {
+		jstr_init(dest);
 		return 0;
 	}
-	this_->size = otherlen;
-	memcpy(this_->data, other, otherlen + 1);
+	dest->size = srclen;
+	memcpy(dest->data, src, srclen + 1);
 	return 1;
 }
 
