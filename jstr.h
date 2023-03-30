@@ -112,7 +112,7 @@ int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other, const size
 
 void jstr_rev(jstring_t *RESTRICT this_);
 
-void jstr_rev_dup(jstring_t *RESTRICT src, char *dest);
+int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_WARN_UNUSED;
 
 #ifdef JSTR_HAS_GENERIC
 #	define jstr_replace(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                        \

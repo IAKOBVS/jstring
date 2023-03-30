@@ -438,14 +438,17 @@ ALWAYS_INLINE void jstr_rev(jstring_t *RESTRICT this_)
 	}
 }
 
-ALWAYS_INLINE void jstr_rev_dup(jstring_t *RESTRICT src, char *RESTRICT dest)
+ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest)
 {
-	char *RESTRICT begin = src->data;
-	char *RESTRICT const end = src->data + src->size;
-	dest += src->size;
-	*dest-- = '\0';
+	*dest = malloc(src->size + 1);
+	if (unlikely(!*dest))
+		return 0;
+	char *RESTRICT const begin = src->data - 1;
+	char *RESTRICT end = src->data + src->size - 1;
 	while (begin < end)
-		*dest-- = *begin++;
+		**dest++ = *end--;
+	**dest = '\0';
+	return 1;
 }
 
 ALWAYS_INLINE char *jstr_chr(jstring_t *RESTRICT this_, int c)
