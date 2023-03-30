@@ -442,7 +442,8 @@ ALWAYS_INLINE void private_jstr_rev_noalloc(jstring_t *RESTRICT this_, char *buf
 {
 	memcpy(buf, this_->data, this_->size + 1);
 	char *RESTRICT end = this_->data + this_->size - 1;
-	while ((*end-- = *buf++));
+	while (buf < end)
+		*buf++ = *end--;
 }
 
 ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT this_)
