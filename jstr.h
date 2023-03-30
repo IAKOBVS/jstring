@@ -4,15 +4,15 @@
 #define JSTR_ALIGN_POWER_OF_TWO
 #define JSTR_64_BIT
 
+#ifdef __GNUC__
+#	define _GNU_SOURCE
+#endif
+
 #include <sys/cdefs.h>
 #include <stdlib.h>
 #include <features.h>
 #include "macros.h"
 #include "/home/james/c/pp_macros/pp_va_args_macros.h"
-
-#ifdef __GNUC__
-#	define __USE_GNU
-#endif
 
 typedef struct jstring_t {
 	size_t size; 
