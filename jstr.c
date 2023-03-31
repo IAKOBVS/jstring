@@ -28,6 +28,24 @@ extern "C" {
 
 #define ALWAYS_INLINE_
 
+#ifdef __cplusplus
+
+ALWAYS_INLINE void private_jstr_constructor_cap(jstring_t *RESTRICT this_, const std::size_t cap, const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
+{
+	this_->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
+	this_->data = (char *)std::malloc(this->capacity);
+	if (unlikely(!this_->data)) {
+		this_->capacity = 0;
+		this_->size = 0;
+		return;
+	}
+	std::memcpy(this_->data, s, slen + 1);
+	*(this_->data + slen) = '\0';
+	this_->size = slen;
+}
+
+#endif // __cplusplus
+
 ALWAYS_INLINE_ void jstr_init(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	this_->capacity = 0;
