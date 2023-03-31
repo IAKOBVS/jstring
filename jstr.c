@@ -1,15 +1,27 @@
 #include "jstr.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 #include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 #include "macros.h"
+
+#ifndef __cplusplus
+#	 include <stdlib.h>
+#	 include <string.h>
+#else
+#	include <cstdlib>
+#	include <cstring>
+#endif
 
 #define JSTR_MAX_STACK 2048
 
 #ifdef __cplusplus
 #	define JSTR_CAST(T) (T)
-#	define ALWAYS_INLINE
 #else
 #	define JSTR_CAST(T)
 #endif // __cplusplus
