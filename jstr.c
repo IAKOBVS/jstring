@@ -7,6 +7,12 @@
 
 #define JSTR_MAX_STACK 2048
 
+#ifdef __cplusplus
+#	define JSTR_CAST(T) (T)
+#else
+#	define JSTR_CAST(T)
+#endif // __cplusplus
+
 ALWAYS_INLINE void jstr_init(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	this_->capacity = 0;
@@ -23,7 +29,7 @@ ALWAYS_INLINE void jstr_delete(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 ALWAYS_INLINE int jstr_reserve_nocheck_exact(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 {
 	char *RESTRICT tmp;
-	if (unlikely(!(tmp = realloc(this_->data, cap))))
+	if (unlikely(!(tmp = JSTR_CAST(char *)realloc(this_->data, cap))))
 		return 0;
 	this_->data = tmp;
 	this_->capacity = cap;
@@ -36,7 +42,7 @@ ALWAYS_INLINE int jstr_reserve_nocheck(jstring_t *RESTRICT this_, const size_t c
 	while (tmp_cap < cap)
 		tmp_cap *= 2;
 	char *RESTRICT tmp;
-	if (unlikely(!(tmp = realloc(this_->data, tmp_cap))))
+	if (unlikely(!(tmp = JSTR_CAST(char *)realloc(this_->data, tmp_cap))))
 		return 0;
 	this_->data = tmp;
 	this_->capacity = tmp_cap;
@@ -105,7 +111,7 @@ ALWAYS_INLINE int private_jstr_append_s(jstring_t *RESTRICT dest, const char *RE
 ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT dest, const size_t srclen, const char *RESTRICT const src, ...) JSTR_NOEXCEPT__
 {
 	dest->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * srclen));
-	dest->data = malloc(dest->capacity);
+	dest->data = JSTR_CAST(char *)malloc(dest->capacity);
 	if (unlikely(!dest->data)) {
 		jstr_init(dest);
 		return 0;
@@ -118,7 +124,7 @@ ALWAYS_INLINE int jstr_new_append(jstring_t *RESTRICT dest, const size_t srclen,
 int private_jstr_new_cat(jstring_t *RESTRICT this_, const size_t arglen, ...) JSTR_NOEXCEPT__
 {
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * arglen));
-	this_->data = malloc(this_->capacity);
+	this_->data = JSTR_CAST(char *)malloc(this_->capacity);
 	if (unlikely(!this_->data)) {
 		jstr_init(this_);
 		return 0;
@@ -140,7 +146,7 @@ ALWAYS_INLINE int jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) J
 {
 	this_->size = 0;
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
-	this_->data = malloc(this_->capacity);
+	this_->data = JSTR_CAST(char *)malloc(this_->capacity);
 	if (unlikely(!this_->data)) {
 		this_->capacity = 0;
 		this_->data = NULL;
@@ -273,7 +279,7 @@ ALWAYS_INLINE int jstr_reserve_s(jstring_t *RESTRICT this_, const size_t cap) JS
 ALWAYS_INLINE int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	char *RESTRICT tmp;
-	if (unlikely(!(tmp = realloc(this_->data, this_->size + 1))))
+	if (unlikely(!(tmp = JSTR_CAST(char *)realloc(this_->data, this_->size + 1))))
 		return 0;
 	this_->capacity = this_->size + 1;
 	this_->data = tmp;
@@ -290,7 +296,7 @@ ALWAYS_INLINE int jstr_shrink_to_fit(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 ALWAYS_INLINE int jstr_shrink_to_nocheck(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 {
 	char *RESTRICT tmp;
-	if (unlikely(!(tmp = realloc(this_->data, cap))))
+	if (unlikely(!(tmp = JSTR_CAST(char *)realloc(this_->data, cap))))
 		return 0;
 	this_->data = tmp;
 	this_->data[this_->size = cap] = '\0';
@@ -406,14 +412,14 @@ ALWAYS_INLINE void jstr_pop_front_s(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 
 #ifdef __USE_GNU
 
-ALWAYS_INLINE char *private_jstr_str(jstring_t *haystack, const char *RESTRICT const needle, size_t needlelen, ...) JSTR_NOEXCEPT__
+char *private_jstr_str(jstring_t *haystack, const char *RESTRICT const needle, size_t needlelen, ...) JSTR_NOEXCEPT__
 {
-	return memmem(haystack->data, haystack->size, needle, needlelen);
+	return JSTR_CAST(char *)memmem(haystack->data, haystack->size, needle, needlelen);
 }
 
 #else
 
-ALWAYS_INLINE char *jstr_str(jstring_t *haystack, const char *RESTRICT needle) JSTR_NOEXCEPT__
+char *jstr_str(jstring_t *haystack, const char *RESTRICT needle) JSTR_NOEXCEPT__
 {
 	return strstr(haystack->data, needle);
 }
@@ -424,7 +430,7 @@ ALWAYS_INLINE char *jstr_str(jstring_t *haystack, const char *RESTRICT needle) J
 
 ALWAYS_INLINE char *jstr_rchr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__
 {
-	return memrchr(this_->data, c, this_->size);
+	return JSTR_CAST(char *)memrchr(this_->data, c, this_->size);
 }
 
 #else
@@ -472,7 +478,7 @@ ALWAYS_INLINE char *jstr_chr(const jstring_t *RESTRICT const this_, int c) JSTR_
 
 ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
 {
-	other->data = malloc(this_->capacity);
+	other->data = JSTR_CAST(char *)malloc(this_->capacity);
 	if (unlikely(!other))
 		return 0;
 	memcpy(other->data, this_->data, this_->size + 1);
@@ -492,7 +498,7 @@ ALWAYS_INLINE int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other
 {
 	if (n > this_->size)
 		return 0;
-	other->data = malloc(n + 1);
+	other->data = JSTR_CAST(char *)malloc(n + 1);
 	if (unlikely(!other))
 		return 0;
 	memcpy(other->data, this_->data, n + 1);
@@ -507,7 +513,7 @@ ALWAYS_INLINE int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT oth
 	if (!this_->size
 	| (n > this_->size))
 		return 0;
-	other->data = malloc(n + 1);
+	other->data = JSTR_CAST(char *)malloc(n + 1);
 	if (unlikely(!other))
 		return 0;
 	memcpy(other->data, this_->data, n + 1);
@@ -516,3 +522,5 @@ ALWAYS_INLINE int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT oth
 	other->size = n;
 	return 1;
 }
+
+#undef JSTR_CAST

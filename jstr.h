@@ -28,9 +28,6 @@ extern "C" {
 #	 include "/home/james/c/pp_macros/pp_va_args_macros.h"
 #ifdef __cplusplus
 }
-#endif // __cplusplus
-
-#ifdef __cplusplus
 #	include <cstring>
 #	include <cstdlib>
 #endif // __cplusplus
@@ -124,7 +121,7 @@ char *jstr_rchr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__ JS
 char *jstr_chr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
 #ifdef __USE_GNU
-char *private_jstr_str(jstring_t *haystack, const char *RESTRICT const needle, size_t needlelen, ...) JSTR_WARN_UNUSED;
+char *private_jstr_str(jstring_t *haystack, const char *RESTRICT const needle, size_t needlelen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED;
 
 #	define jstr_str(this_, ...)                                                                             \
 		(PP_NARG(__VA_ARGS__) == 1)                                                                     \
