@@ -8,11 +8,11 @@
 #endif
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) || defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-#	define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
+#	define JSTR_WARN_UNUSED__ __attribute__((warn_unused_result))
 #elif defined(__attribute_warn_unused_result__)
-#	define JSTR_WARN_UNUSED __attribute_warn_unused_result__
+#	define JSTR_WARN_UNUSED__ __attribute_warn_unused_result__
 #else
-#	define JSTR_WARN_UNUSED
+#	define JSTR_WARN_UNUSED__
 #endif // __attribute__unused
 
 #if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
@@ -45,7 +45,9 @@
 #	endif // JSTR_64_BIT
 #endif // JSTR_ALIGN_POWER_OF_TWO
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#ifdef __cplusplus
+#	define RESTRICT
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #	define RESTRICT restrict
 #elif defined(__GNUC__) || defined(__clang__)
 #	define RESTRICT __restrict__
