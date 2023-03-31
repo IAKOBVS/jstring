@@ -1,21 +1,15 @@
 #include "jstr.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-#include <stdarg.h>
-#ifdef __cplusplus
-}
-#endif // __cplusplus
-
 #include "macros.h"
 
 #ifndef __cplusplus
-#	 include <stdlib.h>
-#	 include <string.h>
+#	include <stdlib.h>
+#	include <string.h>
+#	include <stdarg.h>
 #else
 #	include <cstdlib>
 #	include <cstring>
+#	include <cstdarg>
 #endif
 
 #define JSTR_MAX_STACK 2048
@@ -42,6 +36,30 @@ ALWAYS_INLINE void private_jstr_constructor_cap(jstring_t *RESTRICT this_, const
 	std::memcpy(this_->data, s, slen + 1);
 	*(this_->data + slen) = '\0';
 	this_->size = slen;
+}
+
+ALWAYS_INLINE_ void private_jstr_new_append_void(jstring_t *RESTRICT dest, const size_t srclen, const char *RESTRICT const src, ...) JSTR_NOEXCEPT__
+{
+	dest->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * srclen));
+	dest->data = JSTR_CAST(char *)malloc(dest->capacity);
+	if (unlikely(!dest->data)) {
+		jstr_init(dest);
+		return;
+	}
+	dest->size = srclen;
+	memcpy(dest->data, src, srclen + 1);
+}
+
+ALWAYS_INLINE_ void private_jstr_new_alloc_void(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__
+{
+	this_->size = 0;
+	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
+	this_->data = JSTR_CAST(char *)malloc(this_->capacity);
+	if (unlikely(!this_->data)) {
+		this_->capacity = 0;
+		this_->data = NULL;
+		return;
+	}
 }
 
 #endif // __cplusplus
