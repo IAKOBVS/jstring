@@ -9,6 +9,7 @@
 
 #ifdef __cplusplus
 #	define JSTR_CAST(T) (T)
+#	define ALWAYS_INLINE
 #else
 #	define JSTR_CAST(T)
 #endif // __cplusplus
@@ -460,7 +461,7 @@ ALWAYS_INLINE void jstr_rev(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 
 ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__
 {
-	*dest = malloc(src->size + 1);
+	*dest = JSTR_CAST(char *)malloc(src->size + 1);
 	if (unlikely(!*dest))
 		return 0;
 	char *RESTRICT const begin = src->data - 1;
@@ -473,7 +474,7 @@ ALWAYS_INLINE int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JS
 
 ALWAYS_INLINE char *jstr_chr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__
 {
-	return memchr(this_->data, c, this_->size);
+	return JSTR_CAST(char *)memchr(this_->data, c, this_->size);
 }
 
 ALWAYS_INLINE int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
