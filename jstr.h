@@ -175,6 +175,47 @@ typedef struct jstring_t {
 		this->size = 0;
 	}
 
+	ALWAYS_INLINE int alloc() JSTR_NOEXCEPT__
+	{
+		jstr_new_alloc(this, 8);
+		if (unlikely(!this->data))
+			return 0;
+		return 1;
+	}
+
+	ALWAYS_INLINE int alloc(const size_t cap) JSTR_NOEXCEPT__
+	{
+		jstr_new_alloc(this, cap);
+		if (unlikely(!this->data))
+			return 0;
+		return 1;
+	}
+
+	template <std::size_t N>
+	ALWAYS_INLINE int alloc(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		jstr_new_append(this, N - 1, s);
+		if (unlikely(!this->data))
+			return 0;
+		return 1;
+	}
+
+	ALWAYS_INLINE int alloc(const char *RESTRICT const s, const size_t slen) JSTR_NOEXCEPT__
+	{
+		jstr_new_append(this, slen, s);
+		if (unlikely(!this->data))
+			return 0;
+		return 1;
+	}
+
+	ALWAYS_INLINE int alloc(const char *RESTRICT const s) JSTR_NOEXCEPT__
+	{
+		jstr_new_append(this, strlen(s), s);
+		if (unlikely(!this->data))
+			return 0;
+		return 1;
+	}
+		
 	ALWAYS_INLINE jstring_t(const char *RESTRICT s) JSTR_NOEXCEPT__
 	{
 		jstr_new_append(this, strlen(s), s);
@@ -229,22 +270,22 @@ typedef struct jstring_t {
 
 	ALWAYS_INLINE CONST char *begin() JSTR_NOEXCEPT__
 	{
-		return (char *const)this->data;
+		return (char *)this->data;
 	}
 
 	ALWAYS_INLINE CONST char *end() JSTR_NOEXCEPT__
 	{
-		return (char *const)this->data + this->size;
+		return (char *)this->data + this->size;
 	}
 
 	ALWAYS_INLINE CONST const char *cbegin() JSTR_NOEXCEPT__
 	{
-		return (const char *const)this->data;
+		return (const char *)this->data;
 	}
 
 	ALWAYS_INLINE CONST const char *cend() JSTR_NOEXCEPT__
 	{
-		return (const char *const)this->data + this->size;
+		return (const char *)this->data + this->size;
 	}
 
 	ALWAYS_INLINE void pop_back() JSTR_NOEXCEPT__
