@@ -32,8 +32,6 @@ extern "C" {
 #	include <cstdlib>
 #endif // __cplusplus
 
-#define ALWAYS_INLINE
-
 #define JSTR_MIN_CAP 8
 #define JSTR_MULTIPLIER 2
 
