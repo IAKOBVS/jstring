@@ -12,17 +12,15 @@
 #	include <cstdarg>
 #endif
 
-#define JSTR_MAX_STACK 2048
-
 #ifdef __cplusplus
-#	define JSTR_CAST(T) (T)
+#	define JSTR_CAST__(T) (T)
 #else
-#	define JSTR_CAST(T)
+#	define JSTR_CAST__(T)
 #endif // __cplusplus
 
 #ifdef __cplusplus
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void private_jstr_constructor_cap(jstring_t *RESTRICT this_, const std::size_t cap, const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
 {
 	this_->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
@@ -37,11 +35,11 @@ void private_jstr_constructor_cap(jstring_t *RESTRICT this_, const std::size_t c
 	this_->size = slen;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void private_jstr_new_append_void(jstring_t *RESTRICT dest, const size_t srclen, const char *RESTRICT const src, ...) JSTR_NOEXCEPT__
 {
 	dest->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * srclen));
-	dest->data = JSTR_CAST(char *)malloc(dest->capacity);
+	dest->data = JSTR_CAST__(char *)malloc(dest->capacity);
 	if (unlikely(!dest->data)) {
 		jstr_init(dest);
 		return;
@@ -50,12 +48,12 @@ void private_jstr_new_append_void(jstring_t *RESTRICT dest, const size_t srclen,
 	memcpy(dest->data, src, srclen + 1);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void private_jstr_new_alloc_void(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__
 {
 	this_->size = 0;
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
-	this_->data = JSTR_CAST(char *)malloc(this_->capacity);
+	this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 	if (unlikely(!this_->data)) {
 		this_->capacity = 0;
 		this_->data = NULL;
@@ -65,7 +63,7 @@ void private_jstr_new_alloc_void(jstring_t *RESTRICT this_, const size_t size) J
 
 #endif // __cplusplus
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_init(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	this_->capacity = 0;
@@ -73,39 +71,39 @@ void jstr_init(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 	this_->data = NULL;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_delete(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	free(this_->data);
 	jstr_init(this_);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_reserve_nocheck_exact(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 {
 	char *RESTRICT tmp;
-	if (unlikely(!(tmp = JSTR_CAST(char *)realloc(this_->data, cap))))
+	if (unlikely(!(tmp = JSTR_CAST__(char *)realloc(this_->data, cap))))
 		return 0;
 	this_->data = tmp;
 	this_->capacity = cap;
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_reserve_nocheck(jstring_t *RESTRICT this_, const size_t cap, ...) JSTR_NOEXCEPT__
 {
 	size_t tmp_cap = this_->capacity * JSTR_MULTIPLIER;
 	while (tmp_cap < cap)
 		tmp_cap *= 2;
 	char *RESTRICT tmp;
-	if (unlikely(!(tmp = JSTR_CAST(char *)realloc(this_->data, tmp_cap))))
+	if (unlikely(!(tmp = JSTR_CAST__(char *)realloc(this_->data, tmp_cap))))
 		return 0;
 	this_->data = tmp;
 	this_->capacity = tmp_cap;
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_reserve(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 {
 	if (cap > this_->capacity)
@@ -149,14 +147,14 @@ int private_jstr_cat_s(jstring_t *RESTRICT this_, const size_t len, ...) JSTR_NO
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void private_jstr_append_noalloc(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen) JSTR_NOEXCEPT__
 {
 	memcpy(dest->data + dest->size, src, srclen + 1);
 	dest->size = dest->size + srclen;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int private_jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen) JSTR_NOEXCEPT__
 {
 	if (unlikely(!jstr_reserve(dest, dest->size + srclen)))
@@ -165,7 +163,7 @@ int private_jstr_append(jstring_t *RESTRICT dest, const char *RESTRICT const src
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int private_jstr_append_s(jstring_t *RESTRICT dest, const char *RESTRICT const src, const size_t srclen) JSTR_NOEXCEPT__
 {
 	if (unlikely(!dest->capacity))
@@ -173,11 +171,11 @@ int private_jstr_append_s(jstring_t *RESTRICT dest, const char *RESTRICT const s
 	return private_jstr_append(dest, src, srclen);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_new_append(jstring_t *RESTRICT dest, const size_t srclen, const char *RESTRICT const src, ...) JSTR_NOEXCEPT__
 {
 	dest->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * srclen));
-	dest->data = JSTR_CAST(char *)malloc(dest->capacity);
+	dest->data = JSTR_CAST__(char *)malloc(dest->capacity);
 	if (unlikely(!dest->data)) {
 		jstr_init(dest);
 		return 0;
@@ -190,7 +188,7 @@ int jstr_new_append(jstring_t *RESTRICT dest, const size_t srclen, const char *R
 int private_jstr_new_cat(jstring_t *RESTRICT this_, const size_t arglen, ...) JSTR_NOEXCEPT__
 {
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * arglen));
-	this_->data = JSTR_CAST(char *)malloc(this_->capacity);
+	this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 	if (unlikely(!this_->data)) {
 		jstr_init(this_);
 		return 0;
@@ -208,12 +206,12 @@ int private_jstr_new_cat(jstring_t *RESTRICT this_, const size_t arglen, ...) JS
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__
 {
 	this_->size = 0;
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
-	this_->data = JSTR_CAST(char *)malloc(this_->capacity);
+	this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 	if (unlikely(!this_->data)) {
 		this_->capacity = 0;
 		this_->data = NULL;
@@ -222,7 +220,7 @@ int jstr_new_alloc(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_swap(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
 {
 	const jstring_t tmp = *other;
@@ -230,7 +228,7 @@ void jstr_swap(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCE
 	*this_ = tmp;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_swap_str(jstring_t *RESTRICT this_, char **RESTRICT other, size_t *RESTRICT otherlen, size_t *RESTRICT othercapacity) JSTR_NOEXCEPT__
 {
 	char *RESTRICT const tmp_other = *other;
@@ -244,13 +242,13 @@ void jstr_swap_str(jstring_t *RESTRICT this_, char **RESTRICT other, size_t *RES
 	this_->capacity = tmp_othercap;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_cmp_nocheck(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	return memcmp(this_->data, other->data, this_->size);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	if (this_->size != other->size)
@@ -258,7 +256,7 @@ int jstr_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT co
 	return jstr_cmp_nocheck(this_, other);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_cmp_str(const jstring_t *RESTRICT const this_, const char *RESTRICT const s, const size_t slen) JSTR_NOEXCEPT__
 {
 	if (this_->size != slen)
@@ -268,19 +266,19 @@ int jstr_cmp_str(const jstring_t *RESTRICT const this_, const char *RESTRICT con
 
 #ifdef __USE_GNU
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_case_cmp_nocheck(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	return strcasecmp(this_->data, other->data);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_case_cmp_str(const jstring_t *RESTRICT const this_, const char *RESTRICT const s) JSTR_NOEXCEPT__
 {
 	return strcasecmp(this_->data, s);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_case_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRICT const other) JSTR_NOEXCEPT__
 {
 	if (this_->size != other->size)
@@ -290,21 +288,21 @@ int jstr_case_cmp(const jstring_t *RESTRICT const this_, const jstring_t *RESTRI
 
 #endif
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_replace_noalloc(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen) JSTR_NOEXCEPT__
 {
 	memcpy(dest->data, src, srclen + 1);
 	dest->size = srclen;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_replace_jstr_noalloc(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src) JSTR_NOEXCEPT__
 {
 	memcpy(dest->data, src->data, src->size + 1);
 	dest->size = src->size;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_replace_nocheck(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen) JSTR_NOEXCEPT__
 {
 	if (unlikely(!jstr_reserve_nocheck(dest, srclen)))
@@ -313,7 +311,7 @@ int jstr_replace_nocheck(jstring_t *RESTRICT dest, const char *RESTRICT src, con
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src) JSTR_NOEXCEPT__
 {
 	if (unlikely(!jstr_reserve_nocheck(dest, src->size)))
@@ -323,7 +321,7 @@ int jstr_replace_jstr_nocheck(jstring_t *RESTRICT dest, const jstring_t *RESTRIC
 }
 
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int private_jstr_replace(jstring_t *RESTRICT dest, const char *RESTRICT src, const size_t srclen, ...) JSTR_NOEXCEPT__
 {
 	if (dest->capacity < srclen)
@@ -332,7 +330,7 @@ int private_jstr_replace(jstring_t *RESTRICT dest, const char *RESTRICT src, con
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_replace_jstr(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const src, ...) JSTR_NOEXCEPT__
 {
 	if (dest->capacity < src->capacity)
@@ -341,7 +339,7 @@ int jstr_replace_jstr(jstring_t *RESTRICT dest, const jstring_t *RESTRICT const 
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_reserve_s(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 {
 	if (unlikely(!this_->capacity))
@@ -349,18 +347,18 @@ int jstr_reserve_s(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 	return jstr_reserve(this_, cap);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_shrink_to_fit_nocheck(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	char *RESTRICT tmp;
-	if (unlikely(!(tmp = JSTR_CAST(char *)realloc(this_->data, this_->size + 1))))
+	if (unlikely(!(tmp = JSTR_CAST__(char *)realloc(this_->data, this_->size + 1))))
 		return 0;
 	this_->capacity = this_->size + 1;
 	this_->data = tmp;
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_shrink_to_fit(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	if (unlikely(this_->capacity == this_->size))
@@ -368,11 +366,11 @@ int jstr_shrink_to_fit(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 	return jstr_shrink_to_fit_nocheck(this_);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_shrink_to_nocheck(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 {
 	char *RESTRICT tmp;
-	if (unlikely(!(tmp = JSTR_CAST(char *)realloc(this_->data, cap))))
+	if (unlikely(!(tmp = JSTR_CAST__(char *)realloc(this_->data, cap))))
 		return 0;
 	this_->data = tmp;
 	this_->data[this_->size = cap] = '\0';
@@ -380,7 +378,7 @@ int jstr_shrink_to_nocheck(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOE
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_shrink_to(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 {
 	if (cap > this_->capacity)
@@ -388,34 +386,34 @@ int jstr_shrink_to(jstring_t *RESTRICT this_, const size_t cap) JSTR_NOEXCEPT__
 	return jstr_shrink_to_nocheck(this_, cap);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_shrink_to_size_nocheck(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__
 {
 	this_->data[this_->size = size] = '\0';
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_shrink_to_size(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__
 {
 	if (size < this_->size)
 		jstr_shrink_to_size_nocheck(this_, size);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_shrink_to_size_s(jstring_t *RESTRICT this_, const size_t size) JSTR_NOEXCEPT__
 {
 	if (!!this_->size & (size < this_->size))
 		jstr_shrink_to_size_nocheck(this_, size);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_push_back_noalloc(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
 	this_->data[this_->size] = c;
 	this_->data[++this_->size] = '\0';
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_push_back_nocheck(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
 	if (unlikely(!jstr_reserve_nocheck(this_, this_->size * JSTR_MULTIPLIER)))
@@ -424,7 +422,7 @@ int jstr_push_back_nocheck(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEP
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_push_back(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
 	if (unlikely(this_->size == this_->capacity))
@@ -433,7 +431,7 @@ int jstr_push_back(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_push_back_s(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
 	if (unlikely(!this_->capacity))
@@ -441,13 +439,13 @@ int jstr_push_back_s(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 	return jstr_push_back(this_, c);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_pop_back(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	this_->data[--this_->size] = '\0';
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_pop_back_s(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	if (unlikely(!this_->size))
@@ -455,14 +453,14 @@ void jstr_pop_back_s(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 	jstr_pop_back(this_);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_push_front_noalloc(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
 	memmove(this_->data + 1, this_->data, ++this_->size);
 	*this_->data = c;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_push_front_nocheck(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
 	if (unlikely(!jstr_reserve_nocheck(this_, this_->size * JSTR_MULTIPLIER)))
@@ -471,7 +469,7 @@ int jstr_push_front_nocheck(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCE
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_push_front(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
 	if (unlikely(this_->capacity == this_->size))
@@ -480,7 +478,7 @@ int jstr_push_front(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_push_front_s(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 {
 	if (unlikely(!this_->capacity))
@@ -488,13 +486,13 @@ int jstr_push_front_s(jstring_t *RESTRICT this_, const char c) JSTR_NOEXCEPT__
 	return jstr_push_front(this_, c);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_pop_front(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	memmove(this_->data, this_->data + 1, this_->size--);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_pop_front_s(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	if (unlikely(!this_->size))
@@ -504,15 +502,15 @@ void jstr_pop_front_s(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 
 #ifdef __USE_GNU
 
-ALWAYS_INLINE
+JSTR_INLINE__
 char *private_jstr_str(jstring_t *haystack, const char *RESTRICT const needle, size_t needlelen, ...) JSTR_NOEXCEPT__
 {
-	return JSTR_CAST(char *)memmem(haystack->data, haystack->size, needle, needlelen);
+	return JSTR_CAST__(char *)memmem(haystack->data, haystack->size, needle, needlelen);
 }
 
 #else
 
-ALWAYS_INLINE
+JSTR_INLINE__
 char *jstr_str(jstring_t *haystack, const char *RESTRICT needle) JSTR_NOEXCEPT__
 {
 	return strstr(haystack->data, needle);
@@ -522,15 +520,15 @@ char *jstr_str(jstring_t *haystack, const char *RESTRICT needle) JSTR_NOEXCEPT__
 
 #ifdef __USE_GNU
 
-ALWAYS_INLINE
+JSTR_INLINE__
 char *jstr_rchr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__
 {
-	return JSTR_CAST(char *)memrchr(this_->data, c, this_->size);
+	return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size);
 }
 
 #else
 
-ALWAYS_INLINE
+JSTR_INLINE__
 char *jstr_rchr(const jstring_t *RESTRICT const this_, const int c) JSTR_NOEXCEPT__
 {
 	const char *RESTRICT const begin = this_->data;
@@ -543,7 +541,7 @@ char *jstr_rchr(const jstring_t *RESTRICT const this_, const int c) JSTR_NOEXCEP
 
 #endif // __USE_GNU
 
-ALWAYS_INLINE
+JSTR_INLINE__
 void jstr_rev(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 {
 	char *RESTRICT begin = this_->data;
@@ -555,10 +553,10 @@ void jstr_rev(jstring_t *RESTRICT this_) JSTR_NOEXCEPT__
 	}
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__
 {
-	*dest = JSTR_CAST(char *)malloc(src->size + 1);
+	*dest = JSTR_CAST__(char *)malloc(src->size + 1);
 	if (unlikely(!*dest))
 		return 0;
 	char *RESTRICT const begin = src->data - 1;
@@ -569,16 +567,16 @@ int jstr_rev_dup(jstring_t *RESTRICT src, char **RESTRICT dest) JSTR_NOEXCEPT__
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 char *jstr_chr(const jstring_t *RESTRICT const this_, int c) JSTR_NOEXCEPT__
 {
-	return JSTR_CAST(char *)memchr(this_->data, c, this_->size);
+	return JSTR_CAST__(char *)memchr(this_->data, c, this_->size);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
 {
-	other->data = JSTR_CAST(char *)malloc(this_->capacity);
+	other->data = JSTR_CAST__(char *)malloc(this_->capacity);
 	if (unlikely(!other))
 		return 0;
 	memcpy(other->data, this_->data, this_->size + 1);
@@ -587,7 +585,7 @@ int jstr_dup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_dup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCEPT__
 {
 	if (unlikely(!this_->size))
@@ -595,12 +593,12 @@ int jstr_dup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other) JSTR_NOEXCE
 	return jstr_dup(this_, other);
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other, const size_t n) JSTR_NOEXCEPT__
 {
 	if (n > this_->size)
 		return 0;
-	other->data = JSTR_CAST(char *)malloc(n + 1);
+	other->data = JSTR_CAST__(char *)malloc(n + 1);
 	if (unlikely(!other))
 		return 0;
 	memcpy(other->data, this_->data, n + 1);
@@ -610,13 +608,13 @@ int jstr_ndup(jstring_t *RESTRICT this_, jstring_t *RESTRICT other, const size_t
 	return 1;
 }
 
-ALWAYS_INLINE
+JSTR_INLINE__
 int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other, const size_t n) JSTR_NOEXCEPT__
 {
 	if (!this_->size
 	| (n > this_->size))
 		return 0;
-	other->data = JSTR_CAST(char *)malloc(n + 1);
+	other->data = JSTR_CAST__(char *)malloc(n + 1);
 	if (unlikely(!other))
 		return 0;
 	memcpy(other->data, this_->data, n + 1);
@@ -626,4 +624,4 @@ int jstr_ndup_s(jstring_t *RESTRICT this_, jstring_t *RESTRICT other, const size
 	return 1;
 }
 
-#undef JSTR_CAST
+#undef JSTR_CAST__

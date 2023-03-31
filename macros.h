@@ -46,15 +46,15 @@
 #endif // JSTR_ALIGN_POWER_OF_TWO
 
 #ifdef __cplusplus
-#	define RESTRICT
+#	define JSTR_RESTRICT__
 #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-#	define RESTRICT restrict
+#	define JSTR_RESTRICT__ restrict
 #elif defined(__GNUC__) || defined(__clang__)
-#	define RESTRICT __restrict__
+#	define JSTR_RESTRICT__ __restrict__
 #elif defined(_MSC_VER)
-#	define RESTRICT __restrict
+#	define JSTR_RESTRICT__ __restrict
 #else
-#	define RESTRICT
+#	define JSTR_RESTRICT__
 #endif // restrict
 
 #if defined(__PRETTY_FUNCTION__)
@@ -76,7 +76,7 @@
 #endif // __has_builtin(__builtin_expect)
 
 #if defined(__GNUC__) || defined(__clang__)
-#	define ALWAYS_INLINE __attribute__((always_inline)) inline
+#	define JSTR_INLINE__ __attribute__((always_inline)) inline
 #	if __has_attribute(pure)
 #		define PURE __attribute__((pure))
 #	else
@@ -93,12 +93,12 @@
 #		define FLATTEN
 #	endif // FLATTEN
 #elif defined(_MSC_VER)
-#	define ALWAYS_INLINE __forceinline inline
+#	define JSTR_INLINE__ __forceinline inline
 #	define PURE __declspec(noalias)
 #	define CONST __declspec(restrict)
 #	define FLATTEN
 #else
-#	define ALWAYS_INLINE inline
+#	define JSTR_INLINE__ inline
 #	define PURE
 #	define CONST
 #	define FLATTEN
@@ -114,13 +114,13 @@
 #	ifdef __cplusplus
 		extern "C" {
 #	endif
-		CONST ALWAYS_INLINE uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
+		CONST JSTR_INLINE__ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
 		{
 			return 1ull << (64 - __builtin_clzll(x - 1));
 		}
 #	endif // __has_builtin(__builtin_clzll)
 #	if __has_builtin(__builtin_clz)
-		CONST ALWAYS_INLINE uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
+		CONST JSTR_INLINE__ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
 		{
 			return 1 << (32 - __builtin_clz(x - 1));
 		}
@@ -135,21 +135,21 @@
 #	ifdef __cplusplus
 		extern "C" {
 #	endif
-	CONST ALWAYS_INLINE uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
+	CONST JSTR_INLINE__ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
 	{
 		unsigned long index;
 		_BitScanReverse(&index, x - 1);
 		return 1 << (index + 1);
 	}
 
-	CONST ALWAYS_INLINE uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
+	CONST JSTR_INLINE__ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
 	{
 		unsigned long index;
 		_BitScanReverse64(&index, x - 1);
 		return 1ull << (index + 1);
 	}
 #else
-	CONST ALWAYS_INLINE size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT__
+	CONST JSTR_INLINE__ size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT__
 	{
 		--x;
 		x |= x >> 1;
@@ -160,7 +160,7 @@
 		return x + 1;
 	}
 
-	CONST ALWAYS_INLINE size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT__
+	CONST JSTR_INLINE__ size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT__
 	{
 		--x;
 		x |= x >> 1;
