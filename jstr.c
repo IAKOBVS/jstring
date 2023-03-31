@@ -33,7 +33,7 @@ extern "C" {
 ALWAYS_INLINE void private_jstr_constructor_cap(jstring_t *RESTRICT this_, const std::size_t cap, const char *RESTRICT s, const std::size_t slen) JSTR_NOEXCEPT__
 {
 	this_->capacity = MAX(JSTR_NEXT_POW2(cap), JSTR_MIN_CAP);
-	this_->data = (char *)std::malloc(this->capacity);
+	this_->data = (char *)std::malloc(this_->capacity);
 	if (unlikely(!this_->data)) {
 		this_->capacity = 0;
 		this_->size = 0;
