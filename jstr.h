@@ -199,7 +199,7 @@ typedef struct jstring_t {
 				return;
 			this->data = tmp;
 		}
-		std::memcpy(this->data, other.data, other.size);
+		std::memcpy(this->data, other.data, other.size + 1);
 		this->capacity = other.capacity;
 	}
 
@@ -229,7 +229,7 @@ typedef struct jstring_t {
 				return *this;
 			this->data = tmp;
 		}
-		std::memcpy(this->data, other.data, other.size);
+		std::memcpy(this->data, other.data, other.size + 1);
 		this->capacity = other.capacity;
 		return *this;
 	}
