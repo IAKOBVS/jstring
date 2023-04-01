@@ -49,7 +49,7 @@ extern "C" {
 #	define JSTR_CAST__(T)
 #endif // __cplusplus
 
-#ifndef __cplusplus
+#ifndef __cplusplus // ! __cplusplus
 
 typedef struct jstring_t jstring_t;
 
@@ -154,14 +154,14 @@ int jstr_rev_dup(jstring_t *JSTR_RESTRICT__ src, char **JSTR_RESTRICT__ dest) JS
 
 typedef struct jstring_t {
 
-#ifndef __cplusplus
+#ifndef __cplusplus // ! __cpluslus
 
 	size_t size; 
 	size_t capacity;
 	char *data;
 } jstring_t;
 
-#else
+#else // __cplusplus
 
 	std::size_t size;
 	std::size_t capacity;
@@ -183,6 +183,67 @@ typedef struct jstring_t {
 		this->data = nullptr;
 		this->capacity = 0;
 		this->size = 0;
+	}
+
+	JSTR_INLINE__
+	jstring_t(const jstring_t& other) JSTR_NOEXCEPT__
+	{
+		this->size = other.size;
+		if (!this->capacity) {
+			this->data = (char *)malloc(other.capacity);
+			if (unlikely(!this->data))
+				return;
+		} else if (this->capacity < other.capacity) {
+			char *tmp = (char *)realloc(this->data, other.capacity);
+			if (unlikely(!tmp))
+				return;
+			this->data = tmp;
+		}
+		std::memcpy(this->data, other.data, other.size);
+		this->capacity = other.capacity;
+	}
+
+	JSTR_INLINE__
+	jstring_t(jstring_t&& other) JSTR_NOEXCEPT__
+	{
+		this->size = other.size;
+		this->capacity = other.capacity;
+		this->data = other.data;
+		other.data = nullptr;
+		other.capacity = 0;
+		other.size = 0;
+	}
+
+
+	JSTR_INLINE__
+	jstring_t& operator=(const jstring_t& other) JSTR_NOEXCEPT__
+	{
+		this->size = other.size;
+		if (!this->capacity) {
+			this->data = (char *)malloc(other.capacity);
+			if (unlikely(!this->data))
+				return *this;
+		} else if (this->capacity < other.capacity) {
+			char *tmp = (char *)realloc(this->data, other.capacity);
+			if (unlikely(!tmp))
+				return *this;
+			this->data = tmp;
+		}
+		std::memcpy(this->data, other.data, other.size);
+		this->capacity = other.capacity;
+		return *this;
+	}
+
+	JSTR_INLINE__
+	jstring_t& operator=(jstring_t&& other) JSTR_NOEXCEPT__
+	{
+		this->size = other.size;
+		this->capacity = other.capacity;
+		this->data = other.data;
+		other.data = nullptr;
+		other.capacity = 0;
+		other.size = 0;
+		return *this;
 	}
 
 JSTR_PRIVATE__
@@ -538,43 +599,43 @@ JSTR_PUBLIC__
 		return jstr_push_back_s(this, c);
 	}
 
-	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int operator+=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
-	{
-		return this->append(s);
-	}
+	/* JSTR_INLINE__ JSTR_WARN_UNUSED__ */
+	/* int operator+=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ */
+	/* { */
+	/* 	return this->append(s); */
+	/* } */
 
-	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int operator+=(const char c) JSTR_NOEXCEPT__
-	{
-		return this->push_back(c);
-	}
+	/* JSTR_INLINE__ JSTR_WARN_UNUSED__ */
+	/* int operator+=(const char c) JSTR_NOEXCEPT__ */
+	/* { */
+	/* 	return this->push_back(c); */
+	/* } */
 
-	template <std::size_t N>
-	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int operator+=(const char (&s)[N]) JSTR_NOEXCEPT__
-	{
-		return private_jstr_append(this, s, N - 1);
-	}
+	/* template <std::size_t N> */
+	/* JSTR_INLINE__ JSTR_WARN_UNUSED__ */
+	/* int operator+=(const char (&s)[N]) JSTR_NOEXCEPT__ */
+	/* { */
+	/* 	return private_jstr_append(this, s, N - 1); */
+	/* } */
 
-	template <std::size_t N>
-	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int operator=(const char (&s)[N]) JSTR_NOEXCEPT__
-	{
-		return this->replace(s);
-	}
+	/* template <std::size_t N> */
+	/* JSTR_INLINE__ JSTR_WARN_UNUSED__ */
+	/* int operator=(const char (&s)[N]) JSTR_NOEXCEPT__ */
+	/* { */
+	/* 	return this->replace(s); */
+	/* } */
 
-	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int operator=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
-	{
-		return this->replace(s);
-	}
+	/* JSTR_INLINE__ JSTR_WARN_UNUSED__ */
+	/* int operator=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ */
+	/* { */
+	/* 	return this->replace(s); */
+	/* } */
 
-	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int operator=(const jstring_t *JSTR_RESTRICT__ const other) JSTR_NOEXCEPT__
-	{
-		return this->replace(other);
-	}
+	/* JSTR_INLINE__ JSTR_WARN_UNUSED__ */
+	/* int operator=(const jstring_t *JSTR_RESTRICT__ const other) JSTR_NOEXCEPT__ */
+	/* { */
+	/* 	return this->replace(other); */
+	/* } */
 	
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
 	int append(const char *JSTR_RESTRICT__ const s, const size_t slen) JSTR_NOEXCEPT__
@@ -716,7 +777,7 @@ JSTR_PUBLIC__
 
 #	endif // __USE_GNU
 
-#endif // __cplusplus
+#endif // __cplusplus templates
 
 JSTR_PRIVATE__
 
@@ -1326,7 +1387,7 @@ JSTR_PRIVATE__
 
 } jstring_t;
 
-#endif // __cplusplus
+#endif // __cplusplus end of struct
 
 #ifdef JSTR_HAS_GENERIC
 #	define jstr_replace(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                        \
