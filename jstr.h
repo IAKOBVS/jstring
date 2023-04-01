@@ -42,21 +42,16 @@ extern "C" {
 #define JSTR_MULTIPLIER 2
 
 #ifdef __cplusplus
+#	define JSTR_PRIVATE__ private:
+#	define JSTR_PUBLIC__ public:
 #	define JSTR_CAST__(T) (T)
 #else
 #	define JSTR_CAST__(T)
 #endif // __cplusplus
 
+#ifndef __cplusplus
+
 typedef struct jstring_t jstring_t;
-
-#ifdef __cplusplus
-
-void private_jstr_constructor_cap(jstring_t *JSTR_RESTRICT__ this_, const std::size_t cap, const char *JSTR_RESTRICT__ s, const std::size_t slen) JSTR_NOEXCEPT__;
-void private_jstr_new_append_void(jstring_t *JSTR_RESTRICT__ this_, const size_t srclen, const char *JSTR_RESTRICT__ const src_, ...) JSTR_NOEXCEPT__;
-void private_jstr_new_alloc_void(jstring_t *JSTR_RESTRICT__ this_, const size_t size) JSTR_NOEXCEPT__;
-
-extern "C" {
-#endif // __cplusplus
 
 int private_jstr_cat(jstring_t *JSTR_RESTRICT__ this_, const size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int private_jstr_cat_s(jstring_t *JSTR_RESTRICT__ this_, const size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
@@ -155,20 +150,26 @@ void jstr_rev(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 
 int jstr_rev_dup(jstring_t *JSTR_RESTRICT__ src, char **JSTR_RESTRICT__ dest) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+#endif // ! __cplusplus
 
 typedef struct jstring_t {
+
 #ifndef __cplusplus
+
 	size_t size; 
 	size_t capacity;
 	char *data;
 } jstring_t;
+
 #else
+
 	std::size_t size;
 	std::size_t capacity;
 	char *data;
+
+	JSTR_INLINE__
+	const char *cdata() JSTR_NOEXCEPT__ { return this->data; }
+
 	JSTR_INLINE__
 	jstring_t() JSTR_NOEXCEPT__
 	{
@@ -184,12 +185,60 @@ typedef struct jstring_t {
 		this->size = 0;
 	}
 
+JSTR_PRIVATE__
+
+	constexpr void assert_are_strings() JSTR_NOEXCEPT__ {}
+
+	template <typename Arg, typename... Args>
+	JSTR_INLINE__
+	constexpr void assert_are_strings(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
+	{
+		static_assert(std::is_same<const char *, std::decay_t<Arg>>::value
+			|| std::is_same<char *, std::decay_t<Arg>>::value, "Wrong argument type passed!");
+		assert_are_strings(args...);
+	}
+
+	template <typename T>
+	constexpr void assert_are_type() JSTR_NOEXCEPT__ {}
+
+	template <typename T, typename Arg, typename... Args>
+	JSTR_INLINE__
+	constexpr void assert_are_type(Arg&& arg, Args&&... args)
+	{
+		static_assert(std::is_same<T, std::decay_t<Arg>>::value, "Wrong argument type passed!");
+		assert_are_type<T>(args...);
+	}
+
+	constexpr int args_are_strings() JSTR_NOEXCEPT__ { return 1; }
+
+	template <typename Arg, typename... Args>
+	JSTR_INLINE__ JSTR_WARN_UNUSED__
+	constexpr int args_are_strings(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
+	{
+		return (std::is_same<const char *, std::decay_t<Arg>>::value
+		|| std::is_same<const char *, std::decay_t<Arg>>::value)
+		&& args_are_strings(args...);
+	}
+
+	template <typename T>
+	constexpr int args_are_type() JSTR_NOEXCEPT__ { return 1; }
+
+	template <typename T, typename Arg, typename... Args>
+	JSTR_INLINE__ JSTR_WARN_UNUSED__
+	constexpr int args_are_type(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
+	{
+		return std::is_same<T, std::decay_t<Arg>>::value && args_are_type<T>(args...);
+	}
+
 	template <std::size_t N>
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
 	constexpr std::size_t strlen(const char (&s)[N]) JSTR_NOEXCEPT__
 	{
 		return N - 1;
 	}
+
+	JSTR_INLINE__ JSTR_WARN_UNUSED__
+	constexpr std::size_t strlen_args() JSTR_NOEXCEPT__ { return 0; }
 
 #	if __cplusplus >= 201703L
 
@@ -211,22 +260,33 @@ typedef struct jstring_t {
 
 #	endif // __cplusplus 17
 
+JSTR_PUBLIC__
+
+	template <typename T, typename U, typename... Args>
+	JSTR_INLINE__
+	jstring_t(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__
+	{
+		this->cat_new(arg1, arg2, std::forward<Args>(args)...);
+	}
+
 #	if __cplusplus >= 201103L
+
+JSTR_PRIVATE__
 
 	template <typename T, typename... Args>
 	JSTR_INLINE__
-	jstring_t(T arg1, T arg2, Args&&... args) JSTR_NOEXCEPT__
+	void cat_new(T arg, Args&&... args) JSTR_NOEXCEPT__
 	{
-		static_assert(std::is_same<std::decay_t<T>, const char *>::value, "Args passed must be a C string!");
-		const size_t arglen = strlen_args(arg1, arg2, std::forward<Args>(args)...);
-		if (unlikely(!alloc(arglen)))
+		static_assert(sizeof...(args), "At least two arguments needed!");
+		assert_are_strings(arg, args...);
+		const std::size_t arglen_1 = std::strlen(arg);
+		const size_t arglen = strlen_args(std::forward<Args>(args)...);
+		if (unlikely(!alloc(arglen_1 + arglen)))
 			return;
 		char *tmp = this->data;
-		while (*arg1)
-			*tmp++ = *arg1++;
-		while (*arg2)
-			*tmp++ = *arg2++;
-		for (const auto&& arg : { std::forward<Args>(args)... })
+		memcpy(tmp, arg, arglen_1);
+		tmp += arglen_1;
+		for (auto arg : { std::forward<Args>(args)... })
 			while (*arg)
 				*tmp++ = *arg++;
 		*tmp = '\0';
@@ -235,18 +295,18 @@ typedef struct jstring_t {
 
 	template <typename T, typename... Args>
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int cat(T arg1, T arg2, Args&&... args) JSTR_NOEXCEPT__
+	int cat_(T arg, Args&&... args) JSTR_NOEXCEPT__
 	{
-		static_assert(std::is_same<std::decay_t<T>, const char *>::value, "Args passed must be a C string!");
-		const size_t arglen = strlen_args(arg1, arg2, std::forward<Args>(args)...);
-		if (unlikely(!this->reserve_add(arglen)))
+		static_assert(sizeof...(args), "At least two arguments needed! Use append instead.");
+		assert_are_strings(arg, args...);
+		const std::size_t arglen_1 = std::strlen(arg);
+		const size_t arglen = strlen_args(std::forward<Args>(args)...);
+		if (unlikely(!this->reserve_add(arglen_1 + arglen)))
 			return 0;
 		char *tmp = this->data + this->size;
-		while (*arg1)
-			*tmp++ = *arg1++;
-		while (*arg2)
-			*tmp++ = *arg2++;
-		for (const auto&& arg : { std::forward<Args>(args)... })
+		memcpy(tmp, arg, arglen_1);
+		tmp += arglen_1;
+		for (auto arg : { std::forward<Args>(args)... })
 			while (*arg)
 				*tmp++ = *arg++;
 		*tmp = '\0';
@@ -254,38 +314,56 @@ typedef struct jstring_t {
 		return 1;
 	}
 
+JSTR_PUBLIC__
+
+	template <typename T>
+	JSTR_INLINE__ JSTR_WARN_UNUSED__
+	int cat(T arg) JSTR_NOEXCEPT__
+	{
+		return this->append(std::forward<T>(arg));
+	}
+
+	template <typename T, typename U, typename... Args>
+	JSTR_INLINE__ JSTR_WARN_UNUSED__
+	int cat(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__
+	{
+		return this->cat_(arg1, arg2, std::forward<Args>(args)...);
+	}
+
 	template <typename T, typename... Args>
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
 	int cat_s(T arg1, T arg2, Args&&... args) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!this->cat(arg1, arg2, std::forward<Args>(args)...)))
+		if (unlikely(!this->capacity))
 			return 0;
-		return 1;
+		return this->cat(arg1, arg2, std::forward<Args>(args)...);
 	}
 
 #	else
 
-	template <typename T, typename... Args>
+	template <typename T, typename U, typename... Args>
 	JSTR_INLINE__
-	jstring_t(T arg1, T arg2, Args&&... args) JSTR_NOEXCEPT__
+	jstring_t(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__
 	{
+		assert_are_strings(arg1, arg2, args...);
 		if (unlikely(!private_jstr_cat(this, strlen_args(arg1, arg2, std::forward<Args>(args)...), arg1, arg2, args...)))
 			return 0;
 		return 1;
 	}
 
-	template <typename T, typename... Args>
+	template <typename T, typename U, typename... Args>
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int cat(T arg1, T arg2, Args&&... args) JSTR_NOEXCEPT__
+	int cat(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__
 	{
+		assert_are_strings(arg1, arg2, args...);
 		if (unlikely(!private_jstr_cat(this, strlen_args(arg1, arg2, std::forward<Args>(args)...), arg1, arg2, args...)))
 			return 0;
 		return 1;
 	}
 
-	template <typename T, typename... Args>
+	template <typename T, typename U, typename... Args>
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
-	int cat_s(T arg1, T arg2, Args&&... args) JSTR_NOEXCEPT__
+	int cat_s(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__
 	{
 		if (unlikely(!private_jstr_cat_s(this, strlen_args(arg1, arg2, std::forward<Args>(args)...), arg1, arg2, args...)))
 			return 0;
@@ -373,25 +451,19 @@ typedef struct jstring_t {
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
 	int alloc(const char (&s)[N]) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!jstr_new_append(this, N - 1, s)))
-			return 0;
-		return 1;
+		return jstr_new_append(this, N - 1, s);
 	}
 
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
 	int alloc(const char *JSTR_RESTRICT__ const s, const size_t slen) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!jstr_new_append(this, slen, s)))
-			return 0;
-		return 1;
+		return jstr_new_append(this, slen, s);
 	}
 
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
 	int alloc(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!jstr_new_append(this, std::strlen(s), s)))
-			return 0;
-		return 1;
+		return jstr_new_append(this, std::strlen(s), s);
 	}
 		
 	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
@@ -643,6 +715,10 @@ typedef struct jstring_t {
 	}
 
 #	endif // __USE_GNU
+
+#endif // __cplusplus
+
+JSTR_PRIVATE__
 
 	JSTR_INLINE__
 	void private_jstr_constructor_cap(jstring_t *JSTR_RESTRICT__ this_, const std::size_t cap, const char *JSTR_RESTRICT__ s, const std::size_t slen) JSTR_NOEXCEPT__
@@ -1245,7 +1321,11 @@ typedef struct jstring_t {
 		other->size = n;
 		return 1;
 	}
+
+#ifdef __cplusplus
+
 } jstring_t;
+
 #endif // __cplusplus
 
 #ifdef JSTR_HAS_GENERIC

@@ -1,5 +1,5 @@
-#ifndef JSTR_MACROS_H_DEF
-#define JSTR_MACROS_H_DEF
+#ifndef JSTR_MACROS_H_DEF__
+#define JSTR_MACROS_H_DEF__
 
 #ifdef __cplusplus
 #	define JSTR_NOEXCEPT__ noexcept
@@ -244,4 +244,4 @@
 #	define MIN(a,b) ((a)<(b)?(a):(b))
 #endif // MIN
 
-#endif // JSTR_MACROS_H_DEF
+#endif // JSTR_MACROS_H_DEF__

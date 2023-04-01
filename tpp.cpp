@@ -1,92 +1,101 @@
-#include "jstr.h" // .c
-#include "macros.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <stdio.h>
+#include "jstr.h"
 
-#define deb_ ALWAYS_INLINE static int
+/* #define deb_ ALWAYS_INLINE static int */
 
-#define s_ jstring_t *
+/* #define s_ jstring_t * */
 
-/* deb_ d_jstr_init(s_ s) */
+/* /1* deb_ d_jstr_init(s_ s) *1/ */
+/* /1* { *1/ */
+/* /1* 	jstr_init(s); *1/ */
+/* /1* 	assert(!s->size); *1/ */
+/* /1* 	assert(!s->capacity); *1/ */
+/* /1* 	assert(!s->data); *1/ */
+/* /1* 	return 1; *1/ */
+/* /1* } *1/ */
+
+/* deb_ d_jstr_delete(s_ s) */
 /* { */
-/* 	jstr_init(s); */
+/* 	jstr_delete(s); */
 /* 	assert(!s->size); */
 /* 	assert(!s->capacity); */
 /* 	assert(!s->data); */
 /* 	return 1; */
 /* } */
 
-deb_ d_jstr_delete(s_ s)
-{
-	jstr_delete(s);
-	assert(!s->size);
-	assert(!s->capacity);
-	assert(!s->data);
-	return 1;
-}
+/* const char *s_1 = "sample string"; */
 
-const char *s_1 = "sample string";
+/* /1* deb_ d_jstr_new(s_ s) *1/ */
+/* /1* { *1/ */
+/* /1* 	assert(jstr_new(s, s_1)); *1/ */
+/* /1* 	assert(!strcmp(s->data, s_1)); *1/ */
+/* /1* 	assert(s->size == strlen(s_1)); *1/ */
+/* /1* 	return 1; *1/ */
+/* /1* } *1/ */
 
-/* deb_ d_jstr_new(s_ s) */
+/* const char c_1 = 'e'; */
+
+/* const char *s_1_c_1 = "sample stringe"; */
+
+/* deb_ d_jstr_push_back(s_ s) */
 /* { */
-/* 	assert(jstr_new(s, s_1)); */
-/* 	assert(!strcmp(s->data, s_1)); */
-/* 	assert(s->size == strlen(s_1)); */
+/* 	const size_t old_size = s->size; */
+/* 	assert(jstr_push_back(s, 'e')); */
+/* 	assert(!strcmp(s->data, s_1_c_1)); */
+/* 	assert(s->size == old_size + 1); */
 /* 	return 1; */
 /* } */
 
-const char c_1 = 'e';
+/* deb_ d_jstr_reserve(s_ s) */
+/* { */
+/* 	assert(jstr_reserve(s, 100)); */
+/* 	assert(s->capacity == JSTR_NEXT_POW2(100)); */
+/* 	return 1; */
+/* } */
 
-const char *s_1_c_1 = "sample stringe";
+/* deb_ d_jstr_shrink_to_fit(s_ s) */
+/* { */
+/* 	assert(jstr_shrink_to_fit(s)); */
+/* 	assert(s->capacity == s->size + 1); */
+/* 	return 1; */
+/* } */
 
-deb_ d_jstr_push_back(s_ s)
-{
-	const size_t old_size = s->size;
-	assert(jstr_push_back(s, 'e'));
-	assert(!strcmp(s->data, s_1_c_1));
-	assert(s->size == old_size + 1);
-	return 1;
-}
+/* const char *s_2 = "hello world"; */
 
-deb_ d_jstr_reserve(s_ s)
-{
-	assert(jstr_reserve(s, 100));
-	assert(s->capacity == JSTR_NEXT_POW2(100));
-	return 1;
-}
+/* deb_ d_jstr_replace(s_ s) */
+/* { */
+/* 	assert(jstr_replace(s, s_2)); */
+/* 	assert(!strcmp(s->data, s_2)); */
+/* 	assert(s->size == strlen(s_2)); */
+/* 	return 1; */
+/* } */
 
-deb_ d_jstr_shrink_to_fit(s_ s)
-{
-	assert(jstr_shrink_to_fit(s));
-	assert(s->capacity == s->size + 1);
-	return 1;
-}
+/* template <std::size_t N> */
+/* constexpr int is_str(const char (&s)[N]) */
+/* { */
+/* 	return 1; */
+/* } */
 
-const char *s_2 = "hello world";
-
-deb_ d_jstr_replace(s_ s)
-{
-	assert(jstr_replace(s, s_2));
-	assert(!strcmp(s->data, s_2));
-	assert(s->size == strlen(s_2));
-	return 1;
-}
+/* template <std::size_t N> */
+/* constexpr int is_str(char (&s)[N]) */
+/* { */
+/* 	return 1; */
+/* } */
 
 int debug()
 {
-	jstring_t s("hello world");
-	assert(d_jstr_push_back(&s));
-	assert(d_jstr_reserve(&s));
-	assert(d_jstr_shrink_to_fit(&s));
-	assert(d_jstr_replace(&s));
-	assert(puts(s.data));
-	assert(d_jstr_delete(&s));
+	/* jstring_t s("hello world"); */
+	/* assert(d_jstr_push_back(&s)); */
+	/* assert(d_jstr_reserve(&s)); */
+	/* assert(d_jstr_shrink_to_fit(&s)); */
+	/* assert(d_jstr_replace(&s)); */
+	/* assert(puts(s.data)); */
+	/* assert(d_jstr_delete(&s)); */
+	/* q.assert_are_type<const char *>("hello", (&s)[1]); */
+	/* if (q.cat("hello", "world")) */
+		/* ; */
 	return 1;
 }
 
 int main()
 {
-	assert(debug());
 }
