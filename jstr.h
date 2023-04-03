@@ -47,6 +47,8 @@ extern "C" {
 #	define JSTR_CAST__(T) (T)
 #else
 #	define JSTR_CAST__(T)
+#	define JSTR_PRIVATE__
+#	define JSTR_PUBLIC__
 #endif // __cplusplus
 
 #ifndef __cplusplus // ! __cplusplus
@@ -190,11 +192,11 @@ typedef struct jstring_t {
 	{
 		this->size = other.size;
 		if (!this->capacity) {
-			this->data = (char *)malloc(other.capacity);
+			this->data = (char *)std::malloc(other.capacity);
 			if (unlikely(!this->data))
 				return;
 		} else if (this->capacity < other.capacity) {
-			char *tmp = (char *)realloc(this->data, other.capacity);
+			char *tmp = (char *)std::realloc(this->data, other.capacity);
 			if (unlikely(!tmp))
 				return;
 			this->data = tmp;
@@ -220,11 +222,11 @@ typedef struct jstring_t {
 	{
 		this->size = other.size;
 		if (!this->capacity) {
-			this->data = (char *)malloc(other.capacity);
+			this->data = (char *)std::malloc(other.capacity);
 			if (unlikely(!this->data))
 				return *this;
 		} else if (this->capacity < other.capacity) {
-			char *tmp = (char *)realloc(this->data, other.capacity);
+			char *tmp = (char *)std::realloc(this->data, other.capacity);
 			if (unlikely(!tmp))
 				return *this;
 			this->data = tmp;
