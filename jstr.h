@@ -783,6 +783,8 @@ JSTR_PUBLIC__
 
 JSTR_PRIVATE__
 
+#ifdef __cplusplus
+
 	JSTR_INLINE__
 	void private_jstr_constructor_cap(jstring_t *JSTR_RESTRICT__ this_, const std::size_t cap, const char *JSTR_RESTRICT__ s, const std::size_t slen) JSTR_NOEXCEPT__
 	{
@@ -810,6 +812,8 @@ JSTR_PRIVATE__
 		dest->size = srclen;
 		memcpy(dest->data, src, srclen + 1);
 	}
+
+#endif // __cpluslus
 
 	JSTR_INLINE__
 	void private_jstr_new_alloc_void(jstring_t *JSTR_RESTRICT__ this_, const size_t size) JSTR_NOEXCEPT__
