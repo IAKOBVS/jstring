@@ -497,17 +497,13 @@ JSTR_PUBLIC__
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
 	int alloc() JSTR_NOEXCEPT__
 	{
-		if (unlikely(!jstr_new_alloc(this, 8)))
-			return 0;
-		return 1;
+		return jstr_new_alloc(this, 8);
 	}
 
 	JSTR_INLINE__ JSTR_WARN_UNUSED__
 	int alloc(const size_t cap) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!jstr_new_alloc(this, cap)))
-			return 0;
-		return 1;
+		return jstr_new_alloc(this, cap);
 	}
 
 	template <std::size_t N>
