@@ -1402,17 +1402,17 @@ JSTR_PRIVATE__
 #	ifdef JSTR_HAS_GENERIC
 #		define jstr_assign(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                \
 		jstring_t *: jstr_assign_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                                       \
-		JSTR_GENERIC_CASE_STR((PP_NARG(__VA_ARGS__) == 2)                                                                   \
+		JSTR_GENERIC_CASE_STR((PP_NARG(__VA_ARGS__) == 2)                                                                  \
 			? private_jstr_assign(dest, (char *)__VA_ARGS__, 0)                                                        \
 			: private_jstr_assign(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__)))) \
 	)
 #	else
-#		define jstr_assign(dest, src, srclen)  \
-		private_jstr_assign(dest, src, srclen)
+#		define jstr_assign(dest, src, srclen)          \
+			private_jstr_assign(dest, src, srclen)
 #	endif // JSTR_HAS_GENERIC
 
 #	ifdef JSTR_HAS_GENERIC
-#		define jstr_cat(this_jstr, ...)                                                \
+#		define jstr_cat(this_jstr, ...)                                                        \
 			generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
 #		define generic_jstr_cat(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
@@ -1446,16 +1446,16 @@ JSTR_PRIVATE__
 		? PRIVATE_JSTR_NEW_ALLOC(this_jstr, __VA_ARGS__)           \
 		: PRIVATE_JSTR_NEW_APPEND_WITH_LEN(this_jstr, __VA_ARGS__)
 
-#	define PRIVATE_JSTR_NEW_ALLOC(this_jstr, ...)                       \
+#	define PRIVATE_JSTR_NEW_ALLOC(this_jstr, ...)                \
 	jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))
 
-#	define PRIVATE_JSTR_NEW_APPEND(this_jstr, ...)                                                                  \
+#	define PRIVATE_JSTR_NEW_APPEND(this_jstr, ...)                                                           \
 	jstr_new_append(this_jstr, strlen((char *)PP_FIRST_ARG(__VA_ARGS__)), (char *)PP_FIRST_ARG(__VA_ARGS__))
 
 #	define PRIVATE_JSTR_NEW_APPEND_WITH_LEN(this_jstr, ...) \
 	jstr_new_append(this_jstr, (size_t)__VA_ARGS__, NULL)
 
-#	define PRIVATE_JSTR_NEW_CAT(this_jstr, ...)                                                       \
+#	define PRIVATE_JSTR_NEW_CAT(this_jstr, ...)                                                \
 	private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS((char *)__VA_ARGS__), __VA_ARGS__, NULL)
 
 #	define PRIVATE_JSTR_NEW_ADD_STR(this_jstr, ...)           \
@@ -1475,9 +1475,9 @@ JSTR_PRIVATE__
 #	endif // JSTR_HAS_GENERIC
 
 #	ifdef JSTR_HAS_GENERIC
-#		define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                         \
+#		define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                   \
 			JSTR_GENERIC_CASE_SIZE(jstr_reserve_f(this_jstr, ((this_jstr)->capacity) + (size_t)PP_FIRST_ARG(__VA_ARGS__))), \
-			JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, (char *)__VA_ARGS__))                                                    \
+			JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, (char *)__VA_ARGS__))                                              \
 	)
 
 #	endif // JSTR_HAS_GENERIC
@@ -1489,7 +1489,7 @@ JSTR_PRIVATE__
 		: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
 )
 
-#	define private_jstr_reserve_x(this_jstr, multiplier)                            \
+#	define private_jstr_reserve_x(this_jstr, multiplier)                      \
 	jstr_reserve_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
 
 #	define jstr_reserve_2x(this_jstr) private_jstr_reserve_x(this_jstr, 2)
@@ -1499,7 +1499,7 @@ JSTR_PRIVATE__
 #	define jstr_reserve_32x(this_jstr) private_jstr_reserve_x(this_jstr, 32)
 #	define jstr_reserve_64x(this_jstr) private_jstr_reserve_x(this_jstr, 64)
 
-#	define private_jstr_reserve_s_x(this_jstr, multiplier)                            \
+#	define private_jstr_reserve_s_x(this_jstr, multiplier)                      \
 	jstr_reserve_s_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
 
 #	define jstr_reserve_s_2x(this_jstr) private_jstr_reserve_s_x(this_jstr, 2)
