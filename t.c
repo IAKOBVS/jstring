@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#define deb_ ALWAYS_INLINE static int
+#define deb_ static int
 
 #define s_ jstring_t *
 
@@ -66,9 +66,9 @@ deb_ d_jstr_shrink_to_fit(s_ s)
 
 const char *s_2 = "hello world";
 
-deb_ d_jstr_replace(s_ s)
+deb_ d_jstr_assign(s_ s)
 {
-	assert(jstr_replace(s, s_2));
+	assert(jstr_assign(s, s_2));
 	assert(!strcmp(s->data, s_2));
 	assert(s->size == strlen(s_2));
 	return 1;
