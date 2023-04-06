@@ -226,24 +226,34 @@ typedef struct jstring_t {
 	char *data;
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	JSTR_CONST__
 	size_t csize() JSTR_NOEXCEPT__ { return this->size; }
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	JSTR_CONST__
 	size_t clength() JSTR_NOEXCEPT__ { return this->size; }
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	JSTR_CONST__
 	size_t ccapacity() JSTR_NOEXCEPT__ { return this->capacity; }
 	
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	JSTR_CONST__
 	const char *cdata() JSTR_NOEXCEPT__ { return this->data; }
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	JSTR_CONST__
 	const char *c_str() JSTR_NOEXCEPT__ { return this->data; }
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	int empty() JSTR_NOEXCEPT__ { return !!this->size; }
 
 	JSTR_INLINE__
 	jstring_t() JSTR_NOEXCEPT__
