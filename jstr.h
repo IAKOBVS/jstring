@@ -75,7 +75,6 @@ int jstr_tolower(const int c) JSTR_NOEXCEPT__
 }
 
 JSTR_INLINE__
-JSTR_CONST__
 void jstr_strupper(char *JSTR_RESTRICT__ dest) JSTR_NOEXCEPT__
 {
 	for (;; ++dest) {
@@ -249,6 +248,38 @@ typedef struct jstring_t {
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
 	const char *c_str() JSTR_NOEXCEPT__ { return this->data; }
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	char *begin() JSTR_NOEXCEPT__
+	{
+		return (char *)this->data;
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	char *end() JSTR_NOEXCEPT__
+	{
+		return (char *)this->data + this->size;
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	const char *cbegin() JSTR_NOEXCEPT__
+	{
+		return this->data;
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	const char *cend() JSTR_NOEXCEPT__
+	{
+		return this->data + this->size;
+	}
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
@@ -623,38 +654,6 @@ JSTR_PUBLIC__
 	int alloc(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 	{
 		return jstr_new_append(this, std::strlen(s), s);
-	}
-		
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	char *begin() JSTR_NOEXCEPT__
-	{
-		return (char *)this->data;
-	}
-
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	JSTR_CONST__
-	char *end() JSTR_NOEXCEPT__
-	{
-		return (char *)this->data + this->size;
-	}
-
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	JSTR_CONST__
-	const char *cbegin() JSTR_NOEXCEPT__
-	{
-		return (const char *)this->data;
-	}
-
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	JSTR_CONST__
-	const char *cend() JSTR_NOEXCEPT__
-	{
-		return (const char *)this->data + this->size;
 	}
 
 	JSTR_INLINE__
@@ -1676,8 +1675,6 @@ JSTR_PRIVATE__
 #		define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
 #		define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
 #	endif // __cplusplus
-
-#	define jstr_typeof_data char *
 
 #	define jstr_foreach_index(elem, jstr)                 \
 	for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
