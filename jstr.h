@@ -105,7 +105,7 @@ void jstr_strlower(char *JSTR_RESTRICT__ dest) JSTR_NOEXCEPT__
 
 #ifndef __cplusplus // ! __cplusplus
 
-#define jstring(name, ...) jstring name = {0}
+#define jstring(name) jstring name = {0}
 
 typedef struct jstring_t jstring_t;
 
@@ -673,60 +673,60 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	void strlower() JSTR_NOEXCEPT__
+	void lower() JSTR_NOEXCEPT__
 	{
 		jstr_strlower(this->data);
 	}
 
 	JSTR_INLINE__
-	void strupper() JSTR_NOEXCEPT__
+	void upper() JSTR_NOEXCEPT__
 	{
 		jstr_strupper(this->data);
 	}
 
-	/* JSTR_INLINE__
-	JSTR_WARN_UNUSED__ */
-	/* int operator+=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ */
-	/* { */
-	/* 	return this->append(s); */
-	/* } */
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	int operator+=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
+	{
+		return this->append(s);
+	}
 
-	/* JSTR_INLINE__
-	JSTR_WARN_UNUSED__ */
-	/* int operator+=(const char c) JSTR_NOEXCEPT__ */
-	/* { */
-	/* 	return this->push_back(c); */
-	/* } */
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	int operator+=(const char c) JSTR_NOEXCEPT__
+	{
+		return this->push_back(c);
+	}
 
-	/* template <std::size_t N> */
-	/* JSTR_INLINE__
-	JSTR_WARN_UNUSED__ */
-	/* int operator+=(const char (&s)[N]) JSTR_NOEXCEPT__ */
-	/* { */
-	/* 	return private_jstr_append(this, s, N - 1); */
-	/* } */
+	template <std::size_t N>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	int operator+=(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return private_jstr_append(this, s, N - 1);
+	}
 
-	/* template <std::size_t N> */
-	/* JSTR_INLINE__
-	JSTR_WARN_UNUSED__ */
-	/* int operator=(const char (&s)[N]) JSTR_NOEXCEPT__ */
-	/* { */
-	/* 	return this->assign(s); */
-	/* } */
+	template <std::size_t N>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	int operator=(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return this->assign(s);
+	}
 
-	/* JSTR_INLINE__
-	JSTR_WARN_UNUSED__ */
-	/* int operator=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ */
-	/* { */
-	/* 	return this->assign(s); */
-	/* } */
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	int operator=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
+	{
+		return this->assign(s);
+	}
 
-	/* JSTR_INLINE__
-	JSTR_WARN_UNUSED__ */
-	/* int operator=(const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ */
-	/* { */
-	/* 	return this->assign(other_); */
-	/* } */
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	int operator=(const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
+	{
+		return this->assign(other_);
+	}
 	
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
@@ -1501,28 +1501,6 @@ JSTR_PRIVATE__
 } jstring_t;
 
 #endif // __cplusplus end of struct
-
-JSTR_INLINE__
-JSTR_WARN_UNUSED__
-int jstr_toupper(const int c) JSTR_NOEXCEPT__
-{
-	switch (c) {
-	CASE_LOWER
-		return c - 'a' + 'A';
-	}
-	return c;
-}
-
-JSTR_INLINE__
-JSTR_WARN_UNUSED__
-int jstr_tolower(const int c) JSTR_NOEXCEPT__
-{
-	switch (c) {
-	CASE_UPPER
-		return c - 'A' + 'a';
-	}
-	return c;
-}
 
 #ifndef __cplusplus
 

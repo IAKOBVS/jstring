@@ -82,7 +82,7 @@ int debug()
 	assert(d_jstr_push_back(&s));
 	assert(d_jstr_reserve(&s));
 	assert(d_jstr_shrink_to_fit(&s));
-	assert(d_jstr_replace(&s));
+	assert(d_jstr_assign(&s));
 	assert(puts(s.data));
 	assert(d_jstr_delete(&s));
 	return 1;
