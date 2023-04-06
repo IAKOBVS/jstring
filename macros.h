@@ -83,10 +83,10 @@
 #		define PURE
 #	endif // PURE
 #	if __has_attribute(const)
-#		define CONST __attribute__((const))
+#		define JSTR_CONST__ __attribute__((const))
 #	else
-#		define CONST
-#	endif // CONST
+#		define JSTR_CONST__
+#	endif // JSTR_CONST__
 #	if __has_attribute(flatten)
 #		define FLATTEN __attribute__((flatten))
 #	else
@@ -95,12 +95,12 @@
 #elif defined(_MSC_VER)
 #	define JSTR_INLINE__ __forceinline inline
 #	define PURE __declspec(noalias)
-#	define CONST __declspec(restrict)
+#	define JSTR_CONST__ __declspec(restrict)
 #	define FLATTEN
 #else
 #	define JSTR_INLINE__ inline
 #	define PURE
-#	define CONST
+#	define JSTR_CONST__
 #	define FLATTEN
 #endif // __GNUC__ || __clang__ || _MSC_VER
 
@@ -114,13 +114,13 @@
 #	ifdef __cplusplus
 		extern "C" {
 #	endif
-		CONST JSTR_INLINE__ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
+		JSTR_CONST__ JSTR_INLINE__ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
 		{
 			return 1ull << (64 - __builtin_clzll(x - 1));
 		}
 #	endif // __has_builtin(__builtin_clzll)
 #	if __has_builtin(__builtin_clz)
-		CONST JSTR_INLINE__ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
+		JSTR_CONST__ JSTR_INLINE__ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
 		{
 			return 1 << (32 - __builtin_clz(x - 1));
 		}
@@ -135,21 +135,21 @@
 #	ifdef __cplusplus
 		extern "C" {
 #	endif
-	CONST JSTR_INLINE__ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
+	JSTR_CONST__ JSTR_INLINE__ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
 	{
 		unsigned long index;
 		_BitScanReverse(&index, x - 1);
 		return 1 << (index + 1);
 	}
 
-	CONST JSTR_INLINE__ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
+	JSTR_CONST__ JSTR_INLINE__ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
 	{
 		unsigned long index;
 		_BitScanReverse64(&index, x - 1);
 		return 1ull << (index + 1);
 	}
 #else
-	CONST JSTR_INLINE__ size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT__
+	JSTR_CONST__ JSTR_INLINE__ size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT__
 	{
 		--x;
 		x |= x >> 1;
@@ -160,7 +160,7 @@
 		return x + 1;
 	}
 
-	CONST JSTR_INLINE__ size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT__
+	JSTR_CONST__ JSTR_INLINE__ size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT__
 	{
 		--x;
 		x |= x >> 1;

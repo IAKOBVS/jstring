@@ -64,6 +64,7 @@ int jstr_toupper(const int c) JSTR_NOEXCEPT__
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
+JSTR_CONST__
 int jstr_tolower(const int c) JSTR_NOEXCEPT__
 {
 	switch (c) {
@@ -74,6 +75,7 @@ int jstr_tolower(const int c) JSTR_NOEXCEPT__
 }
 
 JSTR_INLINE__
+JSTR_CONST__
 void jstr_strupper(char *JSTR_RESTRICT__ dest) JSTR_NOEXCEPT__
 {
 	for (;; ++dest) {
@@ -171,10 +173,10 @@ int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JS
 int jstr_cmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s, const size_t slen) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
 #ifdef __USE_GNU
-int jstr_case_cmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-int jstr_case_cmp(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_casecmp(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
-int jstr_case_cmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 #endif // __USE_GNU
 
 /* finds first occurence of character from end of string */
@@ -224,7 +226,24 @@ typedef struct jstring_t {
 	char *data;
 
 	JSTR_INLINE__
+	JSTR_CONST__
+	size_t csize() JSTR_NOEXCEPT__ { return this->size; }
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	size_t clength() JSTR_NOEXCEPT__ { return this->size; }
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	size_t ccapacity() JSTR_NOEXCEPT__ { return this->capacity; }
+	
+	JSTR_INLINE__
+	JSTR_CONST__
 	const char *cdata() JSTR_NOEXCEPT__ { return this->data; }
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	const char *c_str() JSTR_NOEXCEPT__ { return this->data; }
 
 	JSTR_INLINE__
 	jstring_t() JSTR_NOEXCEPT__
@@ -596,25 +615,33 @@ JSTR_PUBLIC__
 		return jstr_new_append(this, std::strlen(s), s);
 	}
 		
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	char *begin() JSTR_NOEXCEPT__
 	{
 		return (char *)this->data;
 	}
 
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
 	char *end() JSTR_NOEXCEPT__
 	{
 		return (char *)this->data + this->size;
 	}
 
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
 	const char *cbegin() JSTR_NOEXCEPT__
 	{
 		return (const char *)this->data;
 	}
 
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
 	const char *cend() JSTR_NOEXCEPT__
 	{
 		return (const char *)this->data + this->size;
@@ -779,25 +806,25 @@ JSTR_PUBLIC__
 	}
 
 	template <std::size_t N>
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
 	int str(const char (&s)[N]) JSTR_NOEXCEPT__
 	{
 		return private_jstr_str(this, s, N - 1);
 	}
 
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
 	char *str(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 	{
 		return private_jstr_str(this, s, std::strlen(s));
 	}
 
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
 	char *chr(const int c) JSTR_NOEXCEPT__
 	{
 		return jstr_chr(this, c);
 	}
 
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
 	char *rchr(const int c) JSTR_NOEXCEPT__
 	{
 		return jstr_rchr(this, c);
@@ -851,31 +878,47 @@ JSTR_PUBLIC__
 		return jstr_shrink_to_fit(this);
 	}
 
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
 	int cmp(const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
 	{
-		return jstr_cmp_f(this, other_);
+		return jstr_cmp(this, other_);
 	}
 
 	template <std::size_t N>
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
 	int cmp(const char (&s)[N]) JSTR_NOEXCEPT__
 	{
 		return jstr_cmp_str(this, s, N - 1);
 	}
 
-#	ifdef __USE_GNU
-
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
-	int casecmp(const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	int cmp(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 	{
-		return jstr_case_cmp_str(this, other_->data);
+		return jstr_cmp_str(this, s, MIN(std::strlen(s), this->size));
 	}
 
-	JSTR_INLINE__ CONST JSTR_WARN_UNUSED__
+#	ifdef __USE_GNU
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	int casecmp(const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
+	{
+		return jstr_casecmp_str(this, other_->data);
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
 	int casecmp(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 	{
-		return jstr_case_cmp_str(this, s);
+		return jstr_casecmp_str(this, s);
 	}
 
 #	endif // __USE_GNU
@@ -932,8 +975,8 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	void jstr_init(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
-		this_->capacity = 0;
 		this_->size = 0;
+		this_->capacity = 0;
 		this_->data = NULL;
 	}
 
@@ -1117,39 +1160,39 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	int jstr_cmp(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
 	{
-		if (this_->size != other_->size)
-			return 1;
-		return jstr_cmp_f(this_, other_);
+		if (this_->size == other_->size)
+			return jstr_cmp_f(this_, other_);
+		return 1;
 	}
 
 	JSTR_INLINE__
 	int jstr_cmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s, const size_t slen) JSTR_NOEXCEPT__
 	{
-		if (this_->size != slen)
-			return 1;
-		return memcmp(this_, s, slen);
+		if (this_->size == slen)
+			return memcmp(this_, s, slen);
+		return 1;
 	}
 
 #ifdef __USE_GNU
 
 	JSTR_INLINE__
-	int jstr_case_cmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
+	int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
 	{
 		return strcasecmp(this_->data, other_->data);
 	}
 
 	JSTR_INLINE__
-	int jstr_case_cmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
+	int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 	{
 		return strcasecmp(this_->data, s);
 	}
 
 	JSTR_INLINE__
-	int jstr_case_cmp(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
+	int jstr_casecmp(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
 	{
-		if (this_->size != other_->size)
-			return 1;
-		return jstr_case_cmp_f(this_, other_);
+		if (this_->size == other_->size)
+			return jstr_casecmp_f(this_, other_);
+		return 1;
 	}
 
 #endif
