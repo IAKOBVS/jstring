@@ -1407,9 +1407,7 @@ JSTR_PRIVATE__
 
 	JSTR_INLINE__
 	void jstr_pop_front(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
-	{
-		memmove(this_->data, this_->data + 1, this_->size--);
-	}
+	{ memmove(this_->data, this_->data + 1, this_->size--); }
 
 	JSTR_INLINE__
 	void jstr_pop_front_s(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
@@ -1426,17 +1424,13 @@ JSTR_PRIVATE__
 				const char *JSTR_RESTRICT__ const needle,
 				size_t needlelen,
 				...) JSTR_NOEXCEPT__
-	{
-		return JSTR_CAST__(char *)memmem(haystack->data, haystack->size, needle, needlelen);
-	}
+	{ return JSTR_CAST__(char *)memmem(haystack->data, haystack->size, needle, needlelen); }
 
 #else
 
 	JSTR_INLINE__
 	char *jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__
-	{
-		return strstr(haystack->data, needle);
-	}
+	{ return strstr(haystack->data, needle); }
 
 #endif
 
@@ -1444,9 +1438,7 @@ JSTR_PRIVATE__
 
 	JSTR_INLINE__
 	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, int c) JSTR_NOEXCEPT__
-	{
-		return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size);
-	}
+	{ return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
 
 #else
 
@@ -1491,9 +1483,7 @@ JSTR_PRIVATE__
 
 	JSTR_INLINE__
 	char *jstr_chr(const jstring_t *JSTR_RESTRICT__ const this_, int c) JSTR_NOEXCEPT__
-	{
-		return JSTR_CAST__(char *)memchr(this_->data, c, this_->size);
-	}
+	{ return JSTR_CAST__(char *)memchr(this_->data, c, this_->size); }
 
 	JSTR_INLINE__
 	int jstr_dup(jstring_t *JSTR_RESTRICT__ this_, jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__
