@@ -153,9 +153,9 @@ JSTR_INLINE__
 JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstr_casecmp(const char *JSTR_RESTRICT__ s1,
-		const char *JSTR_RESTRICT__ const s2) JSTR_NOEXCEPT__
+		const char *JSTR_RESTRICT__ s2) JSTR_NOEXCEPT__
 {
-	for (char c;; ) {
+	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
 		CASE_UPPER
 			c = *s1 - 'A' + 'a';
@@ -164,7 +164,7 @@ int jstr_casecmp(const char *JSTR_RESTRICT__ s1,
 			c = *s1;
 			break;
 		case '\0':
-			return *s2 != '\0';
+			return *s2;
 		}
 		switch (*s2) {
 		CASE_UPPER
@@ -245,10 +245,10 @@ int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JS
 int jstr_cmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s, const size_t slen) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
 #ifdef __USE_GNU
-int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
-int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 #endif // __USE_GNU
 
 /* finds first occurence of character from end of string */
@@ -874,12 +874,12 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int casecmp(const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ { return jstr_casecmp_str(this, other_->data); }
+	int casecmp(const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ { return jstr_casecmp_str(this, other_->data); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int casecmp(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return jstr_casecmp_str(this, s); }
+	int casecmp(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { return jstr_casecmp_str(this, s); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
