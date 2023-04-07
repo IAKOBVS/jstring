@@ -36,6 +36,7 @@ extern "C" {
 #	include <cstdarg>
 #	include <cstdlib>
 #	include <utility>
+#	include <cassert>
 #endif // __cplusplus
 
 #define JSTR_MIN_CAP 8
@@ -646,6 +647,39 @@ JSTR_PUBLIC__
 	void upper() JSTR_NOEXCEPT__ { jstr_strupper(this->data); }
 
 	JSTR_INLINE__
+	void operator-=(const std::size_t size) JSTR_NOEXCEPT__ { this->size -= size; }
+
+	JSTR_INLINE__
+	jstring_t operator-(const std::size_t size) JSTR_NOEXCEPT__
+	{
+		jstring_t tmp;
+		tmp.capacity = MAX(JSTR_NEXT_POW2(2 * (this->size - size)), JSTR_MIN_CAP);
+		tmp.data = JSTR_CAST__(char *)malloc(tmp.capacity);
+		if (likely(tmp.data)) {
+			tmp.size = this->size - size;
+			memcpy(tmp.data, this->data, tmp.size);
+			(tmp.data)[tmp.size] = '\0';
+		} else {
+			tmp.capacity = 0;
+		}
+		return tmp;
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	char *operator[](const std::size_t index) { return this->data + index; }
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	char *at(const std::size_t index)
+	{
+		assert(index <= this->size);
+		return this->data + index;
+	}
+
+	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	int operator+=(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return this->append(s); }
 
@@ -657,6 +691,35 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	int operator+=(const char (&s)[N]) JSTR_NOEXCEPT__ { return private_jstr_append(this, s, N - 1); }
+
+	template <std::size_t N>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	jstring_t operator+(const char (&s)[N]) JSTR_NOEXCEPT__ { return this->operator_plus(s, N - 1); }
+	
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	jstring_t operator+(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return this->operator_plus(s, std::strlen(s)); }
+
+JSTR_PRIVATE__
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	jstring_t operator_plus(const char *JSTR_RESTRICT__ const s, const std::size_t slen) JSTR_NOEXCEPT__ {
+		jstring_t tmp;
+		tmp.capacity = MAX(JSTR_NEXT_POW2(2 * (this->size + slen)), JSTR_MIN_CAP);
+		tmp.data = JSTR_CAST__(char *)malloc(tmp.capacity);
+		if (likely(tmp.data)) {
+			memcpy(tmp.data, this->data, this->size);
+			memcpy(tmp.data + this->size, s, slen + 1);
+			tmp.size = this->size + slen;
+		} else {
+			tmp.capacity = 0;
+		}
+		return tmp;
+	}
+
+JSTR_PUBLIC__
 
 	template <std::size_t N>
 	JSTR_INLINE__
@@ -710,16 +773,24 @@ JSTR_PUBLIC__
 	int append_s(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_append_s(this, s, std::strlen(s)); }
 
 	template <std::size_t N>
-	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	int str(const char (&s)[N]) JSTR_NOEXCEPT__ { return private_jstr_str(this, s, N - 1); }
 
-	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	char *str(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_str(this, s, std::strlen(s)); }
 
-	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	char *chr(int c) JSTR_NOEXCEPT__ { return jstr_chr(this, c); }
 
-	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	char *rchr(int c) JSTR_NOEXCEPT__ { return jstr_rchr(this, c); }
 
 	JSTR_INLINE__ void swap(jstring_t *other_) JSTR_NOEXCEPT__ { jstr_swap(this, other_); }
