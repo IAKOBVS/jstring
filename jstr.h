@@ -52,6 +52,11 @@ extern "C" {
 #	define JSTR_PUBLIC__
 #endif // __cplusplus
 
+/*
+   at() will do bounds checking by asserting that index <= this->size.
+   it will crash at runtime if assertion fails.
+*/
+
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
 int jstr_toupper(const int c) JSTR_NOEXCEPT__
