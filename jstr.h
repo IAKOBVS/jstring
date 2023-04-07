@@ -56,7 +56,7 @@ JSTR_WARN_UNUSED__
 int jstr_toupper(const int c) JSTR_NOEXCEPT__
 {
 	switch (c) {
-	CASE_LOWER
+	JSTR_CASE_LOWER
 		return c - 'a' + 'A';
 	}
 	return c;
