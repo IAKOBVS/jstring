@@ -104,6 +104,45 @@ void jstr_strlower(char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 	}
 }
 
+JSTR_INLINE__
+JSTR_CONST__
+JSTR_WARN_UNUSED__
+int jstr_count_c(const char* JSTR_RESTRICT__ s, const int c) JSTR_NOEXCEPT__
+{
+	int count = 0;
+	while (*s)
+		if (*s == c)
+			++count;
+	return count;
+}
+
+
+JSTR_INLINE__
+JSTR_CONST__
+JSTR_WARN_UNUSED__
+#ifdef __USE_GNU
+int jstr_count_s(const char* JSTR_RESTRICT__ haystack,
+		size_t haystacklen,
+		const char* JSTR_RESTRICT__ const needle,
+		size_t needlelen) JSTR_NOEXCEPT__
+{
+	int count = 0;
+	for (const char* JSTR_RESTRICT__ old = haystack;
+		(haystack = (char *)memmem(haystack, haystacklen, needle, needlelen));
+		haystacklen -= (haystack - old), ++count);
+	return count;
+}
+#else
+int jstr_count_s(const char* JSTR_RESTRICT__ haystack,
+		const char* JSTR_RESTRICT__ const needle) JSTR_NOEXCEPT__
+{
+	int count = 0;
+	while ((haystack = (char *)strstr(haystack, needle)))
+		++count;
+	return count;
+}
+#endif // __USE_GNU
+
 #ifndef __cplusplus // ! __cplusplus
 
 #define jstring(name) jstring name = {0}
@@ -928,6 +967,47 @@ JSTR_PUBLIC__
 	int casecmp(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 	{
 		return jstr_casecmp_str(this, s);
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	int count_c(const int c) JSTR_NOEXCEPT__
+	{
+		return jstr_count_c(this->data, c);
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	int count_s(const char* JSTR_RESTRICT__ const needle) JSTR_NOEXCEPT__
+	{
+		return jstr_count_s(this->data, this->size, needle, std::strlen(needle));
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	int count_s(const char* JSTR_RESTRICT__ const needle, std::size_t needlelen) JSTR_NOEXCEPT__
+	{
+		return jstr_count_s(this->data, this->size, needle, needlelen);
+	}
+
+	template <std::size_t N>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	int count_s(const char (&needle)[N]) JSTR_NOEXCEPT__
+	{
+		return jstr_count_s(this->data, this->size, needle, N - 1);
+	}
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	int count_s(const jstring_t *JSTR_RESTRICT__ const needle) JSTR_NOEXCEPT__
+	{
+		return jstr_count_s(this->data, this->size, needle->data, needle->size);
 	}
 
 #	endif // __USE_GNU
