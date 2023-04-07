@@ -24,6 +24,7 @@
 #	include <string.h>
 #endif // ! __cplusplus
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -37,20 +38,13 @@ extern "C" {
 #	include <cstdlib>
 #	include <utility>
 #	include <cassert>
+#	include <cstdio>
 #endif // __cplusplus
+
+#	include "jstrio.h"
 
 #define JSTR_MIN_CAP 8
 #define JSTR_MULTIPLIER 2
-
-#ifdef __cplusplus
-#	define JSTR_PRIVATE__ private:
-#	define JSTR_PUBLIC__ public:
-#	define JSTR_CAST__(T) (T)
-#else
-#	define JSTR_CAST__(T)
-#	define JSTR_PRIVATE__
-#	define JSTR_PUBLIC__
-#endif // __cplusplus
 
 /*
    at() will do bounds checking by asserting that index <= this->size.
@@ -869,8 +863,6 @@ JSTR_PUBLIC__
 	JSTR_CONST__
 	int cmp(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return jstr_cmp_str(this, s, MIN(std::strlen(s), this->size)); }
 
-#	ifdef __USE_GNU
-
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
@@ -909,21 +901,19 @@ JSTR_PUBLIC__
 	JSTR_CONST__
 	int count_s(const char (&needle)[N]) JSTR_NOEXCEPT__
 #ifdef __USE_GNU
-	{ return jstr_count_s(this->data, this->size, needle, N - 1); }
+		{ return jstr_count_s(this->data, this->size, needle, N - 1); }
 #else
-	{ return jstr_count_s(this->data, needle); }
+		{ return jstr_count_s(this->data, needle); }
 #endif
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
 	int count_s(const jstring_t *JSTR_RESTRICT__ const needle) JSTR_NOEXCEPT__
-#ifdef __USE_GNU
-	{ return jstr_count_s(this->data, this->size, needle->data, needle->size); }
-#else
-	{ return jstr_count_s(this->data, needle); }
-#endif
-
+#	ifdef __USE_GNU
+		{ return jstr_count_s(this->data, this->size, needle->data, needle->size); }
+#	else
+		{ return jstr_count_s(this->data, needle); }
 #	endif // __USE_GNU
 
 #endif // __cplusplus templates

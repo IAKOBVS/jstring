@@ -260,5 +260,15 @@
 #define JSTR_CASE_ALPHANUM JSTR_CASE_DIGIT JSTR_CASE_ALPHA
 
 #define JSTR_CASE_WHITESPACE case '\n': case '\t': case '\r': case ' ':
+	 
+#ifdef __cplusplus
+#	define JSTR_PRIVATE__ private:
+#	define JSTR_PUBLIC__ public:
+#	define JSTR_CAST__(T) (T)
+#else
+#	define JSTR_CAST__(T)
+#	define JSTR_PRIVATE__
+#	define JSTR_PUBLIC__
+#endif // __cplusplus
 
 #endif // JSTR_MACROS_H_DEF__
