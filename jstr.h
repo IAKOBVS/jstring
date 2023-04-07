@@ -1079,9 +1079,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ const this_,
 			const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
-	{
-		return memcmp(this_->data, other_->data, this_->size);
-	}
+	{ return memcmp(this_->data, other_->data, this_->size); }
 
 	JSTR_INLINE__
 	int jstr_cmp(const jstring_t *JSTR_RESTRICT__ const this_,
@@ -1107,16 +1105,12 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_,
 			const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__
-	{
-		return strcasecmp(this_->data, other_->data);
-	}
+	{ return strcasecmp(this_->data, other_->data); }
 
 	JSTR_INLINE__
 	int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_,
 			const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
-	{
-		return strcasecmp(this_->data, s);
-	}
+	{ return strcasecmp(this_->data, s); }
 
 	JSTR_INLINE__
 	int jstr_casecmp(const jstring_t *JSTR_RESTRICT__ const this_,
