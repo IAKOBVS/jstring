@@ -717,10 +717,10 @@ JSTR_PUBLIC__
 	char *str(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_str(this, s, std::strlen(s)); }
 
 	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
-	char *chr(const int c) JSTR_NOEXCEPT__ { return jstr_chr(this, c); }
+	char *chr(int c) JSTR_NOEXCEPT__ { return jstr_chr(this, c); }
 
 	JSTR_INLINE__ JSTR_CONST__ JSTR_WARN_UNUSED__
-	char *rchr(const int c) JSTR_NOEXCEPT__ { return jstr_rchr(this, c); }
+	char *rchr(int c) JSTR_NOEXCEPT__ { return jstr_rchr(this, c); }
 
 	JSTR_INLINE__ void swap(jstring_t *other_) JSTR_NOEXCEPT__ { jstr_swap(this, other_); }
 
@@ -1370,11 +1370,11 @@ JSTR_PRIVATE__
 
 	JSTR_INLINE__
 	JSTR_CONST__
-	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, const int c) JSTR_NOEXCEPT__
 #ifdef __USE_GNU
+	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, int c) JSTR_NOEXCEPT__
 	{ return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
 #else
-	{
+	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, const int c) JSTR_NOEXCEPT__
 		const char *JSTR_RESTRICT__ const begin = this_->data;
 		const char *JSTR_RESTRICT__ end = this_->data + this_->size - 1;
 		for ( ; end != begin; --end)
