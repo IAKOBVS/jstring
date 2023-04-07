@@ -68,7 +68,7 @@ JSTR_CONST__
 int jstr_tolower(const int c) JSTR_NOEXCEPT__
 {
 	switch (c) {
-	CASE_UPPER
+	JSTR_CASE_UPPER
 		return c - 'A' + 'a';
 	}
 	return c;
@@ -79,7 +79,7 @@ void jstr_strupper(char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 {
 	for (;; ++s) {
 		switch (*s) {
-		CASE_LOWER
+		JSTR_CASE_LOWER
 			*s = *s - 'a' + 'A';
 		default:
 			continue;
@@ -94,7 +94,7 @@ void jstr_strlower(char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 {
 	for (;; ++s) {
 		switch (*s) {
-		CASE_UPPER
+		JSTR_CASE_UPPER
 			*s = *s - 'A' + 'a';
 		default:
 			continue;
