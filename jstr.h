@@ -164,6 +164,7 @@ int jstr_casecmp(const char *JSTR_RESTRICT__ s1,
 		CASE_LOWER
 			if (*s2 != c)
 				return 1;
+			break;
 		CASE_UPPER
 			if ((*s2 - 'A' + 'a') != c)
 				return 1;
@@ -1176,12 +1177,12 @@ JSTR_PRIVATE__
 
 	JSTR_INLINE__
 	int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ const this_,
-			const jstring_t *JSTR_RESTRICT__ const other_) const JSTR_NOEXCEPT__
+			const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{ return memcmp(this_->data, other_->data, this_->size); }
 
 	JSTR_INLINE__
 	int jstr_cmp(const jstring_t *JSTR_RESTRICT__ const this_,
-			const jstring_t *JSTR_RESTRICT__ const other_) const JSTR_NOEXCEPT__
+			const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		if (this_->size == other_->size)
 			return jstr_cmp_f(this_, other_);
@@ -1191,7 +1192,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	int jstr_cmp_str(const jstring_t *JSTR_RESTRICT__ const this_,
 			const char *JSTR_RESTRICT__ const s,
-			const size_t slen) const JSTR_NOEXCEPT__
+			const size_t slen) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		if (this_->size == slen)
 			return memcmp(this_, s, slen);
@@ -1202,18 +1203,18 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) const JSTR_NOEXCEPT__ { return jstr_casecmp(this_->data, other_->data); }
+	int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstr_casecmp(this_->data, other_->data); }
 
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s) const JSTR_NOEXCEPT__ { return jstr_casecmp(this_->data, s); }
+	int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstr_casecmp(this_->data, s); }
 
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ const this_,
-			const jstring_t *JSTR_RESTRICT__ const other_) const JSTR_NOEXCEPT__
+			const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{ return (this_->size == other_->size) ? jstr_casecmp(this_->data, other_->data) : 1; }
 
 	JSTR_INLINE__

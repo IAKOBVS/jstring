@@ -265,10 +265,12 @@
 #	define JSTR_PRIVATE__ private:
 #	define JSTR_PUBLIC__ public:
 #	define JSTR_CAST__(T) (T)
+#	define JSTR_CPP_CONST__ const
 #else
 #	define JSTR_CAST__(T)
 #	define JSTR_PRIVATE__
 #	define JSTR_PUBLIC__
+#	define JSTR_CPP_CONST__
 #endif // __cplusplus
 
 #endif // JSTR_MACROS_H_DEF__
