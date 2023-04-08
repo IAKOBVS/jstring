@@ -1447,10 +1447,7 @@ JSTR_PRIVATE__
 
 #ifdef __USE_GNU
 	JSTR_INLINE__
-	char *private_jstr_str(jstring_t *haystack,
-				const char *JSTR_RESTRICT__ const needle,
-				size_t needlelen,
-				...) JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memmem(haystack->data, haystack->size, needle, needlelen); }
+	char *private_jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ const needle, size_t needlelen, ...) JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memmem(haystack->data, haystack->size, needle, needlelen); }
 #else
 	JSTR_INLINE__
 	char *jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__ { return strstr(haystack->data, needle); }
@@ -1459,8 +1456,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 #ifdef __USE_GNU
-	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, int c) JSTR_NOEXCEPT__
-	{ return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
+	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, int c) JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
 #else
 	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, const int c) JSTR_NOEXCEPT__
 		const char *JSTR_RESTRICT__ const begin = this_->data;
