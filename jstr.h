@@ -1379,7 +1379,7 @@ JSTR_PRIVATE__
 	int jstr_dup(jstring_t *JSTR_RESTRICT__ this_, jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__
 	{
 		other_->data = JSTR_CAST__(char *)malloc(this_->capacity);
-		if (unlikely(!other_))
+		if (unlikely(!other_->data))
 			return 0;
 		memcpy(other_->data, this_->data, this_->size + 1);
 		other_->capacity = this_->capacity;
@@ -1401,7 +1401,7 @@ JSTR_PRIVATE__
 			const size_t n) JSTR_NOEXCEPT__
 	{
 		other_->data = JSTR_CAST__(char *)malloc(n + 1);
-		if (unlikely(!other_))
+		if (unlikely(!other_->data))
 			return 0;
 		memcpy(other_->data, this_->data, n + 1);
 		*(other_->data + n) = '\0';
