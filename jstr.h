@@ -14,14 +14,14 @@
    _s (safe) functons will check if object has been allocated with malloc.
 */
 
+#define JSTR_ALIGN_POWER_OF_TWO
+#define JSTR_64_BIT
+
 #if defined(__GNUC__) || defined(__GLIBC__)
 #	ifndef _GNU_SOURCE
 #		define _GNU_SOURCE
 #	endif
 #endif
-
-#define JSTR_ALIGN_POWER_OF_TWO
-#define JSTR_64_BIT
 
 #include "macros.h"
 
