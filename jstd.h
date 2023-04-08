@@ -1,9 +1,12 @@
 #ifndef JSTD_DEF_H__
 #define JSTD_DEF_H__
 
-#include <stddef.h>
-#include <string.h>
-#include "macros.h"
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+#	 include <stddef.h>
+#	 include <string.h>
+#	 include "macros.h"
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
@@ -125,5 +128,9 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1,
 		}
 	}
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // JSTD_DEF_H__
