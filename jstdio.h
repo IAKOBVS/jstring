@@ -1,3 +1,6 @@
+#ifndef JSTDIO_DEF_H__
+#define JSTDIO_DEF_H__
+
 #include "macros.h"
 
 #ifdef __cplusplus
@@ -10,7 +13,7 @@ extern "C" {
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
-size_t jstrio_sizeof_file(const char *JSTR_RESTRICT__ const filename) JSTR_NOEXCEPT__
+size_t jstdio_sizeof_file(const char *JSTR_RESTRICT__ const filename) JSTR_NOEXCEPT__
 {
 	struct stat st;
 	return (!stat(filename, &st) ? st.st_size : 0);
@@ -18,7 +21,7 @@ size_t jstrio_sizeof_file(const char *JSTR_RESTRICT__ const filename) JSTR_NOEXC
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
-int jstrio_readfile(char *JSTR_RESTRICT__ buf,
+int jstdio_readfile(char *JSTR_RESTRICT__ buf,
 		const char *JSTR_RESTRICT__ filename,
 		const size_t sizeof_file) JSTR_NOEXCEPT__
 {
@@ -33,3 +36,5 @@ int jstrio_readfile(char *JSTR_RESTRICT__ buf,
 #ifdef __cplusplus
 }
 #endif
+
+#endif // JSTDIO_DEF_H__
