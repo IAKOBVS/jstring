@@ -484,7 +484,11 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	jstring_t(const std::size_t size) JSTR_NOEXCEPT__ { private_jstr_new_alloc_void(this, size); }
+	jstring_t(const std::size_t cap) JSTR_NOEXCEPT__
+	{
+		this->size = 0;
+		private_jstr_new_alloc_void(this, cap);
+	}
 
 	JSTR_INLINE__
 	jstring_t(const std::size_t cap, const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { private_jstr_constructor_cap(this, cap, s, std::strlen(s)); }
@@ -495,6 +499,15 @@ JSTR_PUBLIC__
 	template <std::size_t N>
 	JSTR_INLINE__
 	jstring_t(const std::size_t cap, const char (&s)[N]) JSTR_NOEXCEPT__ { private_jstr_constructor_cap(this, cap, s, N - 1); }
+
+	JSTR_INLINE__
+	jstring_t(const std::size_t cap, const std::size_t future_size) JSTR_NOEXCEPT__
+	{
+		private_jstr_new_alloc_void(this, cap);
+		if (unlikely(this->data))
+			return;
+		this->size = future_size;
+	}
 
 	JSTR_INLINE__
 	jstring_t(const jstring_t *JSTR_RESTRICT__ const other_) JSTR_NOEXCEPT__ { private_jstr_new_append_void(this, other_->size, other_->data); }
@@ -843,7 +856,6 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	void private_jstr_new_alloc_void(jstring_t *JSTR_RESTRICT__ this_, const size_t size) JSTR_NOEXCEPT__
 	{
-		this_->size = 0;
 		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
 		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 		if (unlikely(!this_->data)) {
