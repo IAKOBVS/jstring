@@ -63,12 +63,11 @@ extern "C" {
 
 typedef struct jstring_t jstring_t;
 
-int private_jstr_cat(jstring_t *JSTR_RESTRICT__ this_, const size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-int private_jstr_cat_s(jstring_t *JSTR_RESTRICT__ this_, const size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-
+void jstr_init(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 void jstr_delete(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 
-void jstr_init(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
+int private_jstr_cat(jstring_t *JSTR_RESTRICT__ this_, const size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int private_jstr_cat_s(jstring_t *JSTR_RESTRICT__ this_, const size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
 int jstr_new_alloc(jstring_t *JSTR_RESTRICT__ this_, const size_t size) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_, const size_t srclen, const char *JSTR_RESTRICT__ const src_, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
@@ -130,6 +129,7 @@ int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RE
 
 /* finds first occurence of character from end of string */
 #ifdef __USE_GNU
+/* memrchr */
 char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, const int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 #endif // __USE_GNU
 /* memchr */
