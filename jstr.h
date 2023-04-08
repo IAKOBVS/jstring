@@ -518,7 +518,7 @@ JSTR_PUBLIC__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return jstr_new_append(this, std::strlen(s), s); }
+	int alloc(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { return jstr_new_append(this, std::strlen(s), s); }
 
 	JSTR_INLINE__
 	void pop_back() JSTR_NOEXCEPT__ { jstr_pop_back(this); }
