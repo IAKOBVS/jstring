@@ -23,8 +23,6 @@
 #	endif
 #endif
 
-#include "macros.h"
-
 #ifdef __cplusplus
 #	define JSTR_NOEXCEPT__ noexcept
 #else
@@ -36,6 +34,7 @@
 #	include <stdlib.h>
 #	include <string.h>
 #	include "jstd.h"
+#	include "macros.h"
 #endif // ! __cplusplus
 
 #ifdef __cplusplus
