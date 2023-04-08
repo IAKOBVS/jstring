@@ -1227,7 +1227,7 @@ JSTR_PRIVATE__
 	JSTR_WARN_UNUSED__
 	int jstr_shrink_to_size_s(jstring_t *JSTR_RESTRICT__ this_, const size_t size) JSTR_NOEXCEPT__
 	{
-		if (!!this_->size & (size < this_->size)) {
+		if ((!!this_->size) & (size < this_->size)) {
 			jstr_shrink_to_size_f(this_, size);
 			return 1;
 		}
@@ -1428,7 +1428,7 @@ JSTR_PRIVATE__
 			jstring_t *JSTR_RESTRICT__ other_,
 			const size_t n) JSTR_NOEXCEPT__
 	{
-		if (!this_->size
+		if ((!this_->size)
 		| (n > this_->size))
 			return 0;
 		return impl_jstr_ndup(this_, other_, n);
@@ -1442,129 +1442,129 @@ JSTR_PRIVATE__
 
 #ifndef __cplusplus
 
-#	ifdef JSTR_HAS_GENERIC
-#		define jstr_assign(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                \
-		jstring_t *: jstr_assign_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                                       \
-		JSTR_GENERIC_CASE_STR((PP_NARG(__VA_ARGS__) == 2)                                                                  \
-			? private_jstr_assign(dest, (char *)__VA_ARGS__, 0)                                                        \
-			: private_jstr_assign(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__)))) \
-	)
-#	else
-#		define jstr_assign(dest, src, srclen)          \
-			private_jstr_assign(dest, src, srclen)
-#	endif // JSTR_HAS_GENERIC
+#ifdef JSTR_HAS_GENERIC
+#	define jstr_assign(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                \
+	jstring_t *: jstr_assign_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                                       \
+	JSTR_GENERIC_CASE_STR((PP_NARG(__VA_ARGS__) == 2)                                                                  \
+		? private_jstr_assign(dest, (char *)__VA_ARGS__, 0)                                                        \
+		: private_jstr_assign(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__)))) \
+ )
+#else
+#	define jstr_assign(dest, src, srclen)          \
+		private_jstr_assign(dest, src, srclen)
+#endif // JSTR_HAS_GENERIC
 
-#	ifdef JSTR_HAS_GENERIC
-#		define jstr_cat(this_jstr, ...)                                                        \
-			generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+#ifdef JSTR_HAS_GENERIC
+#	define jstr_cat(this_jstr, ...)                                                        \
+		generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
-#		define generic_jstr_cat(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
-			void *: jstr_append(this_jstr, arg1, len),                                       \
-			JSTR_GENERIC_CASE_STR(private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__))       \
-	)
+#	define generic_jstr_cat(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
+		void *: jstr_append(this_jstr, arg1, len),                                       \
+		JSTR_GENERIC_CASE_STR(private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__))       \
+ )
 
-#		define jstr_cat_s(this_jstr, ...)                                                        \
-			generic_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+#	define jstr_cat_s(this_jstr, ...)                                                        \
+		generic_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
-#		define generic_jstr_cat_s(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
-			void *: jstr_append_s(this_jstr, arg1, len),                                       \
-			JSTR_GENERIC_CASE_STR(private_jstr_cat_s(this_jstr, len, arg1, __VA_ARGS__))       \
-	)
-#	else
-#		define jstr_cat(this_jstr, ...)                                                                                   \
-		(PP_NARG(__VA_ARGS__) > 1)                                                                                        \
-			? private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)                          \
-			: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), PP_STRLEN_VA_ARGS(PP_FIRST_ARG(__VA_ARGS__)))
+#	define generic_jstr_cat_s(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
+		void *: jstr_append_s(this_jstr, arg1, len),                                       \
+		JSTR_GENERIC_CASE_STR(private_jstr_cat_s(this_jstr, len, arg1, __VA_ARGS__))       \
+ )
+#else
+#	define jstr_cat(this_jstr, ...)                                                                                   \
+	(PP_NARG(__VA_ARGS__) > 1)                                                                                        \
+		? private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)                          \
+		: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), PP_STRLEN_VA_ARGS(PP_FIRST_ARG(__VA_ARGS__)))
 
-#		define jstr_cat_s(this_jstr, ...)                                                                                   \
-		(PP_NARG(__VA_ARGS__) > 1)                                                                                          \
-			? private_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)                          \
-			: private_jstr_append_s(this_jstr, PP_FIRST_ARG(__VA_ARGS__), PP_STRLEN_VA_ARGS(PP_FIRST_ARG(__VA_ARGS__)))
-#	endif // JSTR_HAS_GENERIC
+#	define jstr_cat_s(this_jstr, ...)                                                                                   \
+	(PP_NARG(__VA_ARGS__) > 1)                                                                                          \
+		? private_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)                          \
+		: private_jstr_append_s(this_jstr, PP_FIRST_ARG(__VA_ARGS__), PP_STRLEN_VA_ARGS(PP_FIRST_ARG(__VA_ARGS__)))
+#endif // JSTR_HAS_GENERIC
 
-#	define jstr_new_cat(this_jstr, ...) private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
+#define jstr_new_cat(this_jstr, ...) private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, NULL)
 
-#	define PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, ...)                  \
-	(PP_NARG(__VA_ARGS__) == 1)                                        \
-		? PRIVATE_JSTR_NEW_ALLOC(this_jstr, __VA_ARGS__)           \
-		: PRIVATE_JSTR_NEW_APPEND_WITH_LEN(this_jstr, __VA_ARGS__)
+#define PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, ...)                 \
+ (PP_NARG(__VA_ARGS__) == 1)                                       \
+	? PRIVATE_JSTR_NEW_ALLOC(this_jstr, __VA_ARGS__)           \
+	: PRIVATE_JSTR_NEW_APPEND_WITH_LEN(this_jstr, __VA_ARGS__)
 
-#	define PRIVATE_JSTR_NEW_ALLOC(this_jstr, ...)                \
-	jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))
+#define PRIVATE_JSTR_NEW_ALLOC(this_jstr, ...)                \
+ jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))
 
-#	define PRIVATE_JSTR_NEW_APPEND(this_jstr, ...)                                                           \
-	jstr_new_append(this_jstr, strlen((char *)PP_FIRST_ARG(__VA_ARGS__)), (char *)PP_FIRST_ARG(__VA_ARGS__))
+#define PRIVATE_JSTR_NEW_APPEND(this_jstr, ...)                                                           \
+ jstr_new_append(this_jstr, strlen((char *)PP_FIRST_ARG(__VA_ARGS__)), (char *)PP_FIRST_ARG(__VA_ARGS__))
 
-#	define PRIVATE_JSTR_NEW_APPEND_WITH_LEN(this_jstr, ...) \
-	jstr_new_append(this_jstr, (size_t)__VA_ARGS__, NULL)
+#define PRIVATE_JSTR_NEW_APPEND_WITH_LEN(this_jstr, ...) \
+ jstr_new_append(this_jstr, (size_t)__VA_ARGS__, NULL)
 
-#	define PRIVATE_JSTR_NEW_CAT(this_jstr, ...)                                                \
-	private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS((char *)__VA_ARGS__), __VA_ARGS__, NULL)
+#define PRIVATE_JSTR_NEW_CAT(this_jstr, ...)                                                \
+ private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS((char *)__VA_ARGS__), __VA_ARGS__, NULL)
 
-#	define PRIVATE_JSTR_NEW_ADD_STR(this_jstr, ...)           \
-(                                                                 \
-	(PP_NARG(__VA_ARGS__) == 1)                               \
-		? PRIVATE_JSTR_NEW_APPEND(this_jstr, __VA_ARGS__) \
-		: PRIVATE_JSTR_NEW_CAT(this_jstr, __VA_ARGS__)    \
+#define PRIVATE_JSTR_NEW_ADD_STR(this_jstr, ...)           \
+(                                                         \
+ (PP_NARG(__VA_ARGS__) == 1)                               \
+	? PRIVATE_JSTR_NEW_APPEND(this_jstr, __VA_ARGS__) \
+	: PRIVATE_JSTR_NEW_CAT(this_jstr, __VA_ARGS__)    \
 )
 
-#	ifdef JSTR_HAS_GENERIC
-#		define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),       \
-		JSTR_GENERIC_CASE_SIZE(PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, __VA_ARGS__)), \
-		JSTR_GENERIC_CASE_STR(PRIVATE_JSTR_NEW_ADD_STR(this_jstr, __VA_ARGS__))     \
-	)
-#	else
-#		define jstr_new(this_jstr, size) jstr_new_alloc(this_jstr, size)
-#	endif // JSTR_HAS_GENERIC
+#ifdef JSTR_HAS_GENERIC
+#	define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),       \
+	JSTR_GENERIC_CASE_SIZE(PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, __VA_ARGS__)), \
+	JSTR_GENERIC_CASE_STR(PRIVATE_JSTR_NEW_ADD_STR(this_jstr, __VA_ARGS__))     \
+ )
+#else
+#	define jstr_new(this_jstr, size) jstr_new_alloc(this_jstr, size)
+#endif // JSTR_HAS_GENERIC
 
-#	ifdef JSTR_HAS_GENERIC
-#		define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                   \
-			JSTR_GENERIC_CASE_SIZE(jstr_reserve_f(this_jstr, ((this_jstr)->capacity) + (size_t)PP_FIRST_ARG(__VA_ARGS__))), \
-			JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, (char *)__VA_ARGS__))                                              \
-	)
+#ifdef JSTR_HAS_GENERIC
+#	define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                   \
+		JSTR_GENERIC_CASE_SIZE(jstr_reserve_f(this_jstr, ((this_jstr)->capacity) + (size_t)PP_FIRST_ARG(__VA_ARGS__))), \
+		JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, (char *)__VA_ARGS__))                                              \
+ )
 
-#	endif // JSTR_HAS_GENERIC
+#endif // JSTR_HAS_GENERIC
 
-#	define jstr_append(this_jstr, ...)                                                                     \
-(                                                                                                              \
-	PP_NARG(__VA_ARGS__) == 2                                                                              \
-		? private_jstr_append(this_jstr, __VA_ARGS__, 0)                                               \
-		: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
+#define jstr_append(this_jstr, ...)                                                                     \
+(                                                                                                      \
+ PP_NARG(__VA_ARGS__) == 2                                                                              \
+	? private_jstr_append(this_jstr, __VA_ARGS__, 0)                                               \
+	: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
 )
 
-#	define private_jstr_reserve_x(this_jstr, multiplier)                      \
-	jstr_reserve_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
+#define private_jstr_reserve_x(this_jstr, multiplier)                      \
+ jstr_reserve_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
 
-#	define jstr_reserve_2x(this_jstr) private_jstr_reserve_x(this_jstr, 2)
-#	define jstr_reserve_4x(this_jstr) private_jstr_reserve_x(this_jstr, 4)
-#	define jstr_reserve_8x(this_jstr) private_jstr_reserve_x(this_jstr, 8)
-#	define jstr_reserve_16x(this_jstr) private_jstr_reserve_x(this_jstr, 16)
-#	define jstr_reserve_32x(this_jstr) private_jstr_reserve_x(this_jstr, 32)
-#	define jstr_reserve_64x(this_jstr) private_jstr_reserve_x(this_jstr, 64)
+#define jstr_reserve_2x(this_jstr) private_jstr_reserve_x(this_jstr, 2)
+#define jstr_reserve_4x(this_jstr) private_jstr_reserve_x(this_jstr, 4)
+#define jstr_reserve_8x(this_jstr) private_jstr_reserve_x(this_jstr, 8)
+#define jstr_reserve_16x(this_jstr) private_jstr_reserve_x(this_jstr, 16)
+#define jstr_reserve_32x(this_jstr) private_jstr_reserve_x(this_jstr, 32)
+#define jstr_reserve_64x(this_jstr) private_jstr_reserve_x(this_jstr, 64)
 
-#	define private_jstr_reserve_s_x(this_jstr, multiplier)                      \
-	jstr_reserve_s_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
+#define private_jstr_reserve_s_x(this_jstr, multiplier)                      \
+ jstr_reserve_s_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
 
-#	define jstr_reserve_s_2x(this_jstr) private_jstr_reserve_s_x(this_jstr, 2)
-#	define jstr_reserve_s_4x(this_jstr) private_jstr_reserve_s_x(this_jstr, 4)
-#	define jstr_reserve_s_8x(this_jstr) private_jstr_reserve_s_x(this_jstr, 8)
-#	define jstr_reserve_s_16x(this_jstr) private_jstr_reserve_s_x(this_jstr, 16)
-#	define jstr_reserve_s_32x(this_jstr) private_jstr_reserve_s_x(this_jstr, 32)
-#	define jstr_reserve_s_64x(this_jstr) private_jstr_reserve_s_x(this_jstr, 64)
+#define jstr_reserve_s_2x(this_jstr) private_jstr_reserve_s_x(this_jstr, 2)
+#define jstr_reserve_s_4x(this_jstr) private_jstr_reserve_s_x(this_jstr, 4)
+#define jstr_reserve_s_8x(this_jstr) private_jstr_reserve_s_x(this_jstr, 8)
+#define jstr_reserve_s_16x(this_jstr) private_jstr_reserve_s_x(this_jstr, 16)
+#define jstr_reserve_s_32x(this_jstr) private_jstr_reserve_s_x(this_jstr, 32)
+#define jstr_reserve_s_64x(this_jstr) private_jstr_reserve_s_x(this_jstr, 64)
 
-#	ifndef __cplusplus
-#		define jstr_foreach(elem, jstr)                          \
-			for (char *elem = ((jstr)->data); *elem; ++elem)
-#		define jstr_begin(this_jstr) ((this_jstr)->data)
-#		define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))
+#ifndef __cplusplus
+#	define jstr_foreach(elem, jstr)                          \
+		for (char *elem = ((jstr)->data); *elem; ++elem)
+#	define jstr_begin(this_jstr) ((this_jstr)->data)
+#	define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))
 
-#		define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
-#		define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
-#	endif // __cplusplus
+#	define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
+#	define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
+#endif // __cplusplus
 
-#	define jstr_foreach_index(elem, jstr)                 \
-	for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
+#define jstr_foreach_index(elem, jstr)                 \
+ for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
 
-#	endif // ! __cplusplus : c macros
+#endif // ! __cplusplus : c macros
 
 #endif // JSTR_H_DEF__
