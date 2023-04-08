@@ -141,6 +141,7 @@ int jstr_count_s(const char *JSTR_RESTRICT__ haystack,
 		++count;
 	return count;
 }
+#endif // __USE_GNU
 
 JSTR_INLINE__
 JSTR_CONST__
@@ -150,26 +151,25 @@ int jstr_casecmp(const char *JSTR_RESTRICT__ s1,
 {
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
-		CASE_UPPER
-			c = *s1 - 'A' + 'a';
-			break;
 		CASE_LOWER
 			c = *s1;
+			break;
+		CASE_UPPER
+			c = *s1 - 'A' + 'a';
 			break;
 		case '\0':
 			return *s2;
 		}
 		switch (*s2) {
-		CASE_UPPER
-			if ((*s2 - 'A' + 'a') != c)
-				return 1;
 		CASE_LOWER
 			if (*s2 != c)
+				return 1;
+		CASE_UPPER
+			if ((*s2 - 'A' + 'a') != c)
 				return 1;
 		}
 	}
 }
-#endif // __USE_GNU
 
 #ifndef __cplusplus // ! __cplusplus
 
@@ -1202,39 +1202,19 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_,
-			const jstring_t *JSTR_RESTRICT__ const other_) const JSTR_NOEXCEPT__
-#ifdef __USE_GNU
-	{ return strcasecmp(this_->data, other_->data); }
-#else
-	{ return jstr_casecmp(this_->data, other_->data); }
-#endif
+	int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ const other_) const JSTR_NOEXCEPT__ { return jstr_casecmp(this_->data, other_->data); }
 
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_,
-			const char *JSTR_RESTRICT__ const s) const JSTR_NOEXCEPT__
-#ifdef __USE_GNU
-	{ return strcasecmp(this_->data, s); }
-#else
-	{ return jstr_casecmp(this_->data, s); }
-#endif
+	int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ const s) const JSTR_NOEXCEPT__ { return jstr_casecmp(this_->data, s); }
 
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ const this_,
 			const jstring_t *JSTR_RESTRICT__ const other_) const JSTR_NOEXCEPT__
-	{
-		if (this_->size == other_->size)
-#ifdef __USE_GNU
-			return strcasecmp(this_->data, other_->data);
-#else
-			return jstr_casecmp(this_->data, other_->data);
-#endif
-		return 1;
-	}
+	{ return (this_->size == other_->size) ? jstr_casecmp(this_->data, other_->data) : 1; }
 
 	JSTR_INLINE__
 	void jstr_assign_u(jstring_t *JSTR_RESTRICT__ dest,
