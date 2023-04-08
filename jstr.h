@@ -33,6 +33,7 @@
 #	include <stdarg.h>
 #	include <stdlib.h>
 #	include <string.h>
+#	include <assert.h>
 #	include "jstd.h"
 #	include "macros.h"
 #endif // ! __cplusplus
@@ -51,7 +52,6 @@ extern "C" {
 #	include <cstdlib>
 #	include <utility>
 #	include <cassert>
-#	include <cstdio>
 #endif // __cplusplus
 
 #define JSTR_MIN_CAP 8
@@ -135,18 +135,15 @@ char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ const this_, const int c) JSTR_
 /* memchr */
 char *jstr_chr(const jstring_t *JSTR_RESTRICT__ const this_, int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
+#define jstr_str(this_, ...)                                                                            \
+	(PP_NARG(__VA_ARGS__) == 1)                                                                     \
+		? private_jstr_str(this_, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
+		: private_jstr_str(this_, __VA_ARGS__, 0)
+
 #ifdef __USE_GNU
 char *private_jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ const needle, size_t needlelen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-
-#	define jstr_str(this_, ...)                                                                             \
-		(PP_NARG(__VA_ARGS__) == 1)                                                                     \
-			? private_jstr_str(this_, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
-			: private_jstr_str(this_, __VA_ARGS__, 0)
-
 #else
-
 char *jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-
 #endif
 
 int jstr_dup(jstring_t *JSTR_RESTRICT__ this_, jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
