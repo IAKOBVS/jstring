@@ -59,7 +59,7 @@ extern "C" {
 
 #ifndef __cplusplus // ! __cplusplus
 
-#define jstring(name) jstring name = {0}
+#define jstring(name) jstring_t name = {0}
 
 typedef struct jstring_t jstring_t;
 
