@@ -397,7 +397,7 @@ JSTR_PRIVATE__
 	template <typename T, typename... Args>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int cat_(T arg, Args&&... args) JSTR_NOEXCEPT__
+	int cat_impl(T arg, Args&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed! Use append instead.");
 		assert_are_strings(arg, args...);
@@ -426,7 +426,7 @@ JSTR_PUBLIC__
 	template <typename T, typename U, typename... Args>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int cat(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__ { return this->cat_(arg1, arg2, std::forward<Args>(args)...); }
+	int cat(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__ { return this->cat_impl(arg1, arg2, std::forward<Args>(args)...); }
 
 	template <typename T, typename... Args>
 	JSTR_INLINE__
@@ -1460,7 +1460,7 @@ JSTR_PRIVATE__
 		JSTR_GENERIC_CASE_STR(private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__))       \
  )
 
-#	define jstr_cat_s(this_jstr, ...)                                                        \
+#	define jstr_cat_s(this_jstr, ...)                                                             \
 		generic_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, (void *)0)
 
 #	define generic_jstr_cat_s(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
