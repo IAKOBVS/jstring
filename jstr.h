@@ -40,8 +40,6 @@ extern "C" {
 #	include <cstdio>
 #endif // __cplusplus
 
-#	include "jstrio.h"
-
 #define JSTR_MIN_CAP 8
 #define JSTR_MULTIPLIER 2
 
