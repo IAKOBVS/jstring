@@ -1450,8 +1450,8 @@ JSTR_PRIVATE__
 		: private_jstr_assign(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__)))) \
 	)
 #else
-#define jstr_assign(dest, ...)                         \
-		private_jstr_assign(dest, __VA_ARGS__)
+#define jstr_assign(dest, ...)                 \
+	private_jstr_assign(dest, __VA_ARGS__)
 #endif // JSTR_HAS_GENERIC
 
 #ifdef JSTR_HAS_GENERIC
