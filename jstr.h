@@ -49,6 +49,10 @@ extern "C" {
 /*
    at() will do bounds checking by asserting that index <= this->size.
    it will crash at runtime if assertion fails.
+
+   _u (unsafe) functions will not do any allocations.
+   _f (force/fast) functions will force allocations.
+   _s (safe) functons will check if object has been allocated with malloc.
 */
 
 JSTR_INLINE__
