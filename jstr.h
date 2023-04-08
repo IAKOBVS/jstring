@@ -279,16 +279,12 @@ int jstr_rev_dup(jstring_t *JSTR_RESTRICT__ src, char **JSTR_RESTRICT__ dest) JS
 #endif // ! __cplusplus
 
 typedef struct jstring_t {
-
 #ifndef __cplusplus // ! __cpluslus
-
 	size_t size; 
 	size_t capacity;
 	char *data;
 } jstring_t;
-
 #else // __cplusplus
-
 	std::size_t size;
 	std::size_t capacity;
 	char *data;
