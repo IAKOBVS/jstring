@@ -3,7 +3,7 @@
 
 /* rename to the right path */
 
-#define PATH_TO_PP_VA_ARGS_MACROS_H "/home/james/c/pp_macros/pp_va_args_macros.h"
+#define JSTR_PATH_TO_PP_VA_ARGS_MACROS_H "/home/james/c/pp_macros/pp_va_args_macros.h"
 
 /*
    at() will do bounds checking by asserting that index <= this->size.
@@ -43,7 +43,7 @@ extern "C" {
 #endif // __cplusplus
 #	include <sys/cdefs.h>
 #	include "jstd.h"
-#	include PATH_TO_PP_VA_ARGS_MACROS_H
+#	include JSTR_PATH_TO_PP_VA_ARGS_MACROS_H
 #ifdef __cplusplus
 }
 #	include <type_traits>
