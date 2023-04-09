@@ -23,12 +23,6 @@
 #	endif
 #endif
 
-#ifdef __cplusplus
-#	define JSTR_NOEXCEPT__ noexcept
-#else
-#	define JSTR_NOEXCEPT__
-#endif
-
 #ifndef __cplusplus
 #	include <stdarg.h>
 #	include <stdlib.h>
