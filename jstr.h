@@ -351,17 +351,6 @@ JSTR_PRIVATE__
 
 #	if __cplusplus >= 201703L
 
-	template <typename T>
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	JSTR_CONST__
-	std::size_t strlen(T arg) JSTR_NOEXCEPT__
-	{
-		if constexpr (std::is_same<T, const char (&)[]>::value)
-			return strlen_literal(arg);
-		return std::strlen(arg);
-	}
-
 	template <typename T, typename... Args>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
