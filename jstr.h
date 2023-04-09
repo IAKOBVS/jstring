@@ -172,54 +172,54 @@ typedef struct jstring_t {
 	}
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	size_t csize() const JSTR_NOEXCEPT__ { return this->size; }
+	JSTR_WARN_UNUSED__
+	size_t csize() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->size; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	size_t clength() const JSTR_NOEXCEPT__ { return this->size; }
+	JSTR_WARN_UNUSED__
+	size_t clength() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->size; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	size_t ccapacity() const JSTR_NOEXCEPT__ { return this->capacity; }
+	JSTR_WARN_UNUSED__
+	size_t ccapacity() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->capacity; }
 	
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	const char *cdata() const JSTR_NOEXCEPT__ { return this->data; }
+	JSTR_WARN_UNUSED__
+	const char *cdata() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	const char *c_str() const JSTR_NOEXCEPT__ { return this->data; }
+	JSTR_WARN_UNUSED__
+	const char *c_str() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	char *begin() const JSTR_NOEXCEPT__ { return this->data; }
+	JSTR_WARN_UNUSED__
+	char *begin() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	char *end() const JSTR_NOEXCEPT__ { return this->data + this->size; }
+	JSTR_WARN_UNUSED__
+	char *end() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data + this->size; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	const char *cbegin() const JSTR_NOEXCEPT__ { return this->data; }
+	JSTR_WARN_UNUSED__
+	const char *cbegin() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	const char *cend() const JSTR_NOEXCEPT__ { return this->data + this->size; }
+	JSTR_WARN_UNUSED__
+	const char *cend() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data + this->size; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int empty() const JSTR_NOEXCEPT__ { return !!this->size; }
+	JSTR_WARN_UNUSED__
+	int empty() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return !!this->size; }
 
 	JSTR_INLINE__
 	jstring_t(const jstring_t& other_) JSTR_NOEXCEPT__
@@ -326,40 +326,40 @@ JSTR_PRIVATE__
 	static constexpr int args_are_type(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__ { return std::is_same<T, std::decay_t<Arg>>::value && args_are_type<T>(args...); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	static constexpr std::size_t strlen_args() JSTR_NOEXCEPT__ { return 0; }
 
 	template <std::size_t N>
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	static constexpr std::size_t strlen(const char (&s)[N]) JSTR_NOEXCEPT__ { return N - 1; }
 	
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	static std::size_t strlen(const char *s) JSTR_NOEXCEPT__ { return std::strlen(s); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	static std::size_t strlen(char *s) JSTR_NOEXCEPT__ { return std::strlen(s); }
 
 #	if __cplusplus >= 201703L
 
 	template <typename T, typename... Args>
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	size_t strlen_args(T arg, Args&&... args) JSTR_NOEXCEPT__ { return (strlen(arg) + ... + strlen(args)); }
 
 #	else
 
 	template <typename T, typename... Args>
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	size_t strlen_args(T s, Args... args) JSTR_NOEXCEPT__ { return strlen(s) + strlen_args(args...); }
 
 #	endif // __cplusplus 17
@@ -587,14 +587,14 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	char *operator[](const std::size_t index) const JSTR_NOEXCEPT__ { return this->data + index; }
+	JSTR_WARN_UNUSED__
+	char *operator[](const std::size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data + index; }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	char &at(const std::size_t index) const JSTR_NOEXCEPT__
+	JSTR_WARN_UNUSED__
+	char &at(const std::size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		assert(index <= this->size);
 		return *(this->data + index);
@@ -611,22 +611,22 @@ JSTR_PUBLIC__
 	template <std::size_t N>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int operator+=(const char (&s)[N]) const JSTR_NOEXCEPT__ { return private_jstr_append(this, s, N - 1); }
+	int operator+=(const char (&s)[N]) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return private_jstr_append(this, s, N - 1); }
 
 	template <std::size_t N>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	jstring_t operator+(const char (&s)[N]) const JSTR_NOEXCEPT__ { return this->operator_plus(s, N - 1); }
+	jstring_t operator+(const char (&s)[N]) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->operator_plus(s, N - 1); }
 	
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	jstring_t operator+(const char *JSTR_RESTRICT__ s) const JSTR_NOEXCEPT__ { return this->operator_plus(s, strlen(s)); }
+	jstring_t operator+(const char *JSTR_RESTRICT__ s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->operator_plus(s, strlen(s)); }
 
 JSTR_PRIVATE__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	jstring_t operator_plus(const char *JSTR_RESTRICT__ s, const std::size_t slen) const JSTR_NOEXCEPT__
+	jstring_t operator_plus(const char *JSTR_RESTRICT__ s, const std::size_t slen) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		jstring_t tmp;
 		tmp.capacity = MAX(JSTR_NEXT_POW2(2 * (this->size + slen)), JSTR_MIN_CAP);
@@ -743,40 +743,40 @@ JSTR_PUBLIC__
 	int shrink_to_fit() JSTR_NOEXCEPT__ { return jstr_shrink_to_fit(this); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int cmp(const jstring_t *JSTR_RESTRICT__ other_) const JSTR_NOEXCEPT__ { return jstr_cmp(this, other_); }
+	JSTR_WARN_UNUSED__
+	int cmp(const jstring_t *JSTR_RESTRICT__ other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstr_cmp(this, other_); }
 
 	template <std::size_t N>
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int cmp(const char (&s)[N]) const JSTR_NOEXCEPT__ { return jstr_cmp_str(this, s, N - 1); }
+	JSTR_WARN_UNUSED__
+	int cmp(const char (&s)[N]) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstr_cmp_str(this, s, N - 1); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int cmp(const char *JSTR_RESTRICT__ s) const JSTR_NOEXCEPT__ { return jstr_cmp_str(this, s, MIN(strlen(s), this->size)); }
+	JSTR_WARN_UNUSED__
+	int cmp(const char *JSTR_RESTRICT__ s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstr_cmp_str(this, s, MIN(strlen(s), this->size)); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int casecmp(const jstring_t *JSTR_RESTRICT__ other_) const JSTR_NOEXCEPT__ { return jstr_casecmp_str(this, other_->data); }
+	JSTR_WARN_UNUSED__
+	int casecmp(const jstring_t *JSTR_RESTRICT__ other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstr_casecmp_str(this, other_->data); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int casecmp(const char *JSTR_RESTRICT__ s) const JSTR_NOEXCEPT__ { return jstr_casecmp_str(this, s); }
+	JSTR_WARN_UNUSED__
+	int casecmp(const char *JSTR_RESTRICT__ s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstr_casecmp_str(this, s); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int count_c(const int c) const JSTR_NOEXCEPT__ { return jstd_count_c(this->data, c); }
+	JSTR_WARN_UNUSED__
+	int count_c(const int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstd_count_c(this->data, c); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int count_s(const char *JSTR_RESTRICT__ needle) const JSTR_NOEXCEPT__
+	JSTR_WARN_UNUSED__
+	int count_s(const char *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 #ifdef JSTR_HAS_MEMMEM__
 	{ return jstd_count_s(this->data, this->size, needle, strlen(needle)); }
 #else
@@ -785,16 +785,16 @@ JSTR_PUBLIC__
 
 #ifdef JSTR_HAS_MEMMEM__
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int count_s(const char *JSTR_RESTRICT__ needle, std::size_t needlelen) const JSTR_NOEXCEPT__ { return jstd_count_s(this->data, this->size, needle, needlelen); }
+	JSTR_WARN_UNUSED__
+	int count_s(const char *JSTR_RESTRICT__ needle, std::size_t needlelen) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return jstd_count_s(this->data, this->size, needle, needlelen); }
 #endif // JSTR_HAS_MEMMEM__
 
 	template <std::size_t N>
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int count_s(const char (&needle)[N]) const JSTR_NOEXCEPT__
+	JSTR_WARN_UNUSED__
+	int count_s(const char (&needle)[N]) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 #ifdef JSTR_HAS_MEMMEM__
 		{ return jstd_count_s(this->data, this->size, needle, N - 1); }
 #else
@@ -802,9 +802,9 @@ JSTR_PUBLIC__
 #endif // JSTR_HAS_MEMMEM__
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int count_s(const jstring_t *JSTR_RESTRICT__ needle) const JSTR_NOEXCEPT__
+	JSTR_WARN_UNUSED__
+	int count_s(const jstring_t *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 #ifdef JSTR_HAS_MEMMEM__
 		{ return jstd_count_s(this->data, this->size, needle->data, needle->size); }
 #	else
@@ -1101,8 +1101,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ this_,
-			const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{ return (this_->size == other_->size) ? jstd_casecmp(this_->data, other_->data) : 1; }
 
 	JSTR_INLINE__
@@ -1123,6 +1122,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_assign_f(jstring_t *JSTR_RESTRICT__ dest,
 			const char *JSTR_RESTRICT__ src,
 			size_t srclen) JSTR_NOEXCEPT__
@@ -1134,6 +1134,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_assign_jstr_f(jstring_t *JSTR_RESTRICT__ dest,
 			const jstring_t *JSTR_RESTRICT__ const src) JSTR_NOEXCEPT__
 	{
@@ -1156,6 +1157,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_assign_jstr(jstring_t *JSTR_RESTRICT__ dest,
 			const jstring_t *JSTR_RESTRICT__ const src,
 			...) JSTR_NOEXCEPT__
@@ -1167,6 +1169,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_reserve_s(jstring_t *JSTR_RESTRICT__ this_,
 			size_t cap) JSTR_NOEXCEPT__
 	{
@@ -1176,6 +1179,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_shrink_to_fit_f(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
 		char *JSTR_RESTRICT__ tmp;
@@ -1187,6 +1191,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_shrink_to_fit(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
 		if (unlikely(this_->capacity == this_->size))
@@ -1195,6 +1200,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_shrink_to_f(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
 	{
 		char *JSTR_RESTRICT__ tmp;
@@ -1207,6 +1213,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_shrink_to(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
 	{
 		if (cap > this_->capacity)
@@ -1250,6 +1257,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_push_back_f(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
 		if (unlikely(!jstr_reserve_f(this_, this_->size * JSTR_MULTIPLIER)))
@@ -1259,6 +1267,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_push_back(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
 		if (unlikely(this_->size == this_->capacity))
@@ -1268,6 +1277,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_push_back_s(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
 		if (unlikely(!this_->capacity))
@@ -1297,6 +1307,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_push_front_f(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
 		if (unlikely(!jstr_reserve_f(this_, this_->size * JSTR_MULTIPLIER)))
@@ -1306,6 +1317,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_push_front(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
 		if (unlikely(this_->capacity == this_->size))
@@ -1315,6 +1327,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_push_front_s(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
 		if (unlikely(!this_->capacity))
@@ -1333,20 +1346,22 @@ JSTR_PRIVATE__
 		memmove(this_->data, this_->data + 1, this_->size--);
 	}
 
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 #ifdef JSTR_HAS_MEMMEM__
-	JSTR_INLINE__
-	char *private_jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle, size_t needlelen, ...) JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memmem(haystack->data, haystack->size, needle, needlelen); }
+	char *private_jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle, size_t needlelen, ...) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memmem(haystack->data, haystack->size, needle, needlelen); }
 #else
-	JSTR_INLINE__
-	char *jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__ { return strstr(haystack->data, needle); }
+	char *jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return strstr(haystack->data, needle); }
 #endif // JSTR_HAS_MEMMEM__
 
 	JSTR_INLINE__
 	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 #ifdef JSTR_HAS_MEMRCHR__
-	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
+	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
 #else
-	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_NOEXCEPT__
+	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		return jstd_rchr(this_->data, c, this_->size);
 	}
@@ -1365,6 +1380,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_rev_dup(jstring_t *JSTR_RESTRICT__ src, char **JSTR_RESTRICT__ dest) JSTR_NOEXCEPT__
 	{
 		*dest = JSTR_CAST__(char *)malloc(src->size + 1);
@@ -1379,9 +1395,10 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
-	char *jstr_chr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memchr(this_->data, c, this_->size); }
+	char *jstr_chr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memchr(this_->data, c, this_->size); }
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_dup(jstring_t *JSTR_RESTRICT__ this_, jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__
 	{
 		other_->data = JSTR_CAST__(char *)malloc(this_->capacity);
@@ -1394,6 +1411,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_dup_s(jstring_t *JSTR_RESTRICT__ this_, jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__
 	{
 		if (unlikely(!this_->size))
@@ -1417,6 +1435,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_ndup(jstring_t *JSTR_RESTRICT__ this_,
 			jstring_t *JSTR_RESTRICT__ other_,
 			size_t n) JSTR_NOEXCEPT__
@@ -1427,6 +1446,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	int jstr_ndup_s(jstring_t *JSTR_RESTRICT__ this_,
 			jstring_t *JSTR_RESTRICT__ other_,
 			size_t n) JSTR_NOEXCEPT__
@@ -1440,7 +1460,7 @@ JSTR_PRIVATE__
 #ifndef __cplusplus
 	JSTR_INLINE__
 	JSTR_CONST__
-	char *jstr_at(const jstring_t *this_jstr, const size_t index)
+	char *jstr_at(const jstring_t *this_jstr, const size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		assert(index <= this_jstr->size);
 		return this_jstr->data + index;
