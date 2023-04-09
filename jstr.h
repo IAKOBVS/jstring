@@ -1050,7 +1050,6 @@ JSTR_PRIVATE__
 		*other_ = *this_;
 		*this_ = tmp;
 	}
-
 	JSTR_INLINE__
 	void jstr_swap_str(jstring_t *JSTR_RESTRICT__ this_,
 			char **JSTR_RESTRICT__ other_,
