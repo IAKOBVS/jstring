@@ -201,7 +201,7 @@
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	constexpr static std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT__
+	static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT__
 	{
 		--x;
 		x |= x >> 1;
@@ -215,7 +215,7 @@
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	constexpr static std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT__
+	static constexpr std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT__
 	{
 		--x;
 		x |= x >> 1;
