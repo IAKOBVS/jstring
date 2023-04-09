@@ -90,9 +90,8 @@
 
 int main()
 {
-	std::string q;
 	jstring_t s("hello");
-	jstring_t s2("world");
-	s = s2;
-	puts(s.data);
+	s.at(2) = '\0';
+	std::string s("hello");
+	s.at(1) = '\0';
 }

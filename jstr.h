@@ -594,10 +594,10 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	char *at(const std::size_t index) const JSTR_NOEXCEPT__
+	char &at(const std::size_t index) const JSTR_NOEXCEPT__
 	{
 		assert(index <= this->size);
-		return this->data + index;
+		return *(this->data + index);
 	}
 
 	JSTR_INLINE__
