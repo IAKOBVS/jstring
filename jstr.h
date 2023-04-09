@@ -32,11 +32,12 @@
 #	include "macros.h"
 #endif // ! __cplusplus
 
+#	include "jstd.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 #	include <sys/cdefs.h>
-#	include "jstd.h"
 #	include JSTR_PATH_TO_PP_VA_ARGS_MACROS_H
 #ifdef __cplusplus
 }
