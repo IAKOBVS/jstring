@@ -77,11 +77,23 @@ int jstd_count_c(const char *JSTR_RESTRICT__ s, const int c) JSTR_NOEXCEPT__
 	return count;
 }
 
+JSTR_INLINE__
+JSTR_CONST__
+JSTR_WARN_UNUSED__
+char *jstd_rchr(const char *s, const int c, size_t slen)
+{
+	const char *JSTR_RESTRICT__ const begin = s;
+	char *JSTR_RESTRICT__ end = s + slen - 1;
+	for ( ; end != begin; --end)
+		if (*end == c)
+			return end;
+	return NULL;
+}
 
 JSTR_INLINE__
 JSTR_CONST__
 JSTR_WARN_UNUSED__
-#ifdef __USE_GNU
+#ifdef JSTR_HAS_MEMMEM__
 int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 		size_t haystacklen,
 		const char *JSTR_RESTRICT__ needle,
@@ -102,7 +114,7 @@ int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 		++count;
 	return count;
 }
-#endif // __USE_GNU
+#endif // __JSTR_HAS_MEMMEM__
 
 JSTR_INLINE__
 JSTR_CONST__

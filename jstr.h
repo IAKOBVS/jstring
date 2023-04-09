@@ -1354,7 +1354,7 @@ JSTR_PRIVATE__
 	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, const int c) JSTR_NOEXCEPT__
 	{
 		const char *JSTR_RESTRICT__ const begin = this_->data;
-		char *JSTR_RESTRICT__ end = this_->data + this_->size - 1;
+		const char *JSTR_RESTRICT__ end = this_->data + this_->size - 1;
 		for ( ; end != begin; --end)
 			if (*end == c)
 				return end;
