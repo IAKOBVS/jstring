@@ -334,20 +334,27 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	static constexpr int args_are_type(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__ { return std::is_same<T, std::decay_t<Arg>>::value && args_are_type<T>(args...); }
-	
-	template <std::size_t N>
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	JSTR_CONST__
-	std::size_t strlen_literal(const char (&s)[N]) JSTR_NOEXCEPT__
-	{
-		return N - 1;
-	}
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
 	static constexpr std::size_t strlen_args() JSTR_NOEXCEPT__ { return 0; }
+
+	template <std::size_t N>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	static constexpr std::size_t strlen(const char (&s)[N]) JSTR_NOEXCEPT__ { return N - 1; }
+	
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	static std::size_t strlen(const char *s) JSTR_NOEXCEPT__ { return std::strlen(s); }
+
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	static std::size_t strlen(char *s) JSTR_NOEXCEPT__ { return std::strlen(s); }
 
 #	if __cplusplus >= 201703L
 
