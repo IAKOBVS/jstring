@@ -334,12 +334,15 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	constexpr int args_are_type(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__ { return std::is_same<T, std::decay_t<Arg>>::value && args_are_type<T>(args...); }
-
+	
 	template <std::size_t N>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	constexpr std::size_t strlen(const char (&s)[N]) JSTR_NOEXCEPT__ { return N - 1; }
+	std::size_t strlen_literal(const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		return N - 1;
+	}
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
@@ -348,11 +351,22 @@ JSTR_PRIVATE__
 
 #	if __cplusplus >= 201703L
 
+	template <typename T>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	std::size_t strlen(T arg) JSTR_NOEXCEPT__
+	{
+		if constexpr (std::is_same<T, const char (&)[]>::value)
+			return strlen_literal(arg);
+		return std::strlen(arg);
+	}
+
 	template <typename T, typename... Args>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	size_t strlen_args(T arg, Args&&... args) JSTR_NOEXCEPT__ { return (std::strlen(arg) + ... + std::strlen(args)); }
+	size_t strlen_args(T arg, Args&&... args) JSTR_NOEXCEPT__ { return (strlen(arg) + ... + strlen(args)); }
 
 #	else
 
@@ -360,7 +374,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	size_t strlen_args(T s, Args... args) JSTR_NOEXCEPT__ { return std::strlen(s) + strlen_args(args...); }
+	size_t strlen_args(T s, Args... args) JSTR_NOEXCEPT__ { return strlen(s) + strlen_args(args...); }
 
 #	endif // __cplusplus 17
 
@@ -380,7 +394,7 @@ JSTR_PRIVATE__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed!");
 		assert_are_strings(arg, args...);
-		const std::size_t arglen_1 = std::strlen(arg);
+		const std::size_t arglen_1 = strlen(arg);
 		const size_t arglen = strlen_args(std::forward<Args>(args)...);
 		if (unlikely(!alloc(arglen_1 + arglen)))
 			return;
@@ -401,7 +415,7 @@ JSTR_PRIVATE__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed! Use append instead.");
 		assert_are_strings(arg, args...);
-		const std::size_t arglen_1 = std::strlen(arg);
+		const std::size_t arglen_1 = strlen(arg);
 		const size_t arglen = strlen_args(std::forward<Args>(args)...);
 		if (unlikely(!this->reserve_add(arglen_1 + arglen)))
 			return 0;
@@ -469,7 +483,7 @@ JSTR_PUBLIC__
 	jstring_t(T arg, Args&&... args) JSTR_NOEXCEPT__ { private_jstr_new_cat(this, strlen_args(arg, std::forward<args>(args)...), arg, args...); }
 
 	JSTR_INLINE__
-	jstring_t(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { private_jstr_new_append_void(this, std::strlen(s), s); }
+	jstring_t(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { private_jstr_new_append_void(this, strlen(s), s); }
 
 	template <std::size_t N>
 	JSTR_INLINE__
@@ -491,7 +505,7 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	jstring_t(const std::size_t cap, const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { private_jstr_constructor_cap(this, cap, s, std::strlen(s)); }
+	jstring_t(const std::size_t cap, const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { private_jstr_constructor_cap(this, cap, s, strlen(s)); }
 
 	JSTR_INLINE__
 	jstring_t(const std::size_t cap, const char *JSTR_RESTRICT__ s, const std::size_t slen) JSTR_NOEXCEPT__ { private_jstr_constructor_cap(this, cap, s, slen); }
@@ -531,7 +545,7 @@ JSTR_PUBLIC__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { return jstr_new_append(this, std::strlen(s), s); }
+	int alloc(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { return jstr_new_append(this, strlen(s), s); }
 
 	JSTR_INLINE__
 	void pop_back() JSTR_NOEXCEPT__ { jstr_pop_back(this); }
@@ -620,7 +634,7 @@ JSTR_PUBLIC__
 	
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	jstring_t operator+(const char *JSTR_RESTRICT__ const s) const JSTR_NOEXCEPT__ { return this->operator_plus(s, std::strlen(s)); }
+	jstring_t operator+(const char *JSTR_RESTRICT__ const s) const JSTR_NOEXCEPT__ { return this->operator_plus(s, strlen(s)); }
 
 JSTR_PRIVATE__
 
@@ -673,7 +687,7 @@ JSTR_PUBLIC__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int append(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_append(this, s, std::strlen(s)); }
+	int append(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_append(this, s, strlen(s)); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
@@ -692,7 +706,7 @@ JSTR_PUBLIC__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int append_s(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_append_s(this, s, std::strlen(s)); }
+	int append_s(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_append_s(this, s, strlen(s)); }
 
 	template <std::size_t N>
 	JSTR_INLINE__
@@ -703,7 +717,7 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	char *str(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_str(this, s, std::strlen(s)); }
+	char *str(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_str(this, s, strlen(s)); }
 
 	JSTR_INLINE__
 	JSTR_CONST__
@@ -727,7 +741,7 @@ JSTR_PUBLIC__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int assign(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_assign(this, s, std::strlen(s)); }
+	int assign(const char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__ { return private_jstr_assign(this, s, strlen(s)); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
@@ -756,7 +770,7 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	int cmp(const char *JSTR_RESTRICT__ const s) const JSTR_NOEXCEPT__ { return jstr_cmp_str(this, s, MIN(std::strlen(s), this->size)); }
+	int cmp(const char *JSTR_RESTRICT__ const s) const JSTR_NOEXCEPT__ { return jstr_cmp_str(this, s, MIN(strlen(s), this->size)); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
@@ -778,7 +792,7 @@ JSTR_PUBLIC__
 	JSTR_CONST__
 	int count_s(const char *JSTR_RESTRICT__ const needle) const JSTR_NOEXCEPT__
 #ifdef __USE_GNU
-	{ return jstd_count_s(this->data, this->size, needle, std::strlen(needle)); }
+	{ return jstd_count_s(this->data, this->size, needle, strlen(needle)); }
 #else
 	{ return jstd_count_s(this->data, needle); }
 #endif // __USE_GNU
