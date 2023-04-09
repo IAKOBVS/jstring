@@ -31,8 +31,8 @@
 #	include "jstd.h"
 #endif // ! __cplusplus
 
-#	include "macros.h"
-#	include "jstd.h"
+#include "macros.h"
+#include "jstd.h"
 
 #ifdef __cplusplus
 extern "C" {
