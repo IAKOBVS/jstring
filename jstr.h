@@ -64,7 +64,7 @@ void jstr_delete(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 int private_jstr_cat(jstring_t *JSTR_RESTRICT__ this_, size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int private_jstr_cat_s(jstring_t *JSTR_RESTRICT__ this_, size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
-int jstr_new_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_, size_t srclen, const char *JSTR_RESTRICT__ src_, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int private_jstr_new_cat(jstring_t *JSTR_RESTRICT__ this_, size_t arglen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
@@ -487,7 +487,7 @@ JSTR_PUBLIC__
 	jstring_t(const std::size_t cap) JSTR_NOEXCEPT__
 	{
 		this->size = 0;
-		private_jstr_new_alloc_void(this, cap);
+		private_jstr_new_void(this, cap);
 	}
 
 	JSTR_INLINE__
@@ -503,7 +503,7 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	jstring_t(const std::size_t cap, const std::size_t future_size) JSTR_NOEXCEPT__
 	{
-		private_jstr_new_alloc_void(this, cap);
+		private_jstr_new_void(this, cap);
 		if (unlikely(this->data))
 			return;
 		this->size = future_size;
@@ -514,11 +514,11 @@ JSTR_PUBLIC__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc() JSTR_NOEXCEPT__ { return jstr_new_alloc(this, 8); }
+	int alloc() JSTR_NOEXCEPT__ { return jstr_new(this, 8); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc(size_t cap) JSTR_NOEXCEPT__ { return jstr_new_alloc(this, cap); }
+	int alloc(size_t cap) JSTR_NOEXCEPT__ { return jstr_new(this, cap); }
 
 	template <std::size_t N>
 	JSTR_INLINE__
@@ -854,7 +854,7 @@ JSTR_PRIVATE__
 #endif // __cpluslus
 
 	JSTR_INLINE__
-	void private_jstr_new_alloc_void(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+	void private_jstr_new_void(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 	{
 		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
 		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
@@ -1025,19 +1025,36 @@ JSTR_PRIVATE__
 		return 1;
 	}
 
-	JSTR_INLINE__
-	int jstr_new_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
-	{
-		this_->size = 0;
-		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
-		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
-		if (unlikely(!this_->data)) {
-			this_->data = NULL;
-			this_->capacity = 0;
-			return 0;
-		}
-		return 1;
+#ifdef __cplusplus
+
+JSTR_INLINE__
+int jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+{
+	this_->size = 0;
+	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
+	this_->data = JSTR_CAST__(char *)malloc(this_->capacity * sizeof(*this_->data));
+	if (unlikely(!this_->data)) {
+		this_->data = NULL;
+		this_->capacity = 0;
+		return 0;
 	}
+	return 1;
+}
+
+#else
+
+#define jstr_new(this_, size_)                                                                       \
+do {                                                                                                 \
+	((this_)->size) = 0;                                                                         \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size_));                          \
+	((this_)->data) = JSTR_CAST__(char *)malloc(((this_)->capacity) * sizeof(*((this_)->data))); \
+	if (unlikely(!((this_)->data))) {                                                            \
+		((this_)->data) = NULL;                                                              \
+		((this_)->capacity) = 0;                                                             \
+	}                                                                                            \
+} while (0)
+
+#endif // __cpluslus
 
 	JSTR_INLINE__
 	void jstr_swap(jstring_t *JSTR_RESTRICT__ this_, jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__
@@ -1516,39 +1533,6 @@ JSTR_PRIVATE__
 #endif // JSTR_HAS_GENERIC
 
 #define jstr_new_cat(this_jstr, ...) private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, (void *)0)
-
-#define PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, ...)                         \
-	(PP_NARG(__VA_ARGS__) == 1)                                        \
-		? PRIVATE_JSTR_NEW_ALLOC(this_jstr, __VA_ARGS__)           \
-		: PRIVATE_JSTR_NEW_APPEND_WITH_LEN(this_jstr, __VA_ARGS__)
-
-#define PRIVATE_JSTR_NEW_ALLOC(this_jstr, ...)                       \
-	jstr_new_alloc(this_jstr, (size_t)PP_FIRST_ARG(__VA_ARGS__))
-
-#define PRIVATE_JSTR_NEW_APPEND(this_jstr, ...)                                                                  \
-	jstr_new_append(this_jstr, strlen((char *)PP_FIRST_ARG(__VA_ARGS__)), (char *)PP_FIRST_ARG(__VA_ARGS__))
-
-#define PRIVATE_JSTR_NEW_APPEND_WITH_LEN(this_jstr, ...)           \
-	jstr_new_append(this_jstr, (size_t)__VA_ARGS__, (void *)0)
-
-#define PRIVATE_JSTR_NEW_CAT(this_jstr, ...)                                                            \
-	private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS((char *)__VA_ARGS__), __VA_ARGS__, (void *)0)
-
-#define PRIVATE_JSTR_NEW_ADD_STR(this_jstr, ...)                  \
-(                                                                 \
-	(PP_NARG(__VA_ARGS__) == 1)                               \
-		? PRIVATE_JSTR_NEW_APPEND(this_jstr, __VA_ARGS__) \
-		: PRIVATE_JSTR_NEW_CAT(this_jstr, __VA_ARGS__)    \
-)
-
-#ifdef JSTR_HAS_GENERIC
-#	define jstr_new(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),               \
-		JSTR_GENERIC_CASE_SIZE(PRIVATE_JSTR_NEW_FIRST_INT(this_jstr, __VA_ARGS__)), \
-		JSTR_GENERIC_CASE_STR(PRIVATE_JSTR_NEW_ADD_STR(this_jstr, __VA_ARGS__))     \
-	)
-#else
-#	define jstr_new(this_jstr, size) jstr_new_alloc(this_jstr, size)
-#endif // JSTR_HAS_GENERIC
 
 #ifdef JSTR_HAS_GENERIC
 #	define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                   \

@@ -89,11 +89,9 @@
 /* 	return 1; */
 /* } */
 
-#define JSTR_HAS_GENERIC
-
 int main()
 {
 	/* assert(debug()); */
 	jstring_t s;
-	assert(jstr_new(&s, "hello"));
+	jstr_new(&s, 100);
 }
