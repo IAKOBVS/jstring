@@ -1437,6 +1437,16 @@ JSTR_PRIVATE__
 		return impl_jstr_ndup(this_, other_, n);
 	}
 
+#ifndef __cplusplus
+	JSTR_INLINE__
+	JSTR_CONST__
+	char *jstr_at(const jstring_t *this_jstr, const size_t index)
+	{
+		assert(index <= this_jstr->size);
+		return this_jstr->data + index;
+	}
+#endif // ! __cpluslus
+
 #ifdef __cplusplus
 
 } jstring_t;
