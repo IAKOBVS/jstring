@@ -114,13 +114,19 @@
 #	ifdef __cplusplus
 		extern "C" {
 #	endif
-		JSTR_CONST__ JSTR_INLINE__ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
+		JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
 		{
 			return 1ull << (64 - __builtin_clzll(x - 1));
 		}
 #	endif // __has_builtin(__builtin_clzll)
 #	if __has_builtin(__builtin_clz)
-		JSTR_CONST__ JSTR_INLINE__ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
+		JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
 		{
 			return 1 << (32 - __builtin_clz(x - 1));
 		}
@@ -135,21 +141,30 @@
 #	ifdef __cplusplus
 		extern "C" {
 #	endif
-	JSTR_CONST__ JSTR_INLINE__ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
 	{
 		unsigned long index;
 		_BitScanReverse(&index, x - 1);
 		return 1 << (index + 1);
 	}
 
-	JSTR_CONST__ JSTR_INLINE__ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
 	{
 		unsigned long index;
 		_BitScanReverse64(&index, x - 1);
 		return 1ull << (index + 1);
 	}
 #else
-	JSTR_CONST__ JSTR_INLINE__ size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT__
 	{
 		--x;
 		x |= x >> 1;
@@ -160,7 +175,10 @@
 		return x + 1;
 	}
 
-	JSTR_CONST__ JSTR_INLINE__ size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT__
 	{
 		--x;
 		x |= x >> 1;
@@ -175,6 +193,63 @@
 		}
 #	endif
 #endif // __GNUC__ || __clang__
+
+#ifdef __cplusplus
+
+#include <type_traits>
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	constexpr static std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT__
+	{
+		--x;
+		x |= x >> 1;
+		x |= x >> 2;
+		x |= x >> 4;
+		x |= x >> 8;
+		x |= x >> 16;
+		return x + 1;
+	}
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	constexpr static std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT__
+	{
+		--x;
+		x |= x >> 1;
+		x |= x >> 2;
+		x |= x >> 4;
+		x |= x >> 8;
+		x |= x >> 16;
+		x |= x >> 32;
+		return x + 1;
+	}
+
+	template <typename T>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	static std::size_t JSTR_NEXT_POW2_32(T x)
+	{
+		if constexpr (std::is_integral<T>::value)
+			return private_jstr_next_pow2_32_constexpr(x);
+		return private_jstr_next_pow2_32(x);
+	}
+
+	template <typename T>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	JSTR_CONST__
+	static std::size_t JSTR_NEXT_POW2_64(T x)
+	{
+		if constexpr (std::is_integral<T>::value)
+			return private_jstr_next_pow2_64_constexpr(x);
+		return private_jstr_next_pow2_64(x);
+	}
+
+#endif // __cplusplus
 
 #if defined(JSTR_HAS_TYPEOF) && defined(JSTR_HAS_GENERIC)
 #	define JSTR_SAME_TYPE(x, y) _Generic((x), \
