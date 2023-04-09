@@ -1048,9 +1048,35 @@ do {                                                                            
 	((this_)->size) = 0;                                                                         \
 	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size_));                          \
 	((this_)->data) = JSTR_CAST__(char *)malloc(((this_)->capacity) * sizeof(*((this_)->data))); \
-	if (unlikely(!((this_)->data))) {                                                            \
-		((this_)->data) = NULL;                                                              \
+	if (unlikely(!((this_)->data)))                                                              \
 		((this_)->capacity) = 0;                                                             \
+} while (0)
+
+void private_jstr_new_cat_(char *data,
+			...) JSTR_NOEXCEPT__
+{
+	va_list ap;
+	va_start(ap, data);
+	for (const char *JSTR_RESTRICT__ argv = va_arg(ap, const char *);
+			argv;
+			argv = va_arg(ap, const char *))
+		do {
+			*data++ = *argv++;
+		} while (*argv);
+	*data = '\0';
+	va_end(ap);
+}
+
+#define jstr_new_cat(this_, ...)                                                                     \
+do {                                                                                                 \
+	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                          \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                \
+	((this_)->data) = JSTR_CAST__(char *)malloc(((this_)->capacity) * sizeof(*((this_)->data))); \
+	if (unlikely(!((this_)->data))) {                                                            \
+		((this_)->capacity) = 0;                                                             \
+		((this_)->size) = 0;                                                                 \
+	} else {                                                                                     \
+		private_jstr_new_cat(((this_)->data), PP_NARG(__VA_ARGS__), __VA_ARGS__)             \
 	}                                                                                            \
 } while (0)
 

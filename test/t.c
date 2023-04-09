@@ -92,6 +92,7 @@
 int main()
 {
 	/* assert(debug()); */
-	jstring_t s;
-	jstr_new(&s, 100);
+	/* jstring_t s; */
+	/* jstr_new(&s, 100); */
+	char **p = { "hello", "hi", "hoo" };
 }
