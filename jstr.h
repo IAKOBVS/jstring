@@ -29,9 +29,9 @@
 #	include <string.h>
 #	include <assert.h>
 #	include "jstd.h"
-#	include "macros.h"
 #endif // ! __cplusplus
 
+#	include "macros.h"
 #	include "jstd.h"
 
 #ifdef __cplusplus

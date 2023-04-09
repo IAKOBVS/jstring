@@ -37,9 +37,17 @@
 
 #ifdef JSTR_ALIGN_POWER_OF_TWO
 #	ifdef JSTR_64_BIT
-#		define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
+#		ifdef __cplusplus
+#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
+#		else
+#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
+#		endif // __cplusplus
 #	elif JSTR_32_BIT
-#		define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
+#		ifdef __cplusplus
+#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
+#		else
+#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
+#		endif // __cplusplus
 #	else
 #		define JSTR_NEXT_POW2(x) (x)
 #	endif // JSTR_64_BIT
@@ -233,8 +241,10 @@
 	JSTR_CONST__
 	static std::size_t JSTR_NEXT_POW2_32(T x)
 	{
-		if constexpr (std::is_integral<T>::value)
+		if constexpr (std::is_integral<T>::value) {
+			static_assert(x > 0, "Passing zero or negative value as capacity!");
 			return private_jstr_next_pow2_32_constexpr(x);
+		}
 		return private_jstr_next_pow2_32(x);
 	}
 
@@ -244,8 +254,10 @@
 	JSTR_CONST__
 	static std::size_t JSTR_NEXT_POW2_64(T x)
 	{
-		if constexpr (std::is_integral<T>::value)
+		if constexpr (std::is_integral<T>::value) {
+			static_assert(x > 0, "Passing zero or negative value as capacity!");
 			return private_jstr_next_pow2_64_constexpr(x);
+		}
 		return private_jstr_next_pow2_64(x);
 	}
 
