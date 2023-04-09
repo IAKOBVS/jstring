@@ -293,11 +293,11 @@ typedef struct jstring_t {
 
 JSTR_PRIVATE__
 
-	constexpr void assert_are_strings() JSTR_NOEXCEPT__ {}
+	static constexpr void assert_are_strings() JSTR_NOEXCEPT__ {}
 
 	template <typename Arg, typename... Args>
 	JSTR_INLINE__
-	constexpr void assert_are_strings(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
+	static constexpr void assert_are_strings(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(std::is_same<const char *, std::decay_t<Arg>>::value
 			|| std::is_same<char *, std::decay_t<Arg>>::value, "Wrong argument type passed!");
@@ -305,22 +305,22 @@ JSTR_PRIVATE__
 	}
 
 	template <typename T>
-	constexpr void assert_are_type() JSTR_NOEXCEPT__ {}
+	static constexpr void assert_are_type() JSTR_NOEXCEPT__ {}
 
 	template <typename T, typename Arg, typename... Args>
 	JSTR_INLINE__
-	constexpr void assert_are_type(Arg&& arg, Args&&... args)
+	static constexpr void assert_are_type(Arg&& arg, Args&&... args)
 	{
 		static_assert(std::is_same<T, std::decay_t<Arg>>::value, "Wrong argument type passed!");
 		assert_are_type<T>(args...);
 	}
 
-	constexpr int args_are_strings() JSTR_NOEXCEPT__ { return 1; }
+	static constexpr int args_are_strings() JSTR_NOEXCEPT__ { return 1; }
 
 	template <typename Arg, typename... Args>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	constexpr int args_are_strings(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
+	static constexpr int args_are_strings(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
 	{
 		return (std::is_same<const char *, std::decay_t<Arg>>::value
 		|| std::is_same<const char *, std::decay_t<Arg>>::value)
@@ -328,12 +328,12 @@ JSTR_PRIVATE__
 	}
 
 	template <typename T>
-	constexpr int args_are_type() JSTR_NOEXCEPT__ { return 1; }
+	static constexpr int args_are_type() JSTR_NOEXCEPT__ { return 1; }
 
 	template <typename T, typename Arg, typename... Args>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	constexpr int args_are_type(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__ { return std::is_same<T, std::decay_t<Arg>>::value && args_are_type<T>(args...); }
+	static constexpr int args_are_type(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__ { return std::is_same<T, std::decay_t<Arg>>::value && args_are_type<T>(args...); }
 	
 	template <std::size_t N>
 	JSTR_INLINE__
@@ -347,7 +347,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	JSTR_CONST__
-	constexpr std::size_t strlen_args() JSTR_NOEXCEPT__ { return 0; }
+	static constexpr std::size_t strlen_args() JSTR_NOEXCEPT__ { return 0; }
 
 #	if __cplusplus >= 201703L
 
