@@ -2,10 +2,13 @@
 #define JSTD_DEF_H__
 
 #ifdef __cplusplus
+#	include <cstddef>
+#	include <cstring>
 extern "C" {
-#endif // __cplusplus
+#else
 #	 include <stddef.h>
 #	 include <string.h>
+#endif // __cplusplus
 #	 include "macros.h"
 
 JSTR_INLINE__
@@ -80,12 +83,12 @@ JSTR_WARN_UNUSED__
 #ifdef __USE_GNU
 int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 		size_t haystacklen,
-		const char *JSTR_RESTRICT__ const needle,
+		const char *JSTR_RESTRICT__ needle,
 		size_t needlelen) JSTR_NOEXCEPT__
 {
 	int count = 0;
 	for (const char *JSTR_RESTRICT__ old = haystack;
-		(haystack = (char *)memmem(haystack, haystacklen, needle, needlelen));
+		(haystack = JSTR_CAST__(char *)memmem(haystack, haystacklen, needle, needlelen));
 		haystacklen -= (haystack - old), ++count);
 	return count;
 }
@@ -94,7 +97,7 @@ int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 		const char *JSTR_RESTRICT__ const needle) JSTR_NOEXCEPT__
 {
 	int count = 0;
-	while ((haystack = (char *)strstr(haystack, needle)))
+	while ((haystack = JSTR_CAST__(char *)strstr(haystack, needle)))
 		++count;
 	return count;
 }
