@@ -122,13 +122,8 @@ int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR
 int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
-/* finds first occurence of character from end of string */
-#ifdef JSTR_HAS_MEMMEM__
 /* memrchr */
 char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, const int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-#endif // HAS MEMMEM
-/* memchr */
-char *jstr_chr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
 #define jstr_str(this_, ...)                                                                            \
 	(PP_NARG(__VA_ARGS__) == 1)                                                                     \
@@ -1351,14 +1346,9 @@ JSTR_PRIVATE__
 #ifdef JSTR_HAS_MEMRCHR__
 	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
 #else
-	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, const int c) JSTR_NOEXCEPT__
+	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_NOEXCEPT__
 	{
-		const char *JSTR_RESTRICT__ const begin = this_->data;
-		const char *JSTR_RESTRICT__ end = this_->data + this_->size - 1;
-		for ( ; end != begin; --end)
-			if (*end == c)
-				return end;
-		return NULL;
+		return jstd_rchr(this_->data, c, this_->size);
 	}
 #endif // JSTR_HAS_MEMRCHR__
 

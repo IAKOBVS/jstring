@@ -1,7 +1,7 @@
 #ifndef JSTD_DEF_H__
 #define JSTD_DEF_H__
 
-#	 include "macros.h"
+# include "macros.h"
 
 #ifdef __cplusplus
 #	include <cstddef>
@@ -77,10 +77,11 @@ int jstd_count_c(const char *JSTR_RESTRICT__ s, const int c) JSTR_NOEXCEPT__
 	return count;
 }
 
+/* memrchr */
 JSTR_INLINE__
 JSTR_CONST__
 JSTR_WARN_UNUSED__
-char *jstd_rchr(const char *s, const int c, size_t slen)
+char *jstd_rchr(char *s, int c, size_t slen)
 {
 	const char *JSTR_RESTRICT__ const begin = s;
 	char *JSTR_RESTRICT__ end = s + slen - 1;
@@ -107,7 +108,7 @@ int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 }
 #else
 int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
-		const char *JSTR_RESTRICT__ const needle) JSTR_NOEXCEPT__
+		const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__
 {
 	int count = 0;
 	while ((haystack = JSTR_CAST__(char *)strstr(haystack, needle)))
