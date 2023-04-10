@@ -1127,9 +1127,7 @@ do {                                                                            
 	}
 
 	JSTR_INLINE__
-	int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ this_,
-			const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
-	{ return memcmp(this_->data, other_->data, this_->size); }
+	int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return memcmp(this_->data, other_->data, this_->size); }
 
 	JSTR_INLINE__
 	int jstr_cmp(const jstring_t *JSTR_RESTRICT__ this_,
@@ -1149,7 +1147,6 @@ do {                                                                            
 			return memcmp(this_, s, slen);
 		return 1;
 	}
-
 
 	JSTR_INLINE__
 	JSTR_CONST__
