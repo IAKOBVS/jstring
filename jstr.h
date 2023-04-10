@@ -61,6 +61,12 @@ do {                             \
 	((this_)->size) = 0;     \
 } while (0)
 
+#define jstr_zero(this_)         \
+do {                             \
+	((this_)->capacity) = 0; \
+	((this_)->size) = 0;     \
+} while (0)
+
 #define jstr_delete(this_)       \
 do {                             \
 	((this_)->capacity) = 0; \
@@ -227,12 +233,16 @@ typedef struct jstring_t {
 		this->size = other_.size;
 		if (!this->capacity) {
 			this->data = (char *)std::malloc(other_.capacity);
-			if (unlikely(!this->data))
+			if (unlikely(!this->data)) {
+				this->size = 0;
 				return;
+			}
 		} else if (this->capacity < other_.capacity) {
 			this->data = (char *)std::realloc(this->data, other_.capacity);
-			if (unlikely(!this->data))
+			if (unlikely(!this->data)) {
+				this->size = 0;
 				return;
+			}
 		}
 		std::memcpy(this->data, other_.data, other_.size + 1);
 		this->capacity = other_.capacity;
@@ -255,12 +265,16 @@ typedef struct jstring_t {
 		this->size = other_.size;
 		if (!this->capacity) {
 			this->data = (char *)std::malloc(other_.capacity);
-			if (unlikely(!this->data))
+			if (unlikely(!this->data)) {
+				this->size = 0;
 				return *this;
+			}
 		} else if (this->capacity < other_.capacity) {
 			this->data = (char *)std::realloc(this->data, other_.capacity);
-			if (unlikely(!this->data))
+			if (unlikely(!this->data)) {
+				this->size = 0;
 				return *this;
+			}
 		}
 		std::memcpy(this->data, other_.data, other_.size + 1);
 		this->capacity = other_.capacity;
@@ -400,8 +414,11 @@ JSTR_PRIVATE__
 		assert_are_strings(arg, args...);
 		const std::size_t arglen_1 = strlen(arg);
 		size_t arglen = strlen_args(std::forward<Args>(args)...);
-		if (unlikely(!this->data))
+		if (unlikely(!this->data)) {
+			this->size = 0;
+			this->capacity = 0;
 			return;
+		}
 		char *tmp = this->data + this->size;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
@@ -429,7 +446,7 @@ JSTR_PUBLIC__
 	JSTR_WARN_UNUSED__
 	int cat_s(T arg1, T arg2, Args&&... args) JSTR_NOEXCEPT__
 	{
-		assert(unlikely(!this->capacity));
+		assert(this->capacity);
 		return this->cat(arg1, arg2, std::forward<Args>(args)...);
 	}
 
@@ -715,8 +732,7 @@ JSTR_PUBLIC__
 	int assign(const char (&s)[N]) JSTR_NOEXCEPT__ { return private_jstr_assign(this, s, N - 1); }
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	int shrink_to_fit() JSTR_NOEXCEPT__ { return jstr_shrink_to_fit(this); }
+	void shrink_to_fit() JSTR_NOEXCEPT__ { jstr_shrink_to_fit(this); }
 
 	JSTR_INLINE__
 	JSTR_CONST__
@@ -820,7 +836,8 @@ JSTR_PRIVATE__
 		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * slen));
 		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 		if (unlikely(!this_->data)) {
-			jstr_init(this_);
+			this_->capacity = 0;
+			this_->size = 0;
 			return;
 		}
 		this_->size = slen;
@@ -834,7 +851,7 @@ JSTR_PRIVATE__
 		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 		if (unlikely(!this_->data)) {
 			this_->capacity = 0;
-			this_->data = NULL;
+			this_->size = 0;
 			return;
 		}
 	}
@@ -845,8 +862,11 @@ JSTR_PRIVATE__
 	void jstr_reserve_f_exact(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
 	{
 		this_->data = JSTR_CAST__(char *)realloc(this_->data, cap);
-		if (unlikely(!this_->data))
+		if (unlikely(!this_->data)) {
+			this_->capacity = 0;
+			this_->size = 0;
 			return;
+		}
 		this_->capacity = cap;
 	}
 
@@ -873,8 +893,11 @@ JSTR_PRIVATE__
 	void private_jstr_cat(jstring_t *JSTR_RESTRICT__ this_, size_t len, ...) JSTR_NOEXCEPT__
 	{
 		jstr_reserve(this_, this_->size + len + 1);
-		if (unlikely(!this_->data))
+		if (unlikely(!this_->data)) {
+			this_->capacity = 0;
+			this_->size = 0;
 			return;
+		}
 		char *JSTR_RESTRICT__ tmp = this_->data + len;
 		this_->size += len;
 		va_list ap;
@@ -894,8 +917,11 @@ JSTR_PRIVATE__
 	{
 		assert(this_->capacity);
 		jstr_reserve(this_, this_->size + len + 1);
-		if (unlikely(!this_->data))
+		if (unlikely(!this_->data)) {
+			this_->capacity = 0;
+			this_->size = 0;
 			return;
+		}
 		char *JSTR_RESTRICT__ tmp = this_->data + len;
 		this_->size += len;
 		va_list ap;
@@ -925,8 +951,11 @@ JSTR_PRIVATE__
 				size_t slen) JSTR_NOEXCEPT__
 	{
 		jstr_reserve(this_, this_->size + slen);
-		if (unlikely(!this_->data))
+		if (unlikely(!this_->data)) {
+			this_->capacity = 0;
+			this_->size = 0;
 			return;
+		}
 		private_jstr_append_u(this_, s, slen);
 	}
 
@@ -950,7 +979,8 @@ int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_,
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * slen));
 	this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 	if (unlikely(!this_->data)) {
-		jstr_init(this_);
+		this_->capacity = 0;
+		this_->size = 0;
 		return 0;
 	}
 	this_->size = slen;
@@ -965,7 +995,8 @@ int private_jstr_new_cat(jstring_t *JSTR_RESTRICT__ this_,
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * arglen));
 	this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 	if (unlikely(!this_->data)) {
-		jstr_init(this_);
+		this_->capacity = 0;
+		this_->size = 0;
 		return 0;
 	}
 	this_->size = arglen;
@@ -990,7 +1021,6 @@ int jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
 	this_->data = JSTR_CAST__(char *)malloc(this_->capacity * sizeof(*this_->data));
 	if (unlikely(!this_->data)) {
-		this_->data = NULL;
 		this_->capacity = 0;
 		return 0;
 	}
@@ -1196,46 +1226,44 @@ do {                                                                            
 	}
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	int jstr_shrink_to_fit_f(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
+	void jstr_shrink_to_fit_f(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
-		char *JSTR_RESTRICT__ tmp;
-		if (unlikely(!(tmp = JSTR_CAST__(char *)realloc(this_->data, this_->size + 1))))
-			return 0;
+		this_->data = JSTR_CAST__(char *)realloc(this_->data, this_->size + 1);
+		if (unlikely(!this_->data)) {
+			this_->size = 0;
+			this_->capacity = 0;
+			return;
+		}
 		this_->capacity = this_->size + 1;
-		this_->data = tmp;
-		return 1;
 	}
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	int jstr_shrink_to_fit(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
+	void jstr_shrink_to_fit(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
 		if (unlikely(this_->capacity == this_->size))
-			return 1;
-		return jstr_shrink_to_fit_f(this_);
+			return;
+		jstr_shrink_to_fit_f(this_);
 	}
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	int jstr_shrink_to_f(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
+	void jstr_shrink_to_f(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
 	{
-		char *JSTR_RESTRICT__ tmp;
-		if (unlikely(!(tmp = JSTR_CAST__(char *)realloc(this_->data, cap))))
-			return 0;
-		this_->data = tmp;
+		this_->data = JSTR_CAST__(char *)realloc(this_->data, cap);
+		if (unlikely(!this_->data)) {
+			this_->size = 0;
+			this_->capacity = 0;
+			return;
+		}
 		this_->data[this_->size = cap] = '\0';
 		this_->capacity = cap;
-		return 1;
 	}
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	int jstr_shrink_to(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
+	void jstr_shrink_to(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
 	{
 		if (cap > this_->capacity)
-			return 1;
-		return jstr_shrink_to_f(this_, cap);
+			return;
+		jstr_shrink_to_f(this_, cap);
 	}
 
 	JSTR_INLINE__
@@ -1245,25 +1273,21 @@ do {                                                                            
 	}
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	int jstr_shrink_to_size(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+	void jstr_shrink_to_size(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 	{
 		if (size < this_->size) {
 			jstr_shrink_to_size_f(this_, size);
-			return 1;
+			return;
 		}
-		return 0;
 	}
 
 	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	int jstr_shrink_to_size_s(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+	void jstr_shrink_to_size_s(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 	{
 		if ((!!this_->size) & (size < this_->size)) {
 			jstr_shrink_to_size_f(this_, size);
-			return 1;
+			return;
 		}
-		return 0;
 	}
 
 	JSTR_INLINE__
