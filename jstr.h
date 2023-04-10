@@ -1055,7 +1055,7 @@ do {                                                                            
 		} else {                                                                         \
 			size_t i = 0;                                                            \
 			const char *args[] = { __VA_ARGS__, NULL };                              \
-			for (const char **argsp = args; *argsp; ++argsp)                         \
+			for (const char **JSTR_RESTRICT__ argsp = args; *argsp; ++argsp)         \
 				while (**argsp)                                                  \
 					((this_)->data)[i++] = *(*argsp)++;                      \
 			((this_)->data)[i] = '\0';                                               \
@@ -1080,7 +1080,7 @@ do {                                                                            
 		} else {                                                                                           \
 			size_t i = ((this_)->size);                                                                \
 			const char *args[] = { __VA_ARGS__, NULL };                                                \
-			for (const char **argsp = args; *argsp; ++argsp)                                           \
+			for (const char **JSTR_RESTRICT__ argsp = args; *argsp; ++argsp)                           \
 				while (**argsp)                                                                    \
 					((this_)->data)[i++] = *(*argsp)++;                                        \
 			((this_)->data)[i] = '\0';                                                                 \
