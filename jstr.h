@@ -1066,17 +1066,20 @@ void private_jstr_new_cat_(char *data,
 	va_end(ap);
 }
 
-#define jstr_new_cat(this_, ...)                                                                     \
-do {                                                                                                 \
-	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                          \
-	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                \
-	((this_)->data) = JSTR_CAST__(char *)malloc(((this_)->capacity) * sizeof(*((this_)->data))); \
-	if (unlikely(!((this_)->data))) {                                                            \
-		((this_)->capacity) = 0;                                                             \
-		((this_)->size) = 0;                                                                 \
-	} else {                                                                                     \
-		private_jstr_new_cat(((this_)->data), PP_NARG(__VA_ARGS__), __VA_ARGS__)             \
-	}                                                                                            \
+#define jstr_new_cat(this_, ...)                                                      \
+do {                                                                                  \
+	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                           \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size))); \
+	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));     \
+	if (unlikely(!((this_)->data))) {                                             \
+		((this_)->capacity) = 0;                                              \
+		((this_)->size) = 0;                                                  \
+	} else {                                                                      \
+		const char *args[] = { __VA_ARGS__, NULL };                           \
+		for (char *datap = ((this_)->data); *args; ++*args)                   \
+			while (*args)                                                 \
+				*datap++ = *(*args)++;                                \
+	}                                                                             \
 } while (0)
 
 #endif // __cpluslus
