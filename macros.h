@@ -364,4 +364,7 @@
 #	define JSTR_HAS_MEMRCHR__
 #endif // JSTR_HAS_MEMRCHR__
 
+#ifndef __USE_GNU
+#endif // __USE_GNU
+
 #endif // JSTR_MACROS_H_DEF__

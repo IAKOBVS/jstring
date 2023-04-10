@@ -802,6 +802,20 @@ JSTR_PUBLIC__
 		{ return jstd_count_s(this->data, needle); }
 #endif // JSTR_HAS_MEMMEM__
 
+#ifdef __USE_GNU
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	char *casestr(const char *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return strcasestr(this->data, needle); }
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	char *casestr(const jstring_t *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return strcasestr(this->data, needle->data); }
+
+#endif // __USE_GNU
+
 #endif // __cplusplus templates
 
 JSTR_PRIVATE__
@@ -1415,12 +1429,24 @@ do {                                                                            
 		}
 	}
 
+#ifdef __USE_GNU
+
 	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	char *jstr_casestr(const jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)strcasestr(this_->data, needle); }
+
+#endif // __USE_GNU
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	char *jstr_chr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memchr(this_->data, c, this_->size); }
 
 #ifndef __cplusplus
 	JSTR_INLINE__
 	JSTR_CONST__
+	JSTR_WARN_UNUSED__
 	char *jstr_at(const jstring_t *this_jstr, const size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		assert(index <= this_jstr->size);
