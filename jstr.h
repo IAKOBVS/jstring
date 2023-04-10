@@ -28,7 +28,6 @@
 #	include <stdlib.h>
 #	include <string.h>
 #	include <assert.h>
-#	include "jstd.h"
 #endif // ! __cplusplus
 
 #include "macros.h"
@@ -52,14 +51,26 @@ extern "C" {
 #define JSTR_MIN_CAP 8
 #define JSTR_MULTIPLIER 2
 
+#define jstr_init(this_)         \
+do {                             \
+	((this_)->data) = NULL;  \
+	((this_)->capacity) = 0; \
+	((this_)->size) = 0;     \
+} while (0)
+
+#define jstr_delete(this_)       \
+do {                             \
+	((this_)->capacity) = 0; \
+	((this_)->size) = 0;     \
+	free(((this_)->data));   \
+	((this_)->data) = NULL;  \
+} while (0)
+
 #ifndef __cplusplus // ! __cplusplus
 
 #define jstring(name) jstring_t name = {0}
 
 typedef struct jstring_t jstring_t;
-
-void jstr_init(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
-void jstr_delete(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 
 int jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_, size_t srclen, const char *JSTR_RESTRICT__ src_, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
@@ -803,9 +814,9 @@ JSTR_PUBLIC__
 	int count_s(const jstring_t *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 #ifdef JSTR_HAS_MEMMEM__
 		{ return jstd_count_s(this->data, this->size, needle->data, needle->size); }
-#	else
+#else
 		{ return jstd_count_s(this->data, needle); }
-#	endif // JSTR_HAS_MEMMEM__
+#endif // JSTR_HAS_MEMMEM__
 
 #endif // __cplusplus templates
 
@@ -860,21 +871,6 @@ JSTR_PRIVATE__
 	}
 
 #endif // __cpluslus
-
-	JSTR_INLINE__
-	void jstr_init(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
-	{
-		this_->size = 0;
-		this_->capacity = 0;
-		this_->data = NULL;
-	}
-
-	JSTR_INLINE__
-	void jstr_delete(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
-	{
-		free(this_->data);
-		jstr_init(this_);
-	}
 
 	JSTR_INLINE__
 	int jstr_reserve_f_exact(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
@@ -1414,12 +1410,10 @@ do {                                                                            
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 #ifdef JSTR_HAS_MEMRCHR__
-	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
-#else
 	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
-	{
-		return jstd_rchr(this_->data, c, this_->size);
-	}
+	{ return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
+#else
+	{ return jstd_rchr(this_->data, c, this_->size); }
 #endif // JSTR_HAS_MEMRCHR__
 
 	JSTR_INLINE__
@@ -1538,8 +1532,10 @@ do {                                                                            
 		: private_jstr_assign(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__)))) \
 	)
 #else
-#define jstr_assign(dest, ...)                 \
-	private_jstr_assign(dest, __VA_ARGS__)
+#define jstr_assign(dest, ...)                                                                                 \
+	PP_NARG(__VA_ARGS__) == 2                                                                              \
+		? private_jstr_assign(this_jstr, __VA_ARGS__, 0)                                               \
+		: private_jstr_assign(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
 #endif // JSTR_HAS_GENERIC
 
 #define jstr_append(this_jstr, ...)                                                                            \
@@ -1569,15 +1565,13 @@ do {                                                                            
 #define jstr_reserve_s_32x(this_jstr) private_jstr_reserve_s_x(this_jstr, 32)
 #define jstr_reserve_s_64x(this_jstr) private_jstr_reserve_s_x(this_jstr, 64)
 
-#ifndef __cplusplus
-#	define jstr_foreach(elem, jstr)                          \
-		for (char *elem = ((jstr)->data); *elem; ++elem)
-#	define jstr_begin(this_jstr) ((this_jstr)->data)
-#	define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))
+#define jstr_foreach(elem, jstr)                          \
+ 	for (char *elem = ((jstr)->data); *elem; ++elem)
+#define jstr_begin(this_jstr) ((this_jstr)->data)
+#define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))
 
-#	define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
-#	define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
-#endif // __cplusplus
+#define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
+#define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
 
 #define jstr_foreach_index(elem, jstr)                 \
  for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
