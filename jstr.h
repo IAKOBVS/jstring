@@ -66,12 +66,6 @@ do {                             \
 	((this_)->size) = 0;     \
 } while (0)
 
-#define jstr_zero(this_)         \
-do {                             \
-	((this_)->capacity) = 0; \
-	((this_)->size) = 0;     \
-} while (0)
-
 #define jstr_delete(this_)       \
 do {                             \
 	((this_)->capacity) = 0; \
