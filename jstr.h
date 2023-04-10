@@ -125,12 +125,11 @@ int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RE
 /* memrchr */
 char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, const int c) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
-#define jstr_str(this_, ...)                                                                            \
-	(PP_NARG(__VA_ARGS__) == 1)                                                                     \
-		? private_jstr_str(this_, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
-		: private_jstr_str(this_, __VA_ARGS__, 0)
-
 #ifdef JSTR_HAS_MEMMEM__
+#	define jstr_str(this_, ...)                                                                             \
+		(PP_NARG(__VA_ARGS__) == 1)                                                                     \
+			? private_jstr_str(this_, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
+			: private_jstr_str(this_, __VA_ARGS__, 0)
 char *private_jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle, size_t needlelen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 #else
 char *jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
