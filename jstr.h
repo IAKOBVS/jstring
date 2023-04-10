@@ -10,8 +10,11 @@
    it will crash at runtime if assertion fails.
 
    _u (unsafe) functions will not do any allocations.
+
    _f (force/fast) functions will force allocations.
-   _s (safe) functons will check if object has been allocated with malloc.
+
+   _s (safe) functons will assert if object has been
+   allocated with malloc, if not it will crash the program.
 */
 
 #define JSTR_ALIGN_POWER_OF_TWO
@@ -440,8 +443,7 @@ JSTR_PUBLIC__
 	JSTR_WARN_UNUSED__
 	int cat_s(T arg1, T arg2, Args&&... args) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!this->capacity))
-			return 0;
+		assert(unlikely(!this->capacity));
 		return this->cat(arg1, arg2, std::forward<Args>(args)...);
 	}
 
@@ -926,8 +928,7 @@ JSTR_PRIVATE__
 
 	int private_jstr_cat_s(jstring_t *JSTR_RESTRICT__ this_, size_t len, ...) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!this_->capacity))
-			return 0;
+		assert(this_->capacity);
 		if (unlikely(!jstr_reserve(this_, this_->size + len + 1)))
 			return 0;
 		char *JSTR_RESTRICT__ tmp = this_->data + len;
@@ -970,8 +971,7 @@ JSTR_PRIVATE__
 				const char *JSTR_RESTRICT__ const s,
 				size_t slen) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!this_->capacity))
-			return 0;
+		assert(this_->capacity);
 		return private_jstr_append(this_, s, slen);
 	}
 
@@ -1064,6 +1064,12 @@ do {                                                                            
 		((this_)->capacity) = 0;                                                         \
 		((this_)->size) = 0;                                                             \
 	}                                                                                        \
+} while (0)
+
+#define jstr_cat_s(this_, ...)        \
+do {                                  \
+	assert(((this_)->data));      \
+	jstr_cat(this_, __VA_ARGS__); \
 } while (0)
 
 #define jstr_cat(this_, ...)                                                                                       \
@@ -1331,8 +1337,7 @@ do {                                                                            
 	JSTR_WARN_UNUSED__
 	int jstr_push_back_s(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!this_->capacity))
-			return 0;
+		assert(this_->capacity);
 		return jstr_push_back(this_, c);
 	}
 
