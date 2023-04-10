@@ -1409,8 +1409,8 @@ do {                                                                            
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-#ifdef JSTR_HAS_MEMRCHR__
 	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+#ifdef JSTR_HAS_MEMRCHR__
 	{ return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
 #else
 	{ return jstd_rchr(this_->data, c, this_->size); }
@@ -1524,19 +1524,10 @@ do {                                                                            
 
 #ifndef __cplusplus
 
-#ifdef JSTR_HAS_GENERIC
-#	define jstr_assign(dest, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                \
-	jstring_t *: jstr_assign_jstr(dest, (jstring_t *)PP_FIRST_ARG(__VA_ARGS__)),                                       \
-	JSTR_GENERIC_CASE_STR((PP_NARG(__VA_ARGS__) == 2)                                                                  \
-		? private_jstr_assign(dest, (char *)__VA_ARGS__, 0)                                                        \
-		: private_jstr_assign(dest, (char *)PP_FIRST_ARG(__VA_ARGS__), strlen((char *)PP_FIRST_ARG(__VA_ARGS__)))) \
-	)
-#else
 #define jstr_assign(dest, ...)                                                                                 \
 	PP_NARG(__VA_ARGS__) == 2                                                                              \
 		? private_jstr_assign(this_jstr, __VA_ARGS__, 0)                                               \
 		: private_jstr_assign(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
-#endif // JSTR_HAS_GENERIC
 
 #define jstr_append(this_jstr, ...)                                                                            \
 (                                                                                                              \
