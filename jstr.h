@@ -1098,9 +1098,15 @@ do {                                                                            
 	JSTR_INLINE__
 	void jstr_swap(jstring_t *JSTR_RESTRICT__ this_, jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__
 	{
-		const jstring_t tmp = *other_;
-		*other_ = *this_;
-		*this_ = tmp;
+		char *JSTR_RESTRICT__ const tmp_data = this_->data;
+		const size_t tmp_size = this_->size;
+		const size_t tmp_capacity = this_->capacity;
+		this_->data = other_->data;
+		this_->size = other_->size;
+		this_->capacity = other_->capacity;
+		other_->data = tmp_data;
+		other_->size = tmp_size;
+		other_->capacity = tmp_capacity;
 	}
 
 	JSTR_INLINE__
