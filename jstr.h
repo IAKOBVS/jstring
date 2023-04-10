@@ -66,7 +66,7 @@ do {                             \
 	((this_)->size) = 0;     \
 } while (0)
 
-#define jstr_del(this_)          \
+#define jstr_dealloc(this_)      \
 do {                             \
 	free(((this_)->data));   \
 	((this_)->data) = NULL;  \
@@ -80,9 +80,9 @@ do {                             \
 
 typedef struct jstring_t jstring_t;
 
-void jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__;
-void jstr_new_append(jstring_t *JSTR_RESTRICT__ this_, size_t srclen, const char *JSTR_RESTRICT__ src_, ...) JSTR_NOEXCEPT__;
-void private_jstr_new_cat(jstring_t *JSTR_RESTRICT__ this_, size_t arglen, ...) JSTR_NOEXCEPT__;
+void jstr_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__;
+void jstr_alloc_append(jstring_t *JSTR_RESTRICT__ this_, size_t srclen, const char *JSTR_RESTRICT__ src_, ...) JSTR_NOEXCEPT__;
+void private_jstr_alloc_cat(jstring_t *JSTR_RESTRICT__ this_, size_t arglen, ...) JSTR_NOEXCEPT__;
 
 void jstr_push_back_u(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
 void jstr_push_back_f(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
@@ -177,9 +177,9 @@ typedef struct jstring_t {
 	}
 
 	JSTR_INLINE__
-	void del() JSTR_NOEXCEPT__
+	void dealloc() JSTR_NOEXCEPT__
 	{
-		jstr_delete(this);
+		jstr_dealloc(this);
 	}
 
 	JSTR_INLINE__
@@ -385,7 +385,7 @@ JSTR_PUBLIC__
 
 	template <typename T, typename U, typename... Args>
 	JSTR_INLINE__
-	jstring_t(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__ { this->cat_new(arg1, arg2, std::forward<Args>(args)...); }
+	jstring_t(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__ { this->cat_alloc(arg1, arg2, std::forward<Args>(args)...); }
 
 #	if __cplusplus >= 201103L
 
@@ -393,7 +393,7 @@ JSTR_PRIVATE__
 
 	template <typename T, typename... Args>
 	JSTR_INLINE__
-	void cat_new(T arg, Args&&... args) JSTR_NOEXCEPT__
+	void cat_alloc(T arg, Args&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed!");
 		assert_are_strings(arg, args...);
@@ -483,19 +483,19 @@ JSTR_PUBLIC__
 
 	template <typename T, typename... Args>
 	JSTR_INLINE__
-	jstring_t(T arg, Args&&... args) JSTR_NOEXCEPT__ { private_jstr_new_cat(this, strlen_args(arg, std::forward<args>(args)...), arg, args...); }
+	jstring_t(T arg, Args&&... args) JSTR_NOEXCEPT__ { private_jstr_alloc_cat(this, strlen_args(arg, std::forward<args>(args)...), arg, args...); }
 
 	JSTR_INLINE__
-	jstring_t(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { private_jstr_new_append_void(this, strlen(s), s); }
+	jstring_t(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { private_jstr_alloc_append_void(this, strlen(s), s); }
 
 	template <std::size_t N>
 	JSTR_INLINE__
-	jstring_t(const char (&s)[N]) JSTR_NOEXCEPT__ { private_jstr_new_append_void(this, N - 1, s); }
+	jstring_t(const char (&s)[N]) JSTR_NOEXCEPT__ { private_jstr_alloc_append_void(this, N - 1, s); }
 
 	JSTR_INLINE__
 	jstring_t(const char *JSTR_RESTRICT__ s, const std::size_t slen) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!jstr_new_append(this, slen, s)))
+		if (unlikely(!jstr_alloc_append(this, slen, s)))
 			return;
 		*(this->data + slen) = '\0';
 	}
@@ -504,7 +504,7 @@ JSTR_PUBLIC__
 	jstring_t(const std::size_t cap) JSTR_NOEXCEPT__
 	{
 		this->size = 0;
-		private_jstr_new_void(this, cap);
+		private_jstr_alloc_void(this, cap);
 	}
 
 	JSTR_INLINE__
@@ -520,35 +520,35 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	jstring_t(const std::size_t cap, const std::size_t future_size) JSTR_NOEXCEPT__
 	{
-		private_jstr_new_void(this, cap);
+		private_jstr_alloc_void(this, cap);
 		if (unlikely(this->data))
 			return;
 		this->size = future_size;
 	}
 
 	JSTR_INLINE__
-	jstring_t(const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ { private_jstr_new_append_void(this, other_->size, other_->data); }
+	jstring_t(const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ { private_jstr_alloc_append_void(this, other_->size, other_->data); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc() JSTR_NOEXCEPT__ { return jstr_new(this, 8); }
+	int alloc() JSTR_NOEXCEPT__ { return jstr_alloc(this, 8); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc(size_t cap) JSTR_NOEXCEPT__ { return jstr_new(this, cap); }
+	int alloc(size_t cap) JSTR_NOEXCEPT__ { return jstr_alloc(this, cap); }
 
 	template <std::size_t N>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc(const char (&s)[N]) JSTR_NOEXCEPT__ { return jstr_new_append(this, N - 1, s); }
+	int alloc(const char (&s)[N]) JSTR_NOEXCEPT__ { return jstr_alloc_append(this, N - 1, s); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc(const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__ { return jstr_new_append(this, slen, s); }
+	int alloc(const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__ { return jstr_alloc_append(this, slen, s); }
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	int alloc(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { return jstr_new_append(this, strlen(s), s); }
+	int alloc(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { return jstr_alloc_append(this, strlen(s), s); }
 
 	JSTR_INLINE__
 	void pop_back() JSTR_NOEXCEPT__ { jstr_pop_back(this); }
@@ -847,7 +847,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
-	void private_jstr_new_append_void(jstring_t *JSTR_RESTRICT__ this_,
+	void private_jstr_alloc_append_void(jstring_t *JSTR_RESTRICT__ this_,
 					const size_t slen,
 					const char *JSTR_RESTRICT__ const s,
 					...) JSTR_NOEXCEPT__
@@ -864,7 +864,7 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
-	void private_jstr_new_void(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+	void private_jstr_alloc_void(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 	{
 		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
 		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
@@ -990,7 +990,7 @@ JSTR_PRIVATE__
 #ifdef __cplusplus
 
 JSTR_INLINE__
-int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_,
+int jstr_alloc_append(jstring_t *JSTR_RESTRICT__ this_,
 		const size_t slen,
 		const char *JSTR_RESTRICT__ const s,
 		...) JSTR_NOEXCEPT__
@@ -1007,7 +1007,7 @@ int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_,
 	return 1;
 }
 
-int private_jstr_new_cat(jstring_t *JSTR_RESTRICT__ this_,
+int private_jstr_alloc_cat(jstring_t *JSTR_RESTRICT__ this_,
 			const size_t arglen,
 			...) JSTR_NOEXCEPT__
 {
@@ -1034,7 +1034,7 @@ int private_jstr_new_cat(jstring_t *JSTR_RESTRICT__ this_,
 }
 
 JSTR_INLINE__
-int jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+int jstr_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 {
 	this_->size = 0;
 	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
@@ -1048,7 +1048,7 @@ int jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 
 #else
 
-#define jstr_new(this_, size_)                                                                       \
+#define jstr_alloc(this_, size_)                                                                     \
 do {                                                                                                 \
 	((this_)->size) = 0;                                                                         \
 	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size_));                          \
@@ -1057,7 +1057,7 @@ do {                                                                            
 		((this_)->capacity) = 0;                                                             \
 } while (0)
 
-#define jstr_new_cat(this_, ...)                                                                 \
+#define jstr_alloc_cat(this_, ...)                                                               \
 do {                                                                                             \
 	PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                                \
 	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                      \
