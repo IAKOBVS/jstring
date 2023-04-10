@@ -1048,44 +1048,48 @@ do {                                                                            
 		((this_)->capacity) = 0;                                                             \
 } while (0)
 
-#define jstr_new_cat(this_, ...)                                                             \
-do {                                                                                         \
-	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                  \
-	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));        \
-	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));            \
-	if (likely(((this_)->data))) {                                                       \
-		if (PP_NARG(__VA_ARGS__) == 1) {                                             \
-			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size)); \
-		} else {                                                                     \
-			const char *args[] = { __VA_ARGS__, NULL };                          \
-			for (char *datap = ((this_)->data); *args; ++*args)                  \
-				while (*args)                                                \
-					*datap++ = *(*args)++;                               \
-		}                                                                            \
-	} else {                                                                             \
-		((this_)->capacity) = 0;                                                     \
-		((this_)->size) = 0;                                                         \
-	}                                                                                    \
+#define jstr_new_cat(this_, ...)                                                                 \
+do {                                                                                             \
+	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                      \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));            \
+	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));                \
+	if (likely(((this_)->data))) {                                                           \
+		if (PP_NARG(__VA_ARGS__) == 1) {                                                 \
+			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1); \
+		} else {                                                                         \
+			size_t i = 0;                                                            \
+			const char *args[] = { __VA_ARGS__, NULL };                              \
+			for (const char **argsp = args; *argsp; ++argsp)                         \
+				while (**argsp)                                                  \
+					((this_)->data)[i++] = *(*argsp)++;                      \
+			((this_)->data)[i] = '\0';                                               \
+		}                                                                                \
+	} else {                                                                                 \
+		((this_)->capacity) = 0;                                                         \
+		((this_)->size) = 0;                                                             \
+	}                                                                                        \
 } while (0)
 
-#define jstr_cat(this_, ...)                                                                                   \
-do {                                                                                                           \
-	((this_)->size) += (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                                   \
-	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                          \
-	((this_)->data) = realloc(((this_)->data), ((this_)->capacity) * sizeof(*((this_)->data)));            \
-	if (unlikely(!((this_)->data))) {                                                                      \
-		((this_)->capacity) = 0;                                                                       \
-		((this_)->size) = 0;                                                                           \
-	} else {                                                                                               \
-		if (PP_NARG(__VA_ARGS__) == 1) {                                                               \
-			memcpy(((this_)->data) + ((this_)->size), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size)); \
-		} else {                                                                                       \
-			const char *args[] = { __VA_ARGS__, NULL };                                            \
-			for (char *datap = ((this_)->data) + ((this_)->size); *args; ++*args)                  \
-				while (*args)                                                                  \
-					*datap++ = *(*args)++;                                                 \
-		}                                                                                              \
-	}                                                                                                      \
+#define jstr_cat(this_, ...)                                                                                       \
+do {                                                                                                               \
+	((this_)->size) += (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                                       \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                              \
+	((this_)->data) = realloc(((this_)->data), ((this_)->capacity) * sizeof(*((this_)->data)));                \
+	if (unlikely(!((this_)->data))) {                                                                          \
+		((this_)->capacity) = 0;                                                                           \
+		((this_)->size) = 0;                                                                               \
+	} else {                                                                                                   \
+		if (PP_NARG(__VA_ARGS__) == 1) {                                                                   \
+			memcpy(((this_)->data) + ((this_)->size), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1); \
+		} else {                                                                                           \
+			size_t i = ((this_)->size);                                                                \
+			const char *args[] = { __VA_ARGS__, NULL };                                                \
+			for (const char **argsp = args; *argsp; ++argsp)                                           \
+				while (**argsp)                                                                    \
+					((this_)->data)[i++] = *(*argsp)++;                                        \
+			((this_)->data)[i] = '\0';                                                                 \
+		}                                                                                                  \
+	}                                                                                                          \
 } while (0)
 
 #endif // __cpluslus
