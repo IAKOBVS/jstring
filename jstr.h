@@ -6,6 +6,11 @@
 #define JSTR_PATH_TO_PP_VA_ARGS_MACROS_H "/home/james/c/pp_macros/pp_va_args_macros.h"
 
 /*
+   you are expected to error-check memory allocation
+   by checking for NULL in data member after every function
+   except those that do not require require allocation;
+   e.g., pop_back, pop_front.
+
    at() will do bounds checking by asserting that index <= this->size.
    it will crash at runtime if assertion fails.
 
