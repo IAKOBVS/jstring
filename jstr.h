@@ -66,12 +66,12 @@ do {                             \
 	((this_)->size) = 0;     \
 } while (0)
 
-#define jstr_delete(this_)       \
+#define jstr_del(this_)          \
 do {                             \
-	((this_)->capacity) = 0; \
-	((this_)->size) = 0;     \
 	free(((this_)->data));   \
 	((this_)->data) = NULL;  \
+	((this_)->capacity) = 0; \
+	((this_)->size) = 0;     \
 } while (0)
 
 #ifndef __cplusplus // ! __cplusplus
@@ -174,6 +174,12 @@ typedef struct jstring_t {
 		this->data = nullptr;
 		this->capacity = 0;
 		this->size = 0;
+	}
+
+	JSTR_INLINE__
+	void del() JSTR_NOEXCEPT__
+	{
+		jstr_delete(this);
 	}
 
 	JSTR_INLINE__
