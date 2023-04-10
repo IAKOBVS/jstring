@@ -61,9 +61,6 @@ typedef struct jstring_t jstring_t;
 void jstr_init(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 void jstr_delete(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 
-int private_jstr_cat(jstring_t *JSTR_RESTRICT__ this_, size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-int private_jstr_cat_s(jstring_t *JSTR_RESTRICT__ this_, size_t len, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-
 int jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_, size_t srclen, const char *JSTR_RESTRICT__ src_, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int private_jstr_new_cat(jstring_t *JSTR_RESTRICT__ this_, size_t arglen, ...) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
@@ -850,8 +847,6 @@ JSTR_PRIVATE__
 		memcpy(this_->data, s, slen + 1);
 	}
 
-#endif // __cpluslus
-
 	JSTR_INLINE__
 	void private_jstr_new_void(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 	{
@@ -863,6 +858,8 @@ JSTR_PRIVATE__
 			return;
 		}
 	}
+
+#endif // __cpluslus
 
 	JSTR_INLINE__
 	void jstr_init(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
@@ -982,49 +979,49 @@ JSTR_PRIVATE__
 		return private_jstr_append(this_, s, slen);
 	}
 
-	JSTR_INLINE__
-	int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_,
-			const size_t slen,
-			const char *JSTR_RESTRICT__ const s,
-			...) JSTR_NOEXCEPT__
-	{
-		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * slen));
-		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
-		if (unlikely(!this_->data)) {
-			jstr_init(this_);
-			return 0;
-		}
-		this_->size = slen;
-		memcpy(this_->data, s, slen + 1);
-		return 1;
-	}
-
-	int private_jstr_new_cat(jstring_t *JSTR_RESTRICT__ this_,
-				const size_t arglen,
-				...) JSTR_NOEXCEPT__
-	{
-		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * arglen));
-		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
-		if (unlikely(!this_->data)) {
-			jstr_init(this_);
-			return 0;
-		}
-		this_->size = arglen;
-		char *tmp = this_->data;
-		va_list ap;
-		va_start(ap, arglen);
-		for (const char *JSTR_RESTRICT__ argv = va_arg(ap, const char *);
-				argv;
-				argv = va_arg(ap, const char *))
-			do {
-				*tmp++ = *argv++;
-			} while (*argv);
-		*tmp = '\0';
-		va_end(ap);
-		return 1;
-	}
-
 #ifdef __cplusplus
+
+JSTR_INLINE__
+int jstr_new_append(jstring_t *JSTR_RESTRICT__ this_,
+		const size_t slen,
+		const char *JSTR_RESTRICT__ const s,
+		...) JSTR_NOEXCEPT__
+{
+	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * slen));
+	this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
+	if (unlikely(!this_->data)) {
+		jstr_init(this_);
+		return 0;
+	}
+	this_->size = slen;
+	memcpy(this_->data, s, slen + 1);
+	return 1;
+}
+
+int private_jstr_new_cat(jstring_t *JSTR_RESTRICT__ this_,
+			const size_t arglen,
+			...) JSTR_NOEXCEPT__
+{
+	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * arglen));
+	this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
+	if (unlikely(!this_->data)) {
+		jstr_init(this_);
+		return 0;
+	}
+	this_->size = arglen;
+	char *tmp = this_->data;
+	va_list ap;
+	va_start(ap, arglen);
+	for (const char *JSTR_RESTRICT__ argv = va_arg(ap, const char *);
+			argv;
+			argv = va_arg(ap, const char *))
+		do {
+			*tmp++ = *argv++;
+		} while (*argv);
+	*tmp = '\0';
+	va_end(ap);
+	return 1;
+}
 
 JSTR_INLINE__
 int jstr_new(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
@@ -1051,35 +1048,44 @@ do {                                                                            
 		((this_)->capacity) = 0;                                                             \
 } while (0)
 
-void private_jstr_new_cat_(char *data,
-			...) JSTR_NOEXCEPT__
-{
-	va_list ap;
-	va_start(ap, data);
-	for (const char *JSTR_RESTRICT__ argv = va_arg(ap, const char *);
-			argv;
-			argv = va_arg(ap, const char *))
-		do {
-			*data++ = *argv++;
-		} while (*argv);
-	*data = '\0';
-	va_end(ap);
-}
+#define jstr_new_cat(this_, ...)                                                             \
+do {                                                                                         \
+	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                  \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));        \
+	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));            \
+	if (likely(((this_)->data))) {                                                       \
+		if (PP_NARG(__VA_ARGS__) == 1) {                                             \
+			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size)); \
+		} else {                                                                     \
+			const char *args[] = { __VA_ARGS__, NULL };                          \
+			for (char *datap = ((this_)->data); *args; ++*args)                  \
+				while (*args)                                                \
+					*datap++ = *(*args)++;                               \
+		}                                                                            \
+	} else {                                                                             \
+		((this_)->capacity) = 0;                                                     \
+		((this_)->size) = 0;                                                         \
+	}                                                                                    \
+} while (0)
 
-#define jstr_new_cat(this_, ...)                                                      \
-do {                                                                                  \
-	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                           \
-	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size))); \
-	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));     \
-	if (unlikely(!((this_)->data))) {                                             \
-		((this_)->capacity) = 0;                                              \
-		((this_)->size) = 0;                                                  \
-	} else {                                                                      \
-		const char *args[] = { __VA_ARGS__, NULL };                           \
-		for (char *datap = ((this_)->data); *args; ++*args)                   \
-			while (*args)                                                 \
-				*datap++ = *(*args)++;                                \
-	}                                                                             \
+#define jstr_cat(this_, ...)                                                                                   \
+do {                                                                                                           \
+	((this_)->size) += (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                                   \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                          \
+	((this_)->data) = realloc(((this_)->data), ((this_)->capacity) * sizeof(*((this_)->data)));            \
+	if (unlikely(!((this_)->data))) {                                                                      \
+		((this_)->capacity) = 0;                                                                       \
+		((this_)->size) = 0;                                                                           \
+	} else {                                                                                               \
+		if (PP_NARG(__VA_ARGS__) == 1) {                                                               \
+			memcpy(((this_)->data) + ((this_)->size), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size)); \
+		} else {                                                                                       \
+			const char *args[] = { __VA_ARGS__, NULL };                                            \
+			for (char *datap = ((this_)->data) + ((this_)->size); *args; ++*args)                  \
+				while (*args)                                                                  \
+					*datap++ = *(*args)++;                                                 \
+		}                                                                                              \
+	}                                                                                                      \
 } while (0)
 
 #endif // __cpluslus
@@ -1530,44 +1536,6 @@ do {                                                                            
 #else
 #define jstr_assign(dest, ...)                 \
 	private_jstr_assign(dest, __VA_ARGS__)
-#endif // JSTR_HAS_GENERIC
-
-#ifdef JSTR_HAS_GENERIC
-#	define jstr_cat(this_jstr, ...)                                                             \
-		generic_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, (void *)0)
-
-#	define generic_jstr_cat(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
-		void *: jstr_append(this_jstr, arg1, len),                                       \
-		JSTR_GENERIC_CASE_STR(private_jstr_cat(this_jstr, len, arg1, __VA_ARGS__))       \
- )
-
-#	define jstr_cat_s(this_jstr, ...)                                                             \
-		generic_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, (void *)0)
-
-#	define generic_jstr_cat_s(this_jstr, len, arg1, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)), \
-		void *: jstr_append_s(this_jstr, arg1, len),                                       \
-		JSTR_GENERIC_CASE_STR(private_jstr_cat_s(this_jstr, len, arg1, __VA_ARGS__))       \
- )
-#else
-#	define jstr_cat(this_jstr, ...)                                                                                   \
-	(PP_NARG(__VA_ARGS__) > 1)                                                                                        \
-		? private_jstr_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, (void *)0)                     \
-		: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), PP_STRLEN_VA_ARGS(PP_FIRST_ARG(__VA_ARGS__)))
-
-#	define jstr_cat_s(this_jstr, ...)                                                                                   \
-	(PP_NARG(__VA_ARGS__) > 1)                                                                                          \
-		? private_jstr_cat_s(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, (void *)0)                     \
-		: private_jstr_append_s(this_jstr, PP_FIRST_ARG(__VA_ARGS__), PP_STRLEN_VA_ARGS(PP_FIRST_ARG(__VA_ARGS__)))
-#endif // JSTR_HAS_GENERIC
-
-#define jstr_new_cat(this_jstr, ...) private_jstr_new_cat(this_jstr, PP_STRLEN_VA_ARGS(__VA_ARGS__), __VA_ARGS__, (void *)0)
-
-#ifdef JSTR_HAS_GENERIC
-#	define jstr_add(this_jstr, ...) _Generic((PP_FIRST_ARG(__VA_ARGS__)),                                                   \
-		JSTR_GENERIC_CASE_SIZE(jstr_reserve_f(this_jstr, ((this_jstr)->capacity) + (size_t)PP_FIRST_ARG(__VA_ARGS__))), \
-		JSTR_GENERIC_CASE_STR(jstr_append(this_jstr, (char *)__VA_ARGS__))                                              \
-	)
-
 #endif // JSTR_HAS_GENERIC
 
 #define jstr_append(this_jstr, ...)                                                                            \
