@@ -1039,6 +1039,7 @@ do {                                                                            
 
 #define jstr_new_cat(this_, ...)                                                                 \
 do {                                                                                             \
+	PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                                \
 	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                      \
 	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));            \
 	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));                \
@@ -1067,6 +1068,7 @@ do {                                  \
 
 #define jstr_cat(this_, ...)                                                                                       \
 do {                                                                                                               \
+	PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                                                  \
 	((this_)->size) += (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                                       \
 	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                              \
 	((this_)->data) = realloc(((this_)->data), ((this_)->capacity) * sizeof(*((this_)->data)));                \
