@@ -1065,25 +1065,25 @@ do {                                                                            
 		((this_)->capacity) = 0;                                                             \
 } while (0)
 
-#define jstr_alloc_cat(this_, ...)                                                                \
-do {                                                                                              \
-	JSTR_IS_STR_VA_ARGS(__VA_ARGS__)                                                          \
-	                                                                                          \
-	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                       \
-	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));             \
-	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));                 \
-	if (likely(((this_)->data))) {                                                            \
-		if (PP_NARG(__VA_ARGS__) == 1) {                                                  \
-			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);  \
-		} else {                                                                          \
-			size_t dest_it__ = ((this_)->size);                                       \
-			PP_STRCPY_VA_ARGS(((this_)->data), dest_it__, __VA_ARGS__);               \
-			((this_)->data)[dest_it__] = '\0';                                        \
-		}                                                                                 \
-	} else {                                                                                  \
-		((this_)->capacity) = 0;                                                          \
-		((this_)->size) = 0;                                                              \
-	}                                                                                         \
+#define jstr_alloc_cat(this_, ...)                                                                 \
+do {                                                                                               \
+	JSTR_IS_STR_VA_ARGS(__VA_ARGS__)                                                           \
+	                                                                                           \
+	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                        \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));              \
+	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));                  \
+	if (likely(((this_)->data))) {                                                             \
+		if (PP_NARG(__VA_ARGS__) == 1) {                                                   \
+			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);   \
+		} else {                                                                           \
+			size_t dest_it__ = 0;                                                      \
+			PP_STRCPY_VA_ARGS(((this_)->data), dest_it__, __VA_ARGS__);                \
+			((this_)->data)[dest_it__] = '\0';                                         \
+		}                                                                                  \
+	} else {                                                                                   \
+		((this_)->capacity) = 0;                                                           \
+		((this_)->size) = 0;                                                               \
+	}                                                                                          \
 } while (0)
 
 #define jstr_alloc_append(this_, ...) private_jstr_alloc_append(this_, __VA_ARGS__, 0)
