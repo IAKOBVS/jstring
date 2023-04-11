@@ -86,9 +86,9 @@ do {                             \
 
 typedef struct jstring_t jstring_t;
 
-void jstr_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__;
-void jstr_alloc_append(jstring_t *JSTR_RESTRICT__ this_, size_t srclen, const char *JSTR_RESTRICT__ src_, ...) JSTR_NOEXCEPT__;
-void private_jstr_alloc_cat(jstring_t *JSTR_RESTRICT__ this_, size_t arglen, ...) JSTR_NOEXCEPT__;
+/* void jstr_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__; */
+/* void jstr_alloc_append(jstring_t *JSTR_RESTRICT__ this_, size_t srclen, const char *JSTR_RESTRICT__ src_, ...) JSTR_NOEXCEPT__; */
+/* void private_jstr_alloc_cat(jstring_t *JSTR_RESTRICT__ this_, size_t arglen, ...) JSTR_NOEXCEPT__; */
 
 void jstr_push_back_u(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
 void jstr_push_back_f(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
@@ -1090,7 +1090,8 @@ do {                                                                            
 
 #define private_jstr_alloc_append(this_, ...)                                                                             \
 do {                                                                                                                      \
-	JSTR_IS_STR_VA_ARGS_1(__VA_ARGS__)                                                                                \
+	JSTR_ASSERT_IS_STR(PP_FIRST_ARG(__VA_ARGS__))                                                                     \
+	JSTR_ASSERT_IS_SIZE(PP_SECOND_ARG(__VA_ARGS__))                                                                   \
 	((this_)->size) = (PP_NARG(__VA_ARGS__) == 3) ? PP_SECOND_ARG(__VA_ARGS__) : (strlen(PP_FIRST_ARG(__VA_ARGS__))); \
 	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                                     \
 	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));                                         \

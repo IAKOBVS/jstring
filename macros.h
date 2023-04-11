@@ -298,16 +298,18 @@
 			JSTR_GENERIC_CASE_CHAR(1),         \
 					default: 0)
 
-#		define JSTR_ASSERT_SIZE(expr)                                                              \
+#		define JSTR_ASSERT_IS_SIZE(expr)                                                              \
 			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Not using a number where a number is required!");
-#		define JSTR_ASSERT_STR(expr)                                                              \
+#		define JSTR_ASSERT_IS_STR(expr)                                                              \
 			JSTR_ASSERT(JSTR_IS_STR(expr), "Not using a char * where a char * is required!");
-#		define JSTR_ASSERT_CHAR(expr)                                                          \
+#		define JSTR_ASSERT_IS_CHAR(expr)                                                          \
 			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Not using a char where a char is required!");
 #		define JSTR_ASSERT_TYPECHECK(Texpr, expr) JSTR_ASSERT(JSTR_SAME_TYPE(Texpr, expr), "Passing the wrong data type!");
 #	else
-#		define JSTR_IS_SIZE(expr)
-#		define JSTR_ASSERT_SIZE(expr)
+#		define JSTR_ASSERT_IS_SIZE(expr)
+#		define JSTR_ASSERT_IS_STR(expr)
+#		define JSTR_ASSERT_IS_CHAR(expr)
+#		define JSTR_ASSERT_TYPECHECK(Texpr, expr)
 #	endif // JSTR_HAS_GENERIC
 #	define JSTR_MACRO_START ({
 #	define JSTR_MACRO_END ;})
