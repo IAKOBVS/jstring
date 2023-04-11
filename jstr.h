@@ -1057,6 +1057,7 @@ int jstr_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
 #define jstr_alloc(this_, size_)                                                                     \
 do {                                                                                                 \
 	JSTR_ASSERT_IS_SIZE(size_)                                                                   \
+	                                                                                             \
 	((this_)->size) = 0;                                                                         \
 	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size_));                          \
 	((this_)->data) = JSTR_CAST__(char *)malloc(((this_)->capacity) * sizeof(*((this_)->data))); \
@@ -1092,7 +1093,7 @@ do {                                                                            
 
 #define private_jstr_alloc_append(this_, ...)                                                                              \
 do {                                                                                                                       \
-	JSTR_ASSERT_SEMICOLON(PP_NARG(__VA_ARGS__) <= 4, "Function only accepts two arguments maximum!")                   \
+	JSTR_ASSERT_SEMICOLON(PP_NARG(__VA_ARGS__) <= 3, "Function only accepts two arguments maximum!")                   \
 	JSTR_ASSERT_IS_STR(PP_FIRST_ARG(__VA_ARGS__))                                                                      \
 	JSTR_ASSERT_IS_SIZE(PP_SECOND_ARG(__VA_ARGS__))                                                                    \
 	                                                                                                                   \
@@ -1101,9 +1102,9 @@ do {                                                                            
 	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));                                          \
 	if (likely(((this_)->data))) {                                                                                     \
 		if (PP_NARG(__VA_ARGS__) == 3)                                                                             \
-			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);                           \
-		else                                                                                                       \
 			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), PP_SECOND_ARG(__VA_ARGS__) + 1);                \
+		else                                                                                                       \
+			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);                           \
 	} else {                                                                                                           \
 		((this_)->capacity) = 0;                                                                                   \
 		((this_)->size) = 0;                                                                                       \
