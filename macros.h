@@ -122,6 +122,8 @@
 #	ifdef __cplusplus
 extern "C" {
 #	endif
+
+#	ifdef JARR_64_BIT
 		JSTR_INLINE__
 		JSTR_CONST__
 		JSTR_WARN_UNUSED__
@@ -129,8 +131,13 @@ extern "C" {
 		{
 			return 1ull << (64 - __builtin_clzll(x - 1));
 		}
+
+#	endif // JARR_64_BIT
+
 #	endif // __has_builtin(__builtin_clzll)
 #	if __has_builtin(__builtin_clz)
+
+#	ifdef JARR_32_BIT
 		JSTR_INLINE__
 		JSTR_CONST__
 		JSTR_WARN_UNUSED__
@@ -138,6 +145,9 @@ extern "C" {
 		{
 			return 1 << (32 - __builtin_clz(x - 1));
 		}
+
+#	endif // JARR_32_BIT
+
 #	ifdef __cplusplus
 }
 #	endif
@@ -149,6 +159,8 @@ extern "C" {
 #	ifdef __cplusplus
 		extern "C" {
 #	endif
+
+#	ifdef JARR_32_BIT
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
@@ -159,6 +171,9 @@ extern "C" {
 		return 1 << (index + 1);
 	}
 
+#	endif // JARR_32_BIT
+
+#	ifdef JARR_64_BIT
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
@@ -168,7 +183,13 @@ extern "C" {
 		_BitScanReverse64(&index, x - 1);
 		return 1ull << (index + 1);
 	}
+
+#	endif // JARR_64_BIT
+
 #else
+
+#	ifdef JARR_32_BIT
+
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
@@ -182,6 +203,10 @@ extern "C" {
 		x |= x >> 16;
 		return x + 1;
 	}
+
+#endif // JARR_32_BIT
+
+#	ifdef JARR_64_BIT
 
 	JSTR_INLINE__
 	JSTR_CONST__
@@ -197,6 +222,9 @@ extern "C" {
 		x |= x >> 32;
 		return x + 1;
 	}
+
+#endif // JARR_64_BIT
+
 #	ifdef __cplusplus
 		}
 #	endif
