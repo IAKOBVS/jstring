@@ -120,26 +120,34 @@
 #	endif // __cplusplus
 #	if __has_builtin(__builtin_clzll)
 #	ifdef __cplusplus
-		extern "C" {
+extern "C" {
 #	endif
-		JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
-		{
-			return 1ull << (64 - __builtin_clzll(x - 1));
-		}
+
+		/* JSTR_INLINE__ */
+		/* JSTR_CONST__ */
+		/* JSTR_WARN_UNUSED__ */
+		/* uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__ */
+		/* { */
+		/* 	return 1ull << (64 - __builtin_clzll(x - 1)); */
+		/* } */
+
+#		define private_jstr_next_pow2_64(x) (1ull << (64 - __builtin_clzll(x - 1)))
+
 #	endif // __has_builtin(__builtin_clzll)
 #	if __has_builtin(__builtin_clz)
-		JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
-		{
-			return 1 << (32 - __builtin_clz(x - 1));
-		}
+
+		/* JSTR_INLINE__ */
+		/* JSTR_CONST__ */
+		/* JSTR_WARN_UNUSED__ */
+		/* uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__ */
+		/* { */
+		/* 	return 1u << (32 - __builtin_clz(x - 1)); */
+		/* } */
+
+#		define private_jstr_next_pow2_32(x) (1u << (32 - __builtin_clzll(x - 1)))
+
 #	ifdef __cplusplus
-		}
+}
 #	endif
 #	endif // __has_builtin(__builtin_clz)
 #elif defined(_MSC_VER)
