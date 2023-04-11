@@ -123,7 +123,7 @@
 extern "C" {
 #	endif
 
-#	ifdef JARR_64_BIT
+#	ifdef JSTR_64_BIT
 		JSTR_INLINE__
 		JSTR_CONST__
 		JSTR_WARN_UNUSED__
@@ -132,12 +132,12 @@ extern "C" {
 			return 1ull << (64 - __builtin_clzll(x - 1));
 		}
 
-#	endif // JARR_64_BIT
+#	endif // JSTR_64_BIT
 
 #	endif // __has_builtin(__builtin_clzll)
 #	if __has_builtin(__builtin_clz)
 
-#	ifdef JARR_32_BIT
+#	ifdef JSTR_32_BIT
 		JSTR_INLINE__
 		JSTR_CONST__
 		JSTR_WARN_UNUSED__
@@ -146,7 +146,7 @@ extern "C" {
 			return 1 << (32 - __builtin_clz(x - 1));
 		}
 
-#	endif // JARR_32_BIT
+#	endif // JSTR_32_BIT
 
 #	ifdef __cplusplus
 }
@@ -160,7 +160,7 @@ extern "C" {
 		extern "C" {
 #	endif
 
-#	ifdef JARR_32_BIT
+#	ifdef JSTR_32_BIT
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
@@ -171,9 +171,9 @@ extern "C" {
 		return 1 << (index + 1);
 	}
 
-#	endif // JARR_32_BIT
+#	endif // JSTR_32_BIT
 
-#	ifdef JARR_64_BIT
+#	ifdef JSTR_64_BIT
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
@@ -184,11 +184,11 @@ extern "C" {
 		return 1ull << (index + 1);
 	}
 
-#	endif // JARR_64_BIT
+#	endif // JSTR_64_BIT
 
 #else
 
-#	ifdef JARR_32_BIT
+#	ifdef JSTR_32_BIT
 
 	JSTR_INLINE__
 	JSTR_CONST__
@@ -204,9 +204,9 @@ extern "C" {
 		return x + 1;
 	}
 
-#endif // JARR_32_BIT
+#endif // JSTR_32_BIT
 
-#	ifdef JARR_64_BIT
+#	ifdef JSTR_64_BIT
 
 	JSTR_INLINE__
 	JSTR_CONST__
@@ -223,7 +223,7 @@ extern "C" {
 		return x + 1;
 	}
 
-#endif // JARR_64_BIT
+#endif // JSTR_64_BIT
 
 #	ifdef __cplusplus
 		}
