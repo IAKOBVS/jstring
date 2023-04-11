@@ -1495,9 +1495,11 @@ do {                                                                            
 #ifndef __cplusplus
 
 #define jstr_assign(dest, ...)                                                                                 \
+(                                                                                                              \
 	PP_NARG(__VA_ARGS__) == 2                                                                              \
 		? private_jstr_assign(this_jstr, __VA_ARGS__, 0)                                               \
 		: private_jstr_assign(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
+)
 
 #define jstr_append(this_jstr, ...)                                                                            \
 (                                                                                                              \
@@ -1506,8 +1508,8 @@ do {                                                                            
 		: private_jstr_append(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
 )
 
-#define private_jstr_reserve_x(this_jstr, multiplier)                      \
- jstr_reserve_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
+#define private_jstr_reserve_x(this_jstr, multiplier)                             \
+	jstr_reserve_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
 
 #define jstr_reserve_2x(this_jstr) private_jstr_reserve_x(this_jstr, 2)
 #define jstr_reserve_4x(this_jstr) private_jstr_reserve_x(this_jstr, 4)
@@ -1516,8 +1518,8 @@ do {                                                                            
 #define jstr_reserve_32x(this_jstr) private_jstr_reserve_x(this_jstr, 32)
 #define jstr_reserve_64x(this_jstr) private_jstr_reserve_x(this_jstr, 64)
 
-#define private_jstr_reserve_s_x(this_jstr, multiplier)                      \
- jstr_reserve_s_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
+#define private_jstr_reserve_s_x(this_jstr, multiplier)                             \
+	jstr_reserve_s_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
 
 #define jstr_reserve_s_2x(this_jstr) private_jstr_reserve_s_x(this_jstr, 2)
 #define jstr_reserve_s_4x(this_jstr) private_jstr_reserve_s_x(this_jstr, 4)
