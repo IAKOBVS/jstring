@@ -24,16 +24,14 @@
 #endif // JSTR_HAS_GENERIC
 
 #if defined(static_assert)
+#	define JSTR_ASSERT(expr, msg) static_assert(expr, msg)
 #	define JSTR_HAS_STATIC_ASSERT
 #elif __STDC_VERSION__ >= 201112L
-#	define JSTR_HAS__STATIC_ASSERT_
-#endif // static_assert
-
-#ifdef JSTR_HAS_STATIC_ASSERT
-#	define JSTR_ASSERT(expr, msg) static_assert(expr, msg)
-#elif defined(JSTR_HAS__STATIC_ASSERT_)
 #	define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
-#endif // JSTR_HAS_STATIC_ASSERT
+#	define JSTR_HAS_STATIC_ASSERT
+#else
+#	define JSTR_ASSERT(expr, msg)
+#endif // static_assert
 
 #ifdef JSTR_ALIGN_POWER_OF_TWO
 #	ifdef JSTR_64_BIT
