@@ -24,13 +24,15 @@
 #endif // JSTR_HAS_GENERIC
 
 #if defined(static_assert)
+#	define JSTR_HAS_STATIC_ASSERT
 #	define JSTR_ASSERT(expr, msg) static_assert(expr, msg)
-#	define JSTR_HAS_STATIC_ASSERT
+#	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
 #elif __STDC_VERSION__ >= 201112L
-#	define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
 #	define JSTR_HAS_STATIC_ASSERT
+#	define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define JSTR_ASSERT(expr, msg)
+#	define JSTR_ASSERT_SEMICOLON(expr, msg)
 #endif // static_assert
 
 #ifdef JSTR_ALIGN_POWER_OF_TWO
@@ -298,12 +300,12 @@
 			JSTR_GENERIC_CASE_CHAR(1),         \
 					default: 0)
 
-#		define JSTR_ASSERT_IS_SIZE(expr)                                                              \
-			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Not using a number where a number is required!");
-#		define JSTR_ASSERT_IS_STR(expr)                                                              \
-			JSTR_ASSERT(JSTR_IS_STR(expr), "Not using a char * where a char * is required!");
-#		define JSTR_ASSERT_IS_CHAR(expr)                                                          \
-			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Not using a char where a char is required!");
+#		define JSTR_ASSERT_IS_SIZE(expr)                                                   \
+			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Passing non-number as number argument!");
+#		define JSTR_ASSERT_IS_STR(expr)                                                   \
+			JSTR_ASSERT(JSTR_IS_STR(expr), "Passing non-string as string argument!");
+#		define JSTR_ASSERT_IS_CHAR(expr)                                               \
+			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Passing non-char as char argument!");
 #		define JSTR_ASSERT_TYPECHECK(Texpr, expr) JSTR_ASSERT(JSTR_SAME_TYPE(Texpr, expr), "Passing the wrong data type!");
 #	else
 #		define JSTR_ASSERT_IS_SIZE(expr)
