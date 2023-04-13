@@ -410,9 +410,9 @@ JSTR_PRIVATE__
 		char *tmp = this->data;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		for (auto arg : { std::forward<Args>(args)... })
-			while (*arg)
-				*tmp++ = *arg++;
+		for (auto arg_ : { std::forward<Args>(args)... })
+			while (*arg_)
+				*tmp++ = *arg_++;
 		*tmp = '\0';
 		this->size = arglen;
 	}
@@ -433,9 +433,9 @@ JSTR_PRIVATE__
 		char *tmp = this->data + this->size;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		for (auto arg : { std::forward<Args>(args)... })
-			while (*arg)
-				*tmp++ = *arg++;
+		for (auto arg_ : { std::forward<Args>(args)... })
+			while (*arg_)
+				*tmp++ = *arg_++;
 		*tmp = '\0';
 		this->size += arglen;
 	}
@@ -587,16 +587,16 @@ JSTR_PUBLIC__
 	void upper() JSTR_NOEXCEPT__ { jstd_toupper_s(this->data); }
 
 	JSTR_INLINE__
-	void operator-=(const std::size_t size) JSTR_NOEXCEPT__ { this->size -= size; }
+	void operator-=(const std::size_t size_) JSTR_NOEXCEPT__ { this->size -= size_; }
 
 	JSTR_INLINE__
-	jstring_t operator-(const std::size_t size) JSTR_NOEXCEPT__
+	jstring_t operator-(const std::size_t size_) JSTR_NOEXCEPT__
 	{
 		jstring_t tmp;
-		tmp.capacity = MAX(JSTR_NEXT_POW2(2 * (this->size - size)), JSTR_MIN_CAP);
+		tmp.capacity = MAX(JSTR_NEXT_POW2(2 * (this->size - size_)), JSTR_MIN_CAP);
 		tmp.data = JSTR_CAST__(char *)malloc(tmp.capacity);
 		if (likely(tmp.data)) {
-			tmp.size = this->size - size;
+			tmp.size = this->size - size_;
 			memcpy(tmp.data, this->data, tmp.size);
 			(tmp.data)[tmp.size] = '\0';
 		} else {
@@ -726,10 +726,10 @@ JSTR_PUBLIC__
 	JSTR_INLINE__ void swap(jstring_t *other_) JSTR_NOEXCEPT__ { jstr_swap(this, other_); }
 
 	JSTR_INLINE__
-	void reserve(const std::size_t cap) JSTR_NOEXCEPT__ { return jstr_reserve(this, cap); }
+	void reserve(const std::size_t cap) JSTR_NOEXCEPT__ { jstr_reserve(this, cap); }
 
 	JSTR_INLINE__
-	void reserve_add(const std::size_t add_cap) JSTR_NOEXCEPT__ { return jstr_reserve(this, this->capacity + add_cap); }
+	void reserve_add(const std::size_t add_cap) JSTR_NOEXCEPT__ { jstr_reserve(this, this->capacity + add_cap); }
 
 	JSTR_INLINE__
 	void assign(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__ { private_jstr_assign(this, s, strlen(s)); }
@@ -870,9 +870,9 @@ JSTR_PRIVATE__
 	}
 
 	JSTR_INLINE__
-	void private_jstr_alloc_void(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+	void private_jstr_alloc_void(jstring_t *JSTR_RESTRICT__ this_, size_t size_) JSTR_NOEXCEPT__
 	{
-		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
+		this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size_));
 		this_->data = JSTR_CAST__(char *)malloc(this_->capacity);
 		if (unlikely(!this_->data)) {
 			this_->capacity = 0;
@@ -912,7 +912,7 @@ JSTR_PRIVATE__
 	void jstr_reserve(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__
 	{
 		if (cap > this_->capacity)
-			return jstr_reserve_f(this_, cap);
+			jstr_reserve_f(this_, cap);
 	}
 
 	void private_jstr_cat(jstring_t *JSTR_RESTRICT__ this_, size_t len, ...) JSTR_NOEXCEPT__
@@ -1040,10 +1040,10 @@ int private_jstr_alloc_cat(jstring_t *JSTR_RESTRICT__ this_,
 }
 
 JSTR_INLINE__
-int jstr_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+int jstr_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size_) JSTR_NOEXCEPT__
 {
 	this_->size = 0;
-	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size));
+	this_->capacity = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * size_));
 	this_->data = JSTR_CAST__(char *)malloc(this_->capacity * sizeof(*this_->data));
 	if (unlikely(!this_->data)) {
 		this_->capacity = 0;
@@ -1272,7 +1272,7 @@ do {                                                                            
 			size_t cap) JSTR_NOEXCEPT__
 	{
 		assert(this_->capacity);
-		return jstr_reserve(this_, cap);
+		jstr_reserve(this_, cap);
 	}
 
 	JSTR_INLINE__
@@ -1317,25 +1317,25 @@ do {                                                                            
 	}
 
 	JSTR_INLINE__
-	void jstr_shrink_to_size_f(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+	void jstr_shrink_to_size_f(jstring_t *JSTR_RESTRICT__ this_, size_t size_) JSTR_NOEXCEPT__
 	{
-		this_->data[this_->size = size] = '\0';
+		this_->data[this_->size = size_] = '\0';
 	}
 
 	JSTR_INLINE__
-	void jstr_shrink_to_size(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+	void jstr_shrink_to_size(jstring_t *JSTR_RESTRICT__ this_, size_t size_) JSTR_NOEXCEPT__
 	{
-		if (size < this_->size) {
-			jstr_shrink_to_size_f(this_, size);
+		if (size_ < this_->size) {
+			jstr_shrink_to_size_f(this_, size_);
 			return;
 		}
 	}
 
 	JSTR_INLINE__
-	void jstr_shrink_to_size_s(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__
+	void jstr_shrink_to_size_s(jstring_t *JSTR_RESTRICT__ this_, size_t size_) JSTR_NOEXCEPT__
 	{
-		if ((!!this_->size) & (size < this_->size)) {
-			jstr_shrink_to_size_f(this_, size);
+		if ((!!this_->size) & (size_ < this_->size)) {
+			jstr_shrink_to_size_f(this_, size_);
 			return;
 		}
 	}
