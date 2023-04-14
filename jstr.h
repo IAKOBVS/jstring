@@ -25,11 +25,8 @@
 #define JSTR_64_BIT
 #define JSTR_ALIGN_POWER_OF_TWO
 
-#if defined(__GNUC__) || defined(__GLIBC__)
-#	ifndef _GNU_SOURCE
-#		define _GNU_SOURCE
-#	endif
-#endif
+#include "macros.h"
+#include "jstd.h"
 
 #ifndef __cplusplus
 #	include <stdarg.h>
@@ -37,9 +34,6 @@
 #	include <string.h>
 #	include <assert.h>
 #endif // ! __cplusplus
-
-#include "macros.h"
-#include "jstd.h"
 
 #ifdef __cplusplus
 extern "C" {

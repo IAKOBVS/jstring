@@ -390,7 +390,7 @@ extern "C" {
 #	define JSTR_HAS_MEMMEM__
 #endif // JSTR_HAS_MEMMEM__
 
-#if defined(__USE_GNU) || (_XOPEN_SOURCE >= 700) || (_POSIX_C_SOURCE >= 200890L) || defined(__USE_BSD) || __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 26)
+#if (defined(__USE_GNU) && (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 26))) || (_XOPEN_SOURCE >= 700) || (_POSIX_C_SOURCE >= 200890L) || defined(__USE_BSD)
 #	define JSTR_HAS_MEMRCHR__
 #endif // JSTR_HAS_MEMRCHR__
 
