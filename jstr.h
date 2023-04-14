@@ -398,7 +398,7 @@ JSTR_PRIVATE__
 		static_assert(sizeof...(args), "At least two arguments needed!");
 		assert_are_strings(arg, args...);
 		const std::size_t arglen_1 = strlen(arg);
-		size_t arglen = strlen_args(std::forward<Args>(args)...);
+		const std::size_t arglen = strlen_args(std::forward<Args>(args)...);
 		this->alloc(arglen_1 + arglen + 1);
 		if (unlikely(!this->data))
 			return;
@@ -419,7 +419,7 @@ JSTR_PRIVATE__
 		static_assert(sizeof...(args), "At least two arguments needed! Use append instead.");
 		assert_are_strings(arg, args...);
 		const std::size_t arglen_1 = strlen(arg);
-		size_t arglen = strlen_args(std::forward<Args>(args)...);
+		const std::size_t arglen = strlen_args(std::forward<Args>(args)...);
 		if (unlikely(!this->data)) {
 			this->size = 0;
 			this->capacity = 0;
@@ -439,11 +439,18 @@ JSTR_PUBLIC__
 
 	template <typename T>
 	JSTR_INLINE__
-	void cat(T arg) JSTR_NOEXCEPT__ { this->append(std::forward<T>(arg)); }
+	void cat(T arg) JSTR_NOEXCEPT__
+	{
+		assert_are_strings(arg);
+		this->append(std::forward<T>(arg));
+	}
 
 	template <typename T, typename U, typename... Args>
 	JSTR_INLINE__
-	void cat(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__ { this->cat_impl(arg1, arg2, std::forward<Args>(args)...); }
+	void cat(T arg1, U arg2, Args&&... args) JSTR_NOEXCEPT__ {
+		assert_are_strings(arg1, arg2, std::forward<Args>(args)...);
+		this->cat_impl(arg1, arg2, std::forward<Args>(args)...);
+	}
 
 	template <typename T, typename... Args>
 	JSTR_INLINE__
