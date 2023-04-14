@@ -304,7 +304,7 @@ JSTR_PRIVATE__
 
 	template <typename Arg, typename... Args>
 	JSTR_INLINE__
-	static constexpr void assert_are_strings(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
+	static constexpr void assert_are_strings(Arg&&, Args&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(std::is_same<const char *, std::decay_t<Arg>>::value
 			|| std::is_same<char *, std::decay_t<Arg>>::value, "Wrong argument type passed!");
@@ -316,7 +316,7 @@ JSTR_PRIVATE__
 
 	template <typename T, typename Arg, typename... Args>
 	JSTR_INLINE__
-	static constexpr void assert_are_type(Arg&& arg, Args&&... args)
+	static constexpr void assert_are_type(Arg&&, Args&&... args)
 	{
 		static_assert(std::is_same<T, std::decay_t<Arg>>::value, "Wrong argument type passed!");
 		assert_are_type<T>(args...);
@@ -327,7 +327,7 @@ JSTR_PRIVATE__
 	template <typename Arg, typename... Args>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	static constexpr int args_are_strings(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__
+	static constexpr int args_are_strings(Arg&&, Args&&... args) JSTR_NOEXCEPT__
 	{
 		return (std::is_same<const char *, std::decay_t<Arg>>::value
 		|| std::is_same<const char *, std::decay_t<Arg>>::value)
@@ -340,7 +340,7 @@ JSTR_PRIVATE__
 	template <typename T, typename Arg, typename... Args>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	static constexpr int args_are_type(Arg&& arg, Args&&... args) JSTR_NOEXCEPT__ { return std::is_same<T, std::decay_t<Arg>>::value && args_are_type<T>(args...); }
+	static constexpr int args_are_type(Arg&&, Args&&... args) JSTR_NOEXCEPT__ { return std::is_same<T, std::decay_t<Arg>>::value && args_are_type<T>(args...); }
 
 	JSTR_INLINE__
 	JSTR_CONST__
@@ -351,7 +351,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static constexpr std::size_t strlen(const char (&s)[N]) JSTR_NOEXCEPT__ { return N - 1; }
+	static constexpr std::size_t strlen(const char (&)[N]) JSTR_NOEXCEPT__ { return N - 1; }
 	
 	JSTR_INLINE__
 	JSTR_CONST__
@@ -404,7 +404,7 @@ JSTR_PRIVATE__
 		char *tmp = this->data;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		for (auto arg_ : { std::forward<Args>(args)... })
+		for (const char *arg_ : { std::forward<Args>(args)... })
 			while (*arg_)
 				*tmp++ = *arg_++;
 		*tmp = '\0';
@@ -427,7 +427,7 @@ JSTR_PRIVATE__
 		char *tmp = this->data + this->size;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		for (auto arg_ : { std::forward<Args>(args)... })
+		for (const char *arg_ : { std::forward<Args>(args)... })
 			while (*arg_)
 				*tmp++ = *arg_++;
 		*tmp = '\0';
@@ -1059,25 +1059,25 @@ do {                                                                            
 		((this_)->capacity) = 0;                                                             \
 } while (0)
 
-#define jstr_alloc_cat(this_, ...)                                                                 \
-do {                                                                                               \
-	JSTR_IS_STR_VA_ARGS(__VA_ARGS__)                                                           \
-	                                                                                           \
-	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                        \
-	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));              \
-	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));                  \
-	if (likely(((this_)->data))) {                                                             \
-		if (PP_NARG(__VA_ARGS__) == 1) {                                                   \
-			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);   \
-		} else {                                                                           \
-			size_t dest_it__ = 0;                                                      \
-			PP_STRCPY_VA_ARGS(((this_)->data), dest_it__, __VA_ARGS__);                \
-			((this_)->data)[dest_it__] = '\0';                                         \
-		}                                                                                  \
-	} else {                                                                                   \
-		((this_)->capacity) = 0;                                                           \
-		((this_)->size) = 0;                                                               \
-	}                                                                                          \
+#define jstr_alloc_cat(this_, ...)                                                                  \
+do {                                                                                                \
+	JSTR_IS_STR_VA_ARGS(__VA_ARGS__)                                                            \
+	                                                                                            \
+	((this_)->size) = (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                         \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));               \
+	((this_)->data) = malloc(((this_)->capacity) * sizeof(*((this_)->data)));                   \
+	if (likely(((this_)->data))) {                                                              \
+		if (PP_NARG(__VA_ARGS__) == 1) {                                                    \
+			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);    \
+		} else {                                                                            \
+			size_t dest_it__ = 0;                                                       \
+			PP_STRCPY_VA_ARGS(((this_)->data), dest_it__, __VA_ARGS__);                 \
+			((this_)->data)[dest_it__] = '\0';                                          \
+		}                                                                                   \
+	} else {                                                                                    \
+		((this_)->capacity) = 0;                                                            \
+		((this_)->size) = 0;                                                                \
+	}                                                                                           \
 } while (0)
 
 #define jstr_alloc_append(this_, ...) private_jstr_alloc_append(this_, __VA_ARGS__, 0)
@@ -1108,25 +1108,25 @@ do {                                  \
 	jstr_cat(this_, __VA_ARGS__); \
 } while (0)
 
-#define jstr_cat(this_, ...)                                                                                          \
-do {                                                                                                                  \
-	JSTR_IS_STR_VA_ARGS(__VA_ARGS__)                                                                              \
-	                                                                                                              \
-	((this_)->size) += (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                                          \
-	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                                 \
-	((this_)->data) = realloc(((this_)->data), ((this_)->capacity) * sizeof(*((this_)->data)));                   \
-	if (unlikely(!((this_)->data))) {                                                                             \
-		((this_)->capacity) = 0;                                                                              \
-		((this_)->size) = 0;                                                                                  \
-	} else {                                                                                                      \
-		if (PP_NARG(__VA_ARGS__) == 1) {                                                                      \
-			memcpy(((this_)->data) + ((this_)->size), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);    \
-		} else {                                                                                              \
-			size_t dest_it__ = ((this_)->size);                                                           \
-			PP_STRCPY_VA_ARGS(((this_)->data), dest_it__, __VA_ARGS__);                                   \
-			((this_)->data)[dest_it__] = '\0';                                                            \
-		}                                                                                                     \
-	}                                                                                                             \
+#define jstr_cat(this_, ...)                                                                                           \
+do {                                                                                                                   \
+	JSTR_IS_STR_VA_ARGS(__VA_ARGS__)                                                                               \
+	                                                                                                               \
+	((this_)->size) += (PP_STRLEN_VA_ARGS(__VA_ARGS__));                                                           \
+	((this_)->capacity) = MAX(JSTR_MIN_CAP, JSTR_NEXT_POW2(2 * ((this_)->size)));                                  \
+	((this_)->data) = realloc(((this_)->data), ((this_)->capacity) * sizeof(*((this_)->data)));                    \
+	if (unlikely(!((this_)->data))) {                                                                              \
+		((this_)->capacity) = 0;                                                                               \
+		((this_)->size) = 0;                                                                                   \
+	} else {                                                                                                       \
+		if (PP_NARG(__VA_ARGS__) == 1) {                                                                       \
+			memcpy(((this_)->data) + ((this_)->size), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);     \
+		} else {                                                                                               \
+			size_t dest_it__ = ((this_)->size);                                                            \
+			PP_STRCPY_VA_ARGS(((this_)->data), dest_it__, __VA_ARGS__);                                    \
+			((this_)->data)[dest_it__] = '\0';                                                             \
+		}                                                                                                      \
+	}                                                                                                              \
 } while (0)
 
 #endif // __cpluslus
