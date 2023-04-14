@@ -399,7 +399,8 @@ JSTR_PRIVATE__
 		assert_are_strings(arg, args...);
 		const std::size_t arglen_1 = strlen(arg);
 		size_t arglen = strlen_args(std::forward<Args>(args)...);
-		if (unlikely(!alloc(arglen_1 + arglen)))
+		this->alloc(arglen_1 + arglen + 1);
+		if (unlikely(!this->data))
 			return;
 		char *tmp = this->data;
 		memcpy(tmp, arg, arglen_1);
