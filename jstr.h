@@ -510,9 +510,8 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	jstring_t(const char *JSTR_RESTRICT__ s, const std::size_t slen) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!jstr_alloc_append(this, slen, s)))
-			return;
-		*(this->data + slen) = '\0';
+		if (likely(jstr_alloc_append(this, slen, s)))
+			*(this->data + slen) = '\0';
 	}
 
 	JSTR_INLINE__
@@ -536,9 +535,8 @@ JSTR_PUBLIC__
 	jstring_t(const std::size_t cap, const std::size_t future_size) JSTR_NOEXCEPT__
 	{
 		private_jstr_alloc_void(this, cap);
-		if (unlikely(this->data))
-			return;
-		this->size = future_size;
+		if (likely(this->data))
+			this->size = future_size;
 	}
 
 	JSTR_INLINE__
@@ -663,9 +661,8 @@ JSTR_PUBLIC__
 	void append(const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 	{
 		private_jstr_append(this, s, slen);
-		if (unlikely(!s))
-			return;
-		*(this->data + slen) = '\0';
+		if (likely(s))
+			*(this->data + slen) = '\0';
 	}
 
 	template <std::size_t N>
@@ -679,9 +676,8 @@ JSTR_PUBLIC__
 	void append_s(const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 	{
 		private_jstr_append_s(this, s, slen);
-		if (unlikely(!s))
-			return;
-		*(this->data + slen) = '\0';
+		if (likely(s))
+			*(this->data + slen) = '\0';
 	}
 
 	template <std::size_t N>
@@ -865,7 +861,6 @@ JSTR_PRIVATE__
 		if (unlikely(!this_->data)) {
 			this_->capacity = 0;
 			this_->size = 0;
-			return;
 		}
 	}
 
@@ -1217,9 +1212,8 @@ do {                                                                            
 			size_t srclen) JSTR_NOEXCEPT__
 	{
 		jstr_reserve_f(dest, srclen);
-		if (unlikely(!dest->data))
-			return;
-		jstr_assign_u(dest, src, srclen);
+		if (likely(dest->data))
+			jstr_assign_u(dest, src, srclen);
 	}
 
 	JSTR_INLINE__
@@ -1227,9 +1221,8 @@ do {                                                                            
 			const jstring_t *JSTR_RESTRICT__ const src) JSTR_NOEXCEPT__
 	{
 		jstr_reserve_f(dest, src->size);
-		if (unlikely(!dest->data))
-			return;
-		jstr_assign_jstr_u(dest, src);
+		if (likely(dest->data))
+			jstr_assign_jstr_u(dest, src);
 	}
 
 	JSTR_INLINE__
@@ -1339,9 +1332,8 @@ do {                                                                            
 	void jstr_push_back_f(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
 		jstr_reserve_f(this_, this_->size * JSTR_MULTIPLIER);
-		if (unlikely(this_->data))
-			return;
-		jstr_push_back_u(this_, c);
+		if (likely(this_->data))
+			jstr_push_back_u(this_, c);
 	}
 
 	JSTR_INLINE__
@@ -1361,17 +1353,13 @@ do {                                                                            
 	}
 
 	JSTR_INLINE__
-	void jstr_pop_back(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
-	{
-		this_->data[--this_->size] = '\0';
-	}
+	void jstr_pop_back(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__ { this_->data[--this_->size] = '\0'; }
 
 	JSTR_INLINE__
 	void jstr_pop_back_s(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!this_->size))
-			return;
-		jstr_pop_back(this_);
+		if (likely(this_->size))
+			jstr_pop_back(this_);
 	}
 
 	JSTR_INLINE__
@@ -1385,9 +1373,8 @@ do {                                                                            
 	void jstr_push_front_f(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
 		jstr_reserve_f(this_, this_->size * JSTR_MULTIPLIER);
-		if (unlikely(!this_->data))
-			return;
-		jstr_push_front_u(this_, c);
+		if (likely(this_->data))
+			jstr_push_front_u(this_, c);
 	}
 
 	JSTR_INLINE__
@@ -1402,9 +1389,8 @@ do {                                                                            
 	JSTR_INLINE__
 	void jstr_push_front_s(jstring_t *JSTR_RESTRICT__ this_, const char c) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!this_->capacity))
-			return;
-		jstr_push_front(this_, c);
+		if (likely(this_->capacity))
+			jstr_push_front(this_, c);
 	}
 
 	JSTR_INLINE__
@@ -1413,9 +1399,8 @@ do {                                                                            
 	JSTR_INLINE__
 	void jstr_pop_front_s(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
-		if (unlikely(!this_->size))
-			return;
-		memmove(this_->data, this_->data + 1, this_->size--);
+		if (likely(this_->size))
+			memmove(this_->data, this_->data + 1, this_->size--);
 	}
 
 	JSTR_INLINE__
