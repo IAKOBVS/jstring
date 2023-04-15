@@ -7,7 +7,6 @@
 extern "C" {
 #endif
 
-#include <stddef.h>
 #include <stdio.h>
 #include <sys/stat.h>
 
@@ -21,7 +20,7 @@ size_t jstdio_sizeof_file(const char *JSTR_RESTRICT__ const filename) JSTR_NOEXC
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
-int jstdio_readfile(char *JSTR_RESTRICT__ buf,
+int jstdio_cat(char *JSTR_RESTRICT__ buf,
 		const char *JSTR_RESTRICT__ filename,
 		const size_t sizeof_file) JSTR_NOEXCEPT__
 {
@@ -30,6 +29,7 @@ int jstdio_readfile(char *JSTR_RESTRICT__ buf,
 		return 0;
 	fread(JSTR_CAST__(void *)buf, 1, sizeof_file, fp);
 	fclose(fp);
+	*(buf + sizeof_file) = '\0';
 	return 1;
 }
 
