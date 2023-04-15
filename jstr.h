@@ -243,18 +243,13 @@ typedef struct jstring_t {
 	jstring_t(const jstring_t& other_) JSTR_NOEXCEPT__
 	{
 		this->size = other_.size;
-		if (!this->capacity) {
+		if (!this->capacity)
 			this->data = (char *)std::malloc(other_.capacity);
-			if (unlikely(!this->data)) {
-				this->size = 0;
-				return;
-			}
-		} else if (this->capacity < other_.capacity) {
+		else if (this->capacity < other_.capacity)
 			this->data = (char *)std::realloc(this->data, other_.capacity);
-			if (unlikely(!this->data)) {
-				this->size = 0;
-				return;
-			}
+		if (unlikely(!this->data)) {
+			this->size = 0;
+			return;
 		}
 		std::memcpy(this->data, other_.data, other_.size + 1);
 		this->capacity = other_.capacity;
@@ -1271,9 +1266,8 @@ do {                                                                            
 	JSTR_INLINE__
 	void jstr_shrink_to_fit(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
-		if (unlikely(this_->capacity == this_->size))
-			return;
-		jstr_shrink_to_fit_f(this_);
+		if (likely(this_->capacity != this_->size))
+			jstr_shrink_to_fit_f(this_);
 	}
 
 	JSTR_INLINE__
@@ -1306,19 +1300,15 @@ do {                                                                            
 	JSTR_INLINE__
 	void jstr_shrink_to_size(jstring_t *JSTR_RESTRICT__ this_, size_t size_) JSTR_NOEXCEPT__
 	{
-		if (size_ < this_->size) {
+		if (size_ < this_->size)
 			jstr_shrink_to_size_f(this_, size_);
-			return;
-		}
 	}
 
 	JSTR_INLINE__
 	void jstr_shrink_to_size_s(jstring_t *JSTR_RESTRICT__ this_, size_t size_) JSTR_NOEXCEPT__
 	{
-		if ((!!this_->size) & (size_ < this_->size)) {
+		if ((!!this_->size) & (size_ < this_->size))
 			jstr_shrink_to_size_f(this_, size_);
-			return;
-		}
 	}
 
 	JSTR_INLINE__
