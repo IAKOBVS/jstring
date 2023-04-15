@@ -304,12 +304,12 @@ JSTR_PRIVATE__
 
 	static constexpr void assert_are_strings() JSTR_NOEXCEPT__ {}
 
-	template <typename Arg, typename... Args>
+	template <typename T, typename... Args>
 	JSTR_INLINE__
-	static constexpr void assert_are_strings(Arg&&, Args&&... args) JSTR_NOEXCEPT__
+	static constexpr void assert_are_strings(T&&, Args&&... args) JSTR_NOEXCEPT__
 	{
-		static_assert(std::is_same<const char *, std::decay_t<Arg>>::value
-			|| std::is_same<char *, std::decay_t<Arg>>::value, "Wrong argument type passed!");
+		static_assert(std::is_same<const char *, std::decay_t<T>>::value
+			|| std::is_same<char *, std::decay_t<T>>::value, "Passing non-string as string argument!");
 		assert_are_strings(args...);
 	}
 
@@ -365,23 +365,11 @@ JSTR_PRIVATE__
 	JSTR_WARN_UNUSED__
 	static std::size_t strlen(char *s) JSTR_NOEXCEPT__ { return std::strlen(s); }
 
-#	if __cplusplus >= 201703L
-
-	template <typename T, typename... Args>
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	size_t strlen_args(T arg, Args&&... args) JSTR_NOEXCEPT__ { return (strlen(arg) + ... + strlen(args)); }
-
-#	else
-
 	template <typename T, typename... Args>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	size_t strlen_args(T s, Args... args) JSTR_NOEXCEPT__ { return strlen(s) + strlen_args(args...); }
-
-#	endif // __cplusplus 17
 
 JSTR_PUBLIC__
 
