@@ -80,10 +80,6 @@ do {                             \
 
 typedef struct jstring_t jstring_t;
 
-/* void jstr_alloc(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOEXCEPT__; */
-/* void jstr_alloc_append(jstring_t *JSTR_RESTRICT__ this_, size_t srclen, const char *JSTR_RESTRICT__ src_, ...) JSTR_NOEXCEPT__; */
-/* void private_jstr_alloc_cat(jstring_t *JSTR_RESTRICT__ this_, size_t arglen, ...) JSTR_NOEXCEPT__; */
-
 void jstr_push_back_u(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
 void jstr_push_back_f(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
 void jstr_push_back(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
