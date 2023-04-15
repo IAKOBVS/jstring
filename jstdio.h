@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
+#include <stddef.h>
 #include <sys/stat.h>
 
 JSTR_INLINE__

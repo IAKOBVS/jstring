@@ -173,10 +173,7 @@ typedef struct jstring_t {
 	}
 
 	JSTR_INLINE__
-	void dealloc() JSTR_NOEXCEPT__
-	{
-		jstr_dealloc(this);
-	}
+	void dealloc() JSTR_NOEXCEPT__ { jstr_dealloc(this); }
 
 	JSTR_INLINE__
 	JSTR_CONST__
@@ -227,6 +224,20 @@ typedef struct jstring_t {
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	int empty() JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return !!this->size; }
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	char& at(const std::size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	{  
+		assert(index <= this->size);
+		return *(this->data + this->size);
+	}
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	char *operator[](const std::size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data + index; }
 
 	JSTR_INLINE__
 	jstring_t(const jstring_t& other_) JSTR_NOEXCEPT__
@@ -596,20 +607,6 @@ JSTR_PUBLIC__
 			tmp.capacity = 0;
 		}
 		return tmp;
-	}
-
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	char *operator[](const std::size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data + index; }
-
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	char &at(const std::size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
-	{
-		assert(index <= this->size);
-		return *(this->data + index);
 	}
 
 	JSTR_INLINE__
