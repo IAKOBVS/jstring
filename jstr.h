@@ -95,8 +95,8 @@ void jstr_pop_back(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 
 void jstr_pop_front(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__;
 
-void private_jstr_append_u(jstring_t *dest, const char *JSTR_RESTRICT__ src, size_t srclen) JSTR_NOEXCEPT__;
-void private_jstr_append(jstring_t *dest, const char *JSTR_RESTRICT__ src, size_t srclen) JSTR_NOEXCEPT__;
+void private_jstr_append_u(jstring_t *this_, const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__;
+void private_jstr_append(jstring_t *this_, const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__;
 
 void jstr_swap(jstring_t *JSTR_RESTRICT__ this_, jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__;
 void jstr_swap_str(jstring_t *JSTR_RESTRICT__ this_, char **JSTR_RESTRICT__ other_, size_t *other_len, size_t *other_cap) JSTR_NOEXCEPT__;
@@ -113,13 +113,13 @@ void jstr_shrink_to_size(jstring_t *JSTR_RESTRICT__ this_, size_t size) JSTR_NOE
 void jstr_reserve(jstring_t *JSTR_RESTRICT__ this_, size_t cap) JSTR_NOEXCEPT__;
 void jstr_reserve_f(jstring_t *JSTR_RESTRICT__ this_, size_t cap, ...) JSTR_NOEXCEPT__;
 
-void private_jstr_assign(jstring_t *JSTR_RESTRICT__ dest, const char *JSTR_RESTRICT__ src, size_t srclen, ...) JSTR_NOEXCEPT__;
-void jstr_assign_u(jstring_t *JSTR_RESTRICT__ dest, const char *JSTR_RESTRICT__ src, size_t srclen) JSTR_NOEXCEPT__;
-void jstr_assign_f(jstring_t *JSTR_RESTRICT__ dest, const char *JSTR_RESTRICT__ src, size_t srclen) JSTR_NOEXCEPT__;
+void private_jstr_assign(jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ s, size_t slen, ...) JSTR_NOEXCEPT__;
+void jstr_assign_u(jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__;
+void jstr_assign_f(jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__;
 
-void jstr_assign_jstr_u(jstring_t *JSTR_RESTRICT__ dest, const jstring_t *JSTR_RESTRICT__ src) JSTR_NOEXCEPT__;
-void jstr_assign_jstr_f(jstring_t *JSTR_RESTRICT__ dest, const jstring_t *JSTR_RESTRICT__ src) JSTR_NOEXCEPT__;
-void jstr_assign_jstr(jstring_t *JSTR_RESTRICT__ dest, const jstring_t *JSTR_RESTRICT__ src, ...) JSTR_NOEXCEPT__;
+void jstr_assign_jstr_u(jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__;
+void jstr_assign_jstr_f(jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__;
+void jstr_assign_jstr(jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ s, ...) JSTR_NOEXCEPT__;
 
 /* if equals returns 0 */
 int jstr_cmp(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
@@ -306,7 +306,8 @@ JSTR_PRIVATE__
 	{
 		static_assert(std::is_same<const char *, std::decay_t<Str>>::value
 			|| std::is_same<char *, std::decay_t<Str>>::value
-			|| std::is_same<jstring_t, std::decay_t<Str>>::value, "Passing non-string as string argument!");
+			|| std::is_same<jstring_t *, std::decay_t<Str>>::value,
+			"Passing non-string as string argument!");
 	}
 
 	template <typename Str, typename... StrArgs>
@@ -340,7 +341,7 @@ JSTR_PRIVATE__
 	{
 		return (std::is_same<const char *, std::decay_t<Str>>::value
 			|| std::is_same<char *, std::decay_t<Str>>::value
-			|| std::is_same<jstring_t, std::decay_t<Str>>::value)
+			|| std::is_same<jstring_t *, std::decay_t<Str>>::value)
 			&& args_are_strings(args...);
 	}
 
@@ -1515,10 +1516,10 @@ do {                                                                            
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	char *jstr_at(const jstring_t *this_jstr, const size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	char *jstr_at(const jstring_t *this_, const size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
-		assert(index <= this_jstr->size);
-		return this_jstr->data + index;
+		assert(index <= this_->size);
+		return this_->data + index;
 	}
 #endif // ! __cpluslus
 
@@ -1530,12 +1531,12 @@ do {                                                                            
 
 #ifndef __cplusplus
 
-#define jstr_assign(this_, ...)                                                                               \
-do {                                                                                                          \
-	if (PP_NARG(__VA_ARGS__) == 2)                                                                        \
-		private_jstr_assign(this_jstr, __VA_ARGS__, 0);                                               \
-	else                                                                                                  \
-		private_jstr_assign(this_jstr, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))); \
+#define jstr_assign(this_, ...)                                                                           \
+do {                                                                                                      \
+	if (PP_NARG(__VA_ARGS__) == 2)                                                                    \
+		private_jstr_assign(this_, __VA_ARGS__, 0);                                               \
+	else                                                                                              \
+		private_jstr_assign(this_, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))); \
 } while (0)
 
 #define jstr_assign_n(this_, s, N)                       \
