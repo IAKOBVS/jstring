@@ -722,20 +722,20 @@ JSTR_PUBLIC__
 		this->assign(std::forward<Str>(s));
 	}
 
-	JSTR_INLINE__
-	void append(const char *s, std::size_t slen) JSTR_NOEXCEPT__
-	{
-		private_jstr_append(this, s, slen);
-		if (likely(s))
-			*(this->data + slen) = '\0';
-	}
-
 	template <typename Str>
 	JSTR_INLINE__
 	void append(Str &&s) JSTR_NOEXCEPT__
 	{
 		assert_are_strings(s);
 		private_jstr_append(this, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
+	}
+
+	JSTR_INLINE__
+	void append(const char *s, std::size_t slen) JSTR_NOEXCEPT__
+	{
+		private_jstr_append(this, s, slen);
+		if (likely(s))
+			*(this->data + slen) = '\0';
 	}
 
 	template <typename Str>
