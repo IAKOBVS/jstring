@@ -60,7 +60,7 @@ extern "C" {
 #	define JSTR_IS_STR_VA_ARGS(...)
 #endif // JSTR_HAS_STATIC_ASSERT
 
-#define JSTR_GET_MALLOC_SIZE(x) (((x) > 4) ? JSTR_NEXT_POW2(2 * (x)) : JSTR_MIN_CAP)
+#define JSTR_GET_MALLOC_SIZE(x) (((x) > 4) ? JSTR_NEXT_POW2(JSTR_MULTIPLIER * (x)) : JSTR_MIN_CAP)
 
 #define jstr_init(this_)         \
 do {                             \
