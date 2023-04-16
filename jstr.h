@@ -817,29 +817,14 @@ JSTR_PUBLIC__
 		jstr_shrink_to_fit(this);
 	}
 
+	template <typename Str>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int cmp(const jstring_t *other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	int cmp(Str&& s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
-		return jstr_cmp(this, other_);
-	}
-
-	template <std::size_t N>
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	int cmp(const char (&s)[N]) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
-	{
-		return jstr_cmp_str(this, s, N - 1);
-	}
-
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	int cmp(const char *s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
-	{
-		return jstr_cmp_str(this, s, MIN(strlen(s), this->size));
+		assert_are_strings(s);
+		return jstr_cmp_str(this, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
 	}
 
 	JSTR_INLINE__
@@ -1574,23 +1559,17 @@ do {                                                     \
 #define private_jstr_reserve_s_x(this_jstr, multiplier)                             \
 	jstr_reserve_s_f_exact(this_jstr, ((multiplier) * ((this_jstr)->capacity)))
 
-#define jstr_reserve_s_2x(this_jstr) private_jstr_reserve_s_x(this_jstr, 2)
-#define jstr_reserve_s_4x(this_jstr) private_jstr_reserve_s_x(this_jstr, 4)
-#define jstr_reserve_s_8x(this_jstr) private_jstr_reserve_s_x(this_jstr, 8)
-#define jstr_reserve_s_16x(this_jstr) private_jstr_reserve_s_x(this_jstr, 16)
-#define jstr_reserve_s_32x(this_jstr) private_jstr_reserve_s_x(this_jstr, 32)
-#define jstr_reserve_s_64x(this_jstr) private_jstr_reserve_s_x(this_jstr, 64)
-
-#define jstr_foreach(elem, jstr)                          \
+#define jstr_foreach(elem, jstr)                         \
  	for (char *elem = ((jstr)->data); *elem; ++elem)
+
 #define jstr_begin(this_jstr) ((this_jstr)->data)
 #define jstr_end(this_jstr) (((this_jstr)->data) + ((this_jstr)->size))
 
 #define jstr_cbegin(this_jstr) ((const char *)((this_jstr)->data))
 #define jstr_cend(this_jstr) ((const char *)(((this_jstr)->data) + ((this_jstr)->size)))
 
-#define jstr_foreach_index(elem, jstr)                 \
- for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
+#define jstr_foreach_index(elem, jstr)                        \
+	for (size_t i = 0, end__ = jstr.size; i < end__; ++i)
 
 #endif // ! __cplusplus : c macros
 
