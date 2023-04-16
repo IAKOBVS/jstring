@@ -385,7 +385,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static std::size_t strlen(jstring_t *s) JSTR_NOEXCEPT__
+	static std::size_t strlen(const jstring_t *s) JSTR_NOEXCEPT__
 	{
 		return s->size;
 	}
@@ -463,7 +463,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static char *strdata(jstring_t *s) JSTR_NOEXCEPT__
+	static char *strdata(const jstring_t *s) JSTR_NOEXCEPT__
 	{
 		return s->data;
 	}
