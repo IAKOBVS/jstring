@@ -48,6 +48,7 @@ extern "C" {
 #	include <cstdlib>
 #	include <utility>
 #	include <cassert>
+#	include <cstdio>
 #endif // __cplusplus
 
 #define JSTR_MIN_CAP 8
@@ -304,16 +305,17 @@ JSTR_PRIVATE__
 
 	static constexpr void assert_are_strings() JSTR_NOEXCEPT__ {}
 
-	template <typename T, typename... Args>
+	template <typename String, typename... StringArgs>
 	JSTR_INLINE__
-	static constexpr void assert_are_strings(T&&, Args&&... args) JSTR_NOEXCEPT__
+	static constexpr void assert_are_strings(String&&, StringArgs&&... args) JSTR_NOEXCEPT__
 	{
-		static_assert(std::is_same<const char *, std::decay_t<T>>::value
-			|| std::is_same<char *, std::decay_t<T>>::value, "Passing non-string as string argument!");
+		static_assert(std::is_same<const char *, std::decay_t<String>>::value
+			|| std::is_same<char *, std::decay_t<String>>::value
+			|| std::is_same<jstring_t, std::decay_t<String>>::value, "Passing non-string as string argument!");
 		assert_are_strings(args...);
 	}
 
-	template <typename T>
+	template <typename String>
 	static constexpr void assert_are_type() JSTR_NOEXCEPT__ {}
 
 	template <typename T, typename Arg, typename... Args>
@@ -326,14 +328,15 @@ JSTR_PRIVATE__
 
 	static constexpr int args_are_strings() JSTR_NOEXCEPT__ { return 1; }
 
-	template <typename T, typename... Args>
+	template <typename String, typename... StringArgs>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	static constexpr int args_are_strings(T&&, Args&&... args) JSTR_NOEXCEPT__
+	static constexpr int args_are_strings(String&&, StringArgs&&... args) JSTR_NOEXCEPT__
 	{
-		return (std::is_same<const char *, std::decay_t<T>>::value
-		|| std::is_same<const char *, std::decay_t<T>>::value)
-		&& args_are_strings(args...);
+		return (std::is_same<const char *, std::decay_t<String>>::value
+			|| std::is_same<char *, std::decay_t<String>>::value
+			|| std::is_same<jstring_t, std::decay_t<String>>::value)
+			&& args_are_strings(args...);
 	}
 
 	template <typename T>
@@ -349,67 +352,91 @@ JSTR_PRIVATE__
 	JSTR_WARN_UNUSED__
 	static constexpr std::size_t strlen_args() JSTR_NOEXCEPT__ { return 0; }
 
-	template <std::size_t N>
+	template <typename String, typename... StringArgs>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static constexpr std::size_t strlen(char (&)[N]) JSTR_NOEXCEPT__ { return N - 1; }
-	
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	static std::size_t strlen(const char *s) JSTR_NOEXCEPT__ { return std::strlen(s); }
-
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	static std::size_t strlen(char *s) JSTR_NOEXCEPT__ { return std::strlen(s); }
-
-	template <typename T, typename... Args>
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	size_t strlen_args(T&& s, Args&&... args) JSTR_NOEXCEPT__ { return strlen(std::forward<T>(s)) + strlen_args(std::forward<Args>(args)...); }
+	size_t strlen_args(String&& s, StringArgs&&... args) JSTR_NOEXCEPT__ { return strlen(std::forward<String>(s)) + strlen_args(std::forward<StringArgs>(args)...); }
 
 JSTR_PUBLIC__
 
-	template <typename T, typename U, typename... Args>
+	template <typename String, typename OtherString, typename... StringArgs>
 	JSTR_INLINE__
-	jstring_t(T&& arg1, U&& arg2, Args&&... args) JSTR_NOEXCEPT__ { this->cat_alloc(std::forward<T>(arg1), std::forward<U>(arg2), std::forward<Args>(args)...); }
+	jstring_t(String&& arg1, OtherString&& arg2, StringArgs&&... args) JSTR_NOEXCEPT__ { this->cat_alloc(std::forward<String>(arg1), std::forward<OtherString>(arg2), std::forward<StringArgs>(args)...); }
 
 #	if __cplusplus >= 201103L
 
 JSTR_PRIVATE__
 
-	template <typename T, typename... Args>
+	template <typename String>
 	JSTR_INLINE__
-	void cat_alloc(T&& arg, Args&&... args) JSTR_NOEXCEPT__
+	void cat_assign(char **destp, String s) JSTR_NOEXCEPT__
+	{
+		static_assert(std::is_same<String, const char *>::value, "Passing non-string to string argument!");
+		while (*s) *(*destp)++ = *s++;
+	}
+
+	JSTR_INLINE__
+	void cat_assign(char **destp, char *s) JSTR_NOEXCEPT__
+	{
+		while (*s) *(*destp)++ = *s++;
+	}
+
+	template <std::size_t N>
+	JSTR_INLINE__
+	void cat_assign(char **destp, const char (&s)[N]) JSTR_NOEXCEPT__
+	{
+		puts("const char array");
+		memcpy(*destp, s, N - 1);
+		(*destp) += (N - 1);
+	}
+	
+	template <std::size_t N>
+	JSTR_INLINE__
+	void cat_assign(char **destp, jstring_t *s) JSTR_NOEXCEPT__
+	{
+		memcpy(*destp, s->data, s->size);
+		(*destp) += s->size;
+	}
+
+	JSTR_INLINE__
+	void cat_loop_assign(char **) JSTR_NOEXCEPT__ {}
+
+	template <typename String, typename... StringArgs>
+	JSTR_INLINE__
+	void cat_loop_assign(char **destp, String&& arg, StringArgs&&... args) JSTR_NOEXCEPT__
+	{
+		cat_assign(destp, std::forward<String>(arg));
+		cat_loop_assign(destp, std::forward<StringArgs>(args)...);
+	}
+
+	template <typename String, typename... StringArgs>
+	JSTR_INLINE__
+	void cat_alloc(String&& arg, StringArgs&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed!");
 		assert_are_strings(arg, args...);
-		const std::size_t arglen_1 = strlen(std::forward<T>(arg));
-		const std::size_t arglen = strlen_args(std::forward<Args>(args)...);
+		const std::size_t arglen_1 = strlen(std::forward<String>(arg));
+		const std::size_t arglen = strlen_args(std::forward<StringArgs>(args)...);
 		this->alloc(arglen_1 + arglen + 1);
 		if (unlikely(!this->data))
 			return;
 		char *tmp = this->data;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		for (const char *arg_ : { std::forward<Args>(args)... })
-			while (*arg_)
-				*tmp++ = *arg_++;
+		cat_loop_assign(&tmp, std::forward<String>(arg), std::forward<StringArgs>(args)...);
 		*tmp = '\0';
 		this->size = arglen;
 	}
 
-	template <typename T, typename... Args>
+	template <typename String, typename... StringArgs>
 	JSTR_INLINE__
-	void cat_impl(T&& arg, Args&&... args) JSTR_NOEXCEPT__
+	void cat_impl(String&& arg, StringArgs&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed! Use append instead.");
 		assert_are_strings(arg, args...);
-		const std::size_t arglen_1 = strlen(std::forward<T>(arg));
-		const std::size_t arglen = strlen_args(std::forward<Args>(args)...);
+		const std::size_t arglen_1 = strlen(std::forward<String>(arg));
+		const std::size_t arglen = strlen_args(std::forward<StringArgs>(args)...);
 		if (sizeof...(args) + this->size > this->capacity) {
 			this->reserve_add(sizeof...(args));
 			if (unlikely(!this->data)) {
@@ -421,61 +448,60 @@ JSTR_PRIVATE__
 		char *tmp = this->data + this->size;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		for (const char *arg_ : { std::forward<Args>(args)... })
-			while (*arg_)
-				*tmp++ = *arg_++;
+		cat_loop_assign(&tmp, std::forward<String>(arg), std::forward<StringArgs>(args)...);
 		*tmp = '\0';
 		this->size += arglen;
 	}
 
 JSTR_PUBLIC__
 
-	template <typename T>
+	template <typename String>
 	JSTR_INLINE__
-	void cat(T&& arg) JSTR_NOEXCEPT__
+	void cat(String&& arg) JSTR_NOEXCEPT__
 	{
 		assert_are_strings(arg);
-		this->append(std::forward<T>(arg));
+		this->append(std::forward<String>(arg));
 	}
 
-	template <typename T, typename U, typename... Args>
+	template <typename String, typename OtherString, typename... StringArgs>
 	JSTR_INLINE__
-	void cat(T&& arg1, U&& arg2, Args&&... args) JSTR_NOEXCEPT__ {
-		assert_are_strings(std::forward<T>(arg1), std::forward<U>(arg2), std::forward<Args>(args)...);
-		this->cat_impl(std::forward<T>(arg1), std::forward<U>(arg2), std::forward<Args>(args)...);
+	void cat(String&& arg1, OtherString&& arg2, StringArgs&&... args) JSTR_NOEXCEPT__
+	{
+		assert_are_strings(std::forward<String>(arg1), std::forward<OtherString>(arg2), std::forward<StringArgs>(args)...);
+		this->cat_impl(std::forward<String>(arg1), std::forward<OtherString>(arg2), std::forward<StringArgs>(args)...);
 	}
 
-	template <typename T, typename U, typename... Args>
+	template <typename String, typename OtherString, typename... StringArgs>
 	JSTR_INLINE__
-	void cat_s(T&& arg1, U&& arg2, Args&&... args) JSTR_NOEXCEPT__
+	void cat_s(String&& arg1, OtherString&& arg2, StringArgs&&... args) JSTR_NOEXCEPT__
 	{
 		assert(this->capacity);
-		this->cat(std::forward<T>(arg1), std::forward<U>(arg2), std::forward<Args>(args)...);
+		this->cat(std::forward<String>(arg1), std::forward<OtherString>(arg2), std::forward<StringArgs>(args)...);
 	}
 
 #	else
 
-	template <typename T, typename U, typename... Args>
+	template <typename String typename OtherString, typename... StringArgs>
 	JSTR_INLINE__
-	jstring_t(T&& arg1, U&& arg2, Args&&... args) JSTR_NOEXCEPT__
+	jstring_t(String& arg1, OtherString&& arg2, StringArgs&&... args) JSTR_NOEXCEPT__
 	{
 		assert_are_strings(arg1, arg2, args...);
-		return private_jstr_cat(this, strlen_args(arg1, arg2, std::forward<Args>(args)...), arg1, arg2, args...);
+		return private_jstr_cat(this, strlen_args(arg1, arg2, std::forward<StringArgs>(args)...), arg1, arg2, args...);
 	}
 
-	template <typename T, typename U, typename... Args>
+	template <typename String typename OtherString, typename... StringArgs>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	void cat(T&& arg1, U&& arg2, Args&&... args) JSTR_NOEXCEPT__
+	void cat(String& arg1, OtherString&& arg2, StringArgs&&... args) JSTR_NOEXCEPT__
 	{
 		assert_are_strings(arg1, arg2, args...);
-		private_jstr_cat(this, strlen_args(arg1, arg2, std::forward<Args>(args)...), arg1, arg2, args...);
+		private_jstr_cat(this, strlen_args(arg1, arg2, std::forward<StringArgs>(args)...), arg1, arg2, args...);
 	}
 
-	template <typename T, typename U, typename... Args>
+	template <typename String typename OtherString, typename... StringArgs>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	void cat_s(T&& arg1, U&& arg2, Args&&... args) JSTR_NOEXCEPT__ { return private_jstr_cat_s(this, strlen_args(arg1, arg2, std::forward<Args>(args)...), arg1, arg2, args...); }
+	void cat_s(String& arg1, OtherString&& arg2, StringArgs&&... args) JSTR_NOEXCEPT__ { return private_jstr_cat_s(this, strlen_args(arg1, arg2, std::forward<StringArgs>(args)...), arg1, arg2, args...); }
 
 #	endif // __cplusplus 11
 
@@ -512,7 +538,7 @@ JSTR_PUBLIC__
 
 	template <std::size_t N>
 	JSTR_INLINE__
-	jstring_t(const std::size_t cap, char (&s)[N]) JSTR_NOEXCEPT__ { private_jstr_constructor_cap(this, cap, s, N - 1); }
+	jstring_t(const std::size_t cap, const char (&s)[N]) JSTR_NOEXCEPT__ { private_jstr_constructor_cap(this, cap, s, N - 1); }
 
 	JSTR_INLINE__
 	jstring_t(const std::size_t cap, const std::size_t future_size) JSTR_NOEXCEPT__
