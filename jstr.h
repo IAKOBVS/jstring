@@ -506,7 +506,7 @@ JSTR_PRIVATE__
 		char *tmp = this->data + this->size;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		cat_loop_assign(&tmp, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		cat_loop_assign(&tmp, std::forward<StrArgs>(args)...);
 		*tmp = '\0';
 		this->size += arglen;
 	}
