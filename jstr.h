@@ -60,7 +60,7 @@ extern "C" {
 #	define JSTR_IS_STR_VA_ARGS(...)
 #endif // JSTR_HAS_STATIC_ASSERT
 
-#define JSTR_GET_MALLOC_SIZE(x) (((x) > 4) ? JSTR_NEXT_POW2(2 * (x)) : 8)
+#define JSTR_GET_MALLOC_SIZE(x) (((x) > 4) ? JSTR_NEXT_POW2(2 * (x)) : JSTR_MIN_CAP)
 
 #define jstr_init(this_)         \
 do {                             \
@@ -1046,7 +1046,7 @@ JSTR_PRIVATE__
 	void jstr_reserve_f(jstring_t *JSTR_RESTRICT__ this_, size_t cap, ...) JSTR_NOEXCEPT__
 	{
 		do {
-			this_->capacity *= 2;
+			this_->capacity *= JSTR_MULTIPLIER;
 		} while (this_->capacity < cap);
 		this_->data = JSTR_CAST__(char *)realloc(this_->data, this_->capacity);
 		if (unlikely(!this_->data)) {
