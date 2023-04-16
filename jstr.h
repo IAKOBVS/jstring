@@ -17,9 +17,6 @@
    _u (unsafe) functions will not do any allocations.
 
    _f (force/fast) functions will force allocations.
-
-   _s (safe) functons will assert if object has been
-   allocated with malloc, if not it will crash the program.
 */
 
 #define JSTR_64_BIT
@@ -1463,11 +1460,13 @@ do {                                                                            
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, int c) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	{
 #ifdef JSTR_HAS_MEMRCHR__
-	{ return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size); }
+		return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size);
 #else
-	{ return jstd_rchr(this_->data, c, this_->size); }
+		return jstd_rchr(this_->data, c, this_->size);
 #endif // JSTR_HAS_MEMRCHR__
+	}
 
 	JSTR_INLINE__
 	void jstr_rev(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
