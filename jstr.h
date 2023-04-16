@@ -119,9 +119,9 @@ void jstr_assign_jstr_f(jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_
 void jstr_assign_jstr(jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ s, ...) JSTR_NOEXCEPT__;
 
 /* if equals returns 0 */
-int jstr_cmp(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
-int jstr_cmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_cmp(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
+int jstr_cmp_str(const jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 
 int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
 int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_NOEXCEPT__ JSTR_WARN_UNUSED__;
@@ -135,9 +135,9 @@ char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, const int c) JSTR_NOEXCE
 		(PP_NARG(__VA_ARGS__) == 1)                                                                     \
 			? private_jstr_str(this_, PP_FIRST_ARG(__VA_ARGS__), strlen(PP_FIRST_ARG(__VA_ARGS__))) \
 			: private_jstr_str(this_, __VA_ARGS__, 0)
-char *private_jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle, size_t needlelen, ...) JSTR_NOEXCEPT__;
+char *private_jstr_str(const jstring_t *haystack, const char *JSTR_RESTRICT__ needle, size_t needlelen, ...) JSTR_NOEXCEPT__;
 #else
-char *jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__;
+char *jstr_str(const jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__;
 #endif
 
 #endif // ! __cplusplus
@@ -1223,14 +1223,14 @@ do {                                                                            
 	}
 
 	JSTR_INLINE__
-	int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	int jstr_cmp_f(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		return memcmp(this_->data, other_->data, this_->size);
 	}
 
 	JSTR_INLINE__
 	int jstr_cmp(const jstring_t *JSTR_RESTRICT__ this_,
-			const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+			const jstring_t *JSTR_RESTRICT__ other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		if (this_->size == other_->size)
 			return jstr_cmp_f(this_, other_);
@@ -1250,7 +1250,7 @@ do {                                                                            
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ const this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	int jstr_casecmp_f(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		return jstd_casecmp(this_->data, other_->data);
 	}
@@ -1258,7 +1258,7 @@ do {                                                                            
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ const this_, const char *JSTR_RESTRICT__ s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	int jstr_casecmp_str(const jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		return jstd_casecmp(this_->data, s);
 	}
@@ -1266,7 +1266,7 @@ do {                                                                            
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ const other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	int jstr_casecmp_jstr(const jstring_t *JSTR_RESTRICT__ this_, const jstring_t *JSTR_RESTRICT__ other_) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{ return (this_->size == other_->size) ? jstd_casecmp(this_->data, other_->data) : 1; }
 
 	JSTR_INLINE__
@@ -1445,12 +1445,12 @@ do {                                                                            
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 #ifdef JSTR_HAS_MEMMEM__
-	char *private_jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle, size_t needlelen, ...) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	char *private_jstr_str(const jstring_t *haystack, const char *JSTR_RESTRICT__ needle, size_t needlelen, ...) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		return JSTR_CAST__(char *)memmem(haystack->data, haystack->size, needle, needlelen);
 	}
 #else
-	char *jstr_str(jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	char *jstr_str(const jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		return strstr(haystack->data, needle);
 	}
