@@ -349,13 +349,14 @@ extern "C" {
 #	define JSTR_MACRO_END )
 #endif // __GNUC__ || __clang__
 
-#ifndef MAX
-#	define MAX(a,b) ((a)>(b)?(a):(b))
+ #ifndef MAX
+#	define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #endif // MAX
 
 #ifndef MIN
-#	define MIN(a,b) ((a)<(b)?(a):(b))
+#	define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #endif // MIN
+
 
 #define JSTR_CASE_VOWEL_LOWER case 'a': case 'i': case 'u': case 'e': case 'o':
 #define JSTR_CASE_VOWEL_UPPER case 'A': case 'I': case 'U': case 'E': case 'O':
