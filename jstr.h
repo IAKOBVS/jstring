@@ -373,7 +373,6 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	static constexpr void assert_are_strings(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(arg);
 		assert_are_strings(args...);
 	}
 
@@ -504,7 +503,6 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	jstring_t(Str&& arg1, OtherStr&& arg2, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(arg1, arg2, args...);
 		this->cat_alloc(std::forward<Str>(arg1), std::forward<OtherStr>(arg2), std::forward<StrArgs>(args)...);
 	}
 
@@ -557,7 +555,6 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	void cat_loop_assign(char **destp, Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(arg, args...);
 		cat_assign(destp, std::forward<Str>(arg));
 		cat_loop_assign(destp, std::forward<StrArgs>(args)...);
 	}
@@ -601,7 +598,6 @@ JSTR_PRIVATE__
 	void cat_alloc(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed!");
-		assert_are_strings(arg, args...);
 		const std::size_t arglen_1 = strlen(std::forward<Str>(arg));
 		const std::size_t arglen = strlen_args(std::forward<StrArgs>(args)...);
 		this->alloc(arglen_1 + arglen + 1);
@@ -621,7 +617,6 @@ JSTR_PRIVATE__
 	void cat_impl(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed! Use append instead.");
-		assert_are_strings(arg, args...);
 		const std::size_t arglen_1 = strlen(std::forward<Str>(arg));
 		const std::size_t arglen = strlen_args(std::forward<StrArgs>(args)...);
 		if (sizeof...(args) + this->size > this->capacity) {
@@ -654,7 +649,6 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	void cat(Str&& arg1, OtherStr&& arg2, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(arg1, arg2, args...);
 		this->cat_impl(std::forward<Str>(arg1), std::forward<OtherStr>(arg2), std::forward<StrArgs>(args)...);
 	}
 
