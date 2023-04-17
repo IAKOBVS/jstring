@@ -344,9 +344,9 @@ JSTR_PRIVATE__
 	template <typename Str>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	static constexpr int args_are_strings(Str&&) JSTR_NOEXCEPT__
+	static constexpr int args_are_strings() JSTR_NOEXCEPT__
 	{
-		return std::is_same<const char *, std::decay_t<Str>>::value
+		return (std::is_same<const char *, std::decay_t<Str>>::value
 			|| std::is_same<const char *&, std::decay_t<Str>>::value
 			|| std::is_same<const char *&&, std::decay_t<Str>>::value
 			|| std::is_same<char *, std::decay_t<Str>>::value
@@ -356,7 +356,7 @@ JSTR_PRIVATE__
 			|| std::is_same<jstring_t *& , std::decay_t<Str>>::value
 			|| std::is_same<jstring_t *&&, std::decay_t<Str>>::value
 			|| std::is_same<jstring_t& , std::decay_t<Str>>::value
-			|| std::is_same<jstring_t&&, std::decay_t<Str>>::value;
+			|| std::is_same<jstring_t&&, std::decay_t<Str>>::value);
 	}
 
 	template <typename Str, typename... StrArgs>
@@ -364,7 +364,7 @@ JSTR_PRIVATE__
 	JSTR_WARN_UNUSED__
 	static constexpr int args_are_strings(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
-		return args_are_strings(arg)
+		return args_are_strings<Str>()
 		&& args_are_strings(args...);
 	}
 
@@ -432,13 +432,12 @@ JSTR_PRIVATE__
 		return s->size;
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	static std::size_t strlen(Str&& s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		return std::strlen(strdata(std::forward<Str>(s)));
 	}
 	
@@ -456,11 +455,10 @@ JSTR_PUBLIC__
 
 JSTR_PRIVATE__
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void cat_assign(char **destp, Str&& s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		while (*s)
 			*(*destp)++ = *s++;
 	}
@@ -506,13 +504,12 @@ JSTR_PRIVATE__
 		cat_loop_assign(destp, std::forward<StrArgs>(args)...);
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	static Str&& strdata(Str&& s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		return s;
 	}
 
@@ -585,11 +582,10 @@ JSTR_PRIVATE__
 
 JSTR_PUBLIC__
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void cat(Str&& arg) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(arg);
 		this->append(std::forward<Str>(arg));
 	}
 
@@ -601,11 +597,10 @@ JSTR_PUBLIC__
 		this->cat_impl(std::forward<Str>(arg1), std::forward<OtherStr>(arg2), std::forward<StrArgs>(args)...);
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	jstring_t(Str&& s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		private_jstr_alloc_assign_void(this, strlen(std::forward<Str>(s)), strdata(std::forward<Str>(s)));
 	}
 
@@ -622,19 +617,17 @@ JSTR_PUBLIC__
 		private_jstr_alloc_void(this, cap);
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	jstring_t(const std::size_t cap, Str&& s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		private_jstr_constructor_cap(this, cap, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	jstring_t(const std::size_t cap, Str&& s, std::size_t slen) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		private_jstr_constructor_cap(this, cap, strdata(std::forward(s)), slen);
 	}
 
@@ -671,7 +664,7 @@ JSTR_PUBLIC__
 		jstr_alloc_assign(this, N - 1, s);
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void alloc(Str&& s) JSTR_NOEXCEPT__
 	{
@@ -742,11 +735,10 @@ JSTR_PUBLIC__
 		return tmp;
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void operator+=(Str &&s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		this->append(std::forward<Str>(s));
 	}
 
@@ -756,12 +748,11 @@ JSTR_PUBLIC__
 		this->push_back(c);
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
 	jstring_t operator+(Str&& s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		return this->operator_plus(strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
 	}
 
@@ -786,19 +777,17 @@ JSTR_PRIVATE__
 
 JSTR_PUBLIC__
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void operator=(Str &&s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		this->assign(std::forward<Str>(s));
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void append(Str &&s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		private_jstr_append(this, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
 	}
 
@@ -810,22 +799,20 @@ JSTR_PUBLIC__
 			*(this->data + slen) = '\0';
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void append_n(Str &&s, std::size_t N) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		private_jstr_append(this, strdata(std::forward<Str>(s)), N);
 		*(this->data + N) = '\0';
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	char *str(Str&& s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		return private_jstr_str(this, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
 	}
 
@@ -863,19 +850,17 @@ JSTR_PUBLIC__
 		jstr_reserve(this, this->capacity + add_cap);
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void assign(Str&& s) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		private_jstr_assign(this, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	void assign_n(Str&& s, std::size_t N) JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		private_jstr_assign(this, strdata(std::forward<Str>(s)), N);
 		*(this->data + N) = '\0';
 	}
@@ -886,13 +871,12 @@ JSTR_PUBLIC__
 		jstr_shrink_to_fit(this);
 	}
 
-	template <typename Str>
+	template <typename Str, typename = typename std::enable_if<args_are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	int cmp(Str&& s) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
-		assert_are_strings(s);
 		return jstr_cmp_str(this, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
 	}
 
