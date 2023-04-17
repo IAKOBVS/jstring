@@ -73,11 +73,11 @@ do {                             \
 	((this_)->size) = 0;     \
 } while (0)
 
+typedef struct jstring_t jstring_t;
+
 #ifndef __cplusplus // ! __cplusplus
 
 #define jstring(name) jstring_t name = {0}
-
-typedef struct jstring_t jstring_t;
 
 void jstr_push_back_u(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
 void jstr_push_back_f(jstring_t *this_, const char c) JSTR_NOEXCEPT__;
@@ -137,7 +137,47 @@ char *jstr_rchr(const jstring_t *JSTR_RESTRICT__ this_, const int c) JSTR_NOEXCE
 char *private_jstr_str(const jstring_t *haystack, const char *JSTR_RESTRICT__ needle, size_t needlelen, ...) JSTR_NOEXCEPT__;
 #else
 char *jstr_str(const jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__;
-#endif
+#endif // JSTR_HAS_MEMMEM__
+
+#else
+
+namespace jstr {
+
+template <typename T>
+struct is_string_t {
+	static constexpr bool value =
+		std::is_same<const char *, typename std::decay<T>::type>::value ||
+		std::is_same<const char *&, typename std::decay<T>::type>::value ||
+		std::is_same<const char *&&, typename std::decay<T>::type>::value ||
+		std::is_same<char *, typename std::decay<T>::type>::value ||
+		std::is_same<char *&, typename std::decay<T>::type>::value ||
+		std::is_same<char *&&, typename std::decay<T>::type>::value ||
+		std::is_same<jstring_t *, typename std::decay<T>::type>::value ||
+		std::is_same<jstring_t *& , typename std::decay<T>::type>::value ||
+		std::is_same<jstring_t *&&, typename std::decay<T>::type>::value ||
+		std::is_same<jstring_t& , typename std::decay<T>::type>::value ||
+		std::is_same<jstring_t&&, typename std::decay<T>::type>::value;
+};
+
+template <typename... Args>
+struct are_strings_t {
+	static constexpr bool value = true;
+};
+
+template <typename T, typename... Args>
+struct are_strings_t<T, Args...>
+{
+	static constexpr bool value =
+		is_string_t<T>::value && are_strings_t<Args...>::value;
+};
+
+template <typename Str, typename... StrArgs>
+static constexpr int are_strings()
+{
+	return are_strings_t<Str, StrArgs...>::value;
+}
+
+}
 
 #endif // ! __cplusplus
 
