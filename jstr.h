@@ -303,7 +303,10 @@ JSTR_PRIVATE__
 	{
 		static_assert(std::is_same<const char *, std::decay_t<Str>>::value
 			|| std::is_same<char *, std::decay_t<Str>>::value
-			|| std::is_same<jstring_t *, std::decay_t<Str>>::value,
+			|| std::is_same<jstring_t, std::decay_t<Str>>::value
+			|| std::is_same<jstring_t *, std::decay_t<Str>>::value
+			|| std::is_same<jstring_t&, std::decay_t<Str>>::value
+			|| std::is_same<jstring_t&&, std::decay_t<Str>>::value,
 			"Passing non-string as string argument!");
 	}
 
@@ -385,7 +388,23 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static std::size_t strlen(const jstring_t *s) JSTR_NOEXCEPT__
+	static std::size_t strlen(jstring_t& s) JSTR_NOEXCEPT__
+	{
+		return s.size;
+	}
+	
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	static std::size_t strlen(jstring_t&& s) JSTR_NOEXCEPT__
+	{
+		return s.size;
+	}
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	static std::size_t strlen(jstring_t *s) JSTR_NOEXCEPT__
 	{
 		return s->size;
 	}
@@ -397,7 +416,7 @@ JSTR_PRIVATE__
 	static std::size_t strlen(Str&& s) JSTR_NOEXCEPT__
 	{
 		assert_are_strings(s);
-		return std::strlen(s);
+		return std::strlen(strdata(std::forward<Str>(s)));
 	}
 	
 JSTR_PUBLIC__
@@ -463,9 +482,25 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static char *strdata(const jstring_t *s) JSTR_NOEXCEPT__
+	static char *strdata(jstring_t *s) JSTR_NOEXCEPT__
 	{
 		return s->data;
+	}
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	static char *strdata(jstring_t& s) JSTR_NOEXCEPT__
+	{
+		return s.data;
+	}
+
+	JSTR_INLINE__
+	JSTR_CONST__
+	JSTR_WARN_UNUSED__
+	static char *strdata(jstring_t&& s) JSTR_NOEXCEPT__
+	{
+		return s.data;
 	}
 
 	template <typename Str, typename... StrArgs>
@@ -534,7 +569,7 @@ JSTR_PUBLIC__
 	jstring_t(Str&& s) JSTR_NOEXCEPT__
 	{
 		assert_are_strings(s);
-		private_jstr_alloc_assign_void(this, strlen(std::forward<Str>(s)), strdata(s));
+		private_jstr_alloc_assign_void(this, strlen(std::forward<Str>(s)), strdata(std::forward<Str>(s)));
 	}
 
 	JSTR_INLINE__
