@@ -172,18 +172,21 @@ struct are_strings_t<Str, StrArgs...>
 };
 
 template <typename Str, typename... StrArgs>
+JSTR_INLINE__
 static constexpr int are_strings()
 {
 	return are_strings_t<Str, StrArgs...>::value;
 }
 
 template <typename Str, typename... StrArgs>
+JSTR_INLINE__
 static constexpr int are_strings(Str, StrArgs...)
 {
 	return are_strings_t<Str, StrArgs...>::value;
 }
 
 template <typename Str>
+JSTR_INLINE__
 static constexpr int are_strings(Str)
 {
 	return are_strings_t<Str>::value;
