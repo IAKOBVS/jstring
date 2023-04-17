@@ -458,6 +458,20 @@ JSTR_PRIVATE__
 		memcpy(*destp, s->data, s->size);
 		*destp += s->size;
 	}
+	
+	JSTR_INLINE__
+	void cat_assign(char **destp, jstring_t& s) JSTR_NOEXCEPT__
+	{
+		memcpy(*destp, s.data, s.size);
+		*destp += s.size;
+	}
+	
+	JSTR_INLINE__
+	void cat_assign(char **destp, jstring_t&& s) JSTR_NOEXCEPT__
+	{
+		memcpy(*destp, s.data, s.size);
+		*destp += s.size;
+	}
 
 	JSTR_INLINE__
 	void cat_loop_assign(char **) JSTR_NOEXCEPT__ {}
