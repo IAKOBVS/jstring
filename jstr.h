@@ -328,22 +328,32 @@ JSTR_PRIVATE__
 		assert_are_type<T>(args...);
 	}
 
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
 	static constexpr int args_are_strings() JSTR_NOEXCEPT__
 	{
 		return 1;
 	}
 
-	template <typename Str, typename... StrArgs>
+	template <typename Str>
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	static constexpr int args_are_strings(Str&&, StrArgs&&... args) JSTR_NOEXCEPT__
+	static constexpr int args_are_strings(Str&&) JSTR_NOEXCEPT__
 	{
-		return (std::is_same<const char *, std::decay_t<Str>>::value
+		return std::is_same<const char *, std::decay_t<Str>>::value
 			|| std::is_same<char *, std::decay_t<Str>>::value
 			|| std::is_same<jstring_t *, std::decay_t<Str>>::value
 			|| std::is_same<jstring_t& , std::decay_t<Str>>::value
-			|| std::is_same<jstring_t&&, std::decay_t<Str>>::value)
-			&& args_are_strings(args...);
+			|| std::is_same<jstring_t&&, std::decay_t<Str>>::value;
+	}
+
+	template <typename Str, typename... StrArgs>
+	JSTR_INLINE__
+	JSTR_WARN_UNUSED__
+	static constexpr int args_are_strings(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
+	{
+		return args_are_strings(arg)
+		&& args_are_strings(args...);
 	}
 
 	template <typename T>
@@ -410,7 +420,7 @@ JSTR_PRIVATE__
 		return s->size;
 	}
 
-	template <typename Str>
+	template <typename Str, std::enable_if<args_are_strings<Str>(), int> = 1>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
