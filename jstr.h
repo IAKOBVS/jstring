@@ -1503,7 +1503,7 @@ do {                                                                            
 #else
 	char *jstr_str(const jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
-		return strstr(haystack->data, needle);
+		return JSTR_CAST__(char *)strstr(haystack->data, needle);
 	}
 #endif // JSTR_HAS_MEMMEM__
 
@@ -1515,7 +1515,7 @@ do {                                                                            
 #ifdef JSTR_HAS_MEMRCHR__
 		return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size);
 #else
-		return jstd_rchr(this_->data, c, this_->size);
+		return JSTR_CAST__(char *)jstd_rchr(this_->data, c, this_->size);
 #endif // JSTR_HAS_MEMRCHR__
 	}
 
