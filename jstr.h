@@ -45,7 +45,6 @@ extern "C" {
 #	include <cstdlib>
 #	include <utility>
 #	include <cassert>
-#	include <cstdio>
 #endif // __cplusplus
 
 #define JSTR_MIN_CAP 8
