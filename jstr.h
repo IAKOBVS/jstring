@@ -854,7 +854,7 @@ JSTR_PUBLIC__
 	void assign_n(Str&& s, std::size_t N) JSTR_NOEXCEPT__
 	{
 		assert_are_strings(s);
-		private_jstr_assign(this, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
+		private_jstr_assign(this, strdata(std::forward<Str>(s)), N);
 		*(this->data + N) = '\0';
 	}
 
