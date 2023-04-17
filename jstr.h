@@ -295,6 +295,7 @@ typedef struct jstring_t {
 
 JSTR_PRIVATE__
 
+	JSTR_INLINE__
 	static constexpr void assert_are_strings() JSTR_NOEXCEPT__ {}
 
 	template <typename Str, typename... StrArgs>
@@ -303,7 +304,6 @@ JSTR_PRIVATE__
 	{
 		static_assert(std::is_same<const char *, std::decay_t<Str>>::value
 			|| std::is_same<char *, std::decay_t<Str>>::value
-			|| std::is_same<jstring_t, std::decay_t<Str>>::value
 			|| std::is_same<jstring_t *, std::decay_t<Str>>::value
 			|| std::is_same<jstring_t&, std::decay_t<Str>>::value
 			|| std::is_same<jstring_t&&, std::decay_t<Str>>::value,
@@ -318,7 +318,7 @@ JSTR_PRIVATE__
 		assert_are_strings(args...);
 	}
 
-	template <typename Str>
+	JSTR_INLINE__
 	static constexpr void assert_are_type() JSTR_NOEXCEPT__ {}
 
 	template <typename T, typename Arg, typename... Args>
@@ -341,7 +341,9 @@ JSTR_PRIVATE__
 	{
 		return (std::is_same<const char *, std::decay_t<Str>>::value
 			|| std::is_same<char *, std::decay_t<Str>>::value
-			|| std::is_same<jstring_t *, std::decay_t<Str>>::value)
+			|| std::is_same<jstring_t *, std::decay_t<Str>>::value
+			|| std::is_same<jstring_t& , std::decay_t<Str>>::value
+			|| std::is_same<jstring_t&&, std::decay_t<Str>>::value)
 			&& args_are_strings(args...);
 	}
 
