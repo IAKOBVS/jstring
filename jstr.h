@@ -144,38 +144,38 @@ char *jstr_str(const jstring_t *haystack, const char *JSTR_RESTRICT__ needle) JS
 namespace jstr {
 
 template <typename Str>
-struct is_string_t {
-	static constexpr bool value =
-		std::is_same<const char *, typename std::decay<Str>::type>::value ||
-		std::is_same<const char *&, typename std::decay<Str>::type>::value ||
-		std::is_same<const char *&&, typename std::decay<Str>::type>::value ||
-		std::is_same<char *, typename std::decay<Str>::type>::value ||
-		std::is_same<char *&, typename std::decay<Str>::type>::value ||
-		std::is_same<char *&&, typename std::decay<Str>::type>::value ||
-		std::is_same<jstring_t *, typename std::decay<Str>::type>::value ||
-		std::is_same<jstring_t *& , typename std::decay<Str>::type>::value ||
-		std::is_same<jstring_t *&&, typename std::decay<Str>::type>::value ||
-		std::is_same<jstring_t& , typename std::decay<Str>::type>::value ||
-		std::is_same<jstring_t&&, typename std::decay<Str>::type>::value;
-};
-
-template <typename... StrArgs>
-struct are_strings_t {
-	static constexpr bool value = true;
-};
-
-template <typename Str, typename... StrArgs>
-struct are_strings_t<Str, StrArgs...>
-{
-	static constexpr bool value =
-		is_string_t<Str>::value && are_strings_t<StrArgs...>::value;
-};
-
-template <typename Str, typename... StrArgs>
-JSTR_INLINE__
 static constexpr int are_strings()
 {
-	return are_strings_t<Str, StrArgs...>::value;
+	return (std::is_same<const char *, std::decay_t<Str>>::value
+		|| std::is_same<const char *&, std::decay_t<Str>>::value
+		|| std::is_same<const char *&&, std::decay_t<Str>>::value
+		|| std::is_same<char *, std::decay_t<Str>>::value
+		|| std::is_same<char *&, std::decay_t<Str>>::value
+		|| std::is_same<char *&&, std::decay_t<Str>>::value
+		|| std::is_same<jstring_t *, std::decay_t<Str>>::value
+		|| std::is_same<jstring_t *&, std::decay_t<Str>>::value
+		|| std::is_same<jstring_t *&&, std::decay_t<Str>>::value
+		|| std::is_same<jstring_t& , std::decay_t<Str>>::value
+		|| std::is_same<jstring_t&&, std::decay_t<Str>>::value);
+}
+
+template <typename Str, typename... StrArgs, typename = typename std::enable_if<sizeof...(StrArgs) != 0>::type>
+static constexpr int are_strings()
+{
+	return are_strings<Str>()
+	&& are_strings<StrArgs...>();
+}
+
+template<typename Str>
+static constexpr int are_strings(Str)
+{
+	return are_strings<Str>();
+}
+
+template<typename Str, typename... StrArgs>
+static constexpr int are_strings(Str, StrArgs...)
+{
+	return are_strings<Str, StrArgs...>();
 }
 
 }
@@ -338,8 +338,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	static constexpr void assert_are_strings() JSTR_NOEXCEPT__ {}
 
-	template <typename Str, typename... StrArgs,
-		typename = typename std::enable_if<jstr::are_strings<Str, StrArgs...>(), int>::type>
+	template <typename Str>
 	JSTR_INLINE__
 	static constexpr void assert_are_strings(Str&&) JSTR_NOEXCEPT__
 	{
@@ -357,11 +356,11 @@ JSTR_PRIVATE__
 			"Passing non-string as string argument!");
 	}
 
-	template <typename Str, typename... StrArgs,
-		typename = typename std::enable_if<jstr::are_strings<Str, StrArgs...>(), int>::type>
+	template <typename Str, typename... StrArgs>
 	JSTR_INLINE__
-	static constexpr void assert_are_strings(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
+	static constexpr void assert_are_strings(Str&&, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
+		assert_are_strings<Str>();
 		assert_are_strings(args...);
 	}
 
