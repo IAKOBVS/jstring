@@ -345,7 +345,8 @@ JSTR_PRIVATE__
 		return s->size;
 	}
 
-	template <typename Str>
+	template <typename Str,
+		typename = typename std::enable_if<jstd::are_strings<Str>(), int>::type>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
