@@ -81,4 +81,11 @@ static constexpr int are_type(Arg, Args...) JSTR_NOEXCEPT__
 	return are_type<T, Arg, Args...>();
 }
 
+template <typename T, typename Arg, typename... Args>
+JSTR_INLINE__
+static constexpr void assert_are_type(Arg&&, Args&&...) JSTR_NOEXCEPT__
+{
+	static_assert(are_type<T, Arg, Args...>(), "Passing non-T as T argument!");
+}
+
 }
