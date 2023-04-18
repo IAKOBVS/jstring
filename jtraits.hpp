@@ -1,8 +1,11 @@
+#ifndef JTRAITS_DEF_H__
+#define JTRAITS_DEF_H__
+
 #include "macros.h"
 
 typedef struct jstring_t jstring_t;
 
-namespace jtraits {
+namespace jstd {
 
 template <typename Str>
 JSTR_INLINE__
@@ -89,3 +92,5 @@ static constexpr void assert_are_same_type(Arg&&, Args&&...) JSTR_NOEXCEPT__
 }
 
 }
+
+#endif // JTRAITS_DEF_H__
