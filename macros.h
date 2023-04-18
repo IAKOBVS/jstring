@@ -269,8 +269,10 @@ extern "C" {
 	JSTR_CONST__
 	static std::size_t JSTR_NEXT_POW2_32(T x)
 	{
+#if __cplusplus > 201703L
 		if constexpr (std::is_integral<T>::value)
 			return private_jstr_next_pow2_32_constexpr(x);
+#endif // cpp 17
 		return private_jstr_next_pow2_32(x);
 	}
 
@@ -280,8 +282,10 @@ extern "C" {
 	JSTR_CONST__
 	static std::size_t JSTR_NEXT_POW2_64(T x)
 	{
+#if __cplusplus > 201703L
 		if constexpr (std::is_integral<T>::value)
 			return private_jstr_next_pow2_64_constexpr(x);
+#endif // cpp 17
 		return private_jstr_next_pow2_64(x);
 	}
 
