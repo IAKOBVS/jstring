@@ -11,17 +11,18 @@ template <typename Str>
 JSTR_INLINE__
 static constexpr int are_strings() JSTR_NOEXCEPT__
 {
-	return (std::is_same<const char *, std::decay_t<Str>>::value
-		|| std::is_same<const char *&, std::decay_t<Str>>::value
-		|| std::is_same<const char *&&, std::decay_t<Str>>::value
-		|| std::is_same<char *, std::decay_t<Str>>::value
-		|| std::is_same<char *&, std::decay_t<Str>>::value
-		|| std::is_same<char *&&, std::decay_t<Str>>::value
-		|| std::is_same<jstring_t *, std::decay_t<Str>>::value
-		|| std::is_same<jstring_t *&, std::decay_t<Str>>::value
-		|| std::is_same<jstring_t *&&, std::decay_t<Str>>::value
-		|| std::is_same<jstring_t& , std::decay_t<Str>>::value
-		|| std::is_same<jstring_t&&, std::decay_t<Str>>::value);
+	using namespace std;
+	return (is_same<const char *, decay_t<Str>>::value
+		|| is_same<const char *&, decay_t<Str>>::value
+		|| is_same<const char *&&, decay_t<Str>>::value
+		|| is_same<char *, decay_t<Str>>::value
+		|| is_same<char *&, decay_t<Str>>::value
+		|| is_same<char *&&, decay_t<Str>>::value
+		|| is_same<jstring_t *, decay_t<Str>>::value
+		|| is_same<jstring_t *&, decay_t<Str>>::value
+		|| is_same<jstring_t *&&, decay_t<Str>>::value
+		|| is_same<jstring_t& , decay_t<Str>>::value
+		|| is_same<jstring_t&&, decay_t<Str>>::value);
 }
 
 template <typename Str, typename... StrArgs,
