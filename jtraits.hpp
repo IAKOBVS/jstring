@@ -24,7 +24,8 @@ static constexpr int are_strings() JSTR_NOEXCEPT__
 		|| std::is_same<jstring_t&&, std::decay_t<Str>>::value);
 }
 
-template <typename Str, typename... StrArgs, typename = typename std::enable_if<sizeof...(StrArgs) != 0>::type>
+template <typename Str, typename... StrArgs,
+	 typename = typename std::enable_if<sizeof...(StrArgs) != 0>::type>
 JSTR_INLINE__
 static constexpr int are_strings() JSTR_NOEXCEPT__
 {
@@ -62,7 +63,8 @@ static constexpr int are_same_type() JSTR_NOEXCEPT__
 	return std::is_same<T, std::decay_t<Arg>>::value;
 }
 
-template <typename T, typename Arg, typename... Args, typename = typename std::enable_if<sizeof...(Args) != 0>::type>
+template <typename T, typename Arg, typename... Args,
+	 typename = typename std::enable_if<sizeof...(Args) != 0>::type>
 JSTR_INLINE__
 static constexpr int are_same_type() JSTR_NOEXCEPT__
 {
