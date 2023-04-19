@@ -476,8 +476,10 @@ JSTR_PRIVATE__
 	void cat_impl(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed! Use append instead.");
-		const std::size_t arglen_1 = strlen(std::forward<Str>(arg));
-		const std::size_t arglen = strlen_args(std::forward<StrArgs>(args)...);
+		using std::forward;
+		using std::size_t;
+		const size_t arglen_1 = strlen(forward<Str>(arg));
+		const size_t arglen = strlen_args(forward<StrArgs>(args)...);
 		if (sizeof...(args) + this->size > this->capacity) {
 			this->reserve_add(sizeof...(args));
 			if (unlikely(!this->data)) {
@@ -489,7 +491,7 @@ JSTR_PRIVATE__
 		char *tmp = this->data + this->size;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		cat_loop_assign(&tmp, std::forward<StrArgs>(args)...);
+		cat_loop_assign(&tmp, forward<StrArgs>(args)...);
 		*tmp = '\0';
 		this->size += arglen;
 	}
