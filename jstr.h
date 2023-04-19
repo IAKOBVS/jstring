@@ -149,7 +149,7 @@ typedef struct jstring_t {
 	char *data;
 } jstring_t;
 #else // __cplusplus
-	typedef size_t size_t;
+	typedef std::size_t size_t;
 
 	size_t size;
 	size_t capacity;
