@@ -149,8 +149,10 @@ typedef struct jstring_t {
 	char *data;
 } jstring_t;
 #else // __cplusplus
-	std::size_t size;
-	std::size_t capacity;
+	typedef size_t size_t;
+
+	size_t size;
+	size_t capacity;
 	char *data;
 
 	JSTR_INLINE__
@@ -221,7 +223,7 @@ typedef struct jstring_t {
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	char& at(const std::size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	char& at(const size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{  
 		assert(index <= this->size);
 		return *(this->data + this->size);
@@ -230,7 +232,7 @@ typedef struct jstring_t {
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	char *operator[](const std::size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data + index; }
+	char *operator[](const size_t index) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ { return this->data + index; }
 
 	JSTR_INLINE__
 	jstring_t(const jstring_t& other_) JSTR_NOEXCEPT__
@@ -297,7 +299,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static constexpr std::size_t strlen_args() JSTR_NOEXCEPT__
+	static constexpr size_t strlen_args() JSTR_NOEXCEPT__
 	{
 		return 0;
 	}
@@ -307,16 +309,16 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static std::size_t strlen_args(Str&& s, StrArgs&&... args) JSTR_NOEXCEPT__
+	static size_t strlen_args(Str&& s, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
 		return strlen(std::forward<Str>(s)) + strlen_args(std::forward<StrArgs>(args)...);
 	}
 
-	template <std::size_t N>
+	template <size_t N>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static constexpr std::size_t strlen(const char (&)[N]) JSTR_NOEXCEPT__
+	static constexpr size_t strlen(const char (&)[N]) JSTR_NOEXCEPT__
 	{
 		return N - 1;
 	}
@@ -324,7 +326,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static std::size_t strlen(jstring_t& s) JSTR_NOEXCEPT__
+	static size_t strlen(jstring_t& s) JSTR_NOEXCEPT__
 	{
 		return s.size;
 	}
@@ -332,7 +334,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static std::size_t strlen(jstring_t&& s) JSTR_NOEXCEPT__
+	static size_t strlen(jstring_t&& s) JSTR_NOEXCEPT__
 	{
 		return s.size;
 	}
@@ -340,7 +342,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static std::size_t strlen(jstring_t *s) JSTR_NOEXCEPT__
+	static size_t strlen(jstring_t *s) JSTR_NOEXCEPT__
 	{
 		return s->size;
 	}
@@ -350,7 +352,7 @@ JSTR_PRIVATE__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	static std::size_t strlen(Str&& s) JSTR_NOEXCEPT__
+	static size_t strlen(Str&& s) JSTR_NOEXCEPT__
 	{
 		return std::strlen(strdata(std::forward<Str>(s)));
 	}
@@ -377,7 +379,7 @@ JSTR_PRIVATE__
 			*(*destp)++ = *s++;
 	}
 
-	template <std::size_t N>
+	template <size_t N>
 	JSTR_INLINE__
 	void cat_assign(char **destp, const char (&s)[N]) JSTR_NOEXCEPT__
 	{
@@ -457,8 +459,8 @@ JSTR_PRIVATE__
 	void cat_alloc(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed!");
-		const std::size_t arglen_1 = strlen(std::forward<Str>(arg));
-		const std::size_t arglen = strlen_args(std::forward<StrArgs>(args)...);
+		const size_t arglen_1 = strlen(std::forward<Str>(arg));
+		const size_t arglen = strlen_args(std::forward<StrArgs>(args)...);
 		this->alloc(arglen_1 + arglen + 1);
 		if (unlikely(!this->data))
 			return;
@@ -476,10 +478,8 @@ JSTR_PRIVATE__
 	void cat_impl(Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
 		static_assert(sizeof...(args), "At least two arguments needed! Use append instead.");
-		using std::forward;
-		using std::size_t;
-		const size_t arglen_1 = strlen(forward<Str>(arg));
-		const size_t arglen = strlen_args(forward<StrArgs>(args)...);
+		const size_t arglen_1 = strlen(std::forward<Str>(arg));
+		const size_t arglen = strlen_args(std::forward<StrArgs>(args)...);
 		if (sizeof...(args) + this->size > this->capacity) {
 			this->reserve_add(sizeof...(args));
 			if (unlikely(!this->data)) {
@@ -491,7 +491,7 @@ JSTR_PRIVATE__
 		char *tmp = this->data + this->size;
 		memcpy(tmp, arg, arglen_1);
 		tmp += arglen_1;
-		cat_loop_assign(&tmp, forward<StrArgs>(args)...);
+		cat_loop_assign(&tmp, std::forward<StrArgs>(args)...);
 		*tmp = '\0';
 		this->size += arglen;
 	}
@@ -521,13 +521,13 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	jstring_t(const char *s, std::size_t slen) JSTR_NOEXCEPT__
+	jstring_t(const char *s, size_t slen) JSTR_NOEXCEPT__
 	{
 		private_jstr_alloc_assign_void(this, slen, s);
 	}
 
 	JSTR_INLINE__
-	jstring_t(const std::size_t cap) JSTR_NOEXCEPT__
+	jstring_t(const size_t cap) JSTR_NOEXCEPT__
 	{
 		this->size = 0;
 		private_jstr_alloc_void(this, cap);
@@ -535,20 +535,20 @@ JSTR_PUBLIC__
 
 	template <typename Str, typename = typename std::enable_if<jstd::are_strings<Str>(), int>::type>
 	JSTR_INLINE__
-	jstring_t(const std::size_t cap, Str&& s) JSTR_NOEXCEPT__
+	jstring_t(const size_t cap, Str&& s) JSTR_NOEXCEPT__
 	{
 		private_jstr_constructor_cap(this, cap, strdata(std::forward<Str>(s)), strlen(std::forward<Str>(s)));
 	}
 
 	template <typename Str, typename = typename std::enable_if<jstd::are_strings<Str>(), int>::type>
 	JSTR_INLINE__
-	jstring_t(const std::size_t cap, Str&& s, std::size_t slen) JSTR_NOEXCEPT__
+	jstring_t(const size_t cap, Str&& s, std::size_t slen) JSTR_NOEXCEPT__
 	{
 		private_jstr_constructor_cap(this, cap, strdata(std::forward(s)), slen);
 	}
 
 	JSTR_INLINE__
-	jstring_t(const std::size_t cap, const std::size_t future_size) JSTR_NOEXCEPT__
+	jstring_t(const size_t cap, const std::size_t future_size) JSTR_NOEXCEPT__
 	{
 		private_jstr_alloc_void(this, cap);
 		if (likely(this->data))
@@ -568,12 +568,12 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	void alloc(std::size_t cap) JSTR_NOEXCEPT__
+	void alloc(size_t cap) JSTR_NOEXCEPT__
 	{
 		jstr_alloc(this, cap);
 	}
 
-	template <std::size_t N>
+	template <size_t N>
 	JSTR_INLINE__
 	void alloc(const char (&s)[N]) JSTR_NOEXCEPT__
 	{
@@ -630,13 +630,13 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	void operator-=(const std::size_t size_) JSTR_NOEXCEPT__
+	void operator-=(const size_t size_) JSTR_NOEXCEPT__
 	{
 		this->size -= size_;
 	}
 
 	JSTR_INLINE__
-	jstring_t operator-(const std::size_t size_) JSTR_NOEXCEPT__
+	jstring_t operator-(const size_t size_) JSTR_NOEXCEPT__
 	{
 		jstring_t tmp;
 		tmp.capacity = JSTR_GET_MALLOC_SIZE(this->size - size);
@@ -676,7 +676,7 @@ JSTR_PRIVATE__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	jstring_t operator_plus(const char *s, const std::size_t slen) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	jstring_t operator_plus(const char *s, const size_t slen) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		jstring_t tmp;
 		tmp.capacity = JSTR_GET_MALLOC_SIZE(this->size + slen);
@@ -708,7 +708,7 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	void append(const char *s, std::size_t slen) JSTR_NOEXCEPT__
+	void append(const char *s, size_t slen) JSTR_NOEXCEPT__
 	{
 		private_jstr_append(this, s, slen);
 		if (likely(s))
@@ -717,7 +717,7 @@ JSTR_PUBLIC__
 
 	template <typename Str, typename = typename std::enable_if<jstd::are_strings<Str>(), int>::type>
 	JSTR_INLINE__
-	void append_n(Str &&s, std::size_t N) JSTR_NOEXCEPT__
+	void append_n(Str &&s, size_t N) JSTR_NOEXCEPT__
 	{
 		private_jstr_append(this, strdata(std::forward<Str>(s)), N);
 		*(this->data + N) = '\0';
@@ -755,13 +755,13 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
-	void reserve(const std::size_t cap) JSTR_NOEXCEPT__
+	void reserve(const size_t cap) JSTR_NOEXCEPT__
 	{
 		jstr_reserve(this, cap);
 	}
 
 	JSTR_INLINE__
-	void reserve_add(const std::size_t add_cap) JSTR_NOEXCEPT__
+	void reserve_add(const size_t add_cap) JSTR_NOEXCEPT__
 	{
 		jstr_reserve(this, this->capacity + add_cap);
 	}
@@ -775,7 +775,7 @@ JSTR_PUBLIC__
 
 	template <typename Str, typename = typename std::enable_if<jstd::are_strings<Str>(), int>::type>
 	JSTR_INLINE__
-	void assign_n(Str&& s, std::size_t N) JSTR_NOEXCEPT__
+	void assign_n(Str&& s, size_t N) JSTR_NOEXCEPT__
 	{
 		private_jstr_assign(this, strdata(std::forward<Str>(s)), N);
 		*(this->data + N) = '\0';
@@ -836,13 +836,13 @@ JSTR_PUBLIC__
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
-	int count_s(const char *needle, std::size_t needlelen) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	int count_s(const char *needle, size_t needlelen) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		return jstd_count_s(this->data, this->size, needle, needlelen);
 	}
 #endif // JSTR_HAS_MEMMEM__
 
-	template <std::size_t N>
+	template <size_t N>
 	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__

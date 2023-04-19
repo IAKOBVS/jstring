@@ -11,8 +11,7 @@ template <typename Str>
 JSTR_INLINE__
 static constexpr int are_strings() JSTR_NOEXCEPT__
 {
-	using std::is_same;
-	using std::decay;
+	using namespace std;
 	return (is_same<const char *, typename decay<Str>::type>::value
 		|| is_same<const char *&, typename decay<Str>::type>::value
 		|| is_same<const char *&&, typename decay<Str>::type>::value
@@ -62,7 +61,8 @@ template <typename T, typename Arg>
 JSTR_INLINE__
 static constexpr int are_same_type() JSTR_NOEXCEPT__
 {
-	return std::is_same<T, std::decay_t<Arg>>::value;
+	using namespace std;
+	return is_same<T, typename decay<Arg>::type>::value;
 }
 
 template <typename T, typename Arg, typename... Args,
