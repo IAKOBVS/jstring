@@ -7,22 +7,25 @@ typedef struct jstring_t jstring_t;
 
 namespace jstd {
 
+template <typename T, typename Arg>
+JSTR_INLINE__
+static constexpr int is_same_decay()
+{
+	using namespace std;
+	return is_same<T, typename decay<Arg>::type>::value;
+}
+
 template <typename Str>
 JSTR_INLINE__
 static constexpr int are_strings() JSTR_NOEXCEPT__
 {
-	using namespace std;
-	return (is_same<const char *, typename decay<Str>::type>::value
-		|| is_same<const char *&, typename decay<Str>::type>::value
-		|| is_same<const char *&&, typename decay<Str>::type>::value
-		|| is_same<char *, typename decay<Str>::type>::value
-		|| is_same<char *&, typename decay<Str>::type>::value
-		|| is_same<char *&&, typename decay<Str>::type>::value
-		|| is_same<jstring_t *, typename decay<Str>::type>::value
-		|| is_same<jstring_t *&, typename decay<Str>::type>::value
-		|| is_same<jstring_t *&&, typename decay<Str>::type>::value
-		|| is_same<jstring_t& , typename decay<Str>::type>::value
-		|| is_same<jstring_t&&, typename decay<Str>::type>::value);
+	return (is_same_decay<const char *, Str>
+		|| is_same_decay<char *, Str>
+		|| std::is_same<jstring_t *, Str>::value
+		|| std::is_same<jstring_t *&, Str>::value
+		|| std::is_same<jstring_t *&&, Str>::value
+		|| std::is_same<jstring_t& , Str>::value
+		|| std::is_same<jstring_t&&, Str>::value);
 }
 
 template <typename Str, typename... StrArgs,
