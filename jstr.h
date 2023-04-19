@@ -875,11 +875,13 @@ JSTR_PUBLIC__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	int count_s(const jstring_t *needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	{
 #ifdef JSTR_HAS_MEMMEM__
-		{ return jstd_count_s(this->data, this->size, needle->data, needle->size); }
+		return jstd_count_s(this->data, this->size, needle->data, needle->size);
 #else
-		{ return jstd_count_s(this->data, needle); }
+		return jstd_count_s(this->data, needle);
 #endif // JSTR_HAS_MEMMEM__
+	}
 
 #ifdef __USE_GNU
 

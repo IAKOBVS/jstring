@@ -9,7 +9,7 @@ namespace jstd {
 
 template <typename T, typename Arg>
 JSTR_INLINE__
-static constexpr int is_same_decay()
+static constexpr int is_same_decay() JSTR_NOEXCEPT__
 {
 	using namespace std;
 	return is_same<T, typename decay<Arg>::type>::value;
