@@ -548,13 +548,13 @@ JSTR_PUBLIC__
 	template <typename Str,
 		typename = typename std::enable_if<jstd::are_strings<Str>(), int>::type>
 	JSTR_INLINE__
-	jstring_t(const size_t cap, Str&& s, std::size_t slen) JSTR_NOEXCEPT__
+	jstring_t(const size_t cap, Str&& s, size_t slen) JSTR_NOEXCEPT__
 	{
 		private_jstr_constructor_cap(this, cap, strdata(std::forward(s)), slen);
 	}
 
 	JSTR_INLINE__
-	jstring_t(const size_t cap, const std::size_t future_size) JSTR_NOEXCEPT__
+	jstring_t(const size_t cap, const size_t future_size) JSTR_NOEXCEPT__
 	{
 		private_jstr_alloc_void(this, cap);
 		if (likely(this->data))
