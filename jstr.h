@@ -905,14 +905,7 @@ JSTR_PUBLIC__
 
 	JSTR_INLINE__
 	JSTR_WARN_UNUSED__
-	char *tok(char **save_ptr, int delim) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
-	{
-		return jstd_tok(save_ptr, delim);
-	}
-
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	const char *ctok(char **save_ptr, int delim) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
+	char *ctok(char **save_ptr, int delim) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
 	{
 		return jstd_tok(save_ptr, delim);
 	}

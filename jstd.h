@@ -157,13 +157,15 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1,
 		JSTR_CASE_UPPER
 			if ((*s2 - 'A' + 'a') != c)
 				return 1;
+		case '\0':
+			return 1;
 		}
 	}
 }
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
-char *jstd_tok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__
+char *jstd_ctok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__
 {
 	char *JSTR_RESTRICT__ const start = *save_ptr;
 	*save_ptr = strchr(*save_ptr, delim);
@@ -172,13 +174,6 @@ char *jstd_tok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__
 	**save_ptr = '\0';
 	while (*++*save_ptr == delim);
 	return start;
-}
-
-JSTR_INLINE__
-JSTR_WARN_UNUSED__
-const char *jstd_ctok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__
-{
-	return jstd_tok(save_ptr, delim);
 }
 
 JSTR_INLINE__
