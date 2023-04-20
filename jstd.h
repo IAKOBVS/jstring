@@ -14,6 +14,21 @@ extern "C" {
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
+int jstd_aredigits(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
+{
+	for (;; ++s) {
+		switch (*s) {
+		default:
+			return 0;
+		case '\0':
+			return 1;
+		JSTR_CASE_DIGIT;
+		}
+	}
+}
+
+JSTR_INLINE__
+JSTR_WARN_UNUSED__
 int jstd_toupper(const int c) JSTR_NOEXCEPT__
 {
 	switch (c) {
@@ -103,7 +118,7 @@ int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 	int count = 0;
 	for (const char *JSTR_RESTRICT__ old = haystack;
 		(haystack = JSTR_CAST__(char *)memmem(haystack, haystacklen, needle, needlelen));
-		haystacklen -= (haystack - old), ++count);
+		haystacklen -= JSTR_CAST__(size_t)(haystack - old), ++count);
 	return count;
 }
 #else
@@ -144,6 +159,37 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1,
 				return 1;
 		}
 	}
+}
+
+JSTR_INLINE__
+JSTR_WARN_UNUSED__
+char *jstd_tok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ const start = *save_ptr;
+	*save_ptr = strchr(*save_ptr, delim);
+	if (unlikely(!*save_ptr))
+		return NULL;
+	**save_ptr = '\0';
+	while (*++*save_ptr == delim);
+	return start;
+}
+
+JSTR_INLINE__
+JSTR_WARN_UNUSED__
+const char *jstd_ctok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__
+{
+	return jstd_tok(save_ptr, delim);
+}
+
+JSTR_INLINE__
+JSTR_WARN_UNUSED__
+int jstd_dirof(char *JSTR_RESTRICT__ dirname) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ const s = strrchr(dirname, '/');
+	if (unlikely(!s))
+		return 0;
+	*s = '\0';
+	return 1;
 }
 
 #ifdef __cplusplus

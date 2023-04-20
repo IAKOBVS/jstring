@@ -77,8 +77,7 @@ template <typename T, typename Arg>
 JSTR_INLINE__
 static constexpr int are_same() JSTR_NOEXCEPT__
 {
-	using namespace std;
-	return is_same<T, Arg>::value;
+	return std::is_same<T, Arg>::value;
 }
 
 template <typename T, typename Arg, typename... Args,

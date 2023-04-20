@@ -16,7 +16,7 @@ JSTR_WARN_UNUSED__
 size_t jstdio_sizeof_file(const char *JSTR_RESTRICT__ const filename) JSTR_NOEXCEPT__
 {
 	struct stat st;
-	return (!stat(filename, &st) ? st.st_size : 0);
+	return JSTR_CAST__(size_t)(!stat(filename, &st) ? st.st_size : 0);
 }
 
 JSTR_INLINE__
