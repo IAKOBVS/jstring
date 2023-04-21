@@ -238,7 +238,7 @@ void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOE
 }
 
 JSTR_INLINE__
-void jstd_memstrip(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__
+void jstd_memstrip_c(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__
 {
 	const char *JSTR_RESTRICT__ end = s + n;
 	while ((s = JSTR_CAST__(char *)memchr(s, c, n))) {
@@ -247,8 +247,14 @@ void jstd_memstrip(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT
 	}
 }
 
+#define jstd_strstrip_c(s, c)            \
+	jstd_memstrip_c(s, c, strlen(s))
+
+#define jstd_strstrip(s, c)            \
+	jstd_memstrip(s, c, strlen(s))
+
 JSTR_INLINE__
-void jstd_memstrips(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
+void jstd_memstrip(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
 {
 	const char *JSTR_RESTRICT__ tmp;
 	for (const char *JSTR_RESTRICT__ end = s + n;
