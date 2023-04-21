@@ -253,25 +253,24 @@ void jstd_memstrip(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT
 JSTR_INLINE__
 void jstd_memstrips(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
 {
-	const char *JSTR_RESTRICT__ begin = s;
-	const char *JSTR_RESTRICT__ end = s + n;
-	int moved;
-	while ((s = JSTR_CAST__(char *)memchr(s, c, n))) {
-		moved = 1;
+	const char *JSTR_RESTRICT__ tmp;
+	for (const char *JSTR_RESTRICT__ end = s + n;
+			(s = JSTR_CAST__(char *)memchr(s, c, n)); ) {
+		tmp = s;
 		n = end-- - s;
 		for (;;) {
-			if (unlikely(!*s))
+			if (unlikely(!*tmp))
 				goto END;
-			if (*(s + moved) == c)
-				++moved, --end, --n;
+			if (*++tmp == c)
+				--end, --n;
 			else
 				break;
 		}
-		memmove(s, s + moved, n);
+		memmove(s, tmp, n);
 	}
 	return;
 END:
-	memmove(s, s + moved, n);
+	memmove(s, tmp, n);
 }
 
 /* JSTR_INLINE__ */
