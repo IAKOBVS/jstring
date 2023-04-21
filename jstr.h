@@ -903,12 +903,12 @@ JSTR_PUBLIC__
 
 #endif // __USE_GNU
 
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	char *ctok(char **save_ptr, int delim) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
-	{
-		return jstd_tok(save_ptr, delim);
-	}
+	/* JSTR_INLINE__ */
+	/* JSTR_WARN_UNUSED__ */
+	/* char *ctok(char **save_ptr, int delim) JSTR_CPP_CONST__ JSTR_NOEXCEPT__ */
+	/* { */
+	/* 	return jstd_ctok(save_ptr, delim); */
+	/* } */
 
 #endif // __cplusplus templates
 

@@ -81,6 +81,18 @@ void jstd_tolower_s(char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 }
 
 JSTR_INLINE__
+void jstd_capitalize(char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
+{
+	*s = JSTR_CAST__(char)jstd_toupper(*s);
+}
+
+JSTR_INLINE__
+void jstd_uncapitalize(char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
+{
+	*s = JSTR_CAST__(char)jstd_tolower(*s);
+}
+
+JSTR_INLINE__
 JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstd_count_c(const char *JSTR_RESTRICT__ s, const int c) JSTR_NOEXCEPT__
@@ -163,18 +175,18 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1,
 	}
 }
 
-JSTR_INLINE__
-JSTR_WARN_UNUSED__
-char *jstd_ctok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__
-{
-	char *JSTR_RESTRICT__ const start = *save_ptr;
-	*save_ptr = strchr(*save_ptr, delim);
-	if (unlikely(!*save_ptr))
-		return NULL;
-	**save_ptr = '\0';
-	while (*++*save_ptr == delim);
-	return start;
-}
+/* JSTR_INLINE__ */
+/* JSTR_WARN_UNUSED__ */
+/* char *jstd_ctok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__ */
+/* { */
+/* 	char *JSTR_RESTRICT__ const start = *save_ptr; */
+/* 	*save_ptr = strchr(*save_ptr, delim); */
+/* 	if (unlikely(!*save_ptr)) */
+/* 		return NULL; */
+/* 	**save_ptr = '\0'; */
+/* 	while (*++*save_ptr == delim); */
+/* 	return start; */
+/* } */
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
