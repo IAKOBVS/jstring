@@ -134,19 +134,28 @@ int jstd_count_c(const char *JSTR_RESTRICT__ s, const int c) JSTR_NOEXCEPT__
 	return count;
 }
 
+#ifndef JSTR_HAS_MEMRCHR__
+
 /* memrchr */
 JSTR_INLINE__
 JSTR_CONST__
 JSTR_WARN_UNUSED__
-char *jstd_rchr(char *s, int c, size_t slen)
+char *jstd_memrchr(char *s, const int c, size_t n)
 {
 	const char *JSTR_RESTRICT__ const begin = s;
-	char *JSTR_RESTRICT__ end = s + slen - 1;
+	char *JSTR_RESTRICT__ end = s + n - 1;
 	for ( ; end != begin; --end)
 		if (*end == c)
 			return end;
 	return NULL;
 }
+
+#else
+
+#define jstd_memrchr(s, c, n) \
+	memrchr(s, c, n)
+
+#endif // ! JSTR_HAS_MEMRCHR__
 
 JSTR_INLINE__
 JSTR_CONST__
@@ -216,17 +225,43 @@ void jstd_memrev(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 	}
 }
 
-
-JSTR_INLINE__
-void jstd_strswap(char *JSTR_RESTRICT__ s1, char *JSTR_RESTRICT__ s2) JSTR_NOEXCEPT__
-{
-	char *JSTR_RESTRICT__ const tmp = s1;
-	s1 = s2;
-	s2 = tmp;
-}
-
 #define jstd_strrev(s)            \
 	jstd_memrev(s, strlen(s))
+
+JSTR_INLINE__
+void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ const tmp = *s1;
+	*s1 = *s2;
+	*s2 = tmp;
+}
+
+#include <stdio.h>
+
+JSTR_INLINE__
+void jstd_memstrip(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ const begin = s;
+	const char *JSTR_RESTRICT__ end = s + n;
+	while ((s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n))) {
+		n = JSTR_CAST__(size_t)(--end - s);
+		memmove(s, s + 1, n);
+	}
+}
+
+JSTR_INLINE__
+void jstd_memstrips(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ const begin = s;
+	const char *JSTR_RESTRICT__ end = s + n;
+	for (int moved; (s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n)); ) {
+		moved = 1;
+		n = JSTR_CAST__(size_t)(--end - s);
+		while (s != begin && *(s - 1) == c)
+			--s, ++moved;
+		memmove(s, s + moved, n);
+	}
+}
 
 /* JSTR_INLINE__ */
 /* JSTR_WARN_UNUSED__ */

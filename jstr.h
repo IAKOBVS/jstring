@@ -1461,7 +1461,7 @@ do {                                                                            
 #ifdef JSTR_HAS_MEMRCHR__
 		return JSTR_CAST__(char *)memrchr(this_->data, c, this_->size);
 #else
-		return JSTR_CAST__(char *)jstd_rchr(this_->data, c, this_->size);
+		return JSTR_CAST__(char *)jstd_memrchr(this_->data, c, this_->size);
 #endif // JSTR_HAS_MEMRCHR__
 	}
 
