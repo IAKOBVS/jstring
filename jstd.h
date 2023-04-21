@@ -11,6 +11,36 @@ extern "C" {
 #	 include <stddef.h>
 #	 include <string.h>
 #endif // __cplusplus
+	
+JSTR_INLINE__
+JSTR_WARN_UNUSED__
+int jstd_arealnum(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
+{
+	for (;; ++s) {
+		switch (*s) {
+		default:
+			return 0;
+		case '\0':
+			return 1;
+		JSTR_CASE_ALPHANUM;
+		}
+	}
+}
+
+JSTR_INLINE__
+JSTR_WARN_UNUSED__
+int jstd_arealpha(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
+{
+	for (;; ++s) {
+		switch (*s) {
+		default:
+			return 0;
+		case '\0':
+			return 1;
+		JSTR_CASE_ALPHA;
+		}
+	}
+}
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
