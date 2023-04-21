@@ -254,14 +254,25 @@ void jstd_memstrips(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEP
 {
 	char *JSTR_RESTRICT__ const begin = s;
 	const char *JSTR_RESTRICT__ end = s + n;
-	for (int moved; (s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n)); ) {
+	int moved;
+	while ((s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n))) {
 		moved = 1;
 		n = JSTR_CAST__(size_t)(--end - s);
-		while (s != begin && *(s - 1) == c)
-			--s, ++moved;
+		for (;;) {
+			if (unlikely(s < begin))
+				goto END;
+			if (*(s - 1) == c)
+				--s, ++moved;
+			else
+				break;
+		}
 		memmove(s, s + moved, n);
 	}
+	return;
+END:
+	memmove(s, s + moved, n);
 }
+
 
 /* JSTR_INLINE__ */
 /* JSTR_WARN_UNUSED__ */
