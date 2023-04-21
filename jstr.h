@@ -1468,13 +1468,7 @@ do {                                                                            
 	JSTR_INLINE__
 	void jstr_rev(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
-		char *JSTR_RESTRICT__ begin = this_->data;
-		char *JSTR_RESTRICT__ end = this_->data + this_->size - 1;
-		for (char tmp_begin; begin < end; ++begin, --end) {
-			tmp_begin = *begin;
-			*begin = *end;
-			*end = tmp_begin;
-		}
+		jstd_memrev(this_->data, this_->size);
 	}
 
 #ifdef __USE_GNU

@@ -205,6 +205,29 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1,
 	}
 }
 
+JSTR_INLINE__
+void jstd_memrev(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ end = s + slen - 1;
+	for (char tmp; s < end; ++s, --end) {
+		tmp = *s;
+		*s = *end;
+		*end = tmp;
+	}
+}
+
+
+JSTR_INLINE__
+void jstd_strswap(char *JSTR_RESTRICT__ s1, char *JSTR_RESTRICT__ s2) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ const tmp = s1;
+	s1 = s2;
+	s2 = tmp;
+}
+
+#define jstd_strrev(s)            \
+	jstd_memrev(s, strlen(s))
+
 /* JSTR_INLINE__ */
 /* JSTR_WARN_UNUSED__ */
 /* char *jstd_ctok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__ */
