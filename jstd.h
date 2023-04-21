@@ -113,13 +113,13 @@ void jstd_tolower_s(char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 JSTR_INLINE__
 void jstd_capitalize(char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 {
-	*s = JSTR_CAST__(char)jstd_toupper(*s);
+	*s = jstd_toupper(*s);
 }
 
 JSTR_INLINE__
 void jstd_uncapitalize(char *JSTR_RESTRICT__ const s) JSTR_NOEXCEPT__
 {
-	*s = JSTR_CAST__(char)jstd_tolower(*s);
+	*s = jstd_tolower(*s);
 }
 
 JSTR_INLINE__
@@ -169,7 +169,7 @@ int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 	int count = 0;
 	for (const char *JSTR_RESTRICT__ old = haystack;
 		(haystack = JSTR_CAST__(char *)memmem(haystack, haystacklen, needle, needlelen));
-		haystacklen -= JSTR_CAST__(size_t)(haystack - old), ++count);
+		haystacklen -= (haystack - old), ++count);
 	return count;
 }
 #else
@@ -208,6 +208,7 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1,
 		JSTR_CASE_UPPER
 			if ((*s2 - 'A' + 'a') != c)
 				return 1;
+			break;
 		case '\0':
 			return 1;
 		}
@@ -244,7 +245,7 @@ void jstd_memstrip(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT
 	char *JSTR_RESTRICT__ const begin = s;
 	const char *JSTR_RESTRICT__ end = s + n;
 	while ((s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n))) {
-		n = JSTR_CAST__(size_t)(--end - s);
+		n = --end - s;
 		memmove(s, s + 1, n);
 	}
 }
@@ -257,7 +258,7 @@ void jstd_memstrips(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEP
 	int moved;
 	while ((s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n))) {
 		moved = 1;
-		n = JSTR_CAST__(size_t)(--end - s);
+		n = --end - s;
 		for (;;) {
 			if (unlikely(s < begin))
 				goto END;
