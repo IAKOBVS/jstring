@@ -237,33 +237,33 @@ void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOE
 	*s2 = tmp;
 }
 
-#include <stdio.h>
-
 JSTR_INLINE__
 void jstd_memstrip(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__
 {
-	char *JSTR_RESTRICT__ const begin = s;
 	const char *JSTR_RESTRICT__ end = s + n;
-	while ((s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n))) {
-		n = --end - s;
+	while ((s = JSTR_CAST__(char *)memchr(s, c, n))) {
+		n = end-- - s;
 		memmove(s, s + 1, n);
 	}
 }
 
+#include <stdio.h>
+#include <assert.h>
+
 JSTR_INLINE__
-void jstd_memstrips(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__
+void jstd_memstrips(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
 {
-	char *JSTR_RESTRICT__ const begin = s;
+	const char *JSTR_RESTRICT__ begin = s;
 	const char *JSTR_RESTRICT__ end = s + n;
 	int moved;
-	while ((s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n))) {
+	while ((s = JSTR_CAST__(char *)memchr(s, c, n))) {
 		moved = 1;
-		n = --end - s;
+		n = end-- - s;
 		for (;;) {
-			if (unlikely(s < begin))
+			if (unlikely(!*s))
 				goto END;
-			if (*(s - 1) == c)
-				--s, ++moved;
+			if (*(s + moved) == c)
+				++moved, --end, --n;
 			else
 				break;
 		}
@@ -273,17 +273,6 @@ void jstd_memstrips(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEP
 END:
 	memmove(s, s + moved, n);
 }
-
-/* JSTR_INLINE__ */
-/* void jstd_memstrip_start(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__ */
-/* { */
-/* 	char *JSTR_RESTRICT__ begin = s; */
-/* 	const char *JSTR_RESTRICT__ end = s + n; */
-/* 	while ((s = JSTR_CAST__(char *)memchr(begin, c, n))) { */
-/* 		n = --end - s; */
-/* 		memmove(s, s + 1, n); */
-/* 	} */
-/* } */
 
 /* JSTR_INLINE__ */
 /* void jstd_memstrips_start(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__ */
