@@ -247,9 +247,6 @@ void jstd_memstrip(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT
 	}
 }
 
-#include <stdio.h>
-#include <assert.h>
-
 JSTR_INLINE__
 void jstd_memstrips(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
 {
@@ -257,58 +254,21 @@ void jstd_memstrips(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
 	for (const char *JSTR_RESTRICT__ end = s + n;
 			(s = JSTR_CAST__(char *)memchr(s, c, n)); ) {
 		tmp = s;
-		n = end-- - s;
 		for (;;) {
 			if (unlikely(!*tmp))
 				goto END;
 			if (*++tmp == c)
-				--end, --n;
+				--end;
 			else
 				break;
 		}
+		n = end-- - s;
 		memmove(s, tmp, n);
 	}
 	return;
 END:
 	memmove(s, tmp, n);
 }
-
-/* JSTR_INLINE__ */
-/* void jstd_memstrips_start(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__ */
-/* { */
-/* 	char *JSTR_RESTRICT__ const begin = s; */
-/* 	const char *JSTR_RESTRICT__ end = s + n; */
-/* 	int moved; */
-/* 	while ((s = JSTR_CAST__(char *)jstd_memrchr(begin, c, n))) { */
-/* 		moved = 1; */
-/* 		n = --end - s; */
-/* 		for (;;) { */
-/* 			if (unlikely(s < begin)) */
-/* 				goto END; */
-/* 			if (*(s - 1) == c) */
-/* 				--s, ++moved; */
-/* 			else */
-/* 				break; */
-/* 		} */
-/* 		memmove(s, s + moved, n); */
-/* 	} */
-/* 	return; */
-/* END: */
-/* 	memmove(s, s + moved, n); */
-/* } */
-
-/* JSTR_INLINE__ */
-/* JSTR_WARN_UNUSED__ */
-/* char *jstd_ctok(char **JSTR_RESTRICT__ save_ptr, int delim) JSTR_NOEXCEPT__ */
-/* { */
-/* 	char *JSTR_RESTRICT__ const start = *save_ptr; */
-/* 	*save_ptr = strchr(*save_ptr, delim); */
-/* 	if (unlikely(!*save_ptr)) */
-/* 		return NULL; */
-/* 	**save_ptr = '\0'; */
-/* 	while (*++*save_ptr == delim); */
-/* 	return start; */
-/* } */
 
 #ifdef __cplusplus
 }
