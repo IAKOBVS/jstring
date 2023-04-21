@@ -188,17 +188,6 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1,
 /* 	return start; */
 /* } */
 
-JSTR_INLINE__
-JSTR_WARN_UNUSED__
-int jstd_dirof(char *JSTR_RESTRICT__ dirname) JSTR_NOEXCEPT__
-{
-	char *JSTR_RESTRICT__ const s = strrchr(dirname, '/');
-	if (unlikely(!s))
-		return 0;
-	*s = '\0';
-	return 1;
-}
-
 #ifdef __cplusplus
 }
 #endif // __cplusplus
