@@ -21,6 +21,7 @@ extern "C" {
 #endif // __cpluslus
 	
 JSTR_INLINE__
+JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstd_arealnum(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 {
@@ -36,6 +37,7 @@ int jstd_arealnum(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 }
 
 JSTR_INLINE__
+JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstd_arealpha(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 {
@@ -51,6 +53,7 @@ int jstd_arealpha(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 }
 
 JSTR_INLINE__
+JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstd_aredigits(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 {
@@ -66,6 +69,7 @@ int jstd_aredigits(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 }
 
 JSTR_INLINE__
+JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstd_toupper(const int c) JSTR_NOEXCEPT__
 {
@@ -77,8 +81,8 @@ int jstd_toupper(const int c) JSTR_NOEXCEPT__
 }
 
 JSTR_INLINE__
-JSTR_WARN_UNUSED__
 JSTR_CONST__
+JSTR_WARN_UNUSED__
 int jstd_tolower(const int c) JSTR_NOEXCEPT__
 {
 	switch (c) {
