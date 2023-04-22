@@ -1,8 +1,6 @@
 #ifndef JSTD_DEF_H__
 #define JSTD_DEF_H__
 
-# include "macros.h"
-
 #ifdef __cplusplus
 #	include <cstddef>
 #	include <cstring>
@@ -11,6 +9,16 @@ extern "C" {
 #	 include <stddef.h>
 #	 include <string.h>
 #endif // __cplusplus
+
+#ifdef __cplusplus
+}
+#endif // __cpluslus
+
+#include "macros.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cpluslus
 	
 JSTR_INLINE__
 JSTR_WARN_UNUSED__

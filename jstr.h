@@ -22,9 +22,6 @@
 #define JSTR_64_BIT
 #define JSTR_ALIGN_POWER_OF_TWO
 
-#include "macros.h"
-#include "jstd.h"
-
 #ifndef __cplusplus
 #	include <stdarg.h>
 #	include <stdlib.h>
@@ -47,6 +44,9 @@ extern "C" {
 #	include <cassert>
 #	include "jtraits.hpp"
 #endif // __cplusplus
+
+#include "macros.h"
+#include "jstd.h"
 
 #define JSTR_MIN_CAP 8
 #define JSTR_MULTIPLIER 2
