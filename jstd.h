@@ -148,7 +148,7 @@ int jstd_count_c(const char *JSTR_RESTRICT__ s, const int c) JSTR_NOEXCEPT__
 JSTR_INLINE__
 JSTR_CONST__
 JSTR_WARN_UNUSED__
-char *jstd_memrchr(char *s, const int c, size_t n)
+char *jstd_memrchr(char *s, const int c, size_t n) JSTR_NOEXCEPT__
 {
 	char *JSTR_RESTRICT__ end = s + n - 1;
 	for ( ; end <= s; --end)

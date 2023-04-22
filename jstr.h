@@ -837,6 +837,24 @@ JSTR_PUBLIC__
 	}
 
 	JSTR_INLINE__
+	void trim() JSTR_NOEXCEPT__
+	{
+		jstr_trim(this);
+	}
+
+	JSTR_INLINE__
+	void strip(const int c) JSTR_NOEXCEPT__
+	{
+		jstr_strip(this, c);
+	}
+
+	JSTR_INLINE__
+	void strip(const char *reject) JSTR_NOEXCEPT__
+	{
+		jstr_stripspn(this, reject);
+	}
+
+	JSTR_INLINE__
 	JSTR_CONST__
 	JSTR_WARN_UNUSED__
 	int count_s(const char *needle) JSTR_CPP_CONST__ JSTR_NOEXCEPT__
@@ -1436,6 +1454,68 @@ do {                                                                            
 	void jstr_pop_front(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
 		memmove(this_->data, this_->data + 1, this_->size--);
+	}
+
+	JSTR_INLINE__
+	void jstr_trim(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
+	{
+		for (char *JSTR_RESTRICT__ end = this_->data + this_->size - 1;
+				end >= this_->data; ) {
+			switch (*end) {
+			case '\t':
+			case ' ':
+				--this_->size;
+				*end-- = '\0';
+				continue;
+			}
+			break;
+		}
+	}
+
+	JSTR_INLINE__
+	void jstr_strip(jstring_t *JSTR_RESTRICT__ this_, const int c) JSTR_NOEXCEPT__
+	{
+		char *JSTR_RESTRICT__ s = this_->data;
+		char *JSTR_RESTRICT__ tmp;
+		size_t sz = this_->size;
+		for (const char *JSTR_RESTRICT__ end = s + this_->size;
+				(s = JSTR_CAST__(char *)memchr(s, c, sz));
+				--this_->size) {
+			tmp = s;
+			for (;;) {
+				if (unlikely(!tmp))
+					goto END;
+				if (*++tmp == c)
+					--end, --this_->size;
+				else
+					break;
+			}
+			sz = end-- - s;
+			memmove(s, tmp, sz);
+		}
+		return;
+END:
+		memmove(s, tmp, sz);
+	}
+
+	JSTR_INLINE__
+	void jstr_stripspn(jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ reject) JSTR_NOEXCEPT__
+	{
+		char *JSTR_RESTRICT__ s = this_->data;
+		char *JSTR_RESTRICT__ tmp;
+		size_t n = this_->size;
+		for (const char *JSTR_RESTRICT__ end = s + n;; ) {
+			s += strcspn(s, reject);
+			if (unlikely(!*s))
+				return;
+			tmp = s + strspn(s, reject);
+			if (unlikely(!*s))
+				return;
+			n = end - tmp;
+			end -= (tmp - s);
+			memmove(s, tmp, n + 1);
+			this_->size -= (tmp - s);
+		}
 	}
 
 	JSTR_INLINE__
