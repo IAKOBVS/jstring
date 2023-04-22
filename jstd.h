@@ -239,8 +239,8 @@ void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOE
 JSTR_INLINE__
 void jstd_memstrip_c(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__
 {
-	const char *JSTR_RESTRICT__ end = s + n;
-	while ((s = JSTR_CAST__(char *)memchr(s, c, n))) {
+	for (const char *JSTR_RESTRICT__ end = s + n ;
+			(s = JSTR_CAST__(char *)memchr(s, c, n)); ) {
 		n = end-- - s;
 		memmove(s, s + 1, n);
 	}
@@ -278,8 +278,8 @@ END:
 JSTR_INLINE__
 void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 {
-	char *JSTR_RESTRICT__ end = s + slen - 1;
-	while (end >= s) {
+	for (char *JSTR_RESTRICT__ end = s + slen - 1 ;
+			end >= s; ) {
 		switch (*end) {
 		case '\t':
 		case ' ':
