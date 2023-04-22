@@ -269,10 +269,10 @@ void jstd_memstrip(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
 			(s = JSTR_CAST__(char *)memchr(s, c, n)); ) {
 		tmp = s;
 		for (;;) {
-			if (unlikely(!*tmp))
-				goto END;
 			if (*++tmp == c)
 				--end;
+			else if (unlikely(*tmp == '\0'))
+					goto END;
 			else
 				break;
 		}
@@ -295,10 +295,10 @@ void jstd_memstripspn(char *JSTR_RESTRICT__ s,
 	char *JSTR_RESTRICT__ tmp;
 	for (const char *JSTR_RESTRICT__ end = s + n;; ) {
 		s += strcspn(s, reject);
-		if (unlikely(!*s))
+		if (*s == '\0')
 			return;
 		tmp = s + strspn(s, reject);
-		if (unlikely(!*s))
+		if (*s == '\0')
 			return;
 		n = end - tmp;
 		end -= (tmp - s);
