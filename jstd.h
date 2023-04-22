@@ -142,9 +142,8 @@ JSTR_CONST__
 JSTR_WARN_UNUSED__
 char *jstd_memrchr(char *s, const int c, size_t n)
 {
-	const char *JSTR_RESTRICT__ const begin = s - 1;
 	char *JSTR_RESTRICT__ end = s + n - 1;
-	for ( ; end != begin; --end)
+	for ( ; end <= s; --end)
 		if (*end == c)
 			return end;
 	return NULL;
@@ -298,4 +297,4 @@ void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 }
 #endif // __cplusplus
 
-#endif // JSTD_DEF_H__
+#endif // JSTD_DEF_H_
