@@ -308,7 +308,7 @@ void jstd_memstripspn(char *JSTR_RESTRICT__ s,
 JSTR_INLINE__
 void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 {
-	for (char *JSTR_RESTRICT__ end = s + slen - 1 ;
+	for (char *JSTR_RESTRICT__ end = s + slen - 1;
 			end >= s; ) {
 		switch (*end) {
 		case '\t':
