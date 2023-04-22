@@ -142,7 +142,7 @@ JSTR_CONST__
 JSTR_WARN_UNUSED__
 char *jstd_memrchr(char *s, const int c, size_t n)
 {
-	const char *JSTR_RESTRICT__ const begin = s;
+	const char *JSTR_RESTRICT__ const begin = s - 1;
 	char *JSTR_RESTRICT__ end = s + n - 1;
 	for ( ; end != begin; --end)
 		if (*end == c)
@@ -250,9 +250,6 @@ void jstd_memstrip_c(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCE
 #define jstd_strstrip_c(s, c)            \
 	jstd_memstrip_c(s, c, strlen(s))
 
-#define jstd_strstrip(s, c)            \
-	jstd_memstrip(s, c, strlen(s))
-
 JSTR_INLINE__
 void jstd_memstrip(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
 {
@@ -275,6 +272,27 @@ void jstd_memstrip(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
 END:
 	memmove(s, tmp, n);
 }
+
+#define jstd_strstrip(s, c)            \
+	jstd_memstrip(s, c, strlen(s))
+
+JSTR_INLINE__
+void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ end = s + slen - 1;
+	while (end >= s) {
+		switch (*end) {
+		case '\t':
+		case ' ':
+			*end-- = '\0';
+			continue;
+		}
+		break;
+	}
+}
+
+#define jstd_strtrim(s)            \
+	jstd_memtrim(s, strlen(s))
 
 #ifdef __cplusplus
 }
