@@ -26,18 +26,19 @@ template <typename Str>
 JSTR_INLINE__
 static constexpr int are_strings() JSTR_NOEXCEPT__
 {
+	using namespace std;
 	return (
 		is_same_decay<const char *, Str>()
 		|| is_same_decay<char *, Str>()
 		|| is_same_decay<jstring_t *, Str>()
-		|| std::is_same<jstring_t& , Str>::value
-		|| std::is_same<jstring_t&&, Str>::value
-		|| std::is_same<const jstring_t& , Str>::value
-		|| std::is_same<const jstring_t&&, Str>::value
-		|| std::is_same<volatile jstring_t& , Str>::value
-		|| std::is_same<volatile jstring_t&&, Str>::value
-		|| std::is_same<const volatile jstring_t& , Str>::value
-		|| std::is_same<const volatile jstring_t&&, Str>::value
+		|| is_same<jstring_t& , Str>::value
+		|| is_same<jstring_t&&, Str>::value
+		|| is_same<const jstring_t& , Str>::value
+		|| is_same<const jstring_t&&, Str>::value
+		|| is_same<volatile jstring_t& , Str>::value
+		|| is_same<volatile jstring_t&&, Str>::value
+		|| is_same<const volatile jstring_t& , Str>::value
+		|| is_same<const volatile jstring_t&&, Str>::value
 		);
 }
 
