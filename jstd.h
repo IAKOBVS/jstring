@@ -284,6 +284,28 @@ END:
 	jstd_memstrip(s, c, strlen(s))
 
 JSTR_INLINE__
+void jstd_memstripspn(char *JSTR_RESTRICT__ s,
+		const char *JSTR_RESTRICT__ reject,
+		size_t n) JSTR_NOEXCEPT__
+{
+	char *JSTR_RESTRICT__ tmp;
+	for (const char *JSTR_RESTRICT__ end = s + n;; ) {
+		s += strcspn(s, reject);
+		if (unlikely(!*s))
+			return;
+		tmp = s + strspn(s, reject);
+		if (unlikely(!*s))
+			return;
+		n = end - tmp;
+		end -= (tmp - s);
+		memmove(s, tmp, n + 1);
+	}
+}
+
+#define jstd_strstripspn(s, reject)       \
+	jstd_memstripspn(s, c, strlen(s))
+
+JSTR_INLINE__
 void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 {
 	for (char *JSTR_RESTRICT__ end = s + slen - 1 ;
