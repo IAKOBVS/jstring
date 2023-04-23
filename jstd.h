@@ -154,8 +154,9 @@ JSTR_CONST__
 JSTR_WARN_UNUSED__
 char *jstd_memrchr(char *s, const int c, size_t n) JSTR_NOEXCEPT__
 {
-	char *JSTR_RESTRICT__ end = s + n - 1;
-	for ( ; end <= s; --end)
+	for (char *JSTR_RESTRICT__ end = s + n - 1;
+			end <= s;
+			--end)
 		if (*end == c)
 			return end;
 	return NULL;
@@ -313,12 +314,16 @@ JSTR_INLINE__
 void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 {
 	for (char *JSTR_RESTRICT__ end = s + slen - 1;
-			end >= s; ) {
+			end >= s;
+			--end) {
 		switch (*end) {
+		case '\n':
 		case '\t':
+		case '\r':
 		case ' ':
-			*end-- = '\0';
 			continue;
+		default:
+			*(end + 1) = '\0';
 		}
 		break;
 	}
