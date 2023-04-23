@@ -332,6 +332,41 @@ void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 #define jstd_strtrim(s)            \
 	jstd_memtrim(s, strlen(s))
 
+#ifdef JSTR_HAS_MEMMEM__
+JSTR_INLINE__
+int jstd_memsearchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace, size_t n)
+{
+	char *JSTR_RESTRICT__ const end = s + n - 1;
+	char *JSTR_RESTRICT__ mtc;
+	size_t rlen = strlen(replace);
+	while ((mtc = JSTR_CAST__(char *)memmem(s, n, replace, rlen))) {
+		if (unlikely(end - mtc < rlen))
+			return 0;
+		n -= (mtc - s);
+		memcpy(mtc, search, rlen);
+	}
+	return 1;
+}
+
+#define jstd_strsearchnreplace(s, search, replace)            \
+	jstd_memsearchnreplace(s, search, replace, strlen(s))
+
+#else
+int jstd_searchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace)
+{
+	size_t n = strlen(s);
+	char *JSTR_RESTRICT__ const end = s + n - 1;
+	char *JSTR_RESTRICT__ mtc;
+	size_t rlen = strlen(replace);
+	while ((mtc = JSTR_CAST__(char *)strstr(s, replace))) {
+		if (unlikely(end - mtc < rlen))
+			return 0;
+		memcpy(mtc, search, rlen);
+	}
+	return 1;
+}
+#endif
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
