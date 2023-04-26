@@ -250,65 +250,29 @@ void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOE
 }
 
 JSTR_INLINE__
-void jstd_memstrip_c(char *JSTR_RESTRICT__ s, const int c, size_t n) JSTR_NOEXCEPT__
+void jstd_strstrip(char *JSTR_RESTRICT__ s, const int c)
 {
-	for (const char *JSTR_RESTRICT__ end = s + n ;
-			(s = JSTR_CAST__(char *)memchr(s, c, n)); ) {
-		n = end-- - s;
-		memmove(s, s + 1, n);
-	}
+	for (const char *src = s; *src; ++src)
+		if (*src != c)
+			*s++ = *src;
+	*s = '\0';
 }
-
-#define jstd_strstrip_c(s, c)            \
-	jstd_memstrip_c(s, c, strlen(s))
 
 JSTR_INLINE__
-void jstd_memstrip(char *JSTR_RESTRICT__ s, int c, size_t n) JSTR_NOEXCEPT__
+void jstd_strstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reject)
 {
-	const char *JSTR_RESTRICT__ tmp;
-	for (const char *JSTR_RESTRICT__ end = s + n;
-			(s = JSTR_CAST__(char *)memchr(s, c, n)); ) {
-		tmp = s;
-		for (;;) {
-			if (*++tmp == c)
-				--end;
-			else if (unlikely(*tmp == '\0'))
-					goto END;
-			else
-				break;
-		}
-		n = end-- - s;
-		memmove(s, tmp, n);
-	}
-	return;
-END:
-	memmove(s, tmp, n);
+	unsigned char table[256];
+	memset(table, 0, 64);
+	memset(&table[64], 0, 64);
+	memset(&table[128], 0, 64);
+	memset(&table[192], 0, 64);
+	while (*reject)
+		table[(unsigned char)*reject++] = 1;
+	for (const char *src = s; *src; ++src)
+		if (!table[(unsigned char)*src])
+			*s++ = *src;
+	*s = '\0';
 }
-
-#define jstd_strstrip(s, c)            \
-	jstd_memstrip(s, c, strlen(s))
-
-JSTR_INLINE__
-void jstd_memstripspn(char *JSTR_RESTRICT__ s,
-		const char *JSTR_RESTRICT__ reject,
-		size_t n) JSTR_NOEXCEPT__
-{
-	char *JSTR_RESTRICT__ tmp;
-	for (const char *JSTR_RESTRICT__ end = s + n;; ) {
-		s += strcspn(s, reject);
-		if (*s == '\0')
-			return;
-		tmp = s + strspn(s, reject);
-		if (*s == '\0')
-			return;
-		n = end - tmp;
-		end -= (tmp - s);
-		memmove(s, tmp, n + 1);
-	}
-}
-
-#define jstd_strstripspn(s, reject)       \
-	jstd_memstripspn(s, c, strlen(s))
 
 JSTR_INLINE__
 void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
