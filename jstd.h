@@ -173,6 +173,7 @@ JSTR_INLINE__
 JSTR_CONST__
 JSTR_WARN_UNUSED__
 #ifdef JSTR_HAS_MEMMEM__
+
 int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 		size_t haystacklen,
 		const char *JSTR_RESTRICT__ needle,
@@ -184,7 +185,9 @@ int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 		haystacklen -= (haystack - old), ++count);
 	return count;
 }
+
 #else
+
 int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 		const char *JSTR_RESTRICT__ needle) JSTR_NOEXCEPT__
 {
@@ -193,6 +196,7 @@ int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 		++count;
 	return count;
 }
+
 #endif // __JSTR_HAS_MEMMEM__
 
 JSTR_INLINE__
@@ -302,7 +306,8 @@ char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 
 JSTR_INLINE__
 #ifdef JSTR_HAS_MEMMEM__
-char *jstd_memsearchnreplace(char *JSTR_RESTRICT__ s,
+
+char *jstd_memreplace(char *JSTR_RESTRICT__ s,
 			const char *JSTR_RESTRICT__ search,
 			const char *JSTR_RESTRICT__ replace,
 			size_t n) JSTR_NOEXCEPT__
@@ -319,11 +324,12 @@ char *jstd_memsearchnreplace(char *JSTR_RESTRICT__ s,
 	return mtc;
 }
 
-#define jstd_strsearchnreplace(s, search, replace)            \
-	jstd_memsearchnreplace(s, search, replace, strlen(s))
+#define jstd_strreplace(s, search, replace)            \
+	jstd_memreplace(s, search, replace, strlen(s))
 
 #else
-char *jstd_searchnreplace(char *JSTR_RESTRICT__ s,
+
+char *jstd_replace(char *JSTR_RESTRICT__ s,
 			const char *JSTR_RESTRICT__ search,
 			const char *JSTR_RESTRICT__ replace) JSTR_NOEXCEPT__
 {
@@ -338,6 +344,7 @@ char *jstd_searchnreplace(char *JSTR_RESTRICT__ s,
 	}
 	return mtc;
 }
+
 #endif
 
 #ifdef __cplusplus
