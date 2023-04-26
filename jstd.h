@@ -250,16 +250,17 @@ void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOE
 }
 
 JSTR_INLINE__
-void jstd_strstrip(char *JSTR_RESTRICT__ s, const int c)
+char *jstd_strstrip(char *JSTR_RESTRICT__ s, const int c)
 {
 	for (const char *src = s; *src; ++src)
 		if (*src != c)
 			*s++ = *src;
 	*s = '\0';
+	return s;
 }
 
 JSTR_INLINE__
-void jstd_strstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reject)
+char *jstd_strstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reject)
 {
 	unsigned char table[256];
 	memset(table, 0, 64);
@@ -272,25 +273,27 @@ void jstd_strstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ rejec
 		if (!table[(unsigned char)*src])
 			*s++ = *src;
 	*s = '\0';
+	return s;
 }
 
 JSTR_INLINE__
-void jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
+char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 {
-	for (char *JSTR_RESTRICT__ end = s + slen - 1;
-			end >= s;
-			--end) {
+	if (unlikely(!slen))
+		return NULL;
+	char *JSTR_RESTRICT__ end = s + slen - 1;
+	while (end >= s)
 		switch (*end) {
 		case '\n':
 		case '\t':
 		case '\r':
 		case ' ':
+			--end;
 			continue;
 		default:
 			*(end + 1) = '\0';
 		}
-		break;
-	}
+	return end;
 }
 
 #define jstd_strtrim(s)            \
