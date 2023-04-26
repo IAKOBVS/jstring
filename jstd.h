@@ -299,38 +299,40 @@ char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 #define jstd_strtrim(s)            \
 	jstd_memtrim(s, strlen(s))
 
+#include <stdio.h>
+
 #ifdef JSTR_HAS_MEMMEM__
 JSTR_INLINE__
-int jstd_memsearchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace, size_t n)
+char *jstd_memsearchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace, size_t n)
 {
-	char *JSTR_RESTRICT__ const end = s + n - 1;
+	const char *JSTR_RESTRICT__ const end = s + n;
 	char *JSTR_RESTRICT__ mtc;
-	size_t rlen = strlen(replace);
-	while ((mtc = JSTR_CAST__(char *)memmem(s, n, replace, rlen))) {
-		if (unlikely(end - mtc < rlen))
-			return 0;
+	size_t slen = strlen(search);
+	while ((mtc = JSTR_CAST__(char *)memmem(s, n, search, slen))) {
+		if (unlikely(end - mtc < slen))
+			break;
+		memcpy(mtc, replace, slen);
 		n -= (mtc - s);
-		memcpy(mtc, search, rlen);
 	}
-	return 1;
+	return mtc;
 }
 
 #define jstd_strsearchnreplace(s, search, replace)            \
 	jstd_memsearchnreplace(s, search, replace, strlen(s))
 
 #else
-int jstd_searchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace)
+char *jstd_searchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace)
 {
 	size_t n = strlen(s);
-	char *JSTR_RESTRICT__ const end = s + n - 1;
+	const char *JSTR_RESTRICT__ const end = s + n;
 	char *JSTR_RESTRICT__ mtc;
-	size_t rlen = strlen(replace);
-	while ((mtc = JSTR_CAST__(char *)strstr(s, replace))) {
-		if (unlikely(end - mtc < rlen))
-			return 0;
-		memcpy(mtc, search, rlen);
+	size_t slen = strlen(search);
+	while ((mtc = JSTR_CAST__(char *)strstr(s, search))) {
+		if (unlikely(end - mtc < slen))
+			break;
+		memcpy(mtc, replace, slen);
 	}
-	return 1;
+	return mtc;
 }
 #endif
 
