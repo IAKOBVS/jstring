@@ -374,39 +374,39 @@ JSTR_PRIVATE__
 	template <typename Str,
 		typename = typename std::enable_if<jstd::are_strings<Str>(), int>::type>
 	JSTR_INLINE__
-	void cat_assign(char **destp, Str&& s) JSTR_NOEXCEPT__
+	void cat_assign(char **dstp, Str&& s) JSTR_NOEXCEPT__
 	{
 		while (*s)
-			*(*destp)++ = *s++;
+			*(*dstp)++ = *s++;
 	}
 
 	template <size_t N>
 	JSTR_INLINE__
-	void cat_assign(char **destp, const char (&s)[N]) JSTR_NOEXCEPT__
+	void cat_assign(char **dstp, const char (&s)[N]) JSTR_NOEXCEPT__
 	{
-		memcpy(*destp, s, N - 1);
-		*destp += (N - 1);
+		memcpy(*dstp, s, N - 1);
+		*dstp += (N - 1);
 	}
 	
 	JSTR_INLINE__
-	void cat_assign(char **destp, jstring_t *s) JSTR_NOEXCEPT__
+	void cat_assign(char **dstp, jstring_t *s) JSTR_NOEXCEPT__
 	{
-		memcpy(*destp, s->data, s->size);
-		*destp += s->size;
+		memcpy(*dstp, s->data, s->size);
+		*dstp += s->size;
 	}
 	
 	JSTR_INLINE__
-	void cat_assign(char **destp, jstring_t& s) JSTR_NOEXCEPT__
+	void cat_assign(char **dstp, jstring_t& s) JSTR_NOEXCEPT__
 	{
-		memcpy(*destp, s.data, s.size);
-		*destp += s.size;
+		memcpy(*dstp, s.data, s.size);
+		*dstp += s.size;
 	}
 	
 	JSTR_INLINE__
-	void cat_assign(char **destp, jstring_t&& s) JSTR_NOEXCEPT__
+	void cat_assign(char **dstp, jstring_t&& s) JSTR_NOEXCEPT__
 	{
-		memcpy(*destp, s.data, s.size);
-		*destp += s.size;
+		memcpy(*dstp, s.data, s.size);
+		*dstp += s.size;
 	}
 
 	JSTR_INLINE__
@@ -415,10 +415,10 @@ JSTR_PRIVATE__
 	template <typename Str, typename... StrArgs,
 		typename = typename std::enable_if<jstd::are_strings<Str, StrArgs...>(), int>::type>
 	JSTR_INLINE__
-	void cat_loop_assign(char **destp, Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
+	void cat_loop_assign(char **dstp, Str&& arg, StrArgs&&... args) JSTR_NOEXCEPT__
 	{
-		cat_assign(destp, std::forward<Str>(arg));
-		cat_loop_assign(destp, std::forward<StrArgs>(args)...);
+		cat_assign(dstp, std::forward<Str>(arg));
+		cat_loop_assign(dstp, std::forward<StrArgs>(args)...);
 	}
 
 	template <typename Str,
@@ -1144,9 +1144,9 @@ do {                                                                            
 		if (PP_NARG(__VA_ARGS__) == 1) {                                                     \
 			memcpy(((this_)->data), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);     \
 		} else {                                                                             \
-			size_t dest_it__ = 0;                                                        \
-			PP_STRCPY_VA_ARGS(((this_)->data), dest_it__, __VA_ARGS__);                  \
-			((this_)->data)[dest_it__] = '\0';                                           \
+			size_t dst_it__ = 0;                                                        \
+			PP_STRCPY_VA_ARGS(((this_)->data), dst_it__, __VA_ARGS__);                  \
+			((this_)->data)[dst_it__] = '\0';                                           \
 		}                                                                                    \
 	} else {                                                                                     \
 		((this_)->capacity) = 0;                                                             \
@@ -1197,9 +1197,9 @@ do {                                                                            
 		if (PP_NARG(__VA_ARGS__) == 1) {                                                                        \
 			memcpy(((this_)->data) + ((this_)->size), PP_FIRST_ARG(__VA_ARGS__), ((this_)->size) + 1);      \
 		} else {                                                                                                \
-			size_t dest_it__ = ((this_)->size);                                                             \
-			PP_STRCPY_VA_ARGS(((this_)->data), dest_it__, __VA_ARGS__);                                     \
-			((this_)->data)[dest_it__] = '\0';                                                              \
+			size_t dst_it__ = ((this_)->size);                                                             \
+			PP_STRCPY_VA_ARGS(((this_)->data), dst_it__, __VA_ARGS__);                                     \
+			((this_)->data)[dst_it__] = '\0';                                                              \
 		}                                                                                                       \
 	}                                                                                                               \
 } while (0)
@@ -1285,62 +1285,62 @@ do {                                                                            
 	{ return (this_->size == other_->size) ? jstd_casecmp(this_->data, other_->data) : 1; }
 
 	JSTR_INLINE__
-	void jstr_assign_u(jstring_t *JSTR_RESTRICT__ dest,
+	void jstr_assign_u(jstring_t *JSTR_RESTRICT__ dst,
 			const char *JSTR_RESTRICT__ src,
 			size_t srclen) JSTR_NOEXCEPT__
 	{
-		memcpy(dest->data, src, srclen + 1);
-		dest->size = srclen;
+		memcpy(dst->data, src, srclen + 1);
+		dst->size = srclen;
 	}
 
 	JSTR_INLINE__
-	void jstr_assign_jstr_u(jstring_t *JSTR_RESTRICT__ dest,
+	void jstr_assign_jstr_u(jstring_t *JSTR_RESTRICT__ dst,
 				const jstring_t *JSTR_RESTRICT__ const src) JSTR_NOEXCEPT__
 	{
-		memcpy(dest->data, src->data, src->size + 1);
-		dest->size = src->size;
+		memcpy(dst->data, src->data, src->size + 1);
+		dst->size = src->size;
 	}
 
 	JSTR_INLINE__
-	void jstr_assign_f(jstring_t *JSTR_RESTRICT__ dest,
+	void jstr_assign_f(jstring_t *JSTR_RESTRICT__ dst,
 			const char *JSTR_RESTRICT__ src,
 			size_t srclen) JSTR_NOEXCEPT__
 	{
-		jstr_reserve_f(dest, srclen);
-		if (likely(dest->data))
-			jstr_assign_u(dest, src, srclen);
+		jstr_reserve_f(dst, srclen);
+		if (likely(dst->data))
+			jstr_assign_u(dst, src, srclen);
 	}
 
 	JSTR_INLINE__
-	void jstr_assign_jstr_f(jstring_t *JSTR_RESTRICT__ dest,
+	void jstr_assign_jstr_f(jstring_t *JSTR_RESTRICT__ dst,
 			const jstring_t *JSTR_RESTRICT__ const src) JSTR_NOEXCEPT__
 	{
-		jstr_reserve_f(dest, src->size);
-		if (likely(dest->data))
-			jstr_assign_jstr_u(dest, src);
+		jstr_reserve_f(dst, src->size);
+		if (likely(dst->data))
+			jstr_assign_jstr_u(dst, src);
 	}
 
 	JSTR_INLINE__
-	void private_jstr_assign(jstring_t *JSTR_RESTRICT__ dest,
+	void private_jstr_assign(jstring_t *JSTR_RESTRICT__ dst,
 			const char *JSTR_RESTRICT__ src,
 			const size_t srclen,
 			...) JSTR_NOEXCEPT__
 	{
-		if (dest->capacity < srclen)
-			jstr_assign_f(dest, src, srclen);
+		if (dst->capacity < srclen)
+			jstr_assign_f(dst, src, srclen);
 		else
-			jstr_assign_u(dest, src, srclen);
+			jstr_assign_u(dst, src, srclen);
 	}
 
 	JSTR_INLINE__
-	void jstr_assign_jstr(jstring_t *JSTR_RESTRICT__ dest,
+	void jstr_assign_jstr(jstring_t *JSTR_RESTRICT__ dst,
 			const jstring_t *JSTR_RESTRICT__ const src,
 			...) JSTR_NOEXCEPT__
 	{
-		if (dest->capacity < src->capacity)
-			jstr_assign_f(dest, src->data, src->capacity);
+		if (dst->capacity < src->capacity)
+			jstr_assign_f(dst, src->data, src->capacity);
 		else
-			jstr_assign_jstr_u(dest, src);
+			jstr_assign_jstr_u(dst, src);
 	}
 
 	JSTR_INLINE__
@@ -1460,12 +1460,12 @@ do {                                                                            
 	void jstr_trim(jstring_t *JSTR_RESTRICT__ this_) JSTR_NOEXCEPT__
 	{
 		for (char *JSTR_RESTRICT__ end = this_->data + this_->size - 1;
-				end >= this_->data; ) {
+				end >= this_->data;
+				--end, --this_->size) {
 			switch (*end) {
 			case '\t':
 			case ' ':
-				--this_->size;
-				*end-- = '\0';
+				*end = '\0';
 				continue;
 			}
 			break;
@@ -1473,49 +1473,32 @@ do {                                                                            
 	}
 
 	JSTR_INLINE__
-	void jstr_strip(jstring_t *JSTR_RESTRICT__ this_, const int c) JSTR_NOEXCEPT__
+	void jstr_strip(jstring_t *JSTR_RESTRICT__ this_, const int c)
 	{
 		char *JSTR_RESTRICT__ s = this_->data;
-		char *JSTR_RESTRICT__ tmp;
-		size_t sz = this_->size;
-		for (const char *JSTR_RESTRICT__ end = s + this_->size;
-				(s = JSTR_CAST__(char *)memchr(s, c, sz));
-				--this_->size) {
-			tmp = s;
-			for (;;) {
-				if (unlikely(!tmp))
-					goto END;
-				if (*++tmp == c)
-					--end, --this_->size;
-				else
-					break;
-			}
-			sz = end-- - s;
-			memmove(s, tmp, sz);
-		}
-		return;
-END:
-		memmove(s, tmp, sz);
+		for (const char *src = s; *src; ++src)
+			if (*s != c)
+				*s++ = *src;
+		*s = '\0';
+		this_->size = s - this_->data;
 	}
 
 	JSTR_INLINE__
-	void jstr_stripspn(jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ reject) JSTR_NOEXCEPT__
+	void jstr_stripspn(jstring_t *JSTR_RESTRICT__ this_, const char *JSTR_RESTRICT__ reject)
 	{
 		char *JSTR_RESTRICT__ s = this_->data;
-		char *JSTR_RESTRICT__ tmp;
-		size_t n = this_->size;
-		for (const char *JSTR_RESTRICT__ end = s + n;; ) {
-			s += strcspn(s, reject);
-			if (unlikely(!*s))
-				return;
-			tmp = s + strspn(s, reject);
-			if (unlikely(!*s))
-				return;
-			n = end - tmp;
-			end -= (tmp - s);
-			memmove(s, tmp, n + 1);
-			this_->size -= (tmp - s);
-		}
+		unsigned char table[256];
+		memset(table, 0, 64);
+		memset(&table[64], 0, 64);
+		memset(&table[128], 0, 64);
+		memset(&table[192], 0, 64);
+		while (*reject)
+			table[(unsigned char)*reject++] = 1;
+		for (const char *src = s; *src; ++src)
+			if (!table[(unsigned char)*src])
+				*s++ = *src;
+		*s = '\0';
+		this_->size = s - this_->data;
 	}
 
 	JSTR_INLINE__
