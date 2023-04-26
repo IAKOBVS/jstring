@@ -301,8 +301,8 @@ char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 
 #include <stdio.h>
 
-#ifdef JSTR_HAS_MEMMEM__
 JSTR_INLINE__
+#ifdef JSTR_HAS_MEMMEM__
 char *jstd_memsearchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace, size_t n)
 {
 	const char *JSTR_RESTRICT__ const end = s + n;
