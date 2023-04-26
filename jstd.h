@@ -198,8 +198,7 @@ int jstd_count_s(const char *JSTR_RESTRICT__ haystack,
 JSTR_INLINE__
 JSTR_CONST__
 JSTR_WARN_UNUSED__
-int jstd_casecmp(const char *JSTR_RESTRICT__ s1,
-		const char *JSTR_RESTRICT__ s2) JSTR_NOEXCEPT__
+int jstd_casecmp(const char *JSTR_RESTRICT__ s1, const char *JSTR_RESTRICT__ s2) JSTR_NOEXCEPT__
 {
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
@@ -303,13 +302,16 @@ char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 
 JSTR_INLINE__
 #ifdef JSTR_HAS_MEMMEM__
-char *jstd_memsearchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace, size_t n)
+char *jstd_memsearchnreplace(char *JSTR_RESTRICT__ s,
+			const char *JSTR_RESTRICT__ search,
+			const char *JSTR_RESTRICT__ replace,
+			size_t n) JSTR_NOEXCEPT__
 {
 	const char *JSTR_RESTRICT__ const end = s + n;
 	char *JSTR_RESTRICT__ mtc;
 	size_t slen = strlen(search);
 	while ((mtc = JSTR_CAST__(char *)memmem(s, n, search, slen))) {
-		if (unlikely(end - mtc < slen))
+		if (unlikely((size_t)(end - mtc) < slen))
 			break;
 		memcpy(mtc, replace, slen);
 		n -= (mtc - s);
@@ -321,7 +323,9 @@ char *jstd_memsearchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT_
 	jstd_memsearchnreplace(s, search, replace, strlen(s))
 
 #else
-char *jstd_searchnreplace(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ search, const char *JSTR_RESTRICT__ replace)
+char *jstd_searchnreplace(char *JSTR_RESTRICT__ s,
+			const char *JSTR_RESTRICT__ search,
+			const char *JSTR_RESTRICT__ replace) JSTR_NOEXCEPT__
 {
 	size_t n = strlen(s);
 	const char *JSTR_RESTRICT__ const end = s + n;
