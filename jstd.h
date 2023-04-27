@@ -333,8 +333,6 @@ char *jstd_memreplace(char *JSTR_RESTRICT__ s,
 	char *JSTR_RESTRICT__ mtc;
 	size_t slen = strlen(search);
 	while ((mtc = JSTR_CAST__(char *)memmem(s, n, search, slen))) {
-		if (unlikely((size_t)(end - mtc) < slen))
-			break;
 		memcpy(mtc, replace, slen);
 		n -= (mtc - s);
 	}
