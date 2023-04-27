@@ -265,15 +265,23 @@ char *jstd_strstrip(char *JSTR_RESTRICT__ s, const int c)
 JSTR_INLINE__
 char *jstd_strstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reject)
 {
+	if (unlikely(reject[0] == '\0'))
+		return NULL;
+	if (unlikely(reject[1] == '\0'))
+		return jstd_strstrip(s, *reject);
 	unsigned char table[256];
 	memset(table, 0, 64);
 	memset(&table[64], 0, 64);
 	memset(&table[128], 0, 64);
 	memset(&table[192], 0, 64);
-	while (*reject)
+	do {
+
 		table[(unsigned char)*reject++] = 1;
-	for (const char *src = s; *src; ++src)
-		if (!table[(unsigned char)*src])
+	} while (*reject);
+	for (const unsigned char *JSTR_RESTRICT__ src = (unsigned char *)s;
+			*src;
+			++src)
+		if (!table[*src])
 			*s++ = *src;
 	*s = '\0';
 	return s;
@@ -302,7 +310,16 @@ char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 #define jstd_strtrim(s)            \
 	jstd_memtrim(s, strlen(s))
 
-#include <stdio.h>
+JSTR_INLINE__
+char *jstd_strreplace_c(char *JSTR_RESTRICT__ s,
+			const char search,
+			const char replace) JSTR_NOEXCEPT__
+{
+	for ( ; *s; ++s)
+		if (*s == search)
+			*s = replace;
+	return s;
+}
 
 JSTR_INLINE__
 #ifdef JSTR_HAS_MEMMEM__
