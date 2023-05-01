@@ -306,9 +306,7 @@ char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 	char *JSTR_RESTRICT__ end = s + slen - 1;
 	while (end >= s)
 		switch (*end) {
-		case '\n':
 		case '\t':
-		case '\r':
 		case ' ':
 			--end;
 			continue;
