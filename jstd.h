@@ -255,9 +255,12 @@ void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOE
 JSTR_INLINE__
 char *jstd_strstrip(char *JSTR_RESTRICT__ s, const int c)
 {
-	for (const char *src = s; *src; ++src)
+	for (const char *src = s;; ++src) {
 		if (*src != c)
 			*s++ = *src;
+		else if (unlikely(*src == '\0'))
+			break;
+	}
 	*s = '\0';
 	return s;
 }
@@ -265,24 +268,32 @@ char *jstd_strstrip(char *JSTR_RESTRICT__ s, const int c)
 JSTR_INLINE__
 char *jstd_strstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reject)
 {
+	enum { ACCEPT = 0, REJECT = 1, NUL = 2 };
 	if (unlikely(reject[0] == '\0'))
 		return NULL;
 	if (unlikely(reject[1] == '\0'))
 		return jstd_strstrip(s, *reject);
 	unsigned char table[256];
-	memset(table, 0, 64);
-	memset(&table[64], 0, 64);
-	memset(&table[128], 0, 64);
-	memset(&table[192], 0, 64);
+	memset(table, ACCEPT, 64);
+	memset(&table[64], ACCEPT, 64);
+	memset(&table[128], ACCEPT, 64);
+	memset(&table[192], ACCEPT, 64);
+	table[0] = NUL;
 	do {
 
-		table[(unsigned char)*reject++] = 1;
+		table[(unsigned char)*reject++] = REJECT;
 	} while (*reject);
-	for (const unsigned char *JSTR_RESTRICT__ src = (unsigned char *)s;
-			*src;
-			++src)
-		if (!table[*src])
+	for (const unsigned char *JSTR_RESTRICT__ src = (unsigned char *)s;;
+			++src) {
+		switch (table[*src]) {
+		case ACCEPT:
 			*s++ = *src;
+		case REJECT:
+			continue;
+		case NUL:;
+		}
+		break;
+	}
 	*s = '\0';
 	return s;
 }
@@ -315,9 +326,12 @@ char *jstd_strreplace_c(char *JSTR_RESTRICT__ s,
 			const char search,
 			const char replace) JSTR_NOEXCEPT__
 {
-	for ( ; *s; ++s)
+	for ( ;; ++s) {
 		if (*s == search)
 			*s = replace;
+		else if (unlikely(*s == '\0'))
+			break;
+	}
 	return s;
 }
 
