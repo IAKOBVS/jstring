@@ -341,7 +341,6 @@ char *jstd_memreplace(char *JSTR_RESTRICT__ s,
 			const char *JSTR_RESTRICT__ replace,
 			size_t n) JSTR_NOEXCEPT__
 {
-	const char *JSTR_RESTRICT__ const end = s + n;
 	char *JSTR_RESTRICT__ mtc;
 	size_t slen = strlen(search);
 	while ((mtc = JSTR_CAST__(char *)memmem(s, n, search, slen))) {
