@@ -19,6 +19,27 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif // __cpluslus
+		
+#if _POSIX_C_SOURCE >= 200809L
+#	define jstd_stpcpy(dst, src) stpcpy(dst, src)
+#else
+JSTR_INLINE__
+JSTR_WARN_UNUSED__
+char *jstd_stpcpy(char *JSTR_RESTRICT__ dst, const char *JSTR_RESTRICT__ src) JSTR_NOEXCEPT__
+{
+	const size_t slen = strlen(src);
+	memcpy(dst, src, slen + 1);
+	return dst + slen;
+}
+#endif // _POSIX_C_SOURCE
+
+JSTR_INLINE__
+JSTR_WARN_UNUSED__
+char *jstd_stpcat(char *JSTR_RESTRICT__ dst, const char *JSTR_RESTRICT__ src) JSTR_NOEXCEPT__
+{
+	dst += strlen(dst);
+	return jstd_stpcpy(dst, src);
+}
 	
 JSTR_INLINE__
 JSTR_CONST__
@@ -253,7 +274,7 @@ void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOE
 }
 
 JSTR_INLINE__
-char *jstd_strstrip(char *JSTR_RESTRICT__ s, const int c)
+char *jstd_stpstrip(char *JSTR_RESTRICT__ s, const int c)
 {
 	for (const char *src = s;; ++src) {
 		if (*src != c)
@@ -266,13 +287,13 @@ char *jstd_strstrip(char *JSTR_RESTRICT__ s, const int c)
 }
 
 JSTR_INLINE__
-char *jstd_strstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reject)
+char *jstd_stpstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reject)
 {
 	enum { ACCEPT = 0, REJECT = 1, NUL = 2 };
 	if (unlikely(reject[0] == '\0'))
 		return NULL;
 	if (unlikely(reject[1] == '\0'))
-		return jstd_strstrip(s, *reject);
+		return jstd_stpstrip(s, *reject);
 	unsigned char table[256];
 	memset(table, ACCEPT, 64);
 	memset(&table[64], ACCEPT, 64);
@@ -299,7 +320,7 @@ char *jstd_strstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reje
 }
 
 JSTR_INLINE__
-char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
+char *jstd_memptrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 {
 	if (unlikely(!slen))
 		return NULL;
@@ -316,8 +337,8 @@ char *jstd_memtrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 	return end;
 }
 
-#define jstd_strtrim(s)            \
-	jstd_memtrim(s, strlen(s))
+#define jstd_stptrim(s)            \
+	jstd_memptrim(s, strlen(s))
 
 JSTR_INLINE__
 char *jstd_strreplace_c(char *JSTR_RESTRICT__ s,
