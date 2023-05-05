@@ -37,7 +37,7 @@ char *jstd_stpcpy(char *JSTR_RESTRICT__ dst, const char *JSTR_RESTRICT__ src) JS
 	memcpy(dst, src, slen + 1);
 	return dst + slen;
 }
-#endif // _POSIX_C_SOURCE
+#endif // JSTD_HAS_STPCPY
 
 JSTR_INLINE__
 JSTR_WARN_UNUSED__
