@@ -52,7 +52,7 @@ JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstd_arealnum(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 {
-	for (;; ++s) {
+	for (;; ++s)
 		switch (*s) {
 		default:
 			return 0;
@@ -60,7 +60,6 @@ int jstd_arealnum(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 			return 1;
 		JSTR_CASE_ALPHANUM;
 		}
-	}
 }
 
 JSTR_INLINE__
@@ -68,7 +67,7 @@ JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstd_arealpha(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 {
-	for (;; ++s) {
+	for (;; ++s)
 		switch (*s) {
 		default:
 			return 0;
@@ -76,7 +75,6 @@ int jstd_arealpha(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 			return 1;
 		JSTR_CASE_ALPHA;
 		}
-	}
 }
 
 JSTR_INLINE__
@@ -84,7 +82,7 @@ JSTR_CONST__
 JSTR_WARN_UNUSED__
 int jstd_aredigits(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 {
-	for (;; ++s) {
+	for (;; ++s)
 		switch (*s) {
 		default:
 			return 0;
@@ -92,7 +90,6 @@ int jstd_aredigits(const char *JSTR_RESTRICT__ s) JSTR_NOEXCEPT__
 			return 1;
 		JSTR_CASE_DIGIT;
 		}
-	}
 }
 
 JSTR_INLINE__
@@ -181,11 +178,13 @@ JSTR_CONST__
 JSTR_WARN_UNUSED__
 char *jstd_memrchr(char *s, const int c, size_t n) JSTR_NOEXCEPT__
 {
-	for (char *JSTR_RESTRICT__ end = s + n - 1;
-			end <= s;
-			--end)
+	if (unlikely(!n))
+		return NULL;
+	char *JSTR_RESTRICT__ end = s + n - 1;
+	do
 		if (*end == c)
 			return end;
+	while (--end <= s);
 	return NULL;
 }
 
@@ -260,12 +259,15 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1, const char *JSTR_RESTRICT__ s2)
 JSTR_INLINE__
 void jstd_memrev(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 {
+	if (unlikely(!slen))
+		return;
 	char *JSTR_RESTRICT__ end = s + slen - 1;
-	for (char tmp; s < end; ++s, --end) {
+	char tmp;
+	do {
 		tmp = *s;
-		*s = *end;
-		*end = tmp;
-	}
+		*s++ = *end;
+		*end-- = tmp;
+	} while (s < end);
 }
 
 #define jstd_strrev(s)            \
@@ -282,12 +284,11 @@ void jstd_strswap(char **JSTR_RESTRICT__ s1, char **JSTR_RESTRICT__ s2) JSTR_NOE
 JSTR_INLINE__
 char *jstd_stpstrip(char *JSTR_RESTRICT__ s, const int c)
 {
-	for (const char *src = s;; ++src) {
+	for (const char *src = s;; ++src)
 		if (*src != c)
 			*s++ = *src;
 		else if (unlikely(*src == '\0'))
 			break;
-	}
 	*s = '\0';
 	return s;
 }
@@ -295,21 +296,20 @@ char *jstd_stpstrip(char *JSTR_RESTRICT__ s, const int c)
 JSTR_INLINE__
 char *jstd_stpstripspn(char *JSTR_RESTRICT__ s, const char *JSTR_RESTRICT__ reject)
 {
-	enum { ACCEPT = 0, REJECT = 1, NUL = 2 };
 	if (unlikely(reject[0] == '\0'))
 		return NULL;
 	if (unlikely(reject[1] == '\0'))
 		return jstd_stpstrip(s, *reject);
+	enum { ACCEPT = 0, REJECT = 1, NUL = 2 };
 	unsigned char table[256];
 	memset(table, ACCEPT, 64);
 	memset(&table[64], ACCEPT, 64);
 	memset(&table[128], ACCEPT, 64);
 	memset(&table[192], ACCEPT, 64);
 	table[0] = NUL;
-	do {
-
+	do
 		table[(unsigned char)*reject++] = REJECT;
-	} while (*reject);
+	while (*reject);
 	for (const unsigned char *JSTR_RESTRICT__ src = (unsigned char *)s;;
 			++src) {
 		switch (table[*src]) {
@@ -331,7 +331,7 @@ char *jstd_memptrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 	if (unlikely(!slen))
 		return NULL;
 	char *JSTR_RESTRICT__ end = s + slen - 1;
-	while (end >= s)
+	do {
 		switch (*end) {
 		case '\t':
 		case ' ':
@@ -340,6 +340,8 @@ char *jstd_memptrim(char *JSTR_RESTRICT__ s, size_t slen) JSTR_NOEXCEPT__
 		default:
 			*(end + 1) = '\0';
 		}
+		break;
+	} while (end >= s);
 	return end;
 }
 
@@ -351,12 +353,11 @@ char *jstd_strreplace_c(char *JSTR_RESTRICT__ s,
 			const char search,
 			const char replace) JSTR_NOEXCEPT__
 {
-	for ( ;; ++s) {
+	for ( ;; ++s)
 		if (*s == search)
 			*s = replace;
 		else if (unlikely(*s == '\0'))
 			break;
-	}
 	return s;
 }
 
