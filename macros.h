@@ -400,7 +400,18 @@ extern "C" {
 #	define JSTR_HAS_MEMRCHR__
 #endif // JSTR_HAS_MEMRCHR__
 
-#ifndef __USE_GNU
-#endif // __USE_GNU
+#if __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 19
+#	if _DEFAULT_SOURCE
+#		define JSTR_HAS_FREAD_UNLOCKED
+#		define JSTR_HAS_FWRITE_UNLOCKED
+#		define JSTR_HAS_FPUTC_UNLOCKED
+#		define JSTR_HAS_FGETC_UNLOCKED
+#	elif defined(_SVID_SOURCE) || defined(_BSD_SOURCE)
+#		define JSTR_HAS_FREAD_UNLOCKED
+#		define JSTR_HAS_FWRITE_UNLOCKED
+#		define JSTR_HAS_FPUTC_UNLOCKED
+#		define JSTR_HAS_FGETC_UNLOCKED
+#	endif /* _DEFAULT_SOURCE */
+#endif /* */
 
 #endif // JSTR_MACROS_H_DEF__
