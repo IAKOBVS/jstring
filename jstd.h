@@ -24,7 +24,7 @@ extern "C" {
 #	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)) && (_POSIX_C_SOURCE >= 200809L) || _GNU_SOURCE)
 #		define JSTD_HAS_STPCPY
 #	endif
-#endif
+#endif // __GLIBC__
 		
 #ifdef JSTD_HAS_STPCPY
 #	define jstd_stpcpy(dst, src) stpcpy(dst, src)
@@ -232,6 +232,7 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1, const char *JSTR_RESTRICT__ s2)
 {
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
+		default:
 		JSTR_CASE_LOWER
 			c = *s1;
 			break;
@@ -242,6 +243,7 @@ int jstd_casecmp(const char *JSTR_RESTRICT__ s1, const char *JSTR_RESTRICT__ s2)
 			return *s2;
 		}
 		switch (*s2) {
+		default:
 		JSTR_CASE_LOWER
 			if (*s2 != c)
 				return 1;
