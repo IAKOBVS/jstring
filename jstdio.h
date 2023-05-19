@@ -29,7 +29,11 @@ int jstdio_cat(char *JSTR_RESTRICT__ buf,
 	FILE *fp = fopen(filename, "r");
 	if (unlikely(!fp))
 		return 0;
+#ifdef JSTR_HAS_FREAD_UNLOCKED
+	fread_unlocked(JSTR_CAST__(void *) buf, 1, sizeof_file, fp);
+#else
 	fread(JSTR_CAST__(void *) buf, 1, sizeof_file, fp);
+#endif /* JSTR_HAS_FREAD_UNLOCKED */
 	fclose(fp);
 	*(buf + sizeof_file) = '\0';
 	return 1;
