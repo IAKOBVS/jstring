@@ -19,12 +19,6 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif // __cpluslus
-
-#ifdef __GLIBC__
-#	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)) && (_POSIX_C_SOURCE >= 200809L) || _GNU_SOURCE)
-#		define JSTD_HAS_STPCPY
-#	endif
-#endif // __GLIBC__
 		
 #ifdef JSTD_HAS_STPCPY
 #	define jstd_stpcpy(dst, src) stpcpy(dst, src)

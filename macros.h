@@ -413,5 +413,11 @@ extern "C" {
 #		define JSTR_HAS_FGETC_UNLOCKED
 #	endif /* _DEFAULT_SOURCE */
 #endif /* */
+	 
+#ifdef __GLIBC__
+#	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)) && (_POSIX_C_SOURCE >= 200809L) || _GNU_SOURCE)
+#		define JSTD_HAS_STPCPY
+#	endif
+#endif // __GLIBC__
 
 #endif // JSTR_MACROS_H_DEF__
