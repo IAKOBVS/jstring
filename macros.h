@@ -1,18 +1,18 @@
-#ifndef JSTR_MACROS_H_DEF__
-#define JSTR_MACROS_H_DEF__
+#ifndef JSTR_MACROS_H_DEF
+#define JSTR_MACROS_H_DEF
 
 #ifdef __cplusplus
-#	define JSTR_NOEXCEPT__ noexcept
+#	define JSTR_NOEXCEPT noexcept
 #else
-#	define JSTR_NOEXCEPT__
+#	define JSTR_NOEXCEPT
 #endif
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) || defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-#	define JSTR_WARN_UNUSED__ __attribute__((warn_unused_result))
+#	define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
 #elif defined(__attribute_warn_unused_result__)
-#	define JSTR_WARN_UNUSED__ __attribute_warn_unused_result__
+#	define JSTR_WARN_UNUSED __attribute_warn_unused_result__
 #else
-#	define JSTR_WARN_UNUSED__
+#	define JSTR_WARN_UNUSED
 #endif // __attribute__unused
 
 #if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
@@ -54,15 +54,15 @@
 #endif // JSTR_ALIGN_POWER_OF_TWO
 
 #ifdef __cplusplus
-#	define JSTR_RESTRICT__
+#	define JSTR_RESTRICT
 #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-#	define JSTR_RESTRICT__ restrict
+#	define JSTR_RESTRICT restrict
 #elif defined(__GNUC__) || defined(__clang__)
-#	define JSTR_RESTRICT__ __restrict__
+#	define JSTR_RESTRICT __restrict__
 #elif defined(_MSC_VER)
-#	define JSTR_RESTRICT__ __restrict
+#	define JSTR_RESTRICT __restrict
 #else
-#	define JSTR_RESTRICT__
+#	define JSTR_RESTRICT
 #endif // restrict
 
 #if defined(__PRETTY_FUNCTION__)
@@ -84,31 +84,31 @@
 #endif // __has_builtin(__builtin_expect)
 
 #if defined(__GNUC__) || defined(__clang__)
-#	define JSTR_INLINE__ __attribute__((always_inline)) inline
+#	define JSTR_INLINE __attribute__((always_inline)) inline
 #	if __has_attribute(pure)
 #		define PURE __attribute__((pure))
 #	else
 #		define PURE
 #	endif // PURE
 #	if __has_attribute(const)
-#		define JSTR_CONST__ __attribute__((const))
+#		define JSTR_CONST __attribute__((const))
 #	else
-#		define JSTR_CONST__
-#	endif // JSTR_CONST__
+#		define JSTR_CONST
+#	endif // JSTR_CONST
 #	if __has_attribute(flatten)
 #		define FLATTEN __attribute__((flatten))
 #	else
 #		define FLATTEN
 #	endif // FLATTEN
 #elif defined(_MSC_VER)
-#	define JSTR_INLINE__ __forceinline inline
+#	define JSTR_INLINE __forceinline inline
 #	define PURE __declspec(noalias)
-#	define JSTR_CONST__ __declspec(restrict)
+#	define JSTR_CONST __declspec(restrict)
 #	define FLATTEN
 #else
-#	define JSTR_INLINE__ inline
+#	define JSTR_INLINE inline
 #	define PURE
-#	define JSTR_CONST__
+#	define JSTR_CONST
 #	define FLATTEN
 #endif // __GNUC__ || __clang__ || _MSC_VER
 
@@ -124,10 +124,10 @@ extern "C" {
 #	endif
 
 #	ifdef JSTR_64_BIT
-		JSTR_INLINE__
-		JSTR_CONST__
-		JSTR_WARN_UNUSED__
-		uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
+		JSTR_INLINE
+		JSTR_CONST
+		JSTR_WARN_UNUSED
+		uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
 		{
 			return 1ull << (64 - __builtin_clzll(x - 1));
 		}
@@ -138,10 +138,10 @@ extern "C" {
 #	if __has_builtin(__builtin_clz)
 
 #	ifdef JSTR_32_BIT
-		JSTR_INLINE__
-		JSTR_CONST__
-		JSTR_WARN_UNUSED__
-		uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
+		JSTR_INLINE
+		JSTR_CONST
+		JSTR_WARN_UNUSED
+		uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 		{
 			return 1 << (32 - __builtin_clz(x - 1));
 		}
@@ -161,10 +161,10 @@ extern "C" {
 #	endif
 
 #	ifdef JSTR_32_BIT
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE
+	JSTR_CONST
+	JSTR_WARN_UNUSED
+	uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 	{
 		unsigned long index;
 		_BitScanReverse(&index, x - 1);
@@ -174,10 +174,10 @@ extern "C" {
 #	endif // JSTR_32_BIT
 
 #	ifdef JSTR_64_BIT
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE
+	JSTR_CONST
+	JSTR_WARN_UNUSED
+	uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
 	{
 		unsigned long index;
 		_BitScanReverse64(&index, x - 1);
@@ -190,10 +190,10 @@ extern "C" {
 
 #	ifdef JSTR_32_BIT
 
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE
+	JSTR_CONST
+	JSTR_WARN_UNUSED
+	size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT
 	{
 		--x;
 		x |= x >> 1;
@@ -208,10 +208,10 @@ extern "C" {
 
 #	ifdef JSTR_64_BIT
 
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE
+	JSTR_CONST
+	JSTR_WARN_UNUSED
+	size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
 	{
 		--x;
 		x |= x >> 1;
@@ -234,10 +234,10 @@ extern "C" {
 
 #include <type_traits>
 
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE
+	JSTR_CONST
+	JSTR_WARN_UNUSED
+	static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT
 	{
 		--x;
 		x |= x >> 1;
@@ -248,10 +248,10 @@ extern "C" {
 		return x + 1;
 	}
 
-	JSTR_INLINE__
-	JSTR_CONST__
-	JSTR_WARN_UNUSED__
-	static constexpr std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT__
+	JSTR_INLINE
+	JSTR_CONST
+	JSTR_WARN_UNUSED
+	static constexpr std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT
 	{
 		--x;
 		x |= x >> 1;
@@ -264,9 +264,9 @@ extern "C" {
 	}
 
 	template <typename T>
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	JSTR_CONST__
+	JSTR_INLINE
+	JSTR_WARN_UNUSED
+	JSTR_CONST
 	static std::size_t JSTR_NEXT_POW2_32(T x)
 	{
 		if 
@@ -279,9 +279,9 @@ extern "C" {
 	}
 
 	template <typename T>
-	JSTR_INLINE__
-	JSTR_WARN_UNUSED__
-	JSTR_CONST__
+	JSTR_INLINE
+	JSTR_WARN_UNUSED
+	JSTR_CONST
 	static std::size_t JSTR_NEXT_POW2_64(T x)
 	{
 		if 
@@ -384,20 +384,20 @@ extern "C" {
 #define JSTR_CASE_WHITESPACE case '\n': case '\t': case '\r': case ' ':
 	 
 #ifdef __cplusplus
-#	define JSTR_PRIVATE__ private:
-#	define JSTR_PUBLIC__ public:
-#	define JSTR_CAST__(T) (T)
-#	define JSTR_CPP_CONST__ const
+#	define JSTR_PRIVATE private:
+#	define JSTR_PUBLIC public:
+#	define JSTR_CAST(T) (T)
+#	define JSTR_CPP_CONST const
 #else
-#	define JSTR_CAST__(T)
-#	define JSTR_PRIVATE__
-#	define JSTR_PUBLIC__
-#	define JSTR_CPP_CONST__
+#	define JSTR_CAST(T)
+#	define JSTR_PRIVATE
+#	define JSTR_PUBLIC
+#	define JSTR_CPP_CONST
 #endif // __cplusplus
 
 #if defined(_GNU_SOURCE)
-#	define JSTR_HAS_MEMMEM__
-#	define JSTR_HAS_MEMRCHR__
+#	define JSTR_HAS_MEMMEM
+#	define JSTR_HAS_MEMRCHR
 #endif // JSTR_HAS_MEMRCHR__
 
 #if __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 19
@@ -415,9 +415,9 @@ extern "C" {
 #endif /* */
 	 
 #ifdef __GLIBC__
-#	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)) && (_POSIX_C_SOURCE >= 200809L) || _GNU_SOURCE)
+#	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)) && (_POSIX_C_SOURCE >= 200809L) || defined(_GNU_SOURCE))
 #		define JSTD_HAS_STPCPY
 #	endif
 #endif // __GLIBC__
 
-#endif // JSTR_MACROS_H_DEF__
+#endif // JSTR_MACROS_H_DEF
