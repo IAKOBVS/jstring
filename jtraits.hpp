@@ -1,5 +1,5 @@
-#ifndef JTRAITS_DEF_H
-#define JTRAITS_DEF_H
+#ifndef JTRAITS_H_DEF
+#define JTRAITS_H_DEF
 
 #include "macros.h"
 
@@ -100,4 +100,4 @@ JSTR_INLINE static constexpr void assert_are_same(Arg &&, Args &&...) JSTR_NOEXC
 
 }
 
-#endif // JTRAITS_DEF_H
+#endif // JTRAITS_H_DEF

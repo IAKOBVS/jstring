@@ -1,5 +1,5 @@
-#ifndef JSTD_DEF_H__
-#define JSTD_DEF_H__
+#ifndef JSTD_H_DEF
+#define JSTD_H_DEF
 
 #ifdef __cplusplus
 #	include <cstddef>
@@ -416,9 +416,9 @@ int jstd_memreplace(char **JSTR_RESTRICT s,
 		    const char *JSTR_RESTRICT replace,
 		    size_t *ssz, size_t *scap) JSTR_NOEXCEPT
 {
-	char *JSTR_RESTRICT mtc;
-	size_t slen = strlen(search);
-	size_t rlen = strlen(replace);
+	char *mtc;
+	const size_t slen = strlen(search);
+	const size_t rlen = strlen(replace);
 	if ((mtc = JSTR_CAST(char *)
 #ifdef JSTR_HAS_MEMMEM
 	     memmem(*s, *ssz, search, slen)
@@ -439,15 +439,15 @@ int jstd_memreplace(char **JSTR_RESTRICT s,
 }
 
 JSTR_INLINE
-int jstd_memreplaceall(char **JSTR_RESTRICT s,
-		       const char *JSTR_RESTRICT search,
-		       const char *JSTR_RESTRICT replace,
-		       size_t *ssz, size_t *scap) JSTR_NOEXCEPT
+unsigned int jstd_memreplaceall(char **JSTR_RESTRICT s,
+				const char *JSTR_RESTRICT search,
+				const char *JSTR_RESTRICT replace,
+				size_t *ssz, size_t *scap) JSTR_NOEXCEPT
 {
-	char *JSTR_RESTRICT mtc;
-	size_t slen = strlen(search);
-	size_t rlen = strlen(replace);
-	int mtcd = 0;
+	char *mtc;
+	const size_t slen = strlen(search);
+	const size_t rlen = strlen(replace);
+	unsigned int mtcd = 0;
 	for (size_t mtcsz; (mtc = JSTR_CAST(char *)
 #ifdef JSTR_HAS_MEMMEM
 			    memmem(*s, *ssz, search, slen)
@@ -472,4 +472,4 @@ int jstd_memreplaceall(char **JSTR_RESTRICT s,
 }
 #endif // __cplusplus
 
-#endif // JSTD_DEF_H_
+#endif // JSTD_H_DEF

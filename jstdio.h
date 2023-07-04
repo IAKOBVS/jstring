@@ -1,5 +1,5 @@
-#ifndef JSTDIO_DEF_H
-#define JSTDIO_DEF_H
+#ifndef JSTDIO_H_DEF
+#define JSTDIO_H_DEF
 
 #include "macros.h"
 
@@ -54,4 +54,4 @@ int jstdio_dirof(char *JSTR_RESTRICT dirname) JSTR_NOEXCEPT
 }
 #endif
 
-#endif // JSTDIO_DEF_H
+#endif // JSTDIO_H_DEF

@@ -1,5 +1,5 @@
-#ifndef JSTR_H_DEF__
-#define JSTR_H_DEF__
+#ifndef JSTR_H_DEF
+#define JSTR_H_DEF
 
 /* rename to the right path */
 
@@ -1618,4 +1618,4 @@ jstring_t;
 
 #endif // ! __cplusplus : c macros
 
-#endif // JSTR_H_DEF__
+#endif // JSTR_H_DEF
