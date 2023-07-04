@@ -244,26 +244,26 @@ JSTR_CONST
 JSTR_WARN_UNUSED
 #ifdef JSTR_HAS_MEMMEM
 
-int jstd_count_s(const char *JSTR_RESTRICT haystack,
-		 size_t haystacklen,
-		 const char *JSTR_RESTRICT needle,
-		 size_t needlelen) JSTR_NOEXCEPT
+int jstd_count_s(const char *JSTR_RESTRICT hs,
+		 size_t hslen,
+		 const char *JSTR_RESTRICT ne,
+		 size_t nelen) JSTR_NOEXCEPT
 {
 	int count = 0;
-	for (const char *JSTR_RESTRICT old = haystack;
-	     (haystack = JSTR_CAST(char *) memmem(haystack, haystacklen, needle, needlelen));
-	     haystacklen -= (haystack - old), ++count)
+	for (const char *JSTR_RESTRICT old = hs;
+	     (hs = JSTR_CAST(char *) memmem(hs, hslen, ne, nelen));
+	     hslen -= (hs - old), ++count)
 		;
 	return count;
 }
 
 #else
 
-int jstd_count_s(const char *JSTR_RESTRICT haystack,
-		 const char *JSTR_RESTRICT needle) JSTR_NOEXCEPT
+int jstd_count_s(const char *JSTR_RESTRICT hs,
+		 const char *JSTR_RESTRICT ne) JSTR_NOEXCEPT
 {
 	int count = 0;
-	while ((haystack = JSTR_CAST(char *) strstr(haystack, needle)))
+	while ((hs = JSTR_CAST(char *) strstr(hs, ne)))
 		++count;
 	return count;
 }
@@ -411,10 +411,10 @@ char *jstd_strreplace_c(char *JSTR_RESTRICT s,
 }
 
 JSTR_INLINE
-int jstd_memreplace(char **JSTR_RESTRICT s,
-		    const char *JSTR_RESTRICT search,
-		    const char *JSTR_RESTRICT replace,
-		    size_t *ssz, size_t *scap) JSTR_NOEXCEPT
+int jstd_replace(char **JSTR_RESTRICT s,
+		 const char *JSTR_RESTRICT search,
+		 const char *JSTR_RESTRICT replace,
+		 size_t *ssz, size_t *scap) JSTR_NOEXCEPT
 {
 	char *mtc;
 	const size_t slen = strlen(search);
@@ -439,10 +439,10 @@ int jstd_memreplace(char **JSTR_RESTRICT s,
 }
 
 JSTR_INLINE
-unsigned int jstd_memreplaceall(char **JSTR_RESTRICT s,
-				const char *JSTR_RESTRICT search,
-				const char *JSTR_RESTRICT replace,
-				size_t *ssz, size_t *scap) JSTR_NOEXCEPT
+unsigned int jstd_replaceall(char **JSTR_RESTRICT s,
+			     const char *JSTR_RESTRICT search,
+			     const char *JSTR_RESTRICT replace,
+			     size_t *ssz, size_t *scap) JSTR_NOEXCEPT
 {
 	char *mtc;
 	const size_t slen = strlen(search);
