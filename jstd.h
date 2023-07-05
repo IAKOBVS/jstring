@@ -39,8 +39,8 @@ extern "C" {
 #else
 
 /*
-	return:
-	pointer to '\0' in DST
+	Return value:
+	pointer to '\0' in DST.
 */
 JSTD_INLINE
 JSTD_WARN_UNUSED
@@ -93,9 +93,11 @@ enum {
 };
 
 /*
-	return:
-	JSTD_RET_FAIL if malloc/realloc failure occurs
-	JSTD_RET_SUCCESS otherwise
+	Return value:
+
+	JSTD_RET_FAIL if malloc/realloc failure occurs;
+
+	JSTD_RET_SUCCESS otherwise.
 */
 JSTD_INLINE
 int jstd_alloc(char **JSTD_RESTRICT s,
@@ -111,8 +113,10 @@ int jstd_alloc(char **JSTD_RESTRICT s,
 }
 
 /*
-	return:
+	Return value:
+
 	JSTD_RET_FAIL if malloc/realloc failure occurs
+
 	JSTD_RET_SUCCESS otherwise
 */
 JSTD_INLINE
@@ -144,8 +148,10 @@ void jstd_appendmemf(char **JSTD_RESTRICT s,
 #define jstd_appendf(s, src, sz) jstd_appendmemf(s, src, strlen(src), sz)
 
 /*
-	return:
+	Return value:
+
 	JSTD_RET_FAIL if malloc/realloc failure occurs
+
 	JSTD_RET_SUCCESS otherwise
 */
 JSTD_INLINE
@@ -164,8 +170,9 @@ int jstd_appendmem(char **JSTD_RESTRICT s,
 #define jstd_append(s, src, sz, cap) jstd_appendmem(s, src, strlen(src), sz, cap)
 
 /*
-	return:
-	pointer to '\0' in DST
+	Return value:
+
+	Pointer to '\0' in DST.
 */
 JSTD_INLINE
 JSTD_WARN_UNUSED
@@ -287,8 +294,11 @@ void jstd_uncapitalize(char *JSTD_RESTRICT const s) JSTD_NOEXCEPT
 }
 
 /*
-	return:
-	occurences of C in S
+	Count occurences of C in S.
+
+	Return value:
+
+	Occurences of C in S.
 */
 JSTD_INLINE
 JSTD_CONST
@@ -304,7 +314,15 @@ int jstd_countc(const char *JSTD_RESTRICT s, const int c) JSTD_NOEXCEPT
 
 #ifndef JSTD_HAS_MEMRCHR
 
-/* memrchr */
+/*
+	Return pointer to last C in S.
+	
+	Return value:
+
+	pointer to last C;
+
+	NULL if not found.
+*/
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
@@ -328,8 +346,11 @@ char *jstd_memrchr(char *JSTD_RESTRICT s, const int c, size_t n) JSTD_NOEXCEPT
 #endif // ! JSTD_HAS_MEMRCHR
 
 /*
-	return:
-	occurences of NE in HS
+	Count occurences of NE in HS.
+
+	Return value:
+
+	occurences of NE in HS.
 */
 JSTD_INLINE
 JSTD_CONST
@@ -363,9 +384,13 @@ int jstd_counts(const char *JSTD_RESTRICT hs,
 #endif // __JSTD_HAS_MEMMEM
 
 /*
-	return:
-	0 if strings match
-	non-zero otherwise
+	Compare S1 with S2 case-insensitively.
+
+	Return value:
+
+	0 if strings match;
+
+	non-zero otherwise.
 */
 JSTD_INLINE
 JSTD_CONST
@@ -400,8 +425,11 @@ int jstd_casecmp(const char *JSTD_RESTRICT s1, const char *JSTD_RESTRICT s2) JST
 	}
 }
 
+/*
+	Reverse S.
+*/
 JSTD_INLINE
-void jstd_memrev(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
+void jstd_revmem(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
 {
 	if (unlikely(!slen))
 		return;
@@ -414,8 +442,8 @@ void jstd_memrev(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
 	} while (s < end);
 }
 
-#define jstd_strrev(s) \
-	jstd_memrev(s, strlen(s))
+#define jstd_revstr(s) \
+	jstd_revmem(s, strlen(s))
 
 JSTD_INLINE
 void jstd_swap(char **JSTD_RESTRICT s1, char **JSTD_RESTRICT s2) JSTD_NOEXCEPT
@@ -426,8 +454,11 @@ void jstd_swap(char **JSTD_RESTRICT s1, char **JSTD_RESTRICT s2) JSTD_NOEXCEPT
 }
 
 /*
-	return:
-	pinter to '\0' in S
+   	Remove all C in S.
+
+	Return value:
+
+	Pointer to '\0' in S.
 */
 JSTD_INLINE
 char *jstd_stripp(char *JSTD_RESTRICT s, const int c)
@@ -442,9 +473,13 @@ char *jstd_stripp(char *JSTD_RESTRICT s, const int c)
 }
 
 /*
-	return:
-	pointer to '\0' in S
-	NULL if REJECT is empty
+	Remove characters in REJECT in S.
+
+	Return value:
+
+	Pointer to '\0' in S;
+
+	NULL if REJECT is empty.
 */
 JSTD_INLINE
 char *jstd_stripspnp(char *JSTD_RESTRICT s, const char *JSTD_RESTRICT reject)
@@ -481,9 +516,13 @@ char *jstd_stripspnp(char *JSTD_RESTRICT s, const char *JSTD_RESTRICT reject)
 }
 
 /*
-	return:
-	pointer to '\0' in S
-	NULL if SLEN is 0
+	Trim spaces [ \t] from end of S.
+
+	Return value:
+
+	Pointer to '\0' in S;
+
+	NULL if SLEN is 0.
 */
 JSTD_INLINE
 char *jstd_trimpmem(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
@@ -508,6 +547,9 @@ char *jstd_trimpmem(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
 #define jstd_trimp(s) \
 	jstd_trimpmem(s, strlen(s))
 
+/*
+	Replace first SEARCH in REPLACE.
+*/
 JSTD_INLINE
 void jstd_replacec(char *JSTD_RESTRICT s,
 		   const char search,
@@ -523,6 +565,9 @@ void jstd_replacec(char *JSTD_RESTRICT s,
 	}
 }
 
+/*
+	Replace all SEARCH in REPLACE.
+*/
 JSTD_INLINE
 void jstd_replacecall(char *JSTD_RESTRICT s,
 		      const char search,
@@ -548,9 +593,13 @@ void jstd_replacecall(char *JSTD_RESTRICT s,
 	} while (0)
 
 /*
-	return:
-	JSTD_RET_FAIL if malloc/realloc failure occurs
-	JSTD_RET_SUCCESS otherwise
+	Replace first SEARCH in S with REPLACE.
+
+	Return value:
+
+	JSTD_RET_FAIL if malloc/realloc failure occurs;
+
+	JSTD_RET_SUCCESS otherwise.
 */
 JSTD_INLINE
 int jstd_replace(char **JSTD_RESTRICT s,
@@ -576,9 +625,13 @@ int jstd_replace(char **JSTD_RESTRICT s,
 }
 
 /*
-	return:
-	JSTD_RET_FAIL if malloc/realloc failure occurs
-	JSTD_RET_SUCCESS otherwise
+   	Replace all SEARCH in S with REPLACE.
+
+	Return value:
+
+	JSTD_RET_FAIL if malloc/realloc failure occurs;
+
+	JSTD_RET_SUCCESS otherwise.
 */
 JSTD_INLINE
 int jstd_replaceall(char **JSTD_RESTRICT s,
