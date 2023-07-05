@@ -316,7 +316,7 @@ int jstd_countc(const char *JSTD_RESTRICT s, const int c) JSTD_NOEXCEPT
 
 /*
 	Return pointer to last C in S.
-	
+
 	Return value:
 
 	pointer to last C;
@@ -454,7 +454,7 @@ void jstd_swap(char **JSTD_RESTRICT s1, char **JSTD_RESTRICT s2) JSTD_NOEXCEPT
 }
 
 /*
-   	Remove all C in S.
+	Remove all C in S.
 
 	Return value:
 
@@ -625,7 +625,7 @@ int jstd_replace(char **JSTD_RESTRICT s,
 }
 
 /*
-   	Replace all SEARCH in S with REPLACE.
+	Replace all SEARCH in S with REPLACE.
 
 	Return value:
 
