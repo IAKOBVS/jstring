@@ -1,0 +1,2 @@
+#!/bin/sh
+sed "s/jstd_/$1_/g" jstd.h > jstd"$1_".h
