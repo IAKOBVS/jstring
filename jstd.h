@@ -436,7 +436,7 @@ char *jstd_stpstripspn(char *JSTR_RESTRICT s, const char *JSTR_RESTRICT reject)
 }
 
 JSTR_INLINE
-char *jstd_memptrim(char *JSTR_RESTRICT s, size_t slen) JSTR_NOEXCEPT
+char *jstd_trimpmem(char *JSTR_RESTRICT s, size_t slen) JSTR_NOEXCEPT
 {
 	if (unlikely(!slen))
 		return NULL;
@@ -455,8 +455,8 @@ char *jstd_memptrim(char *JSTR_RESTRICT s, size_t slen) JSTR_NOEXCEPT
 	return end;
 }
 
-#define jstd_stptrim(s) \
-	jstd_memptrim(s, strlen(s))
+#define jstd_trimstrp(s) \
+	jstd_trimpmem(s, strlen(s))
 
 JSTR_INLINE
 void jstd_replacec(char *JSTR_RESTRICT s,
