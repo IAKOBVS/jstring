@@ -64,6 +64,18 @@ char *jstd_stpcpy(char *JSTD_RST dst, const char *JSTD_RST src) JSTD_NOEX
 		}                                                                  \
 	} while (0)
 
+#define JSTD_GROW_SMALL(p, oldcap, newcap) \
+	do {                               \
+		(oldcap) *= 2;             \
+	} while ((oldcap) < (newcap));
+
+#define JSTD_REALLOC_SMALL(p, oldcap, newcap, malloc_fail)  \
+	do {                                                \
+		JSTD_GROW_SMALL(p, oldcap, newcap);         \
+		(p) = JSTD_CAST(char *) realloc(p, newcap); \
+		JSTD_MALLOC_ERR(p, malloc_fail);            \
+	} while (0)
+
 #define JSTD_GROW(p, oldcap, newcap)                  \
 	do {                                          \
 		do {                                  \
@@ -159,7 +171,7 @@ int jstd_appendmem(char **JSTD_RST dst,
 		   size_t *JSTD_RST cap) JSTD_NOEX
 {
 	if (*cap < *sz + srcsz)
-		JSTD_REALLOC(*dst, *cap, *sz + srcsz, return JSTD_RET_FAIL);
+		JSTD_REALLOC_SMALL(*dst, *cap, *sz + srcsz, return JSTD_RET_FAIL);
 	jstd_appendmemf(dst, src, srcsz, sz);
 	return JSTD_RET_SUCCESS;
 }
@@ -569,17 +581,6 @@ void jstd_replacecall(char *JSTD_RST s,
 	}
 }
 
-#define JSTD_REPLACE(malloc_fail)                                              \
-	do {                                                                   \
-		if (*scap < *ssz + rlen) {                                     \
-			JSTD_REALLOC(*s, *scap, *ssz + rlen, malloc_fail);     \
-			mtc = *s + mtcsz;                                      \
-		}                                                              \
-		memmove(mtc + rlen, mtc + slen, (*s + *ssz + 1) - mtc + slen); \
-		memcpy(mtc, replace, rlen);                                    \
-		*ssz += (rlen - slen);                                         \
-	} while (0)
-
 /*
   Replace first SEARCH in S with REPLACE.
   Return value:
@@ -604,6 +605,18 @@ int jstd_replace(char **JSTD_RST s,
 #endif
 	     )) {
 		const size_t mtcsz = mtc - *s;
+
+#define JSTD_REPLACE(malloc_fail)                                              \
+	do {                                                                   \
+		if (*scap < *ssz + rlen) {                                     \
+			JSTD_REALLOC(*s, *scap, *ssz + rlen, malloc_fail);     \
+			mtc = *s + mtcsz;                                      \
+		}                                                              \
+		memmove(mtc + rlen, mtc + slen, (*s + *ssz + 1) - mtc + slen); \
+		memcpy(mtc, replace, rlen);                                    \
+		*ssz += (rlen - slen);                                         \
+	} while (0)
+
 		JSTD_REPLACE(return JSTD_RET_FAIL);
 	}
 	return JSTD_RET_SUCCESS;
