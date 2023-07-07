@@ -22,11 +22,13 @@ extern "C" {
 
 #ifndef __LINE__
 #	define __LINE__
-#endif
+#endif /* __LINE__ */
 
 #ifndef __FILE__
 #	define __FILE__
-#endif
+#endif /* __FILE__ */
+
+#define JSTD_RST JSTD_RESTRICT
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,7 +46,7 @@ extern "C" {
 */
 JSTD_INLINE
 JSTD_WARN_UNUSED
-char *jstd_stpcpy(char *JSTD_RESTRICT dst, const char *JSTD_RESTRICT src) JSTD_NOEXCEPT
+char *jstd_stpcpy(char *JSTD_RST dst, const char *JSTD_RST src) JSTD_NOEXCEPT
 {
 	const size_t slen = strlen(src);
 	memcpy(dst, src, slen + 1);
@@ -100,10 +102,10 @@ enum {
 	JSTD_RET_SUCCESS otherwise.
 */
 JSTD_INLINE
-int jstd_alloc(char **JSTD_RESTRICT s,
+int jstd_alloc(char **JSTD_RST s,
 	       const size_t newsz,
-	       size_t *JSTD_RESTRICT sz,
-	       size_t *JSTD_RESTRICT cap)
+	       size_t *JSTD_RST sz,
+	       size_t *JSTD_RST cap)
 {
 	*s = JSTD_CAST(char *) malloc(newsz * 2);
 	JSTD_MALLOC_ERR(*s, return JSTD_RET_FAIL);
@@ -120,32 +122,32 @@ int jstd_alloc(char **JSTD_RESTRICT s,
 	JSTD_RET_SUCCESS otherwise
 */
 JSTD_INLINE
-int jstd_alloc_appendmem(char **JSTD_RESTRICT s,
-			 const char *JSTD_RESTRICT src,
+int jstd_alloc_appendmem(char **JSTD_RST dst,
+			 const char *JSTD_RST src,
 			 const size_t srcsz,
-			 size_t *JSTD_RESTRICT sz,
-			 size_t *JSTD_RESTRICT cap)
+			 size_t *JSTD_RST sz,
+			 size_t *JSTD_RST cap)
 {
-	jstd_alloc(s, srcsz * 2, sz, cap);
-	if (unlikely(!*s))
+	jstd_alloc(dst, srcsz * 2, sz, cap);
+	if (unlikely(!*dst))
 		return JSTD_RET_FAIL;
-	memcpy(*s, src, srcsz + 1);
+	memcpy(*dst, src, srcsz + 1);
 	return JSTD_RET_SUCCESS;
 }
 
-#define jstd_alloc_append(s, src, sz, cap) jstd_alloc_appendmem(s, src, strlen(src), sz, cap);
+#define jstd_alloc_append(dst, src, sz, cap) jstd_alloc_appendmem(dst, src, strlen(src), sz, cap);
 
 JSTD_INLINE
-void jstd_appendmemf(char **JSTD_RESTRICT s,
-		     const char *JSTD_RESTRICT src,
+void jstd_appendmemf(char **JSTD_RST dst,
+		     const char *JSTD_RST src,
 		     const size_t srcsz,
-		     size_t *JSTD_RESTRICT sz)
+		     size_t *JSTD_RST sz)
 {
-	memcpy(*s, src, srcsz + 1);
+	memcpy(*dst, src, srcsz + 1);
 	*sz += srcsz;
 }
 
-#define jstd_appendf(s, src, sz) jstd_appendmemf(s, src, strlen(src), sz)
+#define jstd_appendf(dst, src, sz) jstd_appendmemf(dst, src, strlen(src), sz)
 
 /*
 	Return value:
@@ -155,19 +157,19 @@ void jstd_appendmemf(char **JSTD_RESTRICT s,
 	JSTD_RET_SUCCESS otherwise
 */
 JSTD_INLINE
-int jstd_appendmem(char **JSTD_RESTRICT s,
-		   const char *JSTD_RESTRICT src,
+int jstd_appendmem(char **JSTD_RST dst,
+		   const char *JSTD_RST src,
 		   const size_t srcsz,
-		   size_t *JSTD_RESTRICT sz,
-		   size_t *JSTD_RESTRICT cap)
+		   size_t *JSTD_RST sz,
+		   size_t *JSTD_RST cap)
 {
 	if (*cap < *sz + srcsz)
-		JSTD_REALLOC(*s, *cap, *sz + srcsz, return JSTD_RET_FAIL);
-	jstd_appendmemf(s, src, srcsz, sz);
+		JSTD_REALLOC(*dst, *cap, *sz + srcsz, return JSTD_RET_FAIL);
+	jstd_appendmemf(dst, src, srcsz, sz);
 	return JSTD_RET_SUCCESS;
 }
 
-#define jstd_append(s, src, sz, cap) jstd_appendmem(s, src, strlen(src), sz, cap)
+#define jstd_append(dst, src, sz, cap) jstd_appendmem(dst, src, strlen(src), sz, cap)
 
 /*
 	Return value:
@@ -176,7 +178,7 @@ int jstd_appendmem(char **JSTD_RESTRICT s,
 */
 JSTD_INLINE
 JSTD_WARN_UNUSED
-char *jstd_stpcat(char *JSTD_RESTRICT dst, const char *JSTD_RESTRICT src) JSTD_NOEXCEPT
+char *jstd_stpcat(char *JSTD_RST dst, const char *JSTD_RST src) JSTD_NOEXCEPT
 {
 	dst += strlen(dst);
 	return jstd_stpcpy(dst, src);
@@ -185,7 +187,7 @@ char *jstd_stpcat(char *JSTD_RESTRICT dst, const char *JSTD_RESTRICT src) JSTD_N
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-int jstd_arealnum(const char *JSTD_RESTRICT s) JSTD_NOEXCEPT
+int jstd_arealnum(const char *JSTD_RST s) JSTD_NOEXCEPT
 {
 	for (;; ++s)
 		switch (*s) {
@@ -200,7 +202,7 @@ int jstd_arealnum(const char *JSTD_RESTRICT s) JSTD_NOEXCEPT
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-int jstd_arealpha(const char *JSTD_RESTRICT s) JSTD_NOEXCEPT
+int jstd_arealpha(const char *JSTD_RST s) JSTD_NOEXCEPT
 {
 	for (;; ++s)
 		switch (*s) {
@@ -215,7 +217,7 @@ int jstd_arealpha(const char *JSTD_RESTRICT s) JSTD_NOEXCEPT
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-int jstd_aredigits(const char *JSTD_RESTRICT s) JSTD_NOEXCEPT
+int jstd_aredigits(const char *JSTD_RST s) JSTD_NOEXCEPT
 {
 	for (;; ++s)
 		switch (*s) {
@@ -252,7 +254,7 @@ int jstd_tolower(const int c) JSTD_NOEXCEPT
 }
 
 JSTD_INLINE
-void jstd_touppers(char *JSTD_RESTRICT s) JSTD_NOEXCEPT
+void jstd_touppers(char *JSTD_RST s) JSTD_NOEXCEPT
 {
 	for (;; ++s) {
 		switch (*s) {
@@ -267,7 +269,7 @@ void jstd_touppers(char *JSTD_RESTRICT s) JSTD_NOEXCEPT
 }
 
 JSTD_INLINE
-void jstd_tolowers(char *JSTD_RESTRICT s) JSTD_NOEXCEPT
+void jstd_tolowers(char *JSTD_RST s) JSTD_NOEXCEPT
 {
 	for (;; ++s) {
 		switch (*s) {
@@ -282,13 +284,13 @@ void jstd_tolowers(char *JSTD_RESTRICT s) JSTD_NOEXCEPT
 }
 
 JSTD_INLINE
-void jstd_capitalize(char *JSTD_RESTRICT const s) JSTD_NOEXCEPT
+void jstd_capitalize(char *JSTD_RST const s) JSTD_NOEXCEPT
 {
 	*s = jstd_toupper(*s);
 }
 
 JSTD_INLINE
-void jstd_uncapitalize(char *JSTD_RESTRICT const s) JSTD_NOEXCEPT
+void jstd_uncapitalize(char *JSTD_RST const s) JSTD_NOEXCEPT
 {
 	*s = jstd_tolower(*s);
 }
@@ -303,7 +305,7 @@ void jstd_uncapitalize(char *JSTD_RESTRICT const s) JSTD_NOEXCEPT
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-int jstd_countc(const char *JSTD_RESTRICT s, const int c) JSTD_NOEXCEPT
+int jstd_countc(const char *JSTD_RST s, const int c) JSTD_NOEXCEPT
 {
 	int count = 0;
 	while (*s)
@@ -326,11 +328,11 @@ int jstd_countc(const char *JSTD_RESTRICT s, const int c) JSTD_NOEXCEPT
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-char *jstd_memrchr(char *JSTD_RESTRICT s, const int c, size_t n) JSTD_NOEXCEPT
+char *jstd_memrchr(char *JSTD_RST s, const int c, size_t n) JSTD_NOEXCEPT
 {
 	if (unlikely(!n))
 		return NULL;
-	char *JSTD_RESTRICT end = s + n - 1;
+	char *JSTD_RST end = s + n - 1;
 	do
 		if (*end == c)
 			return end;
@@ -357,13 +359,13 @@ JSTD_CONST
 JSTD_WARN_UNUSED
 #ifdef JSTD_HAS_MEMMEM
 
-int jstd_counts(const char *JSTD_RESTRICT hs,
+int jstd_counts(const char *JSTD_RST hs,
 		size_t hslen,
-		const char *JSTD_RESTRICT ne,
+		const char *JSTD_RST ne,
 		size_t nelen) JSTD_NOEXCEPT
 {
 	int count = 0;
-	for (const char *JSTD_RESTRICT old = hs;
+	for (const char *JSTD_RST old = hs;
 	     (hs = JSTD_CAST(char *) memmem(hs, hslen, ne, nelen));
 	     hslen -= (hs - old), ++count)
 		;
@@ -372,8 +374,8 @@ int jstd_counts(const char *JSTD_RESTRICT hs,
 
 #else
 
-int jstd_counts(const char *JSTD_RESTRICT hs,
-		const char *JSTD_RESTRICT ne) JSTD_NOEXCEPT
+int jstd_counts(const char *JSTD_RST hs,
+		const char *JSTD_RST ne) JSTD_NOEXCEPT
 {
 	int count = 0;
 	while ((hs = JSTD_CAST(char *) strstr(hs, ne)))
@@ -395,7 +397,7 @@ int jstd_counts(const char *JSTD_RESTRICT hs,
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-int jstd_casecmp(const char *JSTD_RESTRICT s1, const char *JSTD_RESTRICT s2) JSTD_NOEXCEPT
+int jstd_casecmp(const char *JSTD_RST s1, const char *JSTD_RST s2) JSTD_NOEXCEPT
 {
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
@@ -429,11 +431,11 @@ int jstd_casecmp(const char *JSTD_RESTRICT s1, const char *JSTD_RESTRICT s2) JST
 	Reverse S.
 */
 JSTD_INLINE
-void jstd_revmem(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
+void jstd_revmem(char *JSTD_RST s, size_t slen) JSTD_NOEXCEPT
 {
 	if (unlikely(!slen))
 		return;
-	char *JSTD_RESTRICT end = s + slen - 1;
+	char *JSTD_RST end = s + slen - 1;
 	char tmp;
 	do {
 		tmp = *s;
@@ -446,9 +448,9 @@ void jstd_revmem(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
 	jstd_revmem(s, strlen(s))
 
 JSTD_INLINE
-void jstd_swap(char **JSTD_RESTRICT s1, char **JSTD_RESTRICT s2) JSTD_NOEXCEPT
+void jstd_swap(char **JSTD_RST s1, char **JSTD_RST s2) JSTD_NOEXCEPT
 {
-	char *JSTD_RESTRICT const tmp = *s1;
+	char *JSTD_RST const tmp = *s1;
 	*s1 = *s2;
 	*s2 = tmp;
 }
@@ -461,7 +463,7 @@ void jstd_swap(char **JSTD_RESTRICT s1, char **JSTD_RESTRICT s2) JSTD_NOEXCEPT
 	Pointer to '\0' in S.
 */
 JSTD_INLINE
-char *jstd_stripp(char *JSTD_RESTRICT s, const int c)
+char *jstd_stripp(char *JSTD_RST s, const int c)
 {
 	for (const char *src = s;; ++src)
 		if (*src != c)
@@ -482,7 +484,7 @@ char *jstd_stripp(char *JSTD_RESTRICT s, const int c)
 	NULL if REJECT is empty.
 */
 JSTD_INLINE
-char *jstd_stripspnp(char *JSTD_RESTRICT s, const char *JSTD_RESTRICT reject)
+char *jstd_stripspnp(char *JSTD_RST s, const char *JSTD_RST reject)
 {
 	if (unlikely(reject[0] == '\0'))
 		return NULL;
@@ -500,7 +502,7 @@ char *jstd_stripspnp(char *JSTD_RESTRICT s, const char *JSTD_RESTRICT reject)
 	do
 		table[(unsigned char)*reject++] = REJECT;
 	while (*reject);
-	for (const unsigned char *JSTD_RESTRICT src = (unsigned char *)s;;
+	for (const unsigned char *JSTD_RST src = (unsigned char *)s;;
 	     ++src) {
 		switch (table[*src]) {
 		case ACCEPT:
@@ -525,11 +527,11 @@ char *jstd_stripspnp(char *JSTD_RESTRICT s, const char *JSTD_RESTRICT reject)
 	NULL if SLEN is 0.
 */
 JSTD_INLINE
-char *jstd_trimpmem(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
+char *jstd_trimpmem(char *JSTD_RST s, size_t slen) JSTD_NOEXCEPT
 {
 	if (unlikely(!slen))
 		return NULL;
-	char *JSTD_RESTRICT end = s + slen - 1;
+	char *JSTD_RST end = s + slen - 1;
 	do {
 		switch (*end) {
 		case '\t':
@@ -551,7 +553,7 @@ char *jstd_trimpmem(char *JSTD_RESTRICT s, size_t slen) JSTD_NOEXCEPT
 	Replace first SEARCH in REPLACE.
 */
 JSTD_INLINE
-void jstd_replacec(char *JSTD_RESTRICT s,
+void jstd_replacec(char *JSTD_RST s,
 		   const char search,
 		   const char replace) JSTD_NOEXCEPT
 {
@@ -569,7 +571,7 @@ void jstd_replacec(char *JSTD_RESTRICT s,
 	Replace all SEARCH in REPLACE.
 */
 JSTD_INLINE
-void jstd_replacecall(char *JSTD_RESTRICT s,
+void jstd_replacecall(char *JSTD_RST s,
 		      const char search,
 		      const char replace) JSTD_NOEXCEPT
 {
@@ -602,11 +604,11 @@ void jstd_replacecall(char *JSTD_RESTRICT s,
 	JSTD_RET_SUCCESS otherwise.
 */
 JSTD_INLINE
-int jstd_replace(char **JSTD_RESTRICT s,
-		 const char *JSTD_RESTRICT search,
-		 const char *JSTD_RESTRICT replace,
-		 size_t *JSTD_RESTRICT ssz,
-		 size_t *JSTD_RESTRICT scap) JSTD_NOEXCEPT
+int jstd_replace(char **JSTD_RST s,
+		 const char *JSTD_RST search,
+		 const char *JSTD_RST replace,
+		 size_t *JSTD_RST ssz,
+		 size_t *JSTD_RST scap) JSTD_NOEXCEPT
 {
 	char *mtc;
 	const size_t slen = strlen(search);
@@ -634,11 +636,11 @@ int jstd_replace(char **JSTD_RESTRICT s,
 	JSTD_RET_SUCCESS otherwise.
 */
 JSTD_INLINE
-int jstd_replaceall(char **JSTD_RESTRICT s,
-		    const char *JSTD_RESTRICT search,
-		    const char *JSTD_RESTRICT replace,
-		    size_t *JSTD_RESTRICT ssz,
-		    size_t *JSTD_RESTRICT scap) JSTD_NOEXCEPT
+int jstd_replaceall(char **JSTD_RST s,
+		    const char *JSTD_RST search,
+		    const char *JSTD_RST replace,
+		    size_t *JSTD_RST ssz,
+		    size_t *JSTD_RST scap) JSTD_NOEXCEPT
 {
 	char *mtc;
 	const size_t slen = strlen(search);
@@ -661,5 +663,7 @@ int jstd_replaceall(char **JSTD_RESTRICT s,
 #ifdef __cplusplus
 }
 #endif // __cplusplus
+
+#undef JSTD_RST
 
 #endif // JSTD_H_DEF
