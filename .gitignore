@@ -3,4 +3,5 @@ t
 jstr.c
 jstr.cpp
 jstrp.c
+legacy
 *.gch
