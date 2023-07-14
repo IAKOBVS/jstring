@@ -1,9 +1,9 @@
-#!/ bin / sh
-if !test
-	"$1";
-then
-echo 'Usage: ./replace_namespace <namespace>' echo 'For example: ./replace_namespace j' echo 'jstd_ -> j_' exit
+#!/bin/sh
+if ! test "$1"; then
+	echo 'Usage: ./replace_namespace <namespace>'
+	echo 'For example: ./replace_namespace j'
+	echo 'jstd_ -> j_'
+	exit
 fi
-sed "s/jstd_/$1_/g; s/$1_macros.h/jstd_macros.h/g" jstd.h
-> jstd "_$1".h
-  echo "sed \"s/jstd_/$1_/g; s/$1_macros.h/jstd_macros.h/g\" jstd.h > jstd\"_$1\".h"
+sed "s/jstd_/$1_/g; s/$1_macros.h/jstd_macros.h/g" jstd.h > jstd"_$1".h
+echo "sed \"s/jstd_/$1_/g; s/$1_macros.h/jstd_macros.h/g\" jstd.h > jstd\"_$1\".h"
