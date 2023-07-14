@@ -652,12 +652,12 @@ int jstd_replaceall(char **JSTD_RST s,
 }
 
 #undef JSTD_REPLACE
-#undef JSTD_NOEX
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
+#undef JSTD_NOEX
 #undef JSTD_RST
 
 #endif // JSTD_H_DEF
