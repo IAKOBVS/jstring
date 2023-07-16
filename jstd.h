@@ -35,6 +35,11 @@ extern "C" {
 extern "C" {
 #endif // __cpluslus
 
+enum {
+	JSTD_RET_FAIL = -1,
+	JSTD_RET_SUCCESS = 0,
+};
+
 #ifdef JSTD_HAS_STPCPY
 
 #	define jstd_stpcpy(dst, src) stpcpy(dst, src)
@@ -103,10 +108,10 @@ char *jstd_stpcpy(char *JSTD_RST dst, const char *JSTD_RST src) JSTD_NOEX
 		JSTD_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
 
-enum {
-	JSTD_RET_FAIL = -1,
-	JSTD_RET_SUCCESS = 0,
-};
+#define jstd_declare_string(s, sz, cap) \
+	char *s;                        \
+	size_t sz;                      \
+	size_t cap
 
 /*
   Return value:
@@ -131,30 +136,30 @@ int jstd_alloc(char **JSTD_RST s,
 */
 JSTD_INLINE
 int jstd_alloc_appendmem(char **JSTD_RST dst,
+			 size_t *JSTD_RST dsz,
+			 size_t *JSTD_RST dcap,
 			 const char *JSTD_RST src,
-			 const size_t srcsz,
-			 size_t *JSTD_RST sz,
-			 size_t *JSTD_RST cap) JSTD_NOEX
+			 const size_t ssz) JSTD_NOEX
 {
-	jstd_alloc(dst, srcsz * 2, cap);
+	jstd_alloc(dst, ssz * 2, dcap);
 	if (unlikely(!*dst))
 		return JSTD_RET_FAIL;
-	*sz = srcsz;
-	memcpy(*dst, src, srcsz + 1);
+	*dsz = ssz;
+	memcpy(*dst, src, ssz + 1);
 	return JSTD_RET_SUCCESS;
 }
 
-#define jstd_alloc_append(dst, src, sz, cap) \
-	jstd_alloc_appendmem(dst, src, strlen(src), sz, cap);
+#define jstd_alloc_append(dst, sz, cap, src) \
+	jstd_alloc_appendmem(dst, sz, cap, src, strlen(src))
 
 JSTD_INLINE
 void jstd_appendmemf(char **JSTD_RST dst,
+		     size_t *JSTD_RST dsz,
 		     const char *JSTD_RST src,
-		     const size_t srcsz,
-		     size_t *JSTD_RST sz) JSTD_NOEX
+		     const size_t ssz) JSTD_NOEX
 {
-	memcpy(*dst, src, srcsz + 1);
-	*sz += srcsz;
+	memcpy(*dst, src, ssz + 1);
+	*dsz += ssz;
 }
 
 #define jstd_appendf(dst, src, sz) jstd_appendmemf(dst, src, strlen(src), sz)
@@ -172,9 +177,8 @@ int jstd_appendmem(char **JSTD_RST dst,
 		   size_t *JSTD_RST cap) JSTD_NOEX
 {
 	if (*cap < *sz + srcsz)
-		JSTD_REALLOC_SMALL(
-		*dst, *cap, *sz + srcsz, return JSTD_RET_FAIL);
-	jstd_appendmemf(dst, src, srcsz, sz);
+		JSTD_REALLOC_SMALL(*dst, *cap, *sz + srcsz, return JSTD_RET_FAIL);
+	jstd_appendmemf(dst, sz, src, srcsz);
 	return JSTD_RET_SUCCESS;
 }
 
@@ -577,10 +581,10 @@ void jstd_replacecall(char *JSTD_RST s,
 */
 JSTD_INLINE
 int jstd_replace(char **JSTD_RST s,
-		 const char *JSTD_RST search,
-		 const char *JSTD_RST replace,
 		 size_t *JSTD_RST ssz,
-		 size_t *JSTD_RST scap) JSTD_NOEX
+		 size_t *JSTD_RST scap,
+		 const char *JSTD_RST search,
+		 const char *JSTD_RST replace) JSTD_NOEX
 {
 	char *mtc;
 	char *tmp;
@@ -630,10 +634,10 @@ int jstd_replace(char **JSTD_RST s,
 */
 JSTD_INLINE
 int jstd_replaceall(char **JSTD_RST s,
-		    const char *JSTD_RST search,
-		    const char *JSTD_RST replace,
 		    size_t *JSTD_RST ssz,
-		    size_t *JSTD_RST scap) JSTD_NOEX
+		    size_t *JSTD_RST scap,
+		    const char *JSTD_RST search,
+		    const char *JSTD_RST replace) JSTD_NOEX
 {
 	char *mtc;
 	char *tmp;
