@@ -452,8 +452,7 @@ void jstd_swap(char **JSTD_RST s1, char **JSTD_RST s2) JSTD_NOEX
 JSTD_INLINE
 char *jstd_stripp(char *JSTD_RST s, const int c) JSTD_NOEX
 {
-	const char *src = s;
-	for (;; ++src)
+	for (const char *src = s;; ++src)
 		if (*src != c)
 			*s++ = *src;
 		else if (unlikely(*src == '\0'))
@@ -489,8 +488,7 @@ char *jstd_stripspnp(char *JSTD_RST s, const char *JSTD_RST reject) JSTD_NOEX
 	do
 		tbl[(unsigned char)*reject++] = REJECT;
 	while (*reject);
-	const unsigned char *JSTD_RST src = (unsigned char *)s;
-	for (;; ++src) {
+	for (const unsigned char *JSTD_RST src = (unsigned char *)s;; ++src) {
 		switch (tbl[*src]) {
 		case ACCEPT:
 			*s++ = *src;
@@ -565,8 +563,6 @@ void jstd_replacecall(char *JSTD_RST s,
 			break;
 	}
 }
-
-#include <math.h>
 
 /*
   Replace first SEARCH in S with REPLACE.
