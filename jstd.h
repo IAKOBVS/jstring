@@ -74,23 +74,22 @@ char *jstd_stpcpy(char *JSTD_RST dst, const char *JSTD_RST src) JSTD_NOEX
 		JSTD_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
 
-#define JSTD_GROW(oldcap, newcap)                     \
-	do {                                          \
-		do {                                  \
-			if ((oldcap)*2 > (newcap)) {  \
-				(oldcap) *= 2;        \
-				break;                \
-			}                             \
-			if ((oldcap)*4 > (newcap)) {  \
-				(oldcap) *= 4;        \
-				break;                \
-			}                             \
-			if ((oldcap)*16 > (newcap)) { \
-				(oldcap) *= 16;       \
-				break;                \
-			}                             \
-			(oldcap) *= 32;               \
-		} while ((oldcap) < (newcap));        \
+#define JSTD_GROW(oldcap, newcap)                      \
+	do {                                           \
+		do {                                   \
+			if ((oldcap)*2 > (newcap)) {   \
+				(oldcap) *= 2;         \
+				break;                 \
+			}                              \
+			if ((oldcap)*4 > (newcap)) {   \
+				(oldcap) *= 4;         \
+				break;                 \
+			}                              \
+			if ((oldcap)*16 > (newcap)) {  \
+				(oldcap) *= 16;        \
+				break;                 \
+			}                              \
+		} while (((oldcap) *= 32) < (newcap)); \
 	} while (0)
 
 #define JSTD_REALLOC(p, oldcap, newcap, malloc_fail)        \
