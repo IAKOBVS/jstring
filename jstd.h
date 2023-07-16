@@ -671,7 +671,9 @@ void jstd_insertmem(char **JSTD_RST dst,
 		JSTD_MALLOC_ERR(tmp, return);
 		memcpy(tmp, *dst, at);
 		memcpy(tmp + at, src, ssz);
-		memcpy(tmp + at + ssz, *dst + at, *dsz - at + 1);
+		memcpy(tmp + at + ssz,
+		       *dst + at,
+		       *dsz - at + 1);
 		free(*dst);
 		*dst = tmp;
 		*dsz += ssz;
