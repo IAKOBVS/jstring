@@ -632,46 +632,46 @@ void jstd_replaceallmem(char **JSTD_RST s,
 	char *mtc = *s;
 	char *tmp;
 #ifdef JSTD_HAS_MEMMEM
-	while ((mtc = JSTD_CAST(char *) memmem(mtc, (*s + *ssz) - mtc, search, slen))) {
+	while ((mtc = JSTD_CAST(char *) memmem(mtc, (*s + *ssz) - mtc, search, slen)))
 #else
 	while ((mtc = JSTD_CAST(char *) strstr(mtc, search)))
 #endif
 		JSTD_REPLACE(1, return);
-	}
+}
 
 #define jstd_replaceall(s, ssz, scap, search, replace) jstd_replaceallmem(s, ssz, scap, search, strlen(search), replace, strlen(replace))
 
 #undef JSTD_REPLACE
 
-	/*
-	  Insert SRC into DST[AT].
-	  Return value:
-	  JSTD_RET_FAIL if malloc/realloc failure occurs;
-	  JSTD_RET_SUCCESS otherwise.
-	*/
-	JSTD_INLINE
-	void jstd_insertmem(char **JSTD_RST dst,
-			    size_t *JSTD_RST dsz,
-			    size_t *JSTD_RST dcap,
-			    size_t at,
-			    char *JSTD_RST src,
-			    size_t ssz) JSTD_NOEX
-	{
-		if (*dcap > *dsz + ssz + 1) {
-			memmove(*dst + at + ssz, *dst + at, *dsz - at + 1);
-			memcpy(*dst + at, src, ssz);
-		} else {
-			JSTD_GROW(*dcap, *dsz + ssz + 1);
-			char *const tmp = JSTD_CAST(char *) malloc(*dcap);
-			JSTD_MALLOC_ERR(tmp, return);
-			memcpy(tmp, *dst, at);
-			memcpy(tmp + at, src, ssz);
-			memcpy(tmp + at + ssz, *dst + at, *dsz - at + 1);
-			free(*dst);
-			*dst = tmp;
-			*dsz += ssz;
-		}
+/*
+  Insert SRC into DST[AT].
+  Return value:
+  JSTD_RET_FAIL if malloc/realloc failure occurs;
+  JSTD_RET_SUCCESS otherwise.
+*/
+JSTD_INLINE
+void jstd_insertmem(char **JSTD_RST dst,
+		    size_t *JSTD_RST dsz,
+		    size_t *JSTD_RST dcap,
+		    size_t at,
+		    char *JSTD_RST src,
+		    size_t ssz) JSTD_NOEX
+{
+	if (*dcap > *dsz + ssz + 1) {
+		memmove(*dst + at + ssz, *dst + at, *dsz - at + 1);
+		memcpy(*dst + at, src, ssz);
+	} else {
+		JSTD_GROW(*dcap, *dsz + ssz + 1);
+		char *const tmp = JSTD_CAST(char *) malloc(*dcap);
+		JSTD_MALLOC_ERR(tmp, return);
+		memcpy(tmp, *dst, at);
+		memcpy(tmp + at, src, ssz);
+		memcpy(tmp + at + ssz, *dst + at, *dsz - at + 1);
+		free(*dst);
+		*dst = tmp;
+		*dsz += ssz;
 	}
+}
 
 #define jstd_insert(dst, dsz, dcap, at, src) \
 	jstd_insertmem(dst, dsz, dcap, at, src, strlen(src))
