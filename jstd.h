@@ -581,11 +581,13 @@ void jstd_replacemem(char **JSTD_RST s,
 {
 	char *mtc;
 	char *tmp;
+	if ((mtc = JSTD_CAST(char *)
 #ifdef JSTD_HAS_MEMMEM
-	if ((mtc = JSTD_CAST(char *) memmem(*s, *ssz, search, slen)))
+		memmem(*s, *ssz, search, slen)
 #else
-	if ((mtc = JSTD_CAST(char *) strstr(*s, search)))
+		strstr(*s, search)
 #endif
+	    ))
 #define JSTD_REPLACE(update_mtc, malloc_fail)                         \
 	do {                                                          \
 		if (rlen <= slen || *scap > *ssz + rlen - slen + 1) { \
@@ -633,11 +635,13 @@ void jstd_replaceallmem(char **JSTD_RST s,
 {
 	char *mtc = *s;
 	char *tmp;
+	while ((mtc = JSTD_CAST(char *)
 #ifdef JSTD_HAS_MEMMEM
-	while ((mtc = JSTD_CAST(char *) memmem(mtc, (*s + *ssz) - mtc, search, slen)))
+		memmem(mtc, (*s + *ssz) - mtc, search, slen)
 #else
-	while ((mtc = JSTD_CAST(char *) strstr(mtc, search)))
+		strstr(mtc, search)
 #endif
+			))
 		JSTD_REPLACE(1, return);
 }
 
