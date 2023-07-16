@@ -56,12 +56,13 @@ char *jstd_stpcpy(char *JSTD_RST dst, const char *JSTD_RST src) JSTD_NOEX
 
 #endif // JSTD_HAS_STPCPY
 
-#define JSTD_MALLOC_ERR(p, malloc_fail)                                            \
-	do {                                                                       \
-		if (unlikely(!(p))) {                                              \
-			fprintf(stderr, "%s:%d:Can't malloc", __FILE__, __LINE__); \
-			malloc_fail;                                               \
-		}                                                                  \
+#define JSTD_MALLOC_ERR(p, malloc_fail)                                    \
+	do {                                                               \
+		if (unlikely(!(p))) {                                      \
+			fprintf(                                           \
+			stderr, "%s:%d:Can't malloc", __FILE__, __LINE__); \
+			malloc_fail;                                       \
+		}                                                          \
 	} while (0)
 
 #define JSTD_GROW_SMALL(p, oldcap, newcap) \
@@ -115,13 +116,11 @@ enum {
 JSTD_INLINE
 int jstd_alloc(char **JSTD_RST s,
 	       const size_t newsz,
-	       size_t *JSTD_RST sz,
 	       size_t *JSTD_RST cap) JSTD_NOEX
 {
 	*s = JSTD_CAST(char *) malloc(newsz * 2);
 	JSTD_MALLOC_ERR(*s, return JSTD_RET_FAIL);
 	*cap = newsz * 2;
-	*sz = 0;
 	return JSTD_RET_SUCCESS;
 }
 
@@ -137,14 +136,16 @@ int jstd_alloc_appendmem(char **JSTD_RST dst,
 			 size_t *JSTD_RST sz,
 			 size_t *JSTD_RST cap) JSTD_NOEX
 {
-	jstd_alloc(dst, srcsz * 2, sz, cap);
+	jstd_alloc(dst, srcsz * 2, cap);
 	if (unlikely(!*dst))
 		return JSTD_RET_FAIL;
+	*sz = srcsz;
 	memcpy(*dst, src, srcsz + 1);
 	return JSTD_RET_SUCCESS;
 }
 
-#define jstd_alloc_append(dst, src, sz, cap) jstd_alloc_appendmem(dst, src, strlen(src), sz, cap);
+#define jstd_alloc_append(dst, src, sz, cap) \
+	jstd_alloc_appendmem(dst, src, strlen(src), sz, cap);
 
 JSTD_INLINE
 void jstd_appendmemf(char **JSTD_RST dst,
@@ -171,12 +172,14 @@ int jstd_appendmem(char **JSTD_RST dst,
 		   size_t *JSTD_RST cap) JSTD_NOEX
 {
 	if (*cap < *sz + srcsz)
-		JSTD_REALLOC_SMALL(*dst, *cap, *sz + srcsz, return JSTD_RET_FAIL);
+		JSTD_REALLOC_SMALL(
+		*dst, *cap, *sz + srcsz, return JSTD_RET_FAIL);
 	jstd_appendmemf(dst, src, srcsz, sz);
 	return JSTD_RET_SUCCESS;
 }
 
-#define jstd_append(dst, src, sz, cap) jstd_appendmem(dst, src, strlen(src), sz, cap)
+#define jstd_append(dst, src, sz, cap) \
+	jstd_appendmem(dst, src, strlen(src), sz, cap)
 
 /*
   Return value:
@@ -184,8 +187,7 @@ int jstd_appendmem(char **JSTD_RST dst,
 */
 JSTD_INLINE
 JSTD_WARN_UNUSED
-char *jstd_stpcat(char *JSTD_RST dst,
-		  const char *JSTD_RST src) JSTD_NOEX
+char *jstd_stpcat(char *JSTD_RST dst, const char *JSTD_RST src) JSTD_NOEX
 {
 	dst += strlen(dst);
 	return jstd_stpcpy(dst, src);
@@ -310,8 +312,7 @@ void jstd_uncapitalize(char *JSTD_RST const s) JSTD_NOEX
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-int jstd_countc(const char *JSTD_RST s,
-		const int c) JSTD_NOEX
+int jstd_countc(const char *JSTD_RST s, const int c) JSTD_NOEX
 {
 	int count = 0;
 	while (*s)
@@ -331,9 +332,7 @@ int jstd_countc(const char *JSTD_RST s,
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-char *jstd_memrchr(char *JSTD_RST s,
-		   const int c,
-		   size_t n) JSTD_NOEX
+char *jstd_memrchr(char *JSTD_RST s, const int c, size_t n) JSTD_NOEX
 {
 	if (unlikely(!n))
 		return NULL;
@@ -347,8 +346,7 @@ char *jstd_memrchr(char *JSTD_RST s,
 
 #else
 
-#	define jstd_memrchr(s, c, n) \
-		memrchr(s, c, n)
+#	define jstd_memrchr(s, c, n) memrchr(s, c, n)
 
 #endif // ! JSTD_HAS_MEMRCHR
 
@@ -377,8 +375,7 @@ int jstd_counts(const char *JSTD_RST hs,
 
 #else
 
-int jstd_counts(const char *JSTD_RST hs,
-		const char *JSTD_RST ne) JSTD_NOEX
+int jstd_counts(const char *JSTD_RST hs, const char *JSTD_RST ne) JSTD_NOEX
 {
 	int count = 0;
 	while ((hs = JSTD_CAST(char *) strstr(hs, ne)))
@@ -397,8 +394,7 @@ int jstd_counts(const char *JSTD_RST hs,
 JSTD_INLINE
 JSTD_CONST
 JSTD_WARN_UNUSED
-int jstd_casecmp(const char *JSTD_RST s1,
-		 const char *JSTD_RST s2) JSTD_NOEX
+int jstd_casecmp(const char *JSTD_RST s1, const char *JSTD_RST s2) JSTD_NOEX
 {
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
@@ -432,8 +428,7 @@ int jstd_casecmp(const char *JSTD_RST s1,
   Reverse S.
 */
 JSTD_INLINE
-void jstd_revmem(char *JSTD_RST s,
-		 size_t n) JSTD_NOEX
+void jstd_revmem(char *JSTD_RST s, size_t n) JSTD_NOEX
 {
 	if (unlikely(!n))
 		return;
@@ -446,12 +441,10 @@ void jstd_revmem(char *JSTD_RST s,
 	} while (s < end);
 }
 
-#define jstd_revstr(s) \
-	jstd_revmem(s, strlen(s))
+#define jstd_revstr(s) jstd_revmem(s, strlen(s))
 
 JSTD_INLINE
-void jstd_swap(char **JSTD_RST s1,
-	       char **JSTD_RST s2) JSTD_NOEX
+void jstd_swap(char **JSTD_RST s1, char **JSTD_RST s2) JSTD_NOEX
 {
 	char *JSTD_RST const tmp = *s1;
 	*s1 = *s2;
@@ -464,8 +457,7 @@ void jstd_swap(char **JSTD_RST s1,
   Pointer to '\0' in S.
 */
 JSTD_INLINE
-char *jstd_stripp(char *JSTD_RST s,
-		  const int c) JSTD_NOEX
+char *jstd_stripp(char *JSTD_RST s, const int c) JSTD_NOEX
 {
 	for (const char *src = s;; ++src)
 		if (*src != c)
@@ -483,8 +475,7 @@ char *jstd_stripp(char *JSTD_RST s,
   NULL if REJECT is empty.
 */
 JSTD_INLINE
-char *jstd_stripspnp(char *JSTD_RST s,
-		     const char *JSTD_RST reject) JSTD_NOEX
+char *jstd_stripspnp(char *JSTD_RST s, const char *JSTD_RST reject) JSTD_NOEX
 {
 	if (unlikely(reject[0] == '\0'))
 		return NULL;
@@ -502,8 +493,7 @@ char *jstd_stripspnp(char *JSTD_RST s,
 	do
 		table[(unsigned char)*reject++] = REJECT;
 	while (*reject);
-	for (const unsigned char *JSTD_RST src = (unsigned char *)s;;
-	     ++src) {
+	for (const unsigned char *JSTD_RST src = (unsigned char *)s;; ++src) {
 		switch (table[*src]) {
 		case ACCEPT:
 			*s++ = *src;
@@ -524,8 +514,7 @@ char *jstd_stripspnp(char *JSTD_RST s,
   NULL if SLEN is 0.
 */
 JSTD_INLINE
-char *jstd_trimpmem(char *JSTD_RST s,
-		    size_t n) JSTD_NOEX
+char *jstd_trimpmem(char *JSTD_RST s, size_t n) JSTD_NOEX
 {
 	if (unlikely(!n))
 		return NULL;
@@ -544,8 +533,7 @@ char *jstd_trimpmem(char *JSTD_RST s,
 	return end;
 }
 
-#define jstd_trimp(s) \
-	jstd_trimpmem(s, strlen(s))
+#define jstd_trimp(s) jstd_trimpmem(s, strlen(s))
 
 /*
   Replace first SEARCH in REPLACE.
@@ -595,6 +583,7 @@ int jstd_replace(char **JSTD_RST s,
 		 size_t *JSTD_RST scap) JSTD_NOEX
 {
 	char *mtc;
+	char *tmp;
 	const size_t slen = strlen(search);
 	const size_t rlen = strlen(replace);
 	if ((mtc = JSTD_CAST(char *)
@@ -606,15 +595,26 @@ int jstd_replace(char **JSTD_RST s,
 	     )) {
 		const size_t mtcsz = mtc - *s;
 
-#define JSTD_REPLACE(malloc_fail)                                              \
-	do {                                                                   \
-		if (*scap < *ssz + rlen) {                                     \
-			JSTD_REALLOC(*s, *scap, *ssz + rlen, malloc_fail);     \
-			mtc = *s + mtcsz;                                      \
-		}                                                              \
-		memmove(mtc + rlen, mtc + slen, (*s + *ssz + 1) - mtc + slen); \
-		memcpy(mtc, replace, rlen);                                    \
-		*ssz += (rlen - slen);                                         \
+#define JSTD_REPLACE(malloc_fail)                                                       \
+	do {                                                                            \
+		if (*scap > *ssz + rlen + 1) {                                          \
+			memmove(                                                        \
+			mtc + rlen, mtc + slen, (*s + *ssz + 1) - mtc + slen);          \
+			memcpy(mtc, replace, rlen);                                     \
+			*ssz += (rlen - slen);                                          \
+		} else {                                                                \
+			do                                                              \
+				*scap *= 2;                                             \
+			while (*scap < *ssz + rlen + 1);                                \
+			tmp = JSTD_CAST(char *) malloc(*scap);                          \
+			JSTD_MALLOC_ERR(tmp, return JSTD_RET_FAIL);                     \
+			memcpy(tmp, *s, mtc - *s);                                      \
+			memcpy(tmp + (mtc - *s), replace, rlen);                        \
+			memcpy(tmp + (mtc - *s) + rlen, mtc + rlen, *ssz - (mtc - *s)); \
+			free(*s);                                                       \
+			mtc = *s + mtcsz;                                               \
+			*s = tmp;                                                       \
+		}                                                                       \
 	} while (0)
 
 		JSTD_REPLACE(return JSTD_RET_FAIL);
@@ -636,6 +636,7 @@ int jstd_replaceall(char **JSTD_RST s,
 		    size_t *JSTD_RST scap) JSTD_NOEX
 {
 	char *mtc;
+	char *tmp;
 	const size_t slen = strlen(search);
 	const size_t rlen = strlen(replace);
 	for (size_t mtcsz; (mtc = JSTD_CAST(char *)
@@ -652,6 +653,42 @@ int jstd_replaceall(char **JSTD_RST s,
 }
 
 #undef JSTD_REPLACE
+
+/*
+  Insert SRC into DST[AT].
+  Return value:
+  JSTD_RET_FAIL if malloc/realloc failure occurs;
+  JSTD_RET_SUCCESS otherwise.
+*/
+JSTD_INLINE
+int jstd_insertmem(char **JSTD_RST dst,
+		   size_t *JSTD_RST dsz,
+		   size_t *JSTD_RST dcap,
+		   size_t at,
+		   char *JSTD_RST src,
+		   size_t ssz) JSTD_NOEX
+{
+	if (*dcap > *dsz + ssz + 1) {
+		memmove(*dst + at + ssz, *dst + at, *dsz - at + 1);
+		memcpy(*dst + at, src, ssz);
+	} else {
+		do
+			*dcap *= 2;
+		while (*dcap < *dsz + ssz + 1);
+		char *const tmp = JSTD_CAST(char *) malloc(*dcap);
+		JSTD_MALLOC_ERR(tmp, return JSTD_RET_FAIL);
+		memcpy(tmp, *dst, at);
+		memcpy(tmp + at, src, ssz);
+		memcpy(tmp + at + ssz, *dst + at, *dsz - at + 1);
+		free(*dst);
+		*dst = tmp;
+		*dsz += ssz;
+	}
+	return JSTD_RET_SUCCESS;
+}
+
+#define jstd_insert(dst, dsz, dcap, at, src) \
+	jstd_insertmem(dst, dsz, dcap, at, src, strlen(src))
 
 #ifdef __cplusplus
 }
