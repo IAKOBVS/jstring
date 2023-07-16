@@ -56,13 +56,12 @@ char *jstd_stpcpy(char *JSTD_RST dst, const char *JSTD_RST src) JSTD_NOEX
 
 #endif // JSTD_HAS_STPCPY
 
-#define JSTD_MALLOC_ERR(p, malloc_fail)                                    \
-	do {                                                               \
-		if (unlikely(!(p))) {                                      \
-			fprintf(                                           \
-			stderr, "%s:%d:Can't malloc", __FILE__, __LINE__); \
-			malloc_fail;                                       \
-		}                                                          \
+#define JSTD_MALLOC_ERR(p, malloc_fail)                                            \
+	do {                                                                       \
+		if (unlikely(!(p))) {                                              \
+			fprintf(stderr, "%s:%d:Can't malloc", __FILE__, __LINE__); \
+			malloc_fail;                                               \
+		}                                                                  \
 	} while (0)
 
 #define JSTD_GROW_SMALL(oldcap, newcap) \
@@ -588,26 +587,30 @@ void jstd_replacemem(char **JSTD_RST s,
 #else
 	if ((mtc = JSTD_CAST(char *) strstr(*s, search)))
 #endif
-#define JSTD_REPLACE(update_mtc, malloc_fail)                                           \
-	do {                                                                            \
-		if (rlen <= slen || *scap > *ssz + rlen - slen + 1) {                   \
-			memmove(mtc + rlen, mtc + slen, (*s + *ssz + 1) - mtc + slen);  \
-			memcpy(mtc, replace, rlen);                                     \
-			if (update_mtc)                                                 \
-				mtc += rlen;                                            \
-		} else {                                                                \
-			JSTD_GROW(*scap, *ssz + rlen + 1);                              \
-			tmp = JSTD_CAST(char *) malloc(*scap);                          \
-			JSTD_MALLOC_ERR(tmp, malloc_fail);                              \
-			memcpy(tmp, *s, mtc - *s);                                      \
-			memcpy(tmp + (mtc - *s), replace, rlen);                        \
-			memcpy(tmp + (mtc - *s) + rlen, mtc + rlen, *ssz - (mtc - *s)); \
-			if (update_mtc)                                                 \
-				mtc = tmp + (mtc - *s) + rlen;                          \
-			free(*s);                                                       \
-			*s = tmp;                                                       \
-		}                                                                       \
-		*ssz += (long long)(rlen - slen);                                       \
+#define JSTD_REPLACE(update_mtc, malloc_fail)                         \
+	do {                                                          \
+		if (rlen <= slen || *scap > *ssz + rlen - slen + 1) { \
+			memmove(mtc + rlen,                           \
+				mtc + slen,                           \
+				(*s + *ssz + 1) - mtc + slen);        \
+			memcpy(mtc, replace, rlen);                   \
+			if (update_mtc)                               \
+				mtc += rlen;                          \
+		} else {                                              \
+			JSTD_GROW(*scap, *ssz + rlen + 1);            \
+			tmp = JSTD_CAST(char *) malloc(*scap);        \
+			JSTD_MALLOC_ERR(tmp, malloc_fail);            \
+			memcpy(tmp, *s, mtc - *s);                    \
+			memcpy(tmp + (mtc - *s), replace, rlen);      \
+			memcpy(tmp + (mtc - *s) + rlen,               \
+			       mtc + rlen,                            \
+			       (*s + *ssz + 1) - (mtc + rlen));       \
+			if (update_mtc)                               \
+				mtc = tmp + (mtc - *s) + rlen;        \
+			free(*s);                                     \
+			*s = tmp;                                     \
+		}                                                     \
+		*ssz += (long long)(rlen - slen);                     \
 	} while (0)
 		JSTD_REPLACE(0, return);
 }
@@ -658,7 +661,9 @@ void jstd_insertmem(char **JSTD_RST dst,
 		    size_t ssz) JSTD_NOEX
 {
 	if (*dcap > *dsz + ssz + 1) {
-		memmove(*dst + at + ssz, *dst + at, *dsz - at + 1);
+		memmove(*dst + at + ssz,
+			*dst + at,
+			*dsz - at + 1);
 		memcpy(*dst + at, src, ssz);
 	} else {
 		JSTD_GROW(*dcap, *dsz + ssz + 1);
