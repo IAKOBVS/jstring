@@ -452,7 +452,8 @@ void jstd_swap(char **JSTD_RST s1, char **JSTD_RST s2) JSTD_NOEX
 JSTD_INLINE
 char *jstd_stripp(char *JSTD_RST s, const int c) JSTD_NOEX
 {
-	for (const char *src = s;; ++src)
+	const char *src = s;
+	for (;; ++src)
 		if (*src != c)
 			*s++ = *src;
 		else if (unlikely(*src == '\0'))
@@ -474,20 +475,23 @@ char *jstd_stripspnp(char *JSTD_RST s, const char *JSTD_RST reject) JSTD_NOEX
 		return NULL;
 	if (unlikely(reject[1] == '\0'))
 		return jstd_stripp(s, *reject);
-	enum { ACCEPT = 0,
-	       REJECT = 1,
-	       NUL = 2 };
-	unsigned char table[256];
-	memset(table, ACCEPT, 64);
-	memset(&table[64], ACCEPT, 64);
-	memset(&table[128], ACCEPT, 64);
-	memset(&table[192], ACCEPT, 64);
-	table[0] = NUL;
+	enum {
+		ACCEPT = 0,
+		REJECT,
+		NUL,
+	};
+	unsigned char tbl[256];
+	memset(tbl, ACCEPT, 64);
+	memset(&tbl[64], ACCEPT, 64);
+	memset(&tbl[128], ACCEPT, 64);
+	memset(&tbl[192], ACCEPT, 64);
+	tbl[0] = NUL;
 	do
-		table[(unsigned char)*reject++] = REJECT;
+		tbl[(unsigned char)*reject++] = REJECT;
 	while (*reject);
-	for (const unsigned char *JSTD_RST src = (unsigned char *)s;; ++src) {
-		switch (table[*src]) {
+	const unsigned char *JSTD_RST src = (unsigned char *)s;
+	for (;; ++src) {
+		switch (tbl[*src]) {
 		case ACCEPT:
 			*s++ = *src;
 		case REJECT:
@@ -583,11 +587,11 @@ void jstd_replacemem(char **JSTD_RST s,
 	char *tmp;
 	if ((mtc = JSTD_CAST(char *)
 #ifdef JSTD_HAS_MEMMEM
-		memmem(*s, *ssz, search, slen)
+	     memmem(*s, *ssz, search, slen)
 #else
-		strstr(*s, search)
+	     strstr(*s, search)
 #endif
-	    ))
+	     ))
 #define JSTD_REPLACE(update_mtc, malloc_fail)                         \
 	do {                                                          \
 		if (rlen <= slen || *scap > *ssz + rlen - slen + 1) { \
@@ -641,7 +645,7 @@ void jstd_replaceallmem(char **JSTD_RST s,
 #else
 		strstr(mtc, search)
 #endif
-			))
+		))
 		JSTD_REPLACE(1, return);
 }
 
