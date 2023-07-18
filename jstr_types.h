@@ -1,10 +1,10 @@
 #ifndef JSTR_TYPES_H_DEF
 #define JSTR_TYPES_H_DEF
 
-#include <stddef.h>
 #include "jstr_macros.h"
+#include <stddef.h>
 
-#define JSTR_RST JSTR_RESTRICT
+#define JSTR_RST  JSTR_RESTRICT
 #define JSTR_NOEX JSTR_NOEXCEPT
 
 JSTR_INLINE

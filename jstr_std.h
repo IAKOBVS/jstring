@@ -45,7 +45,7 @@ static char *jstr_memrchr(char *JSTR_RST s,
 {
 	if (unlikely(!n))
 		return NULL;
-	char *JSTR_RST end = s + n - 1;
+	char *end = s + n - 1;
 	do
 		if (*end == c)
 			return end;
@@ -80,7 +80,8 @@ static char *jstr_stpcat(char *JSTR_RST dst,
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-static int jstr_casecmp(const char *JSTR_RST s1, const char *JSTR_RST s2) JSTR_NOEX
+static int jstr_casecmp(const char *JSTR_RST s1,
+			const char *JSTR_RST s2) JSTR_NOEX
 {
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
