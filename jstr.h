@@ -192,7 +192,7 @@ static int jstr_counts(const char *JSTR_RST hs,
 static int jstr_counts(const char *JSTR_RST hs, const char *JSTR_RST ne) JSTR_NOEX
 {
 	int count = 0;
-	while ((hs = JSTR_CAST(char *) strstr(hs, ne)))
+	while ((hs = strstr(hs, ne)))
 		++count;
 	return count;
 }
@@ -303,7 +303,7 @@ static char *jstr_stripspnp(char *JSTR_RST s, const char *JSTR_RST reject) JSTR_
 }
 
 /*
-  Trim spaces [ \t] from end of S.
+  Trim spaces in [ \t] from end of S.
   Return value:
   Pointer to '\0' in S;
   NULL if SLEN is 0.
@@ -315,21 +315,23 @@ static char *jstr_trimmemp(char *JSTR_RST s, const size_t n) JSTR_NOEX
 		return NULL;
 	char *end = s + n - 1;
 	do {
-		switch (*end) {
-		case '\t':
-		case ' ':
-			--end;
-			continue;
-		default:
-			*(end + 1) = '\0';
+		for (;;) {
+			switch (*end) {
+			case '\t':
+			case ' ':
+				--end;
+				continue;
+			default:
+				*(end + 1) = '\0';
+			}
+			break;
 		}
-		break;
 	} while (end >= s);
 	return end;
 }
 
 /*
-  Trim spaces [ \t] from end of S.
+  Trim spaces in [ \t] from end of S.
   Return value:
   Pointer to '\0' in S;
   NULL if SLEN is 0.
