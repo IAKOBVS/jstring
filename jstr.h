@@ -26,11 +26,6 @@ extern "C" {
 #define JSTR_RST  JSTR_RESTRICT
 #define JSTR_NOEX JSTR_NOEXCEPT
 
-#define JSTR_PARAMS_STRING(s_, sz_, cap_) \
-	char **JSTR_RST s_,               \
-	size_t *JSTR_RST sz_,             \
-	size_t *JSTR_RST cap_
-
 typedef struct jstr_t {
 	size_t size;
 	size_t cap;
@@ -452,6 +447,7 @@ static void jstr_replaceallmem(char **JSTR_RST s,
 #endif
 		))
 		JSTR_REPLACE(1, return);
+#undef JSTR_REPLACE
 }
 
 /*
@@ -502,14 +498,13 @@ static void jstr_insertmem(char **JSTR_RST dst,
   Insert SRC into DST[AT].
 */
 JSTR_INLINE
-static void private_jstr_insert(char **JSTR_RST dst,
-				size_t *JSTR_RST dsz,
-				size_t *JSTR_RST dcap,
-				size_t at,
-				char *JSTR_RST src,
-				size_t ssz) JSTR_NOEX
+static void jstr_insert(char **JSTR_RST dst,
+			size_t *JSTR_RST dsz,
+			size_t *JSTR_RST dcap,
+			size_t at,
+			char *JSTR_RST src) JSTR_NOEX
 {
-	jstr_insertmem(dst, dsz, dcap, at, src, ssz);
+	jstr_insertmem(dst, dsz, dcap, at, src, strlen(src));
 }
 
 JSTR_INLINE
@@ -532,14 +527,10 @@ static int jstr_endswith(char *JSTR_RST s1,
 	return (l1 < l2) ? 1 : memcmp(s1 + l1 - l2, s2, l2);
 }
 
-#define jstr_insert(dst, dsz, dcap, at, src) \
-	private_jstr_insert(dst, dsz, dcap, at, src, strlen(src))
-
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-#undef JSTR_REPLACE
 #undef JSTR_NOEX
 #undef JSTR_RST
 #undef JSTR_MALLOC_ERR
