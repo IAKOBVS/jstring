@@ -15,8 +15,9 @@ static int jstr_isalnum(const int c) JSTR_NOEX
 	switch (c) {
 		JSTR_CASE_ALPHANUM;
 		return 1;
+	default:
+		return 0;
 	}
-	return 0;
 }
 
 JSTR_INLINE
@@ -24,8 +25,8 @@ JSTR_CONST
 JSTR_WARN_UNUSED
 static int jstr_arealnum(const char *JSTR_RST s) JSTR_NOEX
 {
-	for (;; ++s)
-		switch (*s) {
+	for (;;)
+		switch (*s++) {
 		default:
 			return 0;
 		case '\0':
@@ -42,8 +43,9 @@ static int jstr_isalpha(const int c) JSTR_NOEX
 	switch (c) {
 		JSTR_CASE_ALPHA;
 		return 1;
+	default:
+		return 0;
 	}
-	return 0;
 }
 
 JSTR_INLINE
@@ -51,8 +53,8 @@ JSTR_CONST
 JSTR_WARN_UNUSED
 static int jstr_arealpha(const char *JSTR_RST s) JSTR_NOEX
 {
-	for (;; ++s)
-		switch (*s) {
+	for (;;)
+		switch (*s++) {
 		default:
 			return 0;
 		case '\0':
@@ -78,8 +80,8 @@ JSTR_CONST
 JSTR_WARN_UNUSED
 static int jstr_aredigits(const char *JSTR_RST s) JSTR_NOEX
 {
-	for (;; ++s)
-		switch (*s) {
+	for (;;)
+		switch (*s++) {
 		default:
 			return 0;
 		case '\0':

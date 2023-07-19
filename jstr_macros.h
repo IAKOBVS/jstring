@@ -35,6 +35,14 @@
 #	define JSTR_ASSERT_SEMICOLON(expr, msg)
 #endif // static_assert
 
+#if defined(__GNUC__) || defined(__clang__)
+#	define JSTR_NONNULL_ALL   __attribute__((nonnull))
+#	define JSTR_NONNULL(args) __attribute__((nonnull(args)))
+#else
+#	define JSTR_NONNULL_ALL
+#	define JSTR_NONNULL(args)
+#endif /* NONNULL */
+
 #ifdef JSTR_ALIGN_POWER_OF_TWO
 #	ifdef JSTR_64_BIT
 #		ifdef __cplusplus
@@ -112,250 +120,250 @@
 #	define FLATTEN
 #endif // __GNUC__ || __clang__ || _MSC_VER
 
-#if defined(__GNUC__) || defined(__clang__)
-#	ifdef __cplusplus
-#		include <cstdint>
-#	else
-#		include <stdint.h>
-#	endif // __cplusplus
-#	if __has_builtin(__builtin_clzll)
-#		ifdef __cplusplus
-extern "C" {
-#		endif
+/* #if defined(__GNUC__) || defined(__clang__) */
+/* #	ifdef __cplusplus */
+/* #		include <cstdint> */
+/* #	else */
+/* #		include <stdint.h> */
+/* #	endif // __cplusplus */
+/* #	if __has_builtin(__builtin_clzll) */
+/* #		ifdef __cplusplus */
+/* extern "C" { */
+/* #		endif */
 
-#		ifdef JSTR_64_BIT
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
-{
-	return 1ull << (64 - __builtin_clzll(x - 1));
-}
+/* #		ifdef JSTR_64_BIT */
+/* JSTR_INLINE */
+/* JSTR_CONST */
+/* JSTR_WARN_UNUSED */
+/* uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT */
+/* { */
+/* 	return 1ull << (64 - __builtin_clzll(x - 1)); */
+/* } */
 
-#		endif // JSTR_64_BIT
+/* #		endif // JSTR_64_BIT */
 
-#	endif // __has_builtin(__builtin_clzll)
-#	if __has_builtin(__builtin_clz)
+/* #	endif // __has_builtin(__builtin_clzll) */
+/* #	if __has_builtin(__builtin_clz) */
 
-#		ifdef JSTR_32_BIT
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
-{
-	return 1 << (32 - __builtin_clz(x - 1));
-}
+/* #		ifdef JSTR_32_BIT */
+/* JSTR_INLINE */
+/* JSTR_CONST */
+/* JSTR_WARN_UNUSED */
+/* uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT */
+/* { */
+/* 	return 1 << (32 - __builtin_clz(x - 1)); */
+/* } */
 
-#		endif // JSTR_32_BIT
+/* #		endif // JSTR_32_BIT */
 
-#		ifdef __cplusplus
-}
-#		endif
-#	endif // __has_builtin(__builtin_clz)
-#elif defined(_MSC_VER)
-#	include <stdint.h>
-#	include <intrin.h>
-#	pragma intrinsic(_BitScanReverse64)
-#	ifdef __cplusplus
-extern "C" {
-#	endif
+/* #		ifdef __cplusplus */
+/* } */
+/* #		endif */
+/* #	endif // __has_builtin(__builtin_clz) */
+/* #elif defined(_MSC_VER) */
+/* #	include <stdint.h> */
+/* #	include <intrin.h> */
+/* #	pragma intrinsic(_BitScanReverse64) */
+/* #	ifdef __cplusplus */
+/* extern "C" { */
+/* #	endif */
 
-#	ifdef JSTR_32_BIT
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
-{
-	unsigned long index;
-	_BitScanReverse(&index, x - 1);
-	return 1 << (index + 1);
-}
+/* #	ifdef JSTR_32_BIT */
+/* JSTR_INLINE */
+/* JSTR_CONST */
+/* JSTR_WARN_UNUSED */
+/* uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT */
+/* { */
+/* 	unsigned long index; */
+/* 	_BitScanReverse(&index, x - 1); */
+/* 	return 1 << (index + 1); */
+/* } */
 
-#	endif // JSTR_32_BIT
+/* #	endif // JSTR_32_BIT */
 
-#	ifdef JSTR_64_BIT
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
-{
-	unsigned long index;
-	_BitScanReverse64(&index, x - 1);
-	return 1ull << (index + 1);
-}
+/* #	ifdef JSTR_64_BIT */
+/* JSTR_INLINE */
+/* JSTR_CONST */
+/* JSTR_WARN_UNUSED */
+/* uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT */
+/* { */
+/* 	unsigned long index; */
+/* 	_BitScanReverse64(&index, x - 1); */
+/* 	return 1ull << (index + 1); */
+/* } */
 
-#	endif // JSTR_64_BIT
+/* #	endif // JSTR_64_BIT */
 
-#else
+/* #else */
 
-#	ifdef JSTR_32_BIT
+/* #	ifdef JSTR_32_BIT */
 
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT
-{
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	return x + 1;
-}
+/* JSTR_INLINE */
+/* JSTR_CONST */
+/* JSTR_WARN_UNUSED */
+/* size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT */
+/* { */
+/* 	--x; */
+/* 	x |= x >> 1; */
+/* 	x |= x >> 2; */
+/* 	x |= x >> 4; */
+/* 	x |= x >> 8; */
+/* 	x |= x >> 16; */
+/* 	return x + 1; */
+/* } */
 
-#	endif // JSTR_32_BIT
+/* #	endif // JSTR_32_BIT */
 
-#	ifdef JSTR_64_BIT
+/* #	ifdef JSTR_64_BIT */
 
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
-{
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	x |= x >> 32;
-	return x + 1;
-}
+/* JSTR_INLINE */
+/* JSTR_CONST */
+/* JSTR_WARN_UNUSED */
+/* size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT */
+/* { */
+/* 	--x; */
+/* 	x |= x >> 1; */
+/* 	x |= x >> 2; */
+/* 	x |= x >> 4; */
+/* 	x |= x >> 8; */
+/* 	x |= x >> 16; */
+/* 	x |= x >> 32; */
+/* 	return x + 1; */
+/* } */
 
-#	endif // JSTR_64_BIT
+/* #	endif // JSTR_64_BIT */
 
-#	ifdef __cplusplus
-}
-#	endif
-#endif // __GNUC__ || __clang__
+/* #	ifdef __cplusplus */
+/* } */
+/* #	endif */
+/* #endif // __GNUC__ || __clang__ */
 
-#ifdef __cplusplus
+/* #ifdef __cplusplus */
 
-#	include <type_traits>
+/* #	include <type_traits> */
 
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT
-{
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	return x + 1;
-}
+/* JSTR_INLINE */
+/* JSTR_CONST */
+/* JSTR_WARN_UNUSED */
+/* static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT */
+/* { */
+/* 	--x; */
+/* 	x |= x >> 1; */
+/* 	x |= x >> 2; */
+/* 	x |= x >> 4; */
+/* 	x |= x >> 8; */
+/* 	x |= x >> 16; */
+/* 	return x + 1; */
+/* } */
 
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-static constexpr std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT
-{
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	x |= x >> 32;
-	return x + 1;
-}
+/* JSTR_INLINE */
+/* JSTR_CONST */
+/* JSTR_WARN_UNUSED */
+/* static constexpr std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT */
+/* { */
+/* 	--x; */
+/* 	x |= x >> 1; */
+/* 	x |= x >> 2; */
+/* 	x |= x >> 4; */
+/* 	x |= x >> 8; */
+/* 	x |= x >> 16; */
+/* 	x |= x >> 32; */
+/* 	return x + 1; */
+/* } */
 
-template <typename T>
-JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_CONST static std::size_t
-JSTR_NEXT_POW2_32(T x)
-{
-	if
-#	if __cplusplus > 201703L
-	constexpr
-#	endif // cpp 17
-	(std::is_integral<T>::value)
-		return private_jstr_next_pow2_32_constexpr(x);
-	return private_jstr_next_pow2_32(x);
-}
+/* template <typename T> */
+/* JSTR_INLINE */
+/* JSTR_WARN_UNUSED */
+/* JSTR_CONST static std::size_t */
+/* JSTR_NEXT_POW2_32(T x) */
+/* { */
+/* 	if */
+/* #	if __cplusplus > 201703L */
+/* 	constexpr */
+/* #	endif // cpp 17 */
+/* 	(std::is_integral<T>::value) */
+/* 		return private_jstr_next_pow2_32_constexpr(x); */
+/* 	return private_jstr_next_pow2_32(x); */
+/* } */
 
-template <typename T>
-JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_CONST static std::size_t
-JSTR_NEXT_POW2_64(T x)
-{
-	if
-#	if __cplusplus > 201703L
-	constexpr
-#	endif // cpp 17
-	(std::is_integral<T>::value)
-		return private_jstr_next_pow2_64_constexpr(x);
-	return private_jstr_next_pow2_64(x);
-}
+/* template <typename T> */
+/* JSTR_INLINE */
+/* JSTR_WARN_UNUSED */
+/* JSTR_CONST static std::size_t */
+/* JSTR_NEXT_POW2_64(T x) */
+/* { */
+/* 	if */
+/* #	if __cplusplus > 201703L */
+/* 	constexpr */
+/* #	endif // cpp 17 */
+/* 	(std::is_integral<T>::value) */
+/* 		return private_jstr_next_pow2_64_constexpr(x); */
+/* 	return private_jstr_next_pow2_64(x); */
+/* } */
 
-#endif // __cplusplus
+/* #endif // __cplusplus */
 
-#if defined(JSTR_HAS_TYPEOF) && defined(JSTR_HAS_GENERIC)
-#	define JSTR_SAME_TYPE(x, y) _Generic((x),           \
-					      typeof(y) : 1, \
-					      default : 0)
-#	define JSTR_IS_TYPE(T, x) _Generic((x),   \
-					    T : 1, \
-					    default : 0)
-#endif // JSTR_HAS_TYPEOF && JSTR_HAS_GENERIC
+/* #if defined(JSTR_HAS_TYPEOF) && defined(JSTR_HAS_GENERIC) */
+/* #	define JSTR_SAME_TYPE(x, y) _Generic((x),           \ */
+/* 					      typeof(y) : 1, \ */
+/* 					      default : 0) */
+/* #	define JSTR_IS_TYPE(T, x) _Generic((x),   \ */
+/* 					    T : 1, \ */
+/* 					    default : 0) */
+/* #endif // JSTR_HAS_TYPEOF && JSTR_HAS_GENERIC */
 
-#if defined(__GNUC__) || defined(__clang__)
-#	ifdef JSTR_HAS_GENERIC
-#		define JSTR_GENERIC_CASE_SIZE(expr)                           \
-			int : expr,                                            \
-			      unsigned int : expr,                             \
-					     size_t : expr,                    \
-						      long : expr,             \
-							     long long : expr, \
-									 unsigned long long : expr
+/* #if defined(__GNUC__) || defined(__clang__) */
+/* #	ifdef JSTR_HAS_GENERIC */
+/* #		define JSTR_GENERIC_CASE_SIZE(expr)                           \ */
+/* 			int : expr,                                            \ */
+/* 			      unsigned int : expr,                             \ */
+/* 					     size_t : expr,                    \ */
+/* 						      long : expr,             \ */
+/* 							     long long : expr, \ */
+/* 									 unsigned long long : expr */
 
-#		define JSTR_GENERIC_CASE_STR(expr) \
-			char * : expr,              \
-				 const char * : expr
+/* #		define JSTR_GENERIC_CASE_STR(expr) \ */
+/* 			char * : expr,              \ */
+/* 				 const char * : expr */
 
-#		define JSTR_GENERIC_CASE_CHAR(expr) \
-			char : expr,                 \
-			       const char : expr
+/* #		define JSTR_GENERIC_CASE_CHAR(expr) \ */
+/* 			char : expr,                 \ */
+/* 			       const char : expr */
 
-#		define JSTR_IS_SIZE(expr) _Generic((expr),                    \
-						    JSTR_GENERIC_CASE_SIZE(1), \
-						    default : 0)
+/* #		define JSTR_IS_SIZE(expr) _Generic((expr),                    \ */
+/* 						    JSTR_GENERIC_CASE_SIZE(1), \ */
+/* 						    default : 0) */
 
-#		define JSTR_IS_STR(expr) _Generic((expr),                   \
-						   JSTR_GENERIC_CASE_STR(1), \
-						   default : 0)
+/* #		define JSTR_IS_STR(expr) _Generic((expr),                   \ */
+/* 						   JSTR_GENERIC_CASE_STR(1), \ */
+/* 						   default : 0) */
 
-#		define JSTR_IS_CHAR(expr) _Generic((expr),                    \
-						    JSTR_GENERIC_CASE_CHAR(1), \
-						    default : 0)
+/* #		define JSTR_IS_CHAR(expr) _Generic((expr),                    \ */
+/* 						    JSTR_GENERIC_CASE_CHAR(1), \ */
+/* 						    default : 0) */
 
-#		define JSTR_ASSERT_IS_SIZE(expr) \
-			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Passing non-number as number argument!");
-#		define JSTR_ASSERT_IS_STR(expr) \
-			JSTR_ASSERT(JSTR_IS_STR(expr), "Passing non-string as string argument!");
-#		define JSTR_ASSERT_IS_CHAR(expr) \
-			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Passing non-char as char argument!");
-#		define JSTR_ASSERT_TYPECHECK(Texpr, expr) JSTR_ASSERT(JSTR_SAME_TYPE(Texpr, expr), "Passing the wrong data type!");
-#	else
-#		define JSTR_ASSERT_IS_SIZE(expr)
-#		define JSTR_ASSERT_IS_STR(expr)
-#		define JSTR_ASSERT_IS_CHAR(expr)
-#		define JSTR_ASSERT_TYPECHECK(Texpr, expr)
-#	endif // JSTR_HAS_GENERIC
-#	define JSTR_MACRO_START ({
-#	define JSTR_MACRO_END \
-		;              \
-		})
-#else
-#	define JSTR_IS_SIZE(val)
-#	define JSTR_MACRO_START (
-#	define JSTR_MACRO_END )
-#endif // __GNUC__ || __clang__
+/* #		define JSTR_ASSERT_IS_SIZE(expr) \ */
+/* 			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Passing non-number as number argument!"); */
+/* #		define JSTR_ASSERT_IS_STR(expr) \ */
+/* 			JSTR_ASSERT(JSTR_IS_STR(expr), "Passing non-string as string argument!"); */
+/* #		define JSTR_ASSERT_IS_CHAR(expr) \ */
+/* 			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Passing non-char as char argument!"); */
+/* #		define JSTR_ASSERT_TYPECHECK(Texpr, expr) JSTR_ASSERT(JSTR_SAME_TYPE(Texpr, expr), "Passing the wrong data type!"); */
+/* #	else */
+/* #		define JSTR_ASSERT_IS_SIZE(expr) */
+/* #		define JSTR_ASSERT_IS_STR(expr) */
+/* #		define JSTR_ASSERT_IS_CHAR(expr) */
+/* #		define JSTR_ASSERT_TYPECHECK(Texpr, expr) */
+/* #	endif // JSTR_HAS_GENERIC */
+/* #	define JSTR_MACRO_START ({ */
+/* #	define JSTR_MACRO_END \ */
+/* 		;              \ */
+/* 		}) */
+/* #else */
+/* #	define JSTR_IS_SIZE(val) */
+/* #	define JSTR_MACRO_START ( */
+/* #	define JSTR_MACRO_END ) */
+/* #endif // __GNUC__ || __clang__ */
 
 #ifndef MAX
 #	define MAX(a, b) (((a) > (b)) ? (a) : (b))
@@ -379,7 +387,7 @@ case 'E':                     \
 case 'O':
 #define JSTR_CASE_VOWEL \
 JSTR_CASE_VOWEL_UPPER:  \
-	JSTR_CASE_VOWEL_LOWER
+JSTR_CASE_VOWEL_LOWER:
 
 #define JSTR_CASE_CONSONANT_LOWER \
 case 'b':                         \
@@ -427,7 +435,7 @@ case 'Y':                         \
 case 'Z':
 #define JSTR_CASE_CONSONANT \
 JSTR_CASE_CONSONANT_UPPER:  \
-	JSTR_CASE_CONSONANT_LOWER
+JSTR_CASE_CONSONANT_LOWER:
 
 #define JSTR_CASE_DIGIT \
 case '0':               \
