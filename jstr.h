@@ -315,17 +315,15 @@ static char *jstr_trimmemp(char *JSTR_RST s, const size_t n) JSTR_NOEX
 		return NULL;
 	char *end = s + n - 1;
 	do {
-		for (;;) {
-			switch (*end) {
-			case '\t':
-			case ' ':
-				--end;
-				continue;
-			default:
-				*(end + 1) = '\0';
-			}
-			break;
+		switch (*end) {
+		case '\t':
+		case ' ':
+			--end;
+			continue;
+		default:
+			*(end + 1) = '\0';
 		}
+		break;
 	} while (end >= s);
 	return end;
 }
