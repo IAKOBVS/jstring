@@ -14,6 +14,7 @@
   pointer to '\0' in DST.
 */
 JSTR_INLINE
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_stpcpy(char *JSTR_RST dst,
 			 const char *JSTR_RST src) JSTR_NOEX
@@ -37,6 +38,7 @@ static char *jstr_stpcpy(char *JSTR_RST dst,
 */
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_memrchr(char *JSTR_RST s,
 			  const int c,
@@ -63,6 +65,7 @@ static char *jstr_memrchr(char *JSTR_RST s,
   Pointer to '\0' in DST.
 */
 JSTR_INLINE
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_stpcat(char *JSTR_RST dst,
 			 const char *JSTR_RST src) JSTR_NOEX
@@ -79,6 +82,7 @@ static char *jstr_stpcat(char *JSTR_RST dst,
 */
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_casecmp(const char *JSTR_RST s1,
 			const char *JSTR_RST s2) JSTR_NOEX

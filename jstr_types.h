@@ -9,6 +9,7 @@
 
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_isalnum(const int c) JSTR_NOEX
 {
@@ -22,6 +23,7 @@ static int jstr_isalnum(const int c) JSTR_NOEX
 
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_arealnum(const char *JSTR_RST s) JSTR_NOEX
 {
@@ -37,6 +39,7 @@ static int jstr_arealnum(const char *JSTR_RST s) JSTR_NOEX
 
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_isalpha(const int c) JSTR_NOEX
 {
@@ -50,6 +53,7 @@ static int jstr_isalpha(const int c) JSTR_NOEX
 
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_arealpha(const char *JSTR_RST s) JSTR_NOEX
 {
@@ -65,6 +69,7 @@ static int jstr_arealpha(const char *JSTR_RST s) JSTR_NOEX
 
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_isdigit(const int c) JSTR_NOEX
 {
@@ -77,6 +82,7 @@ static int jstr_isdigit(const int c) JSTR_NOEX
 
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_aredigits(const char *JSTR_RST s) JSTR_NOEX
 {
@@ -92,6 +98,7 @@ static int jstr_aredigits(const char *JSTR_RST s) JSTR_NOEX
 
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_toupper(const int c) JSTR_NOEX
 {
@@ -103,6 +110,7 @@ static int jstr_toupper(const int c) JSTR_NOEX
 }
 
 JSTR_INLINE
+JSTR_NONNULL_ALL
 static void jstr_touppers(char *JSTR_RST s) JSTR_NOEX
 {
 	for (;; ++s) {
@@ -119,6 +127,7 @@ static void jstr_touppers(char *JSTR_RST s) JSTR_NOEX
 
 JSTR_INLINE
 JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_tolower(const int c) JSTR_NOEX
 {
@@ -130,6 +139,7 @@ static int jstr_tolower(const int c) JSTR_NOEX
 }
 
 JSTR_INLINE
+JSTR_NONNULL_ALL
 static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEX
 {
 	for (;; ++s) {
@@ -145,12 +155,14 @@ static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEX
 }
 
 JSTR_INLINE
+JSTR_NONNULL_ALL
 static void jstr_capitalize(char *JSTR_RST const s) JSTR_NOEX
 {
 	*s = jstr_toupper(*s);
 }
 
 JSTR_INLINE
+JSTR_NONNULL_ALL
 static void jstr_uncapitalize(char *JSTR_RST const s) JSTR_NOEX
 {
 	*s = jstr_tolower(*s);
