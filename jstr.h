@@ -40,37 +40,12 @@ typedef struct jstr_t {
 		}                                                                  \
 	} while (0)
 
-#define JSTR_GROW_SMALL(oldcap, newcap) \
+#define JSTR_GROW(oldcap, newcap) \
 	while (((oldcap) *= 2) < (newcap))
-
-#define JSTR_REALLOC_SMALL(p, oldcap, newcap, malloc_fail)  \
-	do {                                                \
-		JSTR_GROW_SMALL(oldcap, newcap);            \
-		(p) = JSTR_CAST(char *) realloc(p, newcap); \
-		JSTR_MALLOC_ERR(p, malloc_fail);            \
-	} while (0)
-
-#define JSTR_GROW(oldcap, newcap)                      \
-	do {                                           \
-		do {                                   \
-			if ((oldcap)*2 > (newcap)) {   \
-				(oldcap) *= 2;         \
-				break;                 \
-			}                              \
-			if ((oldcap)*4 > (newcap)) {   \
-				(oldcap) *= 4;         \
-				break;                 \
-			}                              \
-			if ((oldcap)*16 > (newcap)) {  \
-				(oldcap) *= 16;        \
-				break;                 \
-			}                              \
-		} while (((oldcap) *= 32) < (newcap)); \
-	} while (0)
 
 #define JSTR_REALLOC(p, oldcap, newcap, malloc_fail)        \
 	do {                                                \
-		JSTR_GROW(p, oldcap, newcap);               \
+		JSTR_GROW(oldcap, newcap);                  \
 		(p) = JSTR_CAST(char *) realloc(p, newcap); \
 		JSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
@@ -140,7 +115,7 @@ static void jstr_appendmem(char **JSTR_RST dst,
 			   const size_t ssz) JSTR_NOEX
 {
 	if (*dcap < *dsz + ssz)
-		JSTR_REALLOC_SMALL(*dst, *dcap, *dsz + ssz, return);
+		JSTR_REALLOC(*dst, *dcap, *dsz + ssz, return);
 	jstr_appendmemf(dst, dsz, src, ssz);
 }
 
