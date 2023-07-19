@@ -543,7 +543,7 @@ static int jstr_endswithmem(char *JSTR_RST s1,
   Checks if S2 is in end of S1.
   Return value:
   0 if true;
-  1 if false or l1 < l2.
+  1 if false.
 */
 JSTR_INLINE
 JSTR_CONST
