@@ -53,8 +53,8 @@ typedef struct jstr_t {
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_alloc(char **JSTR_RST s,
-		       const size_t newsz,
-		       size_t *JSTR_RST cap) JSTR_NOEX
+		       size_t *JSTR_RST cap,
+		       const size_t newsz) JSTR_NOEX
 {
 	*s = JSTR_CAST(char *) malloc(newsz * 2);
 	JSTR_MALLOC_ERR(*s, return);
@@ -69,7 +69,7 @@ static void jstr_alloc_appendmem(char **JSTR_RST dst,
 				 const char *JSTR_RST src,
 				 const size_t ssz) JSTR_NOEX
 {
-	jstr_alloc(dst, ssz * 2, dcap);
+	jstr_alloc(dst, dcap, ssz * 2);
 	if (unlikely(!*dst))
 		return;
 	*dsz = ssz;
@@ -86,6 +86,10 @@ static void jstr_alloc_append(char **JSTR_RST dst,
 	jstr_alloc_appendmem(dst, dsz, dcap, src, strlen(src));
 }
 
+/*
+   Append SRC to DST.
+   Use non-f version for bounds checking.
+*/
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_appendmemf(char **JSTR_RST dst,
@@ -97,6 +101,10 @@ static void jstr_appendmemf(char **JSTR_RST dst,
 	*dsz += ssz;
 }
 
+/*
+   Append SRC to DST.
+   Use non-f version for bounds checking.
+*/
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_appendf(char **JSTR_RST dst,
@@ -106,6 +114,9 @@ static void jstr_appendf(char **JSTR_RST dst,
 	jstr_appendmemf(dst, dsz, src, strlen(src));
 }
 
+/*
+   Append SRC to DST.
+*/
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_appendmem(char **JSTR_RST dst,
@@ -119,6 +130,9 @@ static void jstr_appendmem(char **JSTR_RST dst,
 	jstr_appendmemf(dst, dsz, src, ssz);
 }
 
+/*
+   Append SRC to DST.
+*/
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_append(char **JSTR_RST dst,
@@ -164,9 +178,9 @@ static int jstr_counts(const char *JSTR_RST hs,
 		       const size_t nlen) JSTR_NOEX
 {
 	int count = 0;
-	for (const char *old = hs;
-	     (hs = JSTR_CAST(char *) memmem(hs, hlen, ne, nlen));
-	     hlen -= (hs - old), ++count)
+	for (const char *const old = hs;
+	     (hs = JSTR_CAST(char *) memmem(hs, hlen - (hs - old), ne, nlen));
+	     ++count)
 		;
 	return count;
 }
