@@ -155,9 +155,11 @@ JSTR_WARN_UNUSED
 static int jstr_countc(const char *JSTR_RST s, const int c) JSTR_NOEX
 {
 	int count = 0;
-	while (*s)
+	for (;; ++s)
 		if (*s == c)
 			++count;
+		else if (unlikely(*s == '\0'))
+			break;
 	return count;
 }
 
@@ -187,7 +189,8 @@ static int jstr_counts(const char *JSTR_RST hs,
 
 #else
 
-static int jstr_counts(const char *JSTR_RST hs, const char *JSTR_RST ne) JSTR_NOEX
+static int jstr_counts(const char *JSTR_RST hs,
+		       const char *JSTR_RST ne) JSTR_NOEX
 {
 	int count = 0;
 	while ((hs = strstr(hs, ne)))
@@ -202,7 +205,8 @@ static int jstr_counts(const char *JSTR_RST hs, const char *JSTR_RST ne) JSTR_NO
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_revmem(char *JSTR_RST s, const size_t n) JSTR_NOEX
+static void jstr_revmem(char *JSTR_RST s,
+			const size_t n) JSTR_NOEX
 {
 	if (unlikely(!n))
 		return;
@@ -253,7 +257,8 @@ static void jstr_swap(char **JSTR_RST s1,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_stripp(char *JSTR_RST s, const int c) JSTR_NOEX
+static char *jstr_stripp(char *JSTR_RST s,
+			 const int c) JSTR_NOEX
 {
 	for (const char *src = s;; ++src)
 		if (*src != c)
@@ -273,7 +278,8 @@ static char *jstr_stripp(char *JSTR_RST s, const int c) JSTR_NOEX
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_stripspnp(char *JSTR_RST s, const char *JSTR_RST reject) JSTR_NOEX
+static char *jstr_stripspnp(char *JSTR_RST s,
+			    const char *JSTR_RST reject) JSTR_NOEX
 {
 	enum {
 		ACCEPT = 0,
@@ -316,7 +322,8 @@ static char *jstr_stripspnp(char *JSTR_RST s, const char *JSTR_RST reject) JSTR_
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_trimmemp(char *JSTR_RST const s, const size_t n) JSTR_NOEX
+static char *jstr_trimmemp(char *JSTR_RST const s,
+			   const size_t n) JSTR_NOEX
 {
 	if (unlikely(!n))
 		return s;
