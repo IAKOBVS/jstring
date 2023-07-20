@@ -19,13 +19,13 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
-#if defined(__cplusplus) && JSTR_EXTERN_C
-extern "C" {
-#endif // __cpluslus
-
-#if defined(__cplusplus) && JSTR_NAMESPACE
+#if JSTR_NAMESPACE && defined(__cplusplus)
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
+
+#if JSTR_EXTERN_C && defined(__cplusplus)
+extern "C" {
+#endif // __cpluslus
 
 #include "jstr_ctype.h"
 #include "jstr_string.h"
