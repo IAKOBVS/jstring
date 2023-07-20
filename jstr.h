@@ -16,12 +16,14 @@ extern "C" {
 
 #include "jstr_macros.h"
 
-#ifdef __cplusplus
+#define JSTR_EXTERN_C 1
+
+#if defined(__cplusplus) && JSTR_EXTERN_C
 extern "C" {
 #endif // __cpluslus
 
-#include "jstr_std.h"
-#include "jstr_types.h"
+#include "jstr_string.h"
+#include "jstr_ctype.h"
 
 #define JSTR_RST  JSTR_RESTRICT
 #define JSTR_NOEX JSTR_NOEXCEPT
@@ -577,7 +579,7 @@ static int jstr_endswith(char *JSTR_RST s1,
 	return jstr_endswithmem(s1, l1, s2, strlen(s2));
 }
 
-#ifdef __cplusplus
+#if defined(__cplusplus) && JSTR_EXTERN_C
 }
 #endif // __cplusplus
 

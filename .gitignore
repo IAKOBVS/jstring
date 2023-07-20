@@ -5,3 +5,4 @@ jstr.cpp
 jstrp.c
 legacy
 *.gch
+cpp
