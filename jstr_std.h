@@ -40,7 +40,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_memrchr(char *JSTR_RST s,
+static char *jstr_memrchr(char *JSTR_RST const s,
 			  const int c,
 			  size_t n) JSTR_NOEX
 #ifndef JSTR_HAS_MEMRCHR

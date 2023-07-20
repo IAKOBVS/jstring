@@ -159,14 +159,14 @@ JSTR_WARN_UNUSED
 #ifdef JSTR_HAS_MEMMEM
 
 static int jstr_counts(const char *JSTR_RST hs,
-		       size_t hslen,
+		       size_t hlen,
 		       const char *JSTR_RST ne,
-		       const size_t nelen) JSTR_NOEX
+		       const size_t nlen) JSTR_NOEX
 {
 	int count = 0;
 	for (const char *old = hs;
-	     (hs = JSTR_CAST(char *) memmem(hs, hslen, ne, nelen));
-	     hslen -= (hs - old), ++count)
+	     (hs = JSTR_CAST(char *) memmem(hs, hlen, ne, nlen));
+	     hlen -= (hs - old), ++count)
 		;
 	return count;
 }
