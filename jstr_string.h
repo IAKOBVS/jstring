@@ -1,8 +1,17 @@
 #ifndef JSTR_STD_H_DEF
 #define JSTR_STD_H_DEF
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include <stddef.h>
 #include <string.h>
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #include "jstr_macros.h"
 

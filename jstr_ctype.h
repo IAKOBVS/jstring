@@ -2,7 +2,16 @@
 #define JSTR_TYPES_H_DEF
 
 #include "jstr_macros.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include <stddef.h>
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #define JSTR_RST  JSTR_RESTRICT
 #define JSTR_NOEX JSTR_NOEXCEPT
