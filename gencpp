@@ -1,0 +1,7 @@
+#!/bin/sh
+cpp_dir=./cpp
+mkdir -p $cpp_dir
+for fname in $(echo *.h); do
+	newfname=./cpp/${fname%.*}.hpp
+	printf "%s" "$(sed 's/JSTR_EXTERN_C 1/JSTR_EXTERN_C 0/; s/H_DEF/HPP_DEF/; s/\.h"/\.hpp"/g; s/\(jstr_[_0-9A-Za-z]\{1,\}\)mem/\1/g' "$fname")" > "$newfname"
+done
