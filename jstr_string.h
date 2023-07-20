@@ -16,7 +16,6 @@ extern "C" {
 #include "jstr_macros.h"
 
 #define JSTR_RST  JSTR_RESTRICT
-#define JSTR_NOEX JSTR_NOEXCEPT
 
 /*
   Return value:
@@ -26,7 +25,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_stpcpy(char *JSTR_RST dst,
-			 const char *JSTR_RST src) JSTR_NOEX
+			 const char *JSTR_RST src) JSTR_NOEXCEPT
 #ifndef JSTR_HAS_STPCPY
 {
 	const size_t slen = strlen(src);
@@ -51,7 +50,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_memrchr(char *JSTR_RST const s,
 			  const int c,
-			  size_t n) JSTR_NOEX
+			  size_t n) JSTR_NOEXCEPT
 #ifndef JSTR_HAS_MEMRCHR
 {
 	if (unlikely(!n))
@@ -77,7 +76,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_stpcat(char *JSTR_RST dst,
-			 const char *JSTR_RST src) JSTR_NOEX
+			 const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 	dst += strlen(dst);
 	return jstr_stpcpy(dst, src);
@@ -94,7 +93,7 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_casecmp(const char *JSTR_RST s1,
-			const char *JSTR_RST s2) JSTR_NOEX
+			const char *JSTR_RST s2) JSTR_NOEXCEPT
 {
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
@@ -125,6 +124,5 @@ static int jstr_casecmp(const char *JSTR_RST s1,
 }
 
 #undef JSTR_RST
-#undef JSTR_NOEX
 
 #endif /* JSTR_STD_H_DEF */
