@@ -61,19 +61,19 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_alloc(char **JSTR_RST s,
 		       size_t *JSTR_RST cap,
-		       const size_t newsz) JSTR_NOEX
+		       const size_t top__) JSTR_NOEX
 {
-	*s = JSTR_CAST(char *) malloc(newsz * 2);
+	*s = JSTR_CAST(char *) malloc(top__ * 2);
 	JSTR_MALLOC_ERR(*s, return);
-	*cap = newsz * 2;
+	*cap = top__ * 2;
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_alloc_j(jstr_t *JSTR_RST j,
-			 const size_t newsz) JSTR_NOEX
+			 const size_t top__) JSTR_NOEX
 {
-	jstr_alloc(&j->data, &j->cap, newsz);
+	jstr_alloc(&j->data, &j->cap, top__);
 }
 
 JSTR_INLINE
