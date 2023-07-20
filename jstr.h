@@ -81,22 +81,22 @@ static void jstr_alloc_appendmem(char **JSTR_RST dst,
 				 size_t *JSTR_RST dsz,
 				 size_t *JSTR_RST dcap,
 				 const char *JSTR_RST src,
-				 const size_t ssz) JSTR_NOEXCEPT
+				 const size_t slen) JSTR_NOEXCEPT
 {
-	jstr_alloc(dst, dcap, ssz * 2);
+	jstr_alloc(dst, dcap, slen * 2);
 	if (unlikely(!*dst))
 		return;
-	*dsz = ssz;
-	memcpy(*dst, src, ssz + 1);
+	*dsz = slen;
+	memcpy(*dst, src, slen + 1);
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_alloc_appendmem_j(jstr_t *JSTR_RST j,
 				   const char *JSTR_RST src,
-				   const size_t ssz) JSTR_NOEXCEPT
+				   const size_t slen) JSTR_NOEXCEPT
 {
-	jstr_alloc_appendmem(&j->data, &j->size, &j->cap, src, ssz);
+	jstr_alloc_appendmem(&j->data, &j->size, &j->cap, src, slen);
 }
 
 JSTR_INLINE
@@ -126,10 +126,10 @@ JSTR_NONNULL_ALL
 static void jstr_appendmemf(char **JSTR_RST dst,
 			    size_t *JSTR_RST dsz,
 			    const char *JSTR_RST src,
-			    const size_t ssz) JSTR_NOEXCEPT
+			    const size_t slen) JSTR_NOEXCEPT
 {
-	memcpy(*dst, src, ssz + 1);
-	*dsz += ssz;
+	memcpy(*dst, src, slen + 1);
+	*dsz += slen;
 }
 
 /*
@@ -140,9 +140,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_appendmemf_j(jstr_t *JSTR_RST j,
 			      const char *JSTR_RST src,
-			      const size_t ssz) JSTR_NOEXCEPT
+			      const size_t slen) JSTR_NOEXCEPT
 {
-	jstr_appendmemf(&j->data, &j->size, src, ssz);
+	jstr_appendmemf(&j->data, &j->size, src, slen);
 }
 
 /*
@@ -179,11 +179,11 @@ static void jstr_appendmem(char **JSTR_RST dst,
 			   size_t *JSTR_RST dsz,
 			   size_t *JSTR_RST dcap,
 			   const char *JSTR_RST src,
-			   const size_t ssz) JSTR_NOEXCEPT
+			   const size_t slen) JSTR_NOEXCEPT
 {
-	if (*dcap < *dsz + ssz)
-		JSTR_REALLOC(*dst, *dcap, *dsz + ssz, return);
-	jstr_appendmemf(dst, dsz, src, ssz);
+	if (*dcap < *dsz + slen)
+		JSTR_REALLOC(*dst, *dcap, *dsz + slen, return);
+	jstr_appendmemf(dst, dsz, src, slen);
 }
 
 /*
@@ -193,9 +193,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_appendmem_j(jstr_t *JSTR_RST j,
 			     const char *JSTR_RST src,
-			     const size_t ssz) JSTR_NOEXCEPT
+			     const size_t slen) JSTR_NOEXCEPT
 {
-	jstr_appendmem(&j->data, &j->size, &j->cap, src, ssz);
+	jstr_appendmem(&j->data, &j->size, &j->cap, src, slen);
 }
 
 /*
@@ -683,25 +683,25 @@ static void jstr_insertmem(char **JSTR_RST dst,
 			   size_t *JSTR_RST dcap,
 			   const size_t at,
 			   const char *JSTR_RST src,
-			   const size_t ssz) JSTR_NOEXCEPT
+			   const size_t slen) JSTR_NOEXCEPT
 {
-	if (*dcap > *dsz + ssz + 1) {
-		memmove(*dst + at + ssz,
+	if (*dcap > *dsz + slen + 1) {
+		memmove(*dst + at + slen,
 			*dst + at,
 			*dsz - at + 1);
-		memcpy(*dst + at, src, ssz);
+		memcpy(*dst + at, src, slen);
 	} else {
-		JSTR_GROW(*dcap, *dsz + ssz + 1);
+		JSTR_GROW(*dcap, *dsz + slen + 1);
 		char *const tmp = JSTR_CAST(char *) malloc(*dcap);
 		JSTR_MALLOC_ERR(tmp, return);
 		memcpy(tmp, *dst, at);
-		memcpy(tmp + at, src, ssz);
-		memcpy(tmp + at + ssz,
+		memcpy(tmp + at, src, slen);
+		memcpy(tmp + at + slen,
 		       *dst + at,
 		       *dsz - at + 1);
 		free(*dst);
 		*dst = tmp;
-		*dsz += ssz;
+		*dsz += slen;
 	}
 }
 
@@ -713,9 +713,9 @@ JSTR_NONNULL_ALL
 static void jstr_insertmem_j(jstr_t *JSTR_RST j,
 			     const size_t at,
 			     const char *JSTR_RST src,
-			     const size_t ssz) JSTR_NOEXCEPT
+			     const size_t slen) JSTR_NOEXCEPT
 {
-	jstr_insertmem(&j->data, &j->size, &j->cap, at, src, ssz);
+	jstr_insertmem(&j->data, &j->size, &j->cap, at, src, slen);
 }
 
 /*
