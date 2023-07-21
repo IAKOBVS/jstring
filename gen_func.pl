@@ -102,8 +102,8 @@ foreach (@funcs) {
 
 	$hpp .= $decl;
 
-	$decl =~ s/$func/$func\_j/;
 	$h .= $decl;
+	$h =~ s/$func/$func\_j/;
 }
 my $end = "$namespace\n$undef\n$endif";
 if ($h && $hpp) {

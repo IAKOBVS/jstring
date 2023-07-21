@@ -348,7 +348,7 @@ static char *jstr_trimp(char *JSTR_RST s) JSTR_NOEXCEPT
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replace_c(char *JSTR_RST s,
+static void jstr_replacec(char *JSTR_RST s,
 			   const int srch,
 			   const int rplc) JSTR_NOEXCEPT
 {
@@ -367,7 +367,7 @@ static void jstr_replace_c(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replace_call(char *JSTR_RST s,
+static void jstr_replacecall(char *JSTR_RST s,
 			      const int srch,
 			      const int rplc) JSTR_NOEXCEPT
 {
