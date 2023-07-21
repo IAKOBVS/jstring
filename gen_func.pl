@@ -121,6 +121,7 @@ $hpp =~ s/$NAMESPACE\_(\w*)mem(\w*\()/$1$2/g;
 $hpp =~ s/($NAMESPACE\_\w*)_j(\()/$1$2/g;
 $hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
 $hpp =~ s/\n\n\n/\n\n/g;
+$hpp =~ s/alloc_append/alloc/g;
 $h =~ s/\n\n\n/\n\n/g;
 open($FH, '>', "$DIR_CPP/$FNAME".'pp')
 	or die "Can't open $DIR_CPP/$FNAME"."pp\n";
