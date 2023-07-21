@@ -2,42 +2,52 @@
 use strict;
 use warnings;
 
-my $namespace = 'jstr';
-my $namespace_big = 'JSTR';
+my $NAMESPACE = 'jstr';
+my $NAMESPACE_BIG = 'JSTR';
+
+mkdir('cpp');
 
 while (glob('*.h')) {
 	my $fname = $_;
-	open(my $FH, '<', $fname) or die "Can't open $fname\n";
-	my $s;
+	my $file;
+	my $namespace = '';
+	my $undef = '';
+	my $endif = '';
+	open(my $FH, '<', $fname)
+		or die "Can't open $fname\n";
 	while (<$FH>) {
-		$s .= $_;
+		if (/#\s*undef/) {
+			$undef .= $_;
+		} elsif (/#\s*endif\s*(?:\/\/|\/\*).*DEF.*(?:\/\*){0,1}/) {
+			$endif .= $_;
+		} elsif (/^\s*#if\s*defined.*JSTR_EXTERN_C/) {
+			$namespace .= $_;
+			while (<$FH>) {
+				last if /^$/;
+				$namespace .= $_;
+			}
+			$namespace = '' if $namespace =~ /namespace/;
+		} else {
+			$file .= $_;
+		}
 	}
 	close($FH);
-	my @funcs = split(/\n\n/, $s);
-	my $file;
+	my $h;
+	my $hpp;
+	my @funcs = split(/\n\n/, $file);
 	foreach (@funcs) {
-		/^((?:\/\/|\/\*|$namespace_big|static)[^(){}]+?($namespace\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
-		if (!$1 || !$2 || !$3) {
-			next;
-		}
+		/^((?:\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
+		next if !$1 || !$2 || !$3;
 		my $decl = $1;
 		my $func = $2;
 		my $args = $3;
-		my $has_sz = 0;
-		if (index($args, 'sz') != -1) {
-			$has_sz = 1;
-		}
-		my $has_cap = 0;
-		if (index($args, 'cap') != -1) {
-			$has_cap = 1;
-		}
-		if (!$has_sz && !$has_cap) {
-			next;
-		}
+		my $has_sz = (index($args, 'sz') != -1) ? 1 : 0;
+		my $has_cap = (index($args, 'cap') != -1) ? 1 : 0;
+		next if !$has_sz && !$has_cap;
 		$args =~ s/\)/,/;
-		my @new_args;
 		my @types;
 		my $argnum = 0;
+		my @new_args;
 		{
 			my @old_args = split(/\s/, $args);
 			my $i = 0;
@@ -54,17 +64,13 @@ while (glob('*.h')) {
 		my $tmp = '';
 		if ($has_sz) {
 			$decl =~ s/\((?:.|\n)+?sz(,|\))/(/;
-			if ($1) {
-				$tmp = $1;
-			}
+			$tmp = $1 if $1;
 		}
 		if ($has_cap) {
 			$decl =~ s/\((?:.|\n)+?cap(,|\))/(/;
-			if ($1 eq ',') {
-				$tmp = $1;
-			}
+			$tmp = $1 if $1 eq ',';
 		}
-		$decl =~ s/\(/($namespace\_t *j$tmp/;
+		$decl =~ s/\(/($NAMESPACE\_t *j$tmp/;
 		$decl .= "\n{\n\t$func(";
 		my $func_args;
 		for (my $i = 0; $i <= $#new_args; ++$i) {
@@ -79,25 +85,31 @@ while (glob('*.h')) {
 		}
 		$func_args =~ s/,[^,]*$//;
 		$decl .= "$func_args);\n}\n\n";
-		$decl =~ s/$func/$func\_j/g;
-		$file .= $decl;
+
+		$hpp .= $decl;
+
+		$h .= $decl;
 	}
-	if (!$file) {
-		next;
+	my $end = "$namespace\n$undef\n$endif";
+	if ($h && $hpp) {
+		$h = "$file\n$h\n$end";
+		$hpp = "$file\n$hpp\n$end";
+	} else {
+		$h = "$file\n$end";
+		$hpp = "$file\n$end";
 	}
-	$file =~ s/$namespace_big\_RST/$namespace_big\_RESTRICT/g;
-	$file = "$s\n#if $namespace_big\_NAMESPACE && defined(__cplusplus)\nnamespace $namespace {\n#endif /* $namespace_big\_NAMESPACE */\n\n$file#if $namespace_big\_NAMESPACE && defined(__cplusplus)\n}\n#endif /* $namespace_big\_NAMESPACE */\n";
-	my $tmp = $file;
-	$tmp =~ s/\.h"/.hpp"/g;
-	$tmp =~ s/H_DEF/HPP_DEF/g;
-	$tmp =~ s/$namespace\_(\w*)\(/$1(/g;
-	$tmp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
-	$tmp =~ s/NAMESPACE\s*\d/NAMESPACE 1/;
-	$tmp =~ s/_j\(/(/g;
-	open($FH, '>', "cpp/$fname". 'pp') or die "Can't open cpp/$fname"."pp\n";
-	print($FH $tmp);
+	$hpp =~ s/\.h"/.hpp"/g;
+	$hpp =~ s/H_DEF/HPP_DEF/g;
+	$hpp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
+	$hpp =~ s/NAMESPACE\s*\d/NAMESPACE 1/;
+	$hpp =~ s/$NAMESPACE\_(\w*)mem(\w*\()/$1$2/g;
+	$hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
+	open($FH, '>', "cpp/$fname".'pp')
+		or die "Can't open cpp/$fname"."pp\n";
+	print($FH $hpp);
 	close($FH);
-	# open($FH, '>', $fname) or die "Can't open $fname\n";
-	# print($FH $file);
-	# close($FH);
+	open($FH, '>', "cpp/$fname")
+		or die "Can't open $fname\n";
+	print($FH $h);
+	close($FH);
 }
