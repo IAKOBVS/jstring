@@ -6,3 +6,5 @@ jstrp.c
 legacy
 *.gch
 cpp
+./gen_cpp
+./gen_func.pl
