@@ -11,5 +11,6 @@ for fname in $(echo *.h); do
 	s/\.h\"/\.hpp\"/g;
 	s/\($namespace\_[_0-9A-Za-z]\{1,\}\)mem/\1/g;
 	s/\($namespace\_[_0-9A-Za-z]\{1,\}\)_j\([^0-9A-Za-z]\{,1\}.*(\)/\1\2/g;
+	s/$namespace\_\([_0-9A-Za-z]\{1,\}(\)/\1/g;
 	s/_j(/(/g" "$fname")" >"$newfname"
 done
