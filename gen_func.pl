@@ -4,17 +4,18 @@ use warnings;
 
 my $NAMESPACE = 'jstr';
 my $NAMESPACE_BIG = 'JSTR';
+my $NEW_DIR = 'cpp';
 
-mkdir('cpp');
+mkdir($NEW_DIR);
 
 while (glob('*.h')) {
-	my $fname = $_;
+	my $FNAME = $_;
 	my $file;
 	my $namespace = '';
 	my $undef = '';
 	my $endif = '';
-	open(my $FH, '<', $fname)
-		or die "Can't open $fname\n";
+	open(my $FH, '<', $FNAME)
+		or die "Can't open $FNAME\n";
 	while (<$FH>) {
 		if (/#\s*undef/) {
 			$undef .= $_;
@@ -116,12 +117,12 @@ while (glob('*.h')) {
 	$hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
 	$hpp =~ s/\n\n\n/\n\n/g;
 	$h =~ s/\n\n\n/\n\n/g;
-	open($FH, '>', "cpp/$fname".'pp')
-		or die "Can't open cpp/$fname"."pp\n";
+	open($FH, '>', "$NEW_DIR/$FNAME".'pp')
+		or die "Can't open $NEW_DIR/$FNAME"."pp\n";
 	print($FH $hpp);
 	close($FH);
-	open($FH, '>', "cpp/$fname")
-		or die "Can't open $fname\n";
+	open($FH, '>', "$NEW_DIR/$FNAME")
+		or die "Can't open $FNAME\n";
 	print($FH $h);
 	close($FH);
 }

@@ -1,0 +1,8 @@
+#!/bin/sh
+DIR=cpp
+FMT_FILE=.clang-format
+./gen_func.pl
+for file in $(echo $DIR/*.h*); do
+	clang-format -i --style=file:"$FMT_FILE" "$file" &
+done
+wait
