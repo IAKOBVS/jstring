@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cpluslus
+#endif /* __cpluslus */
 
 #include <stddef.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif // __cpluslus
+#endif /* __cpluslus */
 
 #include "jstr_macros.h"
 
@@ -294,7 +294,7 @@ static int jstr_counts(const char *JSTR_RST hs,
 	return count;
 }
 
-#endif // __JSTR_HAS_MEMMEM
+#endif /* __JSTR_HAS_MEMMEM */
 
 /*
   Reverse S.
@@ -827,4 +827,4 @@ static int jstr_endswith_j(const jstr_t *JSTR_RST j,
 #undef JSTR_GROW
 #undef JSTR_REALLOC
 
-#endif // JSTR_H_DEF
+#endif /* JSTR_H_DEF */
