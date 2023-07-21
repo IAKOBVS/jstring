@@ -4,9 +4,11 @@ use warnings;
 
 my $NAMESPACE = 'jstr';
 my $NAMESPACE_BIG = 'JSTR';
-my $NEW_DIR = 'cpp';
+my $DIR_CPP = 'cpp';
+my $DIR_C = 'c';
 
-mkdir($NEW_DIR);
+mkdir($DIR_CPP);
+mkdir($DIR_C);
 
 my $FNAME = $ARGV[0];
 if ($#ARGV != 0) {
@@ -120,11 +122,11 @@ $hpp =~ s/($NAMESPACE\_\w*)_j(\()/$1$2/g;
 $hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h =~ s/\n\n\n/\n\n/g;
-open($FH, '>', "$NEW_DIR/$FNAME".'pp')
-	or die "Can't open $NEW_DIR/$FNAME"."pp\n";
+open($FH, '>', "$DIR_CPP/$FNAME".'pp')
+	or die "Can't open $DIR_CPP/$FNAME"."pp\n";
 print($FH $hpp);
 close($FH);
-open($FH, '>', "$NEW_DIR/$FNAME")
-	or die "Can't open $FNAME\n";
+open($FH, '>', "$DIR_C/$FNAME")
+	or die "Can't open $DIR_C/$FNAME\n";
 print($FH $h);
 close($FH);
