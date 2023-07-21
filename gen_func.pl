@@ -99,9 +99,7 @@ foreach (@funcs) {
 	}
 	$func_args =~ s/,[^,]*$//;
 	$decl .= "$func_args);\n}\n\n";
-
 	$hpp .= $decl;
-
 	$h .= $decl;
 	$h =~ s/$func/$func\_j/;
 }
