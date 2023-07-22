@@ -103,35 +103,36 @@ typedef struct jstr_t {
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	jstr_t(const size_t len)
+	jstr_t(const size_t len) JSTR_NOEXCEPT
 	{
 		jstr_alloc(&this->data, &this->cap, len);
 	}
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	jstr_t(const char *JSTR_RST src)
+	jstr_t(const char *JSTR_RST src) JSTR_NOEXCEPT
 	{
 		jstr_alloc_append(&this->data, &this->size, &this->cap, src);
 	}
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	jstr_t(const char *JSTR_RST src, const size_t slen)
+	jstr_t(const char *JSTR_RST src,
+	       const size_t slen) JSTR_NOEXCEPT
 	{
 		jstr_alloc_appendmem(&this->data, &this->size, &this->cap, src, slen);
 	}
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	~jstr_t()
+	~jstr_t() JSTR_NOEXCEPT
 	{
 		free(this->data);
 	}
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	void del()
+	void del() JSTR_NOEXCEPT
 	{
 		free(this->data);
 		this->data = NULL;
