@@ -161,8 +161,7 @@ typedef struct jstr_t {
 	JSTR_NONNULL_ALL
 	void del(void) JSTR_NOEXCEPT
 	{
-		free(this->data);
-		this->data = NULL;
+		jstr_del(this->data);
 	}
 
 	/*
