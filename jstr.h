@@ -32,12 +32,6 @@ extern "C" {
 
 #define JSTR_RST JSTR_RESTRICT
 
-typedef struct jstr_t {
-	size_t size;
-	size_t cap;
-	char *data;
-} jstr_t;
-
 #define JSTR_MALLOC_ERR(p, malloc_fail)                                            \
 	do {                                                                       \
 		if (unlikely(!(p))) {                                              \
@@ -91,6 +85,38 @@ static void jstr_alloc_append(char **JSTR_RST dst,
 {
 	jstr_alloc_appendmem(dst, dsz, dcap, src, strlen(src));
 }
+
+typedef struct jstr_t {
+	size_t size;
+	size_t cap;
+	char *data;
+#ifdef __cplusplus
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	jstr_t(const size_t len)
+	{
+		jstr_alloc(&this->data, &this->cap, len);
+	}
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	jstr_t(const char *JSTR_RST src)
+	{
+		jstr_alloc_append(&this->data, &this->size, &this->cap, src);
+	}
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	jstr_t(const char *JSTR_RST src, const size_t slen)
+	{
+		jstr_alloc_appendmem(&this->data, &this->size, &this->cap, src, slen);
+	}
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	~jstr_t()
+	{
+		free(this->data);
+	}
+#endif /* __cpluslus */
+} jstr_t;
 
 /*
    Append SRC to DST.
@@ -187,8 +213,8 @@ static int jstr_countsmem(const char *JSTR_RST hs,
 			  const size_t nlen) JSTR_NOEXCEPT
 {
 	int count = 0;
-	for (const char *const old = hs;
-	     (hs = JSTR_CAST(char *) memmem(hs, hlen - (hs - old), ne, nlen));
+	for (const char *const end = hs + hlen;
+	     (hs = JSTR_CAST(char *) memmem(hs, end - hs, ne, nlen));
 	     ++count)
 		;
 	return count;

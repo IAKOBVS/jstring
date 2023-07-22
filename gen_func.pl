@@ -129,6 +129,8 @@ $hpp =~ s/$NAMESPACE\_(\w+\()/$1/g;
 $hpp =~ s/alloc_append/alloc/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
+$hpp =~ s/\tt\(/\t$1$NAMESPACE\_t(/g;
+$hpp =~ s/\t~t\(/\t$1$NAMESPACE\_t(/g;
 open($FH, '>', "$DIR_CPP/$FNAME" . 'pp')
   or die "Can't open $DIR_CPP/$FNAME" . "pp\n";
 print($FH $hpp);
