@@ -52,6 +52,14 @@ extern "C" {
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+static void jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
+{
+	free(p);
+	p = NULL;
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
 static void jstr_alloc(char **JSTR_RST s,
 		       size_t *JSTR_RST cap,
 		       const size_t top) JSTR_NOEXCEPT
@@ -114,6 +122,13 @@ typedef struct jstr_t {
 	~jstr_t()
 	{
 		free(this->data);
+	}
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	void del()
+	{
+		free(this->data);
+		this->data = NULL;
 	}
 #endif /* __cpluslus */
 } jstr_t;
