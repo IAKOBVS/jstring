@@ -16,6 +16,8 @@ extern "C" {
 
 #include "jstr_macros.h"
 
+#define JSTR_EXIT_IF_MALLOC_ERROR 1
+
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
@@ -32,12 +34,10 @@ extern "C" {
 
 #define JSTR_RST JSTR_RESTRICT
 
-#define JSTR_MALLOC_ERR(p, malloc_fail)                                            \
-	do {                                                                       \
-		if (unlikely(!(p))) {                                              \
-			fprintf(stderr, "%s:%d:Can't malloc", __FILE__, __LINE__); \
-			malloc_fail;                                               \
-		}                                                                  \
+#define JSTR_MALLOC_ERR(p, malloc_fail) \
+	do {                            \
+		if (unlikely(!(p)))     \
+			JSTR_ERR();     \
 	} while (0)
 
 #define JSTR_GROW(oldcap, newcap) \
@@ -50,6 +50,29 @@ extern "C" {
 		JSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
 
+JSTR_INLINE
+static void JSTR_ERR(void) JSTR_NOEXCEPT
+{
+	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
+	perror("");
+#if JSTR_EXIT_IF_MALLOC_ERROR
+	exit(1);
+#endif /* JSTR_EXIT_IF_MALLOC_ERROR */
+}
+
+/*
+  exit(1) if ptr is NULL.
+*/
+JSTR_INLINE
+static void jstr_err(char *JSTR_RST p) JSTR_NOEXCEPT
+{
+	if (unlikely(!p))
+		JSTR_ERR();
+}
+
+/*
+  free(p) and set p to NULL.
+*/
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
@@ -125,17 +148,30 @@ typedef struct jstr_t {
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	~jstr_t() JSTR_NOEXCEPT
+	~jstr_t(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
 	}
 
+	/*
+	  free(p) and set p to NULL.
+	*/
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	void del() JSTR_NOEXCEPT
+	void del(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
 		this->data = NULL;
+	}
+
+	/*
+	  exit(1) if ptr is NULL.
+	*/
+	JSTR_INLINE
+	void err(void) JSTR_NOEXCEPT
+	{
+		if (unlikely(!this->data))
+			exit(1);
 	}
 #endif /* __cpluslus */
 } jstr_t;
