@@ -44,6 +44,7 @@ close($FH);
 my $h;
 my $hpp;
 my @funcs = split(/\n\n/, $file);
+my $skeleton;
 foreach (@funcs) {
 /^((?:\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
     if (!$1 || !$2 || !$3) {
@@ -63,25 +64,7 @@ foreach (@funcs) {
         my $i        = 0;
         foreach (@old_args) {
             if ($i == 0) {
-                if ($_ =~ /const/) {
-                    $is_const = 1;
-                } else {
-                    $is_const = 0;
-                }
-            }
-            if (/,$/) {
-                s/,//;
-                push(@new_args, $_);
-                ++$i;
-            }
-        }
-        for (my $i = 0 ; $i < $#old_args ; ++$i) {
-            if ($i == 0) {
-                if ($_ =~ /const/) {
-                    $is_const = 1;
-                } else {
-                    $is_const = 0;
-                }
+		$is_const = ($_ =~ /const/) ? 1 : 0;
             }
             if (/,$/) {
                 s/,//;
