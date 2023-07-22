@@ -73,16 +73,6 @@
 #	define JSTR_RESTRICT
 #endif // restrict
 
-#if defined(__PRETTY_FUNCTION__)
-#	define CURR_FUNC __PRETTY_FUNCTION__
-#elif defined(__FUNCTION__)
-#	define CURR_FUNC __FUNCTION__
-#elif defined(__func__)
-#	define CURR_FUNC __func__
-#else
-#	define CURR_FUNC ""
-#endif // __func__
-
 #if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
 #	define likely(x)   __builtin_expect(!!(x), 1)
 #	define unlikely(x) __builtin_expect(!!(x), 0)
@@ -119,6 +109,14 @@
 #	define JSTR_CONST
 #	define FLATTEN
 #endif // __GNUC__ || __clang__ || _MSC_VER
+
+#if defined(__GNUC__) || defined(__clang__)
+#	define JSTR_NOINLINE __attribute__((noinline))
+#elif defined(_MSC_VER)
+#	define JSTR_NOINLINE __declspec(noinline)
+#else
+#	define JSTR_NOINLINE
+#endif /* JSTR_NOINLINE */
 
 /* #if defined(__GNUC__) || defined(__clang__) */
 /* #	ifdef __cplusplus */

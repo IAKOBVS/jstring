@@ -5,7 +5,6 @@
 extern "C" {
 #endif /* __cpluslus */
 
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +20,7 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
-JSTR_INLINE
+JSTR_NOINLINE
 static void JSTR_ERR(void) JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
@@ -156,7 +155,7 @@ typedef struct jstr_t {
 	}
 
 	/*
-	  free(p) and set p to NULL.
+	  free(STR) and set STR to NULL.
 	*/
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
@@ -167,7 +166,7 @@ typedef struct jstr_t {
 	}
 
 	/*
-	  exit(1) if ptr is NULL.
+	  exit(1) if STR is NULL.
 	*/
 	JSTR_INLINE
 	void err(void) JSTR_NOEXCEPT
@@ -567,7 +566,6 @@ static void jstr_replaceallmem(char **JSTR_RST s,
 #endif
 		))
 		JSTR_REPLACE(1, return);
-#undef JSTR_REPLACE
 }
 
 /*
@@ -673,9 +671,8 @@ static int jstr_endswith(const char *JSTR_RST s1,
 #endif /* JSTR_NAMESPACE */
 
 #undef JSTR_RST
+#undef JSTR_REPLACE
 #undef JSTR_MALLOC_ERR
-#undef JSTR_GROW_SMALL
-#undef JSTR_REALLOC_SMALL
 #undef JSTR_GROW
 #undef JSTR_REALLOC
 
