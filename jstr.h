@@ -98,31 +98,37 @@ typedef struct jstr_t {
 	size_t size;
 	size_t cap;
 	char *data;
+
 #ifdef __cplusplus
+
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
 	jstr_t(const size_t len)
 	{
 		jstr_alloc(&this->data, &this->cap, len);
 	}
+
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
 	jstr_t(const char *JSTR_RST src)
 	{
 		jstr_alloc_append(&this->data, &this->size, &this->cap, src);
 	}
+
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
 	jstr_t(const char *JSTR_RST src, const size_t slen)
 	{
 		jstr_alloc_appendmem(&this->data, &this->size, &this->cap, src, slen);
 	}
+
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
 	~jstr_t()
 	{
 		free(this->data);
 	}
+
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
 	void del()
