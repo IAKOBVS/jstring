@@ -384,7 +384,7 @@ static void jstr_replacecall(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replace_mem(char **JSTR_RST s,
+static void jstr_replacemem(char **JSTR_RST s,
 			     size_t *JSTR_RST ssz,
 			     size_t *JSTR_RST scap,
 			     const char *JSTR_RST srch,
@@ -440,7 +440,7 @@ static void jstr_replace(char **JSTR_RST s,
 			 const char *JSTR_RST srch,
 			 const char *JSTR_RST rplc) JSTR_NOEXCEPT
 {
-	jstr_replace_mem(s, ssz, scap, srch, strlen(srch), rplc, strlen(rplc));
+	jstr_replacemem(s, ssz, scap, srch, strlen(srch), rplc, strlen(rplc));
 }
 
 /*

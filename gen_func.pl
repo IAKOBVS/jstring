@@ -99,9 +99,11 @@ foreach (@funcs) {
 	}
 	$func_args =~ s/,[^,]*$//;
 	$decl .= "$func_args);\n}\n\n";
+
 	$hpp .= $decl;
+
+	$decl =~ s/$func/$func\_j/;
 	$h .= $decl;
-	$h =~ s/$func/$func\_j/;
 }
 my $end = "$namespace\n$undef\n$endif";
 if ($h && $hpp) {
@@ -116,10 +118,10 @@ $hpp =~ s/H_DEF/HPP_DEF/g;
 $hpp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
 $hpp =~ s/NAMESPACE\s*\d/NAMESPACE 1/;
 $hpp =~ s/$NAMESPACE\_(\w*)mem(\w*\()/$1$2/g;
-$hpp =~ s/($NAMESPACE\_\w*)_j(\()/$1$2/g;
-$hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
-$hpp =~ s/\n\n\n/\n\n/g;
+$hpp =~ s/($NAMESPACE\_\w+)_j(\()/$1$2/g;
+$hpp =~ s/$NAMESPACE\_(\w+\()/$1/g;
 $hpp =~ s/alloc_append/alloc/g;
+$hpp =~ s/\n\n\n/\n\n/g;
 $h =~ s/\n\n\n/\n\n/g;
 open($FH, '>', "$DIR_CPP/$FNAME".'pp')
 	or die "Can't open $DIR_CPP/$FNAME"."pp\n";
