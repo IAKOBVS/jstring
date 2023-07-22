@@ -21,6 +21,16 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
+JSTR_INLINE
+static void JSTR_ERR(void) JSTR_NOEXCEPT
+{
+	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
+	perror("");
+#if JSTR_EXIT_IF_MALLOC_ERROR
+	exit(1);
+#endif /* JSTR_EXIT_IF_MALLOC_ERROR */
+}
+
 #if JSTR_NAMESPACE && defined(__cplusplus)
 #	define JSTR_IN_NAMESPACE 1
 namespace jstr {
@@ -36,8 +46,10 @@ extern "C" {
 
 #define JSTR_MALLOC_ERR(p, malloc_fail) \
 	do {                            \
-		if (unlikely(!(p)))     \
+		if (unlikely(!(p))) {   \
 			JSTR_ERR();     \
+			malloc_fail;    \
+		}                       \
 	} while (0)
 
 #define JSTR_GROW(oldcap, newcap) \
@@ -49,16 +61,6 @@ extern "C" {
 		(p) = JSTR_CAST(char *) realloc(p, newcap); \
 		JSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
-
-JSTR_INLINE
-static void JSTR_ERR(void) JSTR_NOEXCEPT
-{
-	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
-	perror("");
-#if JSTR_EXIT_IF_MALLOC_ERROR
-	exit(1);
-#endif /* JSTR_EXIT_IF_MALLOC_ERROR */
-}
 
 /*
   exit(1) if ptr is NULL.
