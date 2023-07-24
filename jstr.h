@@ -243,7 +243,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_countc(const char *JSTR_RST s,
+static int jstr_count_c(const char *JSTR_RST s,
 		       const int c) JSTR_NOEXCEPT
 {
 	int count = 0;
@@ -266,7 +266,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 #ifdef JSTR_HAS_MEMMEM
 
-static int jstr_countsmem(const char *JSTR_RST hs,
+static int jstr_countmem(const char *JSTR_RST hs,
 			  const char *JSTR_RST ne,
 			  const size_t hlen,
 			  const size_t nlen) JSTR_NOEXCEPT
@@ -288,15 +288,15 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_counts(const char *JSTR_RST hs,
+static int jstr_count(const char *JSTR_RST hs,
 		       const char *JSTR_RST ne) JSTR_NOEXCEPT
 {
-	return jstr_countsmem(hs, ne, strlen(hs), strlen(ne));
+	return jstr_countmem(hs, ne, strlen(hs), strlen(ne));
 }
 
 #else
 
-static int jstr_counts(const char *JSTR_RST hs,
+static int jstr_count(const char *JSTR_RST hs,
 		       const char *JSTR_RST ne) JSTR_NOEXCEPT
 {
 	int count = 0;
