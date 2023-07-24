@@ -65,7 +65,7 @@ extern "C" {
   exit(1) if ptr is NULL.
 */
 JSTR_INLINE
-static void jstr_err(char *JSTR_RST p) JSTR_NOEXCEPT
+static void jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 {
 	if (unlikely(!p))
 		JSTR_ERR();
@@ -84,8 +84,8 @@ static void jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_alloc(char **JSTR_RST s,
-		       size_t *JSTR_RST cap,
+static void jstr_alloc(char **JSTR_RST const s,
+		       size_t *JSTR_RST const cap,
 		       const size_t top) JSTR_NOEXCEPT
 {
 	*s = JSTR_CAST(char *) malloc(top * 2);
@@ -95,10 +95,10 @@ static void jstr_alloc(char **JSTR_RST s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_alloc_appendmem(char **JSTR_RST dst,
-				 size_t *JSTR_RST dsz,
-				 size_t *JSTR_RST dcap,
-				 const char *JSTR_RST src,
+static void jstr_alloc_appendmem(char **JSTR_RST const dst,
+				 size_t *JSTR_RST const dsz,
+				 size_t *JSTR_RST const dcap,
+				 const char *JSTR_RST const src,
 				 const size_t slen) JSTR_NOEXCEPT
 {
 	jstr_alloc(dst, dcap, slen * 2);
@@ -110,10 +110,10 @@ static void jstr_alloc_appendmem(char **JSTR_RST dst,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_alloc_append(char **JSTR_RST dst,
-			      size_t *JSTR_RST dsz,
-			      size_t *JSTR_RST dcap,
-			      const char *JSTR_RST src) JSTR_NOEXCEPT
+static void jstr_alloc_append(char **JSTR_RST const dst,
+			      size_t *JSTR_RST const dsz,
+			      size_t *JSTR_RST const dcap,
+			      const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 	jstr_alloc_appendmem(dst, dsz, dcap, src, strlen(src));
 }
@@ -134,14 +134,14 @@ typedef struct jstr_t {
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	jstr_t(const char *JSTR_RST src) JSTR_NOEXCEPT
+	jstr_t(const char *JSTR_RST const src) JSTR_NOEXCEPT
 	{
 		jstr_alloc_append(&this->data, &this->size, &this->cap, src);
 	}
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	jstr_t(const char *JSTR_RST src,
+	jstr_t(const char *JSTR_RST const src,
 	       const size_t slen) JSTR_NOEXCEPT
 	{
 		jstr_alloc_appendmem(&this->data, &this->size, &this->cap, src, slen);
@@ -183,9 +183,9 @@ typedef struct jstr_t {
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_appendmemf(char **JSTR_RST dst,
-			    size_t *JSTR_RST dsz,
-			    const char *JSTR_RST src,
+static void jstr_appendmemf(char **JSTR_RST const dst,
+			    size_t *JSTR_RST const dsz,
+			    const char *JSTR_RST const src,
 			    const size_t slen) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, slen + 1);
@@ -198,9 +198,9 @@ static void jstr_appendmemf(char **JSTR_RST dst,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_appendf(char **JSTR_RST dst,
-			 size_t *JSTR_RST dsz,
-			 const char *JSTR_RST src) JSTR_NOEXCEPT
+static void jstr_appendf(char **JSTR_RST const dst,
+			 size_t *JSTR_RST const dsz,
+			 const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 	jstr_appendmemf(dst, dsz, src, strlen(src));
 }
@@ -210,10 +210,10 @@ static void jstr_appendf(char **JSTR_RST dst,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_appendmem(char **JSTR_RST dst,
-			   size_t *JSTR_RST dsz,
-			   size_t *JSTR_RST dcap,
-			   const char *JSTR_RST src,
+static void jstr_appendmem(char **JSTR_RST const dst,
+			   size_t *JSTR_RST const dsz,
+			   size_t *JSTR_RST const dcap,
+			   const char *JSTR_RST const src,
 			   const size_t slen) JSTR_NOEXCEPT
 {
 	if (*dcap < *dsz + slen)
@@ -226,10 +226,10 @@ static void jstr_appendmem(char **JSTR_RST dst,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_append(char **JSTR_RST dst,
-			size_t *JSTR_RST dsz,
-			size_t *JSTR_RST dcap,
-			const char *JSTR_RST src) JSTR_NOEXCEPT
+static void jstr_append(char **JSTR_RST const dst,
+			size_t *JSTR_RST const dsz,
+			size_t *JSTR_RST const dcap,
+			const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 	jstr_appendmem(dst, dsz, dcap, src, strlen(src));
 }
@@ -288,8 +288,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_count(const char *JSTR_RST hs,
-		      const char *JSTR_RST ne) JSTR_NOEXCEPT
+static int jstr_count(const char *JSTR_RST const hs,
+		      const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
 	return jstr_countmem(hs, ne, strlen(hs), strlen(ne));
 }
@@ -297,7 +297,7 @@ static int jstr_count(const char *JSTR_RST hs,
 #else
 
 static int jstr_count(const char *JSTR_RST hs,
-		      const char *JSTR_RST ne) JSTR_NOEXCEPT
+		      const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
 	int count = 0;
 	while ((hs = strstr(hs, ne)))
@@ -331,7 +331,7 @@ static void jstr_revmem(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_rev(char *JSTR_RST s) JSTR_NOEXCEPT
+static void jstr_rev(char *JSTR_RST const s) JSTR_NOEXCEPT
 {
 	jstr_revmem(s, strlen(s));
 }
@@ -346,7 +346,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_trimmem_p(char *JSTR_RST const s,
-			   const size_t n) JSTR_NOEXCEPT
+			    const size_t n) JSTR_NOEXCEPT
 {
 	if (unlikely(!n))
 		return s;
@@ -374,7 +374,7 @@ static char *jstr_trimmem_p(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_trim_p(char *JSTR_RST s) JSTR_NOEXCEPT
+static char *jstr_trim_p(char *JSTR_RST const s) JSTR_NOEXCEPT
 {
 	return jstr_trimmem_p(s, strlen(s));
 }
@@ -484,8 +484,8 @@ static void jstr_replace_c(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static char *jstr_removemem_p(char *JSTR_RST s,
-			      const char *JSTR_RST hs,
+static char *jstr_removemem_p(char *JSTR_RST const s,
+			      const char *JSTR_RST const hs,
 			      const size_t slen,
 			      const size_t hlen) JSTR_NOEXCEPT
 {
@@ -505,7 +505,7 @@ static char *jstr_removemem_p(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static char *jstr_remove_p(char *JSTR_RST s,
+static char *jstr_remove_p(char *JSTR_RST const s,
 			   const char *JSTR_RST const hs,
 			   const size_t slen) JSTR_NOEXCEPT
 {
@@ -529,7 +529,7 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 	const char *const end = s + slen - hlen;
 	const size_t off = hlen - 8;
 	while (s <= end) {
-		if (*s == *hs && *(s + slen - 1) == *(hs + hlen - 1))
+		if (*s == *hs && *(s + hlen - 1) == *(hs + hlen - 1))
 			if (hlen <= 15 || !memcmp(s + off, hs + off, 8))
 				if (!memcmp(s, hs, hlen)) {
 					s += hlen + 1;
@@ -537,7 +537,7 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 				}
 		*dst++ = *s++;
 	}
-	memcpy(dst, s, s - end + hlen + 1);
+	memcpy(dst, s, end + hlen - s + 1);
 	return dst;
 }
 
@@ -558,7 +558,7 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static char *jstr_removeall_p(char *JSTR_RST s,
+static char *jstr_removeall_p(char *JSTR_RST const s,
 			      const char *JSTR_RST const hs,
 			      const size_t slen) JSTR_NOEXCEPT
 {
@@ -587,11 +587,11 @@ static void jstr_replaceall_c(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replacemem(char **JSTR_RST s,
-			    size_t *JSTR_RST ssz,
-			    size_t *JSTR_RST scap,
-			    const char *JSTR_RST srch,
-			    const char *JSTR_RST rplc,
+static void jstr_replacemem(char **JSTR_RST const s,
+			    size_t *JSTR_RST const ssz,
+			    size_t *JSTR_RST const scap,
+			    const char *JSTR_RST const srch,
+			    const char *JSTR_RST const rplc,
 			    const size_t slen,
 			    const size_t rlen) JSTR_NOEXCEPT
 {
@@ -632,11 +632,11 @@ static void jstr_replacemem(char **JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replace(char **JSTR_RST s,
-			 size_t *JSTR_RST ssz,
-			 size_t *JSTR_RST scap,
-			 const char *JSTR_RST srch,
-			 const char *JSTR_RST rplc) JSTR_NOEXCEPT
+static void jstr_replace(char **JSTR_RST const s,
+			 size_t *JSTR_RST const ssz,
+			 size_t *JSTR_RST const scap,
+			 const char *JSTR_RST const srch,
+			 const char *JSTR_RST const rplc) JSTR_NOEXCEPT
 {
 	jstr_replacemem(s, ssz, scap, srch, rplc, strlen(srch), strlen(rplc));
 }
@@ -646,11 +646,11 @@ static void jstr_replace(char **JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replaceallmem(char **JSTR_RST s,
-			       size_t *JSTR_RST ssz,
-			       size_t *JSTR_RST scap,
-			       const char *JSTR_RST srch,
-			       const char *JSTR_RST rplc,
+static void jstr_replaceallmem(char **JSTR_RST const s,
+			       size_t *JSTR_RST const ssz,
+			       size_t *JSTR_RST const scap,
+			       const char *JSTR_RST const srch,
+			       const char *JSTR_RST const rplc,
 			       const size_t slen,
 			       const size_t rlen) JSTR_NOEXCEPT
 {
@@ -665,11 +665,11 @@ static void jstr_replaceallmem(char **JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replaceall(char **JSTR_RST s,
-			    size_t *JSTR_RST ssz,
-			    size_t *JSTR_RST scap,
-			    const char *JSTR_RST srch,
-			    const char *JSTR_RST rplc) JSTR_NOEXCEPT
+static void jstr_replaceall(char **JSTR_RST const s,
+			    size_t *JSTR_RST const ssz,
+			    size_t *JSTR_RST const scap,
+			    const char *JSTR_RST const srch,
+			    const char *JSTR_RST const rplc) JSTR_NOEXCEPT
 {
 	jstr_replaceallmem(s, ssz, scap, srch, rplc, strlen(srch), strlen(rplc));
 }
@@ -679,11 +679,11 @@ static void jstr_replaceall(char **JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_slipmem(char **JSTR_RST dst,
-			 size_t *JSTR_RST dsz,
-			 size_t *JSTR_RST dcap,
+static void jstr_slipmem(char **JSTR_RST const dst,
+			 size_t *JSTR_RST const dsz,
+			 size_t *JSTR_RST const dcap,
 			 const size_t at,
-			 const char *JSTR_RST src,
+			 const char *JSTR_RST const src,
 			 const size_t slen) JSTR_NOEXCEPT
 {
 	if (*dcap > *dsz + slen + 1) {
@@ -711,11 +711,11 @@ static void jstr_slipmem(char **JSTR_RST dst,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_slip(char **JSTR_RST dst,
-		      size_t *JSTR_RST dsz,
-		      size_t *JSTR_RST dcap,
+static void jstr_slip(char **JSTR_RST const dst,
+		      size_t *JSTR_RST const dsz,
+		      size_t *JSTR_RST const dcap,
 		      const size_t at,
-		      const char *JSTR_RST src) JSTR_NOEXCEPT
+		      const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 	jstr_slipmem(dst, dsz, dcap, at, src, strlen(src));
 }
@@ -730,8 +730,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_endswithmem(const char *JSTR_RST s1,
-			    const char *JSTR_RST s2,
+static int jstr_endswithmem(const char *JSTR_RST const s1,
+			    const char *JSTR_RST const s2,
 			    const size_t l1,
 			    const size_t l2) JSTR_NOEXCEPT
 {
@@ -748,8 +748,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_endswith(const char *JSTR_RST s1,
-			 const char *JSTR_RST s2,
+static int jstr_endswith(const char *JSTR_RST const s1,
+			 const char *JSTR_RST const s2,
 			 const size_t l1) JSTR_NOEXCEPT
 {
 	return jstr_endswithmem(s1, s2, l1, strlen(s2));
