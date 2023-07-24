@@ -675,7 +675,7 @@ static void jstr_replaceall(char **JSTR_RST const s,
 }
 
 /*
-  Insert SRC into DST[AT].
+  Slip SRC into DST[AT].
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -707,7 +707,7 @@ static void jstr_slipmem(char **JSTR_RST const dst,
 }
 
 /*
-  Insert SRC into DST[AT].
+  Slip SRC into DST[AT].
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
