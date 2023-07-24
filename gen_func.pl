@@ -87,9 +87,9 @@ foreach (@funcs) {
 		}
 	}
 	if ($is_const) {
-		$decl =~ s/\(/(const $NAMESPACE\_t *j$tmp/;
+		$decl =~ s/\(/(const $NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$tmp/;
 	} else {
-		$decl =~ s/\(/($NAMESPACE\_t *j$tmp/;
+		$decl =~ s/\(/($NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$tmp/;
 	}
 	$decl .= "\n{\n\t$func(";
 	my $func_args;
