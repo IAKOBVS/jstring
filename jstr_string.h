@@ -63,7 +63,7 @@ static char *jstr_memrchr(char *JSTR_RST const s,
 			  size_t n) JSTR_NOEXCEPT
 #ifndef JSTR_HAS_MEMRCHR
 {
-	if (unlikely(!n))
+	if (unlikely(!*s))
 		return NULL;
 	char *end = s + n - 1;
 	do
