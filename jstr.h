@@ -609,10 +609,12 @@ static void jstr_replacemem(char **JSTR_RST const s,
 			    const size_t slen,
 			    const size_t rlen) JSTR_NOEXCEPT
 {
-	if (unlikely(!*rplc)) {
+	if (unlikely (!*srch)) {
+		return;
+	} else if (unlikely(!*rplc)) {
 		*ssz = jstr_removemem_p(*s, srch, *ssz, slen) - *s;
 		return;
-	} else if (unlikely(!*(rplc + 1))) {
+	} else if (unlikely(!*(srch + 1) && !*(rplc + 1))) {
 		jstr_replace_c(*s, *srch, *rplc);
 		--*ssz;
 		return;
