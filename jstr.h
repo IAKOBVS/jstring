@@ -315,7 +315,7 @@ JSTR_NONNULL_ALL
 static void jstr_revmem(char *JSTR_RST s,
 			const size_t n) JSTR_NOEXCEPT
 {
-	if (unlikely(!n))
+	if (unlikely(!*s))
 		return;
 	char *end = s + n - 1;
 	char tmp;
@@ -348,7 +348,7 @@ JSTR_WARN_UNUSED
 static char *jstr_trimmem_p(char *JSTR_RST const s,
 			    const size_t n) JSTR_NOEXCEPT
 {
-	if (unlikely(!n))
+	if (unlikely(!*s))
 		return s;
 	char *end = s + n - 1;
 	do {
@@ -390,12 +390,15 @@ JSTR_NONNULL_ALL
 static int jstr_remove_c(char *JSTR_RST s,
 			  const int c) JSTR_NOEXCEPT
 {
-	for (; *s; ++s)
-		if (*s != c) {
+	if (unlikely(!*s))
+		return 0;
+	do {
+		if (*s == c) {
 			for (char *d = s; (*d++ = *s++);)
 				;
 			return 1;
 		}
+	} while (*++s);
 	return 0;
 }
 
@@ -409,10 +412,13 @@ JSTR_NONNULL_ALL
 static char *jstr_removeall_c(char *JSTR_RST s,
 			      const int c) JSTR_NOEXCEPT
 {
+	if (unlikely(!*s))
+		return s;
 	char *dst = s;
-	for (; *s; ++s)
+	do {
 		if (*s != c)
 			*dst++ = *s;
+	} while (*++s);
 	*dst = '\0';
 	return dst;
 }
@@ -470,12 +476,14 @@ static void jstr_replace_c(char *JSTR_RST s,
 			   const int srch,
 			   const int rplc) JSTR_NOEXCEPT
 {
-	for (;; ++s) {
+	if (unlikely(!*s))
+		return;
+	for (;;) {
 		if (*s == srch) {
 			*s = rplc;
 			break;
 		}
-		if (unlikely(!*s))
+		if (unlikely(!*++s))
 			break;
 	}
 }
@@ -578,10 +586,12 @@ static void jstr_replaceall_c(char *JSTR_RST s,
 			      const int srch,
 			      const int rplc) JSTR_NOEXCEPT
 {
-	for (;; ++s) {
+	if (unlikely(*s))
+		return;
+	for (;;) {
 		if (*s == srch)
 			*s = rplc;
-		if (unlikely(!*s))
+		if (unlikely(!*++s))
 			break;
 	}
 }
@@ -599,6 +609,14 @@ static void jstr_replacemem(char **JSTR_RST const s,
 			    const size_t slen,
 			    const size_t rlen) JSTR_NOEXCEPT
 {
+	if (unlikely(!*rplc)) {
+		*ssz = jstr_removemem_p(*s, srch, *ssz, slen) - *s;
+		return;
+	} else if (unlikely(!*(rplc + 1))) {
+		jstr_replace_c(*s, *srch, *rplc);
+		--*ssz;
+		return;
+	}
 	char *mtc;
 	if ((mtc = JSTR_CAST(char *) jstr_memmem(*s, *ssz, srch, slen))) {
 		char *tmp;
