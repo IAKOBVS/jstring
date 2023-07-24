@@ -20,6 +20,7 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
+/* This is executed every time a malloc error is encountered. */
 JSTR_NOINLINE
 static void JSTR_ERR(void) JSTR_NOEXCEPT
 {
