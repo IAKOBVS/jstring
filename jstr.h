@@ -380,19 +380,23 @@ static char *jstr_trim_p(char *JSTR_RST const s) JSTR_NOEXCEPT
 }
 
 /*
-  Remove all C in S.
+  Remove first C in S.
+  Return value:
+  1 if a C is found;
+  0 otherwise.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_remove_c(char *JSTR_RST s,
+static int jstr_remove_c(char *JSTR_RST s,
 			  const int c) JSTR_NOEXCEPT
 {
 	for (; *s; ++s)
 		if (*s != c) {
 			for (char *d = s; (*d++ = *s++);)
 				;
-			break;
+			return 1;
 		}
+	return 0;
 }
 
 /*
@@ -595,6 +599,9 @@ static void jstr_replacemem(char **JSTR_RST const s,
 			    const size_t slen,
 			    const size_t rlen) JSTR_NOEXCEPT
 {
+	char *mtc;
+	if ((mtc = JSTR_CAST(char *) jstr_memmem(*s, *ssz, srch, slen))) {
+		char *tmp;
 #define JSTR_REPLACE(update_mtc, malloc_fail)                         \
 	do {                                                          \
 		if (rlen <= slen || *scap > *ssz + rlen - slen + 1) { \
@@ -620,9 +627,6 @@ static void jstr_replacemem(char **JSTR_RST const s,
 		}                                                     \
 		*ssz += (long long)(rlen - slen);                     \
 	} while (0)
-	char *mtc;
-	if ((mtc = JSTR_CAST(char *) jstr_memmem(*s, *ssz, srch, slen))) {
-		char *tmp;
 		JSTR_REPLACE(0, return);
 	}
 }
