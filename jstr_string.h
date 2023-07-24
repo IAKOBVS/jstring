@@ -133,6 +133,12 @@ static int jstr_casecmp(const char *JSTR_RST s1,
 	}
 }
 
+#ifdef JSTR_HAS_MEMMEM
+#	define jstr_memmem(hs, hlen, ne, nlen) memmem(hs, hlen, ne, nlen)
+#else
+#	define jstr_memmem(hs, hlen, ne, nlen) strstr(hs, ne)
+#endif /* JSTR_HAS_MEMMEM */
+
 #if JSTR_EXTERN_C && defined(__cplusplus)
 }
 #endif /* JSTR_EXTERN_C */
