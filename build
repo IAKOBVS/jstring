@@ -1,0 +1,22 @@
+#!/bin/sh
+DIR_CPP=cpp
+DIR_C=c
+FMT_FILE=.clang-format
+for file in $(echo *.h*); do
+	perl gen_func.pl "$file" &
+done
+wait
+for file in $(echo $DIR_CPP/*.h*); do
+	clang-format -i --style=file:"$FMT_FILE" "$file" &
+done
+for file in $(echo $DIR_C/*.h*); do
+	clang-format -i --style=file:"$FMT_FILE" "$file" &
+done
+wait
+# for file in $(echo $DIR_CPP/*.h*); do
+# 	perl gen_skel.pl "$file" &
+# done
+# for file in $(echo $DIR_C/*.h*); do
+# 	perl gen_skel.pl "$file" &
+# done
+# wait
