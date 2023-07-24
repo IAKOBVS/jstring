@@ -244,7 +244,7 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_count_c(const char *JSTR_RST s,
-		       const int c) JSTR_NOEXCEPT
+			const int c) JSTR_NOEXCEPT
 {
 	int count = 0;
 	for (;; ++s)
@@ -267,9 +267,9 @@ JSTR_WARN_UNUSED
 #ifdef JSTR_HAS_MEMMEM
 
 static int jstr_countmem(const char *JSTR_RST hs,
-			  const char *JSTR_RST ne,
-			  const size_t hlen,
-			  const size_t nlen) JSTR_NOEXCEPT
+			 const char *JSTR_RST ne,
+			 const size_t hlen,
+			 const size_t nlen) JSTR_NOEXCEPT
 {
 	int count = 0;
 	for (const char *const end = hs + hlen;
@@ -289,7 +289,7 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_count(const char *JSTR_RST hs,
-		       const char *JSTR_RST ne) JSTR_NOEXCEPT
+		      const char *JSTR_RST ne) JSTR_NOEXCEPT
 {
 	return jstr_countmem(hs, ne, strlen(hs), strlen(ne));
 }
@@ -297,7 +297,7 @@ static int jstr_count(const char *JSTR_RST hs,
 #else
 
 static int jstr_count(const char *JSTR_RST hs,
-		       const char *JSTR_RST ne) JSTR_NOEXCEPT
+		      const char *JSTR_RST ne) JSTR_NOEXCEPT
 {
 	int count = 0;
 	while ((hs = strstr(hs, ne)))
@@ -476,6 +476,11 @@ static void jstr_replace_c(char *JSTR_RST s,
 	}
 }
 
+/*
+  Remove first HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
@@ -492,15 +497,26 @@ static char *jstr_removemem_p(char *JSTR_RST s,
 	return s + slen;
 }
 
+/*
+  Remove first HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static char *jstr_remove_p(char *JSTR_RST s,
-			   const char *JSTR_RST hs) JSTR_NOEXCEPT
+			   const char *JSTR_RST const hs,
+			   const size_t slen) JSTR_NOEXCEPT
 {
-	return jstr_removemem_p(s, hs, strlen(s), strlen(hs));
+	return jstr_removemem_p(s, hs, slen, strlen(hs));
 }
 
+/*
+  Remove all HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
@@ -533,6 +549,21 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 /* 		rm += rmlen; */
 /* 	} */
 /* 	return s + slen; */
+
+/*
+  Remove all HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
+JSTR_INLINE
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+static char *jstr_removeall_p(char *JSTR_RST s,
+			      const char *JSTR_RST const hs,
+			      const size_t slen) JSTR_NOEXCEPT
+{
+	return jstr_removeallmem_p(s, hs, slen, strlen(hs));
+}
 
 /*
   Replace all SEARCH in REPLACE.
