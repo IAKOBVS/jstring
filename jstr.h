@@ -15,7 +15,7 @@ extern "C" {
 
 #include "jstr_macros.h"
 
-#define JSTR_EXIT_IF_MALLOC_ERROR 1
+#define JSTR_EXIT_ON_MALLOC_ERROR 1
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
@@ -25,9 +25,9 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
 	perror("");
-#if JSTR_EXIT_IF_MALLOC_ERROR
+#if JSTR_EXIT_ON_MALLOC_ERROR
 	exit(1);
-#endif /* JSTR_EXIT_IF_MALLOC_ERROR */
+#endif /* JSTR_EXIT_ON_MALLOC_ERROR */
 }
 
 #if JSTR_NAMESPACE && defined(__cplusplus)
@@ -175,6 +175,7 @@ typedef struct jstr_t {
 			exit(1);
 	}
 #endif /* __cpluslus */
+
 } jstr_t;
 
 /*
