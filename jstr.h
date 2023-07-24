@@ -345,7 +345,7 @@ static void jstr_rev(char *JSTR_RST s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_trimmemp(char *JSTR_RST const s,
+static char *jstr_trimmem_p(char *JSTR_RST const s,
 			   const size_t n) JSTR_NOEXCEPT
 {
 	if (unlikely(!n))
@@ -376,7 +376,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_trim_p(char *JSTR_RST s) JSTR_NOEXCEPT
 {
-	return jstr_trimmemp(s, strlen(s));
+	return jstr_trimmem_p(s, strlen(s));
 }
 
 /*
