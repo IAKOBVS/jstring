@@ -2,8 +2,10 @@
 if ! test "$1"; then
 	echo 'Usage: ./replace_namespace <namespace>'
 	echo 'For example: ./replace_namespace j'
-	echo 'jstd_ -> j_'
+	echo 'jstd -> j'
 	exit
 fi
-sed "s/jstd_/$1_/g; s/$1_macros.h/jstd_macros.h/g" jstd.h > jstd"_$1".h
-echo "sed \"s/jstd_/$1_/g; s/$1_macros.h/jstd_macros.h/g\" jstd.h > jstd\"_$1\".h"
+for file in $(echo c/*.h); do
+	sed "s/jstd_/$1_/g" "$file" > "c/$1.h"
+	echo "sed s/jstd_/$1_/g $file > c/$1.h"
+done
