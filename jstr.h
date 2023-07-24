@@ -88,9 +88,10 @@ static void jstr_alloc(char **JSTR_RST const s,
 		       size_t *JSTR_RST const cap,
 		       const size_t top) JSTR_NOEXCEPT
 {
+	enum { GROWTH_MULTIPLIER = 2 };
 	*s = JSTR_CAST(char *) malloc(top * 2);
 	JSTR_MALLOC_ERR(*s, return);
-	*cap = top * 2;
+	*cap = top * GROWTH_MULTIPLIER;
 }
 
 JSTR_INLINE
@@ -101,7 +102,8 @@ static void jstr_alloc_appendmem(char **JSTR_RST const dst,
 				 const char *JSTR_RST const src,
 				 const size_t slen) JSTR_NOEXCEPT
 {
-	jstr_alloc(dst, dcap, slen * 2);
+	enum { GROWTH_MULTIPLIER = 2 };
+	jstr_alloc(dst, dcap, slen * GROWTH_MULTIPLIER);
 	if (unlikely(!*dst))
 		return;
 	*dsz = slen;
@@ -389,7 +391,7 @@ static char *jstr_trim_p(char *JSTR_RST const s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static int jstr_remove_c(char *JSTR_RST s,
-			  const int c) JSTR_NOEXCEPT
+			 const int c) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
 		return 0;
@@ -440,12 +442,13 @@ static char *jstr_stripspn_p(char *JSTR_RST s,
 		ACCEPT = 0,
 		REJECT,
 		NUL,
+		ASCII_SIZE = 256,
 	};
 	if (unlikely(!reject[0]))
 		return s;
 	if (unlikely(!reject[1]))
 		return jstr_removeall_c(s, *reject);
-	unsigned char tbl[256];
+	unsigned char tbl[ASCII_SIZE];
 	memset(tbl, ACCEPT, 64);
 	memset(&tbl[64], ACCEPT, 64);
 	memset(&tbl[128], ACCEPT, 64);
@@ -538,12 +541,16 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 				 const size_t slen,
 				 size_t hlen) JSTR_NOEXCEPT
 {
+	enum {
+		SMALL_CMPLEN = 8,
+		MAX_SMALL_NELEN = 15,
+	};
 	char *dst = s;
 	const char *const end = s + slen - hlen;
 	const size_t off = hlen - 8;
 	while (s <= end) {
 		if (*s == *hs && *(s + hlen - 1) == *(hs + hlen - 1))
-			if (hlen <= 15 || !memcmp(s + off, hs + off, 8))
+			if (hlen <= MAX_SMALL_NELEN || !memcmp(s + off, hs + off, SMALL_CMPLEN))
 				if (!memcmp(s, hs, hlen)) {
 					s += hlen + 1;
 					continue;
@@ -610,7 +617,7 @@ static void jstr_replacemem(char **JSTR_RST const s,
 			    const size_t slen,
 			    const size_t rlen) JSTR_NOEXCEPT
 {
-	if (unlikely (!*srch)) {
+	if (unlikely(!*srch)) {
 		return;
 	} else if (unlikely(!*rplc)) {
 		*ssz = jstr_removemem_p(*s, srch, *ssz, slen) - *s;
