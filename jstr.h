@@ -535,7 +535,6 @@ static char *jstr_remove_p(char *JSTR_RST const s,
   Return value:
   Pointer to '\0' in S.
 */
-JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static char *jstr_removeallmem_p(char *JSTR_RST s,
@@ -727,7 +726,6 @@ static void jstr_replace(char **JSTR_RST const s,
 /*
   Replace all SEARCH in S with REPLACE.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_replaceallmem(char **JSTR_RST const s,
 			       size_t *JSTR_RST const ssz,
