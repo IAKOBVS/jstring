@@ -555,10 +555,10 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 		uint16_t nw = ne[0] << 8 | ne[1];
 		uint16_t sw = s[0] << 8 | s[1];
 		for (++s, slen -= 2; slen--; sw = sw << 8 | *s)
-			if (sw == nw)
-				s += 2;
-			else
+			if (sw != nw)
 				*dst++ = *(s++ - 1);
+			else
+				s += 2;
 		*dst = '\0';
 		break;
 	}
@@ -566,10 +566,10 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 		uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
 		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8;
 		for (s += 3, slen -= 3; slen--; sw = (sw | *s++) << 8)
-			if (sw == nw)
-				s += 2;
-			else
+			if (sw != nw)
 				*dst++ = *(s - 3);
+			else
+				s += 2;
 		*dst = '\0';
 		break;
 	}
@@ -577,10 +577,10 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 		uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
 		for (s += 4, slen -= 4; slen--; sw = sw << 8 | *s++)
-			if (sw == nw)
-				s += 3;
-			else
+			if (sw != nw)
 				*dst++ = *(s - 4);
+			else
+				s += 3;
 		*dst = '\0';
 		break;
 	}
