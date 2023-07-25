@@ -538,9 +538,9 @@ static char *jstr_remove_p(char *JSTR_RST const s,
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static char *jstr_removeallmem_p(char *JSTR_RST s,
-				  const char *JSTR_RST const ne,
-				  size_t slen,
-				  size_t nlen) JSTR_NOEXCEPT
+				 const char *JSTR_RST const ne,
+				 size_t slen,
+				 size_t nlen) JSTR_NOEXCEPT
 {
 	char *dst = s;
 	switch (nlen) {
@@ -552,7 +552,7 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 		break;
 	}
 	case 2: {
-		uint16_t nw = ne[0] << 8 | ne[1];
+		const uint16_t nw = ne[0] << 8 | ne[1];
 		uint16_t sw = s[0] << 8 | s[1];
 		for (++s, slen -= 2; slen--; sw = sw << 8 | *s)
 			if (sw != nw)
@@ -563,7 +563,7 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 		break;
 	}
 	case 3: {
-		uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
+		const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
 		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8;
 		for (s += 3, slen -= 3; slen--; sw = (sw | *s++) << 8)
 			if (sw != nw)
@@ -574,7 +574,7 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 		break;
 	}
 	case 4: {
-		uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
+		const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
 		for (s += 4, slen -= 4; slen--; sw = sw << 8 | *s++)
 			if (sw != nw)
@@ -585,27 +585,25 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 		break;
 	}
 	default: {
-		uint16_t nw = ne[0] << 8 | ne[nlen - 1];
+		const uint16_t nw = ne[0] << 8 | ne[nlen - 1];
 		const char *const end = s + slen - nlen;
-		if (nlen < 15) {
+		if (nlen < 15)
 			while (s <= end)
 				if (nw == (s[0] << 8 | s[nlen - 1])
 				    && !memcmp(s, ne, nlen))
 					s += nlen;
 				else
 					*dst++ = *s++;
-		} else {
-			const size_t off = nlen - 9;
-			while (s <= end)
+		else
+			for (const size_t off = nlen - 9; s <= end;)
 				if (nw == (s[0] << 8 | s[nlen - 1])
 				    && !memcmp(s + off, ne + off, 8)
 				    && !memcmp(s, ne, nlen))
 					s += nlen;
 				else
 					*dst++ = *s++;
-		}
 		memcpy(dst, s, end + nlen - s + 1);
-		dst += (end + nlen - s);
+		return dst + (end + nlen - s);
 		break;
 	}
 	}
