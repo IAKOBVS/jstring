@@ -272,7 +272,7 @@ JSTR_WARN_UNUSED
 #ifdef JSTR_HAS_MEMMEM
 
 static int jstr_countmem(const char *JSTR_RST hs,
-			 const char *JSTR_RST ne,
+			 const char *JSTR_RST const ne,
 			 const size_t hlen,
 			 const size_t nlen) JSTR_NOEXCEPT
 {
@@ -782,6 +782,182 @@ static void jstr_replaceall(char **JSTR_RST const s,
 }
 
 /*
+  Insert SRC into DST[AT].
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertmem(char **JSTR_RST const dst,
+			   size_t *JSTR_RST const dsz,
+			   size_t *JSTR_RST const dcap,
+			   const size_t at,
+			   const char *JSTR_RST const src,
+			   const size_t slen) JSTR_NOEXCEPT
+{
+	if (*dcap > *dsz + slen + 1) {
+		memcpy(*dst + at, src, slen);
+		return;
+	}
+	JSTR_REALLOC(*dst, *dcap, *dsz + slen + 1, return);
+	memcpy(*dst + at, src, slen);
+	*dsz += slen;
+}
+
+/*
+  Insert SRC into DST[AT].
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insert(char **JSTR_RST const dst,
+			size_t *JSTR_RST const dsz,
+			size_t *JSTR_RST const dcap,
+			const size_t at,
+			const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+	jstr_insertmem(dst, dsz, dcap, at, src, strlen(src));
+}
+
+/*
+  Insert SRC after C in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertaftercmem(char **JSTR_RST const dst,
+				 size_t *JSTR_RST const dsz,
+				 size_t *JSTR_RST const dcap,
+				 const int c,
+				 const char *JSTR_RST const src,
+				 const size_t slen) JSTR_NOEXCEPT
+{
+	const char *const p = JSTR_CAST(char *) memchr(*dst, c, *dsz);
+	if (!p)
+		return;
+	jstr_insertmem(dst, dsz, dcap, p - *dst + 1, src, slen);
+}
+
+/*
+  Insert SRC after C in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertafterc(char **JSTR_RST const dst,
+			      size_t *JSTR_RST const dsz,
+			      size_t *JSTR_RST const dcap,
+			      const int c,
+			      const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+	const char *const p = JSTR_CAST(char *) memchr(*dst, c, *dsz);
+	if (!p)
+		return;
+	jstr_insertmem(dst, dsz, dcap, p - *dst + 1, src, strlen(src));
+}
+
+/*
+  Insert SRC after all C in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertafterallcmem(char **JSTR_RST const dst,
+				    size_t *JSTR_RST const dsz,
+				    size_t *JSTR_RST const dcap,
+				    const int c,
+				    const char *JSTR_RST const src,
+				    const size_t slen) JSTR_NOEXCEPT
+{
+	size_t off = 0;
+	for (char *p;
+	     (p = JSTR_CAST(char *) memchr(*dst + off, c, *dsz - off));
+	     off += *dst - p + 1)
+		jstr_insertmem(dst, dsz, dcap, p - *dst + 1, src, slen);
+}
+
+/*
+  Insert SRC after all C in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertafterallc(char **JSTR_RST const dst,
+				 size_t *JSTR_RST const dsz,
+				 size_t *JSTR_RST const dcap,
+				 const int c,
+				 const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+	jstr_insertafterallcmem(dst, dsz, dcap, c, src, strlen(src));
+}
+
+/*
+  Insert SRC after end of NE in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertaftermem(char **JSTR_RST const dst,
+				size_t *JSTR_RST const dsz,
+				size_t *JSTR_RST const dcap,
+				const char *JSTR_RST const ne,
+				const char *JSTR_RST const src,
+				const size_t nlen,
+				const size_t slen) JSTR_NOEXCEPT
+{
+	if (unlikely(!*(ne + 1))) {
+		jstr_insertaftercmem(dst, dsz, dcap, *ne, src, slen);
+		return;
+	}
+	const char *const p = JSTR_CAST(char *) jstr_memmem(*dst, *dsz, ne, nlen);
+	if (!p)
+		return;
+	jstr_insertmem(dst, dsz, dcap, p - *dst + nlen, src, slen);
+}
+
+/*
+  Insert SRC after end of NE in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertafter(char **JSTR_RST const dst,
+			     size_t *JSTR_RST const dsz,
+			     size_t *JSTR_RST const dcap,
+			     const char *JSTR_RST const ne,
+			     const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+	jstr_insertaftermem(dst, dsz, dcap, ne, src, strlen(ne), strlen(src));
+}
+
+/*
+  Insert SRC after all end of NE in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertafterallmem(char **JSTR_RST const dst,
+				   size_t *JSTR_RST const dsz,
+				   size_t *JSTR_RST const dcap,
+				   const char *JSTR_RST const ne,
+				   const char *JSTR_RST const src,
+				   const size_t nlen,
+				   const size_t slen) JSTR_NOEXCEPT
+{
+	if (unlikely(!*(ne + 1))) {
+		jstr_insertafterallcmem(dst,dsz, dcap, *ne, src, slen);
+		return;
+	}
+	size_t off = 0;
+	for (char *p; (p = JSTR_CAST(char *) jstr_memmem(*dst + off, *dsz, ne, nlen - off)); off += *dst - p + nlen)
+		jstr_insertmem(dst, dsz, dcap, p - *dst + nlen, src, slen);
+}
+
+/*
+  Insert SRC after all end of NE in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_insertafterall(char **JSTR_RST const dst,
+				size_t *JSTR_RST const dsz,
+				size_t *JSTR_RST const dcap,
+				const char *JSTR_RST const ne,
+				const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+	jstr_insertafterallmem(dst, dsz, dcap, ne, src, strlen(ne), strlen(src));
+}
+
+/*
   Slip SRC into DST[AT].
 */
 JSTR_INLINE
@@ -873,8 +1049,8 @@ static void jstr_slipafterallcmem(char **JSTR_RST const dst,
 {
 	size_t off = 0;
 	for (char *p;
-	     (p = JSTR_CAST(char *) memchr(*dst + off, c, *dsz));
-	     off = p - *dst + 1)
+	     (p = JSTR_CAST(char *) memchr(*dst + off, c, *dsz - off));
+	     off += p - *dst + 1)
 		jstr_slipmem(dst, dsz, dcap, p - *dst + 1, src, slen);
 }
 
@@ -899,19 +1075,19 @@ JSTR_NONNULL_ALL
 static void jstr_slipaftermem(char **JSTR_RST const dst,
 			      size_t *JSTR_RST const dsz,
 			      size_t *JSTR_RST const dcap,
-			      const char *JSTR_RST ne,
+			      const char *JSTR_RST const ne,
 			      const char *JSTR_RST const src,
-			      const size_t nelen,
+			      const size_t nlen,
 			      const size_t slen) JSTR_NOEXCEPT
 {
 	if (unlikely(!*(ne + 1))) {
 		jstr_slipaftercmem(dst, dsz, dcap, *ne, src, slen);
 		return;
 	}
-	const char *const p = JSTR_CAST(char *) jstr_memmem(*dst, *dsz, ne, nelen);
+	const char *const p = JSTR_CAST(char *) jstr_memmem(*dst, *dsz, ne, nlen);
 	if (!p)
 		return;
-	jstr_slipmem(dst, dsz, dcap, p - *dst + nelen, src, slen);
+	jstr_slipmem(dst, dsz, dcap, p - *dst + nlen, src, slen);
 }
 
 /*
@@ -922,7 +1098,7 @@ JSTR_NONNULL_ALL
 static void jstr_slipafter(char **JSTR_RST const dst,
 			   size_t *JSTR_RST const dsz,
 			   size_t *JSTR_RST const dcap,
-			   const char *JSTR_RST ne,
+			   const char *JSTR_RST const ne,
 			   const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 	jstr_slipaftermem(dst, dsz, dcap, ne, src, strlen(ne), strlen(src));
@@ -936,9 +1112,9 @@ JSTR_NONNULL_ALL
 static void jstr_slipafterallmem(char **JSTR_RST const dst,
 				 size_t *JSTR_RST const dsz,
 				 size_t *JSTR_RST const dcap,
-				 const char *JSTR_RST ne,
+				 const char *JSTR_RST const ne,
 				 const char *JSTR_RST const src,
-				 const size_t nelen,
+				 const size_t nlen,
 				 const size_t slen) JSTR_NOEXCEPT
 {
 	if (unlikely(!*(ne + 1))) {
@@ -947,9 +1123,9 @@ static void jstr_slipafterallmem(char **JSTR_RST const dst,
 	}
 	size_t off = 0;
 	for (char *p;
-	     (p = JSTR_CAST(char *) jstr_memmem(*dst + off, *dsz, ne, nelen));
-	     off = p - *dst + nelen)
-		jstr_slipaftermem(dst, dsz, dcap, ne, src, nelen, slen);
+	     (p = JSTR_CAST(char *) jstr_memmem(*dst + off, *dsz, ne, nlen - off));
+	     off += p - *dst + nlen)
+		jstr_slipaftermem(dst, dsz, dcap, ne, src, nlen, slen);
 }
 
 /*

@@ -105,6 +105,9 @@ foreach (@funcs) {
 	}
 	$func_args =~ s/,[^,]*$//;
 	$decl .= "$func_args);\n}\n\n";
+	if ($decl !~ /$NAMESPACE_BIG\_INLINE/) {
+		$decl =~ s/static/$NAMESPACE_BIG\_INLINE\nstatic/;
+	}
 
 	$hpp .= $decl;
 
