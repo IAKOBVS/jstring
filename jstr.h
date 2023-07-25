@@ -152,7 +152,6 @@ typedef struct jstr_t {
 	}
 
 	JSTR_INLINE
-	JSTR_NONNULL_ALL
 	~jstr_t(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
@@ -162,7 +161,6 @@ typedef struct jstr_t {
 	  free(STR) and set STR to NULL.
 	*/
 	JSTR_INLINE
-	JSTR_NONNULL_ALL
 	void del(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
@@ -178,9 +176,36 @@ typedef struct jstr_t {
 		if (unlikely(!this->data))
 			exit(1);
 	}
+
+	JSTR_INLINE
+	void print(void) JSTR_NOEXCEPT
+	{
+		fwrite(this->data, 1, this->size, stdout);
+	}
+
+	JSTR_INLINE
+	void print_stderr(void) JSTR_NOEXCEPT
+	{
+		fwrite(this->data, 1, this->size, stderr);
+	}
+
+	JSTR_INLINE
+	void debug_print(void) JSTR_NOEXCEPT
+	{
+		fprintf(stderr, "size:%zu\ncap:%zu\n", this->size, this->cap);
+		fprintf(stderr, "data:%s\n", this->data);
+	}
 #endif /* __cpluslus */
 
 } jstr_t;
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_debug(const jstr_t *j)
+{
+	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
+	fprintf(stderr, "data:%s\n", j->data);
+}
 
 /*
    Append SRC to DST.
