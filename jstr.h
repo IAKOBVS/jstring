@@ -793,13 +793,12 @@ static void jstr_insertmem(char **JSTR_RST const dst,
 			   const char *JSTR_RST const src,
 			   const size_t slen) JSTR_NOEXCEPT
 {
-	if (*dcap > *dsz + slen + 1) {
-		memcpy(*dst + at, src, slen);
-		return;
+	if (at + slen > *dsz) {
+		JSTR_REALLOC(*dst, *dcap, *dsz + slen + 1, return);
+		*dsz += slen;
+		*(*dst + *dsz) = '\0';
 	}
-	JSTR_REALLOC(*dst, *dcap, *dsz + slen + 1, return);
 	memcpy(*dst + at, src, slen);
-	*dsz += slen;
 }
 
 /*
@@ -935,11 +934,11 @@ static void jstr_insertafterallmem(char **JSTR_RST const dst,
 				   const size_t slen) JSTR_NOEXCEPT
 {
 	if (unlikely(!*(ne + 1))) {
-		jstr_insertafterallcmem(dst,dsz, dcap, *ne, src, slen);
+		jstr_insertafterallcmem(dst, dsz, dcap, *ne, src, slen);
 		return;
 	}
 	size_t off = 0;
-	for (char *p; (p = JSTR_CAST(char *) jstr_memmem(*dst + off, *dsz, ne, nlen - off)); off += *dst - p + nlen)
+	for (char *p; (p = JSTR_CAST(char *) jstr_memmem(*dst + off, *dsz - off, ne, nlen)); off += *dst - p + nlen)
 		jstr_insertmem(dst, dsz, dcap, p - *dst + nlen, src, slen);
 }
 
@@ -985,8 +984,8 @@ static void jstr_slipmem(char **JSTR_RST const dst,
 		       *dsz - at + 1);
 		free(*dst);
 		*dst = tmp;
-		*dsz += slen;
 	}
+	*dsz += slen;
 }
 
 /*
@@ -1123,9 +1122,23 @@ static void jstr_slipafterallmem(char **JSTR_RST const dst,
 	}
 	size_t off = 0;
 	for (char *p;
-	     (p = JSTR_CAST(char *) jstr_memmem(*dst + off, *dsz, ne, nlen - off));
+	     (p = JSTR_CAST(char *) jstr_memmem(*dst + off, *dsz - off, ne, nlen));
 	     off += p - *dst + nlen)
-		jstr_slipaftermem(dst, dsz, dcap, ne, src, nlen, slen);
+		jstr_slipmem(dst, dsz, dcap, p - *dst + nlen, src, slen);
+}
+
+/*
+  Slip SRC after all end of NE in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_slipafterall(char **JSTR_RST const dst,
+			      size_t *JSTR_RST const dsz,
+			      size_t *JSTR_RST const dcap,
+			      const char *JSTR_RST const ne,
+			      const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+	jstr_slipafterallmem(dst, dsz, dcap, ne, src, strlen(ne), strlen(src));
 }
 
 /*
