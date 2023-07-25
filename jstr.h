@@ -734,7 +734,6 @@ static void jstr_replaceallmem(char **JSTR_RST const s,
 		break;
 	}
 	char *mtc = *s;
-	char *tmp;
 	if (rlen <= slen) {
 		while ((mtc = JSTR_CAST(char *) jstr_memmem(mtc, (*s + *ssz) - mtc, srch, slen))) {
 			memmove(mtc + rlen,
@@ -745,6 +744,7 @@ static void jstr_replaceallmem(char **JSTR_RST const s,
 			*ssz += (long long)(rlen - slen);
 		}
 	} else {
+		char *tmp;
 		while ((mtc = JSTR_CAST(char *) jstr_memmem(mtc, (*s + *ssz) - mtc, srch, slen))) {
 			if (*scap > *ssz + rlen - slen + 1) {
 				memmove(mtc + rlen,
