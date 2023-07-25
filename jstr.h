@@ -201,7 +201,7 @@ typedef struct jstr_t {
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_debug(const jstr_t *j)
+static void jstr_debug(const jstr_t *JSTR_RST const j)
 {
 	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
 	fprintf(stderr, "data:%s\n", j->data);
