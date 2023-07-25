@@ -1,5 +1,5 @@
-#ifndef JSTR_TYPES_H_DEF
-#define JSTR_TYPES_H_DEF
+#ifndef JSTR_CTYPE_H_DEF
+#define JSTR_CTYPE_H_DEF
 
 #ifdef __cplusplus
 extern "C" {
@@ -182,4 +182,4 @@ static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
 
 #undef JSTR_RST
 
-#endif /* JSTR_TYPES_H_DEF */
+#endif /* JSTR_CTYPE_H_DEF */

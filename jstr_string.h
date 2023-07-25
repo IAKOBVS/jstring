@@ -1,5 +1,5 @@
-#ifndef JSTR_STD_H_DEF
-#define JSTR_STD_H_DEF
+#ifndef JSTR_STRING_H_DEF
+#define JSTR_STRING_H_DEF
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,7 +58,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_memrchr(char *JSTR_RST const s,
+static void *jstr_memrchr(char *JSTR_RST const s,
 			  const int c,
 			  size_t n) JSTR_NOEXCEPT
 #ifndef JSTR_HAS_MEMRCHR
@@ -74,7 +74,7 @@ static char *jstr_memrchr(char *JSTR_RST const s,
 }
 #else
 {
-	return JSTR_CAST(char *) memrchr(s, c, n);
+	return memrchr(s, c, n);
 }
 #endif // !JSTR_HAS_MEMRCHR
 
@@ -148,4 +148,4 @@ static int jstr_casecmp(const char *JSTR_RST s1,
 
 #undef JSTR_RST
 
-#endif /* JSTR_STD_H_DEF */
+#endif /* JSTR_STRING_H_DEF */
