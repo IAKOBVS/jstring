@@ -194,6 +194,7 @@ typedef struct jstr_t {
 		fprintf(stderr, "size:%zu\ncap:%zu\n", this->size, this->cap);
 		fprintf(stderr, "data:%s\n", this->data);
 	}
+
 #endif /* __cpluslus */
 
 } jstr_t;
@@ -284,6 +285,8 @@ static int jstr_countc(const char *JSTR_RST s,
 	return count;
 }
 
+#ifdef JSTR_HAS_MEMMEM
+
 /*
   Count occurences of NE in HS.
   Return value:
@@ -293,7 +296,6 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-#ifdef JSTR_HAS_MEMMEM
 static int jstr_count_mem(const char *JSTR_RST s,
 			  const char *JSTR_RST const ne,
 			  size_t sz,
@@ -324,6 +326,15 @@ static int jstr_count(const char *JSTR_RST const s,
 
 #else
 
+/*
+  Count occurences of NE in HS.
+  Return value:
+  occurences of NE in HS.
+*/
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
 static int jstr_count(const char *JSTR_RST s,
 		      const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
@@ -332,6 +343,7 @@ static int jstr_count(const char *JSTR_RST s,
 		++count;
 	return count;
 }
+
 #endif /* __JSTR_HAS_MEMMEM */
 
 /*

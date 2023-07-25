@@ -43,8 +43,26 @@ while (<$FH>) {
 close($FH);
 my $h;
 my $hpp;
+my $has_funcs = 0;
+my $in_if = 0;
 foreach (split(/\n\n/, $file)) {
-	/^((?:\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
+	if (/^[ \t]*#[ \t]*(?:if|elif|else)/) {
+		if (/#[ \t]*ifndef.*(?:H|DEF)/ || /#if[ \t]*.*(?:NAMESPACE)/) {
+			$in_if = 0;
+			next;
+		}
+		$in_if = 1;
+		$h .= "$_\n\n";
+		$hpp .= "$_\n\n";
+		next;
+	} elsif (/^[ \t]*#[ \t]*endif/) {
+		if ($in_if) {
+			$h .= "$_\n\n";
+			$hpp .= "$_\n\n";
+		}
+		next;
+	}
+	/^((?:#if|\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
 	if (!$1 && !$2 && !$3) {
 		next;
 	}
@@ -59,6 +77,7 @@ foreach (split(/\n\n/, $file)) {
 	if (!$SZ && !$CAP) {
 		next;
 	}
+	$has_funcs = 1;
 	my $PTR = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
 	if ($SZ) {
 		if ($decl =~ /\w*sz(,|\))/) {
@@ -110,7 +129,7 @@ foreach (split(/\n\n/, $file)) {
 	$h .= $decl;
 }
 my $end = "$namespace\n$undef\n$endif";
-if ($h && $hpp) {
+if ($has_funcs) {
 	$h   = "$file\n$h\n$end";
 	$hpp = "$file\n$hpp\n$end";
 } else {
@@ -127,6 +146,8 @@ $hpp =~ s/$NAMESPACE\_(\w+\()/$1/g;
 $hpp =~ s/\tt\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/\t~t\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/alloc_append/alloc/g;
+# $hpp =~ s/\n(#ifndef.*HPP_DEF)/$1\n/g;
+# $h =~ s/\n(#ifndef.*H_DEF)/$1\n/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
 open($FH, '>', "$DIR_CPP/${FNAME}pp") or die "Can't open $DIR_CPP/${FNAME}pp\n";
