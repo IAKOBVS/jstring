@@ -43,83 +43,70 @@ while (<$FH>) {
 close($FH);
 my $h;
 my $hpp;
-my @funcs = split(/\n\n/, $file);
-my $skeleton;
-foreach (@funcs) {
+foreach (split(/\n\n/, $file)) {
 	/^((?:\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
-	if (!$1 || !$2 || !$3) {
+	if (!$1 && !$2 && !$3) {
 		next;
 	}
-	my $decl    = $1;
-	my $func    = $2;
-	my $args    = $3;
-	my $has_sz  = (index($args, 'sz') != -1)  ? 1 : 0;
-	my $has_cap = (index($args, 'cap') != -1) ? 1 : 0;
-	next if !$has_sz && !$has_cap;
-	$args =~ s/\)/,/;
-	my @new_args;
-	{
-		my $is_const;
-		my @old_args = split(/\s/, $args);
-		my $i        = 0;
-		foreach (@old_args) {
-			if ($i == 0) {
-				$is_const = ($_ =~ /const/) ? 1 : 0;
+	my $decl   = $1;
+	my $FUNC   = $2;
+	my $PARAMS = $3;
+	$PARAMS =~ s/\)/,/;
+	my $RETURN = (index($decl,   'void') != -1) ? '' : 'return ';
+	my $SZ     = (index($PARAMS, 'sz') != -1)   ? 1  : 0;
+	my $CAP    = (index($PARAMS, 'cap') != -1)  ? 1  : 0;
+
+	if (!$SZ && !$CAP) {
+		next;
+	}
+	my $PTR = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
+	if ($SZ) {
+		if ($decl =~ /\w*sz(,|\))/) {
+			if ($1 eq ')') {
+				$decl =~ s/[^(,]*sz(?:,|\))/)/;
+			} elsif ($1 eq ',') {
+				$decl =~ s/[^(,]*sz,//;
 			}
-			if (/,$/) {
-				s/,//;
-				push(@new_args, $_);
-				++$i;
-			}
-		}
-		my $last = '';
-		if ($has_sz) {
-			if ($decl =~ /\w*sz(,|\))/) {
-				if ($1 eq ')') {
-					$decl =~ s/[^(,]*sz(?:,|\))/)/;
-				} elsif ($1 eq ',') {
-					$last = $1;
-					$decl =~ s/[^(,]*sz,//;
-				}
-			}
-		}
-		if ($has_cap) {
-			if ($decl =~ /\w*cap(,|\))/) {
-				if ($1 eq ')') {
-					$decl =~ s/[^(,]*cap(?:,|\))/)/;
-				} elsif ($1 eq ',') {
-					$last = $1;
-					$decl =~ s/[^(,]*cap,//;
-				}
-			}
-		}
-		if ($is_const) {
-			$decl =~ s/\(.+?$last/(const $NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$last/;
-		} else {
-			$decl =~ s/\(.+?$last/($NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$last/;
 		}
 	}
-	$decl .= "\n{\n\t$func(";
-	my $func_args;
-	for (my $i = 0 ; $i <= $#new_args ; ++$i) {
-		if (index($new_args[$i], 'sz') != -1) {
-			$new_args[$i] = "&j->size";
-		} elsif (index($new_args[$i], 'cap') != -1) {
-			$new_args[$i] = "&j->cap";
-		} elsif ($i == 0) {
-			$new_args[$i] = "&j->data";
+	if ($CAP) {
+		if ($decl =~ /\w*cap(,|\))/) {
+			if ($1 eq ')') {
+				$decl =~ s/[^(,]*cap(?:,|\))/)/;
+			} elsif ($1 eq ',') {
+				$decl =~ s/[^(,]*cap,//;
+			}
 		}
-		$func_args .= "$new_args[$i], ";
+	}
+	my @OLD_ARGS = split(/\s/, $PARAMS);
+	my $CONST    = ($OLD_ARGS[0] eq 'const') ? 'const ' : '';
+	my @NEW_ARGS;
+	foreach (@OLD_ARGS) {
+		if (/,$/) {
+			s/,//;
+			push(@NEW_ARGS, $_);
+		}
+	}
+	my $LAST    = (index($PARAMS, ',') != -1) ? ',' : ')';
+	my $replace = "($NAMESPACE\_t *$NAMESPACE_BIG\_RST $CONST" . "j$LAST";
+	$decl =~ s/\(.+?$LAST/$replace/;
+	$decl .= "\n{\n\t$RETURN$FUNC(";
+	my $func_args = $PTR . "j->data, ";
+	for (my $i = 1 ; $i <= $#NEW_ARGS ; ++$i) {
+		if (index($NEW_ARGS[$i], 'sz') != -1) {
+			$NEW_ARGS[$i] = $PTR . "j->size";
+		} elsif (index($NEW_ARGS[$i], 'cap') != -1) {
+			$NEW_ARGS[$i] = $PTR . "j->cap";
+		}
+		$func_args .= "$NEW_ARGS[$i], ";
 	}
 	$func_args =~ s/,[^,]*$//;
 	$decl .= "$func_args);\n}\n\n";
 	if ($decl !~ /$NAMESPACE_BIG\_INLINE/) {
 		$decl =~ s/static/$NAMESPACE_BIG\_INLINE\nstatic/;
 	}
-
 	$hpp .= $decl;
-
-	$decl =~ s/$func/$func\_j/;
+	$decl =~ s/$FUNC/$FUNC\_j/;
 	$h .= $decl;
 }
 my $end = "$namespace\n$undef\n$endif";
@@ -142,8 +129,7 @@ $hpp =~ s/\t~t\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/alloc_append/alloc/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
-open($FH, '>', "$DIR_CPP/$FNAME" . 'pp')
-  or die "Can't open $DIR_CPP/$FNAME" . "pp\n";
+open($FH, '>', "$DIR_CPP/${FNAME}pp") or die "Can't open $DIR_CPP/${FNAME}pp\n";
 print($FH $hpp);
 close($FH);
 open($FH, '>', "$DIR_C/$FNAME") or die "Can't open $DIR_C/$FNAME\n";
