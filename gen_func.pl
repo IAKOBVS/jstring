@@ -47,7 +47,7 @@ my $has_funcs = 0;
 my $in_if = 0;
 foreach (split(/\n\n/, $file)) {
 	if (/^[ \t]*#[ \t]*(?:if|elif|else)/) {
-		if (/#[ \t]*ifndef.*(?:H|DEF)/ || /#if[ \t]*.*(?:NAMESPACE)/) {
+		if (/\s*#[ \t]*ifndef.*(?:H|DEF)/ || /\s*#if[ \t]*.*(?:NAMESPACE)/ || /\s*#[ \t]*include/) {
 			$in_if = 0;
 			next;
 		}
@@ -146,8 +146,6 @@ $hpp =~ s/$NAMESPACE\_(\w+\()/$1/g;
 $hpp =~ s/\tt\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/\t~t\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/alloc_append/alloc/g;
-# $hpp =~ s/\n(#ifndef.*HPP_DEF)/$1\n/g;
-# $h =~ s/\n(#ifndef.*H_DEF)/$1\n/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
 open($FH, '>', "$DIR_CPP/${FNAME}pp") or die "Can't open $DIR_CPP/${FNAME}pp\n";
