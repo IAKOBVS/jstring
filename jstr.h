@@ -549,9 +549,9 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static char *jstr_remove_p(char *JSTR_RST const s,
 			   const char *JSTR_RST const ne,
-			   const size_t slen) JSTR_NOEXCEPT
+			   const size_t ssz) JSTR_NOEXCEPT
 {
-	return jstr_remove_mem_p(s, ne, slen, strlen(ne));
+	return jstr_remove_mem_p(s, ne, ssz, strlen(ne));
 }
 
 /*
@@ -563,7 +563,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static char *jstr_removeall_mem_p(char *JSTR_RST s,
 				  const char *JSTR_RST const ne,
-				  size_t slen,
+				  size_t ssz,
 				  size_t nlen) JSTR_NOEXCEPT
 {
 	char *dst = s;
@@ -572,13 +572,13 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 		return s;
 	case 1: {
 		jstr_removeallc(s, *ne);
-		return s + slen - 1;
+		return s + ssz - 1;
 		break;
 	}
 	case 2: {
 		const uint16_t nw = ne[0] << 8 | ne[1];
 		uint16_t sw = s[0] << 8 | s[1];
-		for (++s, slen -= 2; slen--; sw = sw << 8 | *s)
+		for (++s, ssz -= 2; ssz--; sw = sw << 8 | *s)
 			if (sw != nw)
 				*dst++ = *(s++ - 1);
 			else
@@ -589,7 +589,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 	case 3: {
 		const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
 		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8;
-		for (s += 3, slen -= 3; slen--; sw = (sw | *s++) << 8)
+		for (s += 3, ssz -= 3; ssz--; sw = (sw | *s++) << 8)
 			if (sw != nw)
 				*dst++ = *(s - 3);
 			else
@@ -600,7 +600,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 	case 4: {
 		const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
-		for (s += 4, slen -= 4; slen--; sw = sw << 8 | *s++)
+		for (s += 4, ssz -= 4; ssz--; sw = sw << 8 | *s++)
 			if (sw != nw)
 				*dst++ = *(s - 4);
 			else
@@ -610,7 +610,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 	}
 	default: {
 		const uint16_t nw = ne[0] << 8 | ne[nlen - 1];
-		const char *const end = s + slen - nlen;
+		const char *const end = s + ssz - nlen;
 		if (nlen < 15)
 			while (s <= end)
 				if (nw == (s[0] << 8 | s[nlen - 1])
@@ -644,9 +644,9 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static char *jstr_removeall_p(char *JSTR_RST const s,
 			      const char *JSTR_RST const ne,
-			      const size_t slen) JSTR_NOEXCEPT
+			      const size_t ssz) JSTR_NOEXCEPT
 {
-	return jstr_removeall_mem_p(s, ne, slen, strlen(ne));
+	return jstr_removeall_mem_p(s, ne, ssz, strlen(ne));
 }
 
 /*

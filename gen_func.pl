@@ -57,9 +57,9 @@ foreach (@funcs) {
 	my $has_cap = (index($args, 'cap') != -1) ? 1 : 0;
 	next if !$has_sz && !$has_cap;
 	$args =~ s/\)/,/;
-	my $is_const;
 	my @new_args;
 	{
+		my $is_const;
 		my @old_args = split(/\s/, $args);
 		my $i        = 0;
 		foreach (@old_args) {
@@ -72,24 +72,34 @@ foreach (@funcs) {
 				++$i;
 			}
 		}
-	}
-	my $tmp = '';
-	if ($has_sz) {
-		$decl =~ s/\((?:.|\n)+?sz(,|\))/(/;
-		if ($1) {
-			$tmp = $1;
+		my $last = '';
+		if ($has_sz) {
+			if ($decl =~ /\w*sz(,|\))/) {
+				if ($1 eq ')') {
+					$decl =~ s/[^(,]*sz(?:,|\))/)/;
+				} elsif ($1 eq ',') {
+					$last = $1;
+					$decl =~ s/[^(,]*sz,//;
+				}
+			}
 		}
-	}
-	if ($has_cap) {
-		$decl =~ s/\((?:.|\n)+?cap(,|\))/(/;
-		if ($1 eq ',') {
-			$tmp = $1;
+		if ($has_cap) {
+			if ($decl =~ /\w*cap(,|\))/) {
+				if ($1 eq ')') {
+					$decl =~ s/[^(,]*cap(?:,|\))/)/;
+				} elsif ($1 eq ',') {
+					$last = $1;
+					$decl =~ s/[^(,]*cap,//;
+				}
+			}
 		}
-	}
-	if ($is_const) {
-		$decl =~ s/\(/(const $NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$tmp/;
-	} else {
-		$decl =~ s/\(/($NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$tmp/;
+		if ($is_const) {
+			$decl =~
+s/\(.+?$last/(const $NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$last/;
+		} else {
+			$decl =~
+			  s/\(.+?$last/($NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$last/;
+		}
 	}
 	$decl .= "\n{\n\t$func(";
 	my $func_args;
