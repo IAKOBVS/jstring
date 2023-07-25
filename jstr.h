@@ -647,7 +647,6 @@ static void jstr_replaceall_c(char *JSTR_RST s,
 /*
   Replace first SEARCH in S with REPLACE.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_replacemem(char **JSTR_RST const s,
 			    size_t *JSTR_RST const ssz,
@@ -734,7 +733,7 @@ static void jstr_replaceallmem(char **JSTR_RST const s,
 		break;
 	}
 	char *mtc = *s;
-	if (rlen <= slen) {
+	if (rlen <= slen)
 		while ((mtc = JSTR_CAST(char *) jstr_memmem(mtc, (*s + *ssz) - mtc, srch, slen))) {
 			memmove(mtc + rlen,
 				mtc + slen,
@@ -743,9 +742,10 @@ static void jstr_replaceallmem(char **JSTR_RST const s,
 			mtc += rlen;
 			*ssz += (long long)(rlen - slen);
 		}
-	} else {
-		char *tmp;
-		while ((mtc = JSTR_CAST(char *) jstr_memmem(mtc, (*s + *ssz) - mtc, srch, slen))) {
+	else
+		for (char *tmp;
+		     (mtc = JSTR_CAST(char *) jstr_memmem(mtc, (*s + *ssz) - mtc, srch, slen));
+		     *ssz += (long long)(rlen - slen))
 			if (*scap > *ssz + rlen - slen + 1) {
 				memmove(mtc + rlen,
 					mtc + slen,
@@ -765,9 +765,6 @@ static void jstr_replaceallmem(char **JSTR_RST const s,
 				free(*s);
 				*s = tmp;
 			}
-			*ssz += (long long)(rlen - slen);
-		}
-	}
 }
 
 /*
