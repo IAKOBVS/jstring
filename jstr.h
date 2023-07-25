@@ -689,33 +689,24 @@ static void jstr_replacemem(char **JSTR_RST const s,
 	}
 	char *mtc = JSTR_CAST(char *) jstr_memmem(*s, *ssz, srch, slen);
 	if (mtc) {
-		char *tmp;
-#define JSTR_REPLACE(update_mtc, malloc_fail)                         \
-	do {                                                          \
-		if (rlen <= slen || *scap > *ssz + rlen - slen + 1) { \
-			memmove(mtc + rlen,                           \
-				mtc + slen,                           \
-				(*s + *ssz + 1) - mtc + slen);        \
-			memcpy(mtc, rplc, rlen);                      \
-			if (update_mtc)                               \
-				mtc += rlen;                          \
-		} else {                                              \
-			JSTR_GROW(*scap, *ssz + rlen + 1);            \
-			tmp = JSTR_CAST(char *) malloc(*scap);        \
-			JSTR_MALLOC_ERR(tmp, malloc_fail);            \
-			memcpy(tmp, *s, mtc - *s);                    \
-			memcpy(tmp + (mtc - *s), rplc, rlen);         \
-			memcpy(tmp + (mtc - *s) + rlen,               \
-			       mtc + rlen,                            \
-			       (*s + *ssz + 1) - (mtc + rlen));       \
-			if (update_mtc)                               \
-				mtc = tmp + (mtc - *s) + rlen;        \
-			free(*s);                                     \
-			*s = tmp;                                     \
-		}                                                     \
-		*ssz += (long long)(rlen - slen);                     \
-	} while (0)
-		JSTR_REPLACE(0, return);
+		if (rlen <= slen || *scap > *ssz + rlen - slen + 1) {
+			memmove(mtc + rlen,
+				mtc + slen,
+				(*s + *ssz + 1) - mtc + slen);
+			memcpy(mtc, rplc, rlen);
+		} else {
+			JSTR_GROW(*scap, *ssz + rlen + 1);
+			char *const tmp = JSTR_CAST(char *) malloc(*scap);
+			JSTR_MALLOC_ERR(tmp, return);
+			memcpy(tmp, *s, mtc - *s);
+			memcpy(tmp + (mtc - *s), rplc, rlen);
+			memcpy(tmp + (mtc - *s) + rlen,
+			       mtc + rlen,
+			       (*s + *ssz + 1) - (mtc + rlen));
+			free(*s);
+			*s = tmp;
+		}
+		*ssz += (long long)(rlen - slen);
 	}
 }
 
@@ -762,8 +753,39 @@ static void jstr_replaceallmem(char **JSTR_RST const s,
 	}
 	char *mtc = *s;
 	char *tmp;
-	while ((mtc = JSTR_CAST(char *) jstr_memmem(mtc, (*s + *ssz) - mtc, srch, slen)))
-		JSTR_REPLACE(1, return);
+	if (rlen <= slen) {
+		while ((mtc = JSTR_CAST(char *) jstr_memmem(mtc, (*s + *ssz) - mtc, srch, slen))) {
+			memmove(mtc + rlen,
+				mtc + slen,
+				(*s + *ssz + 1) - mtc + slen);
+			memcpy(mtc, rplc, rlen);
+			mtc += rlen;
+			*ssz += (long long)(rlen - slen);
+		}
+	} else {
+		while ((mtc = JSTR_CAST(char *) jstr_memmem(mtc, (*s + *ssz) - mtc, srch, slen))) {
+			if (*scap > *ssz + rlen - slen + 1) {
+				memmove(mtc + rlen,
+					mtc + slen,
+					(*s + *ssz + 1) - mtc + slen);
+				memcpy(mtc, rplc, rlen);
+				mtc += rlen;
+			} else {
+				JSTR_GROW(*scap, *ssz + rlen + 1);
+				tmp = JSTR_CAST(char *) malloc(*scap);
+				JSTR_MALLOC_ERR(tmp, return);
+				memcpy(tmp, *s, mtc - *s);
+				memcpy(tmp + (mtc - *s), rplc, rlen);
+				memcpy(tmp + (mtc - *s) + rlen,
+				       mtc + rlen,
+				       (*s + *ssz + 1) - (mtc + rlen));
+				mtc = tmp + (mtc - *s) + rlen;
+				free(*s);
+				*s = tmp;
+			}
+			*ssz += (long long)(rlen - slen);
+		}
+	}
 }
 
 /*
