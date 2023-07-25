@@ -46,7 +46,7 @@ my $hpp;
 my @funcs = split(/\n\n/, $file);
 my $skeleton;
 foreach (@funcs) {
-/^((?:\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
+	/^((?:\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
 	if (!$1 || !$2 || !$3) {
 		next;
 	}
@@ -94,11 +94,9 @@ foreach (@funcs) {
 			}
 		}
 		if ($is_const) {
-			$decl =~
-s/\(.+?$last/(const $NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$last/;
+			$decl =~ s/\(.+?$last/(const $NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$last/;
 		} else {
-			$decl =~
-			  s/\(.+?$last/($NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$last/;
+			$decl =~ s/\(.+?$last/($NAMESPACE\_t *$NAMESPACE_BIG\_RST const j$last/;
 		}
 	}
 	$decl .= "\n{\n\t$func(";

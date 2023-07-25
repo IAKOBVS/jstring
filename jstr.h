@@ -294,16 +294,14 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 #ifdef JSTR_HAS_MEMMEM
-
 static int jstr_count_mem(const char *JSTR_RST hs,
 			  const char *JSTR_RST const ne,
-			  const size_t hlen,
+			  size_t hlen,
 			  const size_t nlen) JSTR_NOEXCEPT
 {
 	int count = 0;
-	for (const char *const end = hs + hlen;
-	     (hs = (char *)memmem(hs, end - hs, ne, nlen));
-	     ++count, hs += nlen)
+	for (; (hs = (char *)memmem(hs, hlen, ne, nlen));
+	     ++count, hs += nlen, hlen -= nlen)
 		;
 	return count;
 }
@@ -318,13 +316,12 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_count(const char *JSTR_RST const hs,
-		      const char *JSTR_RST const ne) JSTR_NOEXCEPT
+		      const char *JSTR_RST const ne,
+		      const size_t hlen) JSTR_NOEXCEPT
 {
-	return jstr_count_mem(hs, ne, strlen(hs), strlen(ne));
+	return jstr_count_mem(hs, ne, hlen, strlen(ne));
 }
-
 #else
-
 static int jstr_count(const char *JSTR_RST hs,
 		      const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
@@ -333,7 +330,6 @@ static int jstr_count(const char *JSTR_RST hs,
 		++count;
 	return count;
 }
-
 #endif /* __JSTR_HAS_MEMMEM */
 
 /*
@@ -443,13 +439,13 @@ static char *jstr_removeallc(char *JSTR_RST s,
 {
 	if (unlikely(!*s))
 		return s;
-	char *dst = s;
+	const char *src = s;
 	do {
-		if (*s != c)
-			*dst++ = *s;
-	} while (*++s);
-	*dst = '\0';
-	return dst;
+		if (*src != c)
+			*s++ = *src;
+	} while (*++src);
+	*s = '\0';
+	return s;
 }
 
 /*
@@ -566,7 +562,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 				  size_t ssz,
 				  size_t nlen) JSTR_NOEXCEPT
 {
-	char *dst = s;
+	const char *src = s;
 	switch (nlen) {
 	case 0:
 		return s;
@@ -577,61 +573,61 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 	}
 	case 2: {
 		const uint16_t nw = ne[0] << 8 | ne[1];
-		uint16_t sw = s[0] << 8 | s[1];
-		for (++s, ssz -= 2; ssz--; sw = sw << 8 | *s)
+		uint16_t sw = src[0] << 8 | src[1];
+		for (++src, ssz -= 2; ssz--; sw = sw << 8 | *src)
 			if (sw != nw)
-				*dst++ = *(s++ - 1);
+				*s++ = *(src++ - 1);
 			else
-				s += 2;
-		*dst = '\0';
+				src += 2;
+		*s = '\0';
 		break;
 	}
 	case 3: {
 		const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
-		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8;
-		for (s += 3, ssz -= 3; ssz--; sw = (sw | *s++) << 8)
+		uint32_t sw = src[0] << 24 | src[1] << 16 | src[2] << 8;
+		for (src += 3, ssz -= 3; ssz--; sw = (sw | *src++) << 8)
 			if (sw != nw)
-				*dst++ = *(s - 3);
+				*s++ = *(src - 3);
 			else
-				s += 2;
-		*dst = '\0';
+				src += 2;
+		*s = '\0';
 		break;
 	}
 	case 4: {
 		const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
-		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
-		for (s += 4, ssz -= 4; ssz--; sw = sw << 8 | *s++)
+		uint32_t sw = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+		for (src += 4, ssz -= 4; ssz--; sw = sw << 8 | *src++)
 			if (sw != nw)
-				*dst++ = *(s - 4);
+				*s++ = *(src - 4);
 			else
-				s += 3;
-		*dst = '\0';
+				src += 3;
+		*s = '\0';
 		break;
 	}
 	default: {
 		const uint16_t nw = ne[0] << 8 | ne[nlen - 1];
-		const char *const end = s + ssz - nlen;
+		const char *const end = src + ssz - nlen;
 		if (nlen < 15)
-			while (s <= end)
-				if (nw == (s[0] << 8 | s[nlen - 1])
-				    && !memcmp(s, ne, nlen))
-					s += nlen;
+			while (src <= end)
+				if (nw == (src[0] << 8 | src[nlen - 1])
+				    && !memcmp(src, ne, nlen))
+					src += nlen;
 				else
-					*dst++ = *s++;
+					*s++ = *src++;
 		else
-			for (const size_t off = nlen - 9; s <= end;)
-				if (nw == (s[0] << 8 | s[nlen - 1])
-				    && !memcmp(s + off, ne + off, 8)
-				    && !memcmp(s, ne, nlen))
-					s += nlen;
+			for (const size_t off = nlen - 9; src <= end;)
+				if (nw == (src[0] << 8 | src[nlen - 1])
+				    && !memcmp(src + off, ne + off, 8)
+				    && !memcmp(src, ne, nlen))
+					src += nlen;
 				else
-					*dst++ = *s++;
-		memcpy(dst, s, end + nlen - s + 1);
-		return dst + (end + nlen - s);
+					*s++ = *src++;
+		memcpy(s, src, end + nlen - src + 1);
+		return s + (end + nlen - src);
 		break;
 	}
 	}
-	return dst;
+	return s;
 }
 
 /*
