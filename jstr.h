@@ -538,9 +538,9 @@ static char *jstr_remove_p(char *JSTR_RST const s,
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static char *jstr_removeallmem_p(char *JSTR_RST s,
-				 const char *JSTR_RST const ne,
-				 size_t slen,
-				 size_t nlen) JSTR_NOEXCEPT
+				  const char *JSTR_RST const ne,
+				  size_t slen,
+				  size_t nlen) JSTR_NOEXCEPT
 {
 	char *dst = s;
 	switch (nlen) {
@@ -584,40 +584,26 @@ static char *jstr_removeallmem_p(char *JSTR_RST s,
 		*dst = '\0';
 		break;
 	}
-	case 5:
-	case 6:
-	case 7:
-	case 8:
-	case 9:
-	case 10:
-	case 11:
-	case 12:
-	case 13:
-	case 14:
-	case 15: {
-		uint16_t nw = ne[0] << 8 | ne[nlen - 1];
-		const char *const end = s + slen - nlen;
-		while (s <= end)
-			if (nw == (s[0] << 8 | s[nlen - 1])
-			    && !memcmp(s, ne, nlen))
-				s += nlen;
-			else
-				*dst++ = *s++;
-		memcpy(dst, s, end + nlen - s + 1);
-		dst += (end + nlen - s);
-		break;
-	}
 	default: {
 		uint16_t nw = ne[0] << 8 | ne[nlen - 1];
 		const char *const end = s + slen - nlen;
-		const size_t off = nlen - 9;
-		while (s <= end)
-			if (nw == (s[0] << 8 | s[nlen - 1])
-			    && !memcmp(s + off, ne + off, 8)
-			    && !memcmp(s, ne, nlen))
-				s += nlen;
-			else
-				*dst++ = *s++;
+		if (nlen < 15) {
+			while (s <= end)
+				if (nw == (s[0] << 8 | s[nlen - 1])
+				    && !memcmp(s, ne, nlen))
+					s += nlen;
+				else
+					*dst++ = *s++;
+		} else {
+			const size_t off = nlen - 9;
+			while (s <= end)
+				if (nw == (s[0] << 8 | s[nlen - 1])
+				    && !memcmp(s + off, ne + off, 8)
+				    && !memcmp(s, ne, nlen))
+					s += nlen;
+				else
+					*dst++ = *s++;
+		}
 		memcpy(dst, s, end + nlen - s + 1);
 		dst += (end + nlen - s);
 		break;
