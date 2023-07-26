@@ -20,11 +20,11 @@ my $endif         = '';
 open(my $FH, '<', $FNAME)
   or die "Can't open $FNAME\n";
 while (<$FH>) {
-	if (/#\s*undef/) {
+	if (/^[ \t]*#\s*undef/) {
 		$undef .= $_;
-	} elsif (/#\s*endif\s*(?:\/\/|\/\*).*DEF.*(?:\/\*){0,1}/) {
+	} elsif (/^[ \t]*#\s*endif\s*(?:\/\/|\/\*).*DEF.*(?:\/\*){0,1}/) {
 		$endif .= $_;
-	} elsif (/^\s*#\s*if\s*$NAMESPACE_BIG\_(?:EXTERN_C|NAMESPACE)/) {
+	} elsif (/^[ \t]*#\s*if\s*$NAMESPACE_BIG\_(?:EXTERN_C|NAMESPACE)/) {
 		$namespace_end .= $_;
 		while (<$FH>) {
 			if (/^$/) {
@@ -46,7 +46,7 @@ my $hpp       = '';
 my $has_funcs = 0;
 my $in_if     = 0;
 foreach (split(/\n\n/, $file)) {
-	if (/\s*#[ \t]*ifndef.*(?:H|DEF)/ || /\s*#if[ \t]*.*(?:NAMESPACE)/ || /\s*#[ \t]*include/) {
+	if (/#[ \t]*ifndef.*(?:H|DEF)/ || /\s*#if[ \t]*.*(?:NAMESPACE)/ || /\s*#[ \t]*include/) {
 		$in_if = 0;
 		next;
 	}
@@ -69,8 +69,8 @@ foreach (split(/\n\n/, $file)) {
 	my $FUNC   = $2;
 	my $params = $3;
 	$params =~ s/\)/,/;
-	my $SZ  = (index($params, 'sz') != -1)  ? 1 : 0;
-	my $CAP = (index($params, 'cap') != -1) ? 1 : 0;
+	my $SZ  = ($params =~ /sz(?:,|\))/)  ? 1 : 0;
+	my $CAP = ($params =~ /cap(?:,|\))/) ? 1 : 0;
 	if (!$SZ && !$CAP) {
 		next;
 	}
