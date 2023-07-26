@@ -547,4 +547,6 @@ case ' ':
 #	endif
 #endif // __GLIBC__
 
+#define JSTR_RST JSTR_RESTRICT
+
 #endif // JSTR_MACROS_H_DEF

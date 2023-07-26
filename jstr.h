@@ -13,24 +13,12 @@ extern "C" {
 #endif /* __cpluslus */
 
 #include "jstr_ctype.h"
-#include "jstr_macros.h"
 #include "jstr_string.h"
-
-#define JSTR_EXIT_ON_MALLOC_ERROR 1
+#include "jstr_macros.h"
+#include "jstr_builder.h"
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
-
-/* This is executed every time a malloc error is encountered. */
-JSTR_NOINLINE
-static void JSTR_ERR(void) JSTR_NOEXCEPT
-{
-	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
-	perror("");
-#if JSTR_EXIT_ON_MALLOC_ERROR
-	exit(1);
-#endif /* JSTR_EXIT_ON_MALLOC_ERROR */
-}
 
 #if JSTR_NAMESPACE && defined(__cplusplus)
 #	define JSTR_IN_NAMESPACE 1
@@ -39,171 +27,6 @@ namespace jstr {
 #if JSTR_EXTERN_C && defined(__cplusplus)
 extern "C" {
 #endif /* JSTR_EXTERN_C */
-
-#define JSTR_RST JSTR_RESTRICT
-
-#define JSTR_MALLOC_ERR(p, malloc_fail) \
-	do {                            \
-		if (unlikely(!(p))) {   \
-			JSTR_ERR();     \
-			malloc_fail;    \
-		}                       \
-	} while (0)
-
-#define JSTR_GROW(oldcap, newcap) \
-	while (((oldcap) *= 2) < (newcap))
-
-#define JSTR_REALLOC(p, oldcap, newcap, malloc_fail) \
-	do {                                         \
-		JSTR_GROW(oldcap, newcap);           \
-		(p) = (char *)realloc(p, newcap);    \
-		JSTR_MALLOC_ERR(p, malloc_fail);     \
-	} while (0)
-
-/*
-  exit(1) if ptr is NULL.
-*/
-JSTR_INLINE
-static void jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
-{
-	if (unlikely(!p))
-		JSTR_ERR();
-}
-
-/*
-  free(p) and set p to NULL.
-*/
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
-{
-	free(p);
-	p = NULL;
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void jstr_alloc(char **JSTR_RST const s,
-		       size_t *JSTR_RST const cap,
-		       const size_t top) JSTR_NOEXCEPT
-{
-	enum { GROWTH_MULTIPLIER = 2 };
-	*s = (char *)malloc(top * 2);
-	JSTR_MALLOC_ERR(*s, return);
-	*cap = top * GROWTH_MULTIPLIER;
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void jstr_alloc_append_mem(char **JSTR_RST const s,
-				  size_t *JSTR_RST const sz,
-				  size_t *JSTR_RST const cap,
-				  const char *JSTR_RST const src,
-				  const size_t slen) JSTR_NOEXCEPT
-{
-	enum { GROWTH_MULTIPLIER = 2 };
-	jstr_alloc(s, cap, slen * GROWTH_MULTIPLIER);
-	if (unlikely(!*s))
-		return;
-	*sz = slen;
-	memcpy(*s, src, slen + 1);
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void jstr_alloc_append(char **JSTR_RST const s,
-			      size_t *JSTR_RST const sz,
-			      size_t *JSTR_RST const cap,
-			      const char *JSTR_RST const src) JSTR_NOEXCEPT
-{
-	jstr_alloc_append_mem(s, sz, cap, src, strlen(src));
-}
-
-typedef struct jstr_t {
-	size_t size;
-	size_t cap;
-	char *data;
-
-#ifdef __cplusplus
-
-	JSTR_INLINE
-	JSTR_NONNULL_ALL
-	jstr_t(const size_t len) JSTR_NOEXCEPT
-	{
-		jstr_alloc(&this->data, &this->cap, len);
-	}
-
-	JSTR_INLINE
-	JSTR_NONNULL_ALL
-	jstr_t(const char *JSTR_RST const src) JSTR_NOEXCEPT
-	{
-		jstr_alloc_append(&this->data, &this->size, &this->cap, src);
-	}
-
-	JSTR_INLINE
-	JSTR_NONNULL_ALL
-	jstr_t(const char *JSTR_RST const src,
-	       const size_t slen) JSTR_NOEXCEPT
-	{
-		jstr_alloc_append_mem(&this->data, &this->size, &this->cap, src, slen);
-	}
-
-	JSTR_INLINE
-	~jstr_t(void) JSTR_NOEXCEPT
-	{
-		free(this->data);
-	}
-
-	/*
-	  free(STR) and set STR to NULL.
-	*/
-	JSTR_INLINE
-	void del(void) JSTR_NOEXCEPT
-	{
-		free(this->data);
-		this->data = NULL;
-	}
-
-	/*
-	  exit(1) if STR is NULL.
-	*/
-	JSTR_INLINE
-	void err(void) JSTR_NOEXCEPT
-	{
-		if (unlikely(!this->data))
-			exit(1);
-	}
-
-	JSTR_INLINE
-	void print(void) JSTR_NOEXCEPT
-	{
-		fwrite(this->data, 1, this->size, stdout);
-	}
-
-	JSTR_INLINE
-	void print_stderr(void) JSTR_NOEXCEPT
-	{
-		fwrite(this->data, 1, this->size, stderr);
-	}
-
-	JSTR_INLINE
-	void debug_print(void) JSTR_NOEXCEPT
-	{
-		fprintf(stderr, "size:%zu\ncap:%zu\n", this->size, this->cap);
-		fprintf(stderr, "data:%s\n", this->data);
-	}
-
-#endif /* __cpluslus */
-
-} jstr_t;
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void jstr_debug(const jstr_t *JSTR_RST const j)
-{
-	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
-	fprintf(stderr, "data:%s\n", j->data);
-}
 
 /*
    Append SRC to DST.
@@ -928,7 +751,7 @@ static void jstr_insertaft_mem(char **JSTR_RST const s,
 			       const size_t nlen,
 			       const size_t slen) JSTR_NOEXCEPT
 {
-	if (unlikely(!*(ne + 1))) {
+	if (unlikely(!ne[1])) {
 		jstr_insertaftc_mem(s, sz, cap, *ne, src, slen);
 		return;
 	}
@@ -965,7 +788,7 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 				  const size_t nlen,
 				  const size_t slen) JSTR_NOEXCEPT
 {
-	if (unlikely(!*(ne + 1))) {
+	if (unlikely(!ne[1])) {
 		jstr_insertaftallc_mem(s, sz, cap, *ne, src, slen);
 		return;
 	}
@@ -1114,7 +937,7 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 			     const size_t nlen,
 			     const size_t slen) JSTR_NOEXCEPT
 {
-	if (unlikely(!*(ne + 1))) {
+	if (unlikely(!ne[1])) {
 		jstr_slipaftc_mem(s, sz, cap, *ne, src, slen);
 		return;
 	}
@@ -1151,7 +974,7 @@ static void jstr_slipaftall_mem(char **JSTR_RST const s,
 				const size_t nlen,
 				const size_t slen) JSTR_NOEXCEPT
 {
-	if (unlikely(!*(ne + 1))) {
+	if (unlikely(!ne[1])) {
 		jstr_slipaftallc_mem(s, sz, cap, *ne, src, slen);
 		return;
 	}
@@ -1211,10 +1034,10 @@ static int jstr_endswith(const char *JSTR_RST const s1,
 	return jstr_endswith_mem(s1, s2, l1, strlen(s2));
 }
 
-#if defined(__cplusplus) && JSTR_EXTERN_C
+#if JSTR_EXTERN_C && defined(__cplusplus)
 }
 #endif /* JSTR_EXTERN_C */
-#if defined(__cplusplus) && JSTR_NAMESPACE
+#if JSTR_NAMESPACE && defined(__cplusplus)
 }
 #endif /* JSTR_NAMESPACE */
 

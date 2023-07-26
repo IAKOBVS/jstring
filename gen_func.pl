@@ -25,7 +25,7 @@ while (<$FH>) {
 		$undef .= $_;
 	} elsif (/#\s*endif\s*(?:\/\/|\/\*).*DEF.*(?:\/\*){0,1}/) {
 		$endif .= $_;
-	} elsif (/^\s*#if\s*defined.*JSTR_EXTERN_C/) {
+	} elsif (/^\s*#\s*if\s*$NAMESPACE_BIG\_(?:EXTERN_C|NAMESPACE)/) {
 		$namespace .= $_;
 		while (<$FH>) {
 			if (/^$/) {
@@ -33,7 +33,8 @@ while (<$FH>) {
 			}
 			$namespace .= $_;
 		}
-		if ($namespace =~ /namespace/) {
+		if (index($namespace, 'namespace') != -1) {
+			$file .= "$namespace\n";
 			$namespace = '';
 		}
 	} else {
@@ -146,6 +147,7 @@ $hpp =~ s/$NAMESPACE\_(\w+\()/$1/g;
 $hpp =~ s/\tt\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/\t~t\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/alloc_append/alloc/g;
+$hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
 open($FH, '>', "$DIR_CPP/${FNAME}pp") or die "Can't open $DIR_CPP/${FNAME}pp\n";

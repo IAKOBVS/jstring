@@ -24,8 +24,6 @@ extern "C" {
 #define JSTR_IN_NAMESPACE 1
 #endif /* JSTR_EXTERN_C */
 
-#define JSTR_RST  JSTR_RESTRICT
-
 JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
@@ -179,7 +177,5 @@ static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
 #if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
 }
 #endif /* JSTR_NAMESPACE */
-
-#undef JSTR_RST
 
 #endif /* JSTR_CTYPE_H_DEF */

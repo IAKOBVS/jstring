@@ -17,6 +17,8 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
+#define JSTR_RST JSTR_RESTRICT
+
 #if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
@@ -24,8 +26,6 @@ namespace jstr {
 extern "C" {
 #	define JSTR_IN_NAMESPACE 1
 #endif /* JSTR_EXTERN_C */
-
-#define JSTR_RST JSTR_RESTRICT
 
 /*
   Return value:
@@ -145,7 +145,5 @@ static int jstr_casecmp(const char *JSTR_RST s1,
 #if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
 }
 #endif /* JSTR_NAMESPACE */
-
-#undef JSTR_RST
 
 #endif /* JSTR_STRING_H_DEF */
