@@ -93,13 +93,13 @@ static void jstr_alloc_append_mem(char **JSTR_RST const s,
 				  size_t *JSTR_RST const sz,
 				  size_t *JSTR_RST const cap,
 				  const char *JSTR_RST const src,
-				  const size_t slen) JSTR_NOEXCEPT
+				  const size_t srclen) JSTR_NOEXCEPT
 {
-	jstr_alloc(s, cap, slen * JSTR_GROWTH_MULTIPLIER);
+	jstr_alloc(s, cap, srclen * JSTR_GROWTH_MULTIPLIER);
 	if (unlikely(!*s))
 		return;
-	*sz = slen;
-	memcpy(*s, src, slen + 1);
+	*sz = srclen;
+	memcpy(*s, src, srclen + 1);
 }
 
 JSTR_INLINE
@@ -136,9 +136,9 @@ typedef struct jstr_t {
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
 	jstr_t(const char *JSTR_RST const src,
-	       const size_t slen) JSTR_NOEXCEPT
+	       const size_t srclen) JSTR_NOEXCEPT
 	{
-		jstr_alloc_append_mem(&this->data, &this->size, &this->cap, src, slen);
+		jstr_alloc_append_mem(&this->data, &this->size, &this->cap, src, srclen);
 	}
 
 #	if JSTR_FREE_ON_DESTRUCTOR
