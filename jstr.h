@@ -49,7 +49,7 @@ static void jstr_append_mem_f(char **JSTR_RST const s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_appendf(char **JSTR_RST const s,
+static void jstr_append_f(char **JSTR_RST const s,
 			 size_t *JSTR_RST const sz,
 			 const char *JSTR_RST const src) JSTR_NOEXCEPT
 {

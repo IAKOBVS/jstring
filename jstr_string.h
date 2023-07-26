@@ -17,8 +17,6 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
-#define JSTR_RST JSTR_RESTRICT
-
 #if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
