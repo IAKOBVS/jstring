@@ -171,7 +171,7 @@ static int jstr_count(const char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_rev_mem(char *JSTR_RST s,
+static void jstr_reverse_mem(char *JSTR_RST s,
 			 const size_t sz) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
@@ -190,9 +190,9 @@ static void jstr_rev_mem(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_rev(char *JSTR_RST const s) JSTR_NOEXCEPT
+static void jstr_reverse(char *JSTR_RST const s) JSTR_NOEXCEPT
 {
-	jstr_rev_mem(s, strlen(s));
+	jstr_reverse_mem(s, strlen(s));
 }
 
 /*

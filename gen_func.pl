@@ -44,19 +44,19 @@ close($FH);
 my $h         = '';
 my $hpp       = '';
 my $has_funcs = 0;
-my $in_if     = 0;
+my $in_ifdef  = 0;
 foreach (split(/\n\n/, $file)) {
 	if (/#[ \t]*ifndef.*(?:H|DEF)/ || /\s*#if[ \t]*.*(?:NAMESPACE)/ || /\s*#[ \t]*include/) {
-		$in_if = 0;
+		$in_ifdef = 0;
 		next;
 	}
 	if (/^[ \t]*#[ \t]*(?:if|elif|else)/) {
-		$in_if = 1;
+		$in_ifdef = 1;
 		$h   .= "$_\n\n";
 		$hpp .= "$_\n\n";
 		next;
 	} elsif (/^[ \t]*#[ \t]*endif/) {
-		if ($in_if) {
+		if ($in_ifdef) {
 			$h   .= "$_\n\n";
 			$hpp .= "$_\n\n";
 		}
