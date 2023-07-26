@@ -4,10 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
-
-#include <stddef.h>
 #include <string.h>
-
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */

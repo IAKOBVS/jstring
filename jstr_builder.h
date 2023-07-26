@@ -11,8 +11,8 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "jstr_macros.h"
 #include "jstr_config.h"
+#include "jstr_macros.h"
 
 /* This is executed every time a malloc error is encountered. */
 JSTR_NOINLINE
@@ -82,7 +82,7 @@ static void jstr_alloc(char **JSTR_RST const s,
 		       size_t *JSTR_RST const cap,
 		       const size_t top) JSTR_NOEXCEPT
 {
-	*s = (char *)malloc(top * 2);
+	*s = (char *)malloc(top * JSTR_GROWTH_MULTIPLIER);
 	JSTR_MALLOC_ERR(*s, return);
 	*cap = top * JSTR_GROWTH_MULTIPLIER;
 }
@@ -141,18 +141,18 @@ typedef struct jstr_t {
 		jstr_alloc_append_mem(&this->data, &this->size, &this->cap, src, slen);
 	}
 
-#if JSTR_FREE_ON_DESTRUCTOR
+#	if JSTR_FREE_ON_DESTRUCTOR
 
 	JSTR_INLINE
 	~jstr_t(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
-#if JSTR_NULLIFY_PTR_ON_DESTRUCTOR
+#		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR
 		this->data = NULL;
-#endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR */
+#		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR */
 	}
 
-#endif /* JSTR_FREE_ON_DESTRUCTOR */
+#	endif /* JSTR_FREE_ON_DESTRUCTOR */
 
 	/*
 	  free(STR) and set STR to NULL.
@@ -161,9 +161,9 @@ typedef struct jstr_t {
 	void del(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
-#if JSTR_NULLIFY_PTR_ON_DELETE
+#	if JSTR_NULLIFY_PTR_ON_DELETE
 		this->data = NULL;
-#endif /* JSTR_NULLIFY_PTR_ON_DELETE */
+#	endif /* JSTR_NULLIFY_PTR_ON_DELETE */
 	}
 
 	/*

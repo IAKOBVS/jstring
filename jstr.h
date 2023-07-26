@@ -5,17 +5,16 @@
 extern "C" {
 #endif /* __cpluslus */
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */
 
-#include "jstr_ctype.h"
-#include "jstr_string.h"
 #include "jstr_builder.h"
+#include "jstr_ctype.h"
 #include "jstr_macros.h"
+#include "jstr_string.h"
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
@@ -50,8 +49,8 @@ static void jstr_append_mem_f(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_append_f(char **JSTR_RST const s,
-			 size_t *JSTR_RST const sz,
-			 const char *JSTR_RST const src) JSTR_NOEXCEPT
+			  size_t *JSTR_RST const sz,
+			  const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 	jstr_append_mem_f(s, sz, src, strlen(src));
 }
