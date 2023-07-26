@@ -180,9 +180,9 @@ static void jstr_rev_mem(char *JSTR_RST s,
 	char tmp;
 	do {
 		tmp = *s;
-		*s++ = *end;
-		*end-- = tmp;
-	} while (s < end);
+		*s = *end;
+		*end = tmp;
+	} while (++s < --end);
 }
 
 /*
