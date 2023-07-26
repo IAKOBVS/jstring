@@ -251,13 +251,13 @@ static int jstr_removec(char *JSTR_RST s,
 {
 	if (unlikely(!*s))
 		return 0;
-	do {
+	do
 		if (*s == c) {
-			for (char *d = s; (*d++ = *s++);)
+			for (const char *src = s; (*s++ = *++src);)
 				;
 			return 1;
 		}
-	} while (*++s);
+	while (*++s);
 	return 0;
 }
 
@@ -274,11 +274,16 @@ static char *jstr_removeallc(char *JSTR_RST s,
 	if (unlikely(!*s))
 		return s;
 	const char *src = s;
-	do {
-		if (*src != c)
-			*s++ = *src;
-	} while (*++src);
-	*s = '\0';
+	do
+		if (*src != c) {
+			do
+				if (*src != c)
+					*s++ = *src;
+			while (*++src);
+			*s = '\0';
+			break;
+		}
+	while (*++src);
 	return s;
 }
 
@@ -338,14 +343,12 @@ static void jstr_replacec(char *JSTR_RST s,
 {
 	if (unlikely(!*s))
 		return;
-	for (;;) {
+	do
 		if (*s == srch) {
 			*s = rplc;
 			break;
 		}
-		if (unlikely(!*++s))
-			break;
-	}
+	while (*++s);
 }
 
 /*
@@ -488,14 +491,12 @@ static void jstr_replaceallc(char *JSTR_RST s,
 			     const int srch,
 			     const int rplc) JSTR_NOEXCEPT
 {
-	if (unlikely(*s))
+	if (unlikely(!*s))
 		return;
-	for (;;) {
+	do
 		if (*s == srch)
 			*s = rplc;
-		if (unlikely(!*++s))
-			break;
-	}
+	while (*++s);
 }
 
 /*
@@ -750,14 +751,25 @@ static void jstr_insertaft_mem(char **JSTR_RST const s,
 			       const size_t nlen,
 			       const size_t slen) JSTR_NOEXCEPT
 {
-	if (unlikely(!ne[1])) {
-		jstr_insertaftc_mem(s, sz, cap, *ne, src, slen);
+	if (unlikely(!slen)) {
+		*sz = jstr_remove_mem_p(*s, ne, *sz, nlen) - *s;
 		return;
 	}
-	const char *const p = (char *)jstr_memmem(*s, *sz, ne, nlen);
-	if (!p)
-		return;
-	jstr_insert_mem(s, sz, cap, p - *s + nlen, src, slen);
+	switch (nlen) {
+	case 0:
+		break;
+	case 1: {
+		jstr_insertaftc_mem(s, sz, cap, *ne, src, slen);
+		break;
+	}
+	default: {
+		const char *const p = (char *)jstr_memmem(*s, *sz, ne, nlen);
+		if (!p)
+			return;
+		jstr_insert_mem(s, sz, cap, p - *s + nlen, src, slen);
+		break;
+	}
+	}
 }
 
 /*
@@ -787,15 +799,26 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 				  const size_t nlen,
 				  const size_t slen) JSTR_NOEXCEPT
 {
-	if (unlikely(!ne[1])) {
-		jstr_insertaftallc_mem(s, sz, cap, *ne, src, slen);
+	if (unlikely(!slen)) {
+		*sz = jstr_removeall_mem_p(*s, ne, *sz, nlen) - *s;
 		return;
 	}
-	size_t off = 0;
-	for (char *p;
-	     (p = (char *)jstr_memmem(*s + off, *sz - off, ne, nlen));
-	     off += *s - p + nlen)
-		jstr_insert_mem(s, sz, cap, p - *s + nlen, src, slen);
+	switch (nlen) {
+	case 0:
+		break;
+	case 1: {
+		jstr_insertaftallc_mem(s, sz, cap, *ne, src, slen);
+		break;
+	}
+	default: {
+		size_t off = 0;
+		for (char *p;
+		     (p = (char *)jstr_memmem(*s + off, *sz - off, ne, nlen));
+		     off += *s - p + nlen)
+			jstr_insert_mem(s, sz, cap, p - *s + nlen, src, slen);
+		break;
+	}
+	}
 }
 
 /*
@@ -936,7 +959,7 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 			     const size_t nlen,
 			     const size_t slen) JSTR_NOEXCEPT
 {
-	if (unlikely(!ne[1])) {
+	if (unlikely(nlen == 1)) {
 		jstr_slipaftc_mem(s, sz, cap, *ne, src, slen);
 		return;
 	}
@@ -973,7 +996,7 @@ static void jstr_slipaftall_mem(char **JSTR_RST const s,
 				const size_t nlen,
 				const size_t slen) JSTR_NOEXCEPT
 {
-	if (unlikely(!ne[1])) {
+	if (unlikely(nlen == 1)) {
 		jstr_slipaftallc_mem(s, sz, cap, *ne, src, slen);
 		return;
 	}
