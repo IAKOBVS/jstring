@@ -1,123 +1,6 @@
 #ifndef JSTR_MACROS_H_DEF
 #define JSTR_MACROS_H_DEF
 
-#ifdef __cplusplus
-#	define JSTR_NOEXCEPT noexcept
-#else
-#	define JSTR_NOEXCEPT
-#endif
-
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) || defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-#	define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
-#elif defined(__attribute_warn_unused_result__)
-#	define JSTR_WARN_UNUSED __attribute_warn_unused_result__
-#else
-#	define JSTR_WARN_UNUSED
-#endif // __attribute__unused
-
-#if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
-#	define JSTR_HAS_TYPEOF
-#endif // JSTR_HAS_TYPEOF
-
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-#	define JSTR_HAS_GENERIC
-#endif // JSTR_HAS_GENERIC
-
-#if defined(static_assert)
-#	define JSTR_HAS_STATIC_ASSERT
-#	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
-#	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
-#elif __STDC_VERSION__ >= 201112L
-#	define JSTR_HAS_STATIC_ASSERT
-#	define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
-#else
-#	define JSTR_ASSERT(expr, msg)
-#	define JSTR_ASSERT_SEMICOLON(expr, msg)
-#endif // static_assert
-
-#if defined(__GNUC__) || defined(__clang__)
-#	define JSTR_NONNULL_ALL   __attribute__((nonnull))
-#	define JSTR_NONNULL(args) __attribute__((nonnull(args)))
-#else
-#	define JSTR_NONNULL_ALL
-#	define JSTR_NONNULL(args)
-#endif /* NONNULL */
-
-#ifdef JSTR_ALIGN_POWER_OF_TWO
-#	ifdef JSTR_64_BIT
-#		ifdef __cplusplus
-#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
-#		else
-#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
-#		endif // __cplusplus
-#	elif JSTR_32_BIT
-#		ifdef __cplusplus
-#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
-#		else
-#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
-#		endif // __cplusplus
-#	else
-#		define JSTR_NEXT_POW2(x) (x)
-#	endif // JSTR_64_BIT
-#endif // JSTR_ALIGN_POWER_OF_TWO
-
-#ifdef __cplusplus
-#	define JSTR_RESTRICT
-#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-#	define JSTR_RESTRICT restrict
-#elif defined(__GNUC__) || defined(__clang__)
-#	define JSTR_RESTRICT __restrict__
-#elif defined(_MSC_VER)
-#	define JSTR_RESTRICT __restrict
-#else
-#	define JSTR_RESTRICT
-#endif // restrict
-
-#if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
-#	define likely(x)   __builtin_expect(!!(x), 1)
-#	define unlikely(x) __builtin_expect(!!(x), 0)
-#else
-#	define likely(x)   (x)
-#	define unlikely(x) (x)
-#endif // __has_builtin(__builtin_expect)
-
-#if defined(__GNUC__) || defined(__clang__)
-#	define JSTR_INLINE __attribute__((always_inline)) inline
-#	if __has_attribute(pure)
-#		define PURE __attribute__((pure))
-#	else
-#		define PURE
-#	endif // PURE
-#	if __has_attribute(const)
-#		define JSTR_CONST __attribute__((const))
-#	else
-#		define JSTR_CONST
-#	endif // JSTR_CONST
-#	if __has_attribute(flatten)
-#		define FLATTEN __attribute__((flatten))
-#	else
-#		define FLATTEN
-#	endif // FLATTEN
-#elif defined(_MSC_VER)
-#	define JSTR_INLINE __forceinline inline
-#	define PURE	    __declspec(noalias)
-#	define JSTR_CONST  __declspec(restrict)
-#	define FLATTEN
-#else
-#	define JSTR_INLINE inline
-#	define PURE
-#	define JSTR_CONST
-#	define FLATTEN
-#endif // __GNUC__ || __clang__ || _MSC_VER
-
-#if defined(__GNUC__) || defined(__clang__)
-#	define JSTR_NOINLINE __attribute__((noinline))
-#elif defined(_MSC_VER)
-#	define JSTR_NOINLINE __declspec(noinline)
-#else
-#	define JSTR_NOINLINE
-#endif /* JSTR_NOINLINE */
-
 /* #if defined(__GNUC__) || defined(__clang__) */
 /* #	ifdef __cplusplus */
 /* #		include <cstdint> */
@@ -362,6 +245,123 @@
 /* #	define JSTR_MACRO_START ( */
 /* #	define JSTR_MACRO_END ) */
 /* #endif // __GNUC__ || __clang__ */
+
+#ifdef __cplusplus
+#	define JSTR_NOEXCEPT noexcept
+#else
+#	define JSTR_NOEXCEPT
+#endif
+
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) || defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
+#	define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
+#elif defined(__attribute_warn_unused_result__)
+#	define JSTR_WARN_UNUSED __attribute_warn_unused_result__
+#else
+#	define JSTR_WARN_UNUSED
+#endif // __attribute__unused
+
+#if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
+#	define JSTR_HAS_TYPEOF
+#endif // JSTR_HAS_TYPEOF
+
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
+#	define JSTR_HAS_GENERIC
+#endif // JSTR_HAS_GENERIC
+
+#if defined(static_assert)
+#	define JSTR_HAS_STATIC_ASSERT
+#	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
+#	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
+#elif __STDC_VERSION__ >= 201112L
+#	define JSTR_HAS_STATIC_ASSERT
+#	define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
+#else
+#	define JSTR_ASSERT(expr, msg)
+#	define JSTR_ASSERT_SEMICOLON(expr, msg)
+#endif // static_assert
+
+#if defined(__GNUC__) || defined(__clang__)
+#	define JSTR_NONNULL_ALL   __attribute__((nonnull))
+#	define JSTR_NONNULL(args) __attribute__((nonnull(args)))
+#else
+#	define JSTR_NONNULL_ALL
+#	define JSTR_NONNULL(args)
+#endif /* NONNULL */
+
+#ifdef JSTR_ALIGN_POWER_OF_TWO
+#	ifdef JSTR_64_BIT
+#		ifdef __cplusplus
+#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
+#		else
+#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
+#		endif // __cplusplus
+#	elif JSTR_32_BIT
+#		ifdef __cplusplus
+#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
+#		else
+#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
+#		endif // __cplusplus
+#	else
+#		define JSTR_NEXT_POW2(x) (x)
+#	endif // JSTR_64_BIT
+#endif // JSTR_ALIGN_POWER_OF_TWO
+
+#ifdef __cplusplus
+#	define JSTR_RESTRICT
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#	define JSTR_RESTRICT restrict
+#elif defined(__GNUC__) || defined(__clang__)
+#	define JSTR_RESTRICT __restrict__
+#elif defined(_MSC_VER)
+#	define JSTR_RESTRICT __restrict
+#else
+#	define JSTR_RESTRICT
+#endif // restrict
+
+#if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
+#	define likely(x)   __builtin_expect(!!(x), 1)
+#	define unlikely(x) __builtin_expect(!!(x), 0)
+#else
+#	define likely(x)   (x)
+#	define unlikely(x) (x)
+#endif // __has_builtin(__builtin_expect)
+
+#if defined(__GNUC__) || defined(__clang__)
+#	define JSTR_INLINE __attribute__((always_inline)) inline
+#	if __has_attribute(pure)
+#		define PURE __attribute__((pure))
+#	else
+#		define PURE
+#	endif // PURE
+#	if __has_attribute(const)
+#		define JSTR_CONST __attribute__((const))
+#	else
+#		define JSTR_CONST
+#	endif // JSTR_CONST
+#	if __has_attribute(flatten)
+#		define FLATTEN __attribute__((flatten))
+#	else
+#		define FLATTEN
+#	endif // FLATTEN
+#elif defined(_MSC_VER)
+#	define JSTR_INLINE __forceinline inline
+#	define PURE	    __declspec(noalias)
+#	define JSTR_CONST  __declspec(restrict)
+#	define FLATTEN
+#else
+#	define JSTR_INLINE inline
+#	define PURE
+#	define JSTR_CONST
+#	define FLATTEN
+#endif // __GNUC__ || __clang__ || _MSC_VER
+
+#if defined(__GNUC__) || defined(__clang__)
+#	define JSTR_NOINLINE __attribute__((noinline))
+#elif defined(_MSC_VER)
+#	define JSTR_NOINLINE __declspec(noinline)
+#else
+#	define JSTR_NOINLINE
+#endif /* JSTR_NOINLINE */
 
 #ifndef MAX
 #	define MAX(a, b) (((a) > (b)) ? (a) : (b))
