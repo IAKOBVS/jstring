@@ -2,63 +2,62 @@
 use strict;
 use warnings;
 
+my $FNAME         = $ARGV[0];
 my $NAMESPACE     = 'jstr';
-my $NAMESPACE_BIG = 'JSTR';
-my $DIR_CPP       = 'cpp';
+my $NAMESPACE_BIG = uc($NAMESPACE);
 my $DIR_C         = 'c';
-
+my $DIR_CPP       = $DIR_C . 'pp';
 mkdir($DIR_CPP);
 mkdir($DIR_C);
-
-my $FNAME = $ARGV[0];
 if ($#ARGV != 0) {
-	print "Usage: ./gen_func.pl <file>";
+	print 'Usage: ./gen_func.pl <file>';
 	exit 1;
 }
-my $file;
-my $namespace = '';
-my $undef     = '';
-my $endif     = '';
-open(my $FH, '<', $FNAME) or die "Can't open $FNAME\n";
+my $file          = '';
+my $namespace_end = '';
+my $undef         = '';
+my $endif         = '';
+open(my $FH, '<', $FNAME)
+  or die "Can't open $FNAME\n";
 while (<$FH>) {
 	if (/#\s*undef/) {
 		$undef .= $_;
 	} elsif (/#\s*endif\s*(?:\/\/|\/\*).*DEF.*(?:\/\*){0,1}/) {
 		$endif .= $_;
 	} elsif (/^\s*#\s*if\s*$NAMESPACE_BIG\_(?:EXTERN_C|NAMESPACE)/) {
-		$namespace .= $_;
+		$namespace_end .= $_;
 		while (<$FH>) {
 			if (/^$/) {
 				last;
 			}
-			$namespace .= $_;
+			$namespace_end .= $_;
 		}
-		if (index($namespace, 'namespace') != -1) {
-			$file .= "$namespace\n";
-			$namespace = '';
+		if (index($namespace_end, 'namespace') != -1) {
+			$file .= "$namespace_end\n";
+			$namespace_end = '';
 		}
 	} else {
 		$file .= $_;
 	}
 }
 close($FH);
-my $h;
-my $hpp;
+my $h         = '';
+my $hpp       = '';
 my $has_funcs = 0;
-my $in_if = 0;
+my $in_if     = 0;
 foreach (split(/\n\n/, $file)) {
+	if (/\s*#[ \t]*ifndef.*(?:H|DEF)/ || /\s*#if[ \t]*.*(?:NAMESPACE)/ || /\s*#[ \t]*include/) {
+		$in_if = 0;
+		next;
+	}
 	if (/^[ \t]*#[ \t]*(?:if|elif|else)/) {
-		if (/\s*#[ \t]*ifndef.*(?:H|DEF)/ || /\s*#if[ \t]*.*(?:NAMESPACE)/ || /\s*#[ \t]*include/) {
-			$in_if = 0;
-			next;
-		}
 		$in_if = 1;
-		$h .= "$_\n\n";
+		$h   .= "$_\n\n";
 		$hpp .= "$_\n\n";
 		next;
 	} elsif (/^[ \t]*#[ \t]*endif/) {
 		if ($in_if) {
-			$h .= "$_\n\n";
+			$h   .= "$_\n\n";
 			$hpp .= "$_\n\n";
 		}
 		next;
@@ -129,7 +128,7 @@ foreach (split(/\n\n/, $file)) {
 	$decl =~ s/$FUNC/$FUNC\_j/;
 	$h .= $decl;
 }
-my $end = "$namespace\n$undef\n$endif";
+my $end = "$namespace_end\n$undef\n$endif";
 if ($has_funcs) {
 	$h   = "$file\n$h\n$end";
 	$hpp = "$file\n$hpp\n$end";
@@ -150,9 +149,11 @@ $hpp =~ s/alloc_append/alloc/g;
 $hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
-open($FH, '>', "$DIR_CPP/${FNAME}pp") or die "Can't open $DIR_CPP/${FNAME}pp\n";
+open($FH, '>', "$DIR_CPP/${FNAME}pp")
+  or die "Can't open $DIR_CPP/${FNAME}pp\n";
 print($FH $hpp);
 close($FH);
-open($FH, '>', "$DIR_C/$FNAME") or die "Can't open $DIR_C/$FNAME\n";
+open($FH, '>', "$DIR_C/$FNAME")
+  or die "Can't open $DIR_C/$FNAME\n";
 print($FH $h);
 close($FH);
