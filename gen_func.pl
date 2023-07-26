@@ -62,43 +62,42 @@ foreach (split(/\n\n/, $file)) {
 		}
 		next;
 	}
-	/^((?:#if|\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/;
-	if (!$1 && !$2 && !$3) {
+	if (!/^((?:#if|\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/) {
 		next;
 	}
 	my $decl   = $1;
 	my $FUNC   = $2;
-	my $PARAMS = $3;
-	$PARAMS =~ s/\)/,/;
-	my $RETURN = (index($decl,   'void') != -1) ? '' : 'return ';
-	my $SZ     = (index($PARAMS, 'sz') != -1)   ? 1  : 0;
-	my $CAP    = (index($PARAMS, 'cap') != -1)  ? 1  : 0;
-
+	my $params = $3;
+	$params =~ s/\)/,/;
+	my $SZ  = (index($params, 'sz') != -1)  ? 1 : 0;
+	my $CAP = (index($params, 'cap') != -1) ? 1 : 0;
 	if (!$SZ && !$CAP) {
 		next;
 	}
 	$has_funcs = 1;
-	my $PTR = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
-	if ($SZ) {
-		if ($decl =~ /\w*sz(,|\))/) {
-			if ($1 eq ')') {
-				$decl =~ s/[^(,]*sz(?:,|\))/)/;
-			} elsif ($1 eq ',') {
-				$decl =~ s/[^(,]*sz,//;
-			}
+	my $RETURN = (index($decl, 'void') != -1) ? '' : 'return ';
+	my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
+	if ($SZ && $decl =~ /\w*sz(,|\))/) {
+		if ($1 eq ')') {
+			$decl =~ s/[^(,]*sz(?:,|\))/)/;
+		} elsif ($1 eq ',') {
+			$decl =~ s/[^(,]*sz,//;
 		}
 	}
-	if ($CAP) {
-		if ($decl =~ /\w*cap(,|\))/) {
-			if ($1 eq ')') {
-				$decl =~ s/[^(,]*cap(?:,|\))/)/;
-			} elsif ($1 eq ',') {
-				$decl =~ s/[^(,]*cap,//;
-			}
+	if ($CAP && $decl =~ /\w*cap(,|\))/) {
+		if ($1 eq ')') {
+			$decl =~ s/[^(,]*cap(?:,|\))/)/;
+		} elsif ($1 eq ',') {
+			$decl =~ s/[^(,]*cap,//;
 		}
 	}
-	my @OLD_ARGS = split(/\s/, $PARAMS);
-	my $CONST    = ($OLD_ARGS[0] eq 'const') ? 'const ' : '';
+	my @OLD_ARGS = split(/\s/, $params);
+	my $CONST    = ($OLD_ARGS[0] eq 'const')   ? 'const ' : '';
+	my $LAST     = (index($params, ',') != -1) ? ','      : ')';
+	my $tmp      = "($NAMESPACE\_t *$NAMESPACE_BIG\_RST $CONST" . "j$LAST";
+	$decl =~ s/\(.+?$LAST/$tmp/;
+	$decl .= "\n{\n\t$RETURN$FUNC(";
+
 	my @NEW_ARGS;
 	foreach (@OLD_ARGS) {
 		if (/,$/) {
@@ -106,10 +105,6 @@ foreach (split(/\n\n/, $file)) {
 			push(@NEW_ARGS, $_);
 		}
 	}
-	my $LAST    = (index($PARAMS, ',') != -1) ? ',' : ')';
-	my $replace = "($NAMESPACE\_t *$NAMESPACE_BIG\_RST $CONST" . "j$LAST";
-	$decl =~ s/\(.+?$LAST/$replace/;
-	$decl .= "\n{\n\t$RETURN$FUNC(";
 	my $func_args = $PTR . "j->data, ";
 	for (my $i = 1 ; $i <= $#NEW_ARGS ; ++$i) {
 		if (index($NEW_ARGS[$i], 'sz') != -1) {
@@ -149,8 +144,8 @@ $hpp =~ s/alloc_append/alloc/g;
 $hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
-open($FH, '>', "$DIR_CPP/${FNAME}pp")
-  or die "Can't open $DIR_CPP/${FNAME}pp\n";
+open($FH, '>', "$DIR_CPP/$FNAME" . 'pp')
+  or die "Can't open $DIR_CPP/$FNAME" . "pp\n";
 print($FH $hpp);
 close($FH);
 open($FH, '>', "$DIR_C/$FNAME")
