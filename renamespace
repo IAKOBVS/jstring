@@ -12,12 +12,16 @@ fi
 new_name() { echo "$1" | sed "s/$nmspc\_/$new\_/"; }
 for file in $(echo c/*.h); do
 	{
-		sed "s/$nmspc\_/$new\_/g; s/$nmspc_upp\_/$new_upp\_/g" "$file" >"$(new_name "$file")"
+		newfile=$(new_name "$file")
+		sed "s/$nmspc\_/$new\_/g; s/$nmspc_upp\_/$new_upp\_/g" "$file" >"$newfile"
+		./fmt "$newfile"
 	} &
 done
 for file in $(echo cpp/*.h*); do
 	{
-		sed "s/$nmspc\_/$new\_/g; s/$nmspc_upp\_/$new_upp\_/g; s/namespace $nmspc/namespace $new/g" "$file" >"$(new_name "$file")"
+		newfile=$(new_name "$file")
+		sed "s/$nmspc\_/$new\_/g; s/$nmspc_upp\_/$new_upp\_/g; s/namespace $nmspc/namespace $new/g" "$file" >"$newfile"
+		./fmt "$newfile"
 	} &
 done
 wait
