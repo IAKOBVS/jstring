@@ -769,9 +769,8 @@ static void jstr_insertaftc_mem(char **JSTR_RST const s,
 	if (unlikely(srclen == 0))
 		return;
 	const char *const p = (char *)memchr(*s, c, *sz);
-	if (!p)
-		return;
-	jstr_insert_mem(s, sz, cap, p - *s + 1, src, srclen);
+	if (p)
+		jstr_insert_mem(s, sz, cap, p - *s + 1, src, srclen);
 }
 
 /*
@@ -847,9 +846,8 @@ static void jstr_insertaft_mem(char **JSTR_RST const s,
 		if (unlikely(srclen == 0))
 			return;
 		const char *const p = (char *)jstr_memmem(*s, *sz, ne, nelen);
-		if (!p)
-			return;
-		jstr_insert_mem(s, sz, cap, p - *s + nelen, src, srclen);
+		if (p)
+			jstr_insert_mem(s, sz, cap, p - *s + nelen, src, srclen);
 		break;
 	}
 	}
@@ -977,9 +975,8 @@ static void jstr_slipaftc_mem(char **JSTR_RST const s,
 	if (unlikely(srclen == 0))
 		return;
 	const char *const p = (char *)memchr(*s, c, *sz);
-	if (!p)
-		return;
-	jstr_slip_mem(s, sz, cap, p - *s + 1, src, srclen);
+	if (p)
+		jstr_slip_mem(s, sz, cap, p - *s + 1, src, srclen);
 }
 
 /*
@@ -1055,9 +1052,8 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 		if (unlikely(srclen == 0))
 			return;
 		const char *const p = (char *)jstr_memmem(*s, *sz, ne, nelen);
-		if (!p)
-			return;
-		jstr_slip_mem(s, sz, cap, p - *s + nelen, src, srclen);
+		if (p)
+			jstr_slip_mem(s, sz, cap, p - *s + nelen, src, srclen);
 	}
 	}
 }
