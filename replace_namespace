@@ -1,12 +1,15 @@
 #!/bin/sh
-namespace=jstr
+namspac=jstr
+namspac_upp=$(echo $namspac | tr '[:lower:]' '[:upper:]')
 if ! test "$1"; then
-	echo 'Usage: ./replace_namespace <namespace>'
-	echo 'For example: ./replace_namespace j'
-	echo 'jstd -> j'
+	echo 'Usage: ./replace_namspac <namspac>'
+	echo 'For example: ./replace_namspac j'
+	echo 'jstr -> j'
 	exit
 fi
 for file in $(echo c/*.h); do
-	sed "s/$namespace\_/$1_/g" "$file" > "c/$1.h"
-	echo "sed s/$namespace\_/$1_/g $file > c/$1.h"
+	{
+		sed "s/$namspac\_/$1_/g; s/$namspac_upp\_/$1_/g" "$file" >"c/$1.h"
+		echo "sed s/$namspac\_/$1_/g; s/$namspac_upp\_/$1_/g $file > c/$1.h"
+	} &
 done
