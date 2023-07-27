@@ -13,6 +13,9 @@ if ($#ARGV != 0) {
 	print 'Usage: ./gen_func.pl <file>';
 	exit 1;
 }
+if (system("test $FNAME -nt $DIR_C")) {
+	exit 1;
+}
 my $file          = '';
 my $namespace_end = '';
 my $undef         = '';
