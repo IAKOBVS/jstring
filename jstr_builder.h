@@ -141,18 +141,18 @@ typedef struct jstr_t {
 		jstr_alloc_append_mem(&this->data, &this->size, &this->cap, src, srclen);
 	}
 
-#	if JSTR_FREE_ON_DESTRUCTOR
+#	if JSTR_FREE_ON_DESTRUCTOR_CPP
 
 	JSTR_INLINE
 	~jstr_t(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
-#		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR
+#		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
 		this->data = NULL;
-#		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR */
+#		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
 	}
 
-#	endif /* JSTR_FREE_ON_DESTRUCTOR */
+#	endif /* JSTR_FREE_ON_DESTRUCTOR_CPP */
 
 	/*
 	  free(STR) and set STR to NULL.
