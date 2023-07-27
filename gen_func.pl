@@ -13,70 +13,93 @@ if ($#ARGV != 0) {
 	print 'Usage: ./gen_func.pl <file>';
 	exit 1;
 }
-if (system("test $FNAME -nt $DIR_C")) {
-	exit 1;
-}
+
+# if (system("test $FNAME -nt $DIR_C")) {
+# 	exit 1;
+# }
+
 my $file          = '';
 my $namespace_end = '';
 my $undef         = '';
 my $endif         = '';
 open(my $FH, '<', $FNAME)
   or die "Can't open $FNAME\n";
+
 while (<$FH>) {
-	if (/^[ \t]*#\s*undef/) {
-		$undef .= $_;
-	} elsif (/^[ \t]*#\s*endif\s*(?:\/\/|\/\*).*DEF.*(?:\/\*){0,1}/) {
-		$endif .= $_;
-	} elsif (/^[ \t]*#\s*if\s*$NAMESPACE_BIG\_(?:EXTERN_C|NAMESPACE)/) {
-		$namespace_end .= $_;
-		while (<$FH>) {
-			if (/^$/) {
-				last;
-			}
-			$namespace_end .= $_;
-		}
-		if (index($namespace_end, 'namespace') != -1) {
-			$file .= "$namespace_end\n";
-			$namespace_end = '';
-		}
-	} else {
-		$file .= $_;
-	}
+	$file .= $_;
 }
+
 close($FH);
-my $h         = '';
-my $hpp       = '';
+
+foreach (split(/\n\n/, $file)) {
+	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*_mem\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/) {
+		next;
+	}
+	my $decl     = $1;
+	my $FUNC     = $2;
+	my $params   = $3;
+	my $FUNCTION = $_;
+	if (!$decl && !$FUNC && !$params) {
+		next;
+	}
+	$params =~ s/\)/,/;
+	my @OLD_ARGS = split(/\s/, $params);
+	my @NEW_ARGS;
+	my $PTR = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
+	foreach (@OLD_ARGS) {
+		if (/,$/) {
+			s/,//;
+			if (/(\w*)len/) {
+				$_ = "strlen($1)";
+			}
+			push(@NEW_ARGS, $_);
+		}
+	}
+	$decl =~ s/$NAMESPACE\w*_mem\w*\(/(/;
+	$decl =~ s/,\s*\w*len//g;
+	my $func_args = $PTR . "j->data, ";
+	for (my $i = 1 ; $i <= $#NEW_ARGS ; ++$i) {
+		if (index($NEW_ARGS[$i], 'sz') != -1) {
+			$NEW_ARGS[$i] = $PTR . "j->size";
+		} elsif (index($NEW_ARGS[$i], 'cap') != -1) {
+			$NEW_ARGS[$i] = $PTR . "j->cap";
+		}
+		$func_args .= "$NEW_ARGS[$i], ";
+	}
+	$decl .= "\n{\n\t";
+	$decl .= "$FUNC(";
+	foreach (@NEW_ARGS) {
+		$decl .= "$_, ";
+	}
+	$decl =~ s/, $//;
+	$decl .= ");\n}\n";
+	$file =~ s/\Q$FUNCTION\E/$FUNCTION\n\n$decl/;
+}
+
+$file =~ s/\n\n\n/\n\n/g;
+
+my $h         = $file;
+my $hpp       = $file;
 my $has_funcs = 0;
 my $in_ifdef  = 0;
+
 foreach (split(/\n\n/, $file)) {
-	if (/#[ \t]*ifndef.*(?:H|DEF)/ || /\s*#if[ \t]*.*(?:NAMESPACE)/ || /\s*#[ \t]*include/) {
-		$in_ifdef = 0;
-		next;
-	}
-	if (/^[ \t]*#[ \t]*(?:if|elif|else)/) {
-		$in_ifdef = 1;
-		$h   .= "$_\n\n";
-		$hpp .= "$_\n\n";
-		next;
-	} elsif (/^[ \t]*#[ \t]*endif/) {
-		if ($in_ifdef) {
-			$h   .= "$_\n\n";
-			$hpp .= "$_\n\n";
-		}
-		next;
-	}
-	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w+)\(([^)]*[^)]*\)[ \t]*\w*NOEXCEPT))/) {
+	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/) {
 		next;
 	}
 	my $decl   = $1;
 	my $FUNC   = $2;
 	my $params = $3;
+	if (!$decl && !$FUNC && !$params) {
+		next;
+	}
 	$params =~ s/\)/,/;
 	my $SZ  = ($params =~ /sz(?:,|\))/)  ? 1 : 0;
 	my $CAP = ($params =~ /cap(?:,|\))/) ? 1 : 0;
 	if (!$SZ && !$CAP) {
 		next;
 	}
+	my $FUNCTION = $_;
 	$has_funcs = 1;
 	my $RETURN = (index($decl, 'void') != -1) ? '' : 'return ';
 	my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
@@ -98,7 +121,7 @@ foreach (split(/\n\n/, $file)) {
 	my $CONST    = ($OLD_ARGS[0] eq 'const')   ? 'const ' : '';
 	my $LAST     = (index($params, ',') != -1) ? ','      : ')';
 	my $tmp      = "($NAMESPACE\_t *$NAMESPACE_BIG\_RST $CONST" . "j$LAST";
-	$decl =~ s/\(.+?$LAST/$tmp/;
+	$decl =~ s/\(.+?\Q$LAST\E/$tmp/;
 	$decl .= "\n{\n\t$RETURN$FUNC(";
 
 	my @NEW_ARGS;
@@ -124,31 +147,25 @@ foreach (split(/\n\n/, $file)) {
 	}
 	$decl =~ s/,\s*,/)/g;
 	$decl =~ s/,\s*\)/)/g;
-	$hpp .= $decl;
+	$h    =~ s/\Q$FUNCTION\E/$FUNCTION\n\n$decl/;
 	$decl =~ s/$FUNC/$FUNC\_j/;
-	$h .= $decl;
+	$hpp  =~ s/\Q$FUNCTION\E/$FUNCTION\n\n$decl/;
 }
-my $end = "$namespace_end\n$undef\n$endif";
-if ($has_funcs) {
-	$h   = "$file\n$h\n$end";
-	$hpp = "$file\n$hpp\n$end";
-} else {
-	$h   = "$file\n$end";
-	$hpp = "$file\n$end";
-}
+
 $hpp =~ s/\.h"/.hpp"/g;
 $hpp =~ s/H_DEF/HPP_DEF/g;
 $hpp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
 $hpp =~ s/NAMESPACE\s*\d/NAMESPACE 1/;
-$hpp =~ s/$NAMESPACE\_(\w*)_mem(\w*\()/$1$2/g;
-$hpp =~ s/($NAMESPACE\_\w+)_j(\()/$1$2/g;
-$hpp =~ s/$NAMESPACE\_(\w+\()/$1/g;
+$hpp =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/g;
+$hpp =~ s/($NAMESPACE\_\w*)_j(\()/$1$2/g;
+$hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
 $hpp =~ s/\tt\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/\t~t\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/alloc_append/alloc/g;
 $hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
+
 open($FH, '>', "$DIR_CPP/$FNAME" . 'pp')
   or die "Can't open $DIR_CPP/$FNAME" . "pp\n";
 print($FH $hpp);
