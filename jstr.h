@@ -477,12 +477,11 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	case 2: {
 		const uint16_t nw = ne[0] << 8 | ne[1];
 		uint16_t sw = s[0] << 8 | s[1];
-		for (++s, sz -= 2; sz--; sw = sw << 8 | *s) {
+		for (++s, sz -= 2; sz--; sw = sw << 8 | *s)
 			if (sw != nw)
 				*dst++ = *(s++ - 1);
 			else
 				s += 2;
-		}
 		if (sw != nw)
 			*dst++ = *(s - 1);
 		*dst = '\0';
