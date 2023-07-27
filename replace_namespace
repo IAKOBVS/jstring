@@ -1,4 +1,5 @@
 #!/bin/sh
+namespace=jstr
 if ! test "$1"; then
 	echo 'Usage: ./replace_namespace <namespace>'
 	echo 'For example: ./replace_namespace j'
@@ -6,6 +7,6 @@ if ! test "$1"; then
 	exit
 fi
 for file in $(echo c/*.h); do
-	sed "s/jstd_/$1_/g" "$file" > "c/$1.h"
-	echo "sed s/jstd_/$1_/g $file > c/$1.h"
+	sed "s/$namespace\_/$1_/g" "$file" > "c/$1.h"
+	echo "sed s/$namespace\_/$1_/g $file > c/$1.h"
 done
