@@ -242,7 +242,6 @@ static char *jstr_trim_p(char *JSTR_RST const s) JSTR_NOEXCEPT
   Remove first C in S.
   Return value:
   Pointer to '\0' in S;
-  S if no C in S.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -258,7 +257,7 @@ static char *jstr_removec_mem(char *JSTR_RST s,
 		memmove(s, s + 1, sz - (s - sstart) + 1);
 		return s + sz - (s - sstart);
 	}
-	return s;
+	return s + sz;
 }
 
 /*
