@@ -246,7 +246,7 @@ static char *jstr_trim_p(char *JSTR_RST const s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_removec_mem(char *JSTR_RST s,
+static char *jstr_rmc_mem(char *JSTR_RST s,
 			      const int c,
 			      const size_t sz) JSTR_NOEXCEPT
 {
@@ -269,7 +269,7 @@ static char *jstr_removec_mem(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_removec(char *JSTR_RST s,
+static char *jstr_rmc(char *JSTR_RST s,
 			  const int c) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
@@ -290,7 +290,7 @@ static char *jstr_removec(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_removeallc_mem(char *JSTR_RST s,
+static char *jstr_rmallc_mem(char *JSTR_RST s,
 				 const int c,
 				 const size_t sz) JSTR_NOEXCEPT
 {
@@ -317,7 +317,7 @@ static char *jstr_removeallc_mem(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_removeallc(char *JSTR_RST s,
+static char *jstr_rmallc(char *JSTR_RST s,
 			     const int c) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
@@ -414,7 +414,7 @@ static void jstr_replacec(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static char *jstr_remove_mem_p(char *JSTR_RST const s,
+static char *jstr_rm_mem_p(char *JSTR_RST const s,
 			       const char *JSTR_RST const ne,
 			       const size_t sz,
 			       const size_t nelen) JSTR_NOEXCEPT
@@ -435,11 +435,11 @@ static char *jstr_remove_mem_p(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static char *jstr_remove_p(char *JSTR_RST const s,
+static char *jstr_rm_p(char *JSTR_RST const s,
 			   const char *JSTR_RST const ne,
 			   const size_t sz) JSTR_NOEXCEPT
 {
-	return jstr_remove_mem_p(s, ne, sz, strlen(ne));
+	return jstr_rm_mem_p(s, ne, sz, strlen(ne));
 }
 
 /*
@@ -449,7 +449,7 @@ static char *jstr_remove_p(char *JSTR_RST const s,
 */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static char *jstr_removeall_mem_p(char *JSTR_RST s,
+static char *jstr_rmall_mem_p(char *JSTR_RST s,
 				  const char *JSTR_RST const ne,
 				  size_t sz,
 				  size_t nelen) JSTR_NOEXCEPT
@@ -463,6 +463,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 	s = dst;
 	switch (nelen) {
 	case 0:
+		return dst;
 		break;
 	case 1: {
 		do
@@ -470,6 +471,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 				*dst++ = *s;
 		while (*++s);
 		*dst = '\0';
+		return dst;
 		break;
 	}
 	case 2: {
@@ -481,6 +483,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 			else
 				s += 2;
 		*dst = '\0';
+		return dst;
 		break;
 	}
 	case 3: {
@@ -492,6 +495,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 			else
 				s += 2;
 		*dst = '\0';
+		return dst;
 		break;
 	}
 	case 4: {
@@ -503,6 +507,7 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 			else
 				s += 3;
 		*dst = '\0';
+		return dst;
 		break;
 	}
 	default: {
@@ -528,7 +533,6 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 		break;
 	}
 	}
-	return dst;
 }
 
 /*
@@ -539,11 +543,11 @@ static char *jstr_removeall_mem_p(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static char *jstr_removeall_p(char *JSTR_RST const s,
+static char *jstr_rmall_p(char *JSTR_RST const s,
 			      const char *JSTR_RST const ne,
 			      const size_t sz) JSTR_NOEXCEPT
 {
-	return jstr_removeall_mem_p(s, ne, sz, strlen(ne));
+	return jstr_rmall_mem_p(s, ne, sz, strlen(ne));
 }
 
 /*
@@ -595,7 +599,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 		return;
 	switch (rplclen) {
 	case 0:
-		*sz = jstr_remove_mem_p(*s, srch, *sz, srchlen) - *s;
+		*sz = jstr_rm_mem_p(*s, srch, *sz, srchlen) - *s;
 		break;
 	case 1:
 		if (srchlen == 1) {
@@ -661,7 +665,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		return;
 	switch (rplclen) {
 	case 0: {
-		*sz = jstr_removeall_mem_p(*s, srch, *sz, srchlen) - *s;
+		*sz = jstr_rmall_mem_p(*s, srch, *sz, srchlen) - *s;
 		break;
 	}
 	case 1:
