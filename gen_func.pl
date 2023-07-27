@@ -62,7 +62,7 @@ foreach (split(/\n\n/, $file)) {
 		}
 		next;
 	}
-	if (!/^((?:#if|\/\/|\/\*|$NAMESPACE_BIG|static)[^(){}]+?($NAMESPACE\_\w+?)\(((?:.|\n)+?(?:sz|cap)(?:.|\n)+?\)\s*\w*NOEXCEPT))/) {
+	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w+)\(([^)]*[^)]*\)[ \t]*\w*NOEXCEPT))/) {
 		next;
 	}
 	my $decl   = $1;
@@ -119,6 +119,8 @@ foreach (split(/\n\n/, $file)) {
 	if ($decl !~ /$NAMESPACE_BIG\_INLINE/) {
 		$decl =~ s/static/$NAMESPACE_BIG\_INLINE\nstatic/;
 	}
+	$decl =~ s/,\s*,/)/g;
+	$decl =~ s/,\s*\)/)/g;
 	$hpp .= $decl;
 	$decl =~ s/$FUNC/$FUNC\_j/;
 	$h .= $decl;
