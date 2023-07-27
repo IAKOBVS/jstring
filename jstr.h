@@ -30,29 +30,35 @@ extern "C" {
 /*
    Append SRC to DST.
    Use non-f version for bounds checking.
+   Return value:
+   New len of S.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_append_mem_f(char **JSTR_RST const s,
-			      size_t *JSTR_RST const sz,
-			      const char *JSTR_RST const src,
-			      const size_t srclen) JSTR_NOEXCEPT
+JSTR_WARN_UNUSED
+static char *jstr_append_mem_f(char *JSTR_RST const s,
+			       const char *JSTR_RST const src,
+			       const size_t sz,
+			       const size_t srclen) JSTR_NOEXCEPT
 {
-	memcpy(*s, src, srclen + 1);
-	*sz += srclen;
+	memcpy(s, src, srclen + 1);
+	return s + sz + srclen;
 }
 
 /*
    Append SRC to DST.
    Use non-f version for bounds checking.
+   Return value:
+   New len of S.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_append_f(char **JSTR_RST const s,
-			  size_t *JSTR_RST const sz,
-			  const char *JSTR_RST const src) JSTR_NOEXCEPT
+JSTR_WARN_UNUSED
+static char *jstr_append_f(char *JSTR_RST const s,
+			   const char *JSTR_RST const src,
+			   const size_t sz) JSTR_NOEXCEPT
 {
-	jstr_append_mem_f(s, sz, src, strlen(src));
+	return jstr_append_mem_f(s, src, sz, strlen(src));
 }
 
 /*
@@ -68,7 +74,7 @@ static void jstr_append_mem(char **JSTR_RST const s,
 {
 	if (*cap < *sz + srclen)
 		JSTR_REALLOC(*s, *cap, *sz + srclen, return);
-	jstr_append_mem_f(s, sz, src, srclen);
+	*sz = jstr_append_mem_f(*s, src, *sz, srclen) - *s;
 }
 
 /*
@@ -937,10 +943,9 @@ JSTR_NONNULL_ALL
 static void jstr_insertaftc_f(char *JSTR_RST const s,
 			      const int c,
 			      const char *JSTR_RST const src,
-			      const size_t sz,
-			      const size_t srclen) JSTR_NOEXCEPT
+			      const size_t sz) JSTR_NOEXCEPT
 {
-	jstr_insertaftc_mem_f(s, c, src, sz, srclen);
+	jstr_insertaftc_mem_f(s, c, src, sz, strlen(src));
 }
 
 /*
