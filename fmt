@@ -1,2 +1,2 @@
 #!/bin/sh
-clang-format -i --style=file".clang-format" $1
+clang-format -i --style=file:".clang-format" $1
