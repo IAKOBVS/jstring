@@ -596,7 +596,6 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 	switch (rplclen) {
 	case 0:
 		*sz = jstr_remove_mem_p(*s, srch, *sz, srchlen) - *s;
-		return;
 		break;
 	case 1:
 		if (srchlen == 1) {
@@ -605,28 +604,31 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 			return;
 		}
 		break;
+	default: {
+		char *mtc = (char *)jstr_memmem(*s, *sz, srch, srchlen);
+		if (!mtc)
+			return;
+		if (rplclen <= srchlen || *cap > *sz + rplclen - srchlen + 1) {
+			memmove(mtc + rplclen,
+				mtc + srchlen,
+				(*s + *sz + 1) - mtc + srchlen);
+			memcpy(mtc, rplc, rplclen);
+		} else {
+			JSTR_GROW(*cap, *sz + rplclen + 1);
+			char *const tmp = (char *)malloc(*cap);
+			JSTR_MALLOC_ERR(tmp, return);
+			memcpy(tmp, *s, mtc - *s);
+			memcpy(tmp + (mtc - *s), rplc, rplclen);
+			memcpy(tmp + (mtc - *s) + rplclen,
+			       mtc + rplclen,
+			       (*s + *sz + 1) - (mtc + rplclen));
+			free(*s);
+			*s = tmp;
+		}
+		*sz += (long long)(rplclen - srchlen);
+		break;
 	}
-	char *mtc = (char *)jstr_memmem(*s, *sz, srch, srchlen);
-	if (!mtc)
-		return;
-	if (rplclen <= srchlen || *cap > *sz + rplclen - srchlen + 1) {
-		memmove(mtc + rplclen,
-			mtc + srchlen,
-			(*s + *sz + 1) - mtc + srchlen);
-		memcpy(mtc, rplc, rplclen);
-	} else {
-		JSTR_GROW(*cap, *sz + rplclen + 1);
-		char *const tmp = (char *)malloc(*cap);
-		JSTR_MALLOC_ERR(tmp, return);
-		memcpy(tmp, *s, mtc - *s);
-		memcpy(tmp + (mtc - *s), rplc, rplclen);
-		memcpy(tmp + (mtc - *s) + rplclen,
-		       mtc + rplclen,
-		       (*s + *sz + 1) - (mtc + rplclen));
-		free(*s);
-		*s = tmp;
 	}
-	*sz += (long long)(rplclen - srchlen);
 }
 
 /*
@@ -660,7 +662,6 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 	switch (rplclen) {
 	case 0: {
 		*sz = jstr_removeall_mem_p(*s, srch, *sz, srchlen) - *s;
-		return;
 		break;
 	}
 	case 1:
@@ -670,40 +671,43 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 			return;
 		}
 		break;
-	}
-	char *mtc = *s;
-	if (rplclen <= srchlen)
-		while ((mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, srch, srchlen))) {
-			memmove(mtc + rplclen,
-				mtc + srchlen,
-				(*s + *sz + 1) - mtc + srchlen);
-			memcpy(mtc, rplc, rplclen);
-			mtc += rplclen;
-			*sz += (long long)(rplclen - srchlen);
-		}
-	else
-		for (char *tmp;
-		     (mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, srch, srchlen));
-		     *sz += (long long)(rplclen - srchlen))
-			if (*cap > *sz + rplclen - srchlen + 1) {
+	default: {
+		char *mtc = *s;
+		if (rplclen <= srchlen)
+			while ((mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, srch, srchlen))) {
 				memmove(mtc + rplclen,
 					mtc + srchlen,
 					(*s + *sz + 1) - mtc + srchlen);
 				memcpy(mtc, rplc, rplclen);
 				mtc += rplclen;
-			} else {
-				JSTR_GROW(*cap, *sz + rplclen + 1);
-				tmp = (char *)malloc(*cap);
-				JSTR_MALLOC_ERR(tmp, return);
-				memcpy(tmp, *s, mtc - *s);
-				memcpy(tmp + (mtc - *s), rplc, rplclen);
-				memcpy(tmp + (mtc - *s) + rplclen,
-				       mtc + rplclen,
-				       (*s + *sz + 1) - (mtc + rplclen));
-				mtc = tmp + (mtc - *s) + rplclen;
-				free(*s);
-				*s = tmp;
+				*sz += (long long)(rplclen - srchlen);
 			}
+		else
+			for (char *tmp;
+			     (mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, srch, srchlen));
+			     *sz += (long long)(rplclen - srchlen))
+				if (*cap > *sz + rplclen - srchlen + 1) {
+					memmove(mtc + rplclen,
+						mtc + srchlen,
+						(*s + *sz + 1) - mtc + srchlen);
+					memcpy(mtc, rplc, rplclen);
+					mtc += rplclen;
+				} else {
+					JSTR_GROW(*cap, *sz + rplclen + 1);
+					tmp = (char *)malloc(*cap);
+					JSTR_MALLOC_ERR(tmp, return);
+					memcpy(tmp, *s, mtc - *s);
+					memcpy(tmp + (mtc - *s), rplc, rplclen);
+					memcpy(tmp + (mtc - *s) + rplclen,
+					       mtc + rplclen,
+					       (*s + *sz + 1) - (mtc + rplclen));
+					mtc = tmp + (mtc - *s) + rplclen;
+					free(*s);
+					*s = tmp;
+				}
+		break;
+	}
+	}
 }
 
 /*
@@ -1054,6 +1058,7 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 		const char *const p = (char *)jstr_memmem(*s, *sz, ne, nelen);
 		if (p)
 			jstr_slip_mem(s, sz, cap, p - *s + nelen, src, srclen);
+		break;
 	}
 	}
 }
