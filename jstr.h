@@ -527,15 +527,13 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 				else
 					*dst++ = *s++;
 		else
-			for (size_t off = nelen - 9; s <= end;)
+			for (const size_t off = nelen - 9; s <= end;)
 				if (nw == (s[0] << 8 | s[nelen - 1])
 				    && !memcmp(s + off, ne + off, 8)
-				    && !memcmp(s, ne, nelen)) {
+				    && !memcmp(s, ne, nelen))
 					s += nelen;
-				} else {
+				else
 					*dst++ = *s++;
-					off = (off >= 8 ? off : nelen - 1) - 8;
-				}
 		memcpy(dst, s, end + nelen - s + 1);
 		return dst + (end + nelen - s);
 		break;
