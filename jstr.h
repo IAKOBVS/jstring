@@ -295,7 +295,7 @@ static char *jstr_removeallc_mem(char *JSTR_RST s,
 				 const size_t sz) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
-		return 0;
+		return s;
 	s = (char *)memchr(s, c, sz);
 	if (!s)
 		return s + sz;
