@@ -2,11 +2,16 @@
 use strict;
 use warnings;
 
-my $FNAME         = $ARGV[0];
+usage();
+
+my $FNAME = $ARGV[0];
+my $DIR_C = 'c';
+
+update_needed();
+
+my $DIR_CPP       = $DIR_C . 'pp';
 my $NAMESPACE     = 'jstr';
 my $NAMESPACE_BIG = uc($NAMESPACE);
-my $DIR_C         = 'c';
-my $DIR_CPP       = $DIR_C . 'pp';
 
 my $STRUCT_VAR  = 'j';
 my $STR_STRUCT  = $NAMESPACE . '_t';
@@ -24,30 +29,41 @@ my $RESTRICT_MACRO = $NAMESPACE_BIG . '_RST';
 mkdir($DIR_CPP);
 mkdir($DIR_C);
 
-if ($#ARGV != 0) {
-	print 'Usage: ./gen_func.pl <file>';
-	exit 1;
-}
+my $file = get_file_buf();
+my $h    = '';
+my $hpp  = '';
 
-if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
-	exit 1;
-}
-
-open(my $FH, '<', $FNAME)
-  or die "Can't open $FNAME\n";
-my $file = '';
-while (<$FH>) {
-	$file .= $_;
-}
-close($FH);
-
-my $RE_FUNC = qr/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/;
-my $h       = '';
-my $hpp     = '';
-
+my $RE_FUNC   = qr/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/;
 my @NEW_LINES = gen_nonmem_funcs(split(/\n\n/, $file));
 gen_struct_funcs(@NEW_LINES);
 print_to_file("$DIR_C/$FNAME", "$DIR_CPP/$FNAME");
+
+sub usage
+{
+	if ($#ARGV != 0) {
+		print 'Usage: ./gen_func.pl <file>';
+		exit 1;
+	}
+}
+
+sub update_needed
+{
+	if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
+		exit 1;
+	}
+}
+
+sub get_file_buf
+{
+	open(my $FH, '<', $FNAME)
+	  or die "Can't open $FNAME\n";
+	my $file = '';
+	while (<$FH>) {
+		$file .= $_;
+	}
+	close($FH);
+	return $file;
+}
 
 sub print_to_file
 {
