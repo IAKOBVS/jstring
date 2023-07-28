@@ -994,7 +994,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 			}
 		else {
 			char *tmp;
-			while ((mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, srch, srchlen))) {
+			while (n-- && (mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, srch, srchlen))) {
 				if (*cap > *sz + rplclen - srchlen + 1) {
 					memmove(mtc + rplclen,
 						mtc + srchlen,
