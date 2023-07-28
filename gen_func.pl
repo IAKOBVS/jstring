@@ -7,17 +7,28 @@ if ($#ARGV != 0) {
 	exit 1;
 }
 
-my $FNAME         = $ARGV[0];
-my $NAMESPACE     = 'jstr';
-my $NAMESPACE_BIG = uc($NAMESPACE);
-my $DIR_C         = 'c';
-my $DIR_CPP       = $DIR_C . 'pp';
+my $FNAME     = $ARGV[0];
+my $NMSPC     = 'jstr';
+my $NMSPC_BIG = uc($NMSPC);
+my $DIR_C     = 'c';
+my $DIR_CPP   = $DIR_C . 'pp';
 mkdir($DIR_CPP);
 mkdir($DIR_C);
 
-# if (system("test $0 -ot $FNAME && test $FNAME -nt $DIR_C/$FNAME")) {
-# 	exit 1;
-# }
+if (system("test $0 -ot $FNAME && test $FNAME -nt $DIR_C/$FNAME")) {
+	exit 1;
+}
+
+my $STRUCT_VAR  = 'j';
+my $STRUCT_SIZE = 'size';
+my $STRUCT_CAP  = 'cap';
+my $STRUCT_DATA = 'data';
+
+my $SIZE_PTN = 'sz';
+my $CAP_PTN  = 'cap';
+my $LEN_PTN  = 'len';
+
+my $STR_STRUCT = $NMSPC . '_t';
 
 open(my $FH, '<', $FNAME)
   or die "Can't open $FNAME\n";
@@ -27,59 +38,59 @@ while (<$FH>) {
 }
 close($FH);
 
-my $namespace_end = '';
-my $undef         = '';
-my $endif         = '';
+my $RE_FUNC = qr/^((?:\/\*|\/\/|$NMSPC_BIG\_|static)[^(){}]*($NMSPC\_\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/;
 
-my @OLD_LINES = split(/\n\n/, $file);
-my @NEW_LINES;
-
-foreach (@OLD_LINES) {
-	if ($FNAME =~ /$NAMESPACE\_builder/) {
+my @lines;
+foreach (split(/\n\n/, $file)) {
+	if ($FNAME =~ /$NMSPC\_builder/) {
 		goto NEXT;
 	}
-	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*_mem\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/) {
+	if (!$RE_FUNC) {
 		goto NEXT;
 	}
-	my $decl   = $1;
-	my $FUNC   = $2;
-	my $params = $3;
-	if (!$decl && !$FUNC && !$params) {
-		goto NEXT;
-	}
-	my $FUNC_BASENAME = $FUNC;
-	$FUNC_BASENAME =~ s/_mem//;
-	if ($file =~ /$FUNC_BASENAME\(/) {
+	my $DECL      = $1;
+	my $FUNC_NAME = $2;
+	my $params    = $3;
+	if (!$DECL && !$FUNC_NAME && !$params) {
 		goto NEXT;
 	}
 	$params =~ s/\)/,/;
+	my $decl = $DECL;
+	if ($FUNC_NAME !~ /_mem/) {
+		next;
+	}
+	my $tmp = $FUNC_NAME;
+	$tmp =~ s/_mem//;
+	if ($file =~ /$tmp\(/) {
+		goto NEXT;
+	}
+	my $PTR      = get_ptr_str($DECL);
+	my $RETURN   = get_return_str($DECL);
 	my @OLD_ARGS = split(/\s/, $params);
 	my @NEW_ARGS;
-	my $PTR    = get_ptr_str($decl);
-	my $RETURN = get_return_str($decl);
 	foreach (@OLD_ARGS) {
 		if (/,$/) {
 			s/,//;
 			push(@NEW_ARGS, $_);
 		}
 	}
-	$decl =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/;
 	my $func_args;
 	for (my $i = 0 ; $i <= $#NEW_ARGS ; ++$i) {
 		$func_args .= $PTR . "$NEW_ARGS[$i],";
 	}
-	$decl .= "\n{\n\t$RETURN$FUNC(";
-	my $LEN = has_arg($params, 'len');
+	$decl =~ s/($NMSPC\_\w*)_mem(\w*\()/$1$2/;
+	$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
+	my $LEN = has_arg($params, $LEN_PTN);
 	foreach (@NEW_ARGS) {
 		if ($LEN) {
-			if (/(\w*)len/) {
+			if (/(\w*)$LEN_PTN/) {
 				my $var = $1;
-				$decl =~ s/,[^,]*len//;
+				$decl =~ s/,[^,]*$LEN_PTN//;
 				$_ = "strlen($var)";
 			}
 		} else {
-			if (/\w*sz/) {
-				$decl =~ s/,[^,]*sz//;
+			if (/\w*$SIZE_PTN/) {
+				$decl =~ s/,[^,]*$SIZE_PTN//;
 				$_ = "strlen($NEW_ARGS[0])";
 			}
 		}
@@ -87,64 +98,63 @@ foreach (@OLD_LINES) {
 	}
 	$decl =~ s/,$//;
 	$decl .= ");\n}\n";
-	push(@NEW_LINES, $_);
-	push(@NEW_LINES, $decl);
+	push(@lines, $_);
+	push(@lines, $decl);
 	next;
   NEXT:
-	push(@NEW_LINES, $_);
+	push(@lines, $_);
 }
 
-my $h;
-my $hpp;
-my $has_funcs = 0;
-my $in_ifdef  = 0;
+my $h   = '';
+my $hpp = '';
 
-foreach (@NEW_LINES) {
-	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/) {
+foreach (@lines) {
+	if (!$RE_FUNC) {
 		goto NEXT;
 	}
-	my $decl   = $1;
+	my $DECL   = $1;
 	my $FUNC   = $2;
 	my $params = $3;
-	if (!$decl && !$FUNC && !$params) {
+	if (!$DECL && !$FUNC && !$params) {
 		goto NEXT;
 	}
+	my $decl = $DECL;
 	$params =~ s/\)/,/;
 	my $SZ  = has_arg($params, 'sz');
 	my $CAP = has_arg($params, 'cap');
 	if (!$SZ && !$CAP) {
 		goto NEXT;
 	}
-	$has_funcs = 1;
-	my $RETURN = get_return_str($decl);
-	my $PTR    = get_ptr_str($decl);
-	$decl = handle_sz_cap($SZ, $CAP, $decl);
 	my @OLD_ARGS = split(/\s/, $params);
 	my $CONST    = get_const_str(@OLD_ARGS);
+	my $RETURN   = get_return_str($DECL);
+	my $PTR      = get_ptr_str($DECL);
 	my $LAST     = ($params =~ /,/) ? ',' : ')';
-	my $tmp      = "($NAMESPACE\_t *$NAMESPACE_BIG\_RST $CONST" . "j$LAST";
+	my $tmp      = "($STR_STRUCT *$NMSPC_BIG\_RST $CONST" . "$STRUCT_VAR$LAST";
+	$decl = rm_arg($decl, $SZ,  $SIZE_PTN);
+	$decl = rm_arg($decl, $CAP, $CAP_PTN);
+	$decl = add_inline($decl);
 	$decl =~ s/\(.+?$LAST/$tmp/;
 	$decl .= "\n{\n\t$RETURN$FUNC(";
 
-	my @NEW_ARGS;
+	my @new_args;
 	foreach (@OLD_ARGS) {
 		if (/,$/) {
 			s/,//;
-			push(@NEW_ARGS, $_);
+			push(@new_args, $_);
 		}
 	}
-	my $func_args = $PTR . "j->data,";
-	for (my $i = 1 ; $i <= $#NEW_ARGS ; ++$i) {
-		if ($NEW_ARGS[$i] =~ /sz/) {
-			$NEW_ARGS[$i] = $PTR . "j->size";
-		} elsif ($NEW_ARGS[$i] =~ /cap/) {
-			$NEW_ARGS[$i] = $PTR . "j->cap";
+	my $func_args = $PTR . "$STRUCT_VAR->$STRUCT_DATA,";
+	for (my $i = 1 ; $i <= $#new_args ; ++$i) {
+		if ($new_args[$i] =~ /$SIZE_PTN/) {
+			$new_args[$i] = $PTR . "$STRUCT_VAR->$STRUCT_SIZE";
+		} elsif ($new_args[$i] =~ /$CAP_PTN/) {
+			$new_args[$i] = $PTR . "$STRUCT_VAR->$STRUCT_CAP";
 		}
-		$func_args .= "$NEW_ARGS[$i],";
+		$func_args .= "$new_args[$i],";
 	}
 	$func_args =~ s/,$//;
 	$decl .= "$func_args);\n}\n";
-	$decl = add_inline($decl);
 	$decl =~ s/,\s*\)/)/g;
 	$_    .= "\n\n";
 	$decl .= "\n\n";
@@ -163,12 +173,12 @@ foreach (@NEW_LINES) {
 $hpp =~ s/\.h"/.hpp"/g;
 $hpp =~ s/H_DEF/HPP_DEF/g;
 $hpp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
-$hpp =~ s/NAMESPACE\s*\d/NAMESPACE 1/;
+$hpp =~ s/NMSPC\s*\d/NMSPC 1/;
 
-# $hpp =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/g;
-$hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
-$hpp =~ s/\tt\(/\t$NAMESPACE\_t(/g;
-$hpp =~ s/\t~t\(/\t$NAMESPACE\_t(/g;
+# $hpp =~ s/($NMSPC\_\w*)_mem(\w*\()/$1$2/g;
+$hpp =~ s/$NMSPC\_(\w*\()/$1/g;
+$hpp =~ s/\tt\(/\t$NMSPC\_t(/g;
+$hpp =~ s/\t~t\(/\t$NMSPC\_t(/g;
 
 # $hpp =~ s/alloc_append/alloc/g;
 $hpp =~ s/\n#if.*\s*#endif.*/\n/g;
@@ -199,34 +209,21 @@ sub get_const_str {
 	($OLD_ARGS[0] eq 'const') ? 'const ' : '';
 }
 
-sub handle_sz_cap {
-	my ($SZ, $CAP, $decl) = @_;
-	if ($SZ && $decl =~ /\w*sz(,|\))/) {
+sub rm_arg {
+	my ($decl, $has_arg, $arg) = @_;
+	if ($has_arg && $decl =~ /\w*$arg(,|\))/) {
 		if ($1 eq ')') {
-			$decl =~ s/[^(,]*sz(?:,|\))/)/;
+			$decl =~ s/[^(,]*$arg(?:,|\))/)/;
 		} elsif ($1 eq ',') {
-			$decl =~ s/[^(,]*sz,//;
+			$decl =~ s/[^(,]*$arg,//;
 		}
 	}
-	if ($CAP && $decl =~ /\w*cap(,|\))/) {
-		if ($1 eq ')') {
-			$decl =~ s/[^(,]*cap(?:,|\))/)/;
-		} elsif ($1 eq ',') {
-			$decl =~ s/[^(,]*cap,//;
-		}
-	}
-	return $decl;
-}
-
-sub has_arg {
-	my ($params, $argname) = @_;
-	return ($params =~ /$argname(?:,|\))/) ? 1 : 0;
 }
 
 sub add_inline {
 	my ($decl) = @_;
-	if ($decl !~ /$NAMESPACE_BIG\_INLINE/) {
-		$decl =~ s/static/$NAMESPACE_BIG\_INLINE\nstatic/;
+	if ($decl !~ /$NMSPC_BIG\_INLINE/) {
+		$decl =~ s/static/$NMSPC_BIG\_INLINE\nstatic/;
 	}
 	return $decl;
 }
