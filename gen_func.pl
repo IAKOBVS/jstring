@@ -31,77 +31,92 @@ while (<$FH>) {
 
 close($FH);
 
-foreach (split(/\n\n/, $file)) {
+my @OLD_LINES = split(/\n\n/, $file);
+my @NEW_LINES;
+
+foreach (@OLD_LINES) {
+	if ($FNAME =~ /$NAMESPACE\_builder/) {
+		goto NEXT;
+	}
 	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*_mem\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/) {
-		next;
-	}
-	my $decl     = $1;
-	my $FUNC     = $2;
-	my $params   = $3;
-	my $FUNCTION = $_;
-	if (!$decl && !$FUNC && !$params) {
-		next;
-	}
-	$params =~ s/\)/,/;
-	my @OLD_ARGS = split(/\s/, $params);
-	my @NEW_ARGS;
-	my $PTR = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
-	foreach (@OLD_ARGS) {
-		if (/,$/) {
-			s/,//;
-			if (/(\w*)len/) {
-				$_ = "strlen($1)";
-			}
-			push(@NEW_ARGS, $_);
-		}
-	}
-	$decl =~ s/$NAMESPACE\w*_mem\w*\(/(/;
-	$decl =~ s/,\s*\w*len//g;
-	my $func_args = $PTR . "j->data, ";
-	for (my $i = 1 ; $i <= $#NEW_ARGS ; ++$i) {
-		if (index($NEW_ARGS[$i], 'sz') != -1) {
-			$NEW_ARGS[$i] = $PTR . "j->size";
-		} elsif (index($NEW_ARGS[$i], 'cap') != -1) {
-			$NEW_ARGS[$i] = $PTR . "j->cap";
-		}
-		$func_args .= "$NEW_ARGS[$i], ";
-	}
-	$decl .= "\n{\n\t";
-	$decl .= "$FUNC(";
-	foreach (@NEW_ARGS) {
-		$decl .= "$_, ";
-	}
-	$decl =~ s/, $//;
-	$decl .= ");\n}\n";
-	$file =~ s/\Q$FUNCTION\E/$FUNCTION\n\n$decl/;
-}
-
-$file =~ s/\n\n\n/\n\n/g;
-
-my $h         = $file;
-my $hpp       = $file;
-my $has_funcs = 0;
-my $in_ifdef  = 0;
-
-foreach (split(/\n\n/, $file)) {
-	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/) {
-		next;
+		goto NEXT;
 	}
 	my $decl   = $1;
 	my $FUNC   = $2;
 	my $params = $3;
 	if (!$decl && !$FUNC && !$params) {
-		next;
+		goto NEXT;
+	}
+	my $FUNC_BASENAME = $FUNC;
+	$FUNC_BASENAME =~ s/_mem//;
+	if ($file =~ /$FUNC_BASENAME/) {
+		goto NEXT;
+	}
+	$params =~ s/\)/,/;
+	my @OLD_ARGS = split(/\s/, $params);
+	my @NEW_ARGS;
+	my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
+	my $RETURN = ($decl =~ /void/)         ? ''  : 'return ';
+	foreach (@OLD_ARGS) {
+		if (/,$/) {
+			s/,//;
+			push(@NEW_ARGS, $_);
+		}
+	}
+	$decl =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/;
+	my $func_args;
+	for (my $i = 0 ; $i <= $#NEW_ARGS ; ++$i) {
+		$func_args .= $PTR . "$NEW_ARGS[$i],";
+	}
+	$decl .= "\n{\n\t$RETURN$FUNC(";
+	my $LEN = ($params =~ /len/) ? 1 : 0;
+	foreach (@NEW_ARGS) {
+		if ($LEN) {
+			if (/(\w*)len/) {
+				my $var = $1;
+				$decl =~ s/,[^,]*len//;
+				$_ = "strlen($var)";
+			}
+		} else {
+			if (/\w*sz/) {
+				$decl =~ s/,[^,]*sz//;
+				$_ = "strlen($NEW_ARGS[0])";
+			}
+		}
+		$decl .= "$_,";
+	}
+	$decl =~ s/,$//;
+	$decl .= ");\n}\n";
+	push(@NEW_LINES, $_);
+	push(@NEW_LINES, $decl);
+	next;
+  NEXT:
+	push(@NEW_LINES, $_);
+}
+
+my $h;
+my $hpp;
+my $has_funcs = 0;
+my $in_ifdef  = 0;
+
+foreach (@NEW_LINES) {
+	if (!/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/) {
+		goto NEXT;
+	}
+	my $decl   = $1;
+	my $FUNC   = $2;
+	my $params = $3;
+	if (!$decl && !$FUNC && !$params) {
+		goto NEXT;
 	}
 	$params =~ s/\)/,/;
 	my $SZ  = ($params =~ /sz(?:,|\))/)  ? 1 : 0;
 	my $CAP = ($params =~ /cap(?:,|\))/) ? 1 : 0;
 	if (!$SZ && !$CAP) {
-		next;
+		goto NEXT;
 	}
-	my $FUNCTION = $_;
 	$has_funcs = 1;
-	my $RETURN = (index($decl, 'void') != -1) ? '' : 'return ';
+	my $RETURN = ($decl =~ /void/)         ? ''  : 'return ';
 	my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
 	if ($SZ && $decl =~ /\w*sz(,|\))/) {
 		if ($1 eq ')') {
@@ -118,10 +133,10 @@ foreach (split(/\n\n/, $file)) {
 		}
 	}
 	my @OLD_ARGS = split(/\s/, $params);
-	my $CONST    = ($OLD_ARGS[0] eq 'const')   ? 'const ' : '';
-	my $LAST     = (index($params, ',') != -1) ? ','      : ')';
+	my $CONST    = ($OLD_ARGS[0] eq 'const') ? 'const ' : '';
+	my $LAST     = ($params =~ /,/)          ? ','      : ')';
 	my $tmp      = "($NAMESPACE\_t *$NAMESPACE_BIG\_RST $CONST" . "j$LAST";
-	$decl =~ s/\(.+?\Q$LAST\E/$tmp/;
+	$decl =~ s/\(.+?$LAST/$tmp/;
 	$decl .= "\n{\n\t$RETURN$FUNC(";
 
 	my @NEW_ARGS;
@@ -131,25 +146,33 @@ foreach (split(/\n\n/, $file)) {
 			push(@NEW_ARGS, $_);
 		}
 	}
-	my $func_args = $PTR . "j->data, ";
+	my $func_args = $PTR . "j->data,";
 	for (my $i = 1 ; $i <= $#NEW_ARGS ; ++$i) {
-		if (index($NEW_ARGS[$i], 'sz') != -1) {
+		if ($NEW_ARGS[$i] =~ /sz/) {
 			$NEW_ARGS[$i] = $PTR . "j->size";
-		} elsif (index($NEW_ARGS[$i], 'cap') != -1) {
+		} elsif ($NEW_ARGS[$i] =~ /cap/) {
 			$NEW_ARGS[$i] = $PTR . "j->cap";
 		}
-		$func_args .= "$NEW_ARGS[$i], ";
+		$func_args .= "$NEW_ARGS[$i],";
 	}
-	$func_args =~ s/,[^,]*$//;
-	$decl .= "$func_args);\n}\n\n";
+	$func_args =~ s/,$//;
+	$decl .= "$func_args);\n}\n";
 	if ($decl !~ /$NAMESPACE_BIG\_INLINE/) {
 		$decl =~ s/static/$NAMESPACE_BIG\_INLINE\nstatic/;
 	}
-	$decl =~ s/,\s*,/)/g;
 	$decl =~ s/,\s*\)/)/g;
-	$h    =~ s/\Q$FUNCTION\E/$FUNCTION\n\n$decl/;
+	$_    .= "\n\n";
+	$decl .= "\n\n";
+	$hpp  .= $_;
+	$hpp  .= $decl;
 	$decl =~ s/$FUNC/$FUNC\_j/;
-	$hpp  =~ s/\Q$FUNCTION\E/$FUNCTION\n\n$decl/;
+	$h .= $_;
+	$h .= $decl;
+	next;
+  NEXT:
+	$_   .= "\n\n";
+	$h   .= $_;
+	$hpp .= $_;
 }
 
 $hpp =~ s/\.h"/.hpp"/g;
@@ -157,7 +180,6 @@ $hpp =~ s/H_DEF/HPP_DEF/g;
 $hpp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
 $hpp =~ s/NAMESPACE\s*\d/NAMESPACE 1/;
 $hpp =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/g;
-$hpp =~ s/($NAMESPACE\_\w*)_j(\()/$1$2/g;
 $hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
 $hpp =~ s/\tt\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/\t~t\(/\t$NAMESPACE\_t(/g;
