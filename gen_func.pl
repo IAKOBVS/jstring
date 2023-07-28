@@ -49,7 +49,8 @@ my @NEW_LINES = gen_nonmem_funcs(split(/\n\n/, $file));
 gen_struct_funcs(@NEW_LINES);
 print_to_file("$DIR_C/$FNAME", "$DIR_CPP/$FNAME");
 
-sub print_to_file {
+sub print_to_file
+{
 	my ($h, $hpp) = @_;
 	open(my $FH, '>', $h)
 	  or die "Can't open $h\n";
@@ -61,7 +62,8 @@ sub print_to_file {
 	close($FH);
 }
 
-sub gen_nonmem_funcs {
+sub gen_nonmem_funcs
+{
 	my (@OLD_LINES) = @_;
 	my @NEW_LINES;
 	if ($FNAME =~ /builder/) {
@@ -71,25 +73,25 @@ sub gen_nonmem_funcs {
 			if ($_ !~ $RE_FUNC) {
 				goto NEXT;
 			}
-			my $decl   = $1;
-			my $FUNC   = $2;
-			my $params = $3;
-			if (!$decl && !$FUNC && !$params) {
+			my $decl      = $1;
+			my $FUNC_NAME = $2;
+			my $params    = $3;
+			if (!$decl && !$FUNC_NAME && !$params) {
 				goto NEXT;
 			}
-			if ($FUNC !~ /_mem[^0-9A-Za-z]/) {
+			if ($FUNC_NAME !~ /_mem[^0-9A-Za-z]/) {
 				goto NEXT;
 			}
-			my $tmp = $FUNC;
+			my $tmp = $FUNC_NAME;
 			$tmp =~ s/_mem//;
 			if ($file =~ /$tmp\(/) {
 				goto NEXT;
 			}
 			$params =~ s/\)/,/;
+			my $PTR      = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
+			my $RETURN   = ($_    =~ /return/)       ? 'return ' : '';
 			my @OLD_ARGS = split(/\s/, $params);
 			my @NEW_ARGS;
-			my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
-			my $RETURN = ($_    =~ /return/)       ? 'return ' : '';
 			foreach (@OLD_ARGS) {
 				if (/,$/) {
 					s/,//;
@@ -101,7 +103,7 @@ sub gen_nonmem_funcs {
 			for (my $i = 0 ; $i <= $#NEW_ARGS ; ++$i) {
 				$func_args .= $PTR . "$NEW_ARGS[$i],";
 			}
-			$decl .= "\n{\n\t$RETURN$FUNC(";
+			$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
 			my $LEN = ($params =~ /$LEN_PTN/) ? 1 : 0;
 			foreach (@NEW_ARGS) {
 				if ($LEN) {
@@ -130,34 +132,35 @@ sub gen_nonmem_funcs {
 	return @NEW_LINES;
 }
 
-sub gen_struct_funcs {
+sub gen_struct_funcs
+{
 	my (@LINES) = @_;
 	foreach (@LINES) {
 		if ($_ !~ $RE_FUNC) {
 			goto NEXT;
 		}
-		my $decl   = $1;
-		my $FUNC   = $2;
-		my $params = $3;
-		if (!$decl && !$FUNC && !$params) {
+		my $decl      = $1;
+		my $FUNC_NAME = $2;
+		my $params    = $3;
+		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
 		$params =~ s/\)/,/;
-		my $SZ  = ($params =~ /$SIZE_PTN(?:,|\))/) ? 1 : 0;
-		my $CAP = ($params =~ /$CAP_PTN(?:,|\))/)  ? 1 : 0;
-		if (!$SZ && !$CAP) {
+		my $HAS_SZ  = ($params =~ /$SIZE_PTN(?:,|\))/) ? 1 : 0;
+		my $HAS_CAP = ($params =~ /$CAP_PTN(?:,|\))/)  ? 1 : 0;
+		if (!$HAS_SZ && !$HAS_CAP) {
 			goto NEXT;
 		}
 		my $RETURN = ($decl =~ /void/)         ? ''  : 'return ';
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
-		if ($SZ && $decl =~ /\w*$SIZE_PTN(,|\))/) {
+		if ($HAS_SZ && $decl =~ /\w*$SIZE_PTN(,|\))/) {
 			if ($1 eq ')') {
 				$decl =~ s/[^(,]*$SIZE_PTN(?:,|\))/)/;
 			} elsif ($1 eq ',') {
 				$decl =~ s/[^(,]*$SIZE_PTN,//;
 			}
 		}
-		if ($CAP && $decl =~ /\w*$CAP_PTN(,|\))/) {
+		if ($HAS_CAP && $decl =~ /\w*$CAP_PTN(,|\))/) {
 			if ($1 eq ')') {
 				$decl =~ s/[^(,]*$CAP_PTN(?:,|\))/)/;
 			} elsif ($1 eq ',') {
@@ -169,7 +172,7 @@ sub gen_struct_funcs {
 		my $LAST     = ($params =~ /,/)          ? ','      : ')';
 		my $tmp      = "($STR_STRUCT *$RESTRICT_MACRO $CONST" . "j$LAST";
 		$decl =~ s/\(.+?$LAST/$tmp/;
-		$decl .= "\n{\n\t$RETURN$FUNC(";
+		$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
 		my @NEW_ARGS;
 
 		foreach (@OLD_ARGS) {
@@ -195,7 +198,7 @@ sub gen_struct_funcs {
 		$decl =~ s/,\s*\)/)/g;
 		$_    .= "\n\n";
 		$decl .= "\n\n";
-		$decl =~ s/$FUNC/$FUNC\_j/;
+		$decl =~ s/$FUNC_NAME/$FUNC_NAME\_j/;
 		$hpp .= $_;
 		$hpp .= $decl;
 		$h   .= $_;
