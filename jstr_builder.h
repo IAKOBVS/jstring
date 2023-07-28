@@ -194,6 +194,46 @@ static void jstr_alloc_append(char **JSTR_RST const s,
 jstr_t;
 #endif /* __cpluslus */
 
+#ifdef __cplusplus
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_alloc(char **JSTR_RST const s,
+		       size_t *JSTR_RST const cap,
+		       const size_t top) JSTR_NOEXCEPT
+{
+	*s = (char *)malloc(top * JSTR_GROWTH_MULTIPLIER);
+	JSTR_MALLOC_ERR(*s, return);
+	*cap = top * JSTR_GROWTH_MULTIPLIER;
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_alloc_append_mem(char **JSTR_RST const s,
+				  size_t *JSTR_RST const sz,
+				  size_t *JSTR_RST const cap,
+				  const char *JSTR_RST const src,
+				  const size_t srclen) JSTR_NOEXCEPT
+{
+	jstr_alloc(s, cap, srclen * JSTR_GROWTH_MULTIPLIER);
+	if (unlikely(!*s))
+		return;
+	*sz = srclen;
+	memcpy(*s, src, srclen + 1);
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_alloc_append(char **JSTR_RST const s,
+			      size_t *JSTR_RST const sz,
+			      size_t *JSTR_RST const cap,
+			      const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+	jstr_alloc_append_mem(s, sz, cap, src, strlen(src));
+}
+
+#endif /* __cpluslus */
+
 /*
   free(p) and set p to NULL.
 */
