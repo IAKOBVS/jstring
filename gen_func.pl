@@ -29,9 +29,9 @@ if ($#ARGV != 0) {
 	exit 1;
 }
 
-# if (system("test $FNAME -nt $DIR_C/$FNAME")) {
-# 	exit 1;
-# }
+if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
+	exit 1;
+}
 
 open(my $FH, '<', $FNAME)
   or die "Can't open $FNAME\n";
