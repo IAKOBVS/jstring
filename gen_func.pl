@@ -32,9 +32,9 @@ my $RESTRICT_MACRO = $NAMESPACE_BIG . '_RST';
 mkdir($DIR_CPP);
 mkdir($DIR_C);
 
-my $file    = get_file_buf();
 my $out_h   = '';
 my $out_hpp = '';
+my $file    = get_file_buf();
 
 my $RE_FUNC   = qr/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^(){}]*($NAMESPACE\_\w*)\(([^\)]*\)[ \t]*\w*NOEXCEPT))/;
 my @NEW_LINES = gen_nonmem_funcs(split(/\n\n/, $file));
@@ -44,15 +44,14 @@ print_to_file($OUT_C, $OUT_CPP);
 sub usage
 {
 	if ($#ARGV != 0) {
-		print('Usage: ./gen_func.pl <file>');
-		exit(1);
+		die('Usage: ./gen_func.pl <file>');
 	}
 }
 
 sub update_needed
 {
 	if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
-		exit(1);
+		exit;
 	}
 }
 
