@@ -65,10 +65,10 @@ sub print_to_file
 sub gen_nonmem_funcs
 {
 	my (@OLD_LINES) = @_;
-	my @NEW_LINES;
 	if ($FNAME =~ /builder/) {
-		@NEW_LINES = @OLD_LINES;
+		return @OLD_LINES;
 	} else {
+		my @NEW_LINES;
 		foreach (split(/\n\n/, $file)) {
 			if ($_ !~ $RE_FUNC) {
 				goto NEXT;
@@ -128,8 +128,8 @@ sub gen_nonmem_funcs
 		  NEXT:
 			push(@NEW_LINES, $_);
 		}
+		return @NEW_LINES;
 	}
-	return @NEW_LINES;
 }
 
 sub gen_struct_funcs
