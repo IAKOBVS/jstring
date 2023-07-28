@@ -282,7 +282,7 @@ static char *jstr_rmallc(char *JSTR_RST s,
 }
 
 /*
-  Remove all C in S.
+  Remove N C in S.
   Return value:
   Pointer to '\0' in S.
 */
@@ -321,7 +321,7 @@ static char *jstr_rmnc_mem(char *JSTR_RST s,
 }
 
 /*
-  Remove all C in S.
+  Remove N C in S.
   Return value:
   Pointer to '\0' in S;
   S if no C in S.
@@ -453,8 +453,7 @@ static char *jstr_rm_mem_p(char *JSTR_RST const s,
 }
 
 /*
-  FIXME:
-  Remove all HS in S.
+  Remove N HS in S.
   Return value:
   Pointer to '\0' in S.
 */
@@ -727,7 +726,7 @@ static void jstr_replaceallc(char *JSTR_RST s,
 }
 
 /*
-  Replace all SEARCH in REPLACE.
+  Replace N SEARCH in REPLACE.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -750,7 +749,7 @@ static void jstr_replacenc_mem(char *JSTR_RST s,
 }
 
 /*
-  Replace all SEARCH in REPLACE.
+  Replace N SEARCH in REPLACE.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -864,7 +863,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 }
 
 /*
-  Replace all SEARCH in S with REPLACE.
+  Replace N SEARCH in S with REPLACE.
   Assumes that S have enough space for REPLACE.
 */
 JSTR_NONNULL_ALL
@@ -953,7 +952,7 @@ static char *jstr_replaceall_mem_f(char *JSTR_RST const s,
 }
 
 /*
-  Replace all SEARCH in S with REPLACE.
+  Replace N SEARCH in S with REPLACE.
 */
 JSTR_NONNULL_ALL
 static void jstr_replacen_mem(char **JSTR_RST const s,
