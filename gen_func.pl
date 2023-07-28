@@ -2,6 +2,11 @@
 use strict;
 use warnings;
 
+if ($#ARGV != 0) {
+	print "Usage: ./$0 <file>";
+	exit 1;
+}
+
 my $FNAME         = $ARGV[0];
 my $NAMESPACE     = 'jstr';
 my $NAMESPACE_BIG = uc($NAMESPACE);
@@ -9,14 +14,10 @@ my $DIR_C         = 'c';
 my $DIR_CPP       = $DIR_C . 'pp';
 mkdir($DIR_CPP);
 mkdir($DIR_C);
-if ($#ARGV != 0) {
-	print 'Usage: ./gen_func.pl <file>';
+
+if (system("test $0 -ot $FNAME && test $FNAME -nt $DIR_C")) {
 	exit 1;
 }
-
-# if (system("test $FNAME -nt $DIR_C")) {
-# 	exit 1;
-# }
 
 my $file          = '';
 my $namespace_end = '';
