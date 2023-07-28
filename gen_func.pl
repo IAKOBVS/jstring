@@ -12,6 +12,7 @@ update_needed();
 my $DIR_CPP = $DIR_C . 'pp';
 my $OUT_C   = "$DIR_C/$FNAME";
 my $OUT_CPP = "$DIR_CPP/$FNAME" . 'pp';
+my $IGNORE_FILE_NONMEM = 'builder';
 
 my $NAMESPACE     = 'jstr';
 my $NAMESPACE_BIG = uc($NAMESPACE);
@@ -83,7 +84,7 @@ sub print_to_file
 sub gen_nonmem_funcs
 {
 	my (@OLD_LINES) = @_;
-	if ($FNAME =~ /builder/) {
+	if ($FNAME =~ /$IGNORE_FILE_NONMEM/) {
 		return @OLD_LINES;
 	} else {
 		my @NEW_LINES;
