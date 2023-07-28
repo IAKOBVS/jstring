@@ -15,13 +15,13 @@ my $DIR_CPP       = $DIR_C . 'pp';
 mkdir($DIR_CPP);
 mkdir($DIR_C);
 
-if (system("test $0 -ot $FNAME && test $FNAME -nt $DIR_C/$FNAME")) {
-	exit 1;
-}
+# if (system("test $0 -ot $FNAME && test $FNAME -nt $DIR_C/$FNAME")) {
+# 	exit 1;
+# }
 
-my $file = '';
 open(my $FH, '<', $FNAME)
   or die "Can't open $FNAME\n";
+my $file = '';
 while (<$FH>) {
 	$file .= $_;
 }
@@ -49,7 +49,7 @@ foreach (@OLD_LINES) {
 	}
 	my $FUNC_BASENAME = $FUNC;
 	$FUNC_BASENAME =~ s/_mem//;
-	if ($file =~ /$FUNC_BASENAME/) {
+	if ($file =~ /$FUNC_BASENAME\(/) {
 		goto NEXT;
 	}
 	$params =~ s/\)/,/;
@@ -148,11 +148,11 @@ foreach (@NEW_LINES) {
 	$decl =~ s/,\s*\)/)/g;
 	$_    .= "\n\n";
 	$decl .= "\n\n";
-	$hpp  .= $_;
-	$hpp  .= $decl;
 	$decl =~ s/$FUNC/$FUNC\_j/;
-	$h .= $_;
-	$h .= $decl;
+	$hpp .= $_;
+	$hpp .= $decl;
+	$h   .= $_;
+	$h   .= $decl;
 	next;
   NEXT:
 	$_   .= "\n\n";
@@ -164,11 +164,13 @@ $hpp =~ s/\.h"/.hpp"/g;
 $hpp =~ s/H_DEF/HPP_DEF/g;
 $hpp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
 $hpp =~ s/NAMESPACE\s*\d/NAMESPACE 1/;
-$hpp =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/g;
+
+# $hpp =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/g;
 $hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
 $hpp =~ s/\tt\(/\t$NAMESPACE\_t(/g;
 $hpp =~ s/\t~t\(/\t$NAMESPACE\_t(/g;
-$hpp =~ s/alloc_append/alloc/g;
+
+# $hpp =~ s/alloc_append/alloc/g;
 $hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;

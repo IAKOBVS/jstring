@@ -5,13 +5,7 @@ for file in $(echo *.h*); do
 	perl gen_func.pl "$file" &
 done
 wait
-for file in $(echo $DIR_CPP/*.h*); do
-	./fmt "$file" &
-done
-for file in $(echo $DIR_C/*.h*); do
-	./fmt "$file" &
-done
-wait
+
 # for file in $(echo $DIR_CPP/*.h*); do
 # 	perl gen_skel.pl "$file" &
 # done
@@ -19,3 +13,12 @@ wait
 # 	perl gen_skel.pl "$file" &
 # done
 # wait
+
+for file in $(echo $DIR_CPP/*.h*); do
+	./fmt "$file" &
+done
+for file in $(echo $DIR_C/*.h*); do
+	./fmt "$file" &
+done
+wait
+

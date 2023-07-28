@@ -37,9 +37,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_append_mem_p_f(char *JSTR_RST const s,
-			       const char *JSTR_RST const src,
-			       const size_t sz,
-			       const size_t srclen) JSTR_NOEXCEPT
+				 const char *JSTR_RST const src,
+				 const size_t sz,
+				 const size_t srclen) JSTR_NOEXCEPT
 {
 	memcpy(s, src, srclen + 1);
 	return s + sz + srclen;
@@ -184,8 +184,8 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_rmc_mem_p(char *JSTR_RST s,
-			  const int c,
-			  const size_t sz) JSTR_NOEXCEPT
+			    const int c,
+			    const size_t sz) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
 		return s;
@@ -207,7 +207,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_rmc_p(char *JSTR_RST s,
-		      const int c) JSTR_NOEXCEPT
+			const int c) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
 		return s;
@@ -228,8 +228,8 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_rmallc_mem_p(char *JSTR_RST s,
-			     const int c,
-			     const size_t sz) JSTR_NOEXCEPT
+			       const int c,
+			       const size_t sz) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
 		return s;
@@ -260,7 +260,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_rmallc_p(char *JSTR_RST s,
-			 const int c) JSTR_NOEXCEPT
+			   const int c) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
 		return s;
@@ -290,9 +290,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_rmnc_mem_p(char *JSTR_RST s,
-			   const int c,
-			   size_t n,
-			   const size_t sz) JSTR_NOEXCEPT
+			     const int c,
+			     size_t n,
+			     const size_t sz) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
 		return s;
@@ -330,8 +330,8 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_rmnc_p(char *JSTR_RST s,
-		       const int c,
-		       size_t n) JSTR_NOEXCEPT
+			 const int c,
+			 size_t n) JSTR_NOEXCEPT
 {
 	if (unlikely(!*s))
 		return s;
@@ -778,11 +778,11 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
-				const char *JSTR_RST const srch,
-				const char *JSTR_RST const rplc,
-				const size_t sz,
-				const size_t srchlen,
-				const size_t rplclen) JSTR_NOEXCEPT
+				  const char *JSTR_RST const srch,
+				  const char *JSTR_RST const rplc,
+				  const size_t sz,
+				  const size_t srchlen,
+				  const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (unlikely(srchlen == 0))
 		return s + sz;
@@ -870,12 +870,12 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
-				 const char *JSTR_RST const srch,
-				 const char *JSTR_RST const rplc,
-				 size_t n,
-				 size_t sz,
-				 const size_t srchlen,
-				 const size_t rplclen) JSTR_NOEXCEPT
+				   const char *JSTR_RST const srch,
+				   const char *JSTR_RST const rplc,
+				   size_t n,
+				   size_t sz,
+				   const size_t srchlen,
+				   const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (unlikely(srchlen == 0))
 		return s + sz;
@@ -916,11 +916,11 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
-				   const char *JSTR_RST const srch,
-				   const char *JSTR_RST const rplc,
-				   size_t sz,
-				   const size_t srchlen,
-				   const size_t rplclen) JSTR_NOEXCEPT
+				     const char *JSTR_RST const srch,
+				     const char *JSTR_RST const rplc,
+				     size_t sz,
+				     const size_t srchlen,
+				     const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (unlikely(srchlen == 0))
 		return s + sz;
@@ -982,7 +982,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		break;
 	default: {
 		char *mtc = *s;
-		if (rplclen <= srchlen)
+		if (rplclen <= srchlen) {
 			while (n-- && (mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, srch, srchlen))) {
 				memmove(mtc + rplclen,
 					mtc + srchlen,
@@ -991,7 +991,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 				mtc += rplclen;
 				*sz += (long long)(rplclen - srchlen);
 			}
-		else {
+		} else {
 			char *tmp;
 			while (n-- && (mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, srch, srchlen))) {
 				if (*cap > *sz + rplclen - srchlen + 1) {
@@ -1285,10 +1285,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_slip_mem_p_f(char *JSTR_RST const s,
-			     const size_t at,
-			     const char *JSTR_RST const src,
-			     const size_t sz,
-			     const size_t srclen) JSTR_NOEXCEPT
+			       const size_t at,
+			       const char *JSTR_RST const src,
+			       const size_t sz,
+			       const size_t srclen) JSTR_NOEXCEPT
 {
 	memmove(s + at + srclen,
 		s + at,
@@ -1339,10 +1339,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_slipaftc_mem_p_f(char *JSTR_RST const s,
-				 const int c,
-				 const char *JSTR_RST const src,
-				 const size_t sz,
-				 const size_t srclen) JSTR_NOEXCEPT
+				   const int c,
+				   const char *JSTR_RST const src,
+				   const size_t sz,
+				   const size_t srclen) JSTR_NOEXCEPT
 {
 	if (unlikely(srclen == 0))
 		return s + sz;
