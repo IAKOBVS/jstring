@@ -56,8 +56,8 @@ foreach (@OLD_LINES) {
 	$params =~ s/\)/,/;
 	my @OLD_ARGS = split(/\s/, $params);
 	my @NEW_ARGS;
-	my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
-	my $RETURN = ($decl =~ /void/)         ? ''  : 'return ';
+	my $PTR    = get_ptr_str($decl);
+	my $RETURN = get_return_str($decl);
 	foreach (@OLD_ARGS) {
 		if (/,$/) {
 			s/,//;
@@ -70,7 +70,7 @@ foreach (@OLD_LINES) {
 		$func_args .= $PTR . "$NEW_ARGS[$i],";
 	}
 	$decl .= "\n{\n\t$RETURN$FUNC(";
-	my $LEN = ($params =~ /len/) ? 1 : 0;
+	my $LEN = has_arg($params, 'len');
 	foreach (@NEW_ARGS) {
 		if ($LEN) {
 			if (/(\w*)len/) {
@@ -111,31 +111,18 @@ foreach (@NEW_LINES) {
 		goto NEXT;
 	}
 	$params =~ s/\)/,/;
-	my $SZ  = ($params =~ /sz(?:,|\))/)  ? 1 : 0;
-	my $CAP = ($params =~ /cap(?:,|\))/) ? 1 : 0;
+	my $SZ  = has_arg($params, 'sz');
+	my $CAP = has_arg($params, 'cap');
 	if (!$SZ && !$CAP) {
 		goto NEXT;
 	}
 	$has_funcs = 1;
-	my $RETURN = ($decl =~ /void/)         ? ''  : 'return ';
-	my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
-	if ($SZ && $decl =~ /\w*sz(,|\))/) {
-		if ($1 eq ')') {
-			$decl =~ s/[^(,]*sz(?:,|\))/)/;
-		} elsif ($1 eq ',') {
-			$decl =~ s/[^(,]*sz,//;
-		}
-	}
-	if ($CAP && $decl =~ /\w*cap(,|\))/) {
-		if ($1 eq ')') {
-			$decl =~ s/[^(,]*cap(?:,|\))/)/;
-		} elsif ($1 eq ',') {
-			$decl =~ s/[^(,]*cap,//;
-		}
-	}
+	my $RETURN = get_return_str($decl);
+	my $PTR    = get_ptr_str($decl);
+	$decl = handle_sz_cap($SZ, $CAP, $decl);
 	my @OLD_ARGS = split(/\s/, $params);
-	my $CONST    = ($OLD_ARGS[0] eq 'const') ? 'const ' : '';
-	my $LAST     = ($params =~ /,/)          ? ','      : ')';
+	my $CONST    = get_const_str(@OLD_ARGS);
+	my $LAST     = ($params =~ /,/) ? ',' : ')';
 	my $tmp      = "($NAMESPACE\_t *$NAMESPACE_BIG\_RST $CONST" . "j$LAST";
 	$decl =~ s/\(.+?$LAST/$tmp/;
 	$decl .= "\n{\n\t$RETURN$FUNC(";
@@ -197,3 +184,42 @@ open($FH, '>', "$DIR_C/$FNAME")
   or die "Can't open $DIR_C/$FNAME\n";
 print($FH $h);
 close($FH);
+
+sub get_return_str {
+	my ($decl) = @_;
+	return ($decl =~ /void/) ? '' : 'return ';
+}
+
+sub get_ptr_str {
+	my ($decl) = @_;
+	return ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
+}
+
+sub get_const_str {
+	my (@OLD_ARGS) = @_;
+	($OLD_ARGS[0] eq 'const') ? 'const ' : '';
+}
+
+sub handle_sz_cap {
+	my ($SZ, $CAP, $decl) = @_;
+	if ($SZ && $decl =~ /\w*sz(,|\))/) {
+		if ($1 eq ')') {
+			$decl =~ s/[^(,]*sz(?:,|\))/)/;
+		} elsif ($1 eq ',') {
+			$decl =~ s/[^(,]*sz,//;
+		}
+	}
+	if ($CAP && $decl =~ /\w*cap(,|\))/) {
+		if ($1 eq ')') {
+			$decl =~ s/[^(,]*cap(?:,|\))/)/;
+		} elsif ($1 eq ',') {
+			$decl =~ s/[^(,]*cap,//;
+		}
+	}
+	return $decl;
+}
+
+sub has_arg {
+	my ($params, $argname) = @_;
+	return ($params =~ /$argname(?:,|\))/) ? 1 : 0;
+}
