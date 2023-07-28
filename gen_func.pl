@@ -15,22 +15,21 @@ my $DIR_CPP       = $DIR_C . 'pp';
 mkdir($DIR_CPP);
 mkdir($DIR_C);
 
-if (system("test $0 -ot $FNAME && test $FNAME -nt $DIR_C")) {
+if (system("test $0 -ot $FNAME && test $FNAME -nt $DIR_C/$FNAME")) {
 	exit 1;
 }
 
-my $file          = '';
-my $namespace_end = '';
-my $undef         = '';
-my $endif         = '';
+my $file = '';
 open(my $FH, '<', $FNAME)
   or die "Can't open $FNAME\n";
-
 while (<$FH>) {
 	$file .= $_;
 }
-
 close($FH);
+
+my $namespace_end = '';
+my $undef         = '';
+my $endif         = '';
 
 my @OLD_LINES = split(/\n\n/, $file);
 my @NEW_LINES;
@@ -145,9 +144,7 @@ foreach (@NEW_LINES) {
 	}
 	$func_args =~ s/,$//;
 	$decl .= "$func_args);\n}\n";
-	if ($decl !~ /$NAMESPACE_BIG\_INLINE/) {
-		$decl =~ s/static/$NAMESPACE_BIG\_INLINE\nstatic/;
-	}
+	$decl = add_inline($decl);
 	$decl =~ s/,\s*\)/)/g;
 	$_    .= "\n\n";
 	$decl .= "\n\n";
@@ -176,13 +173,13 @@ $hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 $hpp =~ s/\n\n\n/\n\n/g;
 $h   =~ s/\n\n\n/\n\n/g;
 
-open($FH, '>', "$DIR_CPP/$FNAME" . 'pp')
-  or die "Can't open $DIR_CPP/$FNAME" . "pp\n";
-print($FH $hpp);
-close($FH);
 open($FH, '>', "$DIR_C/$FNAME")
   or die "Can't open $DIR_C/$FNAME\n";
 print($FH $h);
+close($FH);
+open($FH, '>', "$DIR_CPP/$FNAME" . 'pp')
+  or die "Can't open $DIR_CPP/$FNAME" . "pp\n";
+print($FH $hpp);
 close($FH);
 
 sub get_return_str {
@@ -222,4 +219,12 @@ sub handle_sz_cap {
 sub has_arg {
 	my ($params, $argname) = @_;
 	return ($params =~ /$argname(?:,|\))/) ? 1 : 0;
+}
+
+sub add_inline {
+	my ($decl) = @_;
+	if ($decl !~ /$NAMESPACE_BIG\_INLINE/) {
+		$decl =~ s/static/$NAMESPACE_BIG\_INLINE\nstatic/;
+	}
+	return $decl;
 }
