@@ -47,15 +47,19 @@ my $hpp     = '';
 
 my @NEW_LINES = gen_nonmem_funcs(split(/\n\n/, $file));
 gen_struct_funcs(@NEW_LINES);
+print_to_file("$DIR_C/$FNAME", "$DIR_CPP/$FNAME");
 
-open($FH, '>', "$DIR_CPP/$FNAME" . 'pp')
-  or die "Can't open $DIR_CPP/$FNAME" . "pp\n";
-print($FH $hpp);
-close($FH);
-open($FH, '>', "$DIR_C/$FNAME")
-  or die "Can't open $DIR_C/$FNAME\n";
-print($FH $h);
-close($FH);
+sub print_to_file {
+	my ($h, $hpp) = @_;
+	open(my $FH, '>', $h)
+	  or die "Can't open $h\n";
+	print($FH $h);
+	close($FH);
+	open($FH, '>', $hpp)
+	  or die "Can't open $hpp\n";
+	print($FH $hpp);
+	close($FH);
+}
 
 sub gen_nonmem_funcs {
 	my (@OLD_LINES) = @_;
@@ -167,6 +171,7 @@ sub gen_struct_funcs {
 		$decl =~ s/\(.+?$LAST/$tmp/;
 		$decl .= "\n{\n\t$RETURN$FUNC(";
 		my @NEW_ARGS;
+
 		foreach (@OLD_ARGS) {
 			if (/,$/) {
 				s/,//;
