@@ -27,8 +27,6 @@ namespace jstr {
 extern "C" {
 #endif /* JSTR_EXTERN_C */
 
-#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
-
 /*
    Append SRC to DST.
    Use non-f version for bounds checking.
@@ -702,6 +700,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		memmove(dst, s, end + searclen - s + 1);
 		return dst + (end + searclen - s);
 		break;
+	}
 		/* const char *const end = s + sz - searclen; */
 		/* size_t off = 0; */
 		/* if (unlikely(searclen > 256)) { */
@@ -718,6 +717,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		/* 		*dst++ = *s++; */
 		/* 	} */
 		/* } else { */
+		/* #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift)) */
 		/* 	const char *s_old = s; */
 		/* 	uint8_t shift[256]; */
 		/* 	size_t tmp; */
@@ -753,7 +753,6 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		/* memmove(dst, s, end + searclen - s + 1); */
 		/* return dst + (end + searclen - s); */
 		/* break; */
-	}
 	}
 }
 
