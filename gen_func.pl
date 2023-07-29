@@ -15,10 +15,10 @@ my $G_OUT_CPP            = "$G_DIR_CPP/$G_FNAME" . 'pp';
 my $G_IGNORE_FILE_NONMEM = 'builder.h';
 
 my $G_NMSPC     = 'jstr';
-my $G_NMSPC_BIG = uc($G_NMSPC);
+my $G_NMSPC_UPP = uc($G_NMSPC);
 
-my $G_STRUCT_VAR  = 'j';
 my $G_STR_STRUCT  = $G_NMSPC . '_t';
+my $G_STRUCT_VAR  = substr($G_STR_STRUCT, 0, 1);
 my $G_STRUCT_DATA = 'data';
 my $G_STRUCT_SIZE = 'size';
 my $G_STRUCT_CAP  = 'cap';
@@ -27,10 +27,10 @@ my $G_CAP_PTN  = 'cap';
 my $G_SIZE_PTN = 'sz';
 my $G_LEN_PTN  = 'len';
 
-my $G_INLINE_MACRO   = $G_NMSPC_BIG . '_INLINE';
-my $G_RESTRICT_MACRO = $G_NMSPC_BIG . '_RST';
+my $G_INLINE_MACRO   = $G_NMSPC_UPP . '_INLINE';
+my $G_RESTRICT_MACRO = $G_NMSPC_UPP . '_RST';
 
-my $G_RE_FUNC = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_BIG\_|static)[^{}()]*($G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
+my $G_RE_FUNC = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)[^{}()]*($G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 
 mkdir($G_DIR_CPP);
 mkdir($G_DIR_C);
@@ -242,8 +242,8 @@ sub gen_struct_funcs
 	}
 	$out_hpp =~ s/\.h"/.hpp"/g;
 	$out_hpp =~ s/H_DEF/Hpp_DEF/g;
-	$out_hpp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
-	$out_hpp =~ s/namespace\s*\d/namespace 1/;
+	$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/;
+	$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/;
 	$out_hpp =~ s/$G_NMSPC\_(\w*\()/$1/go;
 	$out_hpp =~ s/\tt\(/\t$G_STR_STRUCT(/go;
 	$out_hpp =~ s/\t~t\(/\t$G_STR_STRUCT(/go;
