@@ -205,21 +205,21 @@ sub gen_struct_funcs
 		$decl =~ s/\(.+?$LAST/$tmp/;
 		$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
 
-		my @NEW_ARGS;
+		my @new_args;
 		foreach (@OLD_ARGS) {
 			if (/,$/) {
 				s/,//;
-				push(@NEW_ARGS, $_);
+				push(@new_args, $_);
 			}
 		}
 		my $func_args = $PTR . "$G_STRUCT_VAR->$G_STRUCT_DATA,";
-		for (my $i = 1 ; $i <= $#NEW_ARGS ; ++$i) {
-			if ($NEW_ARGS[$i] =~ /$G_SIZE_PTN/o) {
-				$NEW_ARGS[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
-			} elsif ($NEW_ARGS[$i] =~ /$G_CAP_PTN/o) {
-				$NEW_ARGS[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_CAP";
+		for (my $i = 1 ; $i <= $#new_args ; ++$i) {
+			if ($new_args[$i] =~ /$G_SIZE_PTN/o) {
+				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
+			} elsif ($new_args[$i] =~ /$G_CAP_PTN/o) {
+				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_CAP";
 			}
-			$func_args .= "$NEW_ARGS[$i],";
+			$func_args .= "$new_args[$i],";
 		}
 		$func_args =~ s/,$//;
 		$decl .= "$func_args);\n}\n";
