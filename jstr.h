@@ -633,13 +633,13 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	}
 	case 2: {
 		const uint16_t nw = searc[0] << 8 | searc[1];
-		uint16_t sw = s[0] << 8 | s[1];
-		for (++s, sz -= 2; sz--; sw = sw << 8 | *s)
-			if (sw != nw)
+		uint16_t hw = s[0] << 8 | s[1];
+		for (++s, sz -= 2; sz--; hw = hw << 8 | *s)
+			if (hw != nw)
 				*dst++ = *(s++ - 1);
 			else
 				s += 2;
-		if (sw != nw)
+		if (hw != nw)
 			*dst++ = *(s - 1);
 		*dst = '\0';
 		return dst;
@@ -647,13 +647,13 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	}
 	case 3: {
 		const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
-		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8;
-		for (s += 3, sz -= 3; sz--; sw = (sw | *s++) << 8)
-			if (sw != nw)
+		uint32_t hw = s[0] << 24 | s[1] << 16 | s[2] << 8;
+		for (s += 3, sz -= 3; sz--; hw = (hw | *s++) << 8)
+			if (hw != nw)
 				*dst++ = *(s - 3);
 			else
 				s += 2;
-		if (sw != nw)
+		if (hw != nw)
 			*dst++ = *(s - 3);
 		*dst = '\0';
 		return dst;
@@ -661,13 +661,13 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	}
 	case 4: {
 		const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
-		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
-		for (s += 4, sz -= 4; sz--; sw = sw << 8 | *s++)
-			if (sw != nw)
+		uint32_t hw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
+		for (s += 4, sz -= 4; sz--; hw = hw << 8 | *s++)
+			if (hw != nw)
 				*dst++ = *(s - 4);
 			else
 				s += 3;
-		if (sw != nw)
+		if (hw != nw)
 			*dst++ = *(s - 4);
 		*dst = '\0';
 		return dst;
@@ -676,14 +676,14 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	default: {
 		const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 		const char *const end = s + sz - searclen;
-		if (searclen < 15)
+		if (searclen < 15) {
 			while (s <= end)
 				if (nw == (s[0] << 8 | s[searclen - 1])
 				    && !memcmp(s, searc, searclen))
 					s += searclen;
 				else
 					*dst++ = *s++;
-		else {
+		} else {
 			size_t off = 0;
 			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
