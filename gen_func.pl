@@ -51,9 +51,9 @@ sub usage
 
 sub script_needed
 {
-	# if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
-	# 	exit;
-	# }
+	if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
+		exit;
+	}
 }
 
 sub cat_file
