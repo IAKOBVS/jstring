@@ -16,9 +16,9 @@ my $G_IGNORE_FILE_NONMEM = 'builder.h';
 
 my $G_NMSPC     = 'jstr';
 my $G_NMSPC_UPP = uc($G_NMSPC);
-
 my $G_STR_STRUCT  = $G_NMSPC . '_t';
 my $G_STRUCT_VAR  = substr($G_STR_STRUCT, 0, 1);
+
 my $G_STRUCT_DATA = 'data';
 my $G_STRUCT_SIZE = 'size';
 my $G_STRUCT_CAP  = 'cap';
