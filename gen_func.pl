@@ -14,10 +14,10 @@ my $G_OUT_C              = "$G_DIR_C/$G_FNAME";
 my $G_OUT_CPP            = "$G_DIR_CPP/$G_FNAME" . 'pp';
 my $G_IGNORE_FILE_NONMEM = 'builder.h';
 
-my $G_NMSPC     = 'jstr';
-my $G_NMSPC_UPP = uc($G_NMSPC);
-my $G_STR_STRUCT  = $G_NMSPC . '_t';
-my $G_STRUCT_VAR  = substr($G_STR_STRUCT, 0, 1);
+my $G_NMSPC      = 'jstr';
+my $G_NMSPC_UPP  = uc($G_NMSPC);
+my $G_STR_STRUCT = $G_NMSPC . '_t';
+my $G_STRUCT_VAR = substr($G_STR_STRUCT, 0, 1);
 
 my $G_STRUCT_DATA = 'data';
 my $G_STRUCT_SIZE = 'size';
@@ -35,7 +35,7 @@ my $G_RE_FUNC = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)[^{}()]*($G_NMSPC\_
 mkdir($G_DIR_CPP);
 mkdir($G_DIR_C);
 
-my $g_in_h = cat_file($G_FNAME);
+my $g_in_h = get_file_str($G_FNAME);
 $g_in_h = tidy_newlines($g_in_h);
 
 my @LNS = gen_nonmem_funcs($g_in_h);
@@ -57,7 +57,7 @@ sub script_needed
 	}
 }
 
-sub cat_file
+sub get_file_str
 {
 	my ($FILENAME) = @_;
 	open(my $FH, '<', $FILENAME)
