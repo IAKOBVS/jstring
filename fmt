@@ -1,2 +1,14 @@
 #!/bin/sh
-clang-format -i --style=file:".clang-format" $1
+DIR_CPP=cpp
+DIR_C=cpp
+fmt() { clang-format -i --style=file:".clang-format" "$1"; }
+for f in $(echo *.h); do
+	fmt "$f" &
+done
+for f in $(echo $DIR_CPP/*.h*); do
+	fmt "$f" &
+done
+for f in $(echo $DIR_C/*.h*); do
+	fmt "$f" &
+done
+wait

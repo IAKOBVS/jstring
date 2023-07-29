@@ -35,9 +35,9 @@ extern "C" {
    Return value:
    New len of S.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_INLINE
 static char *jstr_append_mem_p_f(char *JSTR_RST const s,
 				 const char *JSTR_RST const src,
 				 const size_t sz,

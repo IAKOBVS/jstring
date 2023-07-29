@@ -31,17 +31,15 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static char *jstr_stpcpy(char *JSTR_RST const dst,
 			 const char *JSTR_RST const src) JSTR_NOEXCEPT
-#ifndef JSTR_HAS_STPCPY
 {
+#ifndef JSTR_HAS_STPCPY
 	const size_t slen = strlen(src);
 	memcpy(dst, src, slen + 1);
 	return dst + slen;
-}
 #else
-{
 	return stpcpy(dst, src);
-}
 #endif // !JSTR_HAS_STPCPY
+}
 
 /*
   Return pointer to last C in S.
@@ -56,8 +54,8 @@ JSTR_WARN_UNUSED
 static void *jstr_memrchr(char *JSTR_RST const s,
 			  const int c,
 			  size_t n) JSTR_NOEXCEPT
-#ifndef JSTR_HAS_MEMRCHR
 {
+#ifndef JSTR_HAS_MEMRCHR
 	if (unlikely(!*s))
 		return NULL;
 	char *end = s + n - 1;
@@ -66,12 +64,10 @@ static void *jstr_memrchr(char *JSTR_RST const s,
 			return end;
 	while (--end <= s);
 	return NULL;
-}
 #else
-{
 	return memrchr(s, c, n);
-}
 #endif // !JSTR_HAS_MEMRCHR
+}
 
 /*
   Return value:
