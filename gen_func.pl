@@ -7,7 +7,7 @@ usage();
 my $FNAME = $ARGV[0];
 my $DIR_C = 'c';
 
-update_needed();
+script_needed();
 
 my $DIR_CPP = $DIR_C . 'pp';
 my $OUT_C   = "$DIR_C/$FNAME";
@@ -49,7 +49,7 @@ sub usage
 	}
 }
 
-sub update_needed
+sub script_needed
 {
 	if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
 		exit;

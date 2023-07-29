@@ -27,6 +27,8 @@ namespace jstr {
 extern "C" {
 #endif /* JSTR_EXTERN_C */
 
+#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
+
 /*
    Append SRC to DST.
    Use non-f version for bounds checking.
@@ -463,7 +465,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 			    const char *JSTR_RST const searc,
 			    size_t n,
 			    size_t sz,
-			    size_t searclen) JSTR_NOEXCEPT
+			    const size_t searclen) JSTR_NOEXCEPT
 {
 	if (unlikely(searclen == 0))
 		return s + sz;
@@ -561,27 +563,33 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 	default: {
 		const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 		const char *const end = s + sz - searclen;
-		if (searclen < 15)
-			while (s <= end)
+		if (searclen < 15) {
+			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
 				    && !memcmp(s, searc, searclen)) {
 					s += searclen;
 					if (unlikely(!--n))
 						break;
-				} else {
-					*dst++ = *s++;
+					continue;
 				}
-		else
-			for (const size_t off = searclen - 9; s <= end;)
+				*dst++ = *s++;
+			}
+		} else {
+			size_t off = 0;
+			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
-				    && !memcmp(s + off, searc + off, 8)
-				    && !memcmp(s, searc, searclen)) {
-					s += searclen;
-					if (unlikely(!--n))
-						break;
-				} else {
-					*dst++ = *s++;
+				    && !memcmp(s + off, searc + off, 8)) {
+					if (!memcmp(s, searc, searclen)) {
+						s += searclen;
+						if (unlikely(!--n))
+							break;
+						continue;
+					}
+					off = (off >= 8 ? off : searclen - 1) - 8;
 				}
+				*dst++ = *s++;
+			}
+		}
 		memmove(dst, s, end + searclen - s + 1);
 		return dst + (end + searclen - s);
 		break;
@@ -599,7 +607,7 @@ JSTR_NONNULL_ALL
 static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			      const char *JSTR_RST const searc,
 			      size_t sz,
-			      size_t searclen) JSTR_NOEXCEPT
+			      const size_t searclen) JSTR_NOEXCEPT
 {
 	if (unlikely(searclen == 0))
 		return s + sz;
@@ -677,17 +685,74 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 					s += searclen;
 				else
 					*dst++ = *s++;
-		else
-			for (const size_t off = searclen - 9; s <= end;)
+		else {
+			size_t off = 0;
+			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
-				    && !memcmp(s + off, searc + off, 8)
-				    && !memcmp(s, searc, searclen))
-					s += searclen;
-				else
-					*dst++ = *s++;
-		memcpy(dst, s, end + searclen - s + 1);
+				    && !memcmp(s + off, searc + off, 8)) {
+					if (!memcmp(s, searc, searclen)) {
+						s += searclen;
+						continue;
+					}
+					off = (off >= 8 ? off : searclen - 1) - 8;
+				}
+				*dst++ = *s++;
+			}
+		}
+		memmove(dst, s, end + searclen - s + 1);
 		return dst + (end + searclen - s);
 		break;
+		/* const char *const end = s + sz - searclen; */
+		/* size_t off = 0; */
+		/* if (unlikely(searclen > 256)) { */
+		/* 	const uint16_t nw = searc[0] << 8 | searc[searclen - 1]; */
+		/* 	while (s <= end) { */
+		/* 		if (nw == (s[0] << 8 | s[searclen - 1]) */
+		/* 		    && !memcmp(s + off, searc + off, 8)) { */
+		/* 			if (!memcmp(s, searc, searclen)) { */
+		/* 				s += searclen; */
+		/* 				continue; */
+		/* 			} */
+		/* 			off = (off >= 8 ? off : m1) - 8; */
+		/* 		} */
+		/* 		*dst++ = *s++; */
+		/* 	} */
+		/* } else { */
+		/* 	const char *s_old = s; */
+		/* 	uint8_t shift[256]; */
+		/* 	size_t tmp; */
+		/* 	size_t shift1; */
+		/* 	memset(shift, 0, sizeof(shift)); */
+		/* 	for (int i = 1; i < m1; ++i) */
+		/* 		shift[JSTR_HASH2(searc + m1)] = m1; */
+		/* 	shift1 = m1 - shift[JSTR_HASH2(searc + m1)]; */
+		/* 	shift[JSTR_HASH2(searc + m1)] = m1; */
+		/* 	while (s <= end) { */
+		/* 		do { */
+		/* 			s += m1; */
+		/* 			tmp = shift[JSTR_HASH2(s)]; */
+		/* 		} while (!tmp && s <= end); */
+		/* 		s -= tmp; */
+		/* 		if (tmp < m1) */
+		/* 			continue; */
+		/* 		if (searclen < 15 || !memcmp(s + off, searc + off, 8)) { */
+		/* 			if (!memcmp(s, searc, searclen)) { */
+		/* 				while (s_old <= s) */
+		/* 					*dst++ = *s_old++; */
+		/* 				s += searclen; */
+		/* 				s_old += searclen; */
+		/* 				continue; */
+		/* 			} */
+		/* 			off = (off >= 8 ? off : m1) - 8; */
+		/* 		} */
+		/* 		s += shift1; */
+		/* 		while (s_old <= s) */
+		/* 			*dst++ = *s_old++; */
+		/* 	} */
+		/* } */
+		/* memmove(dst, s, end + searclen - s + 1); */
+		/* return dst + (end + searclen - s); */
+		/* break; */
 	}
 	}
 }
