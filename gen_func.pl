@@ -72,23 +72,23 @@ sub cat_file
 
 sub tidy_newlines
 {
-	my ($g_in_h) = @_;
-	$g_in_h =~ s/(\n[ \t].*)\n\n\n*/$1\n/g;
-	$g_in_h =~ s/\n\n\n*\t/\n\t/g;
-	$g_in_h =~ s/\n\n\n* /\n /g;
-	return $g_in_h;
+	my ($IN_H) = @_;
+	$IN_H =~ s/(\n[ \t].*)\n\n\n*/$1\n/g;
+	$IN_H =~ s/\n\n\n*\t/\n\t/g;
+	$IN_H =~ s/\n\n\n* /\n /g;
+	return $IN_H;
 }
 
 sub print_to_file
 {
-	my ($G_OUT_C, $out_h, $G_OUT_CPP, $out_hpp) = @_;
-	open(my $FH, '>', $G_OUT_C)
-	  or die("Can't open $out_h\n");
-	print($FH $out_h);
+	my ($OUT_C, $OUT_H, $OUT_CPP, $OUT_HPP) = @_;
+	open(my $FH, '>', $OUT_C)
+	  or die("Can't open $OUT_H\n");
+	print($FH $OUT_H);
 	close($FH);
-	open($FH, '>', $G_OUT_CPP)
-	  or die("Can't open $out_hpp\n");
-	print($FH $out_hpp);
+	open($FH, '>', $OUT_CPP)
+	  or die("Can't open $OUT_HPP\n");
+	print($FH $OUT_HPP);
 	close($FH);
 }
 
@@ -165,7 +165,8 @@ sub gen_nonmem_funcs
 sub gen_struct_funcs
 {
 	my (@LINES) = @_;
-	my ($out_h, $out_hpp);
+	my $out_h;
+	my $out_hpp;
 	foreach (@LINES) {
 		if ($_ !~ $G_RE_FUNC) {
 			goto NEXT;
