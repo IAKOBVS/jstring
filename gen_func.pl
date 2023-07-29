@@ -45,7 +45,8 @@ print_to_file($OUT_C, $out_h, $OUT_CPP, $out_hpp);
 sub usage
 {
 	if ($#ARGV != 0) {
-		die('Usage: ./gen_func.pl <file>');
+		print('Usage: ./gen_func.pl <file>');
+		exit;
 	}
 }
 
