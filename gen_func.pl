@@ -12,7 +12,7 @@ script_needed();
 my $DIR_CPP            = $DIR_C . 'pp';
 my $OUT_C              = "$DIR_C/$FNAME";
 my $OUT_CPP            = "$DIR_CPP/$FNAME" . 'pp';
-my $IGNORE_FILE_NONMEM = qr/builder/;
+my $IGNORE_FILE_NONMEM = 'builder';
 
 my $NAMESPACE     = 'jstr';
 my $NAMESPACE_BIG = uc($NAMESPACE);
@@ -35,13 +35,12 @@ mkdir($DIR_C);
 
 my $in_h = cat_file($FNAME);
 $in_h = tidy_newlines($in_h);
-my $out_h   = '';
-my $out_hpp = '';
 
-my $RE_FUNC   = qr/^((?:\/\*|\/\/|$NAMESPACE_BIG\_|static).+?($NAMESPACE\_.+?)\((.*?\)[ \t]*\w*NOEXCEPT))/;
+my $RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$NAMESPACE_BIG\_|static)[^{}()]*($NAMESPACE\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
+
 my @NEW_LINES = gen_nonmem_funcs($in_h);
-gen_struct_funcs(@NEW_LINES);
-print_to_file($OUT_C, $OUT_CPP);
+my ($out_h, $out_hpp) = gen_struct_funcs(@NEW_LINES);
+print_to_file($OUT_C, $out_h, $OUT_CPP, $out_hpp);
 
 sub usage
 {
@@ -52,9 +51,9 @@ sub usage
 
 sub script_needed
 {
-	if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
-		exit;
-	}
+	# if (system("test $FNAME -nt $DIR_C/$FNAME || test $0 -nt $DIR_C")) {
+	# 	exit;
+	# }
 }
 
 sub cat_file
@@ -81,12 +80,12 @@ sub tidy_newlines
 
 sub print_to_file
 {
-	my ($h, $hpp) = @_;
-	open(my $FH, '>', $h)
+	my ($OUT_C, $out_h, $OUT_CPP, $out_hpp) = @_;
+	open(my $FH, '>', $OUT_C)
 	  or die("Can't open $out_h\n");
 	print($FH $out_h);
 	close($FH);
-	open($FH, '>', $hpp)
+	open($FH, '>', $OUT_CPP)
 	  or die("Can't open $out_hpp\n");
 	print($FH $out_hpp);
 	close($FH);
@@ -96,11 +95,11 @@ sub gen_nonmem_funcs
 {
 	my ($file_str) = @_;
 	my @OLD_LINES = split(/\n\n/, $file_str);
-	if ($FNAME =~ $IGNORE_FILE_NONMEM) {
+	if ($FNAME =~ /$IGNORE_FILE_NONMEM/) {
 		return @OLD_LINES;
 	}
 	my @NEW_LINES;
-	foreach (split(/\n\n/, $in_h)) {
+	foreach (@OLD_LINES) {
 		if ($_ !~ $RE_FUNC) {
 			goto NEXT;
 		}
@@ -165,6 +164,7 @@ sub gen_nonmem_funcs
 sub gen_struct_funcs
 {
 	my (@LINES) = @_;
+	my ($out_h, $out_hpp);
 	foreach (@LINES) {
 		if ($_ !~ $RE_FUNC) {
 			goto NEXT;
@@ -249,6 +249,5 @@ sub gen_struct_funcs
 	$out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 	$out_hpp =~ s/\n\n\n/\n\n/g;
 	$out_h   =~ s/\n\n\n/\n\n/g;
-
-	# $out_hpp =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/g;
+	return ($out_h, $out_hpp);
 }
