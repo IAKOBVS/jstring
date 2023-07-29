@@ -95,7 +95,7 @@ sub gen_nonmem_funcs
 {
 	my ($file_str) = @_;
 	my @OLD_LINES = split(/\n\n/, $file_str);
-	if ($FNAME =~ /$IGNORE_FILE_NONMEM/) {
+	if ($FNAME =~ /$IGNORE_FILE_NONMEM/o) {
 		return @OLD_LINES;
 	}
 	my @NEW_LINES;
@@ -128,23 +128,23 @@ sub gen_nonmem_funcs
 				push(@NEW_ARGS, $_);
 			}
 		}
-		$decl =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/;
+		$decl =~ s/($NAMESPACE\_\w*)_mem(\w*\()/$1$2/o;
 		my $func_args;
 		for (my $i = 0 ; $i <= $#NEW_ARGS ; ++$i) {
 			$func_args .= $PTR . "$NEW_ARGS[$i],";
 		}
 		$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
-		my $LEN = ($params =~ /$LEN_PTN/) ? 1 : 0;
+		my $LEN = ($params =~ /$LEN_PTN/o) ? 1 : 0;
 		foreach (@NEW_ARGS) {
 			if ($LEN) {
 				if (/(\w*)$LEN_PTN/) {
 					my $var = $1;
-					$decl =~ s/,[^,]*$LEN_PTN//;
+					$decl =~ s/,[^,]*$LEN_PTN//o;
 					$_ = "strlen($var)";
 				}
 			} else {
 				if (/\w*$SIZE_PTN/) {
-					$decl =~ s/,[^,]*$SIZE_PTN//;
+					$decl =~ s/,[^,]*$SIZE_PTN//o;
 					$_ = "strlen($NEW_ARGS[0])";
 				}
 			}
@@ -176,25 +176,25 @@ sub gen_struct_funcs
 			goto NEXT;
 		}
 		$params =~ s/\)/,/;
-		my $HAS_SZ  = ($params =~ /$SIZE_PTN(?:,|\))/) ? 1 : 0;
-		my $HAS_CAP = ($params =~ /$CAP_PTN(?:,|\))/)  ? 1 : 0;
+		my $HAS_SZ  = ($params =~ /$SIZE_PTN(?:,|\))/o) ? 1 : 0;
+		my $HAS_CAP = ($params =~ /$CAP_PTN(?:,|\))/o)  ? 1 : 0;
 		if (!$HAS_SZ && !$HAS_CAP) {
 			goto NEXT;
 		}
 		my $RETURN = ($decl =~ /void/)         ? ''  : 'return ';
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
-		if ($HAS_SZ && $decl =~ /\w*$SIZE_PTN(,|\))/) {
+		if ($HAS_SZ && $decl =~ /\w*$SIZE_PTN(,|\))/o) {
 			if ($1 eq ')') {
-				$decl =~ s/[^(,]*$SIZE_PTN(?:,|\))/)/;
+				$decl =~ s/[^(,]*$SIZE_PTN(?:,|\))/)/o;
 			} elsif ($1 eq ',') {
-				$decl =~ s/[^(,]*$SIZE_PTN,//;
+				$decl =~ s/[^(,]*$SIZE_PTN,//o;
 			}
 		}
-		if ($HAS_CAP && $decl =~ /\w*$CAP_PTN(,|\))/) {
+		if ($HAS_CAP && $decl =~ /\w*$CAP_PTN(,|\))/o) {
 			if ($1 eq ')') {
-				$decl =~ s/[^(,]*$CAP_PTN(?:,|\))/)/;
+				$decl =~ s/[^(,]*$CAP_PTN(?:,|\))/o)/;
 			} elsif ($1 eq ',') {
-				$decl =~ s/[^(,]*$CAP_PTN,//;
+				$decl =~ s/[^(,]*$CAP_PTN,//o;
 			}
 		}
 		my @OLD_ARGS = split(/\s/, $params);
@@ -213,9 +213,9 @@ sub gen_struct_funcs
 		}
 		my $func_args = $PTR . "$STRUCT_VAR->$STRUCT_DATA,";
 		for (my $i = 1 ; $i <= $#NEW_ARGS ; ++$i) {
-			if ($NEW_ARGS[$i] =~ /$SIZE_PTN/) {
+			if ($NEW_ARGS[$i] =~ /$SIZE_PTN/o) {
 				$NEW_ARGS[$i] = $PTR . "$STRUCT_VAR->$STRUCT_SIZE";
-			} elsif ($NEW_ARGS[$i] =~ /$CAP_PTN/) {
+			} elsif ($NEW_ARGS[$i] =~ /$CAP_PTN/o) {
 				$NEW_ARGS[$i] = $PTR . "$STRUCT_VAR->$STRUCT_CAP";
 			}
 			$func_args .= "$NEW_ARGS[$i],";
@@ -223,12 +223,12 @@ sub gen_struct_funcs
 		$func_args =~ s/,$//;
 		$decl .= "$func_args);\n}\n";
 		if ($decl !~ /$INLINE_MACRO/) {
-			$decl =~ s/static/$INLINE_MACRO\nstatic/;
+			$decl =~ s/static/$INLINE_MACRO\nstatic/o;
 		}
 		$decl =~ s/,\s*\)/)/g;
 		$_    .= "\n\n";
 		$decl .= "\n\n";
-		$decl =~ s/$FUNC_NAME/$FUNC_NAME\_j/;
+		$decl =~ s/$FUNC_NAME/$FUNC_NAME\_j/o;
 		$out_hpp .= $_;
 		$out_hpp .= $decl;
 		$out_h   .= $_;
@@ -243,9 +243,9 @@ sub gen_struct_funcs
 	$out_hpp =~ s/H_DEF/HPP_DEF/g;
 	$out_hpp =~ s/EXTERN_C\s*\d/EXTERN_C 0/;
 	$out_hpp =~ s/NAMESPACE\s*\d/NAMESPACE 1/;
-	$out_hpp =~ s/$NAMESPACE\_(\w*\()/$1/g;
-	$out_hpp =~ s/\tt\(/\t$STR_STRUCT(/g;
-	$out_hpp =~ s/\t~t\(/\t$STR_STRUCT(/g;
+	$out_hpp =~ s/$NAMESPACE\_(\w*\()/$1/go;
+	$out_hpp =~ s/\tt\(/\t$STR_STRUCT(/go;
+	$out_hpp =~ s/\t~t\(/\t$STR_STRUCT(/go;
 	$out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 	$out_hpp =~ s/\n\n\n/\n\n/g;
 	$out_h   =~ s/\n\n\n/\n\n/g;
