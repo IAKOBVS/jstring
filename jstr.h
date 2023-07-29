@@ -573,17 +573,16 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 				*dst++ = *s++;
 			}
 		} else {
-			size_t off = 0;
+			const size_t off = searclen - 9;
 			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
 				    && !memcmp(s + off, searc + off, 8)) {
-					if (!memcmp(s, searc, searclen)) {
+					if (!memcmp(s, searc, searclen - 9)) {
 						s += searclen;
 						if (unlikely(!--n))
 							break;
 						continue;
 					}
-					off = (off >= 8 ? off : searclen - 1) - 8;
 				}
 				*dst++ = *s++;
 			}
@@ -684,15 +683,14 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 				else
 					*dst++ = *s++;
 		} else {
-			size_t off = 0;
+			const size_t off = searclen - 9;
 			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
 				    && !memcmp(s + off, searc + off, 8)) {
-					if (!memcmp(s, searc, searclen)) {
+					if (!memcmp(s, searc, searclen - 9)) {
 						s += searclen;
 						continue;
 					}
-					off = (off >= 8 ? off : searclen - 1) - 8;
 				}
 				*dst++ = *s++;
 			}
