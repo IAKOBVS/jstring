@@ -94,13 +94,13 @@ sub print_to_file
 
 sub gen_nonmem_funcs
 {
-	my ($file_str) = @_;
-	my @OLD_LINES = split(/\n\n/, $file_str);
+	my ($FILE_STR) = @_;
+	my @OLD_LNS = split(/\n\n/, $FILE_STR);
 	if ($G_FNAME =~ /$G_IGNORE_FILE_NONMEM/o) {
-		return @OLD_LINES;
+		return @OLD_LNS;
 	}
-	my @NEW_LINES;
-	foreach (@OLD_LINES) {
+	my @NEW_LNS;
+	foreach (@OLD_LNS) {
 		if ($_ !~ $G_RE_FUNC) {
 			goto NEXT;
 		}
@@ -153,13 +153,13 @@ sub gen_nonmem_funcs
 		}
 		$decl =~ s/,$//;
 		$decl .= ");\n}\n";
-		push(@NEW_LINES, $_);
-		push(@NEW_LINES, $decl);
+		push(@NEW_LNS, $_);
+		push(@NEW_LNS, $decl);
 		next;
 	  NEXT:
-		push(@NEW_LINES, $_);
+		push(@NEW_LNS, $_);
 	}
-	return @NEW_LINES;
+	return @NEW_LNS;
 }
 
 sub gen_struct_funcs
@@ -178,8 +178,8 @@ sub gen_struct_funcs
 		}
 		$params =~ s/\)/,/;
 		my $HAS_SZ  = ($params =~ /$G_SIZE_PTN(?:,|\))/o) ? 1 : 0;
-		my $HAS_cap = ($params =~ /$G_CAP_PTN(?:,|\))/o)  ? 1 : 0;
-		if (!$HAS_SZ && !$HAS_cap) {
+		my $HAS_CAP = ($params =~ /$G_CAP_PTN(?:,|\))/o)  ? 1 : 0;
+		if (!$HAS_SZ && !$HAS_CAP) {
 			goto NEXT;
 		}
 		my $RETURN = ($decl =~ /void/)         ? ''  : 'return ';
@@ -191,7 +191,7 @@ sub gen_struct_funcs
 				$decl =~ s/[^(,]*$G_SIZE_PTN,//o;
 			}
 		}
-		if ($HAS_cap && $decl =~ /\w*$G_CAP_PTN(,|\))/o) {
+		if ($HAS_CAP && $decl =~ /\w*$G_CAP_PTN(,|\))/o) {
 			if ($1 eq ')') {
 				$decl =~ s/[^(,]*$G_CAP_PTN(?:,|\))/o)/;
 			} elsif ($1 eq ',') {
