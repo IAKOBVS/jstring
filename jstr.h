@@ -577,7 +577,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
 				    && !memcmp(s + off, searc + off, 8)) {
-					if (!memcmp(s, searc, searclen - 9)) {
+					if (!memcmp(s + 1, searc + 1, searclen - 10)) {
 						s += searclen;
 						if (unlikely(!--n))
 							break;
@@ -601,6 +601,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
+JSTR_INLINE
 static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			      const char *JSTR_RST const searc,
 			      size_t sz,
@@ -683,14 +684,16 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 				else
 					*dst++ = *s++;
 		} else {
-			const size_t off = searclen - 9;
+			const size_t m1 = searclen - 1;
+			size_t off = searclen - 9;
 			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
 				    && !memcmp(s + off, searc + off, 8)) {
-					if (!memcmp(s, searc, searclen - 9)) {
+					if (!memcmp(s + 1, searc + 1, searclen - 9)) {
 						s += searclen;
 						continue;
 					}
+					off = (off >= 8 ? off : m1) - 8;
 				}
 				*dst++ = *s++;
 			}
@@ -698,59 +701,10 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		memmove(dst, s, end + searclen - s + 1);
 		return dst + (end + searclen - s);
 		break;
+		memmove(dst, s, end + searclen - s + 1);
+		return dst + (end + searclen - s);
+		break;
 	}
-		/* const char *const end = s + sz - searclen; */
-		/* size_t off = 0; */
-		/* if (unlikely(searclen > 256)) { */
-		/* 	const uint16_t nw = searc[0] << 8 | searc[searclen - 1]; */
-		/* 	while (s <= end) { */
-		/* 		if (nw == (s[0] << 8 | s[searclen - 1]) */
-		/* 		    && !memcmp(s + off, searc + off, 8)) { */
-		/* 			if (!memcmp(s, searc, searclen)) { */
-		/* 				s += searclen; */
-		/* 				continue; */
-		/* 			} */
-		/* 			off = (off >= 8 ? off : m1) - 8; */
-		/* 		} */
-		/* 		*dst++ = *s++; */
-		/* 	} */
-		/* } else { */
-		/* #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift)) */
-		/* 	const char *s_old = s; */
-		/* 	uint8_t shift[256]; */
-		/* 	size_t tmp; */
-		/* 	size_t shift1; */
-		/* 	memset(shift, 0, sizeof(shift)); */
-		/* 	for (int i = 1; i < m1; ++i) */
-		/* 		shift[JSTR_HASH2(searc + m1)] = m1; */
-		/* 	shift1 = m1 - shift[JSTR_HASH2(searc + m1)]; */
-		/* 	shift[JSTR_HASH2(searc + m1)] = m1; */
-		/* 	while (s <= end) { */
-		/* 		do { */
-		/* 			s += m1; */
-		/* 			tmp = shift[JSTR_HASH2(s)]; */
-		/* 		} while (!tmp && s <= end); */
-		/* 		s -= tmp; */
-		/* 		if (tmp < m1) */
-		/* 			continue; */
-		/* 		if (searclen < 15 || !memcmp(s + off, searc + off, 8)) { */
-		/* 			if (!memcmp(s, searc, searclen)) { */
-		/* 				while (s_old <= s) */
-		/* 					*dst++ = *s_old++; */
-		/* 				s += searclen; */
-		/* 				s_old += searclen; */
-		/* 				continue; */
-		/* 			} */
-		/* 			off = (off >= 8 ? off : m1) - 8; */
-		/* 		} */
-		/* 		s += shift1; */
-		/* 		while (s_old <= s) */
-		/* 			*dst++ = *s_old++; */
-		/* 	} */
-		/* } */
-		/* memmove(dst, s, end + searclen - s + 1); */
-		/* return dst + (end + searclen - s); */
-		/* break; */
 	}
 }
 
