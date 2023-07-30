@@ -609,7 +609,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 {
 	if (unlikely(searclen == 0))
 		return s + sz;
-	char *dst = (char *)memchr(s, *searc, sz);
+	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
 	if (!dst)
 		return s + sz;
 	sz -= (s - dst);
