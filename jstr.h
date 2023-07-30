@@ -701,9 +701,6 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		memmove(dst, s, end + searclen - s + 1);
 		return dst + (end + searclen - s);
 		break;
-		memmove(dst, s, end + searclen - s + 1);
-		return dst + (end + searclen - s);
-		break;
 	}
 	}
 }
