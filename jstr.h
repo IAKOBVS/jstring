@@ -469,48 +469,55 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		return s + sz;
 	if (unlikely(n == 0))
 		return s + sz;
-	char *dst = (char *)memchr(s, *searc, sz);
+	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
 	if (!dst)
 		return s + sz;
-	sz -= (s - dst);
-	s = dst;
 	switch (searclen) {
 	case 0:
 		return dst;
 		break;
 	case 1: {
-		++s;
-		*dst++ = *s++;
+		s = dst;
+		goto MTC1;
 		for (;;)
 			if (*s != *searc) {
 				*dst++ = *s;
 				if (unlikely(!*++s))
 					break;
-			} else if (unlikely(!--n)) {
-				do
-					*dst++ = *s;
-				while (*++s);
-				break;
 			} else {
-				++s;
+			MTC1:
+				if (unlikely(!--n)) {
+					do
+						*dst++ = *s;
+					while (*++s);
+					break;
+				} else {
+					++s;
+				}
 			}
 		*dst = '\0';
 		return dst;
 		break;
 	}
 	case 2: {
+		sz -= (dst - s) - 3;
+		s = dst + 1;
 		const uint16_t nw = searc[0] << 8 | searc[1];
 		uint16_t sw = s[0] << 8 | s[1];
-		for (++s, sz -= 2; sz--; sw = sw << 8 | *s)
+		goto MTC2;
+		for (; sz--; sw = sw << 8 | *s)
 			if (sw != nw) {
 				*dst++ = *(s++ - 1);
-			} else if (unlikely(!--n)) {
-				do
-					*dst++ = *(s++ - 1);
-				while (--sz);
-				break;
 			} else {
-				s += 2;
+			MTC2:
+				if (unlikely(!--n)) {
+					do
+						*dst++ = *(s++ - 1);
+					while (--sz);
+					break;
+				} else {
+					s += 2;
+				}
 			}
 		if (sw != nw)
 			*dst++ = *(s - 1);
@@ -519,18 +526,24 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		break;
 	}
 	case 3: {
+		s = dst + 3;
+		sz -= (dst - s) - 4;
 		const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
 		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8;
-		for (s += 3, sz -= 3; sz--; sw = (sw | *s++) << 8)
+		goto MTC3;
+		for (; sz--; sw = (sw | *s++) << 8)
 			if (sw != nw) {
 				*dst++ = *(s - 3);
-			} else if (unlikely(!--n)) {
-				do
-					*dst++ = *(s++ - 3);
-				while (--sz);
-				break;
 			} else {
-				s += 2;
+			MTC3:
+				if (unlikely(!--n)) {
+					do
+						*dst++ = *(s++ - 3);
+					while (--sz);
+					break;
+				} else {
+					s += 2;
+				}
 			}
 		if (sw != nw)
 			*dst++ = *(s - 3);
@@ -539,18 +552,24 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		break;
 	}
 	case 4: {
+		s = dst + 4;
+		sz -= (dst - s) - 5;
 		const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
 		uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
-		for (s += 4, sz -= 4; sz--; sw = sw << 8 | *s++)
+		goto MTC4;
+		for (; sz--; sw = sw << 8 | *s++)
 			if (sw != nw) {
 				*dst++ = *(s - 4);
-			} else if (unlikely(!--n)) {
-				do
-					*dst++ = *(s++ - 4);
-				while (--sz);
-				break;
 			} else {
-				s += 3;
+			MTC4:
+				if (unlikely(!--n)) {
+					do
+						*dst++ = *(s++ - 4);
+					while (--sz);
+					break;
+				} else {
+					s += 3;
+				}
 			}
 		if (sw != nw)
 			*dst++ = *(s - 4);
@@ -561,10 +580,13 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 	default: {
 		const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 		const char *const end = s + sz - searclen;
+		s = dst;
 		if (searclen < 15) {
+			goto MTC5;
 			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
 				    && !memcmp(s, searc, searclen)) {
+				MTC5:
 					s += searclen;
 					if (unlikely(!--n))
 						break;
@@ -574,10 +596,12 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 			}
 		} else {
 			const size_t off = searclen - 9;
+			goto MTC6;
 			while (s <= end) {
 				if (nw == (s[0] << 8 | s[searclen - 1])
 				    && !memcmp(s + off, searc + off, 8)) {
 					if (!memcmp(s + 1, searc + 1, searclen - 10)) {
+					MTC6:
 						s += searclen;
 						if (unlikely(!--n))
 							break;
@@ -970,9 +994,11 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 			const char *const end = s + sz - searclen;
 			if (searclen < 15) {
+				goto MTC1;
 				while (src <= end) {
 					if (nw == (src[0] << 8 | src[searclen - 1])
 					    && !memcmp(src, searc, searclen)) {
+					MTC1:
 						memcpy(dst, rplc, rplclen);
 						src += (rplclen - searclen);
 						continue;
@@ -981,10 +1007,12 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 				}
 			} else {
 				size_t off = searclen - 9;
+				goto MTC2;
 				while (src <= end) {
 					if (nw == (src[0] << 8 | src[searclen - 1])
 					    && !memcmp(src + off, searc + off, 8)) {
 						if (!memcmp(src + 1, searc + 1, searclen - 10)) {
+						MTC2:
 							memcpy(dst, rplc, rplclen);
 							src += (rplclen - searclen);
 							continue;
@@ -996,15 +1024,14 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 			memmove(dst, s, end + searclen - s + 1);
 			return s + (dst + searclen - s);
 		}
-		char *mtc = s;
 		do {
-			memmove(mtc + rplclen,
-				mtc + searclen,
-				(s + sz + 1) - mtc + searclen);
-			memcpy(mtc, rplc, rplclen);
-			mtc += rplclen;
+			memmove(dst + rplclen,
+				dst + searclen,
+				(s + sz + 1) - dst + searclen);
+			memcpy(dst, rplc, rplclen);
+			dst += rplclen;
 			sz += (long long)(rplclen - searclen);
-		} while ((mtc = (char *)jstr_memmem(mtc, (s + sz) - mtc, searc, searclen)));
+		} while ((dst = (char *)jstr_memmem(dst, (s + sz) - dst, searc, searclen)));
 		return s + sz;
 		break;
 	}

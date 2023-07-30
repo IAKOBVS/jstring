@@ -118,9 +118,6 @@ sub gen_nonmem_funcs
 		if ($g_in_h =~ /$tmp\(/) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME =~ /replaceall/) {
-			print $decl;
-		}
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/)       ? 'return ' : '';
 		$params =~ s/\)/,/;
