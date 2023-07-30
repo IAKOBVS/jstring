@@ -14,8 +14,8 @@ extern "C" {
 #include "jstr_builder.h"
 #include "jstr_ctype.h"
 #include "jstr_macros.h"
-#include "jstr_string.h"
 #include "jstr_replace.h"
+#include "jstr_string.h"
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0

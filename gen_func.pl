@@ -167,6 +167,7 @@ sub gen_struct_funcs
 	my (@LINES) = @_;
 	my $out_h;
 	my $out_hpp;
+	# my $skel;
 	foreach (@LINES) {
 		if ($_ !~ $G_RE_FUNC) {
 			goto NEXT;
@@ -177,6 +178,9 @@ sub gen_struct_funcs
 		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
+		# if ($G_FNAME !~ /$G_IGNORE_FILE_NONMEM/) {
+		# 	$skel .= "$decl;\n\n";
+		# }
 		$params =~ s/\)/,/;
 		my $HAS_SZ  = ($params =~ /$G_SIZE_PTN(?:,|\))/o) ? 1 : 0;
 		my $HAS_CAP = ($params =~ /$G_CAP_PTN(?:,|\))/o)  ? 1 : 0;
@@ -241,8 +245,12 @@ sub gen_struct_funcs
 		$out_h   .= $_;
 		$out_hpp .= $_;
 	}
+	# if ($skel) {
+	# 	$out_h =~ s/(namespace(?:.|\n)*?\n\n)/$1$skel/;
+	# 	$out_hpp =~ s/(namespace(?:.|\n)*?\n\n)/$1$skel/;
+	# }
 	$out_hpp =~ s/\.h"/.hpp"/g;
-	$out_hpp =~ s/H_DEF/Hpp_DEF/g;
+	$out_hpp =~ s/H_DEF/HPP_DEF/g;
 	$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/;
 	$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/;
 	$out_hpp =~ s/$G_NMSPC\_(\w*\()/$1/go;

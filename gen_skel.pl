@@ -31,7 +31,8 @@ foreach (@funcs) {
 	}
 }
 $file =~ s/(.*&& $NAMESPACE_BIG\_EXTERN_C)/$skel$1/;
-open($FH, '>', $FNAME)
-  or die "Can't open $FNAME\n";
-print $FH $file;
-close($FH);
+print $skel;
+# open($FH, '>', $FNAME)
+#   or die "Can't open $FNAME\n";
+# print $FH $file;
+# close($FH);
