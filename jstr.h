@@ -838,7 +838,7 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
 		break;
 	case 1:
 		if (searclen == 1) {
-			jstr_replacec(s, *searc, *rplc);
+			jstr_replacec_mem(s, *searc, *rplc, sz);
 			return s + sz;
 		}
 		/* FALLTHROUGH */
