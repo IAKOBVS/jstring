@@ -929,6 +929,8 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 	if (unlikely(rplclen == 0))
 		return jstr_rmn_mem_p(s, searc, n, sz, searclen);
 	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
+	if (!dst)
+		return s + sz;
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1: {
@@ -1227,6 +1229,8 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		return;
 	}
 	char *dst = (char *)jstr_memmem(*s, *sz, searc, searclen);
+	if (!dst)
+		return;
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1: {
@@ -1350,7 +1354,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 				}
 			}
 			memmove(dst, src, end + searclen - src + 1);
-			*sz = dst + (end + searclen - src) - (*s + *sz);
+			*sz -= (end + searclen - dst + (end + searclen - src));
 			return;
 			break;
 		}
@@ -1400,7 +1404,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		return;
 	}
 	char *dst = (char *)jstr_memmem(*s, *sz, searc, searclen);
-	if (unlikely(!dst))
+	if (!dst)
 		return;
 	if (rplclen <= searclen) {
 		switch (searclen) {
