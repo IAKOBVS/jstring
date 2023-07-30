@@ -356,6 +356,12 @@
 #endif // __GNUC__ || __clang__ || _MSC_VER
 
 #if defined(__GNUC__) || defined(__clang__)
+#	define JSTR_MAYBE_UNUSED __attribute__((unused))
+#else
+#	define JSTR_MAYBE_UNUSED
+#endif /* MAYBE_UNUSED */
+
+#if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_NOINLINE __attribute__((noinline))
 #elif defined(_MSC_VER)
 #	define JSTR_NOINLINE __declspec(noinline)
