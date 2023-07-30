@@ -786,7 +786,7 @@ static void jstr_replacenc_mem(char *JSTR_RST s,
 		for (;;) {
 			if (*s == searc) {
 				*s++ = rplc;
-				if (n-- == 1)
+				if (unlikely(!--n))
 					break;
 			} else if (unlikely(!*++s)) {
 				break;
@@ -808,7 +808,7 @@ static void jstr_replacenc(char *JSTR_RST s,
 		for (;;) {
 			if (*s == searc) {
 				*s = rplc;
-				if (n-- == 1)
+				if (unlikely(!--n))
 					break;
 			} else if (unlikely(!*++s)) {
 				break;
@@ -876,7 +876,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 		break;
 	case 1:
 		if (searclen == 1) {
-			jstr_replacec(*s, *searc, *rplc);
+			jstr_replacec_mem(*s, *searc, *rplc, *sz);
 			--*sz;
 			return;
 		}
@@ -913,7 +913,6 @@ static void jstr_replace_mem(char **JSTR_RST const s,
   Assumes that S have enough space for REPLACE.
 */
 JSTR_NONNULL_ALL
-JSTR_INLINE
 JSTR_WARN_UNUSED
 static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 				   const char *JSTR_RST const searc,
@@ -927,31 +926,145 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 		return s + sz;
 	if (unlikely(n == 0))
 		return s + sz;
-	switch (rplclen) {
-	case 0: {
+	if (unlikely(rplclen == 0))
 		return jstr_rmn_mem_p(s, searc, n, sz, searclen);
-		break;
-	}
-	case 1:
-		if (searclen == 1) {
-			jstr_replacenc_mem(s, *searc, *rplc, n, rplclen);
+	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
+	if (rplclen <= searclen) {
+		switch (searclen) {
+		case 1: {
+			jstr_replacenc_mem(s, *searc, *rplc, n, sz);
 			return s + sz;
+			break;
 		}
-		/* FALLTHROUGH */
-	default: {
-		char *mtc = s;
-		while (n-- && (mtc = (char *)jstr_memmem(mtc, (s + sz) - mtc, searc, searclen))) {
-			memmove(mtc + rplclen,
-				mtc + searclen,
-				(s + sz + 1) - mtc + searclen);
-			memcpy(mtc, rplc, rplclen);
-			mtc += rplclen;
-			sz += (long long)(rplclen - searclen);
+		case 2: {
+			const char *src = dst + 1;
+			const uint16_t nw = searc[0] << 8 | searc[1];
+			uint16_t hw = src[0] << 8 | src[1];
+			goto MTC2;
+			for (; *src; hw = hw << 8 | *src)
+				if (hw != nw) {
+					*dst++ = *(src++ - 1);
+				} else {
+				MTC2:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 2;
+					if (unlikely(!--n)) {
+						memmove(dst, src - 1, s + sz - src - 1 + 1);
+						goto END_UNDER_4;
+						break;
+					}
+				}
+			if (hw != nw)
+				*dst++ = *(src - 1);
+			goto END_UNDER_4;
+			break;
 		}
-		return s + sz;
-		break;
+		case 3: {
+			const char *src = dst + 3;
+			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
+			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8;
+			goto MTC3;
+			for (; *src; hw = (hw | *src++) << 8)
+				if (hw != nw) {
+					*dst++ = *(src - 3);
+				} else {
+				MTC3:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 2;
+					if (unlikely(!--n)) {
+						memmove(dst, src - 3, s + sz - src - 3 + 1);
+						goto END_UNDER_4;
+						break;
+					}
+				}
+			if (hw != nw)
+				*dst++ = *(src - 3);
+			goto END_UNDER_4;
+			break;
+		}
+		case 4: {
+			const char *src = dst + 4;
+			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
+			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+			goto MTC4;
+			for (; *src; hw = hw << 8 | *src++)
+				if (hw != nw)
+					*dst++ = *(src - 4);
+				else {
+				MTC4:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 3;
+					if (unlikely(!--n)) {
+						memmove(dst, src - 4, s + sz - src - 4 + 1);
+						goto END_UNDER_4;
+						break;
+					}
+				}
+			if (hw != nw)
+				*dst++ = *(src - 4);
+			goto END_UNDER_4;
+			break;
+		}
+		END_UNDER_4:
+			*dst = '\0';
+			return dst;
+			break;
+		default: {
+			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
+			const char *const end = s + sz - searclen;
+			const char *src = dst;
+			if (searclen < 15) {
+				goto MTC5;
+				while (src <= end) {
+					if (nw == (src[0] << 8 | src[searclen - 1])
+					    && !memcmp(src, searc, searclen)) {
+					MTC5:
+						memcpy(dst, rplc, rplclen);
+						dst += rplclen;
+						src += searclen;
+						if (unlikely(!--n))
+							break;
+						continue;
+					}
+					*dst++ = *src++;
+				}
+			} else {
+				const size_t off = searclen - 9;
+				goto MTC6;
+				while (src <= end) {
+					if (nw == (src[0] << 8 | src[searclen - 1])
+					    && !memcmp(src + off, searc + off, 8)) {
+						if (!memcmp(src + 1, searc + 1, searclen - 10)) {
+						MTC6:
+							memcpy(dst, rplc, rplclen);
+							dst += rplclen;
+							src += searclen;
+							if (unlikely(!--n))
+								break;
+							continue;
+						}
+					}
+					*dst++ = *src++;
+				}
+			}
+			memmove(dst, src, end + searclen - src + 1);
+			return dst + (end + searclen - src);
+			break;
+		}
+		}
 	}
-	}
+	do {
+		memmove(dst + rplclen,
+			dst + searclen,
+			(s + sz + 1) - dst + searclen);
+		memcpy(dst, rplc, rplclen);
+		dst += rplclen;
+		sz += (long long)(rplclen - searclen);
+	} while (--n && (dst = (char *)jstr_memmem(dst, (s + sz) - dst, searc, searclen)));
+	return s + sz;
 }
 
 /*
@@ -969,31 +1082,88 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 {
 	if (unlikely(searclen == 0))
 		return s + sz;
-	switch (rplclen) {
-	case 0: {
+	if (unlikely(rplclen == 0))
 		return jstr_rmall_mem_p(s, searc, sz, searclen);
-		break;
-	}
-	case 1:
-		if (searclen == 1) {
-			jstr_replaceallc(s, *searc, *rplc);
-			return s + sz;
+	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
+	if (!dst)
+		return s + sz;
+	if (rplclen <= searclen) {
+		switch (searclen) {
+		case 1: {
+			jstr_replaceallc_mem(s, *searc, *rplc, sz);
+			break;
 		}
-		/* FALLTHROUGH */
-	default: {
-		char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
-		if (!dst)
-			return s + sz;
-		if (searclen >= rplclen) {
-			const char *src = dst;
+		case 2: {
+			const char *src = dst + 1;
+			const uint16_t nw = searc[0] << 8 | searc[1];
+			uint16_t hw = src[0] << 8 | src[1];
+			goto MTC2;
+			for (; *src; hw = hw << 8 | *src)
+				if (hw != nw) {
+					*dst++ = *(src++ - 1);
+				} else {
+				MTC2:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 2;
+				}
+			if (hw != nw)
+				*dst++ = *(src - 1);
+			goto END_UNDER_4;
+			break;
+		}
+		case 3: {
+			const char *src = dst + 3;
+			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
+			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8;
+			goto MTC3;
+			for (; *src; hw = (hw | *src++) << 8)
+				if (hw != nw) {
+					*dst++ = *(src - 3);
+				} else {
+				MTC3:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 2;
+				}
+			if (hw != nw)
+				*dst++ = *(src - 3);
+			goto END_UNDER_4;
+			break;
+		}
+		case 4: {
+			const char *src = dst + 4;
+			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
+			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+			goto MTC4;
+			for (; *src; hw = hw << 8 | *src++)
+				if (hw != nw)
+					*dst++ = *(src - 4);
+				else {
+				MTC4:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 3;
+				}
+			if (hw != nw)
+				*dst++ = *(src - 4);
+			goto END_UNDER_4;
+			break;
+		}
+		END_UNDER_4:
+			*dst = '\0';
+			return dst;
+			break;
+		default: {
 			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 			const char *const end = s + sz - searclen;
+			const char *src = dst;
 			if (searclen < 15) {
-				goto MTC1;
+				goto MTC5;
 				while (src <= end) {
 					if (nw == (src[0] << 8 | src[searclen - 1])
 					    && !memcmp(src, searc, searclen)) {
-					MTC1:
+					MTC5:
 						memcpy(dst, rplc, rplclen);
 						dst += rplclen;
 						src += searclen;
@@ -1003,12 +1173,12 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 				}
 			} else {
 				const size_t off = searclen - 9;
-				goto MTC2;
+				goto MTC6;
 				while (src <= end) {
 					if (nw == (src[0] << 8 | src[searclen - 1])
 					    && !memcmp(src + off, searc + off, 8)) {
 						if (!memcmp(src + 1, searc + 1, searclen - 10)) {
-						MTC2:
+						MTC6:
 							memcpy(dst, rplc, rplclen);
 							dst += rplclen;
 							src += searclen;
@@ -1018,21 +1188,21 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 					*dst++ = *src++;
 				}
 			}
-			memmove(dst, s, end + searclen - s + 1);
-			return s + (dst + searclen - s);
+			memmove(dst, src, end + searclen - src + 1);
+			return dst + (end + searclen - src);
+			break;
 		}
-		do {
-			memmove(dst + rplclen,
-				dst + searclen,
-				(s + sz + 1) - dst + searclen);
-			memcpy(dst, rplc, rplclen);
-			dst += rplclen;
-			sz += (long long)(rplclen - searclen);
-		} while ((dst = (char *)jstr_memmem(dst, (s + sz) - dst, searc, searclen)));
-		return s + sz;
-		break;
+		}
 	}
-	}
+	do {
+		memmove(dst + rplclen,
+			dst + searclen,
+			(s + sz + 1) - dst + searclen);
+		memcpy(dst, rplc, rplclen);
+		dst += rplclen;
+		sz += (long long)(rplclen - searclen);
+	} while ((dst = (char *)jstr_memmem(dst, (s + sz) - dst, searc, searclen)));
+	return s + sz;
 }
 
 /*
@@ -1052,57 +1222,163 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		return;
 	if (unlikely(n == 0))
 		return;
-	switch (rplclen) {
-	case 0: {
+	if (unlikely(rplclen == 0)) {
 		*sz = jstr_rmn_mem_p(*s, searc, n, *sz, searclen) - *s;
-		break;
+		return;
 	}
-	case 1:
-		if (searclen == 1) {
-			jstr_replacenc(*s, *searc, *rplc, n);
-			--*sz;
+	char *dst = (char *)jstr_memmem(*s, *sz, searc, searclen);
+	if (rplclen <= searclen) {
+		switch (searclen) {
+		case 1: {
+			jstr_replacenc_mem(*s, *searc, *rplc, n, *sz);
 			return;
+			break;
 		}
-		break;
-	default: {
-		char *mtc = *s;
-		if (rplclen <= searclen) {
-			while (n-- && (mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, searc, searclen))) {
-				memmove(mtc + rplclen,
-					mtc + searclen,
-					(*s + *sz + 1) - mtc + searclen);
-				memcpy(mtc, rplc, rplclen);
-				mtc += rplclen;
-				*sz += (long long)(rplclen - searclen);
-			}
-		} else {
-			char *tmp;
-			while (n-- && (mtc = (char *)jstr_memmem(mtc, (*s + *sz) - mtc, searc, searclen))) {
-				if (*cap > *sz + rplclen - searclen + 1) {
-					memmove(mtc + rplclen,
-						mtc + searclen,
-						(*s + *sz + 1) - mtc + searclen);
-					memcpy(mtc, rplc, rplclen);
-					mtc += rplclen;
+		case 2: {
+			const char *src = dst + 1;
+			const uint16_t nw = searc[0] << 8 | searc[1];
+			uint16_t hw = src[0] << 8 | src[1];
+			goto MTC2;
+			for (; *src; hw = hw << 8 | *src)
+				if (hw != nw) {
+					*dst++ = *(src++ - 1);
 				} else {
-					JSTR_GROW(*cap, *sz + rplclen + 1);
-					tmp = (char *)malloc(*cap);
-					JSTR_MALLOC_ERR(tmp, return);
-					memcpy(tmp, *s, mtc - *s);
-					memcpy(tmp + (mtc - *s), rplc, rplclen);
-					memcpy(tmp + (mtc - *s) + rplclen,
-					       mtc + rplclen,
-					       (*s + *sz + 1) - (mtc + rplclen));
-					mtc = tmp + (mtc - *s) + rplclen;
-					free(*s);
-					*s = tmp;
+				MTC2:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 2;
+					if (unlikely(!--n)) {
+						memmove(dst, src - 1, *s + *sz - src - 1 + 1);
+						goto END_UNDER_4;
+						break;
+					}
 				}
-				*sz += (long long)(rplclen - searclen);
-			}
+			if (hw != nw)
+				*dst++ = *(src - 1);
+			goto END_UNDER_4;
+			break;
 		}
-		break;
+		case 3: {
+			const char *src = dst + 3;
+			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
+			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8;
+			goto MTC3;
+			for (; *src; hw = (hw | *src++) << 8)
+				if (hw != nw) {
+					*dst++ = *(src - 3);
+				} else {
+				MTC3:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 2;
+					if (unlikely(!--n)) {
+						memmove(dst, src - 3, *s + *sz - src - 3 + 1);
+						goto END_UNDER_4;
+						break;
+					}
+				}
+			if (hw != nw)
+				*dst++ = *(src - 3);
+			goto END_UNDER_4;
+			break;
+		}
+		case 4: {
+			const char *src = dst + 4;
+			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
+			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+			goto MTC4;
+			for (; *src; hw = hw << 8 | *src++)
+				if (hw != nw)
+					*dst++ = *(src - 4);
+				else {
+				MTC4:
+					memcpy(dst, rplc, rplclen);
+					dst += rplclen;
+					src += 3;
+					if (unlikely(!--n)) {
+						memmove(dst, src - 4, *s + *sz - src - 4 + 1);
+						goto END_UNDER_4;
+						break;
+					}
+				}
+			if (hw != nw)
+				*dst++ = *(src - 4);
+			goto END_UNDER_4;
+			break;
+		}
+		END_UNDER_4:
+			*dst = '\0';
+			*sz = dst - *s;
+			return;
+			break;
+		default: {
+			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
+			const char *const end = *s + *sz - searclen;
+			const char *src = dst;
+			if (searclen < 15) {
+				goto MTC5;
+				while (src <= end) {
+					if (nw == (src[0] << 8 | src[searclen - 1])
+					    && !memcmp(src, searc, searclen)) {
+					MTC5:
+						memcpy(dst, rplc, rplclen);
+						dst += rplclen;
+						src += searclen;
+						if (unlikely(!--n))
+							break;
+						continue;
+					}
+					*dst++ = *src++;
+				}
+			} else {
+				const size_t off = searclen - 9;
+				goto MTC6;
+				while (src <= end) {
+					if (nw == (src[0] << 8 | src[searclen - 1])
+					    && !memcmp(src + off, searc + off, 8)) {
+						if (!memcmp(src + 1, searc + 1, searclen - 10)) {
+						MTC6:
+							memcpy(dst, rplc, rplclen);
+							dst += rplclen;
+							src += searclen;
+							if (unlikely(!--n))
+								break;
+							continue;
+						}
+					}
+					*dst++ = *src++;
+				}
+			}
+			memmove(dst, src, end + searclen - src + 1);
+			*sz = dst + (end + searclen - src) - (*s + *sz);
+			return;
+			break;
+		}
+		}
 	}
-	}
+	char *tmp;
+	do {
+		if (*cap > *sz + rplclen - searclen + 1) {
+			memmove(dst + rplclen,
+				dst + searclen,
+				(*s + *sz + 1) - dst + searclen);
+			memcpy(dst, rplc, rplclen);
+			dst += rplclen;
+		} else {
+			JSTR_GROW(*cap, *sz + rplclen + 1);
+			tmp = (char *)malloc(*cap);
+			JSTR_MALLOC_ERR(tmp, return);
+			memcpy(tmp, *s, dst - *s);
+			memcpy(tmp + (dst - *s), rplc, rplclen);
+			memcpy(tmp + (dst - *s) + rplclen,
+			       dst + rplclen,
+			       (*s + *sz + 1) - (dst + rplclen));
+			dst = tmp + (dst - *s) + rplclen;
+			free(*s);
+			*s = tmp;
+		}
+		*sz += (long long)(rplclen - searclen);
+	} while (n-- && (dst = (char *)jstr_memmem(dst, (*s + *sz) - dst, searc, searclen)));
 }
 
 /*
@@ -1129,7 +1405,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1: {
-			jstr_replaceallc(*s, *searc, *rplc);
+			jstr_replaceallc_mem(*s, *searc, *rplc, *sz);
 			break;
 		}
 		case 2: {
@@ -1232,8 +1508,8 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 			break;
 		}
 		}
-		return;
 	}
+	return;
 	char *tmp;
 	do {
 		if (*cap > *sz + rplclen - searclen + 1) {
