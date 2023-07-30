@@ -601,7 +601,6 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-JSTR_INLINE
 static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			      const char *JSTR_RST const searc,
 			      size_t sz,

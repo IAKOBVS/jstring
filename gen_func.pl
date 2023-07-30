@@ -110,13 +110,16 @@ sub gen_nonmem_funcs
 		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME !~ /_mem[^0-9A-Za-z]/) {
+		if ($FUNC_NAME !~ /_mem(?:_|$)/) {
 			goto NEXT;
 		}
 		my $tmp = $FUNC_NAME;
 		$tmp =~ s/_mem//;
 		if ($g_in_h =~ /$tmp\(/) {
 			goto NEXT;
+		}
+		if ($FUNC_NAME =~ /replaceall/) {
+			print $decl;
 		}
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/)       ? 'return ' : '';
