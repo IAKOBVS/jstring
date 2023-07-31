@@ -146,7 +146,10 @@ typedef struct jstr_t {
 	void debug_print(void) JSTR_NOEXCEPT
 	{
 		fprintf(stderr, "size:%zu\ncap:%zu\n", this->size, this->cap);
-		fprintf(stderr, "data:%s\n", this->data);
+		fprintf(stderr, "data puts():%s\n", this->data);
+		fputs("data:", stderr);
+		fwrite(this->data, 1, this->size, stderr);
+		fputc('\n', stderr);
 	}
 
     private:

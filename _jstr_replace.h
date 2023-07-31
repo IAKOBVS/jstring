@@ -1296,9 +1296,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		*sz = jstr_rmall_mem_p(*s, searc, *sz, searclen) - *s;
 		return;
 	}
-	char *dst = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
-	if (unlikely(!dst))
-		return;
+	char *dst = *s;
 	if (unlikely(dst + searclen + searclen >= *s + *sz))
 		goto RPLC_GROW;
 	if (rplclen <= searclen) {
@@ -1375,23 +1373,23 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 			return;
 			break;
 		default: {
-			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 			const char *const end = *s + *sz - searclen;
 			const char *src = dst;
-			if (searclen < 15) {
-				goto MTC5;
-				while (src <= end) {
-					if (nw == (src[0] << 8 | src[searclen - 1])
-					    && !memcmp(src, searc, searclen)) {
-					MTC5:
-						memcpy(dst, rplc, rplclen);
-						dst += rplclen;
-						src += searclen;
-						continue;
-					}
-					*dst++ = *src++;
-				}
-			} else {
+			/* if (searclen < 15) { */
+			/* goto MTC5; */
+			/* while (src <= end) { */
+			/* 	if (nw == (src[0] << 8 | src[searclen - 1]) */
+			/* 	    && !memcmp(src, searc, searclen)) { */
+			/* 	MTC5: */
+			/* 		memcpy(dst, rplc, rplclen); */
+			/* 		dst += rplclen; */
+			/* 		src += searclen; */
+			/* 		continue; */
+			/* 	} */
+			/* 	*dst++ = *src++; */
+			/* } */
+			if (unlikely(searclen > 256)) {
+				const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 				const size_t off = searclen - 9;
 				goto MTC6;
 				while (src <= end) {
@@ -1407,6 +1405,45 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 					}
 					*dst++ = *src++;
 				}
+			} else {
+#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
+				uint8_t shift[256];
+				size_t tmp;
+				size_t shift1;
+				size_t m1 = searclen - 1;
+				size_t off = 0;
+				memset(shift, 0, sizeof(shift));
+				for (int i = 1; i < m1; ++i)
+					shift[JSTR_HASH2(searc + i)] = i;
+				shift1 = m1 - shift[JSTR_HASH2(searc + m1)];
+				shift[JSTR_HASH2(searc + m1)] = m1;
+				char *old = dst;
+				goto MTC5;
+				while (src <= end) {
+					do {
+						src += m1;
+						tmp = shift[JSTR_HASH2(src)];
+#undef JSTR_HASH2
+					} while (!tmp && src <= end);
+					src -= tmp;
+					if (tmp < m1)
+						continue;
+					if (m1 < 15 || !memcmp(src + off, searc + off, 8)) {
+						if (!memcmp(src, searc, searclen)) {
+							while (old < src) {
+								putchar(*old);
+								*dst++ = *old++;
+							}
+						MTC5:
+							memcpy(dst, rplc, rplclen);
+							dst += rplclen;
+							old += searclen;
+							src += searclen;
+							continue;
+						}
+					}
+					src += shift1;
+				}
 			}
 			memmove(dst, src, end + searclen - src + 1);
 			*sz = dst + (end + searclen - src) - *s;
@@ -1417,7 +1454,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 	}
 RPLC_GROW:;
 	char *tmp;
-	do {
+	while ((dst = (char *)JSTR_MEMMEM(dst, (*s + *sz) - dst, searc, searclen))) {
 		if (*cap > *sz + rplclen - searclen + 1) {
 			memmove(dst + rplclen,
 				dst + searclen,
@@ -1438,7 +1475,7 @@ RPLC_GROW:;
 			*s = tmp;
 		}
 		*sz += rplclen - searclen;
-	} while ((dst = (char *)JSTR_MEMMEM(dst, (*s + *sz) - dst, searc, searclen)));
+	}
 }
 
 #if JSTR_EXTERN_C && defined(__cplusplus)

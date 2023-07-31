@@ -577,11 +577,11 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static char *jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
-				    const char *JSTR_RST const searc,
-				    const char *JSTR_RST const src,
-				    size_t sz,
-				    const size_t searclen,
-				    const size_t srclen) JSTR_NOEXCEPT
+				     const char *JSTR_RST const searc,
+				     const char *JSTR_RST const src,
+				     size_t sz,
+				     const size_t searclen,
+				     const size_t srclen) JSTR_NOEXCEPT
 {
 	switch (searclen) {
 	case 0:
