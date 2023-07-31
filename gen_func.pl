@@ -14,7 +14,7 @@ my $G_DIR_C = 'c';
 my $G_DIR_CPP            = $G_DIR_C . 'pp';
 my $G_OUT_C              = "$G_DIR_C/$G_FNAME_BASE";
 my $G_OUT_CPP            = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
-my $G_IGNORE_FILE_NONMEM = 'builder.h';
+# my $G_IGNORE_FILE_NONMEM = 'builder.h';
 
 my $G_NMSPC      = 'jstr';
 my $G_NMSPC_UPP  = uc($G_NMSPC);
@@ -99,9 +99,6 @@ sub gen_nonmem_funcs
 {
 	my ($FILE_STR) = @_;
 	my @OLD_LNS = split(/\n\n/, $FILE_STR);
-	if ($G_FNAME =~ /$G_IGNORE_FILE_NONMEM/o) {
-		return @OLD_LNS;
-	}
 	my @NEW_LNS;
 	foreach (@OLD_LNS) {
 		if ($_ !~ $G_RE_FUNC) {
@@ -111,6 +108,9 @@ sub gen_nonmem_funcs
 		my $FUNC_NAME = $2;
 		my $params    = $3;
 		if (!$decl && !$FUNC_NAME && !$params) {
+			goto NEXT;
+		}
+		if ($FUNC_NAME !~ /$G_NMSPC\_/) {
 			goto NEXT;
 		}
 		if ($FUNC_NAME !~ /_mem(?:_|$)/) {
@@ -192,6 +192,9 @@ sub gen_struct_funcs
 		if (!$HAS_SZ && !$HAS_CAP) {
 			goto NEXT;
 		}
+		if ($FUNC_NAME !~ /$G_NMSPC\_/) {
+			goto NEXT;
+		}
 		my $RETURN           = ($decl =~ /void/) ? '' : 'return ';
 		my $RETURNS_PTR_FUNC = 0;
 		$decl =~ s/$FUNC_NAME/$FUNC_NAME\_j/;
@@ -230,6 +233,7 @@ sub gen_struct_funcs
 		$decl .= "\n{\n\t";
 		my $body = "$RETURN$FUNC_NAME(";
 		my @new_args;
+
 		foreach (@OLD_ARGS) {
 			if (/,$/) {
 				s/,//;

@@ -99,9 +99,11 @@ static int jstr_count_mem(const char *JSTR_RST s,
 			  const size_t searclen) JSTR_NOEXCEPT
 {
 	int count = 0;
-	for (; (s = (char *)memmem(s, sz, searc, searclen));
-	     ++count, s += searclen, sz -= searclen)
-		;
+	while ((s = (char *)memmem(s, sz, searc, searclen))) {
+		++count;
+		s += searclen;
+		sz += searclen;
+	}
 	return count;
 }
 
@@ -263,10 +265,11 @@ static void jstr_insertaftallc_mem(char **JSTR_RST const s,
 	if (unlikely(srclen == 0))
 		return;
 	size_t off = 0;
-	for (char *p;
-	     (p = (char *)memchr(*s + off, c, *sz - off));
-	     off += *s - p + 1)
+	char *p;
+	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
 		jstr_insert_mem(s, sz, cap, p - *s + 1, src, srclen);
+		off += *s - p + 1;
+	}
 }
 
 /*
@@ -355,10 +358,11 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 		if (unlikely(srclen == 0))
 			return;
 		size_t off = 0;
-		for (char *p;
-		     (p = (char *)JSTR_MEMMEM(*s + off, *sz - off, searc, searclen));
-		     off += *s - p + searclen)
+		char *p;
+		while ((p = (char *)JSTR_MEMMEM(*s + off, *sz - off, searc, searclen))) {
 			jstr_insert_mem(s, sz, cap, p - *s + searclen, src, srclen);
+			off += *s - p + searclen;
+		}
 		break;
 	}
 	}
@@ -474,10 +478,11 @@ static char *jstr_slipaftallc_mem_p_f(char *JSTR_RST const s,
 	if (unlikely(srclen == 0))
 		return s + sz;
 	size_t off = 0;
-	for (char *p;
-	     (p = (char *)memchr(s + off, c, sz - off));
-	     off += p - s + 1)
+	char *p;
+	while ((p = (char *)memchr(s + off, c, sz - off))) {
 		sz = jstr_slip_mem_p_f(s, p - s, src, sz, srclen) - s;
+		off += p - s + 1;
+	}
 	return s + sz;
 }
 
@@ -496,10 +501,11 @@ static void jstr_slipaftallc_mem(char **JSTR_RST const s,
 	if (unlikely(srclen == 0))
 		return;
 	size_t off = 0;
-	for (char *p;
-	     (p = (char *)memchr(*s + off, c, *sz - off));
-	     off += p - *s + 1)
+	char *p;
+	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
 		jstr_slip_mem(s, sz, cap, p - *s + 1, src, srclen);
+		off += p - *s + 1;
+	}
 }
 
 /*
@@ -588,10 +594,11 @@ static void jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
 		if (unlikely(srclen == 0))
 			return;
 		size_t off = 0;
-		for (char *p;
-		     (p = (char *)JSTR_MEMMEM(s + off, sz - off, searc, searclen));
-		     off += p - s + searclen)
+		char *p;
+		while ((p = (char *)JSTR_MEMMEM(s + off, sz - off, searc, searclen))) {
 			sz = jstr_slip_mem_p_f(s, p - s, src, sz, srclen) - s;
+			off += p - s + searclen;
+		}
 	}
 	}
 }
@@ -620,10 +627,11 @@ static void jstr_slipaftall_mem(char **JSTR_RST const s,
 		if (unlikely(srclen == 0))
 			return;
 		size_t off = 0;
-		for (char *p;
-		     (p = (char *)JSTR_MEMMEM(*s + off, *sz - off, searc, searclen));
-		     off += p - *s + searclen)
+		char *p;
+		while ((p = (char *)JSTR_MEMMEM(*s + off, *sz - off, searc, searclen))) {
 			jstr_slip_mem(s, sz, cap, p - *s + searclen, src, srclen);
+			off += p - *s + searclen;
+		}
 	}
 	}
 }

@@ -1,3 +1,15 @@
 #!/bin/sh
 rm -rf ./cpp
 rm -rf ./c
+shebang="#!/bin/sh"
+cmd="cd .. && ./build"
+cp_build()
+{
+	mkdir -p "$1"
+	fname=$1/build
+	echo "$shebang" >"$fname"
+	echo "$cmd" >>"$fname"
+	chmod +x "$fname"
+}
+cp_build c
+cp_build cpp
