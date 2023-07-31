@@ -29,8 +29,8 @@ my $G_CAP_PTN  = 'cap';
 my $G_SIZE_PTN = 'sz';
 my $G_LEN_PTN  = 'len';
 
-my $G_MACRO_INLINE   = $G_NMSPC_UPP . '_INLINE';
-my $G_MACRO_RESTRICT = $G_NMSPC_UPP . '_RST';
+my $G_MACRO_INLINE      = $G_NMSPC_UPP . '_INLINE';
+my $G_MACRO_RESTRICT    = $G_NMSPC_UPP . '_RST';
 my $G_MACRO_WARN_UNUSED = $G_NMSPC_UPP . '_WARN_UNUSED';
 
 my $G_RE_FUNC = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)[^{}()]*($G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
@@ -182,6 +182,7 @@ sub gen_struct_funcs
 		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
+
 		# if ($G_FNAME !~ /$G_IGNORE_FILE_NONMEM/) {
 		# 	$skel .= "$decl;\n\n";
 		# }
@@ -191,18 +192,21 @@ sub gen_struct_funcs
 		if (!$HAS_SZ && !$HAS_CAP) {
 			goto NEXT;
 		}
-		my $RETURN = ($decl =~ /void/)         ? ''  : 'return ';
+		my $RETURN           = ($decl =~ /void/) ? '' : 'return ';
 		my $RETURNS_PTR_FUNC = 0;
 		$decl =~ s/$FUNC_NAME/$FUNC_NAME\_j/;
+		if ($decl !~ /$G_MACRO_INLINE/) {
+			$decl =~ s/static/$G_MACRO_INLINE\nstatic/o;
+		}
 		if ($FUNC_NAME =~ /_p(?:_|$)/) {
 			$decl =~ s/.*Return value:(?:.|\n)*?(\*\/|\/\/)/$1/;
 			$decl =~ s/_p//;
 			$decl =~ s/static\s*(?:char|void)\s\*/static void /;
 			$decl =~ s/[ \t]*$G_MACRO_WARN_UNUSED[ \t]*\n//;
-			$RETURN = '';
+			$RETURN           = '';
 			$RETURNS_PTR_FUNC = 1;
 		}
-		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
+		my $PTR = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
 		if ($HAS_SZ && $decl =~ /\w*$G_SIZE_PTN(,|\))/o) {
 			if ($1 eq ')') {
 				$decl =~ s/[^(,]*$G_SIZE_PTN(?:,|\))/)/o;
@@ -222,11 +226,9 @@ sub gen_struct_funcs
 		my $LAST     = ($params =~ /,/)          ? ','      : ')';
 		my $tmp      = "($G_STR_STRUCT *$G_MACRO_RESTRICT $CONST" . "j$LAST";
 		$decl =~ s/\(.+?$LAST/$tmp/;
-		$decl .= "\n{\n\t$RETURN";
-		if ($RETURNS_PTR_FUNC) {
-			$decl .= "$G_STRUCT_VAR->$G_STRUCT_SIZE = ";
-		}
-		$decl .= "$FUNC_NAME(";
+		$decl =~ s/,\s*\)/)/g;
+		$decl .= "\n{\n\t";
+		my $body = "$RETURN$FUNC_NAME(";
 		my @new_args;
 		foreach (@OLD_ARGS) {
 			if (/,$/) {
@@ -234,27 +236,24 @@ sub gen_struct_funcs
 				push(@new_args, $_);
 			}
 		}
-		my $func_args = $PTR . "$G_STRUCT_VAR->$G_STRUCT_DATA,";
+		$body .= $PTR . "$G_STRUCT_VAR->$G_STRUCT_DATA,";
 		for (my $i = 1 ; $i <= $#new_args ; ++$i) {
 			if ($new_args[$i] =~ /$G_SIZE_PTN/o) {
 				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
 			} elsif ($new_args[$i] =~ /$G_CAP_PTN/o) {
 				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_CAP";
 			}
-			$func_args .= "$new_args[$i],";
+			$body .= "$new_args[$i],";
 		}
-		$func_args =~ s/,$//;
-		$decl .= "$func_args)";
+		$body =~ s/,$//;
+		$body .= ")";
 		if ($RETURNS_PTR_FUNC) {
-			$decl .= " - $G_STRUCT_VAR->$G_STRUCT_DATA";
+			$body = "$G_STRUCT_VAR->$G_STRUCT_SIZE = $body";
+			$body .= " - $G_STRUCT_VAR->$G_STRUCT_DATA";
 		}
-		$decl .= ";\n}\n";
-		if ($decl !~ /$G_MACRO_INLINE/) {
-			$decl =~ s/static/$G_MACRO_INLINE\nstatic/o;
-		}
-		$decl =~ s/,\s*\)/)/g;
-		$_    .= "\n\n";
-		$decl .= "\n\n";
+		$decl    .= "$body;\n}\n";
+		$_       .= "\n\n";
+		$decl    .= "\n\n";
 		$out_hpp .= $_;
 		$out_hpp .= $decl;
 		$out_h   .= $_;
