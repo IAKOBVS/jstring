@@ -834,7 +834,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 		case 2: {
 			const char *src = dst + 1;
 			const uint16_t nw = searc[0] << 8 | searc[1];
-			uint16_t hw = src[0] << 8 | src[1];
+			uint16_t hw = dst[0] << 8 | dst[1];
 			for (; *src; hw = hw << 8 | *src)
 				if (hw != nw) {
 					*dst++ = *(src++ - 1);
@@ -856,7 +856,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 		case 3: {
 			const char *src = dst + 3;
 			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
-			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8;
+			uint32_t hw = dst[0] << 24 | dst[1] << 16 | dst[2] << 8;
 			for (; *src; hw = (hw | *src++) << 8)
 				if (hw != nw) {
 					*dst++ = *(src - 3);
@@ -880,7 +880,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 		case 4: {
 			const char *src = dst + 4;
 			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
-			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+			uint32_t hw = dst[0] << 24 | dst[1] << 16 | dst[2] << 8 | dst[3];
 			for (; *src; hw = hw << 8 | *src++)
 				if (hw != nw)
 					*dst++ = *(src - 4);
@@ -1012,7 +1012,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 		case 2: {
 			const char *src = dst + 1;
 			const uint16_t nw = searc[0] << 8 | searc[1];
-			uint16_t hw = src[0] << 8 | src[1];
+			uint16_t hw = dst[0] << 8 | dst[1];
 			for (; *src; hw = hw << 8 | *src)
 				if (hw != nw) {
 					*dst++ = *(src++ - 1);
@@ -1029,7 +1029,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 		case 3: {
 			const char *src = dst + 3;
 			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
-			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8;
+			uint32_t hw = dst[0] << 24 | dst[1] << 16 | dst[2] << 8;
 			for (; *src; hw = (hw | *src++) << 8)
 				if (hw != nw) {
 					*dst++ = *(src - 3);
@@ -1048,7 +1048,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 		case 4: {
 			const char *src = dst + 4;
 			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
-			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+			uint32_t hw = dst[0] << 24 | dst[1] << 16 | dst[2] << 8 | dst[3];
 			for (; *src; hw = hw << 8 | *src++)
 				if (hw != nw)
 					*dst++ = *(src - 4);
@@ -1175,7 +1175,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		case 2: {
 			const char *src = dst + 1;
 			const uint16_t nw = searc[0] << 8 | searc[1];
-			uint16_t hw = src[0] << 8 | src[1];
+			uint16_t hw = dst[0] << 8 | dst[1];
 			for (; *src; hw = hw << 8 | *src)
 				if (hw != nw) {
 					*dst++ = *(src++ - 1);
@@ -1197,7 +1197,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		case 3: {
 			const char *src = dst + 3;
 			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
-			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8;
+			uint32_t hw = dst[0] << 24 | dst[1] << 16 | dst[2] << 8;
 			for (; *src; hw = (hw | *src++) << 8)
 				if (hw != nw) {
 					*dst++ = *(src - 3);
@@ -1221,7 +1221,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		case 4: {
 			const char *src = dst + 4;
 			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
-			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+			uint32_t hw = dst[0] << 24 | dst[1] << 16 | dst[2] << 8 | dst[3];
 			for (; *src; hw = hw << 8 | *src++)
 				if (hw != nw) {
 					*dst++ = *(src - 4);
@@ -1254,7 +1254,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 			if (unlikely(searclen > 256)) {
 				const size_t off = searclen - 9;
 				while (src <= end) {
-					if (nw == (src[0] << 8 | src[searclen - 1])
+					if (nw == (dst[0] << 8 | dst[searclen - 1])
 					    && !memcmp(src + off, searc + off, 8)) {
 						if (!memcmp(src + 1, searc + 1, searclen - 10)) {
 							memcpy(dst, rplc, rplclen);
@@ -1372,7 +1372,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		case 2: {
 			const char *src = dst + 1;
 			const uint16_t nw = searc[0] << 8 | searc[1];
-			uint16_t hw = src[0] << 8 | src[1];
+			uint16_t hw = dst[0] << 8 | dst[1];
 			for (; *src; hw = hw << 8 | *src)
 				if (hw != nw) {
 					*dst++ = *(src++ - 1);
@@ -1389,7 +1389,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		case 3: {
 			const char *src = dst + 3;
 			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
-			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8;
+			uint32_t hw = dst[0] << 24 | dst[1] << 16 | dst[2] << 8;
 			for (; *src; hw = (hw | *src++) << 8)
 				if (hw != nw) {
 					*dst++ = *(src - 3);
@@ -1408,7 +1408,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		case 4: {
 			const char *src = dst + 4;
 			const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
-			uint32_t hw = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+			uint32_t hw = dst[0] << 24 | dst[1] << 16 | dst[2] << 8 | dst[3];
 			for (; *src; hw = hw << 8 | *src++)
 				if (hw != nw)
 					*dst++ = *(src - 4);
@@ -1436,7 +1436,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 				const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 				const size_t off = searclen - 9;
 				while (src <= end) {
-					if (nw == (src[0] << 8 | src[searclen - 1])
+					if (nw == (dst[0] << 8 | dst[searclen - 1])
 					    && !memcmp(src + off, searc + off, 8)) {
 						if (!memcmp(src + 1, searc + 1, searclen - 10)) {
 							memcpy(dst, rplc, rplclen);
