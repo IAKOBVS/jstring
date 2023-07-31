@@ -293,7 +293,7 @@ static void jstr_insertaft_mem_f(char *JSTR_RST const s,
 	default: {
 		if (unlikely(srclen == 0))
 			return;
-		const char *const p = (char *)jstr_memmem(s, sz, searc, searclen);
+		const char *const p = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 		if (p)
 			jstr_insert_mem_f(s, p - s + searclen, src, srclen);
 		break;
@@ -324,7 +324,7 @@ static void jstr_insertaft_mem(char **JSTR_RST const s,
 	default: {
 		if (unlikely(srclen == 0))
 			return;
-		const char *const p = (char *)jstr_memmem(*s, *sz, searc, searclen);
+		const char *const p = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
 		if (p)
 			jstr_insert_mem(s, sz, cap, p - *s + searclen, src, srclen);
 		break;
@@ -357,7 +357,7 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 			return;
 		size_t off = 0;
 		for (char *p;
-		     (p = (char *)jstr_memmem(*s + off, *sz - off, searc, searclen));
+		     (p = (char *)JSTR_MEMMEM(*s + off, *sz - off, searc, searclen));
 		     off += *s - p + searclen)
 			jstr_insert_mem(s, sz, cap, p - *s + searclen, src, srclen);
 		break;
@@ -506,7 +506,7 @@ static char *jstr_slipaft_mem_f(char *JSTR_RST const s,
 	default: {
 		if (unlikely(srclen == 0))
 			return s + sz;
-		const char *const p = (char *)jstr_memmem(s, sz, searc, searclen);
+		const char *const p = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 		if (p)
 			return jstr_slip_mem_p_f(s, p - s, src, sz, srclen);
 		return s + sz;
@@ -537,7 +537,7 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 	default: {
 		if (unlikely(srclen == 0))
 			return;
-		const char *const p = (char *)jstr_memmem(*s, *sz, searc, searclen);
+		const char *const p = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
 		if (p)
 			jstr_slip_mem(s, sz, cap, p - *s + searclen, src, srclen);
 		break;
@@ -570,7 +570,7 @@ static void jstr_slipaftall_mem(char **JSTR_RST const s,
 			return;
 		size_t off = 0;
 		for (char *p;
-		     (p = (char *)jstr_memmem(*s + off, *sz - off, searc, searclen));
+		     (p = (char *)JSTR_MEMMEM(*s + off, *sz - off, searc, searclen));
 		     off += p - *s + searclen)
 			jstr_slip_mem(s, sz, cap, p - *s + searclen, src, srclen);
 	}

@@ -19,7 +19,6 @@ namespace jstr {
 #endif /* JSTR_NAMESPACE */
 #if JSTR_EXTERN_C && defined(__cplusplus)
 extern "C" {
-#	define JSTR_IN_NAMESPACE 1
 #endif /* JSTR_EXTERN_C */
 
 /*
@@ -125,9 +124,9 @@ static int jstr_casecmp(const char *JSTR_RST s1,
 }
 
 #ifdef JSTR_HAS_MEMMEM
-#	define jstr_memmem(hs, hlen, ne, nlen) memmem(hs, hlen, ne, nlen)
+#	define JSTR_MEMMEM(hs, hlen, ne, nlen) memmem(hs, hlen, ne, nlen)
 #else
-#	define jstr_memmem(hs, hlen, ne, nlen) strstr(hs, ne)
+#	define JSTR_MEMMEM(hs, hlen, ne, nlen) strstr(hs, ne)
 #endif /* JSTR_HAS_MEMMEM */
 
 #if JSTR_EXTERN_C && defined(__cplusplus)

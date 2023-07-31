@@ -27,8 +27,7 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 #endif /* JSTR_EXIT_ON_MALLOC_ERROR */
 }
 
-#if JSTR_NAMESPACE && defined(__cplusplus)
-#	define JSTR_IN_NAMESPACE 1
+#if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
 #if JSTR_EXTERN_C && defined(__cplusplus)

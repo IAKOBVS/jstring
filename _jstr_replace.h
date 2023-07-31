@@ -15,6 +15,16 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
+#define JSTR_EXTERN_C  1
+#define JSTR_NAMESPACE 0
+
+#if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
+namespace jstr {
+#endif /* JSTR_NAMESPACE */
+#if JSTR_EXTERN_C && defined(__cplusplus)
+extern "C" {
+#endif /* JSTR_EXTERN_C */
+
 /*
   Remove first C in S.
   Return value:
@@ -250,7 +260,7 @@ static char *jstr_rm_mem_p(char *JSTR_RST const s,
 			   const size_t sz,
 			   const size_t searclen) JSTR_NOEXCEPT
 {
-	char *const p = (char *)jstr_memmem(s, sz, searc, searclen);
+	char *const p = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 	if (unlikely(!p))
 		return s + sz;
 	memmove(p, p + searclen, (s + sz) - p);
@@ -274,7 +284,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		return s + sz;
 	if (unlikely(n == 0))
 		return s + sz;
-	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
+	char *dst = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 	if (unlikely(!dst))
 		return s + sz;
 	if (unlikely(dst + searclen + searclen >= s + sz)) {
@@ -441,7 +451,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 {
 	if (unlikely(searclen == 0))
 		return s + sz;
-	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
+	char *dst = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 	if (unlikely(!dst))
 		return s + sz;
 	if (unlikely(dst + searclen + searclen >= s + sz)) {
@@ -707,7 +717,7 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
 		}
 		/* FALLTHROUGH */
 	default: {
-		char *mtc = (char *)jstr_memmem(s, sz, searc, searclen);
+		char *mtc = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 		if (unlikely(!mtc))
 			return s + sz;
 		memmove(mtc + rplclen,
@@ -746,7 +756,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 		}
 		break;
 	default: {
-		char *mtc = (char *)jstr_memmem(*s, *sz, searc, searclen);
+		char *mtc = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
 		if (unlikely(!mtc))
 			return;
 		if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {
@@ -793,7 +803,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 		return s + sz;
 	if (unlikely(rplclen == 0))
 		return jstr_rmn_mem_p(s, searc, n, sz, searclen);
-	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
+	char *dst = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 	if (unlikely(!dst))
 		return s + sz;
 	if (unlikely(dst + searclen + searclen >= s + sz))
@@ -937,7 +947,7 @@ RPLC_GROW:
 		memcpy(dst, rplc, rplclen);
 		dst += rplclen;
 		sz += (long long)(rplclen - searclen);
-	} while (--n && (dst = (char *)jstr_memmem(dst, (s + sz) - dst, searc, searclen)));
+	} while (--n && (dst = (char *)JSTR_MEMMEM(dst, (s + sz) - dst, searc, searclen)));
 	return s + sz;
 }
 
@@ -959,7 +969,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 		return s + sz;
 	if (unlikely(rplclen == 0))
 		return jstr_rmall_mem_p(s, searc, sz, searclen);
-	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
+	char *dst = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 	if (unlikely(!dst))
 		return s + sz;
 	if (unlikely(dst + searclen + searclen >= s + sz))
@@ -1083,7 +1093,7 @@ RPLC:
 		memcpy(dst, rplc, rplclen);
 		dst += rplclen;
 		sz += (long long)(rplclen - searclen);
-	} while ((dst = (char *)jstr_memmem(dst, (s + sz) - dst, searc, searclen)));
+	} while ((dst = (char *)JSTR_MEMMEM(dst, (s + sz) - dst, searc, searclen)));
 	return s + sz;
 }
 
@@ -1109,7 +1119,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		*sz = jstr_rmn_mem_p(*s, searc, n, *sz, searclen) - *s;
 		return;
 	}
-	char *dst = (char *)jstr_memmem(*s, *sz, searc, searclen);
+	char *dst = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
 	if (unlikely(!dst))
 		return;
 	if (rplclen <= searclen) {
@@ -1267,7 +1277,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 			*s = tmp;
 		}
 		*sz += (long long)(rplclen - searclen);
-	} while (n-- && (dst = (char *)jstr_memmem(dst, (*s + *sz) - dst, searc, searclen)));
+	} while (n-- && (dst = (char *)JSTR_MEMMEM(dst, (*s + *sz) - dst, searc, searclen)));
 }
 
 /*
@@ -1289,7 +1299,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		*sz = jstr_rmall_mem_p(*s, searc, *sz, searclen) - *s;
 		return;
 	}
-	char *dst = (char *)jstr_memmem(*s, *sz, searc, searclen);
+	char *dst = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
 	if (unlikely(!dst))
 		return;
 	if (unlikely(dst + searclen + searclen >= *s + *sz))
@@ -1431,7 +1441,14 @@ RPLC_GROW:;
 			*s = tmp;
 		}
 		*sz += rplclen - searclen;
-	} while ((dst = (char *)jstr_memmem(dst, (*s + *sz) - dst, searc, searclen)));
+	} while ((dst = (char *)JSTR_MEMMEM(dst, (*s + *sz) - dst, searc, searclen)));
 }
+
+#if JSTR_EXTERN_C && defined(__cplusplus)
+}
+#endif /* JSTR_EXTERN_C */
+#if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
+}
+#endif /* JSTR_NAMESPACE */
 
 #endif /* JSTR_H_REPLACE_DEF */
