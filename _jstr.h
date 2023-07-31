@@ -576,7 +576,7 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
+static char *jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
 				    const char *JSTR_RST const searc,
 				    const char *JSTR_RST const src,
 				    size_t sz,
@@ -585,20 +585,22 @@ static void jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
 {
 	switch (searclen) {
 	case 0:
+		return s + sz;
 		break;
 	case 1: {
-		jstr_slipaftallc_mem_p_f(s, *searc, src, sz, srclen);
+		return jstr_slipaftallc_mem_p_f(s, *searc, src, sz, srclen);
 		break;
 	}
 	default: {
 		if (unlikely(srclen == 0))
-			return;
+			return s + sz;
 		size_t off = 0;
 		char *p;
 		while ((p = (char *)JSTR_MEMMEM(s + off, sz - off, searc, searclen))) {
 			sz = jstr_slip_mem_p_f(s, p - s, src, sz, srclen) - s;
 			off += p - s + searclen;
 		}
+		return s + sz;
 	}
 	}
 }
