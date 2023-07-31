@@ -796,6 +796,8 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
 	if (unlikely(!dst))
 		return s + sz;
+	if (unlikely(dst + searclen + searclen >= s + sz))
+		goto RPLC_GROW;
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1: {
@@ -927,6 +929,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 		}
 		}
 	}
+RPLC_GROW:
 	do {
 		memmove(dst + rplclen,
 			dst + searclen,
@@ -1286,6 +1289,9 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 	char *dst = (char *)jstr_memmem(*s, *sz, searc, searclen);
 	if (unlikely(!dst))
 		return;
+	if (unlikely(dst + searclen + searclen >= *s + *sz)) {
+		goto RPLC_GROW;
+	}
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1: {
@@ -1400,6 +1406,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		}
 		}
 	}
+RPLC_GROW:;
 	char *tmp;
 	do {
 		if (*cap > *sz + rplclen - searclen + 1) {
