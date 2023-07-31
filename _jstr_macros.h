@@ -258,15 +258,15 @@
 #	define JSTR_WARN_UNUSED __attribute_warn_unused_result__
 #else
 #	define JSTR_WARN_UNUSED
-#endif // __attribute__unused
+#endif /* __attribute__unused */
 
 #if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
 #	define JSTR_HAS_TYPEOF
-#endif // JSTR_HAS_TYPEOF
+#endif /* JSTR_HAS_TYPEOF */
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
 #	define JSTR_HAS_GENERIC
-#endif // JSTR_HAS_GENERIC
+#endif /* JSTR_HAS_GENERIC */
 
 #if defined(static_assert)
 #	define JSTR_HAS_STATIC_ASSERT
@@ -278,7 +278,7 @@
 #else
 #	define JSTR_ASSERT(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg)
-#endif // static_assert
+#endif /* static_assert */
 
 #if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_NONNULL_ALL   __attribute__((nonnull))
@@ -294,17 +294,17 @@
 #			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
 #		else
 #			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
-#		endif // __cplusplus
+#		endif /* __cplusplus */
 #	elif JSTR_32_BIT
 #		ifdef __cplusplus
 #			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
 #		else
 #			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
-#		endif // __cplusplus
+#		endif /* __cplusplus */
 #	else
 #		define JSTR_NEXT_POW2(x) (x)
-#	endif // JSTR_64_BIT
-#endif // JSTR_ALIGN_POWER_OF_TWO
+#	endif /* JSTR_64_BIT */
+#endif /* JSTR_ALIGN_POWER_OF_TWO */
 
 #ifdef __cplusplus
 #	define JSTR_RESTRICT
@@ -316,7 +316,7 @@
 #	define JSTR_RESTRICT __restrict
 #else
 #	define JSTR_RESTRICT
-#endif // restrict
+#endif /* restrict */
 
 #if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
 #	define likely(x)   __builtin_expect(!!(x), 1)
@@ -324,7 +324,7 @@
 #else
 #	define likely(x)   (x)
 #	define unlikely(x) (x)
-#endif // __has_builtin(__builtin_expect)
+#endif /* __has_builtin(__builtin_expect) */
 
 #if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_INLINE __attribute__((always_inline)) inline
@@ -332,17 +332,17 @@
 #		define PURE __attribute__((pure))
 #	else
 #		define PURE
-#	endif // PURE
+#	endif /* PURE */
 #	if __has_attribute(const)
 #		define JSTR_CONST __attribute__((const))
 #	else
 #		define JSTR_CONST
-#	endif // JSTR_CONST
+#	endif /* JSTR_CONST */
 #	if __has_attribute(flatten)
 #		define FLATTEN __attribute__((flatten))
 #	else
 #		define FLATTEN
-#	endif // FLATTEN
+#	endif /* FLATTEN */
 #elif defined(_MSC_VER)
 #	define JSTR_INLINE __forceinline inline
 #	define PURE	    __declspec(noalias)
@@ -353,7 +353,7 @@
 #	define PURE
 #	define JSTR_CONST
 #	define FLATTEN
-#endif // __GNUC__ || __clang__ || _MSC_VER
+#endif /* __GNUC__ || __clang__ || _MSC_VER */
 
 #if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_MAYBE_UNUSED __attribute__((unused))
@@ -371,11 +371,11 @@
 
 #ifndef MAX
 #	define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#endif // MAX
+#endif /* MAX */
 
 #ifndef MIN
 #	define MIN(a, b) (((a) < (b)) ? (a) : (b))
-#endif // MIN
+#endif /* MIN */
 
 #define JSTR_CASE_VOWEL_LOWER \
 case 'a':                     \
@@ -526,12 +526,12 @@ case ' ':
 #	define JSTR_PRIVATE
 #	define JSTR_PUBLIC
 #	define JSTR_CPP_CONST
-#endif // __cplusplus
+#endif /* __cplusplus */
 
 #if defined(_GNU_SOURCE)
 #	define JSTR_HAS_MEMMEM
 #	define JSTR_HAS_MEMRCHR
-#endif // JSTR_HAS_MEMRCHR__
+#endif /* JSTR_HAS_MEMRCHR__ */
 
 #if __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 19
 #	if _DEFAULT_SOURCE
@@ -551,8 +551,8 @@ case ' ':
 #	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)) && (_POSIX_C_SOURCE >= 200809L) || defined(_GNU_SOURCE))
 #		define JSTR_HAS_STPCPY
 #	endif
-#endif // __GLIBC__
+#endif /* __GLIBC__ */
 
 #define JSTR_RST JSTR_RESTRICT
 
-#endif // JSTR_MACROS_H_DEF
+#endif /* JSTR_MACROS_H_DEF */
