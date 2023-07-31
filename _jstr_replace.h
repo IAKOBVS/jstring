@@ -292,9 +292,6 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		return dst;
 	}
 	switch (searclen) {
-	case 0:
-		return dst;
-		break;
 	case 1: {
 		s = dst;
 		goto MTC1;
@@ -459,9 +456,6 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		return dst;
 	}
 	switch (searclen) {
-	case 0:
-		return dst;
-		break;
 	case 1: {
 		s = dst + 1;
 		for (;; ++s)
