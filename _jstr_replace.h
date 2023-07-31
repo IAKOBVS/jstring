@@ -25,6 +25,8 @@ namespace jstr {
 extern "C" {
 #endif /* JSTR_EXTERN_C */
 
+#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
+
 /*
   Remove first C in S.
   Return value:
@@ -284,13 +286,11 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		return s + sz;
 	if (unlikely(n == 0))
 		return s + sz;
-	char *dst = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
-	if (unlikely(!dst))
-		return s + sz;
-	if (unlikely(dst + searclen + searclen >= s + sz)) {
-		*dst = '\0';
-		return dst;
+	if (unlikely(s + searclen + searclen >= s + sz)) {
+		*s = '\0';
+		return s;
 	}
+	char *dst = s;
 	switch (searclen) {
 	case 1: {
 		s = dst;
@@ -394,23 +394,9 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		return dst;
 		break;
 	default: {
-		const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 		const char *const end = s + sz - searclen;
-		s = dst;
-		if (searclen < 15) {
-			goto MTC5;
-			while (s <= end) {
-				if (nw == (s[0] << 8 | s[searclen - 1])
-				    && !memcmp(s, searc, searclen)) {
-				MTC5:
-					s += searclen;
-					if (unlikely(!--n))
-						break;
-					continue;
-				}
-				*dst++ = *s++;
-			}
-		} else {
+		if (unlikely(searclen > 256)) {
+			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 			const size_t off = searclen - 9;
 			goto MTC6;
 			while (s <= end) {
@@ -426,9 +412,46 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 				}
 				*dst++ = *s++;
 			}
+			memmove(dst, s, end + searclen - s + 1);
+			return dst + (end + searclen - s);
 		}
-		memmove(dst, s, end + searclen - s + 1);
-		return dst + (end + searclen - s);
+		uint8_t shift[256];
+		size_t tmp;
+		size_t shift1;
+		size_t m1 = searclen - 1;
+		size_t off = 0;
+		memset(shift, 0, sizeof(shift));
+		for (int i = 1; i < m1; ++i)
+			shift[JSTR_HASH2(searc + i)] = i;
+		shift1 = m1 - shift[JSTR_HASH2(searc + m1)];
+		shift[JSTR_HASH2(searc + m1)] = m1;
+		char *old = dst;
+		goto MTC5;
+		while (s <= end) {
+			do {
+				s += m1;
+				tmp = shift[JSTR_HASH2(s)];
+			} while (!tmp && s <= end);
+			s -= tmp;
+			if (tmp < m1)
+				continue;
+			if (m1 < 15 || !memcmp(s + off, searc + off, 8)) {
+				if (!memcmp(s, searc, searclen)) {
+					memmove(dst, old, s - old);
+					dst += (s - old);
+					old += (s - old);
+				MTC5:
+					s += searclen;
+					if (unlikely(!--n))
+						break;
+					continue;
+				}
+				off = (off >= 8 ? off : m1) - 8;
+			}
+			s += shift1;
+		}
+		memmove(dst, old, end + searclen - old + 1);
+		return dst + (end + searclen - old);
 		break;
 	}
 	}
@@ -448,13 +471,11 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 {
 	if (unlikely(searclen == 0))
 		return s + sz;
-	char *dst = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
-	if (unlikely(!dst))
-		return s + sz;
-	if (unlikely(dst + searclen + searclen >= s + sz)) {
-		*dst = '\0';
-		return dst;
+	if (unlikely(s + searclen + searclen >= s + sz)) {
+		*s = '\0';
+		return s;
 	}
+	char *dst = s;
 	switch (searclen) {
 	case 1: {
 		s = dst + 1;
@@ -524,19 +545,9 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		return dst;
 		break;
 	default: {
-		const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 		const char *const end = s + sz - searclen;
-		s = dst;
-		if (searclen < 15) {
-			goto MTC5;
-			while (s <= end)
-				if (nw == (s[0] << 8 | s[searclen - 1])
-				    && !memcmp(s, searc, searclen))
-				MTC5:
-					s += searclen;
-				else
-					*dst++ = *s++;
-		} else {
+		if (unlikely(searclen > 256)) {
+			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 			const size_t off = searclen - 9;
 			goto MTC6;
 			while (s <= end) {
@@ -550,9 +561,44 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 				}
 				*dst++ = *s++;
 			}
+			memmove(dst, s, end + searclen - s + 1);
+			return dst + (end + searclen - s);
 		}
-		memmove(dst, s, end + searclen - s + 1);
-		return dst + (end + searclen - s);
+		uint8_t shift[256];
+		size_t tmp;
+		size_t shift1;
+		size_t m1 = searclen - 1;
+		size_t off = 0;
+		memset(shift, 0, sizeof(shift));
+		for (int i = 1; i < m1; ++i)
+			shift[JSTR_HASH2(searc + i)] = i;
+		shift1 = m1 - shift[JSTR_HASH2(searc + m1)];
+		shift[JSTR_HASH2(searc + m1)] = m1;
+		char *old = dst;
+		goto MTC5;
+		while (s <= end) {
+			do {
+				s += m1;
+				tmp = shift[JSTR_HASH2(s)];
+			} while (!tmp && s <= end);
+			s -= tmp;
+			if (tmp < m1)
+				continue;
+			if (m1 < 15 || !memcmp(s + off, searc + off, 8)) {
+				if (!memcmp(s, searc, searclen)) {
+					memmove(dst, old, s - old);
+					dst += (s - old);
+					old += (s - old);
+				MTC5:
+					s += searclen;
+					continue;
+				}
+				off = (off >= 8 ? off : m1) - 8;
+			}
+			s += shift1;
+		}
+		memmove(dst, old, end + searclen - old + 1);
+		return dst + (end + searclen - old);
 		break;
 	}
 	}
@@ -912,7 +958,6 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 				return dst + (end + searclen - s);
 				break;
 			}
-#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 			uint8_t shift[256];
 			size_t tmp;
 			size_t shift1;
@@ -929,7 +974,6 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 				do {
 					s += m1;
 					tmp = shift[JSTR_HASH2(s)];
-#undef JSTR_HASH2
 				} while (!tmp && s <= end);
 				s -= tmp;
 				if (tmp < m1)
@@ -1084,7 +1128,6 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 				memmove(dst, s, end + searclen - s + 1);
 				return dst + (end + searclen - s);
 			}
-#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 			uint8_t shift[256];
 			size_t tmp;
 			size_t shift1;
@@ -1101,7 +1144,6 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 				do {
 					s += m1;
 					tmp = shift[JSTR_HASH2(s)];
-#undef JSTR_HASH2
 				} while (!tmp && s <= end);
 				s -= tmp;
 				if (tmp < m1)
@@ -1279,7 +1321,6 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 				*sz = dst + (end + searclen - src) - *s;
 				return;
 			}
-#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 			uint8_t shift[256];
 			size_t tmp;
 			size_t shift1;
@@ -1296,7 +1337,6 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 				do {
 					src += m1;
 					tmp = shift[JSTR_HASH2(src)];
-#undef JSTR_HASH2
 				} while (!tmp && src <= end);
 				src -= tmp;
 				if (tmp < m1)
@@ -1471,7 +1511,6 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 				*sz = (dst + (end + searclen - src)) - *s;
 				return;
 			}
-#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 			uint8_t shift[256];
 			size_t tmp;
 			size_t shift1;
@@ -1488,7 +1527,6 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 				do {
 					src += m1;
 					tmp = shift[JSTR_HASH2(src)];
-#undef JSTR_HASH2
 				} while (!tmp && src <= end);
 				src -= tmp;
 				if (tmp < m1)
@@ -1548,5 +1586,7 @@ RPLC_GROW:;
 #if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
 }
 #endif /* JSTR_NAMESPACE */
+
+#undef JSTR_HASH2
 
 #endif /* JSTR_H_REPLACE_DEF */
