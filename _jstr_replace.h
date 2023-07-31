@@ -1116,6 +1116,8 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 	char *dst = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
 	if (unlikely(!dst))
 		return;
+	if (unlikely(dst + searclen + searclen >= *s + *sz))
+		goto RPLC_GROW;
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1: {
@@ -1249,6 +1251,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		}
 		}
 	}
+RPLC_GROW:;
 	char *tmp;
 	do {
 		if (*cap > *sz + rplclen - searclen + 1) {
