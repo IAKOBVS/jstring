@@ -11,8 +11,8 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "jstr_config.h"
-#include "jstr_macros.h"
+#include "_jstr_config.h"
+#include "_jstr_macros.h"
 
 /* This is executed every time a malloc error is encountered. */
 JSTR_NOINLINE

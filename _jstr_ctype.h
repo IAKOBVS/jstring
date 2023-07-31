@@ -8,7 +8,7 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "jstr_macros.h"
+#include "_jstr_macros.h"
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0

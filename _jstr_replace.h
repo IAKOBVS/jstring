@@ -11,9 +11,9 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "jstr_builder.h"
-#include "jstr_macros.h"
-#include "jstr_string.h"
+#include "_jstr_builder.h"
+#include "_jstr_macros.h"
+#include "_jstr_string.h"
 
 /*
   Remove first C in S.
@@ -337,8 +337,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 			}
 		if (sw != nw)
 			*dst++ = *(s - 1);
-		*dst = '\0';
-		return dst;
+		goto END_UNDER_4;
 		break;
 	}
 	case 3: {
@@ -360,10 +359,11 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 					s += 2;
 				}
 			}
-		if (sw != nw)
-			*dst++ = *(s - 3);
-		*dst = '\0';
-		return dst;
+		if (sw != nw) {
+			memmove(dst, s - 3, 3);
+			dst += 3;
+		}
+		goto END_UNDER_4;
 		break;
 	}
 	case 4: {
@@ -385,12 +385,17 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 					s += 3;
 				}
 			}
-		if (sw != nw)
-			*dst++ = *(s - 4);
+		if (sw != nw) {
+			memmove(dst, s - 4, 4);
+			dst += 4;
+		}
+		goto END_UNDER_4;
+		break;
+	}
+	END_UNDER_4:
 		*dst = '\0';
 		return dst;
 		break;
-	}
 	default: {
 		const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 		const char *const end = s + sz - searclen;
@@ -454,6 +459,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		return dst;
 		break;
 	case 1: {
+		s = dst;
 		goto MTC1;
 		for (;;)
 			if (*s != *searc) {
@@ -495,8 +501,10 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			else
 			MTC3:
 				s += 2;
-		if (hw != nw)
-			*dst++ = *(s - 3);
+		if (hw != nw) {
+			memmove(dst, s - 3, 3);
+			dst += 3;
+		}
 		goto END_UNDER_4;
 		break;
 	}
@@ -511,8 +519,10 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			else
 			MTC4:
 				s += 3;
-		if (hw != nw)
-			*dst++ = *(s - 4);
+		if (hw != nw) {
+			memmove(dst, s - 4, 4);
+			dst += 4;
+		}
 		goto END_UNDER_4;
 		break;
 	}
@@ -847,8 +857,10 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 						break;
 					}
 				}
-			if (hw != nw)
-				*dst++ = *(src - 3);
+			if (hw != nw) {
+				memmove(dst, src - 3, 3);
+				dst += 3;
+			}
 			goto END_UNDER_4;
 			break;
 		}
@@ -871,8 +883,10 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 						break;
 					}
 				}
-			if (hw != nw)
-				*dst++ = *(src - 4);
+			if (hw != nw) {
+				memmove(dst, src - 4, 4);
+				dst += 4;
+			}
 			goto END_UNDER_4;
 			break;
 		}
@@ -995,8 +1009,10 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 					dst += rplclen;
 					src += 2;
 				}
-			if (hw != nw)
-				*dst++ = *(src - 3);
+			if (hw != nw) {
+				memmove(dst, src - 3, 3);
+				dst += 3;
+			}
 			goto END_UNDER_4;
 			break;
 		}
@@ -1014,8 +1030,10 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 					dst += rplclen;
 					src += 3;
 				}
-			if (hw != nw)
-				*dst++ = *(src - 4);
+			if (hw != nw) {
+				memmove(dst, src - 4, 3);
+				dst += 4;
+			}
 			goto END_UNDER_4;
 			break;
 		}
@@ -1149,8 +1167,10 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 						break;
 					}
 				}
-			if (hw != nw)
-				*dst++ = *(src - 3);
+			if (hw != nw) {
+				memmove(dst, src - 3, 3);
+				dst += 3;
+			}
 			goto END_UNDER_4;
 			break;
 		}
@@ -1173,8 +1193,10 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 						break;
 					}
 				}
-			if (hw != nw)
-				*dst++ = *(src - 4);
+			if (hw != nw) {
+				memmove(dst, src - 4, 4);
+				dst += 4;
+			}
 			goto END_UNDER_4;
 			break;
 		}
@@ -1279,6 +1301,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		switch (searclen) {
 		case 1: {
 			jstr_replaceallc_mem(*s, *searc, *rplc, *sz);
+			return;
 			break;
 		}
 		case 2: {
@@ -1314,8 +1337,10 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 					dst += rplclen;
 					src += 2;
 				}
-			if (hw != nw)
-				*dst++ = *(src - 3);
+			if (hw != nw) {
+				memmove(dst, src - 3, 3);
+				dst += 3;
+			}
 			goto END_UNDER_4;
 			break;
 		}
@@ -1333,14 +1358,17 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 					dst += rplclen;
 					src += 3;
 				}
-			if (hw != nw)
-				*dst++ = *(src - 4);
+			if (hw != nw) {
+				memmove(dst, src - 4, 4);
+				dst += 4;
+			}
 			goto END_UNDER_4;
 			break;
 		}
 		END_UNDER_4:
 			*dst = '\0';
 			*sz = dst - *s;
+			return;
 			break;
 		default: {
 			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
@@ -1378,11 +1406,11 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 			}
 			memmove(dst, src, end + searclen - src + 1);
 			*sz = dst + (end + searclen - src) - *s;
+			return;
 			break;
 		}
 		}
 	}
-	return;
 	char *tmp;
 	do {
 		if (*cap > *sz + rplclen - searclen + 1) {

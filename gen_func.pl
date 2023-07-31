@@ -4,14 +4,16 @@ use warnings;
 
 usage();
 
-my $G_FNAME = $ARGV[0];
+my $G_FNAME      = $ARGV[0];
+my $G_FNAME_BASE = $G_FNAME;
+$G_FNAME_BASE =~ s/^_//;
 my $G_DIR_C = 'c';
 
 script_needed();
 
 my $G_DIR_CPP            = $G_DIR_C . 'pp';
-my $G_OUT_C              = "$G_DIR_C/$G_FNAME";
-my $G_OUT_CPP            = "$G_DIR_CPP/$G_FNAME" . 'pp';
+my $G_OUT_C              = "$G_DIR_C/$G_FNAME_BASE";
+my $G_OUT_CPP            = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
 my $G_IGNORE_FILE_NONMEM = 'builder.h';
 
 my $G_NMSPC      = 'jstr';
@@ -167,6 +169,7 @@ sub gen_struct_funcs
 	my (@LINES) = @_;
 	my $out_h;
 	my $out_hpp;
+
 	# my $skel;
 	foreach (@LINES) {
 		if ($_ !~ $G_RE_FUNC) {
@@ -178,6 +181,7 @@ sub gen_struct_funcs
 		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
+
 		# if ($G_FNAME !~ /$G_IGNORE_FILE_NONMEM/) {
 		# 	$skel .= "$decl;\n\n";
 		# }
@@ -241,10 +245,12 @@ sub gen_struct_funcs
 		$out_h   .= $decl;
 		next;
 	  NEXT:
+		$_ = update_includes($_);
 		$_       .= "\n\n";
 		$out_h   .= $_;
 		$out_hpp .= $_;
 	}
+
 	# if ($skel) {
 	# 	$out_h =~ s/(namespace(?:.|\n)*?\n\n)/$1$skel/;
 	# 	$out_hpp =~ s/(namespace(?:.|\n)*?\n\n)/$1$skel/;
@@ -259,7 +265,14 @@ sub gen_struct_funcs
 	$out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 	$out_hpp =~ s/\n\n\n/\n\n/g;
 	$out_h   =~ s/\n\n\n/\n\n/g;
-	$out_h =~ s/\n\n*$/\n/g;
+	$out_h   =~ s/\n\n*$/\n/g;
 	$out_hpp =~ s/\n\n*$/\n/g;
 	return ($out_h, $out_hpp);
+}
+
+sub update_includes
+{
+	my ($includes) = @_;
+	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_$G_NMSPC/$1$G_NMSPC/g;
+	return $includes;
 }
