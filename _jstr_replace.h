@@ -25,7 +25,8 @@ namespace jstr {
 extern "C" {
 #endif /* JSTR_EXTERN_C */
 
-#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
+#define JSTR_HASH2(p)	(((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
+#define JSTR_ASCII_SIZE 256
 
 /*
   Remove first C in S.
@@ -220,13 +221,12 @@ static char *jstr_stripspn_p(char *JSTR_RST s,
 		ACCEPT = 0,
 		REJECT,
 		NUL,
-		ASCII_SIZE = 256,
 	};
 	if (unlikely(!reject[0]))
 		return s;
 	if (unlikely(!reject[1]))
 		return s;
-	unsigned char tbl[ASCII_SIZE];
+	unsigned char tbl[JSTR_ASCII_SIZE];
 	memset(tbl, ACCEPT, 64);
 	memset(&tbl[64], ACCEPT, 64);
 	memset(&tbl[128], ACCEPT, 64);
@@ -387,7 +387,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		break;
 	default: {
 		const char *const end = s + sz - searclen;
-		if (unlikely(searclen > 256)) {
+		if (unlikely(searclen > JSTR_ASCII_SIZE)) {
 			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 			const size_t off = searclen - 9;
 			while (s <= end) {
@@ -405,7 +405,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 			memmove(dst, s, end + searclen - s + 1);
 			return dst + (end + searclen - s);
 		}
-		uint8_t shift[256];
+		uint8_t shift[JSTR_ASCII_SIZE];
 		size_t tmp;
 		size_t shift1;
 		size_t m1 = searclen - 1;
@@ -528,7 +528,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		break;
 	default: {
 		const char *const end = s + sz - searclen;
-		if (unlikely(searclen > 256)) {
+		if (unlikely(searclen > JSTR_ASCII_SIZE)) {
 			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 			const size_t off = searclen - 9;
 			while (s <= end) {
@@ -544,7 +544,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			memmove(dst, s, end + searclen - s + 1);
 			return dst + (end + searclen - s);
 		}
-		uint8_t shift[256];
+		uint8_t shift[JSTR_ASCII_SIZE];
 		size_t tmp;
 		size_t shift1;
 		size_t m1 = searclen - 1;
@@ -908,7 +908,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 		default: {
 			const char *const end = s + sz - searclen;
 			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
-			if (unlikely(searclen > 256)) {
+			if (unlikely(searclen > JSTR_ASCII_SIZE)) {
 				const size_t off = searclen - 9;
 				while (s <= end) {
 					if (nw == (s[0] << 8 | s[searclen - 1])
@@ -928,7 +928,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 				return dst + (end + searclen - s);
 				break;
 			}
-			uint8_t shift[256];
+			uint8_t shift[JSTR_ASCII_SIZE];
 			size_t tmp;
 			size_t shift1;
 			size_t m1 = searclen - 1;
@@ -986,9 +986,9 @@ RPLC_GROW:
   Replace all SEARCH in S with REPLACE.
   Assumes that S have enough space for REPLACE.
 */
-/* JSTR_NONNULL_ALL */
-/* JSTR_WARN_UNUSED */
-/* JSTR_MAYBE_UNUSED */
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
 static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 				     const char *JSTR_RST const searc,
 				     const char *JSTR_RST const rplc,
@@ -1071,7 +1071,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 		default: {
 			const char *const end = s + sz - searclen;
 			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
-			if (unlikely(searclen > 256)) {
+			if (unlikely(searclen > JSTR_ASCII_SIZE)) {
 				const size_t off = searclen - 9;
 				while (s <= end) {
 					if (nw == (s[0] << 8 | s[searclen - 1])
@@ -1088,7 +1088,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 				memmove(dst, s, end + searclen - s + 1);
 				return dst + (end + searclen - s);
 			}
-			uint8_t shift[256];
+			uint8_t shift[JSTR_ASCII_SIZE];
 			size_t tmp;
 			size_t shift1;
 			size_t m1 = searclen - 1;
@@ -1251,7 +1251,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 			char *src = *s;
 			const char *const end = *s + *sz - searclen;
 			const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
-			if (unlikely(searclen > 256)) {
+			if (unlikely(searclen > JSTR_ASCII_SIZE)) {
 				const size_t off = searclen - 9;
 				while (src <= end) {
 					if (nw == (dst[0] << 8 | dst[searclen - 1])
@@ -1271,7 +1271,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 				*sz = dst + (end + searclen - src) - *s;
 				return;
 			}
-			uint8_t shift[256];
+			uint8_t shift[JSTR_ASCII_SIZE];
 			size_t tmp;
 			size_t shift1;
 			size_t m1 = searclen - 1;
@@ -1432,7 +1432,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		default: {
 			const char *const end = *s + *sz - searclen;
 			char *src = dst;
-			if (unlikely(searclen > 256)) {
+			if (unlikely(searclen > JSTR_ASCII_SIZE)) {
 				const uint16_t nw = searc[0] << 8 | searc[searclen - 1];
 				const size_t off = searclen - 9;
 				while (src <= end) {
@@ -1451,7 +1451,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 				*sz = (dst + (end + searclen - src)) - *s;
 				return;
 			}
-			uint8_t shift[256];
+			uint8_t shift[JSTR_ASCII_SIZE];
 			size_t tmp;
 			size_t shift1;
 			size_t m1 = searclen - 1;
