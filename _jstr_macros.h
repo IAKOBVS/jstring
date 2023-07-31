@@ -6,7 +6,7 @@
 /* #		include <cstdint> */
 /* #	else */
 /* #		include <stdint.h> */
-/* #	endif // __cplusplus */
+/* #	endif /1* __cplusplus *1/ */
 /* #	if __has_builtin(__builtin_clzll) */
 /* #		ifdef __cplusplus */
 /* extern "C" { */
@@ -21,9 +21,9 @@
 /* 	return 1ull << (64 - __builtin_clzll(x - 1)); */
 /* } */
 
-/* #		endif // JSTR_64_BIT */
+/* #		endif /1* JSTR_64_BIT *1/ */
 
-/* #	endif // __has_builtin(__builtin_clzll) */
+/* #	endif /1* __has_builtin(__builtin_clzll) *1/ */
 /* #	if __has_builtin(__builtin_clz) */
 
 /* #		ifdef JSTR_32_BIT */
@@ -35,12 +35,12 @@
 /* 	return 1 << (32 - __builtin_clz(x - 1)); */
 /* } */
 
-/* #		endif // JSTR_32_BIT */
+/* #		endif /1* JSTR_32_BIT *1/ */
 
 /* #		ifdef __cplusplus */
 /* } */
 /* #		endif */
-/* #	endif // __has_builtin(__builtin_clz) */
+/* #	endif /1* __has_builtin(__builtin_clz) *1/ */
 /* #elif defined(_MSC_VER) */
 /* #	include <stdint.h> */
 /* #	include <intrin.h> */
@@ -60,7 +60,7 @@
 /* 	return 1 << (index + 1); */
 /* } */
 
-/* #	endif // JSTR_32_BIT */
+/* #	endif /1* JSTR_32_BIT *1/ */
 
 /* #	ifdef JSTR_64_BIT */
 /* JSTR_INLINE */
@@ -73,7 +73,7 @@
 /* 	return 1ull << (index + 1); */
 /* } */
 
-/* #	endif // JSTR_64_BIT */
+/* #	endif /1* JSTR_64_BIT *1/ */
 
 /* #else */
 
@@ -93,7 +93,7 @@
 /* 	return x + 1; */
 /* } */
 
-/* #	endif // JSTR_32_BIT */
+/* #	endif /1* JSTR_32_BIT *1/ */
 
 /* #	ifdef JSTR_64_BIT */
 
@@ -112,12 +112,12 @@
 /* 	return x + 1; */
 /* } */
 
-/* #	endif // JSTR_64_BIT */
+/* #	endif /1* JSTR_64_BIT *1/ */
 
 /* #	ifdef __cplusplus */
 /* } */
 /* #	endif */
-/* #endif // __GNUC__ || __clang__ */
+/* #endif /1* __GNUC__ || __clang__ *1/ */
 
 /* #ifdef __cplusplus */
 
@@ -161,7 +161,7 @@
 /* 	if */
 /* #	if __cplusplus > 201703L */
 /* 	constexpr */
-/* #	endif // cpp 17 */
+/* #	endif /1* cpp 17 *1/ */
 /* 	(std::is_integral<T>::value) */
 /* 		return private_jstr_next_pow2_32_constexpr(x); */
 /* 	return private_jstr_next_pow2_32(x); */
@@ -176,13 +176,13 @@
 /* 	if */
 /* #	if __cplusplus > 201703L */
 /* 	constexpr */
-/* #	endif // cpp 17 */
+/* #	endif /1* cpp 17 *1/ */
 /* 	(std::is_integral<T>::value) */
 /* 		return private_jstr_next_pow2_64_constexpr(x); */
 /* 	return private_jstr_next_pow2_64(x); */
 /* } */
 
-/* #endif // __cplusplus */
+/* #endif /1* __cplusplus *1/ */
 
 /* #if defined(JSTR_HAS_TYPEOF) && defined(JSTR_HAS_GENERIC) */
 /* #	define JSTR_SAME_TYPE(x, y) _Generic((x),           \ */
@@ -191,7 +191,7 @@
 /* #	define JSTR_IS_TYPE(T, x) _Generic((x),   \ */
 /* 					    T : 1, \ */
 /* 					    default : 0) */
-/* #endif // JSTR_HAS_TYPEOF && JSTR_HAS_GENERIC */
+/* #endif /1* JSTR_HAS_TYPEOF && JSTR_HAS_GENERIC *1/ */
 
 /* #if defined(__GNUC__) || defined(__clang__) */
 /* #	ifdef JSTR_HAS_GENERIC */
@@ -235,7 +235,7 @@
 /* #		define JSTR_ASSERT_IS_STR(expr) */
 /* #		define JSTR_ASSERT_IS_CHAR(expr) */
 /* #		define JSTR_ASSERT_TYPECHECK(Texpr, expr) */
-/* #	endif // JSTR_HAS_GENERIC */
+/* #	endif /1* JSTR_HAS_GENERIC *1/ */
 /* #	define JSTR_MACRO_START ({ */
 /* #	define JSTR_MACRO_END \ */
 /* 		;              \ */
@@ -244,7 +244,7 @@
 /* #	define JSTR_IS_SIZE(val) */
 /* #	define JSTR_MACRO_START ( */
 /* #	define JSTR_MACRO_END ) */
-/* #endif // __GNUC__ || __clang__ */
+/* #endif /1* __GNUC__ || __clang__ *1/ */
 
 #ifdef __cplusplus
 #	define JSTR_NOEXCEPT noexcept
