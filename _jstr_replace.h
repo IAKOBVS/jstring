@@ -78,15 +78,11 @@ static char *jstr_rmallc_mem_p(char *JSTR_RST s,
 	if (unlikely(!s))
 		return s + sz;
 	const char *src = s + 1;
-	goto MTC;
-	for (;;)
+	for (;; ++src)
 		if (*src != c) {
-		MTC:
-			*s++ = *src++;
 			if (unlikely(!*src))
 				break;
-		} else {
-			++src;
+			*s++ = *src;
 		}
 	*s = '\0';
 	return s;
@@ -110,15 +106,11 @@ static char *jstr_rmallc_p(char *JSTR_RST s,
 	if (unlikely(!s))
 		return s;
 	const char *src = s + 1;
-	goto MTC;
-	for (;;)
+	for (;; ++src)
 		if (*src != c) {
-		MTC:
-			*s++ = *src++;
 			if (unlikely(!*src))
 				break;
-		} else {
-			++src;
+			*s++ = *src;
 		}
 	*s = '\0';
 	return s;
@@ -145,20 +137,18 @@ static char *jstr_rmnc_mem_p(char *JSTR_RST s,
 	if (unlikely(!s))
 		return s;
 	const char *src = s + 1;
-	goto MTC;
-	for (;;)
+	for (;; ++src)
 		if (*src != c) {
-		MTC:
-			*s++ = *src++;
 			if (unlikely(!*src))
 				break;
-		} else if (unlikely(!--n)) {
-			do
-				*s++ = *src++;
-			while (*src);
-			break;
+			*s++ = *src;
 		} else {
-			++src;
+			if (unlikely(!--n)) {
+				do
+					*s++ = *src++;
+				while (*src);
+				break;
+			}
 		}
 	*s = '\0';
 	return s;
@@ -185,20 +175,18 @@ static char *jstr_rmnc_p(char *JSTR_RST s,
 	if (unlikely(!s))
 		return s;
 	const char *src = s + 1;
-	goto MTC;
-	for (;;)
+	for (;; ++src)
 		if (*src != c) {
-		MTC:
-			*s++ = *src++;
 			if (unlikely(!*src))
 				break;
-		} else if (unlikely(!--n)) {
-			do
-				*s++ = *src++;
-			while (*src);
-			break;
+			*s++ = *src;
 		} else {
-			++src;
+			if (unlikely(!--n)) {
+				do
+					*s++ = *src++;
+				while (*src);
+				break;
+			}
 		}
 	*s = '\0';
 	return s;
@@ -296,20 +284,18 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 	case 1: {
 		s = dst;
 		goto MTC1;
-		for (;;)
+		for (;; ++s)
 			if (*s != *searc) {
-				*dst++ = *s;
-				if (unlikely(!*++s))
+				if (unlikely(!*s))
 					break;
+				*dst++ = *s;
 			} else {
 			MTC1:
 				if (unlikely(!--n)) {
 					do
-						*dst++ = *s;
-					while (*++s);
+						*dst++ = *s++;
+					while (*s);
 					break;
-				} else {
-					++s;
 				}
 			}
 		*dst = '\0';
@@ -459,16 +445,12 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 		return dst;
 		break;
 	case 1: {
-		s = dst;
-		goto MTC1;
-		for (;;)
+		s = dst + 1;
+		for (;; ++s)
 			if (*s != *searc) {
-				*dst++ = *s;
-				if (unlikely(!*++s))
+				if (unlikely(!*s))
 					break;
-			} else {
-			MTC1:
-				++s;
+				*dst++ = *s;
 			}
 		*dst = '\0';
 		return dst;
