@@ -30,11 +30,11 @@ static char *jstr_rmc_mem_p(char *JSTR_RST s,
 	if (unlikely(!*s))
 		return s;
 	const char *const sstart = s;
-	if ((s = (char *)memchr(s, c, sz))) {
-		memmove(s, s + 1, sz - (s - sstart) + 1);
-		return s + sz - (s - sstart);
-	}
-	return s + sz;
+	s = (char *)memchr(s, c, sz);
+	if (unlikely(!s))
+		return s + sz;
+	memmove(s, s + 1, sz - (s - sstart) + 1);
+	return s + sz - (s - sstart);
 }
 
 /*
@@ -51,12 +51,13 @@ static char *jstr_rmc_p(char *JSTR_RST s,
 {
 	if (unlikely(!*s))
 		return s;
-	if ((s = strchr(s, c))) {
-		for (const char *src = s; (*s++ = *++src);)
-			;
-		*s = '\0';
-	}
-	return s;
+	s = strchr(s, c);
+	if (unlikely(!s))
+		return s;
+	const char *src = s;
+	while ((*s++ = *++src))
+		;
+	return s - 1;
 }
 
 /*
@@ -74,14 +75,15 @@ static char *jstr_rmallc_mem_p(char *JSTR_RST s,
 	if (unlikely(!*s))
 		return s;
 	s = (char *)memchr(s, c, sz);
-	if (!s)
+	if (unlikely(!s))
 		return s + sz;
 	const char *src = s + 1;
-	*s++ = *src++;
+	goto MTC;
 	for (;;)
 		if (*src != c) {
-			*s++ = *src;
-			if (unlikely(!*++src))
+		MTC:
+			*s++ = *src++;
+			if (unlikely(!*src))
 				break;
 		} else {
 			++src;
@@ -105,14 +107,15 @@ static char *jstr_rmallc_p(char *JSTR_RST s,
 	if (unlikely(!*s))
 		return s;
 	s = strchr(s, c);
-	if (!s)
+	if (unlikely(!s))
 		return s;
 	const char *src = s + 1;
-	*s++ = *src++;
+	goto MTC;
 	for (;;)
 		if (*src != c) {
-			*s++ = *src;
-			if (unlikely(!*++src))
+		MTC:
+			*s++ = *src++;
+			if (unlikely(!*src))
 				break;
 		} else {
 			++src;
@@ -139,19 +142,20 @@ static char *jstr_rmnc_mem_p(char *JSTR_RST s,
 	if (unlikely(n == 0))
 		return s + sz;
 	s = (char *)memchr(s, c, sz);
-	if (!s)
+	if (unlikely(!s))
 		return s;
 	const char *src = s + 1;
-	*s++ = *src++;
+	goto MTC;
 	for (;;)
 		if (*src != c) {
-			*s++ = *src;
-			if (unlikely(!*++src))
+		MTC:
+			*s++ = *src++;
+			if (unlikely(!*src))
 				break;
 		} else if (unlikely(!--n)) {
 			do
-				*s++ = *src;
-			while (*++src);
+				*s++ = *src++;
+			while (*src);
 			break;
 		} else {
 			++src;
@@ -178,19 +182,20 @@ static char *jstr_rmnc_p(char *JSTR_RST s,
 	if (unlikely(n == 0))
 		return s;
 	s = (char *)strchr(s, c);
-	if (!s)
+	if (unlikely(!s))
 		return s;
 	const char *src = s + 1;
-	*s++ = *src++;
+	goto MTC;
 	for (;;)
 		if (*src != c) {
-			*s++ = *src;
-			if (unlikely(!*++src))
+		MTC:
+			*s++ = *src++;
+			if (unlikely(!*src))
 				break;
 		} else if (unlikely(!--n)) {
 			do
-				*s++ = *src;
-			while (*++src);
+				*s++ = *src++;
+			while (*src);
 			break;
 		} else {
 			++src;
@@ -258,11 +263,10 @@ static char *jstr_rm_mem_p(char *JSTR_RST const s,
 			   const size_t searclen) JSTR_NOEXCEPT
 {
 	char *const p = (char *)jstr_memmem(s, sz, searc, searclen);
-	if (p) {
-		memmove(p, p + searclen, (s + sz) - p);
-		return s + sz - searclen;
-	}
-	return s + sz;
+	if (unlikely(!p))
+		return s + sz;
+	memmove(p, p + searclen, (s + sz) - p);
+	return s + sz - searclen;
 }
 
 /*
@@ -283,7 +287,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 	if (unlikely(n == 0))
 		return s + sz;
 	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
-	if (!dst)
+	if (unlikely(!dst))
 		return s + sz;
 	switch (searclen) {
 	case 0:
@@ -443,7 +447,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	if (unlikely(searclen == 0))
 		return s + sz;
 	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
-	if (!dst)
+	if (unlikely(!dst))
 		return s + sz;
 	switch (searclen) {
 	case 0:
@@ -561,8 +565,10 @@ static void jstr_replacec_mem(char *JSTR_RST s,
 			      const int rplc,
 			      const size_t sz) JSTR_NOEXCEPT
 {
-	if ((s = (char *)memchr(s, searc, sz)))
-		*s = rplc;
+	s = (char *)memchr(s, searc, sz);
+	if (unlikely(!s))
+		return;
+	*s = rplc;
 }
 
 /*
@@ -574,8 +580,10 @@ static void jstr_replacec(char *JSTR_RST s,
 			  const int searc,
 			  const int rplc) JSTR_NOEXCEPT
 {
-	if ((s = strchr(s, searc)))
-		*s = rplc;
+	s = strchr(s, searc);
+	if (unlikely(!s))
+		return;
+	*s = rplc;
 }
 
 /*
@@ -588,11 +596,16 @@ static void jstr_replaceallc_mem(char *JSTR_RST s,
 				 const int rplc,
 				 const size_t sz) JSTR_NOEXCEPT
 {
-	if ((s = (char *)memchr(s, searc, sz)))
-		do
-			if (*s == searc)
-				*s = rplc;
-		while (*++s);
+	s = (char *)memchr(s, searc, sz);
+	if (unlikely(!s))
+		return;
+	goto MTC;
+	for (;; ++s)
+		if (*s == searc)
+		MTC:
+			*s = rplc;
+		else if (unlikely(!*s))
+			break;
 }
 
 /*
@@ -604,11 +617,16 @@ static void jstr_replaceallc(char *JSTR_RST s,
 			     const int searc,
 			     const int rplc) JSTR_NOEXCEPT
 {
-	if ((s = strchr(s, searc)))
-		do
-			if (*s == searc)
-				*s = rplc;
-		while (*++s);
+	s = strchr(s, searc);
+	if (unlikely(!s))
+		return;
+	goto MTC;
+	for (;; ++s)
+		if (*s == searc)
+		MTC:
+			*s = rplc;
+		else if (unlikely(!*s))
+			break;
 }
 
 /*
@@ -622,15 +640,18 @@ static void jstr_replacenc_mem(char *JSTR_RST s,
 			       size_t n,
 			       const size_t sz) JSTR_NOEXCEPT
 {
-	if ((s = (char *)memchr(s, searc, sz)))
-		for (;;) {
-			if (*s == searc) {
-				*s++ = rplc;
-				if (unlikely(!--n))
-					break;
-			} else if (unlikely(!*++s)) {
+	s = (char *)memchr(s, searc, sz);
+	if (unlikely(!s))
+		return;
+	goto MTC;
+	for (;; ++s)
+		if (*s == searc) {
+		MTC:
+			*s = rplc;
+			if (unlikely(!--n))
 				break;
-			}
+		} else if (unlikely(!*s)) {
+			break;
 		}
 }
 
@@ -644,16 +665,20 @@ static void jstr_replacenc(char *JSTR_RST s,
 			   const int rplc,
 			   size_t n) JSTR_NOEXCEPT
 {
-	if ((s = strchr(s, searc)))
-		for (;;) {
-			if (*s == searc) {
-				*s = rplc;
-				if (unlikely(!--n))
-					break;
-			} else if (unlikely(!*++s)) {
+	s = strchr(s, searc);
+	if (unlikely(!s))
+		return;
+	goto MTC;
+	for (;;) {
+		if (*s == searc) {
+		MTC:
+			*s = rplc;
+			if (unlikely(!--n))
 				break;
-			}
+		} else if (unlikely(!*++s)) {
+			break;
 		}
+	}
 }
 
 /*

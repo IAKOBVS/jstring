@@ -259,5 +259,7 @@ sub gen_struct_funcs
 	$out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
 	$out_hpp =~ s/\n\n\n/\n\n/g;
 	$out_h   =~ s/\n\n\n/\n\n/g;
+	$out_h =~ s/\n\n*$/\n/g;
+	$out_hpp =~ s/\n\n*$/\n/g;
 	return ($out_h, $out_hpp);
 }
