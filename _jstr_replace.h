@@ -277,6 +277,10 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
 	if (unlikely(!dst))
 		return s + sz;
+	if (unlikely(dst + searclen + searclen >= s + sz)) {
+		*dst = '\0';
+		return dst;
+	}
 	switch (searclen) {
 	case 0:
 		return dst;
@@ -440,6 +444,10 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
 	if (unlikely(!dst))
 		return s + sz;
+	if (unlikely(dst + searclen + searclen >= s + sz)) {
+		*dst = '\0';
+		return dst;
+	}
 	switch (searclen) {
 	case 0:
 		return dst;
@@ -452,8 +460,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 					break;
 				*dst++ = *s;
 			}
-		*dst = '\0';
-		return dst;
+		goto END_UNDER_4;
 		break;
 	}
 	case 2: {
