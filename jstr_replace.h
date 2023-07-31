@@ -709,7 +709,7 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
 		/* FALLTHROUGH */
 	default: {
 		char *mtc = (char *)jstr_memmem(s, sz, searc, searclen);
-		if (!mtc)
+		if (unlikely(!mtc))
 			return s + sz;
 		memmove(mtc + rplclen,
 			mtc + searclen,
@@ -748,7 +748,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 		break;
 	default: {
 		char *mtc = (char *)jstr_memmem(*s, *sz, searc, searclen);
-		if (!mtc)
+		if (unlikely(!mtc))
 			return;
 		if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {
 			memmove(mtc + rplclen,
@@ -795,7 +795,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST const s,
 	if (unlikely(rplclen == 0))
 		return jstr_rmn_mem_p(s, searc, n, sz, searclen);
 	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
-	if (!dst)
+	if (unlikely(!dst))
 		return s + sz;
 	if (rplclen <= searclen) {
 		switch (searclen) {
@@ -954,7 +954,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST const s,
 	if (unlikely(rplclen == 0))
 		return jstr_rmall_mem_p(s, searc, sz, searclen);
 	char *dst = (char *)jstr_memmem(s, sz, searc, searclen);
-	if (!dst)
+	if (unlikely(!dst))
 		return s + sz;
 	if (rplclen <= searclen) {
 		switch (searclen) {
@@ -1097,7 +1097,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		return;
 	}
 	char *dst = (char *)jstr_memmem(*s, *sz, searc, searclen);
-	if (!dst)
+	if (unlikely(!dst))
 		return;
 	if (rplclen <= searclen) {
 		switch (searclen) {
@@ -1273,7 +1273,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		return;
 	}
 	char *dst = (char *)jstr_memmem(*s, *sz, searc, searclen);
-	if (!dst)
+	if (unlikely(!dst))
 		return;
 	if (rplclen <= searclen) {
 		switch (searclen) {
