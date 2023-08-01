@@ -245,38 +245,31 @@ static char *private_jstr_memmem2(const int use_remove,
 				  const char *JSTR_RST const searc,
 				  const char *JSTR_RST const rplc,
 				  size_t n,
-				  const size_t sz,
+				  size_t sz,
 				  const size_t rplclen) JSTR_NOEXCEPT
 {
 	const char *const end = s + sz;
 	const char *src = s + 2;
 	const uint16_t nw = searc[0] << 8 | searc[1];
 	uint16_t hw = s[0] << 8 | s[1];
-	for (; *src; hw = hw << 8 | *src++)
+	for (sz -= 2; sz--; hw = hw << 8 | *src++)
 		if (hw != nw) {
 			*s++ = *(src - 2);
 		} else {
-			src += 1;
+			++src;
 			if (use_replace) {
 				memcpy(s, rplc, rplclen);
 				s += rplclen;
 			} else if (use_remove) {
-				if (unlikely(!--n)) {
-					memmove(s, src, end - src - 2 + 1);
-					return s + (end - src - 2);
-				}
 			}
 			if (use_n) {
 				if (unlikely(!--n)) {
 					memmove(s, src - 2, end - src - 2 + 1);
-					return s + (end - src - 2);
+					memmove(s, src - 2, sz + 1);
+					return s + sz + 1;
 				}
 			}
 		}
-	if (hw != nw) {
-		memmove(s, src - 2, 2);
-		s += 2;
-	}
 	*s = '\0';
 	return s;
 }

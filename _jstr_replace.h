@@ -10,8 +10,8 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "_jstr_private_replace_memmem.h"
 #include "_jstr_macros.h"
+#include "_jstr_private_replace_memmem.h"
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
@@ -26,7 +26,9 @@ extern "C" {
 #define JSTR_HASH2(p)	(((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 #define JSTR_ASCII_SIZE 256
 
-/* TODO: Fix private_jstr_replaceall_memmem3 and 4. */
+/* #define JSTR_MEMMEM_USE_2 1 */
+
+/* TODO: Fix private_jstr_replaceall_memmem2, 3 and 4. */
 
 /*
   Remove first C in S.
@@ -295,9 +297,11 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 	case 1: {
 		return private_jstr_rmn_memmem1(s, *searc, n, sz);
 	}
+#if JSTR_MEMMEM_USE_2
 	case 2: {
 		return private_jstr_rmn_memmem2(s, searc, n, sz);
 	}
+#endif
 	/* case 3: { */
 	/* 	return private_jstr_rmn_memmem3(s, searc, n, sz); */
 	/* } */
@@ -331,9 +335,11 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	case 1: {
 		return private_jstr_rmall_memmem1(s, *searc, sz);
 	}
+#if JSTR_MEMMEM_USE_2
 	case 2: {
 		return private_jstr_rmall_memmem2(s, searc, sz);
 	}
+#endif
 	/* case 3: { */
 	/* 	return private_jstr_rmall_memmem3(s, searc, sz); */
 	/* } */
@@ -536,7 +542,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 			jstr_replacec_mem(*s, *searc, *rplc, *sz);
 			return;
 		}
-		break;
+		/* FALLTHROUGH */
 	default: {
 		char *mtc = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
 		if (unlikely(!mtc))
@@ -594,9 +600,11 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 			private_jstr_replacenc_memmem1(s, *searc, *rplc, n, sz);
 			return s + sz;
 		}
+#if JSTR_MEMMEM_USE_2
 		case 2: {
 			return private_jstr_replacen_memmem2(s, searc, rplc, n, sz, rplclen);
 		}
+#endif
 		/* case 3: { */
 		/* 	return private_jstr_replacen_memmem3(s, searc, rplc, n, sz, rplclen); */
 		/* } */
@@ -638,9 +646,11 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 		case 1: {
 			return private_jstr_replaceall_memmem1(s, *searc, *rplc, sz);
 		}
+#if JSTR_MEMMEM_USE_2
 		case 2: {
 			return private_jstr_replaceall_memmem2(s, searc, rplc, sz, rplclen);
 		}
+#endif
 		/* case 3: { */
 		/* 	return private_jstr_replaceall_memmem3(s, searc, rplc, sz, rplclen); */
 		/* } */
@@ -687,10 +697,12 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 			private_jstr_replacenc_memmem1(*s, *searc, *rplc, n, *sz);
 			return;
 		}
+#if JSTR_MEMMEM_USE_2
 		case 2: {
 			*sz = private_jstr_replacen_memmem2(*s, searc, rplc, n, *sz, rplclen) - *s;
 			return;
 		}
+#endif
 		/* case 3: { */
 		/* 	*sz = private_jstr_replacen_memmem3(*s, searc, rplc, n, *sz, rplclen) - *s; */
 		/* 	return; */
@@ -737,10 +749,12 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 			*sz = private_jstr_replaceall_memmem1(*s, *searc, *rplc, *sz) - *s;
 			return;
 		}
+#if JSTR_MEMMEM_USE_2
 		case 2: {
 			*sz = private_jstr_replaceall_memmem2(*s, searc, rplc, *sz, rplclen) - *s;
 			return;
 		}
+#endif
 		/* case 3: { */
 		/* 	*sz = private_jstr_replaceall_memmem3(*s, searc, rplc, *sz, rplclen) - *s; */
 		/* 	return; */
