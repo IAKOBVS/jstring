@@ -326,10 +326,8 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 {
 	if (unlikely(searclen == 0))
 		return s + sz;
-	if (unlikely(s + searclen + searclen >= s + sz)) {
-		*s = '\0';
-		return s;
-	}
+	if (unlikely(sz < searclen))
+		return s + sz;
 	switch (searclen) {
 	case 1: {
 		return private_jstr_rmall_memmem1(s, *searc, sz);
