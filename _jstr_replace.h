@@ -13,7 +13,7 @@ extern "C" {
 
 #include "_jstr_builder.h"
 #include "_jstr_macros.h"
-#include "_jstr_replace_memmem.h"
+#include "_jstr_private_replace_memmem.h"
 #include "_jstr_string.h"
 
 #define JSTR_EXTERN_C  1
@@ -292,7 +292,6 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		*s = '\0';
 		return s;
 	}
-	char *dst = s;
 	switch (searclen) {
 	case 1: {
 		return private_jstr_rmn_memmem1(s, *searc, n, sz);

@@ -15,6 +15,7 @@ my $G_DIR_CPP            = $G_DIR_C . 'pp';
 my $G_OUT_C              = "$G_DIR_C/$G_FNAME_BASE";
 my $G_OUT_CPP            = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
 # my $G_IGNORE_FILE_NONMEM = 'builder.h';
+my $G_IGNORE_FILE = 'private';
 
 my $G_NMSPC      = 'jstr';
 my $G_NMSPC_UPP  = uc($G_NMSPC);
@@ -121,6 +122,9 @@ sub gen_nonmem_funcs
 		if ($g_in_h =~ /$tmp\(/) {
 			goto NEXT;
 		}
+		if ($G_FNAME =~ /$G_IGNORE_FILE/) {
+			goto NEXT;
+		}
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/)       ? 'return ' : '';
 		$params =~ s/\)/,/;
@@ -193,6 +197,9 @@ sub gen_struct_funcs
 			goto NEXT;
 		}
 		if ($FUNC_NAME !~ /$G_NMSPC\_/) {
+			goto NEXT;
+		}
+		if ($G_FNAME =~ /$G_IGNORE_FILE/) {
 			goto NEXT;
 		}
 		my $RETURN           = ($decl =~ /void/) ? '' : 'return ';
@@ -278,7 +285,7 @@ sub gen_struct_funcs
 	$out_hpp =~ s/H_DEF/HPP_DEF/g;
 	$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/;
 	$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/;
-	$out_hpp =~ s/$G_NMSPC\_(\w*\()/$1/go;
+	$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
 	$out_hpp =~ s/\tt\(/\t$G_STR_STRUCT(/go;
 	$out_hpp =~ s/\t~t\(/\t$G_STR_STRUCT(/go;
 	$out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
