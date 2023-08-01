@@ -281,14 +281,13 @@ static char *private_jstr_memmem3(const int use_remove,
 				  const char *JSTR_RST const searc,
 				  const char *JSTR_RST const rplc,
 				  size_t n,
-				  const size_t sz,
+				  size_t sz,
 				  const size_t rplclen) JSTR_NOEXCEPT
 {
-	const char *const end = s + sz;
 	const char *src = s + 3;
 	const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
 	uint32_t hw = s[0] << 24 | s[1] << 16 | s[2] << 8;
-	for (; *s; hw = (hw | *s++) << 8)
+	for (sz -= 3; sz--; hw = (hw | *s++) << 8)
 		if (hw != nw) {
 			*s++ = *(src - 3);
 		} else {
@@ -296,16 +295,12 @@ static char *private_jstr_memmem3(const int use_remove,
 			if (use_replace) {
 				memcpy(s, rplc, rplclen);
 				s += rplclen;
-				if (use_n) {
-					if (unlikely(!--n)) {
-						memmove(s, src - 3, end - src - 3 + 1);
-						return s + (end - src - 3);
-					}
-				}
 			} else if (use_remove) {
+			}
+			if (use_n) {
 				if (unlikely(!--n)) {
-					memmove(s, src - 3, end - src - 3 + 1);
-					return s + (end - src - 3);
+					memmove(s, src - 3, sz + 1);
+					return s + sz + 1;
 				}
 			}
 		}
