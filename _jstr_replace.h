@@ -4,17 +4,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */
 
-#include "_jstr_builder.h"
-#include "_jstr_macros.h"
 #include "_jstr_private_replace_memmem.h"
-#include "_jstr_string.h"
+#include "_jstr_macros.h"
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
