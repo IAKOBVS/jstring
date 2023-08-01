@@ -259,18 +259,19 @@ static char *private_jstr_memmem2(const int use_remove,
 			if (use_replace) {
 				memcpy(s, rplc, rplclen);
 				s += rplclen;
+				src += 1;
 				if (use_n)
 					if (unlikely(!--n)) {
 						memmove(s, src - 2, end - src - 2 + 1);
-						return s;
+						return s + (end - src - 2);
 					}
 			} else if (use_remove) {
 				if (unlikely(!--n)) {
-					memmove(s, src - 2, end - src - 2 + 1);
-					return s;
+					memmove(s, src, end - src - 2 + 1);
+					return s + (end - src - 2);
 				}
+				src += 1;
 			}
-			src += 2;
 		}
 	if (hw != nw) {
 		memmove(s, src - 2, 2);
@@ -300,21 +301,23 @@ static char *private_jstr_memmem3(const int use_remove,
 		if (hw != nw) {
 			*s++ = *(src - 3);
 		} else {
+			puts(src - 3);
 			if (use_replace) {
 				memcpy(s, rplc, rplclen);
 				s += rplclen;
+				src += 3;
 				if (use_n)
 					if (unlikely(!--n)) {
 						memmove(s, src - 3, end - src - 3 + 1);
-						return s;
+						return s + (end - src - 3);
 					}
 			} else if (use_remove) {
+				src += 3;
 				if (unlikely(!--n)) {
 					memmove(s, src - 3, end - src - 3 + 1);
-					return s;
+					return s + (end - src - 3);
 				}
 			}
-			src += 3;
 		}
 	if (hw != nw) {
 		memmove(s, src - 3, 3);
@@ -347,19 +350,20 @@ static char *private_jstr_memmem4(const int use_remove,
 			if (use_replace) {
 				memcpy(s, rplc, rplclen);
 				s += rplclen;
+				src += 4;
 				if (use_n)
 					if (unlikely(!--n)) {
 						memmove(s, src - 4, end - src - 4 + 1);
-						return s;
+						return s + (end - src - 4);
 					}
 			} else if (use_remove) {
+				src += 4;
 				if (use_n)
 					if (unlikely(!--n)) {
 						memmove(s, src - 4, end - src - 4 + 1);
-						return s;
+						return s + (end - src - 4);
 					}
 			}
-			src += 4;
 		}
 	if (hw != nw) {
 		memmove(s, src - 4, 4);
