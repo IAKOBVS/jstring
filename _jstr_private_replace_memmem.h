@@ -248,7 +248,6 @@ static char *private_jstr_memmem2(const int use_remove,
 				  size_t sz,
 				  const size_t rplclen) JSTR_NOEXCEPT
 {
-	const char *const end = s + sz;
 	const char *src = s + 2;
 	const uint16_t nw = searc[0] << 8 | searc[1];
 	uint16_t hw = s[0] << 8 | s[1];
@@ -264,7 +263,6 @@ static char *private_jstr_memmem2(const int use_remove,
 			}
 			if (use_n) {
 				if (unlikely(!--n)) {
-					memmove(s, src - 2, end - src - 2 + 1);
 					memmove(s, src - 2, sz + 1);
 					return s + sz + 1;
 				}

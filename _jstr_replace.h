@@ -26,9 +26,7 @@ extern "C" {
 #define JSTR_HASH2(p)	(((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 #define JSTR_ASCII_SIZE 256
 
-/* #define JSTR_MEMMEM_USE_2 1 */
-
-/* TODO: Fix private_jstr_replaceall_memmem2, 3 and 4. */
+/* TODO: Fix private_jstr_replaceall_memmem3 and 4. */
 
 /*
   Remove first C in S.
