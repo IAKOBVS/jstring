@@ -657,15 +657,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 		}
 	}
 RPLC:
-	while ((dst = (char *)JSTR_MEMMEM(dst, (s + sz) - dst, searc, searclen))) {
-		memmove(dst + rplclen,
-			dst + searclen,
-			(s + sz + 1) - dst + searclen);
-		memcpy(dst, rplc, rplclen);
-		dst += rplclen;
-		sz += (long long)(rplclen - searclen);
-	}
-	return s + sz;
+	return private_jstr_replaceall_move(s, searc, rplc, sz, searclen, rplclen);
 }
 
 /*
