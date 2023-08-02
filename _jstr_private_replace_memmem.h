@@ -245,14 +245,15 @@ static char *private_jstr_memmem2(const int use_remove,
 				  const char *JSTR_RST const searc,
 				  const char *JSTR_RST const rplc,
 				  size_t n,
-				  size_t sz,
+				  const size_t sz,
 				  const size_t rplclen) JSTR_NOEXCEPT
 {
 	const char *src = s + 2;
+	const char *const end = s + sz;
 	const uint16_t nw = searc[0] << 8 | searc[1];
-	uint16_t hw = s[0] << 8 | s[1];
-	for (sz -= 2; sz--; hw = hw << 8 | *src++)
-		if (hw != nw) {
+	uint16_t sw = s[0] << 8 | s[1];
+	for (; src <= end; sw = sw << 8 | *src++)
+		if (sw != nw) {
 			*s++ = *(src - 2);
 		} else {
 			++src;
@@ -263,8 +264,8 @@ static char *private_jstr_memmem2(const int use_remove,
 			}
 			if (use_n) {
 				if (unlikely(!--n)) {
-					memmove(s, src - 2, sz + 1);
-					return s + sz + 1;
+					memmove(s, src - 1, end - src - 1 + 1);
+					return s + (end - src - 1);
 				}
 			}
 		}
@@ -281,14 +282,15 @@ static char *private_jstr_memmem3(const int use_remove,
 				  const char *JSTR_RST const searc,
 				  const char *JSTR_RST const rplc,
 				  size_t n,
-				  size_t sz,
+				  const size_t sz,
 				  const size_t rplclen) JSTR_NOEXCEPT
 {
 	const char *src = s + 3;
+	const char *const end = s + sz;
 	const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
-	uint32_t hw = s[0] << 24 | s[1] << 16 | s[2] << 8;
-	for (sz -= 3; sz--; hw = (hw | *s++) << 8)
-		if (hw != nw) {
+	uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8;
+	for (; src <= end; sw = (sw | *s++) << 8)
+		if (sw != nw) {
 			*s++ = *(src - 3);
 		} else {
 			src += 2;
@@ -299,15 +301,11 @@ static char *private_jstr_memmem3(const int use_remove,
 			}
 			if (use_n) {
 				if (unlikely(!--n)) {
-					memmove(s, src - 3, sz + 1);
-					return s + sz + 1;
+					memmove(s, src - 2, end - src - 2 + 1);
+					return s + (end - src - 2);
 				}
 			}
 		}
-	if (hw != nw) {
-		memmove(s, src - 3, 3);
-		s += 3;
-	}
 	*s = '\0';
 	return s;
 }
@@ -327,34 +325,24 @@ static char *private_jstr_memmem4(const int use_remove,
 	const char *const end = s + sz;
 	const char *src = s + 4;
 	const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
-	uint32_t hw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
-	for (; *s; hw = hw << 8 | *s++)
-		if (hw != nw) {
+	uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
+	for (; src <= end; sw = sw << 8 | *s++)
+		if (sw != nw) {
 			*s++ = *(src - 4);
 		} else {
-			src += 4;
+			src += 3;
 			if (use_replace) {
 				memcpy(s, rplc, rplclen);
 				s += rplclen;
-				if (use_n) {
-					if (unlikely(!--n)) {
-						memmove(s, src - 4, end - src - 4 + 1);
-						return s + (end - src - 4);
-					}
-				}
 			} else if (use_remove) {
-				if (use_n) {
-					if (unlikely(!--n)) {
-						memmove(s, src - 4, end - src - 4 + 1);
-						return s + (end - src - 4);
-					}
+			}
+			if (use_n) {
+				if (unlikely(!--n)) {
+					memmove(s, src - 3, end - src - 3 + 1);
+					return s + (end - src - 3);
 				}
 			}
 		}
-	if (hw != nw) {
-		memmove(s, src - 4, 4);
-		s += 4;
-	}
 	*s = '\0';
 	return s;
 }
@@ -379,7 +367,6 @@ static char *private_jstr_memmem5(const int use_remove,
 			shift[JSTR_HASH2(searc + i)] = i;                   \
 		shift1 = m1 - shift[JSTR_HASH2(searc + m1)];                \
 		shift[JSTR_HASH2(searc + m1)] = m1;                         \
-		char *old = dst;                                            \
 		while (s <= end) {                                          \
 			do {                                                \
 				s += m1;                                    \
@@ -390,16 +377,13 @@ static char *private_jstr_memmem5(const int use_remove,
 				continue;                                   \
 			if (m1 < 15 || !memcmp(s + off, searc + off, 8)) {  \
 				if (!memcmp(s, searc, searclen)) {          \
+					memmove(dst, old, s - old);         \
+					dst += (s - old);                   \
+					old += (s - old);                   \
 					if (use_replace) {                  \
-						memmove(dst, old, s - old); \
-						dst += (s - old);           \
-						old += (s - old);           \
 						memcpy(dst, rplc, rplclen); \
 						dst += rplclen;             \
 					} else if (use_remove) {            \
-						memmove(dst, old, s - old); \
-						dst += (s - old);           \
-						old += (s - old);           \
 					}                                   \
 					old += searclen;                    \
 					s += searclen;                      \
@@ -417,6 +401,7 @@ static char *private_jstr_memmem5(const int use_remove,
 		return dst + (end + searclen - old);                        \
 	} while (0)
 	char *dst = s;
+	char *old = s;
 	const char *const end = s + sz - searclen;
 	size_t off = 0;
 	size_t tmp;
