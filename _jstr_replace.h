@@ -590,19 +590,15 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 		goto RPLC_GROW;
 	if (rplclen <= searclen) {
 		switch (searclen) {
-		case 1: {
+		case 1:
 			private_jstr_replacenc_memmem1(s, *searc, *rplc, n, sz);
 			return s + sz;
-		}
-		case 2: {
+		case 2:
 			return private_jstr_replacen_memmem2(s, searc, rplc, n, sz, rplclen);
-		}
-		/* case 3: { */
+		/* case 3: */
 		/* 	return private_jstr_replacen_memmem3(s, searc, rplc, n, sz, rplclen); */
-		/* } */
-		/* case 4: { */
+		/* case 4: */
 		/* 	return private_jstr_replacen_memmem4(s, searc, rplc, n, sz, rplclen); */
-		/* } */
 		default: {
 			return private_jstr_replacen_memmem5(s, searc, rplc, n, sz, searclen, rplclen);
 		}
@@ -635,18 +631,14 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 		goto RPLC;
 	if (rplclen <= searclen) {
 		switch (searclen) {
-		case 1: {
+		case 1:
 			return private_jstr_replaceall_memmem1(s, *searc, *rplc, sz);
-		}
-		case 2: {
+		case 2:
 			return private_jstr_replaceall_memmem2(s, searc, rplc, sz, rplclen);
-		}
-		/* case 3: { */
+		/* case 3: */
 		/* 	return private_jstr_replaceall_memmem3(s, searc, rplc, sz, rplclen); */
-		/* } */
-		/* case 4: { */
+		/* case 4: */
 		/* 	return private_jstr_replaceall_memmem4(s, searc, rplc, sz, rplclen); */
-		/* } */
 		default: {
 			return private_jstr_replaceall_memmem5(s, searc, rplc, sz, searclen, rplclen);
 		}
@@ -683,22 +675,19 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		goto RPLC_GROW;
 	if (rplclen <= searclen) {
 		switch (searclen) {
-		case 1: {
+		case 1:
 			private_jstr_replacenc_memmem1(*s, *searc, *rplc, n, *sz);
 			return;
-		}
-		case 2: {
+		case 2:
 			*sz = private_jstr_replacen_memmem2(*s, searc, rplc, n, *sz, rplclen) - *s;
 			return;
-		}
-		/* case 3: { */
+		/* case 3: */
 		/* 	*sz = private_jstr_replacen_memmem3(*s, searc, rplc, n, *sz, rplclen) - *s; */
 		/* 	return; */
-		/* } */
-		/* case 4: { */
+		/* */
+		/* case 4: */
 		/* 	*sz = private_jstr_replacen_memmem4(*s, searc, rplc, n, *sz, rplclen) - *s; */
 		/* 	return; */
-		/* } */
 		default: {
 			*sz = private_jstr_replacen_memmem5(*s, searc, rplc, n, *sz, searclen, rplclen) - *s;
 			return;
@@ -733,22 +722,18 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		goto RPLC_GROW;
 	if (rplclen <= searclen) {
 		switch (searclen) {
-		case 1: {
+		case 1:
 			*sz = private_jstr_replaceall_memmem1(*s, *searc, *rplc, *sz) - *s;
 			return;
-		}
-		case 2: {
+		case 2:
 			*sz = private_jstr_replaceall_memmem2(*s, searc, rplc, *sz, rplclen) - *s;
 			return;
-		}
-		/* case 3: { */
+		/* case 3: */
 		/* 	*sz = private_jstr_replaceall_memmem3(*s, searc, rplc, *sz, rplclen) - *s; */
 		/* 	return; */
-		/* } */
-		/* case 4: { */
+		/* case 4: */
 		/* 	*sz = private_jstr_replaceall_memmem4(*s, searc, rplc, *sz, rplclen) - *s; */
 		/* 	return; */
-		/* } */
 		default: {
 			*sz = private_jstr_replaceall_memmem5(*s, searc, rplc, *sz, searclen, rplclen) - *s;
 			return;
