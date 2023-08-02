@@ -172,6 +172,7 @@ static char *private_jstr_rmn_memmem1(char *JSTR_RST s,
 	if (unlikely(!s))
 		return s + sz;
 	const char *src = s + 1;
+	const char *const end = s + sz;
 	for (;; ++src)
 		if (*src != c) {
 			if (unlikely(!*src))
@@ -179,10 +180,8 @@ static char *private_jstr_rmn_memmem1(char *JSTR_RST s,
 			*s++ = *src;
 		} else {
 			if (unlikely(!--n)) {
-				do
-					*s++ = *src++;
-				while (*s);
-				break;
+				memmove(s, src, end - src + 1);
+				return s + (end - src + 1);
 			}
 		}
 	*s = '\0';
@@ -248,6 +247,13 @@ static char *private_jstr_memmem2(const int use_remove,
 				  const size_t sz,
 				  const size_t rplclen) JSTR_NOEXCEPT
 {
+	if (use_n) {
+		if (unlikely(n == 0)) {
+			return s + sz;
+		}
+	}
+	if (unlikely(sz < 2))
+		return s + sz;
 	const char *src = s + 2;
 	const char *const end = s + sz;
 	const uint16_t nw = searc[0] << 8 | searc[1];
@@ -400,6 +406,12 @@ static char *private_jstr_memmem5(const int use_remove,
 		memmove(dst, old, end + searclen - old + 1);                \
 		return dst + (end + searclen - old);                        \
 	} while (0)
+	if (use_n) {
+		if (unlikely(n == 0))
+			return s + sz;
+	}
+	if (unlikely(sz < searclen))
+		return s + sz;
 	char *dst = s;
 	char *old = s;
 	const char *const end = s + sz - searclen;
