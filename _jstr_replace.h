@@ -149,6 +149,7 @@ static char *jstr_rmnc_mem_p(char *JSTR_RST s,
 	s = (char *)memchr(s, c, sz);
 	if (unlikely(!s))
 		return s;
+	const char *const end = s + sz;
 	const char *src = s + 1;
 	for (;; ++src)
 		if (*src != c) {
@@ -157,9 +158,7 @@ static char *jstr_rmnc_mem_p(char *JSTR_RST s,
 			*s++ = *src;
 		} else {
 			if (unlikely(!--n)) {
-				do
-					*s++ = *src++;
-				while (*src);
+				memmove(s, src, end - src + 1);
 				break;
 			}
 		}
@@ -292,16 +291,11 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 		return s;
 	}
 	switch (searclen) {
-	case 1:
-		return private_jstr_rmn_memmem1(s, *searc, n, sz);
-	case 2:
-		return private_jstr_rmn_memmem2(s, searc, n, sz);
-	/* case 3: */
-	/* 	return private_jstr_rmn_memmem3(s, searc, n, sz); */
-	/* case 4: */
-	/* 	return private_jstr_rmn_memmem4(s, searc, n, sz); */
-	default:
-		return private_jstr_rmn_memmem5(s, searc, n, sz, searclen);
+	case 1: return private_jstr_rmn_memmem1(s, *searc, n, sz);
+	case 2: return private_jstr_rmn_memmem2(s, searc, n, sz);
+	/* case 3: return private_jstr_rmn_memmem3(s, searc, n, sz); */
+	/* case 4: return private_jstr_rmn_memmem4(s, searc, n, sz); */
+	default: return private_jstr_rmn_memmem5(s, searc, n, sz, searclen);
 	}
 }
 
@@ -323,16 +317,11 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	if (unlikely(sz < searclen))
 		return s + sz;
 	switch (searclen) {
-	case 1:
-		return private_jstr_rmall_memmem1(s, *searc, sz);
-	case 2:
-		return private_jstr_rmall_memmem2(s, searc, sz);
-	/* case 3: */
-	/* 	return private_jstr_rmall_memmem3(s, searc, sz); */
-	/* case 4: */
-	/* 	return private_jstr_rmall_memmem4(s, searc, sz); */
-	default:
-		return private_jstr_rmall_memmem5(s, searc, sz, searclen);
+	case 1: return private_jstr_rmall_memmem1(s, *searc, sz);
+	case 2: return private_jstr_rmall_memmem2(s, searc, sz);
+	/* case 3: return private_jstr_rmall_memmem3(s, searc, sz); */
+	/* case 4: return private_jstr_rmall_memmem4(s, searc, sz); */
+	default: return private_jstr_rmall_memmem5(s, searc, sz, searclen);
 	}
 }
 
@@ -735,5 +724,6 @@ RPLC_GROW:;
 #endif /* JSTR_NAMESPACE */
 
 #undef JSTR_HASH2
+#undef JSTR_ASCII_SIZE
 
 #endif /* JSTR_H_REPLACE_DEF */
