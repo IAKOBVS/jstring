@@ -139,7 +139,7 @@ sub gen_nonmem_funcs
 		$decl =~ s/($G_NMSPC\_\w*)_mem(\w*\()/$1$2/o;
 		my $func_args;
 		for (my $i = 0 ; $i <= $#new_args ; ++$i) {
-			$func_args .= $PTR . "$new_args[$i],";
+			$func_args .= $PTR . "$new_args[$i], ";
 		}
 		$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
 		my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
@@ -156,9 +156,9 @@ sub gen_nonmem_funcs
 					$_ = "strlen($new_args[0])";
 				}
 			}
-			$decl .= "$_,";
+			$decl .= "$_, ";
 		}
-		$decl =~ s/,$//;
+		$decl =~ s/, $//;
 		$decl .= ");\n}\n";
 		push(@NEW_LNS, $_);
 		push(@NEW_LNS, $decl);
@@ -247,16 +247,16 @@ sub gen_struct_funcs
 				push(@new_args, $_);
 			}
 		}
-		$body .= $PTR . "$G_STRUCT_VAR->$G_STRUCT_DATA,";
+		$body .= $PTR . "$G_STRUCT_VAR->$G_STRUCT_DATA, ";
 		for (my $i = 1 ; $i <= $#new_args ; ++$i) {
 			if ($new_args[$i] =~ /$G_SIZE_PTN/o) {
 				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
 			} elsif ($new_args[$i] =~ /$G_CAP_PTN/o) {
 				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_CAP";
 			}
-			$body .= "$new_args[$i],";
+			$body .= "$new_args[$i], ";
 		}
-		$body =~ s/,$//;
+		$body =~ s/, $//;
 		$body .= ")";
 		if ($RETURNS_PTR_FUNC) {
 			$body = "$G_STRUCT_VAR->$G_STRUCT_SIZE = $body";
