@@ -291,6 +291,8 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			      size_t sz,
 			      const size_t searclen) JSTR_NOEXCEPT
 {
+	if (unlikely(searclen > sz))
+		return s + sz;
 	switch (searclen) {
 	case 0: return s + sz;
 	case 1: return private_jstr_rmall_memmem1(s, *searc, sz);

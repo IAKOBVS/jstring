@@ -252,8 +252,6 @@ static char *private_jstr_memmem2(const int use_remove,
 			return s + sz;
 		}
 	}
-	if (unlikely(sz < 2))
-		return s + sz;
 	const char *src = s + 2;
 	const char *const end = s + sz;
 	const uint16_t nw = searc[0] << 8 | searc[1];
