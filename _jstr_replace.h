@@ -52,7 +52,6 @@ static char *jstr_rmc_mem_p(char *JSTR_RST s,
   Remove first C in S.
   Return value:
   Pointer to '\0' in S;
-  S if no C in S.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -60,13 +59,17 @@ JSTR_WARN_UNUSED
 static char *jstr_rmc_p(char *JSTR_RST s,
 			const int c) JSTR_NOEXCEPT
 {
-	s = strchr(s, c);
-	if (unlikely(!s))
+#ifdef JSTR_HAS_STRCHRNUL
+	s = strchrnul(s, c);
+	if (unlikely(!*s))
 		return s;
 	const char *src = s;
 	while ((*s++ = *++src))
 		;
 	return s - 1;
+#else
+	return jstr_rmc_mem_p(s, c, strlen(s));
+#endif /* HAS_STRCHRNUL */
 }
 
 /*
@@ -99,7 +102,6 @@ static char *jstr_rmallc_mem_p(char *JSTR_RST s,
   Remove all C in S.
   Return value:
   Pointer to '\0' in S;
-  S if no C in S.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -107,8 +109,9 @@ JSTR_WARN_UNUSED
 static char *jstr_rmallc_p(char *JSTR_RST s,
 			   const int c) JSTR_NOEXCEPT
 {
-	s = strchr(s, c);
-	if (unlikely(!s))
+#ifdef JSTR_HAS_STRCHRNUL
+	s = strchrnul(s, c);
+	if (unlikely(!*s))
 		return s;
 	const char *src = s + 1;
 	for (;; ++src)
@@ -119,6 +122,8 @@ static char *jstr_rmallc_p(char *JSTR_RST s,
 		}
 	*s = '\0';
 	return s;
+#endif /* HAS_STRCHRNUL */
+	return jstr_rmallc_mem_p(s, c, strlen(s));
 }
 
 /*
@@ -158,7 +163,6 @@ static char *jstr_rmnc_mem_p(char *JSTR_RST s,
   Remove N C in S.
   Return value:
   Pointer to '\0' in S;
-  S if no C in S.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -167,8 +171,9 @@ static char *jstr_rmnc_p(char *JSTR_RST s,
 			 const int c,
 			 size_t n) JSTR_NOEXCEPT
 {
-	s = (char *)strchr(s, c);
-	if (unlikely(!s))
+#ifdef JSTR_HAS_STRCHRNUL
+	s = (char *)strchrnul(s, c);
+	if (unlikely(!*s))
 		return s;
 	const char *src = s + 1;
 	for (;; ++src)
@@ -186,13 +191,59 @@ static char *jstr_rmnc_p(char *JSTR_RST s,
 		}
 	*s = '\0';
 	return s;
+#else
+	return jstr_rmnc_mem_p(s, c, n, strlen(s));
+#endif /* HAS_STRCHRNUL */
 }
 
 /*
   Remove characters in REJECT in S.
   Return value:
-  Pointer to '\0' in S;
-  S if no REJECT in S, and REJECT is one character.
+  Pointer to '\0' in S.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static char *jstr_stripspn_mem_p(char *JSTR_RST s,
+				 const char *JSTR_RST reject,
+				 const size_t sz) JSTR_NOEXCEPT
+{
+	enum {
+		ACCEPT = 0,
+		REJECT,
+		NUL,
+	};
+	if (unlikely(!reject[0]))
+		return s + sz;
+	if (unlikely(!reject[1]))
+		return jstr_rmallc_mem_p(s, *reject, sz);
+	unsigned char tbl[JSTR_ASCII_SIZE];
+	memset(tbl, ACCEPT, 64);
+	memset(&tbl[64], ACCEPT, 64);
+	memset(&tbl[128], ACCEPT, 64);
+	memset(&tbl[192], ACCEPT, 64);
+	tbl[0] = NUL;
+	do
+		tbl[(unsigned char)*reject++] = REJECT;
+	while (*reject);
+	for (const unsigned char *src = (unsigned char *)s;; ++src) {
+		switch (tbl[*src]) {
+		case ACCEPT:
+			*s++ = *src;
+		case REJECT:
+			continue;
+		case NUL:;
+		}
+		break;
+	}
+	*s = '\0';
+	return s;
+}
+
+/*
+  Remove characters in REJECT in S.
+  Return value:
+  Pointer to '\0' in S.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -206,9 +257,9 @@ static char *jstr_stripspn_p(char *JSTR_RST s,
 		NUL,
 	};
 	if (unlikely(!reject[0]))
-		return s;
+		return s + strlen(s);
 	if (unlikely(!reject[1]))
-		return s;
+		return jstr_rmallc_p(s, *reject);
 	unsigned char tbl[JSTR_ASCII_SIZE];
 	memset(tbl, ACCEPT, 64);
 	memset(&tbl[64], ACCEPT, 64);

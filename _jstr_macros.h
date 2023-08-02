@@ -553,6 +553,10 @@ case ' ':
 #	endif
 #endif /* __GLIBC__ */
 
+#ifdef _GNU_SOURCE
+#	define JSTR_HAS_STRCHRNUL
+#endif /* _GNU_SOURCE */
+
 #define JSTR_RST JSTR_RESTRICT
 
 #endif /* JSTR_MACROS_H_DEF */
