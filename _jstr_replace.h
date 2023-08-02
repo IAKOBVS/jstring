@@ -282,15 +282,12 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 			    size_t sz,
 			    const size_t searclen) JSTR_NOEXCEPT
 {
-	if (unlikely(searclen == 0))
-		return s + sz;
 	if (unlikely(n == 0))
 		return s + sz;
-	if (unlikely(s + searclen + searclen >= s + sz)) {
-		*s = '\0';
-		return s;
-	}
+	if (unlikely(searclen > sz))
+		return s + sz;
 	switch (searclen) {
+	case 0: return s + sz;
 	case 1: return private_jstr_rmn_memmem1(s, *searc, n, sz);
 	case 2: return private_jstr_rmn_memmem2(s, searc, n, sz);
 	/* case 3: return private_jstr_rmn_memmem3(s, searc, n, sz); */
@@ -312,11 +309,10 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			      size_t sz,
 			      const size_t searclen) JSTR_NOEXCEPT
 {
-	if (unlikely(searclen == 0))
-		return s + sz;
 	if (unlikely(sz < searclen))
 		return s + sz;
 	switch (searclen) {
+	case 0: return s + sz;
 	case 1: return private_jstr_rmall_memmem1(s, *searc, sz);
 	case 2: return private_jstr_rmall_memmem2(s, searc, sz);
 	/* case 3: return private_jstr_rmall_memmem3(s, searc, sz); */
@@ -564,25 +560,23 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 		return s + sz;
 	if (unlikely(rplclen == 0))
 		return jstr_rmn_mem_p(s, searc, n, sz, searclen);
-	if (unlikely(s + searclen + searclen >= s + sz))
-		goto RPLC_GROW;
+	if (unlikely(searclen > sz))
+		return s + sz;
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1:
-			private_jstr_replacenc_memmem1(s, *searc, *rplc, n, sz);
-			return s + sz;
+			if (rplclen == 1) {
+				private_jstr_replacenc_memmem1(s, *searc, *rplc, n, sz);
+				return s + sz;
+			}
+			/* FALLTHROUGH */
+		default: return private_jstr_replacen_memmem5(s, searc, rplc, n, sz, searclen, rplclen);
 		case 2:
 			return private_jstr_replacen_memmem2(s, searc, rplc, n, sz, rplclen);
-		/* case 3: */
-		/* 	return private_jstr_replacen_memmem3(s, searc, rplc, n, sz, rplclen); */
-		/* case 4: */
-		/* 	return private_jstr_replacen_memmem4(s, searc, rplc, n, sz, rplclen); */
-		default: {
-			return private_jstr_replacen_memmem5(s, searc, rplc, n, sz, searclen, rplclen);
-		}
+			/* case 3: return private_jstr_replacen_memmem3(s, searc, rplc, n, sz, rplclen); */
+			/* case 4: return private_jstr_replacen_memmem4(s, searc, rplc, n, sz, rplclen); */
 		}
 	}
-RPLC_GROW:
 	return private_jstr_replacen_move(s, searc, rplc, n, sz, searclen, rplclen);
 }
 
@@ -604,24 +598,21 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 		return s + sz;
 	if (unlikely(rplclen == 0))
 		return jstr_rmall_mem_p(s, searc, sz, searclen);
-	if (unlikely(s + searclen + searclen >= s + sz))
-		goto RPLC;
+	if (unlikely(searclen > sz))
+		return s + sz;
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1:
-			return private_jstr_replaceall_memmem1(s, *searc, *rplc, sz);
+			if (rplclen == 1)
+				return private_jstr_replaceall_memmem1(s, *searc, *rplc, sz);
+			/* FALLTHROUGH */
+		default: return private_jstr_replaceall_memmem5(s, searc, rplc, sz, searclen, rplclen);
 		case 2:
 			return private_jstr_replaceall_memmem2(s, searc, rplc, sz, rplclen);
-		/* case 3: */
-		/* 	return private_jstr_replaceall_memmem3(s, searc, rplc, sz, rplclen); */
-		/* case 4: */
-		/* 	return private_jstr_replaceall_memmem4(s, searc, rplc, sz, rplclen); */
-		default: {
-			return private_jstr_replaceall_memmem5(s, searc, rplc, sz, searclen, rplclen);
-		}
+			/* case 3: return private_jstr_replaceall_memmem3(s, searc, rplc, sz, rplclen); */
+			/* case 4: return private_jstr_replaceall_memmem4(s, searc, rplc, sz, rplclen); */
 		}
 	}
-RPLC:
 	return private_jstr_replaceall_move(s, searc, rplc, sz, searclen, rplclen);
 }
 
@@ -647,8 +638,8 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 		*sz = jstr_rmn_mem_p(*s, searc, n, *sz, searclen) - *s;
 		return;
 	}
-	if (unlikely(*s + searclen + searclen >= *s + *sz))
-		goto RPLC_GROW;
+	if (unlikely(searclen > *sz))
+		return;
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1:
@@ -668,7 +659,6 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 			return;
 		}
 	}
-RPLC_GROW:;
 	private_jstr_replacen_grow(s, sz, cap, searc, rplc, n, searclen, rplclen);
 }
 
@@ -691,28 +681,30 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 		*sz = jstr_rmall_mem_p(*s, searc, *sz, searclen) - *s;
 		return;
 	}
-	if (unlikely(*s + searclen + searclen >= *s + *sz))
-		goto RPLC_GROW;
+	if (unlikely(searclen > *sz))
+		return;
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 1:
-			*sz = private_jstr_replaceall_memmem1(*s, *searc, *rplc, *sz) - *s;
+			if (rplclen == 1) {
+				*sz = private_jstr_replaceall_memmem1(*s, *searc, *rplc, *sz) - *s;
+				return;
+			}
+			/* FALLTHROUGH */
+		default:
+			*sz = private_jstr_replaceall_memmem5(*s, searc, rplc, *sz, searclen, rplclen) - *s;
 			return;
 		case 2:
 			*sz = private_jstr_replaceall_memmem2(*s, searc, rplc, *sz, rplclen) - *s;
 			return;
-		/* case 3: */
-		/* 	*sz = private_jstr_replaceall_memmem3(*s, searc, rplc, *sz, rplclen) - *s; */
-		/* 	return; */
-		/* case 4: */
-		/* 	*sz = private_jstr_replaceall_memmem4(*s, searc, rplc, *sz, rplclen) - *s; */
-		/* 	return; */
-		default:
-			*sz = private_jstr_replaceall_memmem5(*s, searc, rplc, *sz, searclen, rplclen) - *s;
-			return;
+			/* case 3: */
+			/* 	*sz = private_jstr_replaceall_memmem3(*s, searc, rplc, *sz, rplclen) - *s; */
+			/* 	return; */
+			/* case 4: */
+			/* 	*sz = private_jstr_replaceall_memmem4(*s, searc, rplc, *sz, rplclen) - *s; */
+			/* 	return; */
 		}
 	}
-RPLC_GROW:;
 	private_jstr_replaceall_grow(s, sz, cap, searc, rplc, searclen, rplclen);
 }
 
