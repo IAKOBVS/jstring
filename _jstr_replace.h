@@ -23,7 +23,6 @@ namespace jstr {
 extern "C" {
 #endif /* JSTR_EXTERN_C */
 
-#define JSTR_HASH2(p)	(((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 #define JSTR_ASCII_SIZE 256
 
 /* TODO: Fix private_jstr_memmem3 and 4. */
@@ -738,7 +737,6 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 }
 #endif /* JSTR_NAMESPACE */
 
-#undef JSTR_HASH2
 #undef JSTR_ASCII_SIZE
 
 #endif /* JSTR_H_REPLACE_DEF */
