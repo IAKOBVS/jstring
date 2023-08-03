@@ -644,6 +644,8 @@ static int jstr_endswith_mem(const char *JSTR_RST const hs,
 	return (hsz < nelen) ? 1 : memcmp(hs + hsz - nelen, ne, nelen);
 }
 
+#ifndef __cplusplus
+
 /*
    Append multiple strings to end of S.
    The last argument MUST be NULL.
@@ -740,6 +742,8 @@ inline static char *jstr_cat_p_f(char *JSTR_RST const s,
 	*sp = '\0';
 	return sp;
 }
+
+#endif /* __cpluslus */
 
 /*
   Converts int to string.

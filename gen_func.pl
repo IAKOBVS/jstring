@@ -13,7 +13,12 @@ my $G_DIR_C = 'c';
 
 my $G_DIR_CPP            = $G_DIR_C . 'pp';
 my $G_OUT_C              = "$G_DIR_C/$G_FNAME_BASE";
-my $G_OUT_CPP            = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
+my $G_OUT_CPP;
+if ($G_OUT_C =~ /\.hpp/) {
+	$G_OUT_CPP = $G_OUT_C;
+} else {
+	$G_OUT_CPP = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
+}
 # my $G_IGNORE_FILE_NONMEM = 'builder.h';
 my $G_IGNORE_FILE = 'private';
 

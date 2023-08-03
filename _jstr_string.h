@@ -42,6 +42,26 @@ static char *jstr_strcpyp(char *JSTR_RST const dst,
 }
 
 /*
+  Return value:
+  pointer to '\0' in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *jstr_strcpyp_nonul(char *JSTR_RST const dst,
+			  const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+#ifndef JSTR_HAS_STPCPY
+	const size_t slen = strlen(src);
+	memcpy(dst, src, slen);
+	return dst + slen;
+#else
+	return stpcpy(dst, src);
+#endif // !JSTR_HAS_STPCPY
+}
+
+/*
   Return pointer to last C in S.
   Return value:
   pointer to last C;

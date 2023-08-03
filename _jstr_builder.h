@@ -10,24 +10,16 @@ extern "C" {
 #include <string.h>
 #ifdef __cplusplus
 }
+#	include <utility>
 #endif /* __cpluslus */
 
 #include "_jstr_config.h"
 #include "_jstr_macros.h"
+#include "_jstr_templates.h"
 
-/* This is executed every time a malloc error is encountered. */
-JSTR_NOINLINE
-JSTR_COLD
-static void JSTR_ERR(void) JSTR_NOEXCEPT
-{
-#if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
-	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
-	perror("");
-#endif /* JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR */
-#if JSTR_EXIT_ON_MALLOC_ERROR
-	exit(1);
-#endif /* JSTR_EXIT_ON_MALLOC_ERROR */
-}
+#ifdef __cplusplus
+#	include "_jstr_traits.h"
+#endif /* __cpluslus */
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
@@ -36,7 +28,7 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
 #if JSTR_EXTERN_C && defined(__cplusplus)
-extern "C" {
+/* extern "C" { */
 #endif /* JSTR_EXTERN_C */
 
 #define JSTR_MALLOC_ERR(p, malloc_fail) \
@@ -78,11 +70,99 @@ typedef struct jstr_t {
 
 #else
 
+    private:
+
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	static char *cat_assign(char *JSTR_RST const dst,
+				jstr_t *JSTR_RST src) JSTR_NOEXCEPT
+	{
+		memcpy(dst, src->data, src->size);
+		return dst + src->size;
+	}
+
+	template <size_t N>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL static void
+	cat_assign(char **JSTR_RST const dst,
+		   const char (&s)[N]) JSTR_NOEXCEPT
+	{
+		memcpy(*dst, s, N - 1);
+		*dst += (N - 1);
+	}
+
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	static void cat_assign(char **JSTR_RST dst,
+			       char *JSTR_RST src) JSTR_NOEXCEPT
+	{
+#	ifdef JSTR_HAS_STPCPY
+		*dst = stpcpy(*dst, src);
+#	else
+		while (*src)
+			**dst++ = *src++;
+#	endif
+	}
+
+	JSTR_INLINE
+	static constexpr void cat_loop_assign(char **JSTR_RST const) JSTR_NOEXCEPT {}
+
+	template <typename Str,
+		  typename... StrArgs,
+		  typename = typename std::enable_if<jstr::traits::are_strings<Str, StrArgs...>(), int>::type>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL static void
+	cat_loop_assign(char **JSTR_RST const dst,
+			Str &&arg,
+			StrArgs &&...args) JSTR_NOEXCEPT
+	{
+		cat_assign(dst, std::forward<Str>(arg));
+		cat_loop_assign(dst, std::forward<StrArgs>(args)...);
+	}
+
+	template <typename Str,
+		  typename... StrArgs,
+		  typename = typename std::enable_if<jstr::traits::are_strings<Str, StrArgs...>(), int>::type>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL static void
+	alloc_cat(char **JSTR_RST const s,
+		  size_t *JSTR_RST const sz,
+		  size_t *JSTR_RST const cap,
+		  Str &&arg,
+		  StrArgs &&...args) JSTR_NOEXCEPT
+	{
+		if (sizeof...(args) == 1) {
+			jstr_alloc_append(s, sz, cap, arg);
+			return;
+		}
+		*sz = jstr::priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		*s = (char *)malloc(*sz * 2);
+		if (unlikely(!s)) {
+			JSTR_ERR();
+			return;
+		}
+		*cap = *sz * 2;
+		cat_loop_assign(s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		**s = '\0';
+	}
+
+    public:
+
+	template <typename Str,
+		  typename... StrArgs>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	jstr_t(Str &&arg,
+	       StrArgs &&...args)
+	{
+		alloc_cat(&this->data, &this->size, &this->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	}
+
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
 	jstr_t(const size_t len) JSTR_NOEXCEPT
 	{
-		jstr_alloc(&this->data, &this->cap, len);
+		jstr_alloc(&this->data, &this->size, &this->cap, len);
 	}
 
 	JSTR_INLINE
@@ -99,6 +179,14 @@ typedef struct jstr_t {
 	{
 		jstr_alloc_append_mem(&this->data, &this->size, &this->cap, src, srclen);
 	}
+
+	template <typename Str,
+		  typename... StrArgs>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL static void
+	cat(jstr_t *j,
+	    Str &&arg,
+	    StrArgs &&...args) JSTR_NOEXCEPT;
 
 #	if JSTR_FREE_ON_DESTRUCTOR_CPP
 
@@ -163,9 +251,11 @@ typedef struct jstr_t {
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_alloc(char **JSTR_RST const s,
+		       size_t *JSTR_RST const sz,
 		       size_t *JSTR_RST const cap,
 		       const size_t top) JSTR_NOEXCEPT
 {
+	*sz = 0;
 	*s = (char *)malloc(top * JSTR_GROWTH_MULTIPLIER);
 	JSTR_MALLOC_ERR(*s, return);
 	*cap = top * JSTR_GROWTH_MULTIPLIER;
@@ -179,7 +269,7 @@ static void jstr_alloc_append_mem(char **JSTR_RST const s,
 				  const char *JSTR_RST const src,
 				  const size_t srclen) JSTR_NOEXCEPT
 {
-	jstr_alloc(s, cap, srclen * JSTR_GROWTH_MULTIPLIER);
+	jstr_alloc(s, sz, cap, srclen * JSTR_GROWTH_MULTIPLIER);
 	if (unlikely(!*s))
 		return;
 	*sz = srclen;
@@ -206,9 +296,11 @@ jstr_t;
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_alloc(char **JSTR_RST const s,
+		       size_t *JSTR_RST const sz,
 		       size_t *JSTR_RST const cap,
 		       const size_t top) JSTR_NOEXCEPT
 {
+	*sz = 0;
 	*s = (char *)malloc(top * JSTR_GROWTH_MULTIPLIER);
 	JSTR_MALLOC_ERR(*s, return);
 	*cap = top * JSTR_GROWTH_MULTIPLIER;
@@ -222,7 +314,7 @@ static void jstr_alloc_append_mem(char **JSTR_RST const s,
 				  const char *JSTR_RST const src,
 				  const size_t srclen) JSTR_NOEXCEPT
 {
-	jstr_alloc(s, cap, srclen * JSTR_GROWTH_MULTIPLIER);
+	jstr_alloc(s, sz, cap, srclen * JSTR_GROWTH_MULTIPLIER);
 	if (unlikely(!*s))
 		return;
 	*sz = srclen;
@@ -238,6 +330,8 @@ static void jstr_alloc_append(char **JSTR_RST const s,
 {
 	jstr_alloc_append_mem(s, sz, cap, src, strlen(src));
 }
+
+#else
 
 #endif /* __cpluslus */
 
@@ -261,6 +355,8 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
 	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
 	fprintf(stderr, "data:%s\n", j->data);
 }
+
+#ifndef __cplusplus
 
 /*
    Insert multiple strings to S.
@@ -294,12 +390,12 @@ inline static void jstr_alloc_cat(char **JSTR_RST const s,
 	char *sp = *s + *sz;
 	va_start(ap, cap);
 	while ((arg = va_arg(ap, char *)))
-#ifdef JSTR_HAS_STPCPY
+#	ifdef JSTR_HAS_STPCPY
 		sp = stpcpy(sp, arg);
-#else
-			while (*arg)
-				*sp++ = *arg++;
-#endif
+#	else
+		while (*arg)
+			*sp++ = *arg++;
+#	endif
 	va_end(ap);
 	*sp = '\0';
 }
@@ -334,21 +430,118 @@ inline static void jstr_alloc_cat_j(jstr_t *JSTR_RST const j,
 	char *sp = j->data + j->size;
 	va_start(ap, j);
 	while ((arg = va_arg(ap, char *)))
-#ifdef JSTR_HAS_STPCPY
+#	ifdef JSTR_HAS_STPCPY
 		sp = stpcpy(sp, arg);
-#else
-			while (*arg)
-				*sp++ = *arg++;
-#endif
+#	else
+		while (*arg)
+			*sp++ = *arg++;
+#	endif
 	va_end(ap);
 	*sp = '\0';
 }
 
-#if JSTR_EXTERN_C && defined(__cplusplus)
+#else
+
+#	if JSTR_EXTERN_C && defined(__cplusplus)
+/* } */
+#	endif /* JSTR_NAMESPACE */
+#	if JSTR_NAMESPACE && defined(__cplusplus)
 }
-#endif /* JSTR_NAMESPACE */
-#if JSTR_NAMESPACE && defined(__cplusplus)
-}
-#endif /* JSTR_EXTERN_C */
+#	endif /* JSTR_EXTERN_C */
+
+namespace jstr
+{
+
+	namespace priv {
+
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	static char *cat_assign(char *JSTR_RST const dst,
+				jstr_t *JSTR_RST src) JSTR_NOEXCEPT
+	{
+		memcpy(dst, src->data, src->size);
+		return dst + src->size;
+	}
+
+	} /* namespace priv */
+
+	template <typename Str,
+		  typename... StrArgs,
+		  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL static void
+	alloc_cat(char **JSTR_RST const s,
+		  size_t *JSTR_RST const sz,
+		  size_t *JSTR_RST const cap,
+		  Str &&arg,
+		  StrArgs &&...args) JSTR_NOEXCEPT
+	{
+		if (sizeof...(args) == 1) {
+			jstr_alloc_append(s, sz, cap, arg);
+			return;
+		}
+		*sz = priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		*s = (char *)malloc(*sz * 2);
+		if (unlikely(!s)) {
+			JSTR_ERR();
+			return;
+		}
+		*cap = *sz * 2;
+		priv::cat_loop_assign(s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		**s = '\0';
+	}
+
+	template <typename Str,
+		  typename... StrArgs,
+		  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL static void
+	cat(char **JSTR_RST const s,
+	    size_t *JSTR_RST const sz,
+	    size_t *JSTR_RST const cap,
+	    Str &&arg,
+	    StrArgs &&...args) JSTR_NOEXCEPT
+	{
+		if (sizeof...(args) == 1) {
+			jstr_alloc_append(s, sz, cap, arg);
+			return;
+		}
+		*sz += priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		if (*cap < *sz)
+			JSTR_REALLOC(*s, *cap, *sz, return);
+		if (unlikely(!s)) {
+			JSTR_ERR();
+			return;
+		}
+		*cap = *sz * 2;
+		priv::cat_loop_assign(s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		**s = '\0';
+	}
+
+	template <typename Str,
+		  typename... StrArgs>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL static void
+	alloc_cat(jstr_t * j,
+		  Str && arg,
+		  StrArgs && ...args) JSTR_NOEXCEPT
+	{
+		alloc_cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	}
+
+	template <typename Str,
+		  typename... StrArgs>
+	JSTR_INLINE
+	JSTR_NONNULL_ALL static void
+	cat(jstr_t * j,
+	    Str && arg,
+	    StrArgs && ...args) JSTR_NOEXCEPT
+	{
+		cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	}
+
+} /* namespace jstr */
+
+#endif /* __cpluslus */
 
 #endif /* JSTR_BUILDER H_DEF */
