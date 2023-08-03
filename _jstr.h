@@ -756,7 +756,7 @@ static char *jstr_itoa(char *JSTR_RST dst, int num, unsigned char base)
 		while (s <= end)                                     \
 			*dst++ = *s++;                               \
 		*dst = '\0';                                         \
-		return dst + (end - s) + 1;                          \
+		return dst;                                          \
 	} while (0)
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
 }
@@ -787,6 +787,60 @@ static char *jstr_lltoa(char *JSTR_RST dst, long long num, unsigned char base)
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
 
+/*
+  Converts unsigned int to string.
+  Return value:
+  new pointer to '\0' in dst.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static char *jstr_utoa(char *JSTR_RST dst, unsigned int num, unsigned char base)
+{
+#define PRIVATE_JSTR_UNUMTOSTR(max_digits)            \
+	do {                                          \
+		char sbuf[max_digits];                \
+		char *JSTR_RST s = sbuf;              \
+		char *const end = s + max_digits - 1; \
+		s = end;                              \
+		do                                    \
+			*s-- = num % base + '0';      \
+		while (num /= 10);                    \
+		++s;                                  \
+		while (s <= end)                      \
+			*dst++ = *s++;                \
+		*dst = '\0';                          \
+		return dst;                           \
+	} while (0)
+	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_UINT_DIGITS);
+}
+
+/*
+  Converts unsigned long to string.
+  Return value:
+  new pointer to '\0' in dst.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static char *jstr_ultoa(char *JSTR_RST dst, unsigned long num, unsigned char base)
+{
+	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_DIGITS);
+}
+
+/*
+  Converts unsigned long long to string.
+  Return value:
+  new pointer to '\0' in dst.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned char base)
+{
+	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);
+}
+
 #if JSTR_EXTERN_C && defined(__cplusplus)
 }
 #endif /* JSTR_EXTERN_C */
@@ -795,6 +849,7 @@ static char *jstr_lltoa(char *JSTR_RST dst, long long num, unsigned char base)
 #endif /* JSTR_NAMESPACE */
 
 #undef PRIVATE_JSTR_NUMTOSTR
+#undef PRIVATE_JSTR_UNUMTOSTR
 #undef JSTR_RST
 #undef JSTR_REPLACE
 #undef JSTR_MALLOC_ERR

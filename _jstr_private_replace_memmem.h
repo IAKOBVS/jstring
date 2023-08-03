@@ -99,12 +99,12 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static char *private_jstr_replacen_f(char *JSTR_RST s,
-					const char *JSTR_RST const searc,
-					const char *JSTR_RST const rplc,
-					size_t n,
-					size_t sz,
-					const size_t searclen,
-					const size_t rplclen) JSTR_NOEXCEPT
+				     const char *JSTR_RST const searc,
+				     const char *JSTR_RST const rplc,
+				     size_t n,
+				     size_t sz,
+				     const size_t searclen,
+				     const size_t rplclen) JSTR_NOEXCEPT
 {
 	while (n-- && (s = (char *)JSTR_MEMMEM(s, (s + sz) - s, searc, searclen))) {
 		memmove(s + rplclen,
@@ -122,11 +122,11 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static char *private_jstr_replaceall_f(char *JSTR_RST s,
-					  const char *JSTR_RST const searc,
-					  const char *JSTR_RST const rplc,
-					  size_t sz,
-					  const size_t searclen,
-					  const size_t rplclen) JSTR_NOEXCEPT
+				       const char *JSTR_RST const searc,
+				       const char *JSTR_RST const rplc,
+				       size_t sz,
+				       const size_t searclen,
+				       const size_t rplclen) JSTR_NOEXCEPT
 {
 	while ((s = (char *)JSTR_MEMMEM(s, (s + sz) - s, searc, searclen))) {
 		memmove(s + rplclen,
@@ -262,8 +262,15 @@ static char *private_jstr_memmem2(const int use_remove,
 		} else {
 			++src;
 			if (use_replace) {
-				memcpy(s, rplc, rplclen);
-				s += rplclen;
+				if (rplclen == 1) {
+					*s++ = *rplc;
+				} else {
+					*s = *rplc;
+					*(s + 1) = *(rplc + 1);
+					s += 2;
+				}
+				/* memcpy(s, rplc, rplclen); */
+				/* s += rplclen; */
 			} else if (use_remove) {
 			}
 			if (use_n) {

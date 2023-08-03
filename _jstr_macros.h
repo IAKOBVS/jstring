@@ -329,30 +329,30 @@
 #if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_INLINE __attribute__((always_inline)) inline
 #	if __has_attribute(pure)
-#		define PURE __attribute__((pure))
+#		define JSTR_PURE __attribute__((pure))
 #	else
-#		define PURE
-#	endif /* PURE */
+#		define JSTR_PURE
+#	endif /* JSTR_PURE */
 #	if __has_attribute(const)
 #		define JSTR_CONST __attribute__((const))
 #	else
 #		define JSTR_CONST
 #	endif /* JSTR_CONST */
 #	if __has_attribute(flatten)
-#		define FLATTEN __attribute__((flatten))
+#		define JSTR_FLATTEN __attribute__((flatten))
 #	else
-#		define FLATTEN
+#		define JSTR_FLATTEN
 #	endif /* FLATTEN */
 #elif defined(_MSC_VER)
 #	define JSTR_INLINE __forceinline inline
-#	define PURE	    __declspec(noalias)
+#	define JSTR_PURE	    __declspec(noalias)
 #	define JSTR_CONST  __declspec(restrict)
-#	define FLATTEN
+#	define JSTR_FLATTEN
 #else
 #	define JSTR_INLINE inline
-#	define PURE
+#	define JSTR_PURE
 #	define JSTR_CONST
-#	define FLATTEN
+#	define JSTR_FLATTEN
 #endif /* __GNUC__ || __clang__ || _MSC_VER */
 
 #if defined(__GNUC__) || defined(__clang__)
