@@ -642,6 +642,7 @@ static int jstr_endswith_mem(const char *JSTR_RST const hs,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
+JSTR_SENTINEL
 inline static void jstr_cat(char **JSTR_RST const s,
 			    size_t *JSTR_RST const sz,
 			    size_t *JSTR_RST const cap,
@@ -675,6 +676,7 @@ inline static void jstr_cat(char **JSTR_RST const s,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
+JSTR_SENTINEL
 inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 			      ...) JSTR_NOEXCEPT
 {
@@ -709,6 +711,7 @@ inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
+JSTR_SENTINEL
 inline static char *jstr_cat_p_f(char *JSTR_RST const s,
 				 const size_t sz,
 				 ...) JSTR_NOEXCEPT

@@ -17,6 +17,7 @@ extern "C" {
 
 /* This is executed every time a malloc error is encountered. */
 JSTR_NOINLINE
+JSTR_COLD
 static void JSTR_ERR(void) JSTR_NOEXCEPT
 {
 #if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
@@ -125,13 +126,13 @@ typedef struct jstr_t {
 	}
 
 	/*
-	  exit(1) if STR is NULL.
+	  Execute JSTR_ERR().
 	*/
 	JSTR_INLINE
 	void err(void) JSTR_NOEXCEPT
 	{
 		if (unlikely(!this->data))
-			exit(1);
+			JSTR_ERR();
 	}
 
 	JSTR_INLINE
@@ -266,6 +267,7 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
+JSTR_SENTINEL
 inline static void jstr_alloc_cat(char **JSTR_RST const s,
 				  size_t *JSTR_RST const sz,
 				  size_t *JSTR_RST const cap,
@@ -307,6 +309,7 @@ inline static void jstr_alloc_cat(char **JSTR_RST const s,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
+JSTR_SENTINEL
 inline static void jstr_alloc_cat_j(jstr_t *JSTR_RST const j,
 				    ...) JSTR_NOEXCEPT
 {

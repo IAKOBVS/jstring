@@ -342,17 +342,31 @@
 #		define JSTR_FLATTEN __attribute__((flatten))
 #	else
 #		define JSTR_FLATTEN
-#	endif /* FLATTEN */
+#	endif /* JSTR_FLATTEN */
+#	if __has_attribute(cold)
+#		define JSTR_COLD __attribute__((cold))
+#	else
+#		define JSTR_COLD
+#	endif /* JSTR_COLD */
+#	if __has_attribute(sentinel)
+#		define JSTR_SENTINEL __attribute__((sentinel))
+#	else
+#		define JSTR_SENTINEL
+#	endif /* JSTR_SENTINEL */
 #elif defined(_MSC_VER)
 #	define JSTR_INLINE __forceinline inline
-#	define JSTR_PURE	    __declspec(noalias)
+#	define JSTR_PURE   __declspec(noalias)
 #	define JSTR_CONST  __declspec(restrict)
 #	define JSTR_FLATTEN
+#	define JSTR_COLD
+#	define JSTR_SENTINEL
 #else
 #	define JSTR_INLINE inline
 #	define JSTR_PURE
 #	define JSTR_CONST
 #	define JSTR_FLATTEN
+#	define JSTR_COLD
+#	define JSTR_SENTINEL
 #endif /* __GNUC__ || __clang__ || _MSC_VER */
 
 #if defined(__GNUC__) || defined(__clang__)
