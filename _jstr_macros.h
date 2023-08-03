@@ -280,14 +280,6 @@
 #	define JSTR_ASSERT_SEMICOLON(expr, msg)
 #endif /* static_assert */
 
-#if defined(__GNUC__) || defined(__clang__)
-#	define JSTR_NONNULL_ALL   __attribute__((nonnull))
-#	define JSTR_NONNULL(args) __attribute__((nonnull(args)))
-#else
-#	define JSTR_NONNULL_ALL
-#	define JSTR_NONNULL(args)
-#endif /* NONNULL */
-
 #ifdef JSTR_ALIGN_POWER_OF_TWO
 #	ifdef JSTR_64_BIT
 #		ifdef __cplusplus
@@ -333,40 +325,79 @@
 #	else
 #		define JSTR_PURE
 #	endif /* JSTR_PURE */
+
 #	if __has_attribute(const)
 #		define JSTR_CONST __attribute__((const))
 #	else
 #		define JSTR_CONST
 #	endif /* JSTR_CONST */
+
 #	if __has_attribute(flatten)
 #		define JSTR_FLATTEN __attribute__((flatten))
 #	else
 #		define JSTR_FLATTEN
 #	endif /* JSTR_FLATTEN */
+
 #	if __has_attribute(cold)
 #		define JSTR_COLD __attribute__((cold))
 #	else
 #		define JSTR_COLD
 #	endif /* JSTR_COLD */
+
 #	if __has_attribute(sentinel)
 #		define JSTR_SENTINEL __attribute__((sentinel))
 #	else
 #		define JSTR_SENTINEL
 #	endif /* JSTR_SENTINEL */
+
+#	if __has_attribute(nonnull)
+#		define JSTR_NONNULL_ALL   __attribute__((nonnull))
+#		define JSTR_NONNULL(args) __attribute__((nonnull(args)))
+#	else
+#		define JSTR_NONNULL_ALL
+#		define JSTR_NONNULL(args)
+#	endif /* JSTR_NONNULL */
+
+#	if __has_attribute(malloc)
+#		define JSTR_MALLOC				      __attribute__((malloc))
+#		define JSTR_MALLOC_DEALLOC(deallocator)	      __attribute__((malloc, deallocator))
+#		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
+#	endif /* JSTR_MALLOC */
+
+#	if __has_attribute(returns_nonnull)
+#		define JSTR_RETURNS_NONNULL __attribute__((returns_nonnull))
+#	else
+#		define JSTR_RETURNS_NONNULL
+#	endif /* RETURNS_NONNULL */
+
 #elif defined(_MSC_VER)
+
 #	define JSTR_INLINE __forceinline inline
 #	define JSTR_PURE   __declspec(noalias)
 #	define JSTR_CONST  __declspec(restrict)
 #	define JSTR_FLATTEN
 #	define JSTR_COLD
 #	define JSTR_SENTINEL
+#	define JSTR_NONNULL_ALL
+#	define JSTR_NONNULL(args)
+#	define JSTR_MALLOC
+#	define JSTR_MALLOC_DEALLOC(deallocator)
+#	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
+#	define JSTR_RETURNS_NONNULL
+
 #else
+
 #	define JSTR_INLINE inline
 #	define JSTR_PURE
 #	define JSTR_CONST
 #	define JSTR_FLATTEN
 #	define JSTR_COLD
 #	define JSTR_SENTINEL
+#	define JSTR_NONNULL_ALL
+#	define JSTR_NONNULL(args)
+#	define JSTR_MALLOC
+#	define JSTR_MALLOC_DEALLOC(deallocator)
+#	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #endif /* __GNUC__ || __clang__ || _MSC_VER */
 
 #if defined(__GNUC__) || defined(__clang__)

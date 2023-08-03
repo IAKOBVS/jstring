@@ -36,6 +36,7 @@ extern "C" {
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_INLINE
+JSTR_RETURNS_NONNULL
 static char *jstr_append_mem_p_f(char *JSTR_RST const s,
 				 const char *JSTR_RST const src,
 				 const size_t sz,
@@ -157,6 +158,7 @@ static void jstr_rev_mem(char *JSTR_RST s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_trim_mem_p(char *JSTR_RST const s,
 			     const size_t sz) JSTR_NOEXCEPT
 {
@@ -362,6 +364,7 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_slip_mem_p_f(char *JSTR_RST const s,
 			       const size_t at,
 			       const char *JSTR_RST const src,
@@ -416,6 +419,7 @@ static void jstr_slip_mem(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_slipaftc_mem_p_f(char *JSTR_RST const s,
 				   const int c,
 				   const char *JSTR_RST const src,
@@ -450,6 +454,7 @@ static void jstr_slipaftc_mem(char **JSTR_RST const s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
 static char *jstr_slipaftallc_mem_p_f(char *JSTR_RST const s,
 				      const int c,
 				      const char *JSTR_RST const src,
@@ -491,6 +496,7 @@ static void jstr_slipaftallc_mem(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_slipaft_mem_f(char *JSTR_RST const s,
 				const char *JSTR_RST const searc,
 				const char *JSTR_RST const src,
@@ -545,6 +551,7 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
 static char *jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
 				     const char *JSTR_RST const searc,
 				     const char *JSTR_RST const src,
@@ -712,6 +719,7 @@ inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 */
 JSTR_MAYBE_UNUSED
 JSTR_SENTINEL
+JSTR_RETURNS_NONNULL
 inline static char *jstr_cat_p_f(char *JSTR_RST const s,
 				 const size_t sz,
 				 ...) JSTR_NOEXCEPT
@@ -740,6 +748,7 @@ inline static char *jstr_cat_p_f(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_itoa(char *JSTR_RST dst, int num, unsigned char base)
 {
 #define PRIVATE_JSTR_NUMTOSTR(max_digits)                            \
@@ -772,6 +781,7 @@ static char *jstr_itoa(char *JSTR_RST dst, int num, unsigned char base)
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_ltoa(char *JSTR_RST dst, long num, unsigned char base)
 {
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
@@ -785,6 +795,7 @@ static char *jstr_ltoa(char *JSTR_RST dst, long num, unsigned char base)
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_lltoa(char *JSTR_RST dst, long long num, unsigned char base)
 {
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
@@ -798,6 +809,7 @@ static char *jstr_lltoa(char *JSTR_RST dst, long long num, unsigned char base)
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_utoa(char *JSTR_RST dst, unsigned int num, unsigned char base)
 {
 #define PRIVATE_JSTR_UNUMTOSTR(max_digits)            \
@@ -826,6 +838,7 @@ static char *jstr_utoa(char *JSTR_RST dst, unsigned int num, unsigned char base)
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_ultoa(char *JSTR_RST dst, unsigned long num, unsigned char base)
 {
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_DIGITS);
@@ -839,6 +852,7 @@ static char *jstr_ultoa(char *JSTR_RST dst, unsigned long num, unsigned char bas
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned char base)
 {
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);

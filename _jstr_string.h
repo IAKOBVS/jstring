@@ -28,6 +28,7 @@ extern "C" {
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_strcpyp(char *JSTR_RST const dst,
 			  const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
@@ -75,6 +76,7 @@ static void *jstr_memchrr(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
 static char *jstr_strcatp(char *JSTR_RST dst,
 			  const char *JSTR_RST src) JSTR_NOEXCEPT
 {
