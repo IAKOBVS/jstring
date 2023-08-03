@@ -98,7 +98,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static char *private_jstr_replacen_move(char *JSTR_RST s,
+static char *private_jstr_replacen_f(char *JSTR_RST s,
 					const char *JSTR_RST const searc,
 					const char *JSTR_RST const rplc,
 					size_t n,
@@ -121,7 +121,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static char *private_jstr_replaceall_move(char *JSTR_RST s,
+static char *private_jstr_replaceall_f(char *JSTR_RST s,
 					  const char *JSTR_RST const searc,
 					  const char *JSTR_RST const rplc,
 					  size_t sz,

@@ -600,7 +600,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 		default: return private_jstr_replacen_memmem5(s, searc, rplc, n, sz, searclen, rplclen);
 		}
 	}
-	return private_jstr_replacen_move(s, searc, rplc, n, sz, searclen, rplclen);
+	return private_jstr_replacen_f(s, searc, rplc, n, sz, searclen, rplclen);
 }
 
 /*
@@ -632,7 +632,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 			/* case 4: return private_jstr_replaceall_memmem4(s, searc, rplc, sz, rplclen); */
 		}
 	}
-	return private_jstr_replaceall_move(s, searc, rplc, sz, searclen, rplclen);
+	return private_jstr_replaceall_f(s, searc, rplc, sz, searclen, rplclen);
 }
 
 /*
