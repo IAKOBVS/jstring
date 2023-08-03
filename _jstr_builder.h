@@ -71,14 +71,13 @@ typedef struct jstr_t {
 #else
 
     private:
-
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	static char *cat_assign(char *JSTR_RST const dst,
-				jstr_t *JSTR_RST src) JSTR_NOEXCEPT
+	static void cat_assign(char **JSTR_RST dst,
+			       jstr_t *JSTR_RST src) JSTR_NOEXCEPT
 	{
-		memcpy(dst, src->data, src->size);
-		return dst + src->size;
+		memcpy(*dst, src->data, src->size);
+		*dst += src->size;
 	}
 
 	template <size_t N>
@@ -131,23 +130,23 @@ typedef struct jstr_t {
 		  Str &&arg,
 		  StrArgs &&...args) JSTR_NOEXCEPT
 	{
-		if (sizeof...(args) == 1) {
+		if (sizeof...(args) == 0) {
 			jstr_alloc_append(s, sz, cap, arg);
 			return;
 		}
 		*sz = jstr::priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 		*s = (char *)malloc(*sz * 2);
-		if (unlikely(!s)) {
+		if (unlikely(!*s)) {
 			JSTR_ERR();
 			return;
 		}
+		char *p = *s;
+		cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		*p = '\0';
 		*cap = *sz * 2;
-		cat_loop_assign(s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-		**s = '\0';
 	}
 
     public:
-
 	template <typename Str,
 		  typename... StrArgs>
 	JSTR_INLINE
@@ -179,14 +178,6 @@ typedef struct jstr_t {
 	{
 		jstr_alloc_append_mem(&this->data, &this->size, &this->cap, src, srclen);
 	}
-
-	template <typename Str,
-		  typename... StrArgs>
-	JSTR_INLINE
-	JSTR_NONNULL_ALL static void
-	cat(jstr_t *j,
-	    Str &&arg,
-	    StrArgs &&...args) JSTR_NOEXCEPT;
 
 #	if JSTR_FREE_ON_DESTRUCTOR_CPP
 
@@ -476,7 +467,7 @@ namespace jstr
 		  Str &&arg,
 		  StrArgs &&...args) JSTR_NOEXCEPT
 	{
-		if (sizeof...(args) == 1) {
+		if (sizeof...(args) == 0) {
 			jstr_alloc_append(s, sz, cap, arg);
 			return;
 		}
@@ -502,7 +493,7 @@ namespace jstr
 	    Str &&arg,
 	    StrArgs &&...args) JSTR_NOEXCEPT
 	{
-		if (sizeof...(args) == 1) {
+		if (sizeof...(args) == 0) {
 			jstr_alloc_append(s, sz, cap, arg);
 			return;
 		}
