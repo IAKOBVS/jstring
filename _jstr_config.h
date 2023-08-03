@@ -1,6 +1,7 @@
 #ifndef JSTR_CONFIG_DEF_H
 #define JSTR_CONFIG_DEF_H
 
+#define JSTR_MIN_CAP 8
 #define JSTR_GROWTH_MULTIPLIER 2
 
 #define JSTR_EXIT_ON_MALLOC_ERROR	   1

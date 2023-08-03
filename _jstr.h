@@ -150,7 +150,7 @@ static void jstr_rev_mem(char *JSTR_RST s,
 /*
   Trim spaces in [ \t] from end of S.
   Return value:
-  Pointer to '\0' in S;
+  pointer to '\0' in S;
   S if SLEN is 0.
 */
 JSTR_INLINE
@@ -355,7 +355,7 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 /*
   Slip SRC into DST[AT].
   Return value:
-  Pointer to '\0' in S.
+  pointer to '\0' in S.
   Assumes that S have enough space for SRC.
 */
 JSTR_INLINE
@@ -409,7 +409,7 @@ static void jstr_slip_mem(char **JSTR_RST const s,
 /*
   Slip SRC after C in DST.
   Return value:
-  Pointer to '\0' in S.
+  pointer to '\0' in S.
   Assumes that S have enough space for SRC.
 */
 JSTR_INLINE

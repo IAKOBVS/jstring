@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -258,6 +259,86 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
 {
 	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
 	fprintf(stderr, "data:%s\n", j->data);
+}
+
+/*
+   Insert multiple strings to S.
+   The last argument MUST be NULL.
+*/
+JSTR_MAYBE_UNUSED
+static void jstr_alloc_cat(char **JSTR_RST const s,
+			   size_t *JSTR_RST const sz,
+			   size_t *JSTR_RST const cap,
+			   ...)
+{
+	char *arg;
+	*sz = 0;
+	va_list ap;
+	va_start(ap, cap);
+	while ((arg = va_arg(ap, char *)))
+		*sz += strlen(arg);
+	va_end(ap);
+	if (unlikely(!*sz)) {
+		*sz = 0;
+		*cap = JSTR_MIN_CAP;
+		**s = '\0';
+		*s = (char *)malloc(JSTR_MIN_CAP);
+		JSTR_MALLOC_ERR(*s, return);
+		return;
+	}
+	*cap = *sz * 2;
+	*s = (char *)malloc(*cap);
+	JSTR_MALLOC_ERR(*s, return);
+	char *sp = *s + *sz;
+	va_start(ap, cap);
+	while ((arg = va_arg(ap, char *)))
+#ifdef JSTR_HAS_STPCPY
+		sp = stpcpy(sp, arg);
+#else
+			while (*arg)
+				*sp++ = *arg++;
+#endif
+	va_end(ap);
+	*sp = '\0';
+}
+
+/*
+   Insert multiple strings to S.
+   The last argument MUST be NULL.
+*/
+JSTR_MAYBE_UNUSED
+static void jstr_alloc_cat_j(jstr_t *JSTR_RST const j,
+			     ...)
+{
+	char *arg;
+	j->size = 0;
+	va_list ap;
+	va_start(ap, j);
+	while ((arg = va_arg(ap, char *)))
+		j->size += strlen(arg);
+	va_end(ap);
+	if (unlikely(!j->size)) {
+		j->size = 0;
+		j->cap = JSTR_MIN_CAP;
+		*j->data = '\0';
+		j->data = (char *)malloc(JSTR_MIN_CAP);
+		JSTR_MALLOC_ERR(j->data, return);
+		return;
+	}
+	j->cap = j->size * 2;
+	j->data = (char *)malloc(j->cap);
+	JSTR_MALLOC_ERR(j->data, return);
+	char *sp = j->data + j->size;
+	va_start(ap, j);
+	while ((arg = va_arg(ap, char *)))
+#ifdef JSTR_HAS_STPCPY
+		sp = stpcpy(sp, arg);
+#else
+			while (*arg)
+				*sp++ = *arg++;
+#endif
+	va_end(ap);
+	*sp = '\0';
 }
 
 #if JSTR_EXTERN_C && defined(__cplusplus)
