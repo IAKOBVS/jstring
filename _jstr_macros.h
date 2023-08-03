@@ -268,7 +268,7 @@
 #	define JSTR_HAS_GENERIC
 #endif /* JSTR_HAS_GENERIC */
 
-#if defined(static_assert)
+#ifdef static_assert
 #	define JSTR_HAS_STATIC_ASSERT
 #	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
@@ -298,9 +298,7 @@
 #	endif /* JSTR_64_BIT */
 #endif /* JSTR_ALIGN_POWER_OF_TWO */
 
-#ifdef __cplusplus
-#	define JSTR_RESTRICT
-#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #	define JSTR_RESTRICT restrict
 #elif defined(__GNUC__) || defined(__clang__)
 #	define JSTR_RESTRICT __restrict__

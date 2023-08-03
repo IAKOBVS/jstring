@@ -656,7 +656,7 @@ inline static void jstr_cat(char **JSTR_RST const s,
 			    ...) JSTR_NOEXCEPT
 {
 	size_t newcap = *sz;
-	char *arg;
+	char *JSTR_RST arg;
 	va_list ap;
 	va_start(ap, cap);
 	while ((arg = va_arg(ap, char *)))
@@ -689,7 +689,7 @@ inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 			      ...) JSTR_NOEXCEPT
 {
 	size_t newcap = j->size;
-	char *arg;
+	char *JSTR_RST arg;
 	va_list ap;
 	va_start(ap, j);
 	while ((arg = va_arg(ap, char *)))
@@ -721,12 +721,11 @@ inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 JSTR_MAYBE_UNUSED
 JSTR_SENTINEL
 JSTR_RETURNS_NONNULL
-JSTR_NONNULL_ALL
 inline static char *jstr_cat_p_f(char *JSTR_RST const s,
 				 const size_t sz,
 				 ...) JSTR_NOEXCEPT
 {
-	char *arg;
+	char *JSTR_RST arg;
 	va_list ap;
 	char *sp = s + sz;
 	va_start(ap, sz);
