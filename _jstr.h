@@ -732,12 +732,12 @@ inline static char *jstr_cat_p_f(char *JSTR_RST const s,
 /*
   Converts int to string.
   Return value:
-  new pointer to '\0' in buf.
+  new pointer to '\0' in dst.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_itoa(char *JSTR_RST buf, int num, unsigned char base)
+static char *jstr_itoa(char *JSTR_RST dst, int num, unsigned char base)
 {
 #define PRIVATE_JSTR_NUMTOSTR(max_digits)                            \
 	do {                                                         \
@@ -754,9 +754,9 @@ static char *jstr_itoa(char *JSTR_RST buf, int num, unsigned char base)
 		else                                                 \
 			++s;                                         \
 		while (s <= end)                                     \
-			*buf++ = *s++;                               \
-		*buf = '\0';                                         \
-		return buf + (end - s) + 1;                          \
+			*dst++ = *s++;                               \
+		*dst = '\0';                                         \
+		return dst + (end - s) + 1;                          \
 	} while (0)
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
 }
@@ -764,12 +764,12 @@ static char *jstr_itoa(char *JSTR_RST buf, int num, unsigned char base)
 /*
   Converts long to string.
   Return value:
-  new pointer to '\0' in buf.
+  new pointer to '\0' in dst.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_ltoa(char *JSTR_RST buf, long num, unsigned char base)
+static char *jstr_ltoa(char *JSTR_RST dst, long num, unsigned char base)
 {
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
@@ -777,12 +777,12 @@ static char *jstr_ltoa(char *JSTR_RST buf, long num, unsigned char base)
 /*
   Converts long long to string.
   Return value:
-  new pointer to '\0' in buf.
+  new pointer to '\0' in dst.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_lltoa(char *JSTR_RST buf, long long num, unsigned char base)
+static char *jstr_lltoa(char *JSTR_RST dst, long long num, unsigned char base)
 {
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
