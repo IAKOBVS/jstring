@@ -202,6 +202,9 @@ sub gen_struct_funcs
 		if ($G_FNAME =~ /$G_IGNORE_FILE/) {
 			goto NEXT;
 		}
+		if ($params =~ /\.\.\./) {
+			goto NEXT;
+		}
 		my $RETURN           = ($decl =~ /void/) ? '' : 'return ';
 		my $RETURNS_PTR_FUNC = 0;
 		$decl =~ s/$FUNC_NAME/$FUNC_NAME\_j/;

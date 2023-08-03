@@ -266,10 +266,10 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
-static void jstr_alloc_cat(char **JSTR_RST const s,
-			   size_t *JSTR_RST const sz,
-			   size_t *JSTR_RST const cap,
-			   ...)
+inline static void jstr_alloc_cat(char **JSTR_RST const s,
+				  size_t *JSTR_RST const sz,
+				  size_t *JSTR_RST const cap,
+				  ...) JSTR_NOEXCEPT
 {
 	char *arg;
 	*sz = 0;
@@ -307,8 +307,8 @@ static void jstr_alloc_cat(char **JSTR_RST const s,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
-static void jstr_alloc_cat_j(jstr_t *JSTR_RST const j,
-			     ...)
+inline static void jstr_alloc_cat_j(jstr_t *JSTR_RST const j,
+				    ...) JSTR_NOEXCEPT
 {
 	char *arg;
 	j->size = 0;

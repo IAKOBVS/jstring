@@ -13,6 +13,7 @@ extern "C" {
 #endif /* __cpluslus */
 
 #include "_jstr_builder.h"
+#include "_jstr_config.h"
 #include "_jstr_macros.h"
 #include "_jstr_replace.h"
 
@@ -641,10 +642,10 @@ static int jstr_endswith_mem(const char *JSTR_RST const hs,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
-static void jstr_cat(char **JSTR_RST const s,
-		     size_t *JSTR_RST const sz,
-		     size_t *JSTR_RST const cap,
-		     ...)
+inline static void jstr_cat(char **JSTR_RST const s,
+			    size_t *JSTR_RST const sz,
+			    size_t *JSTR_RST const cap,
+			    ...) JSTR_NOEXCEPT
 {
 	size_t newcap = *sz;
 	char *arg;
@@ -674,8 +675,8 @@ static void jstr_cat(char **JSTR_RST const s,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
-static void jstr_cat_j(jstr_t *JSTR_RST const j,
-		       ...)
+inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
+			      ...) JSTR_NOEXCEPT
 {
 	size_t newcap = j->size;
 	char *arg;
@@ -708,9 +709,9 @@ static void jstr_cat_j(jstr_t *JSTR_RST const j,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
-static char *jstr_cat_p_f(char *JSTR_RST const s,
-			  const size_t sz,
-			  ...)
+inline static char *jstr_cat_p_f(char *JSTR_RST const s,
+				 const size_t sz,
+				 ...) JSTR_NOEXCEPT
 {
 	char *arg;
 	va_list ap;
@@ -728,6 +729,64 @@ static char *jstr_cat_p_f(char *JSTR_RST const s,
 	return sp;
 }
 
+/*
+  Converts int to string.
+  Return value:
+  new pointer to '\0' in buf.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static char *jstr_itoa(char *JSTR_RST buf, int num, unsigned char base)
+{
+#define PRIVATE_JSTR_NUMTOSTR(max_digits)                            \
+	do {                                                         \
+		char sbuf[max_digits];                               \
+		char *JSTR_RST s = sbuf;                             \
+		unsigned char neg = (num < 0) ? (num = -num, 1) : 0; \
+		char *const end = s + max_digits - 1;                \
+		s = end;                                             \
+		do                                                   \
+			*s-- = num % base + '0';                     \
+		while (num /= 10);                                   \
+		if (neg)                                             \
+			*s = '-';                                    \
+		else                                                 \
+			++s;                                         \
+		while (s <= end)                                     \
+			*buf++ = *s++;                               \
+		*buf = '\0';                                         \
+		return buf + (end - s) + 1;                          \
+	} while (0)
+	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
+}
+
+/*
+  Converts long to string.
+  Return value:
+  new pointer to '\0' in buf.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static char *jstr_ltoa(char *JSTR_RST buf, long num, unsigned char base)
+{
+	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
+}
+
+/*
+  Converts long long to string.
+  Return value:
+  new pointer to '\0' in buf.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static char *jstr_lltoa(char *JSTR_RST buf, long long num, unsigned char base)
+{
+	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
+}
+
 #if JSTR_EXTERN_C && defined(__cplusplus)
 }
 #endif /* JSTR_EXTERN_C */
@@ -735,6 +794,7 @@ static char *jstr_cat_p_f(char *JSTR_RST const s,
 }
 #endif /* JSTR_NAMESPACE */
 
+#undef PRIVATE_JSTR_NUMTOSTR
 #undef JSTR_RST
 #undef JSTR_REPLACE
 #undef JSTR_MALLOC_ERR
