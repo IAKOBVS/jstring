@@ -28,8 +28,8 @@ extern "C" {
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_stpcpy(char *JSTR_RST const dst,
-			 const char *JSTR_RST const src) JSTR_NOEXCEPT
+static char *jstr_strcpyp(char *JSTR_RST const dst,
+			  const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 #ifndef JSTR_HAS_STPCPY
 	const size_t slen = strlen(src);
@@ -50,7 +50,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static void *jstr_memrchr(char *JSTR_RST const s,
+static void *jstr_memchrr(char *JSTR_RST const s,
 			  const int c,
 			  size_t n) JSTR_NOEXCEPT
 {
@@ -75,11 +75,11 @@ static void *jstr_memrchr(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static char *jstr_stpcat(char *JSTR_RST dst,
-			 const char *JSTR_RST src) JSTR_NOEXCEPT
+static char *jstr_strcatp(char *JSTR_RST dst,
+			  const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 	dst += strlen(dst);
-	return jstr_stpcpy(dst, src);
+	return jstr_strcpyp(dst, src);
 }
 
 /*

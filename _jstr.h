@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,6 +12,7 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
+#include "_jstr_builder.h"
 #include "_jstr_macros.h"
 #include "_jstr_replace.h"
 
@@ -632,6 +634,98 @@ static int jstr_endswith_mem(const char *JSTR_RST const hs,
 			     const size_t nelen) JSTR_NOEXCEPT
 {
 	return (hsz < nelen) ? 1 : memcmp(hs + hsz - nelen, ne, nelen);
+}
+
+/*
+   Append multiple strings to end of S.
+   The last argument MUST be NULL.
+*/
+JSTR_MAYBE_UNUSED
+static void jstr_cat(char **JSTR_RST const s,
+		     size_t *JSTR_RST const sz,
+		     size_t *JSTR_RST const cap,
+		     ...)
+{
+	size_t newcap = *sz;
+	char *arg;
+	va_list ap;
+	va_start(ap, cap);
+	while ((arg = va_arg(ap, char *)))
+		newcap += strlen(arg);
+	va_end(ap);
+	if (newcap > *cap)
+		JSTR_REALLOC(*s, *cap, newcap, return);
+	char *sp = *s + *sz;
+	va_start(ap, cap);
+	while ((arg = va_arg(ap, char *)))
+#ifdef JSTR_HAS_STPCPY
+		sp = stpcpy(sp, arg);
+#else
+		while (*arg)
+			*sp++ = *arg++;
+#endif
+	va_end(ap);
+	*sp = '\0';
+	*sz += sp - *s;
+}
+
+/*
+   Append multiple strings to end of S.
+   The last argument MUST be NULL.
+*/
+JSTR_MAYBE_UNUSED
+static void jstr_cat_j(jstr_t *JSTR_RST const j,
+		       ...)
+{
+	size_t newcap = j->size;
+	char *arg;
+	va_list ap;
+	va_start(ap, j);
+	while ((arg = va_arg(ap, char *)))
+		newcap += strlen(arg);
+	va_end(ap);
+	if (newcap > j->cap)
+		JSTR_REALLOC(j->data, j->cap, newcap, return);
+	char *sp = j->data + j->size;
+	va_start(ap, j);
+	while ((arg = va_arg(ap, char *)))
+#ifdef JSTR_HAS_STPCPY
+		sp = stpcpy(sp, arg);
+#else
+		while (*arg)
+			*sp++ = *arg++;
+#endif
+	va_end(ap);
+	*sp = '\0';
+	j->size += sp - j->data;
+}
+
+/*
+   Append multiple strings to end of S.
+   Return value:
+   New pointer to '\0' in S.
+   Assumes that S have enough space.
+   The last argument MUST be NULL.
+*/
+JSTR_MAYBE_UNUSED
+static char *jstr_cat_p_f(char *JSTR_RST const s,
+			  const size_t sz,
+			  ...)
+{
+	char *arg;
+	va_list ap;
+	char *sp = s + sz;
+	va_start(ap, sz);
+	while ((arg = va_arg(ap, char *)))
+#ifdef JSTR_HAS_STPCPY
+		sp = stpcpy(sp, arg);
+#else
+		while (*arg)
+			*sp++ = *arg++;
+#endif
+	va_end(ap);
+	*sp = '\0';
+	return sp;
 }
 
 #if JSTR_EXTERN_C && defined(__cplusplus)
