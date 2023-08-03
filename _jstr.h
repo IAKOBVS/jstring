@@ -675,7 +675,7 @@ inline static void jstr_cat(char **JSTR_RST const s,
 #endif
 	va_end(ap);
 	*sp = '\0';
-	*sz += sp - *s;
+	*sz = sp - *s;
 }
 
 /*
@@ -683,6 +683,7 @@ inline static void jstr_cat(char **JSTR_RST const s,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
 JSTR_SENTINEL
 inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 			      ...) JSTR_NOEXCEPT
@@ -707,7 +708,7 @@ inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 #endif
 	va_end(ap);
 	*sp = '\0';
-	j->size += sp - j->data;
+	j->size = sp - j->data;
 }
 
 /*
@@ -720,6 +721,7 @@ inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 JSTR_MAYBE_UNUSED
 JSTR_SENTINEL
 JSTR_RETURNS_NONNULL
+JSTR_NONNULL_ALL
 inline static char *jstr_cat_p_f(char *JSTR_RST const s,
 				 const size_t sz,
 				 ...) JSTR_NOEXCEPT

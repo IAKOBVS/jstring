@@ -268,6 +268,7 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
 */
 JSTR_MAYBE_UNUSED
 JSTR_SENTINEL
+JSTR_NONNULL_ALL
 inline static void jstr_alloc_cat(char **JSTR_RST const s,
 				  size_t *JSTR_RST const sz,
 				  size_t *JSTR_RST const cap,
@@ -310,6 +311,7 @@ inline static void jstr_alloc_cat(char **JSTR_RST const s,
 */
 JSTR_MAYBE_UNUSED
 JSTR_SENTINEL
+JSTR_NONNULL_ALL
 inline static void jstr_alloc_cat_j(jstr_t *JSTR_RST const j,
 				    ...) JSTR_NOEXCEPT
 {
