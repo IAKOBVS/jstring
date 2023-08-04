@@ -37,14 +37,14 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 		}                       \
 	} while (0)
 
-#define JSTR_GROW(oldcap, newcap) \
-	while (((oldcap) *= 2) < (newcap))
+#define JSTR_GROW(old_cap, new_cap) \
+	while (((old_cap) *= 2) < (new_cap))
 
-#define JSTR_REALLOC(p, oldcap, newcap, malloc_fail) \
-	do {                                         \
-		JSTR_GROW(oldcap, newcap);           \
-		(p) = (char *)realloc(p, newcap);    \
-		JSTR_MALLOC_ERR(p, malloc_fail);     \
+#define JSTR_REALLOC(p, old_cap, new_cap, malloc_fail)  \
+	do {                                            \
+		JSTR_GROW(old_cap, new_cap);            \
+		(p) = (char *)realloc(p, old_cap);      \
+		JSTR_MALLOC_ERR(p, malloc_fail);        \
 	} while (0)
 
 #ifdef __cplusplus
@@ -79,9 +79,9 @@ template <size_t N>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
 cat_assign(char **JSTR_RST const dst,
-	   const char (&s)[N]) JSTR_NOEXCEPT
+	   const char (&src)[N]) JSTR_NOEXCEPT
 {
-	memcpy(*dst, s, N - 1);
+	memcpy(*dst, src, N - 1);
 	*dst += (N - 1);
 }
 
@@ -130,6 +130,9 @@ cat_loop_assign(char **JSTR_RST const dst,
 
 } /* namespace priv */
 
+/*
+   Insert multiple strings to S.
+*/
 template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
@@ -150,6 +153,9 @@ alloc_cat(char **JSTR_RST const s,
 	*p = '\0';
 }
 
+/*
+   Append multiple strings to end of S.
+*/
 template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
@@ -161,12 +167,11 @@ cat(char **JSTR_RST const s,
     Str &&arg,
     StrArgs &&...args) JSTR_NOEXCEPT
 {
-	const size_t new_sz = *sz + priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	if (*cap < new_sz + 1)
-		JSTR_REALLOC(*s, *cap, new_sz + 1, return);
 	char *p = *s + *sz;
+	*sz += priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	if (*cap < *sz + 1)
+		JSTR_REALLOC(*s, *cap, *sz + 1, return);
 	priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	*sz = new_sz;
 	*p = '\0';
 }
 

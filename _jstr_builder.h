@@ -361,6 +361,9 @@ namespace jstr
 
 	} /* namespace priv */
 
+	/*
+	  Insert multiple strings to S.
+	*/
 	template <typename Str,
 		  typename... StrArgs>
 	JSTR_INLINE
@@ -372,6 +375,9 @@ namespace jstr
 		alloc_cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	}
 
+	/*
+	  Append multiple strings to end of S.
+	*/
 	template <typename Str,
 		  typename... StrArgs>
 	JSTR_INLINE
