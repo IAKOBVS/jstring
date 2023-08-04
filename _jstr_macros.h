@@ -563,12 +563,12 @@ case ' ':
 #	define JSTR_PRIVATE   private:
 #	define JSTR_PUBLIC    public:
 #	define JSTR_CAST(T)   (T)
-#	define JSTR_CPP_CONST const
+#	define JSTR_CJSTR_PP_CONST const
 #else
 #	define JSTR_CAST(T)
 #	define JSTR_PRIVATE
 #	define JSTR_PUBLIC
-#	define JSTR_CPP_CONST
+#	define JSTR_CJSTR_PP_CONST
 #endif /* __cplusplus */
 
 #if defined(_GNU_SOURCE)
@@ -591,9 +591,9 @@ case ' ':
 #endif /* */
 
 #ifdef __GLIBC__
-#	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)) && (_POSIX_C_SOURCE >= 200809L) || defined(_GNU_SOURCE))
+#	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) || defined(_GNU_SOURCE))
 #		define JSTR_HAS_STPCPY
-#	endif
+#	endif /* JSTR_HAS_STPCPY */
 #endif /* __GLIBC__ */
 
 #ifdef _GNU_SOURCE

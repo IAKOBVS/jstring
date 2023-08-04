@@ -261,92 +261,7 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
 	fprintf(stderr, "data:%s\n", j->data);
 }
 
-#ifndef __cplusplus
-
-/*
-   Insert multiple strings to S.
-   The last argument MUST be NULL.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_SENTINEL
-inline static void jstr_alloc_cat(char **JSTR_RST const s,
-				  size_t *JSTR_RST const sz,
-				  size_t *JSTR_RST const cap,
-				  ...) JSTR_NOEXCEPT
-{
-	char *JSTR_RST arg;
-	*sz = 0;
-	va_list ap;
-	va_start(ap, cap);
-	while ((arg = va_arg(ap, char *)))
-		*sz += strlen(arg);
-	va_end(ap);
-	if (unlikely(!*sz)) {
-		*sz = 0;
-		*cap = JSTR_MIN_CAP;
-		**s = '\0';
-		*s = (char *)malloc(JSTR_MIN_CAP);
-		JSTR_MALLOC_ERR(*s, return);
-		return;
-	}
-	*cap = *sz * 2;
-	*s = (char *)malloc(*cap);
-	JSTR_MALLOC_ERR(*s, return);
-	char *sp = *s + *sz;
-	va_start(ap, cap);
-	while ((arg = va_arg(ap, char *)))
-#	ifdef JSTR_HAS_STPCPY
-		sp = stpcpy(sp, arg);
-#	else
-		while (*arg)
-			*sp++ = *arg++;
-#	endif
-	va_end(ap);
-	*sp = '\0';
-}
-
-/*
-   Insert multiple strings to S.
-   The last argument MUST be NULL.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_SENTINEL
-inline static void jstr_alloc_cat_j(jstr_t *JSTR_RST const j,
-				    ...) JSTR_NOEXCEPT
-{
-	char *JSTR_RST arg;
-	j->size = 0;
-	va_list ap;
-	va_start(ap, j);
-	while ((arg = va_arg(ap, char *)))
-		j->size += strlen(arg);
-	va_end(ap);
-	if (unlikely(!j->size)) {
-		j->size = 0;
-		j->cap = JSTR_MIN_CAP;
-		*j->data = '\0';
-		j->data = (char *)malloc(JSTR_MIN_CAP);
-		JSTR_MALLOC_ERR(j->data, return);
-		return;
-	}
-	j->cap = j->size * 2;
-	j->data = (char *)malloc(j->cap);
-	JSTR_MALLOC_ERR(j->data, return);
-	char *sp = j->data + j->size;
-	va_start(ap, j);
-	while ((arg = va_arg(ap, char *)))
-#	ifdef JSTR_HAS_STPCPY
-		sp = stpcpy(sp, arg);
-#	else
-		while (*arg)
-			*sp++ = *arg++;
-#	endif
-	va_end(ap);
-	*sp = '\0';
-}
-
-#else
-
+#ifdef __cplusplus
 #	if JSTR_EXTERN_C && defined(__cplusplus)
 /* } */
 #	endif /* JSTR_NAMESPACE */
@@ -354,52 +269,92 @@ inline static void jstr_alloc_cat_j(jstr_t *JSTR_RST const j,
 }
 #	endif /* JSTR_EXTERN_C */
 
-namespace jstr
+namespace jstr {
+
+namespace priv {
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void cat_assign(char **JSTR_RST const dst,
+		       const jstr_t *JSTR_RST const src) JSTR_NOEXCEPT
 {
+	memcpy(*dst, src->data, src->size);
+	*dst += src->size;
+}
 
-	namespace priv {
+} /* namespace priv */
 
-	JSTR_INLINE
-	JSTR_NONNULL_ALL
-	static void cat_assign(char **JSTR_RST const dst,
-			       jstr_t *JSTR_RST const src) JSTR_NOEXCEPT
-	{
-		memcpy(*dst, src->data, src->size);
-		*dst += src->size;
-	}
+/*
+  Insert multiple strings to S.
+*/
+template <typename Str,
+	  typename... StrArgs>
+JSTR_INLINE
+JSTR_NONNULL_ALL static void
+alloc_cat_j(jstr_t *j,
+	    Str &&arg,
+	    StrArgs &&...args) JSTR_NOEXCEPT
+{
+	alloc_cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+}
 
-	} /* namespace priv */
-
-	/*
-	  Insert multiple strings to S.
-	*/
-	template <typename Str,
-		  typename... StrArgs>
-	JSTR_INLINE
-	JSTR_NONNULL_ALL static void
-	alloc_cat_j(jstr_t * j,
-		    Str && arg,
-		    StrArgs && ...args) JSTR_NOEXCEPT
-	{
-		alloc_cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	}
-
-	/*
-	  Append multiple strings to end of S.
-	*/
-	template <typename Str,
-		  typename... StrArgs>
-	JSTR_INLINE
-	JSTR_NONNULL_ALL static void
-	cat_j(jstr_t * j,
-	      Str && arg,
-	      StrArgs && ...args) JSTR_NOEXCEPT
-	{
-		cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	}
+/*
+  Append multiple strings to end of S.
+*/
+template <typename Str,
+	  typename... StrArgs>
+JSTR_INLINE
+JSTR_NONNULL_ALL static void
+cat_j(jstr_t *j,
+      Str &&arg,
+      StrArgs &&...args) JSTR_NOEXCEPT
+{
+	cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+}
 
 } /* namespace jstr */
 
 #endif /* __cpluslus */
+
+#ifndef __cplusplus
+
+#	define jstr_cat_f(s, sz, ...)                                                  \
+		do {                                                                    \
+			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
+			const size_t newsz = *sz + JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__); \
+			char *p = *(s) + *(sz);                                         \
+			JSTR_PP_STRCPY_VA_ARGS(p, __VA_ARGS__);                         \
+			*p = '\0';                                                      \
+			*(sz) = newsz;                                                  \
+		} while (0)
+
+#	define jstr_cat(s, sz, cap, ...)                                               \
+		do {                                                                    \
+			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
+			const size_t newsz = *sz + JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__); \
+			if (*(cap) < newsz + 1)                                         \
+				JSTR_REALLOC(*(s), *(cap), newsz + 1, break);           \
+			char *p = *(s) + *(sz);                                         \
+			JSTR_PP_STRCPY_VA_ARGS(p, __VA_ARGS__);                         \
+			*p = '\0';                                                      \
+			*(sz) = newsz;                                                  \
+		} while (0)
+
+#	define jstr_alloc_cat(s, sz, cap, ...)                        \
+		do {                                                   \
+			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__); \
+			*(sz) = JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__);   \
+			*(cap) = *(sz)*2;                              \
+			*(s) = malloc(*(cap));                         \
+			JSTR_MALLOC_ERR(*((s)), break);                \
+			char *p = *((s));                              \
+			JSTR_PP_STRCPY_VA_ARGS(p, __VA_ARGS__);        \
+			*p = '\0';                                     \
+		} while (0)
+
+#	define jstr_cat_j(j, ...)	 jstr_cat(&((j)->data), &((j)->size), &((j)->cap), __VA_ARGS__)
+#	define jstr_alloc_cat_j(j, ...) jstr_alloc_cat(&((j)->data), &((j)->size), &((j)->cap), __VA_ARGS__)
+
+#endif /* __cplusplus */
 
 #endif /* JSTR_BUILDER H_DEF */

@@ -12,6 +12,10 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
+#ifndef __cplusplus
+#	include "jstr_pp_va_args_macros.h"
+#endif /* __cplusplus */
+
 #include "_jstr_builder.h"
 #include "_jstr_config.h"
 #include "_jstr_macros.h"
@@ -644,106 +648,6 @@ static int jstr_endswith_mem(const char *JSTR_RST const hs,
 	return (hsz < nelen) ? 1 : memcmp(hs + hsz - nelen, ne, nelen);
 }
 
-#ifndef __cplusplus
-
-/*
-   Append multiple strings to end of S.
-   The last argument MUST be NULL.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_SENTINEL
-inline static void jstr_cat(char **JSTR_RST const s,
-			    size_t *JSTR_RST const sz,
-			    size_t *JSTR_RST const cap,
-			    ...) JSTR_NOEXCEPT
-{
-	size_t newcap = *sz;
-	char *JSTR_RST arg;
-	va_list ap;
-	va_start(ap, cap);
-	while ((arg = va_arg(ap, char *)))
-		newcap += strlen(arg);
-	va_end(ap);
-	if (newcap > *cap)
-		JSTR_REALLOC(*s, *cap, newcap, return);
-	char *sp = *s + *sz;
-	va_start(ap, cap);
-	while ((arg = va_arg(ap, char *)))
-#	ifdef JSTR_HAS_STPCPY
-		sp = stpcpy(sp, arg);
-#	else
-		while (*arg)
-			*sp++ = *arg++;
-#	endif
-	va_end(ap);
-	*sp = '\0';
-	*sz = sp - *s;
-}
-
-/*
-   Append multiple strings to end of S.
-   The last argument MUST be NULL.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_SENTINEL
-inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
-			      ...) JSTR_NOEXCEPT
-{
-	size_t newcap = j->size;
-	char *JSTR_RST arg;
-	va_list ap;
-	va_start(ap, j);
-	while ((arg = va_arg(ap, char *)))
-		newcap += strlen(arg);
-	va_end(ap);
-	if (newcap > j->cap)
-		JSTR_REALLOC(j->data, j->cap, newcap, return);
-	char *sp = j->data + j->size;
-	va_start(ap, j);
-	while ((arg = va_arg(ap, char *)))
-#	ifdef JSTR_HAS_STPCPY
-		sp = stpcpy(sp, arg);
-#	else
-		while (*arg)
-			*sp++ = *arg++;
-#	endif
-	va_end(ap);
-	*sp = '\0';
-	j->size = sp - j->data;
-}
-
-/*
-   Append multiple strings to end of S.
-   Return value:
-   New pointer to '\0' in S.
-   Assumes that S have enough space.
-   The last argument MUST be NULL.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_SENTINEL
-JSTR_RETURNS_NONNULL
-inline static char *jstr_cat_p_f(char *JSTR_RST const s,
-				 const size_t sz,
-				 ...) JSTR_NOEXCEPT
-{
-	char *JSTR_RST arg;
-	va_list ap;
-	char *sp = s + sz;
-	va_start(ap, sz);
-	while ((arg = va_arg(ap, char *)))
-#	ifdef JSTR_HAS_STPCPY
-		sp = stpcpy(sp, arg);
-#	else
-		while (*arg)
-			*sp++ = *arg++;
-#	endif
-	va_end(ap);
-	*sp = '\0';
-	return sp;
-}
-
-#endif /* __cpluslus */
-
 /*
   Converts int to string.
   Return value:
@@ -869,11 +773,6 @@ static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned ch
 }
 #endif /* JSTR_NAMESPACE */
 
-#if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC poison JSTR_ERR
-#	pragma GCC poison JSTR_ERR_EXIT
-#endif /* defined(__GNUC__) || defined(__clang__) */
-
 #undef JSTR_EXIT_ON_MALLOC_ERROR
 #undef JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
 #undef JSTR_MAX_INT_DIGITS
@@ -886,9 +785,6 @@ static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned ch
 #undef PRIVATE_JSTR_UNUMTOSTR
 #undef JSTR_RST
 #undef JSTR_REPLACE
-#undef JSTR_MALLOC_ERR
-#undef JSTR_GROW
-#undef JSTR_REALLOC
 #undef JSTR_PRIVATE
 #undef JSTR_PRIVATE_JSTR_MEMMEM5_SHIFTS
 #undef JSTR_HASH2

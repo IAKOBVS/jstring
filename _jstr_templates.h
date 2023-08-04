@@ -3,14 +3,20 @@
 
 #ifdef __cplusplus
 extern "C" {
-#	include <stddef.h>
-#	include <stdlib.h>
-#	include <string.h>
-#	include <stdio.h>
+#endif /* __cplusplus */
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#ifdef __cplusplus
 }
-#	include <utility>
 #endif /* __cplusplus */
 
+#ifdef __cplusplus
+#	include <utility>
+#endif /* __cpluslus */
+
+#include "_jstr_config.h"
 #include "_jstr_macros.h"
 #include "_jstr_traits.h"
 
@@ -38,7 +44,7 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 	} while (0)
 
 #define JSTR_GROW(old_cap, new_cap) \
-	while (((old_cap) *= 2) < (new_cap))
+	while (((old_cap) *= JSTR_GROWTH_MULTIPLIER) < (new_cap))
 
 #define JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
 	do {                                           \
@@ -53,6 +59,7 @@ namespace jstr {
 
 namespace priv {
 
+JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
@@ -88,7 +95,7 @@ cat_assign(char **JSTR_RST const dst,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void cat_assign(char **JSTR_RST dst,
-		       char *JSTR_RST src) JSTR_NOEXCEPT
+		       const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 #	ifdef JSTR_HAS_STPCPY
 	*dst = stpcpy(*dst, src);
@@ -106,7 +113,7 @@ static void cat_assign(char **JSTR_RST dst,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void cat_assign(char **JSTR_RST const dst,
-		       jstr_t *JSTR_RST const src) JSTR_NOEXCEPT;
+		       const jstr_t *JSTR_RST const src) JSTR_NOEXCEPT;
 
 #	if defined(__GNUC__) || defined(__clang__)
 #		pragma GCC diagnostic pop
@@ -167,12 +174,13 @@ cat(char **JSTR_RST const s,
     Str &&arg,
     StrArgs &&...args) JSTR_NOEXCEPT
 {
-	char *p = *s + *sz;
-	*sz += priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *sz + priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	if (*cap < *sz + 1)
-		JSTR_REALLOC(*s, *cap, *sz + 1, return);
+		JSTR_REALLOC(*s, *cap, newsz + 1, return);
+	char *p = *s + *sz;
 	priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
+	*sz = newsz;
 }
 
 } /* namespace jstr */
