@@ -20,7 +20,6 @@ extern "C" {
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static void private_jstr_replacen_grow(char **JSTR_RST s,
 				       size_t *JSTR_RST sz,
@@ -58,7 +57,6 @@ static void private_jstr_replacen_grow(char **JSTR_RST s,
 }
 
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static void private_jstr_replaceall_grow(char **JSTR_RST s,
 					 size_t *JSTR_RST sz,
@@ -96,7 +94,6 @@ static void private_jstr_replaceall_grow(char **JSTR_RST s,
 
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *private_jstr_replacen_f(char *JSTR_RST s,
@@ -120,7 +117,6 @@ static char *private_jstr_replacen_f(char *JSTR_RST s,
 
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *private_jstr_replaceall_f(char *JSTR_RST s,
