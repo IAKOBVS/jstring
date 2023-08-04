@@ -874,6 +874,14 @@ static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned ch
 #	pragma GCC poison JSTR_ERR_EXIT
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
+#undef JSTR_EXIT_ON_MALLOC_ERROR
+#undef JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
+#undef JSTR_MAX_INT_DIGITS
+#undef JSTR_MAX_LONG_DIGITS
+#undef JSTR_MAX_LONG_LONG_DIGITS
+#undef JSTR_MAX_UINT_DIGITS
+#undef JSTR_MAX_ULONG_DIGITS
+#undef JSTR_MAX_ULONG_LONG_DIGITS
 #undef PRIVATE_JSTR_NUMTOSTR
 #undef PRIVATE_JSTR_UNUMTOSTR
 #undef JSTR_RST
@@ -881,5 +889,9 @@ static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned ch
 #undef JSTR_MALLOC_ERR
 #undef JSTR_GROW
 #undef JSTR_REALLOC
+#undef JSTR_PRIVATE
+#undef JSTR_PRIVATE_JSTR_MEMMEM5_SHIFTS
+#undef JSTR_HASH2
+#undef DEFINE_JSTR_MEMMEMN_FUNCS
 
 #endif /* JSTR_H_DEF */
