@@ -31,6 +31,15 @@ namespace jstr {
 /* extern "C" { */
 #endif /* JSTR_EXTERN_C */
 
+JSTR_NOINLINE
+JSTR_COLD
+static void JSTR_ERR_EXIT()
+{
+	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
+	perror("");
+	exit(1);
+}
+
 /*
   exit(1) if ptr is NULL.
 */
@@ -38,7 +47,7 @@ JSTR_INLINE
 static void jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 {
 	if (unlikely(!p))
-		JSTR_ERR();
+		JSTR_ERR_EXIT();
 }
 
 typedef struct jstr_t {
@@ -116,7 +125,7 @@ typedef struct jstr_t {
 	void err(void) JSTR_NOEXCEPT
 	{
 		if (unlikely(!this->data))
-			JSTR_ERR();
+			JSTR_ERR_EXIT();
 	}
 
 	JSTR_INLINE

@@ -869,6 +869,10 @@ static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned ch
 }
 #endif /* JSTR_NAMESPACE */
 
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC poison JSTR_ERR
+#endif /* defined(__GNUC__) || defined(__clang__) */
+
 #undef PRIVATE_JSTR_NUMTOSTR
 #undef PRIVATE_JSTR_UNUMTOSTR
 #undef JSTR_RST
