@@ -31,24 +31,6 @@ namespace jstr {
 /* extern "C" { */
 #endif /* JSTR_EXTERN_C */
 
-#define JSTR_MALLOC_ERR(p, malloc_fail) \
-	do {                            \
-		if (unlikely(!(p))) {   \
-			JSTR_ERR();     \
-			malloc_fail;    \
-		}                       \
-	} while (0)
-
-#define JSTR_GROW(oldcap, newcap) \
-	while (((oldcap) *= 2) < (newcap))
-
-#define JSTR_REALLOC(p, oldcap, newcap, malloc_fail) \
-	do {                                         \
-		JSTR_GROW(oldcap, newcap);           \
-		(p) = (char *)realloc(p, newcap);    \
-		JSTR_MALLOC_ERR(p, malloc_fail);     \
-	} while (0)
-
 /*
   exit(1) if ptr is NULL.
 */
@@ -70,83 +52,6 @@ typedef struct jstr_t {
 
 #else
 
-    private:
-	JSTR_INLINE
-	JSTR_NONNULL_ALL
-	static void cat_assign(char **JSTR_RST dst,
-			       jstr_t *JSTR_RST src) JSTR_NOEXCEPT
-	{
-		memcpy(*dst, src->data, src->size);
-		*dst += src->size;
-	}
-
-	template <size_t N>
-	JSTR_INLINE
-	JSTR_NONNULL_ALL static void
-	cat_assign(char **JSTR_RST const dst,
-		   const char (&s)[N]) JSTR_NOEXCEPT
-	{
-		memcpy(*dst, s, N - 1);
-		*dst += (N - 1);
-	}
-
-	JSTR_INLINE
-	JSTR_NONNULL_ALL
-	static void cat_assign(char **JSTR_RST dst,
-			       char *JSTR_RST src) JSTR_NOEXCEPT
-	{
-#	ifdef JSTR_HAS_STPCPY
-		*dst = stpcpy(*dst, src);
-#	else
-		while (*src)
-			**dst++ = *src++;
-#	endif
-	}
-
-	JSTR_INLINE
-	static constexpr void cat_loop_assign(char **JSTR_RST const) JSTR_NOEXCEPT {}
-
-	template <typename Str,
-		  typename... StrArgs,
-		  typename = typename std::enable_if<jstr::traits::are_strings<Str, StrArgs...>(), int>::type>
-	JSTR_INLINE
-	JSTR_NONNULL_ALL static void
-	cat_loop_assign(char **JSTR_RST const dst,
-			Str &&arg,
-			StrArgs &&...args) JSTR_NOEXCEPT
-	{
-		cat_assign(dst, std::forward<Str>(arg));
-		cat_loop_assign(dst, std::forward<StrArgs>(args)...);
-	}
-
-	template <typename Str,
-		  typename... StrArgs,
-		  typename = typename std::enable_if<jstr::traits::are_strings<Str, StrArgs...>(), int>::type>
-	JSTR_INLINE
-	JSTR_NONNULL_ALL static void
-	alloc_cat(char **JSTR_RST const s,
-		  size_t *JSTR_RST const sz,
-		  size_t *JSTR_RST const cap,
-		  Str &&arg,
-		  StrArgs &&...args) JSTR_NOEXCEPT
-	{
-		if (sizeof...(args) == 0) {
-			jstr_alloc_append(s, sz, cap, arg);
-			return;
-		}
-		*sz = jstr::priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-		*s = (char *)malloc(*sz * 2);
-		if (unlikely(!*s)) {
-			JSTR_ERR();
-			return;
-		}
-		char *p = *s;
-		cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-		*p = '\0';
-		*cap = *sz * 2;
-	}
-
-    public:
 	template <typename Str,
 		  typename... StrArgs>
 	JSTR_INLINE
@@ -154,7 +59,7 @@ typedef struct jstr_t {
 	jstr_t(Str &&arg,
 	       StrArgs &&...args)
 	{
-		alloc_cat(&this->data, &this->size, &this->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		jstr::alloc_cat(&this->data, &this->size, &this->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	}
 
 	JSTR_INLINE
@@ -447,75 +352,22 @@ namespace jstr
 
 	JSTR_INLINE
 	JSTR_NONNULL_ALL
-	static char *cat_assign(char *JSTR_RST const dst,
-				jstr_t *JSTR_RST src) JSTR_NOEXCEPT
+	static void cat_assign(char **JSTR_RST const dst,
+			       jstr_t *JSTR_RST const src) JSTR_NOEXCEPT
 	{
-		memcpy(dst, src->data, src->size);
-		return dst + src->size;
+		memcpy(*dst, src->data, src->size);
+		*dst += src->size;
 	}
 
 	} /* namespace priv */
 
 	template <typename Str,
-		  typename... StrArgs,
-		  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
-	JSTR_INLINE
-	JSTR_NONNULL_ALL static void
-	alloc_cat(char **JSTR_RST const s,
-		  size_t *JSTR_RST const sz,
-		  size_t *JSTR_RST const cap,
-		  Str &&arg,
-		  StrArgs &&...args) JSTR_NOEXCEPT
-	{
-		if (sizeof...(args) == 0) {
-			jstr_alloc_append(s, sz, cap, arg);
-			return;
-		}
-		*sz = priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-		*s = (char *)malloc(*sz * 2);
-		if (unlikely(!s)) {
-			JSTR_ERR();
-			return;
-		}
-		*cap = *sz * 2;
-		priv::cat_loop_assign(s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-		**s = '\0';
-	}
-
-	template <typename Str,
-		  typename... StrArgs,
-		  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
-	JSTR_INLINE
-	JSTR_NONNULL_ALL static void
-	cat(char **JSTR_RST const s,
-	    size_t *JSTR_RST const sz,
-	    size_t *JSTR_RST const cap,
-	    Str &&arg,
-	    StrArgs &&...args) JSTR_NOEXCEPT
-	{
-		if (sizeof...(args) == 0) {
-			jstr_alloc_append(s, sz, cap, arg);
-			return;
-		}
-		*sz += priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-		if (*cap < *sz)
-			JSTR_REALLOC(*s, *cap, *sz, return);
-		if (unlikely(!s)) {
-			JSTR_ERR();
-			return;
-		}
-		*cap = *sz * 2;
-		priv::cat_loop_assign(s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-		**s = '\0';
-	}
-
-	template <typename Str,
 		  typename... StrArgs>
 	JSTR_INLINE
 	JSTR_NONNULL_ALL static void
-	alloc_cat(jstr_t * j,
-		  Str && arg,
-		  StrArgs && ...args) JSTR_NOEXCEPT
+	alloc_cat_j(jstr_t * j,
+		    Str && arg,
+		    StrArgs && ...args) JSTR_NOEXCEPT
 	{
 		alloc_cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	}
@@ -524,9 +376,9 @@ namespace jstr
 		  typename... StrArgs>
 	JSTR_INLINE
 	JSTR_NONNULL_ALL static void
-	cat(jstr_t * j,
-	    Str && arg,
-	    StrArgs && ...args) JSTR_NOEXCEPT
+	cat_j(jstr_t * j,
+	      Str && arg,
+	      StrArgs && ...args) JSTR_NOEXCEPT
 	{
 		cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	}

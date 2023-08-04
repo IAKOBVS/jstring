@@ -11,14 +11,15 @@ my $G_DIR_C = 'c';
 
 # script_needed();
 
-my $G_DIR_CPP            = $G_DIR_C . 'pp';
-my $G_OUT_C              = "$G_DIR_C/$G_FNAME_BASE";
+my $G_DIR_CPP = $G_DIR_C . 'pp';
+my $G_OUT_C   = "$G_DIR_C/$G_FNAME_BASE";
 my $G_OUT_CPP;
 if ($G_OUT_C =~ /\.hpp/) {
 	$G_OUT_CPP = $G_OUT_C;
 } else {
 	$G_OUT_CPP = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
 }
+
 # my $G_IGNORE_FILE_NONMEM = 'builder.h';
 my $G_IGNORE_FILE = 'private';
 
@@ -35,12 +36,13 @@ my $G_CAP_PTN  = 'cap';
 my $G_SIZE_PTN = 'sz';
 my $G_LEN_PTN  = 'len';
 
-my $G_MACRO_INLINE      = $G_NMSPC_UPP . '_INLINE';
-my $G_MACRO_RESTRICT    = $G_NMSPC_UPP . '_RST';
-my $G_MACRO_WARN_UNUSED = $G_NMSPC_UPP . '_WARN_UNUSED';
+my $G_MACRO_INLINE          = $G_NMSPC_UPP . '_INLINE';
+my $G_MACRO_RESTRICT        = $G_NMSPC_UPP . '_RST';
+my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
 
-my $G_RE_FUNC = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)[^{}()]*($G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
+my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)[^{}()]*($G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
+my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
 
 mkdir($G_DIR_CPP);
 mkdir($G_DIR_C);
@@ -131,6 +133,9 @@ sub gen_nonmem_funcs
 		if ($G_FNAME =~ /$G_IGNORE_FILE/o) {
 			goto NEXT;
 		}
+		if ($decl !~ $G_RE_DEFINE) {
+			goto NEXT;
+		}
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/)       ? 'return ' : '';
 		$params =~ s/\)/,/;
@@ -143,29 +148,27 @@ sub gen_nonmem_funcs
 			}
 		}
 		$decl =~ s/($G_NMSPC\_\w*)_mem(\w*\()/$1$2/o;
-		my $func_args;
-		for (my $i = 0 ; $i <= $#new_args ; ++$i) {
-			$func_args .= $PTR . "$new_args[$i], ";
-		}
-		$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
-		my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
-		foreach (@new_args) {
-			if ($G_LEN) {
-				if (/(\w*)$G_LEN_PTN/) {
-					my $var = $1;
-					$decl =~ s/,[^,]*$G_LEN_PTN//o;
-					$_ = "strlen($var)";
+		if ($decl =~ $G_RE_DEFINE) {
+			$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
+			my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
+			foreach (@new_args) {
+				if ($G_LEN) {
+					if (/(\w*)$G_LEN_PTN/) {
+						my $var = $1;
+						$decl =~ s/,[^,]*$G_LEN_PTN//o;
+						$_ = "strlen($var)";
+					}
+				} else {
+					if (/\w*$G_SIZE_PTN/) {
+						$decl =~ s/,[^,]*$G_SIZE_PTN//o;
+						$_ = "strlen($new_args[0])";
+					}
 				}
-			} else {
-				if (/\w*$G_SIZE_PTN/) {
-					$decl =~ s/,[^,]*$G_SIZE_PTN//o;
-					$_ = "strlen($new_args[0])";
-				}
+				$decl .= "$_, ";
 			}
-			$decl .= "$_, ";
+			$decl =~ s/, $//;
+			$decl .= ");\n}\n";
 		}
-		$decl =~ s/, $//;
-		$decl .= ");\n}\n";
 		push(@NEW_LNS, $_);
 		push(@NEW_LNS, $decl);
 		next;
@@ -211,7 +214,10 @@ sub gen_struct_funcs
 		if ($params =~ /\.\.\./) {
 			goto NEXT;
 		}
-		my $RETURN           = ($decl =~ /void/) ? '' : 'return ';
+		if ($decl !~ $G_RE_DEFINE) {
+			goto NEXT;
+		}
+		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
 		if ($RETURN) {
 			$decl =~ s/$G_MACRO_RETURNS_NONNULL//;
 		}
@@ -225,7 +231,7 @@ sub gen_struct_funcs
 			$decl =~ s/_p//;
 			$decl =~ s/static\s*(?:char|void)\s\*/static void /;
 			$decl =~ s/[ \t]*$G_MACRO_WARN_UNUSED[ \t]*\n//o;
-			$RETURN           = '';
+			$RETURN          = '';
 			$RETURNS_END_PTR = 1;
 		}
 		my $PTR = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
