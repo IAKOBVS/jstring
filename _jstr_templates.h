@@ -40,11 +40,11 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 #define JSTR_GROW(old_cap, new_cap) \
 	while (((old_cap) *= 2) < (new_cap))
 
-#define JSTR_REALLOC(p, old_cap, new_cap, malloc_fail)  \
-	do {                                            \
-		JSTR_GROW(old_cap, new_cap);            \
-		(p) = (char *)realloc(p, old_cap);      \
-		JSTR_MALLOC_ERR(p, malloc_fail);        \
+#define JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
+	do {                                           \
+		JSTR_GROW(old_cap, new_cap);           \
+		(p) = (char *)realloc(p, old_cap);     \
+		JSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 
 #ifdef __cplusplus

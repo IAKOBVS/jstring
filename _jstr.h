@@ -669,12 +669,12 @@ inline static void jstr_cat(char **JSTR_RST const s,
 	char *sp = *s + *sz;
 	va_start(ap, cap);
 	while ((arg = va_arg(ap, char *)))
-#ifdef JSTR_HAS_STPCPY
+#	ifdef JSTR_HAS_STPCPY
 		sp = stpcpy(sp, arg);
-#else
+#	else
 		while (*arg)
 			*sp++ = *arg++;
-#endif
+#	endif
 	va_end(ap);
 	*sp = '\0';
 	*sz = sp - *s;
@@ -701,12 +701,12 @@ inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 	char *sp = j->data + j->size;
 	va_start(ap, j);
 	while ((arg = va_arg(ap, char *)))
-#ifdef JSTR_HAS_STPCPY
+#	ifdef JSTR_HAS_STPCPY
 		sp = stpcpy(sp, arg);
-#else
+#	else
 		while (*arg)
 			*sp++ = *arg++;
-#endif
+#	endif
 	va_end(ap);
 	*sp = '\0';
 	j->size = sp - j->data;
@@ -731,12 +731,12 @@ inline static char *jstr_cat_p_f(char *JSTR_RST const s,
 	char *sp = s + sz;
 	va_start(ap, sz);
 	while ((arg = va_arg(ap, char *)))
-#ifdef JSTR_HAS_STPCPY
+#	ifdef JSTR_HAS_STPCPY
 		sp = stpcpy(sp, arg);
-#else
+#	else
 		while (*arg)
 			*sp++ = *arg++;
-#endif
+#	endif
 	va_end(ap);
 	*sp = '\0';
 	return sp;

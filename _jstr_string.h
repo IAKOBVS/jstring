@@ -50,7 +50,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *jstr_strcpyp_nonul(char *JSTR_RST const dst,
-			  const char *JSTR_RST const src) JSTR_NOEXCEPT
+				const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 #ifndef JSTR_HAS_STPCPY
 	const size_t slen = strlen(src);
