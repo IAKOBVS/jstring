@@ -433,12 +433,19 @@ static char *private_jstr_memmem5(const int use_remove,
 	size_t tmp;
 	size_t shift1;
 	size_t m1 = searclen - 1;
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic ignored "-Wstringop-overread" /* NOLINT */
+#	pragma GCC diagnostic push
+#endif /* defined(__GNUC__) || defined(__clang__) */
 	if (unlikely(searclen > 256)) {
 		size_t shift[256];
 		JSTR_PRIVATE_JSTR_MEMMEM5_SHIFTS;
 	}
 	uint8_t shift[256];
 	JSTR_PRIVATE_JSTR_MEMMEM5_SHIFTS;
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic pop
+#endif /* defined(__GNUC__) || defined(__clang__) */
 }
 
 /* use_remove, use_replace, use_n */

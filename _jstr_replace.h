@@ -318,7 +318,7 @@ static char *jstr_rm_mem_p(char *JSTR_RST const s,
 */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *jstr_rmn_mem_p(char *JSTR_RST s,
 			    const char *JSTR_RST const searc,
@@ -345,7 +345,7 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *jstr_rmall_mem_p(char *JSTR_RST s,
 			      const char *JSTR_RST const searc,
@@ -533,7 +533,7 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
   Replace first SEARCH in S with REPLACE.
 */
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
 static void jstr_replace_mem(char **JSTR_RST const s,
 			     size_t *JSTR_RST const sz,
 			     size_t *JSTR_RST const cap,
@@ -586,7 +586,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 */
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 				   const char *JSTR_RST const searc,
@@ -622,7 +622,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 */
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 				     const char *JSTR_RST const searc,
@@ -653,7 +653,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
   Replace N SEARCH in S with REPLACE.
 */
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
 static void jstr_replacen_mem(char **JSTR_RST const s,
 			      size_t *JSTR_RST const sz,
 			      size_t *JSTR_RST const cap,
@@ -696,7 +696,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
   Replace all SEARCH in S with REPLACE.
 */
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
 static void jstr_replaceall_mem(char **JSTR_RST const s,
 				size_t *JSTR_RST const sz,
 				size_t *JSTR_RST const cap,
