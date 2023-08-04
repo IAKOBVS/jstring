@@ -98,19 +98,19 @@ static void cat_assign(char **JSTR_RST dst,
 #	endif
 }
 
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic ignored "-Wunused-function"
-#pragma GCC diagnostic push
-#endif /* defined(__GNUC__) || defined(__clang__) */
-	
+#	if defined(__GNUC__) || defined(__clang__)
+#		pragma GCC diagnostic ignored "-Wunused-function"
+#		pragma GCC diagnostic push
+#	endif /* defined(__GNUC__) || defined(__clang__) */
+
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void cat_assign(char **JSTR_RST const dst,
 		       jstr_t *JSTR_RST const src) JSTR_NOEXCEPT;
 
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic pop
-#endif /* defined(__GNUC__) || defined(__clang__) */
+#	if defined(__GNUC__) || defined(__clang__)
+#		pragma GCC diagnostic pop
+#	endif /* defined(__GNUC__) || defined(__clang__) */
 
 JSTR_INLINE
 static constexpr void cat_loop_assign(char **JSTR_RST const) JSTR_NOEXCEPT {}
@@ -142,12 +142,9 @@ alloc_cat(char **JSTR_RST const s,
 	  StrArgs &&...args) JSTR_NOEXCEPT
 {
 	*sz = priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	*s = (char *)malloc(*sz * 2);
-	if (unlikely(!*s)) {
-		JSTR_ERR();
-		return;
-	}
 	*cap = *sz * 2;
+	*s = (char *)malloc(*cap);
+	JSTR_MALLOC_ERR(*s, return);
 	char *p = *s;
 	priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
@@ -164,18 +161,13 @@ cat(char **JSTR_RST const s,
     Str &&arg,
     StrArgs &&...args) JSTR_NOEXCEPT
 {
-	const size_t new_cap = *sz + priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	if (*cap < new_cap)
-		JSTR_REALLOC(*s, *cap, *sz, return);
-	if (unlikely(!*s)) {
-		JSTR_ERR();
-		return;
-	}
+	const size_t new_sz = *sz + priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	if (*cap < new_sz + 1)
+		JSTR_REALLOC(*s, *cap, new_sz + 1, return);
 	char *p = *s + *sz;
-	*cap = *sz * 2;
 	priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*sz = new_sz;
 	*p = '\0';
-	*sz = new_cap;
 }
 
 } /* namespace jstr */

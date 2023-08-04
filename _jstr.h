@@ -685,7 +685,6 @@ inline static void jstr_cat(char **JSTR_RST const s,
    The last argument MUST be NULL.
 */
 JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
 JSTR_SENTINEL
 inline static void jstr_cat_j(jstr_t *JSTR_RST const j,
 			      ...) JSTR_NOEXCEPT
