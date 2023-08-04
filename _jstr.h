@@ -871,6 +871,7 @@ static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned ch
 
 #if defined(__GNUC__) || defined(__clang__)
 #	pragma GCC poison JSTR_ERR
+#	pragma GCC poison JSTR_ERR_EXIT
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 #undef PRIVATE_JSTR_NUMTOSTR
