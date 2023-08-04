@@ -4,7 +4,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
-#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -320,6 +319,8 @@ cat_j(jstr_t *j,
 
 #	define jstr_cat_f(s, sz, ...)                                                  \
 		do {                                                                    \
+			JSTR_ASSERT_IS_STR(*(s));                                       \
+			JSTR_ASSERT_IS_SIZE(*(sz));                                     \
 			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
 			const size_t newsz = *sz + JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__); \
 			char *p = *(s) + *(sz);                                         \
@@ -330,6 +331,9 @@ cat_j(jstr_t *j,
 
 #	define jstr_cat(s, sz, cap, ...)                                               \
 		do {                                                                    \
+			JSTR_ASSERT_IS_STR(*(s));                                       \
+			JSTR_ASSERT_IS_SIZE(*(sz));                                     \
+			JSTR_ASSERT_IS_SIZE(*(cap));                                    \
 			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
 			const size_t newsz = *sz + JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__); \
 			if (*(cap) < newsz + 1)                                         \
@@ -342,6 +346,9 @@ cat_j(jstr_t *j,
 
 #	define jstr_alloc_cat(s, sz, cap, ...)                        \
 		do {                                                   \
+			JSTR_ASSERT_IS_STR(*(s));                      \
+			JSTR_ASSERT_IS_SIZE(*(sz));                    \
+			JSTR_ASSERT_IS_SIZE(*(cap));                   \
 			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__); \
 			*(sz) = JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__);   \
 			*(cap) = *(sz)*2;                              \

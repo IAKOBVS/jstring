@@ -1,14 +1,24 @@
 #!/bin/sh
 DIR_CPP=cpp
 DIR_C=cpp
-fmt() { clang-format -i --style=file:".clang-format" "$1"; }
+fmt()
+{
+	clang-format -i --style=file:".clang-format" "$1"
+}
+fmt_if_needed()
+{
+	case $1 in
+	*_pp_*) ;;
+	*) fmt "$1" & ;;
+	esac
+}
 for f in $(echo *.h); do
-	fmt "$f" &
+	fmt_if_needed "$f" &
 done
 for f in $(echo $DIR_CPP/*.h*); do
-	fmt "$f" &
+	fmt_if_needed "$f" &
 done
 for f in $(echo $DIR_C/*.h*); do
-	fmt "$f" &
+	fmt_if_needed "$f" &
 done
 wait

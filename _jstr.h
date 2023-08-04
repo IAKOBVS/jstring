@@ -4,7 +4,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
-#include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +12,7 @@ extern "C" {
 #endif /* __cpluslus */
 
 #ifndef __cplusplus
-#	include "jstr_pp_va_args_macros.h"
+#	include "_jstr_pp_va_args_macros.h"
 #endif /* __cplusplus */
 
 #include "_jstr_builder.h"
@@ -286,8 +285,7 @@ static void jstr_insertaft_mem_f(char *JSTR_RST const s,
 				 const size_t srclen) JSTR_NOEXCEPT
 {
 	switch (searclen) {
-	case 0:
-		return;
+	case 0: return;
 	case 1:
 		jstr_insertaftc_mem_f(s, *searc, src, sz, srclen);
 		return;
@@ -314,8 +312,7 @@ static void jstr_insertaft_mem(char **JSTR_RST const s,
 			       const size_t srclen) JSTR_NOEXCEPT
 {
 	switch (searclen) {
-	case 0:
-		return;
+	case 0: return;
 	case 1:
 		jstr_insertaftc_mem(s, sz, cap, *searc, src, srclen);
 		return;
@@ -342,8 +339,7 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 				  const size_t srclen) JSTR_NOEXCEPT
 {
 	switch (searclen) {
-	case 0:
-		return;
+	case 0: return;
 	case 1:
 		jstr_insertaftallc_mem(s, sz, cap, *searc, src, srclen);
 		return;
@@ -509,10 +505,8 @@ static char *jstr_slipaft_mem_f(char *JSTR_RST const s,
 				const size_t srclen) JSTR_NOEXCEPT
 {
 	switch (searclen) {
-	case 0:
-		return s + sz;
-	case 1:
-		return jstr_slipaftc_mem_p_f(s, *searc, src, sz, srclen);
+	case 0: return s + sz;
+	case 1: return jstr_slipaftc_mem_p_f(s, *searc, src, sz, srclen);
 	default: {
 		const char *const p = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
 		if (p)
@@ -536,8 +530,7 @@ static void jstr_slipaft_mem(char **JSTR_RST const s,
 			     const size_t srclen) JSTR_NOEXCEPT
 {
 	switch (searclen) {
-	case 0:
-		return;
+	case 0: return;
 	case 1:
 		jstr_slipaftc_mem(s, sz, cap, *searc, src, srclen);
 		return;

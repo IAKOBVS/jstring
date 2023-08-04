@@ -184,67 +184,70 @@
 
 /* #endif /1* __cplusplus *1/ */
 
-/* #if defined(JSTR_HAS_TYPEOF) && defined(JSTR_HAS_GENERIC) */
-/* #	define JSTR_SAME_TYPE(x, y) _Generic((x),           \ */
-/* 					      typeof(y) : 1, \ */
-/* 					      default : 0) */
-/* #	define JSTR_IS_TYPE(T, x) _Generic((x),   \ */
-/* 					    T : 1, \ */
-/* 					    default : 0) */
-/* #endif /1* JSTR_HAS_TYPEOF && JSTR_HAS_GENERIC *1/ */
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
+#	define JSTR_HAS_GENERIC
+#endif /* JSTR_HAS_GENERIC */
 
-/* #if defined(__GNUC__) || defined(__clang__) */
-/* #	ifdef JSTR_HAS_GENERIC */
-/* #		define JSTR_GENERIC_CASE_SIZE(expr)                           \ */
-/* 			int : expr,                                            \ */
-/* 			      unsigned int : expr,                             \ */
-/* 					     size_t : expr,                    \ */
-/* 						      long : expr,             \ */
-/* 							     long long : expr, \ */
-/* 									 unsigned long long : expr */
+#if defined(JSTR_HAS_TYPEOF) && defined(JSTR_HAS_GENERIC)
+#	define JSTR_SAME_TYPE(x, y) _Generic((x),           \
+					      typeof(y) : 1, \
+					      default : 0)
+#	define JSTR_IS_TYPE(T, x) _Generic((x),   \
+					    T : 1, \
+					    default : 0)
+#endif /* JSTR_HAS_TYPEOF && JSTR_HAS_GENERIC */
 
-/* #		define JSTR_GENERIC_CASE_STR(expr) \ */
-/* 			char * : expr,              \ */
-/* 				 const char * : expr */
+#if defined(__GNUC__) || defined(__clang__)
+#	ifdef JSTR_HAS_GENERIC
+#		define JSTR_GENERIC_CASE_SIZE(expr)                           \
+			int : expr,                                            \
+			      unsigned int : expr,                             \
+					     size_t : expr,                    \
+						      long : expr,             \
+							     long long : expr, \
+									 unsigned long long : expr
+#		define JSTR_GENERIC_CASE_STR(expr) \
+			char * : expr,              \
+				 const char * : expr
 
-/* #		define JSTR_GENERIC_CASE_CHAR(expr) \ */
-/* 			char : expr,                 \ */
-/* 			       const char : expr */
+#		define JSTR_GENERIC_CASE_CHAR(expr) \
+			char : expr,                 \
+			       const char : expr
 
-/* #		define JSTR_IS_SIZE(expr) _Generic((expr),                    \ */
-/* 						    JSTR_GENERIC_CASE_SIZE(1), \ */
-/* 						    default : 0) */
+#		define JSTR_IS_SIZE(expr) _Generic((expr),                    \
+						    JSTR_GENERIC_CASE_SIZE(1), \
+						    default : 0)
 
-/* #		define JSTR_IS_STR(expr) _Generic((expr),                   \ */
-/* 						   JSTR_GENERIC_CASE_STR(1), \ */
-/* 						   default : 0) */
+#		define JSTR_IS_STR(expr) _Generic((expr),                   \
+						   JSTR_GENERIC_CASE_STR(1), \
+						   default : 0)
 
-/* #		define JSTR_IS_CHAR(expr) _Generic((expr),                    \ */
-/* 						    JSTR_GENERIC_CASE_CHAR(1), \ */
-/* 						    default : 0) */
+#		define JSTR_IS_CHAR(expr) _Generic((expr),                    \
+						    JSTR_GENERIC_CASE_CHAR(1), \
+						    default : 0)
 
-/* #		define JSTR_ASSERT_IS_SIZE(expr) \ */
-/* 			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Passing non-number as number argument!"); */
-/* #		define JSTR_ASSERT_IS_STR(expr) \ */
-/* 			JSTR_ASSERT(JSTR_IS_STR(expr), "Passing non-string as string argument!"); */
-/* #		define JSTR_ASSERT_IS_CHAR(expr) \ */
-/* 			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Passing non-char as char argument!"); */
-/* #		define JSTR_ASSERT_TYPECHECK(Texpr, expr) JSTR_ASSERT(JSTR_SAME_TYPE(Texpr, expr), "Passing the wrong data type!"); */
-/* #	else */
-/* #		define JSTR_ASSERT_IS_SIZE(expr) */
-/* #		define JSTR_ASSERT_IS_STR(expr) */
-/* #		define JSTR_ASSERT_IS_CHAR(expr) */
-/* #		define JSTR_ASSERT_TYPECHECK(Texpr, expr) */
-/* #	endif /1* JSTR_HAS_GENERIC *1/ */
-/* #	define JSTR_MACRO_START ({ */
-/* #	define JSTR_MACRO_END \ */
-/* 		;              \ */
-/* 		}) */
-/* #else */
-/* #	define JSTR_IS_SIZE(val) */
-/* #	define JSTR_MACRO_START ( */
-/* #	define JSTR_MACRO_END ) */
-/* #endif /1* __GNUC__ || __clang__ *1/ */
+#		define JSTR_ASSERT_IS_SIZE(expr) \
+			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Passing non-number as number argument!");
+#		define JSTR_ASSERT_IS_STR(expr) \
+			JSTR_ASSERT(JSTR_IS_STR(expr), "Passing non-string as string argument!");
+#		define JSTR_ASSERT_IS_CHAR(expr) \
+			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Passing non-char as char argument!");
+#		define JSTR_ASSERT_TYPECHECK(Texpr, expr) JSTR_ASSERT(JSTR_SAME_TYPE(Texpr, expr), "Passing the wrong data type!");
+#	else
+#		define JSTR_ASSERT_IS_SIZE(expr)
+#		define JSTR_ASSERT_IS_STR(expr)
+#		define JSTR_ASSERT_IS_CHAR(expr)
+#		define JSTR_ASSERT_TYPECHECK(Texpr, expr)
+#	endif /* JSTR_HAS_GENERIC */
+#	define JSTR_MACRO_START ({
+#	define JSTR_MACRO_END \
+		;              \
+		})
+#else
+#	define JSTR_IS_SIZE(val)
+#	define JSTR_MACRO_START (
+#	define JSTR_MACRO_END )
+#endif /* __GNUC__ || __clang__ */
 
 #ifdef __cplusplus
 #	define JSTR_NOEXCEPT noexcept
@@ -263,10 +266,6 @@
 #if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
 #	define JSTR_HAS_TYPEOF
 #endif /* JSTR_HAS_TYPEOF */
-
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-#	define JSTR_HAS_GENERIC
-#endif /* JSTR_HAS_GENERIC */
 
 #ifdef static_assert
 #	define JSTR_HAS_STATIC_ASSERT
@@ -560,9 +559,9 @@ case '\r':                   \
 case ' ':
 
 #ifdef __cplusplus
-#	define JSTR_PRIVATE   private:
-#	define JSTR_PUBLIC    public:
-#	define JSTR_CAST(T)   (T)
+#	define JSTR_PRIVATE	    private:
+#	define JSTR_PUBLIC	    public:
+#	define JSTR_CAST(T)	    (T)
 #	define JSTR_CJSTR_PP_CONST const
 #else
 #	define JSTR_CAST(T)

@@ -133,7 +133,7 @@ sub gen_nonmem_funcs
 		if ($G_FNAME =~ /$G_IGNORE_FILE/o) {
 			goto NEXT;
 		}
-		if ($decl !~ $G_RE_DEFINE) {
+		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
@@ -148,7 +148,6 @@ sub gen_nonmem_funcs
 			}
 		}
 		$decl =~ s/($G_NMSPC\_\w*)_mem(\w*\()/$1$2/o;
-		if ($decl =~ $G_RE_DEFINE) {
 			$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
 			my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
 			foreach (@new_args) {
@@ -168,7 +167,6 @@ sub gen_nonmem_funcs
 			}
 			$decl =~ s/, $//;
 			$decl .= ");\n}\n";
-		}
 		push(@NEW_LNS, $_);
 		push(@NEW_LNS, $decl);
 		next;
@@ -214,7 +212,7 @@ sub gen_struct_funcs
 		if ($params =~ /\.\.\./) {
 			goto NEXT;
 		}
-		if ($decl !~ $G_RE_DEFINE) {
+		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
