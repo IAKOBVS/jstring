@@ -367,6 +367,12 @@
 #		define JSTR_RETURNS_NONNULL
 #	endif /* RETURNS_NONNULL */
 
+#	if __has_builtin(__builtin_constant_p)
+#		define JSTR_CONSTANT_P(p) __builtin_constant_p(p)
+#	else
+#		define JSTR_CONSTANT_P(p) 0
+#	endif /* __has_builtin(__builtin_constant_p) */
+
 #elif defined(_MSC_VER)
 
 #	define JSTR_INLINE __forceinline inline
@@ -381,6 +387,7 @@
 #	define JSTR_MALLOC_DEALLOC(deallocator)
 #	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #	define JSTR_RETURNS_NONNULL
+#	define JSTR_CONSTANT_P(p) 0
 
 #else
 
@@ -395,6 +402,8 @@
 #	define JSTR_MALLOC
 #	define JSTR_MALLOC_DEALLOC(deallocator)
 #	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
+#	define JSTR_CONSTANT_P(p) 0
+
 #endif /* __GNUC__ || __clang__ || _MSC_VER */
 
 #if defined(__GNUC__) || defined(__clang__)
