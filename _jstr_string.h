@@ -193,11 +193,10 @@ static void *jstr_memmemr(const void *JSTR_RST const hs,
 		}                                                             \
 		return NULL;                                                  \
 	} while (0)
-	default: {
+	default:
 		if (unlikely(hslen > 256))
 			PRIVATE_JSTR_MEMMEMR(size_t, size_t);
 		PRIVATE_JSTR_MEMMEMR(uint8_t, int);
-	}
 	}
 }
 
@@ -231,5 +230,7 @@ static void *jstr_strstrr(const void *JSTR_RST const hs,
 #if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
 }
 #endif /* JSTR_NAMESPACE */
+
+#undef PRIVATE_JSTR_MEMMEMR
 
 #endif /* JSTR_STRING_H_DEF */
