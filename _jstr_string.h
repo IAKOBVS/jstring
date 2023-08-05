@@ -60,8 +60,8 @@ static void *jstr_memchrr(const void *JSTR_RST const s,
 #ifndef JSTR_HAS_MEMRCHR
 	if (unlikely(!*(char *)s))
 		return NULL;
-	const char *const start = (char *)s;
-	const char *end = (char *)s + n - 1;
+	const unsigned char *const start = (unsigned char *)s;
+	const unsigned char *end = (unsigned char *)s + n - 1;
 	do
 		if (*end == c)
 			return (void *)end;
@@ -70,6 +70,22 @@ static void *jstr_memchrr(const void *JSTR_RST const s,
 #else
 	return (void *)memrchr(s, c, n);
 #endif /* !JSTR_HAS_MEMRCHR */
+}
+
+/*
+  Return pointer to last C in S.
+  Return value:
+  pointer to last C;
+  NULL if not found.
+*/
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static char *jstr_strchrr(const char *JSTR_RST const s,
+			  const int c) JSTR_NOEXCEPT
+{
+	return (char *)jstr_memchrr(s, c, strlen(s));
 }
 
 /*
@@ -239,11 +255,11 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static void *jstr_strstrr_constexpr(const void *JSTR_RST const hs,
-			  const size_t hslen,
-			  const void *JSTR_RST const ne) JSTR_NOEXCEPT
+static char *jstr_strstrr_constexpr(const char *JSTR_RST const hs,
+				    const size_t hslen,
+				    const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
-	return jstr_memmemr_constexpr(hs, hslen, ne, strlen((char *)ne));
+	return (char *)jstr_memmemr_constexpr(hs, hslen, ne, strlen((char *)ne));
 }
 
 /*
@@ -257,11 +273,11 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static void *jstr_strstrr(const void *JSTR_RST const hs,
+static char *jstr_strstrr(const char *JSTR_RST const hs,
 			  const size_t hslen,
-			  const void *JSTR_RST const ne) JSTR_NOEXCEPT
+			  const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
-	return jstr_memmemr(hs, hslen, ne, strlen((char *)ne));
+	return (char *)jstr_memmemr(hs, hslen, ne, strlen((char *)ne));
 }
 
 #ifdef JSTR_HAS_MEMMEM
