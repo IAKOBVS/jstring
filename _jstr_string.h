@@ -128,38 +128,15 @@ static int jstr_casecmp(const char *JSTR_RST s1,
 	}
 }
 
-/*
-   Find last NE in HS.
-   Return value:
-   Pointer to NE;
-   NULL if not found.
-*/
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-static void *jstr_memmemr(const void *JSTR_RST const hs,
-			  const size_t hslen,
-			  const void *JSTR_RST const ne,
-			  const size_t nelen) JSTR_NOEXCEPT
+static void *private_jstr_memmemr(const void *JSTR_RST const hs,
+				  const size_t hslen,
+				  const void *JSTR_RST const ne,
+				  const size_t nelen) JSTR_NOEXCEPT
 {
-	if (unlikely(hslen < nelen))
-		return NULL;
-	switch (nelen) {
-	case 0:
-		return (void *)hs;
-	case 1:
-		return jstr_memchrr(hs, *(char *)ne, hslen);
-	case 2: {
-		const unsigned char *const start = (unsigned char *)hs;
-		const unsigned char *h = (unsigned char *)hs + hslen;
-		const unsigned char *n = (unsigned char *)ne;
-		const uint16_t nw = n[1] << 8 | n[0];
-		uint16_t hw = h[-1] << 8 | h[0];
-		for (h -= 2; h >= start && hw != nw; hw = hw << 8 | *h--)
-			;
-		return hw == nw ? (void *)(h + 1) : NULL;
-	}
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
 #define PRIVATE_JSTR_MEMMEMR(shift_type, ne_iterator_type)                    \
 	do {                                                                  \
@@ -193,11 +170,80 @@ static void *jstr_memmemr(const void *JSTR_RST const hs,
 		}                                                             \
 		return NULL;                                                  \
 	} while (0)
-	default:
-		if (unlikely(hslen > 256))
-			PRIVATE_JSTR_MEMMEMR(size_t, size_t);
-		PRIVATE_JSTR_MEMMEMR(uint8_t, int);
+	if (unlikely(hslen > 256))
+		PRIVATE_JSTR_MEMMEMR(size_t, size_t);
+	PRIVATE_JSTR_MEMMEMR(uint8_t, int);
+}
+
+/*
+   Find last NE in HS.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_INLINE
+static void *jstr_memmemr_constexpr(const void *JSTR_RST const hs,
+				    const size_t hslen,
+				    const void *JSTR_RST const ne,
+				    const size_t nelen) JSTR_NOEXCEPT
+{
+	if (unlikely(hslen < nelen))
+		return NULL;
+	switch (nelen) {
+	case 0:
+		return (void *)hs;
+	case 1:
+		return jstr_memchrr(hs, *(char *)ne, hslen);
+	case 2: {
+		const unsigned char *const start = (unsigned char *)hs;
+		const unsigned char *h = (unsigned char *)hs + hslen;
+		const unsigned char *n = (unsigned char *)ne;
+		const uint16_t nw = n[1] << 8 | n[0];
+		uint16_t hw = h[-1] << 8 | h[0];
+		for (h -= 2; h >= start && hw != nw; hw = hw << 8 | *h--)
+			;
+		return hw == nw ? (void *)(h + 1) : NULL;
 	}
+	default: return private_jstr_memmemr(hs, hslen, ne, nelen);
+	}
+}
+
+/*
+   Find last NE in HS.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static void *jstr_memmemr(const void *JSTR_RST const hs,
+			  const size_t hslen,
+			  const void *JSTR_RST const ne,
+			  const size_t nelen) JSTR_NOEXCEPT
+{
+	return jstr_memmemr_constexpr(hs, hslen, ne, nelen);
+}
+
+/*
+   Find last NE in HS.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static void *jstr_strstrr_constexpr(const void *JSTR_RST const hs,
+			  const size_t hslen,
+			  const void *JSTR_RST const ne) JSTR_NOEXCEPT
+{
+	return jstr_memmemr_constexpr(hs, hslen, ne, strlen((char *)ne));
 }
 
 /*
