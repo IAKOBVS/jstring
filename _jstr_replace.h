@@ -12,6 +12,7 @@ extern "C" {
 
 #include "_jstr_macros.h"
 #include "_jstr_private_replace_memmem.h"
+#include "_jstr_string.h"
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
@@ -633,6 +634,43 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 			     const size_t rplclen) JSTR_NOEXCEPT
 {
 	return jstr_replace_mem_constexpr(s, sz, cap, searc, rplc, searclen, rplclen);
+}
+
+/*
+  Replace last SEARCH in S with REPLACE.
+*/
+JSTR_NONNULL_ALL
+JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static void jstr_replacelast_mem(char **JSTR_RST const s,
+				 size_t *JSTR_RST const sz,
+				 size_t *JSTR_RST const cap,
+				 const char *JSTR_RST const searc,
+				 const char *JSTR_RST const rplc,
+				 const size_t searclen,
+				 const size_t rplclen) JSTR_NOEXCEPT
+{
+	char *mtc = (char *)jstr_memmemr(*s, *sz, searc, searclen);
+	if (unlikely(!mtc))
+		return;
+	if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {
+		memmove(mtc + rplclen,
+			mtc + searclen,
+			(*s + *sz + 1) - mtc + searclen);
+		memcpy(mtc, rplc, rplclen);
+	} else {
+		JSTR_GROW(*cap, *sz + rplclen + 1);
+		char *const tmp = (char *)malloc(*cap);
+		JSTR_MALLOC_ERR(tmp, return);
+		memcpy(tmp, *s, mtc - *s);
+		memcpy(tmp + (mtc - *s), rplc, rplclen);
+		memcpy(tmp + (mtc - *s) + rplclen,
+		       mtc + rplclen,
+		       (*s + *sz + 1) - (mtc + rplclen));
+		free(*s);
+		*s = tmp;
+	}
+	*sz += (long long)(rplclen - searclen);
 }
 
 /*
