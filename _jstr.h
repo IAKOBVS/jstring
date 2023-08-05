@@ -264,7 +264,7 @@ static void jstr_insertaftallc_mem(char **JSTR_RST const s,
 				   const size_t srclen) JSTR_NOEXCEPT
 {
 	size_t off = 0;
-	char *p;
+	const char *p;
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
 		jstr_insert_mem(s, sz, cap, p - *s + 1, src, srclen);
 		off += *s - p + 1;
@@ -345,7 +345,7 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 		return;
 	default: {
 		size_t off = 0;
-		char *p;
+		const char *p;
 		while ((p = (char *)JSTR_MEMMEM(*s + off, *sz - off, searc, searclen))) {
 			jstr_insert_mem(s, sz, cap, p - *s + searclen, src, srclen);
 			off += *s - p + searclen;
@@ -462,7 +462,7 @@ static char *jstr_slipaftallc_mem_p_f(char *JSTR_RST const s,
 				      const size_t srclen) JSTR_NOEXCEPT
 {
 	size_t off = 0;
-	char *p;
+	const char *p;
 	while ((p = (char *)memchr(s + off, c, sz - off))) {
 		sz = jstr_slip_mem_p_f(s, p - s, src, sz, srclen) - s;
 		off += p - s + 1;
@@ -483,7 +483,7 @@ static void jstr_slipaftallc_mem(char **JSTR_RST const s,
 				 const size_t srclen) JSTR_NOEXCEPT
 {
 	size_t off = 0;
-	char *p;
+	const char *p;
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
 		jstr_slip_mem(s, sz, cap, p - *s + 1, src, srclen);
 		off += p - *s + 1;
@@ -563,7 +563,7 @@ static char *jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
 		return jstr_slipaftallc_mem_p_f(s, *searc, src, sz, srclen);
 	default: {
 		size_t off = 0;
-		char *p;
+		const char *p;
 		while ((p = (char *)JSTR_MEMMEM(s + off, sz - off, searc, searclen))) {
 			sz = jstr_slip_mem_p_f(s, p - s, src, sz, srclen) - s;
 			off += p - s + searclen;
@@ -594,7 +594,7 @@ static void jstr_slipaftall_mem(char **JSTR_RST const s,
 		return;
 	default: {
 		size_t off = 0;
-		char *p;
+		const char *p;
 		while ((p = (char *)JSTR_MEMMEM(*s + off, *sz - off, searc, searclen))) {
 			jstr_slip_mem(s, sz, cap, p - *s + searclen, src, srclen);
 			off += p - *s + searclen;
