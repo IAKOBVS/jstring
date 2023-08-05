@@ -134,10 +134,10 @@ static int jstr_casecmp(const char *JSTR_RST s1,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
 static void *jstr_memmemr(const void *JSTR_RST const hs,
 			  const size_t hslen,
 			  const void *JSTR_RST const ne,
@@ -206,10 +206,11 @@ static void *jstr_memmemr(const void *JSTR_RST const hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
 static void *jstr_strstrr(const void *JSTR_RST const hs,
 			  const size_t hslen,
 			  const void *JSTR_RST const ne) JSTR_NOEXCEPT
