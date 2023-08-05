@@ -642,6 +642,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
 static void jstr_replacelast_mem(char **JSTR_RST const s,
 				 size_t *JSTR_RST const sz,
 				 size_t *JSTR_RST const cap,
