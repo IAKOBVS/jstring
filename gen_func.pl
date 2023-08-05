@@ -37,6 +37,7 @@ my $G_SIZE_PTN = 'sz';
 my $G_LEN_PTN  = 'len';
 
 my $G_MACRO_INLINE          = $G_NMSPC_UPP . '_INLINE';
+my $G_MACRO_MAYBE_UNUSED = $G_NMSPC_UPP . '_MAYBE_UNUSED';
 my $G_MACRO_RESTRICT        = $G_NMSPC_UPP . '_RST';
 my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
@@ -137,8 +138,8 @@ sub gen_nonmem_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
-		if ($decl =~ $G_RE_IGNORE_FUNC) {
-			goto NEXT:
+		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
+			$decl =~ s/static/$G_MACRO_INLINE\n$G_MACRO_MAYBE_UNUSED\nstatic/o;
 		}
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/)       ? 'return ' : '';
@@ -219,17 +220,14 @@ sub gen_struct_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
-		if ($decl =~ $G_RE_IGNORE_FUNC) {
-			goto NEXT;
-		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
 		if ($RETURN) {
 			$decl =~ s/$G_MACRO_RETURNS_NONNULL//;
 		}
 		my $RETURNS_END_PTR = 0;
 		$decl =~ s/$FUNC_NAME/$FUNC_NAME\_j/;
-		if ($decl !~ /$G_MACRO_INLINE/) {
-			$decl =~ s/static/$G_MACRO_INLINE\nstatic/o;
+		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
+			$decl =~ s/static/$G_MACRO_INLINE\n$G_MACRO_MAYBE_UNUSED\nstatic/o;
 		}
 		if ($FUNC_NAME =~ /_p(?:_|$)/) {
 			$decl =~ s/.*Return value:(?:.|\n)*?(\*\/|\/\/)/$1/;
@@ -286,6 +284,7 @@ sub gen_struct_funcs
 			$body .= " - $G_STRUCT_VAR->$G_STRUCT_DATA";
 		}
 		$decl    .= "$body;\n}\n";
+		$decl =~ s/\n\n/\n/g;
 		$_       .= "\n\n";
 		$decl    .= "\n\n";
 		$out_hpp .= $_;
