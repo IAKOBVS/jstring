@@ -161,40 +161,41 @@ static void *jstr_memmemr(const void *JSTR_RST const hs,
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
-#define PRIVATE_JSTR_MEMMEMR(shift_type, ne_iterator_type)            \
-	const unsigned char *h = (unsigned char *)hs + hslen - nelen; \
-	const unsigned char *const n = (unsigned char *)ne;           \
-	const unsigned char *const start = (unsigned char *)hs;       \
-	size_t tmp;                                                   \
-	size_t shift1;                                                \
-	size_t mtc1 = nelen - 1;                                      \
-	size_t off = 0;                                               \
-	shift_type shift[256];                                        \
-	memset(shift, 0, sizeof(shift));                              \
-	for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i) \
-		shift[JSTR_HASH2(n + i)] = i;                         \
-	shift1 = mtc1 - shift[JSTR_HASH2(n + mtc1)];                  \
-	shift[JSTR_HASH2(n + mtc1)] = mtc1;                           \
-	while (h >= start) {                                          \
-		do {                                                  \
-			h -= mtc1;                                    \
-			tmp = shift[JSTR_HASH2(h)];                   \
-		} while (!tmp && h >= start);                         \
-		h -= tmp;                                             \
-		if (tmp < mtc1)                                       \
-			continue;                                     \
-		if (mtc1 < 15 || !memcmp(h + off, n + off, 8)) {      \
-			if (!memcmp(h, n, nelen))                     \
-				return (void *)h;                     \
-			off = (off >= 8 ? off : mtc1) - 8;            \
-		}                                                     \
-		h -= shift1;                                          \
-	}                                                             \
-	return NULL;
+#define PRIVATE_JSTR_MEMMEMR(shift_type, ne_iterator_type)                    \
+	do {                                                                  \
+		const unsigned char *h = (unsigned char *)hs + hslen - nelen; \
+		const unsigned char *const n = (unsigned char *)ne;           \
+		const unsigned char *const start = (unsigned char *)hs;       \
+		size_t tmp;                                                   \
+		size_t shift1;                                                \
+		size_t mtc1 = nelen - 1;                                      \
+		size_t off = 0;                                               \
+		shift_type shift[256];                                        \
+		memset(shift, 0, sizeof(shift));                              \
+		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i) \
+			shift[JSTR_HASH2(n + i)] = i;                         \
+		shift1 = mtc1 - shift[JSTR_HASH2(n + mtc1)];                  \
+		shift[JSTR_HASH2(n + mtc1)] = mtc1;                           \
+		while (h >= start) {                                          \
+			do {                                                  \
+				h -= mtc1;                                    \
+				tmp = shift[JSTR_HASH2(h)];                   \
+			} while (!tmp && h >= start);                         \
+			h -= tmp;                                             \
+			if (tmp < mtc1)                                       \
+				continue;                                     \
+			if (mtc1 < 15 || !memcmp(h + off, n + off, 8)) {      \
+				if (!memcmp(h, n, nelen))                     \
+					return (void *)h;                     \
+				off = (off >= 8 ? off : mtc1) - 8;            \
+			}                                                     \
+			h -= shift1;                                          \
+		}                                                             \
+		return NULL;                                                  \
+	} while (0)
 	default: {
-		if (unlikely(hslen > 256)) {
+		if (unlikely(hslen > 256))
 			PRIVATE_JSTR_MEMMEMR(size_t, size_t);
-		}
 		PRIVATE_JSTR_MEMMEMR(uint8_t, int);
 	}
 	}
