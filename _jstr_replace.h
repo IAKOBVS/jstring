@@ -15,7 +15,7 @@ extern "C" {
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
-#define JSTR_LONG_INLINE JSTR_INLINE
+#define JSTR_INLINE_IF_CONSTEXPR
 
 #if JSTR_NAMESPACE && defined(__cplusplus)
 namespace jstr {
@@ -26,7 +26,7 @@ extern "C" {
 
 #define JSTR_ASCII_SIZE 256
 
-/* TODO: Fix private_jstr_memmem3 and 4. */
+/* TODO: Fix jstr_memmem3 and 4. */
 
 /*
   Remove first C in S.
@@ -319,13 +319,13 @@ static char *jstr_rm_mem_p(char *JSTR_RST const s,
 */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-JSTR_LONG_INLINE
+JSTR_INLINE
 JSTR_RETURNS_NONNULL
-static char *jstr_rmn_mem_p(char *JSTR_RST s,
-			    const char *JSTR_RST const searc,
-			    size_t n,
-			    size_t sz,
-			    const size_t searclen) JSTR_NOEXCEPT
+static char *jstr_rmn_mem_p_constexpr(char *JSTR_RST s,
+				      const char *JSTR_RST const searc,
+				      size_t n,
+				      size_t sz,
+				      const size_t searclen) JSTR_NOEXCEPT
 {
 	if (unlikely(searclen > sz))
 		return s + sz;
@@ -340,18 +340,36 @@ static char *jstr_rmn_mem_p(char *JSTR_RST s,
 }
 
 /*
+  Remove N HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_RETURNS_NONNULL
+static char *jstr_rmn_mem_p(char *JSTR_RST s,
+			    const char *JSTR_RST const searc,
+			    size_t n,
+			    size_t sz,
+			    const size_t searclen) JSTR_NOEXCEPT
+{
+	return jstr_rmn_mem_p_constexpr(s, searc, n, sz, searclen);
+}
+
+/*
   Remove all HS in S.
   Return value:
   Pointer to '\0' in S.
 */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-JSTR_LONG_INLINE
+JSTR_INLINE
 JSTR_RETURNS_NONNULL
-static char *jstr_rmall_mem_p(char *JSTR_RST s,
-			      const char *JSTR_RST const searc,
-			      size_t sz,
-			      const size_t searclen) JSTR_NOEXCEPT
+static char *jstr_rmall_mem_p_constexpr(char *JSTR_RST s,
+					const char *JSTR_RST const searc,
+					size_t sz,
+					const size_t searclen) JSTR_NOEXCEPT
 {
 	if (unlikely(searclen > sz))
 		return s + sz;
@@ -363,6 +381,23 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 	/* case 4: return private_jstr_rmall_memmem4(s, searc, sz); */
 	default: return private_jstr_rmall_memmem5(s, searc, sz, searclen);
 	}
+}
+
+/*
+  Remove all HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_RETURNS_NONNULL
+static char *jstr_rmall_mem_p(char *JSTR_RST s,
+			      const char *JSTR_RST const searc,
+			      size_t sz,
+			      const size_t searclen) JSTR_NOEXCEPT
+{
+	return jstr_rmall_mem_p_constexpr(s, searc, sz, searclen);
 }
 
 /*
@@ -534,14 +569,14 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
   Replace first SEARCH in S with REPLACE.
 */
 JSTR_NONNULL_ALL
-JSTR_LONG_INLINE
-static void jstr_replace_mem(char **JSTR_RST const s,
-			     size_t *JSTR_RST const sz,
-			     size_t *JSTR_RST const cap,
-			     const char *JSTR_RST const searc,
-			     const char *JSTR_RST const rplc,
-			     const size_t searclen,
-			     const size_t rplclen) JSTR_NOEXCEPT
+JSTR_INLINE
+static void jstr_replace_mem_constexpr(char **JSTR_RST const s,
+				       size_t *JSTR_RST const sz,
+				       size_t *JSTR_RST const cap,
+				       const char *JSTR_RST const searc,
+				       const char *JSTR_RST const rplc,
+				       const size_t searclen,
+				       const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (unlikely(searclen == 0))
 		return;
@@ -582,20 +617,37 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 }
 
 /*
+  Replace first SEARCH in S with REPLACE.
+*/
+JSTR_NONNULL_ALL
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_MAYBE_UNUSED
+static void jstr_replace_mem(char **JSTR_RST const s,
+			     size_t *JSTR_RST const sz,
+			     size_t *JSTR_RST const cap,
+			     const char *JSTR_RST const searc,
+			     const char *JSTR_RST const rplc,
+			     const size_t searclen,
+			     const size_t rplclen) JSTR_NOEXCEPT
+{
+	return jstr_replace_mem_constexpr(s, sz, cap, searc, rplc, searclen, rplclen);
+}
+
+/*
   Replace N SEARCH in S with REPLACE.
   Assumes that S have enough space for REPLACE.
 */
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_LONG_INLINE
+JSTR_INLINE
 JSTR_RETURNS_NONNULL
-static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
-				   const char *JSTR_RST const searc,
-				   const char *JSTR_RST const rplc,
-				   size_t n,
-				   size_t sz,
-				   const size_t searclen,
-				   const size_t rplclen) JSTR_NOEXCEPT
+static char *jstr_replacen_mem_p_f_constexpr(char *JSTR_RST s,
+					     const char *JSTR_RST const searc,
+					     const char *JSTR_RST const rplc,
+					     size_t n,
+					     size_t sz,
+					     const size_t searclen,
+					     const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (unlikely(rplclen == 0))
 		return jstr_rmn_mem_p(s, searc, n, sz, searclen);
@@ -618,19 +670,39 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 }
 
 /*
+  Replace N SEARCH in S with REPLACE.
+  Assumes that S have enough space for REPLACE.
+*/
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_MAYBE_UNUSED
+JSTR_RETURNS_NONNULL
+static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
+				   const char *JSTR_RST const searc,
+				   const char *JSTR_RST const rplc,
+				   size_t n,
+				   size_t sz,
+				   const size_t searclen,
+				   const size_t rplclen) JSTR_NOEXCEPT
+{
+	return jstr_replacen_mem_p_f_constexpr(s, searc, rplc, n, sz, searclen, rplclen);
+}
+
+/*
   Replace all SEARCH in S with REPLACE.
   Assumes that S have enough space for REPLACE.
 */
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_LONG_INLINE
+JSTR_INLINE
 JSTR_RETURNS_NONNULL
-static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
-				     const char *JSTR_RST const searc,
-				     const char *JSTR_RST const rplc,
-				     size_t sz,
-				     const size_t searclen,
-				     const size_t rplclen) JSTR_NOEXCEPT
+static char *jstr_replaceall_mem_p_f_constexpr(char *JSTR_RST s,
+					       const char *JSTR_RST const searc,
+					       const char *JSTR_RST const rplc,
+					       size_t sz,
+					       const size_t searclen,
+					       const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (unlikely(rplclen == 0))
 		return jstr_rmall_mem_p(s, searc, sz, searclen);
@@ -651,18 +723,37 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 }
 
 /*
+  Replace all SEARCH in S with REPLACE.
+  Assumes that S have enough space for REPLACE.
+*/
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_MAYBE_UNUSED
+JSTR_RETURNS_NONNULL
+static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
+				     const char *JSTR_RST const searc,
+				     const char *JSTR_RST const rplc,
+				     size_t sz,
+				     const size_t searclen,
+				     const size_t rplclen) JSTR_NOEXCEPT
+{
+	return jstr_replaceall_mem_p_f_constexpr(s, searc, rplc, sz, searclen, rplclen);
+}
+
+/*
   Replace N SEARCH in S with REPLACE.
 */
 JSTR_NONNULL_ALL
-JSTR_LONG_INLINE
-static void jstr_replacen_mem(char **JSTR_RST const s,
-			      size_t *JSTR_RST const sz,
-			      size_t *JSTR_RST const cap,
-			      const char *JSTR_RST const searc,
-			      const char *JSTR_RST const rplc,
-			      size_t n,
-			      const size_t searclen,
-			      const size_t rplclen) JSTR_NOEXCEPT
+JSTR_INLINE
+static void jstr_replacen_mem_constexpr(char **JSTR_RST const s,
+					size_t *JSTR_RST const sz,
+					size_t *JSTR_RST const cap,
+					const char *JSTR_RST const searc,
+					const char *JSTR_RST const rplc,
+					size_t n,
+					const size_t searclen,
+					const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (unlikely(rplclen == 0)) {
 		*sz = jstr_rmn_mem_p(*s, searc, n, *sz, searclen) - *s;
@@ -694,17 +785,35 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 }
 
 /*
+  Replace N SEARCH in S with REPLACE.
+*/
+JSTR_NONNULL_ALL
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_MAYBE_UNUSED
+static void jstr_replacen_mem(char **JSTR_RST const s,
+			      size_t *JSTR_RST const sz,
+			      size_t *JSTR_RST const cap,
+			      const char *JSTR_RST const searc,
+			      const char *JSTR_RST const rplc,
+			      size_t n,
+			      const size_t searclen,
+			      const size_t rplclen) JSTR_NOEXCEPT
+{
+	jstr_replacen_mem_constexpr(s, sz, cap, searc, rplc, n, searclen, rplclen);
+}
+
+/*
   Replace all SEARCH in S with REPLACE.
 */
 JSTR_NONNULL_ALL
-JSTR_LONG_INLINE
-static void jstr_replaceall_mem(char **JSTR_RST const s,
-				size_t *JSTR_RST const sz,
-				size_t *JSTR_RST const cap,
-				const char *JSTR_RST const searc,
-				const char *JSTR_RST const rplc,
-				const size_t searclen,
-				const size_t rplclen) JSTR_NOEXCEPT
+JSTR_INLINE
+static void jstr_replaceall_mem_constexpr(char **JSTR_RST const s,
+					  size_t *JSTR_RST const sz,
+					  size_t *JSTR_RST const cap,
+					  const char *JSTR_RST const searc,
+					  const char *JSTR_RST const rplc,
+					  const size_t searclen,
+					  const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (unlikely(rplclen == 0)) {
 		*sz = jstr_rmall_mem_p(*s, searc, *sz, searclen) - *s;
@@ -735,6 +844,23 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 	private_jstr_replaceall_grow(s, sz, cap, searc, rplc, searclen, rplclen);
 }
 
+/*
+  Replace all SEARCH in S with REPLACE.
+*/
+JSTR_NONNULL_ALL
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_MAYBE_UNUSED
+static void jstr_replaceall_mem(char **JSTR_RST const s,
+				size_t *JSTR_RST const sz,
+				size_t *JSTR_RST const cap,
+				const char *JSTR_RST const searc,
+				const char *JSTR_RST const rplc,
+				const size_t searclen,
+				const size_t rplclen) JSTR_NOEXCEPT
+{
+	jstr_replaceall_mem_constexpr(s, sz, cap, searc, rplc, searclen, rplclen);
+}
+
 #if JSTR_EXTERN_C && defined(__cplusplus)
 }
 #endif /* JSTR_EXTERN_C */
@@ -745,38 +871,38 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 #undef JSTR_ASCII_SIZE
 
 #if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC poison private_jstr_memmem2
-#	pragma GCC poison private_jstr_memmem3
-#	pragma GCC poison private_jstr_memmem4
-#	pragma GCC poison private_jstr_memmem5
-#	pragma GCC poison private_jstr_next_pow2_32
-#	pragma GCC poison private_jstr_next_pow2_32_constexpr
-#	pragma GCC poison private_jstr_next_pow2_64
-#	pragma GCC poison private_jstr_next_pow2_64_constexpr
-#	pragma GCC poison private_jstr_replaceall_f
-#	pragma GCC poison private_jstr_replaceall_grow
-#	pragma GCC poison private_jstr_replaceall_memmem1
-#	pragma GCC poison private_jstr_replaceall_memmem2
-#	pragma GCC poison private_jstr_replaceall_memmem3
-#	pragma GCC poison private_jstr_replaceall_memmem4
-#	pragma GCC poison private_jstr_replaceall_memmem5
-#	pragma GCC poison private_jstr_replacenc_memmem1
-#	pragma GCC poison private_jstr_replacen_f
-#	pragma GCC poison private_jstr_replacen_grow
-#	pragma GCC poison private_jstr_replacen_memmem2
-#	pragma GCC poison private_jstr_replacen_memmem3
-#	pragma GCC poison private_jstr_replacen_memmem4
-#	pragma GCC poison private_jstr_replacen_memmem5
-#	pragma GCC poison private_jstr_rmall_memmem1
-#	pragma GCC poison private_jstr_rmall_memmem2
-#	pragma GCC poison private_jstr_rmall_memmem3
-#	pragma GCC poison private_jstr_rmall_memmem4
-#	pragma GCC poison private_jstr_rmall_memmem5
-#	pragma GCC poison private_jstr_rmn_memmem1
-#	pragma GCC poison private_jstr_rmn_memmem2
-#	pragma GCC poison private_jstr_rmn_memmem3
-#	pragma GCC poison private_jstr_rmn_memmem4
-#	pragma GCC poison private_jstr_rmn_memmem5
+#	pragma GCC poison jstr_memmem2
+#	pragma GCC poison jstr_memmem3
+#	pragma GCC poison jstr_memmem4
+#	pragma GCC poison jstr_memmem5
+#	pragma GCC poison jstr_next_pow2_32
+#	pragma GCC poison jstr_next_pow2_32_constexpr
+#	pragma GCC poison jstr_next_pow2_64
+#	pragma GCC poison jstr_next_pow2_64_constexpr
+#	pragma GCC poison jstr_replaceall_f
+#	pragma GCC poison jstr_replaceall_grow
+#	pragma GCC poison jstr_replaceall_memmem1
+#	pragma GCC poison jstr_replaceall_memmem2
+#	pragma GCC poison jstr_replaceall_memmem3
+#	pragma GCC poison jstr_replaceall_memmem4
+#	pragma GCC poison jstr_replaceall_memmem5
+#	pragma GCC poison jstr_replacenc_memmem1
+#	pragma GCC poison jstr_replacen_f
+#	pragma GCC poison jstr_replacen_grow
+#	pragma GCC poison jstr_replacen_memmem2
+#	pragma GCC poison jstr_replacen_memmem3
+#	pragma GCC poison jstr_replacen_memmem4
+#	pragma GCC poison jstr_replacen_memmem5
+#	pragma GCC poison jstr_rmall_memmem1
+#	pragma GCC poison jstr_rmall_memmem2
+#	pragma GCC poison jstr_rmall_memmem3
+#	pragma GCC poison jstr_rmall_memmem4
+#	pragma GCC poison jstr_rmall_memmem5
+#	pragma GCC poison jstr_rmn_memmem1
+#	pragma GCC poison jstr_rmn_memmem2
+#	pragma GCC poison jstr_rmn_memmem3
+#	pragma GCC poison jstr_rmn_memmem4
+#	pragma GCC poison jstr_rmn_memmem5
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 #endif /* JSTR_H_REPLACE_DEF */

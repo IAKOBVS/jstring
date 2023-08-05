@@ -40,6 +40,7 @@ my $G_MACRO_INLINE          = $G_NMSPC_UPP . '_INLINE';
 my $G_MACRO_RESTRICT        = $G_NMSPC_UPP . '_RST';
 my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
+my $G_MACRO_LONG_FUNCTION = $G_NMSPC_UPP . '_LONG_FUNCTION';
 
 my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)[^{}()]*($G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
@@ -136,6 +137,9 @@ sub gen_nonmem_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
+		if ($decl =~ $G_RE_IGNORE_FUNC) {
+			goto NEXT:
+		}
 		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/)       ? 'return ' : '';
 		$params =~ s/\)/,/;
@@ -213,6 +217,9 @@ sub gen_struct_funcs
 			goto NEXT;
 		}
 		if ($_ !~ $G_RE_DEFINE) {
+			goto NEXT;
+		}
+		if ($decl =~ $G_RE_IGNORE_FUNC) {
 			goto NEXT;
 		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
