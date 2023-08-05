@@ -909,6 +909,9 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 }
 #endif /* JSTR_NAMESPACE */
 
+#undef JSTR_EXTERN_C
+#undef JSTR_NAMESPACE
+
 #undef JSTR_ASCII_SIZE
 
 #if defined(__GNUC__) || defined(__clang__)

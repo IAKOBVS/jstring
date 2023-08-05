@@ -18,6 +18,7 @@ extern "C" {
 #include "_jstr_builder.h"
 #include "_jstr_config.h"
 #include "_jstr_macros.h"
+#include "_jstr_regex.h"
 #include "_jstr_replace.h"
 
 #define JSTR_EXTERN_C  1
@@ -765,6 +766,9 @@ static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned ch
 #if JSTR_NAMESPACE && defined(__cplusplus)
 }
 #endif /* JSTR_NAMESPACE */
+
+#undef JSTR_EXTERN_C
+#undef JSTR_NAMESPACE
 
 #undef JSTR_EXIT_ON_MALLOC_ERROR
 #undef JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR

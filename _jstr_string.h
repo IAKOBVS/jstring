@@ -293,6 +293,9 @@ static char *jstr_strstrr(const char *JSTR_RST const hs,
 }
 #endif /* JSTR_NAMESPACE */
 
+#undef JSTR_EXTERN_C
+#undef JSTR_NAMESPACE
+
 #undef PRIVATE_JSTR_MEMMEMR
 
 #endif /* JSTR_STRING_H_DEF */

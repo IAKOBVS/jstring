@@ -15,3 +15,4 @@ _f: assumes that there be enough space: it will not grow the string.
 <br>
 _constexpr: use when passing arguments known at compile-time.
 <br>
+_now: compiles passed regex_t

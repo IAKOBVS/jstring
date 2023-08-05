@@ -174,4 +174,7 @@ static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
 }
 #endif /* JSTR_NAMESPACE */
 
+#undef JSTR_EXTERN_C
+#undef JSTR_NAMESPACE
+
 #endif /* JSTR_CTYPE_H_DEF */

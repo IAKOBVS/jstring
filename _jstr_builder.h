@@ -364,4 +364,7 @@ cat_j(jstr_t *j,
 
 #endif /* __cplusplus */
 
+#undef JSTR_EXTERN_C
+#undef JSTR_NAMESPACE
+
 #endif /* JSTR_BUILDER H_DEF */

@@ -21,7 +21,7 @@ if ($G_OUT_C =~ /\.hpp/) {
 }
 
 # my $G_IGNORE_FILE_NONMEM = 'builder.h';
-my $G_IGNORE_FILE = 'private';
+my $G_IGNORE_FILE = 'private|regex';
 
 my $G_NMSPC      = 'jstr';
 my $G_NMSPC_UPP  = uc($G_NMSPC);
@@ -37,11 +37,11 @@ my $G_SIZE_PTN = 'sz';
 my $G_LEN_PTN  = 'len';
 
 my $G_MACRO_INLINE          = $G_NMSPC_UPP . '_INLINE';
-my $G_MACRO_MAYBE_UNUSED = $G_NMSPC_UPP . '_MAYBE_UNUSED';
+my $G_MACRO_MAYBE_UNUSED    = $G_NMSPC_UPP . '_MAYBE_UNUSED';
 my $G_MACRO_RESTRICT        = $G_NMSPC_UPP . '_RST';
 my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
-my $G_MACRO_LONG_FUNCTION = $G_NMSPC_UPP . '_LONG_FUNCTION';
+my $G_MACRO_LONG_FUNCTION   = $G_NMSPC_UPP . '_LONG_FUNCTION';
 
 my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)[^{}()]*($G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
@@ -153,25 +153,25 @@ sub gen_nonmem_funcs
 			}
 		}
 		$decl =~ s/($G_NMSPC\_\w*)_mem(\w*\()/$1$2/o;
-			$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
-			my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
-			foreach (@new_args) {
-				if ($G_LEN) {
-					if (/(\w*)$G_LEN_PTN/) {
-						my $var = $1;
-						$decl =~ s/,[^,]*$G_LEN_PTN//o;
-						$_ = "strlen($var)";
-					}
-				} else {
-					if (/\w*$G_SIZE_PTN/) {
-						$decl =~ s/,[^,]*$G_SIZE_PTN//o;
-						$_ = "strlen($new_args[0])";
-					}
+		$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
+		my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
+		foreach (@new_args) {
+			if ($G_LEN) {
+				if (/(\w*)$G_LEN_PTN/) {
+					my $var = $1;
+					$decl =~ s/,[^,]*$G_LEN_PTN//o;
+					$_ = "strlen($var)";
 				}
-				$decl .= "$_, ";
+			} else {
+				if (/\w*$G_SIZE_PTN/) {
+					$decl =~ s/,[^,]*$G_SIZE_PTN//o;
+					$_ = "strlen($new_args[0])";
+				}
 			}
-			$decl =~ s/, $//;
-			$decl .= ");\n}\n";
+			$decl .= "$_, ";
+		}
+		$decl =~ s/, $//;
+		$decl .= ");\n}\n";
 		push(@NEW_LNS, $_);
 		push(@NEW_LNS, $decl);
 		next;
@@ -283,7 +283,7 @@ sub gen_struct_funcs
 			$body = "$G_STRUCT_VAR->$G_STRUCT_SIZE = $body";
 			$body .= " - $G_STRUCT_VAR->$G_STRUCT_DATA";
 		}
-		$decl    .= "$body;\n}\n";
+		$decl .= "$body;\n}\n";
 		$decl =~ s/\n\n/\n/g;
 		$_       .= "\n\n";
 		$decl    .= "\n\n";
@@ -305,9 +305,11 @@ sub gen_struct_funcs
 	# }
 	$out_hpp =~ s/\.h"/.hpp"/g;
 	$out_hpp =~ s/H_DEF/HPP_DEF/g;
-	$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/o;
-	$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/o;
-	$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
+	if ($G_FNAME !~ /$G_IGNORE_FILE/o) {
+		$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/o;
+		$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/o;
+		$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
+	}
 	$out_hpp =~ s/\tt\(/\t$G_STR_STRUCT(/go;
 	$out_hpp =~ s/\t~t\(/\t$G_STR_STRUCT(/go;
 	$out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
