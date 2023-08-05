@@ -38,7 +38,7 @@ static char *jstr_strcpyp(char *JSTR_RST const dst,
 	return dst + slen;
 #else
 	return stpcpy(dst, src);
-#endif // !JSTR_HAS_STPCPY
+#endif /* !JSTR_HAS_STPCPY */
 }
 
 /*
@@ -58,7 +58,7 @@ static char *jstr_strcpyp_nonul(char *JSTR_RST const dst,
 	return dst + slen;
 #else
 	return stpcpy(dst, src);
-#endif // !JSTR_HAS_STPCPY
+#endif /* !JSTR_HAS_STPCPY */
 }
 
 /*
@@ -86,7 +86,7 @@ static void *jstr_memchrr(char *JSTR_RST const s,
 	return NULL;
 #else
 	return memrchr(s, c, n);
-#endif // !JSTR_HAS_MEMRCHR
+#endif /* !JSTR_HAS_MEMRCHR */
 }
 
 /*

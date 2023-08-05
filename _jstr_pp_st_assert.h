@@ -10,7 +10,7 @@
 #	define JSTR_PP_ST_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define JSTR_PP_ST_ASSERT(expr, msg)
-#endif // static_assert
+#endif /* static_assert */
 
 #define JSTR_PP_ST_ASSERT_IS_T_VA_ARGS_1(Texpr, ...)                                                                                 \
 	do {                                                                                                                         \
@@ -8531,7 +8531,7 @@
 #else
 #	define JSTR_PP_ST_ASSERT_IS_T_VA_ARGS(...)
 #	define JSTR_PP_ST_ASSERT_IS_T_VA_ARGS_HELPER(num_args, ...)
-#endif // JSTR_PP_HAS_GENERIC
+#endif /* JSTR_PP_HAS_GENERIC */
 
 #define JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_1(...)                                                                                    \
 	do {                                                                                                                       \
@@ -17054,6 +17054,6 @@
 #else
 #	define JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(...)
 #	define JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(num_args, ...)
-#endif // JSTR_PP_HAS_GENERIC
+#endif /* JSTR_PP_HAS_GENERIC */
 
-#endif // JSTR_PP_ST_ASSERT_IS_T_VA_ARGS_DEF_H__
+#endif /* JSTR_PP_ST_ASSERT_IS_T_VA_ARGS_DEF_H__ */

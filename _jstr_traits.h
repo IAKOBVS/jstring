@@ -99,9 +99,9 @@ JSTR_INLINE static constexpr void assert_are_same(Arg &&, Args &&...) JSTR_NOEXC
 	static_assert(are_same<T, Arg, Args...>(), "Passing non-T as T arguments!");
 }
 
-} // namespace traits
-} // namespace jstr
+} /* namespace traits */
+} /* namespace jstr */
 
 #endif /* __cplusplus */
 
-#endif // JTRAITS_H_DEF
+#endif /* JTRAITS_H_DEF */
