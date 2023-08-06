@@ -32,14 +32,14 @@ extern "C" {
 #	define JSTR_REG_EF_STARTEND REG_STARTEND
 #endif /* REG_STARTEND */
 
-/* POSIX regexec returns */
+/* POSIX regexec return values */
 #ifdef REG_ENOSYS
 #	define JSTR_REG_RET_ENOSYS REG_ENOSYS
 #endif /* REG_ENOSYS */
 #define JSTR_REG_RET_NOERROR REG_NOERROR
 #define JSTR_REG_RET_NOMATCH REG_NOMATCH
 
-/* POSIX regcomp returns */
+/* POSIX regcomp return values */
 #define JSTR_REG_RET_BADPAT   REG_BADPAT
 #define JSTR_REG_RET_ECOLLATE REG_ECOLLATE
 #define JSTR_REG_RET_ECTYPE   REG_ECTYPE
