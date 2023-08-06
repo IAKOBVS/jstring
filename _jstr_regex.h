@@ -325,7 +325,6 @@ static void jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 					const int cflags,
 					const int eflags) JSTR_NOEXCEPT
 {
-
 	if (ptnlen < 256 - 4) {
 		char ptnbuf[256];
 		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
