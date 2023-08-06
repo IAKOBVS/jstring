@@ -161,7 +161,27 @@ alloc_cat(char **JSTR_RST const s,
 }
 
 /*
+   Insert multiple strings to S.
+   Assumes that S have enough space.
+*/
+template <typename Str,
+	  typename... StrArgs,
+	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+JSTR_INLINE
+JSTR_NONNULL_ALL static void
+alloc_cat_f(char *JSTR_RST const s,
+	    size_t *JSTR_RST const sz,
+	    Str &&arg,
+	    StrArgs &&...args) JSTR_NOEXCEPT
+{
+	*sz = priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	priv::cat_loop_assign(&s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*s = '\0';
+}
+
+/*
    Append multiple strings to end of S.
+   Assumes that S have enough space.
 */
 template <typename Str,
 	  typename... StrArgs,
@@ -183,6 +203,25 @@ cat(char **JSTR_RST const s,
 	*sz = newsz;
 }
 
+/*
+   Append multiple strings to end of S.
+   Assumes that S have enough space.
+*/
+template <typename Str,
+	  typename... StrArgs,
+	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+JSTR_INLINE
+JSTR_NONNULL_ALL static void
+cat_f(char *JSTR_RST s,
+      size_t *JSTR_RST const sz,
+      Str &&arg,
+      StrArgs &&...args) JSTR_NOEXCEPT
+{
+	s += *sz;
+	*sz += priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	priv::cat_loop_assign(&s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*s = '\0';
+}
 } /* namespace jstr */
 
 #endif /* __cplusplus */
