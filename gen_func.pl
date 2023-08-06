@@ -129,7 +129,7 @@ sub gen_nonmem_funcs
 		}
 		my $tmp = $FUNC_NAME;
 		$tmp =~ s/_mem//;
-		if ($g_in_h =~ /static.*\s\s*$tmp\(/) {
+		if ($g_in_h =~ /$tmp\(/) {
 			goto NEXT;
 		}
 		if ($G_FNAME =~ /$G_IGNORE_FILE/o) {

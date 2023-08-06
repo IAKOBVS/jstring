@@ -597,7 +597,7 @@ static void jstr_replace_mem_constexpr(char **JSTR_RST const s,
 		char *mtc = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
 		if (unlikely(!mtc))
 			return;
-		if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {
+		if (*cap > (intmax_t)(*sz + rplclen - searclen + 1)) {
 			memmove(mtc + rplclen,
 				mtc + searclen,
 				(*s + *sz + 1) - mtc + searclen);
@@ -654,7 +654,7 @@ static void jstr_replacelast_mem(char **JSTR_RST const s,
 	char *mtc = (char *)jstr_memmemr(*s, *sz, searc, searclen);
 	if (unlikely(!mtc))
 		return;
-	if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {
+	if (*cap > (intmax_t)(*sz + rplclen - searclen + 1)) {
 		memmove(mtc + rplclen,
 			mtc + searclen,
 			(*s + *sz + 1) - mtc + searclen);
