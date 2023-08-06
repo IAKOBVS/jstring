@@ -401,7 +401,8 @@ static char *private_jstr_memmem5(const int use_remove,
 				continue;                                            \
 			if (mtc1 < 15 || !memcmp(src + off, searc + off, 8)) {       \
 				if (!memcmp(src, searc, searclen)) {                 \
-					memmove(dst, old, src - old);                \
+					if (likely(dst != old))                      \
+						memmove(dst, old, src - old);        \
 					dst += (src - old);                          \
 					old += (src - old);                          \
 					if (use_replace) {                           \

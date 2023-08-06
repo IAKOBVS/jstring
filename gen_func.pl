@@ -21,7 +21,7 @@ if ($G_OUT_C =~ /\.hpp/) {
 }
 
 # my $G_IGNORE_FILE_NONMEM = 'builder.h';
-my $G_IGNORE_FILE = 'private|regex';
+my $G_IGNORE_FILE = 'private';
 
 my $G_NMSPC      = 'jstr';
 my $G_NMSPC_UPP  = uc($G_NMSPC);
@@ -43,7 +43,7 @@ my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
 my $G_MACRO_LONG_FUNCTION   = $G_NMSPC_UPP . '_LONG_FUNCTION';
 
-my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)[^{}()]*($G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
+my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*$G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
 
 mkdir($G_DIR_CPP);
