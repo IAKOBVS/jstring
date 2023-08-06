@@ -76,7 +76,7 @@ JSTR_NOINLINE
 JSTR_COLD
 JSTR_MAYBE_UNUSED
 static void jstr_reg_error(const int reg_errcode,
-			   const regex_t *preg)
+			   const regex_t *preg) JSTR_NOEXCEPT
 {
 	char buf[32];
 	regerror(reg_errcode, preg, buf, 32);
@@ -88,7 +88,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static int jstr_reg_match(const char *JSTR_RST const s,
 			  regex_t *JSTR_RST reg,
-			  const int eflags)
+			  const int eflags) JSTR_NOEXCEPT
 {
 	int ret = regexec(reg, s, 0, NULL, eflags);
 	switch (ret) {
@@ -106,7 +106,7 @@ static int jstr_reg_match_now(const char *JSTR_RST const s,
 			      const char *JSTR_RST const ptn,
 			      regex_t *JSTR_RST reg,
 			      const int cflags,
-			      const int eflags)
+			      const int eflags) JSTR_NOEXCEPT
 {
 	int ret = regcomp(reg, ptn, cflags);
 	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
@@ -120,7 +120,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static int jstr_reg_comp(const char *JSTR_RST const ptn,
 			 regex_t *JSTR_RST reg,
-			 const int cflags)
+			 const int cflags) JSTR_NOEXCEPT
 {
 	int ret = regcomp(reg, ptn, cflags);
 	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
@@ -131,7 +131,6 @@ static int jstr_reg_comp(const char *JSTR_RST const ptn,
 }
 
 JSTR_NONNULL_ALL
-JSTR_INLINE
 static void private_jstr_reg_replaceall_mem(char **JSTR_RST const s,
 					    size_t *JSTR_RST const sz,
 					    size_t *JSTR_RST const cap,
@@ -139,7 +138,7 @@ static void private_jstr_reg_replaceall_mem(char **JSTR_RST const s,
 					    const size_t ptnlen,
 					    const size_t rplclen,
 					    const regex_t *JSTR_RST reg,
-					    const int eflags)
+					    const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
 	int ret;
@@ -188,7 +187,7 @@ static void private_jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 						const size_t rplclen,
 						regex_t *JSTR_RST reg,
 						const int cflags,
-						const int eflags)
+						const int eflags) JSTR_NOEXCEPT
 {
 	int ret = regcomp(reg, ptn, cflags);
 	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
@@ -199,7 +198,6 @@ static void private_jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 }
 
 JSTR_NONNULL_ALL
-JSTR_INLINE
 static void private_jstr_reg_replace_mem(char **JSTR_RST const s,
 					 size_t *JSTR_RST const sz,
 					 size_t *JSTR_RST const cap,
@@ -207,7 +205,7 @@ static void private_jstr_reg_replace_mem(char **JSTR_RST const s,
 					 const size_t ptnlen,
 					 const size_t rplclen,
 					 const regex_t *JSTR_RST reg,
-					 const int eflags)
+					 const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
 	int ret;
@@ -251,7 +249,7 @@ static void private_jstr_reg_replace_now_mem(char **JSTR_RST const s,
 					     const size_t rplclen,
 					     regex_t *JSTR_RST reg,
 					     const int cflags,
-					     const int eflags)
+					     const int eflags) JSTR_NOEXCEPT
 {
 	int ret = regcomp(reg, ptn, cflags);
 	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
