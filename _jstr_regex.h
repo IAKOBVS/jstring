@@ -143,7 +143,7 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 	size_t off = 0;
 	size_t ptnlen;
 	char *tmp;
-	for (;;) {
+	do {
 		ret = regexec(reg, *s + off, 1, &rm, eflags);
 		switch (ret) {
 		default:
@@ -172,9 +172,8 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 			free(*s);
 			*s = tmp;
 		}
-		*sz += rplclen - ptnlen;
 		off = rm.rm_eo + rplclen - ptnlen;
-	}
+	} while ((*sz += rplclen - ptnlen) != rplclen);
 }
 
 JSTR_NONNULL_ALL
