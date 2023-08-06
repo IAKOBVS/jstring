@@ -181,7 +181,6 @@ static void private_jstr_reg_replaceall_mem(char **JSTR_RST const s,
 		}
 		ptnlen = rm.rm_eo - rm.rm_so;
 		rm.rm_so += off;
-		rm.rm_eo += off;
 		if (rplclen <= ptnlen || *cap > *sz + rplclen - ptnlen + 1) {
 			memmove(*s + rm.rm_so + rplclen,
 				*s + rm.rm_so + ptnlen,
@@ -195,7 +194,7 @@ static void private_jstr_reg_replaceall_mem(char **JSTR_RST const s,
 			memcpy(tmp + rm.rm_so, rplc, rplclen);
 			memcpy(tmp + rm.rm_so + rplclen,
 			       s + rm.rm_so,
-			       (*s + *sz + 1) - (*s + rm.rm_eo));
+			       (*s + *sz + 1) - (*s + rm.rm_eo + ptnlen));
 			free(*s);
 			*s = tmp;
 		}
