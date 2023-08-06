@@ -129,11 +129,6 @@ static int jstr_reg_comp(const char *JSTR_RST const ptn,
 	return ret;
 }
 
-/*
-   The whole pattern MUST be enclosed with a capture group.
-   \(pattern\) or (pattern) if using REG_EXTENDED.
-   _constexpr functions do this.
-*/
 JSTR_NONNULL_ALL
 static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 				    size_t *JSTR_RST const sz,
