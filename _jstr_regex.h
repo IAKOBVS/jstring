@@ -12,6 +12,7 @@ extern "C" {
 
 #include "_jstr_builder.h"
 #include "_jstr_macros.h"
+#include "_jstr_string.h"
 
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
@@ -72,6 +73,17 @@ namespace jstr {
 extern "C" {
 #endif /* JSTR_EXTERN_C */
 
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void private_jstr_reg_add_parens(char *JSTR_RST const dst,
+					const char *JSTR_RST const src,
+					const size_t srclen) JSTR_NOEXCEPT
+{
+	memcpy(dst, "\\(", sizeof("\\(") - 1);
+	memcpy(dst + sizeof("\\(") - 1, src, srclen);
+	memcpy(dst + sizeof("\\(") - 1 + srclen, "\\(", sizeof("\\("));
+}
+
 JSTR_NOINLINE
 JSTR_COLD
 JSTR_MAYBE_UNUSED
@@ -130,6 +142,10 @@ static int jstr_reg_comp(const char *JSTR_RST const ptn,
 	return ret;
 }
 
+/*
+   The whole pattern MUST be enclosed with \(\) to get the index of the matched string.
+   _constexpr functions do this.
+*/
 JSTR_NONNULL_ALL
 static void private_jstr_reg_replaceall_mem(char **JSTR_RST const s,
 					    size_t *JSTR_RST const sz,
@@ -197,6 +213,10 @@ static void private_jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 	private_jstr_reg_replaceall_mem(s, sz, cap, rplc, rplclen, reg, eflags);
 }
 
+/*
+   The whole pattern MUST be enclosed with \(\) to get the index of the matched string.
+   _constexpr functions do this.
+*/
 JSTR_NONNULL_ALL
 static void private_jstr_reg_replace_mem(char **JSTR_RST const s,
 					 size_t *JSTR_RST const sz,
@@ -258,48 +278,117 @@ static void private_jstr_reg_replace_now_mem(char **JSTR_RST const s,
 	private_jstr_reg_replace_mem(s, sz, cap, rplc, rplclen, reg, eflags);
 }
 
+JSTR_NONNULL_ALL
+JSTR_INLINE
+static void jstr_reg_replace_now_mem(char **JSTR_RST const s,
+				     size_t *JSTR_RST const sz,
+				     size_t *JSTR_RST const cap,
+				     const char *JSTR_RST const ptn,
+				     const char *JSTR_RST const rplc,
+				     const size_t rplclen,
+				     const size_t ptnlen,
+				     regex_t *JSTR_RST reg,
+				     const int cflags,
+				     const int eflags) JSTR_NOEXCEPT
+{
+	if (ptnlen < 256 - 4) {
+		char ptnbuf[256];
+		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
+		private_jstr_reg_replace_now_mem(s, sz, cap, ptnbuf, rplc, rplclen, reg, cflags, eflags);
+	} else if (ptnlen < 1024 - 4) {
+		char ptnbuf[1024];
+		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
+		private_jstr_reg_replace_now_mem(s, sz, cap, ptnbuf, rplc, rplclen, reg, cflags, eflags);
+	} else if (ptnlen < 4096 - 4) {
+		char ptnbuf[4096];
+		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
+		private_jstr_reg_replace_now_mem(s, sz, cap, ptnbuf, rplc, rplclen, reg, cflags, eflags);
+	} else {
+		char *ptnbuf = (char *)malloc(ptnlen + 4 + 1);
+		JSTR_MALLOC_ERR(ptnbuf, return);
+		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
+		private_jstr_reg_replace_now_mem(s, sz, cap, ptnbuf, rplc, rplclen, reg, cflags, eflags);
+		free(ptnbuf);
+	}
+}
+
+JSTR_NONNULL_ALL
+JSTR_INLINE
+static void jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
+					size_t *JSTR_RST const sz,
+					size_t *JSTR_RST const cap,
+					const char *JSTR_RST const ptn,
+					const char *JSTR_RST const rplc,
+					const size_t ptnlen,
+					const size_t rplclen,
+					regex_t *JSTR_RST reg,
+					const int cflags,
+					const int eflags) JSTR_NOEXCEPT
+{
+
+	if (ptnlen < 256 - 4) {
+		char ptnbuf[256];
+		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
+		private_jstr_reg_replaceall_now_mem(s, sz, cap, ptnbuf, rplc, rplclen, reg, cflags, eflags);
+	} else if (ptnlen < 1024 - 4) {
+		char ptnbuf[1024];
+		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
+		private_jstr_reg_replaceall_now_mem(s, sz, cap, ptnbuf, rplc, rplclen, reg, cflags, eflags);
+	} else if (ptnlen < 4096 - 4) {
+		char ptnbuf[4096];
+		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
+		private_jstr_reg_replaceall_now_mem(s, sz, cap, ptnbuf, rplc, rplclen, reg, cflags, eflags);
+	} else {
+		char *ptnbuf = (char *)malloc(ptnlen + 4 + 1);
+		JSTR_MALLOC_ERR(ptnbuf, return);
+		private_jstr_reg_add_parens(ptnbuf, ptn, ptnlen);
+		private_jstr_reg_replaceall_now_mem(s, sz, cap, ptnbuf, rplc, rplclen, reg, cflags, eflags);
+		free(ptnbuf);
+	}
+}
+
 /* replace_now */
-#define jstr_reg_replace_now_mem(s, sz, cap, ptn, rplc, rplclen, reg, cflags, eflags) \
+#define jstr_reg_replace_now_mem_constexpr(s, sz, cap, ptn, rplc, rplclen, reg, cflags, eflags) \
 	private_jstr_reg_replace_now_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, rplclen, reg, cflags, eflags)
-#define jstr_reg_replace_now(s, sz, cap, ptn, rplc, reg, cflags, eflags) \
+#define jstr_reg_replace_now_constexpr(s, sz, cap, ptn, rplc, reg, cflags, eflags) \
 	private_jstr_reg_replace_now_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, strlen(rplc), reg, cflags, eflags)
 /* replace */
-#define jstr_reg_replace_mem(s, sz, cap, ptn, rplc, rplclen, reg, eflags) \
+#define jstr_reg_replace_mem_constexpr(s, sz, cap, ptn, rplc, rplclen, reg, eflags) \
 	private_jstr_reg_replace_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, rplclen, reg, eflags)
-#define jstr_reg_replace(s, sz, cap, ptn, rplc, reg, eflags) \
+#define jstr_reg_replace_constexpr(s, sz, cap, ptn, rplc, reg, eflags) \
 	private_jstr_reg_replace_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, strlen(rplc), reg, eflags)
 
 /* replaceall_now */
-#define jstr_reg_replaceall_now_mem(s, sz, cap, ptn, rplc, rplclen, reg, cflags, eflags) \
+#define jstr_reg_replaceall_now_mem_constexpr(s, sz, cap, ptn, rplc, rplclen, reg, cflags, eflags) \
 	private_jstr_reg_replaceall_now_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, rplclen, reg, cflags, eflags)
-#define jstr_reg_replaceall_now(s, sz, cap, ptn, rplc, reg, cflags, eflags) \
+#define jstr_reg_replaceall_now_constexpr(s, sz, cap, ptn, rplc, reg, cflags, eflags) \
 	private_jstr_reg_replaceall_now_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, strlen(rplc), reg, cflags, eflags)
 /* replaceall */
-#define jstr_reg_replaceall_mem(s, sz, cap, ptn, rplc, rplclen, reg, eflags) \
+#define jstr_reg_replaceall_mem_constexpr(s, sz, cap, ptn, rplc, rplclen, reg, eflags) \
 	private_jstr_reg_replaceall_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, rplclen, reg, eflags)
-#define jstr_reg_replaceall(s, sz, cap, ptn, rplc, reg, eflags) \
+#define jstr_reg_replaceall_constexpr(s, sz, cap, ptn, rplc, reg, eflags) \
 	private_jstr_reg_replaceall_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, strlen(rplc), reg, eflags)
 
 /* replace_now_j */
-#define jstr_reg_replace_now_mem_j(jstr_t, ptn, rplc, rplclen, reg, cflags, eflags) \
+#define jstr_reg_replace_now_mem_j_constexpr(jstr_t, ptn, rplc, rplclen, reg, cflags, eflags) \
 	private_jstr_reg_replace_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, rplclen, reg, cflags, eflags)
-#define jstr_reg_replace_now_j(jstr_t, ptn, rplc, reg, cflags, eflags) \
+#define jstr_reg_replace_now_j_constexpr(jstr_t, ptn, rplc, reg, cflags, eflags) \
 	private_jstr_reg_replace_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, strlen(rplc), reg, cflags, eflags)
 /* replace_j */
-#define jstr_reg_replace_mem_j(jstr_t, ptn, rplc, rplclen, reg, eflags) \
+#define jstr_reg_replace_mem_j_constexpr(jstr_t, ptn, rplc, rplclen, reg, eflags) \
 	private_jstr_reg_replace_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, rplclen, reg, eflags)
-#define jstr_reg_replace_j(jstr_t, ptn, rplc, reg, eflags) \
+#define jstr_reg_replace_j_constexpr(jstr_t, ptn, rplc, reg, eflags) \
 	private_jstr_reg_replace_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, strlen(rplc), reg, eflags)
 
 /* replaceall_now_j */
-#define jstr_reg_replaceall_now_mem_j(jstr_t, ptn, rplc, rplclen, reg, cflags, eflags) \
+#define jstr_reg_replaceall_now_mem_j_constexpr(jstr_t, ptn, rplc, rplclen, reg, cflags, eflags) \
 	private_jstr_reg_replaceall_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, rplclen, reg, cflags, eflags)
-#define jstr_reg_replaceall_now_j(jstr_t, ptn, rplc, reg, cflags, eflags) \
+#define jstr_reg_replaceall_now_j_constexpr(jstr_t, ptn, rplc, reg, cflags, eflags) \
 	private_jstr_reg_replaceall_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, strlen(rplc), reg, cflags, eflags)
 /* replaceall_j */
-#define jstr_reg_replaceall_mem_j(jstr_t, ptn, rplc, rplclen, reg, eflags) \
+#define jstr_reg_replaceall_mem_j_constexpr(jstr_t, ptn, rplc, rplclen, reg, eflags) \
 	private_jstr_reg_replaceall_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, rplclen, reg, eflags)
-#define jstr_reg_replaceall_j(jstr_t, ptn, rplc, reg, eflags) \
+#define jstr_reg_replaceall_j_constexpr(jstr_t, ptn, rplc, reg, eflags) \
 	private_jstr_reg_replaceall_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, strlen(rplc), reg, eflags)
 
 #undef JSTR_EXTERN_C
