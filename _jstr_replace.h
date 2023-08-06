@@ -563,7 +563,7 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
 			mtc + searclen,
 			(s + sz + 1) - mtc + searclen);
 		memcpy(mtc, rplc, rplclen);
-		return s + sz - (long long)(rplclen - searclen);
+		return s + sz - rplclen - searclen;
 	}
 	}
 }
@@ -614,7 +614,7 @@ static void jstr_replace_mem_constexpr(char **JSTR_RST const s,
 			free(*s);
 			*s = tmp;
 		}
-		*sz += (long long)(rplclen - searclen);
+		*sz += rplclen - searclen;
 	}
 	}
 }
@@ -671,7 +671,7 @@ static void jstr_replacelast_mem(char **JSTR_RST const s,
 		free(*s);
 		*s = tmp;
 	}
-	*sz += (long long)(rplclen - searclen);
+	*sz += rplclen - searclen;
 }
 
 /*

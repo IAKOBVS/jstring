@@ -9,7 +9,7 @@ my $G_FNAME_BASE = $G_FNAME;
 $G_FNAME_BASE =~ s/^_//;
 my $G_DIR_C = 'c';
 
-# script_needed();
+script_needed();
 
 my $G_DIR_CPP = $G_DIR_C . 'pp';
 my $G_OUT_C   = "$G_DIR_C/$G_FNAME_BASE";
@@ -129,7 +129,7 @@ sub gen_nonmem_funcs
 		}
 		my $tmp = $FUNC_NAME;
 		$tmp =~ s/_mem//;
-		if ($g_in_h =~ /$tmp\(/) {
+		if ($g_in_h =~ /static.*\s\s*$tmp\(/) {
 			goto NEXT;
 		}
 		if ($G_FNAME =~ /$G_IGNORE_FILE/o) {

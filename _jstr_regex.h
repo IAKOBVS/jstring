@@ -169,6 +169,7 @@ static void private_jstr_reg_replaceall_mem(char **JSTR_RST const s,
 	int ret;
 	size_t off = 0;
 	size_t ptnlen;
+	char *tmp;
 	for (;;) {
 		ret = regexec(reg, *s + off, 1, &rm, eflags);
 		switch (ret) {
@@ -188,7 +189,7 @@ static void private_jstr_reg_replaceall_mem(char **JSTR_RST const s,
 			memcpy(*s + rm.rm_so, rplc, rplclen);
 		} else {
 			JSTR_GROW(*cap, *sz + rplclen + 1);
-			char *JSTR_RST tmp = (char *)malloc(*cap);
+			tmp = (char *)malloc(*cap);
 			JSTR_MALLOC_ERR(tmp, return);
 			memcpy(tmp, s, rm.rm_so);
 			memcpy(tmp + rm.rm_so, rplc, rplclen);
@@ -198,8 +199,8 @@ static void private_jstr_reg_replaceall_mem(char **JSTR_RST const s,
 			free(*s);
 			*s = tmp;
 		}
-		*sz += (long long)(rplclen - ptnlen);
-		off += (long long)(rplclen - ptnlen);
+		*sz += rplclen - ptnlen;
+		off += rplclen + rplclen - ptnlen;
 	}
 }
 
@@ -386,7 +387,7 @@ static void jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 	private_jstr_reg_replaceall_now_j(jstr_t, PRIVATE_JSTR_REG_ADD_PARENS(ptn, cflags), rplc, reg, cflags, eflags)
 /* replaceall_j */
 #define jstr_reg_replaceall_mem_constexpr_j(jstr_t, ptn, rplc, rplclen, reg, cflags, eflags) \
-	private_jstr_reg_replaceall_mem(jstr_t, PRIVATE_JSTR_REG_ADD_PARENS(ptn, cflags), rplc, rplclen, reg, eflags)
+	private_jstr_reg_replaceall_mem_j(jstr_t, PRIVATE_JSTR_REG_ADD_PARENS(ptn, cflags), rplc, rplclen, reg, eflags)
 #define jstr_reg_replaceall_constexpr_j(jstr_t, ptn, rplc, reg, cflags, eflags) \
 	private_jstr_reg_replaceall_j(jstr_t, PRIVATE_JSTR_REG_ADD_PARENS(ptn, cflags), rplc, reg, eflags)
 
