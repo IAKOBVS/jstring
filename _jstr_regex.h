@@ -143,7 +143,7 @@ static int jstr_reg_comp(const char *JSTR_RST const ptn,
 }
 
 /*
-   The whole pattern MUST be enclosed with \(\) to get the index of the matched string.
+   The whole pattern MUST be enclosed with \(\).
    _constexpr functions do this.
 */
 JSTR_NONNULL_ALL
@@ -214,7 +214,7 @@ static void private_jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 }
 
 /*
-   The whole pattern MUST be enclosed with \(\) to get the index of the matched string.
+   The whole pattern MUST be enclosed with \(\).
    _constexpr functions do this.
 */
 JSTR_NONNULL_ALL
@@ -312,8 +312,8 @@ static void jstr_reg_replace_now_mem(char **JSTR_RST const s,
 	}
 }
 
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
-JSTR_INLINE
 static void jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 					size_t *JSTR_RST const sz,
 					size_t *JSTR_RST const cap,
