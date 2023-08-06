@@ -359,6 +359,32 @@ cat_j(jstr_t *j,
 			*p = '\0';                                     \
 		} while (0)
 
+#	define jstr_alloc_cat_stack(s, sz, ...)                                  \
+		do {                                                              \
+			JSTR_ASSERT_IS_STR(*(s));                                 \
+			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);            \
+			const size_t newsz = JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__); \
+			char *p = *(s);                                           \
+			JSTR_PP_STRCPY_VA_ARGS(p, __VA_ARGS__);                   \
+			*p = '\0';                                                \
+			*(sz) = newsz;                                            \
+		} while (0)
+
+#	define jstr_cat_stack(s, sz, ...)                                             \
+		do {                                                                   \
+			JSTR_ASSERT_IS_STR(*(s));                                      \
+			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                 \
+			const size_t newsz = JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__);      \
+			if (sizeof_s < newsz + 1) {                                    \
+				fprintf(stderr, "%s\n", __FILE__, __LINE__, __func__); \
+				exit(1);                                               \
+			}                                                              \
+			char *p = *(s) + *(sz);                                        \
+			JSTR_PP_STRCPY_VA_ARGS(p, __VA_ARGS__);                        \
+			*p = '\0';                                                     \
+			*(sz) = newsz;                                                 \
+		} while (0)
+
 #	define jstr_cat_j(j, ...)	 jstr_cat(&((j)->data), &((j)->size), &((j)->cap), __VA_ARGS__)
 #	define jstr_alloc_cat_j(j, ...) jstr_alloc_cat(&((j)->data), &((j)->size), &((j)->cap), __VA_ARGS__)
 

@@ -206,13 +206,17 @@
 						      long : expr,             \
 							     long long : expr, \
 									 unsigned long long : expr
-#		define JSTR_GENERIC_CASE_STR(expr) \
-			char * : expr,              \
-				 const char * : expr
+#		define JSTR_GENERIC_CASE_STR(bool_) \
+			char * : bool_,              \
+				 const char * : bool_
 
-#		define JSTR_GENERIC_CASE_CHAR(expr) \
-			char : expr,                 \
-			       const char : expr
+#		define JSTR_GENERIC_CASE_STR_STACK(bool_, s) \
+			char(*)[sizeof(s)] : 1,               \
+			const char(*)[sizeof(s)] : 1
+
+#		define JSTR_GENERIC_CASE_CHAR(bool_) \
+			char : bool_,                 \
+			       const char : bool_
 
 #		define JSTR_IS_SIZE(expr) _Generic((expr),                    \
 						    JSTR_GENERIC_CASE_SIZE(1), \
@@ -221,6 +225,10 @@
 #		define JSTR_IS_STR(expr) _Generic((expr),                   \
 						   JSTR_GENERIC_CASE_STR(1), \
 						   default : 0)
+
+#		define JSTR_IS_STR_STACK(expr) _Generic((expr),                               \
+							 JSTR_GENERIC_CASE_STR_STACK(1, expr), \
+							 default : 0)
 
 #		define JSTR_IS_CHAR(expr) _Generic((expr),                    \
 						    JSTR_GENERIC_CASE_CHAR(1), \
