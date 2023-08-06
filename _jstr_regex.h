@@ -173,7 +173,7 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 			*s = tmp;
 		}
 		*sz += rplclen - ptnlen;
-		off += rm.rm_eo + rplclen - ptnlen;
+		off = rm.rm_eo + rplclen - ptnlen;
 	}
 }
 
