@@ -26,6 +26,10 @@ extern "C" {
 #define JSTR_REG_EF_NOSUB  REG_NOSUB
 #define JSTR_REG_EF_NOTBOL REG_NOTBOL
 #define JSTR_REG_EF_NOTEOL REG_NOTEOL
+/* BSD extension */
+#ifdef REG_STARTEND
+#	define JSTR_REG_EF_STARTEND REG_STARTEND
+#endif /* REG_STARTEND */
 
 /* POSIX regexec returns */
 #ifdef REG_ENOSYS
@@ -59,9 +63,7 @@ extern "C" {
 #	define JSTR_REG_ERPAREN REG_RET_ERPAREN
 #endif /* REG_RET_ERPAREN */
 
-#ifdef REG_STARTEND
-#	define JSTR_REG_CF_STARTEND REG_STARTEND
-#endif /* REG_STARTEND */
+#define JSTR_REG_ADD_PARENS(ptn) "\\(" ptn "\\)"
 
 #if JSTR_NAMESPACE && defined(__cplusplus)
 namespace jstr {
@@ -261,47 +263,47 @@ static void private_jstr_reg_replace_now_mem(char **JSTR_RST const s,
 
 /* replace */
 #define jstr_reg_replace_now_mem(s, sz, cap, ptn, rplc, ptnlen, rplclen, reg, cflags, eflags) \
-	private_jstr_reg_replace_now_mem(s, sz, cap, "\\(" ptn "\\)", rplc, ptnlen, rplclen, reg, cflags, eflags)
+	private_jstr_reg_replace_now_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, ptnlen, rplclen, reg, cflags, eflags)
 #define jstr_reg_replace_now(s, sz, cap, ptn, rplc, reg, cflags, eflags) \
-	private_jstr_reg_replace_now_mem(s, sz, cap, "\\(" ptn "\\)", rplc, strlen(ptn), strlen(rplc), reg, cflags, eflags)
+	private_jstr_reg_replace_now_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, strlen(ptn), strlen(rplc), reg, cflags, eflags)
 
 #define jstr_reg_replace_mem(s, sz, cap, ptn, rplc, ptnlen, rplclen, reg, eflags) \
-	private_jstr_reg_replace_mem(s, sz, cap, "\\(" ptn "\\)", rplc, ptnlen, rplclen, reg, eflags)
+	private_jstr_reg_replace_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, ptnlen, rplclen, reg, eflags)
 #define jstr_reg_replace(s, sz, cap, ptn, rplc, reg, eflags) \
-	private_jstr_reg_replace_mem(s, sz, cap, "\\(" ptn "\\)", rplc, strlen(ptn), strlen(rplc), reg, eflags)
+	private_jstr_reg_replace_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, strlen(ptn), strlen(rplc), reg, eflags)
 
 /* replaceall */
 #define jstr_reg_replaceall_now_mem(s, sz, cap, ptn, rplc, ptnlen, rplclen, reg, cflags, eflags) \
-	private_jstr_reg_replaceall_now_mem(s, sz, cap, "\\(" ptn "\\)", rplc, ptnlen, rplclen, reg, cflags, eflags)
+	private_jstr_reg_replaceall_now_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, ptnlen, rplclen, reg, cflags, eflags)
 #define jstr_reg_replaceall_now(s, sz, cap, ptn, rplc, reg, cflags, eflags) \
-	private_jstr_reg_replaceall_now_mem(s, sz, cap, "\\(" ptn "\\)", rplc, strlen(ptn), strlen(rplc), reg, cflags, eflags)
+	private_jstr_reg_replaceall_now_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, strlen(ptn), strlen(rplc), reg, cflags, eflags)
 
 #define jstr_reg_replaceall_mem(s, sz, cap, ptn, rplc, ptnlen, rplclen, reg, eflags) \
-	private_jstr_reg_replaceall_mem(s, sz, cap, "\\(" ptn "\\)", rplc, ptnlen, rplclen, reg, eflags)
+	private_jstr_reg_replaceall_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, ptnlen, rplclen, reg, eflags)
 #define jstr_reg_replaceall(s, sz, cap, ptn, rplc, reg, eflags) \
-	private_jstr_reg_replaceall_mem(s, sz, cap, "\\(" ptn "\\)", rplc, strlen(ptn), strlen(rplc), reg, eflags)
+	private_jstr_reg_replaceall_mem(s, sz, cap, JSTR_REG_ADD_PARENS(ptn), rplc, strlen(ptn), strlen(rplc), reg, eflags)
 
 /* replace_j */
 #define jstr_reg_replace_now_mem_j(jstr_t, ptn, rplc, ptnlen, rplclen, reg, cflags, eflags) \
-	private_jstr_reg_replace_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), "\\(" ptn "\\)", rplc, ptnlen, rplclen, reg, cflags, eflags)
+	private_jstr_reg_replace_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, ptnlen, rplclen, reg, cflags, eflags)
 #define jstr_reg_replace_now_j(jstr_t, ptn, rplc, reg, cflags, eflags) \
-	private_jstr_reg_replace_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), "\\(" ptn "\\)", rplc, strlen(ptn), strlen(rplc), reg, cflags, eflags)
+	private_jstr_reg_replace_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, strlen(ptn), strlen(rplc), reg, cflags, eflags)
 
 #define jstr_reg_replace_mem_j(jstr_t, ptn, rplc, ptnlen, rplclen, reg, eflags) \
-	private_jstr_reg_replace_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), "\\(" ptn "\\)", rplc, ptnlen, rplclen, reg, eflags)
+	private_jstr_reg_replace_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, ptnlen, rplclen, reg, eflags)
 #define jstr_reg_replace_j(jstr_t, ptn, rplc, reg, eflags) \
-	private_jstr_reg_replace_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), "\\(" ptn "\\)", rplc, strlen(ptn), strlen(rplc), reg, eflags)
+	private_jstr_reg_replace_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, strlen(ptn), strlen(rplc), reg, eflags)
 
 /* replaceall_j */
 #define jstr_reg_replaceall_now_mem_j(jstr_t, ptn, rplc, ptnlen, rplclen, reg, cflags, eflags) \
-	private_jstr_reg_replaceall_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), "\\(" ptn "\\)", rplc, ptnlen, rplclen, reg, cflags, eflags)
+	private_jstr_reg_replaceall_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, ptnlen, rplclen, reg, cflags, eflags)
 #define jstr_reg_replaceall_now_j(jstr_t, ptn, rplc, reg, cflags, eflags) \
-	private_jstr_reg_replaceall_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), "\\(" ptn "\\)", rplc, strlen(ptn), strlen(rplc), reg, cflags, eflags)
+	private_jstr_reg_replaceall_now_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, strlen(ptn), strlen(rplc), reg, cflags, eflags)
 
 #define jstr_reg_replaceall_mem_j(jstr_t, ptn, rplc, ptnlen, rplclen, reg, eflags) \
-	private_jstr_reg_replaceall_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), "\\(" ptn "\\)", rplc, ptnlen, rplclen, reg, eflags)
+	private_jstr_reg_replaceall_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, ptnlen, rplclen, reg, eflags)
 #define jstr_reg_replaceall_j(jstr_t, ptn, rplc, reg, eflags) \
-	private_jstr_reg_replaceall_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), "\\(" ptn "\\)", rplc, strlen(ptn), strlen(rplc), reg, eflags)
+	private_jstr_reg_replaceall_mem(&((jstr_t)->data), &((jstr_t)->size), &((jstr_t)->cap), JSTR_REG_ADD_PARENS(ptn), rplc, strlen(ptn), strlen(rplc), reg, eflags)
 
 #undef JSTR_EXTERN_C
 #undef JSTR_NAMESPACE
