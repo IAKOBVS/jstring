@@ -651,7 +651,7 @@ static void jstr_replacelast_mem(char **JSTR_RST const s,
 				 const size_t searclen,
 				 const size_t rplclen) JSTR_NOEXCEPT
 {
-	char *mtc = (char *)jstr_memrmem(*s, *sz, searc, searclen);
+	char *mtc = (char *)jstr_memmemr_constexpr(*s, *sz, searc, searclen);
 	if (unlikely(!mtc))
 		return;
 	if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {

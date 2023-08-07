@@ -561,6 +561,12 @@ case '\t':                   \
 case '\r':                   \
 case ' ':
 
+#if ((__GLIBC__ < 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_BSD_SOURCE)) \
+|| defined(_DEFAULT_SOURCE)
+#	define JSTR_HAS_STRCASECMP
+#	define JSTR_HAS_STRNCASECMP
+#endif
+
 #if defined(_GNU_SOURCE)
 #	define JSTR_HAS_MEMMEM
 #	define JSTR_HAS_MEMRCHR
@@ -574,11 +580,15 @@ case ' ':
 #	define JSTR_HAS_PUTWCHAR_UNLOCKED
 #	define JSTR_HAS_FGETWS_UNLOCKED
 #	define JSTR_HAS_FPUTWS_UNLOCKED
-#	define JSTR_WMEMPCPY
-#	define JSTR_MEMPCPY
+#	define JSTR_HAS_WMEMPCPY
+#	define JSTR_HAS_MEMPCPY
+#	define JSTR_HAS_STRCASESTR
 #endif /* JSTR_HAS_MEMRCHR__ */
 
-#if (__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 24) && _POSIX_C_SOURCE >= 199309L) || (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE) || defined(_BSD_SOURCE)) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 23) && defined(_POSIX_C_SOURCE))
+#if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
+|| (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE)                           \
+    || defined(_BSD_SOURCE))                                                                         \
+|| ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 23) && defined(_POSIX_C_SOURCE))
 #	define JSTR_HAS_GETC_UNLOCKED
 #	define JSTR_HAS_GETCHAR_UNLOCKED
 #	define JSTR_HAS_PUTC_UNLOCKED
@@ -609,9 +619,15 @@ case ' ':
 #	endif /* _DEFAULT_SOURCE || _SVID_SOURCE || _BSD_SOURCE */
 #endif /* */
 
-#if (__GLIBC__ > 2) || ((__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10) && (_POSIX_C_SOURCE >= 200809L)) || defined(_GNU_SOURCE)
+#if ((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) \
+|| defined(_GNU_SOURCE)
 #	define JSTR_HAS_STPCPY
 #endif /* JSTR_HAS_STPCPY */
+
+#if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && __GLIBC_MINOR__ >= 10) && defined(_POSIX_C_SOURCE)) \
+|| defined(_GNU_SOURCE)
+#	define JSTR_HAS_STRNLEN
+#endif /* JSTR_HAS_STRNLEN */
 
 #define JSTR_RST JSTR_RESTRICT
 
