@@ -33,7 +33,7 @@ static void private_jstr_replacen_grow(char **JSTR_RST s,
 	char *tmp;
 	char *dst = *s;
 	while (n-- && (dst = (char *)JSTR_MEMMEM(dst, (dst + *sz) - dst, searc, searclen))) {
-		if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {
+		if (rplclen <= searclen || *cap > *sz + rplclen - searclen) {
 			memmove(dst + rplclen,
 				dst + searclen,
 				(*s + *sz + 1) - dst + searclen);
@@ -70,7 +70,7 @@ static void private_jstr_replaceall_grow(char **JSTR_RST s,
 	char *tmp;
 	char *dst = *s;
 	while ((dst = (char *)JSTR_MEMMEM(dst, (dst + *sz) - dst, searc, searclen))) {
-		if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {
+		if (rplclen <= searclen || *cap > *sz + rplclen - searclen) {
 			memmove(dst + rplclen,
 				dst + searclen,
 				(*s + *sz + 1) - dst + searclen);

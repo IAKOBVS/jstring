@@ -11,6 +11,7 @@ extern "C" {
 #endif /* __cpluslus */
 
 #include "_jstr_builder.h"
+#include "_jstr_config.h"
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
@@ -85,6 +86,20 @@ static void jstr_reg_error(const int reg_errcode,
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
+static int jstr_reg_comp(regex_t *JSTR_RST reg,
+			 const char *JSTR_RST const ptn,
+			 const int cflags) JSTR_NOEXCEPT
+{
+	int ret = regcomp(reg, ptn, cflags);
+#if JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
+	if (unlikely(ret != JSTR_REG_RET_NOERROR))
+		jstr_reg_error(ret, reg);
+#endif /* JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR */
+	return ret;
+}
+
+JSTR_NONNULL_ALL
+JSTR_INLINE
 static int jstr_reg_match(const char *JSTR_RST const s,
 			  regex_t *JSTR_RST reg,
 			  const int eflags) JSTR_NOEXCEPT
@@ -107,11 +122,9 @@ static int jstr_reg_match_now(const char *JSTR_RST const s,
 			      const int cflags,
 			      const int eflags) JSTR_NOEXCEPT
 {
-	int ret = regcomp(reg, ptn, cflags);
-	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
-		jstr_reg_error(ret, reg);
+	int ret = jstr_reg_comp(reg, ptn, cflags);
+	if (unlikely(ret != JSTR_REG_RET_NOERROR))
 		return ret;
-	}
 	return jstr_reg_match(s, reg, eflags);
 }
 
@@ -144,29 +157,13 @@ static int jstr_reg_match_now_mem(const char *JSTR_RST const s,
 				  const int cflags,
 				  const int eflags) JSTR_NOEXCEPT
 {
-	int ret = regcomp(reg, ptn, cflags);
-	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
-		jstr_reg_error(ret, reg);
+	int ret = jstr_reg_comp(reg, ptn, cflags);
+	if (unlikely(ret != JSTR_REG_RET_NOERROR))
 		return ret;
-	}
 	return jstr_reg_match_mem(s, sz, reg, eflags);
 }
 
 #endif /* JSTR_REG_EF_STARTEND */
-
-JSTR_NONNULL_ALL
-JSTR_INLINE
-static int jstr_reg_comp(const char *JSTR_RST const ptn,
-			 regex_t *JSTR_RST reg,
-			 const int cflags) JSTR_NOEXCEPT
-{
-	int ret = regcomp(reg, ptn, cflags);
-	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
-		jstr_reg_error(ret, reg);
-		return ret;
-	}
-	return ret;
-}
 
 JSTR_NONNULL_ALL
 static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
@@ -194,7 +191,7 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 		ptnlen = rm.rm_eo - rm.rm_so;
 		rm.rm_so += off;
 		rm.rm_eo += off;
-		if (rplclen <= ptnlen || *cap > *sz + rplclen - ptnlen + 1) {
+		if (rplclen <= ptnlen || *cap > *sz + rplclen - ptnlen) {
 			memmove(*s + rm.rm_so + rplclen,
 				*s + rm.rm_eo,
 				(*s + *sz + 1) - *s + rm.rm_eo);
@@ -227,11 +224,9 @@ static void jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 					const int cflags,
 					const int eflags) JSTR_NOEXCEPT
 {
-	int ret = regcomp(reg, ptn, cflags);
-	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
-		jstr_reg_error(ret, reg);
+	int ret = jstr_reg_comp(reg, ptn, cflags);
+	if (unlikely(ret != JSTR_REG_RET_NOERROR))
 		return;
-	}
 	jstr_reg_replaceall_mem(s, sz, cap, rplc, rplclen, reg, eflags);
 }
 
@@ -256,7 +251,7 @@ static void jstr_reg_replace_mem(char **JSTR_RST const s,
 	case JSTR_REG_RET_NOERROR: break;
 	}
 	const size_t ptnlen = rm.rm_eo - rm.rm_so;
-	if (rplclen <= ptnlen || *cap > *sz + rplclen - ptnlen + 1) {
+	if (rplclen <= ptnlen || *cap > *sz + rplclen - ptnlen) {
 		memmove(*s + rm.rm_so + rplclen,
 			*s + rm.rm_so + ptnlen,
 			(*s + *sz + 1) - *s + rm.rm_so + ptnlen);
@@ -288,11 +283,9 @@ static void jstr_reg_replace_now_mem(char **JSTR_RST const s,
 				     const int cflags,
 				     const int eflags) JSTR_NOEXCEPT
 {
-	int ret = regcomp(reg, ptn, cflags);
-	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
-		jstr_reg_error(ret, reg);
+	int ret = jstr_reg_comp(reg, ptn, cflags);
+	if (unlikely(ret != JSTR_REG_RET_NOERROR))
 		return;
-	}
 	jstr_reg_replace_mem(s, sz, cap, rplc, rplclen, reg, eflags);
 }
 
