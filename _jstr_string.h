@@ -281,9 +281,9 @@ static char *jstr_strstrr(const char *JSTR_RST const hs,
 }
 
 #ifdef JSTR_HAS_MEMMEM
-#	define JSTR_MEMMEM(hs, hlen, ne, nlen) memmem(hs, hlen, ne, nlen)
+#	define PRIVATE_JSTR_MEMMEM(hs, hlen, ne, nlen) memmem(hs, hlen, ne, nlen)
 #else
-#	define JSTR_MEMMEM(hs, hlen, ne, nlen) strstr(hs, ne)
+#	define PRIVATE_JSTR_MEMMEM(hs, hlen, ne, nlen) strstr(hs, ne)
 #endif /* JSTR_HAS_MEMMEM */
 
 #if JSTR_EXTERN_C && defined(__cplusplus)

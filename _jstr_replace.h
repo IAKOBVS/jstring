@@ -308,7 +308,7 @@ static char *jstr_rm_mem_p(char *JSTR_RST const s,
 			   const size_t sz,
 			   const size_t searclen) JSTR_NOEXCEPT
 {
-	char *const p = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
+	char *const p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, searc, searclen);
 	if (unlikely(!p))
 		return s + sz;
 	memmove(p, p + searclen, (s + sz) - p);
@@ -556,7 +556,7 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
 		}
 		/* FALLTHROUGH */
 	default: {
-		char *mtc = (char *)JSTR_MEMMEM(s, sz, searc, searclen);
+		char *mtc = (char *)PRIVATE_JSTR_MEMMEM(s, sz, searc, searclen);
 		if (unlikely(!mtc))
 			return s + sz;
 		memmove(mtc + rplclen,
@@ -594,7 +594,7 @@ static void jstr_replace_mem_constexpr(char **JSTR_RST const s,
 		}
 		/* FALLTHROUGH */
 	default: {
-		char *mtc = (char *)JSTR_MEMMEM(*s, *sz, searc, searclen);
+		char *mtc = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, searc, searclen);
 		if (unlikely(!mtc))
 			return;
 		if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {

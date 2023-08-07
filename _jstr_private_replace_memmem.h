@@ -32,7 +32,7 @@ static void private_jstr_replacen_grow(char **JSTR_RST s,
 {
 	char *tmp;
 	char *dst = *s;
-	while (n-- && (dst = (char *)JSTR_MEMMEM(dst, (dst + *sz) - dst, searc, searclen))) {
+	while (n-- && (dst = (char *)PRIVATE_JSTR_MEMMEM(dst, (dst + *sz) - dst, searc, searclen))) {
 		if (rplclen <= searclen || *cap > *sz + rplclen - searclen) {
 			memmove(dst + rplclen,
 				dst + searclen,
@@ -69,7 +69,7 @@ static void private_jstr_replaceall_grow(char **JSTR_RST s,
 {
 	char *tmp;
 	char *dst = *s;
-	while ((dst = (char *)JSTR_MEMMEM(dst, (dst + *sz) - dst, searc, searclen))) {
+	while ((dst = (char *)PRIVATE_JSTR_MEMMEM(dst, (dst + *sz) - dst, searc, searclen))) {
 		if (rplclen <= searclen || *cap > *sz + rplclen - searclen) {
 			memmove(dst + rplclen,
 				dst + searclen,
@@ -105,7 +105,7 @@ static char *private_jstr_replacen_f(char *JSTR_RST s,
 				     const size_t searclen,
 				     const size_t rplclen) JSTR_NOEXCEPT
 {
-	while (n-- && (s = (char *)JSTR_MEMMEM(s, (s + sz) - s, searc, searclen))) {
+	while (n-- && (s = (char *)PRIVATE_JSTR_MEMMEM(s, (s + sz) - s, searc, searclen))) {
 		memmove(s + rplclen,
 			s + searclen,
 			(s + sz + 1) - s + searclen);
@@ -127,7 +127,7 @@ static char *private_jstr_replaceall_f(char *JSTR_RST s,
 				       const size_t searclen,
 				       const size_t rplclen) JSTR_NOEXCEPT
 {
-	while ((s = (char *)JSTR_MEMMEM(s, (s + sz) - s, searc, searclen))) {
+	while ((s = (char *)PRIVATE_JSTR_MEMMEM(s, (s + sz) - s, searc, searclen))) {
 		memmove(s + rplclen,
 			s + searclen,
 			(s + sz + 1) - s + searclen);
@@ -375,7 +375,7 @@ static char *private_jstr_memmem5(const int use_remove,
 				  size_t searclen,
 				  size_t rplclen) JSTR_NOEXCEPT
 {
-#define JSTR_PRIVATE_JSTR_MEMMEM5_SHIFTS(shift_type, ne_iterator_type)               \
+#define PRIVATE_JSTR_MEMMEM5_SHIFTS(shift_type, ne_iterator_type)                    \
 	do {                                                                         \
 		unsigned char *src = (unsigned char *)s;                             \
 		unsigned char *dst = (unsigned char *)src;                           \
@@ -435,8 +435,8 @@ static char *private_jstr_memmem5(const int use_remove,
 #	pragma GCC diagnostic push
 #endif /* defined(__GNUC__) || defined(__clang__) */
 	if (unlikely(searclen > 256))
-		JSTR_PRIVATE_JSTR_MEMMEM5_SHIFTS(size_t, size_t);
-	JSTR_PRIVATE_JSTR_MEMMEM5_SHIFTS(uint8_t, int);
+		PRIVATE_JSTR_MEMMEM5_SHIFTS(size_t, size_t);
+	PRIVATE_JSTR_MEMMEM5_SHIFTS(uint8_t, int);
 #if defined(__GNUC__) || defined(__clang__)
 #	pragma GCC diagnostic pop
 #endif /* defined(__GNUC__) || defined(__clang__) */
