@@ -68,18 +68,102 @@ static void JSTR_ERR_EXIT()
 
 namespace jstr {
 
+namespace priv {
+
+JSTR_WARN_UNUSED
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+static constexpr size_t strlen_args() JSTR_NOEXCEPT
+{
+	return 0;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+static size_t strlen_arg(const char *s) JSTR_NOEXCEPT
+{
+	return strlen(s);
+}
+
+template <typename Str,
+	  typename... StrArgs,
+	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+JSTR_WARN_UNUSED
+JSTR_CONST
+JSTR_INLINE
+JSTR_NONNULL_ALL static size_t
+strlen_args(Str &&s,
+	    StrArgs &&...args) JSTR_NOEXCEPT
+{
+	return strlen_arg(std::forward<Str>(s))
+	       + strlen_args(std::forward<StrArgs>(args)...);
+}
+
+template <size_t N>
+JSTR_INLINE
+JSTR_NONNULL_ALL static void
+cat_assign(char **JSTR_RST const dst,
+	   const char (&src)[N]) JSTR_NOEXCEPT
+{
+	memcpy(*dst, src, N - 1);
+	*dst += (N - 1);
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void cat_assign(char **JSTR_RST dst,
+		       const char *JSTR_RST src) JSTR_NOEXCEPT
+{
+#	ifdef JSTR_HAS_STPCPY
+	*dst = stpcpy(*dst, src);
+#	else
+	while (*src)
+		**dst++ = *src++;
+#	endif
+}
+
+JSTR_INLINE
+static constexpr void cat_loop_assign(char **JSTR_RST const) JSTR_NOEXCEPT {}
+
+template <typename Str,
+	  typename... StrArgs,
+	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+JSTR_INLINE
+JSTR_NONNULL_ALL static void
+cat_loop_assign(char **JSTR_RST const dst,
+		Str &&arg,
+		StrArgs &&...args) JSTR_NOEXCEPT
+{
+	cat_assign(dst, std::forward<Str>(arg));
+	cat_loop_assign(dst, std::forward<StrArgs>(args)...);
+}
+
+} /* namespace priv */
+
 /*
    Insert multiple strings to S.
 */
 template <typename Str,
-	  typename... StrArgs>
+	  typename... StrArgs,
+	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
 alloc_cat(char **JSTR_RST const s,
 	  size_t *JSTR_RST const sz,
 	  size_t *JSTR_RST const cap,
 	  Str &&arg,
-	  StrArgs &&...args) JSTR_NOEXCEPT;
+	  StrArgs &&...args) JSTR_NOEXCEPT
+{
+	*sz = strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*cap = *sz * 2;
+	*s = (char *)malloc(*cap);
+	JSTR_MALLOC_ERR(*s, return);
+	char *p = *s;
+	cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*p = '\0';
+}
 
 #endif /* __cpluslus */
 
@@ -108,6 +192,23 @@ typedef struct jstr_t {
 	size_t cap;
 	char *data;
 
+	JSTR_INLINE
+	JSTR_NONNULL_ALL
+	static void cat_assign(char **JSTR_RST const dst,
+			       const jstr_t *JSTR_RST const src) JSTR_NOEXCEPT
+	{
+		memcpy(*dst, src->data, src->size);
+		*dst += src->size;
+	}
+
+	JSTR_INLINE
+	JSTR_CONST
+	JSTR_WARN_UNUSED
+	static size_t strlen_arg(const jstr_t *j) JSTR_NOEXCEPT
+	{
+		return j->size;
+	}
+
 	template <typename Str,
 		  typename... StrArgs>
 	JSTR_INLINE
@@ -115,7 +216,7 @@ typedef struct jstr_t {
 	jstr_t(Str &&arg,
 	       StrArgs &&...args) JSTR_NOEXCEPT
 	{
-		jstr::alloc_cat(&this->data, &this->size, &this->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+		alloc_cat(&this->data, &this->size, &this->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	}
 
 	JSTR_INLINE
@@ -318,119 +419,28 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
 
 #ifdef __cplusplus
 
-namespace priv {
+namespace traits {
 
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void cat_assign(char **JSTR_RST const dst,
-		       const jstr_t *JSTR_RST const src) JSTR_NOEXCEPT
+template <typename Str>
+JSTR_INLINE static constexpr int are_strings() JSTR_NOEXCEPT
 {
-	memcpy(*dst, src->data, src->size);
-	*dst += src->size;
+	using namespace std;
+	return (
+	is_same_decay<const char *, Str>()
+	|| is_same_decay<char *, Str>()
+	|| is_same_decay<jstr_t *, Str>()
+	|| is_same_decay<const jstr_t *, Str>()
+	|| is_same<jstr_t &, Str>::value
+	|| is_same<jstr_t &&, Str>::value
+	|| is_same<const jstr_t &, Str>::value
+	|| is_same<const jstr_t &&, Str>::value
+	|| is_same<volatile jstr_t &, Str>::value
+	|| is_same<volatile jstr_t &&, Str>::value
+	|| is_same<const volatile jstr_t &, Str>::value
+	|| is_same<const volatile jstr_t &&, Str>::value);
 }
 
-JSTR_WARN_UNUSED
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-static constexpr size_t strlen_args() JSTR_NOEXCEPT
-{
-	return 0;
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-static size_t strlen_arg(const char *s) JSTR_NOEXCEPT
-{
-	return strlen(s);
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-static size_t strlen_arg(const jstr_t *j) JSTR_NOEXCEPT
-{
-	return j->size;
-}
-
-template <typename Str,
-	  typename... StrArgs,
-	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
-JSTR_WARN_UNUSED
-JSTR_CONST
-JSTR_INLINE
-JSTR_NONNULL_ALL static size_t
-strlen_args(Str &&s,
-	    StrArgs &&...args) JSTR_NOEXCEPT
-{
-	return strlen_arg(std::forward<Str>(s))
-	       + strlen_args(std::forward<StrArgs>(args)...);
-}
-
-template <size_t N>
-JSTR_INLINE
-JSTR_NONNULL_ALL static void
-cat_assign(char **JSTR_RST const dst,
-	   const char (&src)[N]) JSTR_NOEXCEPT
-{
-	memcpy(*dst, src, N - 1);
-	*dst += (N - 1);
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void cat_assign(char **JSTR_RST dst,
-		       const char *JSTR_RST src) JSTR_NOEXCEPT
-{
-#	ifdef JSTR_HAS_STPCPY
-	*dst = stpcpy(*dst, src);
-#	else
-	while (*src)
-		**dst++ = *src++;
-#	endif
-}
-
-JSTR_INLINE
-static constexpr void cat_loop_assign(char **JSTR_RST const) JSTR_NOEXCEPT {}
-
-template <typename Str,
-	  typename... StrArgs,
-	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
-JSTR_INLINE
-JSTR_NONNULL_ALL static void
-cat_loop_assign(char **JSTR_RST const dst,
-		Str &&arg,
-		StrArgs &&...args) JSTR_NOEXCEPT
-{
-	cat_assign(dst, std::forward<Str>(arg));
-	cat_loop_assign(dst, std::forward<StrArgs>(args)...);
-}
-
-} /* namespace priv */
-
-/*
-   Insert multiple strings to S.
-*/
-template <typename Str,
-	  typename... StrArgs,
-	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
-JSTR_INLINE
-JSTR_NONNULL_ALL static void
-alloc_cat(char **JSTR_RST const s,
-	  size_t *JSTR_RST const sz,
-	  size_t *JSTR_RST const cap,
-	  Str &&arg,
-	  StrArgs &&...args) JSTR_NOEXCEPT
-{
-	*sz = priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	*cap = *sz * 2;
-	*s = (char *)malloc(*cap);
-	JSTR_MALLOC_ERR(*s, return);
-	char *p = *s;
-	priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	*p = '\0';
-}
+} /* namespace traits */
 
 /*
    Insert multiple strings to S.
