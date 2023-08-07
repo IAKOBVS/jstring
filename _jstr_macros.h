@@ -247,14 +247,8 @@
 #		define JSTR_ASSERT_IS_CHAR(expr)
 #		define JSTR_ASSERT_TYPECHECK(Texpr, expr)
 #	endif /* JSTR_HAS_GENERIC */
-#	define JSTR_MACRO_START ({
-#	define JSTR_MACRO_END \
-		;              \
-		})
 #else
 #	define JSTR_IS_SIZE(val)
-#	define JSTR_MACRO_START (
-#	define JSTR_MACRO_END )
 #endif /* __GNUC__ || __clang__ */
 
 #ifdef __cplusplus
@@ -262,14 +256,6 @@
 #else
 #	define JSTR_NOEXCEPT
 #endif
-
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) || defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-#	define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
-#elif defined(__attribute_warn_unused_result__)
-#	define JSTR_WARN_UNUSED __attribute_warn_unused_result__
-#else
-#	define JSTR_WARN_UNUSED
-#endif /* __attribute__unused */
 
 #if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
 #	define JSTR_HAS_TYPEOF
@@ -324,37 +310,33 @@
 #endif /* __has_builtin(__builtin_expect) */
 
 #if defined(__GNUC__) || defined(__clang__)
+
 #	define JSTR_INLINE __attribute__((always_inline)) inline
 #	if __has_attribute(pure)
 #		define JSTR_PURE __attribute__((pure))
 #	else
 #		define JSTR_PURE
 #	endif /* JSTR_PURE */
-
 #	if __has_attribute(const)
 #		define JSTR_CONST __attribute__((const))
 #	else
 #		define JSTR_CONST
 #	endif /* JSTR_CONST */
-
 #	if __has_attribute(flatten)
 #		define JSTR_FLATTEN __attribute__((flatten))
 #	else
 #		define JSTR_FLATTEN
 #	endif /* JSTR_FLATTEN */
-
 #	if __has_attribute(cold)
 #		define JSTR_COLD __attribute__((cold))
 #	else
 #		define JSTR_COLD
 #	endif /* JSTR_COLD */
-
 #	if __has_attribute(sentinel)
 #		define JSTR_SENTINEL __attribute__((sentinel))
 #	else
 #		define JSTR_SENTINEL
 #	endif /* JSTR_SENTINEL */
-
 #	if __has_attribute(nonnull)
 #		define JSTR_NONNULL_ALL   __attribute__((nonnull))
 #		define JSTR_NONNULL(args) __attribute__((nonnull(args)))
@@ -362,19 +344,21 @@
 #		define JSTR_NONNULL_ALL
 #		define JSTR_NONNULL(args)
 #	endif /* JSTR_NONNULL */
-
 #	if __has_attribute(malloc)
 #		define JSTR_MALLOC				      __attribute__((malloc))
 #		define JSTR_MALLOC_DEALLOC(deallocator)	      __attribute__((malloc, deallocator))
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
 #	endif /* JSTR_MALLOC */
-
 #	if __has_attribute(returns_nonnull)
 #		define JSTR_RETURNS_NONNULL __attribute__((returns_nonnull))
 #	else
 #		define JSTR_RETURNS_NONNULL
 #	endif /* RETURNS_NONNULL */
-
+#	if __has_attribute(warn_unused_result)
+#		define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
+#	else
+#		define JSTR_WARN_UNUSED
+#	endif /* */
 #	if __has_builtin(__builtin_constant_p)
 #		define JSTR_CONSTANT_P(p) __builtin_constant_p(p)
 #	else
@@ -396,6 +380,7 @@
 #	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #	define JSTR_RETURNS_NONNULL
 #	define JSTR_CONSTANT_P(p) 0
+#	define JSTR_WARN_UNUSED
 
 #else
 
@@ -411,6 +396,7 @@
 #	define JSTR_MALLOC_DEALLOC(deallocator)
 #	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #	define JSTR_CONSTANT_P(p) 0
+#	define JSTR_WARN_UNUSED
 
 #endif /* __GNUC__ || __clang__ || _MSC_VER */
 
@@ -575,46 +561,57 @@ case '\t':                   \
 case '\r':                   \
 case ' ':
 
-#ifdef __cplusplus
-#	define JSTR_PRIVATE	    private:
-#	define JSTR_PUBLIC	    public:
-#	define JSTR_CAST(T)	    (T)
-#	define JSTR_CJSTR_PP_CONST const
-#else
-#	define JSTR_CAST(T)
-#	define JSTR_PRIVATE
-#	define JSTR_PUBLIC
-#	define JSTR_CJSTR_PP_CONST
-#endif /* __cplusplus */
-
 #if defined(_GNU_SOURCE)
 #	define JSTR_HAS_MEMMEM
 #	define JSTR_HAS_MEMRCHR
+#	define JSTR_HAS_STRCHRNUL
+#	define JSTR_HAS_FGETS_UNLOCKED
+#	define JSTR_HAS_FPUTS_UNLOCKED
+#	define JSTR_HAS_GETWC_UNLOCKED
+#	define JSTR_HAS_GETWCCHAR_UNLOCKED
+#	define JSTR_HAS_FGETWC_UNLOCKED
+#	define JSTR_HAS_FPUTWC_UNLOCKED
+#	define JSTR_HAS_PUTWCHAR_UNLOCKED
+#	define JSTR_HAS_FGETWS_UNLOCKED
+#	define JSTR_HAS_FPUTWS_UNLOCKED
+#	define JSTR_WMEMPCPY
+#	define JSTR_MEMPCPY
 #endif /* JSTR_HAS_MEMRCHR__ */
 
-#if __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 19
-#	if _DEFAULT_SOURCE
+#if (__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 24) && _POSIX_C_SOURCE >= 199309L) || (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE) || defined(_BSD_SOURCE)) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 23) && defined(_POSIX_C_SOURCE))
+#	define JSTR_HAS_GETC_UNLOCKED
+#	define JSTR_HAS_GETCHAR_UNLOCKED
+#	define JSTR_HAS_PUTC_UNLOCKED
+#	define JSTR_HAS_PUTCHAR_UNLOCKED
+#endif /* __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 24 */
+
+#if (__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 19))
+#	ifdef _DEFAULT_SOURCE
 #		define JSTR_HAS_FREAD_UNLOCKED
 #		define JSTR_HAS_FWRITE_UNLOCKED
 #		define JSTR_HAS_FPUTC_UNLOCKED
 #		define JSTR_HAS_FGETC_UNLOCKED
+#		define JSTR_HAS_CLEARERR_UNLOCKED
+#		define JSTR_HAS_FEOF_UNLOCKED
+#		define JSTR_HAS_FERROR_UNLOCKED
+#		define JSTR_HAS_FILENO_UNLOCKED
+#		define JSTR_HAS_FFLUSH_UNLOCKED
 #	elif defined(_SVID_SOURCE) || defined(_BSD_SOURCE)
 #		define JSTR_HAS_FREAD_UNLOCKED
 #		define JSTR_HAS_FWRITE_UNLOCKED
 #		define JSTR_HAS_FPUTC_UNLOCKED
 #		define JSTR_HAS_FGETC_UNLOCKED
-#	endif /* _DEFAULT_SOURCE */
+#		define JSTR_HAS_CLEARERR_UNLOCKED
+#		define JSTR_HAS_FEOF_UNLOCKED
+#		define JSTR_HAS_FERROR_UNLOCKED
+#		define JSTR_HAS_FILENO_UNLOCKED
+#		define JSTR_HAS_FFLUSH_UNLOCKED
+#	endif /* _DEFAULT_SOURCE || _SVID_SOURCE || _BSD_SOURCE */
 #endif /* */
 
-#ifdef __GLIBC__
-#	if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) || defined(_GNU_SOURCE))
-#		define JSTR_HAS_STPCPY
-#	endif /* JSTR_HAS_STPCPY */
-#endif /* __GLIBC__ */
-
-#ifdef _GNU_SOURCE
-#	define JSTR_HAS_STRCHRNUL
-#endif /* _GNU_SOURCE */
+#if (__GLIBC__ > 2) || ((__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10) && (_POSIX_C_SOURCE >= 200809L)) || defined(_GNU_SOURCE)
+#	define JSTR_HAS_STPCPY
+#endif /* JSTR_HAS_STPCPY */
 
 #define JSTR_RST JSTR_RESTRICT
 

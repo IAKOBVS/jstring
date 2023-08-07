@@ -31,15 +31,43 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_strcpyp(char *JSTR_RST const dst,
-			  const char *JSTR_RST const src) JSTR_NOEXCEPT
+static char *jstr_mempcpy(char *JSTR_RST const dst,
+			  const char *JSTR_RST const src,
+			  const size_t n) JSTR_NOEXCEPT
 {
-#ifndef JSTR_HAS_STPCPY
+#if JSTR_HAS_MEMPCPY
+#ifdef __cpluslus
+	return ::mempcpy(dst, src, n);
+#else
+	return mempcpy(dst, src, n);
+#endif /* __cpluslus */
+#else
+	memcpy(dst, src, n);
+	return dst + n;
+#endif /* !JSTR_HAS_STPCPY */
+}
+
+/*
+  Return value:
+  pointer to '\0' in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *jstr_strcpyp(char *JSTR_RST const dst,
+			 const char *JSTR_RST const src) JSTR_NOEXCEPT
+{
+#ifdef JSTR_HAS_STPCPY
+#	ifdef __cpluslus
+	return ::stpcpy(dst, src);
+#	else
+	return stpcpy(dst, src);
+#	endif /* __cpluslus */
+#else
 	const size_t slen = strlen(src);
 	memcpy(dst, src, slen + 1);
 	return dst + slen;
-#else
-	return stpcpy(dst, src);
 #endif /* !JSTR_HAS_STPCPY */
 }
 
@@ -57,7 +85,9 @@ static void *jstr_memchrr(const void *JSTR_RST const s,
 			  const int c,
 			  size_t n) JSTR_NOEXCEPT
 {
-#ifndef JSTR_HAS_MEMRCHR
+#ifdef JSTR_HAS_MEMRCHR
+	return (void *)memrchr(s, c, n);
+#else
 	if (unlikely(!*(char *)s))
 		return NULL;
 	const unsigned char *const start = (unsigned char *)s;
@@ -67,25 +97,7 @@ static void *jstr_memchrr(const void *JSTR_RST const s,
 			return (void *)end;
 	while (--end <= start);
 	return NULL;
-#else
-	return (void *)memrchr(s, c, n);
 #endif /* !JSTR_HAS_MEMRCHR */
-}
-
-/*
-  Return pointer to last C in S.
-  Return value:
-  pointer to last C;
-  NULL if not found.
-*/
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-static char *jstr_strchrr(const char *JSTR_RST const s,
-			  const int c) JSTR_NOEXCEPT
-{
-	return (char *)jstr_memchrr(s, c, strlen(s));
 }
 
 /*
@@ -97,7 +109,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *jstr_strcatp(char *JSTR_RST dst,
-			  const char *JSTR_RST src) JSTR_NOEXCEPT
+			 const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 	dst += strlen(dst);
 	return jstr_strcpyp(dst, src);
@@ -189,6 +201,7 @@ static void *private_jstr_memmemr(const void *JSTR_RST const hs,
 	if (unlikely(hslen > 256))
 		PRIVATE_JSTR_MEMMEMR(size_t, size_t);
 	PRIVATE_JSTR_MEMMEMR(uint8_t, int);
+#undef JSTR_HASH2
 }
 
 /*

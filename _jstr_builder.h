@@ -23,13 +23,6 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
-#if JSTR_NAMESPACE && defined(__cplusplus)
-namespace jstr {
-#endif /* JSTR_NAMESPACE */
-#if JSTR_EXTERN_C && defined(__cplusplus)
-/* extern "C" { */
-#endif /* JSTR_EXTERN_C */
-
 JSTR_NOINLINE
 JSTR_COLD
 static void JSTR_ERR_EXIT()
@@ -39,9 +32,12 @@ static void JSTR_ERR_EXIT()
 	exit(1);
 }
 
-#ifdef __cplusplus
+#if JSTR_NAMESPACE && defined(__cplusplus)
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
+#if JSTR_EXTERN_C && defined(__cplusplus)
+/* extern "C" { */
+#endif /* JSTR_EXTERN_C */
 
 /*
   exit(1) if ptr is NULL.
@@ -203,7 +199,7 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
 	fprintf(stderr, "data:%s\n", j->data);
 }
 
-#ifdef __cplusplus
+#if JSTR_NAMESPACE && defined(__cplusplus)
 
 /*
   Insert multiple strings to S.
@@ -234,8 +230,6 @@ cat_j(jstr_t *JSTR_RST const j,
 {
 	cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
-
-} /* namespace jstr */
 
 #else
 
@@ -301,7 +295,7 @@ cat_j(jstr_t *JSTR_RST const j,
 /* } */
 #endif /* JSTR_EXTERN_C */
 #if JSTR_NAMESPACE && defined(__cplusplus)
-}
+} /* namespace jstr */
 #endif /* JSTR_NAMESPACE */
 
 #undef JSTR_EXTERN_C

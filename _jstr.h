@@ -15,6 +15,8 @@ extern "C" {
 #	include "_jstr_pp_va_args_macros.h"
 #endif /* __cplusplus */
 
+#include "_jstr_ctype.h"
+#include "_jstr_string.h"
 #include "_jstr_builder.h"
 #include "_jstr_config.h"
 #include "_jstr_macros.h"
