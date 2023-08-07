@@ -141,6 +141,34 @@ static void jstr_alloc(char **JSTR_RST const s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+static void jstr_allocexact(char **JSTR_RST const s,
+			    size_t *JSTR_RST const sz,
+			    size_t *JSTR_RST const cap,
+			    const size_t top) JSTR_NOEXCEPT
+{
+	*sz = 0;
+	*s = (char *)malloc(top);
+	JSTR_MALLOC_ERR(*s, return);
+	*cap = top;
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_allocexact_append_mem(char **JSTR_RST const s,
+				       size_t *JSTR_RST const sz,
+				       size_t *JSTR_RST const cap,
+				       const char *JSTR_RST const src,
+				       const size_t srclen) JSTR_NOEXCEPT
+{
+	jstr_allocexact(s, sz, cap, srclen + 1);
+	if (unlikely(!*s))
+		return;
+	*sz = srclen;
+	memcpy(*s, src, srclen + 1);
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
 static void jstr_alloc_append_mem(char **JSTR_RST const s,
 				  size_t *JSTR_RST const sz,
 				  size_t *JSTR_RST const cap,
@@ -152,16 +180,6 @@ static void jstr_alloc_append_mem(char **JSTR_RST const s,
 		return;
 	*sz = srclen;
 	memcpy(*s, src, srclen + 1);
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void jstr_alloc_append(char **JSTR_RST const s,
-			      size_t *JSTR_RST const sz,
-			      size_t *JSTR_RST const cap,
-			      const char *JSTR_RST const src) JSTR_NOEXCEPT
-{
-	jstr_alloc_append_mem(s, sz, cap, src, strlen(src));
 }
 
 /*
@@ -266,7 +284,7 @@ cat_j(jstr_t *JSTR_RST const j,
 			JSTR_ASSERT_IS_SIZE(*(cap));                   \
 			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__); \
 			*(sz) = JSTR_PP_STRLEN_VA_ARGS(__VA_ARGS__);   \
-			*(cap) = *(sz)*2;                              \
+			*(cap) = *(sz)*JSTR_GROWTH_MULTIPLIER;         \
 			*(s) = malloc(*(cap));                         \
 			JSTR_MALLOC_ERR(*((s)), break);                \
 			char *p = *(s);                                \
