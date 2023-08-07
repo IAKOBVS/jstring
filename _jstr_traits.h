@@ -6,10 +6,12 @@
 #	include "_jstr_macros.h"
 #	include <utility>
 
-typedef struct jstr_t jstr_t;
-
 namespace jstr {
+
+/* typedef struct jstr_t jstr_t; */
+
 namespace traits {
+
 template <typename T, typename Arg>
 JSTR_INLINE static constexpr int is_same_decay() JSTR_NOEXCEPT
 {
@@ -30,15 +32,17 @@ JSTR_INLINE static constexpr int are_strings() JSTR_NOEXCEPT
 	return (
 	is_same_decay<const char *, Str>()
 	|| is_same_decay<char *, Str>()
-	|| is_same_decay<jstr_t *, Str>()
-	|| is_same<jstr_t &, Str>::value
-	|| is_same<jstr_t &&, Str>::value
-	|| is_same<const jstr_t &, Str>::value
-	|| is_same<const jstr_t &&, Str>::value
-	|| is_same<volatile jstr_t &, Str>::value
-	|| is_same<volatile jstr_t &&, Str>::value
-	|| is_same<const volatile jstr_t &, Str>::value
-	|| is_same<const volatile jstr_t &&, Str>::value);
+	/* || is_same_decay<jstr_t *, Str>() */
+	/* || is_same_decay<const jstr_t *, Str>() */
+	/* || is_same<jstr_t &, Str>::value */
+	/* || is_same<jstr_t &&, Str>::value */
+	/* || is_same<const jstr_t &, Str>::value */
+	/* || is_same<const jstr_t &&, Str>::value */
+	/* || is_same<volatile jstr_t &, Str>::value */
+	/* || is_same<volatile jstr_t &&, Str>::value */
+	/* || is_same<const volatile jstr_t &, Str>::value */
+	/* || is_same<const volatile jstr_t &&, Str>::value */
+	);
 }
 
 template <typename Str, typename... StrArgs, typename = typename std::enable_if<sizeof...(StrArgs) != 0>::type>
@@ -101,6 +105,10 @@ JSTR_INLINE static constexpr void assert_are_same(Arg &&, Args &&...) JSTR_NOEXC
 
 } /* namespace traits */
 } /* namespace jstr */
+
+#else
+
+typedef struct jstr_t jstr_t;
 
 #endif /* __cplusplus */
 

@@ -308,7 +308,9 @@ sub gen_struct_funcs
 	if ($G_FNAME !~ /$G_IGNORE_FILE/o) {
 		$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/o;
 		$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/o;
+		$out_hpp =~ s/~$G_NMSPC/destructor$G_NMSPC/go;
 		$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
+		$out_hpp =~ s/destructor$G_NMSPC/~$G_NMSPC/go;
 	}
 	$out_hpp =~ s/\tt\(/\t$G_STR_STRUCT(/go;
 	$out_hpp =~ s/\t~t\(/\t$G_STR_STRUCT(/go;
