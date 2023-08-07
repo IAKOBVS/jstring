@@ -31,16 +31,12 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_mempcpy(char *JSTR_RST const dst,
+static char *jstr_memcpyp(char *JSTR_RST const dst,
 			  const char *JSTR_RST const src,
 			  const size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAS_MEMPCPY
-#ifdef __cpluslus
-	return ::mempcpy(dst, src, n);
-#else
 	return mempcpy(dst, src, n);
-#endif /* __cpluslus */
 #else
 	memcpy(dst, src, n);
 	return dst + n;
