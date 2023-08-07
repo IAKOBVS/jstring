@@ -68,10 +68,11 @@ static char *jstr_rmc_p(char *JSTR_RST s,
 	s = strchrnul(s, c);
 	if (unlikely(!*s))
 		return s;
-	const char *src = s;
-	while ((*s++ = *++src))
+	unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = dst;
+	while ((*dst++ = *++src))
 		;
-	return s - 1;
+	return (char *)dst - 1;
 #else
 	return jstr_rmc_mem_p(s, c, strlen(s));
 #endif /* HAS_STRCHRNUL */
@@ -93,15 +94,16 @@ static char *jstr_rmallc_mem_p(char *JSTR_RST s,
 	s = (char *)memchr(s, c, sz);
 	if (unlikely(!s))
 		return s + sz;
-	const char *src = s + 1;
+	unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = dst + 1;
 	for (;; ++src)
 		if (*src != c) {
 			if (unlikely(!*src))
 				break;
-			*s++ = *src;
+			*dst++ = *src;
 		}
-	*s = '\0';
-	return s;
+	*dst = '\0';
+	return (char *)dst;
 }
 
 /*
@@ -120,7 +122,8 @@ static char *jstr_rmallc_p(char *JSTR_RST s,
 	s = strchrnul(s, c);
 	if (unlikely(!*s))
 		return s;
-	const char *src = s + 1;
+	const unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = dst + 1;
 	for (;; ++src)
 		if (*src != c) {
 			if (unlikely(!*src))
@@ -150,21 +153,22 @@ static char *jstr_rmnc_mem_p(char *JSTR_RST s,
 	s = (char *)memchr(s, c, sz);
 	if (unlikely(!s))
 		return s;
-	const char *const end = s + sz;
-	const char *src = s + 1;
+	unsigned char *dst = (unsigned char *)s;
+	const unsigned char *const end = dst + sz;
+	const unsigned char *src = dst + 1;
 	for (;; ++src)
 		if (*src != c) {
 			if (unlikely(!*src))
 				break;
-			*s++ = *src;
+			*dst++ = *src;
 		} else {
 			if (unlikely(!--n)) {
-				memmove(s, src, end - src + 1);
+				memmove(dst, src, end - src + 1);
 				break;
 			}
 		}
-	*s = '\0';
-	return s;
+	*dst = '\0';
+	return (char *)dst;
 }
 
 /*
@@ -184,7 +188,8 @@ static char *jstr_rmnc_p(char *JSTR_RST s,
 	s = (char *)strchrnul(s, c);
 	if (unlikely(!*s))
 		return s;
-	const char *src = s + 1;
+	const unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = dst + 1;
 	for (;; ++src)
 		if (*src != c) {
 			if (unlikely(!*src))
@@ -236,7 +241,9 @@ static char *jstr_stripspn_mem_p(char *JSTR_RST s,
 	do
 		tbl[(unsigned char)*reject++] = REJECT;
 	while (*reject);
-	for (const unsigned char *src = (unsigned char *)s;; ++src) {
+	const unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = dst;
+	for (;; ++src) {
 		switch (tbl[*src]) {
 		case ACCEPT:
 			*s++ = *src;
@@ -280,7 +287,9 @@ static char *jstr_stripspn_p(char *JSTR_RST s,
 	do
 		tbl[(unsigned char)*reject++] = REJECT;
 	while (*reject);
-	for (const unsigned char *src = (unsigned char *)s;; ++src) {
+	const unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = dst;
+	for (;; ++src) {
 		switch (tbl[*src]) {
 		case ACCEPT:
 			*s++ = *src;
@@ -447,12 +456,13 @@ static void jstr_replaceallc_mem(char *JSTR_RST s,
 	s = (char *)memchr(s, searc, sz);
 	if (unlikely(!s))
 		return;
+	unsigned char *dst = (unsigned char *)s;
 	goto MTC;
-	for (;; ++s)
-		if (*s == searc)
+	for (;; ++dst)
+		if (*dst == searc)
 		MTC:
-			*s = rplc;
-		else if (unlikely(!*s))
+			*dst = rplc;
+		else if (unlikely(!*dst))
 			break;
 }
 
@@ -468,12 +478,13 @@ static void jstr_replaceallc(char *JSTR_RST s,
 	s = strchr(s, searc);
 	if (unlikely(!s))
 		return;
+	unsigned char *dst = (unsigned char *)s;
 	goto MTC;
-	for (;; ++s)
-		if (*s == searc)
+	for (;; ++dst)
+		if (*dst == searc)
 		MTC:
-			*s = rplc;
-		else if (unlikely(!*s))
+			*dst = rplc;
+		else if (unlikely(!*dst))
 			break;
 }
 
@@ -491,14 +502,15 @@ static void jstr_replacenc_mem(char *JSTR_RST s,
 	s = (char *)memchr(s, searc, sz);
 	if (unlikely(!s))
 		return;
+	unsigned char *dst = (unsigned char *)s;
 	goto MTC;
-	for (;; ++s)
-		if (*s == searc) {
+	for (;; ++dst)
+		if (*dst == searc) {
 		MTC:
-			*s = rplc;
+			*dst = rplc;
 			if (unlikely(!--n))
 				break;
-		} else if (unlikely(!*s)) {
+		} else if (unlikely(!*dst)) {
 			break;
 		}
 }
@@ -516,14 +528,15 @@ static void jstr_replacenc(char *JSTR_RST s,
 	s = strchr(s, searc);
 	if (unlikely(!s))
 		return;
+	unsigned char *dst = (unsigned char *)s;
 	goto MTC;
 	for (;;) {
-		if (*s == searc) {
+		if (*dst == searc) {
 		MTC:
-			*s = rplc;
+			*dst = rplc;
 			if (unlikely(!--n))
 				break;
-		} else if (unlikely(!*++s)) {
+		} else if (unlikely(!*++dst)) {
 			break;
 		}
 	}
