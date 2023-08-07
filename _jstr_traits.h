@@ -26,7 +26,12 @@ JSTR_INLINE static constexpr int is_same_decay(Arg) JSTR_NOEXCEPT
 }
 
 template <typename Str>
-JSTR_INLINE static constexpr int are_strings() JSTR_NOEXCEPT;
+JSTR_INLINE static constexpr int are_strings() JSTR_NOEXCEPT
+{
+	using namespace std;
+	return (is_same_decay<const char *, Str>()
+	|| is_same_decay<char *, Str>());
+}
 
 template <typename Str, typename... StrArgs, typename = typename std::enable_if<sizeof...(StrArgs) != 0>::type>
 JSTR_INLINE static constexpr int are_strings() JSTR_NOEXCEPT
@@ -52,8 +57,6 @@ JSTR_INLINE static constexpr void assert_are_strings(Str &&, StrArgs &&...) JSTR
 {
 	static_assert(are_strings<Str, StrArgs...>(), "Passing non-strings as string arguments!");
 }
-
-//
 
 template <typename T, typename Arg>
 JSTR_INLINE static constexpr int are_same() JSTR_NOEXCEPT
