@@ -157,8 +157,8 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 		rm.rm_eo += off;
 		if (rplclen <= ptnlen || *cap > *sz + rplclen - ptnlen + 1) {
 			memmove(*s + rm.rm_so + rplclen,
-				*s + rm.rm_so + ptnlen,
-				(*s + *sz + 1) - *s + rm.rm_so + ptnlen);
+				*s + rm.rm_eo,
+				(*s + *sz + 1) - *s + rm.rm_eo);
 			memcpy(*s + rm.rm_so, rplc, rplclen);
 		} else {
 			JSTR_GROW(*cap, *sz + rplclen + 1);
@@ -255,6 +255,13 @@ static void jstr_reg_replace_now_mem(char **JSTR_RST const s,
 		return;
 	}
 	jstr_reg_replace_mem(s, sz, cap, rplc, rplclen, reg, eflags);
+}
+
+JSTR_NONNULL_ALL
+JSTR_INLINE
+static void jstr_reg_free(regex_t *JSTR_RST const preg)
+{
+	regfree(preg);
 }
 
 #undef JSTR_EXTERN_C
