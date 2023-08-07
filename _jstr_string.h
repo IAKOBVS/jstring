@@ -90,7 +90,7 @@ static void *jstr_memchrr(const void *JSTR_RST const s,
 	if (unlikely(!*(char *)s))
 		return NULL;
 	const unsigned char *const start = (unsigned char *)s;
-	const unsigned char *end = (unsigned char *)s + n - 1;
+	const unsigned char *end = start + n - 1;
 	do
 		if (*end == c)
 			return (void *)end;
