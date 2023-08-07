@@ -89,7 +89,7 @@ static int jstr_reg_match(const char *JSTR_RST const s,
 			  regex_t *JSTR_RST reg,
 			  const int eflags) JSTR_NOEXCEPT
 {
-	int ret = regexec(reg, s, 0, NULL, eflags);
+	int ret = regexec(reg, s, 0, NULL, eflags | JSTR_REG_EF_NOSUB);
 	switch (ret) {
 	default:
 		jstr_reg_error(ret, reg);
@@ -114,6 +114,45 @@ static int jstr_reg_match_now(const char *JSTR_RST const s,
 	}
 	return jstr_reg_match(s, reg, eflags);
 }
+
+#ifdef JSTR_REG_EF_STARTEND
+
+JSTR_NONNULL_ALL
+JSTR_INLINE
+static int jstr_reg_match_mem(const char *JSTR_RST const s,
+			      const size_t sz,
+			      regex_t *JSTR_RST reg,
+			      const int eflags) JSTR_NOEXCEPT
+{
+	regmatch_t rm = { 0, (regoff_t)sz };
+	int ret = regexec(reg, s, 0, &rm, eflags | JSTR_REG_EF_NOSUB | JSTR_REG_EF_STARTEND);
+	switch (ret) {
+	default:
+		jstr_reg_error(ret, reg);
+		return ret;
+	case JSTR_REG_RET_NOMATCH: return JSTR_REG_RET_NOMATCH;
+	case JSTR_REG_RET_NOERROR: return JSTR_REG_RET_NOERROR;
+	}
+}
+
+JSTR_NONNULL_ALL
+JSTR_INLINE
+static int jstr_reg_match_now_mem(const char *JSTR_RST const s,
+				  const char *JSTR_RST const ptn,
+				  const size_t sz,
+				  regex_t *JSTR_RST reg,
+				  const int cflags,
+				  const int eflags) JSTR_NOEXCEPT
+{
+	int ret = regcomp(reg, ptn, cflags);
+	if (unlikely(ret != JSTR_REG_RET_NOERROR)) {
+		jstr_reg_error(ret, reg);
+		return ret;
+	}
+	return jstr_reg_match_mem(s, sz, reg, eflags);
+}
+
+#endif /* JSTR_REG_EF_STARTEND */
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
