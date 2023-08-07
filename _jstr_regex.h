@@ -411,6 +411,8 @@ static void jstr_reg_free(regex_t *JSTR_RST const preg)
 }
 #endif /* JSTR_NAMESPACE */
 
+#undef PRIVATE_JSTR_REG_EXEC
+
 #undef JSTR_EXTERN_C
 #undef JSTR_NAMESPACE
 
