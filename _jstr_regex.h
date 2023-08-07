@@ -404,14 +404,14 @@ static void jstr_reg_free(regex_t *JSTR_RST const preg)
 	regfree(preg);
 }
 
-#undef JSTR_EXTERN_C
-#undef JSTR_NAMESPACE
-
 #if JSTR_EXTERN_C && defined(__cplusplus)
 }
 #endif /* JSTR_EXTERN_C */
 #if JSTR_NAMESPACE && defined(__cplusplus)
 }
 #endif /* JSTR_NAMESPACE */
+
+#undef JSTR_EXTERN_C
+#undef JSTR_NAMESPACE
 
 #endif /* JSTR_REGEX_H_DEF */
