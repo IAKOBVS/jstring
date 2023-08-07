@@ -23,6 +23,13 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
+#if JSTR_NAMESPACE && defined(__cplusplus)
+namespace jstr {
+#endif /* JSTR_NAMESPACE */
+#if JSTR_EXTERN_C && defined(__cplusplus)
+/* extern "C" { */
+#endif /* JSTR_EXTERN_C */
+
 JSTR_NOINLINE
 JSTR_COLD
 static void JSTR_ERR_EXIT()
@@ -271,6 +278,13 @@ cat_j(jstr_t *JSTR_RST const j,
 #	define jstr_alloc_cat_j(j, ...) jstr_alloc_cat(&((j)->data), &((j)->size), &((j)->cap), __VA_ARGS__)
 
 #endif /* __cplusplus */
+
+#if JSTR_EXTERN_C && defined(__cplusplus)
+/* } */
+#endif /* JSTR_EXTERN_C */
+#if JSTR_NAMESPACE && defined(__cplusplus)
+}
+#endif /* JSTR_NAMESPACE */
 
 #undef JSTR_EXTERN_C
 #undef JSTR_NAMESPACE
