@@ -31,19 +31,19 @@ namespace jstr {
    Append SRC to DST.
    Use non-f version for bounds checking.
    Return value:
-   New len of S.
+   New _len of S.
 */
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *jstr_append_mem_p_f(char *JSTR_RST const s,
-				 const char *JSTR_RST const src,
+				 const char *JSTR_RST const _src,
 				 const size_t sz,
-				 const size_t srclen) JSTR_NOEXCEPT
+				 const size_t _srclen) JSTR_NOEXCEPT
 {
-	memcpy(s, src, srclen + 1);
-	return s + sz + srclen;
+	memcpy(s, _src, _srclen + 1);
+	return s + sz + _srclen;
 }
 
 /*
@@ -54,12 +54,12 @@ JSTR_NONNULL_ALL
 static void jstr_append_mem(char **JSTR_RST const s,
 			    size_t *JSTR_RST const sz,
 			    size_t *JSTR_RST const cap,
-			    const char *JSTR_RST const src,
-			    const size_t srclen) JSTR_NOEXCEPT
+			    const char *JSTR_RST const _src,
+			    const size_t _srclen) JSTR_NOEXCEPT
 {
-	if (*cap < *sz + srclen)
-		JSTR_REALLOC(*s, *cap, *sz + srclen, return);
-	*sz = jstr_append_mem_p_f(*s, src, *sz, srclen) - *s;
+	if (*cap < *sz + _srclen)
+		JSTR_REALLOC(*s, *cap, *sz + _srclen, return);
+	*sz = jstr_append_mem_p_f(*s, _src, *sz, _srclen) - *s;
 }
 
 /*
@@ -95,15 +95,15 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_count_mem(const char *JSTR_RST s,
-			  const char *JSTR_RST const searc,
+			  const char *JSTR_RST const _searc,
 			  size_t sz,
-			  const size_t searclen) JSTR_NOEXCEPT
+			  const size_t _searclen) JSTR_NOEXCEPT
 {
 	int count = 0;
-	while ((s = (char *)memmem(s, sz, searc, searclen))) {
+	while ((s = (char *)memmem(s, sz, _searc, _searclen))) {
 		++count;
-		s += searclen;
-		sz += searclen;
+		s += _searclen;
+		sz += _searclen;
 	}
 	return count;
 }
@@ -120,10 +120,10 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int jstr_count(const char *JSTR_RST s,
-		      const char *JSTR_RST const searc) JSTR_NOEXCEPT
+		      const char *JSTR_RST const _searc) JSTR_NOEXCEPT
 {
 	int count = 0;
-	while ((s = strstr(s, searc)))
+	while ((s = strstr(s, _searc)))
 		++count;
 	return count;
 }
@@ -190,10 +190,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_insert_mem_f(char *JSTR_RST const s,
 			      const size_t at,
-			      const char *JSTR_RST const src,
-			      const size_t srclen) JSTR_NOEXCEPT
+			      const char *JSTR_RST const _src,
+			      const size_t _srclen) JSTR_NOEXCEPT
 {
-	memcpy(s + at, src, srclen);
+	memcpy(s + at, _src, _srclen);
 }
 
 /*
@@ -205,15 +205,15 @@ static void jstr_insert_mem(char **JSTR_RST const s,
 			    size_t *JSTR_RST const sz,
 			    size_t *JSTR_RST const cap,
 			    const size_t at,
-			    const char *JSTR_RST const src,
-			    const size_t srclen) JSTR_NOEXCEPT
+			    const char *JSTR_RST const _src,
+			    const size_t _srclen) JSTR_NOEXCEPT
 {
-	if (at + srclen > *sz) {
-		JSTR_REALLOC(*s, *cap, at + srclen + 1, return);
-		*sz = at + srclen;
+	if (at + _srclen > *sz) {
+		JSTR_REALLOC(*s, *cap, at + _srclen + 1, return);
+		*sz = at + _srclen;
 		*(*s + *sz) = '\0';
 	}
-	jstr_insert_mem_f(*s, at, src, srclen);
+	jstr_insert_mem_f(*s, at, _src, _srclen);
 }
 
 /*
@@ -224,13 +224,13 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_insertaftc_mem_f(char *JSTR_RST const s,
 				  const int c,
-				  const char *JSTR_RST const src,
+				  const char *JSTR_RST const _src,
 				  const size_t sz,
-				  const size_t srclen) JSTR_NOEXCEPT
+				  const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(s, c, sz);
 	if (p)
-		jstr_insert_mem_f(s, p - s + 1, src, srclen);
+		jstr_insert_mem_f(s, p - s + 1, _src, _srclen);
 }
 
 /*
@@ -242,12 +242,12 @@ static void jstr_insertaftc_mem(char **JSTR_RST const s,
 				size_t *JSTR_RST const sz,
 				size_t *JSTR_RST const cap,
 				const int c,
-				const char *JSTR_RST const src,
-				const size_t srclen) JSTR_NOEXCEPT
+				const char *JSTR_RST const _src,
+				const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(*s, c, *sz);
 	if (p)
-		jstr_insert_mem(s, sz, cap, p - *s + 1, src, srclen);
+		jstr_insert_mem(s, sz, cap, p - *s + 1, _src, _srclen);
 }
 
 /*
@@ -259,13 +259,13 @@ static void jstr_insertaftallc_mem(char **JSTR_RST const s,
 				   size_t *JSTR_RST const sz,
 				   size_t *JSTR_RST const cap,
 				   const int c,
-				   const char *JSTR_RST const src,
-				   const size_t srclen) JSTR_NOEXCEPT
+				   const char *JSTR_RST const _src,
+				   const size_t _srclen) JSTR_NOEXCEPT
 {
 	size_t off = 0;
 	const char *p;
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
-		jstr_insert_mem(s, sz, cap, p - *s + 1, src, srclen);
+		jstr_insert_mem(s, sz, cap, p - *s + 1, _src, _srclen);
 		off += *s - p + 1;
 	}
 }
@@ -277,21 +277,21 @@ static void jstr_insertaftallc_mem(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_insertaft_mem_f(char *JSTR_RST const s,
-				 const char *JSTR_RST const searc,
-				 const char *JSTR_RST const src,
+				 const char *JSTR_RST const _searc,
+				 const char *JSTR_RST const _src,
 				 const size_t sz,
-				 const size_t searclen,
-				 const size_t srclen) JSTR_NOEXCEPT
+				 const size_t _searclen,
+				 const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (searclen) {
+	switch (_searclen) {
 	case 0: return;
 	case 1:
-		jstr_insertaftc_mem_f(s, *searc, src, sz, srclen);
+		jstr_insertaftc_mem_f(s, *_searc, _src, sz, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, searc, searclen);
+		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, _searc, _searclen);
 		if (p)
-			jstr_insert_mem_f(s, p - s + searclen, src, srclen);
+			jstr_insert_mem_f(s, p - s + _searclen, _src, _srclen);
 		return;
 	}
 	}
@@ -305,20 +305,20 @@ JSTR_NONNULL_ALL
 static void jstr_insertaft_mem(char **JSTR_RST const s,
 			       size_t *JSTR_RST const sz,
 			       size_t *JSTR_RST const cap,
-			       const char *JSTR_RST const searc,
-			       const char *JSTR_RST const src,
-			       const size_t searclen,
-			       const size_t srclen) JSTR_NOEXCEPT
+			       const char *JSTR_RST const _searc,
+			       const char *JSTR_RST const _src,
+			       const size_t _searclen,
+			       const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (searclen) {
+	switch (_searclen) {
 	case 0: return;
 	case 1:
-		jstr_insertaftc_mem(s, sz, cap, *searc, src, srclen);
+		jstr_insertaftc_mem(s, sz, cap, *_searc, _src, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, searc, searclen);
+		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, _searc, _searclen);
 		if (p)
-			jstr_insert_mem(s, sz, cap, p - *s + searclen, src, srclen);
+			jstr_insert_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
 		return;
 	}
 	}
@@ -332,22 +332,22 @@ JSTR_NONNULL_ALL
 static void jstr_insertaftall_mem(char **JSTR_RST const s,
 				  size_t *JSTR_RST const sz,
 				  size_t *JSTR_RST const cap,
-				  const char *JSTR_RST const searc,
-				  const char *JSTR_RST const src,
-				  const size_t searclen,
-				  const size_t srclen) JSTR_NOEXCEPT
+				  const char *JSTR_RST const _searc,
+				  const char *JSTR_RST const _src,
+				  const size_t _searclen,
+				  const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (searclen) {
+	switch (_searclen) {
 	case 0: return;
 	case 1:
-		jstr_insertaftallc_mem(s, sz, cap, *searc, src, srclen);
+		jstr_insertaftallc_mem(s, sz, cap, *_searc, _src, _srclen);
 		return;
 	default: {
 		size_t off = 0;
 		const char *p;
-		while ((p = (char *)PRIVATE_JSTR_MEMMEM(*s + off, *sz - off, searc, searclen))) {
-			jstr_insert_mem(s, sz, cap, p - *s + searclen, src, srclen);
-			off += *s - p + searclen;
+		while ((p = (char *)PRIVATE_JSTR_MEMMEM(*s + off, *sz - off, _searc, _searclen))) {
+			jstr_insert_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
+			off += *s - p + _searclen;
 		}
 		return;
 	}
@@ -366,15 +366,15 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *jstr_slip_mem_p_f(char *JSTR_RST const s,
 			       const size_t at,
-			       const char *JSTR_RST const src,
+			       const char *JSTR_RST const _src,
 			       const size_t sz,
-			       const size_t srclen) JSTR_NOEXCEPT
+			       const size_t _srclen) JSTR_NOEXCEPT
 {
-	memmove(s + at + srclen,
+	memmove(s + at + _srclen,
 		s + at,
 		sz - at + 1);
-	memcpy(s + at, src, srclen);
-	return s + sz + srclen;
+	memcpy(s + at, _src, _srclen);
+	return s + sz + _srclen;
 }
 
 /*
@@ -386,27 +386,27 @@ static void jstr_slip_mem(char **JSTR_RST const s,
 			  size_t *JSTR_RST const sz,
 			  size_t *JSTR_RST const cap,
 			  const size_t at,
-			  const char *JSTR_RST const src,
-			  const size_t srclen) JSTR_NOEXCEPT
+			  const char *JSTR_RST const _src,
+			  const size_t _srclen) JSTR_NOEXCEPT
 {
-	if (*cap > *sz + srclen + 1) {
-		memmove(*s + at + srclen,
+	if (*cap > *sz + _srclen + 1) {
+		memmove(*s + at + _srclen,
 			*s + at,
 			*sz - at + 1);
-		memcpy(*s + at, src, srclen);
+		memcpy(*s + at, _src, _srclen);
 	} else {
-		JSTR_GROW(*cap, *sz + srclen + 1);
+		JSTR_GROW(*cap, *sz + _srclen + 1);
 		char *const tmp = (char *)malloc(*cap);
 		JSTR_MALLOC_ERR(tmp, return);
 		memcpy(tmp, *s, at);
-		memcpy(tmp + at, src, srclen);
-		memcpy(tmp + at + srclen,
+		memcpy(tmp + at, _src, _srclen);
+		memcpy(tmp + at + _srclen,
 		       *s + at,
 		       *sz - at + 1);
 		free(*s);
 		*s = tmp;
 	}
-	*sz += srclen;
+	*sz += _srclen;
 }
 
 /*
@@ -421,13 +421,13 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *jstr_slipaftc_mem_p_f(char *JSTR_RST const s,
 				   const int c,
-				   const char *JSTR_RST const src,
+				   const char *JSTR_RST const _src,
 				   const size_t sz,
-				   const size_t srclen) JSTR_NOEXCEPT
+				   const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(s, c, sz);
 	if (p)
-		return jstr_slip_mem_p_f(s, p - s, src, sz - (p - s), srclen);
+		return jstr_slip_mem_p_f(s, p - s, _src, sz - (p - s), _srclen);
 	return s + sz;
 }
 
@@ -440,12 +440,12 @@ static void jstr_slipaftc_mem(char **JSTR_RST const s,
 			      size_t *JSTR_RST const sz,
 			      size_t *JSTR_RST const cap,
 			      const int c,
-			      const char *JSTR_RST const src,
-			      const size_t srclen) JSTR_NOEXCEPT
+			      const char *JSTR_RST const _src,
+			      const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(*s, c, *sz);
 	if (p)
-		jstr_slip_mem(s, sz, cap, p - *s + 1, src, srclen);
+		jstr_slip_mem(s, sz, cap, p - *s + 1, _src, _srclen);
 }
 
 /*
@@ -456,14 +456,14 @@ JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 static char *jstr_slipaftallc_mem_p_f(char *JSTR_RST const s,
 				      const int c,
-				      const char *JSTR_RST const src,
+				      const char *JSTR_RST const _src,
 				      size_t sz,
-				      const size_t srclen) JSTR_NOEXCEPT
+				      const size_t _srclen) JSTR_NOEXCEPT
 {
 	size_t off = 0;
 	const char *p;
 	while ((p = (char *)memchr(s + off, c, sz - off))) {
-		sz = jstr_slip_mem_p_f(s, p - s, src, sz, srclen) - s;
+		sz = jstr_slip_mem_p_f(s, p - s, _src, sz, _srclen) - s;
 		off += p - s + 1;
 	}
 	return s + sz;
@@ -478,13 +478,13 @@ static void jstr_slipaftallc_mem(char **JSTR_RST const s,
 				 size_t *JSTR_RST const sz,
 				 size_t *JSTR_RST const cap,
 				 const int c,
-				 const char *JSTR_RST const src,
-				 const size_t srclen) JSTR_NOEXCEPT
+				 const char *JSTR_RST const _src,
+				 const size_t _srclen) JSTR_NOEXCEPT
 {
 	size_t off = 0;
 	const char *p;
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
-		jstr_slip_mem(s, sz, cap, p - *s + 1, src, srclen);
+		jstr_slip_mem(s, sz, cap, p - *s + 1, _src, _srclen);
 		off += p - *s + 1;
 	}
 }
@@ -497,19 +497,19 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *jstr_slipaft_mem_f(char *JSTR_RST const s,
-				const char *JSTR_RST const searc,
-				const char *JSTR_RST const src,
+				const char *JSTR_RST const _searc,
+				const char *JSTR_RST const _src,
 				const size_t sz,
-				const size_t searclen,
-				const size_t srclen) JSTR_NOEXCEPT
+				const size_t _searclen,
+				const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (searclen) {
+	switch (_searclen) {
 	case 0: return s + sz;
-	case 1: return jstr_slipaftc_mem_p_f(s, *searc, src, sz, srclen);
+	case 1: return jstr_slipaftc_mem_p_f(s, *_searc, _src, sz, _srclen);
 	default: {
-		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, searc, searclen);
+		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, _searc, _searclen);
 		if (p)
-			return jstr_slip_mem_p_f(s, p - s, src, sz, srclen);
+			return jstr_slip_mem_p_f(s, p - s, _src, sz, _srclen);
 		return s + sz;
 	}
 	}
@@ -523,20 +523,20 @@ JSTR_NONNULL_ALL
 static void jstr_slipaft_mem(char **JSTR_RST const s,
 			     size_t *JSTR_RST const sz,
 			     size_t *JSTR_RST const cap,
-			     const char *JSTR_RST const searc,
-			     const char *JSTR_RST const src,
-			     const size_t searclen,
-			     const size_t srclen) JSTR_NOEXCEPT
+			     const char *JSTR_RST const _searc,
+			     const char *JSTR_RST const _src,
+			     const size_t _searclen,
+			     const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (searclen) {
+	switch (_searclen) {
 	case 0: return;
 	case 1:
-		jstr_slipaftc_mem(s, sz, cap, *searc, src, srclen);
+		jstr_slipaftc_mem(s, sz, cap, *_searc, _src, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, searc, searclen);
+		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, _searc, _searclen);
 		if (p)
-			jstr_slip_mem(s, sz, cap, p - *s + searclen, src, srclen);
+			jstr_slip_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
 		return;
 	}
 	}
@@ -549,23 +549,23 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 static char *jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
-				     const char *JSTR_RST const searc,
-				     const char *JSTR_RST const src,
+				     const char *JSTR_RST const _searc,
+				     const char *JSTR_RST const _src,
 				     size_t sz,
-				     const size_t searclen,
-				     const size_t srclen) JSTR_NOEXCEPT
+				     const size_t _searclen,
+				     const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (searclen) {
+	switch (_searclen) {
 	case 0:
 		return s + sz;
 	case 1:
-		return jstr_slipaftallc_mem_p_f(s, *searc, src, sz, srclen);
+		return jstr_slipaftallc_mem_p_f(s, *_searc, _src, sz, _srclen);
 	default: {
 		size_t off = 0;
 		const char *p;
-		while ((p = (char *)PRIVATE_JSTR_MEMMEM(s + off, sz - off, searc, searclen))) {
-			sz = jstr_slip_mem_p_f(s, p - s, src, sz, srclen) - s;
-			off += p - s + searclen;
+		while ((p = (char *)PRIVATE_JSTR_MEMMEM(s + off, sz - off, _searc, _searclen))) {
+			sz = jstr_slip_mem_p_f(s, p - s, _src, sz, _srclen) - s;
+			off += p - s + _searclen;
 		}
 		return s + sz;
 	}
@@ -580,23 +580,23 @@ JSTR_NONNULL_ALL
 static void jstr_slipaftall_mem(char **JSTR_RST const s,
 				size_t *JSTR_RST const sz,
 				size_t *JSTR_RST const cap,
-				const char *JSTR_RST const searc,
-				const char *JSTR_RST const src,
-				const size_t searclen,
-				const size_t srclen) JSTR_NOEXCEPT
+				const char *JSTR_RST const _searc,
+				const char *JSTR_RST const _src,
+				const size_t _searclen,
+				const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (searclen) {
+	switch (_searclen) {
 	case 0:
 		return;
 	case 1:
-		jstr_slipaftallc_mem(s, sz, cap, *searc, src, srclen);
+		jstr_slipaftallc_mem(s, sz, cap, *_searc, _src, _srclen);
 		return;
 	default: {
 		size_t off = 0;
 		const char *p;
-		while ((p = (char *)PRIVATE_JSTR_MEMMEM(*s + off, *sz - off, searc, searclen))) {
-			jstr_slip_mem(s, sz, cap, p - *s + searclen, src, srclen);
-			off += p - *s + searclen;
+		while ((p = (char *)PRIVATE_JSTR_MEMMEM(*s + off, *sz - off, _searc, _searclen))) {
+			jstr_slip_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
+			off += p - *s + _searclen;
 		}
 	}
 	}
@@ -614,12 +614,12 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_endswith_mem_f(const char *JSTR_RST const hs,
-			       const char *JSTR_RST const ne,
-			       const size_t hsz,
-			       const size_t nelen) JSTR_NOEXCEPT
+static int jstr_endswith_mem_f(const char *JSTR_RST const _hs,
+			       const char *JSTR_RST const _ne,
+			       const size_t _hsz,
+			       const size_t _nelen) JSTR_NOEXCEPT
 {
-	return memcmp(hs + hsz - nelen, ne, nelen);
+	return memcmp(_hs + _hsz - _nelen, _ne, _nelen);
 }
 
 /*
@@ -632,36 +632,38 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_endswith_mem(const char *JSTR_RST const hs,
-			     const char *JSTR_RST const ne,
-			     const size_t hsz,
-			     const size_t nelen) JSTR_NOEXCEPT
+static int jstr_endswith_mem(const char *JSTR_RST const _hs,
+			     const char *JSTR_RST const _ne,
+			     const size_t _hsz,
+			     const size_t _nelen) JSTR_NOEXCEPT
 {
-	return (hsz < nelen) ? 1 : memcmp(hs + hsz - nelen, ne, nelen);
+	return (_hsz < _nelen) ? 1 : memcmp(_hs + _hsz - _nelen, _ne, _nelen);
 }
 
 /*
   Converts int to string.
   Return value:
-  new pointer to '\0' in dst.
+  new pointer to '\0' in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_itoa(char *JSTR_RST dst, int num, unsigned char base)
+static char *jstr_itoa(char *JSTR_RST _dst,
+		       int _num,
+		       unsigned char _base)
 {
 #define PRIVATE_JSTR_NUMTOSTR(max_digits)                                       \
 	do {                                                                    \
-		unsigned char *d = (unsigned char *)dst;                        \
+		unsigned char *d = (unsigned char *)_dst;                       \
 		unsigned char sbuf[max_digits];                                 \
 		unsigned char *JSTR_RST s = (unsigned char *)sbuf;              \
-		unsigned char neg = (num < 0) ? (num = -num, 1) : 0;            \
+		unsigned char neg = (_num < 0) ? (_num = -_num, 1) : 0;         \
 		unsigned char *const end = (unsigned char *)s + max_digits - 1; \
 		s = end;                                                        \
 		do                                                              \
-			*s-- = num % base + '0';                                \
-		while (num /= 10);                                              \
+			*s-- = _num % _base + '0';                              \
+		while (_num /= 10);                                             \
 		if (neg)                                                        \
 			*s = '-';                                               \
 		else                                                            \
@@ -677,13 +679,15 @@ static char *jstr_itoa(char *JSTR_RST dst, int num, unsigned char base)
 /*
   Converts long to string.
   Return value:
-  new pointer to '\0' in dst.
+  new pointer to '\0' in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_ltoa(char *JSTR_RST dst, long num, unsigned char base)
+static char *jstr_ltoa(char *JSTR_RST _dst,
+		       long _num,
+		       unsigned char _base)
 {
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
@@ -691,13 +695,15 @@ static char *jstr_ltoa(char *JSTR_RST dst, long num, unsigned char base)
 /*
   Converts long long to string.
   Return value:
-  new pointer to '\0' in dst.
+  new pointer to '\0' in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_lltoa(char *JSTR_RST dst, long long num, unsigned char base)
+static char *jstr_lltoa(char *JSTR_RST _dst,
+			long long _num,
+			unsigned char _base)
 {
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
@@ -705,24 +711,26 @@ static char *jstr_lltoa(char *JSTR_RST dst, long long num, unsigned char base)
 /*
   Converts unsigned int to string.
   Return value:
-  new pointer to '\0' in dst.
+  new pointer to '\0' in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_utoa(char *JSTR_RST dst, unsigned int num, unsigned char base)
+static char *jstr_utoa(char *JSTR_RST _dst,
+		       unsigned int _num,
+		       unsigned char _base)
 {
 #define PRIVATE_JSTR_UNUMTOSTR(max_digits)                     \
 	do {                                                   \
-		unsigned char *d = (unsigned char *)dst;       \
+		unsigned char *d = (unsigned char *)_dst;      \
 		unsigned char sbuf[max_digits];                \
 		unsigned char *JSTR_RST s = sbuf;              \
 		unsigned char *const end = s + max_digits - 1; \
 		s = end;                                       \
 		do                                             \
-			*s-- = num % base + '0';               \
-		while (num /= 10);                             \
+			*s-- = _num % _base + '0';             \
+		while (_num /= 10);                            \
 		++s;                                           \
 		while (s <= end)                               \
 			*d++ = *s++;                           \
@@ -735,13 +743,15 @@ static char *jstr_utoa(char *JSTR_RST dst, unsigned int num, unsigned char base)
 /*
   Converts unsigned long to string.
   Return value:
-  new pointer to '\0' in dst.
+  new pointer to '\0' in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_ultoa(char *JSTR_RST dst, unsigned long num, unsigned char base)
+static char *jstr_ultoa(char *JSTR_RST _dst,
+			unsigned long _num,
+			unsigned char _base)
 {
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_DIGITS);
 }
@@ -749,13 +759,15 @@ static char *jstr_ultoa(char *JSTR_RST dst, unsigned long num, unsigned char bas
 /*
   Converts unsigned long long to string.
   Return value:
-  new pointer to '\0' in dst.
+  new pointer to '\0' in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned char base)
+static char *jstr_ulltoa(char *JSTR_RST _dst,
+			 unsigned long long _num,
+			 unsigned char _base)
 {
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);
 }

@@ -408,6 +408,36 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 }
 
 /*
+  Remove all HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_RETURNS_NONNULL
+static char *jstr_rmall_p(char *JSTR_RST s,
+			  const char *JSTR_RST const _searc,
+			  const size_t _searclen) JSTR_NOEXCEPT
+{
+	return jstr_rmall_mem_p_constexpr(s, _searc, strlen(s), _searclen);
+}
+
+/*
+  Remove all HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
+JSTR_NONNULL_ALL
+JSTR_INLINE_IF_CONSTEXPR
+static void jstr_rmall_j(jstr_t *JSTR_RST const j,
+			  const char *JSTR_RST const _searc,
+			  const size_t _searclen) JSTR_NOEXCEPT
+{
+	j->size = jstr_rmall_mem_p_constexpr(j->data, _searc, j->size, _searclen) - j->data;
+}
+
+/*
   Replace first SEARCH in REPLACE.
 */
 JSTR_INLINE
