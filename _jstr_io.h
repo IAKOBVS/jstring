@@ -37,8 +37,7 @@ static int jstr_alloc_file(char **JSTR_RST const s,
 		goto _ERR_CLOSE;
 	*cap = _st->st_size * 2;
 	*s = (char *)malloc(*cap);
-	if (unlikely(!*s))
-		goto _ERR_CLOSE;
+	JSTR_MALLOC_ERR(*s, goto _ERR_CLOSE);
 	fread(*s, 1, _st->st_size, _fp);
 	*(*s + _st->st_size) = '\0';
 	*sz = _st->st_size;
