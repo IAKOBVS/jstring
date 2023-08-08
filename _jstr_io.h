@@ -1,0 +1,57 @@
+#ifndef JSTR_IO_H_DEF
+#define JSTR_IO_H_DEF
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cpluslus */
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#ifdef __cplusplus
+}
+#endif /* __cpluslus */
+
+#include "_jstr_macros.h"
+
+#ifdef __cplusplus
+namespace jstr {
+#endif /* __cpluslus */
+
+/*
+   Return value:
+   0 if no errors;
+*/
+JSTR_INLINE
+static int jstr_alloc_file(char **JSTR_RST const s,
+			   size_t *JSTR_RST sz,
+			   size_t *JSTR_RST cap,
+			   const char *JSTR_RST _fname,
+			   FILE *JSTR_RST _fp,
+			   struct stat *JSTR_RST const _st)
+{
+	_fp = fopen(_fname, "r");
+	if (unlikely(!_fp))
+		goto _ERR;
+	if (unlikely(stat(_fname, _st)))
+		goto _ERR_CLOSE;
+	*cap = _st->st_size * 2;
+	*s = (char *)malloc(*cap);
+	if (unlikely(!*s))
+		goto _ERR_CLOSE;
+	fread(*s, 1, _st->st_size, _fp);
+	*(*s + _st->st_size) = '\0';
+	*sz = _st->st_size;
+	fclose(_fp);
+	return 0;
+_ERR_CLOSE:
+	fclose(_fp);
+_ERR:
+	perror("");
+	return 1;
+}
+
+#ifdef __cplusplus
+}
+#endif /* __cpluslus */
+
+#endif /* JSTR_IO_H_DEF */
