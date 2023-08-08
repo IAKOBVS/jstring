@@ -57,7 +57,7 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 
 namespace jstr {
 
-namespace priv {
+namespace __private {
 
 JSTR_WARN_UNUSED
 JSTR_INLINE
@@ -121,7 +121,7 @@ cat_loop_assign(char **JSTR_RST const dst,
 	cat_loop_assign(dst, std::forward<StrArgs>(args)...);
 }
 
-} /* namespace priv */
+} /* namespace __private */
 
 /*
    Insert multiple strings to S.
@@ -137,12 +137,12 @@ alloc_cat(char **JSTR_RST const s,
 	  Str &&arg,
 	  StrArgs &&...args) JSTR_NOEXCEPT
 {
-	*sz = priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*sz = __private::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*cap = *sz * 2;
 	*s = (char *)malloc(*cap);
 	JSTR_MALLOC_ERR(*s, return);
 	char *p = *s;
-	priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	__private::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
 }
 
@@ -160,8 +160,8 @@ alloc_cat_f(char *JSTR_RST const s,
 	    Str &&arg,
 	    StrArgs &&...args) JSTR_NOEXCEPT
 {
-	*sz = priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	priv::cat_loop_assign(&s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*sz = __private::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	__private::cat_loop_assign(&s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
 
@@ -180,11 +180,11 @@ cat(char **JSTR_RST const s,
     Str &&arg,
     StrArgs &&...args) JSTR_NOEXCEPT
 {
-	const size_t newsz = *sz + priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *sz + __private::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	if (*cap < *sz + 1)
 		JSTR_REALLOC(*s, *cap, newsz + 1, return);
 	char *p = *s + *sz;
-	priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	__private::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
 	*sz = newsz;
 }
@@ -204,8 +204,8 @@ cat_f(char *JSTR_RST s,
       StrArgs &&...args) JSTR_NOEXCEPT
 {
 	s += *sz;
-	*sz += priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	priv::cat_loop_assign(&s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*sz += __private::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	__private::cat_loop_assign(&s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
 } /* namespace jstr */
