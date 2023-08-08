@@ -486,7 +486,7 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 			*s = tmp;
 		}
 		off = rm.rm_eo + rplclen - ptnlen;
-		if (unlikely(*sz += rplclen - ptnlen) == rplclen)
+		if (unlikely((*sz += rplclen - ptnlen) == rplclen))
 			return;
 	}
 }

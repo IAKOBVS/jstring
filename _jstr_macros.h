@@ -364,6 +364,11 @@
 #	else
 #		define JSTR_CONSTANT_P(p) 0
 #	endif /* __has_builtin(__builtin_constant_p) */
+#	if __has_builtin(deprecated)
+#		define JSTR_DEPRECATED(msg, replacement) __attribute__((deprecated(msg, replacement)))
+#	else
+#		define JSTR_DEPRECATED(msg, replacement)
+#	endif /* JSTR_DEPRECATED */
 
 #elif defined(_MSC_VER)
 
@@ -381,6 +386,7 @@
 #	define JSTR_RETURNS_NONNULL
 #	define JSTR_CONSTANT_P(p) 0
 #	define JSTR_WARN_UNUSED
+#	define JSTR_DEPRECATED(msg, replacement)
 
 #else
 
@@ -397,6 +403,7 @@
 #	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #	define JSTR_CONSTANT_P(p) 0
 #	define JSTR_WARN_UNUSED
+#	define JSTR_DEPRECATED(msg, replacement)
 
 #endif /* __GNUC__ || __clang__ || _MSC_VER */
 

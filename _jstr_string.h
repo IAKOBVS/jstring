@@ -601,8 +601,8 @@ static char *jstr_memcasemem(const char *JSTR_RST const hs,
 }
 
 #if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC diagnostic ignored "-Wunused-parameter"
-#	pragma GCC diagnostic push
+/* #	pragma GCC diagnostic ignored "-Wunused-parameter" */
+/* #	pragma GCC diagnostic push */
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
@@ -617,6 +617,9 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+#ifdef JSTR_HAS_STRCASESTR
+JSTR_DEPRECATED("strcasestr is available! hslen and nelen are wasted.", strcasestr)
+#endif /* JSTR_HAS_STRCASESTR */
 static char *jstr_strcasestr_mem(const char *JSTR_RST const hs,
 				 const size_t hslen,
 				 const char *JSTR_RST const ne,
@@ -630,7 +633,7 @@ static char *jstr_strcasestr_mem(const char *JSTR_RST const hs,
 }
 
 #if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC diagnostic pop
+/* #	pragma GCC diagnostic pop */
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
@@ -687,10 +690,11 @@ static char *jstr_strcasestr(const char *JSTR_RST const hs,
 
 #undef PRIVATE_JSTR_MEMRMEM
 #undef PRIVATE_JSTR_STRSTRCASE
+#undef JSTR_GLOBAL
 
 #if defined(__GNUC__) || defined(__clang__)
-#pragma GCC poison private_jstr_memrmem
-#pragma GCC poison private_jstr_strcasestr_mem3
+#	pragma GCC poison private_jstr_memrmem
+#	pragma GCC poison private_jstr_strcasestr_mem3
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 #endif /* JSTR_STRING_H_DEF */
