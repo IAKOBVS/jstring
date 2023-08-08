@@ -93,7 +93,8 @@ static int jstr_reg_comp(regex_t *JSTR_RST const preg,
 	return ret;
 }
 
-JSTR_NONNULL_ALL
+JSTR_NONNULL(1)
+JSTR_NONNULL(2)
 JSTR_INLINE
 static int jstr_reg_exec(const regex_t *JSTR_RST preg,
 			 const char *JSTR_RST const s,
