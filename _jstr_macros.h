@@ -574,7 +574,11 @@ case ' ':
 #	define JSTR_HAS_STRNCASECMP
 #endif
 
-#if defined(_GNU_SOURCE)
+#ifdef _XOPEN_SOURCE
+#	define JSTR_HAS_MEMCCPY
+#endif /* Misc || Xopen */
+
+#ifdef _GNU_SOURCE
 #	define JSTR_HAS_MEMMEM
 #	define JSTR_HAS_MEMRCHR
 #	define JSTR_HAS_STRCHRNUL
@@ -590,7 +594,7 @@ case ' ':
 #	define JSTR_HAS_WMEMPCPY
 #	define JSTR_HAS_MEMPCPY
 #	define JSTR_HAS_STRCASESTR
-#endif /* JSTR_HAS_MEMRCHR__ */
+#endif /* Gnu */
 
 #if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
 || (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE)                           \
@@ -600,7 +604,7 @@ case ' ':
 #	define JSTR_HAS_GETCHAR_UNLOCKED
 #	define JSTR_HAS_PUTC_UNLOCKED
 #	define JSTR_HAS_PUTCHAR_UNLOCKED
-#endif /* __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 24 */
+#endif /* Posix || Bsd  */
 
 #if (__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 19))
 #	ifdef _DEFAULT_SOURCE
@@ -623,18 +627,14 @@ case ' ':
 #		define JSTR_HAS_FERROR_UNLOCKED
 #		define JSTR_HAS_FILENO_UNLOCKED
 #		define JSTR_HAS_FFLUSH_UNLOCKED
-#	endif /* _DEFAULT_SOURCE || _SVID_SOURCE || _BSD_SOURCE */
-#endif /* */
+#	endif
+#endif /* Default || Svid || Bsd */
 
 #if ((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) \
 || defined(_GNU_SOURCE)
 #	define JSTR_HAS_STPCPY
-#endif /* JSTR_HAS_STPCPY */
-
-#if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && __GLIBC_MINOR__ >= 10) && defined(_POSIX_C_SOURCE)) \
-|| defined(_GNU_SOURCE)
 #	define JSTR_HAS_STRNLEN
-#endif /* JSTR_HAS_STRNLEN */
+#endif /* Posix || Gnu */
 
 #define JSTR_RST JSTR_RESTRICT
 

@@ -680,6 +680,46 @@ static char *jstr_strcasestr(const char *JSTR_RST const hs,
 #endif /* JSTR_HAS_STRCASESTR */
 }
 
+/* Copy no more than N bytes of SRC to DEST, stopping when C is found.
+   Return the position in DEST one byte past where C was copied, or
+   NULL if C was not found in the first N bytes of SRC.  */
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static void *jstr_memccpy(void *JSTR_RST dst,
+			  const void *JSTR_RST src,
+			  int c,
+			  size_t n) JSTR_NOEXCEPT
+{
+#ifdef JSTR_HAS_MEMCCPY
+	return memccpy(dst, src, c, n);
+#else
+	void *p = memchr(src, c, n);
+	if (p)
+		return jstr_mempcpy(dst, src, p - src + 1);
+	memcpy(dst, src, n);
+	return NULL;
+#endif /* JSTR_HAS_MEMCPY */
+}
+
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+JSTR_RETURNS_NONNULL
+static void *jstr_strchrnul(const char *JSTR_RST const s,
+			    const int c)
+{
+#ifdef JSTR_HAS_STRCHRNUL
+	return (char *)JSTR_GLOBAL(strchrnul(s, c));
+#else
+	const size_t n = strlen(s);
+	void *p = (void *)memchr(s, c, n);
+	if (p)
+		return p;
+	return (void *)(s + n);
+#endif /* JSTR_HAS_STRCHRNUL */
+}
+
 #ifdef __cplusplus
 } /* namespace jstr */
 #endif /* JSTR_NAMESPACE */

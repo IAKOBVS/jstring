@@ -913,38 +913,38 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 #undef JSTR_ASCII_SIZE
 
 #if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC poison jstr_memmem2
-#	pragma GCC poison jstr_memmem3
-#	pragma GCC poison jstr_memmem4
-#	pragma GCC poison jstr_memmem5
-#	pragma GCC poison jstr_next_pow2_32
-#	pragma GCC poison jstr_next_pow2_32_constexpr
-#	pragma GCC poison jstr_next_pow2_64
-#	pragma GCC poison jstr_next_pow2_64_constexpr
-#	pragma GCC poison jstr_replaceall_f
-#	pragma GCC poison jstr_replaceall_grow
-#	pragma GCC poison jstr_replaceall_memmem1
-#	pragma GCC poison jstr_replaceall_memmem2
-#	pragma GCC poison jstr_replaceall_memmem3
-#	pragma GCC poison jstr_replaceall_memmem4
-#	pragma GCC poison jstr_replaceall_memmem5
-#	pragma GCC poison jstr_replacenc_memmem1
-#	pragma GCC poison jstr_replacen_f
-#	pragma GCC poison jstr_replacen_grow
-#	pragma GCC poison jstr_replacen_memmem2
-#	pragma GCC poison jstr_replacen_memmem3
-#	pragma GCC poison jstr_replacen_memmem4
-#	pragma GCC poison jstr_replacen_memmem5
-#	pragma GCC poison jstr_rmall_memmem1
-#	pragma GCC poison jstr_rmall_memmem2
-#	pragma GCC poison jstr_rmall_memmem3
-#	pragma GCC poison jstr_rmall_memmem4
-#	pragma GCC poison jstr_rmall_memmem5
-#	pragma GCC poison jstr_rmn_memmem1
-#	pragma GCC poison jstr_rmn_memmem2
-#	pragma GCC poison jstr_rmn_memmem3
-#	pragma GCC poison jstr_rmn_memmem4
-#	pragma GCC poison jstr_rmn_memmem5
+#	pragma GCC poison private_jstr_memmem2
+#	pragma GCC poison private_jstr_memmem3
+#	pragma GCC poison private_jstr_memmem4
+#	pragma GCC poison private_jstr_memmem5
+#	pragma GCC poison private_jstr_next_pow2_32
+#	pragma GCC poison private_jstr_next_pow2_32_constexpr
+#	pragma GCC poison private_jstr_next_pow2_64
+#	pragma GCC poison private_jstr_next_pow2_64_constexpr
+#	pragma GCC poison private_jstr_replaceall_f
+#	pragma GCC poison private_jstr_replaceall_grow
+#	pragma GCC poison private_jstr_replaceall_memmem1
+#	pragma GCC poison private_jstr_replaceall_memmem2
+#	pragma GCC poison private_jstr_replaceall_memmem3
+#	pragma GCC poison private_jstr_replaceall_memmem4
+#	pragma GCC poison private_jstr_replaceall_memmem5
+#	pragma GCC poison private_jstr_replacenc_memmem1
+#	pragma GCC poison private_jstr_replacen_f
+#	pragma GCC poison private_jstr_replacen_grow
+#	pragma GCC poison private_jstr_replacen_memmem2
+#	pragma GCC poison private_jstr_replacen_memmem3
+#	pragma GCC poison private_jstr_replacen_memmem4
+#	pragma GCC poison private_jstr_replacen_memmem5
+#	pragma GCC poison private_jstr_rmall_memmem1
+#	pragma GCC poison private_jstr_rmall_memmem2
+#	pragma GCC poison private_jstr_rmall_memmem3
+#	pragma GCC poison private_jstr_rmall_memmem4
+#	pragma GCC poison private_jstr_rmall_memmem5
+#	pragma GCC poison private_jstr_rmn_memmem1
+#	pragma GCC poison private_jstr_rmn_memmem2
+#	pragma GCC poison private_jstr_rmn_memmem3
+#	pragma GCC poison private_jstr_rmn_memmem4
+#	pragma GCC poison private_jstr_rmn_memmem5
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 #endif /* JSTR_H_REPLACE_DEF */
