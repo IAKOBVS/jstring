@@ -178,8 +178,7 @@ static int jstr_reg_match_now(const char *JSTR_RST const s,
    Returns return value of regexec.
    Stores offset of matched pattern in pmatch.
 */
-JSTR_NONNULL(1)
-JSTR_NONNULL(2)
+JSTR_NONNULL_ALL
 JSTR_INLINE
 static int jstr_reg_search(const char *JSTR_RST const s,
 			   regex_t *JSTR_RST const preg,
@@ -194,8 +193,7 @@ static int jstr_reg_search(const char *JSTR_RST const s,
    Returns return value of regexec or regcomp if it fails.
    Stores offset of matched pattern in pmatch.
 */
-JSTR_NONNULL(1)
-JSTR_NONNULL(2)
+JSTR_NONNULL_ALL
 JSTR_INLINE
 static int jstr_reg_search_now(const char *JSTR_RST const s,
 			       regex_t *JSTR_RST const preg,
