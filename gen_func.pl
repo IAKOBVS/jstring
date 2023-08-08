@@ -161,6 +161,8 @@ sub gen_nonmem_funcs
 				if (/(\w*)$G_LEN_PTN/) {
 					my $var = $1;
 					$decl =~ s/,[^,]*$G_LEN_PTN//o;
+					$params =~ /(\w*$var\w*)\s*,/;
+					$var = $1;
 					$_ = "strlen($var)";
 				}
 			} else {

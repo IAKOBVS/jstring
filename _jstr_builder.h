@@ -121,12 +121,12 @@ JSTR_NONNULL_ALL
 static void jstr_alloc(char **JSTR_RST const s,
 		       size_t *JSTR_RST const sz,
 		       size_t *JSTR_RST const cap,
-		       const size_t top) JSTR_NOEXCEPT
+		       const size_t _top) JSTR_NOEXCEPT
 {
 	*sz = 0;
-	*s = (char *)malloc(top * JSTR_GROWTH_MULTIPLIER);
+	*s = (char *)malloc(_top * JSTR_GROWTH_MULTIPLIER);
 	JSTR_MALLOC_ERR(*s, return);
-	*cap = top * JSTR_GROWTH_MULTIPLIER;
+	*cap = _top * JSTR_GROWTH_MULTIPLIER;
 }
 
 JSTR_INLINE
@@ -134,12 +134,12 @@ JSTR_NONNULL_ALL
 static void jstr_allocexact(char **JSTR_RST const s,
 			    size_t *JSTR_RST const sz,
 			    size_t *JSTR_RST const cap,
-			    const size_t top) JSTR_NOEXCEPT
+			    const size_t _top) JSTR_NOEXCEPT
 {
 	*sz = 0;
-	*s = (char *)malloc(top);
+	*s = (char *)malloc(_top);
 	JSTR_MALLOC_ERR(*s, return);
-	*cap = top;
+	*cap = _top;
 }
 
 JSTR_INLINE
@@ -147,14 +147,14 @@ JSTR_NONNULL_ALL
 static void jstr_allocexact_append_mem(char **JSTR_RST const s,
 				       size_t *JSTR_RST const sz,
 				       size_t *JSTR_RST const cap,
-				       const char *JSTR_RST const src,
-				       const size_t srclen) JSTR_NOEXCEPT
+				       const char *JSTR_RST const _src,
+				       const size_t _srclen) JSTR_NOEXCEPT
 {
-	jstr_allocexact(s, sz, cap, srclen + 1);
+	jstr_allocexact(s, sz, cap, _srclen + 1);
 	if (unlikely(!*s))
 		return;
-	*sz = srclen;
-	memcpy(*s, src, srclen + 1);
+	*sz = _srclen;
+	memcpy(*s, _src, _srclen + 1);
 }
 
 JSTR_INLINE
@@ -162,14 +162,14 @@ JSTR_NONNULL_ALL
 static void jstr_alloc_append_mem(char **JSTR_RST const s,
 				  size_t *JSTR_RST const sz,
 				  size_t *JSTR_RST const cap,
-				  const char *JSTR_RST const src,
-				  const size_t srclen) JSTR_NOEXCEPT
+				  const char *JSTR_RST const _src,
+				  const size_t _srclen) JSTR_NOEXCEPT
 {
-	jstr_alloc(s, sz, cap, srclen * JSTR_GROWTH_MULTIPLIER);
+	jstr_alloc(s, sz, cap, _srclen * JSTR_GROWTH_MULTIPLIER);
 	if (unlikely(!*s))
 		return;
-	*sz = srclen;
-	memcpy(*s, src, srclen + 1);
+	*sz = _srclen;
+	memcpy(*s, _src, _srclen + 1);
 }
 
 JSTR_INLINE
@@ -177,14 +177,14 @@ JSTR_NONNULL_ALL
 static void jstr_allocmore_append_mem(char **JSTR_RST const s,
 				  size_t *JSTR_RST const sz,
 				  size_t *JSTR_RST const cap,
-				  const char *JSTR_RST const src,
-				  const size_t srclen) JSTR_NOEXCEPT
+				  const char *JSTR_RST const _src,
+				  const size_t _srclen) JSTR_NOEXCEPT
 {
-	jstr_alloc(s, sz, cap, srclen * JSTR_GROWTH_MULTIPLIER * 2);
+	jstr_alloc(s, sz, cap, _srclen * JSTR_GROWTH_MULTIPLIER * 2);
 	if (unlikely(!*s))
 		return;
-	*sz = srclen;
-	memcpy(*s, src, srclen + 1);
+	*sz = _srclen;
+	memcpy(*s, _src, _srclen + 1);
 }
 
 /*
