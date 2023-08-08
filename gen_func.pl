@@ -53,6 +53,7 @@ $g_in_h = tidy_newlines($g_in_h);
 
 my @LNS = gen_nonmem_funcs($g_in_h);
 my ($out_h, $out_hpp) = gen_struct_funcs(@LNS);
+
 # fix_namespace($out_hpp);
 print_to_file($G_OUT_C, $out_h, $G_OUT_CPP, $out_hpp);
 
@@ -198,10 +199,6 @@ sub gen_struct_funcs
 		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
-
-		# if ($G_FNAME !~ /$G_IGNORE_FILE_NONMEM/) {
-		# 	$skel .= "$decl;\n\n";
-		# }
 		$params =~ s/\)/,/;
 		my $HAS_SZ  = ($params =~ /$G_SIZE_PTN(?:,|\))/o) ? 1 : 0;
 		my $HAS_CAP = ($params =~ /$G_CAP_PTN(?:,|\))/o)  ? 1 : 0;
@@ -298,21 +295,12 @@ sub gen_struct_funcs
 		$out_h   .= $_;
 		$out_hpp .= $_;
 	}
-
-	# if ($skel) {
-	# 	$out_h =~ s/(namespace(?:.|\n)*?\n\n)/$1$skel/;
-	# 	$out_hpp =~ s/(namespace(?:.|\n)*?\n\n)/$1$skel/;
-	# }
 	$out_hpp =~ s/\.h"/.hpp"/g;
 	$out_hpp =~ s/H_DEF/HPP_DEF/g;
 	if ($G_FNAME !~ /$G_IGNORE_FILE/o) {
 		$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/o;
 		$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/o;
 		$out_hpp =~ s/~$G_NMSPC/destructor$G_NMSPC/go;
-		# if ($G_FNAME =~ /string/) {
-		# 	$out_hpp =~ s/return\s*([^j][^s][^t][^r]\w*\(.*?\)\s*;)/return ::$1/g;
-		# 	$out_hpp =~ s/return\s*(\(.*?\))\s*([^j][^s][^t][^r]\w*\(.*?\)\s*;)/return $1::$2/g;
-		# }
 		$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
 		$out_hpp =~ s/destructor$G_NMSPC/~$G_NMSPC/go;
 	}
