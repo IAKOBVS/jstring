@@ -458,6 +458,10 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 				    const regex_t *JSTR_RST const preg,
 				    const int eflags) JSTR_NOEXCEPT
 {
+	if (unlikely(rplclen == 0)) {
+		*sz = jstr_reg_removeall_mem(*s, *sz, preg, eflags) - *s;
+		return;
+	}
 	regmatch_t rm;
 	size_t off = 0;
 	size_t ptnlen;
