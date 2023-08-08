@@ -184,6 +184,24 @@
 
 /* #endif /1* __cplusplus *1/ */
 
+/* #ifdef JSTR_ALIGN_POWER_OF_TWO */
+/* #	ifdef JSTR_64_BIT */
+/* #		ifdef __cplusplus */
+/* #			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x) */
+/* #		else */
+/* #			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x) */
+/* #		endif /1* __cplusplus *1/ */
+/* #	elif JSTR_32_BIT */
+/* #		ifdef __cplusplus */
+/* #			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x) */
+/* #		else */
+/* #			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x) */
+/* #		endif /1* __cplusplus *1/ */
+/* #	else */
+/* #		define JSTR_NEXT_POW2(x) (x) */
+/* #	endif /1* JSTR_64_BIT *1/ */
+/* #endif /1* JSTR_ALIGN_POWER_OF_TWO *1/ */
+
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
 #	define JSTR_HAS_GENERIC
 #endif /* JSTR_HAS_GENERIC */
@@ -272,24 +290,6 @@
 #	define JSTR_ASSERT(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg)
 #endif /* static_assert */
-
-#ifdef JSTR_ALIGN_POWER_OF_TWO
-#	ifdef JSTR_64_BIT
-#		ifdef __cplusplus
-#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
-#		else
-#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
-#		endif /* __cplusplus */
-#	elif JSTR_32_BIT
-#		ifdef __cplusplus
-#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
-#		else
-#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
-#		endif /* __cplusplus */
-#	else
-#		define JSTR_NEXT_POW2(x) (x)
-#	endif /* JSTR_64_BIT */
-#endif /* JSTR_ALIGN_POWER_OF_TWO */
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #	define JSTR_RESTRICT restrict
@@ -405,13 +405,13 @@
 #	define JSTR_WARN_UNUSED
 #	define JSTR_DEPRECATED(msg, replacement)
 
-#endif /* __GNUC__ || __clang__ || _MSC_VER */
+#endif /* Gnuc || clang || msvc */
 
 #if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_MAYBE_UNUSED __attribute__((unused))
 #else
 #	define JSTR_MAYBE_UNUSED
-#endif /* MAYBE_UNUSED */
+#endif /* maybe_unused */
 
 #if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_NOINLINE __attribute__((noinline))
@@ -419,15 +419,15 @@
 #	define JSTR_NOINLINE __declspec(noinline)
 #else
 #	define JSTR_NOINLINE
-#endif /* JSTR_NOINLINE */
+#endif /* noinline */
 
 #ifndef JSTR_MAX
 #	define JSTR_MAX(a, b) (((a) > (b)) ? (a) : (b))
-#endif /* JSTR_MAX */
+#endif /* Max */
 
 #ifndef JSTR_MIN
 #	define JSTR_MIN(a, b) (((a) < (b)) ? (a) : (b))
-#endif /* JSTR_MIN */
+#endif /* Min */
 
 #define JSTR_CASE_VOWEL_LOWER \
 case 'a':                     \
@@ -435,15 +435,13 @@ case 'i':                     \
 case 'u':                     \
 case 'e':                     \
 case 'o':
+
 #define JSTR_CASE_VOWEL_UPPER \
 case 'A':                     \
 case 'I':                     \
 case 'U':                     \
 case 'E':                     \
 case 'O':
-#define JSTR_CASE_VOWEL \
-JSTR_CASE_VOWEL_UPPER:  \
-JSTR_CASE_VOWEL_LOWER:
 
 #define JSTR_CASE_CONSONANT_LOWER \
 case 'b':                         \
@@ -489,9 +487,6 @@ case 'W':                         \
 case 'X':                         \
 case 'Y':                         \
 case 'Z':
-#define JSTR_CASE_CONSONANT \
-JSTR_CASE_CONSONANT_UPPER:  \
-JSTR_CASE_CONSONANT_LOWER:
 
 #define JSTR_CASE_DIGIT \
 case '0':               \
@@ -504,6 +499,7 @@ case '6':               \
 case '7':               \
 case '8':               \
 case '9':
+
 #define JSTR_CASE_LOWER \
 case 'a':               \
 case 'b':               \
@@ -531,6 +527,7 @@ case 'w':               \
 case 'x':               \
 case 'y':               \
 case 'z':
+
 #define JSTR_CASE_UPPER \
 case 'A':               \
 case 'B':               \
@@ -559,8 +556,21 @@ case 'X':               \
 case 'Y':               \
 case 'Z':
 
-#define JSTR_CASE_ALPHA	   JSTR_CASE_LOWER JSTR_CASE_UPPER
-#define JSTR_CASE_ALPHANUM JSTR_CASE_DIGIT JSTR_CASE_ALPHA
+#define JSTR_CASE_VOWEL \
+JSTR_CASE_VOWEL_UPPER:  \
+JSTR_CASE_VOWEL_LOWER:
+
+#define JSTR_CASE_CONSONANT \
+JSTR_CASE_CONSONANT_UPPER:  \
+JSTR_CASE_CONSONANT_LOWER:
+
+#define JSTR_CASE_ALPHA \
+JSTR_CASE_LOWER:        \
+JSTR_CASE_UPPER:
+
+#define JSTR_CASE_ALPHANUM \
+JSTR_CASE_DIGIT:           \
+JSTR_CASE_ALPHA:
 
 #define JSTR_CASE_WHITESPACE \
 case '\n':                   \
