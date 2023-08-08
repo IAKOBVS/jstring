@@ -19,7 +19,7 @@ _now: compiles passed regex_t.
 <br>
 _constexpr: use when passing arguments known at compile-time.
 <br>
-E.g., replaceall_constexpr(&s.data, &s.size, &s.cap, "hello", "world").
+E.g., rplcall_constexpr(&s.data, &s.size, &s.cap, "hello", "world").
 <br>
 Since the search string, "hello", and the replace, "world", is a literal string, and its length known at compile-time, the compiler can pick the appropriate function based on the length, resulting in smaller code size.
 <br>

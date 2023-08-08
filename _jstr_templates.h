@@ -208,6 +208,7 @@ cat_f(char *JSTR_RST s,
 	__private::cat_loop_assign(&s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
+
 } /* namespace jstr */
 
 #endif /* __cplusplus */

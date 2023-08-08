@@ -412,7 +412,7 @@ static char *jstr_rmall_mem_p(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replacec_mem(char *JSTR_RST s,
+static void jstr_rplcc_mem(char *JSTR_RST s,
 			      const int searc,
 			      const int rplc,
 			      const size_t sz) JSTR_NOEXCEPT
@@ -428,7 +428,7 @@ static void jstr_replacec_mem(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replacec(char *JSTR_RST s,
+static void jstr_rplcc(char *JSTR_RST s,
 			  const int searc,
 			  const int rplc) JSTR_NOEXCEPT
 {
@@ -443,7 +443,7 @@ static void jstr_replacec(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replaceallc_mem(char *JSTR_RST s,
+static void jstr_rplcallc_mem(char *JSTR_RST s,
 				 const int searc,
 				 const int rplc,
 				 const size_t sz) JSTR_NOEXCEPT
@@ -466,7 +466,7 @@ static void jstr_replaceallc_mem(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replaceallc(char *JSTR_RST s,
+static void jstr_rplcallc(char *JSTR_RST s,
 			     const int searc,
 			     const int rplc) JSTR_NOEXCEPT
 {
@@ -488,7 +488,7 @@ static void jstr_replaceallc(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replacenc_mem(char *JSTR_RST s,
+static void jstr_rplcnc_mem(char *JSTR_RST s,
 			       const int searc,
 			       const int rplc,
 			       size_t n,
@@ -515,7 +515,7 @@ static void jstr_replacenc_mem(char *JSTR_RST s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_replacenc(char *JSTR_RST s,
+static void jstr_rplcnc(char *JSTR_RST s,
 			   const int searc,
 			   const int rplc,
 			   size_t n) JSTR_NOEXCEPT
@@ -545,7 +545,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
+static char *jstr_rplc_mem_p_f(char *JSTR_RST const s,
 				  const char *JSTR_RST const searc,
 				  const char *JSTR_RST const rplc,
 				  const size_t sz,
@@ -559,7 +559,7 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
 		return jstr_rm_mem_p(s, searc, sz, searclen);
 	case 1:
 		if (searclen == 1) {
-			jstr_replacec_mem(s, *searc, *rplc, sz);
+			jstr_rplcc_mem(s, *searc, *rplc, sz);
 			return s + sz;
 		}
 		/* FALLTHROUGH */
@@ -581,7 +581,7 @@ static char *jstr_replace_mem_p_f(char *JSTR_RST const s,
 */
 JSTR_NONNULL_ALL
 JSTR_INLINE
-static void jstr_replace_mem_constexpr(char **JSTR_RST const s,
+static void jstr_rplc_mem_constexpr(char **JSTR_RST const s,
 				       size_t *JSTR_RST const sz,
 				       size_t *JSTR_RST const cap,
 				       const char *JSTR_RST const searc,
@@ -597,7 +597,7 @@ static void jstr_replace_mem_constexpr(char **JSTR_RST const s,
 		return;
 	case 1:
 		if (searclen == 1) {
-			jstr_replacec_mem(*s, *searc, *rplc, *sz);
+			jstr_rplcc_mem(*s, *searc, *rplc, *sz);
 			return;
 		}
 		/* FALLTHROUGH */
@@ -633,7 +633,7 @@ static void jstr_replace_mem_constexpr(char **JSTR_RST const s,
 JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_MAYBE_UNUSED
-static void jstr_replace_mem(char **JSTR_RST const s,
+static void jstr_rplc_mem(char **JSTR_RST const s,
 			     size_t *JSTR_RST const sz,
 			     size_t *JSTR_RST const cap,
 			     const char *JSTR_RST const searc,
@@ -641,7 +641,7 @@ static void jstr_replace_mem(char **JSTR_RST const s,
 			     const size_t searclen,
 			     const size_t rplclen) JSTR_NOEXCEPT
 {
-	return jstr_replace_mem_constexpr(s, sz, cap, searc, rplc, searclen, rplclen);
+	return jstr_rplc_mem_constexpr(s, sz, cap, searc, rplc, searclen, rplclen);
 }
 
 /*
@@ -651,7 +651,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
-static void jstr_replacelast_mem(char **JSTR_RST const s,
+static void jstr_rplclast_mem(char **JSTR_RST const s,
 				 size_t *JSTR_RST const sz,
 				 size_t *JSTR_RST const cap,
 				 const char *JSTR_RST const searc,
@@ -690,7 +690,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
-static char *jstr_replacen_mem_p_f_constexpr(char *JSTR_RST s,
+static char *jstr_rplcn_mem_p_f_constexpr(char *JSTR_RST s,
 					     const char *JSTR_RST const searc,
 					     const char *JSTR_RST const rplc,
 					     size_t n,
@@ -706,18 +706,18 @@ static char *jstr_replacen_mem_p_f_constexpr(char *JSTR_RST s,
 		switch (searclen) {
 		case 0: return s + sz;
 		case 1:
-			private_jstr_replacenc_memmem1(s, *searc, *rplc, n, sz);
+			private_jstr_rplcnc_memmem1(s, *searc, *rplc, n, sz);
 			return s + sz;
 		case 2:
-			return private_jstr_replacen_memmem2(s, searc, rplc, n, sz, rplclen);
+			return private_jstr_rplcn_memmem2(s, searc, rplc, n, sz, rplclen);
 #if 0
-		case 3: return private_jstr_replacen_memmem3(s, searc, rplc, n, sz, rplclen);
-		case 4: return private_jstr_replacen_memmem4(s, searc, rplc, n, sz, rplclen);
+		case 3: return private_jstr_rplcn_memmem3(s, searc, rplc, n, sz, rplclen);
+		case 4: return private_jstr_rplcn_memmem4(s, searc, rplc, n, sz, rplclen);
 #endif
-		default: return private_jstr_replacen_memmem5(s, searc, rplc, n, sz, searclen, rplclen);
+		default: return private_jstr_rplcn_memmem5(s, searc, rplc, n, sz, searclen, rplclen);
 		}
 	}
-	return private_jstr_replacen_f(s, searc, rplc, n, sz, searclen, rplclen);
+	return private_jstr_rplcn_f(s, searc, rplc, n, sz, searclen, rplclen);
 }
 
 /*
@@ -729,7 +729,7 @@ JSTR_WARN_UNUSED
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_MAYBE_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
+static char *jstr_rplcn_mem_p_f(char *JSTR_RST s,
 				   const char *JSTR_RST const searc,
 				   const char *JSTR_RST const rplc,
 				   size_t n,
@@ -737,7 +737,7 @@ static char *jstr_replacen_mem_p_f(char *JSTR_RST s,
 				   const size_t searclen,
 				   const size_t rplclen) JSTR_NOEXCEPT
 {
-	return jstr_replacen_mem_p_f_constexpr(s, searc, rplc, n, sz, searclen, rplclen);
+	return jstr_rplcn_mem_p_f_constexpr(s, searc, rplc, n, sz, searclen, rplclen);
 }
 
 /*
@@ -748,7 +748,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
-static char *jstr_replaceall_mem_p_f_constexpr(char *JSTR_RST s,
+static char *jstr_rplcall_mem_p_f_constexpr(char *JSTR_RST s,
 					       const char *JSTR_RST const searc,
 					       const char *JSTR_RST const rplc,
 					       size_t sz,
@@ -762,17 +762,17 @@ static char *jstr_replaceall_mem_p_f_constexpr(char *JSTR_RST s,
 	if (rplclen <= searclen) {
 		switch (searclen) {
 		case 0: return s + sz;
-		case 1: return private_jstr_replaceall_memmem1(s, *searc, *rplc, sz);
-		default: return private_jstr_replaceall_memmem5(s, searc, rplc, sz, searclen, rplclen);
+		case 1: return private_jstr_rplcall_memmem1(s, *searc, *rplc, sz);
+		default: return private_jstr_rplcall_memmem5(s, searc, rplc, sz, searclen, rplclen);
 		case 2:
-			return private_jstr_replaceall_memmem2(s, searc, rplc, sz, rplclen);
+			return private_jstr_rplcall_memmem2(s, searc, rplc, sz, rplclen);
 #if 0
-		case 3: return private_jstr_replaceall_memmem3(s, searc, rplc, sz, rplclen);
-		case 4: return private_jstr_replaceall_memmem4(s, searc, rplc, sz, rplclen);
+		case 3: return private_jstr_rplcall_memmem3(s, searc, rplc, sz, rplclen);
+		case 4: return private_jstr_rplcall_memmem4(s, searc, rplc, sz, rplclen);
 #endif
 		}
 	}
-	return private_jstr_replaceall_f(s, searc, rplc, sz, searclen, rplclen);
+	return private_jstr_rplcall_f(s, searc, rplc, sz, searclen, rplclen);
 }
 
 /*
@@ -784,14 +784,14 @@ JSTR_WARN_UNUSED
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_MAYBE_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
+static char *jstr_rplcall_mem_p_f(char *JSTR_RST s,
 				     const char *JSTR_RST const searc,
 				     const char *JSTR_RST const rplc,
 				     size_t sz,
 				     const size_t searclen,
 				     const size_t rplclen) JSTR_NOEXCEPT
 {
-	return jstr_replaceall_mem_p_f_constexpr(s, searc, rplc, sz, searclen, rplclen);
+	return jstr_rplcall_mem_p_f_constexpr(s, searc, rplc, sz, searclen, rplclen);
 }
 
 /*
@@ -799,7 +799,7 @@ static char *jstr_replaceall_mem_p_f(char *JSTR_RST s,
 */
 JSTR_NONNULL_ALL
 JSTR_INLINE
-static void jstr_replacen_mem_constexpr(char **JSTR_RST const s,
+static void jstr_rplcn_mem_constexpr(char **JSTR_RST const s,
 					size_t *JSTR_RST const sz,
 					size_t *JSTR_RST const cap,
 					const char *JSTR_RST const searc,
@@ -818,25 +818,25 @@ static void jstr_replacen_mem_constexpr(char **JSTR_RST const s,
 		switch (searclen) {
 		case 0: return;
 		case 1:
-			private_jstr_replacenc_memmem1(*s, *searc, *rplc, n, *sz);
+			private_jstr_rplcnc_memmem1(*s, *searc, *rplc, n, *sz);
 			return;
 		case 2:
-			*sz = private_jstr_replacen_memmem2(*s, searc, rplc, n, *sz, rplclen) - *s;
+			*sz = private_jstr_rplcn_memmem2(*s, searc, rplc, n, *sz, rplclen) - *s;
 			return;
 #if 0
 		case 3:
-			*sz = private_jstr_replacen_memmem3(*s, searc, rplc, n, *sz, rplclen) - *s;
+			*sz = private_jstr_rplcn_memmem3(*s, searc, rplc, n, *sz, rplclen) - *s;
 			return;
 		case 4:
-			*sz = private_jstr_replacen_memmem4(*s, searc, rplc, n, *sz, rplclen) - *s;
+			*sz = private_jstr_rplcn_memmem4(*s, searc, rplc, n, *sz, rplclen) - *s;
 			return;
 #endif
 		default:
-			*sz = private_jstr_replacen_memmem5(*s, searc, rplc, n, *sz, searclen, rplclen) - *s;
+			*sz = private_jstr_rplcn_memmem5(*s, searc, rplc, n, *sz, searclen, rplclen) - *s;
 			return;
 		}
 	}
-	private_jstr_replacen_grow(s, sz, cap, searc, rplc, n, searclen, rplclen);
+	private_jstr_rplcn_grow(s, sz, cap, searc, rplc, n, searclen, rplclen);
 }
 
 /*
@@ -845,7 +845,7 @@ static void jstr_replacen_mem_constexpr(char **JSTR_RST const s,
 JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_MAYBE_UNUSED
-static void jstr_replacen_mem(char **JSTR_RST const s,
+static void jstr_rplcn_mem(char **JSTR_RST const s,
 			      size_t *JSTR_RST const sz,
 			      size_t *JSTR_RST const cap,
 			      const char *JSTR_RST const searc,
@@ -854,7 +854,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 			      const size_t searclen,
 			      const size_t rplclen) JSTR_NOEXCEPT
 {
-	jstr_replacen_mem_constexpr(s, sz, cap, searc, rplc, n, searclen, rplclen);
+	jstr_rplcn_mem_constexpr(s, sz, cap, searc, rplc, n, searclen, rplclen);
 }
 
 /*
@@ -862,7 +862,7 @@ static void jstr_replacen_mem(char **JSTR_RST const s,
 */
 JSTR_NONNULL_ALL
 JSTR_INLINE
-static void jstr_replaceall_mem_constexpr(char **JSTR_RST const s,
+static void jstr_rplcall_mem_constexpr(char **JSTR_RST const s,
 					  size_t *JSTR_RST const sz,
 					  size_t *JSTR_RST const cap,
 					  const char *JSTR_RST const searc,
@@ -880,25 +880,25 @@ static void jstr_replaceall_mem_constexpr(char **JSTR_RST const s,
 		switch (searclen) {
 		case 0: return;
 		case 1:
-			*sz = private_jstr_replaceall_memmem1(*s, *searc, *rplc, *sz) - *s;
+			*sz = private_jstr_rplcall_memmem1(*s, *searc, *rplc, *sz) - *s;
 			return;
 		case 2:
-			*sz = private_jstr_replaceall_memmem2(*s, searc, rplc, *sz, rplclen) - *s;
+			*sz = private_jstr_rplcall_memmem2(*s, searc, rplc, *sz, rplclen) - *s;
 			return;
 #if 0
 		case 3:
-			*sz = private_jstr_replaceall_memmem3(*s, searc, rplc, *sz, rplclen) - *s;
+			*sz = private_jstr_rplcall_memmem3(*s, searc, rplc, *sz, rplclen) - *s;
 			return;
 		case 4:
-			*sz = private_jstr_replaceall_memmem4(*s, searc, rplc, *sz, rplclen) - *s;
+			*sz = private_jstr_rplcall_memmem4(*s, searc, rplc, *sz, rplclen) - *s;
 			return;
 #endif
 		default:
-			*sz = private_jstr_replaceall_memmem5(*s, searc, rplc, *sz, searclen, rplclen) - *s;
+			*sz = private_jstr_rplcall_memmem5(*s, searc, rplc, *sz, searclen, rplclen) - *s;
 			return;
 		}
 	}
-	private_jstr_replaceall_grow(s, sz, cap, searc, rplc, searclen, rplclen);
+	private_jstr_rplcall_grow(s, sz, cap, searc, rplc, searclen, rplclen);
 }
 
 /*
@@ -907,7 +907,7 @@ static void jstr_replaceall_mem_constexpr(char **JSTR_RST const s,
 JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_MAYBE_UNUSED
-static void jstr_replaceall_mem(char **JSTR_RST const s,
+static void jstr_rplcall_mem(char **JSTR_RST const s,
 				size_t *JSTR_RST const sz,
 				size_t *JSTR_RST const cap,
 				const char *JSTR_RST const searc,
@@ -915,7 +915,7 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 				const size_t searclen,
 				const size_t rplclen) JSTR_NOEXCEPT
 {
-	jstr_replaceall_mem_constexpr(s, sz, cap, searc, rplc, searclen, rplclen);
+	jstr_rplcall_mem_constexpr(s, sz, cap, searc, rplc, searclen, rplclen);
 }
 
 #ifdef __cplusplus
@@ -933,20 +933,20 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 #	pragma GCC poison private_jstr_next_pow2_32_constexpr
 #	pragma GCC poison private_jstr_next_pow2_64
 #	pragma GCC poison private_jstr_next_pow2_64_constexpr
-#	pragma GCC poison private_jstr_replaceall_f
-#	pragma GCC poison private_jstr_replaceall_grow
-#	pragma GCC poison private_jstr_replaceall_memmem1
-#	pragma GCC poison private_jstr_replaceall_memmem2
-#	pragma GCC poison private_jstr_replaceall_memmem3
-#	pragma GCC poison private_jstr_replaceall_memmem4
-#	pragma GCC poison private_jstr_replaceall_memmem5
-#	pragma GCC poison private_jstr_replacenc_memmem1
-#	pragma GCC poison private_jstr_replacen_f
-#	pragma GCC poison private_jstr_replacen_grow
-#	pragma GCC poison private_jstr_replacen_memmem2
-#	pragma GCC poison private_jstr_replacen_memmem3
-#	pragma GCC poison private_jstr_replacen_memmem4
-#	pragma GCC poison private_jstr_replacen_memmem5
+#	pragma GCC poison private_jstr_rplcall_f
+#	pragma GCC poison private_jstr_rplcall_grow
+#	pragma GCC poison private_jstr_rplcall_memmem1
+#	pragma GCC poison private_jstr_rplcall_memmem2
+#	pragma GCC poison private_jstr_rplcall_memmem3
+#	pragma GCC poison private_jstr_rplcall_memmem4
+#	pragma GCC poison private_jstr_rplcall_memmem5
+#	pragma GCC poison private_jstr_rplcnc_memmem1
+#	pragma GCC poison private_jstr_rplcn_f
+#	pragma GCC poison private_jstr_rplcn_grow
+#	pragma GCC poison private_jstr_rplcn_memmem2
+#	pragma GCC poison private_jstr_rplcn_memmem3
+#	pragma GCC poison private_jstr_rplcn_memmem4
+#	pragma GCC poison private_jstr_rplcn_memmem5
 #	pragma GCC poison private_jstr_rmall_memmem1
 #	pragma GCC poison private_jstr_rmall_memmem2
 #	pragma GCC poison private_jstr_rmall_memmem3

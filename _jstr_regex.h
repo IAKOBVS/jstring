@@ -281,7 +281,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_reg_remove_mem(char *JSTR_RST const s,
+static char *jstr_reg_rm_mem(char *JSTR_RST const s,
 				 size_t sz,
 				 const regex_t *JSTR_RST const preg,
 				 const int eflags) JSTR_NOEXCEPT
@@ -299,7 +299,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_reg_remove_now_mem(char *JSTR_RST const s,
+static char *jstr_reg_rm_now_mem(char *JSTR_RST const s,
 				     const char *JSTR_RST const ptn,
 				     size_t sz,
 				     regex_t *JSTR_RST const preg,
@@ -308,62 +308,62 @@ static char *jstr_reg_remove_now_mem(char *JSTR_RST const s,
 {
 	if (unlikely(jstr_reg_comp(preg, ptn, cflags) != JSTR_REG_RET_NOERROR))
 		return s + sz;
-	return jstr_reg_remove_mem(s, sz, preg, eflags);
+	return jstr_reg_rm_mem(s, sz, preg, eflags);
 }
 
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_reg_remove_j(jstr_t *JSTR_RST const j,
+static char *jstr_reg_rm_j(jstr_t *JSTR_RST const j,
 			       const regex_t *JSTR_RST const preg,
 			       const int eflags) JSTR_NOEXCEPT
 {
-	return jstr_reg_remove_mem(j->data, j->size, preg, eflags);
+	return jstr_reg_rm_mem(j->data, j->size, preg, eflags);
 }
 
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_reg_remove_now_j(jstr_t *JSTR_RST const j,
+static char *jstr_reg_rm_now_j(jstr_t *JSTR_RST const j,
 				   const char *JSTR_RST const ptn,
 				   regex_t *JSTR_RST const preg,
 				   const int cflags,
 				   const int eflags) JSTR_NOEXCEPT
 {
-	return jstr_reg_remove_now_mem(j->data, ptn, j->size, preg, cflags, eflags);
+	return jstr_reg_rm_now_mem(j->data, ptn, j->size, preg, cflags, eflags);
 }
 
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_reg_remove(char *JSTR_RST const s,
+static char *jstr_reg_rm(char *JSTR_RST const s,
 			     const char *JSTR_RST const ptn,
 			     regex_t *JSTR_RST const preg,
 			     const int eflags) JSTR_NOEXCEPT
 {
-	return jstr_reg_remove_mem(s, strlen(s), preg, eflags);
+	return jstr_reg_rm_mem(s, strlen(s), preg, eflags);
 }
 
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_reg_remove_now(char *JSTR_RST const s,
+static char *jstr_reg_rm_now(char *JSTR_RST const s,
 				 const char *JSTR_RST const ptn,
 				 regex_t *JSTR_RST const preg,
 				 const int cflags,
 				 const int eflags) JSTR_NOEXCEPT
 {
-	return jstr_reg_remove_now_mem(s, ptn, strlen(s), preg, cflags, eflags);
+	return jstr_reg_rm_now_mem(s, ptn, strlen(s), preg, cflags, eflags);
 }
 
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
-static char *jstr_reg_removeall_mem(char *JSTR_RST const s,
+static char *jstr_reg_rmall_mem(char *JSTR_RST const s,
 				    size_t sz,
 				    const regex_t *JSTR_RST const preg,
 				    const int eflags) JSTR_NOEXCEPT
@@ -391,7 +391,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
-static char *jstr_reg_removeall_now_mem(char *JSTR_RST const s,
+static char *jstr_reg_rmall_now_mem(char *JSTR_RST const s,
 					const char *JSTR_RST const ptn,
 					const size_t sz,
 					regex_t *JSTR_RST const preg,
@@ -400,55 +400,55 @@ static char *jstr_reg_removeall_now_mem(char *JSTR_RST const s,
 {
 	if (unlikely(jstr_reg_comp(preg, ptn, cflags) != JSTR_REG_RET_NOERROR))
 		return s + sz;
-	return jstr_reg_removeall_mem(s, sz, preg, eflags);
+	return jstr_reg_rmall_mem(s, sz, preg, eflags);
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_reg_removeall_now_j(jstr_t *JSTR_RST const j,
+static void jstr_reg_rmall_now_j(jstr_t *JSTR_RST const j,
 				     const char *JSTR_RST const ptn,
 				     regex_t *JSTR_RST const preg,
 				     const int cflags,
 				     const int eflags) JSTR_NOEXCEPT
 {
-	j->size = jstr_reg_removeall_now_mem(j->data, ptn, j->size, preg, cflags, eflags) - j->data;
+	j->size = jstr_reg_rmall_now_mem(j->data, ptn, j->size, preg, cflags, eflags) - j->data;
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_reg_removeall_j(jstr_t *JSTR_RST const j,
+static void jstr_reg_rmall_j(jstr_t *JSTR_RST const j,
 				 regex_t *JSTR_RST const preg,
 				 const int eflags) JSTR_NOEXCEPT
 {
-	j->size = jstr_reg_removeall_mem(j->data, j->size, preg, eflags) - j->data;
+	j->size = jstr_reg_rmall_mem(j->data, j->size, preg, eflags) - j->data;
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_reg_removeall_now(char *JSTR_RST const s,
+static char *jstr_reg_rmall_now(char *JSTR_RST const s,
 				    const char *JSTR_RST const ptn,
 				    regex_t *JSTR_RST const preg,
 				    const int cflags,
 				    const int eflags) JSTR_NOEXCEPT
 {
-	return jstr_reg_removeall_now_mem(s, ptn, strlen(s), preg, cflags, eflags);
+	return jstr_reg_rmall_now_mem(s, ptn, strlen(s), preg, cflags, eflags);
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_reg_removeall(char *JSTR_RST const s,
+static char *jstr_reg_rmall(char *JSTR_RST const s,
 				regex_t *JSTR_RST const preg,
 				const int eflags) JSTR_NOEXCEPT
 {
-	return jstr_reg_removeall_mem(s, strlen(s), preg, eflags);
+	return jstr_reg_rmall_mem(s, strlen(s), preg, eflags);
 }
 
 JSTR_NONNULL_ALL
-static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
+static void jstr_reg_rplcall_mem(char **JSTR_RST const s,
 				    size_t *JSTR_RST const sz,
 				    size_t *JSTR_RST const cap,
 				    const char *JSTR_RST const rplc,
@@ -457,7 +457,7 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 				    const int eflags) JSTR_NOEXCEPT
 {
 	if (unlikely(rplclen == 0)) {
-		*sz = jstr_reg_removeall_mem(*s, *sz, preg, eflags) - *s;
+		*sz = jstr_reg_rmall_mem(*s, *sz, preg, eflags) - *s;
 		return;
 	}
 	regmatch_t rm;
@@ -493,7 +493,7 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
-static void jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
+static void jstr_reg_rplcall_now_mem(char **JSTR_RST const s,
 					size_t *JSTR_RST const sz,
 					size_t *JSTR_RST const cap,
 					const char *JSTR_RST const ptn,
@@ -506,11 +506,11 @@ static void jstr_reg_replaceall_now_mem(char **JSTR_RST const s,
 	const int ret = jstr_reg_comp(preg, ptn, cflags);
 	if (unlikely(ret != JSTR_REG_RET_NOERROR))
 		return;
-	jstr_reg_replaceall_mem(s, sz, cap, rplc, rplclen, preg, eflags);
+	jstr_reg_rplcall_mem(s, sz, cap, rplc, rplclen, preg, eflags);
 }
 
 JSTR_NONNULL_ALL
-static void jstr_reg_replace_mem(char **JSTR_RST const s,
+static void jstr_reg_rplc_mem(char **JSTR_RST const s,
 				 size_t *JSTR_RST const sz,
 				 size_t *JSTR_RST const cap,
 				 const char *JSTR_RST const rplc,
@@ -544,7 +544,7 @@ static void jstr_reg_replace_mem(char **JSTR_RST const s,
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
-static void jstr_reg_replace_now_mem(char **JSTR_RST const s,
+static void jstr_reg_rplc_now_mem(char **JSTR_RST const s,
 				     size_t *JSTR_RST const sz,
 				     size_t *JSTR_RST const cap,
 				     const char *JSTR_RST const ptn,
@@ -557,7 +557,7 @@ static void jstr_reg_replace_now_mem(char **JSTR_RST const s,
 	const int ret = jstr_reg_comp(preg, ptn, cflags);
 	if (unlikely(ret != JSTR_REG_RET_NOERROR))
 		return;
-	jstr_reg_replace_mem(s, sz, cap, rplc, rplclen, preg, eflags);
+	jstr_reg_rplc_mem(s, sz, cap, rplc, rplclen, preg, eflags);
 }
 
 JSTR_NONNULL_ALL
