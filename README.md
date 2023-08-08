@@ -15,13 +15,13 @@ _p: returns a pointer to the new end of the passed string.
 <br>
 _f: assumes that there be enough space: it will not grow the string.
 <br>
+_now: compiles passed regex_t.
+<br>
 _constexpr: use when passing arguments known at compile-time.
 <br>
 E.g., replaceall_constexpr(&s.data, &s.size, &s.cap, "hello", "world").
 <br>
 Since the search string, "hello", and the replace, "world", is a literal string, and its length known at compile-time, the compiler can pick the appropriate function based on the length, resulting in smaller code size.
-<br>
-_now: compiles passed regex_t.
 <br>
 <br>
 Scripts:
