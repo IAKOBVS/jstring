@@ -384,7 +384,7 @@ static char *jstr_reg_removeall_mem(char *JSTR_RST const s,
 		old += (rm.rm_eo - rm.rm_so);
 		p += (rm.rm_eo - rm.rm_so);
 	}
-	if (dst != old)
+	if (likely(dst != old))
 		memmove(dst, old, end - old + 1);
 	return (char *)dst + (end - old);
 }
@@ -462,7 +462,7 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 	size_t off = 0;
 	size_t ptnlen;
 	char *tmp;
-	while (PRIVATE_JSTR_REG_EXEC(preg, *s + off, *sz - off, 1, &rm, eflags) != JSTR_REG_RET_NOERROR) {
+	while (PRIVATE_JSTR_REG_EXEC(preg, *s + off, *sz - off, 1, &rm, eflags) == JSTR_REG_RET_NOERROR) {
 		ptnlen = rm.rm_eo - rm.rm_so;
 		rm.rm_so += off;
 		rm.rm_eo += off;
@@ -517,7 +517,7 @@ static void jstr_reg_replace_mem(char **JSTR_RST const s,
 				 const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	if (unlikely(PRIVATE_JSTR_REG_EXEC(preg, *s, *sz, 1, &rm, eflags) != JSTR_REG_RET_NOERROR))
+	if (unlikely(PRIVATE_JSTR_REG_EXEC(preg, *s, *sz, 1, &rm, eflags) == JSTR_REG_RET_NOERROR))
 		return;
 	const size_t ptnlen = rm.rm_eo - rm.rm_so;
 	if (rplclen <= ptnlen || *cap > *sz + rplclen - ptnlen) {
