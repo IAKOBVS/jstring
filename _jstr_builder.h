@@ -60,7 +60,7 @@ typedef struct jstr_t {
 	JSTR_INLINE
 	~jstr_t(void) JSTR_NOEXCEPT
 	{
-		free(this->data);
+		::free(this->data);
 #		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
 		this->data = NULL;
 #		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
@@ -74,7 +74,7 @@ typedef struct jstr_t {
 	JSTR_INLINE
 	void free(void) JSTR_NOEXCEPT
 	{
-		free(this->data);
+		::free(this->data);
 #	if JSTR_NULLIFY_PTR_ON_DELETE
 		this->data = NULL;
 #	endif /* JSTR_NULLIFY_PTR_ON_DELETE */
@@ -179,6 +179,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
 {
+#ifdef __cplusplus
+	::
+#endif
 	free(p);
 #if JSTR_NULLIFY_PTR_ON_DELETE
 	p = NULL;
@@ -193,7 +196,7 @@ static void jstr_debug(const jstr_t *JSTR_RST const j)
 	fprintf(stderr, "data:%s\n", j->data);
 }
 
-#if JSTR_NAMESPACE && defined(__cplusplus)
+#ifdef __cplusplus
 
 /*
   Insert multiple strings to S.

@@ -15,7 +15,7 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
-#define JSTR_RST       JSTR_RESTRICT
+#define JSTR_RST JSTR_RESTRICT
 
 /* POSIX cflags */
 #define JSTR_REG_CF_EXTENDED REG_EXTENDED
@@ -262,10 +262,6 @@ static int jstr_reg_match_mem(const char *JSTR_RST const s,
 	return jstr_reg_exec_mem(preg, s, sz, 0, &rm, eflags | JSTR_REG_EF_NOSUB | JSTR_REG_EF_STARTEND);
 }
 
-/*
-   Checks if S matches PTN.
-   Returns return value of regexec or regcomp if it fails.
-*/
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static int jstr_reg_match_now_mem(const char *JSTR_RST const s,
@@ -283,6 +279,177 @@ static int jstr_reg_match_now_mem(const char *JSTR_RST const s,
 
 #endif /* JSTR_REG_EF_STARTEND */
 
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
+JSTR_INLINE
+static char *jstr_reg_remove_mem(char *JSTR_RST const s,
+				 size_t sz,
+				 const regex_t *JSTR_RST const preg,
+				 const int eflags) JSTR_NOEXCEPT
+{
+	regmatch_t rm;
+	if (unlikely(PRIVATE_JSTR_REG_EXEC(preg, s, sz, 1, &rm, eflags) == JSTR_REG_RET_NOERROR))
+		return s + sz;
+	memmove(s + rm.rm_so,
+		s + rm.rm_eo,
+		sz - (rm.rm_eo - rm.rm_so) + 1);
+	return s + sz - (rm.rm_eo - rm.rm_so);
+}
+
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
+JSTR_INLINE
+static char *jstr_reg_remove_now_mem(char *JSTR_RST const s,
+				     const char *JSTR_RST const ptn,
+				     size_t sz,
+				     regex_t *JSTR_RST const preg,
+				     const int cflags,
+				     const int eflags) JSTR_NOEXCEPT
+{
+	if (unlikely(jstr_reg_comp(preg, ptn, cflags) != JSTR_REG_RET_NOERROR))
+		return s + sz;
+	return jstr_reg_remove_mem(s, sz, preg, eflags);
+}
+
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
+JSTR_INLINE
+static char *jstr_reg_remove_j(jstr_t *JSTR_RST const j,
+			       const regex_t *JSTR_RST const preg,
+			       const int eflags) JSTR_NOEXCEPT
+{
+	return jstr_reg_remove_mem(j->data, j->size, preg, eflags);
+}
+
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
+JSTR_INLINE
+static char *jstr_reg_remove_now_j(jstr_t *JSTR_RST const j,
+				   const char *JSTR_RST const ptn,
+				   regex_t *JSTR_RST const preg,
+				   const int cflags,
+				   const int eflags) JSTR_NOEXCEPT
+{
+	return jstr_reg_remove_now_mem(j->data, ptn, j->size, preg, cflags, eflags);
+}
+
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
+JSTR_INLINE
+static char *jstr_reg_remove(char *JSTR_RST const s,
+			     const char *JSTR_RST const ptn,
+			     regex_t *JSTR_RST const preg,
+			     const int eflags) JSTR_NOEXCEPT
+{
+	return jstr_reg_remove_mem(s, strlen(s), preg, eflags);
+}
+
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
+JSTR_INLINE
+static char *jstr_reg_remove_now(char *JSTR_RST const s,
+				 const char *JSTR_RST const ptn,
+				 regex_t *JSTR_RST const preg,
+				 const int cflags,
+				 const int eflags) JSTR_NOEXCEPT
+{
+	return jstr_reg_remove_now_mem(s, ptn, strlen(s), preg, cflags, eflags);
+}
+
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_RETURNS_NONNULL
+static char *jstr_reg_removeall_mem(char *JSTR_RST const s,
+				    size_t sz,
+				    const regex_t *JSTR_RST const preg,
+				    const int eflags) JSTR_NOEXCEPT
+{
+	regmatch_t rm;
+	unsigned char *dst = (unsigned char *)s;
+	const unsigned char *p = dst;
+	const unsigned char *old = dst;
+	const unsigned char *const end = dst + sz;
+	while (PRIVATE_JSTR_REG_EXEC(preg, (char *)p, end - p, 1, &rm, eflags) == JSTR_REG_RET_NOERROR) {
+		p = p + rm.rm_so;
+		if (likely(dst != old))
+			memmove(dst, old, p - old);
+		dst += (p - old);
+		old += (p - old);
+		old += (rm.rm_eo - rm.rm_so);
+		p += (rm.rm_eo - rm.rm_so);
+	}
+	if (dst != old)
+		memmove(dst, old, end - old + 1);
+	return (char *)dst + (end - old);
+}
+
+JSTR_WARN_UNUSED
+JSTR_NONNULL_ALL
+JSTR_INLINE
+JSTR_RETURNS_NONNULL
+static char *jstr_reg_removeall_now_mem(char *JSTR_RST const s,
+					const char *JSTR_RST const ptn,
+					const size_t sz,
+					regex_t *JSTR_RST const preg,
+					const int cflags,
+					const int eflags) JSTR_NOEXCEPT
+{
+	int ret = jstr_reg_comp(preg, ptn, cflags);
+	if (unlikely(ret != JSTR_REG_RET_NOERROR))
+		return s + sz;
+	return jstr_reg_removeall_mem(s, sz, preg, eflags);
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_reg_removeall_now_j(jstr_t *JSTR_RST const j,
+				     const char *JSTR_RST const ptn,
+				     regex_t *JSTR_RST const preg,
+				     const int cflags,
+				     const int eflags) JSTR_NOEXCEPT
+{
+	j->size = jstr_reg_removeall_now_mem(j->data, ptn, j->size, preg, cflags, eflags) - j->data;
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_reg_removeall_j(jstr_t *JSTR_RST const j,
+				 regex_t *JSTR_RST const preg,
+				 const int eflags) JSTR_NOEXCEPT
+{
+	j->size = jstr_reg_removeall_mem(j->data, j->size, preg, eflags) - j->data;
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *jstr_reg_removeall_now(char *JSTR_RST const s,
+				    const char *JSTR_RST const ptn,
+				    regex_t *JSTR_RST const preg,
+				    const int cflags,
+				    const int eflags) JSTR_NOEXCEPT
+{
+	return jstr_reg_removeall_now_mem(s, ptn, strlen(s), preg, cflags, eflags);
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *jstr_reg_removeall(char *JSTR_RST const s,
+				regex_t *JSTR_RST const preg,
+				const int eflags) JSTR_NOEXCEPT
+{
+	return jstr_reg_removeall_mem(s, strlen(s), preg, eflags);
+}
+
 JSTR_NONNULL_ALL
 static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 				    size_t *JSTR_RST const sz,
@@ -296,9 +463,7 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 	size_t off = 0;
 	size_t ptnlen;
 	char *tmp;
-	do {
-		if (unlikely(PRIVATE_JSTR_REG_EXEC(preg, *s + off, *sz - off, 1, &rm, eflags) != JSTR_REG_RET_NOERROR))
-			return;
+	while (PRIVATE_JSTR_REG_EXEC(preg, *s + off, *sz - off, 1, &rm, eflags) != JSTR_REG_RET_NOERROR) {
 		ptnlen = rm.rm_eo - rm.rm_so;
 		rm.rm_so += off;
 		rm.rm_eo += off;
@@ -320,7 +485,9 @@ static void jstr_reg_replaceall_mem(char **JSTR_RST const s,
 			*s = tmp;
 		}
 		off = rm.rm_eo + rplclen - ptnlen;
-	} while ((*sz += rplclen - ptnlen) != rplclen);
+		if (unlikely(*sz += rplclen - ptnlen) == rplclen)
+			return;
+	}
 }
 
 JSTR_NONNULL_ALL
