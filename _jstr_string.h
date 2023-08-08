@@ -60,8 +60,8 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_strcpyp(char *JSTR_RST const dst,
-			  const char *JSTR_RST const src) JSTR_NOEXCEPT
+static char *jstr_stpcpy(char *JSTR_RST const dst,
+			 const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STPCPY
 	return JSTR_GLOBAL(stpcpy(dst, src));
@@ -82,7 +82,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static void *jstr_memchrr(const void *JSTR_RST const s,
+static void *jstr_memrchr(const void *JSTR_RST const s,
 			  const int c,
 			  size_t n) JSTR_NOEXCEPT
 {
@@ -109,11 +109,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_strcatp(char *JSTR_RST dst,
-			  const char *JSTR_RST src) JSTR_NOEXCEPT
+static char *jstr_stpcat(char *JSTR_RST dst,
+			 const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 	dst += strlen(dst);
-	return jstr_strcpyp(dst, src);
+	return jstr_stpcpy(dst, src);
 }
 
 /*
@@ -126,7 +126,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_strncmpcase(const char *JSTR_RST const s1,
+static int jstr_strncasecmp(const char *JSTR_RST const s1,
 			    const char *JSTR_RST const s2,
 			    size_t n) JSTR_NOEXCEPT
 {
@@ -175,7 +175,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_strcmpcase(const char *JSTR_RST s1,
+static int jstr_strcasecmp(const char *JSTR_RST s1,
 			   const char *JSTR_RST s2) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASECMP
@@ -278,7 +278,7 @@ static void *jstr_memrmem_constexpr(const void *JSTR_RST const hs,
 	case 0:
 		return (void *)hs;
 	case 1:
-		return jstr_memchrr(hs, *(char *)ne, hslen);
+		return jstr_memrchr(hs, *(char *)ne, hslen);
 	case 2: {
 		const unsigned char *const start = (unsigned char *)hs;
 		const unsigned char *h = start + hslen;
@@ -321,7 +321,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static char *jstr_strstrr_constexpr(const char *JSTR_RST const hs,
+static char *jstr_strrstr_constexpr(const char *JSTR_RST const hs,
 				    const size_t hslen,
 				    const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
@@ -339,7 +339,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static char *jstr_strstrr(const char *JSTR_RST const hs,
+static char *jstr_strrstr(const char *JSTR_RST const hs,
 			  const size_t hslen,
 			  const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
@@ -350,10 +350,10 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-static char *private_jstr_memmemcase3(const char *JSTR_RST const hs,
-				      const size_t hslen,
-				      const char *JSTR_RST const ne,
-				      const size_t nelen) JSTR_NOEXCEPT
+static char *private_jstr_strcasestr_mem3(const char *JSTR_RST const hs,
+					  const size_t hslen,
+					  const char *JSTR_RST const ne,
+					  const size_t nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % sizeof(shift))
 #define PRIVATE_JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                      \
@@ -380,8 +380,8 @@ static char *private_jstr_memmemcase3(const char *JSTR_RST const hs,
 			h -= tmp;                                                                  \
 			if (tmp < mtc1)                                                            \
 				continue;                                                          \
-			if (mtc1 < 15 || !jstr_strncmpcase((char *)h + off, (char *)n + off, 8)) { \
-				if (!jstr_strncmpcase((char *)h, (char *)n, nelen))                \
+			if (mtc1 < 15 || !jstr_strncasecmp((char *)h + off, (char *)n + off, 8)) { \
+				if (!jstr_strncasecmp((char *)h, (char *)n, nelen))                \
 					return (char *)h;                                          \
 				off = (off >= 8 ? off : mtc1) - 8;                                 \
 			}                                                                          \
@@ -394,44 +394,96 @@ static char *private_jstr_memmemcase3(const char *JSTR_RST const hs,
 	PRIVATE_JSTR_STRSTRCASE(uint8_t, int);
 }
 
+/*
+   Find C in S case-insensitively.
+   S MUST be nul terminated.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-static char *private_jstr_strstrcase1(const char *JSTR_RST const hs,
-				      const size_t hslen,
-				      const char *JSTR_RST const ne) JSTR_NOEXCEPT
+static char *jstr_strcasechr(const char *JSTR_RST const s,
+			     const int c,
+			     const size_t n) JSTR_NOEXCEPT
 {
 	enum { l = 0,
 	       u,
 	};
-	unsigned char n[2];
-	switch (*ne) {
+	unsigned char cc[2];
+	switch (c) {
 		JSTR_CASE_UPPER
-		n[u] = *ne;
-		n[l] = *ne - 'A' + 'a';
+		cc[u] = c;
+		cc[l] = c - 'A' + 'a';
 		break;
 		JSTR_CASE_LOWER
-		n[l] = *ne;
-		n[u] = *ne - 'a' + 'A';
+		cc[l] = c;
+		cc[u] = c - 'a' + 'A';
 		break;
 	default:
-		return (char *)memchr(hs, *ne, hslen);
+		return (char *)memchr(s, c, n);
 	}
-	unsigned char *h = (unsigned char *)hs;
+	unsigned char *h = (unsigned char *)s;
 	for (;; ++h)
 		switch (*h) {
 			JSTR_CASE_UPPER
-			if (*h == n[u])
+			if (*h == cc[u])
 				return (char *)h;
 			break;
 			JSTR_CASE_LOWER
-			if (*h == n[l])
+			if (*h == cc[l])
 				return (char *)h;
 			break;
 		case '\0':
 			return NULL;
 		}
+}
+
+/*
+   Find C in HS case-insensitively.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+static char *jstr_memcasechr(const char *JSTR_RST const s,
+			     const int c,
+			     size_t n) JSTR_NOEXCEPT
+{
+	enum { l = 0,
+	       u,
+	};
+	unsigned char cc[2];
+	switch (c) {
+		JSTR_CASE_UPPER
+		cc[u] = c;
+		cc[l] = c - 'A' + 'a';
+		break;
+		JSTR_CASE_LOWER
+		cc[l] = c;
+		cc[u] = c - 'a' + 'A';
+		break;
+	default:
+		return (char *)memchr(s, c, n);
+	}
+	unsigned char *h = (unsigned char *)s;
+	for (; n--; ++h)
+		switch (*h) {
+			JSTR_CASE_UPPER
+			if (*h == cc[u])
+				return (char *)h;
+			break;
+			JSTR_CASE_LOWER
+			if (*h == cc[l])
+				return (char *)h;
+			break;
+		}
+	return NULL;
 }
 
 /*
@@ -447,17 +499,17 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static char *jstr_memmemcase_constexpr(const char *JSTR_RST const hs,
-				       const size_t hslen,
-				       const char *JSTR_RST const ne,
-				       const size_t nelen) JSTR_NOEXCEPT
+static char *jstr_strcasestr_mem_constexpr(const char *JSTR_RST const hs,
+					   const size_t hslen,
+					   const char *JSTR_RST const ne,
+					   const size_t nelen) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_STRCASESTR
+#ifdef jJSTR_HAS_STRCASESTR
 	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
 #else
 	switch (nelen) {
 	case 0: return (char *)hs;
-	case 1: return private_jstr_strstrcase1(hs, hslen, ne);
+	case 1: return jstr_strcasechr(hs, *ne, hslen);
 	case 2:
 		switch (*ne) {
 			JSTR_CASE_UPPER
@@ -474,9 +526,69 @@ static char *jstr_memmemcase_constexpr(const char *JSTR_RST const hs,
 		}
 		/* FALLTHROUGH */
 	default:
-		return private_jstr_memmemcase3(hs, hslen, ne, nelen);
+		return private_jstr_strcasestr_mem3(hs, hslen, ne, nelen);
 	}
 #endif
+}
+
+/*
+   Find NE in HS case-insensitively.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+static char *jstr_memcasemem_constexpr(const char *JSTR_RST const hs,
+				       const size_t hslen,
+				       const char *JSTR_RST const ne,
+				       const size_t nelen) JSTR_NOEXCEPT
+{
+#ifdef JSTR_HAS_STRCASESTR
+	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
+#else
+	switch (nelen) {
+	case 0: return (char *)hs;
+	case 1: return jstr_memcasechr(hs, *ne, hslen);
+	case 2:
+		switch (*ne) {
+			JSTR_CASE_UPPER
+			JSTR_CASE_LOWER
+			break;
+		default:
+			switch (*(ne + 1)) {
+				JSTR_CASE_UPPER
+				JSTR_CASE_LOWER
+				break;
+			default:
+				return (char *)PRIVATE_JSTR_MEMMEM(hs, hslen, ne, nelen);
+			}
+		}
+		/* FALLTHROUGH */
+	default:
+		return private_jstr_strcasestr_mem3(hs, hslen, ne, nelen);
+	}
+#endif
+}
+
+/*
+   Find NE in HS case-insensitively.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+static char *jstr_memcasemem(const char *JSTR_RST const hs,
+			     const size_t hslen,
+			     const char *JSTR_RST const ne,
+			     const size_t nelen) JSTR_NOEXCEPT
+{
+	return jstr_memcasemem_constexpr(hs, hslen, ne, nelen);
 }
 
 /*
@@ -491,15 +603,15 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-static char *jstr_memmemcase(const char *JSTR_RST const hs,
-			     const size_t hslen,
-			     const char *JSTR_RST const ne,
-			     const size_t nelen) JSTR_NOEXCEPT
+static char *jstr_strcasestr_mem(const char *JSTR_RST const hs,
+				 const size_t hslen,
+				 const char *JSTR_RST const ne,
+				 const size_t nelen) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
 	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
 #else
-	return jstr_memmemcase_constexpr(hs, hslen, ne, nelen);
+	return jstr_strcasestr_mem_constexpr(hs, hslen, ne, nelen);
 #endif /* JSTR_HAS_STRCASESTR */
 }
 
@@ -515,14 +627,13 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-JSTR_FLATTEN
-static char *jstr_strstrcase_constexpr(const char *JSTR_RST const hs,
+static char *jstr_strcasestr_constexpr(const char *JSTR_RST const hs,
 				       const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
 	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
 #else
-	return jstr_memmemcase_constexpr(hs, strlen(hs), ne, strlen(ne));
+	return jstr_strcasestr_mem_constexpr(hs, strlen(hs), ne, strlen(ne));
 #endif /* JSTR_HAS_STRCASESTR */
 }
 
@@ -538,13 +649,13 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static char *jstr_strstrcase(const char *JSTR_RST const hs,
+static char *jstr_strcasestr(const char *JSTR_RST const hs,
 			     const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
 	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
 #else
-	return jstr_memmemcase(hs, strlen(hs), ne, strlen(ne));
+	return jstr_strcasestr_mem(hs, strlen(hs), ne, strlen(ne));
 #endif /* JSTR_HAS_STRCASESTR */
 }
 
