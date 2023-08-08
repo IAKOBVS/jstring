@@ -387,7 +387,7 @@ static char *private_jstr_strcasestr_mem3(const char *JSTR_RST const hs,
 		}                                                                                  \
 		return NULL;                                                                       \
 	} while (0)
-	if (unlikely(hslen > 256))
+	if (unlikely(nelen > 256))
 		PRIVATE_JSTR_STRSTRCASE(size_t, size_t);
 	PRIVATE_JSTR_STRSTRCASE(uint8_t, int);
 }

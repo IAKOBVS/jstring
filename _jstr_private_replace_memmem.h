@@ -22,13 +22,13 @@ extern "C" {
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 static void private_jstr_rplcn_grow(char **JSTR_RST s,
-				       size_t *JSTR_RST sz,
-				       size_t *JSTR_RST cap,
-				       const char *JSTR_RST const searc,
-				       const char *JSTR_RST const rplc,
-				       size_t n,
-				       const size_t searclen,
-				       const size_t rplclen) JSTR_NOEXCEPT
+				    size_t *JSTR_RST sz,
+				    size_t *JSTR_RST cap,
+				    const char *JSTR_RST const searc,
+				    const char *JSTR_RST const rplc,
+				    size_t n,
+				    const size_t searclen,
+				    const size_t rplclen) JSTR_NOEXCEPT
 {
 	char *tmp;
 	char *dst = *s;
@@ -60,12 +60,12 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_MAYBE_UNUSED
 static void private_jstr_rplcall_grow(char **JSTR_RST s,
-					 size_t *JSTR_RST sz,
-					 size_t *JSTR_RST cap,
-					 const char *JSTR_RST const searc,
-					 const char *JSTR_RST const rplc,
-					 const size_t searclen,
-					 const size_t rplclen) JSTR_NOEXCEPT
+				      size_t *JSTR_RST sz,
+				      size_t *JSTR_RST cap,
+				      const char *JSTR_RST const searc,
+				      const char *JSTR_RST const rplc,
+				      const size_t searclen,
+				      const size_t rplclen) JSTR_NOEXCEPT
 {
 	char *tmp;
 	char *dst = *s;
@@ -98,12 +98,12 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_RETURNS_NONNULL
 static char *private_jstr_rplcn_f(char *JSTR_RST s,
-				     const char *JSTR_RST const searc,
-				     const char *JSTR_RST const rplc,
-				     size_t n,
-				     size_t sz,
-				     const size_t searclen,
-				     const size_t rplclen) JSTR_NOEXCEPT
+				  const char *JSTR_RST const searc,
+				  const char *JSTR_RST const rplc,
+				  size_t n,
+				  size_t sz,
+				  const size_t searclen,
+				  const size_t rplclen) JSTR_NOEXCEPT
 {
 	while (n-- && (s = (char *)PRIVATE_JSTR_MEMMEM(s, (s + sz) - s, searc, searclen))) {
 		memmove(s + rplclen,
@@ -121,11 +121,11 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_RETURNS_NONNULL
 static char *private_jstr_rplcall_f(char *JSTR_RST s,
-				       const char *JSTR_RST const searc,
-				       const char *JSTR_RST const rplc,
-				       size_t sz,
-				       const size_t searclen,
-				       const size_t rplclen) JSTR_NOEXCEPT
+				    const char *JSTR_RST const searc,
+				    const char *JSTR_RST const rplc,
+				    size_t sz,
+				    const size_t searclen,
+				    const size_t rplclen) JSTR_NOEXCEPT
 {
 	while ((s = (char *)PRIVATE_JSTR_MEMMEM(s, (s + sz) - s, searc, searclen))) {
 		memmove(s + rplclen,
@@ -196,9 +196,9 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *private_jstr_rplcall_memmem1(char *JSTR_RST s,
-					     const int searc,
-					     const int rplc,
-					     const size_t sz) JSTR_NOEXCEPT
+					  const int searc,
+					  const int rplc,
+					  const size_t sz) JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, searc, sz);
 	if (unlikely(!s))
@@ -218,10 +218,10 @@ static char *private_jstr_rplcall_memmem1(char *JSTR_RST s,
 JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 static void private_jstr_rplcnc_memmem1(char *JSTR_RST s,
-					   const int searc,
-					   const int rplc,
-					   size_t n,
-					   const size_t sz) JSTR_NOEXCEPT
+					const int searc,
+					const int rplc,
+					size_t n,
+					const size_t sz) JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, searc, sz);
 	if (unlikely(!s))
@@ -367,6 +367,11 @@ static char *private_jstr_memmem4(const int use_remove,
 
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic ignored "-Wstringop-overread" /* NOLINT */
+#	pragma GCC diagnostic push
+#endif /* defined(__GNUC__) || defined(__clang__) */
+
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
@@ -411,7 +416,7 @@ static char *private_jstr_memmem5(const int use_remove,
 						memmove(dst, old, src - old);        \
 					dst += (src - old);                          \
 					old += (src - old);                          \
-					if (use_rplc) {                           \
+					if (use_rplc) {                              \
 						memcpy(dst, rplc, rplclen);          \
 						dst += rplclen;                      \
 					} else if (use_remove) {                     \
@@ -436,10 +441,6 @@ static char *private_jstr_memmem5(const int use_remove,
 			return s + sz;
 	if (unlikely(sz < searclen))
 		return s + sz;
-#if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC diagnostic ignored "-Wstringop-overread" /* NOLINT */
-#	pragma GCC diagnostic push
-#endif /* defined(__GNUC__) || defined(__clang__) */
 	if (unlikely(searclen > 256))
 		PRIVATE_JSTR_MEMMEM5_SHIFTS(size_t, size_t);
 	PRIVATE_JSTR_MEMMEM5_SHIFTS(uint8_t, int);
@@ -449,55 +450,55 @@ static char *private_jstr_memmem5(const int use_remove,
 }
 
 /* use_remove, use_rplc, use_n */
-#define DEFINE_JSTR_MEMMEMN_FUNCS(N)                                                     \
-	JSTR_WARN_UNUSED                                                                 \
-	JSTR_MAYBE_UNUSED                                                                \
-	JSTR_NONNULL_ALL                                                                 \
-	JSTR_RETURNS_NONNULL                                                             \
-	static char *private_jstr_rplcall_memmem##N(char *JSTR_RST s,                 \
-						       const char *JSTR_RST const searc, \
-						       const char *JSTR_RST const rplc,  \
-						       const size_t sz,                  \
-						       const size_t rplclen)             \
-	{                                                                                \
-		return private_jstr_memmem##N(0, 1, 0, s, searc, rplc, 0, sz, rplclen);  \
-	}                                                                                \
-                                                                                         \
-	JSTR_WARN_UNUSED                                                                 \
-	JSTR_MAYBE_UNUSED                                                                \
-	JSTR_NONNULL_ALL                                                                 \
-	JSTR_RETURNS_NONNULL                                                             \
-	static char *private_jstr_rplcn_memmem##N(char *JSTR_RST s,                   \
-						     const char *JSTR_RST const searc,   \
-						     const char *JSTR_RST const rplc,    \
-						     const size_t n,                     \
-						     const size_t sz,                    \
-						     const size_t rplclen)               \
-	{                                                                                \
-		return private_jstr_memmem##N(0, 1, 1, s, searc, rplc, n, sz, rplclen);  \
-	}                                                                                \
-                                                                                         \
-	JSTR_WARN_UNUSED                                                                 \
-	JSTR_MAYBE_UNUSED                                                                \
-	JSTR_NONNULL_ALL                                                                 \
-	JSTR_RETURNS_NONNULL                                                             \
-	static char *private_jstr_rmall_memmem##N(char *JSTR_RST s,                      \
-						  const char *JSTR_RST const searc,      \
-						  const size_t sz)                       \
-	{                                                                                \
-		return private_jstr_memmem##N(1, 0, 0, s, searc, NULL, 0, sz, 0);        \
-	}                                                                                \
-                                                                                         \
-	JSTR_WARN_UNUSED                                                                 \
-	JSTR_MAYBE_UNUSED                                                                \
-	JSTR_NONNULL_ALL                                                                 \
-	JSTR_RETURNS_NONNULL                                                             \
-	static char *private_jstr_rmn_memmem##N(char *JSTR_RST s,                        \
-						const char *JSTR_RST const searc,        \
-						const size_t n,                          \
-						const size_t sz)                         \
-	{                                                                                \
-		return private_jstr_memmem##N(1, 0, 1, s, searc, NULL, n, sz, 0);        \
+#define DEFINE_JSTR_MEMMEMN_FUNCS(N)                                                    \
+	JSTR_WARN_UNUSED                                                                \
+	JSTR_MAYBE_UNUSED                                                               \
+	JSTR_NONNULL_ALL                                                                \
+	JSTR_RETURNS_NONNULL                                                            \
+	static char *private_jstr_rplcall_memmem##N(char *JSTR_RST s,                   \
+						    const char *JSTR_RST const searc,   \
+						    const char *JSTR_RST const rplc,    \
+						    const size_t sz,                    \
+						    const size_t rplclen)               \
+	{                                                                               \
+		return private_jstr_memmem##N(0, 1, 0, s, searc, rplc, 0, sz, rplclen); \
+	}                                                                               \
+                                                                                        \
+	JSTR_WARN_UNUSED                                                                \
+	JSTR_MAYBE_UNUSED                                                               \
+	JSTR_NONNULL_ALL                                                                \
+	JSTR_RETURNS_NONNULL                                                            \
+	static char *private_jstr_rplcn_memmem##N(char *JSTR_RST s,                     \
+						  const char *JSTR_RST const searc,     \
+						  const char *JSTR_RST const rplc,      \
+						  const size_t n,                       \
+						  const size_t sz,                      \
+						  const size_t rplclen)                 \
+	{                                                                               \
+		return private_jstr_memmem##N(0, 1, 1, s, searc, rplc, n, sz, rplclen); \
+	}                                                                               \
+                                                                                        \
+	JSTR_WARN_UNUSED                                                                \
+	JSTR_MAYBE_UNUSED                                                               \
+	JSTR_NONNULL_ALL                                                                \
+	JSTR_RETURNS_NONNULL                                                            \
+	static char *private_jstr_rmall_memmem##N(char *JSTR_RST s,                     \
+						  const char *JSTR_RST const searc,     \
+						  const size_t sz)                      \
+	{                                                                               \
+		return private_jstr_memmem##N(1, 0, 0, s, searc, NULL, 0, sz, 0);       \
+	}                                                                               \
+                                                                                        \
+	JSTR_WARN_UNUSED                                                                \
+	JSTR_MAYBE_UNUSED                                                               \
+	JSTR_NONNULL_ALL                                                                \
+	JSTR_RETURNS_NONNULL                                                            \
+	static char *private_jstr_rmn_memmem##N(char *JSTR_RST s,                       \
+						const char *JSTR_RST const searc,       \
+						const size_t n,                         \
+						const size_t sz)                        \
+	{                                                                               \
+		return private_jstr_memmem##N(1, 0, 1, s, searc, NULL, n, sz, 0);       \
 	}
 
 JSTR_MAYBE_UNUSED
@@ -505,11 +506,11 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *private_jstr_rplcall_memmem5(char *JSTR_RST s,
-					     const char *JSTR_RST searc,
-					     const char *JSTR_RST rplc,
-					     const size_t sz,
-					     const size_t searclen,
-					     const size_t rplclen) JSTR_NOEXCEPT
+					  const char *JSTR_RST searc,
+					  const char *JSTR_RST rplc,
+					  const size_t sz,
+					  const size_t searclen,
+					  const size_t rplclen) JSTR_NOEXCEPT
 {
 	return private_jstr_memmem5(0, 1, 0, s, searc, rplc, 0, sz, searclen, rplclen);
 }
@@ -519,12 +520,12 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *private_jstr_rplcn_memmem5(char *JSTR_RST s,
-					   const char *JSTR_RST searc,
-					   const char *JSTR_RST rplc,
-					   const size_t n,
-					   const size_t sz,
-					   const size_t searclen,
-					   const size_t rplclen) JSTR_NOEXCEPT
+					const char *JSTR_RST searc,
+					const char *JSTR_RST rplc,
+					const size_t n,
+					const size_t sz,
+					const size_t searclen,
+					const size_t rplclen) JSTR_NOEXCEPT
 {
 	return private_jstr_memmem5(0, 1, 1, s, searc, rplc, n, sz, searclen, rplclen);
 }
