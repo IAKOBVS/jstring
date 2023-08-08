@@ -149,15 +149,16 @@ static char *private_jstr_rmall_memmem1(char *JSTR_RST s,
 	s = (char *)memchr(s, c, sz);
 	if (unlikely(!s))
 		return s + sz;
-	const char *src = s + 1;
+	unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = dst + 1;
 	for (;; ++src)
 		if (*src != c) {
 			if (unlikely(!*src))
 				break;
-			*s++ = *src;
+			*dst++ = *src;
 		}
-	*s = '\0';
-	return s;
+	*dst = '\0';
+	return (char *)dst;
 }
 
 JSTR_MAYBE_UNUSED
@@ -172,21 +173,22 @@ static char *private_jstr_rmn_memmem1(char *JSTR_RST s,
 	s = (char *)memchr(s, c, sz);
 	if (unlikely(!s))
 		return s + sz;
-	const char *src = s + 1;
-	const char *const end = s + sz;
+	unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = dst + 1;
+	const unsigned char *const end = dst + sz;
 	for (;; ++src)
 		if (*src != c) {
 			if (unlikely(!*src))
 				break;
-			*s++ = *src;
+			*dst++ = *src;
 		} else {
 			if (unlikely(!--n)) {
-				memmove(s, src, end - src + 1);
-				return s + (end - src + 1);
+				memmove(dst, src, end - src + 1);
+				return (char *)dst + (end - src + 1);
 			}
 		}
-	*s = '\0';
-	return s;
+	*dst = '\0';
+	return (char *)dst;
 }
 
 JSTR_MAYBE_UNUSED
