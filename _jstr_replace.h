@@ -432,11 +432,25 @@ static char *jstr_rmall_p(char *JSTR_RST s,
 JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_INLINE
-static void jstr_rmall_j(jstr_t *JSTR_RST const j,
+static void jstr_rmall_mem_j(jstr_t *JSTR_RST const j,
 			 const char *JSTR_RST const _searc,
 			 const size_t _searclen) JSTR_NOEXCEPT
 {
 	j->size = jstr_rmall_mem_p_constexpr(j->data, _searc, j->size, _searclen) - j->data;
+}
+
+/*
+  Remove all HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
+JSTR_NONNULL_ALL
+JSTR_INLINE_IF_CONSTEXPR
+JSTR_INLINE
+static void jstr_rmall_j(jstr_t *JSTR_RST const j,
+			 const char *JSTR_RST const _searc) JSTR_NOEXCEPT
+{
+	j->size = jstr_rmall_mem_p_constexpr(j->data, _searc, j->size, strlen(_searc)) - j->data;
 }
 
 /*
