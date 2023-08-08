@@ -287,81 +287,85 @@ static char *private_jstr_memmem2(const int use_remove,
 	return s;
 }
 
-/* JSTR_WARN_UNUSED */
-/* JSTR_INLINE */
-/* JSTR_RETURNS_NONNULL */
-/* static char *private_jstr_memmem3(const int use_remove, */
-/* 				  const int use_replace, */
-/* 				  const int use_n, */
-/* 				  char *JSTR_RST s, */
-/* 				  const char *JSTR_RST const searc, */
-/* 				  const char *JSTR_RST const rplc, */
-/* 				  size_t n, */
-/* 				  const size_t sz, */
-/* 				  const size_t rplclen) JSTR_NOEXCEPT */
-/* { */
-/* 	const char *src = s + 3; */
-/* 	const char *const end = s + sz; */
-/* 	const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8; */
-/* 	uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8; */
-/* 	for (; src <= end; sw = (sw | *s++) << 8) */
-/* 		if (sw != nw) { */
-/* 			*s++ = *(src - 3); */
-/* 		} else { */
-/* 			src += 2; */
-/* 			if (use_replace) { */
-/* 				memcpy(s, rplc, rplclen); */
-/* 				s += rplclen; */
-/* 			} else if (use_remove) { */
-/* 			} */
-/* 			if (use_n) { */
-/* 				if (unlikely(!--n)) { */
-/* 					memmove(s, src - 2, end - src - 2 + 1); */
-/* 					return s + (end - src - 2); */
-/* 				} */
-/* 			} */
-/* 		} */
-/* 	*s = '\0'; */
-/* 	return s; */
-/* } */
+#if 0
 
-/* JSTR_WARN_UNUSED */
-/* JSTR_INLINE */
-/* JSTR_RETURNS_NONNULL */
-/* static char *private_jstr_memmem4(const int use_remove, */
-/* 				  const int use_replace, */
-/* 				  const int use_n, */
-/* 				  char *JSTR_RST s, */
-/* 				  const char *JSTR_RST const searc, */
-/* 				  const char *JSTR_RST const rplc, */
-/* 				  size_t n, */
-/* 				  const size_t sz, */
-/* 				  const size_t rplclen) JSTR_NOEXCEPT */
-/* { */
-/* 	const char *const end = s + sz; */
-/* 	const char *src = s + 4; */
-/* 	const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3]; */
-/* 	uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3]; */
-/* 	for (; src <= end; sw = sw << 8 | *s++) */
-/* 		if (sw != nw) { */
-/* 			*s++ = *(src - 4); */
-/* 		} else { */
-/* 			src += 3; */
-/* 			if (use_replace) { */
-/* 				memcpy(s, rplc, rplclen); */
-/* 				s += rplclen; */
-/* 			} else if (use_remove) { */
-/* 			} */
-/* 			if (use_n) { */
-/* 				if (unlikely(!--n)) { */
-/* 					memmove(s, src - 3, end - src - 3 + 1); */
-/* 					return s + (end - src - 3); */
-/* 				} */
-/* 			} */
-/* 		} */
-/* 	*s = '\0'; */
-/* 	return s; */
-/* } */
+JSTR_WARN_UNUSED
+JSTR_INLINE
+JSTR_RETURNS_NONNULL
+static char *private_jstr_memmem3(const int use_remove,
+				  const int use_replace,
+				  const int use_n,
+				  char *JSTR_RST s,
+				  const char *JSTR_RST const searc,
+				  const char *JSTR_RST const rplc,
+				  size_t n,
+				  const size_t sz,
+				  const size_t rplclen) JSTR_NOEXCEPT
+{
+	const char *src = s + 3;
+	const char *const end = s + sz;
+	const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8;
+	uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8;
+	for (; src <= end; sw = (sw | *s++) << 8)
+		if (sw != nw) {
+			*s++ = *(src - 3);
+		} else {
+			src += 2;
+			if (use_replace) {
+				memcpy(s, rplc, rplclen);
+				s += rplclen;
+			} else if (use_remove) {
+			}
+			if (use_n) {
+				if (unlikely(!--n)) {
+					memmove(s, src - 2, end - src - 2 + 1);
+					return s + (end - src - 2);
+				}
+			}
+		}
+	*s = '\0';
+	return s;
+}
+
+JSTR_WARN_UNUSED
+JSTR_INLINE
+JSTR_RETURNS_NONNULL
+static char *private_jstr_memmem4(const int use_remove,
+				  const int use_replace,
+				  const int use_n,
+				  char *JSTR_RST s,
+				  const char *JSTR_RST const searc,
+				  const char *JSTR_RST const rplc,
+				  size_t n,
+				  const size_t sz,
+				  const size_t rplclen) JSTR_NOEXCEPT
+{
+	const char *const end = s + sz;
+	const char *src = s + 4;
+	const uint32_t nw = searc[0] << 24 | searc[1] << 16 | searc[2] << 8 | searc[3];
+	uint32_t sw = s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3];
+	for (; src <= end; sw = sw << 8 | *s++)
+		if (sw != nw) {
+			*s++ = *(src - 4);
+		} else {
+			src += 3;
+			if (use_replace) {
+				memcpy(s, rplc, rplclen);
+				s += rplclen;
+			} else if (use_remove) {
+			}
+			if (use_n) {
+				if (unlikely(!--n)) {
+					memmove(s, src - 3, end - src - 3 + 1);
+					return s + (end - src - 3);
+				}
+			}
+		}
+	*s = '\0';
+	return s;
+}
+
+#endif
 
 JSTR_INLINE
 JSTR_WARN_UNUSED
