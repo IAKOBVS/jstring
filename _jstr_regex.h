@@ -6,6 +6,8 @@ extern "C" {
 #endif /* __cpluslus */
 #include <regex.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */

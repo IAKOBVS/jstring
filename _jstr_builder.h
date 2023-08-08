@@ -175,10 +175,10 @@ static void jstr_alloc_append_mem(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_allocmore_append_mem(char **JSTR_RST const s,
-				      size_t *JSTR_RST const sz,
-				      size_t *JSTR_RST const cap,
-				      const char *JSTR_RST const src,
-				      const size_t srclen) JSTR_NOEXCEPT
+				  size_t *JSTR_RST const sz,
+				  size_t *JSTR_RST const cap,
+				  const char *JSTR_RST const src,
+				  const size_t srclen) JSTR_NOEXCEPT
 {
 	jstr_alloc(s, sz, cap, srclen * JSTR_GROWTH_MULTIPLIER * 2);
 	if (unlikely(!*s))
