@@ -22,6 +22,7 @@ extern "C" {
 #include "_jstr_regex.h"
 #include "_jstr_replace.h"
 #include "_jstr_string.h"
+#include "_jstr_io.h"
 
 #ifdef __cplusplus
 namespace jstr {
