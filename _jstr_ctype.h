@@ -18,6 +18,34 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+static int jstr_isupper(const int c) JSTR_NOEXCEPT
+{
+	switch (c) {
+		JSTR_CASE_LOWER
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static int jstr_islower(const int c) JSTR_NOEXCEPT
+{
+	switch (c) {
+		JSTR_CASE_LOWER
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
 static int jstr_isalnum(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
