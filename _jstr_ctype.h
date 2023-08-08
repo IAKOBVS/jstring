@@ -151,7 +151,7 @@ static void jstr_touppers(char *JSTR_RST s) JSTR_NOEXCEPT
 	for (;; ++s) {
 		switch (*s) {
 			JSTR_CASE_LOWER
-			*s = *s - 'a' + 'A';
+			*s -= 'a' + 'A';
 		default:
 			continue;
 		case '\0':;
@@ -180,7 +180,7 @@ static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
 	for (;; ++s) {
 		switch (*s) {
 			JSTR_CASE_UPPER
-			*s = *s - 'A' + 'a';
+			*s -= 'A' + 'a';
 		default:
 			continue;
 		case '\0':;
