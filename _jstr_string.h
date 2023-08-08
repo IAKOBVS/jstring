@@ -16,10 +16,7 @@ extern "C" {
 #include "_jstr_ctype.h"
 #include "_jstr_macros.h"
 
-#define JSTR_EXTERN_C  1
-#define JSTR_NAMESPACE 1
-
-#if JSTR_NAMESPACE && defined(__cplusplus)
+#ifdef __cplusplus
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
 
@@ -217,7 +214,7 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-static void *private_jstr_memmemr(const void *JSTR_RST const hs,
+static void *private_jstr_memrmem(const void *JSTR_RST const hs,
 				  const size_t hslen,
 				  const void *JSTR_RST const ne,
 				  const size_t nelen) JSTR_NOEXCEPT
@@ -270,7 +267,7 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_INLINE
-static void *jstr_memmemr_constexpr(const void *JSTR_RST const hs,
+static void *jstr_memrmem_constexpr(const void *JSTR_RST const hs,
 				    const size_t hslen,
 				    const void *JSTR_RST const ne,
 				    const size_t nelen) JSTR_NOEXCEPT
@@ -292,7 +289,7 @@ static void *jstr_memmemr_constexpr(const void *JSTR_RST const hs,
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
-	default: return private_jstr_memmemr(hs, hslen, ne, nelen);
+	default: return private_jstr_memrmem(hs, hslen, ne, nelen);
 	}
 }
 
@@ -305,12 +302,12 @@ static void *jstr_memmemr_constexpr(const void *JSTR_RST const hs,
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static void *jstr_memmemr(const void *JSTR_RST const hs,
+static void *jstr_memrmem(const void *JSTR_RST const hs,
 			  const size_t hslen,
 			  const void *JSTR_RST const ne,
 			  const size_t nelen) JSTR_NOEXCEPT
 {
-	return jstr_memmemr_constexpr(hs, hslen, ne, nelen);
+	return jstr_memrmem_constexpr(hs, hslen, ne, nelen);
 }
 
 /*
@@ -328,7 +325,7 @@ static char *jstr_strstrr_constexpr(const char *JSTR_RST const hs,
 				    const size_t hslen,
 				    const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
-	return (char *)jstr_memmemr_constexpr(hs, hslen, ne, strlen((char *)ne));
+	return (char *)jstr_memrmem_constexpr(hs, hslen, ne, strlen((char *)ne));
 }
 
 /*
@@ -346,7 +343,7 @@ static char *jstr_strstrr(const char *JSTR_RST const hs,
 			  const size_t hslen,
 			  const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
-	return (char *)jstr_memmemr(hs, hslen, ne, strlen((char *)ne));
+	return (char *)jstr_memrmem(hs, hslen, ne, strlen((char *)ne));
 }
 
 JSTR_CONST
@@ -551,14 +548,13 @@ static char *jstr_strstrcase(const char *JSTR_RST const hs,
 #endif /* JSTR_HAS_STRCASESTR */
 }
 
-#if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
-}
+#ifdef __cplusplus
+} /* namespace jstr */
 #endif /* JSTR_NAMESPACE */
 
 #undef JSTR_HASH2
 #undef JSTR_HASH2_LOWER
-#undef JSTR_EXTERN_C
-#undef JSTR_NAMESPACE
+#undef JSTR_GLOBAL
 
 #undef PRIVATE_JSTR_MEMMEMR
 

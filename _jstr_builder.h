@@ -32,12 +32,9 @@ static void JSTR_ERR_EXIT()
 	exit(1);
 }
 
-#if JSTR_NAMESPACE && defined(__cplusplus)
+#ifdef __cplusplus
 namespace jstr {
-#endif /* JSTR_NAMESPACE */
-#if JSTR_EXTERN_C && defined(__cplusplus)
-/* extern "C" { */
-#endif /* JSTR_EXTERN_C */
+#endif /* __cpluslus */
 
 /*
   exit(1) if ptr is NULL.
@@ -291,14 +288,8 @@ cat_j(jstr_t *JSTR_RST const j,
 
 #endif /* __cplusplus */
 
-#if JSTR_EXTERN_C && defined(__cplusplus)
-/* } */
-#endif /* JSTR_EXTERN_C */
-#if JSTR_NAMESPACE && defined(__cplusplus)
-} /* namespace jstr */
-#endif /* JSTR_NAMESPACE */
-
-#undef JSTR_EXTERN_C
-#undef JSTR_NAMESPACE
+#ifdef __cplusplus
+}
+#endif /* __cpluslus */
 
 #endif /* JSTR_BUILDER H_DEF */

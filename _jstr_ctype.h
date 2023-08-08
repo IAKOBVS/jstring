@@ -13,11 +13,8 @@ extern "C" {
 #define JSTR_EXTERN_C  1
 #define JSTR_NAMESPACE 0
 
-#if JSTR_NAMESPACE && defined(__cplusplus)
+#ifdef __cplusplus
 namespace jstr {
-#endif /* JSTR_NAMESPACE */
-#if JSTR_EXTERN_C && defined(__cplusplus)
-extern "C" {
 #endif /* JSTR_EXTERN_C */
 
 JSTR_INLINE
@@ -167,14 +164,8 @@ static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
 	}
 }
 
-#if JSTR_EXTERN_C && defined(__cplusplus)
-}
-#endif /* JSTR_EXTERN_C */
-#if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
-}
-#endif /* JSTR_NAMESPACE */
-
-#undef JSTR_EXTERN_C
-#undef JSTR_NAMESPACE
+#ifdef __cplusplus
+} /* namespace jstr */
+#endif /* __cpluslus */
 
 #endif /* JSTR_CTYPE_H_DEF */

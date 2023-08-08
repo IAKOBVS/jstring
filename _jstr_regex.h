@@ -15,8 +15,6 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
-#define JSTR_EXTERN_C  1
-#define JSTR_NAMESPACE 0
 #define JSTR_RST       JSTR_RESTRICT
 
 /* POSIX cflags */
@@ -65,12 +63,9 @@ extern "C" {
 #	define JSTR_REG_ERPAREN REG_RET_ERPAREN
 #endif /* REG_RET_ERPAREN */
 
-#if JSTR_NAMESPACE && defined(__cplusplus)
+#ifdef __cplusplus
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
-#if JSTR_EXTERN_C && defined(__cplusplus)
-extern "C" {
-#endif /* JSTR_EXTERN_C */
 
 JSTR_NOINLINE
 JSTR_COLD
@@ -404,16 +399,10 @@ static void jstr_reg_free(regex_t *JSTR_RST const preg)
 	regfree(preg);
 }
 
-#if JSTR_EXTERN_C && defined(__cplusplus)
-}
-#endif /* JSTR_EXTERN_C */
-#if JSTR_NAMESPACE && defined(__cplusplus)
-}
-#endif /* JSTR_NAMESPACE */
+#ifdef __cplusplus
+} /* namespace jstr */
+#endif /* __cpluslus */
 
 #undef PRIVATE_JSTR_REG_EXEC
-
-#undef JSTR_EXTERN_C
-#undef JSTR_NAMESPACE
 
 #endif /* JSTR_REGEX_H_DEF */

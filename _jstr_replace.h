@@ -14,16 +14,11 @@ extern "C" {
 #include "_jstr_private_replace_memmem.h"
 #include "_jstr_string.h"
 
-#define JSTR_EXTERN_C  1
-#define JSTR_NAMESPACE 0
 #define JSTR_INLINE_IF_CONSTEXPR
 
-#if JSTR_NAMESPACE && defined(__cplusplus)
+#ifdef __cplusplus
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
-#if JSTR_EXTERN_C && defined(__cplusplus)
-extern "C" {
-#endif /* JSTR_EXTERN_C */
 
 #define JSTR_ASCII_SIZE 256
 
@@ -664,7 +659,7 @@ static void jstr_replacelast_mem(char **JSTR_RST const s,
 				 const size_t searclen,
 				 const size_t rplclen) JSTR_NOEXCEPT
 {
-	char *mtc = (char *)jstr_memmemr_constexpr(*s, *sz, searc, searclen);
+	char *mtc = (char *)jstr_memrmem_constexpr(*s, *sz, searc, searclen);
 	if (unlikely(!mtc))
 		return;
 	if (rplclen <= searclen || *cap > *sz + rplclen - searclen + 1) {
@@ -915,12 +910,9 @@ static void jstr_replaceall_mem(char **JSTR_RST const s,
 	jstr_replaceall_mem_constexpr(s, sz, cap, searc, rplc, searclen, rplclen);
 }
 
-#if JSTR_EXTERN_C && defined(__cplusplus)
-}
-#endif /* JSTR_EXTERN_C */
-#if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
-}
-#endif /* JSTR_NAMESPACE */
+#ifdef __cplusplus
+} /* namespace jstr */
+#endif /* __cpluslus */
 
 #undef JSTR_EXTERN_C
 #undef JSTR_NAMESPACE
