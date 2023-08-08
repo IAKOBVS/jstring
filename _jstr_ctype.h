@@ -10,12 +10,9 @@ extern "C" {
 
 #include "_jstr_macros.h"
 
-#define JSTR_EXTERN_C  1
-#define JSTR_NAMESPACE 0
-
 #ifdef __cplusplus
 namespace jstr {
-#endif /* JSTR_EXTERN_C */
+#endif /* __cpluslus */
 
 JSTR_INLINE
 JSTR_CONST

@@ -20,9 +20,6 @@ extern "C" {
 #	include "_jstr_traits.h"
 #endif /* __cpluslus */
 
-#define JSTR_EXTERN_C  1
-#define JSTR_NAMESPACE 0
-
 JSTR_NOINLINE
 JSTR_COLD
 static void JSTR_ERR_EXIT()
