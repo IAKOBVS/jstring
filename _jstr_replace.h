@@ -416,6 +416,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_RETURNS_NONNULL
+JSTR_INLINE
 static char *jstr_rmall_p(char *JSTR_RST s,
 			  const char *JSTR_RST const _searc,
 			  const size_t _searclen) JSTR_NOEXCEPT
@@ -430,9 +431,10 @@ static char *jstr_rmall_p(char *JSTR_RST s,
 */
 JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
+JSTR_INLINE
 static void jstr_rmall_j(jstr_t *JSTR_RST const j,
-			  const char *JSTR_RST const _searc,
-			  const size_t _searclen) JSTR_NOEXCEPT
+			 const char *JSTR_RST const _searc,
+			 const size_t _searclen) JSTR_NOEXCEPT
 {
 	j->size = jstr_rmall_mem_p_constexpr(j->data, _searc, j->size, _searclen) - j->data;
 }
