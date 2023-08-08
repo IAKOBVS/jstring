@@ -22,10 +22,6 @@ namespace jstr {
 
 #define JSTR_ASCII_SIZE 256
 
-/* Use _constexpr functions when passing arguments known at compile time. */
-
-/* TODO: Fix jstr_memmem3 and 4. */
-
 /*
   Remove first C in S.
   Return value:
