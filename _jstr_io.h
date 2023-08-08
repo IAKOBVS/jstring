@@ -11,6 +11,7 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
+#include "_jstr_builder.h"
 #include "_jstr_macros.h"
 
 #ifdef __cplusplus
@@ -19,13 +20,13 @@ namespace jstr {
 
 /*
    Return value:
-   0 if no errors;
+   0 if no errors.
 */
-JSTR_INLINE
+JSTR_NONNULL_ALL
 static int jstr_alloc_file(char **JSTR_RST const s,
 			   size_t *JSTR_RST sz,
 			   size_t *JSTR_RST cap,
-			   const char *JSTR_RST _fname,
+			   const char *JSTR_RST const _fname,
 			   FILE *JSTR_RST _fp,
 			   struct stat *JSTR_RST const _st)
 {
@@ -48,6 +49,20 @@ _ERR_CLOSE:
 _ERR:
 	perror("");
 	return 1;
+}
+
+/*
+   Return value:
+   0 if no errors.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static int jstr_alloc_file_j(jstr_t *JSTR_RST const j,
+			     const char *JSTR_RST const _fname,
+			     FILE *JSTR_RST _fp,
+			     struct stat *JSTR_RST const _st)
+{
+	return jstr_alloc_file(&j->data, &j->size, &j->cap, _fname, _fp, _st);
 }
 
 #ifdef __cplusplus

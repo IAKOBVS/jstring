@@ -187,8 +187,6 @@ sub gen_struct_funcs
 	my (@LINES) = @_;
 	my $out_h;
 	my $out_hpp;
-
-	# my $skel;
 	foreach (@LINES) {
 		if ($_ !~ $G_RE_FUNC) {
 			goto NEXT;
