@@ -774,11 +774,11 @@ static char *jstr_ulltoa(char *JSTR_RST dst, unsigned long long num, unsigned ch
 #undef JSTR_MAX_ULONG_LONG_DIGITS
 #undef PRIVATE_JSTR_NUMTOSTR
 #undef PRIVATE_JSTR_UNUMTOSTR
-#undef JSTR_RST
+#undef PRIVATE_JSTR_MEMMEM5_SHIFTS
+#undef DEFINE_JSTR_MEMMEMN_FUNCS
+#undef JSTR_HASH2
 #undef JSTR_REPLACE
 #undef JSTR_PRIVATE
-#undef PRIVATE_JSTR_MEMMEM5_SHIFTS
-#undef JSTR_HASH2
-#undef DEFINE_JSTR_MEMMEMN_FUNCS
+#undef JSTR_RST
 
 #endif /* JSTR_H_DEF */
