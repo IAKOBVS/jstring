@@ -4,9 +4,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */
@@ -15,20 +17,23 @@ extern "C" {
 #include "_jstr_macros.h"
 
 #define JSTR_EXTERN_C  1
-#define JSTR_NAMESPACE 0
+#define JSTR_NAMESPACE 1
 
 #if JSTR_NAMESPACE && defined(__cplusplus)
 namespace jstr {
 #endif /* JSTR_NAMESPACE */
-#if JSTR_EXTERN_C && defined(__cplusplus)
-extern "C" {
-#endif /* JSTR_EXTERN_C */
 
 #ifdef JSTR_HAS_MEMMEM
 #	define PRIVATE_JSTR_MEMMEM(hs, hlen, ne, nlen) memmem(hs, hlen, ne, nlen)
 #else
 #	define PRIVATE_JSTR_MEMMEM(hs, hlen, ne, nlen) strstr(hs, ne)
 #endif /* JSTR_HAS_MEMMEM */
+
+#ifdef __cplusplus
+#	define JSTR_GLOBAL(func) ::func
+#else
+#	define JSTR_GLOBAL(func) func
+#endif /* __cpluslus */
 
 /*
   Return value:
@@ -38,12 +43,12 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static void *jstr_memcpyp(char *JSTR_RST const dst,
+static void *jstr_mempcpy(char *JSTR_RST const dst,
 			  const char *JSTR_RST const src,
 			  const size_t n) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_MEMPCPY
-	return mempcpy(dst, src, n);
+	return JSTR_GLOBAL(mempcpy(dst, src, n));
 #else
 	memcpy(dst, src, n);
 	return dst + n;
@@ -62,7 +67,7 @@ static char *jstr_strcpyp(char *JSTR_RST const dst,
 			  const char *JSTR_RST const src) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STPCPY
-	return stpcpy(dst, src);
+	return JSTR_GLOBAL(stpcpy(dst, src));
 #else
 	const size_t slen = strlen(src);
 	memcpy(dst, src, slen + 1);
@@ -85,7 +90,7 @@ static void *jstr_memchrr(const void *JSTR_RST const s,
 			  size_t n) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_MEMRCHR
-	return (void *)memrchr(s, c, n);
+	return (void *)JSTR_GLOBAL(memrchr(s, c, n));
 #else
 	if (unlikely(!*(char *)s))
 		return NULL;
@@ -129,7 +134,7 @@ static int jstr_strncmpcase(const char *JSTR_RST const s1,
 			    size_t n) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRNCASECMP
-	return strncasecmp(s1, s2, n);
+	return JSTR_GLOBAL(strncasecmp(s1, s2, n));
 #else
 	const unsigned char *p1 = (unsigned char *)s1;
 	const unsigned char *p2 = (unsigned char *)s2;
@@ -177,7 +182,7 @@ static int jstr_strcmpcase(const char *JSTR_RST s1,
 			   const char *JSTR_RST s2) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASECMP
-	return strcasecmp(s1, s2);
+	return JSTR_GLOBAL(strcasecmp(s1, s2));
 #else
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
@@ -451,7 +456,7 @@ static char *jstr_memmemcase_constexpr(const char *JSTR_RST const hs,
 				       const size_t nelen) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
-	return (char *)strcasestr(hs, ne);
+	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
 #else
 	switch (nelen) {
 	case 0: return (char *)hs;
@@ -495,10 +500,10 @@ static char *jstr_memmemcase(const char *JSTR_RST const hs,
 			     const size_t nelen) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
-	return (char *)strcasestr(hs, ne);
+	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
 #else
 	return jstr_memmemcase_constexpr(hs, hslen, ne, nelen);
-#endif
+#endif /* JSTR_HAS_STRCASESTR */
 }
 
 /*
@@ -518,7 +523,7 @@ static char *jstr_strstrcase_constexpr(const char *JSTR_RST const hs,
 				       const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
-	return (char *)strcasestr(hs, ne);
+	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
 #else
 	return jstr_memmemcase_constexpr(hs, strlen(hs), ne, strlen(ne));
 #endif /* JSTR_HAS_STRCASESTR */
@@ -540,15 +545,12 @@ static char *jstr_strstrcase(const char *JSTR_RST const hs,
 			     const char *JSTR_RST const ne) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
-	return (char *)strcasestr(hs, ne);
+	return (char *)JSTR_GLOBAL(strcasestr(hs, ne));
 #else
 	return jstr_memmemcase(hs, strlen(hs), ne, strlen(ne));
 #endif /* JSTR_HAS_STRCASESTR */
 }
 
-#if JSTR_EXTERN_C && defined(__cplusplus)
-}
-#endif /* JSTR_EXTERN_C */
 #if JSTR_NAMESPACE && !JSTR_IN_NAMESPACE && defined(__cplusplus)
 }
 #endif /* JSTR_NAMESPACE */

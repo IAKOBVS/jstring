@@ -20,7 +20,6 @@ if ($G_OUT_C =~ /\.hpp/) {
 	$G_OUT_CPP = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
 }
 
-# my $G_IGNORE_FILE_NONMEM = 'builder.h';
 my $G_IGNORE_FILE = 'private';
 
 my $G_NMSPC      = 'jstr';
@@ -54,6 +53,7 @@ $g_in_h = tidy_newlines($g_in_h);
 
 my @LNS = gen_nonmem_funcs($g_in_h);
 my ($out_h, $out_hpp) = gen_struct_funcs(@LNS);
+# fix_namespace($out_hpp);
 print_to_file($G_OUT_C, $out_h, $G_OUT_CPP, $out_hpp);
 
 sub usage
@@ -309,6 +309,10 @@ sub gen_struct_funcs
 		$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/o;
 		$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/o;
 		$out_hpp =~ s/~$G_NMSPC/destructor$G_NMSPC/go;
+		# if ($G_FNAME =~ /string/) {
+		# 	$out_hpp =~ s/return\s*([^j][^s][^t][^r]\w*\(.*?\)\s*;)/return ::$1/g;
+		# 	$out_hpp =~ s/return\s*(\(.*?\))\s*([^j][^s][^t][^r]\w*\(.*?\)\s*;)/return $1::$2/g;
+		# }
 		$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
 		$out_hpp =~ s/destructor$G_NMSPC/~$G_NMSPC/go;
 	}
@@ -327,4 +331,14 @@ sub update_includes
 	my ($includes) = @_;
 	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_$G_NMSPC/$1$G_NMSPC/go;
 	return $includes;
+}
+
+sub fix_namespace
+{
+	my ($hpp) = @_;
+	if ($G_FNAME =~ /string/) {
+		$hpp =~ s/return\s*(\(.*?\))\s*(\w*\(.*?\)\s*;)/return $1::$2/g;
+		$hpp =~ s/return\s*(\w*\(.*?\)\s*;)/return ::$1/g;
+	}
+	return $hpp;
 }
