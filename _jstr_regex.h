@@ -400,8 +400,7 @@ static char *jstr_reg_removeall_now_mem(char *JSTR_RST const s,
 					const int cflags,
 					const int eflags) JSTR_NOEXCEPT
 {
-	int ret = jstr_reg_comp(preg, ptn, cflags);
-	if (unlikely(ret != JSTR_REG_RET_NOERROR))
+	if (unlikely(jstr_reg_comp(preg, ptn, cflags) != JSTR_REG_RET_NOERROR))
 		return s + sz;
 	return jstr_reg_removeall_mem(s, sz, preg, eflags);
 }
