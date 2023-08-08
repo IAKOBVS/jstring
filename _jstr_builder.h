@@ -72,7 +72,7 @@ typedef struct jstr_t {
 	  free(STR) and set STR to NULL.
 	*/
 	JSTR_INLINE
-	void del(void) JSTR_NOEXCEPT
+	void free(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
 #	if JSTR_NULLIFY_PTR_ON_DELETE
@@ -177,7 +177,7 @@ static void jstr_alloc_append_mem(char **JSTR_RST const s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
+static void jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
 {
 	free(p);
 #if JSTR_NULLIFY_PTR_ON_DELETE
