@@ -262,12 +262,10 @@ static void jstr_insertaftallc_mem(char **JSTR_RST const s,
 				   const char *JSTR_RST const _src,
 				   const size_t _srclen) JSTR_NOEXCEPT
 {
-	size_t off = 0;
-	const char *p;
-	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
-		jstr_insert_mem(s, sz, cap, p - *s + 1, _src, _srclen);
-		off += *s - p + 1;
-	}
+	const char *p = *s;
+	const char *const end = *s + *sz;
+	while ((p = (char *)memchr(p, c, end - p)))
+		jstr_insert_mem(s, sz, cap, p++ - *s + 1, _src, _srclen);
 }
 
 /*
@@ -343,12 +341,10 @@ static void jstr_insertaftall_mem(char **JSTR_RST const s,
 		jstr_insertaftallc_mem(s, sz, cap, *_searc, _src, _srclen);
 		return;
 	default: {
-		size_t off = 0;
-		const char *p;
-		while ((p = (char *)PRIVATE_JSTR_MEMMEM(*s + off, *sz - off, _searc, _searclen))) {
-			jstr_insert_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
-			off += *s - p + _searclen;
-		}
+		const char *p = *s;
+		const char *const end = p + *sz;
+		while ((p = (char *)PRIVATE_JSTR_MEMMEM(p, end - p, _searc, _searclen)))
+			jstr_insert_mem(s, sz, cap, p++ - *s + _searclen, _src, _srclen);
 		return;
 	}
 	}
