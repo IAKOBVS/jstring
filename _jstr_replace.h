@@ -450,7 +450,7 @@ JSTR_INLINE
 static void jstr_rmall_j(jstr_t *JSTR_RST const j,
 			 const char *JSTR_RST const _searc) JSTR_NOEXCEPT
 {
-	j->size = jstr_rmall_mem_p_constexpr(j->data, _searc, j->size, strlen(_searc)) - j->data;
+	return jstr_rmall_mem_j(j, _searc, strlen(_searc));
 }
 
 /*
