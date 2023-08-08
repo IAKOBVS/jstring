@@ -287,7 +287,7 @@ static char *private_jstr_memmem2(const int use_remove,
 	return s;
 }
 
-#if 0
+#if 0 /* broken */
 
 JSTR_WARN_UNUSED
 JSTR_INLINE
