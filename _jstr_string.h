@@ -531,6 +531,11 @@ static char *jstr_strcasestr_mem_constexpr(const char *JSTR_RST const hs,
 #endif
 }
 
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic ignored "-Wunused-parameter"
+#	pragma GCC diagnostic push
+#endif /* defined(__GNUC__) || defined(__clang__) */
+
 /*
    Find NE in HS case-insensitively.
    Return value:
@@ -573,6 +578,10 @@ static char *jstr_memcasemem_constexpr(const char *JSTR_RST const hs,
 #endif
 }
 
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic pop
+#endif /* defined(__GNUC__) || defined(__clang__) */
+
 /*
    Find NE in HS case-insensitively.
    Return value:
@@ -590,6 +599,11 @@ static char *jstr_memcasemem(const char *JSTR_RST const hs,
 {
 	return jstr_memcasemem_constexpr(hs, hslen, ne, nelen);
 }
+
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic ignored "-Wunused-parameter"
+#	pragma GCC diagnostic push
+#endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
    Use ONLY if strcasestr is unavailable.
@@ -614,6 +628,10 @@ static char *jstr_strcasestr_mem(const char *JSTR_RST const hs,
 	return jstr_strcasestr_mem_constexpr(hs, hslen, ne, nelen);
 #endif /* JSTR_HAS_STRCASESTR */
 }
+
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic pop
+#endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
    Find NE in HS case-insensitively.
