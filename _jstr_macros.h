@@ -597,8 +597,7 @@ case ' ':
 #endif /* Gnu */
 
 #if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
-|| (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE)                           \
-    || defined(_BSD_SOURCE))                                                                         \
+|| (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE) || defined(_BSD_SOURCE))  \
 || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 23) && defined(_POSIX_C_SOURCE))
 #	define JSTR_HAS_GETC_UNLOCKED
 #	define JSTR_HAS_GETCHAR_UNLOCKED
@@ -606,28 +605,17 @@ case ' ':
 #	define JSTR_HAS_PUTCHAR_UNLOCKED
 #endif /* Posix || Bsd  */
 
-#if (__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 19))
-#	ifdef _DEFAULT_SOURCE
-#		define JSTR_HAS_FREAD_UNLOCKED
-#		define JSTR_HAS_FWRITE_UNLOCKED
-#		define JSTR_HAS_FPUTC_UNLOCKED
-#		define JSTR_HAS_FGETC_UNLOCKED
-#		define JSTR_HAS_CLEARERR_UNLOCKED
-#		define JSTR_HAS_FEOF_UNLOCKED
-#		define JSTR_HAS_FERROR_UNLOCKED
-#		define JSTR_HAS_FILENO_UNLOCKED
-#		define JSTR_HAS_FFLUSH_UNLOCKED
-#	elif defined(_SVID_SOURCE) || defined(_BSD_SOURCE)
-#		define JSTR_HAS_FREAD_UNLOCKED
-#		define JSTR_HAS_FWRITE_UNLOCKED
-#		define JSTR_HAS_FPUTC_UNLOCKED
-#		define JSTR_HAS_FGETC_UNLOCKED
-#		define JSTR_HAS_CLEARERR_UNLOCKED
-#		define JSTR_HAS_FEOF_UNLOCKED
-#		define JSTR_HAS_FERROR_UNLOCKED
-#		define JSTR_HAS_FILENO_UNLOCKED
-#		define JSTR_HAS_FFLUSH_UNLOCKED
-#	endif
+#if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 19)) && defined(_DEFAULT_SOURCE)) \
+|| defined(_SVID_SOURCE) || defined(_BSD_SOURCE)
+#	define JSTR_HAS_FREAD_UNLOCKED
+#	define JSTR_HAS_FWRITE_UNLOCKED
+#	define JSTR_HAS_FPUTC_UNLOCKED
+#	define JSTR_HAS_FGETC_UNLOCKED
+#	define JSTR_HAS_CLEARERR_UNLOCKED
+#	define JSTR_HAS_FEOF_UNLOCKED
+#	define JSTR_HAS_FERROR_UNLOCKED
+#	define JSTR_HAS_FILENO_UNLOCKED
+#	define JSTR_HAS_FFLUSH_UNLOCKED
 #endif /* Default || Svid || Bsd */
 
 #if ((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) \
