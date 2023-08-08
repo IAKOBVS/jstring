@@ -685,6 +685,12 @@ static char *jstr_strcasestr(const char *JSTR_RST const hs,
 #undef JSTR_HASH2_LOWER
 #undef JSTR_GLOBAL
 
-#undef PRIVATE_JSTR_MEMMEMR
+#undef PRIVATE_JSTR_MEMRMEM
+#undef PRIVATE_JSTR_STRSTRCASE
+
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC poison private_jstr_memrmem
+#pragma GCC poison private_jstr_strcasestr_mem3
+#endif /* defined(__GNUC__) || defined(__clang__) */
 
 #endif /* JSTR_STRING_H_DEF */
