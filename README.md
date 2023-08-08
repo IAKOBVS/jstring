@@ -21,7 +21,7 @@ _constexpr: use when passing arguments known at compile-time.
 <br>
 E.g., rplcall_constexpr(&s.data, &s.size, &s.cap, "hello", "world").
 <br>
-Since the search string, "hello", and the replace, "world", is a literal string, and its length known at compile-time, the compiler can pick the appropriate function based on the length, resulting in smaller code size.
+Since "hello" and "world" are literal strings whose length are known at compile time, the compiler can pick the appropriate function based on the length, potentially resulting in smaller code size.
 <br>
 <br>
 Scripts:
