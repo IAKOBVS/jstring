@@ -1,7 +1,7 @@
 #ifndef JSTR_MACROS_H_DEF
 #define JSTR_MACROS_H_DEF
 
-#if 0
+#if 0 /* unused */
 
 #if defined(__GNUC__) || defined(__clang__)
 #	ifdef __cplusplus
