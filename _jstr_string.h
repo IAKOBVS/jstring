@@ -7,8 +7,8 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef __cplusplus
 }
@@ -600,8 +600,8 @@ static char *jstr_memcasemem(const char *JSTR_RST const hs,
 }
 
 #if defined(__GNUC__) || defined(__clang__)
-/* #	pragma GCC diagnostic ignored "-Wunused-parameter" */
-/* #	pragma GCC diagnostic push */
+#	pragma GCC diagnostic ignored "-Wunused-parameter"
+#	pragma GCC diagnostic push
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
@@ -632,7 +632,7 @@ static char *jstr_strcasestr_mem(const char *JSTR_RST const hs,
 }
 
 #if defined(__GNUC__) || defined(__clang__)
-/* #	pragma GCC diagnostic pop */
+#	pragma GCC diagnostic pop
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
@@ -645,7 +645,7 @@ static char *jstr_strcasestr_mem(const char *JSTR_RST const hs,
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED;
+JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static char *jstr_strcasestr_constexpr(const char *JSTR_RST const hs,
 				       const char *JSTR_RST const ne) JSTR_NOEXCEPT
@@ -705,7 +705,7 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
-static void *jstr_strchrnul(const char *JSTR_RST const s,
+static char *jstr_strchrnul(const char *JSTR_RST const s,
 			    const int c)
 {
 #ifdef JSTR_HAS_STRCHRNUL

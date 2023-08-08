@@ -1,206 +1,210 @@
 #ifndef JSTR_MACROS_H_DEF
 #define JSTR_MACROS_H_DEF
 
-/* #if defined(__GNUC__) || defined(__clang__) */
-/* #	ifdef __cplusplus */
-/* #		include <cstdint> */
-/* #	else */
-/* #		include <stdint.h> */
-/* #	endif /1* __cplusplus *1/ */
-/* #	if __has_builtin(__builtin_clzll) */
-/* #		ifdef __cplusplus */
-/* extern "C" { */
-/* #		endif */
+#if 0
 
-/* #		ifdef JSTR_64_BIT */
-/* JSTR_INLINE */
-/* JSTR_CONST */
-/* JSTR_WARN_UNUSED */
-/* uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT */
-/* { */
-/* 	return 1ull << (64 - __builtin_clzll(x - 1)); */
-/* } */
+#if defined(__GNUC__) || defined(__clang__)
+#	ifdef __cplusplus
+#		include <cstdint>
+#	else
+#		include <stdint.h>
+#	endif /* __cplusplus */
+#	if __has_builtin(__builtin_clzll)
+#		ifdef __cplusplus
+extern "C" {
+#		endif
 
-/* #		endif /1* JSTR_64_BIT *1/ */
+#		ifdef JSTR_64_BIT
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
+{
+	return 1ull << (64 - __builtin_clzll(x - 1));
+}
 
-/* #	endif /1* __has_builtin(__builtin_clzll) *1/ */
-/* #	if __has_builtin(__builtin_clz) */
+#		endif /* JSTR_64_BIT */
 
-/* #		ifdef JSTR_32_BIT */
-/* JSTR_INLINE */
-/* JSTR_CONST */
-/* JSTR_WARN_UNUSED */
-/* uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT */
-/* { */
-/* 	return 1 << (32 - __builtin_clz(x - 1)); */
-/* } */
+#	endif /* __has_builtin(__builtin_clzll) */
+#	if __has_builtin(__builtin_clz)
 
-/* #		endif /1* JSTR_32_BIT *1/ */
+#		ifdef JSTR_32_BIT
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
+{
+	return 1 << (32 - __builtin_clz(x - 1));
+}
 
-/* #		ifdef __cplusplus */
-/* } */
-/* #		endif */
-/* #	endif /1* __has_builtin(__builtin_clz) *1/ */
-/* #elif defined(_MSC_VER) */
-/* #	include <stdint.h> */
-/* #	include <intrin.h> */
-/* #	pragma intrinsic(_BitScanReverse64) */
-/* #	ifdef __cplusplus */
-/* extern "C" { */
-/* #	endif */
+#		endif /* JSTR_32_BIT */
 
-/* #	ifdef JSTR_32_BIT */
-/* JSTR_INLINE */
-/* JSTR_CONST */
-/* JSTR_WARN_UNUSED */
-/* uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT */
-/* { */
-/* 	unsigned long index; */
-/* 	_BitScanReverse(&index, x - 1); */
-/* 	return 1 << (index + 1); */
-/* } */
+#		ifdef __cplusplus
+}
+#		endif
+#	endif /* __has_builtin(__builtin_clz) */
+#elif defined(_MSC_VER)
+#	include <stdint.h>
+#	include <intrin.h>
+#	pragma intrinsic(_BitScanReverse64)
+#	ifdef __cplusplus
+extern "C" {
+#	endif
 
-/* #	endif /1* JSTR_32_BIT *1/ */
+#	ifdef JSTR_32_BIT
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
+{
+	unsigned long index;
+	_BitScanReverse(&index, x - 1);
+	return 1 << (index + 1);
+}
 
-/* #	ifdef JSTR_64_BIT */
-/* JSTR_INLINE */
-/* JSTR_CONST */
-/* JSTR_WARN_UNUSED */
-/* uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT */
-/* { */
-/* 	unsigned long index; */
-/* 	_BitScanReverse64(&index, x - 1); */
-/* 	return 1ull << (index + 1); */
-/* } */
+#	endif /* JSTR_32_BIT */
 
-/* #	endif /1* JSTR_64_BIT *1/ */
+#	ifdef JSTR_64_BIT
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
+{
+	unsigned long index;
+	_BitScanReverse64(&index, x - 1);
+	return 1ull << (index + 1);
+}
 
-/* #else */
+#	endif /* JSTR_64_BIT */
 
-/* #	ifdef JSTR_32_BIT */
+#else
 
-/* JSTR_INLINE */
-/* JSTR_CONST */
-/* JSTR_WARN_UNUSED */
-/* size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT */
-/* { */
-/* 	--x; */
-/* 	x |= x >> 1; */
-/* 	x |= x >> 2; */
-/* 	x |= x >> 4; */
-/* 	x |= x >> 8; */
-/* 	x |= x >> 16; */
-/* 	return x + 1; */
-/* } */
+#	ifdef JSTR_32_BIT
 
-/* #	endif /1* JSTR_32_BIT *1/ */
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT
+{
+	--x;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	return x + 1;
+}
 
-/* #	ifdef JSTR_64_BIT */
+#	endif /* JSTR_32_BIT */
 
-/* JSTR_INLINE */
-/* JSTR_CONST */
-/* JSTR_WARN_UNUSED */
-/* size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT */
-/* { */
-/* 	--x; */
-/* 	x |= x >> 1; */
-/* 	x |= x >> 2; */
-/* 	x |= x >> 4; */
-/* 	x |= x >> 8; */
-/* 	x |= x >> 16; */
-/* 	x |= x >> 32; */
-/* 	return x + 1; */
-/* } */
+#	ifdef JSTR_64_BIT
 
-/* #	endif /1* JSTR_64_BIT *1/ */
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
+{
+	--x;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	x |= x >> 32;
+	return x + 1;
+}
 
-/* #	ifdef __cplusplus */
-/* } */
-/* #	endif */
-/* #endif /1* __GNUC__ || __clang__ *1/ */
+#	endif /* JSTR_64_BIT */
 
-/* #ifdef __cplusplus */
+#	ifdef __cplusplus
+}
+#	endif
+#endif /* __GNUC__ || __clang__ */
 
-/* #	include <type_traits> */
+#ifdef __cplusplus
 
-/* JSTR_INLINE */
-/* JSTR_CONST */
-/* JSTR_WARN_UNUSED */
-/* static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT */
-/* { */
-/* 	--x; */
-/* 	x |= x >> 1; */
-/* 	x |= x >> 2; */
-/* 	x |= x >> 4; */
-/* 	x |= x >> 8; */
-/* 	x |= x >> 16; */
-/* 	return x + 1; */
-/* } */
+#	include <type_traits>
 
-/* JSTR_INLINE */
-/* JSTR_CONST */
-/* JSTR_WARN_UNUSED */
-/* static constexpr std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT */
-/* { */
-/* 	--x; */
-/* 	x |= x >> 1; */
-/* 	x |= x >> 2; */
-/* 	x |= x >> 4; */
-/* 	x |= x >> 8; */
-/* 	x |= x >> 16; */
-/* 	x |= x >> 32; */
-/* 	return x + 1; */
-/* } */
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT
+{
+	--x;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	return x + 1;
+}
 
-/* template <typename T> */
-/* JSTR_INLINE */
-/* JSTR_WARN_UNUSED */
-/* JSTR_CONST static std::size_t */
-/* JSTR_NEXT_POW2_32(T x) */
-/* { */
-/* 	if */
-/* #	if __cplusplus > 201703L */
-/* 	constexpr */
-/* #	endif /1* cpp 17 *1/ */
-/* 	(std::is_integral<T>::value) */
-/* 		return private_jstr_next_pow2_32_constexpr(x); */
-/* 	return private_jstr_next_pow2_32(x); */
-/* } */
+JSTR_INLINE
+JSTR_CONST
+JSTR_WARN_UNUSED
+static constexpr std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT
+{
+	--x;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	x |= x >> 32;
+	return x + 1;
+}
 
-/* template <typename T> */
-/* JSTR_INLINE */
-/* JSTR_WARN_UNUSED */
-/* JSTR_CONST static std::size_t */
-/* JSTR_NEXT_POW2_64(T x) */
-/* { */
-/* 	if */
-/* #	if __cplusplus > 201703L */
-/* 	constexpr */
-/* #	endif /1* cpp 17 *1/ */
-/* 	(std::is_integral<T>::value) */
-/* 		return private_jstr_next_pow2_64_constexpr(x); */
-/* 	return private_jstr_next_pow2_64(x); */
-/* } */
+template <typename T>
+JSTR_INLINE
+JSTR_WARN_UNUSED
+JSTR_CONST static std::size_t
+JSTR_NEXT_POW2_32(T x)
+{
+	if
+#	if __cplusplus > 201703L
+	constexpr
+#	endif /* cpp 17 */
+	(std::is_integral<T>::value)
+		return private_jstr_next_pow2_32_constexpr(x);
+	return private_jstr_next_pow2_32(x);
+}
 
-/* #endif /1* __cplusplus *1/ */
+template <typename T>
+JSTR_INLINE
+JSTR_WARN_UNUSED
+JSTR_CONST static std::size_t
+JSTR_NEXT_POW2_64(T x)
+{
+	if
+#	if __cplusplus > 201703L
+	constexpr
+#	endif /* cpp 17 */
+	(std::is_integral<T>::value)
+		return private_jstr_next_pow2_64_constexpr(x);
+	return private_jstr_next_pow2_64(x);
+}
 
-/* #ifdef JSTR_ALIGN_POWER_OF_TWO */
-/* #	ifdef JSTR_64_BIT */
-/* #		ifdef __cplusplus */
-/* #			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x) */
-/* #		else */
-/* #			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x) */
-/* #		endif /1* __cplusplus *1/ */
-/* #	elif JSTR_32_BIT */
-/* #		ifdef __cplusplus */
-/* #			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x) */
-/* #		else */
-/* #			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x) */
-/* #		endif /1* __cplusplus *1/ */
-/* #	else */
-/* #		define JSTR_NEXT_POW2(x) (x) */
-/* #	endif /1* JSTR_64_BIT *1/ */
-/* #endif /1* JSTR_ALIGN_POWER_OF_TWO *1/ */
+#endif /* __cplusplus */
+
+#ifdef JSTR_ALIGN_POWER_OF_TWO
+#	ifdef JSTR_64_BIT
+#		ifdef __cplusplus
+#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
+#		else
+#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
+#		endif /* __cplusplus */
+#	elif JSTR_32_BIT
+#		ifdef __cplusplus
+#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
+#		else
+#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
+#		endif /* __cplusplus */
+#	else
+#		define JSTR_NEXT_POW2(x) (x)
+#	endif /* JSTR_64_BIT */
+#endif /* JSTR_ALIGN_POWER_OF_TWO */
+
+#endif /* if 0 */
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
 #	define JSTR_HAS_GENERIC
@@ -557,20 +561,20 @@ case 'Y':               \
 case 'Z':
 
 #define JSTR_CASE_VOWEL \
-JSTR_CASE_VOWEL_UPPER:  \
-JSTR_CASE_VOWEL_LOWER:
+JSTR_CASE_VOWEL_UPPER  \
+JSTR_CASE_VOWEL_LOWER
 
 #define JSTR_CASE_CONSONANT \
-JSTR_CASE_CONSONANT_UPPER:  \
-JSTR_CASE_CONSONANT_LOWER:
+JSTR_CASE_CONSONANT_UPPER  \
+JSTR_CASE_CONSONANT_LOWER
 
 #define JSTR_CASE_ALPHA \
-JSTR_CASE_LOWER:        \
-JSTR_CASE_UPPER:
+JSTR_CASE_LOWER        \
+JSTR_CASE_UPPER
 
 #define JSTR_CASE_ALPHANUM \
-JSTR_CASE_DIGIT:           \
-JSTR_CASE_ALPHA:
+JSTR_CASE_DIGIT           \
+JSTR_CASE_ALPHA
 
 #define JSTR_CASE_WHITESPACE \
 case '\n':                   \
