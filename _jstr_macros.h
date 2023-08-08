@@ -634,7 +634,19 @@ case ' ':
 || defined(_GNU_SOURCE)
 #	define JSTR_HAS_STPCPY
 #	define JSTR_HAS_STRNLEN
+#	define JSTR_HAS_STRNDUP
 #endif /* Posix || Gnu */
+
+#if (_XOPEN_SOURCE >= 500)                                                                          \
+|| ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19) && (defined(_BSD_SOURCE) || defined(_SVID_SOURCE))) \
+|| ((__GLIBC__ > 2) || (__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 12) && __POSIX_C_SOURCE >= 200809L)
+#	define JSTR_HAS_STRDUP
+#endif /* Xopen || Bsd || Svid || Posix */
+
+#ifdef _GNU_SOURCE
+#	define JSTR_HAS_STRDUPA
+#	define JSTR_HAS_STRNDUPA
+#endif /* Gnu */
 
 #define JSTR_RST JSTR_RESTRICT
 

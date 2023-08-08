@@ -8,6 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 }
@@ -47,8 +48,7 @@ static void *jstr_mempcpy(char *JSTR_RST const dst,
 #ifdef JSTR_HAS_MEMPCPY
 	return JSTR_GLOBAL(mempcpy(dst, src, n));
 #else
-	memcpy(dst, src, n);
-	return dst + n;
+	return (char *)memcpy(dst, src, n) + n;
 #endif /* !JSTR_HAS_STPCPY */
 }
 
@@ -67,8 +67,7 @@ static char *jstr_stpcpy(char *JSTR_RST const dst,
 	return JSTR_GLOBAL(stpcpy(dst, src));
 #else
 	const size_t slen = strlen(src);
-	memcpy(dst, src, slen + 1);
-	return dst + slen;
+	return memcpy(dst, src, slen + 1) + slen;
 #endif /* !JSTR_HAS_STPCPY */
 }
 
@@ -646,7 +645,7 @@ static char *jstr_strcasestr_mem(const char *JSTR_RST const hs,
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
+JSTR_MAYBE_UNUSED;
 JSTR_INLINE
 static char *jstr_strcasestr_constexpr(const char *JSTR_RST const hs,
 				       const char *JSTR_RST const ne) JSTR_NOEXCEPT
@@ -717,6 +716,22 @@ static void *jstr_strchrnul(const char *JSTR_RST const s,
 	if (p)
 		return p;
 	return (void *)(s + n);
+#endif /* JSTR_HAS_STRCHRNUL */
+}
+
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static char *jstr_strdup(const char *JSTR_RST const s)
+{
+#ifdef JSTR_HAS_STRCHRNUL
+	return (char *)JSTR_GLOBAL(strdup(s));
+#else
+	const size_t len = strlen(s) + 1;
+	void *p = malloc(len);
+	if (unlikely(!p))
+		return NULL;
+	return (char *)memcpy(p, s, len);
 #endif /* JSTR_HAS_STRCHRNUL */
 }
 
