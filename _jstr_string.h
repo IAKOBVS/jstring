@@ -344,6 +344,139 @@ static char *jstr_strstrr(const char *JSTR_RST const hs,
 	return (char *)jstr_memmemr(hs, hslen, ne, strlen((char *)ne));
 }
 
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+static char *private_jstr_memmemcase3(const char *JSTR_RST const hs,
+				      const size_t hslen,
+				      const char *JSTR_RST const ne,
+				      const size_t nelen) JSTR_NOEXCEPT
+{
+#define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % sizeof(shift))
+#define PRIVATE_JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                      \
+	do {                                                                                       \
+		const unsigned char *h = (unsigned char *)hs;                                      \
+		const unsigned char *const n = (unsigned char *)ne;                                \
+		const unsigned char *const end = h + hslen - nelen;                                \
+		size_t tmp;                                                                        \
+		size_t shift1;                                                                     \
+		size_t mtc1 = nelen - 1;                                                           \
+		size_t off = 0;                                                                    \
+		shift_type shift[256];                                                             \
+		memset(shift, 0, sizeof(shift));                                                   \
+		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i) {                    \
+			shift[i] = JSTR_HASH2_LOWER(ne + i);                                       \
+		}                                                                                  \
+		shift1 = mtc1 - shift[JSTR_HASH2_LOWER(n + mtc1)];                                 \
+		shift[JSTR_HASH2_LOWER(n + mtc1)] = mtc1;                                          \
+		while (h <= end) {                                                                 \
+			do {                                                                       \
+				h += mtc1;                                                         \
+				tmp = shift[JSTR_HASH2_LOWER(h)];                                  \
+			} while (!tmp && h <= end);                                                \
+			h -= tmp;                                                                  \
+			if (tmp < mtc1)                                                            \
+				continue;                                                          \
+			if (mtc1 < 15 || !jstr_strncmpcase((char *)h + off, (char *)n + off, 8)) { \
+				if (!jstr_strncmpcase((char *)h, (char *)n, nelen))                \
+					return (char *)h;                                          \
+				off = (off >= 8 ? off : mtc1) - 8;                                 \
+			}                                                                          \
+			h += shift1;                                                               \
+		}                                                                                  \
+		return NULL;                                                                       \
+	} while (0)
+	if (unlikely(hslen > 256))
+		PRIVATE_JSTR_STRSTRCASE(size_t, size_t);
+	PRIVATE_JSTR_STRSTRCASE(uint8_t, int);
+}
+
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+static char *private_jstr_strstrcase1(const char *JSTR_RST const hs,
+				      const size_t hslen,
+				      const char *JSTR_RST const ne) JSTR_NOEXCEPT
+{
+	enum { l = 0,
+	       u,
+	};
+	unsigned char n[2];
+	switch (*ne) {
+		JSTR_CASE_UPPER
+		n[u] = *ne;
+		n[l] = *ne - 'A' + 'a';
+		break;
+		JSTR_CASE_LOWER
+		n[l] = *ne;
+		n[u] = *ne - 'a' + 'A';
+		break;
+	default:
+		return (char *)memchr(hs, *ne, hslen);
+	}
+	unsigned char *h = (unsigned char *)hs;
+	for (;; ++h)
+		switch (*h) {
+			JSTR_CASE_UPPER
+			if (*h == n[u])
+				return (char *)h;
+			break;
+			JSTR_CASE_LOWER
+			if (*h == n[l])
+				return (char *)h;
+			break;
+		case '\0':
+			return NULL;
+		}
+}
+
+/*
+   Use ONLY if strcasestr is unavailable.
+   Find NE in HS case-insensitively.
+   HS MUST be nul terminated.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static char *jstr_memmemcase_constexpr(const char *JSTR_RST const hs,
+				       const size_t hslen,
+				       const char *JSTR_RST const ne,
+				       const size_t nelen) JSTR_NOEXCEPT
+{
+#ifdef JSTR_HAS_STRCASESTR
+	return (char *)strcasestr(hs, ne);
+#else
+	switch (nelen) {
+	case 0: return (char *)hs;
+	case 1: return private_jstr_strstrcase1(hs, hslen, ne);
+	case 2:
+		switch (*ne) {
+			JSTR_CASE_UPPER
+			JSTR_CASE_LOWER
+			break;
+		default:
+			switch (*(ne + 1)) {
+				JSTR_CASE_UPPER
+				JSTR_CASE_LOWER
+				break;
+			default:
+				return (char *)PRIVATE_JSTR_MEMMEM(hs, hslen, ne, nelen);
+			}
+		}
+		/* FALLTHROUGH */
+	default:
+		return private_jstr_memmemcase3(hs, hslen, ne, nelen);
+	}
+#endif
+}
+
 /*
    Use ONLY if strcasestr is unavailable.
    Find NE in HS case-insensitively.
@@ -364,97 +497,31 @@ static char *jstr_memmemcase(const char *JSTR_RST const hs,
 #ifdef JSTR_HAS_STRCASESTR
 	return (char *)strcasestr(hs, ne);
 #else
-#	define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % sizeof(shift))
-#	define PRIVATE_JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                      \
-		do {                                                                                       \
-			const unsigned char *h = (unsigned char *)hs;                                      \
-			const unsigned char *const n = (unsigned char *)ne;                                \
-			const unsigned char *const end = h + hslen - nelen;                                \
-			size_t tmp;                                                                        \
-			size_t shift1;                                                                     \
-			size_t mtc1 = nelen - 1;                                                           \
-			size_t off = 0;                                                                    \
-			shift_type shift[256];                                                             \
-			memset(shift, 0, sizeof(shift));                                                   \
-			for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i) {                    \
-				shift[i] = JSTR_HASH2_LOWER(ne + i);                                       \
-			}                                                                                  \
-			shift1 = mtc1 - shift[JSTR_HASH2_LOWER(n + mtc1)];                                 \
-			shift[JSTR_HASH2_LOWER(n + mtc1)] = mtc1;                                          \
-			while (h <= end) {                                                                 \
-				do {                                                                       \
-					h += mtc1;                                                         \
-					tmp = shift[JSTR_HASH2_LOWER(h)];                                  \
-				} while (!tmp && h <= end);                                                \
-				h -= tmp;                                                                  \
-				if (tmp < mtc1)                                                            \
-					continue;                                                          \
-				if (mtc1 < 15 || !jstr_strncmpcase((char *)h + off, (char *)n + off, 8)) { \
-					if (!jstr_strncmpcase((char *)h, (char *)n, nelen))                \
-						return (char *)h;                                          \
-					off = (off >= 8 ? off : mtc1) - 8;                                 \
-				}                                                                          \
-				h += shift1;                                                               \
-			}                                                                                  \
-			return NULL;                                                                       \
-		} while (0)
-	switch (nelen) {
-	case 0: return (char *)hs;
-	case 1: {
-		enum {
-			l = 0,
-			u,
-		};
-		unsigned char n[2];
-		switch (*ne) {
-			JSTR_CASE_UPPER
-			n[u] = *ne;
-			n[l] = *ne - 'A' + 'a';
-			break;
-			JSTR_CASE_LOWER
-			n[l] = *ne;
-			n[u] = *ne - 'a' + 'A';
-			break;
-		default:
-			return (char *)memchr(hs, *ne, nelen);
-		}
-		unsigned char *h = (unsigned char *)hs;
-		for (;; ++h)
-			switch (*h) {
-				JSTR_CASE_UPPER
-				if (*h == n[u])
-					return (char *)h;
-				break;
-				JSTR_CASE_LOWER
-				if (*h == n[l])
-					return (char *)h;
-				break;
-			case '\0':
-				return NULL;
-			}
-		break;
-	}
-	case 2:
-		switch (*ne) {
-			JSTR_CASE_UPPER
-			JSTR_CASE_LOWER
-			break;
-		default:
-			switch (*(ne + 1)) {
-				JSTR_CASE_UPPER
-				JSTR_CASE_LOWER
-				break;
-			default:
-				return (char *)PRIVATE_JSTR_MEMMEM(hs, hslen, ne, nelen);
-			}
-		}
-		/* FALLTHROUGH */
-	default:
-		if (unlikely(hslen > 256))
-			PRIVATE_JSTR_STRSTRCASE(size_t, size_t);
-		PRIVATE_JSTR_STRSTRCASE(uint8_t, int);
-	}
+	return jstr_memmemcase_constexpr(hs, hslen, ne, nelen);
 #endif
+}
+
+/*
+   Find NE in HS case-insensitively.
+   HS MUST be nul terminated.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+JSTR_FLATTEN
+static char *jstr_strstrcase_constexpr(const char *JSTR_RST const hs,
+				       const char *JSTR_RST const ne) JSTR_NOEXCEPT
+{
+#ifdef JSTR_HAS_STRCASESTR
+	return (char *)strcasestr(hs, ne);
+#else
+	return jstr_memmemcase_constexpr(hs, strlen(hs), ne, strlen(ne));
+#endif /* JSTR_HAS_STRCASESTR */
 }
 
 /*
