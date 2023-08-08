@@ -1,8 +1,10 @@
 Features:
 <br>
-string replacement,
+will work with any string type (takes a pointer to string, size, and cap)
 <br>
-regex replacement,
+string replacement;
+<br>
+regex replacement;
 <br>
 etc.
 <br>
