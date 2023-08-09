@@ -484,6 +484,11 @@ static char *jstr_memcasechr(const char *JSTR_RST const s,
 	return NULL;
 }
 
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic ignored "-Wunused-parameter"
+#	pragma GCC diagnostic push
+#endif /* defined(__GNUC__) || defined(__clang__) */
+
 /*
    Use ONLY if strcasestr is unavailable.
    Find NE in HS case-insensitively.
@@ -528,11 +533,6 @@ static char *jstr_strcasestr_mem_constexpr(const char *JSTR_RST const _hs,
 	}
 #endif
 }
-
-#if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC diagnostic ignored "-Wunused-parameter"
-#	pragma GCC diagnostic push
-#endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
    Find NE in HS case-insensitively.
