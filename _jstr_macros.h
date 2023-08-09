@@ -207,7 +207,7 @@ JSTR_NEXT_POW2_64(T x)
 #endif /* if 0 */
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-#	define JSTR_HAS_GENERIC
+#	define JSTR_HAS_GENERIC 1
 #endif /* JSTR_HAS_GENERIC */
 
 #if defined(JSTR_HAS_TYPEOF) && defined(JSTR_HAS_GENERIC)
@@ -280,11 +280,11 @@ JSTR_NEXT_POW2_64(T x)
 #endif
 
 #if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
-#	define JSTR_HAS_TYPEOF
+#	define JSTR_HAS_TYPEOF 1
 #endif /* JSTR_HAS_TYPEOF */
 
 #ifdef static_assert
-#	define JSTR_HAS_STATIC_ASSERT
+#	define JSTR_HAS_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
 #elif __STDC_VERSION__ >= 201112L
@@ -584,70 +584,70 @@ case ' ':
 
 #if ((__GLIBC__ < 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_BSD_SOURCE)) \
 || defined(_DEFAULT_SOURCE)
-#	define JSTR_HAS_STRCASECMP
-#	define JSTR_HAS_STRNCASECMP
+#	define JSTR_HAS_STRCASECMP 1
+#	define JSTR_HAS_STRNCASECMP 1
 #endif
 
 #ifdef _XOPEN_SOURCE
-#	define JSTR_HAS_MEMCCPY
+#	define JSTR_HAS_MEMCCPY 1
 #endif /* Misc || Xopen */
 
 #ifdef _GNU_SOURCE
-#	define JSTR_HAS_MEMMEM
-#	define JSTR_HAS_MEMRCHR
-#	define JSTR_HAS_STRCHRNUL
-#	define JSTR_HAS_FGETS_UNLOCKED
-#	define JSTR_HAS_FPUTS_UNLOCKED
-#	define JSTR_HAS_GETWC_UNLOCKED
-#	define JSTR_HAS_GETWCCHAR_UNLOCKED
-#	define JSTR_HAS_FGETWC_UNLOCKED
-#	define JSTR_HAS_FPUTWC_UNLOCKED
-#	define JSTR_HAS_PUTWCHAR_UNLOCKED
-#	define JSTR_HAS_FGETWS_UNLOCKED
-#	define JSTR_HAS_FPUTWS_UNLOCKED
-#	define JSTR_HAS_WMEMPCPY
-#	define JSTR_HAS_MEMPCPY
-#	define JSTR_HAS_STRCASESTR
+#	define JSTR_HAS_MEMMEM 1
+#	define JSTR_HAS_MEMRCHR 1
+#	define JSTR_HAS_STRCHRNUL 1
+#	define JSTR_HAS_FGETS_UNLOCKED 1
+#	define JSTR_HAS_FPUTS_UNLOCKED 1
+#	define JSTR_HAS_GETWC_UNLOCKED 1
+#	define JSTR_HAS_GETWCCHAR_UNLOCKED 1
+#	define JSTR_HAS_FGETWC_UNLOCKED 1
+#	define JSTR_HAS_FPUTWC_UNLOCKED 1
+#	define JSTR_HAS_PUTWCHAR_UNLOCKED 1
+#	define JSTR_HAS_FGETWS_UNLOCKED 1
+#	define JSTR_HAS_FPUTWS_UNLOCKED 1
+#	define JSTR_HAS_WMEMPCPY 1
+#	define JSTR_HAS_MEMPCPY 1
+#	define JSTR_HAS_STRCASESTR 1
 #endif /* Gnu */
 
 #if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
 || (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE) || defined(_BSD_SOURCE))  \
 || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 23) && defined(_POSIX_C_SOURCE))
-#	define JSTR_HAS_GETC_UNLOCKED
-#	define JSTR_HAS_GETCHAR_UNLOCKED
-#	define JSTR_HAS_PUTC_UNLOCKED
-#	define JSTR_HAS_PUTCHAR_UNLOCKED
+#	define JSTR_HAS_GETC_UNLOCKED 1
+#	define JSTR_HAS_GETCHAR_UNLOCKED 1
+#	define JSTR_HAS_PUTC_UNLOCKED 1
+#	define JSTR_HAS_PUTCHAR_UNLOCKED 1
 #endif /* Posix || Bsd  */
 
 #if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 19)) && defined(_DEFAULT_SOURCE)) \
 || defined(_SVID_SOURCE) || defined(_BSD_SOURCE)
-#	define JSTR_HAS_FREAD_UNLOCKED
-#	define JSTR_HAS_FWRITE_UNLOCKED
-#	define JSTR_HAS_FPUTC_UNLOCKED
-#	define JSTR_HAS_FGETC_UNLOCKED
-#	define JSTR_HAS_CLEARERR_UNLOCKED
-#	define JSTR_HAS_FEOF_UNLOCKED
-#	define JSTR_HAS_FERROR_UNLOCKED
-#	define JSTR_HAS_FILENO_UNLOCKED
-#	define JSTR_HAS_FFLUSH_UNLOCKED
+#	define JSTR_HAS_FREAD_UNLOCKED 1
+#	define JSTR_HAS_FWRITE_UNLOCKED 1
+#	define JSTR_HAS_FPUTC_UNLOCKED 1
+#	define JSTR_HAS_FGETC_UNLOCKED 1
+#	define JSTR_HAS_CLEARERR_UNLOCKED 1
+#	define JSTR_HAS_FEOF_UNLOCKED 1
+#	define JSTR_HAS_FERROR_UNLOCKED 1
+#	define JSTR_HAS_FILENO_UNLOCKED 1
+#	define JSTR_HAS_FFLUSH_UNLOCKED 1
 #endif /* Default || Svid || Bsd */
 
 #if ((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) \
 || defined(_GNU_SOURCE)
-#	define JSTR_HAS_STPCPY
-#	define JSTR_HAS_STRNLEN
-#	define JSTR_HAS_STRNDUP
+#	define JSTR_HAS_STPCPY 1
+#	define JSTR_HAS_STRNLEN 1
+#	define JSTR_HAS_STRNDUP 1
 #endif /* Posix || Gnu */
 
 #if (_XOPEN_SOURCE >= 500)                                                                          \
 || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19) && (defined(_BSD_SOURCE) || defined(_SVID_SOURCE))) \
 || ((__GLIBC__ > 2) || (__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 12) && __POSIX_C_SOURCE >= 200809L)
-#	define JSTR_HAS_STRDUP
+#	define JSTR_HAS_STRDUP 1
 #endif /* Xopen || Bsd || Svid || Posix */
 
 #ifdef _GNU_SOURCE
-#	define JSTR_HAS_STRDUPA
-#	define JSTR_HAS_STRNDUPA
+#	define JSTR_HAS_STRDUPA 1
+#	define JSTR_HAS_STRNDUPA 1
 #endif /* Gnu */
 
 #define JSTR_RST JSTR_RESTRICT
