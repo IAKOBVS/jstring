@@ -513,10 +513,9 @@ static void jstr_rplcallc_mem(char *JSTR_RST s,
 	if (unlikely(!s))
 		return;
 	unsigned char *dst = (unsigned char *)s;
-	goto MTC;
+	*dst++ = _rplc;
 	for (;; ++dst)
 		if (*dst == _searc)
-		MTC:
 			*dst = _rplc;
 		else if (unlikely(!*dst))
 			break;
@@ -541,10 +540,9 @@ static void jstr_rplcallc(char *JSTR_RST s,
 	if (unlikely(!s))
 		return;
 	unsigned char *dst = (unsigned char *)s;
-	goto MTC;
+	*dst++ = _rplc
 	for (;; ++dst)
 		if (*dst == _searc)
-		MTC:
 			*dst = _rplc;
 		else if (unlikely(!*dst))
 			break;
