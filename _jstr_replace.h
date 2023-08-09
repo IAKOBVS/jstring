@@ -433,8 +433,8 @@ JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_INLINE
 static void jstr_rmall_mem_j(jstr_t *JSTR_RST const j,
-			 const char *JSTR_RST const _searc,
-			 const size_t _searclen) JSTR_NOEXCEPT
+			     const char *JSTR_RST const _searc,
+			     const size_t _searclen) JSTR_NOEXCEPT
 {
 	j->size = jstr_rmall_mem_p_constexpr(j->data, _searc, j->size, _searclen) - j->data;
 }
@@ -752,7 +752,7 @@ static char *jstr_rplcn_mem_p_f_constexpr(char *JSTR_RST s,
 		switch (_searclen) {
 		case 0: return s + sz;
 		case 1:
-			private_jstr_rplcnc_memmem1(s, *_searc, *_rplc, n, sz);
+			private_jstr_rplcn_memmem1(s, *_searc, *_rplc, n, sz);
 			return s + sz;
 		case 2:
 			return private_jstr_rplcn_memmem2(s, _searc, _rplc, n, sz, _rplclen);
@@ -808,7 +808,9 @@ static char *jstr_rplcall_mem_p_f_constexpr(char *JSTR_RST s,
 	if (_rplclen <= _searclen) {
 		switch (_searclen) {
 		case 0: return s + sz;
-		case 1: return private_jstr_rplcall_memmem1(s, *_searc, *_rplc, sz);
+		case 1:
+			private_jstr_rplcall_memmem1(s, *_searc, *_rplc, sz);
+			return s + sz;
 		default: return private_jstr_rplcall_memmem5(s, _searc, _rplc, sz, _searclen, _rplclen);
 		case 2:
 			return private_jstr_rplcall_memmem2(s, _searc, _rplc, sz, _rplclen);
@@ -864,7 +866,7 @@ static void jstr_rplcn_mem_constexpr(char **JSTR_RST const s,
 		switch (_searclen) {
 		case 0: return;
 		case 1:
-			private_jstr_rplcnc_memmem1(*s, *_searc, *_rplc, n, *sz);
+			private_jstr_rplcn_memmem1(*s, *_searc, *_rplc, n, *sz);
 			return;
 		case 2:
 			*sz = private_jstr_rplcn_memmem2(*s, _searc, _rplc, n, *sz, _rplclen) - *s;
@@ -926,7 +928,7 @@ static void jstr_rplcall_mem_constexpr(char **JSTR_RST const s,
 		switch (_searclen) {
 		case 0: return;
 		case 1:
-			*sz = private_jstr_rplcall_memmem1(*s, *_searc, *_rplc, *sz) - *s;
+			private_jstr_rplcall_memmem1(*s, *_searc, *_rplc, *sz);
 			return;
 		case 2:
 			*sz = private_jstr_rplcall_memmem2(*s, _searc, _rplc, *sz, _rplclen) - *s;
@@ -986,7 +988,7 @@ static void jstr_rplcall_mem(char **JSTR_RST const s,
 #	pragma GCC poison private_jstr_rplcall_memmem3
 #	pragma GCC poison private_jstr_rplcall_memmem4
 #	pragma GCC poison private_jstr_rplcall_memmem5
-#	pragma GCC poison private_jstr_rplcnc_memmem1
+#	pragma GCC poison private_jstr_rplcn_memmem1
 #	pragma GCC poison private_jstr_rplcn_f
 #	pragma GCC poison private_jstr_rplcn_grow
 #	pragma GCC poison private_jstr_rplcn_memmem2
