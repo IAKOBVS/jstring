@@ -161,6 +161,9 @@ static char *private_jstr_base_rm_memmem1(const int _flag,
 					  size_t n,
 					  const size_t sz) JSTR_NOEXCEPT
 {
+	if (unlikely(_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N))
+		if (unlikely(n == 0))
+			return s + sz;
 	s = (char *)memchr(s, c, sz);
 	if (unlikely(!s))
 		return s + sz;
@@ -217,6 +220,9 @@ static void private_jstr_base_rplc_memmem1(const int _flag,
 					   size_t n,
 					   const size_t sz) JSTR_NOEXCEPT
 {
+	if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N)
+		if (unlikely(n == 0))
+			return;
 	s = (char *)memchr(s, _searc, sz);
 	if (unlikely(!s))
 		return;
@@ -228,10 +234,9 @@ static void private_jstr_base_rplc_memmem1(const int _flag,
 		} else {
 		MTC:
 			*s = _rplc;
-			if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N) {
+			if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N)
 				if (unlikely(!--n))
 					break;
-			}
 		}
 }
 
@@ -382,7 +387,7 @@ static char *private_jstr_memmem4(const int _use_remove,
 #if defined(__GNUC__) || defined(__clang__)
 #	pragma GCC diagnostic ignored "-Wstringop-overread" /* NOLINT */
 #	pragma GCC diagnostic push
-#endif /* defined(__GNUC__) || defined(__clang__) */
+#endif /* Gnuc || Clang */
 
 JSTR_INLINE
 JSTR_WARN_UNUSED
@@ -453,12 +458,12 @@ static char *private_jstr_memmem5(const int _flag,
 	if (unlikely(_searclen > 256))
 		PRIVATE_JSTR_MEMMEM5_SHIFTS(size_t, size_t);
 	PRIVATE_JSTR_MEMMEM5_SHIFTS(uint8_t, int);
-#if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC diagnostic pop
-#endif /* defined(__GNUC__) || defined(__clang__) */
 }
 
-/* _use_remove, _use_rplc, _use_n */
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic pop
+#endif /* Gnuc || Clang */
+
 #define DEFINE_JSTR_MEMMEMN_FUNCS(N)                                                                                                                         \
 	JSTR_WARN_UNUSED                                                                                                                                     \
 	JSTR_MAYBE_UNUSED                                                                                                                                    \
