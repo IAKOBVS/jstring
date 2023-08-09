@@ -8,7 +8,7 @@
 
 namespace jstr {
 
-/* typedef struct jstr_t jstr_t; */
+/* typedef struct Jstring Jstring; */
 
 namespace traits {
 
@@ -94,7 +94,7 @@ JSTR_INLINE static constexpr void assert_are_same(Arg &&, Args &&...) JSTR_NOEXC
 
 #else
 
-typedef struct jstr_t jstr_t;
+typedef struct Jstring Jstring;
 
 #endif /* __cplusplus */
 

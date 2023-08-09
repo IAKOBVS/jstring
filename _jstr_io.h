@@ -56,7 +56,7 @@ _ERR:
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static int jstr_alloc_file_j(jstr_t *JSTR_RST const j,
+static int jstr_alloc_file_j(Jstring *JSTR_RST const j,
 			     const char *JSTR_RST const _fname,
 			     FILE *JSTR_RST _fp,
 			     struct stat *JSTR_RST const _st)

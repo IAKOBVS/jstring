@@ -736,10 +736,10 @@ static char *jstr_strcasestr_mem(const char *JSTR_RST _hs,
 #	else
 	const char *JSTR_RST const end = _hs + _hslen - _nelen;
 	for (; _hs <= end; ++_hs) {
-		if (jstr_tolower(*_hs) != jstr_tolower(*_ne)) {
+		if (jstr_lower(*_hs) != jstr_lower(*_ne)) {
 			if (_nelen == 1)
 				return (char *)_hs;
-			if (jstr_tolower(*(_hs + _hslen - 1)) == jstr_tolower(*(_ne + _nelen - 1))) {
+			if (jstr_lower(*(_hs + _hslen - 1)) == jstr_lower(*(_ne + _nelen - 1))) {
 				if (_nelen == 2)
 					return (char *)_hs;
 				if (_nelen < 15) {

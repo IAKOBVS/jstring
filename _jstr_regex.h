@@ -319,7 +319,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_reg_rm_j(jstr_t *JSTR_RST const j,
+static char *jstr_reg_rm_j(Jstring *JSTR_RST const j,
 			   const regex_t *JSTR_RST const _preg,
 			   const int _eflags) JSTR_NOEXCEPT
 {
@@ -330,7 +330,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_reg_rm_now_j(jstr_t *JSTR_RST const j,
+static char *jstr_reg_rm_now_j(Jstring *JSTR_RST const j,
 			       const char *JSTR_RST const _ptn,
 			       regex_t *JSTR_RST const _preg,
 			       const int _cflags,
@@ -408,7 +408,7 @@ static char *jstr_reg_rmall_now_mem(char *JSTR_RST const s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_reg_rmall_now_j(jstr_t *JSTR_RST const j,
+static void jstr_reg_rmall_now_j(Jstring *JSTR_RST const j,
 				 const char *JSTR_RST const _ptn,
 				 regex_t *JSTR_RST const _preg,
 				 const int _cflags,
@@ -419,7 +419,7 @@ static void jstr_reg_rmall_now_j(jstr_t *JSTR_RST const j,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_reg_rmall_j(jstr_t *JSTR_RST const j,
+static void jstr_reg_rmall_j(Jstring *JSTR_RST const j,
 			     regex_t *JSTR_RST const _preg,
 			     const int _eflags) JSTR_NOEXCEPT
 {

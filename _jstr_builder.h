@@ -44,7 +44,7 @@ static void jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 		JSTR_ERR_EXIT();
 }
 
-typedef struct jstr_t {
+typedef struct Jstring {
 	size_t size;
 	size_t cap;
 	char *data;
@@ -52,14 +52,14 @@ typedef struct jstr_t {
 #ifdef __cplusplus
 
 	JSTR_INLINE
-	jstr_t(void) JSTR_NOEXCEPT
+	Jstring(void) JSTR_NOEXCEPT
 	{
 		this->data = NULL;
 	}
 
 #	if JSTR_FREE_ON_DESTRUCTOR_CPP
 	JSTR_INLINE
-	~jstr_t(void) JSTR_NOEXCEPT
+	~Jstring(void) JSTR_NOEXCEPT
 	{
 		::free(this->data);
 #		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
@@ -115,7 +115,7 @@ typedef struct jstr_t {
 
 #endif /* __cpluslus */
 
-} jstr_t;
+} Jstring;
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -206,7 +206,7 @@ static void jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_debug(const jstr_t *JSTR_RST const j)
+static void jstr_debug(const Jstring *JSTR_RST const j)
 {
 	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
 	fprintf(stderr, "data:%s\n", j->data);
@@ -222,7 +222,7 @@ template <typename Str,
 	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-alloc_cat_j(jstr_t *JSTR_RST const j,
+alloc_cat_j(Jstring *JSTR_RST const j,
 	    Str &&arg,
 	    StrArgs &&...args) JSTR_NOEXCEPT
 {
@@ -237,7 +237,7 @@ template <typename Str,
 	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-cat_j(jstr_t *JSTR_RST const j,
+cat_j(Jstring *JSTR_RST const j,
       Str &&arg,
       StrArgs &&...args) JSTR_NOEXCEPT
 {

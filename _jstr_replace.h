@@ -446,7 +446,7 @@ static char *jstr_rmall_p(char *JSTR_RST s,
 JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_INLINE
-static void jstr_rmall_mem_j(jstr_t *JSTR_RST const j,
+static void jstr_rmall_mem_j(Jstring *JSTR_RST const j,
 			     const char *JSTR_RST const _searc,
 			     const size_t _searclen) JSTR_NOEXCEPT
 {
@@ -461,7 +461,7 @@ static void jstr_rmall_mem_j(jstr_t *JSTR_RST const j,
 JSTR_NONNULL_ALL
 JSTR_INLINE_IF_CONSTEXPR
 JSTR_INLINE
-static void jstr_rmall_j(jstr_t *JSTR_RST const j,
+static void jstr_rmall_j(Jstring *JSTR_RST const j,
 			 const char *JSTR_RST const _searc) JSTR_NOEXCEPT
 {
 	return jstr_rmall_mem_j(j, _searc, strlen(_searc));
