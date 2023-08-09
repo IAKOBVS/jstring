@@ -32,8 +32,6 @@ namespace jstr {
 #	define JSTR_GLOBAL(func) func
 #endif /* __cpluslus */
 
-#undef JSTR_HAS_STRCASESTR
-
 /*
   Return value:
   pointer to '\0' in DST.
@@ -688,6 +686,8 @@ static char *jstr_strcasestr_constexpr(const char *JSTR_RST const _hs,
 #	endif /* JSTR_HAS_STRCASESTR */
 }
 
+#endif /* #if 0 */
+
 /*
    Find NE in HS case-insensitively.
    HS MUST be nul terminated.
@@ -700,17 +700,30 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
-static char *jstr_strcasestr(const char *JSTR_RST const _hs,
+static char *jstr_strcasestr(const char *JSTR_RST _hs,
 			     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
-#	ifdef JSTR_HAS_STRCASESTR
+#ifdef JSTR_HAS_STRCASESTR
 	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
-#	else
+#else
+#	if 0 /* broken */
 	return jstr_strcasestr_mem(_hs, strlen(_hs), _ne, strlen(_ne));
-#	endif /* JSTR_HAS_STRCASESTR */
+#	endif
+	const size_t nelen = strlen(_ne);
+	const char *JSTR_RST const end = _hs + strlen(_hs) - nelen;
+	for (; _hs <= end; ++_hs)
+		if (jstr_tolower(*_hs) == jstr_tolower(*_ne)) {
+			if (nelen < 15) {
+				if (jstr_strncasecmp(_hs, _ne + 1, nelen - 1))
+					return (char *)_hs;
+			} else if (jstr_strncasecmp(_hs + 1, _ne + 1, 8)) {
+				if (jstr_strncasecmp(_hs + 9, _ne + 9, nelen - 9))
+					return (char *)_hs;
+			}
+		}
+	return NULL;
+#endif /* JSTR_HAS_STRCASESTR */
 }
-
-#endif /* #if 0 */
 
 /* Copy no more than N bytes of SRC to DEST, stopping when C is found.
    Return the position in DEST one byte past where C was copied, or
