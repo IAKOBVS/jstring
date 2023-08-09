@@ -502,7 +502,7 @@ static char *jstr_strcasestr_mem_constexpr(const char *JSTR_RST const _hs,
 					   const char *JSTR_RST const _ne,
 					   const size_t _nelen) JSTR_NOEXCEPT
 {
-#ifdef jJSTR_HAS_STRCASESTR
+#ifdef JSTR_HAS_STRCASESTR
 	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
 #else
 	switch (_nelen) {
