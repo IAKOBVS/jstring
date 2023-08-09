@@ -558,7 +558,7 @@ static char *private_jstr_rmn_memmem5(char *s,
 				      size_t sz,
 				      const size_t _searclen) JSTR_NOEXCEPT
 {
-	private_jstr_memmem5(PRIVATE_JSTR_FLAG_REPLACE_USE_N, &s, &sz, NULL, _searc, NULL, 0, _searclen, 0);
+	private_jstr_memmem5(PRIVATE_JSTR_FLAG_REPLACE_USE_N, &s, &sz, NULL, _searc, NULL, n, _searclen, 0);
 	return s + sz;
 }
 
