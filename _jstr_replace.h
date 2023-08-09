@@ -741,7 +741,7 @@ static void jstr_rplclast_mem(char **JSTR_RST const s,
 			      const size_t _searclen,
 			      const size_t _rplclen) JSTR_NOEXCEPT
 {
-	char *mtc = (char *)jstr_memrmem_constexpr(*s, *sz, _searc, _searclen);
+	char *mtc = (char *)jstr_memrmem(*s, *sz, _searc, _searclen);
 	if (unlikely(!mtc))
 		return;
 	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen + 1) {
