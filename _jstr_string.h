@@ -741,7 +741,6 @@ static char *jstr_strdup(const char *JSTR_RST const s)
 #undef JSTR_HASH2
 #undef JSTR_HASH2_LOWER
 #undef JSTR_GLOBAL
-
 #undef PRIVATE_JSTR_MEMRMEM
 #undef PRIVATE_JSTR_STRSTRCASE
 #undef JSTR_GLOBAL
