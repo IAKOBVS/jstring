@@ -336,7 +336,7 @@ static char *jstr_rmn_mem_p_constexpr(char *JSTR_RST s,
 	case 0: return s + sz;
 	case 1: return private_jstr_rmn_memmem1(s, *_searc, n, sz);
 	case 2: return private_jstr_rmn_memmem2(s, _searc, n, sz);
-#if 0
+#if PRIVATE_JSTR_USE_MEMMEM34
 	case 3: return private_jstr_rmn_memmem3(s, _searc, n, sz);
 	case 4: return private_jstr_rmn_memmem4(s, _searc, n, sz);
 #endif
@@ -382,7 +382,7 @@ static char *jstr_rmall_mem_p_constexpr(char *JSTR_RST s,
 	case 0: return s + sz;
 	case 1: return private_jstr_rmall_memmem1(s, *_searc, sz);
 	case 2: return private_jstr_rmall_memmem2(s, _searc, sz);
-#if 0
+#if PRIVATE_JSTR_USE_MEMMEM34
 	case 3: return private_jstr_rmall_memmem3(s, _searc, sz);
 	case 4: return private_jstr_rmall_memmem4(s, _searc, sz);
 #endif
@@ -756,7 +756,7 @@ static char *jstr_rplcn_mem_p_f_constexpr(char *JSTR_RST s,
 			return s + sz;
 		case 2:
 			return private_jstr_rplcn_memmem2(s, _searc, _rplc, n, sz, _rplclen);
-#if 0
+#if PRIVATE_JSTR_USE_MEMMEM34
 		case 3: return private_jstr_rplcn_memmem3(s, _searc, _rplc, n, sz, _rplclen);
 		case 4: return private_jstr_rplcn_memmem4(s, _searc, _rplc, n, sz, _rplclen);
 #endif
@@ -814,7 +814,7 @@ static char *jstr_rplcall_mem_p_f_constexpr(char *JSTR_RST s,
 		default: return private_jstr_rplcall_memmem5(s, _searc, _rplc, sz, _searclen, _rplclen);
 		case 2:
 			return private_jstr_rplcall_memmem2(s, _searc, _rplc, sz, _rplclen);
-#if 0
+#if PRIVATE_JSTR_USE_MEMMEM34
 		case 3: return private_jstr_rplcall_memmem3(s, _searc, _rplc, sz, _rplclen);
 		case 4: return private_jstr_rplcall_memmem4(s, _searc, _rplc, sz, _rplclen);
 #endif
@@ -871,7 +871,7 @@ static void jstr_rplcn_mem_constexpr(char **JSTR_RST const s,
 		case 2:
 			*sz = private_jstr_rplcn_memmem2(*s, _searc, _rplc, n, *sz, _rplclen) - *s;
 			return;
-#if 0
+#if PRIVATE_JSTR_USE_MEMMEM34
 		case 3:
 			*sz = private_jstr_rplcn_memmem3(*s, _searc, _rplc, n, *sz, _rplclen) - *s;
 			return;
@@ -933,7 +933,7 @@ static void jstr_rplcall_mem_constexpr(char **JSTR_RST const s,
 		case 2:
 			*sz = private_jstr_rplcall_memmem2(*s, _searc, _rplc, *sz, _rplclen) - *s;
 			return;
-#if 0
+#if PRIVATE_JSTR_USE_MEMMEM34
 		case 3:
 			*sz = private_jstr_rplcall_memmem3(*s, _searc, _rplc, *sz, _rplclen) - *s;
 			return;
