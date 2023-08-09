@@ -363,21 +363,26 @@ static void private_jstr_memmem5(const int _flag,
 						}                                                                                   \
 						old += _searclen;                                                                   \
 						src += _searclen;                                                                   \
-						continue;                                                                           \
 					}                                                                                           \
 					if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_N)                                                \
 						if (unlikely(!--n))                                                                 \
 							break;                                                                      \
+					continue;                                                                                   \
 				}                                                                                                   \
 				off = (off >= 8 ? off : mtc1) - 8;                                                                  \
 			}                                                                                                           \
 			src += shift1;                                                                                              \
 		} while (src <= end);                                                                                               \
 		if (!(_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER)) {                                                         \
-			if (!(_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER_FORCE)) {                                           \
-				memmove(dst, old, end + _searclen - old + 1);                                                       \
-				*sz = (char *)dst + (end + _searclen - old) - *s;                                                   \
-			}                                                                                                           \
+			if (unlikely(dst == old))                                                                                   \
+				return;                                                                                             \
+			memmove(dst, old, end + _searclen - old + 1);                                                               \
+			*sz = (char *)dst + (end + _searclen - old) - *s;                                                           \
+		} else if (!(_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER_FORCE)) {                                            \
+			if (unlikely(dst == old))                                                                                   \
+				return;                                                                                             \
+			memmove(dst, old, end + _searclen - old + 1);                                                               \
+			*sz = (char *)dst + (end + _searclen - old) - *s;                                                           \
 		}                                                                                                                   \
 		return;                                                                                                             \
 	} while (0)

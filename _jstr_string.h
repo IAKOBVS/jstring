@@ -27,9 +27,9 @@ namespace jstr {
 #endif /* JSTR_HAS_MEMMEM */
 
 #ifdef __cplusplus
-#	define JSTR_GLOBAL(func) ::func
+#	define JSTR_GLOBALIZE(func) ::func
 #else
-#	define JSTR_GLOBAL(func) func
+#	define JSTR_GLOBALIZE(func) func
 #endif /* __cpluslus */
 
 /*
@@ -45,7 +45,7 @@ static void *jstr_mempcpy(char *JSTR_RST const _dst,
 			  const size_t n) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_MEMPCPY
-	return JSTR_GLOBAL(mempcpy(_dst, _src, n));
+	return JSTR_GLOBALIZE(mempcpy(_dst, _src, n));
 #else
 	return (char *)memcpy(_dst, _src, n) + n;
 #endif /* !JSTR_HAS_STPCPY */
@@ -63,7 +63,7 @@ static char *jstr_stpcpy(char *JSTR_RST const _dst,
 			 const char *JSTR_RST const _src) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STPCPY
-	return JSTR_GLOBAL(stpcpy(_dst, _src));
+	return JSTR_GLOBALIZE(stpcpy(_dst, _src));
 #else
 	const size_t slen = strlen(_src);
 	return memcpy(_dst, _src, slen + 1) + slen;
@@ -85,7 +85,7 @@ static void *jstr_memrchr(const void *JSTR_RST const s,
 			  size_t n) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_MEMRCHR
-	return (void *)JSTR_GLOBAL(memrchr(s, c, n));
+	return (void *)JSTR_GLOBALIZE(memrchr(s, c, n));
 #else
 	if (unlikely(!*(char *)s))
 		return NULL;
@@ -129,7 +129,7 @@ static int jstr_strncasecmp(const char *JSTR_RST const s1,
 			    size_t n) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRNCASECMP
-	return JSTR_GLOBAL(strncasecmp(s1, s2, n));
+	return JSTR_GLOBALIZE(strncasecmp(s1, s2, n));
 #else
 	const unsigned char *p1 = (unsigned char *)s1;
 	const unsigned char *p2 = (unsigned char *)s2;
@@ -177,7 +177,7 @@ static int jstr_strcasecmp(const char *JSTR_RST s1,
 			   const char *JSTR_RST s2) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASECMP
-	return JSTR_GLOBAL(strcasecmp(s1, s2));
+	return JSTR_GLOBALIZE(strcasecmp(s1, s2));
 #else
 	for (char c;; ++s1, ++s2) {
 		switch (*s1) {
@@ -531,7 +531,7 @@ static char *jstr_strcasestr_mem_constexpr(const char *JSTR_RST const _hs,
 					   const size_t _nelen) JSTR_NOEXCEPT
 {
 #	ifdef JSTR_HAS_STRCASESTR
-	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
+	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #	else
 	switch (_nelen) {
 	case 0: return (char *)_hs;
@@ -573,7 +573,7 @@ static char *jstr_memcasemem_constexpr(const char *JSTR_RST const _hs,
 				       const size_t _nelen) JSTR_NOEXCEPT
 {
 #	ifdef JSTR_HAS_STRCASESTR
-	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
+	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #	else
 	if (unlikely(_hslen < _nelen))
 		return NULL;
@@ -639,7 +639,7 @@ static char *jstr_strcasestr_constexpr(const char *JSTR_RST const _hs,
 				       const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
 #	ifdef JSTR_HAS_STRCASESTR
-	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
+	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #	else
 	return jstr_strcasestr_mem_constexpr(_hs, strlen(_hs), _ne, strlen(_ne));
 #	endif /* JSTR_HAS_STRCASESTR */
@@ -673,7 +673,7 @@ static char *jstr_strcasestr_mem(const char *JSTR_RST _hs,
 				 const size_t _nelen) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
-	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
+	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #else
 #	if 0 /* broken */
 	return jstr_strcasestr_mem_constexpr(_hs, _hslen, _ne, _nelen);
@@ -715,7 +715,7 @@ static char *jstr_strcasestr(const char *JSTR_RST _hs,
 			     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCASESTR
-	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
+	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #else
 	return jstr_strcasestr_mem(_hs, strlen(_hs), _ne, strlen(_ne));
 #endif /* JSTR_HAS_STRCASESTR */
@@ -729,7 +729,7 @@ static char *jstr_strchrnul(const char *JSTR_RST const s,
 			    const int c)
 {
 #ifdef JSTR_HAS_STRCHRNUL
-	return (char *)JSTR_GLOBAL(strchrnul(s, c));
+	return (char *)JSTR_GLOBALIZE(strchrnul(s, c));
 #else
 	const size_t n = strlen(s);
 	void *p = (void *)memchr(s, c, n);
@@ -745,7 +745,7 @@ JSTR_INLINE
 static char *jstr_strdup(const char *JSTR_RST const s)
 {
 #ifdef JSTR_HAS_STRCHRNUL
-	return (char *)JSTR_GLOBAL(strdup(s));
+	return (char *)JSTR_GLOBALIZE(strdup(s));
 #else
 	const size_t len = strlen(s) + 1;
 	void *p = malloc(len);
@@ -783,10 +783,9 @@ static void *jstr_memccpy(void *JSTR_RST _dst,
 
 #undef JSTR_HASH2
 #undef JSTR_HASH2_LOWER
-#undef JSTR_GLOBAL
+#undef JSTR_GLOBALIZE
 #undef PRIVATE_JSTR_MEMRMEM
 #undef PRIVATE_JSTR_STRSTRCASE
-#undef JSTR_GLOBAL
 
 #if defined(__GNUC__) || defined(__clang__)
 #	pragma GCC poison private_jstr_memrmem
