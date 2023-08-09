@@ -505,7 +505,8 @@ static void jstr_rplcallc_mem(char *JSTR_RST s,
 		else if (unlikely(!*dst))
 			break;
 #else
-	while ((s = (char *)memchr(s, _searc, sz)))
+	const char *JSTR_RST const end = s + sz;
+	while ((s = (char *)memchr(s, _searc, end - s)))
 		*s++ = _rplc;
 #endif
 }
@@ -564,7 +565,8 @@ static void jstr_rplcnc_mem(char *JSTR_RST s,
 			break;
 		}
 #else
-	while ((s = (char *)memchr(s, _searc, sz)))
+	const char *JSTR_RST const end = s + sz;
+	while ((s = (char *)memchr(s, _searc, end - s)))
 		*s++ = _rplc;
 #endif
 }
