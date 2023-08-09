@@ -76,11 +76,27 @@ static int jstr_countc(const char *JSTR_RST s,
 		       const int c) JSTR_NOEXCEPT
 {
 	int count = 0;
-	for (;; ++s)
-		if (*s == c)
-			++count;
-		else if (unlikely(!*s))
-			break;
+	while ((s = strchr(s, c)))
+		++count;
+	return count;
+}
+
+/*
+  Count occurences of C in S.
+  Return value:
+  Occurences of C in S.
+*/
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static int jstr_countc_mem(const char *JSTR_RST s,
+			   const int c,
+			   const int n) JSTR_NOEXCEPT
+{
+	int count = 0;
+	while ((s = (char *)memchr(s, c, n)))
+		++count;
 	return count;
 }
 
@@ -109,7 +125,7 @@ static int jstr_count_mem(const char *JSTR_RST s,
 	return count;
 }
 
-#else
+#endif
 
 /*
   Count occurences of NE in HS.
@@ -128,8 +144,6 @@ static int jstr_count(const char *JSTR_RST s,
 		++count;
 	return count;
 }
-
-#endif /* __JSTR_HAS_MEMMEM */
 
 /*
   Reverse S.

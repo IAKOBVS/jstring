@@ -59,11 +59,9 @@ static char *jstr_rmc_p(char *JSTR_RST s,
 	s = strchrnul(s, c);
 	if (unlikely(!*s))
 		return s;
-	unsigned char *dst = (unsigned char *)s;
-	const unsigned char *src = dst + 1;
-	while ((*dst++ = *src++))
-		;
-	return (char *)dst - 1;
+	size_t len = strlen(s);
+	memmove(s, s + 1, len);
+	return s + len - 1;
 #else
 	return jstr_rmc_mem_p(s, c, strlen(s));
 #endif /* HAS_STRCHRNUL */
@@ -494,6 +492,7 @@ static void jstr_rplcallc_mem(char *JSTR_RST s,
 			      const int _rplc,
 			      const size_t sz) JSTR_NOEXCEPT
 {
+#if 0 /* use_loop */
 	s = (char *)memchr(s, _searc, sz);
 	if (unlikely(!s))
 		return;
@@ -505,6 +504,10 @@ static void jstr_rplcallc_mem(char *JSTR_RST s,
 			*dst = _rplc;
 		else if (unlikely(!*dst))
 			break;
+#else
+	while ((s = (char *)memchr(s, _searc, sz)))
+		*s++ = _rplc;
+#endif
 }
 
 /*
@@ -516,6 +519,7 @@ static void jstr_rplcallc(char *JSTR_RST s,
 			  const int _searc,
 			  const int _rplc) JSTR_NOEXCEPT
 {
+#if 0 /* use loop */
 	s = strchr(s, _searc);
 	if (unlikely(!s))
 		return;
@@ -527,6 +531,10 @@ static void jstr_rplcallc(char *JSTR_RST s,
 			*dst = _rplc;
 		else if (unlikely(!*dst))
 			break;
+#else
+	while ((s = (strchr(s, _searc))))
+		*s++ = _rplc;
+#endif
 }
 
 /*
@@ -540,6 +548,7 @@ static void jstr_rplcnc_mem(char *JSTR_RST s,
 			    size_t n,
 			    const size_t sz) JSTR_NOEXCEPT
 {
+#if 0 /* use loop */
 	s = (char *)memchr(s, _searc, sz);
 	if (unlikely(!s))
 		return;
@@ -554,6 +563,10 @@ static void jstr_rplcnc_mem(char *JSTR_RST s,
 		} else if (unlikely(!*dst)) {
 			break;
 		}
+#else
+	while ((s = (char *)memchr(s, _searc, sz)))
+		*s++ = _rplc;
+#endif
 }
 
 /*
@@ -566,6 +579,7 @@ static void jstr_rplcnc(char *JSTR_RST s,
 			const int _rplc,
 			size_t n) JSTR_NOEXCEPT
 {
+#if 0 /* use loop */
 	s = strchr(s, _searc);
 	if (unlikely(!s))
 		return;
@@ -581,6 +595,10 @@ static void jstr_rplcnc(char *JSTR_RST s,
 			break;
 		}
 	}
+#else
+	while ((s = strchr(s, _searc)))
+		*s++ = _rplc;
+#endif
 }
 
 /*
