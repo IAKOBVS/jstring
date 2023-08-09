@@ -726,6 +726,8 @@ static void jstr_rplc_mem(char **JSTR_RST const s,
 	return jstr_rplc_mem_constexpr(s, sz, cap, _searc, _rplc, _searclen, _rplclen);
 }
 
+#if 0 /* broken */
+
 /*
   Replace last SEARCH in S with REPLACE.
 */
@@ -763,6 +765,8 @@ static void jstr_rplclast_mem(char **JSTR_RST const s,
 	}
 	*sz += _rplclen - _searclen;
 }
+
+#endif
 
 /*
   Replace N SEARCH in S with REPLACE.

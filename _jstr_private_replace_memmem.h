@@ -310,7 +310,7 @@ static void private_jstr_memmem5(const int _flag,
 			shift[JSTR_HASH2(_searc + i)] = i;                                                                          \
 		shift1 = mtc1 - shift[JSTR_HASH2(_searc + mtc1)];                                                                   \
 		shift[JSTR_HASH2(_searc + mtc1)] = mtc1;                                                                            \
-		while (src <= end) {                                                                                                \
+		do {                                                                                                                \
 			do {                                                                                                        \
 				src += mtc1;                                                                                        \
 				tmp = shift[JSTR_HASH2(src)];                                                                       \
@@ -372,7 +372,7 @@ static void private_jstr_memmem5(const int _flag,
 				off = (off >= 8 ? off : mtc1) - 8;                                                                  \
 			}                                                                                                           \
 			src += shift1;                                                                                              \
-		}                                                                                                                   \
+		} while (src <= end);                                                                                               \
 		if (!(_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER)) {                                                         \
 			if (!(_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER_FORCE)) {                                           \
 				memmove(dst, old, end + _searclen - old + 1);                                                       \
