@@ -368,10 +368,6 @@ static char *jstr_strrstr(const char *JSTR_RST const _hs,
 	return (char *)jstr_memrmem(_hs, _hslen, _ne, strlen((char *)_ne));
 }
 
-#endif /* #if 0 */
-
-#if 0 /* broken */
-
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -393,9 +389,8 @@ static char *private_jstr_strcasestr_mem3(const char *JSTR_RST const _hs,
 			size_t off = 0;                                                                    \
 			shift_type shift[256];                                                             \
 			memset(shift, 0, sizeof(shift));                                                   \
-			for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i) {                    \
+			for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                      \
 				shift[i] = JSTR_HASH2_LOWER(_ne + i);                                      \
-			}                                                                                  \
 			shift1 = mtc1 - shift[JSTR_HASH2_LOWER(n + mtc1)];                                 \
 			shift[JSTR_HASH2_LOWER(n + mtc1)] = mtc1;                                          \
 			while (h <= end) {                                                                 \
@@ -628,42 +623,6 @@ static char *jstr_memcasemem(const char *JSTR_RST const _hs,
 	return jstr_memcasemem_constexpr(_hs, _hslen, _ne, _nelen);
 }
 
-#	if defined(__GNUC__) || defined(__clang__)
-#		pragma GCC diagnostic ignored "-Wunused-parameter"
-#		pragma GCC diagnostic push
-#	endif /* defined(__GNUC__) || defined(__clang__) */
-
-/*
-   Use ONLY if strcasestr is unavailable.
-   Find NE in HS case-insensitively.
-   HS MUST be nul terminated.
-   Return value:
-   Pointer to NE;
-   NULL if not found.
-*/
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-#	ifdef JSTR_HAS_STRCASESTR
-JSTR_DEPRECATED("strcasestr is available! _hslen and _nelen are wasted.", strcasestr)
-#	endif /* JSTR_HAS_STRCASESTR */
-static char *jstr_strcasestr_mem(const char *JSTR_RST const _hs,
-				 const size_t _hslen,
-				 const char *JSTR_RST const _ne,
-				 const size_t _nelen) JSTR_NOEXCEPT
-{
-#	ifdef JSTR_HAS_STRCASESTR
-	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
-#	else
-	return jstr_strcasestr_mem_constexpr(_hs, _hslen, _ne, _nelen);
-#	endif /* JSTR_HAS_STRCASESTR */
-}
-
-#	if defined(__GNUC__) || defined(__clang__)
-#		pragma GCC diagnostic pop
-#	endif /* defined(__GNUC__) || defined(__clang__) */
-
 /*
    Find NE in HS case-insensitively.
    HS MUST be nul terminated.
@@ -688,6 +647,58 @@ static char *jstr_strcasestr_constexpr(const char *JSTR_RST const _hs,
 
 #endif /* #if 0 */
 
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic ignored "-Wunused-parameter"
+#	pragma GCC diagnostic push
+#endif /* defined(__GNUC__) || defined(__clang__) */
+
+/*
+   Use ONLY if strcasestr is unavailable.
+   Find NE in HS case-insensitively.
+   HS MUST be nul terminated.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+#ifdef JSTR_HAS_STRCASESTR
+JSTR_DEPRECATED("strcasestr is available! _hslen and _nelen are wasted.", strcasestr)
+#endif /* JSTR_HAS_STRCASESTR */
+static char *jstr_strcasestr_mem(const char *JSTR_RST _hs,
+				 const size_t _hslen,
+				 const char *JSTR_RST const _ne,
+				 const size_t _nelen) JSTR_NOEXCEPT
+{
+#ifdef JSTR_HAS_STRCASESTR
+	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
+#else
+#	if 0 /* broken */
+	return jstr_strcasestr_mem_constexpr(_hs, _hslen, _ne, _nelen);
+#	else
+	const size_t nelen = strlen(_ne);
+	const char *JSTR_RST const end = _hs + _hslen - nelen;
+	for (; _hs <= end; ++_hs)
+		if (jstr_tolower(*_hs) == jstr_tolower(*_ne)) {
+			if (nelen < 15) {
+				if (jstr_strncasecmp(_hs, _ne + 1, nelen - 1))
+					return (char *)_hs;
+			} else if (jstr_strncasecmp(_hs + 1, _ne + 1, 8)) {
+				if (jstr_strncasecmp(_hs + 9, _ne + 9, nelen - 9))
+					return (char *)_hs;
+			}
+		}
+	return NULL;
+#	endif
+#endif /* JSTR_HAS_STRCASESTR */
+}
+
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic pop
+#endif /* defined(__GNUC__) || defined(__clang__) */
+
 /*
    Find NE in HS case-insensitively.
    HS MUST be nul terminated.
@@ -706,45 +717,8 @@ static char *jstr_strcasestr(const char *JSTR_RST _hs,
 #ifdef JSTR_HAS_STRCASESTR
 	return (char *)JSTR_GLOBAL(strcasestr(_hs, _ne));
 #else
-#	if 0 /* broken */
 	return jstr_strcasestr_mem(_hs, strlen(_hs), _ne, strlen(_ne));
-#	endif
-	const size_t nelen = strlen(_ne);
-	const char *JSTR_RST const end = _hs + strlen(_hs) - nelen;
-	for (; _hs <= end; ++_hs)
-		if (jstr_tolower(*_hs) == jstr_tolower(*_ne)) {
-			if (nelen < 15) {
-				if (jstr_strncasecmp(_hs, _ne + 1, nelen - 1))
-					return (char *)_hs;
-			} else if (jstr_strncasecmp(_hs + 1, _ne + 1, 8)) {
-				if (jstr_strncasecmp(_hs + 9, _ne + 9, nelen - 9))
-					return (char *)_hs;
-			}
-		}
-	return NULL;
 #endif /* JSTR_HAS_STRCASESTR */
-}
-
-/* Copy no more than N bytes of SRC to DEST, stopping when C is found.
-   Return the position in DEST one byte past where C was copied, or
-   NULL if C was not found in the first N bytes of SRC.  */
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
-JSTR_INLINE
-static void *jstr_memccpy(void *JSTR_RST _dst,
-			  const void *JSTR_RST _src,
-			  int c,
-			  size_t n) JSTR_NOEXCEPT
-{
-#ifdef JSTR_HAS_MEMCCPY
-	return memccpy(_dst, _src, c, n);
-#else
-	void *p = memchr(_src, c, n);
-	if (p)
-		return jstr_mempcpy(_dst, _src, p - _src + 1);
-	memcpy(_dst, _src, n);
-	return NULL;
-#endif /* JSTR_HAS_MEMCPY */
 }
 
 JSTR_NONNULL_ALL
@@ -779,6 +753,28 @@ static char *jstr_strdup(const char *JSTR_RST const s)
 		return NULL;
 	return (char *)memcpy(p, s, len);
 #endif /* JSTR_HAS_STRCHRNUL */
+}
+
+/* Copy no more than N bytes of SRC to DEST, stopping when C is found.
+   Return the position in DEST one byte past where C was copied, or
+   NULL if C was not found in the first N bytes of SRC.  */
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static void *jstr_memccpy(void *JSTR_RST _dst,
+			  const void *JSTR_RST _src,
+			  int c,
+			  size_t n) JSTR_NOEXCEPT
+{
+#ifdef JSTR_HAS_MEMCCPY
+	return memccpy(_dst, _src, c, n);
+#else
+	void *p = memchr(_src, c, n);
+	if (p)
+		return jstr_mempcpy(_dst, _src, p - _src + 1);
+	memcpy(_dst, _src, n);
+	return NULL;
+#endif /* JSTR_HAS_MEMCPY */
 }
 
 #ifdef __cplusplus
