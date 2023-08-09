@@ -80,6 +80,7 @@ static char *jstr_rmallc_mem_p(char *JSTR_RST s,
 			       const int c,
 			       const size_t sz) JSTR_NOEXCEPT
 {
+#if 0 /* use loop */
 	s = (char *)memchr(s, c, sz);
 	if (unlikely(!s))
 		return s + sz;
@@ -93,6 +94,21 @@ static char *jstr_rmallc_mem_p(char *JSTR_RST s,
 		}
 	*dst = '\0';
 	return (char *)dst;
+#else
+	char *dst = s;
+	char *old = s;
+	char *p = s;
+	const char *const end = s + sz;
+	while ((p = (char *)memchr(p, c, end - p))) {
+		memmove(dst, old, p - old);
+		dst += (p - old);
+		old += (p - old);
+		++old;
+		++p;
+	}
+	memmove(dst, old, end - old + 1);
+	return dst + (end - old);
+#endif
 }
 
 /*

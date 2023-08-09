@@ -299,7 +299,6 @@ cat_j(jstr_t *JSTR_RST const j,
 			*(s) = malloc(*(cap));                                         \
 			JSTR_MALLOC_ERR(*((s)), break);                                \
 			char *p = *(s);                                                \
-			_ARR_VA_ARGS = _ARR_VA_ARGS;                                   \
 			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);          \
 			*p = '\0';                                                     \
 		} while (0)
