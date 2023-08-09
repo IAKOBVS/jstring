@@ -735,18 +735,23 @@ static char *jstr_strcasestr_mem(const char *JSTR_RST _hs,
 	return jstr_strcasestr_mem_constexpr(_hs, _hslen, _ne, _nelen);
 #	else
 	const char *JSTR_RST const end = _hs + _hslen - _nelen;
-	for (; _hs <= end; ++_hs)
-		if (jstr_tolower(*_hs) == jstr_tolower(*_ne)) {
+	for (; _hs <= end; ++_hs) {
+		if (jstr_tolower(*_hs) != jstr_tolower(*_ne)) {
 			if (_nelen == 1)
 				return (char *)_hs;
-			if (_nelen < 15) {
-				if (jstr_strncasecmp(_hs, _ne + 1, _nelen - 1))
+			if (jstr_tolower(*(_hs + _hslen - 1)) == jstr_tolower(*(_ne + _nelen - 1))) {
+				if (_nelen == 2)
 					return (char *)_hs;
-			} else if (jstr_strncasecmp(_hs + 1, _ne + 1, 8)
-				   && jstr_strncasecmp(_hs + 9, _ne + 9, _nelen - 9)) {
-				return (char *)_hs;
+				if (_nelen < 15) {
+					if (jstr_strncasecmp(_hs + 1, _ne + 1, _nelen - 2))
+						return (char *)_hs;
+				} else if (jstr_strncasecmp(_hs + 1, _ne + 1, 8)
+					   && jstr_strncasecmp(_hs + 9, _ne + 9, _nelen - 10)) {
+					return (char *)_hs;
+				}
 			}
 		}
+	}
 	return NULL;
 #	endif
 #endif /* JSTR_HAS_STRCASESTR */

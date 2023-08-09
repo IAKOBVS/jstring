@@ -580,7 +580,7 @@ static void jstr_rplcnc_mem(char *JSTR_RST s,
 		}
 #else
 	const char *JSTR_RST const end = s + sz;
-	while ((s = (char *)memchr(s, _searc, end - s)))
+	while (--n && (s = (char *)memchr(s, _searc, end - s)))
 		*s++ = _rplc;
 #endif
 }

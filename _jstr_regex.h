@@ -344,7 +344,6 @@ JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
 static char *jstr_reg_rm(char *JSTR_RST const s,
-			 const char *JSTR_RST const _ptn,
 			 regex_t *JSTR_RST const _preg,
 			 const int _eflags) JSTR_NOEXCEPT
 {
