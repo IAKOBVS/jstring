@@ -24,8 +24,8 @@ namespace jstr {
 #endif /* __cpluslus */
 
 enum {
-	PRIVATE_JSTR_REPLACE_FLAG_USE_N = 1,
-	PRIVATE_JSTR_REPLACE_FLAG_USE_RPLC = 10,
+	PRIVATE_JSTR_FLAT_REPLACE_USE_N = 1,
+	PRIVATE_JSTR_FLAT_REPLACE_USE_RPLC = 10,
 };
 
 JSTR_NONNULL_ALL
@@ -43,7 +43,7 @@ static void private_jstr_base_rplc_grow(const int _flag,
 {
 	char *tmp;
 	char *dst = *s;
-	while ((_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N && n--)
+	while ((_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N && n--)
 	       && (dst = (char *)PRIVATE_JSTR_MEMMEM(dst, (dst + *sz) - dst, _searc, _searclen))) {
 		if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
 			memmove(dst + _rplclen,
@@ -79,7 +79,7 @@ static void private_jstr_rplcn_grow(char **JSTR_RST s,
 				    const size_t _searclen,
 				    const size_t _rplclen) JSTR_NOEXCEPT
 {
-	private_jstr_base_rplc_grow(PRIVATE_JSTR_REPLACE_FLAG_USE_N, s, sz, cap, _searc, _rplc, n, _searclen, _rplclen);
+	private_jstr_base_rplc_grow(PRIVATE_JSTR_FLAT_REPLACE_USE_N, s, sz, cap, _searc, _rplc, n, _searclen, _rplclen);
 }
 
 JSTR_NONNULL_ALL
@@ -110,7 +110,7 @@ static char *private_jstr_base_rplcn_f(const int _flag,
 				       const size_t _searclen,
 				       const size_t _rplclen) JSTR_NOEXCEPT
 {
-	while ((_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N && n--)
+	while ((_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N && n--)
 	       && (s = (char *)PRIVATE_JSTR_MEMMEM(s, (s + sz) - s, _searc, _searclen))) {
 		memmove(s + _rplclen,
 			s + _searclen,
@@ -134,7 +134,7 @@ static char *private_jstr_rplcn_f(char *JSTR_RST s,
 				  const size_t _searclen,
 				  const size_t _rplclen) JSTR_NOEXCEPT
 {
-	return private_jstr_base_rplcn_f(PRIVATE_JSTR_REPLACE_FLAG_USE_N, s, _searc, _rplc, n, sz, _searclen, _rplclen);
+	return private_jstr_base_rplcn_f(PRIVATE_JSTR_FLAT_REPLACE_USE_N, s, _searc, _rplc, n, sz, _searclen, _rplclen);
 }
 
 JSTR_NONNULL_ALL
@@ -162,7 +162,7 @@ static char *private_jstr_base_rm_memmem1(const int _flag,
 					  size_t n,
 					  const size_t sz) JSTR_NOEXCEPT
 {
-	if (unlikely(_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N))
+	if (unlikely(_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N))
 		if (unlikely(n == 0))
 			return s + sz;
 	s = (char *)memchr(s, c, sz);
@@ -177,7 +177,7 @@ static char *private_jstr_base_rm_memmem1(const int _flag,
 				break;
 			*dst++ = *src;
 		} else {
-			if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N) {
+			if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N) {
 				if (unlikely(!--n)) {
 					memmove(dst, src, end - src + 1);
 					return (char *)dst + (end - src + 1);
@@ -208,7 +208,7 @@ static char *private_jstr_rmn_memmem1(char *JSTR_RST s,
 				      size_t n,
 				      const size_t sz) JSTR_NOEXCEPT
 {
-	return private_jstr_base_rm_memmem1(PRIVATE_JSTR_REPLACE_FLAG_USE_N, s, c, n, sz);
+	return private_jstr_base_rm_memmem1(PRIVATE_JSTR_FLAT_REPLACE_USE_N, s, c, n, sz);
 }
 
 JSTR_MAYBE_UNUSED
@@ -221,7 +221,7 @@ static void private_jstr_base_rplc_memmem1(const int _flag,
 					   size_t n,
 					   const size_t sz) JSTR_NOEXCEPT
 {
-	if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N)
+	if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N)
 		if (unlikely(n == 0))
 			return;
 	s = (char *)memchr(s, _searc, sz);
@@ -235,7 +235,7 @@ static void private_jstr_base_rplc_memmem1(const int _flag,
 		} else {
 		MTC:
 			*s = _rplc;
-			if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N)
+			if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N)
 				if (unlikely(!--n))
 					break;
 		}
@@ -259,7 +259,7 @@ static void private_jstr_rplcn_memmem1(char *JSTR_RST s,
 				       size_t n,
 				       const size_t sz) JSTR_NOEXCEPT
 {
-	private_jstr_base_rplc_memmem1(PRIVATE_JSTR_REPLACE_FLAG_USE_N, s, _searc, _rplc, n, sz);
+	private_jstr_base_rplc_memmem1(PRIVATE_JSTR_FLAT_REPLACE_USE_N, s, _searc, _rplc, n, sz);
 }
 
 JSTR_WARN_UNUSED
@@ -273,7 +273,7 @@ static char *private_jstr_base_memmem2(const int _flag,
 				       const size_t sz,
 				       const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N)
+	if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N)
 		if (unlikely(n == 0))
 			return s + sz;
 	const unsigned char *src = (unsigned char *)s + 2;
@@ -285,7 +285,7 @@ static char *private_jstr_base_memmem2(const int _flag,
 			*s++ = *(src - 2);
 		} else {
 			++src;
-			if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_RPLC) {
+			if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_RPLC) {
 				if (_rplclen == 1) {
 					*s++ = *_rplc;
 				} else {
@@ -293,7 +293,7 @@ static char *private_jstr_base_memmem2(const int _flag,
 					*(s + 1) = *(_rplc + 1);
 					s += 2;
 				}
-				if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N) {
+				if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N) {
 					if (unlikely(!--n)) {
 						memmove(s, src - 1, end - src - 1 + 1);
 						return s + (end - src - 1);
@@ -432,13 +432,13 @@ static char *private_jstr_memmem5(const int _flag,
 						memmove(dst, old, src - old);             \
 					dst += (src - old);                               \
 					old += (src - old);                               \
-					if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_RPLC) { \
+					if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_RPLC) { \
 						memcpy(dst, _rplc, _rplclen);             \
 						dst += _rplclen;                          \
 					}                                                 \
 					old += _searclen;                                 \
 					src += _searclen;                                 \
-					if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N) {    \
+					if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N) {    \
 						if (unlikely(!--n))                       \
 							break;                            \
 					}                                                 \
@@ -451,7 +451,7 @@ static char *private_jstr_memmem5(const int _flag,
 		memmove(dst, old, end + _searclen - old + 1);                             \
 		return (char *)dst + (end + _searclen - old);                             \
 	} while (0)
-	if (_flag & PRIVATE_JSTR_REPLACE_FLAG_USE_N)
+	if (_flag & PRIVATE_JSTR_FLAT_REPLACE_USE_N)
 		if (unlikely(n == 0))
 			return s + sz;
 	if (unlikely(sz < _searclen))
@@ -476,7 +476,7 @@ static char *private_jstr_memmem5(const int _flag,
 						    const size_t sz,                                                                                         \
 						    const size_t _rplclen)                                                                                   \
 	{                                                                                                                                                    \
-		return private_jstr_base_memmem##N(PRIVATE_JSTR_REPLACE_FLAG_USE_RPLC, s, _searc, _rplc, 0, sz, _rplclen);                                   \
+		return private_jstr_base_memmem##N(PRIVATE_JSTR_FLAT_REPLACE_USE_RPLC, s, _searc, _rplc, 0, sz, _rplclen);                                   \
 	}                                                                                                                                                    \
                                                                                                                                                              \
 	JSTR_WARN_UNUSED                                                                                                                                     \
@@ -490,7 +490,7 @@ static char *private_jstr_memmem5(const int _flag,
 						  const size_t sz,                                                                                           \
 						  const size_t _rplclen)                                                                                     \
 	{                                                                                                                                                    \
-		return private_jstr_base_memmem##N(PRIVATE_JSTR_REPLACE_FLAG_USE_RPLC | PRIVATE_JSTR_REPLACE_FLAG_USE_N, s, _searc, _rplc, n, sz, _rplclen); \
+		return private_jstr_base_memmem##N(PRIVATE_JSTR_FLAT_REPLACE_USE_RPLC | PRIVATE_JSTR_FLAT_REPLACE_USE_N, s, _searc, _rplc, n, sz, _rplclen); \
 	}                                                                                                                                                    \
                                                                                                                                                              \
 	JSTR_WARN_UNUSED                                                                                                                                     \
@@ -513,7 +513,7 @@ static char *private_jstr_memmem5(const int _flag,
 						const size_t n,                                                                                              \
 						const size_t sz)                                                                                             \
 	{                                                                                                                                                    \
-		return private_jstr_base_memmem##N(PRIVATE_JSTR_REPLACE_FLAG_USE_N, s, _searc, NULL, n, sz, 0);                                              \
+		return private_jstr_base_memmem##N(PRIVATE_JSTR_FLAT_REPLACE_USE_N, s, _searc, NULL, n, sz, 0);                                              \
 	}
 
 JSTR_MAYBE_UNUSED
@@ -527,7 +527,7 @@ static char *private_jstr_rplcall_memmem5(char *JSTR_RST s,
 					  const size_t _searclen,
 					  const size_t _rplclen) JSTR_NOEXCEPT
 {
-	return private_jstr_memmem5(PRIVATE_JSTR_REPLACE_FLAG_USE_RPLC, s, _searc, _rplc, 0, sz, _searclen, _rplclen);
+	return private_jstr_memmem5(PRIVATE_JSTR_FLAT_REPLACE_USE_RPLC, s, _searc, _rplc, 0, sz, _searclen, _rplclen);
 }
 
 JSTR_MAYBE_UNUSED
@@ -542,7 +542,7 @@ static char *private_jstr_rplcn_memmem5(char *JSTR_RST s,
 					const size_t _searclen,
 					const size_t _rplclen) JSTR_NOEXCEPT
 {
-	return private_jstr_memmem5(PRIVATE_JSTR_REPLACE_FLAG_USE_RPLC | PRIVATE_JSTR_REPLACE_FLAG_USE_N, s, _searc, _rplc, n, sz, _searclen, _rplclen);
+	return private_jstr_memmem5(PRIVATE_JSTR_FLAT_REPLACE_USE_RPLC | PRIVATE_JSTR_FLAT_REPLACE_USE_N, s, _searc, _rplc, n, sz, _searclen, _rplclen);
 }
 
 JSTR_MAYBE_UNUSED
@@ -567,7 +567,7 @@ static char *private_jstr_rmn_memmem5(char *JSTR_RST s,
 				      const size_t sz,
 				      const size_t _searclen) JSTR_NOEXCEPT
 {
-	return private_jstr_memmem5(PRIVATE_JSTR_REPLACE_FLAG_USE_N, s, _searc, NULL, n, sz, _searclen, 0);
+	return private_jstr_memmem5(PRIVATE_JSTR_FLAT_REPLACE_USE_N, s, _searc, NULL, n, sz, _searclen, 0);
 }
 
 DEFINE_JSTR_MEMMEMN_FUNCS(2);

@@ -18,11 +18,11 @@ extern "C" {
 #include "_jstr_builder.h"
 #include "_jstr_config.h"
 #include "_jstr_ctype.h"
+#include "_jstr_io.h"
 #include "_jstr_macros.h"
 #include "_jstr_regex.h"
 #include "_jstr_replace.h"
 #include "_jstr_string.h"
-#include "_jstr_io.h"
 
 #ifdef __cplusplus
 namespace jstr {
@@ -252,24 +252,6 @@ static void jstr_insertaftc_mem(char **JSTR_RST const s,
 }
 
 /*
-  Insert SRC after all C in DST.
-*/
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void jstr_insertaftallc_mem(char **JSTR_RST const s,
-				   size_t *JSTR_RST const sz,
-				   size_t *JSTR_RST const cap,
-				   const int c,
-				   const char *JSTR_RST const _src,
-				   const size_t _srclen) JSTR_NOEXCEPT
-{
-	const char *p = *s;
-	const char *const end = *s + *sz;
-	while ((p = (char *)memchr(p, c, end - p)))
-		jstr_insert_mem(s, sz, cap, p++ - *s + 1, _src, _srclen);
-}
-
-/*
   Insert SRC after end of NE in DST.
   Assumes that S have enough space for SRC.
 */
@@ -318,34 +300,6 @@ static void jstr_insertaft_mem(char **JSTR_RST const s,
 		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, _searc, _searclen);
 		if (p)
 			jstr_insert_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
-		return;
-	}
-	}
-}
-
-/*
-  Insert SRC after all end of NE in DST.
-*/
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void jstr_insertaftall_mem(char **JSTR_RST const s,
-				  size_t *JSTR_RST const sz,
-				  size_t *JSTR_RST const cap,
-				  const char *JSTR_RST const _searc,
-				  const char *JSTR_RST const _src,
-				  const size_t _searclen,
-				  const size_t _srclen) JSTR_NOEXCEPT
-{
-	switch (_searclen) {
-	case 0: return;
-	case 1:
-		jstr_insertaftallc_mem(s, sz, cap, *_searc, _src, _srclen);
-		return;
-	default: {
-		const char *p = *s;
-		const char *const end = p + *sz;
-		while ((p = (char *)PRIVATE_JSTR_MEMMEM(p, end - p, _searc, _searclen)))
-			jstr_insert_mem(s, sz, cap, p++ - *s + _searclen, _src, _srclen);
 		return;
 	}
 	}
@@ -459,9 +413,10 @@ static char *jstr_slipaftallc_mem_p_f(char *JSTR_RST const s,
 {
 	size_t off = 0;
 	const char *p;
-	while ((p = (char *)memchr(s + off, c, sz - off))) {
-		sz = jstr_slip_mem_p_f(s, p - s, _src, sz, _srclen) - s;
-		off += p - s + 1;
+	while ((p = (char *)memchr(s + off, c, sz - off - *s))) {
+		off = p - s;
+		sz = jstr_slip_mem_p_f(s, off, _src, sz, _srclen) - s;
+		off += _srclen + 1;
 	}
 	return s + sz;
 }
@@ -481,8 +436,9 @@ static void jstr_slipaftallc_mem(char **JSTR_RST const s,
 	size_t off = 0;
 	const char *p;
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
-		jstr_slip_mem(s, sz, cap, p - *s + 1, _src, _srclen);
-		off += p - *s + 1;
+		off = p - *s;
+		jstr_slip_mem(s, sz, cap, off, _src, _srclen);
+		off += _srclen + 1;
 	}
 }
 
@@ -553,16 +509,15 @@ static char *jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
 				     const size_t _srclen) JSTR_NOEXCEPT
 {
 	switch (_searclen) {
-	case 0:
-		return s + sz;
-	case 1:
-		return jstr_slipaftallc_mem_p_f(s, *_searc, _src, sz, _srclen);
+	case 0: return s + sz;
+	case 1: return jstr_slipaftallc_mem_p_f(s, *_searc, _src, sz, _srclen);
 	default: {
 		size_t off = 0;
 		const char *p;
 		while ((p = (char *)PRIVATE_JSTR_MEMMEM(s + off, sz - off, _searc, _searclen))) {
-			sz = jstr_slip_mem_p_f(s, p - s, _src, sz, _srclen) - s;
-			off += p - s + _searclen;
+			off = p - s;
+			sz = jstr_slip_mem_p_f(s, off, _src, sz, _srclen) - s;
+			off += _searclen + _srclen;
 		}
 		return s + sz;
 	}
@@ -592,8 +547,9 @@ static void jstr_slipaftall_mem(char **JSTR_RST const s,
 		size_t off = 0;
 		const char *p;
 		while ((p = (char *)PRIVATE_JSTR_MEMMEM(*s + off, *sz - off, _searc, _searclen))) {
+			off = p - *s;
 			jstr_slip_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
-			off += p - *s + _searclen;
+			off += _searclen + _srclen;
 		}
 	}
 	}
