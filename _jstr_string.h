@@ -99,6 +99,62 @@ static void *jstr_memrchr(const void *JSTR_RST const s,
 #endif /* !JSTR_HAS_MEMRCHR */
 }
 
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+JSTR_RETURNS_NONNULL
+static char *jstr_strchrnul(const char *JSTR_RST const s,
+			    const int c)
+{
+#ifdef JSTR_HAS_STRCHRNUL
+	return (char *)JSTR_GLOBALIZE(strchrnul(s, c));
+#else
+	const size_t n = strlen(s);
+	void *p = (void *)memchr(s, c, n);
+	if (p)
+		return p;
+	return (void *)(s + n);
+#endif /* JSTR_HAS_STRCHRNUL */
+}
+
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static char *jstr_strdup(const char *JSTR_RST const s)
+{
+#ifdef JSTR_HAS_STRCHRNUL
+	return (char *)JSTR_GLOBALIZE(strdup(s));
+#else
+	const size_t len = strlen(s) + 1;
+	void *p = malloc(len);
+	if (unlikely(!p))
+		return NULL;
+	return (char *)memcpy(p, s, len);
+#endif /* JSTR_HAS_STRCHRNUL */
+}
+
+/* Copy no more than N bytes of SRC to DEST, stopping when C is found.
+   Return the position in DEST one byte past where C was copied, or
+   NULL if C was not found in the first N bytes of SRC.  */
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static void *jstr_memccpy(void *JSTR_RST _dst,
+			  const void *JSTR_RST _src,
+			  int c,
+			  size_t n) JSTR_NOEXCEPT
+{
+#ifdef JSTR_HAS_MEMCCPY
+	return memccpy(_dst, _src, c, n);
+#else
+	void *p = memchr(_src, c, n);
+	if (p)
+		return jstr_mempcpy(_dst, _src, p - _src + 1);
+	memcpy(_dst, _src, n);
+	return NULL;
+#endif /* JSTR_HAS_MEMCPY */
+}
+
 /*
   Return value:
   Pointer to '\0' in DST.
@@ -719,62 +775,6 @@ static char *jstr_strcasestr(const char *JSTR_RST _hs,
 #else
 	return jstr_strcasestr_mem(_hs, strlen(_hs), _ne, strlen(_ne));
 #endif /* JSTR_HAS_STRCASESTR */
-}
-
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
-JSTR_INLINE
-JSTR_RETURNS_NONNULL
-static char *jstr_strchrnul(const char *JSTR_RST const s,
-			    const int c)
-{
-#ifdef JSTR_HAS_STRCHRNUL
-	return (char *)JSTR_GLOBALIZE(strchrnul(s, c));
-#else
-	const size_t n = strlen(s);
-	void *p = (void *)memchr(s, c, n);
-	if (p)
-		return p;
-	return (void *)(s + n);
-#endif /* JSTR_HAS_STRCHRNUL */
-}
-
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
-JSTR_INLINE
-static char *jstr_strdup(const char *JSTR_RST const s)
-{
-#ifdef JSTR_HAS_STRCHRNUL
-	return (char *)JSTR_GLOBALIZE(strdup(s));
-#else
-	const size_t len = strlen(s) + 1;
-	void *p = malloc(len);
-	if (unlikely(!p))
-		return NULL;
-	return (char *)memcpy(p, s, len);
-#endif /* JSTR_HAS_STRCHRNUL */
-}
-
-/* Copy no more than N bytes of SRC to DEST, stopping when C is found.
-   Return the position in DEST one byte past where C was copied, or
-   NULL if C was not found in the first N bytes of SRC.  */
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
-JSTR_INLINE
-static void *jstr_memccpy(void *JSTR_RST _dst,
-			  const void *JSTR_RST _src,
-			  int c,
-			  size_t n) JSTR_NOEXCEPT
-{
-#ifdef JSTR_HAS_MEMCCPY
-	return memccpy(_dst, _src, c, n);
-#else
-	void *p = memchr(_src, c, n);
-	if (p)
-		return jstr_mempcpy(_dst, _src, p - _src + 1);
-	memcpy(_dst, _src, n);
-	return NULL;
-#endif /* JSTR_HAS_MEMCPY */
 }
 
 #ifdef __cplusplus
