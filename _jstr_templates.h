@@ -80,6 +80,45 @@ strlen_args(Str &&s,
 	       + strlen_args(std::forward<StrArgs>(args)...);
 }
 
+template <size_t N>
+JSTR_INLINE
+JSTR_NONNULL_ALL static void
+cat_assign(char **JSTR_RST const dst,
+	   const char (&src)[N]) JSTR_NOEXCEPT
+{
+	memcpy(*dst, src, N - 1);
+	*dst += (N - 1);
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void cat_assign(char **JSTR_RST dst,
+		       const char *JSTR_RST src) JSTR_NOEXCEPT
+{
+#		ifdef JSTR_HAS_STPCPY
+	*dst = stpcpy(*dst, src);
+#		else
+	while (*src)
+		**dst++ = *src++;
+#		endif
+}
+
+JSTR_INLINE
+static constexpr void cat_loop_assign(char **) JSTR_NOEXCEPT {}
+
+template <typename Str,
+	  typename... StrArgs,
+	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+JSTR_INLINE
+JSTR_NONNULL_ALL static void
+cat_loop_assign(char **JSTR_RST const dst,
+		Str &&arg,
+		StrArgs &&...args) JSTR_NOEXCEPT
+{
+	cat_assign(dst, std::forward<Str>(arg));
+	cat_loop_assign(dst, std::forward<StrArgs>(args)...);
+}
+
 #	endif
 
 JSTR_WARN_UNUSED
@@ -118,31 +157,6 @@ strlen_args(size_t *_strlen_arr,
 	       + strlen_args(_strlen_arr, std::forward<StrArgs>(args)...);
 }
 
-#	if 0
-
-template <size_t N>
-JSTR_INLINE
-JSTR_NONNULL_ALL static void
-cat_assign(char **JSTR_RST const dst,
-	   const char (&src)[N]) JSTR_NOEXCEPT
-{
-	memcpy(*dst, src, N - 1);
-	*dst += (N - 1);
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void cat_assign(char **JSTR_RST dst,
-		       const char *JSTR_RST src) JSTR_NOEXCEPT
-{
-#		ifdef JSTR_HAS_STPCPY
-	*dst = stpcpy(*dst, src);
-#		else
-	while (*src)
-		**dst++ = *src++;
-#		endif
-}
-
 template <size_t N>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
@@ -165,11 +179,6 @@ static void cat_assign(char **JSTR_RST dst,
 	*dst += *(*_strlen_arr)++;
 }
 
-#	endif
-
-/* JSTR_INLINE */
-/* static constexpr void cat_loop_assign(char **) JSTR_NOEXCEPT {} */
-
 JSTR_INLINE
 static constexpr void cat_loop_assign(char **, size_t *) JSTR_NOEXCEPT {}
 
@@ -186,23 +195,6 @@ cat_loop_assign(char **JSTR_RST const dst,
 	cat_assign(dst, &_strlen_arr, std::forward<Str>(arg));
 	cat_loop_assign(dst, _strlen_arr, std::forward<StrArgs>(args)...);
 }
-
-#	if 0
-
-template <typename Str,
-	  typename... StrArgs,
-	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
-JSTR_INLINE
-JSTR_NONNULL_ALL static void
-cat_loop_assign(char **JSTR_RST const dst,
-		Str &&arg,
-		StrArgs &&...args) JSTR_NOEXCEPT
-{
-	cat_assign(dst, std::forward<Str>(arg));
-	cat_loop_assign(dst, std::forward<StrArgs>(args)...);
-}
-
-#	endif
 
 } /* namespace _private */
 
