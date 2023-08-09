@@ -155,6 +155,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_INLINE
 static char *private_jstr_base_rm_memmem1(const int _flag,
 					  char *JSTR_RST s,
 					  const int c,
