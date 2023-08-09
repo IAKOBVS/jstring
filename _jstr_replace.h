@@ -60,8 +60,8 @@ static char *jstr_rmc_p(char *JSTR_RST s,
 	if (unlikely(!*s))
 		return s;
 	unsigned char *dst = (unsigned char *)s;
-	const unsigned char *src = dst;
-	while ((*dst++ = *++src))
+	const unsigned char *src = dst + 1;
+	while ((*dst++ = *src++))
 		;
 	return (char *)dst - 1;
 #else
