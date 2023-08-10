@@ -61,7 +61,7 @@ typedef struct Jstring {
 	JSTR_INLINE
 	~Jstring(void) JSTR_NOEXCEPT
 	{
-		::free(this->data);
+		free(this->data);
 #		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
 		this->data = NULL;
 #		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
@@ -73,9 +73,9 @@ typedef struct Jstring {
 	  free(STR) and set STR to NULL.
 	*/
 	JSTR_INLINE
-	void free(void) JSTR_NOEXCEPT
+	void del(void) JSTR_NOEXCEPT
 	{
-		::free(this->data);
+		free(this->data);
 #	if JSTR_NULLIFY_PTR_ON_DELETE
 		this->data = NULL;
 #	endif /* JSTR_NULLIFY_PTR_ON_DELETE */
@@ -193,11 +193,8 @@ static void jstr_allocmore_append_mem(char **JSTR_RST const s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
+static void jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
 {
-#ifdef __cplusplus
-	::
-#endif
 	free(p);
 #if JSTR_NULLIFY_PTR_ON_DELETE
 	p = NULL;
