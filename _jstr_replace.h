@@ -198,90 +198,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_stripspn_mem_p(char *JSTR_RST s,
-				 const char *JSTR_RST _rjct,
-				 const size_t sz) JSTR_NOEXCEPT
+static char *jstr_stripspn_p(char *JSTR_RST const s,
+			     const char *JSTR_RST const _rjct) JSTR_NOEXCEPT
 {
-	enum {
-		ACCEPT = 0,
-		REJECT,
-		NUL,
-	};
-	if (unlikely(!_rjct[0]))
-		return s + sz;
-	if (unlikely(!_rjct[1]))
-		return jstr_rmallc_mem_p(s, *_rjct, sz);
-	unsigned char tbl[JSTR_ASCII_SIZE];
-	memset(tbl, ACCEPT, 64);
-	memset(&tbl[64], ACCEPT, 64);
-	memset(&tbl[128], ACCEPT, 64);
-	memset(&tbl[192], ACCEPT, 64);
-	tbl[0] = NUL;
-	do
-		tbl[(unsigned char)*_rjct++] = REJECT;
-	while (*_rjct);
-	const unsigned char *dst = (unsigned char *)s;
-	const unsigned char *src = dst;
-	for (;; ++src) {
-		switch (tbl[*src]) {
-		case ACCEPT:
-			*s++ = *src;
-		case REJECT:
-			continue;
-		case NUL:;
-		}
-		break;
-	}
-	*s = '\0';
-	return s;
-}
-
-/*
-  Remove characters in REJECT in S.
-  Return value:
-  Pointer to '\0' in S.
-*/
-JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-static char *jstr_stripspn_p(char *JSTR_RST s,
-			     const char *JSTR_RST _rjct) JSTR_NOEXCEPT
-{
-#if 1
-	enum {
-		ACCEPT = 0,
-		REJECT,
-		NUL,
-	};
-	if (unlikely(!_rjct[0]))
-		return s + strlen(s);
-	if (unlikely(!_rjct[1]))
-		return jstr_rmallc_p(s, *_rjct);
-	unsigned char tbl[JSTR_ASCII_SIZE];
-	memset(tbl, ACCEPT, 64);
-	memset(&tbl[64], ACCEPT, 64);
-	memset(&tbl[128], ACCEPT, 64);
-	memset(&tbl[192], ACCEPT, 64);
-	tbl[0] = NUL;
-	do
-		tbl[(unsigned char)*_rjct++] = REJECT;
-	while (*_rjct);
-	const unsigned char *dst = (unsigned char *)s;
-	const unsigned char *src = dst;
-	for (;; ++src) {
-		switch (tbl[*src]) {
-		case ACCEPT:
-			*s++ = *src;
-		case REJECT:
-			continue;
-		case NUL:;
-		}
-		break;
-	}
-	*s = '\0';
-	return s;
-#else
 	unsigned char *dst = (unsigned char *)s;
 	unsigned char *old = dst;
 	unsigned char *p = dst;
@@ -295,7 +214,6 @@ static char *jstr_stripspn_p(char *JSTR_RST s,
 	}
 	memmove(dst, old, p - old + 1);
 	return (char *)dst + (p - old);
-#endif
 }
 
 /*
