@@ -108,6 +108,8 @@ static void *jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const 
 		} while (h <= end);                                                       \
 	} while (0)
 	switch (ptable->nelen) {
+	case 0: return (void *)hs;
+	case 1: return (void *)memchr(hs, *ptable->ne, hslen);
 	case 2: {
 		const unsigned char *h = (unsigned char *)hs + 2;
 		const unsigned char *const end = h + hslen;
@@ -152,8 +154,8 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_CONST
 static void *jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
-					const char *JSTR_RST const hs,
-					const size_t hslen) JSTR_NOEXCEPT
+			      const char *JSTR_RST const hs,
+			      const size_t hslen) JSTR_NOEXCEPT
 {
 	return jstr_memmem_exec_constexpr(ptable, hs, hslen);
 }
