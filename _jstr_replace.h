@@ -252,8 +252,6 @@ static char *jstr_rmn_mem_p_constexpr(char *JSTR_RST s,
 				      size_t sz,
 				      const size_t _searclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen > sz))
-		return s + sz;
 	switch (_searclen) {
 	case 0: return s + sz;
 	case 1: return jstr_rmnc_mem_p(s, *_searc, n, sz);
@@ -298,8 +296,6 @@ static char *jstr_rmall_mem_p_constexpr(char *JSTR_RST s,
 					size_t sz,
 					const size_t _searclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen > sz))
-		return s + sz;
 	switch (_searclen) {
 	case 0: return s + sz;
 	case 1: return jstr_rmallc_mem_p(s, *_searc, sz);
@@ -479,8 +475,6 @@ static char *jstr_rplc_mem_p_f(char *JSTR_RST const s,
 			       const size_t _searclen,
 			       const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen == 0))
-		return s + sz;
 	switch (_rplclen) {
 	case 0:
 		return jstr_rm_mem_p(s, _searc, sz, _searclen);
@@ -516,8 +510,6 @@ static void jstr_rplc_mem_constexpr(char **JSTR_RST const s,
 				    const size_t _searclen,
 				    const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen == 0))
-		return;
 	switch (_rplclen) {
 	case 0:
 		*sz = jstr_rm_mem_p(*s, _searc, *sz, _searclen) - *s;
@@ -627,8 +619,6 @@ static char *jstr_rplcn_mem_p_f_constexpr(char *JSTR_RST s,
 {
 	if (unlikely(_rplclen == 0))
 		return jstr_rmn_mem_p(s, _searc, n, sz, _searclen);
-	if (unlikely(_searclen > sz))
-		return s + sz;
 	if (_rplclen <= _searclen) {
 		switch (_searclen) {
 		case 0: return s + sz;
@@ -684,8 +674,6 @@ static char *jstr_rplcall_mem_p_f_constexpr(char *JSTR_RST s,
 {
 	if (unlikely(_rplclen == 0))
 		return jstr_rmall_mem_p(s, _searc, sz, _searclen);
-	if (unlikely(_searclen > sz))
-		return s + sz;
 	if (_rplclen <= _searclen) {
 		switch (_searclen) {
 		case 0: return s + sz;
@@ -741,8 +729,6 @@ static void jstr_rplcn_mem_constexpr(char **JSTR_RST const s,
 		*sz = jstr_rmn_mem_p(*s, _searc, n, *sz, _searclen) - *s;
 		return;
 	}
-	if (unlikely(_searclen > *sz))
-		return;
 	if (_rplclen <= _searclen) {
 		switch (_searclen) {
 		case 0: return;
@@ -803,8 +789,6 @@ static void jstr_rplcall_mem_constexpr(char **JSTR_RST const s,
 		*sz = jstr_rmall_mem_p(*s, _searc, *sz, _searclen) - *s;
 		return;
 	}
-	if (unlikely(_searclen > *sz))
-		return;
 	if (_rplclen <= _searclen) {
 		switch (_searclen) {
 		case 0: return;

@@ -102,6 +102,8 @@ static void *jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const 
 			h += ptable->shft1;                                       \
 		} while (h <= end);                                               \
 	} while (0)
+	if (unlikely(hslen < ptable->nelen))
+		return NULL;
 	switch (ptable->nelen) {
 	case 0: return (void *)hs;
 	case 1: return (void *)memchr(hs, *ptable->ne, hslen);
@@ -133,15 +135,13 @@ static void *jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const 
 		return (hw == nw) ? (void *)(h - 4) : NULL;
 	}
 	}
-	if (unlikely(hslen < ptable->nelen))
-		return NULL;
 	if (unlikely(ptable->nelen > 256)) {
 		const size_t *const shift = (size_t *)ptable->big_tbl;
 		PRIVATE_JSTR_MEMMEM_EXEC(size_t, size_t);
-		return NULL;
+	} else {
+		const uint8_t *const shift = ptable->smal_tbl;
+		PRIVATE_JSTR_MEMMEM_EXEC(uint8_t, int);
 	}
-	const uint8_t *const shift = ptable->smal_tbl;
-	PRIVATE_JSTR_MEMMEM_EXEC(uint8_t, int);
 	return NULL;
 }
 

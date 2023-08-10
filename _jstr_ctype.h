@@ -135,7 +135,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_tupper(const int c) JSTR_NOEXCEPT
+static int jstr_toupper(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
 		JSTR_CASE_LOWER
@@ -146,7 +146,7 @@ static int jstr_tupper(const int c) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_tuppers(char *JSTR_RST s) JSTR_NOEXCEPT
+static void jstr_touppers(char *JSTR_RST s) JSTR_NOEXCEPT
 {
 	for (;; ++s) {
 		switch (*s) {

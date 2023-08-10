@@ -175,6 +175,8 @@ static char *private_jstr_base_memmem2(const int _flag,
 	if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_N)
 		if (unlikely(n == 0))
 			return s + sz;
+	if (unlikely(sz < 2))
+		return s + sz;
 	const unsigned char *src = (unsigned char *)s + 2;
 	const unsigned char *const end = (unsigned char *)s + sz;
 	unsigned char *dst = (unsigned char *)s;
@@ -221,6 +223,11 @@ static char *private_jstr_base_memmem3(const int _flag,
 				       const size_t sz,
 				       const size_t _rplclen) JSTR_NOEXCEPT
 {
+	if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_N)
+		if (unlikely(n == 0))
+			return s + sz;
+	if (unlikely(sz < 3))
+		return s + sz;
 	const unsigned char *src = (unsigned char *)s + 3;
 	const unsigned char *const end = (unsigned char *)s + sz;
 	unsigned char *dst = (unsigned char *)s;
@@ -262,6 +269,11 @@ static char *private_jstr_base_memmem4(const int _flag,
 				       const size_t sz,
 				       const size_t _rplclen) JSTR_NOEXCEPT
 {
+	if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_N)
+		if (unlikely(n == 0))
+			return s + sz;
+	if (unlikely(sz < 4))
+		return s + sz;
 	const unsigned char *const end = (unsigned char *)s + sz;
 	const unsigned char *src = (unsigned char *)s + 4;
 	unsigned char *dst = (unsigned char *)s;
