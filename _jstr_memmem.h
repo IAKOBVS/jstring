@@ -38,25 +38,22 @@ static int jstr_memmem_comp_mem(jstr_memmem_table *JSTR_RST const ptable,
 	ptable->nelen = nelen;
 	if (unlikely(nelen < 5)) {
 		ptable->big_tbl = NULL;
-		return 0;
-	}
-	if (unlikely(nelen > 256)) {
-		ptable->big_tbl = (size_t *)malloc(256 * sizeof(size_t));
+	} else if (unlikely(nelen > 256)) {
+		ptable->big_tbl = (size_t *)calloc(256, sizeof(size_t));
 		if (unlikely(!ptable->big_tbl))
 			return 1;
-		memset(ptable->big_tbl, 0, 256 * sizeof(size_t));
 		for (size_t i = 1; i < nelen - 1; ++i)
 			ptable->big_tbl[JSTR_HASH2(ne + i)] = i;
 		ptable->shft1 = nelen - 1 - ptable->big_tbl[JSTR_HASH2(ne + nelen - 1)];
 		ptable->smal_tbl[JSTR_HASH2(ne + nelen - 1)] = nelen - 1;
-		return 0;
+	} else {
+		ptable->big_tbl = NULL;
+		memset(ptable->smal_tbl, 0, 256 * sizeof(uint8_t));
+		for (int i = 1; i < (int)nelen - 1; ++i)
+			ptable->smal_tbl[JSTR_HASH2(ne + i)] = i;
+		ptable->shft1 = nelen - 1 - ptable->smal_tbl[JSTR_HASH2(ne + nelen - 1)];
+		ptable->smal_tbl[JSTR_HASH2(ne + nelen - 1)] = nelen - 1;
 	}
-	memset(ptable->smal_tbl, 0, 256 * sizeof(uint8_t));
-	for (int i = 1; i < (int)nelen - 1; ++i)
-		ptable->smal_tbl[JSTR_HASH2(ne + i)] = i;
-	ptable->shft1 = nelen - 1 - ptable->smal_tbl[JSTR_HASH2(ne + nelen - 1)];
-	ptable->smal_tbl[JSTR_HASH2(ne + nelen - 1)] = nelen - 1;
-	ptable->big_tbl = NULL;
 	return 0;
 }
 
