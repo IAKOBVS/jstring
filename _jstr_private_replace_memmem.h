@@ -32,6 +32,8 @@ enum {
 	PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER_FORCE = 1000,
 };
 
+#if 0
+
 JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -102,6 +104,20 @@ static void private_jstr_base_rplc_memmem1(const int _flag,
 					   size_t n,
 					   const size_t sz) JSTR_NOEXCEPT
 {
+	unsigned char *dst = (unsigned char *)s;
+	unsigned char *old = dst;
+	unsigned char *p = dst;
+	unsigned char *end = dst + sz;
+	while ((_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_N && n--) && memchr(s, _searc, n)) {
+		if (likely(dst != old))
+			memmove(dst, old, p - old);
+		dst += (p - old);
+		old += (p - old);
+		++old;
+		++p;
+	}
+	memmove(dst, old, end - old + 1);
+
 	if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_N)
 		if (unlikely(n == 0))
 			return;
@@ -142,6 +158,8 @@ static void private_jstr_rplcn_memmem1(char *JSTR_RST s,
 {
 	private_jstr_base_rplc_memmem1(PRIVATE_JSTR_FLAG_REPLACE_USE_N, s, _searc, _rplc, n, sz);
 }
+
+#endif
 
 JSTR_WARN_UNUSED
 JSTR_INLINE

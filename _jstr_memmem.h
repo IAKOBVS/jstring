@@ -20,12 +20,11 @@ namespace jstr {
 #endif /* __cpluslus */
 
 typedef struct jstr_memmem_table {
-	size_t *tablep;
+	size_t *big_tbl;
 	size_t shift1;
-	size_t mtc1;
 	size_t nelen;
 	const char *ne;
-	uint8_t table[256];
+	uint8_t smal_tbl[256];
 } jstr_memmem_table;
 
 JSTR_INLINE
@@ -38,28 +37,26 @@ static int jstr_memmem_comp_mem(jstr_memmem_table *JSTR_RST const ptable,
 	ptable->ne = ne;
 	ptable->nelen = nelen;
 	if (unlikely(nelen < 5)) {
-		ptable->tablep = NULL;
+		ptable->big_tbl = NULL;
 		return 0;
 	}
 	if (unlikely(nelen > 256)) {
-		ptable->tablep = (size_t *)malloc(256 * sizeof(size_t));
-		if (unlikely(!ptable->tablep))
+		ptable->big_tbl = (size_t *)malloc(256 * sizeof(size_t));
+		if (unlikely(!ptable->big_tbl))
 			return 1;
-		memset(ptable->tablep, 0, 256 * sizeof(size_t));
-		ptable->mtc1 = nelen - 1;
-		for (size_t i = 1; i < ptable->mtc1; ++i)
-			ptable->tablep[JSTR_HASH2(ne + i)] = i;
-		ptable->shift1 = ptable->mtc1 - ptable->tablep[JSTR_HASH2(ne + ptable->mtc1)];
-		ptable->table[JSTR_HASH2(ne + ptable->mtc1)] = ptable->mtc1;
+		memset(ptable->big_tbl, 0, 256 * sizeof(size_t));
+		for (size_t i = 1; i < nelen - 1; ++i)
+			ptable->big_tbl[JSTR_HASH2(ne + i)] = i;
+		ptable->shift1 = nelen - 1 - ptable->big_tbl[JSTR_HASH2(ne + nelen - 1)];
+		ptable->smal_tbl[JSTR_HASH2(ne + nelen - 1)] = nelen - 1;
 		return 0;
 	}
-	memset(ptable->table, 0, 256 * sizeof(uint8_t));
-	ptable->mtc1 = nelen - 1;
-	for (int i = 1; i < (int)ptable->mtc1; ++i)
-		ptable->table[JSTR_HASH2(ne + i)] = i;
-	ptable->shift1 = ptable->mtc1 - ptable->table[JSTR_HASH2(ne + ptable->mtc1)];
-	ptable->table[JSTR_HASH2(ne + ptable->mtc1)] = ptable->mtc1;
-	ptable->tablep = NULL;
+	memset(ptable->smal_tbl, 0, 256 * sizeof(uint8_t));
+	for (int i = 1; i < (int)nelen - 1; ++i)
+		ptable->smal_tbl[JSTR_HASH2(ne + i)] = i;
+	ptable->shift1 = nelen - 1 - ptable->smal_tbl[JSTR_HASH2(ne + nelen - 1)];
+	ptable->smal_tbl[JSTR_HASH2(ne + nelen - 1)] = nelen - 1;
+	ptable->big_tbl = NULL;
 	return 0;
 }
 
@@ -74,7 +71,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void jstr_memmem_free(jstr_memmem_table *JSTR_RST const ptable)
 {
-	free(ptable->tablep);
+	free(ptable->big_tbl);
 }
 
 JSTR_NONNULL_ALL
@@ -85,27 +82,28 @@ static void *jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const 
 					const char *JSTR_RST const hs,
 					const size_t hslen) JSTR_NOEXCEPT
 {
-#define PRIVATE_JSTR_MEMMEM_EXEC(shift_type, ne_iterator_type)                            \
-	do {                                                                              \
-		const unsigned char *h = (unsigned char *)hs;                             \
-		const unsigned char *const end = h + hslen - ptable->nelen;               \
-		size_t off = 0;                                                           \
-		size_t tmp;                                                               \
-		do {                                                                      \
-			do {                                                              \
-				h += ptable->mtc1;                                        \
-				tmp = shift[JSTR_HASH2(h)];                               \
-			} while (!tmp && h <= end);                                       \
-			h -= tmp;                                                         \
-			if (tmp < ptable->mtc1)                                           \
-				continue;                                                 \
-			if (ptable->mtc1 < 15 || !memcmp(h + off, ptable->ne + off, 8)) { \
-				if (!memcmp(h, ptable->ne, ptable->nelen))                \
-					return (void *)h;                                 \
-				off = (off >= 8 ? off : ptable->mtc1) - 8;                \
-			}                                                                 \
-			h += ptable->shift1;                                              \
-		} while (h <= end);                                                       \
+#define PRIVATE_JSTR_MEMMEM_EXEC(shift_type, ne_iterator_type)                    \
+	do {                                                                      \
+		const size_t mtc1 = ptable->nelen - 1;                            \
+		const unsigned char *h = (unsigned char *)hs;                     \
+		const unsigned char *const end = h + hslen - ptable->nelen;       \
+		size_t off = 0;                                                   \
+		size_t tmp;                                                       \
+		do {                                                              \
+			do {                                                      \
+				h += mtc1;                                        \
+				tmp = shift[JSTR_HASH2(h)];                       \
+			} while (!tmp && h <= end);                               \
+			h -= tmp;                                                 \
+			if (tmp < mtc1)                                           \
+				continue;                                         \
+			if (mtc1 < 15 || !memcmp(h + off, ptable->ne + off, 8)) { \
+				if (!memcmp(h, ptable->ne, ptable->nelen))        \
+					return (void *)h;                         \
+				off = (off >= 8 ? off : mtc1) - 8;                \
+			}                                                         \
+			h += ptable->shift1;                                      \
+		} while (h <= end);                                               \
 	} while (0)
 	switch (ptable->nelen) {
 	case 0: return (void *)hs;
@@ -141,11 +139,11 @@ static void *jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const 
 	if (unlikely(hslen < ptable->nelen))
 		return NULL;
 	if (unlikely(ptable->nelen > 256)) {
-		const size_t *const shift = ptable->tablep;
+		const size_t *const shift = (size_t *)ptable->big_tbl;
 		PRIVATE_JSTR_MEMMEM_EXEC(size_t, size_t);
 		return NULL;
 	}
-	const uint8_t *const shift = ptable->table;
+	const uint8_t *const shift = ptable->smal_tbl;
 	PRIVATE_JSTR_MEMMEM_EXEC(uint8_t, int);
 	return NULL;
 }
