@@ -17,7 +17,7 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
-#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % sizeof(shift))
+#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 
 #define PRIVATE_JSTR_USE_MEMMEM34 1
 
