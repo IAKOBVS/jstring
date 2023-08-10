@@ -265,8 +265,6 @@ static int jstr_strcasecmp(const char *JSTR_RST s1,
 #endif
 }
 
-#if 1 /* broken */
-
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -592,8 +590,6 @@ static char *jstr_memcasemem(const char *JSTR_RST const _hs,
 {
 	return jstr_memcasemem_constexpr(_hs, _hslen, _ne, _nelen);
 }
-
-#endif /* #if 0 */
 
 #if defined(__GNUC__) || defined(__clang__)
 #	pragma GCC diagnostic ignored "-Wunused-parameter"
