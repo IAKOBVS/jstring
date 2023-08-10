@@ -654,8 +654,8 @@ static char *jstr_strcasestr(const char *JSTR_RST _hs,
 #undef PRIVATE_JSTR_STRSTRCASE
 
 #if defined(__GNUC__) || defined(__clang__)
-/* #	pragma GCC poison private_jstr_memrmem */
-/* #	pragma GCC poison private_jstr_memcasemem3 */
+#	pragma GCC poison private_jstr_memrmem
+#	pragma GCC poison private_jstr_memcasemem3
 #endif /* defined(__GNUC__) || defined(__clang__) */
 
 #endif /* JSTR_STRING_H_DEF */
