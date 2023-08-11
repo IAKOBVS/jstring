@@ -14,7 +14,6 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_memmem.h"
 #include "_jstr_string.h"
-/* #include "_jstr_private_replace_memmem.h" */
 
 #ifdef __cplusplus
 namespace jstr {
