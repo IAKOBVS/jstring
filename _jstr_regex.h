@@ -116,7 +116,7 @@ static int jstr_reg_exec(const regex_t *JSTR_RST _preg,
 	}
 }
 
-#if JSTR_REG_EF_STARTEND
+#ifdef JSTR_REG_EF_STARTEND
 
 JSTR_INLINE
 static int jstr_reg_exec_mem(const regex_t *JSTR_RST _preg,
@@ -140,7 +140,7 @@ static int jstr_reg_exec_mem(const regex_t *JSTR_RST _preg,
 
 #endif /* JSTR_REG_EF_ REG_STARTEND */
 
-#if JSTR_REG_EF_STARTEND
+#ifdef JSTR_REG_EF_STARTEND
 #	define PRIVATE_JSTR_REG_EXEC(_preg, s, sz, nmatch, _pmatch, _eflags) \
 		jstr_reg_exec_mem(_preg, s, sz, nmatch, _pmatch, _eflags)
 #else
