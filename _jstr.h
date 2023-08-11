@@ -529,7 +529,9 @@ static char *jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
 	default: {
 		size_t off = 0;
 		const char *p;
-		while ((p = (char *)PRIVATE_JSTR_MEMMEM(s + off, sz - off, _searc, _searclen))) {
+		jstr_memmem_table t;
+		jstr_memmem_comp_mem(&t, _searc, _searclen);
+		while ((p = (char *)jstr_memmem_exec(&t, s + off, sz - off))) {
 			off = p - s;
 			sz = jstr_slip_mem_p_f(s, off, _src, sz, _srclen) - s;
 			off += _searclen + _srclen;
@@ -561,7 +563,9 @@ static void jstr_slipaftall_mem(char **JSTR_RST const s,
 	default: {
 		size_t off = 0;
 		const char *p;
-		while ((p = (char *)PRIVATE_JSTR_MEMMEM(*s + off, *sz - off, _searc, _searclen))) {
+		jstr_memmem_table t;
+		jstr_memmem_comp_mem(&t, _searc, _searclen);
+		while ((p = (char *)jstr_memmem_exec(&t, *s + off, *sz - off))) {
 			off = p - *s;
 			jstr_slip_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
 			off += _searclen + _srclen;

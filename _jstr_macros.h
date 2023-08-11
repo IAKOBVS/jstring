@@ -288,7 +288,7 @@ JSTR_NEXT_POW2_64(T x)
 #	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
 #elif __STDC_VERSION__ >= 201112L
-#	define JSTR_HAS_STATIC_ASSERT
+#	define JSTR_HAS_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define JSTR_ASSERT(expr, msg)

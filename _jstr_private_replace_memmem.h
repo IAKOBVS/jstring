@@ -15,6 +15,7 @@ extern "C" {
 
 #include "_jstr_builder.h"
 #include "_jstr_macros.h"
+#include "_jstr_memmem.h"
 #include "_jstr_string.h"
 
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
@@ -416,15 +417,28 @@ static void private_jstr_memmem5(const int _flag,
 			memmove(dst, old, end + _searclen - old + 1);                                                               \
 			*sz = (char *)dst + (end + _searclen - old) - *s;                                                           \
 		}                                                                                                                   \
-		return;                                                                                                             \
 	} while (0)
 	if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_N)
 		if (unlikely(n == 0))
 			return;
 	if (unlikely(*sz < _searclen))
 		return;
-	if (unlikely(_searclen > 256))
+	if (unlikely(_searclen == 1)) {
+		unsigned char *p = *(unsigned char **)s;
+		const unsigned char *const end = p + *sz;
+		while ((_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_N && n--)
+		       && (p = (unsigned char *)memchr(p, *_searc, end - p))) {
+			memmove(p + 1, p, (*(unsigned char **)s + *sz) - p + 1);
+			memcpy(p, _searc, _searclen);
+			p += _searclen;
+			*sz += (_searclen - 1);
+		}
+		return;
+	}
+	if (unlikely(_searclen > 256)) {
 		PRIVATE_JSTR_MEMMEM5(size_t, size_t);
+		return;
+	}
 	PRIVATE_JSTR_MEMMEM5(uint8_t, int);
 }
 
@@ -552,6 +566,8 @@ static char *private_jstr_rplcall_memmem5(char *s,
 					  const size_t _searclen,
 					  const size_t _rplclen) JSTR_NOEXCEPT
 {
+	jstr_memmem_table t;
+	jstr_memmem_comp_mem(&t, _searc, _searclen);
 	private_jstr_memmem5(PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_LOWER, &s, &sz, NULL, _searc, _rplc, 0, _searclen, _rplclen);
 	return s + sz;
 }

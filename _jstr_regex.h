@@ -8,6 +8,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */
@@ -376,14 +377,18 @@ static char *jstr_reg_rmall_mem(char *JSTR_RST const s,
 	const unsigned char *p = dst;
 	const unsigned char *old = dst;
 	const unsigned char *const end = dst + sz;
+	size_t ptnlen;
 	while (PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, end - p, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
+		ptnlen = rm.rm_eo - rm.rm_so;
+		if (unlikely(!ptnlen))
+			break;
 		p = p + rm.rm_so;
 		if (likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);
-		old += (rm.rm_eo - rm.rm_so);
-		p += (rm.rm_eo - rm.rm_so);
+		old += ptnlen;
+		p += ptnlen + 1;
 	}
 	if (likely(dst != old))
 		memmove(dst, old, end - old + 1);
@@ -450,7 +455,7 @@ static char *jstr_reg_rmall(char *JSTR_RST const s,
 	return jstr_reg_rmall_mem(s, strlen(s), _preg, _eflags);
 }
 
-#if 1
+#if 0 /* broken */
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -474,7 +479,9 @@ static void _jstr_reg_rplcall_mem(char **JSTR_RST const s,
 	const unsigned char *old = dst;
 	const unsigned char *end = dst + *sz;
 	while (PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, end - p, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
-		_ptnlen = (rm.rm_eo - rm.rm_so);
+		_ptnlen = rm.rm_eo - rm.rm_so;
+		if (unlikely(!_ptnlen))
+			return;
 		p = *(unsigned char **)s + rm.rm_so;
 		if (_rplclen <= _ptnlen || *cap > *sz + _rplclen - _ptnlen) {
 			if (likely(dst != old))
@@ -484,24 +491,26 @@ static void _jstr_reg_rplcall_mem(char **JSTR_RST const s,
 			memcpy(dst, _rplc, _rplclen);
 			dst += _rplclen;
 			old += _ptnlen;
-			p += _ptnlen;
+			p += _ptnlen + 1;
 		} else {
 			JSTR_GROW(*cap, *sz + _rplclen);
 			tmp = (unsigned char *)malloc(*cap);
 			JSTR_MALLOC_ERR(tmp, return);
 			memcpy(tmp, *s, rm.rm_so);
+			memcpy(tmp + rm.rm_so, _rplc, _rplclen);
 			if (dst != old) {
-				memmove(tmp + rm.rm_so + _rplclen,
-					old,
-					(*(unsigned char **)s + *sz + 1) - old);
-				memcpy(tmp + rm.rm_so, _rplc, _rplclen);
+				memcpy(tmp + rm.rm_so + _rplclen,
+				       old,
+				       end + 1 - old);
+				/* memcpy(tmp + rm.rm_so + _rplclen, */
+				/*        old, */
+				/*        (*(unsigned char **)s + *sz + 1) - old); */
 			} else {
-				memcpy(tmp + rm.rm_so, _rplc, _rplclen);
 				memcpy(tmp + rm.rm_so + _rplclen,
 				       *s + rm.rm_so,
-				       (*s + *sz + 1) - (*s + rm.rm_so + _ptnlen));
+				       (end + 1) - (*(unsigned char **)s + rm.rm_so + _rplclen));
 			}
-			p = tmp + rm.rm_eo;
+			p = tmp + rm.rm_eo + 1;
 			dst = tmp + rm.rm_so + _rplclen;
 			old = dst;
 			free(*s);
@@ -516,14 +525,14 @@ static void _jstr_reg_rplcall_mem(char **JSTR_RST const s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void _jstr_reg_rplcall_now_mem(char **JSTR_RST const s,
-				     size_t *JSTR_RST const sz,
-				     size_t *JSTR_RST const cap,
-				     const char *JSTR_RST const _ptn,
-				     const char *JSTR_RST const _rplc,
-				     const size_t _rplclen,
-				     regex_t *JSTR_RST const _preg,
-				     const int _cflags,
-				     const int _eflags) JSTR_NOEXCEPT
+				      size_t *JSTR_RST const sz,
+				      size_t *JSTR_RST const cap,
+				      const char *JSTR_RST const _ptn,
+				      const char *JSTR_RST const _rplc,
+				      const size_t _rplclen,
+				      regex_t *JSTR_RST const _preg,
+				      const int _cflags,
+				      const int _eflags) JSTR_NOEXCEPT
 {
 	const int ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (unlikely(ret != JSTR_REG_RET_NOERROR))
@@ -532,8 +541,6 @@ static void _jstr_reg_rplcall_now_mem(char **JSTR_RST const s,
 }
 
 #endif
-
-#if 0 /* broken */
 
 JSTR_NONNULL_ALL
 static void jstr_reg_rplcall_mem(char **JSTR_RST const s,
@@ -554,19 +561,11 @@ static void jstr_reg_rplcall_mem(char **JSTR_RST const s,
 	char *tmp;
 	while (PRIVATE_JSTR_REG_EXEC(_preg, *s + off, *sz - off, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		_ptnlen = rm.rm_eo - rm.rm_so;
+		if (unlikely(!_ptnlen))
+			break;
 		rm.rm_so += off;
 		rm.rm_eo += off;
 		if (_rplclen <= _ptnlen || *cap > *sz + _rplclen - _ptnlen) {
-			
-			/* puts("s:"); */
-			/* puts(*s); */
-			/* puts("s_off:"); */
-			/* puts(*s + off); */
-			/* puts("mtc:"); */
-			/* puts(*s + rm.rm_so); */
-			/* puts("mtc_end:"); */
-			/* puts(*s + rm.rm_eo); */
-
 			memmove(*s + rm.rm_so + _rplclen,
 				*s + rm.rm_eo,
 				(*s + *sz + 1) - (*s + rm.rm_eo));
@@ -578,15 +577,13 @@ static void jstr_reg_rplcall_mem(char **JSTR_RST const s,
 			memcpy(tmp, *s, rm.rm_so);
 			memcpy(tmp + rm.rm_so, _rplc, _rplclen);
 			memcpy(tmp + rm.rm_so + _rplclen,
-			       *s + rm.rm_so,
-			       (*sz + 1) - rm.rm_eo);
+			       *s + rm.rm_eo,
+			       (*s + *sz + 1) - (*s + rm.rm_eo));
 			free(*s);
 			*s = tmp;
 		}
 		off = rm.rm_eo + _rplclen - _ptnlen;
-		/* fprintf(stderr, "%s\n", *s + off); */
-		if (unlikely((*sz += _rplclen - _ptnlen) == _rplclen))
-			return;
+		*sz += _rplclen - _ptnlen;
 	}
 }
 
@@ -607,8 +604,6 @@ static void jstr_reg_rplcall_now_mem(char **JSTR_RST const s,
 		return;
 	jstr_reg_rplcall_mem(s, sz, cap, _rplc, _rplclen, _preg, _eflags);
 }
-
-#endif
 
 JSTR_NONNULL_ALL
 static void jstr_reg_rplc_mem(char **JSTR_RST const s,
