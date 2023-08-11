@@ -54,27 +54,57 @@ static void jstr_slip_mem(char **JSTR_RST const s,
 			  size_t *JSTR_RST const sz,
 			  size_t *JSTR_RST const cap,
 			  const size_t at,
-			  const char *JSTR_RST const _src,
-			  const size_t _srclen) JSTR_NOEXCEPT
+			  const char *JSTR_RST const _rplc,
+			  const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (*cap > *sz + _srclen + 1) {
-		memmove(*s + at + _srclen,
+	if (*cap > *sz + _rplclen) {
+		memmove(*s + at + _rplclen,
 			*s + at,
 			*sz - at + 1);
-		memcpy(*s + at, _src, _srclen);
+		memcpy(*s + at, _rplc, _rplclen);
 	} else {
-		JSTR_GROW(*cap, *sz + _srclen + 1);
+		JSTR_GROW(*cap, *sz + _rplclen + 1);
 		char *const tmp = (char *)malloc(*cap);
 		JSTR_MALLOC_ERR(tmp, return);
 		memcpy(tmp, *s, at);
-		memcpy(tmp + at, _src, _srclen);
-		memcpy(tmp + at + _srclen,
+		memcpy(tmp + at, _rplc, _rplclen);
+		memcpy(tmp + at + _rplclen,
 		       *s + at,
 		       *sz - at + 1);
 		free(*s);
 		*s = tmp;
 	}
-	*sz += _srclen;
+	*sz += _rplclen;
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_rplcat_mem(char **JSTR_RST const s,
+			    size_t *JSTR_RST const sz,
+			    size_t *JSTR_RST const cap,
+			    const size_t at,
+			    const char *JSTR_RST const _rplc,
+			    const size_t _rplclen,
+			    const size_t _searclen) JSTR_NOEXCEPT
+{
+	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
+		memmove(*s + at + _rplclen,
+			*s + at + _searclen,
+			*sz - at + _searclen +  1);
+		memcpy(*s + at, _rplc, _rplclen);
+	} else {
+		JSTR_GROW(*cap, *sz + _rplclen + 1);
+		char *const tmp = (char *)malloc(*cap);
+		JSTR_MALLOC_ERR(tmp, return);
+		memcpy(tmp, *s, at);
+		memcpy(tmp + at, _rplc, _rplclen);
+		memcpy(tmp + at + _rplclen,
+		       *s + at + _searclen,
+		       *sz - at + 1 + _searclen);
+		free(*s);
+		*s = tmp;
+	}
+	*sz += _rplclen - _rplclen;
 }
 
 /*

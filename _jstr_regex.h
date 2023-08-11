@@ -17,6 +17,7 @@ extern "C" {
 #include "_jstr_config.h"
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
+#include "_jstr_replace.h"
 
 #define JSTR_RST JSTR_RESTRICT
 
@@ -630,8 +631,8 @@ static void jstr_reg_rplc_mem(char **JSTR_RST const s,
 		memcpy(tmp, s, rm.rm_so);
 		memcpy(tmp + rm.rm_so, _rplc, _rplclen);
 		memcpy(tmp + rm.rm_so + _rplclen,
-		       s + rm.rm_so,
-		       (*s + *sz + 1) - (*s + rm.rm_eo));
+		       s + rm.rm_so + _ptnlen,
+		       (*s + *sz + 1) - (*s + rm.rm_so + _ptnlen));
 		free(*s);
 		*s = tmp;
 	}
