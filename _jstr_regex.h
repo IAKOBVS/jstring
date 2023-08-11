@@ -8,7 +8,6 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */
@@ -30,6 +29,7 @@ extern "C" {
 #define JSTR_REG_EF_NOSUB  REG_NOSUB
 #define JSTR_REG_EF_NOTBOL REG_NOTBOL
 #define JSTR_REG_EF_NOTEOL REG_NOTEOL
+
 /* BSD extension */
 #ifdef REG_STARTEND
 #	define JSTR_REG_EF_STARTEND REG_STARTEND
@@ -39,6 +39,7 @@ extern "C" {
 #ifdef REG_ENOSYS
 #	define JSTR_REG_RET_ENOSYS REG_ENOSYS
 #endif /* REG_ENOSYS */
+
 #define JSTR_REG_RET_NOERROR REG_NOERROR
 #define JSTR_REG_RET_NOMATCH REG_NOMATCH
 
