@@ -359,7 +359,7 @@ static void private_jstr_memmem5(const int _flag,
 								memcpy(src, _rplc, _rplclen);                                       \
 								src += _rplclen;                                                    \
 							} else {                                                                    \
-								JSTR_GROW(*cap, *sz + _rplclen + 1);                                \
+								JSTR_GROW(*cap, *sz + _rplclen);                                    \
 								tmp_malloc = (unsigned char *)malloc(*cap);                         \
 								JSTR_MALLOC_ERR(tmp_malloc, return);                                \
 								memcpy(tmp_malloc, *s, src - *(unsigned char **)s);                 \
@@ -387,10 +387,15 @@ static void private_jstr_memmem5(const int _flag,
 							memmove(dst, old, src - old);                                               \
 						dst += (src - old);                                                                 \
 						old += (src - old);                                                                 \
-						if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_LOWER) {                             \
-							memcpy(dst, _rplc, _rplclen);                                               \
-							dst += _rplclen;                                                            \
-						}                                                                                   \
+						memcpy(dst, _rplc, _rplclen);                                                       \
+						dst += _rplclen;                                                                    \
+						old += _searclen;                                                                   \
+						src += _searclen;                                                                   \
+					} else {                                                                                    \
+						if (likely(dst != old))                                                             \
+							memmove(dst, old, src - old);                                               \
+						dst += (src - old);                                                                 \
+						old += (src - old);                                                                 \
 						old += _searclen;                                                                   \
 						src += _searclen;                                                                   \
 					}                                                                                           \
@@ -403,12 +408,9 @@ static void private_jstr_memmem5(const int _flag,
 			}                                                                                                           \
 			src += shift1;                                                                                              \
 		} while (src <= end);                                                                                               \
-		if (!(_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER)) {                                                         \
-			if (unlikely(dst == old))                                                                                   \
-				return;                                                                                             \
-			memmove(dst, old, end + _searclen - old + 1);                                                               \
-			*sz = (char *)dst + (end + _searclen - old) - *s;                                                           \
-		} else if (!(_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER_FORCE)) {                                            \
+		if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER) {                                                            \
+		} else if (_flag & PRIVATE_JSTR_FLAG_REPLACE_USE_RPLC_HIGHER_FORCE) {                                               \
+		} else {                                                                                                            \
 			if (unlikely(dst == old))                                                                                   \
 				return;                                                                                             \
 			memmove(dst, old, end + _searclen - old + 1);                                                               \

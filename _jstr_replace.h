@@ -524,20 +524,20 @@ static void jstr_rplc_mem_constexpr(char **JSTR_RST const s,
 		char *mtc = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, _searc, _searclen);
 		if (unlikely(!mtc))
 			return;
-		if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen + 1) {
+		if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
 			memmove(mtc + _rplclen,
 				mtc + _searclen,
-				(*s + *sz + 1) - mtc + _searclen);
+				(*s + *sz + 1) - (mtc + _searclen));
 			memcpy(mtc, _rplc, _rplclen);
 		} else {
-			JSTR_GROW(*cap, *sz + _rplclen + 1);
+			JSTR_GROW(*cap, *sz + _rplclen);
 			char *const tmp = (char *)malloc(*cap);
 			JSTR_MALLOC_ERR(tmp, return);
 			memcpy(tmp, *s, mtc - *s);
 			memcpy(tmp + (mtc - *s), _rplc, _rplclen);
 			memcpy(tmp + (mtc - *s) + _rplclen,
 			       mtc + _rplclen,
-			       (*s + *sz + 1) - (mtc + _rplclen));
+			       (*s + *sz + 1) - (mtc + _searclen));
 			free(*s);
 			*s = tmp;
 		}
@@ -581,13 +581,13 @@ static void jstr_rplclast_mem(char **JSTR_RST const s,
 	char *mtc = (char *)jstr_memrmem(*s, *sz, _searc, _searclen);
 	if (unlikely(!mtc))
 		return;
-	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen + 1) {
+	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
 		memmove(mtc + _rplclen,
 			mtc + _searclen,
 			(*s + *sz + 1) - mtc + _searclen);
 		memcpy(mtc, _rplc, _rplclen);
 	} else {
-		JSTR_GROW(*cap, *sz + _rplclen + 1);
+		JSTR_GROW(*cap, *sz + _rplclen);
 		char *const tmp = (char *)malloc(*cap);
 		JSTR_MALLOC_ERR(tmp, return);
 		memcpy(tmp, *s, mtc - *s);

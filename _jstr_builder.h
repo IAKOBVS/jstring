@@ -107,6 +107,7 @@ typedef struct Jstring {
 	void debug_print(void) JSTR_NOEXCEPT
 	{
 		fprintf(stderr, "size:%zu\ncap:%zu\n", this->size, this->cap);
+		fprintf(stderr, "strlen:%zu\n", strlen(this->data));
 		fprintf(stderr, "data puts():%s\n", this->data);
 		fputs("data:", stderr);
 		fwrite(this->data, 1, this->size, stderr);
@@ -206,7 +207,11 @@ JSTR_NONNULL_ALL
 static void jstr_debug(const Jstring *JSTR_RST const j)
 {
 	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
-	fprintf(stderr, "data:%s\n", j->data);
+	fprintf(stderr, "strlen:%zu\n", strlen(j->data));
+	fprintf(stderr, "data puts():%s\n", j->data);
+	fputs("data:", stderr);
+	fwrite(j->data, 1, j->size, stderr);
+	fputc('\n', stderr);
 }
 
 #ifdef __cplusplus
