@@ -16,8 +16,8 @@ extern "C" {
 #include "_jstr_builder.h"
 #include "_jstr_config.h"
 #include "_jstr_macros.h"
-#include "_jstr_string.h"
 #include "_jstr_replace.h"
+#include "_jstr_string.h"
 
 #define JSTR_RST JSTR_RESTRICT
 
@@ -556,35 +556,15 @@ static void jstr_reg_rplcall_mem(char **JSTR_RST const s,
 		*sz = jstr_reg_rmall_mem(*s, *sz, _preg, _eflags) - *s;
 		return;
 	}
-	regmatch_t rm;
 	size_t off = 0;
 	size_t _ptnlen;
-	char *tmp;
+	regmatch_t rm;
 	while (PRIVATE_JSTR_REG_EXEC(_preg, *s + off, *sz - off, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		_ptnlen = rm.rm_eo - rm.rm_so;
-		if (unlikely(!_ptnlen))
+		if (unlikely(!rm.rm_eo - rm.rm_so))
 			break;
-		rm.rm_so += off;
-		rm.rm_eo += off;
-		if (_rplclen <= _ptnlen || *cap > *sz + _rplclen - _ptnlen) {
-			memmove(*s + rm.rm_so + _rplclen,
-				*s + rm.rm_eo,
-				(*s + *sz + 1) - (*s + rm.rm_eo));
-			memcpy(*s + rm.rm_so, _rplc, _rplclen);
-		} else {
-			JSTR_GROW(*cap, *sz + _rplclen);
-			tmp = (char *)malloc(*cap);
-			JSTR_MALLOC_ERR(tmp, return);
-			memcpy(tmp, *s, rm.rm_so);
-			memcpy(tmp + rm.rm_so, _rplc, _rplclen);
-			memcpy(tmp + rm.rm_so + _rplclen,
-			       *s + rm.rm_eo,
-			       (*s + *sz + 1) - (*s + rm.rm_eo));
-			free(*s);
-			*s = tmp;
-		}
-		off = rm.rm_eo + _rplclen - _ptnlen;
-		*sz += _rplclen - _ptnlen;
+		if (unlikely(!(off = jstr_rplcat_mem(s, sz, cap, off + rm.rm_so, _rplc, _rplclen, _ptnlen) - *s)))
+			return;
 	}
 }
 
@@ -616,27 +596,11 @@ static void jstr_reg_rplc_mem(char **JSTR_RST const s,
 			      const int _eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	if (unlikely(PRIVATE_JSTR_REG_EXEC(_preg, *s, *sz, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR))
+	if (unlikely(PRIVATE_JSTR_REG_EXEC(_preg, *s, *sz, 1, &rm, _eflags) != JSTR_REG_RET_NOERROR))
 		return;
-	const size_t _ptnlen = rm.rm_eo - rm.rm_so;
-	if (_rplclen <= _ptnlen || *cap > *sz + _rplclen - _ptnlen) {
-		memmove(*s + rm.rm_so + _rplclen,
-			*s + rm.rm_so + _ptnlen,
-			(*s + *sz + 1) - *s + rm.rm_so + _ptnlen);
-		memcpy(*s + rm.rm_so, _rplc, _rplclen);
-	} else {
-		JSTR_GROW(*cap, *sz + _rplclen);
-		char *JSTR_RST tmp = (char *)malloc(*cap);
-		JSTR_MALLOC_ERR(tmp, return);
-		memcpy(tmp, s, rm.rm_so);
-		memcpy(tmp + rm.rm_so, _rplc, _rplclen);
-		memcpy(tmp + rm.rm_so + _rplclen,
-		       s + rm.rm_so + _ptnlen,
-		       (*s + *sz + 1) - (*s + rm.rm_so + _ptnlen));
-		free(*s);
-		*s = tmp;
-	}
-	*sz += _rplclen - _ptnlen;
+	if (unlikely(rm.rm_eo == rm.rm_so))
+		return;
+	jstr_rplcat_mem(s, sz, cap, rm.rm_so, _rplc, _rplclen, rm.rm_eo - rm.rm_so);
 }
 
 JSTR_NONNULL_ALL

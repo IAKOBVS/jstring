@@ -79,23 +79,23 @@ static void jstr_slip_mem(char **JSTR_RST const s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_rplcat_mem(char **JSTR_RST const s,
-			    size_t *JSTR_RST const sz,
-			    size_t *JSTR_RST const cap,
-			    const size_t at,
-			    const char *JSTR_RST const _rplc,
-			    const size_t _rplclen,
-			    const size_t _searclen) JSTR_NOEXCEPT
+static char *jstr_rplcat_mem(char **JSTR_RST const s,
+			     size_t *JSTR_RST const sz,
+			     size_t *JSTR_RST const cap,
+			     const size_t at,
+			     const char *JSTR_RST const _rplc,
+			     const size_t _rplclen,
+			     const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
 		memmove(*s + at + _rplclen,
 			*s + at + _searclen,
-			*sz - at + _searclen +  1);
+			*sz - at + _searclen + 1);
 		memcpy(*s + at, _rplc, _rplclen);
 	} else {
 		JSTR_GROW(*cap, *sz + _rplclen + 1);
 		char *const tmp = (char *)malloc(*cap);
-		JSTR_MALLOC_ERR(tmp, return);
+		JSTR_MALLOC_ERR(tmp, return NULL);
 		memcpy(tmp, *s, at);
 		memcpy(tmp + at, _rplc, _rplclen);
 		memcpy(tmp + at + _rplclen,
@@ -104,7 +104,8 @@ static void jstr_rplcat_mem(char **JSTR_RST const s,
 		free(*s);
 		*s = tmp;
 	}
-	*sz += _rplclen - _rplclen;
+	*sz += _rplclen - _searclen;
+	return *s + at + _rplclen;
 }
 
 /*
@@ -703,7 +704,7 @@ static void jstr_rplclast_mem(char **JSTR_RST const s,
 	char *p = (char *)jstr_memrmem(*s, *sz, _searc, _searclen);
 	if (unlikely(!p))
 		return;
-	jstr_slip_mem(s, sz, cap, p - *s, _rplc, _rplclen);
+	jstr_rplcat_mem(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 }
 
 /*
@@ -725,8 +726,9 @@ static void jstr_rplcn_mem(char **JSTR_RST const s,
 	jstr_memmem_table t;
 	jstr_memmem_comp_mem(&t, _searc, _searclen);
 	const char *p = *s;
-	while (n-- && (p = (char *)jstr_memmem_exec(&t, p, (*s + *sz) - p)))
-		jstr_slip_mem(s, sz, cap, p - *s, _rplc, _rplclen);
+	while (n-- && (p = (char *)jstr_memmem_exec(&t, p, (*s + *sz) - p))
+	       && (p = jstr_rplcat_mem(s, sz, cap, p - *s, _rplc, _rplclen, _searclen)))
+		;
 }
 
 /*
@@ -747,8 +749,9 @@ static void jstr_rplcall_mem(char **JSTR_RST const s,
 	jstr_memmem_table t;
 	jstr_memmem_comp_mem(&t, _searc, _searclen);
 	const char *p = *s;
-	while ((p = (char *)jstr_memmem_exec(&t, p, (*s + *sz) - p)))
-		jstr_slip_mem(s, sz, cap, p - *s, _rplc, _rplclen);
+	while ((p = (char *)jstr_memmem_exec(&t, p, (*s + *sz) - p))
+	       && (p = jstr_rplcat_mem(s, sz, cap, p - *s, _rplc, _rplclen, _searclen)))
+		;
 }
 
 /*
