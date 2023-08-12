@@ -103,14 +103,15 @@ static int jstr_reg_comp(regex_t *JSTR_RST const _preg,
 			 const int _cflags) JSTR_NOEXCEPT
 {
 	const int ret = regcomp(_preg, _ptn, _cflags);
-#if JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
 	switch (ret) {
 	case JSTR_REG_RET_NOMATCH:
 	case JSTR_REG_RET_NOERROR:
 		break;
-	default: jstr_reg_error(ret, _preg);
-	}
+	default:
+#if JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
+		jstr_reg_error(ret, _preg);
 #endif /* JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR */
+	}
 	return ret;
 }
 
@@ -128,7 +129,9 @@ static int jstr_reg_exec(const regex_t *JSTR_RST _preg,
 	const int ret = regexec(_preg, s, nmatch, _pmatch, _eflags);
 	switch (ret) {
 	default:
+#if JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
 		jstr_reg_error(ret, _preg);
+#endif /* JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR */
 		return ret;
 	case JSTR_REG_RET_NOMATCH: return JSTR_REG_RET_NOMATCH;
 	case JSTR_REG_RET_NOERROR: return JSTR_REG_RET_NOERROR;
@@ -152,7 +155,9 @@ static int jstr_reg_exec_mem(const regex_t *JSTR_RST _preg,
 	const int ret = regexec(_preg, s, nmatch, _pmatch, _eflags | REG_STARTEND);
 	switch (ret) {
 	default:
+#	if JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
 		jstr_reg_error(ret, _preg);
+#	endif /* JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR */
 		return ret;
 	case JSTR_REG_RET_NOMATCH: return JSTR_REG_RET_NOMATCH;
 	case JSTR_REG_RET_NOERROR: return JSTR_REG_RET_NOERROR;
