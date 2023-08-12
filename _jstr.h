@@ -371,25 +371,25 @@ static char *jstr_itoa(char *JSTR_RST const _dst,
 		       int _num,
 		       unsigned char _base)
 {
-#define PRIVATE_JSTR_NUMTOSTR(max_digits)                                       \
-	do {                                                                    \
-		unsigned char *d = (unsigned char *)_dst;                       \
-		unsigned char sbuf[max_digits];                                 \
-		unsigned char *JSTR_RST s = (unsigned char *)sbuf;              \
-		unsigned char neg = (_num < 0) ? (_num = -_num, 1) : 0;         \
-		unsigned char *const end = (unsigned char *)s + max_digits - 1; \
-		s = end;                                                        \
-		do                                                              \
-			*s-- = _num % _base + '0';                              \
-		while (_num /= 10);                                             \
-		if (neg)                                                        \
-			*s = '-';                                               \
-		else                                                            \
-			++s;                                                    \
-		while (s <= end)                                                \
-			*d++ = *s++;                                            \
-		*d = '\0';                                                      \
-		return (char *)d;                                               \
+#define PRIVATE_JSTR_NUMTOSTR(_max_digits)                                       \
+	do {                                                                     \
+		unsigned char *d = (unsigned char *)_dst;                        \
+		unsigned char sbuf[_max_digits];                                 \
+		unsigned char *JSTR_RST s = (unsigned char *)sbuf;               \
+		unsigned char neg = (_num < 0) ? (_num = -_num, 1) : 0;          \
+		unsigned char *const end = (unsigned char *)s + _max_digits - 1; \
+		s = end;                                                         \
+		do                                                               \
+			*s-- = _num % _base + '0';                               \
+		while (_num /= 10);                                              \
+		if (neg)                                                         \
+			*s = '-';                                                \
+		else                                                             \
+			++s;                                                     \
+		while (s <= end)                                                 \
+			*d++ = *s++;                                             \
+		*d = '\0';                                                       \
+		return (char *)d;                                                \
 	} while (0)
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
 }
@@ -439,21 +439,21 @@ static char *jstr_utoa(char *JSTR_RST const _dst,
 		       unsigned int _num,
 		       unsigned char _base)
 {
-#define PRIVATE_JSTR_UNUMTOSTR(max_digits)                     \
-	do {                                                   \
-		unsigned char *d = (unsigned char *)_dst;      \
-		unsigned char sbuf[max_digits];                \
-		unsigned char *JSTR_RST s = sbuf;              \
-		unsigned char *const end = s + max_digits - 1; \
-		s = end;                                       \
-		do                                             \
-			*s-- = _num % _base + '0';             \
-		while (_num /= 10);                            \
-		++s;                                           \
-		while (s <= end)                               \
-			*d++ = *s++;                           \
-		*d = '\0';                                     \
-		return (char *)d;                              \
+#define PRIVATE_JSTR_UNUMTOSTR(_max_digits)                     \
+	do {                                                    \
+		unsigned char *d = (unsigned char *)_dst;       \
+		unsigned char sbuf[_max_digits];                \
+		unsigned char *JSTR_RST s = sbuf;               \
+		unsigned char *const end = s + _max_digits - 1; \
+		s = end;                                        \
+		do                                              \
+			*s-- = _num % _base + '0';              \
+		while (_num /= 10);                             \
+		++s;                                            \
+		while (s <= end)                                \
+			*d++ = *s++;                            \
+		*d = '\0';                                      \
+		return (char *)d;                               \
 	} while (0)
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_UINT_DIGITS);
 }
