@@ -7,11 +7,11 @@ usage();
 my $G_FNAME      = $ARGV[0];
 my $G_FNAME_BASE = $G_FNAME;
 $G_FNAME_BASE =~ s/^_//;
-my $G_DIR_C = 'c';
+my $G_DIR_C = 'jstr';
 
 script_needed();
 
-my $G_DIR_CPP = $G_DIR_C . 'pp';
+# my $G_DIR_CPP = $G_DIR_C . 'pp';
 my $G_OUT_C   = "$G_DIR_C/$G_FNAME_BASE";
 
 # my $G_OUT_CPP;
@@ -46,7 +46,7 @@ my $G_MACRO_LONG_FUNCTION   = $G_NMSPC_UPP . '_LONG_FUNCTION';
 my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*$G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
 
-mkdir($G_DIR_CPP);
+# mkdir($G_DIR_CPP);
 mkdir($G_DIR_C);
 
 my $g_in_h = get_file_str($G_FNAME);
