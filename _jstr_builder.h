@@ -30,10 +30,6 @@ static void JSTR_ERR_EXIT()
 	exit(1);
 }
 
-#ifdef __cplusplus
-namespace jstr {
-#endif /* __cpluslus */
-
 /*
   exit(1) if ptr is NULL.
 */
@@ -117,6 +113,10 @@ typedef struct Jstring {
 #endif /* __cpluslus */
 
 } Jstring;
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cpluslus */
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -215,20 +215,24 @@ static void jstr_debug(const Jstring *JSTR_RST const j)
 }
 
 #ifdef __cplusplus
+}
+#endif /* __cpluslus */
+
+#ifdef __cplusplus
 
 /*
   Insert multiple strings to S.
 */
 template <typename Str,
 	  typename... StrArgs,
-	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-alloc_cat_j(Jstring *JSTR_RST const j,
-	    Str &&arg,
-	    StrArgs &&...args) JSTR_NOEXCEPT
+jstr_alloc_cat_j(Jstring *JSTR_RST const j,
+		 Str &&arg,
+		 StrArgs &&...args) JSTR_NOEXCEPT
 {
-	alloc_cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr_alloc_cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 /*
@@ -236,14 +240,14 @@ alloc_cat_j(Jstring *JSTR_RST const j,
 */
 template <typename Str,
 	  typename... StrArgs,
-	  typename = typename std::enable_if<traits::are_strings<Str, StrArgs...>(), int>::type>
+	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-cat_j(Jstring *JSTR_RST const j,
-      Str &&arg,
-      StrArgs &&...args) JSTR_NOEXCEPT
+jstr_cat_j(Jstring *JSTR_RST const j,
+	   Str &&arg,
+	   StrArgs &&...args) JSTR_NOEXCEPT
 {
-	cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr_cat(&j->data, &j->size, &j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 #else
@@ -309,9 +313,5 @@ cat_j(Jstring *JSTR_RST const j,
 #	define jstr_alloc_cat_j(j, ...) jstr_alloc_cat(&((j)->data), &((j)->size), &((j)->cap), __VA_ARGS__)
 
 #endif /* __cplusplus */
-
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
 
 #endif /* JSTR_BUILDER H_DEF */

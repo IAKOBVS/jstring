@@ -3,18 +3,18 @@
 
 #if 0 /* unused */
 
-#if defined(__GNUC__) || defined(__clang__)
-#	ifdef __cplusplus
-#		include <cstdint>
-#	else
-#		include <stdint.h>
-#	endif /* __cplusplus */
-#	if __has_builtin(__builtin_clzll)
+#	if defined(__GNUC__) || defined(__clang__)
 #		ifdef __cplusplus
+#			include <cstdint>
+#		else
+#			include <stdint.h>
+#		endif /* __cplusplus */
+#		if __has_builtin(__builtin_clzll)
+#			ifdef __cplusplus
 extern "C" {
-#		endif
+#			endif
 
-#		ifdef JSTR_64_BIT
+#			ifdef JSTR_64_BIT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
@@ -23,12 +23,12 @@ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
 	return 1ull << (64 - __builtin_clzll(x - 1));
 }
 
-#		endif /* JSTR_64_BIT */
+#			endif /* JSTR_64_BIT */
 
-#	endif /* __has_builtin(__builtin_clzll) */
-#	if __has_builtin(__builtin_clz)
+#		endif /* __has_builtin(__builtin_clzll) */
+#		if __has_builtin(__builtin_clz)
 
-#		ifdef JSTR_32_BIT
+#			ifdef JSTR_32_BIT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
@@ -37,21 +37,21 @@ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 	return 1 << (32 - __builtin_clz(x - 1));
 }
 
-#		endif /* JSTR_32_BIT */
+#			endif /* JSTR_32_BIT */
 
-#		ifdef __cplusplus
+#			ifdef __cplusplus
 }
-#		endif
-#	endif /* __has_builtin(__builtin_clz) */
-#elif defined(_MSC_VER)
-#	include <stdint.h>
-#	include <intrin.h>
-#	pragma intrinsic(_BitScanReverse64)
-#	ifdef __cplusplus
+#			endif
+#		endif /* __has_builtin(__builtin_clz) */
+#	elif defined(_MSC_VER)
+#		include <stdint.h>
+#		include <intrin.h>
+#		pragma intrinsic(_BitScanReverse64)
+#		ifdef __cplusplus
 extern "C" {
-#	endif
+#		endif
 
-#	ifdef JSTR_32_BIT
+#		ifdef JSTR_32_BIT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
@@ -62,9 +62,9 @@ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 	return 1 << (index + 1);
 }
 
-#	endif /* JSTR_32_BIT */
+#		endif /* JSTR_32_BIT */
 
-#	ifdef JSTR_64_BIT
+#		ifdef JSTR_64_BIT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
@@ -75,11 +75,11 @@ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
 	return 1ull << (index + 1);
 }
 
-#	endif /* JSTR_64_BIT */
+#		endif /* JSTR_64_BIT */
 
-#else
+#	else
 
-#	ifdef JSTR_32_BIT
+#		ifdef JSTR_32_BIT
 
 JSTR_INLINE
 JSTR_CONST
@@ -95,9 +95,9 @@ size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT
 	return x + 1;
 }
 
-#	endif /* JSTR_32_BIT */
+#		endif /* JSTR_32_BIT */
 
-#	ifdef JSTR_64_BIT
+#		ifdef JSTR_64_BIT
 
 JSTR_INLINE
 JSTR_CONST
@@ -114,16 +114,16 @@ size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
 	return x + 1;
 }
 
-#	endif /* JSTR_64_BIT */
+#		endif /* JSTR_64_BIT */
+
+#		ifdef __cplusplus
+}
+#		endif
+#	endif /* __GNUC__ || __clang__ */
 
 #	ifdef __cplusplus
-}
-#	endif
-#endif /* __GNUC__ || __clang__ */
 
-#ifdef __cplusplus
-
-#	include <type_traits>
+#		include <type_traits>
 
 JSTR_INLINE
 JSTR_CONST
@@ -161,9 +161,9 @@ JSTR_CONST static std::size_t
 JSTR_NEXT_POW2_32(T x)
 {
 	if
-#	if __cplusplus > 201703L
+#		if __cplusplus > 201703L
 	constexpr
-#	endif /* cpp 17 */
+#		endif /* cpp 17 */
 	(std::is_integral<T>::value)
 		return private_jstr_next_pow2_32_constexpr(x);
 	return private_jstr_next_pow2_32(x);
@@ -176,33 +176,33 @@ JSTR_CONST static std::size_t
 JSTR_NEXT_POW2_64(T x)
 {
 	if
-#	if __cplusplus > 201703L
+#		if __cplusplus > 201703L
 	constexpr
-#	endif /* cpp 17 */
+#		endif /* cpp 17 */
 	(std::is_integral<T>::value)
 		return private_jstr_next_pow2_64_constexpr(x);
 	return private_jstr_next_pow2_64(x);
 }
 
-#endif /* __cplusplus */
+#	endif /* __cplusplus */
 
-#ifdef JSTR_ALIGN_POWER_OF_TWO
-#	ifdef JSTR_64_BIT
-#		ifdef __cplusplus
-#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
+#	ifdef JSTR_ALIGN_POWER_OF_TWO
+#		ifdef JSTR_64_BIT
+#			ifdef __cplusplus
+#				define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
+#			else
+#				define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
+#			endif /* __cplusplus */
+#		elif JSTR_32_BIT
+#			ifdef __cplusplus
+#				define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
+#			else
+#				define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
+#			endif /* __cplusplus */
 #		else
-#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
-#		endif /* __cplusplus */
-#	elif JSTR_32_BIT
-#		ifdef __cplusplus
-#			define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
-#		else
-#			define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
-#		endif /* __cplusplus */
-#	else
-#		define JSTR_NEXT_POW2(x) (x)
-#	endif /* JSTR_64_BIT */
-#endif /* JSTR_ALIGN_POWER_OF_TWO */
+#			define JSTR_NEXT_POW2(x) (x)
+#		endif /* JSTR_64_BIT */
+#	endif /* JSTR_ALIGN_POWER_OF_TWO */
 
 #endif /* if 0 */
 
@@ -284,7 +284,7 @@ JSTR_NEXT_POW2_64(T x)
 #endif /* JSTR_HAS_TYPEOF */
 
 #ifdef static_assert
-#	define JSTR_HAS_STATIC_ASSERT 1
+#	define JSTR_HAS_STATIC_ASSERT		 1
 #	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
 #elif __STDC_VERSION__ >= 201112L
@@ -560,21 +560,21 @@ case 'X':               \
 case 'Y':               \
 case 'Z':
 
-#define JSTR_CASE_VOWEL \
-JSTR_CASE_VOWEL_UPPER  \
-JSTR_CASE_VOWEL_LOWER
+#define JSTR_CASE_VOWEL       \
+	JSTR_CASE_VOWEL_UPPER \
+	JSTR_CASE_VOWEL_LOWER
 
-#define JSTR_CASE_CONSONANT \
-JSTR_CASE_CONSONANT_UPPER  \
-JSTR_CASE_CONSONANT_LOWER
+#define JSTR_CASE_CONSONANT       \
+	JSTR_CASE_CONSONANT_UPPER \
+	JSTR_CASE_CONSONANT_LOWER
 
 #define JSTR_CASE_ALPHA \
-JSTR_CASE_LOWER        \
-JSTR_CASE_UPPER
+	JSTR_CASE_LOWER \
+	JSTR_CASE_UPPER
 
 #define JSTR_CASE_ALPHANUM \
-JSTR_CASE_DIGIT           \
-JSTR_CASE_ALPHA
+	JSTR_CASE_DIGIT    \
+	JSTR_CASE_ALPHA
 
 #define JSTR_CASE_WHITESPACE \
 case '\n':                   \
@@ -584,7 +584,7 @@ case ' ':
 
 #if ((__GLIBC__ < 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_BSD_SOURCE)) \
 || defined(_DEFAULT_SOURCE)
-#	define JSTR_HAS_STRCASECMP 1
+#	define JSTR_HAS_STRCASECMP  1
 #	define JSTR_HAS_STRNCASECMP 1
 #endif
 
@@ -593,48 +593,48 @@ case ' ':
 #endif /* Misc || Xopen */
 
 #ifdef _GNU_SOURCE
-#	define JSTR_HAS_MEMMEM 1
-#	define JSTR_HAS_MEMRCHR 1
-#	define JSTR_HAS_STRCHRNUL 1
-#	define JSTR_HAS_FGETS_UNLOCKED 1
-#	define JSTR_HAS_FPUTS_UNLOCKED 1
-#	define JSTR_HAS_GETWC_UNLOCKED 1
+#	define JSTR_HAS_MEMMEM		    1
+#	define JSTR_HAS_MEMRCHR	    1
+#	define JSTR_HAS_STRCHRNUL	    1
+#	define JSTR_HAS_FGETS_UNLOCKED	    1
+#	define JSTR_HAS_FPUTS_UNLOCKED	    1
+#	define JSTR_HAS_GETWC_UNLOCKED	    1
 #	define JSTR_HAS_GETWCCHAR_UNLOCKED 1
-#	define JSTR_HAS_FGETWC_UNLOCKED 1
-#	define JSTR_HAS_FPUTWC_UNLOCKED 1
-#	define JSTR_HAS_PUTWCHAR_UNLOCKED 1
-#	define JSTR_HAS_FGETWS_UNLOCKED 1
-#	define JSTR_HAS_FPUTWS_UNLOCKED 1
-#	define JSTR_HAS_WMEMPCPY 1
-#	define JSTR_HAS_MEMPCPY 1
-#	define JSTR_HAS_STRCASESTR 1
+#	define JSTR_HAS_FGETWC_UNLOCKED    1
+#	define JSTR_HAS_FPUTWC_UNLOCKED    1
+#	define JSTR_HAS_PUTWCHAR_UNLOCKED  1
+#	define JSTR_HAS_FGETWS_UNLOCKED    1
+#	define JSTR_HAS_FPUTWS_UNLOCKED    1
+#	define JSTR_HAS_WMEMPCPY	    1
+#	define JSTR_HAS_MEMPCPY	    1
+#	define JSTR_HAS_STRCASESTR	    1
 #endif /* Gnu */
 
 #if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
 || (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE) || defined(_BSD_SOURCE))  \
 || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 23) && defined(_POSIX_C_SOURCE))
-#	define JSTR_HAS_GETC_UNLOCKED 1
+#	define JSTR_HAS_GETC_UNLOCKED	  1
 #	define JSTR_HAS_GETCHAR_UNLOCKED 1
-#	define JSTR_HAS_PUTC_UNLOCKED 1
+#	define JSTR_HAS_PUTC_UNLOCKED	  1
 #	define JSTR_HAS_PUTCHAR_UNLOCKED 1
 #endif /* Posix || Bsd  */
 
 #if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 19)) && defined(_DEFAULT_SOURCE)) \
 || defined(_SVID_SOURCE) || defined(_BSD_SOURCE)
-#	define JSTR_HAS_FREAD_UNLOCKED 1
-#	define JSTR_HAS_FWRITE_UNLOCKED 1
-#	define JSTR_HAS_FPUTC_UNLOCKED 1
-#	define JSTR_HAS_FGETC_UNLOCKED 1
+#	define JSTR_HAS_FREAD_UNLOCKED	   1
+#	define JSTR_HAS_FWRITE_UNLOCKED   1
+#	define JSTR_HAS_FPUTC_UNLOCKED	   1
+#	define JSTR_HAS_FGETC_UNLOCKED	   1
 #	define JSTR_HAS_CLEARERR_UNLOCKED 1
-#	define JSTR_HAS_FEOF_UNLOCKED 1
-#	define JSTR_HAS_FERROR_UNLOCKED 1
-#	define JSTR_HAS_FILENO_UNLOCKED 1
-#	define JSTR_HAS_FFLUSH_UNLOCKED 1
+#	define JSTR_HAS_FEOF_UNLOCKED	   1
+#	define JSTR_HAS_FERROR_UNLOCKED   1
+#	define JSTR_HAS_FILENO_UNLOCKED   1
+#	define JSTR_HAS_FFLUSH_UNLOCKED   1
 #endif /* Default || Svid || Bsd */
 
 #if ((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) \
 || defined(_GNU_SOURCE)
-#	define JSTR_HAS_STPCPY 1
+#	define JSTR_HAS_STPCPY	 1
 #	define JSTR_HAS_STRNLEN 1
 #	define JSTR_HAS_STRNDUP 1
 #endif /* Posix || Gnu */
@@ -646,7 +646,7 @@ case ' ':
 #endif /* Xopen || Bsd || Svid || Posix */
 
 #ifdef _GNU_SOURCE
-#	define JSTR_HAS_STRDUPA 1
+#	define JSTR_HAS_STRDUPA  1
 #	define JSTR_HAS_STRNDUPA 1
 #endif /* Gnu */
 

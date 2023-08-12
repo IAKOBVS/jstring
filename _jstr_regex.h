@@ -70,7 +70,7 @@ extern "C" {
 #endif /* REG_RET_ERPAREN */
 
 #ifdef __cplusplus
-namespace jstr {
+extern "C" {
 #endif /* JSTR_NAMESPACE */
 
 JSTR_NOINLINE
@@ -606,7 +606,7 @@ static void jstr_reg_free(regex_t *JSTR_RST const _preg)
 }
 
 #ifdef __cplusplus
-} /* namespace jstr */
+} /* extern C */
 #endif /* __cpluslus */
 
 #undef PRIVATE_JSTR_REG_EXEC

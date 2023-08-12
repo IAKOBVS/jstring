@@ -11,7 +11,7 @@ extern "C" {
 #include "_jstr_macros.h"
 
 #ifdef __cplusplus
-namespace jstr {
+extern "C" {
 #endif /* __cpluslus */
 
 JSTR_INLINE
@@ -190,7 +190,7 @@ static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
 }
 
 #ifdef __cplusplus
-} /* namespace jstr */
+} /* extern C */
 #endif /* __cpluslus */
 
 #endif /* JSTR_CTYPE_H_DEF */

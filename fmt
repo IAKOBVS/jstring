@@ -1,5 +1,5 @@
 #!/bin/sh
-DIR_CPP=cpp
+# DIR_CPP=cpp
 DIR_C=cpp
 fmt()
 {
@@ -15,9 +15,9 @@ fmt_if_needed()
 for f in $(echo *.h); do
 	fmt_if_needed "$f" &
 done
-for f in $(echo $DIR_CPP/*.h*); do
-	fmt_if_needed "$f" &
-done
+# for f in $(echo $DIR_CPP/*.h*); do
+# 	fmt_if_needed "$f" &
+# done
 for f in $(echo $DIR_C/*.h*); do
 	fmt_if_needed "$f" &
 done

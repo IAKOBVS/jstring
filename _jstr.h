@@ -20,13 +20,13 @@ extern "C" {
 #include "_jstr_ctype.h"
 #include "_jstr_io.h"
 #include "_jstr_macros.h"
+#include "_jstr_memmem.h"
 #include "_jstr_regex.h"
 #include "_jstr_replace.h"
 #include "_jstr_string.h"
-#include "_jstr_memmem.h"
 
 #ifdef __cplusplus
-namespace jstr {
+extern "C" {
 #endif /* __cpluslus */
 
 /*
@@ -367,7 +367,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_itoa(char *JSTR_RST _dst,
+static char *jstr_itoa(char *JSTR_RST const _dst,
 		       int _num,
 		       unsigned char _base)
 {
@@ -403,7 +403,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_ltoa(char *JSTR_RST _dst,
+static char *jstr_ltoa(char *JSTR_RST const _dst,
 		       long _num,
 		       unsigned char _base)
 {
@@ -419,7 +419,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_lltoa(char *JSTR_RST _dst,
+static char *jstr_lltoa(char *JSTR_RST const _dst,
 			long long _num,
 			unsigned char _base)
 {
@@ -435,7 +435,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_utoa(char *JSTR_RST _dst,
+static char *jstr_utoa(char *JSTR_RST const _dst,
 		       unsigned int _num,
 		       unsigned char _base)
 {
@@ -467,7 +467,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_ultoa(char *JSTR_RST _dst,
+static char *jstr_ultoa(char *JSTR_RST const _dst,
 			unsigned long _num,
 			unsigned char _base)
 {
@@ -483,7 +483,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_ulltoa(char *JSTR_RST _dst,
+static char *jstr_ulltoa(char *JSTR_RST const _dst,
 			 unsigned long long _num,
 			 unsigned char _base)
 {
@@ -491,7 +491,7 @@ static char *jstr_ulltoa(char *JSTR_RST _dst,
 }
 
 #ifdef __cplusplus
-} /* namespace jstr */
+} /* extern C */
 #endif /* __cpluslus */
 
 #undef JSTR_EXIT_ON_MALLOC_ERROR

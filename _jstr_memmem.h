@@ -16,7 +16,7 @@ extern "C" {
 #include "_jstr_string.h"
 
 #ifdef __cplusplus
-namespace jstr {
+extern "C" {
 #endif /* __cpluslus */
 
 typedef struct jstr_memmem_table {

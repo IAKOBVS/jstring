@@ -16,7 +16,7 @@ extern "C" {
 #include "_jstr_string.h"
 
 #ifdef __cplusplus
-namespace jstr {
+extern "C" {
 #endif /* JSTR_NAMESPACE */
 
 #define JSTR_ASCII_SIZE 256
@@ -361,7 +361,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_rmallc_mem_p(char *JSTR_RST s,
+static char *jstr_rmallc_mem_p(char *JSTR_RST const s,
 			       const int c,
 			       const size_t sz) JSTR_NOEXCEPT
 {
@@ -390,7 +390,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_rmallc_p(char *JSTR_RST s,
+static char *jstr_rmallc_p(char *JSTR_RST const s,
 			   const int c) JSTR_NOEXCEPT
 {
 #ifdef JSTR_HAS_STRCHRNUL
@@ -421,7 +421,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_rmnc_mem_p(char *JSTR_RST s,
+static char *jstr_rmnc_mem_p(char *JSTR_RST const s,
 			     const int c,
 			     size_t n,
 			     const size_t sz) JSTR_NOEXCEPT
@@ -451,7 +451,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
-static char *jstr_rmnc_p(char *JSTR_RST s,
+static char *jstr_rmnc_p(char *JSTR_RST const s,
 			 const int c,
 			 size_t n) JSTR_NOEXCEPT
 {
@@ -763,7 +763,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_MAYBE_UNUSED
-static char *jstr_rmn_mem_p(char *JSTR_RST s,
+static char *jstr_rmn_mem_p(char *JSTR_RST const s,
 			    const char *JSTR_RST const _searc,
 			    size_t n,
 			    size_t sz,
@@ -798,7 +798,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_MAYBE_UNUSED
-static char *jstr_rmall_mem_p(char *JSTR_RST s,
+static char *jstr_rmall_mem_p(char *JSTR_RST const s,
 			      const char *JSTR_RST const _searc,
 			      size_t sz,
 			      const size_t _searclen) JSTR_NOEXCEPT
@@ -832,7 +832,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
-static char *jstr_rmall_p(char *JSTR_RST s,
+static char *jstr_rmall_p(char *JSTR_RST const s,
 			  const char *JSTR_RST const _searc,
 			  const size_t _searclen) JSTR_NOEXCEPT
 {
@@ -867,7 +867,7 @@ static void jstr_rmall_j(Jstring *JSTR_RST const j,
 }
 
 #ifdef __cplusplus
-} /* namespace jstr */
+} /* extern C */
 #endif /* __cpluslus */
 
 #undef JSTR_ASCII_SIZE

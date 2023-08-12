@@ -18,7 +18,7 @@ extern "C" {
 #include "_jstr_macros.h"
 
 #ifdef __cplusplus
-namespace jstr {
+extern "C" {
 #endif /* JSTR_NAMESPACE */
 
 #ifdef JSTR_HAS_MEMMEM
@@ -274,37 +274,37 @@ static void *private_jstr_memrmem(const void *JSTR_RST const _hs,
 				  const void *JSTR_RST const _ne,
 				  const size_t _nelen) JSTR_NOEXCEPT
 {
-#	define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#	define PRIVATE_JSTR_MEMMEMR(shift_type, ne_iterator_type)                       \
-		do {                                                                     \
-			const unsigned char *h = (unsigned char *)_hs + _hslen + _nelen; \
-			const unsigned char *const n = (unsigned char *)_ne;             \
-			const unsigned char *const start = (unsigned char *)_hs;         \
-			size_t tmp;                                                      \
-			size_t shift1;                                                   \
-			size_t mtc1 = _nelen - 1;                                        \
-			size_t off = 0;                                                  \
-			shift_type shift[256];                                           \
-			memset(shift, 0, sizeof(shift));                                 \
-			for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)    \
-				shift[JSTR_HASH2(n + i)] = i;                            \
-			shift1 = mtc1 - shift[JSTR_HASH2(n + mtc1)];                     \
-			shift[JSTR_HASH2(n + mtc1)] = mtc1;                              \
-			do {                                                             \
-				do {                                                     \
-					h -= mtc1;                                       \
-					tmp = shift[JSTR_HASH2(h)];                      \
-				} while (!tmp && h >= start);                            \
-				h -= tmp;                                                \
-				if (mtc1 < 15 || !memcmp(h + off, n + off, 8)) {         \
-					if (!memcmp(h, n, _nelen))                       \
-						return (void *)h;                        \
-					off = (off >= 8 ? off : mtc1) - 8;               \
-				}                                                        \
-				h -= shift1;                                             \
-			} while (h >= start);                                            \
-			return NULL;                                                     \
-		} while (0)
+#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
+#define PRIVATE_JSTR_MEMMEMR(shift_type, ne_iterator_type)                       \
+	do {                                                                     \
+		const unsigned char *h = (unsigned char *)_hs + _hslen + _nelen; \
+		const unsigned char *const n = (unsigned char *)_ne;             \
+		const unsigned char *const start = (unsigned char *)_hs;         \
+		size_t tmp;                                                      \
+		size_t shift1;                                                   \
+		size_t mtc1 = _nelen - 1;                                        \
+		size_t off = 0;                                                  \
+		shift_type shift[256];                                           \
+		memset(shift, 0, sizeof(shift));                                 \
+		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)    \
+			shift[JSTR_HASH2(n + i)] = i;                            \
+		shift1 = mtc1 - shift[JSTR_HASH2(n + mtc1)];                     \
+		shift[JSTR_HASH2(n + mtc1)] = mtc1;                              \
+		do {                                                             \
+			do {                                                     \
+				h -= mtc1;                                       \
+				tmp = shift[JSTR_HASH2(h)];                      \
+			} while (!tmp && h >= start);                            \
+			h -= tmp;                                                \
+			if (mtc1 < 15 || !memcmp(h + off, n + off, 8)) {         \
+				if (!memcmp(h, n, _nelen))                       \
+					return (void *)h;                        \
+				off = (off >= 8 ? off : mtc1) - 8;               \
+			}                                                        \
+			h -= shift1;                                             \
+		} while (h >= start);                                            \
+		return NULL;                                                     \
+	} while (0)
 	if (unlikely(_hslen > 256))
 		PRIVATE_JSTR_MEMMEMR(size_t, size_t);
 	PRIVATE_JSTR_MEMMEMR(uint8_t, int);
@@ -427,39 +427,39 @@ static char *private_jstr_memcasemem3(const char *JSTR_RST const _hs,
 				      const char *JSTR_RST const _ne,
 				      const size_t _nelen) JSTR_NOEXCEPT
 {
-#	define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#	define PRIVATE_JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                      \
-		do {                                                                                       \
-			const unsigned char *h = (unsigned char *)_hs;                                     \
-			const unsigned char *const n = (unsigned char *)_ne;                               \
-			const unsigned char *const end = h + _hslen - _nelen;                              \
-			size_t tmp;                                                                        \
-			size_t shift1;                                                                     \
-			size_t mtc1 = _nelen - 1;                                                          \
-			size_t off = 0;                                                                    \
-			shift_type shift[256];                                                             \
-			memset(shift, 0, sizeof(shift));                                                   \
-			for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                      \
-				shift[JSTR_HASH2_LOWER(_ne + i)] = i;                                      \
-			shift1 = mtc1 - shift[JSTR_HASH2_LOWER(n + mtc1)];                                 \
-			shift[JSTR_HASH2_LOWER(n + mtc1)] = mtc1;                                          \
-			do {                                                                               \
-				do {                                                                       \
-					h += mtc1;                                                         \
-					tmp = shift[JSTR_HASH2_LOWER(h)];                                  \
-				} while (!tmp && h <= end);                                                \
-				h -= tmp;                                                                  \
-				if (tmp < mtc1)                                                            \
-					continue;                                                          \
-				if (mtc1 < 15 || !jstr_strncasecmp((char *)h + off, (char *)n + off, 8)) { \
-					if (!jstr_strncasecmp((char *)h, (char *)n, _nelen))               \
-						return (char *)h;                                          \
-					off = (off >= 8 ? off : mtc1) - 8;                                 \
-				}                                                                          \
-				h += shift1;                                                               \
-			} while (h <= end);                                                                \
-			return NULL;                                                                       \
-		} while (0)
+#define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
+#define PRIVATE_JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                      \
+	do {                                                                                       \
+		const unsigned char *h = (unsigned char *)_hs;                                     \
+		const unsigned char *const n = (unsigned char *)_ne;                               \
+		const unsigned char *const end = h + _hslen - _nelen;                              \
+		size_t tmp;                                                                        \
+		size_t shift1;                                                                     \
+		size_t mtc1 = _nelen - 1;                                                          \
+		size_t off = 0;                                                                    \
+		shift_type shift[256];                                                             \
+		memset(shift, 0, sizeof(shift));                                                   \
+		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                      \
+			shift[JSTR_HASH2_LOWER(_ne + i)] = i;                                      \
+		shift1 = mtc1 - shift[JSTR_HASH2_LOWER(n + mtc1)];                                 \
+		shift[JSTR_HASH2_LOWER(n + mtc1)] = mtc1;                                          \
+		do {                                                                               \
+			do {                                                                       \
+				h += mtc1;                                                         \
+				tmp = shift[JSTR_HASH2_LOWER(h)];                                  \
+			} while (!tmp && h <= end);                                                \
+			h -= tmp;                                                                  \
+			if (tmp < mtc1)                                                            \
+				continue;                                                          \
+			if (mtc1 < 15 || !jstr_strncasecmp((char *)h + off, (char *)n + off, 8)) { \
+				if (!jstr_strncasecmp((char *)h, (char *)n, _nelen))               \
+					return (char *)h;                                          \
+				off = (off >= 8 ? off : mtc1) - 8;                                 \
+			}                                                                          \
+			h += shift1;                                                               \
+		} while (h <= end);                                                                \
+		return NULL;                                                                       \
+	} while (0)
 	if (unlikely(_nelen > 256))
 		PRIVATE_JSTR_STRSTRCASE(size_t, size_t);
 	PRIVATE_JSTR_STRSTRCASE(uint8_t, int);
@@ -512,10 +512,10 @@ static char *jstr_strcasechr(const char *JSTR_RST const s,
 		}
 }
 
-#	if defined(__GNUC__) || defined(__clang__)
-#		pragma GCC diagnostic ignored "-Wunused-parameter"
-#		pragma GCC diagnostic push
-#	endif /* defined(__GNUC__) || defined(__clang__) */
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic ignored "-Wunused-parameter"
+#	pragma GCC diagnostic push
+#endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
    Find NE in HS case-insensitively.
@@ -528,18 +528,18 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-#	ifdef JSTR_HAS_STRCASESTR
+#ifdef JSTR_HAS_STRCASESTR
 JSTR_INLINE
 JSTR_DEPRECATED("strcasestr is available! _hslen and _nelen are wasted.", strcasestr)
-#	endif /* JSTR_HAS_STRCASESTR */
+#endif /* JSTR_HAS_STRCASESTR */
 static char *jstr_memcasemem_constexpr(const char *JSTR_RST const _hs,
 				       const size_t _hslen,
 				       const char *JSTR_RST const _ne,
 				       const size_t _nelen) JSTR_NOEXCEPT
 {
-#	ifdef JSTR_HAS_STRCASESTR
+#ifdef JSTR_HAS_STRCASESTR
 	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
-#	else
+#else
 	if (unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
@@ -561,12 +561,12 @@ static char *jstr_memcasemem_constexpr(const char *JSTR_RST const _hs,
 		break;
 	}
 	return private_jstr_memcasemem3(_hs, _hslen, _ne, _nelen);
-#	endif
+#endif
 }
 
-#	if defined(__GNUC__) || defined(__clang__)
-#		pragma GCC diagnostic pop
-#	endif /* defined(__GNUC__) || defined(__clang__) */
+#if defined(__GNUC__) || defined(__clang__)
+#	pragma GCC diagnostic pop
+#endif /* defined(__GNUC__) || defined(__clang__) */
 
 /*
    Find NE in HS case-insensitively.
@@ -579,10 +579,10 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-#	ifdef JSTR_HAS_STRCASESTR
+#ifdef JSTR_HAS_STRCASESTR
 JSTR_DEPRECATED("strcasestr is available! _hslen and _nelen are wasted.", strcasestr)
 JSTR_INLINE
-#	endif /* JSTR_HAS_STRCASESTR */
+#endif /* JSTR_HAS_STRCASESTR */
 static char *jstr_memcasemem(const char *JSTR_RST const _hs,
 			     const size_t _hslen,
 			     const char *JSTR_RST const _ne,
@@ -644,7 +644,7 @@ static char *jstr_strcasestr(const char *JSTR_RST _hs,
 }
 
 #ifdef __cplusplus
-} /* namespace jstr */
+} /* extern C */
 #endif /* JSTR_NAMESPACE */
 
 #undef JSTR_HASH2

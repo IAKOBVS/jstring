@@ -15,7 +15,7 @@ extern "C" {
 #include "_jstr_macros.h"
 
 #ifdef __cplusplus
-namespace jstr {
+extern "C" {
 #endif /* __cpluslus */
 
 /*

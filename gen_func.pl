@@ -13,12 +13,13 @@ script_needed();
 
 my $G_DIR_CPP = $G_DIR_C . 'pp';
 my $G_OUT_C   = "$G_DIR_C/$G_FNAME_BASE";
-my $G_OUT_CPP;
-if ($G_OUT_C =~ /\.hpp/) {
-	$G_OUT_CPP = $G_OUT_C;
-} else {
-	$G_OUT_CPP = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
-}
+
+# my $G_OUT_CPP;
+# if ($G_OUT_C =~ /\.hpp/) {
+# 	$G_OUT_CPP = $G_OUT_C;
+# } else {
+# 	$G_OUT_CPP = "$G_DIR_CPP/$G_FNAME_BASE" . 'pp';
+# }
 
 my $G_IGNORE_FILE = 'private';
 
@@ -52,10 +53,9 @@ my $g_in_h = get_file_str($G_FNAME);
 $g_in_h = tidy_newlines($g_in_h);
 
 my @LNS = gen_nonmem_funcs($g_in_h);
-my ($out_h, $out_hpp) = gen_struct_funcs(@LNS);
+my ($out_h) = gen_struct_funcs(@LNS);
 
-# fix_namespace($out_hpp);
-print_to_file($G_OUT_C, $out_h, $G_OUT_CPP, $out_hpp);
+print_to_file($G_OUT_C, $out_h, 0, 0);
 
 sub usage
 {
@@ -101,10 +101,12 @@ sub print_to_file
 	  or die("Can't open $OUT_H\n");
 	print($FH $OUT_H);
 	close($FH);
-	open($FH, '>', $OUT_CPP)
-	  or die("Can't open $OUT_HPP\n");
-	print($FH $OUT_HPP);
-	close($FH);
+	if ($OUT_CPP && $OUT_HPP) {
+		open($FH, '>', $OUT_CPP)
+		  or die("Can't open $OUT_HPP\n");
+		print($FH $OUT_HPP);
+		close($FH);
+	}
 }
 
 sub gen_nonmem_funcs
@@ -186,7 +188,8 @@ sub gen_struct_funcs
 {
 	my (@LINES) = @_;
 	my $out_h;
-	my $out_hpp;
+
+	# my $out_hpp;
 	foreach (@LINES) {
 		if ($_ !~ $G_RE_FUNC) {
 			goto NEXT;
@@ -247,10 +250,11 @@ sub gen_struct_funcs
 				$decl =~ s/[^(,]*$G_CAP_PTN,//o;
 			}
 		}
-		my @OLD_ARGS = split(/\s/, $params);
-		my $CONST    = ($OLD_ARGS[0] eq 'const') ? 'const ' : '';
-		my $LAST     = ($params =~ /,/)          ? ','      : ')';
-		my $tmp      = "($G_STR_STRUCT *$G_MACRO_RESTRICT $CONST" . "j$LAST";
+		my @OLD_ARGS         = split(/\s/, $params);
+		my $CONST            = ($OLD_ARGS[0] =~ 'const')             ? 'const ' : '';
+		my $CONST_STRUCT_PTR = ($params      =~ /[^\n]*const[^\n]*(?:,|\))/) ? 'const ' : '';
+		my $LAST             = ($params      =~ /,/)                 ? ','      : ')';
+		my $tmp              = "($CONST$G_STR_STRUCT *$G_MACRO_RESTRICT $CONST_STRUCT_PTR" . "j$LAST";
 		$decl =~ s/\(.+?$LAST/$tmp/;
 		$decl =~ s/,\s*\)/)/g;
 		$decl .= "\n{\n\t";
@@ -280,37 +284,42 @@ sub gen_struct_funcs
 		}
 		$decl .= "$body;\n}\n";
 		$decl =~ s/\n\n/\n/g;
-		$_       .= "\n\n";
-		$decl    .= "\n\n";
-		$out_hpp .= $_;
-		$out_hpp .= $decl;
-		$out_h   .= $_;
-		$out_h   .= $decl;
+		$_     .= "\n\n";
+		$decl  .= "\n\n";
+		$out_h .= $_;
+		$out_h .= $decl;
+
+		# $out_hpp .= $_;
+		# $out_hpp .= $decl;
 		next;
 	  NEXT:
 		$_ = update_includes($_);
-		$_       .= "\n\n";
-		$out_h   .= $_;
-		$out_hpp .= $_;
+		$_     .= "\n\n";
+		$out_h .= $_;
+
+		# $out_hpp .= $_;
 	}
-	$out_hpp =~ s/\.h"/.hpp"/g;
-	$out_hpp =~ s/H_DEF/HPP_DEF/g;
-	if ($G_FNAME !~ /$G_IGNORE_FILE/o) {
-		$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/o;
-		$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/o;
-		$out_hpp =~ s/~$G_NMSPC/destructor$G_NMSPC/go;
-		$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
-		$out_hpp =~ s/(struct.*?)$G_NMSPC\_(\w+)/$1$2/g;
-		$out_hpp =~ s/destructor$G_NMSPC/~$G_NMSPC/go;
-	}
-	$out_hpp =~ s/\tt\(/\t$G_STR_STRUCT(/go;
-	$out_hpp =~ s/\t~t\(/\t$G_STR_STRUCT(/go;
-	$out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
-	$out_hpp =~ s/\n\n\n/\n\n/g;
-	$out_h   =~ s/\n\n\n/\n\n/g;
-	$out_h   =~ s/\n\n*$/\n/g;
-	$out_hpp =~ s/\n\n*$/\n/g;
-	return ($out_h, $out_hpp);
+
+	# $out_hpp =~ s/\.h"/.hpp"/g;
+	# $out_hpp =~ s/H_DEF/HPP_DEF/g;
+	# if ($G_FNAME !~ /$G_IGNORE_FILE/o) {
+	# 	$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/o;
+	# 	$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/o;
+	# 	$out_hpp =~ s/~$G_NMSPC/destructor$G_NMSPC/go;
+	# 	$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
+	# 	$out_hpp =~ s/(struct.*?)$G_NMSPC\_(\w+)/$1$2/g;
+	# 	$out_hpp =~ s/destructor$G_NMSPC/~$G_NMSPC/go;
+	# }
+	# $out_hpp =~ s/\tt\(/\t$G_STR_STRUCT(/go;
+	# $out_hpp =~ s/\t~t\(/\t$G_STR_STRUCT(/go;
+	# $out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
+	# $out_hpp =~ s/\n\n\n/\n\n/g;
+	# $out_hpp =~ s/\n\n*$/\n/g;
+	$out_h =~ s/\n\n\n/\n\n/g;
+	$out_h =~ s/\n\n*$/\n/g;
+
+	# return ($out_h, $out_hpp);
+	return ($out_h);
 }
 
 sub update_includes
@@ -318,14 +327,4 @@ sub update_includes
 	my ($includes) = @_;
 	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_$G_NMSPC/$1$G_NMSPC/go;
 	return $includes;
-}
-
-sub fix_namespace
-{
-	my ($hpp) = @_;
-	if ($G_FNAME =~ /string/) {
-		$hpp =~ s/return\s*(\(.*?\))\s*(\w*\(.*?\)\s*;)/return $1::$2/g;
-		$hpp =~ s/return\s*(\w*\(.*?\)\s*;)/return ::$1/g;
-	}
-	return $hpp;
 }
