@@ -330,6 +330,8 @@ static int jstr_reg_rm_mem(char *JSTR_RST const s,
 	const int ret = PRIVATE_JSTR_REG_EXEC(_preg, s, *sz, 1, &rm, _eflags);
 	if (unlikely(ret != JSTR_REG_RET_NOERROR))
 		return ret;
+	if (unlikely(rm.rm_eo == rm.rm_so))
+		return ret;
 	memmove(s + rm.rm_so,
 		s + rm.rm_eo,
 		*sz - (rm.rm_eo - rm.rm_so) + 1);

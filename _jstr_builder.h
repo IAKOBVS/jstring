@@ -126,9 +126,11 @@ static void jstr_alloc(char **JSTR_RST const s,
 		       const size_t _top) JSTR_NOEXCEPT
 {
 	*sz = 0;
-	*s = (char *)malloc(_top * JSTR_GROWTH_MULTIPLIER);
+	*cap = (unlikely(_top) < JSTR_MIN_CAP / JSTR_GROWTH_MULTIPLIER)
+	       ? JSTR_MIN_CAP
+	       : (_top * JSTR_GROWTH_MULTIPLIER);
+	*s = (char *)malloc(*cap);
 	JSTR_MALLOC_ERR(*s, return);
-	*cap = _top * JSTR_GROWTH_MULTIPLIER;
 }
 
 JSTR_INLINE
@@ -272,7 +274,7 @@ jstr_cat_j(Jstring *JSTR_RST const j,
 			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                    \
 			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                                   \
 			const size_t newsz = *sz + JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			if (*(cap) < newsz + 1)                                                           \
+			if (*(cap) < newsz)                                                               \
 				JSTR_REALLOC(*(s), *(cap), newsz + 1, break);                             \
 			char *p = *(s) + *(sz);                                                           \
 			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);                             \
