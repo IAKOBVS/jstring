@@ -62,7 +62,7 @@ static void jstr_slip_mem(char **JSTR_RST const s,
 			*sz - at + 1);
 		memcpy(*s + at, _rplc, _rplclen);
 	} else {
-		JSTR_GROW(*cap, *sz + _rplclen + 1);
+		JSTR_GROW(*cap, *sz + _rplclen);
 		char *const tmp = (char *)malloc(*cap);
 		JSTR_MALLOC_ERR(tmp, return);
 		memcpy(tmp, *s, at);
@@ -87,19 +87,20 @@ static char *jstr_rplcat_mem(char **JSTR_RST const s,
 			     const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
-		memmove(*s + at + _rplclen,
-			*s + at + _searclen,
-			*sz - at + _searclen + 1);
+		if (likely(_rplclen != _searclen))
+			memmove(*s + at + _rplclen,
+				*s + at + _searclen,
+				*sz - at + _searclen + 1);
 		memcpy(*s + at, _rplc, _rplclen);
 	} else {
-		JSTR_GROW(*cap, *sz + _rplclen + 1);
+		JSTR_GROW(*cap, *sz + _rplclen - _searclen);
 		char *const tmp = (char *)malloc(*cap);
 		JSTR_MALLOC_ERR(tmp, return NULL);
 		memcpy(tmp, *s, at);
 		memcpy(tmp + at, _rplc, _rplclen);
 		memcpy(tmp + at + _rplclen,
 		       *s + at + _searclen,
-		       *sz - at + 1 + _searclen);
+		       *sz - at + _searclen + 1);
 		free(*s);
 		*s = tmp;
 	}
