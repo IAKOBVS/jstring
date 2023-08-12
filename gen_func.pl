@@ -12,7 +12,7 @@ my $G_DIR_C = 'jstr';
 script_needed();
 
 # my $G_DIR_CPP = $G_DIR_C . 'pp';
-my $G_OUT_C   = "$G_DIR_C/$G_FNAME_BASE";
+my $G_OUT_C = "$G_DIR_C/$G_FNAME_BASE";
 
 # my $G_OUT_CPP;
 # if ($G_OUT_C =~ /\.hpp/) {
@@ -156,19 +156,30 @@ sub gen_nonmem_funcs
 			}
 		}
 		$decl =~ s/($G_NMSPC\_\w*)_mem(\w*\()/$1$2/o;
-		$decl .= "\n{\n\t$RETURN$FUNC_NAME(";
+		$decl .= "\n{\n\t";
+		my $size_ptr_var = get_regex_size_ptr($FUNC_NAME, $params);
+		if ($size_ptr_var) {
+			$decl .= "*$size_ptr_var = ";
+			$params =~ /char[ \t]*(\*+)[^\),]*(\w+)[,\)]/o;
+			my $char_ptr_var = $2;
+			my $deref        = ($1 eq '**') ? '*' : '';
+			$decl .= "strlen($deref$char_ptr_var);\n\t";
+		}
+		$decl .= "$RETURN$FUNC_NAME(";
 		my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
 		foreach (@new_args) {
-			if ($G_LEN) {
-				if (/(\w*)$G_LEN_PTN/) {
-					my $var = $1;
-					$decl =~ s/,[^,]*$G_LEN_PTN//o;
-					$_ = "strlen($var)";
-				}
-			} else {
-				if (/\w*$G_SIZE_PTN/) {
-					$decl =~ s/,[^,]*$G_SIZE_PTN//o;
-					$_ = "strlen($new_args[0])";
+			if (!$size_ptr_var) {
+				if ($G_LEN) {
+					if (/(\w*)$G_LEN_PTN/) {
+						my $var = $1;
+						$decl =~ s/,[^,]*$G_LEN_PTN//o;
+						$_ = "strlen($var)";
+					}
+				} else {
+					if (/\w*$G_SIZE_PTN/) {
+						$decl =~ s/,[^,]*$G_SIZE_PTN//o;
+						$_ = "strlen($new_args[0])";
+					}
 				}
 			}
 			$decl .= "$_, ";
@@ -218,6 +229,9 @@ sub gen_struct_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
+		if (($G_FNAME =~ /regex/) && $FUNC_NAME !~ /mem/) {
+			goto NEXT;
+		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
 		if ($RETURN) {
 			$decl =~ s/$G_MACRO_RETURNS_NONNULL//;
@@ -251,9 +265,9 @@ sub gen_struct_funcs
 			}
 		}
 		my @OLD_ARGS         = split(/\s/, $params);
-		my $CONST            = ($OLD_ARGS[0] =~ 'const')             ? 'const ' : '';
+		my $CONST            = ($OLD_ARGS[0] =~ 'const')                     ? 'const ' : '';
 		my $CONST_STRUCT_PTR = ($params      =~ /[^\n]*const[^\n]*(?:,|\))/) ? 'const ' : '';
-		my $LAST             = ($params      =~ /,/)                 ? ','      : ')';
+		my $LAST             = ($params      =~ /,/)                         ? ','      : ')';
 		my $tmp              = "($CONST$G_STR_STRUCT *$G_MACRO_RESTRICT $CONST_STRUCT_PTR" . "j$LAST";
 		$decl =~ s/\(.+?$LAST/$tmp/;
 		$decl =~ s/,\s*\)/)/g;
@@ -267,10 +281,17 @@ sub gen_struct_funcs
 				push(@new_args, $_);
 			}
 		}
-		$body .= $PTR . "$G_STRUCT_VAR->$G_STRUCT_DATA, ";
+		if (is_str_ptr($params)) {
+			$body .= $PTR;
+		}
+		$body .= "$G_STRUCT_VAR->$G_STRUCT_DATA, ";
 		for (my $i = 1 ; $i <= $#new_args ; ++$i) {
 			if ($new_args[$i] =~ /$G_SIZE_PTN/o) {
-				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
+				if ($FUNC_NAME =~ /$G_NMSPC\_reg/ && is_size_ptr($params)) {
+					$new_args[$i] = "&$G_STRUCT_VAR->$G_STRUCT_SIZE";
+				} else {
+					$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
+				}
 			} elsif ($new_args[$i] =~ /$G_CAP_PTN/o) {
 				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_CAP";
 			}
@@ -327,4 +348,26 @@ sub update_includes
 	my ($includes) = @_;
 	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_$G_NMSPC/$1$G_NMSPC/go;
 	return $includes;
+}
+
+sub get_regex_size_ptr
+{
+	my ($FUNC_NAME, $params) = @_;
+	if ($FUNC_NAME =~ /$G_NMSPC\_reg/o) {
+		$params =~ /size_t[ \t]*\*[ \t]*$G_MACRO_RESTRICT[ \t][^\n]*(\w*sz)/o;
+		return $1;
+	}
+	return 0;
+}
+
+sub is_str_ptr
+{
+	my ($params) = @_;
+	return ($params =~ /[^,\)]*\*\*[^,\)]*s[,\)]/o) ? 1 : 0;
+}
+
+sub is_size_ptr
+{
+	my ($params) = @_;
+	return ($params =~ /size_t[^,\)]*\*[^,\)]*sz[,\)]/) ? 1 : 0;
 }
