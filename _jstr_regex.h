@@ -383,8 +383,12 @@ static char *jstr_reg_rmall_mem(char *JSTR_RST const s,
 	size_t ptnlen;
 	while (PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, end - p, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		ptnlen = rm.rm_eo - rm.rm_so;
-		if (unlikely(!ptnlen))
-			break;
+		if (unlikely(!ptnlen)) {
+			p += ptnlen + 1;
+			if (unlikely(!*p))
+				break;
+			continue;
+		}
 		p = p + rm.rm_so;
 		if (likely(dst != old))
 			memmove(dst, old, p - old);
@@ -479,9 +483,12 @@ static void jstr_reg_rplcall_mem(char **JSTR_RST const s,
 	const unsigned char *old = dst;
 	while (PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, (*(unsigned char **)s + *sz) - p, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		_ptnlen = rm.rm_eo - rm.rm_so;
-		if (unlikely(!_ptnlen))
-			break;
 		p += rm.rm_so;
+		if (unlikely(!_ptnlen)) {
+			if (unlikely(!*++p))
+				break;
+			continue;
+		}
 		if (_rplclen <= _ptnlen) {
 			if (likely(dst != old))
 				memmove(dst, old, p - old);
