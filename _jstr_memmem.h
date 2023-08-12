@@ -45,30 +45,30 @@ void jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr)
 #endif /* JSTR_HAS_GENERIC */
 
-#define jstr_memmem_comp_mem(_jstr_memmem_table, _ne, _nelen)                                                                             \
-	do {                                                                                                                              \
-		JSTR_ASSERT_IS_STR(_ne);                                                                                                  \
-		JSTR_ASSERT_IS_SIZE(_nelen);                                                                                              \
-		(_jstr_memmem_table)->ne = (const unsigned char *)_ne;                                                                    \
-		(_jstr_memmem_table)->nelen = _nelen;                                                                                     \
-		if (unlikely(_nelen < 5)) {                                                                                               \
-			(_jstr_memmem_table)->big_table = NULL;                                                                           \
-			(_jstr_memmem_table)->small_table = NULL;                                                                         \
-		} else if (unlikely(_nelen > 256)) {                                                                                      \
-			(_jstr_memmem_table)->small_table = NULL;                                                                         \
-			(_jstr_memmem_table)->big_table = (size_t *)alloca(256 * sizeof(size_t));                                         \
-			memset((_jstr_memmem_table)->big_table, 0, 256 * sizeof(size_t));                                                 \
-			for (size_t i = 1; i < _nelen - 1; ++i)                                                                           \
-				(_jstr_memmem_table)->big_table[private_jstr_memmem_hash2((_jstr_memmem_table)->ne + i)] = i;             \
-			(_jstr_memmem_table)->big_table[private_jstr_memmem_hash2((_jstr_memmem_table)->ne + _nelen - 1)] = _nelen - 1;   \
-		} else {                                                                                                                  \
-			(_jstr_memmem_table)->big_table = NULL;                                                                           \
-			(_jstr_memmem_table)->small_table = (uint8_t *)alloca(256 * sizeof(uint8_t));                                     \
-			memset((_jstr_memmem_table)->small_table, 0, 256 * sizeof(uint8_t));                                              \
-			for (int i = 1; i < (int)_nelen - 1; ++i)                                                                         \
-				(_jstr_memmem_table)->small_table[private_jstr_memmem_hash2((_jstr_memmem_table)->ne + i)] = i;           \
-			(_jstr_memmem_table)->small_table[private_jstr_memmem_hash2((_jstr_memmem_table)->ne + _nelen - 1)] = _nelen - 1; \
-		}                                                                                                                         \
+#define jstr_memmem_comp_mem(_jstr_memmem_table, _ne, _nelen)                                                                         \
+	do {                                                                                                                          \
+		JSTR_ASSERT_IS_STR(_ne);                                                                                              \
+		JSTR_ASSERT_IS_SIZE(_nelen);                                                                                          \
+		(_jstr_memmem_table)->ne = (const unsigned char *)_ne;                                                                \
+		(_jstr_memmem_table)->nelen = _nelen;                                                                                 \
+		if (unlikely(_nelen < 5)) {                                                                                           \
+			(_jstr_memmem_table)->big_table = NULL;                                                                       \
+			(_jstr_memmem_table)->small_table = NULL;                                                                     \
+		} else if (unlikely(_nelen > 256)) {                                                                                  \
+			(_jstr_memmem_table)->small_table = NULL;                                                                     \
+			(_jstr_memmem_table)->big_table = (size_t *)alloca(256 * sizeof(size_t));                                     \
+			memset((_jstr_memmem_table)->big_table, 0, 256 * sizeof(size_t));                                             \
+			for (size_t i = 1; i < _nelen - 1; ++i)                                                                       \
+				(_jstr_memmem_table)->big_table[private_jstr_memmem_hash2((unsigned char *)_ne + i)] = i;             \
+			(_jstr_memmem_table)->big_table[private_jstr_memmem_hash2((unsigned char *)_ne + _nelen - 1)] = _nelen - 1;   \
+		} else {                                                                                                              \
+			(_jstr_memmem_table)->big_table = NULL;                                                                       \
+			(_jstr_memmem_table)->small_table = (uint8_t *)alloca(256 * sizeof(uint8_t));                                 \
+			memset((_jstr_memmem_table)->small_table, 0, 256 * sizeof(uint8_t));                                          \
+			for (int i = 1; i < (int)_nelen - 1; ++i)                                                                     \
+				(_jstr_memmem_table)->small_table[private_jstr_memmem_hash2((unsigned char *)_ne + i)] = i;           \
+			(_jstr_memmem_table)->small_table[private_jstr_memmem_hash2((unsigned char *)_ne + _nelen - 1)] = _nelen - 1; \
+		}                                                                                                                     \
 	} while (0)
 
 JSTR_NONNULL_ALL
