@@ -140,6 +140,7 @@ static int jstr_reg_exec(const regex_t *JSTR_RST _preg,
 
 #ifdef JSTR_REG_EF_STARTEND
 
+JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
