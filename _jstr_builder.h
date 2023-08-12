@@ -21,6 +21,16 @@ extern "C" {
 #	include "_jstr_traits.h"
 #endif /* __cpluslus */
 
+#define PRIVATE_JSTR_MIN_ALLOC(top_cap)                             \
+	((unlikely(top_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER)) \
+	 ? (JSTR_MIN_CAP)                                           \
+	 : (top_cap * JSTR_ALLOC_MULTIPLIER))
+
+#define PRIVATE_JSTR_ALLOC_ONLY(p, cap, do_fail) \
+	(cap) = PRIVATE_JSTR_MIN_ALLOC(cap);     \
+	(p) = (char *)malloc((cap));             \
+	JSTR_MALLOC_ERR((p), do_fail);
+
 JSTR_NOINLINE
 JSTR_COLD
 static void JSTR_ERR_EXIT()
@@ -126,9 +136,7 @@ static void jstr_alloc(char **JSTR_RST const s,
 		       const size_t _top) JSTR_NOEXCEPT
 {
 	*sz = 0;
-	*cap = (unlikely(_top) < JSTR_MIN_CAP / JSTR_GROWTH_MULTIPLIER)
-	       ? JSTR_MIN_CAP
-	       : (_top * JSTR_GROWTH_MULTIPLIER);
+	*cap = PRIVATE_JSTR_MIN_ALLOC(_top);
 	*s = (char *)malloc(*cap);
 	JSTR_MALLOC_ERR(*s, return);
 }
@@ -169,9 +177,7 @@ static void jstr_alloc_append_mem(char **JSTR_RST const s,
 				  const char *JSTR_RST const _src,
 				  const size_t _srclen) JSTR_NOEXCEPT
 {
-	jstr_alloc(s, sz, cap, _srclen * JSTR_GROWTH_MULTIPLIER);
-	if (unlikely(!*s))
-		return;
+	PRIVATE_JSTR_ALLOC_ONLY(*s, *cap, return);
 	*sz = _srclen;
 	memcpy(*s, _src, _srclen + 1);
 }
@@ -303,7 +309,7 @@ jstr_cat_j(Jstring *JSTR_RST const j,
 			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                 \
 			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                \
 			*(sz) = JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			*(cap) = *(sz)*JSTR_GROWTH_MULTIPLIER;                         \
+			*(cap) = PRIVATE_JSTR_MIN_ALLOC(*(sz));                        \
 			*(s) = malloc(*(cap));                                         \
 			JSTR_MALLOC_ERR(*((s)), break);                                \
 			char *p = *(s);                                                \
