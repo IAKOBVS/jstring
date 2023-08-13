@@ -2,7 +2,6 @@
 #define JSTR_DEF_H
 
 #include "_jstr_macros.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 #define JTRIE_ASCII_SIZE 256
