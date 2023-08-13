@@ -19,7 +19,7 @@ struct Jtrie_node {
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static struct Jtrie_node *
-jtrie_create() JSTR_NOEXCEPT
+jtrie_create(void) JSTR_NOEXCEPT
 {
 	return (struct Jtrie_node *)calloc(1, sizeof(struct Jtrie_node));
 }
@@ -64,9 +64,8 @@ jtrie_remove(struct Jtrie_node *JSTR_RST const root,
 {
 	struct Jtrie_node *curr = root;
 	for (const unsigned char *w = (unsigned char *)word;
-	     curr->child[*w];
-	     ++w)
-		curr = curr->child[*w];
+	     *w && curr->child[*w];)
+		curr = curr->child[*w++];
 	curr->EOW = 0;
 }
 
