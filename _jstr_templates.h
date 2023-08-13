@@ -51,7 +51,7 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 	} while (0)
 
 #if JSTR_HAVE_REALLOC_MREMAP
-#	define JSTR_IS_MMAP(cap) (((cap) > JSTR_MIN_MMAP) ? 1 : 0)
+#	define JSTR_IS_MMAP(cap) ((unlikely((cap) > JSTR_MIN_MMAP)) ? 1 : 0)
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 
 #ifdef __cplusplus
