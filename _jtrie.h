@@ -26,13 +26,24 @@ jtrie_create(void) JSTR_NOEXCEPT
 
 JSTR_MAYBE_UNUSED
 static void
-jtrie_destruct(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
+private_jtrie_destruct_recur(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(!node))
 		return;
 	for (int i = 0; i != JTRIE_ASCII_SIZE - 1; ++i)
-		jtrie_destruct(node->child[i]);
+		private_jtrie_destruct_recur(node->child[i]);
 	free(node);
+	node = NULL;
+}
+
+JSTR_MAYBE_UNUSED
+static void
+jtrie_destruct(struct Jtrie_node **JSTR_RST node) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(!*node))
+		return;
+	private_jtrie_destruct_recur(*node);
+	*node = NULL;
 }
 
 JSTR_INLINE
@@ -57,6 +68,29 @@ jtrie_insert(struct Jtrie_node *JSTR_RST const root,
 	return JTRIE_RET_NOERROR;
 }
 
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static Jtrie_errcode
+jtrie_insertprefix(struct Jtrie_node *JSTR_RST const root,
+		   const char *JSTR_RST const word) JSTR_NOEXCEPT
+{
+	const unsigned char *w = (unsigned char *)word;
+	if (jstr_unlikely(!*w))
+		return JTRIE_RET_NOERROR;
+	struct Jtrie_node *curr = root;
+	for (; *w; ++w) {
+		if (!curr->child[*w])
+			curr->child[*w] = jtrie_create();
+		curr = curr->child[*w];
+		if (jstr_unlikely(!curr))
+			return JTRIE_RET_MALLOC_ERROR;
+		curr->EOW = 1;
+	}
+	curr->EOW = 1;
+	return JTRIE_RET_NOERROR;
+}
+
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
@@ -74,25 +108,23 @@ jtrie_remove(struct Jtrie_node *JSTR_RST const root,
 	curr->EOW = 0;
 }
 
-static void
-private_jtrie_removeall_recur(struct Jtrie_node *JSTR_RST node,
-			      const unsigned char *JSTR_RST const word) JSTR_NOEXCEPT
-{
-	if (*word && node) {
-		private_jtrie_removeall_recur(node->child[*(word + 1)], word + 1);
-		free(node);
-		node = NULL;
-	}
-}
-
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-jtrie_removeall(const struct Jtrie_node *JSTR_RST const root,
-		const char *JSTR_RST const word) JSTR_NOEXCEPT
+jtrie_removeprefix(struct Jtrie_node *JSTR_RST const root,
+		   const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
-	private_jtrie_removeall_recur(root->child[*w], w);
+	if (jstr_unlikely(!*w))
+		return;
+	struct Jtrie_node *curr = root->child[*w];
+	if (jstr_unlikely(!curr))
+		return;
+	while (*++w && curr->child[*w]) {
+		curr->EOW = 0;
+		curr = curr->child[*w];
+	}
+	curr->EOW = 0;
 }
 
 /*
