@@ -12,7 +12,7 @@ typedef enum {
 } Jtrie_errcode;
 
 struct Jtrie_node {
-	struct Jtrie_node *children[JTRIE_ASCII_SIZE];
+	struct Jtrie_node *child[JTRIE_ASCII_SIZE];
 	unsigned char EOW;
 };
 
@@ -31,7 +31,7 @@ jtrie_destruct(struct Jtrie_node *JSTR_RST const node) JSTR_NOEXCEPT
 	if (jstr_unlikely(!node))
 		return;
 	for (int i = 0; i < JTRIE_ASCII_SIZE; ++i)
-		jtrie_destruct(node->children[i]);
+		jtrie_destruct(node->child[i]);
 	free(node);
 }
 
@@ -44,12 +44,12 @@ jtrie_insert(struct Jtrie_node *JSTR_RST const root,
 	struct Jtrie_node *curr = root;
 	const unsigned char *w = (unsigned char *)word;
 	for (; *w; ++w) {
-		if (!curr->children[*w]) {
-			curr->children[*w] = jtrie_create();
-			if (jstr_unlikely(!curr->children[*w]))
+		if (!curr->child[*w]) {
+			curr->child[*w] = jtrie_create();
+			if (jstr_unlikely(!curr->child[*w]))
 				return JTRIE_RET_MALLOC_ERROR;
 		}
-		curr = curr->children[*w];
+		curr = curr->child[*w];
 	}
 	curr->EOW = 1;
 	return JTRIE_RET_NOERROR;
@@ -63,8 +63,8 @@ jtrie_remove(struct Jtrie_node *JSTR_RST const root,
 {
 	struct Jtrie_node *curr = root;
 	const unsigned char *w = (unsigned char *)word;
-	while (curr->children[*w])
-		curr = curr->children[*w];
+	while (curr->child[*w])
+		curr = curr->child[*w];
 	curr->EOW = 0;
 }
 
@@ -82,9 +82,9 @@ jtrie_match(const struct Jtrie_node *JSTR_RST const root,
 	const struct Jtrie_node *curr = root;
 	const unsigned char *w = (unsigned char *)word;
 	for (; *w; ++w) {
-		if (!curr->children[*w])
+		if (!curr->child[*w])
 			return 0;
-		curr = curr->children[*w];
+		curr = curr->child[*w];
 	}
 	return curr->EOW;
 }
@@ -103,9 +103,9 @@ jtrie_starts_with(const struct Jtrie_node *JSTR_RST const root,
 	const struct Jtrie_node *curr = root;
 	const unsigned char *w = (unsigned char *)word;
 	for (; *w; ++w) {
-		if (!curr->children[*w])
+		if (!curr->child[*w])
 			return NULL;
-		curr = curr->children[*w];
+		curr = curr->child[*w];
 	}
 	return (struct Jtrie_node *)curr;
 }
