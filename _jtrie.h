@@ -42,8 +42,9 @@ jtrie_insert(struct Jtrie_node *JSTR_RST const root,
 	     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	struct Jtrie_node *curr = root;
-	const unsigned char *w = (unsigned char *)word;
-	for (; *w; ++w) {
+	for (const unsigned char *w = (unsigned char *)word;
+	     *w;
+	     ++w) {
 		if (!curr->child[*w]) {
 			curr->child[*w] = jtrie_create();
 			if (jstr_unlikely(!curr->child[*w]))
@@ -62,8 +63,9 @@ jtrie_remove(struct Jtrie_node *JSTR_RST const root,
 	     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	struct Jtrie_node *curr = root;
-	const unsigned char *w = (unsigned char *)word;
-	while (curr->child[*w])
+	for (const unsigned char *w = (unsigned char *)word;
+	     curr->child[*w];
+	     ++w)
 		curr = curr->child[*w];
 	curr->EOW = 0;
 }
@@ -80,8 +82,9 @@ jtrie_match(const struct Jtrie_node *JSTR_RST const root,
 	    const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const struct Jtrie_node *curr = root;
-	const unsigned char *w = (unsigned char *)word;
-	for (; *w; ++w) {
+	for (const unsigned char *w = (unsigned char *)word;
+	     *w;
+	     ++w) {
 		if (!curr->child[*w])
 			return 0;
 		curr = curr->child[*w];
@@ -101,8 +104,9 @@ jtrie_starts_with(const struct Jtrie_node *JSTR_RST const root,
 		  const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const struct Jtrie_node *curr = root;
-	const unsigned char *w = (unsigned char *)word;
-	for (; *w; ++w) {
+	for (const unsigned char *w = (unsigned char *)word;
+	     *w;
+	     ++w) {
 		if (!curr->child[*w])
 			return NULL;
 		curr = curr->child[*w];
