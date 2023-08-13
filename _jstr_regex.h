@@ -114,7 +114,7 @@ JSTR_MAYBE_UNUSED
 static void jstr_reg_error(const int _reg_errcode,
 			   const regex_t *_preg) JSTR_NOEXCEPT
 {
-	char buf[32];
+	char buf[64];
 	regerror(_reg_errcode, _preg, buf, 32);
 	fputs(buf, stderr);
 	fputc('\n', stderr);
