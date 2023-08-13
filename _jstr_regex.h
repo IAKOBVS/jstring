@@ -448,14 +448,14 @@ jstr_reg_rmall_mem(char *JSTR_RST const s,
 			continue;
 		}
 		p = p + rm.rm_so;
-		if (likely(dst != old))
+		if (jstr_likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);
 		old += ptnlen;
 		p += ptnlen + 1;
 	}
-	if (likely(dst != old))
+	if (jstr_likely(dst != old))
 		memmove(dst, old, end - old + 1);
 	*sz = (char *)dst + (end - old) - s;
 	return err;
@@ -539,7 +539,7 @@ jstr_reg_rplcall_mem(char **JSTR_RST const s,
 			continue;
 		}
 		if (_rplclen <= _ptnlen) {
-			if (likely(dst != old))
+			if (jstr_likely(dst != old))
 				memmove(dst, old, p - old);
 			dst += (p - old);
 			old += (p - old);

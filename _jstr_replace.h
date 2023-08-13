@@ -120,7 +120,7 @@ private_jstr_rplcat_mem_realloc(char **JSTR_RST const s,
 				const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
-		if (likely(_rplclen != _searclen))
+		if (jstr_likely(_rplclen != _searclen))
 _MOVE:
 			memmove(*s + at + _rplclen,
 				*s + at + _searclen,
@@ -147,7 +147,7 @@ private_jstr_rplcat_mem_malloc(char **JSTR_RST const s,
 			       const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
-		if (likely(_rplclen != _searclen))
+		if (jstr_likely(_rplclen != _searclen))
 			memmove(*s + at + _rplclen,
 				*s + at + _searclen,
 				*sz - (at + _searclen) + 1);
@@ -228,7 +228,7 @@ jstr_rplcat_mem(char **JSTR_RST const s,
 		const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (_rplclen <= _searclen || *cap > *sz + _rplclen - _searclen) {
-		if (likely(_rplclen != _searclen))
+		if (jstr_likely(_rplclen != _searclen))
 #if JSTR_HAVE_REALLOC_MREMAP
 _MOVE:
 #endif
@@ -553,7 +553,7 @@ jstr_rmallc_mem_p(char *JSTR_RST const s,
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
 	while ((p = (unsigned char *)memchr(p, c, end - p))) {
-		if (likely(dst != old))
+		if (jstr_likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);
@@ -582,7 +582,7 @@ jstr_rmallc_p(char *JSTR_RST const s,
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
 	while (*(p = (unsigned char *)strchrnul((char *)p, c))) {
-		if (likely(dst != old))
+		if (jstr_likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);
@@ -616,7 +616,7 @@ jstr_rmnc_mem_p(char *JSTR_RST const s,
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
 	while (n-- && (p = (unsigned char *)memchr(p, c, end - p))) {
-		if (likely(dst != old))
+		if (jstr_likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);
@@ -646,7 +646,7 @@ jstr_rmnc_p(char *JSTR_RST const s,
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
 	while (n-- && *(p = (unsigned char *)strchrnul((char *)p, c))) {
-		if (likely(dst != old))
+		if (jstr_likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);
@@ -677,7 +677,7 @@ jstr_stripspn_p(char *JSTR_RST const s,
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
 	while (*(p = p + strcspn((char *)p, _rjct))) {
-		if (likely(dst != old))
+		if (jstr_likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);
@@ -1002,7 +1002,7 @@ jstr_rmn_mem_p(char *JSTR_RST const s,
 	jstr_memmem_table t;
 	jstr_memmem_comp_mem(&t, _searc, _searclen);
 	while (n-- && (p = (unsigned char *)jstr_memmem_exec(&t, (char *)p, end - p))) {
-		if (likely(dst != old))
+		if (jstr_likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);
@@ -1037,7 +1037,7 @@ jstr_rmall_mem_p(char *JSTR_RST const s,
 	jstr_memmem_table t;
 	jstr_memmem_comp_mem(&t, _searc, _searclen);
 	while ((p = (unsigned char *)jstr_memmem_exec(&t, (char *)p, end - p))) {
-		if (likely(dst != old))
+		if (jstr_likely(dst != old))
 			memmove(dst, old, p - old);
 		dst += (p - old);
 		old += (p - old);

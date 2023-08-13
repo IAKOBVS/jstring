@@ -2,6 +2,7 @@
 #define JSTR_DEF_H
 
 #include "_jstr_macros.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #define JTRIE_ASCII_SIZE 256
@@ -26,7 +27,7 @@ jtrie_create(void) JSTR_NOEXCEPT
 
 JSTR_MAYBE_UNUSED
 static void
-jtrie_destruct(struct Jtrie_node *JSTR_RST const node) JSTR_NOEXCEPT
+jtrie_destruct(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(!node))
 		return;
@@ -37,20 +38,21 @@ jtrie_destruct(struct Jtrie_node *JSTR_RST const node) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
 static Jtrie_errcode
 jtrie_insert(struct Jtrie_node *JSTR_RST const root,
 	     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
+	const unsigned char *w = (unsigned char *)word;
+	if (jstr_unlikely(!*w))
+		return JTRIE_RET_NOERROR;
 	struct Jtrie_node *curr = root;
-	for (const unsigned char *w = (unsigned char *)word;
-	     *w;
-	     ++w) {
-		if (!curr->child[*w]) {
+	for (; *w; ++w) {
+		if (!curr->child[*w])
 			curr->child[*w] = jtrie_create();
-			if (jstr_unlikely(!curr->child[*w]))
-				return JTRIE_RET_MALLOC_ERROR;
-		}
 		curr = curr->child[*w];
+		if (jstr_unlikely(!curr))
+			return JTRIE_RET_MALLOC_ERROR;
 	}
 	curr->EOW = 1;
 	return JTRIE_RET_NOERROR;
@@ -62,11 +64,36 @@ static void
 jtrie_remove(struct Jtrie_node *JSTR_RST const root,
 	     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
-	struct Jtrie_node *curr = root;
-	for (const unsigned char *w = (unsigned char *)word;
-	     *w && curr->child[*w];)
-		curr = curr->child[*w++];
+	const unsigned char *w = (unsigned char *)word;
+	if (jstr_unlikely(!*w))
+		return;
+	struct Jtrie_node *curr = root->child[*w];
+	if (jstr_unlikely(!curr))
+		return;
+	while (*++w && curr->child[*w])
+		curr = curr->child[*w];
 	curr->EOW = 0;
+}
+
+static void
+private_jtrie_removeall_recur(struct Jtrie_node *JSTR_RST node,
+			      const unsigned char *JSTR_RST const word) JSTR_NOEXCEPT
+{
+	if (*word && node) {
+		private_jtrie_removeall_recur(node->child[*(word + 1)], word + 1);
+		free(node);
+		node = NULL;
+	}
+}
+
+JSTR_NONNULL_ALL
+JSTR_INLINE
+static void
+jtrie_removeall(const struct Jtrie_node *JSTR_RST const root,
+		const char *JSTR_RST const word) JSTR_NOEXCEPT
+{
+	const unsigned char *w = (unsigned char *)word;
+	private_jtrie_removeall_recur(root->child[*w], w);
 }
 
 /*
@@ -76,18 +103,19 @@ jtrie_remove(struct Jtrie_node *JSTR_RST const root,
 */
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_WARN_UNUSED
 static int
 jtrie_match(const struct Jtrie_node *JSTR_RST const root,
 	    const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
-	const struct Jtrie_node *curr = root;
-	for (const unsigned char *w = (unsigned char *)word;
-	     *w;
-	     ++w) {
-		if (!curr->child[*w])
-			return 0;
+	const unsigned char *w = (unsigned char *)word;
+	if (jstr_unlikely(!w))
+		return 0;
+	const struct Jtrie_node *curr = root->child[*w];
+	if (jstr_unlikely(!curr))
+		return 0;
+	while (*++w && curr->child[*w])
 		curr = curr->child[*w];
-	}
 	return curr->EOW;
 }
 
@@ -98,18 +126,19 @@ jtrie_match(const struct Jtrie_node *JSTR_RST const root,
 */
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_WARN_UNUSED
 static struct Jtrie_node *
 jtrie_starts_with(const struct Jtrie_node *JSTR_RST const root,
 		  const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
-	const struct Jtrie_node *curr = root;
-	for (const unsigned char *w = (unsigned char *)word;
-	     *w;
-	     ++w) {
-		if (!curr->child[*w])
-			return NULL;
+	const unsigned char *w = (unsigned char *)word;
+	if (jstr_unlikely(!w))
+		return NULL;
+	const struct Jtrie_node *curr = root->child[*w];
+	if (jstr_unlikely(!curr))
+		return NULL;
+	while (*++w && curr->child[*w])
 		curr = curr->child[*w];
-	}
 	return (struct Jtrie_node *)curr;
 }
 
