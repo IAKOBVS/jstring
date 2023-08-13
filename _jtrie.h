@@ -30,7 +30,7 @@ jtrie_destruct(struct Jtrie_node *JSTR_RST const node) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(!node))
 		return;
-	for (int i = 0; i < JTRIE_ASCII_SIZE; ++i)
+	for (int i = 0; i != JTRIE_ASCII_SIZE - 1; ++i)
 		jtrie_destruct(node->child[i]);
 	free(node);
 }
