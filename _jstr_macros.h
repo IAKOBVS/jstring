@@ -307,10 +307,10 @@ JSTR_NEXT_POW2_64(T x)
 
 #if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
 #	define likely(x)   __builtin_expect(!!(x), 1)
-#	define unlikely(x) __builtin_expect(!!(x), 0)
+#	define jstr_unlikely(x) __builtin_expect(!!(x), 0)
 #else
 #	define likely(x)   (x)
-#	define unlikely(x) (x)
+#	define jstr_unlikely(x) (x)
 #endif /* __has_builtin(__builtin_expect) */
 
 #if defined(__GNUC__) || defined(__clang__)

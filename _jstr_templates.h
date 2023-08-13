@@ -31,7 +31,7 @@ extern "C" {
 
 #define JSTR_MALLOC_ERR(p, malloc_fail) \
 	do {                            \
-		if (unlikely(!(p))) {   \
+		if (jstr_unlikely(!(p))) {   \
 			JSTR_ERR;       \
 			malloc_fail;    \
 		}                       \

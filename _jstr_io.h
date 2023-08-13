@@ -31,9 +31,9 @@ jstr_alloc_file(char **JSTR_RST const s,
 		struct stat *JSTR_RST const _st)
 {
 	FILE *JSTR_RST _fp = fopen(_fname, "r");
-	if (unlikely(!_fp))
+	if (jstr_unlikely(!_fp))
 		goto _ERR;
-	if (unlikely(stat(_fname, _st)))
+	if (jstr_unlikely(stat(_fname, _st)))
 		goto _ERR_CLOSE;
 	*cap = _st->st_size * 2;
 	*s = (char *)malloc(*cap);

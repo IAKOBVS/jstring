@@ -53,10 +53,10 @@ jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
 		JSTR_ASSERT_IS_SIZE(_nelen);                                                                                          \
 		(_jstr_memmem_table)->ne = (const unsigned char *)_ne;                                                                \
 		(_jstr_memmem_table)->nelen = _nelen;                                                                                 \
-		if (unlikely(_nelen < 5)) {                                                                                           \
+		if (jstr_unlikely(_nelen < 5)) {                                                                                           \
 			(_jstr_memmem_table)->big_table = NULL;                                                                       \
 			(_jstr_memmem_table)->small_table = NULL;                                                                     \
-		} else if (unlikely(_nelen > 256)) {                                                                                  \
+		} else if (jstr_unlikely(_nelen > 256)) {                                                                                  \
 			(_jstr_memmem_table)->small_table = NULL;                                                                     \
 			(_jstr_memmem_table)->big_table = (size_t *)alloca(256 * sizeof(size_t));                                     \
 			memset((_jstr_memmem_table)->big_table, 0, 256 * sizeof(size_t));                                             \
@@ -166,7 +166,7 @@ jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const ptable,
 			h += shft1;                                                           \
 		} while (h <= end);                                                           \
 	} while (0)
-	if (unlikely(hslen < ptable->nelen))
+	if (jstr_unlikely(hslen < ptable->nelen))
 		return NULL;
 	switch (ptable->nelen) {
 	case 0: return (void *)hs;
@@ -175,7 +175,7 @@ jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const ptable,
 	case 3: return private_jstr_pre_memmem3((unsigned char *)hs, (unsigned char *)ptable->ne, hslen);
 	case 4: return private_jstr_pre_memmem4((unsigned char *)hs, (unsigned char *)ptable->ne, hslen);
 	}
-	if (unlikely(ptable->nelen > 256))
+	if (jstr_unlikely(ptable->nelen > 256))
 		PRIVATE_JSTR_MEMMEM_EXEC(ptable->big_table);
 	else
 		PRIVATE_JSTR_MEMMEM_EXEC(ptable->small_table);

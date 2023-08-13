@@ -91,7 +91,7 @@ jstr_memrchr(const void *JSTR_RST const s,
 #if JSTR_HAVE_MEMRCHR
 	return (void *)JSTR_GLOBALIZE(memrchr(s, c, n));
 #else
-	if (unlikely(!*(char *)s))
+	if (jstr_unlikely(!*(char *)s))
 		return NULL;
 	const unsigned char *const start = (unsigned char *)s;
 	const unsigned char *end = start + n - 1;
@@ -133,7 +133,7 @@ jstr_strdup(const char *JSTR_RST const s)
 #else
 	const size_t len = strlen(s) + 1;
 	void *p = malloc(len);
-	if (unlikely(!p))
+	if (jstr_unlikely(!p))
 		return NULL;
 	return (char *)memcpy(p, s, len);
 #endif /* JSTR_HAVE_STRCHRNUL */
@@ -315,7 +315,7 @@ private_jstr_memrmem(const void *JSTR_RST const _hs,
 		} while (h >= start);                                            \
 		return NULL;                                                     \
 	} while (0)
-	if (unlikely(_hslen > 256))
+	if (jstr_unlikely(_hslen > 256))
 		PRIVATE_JSTR_MEMMEMR(size_t, size_t);
 	PRIVATE_JSTR_MEMMEMR(uint8_t, int);
 }
@@ -337,7 +337,7 @@ jstr_memrmem_constexpr(const void *JSTR_RST const _hs,
 		       const void *JSTR_RST const _ne,
 		       const size_t _nelen) JSTR_NOEXCEPT
 {
-	if (unlikely(_hslen < _nelen))
+	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
 	case 0:
@@ -475,7 +475,7 @@ private_jstr_memcasemem3(const char *JSTR_RST const _hs,
 		} while (h <= end);                                                                \
 		return NULL;                                                                       \
 	} while (0)
-	if (unlikely(_nelen > 256))
+	if (jstr_unlikely(_nelen > 256))
 		PRIVATE_JSTR_STRSTRCASE(size_t, size_t);
 	PRIVATE_JSTR_STRSTRCASE(uint8_t, int);
 }
@@ -557,7 +557,7 @@ jstr_memcasemem_constexpr(const char *JSTR_RST const _hs,
 #if JSTR_HAVE_STRCASESTR
 	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #else
-	if (unlikely(_hslen < _nelen))
+	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
 	case 0: return (char *)_hs;

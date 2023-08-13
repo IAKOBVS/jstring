@@ -195,7 +195,7 @@ _MOVE:
 		memcpy(*s + at, _rplc, _rplclen);
 	} else {
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (unlikely(*cap > JSTR_MIN_MMAP)) {
+		if (jstr_unlikely(*cap > JSTR_MIN_MMAP)) {
 			JSTR_REALLOC(*s, *cap, *sz + _rplclen, return NULL);
 			goto _MOVE;
 		}
@@ -239,7 +239,7 @@ _MOVE:
 
 	} else {
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (unlikely(*cap > JSTR_MIN_MMAP)) {
+		if (jstr_unlikely(*cap > JSTR_MIN_MMAP)) {
 			JSTR_REALLOC(*s, *cap, *sz + _rplclen - _searclen, return NULL);
 			goto _MOVE;
 		}
@@ -345,7 +345,7 @@ jstr_slipaftallc_mem(char **JSTR_RST const s,
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
 		off = p - *s;
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (unlikely(is_mmap))
+		if (jstr_unlikely(is_mmap))
 			private_jstr_slip_mem_realloc(s, sz, cap, off, _src, _srclen);
 		else
 			private_jstr_slip_mem_malloc(s, sz, cap, off, _src, _srclen);
@@ -474,7 +474,7 @@ jstr_slipaftall_mem(char **JSTR_RST const s,
 		while ((p = (char *)jstr_memmem_exec(&t, *s + off, *sz - off))) {
 			off = p - *s;
 #if JSTR_HAVE_REALLOC_MREMAP
-			if (unlikely(is_mmap))
+			if (jstr_unlikely(is_mmap))
 				private_jstr_slip_mem_realloc(s, sz, cap, p - *s + _searclen, _src, _srclen);
 			else
 				private_jstr_slip_mem_malloc(s, sz, cap, p - *s + _searclen, _src, _srclen);
@@ -503,7 +503,7 @@ jstr_rmc_mem_p(char *JSTR_RST s,
 {
 	const char *const sstart = s;
 	s = (char *)memchr(s, c, sz);
-	if (unlikely(!s))
+	if (jstr_unlikely(!s))
 		return s + sz;
 	memmove(s, s + 1, sz - (s - sstart) + 1);
 	return s + sz - (s - sstart);
@@ -524,7 +524,7 @@ jstr_rmc_p(char *JSTR_RST s,
 {
 #if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, c);
-	if (unlikely(!*s))
+	if (jstr_unlikely(!*s))
 		return s;
 	size_t len = strlen(s);
 	memmove(s, s + 1, len);
@@ -703,10 +703,10 @@ jstr_rm_mem_p(char *JSTR_RST const s,
 	      const size_t sz,
 	      const size_t _searclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen == 0))
+	if (jstr_unlikely(_searclen == 0))
 		return s + sz;
 	char *const p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, _searc, _searclen);
-	if (unlikely(!p))
+	if (jstr_unlikely(!p))
 		return s + sz;
 	memmove(p, p + _searclen, (s + sz) - p);
 	return s + sz - _searclen;
@@ -724,7 +724,7 @@ jstr_rplcc_mem(char *JSTR_RST s,
 	       const size_t sz) JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, _searc, sz);
-	if (unlikely(!s))
+	if (jstr_unlikely(!s))
 		return;
 	*s = _rplc;
 }
@@ -740,7 +740,7 @@ jstr_rplcc(char *JSTR_RST s,
 	   const int _rplc) JSTR_NOEXCEPT
 {
 	s = strchr(s, _searc);
-	if (unlikely(!s))
+	if (jstr_unlikely(!s))
 		return;
 	*s = _rplc;
 }
@@ -827,16 +827,16 @@ jstr_rplc_mem_p_f(char *JSTR_RST const s,
 	case 0:
 		return jstr_rm_mem_p(s, _searc, sz, _searclen);
 	case 1:
-		if (unlikely(_searclen == 1)) {
+		if (jstr_unlikely(_searclen == 1)) {
 			jstr_rplcc_mem(s, *_searc, *_rplc, sz);
 			return s + sz;
 		}
 		/* FALLTHROUGH */
 	default: {
-		if (unlikely(_searclen == 0))
+		if (jstr_unlikely(_searclen == 0))
 			return s + sz;
 		char *p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, _searc, _searclen);
-		if (unlikely(!p))
+		if (jstr_unlikely(!p))
 			return s + sz;
 		memmove(p + _rplclen,
 			p + _searclen,
@@ -866,16 +866,16 @@ jstr_rplc_mem(char **JSTR_RST const s,
 		*sz = jstr_rm_mem_p(*s, _searc, *sz, _searclen) - *s;
 		return;
 	case 1:
-		if (unlikely(_searclen == 1)) {
+		if (jstr_unlikely(_searclen == 1)) {
 			jstr_rplcc_mem(*s, *_searc, *_rplc, *sz);
 			return;
 		}
 		/* FALLTHROUGH */
 	default: {
-		if (unlikely(_searclen == 0))
+		if (jstr_unlikely(_searclen == 0))
 			return;
 		char *p = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, _searc, _searclen);
-		if (unlikely(!p))
+		if (jstr_unlikely(!p))
 			return;
 		jstr_slip_mem(s, sz, cap, p - *s, _rplc, _rplclen);
 	}
@@ -896,10 +896,10 @@ jstr_rplclast_mem(char **JSTR_RST const s,
 		  const size_t _searclen,
 		  const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen == 0))
+	if (jstr_unlikely(_searclen == 0))
 		return;
 	char *p = (char *)jstr_memrmem(*s, *sz, _searc, _searclen);
-	if (unlikely(!p))
+	if (jstr_unlikely(!p))
 		return;
 	jstr_rplcat_mem(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 }
@@ -919,7 +919,7 @@ jstr_rplcn_mem(char **JSTR_RST const s,
 	       const size_t _searclen,
 	       const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen == 0))
+	if (jstr_unlikely(_searclen == 0))
 		return;
 	jstr_memmem_table t;
 	jstr_memmem_comp_mem(&t, _searc, _searclen);
@@ -929,14 +929,14 @@ jstr_rplcn_mem(char **JSTR_RST const s,
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while (n-- && (p = (char *)jstr_memmem_exec(&t, p, (*s + *sz) - p))) {
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (unlikely(is_mmap))
+		if (jstr_unlikely(is_mmap))
 			p = private_jstr_rplcat_mem_realloc(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 		else
 			p = private_jstr_rplcat_mem_malloc(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 #else
 		p = jstr_rplcat_mem(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
-		if (unlikely(!p))
+		if (jstr_unlikely(!p))
 			return;
 	}
 }
@@ -955,7 +955,7 @@ jstr_rplcall_mem(char **JSTR_RST const s,
 		 const size_t _searclen,
 		 const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen == 0))
+	if (jstr_unlikely(_searclen == 0))
 		return;
 	jstr_memmem_table t;
 	jstr_memmem_comp_mem(&t, _searc, _searclen);
@@ -965,14 +965,14 @@ jstr_rplcall_mem(char **JSTR_RST const s,
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((p = (char *)jstr_memmem_exec(&t, p, (*s + *sz) - p))) {
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (unlikely(is_mmap))
+		if (jstr_unlikely(is_mmap))
 			p = private_jstr_rplcat_mem_realloc(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 		else
 			p = private_jstr_rplcat_mem_malloc(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 #else
 		p = jstr_rplcat_mem(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
-		if (unlikely(!p))
+		if (jstr_unlikely(!p))
 			return;
 	}
 }
@@ -993,7 +993,7 @@ jstr_rmn_mem_p(char *JSTR_RST const s,
 	       size_t sz,
 	       const size_t _searclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen == 0))
+	if (jstr_unlikely(_searclen == 0))
 		return s + sz;
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *old = dst;
@@ -1028,7 +1028,7 @@ jstr_rmall_mem_p(char *JSTR_RST const s,
 		 size_t sz,
 		 const size_t _searclen) JSTR_NOEXCEPT
 {
-	if (unlikely(_searclen == 0))
+	if (jstr_unlikely(_searclen == 0))
 		return s + sz;
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *old = dst;

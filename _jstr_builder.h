@@ -22,7 +22,7 @@ extern "C" {
 #endif /* __cpluslus */
 
 #define PRIVATE_JSTR_MIN_ALLOC(top_cap)                             \
-	((unlikely(top_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER)) \
+	((jstr_unlikely(top_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER)) \
 	 ? (JSTR_MIN_CAP)                                           \
 	 : (top_cap * JSTR_ALLOC_MULTIPLIER))
 
@@ -47,14 +47,14 @@ JSTR_INLINE
 static void
 jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 {
-	if (unlikely(!p))
+	if (jstr_unlikely(!p))
 		JSTR_ERR_EXIT();
 }
 
 typedef struct Jstring {
+	char *data;
 	size_t size;
 	size_t cap;
-	char *data;
 
 #ifdef __cplusplus
 
@@ -96,7 +96,7 @@ typedef struct Jstring {
 	void
 	err(void) JSTR_NOEXCEPT
 	{
-		if (unlikely(!this->data))
+		if (jstr_unlikely(!this->data))
 			JSTR_ERR_EXIT();
 	}
 
@@ -172,7 +172,7 @@ jstr_allocexact_append_mem(char **JSTR_RST const s,
 			   const size_t _srclen) JSTR_NOEXCEPT
 {
 	jstr_allocexact(s, sz, cap, _srclen + 1);
-	if (unlikely(!*s))
+	if (jstr_unlikely(!*s))
 		return;
 	*sz = _srclen;
 	memcpy(*s, _src, _srclen + 1);
@@ -202,7 +202,7 @@ jstr_allocmore_append_mem(char **JSTR_RST const s,
 			  const size_t _srclen) JSTR_NOEXCEPT
 {
 	jstr_alloc(s, sz, cap, _srclen * JSTR_GROWTH_MULTIPLIER * 2);
-	if (unlikely(!*s))
+	if (jstr_unlikely(!*s))
 		return;
 	*sz = _srclen;
 	memcpy(*s, _src, _srclen + 1);
