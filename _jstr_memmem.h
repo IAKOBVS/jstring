@@ -38,12 +38,12 @@ void jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
 			  const char *JSTR_RST _ne,
 			  const size_t _nelen);
 
-#if defined(JSTR_HAS_GENERIC)
+#if defined(JSTR_HAVE_GENERIC)
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr) \
 		JSTR_ASSERT(_Generic((expr), jstr_memmem_table : 1), "Passing non-jstr_memmem_table as jstr_memmem_table argument!")
 #else
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr)
-#endif /* JSTR_HAS_GENERIC */
+#endif /* JSTR_HAVE_GENERIC */
 
 #define jstr_memmem_comp_mem(_jstr_memmem_table, _ne, _nelen)                                                                         \
 	do {                                                                                                                          \

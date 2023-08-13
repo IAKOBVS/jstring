@@ -50,6 +50,10 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 		JSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 
+#if JSTR_HAVE_REALLOC_MREMAP
+#	define JSTR_IS_MMAP(cap) (((cap) > JSTR_MIN_MMAP) ? 1 : 0)
+#endif /* JSTR_HAVE_REALLOC_MREMAP */
+
 #ifdef __cplusplus
 
 namespace jstr {
@@ -97,7 +101,7 @@ static void cat_assign(size_t *sz,
 		       char **dst,
 		       const char *JSTR_RST src) JSTR_NOEXCEPT
 {
-#	ifdef JSTR_HAS_STPCPY
+#if JSTR_HAVE_STPCPY
 	char *const _new = stpcpy(*dst, src);
 	*sz += _new - *dst;
 	*dst = _new;

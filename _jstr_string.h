@@ -21,11 +21,11 @@ extern "C" {
 extern "C" {
 #endif /* JSTR_NAMESPACE */
 
-#ifdef JSTR_HAS_MEMMEM
+#if JSTR_HAVE_MEMMEM
 #	define PRIVATE_JSTR_MEMMEM(_hs, hlen, _ne, nlen) memmem(_hs, hlen, _ne, nlen)
 #else
 #	define PRIVATE_JSTR_MEMMEM(_hs, hlen, _ne, nlen) strstr(_hs, _ne)
-#endif /* JSTR_HAS_MEMMEM */
+#endif /* JSTR_HAVE_MEMMEM */
 
 #ifdef __cplusplus
 #	define JSTR_GLOBALIZE(func) ::func
@@ -45,11 +45,11 @@ static void *jstr_mempcpy(char *JSTR_RST const _dst,
 			  const char *JSTR_RST const _src,
 			  const size_t n) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_MEMPCPY
+#if JSTR_HAVE_MEMPCPY
 	return JSTR_GLOBALIZE(mempcpy(_dst, _src, n));
 #else
 	return (char *)memcpy(_dst, _src, n) + n;
-#endif /* !JSTR_HAS_STPCPY */
+#endif /* !JSTR_HAVE_STPCPY */
 }
 
 /*
@@ -63,12 +63,12 @@ JSTR_RETURNS_NONNULL
 static char *jstr_stpcpy(char *JSTR_RST const _dst,
 			 const char *JSTR_RST const _src) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_STPCPY
+#if JSTR_HAVE_STPCPY
 	return JSTR_GLOBALIZE(stpcpy(_dst, _src));
 #else
 	const size_t slen = strlen(_src);
 	return memcpy(_dst, _src, slen + 1) + slen;
-#endif /* !JSTR_HAS_STPCPY */
+#endif /* !JSTR_HAVE_STPCPY */
 }
 
 /*
@@ -85,7 +85,7 @@ static void *jstr_memrchr(const void *JSTR_RST const s,
 			  const int c,
 			  size_t n) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_MEMRCHR
+#if JSTR_HAVE_MEMRCHR
 	return (void *)JSTR_GLOBALIZE(memrchr(s, c, n));
 #else
 	if (unlikely(!*(char *)s))
@@ -97,7 +97,7 @@ static void *jstr_memrchr(const void *JSTR_RST const s,
 			return (void *)end;
 	while (--end <= start);
 	return NULL;
-#endif /* !JSTR_HAS_MEMRCHR */
+#endif /* !JSTR_HAVE_MEMRCHR */
 }
 
 JSTR_NONNULL_ALL
@@ -107,7 +107,7 @@ JSTR_RETURNS_NONNULL
 static char *jstr_strchrnul(const char *JSTR_RST const s,
 			    const int c)
 {
-#ifdef JSTR_HAS_STRCHRNUL
+#if JSTR_HAVE_STRCHRNUL
 	return (char *)JSTR_GLOBALIZE(strchrnul(s, c));
 #else
 	const size_t n = strlen(s);
@@ -115,7 +115,7 @@ static char *jstr_strchrnul(const char *JSTR_RST const s,
 	if (p)
 		return p;
 	return (void *)(s + n);
-#endif /* JSTR_HAS_STRCHRNUL */
+#endif /* JSTR_HAVE_STRCHRNUL */
 }
 
 JSTR_NONNULL_ALL
@@ -123,7 +123,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static char *jstr_strdup(const char *JSTR_RST const s)
 {
-#ifdef JSTR_HAS_STRCHRNUL
+#if JSTR_HAVE_STRCHRNUL
 	return (char *)JSTR_GLOBALIZE(strdup(s));
 #else
 	const size_t len = strlen(s) + 1;
@@ -131,7 +131,7 @@ static char *jstr_strdup(const char *JSTR_RST const s)
 	if (unlikely(!p))
 		return NULL;
 	return (char *)memcpy(p, s, len);
-#endif /* JSTR_HAS_STRCHRNUL */
+#endif /* JSTR_HAVE_STRCHRNUL */
 }
 
 /* Copy no more than N bytes of SRC to DEST, stopping when C is found.
@@ -145,7 +145,7 @@ static void *jstr_memccpy(void *JSTR_RST _dst,
 			  int c,
 			  size_t n) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_MEMCCPY
+#if JSTR_HAVE_MEMCCPY
 	return memccpy(_dst, _src, c, n);
 #else
 	void *p = memchr(_src, c, n);
@@ -153,7 +153,7 @@ static void *jstr_memccpy(void *JSTR_RST _dst,
 		return jstr_mempcpy(_dst, _src, p - _src + 1);
 	memcpy(_dst, _src, n);
 	return NULL;
-#endif /* JSTR_HAS_MEMCPY */
+#endif /* JSTR_HAVE_MEMCPY */
 }
 
 /*
@@ -185,7 +185,7 @@ static int jstr_strncasecmp(const char *JSTR_RST const s1,
 			    const char *JSTR_RST const s2,
 			    size_t n) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_STRNCASECMP
+#if JSTR_HAVE_STRNCASECMP
 	return JSTR_GLOBALIZE(strncasecmp(s1, s2, n));
 #else
 	const unsigned char *p1 = (unsigned char *)s1;
@@ -217,7 +217,7 @@ static int jstr_strncasecmp(const char *JSTR_RST const s1,
 		}
 	}
 	return 0;
-#endif /* JSTR_HAS_STRNCASECMP */
+#endif /* JSTR_HAVE_STRNCASECMP */
 }
 
 /*
@@ -233,7 +233,7 @@ JSTR_WARN_UNUSED
 static int jstr_strcasecmp(const char *JSTR_RST s1,
 			   const char *JSTR_RST s2) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_STRCASECMP
+#if JSTR_HAVE_STRCASECMP
 	return JSTR_GLOBALIZE(strcasecmp(s1, s2));
 #else
 	for (char c;; ++s1, ++s2) {
@@ -528,16 +528,16 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-#ifdef JSTR_HAS_STRCASESTR
+#if JSTR_HAVE_STRCASESTR
 JSTR_INLINE
 JSTR_DEPRECATED("strcasestr is available! _hslen and _nelen are wasted.", strcasestr)
-#endif /* JSTR_HAS_STRCASESTR */
+#endif /* JSTR_HAVE_STRCASESTR */
 static char *jstr_memcasemem_constexpr(const char *JSTR_RST const _hs,
 				       const size_t _hslen,
 				       const char *JSTR_RST const _ne,
 				       const size_t _nelen) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_STRCASESTR
+#if JSTR_HAVE_STRCASESTR
 	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #else
 	if (unlikely(_hslen < _nelen))
@@ -579,10 +579,10 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-#ifdef JSTR_HAS_STRCASESTR
+#if JSTR_HAVE_STRCASESTR
 JSTR_DEPRECATED("strcasestr is available! _hslen and _nelen are wasted.", strcasestr)
 JSTR_INLINE
-#endif /* JSTR_HAS_STRCASESTR */
+#endif /* JSTR_HAVE_STRCASESTR */
 static char *jstr_memcasemem(const char *JSTR_RST const _hs,
 			     const size_t _hslen,
 			     const char *JSTR_RST const _ne,
@@ -614,11 +614,11 @@ JSTR_INLINE
 static char *jstr_strcasestr_constexpr(const char *JSTR_RST const _hs,
 				       const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_STRCASESTR
+#if JSTR_HAVE_STRCASESTR
 	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #else
 	return jstr_memcasemem_constexpr(_hs, strlen(_hs), _ne, strlen(_ne));
-#endif /* JSTR_HAS_STRCASESTR */
+#endif /* JSTR_HAVE_STRCASESTR */
 }
 
 /*
@@ -636,11 +636,11 @@ JSTR_INLINE
 static char *jstr_strcasestr(const char *JSTR_RST _hs,
 			     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
-#ifdef JSTR_HAS_STRCASESTR
+#if JSTR_HAVE_STRCASESTR
 	return (char *)JSTR_GLOBALIZE(strcasestr(_hs, _ne));
 #else
 	return jstr_memcasemem(_hs, strlen(_hs), _ne, strlen(_ne));
-#endif /* JSTR_HAS_STRCASESTR */
+#endif /* JSTR_HAVE_STRCASESTR */
 }
 
 #ifdef __cplusplus

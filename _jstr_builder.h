@@ -88,7 +88,7 @@ typedef struct Jstring {
 	}
 
 	/*
-	  Execute JSTR_ERR().
+	  exit(1) if ptr is NULL.
 	*/
 	JSTR_INLINE
 	void err(void) JSTR_NOEXCEPT

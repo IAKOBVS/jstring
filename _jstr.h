@@ -101,7 +101,7 @@ static int jstr_countc_mem(const char *JSTR_RST s,
 	return count;
 }
 
-#ifdef JSTR_HAS_MEMMEM
+#if JSTR_HAVE_MEMMEM
 
 /*
   Count occurences of NE in HS.
@@ -195,6 +195,34 @@ static char *jstr_trim_mem_p(char *JSTR_RST const s,
 		break;
 	} while (end >= start);
 	return (char *)end;
+}
+
+/*
+  Trim spaces in [ \t] from end of S.
+  Return value:
+  pointer to '\0' in S;
+  S if SLEN is 0.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *jstr_trim_p(char *JSTR_RST const s) JSTR_NOEXCEPT
+{
+	return jstr_trim_mem_p(s, strlen(s));
+}
+
+/*
+  Trim spaces in [ \t] from end of S.
+  Return value:
+  pointer to '\0' in S;
+  S if SLEN is 0.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void jstr_trim_j(Jstring *JSTR_RST const j) JSTR_NOEXCEPT
+{
+	j->size = jstr_trim_mem_p(j->data, j->size) - j->data;
 }
 
 /*

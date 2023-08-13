@@ -479,6 +479,8 @@ static int jstr_reg_rplcall_mem(char **JSTR_RST const s,
 	unsigned char *p = dst;
 	const unsigned char *old = dst;
 	int ret;
+#if JSTR_HAVE_REALLOC_MREMAP
+#endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((ret = PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, (*(unsigned char **)s + *sz) - p, 1, &rm, _eflags)) == JSTR_REG_RET_NOERROR) {
 		_ptnlen = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
