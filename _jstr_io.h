@@ -23,11 +23,12 @@ extern "C" {
    0 if no errors.
 */
 JSTR_NONNULL_ALL
-static int jstr_alloc_file(char **JSTR_RST const s,
-			   size_t *JSTR_RST sz,
-			   size_t *JSTR_RST cap,
-			   const char *JSTR_RST const _fname,
-			   struct stat *JSTR_RST const _st)
+static int
+jstr_alloc_file(char **JSTR_RST const s,
+		size_t *JSTR_RST sz,
+		size_t *JSTR_RST cap,
+		const char *JSTR_RST const _fname,
+		struct stat *JSTR_RST const _st)
 {
 	FILE *JSTR_RST _fp = fopen(_fname, "r");
 	if (unlikely(!_fp))
@@ -55,9 +56,10 @@ _ERR:
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static int jstr_alloc_file_j(Jstring *JSTR_RST const j,
-			     const char *JSTR_RST const _fname,
-			     struct stat *JSTR_RST const _st)
+static int
+jstr_alloc_file_j(Jstring *JSTR_RST const j,
+		  const char *JSTR_RST const _fname,
+		  struct stat *JSTR_RST const _st)
 {
 	return jstr_alloc_file(&j->data, &j->size, &j->cap, _fname, _st);
 }

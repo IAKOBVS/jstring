@@ -18,7 +18,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_isupper(const int c) JSTR_NOEXCEPT
+static int
+jstr_isupper(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
 		JSTR_CASE_LOWER
@@ -32,7 +33,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_islower(const int c) JSTR_NOEXCEPT
+static int
+jstr_islower(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
 		JSTR_CASE_LOWER
@@ -46,7 +48,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_isalnum(const int c) JSTR_NOEXCEPT
+static int
+jstr_isalnum(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
 		JSTR_CASE_ALPHANUM;
@@ -60,7 +63,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_arealnum(const char *JSTR_RST s) JSTR_NOEXCEPT
+static int
+jstr_arealnum(const char *JSTR_RST s) JSTR_NOEXCEPT
 {
 	for (;;)
 		switch (*s++) {
@@ -76,7 +80,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_isalpha(const int c) JSTR_NOEXCEPT
+static int
+jstr_isalpha(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
 		JSTR_CASE_ALPHA;
@@ -90,7 +95,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_arealpha(const char *JSTR_RST s) JSTR_NOEXCEPT
+static int
+jstr_arealpha(const char *JSTR_RST s) JSTR_NOEXCEPT
 {
 	for (;;)
 		switch (*s++) {
@@ -106,7 +112,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_isdigit(const int c) JSTR_NOEXCEPT
+static int
+jstr_isdigit(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
 		JSTR_CASE_DIGIT;
@@ -119,7 +126,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_aredigits(const char *JSTR_RST s) JSTR_NOEXCEPT
+static int
+jstr_aredigits(const char *JSTR_RST s) JSTR_NOEXCEPT
 {
 	for (;;)
 		switch (*s++) {
@@ -135,7 +143,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_toupper(const int c) JSTR_NOEXCEPT
+static int
+jstr_toupper(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
 		JSTR_CASE_LOWER
@@ -146,7 +155,8 @@ static int jstr_toupper(const int c) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_touppers(char *JSTR_RST s) JSTR_NOEXCEPT
+static void
+jstr_touppers(char *JSTR_RST s) JSTR_NOEXCEPT
 {
 	for (;; ++s) {
 		switch (*s) {
@@ -164,7 +174,8 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-static int jstr_tolower(const int c) JSTR_NOEXCEPT
+static int
+jstr_tolower(const int c) JSTR_NOEXCEPT
 {
 	switch (c) {
 		JSTR_CASE_UPPER
@@ -175,7 +186,8 @@ static int jstr_tolower(const int c) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
+static void
+jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
 {
 	for (;; ++s) {
 		switch (*s) {

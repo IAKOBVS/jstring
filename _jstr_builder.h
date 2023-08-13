@@ -26,17 +26,17 @@ extern "C" {
 	 ? (JSTR_MIN_CAP)                                           \
 	 : (top_cap * JSTR_ALLOC_MULTIPLIER))
 
-#define PRIVATE_JSTR_ALLOC_ONLY(p, cap, do_fail) \
-	(cap) = PRIVATE_JSTR_MIN_ALLOC(cap);     \
+#define PRIVATE_JSTR_ALLOC_ONLY(p, cap, top_cap, do_fail) \
+	(cap) = PRIVATE_JSTR_MIN_ALLOC(top_cap);     \
 	(p) = (char *)malloc((cap));             \
 	JSTR_MALLOC_ERR((p), do_fail);
 
 JSTR_NOINLINE
 JSTR_COLD
-static void JSTR_ERR_EXIT()
+static void
+JSTR_ERR_EXIT()
 {
-	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
-	perror("");
+	JSTR_ERR;
 	exit(1);
 }
 
@@ -44,7 +44,8 @@ static void JSTR_ERR_EXIT()
   exit(1) if ptr is NULL.
 */
 JSTR_INLINE
-static void jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
+static void
+jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 {
 	if (unlikely(!p))
 		JSTR_ERR_EXIT();
@@ -79,7 +80,8 @@ typedef struct Jstring {
 	  free(STR) and set STR to NULL.
 	*/
 	JSTR_INLINE
-	void del(void) JSTR_NOEXCEPT
+	void
+	del(void) JSTR_NOEXCEPT
 	{
 		free(this->data);
 #	if JSTR_NULLIFY_PTR_ON_DELETE
@@ -91,26 +93,30 @@ typedef struct Jstring {
 	  exit(1) if ptr is NULL.
 	*/
 	JSTR_INLINE
-	void err(void) JSTR_NOEXCEPT
+	void
+	err(void) JSTR_NOEXCEPT
 	{
 		if (unlikely(!this->data))
 			JSTR_ERR_EXIT();
 	}
 
 	JSTR_INLINE
-	void print(void) JSTR_NOEXCEPT
+	void
+	print(void) JSTR_NOEXCEPT
 	{
 		fwrite(this->data, 1, this->size, stdout);
 	}
 
 	JSTR_INLINE
-	void print_stderr(void) JSTR_NOEXCEPT
+	void
+	print_stderr(void) JSTR_NOEXCEPT
 	{
 		fwrite(this->data, 1, this->size, stderr);
 	}
 
 	JSTR_INLINE
-	void debug_print(void) JSTR_NOEXCEPT
+	void
+	debug_print(void) JSTR_NOEXCEPT
 	{
 		fprintf(stderr, "size:%zu\ncap:%zu\n", this->size, this->cap);
 		fprintf(stderr, "strlen:%zu\n", strlen(this->data));
@@ -130,10 +136,11 @@ extern "C" {
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_alloc(char **JSTR_RST const s,
-		       size_t *JSTR_RST const sz,
-		       size_t *JSTR_RST const cap,
-		       const size_t _top) JSTR_NOEXCEPT
+static void
+jstr_alloc(char **JSTR_RST const s,
+	   size_t *JSTR_RST const sz,
+	   size_t *JSTR_RST const cap,
+	   const size_t _top) JSTR_NOEXCEPT
 {
 	*sz = 0;
 	*cap = PRIVATE_JSTR_MIN_ALLOC(_top);
@@ -143,10 +150,11 @@ static void jstr_alloc(char **JSTR_RST const s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_allocexact(char **JSTR_RST const s,
-			    size_t *JSTR_RST const sz,
-			    size_t *JSTR_RST const cap,
-			    const size_t _top) JSTR_NOEXCEPT
+static void
+jstr_allocexact(char **JSTR_RST const s,
+		size_t *JSTR_RST const sz,
+		size_t *JSTR_RST const cap,
+		const size_t _top) JSTR_NOEXCEPT
 {
 	*sz = 0;
 	*s = (char *)malloc(_top);
@@ -156,11 +164,12 @@ static void jstr_allocexact(char **JSTR_RST const s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_allocexact_append_mem(char **JSTR_RST const s,
-				       size_t *JSTR_RST const sz,
-				       size_t *JSTR_RST const cap,
-				       const char *JSTR_RST const _src,
-				       const size_t _srclen) JSTR_NOEXCEPT
+static void
+jstr_allocexact_append_mem(char **JSTR_RST const s,
+			   size_t *JSTR_RST const sz,
+			   size_t *JSTR_RST const cap,
+			   const char *JSTR_RST const _src,
+			   const size_t _srclen) JSTR_NOEXCEPT
 {
 	jstr_allocexact(s, sz, cap, _srclen + 1);
 	if (unlikely(!*s))
@@ -171,24 +180,26 @@ static void jstr_allocexact_append_mem(char **JSTR_RST const s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_alloc_append_mem(char **JSTR_RST const s,
-				  size_t *JSTR_RST const sz,
-				  size_t *JSTR_RST const cap,
-				  const char *JSTR_RST const _src,
-				  const size_t _srclen) JSTR_NOEXCEPT
+static void
+jstr_alloc_append_mem(char **JSTR_RST const s,
+		      size_t *JSTR_RST const sz,
+		      size_t *JSTR_RST const cap,
+		      const char *JSTR_RST const _src,
+		      const size_t _srclen) JSTR_NOEXCEPT
 {
-	PRIVATE_JSTR_ALLOC_ONLY(*s, *cap, return);
+	PRIVATE_JSTR_ALLOC_ONLY(*s, *cap, _srclen, return);
 	*sz = _srclen;
 	memcpy(*s, _src, _srclen + 1);
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_allocmore_append_mem(char **JSTR_RST const s,
-				      size_t *JSTR_RST const sz,
-				      size_t *JSTR_RST const cap,
-				      const char *JSTR_RST const _src,
-				      const size_t _srclen) JSTR_NOEXCEPT
+static void
+jstr_allocmore_append_mem(char **JSTR_RST const s,
+			  size_t *JSTR_RST const sz,
+			  size_t *JSTR_RST const cap,
+			  const char *JSTR_RST const _src,
+			  const size_t _srclen) JSTR_NOEXCEPT
 {
 	jstr_alloc(s, sz, cap, _srclen * JSTR_GROWTH_MULTIPLIER * 2);
 	if (unlikely(!*s))
@@ -202,7 +213,8 @@ static void jstr_allocmore_append_mem(char **JSTR_RST const s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
+static void
+jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
 {
 	free(p);
 #if JSTR_NULLIFY_PTR_ON_DELETE
@@ -212,7 +224,8 @@ static void jstr_del(char *JSTR_RST p) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void jstr_debug(const Jstring *JSTR_RST const j)
+static void
+jstr_debug(const Jstring *JSTR_RST const j)
 {
 	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
 	fprintf(stderr, "strlen:%zu\n", strlen(j->data));

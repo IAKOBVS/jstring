@@ -28,15 +28,17 @@ typedef struct jstr_memmem_table {
 
 JSTR_INLINE
 JSTR_WARN_UNUSED
-static unsigned char private_jstr_memmem_hash2(const unsigned char *JSTR_RST const p) JSTR_NOEXCEPT
+static unsigned char
+private_jstr_memmem_hash2(const unsigned char *JSTR_RST const p) JSTR_NOEXCEPT
 {
 	return (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256);
 }
 
 JSTR_NONNULL_ALL
-void jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
-			  const char *JSTR_RST _ne,
-			  const size_t _nelen);
+void
+jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
+		     const char *JSTR_RST _ne,
+		     const size_t _nelen);
 
 #if defined(JSTR_HAVE_GENERIC)
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr) \
@@ -72,8 +74,9 @@ void jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
 	} while (0)
 
 JSTR_NONNULL_ALL
-void jstr_memmem_comp(jstr_memmem_table *_ptable,
-		      const char *JSTR_RST _ne);
+void
+jstr_memmem_comp(jstr_memmem_table *_ptable,
+		 const char *JSTR_RST _ne);
 
 #define jstr_memmem_comp(_ptable, _ne) \
 	jstr_memmem_comp_mem(_ptable, _ne, strlen(_ne));
@@ -82,9 +85,10 @@ JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_CONST
-static void *private_jstr_pre_memmem2(const unsigned char *JSTR_RST hs,
-				      const unsigned char *JSTR_RST const ne,
-				      const size_t hslen) JSTR_NOEXCEPT
+static void *
+private_jstr_pre_memmem2(const unsigned char *JSTR_RST hs,
+			 const unsigned char *JSTR_RST const ne,
+			 const size_t hslen) JSTR_NOEXCEPT
 {
 	const unsigned char *const end = hs + hslen;
 	const uint32_t nw = ne[0] << 8 | ne[1];
@@ -98,9 +102,10 @@ JSTR_CONST
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static void *private_jstr_pre_memmem3(const unsigned char *JSTR_RST hs,
-				      const unsigned char *JSTR_RST const ne,
-				      const size_t hslen) JSTR_NOEXCEPT
+static void *
+private_jstr_pre_memmem3(const unsigned char *JSTR_RST hs,
+			 const unsigned char *JSTR_RST const ne,
+			 const size_t hslen) JSTR_NOEXCEPT
 {
 	const unsigned char *const end = hs + hslen;
 	const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
@@ -114,9 +119,10 @@ JSTR_CONST
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-static void *private_jstr_pre_memmem4(const unsigned char *JSTR_RST hs,
-				      const unsigned char *JSTR_RST const ne,
-				      const size_t hslen) JSTR_NOEXCEPT
+static void *
+private_jstr_pre_memmem4(const unsigned char *JSTR_RST hs,
+			 const unsigned char *JSTR_RST const ne,
+			 const size_t hslen) JSTR_NOEXCEPT
 {
 	const unsigned char *const end = hs + hslen;
 	const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
@@ -130,9 +136,10 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_CONST
 JSTR_INLINE
-static void *jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const ptable,
-					const char *JSTR_RST const hs,
-					const size_t hslen) JSTR_NOEXCEPT
+static void *
+jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const ptable,
+			   const char *JSTR_RST const hs,
+			   const size_t hslen) JSTR_NOEXCEPT
 {
 #define PRIVATE_JSTR_MEMMEM_EXEC(_table)                                                      \
 	do {                                                                                  \
@@ -178,9 +185,10 @@ static void *jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const 
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_CONST
-static void *jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
-			      const char *JSTR_RST const hs,
-			      const size_t hslen) JSTR_NOEXCEPT
+static void *
+jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
+		 const char *JSTR_RST const hs,
+		 const size_t hslen) JSTR_NOEXCEPT
 {
 	return jstr_memmem_exec_constexpr(ptable, hs, hslen);
 }
@@ -189,8 +197,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_CONST
-static char *jstr_strstr_exec(const jstr_memmem_table *JSTR_RST const ptable,
-			      const char *JSTR_RST const hs) JSTR_NOEXCEPT
+static char *
+jstr_strstr_exec(const jstr_memmem_table *JSTR_RST const ptable,
+		 const char *JSTR_RST const hs) JSTR_NOEXCEPT
 {
 	return (char *)jstr_memmem_exec(ptable, hs, strlen(hs));
 }

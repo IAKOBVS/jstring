@@ -19,25 +19,20 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_traits.h"
 
-/* This is executed every time a malloc error is encountered. */
-JSTR_NOINLINE
-JSTR_COLD
-JSTR_MAYBE_UNUSED
-static void JSTR_ERR(void) JSTR_NOEXCEPT
-{
-#if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
-	fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__);
-	perror("");
-#endif /* JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR */
-#if JSTR_EXIT_ON_MALLOC_ERROR
-	exit(1);
-#endif /* JSTR_EXIT_ON_MALLOC_ERROR */
-}
+#define JSTR_ERR                                                                               \
+	do {                                                                                     \
+		if (JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR) {                                        \
+			fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__); \
+			perror("");                                                              \
+		}                                                                                \
+		if (JSTR_EXIT_ON_MALLOC_ERROR)                                                   \
+			exit(1);                                                                 \
+	} while (0)
 
 #define JSTR_MALLOC_ERR(p, malloc_fail) \
 	do {                            \
 		if (unlikely(!(p))) {   \
-			JSTR_ERR();     \
+			JSTR_ERR;       \
 			malloc_fail;    \
 		}                       \
 	} while (0)
@@ -72,7 +67,8 @@ JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-static constexpr size_t strlen_args() JSTR_NOEXCEPT
+static constexpr size_t
+strlen_args() JSTR_NOEXCEPT
 {
 	return 0;
 }
@@ -105,9 +101,10 @@ cat_assign(size_t *JSTR_RST sz,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void cat_assign(size_t *sz,
-		       char **dst,
-		       const char *JSTR_RST src) JSTR_NOEXCEPT
+static void
+cat_assign(size_t *sz,
+	   char **dst,
+	   const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_STPCPY
 	char *const _new = stpcpy(*dst, src);
@@ -121,7 +118,10 @@ static void cat_assign(size_t *sz,
 }
 
 JSTR_INLINE
-static constexpr void cat_loop_assign(size_t *, char **) JSTR_NOEXCEPT {}
+static constexpr void
+cat_loop_assign(size_t *, char **) JSTR_NOEXCEPT
+{
+}
 
 template <typename Str,
 	  typename... StrArgs,
@@ -154,7 +154,8 @@ JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-static constexpr size_t strlen_args(size_t *) JSTR_NOEXCEPT
+static constexpr size_t
+strlen_args(size_t *) JSTR_NOEXCEPT
 {
 	return 0;
 }
@@ -200,16 +201,20 @@ cat_assign(char **JSTR_RST const dst,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-static void cat_assign(char **JSTR_RST dst,
-		       size_t **JSTR_RST strlen_arr,
-		       const char *JSTR_RST src) JSTR_NOEXCEPT
+static void
+cat_assign(char **JSTR_RST dst,
+	   size_t **JSTR_RST strlen_arr,
+	   const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, *(*strlen_arr));
 	*dst += *(*strlen_arr)++;
 }
 
 JSTR_INLINE
-static constexpr void cat_loop_assign(char **, size_t *) JSTR_NOEXCEPT {}
+static constexpr void
+cat_loop_assign(char **, size_t *) JSTR_NOEXCEPT
+{
+}
 
 template <typename Str,
 	  typename... StrArgs,
