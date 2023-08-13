@@ -1,8 +1,8 @@
 #ifndef JSTR_DEF_H
 #define JSTR_DEF_H
 
-#include <stdlib.h>
 #include "_jstr_macros.h"
+#include <stdlib.h>
 
 #define JTRIE_ASCII_SIZE 256
 
@@ -19,7 +19,7 @@ struct Jtrie_node {
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static struct Jtrie_node *
-jtrie_create(void) JSTR_NOEXCEPT
+jtrie_init(void) JSTR_NOEXCEPT
 {
 	return (struct Jtrie_node *)calloc(1, sizeof(struct Jtrie_node));
 }
@@ -38,7 +38,7 @@ private_jtrie_destruct_recur(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
 
 JSTR_MAYBE_UNUSED
 static void
-jtrie_destruct(struct Jtrie_node **JSTR_RST node) JSTR_NOEXCEPT
+jtrie_free(struct Jtrie_node **JSTR_RST node) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(!*node))
 		return;
@@ -59,7 +59,7 @@ jtrie_insert(struct Jtrie_node *JSTR_RST const root,
 	struct Jtrie_node *curr = root;
 	for (; *w; ++w) {
 		if (!curr->child[*w])
-			curr->child[*w] = jtrie_create();
+			curr->child[*w] = jtrie_init();
 		curr = curr->child[*w];
 		if (jstr_unlikely(!curr))
 			return JTRIE_RET_MALLOC_ERROR;
@@ -81,7 +81,7 @@ jtrie_insertprefix(struct Jtrie_node *JSTR_RST const root,
 	struct Jtrie_node *curr = root;
 	for (; *w; ++w) {
 		if (!curr->child[*w])
-			curr->child[*w] = jtrie_create();
+			curr->child[*w] = jtrie_init();
 		curr = curr->child[*w];
 		if (jstr_unlikely(!curr))
 			return JTRIE_RET_MALLOC_ERROR;
