@@ -65,9 +65,7 @@ _MOVE:
 			*sz - at + 1);
 		memcpy(*s + at, _rplc, _rplclen);
 	} else {
-		JSTR_GROW(*cap, *sz + _rplclen);
-		*s = (char *)realloc(*s, *cap);
-		JSTR_MALLOC_ERR(*s, return NULL);
+		JSTR_REALLOC(*s, *cap, *sz + _rplclen, return NULL);
 		goto _MOVE;
 	}
 	*sz += _rplclen;
@@ -126,9 +124,7 @@ _MOVE:
 		memcpy(*s + at, _rplc, _rplclen);
 
 	} else {
-		JSTR_GROW(*cap, *sz + _rplclen - _searclen);
-		*s = (char *)realloc(*s, *cap);
-		JSTR_MALLOC_ERR(*s, return NULL);
+		JSTR_REALLOC(*s, *cap, *sz + _rplclen, return NULL);
 		goto _MOVE;
 	}
 	*sz += _rplclen - _searclen;
@@ -194,9 +190,7 @@ _MOVE:
 	} else {
 #if JSTR_HAVE_REALLOC_MREMAP
 		if (unlikely(*cap > JSTR_MIN_MMAP)) {
-			JSTR_GROW(*cap, *sz + _rplclen);
-			*s = (char *)realloc(*s, *cap);
-			JSTR_MALLOC_ERR(*s, return NULL);
+			JSTR_REALLOC(*s, *cap, *sz + _rplclen, return NULL);
 			goto _MOVE;
 		}
 #else
@@ -239,9 +233,7 @@ _MOVE:
 	} else {
 #if JSTR_HAVE_REALLOC_MREMAP
 		if (unlikely(*cap > JSTR_MIN_MMAP)) {
-			JSTR_GROW(*cap, *sz + _rplclen - _searclen);
-			*s = (char *)realloc(*s, *cap);
-			JSTR_MALLOC_ERR(*s, return NULL);
+			JSTR_REALLOC(*s, *cap, *sz + _rplclen - _searclen, return NULL);
 			goto _MOVE;
 		}
 #else
@@ -342,7 +334,7 @@ static void jstr_slipaftallc_mem(char **JSTR_RST const s,
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
 		off = p - *s;
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (is_mmap)
+		if (unlikely(is_mmap))
 			private_jstr_slip_mem_realloc(s, sz, cap, off, _src, _srclen);
 		else
 			private_jstr_slip_mem_malloc(s, sz, cap, off, _src, _srclen);
@@ -467,7 +459,7 @@ static void jstr_slipaftall_mem(char **JSTR_RST const s,
 		while ((p = (char *)jstr_memmem_exec(&t, *s + off, *sz - off))) {
 			off = p - *s;
 #if JSTR_HAVE_REALLOC_MREMAP
-			if (is_mmap)
+			if (unlikely(is_mmap))
 				private_jstr_slip_mem_realloc(s, sz, cap, p - *s + _searclen, _src, _srclen);
 			else
 				private_jstr_slip_mem_malloc(s, sz, cap, p - *s + _searclen, _src, _srclen);
@@ -904,7 +896,7 @@ static void jstr_rplcn_mem(char **JSTR_RST const s,
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while (n-- && (p = (char *)jstr_memmem_exec(&t, p, (*s + *sz) - p))) {
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (is_mmap)
+		if (unlikely(is_mmap))
 			p = private_jstr_rplcat_mem_realloc(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 		else
 			p = private_jstr_rplcat_mem_malloc(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
@@ -939,7 +931,7 @@ static void jstr_rplcall_mem(char **JSTR_RST const s,
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((p = (char *)jstr_memmem_exec(&t, p, (*s + *sz) - p))) {
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (is_mmap)
+		if (unlikely(is_mmap))
 			p = private_jstr_rplcat_mem_realloc(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 		else
 			p = private_jstr_rplcat_mem_malloc(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);

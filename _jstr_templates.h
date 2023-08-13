@@ -41,17 +41,25 @@ static void JSTR_ERR(void) JSTR_NOEXCEPT
 			malloc_fail;    \
 		}                       \
 	} while (0)
-#define JSTR_GROW(old_cap, new_cap) \
-	while (((old_cap) *= JSTR_GROWTH_MULTIPLIER) < (new_cap))
+#define JSTR_GROW(old_cap, new_cap)                                       \
+	do {                                                              \
+		JSTR_ASSERT_IS_SIZE(old_cap);                             \
+		JSTR_ASSERT_IS_SIZE(new_cap);                             \
+		while (((old_cap) *= JSTR_GROWTH_MULTIPLIER) < (new_cap)) \
+			;                                                 \
+	} while (0)
 #define JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
 	do {                                           \
+		JSTR_ASSERT_IS_STR(p);                 \
+		JSTR_ASSERT_IS_SIZE(old_cap);          \
+		JSTR_ASSERT_IS_SIZE(new_cap);          \
 		JSTR_GROW(old_cap, new_cap);           \
 		(p) = (char *)realloc(p, old_cap);     \
 		JSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 
 #if JSTR_HAVE_REALLOC_MREMAP
-#	define JSTR_IS_MMAP(cap) ((unlikely((cap) > JSTR_MIN_MMAP)) ? 1 : 0)
+#	define JSTR_IS_MMAP(cap) (((cap) > JSTR_MIN_MMAP) ? 1 : 0)
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 
 #ifdef __cplusplus
@@ -101,7 +109,7 @@ static void cat_assign(size_t *sz,
 		       char **dst,
 		       const char *JSTR_RST src) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STPCPY
+#	if JSTR_HAVE_STPCPY
 	char *const _new = stpcpy(*dst, src);
 	*sz += _new - *dst;
 	*dst = _new;

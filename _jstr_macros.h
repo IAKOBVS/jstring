@@ -650,14 +650,10 @@ case ' ':
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
 
-#define JSTR_RST JSTR_RESTRICT
-							  
-#ifdef __linux__
-#	define JSTR_HAVE_MMAP 1
-#endif /* Linux */
-
-#if defined(_GNU_SOURCE) && JSTR_HAVE_MMAP
+#if defined(__linux__) && defined(__GLIBC__) && JSTR_HAVE_MMAP
 #	define JSTR_HAVE_REALLOC_MREMAP 1
 #endif /* Gnu */
 
+#define JSTR_RST JSTR_RESTRICT
+							  
 #endif /* JSTR_MACROS_H_DEF */
