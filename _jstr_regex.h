@@ -605,7 +605,15 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 		}
 		if (_rplclen <= _ptnlen) {
 			JSTR_DEB_PRINT("_rplclen <= _ptnlen");
-			private_jstr_rplcall_in_place(&dst, &old, (const unsigned char **)&p, _rplc, _ptnlen, _rplclen);
+			if (_rplclen != _ptnlen)
+				if (jstr_likely(dst != old))
+					memmove(dst, old, p - old);
+			dst += (p - old);
+			old += (p - old);
+			old += _ptnlen;
+			p += _ptnlen;
+			memcpy(dst, _rplc, _rplclen);
+			dst += _rplclen;
 			if (jstr_unlikely(*p == '\0'))
 				break;
 			continue;
@@ -671,8 +679,8 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 					       p + _ptnlen,
 					       (sp + *sz) - (p + _ptnlen) + 1);
 				}
-				free(*s);
 				p = tmp + (p - sp);
+				free(*s);
 				*s = (char *)tmp;
 				sp = tmp;
 			}
