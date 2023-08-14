@@ -521,8 +521,10 @@ jstr_reg_rplcall_mem(char **JSTR_RST const s,
 		return jstr_reg_rmall_mem(*s, sz, _preg, _eflags);
 	}
 	regmatch_t rm;
+#if 0
 	size_t _ptnlen;
 	unsigned char *tmp;
+#endif
 	unsigned char *dst = (unsigned char *)*s;
 	unsigned char *p = dst;
 	const unsigned char *old = dst;
@@ -531,6 +533,16 @@ jstr_reg_rplcall_mem(char **JSTR_RST const s,
 	const int is_mmap = JSTR_IS_MMAP(*cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((err = PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, (*(unsigned char **)s + *sz) - p, 1, &rm, _eflags)) == JSTR_REG_RET_NOERROR) {
+#if 1
+#	if JSTR_HAVE_REALLOC_MREMAP
+		if (jstr_unlikely(is_mmap))
+			p = (unsigned char *)private_jstr_rplcat_mem_realloc(s, sz, cap, p + rm.rm_so - *(unsigned char **)s, _rplc, _rplclen, rm.rm_eo - rm.rm_so);
+		else
+			p = (unsigned char *)private_jstr_rplcat_mem_malloc(s, sz, cap, p + rm.rm_so - *(unsigned char **)s, _rplc, _rplclen, rm.rm_eo - rm.rm_so);
+#	else
+		p = (unsigned char *)jstr_rplcat_mem(s, sz, cap, p + rm.rm_so - *(unsigned char **)s, _rplc, _rplclen, rm.rm_eo - rm.rm_so);
+#	endif /* JSTR_HAVE_REALLOC_MREMAP */
+#else
 		_ptnlen = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
 		if (jstr_unlikely(!_ptnlen)) {
@@ -546,6 +558,9 @@ jstr_reg_rplcall_mem(char **JSTR_RST const s,
 			memcpy(dst, _rplc, _rplclen);
 			dst += _rplclen;
 			old += _ptnlen;
+			p += _ptnlen;
+			*sz += _rplclen - _ptnlen;
+			continue;
 		} else if (*cap > *sz + _rplclen - _ptnlen) {
 			if (dst != old) {
 				memmove(dst, old, p - old);
@@ -563,7 +578,7 @@ jstr_reg_rplcall_mem(char **JSTR_RST const s,
 				memcpy(p, _rplc, _rplclen);
 			}
 		} else {
-#if JSTR_HAVE_REALLOC_MREMAP
+#	if JSTR_HAVE_REALLOC_MREMAP
 			if (jstr_unlikely(is_mmap)) {
 				if (dst != old) {
 					memmove(dst,
@@ -580,7 +595,7 @@ jstr_reg_rplcall_mem(char **JSTR_RST const s,
 					(*(unsigned char **)s + *sz) - (p + _ptnlen) + 1);
 				memcpy(p, _rplc, _rplclen);
 			} else {
-#endif /* JSTR_HAVE_REALLOC_MREMAP */
+#	endif /* JSTR_HAVE_REALLOC_MREMAP */
 				JSTR_GROW(*cap, *sz + _rplclen - _ptnlen);
 				tmp = (unsigned char *)malloc(*cap);
 				JSTR_MALLOC_ERR(tmp, return JSTR_REG_RET_MALLOC_ERROR);
@@ -603,11 +618,12 @@ jstr_reg_rplcall_mem(char **JSTR_RST const s,
 				p = tmp + (p - *(unsigned char **)s);
 				*s = (char *)tmp;
 			}
-#if JSTR_HAVE_REALLOC_MREMAP
+#	if JSTR_HAVE_REALLOC_MREMAP
 		}
-#endif /* JSTR_HAVE_REALLOC_MREMAP */
+#	endif /* JSTR_HAVE_REALLOC_MREMAP */
 		*sz += _rplclen - _ptnlen;
 		p += _rplclen;
+#endif
 	}
 	if (dst != old)
 		memmove(dst, old, (*(unsigned char **)s + *sz) - old + 1);
