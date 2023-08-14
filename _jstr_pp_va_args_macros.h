@@ -147,7 +147,7 @@ JSTR_PP_CASE_CONSONANT_UPPER:          \
 #define JSTR_PP_CONCATENATE_(A, B) \
 	A##B
 
-#ifndef ___cplusplus
+#ifndef __cplusplus
 #	define JSTR_PP_PRINTF_FORMAT(x) _Generic((x),                       \
 						  unsigned char              \
 						  : "%hhu\n",                \
@@ -214,6 +214,6 @@ JSTR_PP_CASE_CONSONANT_UPPER:          \
 #else
 #	include <iostream>
 #	define jstr_pp_cout(x) std::cout << x << '\n'
-#endif /* ___cplusplus */
+#endif /* __cplusplus */
 
 #endif /* JSTR_PP_VA_ARGS_MACROS_DEF_H */

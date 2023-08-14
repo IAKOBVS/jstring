@@ -1,20 +1,20 @@
 #ifndef JSTR_IO_H_DEF
 #define JSTR_IO_H_DEF
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#ifdef ___cplusplus
+#ifdef __cplusplus
 }
 #endif /* __cpluslus */
 
 #include "_jstr_builder.h"
 #include "_jstr_macros.h"
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
 
@@ -64,7 +64,7 @@ jstr_alloc_file_j(Jstring *JSTR_RST const j,
 	return jstr_alloc_file(&j->data, &j->size, &j->cap, _fname, _st);
 }
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 }
 #endif /* __cpluslus */
 

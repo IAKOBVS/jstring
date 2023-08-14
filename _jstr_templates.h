@@ -57,7 +57,7 @@ extern "C" {
 #	define JSTR_IS_MMAP(cap) (((cap) > JSTR_MIN_MMAP) ? 1 : 0)
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 
 namespace jstr {
 

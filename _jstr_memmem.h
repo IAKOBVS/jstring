@@ -1,21 +1,21 @@
 #ifndef JSTR_MEMMEM_H_DEF
 #define JSTR_MEMMEM_H_DEF
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
 #include <alloca.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef ___cplusplus
+#ifdef __cplusplus
 }
 #endif /* __cpluslus */
 
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
 
@@ -204,7 +204,7 @@ jstr_strstr_exec(const jstr_memmem_table *JSTR_RST const ptable,
 	return (char *)jstr_memmem_exec(ptable, hs, strlen(hs));
 }
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 }
 #endif /* __cpluslus */
 

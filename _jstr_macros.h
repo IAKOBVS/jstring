@@ -4,13 +4,13 @@
 #if 0 /* unused */
 
 #	if defined(__GNUC__) || defined(__clang__)
-#		ifdef ___cplusplus
+#		ifdef __cplusplus
 #			include <cstdint>
 #		else
 #			include <stdint.h>
-#		endif /* ___cplusplus */
+#		endif /* __cplusplus */
 #		if __has_builtin(__builtin_clzll)
-#			ifdef ___cplusplus
+#			ifdef __cplusplus
 extern "C" {
 #			endif
 
@@ -39,7 +39,7 @@ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 
 #			endif /* JSTR_32_BIT */
 
-#			ifdef ___cplusplus
+#			ifdef __cplusplus
 }
 #			endif
 #		endif /* __has_builtin(__builtin_clz) */
@@ -47,7 +47,7 @@ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 #		include <stdint.h>
 #		include <intrin.h>
 #		pragma intrinsic(_BitScanReverse64)
-#		ifdef ___cplusplus
+#		ifdef __cplusplus
 extern "C" {
 #		endif
 
@@ -116,12 +116,12 @@ size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
 
 #		endif /* JSTR_64_BIT */
 
-#		ifdef ___cplusplus
+#		ifdef __cplusplus
 }
 #		endif
 #	endif /* __GNUC__ || __clang__ */
 
-#	ifdef ___cplusplus
+#	ifdef __cplusplus
 
 #		include <type_traits>
 
@@ -161,7 +161,7 @@ JSTR_CONST static std::size_t
 JSTR_NEXT_POW2_32(T x)
 {
 	if
-#		if ___cplusplus > 201703L
+#		if __cplusplus > 201703L
 	constexpr
 #		endif /* cpp 17 */
 	(std::is_integral<T>::value)
@@ -176,7 +176,7 @@ JSTR_CONST static std::size_t
 JSTR_NEXT_POW2_64(T x)
 {
 	if
-#		if ___cplusplus > 201703L
+#		if __cplusplus > 201703L
 	constexpr
 #		endif /* cpp 17 */
 	(std::is_integral<T>::value)
@@ -184,21 +184,21 @@ JSTR_NEXT_POW2_64(T x)
 	return private_jstr_next_pow2_64(x);
 }
 
-#	endif /* ___cplusplus */
+#	endif /* __cplusplus */
 
 #	ifdef JSTR_ALIGN_POWER_OF_TWO
 #		ifdef JSTR_64_BIT
-#			ifdef ___cplusplus
+#			ifdef __cplusplus
 #				define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
 #			else
 #				define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
-#			endif /* ___cplusplus */
+#			endif /* __cplusplus */
 #		elif JSTR_32_BIT
-#			ifdef ___cplusplus
+#			ifdef __cplusplus
 #				define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
 #			else
 #				define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
-#			endif /* ___cplusplus */
+#			endif /* __cplusplus */
 #		else
 #			define JSTR_NEXT_POW2(x) (x)
 #		endif /* JSTR_64_BIT */
@@ -273,7 +273,7 @@ JSTR_NEXT_POW2_64(T x)
 #	define JSTR_IS_SIZE(val)
 #endif /* __GNUC__ || __clang__ */
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 #	define JSTR_NOEXCEPT noexcept
 #else
 #	define JSTR_NOEXCEPT

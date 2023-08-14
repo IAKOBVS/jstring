@@ -1,7 +1,7 @@
 #ifndef JTRAITS_H_DEF
 #define JTRAITS_H_DEF
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 
 #	include "_jstr_macros.h"
 #	include <utility>
@@ -95,6 +95,6 @@ jtraits_assert_jtraits_are_same(Arg &&, Args &&...) JSTR_NOEXCEPT
 	static_assert(jtraits_are_same<T, Arg, Args...>(), "Passing non-T as T arguments!");
 }
 
-#endif /* ___cplusplus */
+#endif /* __cplusplus */
 
 #endif /* JTRAITS_H_DEF */

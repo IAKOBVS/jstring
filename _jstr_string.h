@@ -1,7 +1,7 @@
 #ifndef JSTR_STRING_H_DEF
 #define JSTR_STRING_H_DEF
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
 
@@ -10,14 +10,14 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 }
 #endif /* __cpluslus */
 
 #include "_jstr_ctype.h"
 #include "_jstr_macros.h"
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif /* JSTR_NAMESPACE */
 
@@ -27,7 +27,7 @@ extern "C" {
 #	define PRIVATE_JSTR_MEMMEM(_hs, hlen, _ne, nlen) strstr(_hs, _ne)
 #endif /* JSTR_HAVE_MEMMEM */
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 #	define JSTR_GLOBALIZE(func) ::func
 #else
 #	define JSTR_GLOBALIZE(func) func
@@ -663,7 +663,7 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 #endif /* JSTR_HAVE_STRCASESTR */
 }
 
-#ifdef ___cplusplus
+#ifdef __cplusplus
 } /* extern C */
 #endif /* JSTR_NAMESPACE */
 
