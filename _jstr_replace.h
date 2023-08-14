@@ -1098,6 +1098,10 @@ private_jstr_base_rplcall_mem(private_jstr_flag_use_n flag,
 		*sz = private_jstr_base_rmall_mem_p(flag, *s, _searc, n, *sz, _searclen) - *s;
 		return;
 	}
+	if (jstr_unlikely(_searclen == 1 && _rplclen == 1)) {
+		jstr_rplcc_mem(*s, *_searc, *_rplc, *sz);
+		return;
+	}
 	if (jstr_unlikely(_searclen == 0))
 		return;
 	if (flag & PRIVATE_JSTR_FLAG_USE_N)
