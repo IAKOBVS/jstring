@@ -141,6 +141,9 @@ sub gen_nonmem_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
+		if ($FUNC_NAME =~ /private/) {
+			goto NEXT;
+		}
 		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
 			$decl =~ s/static/$G_MACRO_INLINE\n$G_MACRO_MAYBE_UNUSED\nstatic/o;
 		}
@@ -230,6 +233,9 @@ sub gen_struct_funcs
 			goto NEXT;
 		}
 		if (($G_FNAME =~ /regex/) && $FUNC_NAME !~ /mem/) {
+			goto NEXT;
+		}
+		if ($FUNC_NAME =~ /private/) {
 			goto NEXT;
 		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';

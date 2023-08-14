@@ -3,8 +3,8 @@
 
 #include "_jstr_pp_st_assert.h"
 #include "_jstr_pp_strcpy_va_args.h"
-#include "_jstr_pp_strlen_va_args.h"
 #include "_jstr_pp_strlen2_va_args.h"
+#include "_jstr_pp_strlen_va_args.h"
 #include "_jstr_pp_va_args_tools.h"
 
 #ifndef JSTR_PP_CASE_VOWEL_UPPER
@@ -21,7 +21,7 @@
 	case 'E':                        \
 	case 'O':
 #	define JSTR_PP_CASE_VOWEL \
-	JSTR_PP_CASE_VOWEL_UPPER:  \
+JSTR_PP_CASE_VOWEL_UPPER:          \
 		JSTR_PP_CASE_VOWEL_LOWER
 
 #	define JSTR_PP_CASE_CONSONANT_LOWER \
@@ -69,7 +69,7 @@
 	case 'Y':                            \
 	case 'Z':
 #	define JSTR_PP_CASE_CONSONANT \
-	JSTR_PP_CASE_CONSONANT_UPPER:  \
+JSTR_PP_CASE_CONSONANT_UPPER:          \
 		JSTR_PP_CASE_CONSONANT_LOWER
 
 #	define JSTR_PP_CASE_DIGIT \
@@ -151,6 +151,8 @@
 #	define JSTR_PP_PRINTF_FORMAT(x) _Generic((x),                       \
 						  unsigned char              \
 						  : "%hhu\n",                \
+						    unsigned char *          \
+						  : "%s\n",                  \
 						    char                     \
 						  : "%c\n",                  \
 						    char *                   \
@@ -180,6 +182,8 @@
                                                                              \
 						    const unsigned char      \
 						  : "%hhu\n",                \
+						    const unsigned char *    \
+						  : "%s\n",                  \
 						    const char               \
 						  : "%c\n",                  \
 						    const char *             \
@@ -207,6 +211,9 @@
 						    const unsigned long long \
 						  : "%llu\n")
 #	define jstr_pp_cout(x) printf(JSTR_PP_PRINTF_FORMAT(x), x)
+#else
+#	include <iostream>
+#	define jstr_pp_cout(x) std::cout << x << '\n'
 #endif /* __cplusplus */
 
 #endif /* JSTR_PP_VA_ARGS_MACROS_DEF_H */
