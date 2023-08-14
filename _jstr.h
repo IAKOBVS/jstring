@@ -161,7 +161,7 @@ static void
 jstr_rev_mem(char *JSTR_RST s,
 	     const size_t sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(!*s))
+	if (jstr_unlikely(*s == '\0'))
 		return;
 	unsigned char *end = (unsigned char *)s + sz - 1;
 	unsigned char *p = (unsigned char *)s;
@@ -187,7 +187,7 @@ static char *
 jstr_trim_mem_p(char *JSTR_RST const s,
 		const size_t sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(!*s))
+	if (jstr_unlikely(*s == '\0'))
 		return s;
 	unsigned char *end = (unsigned char *)s + sz - 1;
 	unsigned char *start = (unsigned char *)s;

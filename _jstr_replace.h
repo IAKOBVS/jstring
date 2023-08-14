@@ -582,7 +582,7 @@ jstr_rmc_mem_p(char *JSTR_RST s,
 {
 	const char *const sstart = s;
 	s = (char *)memchr(s, c, sz);
-	if (jstr_unlikely(!s))
+	if (jstr_unlikely(s == NULL))
 		return s + sz;
 	memmove(s, s + 1, sz - (s - sstart) + 1);
 	return s + sz - (s - sstart);
@@ -603,7 +603,7 @@ jstr_rmc_p(char *JSTR_RST s,
 {
 #if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, c);
-	if (jstr_unlikely(!*s))
+	if (jstr_unlikely(*s == '\0'))
 		return s;
 	size_t len = strlen(s);
 	memmove(s, s + 1, len);
@@ -763,7 +763,7 @@ jstr_rm_mem_p(char *JSTR_RST const s,
 	if (jstr_unlikely(_searclen == 0))
 		return s + sz;
 	char *const p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, _searc, _searclen);
-	if (jstr_unlikely(!p))
+	if (jstr_unlikely(p == NULL))
 		return s + sz;
 	memmove(p, p + _searclen, (s + sz) - p);
 	return s + sz - _searclen;
@@ -781,7 +781,7 @@ jstr_rplcc_mem(char *JSTR_RST s,
 	       const size_t sz) JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, _searc, sz);
-	if (jstr_unlikely(!s))
+	if (jstr_unlikely(s == NULL))
 		return;
 	*s = _rplc;
 }
@@ -797,7 +797,7 @@ jstr_rplcc(char *JSTR_RST s,
 	   const int _rplc) JSTR_NOEXCEPT
 {
 	s = strchr(s, _searc);
-	if (jstr_unlikely(!s))
+	if (jstr_unlikely(s == NULL))
 		return;
 	*s = _rplc;
 }
@@ -893,7 +893,7 @@ jstr_rplc_mem_p_f(char *JSTR_RST const s,
 		if (jstr_unlikely(_searclen == 0))
 			return s + sz;
 		char *p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, _searc, _searclen);
-		if (jstr_unlikely(!p))
+		if (jstr_unlikely(p == NULL))
 			return s + sz;
 		memmove(p + _rplclen,
 			p + _searclen,
@@ -932,7 +932,7 @@ jstr_rplc_mem(char **JSTR_RST const s,
 		if (jstr_unlikely(_searclen == 0))
 			return;
 		char *p = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, _searc, _searclen);
-		if (jstr_unlikely(!p))
+		if (jstr_unlikely(p == NULL))
 			return;
 		jstr_slip_mem(s, sz, cap, p - *s, _rplc, _rplclen);
 	}
@@ -956,7 +956,7 @@ jstr_rplclast_mem(char **JSTR_RST const s,
 	if (jstr_unlikely(_searclen == 0))
 		return;
 	char *p = (char *)jstr_memrmem(*s, *sz, _searc, _searclen);
-	if (jstr_unlikely(!p))
+	if (jstr_unlikely(p == NULL))
 		return;
 	private_jstr_rplcat_mem_may_lower(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 }
@@ -1127,7 +1127,7 @@ private_jstr_base_rplcall_mem(private_jstr_flag_use_n flag,
 		else
 			p = jstr_rplcat_mem(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
-		if (jstr_unlikely(!p))
+		if (jstr_unlikely(p == NULL))
 			break;
 		if (jstr_unlikely(!--n))
 			break;

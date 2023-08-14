@@ -31,7 +31,7 @@ jstr_alloc_file(char **JSTR_RST const s,
 		struct stat *JSTR_RST const _st)
 {
 	FILE *JSTR_RST _fp = fopen(_fname, "r");
-	if (jstr_unlikely(!_fp))
+	if (jstr_unlikely(_fp == NULL))
 		goto _ERR;
 	if (jstr_unlikely(stat(_fname, _st)))
 		goto _ERR_CLOSE;

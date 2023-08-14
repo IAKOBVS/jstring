@@ -91,7 +91,7 @@ jstr_memrchr(const void *JSTR_RST const s,
 #if JSTR_HAVE_MEMRCHR
 	return (void *)JSTR_GLOBALIZE(memrchr(s, c, n));
 #else
-	if (jstr_unlikely(!*(char *)s))
+	if (jstr_unlikely(*(char *)s == '\0'))
 		return NULL;
 	const unsigned char *const start = (unsigned char *)s;
 	const unsigned char *end = start + n - 1;
@@ -133,7 +133,7 @@ jstr_strdup(const char *JSTR_RST const s)
 #else
 	const size_t len = strlen(s) + 1;
 	void *p = malloc(len);
-	if (jstr_unlikely(!p))
+	if (jstr_unlikely(p == NULL))
 		return NULL;
 	return (char *)memcpy(p, s, len);
 #endif /* JSTR_HAVE_STRCHRNUL */

@@ -19,7 +19,7 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_traits.h"
 
-#define JSTR_ERR                                                                               \
+#define JSTR_ERR                                                                                 \
 	do {                                                                                     \
 		if (JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR) {                                        \
 			fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__); \
@@ -29,12 +29,12 @@ extern "C" {
 			exit(1);                                                                 \
 	} while (0)
 
-#define JSTR_MALLOC_ERR(p, malloc_fail) \
-	do {                            \
-		if (jstr_unlikely(!(p))) {   \
-			JSTR_ERR;       \
-			malloc_fail;    \
-		}                       \
+#define JSTR_MALLOC_ERR(p, malloc_fail)           \
+	do {                                      \
+		if (jstr_unlikely((p) == NULL)) { \
+			JSTR_ERR;                 \
+			malloc_fail;              \
+		}                                 \
 	} while (0)
 #define JSTR_GROW(old_cap, new_cap)                                       \
 	do {                                                              \

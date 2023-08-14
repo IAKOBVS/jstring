@@ -28,7 +28,7 @@ JSTR_MAYBE_UNUSED
 static void
 private_jtrie_destruct_recur(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(!node))
+	if (jstr_unlikely(node == NULL))
 		return;
 	for (int i = 0; i != JTRIE_ASCII_SIZE - 1; ++i)
 		private_jtrie_destruct_recur(node->child[i]);
@@ -40,10 +40,7 @@ JSTR_MAYBE_UNUSED
 static void
 jtrie_free(struct Jtrie_node **JSTR_RST node) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(!*node))
-		return;
 	private_jtrie_destruct_recur(*node);
-	*node = NULL;
 }
 
 JSTR_INLINE
@@ -54,14 +51,14 @@ jtrie_insert(struct Jtrie_node *JSTR_RST const root,
 	     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(!*w))
+	if (jstr_unlikely(*w == '\0'))
 		return JTRIE_RET_NOERROR;
 	struct Jtrie_node *curr = root;
 	for (; *w; ++w) {
-		if (!curr->child[*w])
+		if (curr->child[*w] == NULL)
 			curr->child[*w] = jtrie_init();
 		curr = curr->child[*w];
-		if (jstr_unlikely(!curr))
+		if (jstr_unlikely(curr == NULL))
 			return JTRIE_RET_MALLOC_ERROR;
 	}
 	curr->EOW = 1;
@@ -76,14 +73,14 @@ jtrie_insertprefix(struct Jtrie_node *JSTR_RST const root,
 		   const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(!*w))
+	if (jstr_unlikely(*w == '\0'))
 		return JTRIE_RET_NOERROR;
 	struct Jtrie_node *curr = root;
 	for (; *w; ++w) {
-		if (!curr->child[*w])
+		if (curr->child[*w] == NULL)
 			curr->child[*w] = jtrie_init();
 		curr = curr->child[*w];
-		if (jstr_unlikely(!curr))
+		if (jstr_unlikely(curr == NULL))
 			return JTRIE_RET_MALLOC_ERROR;
 		curr->EOW = 1;
 	}
@@ -98,10 +95,10 @@ jtrie_remove(struct Jtrie_node *JSTR_RST const root,
 	     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(!*w))
+	if (jstr_unlikely(*w == '\0'))
 		return;
 	struct Jtrie_node *curr = root->child[*w];
-	if (jstr_unlikely(!curr))
+	if (jstr_unlikely(curr == NULL))
 		return;
 	while (*++w && curr->child[*w])
 		curr = curr->child[*w];
@@ -115,10 +112,10 @@ jtrie_removeprefix(struct Jtrie_node *JSTR_RST const root,
 		   const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(!*w))
+	if (jstr_unlikely(*w == '\0'))
 		return;
 	struct Jtrie_node *curr = root->child[*w];
-	if (jstr_unlikely(!curr))
+	if (jstr_unlikely(curr == NULL))
 		return;
 	while (*++w && curr->child[*w]) {
 		curr->EOW = 0;
@@ -140,10 +137,10 @@ jtrie_match(const struct Jtrie_node *JSTR_RST const root,
 	    const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(!w))
+	if (jstr_unlikely(*w == '\0'))
 		return 0;
 	const struct Jtrie_node *curr = root->child[*w];
-	if (jstr_unlikely(!curr))
+	if (jstr_unlikely(curr == NULL))
 		return 0;
 	while (*++w && curr->child[*w])
 		curr = curr->child[*w];
@@ -163,10 +160,10 @@ jtrie_starts_with(const struct Jtrie_node *JSTR_RST const root,
 		  const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(!w))
+	if (jstr_unlikely(*w == '\0'))
 		return NULL;
 	const struct Jtrie_node *curr = root->child[*w];
-	if (jstr_unlikely(!curr))
+	if (jstr_unlikely(curr == NULL))
 		return NULL;
 	while (*++w && curr->child[*w])
 		curr = curr->child[*w];
