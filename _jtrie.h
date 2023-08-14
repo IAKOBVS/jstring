@@ -1,10 +1,21 @@
 #ifndef JSTR_DEF_H
 #define JSTR_DEF_H
 
-#include "_jstr_macros.h"
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 #include <stdlib.h>
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#include "_jstr_macros.h"
 
 #define JTRIE_ASCII_SIZE 256
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 typedef enum {
 	JTRIE_RET_NOERROR = 0,
@@ -26,12 +37,12 @@ jtrie_init(void) JSTR_NOEXCEPT
 
 JSTR_MAYBE_UNUSED
 static void
-private_jtrie_destruct_recur(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
+private_jtrie_free_recur(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(node == NULL))
 		return;
 	for (int i = 0; i != JTRIE_ASCII_SIZE - 1; ++i)
-		private_jtrie_destruct_recur(node->child[i]);
+		private_jtrie_free_recur(node->child[i]);
 	free(node);
 	node = NULL;
 }
@@ -40,7 +51,7 @@ JSTR_MAYBE_UNUSED
 static void
 jtrie_free(struct Jtrie_node **JSTR_RST node) JSTR_NOEXCEPT
 {
-	private_jtrie_destruct_recur(*node);
+	private_jtrie_free_recur(*node);
 }
 
 JSTR_INLINE
@@ -169,5 +180,9 @@ jtrie_starts_with(const struct Jtrie_node *JSTR_RST const root,
 		curr = curr->child[*w];
 	return (struct Jtrie_node *)curr;
 }
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* JSTR_DEF_H */
