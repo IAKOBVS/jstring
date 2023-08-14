@@ -1,12 +1,12 @@
 #ifndef JSTR_H_REPLACE_DEF
 #define JSTR_H_REPLACE_DEF
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
+#ifdef ___cplusplus
 }
 #endif /* __cpluslus */
 
@@ -15,7 +15,7 @@ extern "C" {
 #include "_jstr_memmem.h"
 #include "_jstr_string.h"
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* JSTR_NAMESPACE */
 
@@ -1173,7 +1173,7 @@ jstr_rplcall_mem(char **JSTR_RST const s,
 	private_jstr_base_rplcall_mem(PRIVATE_JSTR_FLAG_USE_NOT_N, s, sz, cap, _searc, _rplc, 0, _searclen, _rplclen);
 }
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 } /* extern C */
 #endif /* __cpluslus */
 

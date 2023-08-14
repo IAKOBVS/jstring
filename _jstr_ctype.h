@@ -1,16 +1,16 @@
 #ifndef JSTR_CTYPE_H_DEF
 #define JSTR_CTYPE_H_DEF
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
-#ifdef __cplusplus
+#ifdef ___cplusplus
 }
 #endif /* __cpluslus */
 
 #include "_jstr_macros.h"
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
 
@@ -201,7 +201,7 @@ jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
 	}
 }
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 } /* extern C */
 #endif /* __cpluslus */
 

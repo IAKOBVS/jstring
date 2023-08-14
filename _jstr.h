@@ -1,19 +1,19 @@
 #ifndef JSTR_H_DEF
 #define JSTR_H_DEF
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
+#ifdef ___cplusplus
 }
 #endif /* __cpluslus */
 
-#ifndef __cplusplus
+#ifndef ___cplusplus
 #	include "_jstr_pp_va_args_macros.h"
-#endif /* __cplusplus */
+#endif /* ___cplusplus */
 
 #include "_jstr_builder.h"
 #include "_jstr_config.h"
@@ -25,7 +25,7 @@ extern "C" {
 #include "_jstr_replace.h"
 #include "_jstr_string.h"
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
 
@@ -542,7 +542,7 @@ jstr_ulltoa(char *JSTR_RST const _dst,
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);
 }
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 } /* extern C */
 #endif /* __cpluslus */
 

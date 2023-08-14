@@ -1,7 +1,7 @@
 #ifndef JSTR_REGEX_H_DEF
 #define JSTR_REGEX_H_DEF
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
 #include <assert.h>
@@ -9,7 +9,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
+#ifdef ___cplusplus
 }
 #endif /* __cpluslus */
 
@@ -104,7 +104,7 @@ typedef enum {
 #	define JSTR_HAVE_REG_ERPAREN 1
 #endif
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
 
@@ -819,7 +819,7 @@ jstr_reg_rplc_now_mem(char **JSTR_RST const s,
 	return jstr_reg_rplc_mem(s, sz, cap, _rplc, _rplclen, _preg, _eflags);
 }
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 } /* extern C */
 #endif /* __cpluslus */
 

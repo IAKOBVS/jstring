@@ -1,13 +1,13 @@
 #ifndef JSTR_BUILDER_H_DEF
 #define JSTR_BUILDER_H_DEF
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
+#ifdef ___cplusplus
 }
 #	include <utility>
 #endif /* __cpluslus */
@@ -17,7 +17,7 @@ extern "C" {
 #include "_jstr_pp_va_args_macros.h"
 #include "_jstr_templates.h"
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 #	include "_jstr_traits.h"
 #endif /* __cpluslus */
 
@@ -56,7 +56,7 @@ typedef struct Jstring {
 	size_t size;
 	size_t cap;
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 
 	JSTR_INLINE
 	Jstring(void) JSTR_NOEXCEPT
@@ -130,7 +130,7 @@ typedef struct Jstring {
 
 } Jstring;
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 extern "C" {
 #endif /* __cpluslus */
 
@@ -235,11 +235,11 @@ jstr_debug(const Jstring *JSTR_RST const j)
 	fputc('\n', stderr);
 }
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 }
 #endif /* __cpluslus */
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 
 /*
   Insert multiple strings to S.
@@ -333,6 +333,6 @@ jstr_cat_j(Jstring *JSTR_RST const j,
 #	define jstr_cat_j(j, ...)	 jstr_cat(&((j)->data), &((j)->size), &((j)->cap), __VA_ARGS__)
 #	define jstr_alloc_cat_j(j, ...) jstr_alloc_cat(&((j)->data), &((j)->size), &((j)->cap), __VA_ARGS__)
 
-#endif /* __cplusplus */
+#endif /* ___cplusplus */
 
 #endif /* JSTR_BUILDER H_DEF */

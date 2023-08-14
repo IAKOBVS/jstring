@@ -1,17 +1,17 @@
 #ifndef JSTR_TEMPLATES_DEF_H
 #define JSTR_TEMPLATES_DEF_H
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
-#endif /* _cplusplus */
+#endif /* __cplusplus */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
-#endif /* _cplusplus */
+#endif /* __cplusplus */
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 #	include <utility>
 #endif /* _cpluslus */
 
@@ -57,7 +57,7 @@ extern "C" {
 #	define JSTR_IS_MMAP(cap) (((cap) > JSTR_MIN_MMAP) ? 1 : 0)
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 
-#ifdef __cplusplus
+#ifdef ___cplusplus
 
 namespace jstr {
 
@@ -334,6 +334,6 @@ jstr_cat_f(char *s,
 	*s = '\0';
 }
 
-#endif /* _cplusplus */
+#endif /* __cplusplus */
 
 #endif /* JSTR_TMPLATES_DEF_H */
