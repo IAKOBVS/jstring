@@ -975,7 +975,7 @@ private_jstr_base_rmall_mem_p(private_jstr_flag_use_n flag,
 			      const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_searclen == 1))
-		return jstr_rmallc_mem_p(s, *_searc, sz);
+		return private_jstr_base_rmallc_mem_p(flag, s, *_searc, n, sz);
 	if (jstr_unlikely(_searclen == 0))
 		return s + sz;
 	if (flag & PRIVATE_JSTR_RPLC_FLAG_USE_N)
@@ -1095,7 +1095,7 @@ private_jstr_base_rplcall_mem(private_jstr_flag_use_n flag,
 			      const size_t _rplclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_rplclen == 0)) {
-		*sz = jstr_rmn_mem_p(*s, _searc, n, *sz, _searclen) - *s;
+		*sz = private_jstr_base_rmall_mem_p(flag, *s, _searc, n, *sz, _searclen) - *s;
 		return;
 	}
 	if (jstr_unlikely(_searclen == 0))
