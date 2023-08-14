@@ -21,13 +21,13 @@ extern "C" {
 #	include "_jstr_traits.h"
 #endif /* __cpluslus */
 
-#define PRIVATE_JSTR_MIN_ALLOC(top_cap)                             \
-	((jstr_unlikely(top_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER)) \
+#define PRIVATE_JSTR_MIN_ALLOC(new_cap)                             \
+	((jstr_unlikely(new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER)) \
 	 ? (JSTR_MIN_CAP)                                           \
-	 : (top_cap * JSTR_ALLOC_MULTIPLIER))
+	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
 
-#define PRIVATE_JSTR_ALLOC_ONLY(p, cap, top_cap, do_fail) \
-	(cap) = PRIVATE_JSTR_MIN_ALLOC(top_cap);     \
+#define PRIVATE_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
+	(cap) = PRIVATE_JSTR_MIN_ALLOC(new_cap);     \
 	(p) = (char *)malloc((cap));             \
 	JSTR_MALLOC_ERR((p), do_fail);
 
