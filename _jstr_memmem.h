@@ -26,6 +26,8 @@ typedef struct jstr_memmem_table {
 	size_t *big_table;
 } jstr_memmem_table;
 
+typedef jstr_memmem_table jstr_strstr_table;
+
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static unsigned char
