@@ -28,12 +28,12 @@ extern "C" {
 
 #define JSTR_RST JSTR_RESTRICT
 
-/* POSIX _cflags */
+/* POSIX cflags */
 #define JSTR_REG_CF_EXTENDED REG_EXTENDED
 #define JSTR_REG_CF_ICASE    REG_ICASE
 #define JSTR_REG_CF_NEWLINE  REG_NEWLINE
 
-/* POSIX _eflags */
+/* POSIX eflags */
 #define JSTR_REG_EF_NOSUB  REG_NOSUB
 #define JSTR_REG_EF_NOTBOL REG_NOTBOL
 #define JSTR_REG_EF_NOTEOL REG_NOTEOL

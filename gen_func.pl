@@ -161,28 +161,19 @@ sub gen_nonmem_funcs
 		$decl =~ s/($G_NMSPC\_\w*)_mem(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_regex_size_ptr($FUNC_NAME, $params);
-		if ($size_ptr_var) {
-			$decl .= "*$size_ptr_var = ";
-			$params =~ /char[ \t]*(\*+)[^\),]*(\w+)[,\)]/o;
-			my $char_ptr_var = $2;
-			my $deref        = ($1 eq '**') ? '*' : '';
-			$decl .= "strlen($deref$char_ptr_var);\n\t";
-		}
 		$decl .= "$RETURN$FUNC_NAME(";
 		my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
 		foreach (@new_args) {
-			if (!$size_ptr_var) {
-				if ($G_LEN) {
-					if (/(\w*)$G_LEN_PTN/) {
-						my $var = $1;
-						$decl =~ s/,[^,]*$G_LEN_PTN//o;
-						$_ = "strlen($var)";
-					}
-				} else {
-					if (/\w*$G_SIZE_PTN/) {
-						$decl =~ s/,[^,]*$G_SIZE_PTN//o;
-						$_ = "strlen($new_args[0])";
-					}
+			if ($G_LEN) {
+				if (/(\w*)$G_LEN_PTN/) {
+					my $var = $1;
+					$decl =~ s/,[^,]*$G_LEN_PTN//o;
+					$_ = "strlen($var)";
+				}
+			} else {
+				if (!$size_ptr_var && /\w*$G_SIZE_PTN/) {
+					$decl =~ s/,[^,]*$G_SIZE_PTN//o;
+					$_ = "strlen($new_args[0])";
 				}
 			}
 			$decl .= "$_, ";
@@ -230,9 +221,6 @@ sub gen_struct_funcs
 			goto NEXT;
 		}
 		if ($_ !~ $G_RE_DEFINE) {
-			goto NEXT;
-		}
-		if (($G_FNAME =~ /regex/) && $FUNC_NAME !~ /mem/) {
 			goto NEXT;
 		}
 		if ($FUNC_NAME =~ /private/) {
