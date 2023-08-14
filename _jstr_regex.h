@@ -597,7 +597,7 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 		_ptnlen = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
 		if (jstr_unlikely(_ptnlen == 0)) {
-			JSTR_DEB_PRINT("jstr_unlikely(!_ptnlen)");
+			JSTR_DEB_PRINT("jstr_unlikely(_ptnlen == 0)");
 			++p;
 			if (jstr_unlikely(*p == '\0'))
 				break;

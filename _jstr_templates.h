@@ -19,22 +19,40 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_traits.h"
 
-#define JSTR_ERR                                                                                 \
-	do {                                                                                     \
-		if (JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR) {                                        \
-			fprintf(stderr, "%s:%d:%s:Can't malloc:", __FILE__, __LINE__, __func__); \
-			perror("");                                                              \
-		}                                                                                \
-		if (JSTR_EXIT_ON_MALLOC_ERROR)                                                   \
-			exit(1);                                                                 \
-	} while (0)
+JSTR_MAYBE_UNUSED
+JSTR_NOINLINE
+static void
+JSTR_ERR(const char *JSTR_RST const FILE__,
+	 const int LINE__,
+	 const char *JSTR_RST const func__)
+{
+#if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
+	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE__, LINE__, func__);
+	perror("");
+#endif
+#if JSTR_EXIT_ON_MALLOC_ERROR
+	exit(1);
+#endif
+}
 
-#define JSTR_MALLOC_ERR(p, malloc_fail)           \
-	do {                                      \
-		if (jstr_unlikely((p) == NULL)) { \
-			JSTR_ERR;                 \
-			malloc_fail;              \
-		}                                 \
+JSTR_MAYBE_UNUSED
+JSTR_NOINLINE
+static void
+JSTR_ERR_EXIT(void)
+{
+#if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
+	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", __FILE__, __LINE__, __func__);
+	perror("");
+#endif
+	exit(1);
+}
+
+#define JSTR_MALLOC_ERR(p, malloc_fail)                         \
+	do {                                                    \
+		if (jstr_unlikely((p) == NULL)) {               \
+			JSTR_ERR(__FILE__, __LINE__, __func__); \
+			malloc_fail;                            \
+		}                                               \
 	} while (0)
 #define JSTR_GROW(old_cap, new_cap)                                       \
 	do {                                                              \
