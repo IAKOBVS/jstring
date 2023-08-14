@@ -22,8 +22,8 @@ extern "C" {
 #define JSTR_ASCII_SIZE 256
 
 typedef enum {
-	PRIVATE_JSTR_RPLC_FLAG_USE_N = 1,
-	PRIVATE_JSTR_RPLC_FLAG_USE_NOT_N = 1 << 1,
+	PRIVATE_JSTR_FLAG_USE_N = 1,
+	PRIVATE_JSTR_FLAG_USE_NOT_N = 1 << 1,
 } private_jstr_flag_use_n;
 
 JSTR_INLINE
@@ -628,7 +628,7 @@ private_jstr_base_rmallc_mem_p(private_jstr_flag_use_n flag,
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
-	while ((flag & PRIVATE_JSTR_RPLC_FLAG_USE_N && n--)
+	while ((flag & PRIVATE_JSTR_FLAG_USE_N && n--)
 	       && (p = (unsigned char *)memchr(p, c, end - p)))
 		private_jstr_rmall_in_place(&dst, &old, &p, 1);
 	memmove(dst, old, end - old + 1);
@@ -649,7 +649,7 @@ jstr_rmallc_mem_p(char *JSTR_RST const s,
 		  const int c,
 		  const size_t sz) JSTR_NOEXCEPT
 {
-	return private_jstr_base_rmallc_mem_p(PRIVATE_JSTR_RPLC_FLAG_USE_NOT_N, s, c, 0, sz);
+	return private_jstr_base_rmallc_mem_p(PRIVATE_JSTR_FLAG_USE_NOT_N, s, c, 0, sz);
 }
 
 /*
@@ -693,7 +693,7 @@ jstr_rmnc_mem_p(char *JSTR_RST const s,
 		size_t n,
 		const size_t sz) JSTR_NOEXCEPT
 {
-	return private_jstr_base_rmallc_mem_p(PRIVATE_JSTR_RPLC_FLAG_USE_N, s, c, n, sz);
+	return private_jstr_base_rmallc_mem_p(PRIVATE_JSTR_FLAG_USE_N, s, c, n, sz);
 }
 
 /*
@@ -978,7 +978,7 @@ private_jstr_base_rmall_mem_p(private_jstr_flag_use_n flag,
 		return private_jstr_base_rmallc_mem_p(flag, s, *_searc, n, sz);
 	if (jstr_unlikely(_searclen == 0))
 		return s + sz;
-	if (flag & PRIVATE_JSTR_RPLC_FLAG_USE_N)
+	if (flag & PRIVATE_JSTR_FLAG_USE_N)
 		if (jstr_unlikely(n == 0))
 			return s + sz;
 	unsigned char *dst = (unsigned char *)s;
@@ -989,7 +989,7 @@ private_jstr_base_rmall_mem_p(private_jstr_flag_use_n flag,
 	jstr_memmem_comp_mem(&t, _searc, _searclen);
 	while ((p = (unsigned char *)jstr_memmem_exec(&t, (char *)p, end - p))) {
 		private_jstr_rmall_in_place(&dst, &old, &p, _searclen);
-		if (flag & PRIVATE_JSTR_RPLC_FLAG_USE_N)
+		if (flag & PRIVATE_JSTR_FLAG_USE_N)
 			if (jstr_unlikely(!--n))
 				break;
 	}
@@ -1013,7 +1013,7 @@ jstr_rmn_mem_p(char *JSTR_RST const s,
 	       size_t sz,
 	       const size_t _searclen) JSTR_NOEXCEPT
 {
-	return private_jstr_base_rmall_mem_p(PRIVATE_JSTR_RPLC_FLAG_USE_N, s, _searc, n, sz, _searclen);
+	return private_jstr_base_rmall_mem_p(PRIVATE_JSTR_FLAG_USE_N, s, _searc, n, sz, _searclen);
 }
 
 /*
@@ -1031,7 +1031,7 @@ jstr_rmall_mem_p(char *JSTR_RST const s,
 		 size_t sz,
 		 const size_t _searclen) JSTR_NOEXCEPT
 {
-	return private_jstr_base_rmall_mem_p(PRIVATE_JSTR_RPLC_FLAG_USE_NOT_N, s, _searc, 0, sz, _searclen);
+	return private_jstr_base_rmall_mem_p(PRIVATE_JSTR_FLAG_USE_NOT_N, s, _searc, 0, sz, _searclen);
 }
 
 /*
@@ -1100,7 +1100,7 @@ private_jstr_base_rplcall_mem(private_jstr_flag_use_n flag,
 	}
 	if (jstr_unlikely(_searclen == 0))
 		return;
-	if (flag & PRIVATE_JSTR_RPLC_FLAG_USE_N)
+	if (flag & PRIVATE_JSTR_FLAG_USE_N)
 		if (jstr_unlikely(n == 0))
 			return;
 	jstr_memmem_table t;
@@ -1149,7 +1149,7 @@ jstr_rplcn_mem(char **JSTR_RST const s,
 	       const size_t _searclen,
 	       const size_t _rplclen) JSTR_NOEXCEPT
 {
-	private_jstr_base_rplcall_mem(PRIVATE_JSTR_RPLC_FLAG_USE_N, s, sz, cap, _searc, _rplc, n, _searclen, _rplclen);
+	private_jstr_base_rplcall_mem(PRIVATE_JSTR_FLAG_USE_N, s, sz, cap, _searc, _rplc, n, _searclen, _rplclen);
 }
 
 /*
@@ -1166,7 +1166,7 @@ jstr_rplcall_mem(char **JSTR_RST const s,
 		 const size_t _searclen,
 		 const size_t _rplclen) JSTR_NOEXCEPT
 {
-	private_jstr_base_rplcall_mem(PRIVATE_JSTR_RPLC_FLAG_USE_NOT_N, s, sz, cap, _searc, _rplc, 0, _searclen, _rplclen);
+	private_jstr_base_rplcall_mem(PRIVATE_JSTR_FLAG_USE_NOT_N, s, sz, cap, _searc, _rplc, 0, _searclen, _rplclen);
 }
 
 #ifdef __cplusplus
