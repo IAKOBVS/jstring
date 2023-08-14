@@ -218,7 +218,7 @@ jstr_debug(const Jstring *JSTR_RST const j)
 {
 	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->cap);
 	fprintf(stderr, "strlen:%zu\n", strlen(j->data));
-	fprintf(stderr, "data puts():%s\n", j->data);
+	fprintf(stderr, "data puts:%s\n", j->data);
 	fputs("data:", stderr);
 	fwrite(j->data, 1, j->size, stderr);
 	fputc('\n', stderr);
