@@ -137,7 +137,7 @@ JSTR_WARN_UNUSED
 JSTR_CONST
 JSTR_INLINE
 static void *
-jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const ptable,
+jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
 			   const char *JSTR_RST const hs,
 			   const size_t hslen) JSTR_NOEXCEPT
 {
@@ -180,17 +180,6 @@ jstr_memmem_exec_constexpr(const jstr_memmem_table *JSTR_RST const ptable,
 	else
 		PRIVATE_JSTR_MEMMEM_EXEC(ptable->small_table);
 	return NULL;
-}
-
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_CONST
-static void *
-jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
-		 const char *JSTR_RST const hs,
-		 const size_t hslen) JSTR_NOEXCEPT
-{
-	return jstr_memmem_exec_constexpr(ptable, hs, hslen);
 }
 
 JSTR_INLINE
