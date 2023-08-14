@@ -579,20 +579,18 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 		return jstr_reg_rmall_mem(*s, sz, _preg, _eflags);
 	}
 	regmatch_t rm;
-#if 1
 	size_t _ptnlen;
 	unsigned char *tmp;
-#endif
-	unsigned char *dst = (unsigned char *)*s;
+	Jstr_reg_errcode ret = JSTR_REG_RET_NOMATCH;
+	typedef unsigned char uc;
+	unsigned char *dst = *(uc **)s;
 	unsigned char *p = dst;
 	const unsigned char *old = dst;
-	unsigned char *sp = *(unsigned char **)s;
-	Jstr_reg_errcode ret = JSTR_REG_RET_NOMATCH;
 #if JSTR_HAVE_REALLOC_MREMAP
 	const int is_mmap = JSTR_IS_MMAP(*cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((flag & PRIVATE_JSTR_FLAG_USE_N && n--)
-	       && PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, (*(unsigned char **)s + *sz) - p, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
+	       && PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, (*(uc **)s + *sz) - p, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		ret = JSTR_REG_RET_NOERROR;
 		_ptnlen = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
@@ -626,7 +624,7 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 				dst += (p - old);
 				memmove(dst + _rplclen,
 					p + _ptnlen,
-					(*(unsigned char **)s + *sz) - (p + _ptnlen) + 1);
+					(*(uc **)s + *sz) - (p + _ptnlen) + 1);
 				memcpy(dst, _rplc, _rplclen);
 				dst += _rplclen;
 				old = dst;
@@ -634,7 +632,7 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 				JSTR_DEB_PRINT("dst == old");
 				memmove(p + _rplclen,
 					p + _ptnlen,
-					(*(unsigned char **)s + *sz) - (p + _ptnlen) + 1);
+					(*(uc **)s + *sz) - (p + _ptnlen) + 1);
 				memcpy(p, _rplc, _rplclen);
 			}
 		} else {
@@ -643,43 +641,43 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 			if (jstr_unlikely(is_mmap)) {
 				if (dst != old)
 					memmove(dst, old, p - old);
+				tmp = *(uc **)s;
 				JSTR_REALLOC(*s, *cap, *sz + _rplclen - _ptnlen, return JSTR_REG_RET_MALLOC_ERROR);
+				*(uc **)s = *(uc **)s;
 				memmove(p + _rplclen,
 					p + _ptnlen,
-					(sp + *sz) - (p + _ptnlen) + 1);
+					(tmp + *sz) - (p + _ptnlen) + 1);
 				memcpy(p, _rplc, _rplclen);
-				p = *(unsigned char **)s + (p - sp);
-				dst = *(unsigned char **)s + (dst - sp) + _rplclen;
+				p = *(uc **)s + (p - tmp);
+				dst = *(uc **)s + (dst - tmp) + _rplclen;
 				old = dst;
-				sp = *(unsigned char **)s;
 			} else {
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 				JSTR_GROW(*cap, *sz + _rplclen - _ptnlen);
-				tmp = (unsigned char *)malloc(*cap);
+				tmp = (uc *)malloc(*cap);
 				JSTR_MALLOC_ERR(tmp, return JSTR_REG_RET_MALLOC_ERROR);
 				if (dst != old) {
-					memcpy(tmp, sp, dst - sp);
-					memcpy(tmp + (dst - sp),
+					memcpy(tmp, *(uc **)s, dst - *(uc **)s);
+					memcpy(tmp + (dst - *(uc **)s),
 					       old,
 					       p - old);
-					dst = tmp + (dst - sp);
+					dst = tmp + (dst - *(uc **)s);
 					memcpy(dst, _rplc, _rplclen);
 					dst += _rplclen;
 					memcpy(dst,
 					       p,
-					       (sp + *sz) - (p + _ptnlen) + 1);
+					       (*(uc **)s + *sz) - (p + _ptnlen) + 1);
 					old = dst;
 				} else {
-					memcpy(tmp, sp, p - sp);
-					memcpy(tmp + (p - sp), _rplc, _rplclen);
-					memcpy(tmp + (p - sp) + _rplclen,
+					memcpy(tmp, *(uc **)s, p - *(uc **)s);
+					memcpy(tmp + (p - *(uc **)s), _rplc, _rplclen);
+					memcpy(tmp + (p - *(uc **)s) + _rplclen,
 					       p + _ptnlen,
-					       (sp + *sz) - (p + _ptnlen) + 1);
+					       (*(uc **)s + *sz) - (p + _ptnlen) + 1);
 				}
-				p = tmp + (p - sp);
+				p = tmp + (p - *(uc **)s);
 				free(*s);
 				*s = (char *)tmp;
-				sp = tmp;
 			}
 #if JSTR_HAVE_REALLOC_MREMAP
 		}
@@ -690,8 +688,8 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 			break;
 	}
 	if (dst != old) {
-		memmove(dst, old, (sp + *sz) - old + 1);
-		*sz = (dst + (sp + *sz - old)) - sp;
+		memmove(dst, old, (*(uc **)s + *sz) - old + 1);
+		*sz = (dst + (*(uc **)s + *sz - old)) - *(uc **)s;
 	}
 	return ret;
 }
