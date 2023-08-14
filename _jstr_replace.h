@@ -95,16 +95,12 @@ private_jstr_slip_mem_realloc(char **JSTR_RST const s,
 			      const char *JSTR_RST const _rplc,
 			      const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (*cap > *sz + _rplclen) {
-_MOVE:
-		memmove(*s + at + _rplclen,
-			*s + at,
-			*sz - at + 1);
-		memcpy(*s + at, _rplc, _rplclen);
-	} else {
+	if (*cap <= *sz + _rplclen)
 		JSTR_REALLOC(*s, *cap, *sz + _rplclen, return NULL);
-		goto _MOVE;
-	}
+	memmove(*s + at + _rplclen,
+		*s + at,
+		*sz - at + 1);
+	memcpy(*s + at, _rplc, _rplclen);
 	*sz += _rplclen;
 	return *s + at + _rplclen;
 }
@@ -154,19 +150,16 @@ private_jstr_rplcat_mem_realloc(char **JSTR_RST const s,
 				const size_t _rplclen,
 				const size_t _searclen) JSTR_NOEXCEPT
 {
-	if (*cap > *sz + _rplclen - _searclen) {
-		if (jstr_likely(_rplclen != _searclen))
-_MOVE:
-			memmove(*s + at + _rplclen,
-				*s + at + _searclen,
-				*sz - (at + _searclen) + 1);
+	if (jstr_unlikely(_rplclen == _searclen)) {
 		memcpy(*s + at, _rplc, _rplclen);
-
-	} else {
+	} else if (*cap <= *sz + _rplclen - _searclen) {
 		JSTR_REALLOC(*s, *cap, *sz + _rplclen, return NULL);
-		goto _MOVE;
+		memmove(*s + at + _rplclen,
+			*s + at + _searclen,
+			*sz - (at + _searclen) + 1);
+		memcpy(*s + at, _rplc, _rplclen);
+		*sz += _rplclen - _searclen;
 	}
-	*sz += _rplclen - _searclen;
 	return *s + at + _rplclen;
 }
 
@@ -181,13 +174,14 @@ private_jstr_rplcat_mem_malloc(char **JSTR_RST const s,
 			       const size_t _rplclen,
 			       const size_t _searclen) JSTR_NOEXCEPT
 {
-	if (*cap > *sz + _rplclen - _searclen) {
-		if (jstr_likely(_rplclen != _searclen))
-			memmove(*s + at + _rplclen,
-				*s + at + _searclen,
-				*sz - (at + _searclen) + 1);
+	if (jstr_unlikely(_rplclen == _searclen)) {
 		memcpy(*s + at, _rplc, _rplclen);
-
+		goto RET;
+	} else if (*cap > *sz + _rplclen - _searclen) {
+		memmove(*s + at + _rplclen,
+			*s + at + _searclen,
+			*sz - (at + _searclen) + 1);
+		memcpy(*s + at, _rplc, _rplclen);
 	} else {
 		JSTR_GROW(*cap, *sz + _rplclen - _searclen);
 		char *const tmp = (char *)malloc(*cap);
@@ -196,11 +190,12 @@ private_jstr_rplcat_mem_malloc(char **JSTR_RST const s,
 		memcpy(tmp + at, _rplc, _rplclen);
 		memcpy(tmp + at + _rplclen,
 		       *s + at + _searclen,
-		       *sz - at + _searclen + 1);
+		       *sz - (at + _searclen) + 1);
 		free(*s);
 		*s = tmp;
 	}
 	*sz += _rplclen - _searclen;
+RET:
 	return *s + at + _rplclen;
 }
 

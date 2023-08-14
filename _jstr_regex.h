@@ -641,11 +641,8 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 			JSTR_DEB_PRINT("cap <= *sz + _rplclen - _ptnlen");
 #if JSTR_HAVE_REALLOC_MREMAP
 			if (jstr_unlikely(is_mmap)) {
-				if (dst != old) {
-					memmove(dst,
-						old,
-						p - old);
-				}
+				if (dst != old)
+					memmove(dst, old, p - old);
 				JSTR_REALLOC(*s, *cap, *sz + _rplclen - _ptnlen, return JSTR_REG_RET_MALLOC_ERROR);
 				memmove(p + _rplclen,
 					p + _ptnlen,
