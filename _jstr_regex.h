@@ -121,7 +121,7 @@ JSTR_COLD
 JSTR_MAYBE_UNUSED
 static void
 jstr_reg_error(const int _reg_errcode,
-	       const regex_t *_preg) JSTR_NOEXCEPT
+	       const regex_t *JSTR_RST const _preg) JSTR_NOEXCEPT
 {
 	char buf[64];
 	regerror(_reg_errcode, _preg, buf, 32);
@@ -159,7 +159,7 @@ JSTR_CONST
 static Jstr_reg_errcode
 jstr_reg_exec(const regex_t *JSTR_RST _preg,
 	      const char *JSTR_RST const s,
-	      size_t _nmatch,
+	      const size_t _nmatch,
 	      regmatch_t *JSTR_RST const _pmatch,
 	      const int _eflags)
 {
@@ -186,7 +186,7 @@ static Jstr_reg_errcode
 jstr_reg_exec_mem(const regex_t *JSTR_RST _preg,
 		  const char *JSTR_RST const s,
 		  const size_t sz,
-		  size_t _nmatch,
+		  const size_t _nmatch,
 		  regmatch_t *JSTR_RST const _pmatch,
 		  const int _eflags)
 {
@@ -371,7 +371,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static Jstr_reg_errcode
 jstr_reg_rm_mem(char *JSTR_RST const s,
-		size_t *JSTR_RST sz,
+		size_t *JSTR_RST const sz,
 		const regex_t *JSTR_RST const _preg,
 		const int _eflags) JSTR_NOEXCEPT
 {
@@ -393,7 +393,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static Jstr_reg_errcode
 jstr_reg_rm_now_mem(char *JSTR_RST const s,
-		    size_t *JSTR_RST sz,
+		    size_t *JSTR_RST const sz,
 		    const char *JSTR_RST const _ptn,
 		    regex_t *JSTR_RST const _preg,
 		    const int _cflags,
@@ -413,7 +413,7 @@ JSTR_NONNULL_ALL
 static Jstr_reg_errcode
 private_jstr_reg_base_rmall_mem(private_jstr_flag_use_n flag,
 				char *JSTR_RST const s,
-				size_t *JSTR_RST sz,
+				size_t *JSTR_RST const sz,
 				size_t n,
 				const regex_t *JSTR_RST const _preg,
 				const int _eflags) JSTR_NOEXCEPT
@@ -449,7 +449,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static Jstr_reg_errcode
 jstr_reg_rmall_mem(char *JSTR_RST const s,
-		   size_t *JSTR_RST sz,
+		   size_t *JSTR_RST const sz,
 		   const regex_t *JSTR_RST const _preg,
 		   const int _eflags) JSTR_NOEXCEPT
 {
@@ -461,7 +461,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static Jstr_reg_errcode
 jstr_reg_rmn_mem(char *JSTR_RST const s,
-		 size_t *JSTR_RST sz,
+		 size_t *JSTR_RST const sz,
 		 const size_t n,
 		 const regex_t *JSTR_RST const _preg,
 		 const int _eflags) JSTR_NOEXCEPT
@@ -475,7 +475,7 @@ JSTR_INLINE
 static Jstr_reg_errcode
 jstr_reg_rmn_now_mem(char *JSTR_RST const s,
 		     const char *JSTR_RST const _ptn,
-		     size_t *JSTR_RST sz,
+		     size_t *JSTR_RST const sz,
 		     const size_t n,
 		     regex_t *JSTR_RST const _preg,
 		     const int _cflags,
@@ -494,7 +494,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static Jstr_reg_errcode
 jstr_reg_rmall_now_mem(char *JSTR_RST const s,
-		       size_t *JSTR_RST sz,
+		       size_t *JSTR_RST const sz,
 		       const char *JSTR_RST const _ptn,
 		       regex_t *JSTR_RST const _preg,
 		       const int _cflags,
