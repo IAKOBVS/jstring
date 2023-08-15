@@ -1177,37 +1177,4 @@ jstr_rplcall_mem(char **JSTR_RST const s,
 } /* extern C */
 #endif /* __cpluslus */
 
-#undef JSTR_ASCII_SIZE
-
-#if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC poison private_jstr_memmem2
-#	pragma GCC poison private_jstr_memmem3
-#	pragma GCC poison private_jstr_memmem4
-#	pragma GCC poison private_jstr_memmem5
-#	pragma GCC poison private_jstr_next_pow2_32
-#	pragma GCC poison private_jstr_next_pow2_32_constexpr
-#	pragma GCC poison private_jstr_next_pow2_64
-#	pragma GCC poison private_jstr_next_pow2_64_constexpr
-#	pragma GCC poison private_jstr_rplcall_f
-#	pragma GCC poison private_jstr_rplcall_grow
-#	pragma GCC poison private_jstr_rplcall_memmem2
-#	pragma GCC poison private_jstr_rplcall_memmem3
-#	pragma GCC poison private_jstr_rplcall_memmem4
-#	pragma GCC poison private_jstr_rplcall_memmem5
-#	pragma GCC poison private_jstr_rplcn_f
-#	pragma GCC poison private_jstr_rplcn_grow
-#	pragma GCC poison private_jstr_rplcn_memmem2
-#	pragma GCC poison private_jstr_rplcn_memmem3
-#	pragma GCC poison private_jstr_rplcn_memmem4
-#	pragma GCC poison private_jstr_rplcn_memmem5
-#	pragma GCC poison private_jstr_rmall_memmem2
-#	pragma GCC poison private_jstr_rmall_memmem3
-#	pragma GCC poison private_jstr_rmall_memmem4
-#	pragma GCC poison private_jstr_rmall_memmem5
-#	pragma GCC poison private_jstr_rmn_memmem2
-#	pragma GCC poison private_jstr_rmn_memmem3
-#	pragma GCC poison private_jstr_rmn_memmem4
-#	pragma GCC poison private_jstr_rmn_memmem5
-#endif /* defined(__GNUC__) || defined(__clang__) */
-
 #endif /* JSTR_H_REPLACE_DEF */

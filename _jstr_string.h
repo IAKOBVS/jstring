@@ -661,15 +661,4 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 } /* extern C */
 #endif /* JSTR_NAMESPACE */
 
-#undef JSTR_HASH2
-#undef JSTR_HASH2_LOWER
-#undef JSTR_GLOBALIZE
-#undef PRIVATE_JSTR_MEMRMEM
-#undef PRIVATE_JSTR_STRSTRCASE
-
-#if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC poison private_jstr_memrmem
-#	pragma GCC poison private_jstr_memcasemem3
-#endif /* defined(__GNUC__) || defined(__clang__) */
-
 #endif /* JSTR_STRING_H_DEF */

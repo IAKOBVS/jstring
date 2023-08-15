@@ -18,7 +18,7 @@ extern "C" {
 #include "_jstr_templates.h"
 
 #ifdef __cplusplus
-#	include "_jstr_traits.h"
+#	include "_jtraits.h"
 #endif /* __cpluslus */
 
 #define PRIVATE_JSTR_MIN_ALLOC(new_cap)                                  \

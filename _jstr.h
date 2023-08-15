@@ -15,13 +15,13 @@ extern "C" {
 #	include "_jstr_pp_va_args_macros.h"
 #endif /* __cplusplus */
 
+#include "_jregex.h"
 #include "_jstr_builder.h"
 #include "_jstr_config.h"
 #include "_jstr_ctype.h"
 #include "_jstr_io.h"
 #include "_jstr_macros.h"
 #include "_jstr_memmem.h"
-#include "_jregex.h"
 #include "_jstr_replace.h"
 #include "_jstr_string.h"
 
@@ -546,21 +546,38 @@ jstr_ulltoa(char *JSTR_RST const _dst,
 } /* extern C */
 #endif /* __cpluslus */
 
+#undef JSTR_ALLOC_MULTIPLIER
+#undef JSTR_ASCII_SIZE
 #undef JSTR_EXIT_ON_MALLOC_ERROR
-#undef JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
+#undef JSTR_FREE_ON_DESTRUCTOR_CPP
+#undef JSTR_GROW
+#undef JSTR_GROWTH_MULTIPLIER
+#undef JSTR_HASH2
+#undef JSTR_HASH2_LOWER
+#undef JSTR_H_REPLACE_DEF
+#undef JSTR_IS_CHAR
+#undef JSTR_IS_MMAP
 #undef JSTR_MAX_INT_DIGITS
 #undef JSTR_MAX_LONG_DIGITS
 #undef JSTR_MAX_LONG_LONG_DIGITS
 #undef JSTR_MAX_UINT_DIGITS
 #undef JSTR_MAX_ULONG_DIGITS
 #undef JSTR_MAX_ULONG_LONG_DIGITS
-#undef PRIVATE_JSTR_NUMTOSTR
-#undef PRIVATE_JSTR_UNUMTOSTR
-#undef PRIVATE_JSTR_MEMMEM5_SHIFTS
-#undef DEFINE_JSTR_MEMMEMN_FUNCS
-#undef JSTR_HASH2
-#undef JSTR_REPLACE
-#undef JSTR_PRIVATE
+#undef JSTR_MIN_MMAP
+#undef JSTR_NEXT_POW2
+#undef JSTR_NULLIFY_PTR_ON_DELETE
+#undef JSTR_NULLIFY_PTR_ON_DELETE
+#undef JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
+#undef JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
+#undef JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
+#undef JSTR_REALLOC
 #undef JSTR_RST
+#undef JSTR_SAME_TYPE
+#undef PRIVATE_JSTR_ALLOC_ONLY
+#undef PRIVATE_JSTR_MEMMEM
+#undef PRIVATE_JSTR_MEMMEMR
+#undef PRIVATE_JSTR_MEMMEM_EXEC
+#undef PRIVATE_JSTR_MIN_ALLOC
+#undef PRIVATE_JSTR_STRSTRCASE
 
 #endif /* JSTR_H_DEF */
