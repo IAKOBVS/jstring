@@ -147,7 +147,7 @@ jstr_memmem_comp(jstr_memmem_table *JSTR_RST const _ptable,
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
-JSTR_CONST
+JSTR_PURE
 static void *
 private_jstr_pre_memmem2(const unsigned char *JSTR_RST hs,
 			 const unsigned char *JSTR_RST const ne,
@@ -161,7 +161,7 @@ private_jstr_pre_memmem2(const unsigned char *JSTR_RST hs,
 	return (hw == nw) ? (void *)(hs - 2) : NULL;
 }
 
-JSTR_CONST
+JSTR_PURE
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
@@ -178,7 +178,7 @@ private_jstr_pre_memmem3(const unsigned char *JSTR_RST hs,
 	return (hw == nw) ? (void *)(hs - 3) : NULL;
 }
 
-JSTR_CONST
+JSTR_PURE
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
@@ -197,7 +197,7 @@ private_jstr_pre_memmem4(const unsigned char *JSTR_RST hs,
 
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_CONST
+JSTR_PURE
 JSTR_INLINE
 static void *
 jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
@@ -248,7 +248,7 @@ jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
-JSTR_CONST
+JSTR_PURE
 static char *
 jstr_strstr_exec(const jstr_memmem_table *JSTR_RST const ptable,
 		 const char *JSTR_RST const hs) JSTR_NOEXCEPT

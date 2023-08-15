@@ -72,7 +72,7 @@ jstr_append_mem(char **JSTR_RST const s,
   Occurences of C in S.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
@@ -91,7 +91,7 @@ jstr_countc(const char *JSTR_RST s,
   Occurences of C in S.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
@@ -113,7 +113,7 @@ jstr_countc_mem(const char *JSTR_RST s,
   occurences of NE in HS.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
@@ -139,7 +139,7 @@ jstr_count_mem(const char *JSTR_RST s,
   occurences of NE in HS.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
@@ -373,7 +373,7 @@ jstr_insertaft_mem(char **JSTR_RST const s,
   Let memcmp do the bounds check.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
@@ -392,7 +392,7 @@ jstr_endswith_mem_f(const char *JSTR_RST const _hs,
   1 if false.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int

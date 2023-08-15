@@ -132,7 +132,7 @@ jreg_error(const int _reg_errcode,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
-JSTR_CONST
+JSTR_PURE
 static Jstr_reg_errcode
 jreg_comp(regex_t *JSTR_RST const _preg,
 	      const char *JSTR_RST const _ptn,
@@ -155,7 +155,7 @@ JSTR_NONNULL(1)
 JSTR_NONNULL(2)
 JSTR_INLINE
 JSTR_WARN_UNUSED
-JSTR_CONST
+JSTR_PURE
 static Jstr_reg_errcode
 jreg_exec(const regex_t *JSTR_RST _preg,
 	      const char *JSTR_RST const s,
@@ -180,7 +180,7 @@ jreg_exec(const regex_t *JSTR_RST _preg,
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_WARN_UNUSED
 static Jstr_reg_errcode
 jreg_exec_mem(const regex_t *JSTR_RST _preg,

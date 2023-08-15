@@ -74,7 +74,7 @@ jstr_stpcpy(char *JSTR_RST const _dst,
   NULL if not found.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static void *
@@ -179,7 +179,7 @@ jstr_stpcat(char *JSTR_RST _dst,
   non-zero otherwise.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
@@ -229,7 +229,7 @@ jstr_strncasecmp(const char *JSTR_RST const s1,
   non-zero otherwise.
 */
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
@@ -268,7 +268,7 @@ jstr_strcasecmp(const char *JSTR_RST s1,
 #endif
 }
 
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -321,7 +321,7 @@ private_jstr_memrmem(const void *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_INLINE
@@ -378,7 +378,7 @@ jstr_memrmem_constexpr(const void *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static void *
@@ -396,7 +396,7 @@ jstr_memrmem(const void *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -414,7 +414,7 @@ jstr_strrstr_constexpr(const char *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -426,7 +426,7 @@ jstr_strrstr(const char *JSTR_RST const _hs,
 	return (char *)jstr_memrmem(_hs, strlen(_hs), _ne, strlen((char *)_ne));
 }
 
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -481,7 +481,7 @@ private_jstr_memcasemem3(const char *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -534,7 +534,7 @@ private_jstr_strcasechr(const char *JSTR_RST const s,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -586,7 +586,7 @@ do2:
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -618,7 +618,7 @@ jstr_memcasemem(const char *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -641,7 +641,7 @@ jstr_strcasestr_constexpr(const char *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_CONST
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED

@@ -83,7 +83,7 @@ namespace _private {
 
 JSTR_WARN_UNUSED
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_WARN_UNUSED
 static constexpr size_t
 strlen_args() JSTR_NOEXCEPT
@@ -95,7 +95,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_WARN_UNUSED
-JSTR_CONST
+JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL static size_t
 strlen_args(Str &&s,
@@ -170,7 +170,7 @@ cat_loop_assign(char **dst,
 
 JSTR_WARN_UNUSED
 JSTR_INLINE
-JSTR_CONST
+JSTR_PURE
 JSTR_WARN_UNUSED
 static constexpr size_t
 strlen_args(size_t *) JSTR_NOEXCEPT
@@ -181,7 +181,7 @@ strlen_args(size_t *) JSTR_NOEXCEPT
 template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str>(), int>::type>
 JSTR_WARN_UNUSED
-JSTR_CONST
+JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL static size_t
 strlen(size_t **JSTR_RST strlen_arr,
@@ -194,7 +194,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_WARN_UNUSED
-JSTR_CONST
+JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL static size_t
 strlen_args(size_t *strlen_arr,
