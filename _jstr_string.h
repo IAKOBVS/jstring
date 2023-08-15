@@ -285,35 +285,35 @@ private_jstr_memrmem(const void *JSTR_RST const _hs,
 		     const size_t _nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define PRIVATE_JSTR_MEMMEMR(shift_type, ne_iterator_type)                                                                                             \
-	do {                                                                                                                                           \
-		const unsigned char *h = (unsigned char *)_hs + _hslen + _nelen;                                                                       \
-		const unsigned char *const n = (unsigned char *)_ne;                                                                                   \
-		const unsigned char *const start = (unsigned char *)_hs;                                                                               \
-		size_t tmp;                                                                                                                            \
-		size_t shift1;                                                                                                                         \
-		size_t mtc1 = _nelen - 1;                                                                                                              \
-		size_t off = 0;                                                                                                                        \
-		shift_type shift[256];                                                                                                                 \
-		memset(shift, 0, sizeof(shift));                                                                                                       \
-		for (ne_iterator_type i = 1; (sizeof(ne_iterator_type) == sizeof(size_t)) ? jstr_likely(i < mtc1) : (i < (ne_iterator_type)mtc1); ++i) \
-			shift[JSTR_HASH2(n + i)] = i;                                                                                                  \
-		shift1 = mtc1 - shift[JSTR_HASH2(n + mtc1)];                                                                                           \
-		shift[JSTR_HASH2(n + mtc1)] = mtc1;                                                                                                    \
-		do {                                                                                                                                   \
-			do {                                                                                                                           \
-				h -= mtc1;                                                                                                             \
-				tmp = shift[JSTR_HASH2(h)];                                                                                            \
-			} while (!tmp && h >= start);                                                                                                  \
-			h -= tmp;                                                                                                                      \
-			if (mtc1 < 15 || !memcmp(h + off, n + off, 8)) {                                                                               \
-				if (!memcmp(h, n, _nelen))                                                                                             \
-					return (void *)h;                                                                                              \
-				off = (off >= 8 ? off : mtc1) - 8;                                                                                     \
-			}                                                                                                                              \
-			h -= shift1;                                                                                                                   \
-		} while (h >= start);                                                                                                                  \
-		return NULL;                                                                                                                           \
+#define PRIVATE_JSTR_MEMMEMR(shift_type, ne_iterator_type)                       \
+	do {                                                                     \
+		const unsigned char *h = (unsigned char *)_hs + _hslen + _nelen; \
+		const unsigned char *const n = (unsigned char *)_ne;             \
+		const unsigned char *const start = (unsigned char *)_hs;         \
+		size_t tmp;                                                      \
+		size_t shift1;                                                   \
+		size_t mtc1 = _nelen - 1;                                        \
+		size_t off = 0;                                                  \
+		shift_type shift[256];                                           \
+		memset(shift, 0, sizeof(shift));                                 \
+		for (ne_iterator_type i = 1; jstr_likely(i < mtc1); ++i)         \
+			shift[JSTR_HASH2(n + i)] = i;                            \
+		shift1 = mtc1 - shift[JSTR_HASH2(n + mtc1)];                     \
+		shift[JSTR_HASH2(n + mtc1)] = mtc1;                              \
+		do {                                                             \
+			do {                                                     \
+				h -= mtc1;                                       \
+				tmp = shift[JSTR_HASH2(h)];                      \
+			} while (!tmp && h >= start);                            \
+			h -= tmp;                                                \
+			if (mtc1 < 15 || !memcmp(h + off, n + off, 8)) {         \
+				if (!memcmp(h, n, _nelen))                       \
+					return (void *)h;                        \
+				off = (off >= 8 ? off : mtc1) - 8;               \
+			}                                                        \
+			h -= shift1;                                             \
+		} while (h >= start);                                            \
+		return NULL;                                                     \
 	} while (0)
 	if (jstr_unlikely(_hslen > 256))
 		PRIVATE_JSTR_MEMMEMR(size_t, size_t);
