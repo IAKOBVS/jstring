@@ -625,7 +625,7 @@ private_jstr_base_rmallc_mem_p(private_jstr_flag_use_n flag,
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
-	while ((flag & PRIVATE_JSTR_FLAG_USE_N ? n-- : 1)
+	while ((flag & PRIVATE_JSTR_FLAG_USE_N ? jstr_likely(n--) : 1)
 	       && (p = (unsigned char *)memchr(p, c, end - p)))
 		private_jstr_rmall_in_place(&dst, &old, &p, 1);
 	memmove(dst, old, end - old + 1);
@@ -711,7 +711,7 @@ jstr_rmnc_p(char *JSTR_RST const s,
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
-	while (n-- && *(p = (unsigned char *)strchrnul((char *)p, c)))
+	while (jstr_likely(n--) && *(p = (unsigned char *)strchrnul((char *)p, c)))
 		private_jstr_rmall_in_place(&dst, &old, &p, 1);
 	memmove(dst, old, p - old + 1);
 	return (char *)dst + (p - old);
@@ -842,7 +842,7 @@ jstr_rplcnc_mem(char *JSTR_RST s,
 		const size_t sz) JSTR_NOEXCEPT
 {
 	const char *JSTR_RST const end = s + sz;
-	while (--n && (s = (char *)memchr(s, _searc, end - s)))
+	while (jstr_likely(--n) && (s = (char *)memchr(s, _searc, end - s)))
 		*s++ = _rplc;
 }
 

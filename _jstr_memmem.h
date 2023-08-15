@@ -65,12 +65,11 @@ jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
 		JSTR_ASSERT_IS_SIZE(_nelen);                                                                                          \
 		(_jstr_memmem_table)->ne = (const unsigned char *)_ne;                                                                \
 		(_jstr_memmem_table)->nelen = _nelen;                                                                                 \
-		if (jstr_unlikely(_nelen < 5)) {                                                                                      \
-		} else if (jstr_unlikely(_nelen > 256)) {                                                                             \
+		if (jstr_unlikely(_nelen > 256)) {                                                                                    \
 			if ((_jstr_memmem_table)->big_table == NULL)                                                                  \
 				(_jstr_memmem_table)->big_table = (size_t *)alloca(256 * sizeof(size_t));                             \
 			memset((_jstr_memmem_table)->big_table, 0, 256 * sizeof(size_t));                                             \
-			for (size_t i = 1; i < _nelen - 1; ++i)                                                                       \
+			for (size_t i = 1; i < jstr_likely(_nelen - 1); ++i)                                                          \
 				(_jstr_memmem_table)->big_table[private_jstr_memmem_hash2((unsigned char *)_ne + i)] = i;             \
 			(_jstr_memmem_table)->big_table[private_jstr_memmem_hash2((unsigned char *)_ne + _nelen - 1)] = _nelen - 1;   \
 		} else {                                                                                                              \
@@ -103,7 +102,7 @@ private_jstr_pre_memmem2(const unsigned char *JSTR_RST hs,
 	const unsigned char *const end = hs + hslen;
 	const uint32_t nw = ne[0] << 8 | ne[1];
 	uint32_t hw = hs[0] << 8 | hs[1];
-	for (hs += 2; hw != nw && hs <= end; hw = (hw | *hs++) << 8)
+	for (hs += 2; hw != nw && jstr_likely(hs <= end); hw = (hw | *hs++) << 8)
 		;
 	return (hw == nw) ? (void *)(hs - 2) : NULL;
 }
@@ -120,7 +119,7 @@ private_jstr_pre_memmem3(const unsigned char *JSTR_RST hs,
 	const unsigned char *const end = hs + hslen;
 	const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
 	uint32_t hw = hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
-	for (hs += 3; hw != nw && hs <= end; hw = (hw | *hs++) << 8)
+	for (hs += 3; hw != nw && jstr_likely(hs <= end); hw = (hw | *hs++) << 8)
 		;
 	return (hw == nw) ? (void *)(hs - 3) : NULL;
 }
@@ -137,7 +136,7 @@ private_jstr_pre_memmem4(const unsigned char *JSTR_RST hs,
 	const unsigned char *const end = hs + hslen;
 	const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	for (; hw != nw && hs <= end; hw = (hw | *hs++) << 8)
+	for (; hw != nw && jstr_likely(hs <= end); hw = (hw | *hs++) << 8)
 		;
 	return (hw == nw) ? (void *)(hs - 4) : NULL;
 }

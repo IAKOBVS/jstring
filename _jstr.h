@@ -170,7 +170,7 @@ jstr_rev_mem(char *JSTR_RST s,
 		tmp = *p;
 		*p = *end;
 		*end = tmp;
-	} while (++p < --end);
+	} while (jstr_likely(++p < --end));
 }
 
 /*
@@ -201,7 +201,7 @@ jstr_trim_mem_p(char *JSTR_RST const s,
 			*end = '\0';
 		}
 		break;
-	} while (end >= start);
+	} while (jstr_likely(end >= start));
 	return (char *)end;
 }
 
