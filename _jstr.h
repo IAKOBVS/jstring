@@ -21,7 +21,7 @@ extern "C" {
 #include "_jstr_io.h"
 #include "_jstr_macros.h"
 #include "_jstr_memmem.h"
-#include "_jstr_regex.h"
+#include "_jregex.h"
 #include "_jstr_replace.h"
 #include "_jstr_string.h"
 

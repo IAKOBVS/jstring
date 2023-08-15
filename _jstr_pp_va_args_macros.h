@@ -3,8 +3,11 @@
 
 #include "_jstr_pp_st_assert.h"
 #include "_jstr_pp_strcpy_va_args.h"
-#include "_jstr_pp_strlen2_va_args.h"
-#include "_jstr_pp_strlen_va_args.h"
+#if 1
+#	include "_jstr_pp_strlen2_va_args.h"
+#else
+#	include "_jstr_pp_strlen_va_args.h"
+#endif
 #include "_jstr_pp_va_args_tools.h"
 
 #ifndef JSTR_PP_CASE_VOWEL_UPPER
