@@ -190,7 +190,7 @@ jstr_trim_mem_p(char *JSTR_RST const s,
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	unsigned char *end = (unsigned char *)s + sz - 1;
-	unsigned char *start = (unsigned char *)s;
+	const unsigned char *const start = (unsigned char *)s;
 	do {
 		switch (*end--) {
 		case '\t':
@@ -416,7 +416,7 @@ JSTR_RETURNS_NONNULL
 static char *
 jstr_itoa(char *JSTR_RST const _dst,
 	  int _num,
-	  unsigned char _base)
+	  const unsigned char _base)
 {
 #define PRIVATE_JSTR_NUMTOSTR(_max_digits)                                       \
 	do {                                                                     \
@@ -453,7 +453,7 @@ JSTR_RETURNS_NONNULL
 static char *
 jstr_ltoa(char *JSTR_RST const _dst,
 	  long _num,
-	  unsigned char _base)
+	  const unsigned char _base)
 {
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
@@ -470,7 +470,7 @@ JSTR_RETURNS_NONNULL
 static char *
 jstr_lltoa(char *JSTR_RST const _dst,
 	   long long _num,
-	   unsigned char _base)
+	   const unsigned char _base)
 {
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
@@ -487,7 +487,7 @@ JSTR_RETURNS_NONNULL
 static char *
 jstr_utoa(char *JSTR_RST const _dst,
 	  unsigned int _num,
-	  unsigned char _base)
+	  const unsigned char _base)
 {
 #define PRIVATE_JSTR_UNUMTOSTR(_max_digits)                     \
 	do {                                                    \
@@ -520,7 +520,7 @@ JSTR_RETURNS_NONNULL
 static char *
 jstr_ultoa(char *JSTR_RST const _dst,
 	   unsigned long _num,
-	   unsigned char _base)
+	   const unsigned char _base)
 {
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_DIGITS);
 }
@@ -537,7 +537,7 @@ JSTR_RETURNS_NONNULL
 static char *
 jstr_ulltoa(char *JSTR_RST const _dst,
 	    unsigned long long _num,
-	    unsigned char _base)
+	    const unsigned char _base)
 {
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);
 }

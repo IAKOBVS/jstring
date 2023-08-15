@@ -405,34 +405,6 @@ jstr_reg_rm_now_mem(char *JSTR_RST const s,
 	return jstr_reg_rm_mem(s, sz, _preg, _eflags);
 }
 
-JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
-JSTR_INLINE
-static Jstr_reg_errcode
-jstr_reg_rm(char *JSTR_RST const s,
-	    size_t *JSTR_RST sz,
-	    regex_t *JSTR_RST const _preg,
-	    const int _eflags) JSTR_NOEXCEPT
-{
-	*sz = strlen(s);
-	return jstr_reg_rm_mem(s, sz, _preg, _eflags);
-}
-
-JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
-JSTR_INLINE
-static Jstr_reg_errcode
-jstr_reg_rm_now(char *JSTR_RST const s,
-		size_t *JSTR_RST sz,
-		const char *JSTR_RST const _ptn,
-		regex_t *JSTR_RST const _preg,
-		const int _cflags,
-		const int _eflags) JSTR_NOEXCEPT
-{
-	*sz = strlen(s);
-	return jstr_reg_rm_now_mem(s, sz, _ptn, _preg, _cflags, _eflags);
-}
-
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
@@ -530,34 +502,6 @@ jstr_reg_rmall_now_mem(char *JSTR_RST const s,
 	const Jstr_reg_errcode ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(ret != JSTR_REG_RET_NOERROR))
 		return ret;
-	return jstr_reg_rmall_mem(s, sz, _preg, _eflags);
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-static Jstr_reg_errcode
-jstr_reg_rmall_now(char *JSTR_RST const s,
-		   size_t *JSTR_RST sz,
-		   const char *JSTR_RST const _ptn,
-		   regex_t *JSTR_RST const _preg,
-		   const int _cflags,
-		   const int _eflags) JSTR_NOEXCEPT
-{
-	*sz = strlen(s);
-	return jstr_reg_rmall_now_mem(s, sz, _ptn, _preg, _cflags, _eflags);
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-static Jstr_reg_errcode
-jstr_reg_rmall(char *JSTR_RST const s,
-	       size_t *JSTR_RST sz,
-	       regex_t *JSTR_RST const _preg,
-	       const int _eflags) JSTR_NOEXCEPT
-{
-	*sz = strlen(s);
 	return jstr_reg_rmall_mem(s, sz, _preg, _eflags);
 }
 
