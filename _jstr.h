@@ -192,16 +192,16 @@ jstr_trim_mem_p(char *JSTR_RST const s,
 	unsigned char *end = (unsigned char *)s + sz - 1;
 	const unsigned char *const start = (unsigned char *)s;
 	do {
-		switch (*end--) {
+		switch (*end) {
 		case '\t':
 		case ' ':
 			continue;
 		default:
-			end += 2;
-			*end = '\0';
+			*++end = '\0';
+			break;
 		}
 		break;
-	} while (jstr_likely(end >= start));
+	} while (jstr_likely(--end >= start));
 	return (char *)end;
 }
 
