@@ -4,7 +4,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
-#include <alloca.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,10 +18,9 @@ extern "C" {
 extern "C" {
 #endif /* __cpluslus */
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_HAVE_ALLOCA 1
-#elif defined(_MSC_VER) && _MSC_VER >= 1400
-#	define JSTR_HAVE_ALLOCA 1
+#	include <alloca.h>
 #else
 #	define JSTR_HAVE_ALLOCA 0
 #endif
@@ -49,6 +47,8 @@ private_jstr_memmem_hash2(const unsigned char *JSTR_RST const p) JSTR_NOEXCEPT
 	return (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256);
 }
 
+#if JSTR_HAVE_ALLOCA
+
 JSTR_INLINE
 static void
 jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
@@ -58,6 +58,12 @@ jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
 	_ptable->small_table = NULL;
 	_ptable->big_table = NULL;
 }
+
+#else
+
+#	define jstr_memmem_init(_jstr_memmem_table)
+
+#endif
 
 #if defined(JSTR_HAVE_GENERIC)
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr) \
