@@ -14,16 +14,16 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
-
 #if defined(__GNUC__) || defined(__clang__)
 #	define JSTR_HAVE_ALLOCA 1
 #	include <alloca.h>
 #else
 #	define JSTR_HAVE_ALLOCA 0
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cpluslus */
 
 typedef struct jstr_memmem_table {
 	const char *ne;
