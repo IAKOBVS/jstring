@@ -11,14 +11,15 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
+#include "_jstr_config.h"
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
-#if defined(__GNUC__) || defined(__clang__)
-#	define JSTR_HAVE_ALLOCA 1
+#if JSTR_HAVE_ALLOCA && (defined(__GNUC__) || defined(__clang__))
+#	define JSTR_USE_ALLOCA 1
 #	include <alloca.h>
 #else
-#	define JSTR_HAVE_ALLOCA 0
+#	define JSTR_USE_ALLOCA 0
 #endif
 
 #ifdef __cplusplus
@@ -28,13 +29,13 @@ extern "C" {
 typedef struct jstr_memmem_table {
 	const char *ne;
 	size_t nelen;
-#if JSTR_HAVE_ALLOCA
+#if JSTR_USE_ALLOCA
 	uint8_t *small_table;
 	size_t *big_table;
 #else
 	uint8_t small_table[256];
 	size_t big_table[256];
-#endif /* HAVE_ALLOCA */
+#endif /* USE_ALLOCA */
 } jstr_memmem_table;
 
 typedef jstr_memmem_table jstr_strstr_table;
@@ -47,7 +48,7 @@ private_jstr_memmem_hash2(const unsigned char *JSTR_RST const p) JSTR_NOEXCEPT
 	return (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256);
 }
 
-#if JSTR_HAVE_ALLOCA
+#if JSTR_USE_ALLOCA
 
 JSTR_INLINE
 static void
@@ -72,7 +73,7 @@ jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr)
 #endif /* HAVE_GENERIC */
 
-#if JSTR_HAVE_ALLOCA
+#if JSTR_USE_ALLOCA
 
 JSTR_NONNULL_ALL
 void
@@ -114,7 +115,7 @@ jstr_memmem_comp(jstr_memmem_table *_ptable,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-void
+static void
 jstr_memmem_comp_mem(jstr_memmem_table *JSTR_RST const _ptable,
 		     const char *JSTR_RST const _ne,
 		     const size_t _nelen)
@@ -134,14 +135,14 @@ jstr_memmem_comp_mem(jstr_memmem_table *JSTR_RST const _ptable,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
-void
+static void
 jstr_memmem_comp(jstr_memmem_table *JSTR_RST const _ptable,
 		 const char *JSTR_RST const _ne)
 {
 	jstr_memmem_comp_mem(_ptable, _ne, strlen(_ne));
 }
 
-#endif /* HAVE_ALLOCA */
+#endif /* USE_ALLOCA */
 
 JSTR_INLINE
 JSTR_WARN_UNUSED
