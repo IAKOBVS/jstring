@@ -350,7 +350,7 @@ jstr_memrmem_constexpr(const void *JSTR_RST const _hs,
 		const unsigned char *n = (unsigned char *)_ne;
 		const uint16_t nw = n[1] << 8 | n[0];
 		uint16_t hw = h[0] << 8 | h[-1];
-		for (h -= 2; h >= start && hw != nw; hw = hw << 8 | *h--)
+		for (h -= 2; jstr_likely(h >= start) && hw != nw; hw = hw << 8 | *h--)
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
@@ -360,7 +360,7 @@ jstr_memrmem_constexpr(const void *JSTR_RST const _hs,
 		const unsigned char *n = (unsigned char *)_ne;
 		const uint32_t nw = n[2] << 24 | n[1] << 16 | n[0] << 8;
 		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8;
-		for (h -= 3; h >= start && hw != nw; hw = (hw | *h--) << 8)
+		for (h -= 3; jstr_likely(h >= start) && hw != nw; hw = (hw | *h--) << 8)
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
@@ -370,7 +370,7 @@ jstr_memrmem_constexpr(const void *JSTR_RST const _hs,
 		const unsigned char *n = (unsigned char *)_ne;
 		const uint32_t nw = n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		for (h -= 4; h >= start && hw != nw; hw = hw << 8 | *h--)
+		for (h -= 4; jstr_likely(h >= start) && hw != nw; hw = hw << 8 | *h--)
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
@@ -455,7 +455,7 @@ private_jstr_memcasemem3(const char *JSTR_RST const _hs,
 		shift_type shift[256];                                                             \
 		memset(shift, 0, sizeof(shift));                                                   \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                      \
-			shift[JSTR_HASH2_LOWER(_ne + i)] = i;                                      \
+			shift[JSTR_HASH2_LOWER(n + i)] = i;                                        \
 		shift1 = mtc1 - shift[JSTR_HASH2_LOWER(n + mtc1)];                                 \
 		shift[JSTR_HASH2_LOWER(n + mtc1)] = mtc1;                                          \
 		do {                                                                               \
@@ -492,9 +492,9 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
-jstr_strcasechr(const char *JSTR_RST const s,
-		const int c,
-		const size_t n) JSTR_NOEXCEPT
+private_jstr_strcasechr(const char *JSTR_RST const s,
+			const int c,
+			const size_t n) JSTR_NOEXCEPT
 {
 	enum { l = 0,
 	       u,
@@ -561,7 +561,7 @@ jstr_memcasemem_constexpr(const char *JSTR_RST const _hs,
 		return NULL;
 	switch (_nelen) {
 	case 0: return (char *)_hs;
-	case 1: return jstr_strcasechr(_hs, *_ne, _hslen);
+	case 1: return private_jstr_strcasechr(_hs, *_ne, _hslen);
 	case 4:
 		if (jstr_islower(*(_ne + 3)))
 			goto do3;

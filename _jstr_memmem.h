@@ -54,16 +54,17 @@ jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
 
 #if defined(JSTR_HAVE_GENERIC)
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr) \
-		JSTR_ASSERT(_Generic((expr), jstr_memmem_table : 1), "Passing non-jstr_memmem_table as jstr_memmem_table argument!")
+		JSTR_ASSERT(_Generic((expr), jstr_memmem_table * : 1), "Passing non-jstr_memmem_table as jstr_memmem_table argument!")
 #else
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr)
 #endif /* JSTR_HAVE_GENERIC */
 
 #define jstr_memmem_comp_mem(_jstr_memmem_table, _ne, _nelen)                                                               \
 	do {                                                                                                                \
+		JSTR_ASSERT_IS_MEMMEM_TABLE(_jstr_memmem_table);                                                            \
 		JSTR_ASSERT_IS_STR(_ne);                                                                                    \
 		JSTR_ASSERT_IS_SIZE(_nelen);                                                                                \
-		(_jstr_memmem_table)->ne = (const unsigned char *)_ne;                                                      \
+		(_jstr_memmem_table)->ne = _ne;                                                                             \
 		(_jstr_memmem_table)->nelen = _nelen;                                                                       \
 		if (jstr_unlikely(_nelen > 256)) {                                                                          \
 			if ((_jstr_memmem_table)->big_table == NULL)                                                        \
