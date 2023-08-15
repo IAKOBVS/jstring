@@ -625,7 +625,7 @@ private_jstr_base_rmallc_mem_p(private_jstr_flag_use_n flag,
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
-	while ((flag & PRIVATE_JSTR_FLAG_USE_N && n--)
+	while ((flag & PRIVATE_JSTR_FLAG_USE_N ? n-- : 1)
 	       && (p = (unsigned char *)memchr(p, c, end - p)))
 		private_jstr_rmall_in_place(&dst, &old, &p, 1);
 	memmove(dst, old, end - old + 1);

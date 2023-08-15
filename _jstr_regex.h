@@ -416,6 +416,7 @@ private_jstr_reg_base_rmall_mem(private_jstr_flag_use_n flag,
 				const regex_t *JSTR_RST const _preg,
 				const int _eflags) JSTR_NOEXCEPT
 {
+	puts("here");
 	regmatch_t rm;
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *p = dst;
@@ -423,7 +424,7 @@ private_jstr_reg_base_rmall_mem(private_jstr_flag_use_n flag,
 	const unsigned char *const end = dst + *sz;
 	size_t ptnlen;
 	Jstr_reg_errcode ret = JSTR_REG_RET_NOMATCH;
-	while ((flag & PRIVATE_JSTR_FLAG_USE_N && n--)
+	while ((flag & PRIVATE_JSTR_FLAG_USE_N ? n-- : 1)
 	       && PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, end - p, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		ret = JSTR_REG_RET_NOERROR;
 		ptnlen = rm.rm_eo - rm.rm_so;
@@ -533,7 +534,7 @@ private_jstr_reg_base_rplcall_mem(private_jstr_flag_use_n flag,
 #if JSTR_HAVE_REALLOC_MREMAP
 	const int is_mmap = JSTR_IS_MMAP(*cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
-	while ((flag & PRIVATE_JSTR_FLAG_USE_N && n--)
+	while ((flag & PRIVATE_JSTR_FLAG_USE_N ? n-- : 1)
 	       && PRIVATE_JSTR_REG_EXEC(_preg, (char *)p, (*(uc **)s + *sz) - p, 1, &rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		ret = JSTR_REG_RET_NOERROR;
 		_ptnlen = rm.rm_eo - rm.rm_so;
