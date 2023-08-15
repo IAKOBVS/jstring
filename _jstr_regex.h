@@ -418,7 +418,6 @@ private_jstr_reg_base_rmall_mem(private_jstr_flag_use_n flag,
 				const regex_t *JSTR_RST const _preg,
 				const int _eflags) JSTR_NOEXCEPT
 {
-	puts("here");
 	regmatch_t rm;
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *p = dst;

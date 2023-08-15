@@ -687,7 +687,7 @@ JSTR_RETURNS_NONNULL
 static char *
 jstr_rmnc_mem_p(char *JSTR_RST const s,
 		const int c,
-		size_t n,
+		const size_t n,
 		const size_t sz) JSTR_NOEXCEPT
 {
 	return private_jstr_base_rmallc_mem_p(PRIVATE_JSTR_FLAG_USE_N, s, c, n, sz);
