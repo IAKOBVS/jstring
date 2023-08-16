@@ -765,5 +765,6 @@ jreg_rplc_now_mem(char **JSTR_RST const s,
 #endif /* __cpluslus */
 
 #undef PRIVATE_JREG_EXEC
+#undef JREG_DEB_PRINT
 
 #endif /* JREGEX_H_DEF */
