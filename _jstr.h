@@ -126,7 +126,7 @@ jstr_count_mem(const char *JSTR_RST s,
 	while ((s = (char *)memmem(s, sz, _searc, _searclen))) {
 		++count;
 		s += _searclen;
-		sz += _searclen;
+		sz -= _searclen;
 	}
 	return count;
 }
@@ -409,7 +409,7 @@ jstr_endswith_mem(const char *JSTR_RST const _hs,
   Return value:
   new pointer to '\0' in DST.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
@@ -446,7 +446,7 @@ jstr_itoa(char *JSTR_RST const _dst,
   Return value:
   new pointer to '\0' in DST.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
@@ -463,7 +463,7 @@ jstr_ltoa(char *JSTR_RST const _dst,
   Return value:
   new pointer to '\0' in DST.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
@@ -480,7 +480,7 @@ jstr_lltoa(char *JSTR_RST const _dst,
   Return value:
   new pointer to '\0' in DST.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
@@ -513,7 +513,7 @@ jstr_utoa(char *JSTR_RST const _dst,
   Return value:
   new pointer to '\0' in DST.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
@@ -530,7 +530,7 @@ jstr_ultoa(char *JSTR_RST const _dst,
   Return value:
   new pointer to '\0' in DST.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
