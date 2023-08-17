@@ -1065,8 +1065,9 @@ private_jstr_base_rplcall_mem(private_jstr_flag_use_n flag,
 			p = (uc *)private_jstr_rplcat_mem_malloc(s, sz, cap, p - *(uc **)s, _rplc, _rplclen, _searclen);
 		if (jstr_unlikely(p == NULL))
 			break;
-		if (jstr_unlikely(!--n))
-			break;
+		if (flag & PRIVATE_JSTR_FLAG_USE_N)
+			if (jstr_unlikely(!--n))
+				break;
 	}
 	if (_rplclen < _searclen) {
 		memmove(dst, old, *(uc **)s + *sz - old + 1);
