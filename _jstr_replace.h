@@ -29,9 +29,9 @@ typedef enum {
 JSTR_INLINE
 static void
 priv_jstr_rmall_in_place(unsigned char **dst,
-			    const unsigned char **old,
-			    const unsigned char **p,
-			    const size_t _searclen) JSTR_NOEXCEPT
+			 const unsigned char **old,
+			 const unsigned char **p,
+			 const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (jstr_likely(*dst != *old))
 		memmove(*dst, *old, *p - *old);
@@ -44,11 +44,11 @@ priv_jstr_rmall_in_place(unsigned char **dst,
 JSTR_INLINE
 static void
 priv_jstr_rplcall_in_place(unsigned char **dst,
-			      const unsigned char **old,
-			      const unsigned char **p,
-			      const char *JSTR_RST const _rplc,
-			      const size_t _rplclen,
-			      const size_t _searclen) JSTR_NOEXCEPT
+			   const unsigned char **old,
+			   const unsigned char **p,
+			   const char *JSTR_RST const _rplc,
+			   const size_t _rplclen,
+			   const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (jstr_likely(_searclen != _rplclen && *dst != *old))
 		memmove(*dst, *old, *p - *old);
@@ -93,11 +93,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static char *
 priv_jstr_slip_mem_realloc(char **JSTR_RST const s,
-			      size_t *JSTR_RST const sz,
-			      size_t *JSTR_RST const cap,
-			      const size_t at,
-			      const char *JSTR_RST const _rplc,
-			      const size_t _rplclen) JSTR_NOEXCEPT
+			   size_t *JSTR_RST const sz,
+			   size_t *JSTR_RST const cap,
+			   const size_t at,
+			   const char *JSTR_RST const _rplc,
+			   const size_t _rplclen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + _rplclen)
 		JSTR_REALLOC(*s, *cap, *sz + _rplclen, return NULL);
@@ -111,11 +111,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static char *
 priv_jstr_slip_mem_malloc(char **JSTR_RST const s,
-			     size_t *JSTR_RST const sz,
-			     size_t *JSTR_RST const cap,
-			     const size_t at,
-			     const char *JSTR_RST const _rplc,
-			     const size_t _rplclen) JSTR_NOEXCEPT
+			  size_t *JSTR_RST const sz,
+			  size_t *JSTR_RST const cap,
+			  const size_t at,
+			  const char *JSTR_RST const _rplc,
+			  const size_t _rplclen) JSTR_NOEXCEPT
 {
 	if (*cap > *sz + _rplclen)
 		return jstr_slip_mem_p_f(*s, at, _rplc, *sz, _rplclen);
@@ -156,12 +156,12 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static char *
 priv_jstr_rplcat_mem_realloc(char **JSTR_RST const s,
-				size_t *JSTR_RST const sz,
-				size_t *JSTR_RST const cap,
-				const size_t at,
-				const char *JSTR_RST const _rplc,
-				const size_t _rplclen,
-				const size_t _searclen) JSTR_NOEXCEPT
+			     size_t *JSTR_RST const sz,
+			     size_t *JSTR_RST const cap,
+			     const size_t at,
+			     const char *JSTR_RST const _rplc,
+			     const size_t _rplclen,
+			     const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (*cap > *sz + _rplclen - _searclen)
 		JSTR_REALLOC(*s, *cap, *sz + _rplclen, return NULL);
@@ -173,12 +173,12 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static char *
 priv_jstr_rplcat_mem_malloc(char **JSTR_RST const s,
-			       size_t *JSTR_RST const sz,
-			       size_t *JSTR_RST const cap,
-			       const size_t at,
-			       const char *JSTR_RST const _rplc,
-			       const size_t _rplclen,
-			       const size_t _searclen) JSTR_NOEXCEPT
+			    size_t *JSTR_RST const sz,
+			    size_t *JSTR_RST const cap,
+			    const size_t at,
+			    const char *JSTR_RST const _rplc,
+			    const size_t _rplclen,
+			    const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (*cap > *sz + _rplclen - _searclen)
 		return jstr_rplcat_mem_f(*s, sz, at, _rplc, _rplclen, _searclen);
@@ -222,12 +222,12 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static char *
 priv_jstr_rplcat_mem_may_lower(char **JSTR_RST const s,
-				  size_t *JSTR_RST const sz,
-				  size_t *JSTR_RST const cap,
-				  const size_t at,
-				  const char *JSTR_RST const _rplc,
-				  const size_t _rplclen,
-				  const size_t _searclen) JSTR_NOEXCEPT
+			       size_t *JSTR_RST const sz,
+			       size_t *JSTR_RST const cap,
+			       const size_t at,
+			       const char *JSTR_RST const _rplc,
+			       const size_t _rplclen,
+			       const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_rplclen == _searclen)) {
 		memcpy(*s + at, _rplc, _rplclen);
@@ -565,10 +565,10 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *
 priv_jstr_rmallc_mem_p(priv_jstr_flag_use_n flag,
-			       char *JSTR_RST const s,
-			       const int c,
-			       size_t n,
-			       const size_t sz) JSTR_NOEXCEPT
+		       char *JSTR_RST const s,
+		       const int c,
+		       size_t n,
+		       const size_t sz) JSTR_NOEXCEPT
 {
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *old = dst;
@@ -918,11 +918,11 @@ JSTR_RETURNS_NONNULL
 JSTR_MAYBE_UNUSED
 static char *
 priv_jstr_rmall_mem_p(priv_jstr_flag_use_n flag,
-			      char *JSTR_RST const s,
-			      const char *JSTR_RST const _searc,
-			      size_t n,
-			      size_t sz,
-			      const size_t _searclen) JSTR_NOEXCEPT
+		      char *JSTR_RST const s,
+		      const char *JSTR_RST const _searc,
+		      size_t n,
+		      size_t sz,
+		      const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_searclen == 1))
 		return priv_jstr_rmallc_mem_p(flag, s, *_searc, n, sz);
@@ -1040,14 +1040,14 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 static void
 priv_jstr_rplcall_mem(priv_jstr_flag_use_n flag,
-			      char **JSTR_RST const s,
-			      size_t *JSTR_RST const sz,
-			      size_t *JSTR_RST const cap,
-			      const char *JSTR_RST const _searc,
-			      const char *JSTR_RST const _rplc,
-			      size_t n,
-			      const size_t _searclen,
-			      const size_t _rplclen) JSTR_NOEXCEPT
+		      char **JSTR_RST const s,
+		      size_t *JSTR_RST const sz,
+		      size_t *JSTR_RST const cap,
+		      const char *JSTR_RST const _searc,
+		      const char *JSTR_RST const _rplc,
+		      size_t n,
+		      const size_t _searclen,
+		      const size_t _rplclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_rplclen == 0)) {
 		*sz = priv_jstr_rmall_mem_p(flag, *s, _searc, n, *sz, _searclen) - *s;
@@ -1081,8 +1081,6 @@ priv_jstr_rplcall_mem(priv_jstr_flag_use_n flag,
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 		else
 			p = (uc *)priv_jstr_rplcat_mem_malloc(s, sz, cap, p - *(uc **)s, _rplc, _rplclen, _searclen);
-		if (jstr_unlikely(p == NULL))
-			break;
 		if (flag & PRIVATE_JSTR_FLAG_USE_N)
 			if (jstr_unlikely(!--n))
 				break;
