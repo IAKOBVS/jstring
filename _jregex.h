@@ -507,7 +507,6 @@ jreg_rmall_now_mem(char *JSTR_RST const s,
 	return jreg_rmall_mem(s, sz, _preg, _eflags);
 }
 
-JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static Jreg_errcode
@@ -607,7 +606,19 @@ private_jreg_base_rplcall_mem(private_jstr_flag_use_n flag,
 					       (*(uc **)s + *sz) - (p + _ptnlen) + 1);
 					old = dst;
 				} else {
+#ifdef __clang__
+#	pragma clang diagnostic ignored "-Wunknown-warning-option"
+#	pragma clang diagnostic push
+#elif defined __GNUC__
+#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
+#	pragma GCC diagnostic push
+#endif
 					memcpy(tmp, *(uc **)s, p - *(uc **)s);
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#elif defined __clang__
+#	pragma clang diagnostic pop
+#endif
 					memcpy(tmp + (p - *(uc **)s), _rplc, _rplclen);
 					memcpy(tmp + (p - *(uc **)s) + _rplclen,
 					       p + _ptnlen,

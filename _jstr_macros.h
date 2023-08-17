@@ -3,7 +3,7 @@
 
 #if 0 /* unused */
 
-#	if defined(__GNUC__) || defined(__clang__)
+#	if defined __GNUC__ || defined __clang__
 #		ifdef __cplusplus
 #			include <cstdint>
 #		else
@@ -43,7 +43,7 @@ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 }
 #			endif
 #		endif /* __has_builtin(__builtin_clz) */
-#	elif defined(_MSC_VER)
+#	elif defined _MSC_VER
 #		include <stdint.h>
 #		include <intrin.h>
 #		pragma intrinsic(_BitScanReverse64)
@@ -206,11 +206,11 @@ JSTR_NEXT_POW2_64(T x)
 
 #endif /* if 0 */
 
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
+#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1
 #endif /* JSTR_HAVE_GENERIC */
 
-#if defined(JSTR_HAVE_TYPEOF) && defined(JSTR_HAVE_GENERIC)
+#if defined JSTR_HAVE_TYPEOF && defined JSTR_HAVE_GENERIC
 #	define JSTR_SAME_TYPE(x, y) _Generic((x),           \
 					      typeof(y) : 1, \
 					      default : 0)
@@ -219,7 +219,7 @@ JSTR_NEXT_POW2_64(T x)
 					    default : 0)
 #endif /* JSTR_HAVE_TYPEOF && JSTR_HAVE_GENERIC */
 
-#if defined(__GNUC__) || defined(__clang__)
+#if defined __GNUC__ || defined __clang__
 #	if JSTR_HAVE_GENERIC
 #		define JSTR_GENERIC_CASE_SIZE(expr)                           \
 			int : expr,                                            \
@@ -279,7 +279,7 @@ JSTR_NEXT_POW2_64(T x)
 #	define JSTR_NOEXCEPT
 #endif
 
-#if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
+#if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
 #	define JSTR_HAVE_TYPEOF 1
 #endif /* JSTR_HAVE_TYPEOF */
 
@@ -295,25 +295,25 @@ JSTR_NEXT_POW2_64(T x)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg)
 #endif /* static_assert */
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #	define JSTR_RESTRICT restrict
-#elif defined(__GNUC__) || defined(__clang__)
+#elif defined __GNUC__ || defined __clang__
 #	define JSTR_RESTRICT __restrict__
-#elif defined(_MSC_VER)
+#elif defined _MSC_VER
 #	define JSTR_RESTRICT __restrict
 #else
 #	define JSTR_RESTRICT
 #endif /* restrict */
 
-#if (defined(__GNUC__) && (__GNUC__ >= 3)) || (defined(__clang__) && __has_builtin(__builtin_expect))
-#	define jstr_likely(x)   __builtin_expect(!!(x), 1)
+#if (defined __GNUC__ && (__GNUC__ >= 3)) || (defined __clang__ && __has_builtin(__builtin_expect))
+#	define jstr_likely(x)	 __builtin_expect(!!(x), 1)
 #	define jstr_unlikely(x) __builtin_expect(!!(x), 0)
 #else
-#	define jstr_likely(x)   (x)
+#	define jstr_likely(x)	 (x)
 #	define jstr_unlikely(x) (x)
 #endif /* __has_builtin(__builtin_expect) */
 
-#if defined(__GNUC__) || defined(__clang__)
+#if defined __GNUC__ || defined __clang__
 
 #	define JSTR_INLINE __attribute__((always_inline)) inline
 #	if __has_attribute(pure)
@@ -374,7 +374,7 @@ JSTR_NEXT_POW2_64(T x)
 #		define JSTR_DEPRECATED(msg, replacement)
 #	endif /* JSTR_DEPRECATED */
 
-#elif defined(_MSC_VER)
+#elif defined _MSC_VER
 
 #	define JSTR_INLINE __forceinline inline
 #	define JSTR_PURE   __declspec(noalias)
@@ -411,15 +411,15 @@ JSTR_NEXT_POW2_64(T x)
 
 #endif /* Gnuc || clang || msvc */
 
-#if defined(__GNUC__) || defined(__clang__)
+#if defined __GNUC__ || defined __clang__
 #	define JSTR_MAYBE_UNUSED __attribute__((unused))
 #else
 #	define JSTR_MAYBE_UNUSED
 #endif /* maybe_unused */
 
-#if defined(__GNUC__) || defined(__clang__)
+#if defined __GNUC__ || defined __clang__
 #	define JSTR_NOINLINE __attribute__((noinline))
-#elif defined(_MSC_VER)
+#elif defined _MSC_VER
 #	define JSTR_NOINLINE __declspec(noinline)
 #else
 #	define JSTR_NOINLINE
@@ -582,8 +582,8 @@ case '\t':                   \
 case '\r':                   \
 case ' ':
 
-#if ((__GLIBC__ < 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_BSD_SOURCE)) \
-|| defined(_DEFAULT_SOURCE)
+#if (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _BSD_SOURCE) \
+|| defined _DEFAULT_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1
 #	define JSTR_HAVE_STRNCASECMP 1
 #endif
@@ -610,17 +610,17 @@ case ' ':
 #	define JSTR_HAVE_STRCASESTR	     1
 #endif /* Gnu */
 
-#if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
-|| (((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19)) && defined(_SVID_SOURCE) || defined(_BSD_SOURCE))  \
-|| ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 23) && defined(_POSIX_C_SOURCE))
+#if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 24) && _POSIX_C_SOURCE >= 199309L) \
+|| ((__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE)  \
+|| (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
 #	define JSTR_HAVE_GETC_UNLOCKED	   1
 #	define JSTR_HAVE_GETCHAR_UNLOCKED 1
 #	define JSTR_HAVE_PUTC_UNLOCKED	   1
 #	define JSTR_HAVE_PUTCHAR_UNLOCKED 1
 #endif /* Posix || Bsd  */
 
-#if ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 19)) && defined(_DEFAULT_SOURCE)) \
-|| defined(_SVID_SOURCE) || defined(_BSD_SOURCE)
+#if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 19) && defined _DEFAULT_SOURCE) \
+|| defined _SVID_SOURCE || defined _BSD_SOURCE
 #	define JSTR_HAVE_FREAD_UNLOCKED    1
 #	define JSTR_HAVE_FWRITE_UNLOCKED   1
 #	define JSTR_HAVE_FPUTC_UNLOCKED    1
@@ -632,16 +632,16 @@ case ' ':
 #	define JSTR_HAVE_FFLUSH_UNLOCKED   1
 #endif /* Default || Svid || Bsd */
 
-#if ((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) \
-|| defined(_GNU_SOURCE)
+#if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && _POSIX_C_SOURCE >= 200809L \
+|| defined _GNU_SOURCE
 #	define JSTR_HAVE_STPCPY  1
 #	define JSTR_HAVE_STRNLEN 1
 #	define JSTR_HAVE_STRNDUP 1
 #endif /* Posix || Gnu */
 
-#if (_XOPEN_SOURCE >= 500)                                                                          \
-|| ((__GLIBC__ == 2) && (__GLIBC_MINOR__ <= 19) && (defined(_BSD_SOURCE) || defined(_SVID_SOURCE))) \
-|| ((__GLIBC__ > 2) || (__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 12) && __POSIX_C_SOURCE >= 200809L)
+#if _XOPEN_SOURCE >= 500                                                                      \
+|| (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19 && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
+|| (__GLIBC__ > 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ >= 12 && __POSIX_C_SOURCE >= 200809L)
 #	define JSTR_HAVE_STRDUP 1
 #endif /* Xopen || Bsd || Svid || Posix */
 
@@ -650,7 +650,7 @@ case ' ':
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
 
-#if defined(__linux__) && defined(__GLIBC__)
+#if defined __linux__ && defined __GLIBC__
 #	define JSTR_HAVE_REALLOC_MREMAP 1
 #endif /* Gnu */
 

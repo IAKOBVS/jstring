@@ -15,7 +15,7 @@ extern "C" {
 #include "_jstr_macros.h"
 #include "_jstr_string.h"
 
-#if JSTR_HAVE_ALLOCA && (defined(__GNUC__) || defined(__clang__))
+#if JSTR_HAVE_ALLOCA && (defined __GNUC__ || defined __clang__)
 #	define JSTR_USE_ALLOCA 1
 #	include <alloca.h>
 #else
@@ -66,7 +66,7 @@ jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
 
 #endif
 
-#if defined(JSTR_HAVE_GENERIC)
+#ifdef JSTR_HAVE_GENERIC
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr) \
 		JSTR_ASSERT(_Generic((expr), jstr_memmem_table * : 1), "Passing non-jstr_memmem_table as jstr_memmem_table argument!")
 #else
