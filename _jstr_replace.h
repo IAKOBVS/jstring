@@ -564,7 +564,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *
-priv_jstr_rmallc_mem_p(priv_jstr_flag_use_n flag,
+priv_jstr_rmallc_mem_p(const priv_jstr_flag_use_n flag,
 		       char *JSTR_RST const s,
 		       const int c,
 		       size_t n,
@@ -917,7 +917,7 @@ JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_MAYBE_UNUSED
 static char *
-priv_jstr_rmall_mem_p(priv_jstr_flag_use_n flag,
+priv_jstr_rmall_mem_p(const priv_jstr_flag_use_n flag,
 		      char *JSTR_RST const s,
 		      const char *JSTR_RST const _searc,
 		      size_t n,
@@ -1039,7 +1039,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 static void
-priv_jstr_rplcall_mem(priv_jstr_flag_use_n flag,
+priv_jstr_rplcall_mem(const priv_jstr_flag_use_n flag,
 		      char **JSTR_RST const s,
 		      size_t *JSTR_RST const sz,
 		      size_t *JSTR_RST const cap,
