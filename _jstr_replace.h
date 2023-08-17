@@ -434,6 +434,7 @@ JSTR_NOINLINE
 #else
 JSTR_INLINE
 #endif /* HAVE_ALLOCA */
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 static char *
@@ -471,6 +472,7 @@ JSTR_NOINLINE
 #else
 JSTR_INLINE
 #endif /* HAVE_ALLOCA */
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 static void
 jstr_slipaftall_mem(char **JSTR_RST const s,
