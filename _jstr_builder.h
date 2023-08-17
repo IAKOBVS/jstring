@@ -21,10 +21,15 @@ extern "C" {
 #	include "_jtraits.h"
 #endif /* __cpluslus */
 
-#define PRIVATE_JSTR_MIN_ALLOC(new_cap)                                  \
-	((jstr_unlikely(new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER)) \
-	 ? (JSTR_MIN_CAP)                                                \
+#define PRIVATE_JSTR_MIN_ALLOC(new_cap)                   \
+	((new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
+	 ? (JSTR_MIN_CAP)                                 \
 	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
+
+#define PRIVATE_JSTR_MIN_ALLOCEXACT(new_cap) \
+	((new_cap < JSTR_MIN_CAP)            \
+	 ? (JSTR_MIN_CAP)                    \
+	 : (new_cap))
 
 #define PRIVATE_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
 	(cap) = PRIVATE_JSTR_MIN_ALLOC(new_cap);          \
