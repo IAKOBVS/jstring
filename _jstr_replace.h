@@ -31,7 +31,7 @@ static void
 private_jstr_rmall_in_place(unsigned char **dst,
 			    const unsigned char **old,
 			    const unsigned char **p,
-			    const size_t _searclen)
+			    const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (jstr_likely(*dst != *old))
 		memmove(*dst, *old, *p - *old);
@@ -46,9 +46,9 @@ static void
 private_jstr_rplcall_in_place(unsigned char **dst,
 			      const unsigned char **old,
 			      const unsigned char **p,
-			      const char *_rplc,
+			      const char *JSTR_RST const _rplc,
 			      const size_t _rplclen,
-			      const size_t _searclen)
+			      const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (jstr_likely(_searclen != _rplclen && *dst != *old))
 		memmove(*dst, *old, *p - *old);
@@ -237,7 +237,7 @@ private_jstr_rplcat_mem_may_lower(char **JSTR_RST const s,
 
 	} else {
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (jstr_unlikely(*cap > JSTR_MIN_MMAP)) {
+		if (JSTR_IS_MMAP(*cap)) {
 			JSTR_REALLOC(*s, *cap, *sz + _rplclen - _searclen, return NULL);
 			return jstr_rplcat_mem_f(*s, sz, at, _rplc, _rplclen, _searclen);
 		}
