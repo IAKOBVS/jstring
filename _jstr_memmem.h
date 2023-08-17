@@ -62,6 +62,9 @@ jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
 
 #else
 
+void
+jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT;
+
 #	define jstr_memmem_init(_jstr_memmem_table)
 
 #endif
@@ -75,7 +78,6 @@ jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
 
 #if JSTR_USE_ALLOCA
 
-JSTR_NONNULL_ALL
 void
 jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
 		     const char *_ne,

@@ -588,8 +588,9 @@ private_jreg_base_rplcall_mem(private_jstr_flag_use_n flag,
 				p = *(uc **)s + (p - tmp);
 				dst = *(uc **)s + (dst - tmp) + _rplclen;
 				old = dst;
-			} else {
+			} else
 #endif /* JREG_HAVE_REALLOC_MREMAP */
+			{
 				JSTR_GROW(*cap, *sz + _rplclen - _ptnlen);
 				tmp = (uc *)malloc(*cap);
 				JSTR_MALLOC_ERR(tmp, return JREG_RET_MALLOC_ERROR);
@@ -628,9 +629,7 @@ private_jreg_base_rplcall_mem(private_jstr_flag_use_n flag,
 				free(*s);
 				*s = (char *)tmp;
 			}
-#if JREG_HAVE_REALLOC_MREMAP
 		}
-#endif /* JREG_HAVE_REALLOC_MREMAP */
 		*sz += _rplclen - _ptnlen;
 		p += _rplclen;
 		if (jstr_unlikely(*p == '\0'))

@@ -429,7 +429,11 @@ jstr_slipaft_mem(char **JSTR_RST const s,
 /*
   Slip SRC after all end of NE in DST.
 */
+#if JSTR_HAVE_ALLOCA
+JSTR_NOINLINE
+#else
 JSTR_INLINE
+#endif /* HAVE_ALLOCA */
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 static char *
@@ -462,7 +466,11 @@ jstr_slipaftall_mem_p_f(char *JSTR_RST const s,
 /*
   Slip SRC after all end of NE in DST.
 */
+#if JSTR_HAVE_ALLOCA
+JSTR_NOINLINE
+#else
 JSTR_INLINE
+#endif /* HAVE_ALLOCA */
 JSTR_NONNULL_ALL
 static void
 jstr_slipaftall_mem(char **JSTR_RST const s,
@@ -897,7 +905,11 @@ jstr_rplclast_mem(char **JSTR_RST const s,
 	private_jstr_rplcat_mem_may_lower(s, sz, cap, p - *s, _rplc, _rplclen, _searclen);
 }
 
+#if JSTR_HAVE_ALLOCA
+JSTR_NOINLINE
+#else
 JSTR_INLINE
+#endif /* HAVE_ALLOCA */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
@@ -1017,9 +1029,13 @@ jstr_rmall_j(Jstring *JSTR_RST const j,
 	return jstr_rmall_mem_j(j, _searc, strlen(_searc));
 }
 
+#if JSTR_HAVE_ALLOCA
+JSTR_NOINLINE
+#else
+JSTR_INLINE
+#endif /* HAVE_ALLOCA */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
-JSTR_INLINE
 static void
 private_jstr_base_rplcall_mem(private_jstr_flag_use_n flag,
 			      char **JSTR_RST const s,
@@ -1049,8 +1065,8 @@ private_jstr_base_rplcall_mem(private_jstr_flag_use_n flag,
 	jstr_memmem_comp_mem(&t, _searc, _searclen);
 	typedef unsigned char uc;
 	const unsigned char *p = *(uc **)s;
-	unsigned char *dst = *(uc **)s;
 	const unsigned char *old = p;
+	unsigned char *dst = *(uc **)s;
 #if JSTR_HAVE_REALLOC_MREMAP
 	const int is_mmap = JSTR_IS_MMAP(*cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
