@@ -273,7 +273,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static void *
-private_jstr_memrmem(const void *JSTR_RST const _hs,
+priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		     const size_t _hslen,
 		     const void *JSTR_RST const _ne,
 		     const size_t _nelen) JSTR_NOEXCEPT
@@ -368,7 +368,7 @@ jstr_memrmem_constexpr(const void *JSTR_RST const _hs,
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
-	default: return private_jstr_memrmem(_hs, _hslen, _ne, _nelen);
+	default: return priv_jstr_memrmem(_hs, _hslen, _ne, _nelen);
 	}
 }
 
@@ -431,7 +431,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
-private_jstr_memcasemem3(const char *JSTR_RST const _hs,
+priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 			 const size_t _hslen,
 			 const char *JSTR_RST const _ne,
 			 const size_t _nelen) JSTR_NOEXCEPT
@@ -486,7 +486,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
-private_jstr_strcasechr(const char *JSTR_RST const s,
+priv_jstr_strcasechr(const char *JSTR_RST const s,
 			const int c,
 			const size_t n) JSTR_NOEXCEPT
 {
@@ -555,7 +555,7 @@ jstr_memcasemem_constexpr(const char *JSTR_RST const _hs,
 		return NULL;
 	switch (_nelen) {
 	case 0: return (char *)_hs;
-	case 1: return private_jstr_strcasechr(_hs, *_ne, _hslen);
+	case 1: return priv_jstr_strcasechr(_hs, *_ne, _hslen);
 	case 4:
 		if (jstr_islower(*(_ne + 3)))
 			goto do3;
@@ -571,7 +571,7 @@ do2:
 			return (char *)PRIVATE_JSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
 		break;
 	}
-	return private_jstr_memcasemem3(_hs, _hslen, _ne, _nelen);
+	return priv_jstr_memcasemem3(_hs, _hslen, _ne, _nelen);
 #endif
 }
 

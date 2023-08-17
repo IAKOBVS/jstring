@@ -37,12 +37,12 @@ jtrie_init(void) JSTR_NOEXCEPT
 
 JSTR_MAYBE_UNUSED
 static void
-private_jtrie_free_recur(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
+priv_jtrie_free_recur(struct Jtrie_node *JSTR_RST node) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(node == NULL))
 		return;
 	for (int i = 0; i != JTRIE_ASCII_SIZE - 1; ++i)
-		private_jtrie_free_recur(node->child[i]);
+		priv_jtrie_free_recur(node->child[i]);
 	free(node);
 	node = NULL;
 }
@@ -51,7 +51,7 @@ JSTR_MAYBE_UNUSED
 static void
 jtrie_free(struct Jtrie_node **JSTR_RST node) JSTR_NOEXCEPT
 {
-	private_jtrie_free_recur(*node);
+	priv_jtrie_free_recur(*node);
 }
 
 JSTR_INLINE

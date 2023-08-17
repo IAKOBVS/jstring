@@ -21,7 +21,7 @@ extern "C" {
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static int
-private_jstr_alloc_file(const int alloc_exact,
+priv_jstr_alloc_file(const int alloc_exact,
 			char **JSTR_RST const s,
 			size_t *JSTR_RST const sz,
 			size_t *JSTR_RST const cap,
@@ -61,7 +61,7 @@ jstr_alloc_file(char **JSTR_RST const s,
 		const char *JSTR_RST const _fname,
 		struct stat *JSTR_RST const _st)
 {
-	return private_jstr_alloc_file(0, s, sz, cap, _fname, _st);
+	return priv_jstr_alloc_file(0, s, sz, cap, _fname, _st);
 }
 
 /*
@@ -77,7 +77,7 @@ jstr_allocexact_file(char **JSTR_RST const s,
 		     const char *JSTR_RST const _fname,
 		     struct stat *JSTR_RST const _st)
 {
-	return private_jstr_alloc_file(1, s, sz, cap, _fname, _st);
+	return priv_jstr_alloc_file(1, s, sz, cap, _fname, _st);
 }
 
 /*

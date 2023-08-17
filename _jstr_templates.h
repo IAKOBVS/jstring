@@ -79,7 +79,7 @@ JSTR_ERR_EXIT(void)
 
 namespace jstr {
 
-namespace _private {
+namespace _priv {
 
 JSTR_WARN_UNUSED
 JSTR_INLINE
@@ -248,7 +248,7 @@ cat_loop_assign(char **dst,
 	cat_loop_assign(dst, strlen_arr, std::forward<StrArgs>(args)...);
 }
 
-} // namespace _private
+} // namespace _priv
 
 } // namespace jstr
 
@@ -267,12 +267,12 @@ jstr_alloc_cat(char **JSTR_RST const s,
 	       StrArgs &&...args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(args)];
-	*sz = jstr::_private::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*cap = *sz * 2;
 	*s = (char *)malloc(*cap);
 	JSTR_MALLOC_ERR(*s, return);
 	char *p = *s;
-	jstr::_private::cat_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
 }
 
@@ -292,11 +292,11 @@ jstr_alloc_cat_f(char *JSTR_RST const s,
 {
 	size_t strlen_arr[1 + sizeof...(args)];
 #	if 0
-	*sz = jstr::_private::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*sz = jstr::_priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	else
-	*sz = jstr::_private::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	endif
-	jstr::_private::cat_loop_assign(&s, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(&s, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
 
@@ -317,17 +317,17 @@ jstr_cat(char **JSTR_RST const s,
 {
 	size_t strlen_arr[1 + sizeof...(args)];
 #	if 0
-	const size_t newsz = *sz + jstr::_private::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *sz + jstr::_priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	else
-	const size_t newsz = *sz + jstr::_private::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	endif
 	if (*cap < *sz)
 		JSTR_REALLOC(*s, *cap, newsz + 1, return);
 	char *p = *s + *sz;
 #	if 0
-	jstr::_private::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	else
-	jstr::_private::cat_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	endif
 	*p = '\0';
 	*sz = newsz;
@@ -348,7 +348,7 @@ jstr_cat_f(char *s,
 	   StrArgs &&...args) JSTR_NOEXCEPT
 {
 	s += *sz;
-	jstr::_private::cat_loop_assign(sz, &s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(sz, &s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
 

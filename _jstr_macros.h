@@ -18,7 +18,7 @@ extern "C" {
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
+uint64_t priv_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
 {
 	return 1ull << (64 - __builtin_clzll(x - 1));
 }
@@ -32,7 +32,7 @@ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
+uint32_t priv_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 {
 	return 1 << (32 - __builtin_clz(x - 1));
 }
@@ -55,7 +55,7 @@ extern "C" {
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
+uint32_t priv_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 {
 	unsigned long index;
 	_BitScanReverse(&index, x - 1);
@@ -68,7 +68,7 @@ uint32_t private_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
+uint64_t priv_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
 {
 	unsigned long index;
 	_BitScanReverse64(&index, x - 1);
@@ -84,7 +84,7 @@ uint64_t private_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT
+size_t priv_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT
 {
 	--x;
 	x |= x >> 1;
@@ -102,7 +102,7 @@ size_t private_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
+size_t priv_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
 {
 	--x;
 	x |= x >> 1;
@@ -128,7 +128,7 @@ size_t private_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT
+static constexpr std::size_t priv_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT
 {
 	--x;
 	x |= x >> 1;
@@ -142,7 +142,7 @@ static constexpr std::size_t private_jstr_next_pow2_32_constexpr(std::size_t x) 
 JSTR_INLINE
 JSTR_CONST
 JSTR_WARN_UNUSED
-static constexpr std::size_t private_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT
+static constexpr std::size_t priv_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT
 {
 	--x;
 	x |= x >> 1;
@@ -165,8 +165,8 @@ JSTR_NEXT_POW2_32(T x)
 	constexpr
 #		endif /* cpp 17 */
 	(std::is_integral<T>::value)
-		return private_jstr_next_pow2_32_constexpr(x);
-	return private_jstr_next_pow2_32(x);
+		return priv_jstr_next_pow2_32_constexpr(x);
+	return priv_jstr_next_pow2_32(x);
 }
 
 template <typename T>
@@ -180,8 +180,8 @@ JSTR_NEXT_POW2_64(T x)
 	constexpr
 #		endif /* cpp 17 */
 	(std::is_integral<T>::value)
-		return private_jstr_next_pow2_64_constexpr(x);
-	return private_jstr_next_pow2_64(x);
+		return priv_jstr_next_pow2_64_constexpr(x);
+	return priv_jstr_next_pow2_64(x);
 }
 
 #	endif /* __cplusplus */
@@ -191,13 +191,13 @@ JSTR_NEXT_POW2_64(T x)
 #			ifdef __cplusplus
 #				define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
 #			else
-#				define JSTR_NEXT_POW2(x) private_jstr_next_pow2_64(x)
+#				define JSTR_NEXT_POW2(x) priv_jstr_next_pow2_64(x)
 #			endif /* __cplusplus */
 #		elif JSTR_32_BIT
 #			ifdef __cplusplus
 #				define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
 #			else
-#				define JSTR_NEXT_POW2(x) private_jstr_next_pow2_32(x)
+#				define JSTR_NEXT_POW2(x) priv_jstr_next_pow2_32(x)
 #			endif /* __cplusplus */
 #		else
 #			define JSTR_NEXT_POW2(x) (x)
