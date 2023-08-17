@@ -549,7 +549,7 @@ private_jreg_base_rplcall_mem(private_jstr_flag_use_n flag,
 		}
 		if (_rplclen <= _ptnlen) {
 			JREG_DEB_PRINT("_rplclen <= _ptnlen");
-			private_jstr_rplcall_in_place(&dst, &old, (const uc **)&p, _rplc, _ptnlen, _rplclen);
+			private_jstr_rplcall_in_place(&dst, &old, (const uc **)&p, _rplc, _rplclen, _ptnlen);
 			if (jstr_unlikely(*p == '\0'))
 				break;
 			continue;
