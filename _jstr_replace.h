@@ -28,9 +28,9 @@ typedef enum {
 
 JSTR_INLINE
 static void
-priv_jstr_rmall_in_place(unsigned char **dst,
-			 const unsigned char **old,
-			 const unsigned char **p,
+priv_jstr_rmall_in_place(unsigned char **const dst,
+			 const unsigned char **const old,
+			 const unsigned char **const p,
 			 const size_t _searclen) JSTR_NOEXCEPT
 {
 	if (jstr_likely(*dst != *old))
@@ -43,9 +43,9 @@ priv_jstr_rmall_in_place(unsigned char **dst,
 
 JSTR_INLINE
 static void
-priv_jstr_rplcall_in_place(unsigned char **dst,
-			   const unsigned char **old,
-			   const unsigned char **p,
+priv_jstr_rplcall_in_place(unsigned char **const dst,
+			   const unsigned char **const old,
+			   const unsigned char **const p,
 			   const char *JSTR_RST const _rplc,
 			   const size_t _rplclen,
 			   const size_t _searclen) JSTR_NOEXCEPT
