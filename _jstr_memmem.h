@@ -43,9 +43,9 @@ typedef jstr_memmem_table jstr_strstr_table;
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static unsigned char
-priv_jstr_memmem_hash2(const unsigned char *JSTR_RST const p) JSTR_NOEXCEPT
+priv_jstr_memmem_hash2(const unsigned char *JSTR_RST const _p) JSTR_NOEXCEPT
 {
-	return (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256);
+	return (((size_t)(_p)[0] - ((size_t)(_p)[-1] << 3)) % 256);
 }
 
 #if JSTR_USE_ALLOCA
@@ -83,26 +83,26 @@ jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
 		     const char *_ne,
 		     const size_t _nelen);
 
-#	define jstr_memmem_comp_mem(_jstr_memmem_table, _ne, _nelen)                                                            \
-		do {                                                                                                             \
-			JSTR_ASSERT_IS_MEMMEM_TABLE(_jstr_memmem_table);                                                         \
-			JSTR_ASSERT_IS_STR(_ne);                                                                                 \
-			JSTR_ASSERT_IS_SIZE(_nelen);                                                                             \
-			(_jstr_memmem_table)->ne = _ne;                                                                          \
-			(_jstr_memmem_table)->nelen = _nelen;                                                                    \
-			if (jstr_unlikely(_nelen > 256)) {                                                                       \
-				if ((_jstr_memmem_table)->big_table == NULL)                                                     \
-					(_jstr_memmem_table)->big_table = (size_t *)alloca(256 * sizeof(size_t));                \
-				memset((_jstr_memmem_table)->big_table, 0, 256 * sizeof(size_t));                                \
-				for (size_t i = 1; jstr_likely(i < _nelen); ++i)                                                 \
-					(_jstr_memmem_table)->big_table[priv_jstr_memmem_hash2((unsigned char *)_ne + i)] = i;   \
-			} else {                                                                                                 \
-				if ((_jstr_memmem_table)->small_table == NULL)                                                   \
-					(_jstr_memmem_table)->small_table = (uint8_t *)alloca(256 * sizeof(uint8_t));            \
-				memset((_jstr_memmem_table)->small_table, 0, 256 * sizeof(uint8_t));                             \
-				for (int i = 1; jstr_likely(i < (int)_nelen); ++i)                                               \
-					(_jstr_memmem_table)->small_table[priv_jstr_memmem_hash2((unsigned char *)_ne + i)] = i; \
-			}                                                                                                        \
+#	define jstr_memmem_comp_mem(_jstr_memmem_table, _ne, _nelen)                                                              \
+		do {                                                                                                               \
+			JSTR_ASSERT_IS_MEMMEM_TABLE(_jstr_memmem_table);                                                           \
+			JSTR_ASSERT_IS_STR(_ne);                                                                                   \
+			JSTR_ASSERT_IS_SIZE(_nelen);                                                                               \
+			(_jstr_memmem_table)->ne = _ne;                                                                            \
+			(_jstr_memmem_table)->nelen = _nelen;                                                                      \
+			if (jstr_unlikely(_nelen > 256)) {                                                                         \
+				if ((_jstr_memmem_table)->big_table == NULL)                                                       \
+					(_jstr_memmem_table)->big_table = (size_t *)alloca(256 * sizeof(size_t));                  \
+				memset((_jstr_memmem_table)->big_table, 0, 256 * sizeof(size_t));                                  \
+				for (size_t _i = 1; jstr_likely(_i < _nelen); ++_i)                                                \
+					(_jstr_memmem_table)->big_table[priv_jstr_memmem_hash2((unsigned char *)_ne + _i)] = _i;   \
+			} else {                                                                                                   \
+				if ((_jstr_memmem_table)->small_table == NULL)                                                     \
+					(_jstr_memmem_table)->small_table = (uint8_t *)alloca(256 * sizeof(uint8_t));              \
+				memset((_jstr_memmem_table)->small_table, 0, 256 * sizeof(uint8_t));                               \
+				for (int _i = 1; jstr_likely(_i < (int)_nelen); ++_i)                                              \
+					(_jstr_memmem_table)->small_table[priv_jstr_memmem_hash2((unsigned char *)_ne + _i)] = _i; \
+			}                                                                                                          \
 		} while (0)
 
 JSTR_NONNULL_ALL
@@ -126,12 +126,12 @@ jstr_memmem_comp_mem(jstr_memmem_table *JSTR_RST const _ptable,
 	_ptable->nelen = _nelen;
 	if (jstr_unlikely(_nelen > 256)) {
 		memset(_ptable->big_table, 0, 256 * sizeof(size_t));
-		for (size_t i = 1; jstr_likely(i < _nelen); ++i)
-			_ptable->big_table[priv_jstr_memmem_hash2((unsigned char *)_ne + i)] = i;
+		for (size_t _i = 1; jstr_likely(_i < _nelen); ++_i)
+			_ptable->big_table[priv_jstr_memmem_hash2((unsigned char *)_ne + _i)] = _i;
 	} else {
 		memset(_ptable->small_table, 0, 256 * sizeof(uint8_t));
-		for (int i = 1; jstr_likely(i < (int)_nelen); ++i)
-			_ptable->small_table[priv_jstr_memmem_hash2((unsigned char *)_ne + i)] = i;
+		for (int _i = 1; jstr_likely(_i < (int)_nelen); ++_i)
+			_ptable->small_table[priv_jstr_memmem_hash2((unsigned char *)_ne + _i)] = _i;
 	}
 }
 
@@ -151,16 +151,16 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_PURE
 static void *
-priv_jstr_pre_memmem2(const unsigned char *JSTR_RST hs,
-		      const unsigned char *JSTR_RST const ne,
-		      const size_t hslen) JSTR_NOEXCEPT
+priv_jstr_pre_memmem2(const unsigned char *JSTR_RST _hs,
+		      const unsigned char *JSTR_RST const _ne,
+		      const size_t _hslen) JSTR_NOEXCEPT
 {
-	const unsigned char *const end = hs + hslen;
-	const uint32_t nw = ne[0] << 8 | ne[1];
-	uint32_t hw = hs[0] << 8 | hs[1];
-	for (hs += 2; hw != nw && jstr_likely(hs <= end); hw = (hw | *hs++) << 8)
+	const unsigned char *const end = _hs + _hslen;
+	const uint32_t nw = _ne[0] << 8 | _ne[1];
+	uint32_t hw = _hs[0] << 8 | _hs[1];
+	for (_hs += 2; hw != nw && jstr_likely(_hs <= end); hw = (hw | *_hs++) << 8)
 		;
-	return (hw == nw) ? (void *)(hs - 2) : NULL;
+	return (hw == nw) ? (void *)(_hs - 2) : NULL;
 }
 
 JSTR_PURE
@@ -168,16 +168,16 @@ JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static void *
-priv_jstr_pre_memmem3(const unsigned char *JSTR_RST hs,
-		      const unsigned char *JSTR_RST const ne,
-		      const size_t hslen) JSTR_NOEXCEPT
+priv_jstr_pre_memmem3(const unsigned char *JSTR_RST _hs,
+		      const unsigned char *JSTR_RST const _ne,
+		      const size_t _hslen) JSTR_NOEXCEPT
 {
-	const unsigned char *const end = hs + hslen;
-	const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
-	uint32_t hw = hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
-	for (hs += 3; hw != nw && jstr_likely(hs <= end); hw = (hw | *hs++) << 8)
+	const unsigned char *const end = _hs + _hslen;
+	const uint32_t nw = _ne[0] << 24 | _ne[1] << 16 | _ne[2] << 8;
+	uint32_t hw = _hs[0] << 24 | _hs[1] << 16 | _hs[2] << 8;
+	for (_hs += 3; hw != nw && jstr_likely(_hs <= end); hw = (hw | *_hs++) << 8)
 		;
-	return (hw == nw) ? (void *)(hs - 3) : NULL;
+	return (hw == nw) ? (void *)(_hs - 3) : NULL;
 }
 
 JSTR_PURE
@@ -185,16 +185,16 @@ JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static void *
-priv_jstr_pre_memmem4(const unsigned char *JSTR_RST hs,
-		      const unsigned char *JSTR_RST const ne,
-		      const size_t hslen) JSTR_NOEXCEPT
+priv_jstr_pre_memmem4(const unsigned char *JSTR_RST _hs,
+		      const unsigned char *JSTR_RST const _ne,
+		      const size_t _hslen) JSTR_NOEXCEPT
 {
-	const unsigned char *const end = hs + hslen;
-	const uint32_t nw = ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
-	uint32_t hw = hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	for (; hw != nw && jstr_likely(hs <= end); hw = (hw | *hs++) << 8)
+	const unsigned char *const end = _hs + _hslen;
+	const uint32_t nw = _ne[0] << 24 | _ne[1] << 16 | _ne[2] << 8 | _ne[3];
+	uint32_t hw = _hs[0] << 24 | _hs[1] << 16 | _hs[2] << 8 | _hs[3];
+	for (; hw != nw && jstr_likely(_hs <= end); hw = (hw | *_hs++) << 8)
 		;
-	return (hw == nw) ? (void *)(hs - 4) : NULL;
+	return (hw == nw) ? (void *)(_hs - 4) : NULL;
 }
 
 JSTR_NONNULL_ALL
@@ -202,48 +202,47 @@ JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
 static void *
-jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
-		 const char *JSTR_RST const hs,
-		 const size_t hslen) JSTR_NOEXCEPT
+jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const _ptable,
+		 const char *JSTR_RST const _hs,
+		 const size_t _hslen) JSTR_NOEXCEPT
 {
-#define PRIV_JSTR_MEMMEM_EXEC(_table)                                                                    \
-	do {                                                                                                \
-		const unsigned char *h = (unsigned char *)hs;                                               \
-		const unsigned char *const end = h + hslen - ptable->nelen;                                 \
-		const size_t m1 = ptable->nelen - 1;                                                        \
-		const size_t mtc1 = ptable->nelen - 1;                                                      \
-		const size_t shft1 = m1 - _table[priv_jstr_memmem_hash2((unsigned char *)ptable->ne + m1)]; \
-		size_t off = 0;                                                                             \
-		size_t tmp;                                                                                 \
-		do {                                                                                        \
-			do {                                                                                \
-				h += mtc1;                                                                  \
-				tmp = _table[priv_jstr_memmem_hash2(h)];                                    \
-			} while (!tmp && h <= end);                                                         \
-			h -= tmp;                                                                           \
-			if (tmp < mtc1)                                                                     \
-				continue;                                                                   \
-			if (mtc1 < 15 || !memcmp(h + off, ptable->ne + off, 8)) {                           \
-				if (!memcmp(h, ptable->ne, ptable->nelen))                                  \
-					return (void *)h;                                                   \
-				off = (off >= 8 ? off : mtc1) - 8;                                          \
-			}                                                                                   \
-			h += shft1;                                                                         \
-		} while (h <= end);                                                                         \
+#define PRIV_JSTR_MEMMEM_EXEC(_table)                                                                               \
+	do {                                                                                                        \
+		const unsigned char *_h = (unsigned char *)_hs;                                                     \
+		const unsigned char *const end = _h + _hslen - _ptable->nelen;                                      \
+		const size_t _mtc1 = _ptable->nelen - 1;                                                            \
+		const size_t _shft1 = _mtc1 - _table[priv_jstr_memmem_hash2((unsigned char *)_ptable->ne + _mtc1)]; \
+		size_t off = 0;                                                                                     \
+		size_t _tmp;                                                                                        \
+		do {                                                                                                \
+			do {                                                                                        \
+				_h += _mtc1;                                                                        \
+				_tmp = _table[priv_jstr_memmem_hash2(_h)];                                          \
+			} while (!_tmp && _h <= end);                                                               \
+			_h -= _tmp;                                                                                 \
+			if (_tmp < _mtc1)                                                                           \
+				continue;                                                                           \
+			if (_mtc1 < 15 || !memcmp(_h + off, _ptable->ne + off, 8)) {                                \
+				if (!memcmp(_h, _ptable->ne, _ptable->nelen))                                       \
+					return (void *)_h;                                                          \
+				off = (off >= 8 ? off : _mtc1) - 8;                                                 \
+			}                                                                                           \
+			_h += _shft1;                                                                               \
+		} while (_h <= end);                                                                                \
 	} while (0)
-	if (jstr_unlikely(hslen < ptable->nelen))
+	if (jstr_unlikely(_hslen < _ptable->nelen))
 		return NULL;
-	switch (ptable->nelen) {
-	case 0: return (void *)hs;
-	case 1: return (void *)memchr(hs, *ptable->ne, hslen);
-	case 2: return priv_jstr_pre_memmem2((unsigned char *)hs, (unsigned char *)ptable->ne, hslen);
-	case 3: return priv_jstr_pre_memmem3((unsigned char *)hs, (unsigned char *)ptable->ne, hslen);
-	case 4: return priv_jstr_pre_memmem4((unsigned char *)hs, (unsigned char *)ptable->ne, hslen);
+	switch (_ptable->nelen) {
+	case 0: return (void *)_hs;
+	case 1: return (void *)memchr(_hs, *_ptable->ne, _hslen);
+	case 2: return priv_jstr_pre_memmem2((unsigned char *)_hs, (unsigned char *)_ptable->ne, _hslen);
+	case 3: return priv_jstr_pre_memmem3((unsigned char *)_hs, (unsigned char *)_ptable->ne, _hslen);
+	case 4: return priv_jstr_pre_memmem4((unsigned char *)_hs, (unsigned char *)_ptable->ne, _hslen);
 	}
-	if (jstr_unlikely(ptable->nelen > 256))
-		PRIV_JSTR_MEMMEM_EXEC(ptable->big_table);
+	if (jstr_unlikely(_ptable->nelen > 256))
+		PRIV_JSTR_MEMMEM_EXEC(_ptable->big_table);
 	else
-		PRIV_JSTR_MEMMEM_EXEC(ptable->small_table);
+		PRIV_JSTR_MEMMEM_EXEC(_ptable->small_table);
 	return NULL;
 }
 
@@ -252,10 +251,10 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_PURE
 static char *
-jstr_strstr_exec(const jstr_memmem_table *JSTR_RST const ptable,
-		 const char *JSTR_RST const hs) JSTR_NOEXCEPT
+jstr_strstr_exec(const jstr_memmem_table *JSTR_RST const _ptable,
+		 const char *JSTR_RST const _hs) JSTR_NOEXCEPT
 {
-	return (char *)jstr_memmem_exec(ptable, hs, strlen(hs));
+	return (char *)jstr_memmem_exec(_ptable, _hs, strlen(_hs));
 }
 
 #ifdef __cplusplus

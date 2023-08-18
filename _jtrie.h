@@ -84,7 +84,7 @@ typedef enum {
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-priv_jtrie_remove(priv_jtrie_flag_rm_prefixes_ty flag,
+priv_jtrie_remove(priv_jtrie_flag_rm_prefixes_ty _flag,
 		  jtrie_node_ty *JSTR_RST const _root,
 		  const char *JSTR_RST const _word) JSTR_NOEXCEPT
 {
@@ -95,7 +95,7 @@ priv_jtrie_remove(priv_jtrie_flag_rm_prefixes_ty flag,
 	if (jstr_unlikely(curr == NULL))
 		return;
 	while (*++w && curr->child[*w]) {
-		if (flag & PRIV_JTRIE_FLAG_REMOVE_PREFIXES)
+		if (_flag & PRIV_JTRIE_FLAG_REMOVE_PREFIXES)
 			curr->EOW = 0;
 		curr = curr->child[*w];
 	}

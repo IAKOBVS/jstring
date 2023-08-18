@@ -411,7 +411,7 @@ JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static jreg_errcode_ty
-priv_jreg_base_rmall_mem(const priv_jstr_flag_ty flag,
+priv_jreg_base_rmall_mem(const priv_jstr_flag_use_n_ty _flag,
 			 char *JSTR_RST const _s,
 			 size_t *JSTR_RST const _sz,
 			 size_t _n,
@@ -425,7 +425,7 @@ priv_jreg_base_rmall_mem(const priv_jstr_flag_ty flag,
 	const unsigned char *const end = dst + *_sz;
 	size_t ptnlen;
 	jreg_errcode_ty ret = JREG_RET_NOMATCH;
-	while ((flag & PRIV_JSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
+	while ((_flag & PRIV_JSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
 	       && PRIV_JREG_EXEC(_preg, (char *)p, end - p, 1, &rm, _eflags) == JREG_RET_NOERROR) {
 		ret = JREG_RET_NOERROR;
 		ptnlen = rm.rm_eo - rm.rm_so;
@@ -510,7 +510,7 @@ jreg_rmall_now_mem(char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static jreg_errcode_ty
-priv_jreg_base_rplcall_mem(const priv_jstr_flag_ty flag,
+priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 			   char **JSTR_RST const _s,
 			   size_t *JSTR_RST const _sz,
 			   size_t *JSTR_RST const _cap,
@@ -525,7 +525,7 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_ty flag,
 	}
 	regmatch_t rm;
 	size_t _ptnlen;
-	unsigned char *tmp;
+	unsigned char *_tmp;
 	jreg_errcode_ty ret = JREG_RET_NOMATCH;
 	typedef unsigned char uc;
 	unsigned char *dst = *(uc **)_s;
@@ -534,7 +534,7 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_ty flag,
 #if JREG_HAVE_REALLOC_MREMAP
 	const int is_mmap = JSTR_IS_MMAP(*_cap);
 #endif /* JREG_HAVE_REALLOC_MREMAP */
-	while ((flag & PRIV_JSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
+	while ((_flag & PRIV_JSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
 	       && PRIV_JREG_EXEC(_preg, (char *)p, (*(uc **)_s + *_sz) - p, 1, &rm, _eflags) == JREG_RET_NOERROR) {
 		ret = JREG_RET_NOERROR;
 		_ptnlen = rm.rm_eo - rm.rm_so;
@@ -578,28 +578,28 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_ty flag,
 			if (jstr_unlikely(is_mmap)) {
 				if (dst != old)
 					memmove(dst, old, p - old);
-				tmp = *(uc **)_s;
+				_tmp = *(uc **)_s;
 				PRIV_JSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _ptnlen, return JREG_RET_MALLOC_ERROR);
 				*(uc **)_s = *(uc **)_s;
 				memmove(p + _rplclen,
 					p + _ptnlen,
-					(tmp + *_sz) - (p + _ptnlen) + 1);
+					(_tmp + *_sz) - (p + _ptnlen) + 1);
 				memcpy(p, _rplc, _rplclen);
-				p = *(uc **)_s + (p - tmp);
-				dst = *(uc **)_s + (dst - tmp) + _rplclen;
+				p = *(uc **)_s + (p - _tmp);
+				dst = *(uc **)_s + (dst - _tmp) + _rplclen;
 				old = dst;
 			} else
 #endif /* JREG_HAVE_REALLOC_MREMAP */
 			{
 				PRIV_JSTR_GROW(*_cap, *_sz + _rplclen - _ptnlen);
-				tmp = (uc *)malloc(*_cap);
-				PRIV_JSTR_MALLOC_ERR(tmp, return JREG_RET_MALLOC_ERROR);
+				_tmp = (uc *)malloc(*_cap);
+				PRIV_JSTR_MALLOC_ERR(_tmp, return JREG_RET_MALLOC_ERROR);
 				if (dst != old) {
-					memcpy(tmp, *(uc **)_s, dst - *(uc **)_s);
-					memcpy(tmp + (dst - *(uc **)_s),
+					memcpy(_tmp, *(uc **)_s, dst - *(uc **)_s);
+					memcpy(_tmp + (dst - *(uc **)_s),
 					       old,
 					       p - old);
-					dst = tmp + (dst - *(uc **)_s);
+					dst = _tmp + (dst - *(uc **)_s);
 					memcpy(dst, _rplc, _rplclen);
 					dst += _rplclen;
 					memcpy(dst,
@@ -614,20 +614,20 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_ty flag,
 #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #	pragma GCC diagnostic push
 #endif
-					memcpy(tmp, *(uc **)_s, p - *(uc **)_s);
+					memcpy(_tmp, *(uc **)_s, p - *(uc **)_s);
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #elif defined __clang__
 #	pragma clang diagnostic pop
 #endif
-					memcpy(tmp + (p - *(uc **)_s), _rplc, _rplclen);
-					memcpy(tmp + (p - *(uc **)_s) + _rplclen,
+					memcpy(_tmp + (p - *(uc **)_s), _rplc, _rplclen);
+					memcpy(_tmp + (p - *(uc **)_s) + _rplclen,
 					       p + _ptnlen,
 					       (*(uc **)_s + *_sz) - (p + _ptnlen) + 1);
 				}
-				p = tmp + (p - *(uc **)_s);
+				p = _tmp + (p - *(uc **)_s);
 				free(*_s);
-				*_s = (char *)tmp;
+				*_s = (char *)_tmp;
 			}
 		}
 		*_sz += _rplclen - _ptnlen;

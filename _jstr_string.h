@@ -284,7 +284,7 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		const unsigned char *h = (unsigned char *)_hs + _hslen + _nelen;           \
 		const unsigned char *const n = (unsigned char *)_ne;                       \
 		const unsigned char *const start = (unsigned char *)_hs;                   \
-		size_t tmp;                                                                \
+		size_t _tmp;                                                                \
 		size_t shift1;                                                             \
 		size_t mtc1 = _nelen - 1;                                                  \
 		size_t off = 0;                                                            \
@@ -297,9 +297,9 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		do {                                                                       \
 			do {                                                               \
 				h -= mtc1;                                                 \
-				tmp = shift[JSTR_HASH2(h)];                                \
-			} while (!tmp && h >= start);                                      \
-			h -= tmp;                                                          \
+				_tmp = shift[JSTR_HASH2(h)];                                \
+			} while (!_tmp && h >= start);                                      \
+			h -= _tmp;                                                          \
 			if (mtc1 < 15 || !memcmp(h + off, n + off, 8)) {                   \
 				if (!memcmp(h, n, _nelen))                                 \
 					return (void *)h;                                  \
@@ -442,7 +442,7 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 		const unsigned char *h = (unsigned char *)_hs;                                     \
 		const unsigned char *const n = (unsigned char *)_ne;                               \
 		const unsigned char *const end = h + _hslen - _nelen;                              \
-		size_t tmp;                                                                        \
+		size_t _tmp;                                                                        \
 		size_t shift1;                                                                     \
 		size_t mtc1 = _nelen - 1;                                                          \
 		size_t off = 0;                                                                    \
@@ -455,10 +455,10 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 		do {                                                                               \
 			do {                                                                       \
 				h += mtc1;                                                         \
-				tmp = shift[JSTR_HASH2_LOWER(h)];                                  \
-			} while (!tmp && h <= end);                                                \
-			h -= tmp;                                                                  \
-			if (tmp < mtc1)                                                            \
+				_tmp = shift[JSTR_HASH2_LOWER(h)];                                  \
+			} while (!_tmp && h <= end);                                                \
+			h -= _tmp;                                                                  \
+			if (_tmp < mtc1)                                                            \
 				continue;                                                          \
 			if (mtc1 < 15 || !jstr_strncasecmp((char *)h + off, (char *)n + off, 8)) { \
 				if (!jstr_strncasecmp((char *)h, (char *)n, _nelen))               \

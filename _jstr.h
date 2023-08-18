@@ -165,11 +165,11 @@ jstr_rev_mem(char *JSTR_RST _s,
 		return;
 	unsigned char *end = (unsigned char *)_s + _sz - 1;
 	unsigned char *p = (unsigned char *)_s;
-	unsigned char tmp;
+	unsigned char _tmp;
 	do {
-		tmp = *p;
+		_tmp = *p;
 		*p = *end;
-		*end = tmp;
+		*end = _tmp;
 	} while (jstr_likely(++p < --end));
 }
 
