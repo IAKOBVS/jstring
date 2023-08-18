@@ -87,7 +87,7 @@ jstr_allocexact_file(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static int
-jstr_alloc_file_j(Jstring *JSTR_RST const j,
+jstr_alloc_file_j(jstr_ty *JSTR_RST const j,
 		  const char *JSTR_RST const _fname,
 		  struct stat *JSTR_RST const _st)
 {
@@ -101,7 +101,7 @@ jstr_alloc_file_j(Jstring *JSTR_RST const j,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static int
-jstr_allocexact_file_j(Jstring *JSTR_RST const j,
+jstr_allocexact_file_j(jstr_ty *JSTR_RST const j,
 		       const char *JSTR_RST const _fname,
 		       struct stat *JSTR_RST const _st)
 {

@@ -24,7 +24,7 @@ extern "C" {
 typedef enum {
 	PRIVATE_JSTR_FLAG_USE_N = 1,
 	PRIVATE_JSTR_FLAG_USE_NOT_N = 1 << 1,
-} priv_jstr_flag_use_n;
+} priv_jstr_flag_ty;
 
 JSTR_INLINE
 static void
@@ -564,7 +564,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *
-priv_jstr_rmallc_mem_p(const priv_jstr_flag_use_n flag,
+priv_jstr_rmallc_mem_p(const priv_jstr_flag_ty flag,
 		       char *JSTR_RST const s,
 		       const int c,
 		       size_t n,
@@ -917,7 +917,7 @@ JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_MAYBE_UNUSED
 static char *
-priv_jstr_rmall_mem_p(const priv_jstr_flag_use_n flag,
+priv_jstr_rmall_mem_p(const priv_jstr_flag_ty flag,
 		      char *JSTR_RST const s,
 		      const char *JSTR_RST const _searc,
 		      size_t n,
@@ -1010,7 +1010,7 @@ jstr_rmall_p(char *JSTR_RST const s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-jstr_rmall_mem_j(Jstring *JSTR_RST const j,
+jstr_rmall_mem_j(jstr_ty *JSTR_RST const j,
 		 const char *JSTR_RST const _searc,
 		 const size_t _searclen) JSTR_NOEXCEPT
 {
@@ -1025,7 +1025,7 @@ jstr_rmall_mem_j(Jstring *JSTR_RST const j,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-jstr_rmall_j(Jstring *JSTR_RST const j,
+jstr_rmall_j(jstr_ty *JSTR_RST const j,
 	     const char *JSTR_RST const _searc) JSTR_NOEXCEPT
 {
 	return jstr_rmall_mem_j(j, _searc, strlen(_searc));
@@ -1039,7 +1039,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 static void
-priv_jstr_rplcall_mem(const priv_jstr_flag_use_n flag,
+priv_jstr_rplcall_mem(const priv_jstr_flag_ty flag,
 		      char **JSTR_RST const s,
 		      size_t *JSTR_RST const sz,
 		      size_t *JSTR_RST const cap,
