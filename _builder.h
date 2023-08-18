@@ -60,7 +60,7 @@ typedef struct jstr_ty {
 		this->data = NULL;
 	}
 
-#	if JSTR_FREE_ON_DESTRUCTOR_CPP
+#	if JSTR_CFG_FREE_ON_DESTRUCTOR_CPP
 	JSTR_INLINE
 	~jstr_ty(void) JSTR_NOEXCEPT
 	{
@@ -70,7 +70,7 @@ typedef struct jstr_ty {
 #		endif /* JSTR_CFG_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
 	}
 
-#	endif /* JSTR_FREE_ON_DESTRUCTOR_CPP */
+#	endif /* JSTR_CFG_FREE_ON_DESTRUCTOR_CPP */
 
 	/*
 	  free(STR) and set STR to NULL.
