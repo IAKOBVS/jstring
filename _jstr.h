@@ -77,10 +77,10 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
 jstr_countc(const char *JSTR_RST _s,
-	    const int c) JSTR_NOEXCEPT
+	    const int _c) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((_s = strchr(_s, c)))
+	while ((_s = strchr(_s, _c)))
 		++cnt;
 	return cnt;
 }
@@ -96,11 +96,11 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
 jstr_countc_mem(const char *JSTR_RST _s,
-		const int c,
+		const int _c,
 		const int n) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((_s = (char *)memchr(_s, c, n)))
+	while ((_s = (char *)memchr(_s, _c, n)))
 		++cnt;
 	return cnt;
 }
@@ -244,11 +244,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_insert_mem_f(char *JSTR_RST const _s,
-		  const size_t at,
+		  const size_t _at,
 		  const char *JSTR_RST const _src,
 		  const size_t _srclen) JSTR_NOEXCEPT
 {
-	memcpy(_s + at, _src, _srclen);
+	memcpy(_s + _at, _src, _srclen);
 }
 
 /*
@@ -260,16 +260,16 @@ static void
 jstr_insert_mem(char **JSTR_RST const _s,
 		size_t *JSTR_RST const _sz,
 		size_t *JSTR_RST const _cap,
-		const size_t at,
+		const size_t _at,
 		const char *JSTR_RST const _src,
 		const size_t _srclen) JSTR_NOEXCEPT
 {
-	if (at + _srclen > *_sz) {
-		JSTR_REALLOC(*_s, *_cap, at + _srclen + 1, return);
-		*_sz = at + _srclen;
+	if (_at + _srclen > *_sz) {
+		JSTR_REALLOC(*_s, *_cap, _at + _srclen + 1, return);
+		*_sz = _at + _srclen;
 		*(*_s + *_sz) = '\0';
 	}
-	jstr_insert_mem_f(*_s, at, _src, _srclen);
+	jstr_insert_mem_f(*_s, _at, _src, _srclen);
 }
 
 /*
@@ -280,12 +280,12 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_insertaftc_mem_f(char *JSTR_RST const _s,
-		      const int c,
+		      const int _c,
 		      const char *JSTR_RST const _src,
 		      const size_t _sz,
 		      const size_t _srclen) JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(_s, c, _sz);
+	const char *const p = (char *)memchr(_s, _c, _sz);
 	if (p)
 		jstr_insert_mem_f(_s, p - _s + 1, _src, _srclen);
 }
@@ -299,11 +299,11 @@ static void
 jstr_insertaftc_mem(char **JSTR_RST const _s,
 		    size_t *JSTR_RST const _sz,
 		    size_t *JSTR_RST const _cap,
-		    const int c,
+		    const int _c,
 		    const char *JSTR_RST const _src,
 		    const size_t _srclen) JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(*_s, c, *_sz);
+	const char *const p = (char *)memchr(*_s, _c, *_sz);
 	if (p)
 		jstr_insert_mem(_s, _sz, _cap, p - *_s + 1, _src, _srclen);
 }

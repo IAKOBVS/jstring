@@ -22,12 +22,12 @@ extern "C" {
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
 static void
-JSTR_ERR(const char *JSTR_RST const FILE__,
-	 const int LINE__,
-	 const char *JSTR_RST const func__)
+JSTR_ERR(const char *JSTR_RST const FILE_,
+	 const int LINE_,
+	 const char *JSTR_RST const func_)
 {
 #if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
-	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE__, LINE__, func__);
+	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
 	perror("");
 #endif
 #if JSTR_EXIT_ON_MALLOC_ERROR
@@ -99,10 +99,10 @@ JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL static size_t
 strlen_args(Str &&_s,
-	    StrArgs &&...args) JSTR_NOEXCEPT
+	    StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	return strlen(std::forward<Str>(_s))
-	       + strlen_args(std::forward<StrArgs>(args)...);
+	       + strlen_args(std::forward<StrArgs>(_args)...);
 }
 
 template <size_t N>
@@ -148,11 +148,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL static void
 cat_loop_assign(size_t *_sz,
 		char **dst,
-		Str &&arg,
-		StrArgs &&...args) JSTR_NOEXCEPT
+		Str &&_arg,
+		StrArgs &&..._args) JSTR_NOEXCEPT
 {
-	cat_assign(_sz, dst, std::forward<Str>(arg));
-	cat_loop_assign(_sz, dst, std::forward<StrArgs>(args)...);
+	cat_assign(_sz, dst, std::forward<Str>(_arg));
+	cat_loop_assign(_sz, dst, std::forward<StrArgs>(_args)...);
 }
 
 template <typename Str,
@@ -161,11 +161,11 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
 cat_loop_assign(char **dst,
-		Str &&arg,
-		StrArgs &&...args) JSTR_NOEXCEPT
+		Str &&_arg,
+		StrArgs &&..._args) JSTR_NOEXCEPT
 {
-	cat_assign(dst, std::forward<Str>(arg));
-	cat_loop_assign(dst, std::forward<StrArgs>(args)...);
+	cat_assign(dst, std::forward<Str>(_arg));
+	cat_loop_assign(dst, std::forward<StrArgs>(_args)...);
 }
 
 JSTR_WARN_UNUSED
@@ -185,9 +185,9 @@ JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL static size_t
 strlen(size_t **JSTR_RST strlen_arr,
-       Str &&arg) JSTR_NOEXCEPT
+       Str &&_arg) JSTR_NOEXCEPT
 {
-	return ((*(*strlen_arr)++) = ::strlen(std::forward<Str>(arg)));
+	return ((*(*strlen_arr)++) = ::strlen(std::forward<Str>(_arg)));
 }
 
 template <typename Str,
@@ -199,10 +199,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL static size_t
 strlen_args(size_t *strlen_arr,
 	    Str &&_s,
-	    StrArgs &&...args) JSTR_NOEXCEPT
+	    StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	return strlen(&strlen_arr, std::forward<Str>(_s))
-	       + strlen_args(strlen_arr, std::forward<StrArgs>(args)...);
+	       + strlen_args(strlen_arr, std::forward<StrArgs>(_args)...);
 }
 
 template <size_t N>
@@ -241,11 +241,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL static void
 cat_loop_assign(char **dst,
 		size_t *strlen_arr,
-		Str &&arg,
-		StrArgs &&...args) JSTR_NOEXCEPT
+		Str &&_arg,
+		StrArgs &&..._args) JSTR_NOEXCEPT
 {
-	cat_assign(dst, &strlen_arr, std::forward<Str>(arg));
-	cat_loop_assign(dst, strlen_arr, std::forward<StrArgs>(args)...);
+	cat_assign(dst, &strlen_arr, std::forward<Str>(_arg));
+	cat_loop_assign(dst, strlen_arr, std::forward<StrArgs>(_args)...);
 }
 
 } // namespace _priv
@@ -263,16 +263,16 @@ JSTR_NONNULL_ALL static void
 jstr_alloc_cat(char **JSTR_RST const _s,
 	       size_t *const _sz,
 	       size_t *const _cap,
-	       Str &&arg,
-	       StrArgs &&...args) JSTR_NOEXCEPT
+	       Str &&_arg,
+	       StrArgs &&..._args) JSTR_NOEXCEPT
 {
-	size_t strlen_arr[1 + sizeof...(args)];
-	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	size_t strlen_arr[1 + sizeof...(_args)];
+	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*_cap = *_sz * 2;
 	*_s = (char *)malloc(*_cap);
 	JSTR_MALLOC_ERR(*_s, return);
 	char *p = *_s;
-	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*p = '\0';
 }
 
@@ -287,16 +287,16 @@ JSTR_INLINE
 JSTR_NONNULL_ALL static void
 jstr_alloc_cat_f(char *JSTR_RST const _s,
 		 size_t *const _sz,
-		 Str &&arg,
-		 StrArgs &&...args) JSTR_NOEXCEPT
+		 Str &&_arg,
+		 StrArgs &&..._args) JSTR_NOEXCEPT
 {
-	size_t strlen_arr[1 + sizeof...(args)];
+	size_t strlen_arr[1 + sizeof...(_args)];
 #	if 0
-	*_sz = jstr::_priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*_sz = jstr::_priv::strlen_args(std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	else
-	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	endif
-	jstr::_priv::cat_loop_assign(&_s, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(&_s, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*_s = '\0';
 }
 
@@ -312,22 +312,22 @@ JSTR_NONNULL_ALL static void
 jstr_cat(char **JSTR_RST const _s,
 	 size_t *const _sz,
 	 size_t *const _cap,
-	 Str &&arg,
-	 StrArgs &&...args) JSTR_NOEXCEPT
+	 Str &&_arg,
+	 StrArgs &&..._args) JSTR_NOEXCEPT
 {
-	size_t strlen_arr[1 + sizeof...(args)];
+	size_t strlen_arr[1 + sizeof...(_args)];
 #	if 0
-	const size_t newsz = *_sz + jstr::_priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *_sz + jstr::_priv::strlen_args(std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	else
-	const size_t newsz = *_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	endif
 	if (*_cap < *_sz)
 		JSTR_REALLOC(*_s, *_cap, newsz + 1, return);
 	char *p = *_s + *_sz;
 #	if 0
-	jstr::_priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(&p, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	else
-	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	endif
 	*p = '\0';
 	*_sz = newsz;
@@ -344,11 +344,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL static void
 jstr_cat_f(char *_s,
 	   size_t *JSTR_RST _sz,
-	   Str &&arg,
-	   StrArgs &&...args) JSTR_NOEXCEPT
+	   Str &&_arg,
+	   StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	_s += *_sz;
-	jstr::_priv::cat_loop_assign(_sz, &_s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::_priv::cat_loop_assign(_sz, &_s, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*_s = '\0';
 }
 

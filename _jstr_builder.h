@@ -267,61 +267,61 @@ jstr_cat_j(jstr_ty *JSTR_RST const j,
 
 #else
 
-#	define jstr_cat_f(_s, _sz, ...)                                                  \
-		do {                                                                    \
+#	define jstr_cat_f(_s, _sz, ...)                                                 \
+		do {                                                                     \
 			JSTR_ASSERT_IS_STR(*(_s));                                       \
 			JSTR_ASSERT_IS_SIZE(*(_sz));                                     \
+			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                   \
+			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                  \
+			*(_sz) += JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
+			char *p = *(_s) + *(_sz);                                        \
+			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);            \
+			*p = '\0';                                                       \
+		} while (0)
+
+#	define jstr_cat(_s, _sz, _cap, ...)                                                                \
+		do {                                                                                        \
+			JSTR_ASSERT_IS_STR(*(_s));                                                          \
+			JSTR_ASSERT_IS_SIZE(*(_sz));                                                        \
+			JSTR_ASSERT_IS_SIZE(*(_cap));                                                       \
+			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                      \
+			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                                     \
+			const size_t _newsz = *_sz + JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
+			if (*(_cap) < newsz)                                                                \
+				JSTR_REALLOC(*(_s), *(_cap), newsz + 1, break);                             \
+			char *p = *(_s) + *(_sz);                                                           \
+			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);                               \
+			*p = '\0';                                                                          \
+			*(_sz) = newsz;                                                                     \
+		} while (0)
+
+#	define jstr_alloc_cat_f(_s, _sz, ...)                                          \
+		do {                                                                    \
+			JSTR_ASSERT_IS_STR(*(_s));                                      \
+			JSTR_ASSERT_IS_SIZE(*(_sz));                                    \
+			JSTR_ASSERT_IS_SIZE(*(_cap));                                   \
 			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
 			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                 \
-			*(_sz) += JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			char *p = *(_s) + *(_sz);                                         \
+			*(_sz) = JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
+			char *p = *(_s);                                                \
 			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);           \
 			*p = '\0';                                                      \
 		} while (0)
 
-#	define jstr_cat(_s, _sz, _cap, ...)                                                                 \
-		do {                                                                                      \
-			JSTR_ASSERT_IS_STR(*(_s));                                                         \
-			JSTR_ASSERT_IS_SIZE(*(_sz));                                                       \
-			JSTR_ASSERT_IS_SIZE(*(_cap));                                                      \
-			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                    \
-			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                                   \
-			const size_t newsz = *_sz + JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			if (*(_cap) < newsz)                                                               \
-				JSTR_REALLOC(*(_s), *(_cap), newsz + 1, break);                             \
-			char *p = *(_s) + *(_sz);                                                           \
-			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);                             \
-			*p = '\0';                                                                        \
-			*(_sz) = newsz;                                                                    \
-		} while (0)
-
-#	define jstr_alloc_cat_f(_s, _sz, ...)                                           \
-		do {                                                                   \
+#	define jstr_alloc_cat(_s, _sz, _cap, ...)                                      \
+		do {                                                                    \
 			JSTR_ASSERT_IS_STR(*(_s));                                      \
 			JSTR_ASSERT_IS_SIZE(*(_sz));                                    \
 			JSTR_ASSERT_IS_SIZE(*(_cap));                                   \
-			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                 \
-			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                \
+			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
+			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                 \
 			*(_sz) = JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			char *p = *(_s);                                                \
-			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);          \
-			*p = '\0';                                                     \
-		} while (0)
-
-#	define jstr_alloc_cat(_s, _sz, _cap, ...)                                        \
-		do {                                                                   \
-			JSTR_ASSERT_IS_STR(*(_s));                                      \
-			JSTR_ASSERT_IS_SIZE(*(_sz));                                    \
-			JSTR_ASSERT_IS_SIZE(*(_cap));                                   \
-			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                 \
-			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                \
-			*(_sz) = JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			*(_cap) = PRIVATE_JSTR_MIN_ALLOC(*(_sz));                        \
-			*(_s) = malloc(*(_cap));                                         \
+			*(_cap) = PRIVATE_JSTR_MIN_ALLOC(*(_sz));                       \
+			*(_s) = malloc(*(_cap));                                        \
 			JSTR_MALLOC_ERR(*((_s)), break);                                \
 			char *p = *(_s);                                                \
-			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);          \
-			*p = '\0';                                                     \
+			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);           \
+			*p = '\0';                                                      \
 		} while (0)
 
 #	define jstr_cat_j(j, ...)	 jstr_cat(&((j)->data), &((j)->size), &((j)->_cap), __VA_ARGS__)

@@ -19,9 +19,9 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_isupper(const int c) JSTR_NOEXCEPT
+jstr_isupper(const int _c) JSTR_NOEXCEPT
 {
-	switch (c) {
+	switch (_c) {
 		JSTR_CASE_LOWER
 		return 1;
 	default:
@@ -34,9 +34,9 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_islower(const int c) JSTR_NOEXCEPT
+jstr_islower(const int _c) JSTR_NOEXCEPT
 {
-	switch (c) {
+	switch (_c) {
 		JSTR_CASE_LOWER
 		return 1;
 	default:
@@ -49,9 +49,9 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_isalnum(const int c) JSTR_NOEXCEPT
+jstr_isalnum(const int _c) JSTR_NOEXCEPT
 {
-	switch (c) {
+	switch (_c) {
 		JSTR_CASE_ALPHANUM;
 		return 1;
 	default:
@@ -81,9 +81,9 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_isalpha(const int c) JSTR_NOEXCEPT
+jstr_isalpha(const int _c) JSTR_NOEXCEPT
 {
-	switch (c) {
+	switch (_c) {
 		JSTR_CASE_ALPHA;
 		return 1;
 	default:
@@ -113,9 +113,9 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_isdigit(const int c) JSTR_NOEXCEPT
+jstr_isdigit(const int _c) JSTR_NOEXCEPT
 {
-	switch (c) {
+	switch (_c) {
 		JSTR_CASE_DIGIT;
 		return 1;
 	}
@@ -144,13 +144,13 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_toupper(const int c) JSTR_NOEXCEPT
+jstr_toupper(const int _c) JSTR_NOEXCEPT
 {
-	switch (c) {
+	switch (_c) {
 		JSTR_CASE_LOWER
-		return c - 'a' + 'A';
+		return _c - 'a' + 'A';
 	}
-	return c;
+	return _c;
 }
 
 JSTR_INLINE
@@ -175,13 +175,13 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_tolower(const int c) JSTR_NOEXCEPT
+jstr_tolower(const int _c) JSTR_NOEXCEPT
 {
-	switch (c) {
+	switch (_c) {
 		JSTR_CASE_UPPER
-		return c - 'A' + 'a';
+		return _c - 'A' + 'a';
 	}
-	return c;
+	return _c;
 }
 
 JSTR_INLINE

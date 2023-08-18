@@ -38,12 +38,12 @@ JSTR_RETURNS_NONNULL
 static void *
 jstr_mempcpy(char *JSTR_RST const _dst,
 	     const char *JSTR_RST const _src,
-	     const size_t n) JSTR_NOEXCEPT
+	     const size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMPCPY
-	return mempcpy(_dst, _src, n);
+	return mempcpy(_dst, _src, _n);
 #else
-	return (char *)memcpy(_dst, _src, n) + n;
+	return (char *)memcpy(_dst, _src, _n) + _n;
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
@@ -79,18 +79,18 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static void *
 jstr_memrchr(const void *JSTR_RST const _s,
-	     const int c,
-	     size_t n) JSTR_NOEXCEPT
+	     const int _c,
+	     size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(_s, c, n);
+	return (void *)memrchr(_s, _c, _n);
 #else
 	if (jstr_unlikely(*(char *)_s == '\0'))
 		return NULL;
 	const unsigned char *const start = (unsigned char *)_s;
-	const unsigned char *end = start + n - 1;
+	const unsigned char *end = start + _n - 1;
 	do
-		if (*end == c)
+		if (*end == _c)
 			return (void *)end;
 	while (jstr_likely(--end <= start));
 	return NULL;
@@ -103,13 +103,13 @@ JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *
 jstr_strchrnul(const char *JSTR_RST const _s,
-	       const int c)
+	       const int _c)
 {
 #if JSTR_HAVE_STRCHRNUL
-	return (char *)strchrnul(_s, c);
+	return (char *)strchrnul(_s, _c);
 #else
 	const size_t n = strlen(_s);
-	void *p = (void *)memchr(_s, c, n);
+	void *p = (void *)memchr(_s, _c, n);
 	if (p)
 		return p;
 	return (void *)(_s + n);
@@ -142,16 +142,16 @@ JSTR_INLINE
 static void *
 jstr_memccpy(void *JSTR_RST _dst,
 	     const void *JSTR_RST _src,
-	     int c,
-	     size_t n) JSTR_NOEXCEPT
+	     int _c,
+	     size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMCCPY
-	return memccpy(_dst, _src, c, n);
+	return memccpy(_dst, _src, _c, _n);
 #else
-	void *p = memchr(_src, c, n);
+	void *p = memchr(_src, _c, _n);
 	if (p)
 		return jstr_mempcpy(_dst, _src, p - _src + 1);
-	memcpy(_dst, _src, n);
+	memcpy(_dst, _src, _n);
 	return NULL;
 #endif /* JSTR_HAVE_MEMCPY */
 }
@@ -185,21 +185,21 @@ JSTR_WARN_UNUSED
 static int
 jstr_strncasecmp(const char *JSTR_RST const s1,
 		 const char *JSTR_RST const s2,
-		 size_t n) JSTR_NOEXCEPT
+		 size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRNCASECMP
-	return strncasecmp(s1, s2, n);
+	return strncasecmp(s1, s2, _n);
 #else
 	const unsigned char *p1 = (unsigned char *)s1;
 	const unsigned char *p2 = (unsigned char *)s2;
-	for (char c; n--; ++p1, ++p2) {
+	for (char _c; _n--; ++p1, ++p2) {
 		switch (*p1) {
 		default:
 			JSTR_CASE_LOWER
-			c = *p1;
+			_c = *p1;
 			break;
 			JSTR_CASE_UPPER
-			c = *p1 - 'A' + 'a';
+			_c = *p1 - 'A' + 'a';
 			break;
 		case '\0':
 			return *p2;
@@ -207,12 +207,12 @@ jstr_strncasecmp(const char *JSTR_RST const s1,
 		switch (*p2) {
 		default:
 			JSTR_CASE_LOWER
-			if (*p2 != c)
-				return c - *p2;
+			if (*p2 != _c)
+				return _c - *p2;
 			break;
 			JSTR_CASE_UPPER
-			if ((*p2 - 'A' + 'a') != c)
-				return c - (*p2 - 'A' + 'a');
+			if ((*p2 - 'A' + 'a') != _c)
+				return _c - (*p2 - 'A' + 'a');
 			break;
 		case '\0':
 			return 1;
@@ -239,14 +239,14 @@ jstr_strcasecmp(const char *JSTR_RST s1,
 #if JSTR_HAVE_STRCASECMP
 	return strcasecmp(s1, s2);
 #else
-	for (char c;; ++s1, ++s2) {
+	for (char _c;; ++s1, ++s2) {
 		switch (*s1) {
 		default:
 			JSTR_CASE_LOWER
-			c = *s1;
+			_c = *s1;
 			break;
 			JSTR_CASE_UPPER
-			c = *s1 - 'A' + 'a';
+			_c = *s1 - 'A' + 'a';
 			break;
 		case '\0':
 			return *s2;
@@ -254,12 +254,12 @@ jstr_strcasecmp(const char *JSTR_RST s1,
 		switch (*s2) {
 		default:
 			JSTR_CASE_LOWER
-			if (*s2 != c)
-				return c - *s2;
+			if (*s2 != _c)
+				return _c - *s2;
 			break;
 			JSTR_CASE_UPPER
-			if ((*s2 - 'A' + 'a') != c)
-				return c - (*s2 - 'A' + 'a');
+			if ((*s2 - 'A' + 'a') != _c)
+				return _c - (*s2 - 'A' + 'a');
 			break;
 		case '\0':
 			return 1;
@@ -274,9 +274,9 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static void *
 priv_jstr_memrmem(const void *JSTR_RST const _hs,
-		     const size_t _hslen,
-		     const void *JSTR_RST const _ne,
-		     const size_t _nelen) JSTR_NOEXCEPT
+		  const size_t _hslen,
+		  const void *JSTR_RST const _ne,
+		  const size_t _nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 #define PRIVATE_JSTR_MEMMEMR(shift_type, ne_iterator_type)                                 \
@@ -432,9 +432,9 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
 priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
-			 const size_t _hslen,
-			 const char *JSTR_RST const _ne,
-			 const size_t _nelen) JSTR_NOEXCEPT
+		      const size_t _hslen,
+		      const char *JSTR_RST const _ne,
+		      const size_t _nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
 #define PRIVATE_JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                      \
@@ -487,24 +487,24 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
 priv_jstr_strcasechr(const char *JSTR_RST const _s,
-			const int c,
-			const size_t n) JSTR_NOEXCEPT
+		     const int _c,
+		     const size_t _n) JSTR_NOEXCEPT
 {
 	enum { l = 0,
 	       u,
 	};
 	unsigned char cc[2];
-	switch (c) {
+	switch (_c) {
 		JSTR_CASE_UPPER
-		cc[u] = c;
-		cc[l] = c - 'A' + 'a';
+		cc[u] = _c;
+		cc[l] = _c - 'A' + 'a';
 		break;
 		JSTR_CASE_LOWER
-		cc[l] = c;
-		cc[u] = c - 'a' + 'A';
+		cc[l] = _c;
+		cc[u] = _c - 'a' + 'A';
 		break;
 	default:
-		return (char *)memchr(_s, c, n);
+		return (char *)memchr(_s, _c, _n);
 	}
 	unsigned char *h = (unsigned char *)_s;
 	for (;; ++h)
