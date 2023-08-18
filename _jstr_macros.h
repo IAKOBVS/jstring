@@ -523,7 +523,7 @@ case 'o':               \
 case 'p':               \
 case 'q':               \
 case 'r':               \
-case '_s':               \
+case 's':               \
 case 't':               \
 case 'u':               \
 case 'v':               \
