@@ -17044,7 +17044,7 @@
 	} while (0)
 
 #ifdef JSTR_PP_HAS_GENERIC
-#	define JSTR_PP_IS_STR(s) _Generic((s),              \
+#	define JSTR_PP_IS_STR(_s) _Generic((_s),              \
 					   const char * : 1, \
 					   char * : 1,       \
 					   default : 0)

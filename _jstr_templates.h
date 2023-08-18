@@ -72,7 +72,7 @@ JSTR_ERR_EXIT(void)
 	} while (0)
 
 #if JSTR_HAVE_REALLOC_MREMAP
-#	define JSTR_IS_MMAP(cap) ((jstr_unlikely((cap) > JSTR_MIN_MMAP - 1)))
+#	define JSTR_IS_MMAP(_cap) ((jstr_unlikely((_cap) > JSTR_MIN_MMAP - 1)))
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 
 #ifdef __cplusplus
@@ -98,35 +98,35 @@ JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL static size_t
-strlen_args(Str &&s,
+strlen_args(Str &&_s,
 	    StrArgs &&...args) JSTR_NOEXCEPT
 {
-	return strlen(std::forward<Str>(s))
+	return strlen(std::forward<Str>(_s))
 	       + strlen_args(std::forward<StrArgs>(args)...);
 }
 
 template <size_t N>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-cat_assign(size_t *JSTR_RST sz,
+cat_assign(size_t *JSTR_RST _sz,
 	   char **dst,
 	   const char (&src)[N]) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, N - 1);
 	*dst += (N - 1);
-	*sz += (N - 1);
+	*_sz += (N - 1);
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-cat_assign(size_t *sz,
+cat_assign(size_t *_sz,
 	   char **dst,
 	   const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_STPCPY
 	char *const _new = stpcpy(*dst, src);
-	*sz += _new - *dst;
+	*_sz += _new - *dst;
 	*dst = _new;
 #	else
 	const size_t len = strlen(*dst);
@@ -146,13 +146,13 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-cat_loop_assign(size_t *sz,
+cat_loop_assign(size_t *_sz,
 		char **dst,
 		Str &&arg,
 		StrArgs &&...args) JSTR_NOEXCEPT
 {
-	cat_assign(sz, dst, std::forward<Str>(arg));
-	cat_loop_assign(sz, dst, std::forward<StrArgs>(args)...);
+	cat_assign(_sz, dst, std::forward<Str>(arg));
+	cat_loop_assign(_sz, dst, std::forward<StrArgs>(args)...);
 }
 
 template <typename Str,
@@ -198,10 +198,10 @@ JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL static size_t
 strlen_args(size_t *strlen_arr,
-	    Str &&s,
+	    Str &&_s,
 	    StrArgs &&...args) JSTR_NOEXCEPT
 {
-	return strlen(&strlen_arr, std::forward<Str>(s))
+	return strlen(&strlen_arr, std::forward<Str>(_s))
 	       + strlen_args(strlen_arr, std::forward<StrArgs>(args)...);
 }
 
@@ -260,18 +260,18 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-jstr_alloc_cat(char **JSTR_RST const s,
-	       size_t *const sz,
-	       size_t *const cap,
+jstr_alloc_cat(char **JSTR_RST const _s,
+	       size_t *const _sz,
+	       size_t *const _cap,
 	       Str &&arg,
 	       StrArgs &&...args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(args)];
-	*sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	*cap = *sz * 2;
-	*s = (char *)malloc(*cap);
-	JSTR_MALLOC_ERR(*s, return);
-	char *p = *s;
+	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*_cap = *_sz * 2;
+	*_s = (char *)malloc(*_cap);
+	JSTR_MALLOC_ERR(*_s, return);
+	char *p = *_s;
 	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
 }
@@ -285,19 +285,19 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-jstr_alloc_cat_f(char *JSTR_RST const s,
-		 size_t *const sz,
+jstr_alloc_cat_f(char *JSTR_RST const _s,
+		 size_t *const _sz,
 		 Str &&arg,
 		 StrArgs &&...args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(args)];
 #	if 0
-	*sz = jstr::_priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*_sz = jstr::_priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	else
-	*sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	endif
-	jstr::_priv::cat_loop_assign(&s, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	*s = '\0';
+	jstr::_priv::cat_loop_assign(&_s, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*_s = '\0';
 }
 
 /*
@@ -309,28 +309,28 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-jstr_cat(char **JSTR_RST const s,
-	 size_t *const sz,
-	 size_t *const cap,
+jstr_cat(char **JSTR_RST const _s,
+	 size_t *const _sz,
+	 size_t *const _cap,
 	 Str &&arg,
 	 StrArgs &&...args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(args)];
 #	if 0
-	const size_t newsz = *sz + jstr::_priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *_sz + jstr::_priv::strlen_args(std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	else
-	const size_t newsz = *sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	endif
-	if (*cap < *sz)
-		JSTR_REALLOC(*s, *cap, newsz + 1, return);
-	char *p = *s + *sz;
+	if (*_cap < *_sz)
+		JSTR_REALLOC(*_s, *_cap, newsz + 1, return);
+	char *p = *_s + *_sz;
 #	if 0
 	jstr::_priv::cat_loop_assign(&p, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	else
 	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 #	endif
 	*p = '\0';
-	*sz = newsz;
+	*_sz = newsz;
 }
 
 /*
@@ -342,14 +342,14 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-jstr_cat_f(char *s,
-	   size_t *JSTR_RST sz,
+jstr_cat_f(char *_s,
+	   size_t *JSTR_RST _sz,
 	   Str &&arg,
 	   StrArgs &&...args) JSTR_NOEXCEPT
 {
-	s += *sz;
-	jstr::_priv::cat_loop_assign(sz, &s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-	*s = '\0';
+	_s += *_sz;
+	jstr::_priv::cat_loop_assign(_sz, &_s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	*_s = '\0';
 }
 
 #endif /* __cplusplus */

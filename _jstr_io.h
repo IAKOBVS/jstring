@@ -22,9 +22,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static int
 priv_jstr_alloc_file(const int alloc_exact,
-			char **JSTR_RST const s,
-			size_t *JSTR_RST const sz,
-			size_t *JSTR_RST const cap,
+			char **JSTR_RST const _s,
+			size_t *JSTR_RST const _sz,
+			size_t *JSTR_RST const _cap,
 			const char *JSTR_RST const _fname,
 			struct stat *JSTR_RST const _st)
 {
@@ -33,12 +33,12 @@ priv_jstr_alloc_file(const int alloc_exact,
 		goto _ERR;
 	if (jstr_unlikely(stat(_fname, _st)))
 		goto _ERR_CLOSE;
-	*cap = alloc_exact ? _st->st_size : (_st->st_size * 2);
-	*s = (char *)malloc(*cap);
-	JSTR_MALLOC_ERR(*s, goto _ERR_CLOSE);
-	fread(*s, 1, _st->st_size, _fp);
-	*(*s + _st->st_size) = '\0';
-	*sz = _st->st_size;
+	*_cap = alloc_exact ? _st->st_size : (_st->st_size * 2);
+	*_s = (char *)malloc(*_cap);
+	JSTR_MALLOC_ERR(*_s, goto _ERR_CLOSE);
+	fread(*_s, 1, _st->st_size, _fp);
+	*(*_s + _st->st_size) = '\0';
+	*_sz = _st->st_size;
 	fclose(_fp);
 	return 0;
 _ERR_CLOSE:
@@ -55,13 +55,13 @@ _ERR:
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static int
-jstr_alloc_file(char **JSTR_RST const s,
-		size_t *JSTR_RST const sz,
-		size_t *JSTR_RST const cap,
+jstr_alloc_file(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
 		const char *JSTR_RST const _fname,
 		struct stat *JSTR_RST const _st)
 {
-	return priv_jstr_alloc_file(0, s, sz, cap, _fname, _st);
+	return priv_jstr_alloc_file(0, _s, _sz, _cap, _fname, _st);
 }
 
 /*
@@ -71,13 +71,13 @@ jstr_alloc_file(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static int
-jstr_allocexact_file(char **JSTR_RST const s,
-		     size_t *JSTR_RST const sz,
-		     size_t *JSTR_RST const cap,
+jstr_allocexact_file(char **JSTR_RST const _s,
+		     size_t *JSTR_RST const _sz,
+		     size_t *JSTR_RST const _cap,
 		     const char *JSTR_RST const _fname,
 		     struct stat *JSTR_RST const _st)
 {
-	return priv_jstr_alloc_file(1, s, sz, cap, _fname, _st);
+	return priv_jstr_alloc_file(1, _s, _sz, _cap, _fname, _st);
 }
 
 /*
@@ -91,7 +91,7 @@ jstr_alloc_file_j(jstr_ty *JSTR_RST const j,
 		  const char *JSTR_RST const _fname,
 		  struct stat *JSTR_RST const _st)
 {
-	return jstr_alloc_file(&j->data, &j->size, &j->cap, _fname, _st);
+	return jstr_alloc_file(&j->data, &j->size, &j->_cap, _fname, _st);
 }
 
 /*
@@ -105,7 +105,7 @@ jstr_allocexact_file_j(jstr_ty *JSTR_RST const j,
 		       const char *JSTR_RST const _fname,
 		       struct stat *JSTR_RST const _st)
 {
-	return jstr_allocexact_file(&j->data, &j->size, &j->cap, _fname, _st);
+	return jstr_allocexact_file(&j->data, &j->size, &j->_cap, _fname, _st);
 }
 
 #ifdef __cplusplus

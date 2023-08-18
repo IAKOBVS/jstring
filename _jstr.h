@@ -40,13 +40,13 @@ JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *
-jstr_append_mem_p_f(char *JSTR_RST const s,
+jstr_append_mem_p_f(char *JSTR_RST const _s,
 		    const char *JSTR_RST const _src,
-		    const size_t sz,
+		    const size_t _sz,
 		    const size_t _srclen) JSTR_NOEXCEPT
 {
-	memcpy(s, _src, _srclen + 1);
-	return s + sz + _srclen;
+	memcpy(_s, _src, _srclen + 1);
+	return _s + _sz + _srclen;
 }
 
 /*
@@ -55,15 +55,15 @@ jstr_append_mem_p_f(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_append_mem(char **JSTR_RST const s,
-		size_t *JSTR_RST const sz,
-		size_t *JSTR_RST const cap,
+jstr_append_mem(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
 		const char *JSTR_RST const _src,
 		const size_t _srclen) JSTR_NOEXCEPT
 {
-	if (*cap < *sz + _srclen)
-		JSTR_REALLOC(*s, *cap, *sz + _srclen, return);
-	*sz = jstr_append_mem_p_f(*s, _src, *sz, _srclen) - *s;
+	if (*_cap < *_sz + _srclen)
+		JSTR_REALLOC(*_s, *_cap, *_sz + _srclen, return);
+	*_sz = jstr_append_mem_p_f(*_s, _src, *_sz, _srclen) - *_s;
 }
 
 /*
@@ -76,11 +76,11 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_countc(const char *JSTR_RST s,
+jstr_countc(const char *JSTR_RST _s,
 	    const int c) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((s = strchr(s, c)))
+	while ((_s = strchr(_s, c)))
 		++cnt;
 	return cnt;
 }
@@ -95,12 +95,12 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_countc_mem(const char *JSTR_RST s,
+jstr_countc_mem(const char *JSTR_RST _s,
 		const int c,
 		const int n) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((s = (char *)memchr(s, c, n)))
+	while ((_s = (char *)memchr(_s, c, n)))
 		++cnt;
 	return cnt;
 }
@@ -117,16 +117,16 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_count_mem(const char *JSTR_RST s,
+jstr_count_mem(const char *JSTR_RST _s,
 	       const char *JSTR_RST const _searc,
-	       size_t sz,
+	       size_t _sz,
 	       const size_t _searclen) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((s = (char *)memmem(s, sz, _searc, _searclen))) {
+	while ((_s = (char *)memmem(_s, _sz, _searc, _searclen))) {
 		++cnt;
-		s += _searclen;
-		sz -= _searclen;
+		_s += _searclen;
+		_sz -= _searclen;
 	}
 	return cnt;
 }
@@ -143,11 +143,11 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_count(const char *JSTR_RST s,
+jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _searc) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((s = strstr(s, _searc)))
+	while ((_s = strstr(_s, _searc)))
 		++cnt;
 	return cnt;
 }
@@ -158,13 +158,13 @@ jstr_count(const char *JSTR_RST s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_rev_mem(char *JSTR_RST s,
-	     const size_t sz) JSTR_NOEXCEPT
+jstr_rev_mem(char *JSTR_RST _s,
+	     const size_t _sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*s == '\0'))
+	if (jstr_unlikely(*_s == '\0'))
 		return;
-	unsigned char *end = (unsigned char *)s + sz - 1;
-	unsigned char *p = (unsigned char *)s;
+	unsigned char *end = (unsigned char *)_s + _sz - 1;
+	unsigned char *p = (unsigned char *)_s;
 	unsigned char tmp;
 	do {
 		tmp = *p;
@@ -184,13 +184,13 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *
-jstr_trim_mem_p(char *JSTR_RST const s,
-		const size_t sz) JSTR_NOEXCEPT
+jstr_trim_mem_p(char *JSTR_RST const _s,
+		const size_t _sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*s == '\0'))
-		return s;
-	unsigned char *end = (unsigned char *)s + sz - 1;
-	const unsigned char *const start = (unsigned char *)s;
+	if (jstr_unlikely(*_s == '\0'))
+		return _s;
+	unsigned char *end = (unsigned char *)_s + _sz - 1;
+	const unsigned char *const start = (unsigned char *)_s;
 	do {
 		switch (*end) {
 		case '\t':
@@ -216,9 +216,9 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *
-jstr_trim_p(char *JSTR_RST const s) JSTR_NOEXCEPT
+jstr_trim_p(char *JSTR_RST const _s) JSTR_NOEXCEPT
 {
-	return jstr_trim_mem_p(s, strlen(s));
+	return jstr_trim_mem_p(_s, strlen(_s));
 }
 
 /*
@@ -243,12 +243,12 @@ jstr_trim_j(jstr_ty *JSTR_RST const j) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_insert_mem_f(char *JSTR_RST const s,
+jstr_insert_mem_f(char *JSTR_RST const _s,
 		  const size_t at,
 		  const char *JSTR_RST const _src,
 		  const size_t _srclen) JSTR_NOEXCEPT
 {
-	memcpy(s + at, _src, _srclen);
+	memcpy(_s + at, _src, _srclen);
 }
 
 /*
@@ -257,19 +257,19 @@ jstr_insert_mem_f(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_insert_mem(char **JSTR_RST const s,
-		size_t *JSTR_RST const sz,
-		size_t *JSTR_RST const cap,
+jstr_insert_mem(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
 		const size_t at,
 		const char *JSTR_RST const _src,
 		const size_t _srclen) JSTR_NOEXCEPT
 {
-	if (at + _srclen > *sz) {
-		JSTR_REALLOC(*s, *cap, at + _srclen + 1, return);
-		*sz = at + _srclen;
-		*(*s + *sz) = '\0';
+	if (at + _srclen > *_sz) {
+		JSTR_REALLOC(*_s, *_cap, at + _srclen + 1, return);
+		*_sz = at + _srclen;
+		*(*_s + *_sz) = '\0';
 	}
-	jstr_insert_mem_f(*s, at, _src, _srclen);
+	jstr_insert_mem_f(*_s, at, _src, _srclen);
 }
 
 /*
@@ -279,15 +279,15 @@ jstr_insert_mem(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_insertaftc_mem_f(char *JSTR_RST const s,
+jstr_insertaftc_mem_f(char *JSTR_RST const _s,
 		      const int c,
 		      const char *JSTR_RST const _src,
-		      const size_t sz,
+		      const size_t _sz,
 		      const size_t _srclen) JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(s, c, sz);
+	const char *const p = (char *)memchr(_s, c, _sz);
 	if (p)
-		jstr_insert_mem_f(s, p - s + 1, _src, _srclen);
+		jstr_insert_mem_f(_s, p - _s + 1, _src, _srclen);
 }
 
 /*
@@ -296,16 +296,16 @@ jstr_insertaftc_mem_f(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_insertaftc_mem(char **JSTR_RST const s,
-		    size_t *JSTR_RST const sz,
-		    size_t *JSTR_RST const cap,
+jstr_insertaftc_mem(char **JSTR_RST const _s,
+		    size_t *JSTR_RST const _sz,
+		    size_t *JSTR_RST const _cap,
 		    const int c,
 		    const char *JSTR_RST const _src,
 		    const size_t _srclen) JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(*s, c, *sz);
+	const char *const p = (char *)memchr(*_s, c, *_sz);
 	if (p)
-		jstr_insert_mem(s, sz, cap, p - *s + 1, _src, _srclen);
+		jstr_insert_mem(_s, _sz, _cap, p - *_s + 1, _src, _srclen);
 }
 
 /*
@@ -315,22 +315,22 @@ jstr_insertaftc_mem(char **JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_insertaft_mem_f(char *JSTR_RST const s,
+jstr_insertaft_mem_f(char *JSTR_RST const _s,
 		     const char *JSTR_RST const _searc,
 		     const char *JSTR_RST const _src,
-		     const size_t sz,
+		     const size_t _sz,
 		     const size_t _searclen,
 		     const size_t _srclen) JSTR_NOEXCEPT
 {
 	switch (_searclen) {
 	case 0: return;
 	case 1:
-		jstr_insertaftc_mem_f(s, *_searc, _src, sz, _srclen);
+		jstr_insertaftc_mem_f(_s, *_searc, _src, _sz, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(s, sz, _searc, _searclen);
+		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(_s, _sz, _searc, _searclen);
 		if (p)
-			jstr_insert_mem_f(s, p - s + _searclen, _src, _srclen);
+			jstr_insert_mem_f(_s, p - _s + _searclen, _src, _srclen);
 		return;
 	}
 	}
@@ -342,9 +342,9 @@ jstr_insertaft_mem_f(char *JSTR_RST const s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_insertaft_mem(char **JSTR_RST const s,
-		   size_t *JSTR_RST const sz,
-		   size_t *JSTR_RST const cap,
+jstr_insertaft_mem(char **JSTR_RST const _s,
+		   size_t *JSTR_RST const _sz,
+		   size_t *JSTR_RST const _cap,
 		   const char *JSTR_RST const _searc,
 		   const char *JSTR_RST const _src,
 		   const size_t _searclen,
@@ -353,12 +353,12 @@ jstr_insertaft_mem(char **JSTR_RST const s,
 	switch (_searclen) {
 	case 0: return;
 	case 1:
-		jstr_insertaftc_mem(s, sz, cap, *_searc, _src, _srclen);
+		jstr_insertaftc_mem(_s, _sz, _cap, *_searc, _src, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(*s, *sz, _searc, _searclen);
+		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(*_s, *_sz, _searc, _searclen);
 		if (p)
-			jstr_insert_mem(s, sz, cap, p - *s + _searclen, _src, _srclen);
+			jstr_insert_mem(_s, _sz, _cap, p - *_s + _searclen, _src, _srclen);
 		return;
 	}
 	}
@@ -418,25 +418,25 @@ jstr_itoa(char *JSTR_RST const _dst,
 	  int _num,
 	  const unsigned int _base)
 {
-#define PRIVATE_JSTR_NUMTOSTR(_max_digits)                                       \
-	do {                                                                     \
-		unsigned char *d = (unsigned char *)_dst;                        \
-		unsigned char sbuf[_max_digits];                                 \
-		unsigned char *JSTR_RST s = (unsigned char *)sbuf;               \
-		unsigned int neg = (_num < 0) ? (_num = -_num, 1) : 0;           \
-		unsigned char *const end = (unsigned char *)s + _max_digits - 1; \
-		s = end;                                                         \
-		do                                                               \
-			*s-- = _num % _base + '0';                               \
-		while (_num /= 10);                                              \
-		if (neg)                                                         \
-			*s = '-';                                                \
-		else                                                             \
-			++s;                                                     \
-		while (s <= end)                                                 \
-			*d++ = *s++;                                             \
-		*d = '\0';                                                       \
-		return (char *)d;                                                \
+#define PRIVATE_JSTR_NUMTOSTR(_max_digits)                                        \
+	do {                                                                      \
+		unsigned char *d = (unsigned char *)_dst;                         \
+		unsigned char sbuf[_max_digits];                                  \
+		unsigned char *JSTR_RST _s = (unsigned char *)sbuf;               \
+		unsigned int neg = (_num < 0) ? (_num = -_num, 1) : 0;            \
+		unsigned char *const end = (unsigned char *)_s + _max_digits - 1; \
+		_s = end;                                                         \
+		do                                                                \
+			*_s-- = _num % _base + '0';                               \
+		while (_num /= 10);                                               \
+		if (neg)                                                          \
+			*_s = '-';                                                \
+		else                                                              \
+			++_s;                                                     \
+		while (_s <= end)                                                 \
+			*d++ = *_s++;                                             \
+		*d = '\0';                                                        \
+		return (char *)d;                                                 \
 	} while (0)
 	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
 }
@@ -489,21 +489,21 @@ jstr_utoa(char *JSTR_RST const _dst,
 	  unsigned int _num,
 	  const unsigned int _base)
 {
-#define PRIVATE_JSTR_UNUMTOSTR(_max_digits)                     \
-	do {                                                    \
-		unsigned char *d = (unsigned char *)_dst;       \
-		unsigned char sbuf[_max_digits];                \
-		unsigned char *JSTR_RST s = sbuf;               \
-		unsigned char *const end = s + _max_digits - 1; \
-		s = end;                                        \
-		do                                              \
-			*s-- = _num % _base + '0';              \
-		while (_num /= 10);                             \
-		++s;                                            \
-		while (s <= end)                                \
-			*d++ = *s++;                            \
-		*d = '\0';                                      \
-		return (char *)d;                               \
+#define PRIVATE_JSTR_UNUMTOSTR(_max_digits)                      \
+	do {                                                     \
+		unsigned char *d = (unsigned char *)_dst;        \
+		unsigned char sbuf[_max_digits];                 \
+		unsigned char *JSTR_RST _s = sbuf;               \
+		unsigned char *const end = _s + _max_digits - 1; \
+		_s = end;                                        \
+		do                                               \
+			*_s-- = _num % _base + '0';              \
+		while (_num /= 10);                              \
+		++_s;                                            \
+		while (_s <= end)                                \
+			*d++ = *_s++;                            \
+		*d = '\0';                                       \
+		return (char *)d;                                \
 	} while (0)
 	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_UINT_DIGITS);
 }

@@ -42,7 +42,7 @@ JSTR_PP_CASE_VOWEL_UPPER:          \
 	case 'p':                            \
 	case 'q':                            \
 	case 'r':                            \
-	case 's':                            \
+	case '_s':                            \
 	case 't':                            \
 	case 'v':                            \
 	case 'w':                            \
@@ -105,7 +105,7 @@ JSTR_PP_CASE_CONSONANT_UPPER:          \
 	case 'p':                  \
 	case 'q':                  \
 	case 'r':                  \
-	case 's':                  \
+	case '_s':                  \
 	case 't':                  \
 	case 'u':                  \
 	case 'v':                  \
@@ -155,11 +155,11 @@ JSTR_PP_CASE_CONSONANT_UPPER:          \
 						  unsigned char              \
 						  : "%hhu\n",                \
 						    unsigned char *          \
-						  : "%s\n",                  \
+						  : "%_s\n",                  \
 						    char                     \
 						  : "%c\n",                  \
 						    char *                   \
-						  : "%s\n",                  \
+						  : "%_s\n",                  \
 						    short                    \
 						  : "%hd\n",                 \
 						    unsigned short           \
@@ -186,11 +186,11 @@ JSTR_PP_CASE_CONSONANT_UPPER:          \
 						    const unsigned char      \
 						  : "%hhu\n",                \
 						    const unsigned char *    \
-						  : "%s\n",                  \
+						  : "%_s\n",                  \
 						    const char               \
 						  : "%c\n",                  \
 						    const char *             \
-						  : "%s\n",                  \
+						  : "%_s\n",                  \
 						    const short              \
 						  : "%hd\n",                 \
 						    const unsigned short     \

@@ -78,16 +78,16 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static void *
-jstr_memrchr(const void *JSTR_RST const s,
+jstr_memrchr(const void *JSTR_RST const _s,
 	     const int c,
 	     size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(s, c, n);
+	return (void *)memrchr(_s, c, n);
 #else
-	if (jstr_unlikely(*(char *)s == '\0'))
+	if (jstr_unlikely(*(char *)_s == '\0'))
 		return NULL;
-	const unsigned char *const start = (unsigned char *)s;
+	const unsigned char *const start = (unsigned char *)_s;
 	const unsigned char *end = start + n - 1;
 	do
 		if (*end == c)
@@ -102,17 +102,17 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
 static char *
-jstr_strchrnul(const char *JSTR_RST const s,
+jstr_strchrnul(const char *JSTR_RST const _s,
 	       const int c)
 {
 #if JSTR_HAVE_STRCHRNUL
-	return (char *)strchrnul(s, c);
+	return (char *)strchrnul(_s, c);
 #else
-	const size_t n = strlen(s);
-	void *p = (void *)memchr(s, c, n);
+	const size_t n = strlen(_s);
+	void *p = (void *)memchr(_s, c, n);
 	if (p)
 		return p;
-	return (void *)(s + n);
+	return (void *)(_s + n);
 #endif /* JSTR_HAVE_STRCHRNUL */
 }
 
@@ -120,16 +120,16 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static char *
-jstr_strdup(const char *JSTR_RST const s)
+jstr_strdup(const char *JSTR_RST const _s)
 {
 #if JSTR_HAVE_STRCHRNUL
-	return (char *)strdup(s);
+	return (char *)strdup(_s);
 #else
-	const size_t len = strlen(s) + 1;
+	const size_t len = strlen(_s) + 1;
 	void *p = malloc(len);
 	if (jstr_unlikely(p == NULL))
 		return NULL;
-	return (char *)memcpy(p, s, len);
+	return (char *)memcpy(p, _s, len);
 #endif /* JSTR_HAVE_STRCHRNUL */
 }
 
@@ -486,7 +486,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
-priv_jstr_strcasechr(const char *JSTR_RST const s,
+priv_jstr_strcasechr(const char *JSTR_RST const _s,
 			const int c,
 			const size_t n) JSTR_NOEXCEPT
 {
@@ -504,9 +504,9 @@ priv_jstr_strcasechr(const char *JSTR_RST const s,
 		cc[u] = c - 'a' + 'A';
 		break;
 	default:
-		return (char *)memchr(s, c, n);
+		return (char *)memchr(_s, c, n);
 	}
-	unsigned char *h = (unsigned char *)s;
+	unsigned char *h = (unsigned char *)_s;
 	for (;; ++h)
 		switch (*h) {
 			JSTR_CASE_UPPER

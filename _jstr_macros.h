@@ -232,9 +232,9 @@ JSTR_NEXT_POW2_64(T x)
 			char * : bool_,              \
 				 const char * : bool_
 
-#		define JSTR_GENERIC_CASE_STR_STACK(bool_, s) \
-			char(*)[sizeof(s)] : 1,               \
-			const char(*)[sizeof(s)] : 1
+#		define JSTR_GENERIC_CASE_STR_STACK(bool_, _s) \
+			char(*)[sizeof(_s)] : 1,               \
+			const char(*)[sizeof(_s)] : 1
 
 #		define JSTR_GENERIC_CASE_CHAR(bool_) \
 			char : bool_,                 \
@@ -523,7 +523,7 @@ case 'o':               \
 case 'p':               \
 case 'q':               \
 case 'r':               \
-case 's':               \
+case '_s':               \
 case 't':               \
 case 'u':               \
 case 'v':               \

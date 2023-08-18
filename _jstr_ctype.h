@@ -64,10 +64,10 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_arealnum(const char *JSTR_RST s) JSTR_NOEXCEPT
+jstr_arealnum(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	for (;;)
-		switch (*s++) {
+		switch (*_s++) {
 		default:
 			return 0;
 		case '\0':
@@ -96,10 +96,10 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_arealpha(const char *JSTR_RST s) JSTR_NOEXCEPT
+jstr_arealpha(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	for (;;)
-		switch (*s++) {
+		switch (*_s++) {
 		default:
 			return 0;
 		case '\0':
@@ -127,10 +127,10 @@ JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
-jstr_aredigits(const char *JSTR_RST s) JSTR_NOEXCEPT
+jstr_aredigits(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	for (;;)
-		switch (*s++) {
+		switch (*_s++) {
 		default:
 			return 0;
 		case '\0':
@@ -156,12 +156,12 @@ jstr_toupper(const int c) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_touppers(char *JSTR_RST s) JSTR_NOEXCEPT
+jstr_touppers(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	for (;; ++s) {
-		switch (*s) {
+	for (;; ++_s) {
+		switch (*_s) {
 			JSTR_CASE_LOWER
-			*s -= 'a' + 'A';
+			*_s -= 'a' + 'A';
 		default:
 			continue;
 		case '\0':;
@@ -187,12 +187,12 @@ jstr_tolower(const int c) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_tolowers(char *JSTR_RST s) JSTR_NOEXCEPT
+jstr_tolowers(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	for (;; ++s) {
-		switch (*s) {
+	for (;; ++_s) {
+		switch (*_s) {
 			JSTR_CASE_UPPER
-			*s -= 'A' + 'a';
+			*_s -= 'A' + 'a';
 		default:
 			continue;
 		case '\0':;
