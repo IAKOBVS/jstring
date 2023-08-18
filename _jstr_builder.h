@@ -219,13 +219,13 @@ jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_debug(const jstr_ty *JSTR_RST const j)
+jstr_debug(const jstr_ty *JSTR_RST const _j)
 {
-	fprintf(stderr, "size:%zu\ncap:%zu\n", j->size, j->_cap);
-	fprintf(stderr, "strlen:%zu\n", strlen(j->data));
-	fprintf(stderr, "data puts:%s\n", j->data);
+	fprintf(stderr, "size:%zu\ncap:%zu\n", _j->size, _j->_cap);
+	fprintf(stderr, "strlen:%zu\n", strlen(_j->data));
+	fprintf(stderr, "data puts:%s\n", _j->data);
 	fputs("data:", stderr);
-	fwrite(j->data, 1, j->size, stderr);
+	fwrite(_j->data, 1, _j->size, stderr);
 	fputc('\n', stderr);
 }
 
@@ -243,11 +243,11 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-jstr_alloc_cat_j(jstr_ty *JSTR_RST const j,
+jstr_alloc_cat_j(jstr_ty *JSTR_RST const _j,
 		 Str &&arg,
 		 StrArgs &&...args) JSTR_NOEXCEPT
 {
-	jstr_alloc_cat(&j->data, &j->size, &j->_cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr_alloc_cat(&_j->data, &_j->size, &_j->_cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 /*
@@ -258,11 +258,11 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL static void
-jstr_cat_j(jstr_ty *JSTR_RST const j,
+jstr_cat_j(jstr_ty *JSTR_RST const _j,
 	   Str &&arg,
 	   StrArgs &&...args) JSTR_NOEXCEPT
 {
-	jstr_cat(&j->data, &j->size, &j->_cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr_cat(&_j->data, &_j->size, &_j->_cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 #else
@@ -324,8 +324,8 @@ jstr_cat_j(jstr_ty *JSTR_RST const j,
 			*p = '\0';                                                      \
 		} while (0)
 
-#	define jstr_cat_j(j, ...)	 jstr_cat(&((j)->data), &((j)->size), &((j)->_cap), __VA_ARGS__)
-#	define jstr_alloc_cat_j(j, ...) jstr_alloc_cat(&((j)->data), &((j)->size), &((j)->_cap), __VA_ARGS__)
+#	define jstr_cat_j(_j, ...)	 jstr_cat(&((_j)->data), &((_j)->size), &((_j)->_cap), __VA_ARGS__)
+#	define jstr_alloc_cat_j(_j, ...) jstr_alloc_cat(&((_j)->data), &((_j)->size), &((_j)->_cap), __VA_ARGS__)
 
 #endif /* __cplusplus */
 

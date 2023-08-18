@@ -230,9 +230,9 @@ jstr_trim_p(char *JSTR_RST const _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_trim_j(jstr_ty *JSTR_RST const j) JSTR_NOEXCEPT
+jstr_trim_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 {
-	j->size = jstr_trim_mem_p(j->data, j->size) - j->data;
+	_j->size = jstr_trim_mem_p(_j->data, _j->size) - _j->data;
 }
 
 /*

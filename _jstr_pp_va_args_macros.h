@@ -34,7 +34,7 @@ JSTR_PP_CASE_VOWEL_UPPER:          \
 	case 'f':                            \
 	case 'g':                            \
 	case 'h':                            \
-	case 'j':                            \
+	case '_j':                            \
 	case 'k':                            \
 	case 'l':                            \
 	case 'm':                            \
@@ -96,7 +96,7 @@ JSTR_PP_CASE_CONSONANT_UPPER:          \
 	case 'g':                  \
 	case 'h':                  \
 	case 'i':                  \
-	case 'j':                  \
+	case '_j':                  \
 	case 'k':                  \
 	case 'l':                  \
 	case 'm':                  \

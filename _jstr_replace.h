@@ -1010,11 +1010,11 @@ jstr_rmall_p(char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-jstr_rmall_mem_j(jstr_ty *JSTR_RST const j,
+jstr_rmall_mem_j(jstr_ty *JSTR_RST const _j,
 		 const char *JSTR_RST const _searc,
 		 const size_t _searclen) JSTR_NOEXCEPT
 {
-	j->size = jstr_rmall_mem_p(j->data, _searc, j->size, _searclen) - j->data;
+	_j->size = jstr_rmall_mem_p(_j->data, _searc, _j->size, _searclen) - _j->data;
 }
 
 /*
@@ -1025,10 +1025,10 @@ jstr_rmall_mem_j(jstr_ty *JSTR_RST const j,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-jstr_rmall_j(jstr_ty *JSTR_RST const j,
+jstr_rmall_j(jstr_ty *JSTR_RST const _j,
 	     const char *JSTR_RST const _searc) JSTR_NOEXCEPT
 {
-	return jstr_rmall_mem_j(j, _searc, strlen(_searc));
+	return jstr_rmall_mem_j(_j, _searc, strlen(_searc));
 }
 
 #if JSTR_HAVE_ALLOCA
