@@ -22,11 +22,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static int
 priv_jstr_alloc_file(const int alloc_exact,
-			char **JSTR_RST const _s,
-			size_t *JSTR_RST const _sz,
-			size_t *JSTR_RST const _cap,
-			const char *JSTR_RST const _fname,
-			struct stat *JSTR_RST const _st)
+		     char **JSTR_RST const _s,
+		     size_t *JSTR_RST const _sz,
+		     size_t *JSTR_RST const _cap,
+		     const char *JSTR_RST const _fname,
+		     struct stat *JSTR_RST const _st)
 {
 	FILE *JSTR_RST const _fp = fopen(_fname, "r");
 	if (jstr_unlikely(_fp == NULL))
