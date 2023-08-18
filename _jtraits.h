@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#	include "_jstr_macros.h"
+#	include "_macros.h"
 #	include <utility>
 
 template <typename T, typename Arg>

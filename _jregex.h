@@ -13,12 +13,12 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "_jstr_builder.h"
-#include "_jstr_config.h"
-#include "_jstr_macros.h"
-#include "_jstr_pp_va_args_macros.h"
-#include "_jstr_replace.h"
-#include "_jstr_string.h"
+#include "_builder.h"
+#include "_config.h"
+#include "_macros.h"
+#include "_pp_va_args_macros.h"
+#include "_replace.h"
+#include "_string.h"
 
 #if JREG_DEBUG
 #	define JREG_DEB_PRINT(x) jstr_pp_cout(x)
