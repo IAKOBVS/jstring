@@ -1,12 +1,10 @@
 #ifndef JSTR_H_DEF
 #define JSTR_H_DEF
 
-#include "_jregex.h"
 #include "_builder.h"
-#include "_config.h"
 #include "_ctype.h"
 #include "_io.h"
-#include "_macros.h"
+#include "_jregex.h"
 #include "_memmem.h"
 #include "_replace.h"
 #include "_string.h"
