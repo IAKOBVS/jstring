@@ -21,11 +21,6 @@ extern "C" {
 
 #define JSTR_ASCII_SIZE 256
 
-typedef enum {
-	PRIV_JSTR_FLAG_USE_N = 1,
-	PRIV_JSTR_FLAG_USE_NOT_N = 1 << 1,
-} priv_jstr_flag_ty;
-
 JSTR_INLINE
 static void
 priv_jstr_rmall_in_place(unsigned char **const _dst,
@@ -559,12 +554,17 @@ jstr_rmc_p(char *JSTR_RST _s,
 #endif /* HAS_STRCHRNUL */
 }
 
+typedef enum {
+	PRIV_JSTR_FLAG_USE_N = 1,
+	PRIV_JSTR_FLAG_USE_NOT_N = 1 << 1,
+} priv_jstr_flag_use_n_ty;
+
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *
-priv_jstr_rmallc_mem_p(const priv_jstr_flag_ty flag,
+priv_jstr_rmallc_mem_p(const priv_jstr_flag_use_n_ty flag,
 		       char *JSTR_RST const _s,
 		       const int _c,
 		       size_t _n,
@@ -917,7 +917,7 @@ JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 JSTR_MAYBE_UNUSED
 static char *
-priv_jstr_rmall_mem_p(const priv_jstr_flag_ty flag,
+priv_jstr_rmall_mem_p(const priv_jstr_flag_use_n_ty flag,
 		      char *JSTR_RST const _s,
 		      const char *JSTR_RST const _searc,
 		      size_t _n,
@@ -1039,7 +1039,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 static void
-priv_jstr_rplcall_mem(const priv_jstr_flag_ty flag,
+priv_jstr_rplcall_mem(const priv_jstr_flag_use_n_ty flag,
 		      char **JSTR_RST const _s,
 		      size_t *JSTR_RST const _sz,
 		      size_t *JSTR_RST const _cap,
