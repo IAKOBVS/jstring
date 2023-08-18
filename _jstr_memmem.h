@@ -206,7 +206,7 @@ jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
 		 const char *JSTR_RST const hs,
 		 const size_t hslen) JSTR_NOEXCEPT
 {
-#define PRIVATE_JSTR_MEMMEM_EXEC(_table)                                                                    \
+#define PRIV_JSTR_MEMMEM_EXEC(_table)                                                                    \
 	do {                                                                                                \
 		const unsigned char *h = (unsigned char *)hs;                                               \
 		const unsigned char *const end = h + hslen - ptable->nelen;                                 \
@@ -241,9 +241,9 @@ jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const ptable,
 	case 4: return priv_jstr_pre_memmem4((unsigned char *)hs, (unsigned char *)ptable->ne, hslen);
 	}
 	if (jstr_unlikely(ptable->nelen > 256))
-		PRIVATE_JSTR_MEMMEM_EXEC(ptable->big_table);
+		PRIV_JSTR_MEMMEM_EXEC(ptable->big_table);
 	else
-		PRIVATE_JSTR_MEMMEM_EXEC(ptable->small_table);
+		PRIV_JSTR_MEMMEM_EXEC(ptable->small_table);
 	return NULL;
 }
 

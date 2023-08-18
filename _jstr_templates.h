@@ -22,7 +22,7 @@ extern "C" {
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
 static void
-JSTR_ERR(const char *JSTR_RST const FILE_,
+priv_jstr_err(const char *JSTR_RST const FILE_,
 	 const int LINE_,
 	 const char *JSTR_RST const func_)
 {
@@ -38,7 +38,7 @@ JSTR_ERR(const char *JSTR_RST const FILE_,
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
 static void
-JSTR_ERR_EXIT(void)
+priv_jstr_err_exit(void)
 {
 #if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", __FILE__, __LINE__, __func__);
@@ -47,28 +47,28 @@ JSTR_ERR_EXIT(void)
 	exit(1);
 }
 
-#define JSTR_MALLOC_ERR(p, malloc_fail)                         \
+#define PRIV_JSTR_MALLOC_ERR(p, malloc_fail)                         \
 	do {                                                    \
 		if (jstr_unlikely((p) == NULL)) {               \
-			JSTR_ERR(__FILE__, __LINE__, __func__); \
+			priv_jstr_err(__FILE__, __LINE__, __func__); \
 			malloc_fail;                            \
 		}                                               \
 	} while (0)
-#define JSTR_GROW(old_cap, new_cap)                                       \
+#define PRIV_JSTR_GROW(old_cap, new_cap)                                       \
 	do {                                                              \
 		JSTR_ASSERT_IS_SIZE(old_cap);                             \
 		JSTR_ASSERT_IS_SIZE(new_cap);                             \
-		while (((old_cap) *= JSTR_GROWTH_MULTIPLIER) < (new_cap)) \
+		while (((old_cap) *= PRIV_JSTR_GROWTH_MULTIPLIER) < (new_cap)) \
 			;                                                 \
 	} while (0)
-#define JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
+#define PRIV_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
 	do {                                           \
 		JSTR_ASSERT_IS_STR(p);                 \
 		JSTR_ASSERT_IS_SIZE(old_cap);          \
 		JSTR_ASSERT_IS_SIZE(new_cap);          \
-		JSTR_GROW(old_cap, new_cap);           \
+		PRIV_JSTR_GROW(old_cap, new_cap);           \
 		(p) = (char *)realloc(p, old_cap);     \
-		JSTR_MALLOC_ERR(p, malloc_fail);       \
+		PRIV_JSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 
 #if JSTR_HAVE_REALLOC_MREMAP
@@ -270,7 +270,7 @@ jstr_alloc_cat(char **JSTR_RST const _s,
 	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*_cap = *_sz * 2;
 	*_s = (char *)malloc(*_cap);
-	JSTR_MALLOC_ERR(*_s, return);
+	PRIV_JSTR_MALLOC_ERR(*_s, return);
 	char *p = *_s;
 	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*p = '\0';
@@ -322,7 +322,7 @@ jstr_cat(char **JSTR_RST const _s,
 	const size_t newsz = *_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	endif
 	if (*_cap < *_sz)
-		JSTR_REALLOC(*_s, *_cap, newsz + 1, return);
+		PRIV_JSTR_REALLOC(*_s, *_cap, newsz + 1, return);
 	char *p = *_s + *_sz;
 #	if 0
 	jstr::_priv::cat_loop_assign(&p, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);

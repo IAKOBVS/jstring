@@ -62,7 +62,7 @@ jstr_append_mem(char **JSTR_RST const _s,
 		const size_t _srclen) JSTR_NOEXCEPT
 {
 	if (*_cap < *_sz + _srclen)
-		JSTR_REALLOC(*_s, *_cap, *_sz + _srclen, return);
+		PRIV_JSTR_REALLOC(*_s, *_cap, *_sz + _srclen, return);
 	*_sz = jstr_append_mem_p_f(*_s, _src, *_sz, _srclen) - *_s;
 }
 
@@ -265,7 +265,7 @@ jstr_insert_mem(char **JSTR_RST const _s,
 		const size_t _srclen) JSTR_NOEXCEPT
 {
 	if (_at + _srclen > *_sz) {
-		JSTR_REALLOC(*_s, *_cap, _at + _srclen + 1, return);
+		PRIV_JSTR_REALLOC(*_s, *_cap, _at + _srclen + 1, return);
 		*_sz = _at + _srclen;
 		*(*_s + *_sz) = '\0';
 	}
@@ -328,7 +328,7 @@ jstr_insertaft_mem_f(char *JSTR_RST const _s,
 		jstr_insertaftc_mem_f(_s, *_searc, _src, _sz, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(_s, _sz, _searc, _searclen);
+		const char *const p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _searc, _searclen);
 		if (p)
 			jstr_insert_mem_f(_s, p - _s + _searclen, _src, _srclen);
 		return;
@@ -356,7 +356,7 @@ jstr_insertaft_mem(char **JSTR_RST const _s,
 		jstr_insertaftc_mem(_s, _sz, _cap, *_searc, _src, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIVATE_JSTR_MEMMEM(*_s, *_sz, _searc, _searclen);
+		const char *const p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _searc, _searclen);
 		if (p)
 			jstr_insert_mem(_s, _sz, _cap, p - *_s + _searclen, _src, _srclen);
 		return;
@@ -418,7 +418,7 @@ jstr_itoa(char *JSTR_RST const _dst,
 	  int _num,
 	  const unsigned int _base)
 {
-#define PRIVATE_JSTR_NUMTOSTR(_max_digits)                                        \
+#define PRIV_JSTR_NUMTOSTR(_max_digits)                                        \
 	do {                                                                      \
 		unsigned char *d = (unsigned char *)_dst;                         \
 		unsigned char sbuf[_max_digits];                                  \
@@ -438,7 +438,7 @@ jstr_itoa(char *JSTR_RST const _dst,
 		*d = '\0';                                                        \
 		return (char *)d;                                                 \
 	} while (0)
-	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
+	PRIV_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
 }
 
 /*
@@ -455,7 +455,7 @@ jstr_ltoa(char *JSTR_RST const _dst,
 	  long _num,
 	  const unsigned int _base)
 {
-	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
+	PRIV_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
 
 /*
@@ -472,7 +472,7 @@ jstr_lltoa(char *JSTR_RST const _dst,
 	   long long _num,
 	   const unsigned int _base)
 {
-	PRIVATE_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
+	PRIV_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
 }
 
 /*
@@ -489,7 +489,7 @@ jstr_utoa(char *JSTR_RST const _dst,
 	  unsigned int _num,
 	  const unsigned int _base)
 {
-#define PRIVATE_JSTR_UNUMTOSTR(_max_digits)                      \
+#define PRIV_JSTR_UNUMTOSTR(_max_digits)                      \
 	do {                                                     \
 		unsigned char *d = (unsigned char *)_dst;        \
 		unsigned char sbuf[_max_digits];                 \
@@ -505,7 +505,7 @@ jstr_utoa(char *JSTR_RST const _dst,
 		*d = '\0';                                       \
 		return (char *)d;                                \
 	} while (0)
-	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_UINT_DIGITS);
+	PRIV_JSTR_UNUMTOSTR(JSTR_MAX_UINT_DIGITS);
 }
 
 /*
@@ -522,7 +522,7 @@ jstr_ultoa(char *JSTR_RST const _dst,
 	   unsigned long _num,
 	   const unsigned int _base)
 {
-	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_DIGITS);
+	PRIV_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_DIGITS);
 }
 
 /*
@@ -539,7 +539,7 @@ jstr_ulltoa(char *JSTR_RST const _dst,
 	    unsigned long long _num,
 	    const unsigned int _base)
 {
-	PRIVATE_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);
+	PRIV_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);
 }
 
 #ifdef __cplusplus
@@ -550,8 +550,8 @@ jstr_ulltoa(char *JSTR_RST const _dst,
 #undef JSTR_ASCII_SIZE
 #undef JSTR_EXIT_ON_MALLOC_ERROR
 #undef JSTR_FREE_ON_DESTRUCTOR_CPP
-#undef JSTR_GROW
-#undef JSTR_GROWTH_MULTIPLIER
+#undef PRIV_JSTR_GROW
+#undef PRIV_JSTR_GROWTH_MULTIPLIER
 #undef JSTR_HASH2
 #undef JSTR_HASH2_LOWER
 #undef JSTR_H_REPLACE_DEF
@@ -570,14 +570,14 @@ jstr_ulltoa(char *JSTR_RST const _dst,
 #undef JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
 #undef JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
 #undef JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
-#undef JSTR_REALLOC
+#undef PRIV_JSTR_REALLOC
 #undef JSTR_RST
 #undef JSTR_SAME_TYPE
-#undef PRIVATE_JSTR_ALLOC_ONLY
-#undef PRIVATE_JSTR_MEMMEM
-#undef PRIVATE_JSTR_MEMMEMR
-#undef PRIVATE_JSTR_MEMMEM_EXEC
-#undef PRIVATE_JSTR_MIN_ALLOC
-#undef PRIVATE_JSTR_STRSTRCASE
+#undef PRIV_JSTR_ALLOC_ONLY
+#undef PRIV_JSTR_MEMMEM
+#undef PRIV_JSTR_MEMMEMR
+#undef PRIV_JSTR_MEMMEM_EXEC
+#undef PRIV_JSTR_MIN_ALLOC
+#undef PRIV_JSTR_STRSTRCASE
 
 #endif /* JSTR_H_DEF */

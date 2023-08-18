@@ -35,7 +35,7 @@ priv_jstr_alloc_file(const int alloc_exact,
 		goto _ERR_CLOSE;
 	*_cap = alloc_exact ? _st->st_size : (_st->st_size * 2);
 	*_s = (char *)malloc(*_cap);
-	JSTR_MALLOC_ERR(*_s, goto _ERR_CLOSE);
+	PRIV_JSTR_MALLOC_ERR(*_s, goto _ERR_CLOSE);
 	fread(*_s, 1, _st->st_size, _fp);
 	*(*_s + _st->st_size) = '\0';
 	*_sz = _st->st_size;

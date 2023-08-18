@@ -102,6 +102,25 @@ jtrie_insertprefix(jtrie_node_ty *JSTR_RST const root,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
+priv_jtrie_remove(jtrie_node_ty *JSTR_RST const root,
+		  const char *JSTR_RST const word) JSTR_NOEXCEPT
+{
+	const unsigned char *w = (unsigned char *)word;
+	if (jstr_unlikely(*w == '\0'))
+		return;
+	jtrie_node_ty *curr = root->child[*w];
+	if (jstr_unlikely(curr == NULL))
+		return;
+	while (*++w && curr->child[*w]) {
+		curr->EOW = 0;
+		curr = curr->child[*w];
+	}
+	curr->EOW = 0;
+}
+
+JSTR_NONNULL_ALL
+JSTR_INLINE
+static void
 jtrie_remove(jtrie_node_ty *JSTR_RST const root,
 	     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
@@ -119,8 +138,8 @@ jtrie_remove(jtrie_node_ty *JSTR_RST const root,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-jtrie_removeprefix(jtrie_node_ty *JSTR_RST const root,
-		   const char *JSTR_RST const word) JSTR_NOEXCEPT
+jtrie_removeprefixes(jtrie_node_ty *JSTR_RST const root,
+		     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
 	if (jstr_unlikely(*w == '\0'))
@@ -133,29 +152,6 @@ jtrie_removeprefix(jtrie_node_ty *JSTR_RST const root,
 		curr = curr->child[*w];
 	}
 	curr->EOW = 0;
-}
-
-/*
-   Return value:
-   1 if matches;
-   0 otherwise.
-*/
-JSTR_NONNULL_ALL
-JSTR_INLINE
-JSTR_WARN_UNUSED
-static int
-jtrie_match(const jtrie_node_ty *JSTR_RST const root,
-	    const char *JSTR_RST const word) JSTR_NOEXCEPT
-{
-	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(*w == '\0'))
-		return 0;
-	const jtrie_node_ty *curr = root->child[*w];
-	if (jstr_unlikely(curr == NULL))
-		return 0;
-	while (*++w && curr->child[*w])
-		curr = curr->child[*w];
-	return curr->EOW;
 }
 
 /*
@@ -179,6 +175,21 @@ jtrie_starts_with(const jtrie_node_ty *JSTR_RST const root,
 	while (*++w && curr->child[*w])
 		curr = curr->child[*w];
 	return (jtrie_node_ty *)curr;
+}
+
+/*
+   Return value:
+   1 if matches;
+   0 otherwise.
+*/
+JSTR_NONNULL_ALL
+JSTR_INLINE
+JSTR_WARN_UNUSED
+static int
+jtrie_match(const jtrie_node_ty *JSTR_RST const root,
+	    const char *JSTR_RST const word) JSTR_NOEXCEPT
+{
+	return jtrie_starts_with(root, word)->EOW;
 }
 
 #ifdef __cplusplus

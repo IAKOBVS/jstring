@@ -21,20 +21,20 @@ extern "C" {
 #	include "_jtraits.h"
 #endif /* __cpluslus */
 
-#define PRIVATE_JSTR_MIN_ALLOC(new_cap)                   \
+#define PRIV_JSTR_MIN_ALLOC(new_cap)                      \
 	((new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
 	 ? (JSTR_MIN_CAP)                                 \
 	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
 
-#define PRIVATE_JSTR_MIN_ALLOCEXACT(new_cap) \
-	((new_cap < JSTR_MIN_CAP)            \
-	 ? (JSTR_MIN_CAP)                    \
+#define PRIV_JSTR_MIN_ALLOCEXACT(new_cap) \
+	((new_cap < JSTR_MIN_CAP)         \
+	 ? (JSTR_MIN_CAP)                 \
 	 : (new_cap))
 
-#define PRIVATE_JSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
-	(_cap) = PRIVATE_JSTR_MIN_ALLOC(new_cap);          \
-	(p) = (char *)malloc((_cap));                      \
-	JSTR_MALLOC_ERR((p), do_fail);
+#define PRIV_JSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
+	(_cap) = PRIV_JSTR_MIN_ALLOC(new_cap);          \
+	(p) = (char *)malloc((_cap));                   \
+	PRIV_JSTR_MALLOC_ERR((p), do_fail);
 
 /*
   exit(1) if ptr is NULL.
@@ -44,7 +44,7 @@ static void
 jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(p == NULL))
-		JSTR_ERR_EXIT();
+		priv_jstr_err_exit();
 }
 
 typedef struct jstr_ty {
@@ -93,7 +93,7 @@ typedef struct jstr_ty {
 	err_exit(void) JSTR_NOEXCEPT
 	{
 		if (jstr_unlikely(this->data == NULL))
-			JSTR_ERR_EXIT();
+			priv_jstr_err_exit();
 	}
 
 	JSTR_INLINE
@@ -139,9 +139,9 @@ jstr_alloc(char **JSTR_RST const _s,
 	   const size_t _top) JSTR_NOEXCEPT
 {
 	*_sz = 0;
-	*_cap = PRIVATE_JSTR_MIN_ALLOC(_top);
+	*_cap = PRIV_JSTR_MIN_ALLOC(_top);
 	*_s = (char *)malloc(*_cap);
-	JSTR_MALLOC_ERR(*_s, return);
+	PRIV_JSTR_MALLOC_ERR(*_s, return);
 }
 
 JSTR_INLINE
@@ -154,7 +154,7 @@ jstr_allocexact(char **JSTR_RST const _s,
 {
 	*_sz = 0;
 	*_s = (char *)malloc(_top);
-	JSTR_MALLOC_ERR(*_s, return);
+	PRIV_JSTR_MALLOC_ERR(*_s, return);
 	*_cap = _top;
 }
 
@@ -183,7 +183,7 @@ jstr_alloc_append_mem(char **JSTR_RST const _s,
 		      const char *JSTR_RST const _src,
 		      const size_t _srclen) JSTR_NOEXCEPT
 {
-	PRIVATE_JSTR_ALLOC_ONLY(*_s, *_cap, _srclen, return);
+	PRIV_JSTR_ALLOC_ONLY(*_s, *_cap, _srclen, return);
 	*_sz = _srclen;
 	memcpy(*_s, _src, _srclen + 1);
 }
@@ -197,7 +197,7 @@ jstr_allocmore_append_mem(char **JSTR_RST const _s,
 			  const char *JSTR_RST const _src,
 			  const size_t _srclen) JSTR_NOEXCEPT
 {
-	PRIVATE_JSTR_ALLOC_ONLY(*_s, *_cap, _srclen * 2, return);
+	PRIV_JSTR_ALLOC_ONLY(*_s, *_cap, _srclen * 2, return);
 	*_sz = _srclen;
 	memcpy(*_s, _src, _srclen + 1);
 }
@@ -288,7 +288,7 @@ jstr_cat_j(jstr_ty *JSTR_RST const j,
 			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                                     \
 			const size_t _newsz = *_sz + JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
 			if (*(_cap) < newsz)                                                                \
-				JSTR_REALLOC(*(_s), *(_cap), newsz + 1, break);                             \
+				PRIV_JSTR_REALLOC(*(_s), *(_cap), newsz + 1, break);                        \
 			char *p = *(_s) + *(_sz);                                                           \
 			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);                               \
 			*p = '\0';                                                                          \
@@ -316,9 +316,9 @@ jstr_cat_j(jstr_ty *JSTR_RST const j,
 			JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
 			size_t _ARR_VA_ARGS[JSTR_PP_NARG(__VA_ARGS__)];                 \
 			*(_sz) = JSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			*(_cap) = PRIVATE_JSTR_MIN_ALLOC(*(_sz));                       \
+			*(_cap) = PRIV_JSTR_MIN_ALLOC(*(_sz));                          \
 			*(_s) = malloc(*(_cap));                                        \
-			JSTR_MALLOC_ERR(*((_s)), break);                                \
+			PRIV_JSTR_MALLOC_ERR(*((_s)), break);                           \
 			char *p = *(_s);                                                \
 			JSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);           \
 			*p = '\0';                                                      \
