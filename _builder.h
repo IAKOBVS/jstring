@@ -12,9 +12,12 @@ extern "C" {
 #	include <utility>
 #endif /* __cpluslus */
 
+#ifndef __cplusplus
+#	include "_pp_va_args_macros.h"
+#endif /* !__cpluslus */
+
 #include "_config.h"
 #include "_macros.h"
-#include "_pp_va_args_macros.h"
 #include "_templates.h"
 
 #ifdef __cplusplus
