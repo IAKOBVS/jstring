@@ -424,7 +424,7 @@ jstr_slipaft_mem(char **JSTR_RST const _s,
 /*
   Slip SRC after all end of NE in DST.
 */
-#if JSTR_HAVE_ALLOCA
+#if JSTR_CFG_HAVE_ALLOCA
 JSTR_NOINLINE
 #else
 JSTR_INLINE
@@ -462,7 +462,7 @@ jstr_slipaftall_mem_p_f(char *JSTR_RST const _s,
 /*
   Slip SRC after all end of NE in DST.
 */
-#if JSTR_HAVE_ALLOCA
+#if JSTR_CFG_HAVE_ALLOCA
 JSTR_NOINLINE
 #else
 JSTR_INLINE
@@ -907,7 +907,7 @@ jstr_rplclast_mem(char **JSTR_RST const _s,
 	priv_jstr_rplcat_mem_may_lower(_s, _sz, _cap, _p - *_s, _rplc, _rplclen, _searclen);
 }
 
-#if JSTR_HAVE_ALLOCA
+#if JSTR_CFG_HAVE_ALLOCA
 JSTR_NOINLINE
 #else
 JSTR_INLINE
@@ -1031,7 +1031,7 @@ jstr_rmall_j(jstr_ty *JSTR_RST const _j,
 	return jstr_rmall_mem_j(_j, _searc, strlen(_searc));
 }
 
-#if JSTR_HAVE_ALLOCA
+#if JSTR_CFG_HAVE_ALLOCA
 JSTR_NOINLINE
 #else
 JSTR_INLINE
@@ -1124,6 +1124,218 @@ jstr_rplcall_mem(char **JSTR_RST const _s,
 		 const size_t _rplclen) JSTR_NOEXCEPT
 {
 	priv_jstr_rplcall_mem(PRIV_JSTR_FLAG_USE_NOT_N, _s, _sz, _cap, _searc, _rplc, 0, _searclen, _rplclen);
+}
+
+/*
+  Reverse S.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_rev_mem(char *JSTR_RST _s,
+	     const size_t _sz) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_s == '\0'))
+		return;
+	unsigned char *end = (unsigned char *)_s + _sz - 1;
+	unsigned char *p = (unsigned char *)_s;
+	unsigned char _tmp;
+	do {
+		_tmp = *p;
+		*p = *end;
+		*end = _tmp;
+	} while (jstr_likely(++p < --end));
+}
+
+/*
+  Trim spaces in [ \t] from end of S.
+  Return value:
+  pointer to '\0' in S;
+  S if SLEN is 0.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *
+jstr_trim_mem_p(char *JSTR_RST const _s,
+		const size_t _sz) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_s == '\0'))
+		return _s;
+	unsigned char *end = (unsigned char *)_s + _sz - 1;
+	const unsigned char *const start = (unsigned char *)_s;
+	do {
+		switch (*end) {
+		case '\t':
+		case ' ':
+			continue;
+		default:
+			*++end = '\0';
+			break;
+		}
+		break;
+	} while (jstr_likely(--end >= start));
+	return (char *)end;
+}
+
+/*
+  Trim spaces in [ \t] from end of S.
+  Return value:
+  pointer to '\0' in S;
+  S if SLEN is 0.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *
+jstr_trim_p(char *JSTR_RST const _s) JSTR_NOEXCEPT
+{
+	return jstr_trim_mem_p(_s, strlen(_s));
+}
+
+/*
+  Trim spaces in [ \t] from end of S.
+  Return value:
+  pointer to '\0' in S;
+  S if SLEN is 0.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_trim_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+{
+	_j->size = jstr_trim_mem_p(_j->data, _j->size) - _j->data;
+}
+
+/*
+  Insert SRC into DST[AT].
+  Assumes that S have enough space for SRC.
+  Return value:
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_insert_mem_f(char *JSTR_RST const _s,
+		  const size_t _at,
+		  const char *JSTR_RST const _src,
+		  const size_t _srclen) JSTR_NOEXCEPT
+{
+	memcpy(_s + _at, _src, _srclen);
+}
+
+/*
+  Insert SRC into DST[AT].
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_insert_mem(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
+		const size_t _at,
+		const char *JSTR_RST const _src,
+		const size_t _srclen) JSTR_NOEXCEPT
+{
+	if (_at + _srclen > *_sz) {
+		PRIV_JSTR_REALLOC(*_s, *_cap, _at + _srclen + 1, return);
+		*_sz = _at + _srclen;
+		*(*_s + *_sz) = '\0';
+	}
+	jstr_insert_mem_f(*_s, _at, _src, _srclen);
+}
+
+/*
+  Insert SRC after C in DST.
+  Assumes that S have enough space for S.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_insertaftc_mem_f(char *JSTR_RST const _s,
+		      const int _c,
+		      const char *JSTR_RST const _src,
+		      const size_t _sz,
+		      const size_t _srclen) JSTR_NOEXCEPT
+{
+	const char *const p = (char *)memchr(_s, _c, _sz);
+	if (p)
+		jstr_insert_mem_f(_s, p - _s + 1, _src, _srclen);
+}
+
+/*
+  Insert SRC after C in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_insertaftc_mem(char **JSTR_RST const _s,
+		    size_t *JSTR_RST const _sz,
+		    size_t *JSTR_RST const _cap,
+		    const int _c,
+		    const char *JSTR_RST const _src,
+		    const size_t _srclen) JSTR_NOEXCEPT
+{
+	const char *const p = (char *)memchr(*_s, _c, *_sz);
+	if (p)
+		jstr_insert_mem(_s, _sz, _cap, p - *_s + 1, _src, _srclen);
+}
+
+/*
+  Insert SRC after end of NE in DST.
+  Assumes that S have enough space for SRC.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_insertaft_mem_f(char *JSTR_RST const _s,
+		     const char *JSTR_RST const _searc,
+		     const char *JSTR_RST const _src,
+		     const size_t _sz,
+		     const size_t _searclen,
+		     const size_t _srclen) JSTR_NOEXCEPT
+{
+	switch (_searclen) {
+	case 0: return;
+	case 1:
+		jstr_insertaftc_mem_f(_s, *_searc, _src, _sz, _srclen);
+		return;
+	default: {
+		const char *const p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _searc, _searclen);
+		if (p)
+			jstr_insert_mem_f(_s, p - _s + _searclen, _src, _srclen);
+		return;
+	}
+	}
+}
+
+/*
+  Insert SRC after end of NE in DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_insertaft_mem(char **JSTR_RST const _s,
+		   size_t *JSTR_RST const _sz,
+		   size_t *JSTR_RST const _cap,
+		   const char *JSTR_RST const _searc,
+		   const char *JSTR_RST const _src,
+		   const size_t _searclen,
+		   const size_t _srclen) JSTR_NOEXCEPT
+{
+	switch (_searclen) {
+	case 0: return;
+	case 1:
+		jstr_insertaftc_mem(_s, _sz, _cap, *_searc, _src, _srclen);
+		return;
+	default: {
+		const char *const p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _searc, _searclen);
+		if (p)
+			jstr_insert_mem(_s, _sz, _cap, p - *_s + _searclen, _src, _srclen);
+		return;
+	}
+	}
 }
 
 #ifdef __cplusplus

@@ -26,11 +26,11 @@ priv_jstr_err(const char *JSTR_RST const FILE_,
 	 const int LINE_,
 	 const char *JSTR_RST const func_)
 {
-#if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
+#if JSTR_CFG_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
 	perror("");
 #endif
-#if JSTR_EXIT_ON_MALLOC_ERROR
+#if JSTR_CFG_EXIT_ON_MALLOC_ERROR
 	exit(1);
 #endif
 }
@@ -40,7 +40,7 @@ JSTR_NOINLINE
 static void
 priv_jstr_err_exit(void)
 {
-#if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
+#if JSTR_CFG_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", __FILE__, __LINE__, __func__);
 	perror("");
 #endif
@@ -58,7 +58,7 @@ priv_jstr_err_exit(void)
 	do {                                                              \
 		JSTR_ASSERT_IS_SIZE(old_cap);                             \
 		JSTR_ASSERT_IS_SIZE(new_cap);                             \
-		while (((old_cap) *= PRIV_JSTR_GROWTH_MULTIPLIER) < (new_cap)) \
+		while (((old_cap) *= JSTR_CFG_GROWTH_MULTIPLIER) < (new_cap)) \
 			;                                                 \
 	} while (0)
 #define PRIV_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \

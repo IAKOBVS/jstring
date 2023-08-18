@@ -16,6 +16,7 @@ extern "C" {
 
 #include "_ctype.h"
 #include "_macros.h"
+#include "_config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -558,6 +559,271 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 #else
 	return jstr_memcasemem(_hs, strlen(_hs), _ne, strlen(_ne));
 #endif /* JSTR_HAVE_STRCASESTR */
+}
+
+
+/*
+  Checks if S2 is in end of S1.
+  Return value:
+  0 if true;
+  1 if false.
+  Assumes that HS is longer than NE.
+  Let memcmp do the bounds check.
+*/
+JSTR_INLINE
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static int
+jstr_endswith_mem_f(const char *JSTR_RST const _hs,
+		    const char *JSTR_RST const _ne,
+		    const size_t _hsz,
+		    const size_t _nelen) JSTR_NOEXCEPT
+{
+	return memcmp(_hs + _hsz - _nelen, _ne, _nelen);
+}
+
+/*
+  Checks if S2 is in end of S1.
+  Return value:
+  0 if true;
+  1 if false.
+*/
+JSTR_INLINE
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static int
+jstr_endswith_mem(const char *JSTR_RST const _hs,
+		  const char *JSTR_RST const _ne,
+		  const size_t _hsz,
+		  const size_t _nelen) JSTR_NOEXCEPT
+{
+	return (_hsz < _nelen) ? 1 : memcmp(_hs + _hsz - _nelen, _ne, _nelen);
+}
+
+/*
+  Converts int to string.
+  Return value:
+  new pointer to '\0' in DST.
+*/
+JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *
+jstr_itoa(char *JSTR_RST const _dst,
+	  int _num,
+	  const unsigned int _base)
+{
+#define PRIV_JSTR_NUMTOSTR(_max_digits)                                        \
+	do {                                                                      \
+		unsigned char *d = (unsigned char *)_dst;                         \
+		unsigned char sbuf[_max_digits];                                  \
+		unsigned char *JSTR_RST _s = (unsigned char *)sbuf;               \
+		unsigned int neg = (_num < 0) ? (_num = -_num, 1) : 0;            \
+		unsigned char *const end = (unsigned char *)_s + _max_digits - 1; \
+		_s = end;                                                         \
+		do                                                                \
+			*_s-- = _num % _base + '0';                               \
+		while (_num /= 10);                                               \
+		if (neg)                                                          \
+			*_s = '-';                                                \
+		else                                                              \
+			++_s;                                                     \
+		while (_s <= end)                                                 \
+			*d++ = *_s++;                                             \
+		*d = '\0';                                                        \
+		return (char *)d;                                                 \
+	} while (0)
+	PRIV_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
+}
+
+/*
+  Converts long to string.
+  Return value:
+  new pointer to '\0' in DST.
+*/
+JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *
+jstr_ltoa(char *JSTR_RST const _dst,
+	  long _num,
+	  const unsigned int _base)
+{
+	PRIV_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
+}
+
+/*
+  Converts long long to string.
+  Return value:
+  new pointer to '\0' in DST.
+*/
+JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *
+jstr_lltoa(char *JSTR_RST const _dst,
+	   long long _num,
+	   const unsigned int _base)
+{
+	PRIV_JSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
+}
+
+/*
+  Converts unsigned int to string.
+  Return value:
+  new pointer to '\0' in DST.
+*/
+JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *
+jstr_utoa(char *JSTR_RST const _dst,
+	  unsigned int _num,
+	  const unsigned int _base)
+{
+#define PRIV_JSTR_UNUMTOSTR(_max_digits)                      \
+	do {                                                     \
+		unsigned char *d = (unsigned char *)_dst;        \
+		unsigned char sbuf[_max_digits];                 \
+		unsigned char *JSTR_RST _s = sbuf;               \
+		unsigned char *const end = _s + _max_digits - 1; \
+		_s = end;                                        \
+		do                                               \
+			*_s-- = _num % _base + '0';              \
+		while (_num /= 10);                              \
+		++_s;                                            \
+		while (_s <= end)                                \
+			*d++ = *_s++;                            \
+		*d = '\0';                                       \
+		return (char *)d;                                \
+	} while (0)
+	PRIV_JSTR_UNUMTOSTR(JSTR_MAX_UINT_DIGITS);
+}
+
+/*
+  Converts unsigned long to string.
+  Return value:
+  new pointer to '\0' in DST.
+*/
+JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *
+jstr_ultoa(char *JSTR_RST const _dst,
+	   unsigned long _num,
+	   const unsigned int _base)
+{
+	PRIV_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_DIGITS);
+}
+
+/*
+  Converts unsigned long long to string.
+  Return value:
+  new pointer to '\0' in DST.
+*/
+JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_RETURNS_NONNULL
+static char *
+jstr_ulltoa(char *JSTR_RST const _dst,
+	    unsigned long long _num,
+	    const unsigned int _base)
+{
+	PRIV_JSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);
+}
+
+/*
+  Count occurences of C in S.
+  Return value:
+  Occurences of C in S.
+*/
+JSTR_INLINE
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static int
+jstr_countc(const char *JSTR_RST _s,
+	    const int _c) JSTR_NOEXCEPT
+{
+	int cnt = 0;
+	while ((_s = strchr(_s, _c)))
+		++cnt;
+	return cnt;
+}
+
+/*
+  Count occurences of C in S.
+  Return value:
+  Occurences of C in S.
+*/
+JSTR_INLINE
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static int
+jstr_countc_mem(const char *JSTR_RST _s,
+		const int _c,
+		const int n) JSTR_NOEXCEPT
+{
+	int cnt = 0;
+	while ((_s = (char *)memchr(_s, _c, n)))
+		++cnt;
+	return cnt;
+}
+
+#if JSTR_HAVE_MEMMEM
+
+/*
+  Count occurences of NE in HS.
+  Return value:
+  occurences of NE in HS.
+*/
+JSTR_INLINE
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static int
+jstr_count_mem(const char *JSTR_RST _s,
+	       const char *JSTR_RST const _searc,
+	       size_t _sz,
+	       const size_t _searclen) JSTR_NOEXCEPT
+{
+	int cnt = 0;
+	while ((_s = (char *)memmem(_s, _sz, _searc, _searclen))) {
+		++cnt;
+		_s += _searclen;
+		_sz -= _searclen;
+	}
+	return cnt;
+}
+
+#endif
+
+/*
+  Count occurences of NE in HS.
+  Return value:
+  occurences of NE in HS.
+*/
+JSTR_INLINE
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+static int
+jstr_count(const char *JSTR_RST _s,
+	   const char *JSTR_RST const _searc) JSTR_NOEXCEPT
+{
+	int cnt = 0;
+	while ((_s = strstr(_s, _searc)))
+		++cnt;
+	return cnt;
 }
 
 #ifdef __cplusplus

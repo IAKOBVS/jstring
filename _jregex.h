@@ -141,9 +141,9 @@ jreg_comp(regex_t *JSTR_RST const _preg,
 	const jreg_errcode_ty ret = (jreg_errcode_ty)regcomp(_preg, _ptn, _cflags);
 	switch (ret) {
 	default:
-#if JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
+#if JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR
 		jreg_error(ret, _preg);
-#endif /* JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR */
+#endif /* JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR */
 	case JREG_RET_NOMATCH:
 	case JREG_RET_NOERROR:
 		break;
@@ -166,9 +166,9 @@ jreg_exec(const regex_t *JSTR_RST _preg,
 	const jreg_errcode_ty ret = (jreg_errcode_ty)regexec(_preg, _s, _nmatch, _pmatch, _eflags);
 	switch (ret) {
 	default:
-#if JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
+#if JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR
 		jreg_error(ret, _preg);
-#endif /* JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR */
+#endif /* JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR */
 	case JREG_RET_NOMATCH:
 	case JREG_RET_NOERROR:
 		break;
@@ -195,9 +195,9 @@ jreg_exec_mem(const regex_t *JSTR_RST _preg,
 	const jreg_errcode_ty ret = (jreg_errcode_ty)regexec(_preg, _s, _nmatch, _pmatch, _eflags | REG_STARTEND);
 	switch (ret) {
 	default:
-#	if JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR
+#	if JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR
 		jreg_error(ret, _preg);
-#	endif /* JSTR_PRINT_ERR_MSG_ON_REGEX_ERROR */
+#	endif /* JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR */
 	case JREG_RET_NOMATCH:
 	case JREG_RET_NOERROR:
 		break;

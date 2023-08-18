@@ -22,13 +22,13 @@ extern "C" {
 #endif /* __cpluslus */
 
 #define PRIV_JSTR_MIN_ALLOC(new_cap)                      \
-	((new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
-	 ? (JSTR_MIN_CAP)                                 \
-	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
+	((new_cap < JSTR_CFG_MIN_CAP / JSTR_CFG_ALLOC_MULTIPLIER) \
+	 ? (JSTR_CFG_MIN_CAP)                                 \
+	 : (new_cap * JSTR_CFG_ALLOC_MULTIPLIER))
 
 #define PRIV_JSTR_MIN_ALLOCEXACT(new_cap) \
-	((new_cap < JSTR_MIN_CAP)         \
-	 ? (JSTR_MIN_CAP)                 \
+	((new_cap < JSTR_CFG_MIN_CAP)         \
+	 ? (JSTR_CFG_MIN_CAP)                 \
 	 : (new_cap))
 
 #define PRIV_JSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
@@ -65,9 +65,9 @@ typedef struct jstr_ty {
 	~jstr_ty(void) JSTR_NOEXCEPT
 	{
 		::free(this->data);
-#		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
+#		if JSTR_CFG_NULLIFY_PTR_ON_DESTRUCTOR_CPP
 		this->data = NULL;
-#		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
+#		endif /* JSTR_CFG_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
 	}
 
 #	endif /* JSTR_FREE_ON_DESTRUCTOR_CPP */
@@ -80,9 +80,9 @@ typedef struct jstr_ty {
 	free(void) JSTR_NOEXCEPT
 	{
 		::free(this->data);
-#	if JSTR_NULLIFY_PTR_ON_DELETE
+#	if JSTR_CFG_NULLIFY_PTR_ON_DELETE
 		this->data = NULL;
-#	endif /* JSTR_NULLIFY_PTR_ON_DELETE */
+#	endif /* JSTR_CFG_NULLIFY_PTR_ON_DELETE */
 	}
 
 	/*
@@ -211,9 +211,9 @@ static void
 jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
 {
 	free(p);
-#if JSTR_NULLIFY_PTR_ON_DELETE
+#if JSTR_CFG_NULLIFY_PTR_ON_DELETE
 	p = NULL;
-#endif /* JSTR_NULLIFY_PTR_ON_DELETE */
+#endif /* JSTR_CFG_NULLIFY_PTR_ON_DELETE */
 }
 
 JSTR_INLINE
@@ -227,6 +227,43 @@ jstr_debug(const jstr_ty *JSTR_RST const _j)
 	fputs("data:", stderr);
 	fwrite(_j->data, 1, _j->size, stderr);
 	fputc('\n', stderr);
+}
+
+/*
+   Append SRC to DST.
+   Use non-f version for bounds checking.
+   Return value:
+   New _len of S.
+*/
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_INLINE
+JSTR_RETURNS_NONNULL
+static char *
+jstr_append_mem_p_f(char *JSTR_RST const _s,
+		    const char *JSTR_RST const _src,
+		    const size_t _sz,
+		    const size_t _srclen) JSTR_NOEXCEPT
+{
+	memcpy(_s, _src, _srclen + 1);
+	return _s + _sz + _srclen;
+}
+
+/*
+   Append SRC to DST.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+static void
+jstr_append_mem(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
+		const char *JSTR_RST const _src,
+		const size_t _srclen) JSTR_NOEXCEPT
+{
+	if (*_cap < *_sz + _srclen)
+		PRIV_JSTR_REALLOC(*_s, *_cap, *_sz + _srclen, return);
+	*_sz = jstr_append_mem_p_f(*_s, _src, *_sz, _srclen) - *_s;
 }
 
 #ifdef __cplusplus
