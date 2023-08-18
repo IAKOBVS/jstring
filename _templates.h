@@ -16,15 +16,15 @@ extern "C" {
 #endif /* _cpluslus */
 
 #include "_config.h"
-#include "_macros.h"
 #include "_jtraits.h"
+#include "_macros.h"
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
 static void
 priv_jstr_err(const char *JSTR_RST const FILE_,
-	 const int LINE_,
-	 const char *JSTR_RST const func_)
+	      const int LINE_,
+	      const char *JSTR_RST const func_)
 {
 #if JSTR_CFG_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
@@ -48,26 +48,26 @@ priv_jstr_err_exit(void)
 }
 
 #define PRIV_JSTR_MALLOC_ERR(p, malloc_fail)                         \
-	do {                                                    \
-		if (jstr_unlikely((p) == NULL)) {               \
+	do {                                                         \
+		if (jstr_unlikely((p) == NULL)) {                    \
 			priv_jstr_err(__FILE__, __LINE__, __func__); \
-			malloc_fail;                            \
-		}                                               \
+			malloc_fail;                                 \
+		}                                                    \
 	} while (0)
-#define PRIV_JSTR_GROW(old_cap, new_cap)                                       \
-	do {                                                              \
-		JSTR_ASSERT_IS_SIZE(old_cap);                             \
-		JSTR_ASSERT_IS_SIZE(new_cap);                             \
+#define PRIV_JSTR_GROW(old_cap, new_cap)                                      \
+	do {                                                                  \
+		JSTR_ASSERT_IS_SIZE(old_cap);                                 \
+		JSTR_ASSERT_IS_SIZE(new_cap);                                 \
 		while (((old_cap) *= JSTR_CFG_GROWTH_MULTIPLIER) < (new_cap)) \
-			;                                                 \
+			;                                                     \
 	} while (0)
 #define PRIV_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
-	do {                                           \
-		JSTR_ASSERT_IS_STR(p);                 \
-		JSTR_ASSERT_IS_SIZE(old_cap);          \
-		JSTR_ASSERT_IS_SIZE(new_cap);          \
+	do {                                                \
+		JSTR_ASSERT_IS_STR(p);                      \
+		JSTR_ASSERT_IS_SIZE(old_cap);               \
+		JSTR_ASSERT_IS_SIZE(new_cap);               \
 		PRIV_JSTR_GROW(old_cap, new_cap);           \
-		(p) = (char *)realloc(p, old_cap);     \
+		(p) = (char *)realloc(p, old_cap);          \
 		PRIV_JSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 

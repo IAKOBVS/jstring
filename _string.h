@@ -14,9 +14,9 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
+#include "_config.h"
 #include "_ctype.h"
 #include "_macros.h"
-#include "_config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -451,8 +451,8 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
 priv_strcasechr(const char *JSTR_RST const _s,
-		     const int _c,
-		     const size_t _n) JSTR_NOEXCEPT
+		const int _c,
+		const size_t _n) JSTR_NOEXCEPT
 {
 	enum { l = 0,
 	       u,
@@ -508,9 +508,9 @@ JSTR_DEPRECATED("strcasestr is available! _hslen and _nelen are wasted.", strcas
 #endif /* JSTR_HAVE_STRCASESTR */
 static char *
 jstr_memcasemem(const char *JSTR_RST const _hs,
-			  const size_t _hslen,
-			  const char *JSTR_RST const _ne,
-			  const size_t _nelen) JSTR_NOEXCEPT
+		const size_t _hslen,
+		const char *JSTR_RST const _ne,
+		const size_t _nelen) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASESTR
 	return (char *)strcasestr(_hs, _ne);
@@ -552,7 +552,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static char *
 jstr_strcasestr(const char *JSTR_RST const _hs,
-			  const char *JSTR_RST const _ne) JSTR_NOEXCEPT
+		const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASESTR
 	return (char *)strcasestr(_hs, _ne);
@@ -560,7 +560,6 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 	return jstr_memcasemem(_hs, strlen(_hs), _ne, strlen(_ne));
 #endif /* JSTR_HAVE_STRCASESTR */
 }
-
 
 /*
   Checks if S2 is in end of S1.
@@ -616,7 +615,7 @@ jstr_itoa(char *JSTR_RST const _dst,
 	  int _num,
 	  const unsigned int _base)
 {
-#define PRIV_JSTR_NUMTOSTR(_max_digits)                                        \
+#define PRIV_JSTR_NUMTOSTR(_max_digits)                                           \
 	do {                                                                      \
 		unsigned char *d = (unsigned char *)_dst;                         \
 		unsigned char sbuf[_max_digits];                                  \
@@ -687,7 +686,7 @@ jstr_utoa(char *JSTR_RST const _dst,
 	  unsigned int _num,
 	  const unsigned int _base)
 {
-#define PRIV_JSTR_UNUMTOSTR(_max_digits)                      \
+#define PRIV_JSTR_UNUMTOSTR(_max_digits)                         \
 	do {                                                     \
 		unsigned char *d = (unsigned char *)_dst;        \
 		unsigned char sbuf[_max_digits];                 \
