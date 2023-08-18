@@ -24,7 +24,7 @@ typedef enum {
 
 typedef struct jtrie_node_ty {
 	struct jtrie_node_ty *child[JTRIE_ASCII_SIZE];
-	unsigned char EOW;
+	unsigned int EOW;
 } jtrie_node_ty;
 
 JSTR_INLINE
@@ -76,33 +76,16 @@ jtrie_insert(jtrie_node_ty *JSTR_RST const root,
 	return JTRIE_RET_NOERROR;
 }
 
-JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-static jtrie_errcode_ty
-jtrie_insertprefix(jtrie_node_ty *JSTR_RST const root,
-		   const char *JSTR_RST const word) JSTR_NOEXCEPT
-{
-	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(*w == '\0'))
-		return JTRIE_RET_NOERROR;
-	jtrie_node_ty *curr = root;
-	for (; *w; ++w) {
-		if (curr->child[*w] == NULL)
-			curr->child[*w] = jtrie_init();
-		curr = curr->child[*w];
-		if (jstr_unlikely(curr == NULL))
-			return JTRIE_RET_MALLOC_ERROR;
-		curr->EOW = 1;
-	}
-	curr->EOW = 1;
-	return JTRIE_RET_NOERROR;
-}
+typedef enum {
+	PRIV_JTRIE_FLAG_REMOVE_PREFIXES = 1,
+	PRIV_JTRIE_FLAG_REMOVE_NOT_PREFIXES = 1 << 1,
+} priv_jtrie_flag_ty;
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-priv_jtrie_remove(jtrie_node_ty *JSTR_RST const root,
+priv_jtrie_remove(priv_jtrie_flag_ty flag,
+		  jtrie_node_ty *JSTR_RST const root,
 		  const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
 	const unsigned char *w = (unsigned char *)word;
@@ -112,7 +95,8 @@ priv_jtrie_remove(jtrie_node_ty *JSTR_RST const root,
 	if (jstr_unlikely(curr == NULL))
 		return;
 	while (*++w && curr->child[*w]) {
-		curr->EOW = 0;
+		if (flag & PRIV_JTRIE_FLAG_REMOVE_PREFIXES)
+			curr->EOW = 0;
 		curr = curr->child[*w];
 	}
 	curr->EOW = 0;
@@ -124,15 +108,7 @@ static void
 jtrie_remove(jtrie_node_ty *JSTR_RST const root,
 	     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
-	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(*w == '\0'))
-		return;
-	jtrie_node_ty *curr = root->child[*w];
-	if (jstr_unlikely(curr == NULL))
-		return;
-	while (*++w && curr->child[*w])
-		curr = curr->child[*w];
-	curr->EOW = 0;
+	return priv_jtrie_remove(PRIV_JTRIE_FLAG_REMOVE_NOT_PREFIXES, root, word);
 }
 
 JSTR_NONNULL_ALL
@@ -141,17 +117,7 @@ static void
 jtrie_removeprefixes(jtrie_node_ty *JSTR_RST const root,
 		     const char *JSTR_RST const word) JSTR_NOEXCEPT
 {
-	const unsigned char *w = (unsigned char *)word;
-	if (jstr_unlikely(*w == '\0'))
-		return;
-	jtrie_node_ty *curr = root->child[*w];
-	if (jstr_unlikely(curr == NULL))
-		return;
-	while (*++w && curr->child[*w]) {
-		curr->EOW = 0;
-		curr = curr->child[*w];
-	}
-	curr->EOW = 0;
+	return priv_jtrie_remove(PRIV_JTRIE_FLAG_REMOVE_PREFIXES, root, word);
 }
 
 /*
