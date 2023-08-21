@@ -35,9 +35,11 @@ extern "C" {
 	 : (new_cap))
 
 #define PRIV_JSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
-	(_cap) = PRIV_JSTR_MIN_ALLOC(new_cap);          \
-	(p) = (char *)malloc((_cap));                   \
-	PRIV_JSTR_MALLOC_ERR((p), do_fail);
+	do {                                            \
+		(_cap) = PRIV_JSTR_MIN_ALLOC(new_cap);  \
+		(p) = (char *)malloc((_cap));           \
+		PRIV_JSTR_MALLOC_ERR((p), do_fail);     \
+	} while (0)
 
 /*
   exit(1) if ptr is NULL.
