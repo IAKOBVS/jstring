@@ -25,7 +25,7 @@ my $G_IGNORE_FILE = 'private';
 
 my $G_NMSPC      = 'jstr';
 my $G_NMSPC_UPP  = uc($G_NMSPC);
-my $G_STR_STRUCT = 'Jstring';
+my $G_STR_STRUCT = 'jstr_ty';
 my $G_STRUCT_VAR = '_j';
 
 my $G_STRUCT_DATA = 'data';
