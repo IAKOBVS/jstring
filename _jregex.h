@@ -580,7 +580,6 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 					memmove(dst, old, p - old);
 				_tmp = *(uc **)_s;
 				PRIV_JSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _ptnlen, return JREG_RET_MALLOC_ERROR);
-				*(uc **)_s = *(uc **)_s;
 				memmove(p + _rplclen,
 					p + _ptnlen,
 					(_tmp + *_sz) - (p + _ptnlen) + 1);
