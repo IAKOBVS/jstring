@@ -370,7 +370,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static jreg_errcode_ty
-jreg_rm_mem(char *JSTR_RST const _s,
+jreg_rm(char *JSTR_RST const _s,
 	    size_t *JSTR_RST const _sz,
 	    const regex_t *JSTR_RST const _preg,
 	    const int _eflags) JSTR_NOEXCEPT
@@ -392,7 +392,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static jreg_errcode_ty
-jreg_rm_now_mem(char *JSTR_RST const _s,
+jreg_rm_now(char *JSTR_RST const _s,
 		size_t *JSTR_RST const _sz,
 		const char *JSTR_RST const _ptn,
 		regex_t *JSTR_RST const _preg,
@@ -404,14 +404,14 @@ jreg_rm_now_mem(char *JSTR_RST const _s,
 	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(ret != JREG_RET_NOERROR))
 		return ret;
-	return jreg_rm_mem(_s, _sz, _preg, _eflags);
+	return jreg_rm(_s, _sz, _preg, _eflags);
 }
 
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static jreg_errcode_ty
-priv_jreg_base_rmall_mem(const priv_jstr_flag_use_n_ty _flag,
+priv_jreg_base_rmall(const priv_jstr_flag_use_n_ty _flag,
 			 char *JSTR_RST const _s,
 			 size_t *JSTR_RST const _sz,
 			 size_t _n,
@@ -447,32 +447,32 @@ JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static jreg_errcode_ty
-jreg_rmall_mem(char *JSTR_RST const _s,
+jreg_rmall(char *JSTR_RST const _s,
 	       size_t *JSTR_RST const _sz,
 	       const regex_t *JSTR_RST const _preg,
 	       const int _eflags) JSTR_NOEXCEPT
 {
-	return priv_jreg_base_rmall_mem(PRIV_JSTR_FLAG_USE_NOT_N, _s, _sz, 0, _preg, _eflags);
+	return priv_jreg_base_rmall(PRIV_JSTR_FLAG_USE_NOT_N, _s, _sz, 0, _preg, _eflags);
 }
 
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static jreg_errcode_ty
-jreg_rmn_mem(char *JSTR_RST const _s,
+jreg_rmn(char *JSTR_RST const _s,
 	     size_t *JSTR_RST const _sz,
 	     const size_t _n,
 	     const regex_t *JSTR_RST const _preg,
 	     const int _eflags) JSTR_NOEXCEPT
 {
-	return priv_jreg_base_rmall_mem(PRIV_JSTR_FLAG_USE_N, _s, _sz, _n, _preg, _eflags);
+	return priv_jreg_base_rmall(PRIV_JSTR_FLAG_USE_N, _s, _sz, _n, _preg, _eflags);
 }
 
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static jreg_errcode_ty
-jreg_rmn_now_mem(char *JSTR_RST const _s,
+jreg_rmn_now(char *JSTR_RST const _s,
 		 const char *JSTR_RST const _ptn,
 		 size_t *JSTR_RST const _sz,
 		 const size_t _n,
@@ -485,14 +485,14 @@ jreg_rmn_now_mem(char *JSTR_RST const _s,
 	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(ret != JREG_RET_NOERROR))
 		return ret;
-	return jreg_rmn_mem(_s, _sz, _n, _preg, _eflags);
+	return jreg_rmn(_s, _sz, _n, _preg, _eflags);
 }
 
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static jreg_errcode_ty
-jreg_rmall_now_mem(char *JSTR_RST const _s,
+jreg_rmall_now(char *JSTR_RST const _s,
 		   size_t *JSTR_RST const _sz,
 		   const char *JSTR_RST const _ptn,
 		   regex_t *JSTR_RST const _preg,
@@ -504,13 +504,13 @@ jreg_rmall_now_mem(char *JSTR_RST const _s,
 	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(ret != JREG_RET_NOERROR))
 		return ret;
-	return jreg_rmall_mem(_s, _sz, _preg, _eflags);
+	return jreg_rmall(_s, _sz, _preg, _eflags);
 }
 
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static jreg_errcode_ty
-priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
+priv_jreg_base_rplcall(const priv_jstr_flag_use_n_ty _flag,
 			   char **JSTR_RST const _s,
 			   size_t *JSTR_RST const _sz,
 			   size_t *JSTR_RST const _cap,
@@ -521,7 +521,7 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 			   const int _eflags) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_rplclen == 0)) {
-		return jreg_rmall_mem(*_s, _sz, _preg, _eflags);
+		return jreg_rmall(*_s, _sz, _preg, _eflags);
 	}
 	regmatch_t rm;
 	size_t _ptnlen;
@@ -646,7 +646,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static jreg_errcode_ty
-jreg_rplcall_mem(char **JSTR_RST const _s,
+jreg_rplcall(char **JSTR_RST const _s,
 		 size_t *JSTR_RST const _sz,
 		 size_t *JSTR_RST const _cap,
 		 const char *JSTR_RST const _rplc,
@@ -654,14 +654,14 @@ jreg_rplcall_mem(char **JSTR_RST const _s,
 		 const regex_t *JSTR_RST const _preg,
 		 const int _eflags) JSTR_NOEXCEPT
 {
-	return priv_jreg_base_rplcall_mem(PRIV_JSTR_FLAG_USE_NOT_N, _s, _sz, _cap, _rplc, 0, _rplclen, _preg, _eflags);
+	return priv_jreg_base_rplcall(PRIV_JSTR_FLAG_USE_NOT_N, _s, _sz, _cap, _rplc, 0, _rplclen, _preg, _eflags);
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static jreg_errcode_ty
-jreg_rplcn_mem(char **JSTR_RST const _s,
+jreg_rplcn(char **JSTR_RST const _s,
 	       size_t *JSTR_RST const _sz,
 	       size_t *JSTR_RST const _cap,
 	       const char *JSTR_RST const _rplc,
@@ -670,14 +670,14 @@ jreg_rplcn_mem(char **JSTR_RST const _s,
 	       const regex_t *JSTR_RST const _preg,
 	       const int _eflags) JSTR_NOEXCEPT
 {
-	return priv_jreg_base_rplcall_mem(PRIV_JSTR_FLAG_USE_N, _s, _sz, _cap, _rplc, _n, _rplclen, _preg, _eflags);
+	return priv_jreg_base_rplcall(PRIV_JSTR_FLAG_USE_N, _s, _sz, _cap, _rplc, _n, _rplclen, _preg, _eflags);
 }
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static jreg_errcode_ty
-jreg_rplcall_now_mem(char **JSTR_RST const _s,
+jreg_rplcall_now(char **JSTR_RST const _s,
 		     size_t *JSTR_RST const _sz,
 		     size_t *JSTR_RST const _cap,
 		     const char *JSTR_RST const _ptn,
@@ -692,14 +692,14 @@ jreg_rplcall_now_mem(char **JSTR_RST const _s,
 	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(ret != JREG_RET_NOERROR))
 		return ret;
-	return jreg_rplcall_mem(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
+	return jreg_rplcall(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 }
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static jreg_errcode_ty
-jreg_rplcn_now_mem(char **JSTR_RST const _s,
+jreg_rplcn_now(char **JSTR_RST const _s,
 		   size_t *JSTR_RST const _sz,
 		   size_t *JSTR_RST const _cap,
 		   const char *JSTR_RST const _ptn,
@@ -715,14 +715,14 @@ jreg_rplcn_now_mem(char **JSTR_RST const _s,
 	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(ret != JREG_RET_NOERROR))
 		return ret;
-	return jreg_rplcn_mem(_s, _sz, _cap, _rplc, _n, _rplclen, _preg, _eflags);
+	return jreg_rplcn(_s, _sz, _cap, _rplc, _n, _rplclen, _preg, _eflags);
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static jreg_errcode_ty
-jreg_rplc_mem(char **JSTR_RST const _s,
+jreg_rplc(char **JSTR_RST const _s,
 	      size_t *JSTR_RST const _sz,
 	      size_t *JSTR_RST const _cap,
 	      const char *JSTR_RST const _rplc,
@@ -744,7 +744,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
 static jreg_errcode_ty
-jreg_rplc_now_mem(char **JSTR_RST const _s,
+jreg_rplc_now(char **JSTR_RST const _s,
 		  size_t *JSTR_RST const _sz,
 		  size_t *JSTR_RST const _cap,
 		  const char *JSTR_RST const _ptn,
@@ -759,7 +759,7 @@ jreg_rplc_now_mem(char **JSTR_RST const _s,
 	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(ret != JREG_RET_NOERROR))
 		return ret;
-	return jreg_rplc_mem(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
+	return jreg_rplc(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 }
 
 #ifdef __cplusplus
