@@ -55,7 +55,7 @@ jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 typedef struct jstr_ty {
 	char *data;
 	size_t size;
-	size_t _cap;
+	size_t cap;
 
 #ifdef __cplusplus
 
@@ -119,7 +119,7 @@ typedef struct jstr_ty {
 	void
 	debug_print(void) JSTR_NOEXCEPT
 	{
-		fprintf(stderr, "size:%zu\ncap:%zu\n", this->size, this->_cap);
+		fprintf(stderr, "size:%zu\ncap:%zu\n", this->size, this->cap);
 		fprintf(stderr, "strlen:%zu\n", strlen(this->data));
 		fprintf(stderr, "data puts():%s\n", this->data);
 		fputs("data:", stderr);
@@ -226,7 +226,7 @@ JSTR_NONNULL_ALL
 static void
 jstr_debug(const jstr_ty *JSTR_RST const _j)
 {
-	fprintf(stderr, "size:%zu\ncap:%zu\n", _j->size, _j->_cap);
+	fprintf(stderr, "size:%zu\ncap:%zu\n", _j->size, _j->cap);
 	fprintf(stderr, "strlen:%zu\n", strlen(_j->data));
 	fprintf(stderr, "data puts:%s\n", _j->data);
 	fputs("data:", stderr);
@@ -289,7 +289,7 @@ jstr_alloc_cat_j(jstr_ty *JSTR_RST const _j,
 		 Str &&arg,
 		 StrArgs &&...args) JSTR_NOEXCEPT
 {
-	jstr_alloc_cat(&_j->data, &_j->size, &_j->_cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr_alloc_cat(&_j->data, &_j->size, &_j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 /*
@@ -304,7 +304,7 @@ jstr_cat_j(jstr_ty *JSTR_RST const _j,
 	   Str &&arg,
 	   StrArgs &&...args) JSTR_NOEXCEPT
 {
-	jstr_cat(&_j->data, &_j->size, &_j->_cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr_cat(&_j->data, &_j->size, &_j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 #else

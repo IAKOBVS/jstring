@@ -91,7 +91,7 @@ jstr_alloc_file_j(jstr_ty *JSTR_RST const _j,
 		  const char *JSTR_RST const _fname,
 		  struct stat *JSTR_RST const _st)
 {
-	return jstr_alloc_file(&_j->data, &_j->size, &_j->_cap, _fname, _st);
+	return jstr_alloc_file(&_j->data, &_j->size, &_j->cap, _fname, _st);
 }
 
 /*
@@ -105,7 +105,7 @@ jstr_allocexact_file_j(jstr_ty *JSTR_RST const _j,
 		       const char *JSTR_RST const _fname,
 		       struct stat *JSTR_RST const _st)
 {
-	return jstr_allocexact_file(&_j->data, &_j->size, &_j->_cap, _fname, _st);
+	return jstr_allocexact_file(&_j->data, &_j->size, &_j->cap, _fname, _st);
 }
 
 #ifdef __cplusplus

@@ -1,6 +1,5 @@
 #!/bin/sh
-rm -rf ./cpp
-rm -rf ./c
+rm -rf ./jstr
 shebang="#!/bin/sh"
 cmd="cd .. && ./build"
 cp_build()
@@ -11,5 +10,4 @@ cp_build()
 	echo "$cmd" >>"$fname"
 	chmod +x "$fname"
 }
-cp_build c
-cp_build cpp
+cp_build jstr

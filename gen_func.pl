@@ -23,10 +23,11 @@ my $G_OUT_C = "$G_DIR_C/$G_FNAME_BASE";
 
 my $G_IGNORE_FILE = 'private';
 
-my $G_NMSPC      = 'jstr';
-my $G_NMSPC_UPP  = uc($G_NMSPC);
-my $G_STR_STRUCT = 'jstr_ty';
-my $G_STRUCT_VAR = '_j';
+my $G_NMSPC_REGEX = 'jreg';
+my $G_NMSPC       = 'jstr';
+my $G_NMSPC_UPP   = uc($G_NMSPC);
+my $G_STR_STRUCT  = 'jstr_ty';
+my $G_STRUCT_VAR  = 'j';
 
 my $G_STRUCT_DATA = 'data';
 my $G_STRUCT_SIZE = 'size';
@@ -43,7 +44,7 @@ my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
 my $G_MACRO_LONG_FUNCTION   = $G_NMSPC_UPP . '_LONG_FUNCTION';
 
-my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*$G_NMSPC\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
+my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC|$G_NMSPC_REGEX)\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
 
 # mkdir($G_DIR_CPP);
@@ -124,9 +125,6 @@ sub gen_nonmem_funcs
 		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME !~ /$G_NMSPC\_/) {
-			goto NEXT;
-		}
 		if ($FUNC_NAME !~ /_mem(?:_|$)/) {
 			goto NEXT;
 		}
@@ -141,7 +139,7 @@ sub gen_nonmem_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME =~ /private/) {
+		if ($FUNC_NAME =~ /priv/) {
 			goto NEXT;
 		}
 		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
@@ -158,7 +156,8 @@ sub gen_nonmem_funcs
 				push(@new_args, $_);
 			}
 		}
-		$decl =~ s/($G_NMSPC\_\w*)_mem(\w*\()/$1$2/o;
+		my $nmspc = ($decl =~ /$G_NMSPC/o) ? $G_NMSPC : $G_NMSPC_REGEX;
+		$decl =~ s/($nmspc\_\w*)_mem(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_regex_size_ptr($FUNC_NAME, $params);
 		$decl .= "$RETURN$FUNC_NAME(";
@@ -174,6 +173,7 @@ sub gen_nonmem_funcs
 				if (!$size_ptr_var && /\w*$G_SIZE_PTN/) {
 					$decl =~ s/,[^,]*$G_SIZE_PTN//o;
 					$_ = "strlen($new_args[0])";
+					print $_;
 				}
 			}
 			$decl .= "$_, ";
@@ -193,8 +193,6 @@ sub gen_struct_funcs
 {
 	my (@LINES) = @_;
 	my $out_h;
-
-	# my $out_hpp;
 	foreach (@LINES) {
 		if ($_ !~ $G_RE_FUNC) {
 			goto NEXT;
@@ -211,9 +209,6 @@ sub gen_struct_funcs
 		if (!$HAS_SZ && !$HAS_CAP) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME !~ /$G_NMSPC\_/) {
-			goto NEXT;
-		}
 		if ($G_FNAME =~ /$G_IGNORE_FILE/o) {
 			goto NEXT;
 		}
@@ -223,7 +218,7 @@ sub gen_struct_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME =~ /private/) {
+		if ($FUNC_NAME =~ /priv/) {
 			goto NEXT;
 		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
@@ -281,7 +276,7 @@ sub gen_struct_funcs
 		$body .= "$G_STRUCT_VAR->$G_STRUCT_DATA, ";
 		for (my $i = 1 ; $i <= $#new_args ; ++$i) {
 			if ($new_args[$i] =~ /$G_SIZE_PTN/o) {
-				if ($FUNC_NAME =~ /$G_NMSPC\_reg/ && is_size_ptr($params)) {
+				if ($FUNC_NAME =~ /$G_NMSPC_REGEX/ && is_size_ptr($params)) {
 					$new_args[$i] = "&$G_STRUCT_VAR->$G_STRUCT_SIZE";
 				} else {
 					$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
@@ -303,51 +298,28 @@ sub gen_struct_funcs
 		$decl  .= "\n\n";
 		$out_h .= $_;
 		$out_h .= $decl;
-
-		# $out_hpp .= $_;
-		# $out_hpp .= $decl;
 		next;
 	  NEXT:
 		$_ = update_includes($_);
 		$_     .= "\n\n";
 		$out_h .= $_;
-
-		# $out_hpp .= $_;
 	}
-
-	# $out_hpp =~ s/\.h"/.hpp"/g;
-	# $out_hpp =~ s/H_DEF/HPP_DEF/g;
-	# if ($G_FNAME !~ /$G_IGNORE_FILE/o) {
-	# 	$out_hpp =~ s/$G_NMSPC_UPP\_EXTERN_C\s*\d/$G_NMSPC_UPP\_EXTERN_C 0/o;
-	# 	$out_hpp =~ s/$G_NMSPC_UPP\_NAMESPACE\s*\d/$G_NMSPC_UPP\_NAMESPACE 1/o;
-	# 	$out_hpp =~ s/~$G_NMSPC/destructor$G_NMSPC/go;
-	# 	$out_hpp =~ s/(\W)$G_NMSPC\_(\w*\()/$1$2/go;
-	# 	$out_hpp =~ s/(struct.*?)$G_NMSPC\_(\w+)/$1$2/g;
-	# 	$out_hpp =~ s/destructor$G_NMSPC/~$G_NMSPC/go;
-	# }
-	# $out_hpp =~ s/\tt\(/\t$G_STR_STRUCT(/go;
-	# $out_hpp =~ s/\t~t\(/\t$G_STR_STRUCT(/go;
-	# $out_hpp =~ s/\n#if.*\s*#endif.*/\n/g;
-	# $out_hpp =~ s/\n\n\n/\n\n/g;
-	# $out_hpp =~ s/\n\n*$/\n/g;
 	$out_h =~ s/\n\n\n/\n\n/g;
 	$out_h =~ s/\n\n*$/\n/g;
-
-	# return ($out_h, $out_hpp);
 	return ($out_h);
 }
 
 sub update_includes
 {
 	my ($includes) = @_;
-	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_$G_NMSPC/$1$G_NMSPC/go;
+	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_/$1/go;
 	return $includes;
 }
 
 sub get_regex_size_ptr
 {
 	my ($FUNC_NAME, $params) = @_;
-	if ($FUNC_NAME =~ /$G_NMSPC\_reg/o) {
+	if ($FUNC_NAME =~ /$G_NMSPC_REGEX/o) {
 		$params =~ /size_t[ \t]*\*[ \t]*$G_MACRO_RESTRICT[ \t][^\n]*(\w*sz)/o;
 		return $1;
 	}
