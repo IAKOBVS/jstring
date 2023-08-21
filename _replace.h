@@ -30,8 +30,8 @@ priv_jstr_rmall_in_place(unsigned char **const _dst,
 {
 	if (jstr_likely(*_dst != *_old))
 		memmove(*_dst, *_old, *_p - *_old);
-	*_dst += (*_p - *_old);
-	*_old += (*_p - *_old);
+	*_dst += *_p - *_old;
+	*_old += *_p - *_old;
 	*_old += _searclen;
 	*_p += _searclen;
 }
@@ -47,8 +47,8 @@ priv_jstr_rplcall_in_place(unsigned char **const _dst,
 {
 	if (jstr_likely(_searclen != _rplclen && *_dst != *_old))
 		memmove(*_dst, *_old, *_p - *_old);
-	*_dst += (*_p - *_old);
-	*_old += (*_p - *_old);
+	*_dst += *_p - *_old;
+	*_old += *_p - *_old;
 	*_old += _searclen;
 	*_p += _searclen;
 	memcpy(*_dst, _rplc, _rplclen);

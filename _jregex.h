@@ -384,7 +384,7 @@ jreg_rm_mem(char *JSTR_RST const _s,
 	memmove(_s + rm.rm_so,
 		_s + rm.rm_eo,
 		*_sz - (rm.rm_eo - rm.rm_so) + 1);
-	*_sz -= (rm.rm_eo - rm.rm_so);
+	*_sz -= rm.rm_eo - rm.rm_so;
 	return ret;
 }
 
@@ -558,7 +558,7 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 			if (dst != old) {
 				JREG_DEB_PRINT("dst != old");
 				memmove(dst, old, p - old);
-				dst += (p - old);
+				dst += p - old;
 				memmove(dst + _rplclen,
 					p + _ptnlen,
 					(*(uc **)_s + *_sz) - (p + _ptnlen) + 1);

@@ -113,8 +113,8 @@ cat_assign(size_t *JSTR_RST _sz,
 	   const char (&src)[N]) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, N - 1);
-	*dst += (N - 1);
-	*_sz += (N - 1);
+	*dst += N - 1;
+	*_sz += N - 1;
 }
 
 JSTR_INLINE
@@ -213,7 +213,7 @@ cat_assign(char **JSTR_RST const dst,
 	   const char (&src)[N]) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, N - 1);
-	*dst += (N - 1);
+	*dst += N - 1;
 	++*strlen_arr;
 }
 
