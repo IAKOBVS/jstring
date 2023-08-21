@@ -17,7 +17,7 @@ extern "C" {
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* JSTR_NAMESPACE */
+#endif /* __cpluslus */
 
 #define JSTR_ASCII_SIZE 256
 

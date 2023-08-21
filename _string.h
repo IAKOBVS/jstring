@@ -20,7 +20,7 @@ extern "C" {
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* JSTR_NAMESPACE */
+#endif /* __cpluslus */
 
 #if JSTR_HAVE_MEMMEM
 #	define PRIV_JSTR_MEMMEM(_hs, hlen, _ne, nlen) memmem(_hs, hlen, _ne, nlen)
@@ -827,6 +827,6 @@ jstr_count(const char *JSTR_RST _s,
 
 #ifdef __cplusplus
 } /* extern C */
-#endif /* JSTR_NAMESPACE */
+#endif /* __cpluslus */
 
 #endif /* JSTR_STRING_H_DEF */
