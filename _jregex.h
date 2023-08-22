@@ -620,7 +620,7 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 #	pragma clang diagnostic pop
 #endif
 					memcpy(_tmp + (p - *(uc **)_s), _rplc, _rplclen);
-					memcpy(_tmp + (p - *(uc **)_s + _rplclen),
+					memcpy(_tmp + (p - (*(uc **)_s + _rplclen)),
 					       p + _ptnlen,
 					       (*(uc **)_s + *_sz) - (p + _ptnlen) + 1);
 				}
