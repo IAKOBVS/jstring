@@ -138,17 +138,17 @@ jreg_comp(regex_t *JSTR_RST const _preg,
 	  const char *JSTR_RST const _ptn,
 	  const int _cflags) JSTR_NOEXCEPT
 {
-	const jreg_errcode_ty ret = (jreg_errcode_ty)regcomp(_preg, _ptn, _cflags);
-	switch (ret) {
+	const jreg_errcode_ty _ret = (jreg_errcode_ty)regcomp(_preg, _ptn, _cflags);
+	switch (_ret) {
 	default:
 #if JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR
-		jreg_error(ret, _preg);
+		jreg_error(_ret, _preg);
 #endif /* JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR */
 	case JREG_RET_NOMATCH:
 	case JREG_RET_NOERROR:
 		break;
 	}
-	return ret;
+	return _ret;
 }
 
 JSTR_NONNULL(1)
@@ -163,17 +163,17 @@ jreg_exec(const regex_t *JSTR_RST _preg,
 	  regmatch_t *JSTR_RST const _pmatch,
 	  const int _eflags)
 {
-	const jreg_errcode_ty ret = (jreg_errcode_ty)regexec(_preg, _s, _nmatch, _pmatch, _eflags);
-	switch (ret) {
+	const jreg_errcode_ty _ret = (jreg_errcode_ty)regexec(_preg, _s, _nmatch, _pmatch, _eflags);
+	switch (_ret) {
 	default:
 #if JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR
-		jreg_error(ret, _preg);
+		jreg_error(_ret, _preg);
 #endif /* JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR */
 	case JREG_RET_NOMATCH:
 	case JREG_RET_NOERROR:
 		break;
 	}
-	return ret;
+	return _ret;
 }
 
 #ifdef JREG_EF_STARTEND
@@ -192,17 +192,17 @@ jreg_exec_mem(const regex_t *JSTR_RST _preg,
 {
 	_pmatch->rm_so = 0;
 	_pmatch->rm_eo = _sz;
-	const jreg_errcode_ty ret = (jreg_errcode_ty)regexec(_preg, _s, _nmatch, _pmatch, _eflags | REG_STARTEND);
-	switch (ret) {
+	const jreg_errcode_ty _ret = (jreg_errcode_ty)regexec(_preg, _s, _nmatch, _pmatch, _eflags | REG_STARTEND);
+	switch (_ret) {
 	default:
 #	if JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR
-		jreg_error(ret, _preg);
+		jreg_error(_ret, _preg);
 #	endif /* JSTR_CFG_PRINT_ERR_MSG_ON_REGEX_ERROR */
 	case JREG_RET_NOMATCH:
 	case JREG_RET_NOERROR:
 		break;
 	}
-	return ret;
+	return _ret;
 }
 
 #endif /* JREG_EF_ REG_STARTEND */
@@ -244,9 +244,9 @@ jreg_match_now(const char *JSTR_RST const _s,
 	       const int _cflags,
 	       const int _eflags) JSTR_NOEXCEPT
 {
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_match(_s, _preg, _eflags);
 }
 
@@ -282,9 +282,9 @@ jreg_search_now(const char *JSTR_RST const _s,
 		const int _cflags,
 		const int _eflags) JSTR_NOEXCEPT
 {
-	const jreg_errcode_ty ret = jreg_comp(_preg, _s, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _s, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_search(_s, _preg, _pmatch, _eflags);
 }
 
@@ -325,9 +325,9 @@ jreg_search_mem(const char *JSTR_RST const _s,
 		const int _cflags,
 		const int _eflags) JSTR_NOEXCEPT
 {
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_search_now_mem(_s, _sz, _preg, _pmatch, _eflags);
 }
 /*
@@ -343,8 +343,8 @@ jreg_match_mem(const char *JSTR_RST const _s,
 	       regex_t *JSTR_RST const _preg,
 	       const int _eflags) JSTR_NOEXCEPT
 {
-	regmatch_t rm;
-	return jreg_exec_mem(_preg, _s, _sz, 0, &rm, _eflags | JREG_EF_NOSUB | JREG_EF_STARTEND);
+	regmatch_t _rm;
+	return jreg_exec_mem(_preg, _s, _sz, 0, &_rm, _eflags | JREG_EF_NOSUB | JREG_EF_STARTEND);
 }
 
 JSTR_NONNULL_ALL
@@ -358,9 +358,9 @@ jreg_match_now_mem(const char *JSTR_RST const _s,
 		   const int _cflags,
 		   const int _eflags) JSTR_NOEXCEPT
 {
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_match_mem(_s, _sz, _preg, _eflags);
 }
 
@@ -375,17 +375,17 @@ jreg_rm(char *JSTR_RST const _s,
 	    const regex_t *JSTR_RST const _preg,
 	    const int _eflags) JSTR_NOEXCEPT
 {
-	regmatch_t rm;
-	const jreg_errcode_ty ret = PRIV_JREG_EXEC(_preg, _s, *_sz, 1, &rm, _eflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
-	if (jstr_unlikely(rm.rm_eo == rm.rm_so))
-		return ret;
-	memmove(_s + rm.rm_so,
-		_s + rm.rm_eo,
-		*_sz - (rm.rm_eo - rm.rm_so) + 1);
-	*_sz -= (rm.rm_eo - rm.rm_so);
-	return ret;
+	regmatch_t _rm;
+	const jreg_errcode_ty _ret = PRIV_JREG_EXEC(_preg, _s, *_sz, 1, &_rm, _eflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
+	if (jstr_unlikely(_rm.rm_eo == _rm.rm_so))
+		return _ret;
+	memmove(_s + _rm.rm_so,
+		_s + _rm.rm_eo,
+		*_sz - (_rm.rm_eo - _rm.rm_so) + 1);
+	*_sz -= (_rm.rm_eo - _rm.rm_so);
+	return _ret;
 }
 
 JSTR_WARN_UNUSED
@@ -401,9 +401,9 @@ jreg_rm_now(char *JSTR_RST const _s,
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_rm(_s, _sz, _preg, _eflags);
 }
 
@@ -418,29 +418,29 @@ priv_jreg_base_rmall(const priv_jstr_flag_use_n_ty _flag,
 			 const regex_t *JSTR_RST const _preg,
 			 const int _eflags) JSTR_NOEXCEPT
 {
-	regmatch_t rm;
-	unsigned char *dst = (unsigned char *)_s;
-	const unsigned char *p = dst;
-	const unsigned char *old = dst;
-	const unsigned char *const end = dst + *_sz;
+	regmatch_t _rm;
+	unsigned char *_dst = (unsigned char *)_s;
+	const unsigned char *_p = _dst;
+	const unsigned char *_old = _dst;
+	const unsigned char *const _end = _dst + *_sz;
 	size_t ptnlen;
-	jreg_errcode_ty ret = JREG_RET_NOMATCH;
+	jreg_errcode_ty _ret = JREG_RET_NOMATCH;
 	while ((_flag & PRIV_JSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
-	       && PRIV_JREG_EXEC(_preg, (char *)p, end - p, 1, &rm, _eflags) == JREG_RET_NOERROR) {
-		ret = JREG_RET_NOERROR;
-		ptnlen = rm.rm_eo - rm.rm_so;
-		p = p + rm.rm_so;
+	       && PRIV_JREG_EXEC(_preg, (char *)_p, _end - _p, 1, &_rm, _eflags) == JREG_RET_NOERROR) {
+		_ret = JREG_RET_NOERROR;
+		ptnlen = _rm.rm_eo - _rm.rm_so;
+		_p = _p + _rm.rm_so;
 		if (jstr_unlikely(ptnlen == 0))
-			++p;
+			++_p;
 		else
-			priv_jstr_rmall_in_place(&dst, &old, &p, ptnlen);
-		if (jstr_unlikely(*p == '\0'))
+			priv_jstr_rmall_in_place(&_dst, &_old, &_p, ptnlen);
+		if (jstr_unlikely(*_p == '\0'))
 			break;
 	}
-	if (jstr_likely(dst != old))
-		memmove(dst, old, end - old + 1);
-	*_sz = (char *)dst + (end - old) - _s;
-	return ret;
+	if (jstr_likely(_dst != _old))
+		memmove(_dst, _old, _end - _old + 1);
+	*_sz = (char *)_dst + (_end - _old) - _s;
+	return _ret;
 }
 
 JSTR_MAYBE_UNUSED
@@ -482,9 +482,9 @@ jreg_rmn_now(char *JSTR_RST const _s,
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_rmn(_s, _sz, _n, _preg, _eflags);
 }
 
@@ -501,9 +501,9 @@ jreg_rmall_now(char *JSTR_RST const _s,
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_rmall(_s, _sz, _preg, _eflags);
 }
 
@@ -523,88 +523,88 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 	if (jstr_unlikely(_rplclen == 0)) {
 		return jreg_rmall(*_s, _sz, _preg, _eflags);
 	}
-	regmatch_t rm;
+	regmatch_t _rm;
 	size_t _ptnlen;
 	unsigned char *_tmp;
-	jreg_errcode_ty ret = JREG_RET_NOMATCH;
+	jreg_errcode_ty _ret = JREG_RET_NOMATCH;
 	typedef unsigned char uc;
-	unsigned char *dst = *(uc **)_s;
-	unsigned char *p = dst;
-	const unsigned char *old = dst;
+	unsigned char *_dst = *(uc **)_s;
+	unsigned char *_p = _dst;
+	const unsigned char *_old = _dst;
 #if JREG_HAVE_REALLOC_MREMAP
-	const int is_mmap = JSTR_IS_MMAP(*_cap);
+	const int _is_mmap = JSTR_IS_MMAP(*_cap);
 #endif /* JREG_HAVE_REALLOC_MREMAP */
 	while ((_flag & PRIV_JSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
-	       && PRIV_JREG_EXEC(_preg, (char *)p, (*(uc **)_s + *_sz) - p, 1, &rm, _eflags) == JREG_RET_NOERROR) {
-		ret = JREG_RET_NOERROR;
-		_ptnlen = rm.rm_eo - rm.rm_so;
-		p += rm.rm_so;
+	       && PRIV_JREG_EXEC(_preg, (char *)_p, (*(uc **)_s + *_sz) - _p, 1, &_rm, _eflags) == JREG_RET_NOERROR) {
+		_ret = JREG_RET_NOERROR;
+		_ptnlen = _rm.rm_eo - _rm.rm_so;
+		_p += _rm.rm_so;
 		if (jstr_unlikely(_ptnlen == 0)) {
 			JREG_DEB_PRINT("jstr_unlikely(_ptnlen == 0)");
-			++p;
-			if (jstr_unlikely(*p == '\0'))
+			++_p;
+			if (jstr_unlikely(*_p == '\0'))
 				break;
 			continue;
 		}
 		if (_rplclen <= _ptnlen) {
 			JREG_DEB_PRINT("_rplclen <= _ptnlen");
-			priv_jstr_rplcall_in_place(&dst, &old, (const uc **)&p, _rplc, _rplclen, _ptnlen);
-			if (jstr_unlikely(*p == '\0'))
+			priv_jstr_rplcall_in_place(&_dst, &_old, (const uc **)&_p, _rplc, _rplclen, _ptnlen);
+			if (jstr_unlikely(*_p == '\0'))
 				break;
 			continue;
 		}
 		if (*_cap > *_sz + _rplclen - _ptnlen) {
 			JREG_DEB_PRINT("*_cap > *_sz + _rplclen - _ptnlen");
-			if (dst != old) {
+			if (_dst != _old) {
 				JREG_DEB_PRINT("dst != old");
-				memmove(dst, old, p - old);
-				dst += (p - old);
-				memmove(dst + _rplclen,
-					p + _ptnlen,
-					(*(uc **)_s + *_sz) - (p + _ptnlen) + 1);
-				memcpy(dst, _rplc, _rplclen);
-				dst += _rplclen;
-				old = dst;
+				memmove(_dst, _old, _p - _old);
+				_dst += (_p - _old);
+				memmove(_dst + _rplclen,
+					_p + _ptnlen,
+					(*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
+				memcpy(_dst, _rplc, _rplclen);
+				_dst += _rplclen;
+				_old = _dst;
 			} else {
 				JREG_DEB_PRINT("dst == old");
-				memmove(p + _rplclen,
-					p + _ptnlen,
-					(*(uc **)_s + *_sz) - (p + _ptnlen) + 1);
-				memcpy(p, _rplc, _rplclen);
+				memmove(_p + _rplclen,
+					_p + _ptnlen,
+					(*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
+				memcpy(_p, _rplc, _rplclen);
 			}
 		} else {
 			JREG_DEB_PRINT("_cap <= *_sz + _rplclen - _ptnlen");
 #if JREG_HAVE_REALLOC_MREMAP
-			if (jstr_unlikely(is_mmap)) {
-				if (dst != old)
-					memmove(dst, old, p - old);
+			if (jstr_unlikely(_is_mmap)) {
+				if (_dst != _old)
+					memmove(_dst, _old, _p - _old);
 				_tmp = *(uc **)_s;
 				PRIV_JSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _ptnlen, return JREG_RET_MALLOC_ERROR);
-				memmove(p + _rplclen,
-					p + _ptnlen,
-					(_tmp + *_sz) - (p + _ptnlen) + 1);
-				memcpy(p, _rplc, _rplclen);
-				p = *(uc **)_s + (p - _tmp);
-				dst = *(uc **)_s + (dst - _tmp) + _rplclen;
-				old = dst;
+				memmove(_p + _rplclen,
+					_p + _ptnlen,
+					(_tmp + *_sz) - (_p + _ptnlen) + 1);
+				memcpy(_p, _rplc, _rplclen);
+				_p = *(uc **)_s + (_p - _tmp);
+				_dst = *(uc **)_s + (_dst - _tmp) + _rplclen;
+				_old = _dst;
 			} else
 #endif /* JREG_HAVE_REALLOC_MREMAP */
 			{
 				PRIV_JSTR_GROW(*_cap, *_sz + _rplclen - _ptnlen);
 				_tmp = (uc *)malloc(*_cap);
 				PRIV_JSTR_MALLOC_ERR(_tmp, return JREG_RET_MALLOC_ERROR);
-				if (dst != old) {
-					memcpy(_tmp, *(uc **)_s, dst - *(uc **)_s);
-					memcpy(_tmp + (dst - *(uc **)_s),
-					       old,
-					       p - old);
-					dst = _tmp + (dst - *(uc **)_s);
-					memcpy(dst, _rplc, _rplclen);
-					dst += _rplclen;
-					memcpy(dst,
-					       p,
-					       (*(uc **)_s + *_sz) - (p + _ptnlen) + 1);
-					old = dst;
+				if (_dst != _old) {
+					memcpy(_tmp, *(uc **)_s, _dst - *(uc **)_s);
+					memcpy(_tmp + (_dst - *(uc **)_s),
+					       _old,
+					       _p - _old);
+					_dst = _tmp + (_dst - *(uc **)_s);
+					memcpy(_dst, _rplc, _rplclen);
+					_dst += _rplclen;
+					memcpy(_dst,
+					       _p,
+					       (*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
+					_old = _dst;
 				} else {
 #ifdef __clang__
 #	pragma clang diagnostic ignored "-Wunknown-warning-option"
@@ -613,32 +613,32 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 /* #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value" */
 #	pragma GCC diagnostic push
 #endif
-					memcpy(_tmp, *_s, p - *(uc **)_s);
+					memcpy(_tmp, *_s, _p - *(uc **)_s);
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #elif defined __clang__
 #	pragma clang diagnostic pop
 #endif
-					memcpy(_tmp + (p - *(uc **)_s), _rplc, _rplclen);
-					memcpy(_tmp + (p - (*(uc **)_s + _rplclen)),
-					       p + _ptnlen,
-					       (*(uc **)_s + *_sz) - (p + _ptnlen) + 1);
+					memcpy(_tmp + (_p - *(uc **)_s), _rplc, _rplclen);
+					memcpy(_tmp + (_p - (*(uc **)_s + _rplclen)),
+					       _p + _ptnlen,
+					       (*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
 				}
-				p = _tmp + (p - *(uc **)_s);
+				_p = _tmp + (_p - *(uc **)_s);
 				free(*_s);
 				*_s = (char *)_tmp;
 			}
 		}
 		*_sz += _rplclen - _ptnlen;
-		p += _rplclen;
-		if (jstr_unlikely(*p == '\0'))
+		_p += _rplclen;
+		if (jstr_unlikely(*_p == '\0'))
 			break;
 	}
-	if (dst != old) {
-		memmove(dst, old, (*(uc **)_s + *_sz) - old + 1);
-		*_sz = (dst + (*(uc **)_s + *_sz - old)) - *(uc **)_s;
+	if (_dst != _old) {
+		memmove(_dst, _old, (*(uc **)_s + *_sz) - _old + 1);
+		*_sz = (_dst + (*(uc **)_s + *_sz - _old)) - *(uc **)_s;
 	}
-	return ret;
+	return _ret;
 }
 
 JSTR_INLINE
@@ -688,9 +688,9 @@ jreg_rplcall_now_mem(char **JSTR_RST const _s,
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_rplcall_mem(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 }
 
@@ -711,9 +711,9 @@ jreg_rplcn_now_mem(char **JSTR_RST const _s,
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_rplcn_mem(_s, _sz, _cap, _rplc, _n, _rplclen, _preg, _eflags);
 }
 
@@ -729,14 +729,14 @@ jreg_rplc_mem(char **JSTR_RST const _s,
 	      const regex_t *JSTR_RST const _preg,
 	      const int _eflags) JSTR_NOEXCEPT
 {
-	regmatch_t rm;
-	const jreg_errcode_ty ret = PRIV_JREG_EXEC(_preg, *_s, *_sz, 1, &rm, _eflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
-	if (jstr_unlikely(rm.rm_eo == rm.rm_so))
-		return ret;
-	jstr_rplcat_mem(_s, _sz, _cap, rm.rm_so, _rplc, _rplclen, rm.rm_eo - rm.rm_so);
-	return ret;
+	regmatch_t _rm;
+	const jreg_errcode_ty _ret = PRIV_JREG_EXEC(_preg, *_s, *_sz, 1, &_rm, _eflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
+	if (jstr_unlikely(_rm.rm_eo == _rm.rm_so))
+		return _ret;
+	jstr_rplcat_mem(_s, _sz, _cap, _rm.rm_so, _rplc, _rplclen, _rm.rm_eo - _rm.rm_so);
+	return _ret;
 }
 
 JSTR_NONNULL_ALL
@@ -755,9 +755,9 @@ jreg_rplc_now_mem(char **JSTR_RST const _s,
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
-	const jreg_errcode_ty ret = jreg_comp(_preg, _ptn, _cflags);
-	if (jstr_unlikely(ret != JREG_RET_NOERROR))
-		return ret;
+	const jreg_errcode_ty _ret = jreg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
+		return _ret;
 	return jreg_rplc_mem(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 }
 

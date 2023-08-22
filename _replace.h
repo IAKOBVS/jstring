@@ -367,7 +367,7 @@ jstr_slipaftallc_mem(char **JSTR_RST const _s,
 }
 
 /*
-  Slip SRC after end of NE in DST.
+  Slip SRC after _end of NE in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -394,7 +394,7 @@ jstr_slipaft_mem_f(char *JSTR_RST const _s,
 }
 
 /*
-  Slip SRC after end of NE in DST.
+  Slip SRC after _end of NE in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -422,7 +422,7 @@ jstr_slipaft_mem(char **JSTR_RST const _s,
 }
 
 /*
-  Slip SRC after all end of NE in DST.
+  Slip SRC after all _end of NE in DST.
 */
 #if JSTR_CFG_HAVE_ALLOCA
 JSTR_NOINLINE
@@ -460,7 +460,7 @@ jstr_slipaftall_mem_p_f(char *JSTR_RST const _s,
 }
 
 /*
-  Slip SRC after all end of NE in DST.
+  Slip SRC after all _end of NE in DST.
 */
 #if JSTR_CFG_HAVE_ALLOCA
 JSTR_NOINLINE
@@ -573,12 +573,12 @@ priv_jstr_rmallc_mem_p(const priv_jstr_flag_use_n_ty _flag,
 	unsigned char *_dst = (unsigned char *)_s;
 	const unsigned char *_old = _dst;
 	const unsigned char *_p = _dst;
-	const unsigned char *const end = _dst + _sz;
+	const unsigned char *const _end = _dst + _sz;
 	while ((_flag & PRIV_JSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
-	       && (_p = (unsigned char *)memchr(_p, _c, end - _p)))
+	       && (_p = (unsigned char *)memchr(_p, _c, _end - _p)))
 		priv_jstr_rmall_in_place(&_dst, &_old, &_p, 1);
-	memmove(_dst, _old, end - _old + 1);
-	return (char *)_dst + (end - _old);
+	memmove(_dst, _old, _end - _old + 1);
+	return (char *)_dst + (_end - _old);
 }
 
 /*
@@ -759,8 +759,8 @@ jstr_rplcallc_mem(char *JSTR_RST _s,
 		  const int _rplc,
 		  const size_t _sz) JSTR_NOEXCEPT
 {
-	const char *JSTR_RST const end = _s + _sz;
-	while ((_s = (char *)memchr(_s, _find, end - _s)))
+	const char *JSTR_RST const _end = _s + _sz;
+	while ((_s = (char *)memchr(_s, _find, _end - _s)))
 		*_s++ = _rplc;
 }
 
@@ -790,8 +790,8 @@ jstr_rplcnc_mem(char *JSTR_RST _s,
 		size_t _n,
 		const size_t _sz) JSTR_NOEXCEPT
 {
-	const char *JSTR_RST const end = _s + _sz;
-	while (jstr_likely(--_n) && (_s = (char *)memchr(_s, _find, end - _s)))
+	const char *JSTR_RST const _end = _s + _sz;
+	while (jstr_likely(--_n) && (_s = (char *)memchr(_s, _find, _end - _s)))
 		*_s++ = _rplc;
 }
 
@@ -934,18 +934,18 @@ priv_jstr_rmall_mem_p(const priv_jstr_flag_use_n_ty _flag,
 	unsigned char *_dst = (unsigned char *)_s;
 	const unsigned char *_old = _dst;
 	const unsigned char *_p = _dst;
-	const unsigned char *const end = _dst + _sz;
+	const unsigned char *const _end = _dst + _sz;
 	jstr_memmem_table _ptable;
 	jstr_memmem_init(&_ptable);
 	jstr_memmem_comp_mem(&_ptable, _find, _findlen);
-	while ((_p = (unsigned char *)jstr_memmem_exec(&_ptable, (char *)_p, end - _p))) {
+	while ((_p = (unsigned char *)jstr_memmem_exec(&_ptable, (char *)_p, _end - _p))) {
 		priv_jstr_rmall_in_place(&_dst, &_old, &_p, _findlen);
 		if (_flag & PRIV_JSTR_FLAG_USE_N)
 			if (jstr_unlikely(!--_n))
 				break;
 	}
-	memmove(_dst, _old, end - _old + 1);
-	return (char *)_dst + (end - _old);
+	memmove(_dst, _old, _end - _old + 1);
+	return (char *)_dst + (_end - _old);
 }
 
 /*
@@ -1137,18 +1137,18 @@ jstr_rev_mem(char *JSTR_RST _s,
 {
 	if (jstr_unlikely(*_s == '\0'))
 		return;
-	unsigned char *end = (unsigned char *)_s + _sz - 1;
-	unsigned char *p = (unsigned char *)_s;
+	unsigned char *_end = (unsigned char *)_s + _sz - 1;
+	unsigned char *_p = (unsigned char *)_s;
 	unsigned char _tmp;
 	do {
-		_tmp = *p;
-		*p = *end;
-		*end = _tmp;
-	} while (jstr_likely(++p < --end));
+		_tmp = *_p;
+		*_p = *_end;
+		*_end = _tmp;
+	} while (jstr_likely(++_p < --_end));
 }
 
 /*
-  Trim spaces in [ \t] from end of S.
+  Trim spaces in [ \t] from _end of S.
   Return value:
   pointer to '\0' in S;
   S if SLEN is 0.
@@ -1163,24 +1163,24 @@ jstr_trim_mem_p(char *JSTR_RST const _s,
 {
 	if (jstr_unlikely(*_s == '\0'))
 		return _s;
-	unsigned char *end = (unsigned char *)_s + _sz - 1;
+	unsigned char *_end = (unsigned char *)_s + _sz - 1;
 	const unsigned char *const start = (unsigned char *)_s;
 	do {
-		switch (*end) {
+		switch (*_end) {
 		case '\t':
 		case ' ':
 			continue;
 		default:
-			*++end = '\0';
+			*++_end = '\0';
 			break;
 		}
 		break;
-	} while (jstr_likely(--end >= start));
-	return (char *)end;
+	} while (jstr_likely(--_end >= start));
+	return (char *)_end;
 }
 
 /*
-  Trim spaces in [ \t] from end of S.
+  Trim spaces in [ \t] from _end of S.
   Return value:
   pointer to '\0' in S;
   S if SLEN is 0.
@@ -1196,7 +1196,7 @@ jstr_trim_p(char *JSTR_RST const _s) JSTR_NOEXCEPT
 }
 
 /*
-  Trim spaces in [ \t] from end of S.
+  Trim spaces in [ \t] from _end of S.
   Return value:
   pointer to '\0' in S;
   S if SLEN is 0.
@@ -1259,9 +1259,9 @@ jstr_insertaftc_mem_f(char *JSTR_RST const _s,
 		      const size_t _sz,
 		      const size_t _srclen) JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(_s, _c, _sz);
-	if (p)
-		jstr_insert_mem_f(_s, p - _s + 1, _src, _srclen);
+	const char *const _p = (char *)memchr(_s, _c, _sz);
+	if (_p)
+		jstr_insert_mem_f(_s, _p - _s + 1, _src, _srclen);
 }
 
 /*
@@ -1277,13 +1277,13 @@ jstr_insertaftc_mem(char **JSTR_RST const _s,
 		    const char *JSTR_RST const _src,
 		    const size_t _srclen) JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(*_s, _c, *_sz);
-	if (p)
-		jstr_insert_mem(_s, _sz, _cap, p - *_s + 1, _src, _srclen);
+	const char *const _p = (char *)memchr(*_s, _c, *_sz);
+	if (_p)
+		jstr_insert_mem(_s, _sz, _cap, _p - *_s + 1, _src, _srclen);
 }
 
 /*
-  Insert SRC after end of NE in DST.
+  Insert SRC after _end of NE in DST.
   Assumes that S have enough space for SRC.
 */
 JSTR_INLINE
@@ -1302,16 +1302,16 @@ jstr_insertaft_mem_f(char *JSTR_RST const _s,
 		jstr_insertaftc_mem_f(_s, *_find, _src, _sz, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _find, _findlen);
-		if (p)
-			jstr_insert_mem_f(_s, p - _s + _findlen, _src, _srclen);
+		const char *const _p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _find, _findlen);
+		if (_p)
+			jstr_insert_mem_f(_s, _p - _s + _findlen, _src, _srclen);
 		return;
 	}
 	}
 }
 
 /*
-  Insert SRC after end of NE in DST.
+  Insert SRC after _end of NE in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -1330,9 +1330,9 @@ jstr_insertaft_mem(char **JSTR_RST const _s,
 		jstr_insertaftc_mem(_s, _sz, _cap, *_find, _src, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _find, _findlen);
-		if (p)
-			jstr_insert_mem(_s, _sz, _cap, p - *_s + _findlen, _src, _srclen);
+		const char *const _p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _find, _findlen);
+		if (_p)
+			jstr_insert_mem(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
 		return;
 	}
 	}

@@ -89,11 +89,11 @@ jstr_memrchr(const void *JSTR_RST const _s,
 	if (jstr_unlikely(*(char *)_s == '\0'))
 		return NULL;
 	const unsigned char *const start = (unsigned char *)_s;
-	const unsigned char *end = start + _n - 1;
+	const unsigned char *_end = start + _n - 1;
 	do
-		if (*end == _c)
-			return (void *)end;
-	while (jstr_likely(--end <= start));
+		if (*_end == _c)
+			return (void *)_end;
+	while (jstr_likely(--_end <= start));
 	return NULL;
 #endif /* !JSTR_HAVE_MEMRCHR */
 }
@@ -405,7 +405,7 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 	do {                                                                                       \
 		const unsigned char *h = (unsigned char *)_hs;                                     \
 		const unsigned char *const n = (unsigned char *)_ne;                               \
-		const unsigned char *const end = h + _hslen - _nelen;                              \
+		const unsigned char *const _end = h + _hslen - _nelen;                              \
 		size_t _tmp;                                                                       \
 		size_t shift1;                                                                     \
 		size_t mtc1 = _nelen - 1;                                                          \
@@ -420,7 +420,7 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 			do {                                                                       \
 				h += mtc1;                                                         \
 				_tmp = shift[JSTR_HASH2_LOWER(h)];                                 \
-			} while (!_tmp && h <= end);                                               \
+			} while (!_tmp && h <= _end);                                               \
 			h -= _tmp;                                                                 \
 			if (_tmp < mtc1)                                                           \
 				continue;                                                          \
@@ -430,7 +430,7 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 				off = (off >= 8 ? off : mtc1) - 8;                                 \
 			}                                                                          \
 			h += shift1;                                                               \
-		} while (h <= end);                                                                \
+		} while (h <= _end);                                                                \
 		return NULL;                                                                       \
 	} while (0)
 	if (jstr_unlikely(_nelen > 256))
@@ -562,7 +562,7 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 }
 
 /*
-  Checks if S2 is in end of S1.
+  Checks if S2 is in _end of S1.
   Return value:
   0 if true;
   1 if false.
@@ -583,7 +583,7 @@ jstr_endswith_mem_f(const char *JSTR_RST const _hs,
 }
 
 /*
-  Checks if S2 is in end of S1.
+  Checks if S2 is in _end of S1.
   Return value:
   0 if true;
   1 if false.
@@ -617,23 +617,23 @@ jstr_itoa(char *JSTR_RST const _dst,
 {
 #define PRIV_JSTR_NUMTOSTR(_max_digits)                                           \
 	do {                                                                      \
-		unsigned char *d = (unsigned char *)_dst;                         \
-		unsigned char sbuf[_max_digits];                                  \
-		unsigned char *JSTR_RST _s = (unsigned char *)sbuf;               \
-		unsigned int neg = (_num < 0) ? (_num = -_num, 1) : 0;            \
-		unsigned char *const end = (unsigned char *)_s + _max_digits - 1; \
-		_s = end;                                                         \
+		unsigned char *_d = (unsigned char *)_dst;                         \
+		unsigned char _sbuf[_max_digits];                                  \
+		unsigned char *JSTR_RST _s = (unsigned char *)_sbuf;               \
+		unsigned int _neg = (_num < 0) ? (_num = -_num, 1) : 0;            \
+		unsigned char *const _end = (unsigned char *)_s + _max_digits - 1; \
+		_s = _end;                                                         \
 		do                                                                \
 			*_s-- = _num % _base + '0';                               \
 		while (_num /= 10);                                               \
-		if (neg)                                                          \
+		if (_neg)                                                          \
 			*_s = '-';                                                \
 		else                                                              \
 			++_s;                                                     \
-		while (_s <= end)                                                 \
-			*d++ = *_s++;                                             \
-		*d = '\0';                                                        \
-		return (char *)d;                                                 \
+		while (_s <= _end)                                                 \
+			*_d++ = *_s++;                                             \
+		*_d = '\0';                                                        \
+		return (char *)_d;                                                 \
 	} while (0)
 	PRIV_JSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
 }
@@ -688,19 +688,19 @@ jstr_utoa(char *JSTR_RST const _dst,
 {
 #define PRIV_JSTR_UNUMTOSTR(_max_digits)                         \
 	do {                                                     \
-		unsigned char *d = (unsigned char *)_dst;        \
-		unsigned char sbuf[_max_digits];                 \
-		unsigned char *JSTR_RST _s = sbuf;               \
-		unsigned char *const end = _s + _max_digits - 1; \
-		_s = end;                                        \
+		unsigned char *_d = (unsigned char *)_dst;        \
+		unsigned char _sbuf[_max_digits];                 \
+		unsigned char *JSTR_RST _s = _sbuf;               \
+		unsigned char *const _end = _s + _max_digits - 1; \
+		_s = _end;                                        \
 		do                                               \
 			*_s-- = _num % _base + '0';              \
 		while (_num /= 10);                              \
 		++_s;                                            \
-		while (_s <= end)                                \
-			*d++ = *_s++;                            \
-		*d = '\0';                                       \
-		return (char *)d;                                \
+		while (_s <= _end)                                \
+			*_d++ = *_s++;                            \
+		*_d = '\0';                                       \
+		return (char *)_d;                                \
 	} while (0)
 	PRIV_JSTR_UNUMTOSTR(JSTR_MAX_UINT_DIGITS);
 }
