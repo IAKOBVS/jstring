@@ -54,8 +54,6 @@ JSTR_INLINE
 static void
 jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
 {
-	_ptable->ne = 0;
-	_ptable->nelen = 0;
 	_ptable->small_table = NULL;
 	_ptable->big_table = NULL;
 }
