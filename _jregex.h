@@ -610,10 +610,10 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 #	pragma clang diagnostic ignored "-Wunknown-warning-option"
 #	pragma clang diagnostic push
 #elif defined __GNUC__
-#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
+/* #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value" */
 #	pragma GCC diagnostic push
 #endif
-					memcpy(_tmp, *(uc **)_s, p - *(uc **)_s);
+					memcpy(_tmp, *_s, p - *(uc **)_s);
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
 #elif defined __clang__
