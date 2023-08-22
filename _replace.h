@@ -26,14 +26,14 @@ static void
 priv_jstr_rmall_in_place(unsigned char **const _dst,
 			 const unsigned char **const _old,
 			 const unsigned char **const _p,
-			 const size_t _searclen) JSTR_NOEXCEPT
+			 const size_t _findlen) JSTR_NOEXCEPT
 {
 	if (jstr_likely(*_dst != *_old))
 		memmove(*_dst, *_old, *_p - *_old);
 	*_dst += *_p - *_old;
 	*_old += *_p - *_old;
-	*_old += _searclen;
-	*_p += _searclen;
+	*_old += _findlen;
+	*_p += _findlen;
 }
 
 JSTR_INLINE
@@ -43,14 +43,14 @@ priv_jstr_rplcall_in_place(unsigned char **const _dst,
 			   const unsigned char **const _p,
 			   const char *JSTR_RST const _rplc,
 			   const size_t _rplclen,
-			   const size_t _searclen) JSTR_NOEXCEPT
+			   const size_t _findlen) JSTR_NOEXCEPT
 {
-	if (jstr_likely(_searclen != _rplclen && *_dst != *_old))
+	if (jstr_likely(_findlen != _rplclen && *_dst != *_old))
 		memmove(*_dst, *_old, *_p - *_old);
 	*_dst += *_p - *_old;
 	*_old += *_p - *_old;
-	*_old += _searclen;
-	*_p += _searclen;
+	*_old += _findlen;
+	*_p += _findlen;
 	memcpy(*_dst, _rplc, _rplclen);
 	*_dst += _rplclen;
 }
@@ -136,13 +136,13 @@ jstr_rplcat_mem_f(char *JSTR_RST const _s,
 		  const size_t _at,
 		  const char *JSTR_RST const _rplc,
 		  const size_t _rplclen,
-		  const size_t _searclen) JSTR_NOEXCEPT
+		  const size_t _findlen) JSTR_NOEXCEPT
 {
 	memmove(_s + _at + _rplclen,
-		_s + _at + _searclen,
-		*_sz - (_at + _searclen) + 1);
+		_s + _at + _findlen,
+		*_sz - (_at + _findlen) + 1);
 	memcpy(_s + _at, _rplc, _rplclen);
-	*_sz += _rplclen - _searclen;
+	*_sz += _rplclen - _findlen;
 	return _s + _at + _rplclen;
 }
 
@@ -156,11 +156,11 @@ priv_jstr_rplcat_mem_realloc(char **JSTR_RST const _s,
 			     const size_t _at,
 			     const char *JSTR_RST const _rplc,
 			     const size_t _rplclen,
-			     const size_t _searclen) JSTR_NOEXCEPT
+			     const size_t _findlen) JSTR_NOEXCEPT
 {
-	if (*_cap > *_sz + _rplclen - _searclen)
+	if (*_cap > *_sz + _rplclen - _findlen)
 		PRIV_JSTR_REALLOC(*_s, *_cap, *_sz + _rplclen, return NULL);
-	return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _searclen);
+	return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
 }
 
 JSTR_WARN_UNUSED
@@ -173,20 +173,20 @@ priv_jstr_rplcat_mem_malloc(char **JSTR_RST const _s,
 			    const size_t _at,
 			    const char *JSTR_RST const _rplc,
 			    const size_t _rplclen,
-			    const size_t _searclen) JSTR_NOEXCEPT
+			    const size_t _findlen) JSTR_NOEXCEPT
 {
-	if (*_cap > *_sz + _rplclen - _searclen)
-		return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _searclen);
-	PRIV_JSTR_GROW(*_cap, *_sz + _rplclen - _searclen);
+	if (*_cap > *_sz + _rplclen - _findlen)
+		return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
+	PRIV_JSTR_GROW(*_cap, *_sz + _rplclen - _findlen);
 	char *const _tmp = (char *)malloc(*_cap);
 	PRIV_JSTR_MALLOC_ERR(_tmp, return NULL);
 	memcpy(_tmp, *_s, _at);
 	memcpy(_tmp + _at, _rplc, _rplclen);
 	memcpy(_tmp + _at + _rplclen,
-	       *_s + _at + _searclen,
-	       *_sz - (_at + _searclen) + 1);
+	       *_s + _at + _findlen,
+	       *_sz - (_at + _findlen) + 1);
 	free(*_s);
-	*_sz += _rplclen - _searclen;
+	*_sz += _rplclen - _findlen;
 	*_s = _tmp;
 	return _tmp + _at + _rplclen;
 }
@@ -222,34 +222,34 @@ priv_jstr_rplcat_mem_may_lower(char **JSTR_RST const _s,
 			       const size_t _at,
 			       const char *JSTR_RST const _rplc,
 			       const size_t _rplclen,
-			       const size_t _searclen) JSTR_NOEXCEPT
+			       const size_t _findlen) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(_rplclen == _searclen)) {
+	if (jstr_unlikely(_rplclen == _findlen)) {
 		memcpy(*_s + _at, _rplc, _rplclen);
 		goto RET;
-	} else if (*_cap > *_sz + _rplclen - _searclen) {
-		return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _searclen);
+	} else if (*_cap > *_sz + _rplclen - _findlen) {
+		return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
 
 	} else {
 #if JSTR_HAVE_REALLOC_MREMAP
 		if (JSTR_IS_MMAP(*_cap)) {
-			PRIV_JSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _searclen, return NULL);
-			return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _searclen);
+			PRIV_JSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _findlen, return NULL);
+			return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
 		}
 #else
-		PRIV_JSTR_GROW(*_cap, *_sz + _rplclen - _searclen);
+		PRIV_JSTR_GROW(*_cap, *_sz + _rplclen - _findlen);
 		char *const _tmp = (char *)malloc(*_cap);
 		PRIV_JSTR_MALLOC_ERR(_tmp, return NULL);
 		memcpy(_tmp, *_s, _at);
 		memcpy(_tmp + _at, _rplc, _rplclen);
 		memcpy(_tmp + _at + _rplclen,
-		       *_s + _at + _searclen,
-		       *_sz - _at + _searclen + 1);
+		       *_s + _at + _findlen,
+		       *_sz - _at + _findlen + 1);
 		free(*_s);
 		*_s = _tmp;
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	}
-	*_sz += _rplclen - _searclen;
+	*_sz += _rplclen - _findlen;
 RET:
 	return *_s + _at + _rplclen;
 }
@@ -263,13 +263,13 @@ jstr_rplcat_mem(char **JSTR_RST const _s,
 		const size_t _at,
 		const char *JSTR_RST const _rplc,
 		const size_t _rplclen,
-		const size_t _searclen) JSTR_NOEXCEPT
+		const size_t _findlen) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_REALLOC_MREMAP
 	if (JSTR_IS_MMAP(*_cap))
-		return priv_jstr_rplcat_mem_realloc(_s, _sz, _cap, _at, _rplc, _rplclen, _searclen);
+		return priv_jstr_rplcat_mem_realloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
-	return priv_jstr_rplcat_mem_malloc(_s, _sz, _cap, _at, _rplc, _rplclen, _searclen);
+	return priv_jstr_rplcat_mem_malloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
 }
 
 /*
@@ -375,17 +375,17 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 static char *
 jstr_slipaft_mem_f(char *JSTR_RST const _s,
-		   const char *JSTR_RST const _searc,
+		   const char *JSTR_RST const _find,
 		   const char *JSTR_RST const _src,
 		   const size_t _sz,
-		   const size_t _searclen,
+		   const size_t _findlen,
 		   const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_searclen) {
+	switch (_findlen) {
 	case 0: return _s + _sz;
-	case 1: return jstr_slipaftc_mem_p_f(_s, *_searc, _src, _sz, _srclen);
+	case 1: return jstr_slipaftc_mem_p_f(_s, *_find, _src, _sz, _srclen);
 	default: {
-		const char *const _p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _searc, _searclen);
+		const char *const _p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _find, _findlen);
 		if (_p)
 			return jstr_slip_mem_p_f(_s, _p - _s, _src, _sz, _srclen);
 		return _s + _sz;
@@ -402,20 +402,20 @@ static void
 jstr_slipaft_mem(char **JSTR_RST const _s,
 		 size_t *JSTR_RST const _sz,
 		 size_t *JSTR_RST const _cap,
-		 const char *JSTR_RST const _searc,
+		 const char *JSTR_RST const _find,
 		 const char *JSTR_RST const _src,
-		 const size_t _searclen,
+		 const size_t _findlen,
 		 const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_searclen) {
+	switch (_findlen) {
 	case 0: return;
 	case 1:
-		jstr_slipaftc_mem(_s, _sz, _cap, *_searc, _src, _srclen);
+		jstr_slipaftc_mem(_s, _sz, _cap, *_find, _src, _srclen);
 		return;
 	default: {
-		const char *const _p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _searc, _searclen);
+		const char *const _p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _find, _findlen);
 		if (_p)
-			jstr_slip_mem(_s, _sz, _cap, _p - *_s + _searclen, _src, _srclen);
+			jstr_slip_mem(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
 		return;
 	}
 	}
@@ -434,25 +434,25 @@ JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 static char *
 jstr_slipaftall_mem_p_f(char *JSTR_RST const _s,
-			const char *JSTR_RST const _searc,
+			const char *JSTR_RST const _find,
 			const char *JSTR_RST const _src,
 			size_t _sz,
-			const size_t _searclen,
+			const size_t _findlen,
 			const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_searclen) {
+	switch (_findlen) {
 	case 0: return _s + _sz;
-	case 1: return jstr_slipaftallc_mem_p_f(_s, *_searc, _src, _sz, _srclen);
+	case 1: return jstr_slipaftallc_mem_p_f(_s, *_find, _src, _sz, _srclen);
 	default: {
 		size_t off = 0;
 		const char *_p;
 		jstr_memmem_table _ptable;
 		jstr_memmem_init(&_ptable);
-		jstr_memmem_comp_mem(&_ptable, _searc, _searclen);
+		jstr_memmem_comp_mem(&_ptable, _find, _findlen);
 		while ((_p = (char *)jstr_memmem_exec(&_ptable, _s + off, _sz - off))) {
 			off = _p - _s;
 			_sz = jstr_slip_mem_p_f(_s, off, _src, _sz, _srclen) - _s;
-			off += _searclen + _srclen;
+			off += _findlen + _srclen;
 		}
 		return _s + _sz;
 	}
@@ -473,16 +473,16 @@ static void
 jstr_slipaftall_mem(char **JSTR_RST const _s,
 		    size_t *JSTR_RST const _sz,
 		    size_t *JSTR_RST const _cap,
-		    const char *JSTR_RST const _searc,
+		    const char *JSTR_RST const _find,
 		    const char *JSTR_RST const _src,
-		    const size_t _searclen,
+		    const size_t _findlen,
 		    const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_searclen) {
+	switch (_findlen) {
 	case 0:
 		return;
 	case 1:
-		jstr_slipaftallc_mem(_s, _sz, _cap, *_searc, _src, _srclen);
+		jstr_slipaftallc_mem(_s, _sz, _cap, *_find, _src, _srclen);
 		return;
 	default: {
 		size_t off = 0;
@@ -492,16 +492,16 @@ jstr_slipaftall_mem(char **JSTR_RST const _s,
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 		jstr_memmem_table _ptable;
 		jstr_memmem_init(&_ptable);
-		jstr_memmem_comp_mem(&_ptable, _searc, _searclen);
+		jstr_memmem_comp_mem(&_ptable, _find, _findlen);
 		while ((_p = (char *)jstr_memmem_exec(&_ptable, *_s + off, *_sz - off))) {
 			off = _p - *_s;
 #if JSTR_HAVE_REALLOC_MREMAP
 			if (jstr_unlikely(is_mmap))
-				priv_jstr_slip_mem_realloc(_s, _sz, _cap, _p - *_s + _searclen, _src, _srclen);
+				priv_jstr_slip_mem_realloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
 			else
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
-				priv_jstr_slip_mem_malloc(_s, _sz, _cap, _p - *_s + _searclen, _src, _srclen);
-			off += _searclen + _srclen;
+				priv_jstr_slip_mem_malloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
+			off += _findlen + _srclen;
 		}
 	}
 	}
@@ -702,17 +702,17 @@ JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
 static char *
 jstr_rm_mem_p(char *JSTR_RST const _s,
-	      const char *JSTR_RST const _searc,
+	      const char *JSTR_RST const _find,
 	      const size_t _sz,
-	      const size_t _searclen) JSTR_NOEXCEPT
+	      const size_t _findlen) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(_searclen == 0))
+	if (jstr_unlikely(_findlen == 0))
 		return _s + _sz;
-	char *const _p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _searc, _searclen);
+	char *const _p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _find, _findlen);
 	if (jstr_unlikely(_p == NULL))
 		return _s + _sz;
-	memmove(_p, _p + _searclen, (_s + _sz) - _p);
-	return _s + _sz - _searclen;
+	memmove(_p, _p + _findlen, (_s + _sz) - _p);
+	return _s + _sz - _findlen;
 }
 
 /*
@@ -722,11 +722,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_rplcc_mem(char *JSTR_RST _s,
-	       const int _searc,
+	       const int _find,
 	       const int _rplc,
 	       const size_t _sz) JSTR_NOEXCEPT
 {
-	_s = (char *)memchr(_s, _searc, _sz);
+	_s = (char *)memchr(_s, _find, _sz);
 	if (jstr_unlikely(_s == NULL))
 		return;
 	*_s = _rplc;
@@ -739,10 +739,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_rplcc(char *JSTR_RST _s,
-	   const int _searc,
+	   const int _find,
 	   const int _rplc) JSTR_NOEXCEPT
 {
-	_s = strchr(_s, _searc);
+	_s = strchr(_s, _find);
 	if (jstr_unlikely(_s == NULL))
 		return;
 	*_s = _rplc;
@@ -755,12 +755,12 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_rplcallc_mem(char *JSTR_RST _s,
-		  const int _searc,
+		  const int _find,
 		  const int _rplc,
 		  const size_t _sz) JSTR_NOEXCEPT
 {
 	const char *JSTR_RST const end = _s + _sz;
-	while ((_s = (char *)memchr(_s, _searc, end - _s)))
+	while ((_s = (char *)memchr(_s, _find, end - _s)))
 		*_s++ = _rplc;
 }
 
@@ -771,10 +771,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_rplcallc(char *JSTR_RST _s,
-	      const int _searc,
+	      const int _find,
 	      const int _rplc) JSTR_NOEXCEPT
 {
-	while ((_s = (strchr(_s, _searc))))
+	while ((_s = (strchr(_s, _find))))
 		*_s++ = _rplc;
 }
 
@@ -785,13 +785,13 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_rplcnc_mem(char *JSTR_RST _s,
-		const int _searc,
+		const int _find,
 		const int _rplc,
 		size_t _n,
 		const size_t _sz) JSTR_NOEXCEPT
 {
 	const char *JSTR_RST const end = _s + _sz;
-	while (jstr_likely(--_n) && (_s = (char *)memchr(_s, _searc, end - _s)))
+	while (jstr_likely(--_n) && (_s = (char *)memchr(_s, _find, end - _s)))
 		*_s++ = _rplc;
 }
 
@@ -802,11 +802,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_rplcnc(char *JSTR_RST _s,
-	    const int _searc,
+	    const int _find,
 	    const int _rplc,
 	    size_t _n) JSTR_NOEXCEPT
 {
-	while ((_s = strchr(_s, _searc)))
+	while ((_s = strchr(_s, _find)))
 		*_s++ = _rplc;
 }
 
@@ -820,32 +820,32 @@ JSTR_MAYBE_UNUSED
 JSTR_RETURNS_NONNULL
 static char *
 jstr_rplc_mem_p_f(char *JSTR_RST const _s,
-		  const char *JSTR_RST const _searc,
+		  const char *JSTR_RST const _find,
 		  const char *JSTR_RST const _rplc,
 		  const size_t _sz,
-		  const size_t _searclen,
+		  const size_t _findlen,
 		  const size_t _rplclen) JSTR_NOEXCEPT
 {
 	switch (_rplclen) {
 	case 0:
-		return jstr_rm_mem_p(_s, _searc, _sz, _searclen);
+		return jstr_rm_mem_p(_s, _find, _sz, _findlen);
 	case 1:
-		if (jstr_unlikely(_searclen == 1)) {
-			jstr_rplcc_mem(_s, *_searc, *_rplc, _sz);
+		if (jstr_unlikely(_findlen == 1)) {
+			jstr_rplcc_mem(_s, *_find, *_rplc, _sz);
 			return _s + _sz;
 		}
 		/* FALLTHROUGH */
 	default: {
-		if (jstr_unlikely(_searclen == 0))
+		if (jstr_unlikely(_findlen == 0))
 			return _s + _sz;
-		char *_p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _searc, _searclen);
+		char *_p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _find, _findlen);
 		if (jstr_unlikely(_p == NULL))
 			return _s + _sz;
 		memmove(_p + _rplclen,
-			_p + _searclen,
-			(_s + _sz + 1) - _p + _searclen);
+			_p + _findlen,
+			(_s + _sz + 1) - _p + _findlen);
 		memcpy(_p, _rplc, _rplclen);
-		return _s + _sz - _rplclen - _searclen;
+		return _s + _sz - _rplclen - _findlen;
 	}
 	}
 }
@@ -859,25 +859,25 @@ static void
 jstr_rplc_mem(char **JSTR_RST const _s,
 	      size_t *JSTR_RST const _sz,
 	      size_t *JSTR_RST const _cap,
-	      const char *JSTR_RST const _searc,
+	      const char *JSTR_RST const _find,
 	      const char *JSTR_RST const _rplc,
-	      const size_t _searclen,
+	      const size_t _findlen,
 	      const size_t _rplclen) JSTR_NOEXCEPT
 {
 	switch (_rplclen) {
 	case 0:
-		*_sz = jstr_rm_mem_p(*_s, _searc, *_sz, _searclen) - *_s;
+		*_sz = jstr_rm_mem_p(*_s, _find, *_sz, _findlen) - *_s;
 		return;
 	case 1:
-		if (jstr_unlikely(_searclen == 1)) {
-			jstr_rplcc_mem(*_s, *_searc, *_rplc, *_sz);
+		if (jstr_unlikely(_findlen == 1)) {
+			jstr_rplcc_mem(*_s, *_find, *_rplc, *_sz);
 			return;
 		}
 		/* FALLTHROUGH */
 	default: {
-		if (jstr_unlikely(_searclen == 0))
+		if (jstr_unlikely(_findlen == 0))
 			return;
-		char *_p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _searc, _searclen);
+		char *_p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _find, _findlen);
 		if (jstr_unlikely(_p == NULL))
 			return;
 		jstr_slip_mem(_s, _sz, _cap, _p - *_s, _rplc, _rplclen);
@@ -894,17 +894,17 @@ static void
 jstr_rplclast_mem(char **JSTR_RST const _s,
 		  size_t *JSTR_RST const _sz,
 		  size_t *JSTR_RST const _cap,
-		  const char *JSTR_RST const _searc,
+		  const char *JSTR_RST const _find,
 		  const char *JSTR_RST const _rplc,
-		  const size_t _searclen,
+		  const size_t _findlen,
 		  const size_t _rplclen) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(_searclen == 0))
+	if (jstr_unlikely(_findlen == 0))
 		return;
-	char *_p = (char *)jstr_memrmem(*_s, *_sz, _searc, _searclen);
+	char *_p = (char *)jstr_memrmem(*_s, *_sz, _find, _findlen);
 	if (jstr_unlikely(_p == NULL))
 		return;
-	priv_jstr_rplcat_mem_may_lower(_s, _sz, _cap, _p - *_s, _rplc, _rplclen, _searclen);
+	priv_jstr_rplcat_mem_may_lower(_s, _sz, _cap, _p - *_s, _rplc, _rplclen, _findlen);
 }
 
 #if JSTR_CFG_HAVE_ALLOCA
@@ -919,14 +919,14 @@ JSTR_MAYBE_UNUSED
 static char *
 priv_jstr_rmall_mem_p(const priv_jstr_flag_use_n_ty _flag,
 		      char *JSTR_RST const _s,
-		      const char *JSTR_RST const _searc,
+		      const char *JSTR_RST const _find,
 		      size_t _n,
 		      size_t _sz,
-		      const size_t _searclen) JSTR_NOEXCEPT
+		      const size_t _findlen) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(_searclen == 1))
-		return priv_jstr_rmallc_mem_p(_flag, _s, *_searc, _n, _sz);
-	if (jstr_unlikely(_searclen == 0))
+	if (jstr_unlikely(_findlen == 1))
+		return priv_jstr_rmallc_mem_p(_flag, _s, *_find, _n, _sz);
+	if (jstr_unlikely(_findlen == 0))
 		return _s + _sz;
 	if (_flag & PRIV_JSTR_FLAG_USE_N)
 		if (jstr_unlikely(_n == 0))
@@ -937,9 +937,9 @@ priv_jstr_rmall_mem_p(const priv_jstr_flag_use_n_ty _flag,
 	const unsigned char *const end = _dst + _sz;
 	jstr_memmem_table _ptable;
 	jstr_memmem_init(&_ptable);
-	jstr_memmem_comp_mem(&_ptable, _searc, _searclen);
+	jstr_memmem_comp_mem(&_ptable, _find, _findlen);
 	while ((_p = (unsigned char *)jstr_memmem_exec(&_ptable, (char *)_p, end - _p))) {
-		priv_jstr_rmall_in_place(&_dst, &_old, &_p, _searclen);
+		priv_jstr_rmall_in_place(&_dst, &_old, &_p, _findlen);
 		if (_flag & PRIV_JSTR_FLAG_USE_N)
 			if (jstr_unlikely(!--_n))
 				break;
@@ -959,12 +959,12 @@ JSTR_RETURNS_NONNULL
 JSTR_MAYBE_UNUSED
 static char *
 jstr_rmn_mem_p(char *JSTR_RST const _s,
-	       const char *JSTR_RST const _searc,
+	       const char *JSTR_RST const _find,
 	       size_t _n,
 	       size_t _sz,
-	       const size_t _searclen) JSTR_NOEXCEPT
+	       const size_t _findlen) JSTR_NOEXCEPT
 {
-	return priv_jstr_rmall_mem_p(PRIV_JSTR_FLAG_USE_N, _s, _searc, _n, _sz, _searclen);
+	return priv_jstr_rmall_mem_p(PRIV_JSTR_FLAG_USE_N, _s, _find, _n, _sz, _findlen);
 }
 
 /*
@@ -978,11 +978,11 @@ JSTR_RETURNS_NONNULL
 JSTR_MAYBE_UNUSED
 static char *
 jstr_rmall_mem_p(char *JSTR_RST const _s,
-		 const char *JSTR_RST const _searc,
+		 const char *JSTR_RST const _find,
 		 size_t _sz,
-		 const size_t _searclen) JSTR_NOEXCEPT
+		 const size_t _findlen) JSTR_NOEXCEPT
 {
-	return priv_jstr_rmall_mem_p(PRIV_JSTR_FLAG_USE_NOT_N, _s, _searc, 0, _sz, _searclen);
+	return priv_jstr_rmall_mem_p(PRIV_JSTR_FLAG_USE_NOT_N, _s, _find, 0, _sz, _findlen);
 }
 
 /*
@@ -996,10 +996,10 @@ JSTR_RETURNS_NONNULL
 JSTR_INLINE
 static char *
 jstr_rmall_p(char *JSTR_RST const _s,
-	     const char *JSTR_RST const _searc,
-	     const size_t _searclen) JSTR_NOEXCEPT
+	     const char *JSTR_RST const _find,
+	     const size_t _findlen) JSTR_NOEXCEPT
 {
-	return jstr_rmall_mem_p(_s, _searc, strlen(_s), _searclen);
+	return jstr_rmall_mem_p(_s, _find, strlen(_s), _findlen);
 }
 
 /*
@@ -1011,10 +1011,10 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
 jstr_rmall_mem_j(jstr_ty *JSTR_RST const _j,
-		 const char *JSTR_RST const _searc,
-		 const size_t _searclen) JSTR_NOEXCEPT
+		 const char *JSTR_RST const _find,
+		 const size_t _findlen) JSTR_NOEXCEPT
 {
-	_j->size = jstr_rmall_mem_p(_j->data, _searc, _j->size, _searclen) - _j->data;
+	_j->size = jstr_rmall_mem_p(_j->data, _find, _j->size, _findlen) - _j->data;
 }
 
 /*
@@ -1026,9 +1026,9 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
 jstr_rmall_j(jstr_ty *JSTR_RST const _j,
-	     const char *JSTR_RST const _searc) JSTR_NOEXCEPT
+	     const char *JSTR_RST const _find) JSTR_NOEXCEPT
 {
-	return jstr_rmall_mem_j(_j, _searc, strlen(_searc));
+	return jstr_rmall_mem_j(_j, _find, strlen(_find));
 }
 
 #if JSTR_CFG_HAVE_ALLOCA
@@ -1043,28 +1043,28 @@ priv_jstr_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 		      char **JSTR_RST const _s,
 		      size_t *JSTR_RST const _sz,
 		      size_t *JSTR_RST const _cap,
-		      const char *JSTR_RST const _searc,
+		      const char *JSTR_RST const _find,
 		      const char *JSTR_RST const _rplc,
 		      size_t _n,
-		      const size_t _searclen,
+		      const size_t _findlen,
 		      const size_t _rplclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_rplclen == 0)) {
-		*_sz = priv_jstr_rmall_mem_p(_flag, *_s, _searc, _n, *_sz, _searclen) - *_s;
+		*_sz = priv_jstr_rmall_mem_p(_flag, *_s, _find, _n, *_sz, _findlen) - *_s;
 		return;
 	}
-	if (jstr_unlikely(_searclen == 1 && _rplclen == 1)) {
-		jstr_rplcc_mem(*_s, *_searc, *_rplc, *_sz);
+	if (jstr_unlikely(_findlen == 1 && _rplclen == 1)) {
+		jstr_rplcc_mem(*_s, *_find, *_rplc, *_sz);
 		return;
 	}
-	if (jstr_unlikely(_searclen == 0))
+	if (jstr_unlikely(_findlen == 0))
 		return;
 	if (_flag & PRIV_JSTR_FLAG_USE_N)
 		if (jstr_unlikely(_n == 0))
 			return;
 	jstr_memmem_table _ptable;
 	jstr_memmem_init(&_ptable);
-	jstr_memmem_comp_mem(&_ptable, _searc, _searclen);
+	jstr_memmem_comp_mem(&_ptable, _find, _findlen);
 	typedef unsigned char uc;
 	const unsigned char *_p = *(uc **)_s;
 	const unsigned char *_old = _p;
@@ -1073,19 +1073,19 @@ priv_jstr_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 	const int is_mmap = JSTR_IS_MMAP(*_cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((_p = (uc *)jstr_memmem_exec(&_ptable, (char *)_p, (*(uc **)_s + *_sz) - _p))) {
-		if (_rplclen <= _searclen)
-			priv_jstr_rplcall_in_place(&_dst, &_old, &_p, _rplc, _rplclen, _searclen);
+		if (_rplclen <= _findlen)
+			priv_jstr_rplcall_in_place(&_dst, &_old, &_p, _rplc, _rplclen, _findlen);
 #if JSTR_HAVE_REALLOC_MREMAP
 		else if (jstr_unlikely(is_mmap))
-			_p = (uc *)priv_jstr_rplcat_mem_realloc(_s, _sz, _cap, _p - *(uc **)_s, _rplc, _rplclen, _searclen);
+			_p = (uc *)priv_jstr_rplcat_mem_realloc(_s, _sz, _cap, _p - *(uc **)_s, _rplc, _rplclen, _findlen);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 		else
-			_p = (uc *)priv_jstr_rplcat_mem_malloc(_s, _sz, _cap, _p - *(uc **)_s, _rplc, _rplclen, _searclen);
+			_p = (uc *)priv_jstr_rplcat_mem_malloc(_s, _sz, _cap, _p - *(uc **)_s, _rplc, _rplclen, _findlen);
 		if (_flag & PRIV_JSTR_FLAG_USE_N)
 			if (jstr_unlikely(!--_n))
 				break;
 	}
-	if (_rplclen < _searclen) {
+	if (_rplclen < _findlen) {
 		memmove(_dst, _old, *(uc **)_s + *_sz - _old + 1);
 		*_sz = (char *)_dst + (*(uc **)_s + *_sz - _old) - *_s;
 	}
@@ -1100,13 +1100,13 @@ static void
 jstr_rplcn_mem(char **JSTR_RST const _s,
 	       size_t *JSTR_RST const _sz,
 	       size_t *JSTR_RST const _cap,
-	       const char *JSTR_RST const _searc,
+	       const char *JSTR_RST const _find,
 	       const char *JSTR_RST const _rplc,
 	       size_t _n,
-	       const size_t _searclen,
+	       const size_t _findlen,
 	       const size_t _rplclen) JSTR_NOEXCEPT
 {
-	priv_jstr_rplcall_mem(PRIV_JSTR_FLAG_USE_N, _s, _sz, _cap, _searc, _rplc, _n, _searclen, _rplclen);
+	priv_jstr_rplcall_mem(PRIV_JSTR_FLAG_USE_N, _s, _sz, _cap, _find, _rplc, _n, _findlen, _rplclen);
 }
 
 /*
@@ -1118,12 +1118,12 @@ static void
 jstr_rplcall_mem(char **JSTR_RST const _s,
 		 size_t *JSTR_RST const _sz,
 		 size_t *JSTR_RST const _cap,
-		 const char *JSTR_RST const _searc,
+		 const char *JSTR_RST const _find,
 		 const char *JSTR_RST const _rplc,
-		 const size_t _searclen,
+		 const size_t _findlen,
 		 const size_t _rplclen) JSTR_NOEXCEPT
 {
-	priv_jstr_rplcall_mem(PRIV_JSTR_FLAG_USE_NOT_N, _s, _sz, _cap, _searc, _rplc, 0, _searclen, _rplclen);
+	priv_jstr_rplcall_mem(PRIV_JSTR_FLAG_USE_NOT_N, _s, _sz, _cap, _find, _rplc, 0, _findlen, _rplclen);
 }
 
 /*
@@ -1290,21 +1290,21 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
 jstr_insertaft_mem_f(char *JSTR_RST const _s,
-		     const char *JSTR_RST const _searc,
+		     const char *JSTR_RST const _find,
 		     const char *JSTR_RST const _src,
 		     const size_t _sz,
-		     const size_t _searclen,
+		     const size_t _findlen,
 		     const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_searclen) {
+	switch (_findlen) {
 	case 0: return;
 	case 1:
-		jstr_insertaftc_mem_f(_s, *_searc, _src, _sz, _srclen);
+		jstr_insertaftc_mem_f(_s, *_find, _src, _sz, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _searc, _searclen);
+		const char *const p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _find, _findlen);
 		if (p)
-			jstr_insert_mem_f(_s, p - _s + _searclen, _src, _srclen);
+			jstr_insert_mem_f(_s, p - _s + _findlen, _src, _srclen);
 		return;
 	}
 	}
@@ -1319,20 +1319,20 @@ static void
 jstr_insertaft_mem(char **JSTR_RST const _s,
 		   size_t *JSTR_RST const _sz,
 		   size_t *JSTR_RST const _cap,
-		   const char *JSTR_RST const _searc,
+		   const char *JSTR_RST const _find,
 		   const char *JSTR_RST const _src,
-		   const size_t _searclen,
+		   const size_t _findlen,
 		   const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_searclen) {
+	switch (_findlen) {
 	case 0: return;
 	case 1:
-		jstr_insertaftc_mem(_s, _sz, _cap, *_searc, _src, _srclen);
+		jstr_insertaftc_mem(_s, _sz, _cap, *_find, _src, _srclen);
 		return;
 	default: {
-		const char *const p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _searc, _searclen);
+		const char *const p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _find, _findlen);
 		if (p)
-			jstr_insert_mem(_s, _sz, _cap, p - *_s + _searclen, _src, _srclen);
+			jstr_insert_mem(_s, _sz, _cap, p - *_s + _findlen, _src, _srclen);
 		return;
 	}
 	}

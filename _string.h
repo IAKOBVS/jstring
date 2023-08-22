@@ -791,15 +791,15 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
 jstr_count_mem(const char *JSTR_RST _s,
-	       const char *JSTR_RST const _searc,
+	       const char *JSTR_RST const _find,
 	       size_t _sz,
-	       const size_t _searclen) JSTR_NOEXCEPT
+	       const size_t _findlen) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((_s = (char *)memmem(_s, _sz, _searc, _searclen))) {
+	while ((_s = (char *)memmem(_s, _sz, _find, _findlen))) {
 		++cnt;
-		_s += _searclen;
-		_sz -= _searclen;
+		_s += _findlen;
+		_sz -= _findlen;
 	}
 	return cnt;
 }
@@ -817,10 +817,10 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 static int
 jstr_count(const char *JSTR_RST _s,
-	   const char *JSTR_RST const _searc) JSTR_NOEXCEPT
+	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((_s = strstr(_s, _searc)))
+	while ((_s = strstr(_s, _find)))
 		++cnt;
 	return cnt;
 }
