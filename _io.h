@@ -37,9 +37,9 @@ priv_jstr_alloc_file(const int alloc_exact,
 	*_s = (char *)malloc(*_cap);
 	PRIV_JSTR_MALLOC_ERR(*_s, goto _ERR_CLOSE);
 	fread(*_s, 1, _st->st_size, _fp);
+	fclose(_fp);
 	*(*_s + _st->st_size) = '\0';
 	*_sz = _st->st_size;
-	fclose(_fp);
 	return 0;
 _ERR_CLOSE:
 	fclose(_fp);
@@ -52,7 +52,8 @@ _ERR:
    Return value:
    0 if no errors.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
+JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static int
 jstr_alloc_file(char **JSTR_RST const _s,
@@ -68,7 +69,8 @@ jstr_alloc_file(char **JSTR_RST const _s,
    Return value:
    0 if no errors.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
+JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static int
 jstr_allocexact_file(char **JSTR_RST const _s,
@@ -84,7 +86,8 @@ jstr_allocexact_file(char **JSTR_RST const _s,
    Return value:
    0 if no errors.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
+JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static int
 jstr_alloc_file_j(jstr_ty *JSTR_RST const _j,
@@ -98,7 +101,8 @@ jstr_alloc_file_j(jstr_ty *JSTR_RST const _j,
    Return value:
    0 if no errors.
 */
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
+JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static int
 jstr_allocexact_file_j(jstr_ty *JSTR_RST const _j,
