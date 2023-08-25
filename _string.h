@@ -433,21 +433,21 @@ priv_strcasechr(const char *JSTR_RST _s,
 	enum { l = 0,
 	       u,
 	};
-	char _cc[3];
-	_cc[2] = '\0';
+	char _acc[3];
+	_acc[2] = '\0';
 	switch (_c) {
 		JSTR_CASE_UPPER
-		_cc[0] = _c;
-		_cc[1] = _c - 'A' + 'a';
+		_acc[0] = _c;
+		_acc[1] = _c - 'A' + 'a';
 		break;
 		JSTR_CASE_LOWER
-		_cc[0] = _c;
-		_cc[1] = _c - 'a' + 'A';
+		_acc[0] = _c;
+		_acc[1] = _c - 'a' + 'A';
 		break;
 	default:
 		return (char *)memchr(_s, _c, _n);
 	}
-	return *(_s += strcspn(_s, _cc)) ? (char *)_s : NULL;
+	return (char *)strpbrk(_s, _acc);
 }
 
 #if defined(__GNUC__) || defined(__clang__)
