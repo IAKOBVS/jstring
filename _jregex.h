@@ -20,10 +20,10 @@ extern "C" {
 #include "_string.h"
 
 #if JREG_DEBUG
-#	define JREG_DEB_PRINT(x) jstr_pp_cout(x)
+#	define PRIV_JREG_DEB(x) jstr_pp_cout(x)
 #else
-#	define JREG_DEB_PRINT(x)
-#endif /* JREG_DEB_PRINT */
+#	define PRIV_JREG_DEB(x)
+#endif /* PRIV_JREG_DEB */
 
 #define JSTR_RST JSTR_RESTRICT
 
@@ -538,23 +538,23 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 		_ptnlen = _rm.rm_eo - _rm.rm_so;
 		_p += _rm.rm_so;
 		if (jstr_unlikely(_ptnlen == 0)) {
-			JREG_DEB_PRINT("jstr_unlikely(_ptnlen == 0)");
+			PRIV_JREG_DEB("jstr_unlikely(_ptnlen == 0)");
 			++_p;
 			if (jstr_unlikely(*_p == '\0'))
 				break;
 			continue;
 		}
 		if (_rplclen <= _ptnlen) {
-			JREG_DEB_PRINT("_rplclen <= _ptnlen");
+			PRIV_JREG_DEB("_rplclen <= _ptnlen");
 			priv_jstr_rplcall_in_place(&_dst, &_old, (const uc **)&_p, _rplc, _rplclen, _ptnlen);
 			if (jstr_unlikely(*_p == '\0'))
 				break;
 			continue;
 		}
 		if (*_cap > *_sz + _rplclen - _ptnlen) {
-			JREG_DEB_PRINT("*_cap > *_sz + _rplclen - _ptnlen");
+			PRIV_JREG_DEB("*_cap > *_sz + _rplclen - _ptnlen");
 			if (_dst != _old) {
-				JREG_DEB_PRINT("dst != old");
+				PRIV_JREG_DEB("dst != old");
 				memmove(_dst, _old, _p - _old);
 				_dst += (_p - _old);
 				memmove(_dst + _rplclen,
@@ -564,14 +564,14 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 				_dst += _rplclen;
 				_old = _dst;
 			} else {
-				JREG_DEB_PRINT("dst == old");
+				PRIV_JREG_DEB("dst == old");
 				memmove(_p + _rplclen,
 					_p + _ptnlen,
 					(*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
 				memcpy(_p, _rplc, _rplclen);
 			}
 		} else {
-			JREG_DEB_PRINT("_cap <= *_sz + _rplclen - _ptnlen");
+			PRIV_JREG_DEB("_cap <= *_sz + _rplclen - _ptnlen");
 #if JREG_HAVE_REALLOC_MREMAP
 			if (jstr_unlikely(_is_mmap)) {
 				if (_dst != _old)
@@ -767,6 +767,6 @@ jreg_rplc_now_mem(char **JSTR_RST const _s,
 #endif /* __cpluslus */
 
 #undef PRIV_JREG_EXEC
-#undef JREG_DEB_PRINT
+#undef PRIV_JREG_DEB
 
 #endif /* JREGEX_H_DEF */
