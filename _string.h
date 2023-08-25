@@ -426,40 +426,28 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
-priv_strcasechr(const char *JSTR_RST const _s,
+priv_strcasechr(const char *JSTR_RST _s,
 		const int _c,
 		const size_t _n) JSTR_NOEXCEPT
 {
 	enum { l = 0,
 	       u,
 	};
-	unsigned char _cc[2];
+	char _cc[3];
+	_cc[2] = '\0';
 	switch (_c) {
 		JSTR_CASE_UPPER
-		_cc[u] = _c;
-		_cc[l] = _c - 'A' + 'a';
+		_cc[0] = _c;
+		_cc[1] = _c - 'A' + 'a';
 		break;
 		JSTR_CASE_LOWER
-		_cc[l] = _c;
-		_cc[u] = _c - 'a' + 'A';
+		_cc[0] = _c;
+		_cc[1] = _c - 'a' + 'A';
 		break;
 	default:
 		return (char *)memchr(_s, _c, _n);
 	}
-	unsigned char *_h = (unsigned char *)_s;
-	for (;; ++_h)
-		switch (*_h) {
-			JSTR_CASE_UPPER
-			if (*_h == _cc[u])
-				return (char *)_h;
-			break;
-			JSTR_CASE_LOWER
-			if (*_h == _cc[l])
-				return (char *)_h;
-			break;
-		case '\0':
-			return NULL;
-		}
+	return *(_s += strcspn(_s, _cc)) ? (char *)_s : NULL;
 }
 
 #if defined(__GNUC__) || defined(__clang__)
