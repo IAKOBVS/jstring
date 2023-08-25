@@ -769,10 +769,11 @@ JSTR_WARN_UNUSED
 static int
 jstr_countc_mem(const char *JSTR_RST _s,
 		const int _c,
-		const int _n) JSTR_NOEXCEPT
+		const size_t _n) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((_s = (char *)memchr(_s, _c, _n)))
+	const char *const _end = _s + _n;
+	while ((_s = (char *)memchr(_s, _c, _end - _s)))
 		++cnt;
 	return cnt;
 }
@@ -800,11 +801,8 @@ jstr_count_mem(const char *JSTR_RST _s,
 		jstr_memmem_table_ty t;
 		jstr_memmem_init(&t);
 		jstr_memmem_comp_mem(&t, _find, _findlen);
-		while ((_s = (char *)jstr_memmem_exec(&t, _s, _sz))) {
-			++cnt;
-			_s += _findlen;
-			_sz -= _findlen;
-		}
+		while ((_s = (char *)jstr_memmem_exec(&t, _s, _sz)))
+			++cnt, _s += _findlen, _sz -= _findlen;
 		return cnt;
 	}
 	}
