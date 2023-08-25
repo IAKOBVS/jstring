@@ -778,6 +778,8 @@ jstr_countc_mem(const char *JSTR_RST _s,
 	return cnt;
 }
 
+#if JSTR_HAVE_MEMMEM
+
 /*
   Count occurences of NE in HS.
   Return value:
@@ -798,15 +800,19 @@ jstr_count_mem(const char *JSTR_RST _s,
 	case 1: return jstr_countc_mem(_s, *_find, _sz);
 	default: {
 		int cnt = 0;
-		jstr_memmem_table_ty t;
-		jstr_memmem_init(&t);
-		jstr_memmem_comp_mem(&t, _find, _findlen);
-		while ((_s = (char *)jstr_memmem_exec(&t, _s, _sz)))
-			++cnt, _s += _findlen, _sz -= _findlen;
+#	if JSTR_HAVE_MEMMEM
+		const char *const _end = _s + _sz;
+		while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
+#	else
+		while ((_s = (char *)strstr(_s, _find)))
+#	endif /* HAVE_MEMMEM */
+			++cnt, _s += _findlen;
 		return cnt;
 	}
 	}
 }
+
+#endif
 
 /*
   Count occurences of NE in HS.
@@ -821,7 +827,17 @@ static int
 jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
 {
-	return jstr_count_mem(_s, _find, strlen(_s), strlen(_find));
+	const size_t _findlen = strlen(_find);
+	switch (_findlen) {
+	case 0: return 0;
+	case 1: return jstr_countc(_s, *_find);
+	default: {
+		int cnt = 0;
+		while ((_s = (char *)strstr(_s, _find)))
+			++cnt, _s += _findlen;
+		return cnt;
+	}
+	}
 }
 
 #ifdef __cplusplus
