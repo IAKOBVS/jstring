@@ -777,12 +777,8 @@ jstr_count_mem(const char *JSTR_RST _s,
 	case 1: return jstr_countc_mem(_s, *_find, _sz);
 	default: {
 		int cnt = 0;
-#	if JSTR_HAVE_MEMMEM
 		const char *const _end = _s + _sz;
 		while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
-#	else
-		while ((_s = (char *)strstr(_s, _find)))
-#	endif /* HAVE_MEMMEM */
 			++cnt, _s += _findlen;
 		return cnt;
 	}
