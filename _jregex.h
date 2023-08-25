@@ -612,14 +612,14 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 #		pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #		pragma GCC diagnostic push
 #	endif
-#endif
 					memcpy(_tmp, *_s, _p - *(uc **)_s);
-#if 0
 #	ifdef __GNUC__
 #		pragma GCC diagnostic pop
 #	elif defined __clang__
 #		pragma clang diagnostic pop
 #	endif
+#else
+					memcpy(_tmp, *_s, _p - *(uc **)_s);
 #endif
 					memcpy(_tmp + (_p - *(uc **)_s), _rplc, _rplclen);
 					memcpy(_tmp + (_p - (*(uc **)_s + _rplclen)),
