@@ -142,8 +142,6 @@
 	case 'Z':
 #endif
 
-#define PRIV_JSTR_PP_ISDIGIT(c) ((c) >= 48 && (c) <= 57)
-
 #define PRIV_JSTR_PP_CONCATENATE(A, B) \
 	PRIV_JSTR_PP_CONCATENATE_(A, B)
 

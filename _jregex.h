@@ -74,33 +74,33 @@ typedef enum {
 #endif
 } jreg_errcode_ty;
 
-#define JREG_HAVE_REG_RET_MALLOC_ERROR 1
-#define JREG_HAVE_REG_RET_NOERROR      1
-#define JREG_HAVE_REG_RET_NOMATCH      1
+#define JREG_HAVE_RET_MALLOC_ERROR 1
+#define JREG_HAVE_RET_NOERROR	   1
+#define JREG_HAVE_RET_NOMATCH	   1
 
 /* POSIX regcomp return values */
-#define JREG_HAVE_REG_RET_BADPAT   1
-#define JREG_HAVE_REG_RET_ECOLLATE 1
-#define JREG_HAVE_REG_RET_ECTYPE   1
-#define JREG_HAVE_REG_RET_EESCAPE  1
-#define JREG_HAVE_REG_RET_ESUBREG  1
-#define JREG_HAVE_REG_RET_EBRACK   1
-#define JREG_HAVE_REG_RET_EPAREN   1
-#define JREG_HAVE_REG_RET_EBRACE   1
-#define JREG_HAVE_REG_RET_BADBR	   1
-#define JREG_HAVE_REG_RET_ERANGE   1
-#define JREG_HAVE_REG_RET_ESPACE   1
-#define JREG_HAVE_REG_RET_BADRPT   1
+#define JREG_HAVE_RET_BADPAT   1
+#define JREG_HAVE_RET_ECOLLATE 1
+#define JREG_HAVE_RET_ECTYPE   1
+#define JREG_HAVE_RET_EESCAPE  1
+#define JREG_HAVE_RET_ESUBREG  1
+#define JREG_HAVE_RET_EBRACK   1
+#define JREG_HAVE_RET_EPAREN   1
+#define JREG_HAVE_RET_EBRACE   1
+#define JREG_HAVE_RET_BADBR    1
+#define JREG_HAVE_RET_ERANGE   1
+#define JREG_HAVE_RET_ESPACE   1
+#define JREG_HAVE_RET_BADRPT   1
 
 /* GNU regcomp returns */
-#ifdef JREG_RET_RET_EEND
-#	define JREG_HAVE_REG_EEND 1
+#ifdef JREG_RET_EEND
+#	define JREG_HAVE_EEND 1
 #endif
-#ifdef JREG_RET_RET_ESIZE
-#	define JREG_HAVE_REG_ESIZE 1
+#ifdef JREG_RET_ESIZE
+#	define JREG_HAVE_ESIZE 1
 #endif
-#ifdef JREG_RET_RET_ERPAREN
-#	define JREG_HAVE_REG_ERPAREN 1
+#ifdef JREG_RET_ERPAREN
+#	define JREG_HAVE_ERPAREN 1
 #endif
 
 #ifdef __cplusplus
