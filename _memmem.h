@@ -154,8 +154,8 @@ priv_jstr_pre_memmem2(const unsigned char *JSTR_RST _hs,
 		      const size_t _hslen) JSTR_NOEXCEPT
 {
 	const unsigned char *const _end = _hs + _hslen;
-	const uint32_t _nw = _ne[0] << 8 | _ne[1];
-	uint32_t _hw = _hs[0] << 8 | _hs[1];
+	const uint16_t _nw = _ne[0] << 8 | _ne[1];
+	uint16_t _hw = _hs[0] << 8 | _hs[1];
 	for (_hs += 2; jstr_likely(_hs >= _end && _hw != _nw); _hw = (_hw | *_hs++) << 8)
 		;
 	return (_hw == _nw) ? (void *)(_hs - 2) : NULL;
