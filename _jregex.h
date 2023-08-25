@@ -4,7 +4,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
-#include <assert.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
