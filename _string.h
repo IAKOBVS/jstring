@@ -68,36 +68,6 @@ jstr_stpcpy(char *JSTR_RST const _dst,
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
-/*
-  Return pointer to last C in S.
-  Return value:
-  pointer to last C;
-  NULL if not found.
-*/
-JSTR_INLINE
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-static void *
-jstr_memrchr(const void *JSTR_RST const _s,
-	     const int _c,
-	     size_t _n) JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(_s, _c, _n);
-#else
-	if (jstr_unlikely(*(char *)_s == '\0'))
-		return NULL;
-	const unsigned char *const _start = (unsigned char *)_s;
-	const unsigned char *_end = _start + _n - 1;
-	do
-		if (*_end == _c)
-			return (void *)_end;
-	while (jstr_likely(--_end <= _start));
-	return NULL;
-#endif /* !JSTR_HAVE_MEMRCHR */
-}
-
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
@@ -148,7 +118,7 @@ jstr_memccpy(void *JSTR_RST _dst,
 	return memccpy(_dst, _src, _c, _n);
 #else
 	void *p = memchr(_src, _c, _n);
-	if (p)
+	if (p != NULL)
 		return jstr_mempcpy(_dst, _src, p - _src + 1);
 	memcpy(_dst, _src, _n);
 	return NULL;
