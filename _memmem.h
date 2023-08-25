@@ -237,13 +237,13 @@ jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const _ptable,
 	case 3: return priv_jstr_pre_memmem3((unsigned char *)_hs, (unsigned char *)_ptable->ne, _hslen);
 	case 4: return priv_jstr_pre_memmem4((unsigned char *)_hs, (unsigned char *)_ptable->ne, _hslen);
 	}
-	const unsigned char *JSTR_RST const _ne = (unsigned char *)_ptable->ne;
+	const unsigned char *const _ne = (unsigned char *)_ptable->ne;
 	const size_t _nelen = _ptable->nelen;
 	if (jstr_unlikely(_ptable->nelen > 256)) {
-		const size_t *JSTR_RST const _table = _ptable->big_table;
+		const size_t *const _table = _ptable->big_table;
 		PRIV_JSTR_MEMMEM_EXEC;
 	} else {
-		const uint8_t *JSTR_RST const _table = _ptable->small_table;
+		const uint8_t *const _table = _ptable->small_table;
 		PRIV_JSTR_MEMMEM_EXEC;
 	}
 	return NULL;

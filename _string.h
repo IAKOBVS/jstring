@@ -88,12 +88,12 @@ jstr_memrchr(const void *JSTR_RST const _s,
 #else
 	if (jstr_unlikely(*(char *)_s == '\0'))
 		return NULL;
-	const unsigned char *const start = (unsigned char *)_s;
-	const unsigned char *_end = start + _n - 1;
+	const unsigned char *const _start = (unsigned char *)_s;
+	const unsigned char *_end = _start + _n - 1;
 	do
 		if (*_end == _c)
 			return (void *)_end;
-	while (jstr_likely(--_end <= start));
+	while (jstr_likely(--_end <= _start));
 	return NULL;
 #endif /* !JSTR_HAVE_MEMRCHR */
 }
@@ -284,7 +284,7 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 	do {                                                                               \
 		const unsigned char *_h = (unsigned char *)_hs + _hslen + _nelen;          \
 		const unsigned char *const _n = (unsigned char *)_ne;                      \
-		const unsigned char *const start = (unsigned char *)_hs;                   \
+		const unsigned char *const _start = (unsigned char *)_hs;                   \
 		size_t _tmp;                                                               \
 		size_t shift1;                                                             \
 		size_t mtc1 = _nelen - 1;                                                  \
@@ -299,7 +299,7 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 			do {                                                               \
 				_h -= mtc1;                                                \
 				_tmp = shift[JSTR_HASH2(_h)];                              \
-			} while (!_tmp && _h >= start);                                    \
+			} while (!_tmp && _h >= _start);                                    \
 			_h -= _tmp;                                                        \
 			if (mtc1 < 15 || !memcmp(_h + off, _n + off, 8)) {                 \
 				if (!memcmp(_h, _n, _nelen))                               \
@@ -307,7 +307,7 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 				off = (off >= 8 ? off : mtc1) - 8;                         \
 			}                                                                  \
 			_h -= shift1;                                                      \
-		} while (_h >= start);                                                     \
+		} while (_h >= _start);                                                     \
 		return NULL;                                                               \
 	} while (0)
 	if (jstr_unlikely(_hslen > 256))
@@ -339,32 +339,32 @@ jstr_memrmem(const void *JSTR_RST const _hs,
 	case 1:
 		return jstr_memrchr(_hs, *(char *)_ne, _hslen);
 	case 2: {
-		const unsigned char *const start = (unsigned char *)_hs;
-		const unsigned char *_h = start + _hslen - 1;
+		const unsigned char *const _start = (unsigned char *)_hs;
+		const unsigned char *_h = _start + _hslen - 1;
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint16_t _nw = _n[1] << 8 | _n[0];
 		uint16_t _hw = _h[0] << 8 | _h[-1];
-		for (_h -= 2; jstr_likely(_h >= start && _hw != _nw); _hw = _hw << 8 | *_h--)
+		for (_h -= 2; jstr_likely(_h >= _start && _hw != _nw); _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	case 3: {
-		const unsigned char *const start = (unsigned char *)_hs;
-		const unsigned char *_h = start + _hslen - 1;
+		const unsigned char *const _start = (unsigned char *)_hs;
+		const unsigned char *_h = _start + _hslen - 1;
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint32_t _nw = _n[2] << 24 | _n[1] << 16 | _n[0] << 8;
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8;
-		for (_h -= 3; jstr_likely(_h >= start && _hw != _nw); _hw = (_hw | *_h--) << 8)
+		for (_h -= 3; jstr_likely(_h >= _start && _hw != _nw); _hw = (_hw | *_h--) << 8)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	case 4: {
-		const unsigned char *const start = (unsigned char *)_hs;
-		const unsigned char *_h = start + _hslen - 1;
+		const unsigned char *const _start = (unsigned char *)_hs;
+		const unsigned char *_h = _start + _hslen - 1;
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint32_t _nw = _n[3] << 24 | _n[2] << 16 | _n[1] << 8 | _n[0];
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8 | _h[-3];
-		for (_h -= 4; jstr_likely(_h >= start && _hw != _nw); _hw = _hw << 8 | *_h--)
+		for (_h -= 4; jstr_likely(_h >= _start && _hw != _nw); _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
