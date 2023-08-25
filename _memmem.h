@@ -13,7 +13,6 @@ extern "C" {
 
 #include "_config.h"
 #include "_macros.h"
-#include "_string.h"
 
 #if JSTR_CFG_HAVE_ALLOCA && (defined __GNUC__ || defined __clang__)
 #	define JSTR_USE_ALLOCA 1

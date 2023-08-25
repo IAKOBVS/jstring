@@ -17,6 +17,7 @@ extern "C" {
 #include "_config.h"
 #include "_ctype.h"
 #include "_macros.h"
+#include "_memmem.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -776,8 +777,6 @@ jstr_countc_mem(const char *JSTR_RST _s,
 	return cnt;
 }
 
-#if JSTR_HAVE_MEMMEM
-
 /*
   Count occurences of NE in HS.
   Return value:
@@ -793,16 +792,23 @@ jstr_count_mem(const char *JSTR_RST _s,
 	       size_t _sz,
 	       const size_t _findlen) JSTR_NOEXCEPT
 {
-	int cnt = 0;
-	while ((_s = (char *)memmem(_s, _sz, _find, _findlen))) {
-		++cnt;
-		_s += _findlen;
-		_sz -= _findlen;
+	switch (_findlen) {
+	case 0: return 0;
+	case 1: return jstr_countc_mem(_s, *_find, _sz);
+	default: {
+		int cnt = 0;
+		jstr_memmem_table_ty t;
+		jstr_memmem_init(&t);
+		jstr_memmem_comp_mem(&t, _find, _findlen);
+		while ((_s = (char *)jstr_memmem_exec(&t, _s, _sz))) {
+			++cnt;
+			_s += _findlen;
+			_sz -= _findlen;
+		}
+		return cnt;
 	}
-	return cnt;
+	}
 }
-
-#endif
 
 /*
   Count occurences of NE in HS.
@@ -817,10 +823,7 @@ static int
 jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
 {
-	int cnt = 0;
-	while ((_s = strstr(_s, _find)))
-		++cnt;
-	return cnt;
+	return jstr_count_mem(_s, _find, strlen(_s), strlen(_find));
 }
 
 #ifdef __cplusplus
