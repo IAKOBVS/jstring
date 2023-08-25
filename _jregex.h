@@ -370,9 +370,9 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static jreg_errcode_ty
 jreg_rm(char *JSTR_RST const _s,
-	    size_t *JSTR_RST const _sz,
-	    const regex_t *JSTR_RST const _preg,
-	    const int _eflags) JSTR_NOEXCEPT
+	size_t *JSTR_RST const _sz,
+	const regex_t *JSTR_RST const _preg,
+	const int _eflags) JSTR_NOEXCEPT
 {
 	regmatch_t _rm;
 	const jreg_errcode_ty _ret = PRIV_JREG_EXEC(_preg, _s, *_sz, 1, &_rm, _eflags);
@@ -392,11 +392,11 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static jreg_errcode_ty
 jreg_rm_now(char *JSTR_RST const _s,
-		size_t *JSTR_RST const _sz,
-		const char *JSTR_RST const _ptn,
-		regex_t *JSTR_RST const _preg,
-		const int _cflags,
-		const int _eflags) JSTR_NOEXCEPT
+	    size_t *JSTR_RST const _sz,
+	    const char *JSTR_RST const _ptn,
+	    regex_t *JSTR_RST const _preg,
+	    const int _cflags,
+	    const int _eflags) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
@@ -411,11 +411,11 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static jreg_errcode_ty
 priv_jreg_base_rmall(const priv_jstr_flag_use_n_ty _flag,
-			 char *JSTR_RST const _s,
-			 size_t *JSTR_RST const _sz,
-			 size_t _n,
-			 const regex_t *JSTR_RST const _preg,
-			 const int _eflags) JSTR_NOEXCEPT
+		     char *JSTR_RST const _s,
+		     size_t *JSTR_RST const _sz,
+		     size_t _n,
+		     const regex_t *JSTR_RST const _preg,
+		     const int _eflags) JSTR_NOEXCEPT
 {
 	regmatch_t _rm;
 	unsigned char *_dst = (unsigned char *)_s;
@@ -447,9 +447,9 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static jreg_errcode_ty
 jreg_rmall(char *JSTR_RST const _s,
-	       size_t *JSTR_RST const _sz,
-	       const regex_t *JSTR_RST const _preg,
-	       const int _eflags) JSTR_NOEXCEPT
+	   size_t *JSTR_RST const _sz,
+	   const regex_t *JSTR_RST const _preg,
+	   const int _eflags) JSTR_NOEXCEPT
 {
 	return priv_jreg_base_rmall(PRIV_JSTR_FLAG_USE_NOT_N, _s, _sz, 0, _preg, _eflags);
 }
@@ -459,10 +459,10 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 static jreg_errcode_ty
 jreg_rmn(char *JSTR_RST const _s,
-	     size_t *JSTR_RST const _sz,
-	     const size_t _n,
-	     const regex_t *JSTR_RST const _preg,
-	     const int _eflags) JSTR_NOEXCEPT
+	 size_t *JSTR_RST const _sz,
+	 const size_t _n,
+	 const regex_t *JSTR_RST const _preg,
+	 const int _eflags) JSTR_NOEXCEPT
 {
 	return priv_jreg_base_rmall(PRIV_JSTR_FLAG_USE_N, _s, _sz, _n, _preg, _eflags);
 }
@@ -472,12 +472,12 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static jreg_errcode_ty
 jreg_rmn_now(char *JSTR_RST const _s,
-		 const char *JSTR_RST const _ptn,
-		 size_t *JSTR_RST const _sz,
-		 const size_t _n,
-		 regex_t *JSTR_RST const _preg,
-		 const int _cflags,
-		 const int _eflags) JSTR_NOEXCEPT
+	     const char *JSTR_RST const _ptn,
+	     size_t *JSTR_RST const _sz,
+	     const size_t _n,
+	     regex_t *JSTR_RST const _preg,
+	     const int _cflags,
+	     const int _eflags) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
@@ -492,11 +492,11 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 static jreg_errcode_ty
 jreg_rmall_now(char *JSTR_RST const _s,
-		   size_t *JSTR_RST const _sz,
-		   const char *JSTR_RST const _ptn,
-		   regex_t *JSTR_RST const _preg,
-		   const int _cflags,
-		   const int _eflags) JSTR_NOEXCEPT
+	       size_t *JSTR_RST const _sz,
+	       const char *JSTR_RST const _ptn,
+	       regex_t *JSTR_RST const _preg,
+	       const int _cflags,
+	       const int _eflags) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JREG_RET_NOERROR;
@@ -605,18 +605,22 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 					       (*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
 					_old = _dst;
 				} else {
-#ifdef __clang__
-#	pragma clang diagnostic ignored "-Wunknown-warning-option"
-#	pragma clang diagnostic push
-#elif defined __GNUC__
-/* #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value" */
-#	pragma GCC diagnostic push
+#if 0
+#	ifdef __clang__
+#		pragma clang diagnostic ignored "-Wunknown-warning-option"
+#		pragma clang diagnostic push
+#	elif defined __GNUC__
+#		pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
+#		pragma GCC diagnostic push
+#	endif
 #endif
 					memcpy(_tmp, *_s, _p - *(uc **)_s);
-#ifdef __GNUC__
-#	pragma GCC diagnostic pop
-#elif defined __clang__
-#	pragma clang diagnostic pop
+#if 0
+#	ifdef __GNUC__
+#		pragma GCC diagnostic pop
+#	elif defined __clang__
+#		pragma clang diagnostic pop
+#	endif
 #endif
 					memcpy(_tmp + (_p - *(uc **)_s), _rplc, _rplclen);
 					memcpy(_tmp + (_p - (*(uc **)_s + _rplclen)),
