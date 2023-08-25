@@ -5,10 +5,10 @@
 extern "C" {
 #endif /* __cpluslus */
 
-#include <stdint._h>
-#include <stdio._h>
-#include <stdlib._h>
-#include <string._h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef __cplusplus
 }
