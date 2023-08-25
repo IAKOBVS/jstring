@@ -290,7 +290,7 @@ jstr_slipaftc_mem_p_f(char *JSTR_RST const _s,
 		      const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const _p = (char *)memchr(_s, _c, _sz);
-	if (_p)
+	if (_p != NULL)
 		return jstr_slip_mem_p_f(_s, _p - _s, _src, _sz - (_p - _s), _srclen);
 	return _s + _sz;
 }
@@ -309,7 +309,7 @@ jstr_slipaftc_mem(char **JSTR_RST const _s,
 		  const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const _p = (char *)memchr(*_s, _c, *_sz);
-	if (_p)
+	if (_p != NULL)
 		jstr_slip_mem(_s, _sz, _cap, _p - *_s + 1, _src, _srclen);
 }
 
@@ -386,7 +386,7 @@ jstr_slipaft_mem_f(char *JSTR_RST const _s,
 	case 1: return jstr_slipaftc_mem_p_f(_s, *_find, _src, _sz, _srclen);
 	default: {
 		const char *const _p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _find, _findlen);
-		if (_p)
+		if (_p != NULL)
 			return jstr_slip_mem_p_f(_s, _p - _s, _src, _sz, _srclen);
 		return _s + _sz;
 	}
@@ -414,7 +414,7 @@ jstr_slipaft_mem(char **JSTR_RST const _s,
 		return;
 	default: {
 		const char *const _p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _find, _findlen);
-		if (_p)
+		if (_p != NULL)
 			jstr_slip_mem(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
 		return;
 	}
@@ -1260,7 +1260,7 @@ jstr_insertaftc_mem_f(char *JSTR_RST const _s,
 		      const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const _p = (char *)memchr(_s, _c, _sz);
-	if (_p)
+	if (_p != NULL)
 		jstr_insert_mem_f(_s, _p - _s + 1, _src, _srclen);
 }
 
@@ -1278,7 +1278,7 @@ jstr_insertaftc_mem(char **JSTR_RST const _s,
 		    const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const _p = (char *)memchr(*_s, _c, *_sz);
-	if (_p)
+	if (_p != NULL)
 		jstr_insert_mem(_s, _sz, _cap, _p - *_s + 1, _src, _srclen);
 }
 
@@ -1303,7 +1303,7 @@ jstr_insertaft_mem_f(char *JSTR_RST const _s,
 		return;
 	default: {
 		const char *const _p = (char *)PRIV_JSTR_MEMMEM(_s, _sz, _find, _findlen);
-		if (_p)
+		if (_p != NULL)
 			jstr_insert_mem_f(_s, _p - _s + _findlen, _src, _srclen);
 		return;
 	}
@@ -1331,7 +1331,7 @@ jstr_insertaft_mem(char **JSTR_RST const _s,
 		return;
 	default: {
 		const char *const _p = (char *)PRIV_JSTR_MEMMEM(*_s, *_sz, _find, _findlen);
-		if (_p)
+		if (_p != NULL)
 			jstr_insert_mem(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
 		return;
 	}
