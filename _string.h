@@ -5,10 +5,10 @@
 extern "C" {
 #endif /* __cpluslus */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdint._h>
+#include <stdio._h>
+#include <stdlib._h>
+#include <string._h>
 
 #ifdef __cplusplus
 }
@@ -109,11 +109,11 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 #if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(_s, _c);
 #else
-	const size_t n = strlen(_s);
-	void *p = (void *)memchr(_s, _c, n);
+	const size_t _n = strlen(_s);
+	void *p = (void *)memchr(_s, _c, _n);
 	if (p)
 		return p;
-	return (void *)(_s + n);
+	return (void *)(_s + _n);
 #endif /* JSTR_HAVE_STRCHRNUL */
 }
 
@@ -282,8 +282,8 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 #define PRIV_JSTR_MEMMEMR(shift_type, ne_iterator_type)                                    \
 	do {                                                                               \
-		const unsigned char *h = (unsigned char *)_hs + _hslen + _nelen;           \
-		const unsigned char *const n = (unsigned char *)_ne;                       \
+		const unsigned char *_h = (unsigned char *)_hs + _hslen + _nelen;          \
+		const unsigned char *const _n = (unsigned char *)_ne;                      \
 		const unsigned char *const start = (unsigned char *)_hs;                   \
 		size_t _tmp;                                                               \
 		size_t shift1;                                                             \
@@ -292,22 +292,22 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		shift_type shift[256];                                                     \
 		memset(shift, 0, sizeof(shift));                                           \
 		for (ne_iterator_type i = 1; jstr_likely(i < (ne_iterator_type)mtc1); ++i) \
-			shift[JSTR_HASH2(n + i)] = i;                                      \
-		shift1 = mtc1 - shift[JSTR_HASH2(n + mtc1)];                               \
-		shift[JSTR_HASH2(n + mtc1)] = mtc1;                                        \
+			shift[JSTR_HASH2(_n + i)] = i;                                     \
+		shift1 = mtc1 - shift[JSTR_HASH2(_n + mtc1)];                              \
+		shift[JSTR_HASH2(_n + mtc1)] = mtc1;                                       \
 		do {                                                                       \
 			do {                                                               \
-				h -= mtc1;                                                 \
-				_tmp = shift[JSTR_HASH2(h)];                               \
-			} while (!_tmp && h >= start);                                     \
-			h -= _tmp;                                                         \
-			if (mtc1 < 15 || !memcmp(h + off, n + off, 8)) {                   \
-				if (!memcmp(h, n, _nelen))                                 \
-					return (void *)h;                                  \
+				_h -= mtc1;                                                \
+				_tmp = shift[JSTR_HASH2(_h)];                              \
+			} while (!_tmp && _h >= start);                                    \
+			_h -= _tmp;                                                        \
+			if (mtc1 < 15 || !memcmp(_h + off, _n + off, 8)) {                 \
+				if (!memcmp(_h, _n, _nelen))                               \
+					return (void *)_h;                                 \
 				off = (off >= 8 ? off : mtc1) - 8;                         \
 			}                                                                  \
-			h -= shift1;                                                       \
-		} while (h >= start);                                                      \
+			_h -= shift1;                                                      \
+		} while (_h >= start);                                                     \
 		return NULL;                                                               \
 	} while (0)
 	if (jstr_unlikely(_hslen > 256))
@@ -340,33 +340,33 @@ jstr_memrmem(const void *JSTR_RST const _hs,
 		return jstr_memrchr(_hs, *(char *)_ne, _hslen);
 	case 2: {
 		const unsigned char *const start = (unsigned char *)_hs;
-		const unsigned char *h = start + _hslen - 1;
-		const unsigned char *n = (unsigned char *)_ne;
-		const uint16_t nw = n[1] << 8 | n[0];
-		uint16_t hw = h[0] << 8 | h[-1];
-		for (h -= 2; jstr_likely(h >= start) && hw != nw; hw = hw << 8 | *h--)
+		const unsigned char *_h = start + _hslen - 1;
+		const unsigned char *_n = (unsigned char *)_ne;
+		const uint16_t _nw = _n[1] << 8 | _n[0];
+		uint16_t _hw = _h[0] << 8 | _h[-1];
+		for (_h -= 2; jstr_likely(_h >= start && _hw != _nw); _hw = _hw << 8 | *_h--)
 			;
-		return hw == nw ? (void *)(h + 1) : NULL;
+		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	case 3: {
 		const unsigned char *const start = (unsigned char *)_hs;
-		const unsigned char *h = start + _hslen - 1;
-		const unsigned char *n = (unsigned char *)_ne;
-		const uint32_t nw = n[2] << 24 | n[1] << 16 | n[0] << 8;
-		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8;
-		for (h -= 3; jstr_likely(h >= start) && hw != nw; hw = (hw | *h--) << 8)
+		const unsigned char *_h = start + _hslen - 1;
+		const unsigned char *_n = (unsigned char *)_ne;
+		const uint32_t _nw = _n[2] << 24 | _n[1] << 16 | _n[0] << 8;
+		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8;
+		for (_h -= 3; jstr_likely(_h >= start && _hw != _nw); _hw = (_hw | *_h--) << 8)
 			;
-		return hw == nw ? (void *)(h + 1) : NULL;
+		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	case 4: {
 		const unsigned char *const start = (unsigned char *)_hs;
-		const unsigned char *h = start + _hslen - 1;
-		const unsigned char *n = (unsigned char *)_ne;
-		const uint32_t nw = n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
-		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		for (h -= 4; jstr_likely(h >= start) && hw != nw; hw = hw << 8 | *h--)
+		const unsigned char *_h = start + _hslen - 1;
+		const unsigned char *_n = (unsigned char *)_ne;
+		const uint32_t _nw = _n[3] << 24 | _n[2] << 16 | _n[1] << 8 | _n[0];
+		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8 | _h[-3];
+		for (_h -= 4; jstr_likely(_h >= start && _hw != _nw); _hw = _hw << 8 | *_h--)
 			;
-		return hw == nw ? (void *)(h + 1) : NULL;
+		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	default: return priv_jstr_memrmem(_hs, _hslen, _ne, _nelen);
 	}
@@ -401,37 +401,37 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 		      const size_t _nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define PRIV_JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                         \
-	do {                                                                                       \
-		const unsigned char *h = (unsigned char *)_hs;                                     \
-		const unsigned char *const n = (unsigned char *)_ne;                               \
-		const unsigned char *const _end = h + _hslen - _nelen;                              \
-		size_t _tmp;                                                                       \
-		size_t shift1;                                                                     \
-		size_t mtc1 = _nelen - 1;                                                          \
-		size_t off = 0;                                                                    \
-		shift_type shift[256];                                                             \
-		memset(shift, 0, sizeof(shift));                                                   \
-		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                      \
-			shift[JSTR_HASH2_LOWER(n + i)] = i;                                        \
-		shift1 = mtc1 - shift[JSTR_HASH2_LOWER(n + mtc1)];                                 \
-		shift[JSTR_HASH2_LOWER(n + mtc1)] = mtc1;                                          \
-		do {                                                                               \
-			do {                                                                       \
-				h += mtc1;                                                         \
-				_tmp = shift[JSTR_HASH2_LOWER(h)];                                 \
-			} while (!_tmp && h <= _end);                                               \
-			h -= _tmp;                                                                 \
-			if (_tmp < mtc1)                                                           \
-				continue;                                                          \
-			if (mtc1 < 15 || !jstr_strncasecmp((char *)h + off, (char *)n + off, 8)) { \
-				if (!jstr_strncasecmp((char *)h, (char *)n, _nelen))               \
-					return (char *)h;                                          \
-				off = (off >= 8 ? off : mtc1) - 8;                                 \
-			}                                                                          \
-			h += shift1;                                                               \
-		} while (h <= _end);                                                                \
-		return NULL;                                                                       \
+#define PRIV_JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                           \
+	do {                                                                                         \
+		const unsigned char *_h = (unsigned char *)_hs;                                      \
+		const unsigned char *const _n = (unsigned char *)_ne;                                \
+		const unsigned char *const _end = _h + _hslen - _nelen;                              \
+		size_t _tmp;                                                                         \
+		size_t shift1;                                                                       \
+		size_t mtc1 = _nelen - 1;                                                            \
+		size_t off = 0;                                                                      \
+		shift_type shift[256];                                                               \
+		memset(shift, 0, sizeof(shift));                                                     \
+		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                        \
+			shift[JSTR_HASH2_LOWER(_n + i)] = i;                                         \
+		shift1 = mtc1 - shift[JSTR_HASH2_LOWER(_n + mtc1)];                                  \
+		shift[JSTR_HASH2_LOWER(_n + mtc1)] = mtc1;                                           \
+		do {                                                                                 \
+			do {                                                                         \
+				_h += mtc1;                                                          \
+				_tmp = shift[JSTR_HASH2_LOWER(_h)];                                  \
+			} while (!_tmp && _h <= _end);                                               \
+			_h -= _tmp;                                                                  \
+			if (_tmp < mtc1)                                                             \
+				continue;                                                            \
+			if (mtc1 < 15 || !jstr_strncasecmp((char *)_h + off, (char *)_n + off, 8)) { \
+				if (!jstr_strncasecmp((char *)_h, (char *)_n, _nelen))               \
+					return (char *)_h;                                           \
+				off = (off >= 8 ? off : mtc1) - 8;                                   \
+			}                                                                            \
+			_h += shift1;                                                                \
+		} while (_h <= _end);                                                                \
+		return NULL;                                                                         \
 	} while (0)
 	if (jstr_unlikely(_nelen > 256))
 		PRIV_JSTR_STRSTRCASE(size_t, size_t);
@@ -457,29 +457,29 @@ priv_strcasechr(const char *JSTR_RST const _s,
 	enum { l = 0,
 	       u,
 	};
-	unsigned char cc[2];
+	unsigned char _cc[2];
 	switch (_c) {
 		JSTR_CASE_UPPER
-		cc[u] = _c;
-		cc[l] = _c - 'A' + 'a';
+		_cc[u] = _c;
+		_cc[l] = _c - 'A' + 'a';
 		break;
 		JSTR_CASE_LOWER
-		cc[l] = _c;
-		cc[u] = _c - 'a' + 'A';
+		_cc[l] = _c;
+		_cc[u] = _c - 'a' + 'A';
 		break;
 	default:
 		return (char *)memchr(_s, _c, _n);
 	}
-	unsigned char *h = (unsigned char *)_s;
-	for (;; ++h)
-		switch (*h) {
+	unsigned char *_h = (unsigned char *)_s;
+	for (;; ++_h)
+		switch (*_h) {
 			JSTR_CASE_UPPER
-			if (*h == cc[u])
-				return (char *)h;
+			if (*_h == _cc[u])
+				return (char *)_h;
 			break;
 			JSTR_CASE_LOWER
-			if (*h == cc[l])
-				return (char *)h;
+			if (*_h == _cc[l])
+				return (char *)_h;
 			break;
 		case '\0':
 			return NULL;
@@ -615,21 +615,21 @@ jstr_itoa(char *JSTR_RST const _dst,
 	  int _num,
 	  const unsigned int _base)
 {
-#define PRIV_JSTR_NUMTOSTR(_max_digits)                                           \
-	do {                                                                      \
+#define PRIV_JSTR_NUMTOSTR(_max_digits)                                            \
+	do {                                                                       \
 		unsigned char *_d = (unsigned char *)_dst;                         \
 		unsigned char _sbuf[_max_digits];                                  \
 		unsigned char *JSTR_RST _s = (unsigned char *)_sbuf;               \
 		unsigned int _neg = (_num < 0) ? (_num = -_num, 1) : 0;            \
 		unsigned char *const _end = (unsigned char *)_s + _max_digits - 1; \
 		_s = _end;                                                         \
-		do                                                                \
-			*_s-- = _num % _base + '0';                               \
-		while (_num /= 10);                                               \
+		do                                                                 \
+			*_s-- = _num % _base + '0';                                \
+		while (_num /= 10);                                                \
 		if (_neg)                                                          \
-			*_s = '-';                                                \
-		else                                                              \
-			++_s;                                                     \
+			*_s = '-';                                                 \
+		else                                                               \
+			++_s;                                                      \
 		while (_s <= _end)                                                 \
 			*_d++ = *_s++;                                             \
 		*_d = '\0';                                                        \
@@ -686,17 +686,17 @@ jstr_utoa(char *JSTR_RST const _dst,
 	  unsigned int _num,
 	  const unsigned int _base)
 {
-#define PRIV_JSTR_UNUMTOSTR(_max_digits)                         \
-	do {                                                     \
+#define PRIV_JSTR_UNUMTOSTR(_max_digits)                          \
+	do {                                                      \
 		unsigned char *_d = (unsigned char *)_dst;        \
 		unsigned char _sbuf[_max_digits];                 \
 		unsigned char *JSTR_RST _s = _sbuf;               \
 		unsigned char *const _end = _s + _max_digits - 1; \
 		_s = _end;                                        \
-		do                                               \
-			*_s-- = _num % _base + '0';              \
-		while (_num /= 10);                              \
-		++_s;                                            \
+		do                                                \
+			*_s-- = _num % _base + '0';               \
+		while (_num /= 10);                               \
+		++_s;                                             \
 		while (_s <= _end)                                \
 			*_d++ = *_s++;                            \
 		*_d = '\0';                                       \
@@ -770,10 +770,10 @@ JSTR_WARN_UNUSED
 static int
 jstr_countc_mem(const char *JSTR_RST _s,
 		const int _c,
-		const int n) JSTR_NOEXCEPT
+		const int _n) JSTR_NOEXCEPT
 {
 	int cnt = 0;
-	while ((_s = (char *)memchr(_s, _c, n)))
+	while ((_s = (char *)memchr(_s, _c, _n)))
 		++cnt;
 	return cnt;
 }
