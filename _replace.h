@@ -446,7 +446,7 @@ jstr_slipaftall_mem_p_f(char *JSTR_RST const _s,
 	default: {
 		size_t off = 0;
 		const char *_p;
-		jstr_memmem_table _ptable;
+		jstr_memmem_table_ty _ptable;
 		jstr_memmem_init(&_ptable);
 		jstr_memmem_comp_mem(&_ptable, _find, _findlen);
 		while ((_p = (char *)jstr_memmem_exec(&_ptable, _s + off, _sz - off))) {
@@ -490,7 +490,7 @@ jstr_slipaftall_mem(char **JSTR_RST const _s,
 #if JSTR_HAVE_REALLOC_MREMAP
 		const int is_mmap = JSTR_IS_MMAP(*_cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
-		jstr_memmem_table _ptable;
+		jstr_memmem_table_ty _ptable;
 		jstr_memmem_init(&_ptable);
 		jstr_memmem_comp_mem(&_ptable, _find, _findlen);
 		while ((_p = (char *)jstr_memmem_exec(&_ptable, *_s + off, *_sz - off))) {
@@ -935,7 +935,7 @@ priv_jstr_rmall_mem_p(const priv_jstr_flag_use_n_ty _flag,
 	const unsigned char *_old = _dst;
 	const unsigned char *_p = _dst;
 	const unsigned char *const _end = _dst + _sz;
-	jstr_memmem_table _ptable;
+	jstr_memmem_table_ty _ptable;
 	jstr_memmem_init(&_ptable);
 	jstr_memmem_comp_mem(&_ptable, _find, _findlen);
 	while ((_p = (unsigned char *)jstr_memmem_exec(&_ptable, (char *)_p, _end - _p))) {
@@ -1062,7 +1062,7 @@ priv_jstr_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 	if (_flag & PRIV_JSTR_FLAG_USE_N)
 		if (jstr_unlikely(_n == 0))
 			return;
-	jstr_memmem_table _ptable;
+	jstr_memmem_table_ty _ptable;
 	jstr_memmem_init(&_ptable);
 	jstr_memmem_comp_mem(&_ptable, _find, _findlen);
 	typedef unsigned char uc;

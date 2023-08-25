@@ -26,7 +26,7 @@ extern "C" {
 extern "C" {
 #endif /* __cpluslus */
 
-typedef struct jstr_memmem_table {
+typedef struct jstr_memmem_table_ty {
 	const char *ne;
 	size_t nelen;
 #if JSTR_USE_ALLOCA
@@ -36,9 +36,9 @@ typedef struct jstr_memmem_table {
 	uint8_t small_table[256];
 	size_t big_table[256];
 #endif /* USE_ALLOCA */
-} jstr_memmem_table;
+} jstr_memmem_table_ty;
 
-typedef jstr_memmem_table jstr_strstr_table;
+typedef jstr_memmem_table_ty jstr_strstr_table;
 
 JSTR_INLINE
 JSTR_WARN_UNUSED
@@ -52,7 +52,7 @@ priv_memmem_hash2(const unsigned char *JSTR_RST const _p) JSTR_NOEXCEPT
 
 JSTR_INLINE
 static void
-jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
+jstr_memmem_init(jstr_memmem_table_ty *JSTR_RST const _ptable) JSTR_NOEXCEPT
 {
 	_ptable->small_table = NULL;
 	_ptable->big_table = NULL;
@@ -61,15 +61,15 @@ jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT
 #else
 
 void
-jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT;
+jstr_memmem_init(jstr_memmem_table_ty *JSTR_RST const _ptable) JSTR_NOEXCEPT;
 
-#	define jstr_memmem_init(_jstr_memmem_table)
+#	define jstr_memmem_init(_jstr_memmem_table_ty)
 
 #endif
 
 #ifdef JSTR_HAVE_GENERIC
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr) \
-		JSTR_ASSERT(_Generic((expr), jstr_memmem_table * : 1), "Passing non-jstr_memmem_table as jstr_memmem_table argument!")
+		JSTR_ASSERT(_Generic((expr), jstr_memmem_table_ty * : 1), "Passing non-jstr_memmem_table_ty as jstr_memmem_table_ty argument!")
 #else
 #	define JSTR_ASSERT_IS_MEMMEM_TABLE(expr)
 #endif /* HAVE_GENERIC */
@@ -77,35 +77,35 @@ jstr_memmem_init(jstr_memmem_table *JSTR_RST const _ptable) JSTR_NOEXCEPT;
 #if JSTR_USE_ALLOCA
 
 void
-jstr_memmem_comp_mem(jstr_memmem_table *_ptable,
+jstr_memmem_comp_mem(jstr_memmem_table_ty *_ptable,
 		     const char *_ne,
 		     const size_t _nelen);
 
-#	define jstr_memmem_comp_mem(_jstr_memmem_table, _ne, _nelen)                                                         \
+#	define jstr_memmem_comp_mem(_jstr_memmem_table_ty, _ne, _nelen)                                                         \
 		do {                                                                                                          \
-			JSTR_ASSERT_IS_MEMMEM_TABLE(_jstr_memmem_table);                                                      \
+			JSTR_ASSERT_IS_MEMMEM_TABLE(_jstr_memmem_table_ty);                                                      \
 			JSTR_ASSERT_IS_STR(_ne);                                                                              \
 			JSTR_ASSERT_IS_SIZE(_nelen);                                                                          \
-			(_jstr_memmem_table)->ne = _ne;                                                                       \
-			(_jstr_memmem_table)->nelen = _nelen;                                                                 \
+			(_jstr_memmem_table_ty)->ne = _ne;                                                                       \
+			(_jstr_memmem_table_ty)->nelen = _nelen;                                                                 \
 			if (jstr_unlikely(_nelen > 256)) {                                                                    \
-				if ((_jstr_memmem_table)->big_table == NULL)                                                  \
-					(_jstr_memmem_table)->big_table = (size_t *)alloca(256 * sizeof(size_t));             \
-				memset((_jstr_memmem_table)->big_table, 0, 256 * sizeof(size_t));                             \
+				if ((_jstr_memmem_table_ty)->big_table == NULL)                                                  \
+					(_jstr_memmem_table_ty)->big_table = (size_t *)alloca(256 * sizeof(size_t));             \
+				memset((_jstr_memmem_table_ty)->big_table, 0, 256 * sizeof(size_t));                             \
 				for (size_t _i = 1; jstr_likely(_i < _nelen); ++_i)                                           \
-					(_jstr_memmem_table)->big_table[priv_memmem_hash2((unsigned char *)_ne + _i)] = _i;   \
+					(_jstr_memmem_table_ty)->big_table[priv_memmem_hash2((unsigned char *)_ne + _i)] = _i;   \
 			} else {                                                                                              \
-				if ((_jstr_memmem_table)->small_table == NULL)                                                \
-					(_jstr_memmem_table)->small_table = (uint8_t *)alloca(256 * sizeof(uint8_t));         \
-				memset((_jstr_memmem_table)->small_table, 0, 256 * sizeof(uint8_t));                          \
+				if ((_jstr_memmem_table_ty)->small_table == NULL)                                                \
+					(_jstr_memmem_table_ty)->small_table = (uint8_t *)alloca(256 * sizeof(uint8_t));         \
+				memset((_jstr_memmem_table_ty)->small_table, 0, 256 * sizeof(uint8_t));                          \
 				for (int _i = 1; jstr_likely(_i < (int)_nelen); ++_i)                                         \
-					(_jstr_memmem_table)->small_table[priv_memmem_hash2((unsigned char *)_ne + _i)] = _i; \
+					(_jstr_memmem_table_ty)->small_table[priv_memmem_hash2((unsigned char *)_ne + _i)] = _i; \
 			}                                                                                                     \
 		} while (0)
 
 JSTR_NONNULL_ALL
 void
-jstr_memmem_comp(jstr_memmem_table *_ptable,
+jstr_memmem_comp(jstr_memmem_table_ty *_ptable,
 		 const char *_ne);
 
 #	define jstr_memmem_comp(_ptable, _ne) \
@@ -116,7 +116,7 @@ jstr_memmem_comp(jstr_memmem_table *_ptable,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_memmem_comp_mem(jstr_memmem_table *JSTR_RST const _ptable,
+jstr_memmem_comp_mem(jstr_memmem_table_ty *JSTR_RST const _ptable,
 		     const char *JSTR_RST const _ne,
 		     const size_t _nelen)
 {
@@ -136,7 +136,7 @@ jstr_memmem_comp_mem(jstr_memmem_table *JSTR_RST const _ptable,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-jstr_memmem_comp(jstr_memmem_table *JSTR_RST const _ptable,
+jstr_memmem_comp(jstr_memmem_table_ty *JSTR_RST const _ptable,
 		 const char *JSTR_RST const _ne)
 {
 	jstr_memmem_comp_mem(_ptable, _ne, strlen(_ne));
@@ -200,7 +200,7 @@ JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
 static void *
-jstr_memmem_exec(const jstr_memmem_table *JSTR_RST const _ptable,
+jstr_memmem_exec(const jstr_memmem_table_ty *JSTR_RST const _ptable,
 		 const char *JSTR_RST const _hs,
 		 const size_t _hslen) JSTR_NOEXCEPT
 {
@@ -254,7 +254,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_PURE
 static char *
-jstr_strstr_exec(const jstr_memmem_table *JSTR_RST const _ptable,
+jstr_strstr_exec(const jstr_memmem_table_ty *JSTR_RST const _ptable,
 		 const char *JSTR_RST const _hs) JSTR_NOEXCEPT
 {
 	return (char *)jstr_memmem_exec(_ptable, _hs, strlen(_hs));
