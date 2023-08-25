@@ -17,7 +17,6 @@ extern "C" {
 #include "_config.h"
 #include "_ctype.h"
 #include "_macros.h"
-#include "_memmem.h"
 
 #ifdef __cplusplus
 extern "C" {

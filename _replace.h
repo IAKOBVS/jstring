@@ -12,7 +12,6 @@ extern "C" {
 
 #include "_builder.h"
 #include "_macros.h"
-#include "_memmem.h"
 #include "_string.h"
 
 #ifdef __cplusplus

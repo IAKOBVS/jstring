@@ -7,9 +7,6 @@
 #include "_jregex.h"
 #include "_replace.h"
 #include "_string.h"
-#if 0
-#include "_memmem.h"
-#endif
 
 #undef JSTR_ASCII_SIZE
 #undef JSTR_HASH2
