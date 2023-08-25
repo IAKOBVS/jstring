@@ -305,7 +305,11 @@ jstr_memrmem(const void *JSTR_RST const _hs,
 	case 0:
 		return (void *)_hs;
 	case 1:
-		return jstr_memrchr(_hs, *(char *)_ne, _hslen);
+#if JSTR_HAVE_MEMRCHR
+		return (void *)memrchr(_hs, *(char *)_ne, _hslen);
+#else
+		return strrchr(_hs, *(char *)_ne);
+#endif
 	case 2: {
 		const unsigned char *const _start = (unsigned char *)_hs;
 		const unsigned char *_h = _start + _hslen - 1;
@@ -355,6 +359,10 @@ static char *
 jstr_strrstr(const char *JSTR_RST const _hs,
 	     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(*_ne == '\0'))
+		return (char *)_hs;
+	if (jstr_unlikely(*(_ne + 1) == '\0'))
+		return (char *)strrchr(_hs, *_ne);
 	return (char *)jstr_memrmem(_hs, strlen(_hs), _ne, strlen((char *)_ne));
 }
 
