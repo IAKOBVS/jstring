@@ -376,9 +376,8 @@ jreg_rm(char *JSTR_RST const _s,
 {
 	regmatch_t _rm;
 	const jreg_errcode_ty _ret = PRIV_JREG_EXEC(_preg, _s, *_sz, 1, &_rm, _eflags);
-	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
-		return _ret;
-	if (jstr_unlikely(_rm.rm_eo == _rm.rm_so))
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR
+			  || _rm.rm_eo == _rm.rm_so))
 		return _ret;
 	memmove(_s + _rm.rm_so,
 		_s + _rm.rm_eo,
@@ -734,9 +733,8 @@ jreg_rplc_mem(char **JSTR_RST const _s,
 {
 	regmatch_t _rm;
 	const jreg_errcode_ty _ret = PRIV_JREG_EXEC(_preg, *_s, *_sz, 1, &_rm, _eflags);
-	if (jstr_unlikely(_ret != JREG_RET_NOERROR))
-		return _ret;
-	if (jstr_unlikely(_rm.rm_eo == _rm.rm_so))
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR
+			  || _rm.rm_eo == _rm.rm_so))
 		return _ret;
 	jstr_rplcat_mem(_s, _sz, _cap, _rm.rm_so, _rplc, _rplclen, _rm.rm_eo - _rm.rm_so);
 	return _ret;
