@@ -38,7 +38,7 @@ typedef struct jstr_memmem_table_ty {
 #endif /* USE_ALLOCA */
 } jstr_memmem_table_ty;
 
-typedef jstr_memmem_table_ty jstr_strstr_table;
+typedef jstr_memmem_table_ty jstr_strstr_table_ty;
 
 JSTR_INLINE
 JSTR_WARN_UNUSED
