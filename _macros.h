@@ -1,211 +1,6 @@
 #ifndef JSTR_MACROS_H_DEF
 #define JSTR_MACROS_H_DEF
 
-#if 0 /* unused */
-
-#	if defined __GNUC__ || defined __clang__
-#		ifdef __cplusplus
-#			include <cstdint>
-#		else
-#			include <stdint.h>
-#		endif /* __cplusplus */
-#		if __has_builtin(__builtin_clzll)
-#			ifdef __cplusplus
-extern "C" {
-#			endif
-
-#			ifdef JSTR_64_BIT
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-uint64_t priv_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
-{
-	return 1ull << (64 - __builtin_clzll(x - 1));
-}
-
-#			endif /* JSTR_64_BIT */
-
-#		endif /* __has_builtin(__builtin_clzll) */
-#		if __has_builtin(__builtin_clz)
-
-#			ifdef JSTR_32_BIT
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-uint32_t priv_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
-{
-	return 1 << (32 - __builtin_clz(x - 1));
-}
-
-#			endif /* JSTR_32_BIT */
-
-#			ifdef __cplusplus
-}
-#			endif
-#		endif /* __has_builtin(__builtin_clz) */
-#	elif defined _MSC_VER
-#		include <stdint.h>
-#		include <intrin.h>
-#		pragma intrinsic(_BitScanReverse64)
-#		ifdef __cplusplus
-extern "C" {
-#		endif
-
-#		ifdef JSTR_32_BIT
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-uint32_t priv_jstr_next_pow2_32(uint32_t x) JSTR_NOEXCEPT
-{
-	unsigned long index;
-	_BitScanReverse(&index, x - 1);
-	return 1 << (index + 1);
-}
-
-#		endif /* JSTR_32_BIT */
-
-#		ifdef JSTR_64_BIT
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-uint64_t priv_jstr_next_pow2_64(uint64_t x) JSTR_NOEXCEPT
-{
-	unsigned long index;
-	_BitScanReverse64(&index, x - 1);
-	return 1ull << (index + 1);
-}
-
-#		endif /* JSTR_64_BIT */
-
-#	else
-
-#		ifdef JSTR_32_BIT
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-size_t priv_jstr_next_pow2_32(size_t x) JSTR_NOEXCEPT
-{
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	return x + 1;
-}
-
-#		endif /* JSTR_32_BIT */
-
-#		ifdef JSTR_64_BIT
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-size_t priv_jstr_next_pow2_64(size_t x) JSTR_NOEXCEPT
-{
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	x |= x >> 32;
-	return x + 1;
-}
-
-#		endif /* JSTR_64_BIT */
-
-#		ifdef __cplusplus
-}
-#		endif
-#	endif /* __GNUC__ || __clang__ */
-
-#	ifdef __cplusplus
-
-#		include <type_traits>
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-static constexpr std::size_t priv_jstr_next_pow2_32_constexpr(std::size_t x) JSTR_NOEXCEPT
-{
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	return x + 1;
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_WARN_UNUSED
-static constexpr std::size_t priv_jstr_next_pow2_64_constexpr(std::size_t x) JSTR_NOEXCEPT
-{
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	x |= x >> 32;
-	return x + 1;
-}
-
-template <typename T>
-JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_CONST static std::size_t
-JSTR_NEXT_POW2_32(T x)
-{
-	if
-#		if __cplusplus > 201703L
-	constexpr
-#		endif /* cpp 17 */
-	(std::is_integral<T>::value)
-		return priv_jstr_next_pow2_32_constexpr(x);
-	return priv_jstr_next_pow2_32(x);
-}
-
-template <typename T>
-JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_CONST static std::size_t
-JSTR_NEXT_POW2_64(T x)
-{
-	if
-#		if __cplusplus > 201703L
-	constexpr
-#		endif /* cpp 17 */
-	(std::is_integral<T>::value)
-		return priv_jstr_next_pow2_64_constexpr(x);
-	return priv_jstr_next_pow2_64(x);
-}
-
-#	endif /* __cplusplus */
-
-#	ifdef JSTR_ALIGN_POWER_OF_TWO
-#		ifdef JSTR_64_BIT
-#			ifdef __cplusplus
-#				define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_64(x)
-#			else
-#				define JSTR_NEXT_POW2(x) priv_jstr_next_pow2_64(x)
-#			endif /* __cplusplus */
-#		elif JSTR_32_BIT
-#			ifdef __cplusplus
-#				define JSTR_NEXT_POW2(x) JSTR_NEXT_POW2_32(x)
-#			else
-#				define JSTR_NEXT_POW2(x) priv_jstr_next_pow2_32(x)
-#			endif /* __cplusplus */
-#		else
-#			define JSTR_NEXT_POW2(x) (x)
-#		endif /* JSTR_64_BIT */
-#	endif /* JSTR_ALIGN_POWER_OF_TWO */
-
-#endif /* if 0 */
-
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1
 #endif /* HAVE_GENERIC */
@@ -219,58 +14,60 @@ JSTR_NEXT_POW2_64(T x)
 					    default : 0)
 #endif /* HAVE_TYPEOF && JSTR_HAVE_GENERIC */
 
-#if defined __GNUC__ || defined __clang__
-#	if JSTR_HAVE_GENERIC
-#		define JSTR_GENERIC_CASE_SIZE(expr)                           \
-			int : expr,                                            \
-			      unsigned int : expr,                             \
-					     size_t : expr,                    \
-						      long : expr,             \
-							     long long : expr, \
-									 unsigned long long : expr
-#		define JSTR_GENERIC_CASE_STR(bool_) \
-			char * : bool_,              \
-				 const char * : bool_
+#if (defined __GNUC__ || defined __clang__) && JSTR_HAVE_GENERIC
+#	define JSTR_GENERIC_CASE_SIZE(_expr)                           \
+		int : _expr,                                            \
+		      unsigned int : _expr,                             \
+				     size_t : _expr,                    \
+					      long : _expr,             \
+						     long long : _expr, \
+								 unsigned long long : _expr
+#	define JSTR_GENERIC_CASE_STR(_bool) \
+		char * : _bool,              \
+			 const char * : _bool
 
-#		define JSTR_GENERIC_CASE_STR_STACK(bool_, _s) \
-			char(*)[sizeof(_s)] : 1,               \
-			const char(*)[sizeof(_s)] : 1
+#	define JSTR_GENERIC_CASE_STR_STACK(_bool, _s) \
+		char(*)[sizeof(_s)] : 1,               \
+		const char(*)[sizeof(_s)] : 1
 
-#		define JSTR_GENERIC_CASE_CHAR(bool_) \
-			char : bool_,                 \
-			       const char : bool_
+#	define JSTR_GENERIC_CASE_CHAR(_bool) \
+		char : _bool,                 \
+		       const char : _bool
 
-#		define JSTR_IS_SIZE(expr) _Generic((expr),                    \
-						    JSTR_GENERIC_CASE_SIZE(1), \
-						    default : 0)
+#	define JSTR_IS_SIZE(_expr) _Generic((_expr),                   \
+					     JSTR_GENERIC_CASE_SIZE(1), \
+					     default : 0)
 
-#		define JSTR_IS_STR(expr) _Generic((expr),                   \
-						   JSTR_GENERIC_CASE_STR(1), \
-						   default : 0)
+#	define JSTR_IS_STR(_expr) _Generic((_expr),                  \
+					    JSTR_GENERIC_CASE_STR(1), \
+					    default : 0)
 
-#		define JSTR_IS_STR_STACK(expr) _Generic((expr),                               \
-							 JSTR_GENERIC_CASE_STR_STACK(1, expr), \
-							 default : 0)
+#	define JSTR_IS_STR_STACK(_expr) _Generic((_expr),                               \
+						  JSTR_GENERIC_CASE_STR_STACK(1, _expr), \
+						  default : 0)
 
-#		define JSTR_IS_CHAR(expr) _Generic((expr),                    \
-						    JSTR_GENERIC_CASE_CHAR(1), \
-						    default : 0)
+#	define JSTR_IS_CHAR(_expr) _Generic((_expr),                   \
+					     JSTR_GENERIC_CASE_CHAR(1), \
+					     default : 0)
 
-#		define JSTR_ASSERT_IS_SIZE(expr) \
-			JSTR_ASSERT(JSTR_IS_SIZE(expr), "Passing non-number as number argument!");
-#		define JSTR_ASSERT_IS_STR(expr) \
-			JSTR_ASSERT(JSTR_IS_STR(expr), "Passing non-string as string argument!");
-#		define JSTR_ASSERT_IS_CHAR(expr) \
-			JSTR_ASSERT(JSTR_IS_CHAR(expr), "Passing non-char as char argument!");
-#		define JSTR_ASSERT_TYPECHECK(Texpr, expr) JSTR_ASSERT(JSTR_SAME_TYPE(Texpr, expr), "Passing the wrong data type!");
-#	else
-#		define JSTR_ASSERT_IS_SIZE(expr)
-#		define JSTR_ASSERT_IS_STR(expr)
-#		define JSTR_ASSERT_IS_CHAR(expr)
-#		define JSTR_ASSERT_TYPECHECK(Texpr, expr)
-#	endif /* HAVE_GENERIC */
+#	define JSTR_ASSERT_IS_SIZE(_expr) \
+		JSTR_ASSERT(JSTR_IS_SIZE(_expr), "Passing non-number as number argument!");
+#	define JSTR_ASSERT_IS_STR(_expr) \
+		JSTR_ASSERT(JSTR_IS_STR(_expr), "Passing non-string as string argument!");
+#	define JSTR_ASSERT_IS_CHAR(_expr) \
+		JSTR_ASSERT(JSTR_IS_CHAR(_expr), "Passing non-char as char argument!");
+#	define JSTR_ASSERT_TYPECHECK(_expr_ty, _expr) \
+		JSTR_ASSERT(JSTR_SAME_TYPE(_expr_ty, _expr), "Passing the wrong data type!");
 #else
-#	define JSTR_IS_SIZE(val)
+#	define JSTR_GENERIC_CASE_SIZE(_expr)
+#	define JSTR_GENERIC_CASE_STR(_bool)
+#	define JSTR_GENERIC_CASE_CHAR(_bool)
+#	define JSTR_IS_STR(_expr)
+#	define JSTR_IS_CHAR(_expr)
+#	define JSTR_ASSERT_IS_SIZE(_expr)
+#	define JSTR_ASSERT_IS_STR(_expr)
+#	define JSTR_ASSERT_IS_CHAR(_expr)
+#	define JSTR_ASSERT_TYPECHECK(_expr_ty, _expr)
 #endif /* __GNUC__ || __clang__ */
 
 #ifdef __cplusplus
@@ -284,15 +81,15 @@ JSTR_NEXT_POW2_64(T x)
 #endif /* HAVE_TYPEOF */
 
 #ifdef static_assert
-#	define JSTR_HAVE_STATIC_ASSERT		 1
-#	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
-#	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
+#	define JSTR_HAVE_STATIC_ASSERT		  1
+#	define JSTR_ASSERT(_expr, msg)		  static_assert(_expr, msg)
+#	define JSTR_ASSERT_SEMICOLON(_expr, msg) static_assert(_expr, msg);
 #elif __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_ASSERT(expr, msg)	_Static_assert(expr, msg)
+#	define JSTR_ASSERT(_expr, msg) _Static_assert(_expr, msg)
 #else
-#	define JSTR_ASSERT(expr, msg)
-#	define JSTR_ASSERT_SEMICOLON(expr, msg)
+#	define JSTR_ASSERT(_expr, msg)
+#	define JSTR_ASSERT_SEMICOLON(_expr, msg)
 #endif /* static_assert */
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
