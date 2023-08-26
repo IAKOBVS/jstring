@@ -25,8 +25,6 @@ extern "C" {
 #	define PJREG_DEB(x)
 #endif /* PJREG_DEB */
 
-#define JSTR_RST JSTR_RESTRICT
-
 /* POSIX cflags */
 #define JREG_CF_EXTENDED REG_EXTENDED
 #define JREG_CF_ICASE	 REG_ICASE
@@ -530,7 +528,7 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 	unsigned char *_p = _dst;
 	const unsigned char *_old = _dst;
 #if JSTR_HAVE_REALLOC_MREMAP
-	const int _is_mmap = JSTR_IS_MMAP(*_cap);
+	const int _is_mmap = PJSTR_IS_MMAP(*_cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((_flag & PJSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
 	       && PJREG_EXEC(_preg, (char *)_p, (*(uc **)_s + *_sz) - _p, 1, &_rm, _eflags) == JREG_RET_NOERROR) {

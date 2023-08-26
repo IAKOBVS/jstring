@@ -72,7 +72,7 @@ priv_jstr_err_exit(void)
 	} while (0)
 
 #if JSTR_HAVE_REALLOC_MREMAP
-#	define JSTR_IS_MMAP(_cap) ((jstr_unlikely((_cap) > JSTR_MIN_MMAP - 1)))
+#	define PJSTR_IS_MMAP(_cap) ((jstr_unlikely((_cap) > PJSTR_MIN_MMAP - 1)))
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 
 #ifdef __cplusplus

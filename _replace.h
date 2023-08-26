@@ -18,8 +18,6 @@ extern "C" {
 extern "C" {
 #endif /* __cpluslus */
 
-#define JSTR_ASCII_SIZE 256
-
 JSTR_INLINE
 static void
 priv_jstr_rmall_in_place(unsigned char **const _dst,
@@ -206,7 +204,7 @@ jstr_slip_mem(char **JSTR_RST const _s,
 	      const size_t _rplclen) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_REALLOC_MREMAP
-	if (JSTR_IS_MMAP(*_cap))
+	if (PJSTR_IS_MMAP(*_cap))
 		return priv_jstr_slip_mem_realloc(_s, _sz, _cap, _at, _rplc, _rplclen);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	return priv_jstr_slip_mem_malloc(_s, _sz, _cap, _at, _rplc, _rplclen);
@@ -231,7 +229,7 @@ priv_jstr_rplcat_mem_may_lower(char **JSTR_RST const _s,
 
 	} else {
 #if JSTR_HAVE_REALLOC_MREMAP
-		if (JSTR_IS_MMAP(*_cap)) {
+		if (PJSTR_IS_MMAP(*_cap)) {
 			PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _findlen, return NULL);
 			return jstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
 		}
@@ -265,7 +263,7 @@ jstr_rplcat_mem(char **JSTR_RST const _s,
 		const size_t _findlen) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_REALLOC_MREMAP
-	if (JSTR_IS_MMAP(*_cap))
+	if (PJSTR_IS_MMAP(*_cap))
 		return priv_jstr_rplcat_mem_realloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	return priv_jstr_rplcat_mem_malloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
@@ -351,7 +349,7 @@ jstr_slipaftallc_mem(char **JSTR_RST const _s,
 	size_t off = 0;
 	const char *_p;
 #if JSTR_HAVE_REALLOC_MREMAP
-	const int is_mmap = JSTR_IS_MMAP(*_cap);
+	const int is_mmap = PJSTR_IS_MMAP(*_cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((_p = (char *)memchr(*_s + off, _c, *_sz - off))) {
 		off = _p - *_s;
@@ -484,7 +482,7 @@ jstr_slipaftall_mem(char **JSTR_RST const _s,
 		size_t off = 0;
 		const char *_p;
 #if JSTR_HAVE_REALLOC_MREMAP
-		const int is_mmap = JSTR_IS_MMAP(*_cap);
+		const int is_mmap = PJSTR_IS_MMAP(*_cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 		while ((_p = (char *)PJSTR_MEMMEM(*_s + off, *_sz - off, _find, _findlen))) {
 			off = _p - *_s;
@@ -1057,7 +1055,7 @@ priv_jstr_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 	const unsigned char *_old = _p;
 	unsigned char *_dst = *(uc **)_s;
 #if JSTR_HAVE_REALLOC_MREMAP
-	const int is_mmap = JSTR_IS_MMAP(*_cap);
+	const int is_mmap = PJSTR_IS_MMAP(*_cap);
 #endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((_p = (uc *)PJSTR_MEMMEM((char *)_p, (*(uc **)_s + *_sz) - _p, _find, _findlen))) {
 		if (_rplclen <= _findlen)
