@@ -24,7 +24,7 @@ JSTR_NOINLINE
 static void
 priv_jstr_err(const char *JSTR_RST const FILE_,
 	      const int LINE_,
-	      const char *JSTR_RST const func_)
+	      const char *JSTR_RST const func_) JSTR_NOEXCEPT
 {
 #if JSTR_CFG_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
@@ -38,7 +38,7 @@ priv_jstr_err(const char *JSTR_RST const FILE_,
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
 static void
-priv_jstr_err_exit(void)
+priv_jstr_err_exit(void) JSTR_NOEXCEPT
 {
 #if JSTR_CFG_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", __FILE__, __LINE__, __func__);

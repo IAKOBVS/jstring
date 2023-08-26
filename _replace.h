@@ -421,11 +421,6 @@ jstr_slipaft_mem(char **JSTR_RST const _s,
 /*
   Slip SRC after all _end of NE in DST.
 */
-#if JSTR_CFG_HAVE_ALLOCA
-JSTR_NOINLINE
-#else
-JSTR_INLINE
-#endif /* HAVE_ALLOCA */
 JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
@@ -456,11 +451,6 @@ jstr_slipaftall_mem_p_f(char *JSTR_RST const _s,
 /*
   Slip SRC after all _end of NE in DST.
 */
-#if JSTR_CFG_HAVE_ALLOCA
-JSTR_NOINLINE
-#else
-JSTR_INLINE
-#endif /* HAVE_ALLOCA */
 JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 static void
@@ -898,11 +888,6 @@ jstr_rplclast_mem(char **JSTR_RST const _s,
 	priv_jstr_rplcat_mem_may_lower(_s, _sz, _cap, _p - *_s, _rplc, _rplclen, _findlen);
 }
 
-#if JSTR_CFG_HAVE_ALLOCA
-JSTR_NOINLINE
-#else
-JSTR_INLINE
-#endif /* HAVE_ALLOCA */
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
@@ -1019,11 +1004,6 @@ jstr_rmall_j(jstr_ty *JSTR_RST const _j,
 	return jstr_rmall_mem_j(_j, _find, strlen(_find));
 }
 
-#if JSTR_CFG_HAVE_ALLOCA
-JSTR_NOINLINE
-#else
-JSTR_INLINE
-#endif /* HAVE_ALLOCA */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 static void

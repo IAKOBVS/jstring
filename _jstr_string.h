@@ -249,7 +249,7 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		  const size_t _nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define PJSTR_MEMMEMR(shift_type, ne_iterator_type)                                     \
+#define JSTR_MEMMEMR(shift_type, ne_iterator_type)                                     \
 	do {                                                                                \
 		const unsigned char *_h = (unsigned char *)_hs + _hslen + _nelen;           \
 		const unsigned char *const _n = (unsigned char *)_ne;                       \
@@ -279,10 +279,10 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		return NULL;                                                                \
 	} while (0)
 	if (jstr_unlikely(_hslen > 256))
-		PJSTR_MEMMEMR(size_t, size_t);
-	PJSTR_MEMMEMR(uint8_t, int);
+		JSTR_MEMMEMR(size_t, size_t);
+	JSTR_MEMMEMR(uint8_t, int);
 #undef JSTR_HASH2
-#undef PJSTR_MEMMEMR
+#undef JSTR_MEMMEMR
 }
 
 /*
