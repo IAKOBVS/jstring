@@ -357,7 +357,7 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 static int
 jstrio_is_binary_maybe(char *JSTR_RST const _buf,
-			    const size_t _sz) JSTR_NOEXCEPT
+		       const size_t _sz) JSTR_NOEXCEPT
 {
 	if (jstr_likely(_sz > PRIV_JSTR_IO_ELF_SZ - 1))
 		if (!memcmp(_buf, PRIV_JSTR_IO_ELF, PRIV_JSTR_IO_ELF_SZ))
@@ -380,7 +380,7 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 static int
 jstrio_is_binary(const char *JSTR_RST const _buf,
-		      const size_t _sz) JSTR_NOEXCEPT
+		 const size_t _sz) JSTR_NOEXCEPT
 {
 	if (jstr_likely(_sz > PRIV_JSTR_IO_ELF_SZ - 1))
 		if (!memcmp(_buf, PRIV_JSTR_IO_ELF, PRIV_JSTR_IO_ELF_SZ))
