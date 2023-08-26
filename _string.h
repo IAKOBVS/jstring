@@ -450,10 +450,7 @@ priv_strcasechr(const char *JSTR_RST _s,
 	return (char *)strpbrk(_s, _acc);
 }
 
-#if defined(__GNUC__) || defined(__clang__)
-#	pragma GCC diagnostic ignored "-Wunused-parameter"
-#	pragma GCC diagnostic push
-#endif /* defined(__GNUC__) || defined(__clang__) */
+#if !JSTR_HAVE_STRCASESTR
 
 /*
    Find NE in HS case-insensitively.
@@ -466,42 +463,36 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-#if JSTR_HAVE_STRCASESTR
-JSTR_INLINE
-JSTR_DEPRECATED("strcasestr is available! _hslen and _nelen are wasted.", strcasestr)
-#endif /* JSTR_HAVE_STRCASESTR */
 static char *
 jstr_memcasemem(const char *JSTR_RST const _hs,
 		const size_t _hslen,
 		const char *JSTR_RST const _ne,
 		const size_t _nelen) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR
-	return (char *)strcasestr(_hs, _ne);
-#else
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
 	case 0: return (char *)_hs;
 	case 1: return priv_strcasechr(_hs, *_ne, _hslen);
+	case 2:
+do2:
+		if (jstr_islower(*_ne) && jstr_islower(*(_ne + 1)))
+			return (char *)PRIV_JSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
+		break;
+	case 3:
+do3:
+		if (jstr_islower(*(_ne + 2)))
+			goto do2;
+		break;
 	case 4:
 		if (jstr_islower(*(_ne + 3)))
 			goto do3;
 		break;
-do3:
-	case 3:
-		if (jstr_islower(*(_ne + 2)))
-			goto do2;
-		break;
-do2:
-	case 2:
-		if (jstr_islower(*_ne) && jstr_islower(*(_ne + 1)))
-			return (char *)PRIV_JSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
-		break;
 	}
 	return priv_jstr_memcasemem3(_hs, _hslen, _ne, _nelen);
-#endif
 }
+
+#endif /* !HAVE_STRCASESTR */
 
 /*
    Find NE in HS case-insensitively.
