@@ -26,7 +26,7 @@ extern "C" {
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) memmem(_hs, hlen, _ne, nlen)
 #else
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) strstr(_hs, _ne)
-#endif /* JSTR_HAVE_MEMMEM */
+#endif /* HAVE_MEMMEM */
 
 /*
   Return value:
@@ -82,7 +82,7 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 	const size_t _n = strlen(_s);
 	const void *const p = memchr(_s, _c, _n);
 	return (p != NULL) ? (char *)p : (char *)_s + _n;
-#endif /* JSTR_HAVE_STRCHRNUL */
+#endif /* HAVE_STRCHRNUL */
 }
 
 JSTR_NONNULL_ALL
@@ -99,7 +99,7 @@ jstr_strdup(const char *JSTR_RST const _s)
 	if (jstr_unlikely(p == NULL))
 		return NULL;
 	return (char *)memcpy(p, _s, len);
-#endif /* JSTR_HAVE_STRCHRNUL */
+#endif /* HAVE_STRCHRNUL */
 }
 
 /* Copy no more than N bytes of SRC to DEST, stopping when C is found.
@@ -122,7 +122,7 @@ jstr_memccpy(void *JSTR_RST _dst,
 		return jstr_mempcpy(_dst, _src, p - _src + 1);
 	memcpy(_dst, _src, _n);
 	return NULL;
-#endif /* JSTR_HAVE_MEMCPY */
+#endif /* HAVE_MEMCPY */
 }
 
 /*
@@ -189,7 +189,7 @@ jstr_strncasecmp(const char *JSTR_RST const _s1,
 		}
 	}
 	return 0;
-#endif /* JSTR_HAVE_STRNCASECMP */
+#endif /* HAVE_STRNCASECMP */
 }
 
 /*
@@ -517,7 +517,7 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 	return (char *)strcasestr(_hs, _ne);
 #else
 	return jstr_memcasemem(_hs, strlen(_hs), _ne, strlen(_ne));
-#endif /* JSTR_HAVE_STRCASESTR */
+#endif /* HAVE_STRCASESTR */
 }
 
 /*

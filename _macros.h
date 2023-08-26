@@ -208,7 +208,7 @@ JSTR_NEXT_POW2_64(T x)
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1
-#endif /* JSTR_HAVE_GENERIC */
+#endif /* HAVE_GENERIC */
 
 #if defined JSTR_HAVE_TYPEOF && defined JSTR_HAVE_GENERIC
 #	define JSTR_SAME_TYPE(x, y) _Generic((x),           \
@@ -217,7 +217,7 @@ JSTR_NEXT_POW2_64(T x)
 #	define JSTR_IS_TYPE(T, x) _Generic((x),   \
 					    T : 1, \
 					    default : 0)
-#endif /* JSTR_HAVE_TYPEOF && JSTR_HAVE_GENERIC */
+#endif /* HAVE_TYPEOF && JSTR_HAVE_GENERIC */
 
 #if defined __GNUC__ || defined __clang__
 #	if JSTR_HAVE_GENERIC
@@ -268,7 +268,7 @@ JSTR_NEXT_POW2_64(T x)
 #		define JSTR_ASSERT_IS_STR(expr)
 #		define JSTR_ASSERT_IS_CHAR(expr)
 #		define JSTR_ASSERT_TYPECHECK(Texpr, expr)
-#	endif /* JSTR_HAVE_GENERIC */
+#	endif /* HAVE_GENERIC */
 #else
 #	define JSTR_IS_SIZE(val)
 #endif /* __GNUC__ || __clang__ */
@@ -281,7 +281,7 @@ JSTR_NEXT_POW2_64(T x)
 
 #if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
 #	define JSTR_HAVE_TYPEOF 1
-#endif /* JSTR_HAVE_TYPEOF */
+#endif /* HAVE_TYPEOF */
 
 #ifdef static_assert
 #	define JSTR_HAVE_STATIC_ASSERT		 1

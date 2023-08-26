@@ -358,7 +358,7 @@ jstrio_ext_type_mem(const char *JSTR_RST _filename,
 	return priv_jstrio_ext_type(_filename + 1);
 }
 
-#endif /* JSTR_HAVE_MEMRCHR */
+#endif /* HAVE_MEMRCHR */
 
 /*
    Returns jstrio_ext_ty based on the filename extension;
