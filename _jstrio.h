@@ -375,9 +375,17 @@ jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 	return priv_jstrio_ext_type(_filename + 1);
 }
 
-#define PJSTRIO_UNPRINTABLE "\x01\x02\x03\x04\x05\x06\x07\x08\x11\x12\x13\x14\x15\x16\x17\x18\x19\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x30\x31"
-#define PJSTRIO_ELF	 "\x7ELF"
-#define PJSTRIO_ELF_SZ	 (sizeof("\x7ELF") - 1)
+#define JSTR_ELF    "\x7ELF"
+#define JSTR_ELF_SZ (sizeof("\x7ELF") - 1)
+#define JSTR_UTF    "\xEF\xBB\xBF"
+#define JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
+
+/* Exclude \r on Windows */
+#ifdef _WIN32
+#	define JSTR_UNPRINTABLE "\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F"
+#else
+#	define JSTR_UNPRINTABLE "\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F"
+#endif /* _WIN32 */
 
 /*
    Checks if the first 32 bytes or fewer contain any unprintable character.
@@ -389,17 +397,28 @@ static int
 jstrio_is_binary_maybe(char *JSTR_RST const _buf,
 		       const size_t _sz) JSTR_NOEXCEPT
 {
-	if (jstr_likely(_sz > PJSTRIO_ELF_SZ - 1))
-		if (!memcmp(_buf, PJSTRIO_ELF, PJSTRIO_ELF_SZ))
-			return 1;
-	if (jstr_unlikely(_sz > 32)) {
+#define JSTR_BINARY_CHECK()                                                      \
+	do {                                                                     \
+		if (jstr_likely(_sz > JSTR_ELF_SZ - 1)) {                        \
+			if (jstr_unlikely(!memcmp(_buf, JSTR_ELF, JSTR_ELF_SZ))) \
+				return 1;                                        \
+CHECK_UTF:;                                                                      \
+			unsigned char *JSTR_RST _s = (unsigned char *)_buf;      \
+			if (!memcmp(_s, JSTR_UTF, JSTR_UTF_SZ))                  \
+				return 0;                                        \
+		} else if (jstr_likely(_sz == JSTR_UTF_SZ)) {                    \
+			goto CHECK_UTF;                                          \
+		}                                                                \
+	} while (0)
+	JSTR_BINARY_CHECK();
+	if (jstr_likely(_sz > 32)) {
 		const char old = *(_buf + _sz);
 		*(_buf + _sz) = '\0';
-		const int ret = strcspn(_buf, PJSTRIO_UNPRINTABLE) != 32;
+		const int ret = strcspn(_buf, JSTR_UNPRINTABLE) != 32;
 		*(_buf + _sz) = old;
 		return ret;
 	}
-	return strcspn(_buf, PJSTRIO_UNPRINTABLE) != _sz;
+	return strcspn(_buf, JSTR_UNPRINTABLE) != _sz;
 }
 
 /*
@@ -424,15 +443,15 @@ static int
 jstrio_is_binary(const char *JSTR_RST const _buf,
 		 const size_t _sz) JSTR_NOEXCEPT
 {
-	if (jstr_likely(_sz > PJSTRIO_ELF_SZ - 1))
-		if (!memcmp(_buf, PJSTRIO_ELF, PJSTRIO_ELF_SZ))
-			return 1;
-	return strcspn(_buf, PJSTRIO_UNPRINTABLE) == _sz;
+	JSTR_BINARY_CHECK();
+	return strcspn(_buf, JSTR_UNPRINTABLE) == _sz;
 }
 
-#undef PJSTRIO_UNPRINTABLE
-#undef PJSTRIO_ELF
-#undef PJSTRIO_ELF_SZ
+#undef JSTR_ELF
+#undef JSTR_ELF_SZ
+#undef JSTR_UTF
+#undef JSTR_UTF_SZ
+#undef JSTR_UNPRINTABLE
 
 /*
    Checks the whole file for any unprintable character.
