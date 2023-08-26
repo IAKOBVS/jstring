@@ -529,9 +529,9 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 	unsigned char *_dst = *(uc **)_s;
 	unsigned char *_p = _dst;
 	const unsigned char *_old = _dst;
-#if JREG_HAVE_REALLOC_MREMAP
+#if JSTR_HAVE_REALLOC_MREMAP
 	const int _is_mmap = JSTR_IS_MMAP(*_cap);
-#endif /* JREG_HAVE_REALLOC_MREMAP */
+#endif /* JSTR_HAVE_REALLOC_MREMAP */
 	while ((_flag & PRIV_JSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
 	       && PRIV_JREG_EXEC(_preg, (char *)_p, (*(uc **)_s + *_sz) - _p, 1, &_rm, _eflags) == JREG_RET_NOERROR) {
 		_ret = JREG_RET_NOERROR;
@@ -572,7 +572,7 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 			}
 		} else {
 			PRIV_JREG_DEB("_cap <= *_sz + _rplclen - _ptnlen");
-#if JREG_HAVE_REALLOC_MREMAP
+#if JSTR_HAVE_REALLOC_MREMAP
 			if (jstr_unlikely(_is_mmap)) {
 				if (_dst != _old)
 					memmove(_dst, _old, _p - _old);
@@ -586,7 +586,7 @@ priv_jreg_base_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 				_dst = *(uc **)_s + (_dst - _tmp) + _rplclen;
 				_old = _dst;
 			} else
-#endif /* JREG_HAVE_REALLOC_MREMAP */
+#endif /* JSTR_HAVE_REALLOC_MREMAP */
 			{
 				PRIV_JSTR_GROW(*_cap, *_sz + _rplclen - _ptnlen);
 				_tmp = (uc *)malloc(*_cap);
