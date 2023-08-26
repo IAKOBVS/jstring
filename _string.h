@@ -249,35 +249,34 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		  const size_t _nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define PRIV_JSTR_MEMMEMR(shift_type, ne_iterator_type)                                    \
-	do {                                                                               \
-		const unsigned char *_h = (unsigned char *)_hs + _hslen + _nelen;          \
-		const unsigned char *const _n = (unsigned char *)_ne;                      \
-		const unsigned char *const _start = (unsigned char *)_hs - 1;              \
-		size_t _tmp;                                                               \
-		size_t shift1;                                                             \
-		size_t mtc1 = _nelen - 1;                                                  \
-		size_t off = 0;                                                            \
-		shift_type shift[256];                                                     \
-		memset(shift, 0, sizeof(shift));                                           \
-		for (ne_iterator_type i = 1; jstr_likely(i < (ne_iterator_type)mtc1); ++i) \
-			shift[JSTR_HASH2(_n + i)] = i;                                     \
-		shift1 = mtc1 - shift[JSTR_HASH2(_n + mtc1)];                              \
-		shift[JSTR_HASH2(_n + mtc1)] = mtc1;                                       \
-		do {                                                                       \
-			do {                                                               \
-				_h -= mtc1;                                                \
-				_tmp = shift[JSTR_HASH2(_h)];                              \
-			} while (!_tmp && _h > _start);                                    \
-			_h -= _tmp;                                                        \
-			if (mtc1 < 15 || !memcmp(_h + off, _n + off, 8)) {                 \
-				if (!memcmp(_h, _n, _nelen))                               \
-					return (void *)_h;                                 \
-				off = (off >= 8 ? off : mtc1) - 8;                         \
-			}                                                                  \
-			_h -= shift1;                                                      \
-		} while (_h > _start);                                                     \
-		return NULL;                                                               \
+#define PRIV_JSTR_MEMMEMR(shift_type, ne_iterator_type)                                     \
+	do {                                                                                \
+		const unsigned char *_h = (unsigned char *)_hs + _hslen + _nelen;           \
+		const unsigned char *const _n = (unsigned char *)_ne;                       \
+		const unsigned char *const _start = (unsigned char *)_hs - 1;               \
+		size_t _tmp;                                                                \
+		const size_t _mtc1 = _nelen - 1;                                            \
+		size_t _off = 0;                                                            \
+		shift_type _shift[256];                                                     \
+		memset(_shift, 0, sizeof(_shift));                                          \
+		for (ne_iterator_type i = 1; jstr_likely(i < (ne_iterator_type)_mtc1); ++i) \
+			_shift[JSTR_HASH2(_n + i)] = i;                                     \
+		const size_t shft1 = _mtc1 - _shift[JSTR_HASH2(_n + _mtc1)];                \
+		_shift[JSTR_HASH2(_n + _mtc1)] = _mtc1;                                     \
+		do {                                                                        \
+			do {                                                                \
+				_h -= _mtc1;                                                \
+				_tmp = _shift[JSTR_HASH2(_h)];                              \
+			} while (!_tmp && _h > _start);                                     \
+			_h -= _tmp;                                                         \
+			if (_mtc1 < 15 || !memcmp(_h + _off, _n + _off, 8)) {               \
+				if (!memcmp(_h, _n, _nelen))                                \
+					return (void *)_h;                                  \
+				_off = (_off >= 8 ? _off : _mtc1) - 8;                      \
+			}                                                                   \
+			_h -= shft1;                                                        \
+		} while (_h > _start);                                                      \
+		return NULL;                                                                \
 	} while (0)
 	if (jstr_unlikely(_hslen > 256))
 		PRIV_JSTR_MEMMEMR(size_t, size_t);
@@ -385,14 +384,13 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 		const unsigned char *const _n = (unsigned char *)_ne;                                   \
 		const unsigned char *const _end = _h + _hslen - _nelen + 1;                             \
 		size_t _tmp;                                                                            \
-		size_t _shft1;                                                                          \
-		size_t _mtc1 = _nelen - 1;                                                              \
+		const size_t _mtc1 = _nelen - 1;                                                        \
 		size_t _off = 0;                                                                        \
 		shift_type _shift[256];                                                                 \
 		memset(_shift, 0, sizeof(_shift));                                                      \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)_mtc1; ++i)                          \
 			_shift[JSTR_HASH2_LOWER(_n + i)] = i;                                           \
-		_shft1 = _mtc1 - _shift[JSTR_HASH2_LOWER(_n + _mtc1)];                                  \
+		const size_t _shft1 = _mtc1 - _shift[JSTR_HASH2_LOWER(_n + _mtc1)];                     \
 		_shift[JSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                           \
 		do {                                                                                    \
 			do {                                                                            \
