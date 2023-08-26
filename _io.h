@@ -1,5 +1,5 @@
-#ifndef JSTR_IO_H_DEF
-#define JSTR_IO_H_DEF
+#ifndef JSTRIO_H_DEF
+#define JSTRIO_H_DEF
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,9 +19,9 @@ extern "C" {
 #endif /* __cpluslus */
 
 typedef enum {
-	JSTR_IO_UNKNOWN = 0,
-	JSTR_IO_TEXT,
-	JSTR_IO_BINARY,
+	JSTRIO_UNKNOWN = 0,
+	JSTRIO_TEXT,
+	JSTRIO_BINARY,
 } jstrio_ext_ty;
 
 JSTR_WARN_UNUSED
@@ -35,7 +35,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	case 'a':
 		switch (*_ext) {
 		/* a */
-		case '\0': return JSTR_IO_BINARY;
+		case '\0': return JSTRIO_BINARY;
 		}
 		break;
 	/* bin : BINARY */
@@ -46,7 +46,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'n':
 				switch (*_ext) {
 				/* bin */
-				case '\0': return JSTR_IO_BINARY;
+				case '\0': return JSTRIO_BINARY;
 				}
 				break;
 			}
@@ -56,18 +56,18 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	/* C : TEXT */
 	case 'C':
 		switch (*_ext) {
-		case '\0': return JSTR_IO_TEXT;
+		case '\0': return JSTRIO_TEXT;
 		}
 		break;
 	/* c, cc, cpp, cs : TEXT */
 	case 'c':
 		switch (*_ext++) {
 		/* c */
-		case '\0': return JSTR_IO_TEXT;
+		case '\0': return JSTRIO_TEXT;
 		case 'c':
 			switch (*_ext) {
 			/* cc */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		case 'p':
@@ -75,14 +75,14 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'p':
 				switch (*_ext) {
 				/* cpp */
-				case '\0': return JSTR_IO_TEXT;
+				case '\0': return JSTRIO_TEXT;
 				}
 			}
 			break;
 		case 's':
 			switch (*_ext) {
 			/* cs */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		}
@@ -93,7 +93,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		case 'd':
 			switch (*_ext) {
 			/* md */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		case 'k':
@@ -102,7 +102,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 				switch (*_ext++) {
 				case 'v':
 					switch (*_ext) {
-					case '\0': return JSTR_IO_BINARY;
+					case '\0': return JSTRIO_BINARY;
 					}
 					break;
 				}
@@ -117,7 +117,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		case 'z':
 			switch (*_ext) {
 			/* gz */
-			case '\0': return JSTR_IO_BINARY;
+			case '\0': return JSTRIO_BINARY;
 			}
 			break;
 		}
@@ -126,11 +126,11 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	case 'h':
 		switch (*_ext++) {
 		/* h */
-		case '\0': return JSTR_IO_TEXT;
+		case '\0': return JSTRIO_TEXT;
 		case 'h':
 			switch (*_ext) {
 			/* hh */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		case 'p':
@@ -138,7 +138,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'p':
 				switch (*_ext) {
 				/* .hpp */
-				case '\0': return JSTR_IO_TEXT;
+				case '\0': return JSTRIO_TEXT;
 				}
 				break;
 			}
@@ -150,7 +150,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 				case 'l':
 					switch (*_ext++) {
 					/* html */
-					case '\0': return JSTR_IO_TEXT;
+					case '\0': return JSTRIO_TEXT;
 					}
 					break;
 				}
@@ -168,7 +168,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'g':
 				switch (*_ext) {
 				/* jpg */
-				case '\0': return JSTR_IO_BINARY;
+				case '\0': return JSTRIO_BINARY;
 				}
 				break;
 			case 'e':
@@ -176,7 +176,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 				case 'g':
 					switch (*_ext) {
 					/* jpeg */
-					case '\0': return JSTR_IO_BINARY;
+					case '\0': return JSTRIO_BINARY;
 					}
 					break;
 				}
@@ -186,13 +186,13 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		case 's':
 			switch (*_ext++) {
 			/* js */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			case 'o':
 				switch (*_ext++) {
 				case 'n':
 					switch (*_ext) {
 					/* json */
-					case '\0': return JSTR_IO_TEXT;
+					case '\0': return JSTRIO_TEXT;
 					}
 					break;
 				}
@@ -204,7 +204,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	case 'o':
 		switch (*_ext++) {
 		/* o */
-		case '\0': return JSTR_IO_BINARY;
+		case '\0': return JSTRIO_BINARY;
 		}
 		break;
 	/* png, pyc, pdf : BINARY
@@ -214,13 +214,13 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		case 'l':
 			switch (*_ext) {
 			/* pl */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		case 'm':
 			switch (*_ext) {
 			/* pm */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		case 'y':
@@ -228,17 +228,17 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'i':
 				switch (*_ext) {
 				/* pyi */
-				case '\0': return JSTR_IO_TEXT;
+				case '\0': return JSTRIO_TEXT;
 				}
 				break;
 			case 'c':
 				switch (*_ext) {
 				/* pyc */
-				case '\0': return JSTR_IO_BINARY;
+				case '\0': return JSTRIO_BINARY;
 				}
 				break;
 			/* py */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		case 'n':
@@ -246,7 +246,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'g':
 				switch (*_ext) {
 				/* png */
-				case '\0': return JSTR_IO_BINARY;
+				case '\0': return JSTRIO_BINARY;
 				}
 				break;
 			}
@@ -256,7 +256,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'f':
 				switch (*_ext) {
 				/* pdf */
-				case '\0': return JSTR_IO_BINARY;
+				case '\0': return JSTRIO_BINARY;
 				}
 				break;
 			}
@@ -270,17 +270,17 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		case 'h':
 			switch (*_ext) {
 			/* .sh */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		case 'o':
 			switch (*_ext) {
 			/* .so */
-			case '\0': return JSTR_IO_BINARY;
+			case '\0': return JSTRIO_BINARY;
 			}
 			break;
 		/* s */
-		case '\0': return JSTR_IO_TEXT;
+		case '\0': return JSTRIO_TEXT;
 		}
 		break;
 	/* rs : TEXT */
@@ -289,7 +289,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		case 's':
 			switch (*_ext) {
 			/* rs */
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		}
@@ -298,7 +298,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	case 'S':
 		switch (*_ext) {
 		/* S */
-		case '\0': return JSTR_IO_TEXT;
+		case '\0': return JSTRIO_TEXT;
 		}
 		break;
 	/* txt : TEXT */
@@ -306,7 +306,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		switch (*_ext++) {
 		case 's':
 			switch (*_ext) {
-			case '\0': return JSTR_IO_TEXT;
+			case '\0': return JSTRIO_TEXT;
 			}
 			break;
 		case 'x':
@@ -314,7 +314,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 't':
 				switch (*_ext) {
 				/* txt */
-				case '\0': return JSTR_IO_TEXT;
+				case '\0': return JSTRIO_TEXT;
 				}
 				break;
 			}
@@ -329,7 +329,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'v':
 				switch (*_ext) {
 				/* wav */
-				case '\0': return JSTR_IO_BINARY;
+				case '\0': return JSTRIO_BINARY;
 				}
 				break;
 			}
@@ -337,7 +337,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		}
 		break;
 	}
-	return JSTR_IO_UNKNOWN;
+	return JSTRIO_UNKNOWN;
 }
 
 #if JSTR_HAVE_MEMRCHR
@@ -354,7 +354,7 @@ jstrio_ext_type_mem(const char *JSTR_RST _filename,
 {
 	_filename = (char *)memrchr(_filename, '.', _sz);
 	if (_filename == NULL)
-		return JSTR_IO_UNKNOWN;
+		return JSTRIO_UNKNOWN;
 	return priv_jstrio_ext_type(_filename + 1);
 }
 
@@ -371,13 +371,13 @@ jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 {
 	_filename = strrchr(_filename, '.');
 	if (_filename == NULL)
-		return JSTR_IO_UNKNOWN;
+		return JSTRIO_UNKNOWN;
 	return priv_jstrio_ext_type(_filename + 1);
 }
 
-#define PRIV_JSTR_IO_UNPRINTABLE "\x01\x02\x03\x04\x05\x06\x07\x08\x11\x12\x13\x14\x15\x16\x17\x18\x19\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x30\x31"
-#define PRIV_JSTR_IO_ELF	 "\x7ELF"
-#define PRIV_JSTR_IO_ELF_SZ	 (sizeof("\x7ELF") - 1)
+#define PJSTRIO_UNPRINTABLE "\x01\x02\x03\x04\x05\x06\x07\x08\x11\x12\x13\x14\x15\x16\x17\x18\x19\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x30\x31"
+#define PJSTRIO_ELF	 "\x7ELF"
+#define PJSTRIO_ELF_SZ	 (sizeof("\x7ELF") - 1)
 
 /*
    Checks if the first 32 bytes or fewer contain any unprintable character.
@@ -389,17 +389,17 @@ static int
 jstrio_is_binary_maybe(char *JSTR_RST const _buf,
 		       const size_t _sz) JSTR_NOEXCEPT
 {
-	if (jstr_likely(_sz > PRIV_JSTR_IO_ELF_SZ - 1))
-		if (!memcmp(_buf, PRIV_JSTR_IO_ELF, PRIV_JSTR_IO_ELF_SZ))
+	if (jstr_likely(_sz > PJSTRIO_ELF_SZ - 1))
+		if (!memcmp(_buf, PJSTRIO_ELF, PJSTRIO_ELF_SZ))
 			return 1;
 	if (jstr_unlikely(_sz > 32)) {
 		const char old = *(_buf + _sz);
 		*(_buf + _sz) = '\0';
-		const int ret = strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) != 32;
+		const int ret = strcspn(_buf, PJSTRIO_UNPRINTABLE) != 32;
 		*(_buf + _sz) = old;
 		return ret;
 	}
-	return strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) != _sz;
+	return strcspn(_buf, PJSTRIO_UNPRINTABLE) != _sz;
 }
 
 /*
@@ -424,15 +424,15 @@ static int
 jstrio_is_binary(const char *JSTR_RST const _buf,
 		 const size_t _sz) JSTR_NOEXCEPT
 {
-	if (jstr_likely(_sz > PRIV_JSTR_IO_ELF_SZ - 1))
-		if (!memcmp(_buf, PRIV_JSTR_IO_ELF, PRIV_JSTR_IO_ELF_SZ))
+	if (jstr_likely(_sz > PJSTRIO_ELF_SZ - 1))
+		if (!memcmp(_buf, PJSTRIO_ELF, PJSTRIO_ELF_SZ))
 			return 1;
-	return strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) == _sz;
+	return strcspn(_buf, PJSTRIO_UNPRINTABLE) == _sz;
 }
 
-#undef PRIV_JSTR_IO_UNPRINTABLE
-#undef PRIV_JSTR_IO_ELF
-#undef PRIV_JSTR_IO_ELF_SZ
+#undef PJSTRIO_UNPRINTABLE
+#undef PJSTRIO_ELF
+#undef PJSTRIO_ELF_SZ
 
 /*
    Checks the whole file for any unprintable character.
@@ -463,7 +463,7 @@ priv_jstrio_alloc_file(const int alloc_exact,
 		goto _ERR_CLOSE;
 	*_cap = alloc_exact ? _st->st_size : _st->st_size * 2;
 	*_s = (char *)malloc(*_cap);
-	PRIV_JSTR_MALLOC_ERR(*_s, goto _ERR_CLOSE);
+	PJSTR_MALLOC_ERR(*_s, goto _ERR_CLOSE);
 	fread(*_s, 1, _st->st_size, _fp);
 	fclose(_fp);
 	*(*_s + _st->st_size) = '\0';
@@ -544,4 +544,4 @@ jstrio_allocexact_file_j(jstr_ty *JSTR_RST const _j,
 }
 #endif /* __cpluslus */
 
-#endif /* JSTR_IO_H_DEF */
+#endif /* JSTRIO_H_DEF */

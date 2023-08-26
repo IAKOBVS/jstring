@@ -47,28 +47,28 @@ priv_jstr_err_exit(void)
 	exit(1);
 }
 
-#define PRIV_JSTR_MALLOC_ERR(p, malloc_fail)                         \
+#define PJSTR_MALLOC_ERR(p, malloc_fail)                         \
 	do {                                                         \
 		if (jstr_unlikely((p) == NULL)) {                    \
 			priv_jstr_err(__FILE__, __LINE__, __func__); \
 			malloc_fail;                                 \
 		}                                                    \
 	} while (0)
-#define PRIV_JSTR_GROW(old_cap, new_cap)                                      \
+#define PJSTR_GROW(old_cap, new_cap)                                      \
 	do {                                                                  \
 		JSTR_ASSERT_IS_SIZE(old_cap);                                 \
 		JSTR_ASSERT_IS_SIZE(new_cap);                                 \
 		while (((old_cap) *= JSTR_CFG_GROWTH_MULTIPLIER) < (new_cap)) \
 			;                                                     \
 	} while (0)
-#define PRIV_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
+#define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
 	do {                                                \
 		JSTR_ASSERT_IS_STR(p);                      \
 		JSTR_ASSERT_IS_SIZE(old_cap);               \
 		JSTR_ASSERT_IS_SIZE(new_cap);               \
-		PRIV_JSTR_GROW(old_cap, new_cap);           \
+		PJSTR_GROW(old_cap, new_cap);           \
 		(p) = (char *)realloc(p, old_cap);          \
-		PRIV_JSTR_MALLOC_ERR(p, malloc_fail);       \
+		PJSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 
 #if JSTR_HAVE_REALLOC_MREMAP
@@ -270,7 +270,7 @@ jstr_alloc_cat(char **JSTR_RST const _s,
 	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*_cap = *_sz * 2;
 	*_s = (char *)malloc(*_cap);
-	PRIV_JSTR_MALLOC_ERR(*_s, return);
+	PJSTR_MALLOC_ERR(*_s, return);
 	char *p = *_s;
 	jstr::_priv::cat_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*p = '\0';
@@ -322,7 +322,7 @@ jstr_cat(char **JSTR_RST const _s,
 	const size_t newsz = *_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	endif
 	if (*_cap < *_sz)
-		PRIV_JSTR_REALLOC(*_s, *_cap, newsz + 1, return);
+		PJSTR_REALLOC(*_s, *_cap, newsz + 1, return);
 	char *p = *_s + *_sz;
 #	if 0
 	jstr::_priv::cat_loop_assign(&p, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);

@@ -1,5 +1,5 @@
-#ifndef PRIV_JSTR_PP_VA_ARGS_MACROS_DEF_H
-#define PRIV_JSTR_PP_VA_ARGS_MACROS_DEF_H
+#ifndef PJSTR_PP_VA_ARGS_MACROS_DEF_H
+#define PJSTR_PP_VA_ARGS_MACROS_DEF_H
 
 #include "_pp_st_assert.h"
 #include "_pp_strcpy_va_args.h"
@@ -10,24 +10,24 @@
 #endif
 #include "_pp_va_args_tools.h"
 
-#ifndef PRIV_JSTR_PP_CASE_VOWEL_UPPER
-#	define PRIV_JSTR_PP_CASE_VOWEL_LOWER \
+#ifndef PJSTR_PP_CASE_VOWEL_UPPER
+#	define PJSTR_PP_CASE_VOWEL_LOWER \
 	case 'a':                             \
 	case 'i':                             \
 	case 'u':                             \
 	case 'e':                             \
 	case 'o':
-#	define PRIV_JSTR_PP_CASE_VOWEL_UPPER \
+#	define PJSTR_PP_CASE_VOWEL_UPPER \
 	case 'A':                             \
 	case 'I':                             \
 	case 'U':                             \
 	case 'E':                             \
 	case 'O':
-#	define PRIV_JSTR_PP_CASE_VOWEL       \
-		PRIV_JSTR_PP_CASE_VOWEL_UPPER \
-		PRIV_JSTR_PP_CASE_VOWEL_LOWER
+#	define PJSTR_PP_CASE_VOWEL       \
+		PJSTR_PP_CASE_VOWEL_UPPER \
+		PJSTR_PP_CASE_VOWEL_LOWER
 
-#	define PRIV_JSTR_PP_CASE_CONSONANT_LOWER \
+#	define PJSTR_PP_CASE_CONSONANT_LOWER \
 	case 'b':                                 \
 	case 'c':                                 \
 	case 'd':                                 \
@@ -49,7 +49,7 @@
 	case 'x':                                 \
 	case 'y':                                 \
 	case 'z':
-#	define PRIV_JSTR_PP_CASE_CONSONANT_UPPER \
+#	define PJSTR_PP_CASE_CONSONANT_UPPER \
 	case 'B':                                 \
 	case 'C':                                 \
 	case 'D':                                 \
@@ -71,11 +71,11 @@
 	case 'X':                                 \
 	case 'Y':                                 \
 	case 'Z':
-#	define PRIV_JSTR_PP_CASE_CONSONANT       \
-		PRIV_JSTR_PP_CASE_CONSONANT_UPPER \
-		PRIV_JSTR_PP_CASE_CONSONANT_LOWER
+#	define PJSTR_PP_CASE_CONSONANT       \
+		PJSTR_PP_CASE_CONSONANT_UPPER \
+		PJSTR_PP_CASE_CONSONANT_LOWER
 
-#	define PRIV_JSTR_PP_CASE_DIGIT \
+#	define PJSTR_PP_CASE_DIGIT \
 	case '0':                       \
 	case '1':                       \
 	case '2':                       \
@@ -86,7 +86,7 @@
 	case '7':                       \
 	case '8':                       \
 	case '9':
-#	define PRIV_JSTR_PP_CASE_LOWER \
+#	define PJSTR_PP_CASE_LOWER \
 	case 'a':                       \
 	case 'b':                       \
 	case 'c':                       \
@@ -113,7 +113,7 @@
 	case 'x':                       \
 	case 'y':                       \
 	case 'z':
-#	define PRIV_JSTR_PP_CASE_UPPER \
+#	define PJSTR_PP_CASE_UPPER \
 	case 'A':                       \
 	case 'B':                       \
 	case 'C':                       \
@@ -142,14 +142,14 @@
 	case 'Z':
 #endif
 
-#define PRIV_JSTR_PP_CONCATENATE(A, B) \
-	PRIV_JSTR_PP_CONCATENATE_(A, B)
+#define PJSTR_PP_CONCATENATE(A, B) \
+	PJSTR_PP_CONCATENATE_(A, B)
 
-#define PRIV_JSTR_PP_CONCATENATE_(A, B) \
+#define PJSTR_PP_CONCATENATE_(A, B) \
 	A##B
 
 #ifndef __cplusplus
-#	define PRIV_JSTR_PP_PRINTF_FORMAT(x) _Generic((x),                       \
+#	define PJSTR_PP_PRINTF_FORMAT(x) _Generic((x),                       \
 						       unsigned char              \
 						       : "%hhu\n",                \
 							 unsigned char *          \
@@ -211,10 +211,10 @@
 						       : "%lld\n",                \
 							 const unsigned long long \
 						       : "%llu\n")
-#	define jstr_pp_cout(x) printf(PRIV_JSTR_PP_PRINTF_FORMAT(x), x)
+#	define jstr_pp_cout(x) printf(PJSTR_PP_PRINTF_FORMAT(x), x)
 #else
 #	include <iostream>
 #	define jstr_pp_cout(x) std::cout << x << '\n'
 #endif /* __cplusplus */
 
-#endif /* PRIV_JSTR_PP_VA_ARGS_MACROS_DEF_H */
+#endif /* PJSTR_PP_VA_ARGS_MACROS_DEF_H */
