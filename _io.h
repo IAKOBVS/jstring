@@ -420,6 +420,10 @@ jstrio_is_binary(const char *JSTR_RST const _buf,
 	return strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) == _sz;
 }
 
+#undef PRIV_JSTR_IO_UNPRINTABLE
+#undef PRIV_JSTR_IO_ELF
+#undef PRIV_JSTR_IO_ELF_SZ
+
 /*
    Checks the whole file for any unprintable character.
    File must be nul terminated.
@@ -431,10 +435,6 @@ jstrio_is_binary_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 {
 	return jstrio_is_binary(_j->data, _j->size);
 }
-
-#undef PRIV_JSTR_IO_UNPRINTABLE
-#undef PRIV_JSTR_IO_ELF
-#undef PRIV_JSTR_IO_ELF_SZ
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
