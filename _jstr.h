@@ -1,6 +1,7 @@
 #ifndef JSTR_H_DEF
 #define JSTR_H_DEF
 
+#include <features.h>
 #include "_builder.h"
 #include "_ctype.h"
 #include "_io.h"
