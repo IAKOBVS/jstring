@@ -207,7 +207,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		case '\0': return JSTR_IO_BINARY;
 		}
 		break;
-	/* png, pyc : BINARY
+	/* png, pyc, pdf : BINARY
 	   pl, pm, py, pyi : TEXT */
 	case 'p':
 		switch (*_ext++) {
@@ -246,6 +246,16 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			case 'g':
 				switch (*_ext) {
 				/* png */
+				case '\0': return JSTR_IO_BINARY;
+				}
+				break;
+			}
+			break;
+		case 'd':
+			switch (*_ext++) {
+			case 'f':
+				switch (*_ext) {
+				/* pdf */
 				case '\0': return JSTR_IO_BINARY;
 				}
 				break;
@@ -370,7 +380,7 @@ jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 #define PRIV_JSTR_IO_ELF_SZ	 (sizeof("\x7ELF") - 1)
 
 /*
-   Checks if the first 1024 bytes or fewer contain any unprintable character.
+   Checks if the first 32 bytes or fewer contain any unprintable character.
    File must be nul terminated.
 */
 JSTR_NONNULL_ALL
@@ -382,18 +392,18 @@ jstrio_is_binary_maybe(char *JSTR_RST const _buf,
 	if (jstr_likely(_sz > PRIV_JSTR_IO_ELF_SZ - 1))
 		if (!memcmp(_buf, PRIV_JSTR_IO_ELF, PRIV_JSTR_IO_ELF_SZ))
 			return 1;
-	if (jstr_unlikely(_sz > 1024)) {
+	if (jstr_unlikely(_sz > 32)) {
 		const char old = *(_buf + _sz);
 		*(_buf + _sz) = '\0';
-		const int ret = strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) == 1024;
+		const int ret = strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) != 32;
 		*(_buf + _sz) = old;
 		return ret;
 	}
-	return strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) == _sz;
+	return strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) != _sz;
 }
 
 /*
-   Checks if the first 1024 bytes or fewer contain any unprintable character.
+   Checks if the first 32 bytes or fewer contain any unprintable character.
    File must be nul terminated.
 */
 JSTR_NONNULL_ALL
