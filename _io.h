@@ -330,6 +330,26 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	return JSTR_IO_UNKNOWN;
 }
 
+#if JSTR_HAVE_MEMRCHR
+
+/*
+   Returns jstrio_ext_ty based on the filename extension;
+*/
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static jstrio_ext_ty
+jstrio_ext_type_mem(const char *JSTR_RST _filename,
+		    const size_t _sz) JSTR_NOEXCEPT
+{
+	_filename = (char *)memrchr(_filename, '.', _sz);
+	if (_filename == NULL)
+		return JSTR_IO_UNKNOWN;
+	return priv_jstrio_ext_type(_filename + 1);
+}
+
+#endif /* JSTR_HAVE_MEMRCHR */
+
 /*
    Returns jstrio_ext_ty based on the filename extension;
 */
@@ -373,6 +393,18 @@ jstrio_is_binary_maybe(char *JSTR_RST const _buf,
 }
 
 /*
+   Checks if the first 1024 bytes or fewer contain any unprintable character.
+   File must be nul terminated.
+*/
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+static int
+jstrio_is_binary_maybe_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+{
+	return jstrio_is_binary_maybe(_j->data, _j->size);
+}
+
+/*
    Checks the whole file for any unprintable character.
    File must be nul terminated.
 */
@@ -386,6 +418,18 @@ jstrio_is_binary(const char *JSTR_RST const _buf,
 		if (!memcmp(_buf, PRIV_JSTR_IO_ELF, PRIV_JSTR_IO_ELF_SZ))
 			return 1;
 	return strcspn(_buf, PRIV_JSTR_IO_UNPRINTABLE) == _sz;
+}
+
+/*
+   Checks the whole file for any unprintable character.
+   File must be nul terminated.
+*/
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+static int
+jstrio_is_binary_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+{
+	return jstrio_is_binary(_j->data, _j->size);
 }
 
 #undef PRIV_JSTR_IO_UNPRINTABLE
