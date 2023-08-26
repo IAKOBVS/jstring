@@ -89,17 +89,10 @@ sub tidy_newlines
 
 sub print_to_file
 {
-	my ($OUT_C, $OUT_H, $OUT_CPP, $OUT_HPP) = @_;
+	my ($OUT_C, $OUT_H, $OUT_CPP) = @_;
 	open(my $FH, '>', $OUT_C)
 	  or die("Can't open $OUT_H\n");
-	print($FH $OUT_H);
 	close($FH);
-	if ($OUT_CPP && $OUT_HPP) {
-		open($FH, '>', $OUT_CPP)
-		  or die("Can't open $OUT_HPP\n");
-		print($FH $OUT_HPP);
-		close($FH);
-	}
 }
 
 sub gen_nonmem_funcs
