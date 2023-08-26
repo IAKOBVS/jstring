@@ -17,7 +17,9 @@ extern "C" {
 #include "_macros.h"
 #include "_pp_va_args_macros.h"
 #include "_replace.h"
-#include "_string.h"
+#include "_jstr_string.h"
+
+#define JREG_DEBUG 0
 
 #if JREG_DEBUG
 #	define PJREG_DEB(x) jstr_pp_cout(x)
@@ -766,5 +768,6 @@ jreg_rplc_now_mem(char **JSTR_RST const _s,
 
 #undef PJREG_EXEC
 #undef PJREG_DEB
+#undef JREG_DEBUG
 
 #endif /* JREGEX_H_DEF */

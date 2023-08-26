@@ -12,7 +12,7 @@ extern "C" {
 
 #include "_builder.h"
 #include "_macros.h"
-#include "_string.h"
+#include "_jstr_string.h"
 
 #ifdef __cplusplus
 extern "C" {

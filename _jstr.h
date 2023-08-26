@@ -3,11 +3,11 @@
 
 #include <features.h>
 #include "_builder.h"
-#include "_ctype.h"
-#include "_io.h"
+#include "_jstr_ctype.h"
+#include "_jstrio.h"
 #include "_jregex.h"
 #include "_replace.h"
-#include "_string.h"
+#include "_jstr_string.h"
 
 #undef PJSTR_IS_MMAP
 #undef JSTR_MAX_INT_DIGITS
