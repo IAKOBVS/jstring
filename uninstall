@@ -1,2 +1,2 @@
 #!/bin/sh
-rm -rf /usr/local/include/jstr
+rm -rfi /usr/local/include/jstr

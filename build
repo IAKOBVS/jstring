@@ -1,7 +1,5 @@
 #!/bin/sh
-DIR_C=c
-DIR_CPP=cpp
-for file in $(echo *.h*); do
-	perl gen_func.pl "$file" &
+for file in $(echo *.h); do
+	perl _gen_func.pl "$file" &
 done
 wait
