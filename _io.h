@@ -40,9 +40,9 @@ priv_jstr_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		break;
 	/* bin : BINARY */
 	case 'b':
-		switch (*_ext) {
+		switch (*_ext++) {
 		case 'i':
-			switch (*_ext) {
+			switch (*_ext++) {
 			case 'n':
 				switch (*_ext) {
 				/* bin */
@@ -99,7 +99,7 @@ priv_jstr_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		case 'k':
 			switch (*_ext++) {
 			case 'k':
-				switch (*_ext) {
+				switch (*_ext++) {
 				case 'v':
 					switch (*_ext) {
 					case '\0': return JSTR_IO_BINARY;
