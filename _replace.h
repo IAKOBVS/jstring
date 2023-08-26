@@ -1151,7 +1151,7 @@ jstr_trim_mem_p(char *JSTR_RST const _s,
 	if (jstr_unlikely(*_s == '\0'))
 		return _s;
 	unsigned char *_end = (unsigned char *)_s + _sz - 1;
-	const unsigned char *const start = (unsigned char *)_s;
+	const unsigned char *const start = (unsigned char *)_s - 1;
 	do {
 		switch (*_end) {
 		case '\t':
@@ -1162,7 +1162,7 @@ jstr_trim_mem_p(char *JSTR_RST const _s,
 			break;
 		}
 		break;
-	} while (jstr_likely(--_end >= start));
+	} while (jstr_likely(--_end > start));
 	return (char *)_end;
 }
 
