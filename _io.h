@@ -340,7 +340,7 @@ static jstr_io_ext_ty
 jstr_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 {
 	_filename = strrchr(_filename, '.');
-	if (jstr_unlikely(_filename == NULL))
+	if (_filename == NULL)
 		return JSTR_IO_UNKNOWN;
 	return priv_jstr_ext_type(_filename + 1);
 }
