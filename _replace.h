@@ -784,7 +784,7 @@ jstr_rplcnc_mem(char *JSTR_RST _s,
 		const size_t _sz) JSTR_NOEXCEPT
 {
 	const char *JSTR_RST const _end = _s + _sz;
-	while (jstr_likely(--_n) && (_s = (char *)memchr(_s, _find, _end - _s)))
+	while (jstr_likely(_n--) && (_s = (char *)memchr(_s, _find, _end - _s)))
 		*_s++ = _rplc;
 }
 
@@ -799,7 +799,7 @@ jstr_rplcnc(char *JSTR_RST _s,
 	    const int _rplc,
 	    size_t _n) JSTR_NOEXCEPT
 {
-	while ((_s = strchr(_s, _find)))
+	while (jstr_likely(_n--) && (_s = strchr(_s, _find)))
 		*_s++ = _rplc;
 }
 
