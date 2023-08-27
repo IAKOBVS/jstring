@@ -891,7 +891,7 @@ jstr_rplclast_mem(char **JSTR_RST const _s,
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_RETURNS_NONNULL
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
 static char *
 priv_jstr_rmall_mem_p(const priv_jstr_flag_use_n_ty _flag,
 		      char *JSTR_RST const _s,
@@ -1004,8 +1004,8 @@ jstr_rmall_j(jstr_ty *JSTR_RST const _j,
 	return jstr_rmall_mem_j(_j, _find, strlen(_find));
 }
 
+JSTR_INLINE
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
 static void
 priv_jstr_rplcall_mem(const priv_jstr_flag_use_n_ty _flag,
 		      char **JSTR_RST const _s,
