@@ -24,133 +24,118 @@ typedef enum {
 	JSTRIO_BINARY,
 } jstrio_ext_ty;
 
+#define S switch (*_ext++)
+#define T  \
+case '\0': \
+	return JSTRIO_TEXT;
+#define B  \
+case '\0': \
+	return JSTRIO_BINARY;
+
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOINLINE
 static jstrio_ext_ty
 priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 {
-	switch (*_ext++) {
-	/* a : BINARY */
+	S {
 	case 'a':
-		switch (*_ext) {
-		/* a */
-		case '\0': return JSTRIO_BINARY;
+		S {
+			B /* a */
 		}
 		break;
-	/* bin : BINARY */
 	case 'b':
-		switch (*_ext++) {
+		S {
 		case 'i':
-			switch (*_ext++) {
+			S {
 			case 'n':
-				switch (*_ext) {
-				/* bin */
-				case '\0': return JSTRIO_BINARY;
+				S {
+					B /* bin */
 				}
 				break;
 			}
 			break;
 		}
 		break;
-	/* C : TEXT */
 	case 'C':
-		switch (*_ext) {
-		case '\0': return JSTRIO_TEXT;
+		S {
+			T; /* C */
 		}
 		break;
-	/* c, cc, cpp, cs : TEXT */
 	case 'c':
-		switch (*_ext++) {
-		/* c */
-		case '\0': return JSTRIO_TEXT;
+		S {
+			T; /* c */
 		case 'c':
-			switch (*_ext) {
-			/* cc */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* cc */
 			}
 			break;
 		case 'p':
-			switch (*_ext++) {
+			S {
 			case 'p':
-				switch (*_ext) {
-				/* cpp */
-				case '\0': return JSTRIO_TEXT;
+				S {
+					T; /* cpp */
 				}
 			}
 			break;
 		case 's':
-			switch (*_ext) {
-			/* cs */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* cs */
 			}
 			break;
 		}
 		break;
-	/* md : TEXT */
 	case 'm':
-		switch (*_ext++) {
+		S {
 		case 'd':
-			switch (*_ext) {
-			/* md */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* md */
 			}
 			break;
 		case 'k':
-			switch (*_ext++) {
-			case 'k':
-				switch (*_ext++) {
-				case 'v':
-					switch (*_ext) {
-					case '\0': return JSTRIO_BINARY;
-					}
-					break;
+			S {
+			case 'v':
+				S {
+					B /* mkv */
 				}
 				break;
 			}
 			break;
 		}
 		break;
-	/* gz : BINARY */
 	case 'g':
-		switch (*_ext++) {
+		S {
 		case 'z':
-			switch (*_ext) {
-			/* gz */
-			case '\0': return JSTRIO_BINARY;
+			S {
+				B /* gz */
 			}
 			break;
 		}
 		break;
-	/* h, hh, hpp, html : TEXT */
 	case 'h':
-		switch (*_ext++) {
-		/* h */
-		case '\0': return JSTRIO_TEXT;
+		S {
+			T; /* h */
 		case 'h':
-			switch (*_ext) {
-			/* hh */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* hh */
 			}
 			break;
 		case 'p':
-			switch (*_ext++) {
+			S {
 			case 'p':
-				switch (*_ext) {
-				/* .hpp */
-				case '\0': return JSTRIO_TEXT;
+				S {
+					T; /* hpp */
 				}
 				break;
 			}
 			break;
 		case 't':
-			switch (*_ext++) {
+			S {
 			case 'm':
-				switch (*_ext++) {
+				S {
 				case 'l':
-					switch (*_ext++) {
-					/* html */
-					case '\0': return JSTRIO_TEXT;
+					S {
+						T; /* html */
 					}
 					break;
 				}
@@ -159,24 +144,20 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			break;
 		}
 		break;
-	/* jpg, jpeg : BINARY
-	   js, json : TEXT */
 	case 'j':
-		switch (*_ext++) {
+		S {
 		case 'p':
-			switch (*_ext++) {
+			S {
 			case 'g':
-				switch (*_ext) {
-				/* jpg */
-				case '\0': return JSTRIO_BINARY;
+				S {
+					B /* jpg */
 				}
 				break;
 			case 'e':
-				switch (*_ext++) {
+				S {
 				case 'g':
-					switch (*_ext) {
-					/* jpeg */
-					case '\0': return JSTRIO_BINARY;
+					S {
+						B /* jpeg */
 					}
 					break;
 				}
@@ -184,152 +165,127 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			}
 			break;
 		case 's':
-			switch (*_ext++) {
-			/* js */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* js */
 			case 'o':
-				switch (*_ext++) {
+				S {
 				case 'n':
-					switch (*_ext) {
-					/* json */
-					case '\0': return JSTRIO_TEXT;
+					S {
+						T; /* json */
 					}
 					break;
 				}
 				break;
 			}
+			break;
 		}
 		break;
-	/* o : BINARY */
 	case 'o':
-		switch (*_ext++) {
-		/* o */
-		case '\0': return JSTRIO_BINARY;
+		S {
+			B /* o */
 		}
 		break;
-	/* png, pyc, pdf : BINARY
-	   pl, pm, py, pyi : TEXT */
 	case 'p':
-		switch (*_ext++) {
+		S {
 		case 'l':
-			switch (*_ext) {
-			/* pl */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* pl */
 			}
 			break;
 		case 'm':
-			switch (*_ext) {
-			/* pm */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* pm */
 			}
 			break;
 		case 'y':
-			switch (*_ext++) {
+			S {
 			case 'i':
-				switch (*_ext) {
-				/* pyi */
-				case '\0': return JSTRIO_TEXT;
+				S {
+					T; /* pyi */
 				}
 				break;
 			case 'c':
-				switch (*_ext) {
-				/* pyc */
-				case '\0': return JSTRIO_BINARY;
+				S {
+					B /* pyc */
 				}
 				break;
-			/* py */
-			case '\0': return JSTRIO_TEXT;
+				T; /* py */
 			}
 			break;
 		case 'n':
-			switch (*_ext++) {
+			S {
 			case 'g':
-				switch (*_ext) {
-				/* png */
-				case '\0': return JSTRIO_BINARY;
+				S {
+					B /* png */
 				}
 				break;
 			}
 			break;
 		case 'd':
-			switch (*_ext++) {
+			S {
 			case 'f':
-				switch (*_ext) {
-				/* pdf */
-				case '\0': return JSTRIO_BINARY;
+				S {
+					B /* pdf */
 				}
 				break;
 			}
 			break;
 		}
 		break;
-	/* so : BINARY
-	   sh, s : TEXT */
 	case 's':
-		switch (*_ext++) {
+		S {
 		case 'h':
-			switch (*_ext) {
-			/* .sh */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* sh */
 			}
 			break;
 		case 'o':
-			switch (*_ext) {
-			/* .so */
-			case '\0': return JSTRIO_BINARY;
+			S {
+				B /* so */
 			}
 			break;
-		/* s */
-		case '\0': return JSTRIO_TEXT;
+			T; /* s */
 		}
 		break;
-	/* rs : TEXT */
 	case 'r':
-		switch (*_ext++) {
+		S {
 		case 's':
-			switch (*_ext) {
-			/* rs */
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* rs */
 			}
 			break;
 		}
 		break;
-	/* S : TEXT */
 	case 'S':
-		switch (*_ext) {
-		/* S */
-		case '\0': return JSTRIO_TEXT;
+		S {
+			T; /* S */
 		}
 		break;
-	/* txt : TEXT */
 	case 't':
-		switch (*_ext++) {
+		S {
 		case 's':
-			switch (*_ext) {
-			case '\0': return JSTRIO_TEXT;
+			S {
+				T; /* ts */
 			}
 			break;
 		case 'x':
-			switch (*_ext++) {
+			S {
 			case 't':
-				switch (*_ext) {
-				/* txt */
-				case '\0': return JSTRIO_TEXT;
+				S {
+					T; /* txt */
 				}
 				break;
 			}
 			break;
 		}
 		break;
-	/* wav : BINARY */
 	case 'w':
-		switch (*_ext++) {
+		S {
 		case 'a':
-			switch (*_ext++) {
+			S {
 			case 'v':
-				switch (*_ext) {
-				/* wav */
-				case '\0': return JSTRIO_BINARY;
+				S {
+					B /* wav */
 				}
 				break;
 			}
@@ -339,6 +295,10 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	}
 	return JSTRIO_UNKNOWN;
 }
+
+#undef S
+#undef T
+#undef B
 
 #if JSTR_HAVE_MEMRCHR
 
@@ -434,8 +394,7 @@ jstrio_is_binary_maybe_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 }
 
 /*
-   Checks the whole file for any unprintable character.
-   File must be nul terminated.
+   Checks the whole file for a NUL byte.
 */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
@@ -444,9 +403,10 @@ jstrio_is_binary(const char *JSTR_RST const _buf,
 		 const size_t _sz) JSTR_NOEXCEPT
 {
 	JSTR_BINARY_CHECK();
-	return strcspn(_buf, JSTR_UNPRINTABLE) == _sz;
+	return strlen(_buf) != _sz;
 }
 
+#undef JSTR_BINARY_CHECK
 #undef JSTR_ELF
 #undef JSTR_ELF_SZ
 #undef JSTR_UTF
