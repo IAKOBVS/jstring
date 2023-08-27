@@ -931,7 +931,7 @@ jstr_memrspn(const char *JSTR_RST const _s,
 	unsigned char _t[256];
 	const unsigned char *_p = (unsigned char *)_accept;
 	do
-		_t[*_p--] = 1;
+		_t[*_p++] = 1;
 	while (_p);
 	_p = (unsigned char *)_s + _sz - 1;
 	do
@@ -951,6 +951,32 @@ jstr_strrspn(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept) JSTR_NOEXCEPT
 {
 	return jstr_memrspn(_s, _accept, strlen(_s));
+}
+
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static char *
+jstr_memrpbrk(const char *JSTR_RST _s,
+	      const char *JSTR_RST const _accept,
+	      const size_t _sz) JSTR_NOEXCEPT
+{
+	_s = _s + _sz - jstr_memrcspn(_s, _accept, _sz);
+	return *_s ? (char *)_s : NULL;
+}
+
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static char *
+jstr_strrpbrk(const char *JSTR_RST _s,
+	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT
+{
+	return jstr_memrpbrk(_s, _accept, strlen(_s));
 }
 
 #ifdef __cplusplus
