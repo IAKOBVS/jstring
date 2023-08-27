@@ -874,7 +874,10 @@ jstr_memrcspn(const char *JSTR_RST const _s,
 	if (jstr_unlikely(*_s == '\0'))
 		return 0;
 	unsigned char _t[256];
-	memset(_t, 0, sizeof(_t));
+	memset(_t, 0, 64);
+	memset(_t + 64, 0, 64);
+	memset(_t + 128, 0, 64);
+	memset(_t + 192, 0, 64);
 	const unsigned char *const _start = (unsigned char *)_s;
 	const unsigned char *_p = (unsigned char *)_reject;
 	do
@@ -926,7 +929,10 @@ jstr_memrspn(const char *JSTR_RST const _s,
 	}
 	_p = (unsigned char *)_accept;
 	unsigned char _t[256];
-	memset(_t, 0, sizeof(_t));
+	memset(_t, 0, 64);
+	memset(_t + 64, 0, 64);
+	memset(_t + 128, 0, 64);
+	memset(_t + 192, 0, 64);
 	do
 		_t[*_p++] = 1;
 	while (*_p);
