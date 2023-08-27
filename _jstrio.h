@@ -35,6 +35,7 @@ case '\0': \
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOINLINE
+JSTR_PURE
 static jstrio_ext_ty
 priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 {
@@ -308,6 +309,8 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_WARN_UNUSED
+JSTR_PURE
 static jstrio_ext_ty
 jstrio_ext_type_mem(const char *JSTR_RST _filename,
 		    const size_t _sz) JSTR_NOEXCEPT
@@ -326,6 +329,8 @@ jstrio_ext_type_mem(const char *JSTR_RST _filename,
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_WARN_UNUSED
+JSTR_PURE
 static jstrio_ext_ty
 jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 {
@@ -353,6 +358,7 @@ jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
+JSTR_WARN_UNUSED
 static int
 jstrio_is_binary_maybe(char *JSTR_RST const _buf,
 		       const size_t _sz) JSTR_NOEXCEPT
@@ -387,6 +393,7 @@ CHECK_UTF:;                                                                     
 */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
+JSTR_WARN_UNUSED
 static int
 jstrio_is_binary_maybe_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 {
@@ -398,6 +405,8 @@ jstrio_is_binary_maybe_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
+JSTR_WARN_UNUSED
+JSTR_PURE
 static int
 jstrio_is_binary(const char *JSTR_RST const _buf,
 		 const size_t _sz) JSTR_NOEXCEPT
@@ -418,7 +427,9 @@ jstrio_is_binary(const char *JSTR_RST const _buf,
    File must be nul terminated.
 */
 JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_INLINE
+JSTR_PURE
+JSTR_WARN_UNUSED
 static int
 jstrio_is_binary_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 {
