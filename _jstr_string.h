@@ -438,7 +438,6 @@ priv_strcasechr_mem(const char *JSTR_RST _s,
 		    const size_t _n) JSTR_NOEXCEPT
 {
 	char _acc[3];
-	_acc[2] = '\0';
 	switch (_c) {
 		JSTR_CASE_UPPER
 		_acc[0] = _c;
@@ -451,6 +450,7 @@ priv_strcasechr_mem(const char *JSTR_RST _s,
 	default:
 		return (char *)memchr(_s, _c, _n);
 	}
+	_acc[2] = '\0';
 	return (char *)strpbrk(_s, _acc);
 }
 
@@ -470,7 +470,6 @@ priv_strcasechr(const char *JSTR_RST _s,
 		const int _c) JSTR_NOEXCEPT
 {
 	char _acc[3];
-	_acc[2] = '\0';
 	switch (_c) {
 		JSTR_CASE_UPPER
 		_acc[0] = _c;
@@ -483,6 +482,7 @@ priv_strcasechr(const char *JSTR_RST _s,
 	default:
 		return (char *)strchr(_s, _c);
 	}
+	_acc[2] = '\0';
 	return (char *)strpbrk(_s, _acc);
 }
 
