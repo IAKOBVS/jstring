@@ -973,7 +973,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 static char *
-jstr_strrpbrk(const char *JSTR_RST _s,
+jstr_strrpbrk(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT
 {
 	return jstr_memrpbrk(_s, _accept, strlen(_s));
