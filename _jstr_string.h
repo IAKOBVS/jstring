@@ -201,6 +201,10 @@ jstr_strncasecmp(const char *JSTR_RST const _s1,
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+#if JSTR_HAVE_STRCASECMP
+JSTR_INLINE
+#endif
 static int
 jstr_strcasecmp(const char *JSTR_RST _s1,
 		const char *JSTR_RST _s2) JSTR_NOEXCEPT
@@ -318,7 +322,7 @@ jstr_memrmem(const void *JSTR_RST const _hs,
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint16_t _nw = _n[1] << 8 | _n[0];
 		uint16_t _hw = _h[0] << 8 | _h[-1];
-		for (_h -= 2; jstr_likely(_h > _start && _hw != _nw); _hw = _hw << 8 | *_h--)
+		for (_h -= 2; jstr_likely(_h != _start) && jstr_likely(_hw != _nw); _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -328,7 +332,7 @@ jstr_memrmem(const void *JSTR_RST const _hs,
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint32_t _nw = _n[2] << 24 | _n[1] << 16 | _n[0] << 8;
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8;
-		for (_h -= 3; jstr_likely(_h > _start && _hw != _nw); _hw = (_hw | *_h--) << 8)
+		for (_h -= 3; jstr_likely(_h != _start) && jstr_likely(_hw != _nw); _hw = (_hw | *_h--) << 8)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -338,7 +342,7 @@ jstr_memrmem(const void *JSTR_RST const _hs,
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint32_t _nw = _n[3] << 24 | _n[2] << 16 | _n[1] << 8 | _n[0];
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8 | _h[-3];
-		for (_h -= 4; jstr_likely(_h > _start && _hw != _nw); _hw = _hw << 8 | *_h--)
+		for (_h -= 4; jstr_likely(_h != _start) && jstr_likely(_hw != _nw); _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -852,6 +856,90 @@ jstr_count(const char *JSTR_RST _s,
 		return cnt;
 	}
 	}
+}
+
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+static size_t
+jstr_memrcspn(const char *JSTR_RST const _s,
+	      const char *JSTR_RST const _reject,
+	      const size_t _sz) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(_reject[0] == '\0'))
+		return 0;
+	if (jstr_unlikely(_reject[1] == '\0')) {
+		const char *const _p =
+#if JSTR_HAVE_MEMRCHR
+		(char *)memrchr(_s, *_reject, _sz);
+#else
+		(char *)strrchr(_s, *_reject);
+#endif
+		return _p ? (_s + _sz) - _p : 0;
+	}
+	if (jstr_unlikely(*_s == '\0'))
+		return 0;
+	unsigned char _t[256];
+	const unsigned char *const _start = (unsigned char *)memset(_t, 0, sizeof(_t)) - 1;
+	const unsigned char *_p = (unsigned char *)_reject;
+	do
+		_t[*_p++] = 1;
+	while (_p);
+	_p = (unsigned char *)_s + _sz - 1;
+	do
+		if (_t[*_p])
+			return (_s + _sz) - (char *)_p;
+	while (jstr_likely(--_p != _start));
+	return 0;
+}
+
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static size_t
+jstr_strrcspn(const char *JSTR_RST const _s,
+	      const char *JSTR_RST const _reject) JSTR_NOEXCEPT
+{
+	return jstr_memrcspn(_s, _reject, strlen(_s));
+}
+
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+static size_t
+jstr_memrspn(const char *JSTR_RST const _s,
+	     const char *JSTR_RST const _accept,
+	     const size_t _sz) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_accept == '\0'))
+		return 0;
+	if (jstr_unlikely(*_s == '\0'))
+		return 0;
+	const unsigned char *const _start = (unsigned char *)_s - 1;
+	if (jstr_unlikely(_accept[1] == '\0')) {
+		const unsigned char *_p = (unsigned char *)_s + _sz - 1;
+		const unsigned char _c = *(unsigned char *)_accept;
+		do
+			if (*_p != _c)
+				return (_s + _sz) - (char *)_p;
+		while (jstr_likely(--_p != _start));
+		return 0;
+	}
+	unsigned char _t[256];
+	const unsigned char *_p = (unsigned char *)_accept;
+	do
+		_t[*_p--] = 1;
+	while (_p);
+	_p = (unsigned char *)_s + _sz - 1;
+	do
+		if (!_t[*_p])
+			return (_s + _sz) - (char *)_p;
+	while (jstr_likely(--_p != _start));
+	return 0;
 }
 
 #ifdef __cplusplus
