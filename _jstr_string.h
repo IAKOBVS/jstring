@@ -807,7 +807,6 @@ jstr_countc_mem(const char *JSTR_RST _s,
   Return value:
   occurences of NE in HS.
 */
-JSTR_INLINE
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -837,10 +836,10 @@ jstr_count_mem(const char *JSTR_RST _s,
   Return value:
   occurences of NE in HS.
 */
-JSTR_INLINE
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
 static int
 jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
@@ -940,6 +939,18 @@ jstr_memrspn(const char *JSTR_RST const _s,
 			return (_s + _sz) - (char *)_p;
 	while (jstr_likely(--_p != _start));
 	return 0;
+}
+
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+static size_t
+jstr_strrspn(const char *JSTR_RST const _s,
+	     const char *JSTR_RST const _accept) JSTR_NOEXCEPT
+{
+	return jstr_memrspn(_s, _accept, strlen(_s));
 }
 
 #ifdef __cplusplus

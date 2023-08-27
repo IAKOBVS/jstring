@@ -366,10 +366,10 @@ jstr_slipaftallc_mem(char **JSTR_RST const _s,
 /*
   Slip SRC after _end of NE in DST.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_MAYBE_UNUSED
 static char *
 jstr_slipaft_mem_f(char *JSTR_RST const _s,
 		   const char *JSTR_RST const _find,
@@ -393,8 +393,8 @@ jstr_slipaft_mem_f(char *JSTR_RST const _s,
 /*
   Slip SRC after _end of NE in DST.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
 static void
 jstr_slipaft_mem(char **JSTR_RST const _s,
 		 size_t *JSTR_RST const _sz,
@@ -540,7 +540,6 @@ typedef enum {
 	PJSTR_FLAG_USE_NOT_N = 1 << 1,
 } priv_jstr_flag_use_n_ty;
 
-JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
@@ -584,10 +583,10 @@ jstr_rmallc_mem_p(char *JSTR_RST const _s,
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_MAYBE_UNUSED
 static char *
 jstr_rmallc_p(char *JSTR_RST const _s,
 	      const int _c) JSTR_NOEXCEPT
@@ -628,10 +627,10 @@ jstr_rmnc_mem_p(char *JSTR_RST const _s,
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_MAYBE_UNUSED
 static char *
 jstr_rmnc_p(char *JSTR_RST const _s,
 	    const int _c,
@@ -655,10 +654,10 @@ jstr_rmnc_p(char *JSTR_RST const _s,
   Return value:
   Pointer to '\0' in S.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_MAYBE_UNUSED
 static char *
 jstr_stripspn_p(char *JSTR_RST const _s,
 		const char *JSTR_RST const _rjct) JSTR_NOEXCEPT
@@ -732,8 +731,8 @@ jstr_rplcc(char *JSTR_RST _s,
 /*
   Replace all SEARCH in REPLACE.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
 static void
 jstr_rplcallc_mem(char *JSTR_RST _s,
 		  const int _find,
@@ -748,8 +747,8 @@ jstr_rplcallc_mem(char *JSTR_RST _s,
 /*
   Replace all SEARCH in REPLACE.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
 static void
 jstr_rplcallc(char *JSTR_RST _s,
 	      const int _find,
@@ -762,8 +761,8 @@ jstr_rplcallc(char *JSTR_RST _s,
 /*
   Replace N SEARCH in REPLACE.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
 static void
 jstr_rplcnc_mem(char *JSTR_RST _s,
 		const int _find,
@@ -779,8 +778,8 @@ jstr_rplcnc_mem(char *JSTR_RST _s,
 /*
   Replace N SEARCH in REPLACE.
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
 static void
 jstr_rplcnc(char *JSTR_RST _s,
 	    const int _find,
