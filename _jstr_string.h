@@ -261,7 +261,12 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		const size_t _mtc1 = _nelen - 1;                                            \
 		size_t _off = 0;                                                            \
 		shift_type _shift[256];                                                     \
-		memset(_shift, 0, sizeof(_shift));                                          \
+		(sizeof(shift_type) == sizeof(size_t))                                      \
+		? memset(_shift, 0, sizeof(_shift))                                         \
+		: (memset(_shift, 0, 64),                                                   \
+		   memset(_shift + 64, 0, 64),                                              \
+		   memset(_shift + 128, 0, 64),                                             \
+		   memset(_shift + 192, 0, 64));                                            \
 		for (ne_iterator_type i = 1; jstr_likely(i < (ne_iterator_type)_mtc1); ++i) \
 			_shift[JSTR_HASH2(_n + i)] = i;                                     \
 		const size_t shft1 = _mtc1 - _shift[JSTR_HASH2(_n + _mtc1)];                \
@@ -392,7 +397,12 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 		const size_t _mtc1 = _nelen - 1;                                                        \
 		size_t _off = 0;                                                                        \
 		shift_type _shift[256];                                                                 \
-		memset(_shift, 0, sizeof(_shift));                                                      \
+		(sizeof(shift_type) == sizeof(size_t))                                                  \
+		? memset(_shift, 0, sizeof(_shift))                                                     \
+		: (memset(_shift, 0, 64),                                                               \
+		   memset(_shift + 64, 0, 64),                                                          \
+		   memset(_shift + 128, 0, 64),                                                         \
+		   memset(_shift + 192, 0, 64));                                                        \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)_mtc1; ++i)                          \
 			_shift[JSTR_HASH2_LOWER(_n + i)] = i;                                           \
 		const size_t _shft1 = _mtc1 - _shift[JSTR_HASH2_LOWER(_n + _mtc1)];                     \
