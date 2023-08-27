@@ -878,12 +878,12 @@ jstr_memrcspn(const char *JSTR_RST const _s,
 	memset(_t + 64, 0, 64);
 	memset(_t + 128, 0, 64);
 	memset(_t + 192, 0, 64);
-	const unsigned char *const _start = (unsigned char *)_s;
 	const unsigned char *_p = (unsigned char *)_reject;
 	do
 		_t[*_p++] = 1;
 	while (*_p);
 	_p = (unsigned char *)_s + _sz - 1;
+	const unsigned char *const _start = (unsigned char *)_s;
 	do
 		if (_t[*_p])
 			return (_s + _sz) - (char *)_p;
