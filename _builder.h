@@ -49,7 +49,7 @@ static void
 jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(p == NULL))
-		priv_jstr_err_exit();
+		pjstr_err_exit();
 }
 
 typedef struct jstr_ty {
@@ -98,7 +98,7 @@ typedef struct jstr_ty {
 	err_exit(void) JSTR_NOEXCEPT
 	{
 		if (jstr_unlikely(this->data == NULL))
-			priv_jstr_err_exit();
+			pjstr_err_exit();
 	}
 
 	JSTR_INLINE

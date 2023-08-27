@@ -37,12 +37,12 @@ jtrie_init(void) JSTR_NOEXCEPT
 
 JSTR_MAYBE_UNUSED
 static void
-priv_jtrie_free_recur(jtrie_node_ty *JSTR_RST _node) JSTR_NOEXCEPT
+pjtrie_free_recur(jtrie_node_ty *JSTR_RST _node) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_node == NULL))
 		return;
 	for (int i = 0; i != JTRIE_ASCII_SIZE - 1; ++i)
-		priv_jtrie_free_recur(_node->child[i]);
+		pjtrie_free_recur(_node->child[i]);
 	free(_node);
 	_node = NULL;
 }
@@ -51,7 +51,7 @@ JSTR_MAYBE_UNUSED
 static void
 jtrie_free(jtrie_node_ty **JSTR_RST _node) JSTR_NOEXCEPT
 {
-	priv_jtrie_free_recur(*_node);
+	pjtrie_free_recur(*_node);
 }
 
 JSTR_INLINE
@@ -79,12 +79,12 @@ jtrie_insert(jtrie_node_ty *JSTR_RST const _root,
 typedef enum {
 	PJTRIE_FLAG_REMOVE_PREFIXES = 1,
 	PJTRIE_FLAG_REMOVE_NOT_PREFIXES = 1 << 1,
-} priv_jtrie_flag_rm_prefixes_ty;
+} pjtrie_flag_rm_prefixes_ty;
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
 static void
-priv_jtrie_remove(priv_jtrie_flag_rm_prefixes_ty _flag,
+pjtrie_remove(pjtrie_flag_rm_prefixes_ty _flag,
 		  jtrie_node_ty *JSTR_RST const _root,
 		  const char *JSTR_RST const _word) JSTR_NOEXCEPT
 {
@@ -108,7 +108,7 @@ static void
 jtrie_remove(jtrie_node_ty *JSTR_RST const _root,
 	     const char *JSTR_RST const _word) JSTR_NOEXCEPT
 {
-	return priv_jtrie_remove(PJTRIE_FLAG_REMOVE_NOT_PREFIXES, _root, _word);
+	return pjtrie_remove(PJTRIE_FLAG_REMOVE_NOT_PREFIXES, _root, _word);
 }
 
 JSTR_NONNULL_ALL
@@ -117,7 +117,7 @@ static void
 jtrie_removeprefixes(jtrie_node_ty *JSTR_RST const _root,
 		     const char *JSTR_RST const _word) JSTR_NOEXCEPT
 {
-	return priv_jtrie_remove(PJTRIE_FLAG_REMOVE_PREFIXES, _root, _word);
+	return pjtrie_remove(PJTRIE_FLAG_REMOVE_PREFIXES, _root, _word);
 }
 
 /*

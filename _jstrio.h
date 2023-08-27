@@ -37,7 +37,7 @@ JSTR_NONNULL_ALL
 JSTR_NOINLINE
 JSTR_PURE
 static jstrio_ext_ty
-priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
+pjstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 {
 	S {
 	case 'a':
@@ -318,7 +318,7 @@ jstrio_ext_type_mem(const char *JSTR_RST _filename,
 	_filename = (char *)memrchr(_filename, '.', _sz);
 	if (_filename == NULL)
 		return JSTRIO_UNKNOWN;
-	return priv_jstrio_ext_type(_filename + 1);
+	return pjstrio_ext_type(_filename + 1);
 }
 
 #endif /* HAVE_MEMRCHR */
@@ -337,7 +337,7 @@ jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 	_filename = strrchr(_filename, '.');
 	if (_filename == NULL)
 		return JSTRIO_UNKNOWN;
-	return priv_jstrio_ext_type(_filename + 1);
+	return pjstrio_ext_type(_filename + 1);
 }
 
 #define JSTR_ELF    "\x7ELF"
@@ -439,7 +439,7 @@ jstrio_is_binary_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static int
-priv_jstrio_alloc_file(const int alloc_exact,
+pjstrio_alloc_file(const int alloc_exact,
 		       char **JSTR_RST const _s,
 		       size_t *JSTR_RST const _sz,
 		       size_t *JSTR_RST const _cap,
@@ -480,7 +480,7 @@ jstrio_alloc_file(char **JSTR_RST const _s,
 		  const char *JSTR_RST const _fname,
 		  struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
 {
-	return priv_jstrio_alloc_file(0, _s, _sz, _cap, _fname, _st);
+	return pjstrio_alloc_file(0, _s, _sz, _cap, _fname, _st);
 }
 
 /*
@@ -497,7 +497,7 @@ jstrio_allocexact_file(char **JSTR_RST const _s,
 		       const char *JSTR_RST const _fname,
 		       struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
 {
-	return priv_jstrio_alloc_file(1, _s, _sz, _cap, _fname, _st);
+	return pjstrio_alloc_file(1, _s, _sz, _cap, _fname, _st);
 }
 
 /*
