@@ -800,4 +800,11 @@ jstr_count(const char *JSTR_RST _s,
 } /* extern C */
 #endif /* __cpluslus */
 
+#undef JSTR_MAX_INT_DIGITS
+#undef JSTR_MAX_LONG_DIGITS
+#undef JSTR_MAX_LONG_LONG_DIGITS
+#undef JSTR_MAX_UINT_DIGITS
+#undef JSTR_MAX_ULONG_DIGITS
+#undef JSTR_MAX_ULONG_LONG_DIGITS
+
 #endif /* JSTR_STRING_H_DEF */
