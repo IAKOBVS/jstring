@@ -1020,5 +1020,7 @@ jstr_strrpbrk(const char *JSTR_RST const _s,
 #undef JSTR_MAX_UINT_DIGITS
 #undef JSTR_MAX_ULONG_DIGITS
 #undef JSTR_MAX_ULONG_LONG_DIGITS
+#undef PJSTR_UNUMTOSTR
+#undef PJSTR_NUMTOSTR
 
 #endif /* JSTR_STRING_H_DEF */
