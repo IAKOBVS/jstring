@@ -861,6 +861,9 @@ jstr_count(const char *JSTR_RST _s,
 	}
 }
 
+/*
+   Reverse of MEMCSPN.
+*/
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -901,6 +904,9 @@ jstr_memrcspn(const char *JSTR_RST const _s,
 	return 0;
 }
 
+/*
+   Reverse of STRCSPN.
+*/
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -913,6 +919,9 @@ jstr_strrcspn(const char *JSTR_RST const _s,
 	return jstr_memrcspn(_s, _reject, strlen(_s));
 }
 
+/*
+   Reverse of MEMSPN.
+*/
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -954,6 +963,9 @@ jstr_memrspn(const char *JSTR_RST const _s,
 	return 0;
 }
 
+/*
+   Reverse of STRSPN.
+*/
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -966,6 +978,9 @@ jstr_strrspn(const char *JSTR_RST const _s,
 	return jstr_memrspn(_s, _accept, strlen(_s));
 }
 
+/*
+   Reverse of MEMPBRK.
+*/
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -980,6 +995,9 @@ jstr_memrpbrk(const char *JSTR_RST _s,
 	return *_s ? (char *)_s : NULL;
 }
 
+/*
+   Reverse of STRPBRK.
+*/
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
