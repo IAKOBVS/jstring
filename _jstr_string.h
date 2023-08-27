@@ -437,9 +437,6 @@ priv_strcasechr_mem(const char *JSTR_RST _s,
 		    const int _c,
 		    const size_t _n) JSTR_NOEXCEPT
 {
-	enum { l = 0,
-	       u,
-	};
 	char _acc[3];
 	_acc[2] = '\0';
 	switch (_c) {
@@ -472,9 +469,6 @@ static char *
 priv_strcasechr(const char *JSTR_RST _s,
 		const int _c) JSTR_NOEXCEPT
 {
-	enum { l = 0,
-	       u,
-	};
 	char _acc[3];
 	_acc[2] = '\0';
 	switch (_c) {
@@ -880,11 +874,12 @@ jstr_memrcspn(const char *JSTR_RST const _s,
 	if (jstr_unlikely(*_s == '\0'))
 		return 0;
 	unsigned char _t[256];
-	const unsigned char *const _start = (unsigned char *)memset(_t, 0, sizeof(_t)) - 1;
+	memset(_t, 0, sizeof(_t));
+	const unsigned char *const _start = (unsigned char *)_s;
 	const unsigned char *_p = (unsigned char *)_reject;
 	do
 		_t[*_p++] = 1;
-	while (_p);
+	while (*_p);
 	_p = (unsigned char *)_s + _sz - 1;
 	do
 		if (_t[*_p])
@@ -919,8 +914,9 @@ jstr_memrspn(const char *JSTR_RST const _s,
 	if (jstr_unlikely(*_s == '\0'))
 		return 0;
 	const unsigned char *const _start = (unsigned char *)_s - 1;
+	const unsigned char *_p;
 	if (jstr_unlikely(_accept[1] == '\0')) {
-		const unsigned char *_p = (unsigned char *)_s + _sz - 1;
+		_p = (unsigned char *)_s + _sz - 1;
 		const unsigned char _c = *(unsigned char *)_accept;
 		do
 			if (*_p != _c)
@@ -928,15 +924,16 @@ jstr_memrspn(const char *JSTR_RST const _s,
 		while (jstr_likely(--_p != _start));
 		return 0;
 	}
+	_p = (unsigned char *)_accept;
 	unsigned char _t[256];
-	const unsigned char *_p = (unsigned char *)_accept;
+	memset(_t, 0, sizeof(_t));
 	do
 		_t[*_p++] = 1;
-	while (_p);
+	while (*_p);
 	_p = (unsigned char *)_s + _sz - 1;
 	do
 		if (!_t[*_p])
-			return (_s + _sz) - (char *)_p;
+			return (_s + _sz) - ((char *)_p + 1);
 	while (jstr_likely(--_p != _start));
 	return 0;
 }
