@@ -27,10 +27,10 @@ typedef enum {
 #define S switch (*_ext++)
 #define T  \
 case '\0': \
-	return JSTRIO_TEXT;
+	return JSTRIO_TEXT
 #define B  \
 case '\0': \
-	return JSTRIO_BINARY;
+	return JSTRIO_BINARY
 
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
@@ -41,7 +41,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	S {
 	case 'a':
 		S {
-			B /* a */
+			B; /* a */
 		}
 		break;
 	case 'b':
@@ -50,7 +50,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			S {
 			case 'n':
 				S {
-					B /* bin */
+					B; /* bin */
 				}
 				break;
 			}
@@ -96,7 +96,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			S {
 			case 'v':
 				S {
-					B /* mkv */
+					B; /* mkv */
 				}
 				break;
 			}
@@ -107,7 +107,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		S {
 		case 'z':
 			S {
-				B /* gz */
+				B; /* gz */
 			}
 			break;
 		}
@@ -150,14 +150,14 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			S {
 			case 'g':
 				S {
-					B /* jpg */
+					B; /* jpg */
 				}
 				break;
 			case 'e':
 				S {
 				case 'g':
 					S {
-						B /* jpeg */
+						B; /* jpeg */
 					}
 					break;
 				}
@@ -182,7 +182,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		break;
 	case 'o':
 		S {
-			B /* o */
+			B; /* o */
 		}
 		break;
 	case 'p':
@@ -206,7 +206,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 				break;
 			case 'c':
 				S {
-					B /* pyc */
+					B; /* pyc */
 				}
 				break;
 				T; /* py */
@@ -216,7 +216,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			S {
 			case 'g':
 				S {
-					B /* png */
+					B; /* png */
 				}
 				break;
 			}
@@ -225,7 +225,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			S {
 			case 'f':
 				S {
-					B /* pdf */
+					B; /* pdf */
 				}
 				break;
 			}
@@ -241,7 +241,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			break;
 		case 'o':
 			S {
-				B /* so */
+				B; /* so */
 			}
 			break;
 			T; /* s */
@@ -285,7 +285,7 @@ priv_jstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			S {
 			case 'v':
 				S {
-					B /* wav */
+					B; /* wav */
 				}
 				break;
 			}
