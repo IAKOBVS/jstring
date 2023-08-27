@@ -198,7 +198,6 @@ jstr_strncasecmp(const char *JSTR_RST const _s1,
   0 if strings match;
   non-zero otherwise.
 */
-JSTR_INLINE
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -249,7 +248,7 @@ priv_jstr_memrmem(const void *JSTR_RST const _hs,
 		  const size_t _nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define JSTR_MEMMEMR(shift_type, ne_iterator_type)                                     \
+#define JSTR_MEMMEMR(shift_type, ne_iterator_type)                                          \
 	do {                                                                                \
 		const unsigned char *_h = (unsigned char *)_hs + _hslen + _nelen;           \
 		const unsigned char *const _n = (unsigned char *)_ne;                       \
@@ -380,7 +379,7 @@ priv_jstr_memcasemem3(const char *JSTR_RST const _hs,
 		      const size_t _nelen) JSTR_NOEXCEPT
 {
 #define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                              \
+#define JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                                   \
 	do {                                                                                            \
 		const unsigned char *_h = (unsigned char *)_hs;                                         \
 		const unsigned char *const _n = (unsigned char *)_ne;                                   \
@@ -430,9 +429,9 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 static char *
-priv_strcasechr(const char *JSTR_RST _s,
-		const int _c,
-		const size_t _n) JSTR_NOEXCEPT
+priv_strcasechr_mem(const char *JSTR_RST _s,
+		    const int _c,
+		    const size_t _n) JSTR_NOEXCEPT
 {
 	enum { l = 0,
 	       u,
@@ -450,6 +449,41 @@ priv_strcasechr(const char *JSTR_RST _s,
 		break;
 	default:
 		return (char *)memchr(_s, _c, _n);
+	}
+	return (char *)strpbrk(_s, _acc);
+}
+
+/*
+   Find C in S case-insensitively.
+   S MUST be nul terminated.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+static char *
+priv_strcasechr(const char *JSTR_RST _s,
+		const int _c) JSTR_NOEXCEPT
+{
+	enum { l = 0,
+	       u,
+	};
+	char _acc[3];
+	_acc[2] = '\0';
+	switch (_c) {
+		JSTR_CASE_UPPER
+		_acc[0] = _c;
+		_acc[1] = _c - 'A' + 'a';
+		break;
+		JSTR_CASE_LOWER
+		_acc[0] = _c;
+		_acc[1] = _c - 'a' + 'A';
+		break;
+	default:
+		return (char *)strchr(_s, _c);
 	}
 	return (char *)strpbrk(_s, _acc);
 }
@@ -477,19 +511,19 @@ jstr_memcasemem(const char *JSTR_RST const _hs,
 		return NULL;
 	switch (_nelen) {
 	case 0: return (char *)_hs;
-	case 1: return priv_strcasechr(_hs, *_ne, _hslen);
+	case 1: return priv_strcasechr_mem(_hs, *_ne, _hslen);
 	case 2:
 do2:
-		if (jstr_islower(*_ne) && jstr_islower(*(_ne + 1)))
+		if (jstr_islower(_ne[0]) && jstr_islower(_ne[1]))
 			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
 		break;
 	case 3:
 do3:
-		if (jstr_islower(*(_ne + 2)))
+		if (jstr_islower(_ne[2]))
 			goto do2;
 		break;
 	case 4:
-		if (jstr_islower(*(_ne + 3)))
+		if (jstr_islower(_ne[3]))
 			goto do3;
 		break;
 	}
@@ -508,7 +542,9 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+#ifdef JSTR_HAVE_STRCASESTR
 JSTR_INLINE
+#endif
 static char *
 jstr_strcasestr(const char *JSTR_RST const _hs,
 		const char *JSTR_RST const _ne) JSTR_NOEXCEPT
@@ -516,7 +552,29 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 #if JSTR_HAVE_STRCASESTR
 	return (char *)strcasestr(_hs, _ne);
 #else
-	return jstr_memcasemem(_hs, strlen(_hs), _ne, strlen(_ne));
+	size_t _nelen;
+	if (_ne[0] == '\0')
+		return (char *)_hs;
+	if (_ne[1] == '\0')
+		return priv_strcasechr(_hs, *_ne);
+	if (_ne[2] == '\0') {
+do2:
+		if (jstr_islower(_ne[0]) && jstr_islower(_ne[1]))
+			return (char *)strstr(_hs, _ne);
+		_nelen = 2;
+	} else if (_ne[3] == '\0') {
+do3:
+		if (jstr_islower(_ne[2]))
+			goto do2;
+		_nelen = 3;
+	} else if (_ne[4] == '\0') {
+		if (jstr_islower(_ne[3]))
+			goto do3;
+		_nelen = 4;
+	} else {
+		_nelen = 4 + strlen(_ne + 4);
+	}
+	return priv_jstr_memcasemem3(_hs, strlen(_hs), _ne, _nelen);
 #endif /* HAVE_STRCASESTR */
 }
 
@@ -574,7 +632,7 @@ jstr_itoa(char *JSTR_RST const _dst,
 	  int _num,
 	  const unsigned int _base)
 {
-#define PJSTR_NUMTOSTR(_max_digits)                                        \
+#define PJSTR_NUMTOSTR(_max_digits)                                            \
 	do {                                                                   \
 		unsigned char *_d = (unsigned char *)_dst;                     \
 		unsigned char _sbuf[_max_digits];                              \
@@ -645,7 +703,7 @@ jstr_utoa(char *JSTR_RST const _dst,
 	  unsigned int _num,
 	  const unsigned int _base)
 {
-#define PJSTR_UNUMTOSTR(_max_digits)                      \
+#define PJSTR_UNUMTOSTR(_max_digits)                          \
 	do {                                                  \
 		unsigned char *_d = (unsigned char *)_dst;    \
 		unsigned char _sbuf[_max_digits];             \
