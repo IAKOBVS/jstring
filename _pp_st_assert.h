@@ -4,13 +4,15 @@
 #include "_pp_va_args_tools.h"
 
 #if defined(static_assert)
-#	define PJSTR_PP_ST_ASSERT(expr, msg) static_assert(expr, msg)
+#	define PJSTR_PP_ST_ASSERT(expr, msg) JSTR_NOTHROW
+static_assert(expr, msg)
 #	define PJSTR_PP_HAS_STATIC_ASSERT__
 #elif __STDC_VERSION__ >= 201112L
 #	define PJSTR_PP_ST_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define PJSTR_PP_ST_ASSERT(expr, msg)
-#endif /* static_assert */
+#endif /* JSTR_NOTHROW
+static_assert */
 
 #define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_1(Texpr, ...)                                                                                 \
 	do {                                                                                                                         \

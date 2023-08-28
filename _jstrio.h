@@ -36,6 +36,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOINLINE
 JSTR_PURE
+JSTR_NOTHROW
 static jstrio_ext_ty
 pjstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 {
@@ -311,6 +312,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_PURE
+JSTR_NOTHROW
 static jstrio_ext_ty
 jstrio_ext_type_mem(const char *JSTR_RST _filename,
 		    const size_t _sz) JSTR_NOEXCEPT
@@ -331,6 +333,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_PURE
+JSTR_NOTHROW
 static jstrio_ext_ty
 jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 {
@@ -359,6 +362,7 @@ jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstrio_is_binary_maybe(char *JSTR_RST const _buf,
 		       const size_t _sz) JSTR_NOEXCEPT
@@ -394,6 +398,7 @@ CHECK_UTF:;                                                                     
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstrio_is_binary_maybe_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 {
@@ -407,6 +412,7 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_PURE
+JSTR_NOTHROW
 static int
 jstrio_is_binary(const char *JSTR_RST const _buf,
 		 const size_t _sz) JSTR_NOEXCEPT
@@ -430,6 +436,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_PURE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstrio_is_binary_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 {
@@ -438,6 +445,7 @@ jstrio_is_binary_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static int
 pjstrio_alloc_file(const int alloc_exact,
 		       char **JSTR_RST const _s,
@@ -473,6 +481,7 @@ _ERR:
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static int
 jstrio_alloc_file(char **JSTR_RST const _s,
 		  size_t *JSTR_RST const _sz,
@@ -490,6 +499,7 @@ jstrio_alloc_file(char **JSTR_RST const _s,
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static int
 jstrio_allocexact_file(char **JSTR_RST const _s,
 		       size_t *JSTR_RST const _sz,
@@ -507,6 +517,7 @@ jstrio_allocexact_file(char **JSTR_RST const _s,
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static int
 jstrio_alloc_file_j(jstr_ty *JSTR_RST const _j,
 		    const char *JSTR_RST const _fname,
@@ -522,6 +533,7 @@ jstrio_alloc_file_j(jstr_ty *JSTR_RST const _j,
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static int
 jstrio_allocexact_file_j(jstr_ty *JSTR_RST const _j,
 			 const char *JSTR_RST const _fname,

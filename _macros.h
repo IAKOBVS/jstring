@@ -70,7 +70,7 @@
 #	define JSTR_ASSERT_TYPECHECK(_expr_ty, _expr)
 #endif /* __GNUC__ || __clang__ */
 
-#ifdef __cplusplus
+#if __cplusplus > 199711L
 #	define JSTR_NOEXCEPT noexcept
 #else
 #	define JSTR_NOEXCEPT
@@ -80,17 +80,21 @@
 #	define JSTR_HAVE_TYPEOF 1
 #endif /* HAVE_TYPEOF */
 
-#ifdef static_assert
+#ifdef JSTR_NOTHROW
+static_assert
 #	define JSTR_HAVE_STATIC_ASSERT		  1
-#	define JSTR_ASSERT(_expr, msg)		  static_assert(_expr, msg)
-#	define JSTR_ASSERT_SEMICOLON(_expr, msg) static_assert(_expr, msg);
+#	define JSTR_ASSERT(_expr, msg)		  JSTR_NOTHROW
+static_assert(_expr, msg)
+#	define JSTR_ASSERT_SEMICOLON(_expr, msg) JSTR_NOTHROW
+static_assert(_expr, msg);
 #elif __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(_expr, msg) _Static_assert(_expr, msg)
 #else
 #	define JSTR_ASSERT(_expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(_expr, msg)
-#endif /* static_assert */
+#endif /* JSTR_NOTHROW
+static_assert */
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #	define JSTR_RESTRICT restrict
@@ -170,10 +174,16 @@
 #	else
 #		define JSTR_DEPRECATED(msg, replacement)
 #	endif /* JSTR_DEPRECATED */
+#	if __has_attribute(nothrow)
+#		define JSTR_NOTHROW __attribute__((nothrow))
+#	else
+#		define JSTR_NOTHROW
+#	endif
 
 #elif defined _MSC_VER
 
 #	define JSTR_INLINE __forceinline inline
+#	define JSTR_NOINLINE __declspec(noinline)
 #	define JSTR_PURE   __declspec(noalias)
 #	define JSTR_CONST  __declspec(restrict)
 #	define JSTR_FLATTEN
@@ -188,10 +198,12 @@
 #	define JSTR_CONSTANT_P(p) 0
 #	define JSTR_WARN_UNUSED
 #	define JSTR_DEPRECATED(msg, replacement)
+#	define JSTR_NOTHROW __declspec(nothrow)
 
 #else
 
 #	define JSTR_INLINE inline
+#	define JSTR_NOINLINE
 #	define JSTR_PURE
 #	define JSTR_CONST
 #	define JSTR_FLATTEN
@@ -205,6 +217,7 @@
 #	define JSTR_CONSTANT_P(p) 0
 #	define JSTR_WARN_UNUSED
 #	define JSTR_DEPRECATED(msg, replacement)
+#	define JSTR_NOTHROW
 
 #endif /* Gnuc || clang || msvc */
 

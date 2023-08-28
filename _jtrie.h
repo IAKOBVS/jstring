@@ -29,6 +29,7 @@ typedef struct jtrie_node_ty {
 
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jtrie_node_ty *
 jtrie_init(void) JSTR_NOEXCEPT
 {
@@ -36,6 +37,7 @@ jtrie_init(void) JSTR_NOEXCEPT
 }
 
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static void
 pjtrie_free_recur(jtrie_node_ty *JSTR_RST _node) JSTR_NOEXCEPT
 {
@@ -48,6 +50,7 @@ pjtrie_free_recur(jtrie_node_ty *JSTR_RST _node) JSTR_NOEXCEPT
 }
 
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static void
 jtrie_free(jtrie_node_ty **JSTR_RST _node) JSTR_NOEXCEPT
 {
@@ -57,6 +60,7 @@ jtrie_free(jtrie_node_ty **JSTR_RST _node) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jtrie_errcode_ty
 jtrie_insert(jtrie_node_ty *JSTR_RST const _root,
 	     const char *JSTR_RST const _word) JSTR_NOEXCEPT
@@ -83,6 +87,7 @@ typedef enum {
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_NOTHROW
 static void
 pjtrie_remove(pjtrie_flag_rm_prefixes_ty _flag,
 		  jtrie_node_ty *JSTR_RST const _root,
@@ -104,6 +109,7 @@ pjtrie_remove(pjtrie_flag_rm_prefixes_ty _flag,
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_NOTHROW
 static void
 jtrie_remove(jtrie_node_ty *JSTR_RST const _root,
 	     const char *JSTR_RST const _word) JSTR_NOEXCEPT
@@ -113,6 +119,7 @@ jtrie_remove(jtrie_node_ty *JSTR_RST const _root,
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_NOTHROW
 static void
 jtrie_removeprefixes(jtrie_node_ty *JSTR_RST const _root,
 		     const char *JSTR_RST const _word) JSTR_NOEXCEPT
@@ -128,6 +135,7 @@ jtrie_removeprefixes(jtrie_node_ty *JSTR_RST const _root,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jtrie_node_ty *
 jtrie_starts_with(const jtrie_node_ty *JSTR_RST const _root,
 		  const char *JSTR_RST const _word) JSTR_NOEXCEPT
@@ -151,6 +159,7 @@ jtrie_starts_with(const jtrie_node_ty *JSTR_RST const _root,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jtrie_match(const jtrie_node_ty *JSTR_RST const _root,
 	    const char *JSTR_RST const _word) JSTR_NOEXCEPT

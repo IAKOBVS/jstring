@@ -45,6 +45,7 @@ extern "C" {
   exit(1) if ptr is NULL.
 */
 JSTR_INLINE
+JSTR_NOTHROW
 static void
 jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
 {
@@ -137,11 +138,12 @@ extern "C" {
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_alloc(char **JSTR_RST const _s,
 	   size_t *JSTR_RST const _sz,
 	   size_t *JSTR_RST const _cap,
-	   const size_t _top) JSTR_NOEXCEPT
+	   const size_t _top)
 {
 	*_sz = 0;
 	*_cap = PJSTR_MIN_ALLOC(_top);
@@ -151,6 +153,7 @@ jstr_alloc(char **JSTR_RST const _s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_allocexact(char **JSTR_RST const _s,
 		size_t *JSTR_RST const _sz,
@@ -165,6 +168,7 @@ jstr_allocexact(char **JSTR_RST const _s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_allocexact_append_mem(char **JSTR_RST const _s,
 			   size_t *JSTR_RST const _sz,
@@ -181,6 +185,7 @@ jstr_allocexact_append_mem(char **JSTR_RST const _s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_alloc_append_mem(char **JSTR_RST const _s,
 		      size_t *JSTR_RST const _sz,
@@ -195,6 +200,7 @@ jstr_alloc_append_mem(char **JSTR_RST const _s,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_allocmore_append_mem(char **JSTR_RST const _s,
 			  size_t *JSTR_RST const _sz,
@@ -212,6 +218,7 @@ jstr_allocmore_append_mem(char **JSTR_RST const _s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
 {
@@ -223,6 +230,7 @@ jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_debug(const jstr_ty *JSTR_RST const _j)
 {
@@ -244,6 +252,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_append_mem_p_f(char *JSTR_RST const _s,
 		    const char *JSTR_RST const _src,
@@ -259,6 +268,7 @@ jstr_append_mem_p_f(char *JSTR_RST const _s,
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_append_mem(char **JSTR_RST const _s,
 		size_t *JSTR_RST const _sz,
@@ -284,7 +294,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 jstr_alloc_cat_j(jstr_ty *JSTR_RST const _j,
 		 Str &&arg,
 		 StrArgs &&...args) JSTR_NOEXCEPT
@@ -299,7 +310,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 jstr_cat_j(jstr_ty *JSTR_RST const _j,
 	   Str &&arg,
 	   StrArgs &&...args) JSTR_NOEXCEPT

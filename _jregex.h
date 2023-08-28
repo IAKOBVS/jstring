@@ -109,6 +109,7 @@ extern "C" {
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_NOTHROW
 static void
 jreg_free(regex_t *JSTR_RST const _preg)
 {
@@ -118,6 +119,7 @@ jreg_free(regex_t *JSTR_RST const _preg)
 JSTR_NOINLINE
 JSTR_COLD
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static void
 jreg_error(const int _reg_errcode,
 	   const regex_t *JSTR_RST const _preg) JSTR_NOEXCEPT
@@ -132,6 +134,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_PURE
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_comp(regex_t *JSTR_RST const _preg,
 	  const char *JSTR_RST const _ptn,
@@ -155,6 +158,7 @@ JSTR_NONNULL(2)
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_PURE
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_exec(const regex_t *JSTR_RST _preg,
 	  const char *JSTR_RST const _s,
@@ -181,6 +185,7 @@ JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_PURE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_exec_mem(const regex_t *JSTR_RST _preg,
 	      const char *JSTR_RST const _s,
@@ -221,6 +226,7 @@ jreg_exec_mem(const regex_t *JSTR_RST _preg,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_match(const char *JSTR_RST const _s,
 	   regex_t *JSTR_RST const _preg,
@@ -236,6 +242,7 @@ jreg_match(const char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_match_now(const char *JSTR_RST const _s,
 	       const char *JSTR_RST const _ptn,
@@ -257,6 +264,7 @@ jreg_match_now(const char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_search(const char *JSTR_RST const _s,
 	    regex_t *JSTR_RST const _preg,
@@ -274,6 +282,7 @@ jreg_search(const char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_search_now(const char *JSTR_RST const _s,
 		regex_t *JSTR_RST const _preg,
@@ -297,6 +306,7 @@ jreg_search_now(const char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_search_now_mem(const char *JSTR_RST const _s,
 		    const size_t _sz,
@@ -315,6 +325,7 @@ jreg_search_now_mem(const char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_search_mem(const char *JSTR_RST const _s,
 		const char *JSTR_RST const _ptn,
@@ -336,6 +347,7 @@ jreg_search_mem(const char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_match_mem(const char *JSTR_RST const _s,
 	       const size_t _sz,
@@ -349,6 +361,7 @@ jreg_match_mem(const char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_match_now_mem(const char *JSTR_RST const _s,
 		   const char *JSTR_RST const _ptn,
@@ -368,6 +381,7 @@ jreg_match_now_mem(const char *JSTR_RST const _s,
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rm(char *JSTR_RST const _s,
 	size_t *JSTR_RST const _sz,
@@ -389,6 +403,7 @@ jreg_rm(char *JSTR_RST const _s,
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rm_now(char *JSTR_RST const _s,
 	    size_t *JSTR_RST const _sz,
@@ -408,6 +423,7 @@ jreg_rm_now(char *JSTR_RST const _s,
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static jreg_errcode_ty
 pjreg_base_rmall(const pjstr_flag_use_n_ty _flag,
 		     char *JSTR_RST const _s,
@@ -444,6 +460,7 @@ pjreg_base_rmall(const pjstr_flag_use_n_ty _flag,
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rmall(char *JSTR_RST const _s,
 	   size_t *JSTR_RST const _sz,
@@ -456,6 +473,7 @@ jreg_rmall(char *JSTR_RST const _s,
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rmn(char *JSTR_RST const _s,
 	 size_t *JSTR_RST const _sz,
@@ -469,6 +487,7 @@ jreg_rmn(char *JSTR_RST const _s,
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rmn_now(char *JSTR_RST const _s,
 	     const char *JSTR_RST const _ptn,
@@ -489,6 +508,7 @@ jreg_rmn_now(char *JSTR_RST const _s,
 JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_INLINE
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rmall_now(char *JSTR_RST const _s,
 	       size_t *JSTR_RST const _sz,
@@ -507,6 +527,7 @@ jreg_rmall_now(char *JSTR_RST const _s,
 
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 pjreg_base_rplcall_mem(const pjstr_flag_use_n_ty _flag,
 			   char **JSTR_RST const _s,
@@ -646,6 +667,7 @@ pjreg_base_rplcall_mem(const pjstr_flag_use_n_ty _flag,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rplcall_mem(char **JSTR_RST const _s,
 		 size_t *JSTR_RST const _sz,
@@ -661,6 +683,7 @@ jreg_rplcall_mem(char **JSTR_RST const _s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rplcn_mem(char **JSTR_RST const _s,
 	       size_t *JSTR_RST const _sz,
@@ -677,6 +700,7 @@ jreg_rplcn_mem(char **JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rplcall_now_mem(char **JSTR_RST const _s,
 		     size_t *JSTR_RST const _sz,
@@ -699,6 +723,7 @@ jreg_rplcall_now_mem(char **JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rplcn_now_mem(char **JSTR_RST const _s,
 		   size_t *JSTR_RST const _sz,
@@ -722,6 +747,7 @@ jreg_rplcn_now_mem(char **JSTR_RST const _s,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rplc_mem(char **JSTR_RST const _s,
 	      size_t *JSTR_RST const _sz,
@@ -743,6 +769,7 @@ jreg_rplc_mem(char **JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static jreg_errcode_ty
 jreg_rplc_now_mem(char **JSTR_RST const _s,
 		  size_t *JSTR_RST const _sz,

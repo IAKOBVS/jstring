@@ -18,6 +18,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_isupper(const int _c) JSTR_NOEXCEPT
 {
@@ -33,6 +34,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_islower(const int _c) JSTR_NOEXCEPT
 {
@@ -48,6 +50,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_isalnum(const int _c) JSTR_NOEXCEPT
 {
@@ -63,6 +66,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_arealnum(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -80,6 +84,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_isalpha(const int _c) JSTR_NOEXCEPT
 {
@@ -95,6 +100,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_arealpha(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -112,6 +118,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_isdigit(const int _c) JSTR_NOEXCEPT
 {
@@ -126,6 +133,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_aredigits(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -143,6 +151,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_toupper(const int _c) JSTR_NOEXCEPT
 {
@@ -155,6 +164,7 @@ jstr_toupper(const int _c) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_touppers(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -174,6 +184,7 @@ JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_tolower(const int _c) JSTR_NOEXCEPT
 {
@@ -186,6 +197,7 @@ jstr_tolower(const int _c) JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 jstr_tolowers(char *JSTR_RST _s) JSTR_NOEXCEPT
 {

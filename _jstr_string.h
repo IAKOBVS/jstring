@@ -36,6 +36,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static void *
 jstr_mempcpy(char *JSTR_RST const _dst,
 	     const char *JSTR_RST const _src,
@@ -56,6 +57,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_stpcpy(char *JSTR_RST const _dst,
 	    const char *JSTR_RST const _src) JSTR_NOEXCEPT
@@ -72,6 +74,7 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_strchrnul(const char *JSTR_RST const _s,
 	       const int _c)
@@ -88,6 +91,7 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_NOTHROW
 static char *
 jstr_strdup(const char *JSTR_RST const _s)
 {
@@ -108,6 +112,7 @@ jstr_strdup(const char *JSTR_RST const _s)
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_NOTHROW
 static void *
 jstr_memccpy(void *JSTR_RST _dst,
 	     const void *JSTR_RST _src,
@@ -133,6 +138,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_stpcat(char *JSTR_RST _dst,
 	    const char *JSTR_RST _src) JSTR_NOEXCEPT
@@ -147,10 +153,13 @@ jstr_stpcat(char *JSTR_RST _dst,
   0 if strings match;
   non-zero otherwise.
 */
+#if JSTR_HAVE_STRNCASECMP
 JSTR_INLINE
+#endif
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_strncasecmp(const char *JSTR_RST const _s1,
 		 const char *JSTR_RST const _s2,
@@ -205,6 +214,7 @@ JSTR_MAYBE_UNUSED
 #if JSTR_HAVE_STRCASECMP
 JSTR_INLINE
 #endif
+JSTR_NOTHROW
 static int
 jstr_strcasecmp(const char *JSTR_RST _s1,
 		const char *JSTR_RST _s2) JSTR_NOEXCEPT
@@ -245,6 +255,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static void *
 pjstr_memrmem(const void *JSTR_RST const _hs,
 		  const size_t _hslen,
@@ -304,6 +315,7 @@ pjstr_memrmem(const void *JSTR_RST const _hs,
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static void *
 jstr_memrmem(const void *JSTR_RST const _hs,
 	     const size_t _hslen,
@@ -366,6 +378,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_NOTHROW
 static char *
 jstr_strrstr(const char *JSTR_RST const _hs,
 	     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
@@ -381,6 +394,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static char *
 pjstr_memcasemem3(const char *JSTR_RST const _hs,
 		      const size_t _hslen,
@@ -442,6 +456,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static char *
 pstrcasechr_mem(const char *JSTR_RST _s,
 		    const int _c,
@@ -475,6 +490,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static char *
 pstrcasechr(const char *JSTR_RST _s,
 		const int _c) JSTR_NOEXCEPT
@@ -509,6 +525,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static char *
 jstr_memcasemem(const char *JSTR_RST const _hs,
 		const size_t _hslen,
@@ -553,6 +570,7 @@ JSTR_MAYBE_UNUSED
 #ifdef JSTR_HAVE_STRCASESTR
 JSTR_INLINE
 #endif
+JSTR_NOTHROW
 static char *
 jstr_strcasestr(const char *JSTR_RST const _hs,
 		const char *JSTR_RST const _ne) JSTR_NOEXCEPT
@@ -598,6 +616,7 @@ JSTR_INLINE
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_endswith_mem_f(const char *JSTR_RST const _hs,
 		    const char *JSTR_RST const _ne,
@@ -617,6 +636,7 @@ JSTR_INLINE
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_endswith_mem(const char *JSTR_RST const _hs,
 		  const char *JSTR_RST const _ne,
@@ -635,6 +655,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_itoa(char *JSTR_RST const _dst,
 	  int _num,
@@ -672,6 +693,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_ltoa(char *JSTR_RST const _dst,
 	  long _num,
@@ -689,6 +711,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_lltoa(char *JSTR_RST const _dst,
 	   long long _num,
@@ -706,6 +729,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_utoa(char *JSTR_RST const _dst,
 	  unsigned int _num,
@@ -739,6 +763,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_ultoa(char *JSTR_RST const _dst,
 	   unsigned long _num,
@@ -756,6 +781,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
+JSTR_NOTHROW
 static char *
 jstr_ulltoa(char *JSTR_RST const _dst,
 	    unsigned long long _num,
@@ -773,6 +799,7 @@ JSTR_INLINE
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_countc(const char *JSTR_RST _s,
 	    const int _c) JSTR_NOEXCEPT
@@ -792,6 +819,7 @@ JSTR_INLINE
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_countc_mem(const char *JSTR_RST _s,
 		const int _c,
@@ -814,6 +842,7 @@ jstr_countc_mem(const char *JSTR_RST _s,
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static int
 jstr_count_mem(const char *JSTR_RST _s,
 	       const char *JSTR_RST const _find,
@@ -844,6 +873,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static int
 jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
@@ -868,6 +898,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static size_t
 jstr_memrcspn(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _reject,
@@ -912,6 +943,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_NOTHROW
 static size_t
 jstr_strrcspn(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _reject) JSTR_NOEXCEPT
@@ -926,6 +958,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static size_t
 jstr_memrspn(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept,
@@ -971,6 +1004,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_NOTHROW
 static size_t
 jstr_strrspn(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept) JSTR_NOEXCEPT
@@ -986,6 +1020,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_NOTHROW
 static char *
 jstr_memrpbrk(const char *JSTR_RST _s,
 	      const char *JSTR_RST const _accept,
@@ -1003,6 +1038,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
+JSTR_NOTHROW
 static char *
 jstr_strrpbrk(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT

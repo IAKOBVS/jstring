@@ -21,6 +21,7 @@ extern "C" {
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
+JSTR_NOTHROW
 static void
 pjstr_err(const char *JSTR_RST const FILE_,
 	      const int LINE_,
@@ -37,6 +38,7 @@ pjstr_err(const char *JSTR_RST const FILE_,
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
+JSTR_NOTHROW
 static void
 pjstr_err_exit(void) JSTR_NOEXCEPT
 {
@@ -85,6 +87,7 @@ JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_PURE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static constexpr size_t
 strlen_args() JSTR_NOEXCEPT
 {
@@ -97,7 +100,8 @@ template <typename Str,
 JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
-JSTR_NONNULL_ALL static size_t
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static size_t
 strlen_args(Str &&_s,
 	    StrArgs &&..._args) JSTR_NOEXCEPT
 {
@@ -107,7 +111,8 @@ strlen_args(Str &&_s,
 
 template <size_t N>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 cat_assign(size_t *JSTR_RST _sz,
 	   char **dst,
 	   const char (&src)[N]) JSTR_NOEXCEPT
@@ -119,6 +124,7 @@ cat_assign(size_t *JSTR_RST _sz,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 cat_assign(size_t *_sz,
 	   char **dst,
@@ -136,6 +142,7 @@ cat_assign(size_t *_sz,
 }
 
 JSTR_INLINE
+JSTR_NOTHROW
 static constexpr void
 cat_loop_assign(size_t *, char **) JSTR_NOEXCEPT
 {
@@ -145,7 +152,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 cat_loop_assign(size_t *_sz,
 		char **dst,
 		Str &&_arg,
@@ -159,7 +167,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 cat_loop_assign(char **dst,
 		Str &&_arg,
 		StrArgs &&..._args) JSTR_NOEXCEPT
@@ -172,6 +181,7 @@ JSTR_WARN_UNUSED
 JSTR_INLINE
 JSTR_PURE
 JSTR_WARN_UNUSED
+JSTR_NOTHROW
 static constexpr size_t
 strlen_args(size_t *) JSTR_NOEXCEPT
 {
@@ -183,7 +193,8 @@ template <typename Str,
 JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
-JSTR_NONNULL_ALL static size_t
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static size_t
 strlen(size_t **JSTR_RST strlen_arr,
        Str &&_arg) JSTR_NOEXCEPT
 {
@@ -196,7 +207,8 @@ template <typename Str,
 JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
-JSTR_NONNULL_ALL static size_t
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static size_t
 strlen_args(size_t *strlen_arr,
 	    Str &&_s,
 	    StrArgs &&..._args) JSTR_NOEXCEPT
@@ -207,7 +219,8 @@ strlen_args(size_t *strlen_arr,
 
 template <size_t N>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 cat_assign(char **JSTR_RST const dst,
 	   size_t **JSTR_RST strlen_arr,
 	   const char (&src)[N]) JSTR_NOEXCEPT
@@ -219,6 +232,7 @@ cat_assign(char **JSTR_RST const dst,
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
 static void
 cat_assign(char **JSTR_RST dst,
 	   size_t **JSTR_RST strlen_arr,
@@ -229,6 +243,7 @@ cat_assign(char **JSTR_RST dst,
 }
 
 JSTR_INLINE
+JSTR_NOTHROW
 static constexpr void
 cat_loop_assign(char **, size_t *) JSTR_NOEXCEPT
 {
@@ -238,7 +253,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 cat_loop_assign(char **dst,
 		size_t *strlen_arr,
 		Str &&_arg,
@@ -259,7 +275,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 jstr_alloc_cat(char **JSTR_RST const _s,
 	       size_t *const _sz,
 	       size_t *const _cap,
@@ -284,7 +301,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 jstr_alloc_cat_f(char *JSTR_RST const _s,
 		 size_t *const _sz,
 		 Str &&_arg,
@@ -308,7 +326,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 jstr_cat(char **JSTR_RST const _s,
 	 size_t *const _sz,
 	 size_t *const _cap,
@@ -341,7 +360,8 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL static void
+JSTR_NONNULL_ALL JSTR_NOTHROW
+static void
 jstr_cat_f(char *_s,
 	   size_t *JSTR_RST _sz,
 	   Str &&_arg,
