@@ -962,9 +962,8 @@ jstr_memrspn(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept,
 	     const size_t _sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_accept == '\0'))
-		return 0;
-	if (jstr_unlikely(*_s == '\0'))
+	if (jstr_unlikely(*_accept == '\0')
+	    || jstr_unlikely(*_s == '\0'))
 		return 0;
 	const unsigned char *const _start = (unsigned char *)_s - 1;
 	const unsigned char *_p;
