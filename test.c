@@ -2,8 +2,11 @@
 
 int main(int argc, char **argv)
 {
-	const char *s = "hello world113";
-	char *p = jstr_strrstr(s, "11");
+	char s[] = "hello world113a9";
+	char *p = jstr_rmspn_p(s, "1234567890");
+	puts(s);
+	printf("%zu\n", p - s);
+	printf("strlen:%zu\n", strlen(s));
 	/* if (p) */
 	/* 	puts(p); */
 	return 0;

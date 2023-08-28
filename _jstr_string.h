@@ -259,7 +259,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void *
-pjstr_memrmem(const unsigned char *JSTR_RST _hs,
+pjstr_memrmem_bmh(const unsigned char *JSTR_RST _hs,
 	      const size_t _hslen,
 	      const unsigned char *JSTR_RST const _ne,
 	      const size_t _nelen) JSTR_NOEXCEPT
@@ -365,7 +365,7 @@ jstr_memrmem(const void *JSTR_RST const _hs,
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
-	default: return pjstr_memrmem((unsigned char *)_hs, _hslen, (unsigned char *)_ne, _nelen);
+	default: return pjstr_memrmem_bmh((unsigned char *)_hs, _hslen, (unsigned char *)_ne, _nelen);
 	}
 }
 
@@ -394,7 +394,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static char *
-pjstr_memcasemem3(const char *JSTR_RST const _hs,
+pjstr_memcasemem_bmh(const char *JSTR_RST const _hs,
 		  const size_t _hslen,
 		  const char *JSTR_RST const _ne,
 		  const size_t _nelen) JSTR_NOEXCEPT
@@ -550,7 +550,7 @@ do3:
 			goto do3;
 		break;
 	}
-	return pjstr_memcasemem3(_hs, _hslen, _ne, _nelen);
+	return pjstr_memcasemem_bmh(_hs, _hslen, _ne, _nelen);
 }
 
 #endif /* !HAVE_STRCASESTR */
@@ -598,7 +598,7 @@ do3:
 	} else {
 		_nelen = 4 + strlen(_ne + 4);
 	}
-	return pjstr_memcasemem3(_hs, strlen(_hs), _ne, _nelen);
+	return pjstr_memcasemem_bmh(_hs, strlen(_hs), _ne, _nelen);
 #endif /* HAVE_STRCASESTR */
 }
 
