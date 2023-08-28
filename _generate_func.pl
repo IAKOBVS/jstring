@@ -48,7 +48,7 @@ $g_in_h = tidy_newlines($g_in_h);
 my @LNS = gen_nonmem_funcs($g_in_h);
 my ($out_h) = gen_struct_funcs(@LNS);
 
-print_to_file($G_OUT_C, $out_h, 0, 0);
+print_to_file($G_OUT_C, $out_h);
 
 sub usage
 {
@@ -89,9 +89,10 @@ sub tidy_newlines
 
 sub print_to_file
 {
-	my ($OUT_C, $OUT_H, $OUT_CPP) = @_;
+	my ($OUT_C, $BUF) = @_;
 	open(my $FH, '>', $OUT_C)
-	  or die("Can't open $OUT_H\n");
+	  or die("Can't open $OUT_C\n");
+	print $FH $BUF;
 	close($FH);
 }
 
@@ -158,7 +159,6 @@ sub gen_nonmem_funcs
 				if (!$size_ptr_var && /\w*$G_SIZE_PTN/) {
 					$decl =~ s/,[^,]*$G_SIZE_PTN//o;
 					$_ = "strlen($new_args[0])";
-					print $_;
 				}
 			}
 			$decl .= "$_, ";

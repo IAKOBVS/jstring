@@ -554,7 +554,7 @@ jstr_rmchr_p(char *JSTR_RST _s,
 }
 
 /*
-  Remove REJECT in S.
+  Remove all REJECT in S.
   Return value:
   Pointer to '\0' in S;
 */
