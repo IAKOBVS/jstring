@@ -558,7 +558,6 @@ jstr_rmc_p(char *JSTR_RST _s,
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
@@ -578,6 +577,19 @@ jstr_rmspn_p(char *JSTR_RST _s,
 	if (jstr_likely(_dst != _old))
 		memmove(_dst, _old, _p - _old + 1);
 	return (char *)_dst + (_p - _old);
+}
+
+/*
+  Remove REJECT in S.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_rmspn_j(jstr_ty *JSTR_RST const _j,
+	     const char *JSTR_RST _reject) JSTR_NOEXCEPT
+{
+	_j->size = jstr_rmspn_p(_j->data, _reject) - _j->data;
 }
 
 typedef enum {
