@@ -82,8 +82,8 @@
 
 #ifdef JSTR_NOTHROW
 static_assert
-#	define JSTR_HAVE_STATIC_ASSERT		  1
-#	define JSTR_ASSERT(_expr, msg)		  JSTR_NOTHROW
+#	define JSTR_HAVE_STATIC_ASSERT 1
+#	define JSTR_ASSERT(_expr, msg) JSTR_NOTHROW
 static_assert(_expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(_expr, msg) JSTR_NOTHROW
 static_assert(_expr, msg);
@@ -93,7 +93,7 @@ static_assert(_expr, msg);
 #else
 #	define JSTR_ASSERT(_expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(_expr, msg)
-#endif /* JSTR_NOTHROW
+#endif /* JSTR_NOTHROW \
 static_assert */
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
@@ -182,10 +182,10 @@ static_assert */
 
 #elif defined _MSC_VER
 
-#	define JSTR_INLINE __forceinline inline
+#	define JSTR_INLINE   __forceinline inline
 #	define JSTR_NOINLINE __declspec(noinline)
-#	define JSTR_PURE   __declspec(noalias)
-#	define JSTR_CONST  __declspec(restrict)
+#	define JSTR_PURE     __declspec(noalias)
+#	define JSTR_CONST    __declspec(restrict)
 #	define JSTR_FLATTEN
 #	define JSTR_COLD
 #	define JSTR_SENTINEL
@@ -387,8 +387,10 @@ case 'Z':
 	JSTR_CASE_ALPHA
 
 #define JSTR_CASE_WHITESPACE \
-case '\n':                   \
 case '\t':                   \
+case '\n':                   \
+case '\v':                   \
+case '\f':                   \
 case '\r':                   \
 case ' ':
 

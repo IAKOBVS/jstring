@@ -2,11 +2,13 @@
 
 int main(int argc, char **argv)
 {
-	char s[] = "hello world113a9";
-	char *p = jstr_rmspn_p(s, "1234567890");
+	char s[] = "          hello world113a9        ";
+	puts(s);
+	printf("stlren:%zu\n", strlen(s));
+	char *p = jstr_trim_mem_p(s, strlen(s));
 	puts(s);
 	printf("%zu\n", p - s);
-	printf("strlen:%zu\n", strlen(s));
+	printf("stlren:%zu\n", strlen(s));
 	/* if (p) */
 	/* 	puts(p); */
 	return 0;

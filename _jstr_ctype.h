@@ -132,6 +132,18 @@ jstr_isdigit(const int _c) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static int
+jstr_isspace(const int _c) JSTR_NOEXCEPT
+{
+	if (_c == ' ' || (unsigned char)(_c - '\t') <= '\r' - '\t')
+		return 1;
+	return 0;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int

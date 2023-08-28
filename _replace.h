@@ -291,10 +291,10 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 jstr_slipaftchr_mem_p_f(char *JSTR_RST const _s,
-		      const int _c,
-		      const char *JSTR_RST const _src,
-		      const size_t _sz,
-		      const size_t _srclen) JSTR_NOEXCEPT
+			const int _c,
+			const char *JSTR_RST const _src,
+			const size_t _sz,
+			const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const _p = (char *)memchr(_s, _c, _sz);
 	if (_p != NULL)
@@ -310,11 +310,11 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 jstr_slipaftchr_mem(char **JSTR_RST const _s,
-		  size_t *JSTR_RST const _sz,
-		  size_t *JSTR_RST const _cap,
-		  const int _c,
-		  const char *JSTR_RST const _src,
-		  const size_t _srclen) JSTR_NOEXCEPT
+		    size_t *JSTR_RST const _sz,
+		    size_t *JSTR_RST const _cap,
+		    const int _c,
+		    const char *JSTR_RST const _src,
+		    const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const _p = (char *)memchr(*_s, _c, *_sz);
 	if (_p != NULL)
@@ -516,8 +516,8 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 jstr_rmchr_mem_p(char *JSTR_RST _s,
-	       const int _c,
-	       const size_t _sz) JSTR_NOEXCEPT
+		 const int _c,
+		 const size_t _sz) JSTR_NOEXCEPT
 {
 	const char *const _start = _s;
 	_s = (char *)memchr(_s, _c, _sz);
@@ -539,7 +539,7 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 jstr_rmchr_p(char *JSTR_RST _s,
-	   const int _c) JSTR_NOEXCEPT
+	     const int _c) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	_s = strchrnul(_s, _c);
@@ -604,10 +604,10 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 pjstr_rmallchr_mem_p(const pjstr_flag_use_n_ty _flag,
-		   char *JSTR_RST const _s,
-		   const int _c,
-		   size_t _n,
-		   const size_t _sz) JSTR_NOEXCEPT
+		     char *JSTR_RST const _s,
+		     const int _c,
+		     size_t _n,
+		     const size_t _sz) JSTR_NOEXCEPT
 {
 	unsigned char *_dst = (unsigned char *)_s;
 	const unsigned char *_old = _dst;
@@ -631,8 +631,8 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 jstr_rmallchr_mem_p(char *JSTR_RST const _s,
-		  const int _c,
-		  const size_t _sz) JSTR_NOEXCEPT
+		    const int _c,
+		    const size_t _sz) JSTR_NOEXCEPT
 {
 	return pjstr_rmallchr_mem_p(PJSTR_FLAG_USE_NOT_N, _s, _c, 0, _sz);
 }
@@ -649,7 +649,7 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 jstr_rmallchr_p(char *JSTR_RST const _s,
-	      const int _c) JSTR_NOEXCEPT
+		const int _c) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	unsigned char *_dst = (unsigned char *)_s;
@@ -766,9 +766,9 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 jstr_rplcchr_mem(char *JSTR_RST _s,
-	       const int _find,
-	       const int _rplc,
-	       const size_t _sz) JSTR_NOEXCEPT
+		 const int _find,
+		 const int _rplc,
+		 const size_t _sz) JSTR_NOEXCEPT
 {
 	_s = (char *)memchr(_s, _find, _sz);
 	if (jstr_unlikely(_s == NULL))
@@ -784,8 +784,8 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 jstr_rplcchr(char *JSTR_RST _s,
-	   const int _find,
-	   const int _rplc) JSTR_NOEXCEPT
+	     const int _find,
+	     const int _rplc) JSTR_NOEXCEPT
 {
 	_s = strchr(_s, _find);
 	if (jstr_unlikely(_s == NULL))
@@ -801,9 +801,9 @@ JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
 jstr_rplcallchr_mem(char *JSTR_RST _s,
-		  const int _find,
-		  const int _rplc,
-		  const size_t _sz) JSTR_NOEXCEPT
+		    const int _find,
+		    const int _rplc,
+		    const size_t _sz) JSTR_NOEXCEPT
 {
 	const char *JSTR_RST const _end = _s + _sz;
 	while ((_s = (char *)memchr(_s, _find, _end - _s)))
@@ -818,8 +818,8 @@ JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
 jstr_rplcallchr(char *JSTR_RST _s,
-	      const int _find,
-	      const int _rplc) JSTR_NOEXCEPT
+		const int _find,
+		const int _rplc) JSTR_NOEXCEPT
 {
 	while ((_s = (strchr(_s, _find))))
 		*_s++ = _rplc;
@@ -1194,7 +1194,7 @@ jstr_rev_mem(char *JSTR_RST _s,
 }
 
 /*
-  Trim spaces in [ \t] from _end of S.
+  Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
   pointer to '\0' in S;
   S if SLEN is 0.
@@ -1208,25 +1208,21 @@ jstr_trim_mem_p(char *JSTR_RST const _s,
 		const size_t _sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
-		return _s;
-	unsigned char *_end = (unsigned char *)_s + _sz - 1;
-	const unsigned char *const start = (unsigned char *)_s - 1;
-	do {
-		switch (*_end) {
-		case '\t':
-		case ' ':
-			continue;
-		default:
-			*++_end = '\0';
-			break;
-		}
-		break;
-	} while (jstr_likely(--_end > start));
+		return _s + _sz;
+	const size_t _mv = strspn(_s, " \n\t\v\r");
+	if (_mv)
+		memmove(_s, _s + _mv, _mv);
+	unsigned char *_end = (unsigned char *)_s + _sz - _mv - 1;
+	unsigned char *_start = (unsigned char *)_s - 1;
+	while ((*_end == ' ' || *_end - '\t' >= '\r' - '\t')
+	       && --_end != _start)
+		;
+	*++_end = '\0';
 	return (char *)_end;
 }
 
 /*
-  Trim spaces in [ \t] from _end of S.
+  Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
   pointer to '\0' in S;
   S if SLEN is 0.
@@ -1243,7 +1239,7 @@ jstr_trim_p(char *JSTR_RST const _s) JSTR_NOEXCEPT
 }
 
 /*
-  Trim spaces in [ \t] from _end of S.
+  Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
   pointer to '\0' in S;
   S if SLEN is 0.
@@ -1305,10 +1301,10 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 jstr_insertaftchr_mem_f(char *JSTR_RST const _s,
-		      const int _c,
-		      const char *JSTR_RST const _src,
-		      const size_t _sz,
-		      const size_t _srclen) JSTR_NOEXCEPT
+			const int _c,
+			const char *JSTR_RST const _src,
+			const size_t _sz,
+			const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const _p = (char *)memchr(_s, _c, _sz);
 	if (_p != NULL)
@@ -1323,11 +1319,11 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 jstr_insertaftchr_mem(char **JSTR_RST const _s,
-		    size_t *JSTR_RST const _sz,
-		    size_t *JSTR_RST const _cap,
-		    const int _c,
-		    const char *JSTR_RST const _src,
-		    const size_t _srclen) JSTR_NOEXCEPT
+		      size_t *JSTR_RST const _sz,
+		      size_t *JSTR_RST const _cap,
+		      const int _c,
+		      const char *JSTR_RST const _src,
+		      const size_t _srclen) JSTR_NOEXCEPT
 {
 	const char *const _p = (char *)memchr(*_s, _c, *_sz);
 	if (_p != NULL)
