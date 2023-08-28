@@ -2,13 +2,10 @@
 
 int main(int argc, char **argv)
 {
-	const char *acc = "1234567890";
-	const char *s = "hello world";
-	const char *p = s + strlen(s) - jstr_strrspn(s, acc);
-	if (p) {
-		puts(p);
-	} else {
-	}
+	const char *s = "hello world113";
+	char *p = jstr_strrstr(s, "11");
+	/* if (p) */
+	/* 	puts(p); */
 	return 0;
 	/* jstr_ty s; */
 	/* char *str = "hello-world"; */
