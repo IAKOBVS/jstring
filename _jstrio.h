@@ -201,6 +201,7 @@ pjstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			break;
 		case 'y':
 			S {
+				T; /* py */
 			case 'i':
 				S {
 					T; /* pyi */
@@ -211,7 +212,6 @@ pjstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 					B; /* pyc */
 				}
 				break;
-				T; /* py */
 			}
 			break;
 		case 'n':
@@ -242,11 +242,11 @@ pjstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			}
 			break;
 		case 'o':
+			T; /* s */
 			S {
 				B; /* so */
 			}
 			break;
-			T; /* s */
 		}
 		break;
 	case 'r':
