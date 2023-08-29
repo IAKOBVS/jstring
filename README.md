@@ -9,6 +9,7 @@
 - reverse standard string functions: strrstr, strrspn, etc.
 <br>
 <br>
+
 ## Function suffixes:
 <br>
 - _p: returns a pointer to the new end of the passed string.
@@ -18,6 +19,7 @@
 - _now: compiles regular expression now.
 <br>
 <br>
+
 ## Scripts:
 <br>
 - ./build: generate additional functions
