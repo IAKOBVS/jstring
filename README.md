@@ -7,7 +7,10 @@
 ```
 sudo ./install
 ```
-and #include <jstr/jstr.h>
+and
+```
+#include <jstr/jstr.h>
+```
 ## Function suffixes:
 - _p(): returns the new pointer to the end of the string.
 - _f(): assumes that there be enough space in the string: it will not grow it with realloc.
