@@ -5,8 +5,9 @@
 - reverse standard string functions: strrstr, strrspn, etc.
 ## Installation:
 ```
-sudo ./install and #include <jstr/jstr.h>
+sudo ./install
 ```
+and #include <jstr/jstr.h>
 ## Function suffixes:
 - _p: returns a pointer to the new end of the passed string.
 - _f: assumes that there be enough space: it will not grow the string.
