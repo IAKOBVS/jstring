@@ -1,15 +1,17 @@
 Features:
 <br>
-will work with any string type (takes a pointer to string, size, and cap)
+works with any string type (takes a pointer to string, size, and cap);
 <br>
 string replacement;
 <br>
 regex replacement;
 <br>
+provides reverse versions of standard string functions (strrstr, strrspn, strrcspn)
+<br>
 etc.
 <br>
 <br>
-Functions:
+Function suffixes:
 <br>
 _p: returns a pointer to the new end of the passed string.
 <br>
