@@ -231,7 +231,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_touppers(char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	for (;; ++_s) {
 		switch (*_s) {
@@ -264,7 +264,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_tolowers(char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	for (;; ++_s) {
 		switch (*_s) {
