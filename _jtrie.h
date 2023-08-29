@@ -65,9 +65,9 @@ static jtrie_errcode_ty
 jtrie_insert(jtrie_node_ty *JSTR_RST const _root,
 	     const char *JSTR_RST const _word) JSTR_NOEXCEPT
 {
-	const unsigned char *w = (unsigned char *)_word;
-	if (jstr_unlikely(*w == '\0'))
+	if (jstr_unlikely(*_word == '\0'))
 		return JTRIE_RET_NOERROR;
+	const unsigned char *w = (unsigned char *)_word;
 	jtrie_node_ty *curr = _root;
 	for (; *w; ++w) {
 		if (curr->child[*w] == NULL)
@@ -93,9 +93,9 @@ pjtrie_remove(pjtrie_flag_rm_prefixes_ty _flag,
 		  jtrie_node_ty *JSTR_RST const _root,
 		  const char *JSTR_RST const _word) JSTR_NOEXCEPT
 {
-	const unsigned char *w = (unsigned char *)_word;
-	if (jstr_unlikely(*w == '\0'))
+	if (jstr_unlikely(*_word == '\0'))
 		return;
+	const unsigned char *w = (unsigned char *)_word;
 	jtrie_node_ty *curr = _root->child[*w];
 	if (jstr_unlikely(curr == NULL))
 		return;
@@ -140,9 +140,9 @@ static jtrie_node_ty *
 jtrie_starts_with(const jtrie_node_ty *JSTR_RST const _root,
 		  const char *JSTR_RST const _word) JSTR_NOEXCEPT
 {
-	const unsigned char *w = (unsigned char *)_word;
-	if (jstr_unlikely(*w == '\0'))
+	if (jstr_unlikely(*_word == '\0'))
 		return NULL;
+	const unsigned char *w = (unsigned char *)_word;
 	const jtrie_node_ty *curr = _root->child[*w];
 	if (jstr_unlikely(curr == NULL))
 		return NULL;
