@@ -81,8 +81,7 @@
 						       : "%llu\n")
 #	define jstr_pp_cout(x) printf(PJSTR_PP_PRINTF_FORMAT(x), x)
 #else
-#	include <iostream>
-#	define jstr_pp_cout(x) std::cout << x << '\n'
+#	define jstr_pp_cout(x)
 #endif /* __cplusplus */
 
 #endif /* PJSTR_PP_VA_ARGS_MACROS_DEF_H */
