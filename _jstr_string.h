@@ -864,7 +864,7 @@ jstr_count(const char *JSTR_RST _s,
 }
 
 /*
-   Reverse of MEMCSPN.
+   Reverse of STRCSPN.
 */
 JSTR_PURE
 JSTR_NONNULL_ALL
@@ -924,7 +924,7 @@ jstr_strrcspn(const char *JSTR_RST const _s,
 }
 
 /*
-   Reverse of MEMSPN.
+   Reverse of STRSPN.
 */
 JSTR_PURE
 JSTR_NONNULL_ALL
@@ -983,7 +983,7 @@ jstr_strrspn(const char *JSTR_RST const _s,
 }
 
 /*
-   Reverse of MEMPBRK.
+   Reverse of STRPBRK.
 */
 JSTR_PURE
 JSTR_NONNULL_ALL
