@@ -847,17 +847,15 @@ jstr_count_mem(const char *JSTR_RST _s,
 	       size_t _sz,
 	       const size_t _findlen) JSTR_NOEXCEPT
 {
-	switch (_findlen) {
-	case 0: return 0;
-	case 1: return jstr_countc_mem(_s, *_find, _sz);
-	default: {
-		int cnt = 0;
-		const char *const _end = _s + _sz;
-		while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
-			++cnt, _s += _findlen;
-		return cnt;
-	}
-	}
+	if (jstr_unlikely(_findlen == 0))
+		return 0;
+	if (jstr_unlikely(_findlen == 1))
+		return jstr_countc_mem(_s, *_find, _sz);
+	int cnt = 0;
+	const char *const _end = _s + _sz;
+	while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
+		++cnt, _s += _findlen;
+	return cnt;
 }
 
 #endif
@@ -876,17 +874,20 @@ static int
 jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(*_find == '\0'))
+		return 0;
+	if (jstr_unlikely(_find[1] == '\0'))
+		return jstr_countc(_s, *_find);
 	const size_t _findlen = strlen(_find);
-	switch (_findlen) {
-	case 0: return 0;
-	case 1: return jstr_countc(_s, *_find);
-	default: {
-		int cnt = 0;
-		while ((_s = (char *)strstr(_s, _find)))
-			++cnt, _s += _findlen;
-		return cnt;
-	}
-	}
+	int cnt = 0;
+#if JSTR_HAVE_MEMMEM
+	const char *const _end = _s + strlen(_s);
+	while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
+#else
+	while ((_s = (char *)strstr(_s, _find)))
+#endif
+		++cnt, _s += _findlen;
+	return cnt;
 }
 
 /*
