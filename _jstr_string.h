@@ -17,6 +17,7 @@ extern "C" {
 #include "_config.h"
 #include "_jstr_ctype.h"
 #include "_macros.h"
+#include "_builder.h"
 
 #ifdef __cplusplus
 extern "C" {

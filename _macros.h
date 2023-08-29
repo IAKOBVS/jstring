@@ -90,7 +90,7 @@
 #else
 #	define JSTR_ASSERT(_expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(_expr, msg)
-#endif /* JSTR_NOTHROW */
+#endif /* static_assert */
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #	define JSTR_RESTRICT restrict
