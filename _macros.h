@@ -80,21 +80,17 @@
 #	define JSTR_HAVE_TYPEOF 1
 #endif /* HAVE_TYPEOF */
 
-#ifdef JSTR_NOTHROW
-static_assert
+#ifdef static_assert
 #	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_ASSERT(_expr, msg) JSTR_NOTHROW
-static_assert(_expr, msg)
-#	define JSTR_ASSERT_SEMICOLON(_expr, msg) JSTR_NOTHROW
-static_assert(_expr, msg);
+#	define JSTR_ASSERT(_expr, msg) static_assert(_expr, msg)
+#	define JSTR_ASSERT_SEMICOLON(_expr, msg) static_assert(_expr, msg);
 #elif __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(_expr, msg) _Static_assert(_expr, msg)
 #else
 #	define JSTR_ASSERT(_expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(_expr, msg)
-#endif /* JSTR_NOTHROW \
-static_assert */
+#endif /* JSTR_NOTHROW */
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #	define JSTR_RESTRICT restrict
