@@ -14,10 +14,10 @@ extern "C" {
 
 #include "_builder.h"
 #include "_config.h"
+#include "_jstr_string.h"
 #include "_macros.h"
 #include "_pp_va_args_macros.h"
 #include "_replace.h"
-#include "_jstr_string.h"
 
 #define JREG_DEBUG 0
 
@@ -390,8 +390,8 @@ jreg_rm(char *JSTR_RST const _s,
 {
 	regmatch_t _rm;
 	const jreg_errcode_ty _ret = PJREG_EXEC(_preg, _s, *_sz, 1, &_rm, _eflags);
-	if (jstr_unlikely(_ret != JREG_RET_NOERROR
-			  || _rm.rm_eo == _rm.rm_so))
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR)
+	    || jstr_unlikely(_rm.rm_eo == _rm.rm_so))
 		return _ret;
 	memmove(_s + _rm.rm_so,
 		_s + _rm.rm_eo,
@@ -426,11 +426,11 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static jreg_errcode_ty
 pjreg_base_rmall(const pjstr_flag_use_n_ty _flag,
-		     char *JSTR_RST const _s,
-		     size_t *JSTR_RST const _sz,
-		     size_t _n,
-		     const regex_t *JSTR_RST const _preg,
-		     const int _eflags) JSTR_NOEXCEPT
+		 char *JSTR_RST const _s,
+		 size_t *JSTR_RST const _sz,
+		 size_t _n,
+		 const regex_t *JSTR_RST const _preg,
+		 const int _eflags) JSTR_NOEXCEPT
 {
 	regmatch_t _rm;
 	unsigned char *_dst = (unsigned char *)_s;
@@ -530,14 +530,14 @@ JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static jreg_errcode_ty
 pjreg_base_rplcall_mem(const pjstr_flag_use_n_ty _flag,
-			   char **JSTR_RST const _s,
-			   size_t *JSTR_RST const _sz,
-			   size_t *JSTR_RST const _cap,
-			   const char *JSTR_RST const _rplc,
-			   size_t _n,
-			   const size_t _rplclen,
-			   const regex_t *JSTR_RST const _preg,
-			   const int _eflags) JSTR_NOEXCEPT
+		       char **JSTR_RST const _s,
+		       size_t *JSTR_RST const _sz,
+		       size_t *JSTR_RST const _cap,
+		       const char *JSTR_RST const _rplc,
+		       size_t _n,
+		       const size_t _rplclen,
+		       const regex_t *JSTR_RST const _preg,
+		       const int _eflags) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_rplclen == 0)) {
 		return jreg_rmall(*_s, _sz, _preg, _eflags);
@@ -759,8 +759,8 @@ jreg_rplc_mem(char **JSTR_RST const _s,
 {
 	regmatch_t _rm;
 	const jreg_errcode_ty _ret = PJREG_EXEC(_preg, *_s, *_sz, 1, &_rm, _eflags);
-	if (jstr_unlikely(_ret != JREG_RET_NOERROR
-			  || _rm.rm_eo == _rm.rm_so))
+	if (jstr_unlikely(_ret != JREG_RET_NOERROR)
+	    || jstr_unlikely(_rm.rm_eo == _rm.rm_so))
 		return _ret;
 	pjstr_rplcat_mem(_s, _sz, _cap, _rm.rm_so, _rplc, _rplclen, _rm.rm_eo - _rm.rm_so);
 	return _ret;
