@@ -125,7 +125,7 @@ sub gen_nonmem_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME =~ /priv/) {
+		if ($FUNC_NAME =~ /^p/) {
 			goto NEXT;
 		}
 		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
@@ -203,7 +203,7 @@ sub gen_struct_funcs
 		if ($_ !~ $G_RE_DEFINE) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME =~ /priv/) {
+		if ($FUNC_NAME =~ /^p/) {
 			goto NEXT;
 		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';

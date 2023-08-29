@@ -259,7 +259,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void *
-pjstr_strrstr_len_bmh(const unsigned char *JSTR_RST _hs,
+pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		  const size_t _hslen,
 		  const unsigned char *JSTR_RST const _ne,
 		  const size_t _nelen) JSTR_NOEXCEPT
@@ -319,7 +319,7 @@ JSTR_WARN_UNUSED
 JSTR_NOTHROW
 JSTR_MAYBE_UNUSED
 static void *
-jstr_strrstr_len(const void *JSTR_RST const _hs,
+jstr_strrstr_mem(const void *JSTR_RST const _hs,
 	     const size_t _hslen,
 	     const void *JSTR_RST const _ne,
 	     const size_t _nelen) JSTR_NOEXCEPT
@@ -365,7 +365,7 @@ jstr_strrstr_len(const void *JSTR_RST const _hs,
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
-	default: return pjstr_strrstr_len_bmh((unsigned char *)_hs, _hslen, (unsigned char *)_ne, _nelen);
+	default: return pjstr_strrstr_mem_bmh((unsigned char *)_hs, _hslen, (unsigned char *)_ne, _nelen);
 	}
 }
 
@@ -385,7 +385,7 @@ static char *
 jstr_strrstr(const char *JSTR_RST const _hs,
 	     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
-	return (char *)jstr_strrstr_len(_hs, strlen(_hs), _ne, strlen(_ne));
+	return (char *)jstr_strrstr_mem(_hs, strlen(_hs), _ne, strlen(_ne));
 }
 
 JSTR_PURE
@@ -394,7 +394,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static char *
-pjstr_strcasestr_len_bmh(const char *JSTR_RST const _hs,
+pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		     const size_t _hslen,
 		     const char *JSTR_RST const _ne,
 		     const size_t _nelen) JSTR_NOEXCEPT
@@ -456,7 +456,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static char *
-pstrcasechr_len(const char *JSTR_RST _s,
+pstrcasechr_mem(const char *JSTR_RST _s,
 		const int _c,
 		const size_t _n) JSTR_NOEXCEPT
 {
@@ -525,7 +525,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static char *
-jstr_strcasestr_len(const char *JSTR_RST const _hs,
+jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 		const size_t _hslen,
 		const char *JSTR_RST const _ne,
 		const size_t _nelen) JSTR_NOEXCEPT
@@ -534,7 +534,7 @@ jstr_strcasestr_len(const char *JSTR_RST const _hs,
 		return NULL;
 	switch (_nelen) {
 	case 0: return (char *)_hs;
-	case 1: return pstrcasechr_len(_hs, *_ne, _hslen);
+	case 1: return pstrcasechr_mem(_hs, *_ne, _hslen);
 	case 2:
 do2:
 		if (jstr_islower(_ne[0]) && jstr_islower(_ne[1]))
@@ -550,7 +550,7 @@ do3:
 			goto do3;
 		break;
 	}
-	return pjstr_strcasestr_len_bmh(_hs, _hslen, _ne, _nelen);
+	return pjstr_strcasestr_mem_bmh(_hs, _hslen, _ne, _nelen);
 }
 
 #endif /* !HAVE_STRCASESTR */
@@ -598,7 +598,7 @@ do3:
 	} else {
 		_nelen = 4 + strlen(_ne + 4);
 	}
-	return pjstr_strcasestr_len_bmh(_hs, strlen(_hs), _ne, _nelen);
+	return pjstr_strcasestr_mem_bmh(_hs, strlen(_hs), _ne, _nelen);
 #endif /* HAVE_STRCASESTR */
 }
 
@@ -614,7 +614,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_endswith_len(const char *JSTR_RST const _hs,
+jstr_endswith_mem(const char *JSTR_RST const _hs,
 		  const char *JSTR_RST const _ne,
 		  const size_t _hsz,
 		  const size_t _nelen) JSTR_NOEXCEPT
@@ -797,7 +797,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static size_t
-jstr_countc_len(const char *JSTR_RST _s,
+jstr_countc_mem(const char *JSTR_RST _s,
 		const int _c,
 		const size_t _n) JSTR_NOEXCEPT
 {
@@ -820,13 +820,13 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static size_t
-jstr_count_len(const char *JSTR_RST _s,
+jstr_count_mem(const char *JSTR_RST _s,
 	       const char *JSTR_RST const _find,
 	       size_t _sz,
 	       const size_t _findlen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_findlen == 1))
-		return jstr_countc_len(_s, *_find, _sz);
+		return jstr_countc_mem(_s, *_find, _sz);
 	if (jstr_unlikely(_findlen == 0))
 		return 0;
 	size_t cnt = 0;
@@ -872,7 +872,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static size_t
-jstr_strrcspn_len(const char *JSTR_RST const _s,
+jstr_strrcspn_mem(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _reject,
 	      const size_t _sz) JSTR_NOEXCEPT
 {
@@ -920,7 +920,7 @@ static size_t
 jstr_strrcspn(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _reject) JSTR_NOEXCEPT
 {
-	return jstr_strrcspn_len(_s, _reject, strlen(_s));
+	return jstr_strrcspn_mem(_s, _reject, strlen(_s));
 }
 
 /*
@@ -932,7 +932,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static size_t
-jstr_strrspn_len(const char *JSTR_RST const _s,
+jstr_strrspn_mem(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept,
 	     const size_t _sz) JSTR_NOEXCEPT
 {
@@ -979,7 +979,7 @@ static size_t
 jstr_strrspn(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept) JSTR_NOEXCEPT
 {
-	return jstr_strrspn_len(_s, _accept, strlen(_s));
+	return jstr_strrspn_mem(_s, _accept, strlen(_s));
 }
 
 /*
@@ -992,11 +992,11 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
 static char *
-jstr_strrpbrk_len(const char *JSTR_RST _s,
+jstr_strrpbrk_mem(const char *JSTR_RST _s,
 	      const char *JSTR_RST const _accept,
 	      const size_t _sz) JSTR_NOEXCEPT
 {
-	_s = _s + _sz - jstr_strrcspn_len(_s, _accept, _sz);
+	_s = _s + _sz - jstr_strrcspn_mem(_s, _accept, _sz);
 	return *_s ? (char *)_s : NULL;
 }
 
@@ -1013,7 +1013,7 @@ static char *
 jstr_strrpbrk(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT
 {
-	return jstr_strrpbrk_len(_s, _accept, strlen(_s));
+	return jstr_strrpbrk_mem(_s, _accept, strlen(_s));
 }
 
 #ifdef __cplusplus
