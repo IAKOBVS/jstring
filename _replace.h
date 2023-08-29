@@ -391,16 +391,14 @@ jstr_slipaft_mem_f(char *JSTR_RST const _s,
 		   const size_t _findlen,
 		   const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_findlen) {
-	case 0: return _s + _sz;
-	case 1: return jstr_slipaftchr_mem_p_f(_s, *_find, _src, _sz, _srclen);
-	default: {
-		const char *const _p = (char *)PJSTR_MEMMEM(_s, _sz, _find, _findlen);
-		if (_p != NULL)
-			return jstr_slip_mem_p_f(_s, _p - _s, _src, _sz, _srclen);
+	if (jstr_unlikely(_findlen == 1))
+		return jstr_slipaftchr_mem_p_f(_s, *_find, _src, _sz, _srclen);
+	if (jstr_unlikely(_findlen == 0))
 		return _s + _sz;
-	}
-	}
+	const char *const _p = (char *)PJSTR_MEMMEM(_s, _sz, _find, _findlen);
+	if (_p != NULL)
+		return jstr_slip_mem_p_f(_s, _p - _s, _src, _sz, _srclen);
+	return _s + _sz;
 }
 
 /*
@@ -418,18 +416,15 @@ jstr_slipaft_mem(char **JSTR_RST const _s,
 		 const size_t _findlen,
 		 const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_findlen) {
-	case 0: return;
-	case 1:
+	if (jstr_unlikely(_findlen == 1)) {
 		jstr_slipaftchr_mem(_s, _sz, _cap, *_find, _src, _srclen);
 		return;
-	default: {
-		const char *const _p = (char *)PJSTR_MEMMEM(*_s, *_sz, _find, _findlen);
-		if (_p != NULL)
-			jstr_slip_mem(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
+	}
+	if (jstr_unlikely(_findlen == 0))
 		return;
-	}
-	}
+	const char *const _p = (char *)PJSTR_MEMMEM(*_s, *_sz, _find, _findlen);
+	if (_p != NULL)
+		jstr_slip_mem(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
 }
 
 /*
@@ -447,20 +442,18 @@ jstr_slipaftall_mem_p_f(char *JSTR_RST const _s,
 			const size_t _findlen,
 			const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_findlen) {
-	case 0: return _s + _sz;
-	case 1: return jstr_slipaftallc_mem_p_f(_s, *_find, _src, _sz, _srclen);
-	default: {
-		size_t off = 0;
-		const char *_p;
-		while ((_p = (char *)PJSTR_MEMMEM(_s + off, _sz - off, _find, _findlen))) {
-			off = _p - _s;
-			_sz = jstr_slip_mem_p_f(_s, off, _src, _sz, _srclen) - _s;
-			off += _findlen + _srclen;
-		}
+	if (jstr_unlikely(_findlen == 1))
+		return jstr_slipaftallc_mem_p_f(_s, *_find, _src, _sz, _srclen);
+	if (jstr_unlikely(_findlen == 0))
 		return _s + _sz;
+	size_t off = 0;
+	const char *_p;
+	while ((_p = (char *)PJSTR_MEMMEM(_s + off, _sz - off, _find, _findlen))) {
+		off = _p - _s;
+		_sz = jstr_slip_mem_p_f(_s, off, _src, _sz, _srclen) - _s;
+		off += _findlen + _srclen;
 	}
-	}
+	return _s + _sz;
 }
 
 /*
@@ -478,29 +471,26 @@ jstr_slipaftall_mem(char **JSTR_RST const _s,
 		    const size_t _findlen,
 		    const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_findlen) {
-	case 0:
-		return;
-	case 1:
+	if (jstr_unlikely(_findlen == 1)) {
 		jstr_slipaftallc_mem(_s, _sz, _cap, *_find, _src, _srclen);
 		return;
-	default: {
-		size_t off = 0;
-		const char *_p;
-#if JSTR_HAVE_REALLOC_MREMAP
-		const int is_mmap = PJSTR_IS_MMAP(*_cap);
-#endif /* HAVE_REALLOC_MREMAP */
-		while ((_p = (char *)PJSTR_MEMMEM(*_s + off, *_sz - off, _find, _findlen))) {
-			off = _p - *_s;
-#if JSTR_HAVE_REALLOC_MREMAP
-			if (jstr_unlikely(is_mmap))
-				pjstr_slip_mem_realloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
-			else
-#endif /* HAVE_REALLOC_MREMAP */
-				pjstr_slip_mem_malloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
-			off += _findlen + _srclen;
-		}
 	}
+	if (jstr_unlikely(_findlen == 0))
+		return;
+	size_t off = 0;
+	const char *_p;
+#if JSTR_HAVE_REALLOC_MREMAP
+	const int is_mmap = PJSTR_IS_MMAP(*_cap);
+#endif /* HAVE_REALLOC_MREMAP */
+	while ((_p = (char *)PJSTR_MEMMEM(*_s + off, *_sz - off, _find, _findlen))) {
+		off = _p - *_s;
+#if JSTR_HAVE_REALLOC_MREMAP
+		if (jstr_unlikely(is_mmap))
+			pjstr_slip_mem_realloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
+		else
+#endif /* HAVE_REALLOC_MREMAP */
+			pjstr_slip_mem_malloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
+		off += _findlen + _srclen;
 	}
 }
 
@@ -1345,18 +1335,15 @@ jstr_insertaft_mem_f(char *JSTR_RST const _s,
 		     const size_t _findlen,
 		     const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_findlen) {
-	case 0: return;
-	case 1:
+	if (jstr_unlikely(_findlen == 1)) {
 		jstr_insertaftchr_mem_f(_s, *_find, _src, _sz, _srclen);
 		return;
-	default: {
-		const char *const _p = (char *)PJSTR_MEMMEM(_s, _sz, _find, _findlen);
-		if (_p != NULL)
-			jstr_insert_mem_f(_s, _p - _s + _findlen, _src, _srclen);
+	}
+	if (jstr_unlikely(_findlen == 0))
 		return;
-	}
-	}
+	const char *const _p = (char *)PJSTR_MEMMEM(_s, _sz, _find, _findlen);
+	if (_p != NULL)
+		jstr_insert_mem_f(_s, _p - _s + _findlen, _src, _srclen);
 }
 
 /*
@@ -1374,18 +1361,15 @@ jstr_insertaft_mem(char **JSTR_RST const _s,
 		   const size_t _findlen,
 		   const size_t _srclen) JSTR_NOEXCEPT
 {
-	switch (_findlen) {
-	case 0: return;
-	case 1:
+	if (jstr_unlikely(_findlen == 1)) {
 		jstr_insertaftchr_mem(_s, _sz, _cap, *_find, _src, _srclen);
 		return;
-	default: {
-		const char *const _p = (char *)PJSTR_MEMMEM(*_s, *_sz, _find, _findlen);
-		if (_p != NULL)
-			jstr_insert_mem(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
+	}
+	if (jstr_unlikely(_findlen == 0))
 		return;
-	}
-	}
+	const char *const _p = (char *)PJSTR_MEMMEM(*_s, *_sz, _find, _findlen);
+	if (_p != NULL)
+		jstr_insert_mem(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen);
 }
 
 #ifdef __cplusplus

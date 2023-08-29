@@ -847,10 +847,10 @@ jstr_count_mem(const char *JSTR_RST _s,
 	       size_t _sz,
 	       const size_t _findlen) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(_findlen == 0))
-		return 0;
 	if (jstr_unlikely(_findlen == 1))
 		return jstr_countc_mem(_s, *_find, _sz);
+	if (jstr_unlikely(_findlen == 0))
+		return 0;
 	size_t cnt = 0;
 	const char *const _end = _s + _sz;
 	while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
