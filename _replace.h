@@ -1201,7 +1201,7 @@ jstr_trim_mem_p(char *JSTR_RST const _s,
 		return _s + _sz;
 	const size_t _mv = strspn(_s, " \n\t\v\r");
 	if (_mv)
-		memmove(_s, _s + _mv, _mv);
+		memmove(_s, _s + _mv, _sz - _mv + 1);
 	unsigned char *_end = (unsigned char *)_s + _sz - _mv - 1;
 	unsigned char *_start = (unsigned char *)_s - 1;
 	while ((*_end == ' ' || *_end - '\t' >= '\r' - '\t')
