@@ -798,11 +798,11 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
-static int
+static size_t
 jstr_countc(const char *JSTR_RST _s,
 	    const int _c) JSTR_NOEXCEPT
 {
-	int cnt = 0;
+	size_t cnt = 0;
 	while ((_s = strchr(_s, _c)))
 		++cnt;
 	return cnt;
@@ -818,12 +818,12 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
-static int
+static size_t
 jstr_countc_mem(const char *JSTR_RST _s,
 		const int _c,
 		const size_t _n) JSTR_NOEXCEPT
 {
-	int cnt = 0;
+	size_t cnt = 0;
 	const char *const _end = _s + _n;
 	while ((_s = (char *)memchr(_s, _c, _end - _s)))
 		++cnt;
@@ -841,7 +841,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
-static int
+static size_t
 jstr_count_mem(const char *JSTR_RST _s,
 	       const char *JSTR_RST const _find,
 	       size_t _sz,
@@ -851,7 +851,7 @@ jstr_count_mem(const char *JSTR_RST _s,
 		return 0;
 	if (jstr_unlikely(_findlen == 1))
 		return jstr_countc_mem(_s, *_find, _sz);
-	int cnt = 0;
+	size_t cnt = 0;
 	const char *const _end = _s + _sz;
 	while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
 		++cnt, _s += _findlen;
@@ -870,7 +870,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
-static int
+static size_t
 jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
 {
@@ -879,13 +879,8 @@ jstr_count(const char *JSTR_RST _s,
 	if (jstr_unlikely(_find[1] == '\0'))
 		return jstr_countc(_s, *_find);
 	const size_t _findlen = strlen(_find);
-	int cnt = 0;
-#if JSTR_HAVE_MEMMEM
-	const char *const _end = _s + strlen(_s);
-	while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
-#else
+	size_t cnt = 0;
 	while ((_s = (char *)strstr(_s, _find)))
-#endif
 		++cnt, _s += _findlen;
 	return cnt;
 }
