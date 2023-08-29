@@ -343,8 +343,8 @@ jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 	return pjstrio_ext_type(_filename + 1);
 }
 
-#define JSTR_ELF    "\x7ELF"
-#define JSTR_ELF_SZ (sizeof("\x7ELF") - 1)
+#define JSTR_ELF    "\x7f\ELF"
+#define JSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
 #define JSTR_UTF    "\xEF\xBB\xBF"
 #define JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
