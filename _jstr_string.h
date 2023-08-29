@@ -607,28 +607,6 @@ do3:
   Return value:
   0 if true;
   1 if false.
-  Assumes that HS is longer than NE.
-  Let memcmp do the bounds check.
-*/
-JSTR_INLINE
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_endswith_mem_f(const char *JSTR_RST const _hs,
-		    const char *JSTR_RST const _ne,
-		    const size_t _hsz,
-		    const size_t _nelen) JSTR_NOEXCEPT
-{
-	return memcmp(_hs + _hsz - _nelen, _ne, _nelen);
-}
-
-/*
-  Checks if S2 is in _end of S1.
-  Return value:
-  0 if true;
-  1 if false.
 */
 JSTR_INLINE
 JSTR_PURE
