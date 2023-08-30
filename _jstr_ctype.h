@@ -134,7 +134,7 @@ JSTR_NOTHROW
 static int
 jstr_toupper(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_toupper[(unsigned char)(_c + 1)];
+	return pjstr_ascii_table_toupper[(unsigned char)(_c + 1)];
 }
 
 JSTR_INLINE
@@ -145,7 +145,7 @@ JSTR_NOTHROW
 static int
 jstr_tolower(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_tolower[(unsigned char)(_c + 1)];
+	return pjstr_ascii_table_tolower[(unsigned char)(_c + 1)];
 }
 
 JSTR_INLINE

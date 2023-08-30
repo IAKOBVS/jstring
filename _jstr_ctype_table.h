@@ -180,7 +180,7 @@ static const uint16_t jstr_ascii_table_type[256] = {
 };
 
 JSTR_MAYBE_UNUSED
-static const int16_t jstr_ascii_table_tolower[257] = {
+static const int16_t pjstr_ascii_table_tolower[257] = {
 	-1,
 	0,
 	1,
@@ -444,7 +444,7 @@ static const int16_t jstr_ascii_table_tolower[257] = {
 };
 
 JSTR_MAYBE_UNUSED
-static const int16_t jstr_ascii_table_toupper[257] = {
+static const int16_t pjstr_ascii_table_toupper[257] = {
 	-1,
 	0,
 	1,
