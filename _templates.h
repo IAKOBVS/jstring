@@ -24,8 +24,8 @@ JSTR_NOINLINE
 JSTR_NOTHROW
 static void
 pjstr_err(const char *JSTR_RST const FILE_,
-	      const int LINE_,
-	      const char *JSTR_RST const func_) JSTR_NOEXCEPT
+	  const int LINE_,
+	  const char *JSTR_RST const func_) JSTR_NOEXCEPT
 {
 #if JSTR_CFG_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
@@ -50,26 +50,27 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 }
 
 #define PJSTR_MALLOC_ERR(p, malloc_fail)                         \
-	do {                                                         \
-		if (jstr_unlikely((p) == NULL)) {                    \
+	do {                                                     \
+		if (jstr_unlikely((p) == NULL)) {                \
 			pjstr_err(__FILE__, __LINE__, __func__); \
-			malloc_fail;                                 \
-		}                                                    \
+			malloc_fail;                             \
+		}                                                \
 	} while (0)
-#define PJSTR_GROW(old_cap, new_cap)                                      \
+#define PJSTR_GROW(old_cap, new_cap)                                          \
 	do {                                                                  \
 		JSTR_ASSERT_IS_SIZE(old_cap);                                 \
 		JSTR_ASSERT_IS_SIZE(new_cap);                                 \
 		while (((old_cap) *= JSTR_CFG_GROWTH_MULTIPLIER) < (new_cap)) \
 			;                                                     \
+		PJSTR_ALIGN_UP(old_cap, (sizeof(size_t) * 2));                \
 	} while (0)
 #define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
-	do {                                                \
-		JSTR_ASSERT_IS_STR(p);                      \
-		JSTR_ASSERT_IS_SIZE(old_cap);               \
-		JSTR_ASSERT_IS_SIZE(new_cap);               \
+	do {                                            \
+		JSTR_ASSERT_IS_STR(p);                  \
+		JSTR_ASSERT_IS_SIZE(old_cap);           \
+		JSTR_ASSERT_IS_SIZE(new_cap);           \
 		PJSTR_GROW(old_cap, new_cap);           \
-		(p) = (char *)realloc(p, old_cap);          \
+		(p) = (char *)realloc(p, old_cap);      \
 		PJSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 
@@ -100,8 +101,7 @@ template <typename Str,
 JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static size_t
+JSTR_NONNULL_ALL JSTR_NOTHROW static size_t
 strlen_args(Str &&_s,
 	    StrArgs &&..._args) JSTR_NOEXCEPT
 {
@@ -111,8 +111,7 @@ strlen_args(Str &&_s,
 
 template <size_t N>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 cat_assign(size_t *JSTR_RST _sz,
 	   char **dst,
 	   const char (&src)[N]) JSTR_NOEXCEPT
@@ -152,8 +151,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 cat_loop_assign(size_t *_sz,
 		char **dst,
 		Str &&_arg,
@@ -167,8 +165,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 cat_loop_assign(char **dst,
 		Str &&_arg,
 		StrArgs &&..._args) JSTR_NOEXCEPT
@@ -193,8 +190,7 @@ template <typename Str,
 JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static size_t
+JSTR_NONNULL_ALL JSTR_NOTHROW static size_t
 strlen(size_t **JSTR_RST strlen_arr,
        Str &&_arg) JSTR_NOEXCEPT
 {
@@ -207,8 +203,7 @@ template <typename Str,
 JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static size_t
+JSTR_NONNULL_ALL JSTR_NOTHROW static size_t
 strlen_args(size_t *strlen_arr,
 	    Str &&_s,
 	    StrArgs &&..._args) JSTR_NOEXCEPT
@@ -219,8 +214,7 @@ strlen_args(size_t *strlen_arr,
 
 template <size_t N>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 cat_assign(char **JSTR_RST const dst,
 	   size_t **JSTR_RST strlen_arr,
 	   const char (&src)[N]) JSTR_NOEXCEPT
@@ -253,8 +247,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 cat_loop_assign(char **dst,
 		size_t *strlen_arr,
 		Str &&_arg,
@@ -275,8 +268,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_alloc_cat(char **JSTR_RST const _s,
 	       size_t *const _sz,
 	       size_t *const _cap,
@@ -301,8 +293,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_alloc_cat_f(char *JSTR_RST const _s,
 		 size_t *const _sz,
 		 Str &&_arg,
@@ -326,8 +317,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_cat(char **JSTR_RST const _s,
 	 size_t *const _sz,
 	 size_t *const _cap,
@@ -360,8 +350,7 @@ template <typename Str,
 	  typename... StrArgs,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW
-static void
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_cat_f(char *_s,
 	   size_t *JSTR_RST _sz,
 	   Str &&_arg,
