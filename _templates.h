@@ -56,13 +56,13 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 			malloc_fail;                             \
 		}                                                \
 	} while (0)
-#define PJSTR_GROW(old_cap, new_cap)                                          \
-	do {                                                                  \
-		JSTR_ASSERT_IS_SIZE(old_cap);                                 \
-		JSTR_ASSERT_IS_SIZE(new_cap);                                 \
-		while (((old_cap) *= JSTR_CFG_GROWTH_MULTIPLIER) < (new_cap)) \
-			;                                                     \
-		PJSTR_ALIGN_UP(old_cap, (sizeof(size_t) * 2));                \
+#define PJSTR_GROW(old_cap, new_cap)                                                    \
+	do {                                                                            \
+		JSTR_ASSERT_IS_SIZE(old_cap);                                           \
+		JSTR_ASSERT_IS_SIZE(new_cap);                                           \
+		while (((old_cap) *= JSTR_CFG_GROWTH_MULTIPLIER) < (new_cap))           \
+			;                                                               \
+		(old_cap) = PJSTR_ALIGN_UP(old_cap, (sizeof(size_t) + sizeof(size_t))); \
 	} while (0)
 #define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
 	do {                                            \

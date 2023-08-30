@@ -515,7 +515,7 @@ case ' ':
 
 /* Check if BASE is aligned on SIZE  */
 #define PJSTR_PTR_IS_ALIGNED(base, size) \
-	((((uintptr_t)(base)) & (size - 1)) == 0)
+	((((uintptr_t)(base)) & ((size)-1)) == 0)
 
 /* Returns the ptrdiff_t diference between P1 and P2.  */
 #define PJSTR_PTR_DIFF(p1, p2) \
