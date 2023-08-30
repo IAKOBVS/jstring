@@ -839,7 +839,7 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 #else
 		strrchr(_s, *_reject);
 #endif
-		return _p ? (_s + _sz) - _p : 0;
+		return _p ? (_s + _sz) - _p : _sz;
 	}
 	if (jstr_unlikely(_sz == 0))
 		return 0;
