@@ -194,8 +194,8 @@ JSTR_INLINE
 #endif
 JSTR_NOTHROW
 static int
-jstr_strcasecmp(const char *JSTR_RST const _s1,
-		const char *JSTR_RST const _s2) JSTR_NOEXCEPT
+jstr_strcasecmp(const char *JSTR_RST _s1,
+		const char *JSTR_RST _s2) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASECMP
 	return strcasecmp(_s1, _s2);
