@@ -81,8 +81,8 @@ jtrie_insert(jtrie_node_ty *JSTR_RST const _root,
 }
 
 typedef enum {
+	PJTRIE_FLAG_REMOVE_NOT_PREFIXES = 0,
 	PJTRIE_FLAG_REMOVE_PREFIXES = 1,
-	PJTRIE_FLAG_REMOVE_NOT_PREFIXES = 1 << 1,
 } pjtrie_flag_rm_prefixes_ty;
 
 JSTR_NONNULL_ALL
