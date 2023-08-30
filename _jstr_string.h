@@ -867,7 +867,6 @@ jstr_count(const char *JSTR_RST _s,
 /*
    Reverse of STRCSPN.
 */
-JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -935,7 +934,6 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 /*
    Reverse of STRCSPN.
 */
-JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -951,7 +949,6 @@ jstr_strrcspn(char *JSTR_RST const _s,
 /*
    Reverse of STRSPN.
 */
-JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -1019,7 +1016,6 @@ jstr_strrspn_mem(char *JSTR_RST const _s,
 /*
    Reverse of STRSPN.
 */
-JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -1035,7 +1031,6 @@ jstr_strrspn(char *JSTR_RST const _s,
 /*
    Reverse of STRPBRK.
 */
-JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
@@ -1053,7 +1048,6 @@ jstr_strrpbrk_mem(char *JSTR_RST _s,
 /*
    Reverse of STRPBRK.
 */
-JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
