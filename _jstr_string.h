@@ -809,7 +809,7 @@ jstr_count(const char *JSTR_RST _s,
 		return 0;
 	if (jstr_unlikely(_find[1] == '\0'))
 		return jstr_countc(_s, *_find);
-	const size_t _findlen = strlen(_find);
+	const size_t _findlen = strlen(_find + 1) + 1;
 	size_t cnt = 0;
 	while ((_s = (char *)strstr(_s, _find)))
 		++cnt, _s += _findlen;
