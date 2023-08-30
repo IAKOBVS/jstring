@@ -132,6 +132,45 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
+jstr_toupper(const int _c) JSTR_NOEXCEPT
+{
+	return jstr_ascii_table_toupper[(unsigned char)_c];
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_tolower(const int _c) JSTR_NOEXCEPT
+{
+	return jstr_ascii_table_tolower[(unsigned char)_c];
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+_jstr_arealnum(const char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_s == '\0'))
+		return 1;
+	while (jstr_isalnum(*_s++))
+		;
+	if (*_s == '\0')
+		return 1;
+	return 0;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
 jstr_arealnum(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
@@ -225,28 +264,6 @@ static int
 jstr_aredigit(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	return *(_s + strspn(_s, "0123456789")) == '\0';
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_toupper(const int _c) JSTR_NOEXCEPT
-{
-	return jstr_ascii_table_toupper[(unsigned char)_c];
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_tolower(const int _c) JSTR_NOEXCEPT
-{
-	return jstr_ascii_table_tolower[(unsigned char)_c];
 }
 
 JSTR_INLINE
