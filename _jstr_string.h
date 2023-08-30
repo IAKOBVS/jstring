@@ -884,7 +884,7 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 #if JSTR_HAVE_MEMRCHR
 		(char *)memrchr(_s, *_reject, _sz);
 #else
-		(char *)strrchr(_s, *_reject);
+		strrchr(_s, *_reject);
 #endif
 		return _p ? (_s + _sz) - _p : 0;
 	}
@@ -968,7 +968,7 @@ jstr_strrspn_mem(char *JSTR_RST const _s,
 #if JSTR_HAVE_MEMRCHR
 		(char *)memrchr(_s, *_accept, _sz);
 #else
-		(char *)strrchr(_s, *_accept);
+		strrchr(_s, *_accept);
 #endif
 		return _p ? (_s + _sz) - _p : 0;
 	}
