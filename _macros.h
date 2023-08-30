@@ -81,8 +81,8 @@
 #endif /* HAVE_TYPEOF */
 
 #ifdef static_assert
-#	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_ASSERT(_expr, msg) static_assert(_expr, msg)
+#	define JSTR_HAVE_STATIC_ASSERT		  1
+#	define JSTR_ASSERT(_expr, msg)		  static_assert(_expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(_expr, msg) static_assert(_expr, msg);
 #elif __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_STATIC_ASSERT 1
@@ -463,5 +463,62 @@ case ' ':
 #endif /* Gnu */
 
 #define JSTR_RST JSTR_RESTRICT
+
+/* Helper macros for pointer arithmetic.
+   Copyright (C) 2012-2023 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.  */
+
+#include <stdint.h>
+
+#if 0
+
+/* 1 if 'type' is a pointer type, 0 otherwise.  */
+#	define __pointer_type(type) (__builtin_classify_type((type)0) == 5)
+
+/* intptr_t if P is true, or T if P is false.  */
+#	define __integer_if_pointer_type_sub(T, P)                      \
+		__typeof__(*(0 ? (__typeof__(0 ? (T *)0 : (void *)(P)))0 \
+			       : (__typeof__(0 ? (intptr_t *)0 : (void *)(!(P))))0))
+
+/* intptr_t if EXPR has a pointer type, or the type of EXPR otherwise.  */
+#	define __integer_if_pointer_type(expr)                                \
+		__integer_if_pointer_type_sub(__typeof__((__typeof__(expr))0), \
+					      __pointer_type(__typeof__(expr)))
+
+/* Cast an integer or a pointer VAL to integer with proper type.  */
+#	define cast_to_integer(val) ((__integer_if_pointer_type(val))(val))
+
+/* Cast an integer VAL to void * pointer.  */
+#	define cast_to_pointer(val) ((void *)(uintptr_t)(val))
+
+#endif
+
+/* Align a value by rounding down to closest size.
+   e.g. Using size of 4096, we get this behavior:
+	{4095, 4096, 4097} = {0, 4096, 4096}.  */
+#define PJSTR_ALIGN_DOWN(base, size) ((base) & -((uintptr_t)(size)))
+
+/* Align a value by rounding up to closest size.
+   e.g. Using size of 4096, we get this behavior:
+	{4095, 4096, 4097} = {4096, 4096, 8192}.
+
+  Note: The size argument has side effects (expanded multiple times).  */
+#define PJSTR_ALIGN_UP(base, size) PJSTR_ALIGN_DOWN((base) + (size)-1, (size))
+
+/* Same as ALIGN_DOWN(), but automatically casts when base is a pointer.  */
+#define PJSTR_PTR_ALIGN_DOWN(base, size) \
+	(PJSTR_ALIGN_DOWN((uintptr_t)(base), (size)))
+
+/* Same as ALIGN_UP(), but automatically casts when base is a pointer.  */
+#define PJSTR_PTR_ALIGN_UP(base, size) \
+	(PJSTR_ALIGN_UP((uintptr_t)(base), (size)))
+
+/* Check if BASE is aligned on SIZE  */
+#define PJSTR_PTR_IS_ALIGNED(base, size) \
+	((((uintptr_t)(base)) & (size - 1)) == 0)
+
+/* Returns the ptrdiff_t diference between P1 and P2.  */
+#define PJSTR_PTR_DIFF(p1, p2) \
+	((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 
 #endif /* JSTR_MACROS_H_DEF */

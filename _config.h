@@ -15,7 +15,7 @@
 #	define JSTR_CFG_HAVE_ALLOCA 1
 #endif
 
-#define JSTR_CFG_MIN_CAP 24
+#define JSTR_CFG_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 16)
 
 #ifndef JSTR_CFG_GROWTH_MULTIPLIER
 #	define JSTR_CFG_GROWTH_MULTIPLIER 1.5
