@@ -8,6 +8,7 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
+#include "_jstr_ctype_table.h"
 #include "_macros.h"
 #include <string.h>
 
@@ -23,12 +24,7 @@ JSTR_NOTHROW
 static int
 jstr_isupper(const int _c) JSTR_NOEXCEPT
 {
-	switch (_c) {
-		JSTR_CASE_LOWER
-		return 1;
-	default:
-		return 0;
-	}
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISUPPER;
 }
 
 JSTR_INLINE
@@ -39,12 +35,7 @@ JSTR_NOTHROW
 static int
 jstr_islower(const int _c) JSTR_NOEXCEPT
 {
-	switch (_c) {
-		JSTR_CASE_LOWER
-		return 1;
-	default:
-		return 0;
-	}
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISLOWER;
 }
 
 JSTR_INLINE
@@ -55,100 +46,7 @@ JSTR_NOTHROW
 static int
 jstr_isalnum(const int _c) JSTR_NOEXCEPT
 {
-	switch (_c) {
-		JSTR_CASE_ALPHANUM;
-		return 1;
-	default:
-		return 0;
-	}
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_arealnum(const char *JSTR_RST _s) JSTR_NOEXCEPT
-{
-	for (;;)
-		switch (*_s++) {
-		default:
-			return 0;
-		case '\0':
-			return 1;
-			JSTR_CASE_ALPHANUM;
-		}
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_isalpha(const int _c) JSTR_NOEXCEPT
-{
-	switch (_c) {
-		JSTR_CASE_ALPHA;
-		return 1;
-	default:
-		return 0;
-	}
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_arealpha(const char *JSTR_RST _s) JSTR_NOEXCEPT
-{
-	for (;;)
-		switch (*_s++) {
-		default:
-			return 0;
-		case '\0':
-			return 1;
-			JSTR_CASE_ALPHA;
-		}
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_arelower(const char *JSTR_RST _s) JSTR_NOEXCEPT
-{
-	for (;;)
-		switch (*_s++) {
-		default:
-			return 0;
-		case '\0':
-			return 1;
-			JSTR_CASE_LOWER;
-		}
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_areupper(const char *JSTR_RST _s) JSTR_NOEXCEPT
-{
-	for (;;)
-		switch (*_s++) {
-		default:
-			return 0;
-		case '\0':
-			return 1;
-			JSTR_CASE_UPPER;
-		}
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISALNUM;
 }
 
 JSTR_INLINE
@@ -159,11 +57,51 @@ JSTR_NOTHROW
 static int
 jstr_isdigit(const int _c) JSTR_NOEXCEPT
 {
-	switch (_c) {
-		JSTR_CASE_DIGIT;
-		return 1;
-	}
-	return 0;
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISDIGIT;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_isxdigit(const int _c) JSTR_NOEXCEPT
+{
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISXDIGIT;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_isblank(const int _c) JSTR_NOEXCEPT
+{
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISBLANK;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_isgraph(const int _c) JSTR_NOEXCEPT
+{
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISGRAPH;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_ispunct(const int _c) JSTR_NOEXCEPT
+{
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISPUNCT;
 }
 
 JSTR_INLINE
@@ -174,7 +112,84 @@ JSTR_WARN_UNUSED
 static int
 jstr_isspace(const int _c) JSTR_NOEXCEPT
 {
-	if (_c == ' ' || (unsigned char)(_c - '\t') <= '\r' - '\t')
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISSPACE;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_isalpha(const int _c) JSTR_NOEXCEPT
+{
+	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISALPHA;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_arealnum(const char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_s == '\0'))
+		return 1;
+	while (jstr_isalnum(*_s++))
+		;
+	if (*_s == '\0')
+		return 1;
+	return 0;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_arealpha(const char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_s == '\0'))
+		return 1;
+	while (jstr_isalpha(*_s++))
+		;
+	if (*_s == '\0')
+		return 1;
+	return 0;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_arelower(const char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_s == '\0'))
+		return 1;
+	while (jstr_islower(*_s++))
+		;
+	if (*_s == '\0')
+		return 1;
+	return 0;
+}
+
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_areupper(const char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_s == '\0'))
+		return 1;
+	while (jstr_isupper(*_s++))
+		;
+	if (*_s == '\0')
 		return 1;
 	return 0;
 }
@@ -220,29 +235,7 @@ JSTR_NOTHROW
 static int
 jstr_toupper(const int _c) JSTR_NOEXCEPT
 {
-	switch (_c) {
-		JSTR_CASE_LOWER
-		return _c - 'a' + 'A';
-	}
-	return _c;
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
-static void
-jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
-{
-	for (;; ++_s) {
-		switch (*_s) {
-			JSTR_CASE_LOWER
-			*_s -= 'a' + 'A';
-		default:
-			continue;
-		case '\0':;
-		}
-		break;
-	}
+	return jstr_ascii_table_toupper[(unsigned char)_c];
 }
 
 JSTR_INLINE
@@ -253,11 +246,17 @@ JSTR_NOTHROW
 static int
 jstr_tolower(const int _c) JSTR_NOEXCEPT
 {
-	switch (_c) {
-		JSTR_CASE_UPPER
-		return _c - 'A' + 'a';
-	}
-	return _c;
+	return jstr_ascii_table_tolower[(unsigned char)_c];
+}
+
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	while ((*_s = jstr_toupper(*_s)))
+		++_s;
 }
 
 JSTR_INLINE
@@ -266,16 +265,8 @@ JSTR_NOTHROW
 static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	for (;; ++_s) {
-		switch (*_s) {
-			JSTR_CASE_UPPER
-			*_s -= 'A' + 'a';
-		default:
-			continue;
-		case '\0':;
-		}
-		break;
-	}
+	while ((*_s = jstr_tolower(*_s)))
+		++_s;
 }
 
 #ifdef __cplusplus
