@@ -162,43 +162,20 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_strncasecmp(const char *JSTR_RST const _s1,
-		 const char *JSTR_RST const _s2,
-		 const size_t _n) JSTR_NOEXCEPT
+jstr_strncasecmp(const char *JSTR_RST _s1,
+		 const char *JSTR_RST _s2,
+		 size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(_s1, _s2, _n);
 #else
-	const unsigned char *_p1 = (unsigned char *)_s1;
-	const unsigned char *_p2 = (unsigned char *)_s2;
-	const unsigned char *const _end = _p1 + _n;
-	for (unsigned char _c; _p1 < _end; ++_p1, ++_p2) {
-		switch (*_p1) {
-		default:
-			JSTR_CASE_LOWER
-			_c = *_p1;
-			break;
-			JSTR_CASE_UPPER
-			_c = *_p1 - 'A' + 'a';
-			break;
-		case '\0':
-			return *_p2;
-		}
-		switch (*_p2) {
-		default:
-			JSTR_CASE_LOWER
-			if (*_p2 != _c)
-				return _c - *_p2;
-			break;
-			JSTR_CASE_UPPER
-			if ((*_p2 - 'A' + 'a') != _c)
-				return _c - (*_p2 - 'A' + 'a');
-			break;
-		case '\0':
-			return 1;
-		}
-	}
-	return 0;
+	if (jstr_unlikely(_n == 0))
+		return 1;
+	int ret;
+	while ((ret = jstr_tolower(*_s1++) - jstr_tolower(*_s2++)) == 0
+	       && --_n)
+		;
+	return ret;
 #endif /* HAVE_STRNCASECMP */
 }
 
@@ -223,34 +200,11 @@ jstr_strcasecmp(const char *JSTR_RST const _s1,
 #if JSTR_HAVE_STRCASECMP
 	return strcasecmp(_s1, _s2);
 #else
-	const unsigned char *_p1 = (unsigned char *)_s1;
-	const unsigned char *_p2 = (unsigned char *)_s2;
-	for (unsigned char _c;; ++_p1, ++_p2) {
-		switch (*_p1) {
-		default:
-			JSTR_CASE_LOWER
-			_c = *_p1;
-			break;
-			JSTR_CASE_UPPER
-			_c = *_p1 - 'A' + 'a';
-			break;
-		case '\0':
-			return *_p2;
-		}
-		switch (*_p2) {
-		default:
-			JSTR_CASE_LOWER
-			if (*_p2 != _c)
-				return _c - *_p2;
-			break;
-			JSTR_CASE_UPPER
-			if ((*_p2 - 'A' + 'a') != _c)
-				return _c - (*_p2 - 'A' + 'a');
-			break;
-		case '\0':
-			return 1;
-		}
-	}
+	int ret;
+	while ((ret = jstr_tolower(*_s1) - jstr_tolower(*_s2++)) == 0
+	       && *_s1)
+		++_s1;
+	return ret;
 #endif
 }
 
