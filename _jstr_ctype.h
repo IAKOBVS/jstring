@@ -24,7 +24,7 @@ JSTR_NOTHROW
 static int
 jstr_isupper(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISUPPER;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISUPPER;
 }
 
 JSTR_INLINE
@@ -35,7 +35,7 @@ JSTR_NOTHROW
 static int
 jstr_islower(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISLOWER;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISLOWER;
 }
 
 JSTR_INLINE
@@ -46,7 +46,7 @@ JSTR_NOTHROW
 static int
 jstr_isalnum(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISALNUM;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISALNUM;
 }
 
 JSTR_INLINE
@@ -57,7 +57,7 @@ JSTR_NOTHROW
 static int
 jstr_isdigit(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISDIGIT;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISDIGIT;
 }
 
 JSTR_INLINE
@@ -68,7 +68,7 @@ JSTR_NOTHROW
 static int
 jstr_isxdigit(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISXDIGIT;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISXDIGIT;
 }
 
 JSTR_INLINE
@@ -79,7 +79,7 @@ JSTR_NOTHROW
 static int
 jstr_isblank(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISBLANK;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISBLANK;
 }
 
 JSTR_INLINE
@@ -90,7 +90,7 @@ JSTR_NOTHROW
 static int
 jstr_isgraph(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISGRAPH;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISGRAPH;
 }
 
 JSTR_INLINE
@@ -101,7 +101,7 @@ JSTR_NOTHROW
 static int
 jstr_ispunct(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISPUNCT;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISPUNCT;
 }
 
 JSTR_INLINE
@@ -112,7 +112,7 @@ JSTR_WARN_UNUSED
 static int
 jstr_isspace(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISSPACE;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISSPACE;
 }
 
 JSTR_INLINE
@@ -123,7 +123,7 @@ JSTR_NOTHROW
 static int
 jstr_isalpha(const int _c) JSTR_NOEXCEPT
 {
-	return jstr_ascii_table_type[(unsigned char)_c] & JSTR_ISALPHA;
+	return pjstr_ascii_table_type[(unsigned char)_c] & JSTR_ISALPHA;
 }
 
 JSTR_INLINE
