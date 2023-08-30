@@ -850,8 +850,8 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 	memset(_t + 192, 0, 64);
 	const unsigned char *_p = (unsigned char *)_reject;
 	do
-		_t[*_p++] = 1;
-	while (*_p);
+		_t[*_p] = 1;
+	while (*_p++);
 	_p = (unsigned char *)_s + _sz - 1;
 	const char _first = *_s;
 	*_s = '\0';
@@ -884,7 +884,8 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 	*_s = _first;
 	return ((_c0 | _c1) == 0
 		? _cnt - _c0
-		: _cnt - _c2 + 3);
+		: _cnt - _c2 + 3)
+		+ (_p == (unsigned char *)_s && _first != *_reject);
 }
 
 /*
@@ -926,7 +927,7 @@ jstr_strrspn_mem(char *JSTR_RST const _s,
 			--_p;
 		*_s = _first;
 		return (_s + _sz - _p)
-		       + (_p == _s + 1 && _first == *_accept);
+		       + (_p == _s && _first == *_accept);
 	}
 	const unsigned char *_p = (unsigned char *)_accept;
 	unsigned char _t[256];
@@ -967,9 +968,7 @@ jstr_strrspn_mem(char *JSTR_RST const _s,
 	*_s = _first;
 	return ((_c0 & _c1) == 0
 		? _cnt + _c0
-		: _cnt + _c2 + 2)
-	       + (_p == (unsigned char *)_s
-		  && _t[(unsigned char)_first]);
+		: _cnt + _c2 + 2);
 }
 
 /*
