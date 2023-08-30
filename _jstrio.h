@@ -378,9 +378,9 @@ CHECK_UTF:;                                                                     
 	JSTR_BINARY_CHECK();
 	if (jstr_likely(_sz > 32)) {
 		const char old = *(_buf + _sz);
-		*(_buf + _sz) = '\0';
+		*(_buf + 32) = '\0';
 		const int ret = strcspn(_buf, JSTR_UNPRINTABLE) != 32;
-		*(_buf + _sz) = old;
+		*(_buf + 32) = old;
 		return ret;
 	}
 	return strcspn(_buf, JSTR_UNPRINTABLE) != _sz;

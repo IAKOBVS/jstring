@@ -4,7 +4,7 @@
 #include "_macros.h"
 
 typedef enum {
-	JSTR_ISALNUM = 1 << 0,
+	JSTR_ISALNUM = 1,
 	JSTR_ISALPHA = 1 << 1,
 	JSTR_ISCNTRL = 1 << 2,
 	JSTR_ISDIGIT = 1 << 3,
