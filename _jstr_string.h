@@ -169,11 +169,9 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(_s1, _s2, _n);
 #else
-	if (jstr_unlikely(_n == 0))
-		return 1;
 	int ret;
-	while ((ret = jstr_tolower(*_s1++) - jstr_tolower(*_s2++)) == 0
-	       && --_n)
+	while (((ret = jstr_tolower(*_s1++) - jstr_tolower(*_s2++)) == 0)
+	       && _n--)
 		;
 	return ret;
 #endif /* HAVE_STRNCASECMP */
@@ -201,9 +199,9 @@ jstr_strcasecmp(const char *JSTR_RST _s1,
 	return strcasecmp(_s1, _s2);
 #else
 	int ret;
-	while ((ret = jstr_tolower(*_s1) - jstr_tolower(*_s2++)) == 0
-	       && *_s1)
-		++_s1;
+	while (((ret = jstr_tolower(*_s1) - jstr_tolower(*_s2++)) == 0)
+	       && *_s1++)
+		;
 	return ret;
 #endif
 }
@@ -885,7 +883,7 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 	return ((_c0 | _c1) == 0
 		? _cnt - _c0
 		: _cnt - _c2 + 3)
-		+ (_p == (unsigned char *)_s && _first != *_reject);
+	       + (_p == (unsigned char *)_s && _first != *_reject);
 }
 
 /*
