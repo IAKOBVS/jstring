@@ -178,15 +178,13 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-_jstr_arealnum(const char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_isalnum_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
 		return 1;
 	while (jstr_isalnum(*_s++))
 		;
-	if (*_s == '\0')
-		return 1;
-	return 0;
+	return (*_s - 1) == '\0';
 }
 
 JSTR_INLINE
@@ -195,32 +193,13 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_arealnum(const char *JSTR_RST _s) JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(*_s == '\0'))
-		return 1;
-	while (jstr_isalnum(*_s++))
-		;
-	if (*_s == '\0')
-		return 1;
-	return 0;
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_arealpha(const char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_isalpha_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
 		return 1;
 	while (jstr_isalpha(*_s++))
 		;
-	if (*_s == '\0')
-		return 1;
-	return 0;
+	return (*_s - 1) == '\0';
 }
 
 JSTR_INLINE
@@ -229,15 +208,13 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_arelower(const char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_islower_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
 		return 1;
 	while (jstr_islower(*_s++))
 		;
-	if (*_s == '\0')
-		return 1;
-	return 0;
+	return (*_s - 1) == '\0';
 }
 
 JSTR_INLINE
@@ -246,15 +223,13 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_areupper(const char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_isupper_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
 		return 1;
 	while (jstr_isupper(*_s++))
 		;
-	if (*_s == '\0')
-		return 1;
-	return 0;
+	return *(_s - 1) == '\0';
 }
 
 JSTR_INLINE
@@ -263,7 +238,7 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 JSTR_WARN_UNUSED
 static int
-jstr_arespace(const char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_isspace_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	return *(_s + strspn(_s, "\t\n\v\f\r ")) == '\0';
 }
@@ -274,7 +249,7 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 JSTR_WARN_UNUSED
 static int
-jstr_areblank(const char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_isblank_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	return *(_s + strspn(_s, " \t")) == '\0';
 }
@@ -285,7 +260,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_aredigit(const char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_isdigit_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	return *(_s + strspn(_s, "0123456789")) == '\0';
 }
