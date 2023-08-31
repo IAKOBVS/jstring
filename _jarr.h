@@ -39,7 +39,7 @@ extern "C" {
 
 #define jarr_err_exit(j)                                                          \
 	do {                                                                      \
-		if ((j)->data == NULL) {                                          \
+		if (jstr_unlikely((j)->data == NULL)) {                                          \
 			pjstr_err(__FILE__, __LINE__, __func__);                  \
 			exit(1);                                                  \
 		}                                                                 \
