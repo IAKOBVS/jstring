@@ -110,7 +110,7 @@ pjarr_pop_front(unsigned char *JSTR_RST const _p,
 }
 
 #define jarr_pop_front(jarr) \
-	pjarr_pop_front((unsigned char **)&((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
+	pjarr_pop_front((unsigned char *)((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
 
 /* Pop p[size]. */
 JSTR_INLINE
@@ -126,7 +126,7 @@ pjarr_pop_back(unsigned char *JSTR_RST const _p,
 }
 
 #define jarr_pop_back(jarr) \
-	pjarr_pop_back(((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
+	pjarr_pop_back((unsigned char *)((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
 
 /* Push VAL to back of P. */
 JSTR_INLINE
