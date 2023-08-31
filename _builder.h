@@ -308,17 +308,34 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
+jstr_push_front(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
+		const char _c) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_cap == *_sz + 1))
+		PJSTR_REALLOC_EXACT(*_s, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
+	memmove(*_s + 1, *_s, (*_sz)++ + 1);
+	**_s = _c;
+}
+
+/*
+   Pop s[size].
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
 jstr_pop_back(char *JSTR_RST const _s,
 	      size_t *JSTR_RST const _sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_sz == 0))
 		return;
-	memmove(_s, _s + 1, *_sz);
+	*(_s + (*_sz)-- - 1) = '\0';
 }
 
 /*
-   Push C to end of S.
-   S is NUL terminated.
+   Pop s[size].
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -327,6 +344,33 @@ static void
 jstr_pop_back_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 {
 	jstr_pop_back(_j->data, &_j->size);
+}
+
+/*
+   Pop s[0].
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_pop_front(char *JSTR_RST const _s,
+	       size_t *JSTR_RST const _sz) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_sz == 0))
+		return;
+	memmove(_s, _s + 1, (*_sz)--);
+}
+
+/*
+   Pop s[0].
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_pop_front_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+{
+	jstr_pop_front(_j->data, &_j->size);
 }
 
 #ifdef __cplusplus
