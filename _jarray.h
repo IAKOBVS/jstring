@@ -106,7 +106,7 @@ pjarr_pop_front(unsigned char *JSTR_RST const _p,
 		return;
 	memmove(_p,
 		_p + 1 * _sizeof_p,
-		(*_sz)-- * _sizeof_p - 1 * _sizeof_p);
+		((*_sz)-- - 1) * _sizeof_p);
 }
 
 #define jarr_pop_front(jarr) \
@@ -138,7 +138,7 @@ pjarr_push_back(unsigned char **JSTR_RST const _p,
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
 		PJARR_REALLOC_EXACT(*(void **)_p, _sizeof_p, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
-	memcpy(_p + (*_sz)-- * _sizeof_p, _c, _sizeof_p);
+	memcpy(_p + (*_sz)++ * _sizeof_p, _c, _sizeof_p);
 }
 
 #define jarr_push_back(jarr, c) \
