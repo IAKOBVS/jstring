@@ -169,8 +169,43 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(_s1, _s2, _n);
 #else
+	if (jstr_unlikely(_n == 0))
+		return 0;
 	int ret;
-	while (((ret = jstr_tolower_ascii(*_s1++) - jstr_tolower_ascii(*_s2++)) == 0)
+	while (((ret = jstr_tolower_ascii(*_s1) - jstr_tolower_ascii(*_s2++)) == 0)
+	       && *_s1++)
+		if (--_n == 0)
+			return 0;
+	return ret;
+#endif /* HAVE_STRNCASECMP */
+}
+
+/*
+  Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+#if JSTR_HAVE_STRNCASECMP
+JSTR_INLINE
+#endif
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+JSTR_MAYBE_UNUSED
+static int
+jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
+		    const char *JSTR_RST const _s2,
+		    size_t _n) JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP
+	return strncasecmp(_s1, _s2, _n);
+#else
+	const unsigned char *_p1 = (unsigned char *)_s1;
+	const unsigned char *_p2 = (unsigned char *)_s2;
+	int ret;
+	while (((ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++)) == 0)
 	       && _n--)
 		;
 	return ret;
@@ -353,41 +388,41 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			 const size_t _nelen) JSTR_NOEXCEPT
 {
 #define PPJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
-#define PJSTR_STRSTRCASE(shift_type, ne_iterator_type)                                                  \
-	do {                                                                                            \
-		const unsigned char *_h = (unsigned char *)_hs;                                         \
-		const unsigned char *const _n = (unsigned char *)_ne;                                   \
-		const unsigned char *const _end = _h + _hslen - _nelen + 1;                             \
-		size_t _tmp;                                                                            \
-		const size_t _mtc1 = _nelen - 1;                                                        \
-		size_t _off = 0;                                                                        \
-		shift_type _shift[256];                                                                 \
-		(sizeof(shift_type) == sizeof(size_t))                                                  \
-		? memset(_shift, 0, sizeof(_shift))                                                     \
-		: (memset(_shift, 0, 64),                                                               \
-		   memset(_shift + 64, 0, 64),                                                          \
-		   memset(_shift + 128, 0, 64),                                                         \
-		   memset(_shift + 192, 0, 64));                                                        \
-		for (ne_iterator_type _i = 1; _i < (ne_iterator_type)_mtc1; ++_i)                       \
-			_shift[PPJSTR_HASH2_LOWER(_n + _i)] = _i;                                       \
-		const size_t _shft1 = _mtc1 - _shift[PPJSTR_HASH2_LOWER(_n + _mtc1)];                   \
-		_shift[PPJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                         \
-		do {                                                                                    \
-			do {                                                                            \
-				_h += _mtc1;                                                            \
-				_tmp = _shift[PPJSTR_HASH2_LOWER(_h)];                                  \
-			} while (!_tmp && _h < _end);                                                   \
-			_h -= _tmp;                                                                     \
-			if (_tmp < _mtc1)                                                               \
-				continue;                                                               \
-			if (_mtc1 < 15 || !jstr_strncasecmp((char *)_h + _off, (char *)_n + _off, 8)) { \
-				if (!jstr_strncasecmp((char *)_h, (char *)_n, _nelen))                  \
-					return (char *)_h;                                              \
-				_off = (_off >= 8 ? _off : _mtc1) - 8;                                  \
-			}                                                                               \
-			_h += _shft1;                                                                   \
-		} while (_h < _end);                                                                    \
-		return NULL;                                                                            \
+#define PJSTR_STRSTRCASE(shift_type, ne_iterator_type)                                                     \
+	do {                                                                                               \
+		const unsigned char *_h = (unsigned char *)_hs;                                            \
+		const unsigned char *const _n = (unsigned char *)_ne;                                      \
+		const unsigned char *const _end = _h + _hslen - _nelen + 1;                                \
+		size_t _tmp;                                                                               \
+		const size_t _mtc1 = _nelen - 1;                                                           \
+		size_t _off = 0;                                                                           \
+		shift_type _shift[256];                                                                    \
+		(sizeof(shift_type) == sizeof(size_t))                                                     \
+		? memset(_shift, 0, sizeof(_shift))                                                        \
+		: (memset(_shift, 0, 64),                                                                  \
+		   memset(_shift + 64, 0, 64),                                                             \
+		   memset(_shift + 128, 0, 64),                                                            \
+		   memset(_shift + 192, 0, 64));                                                           \
+		for (ne_iterator_type _i = 1; _i < (ne_iterator_type)_mtc1; ++_i)                          \
+			_shift[PPJSTR_HASH2_LOWER(_n + _i)] = _i;                                          \
+		const size_t _shft1 = _mtc1 - _shift[PPJSTR_HASH2_LOWER(_n + _mtc1)];                      \
+		_shift[PPJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                            \
+		do {                                                                                       \
+			do {                                                                               \
+				_h += _mtc1;                                                               \
+				_tmp = _shift[PPJSTR_HASH2_LOWER(_h)];                                     \
+			} while (!_tmp && _h < _end);                                                      \
+			_h -= _tmp;                                                                        \
+			if (_tmp < _mtc1)                                                                  \
+				continue;                                                                  \
+			if (_mtc1 < 15 || !jstr_strcasecmp_mem((char *)_h + _off, (char *)_n + _off, 8)) { \
+				if (!jstr_strcasecmp_mem((char *)_h, (char *)_n, _nelen))                  \
+					return (char *)_h;                                                 \
+				_off = (_off >= 8 ? _off : _mtc1) - 8;                                     \
+			}                                                                                  \
+			_h += _shft1;                                                                      \
+		} while (_h < _end);                                                                       \
+		return NULL;                                                                               \
 	} while (0)
 	if (jstr_unlikely(_nelen > 256))
 		PJSTR_STRSTRCASE(size_t, size_t);
