@@ -19,7 +19,7 @@ typedef enum {
 } jstr_ascii_type_ty;
 
 JSTR_MAYBE_UNUSED
-static const uint16_t pjstr_ascii_table_type[256] = {
+static const uint16_t pjstr_table_ctype[256] = {
 	/* NUL, control codes */
 	JSTR_ISCNTRL,
 	JSTR_ISCNTRL,
