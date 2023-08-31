@@ -25,13 +25,13 @@ extern "C" {
 #endif /* __cpluslus */
 
 #define PJSTR_MIN_ALLOC(new_cap)                                  \
-	((new_cap < JSTR_CFG_MIN_CAP / JSTR_CFG_ALLOC_MULTIPLIER) \
-	 ? (JSTR_CFG_MIN_CAP)                                     \
-	 : (new_cap * JSTR_CFG_ALLOC_MULTIPLIER))
+	((new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
+	 ? (JSTR_MIN_CAP)                                     \
+	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
 
 #define PJSTR_MIN_ALLOCEXACT(new_cap) \
-	((new_cap < JSTR_CFG_MIN_CAP) \
-	 ? (JSTR_CFG_MIN_CAP)         \
+	((new_cap < JSTR_MIN_CAP) \
+	 ? (JSTR_MIN_CAP)         \
 	 : (new_cap))
 
 #define PJSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
@@ -66,17 +66,17 @@ typedef struct jstr_ty {
 		this->data = NULL;
 	}
 
-#	if JSTR_CFG_FREE_ON_DESTRUCTOR_CPP
+#	if JSTR_FREE_ON_DESTRUCTOR_CPP
 	JSTR_INLINE
 	~jstr_ty(void) JSTR_NOEXCEPT
 	{
 		::free(this->data);
-#		if JSTR_CFG_NULLIFY_PTR_ON_DESTRUCTOR_CPP
+#		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
 		this->data = NULL;
-#		endif /* JSTR_CFG_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
+#		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
 	}
 
-#	endif /* JSTR_CFG_FREE_ON_DESTRUCTOR_CPP */
+#	endif /* JSTR_FREE_ON_DESTRUCTOR_CPP */
 
 	/*
 	  free(STR) and set STR to NULL.
@@ -86,9 +86,9 @@ typedef struct jstr_ty {
 	free(void) JSTR_NOEXCEPT
 	{
 		::free(this->data);
-#	if JSTR_CFG_NULLIFY_PTR_ON_DELETE
+#	if JSTR_NULLIFY_PTR_ON_DELETE
 		this->data = NULL;
-#	endif /* JSTR_CFG_NULLIFY_PTR_ON_DELETE */
+#	endif /* JSTR_NULLIFY_PTR_ON_DELETE */
 	}
 
 	/*
@@ -223,9 +223,9 @@ static void
 jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
 {
 	free(p);
-#if JSTR_CFG_NULLIFY_PTR_ON_DELETE
+#if JSTR_NULLIFY_PTR_ON_DELETE
 	p = NULL;
-#endif /* JSTR_CFG_NULLIFY_PTR_ON_DELETE */
+#endif /* JSTR_NULLIFY_PTR_ON_DELETE */
 }
 
 JSTR_INLINE
@@ -295,7 +295,7 @@ jstr_push_back(char **JSTR_RST const _s,
 	       const char _c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
-		PJSTR_REALLOC_EXACT(*_s, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
+		PJSTR_REALLOC_EXACT(*_s, *_cap, *_sz * JSTR_ALLOC_MULTIPLIER, return);
 	*(*_s + *_sz) = _c;
 	*(*_s + ++*_sz) = '\0';
 }
@@ -314,7 +314,7 @@ jstr_push_front(char **JSTR_RST const _s,
 		const char _c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
-		PJSTR_REALLOC_EXACT(*_s, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
+		PJSTR_REALLOC_EXACT(*_s, *_cap, *_sz * JSTR_ALLOC_MULTIPLIER, return);
 	memmove(*_s + 1, *_s, (*_sz)++ + 1);
 	**_s = _c;
 }

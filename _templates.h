@@ -27,11 +27,11 @@ pjstr_err(const char *JSTR_RST const FILE_,
 	  const int LINE_,
 	  const char *JSTR_RST const func_) JSTR_NOEXCEPT
 {
-#if JSTR_CFG_PRINT_ERR_MSG_ON_MALLOC_ERROR
+#if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
 	perror("");
 #endif
-#if JSTR_CFG_EXIT_ON_MALLOC_ERROR
+#if JSTR_EXIT_ON_MALLOC_ERROR
 	exit(1);
 #endif
 }
@@ -42,7 +42,7 @@ JSTR_NOTHROW
 static void
 pjstr_err_exit(void) JSTR_NOEXCEPT
 {
-#if JSTR_CFG_PRINT_ERR_MSG_ON_MALLOC_ERROR
+#if JSTR_PRINT_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", __FILE__, __LINE__, __func__);
 	perror("");
 #endif
@@ -62,7 +62,7 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 	do {                                                                  \
 		JSTR_ASSERT_IS_SIZE(old_cap);                                 \
 		JSTR_ASSERT_IS_SIZE(new_cap);                                 \
-		while (((old_cap) *= JSTR_CFG_GROWTH_MULTIPLIER) < (new_cap)) \
+		while (((old_cap) *= JSTR_GROWTH_MULTIPLIER) < (new_cap)) \
 			;                                                     \
 		(old_cap) = PJSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT);  \
 	} while (0)
