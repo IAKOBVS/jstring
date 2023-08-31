@@ -1,13 +1,17 @@
 #ifndef JSTR_MACROS_H_DEF
 #define JSTR_MACROS_H_DEF
 
-#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
+#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L && !defined __cplusplus
 #	define JSTR_HAVE_GENERIC 1
 #endif /* HAVE_GENERIC */
 
+#if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
+#	define JSTR_HAVE_TYPEOF 1
+#endif /* HAVE_TYPEOF */
+
 #if defined JSTR_HAVE_TYPEOF && defined JSTR_HAVE_GENERIC
 #	define JSTR_SAME_TYPE(x, y) _Generic((x), \
-	typeof(y): 1,                              \
+	__typeof__(y): 1,                          \
 	default: 0)
 #	define JSTR_IS_TYPE(T, x) _Generic((x), \
 	T: 1,                                    \
@@ -75,10 +79,6 @@
 #else
 #	define JSTR_NOEXCEPT
 #endif
-
-#if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
-#	define JSTR_HAVE_TYPEOF 1
-#endif /* HAVE_TYPEOF */
 
 #ifdef static_assert
 #	define JSTR_HAVE_STATIC_ASSERT		  1

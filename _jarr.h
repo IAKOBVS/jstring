@@ -16,46 +16,65 @@ extern "C" {
 #include "_pp_arrcpy_va_args.h"
 #include "_templates.h"
 
-#define PJARR_REALLOC(p, sizeof_elem, old_cap, new_cap, malloc_fail) \
-	do {                                                         \
-		JSTR_ASSERT_IS_SIZE(old_cap);                        \
-		JSTR_ASSERT_IS_SIZE(new_cap);                        \
-		PJSTR_GROW(old_cap, new_cap);                        \
-		(p) = (char *)realloc(p, old_cap * sizeof_elem);     \
-		PJSTR_MALLOC_ERR(p, malloc_fail);                    \
-	} while (0)
-
-#define PJARR_REALLOC_EXACT(p, sizeof_elem, old_cap, new_cap, malloc_fail) \
-	do {                                                               \
-		JSTR_ASSERT_IS_SIZE(old_cap);                              \
-		JSTR_ASSERT_IS_SIZE(new_cap);                              \
-		old_cap = PJSTR_ALIGN_UP(new_cap, PJSTR_MALLOC_ALIGNMENT); \
-		(p) = (char *)realloc(p, old_cap * sizeof_elem);           \
-		PJSTR_MALLOC_ERR(p, malloc_fail);                          \
-	} while (0)
-
-#define jarr_define(T, typename)          \
-	typedef struct jarr_ty_##typename \
-	{                                 \
-		T *data;                  \
-		size_t size;              \
-		size_t capacity;          \
-	}                                 \
-	jarr_##typename##_ty;
-
 #ifdef __cplusplus
-
 template <typename T, typename Other>
 static T
-pjarr_auto_cast(T, Other other)
+PJARR_CAST(T, Other other)
 {
 	return (T)other;
 }
-
 #else
+#	define PJARR_CAST(T, other) other
+#endif /* __cpluslus */
 
-#	define pjarr_auto_cast(T, other) other
+#define PJARR_DATA_NAME	    data
+#define PJARR_SIZE_NAME	    size
+#define PJARR_CAPACITY_NAME capacity
 
+#define PJARR_JARR   (jarr)
+#define PJARR_VAL    (value)
+#define PJARR_ELEMSZ (sizeof(PJARR_DATA) / sizeof(*(PJARR_DATA)))
+#define PJARR_DATA   (PJARR_JARR->PJARR_DATA_NAME)
+#define PJARR_SZ     (PJARR_JARR->PJARR_SIZE_NAME)
+#define PJARR_CAP    (PJARR_JARR->PJARR_CAPACITY_NAME)
+
+#define jarr(T, name)                       \
+	typedef struct jarr_##name##_ty {   \
+		T *PJARR_DATA_NAME;         \
+		size_t PJARR_SIZE_NAME;     \
+		size_t PJARR_CAPACITY_NAME; \
+	} jarr_##name##_ty;                 \
+	jarr_##name##_ty name;
+
+#define PJARR_MEMMOVE(dst, src, n) memmove(dst, src, (n)*PJARR_ELEMSZ)
+#define PJARR_MEMCPY(dst, src, n)  memcpy(dst, src, (n)*PJARR_ELEMSZ)
+
+#define PJARR_MIN_ALLOC(newcap) ((newcap)*PJARR_ELEMSZ)
+
+#define PJARR_CHECK_ARG()                       \
+	do {                                    \
+		JSTR_ASSERT_IS_SIZE(PJARR_SZ);  \
+		JSTR_ASSERT_IS_SIZE(PJARR_CAP); \
+	} while (0)
+
+#define PJARR_REALLOC(new_cap, malloc_fail)                                                        \
+	do {                                                                                       \
+		PJSTR_GROW(PJARR_CAP, new_cap);                                                    \
+		PJARR_DATA = PJARR_CAST(PJARR_DATA, realloc(PJARR_DATA, PJARR_CAP * PJARR_ELEMSZ);     \
+		PJSTR_MALLOC_ERR(PJARR_DATA, malloc_fail);                                         \
+	} while (0)
+
+#define PJARR_REALLOCEXACT(new_cap, malloc_fail)                                                    \
+	do {                                                                                        \
+		PJARR_CAP = PJSTR_ALIGN_UP(new_cap, PJSTR_MALLOC_ALIGNMENT);                        \
+		PJARR_DATA = PJARR_CAST(PJARR_DATA, realloc(PJARR_DATA, PJARR_CAP * PJARR_ELEMSZ)); \
+		PJSTR_MALLOC_ERR(PJARR_DATA, malloc_fail);                                          \
+	} while (0)
+
+#if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF
+#	define PJARR_CHECK_VAL() JSTR_ASSERT(JSTR_SAME_TYPE(PJARR_VAL, *PJARR_DATA), "Passing illegal value incompatible with the array type.")
+#else
+#	define PJARR_CHECK_VAL() JSTR_ASSERT(sizeof(*PJARR_DATA) == PJARR_VAL, "Passing illegal value incompatible with the array type.")
 #endif
 
 #ifdef __cplusplus
@@ -63,117 +82,75 @@ pjarr_auto_cast(T, Other other)
 extern "C" {
 #endif /* __cplusplus */
 
-JSTR_INLINE
-static void
-pjarr_free(void *JSTR_RST _p)
-{
-	free(_p);
-	_p = NULL;
-}
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void
-pjarr_alloc(void **JSTR_RST const _p,
-	    size_t *JSTR_RST const _sz,
-	    size_t *JSTR_RST const _cap,
-	    const size_t _sizeof_elem,
-	    const size_t _newcap)
-{
-	*_sz = 0;
-	*_cap = PJSTR_MIN_ALLOC(_newcap * _sizeof_elem);
-	*_p = malloc(*_cap);
-	PJSTR_MALLOC_ERR(*_p, return);
-	*_cap /= _sizeof_elem;
-}
-
-#define jarr_alloc(jarr, newcap) \
-	pjarr_alloc(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
-
-#define jarr_alloc_cat(jarr, ...)                                                              \
-	do {                                                                                   \
-		(jarr)->capacity = PJSTR_MIN_ALLOC(PJSTR_PP_NARG(__VA_ARGS__) * _sizeof_elem); \
-		(jarr)->data = pjarr_auto_cast((jarr)->data, malloc((jarr)->capacity));        \
-		PJSTR_MALLOC_ERR((jarr)->data, return);                                        \
-		(jarr)->capacity /= _sizeof_elem;                                              \
-		(jarr)->size = PJSTR_PP_NARG(__VA_ARGS__);                                     \
-		PJSTR_PP_ARRCPY_VA_ARGS((jarr)->data, __VA_ARGS__);                            \
+#define jarr_free(p)        \
+	do {                \
+		free(p);    \
+		(p) = NULL; \
 	} while (0)
 
-/* Pop p[0]. */
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void
-pjarr_pop_front(void *JSTR_RST const _p,
-		size_t *JSTR_RST const _sz,
-		const size_t _sizeof_elem)
-{
-	if (jstr_unlikely(*_sz == 0))
-		return;
-	typedef unsigned char uc;
-	memmove(_p,
-		(uc *)_p + 1 * _sizeof_elem,
-		((*_sz)-- - 1) * _sizeof_elem);
-}
+/* Allocate PTR. */
+#define jarr_alloc(PJARR_JARR, newcap)               \
+	do {                                         \
+		PJARR_CHECK_ARG();                   \
+		PJARR_SZ = 0;                        \
+		PJARR_CAP = PJARR_MIN_ALLOC(newcap); \
+		PJARR_DATA = malloc(PJARR_CAP);      \
+		PJSTR_MALLOC_ERR(PJARR_DATA, break); \
+		PJARR_CAP /= PJARR_ELEMSZ;           \
+	} while (0)
 
-#define jarr_pop_front(jarr) \
-	pjarr_pop_front(((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
+typedef void *jarr_ty;
 
-/* Pop p[size]. */
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void
-pjarr_pop_back(void *JSTR_RST const _p,
-	       size_t *JSTR_RST const _sz,
-	       const size_t _sizeof_elem)
-{
-	if (jstr_unlikely(*_sz == 0))
-		return;
-	typedef unsigned char uc;
-	*((uc *)_p + (*_sz)-- * _sizeof_elem - 1 * _sizeof_elem) = '\0';
-}
+/* Allocate elements to PTR. */
+#define jarr_alloc_cat(PJARR_JARR, ...)                                      \
+	do {                                                                 \
+		PJARR_CHECK_ARG();                                           \
+		PJARR_CAP = PJARR_MIN_ALLOC(PJSTR_PP_NARG(__VA_ARGS__));     \
+		PJARR_DATA = pjarr_auto_cast(PJARR_DATA, malloc(PJARR_CAP)); \
+		PJSTR_MALLOC_ERR(PJARR_DATA, break);                         \
+		PJARR_CAP /= PJARR_ELEMSZ;                                   \
+		PJARR_SZ = PJSTR_PP_NARG(__VA_ARGS__);                       \
+		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA, __VA_ARGS__);            \
+	} while (0)
 
-#define jarr_pop_back(jarr) \
-	pjarr_pop_back(((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
+/* Pop PTR[0]. */
+#define jarr_pop_front(PJARR_JARR)                               \
+	do {                                                     \
+		PJARR_CHECK_ARG();                               \
+		if (jstr_unlikely(PJARR_CAP == 0))               \
+			break;                                   \
+		memmove(PJARR_DATA, PJARR_DATA + 1, --PJARR_SZ); \
+	} while (0)
 
-/* Push VAL to back of P. */
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void
-pjarr_push_back(void **JSTR_RST const _p,
-		size_t *JSTR_RST const _sz,
-		size_t *JSTR_RST const _cap,
-		const size_t _sizeof_elem,
-		const void *JSTR_RST const _val)
-{
-	if (jstr_unlikely(*_cap == *_sz + 1))
-		PJARR_REALLOC_EXACT(*(void **)_p, _sizeof_elem, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
-	typedef unsigned char uc;
-	memcpy(*(uc **)_p + (*_sz)++ * _sizeof_elem, _val, _sizeof_elem);
-}
+/* Pop PTR[size]. */
+#define jarr_pop_back(PJARR_JARR)                  \
+	do {                                       \
+		PJARR_CHECK_ARG();                 \
+		if (jstr_unlikely(PJARR_CAP == 0)) \
+			break;                     \
+		*(PJARR_DATA + --PJARR_SZ) = '\0'; \
+	} while (0)
 
-#define jarr_push_back(jarr, c) \
-	pjarr_push_back(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
+/* Push VAL to back of PTR. */
+#define jarr_push_back(PJARR_JARR, PJARR_VAL)                              \
+	do {                                                               \
+		PJARR_CHECK_ARG();                                         \
+		PJARR_CHECK_VAL();                                         \
+		if (jstr_unlikely(PJARR_CAP == PJARR_SZ + 1))              \
+			PJARR_REALLOC_EXACT(PJARR_SZ *JARR_GROWTH, break); \
+		PJARR_DATA[PJARR_SZ++] = PJARR_VAL;                        \
+	} while (0)
 
 /* Push VAL to front of P. */
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void
-pjarr_push_front(void **JSTR_RST const _p,
-		 size_t *JSTR_RST const _sz,
-		 size_t *JSTR_RST const _cap,
-		 const size_t _sizeof_elem,
-		 const void *JSTR_RST const _val)
-{
-	if (jstr_unlikely(*_cap == *_sz + 1))
-		PJARR_REALLOC_EXACT(*(void **)_p, _sizeof_elem, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
-	typedef unsigned char uc;
-	memmove(*(uc **)_p + 1 * _sizeof_elem, *_p, (*_sz)++ * _sizeof_elem);
-	memcpy(*_p, _val, _sizeof_elem);
-}
-
-#define jarr_push_front(jarr, c) \
-	pjarr_push_front(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
+#define jarr_push_front(PJARR_JARR, PJARR_VAL)                             \
+	do {                                                               \
+		PJARR_CHECK_ARG();                                         \
+		PJARR_CHECK_VAL();                                         \
+		if (jstr_unlikely(PJARR_CAP == PJARR_SZ + 1))              \
+			PJARR_REALLOC_EXACT(PJARR_SZ *JARR_GROWTH, break); \
+		PJARR_MEMMOVE(PJARR_DATA + 1, PJARR_DATA, PJARR_SZ++);     \
+		PJARR_DATA[0] = PJARR_VAL;                                 \
+	} while (0)
 
 #ifdef __cplusplus
 }
