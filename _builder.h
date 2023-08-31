@@ -146,7 +146,7 @@ jstr_alloc(char **JSTR_RST const _s,
 	   const size_t _top)
 {
 	*_sz = 0;
-	*_cap = PJSTR_MIN_ALLOC(_top);
+	*_cap = PJSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(_top));
 	*_s = (char *)malloc(*_cap);
 	PJSTR_MALLOC_ERR(*_s, return);
 }
@@ -161,9 +161,9 @@ jstr_allocexact(char **JSTR_RST const _s,
 		const size_t _top) JSTR_NOEXCEPT
 {
 	*_sz = 0;
-	*_s = (char *)malloc(_top);
+	*_cap = PJSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(_top));
+	*_s = (char *)malloc(*_cap);
 	PJSTR_MALLOC_ERR(*_s, return);
-	*_cap = _top;
 }
 
 JSTR_INLINE
@@ -295,7 +295,7 @@ jstr_push_back(char **JSTR_RST const _s,
 	       const char _c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
-		PJSTR_REALLOC_EXACT(*_s, *_cap, *_sz * JSTR_ALLOC_MULTIPLIER, return);
+		PJSTR_REALLOCEXACT(*_s, *_cap, *_sz * JSTR_ALLOC_MULTIPLIER, return);
 	*(*_s + *_sz) = _c;
 	*(*_s + ++*_sz) = '\0';
 }
@@ -314,7 +314,7 @@ jstr_push_front(char **JSTR_RST const _s,
 		const char _c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
-		PJSTR_REALLOC_EXACT(*_s, *_cap, *_sz * JSTR_ALLOC_MULTIPLIER, return);
+		PJSTR_REALLOCEXACT(*_s, *_cap, *_sz * JSTR_ALLOC_MULTIPLIER, return);
 	memmove(*_s + 1, *_s, (*_sz)++ + 1);
 	**_s = _c;
 }

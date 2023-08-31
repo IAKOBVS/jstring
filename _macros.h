@@ -711,4 +711,9 @@ case '~':
 #define PJSTR_PTR_DIFF(p1, p2) \
 	((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 
+#include "_config.h"
+
+#define PJSTR_ALIGN_UP_STR(base) \
+	PJSTR_ALIGN_UP(base, JSTR_MALLOC_ALIGNMENT)
+
 #endif /* JSTR_MACROS_H_DEF */
