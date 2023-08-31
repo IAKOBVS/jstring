@@ -137,7 +137,10 @@ jstr_toupper(const int _c) JSTR_NOEXCEPT
 	return pjstr_table_toupper[_c];
 }
 
-/* Will NOT handle EOF correctly. */
+/*
+   Will NOT handle EOF correctly.
+   toupper_ascii(EOF) != EOF;
+*/
 JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
@@ -160,7 +163,10 @@ jstr_tolower(const int _c) JSTR_NOEXCEPT
 	return pjstr_table_tolower[_c];
 }
 
-/* Will NOT handle EOF correctly. */
+/*
+   Will NOT handle EOF correctly.
+   tolower_ascii(EOF) != EOF;
+*/
 JSTR_INLINE
 JSTR_CONST
 JSTR_NONNULL_ALL
