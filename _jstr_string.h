@@ -29,7 +29,7 @@ extern "C" {
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) strstr(_hs, _ne)
 #endif /* HAVE_MEMMEM */
 
-typedef unsigned long int jstr_op_t JSTR_MAY_ALIAS;
+typedef unsigned long int jstr_op_ty JSTR_MAY_ALIAS;
 
 /*
   Return value:
