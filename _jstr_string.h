@@ -218,38 +218,38 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		      const size_t _nelen) JSTR_NOEXCEPT
 {
 #define PJSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define PJSTR_MEMMEMR(shift_type, ne_iterator_type)                                          \
-	do {                                                                                \
-		const unsigned char *const _start = _hs - 1;                                \
-		_hs += _hslen - _nelen;                                                     \
-		size_t _tmp;                                                                \
-		const size_t _mtc1 = _nelen - 1;                                            \
-		size_t _off = 0;                                                            \
-		shift_type _shift[256];                                                     \
-		(sizeof(shift_type) == sizeof(size_t))                                      \
-		? memset(_shift, 0, sizeof(_shift))                                         \
-		: (memset(_shift, 0, 64),                                                   \
-		   memset(_shift + 64, 0, 64),                                              \
-		   memset(_shift + 128, 0, 64),                                             \
-		   memset(_shift + 192, 0, 64));                                            \
-		for (ne_iterator_type i = 1; jstr_likely(i < (ne_iterator_type)_mtc1); ++i) \
-			_shift[PJSTR_HASH2(_ne + i)] = i;                                    \
-		const size_t shft1 = _mtc1 - _shift[PJSTR_HASH2(_ne + _mtc1)];               \
-		_shift[PJSTR_HASH2(_ne + _mtc1)] = _mtc1;                                    \
-		do {                                                                        \
-			do {                                                                \
-				_hs -= _mtc1;                                               \
-				_tmp = _shift[PJSTR_HASH2(_hs)];                             \
-			} while (!_tmp && _hs > _start);                                    \
-			_hs -= _tmp;                                                        \
-			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {             \
-				if (!memcmp(_hs, _ne, _nelen))                              \
-					return (void *)_hs;                                 \
-				_off = (_off >= 8 ? _off : _mtc1) - 8;                      \
-			}                                                                   \
-			_hs -= shft1;                                                       \
-		} while (_hs > _start);                                                     \
-		return NULL;                                                                \
+#define PJSTR_MEMMEMR(shift_type, ne_iterator_type)                                            \
+	do {                                                                                   \
+		const unsigned char *const _start = _hs - 1;                                   \
+		_hs += _hslen - _nelen;                                                        \
+		size_t _tmp;                                                                   \
+		const size_t _mtc1 = _nelen - 1;                                               \
+		size_t _off = 0;                                                               \
+		shift_type _shift[256];                                                        \
+		(sizeof(shift_type) == sizeof(size_t))                                         \
+		? memset(_shift, 0, sizeof(_shift))                                            \
+		: (memset(_shift, 0, 64),                                                      \
+		   memset(_shift + 64, 0, 64),                                                 \
+		   memset(_shift + 128, 0, 64),                                                \
+		   memset(_shift + 192, 0, 64));                                               \
+		for (ne_iterator_type _i = 1; jstr_likely(_i < (ne_iterator_type)_mtc1); ++_i) \
+			_shift[PJSTR_HASH2(_ne + _i)] = _i;                                    \
+		const size_t shft1 = _mtc1 - _shift[PJSTR_HASH2(_ne + _mtc1)];                 \
+		_shift[PJSTR_HASH2(_ne + _mtc1)] = _mtc1;                                      \
+		do {                                                                           \
+			do {                                                                   \
+				_hs -= _mtc1;                                                  \
+				_tmp = _shift[PJSTR_HASH2(_hs)];                               \
+			} while (!_tmp && _hs > _start);                                       \
+			_hs -= _tmp;                                                           \
+			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {                \
+				if (!memcmp(_hs, _ne, _nelen))                                 \
+					return (void *)_hs;                                    \
+				_off = (_off >= 8 ? _off : _mtc1) - 8;                         \
+			}                                                                      \
+			_hs -= shft1;                                                          \
+		} while (_hs > _start);                                                        \
+		return NULL;                                                                   \
 	} while (0)
 	if (jstr_unlikely(_hslen > 256))
 		PJSTR_MEMMEMR(size_t, size_t);
@@ -353,7 +353,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			 const size_t _nelen) JSTR_NOEXCEPT
 {
 #define PPJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
-#define PJSTR_STRSTRCASE(shift_type, ne_iterator_type)                                                   \
+#define PJSTR_STRSTRCASE(shift_type, ne_iterator_type)                                                  \
 	do {                                                                                            \
 		const unsigned char *_h = (unsigned char *)_hs;                                         \
 		const unsigned char *const _n = (unsigned char *)_ne;                                   \
@@ -368,14 +368,14 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		   memset(_shift + 64, 0, 64),                                                          \
 		   memset(_shift + 128, 0, 64),                                                         \
 		   memset(_shift + 192, 0, 64));                                                        \
-		for (ne_iterator_type i = 1; i < (ne_iterator_type)_mtc1; ++i)                          \
-			_shift[PPJSTR_HASH2_LOWER(_n + i)] = i;                                           \
-		const size_t _shft1 = _mtc1 - _shift[PPJSTR_HASH2_LOWER(_n + _mtc1)];                     \
-		_shift[PPJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                           \
+		for (ne_iterator_type _i = 1; _i < (ne_iterator_type)_mtc1; ++_i)                       \
+			_shift[PPJSTR_HASH2_LOWER(_n + _i)] = _i;                                       \
+		const size_t _shft1 = _mtc1 - _shift[PPJSTR_HASH2_LOWER(_n + _mtc1)];                   \
+		_shift[PPJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                         \
 		do {                                                                                    \
 			do {                                                                            \
 				_h += _mtc1;                                                            \
-				_tmp = _shift[PPJSTR_HASH2_LOWER(_h)];                                    \
+				_tmp = _shift[PPJSTR_HASH2_LOWER(_h)];                                  \
 			} while (!_tmp && _h < _end);                                                   \
 			_h -= _tmp;                                                                     \
 			if (_tmp < _mtc1)                                                               \
@@ -820,14 +820,15 @@ jstr_count(const char *JSTR_RST _s,
 /*
    Reverse of STRCSPN.
 */
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static size_t
-jstr_strrcspn_mem(char *JSTR_RST const _s,
+jstr_strrcspn_mem(const char *JSTR_RST const _s,
 		  const char *JSTR_RST const _reject,
-		  const size_t _sz) JSTR_NOEXCEPT
+		  size_t _sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_reject[0] == '\0'))
 		return 0;
@@ -838,7 +839,7 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 #else
 		strrchr(_s, *_reject);
 #endif
-		return _p ? (_s + _sz) - _p : _sz;
+		return _p ? (_s + _sz - 1) - _p : _sz;
 	}
 	if (jstr_unlikely(_sz == 0))
 		return 0;
@@ -852,39 +853,42 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 		_t[*_p] = 1;
 	while (*_p++);
 	_p = (unsigned char *)_s + _sz - 1;
-	const char _first = *_s;
-	*_s = '\0';
-	if (_t[_p[0]]) {
-		*_s = _first;
-		return 0;
+	if (jstr_unlikely(_sz < 4)) {
+		int _i = 0;
+		while (!_t[_p[-_i]] && ++_i < _sz)
+			;
+		return _i;
 	}
-	if (_t[_p[-1]]) {
-		*_s = _first;
-		return 1;
+	switch (_sz % 4) {
+	case 0: break;
+	case 3:
+		if (!_t[*_p])
+			return 0;
+		--_p;
+		/* FALLTHROUGH */
+	case 2:
+		if (!_t[*_p])
+			return ((unsigned char *)_s + _sz - 1) - _p;
+		--_p;
+		/* FALLTHROUGH */
+	case 1:
+		if (!_t[*_p])
+			return ((unsigned char *)_s + _sz - 1) - _p;
+		--_p;
 	}
-	if (_t[_p[-2]]) {
-		*_s = _first;
-		return 2;
-	}
-	if (_t[_p[-3]]) {
-		*_s = _first;
-		return 3;
-	}
-	_p = (unsigned char *)PJSTR_PTR_ALIGN_UP(_p, 4);
 	unsigned int _c0, _c1, _c2, _c3;
 	do {
-		_p -= 4;
 		_c0 = _t[_p[0]];
 		_c1 = _t[_p[-1]];
 		_c2 = _t[_p[-2]];
 		_c3 = _t[_p[-3]];
-	} while (_c0 | _c1 | _c2 | _c3);
-	size_t _cnt = (unsigned char *)_s - _p;
-	*_s = _first;
-	return ((_c0 | _c1) == 0
-		? _cnt - _c0
-		: _cnt - _c2 + 3)
-	       + (_p == (unsigned char *)_s && _first != *_reject);
+		_p -= 4;
+		_sz -= 4;
+	} while ((_sz != 0) & (_c0 | _c1 | _c2 | _c3));
+	size_t _cnt = ((unsigned char *)_s + _sz - 1) - _p;
+	return (_c0 | _c1) == 0
+	       ? _cnt - _c0
+	       : _cnt - _c2 + 3;
 }
 
 /*
@@ -896,7 +900,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
 static size_t
-jstr_strrcspn(char *JSTR_RST const _s,
+jstr_strrcspn(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _reject) JSTR_NOEXCEPT
 {
 	return jstr_strrcspn_mem(_s, _reject, strlen(_s));
@@ -905,12 +909,13 @@ jstr_strrcspn(char *JSTR_RST const _s,
 /*
    Reverse of STRSPN.
 */
+JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static size_t
-jstr_strrspn_mem(char *JSTR_RST const _s,
+jstr_strrspn_mem(const char *JSTR_RST const _s,
 		 const char *JSTR_RST const _accept,
 		 size_t _sz) JSTR_NOEXCEPT
 {
@@ -918,15 +923,11 @@ jstr_strrspn_mem(char *JSTR_RST const _s,
 		return 0;
 	if (jstr_unlikely(_sz == 0))
 		return 0;
-	const char _first = *_s;
-	*_s = '\0';
 	if (jstr_unlikely(_accept[1] == '\0')) {
 		const char *_p = _s + _sz - 1;
 		while (*_p == *_accept)
 			--_p;
-		*_s = _first;
-		return (_s + _sz - _p)
-		       + (_p == _s && _first == *_accept);
+		return (_s + _sz - 1) - _p;
 	}
 	const unsigned char *_p = (unsigned char *)_accept;
 	unsigned char _t[256];
@@ -938,36 +939,42 @@ jstr_strrspn_mem(char *JSTR_RST const _s,
 		_t[*_p++] = 1;
 	while (*_p);
 	_p = (unsigned char *)_s + _sz - 1;
-	if (!_t[_p[0]]) {
-		*_s = _first;
-		return 0;
+	if (jstr_unlikely(_sz < 4)) {
+		int _i = 0;
+		while (_t[_p[-_i]] && ++_i < _sz)
+			;
+		return _i;
 	}
-	if (!_t[_p[-1]]) {
-		*_s = _first;
-		return 1;
+	switch (_sz % 4) {
+	case 0: break;
+	case 3:
+		if (!_t[*_p])
+			return 0;
+		--_p;
+		/* FALLTHROUGH */
+	case 2:
+		if (!_t[*_p])
+			return ((unsigned char *)_s + _sz - 1) - _p;
+		--_p;
+		/* FALLTHROUGH */
+	case 1:
+		if (!_t[*_p])
+			return ((unsigned char *)_s + _sz - 1) - _p;
+		--_p;
 	}
-	if (!_t[_p[-2]]) {
-		*_s = _first;
-		return 2;
-	}
-	if (!_t[_p[-3]]) {
-		*_s = _first;
-		return 3;
-	}
-	_p = (unsigned char *)PJSTR_PTR_ALIGN_UP(_p, 4);
 	unsigned int _c0, _c1, _c2, _c3;
 	do {
-		_p -= 4;
 		_c0 = _t[_p[0]];
 		_c1 = _t[_p[-1]];
 		_c2 = _t[_p[-2]];
 		_c3 = _t[_p[-3]];
-	} while (_c0 & _c1 & _c2 & _c3);
-	size_t _cnt = (unsigned char *)_s - _p;
-	*_s = _first;
-	return ((_c0 & _c1) == 0
-		? _cnt + _c0
-		: _cnt + _c2 + 2);
+		_p -= 4;
+		_sz -= 4;
+	} while ((_sz != 0) & (_c0 & _c1 & _c2 & _c3));
+	size_t _cnt = ((unsigned char *)_s + _sz - 1) - _p;
+	return (_c0 & _c1) == 0
+	       ? _cnt + _c0
+	       : _cnt + _c2 + 2;
 }
 
 /*
@@ -979,7 +986,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
 static size_t
-jstr_strrspn(char *JSTR_RST const _s,
+jstr_strrspn(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept) JSTR_NOEXCEPT
 {
 	return jstr_strrspn_mem(_s, _accept, strlen(_s));
@@ -994,7 +1001,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
 static char *
-jstr_strrpbrk_mem(char *JSTR_RST _s,
+jstr_strrpbrk_mem(const char *JSTR_RST _s,
 		  const char *JSTR_RST const _accept,
 		  const size_t _sz) JSTR_NOEXCEPT
 {
@@ -1011,7 +1018,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
 static char *
-jstr_strrpbrk(char *JSTR_RST const _s,
+jstr_strrpbrk(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT
 {
 	return jstr_strrpbrk_mem(_s, _accept, strlen(_s));

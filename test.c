@@ -1,8 +1,12 @@
 #define _GNU_SOURCE
-#include "_jarr.h"
+#include "_jstr.h"
 
 int main(int argc, char **argv)
 {
+	
+	const char *s = "0123456789";
+	size_t i = jstr_strrspn(s, "01234567890");
+	printf("%zu\n", i);
 
 	/* jstr_ty s; */
 	/* char *str = "hello-world"; */
@@ -20,7 +24,7 @@ int main(int argc, char **argv)
 	/* jstr_free(s.data); */
 	/* return err; */
 	
-	jarr(int, x);
-	jarr_alloc_cat(&x, 1);
+	/* jarr(int, x); */
+	/* jarr_alloc_cat(&x, 1); */
 
 }
