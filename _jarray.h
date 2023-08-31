@@ -36,7 +36,7 @@
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-pjarr_init(const unsigned char **JSTR_RST const _p,
+pjarr_init(const void **JSTR_RST const _p,
 	   size_t *JSTR_RST const _size,
 	   size_t *JSTR_RST const _cap)
 {
@@ -46,11 +46,11 @@ pjarr_init(const unsigned char **JSTR_RST const _p,
 }
 
 #define jarr_init(jarr, newcap) \
-	pjarr_init((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity))
+	pjarr_init(&((jarr)->data), &((jarr)->size), &((jarr)->capacity))
 
 JSTR_INLINE
 static void
-pjarr_free(unsigned char *JSTR_RST _p)
+pjarr_free(void *JSTR_RST _p)
 {
 	free(_p);
 	_p = NULL;
@@ -59,7 +59,7 @@ pjarr_free(unsigned char *JSTR_RST _p)
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-pjarr_alloc(unsigned char **JSTR_RST const _p,
+pjarr_alloc(void **JSTR_RST const _p,
 	    size_t *JSTR_RST const _sz,
 	    size_t *JSTR_RST const _cap,
 	    const size_t _sizeof_elem,
@@ -67,18 +67,18 @@ pjarr_alloc(unsigned char **JSTR_RST const _p,
 {
 	*_sz = 0;
 	*_cap = PJSTR_MIN_ALLOC(_newcap) / _sizeof_elem;
-	*_p = (unsigned char *)malloc(*_cap * _sizeof_elem);
+	*_p = malloc(*_cap * _sizeof_elem);
 }
 
 #define jarr_alloc(jarr, newcap) \
-	pjarr_alloc((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
+	pjarr_alloc(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
 
 #if 0
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-pjarr_alloc_append(unsigned char **JSTR_RST const _p,
+pjarr_alloc_append(void **JSTR_RST const _p,
 		  size_t *JSTR_RST const _sz,
 		  size_t *JSTR_RST const _cap,
 		  const size_t _sizeof_elem,
@@ -90,7 +90,7 @@ pjarr_alloc_append(unsigned char **JSTR_RST const _p,
 }
 
 #	define jarr_alloc_append(jarr, newcap) \
-		pjarr_alloc_append((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
+		pjarr_alloc_append(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
 
 #endif
 
@@ -98,71 +98,75 @@ pjarr_alloc_append(unsigned char **JSTR_RST const _p,
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-pjarr_pop_front(unsigned char *JSTR_RST const _p,
+pjarr_pop_front(void *JSTR_RST const _p,
 		size_t *JSTR_RST const _sz,
 		const size_t _sizeof_elem)
 {
 	if (jstr_unlikely(*_sz == 0))
 		return;
+	typedef unsigned char uc;
 	memmove(_p,
-		_p + 1 * _sizeof_elem,
+		(uc *)_p + 1 * _sizeof_elem,
 		((*_sz)-- - 1) * _sizeof_elem);
 }
 
 #define jarr_pop_front(jarr) \
-	pjarr_pop_front((unsigned char *)((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
+	pjarr_pop_front(((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
 
 /* Pop p[size]. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-pjarr_pop_back(unsigned char *JSTR_RST const _p,
+pjarr_pop_back(void *JSTR_RST const _p,
 	       size_t *JSTR_RST const _sz,
 	       const size_t _sizeof_elem)
 {
 	if (jstr_unlikely(*_sz == 0))
 		return;
-	*(_p + (*_sz)-- * _sizeof_elem - 1 * _sizeof_elem) = '\0';
+	typedef unsigned char uc;
+	*((uc *)_p + (*_sz)-- * _sizeof_elem - 1 * _sizeof_elem) = '\0';
 }
 
 #define jarr_pop_back(jarr) \
-	pjarr_pop_back((unsigned char *)((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
+	pjarr_pop_back(((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
 
 /* Push VAL to back of P. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-pjarr_push_back(unsigned char **JSTR_RST const _p,
+pjarr_push_back(void **JSTR_RST const _p,
 		size_t *JSTR_RST const _sz,
 		size_t *JSTR_RST const _cap,
 		const size_t _sizeof_elem,
-		const unsigned char *JSTR_RST const _val)
+		const void *JSTR_RST const _val)
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
 		PJARR_REALLOC_EXACT(*(void **)_p, _sizeof_elem, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
-	memcpy(_p + (*_sz)++ * _sizeof_elem, _val, _sizeof_elem);
+	typedef unsigned char uc;
+	memcpy(*(uc **)_p + (*_sz)++ * _sizeof_elem, _val, _sizeof_elem);
 }
 
 #define jarr_push_back(jarr, c) \
-	pjarr_push_back((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
+	pjarr_push_back(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
 
 /* Push VAL to front of P. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
-pjarr_push_front(unsigned char **JSTR_RST const _p,
+pjarr_push_front(void **JSTR_RST const _p,
 		 size_t *JSTR_RST const _sz,
 		 size_t *JSTR_RST const _cap,
 		 const size_t _sizeof_elem,
-		 const unsigned char *JSTR_RST const _val)
+		 const void *JSTR_RST const _val)
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
 		PJARR_REALLOC_EXACT(*(void **)_p, _sizeof_elem, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
-	memmove(*_p + 1 * _sizeof_elem, *_p, (*_sz)++ * _sizeof_elem);
-	memcpy(_p, _val, _sizeof_elem);
+	typedef unsigned char uc;
+	memmove(*(uc **)_p + 1 * _sizeof_elem, *_p, (*_sz)++ * _sizeof_elem);
+	memcpy(*_p, _val, _sizeof_elem);
 }
 
 #define jarr_push_front(jarr, c) \
-	pjarr_push_front((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
+	pjarr_push_front(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
 
 #endif /* JARRAY_DEF_H */
