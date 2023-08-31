@@ -703,7 +703,7 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
 	}
 	if (jstr_unlikely(_sz < 4))
-		return ((unsigned char *)_s + _sz - 1) - _p;
+		return _sz;
 	unsigned int _c0, _c1, _c2, _c3;
 	do {
 		_c0 = _t[_p[0]];
@@ -783,7 +783,7 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
 	}
 	if (jstr_unlikely(_sz < 4))
-		return ((unsigned char *)_s + _sz - 1) - _p;
+		return _sz;
 	unsigned int _c0, _c1, _c2, _c3;
 	do {
 		_c0 = _t[_p[0]];
