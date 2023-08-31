@@ -853,7 +853,7 @@ jstr_memrchr(const void *JSTR_RST const _s,
 	case 0:
 		break;
 	}
-	if (_n < JSTR_OPSIZ)
+	if (jstr_unlikely(_n < JSTR_OPSIZ))
 		return NULL;
 	const jstr_op_ty *_p = (jstr_op_ty *)_end;
 	const jstr_op_ty _cc = pjstr_repeat_bytes(_c);
