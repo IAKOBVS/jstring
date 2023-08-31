@@ -134,7 +134,19 @@ JSTR_NOTHROW
 static int
 jstr_toupper(const int _c) JSTR_NOEXCEPT
 {
-	return pjstr_ascii_table_toupper[(unsigned char)(_c + 1)];
+	return pjstr_table_toupper[_c];
+}
+
+/* Will NOT handle EOF correctly. */
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_toupper_ascii(const int _c) JSTR_NOEXCEPT
+{
+	return pjstr_table_toupper_ascii[(unsigned char)_c];
 }
 
 JSTR_INLINE
@@ -145,7 +157,19 @@ JSTR_NOTHROW
 static int
 jstr_tolower(const int _c) JSTR_NOEXCEPT
 {
-	return pjstr_ascii_table_tolower[(unsigned char)(_c + 1)];
+	return pjstr_table_tolower[_c];
+}
+
+/* Will NOT handle EOF correctly. */
+JSTR_INLINE
+JSTR_CONST
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+static int
+jstr_tolower_ascii(const int _c) JSTR_NOEXCEPT
+{
+	return pjstr_table_tolower_ascii[(unsigned char)_c];
 }
 
 JSTR_INLINE
@@ -272,7 +296,7 @@ JSTR_NOTHROW
 static void
 jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	while ((*_s = jstr_toupper(*_s)))
+	while ((*_s = jstr_toupper_ascii(*_s)))
 		++_s;
 }
 
@@ -282,7 +306,7 @@ JSTR_NOTHROW
 static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	while ((*_s = jstr_tolower(*_s)))
+	while ((*_s = jstr_tolower_ascii(*_s)))
 		++_s;
 }
 

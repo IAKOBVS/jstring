@@ -170,7 +170,7 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 	return strncasecmp(_s1, _s2, _n);
 #else
 	int ret;
-	while (((ret = jstr_tolower(*_s1++) - jstr_tolower(*_s2++)) == 0)
+	while (((ret = jstr_tolower_ascii(*_s1++) - jstr_tolower_ascii(*_s2++)) == 0)
 	       && _n--)
 		;
 	return ret;
@@ -199,7 +199,7 @@ jstr_strcasecmp(const char *JSTR_RST _s1,
 	return strcasecmp(_s1, _s2);
 #else
 	int ret;
-	while (((ret = jstr_tolower(*_s1) - jstr_tolower(*_s2++)) == 0)
+	while (((ret = jstr_tolower_ascii(*_s1) - jstr_tolower_ascii(*_s2++)) == 0)
 	       && *_s1++)
 		;
 	return ret;
@@ -352,7 +352,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			 const char *JSTR_RST const _ne,
 			 const size_t _nelen) JSTR_NOEXCEPT
 {
-#define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
+#define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
 #define JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                                   \
 	do {                                                                                            \
 		const unsigned char *_h = (unsigned char *)_hs;                                         \
