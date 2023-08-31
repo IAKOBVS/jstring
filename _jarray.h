@@ -1,5 +1,5 @@
-#ifndef JARRAY_DEF_H
-#define JARRAY_DEF_H
+#ifndef JARR_DEF_H
+#define JARR_DEF_H
 
 #include "_builder.h"
 #include "_config.h"
@@ -154,4 +154,4 @@ pjarr_push_front(void **JSTR_RST const _p,
 #define jarr_push_front(jarr, c) \
 	pjarr_push_front(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
 
-#endif /* JARRAY_DEF_H */
+#endif /* JARR_DEF_H */
