@@ -302,6 +302,68 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 #undef PJSTR_MEMMEMR
 }
 
+#if JSTR_HAVE_MEMRCHR
+JSTR_INLINE
+#endif
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
+JSTR_PURE
+static void *
+jstr_memrchr(const void *JSTR_RST const _s,
+	     const int _c,
+	     size_t _n) JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_MEMRCHR
+	return (void *)memrchr(_s, _c, _n);
+#else
+	if (jstr_unlikely(_n == 0))
+		return NULL;
+	const unsigned char *_end = (unsigned char *)_s + _n - 1;
+	switch (_n % JSTR_OPSIZ) {
+	case 7:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* FALLTHROUGH */
+	case 6:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* FALLTHROUGH */
+	case 5:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* FALLTHROUGH */
+	case 4:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* FALLTHROUGH */
+	case 3:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* FALLTHROUGH */
+	case 2:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* FALLTHROUGH */
+	case 1:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* FALLTHROUGH */
+	case 0:
+		break;
+	}
+	if (jstr_unlikely(_n < JSTR_OPSIZ))
+		return NULL;
+	const jstr_op_ty *_p = (jstr_op_ty *)_end;
+	const jstr_op_ty _cc = pjstr_repeat_bytes(_c);
+	for (; _n; _n -= JSTR_OPSIZ)
+		if (pjstr_has_eq(*_p, _cc))
+			return (void *)(_p + pjstr_index_last_eq(*_p, _cc));
+	return NULL;
+#endif
+}
+
 /*
 
    Find last NE in HS.
@@ -327,11 +389,7 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 	case 0:
 		return (void *)((unsigned char *)_hs + _hslen);
 	case 1:
-#if JSTR_HAVE_MEMRCHR
-		return (void *)memrchr(_hs, *(char *)_ne, _hslen);
-#else
-		return strrchr(_hs, *(char *)_ne);
-#endif
+		return (void *)jstr_memrchr(_hs, *(char *)_ne, _hslen);
 	case 2: {
 		const unsigned char *const _start = (unsigned char *)_hs - 1;
 		const unsigned char *_h = _start + _hslen;
@@ -615,12 +673,7 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 	if (jstr_unlikely(_reject[0] == '\0'))
 		return 0;
 	if (jstr_unlikely(_reject[1] == '\0')) {
-		const char *const _p =
-#if JSTR_HAVE_MEMRCHR
-		(char *)memrchr(_s, *_reject, _sz);
-#else
-		strrchr(_s, *_reject);
-#endif
+		const char *const _p = (char *)jstr_memrchr(_s, *_reject, _sz);
 		return _p ? (_s + _sz - 1) - _p : _sz;
 	}
 	if (jstr_unlikely(_sz == 0))
@@ -800,67 +853,6 @@ jstr_strrpbrk(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT
 {
 	return jstr_strrpbrk_mem(_s, _accept, strlen(_s));
-}
-
-#if JSTR_HAVE_MEMRCHR
-JSTR_INLINE
-#endif
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
-JSTR_PURE
-static void *
-jstr_memrchr(const void *JSTR_RST const _s,
-	     const int _c,
-	     size_t _n) JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(_s, _c, _n);
-#endif
-	if (jstr_unlikely(_n == 0))
-		return NULL;
-	const unsigned char *_end = (unsigned char *)_s + _n - 1;
-	switch (_n % JSTR_OPSIZ) {
-	case 7:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* FALLTHROUGH */
-	case 6:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* FALLTHROUGH */
-	case 5:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* FALLTHROUGH */
-	case 4:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* FALLTHROUGH */
-	case 3:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* FALLTHROUGH */
-	case 2:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* FALLTHROUGH */
-	case 1:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* FALLTHROUGH */
-	case 0:
-		break;
-	}
-	if (jstr_unlikely(_n < JSTR_OPSIZ))
-		return NULL;
-	const jstr_op_ty *_p = (jstr_op_ty *)_end;
-	const jstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	for (; _n; _n -= JSTR_OPSIZ)
-		if (pjstr_has_eq(*_p, _cc))
-			return (char *)_p + pjstr_index_last_eq(*_p, _cc);
-	return NULL;
 }
 
 /*
