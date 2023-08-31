@@ -13,8 +13,8 @@
 
 #define JSTR_CFG_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 16)
 
-#ifndef JARR_GROWTH
-#	define JARR_GROWTH 2
+#ifndef PJARR_GROWTH
+#	define PJARR_GROWTH 2
 #endif
 
 #ifndef JSTR_CFG_HAVE_ALLOCA

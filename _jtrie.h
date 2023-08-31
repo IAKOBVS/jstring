@@ -90,8 +90,8 @@ JSTR_INLINE
 JSTR_NOTHROW
 static void
 pjtrie_remove(pjtrie_flag_rm_prefixes_ty _flag,
-		  jtrie_node_ty *JSTR_RST const _root,
-		  const char *JSTR_RST const _word) JSTR_NOEXCEPT
+	      jtrie_node_ty *JSTR_RST const _root,
+	      const char *JSTR_RST const _word) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_word == '\0'))
 		return;

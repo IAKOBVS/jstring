@@ -768,6 +768,7 @@ jstr_countc_mem(const char *JSTR_RST _s,
   Return value:
   occurences of NE in HS.
 */
+JSTR_MAYBE_UNUSED
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED

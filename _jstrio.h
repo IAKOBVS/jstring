@@ -443,11 +443,11 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
 pjstrio_alloc_file(const int alloc_exact,
-		       char **JSTR_RST const _s,
-		       size_t *JSTR_RST const _sz,
-		       size_t *JSTR_RST const _cap,
-		       const char *JSTR_RST const _fname,
-		       struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
+		   char **JSTR_RST const _s,
+		   size_t *JSTR_RST const _sz,
+		   size_t *JSTR_RST const _cap,
+		   const char *JSTR_RST const _fname,
+		   struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
 {
 	FILE *JSTR_RST const _fp = fopen(_fname, "r");
 	if (jstr_unlikely(_fp == NULL))
