@@ -8,7 +8,6 @@
 
 #define PJARR_REALLOC(p, sizeof_elem, old_cap, new_cap, malloc_fail) \
 	do {                                                         \
-		JSTR_ASSERT_IS_STR(p);                               \
 		JSTR_ASSERT_IS_SIZE(old_cap);                        \
 		JSTR_ASSERT_IS_SIZE(new_cap);                        \
 		PJSTR_GROW(old_cap, new_cap);                        \
@@ -47,7 +46,7 @@ pjarr_init(const unsigned char **JSTR_RST const _p,
 }
 
 #define jarr_init(jarr, newcap) \
-	pjarr_init(&((jarr)->data), &((jarr)->size), &((jarr)->capacity))
+	pjarr_init((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity))
 
 JSTR_INLINE
 static void
@@ -72,7 +71,7 @@ pjarr_alloc(unsigned char **JSTR_RST const _p,
 }
 
 #define jarr_alloc(jarr, newcap) \
-	pjarr_alloc(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
+	pjarr_alloc((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
 
 #if 0
 
@@ -91,7 +90,7 @@ pjarr_alloc_append(unsigned char **JSTR_RST const _p,
 }
 
 #	define jarr_alloc_append(jarr, newcap) \
-		pjarr_alloc_append(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
+		pjarr_alloc_append((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
 
 #endif
 
@@ -111,7 +110,7 @@ pjarr_pop_front(unsigned char *JSTR_RST const _p,
 }
 
 #define jarr_pop_front(jarr) \
-	pjarr_pop_front(&((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
+	pjarr_pop_front((unsigned char **)&((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
 
 /* Pop p[size]. */
 JSTR_INLINE
@@ -145,7 +144,7 @@ pjarr_push_back(unsigned char **JSTR_RST const _p,
 }
 
 #define jarr_push_back(jarr, c) \
-	pjarr_push_back(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
+	pjarr_push_back((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
 
 /* Push VAL to front of P. */
 JSTR_INLINE
@@ -164,6 +163,6 @@ pjarr_push_front(unsigned char **JSTR_RST const _p,
 }
 
 #define jarr_push_front(jarr, c) \
-	pjarr_push_front(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
+	pjarr_push_front((unsigned char **)&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
 
 #endif /* JARRAY_DEF_H */
