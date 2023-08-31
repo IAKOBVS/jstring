@@ -161,6 +161,7 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
+JSTR_MAYBE_UNUSED
 static int
 jstr_strncasecmp(const char *JSTR_RST _s1,
 		 const char *JSTR_RST _s2,
@@ -921,8 +922,8 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 		_sz -= 4;
 	} while ((_sz != 0) & (_c0 | _c1 | _c2 | _c3));
 	size_t _cnt = ((unsigned char *)_s + _sz - 1) - _p;
-	return (_c0 | _c1) == 0
-	       ? _cnt - _c0
+	return ((_c0 | _c1) != 0)
+	       ? _cnt - _c0 + 1
 	       : _cnt - _c2 + 3;
 }
 
@@ -934,6 +935,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
+JSTR_PURE
 static size_t
 jstr_strrcspn(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _reject) JSTR_NOEXCEPT
@@ -1007,7 +1009,7 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 		_sz -= 4;
 	} while ((_sz != 0) & (_c0 & _c1 & _c2 & _c3));
 	size_t _cnt = ((unsigned char *)_s + _sz - 1) - _p;
-	return (_c0 & _c1) == 0
+	return ((_c0 & _c1) == 0)
 	       ? _cnt + _c0
 	       : _cnt + _c2 + 2;
 }
@@ -1020,6 +1022,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
+JSTR_PURE
 static size_t
 jstr_strrspn(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept) JSTR_NOEXCEPT
@@ -1035,6 +1038,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
+JSTR_PURE
 static char *
 jstr_strrpbrk_mem(const char *JSTR_RST _s,
 		  const char *JSTR_RST const _accept,
@@ -1052,6 +1056,7 @@ JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
+JSTR_PURE
 static char *
 jstr_strrpbrk(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT
