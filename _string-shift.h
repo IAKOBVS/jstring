@@ -19,34 +19,34 @@
 #ifndef _STRING_SHIFT_H
 #define _STRING_SHIFT_H 1
 
+#include "_string-fza.h"
 #include <endian.h>
 #include <limits.h>
 #include <stdint.h>
-#include <string-fza.h>
 
 /* Return the mask WORD shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
-static __always_inline find_t
-shift_find (find_t word, uintptr_t s)
+static __always_inline jstr_op_ty
+shift_find(jstr_op_ty word, uintptr_t s)
 {
-  if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    return word >> (CHAR_BIT * (s % sizeof (op_t)));
-  else
-    return word << (CHAR_BIT * (s % sizeof (op_t)));
+	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+		return word >> (CHAR_BIT * (s % sizeof(jstr_op_ty)));
+	else
+		return word << (CHAR_BIT * (s % sizeof(jstr_op_ty)));
 }
 
 /* Mask off the bits defined for the S alignment value, or return WORD if
    S is 0.  */
-static __always_inline find_t
-shift_find_last (find_t word, uintptr_t s)
+static __always_inline jstr_op_ty
+shift_find_last(jstr_op_ty word, uintptr_t s)
 {
-  s = s % sizeof (op_t);
-  if (s == 0)
-    return word;
-  if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    return word & ~(((op_t)-1) << (s * CHAR_BIT));
-  else
-    return word & ~(((op_t)-1) >> (s * CHAR_BIT));
+	s = s % sizeof(jstr_op_ty);
+	if (s == 0)
+		return word;
+	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+		return word & ~(((jstr_op_ty)-1) << (s * CHAR_BIT));
+	else
+		return word & ~(((jstr_op_ty)-1) >> (s * CHAR_BIT));
 }
 
 #endif /* _STRING_SHIFT_H */

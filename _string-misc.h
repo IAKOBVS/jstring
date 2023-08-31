@@ -19,27 +19,27 @@
 #ifndef _STRING_MISC_H
 #define _STRING_MISC_H 1
 
-#include <limits.h>
-#include <endian.h>
 #include "_string-optype.h"
+#include <endian.h>
+#include <limits.h>
 
 /* Extract the byte at index IDX from word X, with index 0 being the
    least significant byte.  */
 static __always_inline unsigned char
-pjstr_extractbyte (jstr_op_ty x, unsigned int idx)
+pjstr_extractbyte(jstr_op_ty x, unsigned int idx)
 {
-  if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    return x >> (idx * CHAR_BIT);
-  else
-    return x >> (sizeof (x) - 1 - idx) * CHAR_BIT;
+	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+		return x >> (idx * CHAR_BIT);
+	else
+		return x >> (sizeof(x) - 1 - idx) * CHAR_BIT;
 }
 
 /* Setup an word with each byte being c_in.  For instance, on a 64 bits
    machine with input as 0xce the functions returns 0xcececececececece.  */
 static __always_inline jstr_op_ty
-pjstr_repeat_bytes (unsigned char c_in)
+pjstr_repeat_bytes(unsigned char c_in)
 {
-  return ((jstr_op_ty)-1 / 0xff) * c_in;
+	return ((jstr_op_ty)-1 / 0xff) * c_in;
 }
 
 #endif /* _STRING_MISC_H */
