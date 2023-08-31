@@ -51,7 +51,7 @@ extern "C" {
 	do {                                                                      \
 		PJARR_CHECK_ARG(j);                                               \
 		PJARR_SZ(j) = 1;                                                  \
-		PJARR_CAP(j) = JSTR_MIN_CAP;                                      \
+		PJARR_CAP(j) = PJSTR_MIN_CAP;                                      \
 		PJARR_DATA(j) = malloc(PJARR_CAP(j));                             \
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                           \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                  \
@@ -95,7 +95,7 @@ extern "C" {
 		PJARR_CHECK_ARG(j);                                               \
 		PJARR_CHECK_VAL(j);                                               \
 		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                   \
-			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * JARR_GROWTH, break); \
+			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH, break); \
 		PJARR_DATA(j)                                                     \
 		[PJARR_SZ(j)++] = (value);                                        \
 	} while (0)
@@ -106,7 +106,7 @@ extern "C" {
 		PJARR_CHECK_ARG(j);                                               \
 		PJARR_CHECK_VAL(j);                                               \
 		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                   \
-			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * JARR_GROWTH, break); \
+			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH, break); \
 		PJARR_MEMMOVE(PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++);   \
 		PJARR_DATA(j)                                                     \
 		[0] = (value);                                                    \

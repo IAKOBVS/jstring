@@ -24,14 +24,14 @@ extern "C" {
 #	include "_jtraits.h"
 #endif /* __cpluslus */
 
-#define PJSTR_MIN_ALLOC(new_cap)                                  \
-	((new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
-	 ? (JSTR_MIN_CAP)                                     \
+#define PJSTR_MIN_ALLOC(new_cap)                          \
+	((new_cap < PJSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
+	 ? (PJSTR_MIN_CAP)                                 \
 	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
 
 #define PJSTR_MIN_ALLOCEXACT(new_cap) \
-	((new_cap < JSTR_MIN_CAP) \
-	 ? (JSTR_MIN_CAP)         \
+	((new_cap < PJSTR_MIN_CAP)     \
+	 ? (PJSTR_MIN_CAP)             \
 	 : (new_cap))
 
 #define PJSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
@@ -454,7 +454,7 @@ jstr_cat_j(jstr_ty *JSTR_RST const _j,
 			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
 			size_t _ARR_VA_ARGS[PJSTR_PP_NARG(__VA_ARGS__)];                 \
 			*(_sz) = PJSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			*(_cap) = PJSTR_MIN_ALLOC(*(_sz));                               \
+			*(_cap) = PJSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(*(_sz)));           \
 			*(_s) = malloc(*(_cap));                                         \
 			PJSTR_MALLOC_ERR(*((_s)), break);                                \
 			char *p = *(_s);                                                 \

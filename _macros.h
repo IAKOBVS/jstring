@@ -231,8 +231,8 @@
 #	define JSTR_NOINLINE
 #endif /* noinline */
 
-#ifndef JSTR_MAX
-#	define JSTR_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#ifndef PJSTR_MAX
+#	define PJSTR_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif /* Max */
 
 #ifndef JSTR_MIN
@@ -714,6 +714,6 @@ case '~':
 #include "_config.h"
 
 #define PJSTR_ALIGN_UP_STR(base) \
-	PJSTR_ALIGN_UP(base, JSTR_MALLOC_ALIGNMENT)
+	PJSTR_ALIGN_UP(base, PJSTR_MALLOC_ALIGNMENT)
 
 #endif /* JSTR_MACROS_H_DEF */

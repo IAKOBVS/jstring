@@ -62,7 +62,7 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 		JSTR_ASSERT_IS_SIZE(new_cap);                               \
 		while (((old_cap) *= JSTR_GROWTH) < (new_cap))              \
 			;                                                   \
-		(old_cap) = PJSTR_ALIGN_UP(old_cap, JSTR_MALLOC_ALIGNMENT); \
+		(old_cap) = PJSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail)                   \
 	do {                                                              \

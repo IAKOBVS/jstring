@@ -217,8 +217,8 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		      const unsigned char *JSTR_RST const _ne,
 		      const size_t _nelen) JSTR_NOEXCEPT
 {
-#define JSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define JSTR_MEMMEMR(shift_type, ne_iterator_type)                                          \
+#define PJSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
+#define PJSTR_MEMMEMR(shift_type, ne_iterator_type)                                          \
 	do {                                                                                \
 		const unsigned char *const _start = _hs - 1;                                \
 		_hs += _hslen - _nelen;                                                     \
@@ -233,13 +233,13 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		   memset(_shift + 128, 0, 64),                                             \
 		   memset(_shift + 192, 0, 64));                                            \
 		for (ne_iterator_type i = 1; jstr_likely(i < (ne_iterator_type)_mtc1); ++i) \
-			_shift[JSTR_HASH2(_ne + i)] = i;                                    \
-		const size_t shft1 = _mtc1 - _shift[JSTR_HASH2(_ne + _mtc1)];               \
-		_shift[JSTR_HASH2(_ne + _mtc1)] = _mtc1;                                    \
+			_shift[PJSTR_HASH2(_ne + i)] = i;                                    \
+		const size_t shft1 = _mtc1 - _shift[PJSTR_HASH2(_ne + _mtc1)];               \
+		_shift[PJSTR_HASH2(_ne + _mtc1)] = _mtc1;                                    \
 		do {                                                                        \
 			do {                                                                \
 				_hs -= _mtc1;                                               \
-				_tmp = _shift[JSTR_HASH2(_hs)];                             \
+				_tmp = _shift[PJSTR_HASH2(_hs)];                             \
 			} while (!_tmp && _hs > _start);                                    \
 			_hs -= _tmp;                                                        \
 			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {             \
@@ -252,10 +252,10 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		return NULL;                                                                \
 	} while (0)
 	if (jstr_unlikely(_hslen > 256))
-		JSTR_MEMMEMR(size_t, size_t);
-	JSTR_MEMMEMR(uint8_t, int);
-#undef JSTR_HASH2
-#undef JSTR_MEMMEMR
+		PJSTR_MEMMEMR(size_t, size_t);
+	PJSTR_MEMMEMR(uint8_t, int);
+#undef PJSTR_HASH2
+#undef PJSTR_MEMMEMR
 }
 
 /*
@@ -352,8 +352,8 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			 const char *JSTR_RST const _ne,
 			 const size_t _nelen) JSTR_NOEXCEPT
 {
-#define JSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
-#define JSTR_STRSTRCASE(shift_type, ne_iterator_type)                                                   \
+#define PPJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
+#define PJSTR_STRSTRCASE(shift_type, ne_iterator_type)                                                   \
 	do {                                                                                            \
 		const unsigned char *_h = (unsigned char *)_hs;                                         \
 		const unsigned char *const _n = (unsigned char *)_ne;                                   \
@@ -369,13 +369,13 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		   memset(_shift + 128, 0, 64),                                                         \
 		   memset(_shift + 192, 0, 64));                                                        \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)_mtc1; ++i)                          \
-			_shift[JSTR_HASH2_LOWER(_n + i)] = i;                                           \
-		const size_t _shft1 = _mtc1 - _shift[JSTR_HASH2_LOWER(_n + _mtc1)];                     \
-		_shift[JSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                           \
+			_shift[PPJSTR_HASH2_LOWER(_n + i)] = i;                                           \
+		const size_t _shft1 = _mtc1 - _shift[PPJSTR_HASH2_LOWER(_n + _mtc1)];                     \
+		_shift[PPJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                           \
 		do {                                                                                    \
 			do {                                                                            \
 				_h += _mtc1;                                                            \
-				_tmp = _shift[JSTR_HASH2_LOWER(_h)];                                    \
+				_tmp = _shift[PPJSTR_HASH2_LOWER(_h)];                                    \
 			} while (!_tmp && _h < _end);                                                   \
 			_h -= _tmp;                                                                     \
 			if (_tmp < _mtc1)                                                               \
@@ -390,10 +390,10 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		return NULL;                                                                            \
 	} while (0)
 	if (jstr_unlikely(_nelen > 256))
-		JSTR_STRSTRCASE(size_t, size_t);
-	JSTR_STRSTRCASE(uint8_t, int);
-#undef JSTR_HASH2_LOWER
-#undef JSTR_STRSTRCASE
+		PJSTR_STRSTRCASE(size_t, size_t);
+	PJSTR_STRSTRCASE(uint8_t, int);
+#undef PPJSTR_HASH2_LOWER
+#undef PJSTR_STRSTRCASE
 }
 
 /*
@@ -610,7 +610,7 @@ jstr_itoa(char *JSTR_RST const _dst,
 		*_d = '\0';                                                    \
 		return (char *)_d;                                             \
 	} while (0)
-	PJSTR_NUMTOSTR(JSTR_MAX_INT_DIGITS);
+	PJSTR_NUMTOSTR(PJSTR_MAX_INT_DIGITS);
 }
 
 /*
@@ -628,7 +628,7 @@ jstr_ltoa(char *JSTR_RST const _dst,
 	  long _num,
 	  const unsigned int _base)
 {
-	PJSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
+	PJSTR_NUMTOSTR(PJSTR_MAX_LONG_DIGITS);
 }
 
 /*
@@ -646,7 +646,7 @@ jstr_lltoa(char *JSTR_RST const _dst,
 	   long long _num,
 	   const unsigned int _base)
 {
-	PJSTR_NUMTOSTR(JSTR_MAX_LONG_DIGITS);
+	PJSTR_NUMTOSTR(PJSTR_MAX_LONG_DIGITS);
 }
 
 /*
@@ -680,7 +680,7 @@ jstr_utoa(char *JSTR_RST const _dst,
 		*_d = '\0';                                   \
 		return (char *)_d;                            \
 	} while (0)
-	PJSTR_UNUMTOSTR(JSTR_MAX_UINT_DIGITS);
+	PJSTR_UNUMTOSTR(PJSTR_MAX_UINT_DIGITS);
 }
 
 /*
@@ -698,7 +698,7 @@ jstr_ultoa(char *JSTR_RST const _dst,
 	   unsigned long _num,
 	   const unsigned int _base)
 {
-	PJSTR_UNUMTOSTR(JSTR_MAX_ULONG_DIGITS);
+	PJSTR_UNUMTOSTR(PJSTR_MAX_ULONG_DIGITS);
 }
 
 /*
@@ -716,7 +716,7 @@ jstr_ulltoa(char *JSTR_RST const _dst,
 	    unsigned long long _num,
 	    const unsigned int _base)
 {
-	PJSTR_UNUMTOSTR(JSTR_MAX_ULONG_LONG_DIGITS);
+	PJSTR_UNUMTOSTR(PJSTR_MAX_ULONG_LONG_DIGITS);
 }
 
 /*
@@ -1021,12 +1021,12 @@ jstr_strrpbrk(char *JSTR_RST const _s,
 } /* extern C */
 #endif /* __cpluslus */
 
-#undef JSTR_MAX_INT_DIGITS
-#undef JSTR_MAX_LONG_DIGITS
-#undef JSTR_MAX_LONG_LONG_DIGITS
-#undef JSTR_MAX_UINT_DIGITS
-#undef JSTR_MAX_ULONG_DIGITS
-#undef JSTR_MAX_ULONG_LONG_DIGITS
+#undef PJSTR_MAX_INT_DIGITS
+#undef PJSTR_MAX_LONG_DIGITS
+#undef PJSTR_MAX_LONG_LONG_DIGITS
+#undef PJSTR_MAX_UINT_DIGITS
+#undef PJSTR_MAX_ULONG_DIGITS
+#undef PJSTR_MAX_ULONG_LONG_DIGITS
 #undef PJSTR_UNUMTOSTR
 #undef PJSTR_NUMTOSTR
 

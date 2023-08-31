@@ -343,10 +343,10 @@ jstrio_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
 	return pjstrio_ext_type(_filename + 1);
 }
 
-#define JSTR_ELF    "\x7f\ELF"
-#define JSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
-#define JSTR_UTF    "\xEF\xBB\xBF"
-#define JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
+#define PJSTR_ELF    "\x7f\ELF"
+#define PJSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
+#define PJSTR_UTF    "\xEF\xBB\xBF"
+#define PJSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
 #define JSTR_UNPRINTABLE "\x01\x02\x03\x04\x05\x06\x07\x08\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x7F"
 
@@ -364,14 +364,14 @@ jstrio_is_binary_maybe(char *JSTR_RST const _buf,
 {
 #define JSTR_BINARY_CHECK()                                                      \
 	do {                                                                     \
-		if (jstr_likely(_sz > JSTR_ELF_SZ - 1)) {                        \
-			if (jstr_unlikely(!memcmp(_buf, JSTR_ELF, JSTR_ELF_SZ))) \
+		if (jstr_likely(_sz > PJSTR_ELF_SZ - 1)) {                        \
+			if (jstr_unlikely(!memcmp(_buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
 				return 1;                                        \
 CHECK_UTF:;                                                                      \
 			unsigned char *JSTR_RST _s = (unsigned char *)_buf;      \
-			if (!memcmp(_s, JSTR_UTF, JSTR_UTF_SZ))                  \
+			if (!memcmp(_s, PJSTR_UTF, PJSTR_UTF_SZ))                  \
 				return 0;                                        \
-		} else if (jstr_likely(_sz == JSTR_UTF_SZ)) {                    \
+		} else if (jstr_likely(_sz == PJSTR_UTF_SZ)) {                    \
 			goto CHECK_UTF;                                          \
 		}                                                                \
 	} while (0)
@@ -417,10 +417,10 @@ jstrio_is_binary(const char *JSTR_RST const _buf,
 }
 
 #undef JSTR_BINARY_CHECK
-#undef JSTR_ELF
-#undef JSTR_ELF_SZ
-#undef JSTR_UTF
-#undef JSTR_UTF_SZ
+#undef PJSTR_ELF
+#undef PJSTR_ELF_SZ
+#undef PJSTR_UTF
+#undef PJSTR_UTF_SZ
 #undef JSTR_UNPRINTABLE
 
 /*
