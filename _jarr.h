@@ -17,12 +17,6 @@ extern "C" {
 #include "_pp_arrcpy_va_args.h"
 #include "_templates.h"
 
-#if PJARR_NULLIFY_PTR_ON_DELETE
-#	define PJARR_NULLIFY(j) ((j)->data == NULL)
-#else
-#	define PJARR_NULLIFY(j)
-#endif
-
 #define jarr(T, name)                                                             \
 	typedef struct pjarr_##name##_ty {                                        \
 		T *PJARR_DATA_NAME;                                               \
@@ -34,16 +28,24 @@ extern "C" {
 #define jarr_free(j)                                                              \
 	do {                                                                      \
 		free(PJARR_DATA(j));                                              \
-		PJARR_DATA(j) = NULL;                                             \
+		PJARR_NULLIFY(j);                                                 \
 	} while (0)
 
-#define jarr_exit(j)                                                              \
+#if PJARR_NULLIFY_PTR_ON_DELETE
+#	define PJARR_NULLIFY(j) ((j)->data == NULL)
+#else
+#	define PJARR_NULLIFY(j)
+#endif
+
+#define jarr_err_exit(j)                                                          \
 	do {                                                                      \
 		if ((j)->data == NULL) {                                          \
-			free((j)->data == NULL);                                  \
-			PJARR_NULLIFY(j);                                         \
+			pjstr_err(__FILE__, __LINE__, __func__);                  \
+			exit(1);                                                  \
 		}                                                                 \
 	} while (0)
+
+#undef PJARR_NULLIFY
 
 /* Allocate PTR. */
 #define jarr_alloc(j, new_cap)                                                    \
