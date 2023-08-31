@@ -30,6 +30,7 @@ extern "C" {
 #endif /* HAVE_MEMMEM */
 
 typedef unsigned long int jstr_op_ty JSTR_MAY_ALIAS;
+#define JSTR_OPSIZ sizeof(jstr_op_ty)
 
 /*
   Return value:
@@ -629,12 +630,6 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 		_t[*_p] = 1;
 	while (*_p++);
 	_p = (unsigned char *)_s + _sz - 1;
-	if (jstr_unlikely(_sz < 4)) {
-		int _i = 0;
-		while (!_t[_p[-_i]] && ++_i < _sz)
-			;
-		return _i;
-	}
 	switch (_sz % 4) {
 	case 0: break;
 	case 3:
@@ -652,6 +647,8 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 			return ((unsigned char *)_s + _sz - 1) - _p;
 		--_p;
 	}
+	if (jstr_unlikely(_sz < 4))
+		return ((unsigned char *)_s + _sz - 1) - _p;
 	unsigned int _c0, _c1, _c2, _c3;
 	do {
 		_c0 = _t[_p[0]];
@@ -716,12 +713,6 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 		_t[*_p++] = 1;
 	while (*_p);
 	_p = (unsigned char *)_s + _sz - 1;
-	if (jstr_unlikely(_sz < 4)) {
-		int _i = 0;
-		while (_t[_p[-_i]] && ++_i < _sz)
-			;
-		return _i;
-	}
 	switch (_sz % 4) {
 	case 0: break;
 	case 3:
@@ -739,6 +730,8 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 			return ((unsigned char *)_s + _sz - 1) - _p;
 		--_p;
 	}
+	if (jstr_unlikely(_sz < 4))
+		return ((unsigned char *)_s + _sz - 1) - _p;
 	unsigned int _c0, _c1, _c2, _c3;
 	do {
 		_c0 = _t[_p[0]];
@@ -804,16 +797,58 @@ jstr_strrpbrk(const char *JSTR_RST const _s,
 	return jstr_strrpbrk_mem(_s, _accept, strlen(_s));
 }
 
+/* #if JSTR_HAVE_MEMRCHR */
+/* JSTR_INLINE */
+/* #endif */
 /* JSTR_NONNULL_ALL */
 /* JSTR_WARN_UNUSED */
 /* JSTR_MAYBE_UNUSED */
-/* JSTR_INLINE */
 /* JSTR_NOTHROW */
 /* JSTR_PURE */
-/* static char * */
-/* jstr_memrchr(const char *JSTR_RST const _s, */
-/* 	      const int _c) JSTR_NOEXCEPT */
+/* static void * */
+/* jstr_memrchr(const void *JSTR_RST const _s, */
+/* 	     const int _c, */
+/* 	     const size_t _n) JSTR_NOEXCEPT */
 /* { */
+/* #if JSTR_HAVE_MEMRCHR */
+/* 	return (void *)memrchr(_s, _c, _n); */
+/* #endif */
+/* 	if (jstr_unlikely(_n == 0)) */
+/* 		return NULL; */
+/* 	const unsigned char *_end = (unsigned char *)_s + _n - 1; */
+/* 	switch (_n % JSTR_OPSIZ) { */
+/* 	case 7: */
+/* 		if (*_end-- == _c) */
+/* 			return (void *)(_end + 1); */
+/* 		/1* FALLTHROUGH *1/ */
+/* 	case 6: */
+/* 		if (*_end-- == _c) */
+/* 			return (void *)(_end + 1); */
+/* 		/1* FALLTHROUGH *1/ */
+/* 	case 5: */
+/* 		if (*_end-- == _c) */
+/* 			return (void *)(_end + 1); */
+/* 		/1* FALLTHROUGH *1/ */
+/* 	case 4: */
+/* 		if (*_end-- == _c) */
+/* 			return (void *)(_end + 1); */
+/* 		/1* FALLTHROUGH *1/ */
+/* 	case 3: */
+/* 		if (*_end-- == _c) */
+/* 			return (void *)(_end + 1); */
+/* 		/1* FALLTHROUGH *1/ */
+/* 	case 2: */
+/* 		if (*_end-- == _c) */
+/* 			return (void *)(_end + 1); */
+/* 		/1* FALLTHROUGH *1/ */
+/* 	case 1: */
+/* 		if (*_end-- == _c) */
+/* 			return (void *)(_end + 1); */
+/* 		/1* FALLTHROUGH *1/ */
+/* 	case 0: */
+/* 		break; */
+/* 	} */
+/* 	return NULL; */
 /* } */
 
 /*
