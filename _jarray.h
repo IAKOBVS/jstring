@@ -95,6 +95,7 @@ pjarr_alloc_append(unsigned char **JSTR_RST const _p,
 
 #endif
 
+/* Pop p[0]. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
@@ -112,6 +113,7 @@ pjarr_pop_front(unsigned char *JSTR_RST const _p,
 #define jarr_pop_front(jarr) \
 	pjarr_pop_front(&((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
 
+/* Pop p[size]. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
@@ -127,6 +129,7 @@ pjarr_pop_back(unsigned char *JSTR_RST const _p,
 #define jarr_pop_back(jarr) \
 	pjarr_pop_back(((jarr)->data), &((jarr)->size), sizeof(*((jarr)->data)))
 
+/* Push C to back of P. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void
@@ -144,6 +147,7 @@ pjarr_push_back(unsigned char **JSTR_RST const _p,
 #define jarr_push_back(jarr, c) \
 	pjarr_push_back(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
 
+/* Push C to front of P. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 static void

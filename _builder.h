@@ -319,9 +319,7 @@ jstr_push_front(char **JSTR_RST const _s,
 	**_s = _c;
 }
 
-/*
-   Pop s[size].
-*/
+/* Pop s[size]. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
@@ -346,9 +344,7 @@ jstr_pop_back_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 	jstr_pop_back(_j->data, &_j->size);
 }
 
-/*
-   Pop s[0].
-*/
+/* Pop s[0]. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
@@ -361,9 +357,7 @@ jstr_pop_front(char *JSTR_RST const _s,
 	memmove(_s, _s + 1, (*_sz)--);
 }
 
-/*
-   Pop s[0].
-*/
+/* Pop s[0]. */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
