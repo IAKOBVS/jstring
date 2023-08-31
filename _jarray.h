@@ -34,21 +34,6 @@
 	jarr_##typename##_ty;
 
 JSTR_INLINE
-JSTR_NONNULL_ALL
-static void
-pjarr_init(const void **JSTR_RST const _p,
-	   size_t *JSTR_RST const _size,
-	   size_t *JSTR_RST const _cap)
-{
-	*_p = NULL;
-	*_size = 0;
-	*_cap = 0;
-}
-
-#define jarr_init(jarr, newcap) \
-	pjarr_init(&((jarr)->data), &((jarr)->size), &((jarr)->capacity))
-
-JSTR_INLINE
 static void
 pjarr_free(void *JSTR_RST _p)
 {
