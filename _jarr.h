@@ -18,12 +18,12 @@ extern "C" {
 #include "_templates.h"
 
 #define jarr(T, name)                                                              \
-	typedef struct jarr_##name##_ty {                                          \
-		T *data;                                                           \
-		size_t size;                                                       \
-		size_t capacity;                                                   \
-	} jarr_##name##_ty;                                                        \
-	jarr_##name##_ty name;
+	typedef struct pjarr_##name##_ty {                                         \
+		T *PJARR_DATA_NAME;                                                \
+		size_t PJARR_SIZE_NAME;                                            \
+		size_t PJARR_CAPACITY_NAME;                                        \
+	} pjarr_##name##_ty;                                                       \
+	pjarr_##name##_ty name;
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +40,7 @@ extern "C" {
 	do {                                                                       \
 		PJARR_CHECK_ARG(j);                                                \
 		PJARR_SZ(j) = 0;                                                   \
-		PJARR_CAP(j) = PJARR_MIN_ALLOC(newcap);                            \
+		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, newcap);                         \
 		PJARR_DATA(j) = malloc(PJARR_CAP(j));                              \
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                            \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                   \
@@ -51,19 +51,19 @@ extern "C" {
 	do {                                                                       \
 		PJARR_CHECK_ARG(j);                                                \
 		PJARR_SZ(j) = 1;                                                   \
-		PJARR_CAP(j) = PJARR_MIN_ALLOC(1);                                 \
+		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, 1);                              \
 		PJARR_DATA(j) = malloc(PJARR_CAP(j));                              \
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                            \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                   \
 		PJARR_DATA(j)                                                      \
-		[0] = (value);                                                       \
+		[0] = (value);                                                     \
 	} while (0)
 
 /* Allocate elements to PTR. */
 #define jarr_alloc_cat(j, ...)                                                     \
 	do {                                                                       \
 		PJARR_CHECK_ARG(j);                                                \
-		PJARR_CAP(j) = PJARR_MIN_ALLOC(PJSTR_PP_NARG(__VA_ARGS__));        \
+		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, PJSTR_PP_NARG(__VA_ARGS__));     \
 		PJARR_DATA(j) = PJARR_CAST(PJARR_DATA(j), malloc(PJARR_CAP(j)));   \
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                            \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                   \
@@ -97,7 +97,7 @@ extern "C" {
 		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                    \
 			PJARR_REALLOC_EXACT(j, PJARR_SZ(j) * PJARR_GROWTH, break); \
 		PJARR_DATA(j)                                                      \
-		[PJARR_SZ(j)++] = (value);                                           \
+		[PJARR_SZ(j)++] = (value);                                         \
 	} while (0)
 
 /* Push VAL to front of P. */
@@ -109,7 +109,7 @@ extern "C" {
 			PJARR_REALLOC_EXACT(j, PJARR_SZ(j) * PJARR_GROWTH, break); \
 		PJARR_MEMMOVE(PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++);    \
 		PJARR_DATA(j)                                                      \
-		[0] = (value);                                                       \
+		[0] = (value);                                                     \
 	} while (0)
 
 #ifdef __cplusplus

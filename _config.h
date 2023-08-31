@@ -14,7 +14,7 @@
 #define JSTR_CFG_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 16)
 
 #ifndef PJARR_GROWTH
-#	define PJARR_GROWTH 2
+#	define PJARR_GROWTH 1.5
 #endif
 
 #ifndef JSTR_CFG_HAVE_ALLOCA

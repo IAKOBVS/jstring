@@ -1,5 +1,5 @@
 #define _GNU_SOURCE
-#include "_jstr.h"
+#include "_jarr.h"
 
 int main(int argc, char **argv)
 {
@@ -19,5 +19,8 @@ int main(int argc, char **argv)
 	/* jstr_debug(&s); */
 	/* jstr_free(s.data); */
 	/* return err; */
+	
+	jarr(int, x);
+	jarr_alloc_cat(&x, 1);
 
 }
