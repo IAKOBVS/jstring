@@ -25,7 +25,7 @@
 
 /* Extract the byte at index IDX from word X, with index 0 being the
    least significant byte.  */
-static __always_inline unsigned char
+static JSTR_INLINE unsigned char
 pjstr_extractbyte(jstr_op_ty x, unsigned int idx)
 {
 	if (__BYTE_ORDER == __LITTLE_ENDIAN)
@@ -36,7 +36,7 @@ pjstr_extractbyte(jstr_op_ty x, unsigned int idx)
 
 /* Setup an word with each byte being c_in.  For instance, on a 64 bits
    machine with input as 0xce the functions returns 0xcececececececece.  */
-static __always_inline jstr_op_ty
+static JSTR_INLINE jstr_op_ty
 pjstr_repeat_bytes(unsigned char c_in)
 {
 	return ((jstr_op_ty)-1 / 0xff) * c_in;
