@@ -869,7 +869,7 @@ jstr_strrcspn_mem(char *JSTR_RST const _s,
 		*_s = _first;
 		return 3;
 	}
-	_p = (unsigned char *)PJSTR_PTR_ALIGN_DOWN(_p, 4);
+	_p = (unsigned char *)PJSTR_PTR_ALIGN_UP(_p, 4);
 	unsigned int _c0, _c1, _c2, _c3;
 	do {
 		_p -= 4;
@@ -953,7 +953,7 @@ jstr_strrspn_mem(char *JSTR_RST const _s,
 		*_s = _first;
 		return 3;
 	}
-	_p = (unsigned char *)PJSTR_PTR_ALIGN_DOWN(_p, 4);
+	_p = (unsigned char *)PJSTR_PTR_ALIGN_UP(_p, 4);
 	unsigned int _c0, _c1, _c2, _c3;
 	do {
 		_p -= 4;
