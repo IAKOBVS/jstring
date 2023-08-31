@@ -281,6 +281,54 @@ jstr_append_mem(char **JSTR_RST const _s,
 	*_sz = jstr_append_mem_p_f(*_s, _src, *_sz, _srclen) - *_s;
 }
 
+/*
+   Push C to end of S.
+   S is NUL terminated.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_push_back(char **JSTR_RST const _s,
+	       size_t *JSTR_RST const _sz,
+	       size_t *JSTR_RST const _cap,
+	       const char _c) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_cap == *_sz + 1))
+		PJSTR_REALLOC_EXACT(*_s, *_cap, *_sz * JSTR_CFG_ALLOC_MULTIPLIER, return);
+	*(*_s + *_sz) = _c;
+	*(*_s + ++*_sz) = '\0';
+}
+
+/*
+   Push C to end of S.
+   S is NUL terminated.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_pop_back(char *JSTR_RST const _s,
+	      size_t *JSTR_RST const _sz) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_sz == 0))
+		return;
+	memmove(_s, _s + 1, *_sz);
+}
+
+/*
+   Push C to end of S.
+   S is NUL terminated.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_pop_back_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+{
+	jstr_pop_back(_j->data, &_j->size);
+}
+
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */
