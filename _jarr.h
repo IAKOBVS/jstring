@@ -12,31 +12,10 @@ extern "C" {
 
 #include "_builder.h"
 #include "_config.h"
+#include "_jarr_macros.h"
 #include "_macros.h"
 #include "_pp_arrcpy_va_args.h"
 #include "_templates.h"
-
-#ifdef __cplusplus
-template <typename T, typename Other>
-static T
-PJARR_CAST(T, Other other)
-{
-	return (T)other;
-}
-#else
-#	define PJARR_CAST(T, other) other
-#endif /* __cpluslus */
-
-#define PJARR_DATA_NAME	    data
-#define PJARR_SIZE_NAME	    size
-#define PJARR_CAPACITY_NAME capacity
-
-#define PJARR_JARR   (jarr)
-#define PJARR_VAL    (value)
-#define PJARR_ELEMSZ (sizeof(PJARR_DATA) / sizeof(*(PJARR_DATA)))
-#define PJARR_DATA   (PJARR_JARR->PJARR_DATA_NAME)
-#define PJARR_SZ     (PJARR_JARR->PJARR_SIZE_NAME)
-#define PJARR_CAP    (PJARR_JARR->PJARR_CAPACITY_NAME)
 
 #define jarr(T, name)                       \
 	typedef struct jarr_##name##_ty {   \
@@ -46,39 +25,7 @@ PJARR_CAST(T, Other other)
 	} jarr_##name##_ty;                 \
 	jarr_##name##_ty name;
 
-#define PJARR_MEMMOVE(dst, src, n) memmove(dst, src, (n)*PJARR_ELEMSZ)
-#define PJARR_MEMCPY(dst, src, n)  memcpy(dst, src, (n)*PJARR_ELEMSZ)
-
-#define PJARR_MIN_ALLOC(newcap) ((newcap)*PJARR_ELEMSZ)
-
-#define PJARR_CHECK_ARG()                       \
-	do {                                    \
-		JSTR_ASSERT_IS_SIZE(PJARR_SZ);  \
-		JSTR_ASSERT_IS_SIZE(PJARR_CAP); \
-	} while (0)
-
-#define PJARR_REALLOC(new_cap, malloc_fail)                                                        \
-	do {                                                                                       \
-		PJSTR_GROW(PJARR_CAP, new_cap);                                                    \
-		PJARR_DATA = PJARR_CAST(PJARR_DATA, realloc(PJARR_DATA, PJARR_CAP * PJARR_ELEMSZ);     \
-		PJSTR_MALLOC_ERR(PJARR_DATA, malloc_fail);                                         \
-	} while (0)
-
-#define PJARR_REALLOCEXACT(new_cap, malloc_fail)                                                    \
-	do {                                                                                        \
-		PJARR_CAP = PJSTR_ALIGN_UP(new_cap, PJSTR_MALLOC_ALIGNMENT);                        \
-		PJARR_DATA = PJARR_CAST(PJARR_DATA, realloc(PJARR_DATA, PJARR_CAP * PJARR_ELEMSZ)); \
-		PJSTR_MALLOC_ERR(PJARR_DATA, malloc_fail);                                          \
-	} while (0)
-
-#if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF
-#	define PJARR_CHECK_VAL() JSTR_ASSERT(JSTR_SAME_TYPE(PJARR_VAL, *PJARR_DATA), "Passing illegal value incompatible with the array type.")
-#else
-#	define PJARR_CHECK_VAL() JSTR_ASSERT(sizeof(*PJARR_DATA) == PJARR_VAL, "Passing illegal value incompatible with the array type.")
-#endif
-
 #ifdef __cplusplus
-
 extern "C" {
 #endif /* __cplusplus */
 
@@ -99,7 +46,17 @@ extern "C" {
 		PJARR_CAP /= PJARR_ELEMSZ;           \
 	} while (0)
 
-typedef void *jarr_ty;
+/* Allocate PTR. */
+#define jarr_alloc_push(PJARR_JARR, PJARR_VAL)       \
+	do {                                         \
+		PJARR_CHECK_ARG();                   \
+		PJARR_SZ = 1;                        \
+		PJARR_CAP = PJARR_MIN_ALLOC(1);      \
+		PJARR_DATA = malloc(PJARR_CAP);      \
+		PJSTR_MALLOC_ERR(PJARR_DATA, break); \
+		PJARR_CAP /= PJARR_ELEMSZ;           \
+		PJARR_DATA[0] = PJARR_VAL;           \
+	} while (0)
 
 /* Allocate elements to PTR. */
 #define jarr_alloc_cat(PJARR_JARR, ...)                                      \
