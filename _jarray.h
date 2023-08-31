@@ -1,10 +1,20 @@
 #ifndef JARR_DEF_H
 #define JARR_DEF_H
 
+#include <sys/types.h>
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+#include <stdlib.h>
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
 #include "_builder.h"
 #include "_config.h"
 #include "_macros.h"
-#include <stdlib.h>
+#include "_pp_arrcpy_va_args.h"
+#include "_templates.h"
 
 #define PJARR_REALLOC(p, sizeof_elem, old_cap, new_cap, malloc_fail) \
 	do {                                                         \
@@ -33,6 +43,26 @@
 	}                                 \
 	jarr_##typename##_ty;
 
+#ifdef __cplusplus
+
+template <typename T, typename Other>
+static T
+pjarr_auto_cast(T, Other other)
+{
+	return (T)other;
+}
+
+#else
+
+#	define pjarr_auto_cast(T, other) other
+
+#endif
+
+#ifdef __cplusplus
+
+extern "C" {
+#endif /* __cplusplus */
+
 JSTR_INLINE
 static void
 pjarr_free(void *JSTR_RST _p)
@@ -51,33 +81,24 @@ pjarr_alloc(void **JSTR_RST const _p,
 	    const size_t _newcap)
 {
 	*_sz = 0;
-	*_cap = PJSTR_MIN_ALLOC(_newcap) / _sizeof_elem;
-	*_p = malloc(*_cap * _sizeof_elem);
+	*_cap = PJSTR_MIN_ALLOC(_newcap * _sizeof_elem);
+	*_p = malloc(*_cap);
+	PJSTR_MALLOC_ERR(*_p, return);
+	*_cap /= _sizeof_elem;
 }
 
 #define jarr_alloc(jarr, newcap) \
 	pjarr_alloc(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
 
-#if 0
-
-JSTR_INLINE
-JSTR_NONNULL_ALL
-static void
-pjarr_alloc_append(void **JSTR_RST const _p,
-		  size_t *JSTR_RST const _sz,
-		  size_t *JSTR_RST const _cap,
-		  const size_t _sizeof_elem,
-		  const size_t _newcap)
-{
-	*_sz = 0;
-	*_cap = PJSTR_MIN_ALLOC(_newcap) / _sizeof_elem;
-	*_p = malloc(*_cap * _sizeof_elem);
-}
-
-#	define jarr_alloc_append(jarr, newcap) \
-		pjarr_alloc_append(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), newcap)
-
-#endif
+#define jarr_alloc_cat(jarr, ...)                                                              \
+	do {                                                                                   \
+		(jarr)->capacity = PJSTR_MIN_ALLOC(PJSTR_PP_NARG(__VA_ARGS__) * _sizeof_elem); \
+		(jarr)->data = pjarr_auto_cast((jarr)->data, malloc((jarr)->capacity));        \
+		PJSTR_MALLOC_ERR((jarr)->data, return);                                        \
+		(jarr)->capacity /= _sizeof_elem;                                              \
+		(jarr)->size = PJSTR_PP_NARG(__VA_ARGS__);                                     \
+		PJSTR_PP_ARRCPY_VA_ARGS((jarr)->data, __VA_ARGS__);                            \
+	} while (0)
 
 /* Pop p[0]. */
 JSTR_INLINE
@@ -153,5 +174,9 @@ pjarr_push_front(void **JSTR_RST const _p,
 
 #define jarr_push_front(jarr, c) \
 	pjarr_push_front(&((jarr)->data), &((jarr)->size), &((jarr)->capacity), sizeof(*((jarr)->data)), c)
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* JARR_DEF_H */
