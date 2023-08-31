@@ -126,17 +126,6 @@ jstr_isalpha(const int _c) JSTR_NOEXCEPT
 	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISALPHA;
 }
 
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_toupper(const int _c) JSTR_NOEXCEPT
-{
-	return pjstr_table_toupper[_c];
-}
-
 /*
    Will NOT handle EOF correctly.
    toupper_ascii(EOF) != EOF;
@@ -150,17 +139,6 @@ static int
 jstr_toupper_ascii(const int _c) JSTR_NOEXCEPT
 {
 	return pjstr_table_toupper_ascii[(unsigned char)_c];
-}
-
-JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-static int
-jstr_tolower(const int _c) JSTR_NOEXCEPT
-{
-	return pjstr_table_tolower[_c];
 }
 
 /*
