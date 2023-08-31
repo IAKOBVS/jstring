@@ -175,6 +175,11 @@
 #	else
 #		define JSTR_NOTHROW
 #	endif
+#	if __has_attribute(__may_alias__)
+#		define JSTR_MAY_ALIAS __attribute__((__may_alias__))
+#	else
+#		define JSTR_MAY_ALIAS
+#	endif
 
 #elif defined _MSC_VER
 
@@ -195,6 +200,7 @@
 #	define JSTR_WARN_UNUSED
 #	define JSTR_DEPRECATED(msg, replacement)
 #	define JSTR_NOTHROW __declspec(nothrow)
+#	define JSTR_MAY_ALIAS
 
 #else
 
@@ -214,6 +220,7 @@
 #	define JSTR_WARN_UNUSED
 #	define JSTR_DEPRECATED(msg, replacement)
 #	define JSTR_NOTHROW
+#	define JSTR_MAY_ALIAS
 
 #endif /* Gnuc || clang || msvc */
 
