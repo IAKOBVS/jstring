@@ -691,19 +691,16 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 	switch (_sz % 4) {
 	case 0: break;
 	case 3:
-		if (!_t[*_p])
+		if (!_t[*_p--])
 			return 0;
-		--_p;
 		/* FALLTHROUGH */
 	case 2:
-		if (!_t[*_p])
-			return ((unsigned char *)_s + _sz - 1) - _p;
-		--_p;
+		if (!_t[*_p--])
+			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
 		/* FALLTHROUGH */
 	case 1:
-		if (!_t[*_p])
-			return ((unsigned char *)_s + _sz - 1) - _p;
-		--_p;
+		if (!_t[*_p--])
+			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
 	}
 	if (jstr_unlikely(_sz < 4))
 		return ((unsigned char *)_s + _sz - 1) - _p;
@@ -774,19 +771,16 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 	switch (_sz % 4) {
 	case 0: break;
 	case 3:
-		if (!_t[*_p])
+		if (!_t[*_p--])
 			return 0;
-		--_p;
 		/* FALLTHROUGH */
 	case 2:
-		if (!_t[*_p])
-			return ((unsigned char *)_s + _sz - 1) - _p;
-		--_p;
+		if (!_t[*_p--])
+			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
 		/* FALLTHROUGH */
 	case 1:
-		if (!_t[*_p])
-			return ((unsigned char *)_s + _sz - 1) - _p;
-		--_p;
+		if (!_t[*_p--])
+			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
 	}
 	if (jstr_unlikely(_sz < 4))
 		return ((unsigned char *)_s + _sz - 1) - _p;
