@@ -36,11 +36,11 @@ extern "C" {
 	} while (0)
 
 /* Allocate PTR. */
-#define jarr_alloc(j, newcap)                                                     \
+#define jarr_alloc(j, new_cap)                                                     \
 	do {                                                                      \
 		PJARR_CHECK_ARG(j);                                               \
 		PJARR_SZ(j) = 0;                                                  \
-		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, newcap);                        \
+		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, new_cap);                        \
 		PJARR_DATA(j) = malloc(PJARR_CAP(j));                             \
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                           \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                  \
