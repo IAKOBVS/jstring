@@ -26,7 +26,7 @@
 
 /* Given a word X that is known to contain a zero byte, return the pjstr_index of
    the first such within the word in memory order.  */
-static __always_inline unsigned int
+static JSTR_INLINE unsigned int
 pjstr_index_first_zero (jstr_op_ty x)
 {
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
@@ -37,7 +37,7 @@ pjstr_index_first_zero (jstr_op_ty x)
 }
 
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
-static __always_inline unsigned int
+static JSTR_INLINE unsigned int
 pjstr_index_first_eq (jstr_op_ty x1, jstr_op_ty x2)
 {
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
@@ -49,7 +49,7 @@ pjstr_index_first_eq (jstr_op_ty x1, jstr_op_ty x2)
 
 /* Similarly, but perform the search for zero within X1 or equality between
    X1 and X2.  */
-static __always_inline unsigned int
+static JSTR_INLINE unsigned int
 pjstr_index_first_zero_eq (jstr_op_ty x1, jstr_op_ty x2)
 {
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
@@ -61,14 +61,14 @@ pjstr_index_first_zero_eq (jstr_op_ty x1, jstr_op_ty x2)
 
 /* Similarly, but perform the search for zero within X1 or inequality between
    X1 and X2.  */
-static __always_inline unsigned int
+static JSTR_INLINE unsigned int
 pjstr_index_first_zero_ne (jstr_op_ty x1, jstr_op_ty x2)
 {
   return pjstr_index_first (pjstr_find_zero_ne_all (x1, x2));
 }
 
 /* Similarly, but search for the last zero within X.  */
-static __always_inline unsigned int
+static JSTR_INLINE unsigned int
 pjstr_index_last_zero (jstr_op_ty x)
 {
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
@@ -78,7 +78,7 @@ pjstr_index_last_zero (jstr_op_ty x)
   return pjstr_index_last (x);
 }
 
-static __always_inline unsigned int
+static JSTR_INLINE unsigned int
 pjstr_index_last_eq (jstr_op_ty x1, jstr_op_ty x2)
 {
   return pjstr_index_last_zero (x1 ^ x2);
