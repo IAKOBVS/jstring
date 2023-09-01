@@ -1,5 +1,5 @@
-#ifndef JSTR_CTYPE_TABLE_H_DEF
-#define JSTR_CTYPE_TABLE_H_DEF 1
+#ifndef JSTR_CTYPE_TABLE_DEF_H
+#define JSTR_CTYPE_TABLE_DEF_H 1
 
 #include "jstr_macros.h"
 
@@ -701,4 +701,4 @@ static const unsigned char pjstr_table_toupper_ascii[256] = {
 	255,
 };
 
-#endif /* JSTR_CTYPE_TABLE_H_DEF */
+#endif /* JSTR_CTYPE_TABLE_DEF_H */

@@ -1,5 +1,5 @@
-#ifndef JSTR_STRING_H_DEF
-#define JSTR_STRING_H_DEF 1
+#ifndef JSTR_STRING_DEF_H
+#define JSTR_STRING_DEF_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -1125,4 +1125,4 @@ jstr_count(const char *JSTR_RST _s,
 #undef PJSTR_UNUMTOSTR
 #undef PJSTR_NUMTOSTR
 
-#endif /* JSTR_STRING_H_DEF */
+#endif /* JSTR_STRING_DEF_H */

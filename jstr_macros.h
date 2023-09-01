@@ -1,5 +1,5 @@
-#ifndef JSTR_MACROS_H_DEF
-#define JSTR_MACROS_H_DEF 1
+#ifndef JSTR_MACROS_DEF_H
+#define JSTR_MACROS_DEF_H 1
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L && !defined __cplusplus
 #	define JSTR_HAVE_GENERIC 1
@@ -712,4 +712,4 @@ case '~':
 #	define JSTR_ARCH_GENERIC 1
 #endif
 
-#endif /* JSTR_MACROS_H_DEF */
+#endif /* JSTR_MACROS_DEF_H */

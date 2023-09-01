@@ -1,5 +1,5 @@
-#ifndef JSTR_BUILDER_H_DEF
-#define JSTR_BUILDER_H_DEF 1
+#ifndef JSTR_BUILDER_DEF_H
+#define JSTR_BUILDER_DEF_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -467,4 +467,4 @@ jstr_cat_j(jstr_ty *JSTR_RST const _j,
 
 #endif /* __cplusplus */
 
-#endif /* JSTR_BUILDER H_DEF */
+#endif /* JSTR_BUILDER DEF_H */

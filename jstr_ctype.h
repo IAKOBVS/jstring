@@ -1,5 +1,5 @@
-#ifndef JSTR_CTYPE_H_DEF
-#define JSTR_CTYPE_H_DEF 1
+#ifndef JSTR_CTYPE_DEF_H
+#define JSTR_CTYPE_DEF_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -273,4 +273,4 @@ jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 } /* extern C */
 #endif /* __cpluslus */
 
-#endif /* JSTR_CTYPE_H_DEF */
+#endif /* JSTR_CTYPE_DEF_H */

@@ -1,5 +1,5 @@
-#ifndef JSTRIO_H_DEF
-#define JSTRIO_H_DEF 1
+#ifndef JSTRIO_DEF_H
+#define JSTRIO_DEF_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -541,4 +541,4 @@ jstrio_allocexact_file_j(jstr_ty *JSTR_RST const _j,
 }
 #endif /* __cpluslus */
 
-#endif /* JSTRIO_H_DEF */
+#endif /* JSTRIO_DEF_H */

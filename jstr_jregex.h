@@ -1,5 +1,5 @@
-#ifndef JREGEX_H_DEF
-#define JREGEX_H_DEF 1
+#ifndef JREGEX_DEF_H
+#define JREGEX_DEF_H 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -797,4 +797,4 @@ jreg_rplc_now_mem(char **JSTR_RST const _s,
 #undef PJREG_DEB
 #undef JREG_DEBUG
 
-#endif /* JREGEX_H_DEF */
+#endif /* JREGEX_DEF_H */
