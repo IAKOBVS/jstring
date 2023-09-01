@@ -5,9 +5,10 @@
 
 #if defined(static_assert)
 #	define PJSTR_PP_ST_ASSERT(expr, msg) JSTR_NOTHROW
-#	define static_assert(expr, msg)
-#	define PJSTR_PP_HAVE_STATIC_ASSERT 1
+#	define PJSTR_PP_HAVE_STATIC_ASSERT   1
+#	define PJSTR_PP_ST_ASSERT(expr, msg) static_assert(expr, msg)
 #elif __STDC_VERSION__ >= 201112L
+#	define PJSTR_PP_HAVE_STATIC_ASSERT   1
 #	define PJSTR_PP_ST_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define PJSTR_PP_ST_ASSERT(expr, msg)
