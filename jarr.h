@@ -10,7 +10,7 @@ extern "C" {
 }
 #endif /* __cplusplus */
 
-#include "builder.h"
+#include "jstr_builder.h"
 #include "config.h"
 #include "jarr_macros.h"
 #include "jstr_macros.h"

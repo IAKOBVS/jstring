@@ -1,7 +1,7 @@
 #ifndef JSTR_DEF_H
 #define JSTR_DEF_H 1
 
-#include "builder.h"
+#include "jstr_builder.h"
 #include "jstr_jregex.h"
 #include "jstr_ctype.h"
 #include "jstr_string.h"

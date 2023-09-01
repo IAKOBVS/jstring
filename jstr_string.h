@@ -14,7 +14,7 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "builder.h"
+#include "jstr_builder.h"
 #include "config.h"
 #include "jstr_ctype.h"
 #include "jstr_macros.h"

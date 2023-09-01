@@ -1,7 +1,7 @@
 #ifndef JARR_MACROS_DEF_H
 #define JARR_MACROS_DEF_H 1
 
-#include "builder.h"
+#include "jstr_builder.h"
 #include "config.h"
 #include "jstr_macros.h"
 #include "templates.h"

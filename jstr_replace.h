@@ -10,7 +10,7 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "builder.h"
+#include "jstr_builder.h"
 #include "jstr_string.h"
 #include "jstr_macros.h"
 
