@@ -18,6 +18,7 @@ s/sysdeps\/generic\///;
 s/\(#define.*\)/\1\n\n#include "jstr_macros.h"\n/;
 s/#ifndef[ \t]*\([^P][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
 s/#define[ \t]*\([^P][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
+s/PJSTR__/PJSTR_/g;
 ' *?string-fz*.h *?string-misc*.h *?string-shift*.h
 # remove duplicate include "jstr_macros.h"
 awk -i inplace 'BEGIN { dup = 0; fname = 0; }

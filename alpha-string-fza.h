@@ -59,10 +59,16 @@ pjstr_find_zero_ne_all (jstr_op_ty x1, jstr_op_ty x2)
 #define pjstr_find_zero_low		pjstr_find_zero_all
 
 
+
+
 #define pjstr_find_eq_low		pjstr_find_eq_all
 
 
+
+
 #define pjstr_find_zero_eq_low	pjstr_find_zero_eq_all
+
+
 
 
 
