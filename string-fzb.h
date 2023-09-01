@@ -1,20 +1,14 @@
+#ifndef PJSTR_STRING_FZB_H
+#define PJSTR_STRING_FZB_H 1
+
+#include "jstr_macros.h"
+
 #if JSTR_ARCH_ALPHA
-#	include "alpha-string-fzc.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
+#	include "alpha-string-fzb.h"
 #elif JSTR_ARCH_SH
 #	include "sh-string-fzb.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#	include "generic-string-fzc.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_macros.h"
+#else
+#	include "generic-string-fzb.h"
+#endif
+
+#endif /* PJSTR_STRING_FZB_H */

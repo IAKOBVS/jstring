@@ -77,7 +77,7 @@
 #if __cplusplus > 199711L
 #	define JSTR_NOEXCEPT noexcept
 #else
-#	define JSTR_NOEXCEPT 1
+#	define JSTR_NOEXCEPT
 #endif
 
 #ifdef static_assert

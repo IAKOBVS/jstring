@@ -24,7 +24,7 @@
 
 /* Determine if any bytes within X1 and X2 are equal.  */
 static JSTR_INLINE _Bool
-pjstr_has_eq (op_t x1, op_t x2)
+pjstr_has_eq (jstr_op_ty x1, jstr_op_ty x2)
 {
   int ret;
 
@@ -40,14 +40,14 @@ pjstr_has_eq (op_t x1, op_t x2)
 
 /* Determine if any byte within X is zero.  */
 static JSTR_INLINE _Bool
-pjstr_has_zero (op_t x)
+pjstr_has_zero (jstr_op_ty x)
 {
   return pjstr_has_eq (x, 0);
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
 static JSTR_INLINE _Bool
-pjstr_has_zero_eq (op_t x1, op_t x2)
+pjstr_has_zero_eq (jstr_op_ty x1, jstr_op_ty x2)
 {
   return pjstr_has_zero (x1) | pjstr_has_eq (x1, x2);
 }

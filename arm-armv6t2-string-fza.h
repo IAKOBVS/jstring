@@ -23,41 +23,41 @@
 #include "string-optype.h"
 
 /* The functions return a byte mask.  */
-
+typedef jstr_op_ty jstr_op_ty;
 
 /* This function returns at least one bit set within every byte
    of X that is zero.  */
-static JSTR_INLINE pjstr_find_t
-pjstr_find_zero_all (op_t x)
+static JSTR_INLINE jstr_op_ty
+pjstr_find_zero_all (jstr_op_ty x)
 {
   /* Use unsigned saturated subtraction from 1 in each byte.
      That leaves 1 for every byte that was zero.  */
-  op_t ones = pjstr_repeat_bytes (0x01);
-  op_t ret;
+  jstr_op_ty ones = pjstr_repeat_bytes (0x01);
+  jstr_op_ty ret;
   asm ("uqsub8 %0,%1,%2" : "=r"(ret) : "r"(ones), "r"(x));
   return ret;
 }
 
 /* Identify bytes that are equal between X1 and X2.  */
-static JSTR_INLINE pjstr_find_t
-pjstr_find_eq_all (op_t x1, op_t x2)
+static JSTR_INLINE jstr_op_ty
+pjstr_find_eq_all (jstr_op_ty x1, jstr_op_ty x2)
 {
   return pjstr_find_zero_all (x1 ^ x2);
 }
 
 /* Identify zero bytes in X1 or equality between X1 and X2.  */
-static JSTR_INLINE pjstr_find_t
-pjstr_find_zero_eq_all (op_t x1, op_t x2)
+static JSTR_INLINE jstr_op_ty
+pjstr_find_zero_eq_all (jstr_op_ty x1, jstr_op_ty x2)
 {
   return pjstr_find_zero_all (x1) | pjstr_find_zero_all (x1 ^ x2);
 }
 
 /* Identify zero bytes in X1 or inequality between X1 and X2.  */
-static JSTR_INLINE pjstr_find_t
-pjstr_find_zero_ne_all (op_t x1, op_t x2)
+static JSTR_INLINE jstr_op_ty
+pjstr_find_zero_ne_all (jstr_op_ty x1, jstr_op_ty x2)
 {
   /* Make use of the fact that we'll already have ONES in a register.  */
-  op_t ones = pjstr_repeat_bytes (0x01);
+  jstr_op_ty ones = pjstr_repeat_bytes (0x01);
   return pjstr_find_zero_all (x1) | (pjstr_find_zero_all (x1 ^ x2) ^ ones);
 }
 

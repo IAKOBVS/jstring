@@ -27,7 +27,7 @@
 #include "string-optype.h"
 
 static JSTR_INLINE unsigned int
-pjstr_first (pjstr_find_t c)
+pjstr_first (jstr_op_ty c)
 {
   if (c & 0x80U)
     return 0;
@@ -36,7 +36,7 @@ pjstr_first (pjstr_find_t c)
   if (c & 0x800000U)
     return 2;
 
-  if (sizeof (op_t) == 4)
+  if (sizeof (jstr_op_ty) == 4)
     return 3;
 
   if (c & 0x80000000U)
@@ -51,9 +51,9 @@ pjstr_first (pjstr_find_t c)
 }
 
 static JSTR_INLINE unsigned int
-pjstr_last (pjstr_find_t c)
+pjstr_last (jstr_op_ty c)
 {
-  if (sizeof (op_t) == 8)
+  if (sizeof (jstr_op_ty) == 8)
     {
       if (c & 0x8000000000000000UL)
 	return 7;

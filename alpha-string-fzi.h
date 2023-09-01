@@ -29,7 +29,7 @@
 /* A subroutine for the pjstr_zero functions.  Given a bitmask C,
    return the index of the first bit set in memory order.  */
 static JSTR_INLINE unsigned int
-pjstr_first (pjstr_find_t c)
+pjstr_first (jstr_op_ty c)
 {
 #ifdef __alpha_cix__
   return __builtin_ctzl (c);
@@ -43,7 +43,7 @@ pjstr_first (pjstr_find_t c)
    that is non-zero.  Note that only the least 8 bits may be nonzero.  */
 
 static JSTR_INLINE unsigned int
-pjstr_last (pjstr_find_t x)
+pjstr_last (jstr_op_ty x)
 {
 #ifdef __alpha_cix__
   return __builtin_clzl (x) ^ 63;

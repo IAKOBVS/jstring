@@ -24,18 +24,18 @@
 #include "string-fza.h"
 
 static JSTR_INLINE int
-pjstr_clz (pjstr_find_t c)
+pjstr_clz (jstr_op_ty c)
 {
-  if (sizeof (pjstr_find_t) == sizeof (unsigned long))
+  if (sizeof (jstr_op_ty) == sizeof (unsigned long))
     return __builtin_clzl (c);
   else
     return __builtin_clzll (c);
 }
 
 static JSTR_INLINE int
-pjstr_ctz (pjstr_find_t c)
+pjstr_ctz (jstr_op_ty c)
 {
-  if (sizeof (pjstr_find_t) == sizeof (unsigned long))
+  if (sizeof (jstr_op_ty) == sizeof (unsigned long))
     return __builtin_ctzl (c);
   else
     return __builtin_ctzll (c);
@@ -45,7 +45,7 @@ pjstr_ctz (pjstr_find_t c)
    the (memory order) index of the first byte (in memory order) that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-pjstr_first (pjstr_find_t c)
+pjstr_first (jstr_op_ty c)
 {
   int r;
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
@@ -58,14 +58,14 @@ pjstr_first (pjstr_find_t c)
 /* Similarly, but return the (memory order) index of the last byte that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-pjstr_last (pjstr_find_t c)
+pjstr_last (jstr_op_ty c)
 {
   int r;
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
     r = pjstr_clz (c);
   else
     r = pjstr_ctz (c);
-  return sizeof (pjstr_find_t) - 1 - (r / CHAR_BIT);
+  return sizeof (jstr_op_ty) - 1 - (r / CHAR_BIT);
 }
 
 #endif /* STRING_FZI_H */

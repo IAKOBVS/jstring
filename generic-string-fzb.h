@@ -25,7 +25,7 @@
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 
 static JSTR_INLINE _Bool
-pjstr_has_zero (op_t x)
+pjstr_has_zero (jstr_op_ty x)
 {
   return pjstr_find_zero_low (x) != 0;
 }
@@ -33,7 +33,7 @@ pjstr_has_zero (op_t x)
 /* Likewise, but for byte equality between X1 and X2.  */
 
 static JSTR_INLINE _Bool
-pjstr_has_eq (op_t x1, op_t x2)
+pjstr_has_eq (jstr_op_ty x1, jstr_op_ty x2)
 {
   return pjstr_find_eq_low (x1, x2) != 0;
 }
@@ -41,7 +41,7 @@ pjstr_has_eq (op_t x1, op_t x2)
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
 
 static JSTR_INLINE _Bool
-pjstr_has_zero_eq (op_t x1, op_t x2)
+pjstr_has_zero_eq (jstr_op_ty x1, jstr_op_ty x2)
 {
   return pjstr_find_zero_eq_low (x1, x2);
 }

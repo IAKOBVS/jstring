@@ -36,7 +36,7 @@ extern "C" {
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) strstr(_hs, _ne)
 #endif /* HAVE_MEMMEM */
 
-#define JSTR_OPSIZ sizeof(jstr_op_ty)
+#define JSTR_OP_TY_SIZ sizeof(jstr_op_ty)
 
 /*
   Return value:
@@ -322,7 +322,7 @@ jstr_memrchr(const void *JSTR_RST const _s,
 	if (jstr_unlikely(_n == 0))
 		return NULL;
 	const unsigned char *_end = (unsigned char *)_s + _n - 1;
-	switch (_n % JSTR_OPSIZ) {
+	switch (_n % JSTR_OP_TY_SIZ) {
 	case 7:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
@@ -354,11 +354,11 @@ jstr_memrchr(const void *JSTR_RST const _s,
 	case 0:
 		break;
 	}
-	if (jstr_unlikely(_n < JSTR_OPSIZ))
+	if (jstr_unlikely(_n < JSTR_OP_TY_SIZ))
 		return NULL;
 	const jstr_op_ty *_p = (jstr_op_ty *)_end;
 	const jstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	for (; _n; _n -= JSTR_OPSIZ)
+	for (; _n; _n -= JSTR_OP_TY_SIZ)
 		if (pjstr_has_eq(*_p, _cc))
 			return (void *)(_p + pjstr_index_last_eq(*_p, _cc));
 	return NULL;

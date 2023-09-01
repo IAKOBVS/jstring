@@ -25,20 +25,20 @@
 
 /* Return the mask WORD shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
-static JSTR_INLINE pjstr_find_t
-pjstr_shift_find (pjstr_find_t word, uintptr_t s)
+static JSTR_INLINE jstr_op_ty
+pjstr_shift_find (jstr_op_ty word, uintptr_t s)
 {
-  return word >> (s % sizeof (op_t));
+  return word >> (s % sizeof (jstr_op_ty));
 }
 
 /* Mask off the bits defined the the S alignment value.  */
-static JSTR_INLINE pjstr_find_t
-pjstr_shift_find_last (pjstr_find_t word, uintptr_t s)
+static JSTR_INLINE jstr_op_ty
+pjstr_shift_find_last (jstr_op_ty word, uintptr_t s)
 {
-  s = s % sizeof (op_t);
+  s = s % sizeof (jstr_op_ty);
   if (s == 0)
     return word;
-  return word & ~((op_t)-1 << s);
+  return word & ~((jstr_op_ty)-1 << s);
 }
 
 #endif /* PJSTR_STRING_SHIFT_H */
