@@ -43,11 +43,11 @@ pjstr_ctz (jstr_op_ty c)
     return __builtin_ctzll (c);
 }
 
-/* A subroutine for the pjstr_zero functions.  Given a test word C, return
+/* A subroutine for the pjstr_indexzero functions.  Given a test word C, return
    the (memory order) index of the first byte (in memory order) that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-pjstr_first (jstr_op_ty c)
+pjstr_indexfirst (jstr_op_ty c)
 {
   int r;
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
@@ -60,7 +60,7 @@ pjstr_first (jstr_op_ty c)
 /* Similarly, but return the (memory order) index of the last byte that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-pjstr_last (jstr_op_ty c)
+pjstr_indexlast (jstr_op_ty c)
 {
   int r;
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
