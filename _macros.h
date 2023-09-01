@@ -77,7 +77,7 @@
 #if __cplusplus > 199711L
 #	define JSTR_NOEXCEPT noexcept
 #else
-#define JSTR_NOEXCEPT 1
+#	define JSTR_NOEXCEPT 1
 #endif
 
 #ifdef static_assert
@@ -99,7 +99,7 @@
 #elif defined _MSC_VER
 #	define JSTR_RESTRICT __restrict
 #else
-#define JSTR_RESTRICT 1
+#	define JSTR_RESTRICT 1
 #endif /* restrict */
 
 #if (defined __GNUC__ && (__GNUC__ >= 3)) || (defined __clang__ && __has_builtin(__builtin_expect))
@@ -116,33 +116,33 @@
 #	if __has_attribute(pure)
 #		define JSTR_PURE __attribute__((pure))
 #	else
-#define JSTR_PURE 1
+#		define JSTR_PURE 1
 #	endif /* JSTR_PURE */
 #	if __has_attribute(const)
 #		define JSTR_CONST __attribute__((const))
 #	else
-#define JSTR_CONST 1
+#		define JSTR_CONST 1
 #	endif /* JSTR_CONST */
 #	if __has_attribute(flatten)
 #		define JSTR_FLATTEN __attribute__((flatten))
 #	else
-#define JSTR_FLATTEN 1
+#		define JSTR_FLATTEN 1
 #	endif /* JSTR_FLATTEN */
 #	if __has_attribute(cold)
 #		define JSTR_COLD __attribute__((cold))
 #	else
-#define JSTR_COLD 1
+#		define JSTR_COLD 1
 #	endif /* JSTR_COLD */
 #	if __has_attribute(sentinel)
 #		define JSTR_SENTINEL __attribute__((sentinel))
 #	else
-#define JSTR_SENTINEL 1
+#		define JSTR_SENTINEL 1
 #	endif /* JSTR_SENTINEL */
 #	if __has_attribute(nonnull)
 #		define JSTR_NONNULL_ALL   __attribute__((nonnull))
 #		define JSTR_NONNULL(args) __attribute__((nonnull(args)))
 #	else
-#define JSTR_NONNULL_ALL 1
+#		define JSTR_NONNULL_ALL 1
 #		define JSTR_NONNULL(args)
 #	endif /* JSTR_NONNULL */
 #	if __has_attribute(malloc)
@@ -153,12 +153,12 @@
 #	if __has_attribute(returns_nonnull)
 #		define JSTR_RETURNS_NONNULL __attribute__((returns_nonnull))
 #	else
-#define JSTR_RETURNS_NONNULL 1
+#		define JSTR_RETURNS_NONNULL 1
 #	endif /* RETURNS_NONNULL */
 #	if __has_attribute(warn_unused_result)
 #		define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
 #	else
-#define JSTR_WARN_UNUSED 1
+#		define JSTR_WARN_UNUSED 1
 #	endif /* */
 #	if __has_builtin(__builtin_constant_p)
 #		define JSTR_CONSTANT_P(p) __builtin_constant_p(p)
@@ -173,61 +173,61 @@
 #	if __has_attribute(nothrow)
 #		define JSTR_NOTHROW __attribute__((nothrow))
 #	else
-#define JSTR_NOTHROW 1
+#		define JSTR_NOTHROW 1
 #	endif
 #	if __has_attribute(__may_alias__)
 #		define JSTR_MAY_ALIAS __attribute__((__may_alias__))
 #	else
-#define JSTR_MAY_ALIAS 1
+#		define JSTR_MAY_ALIAS 1
 #	endif
 
 #elif defined _MSC_VER
 
-#	define JSTR_INLINE   __forceinline inline
-#	define JSTR_NOINLINE __declspec(noinline)
-#	define JSTR_PURE     __declspec(noalias)
-#	define JSTR_CONST    __declspec(restrict)
-#define JSTR_FLATTEN 1
-#define JSTR_COLD 1
-#define JSTR_SENTINEL 1
-#define JSTR_NONNULL_ALL 1
+#	define JSTR_INLINE	 __forceinline inline
+#	define JSTR_NOINLINE	 __declspec(noinline)
+#	define JSTR_PURE	 __declspec(noalias)
+#	define JSTR_CONST	 __declspec(restrict)
+#	define JSTR_FLATTEN	 1
+#	define JSTR_COLD	 1
+#	define JSTR_SENTINEL	 1
+#	define JSTR_NONNULL_ALL 1
 #	define JSTR_NONNULL(args)
-#define JSTR_MALLOC 1
+#	define JSTR_MALLOC 1
 #	define JSTR_MALLOC_DEALLOC(deallocator)
 #	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
-#define JSTR_RETURNS_NONNULL 1
-#	define JSTR_CONSTANT_P(p) 0
-#define JSTR_WARN_UNUSED 1
+#	define JSTR_RETURNS_NONNULL 1
+#	define JSTR_CONSTANT_P(p)   0
+#	define JSTR_WARN_UNUSED     1
 #	define JSTR_DEPRECATED(msg, replacement)
-#	define JSTR_NOTHROW __declspec(nothrow)
-#define JSTR_MAY_ALIAS 1
+#	define JSTR_NOTHROW   __declspec(nothrow)
+#	define JSTR_MAY_ALIAS 1
 
 #else
 
-#	define JSTR_INLINE inline
-#define JSTR_NOINLINE 1
-#define JSTR_PURE 1
-#define JSTR_CONST 1
-#define JSTR_FLATTEN 1
-#define JSTR_COLD 1
-#define JSTR_SENTINEL 1
-#define JSTR_NONNULL_ALL 1
+#	define JSTR_INLINE	 inline
+#	define JSTR_NOINLINE	 1
+#	define JSTR_PURE	 1
+#	define JSTR_CONST	 1
+#	define JSTR_FLATTEN	 1
+#	define JSTR_COLD	 1
+#	define JSTR_SENTINEL	 1
+#	define JSTR_NONNULL_ALL 1
 #	define JSTR_NONNULL(args)
-#define JSTR_MALLOC 1
+#	define JSTR_MALLOC 1
 #	define JSTR_MALLOC_DEALLOC(deallocator)
 #	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #	define JSTR_CONSTANT_P(p) 0
-#define JSTR_WARN_UNUSED 1
+#	define JSTR_WARN_UNUSED   1
 #	define JSTR_DEPRECATED(msg, replacement)
-#define JSTR_NOTHROW 1
-#define JSTR_MAY_ALIAS 1
+#	define JSTR_NOTHROW   1
+#	define JSTR_MAY_ALIAS 1
 
 #endif /* Gnuc || clang || msvc */
 
 #if defined __GNUC__ || defined __clang__
 #	define JSTR_MAYBE_UNUSED __attribute__((unused))
 #else
-#define JSTR_MAYBE_UNUSED 1
+#	define JSTR_MAYBE_UNUSED 1
 #endif /* maybe_unused */
 
 #if defined __GNUC__ || defined __clang__
@@ -235,7 +235,7 @@
 #elif defined _MSC_VER
 #	define JSTR_NOINLINE __declspec(noinline)
 #else
-#define JSTR_NOINLINE 1
+#	define JSTR_NOINLINE 1
 #endif /* noinline */
 
 #ifndef PJSTR_MAX
@@ -665,5 +665,49 @@ case '~':
 #include "_libc-pointer-arith.h"
 
 #define PJSTR_ALIGN_UP_STR(base) PJSTR_ALIGN_UP(base, PJSTR_MALLOC_ALIGNMENT)
+
+#if defined __x86_64__ || defined _M_X64
+#	define JSTR_ARCH_x86_64
+#elif defined i386 || defined __i386__ || defined __i386 || defined _M_IX86
+#	define JSTR_ARCH_x86_32
+#elif defined __ARM_ARCH_2__
+#	define JSTR_ARCH_ARM2
+#elif defined __ARM_ARCH_3__ || defined __ARM_ARCH_3M__
+#	define JSTR_ARCH_ARM3
+#elif defined __ARM_ARCH_4T__ || defined __TARGET_ARM_4T
+#	define JSTR_ARCH_ARM4T
+#elif defined __ARM_ARCH_5_ || defined __ARM_ARCH_5E_
+#	define JSTR_ARCH_ARM5
+#elif defined __ARM_ARCH_6T2_ || defined __ARM_ARCH_6T2_
+#	define JSTR_ARCH_ARM6T2
+#elif defined __ARM_ARCH_6__ || defined __ARM_ARCH_6J__ || defined __ARM_ARCH_6K__ || defined __ARM_ARCH_6Z__ || defined __ARM_ARCH_6ZK__
+#	define JSTR_ARCH_ARM6
+#elif defined __ARM_ARCH_7__ || defined __ARM_ARCH_7A__ || defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__ || defined __ARM_ARCH_7S__
+#	define JSTR_ARCH_ARM7
+#elif defined __ARM_ARCH_7A__ || defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__ || defined __ARM_ARCH_7S__
+#	define JSTR_ARCH_ARM7A
+#elif defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__ || defined __ARM_ARCH_7S__
+#	define JSTR_ARCH_ARM7R
+#elif defined __ARM_ARCH_7M__
+#	define JSTR_ARCH_ARM7M
+#elif defined __ARM_ARCH_7S__
+#	define JSTR_ARCH_ARM7S
+#elif defined __aarch64__ || defined _M_ARM64
+#	define JSTR_ARCH_ARM64
+#elif defined mips || defined __mips__ || defined __mips
+#	define JSTR_ARCH_MIPS
+#elif defined __sh__
+#	define JSTR_ARCH_SUPERH
+#elif defined __powerpc || defined __powerpc__ || defined __powerpc64__ || defined __POWERPC__ || defined __ppc__ || defined __PPC__ || defined _ARCH_PPC
+#	define JSTR_ARCH_POWERPC
+#elif defined __PPC64__ || defined __ppc64__ || defined _ARCH_PPC64
+#	define JSTR_ARCH_POWERPC64
+#elif defined __sparc__ || defined __sparc
+#	define JSTR_ARCH_SPARC
+#elif defined __m68k__
+#	define JSTR_ARCH_M68K
+#else
+#	define JSTR_ARCH_GENERIC
+#endif
 
 #endif /* JSTR_MACROS_H_DEF */

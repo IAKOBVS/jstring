@@ -21,6 +21,10 @@
 
 #include "_macros.h"
 
+#if JSTR_ARCH_X86_32
+typedef unsigned long long int jstr_op_ty JSTR_MAY_ALIAS;
+#else
 typedef unsigned long int jstr_op_ty JSTR_MAY_ALIAS;
+#endif
 
 #endif /* string-optype.h */

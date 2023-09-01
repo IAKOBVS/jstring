@@ -20,6 +20,10 @@
 #define PJSTR_STRING_OPTHR_H 1
 
 /* Threshold value for when to enter the unrolled loops.  */
-#define JSTR_OP_TY_THRES 16
+#ifdef JSTR_ARCH_x86_32
+#	define JSTR_OP_TY_THRES 8
+#else
+#	define JSTR_OP_TY_THRES 16
+#endif
 
 #endif /* string-opthr.h */
