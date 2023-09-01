@@ -12,8 +12,7 @@
 #	define PJSTR_PP_ST_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define PJSTR_PP_ST_ASSERT(expr, msg)
-#endif /* JSTR_NOTHROW \
-static_assert */
+#endif /* JSTR_NOTHROW */
 
 #define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_1(Texpr, ...)                                                                                   \
 	do {                                                                                                                            \
