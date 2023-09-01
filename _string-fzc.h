@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _STRING_FZC_H
-#define _STRING_FZC_H 1
+#ifndef PJSTR_STRING_FZC_H
+#define PJSTR_STRING_FZC_H 1
 
 #include "_string-fza.h"
 #include "_string-fzi.h"

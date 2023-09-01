@@ -1,5 +1,5 @@
 #ifndef JTRAITS_H_DEF
-#define JTRAITS_H_DEF
+#define JTRAITS_H_DEF 1
 
 #ifdef __cplusplus
 

@@ -1,5 +1,5 @@
 #ifndef PJSTR_PP_ARRCPY_VA_ARGS_DEF_H
-#define PJSTR_PP_ARRCPY_VA_ARGS_DEF_H
+#define PJSTR_PP_ARRCPY_VA_ARGS_DEF_H 1
 
 #include "_pp_va_args_tools.h"
 

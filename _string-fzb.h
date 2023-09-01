@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _STRING_FZB_H
-#define _STRING_FZB_H 1
+#ifndef PJSTR_STRING_FZB_H
+#define PJSTR_STRING_FZB_H 1
 
 #include "_string-fza.h"
 #include <endian.h>
@@ -46,4 +46,4 @@ pjstr_has_zero_eq(jstr_op_ty x1, jstr_op_ty x2)
 	return pjstr_find_zero_eq_low(x1, x2);
 }
 
-#endif /* _STRING_FZB_H */
+#endif /* PJSTR_STRING_FZB_H */

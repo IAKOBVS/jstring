@@ -1,5 +1,5 @@
 #ifndef JSTR_STRLEN_ARR_VA_ARGS_H_DEF
-#define JSTR_STRLEN_ARR_VA_ARGS_H_DEF
+#define JSTR_STRLEN_ARR_VA_ARGS_H_DEF 1
 
 #include "_pp_va_args_tools.h"
 

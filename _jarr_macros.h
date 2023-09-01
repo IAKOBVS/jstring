@@ -1,5 +1,5 @@
 #ifndef JARR_MACROS_DEF_H
-#define JARR_MACROS_DEF_H
+#define JARR_MACROS_DEF_H 1
 
 #include "_builder.h"
 #include "_config.h"

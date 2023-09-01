@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _STRING_FZA_H
-#define _STRING_FZA_H 1
+#ifndef PJSTR_STRING_FZA_H
+#define PJSTR_STRING_FZA_H 1
 
 #include "_macros.h"
 #include "_string-misc.h"
@@ -93,4 +93,4 @@ pjstr_find_zero_ne_all(jstr_op_ty x1, jstr_op_ty x2)
 	return (ne2 | ~nz1) & ~m;
 }
 
-#endif /* _STRING_FZA_H */
+#endif /* PJSTR_STRING_FZA_H */

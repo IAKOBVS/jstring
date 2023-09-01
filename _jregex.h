@@ -1,5 +1,5 @@
 #ifndef JREGEX_H_DEF
-#define JREGEX_H_DEF
+#define JREGEX_H_DEF 1
 
 #ifdef __cplusplus
 extern "C" {

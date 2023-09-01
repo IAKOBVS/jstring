@@ -1,5 +1,5 @@
 #ifndef JARR_DEF_H
-#define JARR_DEF_H
+#define JARR_DEF_H 1
 
 #ifdef __cplusplus
 extern "C" {

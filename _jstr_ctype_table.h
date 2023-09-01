@@ -1,5 +1,5 @@
 #ifndef JSTR_CTYPE_TABLE_H_DEF
-#define JSTR_CTYPE_TABLE_H_DEF
+#define JSTR_CTYPE_TABLE_H_DEF 1
 
 #include "_macros.h"
 

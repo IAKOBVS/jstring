@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _STRING_FZI_H
-#define _STRING_FZI_H 1
+#ifndef PJSTR_STRING_FZI_H
+#define PJSTR_STRING_FZI_H 1
 
 #include <limits.h>
 #include <endian.h>

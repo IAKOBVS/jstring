@@ -1,5 +1,5 @@
 #ifndef JSTR_H_DEF
-#define JSTR_H_DEF
+#define JSTR_H_DEF 1
 
 #include "_builder.h"
 #include "_jregex.h"

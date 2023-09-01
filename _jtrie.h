@@ -1,5 +1,5 @@
 #ifndef JSTR_DEF_H
-#define JSTR_DEF_H
+#define JSTR_DEF_H 1
 
 #ifdef __cplusplus
 extern "C" {

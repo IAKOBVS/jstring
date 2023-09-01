@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _STRING_SHIFT_H
-#define _STRING_SHIFT_H 1
+#ifndef PJSTR_STRING_SHIFT_H
+#define PJSTR_STRING_SHIFT_H 1
 
 #include "_macros.h"
 #include "_string-fza.h"
@@ -50,4 +50,4 @@ pjstr_shift_find_last(jstr_op_ty word, uintptr_t s)
 		return word & ~(((jstr_op_ty)-1) >> (s * CHAR_BIT));
 }
 
-#endif /* _STRING_SHIFT_H */
+#endif /* PJSTR_STRING_SHIFT_H */

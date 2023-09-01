@@ -1,12 +1,12 @@
 #ifndef PJSTR_PP_VA_ARGS_TOOLS_DEF_H
-#define PJSTR_PP_VA_ARGS_TOOLS_DEF_H
+#define PJSTR_PP_VA_ARGS_TOOLS_DEF_H 1
 
 #if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
-#	define PJSTR_PP_HAS_TYPEOF
+#define PJSTR_PP_HAS_TYPEOF 1
 #endif /* PJSTR_PP_HAS_TYPEOF */
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-#	define PJSTR_PP_HAS_GENERIC
+#define PJSTR_PP_HAS_GENERIC 1
 #endif /* PJSTR_PP_HAS_GENERIC */
 
 #define PJSTR_PP_CONCAT(a, b, ...) a##b(__VA_ARGS__)

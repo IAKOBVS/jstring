@@ -1,5 +1,5 @@
 #ifndef PJSTR_PP_VA_ARGS_MACROS_DEF_H
-#define PJSTR_PP_VA_ARGS_MACROS_DEF_H
+#define PJSTR_PP_VA_ARGS_MACROS_DEF_H 1
 
 #include "_pp_st_assert.h"
 #include "_pp_strcpy_va_args.h"

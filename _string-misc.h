@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _STRING_MISC_H
-#define _STRING_MISC_H 1
+#ifndef PJSTR_STRING_MISC_H
+#define PJSTR_STRING_MISC_H 1
 
 #include "_string-optype.h"
 #include <endian.h>
@@ -43,4 +43,4 @@ pjstr_repeat_bytes(unsigned char c_in)
 	return ((jstr_op_ty)-1 / 0xff) * c_in;
 }
 
-#endif /* _STRING_MISC_H */
+#endif /* PJSTR_STRING_MISC_H */

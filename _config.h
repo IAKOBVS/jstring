@@ -1,5 +1,5 @@
 #ifndef JSTR_CONFIG_DEF_H
-#define JSTR_CONFIG_DEF_H
+#define JSTR_CONFIG_DEF_H 1
 
 #define PJSTR_MAX_UINT_DIGITS	   10
 #define PJSTR_MAX_ULONG_DIGITS	   10
