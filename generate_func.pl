@@ -285,7 +285,6 @@ sub gen_struct_funcs
 		$out_h .= $decl;
 		next;
 	  NEXT:
-		$_ = update_includes($_);
 		$_     .= "\n\n";
 		$out_h .= $_;
 	}
@@ -294,12 +293,12 @@ sub gen_struct_funcs
 	return ($out_h);
 }
 
-sub update_includes
-{
-	my ($includes) = @_;
-	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_/$1/go;
-	return $includes;
-}
+# sub update_includes
+# {
+# 	my ($includes) = @_;
+# 	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_/$1/go;
+# 	return $includes;
+# }
 
 sub get_regex_size_ptr
 {
