@@ -11,11 +11,13 @@ s/\(^\|[^_0-9A-Za-z]\)\(index\)_/\1pjstr_/g;
 s/\(^\|[^_0-9A-Za-z]\)\(has_\)/\1pjstr_\2/g;
 s/\(^\|[^_0-9A-Za-z]\)\(clz\)/\1pjstr_\2/g;
 s/\(^\|[^_0-9A-Za-z]\)\(ctz\)/\1pjstr_\2/g;
-s/\(^\|[^_0-9A-Za-z]\)_Bool\(^\|[^_0-9A-Za-z]\)/\1int\2/g;
+s/\(^\|[^_0-9A-Za-z]\)_Bool\($\|[^_0-9A-Za-z]\)/\1int\2/g;
 s/typedef jstr_op_ty jstr_op_ty;//g;
 s/__always_inline/JSTR_INLINE/g;
 s/sysdeps\/generic\///;
 s/\(#define.*\)/\1\n\n#include "jstr_macros.h"\n/;
+s/#ifndef[ \t]*\([^P][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
+s/#define[ \t]*\([^P][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
 ' *?string-fz*.h *?string-misc*.h *?string-shift*.h
 # remove duplicate include "jstr_macros.h"
 awk -i inplace 'BEGIN { dup = 0; fname = 0; }

@@ -16,11 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_FZA_H
-#define PJSTR_STRING_FZA_H 1
+#ifndef PJSTR_ PJSTR_STRING_FZA_H
+#ifndef PJSTR_ PJSTR_STRING_FZA_H 1
 
 #include "jstr_macros.h"
-
 
 
 #include "string-misc.h"
@@ -69,13 +68,10 @@ pjstr_find_zero_ne_all (jstr_op_ty x1, jstr_op_ty x2)
 #define pjstr_find_zero_low		pjstr_find_zero_all
 
 
-
 #define pjstr_find_eq_low		pjstr_find_eq_all
 
 
-
 #define pjstr_find_zero_eq_low	pjstr_find_zero_eq_all
-
 
 
 

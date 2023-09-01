@@ -16,11 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _RISCV_STRING_FZA_H
-#define _RISCV_STRING_FZA_H 1
+#ifndef PJSTR__RISCV_STRING_FZA_H
+#ifndef PJSTR__RISCV_STRING_FZA_H 1
 
 #include "jstr_macros.h"
-
 
 
 #ifdef __riscv_zbb
@@ -29,7 +28,6 @@
 #include "string-optype.h"
 
 /* The functions return a byte mask.  */
-
 
 
 /* This function returns 0xff for each byte that is zero in X.  */

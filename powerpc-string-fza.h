@@ -16,11 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _POWERPC_STRING_FZA_H
-#define _POWERPC_STRING_FZA_H 1
+#ifndef PJSTR__POWERPC_STRING_FZA_H
+#ifndef PJSTR__POWERPC_STRING_FZA_H 1
 
 #include "jstr_macros.h"
-
 
 
 /* PowerISA 2.05 (POWER6) provides cmpb instruction.  */
