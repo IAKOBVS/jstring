@@ -358,7 +358,7 @@ jstr_memrchr(const void *JSTR_RST const _s,
 		return NULL;
 	const jstr_op_ty *_p = (jstr_op_ty *)_end;
 	const jstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	for (; _n; _n -= JSTR_OP_TY_SIZ)
+	for (; _n; _n -= JSTR_OP_TY_SIZ, --_p)
 		if (pjstr_has_eq(*_p, _cc))
 			return (void *)(_p + pjstr_index_last_eq(*_p, _cc));
 	return NULL;
