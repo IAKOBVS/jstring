@@ -9,11 +9,4 @@
 #include "_replace.h"
 #include <features.h>
 
-#undef PJSTR_IS_MMAP
-#undef PJSTR_MIN_MMAP
-#undef PJSTR_REALLOC
-#undef PJSTR_GROW
-#undef PJSTR_ALLOC_ONLY
-#undef PJSTR_MIN_ALLOC
-
 #endif /* JSTR_H_DEF */
