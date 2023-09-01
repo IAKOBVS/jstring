@@ -5,47 +5,47 @@
 
 #if defined(static_assert)
 #	define PJSTR_PP_ST_ASSERT(expr, msg) JSTR_NOTHROW
-static_assert(expr, msg)
-#define PJSTR_PP_HAS_STATIC_ASSERT__ 1
+#	define static_assert(expr, msg)
+#	define PJSTR_PP_HAVE_STATIC_ASSERT 1
 #elif __STDC_VERSION__ >= 201112L
 #	define PJSTR_PP_ST_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define PJSTR_PP_ST_ASSERT(expr, msg)
-#endif /* JSTR_NOTHROW
+#endif /* JSTR_NOTHROW \
 static_assert */
 
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_1(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_1(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_2(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_2(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_3(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_3(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_4(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_4(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(3, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_5(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_5(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(3, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(4, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_6(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_6(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!"); \
@@ -53,8 +53,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(4, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(5, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_7(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_7(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!"); \
@@ -63,8 +63,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(5, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(6, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_8(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_8(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!"); \
@@ -74,8 +74,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(6, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(7, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_9(Texpr, ...)                                                                                 \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_9(Texpr, ...)                                                                                   \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!"); \
@@ -86,8 +86,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(7, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(8, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_10(Texpr, ...)                                                                                \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_10(Texpr, ...)                                                                                  \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!"); \
@@ -99,8 +99,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(8, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(9, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_11(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_11(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -113,8 +113,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(9, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(10, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_12(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_12(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -128,8 +128,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(10, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(11, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_13(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_13(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -144,8 +144,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(11, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(12, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_14(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_14(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -161,8 +161,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(12, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(13, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_15(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_15(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -179,8 +179,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(13, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(14, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_16(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_16(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -198,8 +198,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(14, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(15, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_17(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_17(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -218,8 +218,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(15, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(16, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_18(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_18(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -239,8 +239,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(16, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(17, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_19(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_19(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -261,8 +261,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(17, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(18, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_20(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_20(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -284,8 +284,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(18, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(19, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_21(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_21(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -308,8 +308,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(19, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(20, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_22(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_22(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -333,8 +333,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(20, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(21, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_23(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_23(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -359,8 +359,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(21, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(22, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_24(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_24(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -386,8 +386,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(22, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(23, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_25(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_25(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -414,8 +414,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(23, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(24, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_26(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_26(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -443,8 +443,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(24, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(25, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_27(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_27(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -473,8 +473,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(25, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(26, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_28(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_28(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -504,8 +504,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(26, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(27, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_29(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_29(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -536,8 +536,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(27, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(28, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_30(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_30(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -569,8 +569,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(28, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(29, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_31(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_31(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -603,8 +603,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(29, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(30, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_32(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_32(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -638,8 +638,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(30, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(31, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_33(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_33(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -674,8 +674,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(31, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(32, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_34(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_34(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -711,8 +711,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(32, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(33, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_35(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_35(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -749,8 +749,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(33, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(34, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_36(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_36(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -788,8 +788,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(34, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(35, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_37(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_37(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -828,8 +828,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(35, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(36, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_38(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_38(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -869,8 +869,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(36, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(37, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_39(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_39(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -911,8 +911,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(37, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(38, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_40(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_40(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -954,8 +954,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(38, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(39, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_41(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_41(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -998,8 +998,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(39, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(40, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_42(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_42(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1043,8 +1043,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(40, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(41, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_43(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_43(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1089,8 +1089,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(41, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(42, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_44(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_44(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1136,8 +1136,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(42, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(43, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_45(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_45(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1184,8 +1184,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(43, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(44, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_46(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_46(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1233,8 +1233,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(44, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(45, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_47(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_47(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1283,8 +1283,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(45, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(46, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_48(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_48(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1334,8 +1334,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(46, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(47, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_49(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_49(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1386,8 +1386,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(47, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(48, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_50(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_50(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1439,8 +1439,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(48, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(49, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_51(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_51(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1493,8 +1493,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(49, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(50, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_52(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_52(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1548,8 +1548,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(50, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(51, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_53(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_53(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1604,8 +1604,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(51, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(52, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_54(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_54(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1661,8 +1661,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(52, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(53, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_55(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_55(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1719,8 +1719,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(53, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(54, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_56(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_56(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1778,8 +1778,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(54, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(55, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_57(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_57(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1838,8 +1838,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(55, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(56, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_58(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_58(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1899,8 +1899,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(56, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(57, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_59(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_59(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -1961,8 +1961,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(57, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(58, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_60(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_60(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2024,8 +2024,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(58, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(59, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_61(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_61(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2088,8 +2088,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(59, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(60, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_62(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_62(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2153,8 +2153,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(60, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(61, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_63(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_63(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2219,8 +2219,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(61, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(62, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_64(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_64(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2286,8 +2286,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(62, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(63, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_65(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_65(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2354,8 +2354,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(63, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(64, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_66(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_66(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2423,8 +2423,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(64, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(65, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_67(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_67(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2493,8 +2493,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(65, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(66, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_68(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_68(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2564,8 +2564,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(66, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(67, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_69(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_69(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2636,8 +2636,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(67, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(68, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_70(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_70(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2709,8 +2709,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(68, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(69, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_71(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_71(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2783,8 +2783,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(69, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(70, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_72(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_72(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2858,8 +2858,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(70, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(71, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_73(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_73(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -2934,8 +2934,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(71, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(72, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_74(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_74(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3011,8 +3011,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(72, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(73, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_75(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_75(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3089,8 +3089,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(73, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(74, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_76(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_76(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3168,8 +3168,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(74, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(75, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_77(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_77(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3248,8 +3248,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(75, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(76, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_78(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_78(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3329,8 +3329,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(76, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(77, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_79(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_79(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3411,8 +3411,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(77, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(78, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_80(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_80(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3494,8 +3494,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(78, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(79, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_81(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_81(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3578,8 +3578,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(79, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(80, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_82(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_82(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3663,8 +3663,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(80, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(81, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_83(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_83(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3749,8 +3749,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(81, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(82, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_84(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_84(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3836,8 +3836,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(82, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(83, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_85(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_85(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -3924,8 +3924,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(83, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(84, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_86(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_86(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4013,8 +4013,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(84, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(85, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_87(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_87(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4103,8 +4103,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(85, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(86, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_88(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_88(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4194,8 +4194,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(86, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(87, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_89(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_89(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4286,8 +4286,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(87, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(88, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_90(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_90(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4379,8 +4379,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(88, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(89, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_91(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_91(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4473,8 +4473,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(89, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(90, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_92(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_92(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4568,8 +4568,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(90, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(91, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_93(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_93(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4664,8 +4664,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(91, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(92, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_94(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_94(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4761,8 +4761,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(92, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(93, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_95(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_95(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4859,8 +4859,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(93, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(94, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_96(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_96(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -4958,8 +4958,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(94, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(95, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_97(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_97(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -5058,8 +5058,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(95, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(96, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_98(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_98(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -5159,8 +5159,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(96, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(97, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_99(Texpr, ...)                                                                                 \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_99(Texpr, ...)                                                                                   \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -5261,8 +5261,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(97, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(98, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_100(Texpr, ...)                                                                                \
-	do {                                                                                                                          \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_100(Texpr, ...)                                                                                  \
+	do {                                                                                                                             \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");  \
@@ -5364,8 +5364,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(98, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(99, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_101(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_101(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -5468,8 +5468,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(99, __VA_ARGS__)), "Passing the wrong data type!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(100, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_102(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_102(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -5573,8 +5573,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(100, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(101, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_103(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_103(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -5679,8 +5679,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(101, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(102, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_104(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_104(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -5786,8 +5786,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(102, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(103, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_105(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_105(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -5894,8 +5894,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(103, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(104, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_106(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_106(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6003,8 +6003,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(104, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(105, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_107(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_107(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6113,8 +6113,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(105, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(106, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_108(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_108(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6224,8 +6224,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(106, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(107, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_109(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_109(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6336,8 +6336,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(107, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(108, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_110(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_110(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6449,8 +6449,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(108, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(109, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_111(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_111(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6563,8 +6563,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(109, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(110, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_112(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_112(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6678,8 +6678,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(110, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(111, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_113(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_113(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6794,8 +6794,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(111, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(112, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_114(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_114(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -6911,8 +6911,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(112, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(113, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_115(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_115(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -7029,8 +7029,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(113, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(114, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_116(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_116(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -7148,8 +7148,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(114, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(115, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_117(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_117(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -7268,8 +7268,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(115, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(116, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_118(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_118(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -7389,8 +7389,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(116, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(117, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_119(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_119(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -7511,8 +7511,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(117, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(118, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_120(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_120(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -7634,8 +7634,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(118, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(119, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_121(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_121(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -7758,8 +7758,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(119, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(120, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_122(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_122(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -7883,8 +7883,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(120, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(121, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_123(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_123(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -8009,8 +8009,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(121, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(122, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_124(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_124(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -8136,8 +8136,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(122, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(123, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_125(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_125(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -8264,8 +8264,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(123, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(124, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_126(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_126(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -8393,8 +8393,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(124, __VA_ARGS__)), "Passing the wrong data type!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(125, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_127(Texpr, ...)                                                                                 \
-	do {                                                                                                                           \
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_127(Texpr, ...)                                                                                   \
+	do {                                                                                                                              \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing the wrong data type!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing the wrong data type!");   \
@@ -8524,49 +8524,49 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((Texpr), PJSTR_PP_EXTRACT_ARGS(126, __VA_ARGS__)), "Passing the wrong data type!"); \
 	} while (0)
 
-#ifdef PJSTR_PP_HAS_GENERIC
-#	define PJSTR_PP_SAME_TYPE(x, y) _Generic((x),           \
-						 typeof(y) : 1, \
-						 default : 0)
-#	define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS(Texpr, ...)		    PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_HELPER(PJSTR_PP_NARG(__VA_ARGS__), Texpr, __VA_ARGS__)
+#ifdef PJSTR_PP_HAVE_GENERIC
+#	define PJSTR_PP_SAME_TYPE(x, y) _Generic((x), \
+	typeof(y): 1,                                  \
+	default: 0)
+#	define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS(Texpr, ...)		     PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_HELPER(PJSTR_PP_NARG(__VA_ARGS__), Texpr, __VA_ARGS__)
 #	define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_HELPER(num_args, Texpr, ...) PJSTR_PP_CONCAT(PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_, num_args, Texpr, __VA_ARGS__)
 #else
 #	define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS(...)
 #	define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_HELPER(num_args, ...)
-#endif /* PJSTR_PP_HAS_GENERIC */
+#endif /* PJSTR_PP_HAVE_GENERIC */
 
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_1(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_1(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_2(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_2(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_3(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_3(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_4(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_4(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(3, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_5(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_5(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(3, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(4, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_6(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_6(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!"); \
@@ -8574,8 +8574,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(4, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(5, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_7(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_7(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!"); \
@@ -8584,8 +8584,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(5, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(6, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_8(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_8(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!"); \
@@ -8595,8 +8595,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(6, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(7, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_9(...)                                                                                    \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_9(...)                                                                                      \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!"); \
@@ -8607,8 +8607,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(7, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(8, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_10(...)                                                                                   \
-	do {                                                                                                                       \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_10(...)                                                                                     \
+	do {                                                                                                                          \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!"); \
@@ -8620,8 +8620,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(8, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(9, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_11(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_11(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8634,8 +8634,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(9, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(10, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_12(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_12(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8649,8 +8649,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(10, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(11, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_13(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_13(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8665,8 +8665,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(11, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(12, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_14(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_14(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8682,8 +8682,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(12, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(13, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_15(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_15(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8700,8 +8700,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(13, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(14, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_16(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_16(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8719,8 +8719,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(14, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(15, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_17(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_17(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8739,8 +8739,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(15, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(16, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_18(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_18(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8760,8 +8760,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(16, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(17, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_19(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_19(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8782,8 +8782,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(17, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(18, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_20(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_20(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8805,8 +8805,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(18, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(19, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_21(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_21(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8829,8 +8829,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(19, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(20, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_22(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_22(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8854,8 +8854,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(20, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(21, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_23(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_23(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8880,8 +8880,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(21, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(22, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_24(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_24(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8907,8 +8907,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(22, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(23, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_25(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_25(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8935,8 +8935,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(23, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(24, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_26(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_26(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8964,8 +8964,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(24, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(25, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_27(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_27(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -8994,8 +8994,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(25, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(26, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_28(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_28(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9025,8 +9025,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(26, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(27, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_29(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_29(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9057,8 +9057,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(27, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(28, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_30(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_30(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9090,8 +9090,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(28, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(29, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_31(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_31(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9124,8 +9124,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(29, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(30, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_32(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_32(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9159,8 +9159,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(30, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(31, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_33(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_33(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9195,8 +9195,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(31, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(32, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_34(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_34(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9232,8 +9232,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(32, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(33, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_35(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_35(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9270,8 +9270,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(33, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(34, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_36(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_36(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9309,8 +9309,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(34, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(35, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_37(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_37(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9349,8 +9349,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(35, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(36, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_38(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_38(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9390,8 +9390,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(36, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(37, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_39(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_39(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9432,8 +9432,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(37, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(38, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_40(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_40(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9475,8 +9475,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(38, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(39, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_41(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_41(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9519,8 +9519,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(39, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(40, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_42(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_42(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9564,8 +9564,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(40, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(41, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_43(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_43(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9610,8 +9610,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(41, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(42, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_44(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_44(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9657,8 +9657,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(42, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(43, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_45(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_45(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9705,8 +9705,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(43, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(44, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_46(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_46(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9754,8 +9754,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(44, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(45, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_47(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_47(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9804,8 +9804,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(45, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(46, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_48(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_48(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9855,8 +9855,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(46, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(47, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_49(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_49(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9907,8 +9907,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(47, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(48, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_50(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_50(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -9960,8 +9960,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(48, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(49, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_51(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_51(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10014,8 +10014,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(49, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(50, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_52(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_52(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10069,8 +10069,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(50, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(51, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_53(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_53(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10125,8 +10125,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(51, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(52, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_54(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_54(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10182,8 +10182,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(52, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(53, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_55(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_55(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10240,8 +10240,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(53, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(54, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_56(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_56(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10299,8 +10299,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(54, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(55, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_57(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_57(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10359,8 +10359,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(55, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(56, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_58(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_58(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10420,8 +10420,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(56, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(57, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_59(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_59(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10482,8 +10482,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(57, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(58, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_60(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_60(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10545,8 +10545,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(58, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(59, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_61(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_61(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10609,8 +10609,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(59, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(60, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_62(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_62(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10674,8 +10674,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(60, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(61, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_63(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_63(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10740,8 +10740,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(61, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(62, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_64(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_64(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10807,8 +10807,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(62, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(63, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_65(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_65(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10875,8 +10875,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(63, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(64, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_66(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_66(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -10944,8 +10944,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(64, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(65, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_67(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_67(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11014,8 +11014,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(65, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(66, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_68(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_68(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11085,8 +11085,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(66, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(67, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_69(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_69(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11157,8 +11157,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(67, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(68, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_70(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_70(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11230,8 +11230,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(68, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(69, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_71(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_71(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11304,8 +11304,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(69, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(70, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_72(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_72(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11379,8 +11379,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(70, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(71, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_73(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_73(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11455,8 +11455,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(71, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(72, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_74(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_74(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11532,8 +11532,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(72, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(73, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_75(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_75(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11610,8 +11610,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(73, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(74, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_76(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_76(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11689,8 +11689,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(74, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(75, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_77(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_77(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11769,8 +11769,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(75, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(76, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_78(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_78(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11850,8 +11850,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(76, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(77, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_79(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_79(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -11932,8 +11932,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(77, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(78, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_80(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_80(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12015,8 +12015,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(78, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(79, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_81(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_81(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12099,8 +12099,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(79, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(80, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_82(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_82(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12184,8 +12184,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(80, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(81, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_83(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_83(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12270,8 +12270,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(81, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(82, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_84(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_84(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12357,8 +12357,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(82, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(83, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_85(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_85(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12445,8 +12445,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(83, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(84, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_86(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_86(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12534,8 +12534,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(84, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(85, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_87(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_87(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12624,8 +12624,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(85, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(86, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_88(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_88(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12715,8 +12715,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(86, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(87, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_89(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_89(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12807,8 +12807,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(87, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(88, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_90(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_90(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12900,8 +12900,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(88, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(89, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_91(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_91(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -12994,8 +12994,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(89, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(90, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_92(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_92(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13089,8 +13089,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(90, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(91, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_93(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_93(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13185,8 +13185,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(91, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(92, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_94(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_94(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13282,8 +13282,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(92, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(93, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_95(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_95(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13380,8 +13380,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(93, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(94, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_96(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_96(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13479,8 +13479,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(94, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(95, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_97(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_97(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13579,8 +13579,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(95, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(96, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_98(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_98(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13680,8 +13680,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(96, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(97, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_99(...)                                                                                    \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_99(...)                                                                                      \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13782,8 +13782,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(97, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(98, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_100(...)                                                                                   \
-	do {                                                                                                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_100(...)                                                                                     \
+	do {                                                                                                                           \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");  \
@@ -13885,8 +13885,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(98, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(99, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_101(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_101(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -13989,8 +13989,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(99, __VA_ARGS__)), "Passing non-string as string argument!");  \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(100, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_102(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_102(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14094,8 +14094,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(100, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(101, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_103(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_103(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14200,8 +14200,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(101, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(102, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_104(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_104(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14307,8 +14307,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(102, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(103, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_105(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_105(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14415,8 +14415,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(103, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(104, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_106(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_106(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14524,8 +14524,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(104, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(105, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_107(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_107(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14634,8 +14634,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(105, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(106, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_108(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_108(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14745,8 +14745,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(106, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(107, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_109(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_109(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14857,8 +14857,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(107, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(108, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_110(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_110(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -14970,8 +14970,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(108, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(109, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_111(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_111(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -15084,8 +15084,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(109, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(110, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_112(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_112(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -15199,8 +15199,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(110, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(111, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_113(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_113(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -15315,8 +15315,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(111, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(112, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_114(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_114(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -15432,8 +15432,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(112, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(113, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_115(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_115(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -15550,8 +15550,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(113, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(114, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_116(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_116(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -15669,8 +15669,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(114, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(115, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_117(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_117(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -15789,8 +15789,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(115, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(116, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_118(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_118(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -15910,8 +15910,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(116, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(117, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_119(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_119(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -16032,8 +16032,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(117, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(118, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_120(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_120(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -16155,8 +16155,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(118, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(119, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_121(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_121(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -16279,8 +16279,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(119, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(120, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_122(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_122(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -16404,8 +16404,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(120, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(121, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_123(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_123(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -16530,8 +16530,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(121, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(122, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_124(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_124(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -16657,8 +16657,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(122, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(123, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_125(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_125(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -16785,8 +16785,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(123, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(124, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_126(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_126(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -16914,8 +16914,8 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(124, __VA_ARGS__)), "Passing non-string as string argument!"); \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(125, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_127(...)                                                                                    \
-	do {                                                                                                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_127(...)                                                                                      \
+	do {                                                                                                                            \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(1, __VA_ARGS__)), "Passing non-string as string argument!");   \
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(2, __VA_ARGS__)), "Passing non-string as string argument!");   \
@@ -17045,17 +17045,17 @@ static_assert */
 		PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(126, __VA_ARGS__)), "Passing non-string as string argument!"); \
 	} while (0)
 
-#ifdef PJSTR_PP_HAS_GENERIC
-#	define PJSTR_PP_IS_STR(_s) _Generic((_s),              \
-					   const char * : 1, \
-					   char * : 1,       \
-					   default : 0)
+#ifdef PJSTR_PP_HAVE_GENERIC
+#	define PJSTR_PP_IS_STR(_s) _Generic((_s), \
+	const char *: 1,                           \
+	char *: 1,                                 \
+	default: 0)
 
-#	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(...)		       PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(PJSTR_PP_NARG(__VA_ARGS__), __VA_ARGS__)
+#	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(...)			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(PJSTR_PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(num_args, ...) PJSTR_PP_CONCAT(PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_, num_args, __VA_ARGS__)
 #else
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(...)
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(num_args, ...)
-#endif /* PJSTR_PP_HAS_GENERIC */
+#endif /* PJSTR_PP_HAVE_GENERIC */
 
 #endif /* PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_DEF_H */

@@ -8521,14 +8521,14 @@
 				do {                                            \
 					dst = stpcpy(dst, src);                 \
 				} while (0)
-#		endif /* HAS_STPCPY */
+#		endif /* HAVE_STPCPY */
 #	else
 #		define PJSTR_PP_STRCPY_TO_DST(dst, strlen_arr_ptr, src) \
 			do {                                            \
 				memcpy(dst, src, strlen_arr_ptr);       \
 				dst += strlen_arr_ptr;                  \
 			} while (0)
-#	endif /* HAS_STPCPY */
+#	endif /* HAVE_STPCPY */
 
 #else
 

@@ -461,7 +461,7 @@ jstr_rmchr_p(char *JSTR_RST _s,
 	return _s + len - 1;
 #else
 	return jstr_rmchr_mem_p(_s, _c, strlen(_s));
-#endif /* HAS_STRCHRNUL */
+#endif /* HAVE_STRCHRNUL */
 }
 
 /*
@@ -573,7 +573,7 @@ jstr_rmallchr_p(char *JSTR_RST const _s,
 	return (char *)_dst + (_p - _old);
 #else
 	return jstr_rmallchr_mem_p(_s, _c, strlen(_s));
-#endif /* HAS_STRCHRNUL */
+#endif /* HAVE_STRCHRNUL */
 }
 
 /*
@@ -620,7 +620,7 @@ jstr_rmnc_p(char *JSTR_RST const _s,
 	return (char *)_dst + (_p - _old);
 #else
 	return jstr_rmnc_mem_p(_s, _c, _n, strlen(_s));
-#endif /* HAS_STRCHRNUL */
+#endif /* HAVE_STRCHRNUL */
 }
 
 /*
