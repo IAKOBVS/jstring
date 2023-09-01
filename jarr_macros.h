@@ -1,10 +1,10 @@
 #ifndef JARR_MACROS_DEF_H
 #define JARR_MACROS_DEF_H 1
 
-#include "_builder.h"
-#include "_config.h"
-#include "_macros.h"
-#include "_templates.h"
+#include "builder.h"
+#include "config.h"
+#include "macros.h"
+#include "templates.h"
 
 #ifdef __cplusplus
 template <typename T, typename Other>

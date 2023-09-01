@@ -1,14 +1,14 @@
 #ifndef PJSTR_PP_VA_ARGS_MACROS_DEF_H
 #define PJSTR_PP_VA_ARGS_MACROS_DEF_H 1
 
-#include "_pp_st_assert.h"
-#include "_pp_strcpy_va_args.h"
+#include "pp_st_assert.h"
+#include "pp_strcpy_va_args.h"
 #if 1
-#	include "_pp_strlen2_va_args.h"
+#	include "pp_strlen2_va_args.h"
 #else
-#	include "_pp_strlen_va_args.h"
+#	include "pp_strlen_va_args.h"
 #endif
-#include "_pp_va_args_tools.h"
+#include "pp_va_args_tools.h"
 
 #define PJSTR_PP_CONCATENATE(A, B) \
 	PJSTR_PP_CONCATENATE_(A, B)

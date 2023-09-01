@@ -12,12 +12,12 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "_builder.h"
-#include "_config.h"
-#include "_jstr_string.h"
-#include "_macros.h"
-#include "_pp_va_args_macros.h"
-#include "_replace.h"
+#include "builder.h"
+#include "config.h"
+#include "jstr_string.h"
+#include "macros.h"
+#include "pp_va_args_macros.h"
+#include "replace.h"
 
 #define JREG_DEBUG 0
 

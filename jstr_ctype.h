@@ -8,8 +8,8 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "_jstr_ctype_table.h"
-#include "_macros.h"
+#include "jstr_ctype_table.h"
+#include "macros.h"
 #include <string.h>
 
 #ifdef __cplusplus

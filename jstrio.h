@@ -11,8 +11,8 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "_builder.h"
-#include "_macros.h"
+#include "builder.h"
+#include "macros.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,7 @@
 #ifndef PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_DEF_H
 #define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_DEF_H 1
 
-#include "_pp_va_args_tools.h"
+#include "pp_va_args_tools.h"
 
 #if defined(static_assert)
 #	define PJSTR_PP_ST_ASSERT(expr, msg) JSTR_NOTHROW

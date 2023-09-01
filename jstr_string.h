@@ -14,15 +14,15 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "_builder.h"
-#include "_config.h"
-#include "_jstr_ctype.h"
-#include "_macros.h"
+#include "builder.h"
+#include "config.h"
+#include "jstr_ctype.h"
+#include "macros.h"
 
-#include "_string-fza.h"
-#include "_string-fzb.h"
-#include "_string-fzc.h"
-#include "_string-fzi.h"
+#include "string-fza.h"
+#include "string-fzb.h"
+#include "string-fzc.h"
+#include "string-fzi.h"
 
 #ifdef __cplusplus
 extern "C" {

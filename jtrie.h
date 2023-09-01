@@ -9,7 +9,7 @@ extern "C" {
 }
 #endif /* __cplusplus */
 
-#include "_macros.h"
+#include "macros.h"
 
 #define JTRIE_ASCII_SIZE 256
 

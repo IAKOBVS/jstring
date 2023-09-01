@@ -1,7 +1,7 @@
 #ifndef JSTR_STRLEN_VA_ARGS_H_DEF
 #define JSTR_STRLEN_VA_ARGS_H_DEF 1
 
-#include "_pp_va_args_tools.h"
+#include "pp_va_args_tools.h"
 
 #define PJSTR_PP_STRLEN_VA_ARGS_1(...) \
 	(strlen(PJSTR_PP_EXTRACT_ARGS(0, __VA_ARGS__)))

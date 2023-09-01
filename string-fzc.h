@@ -19,8 +19,8 @@
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
 
-#include "_string-fza.h"
-#include "_string-fzi.h"
+#include "string-fza.h"
+#include "string-fzi.h"
 #include <endian.h>
 
 /* Given a word X that is known to contain a zero byte, return the pjstr_index of

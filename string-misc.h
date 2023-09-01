@@ -1,4 +1,4 @@
-/* Shift unaligned word read  Generic C version.
+/* Miscellaneous functions used in string implementations.  Generic C version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,38 +16,31 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_SHIFT_H
-#define PJSTR_STRING_SHIFT_H 1
+#ifndef PJSTR_STRING_MISC_H
+#define PJSTR_STRING_MISC_H 1
 
-#include "_macros.h"
-#include "_string-fza.h"
+#include "string-optype.h"
 #include <endian.h>
 #include <limits.h>
-#include <stdint.h>
+#include "macros.h"
 
-/* Return the mask WORD shifted based on S_INT address value, to ignore
-   values not presented in the aligned word read.  */
-static JSTR_INLINE jstr_op_ty
-pjstr_shift_find(jstr_op_ty word, uintptr_t s)
+/* Extract the byte at index IDX from word X, with index 0 being the
+   least significant byte.  */
+static JSTR_INLINE unsigned char
+pjstr_extractbyte(jstr_op_ty x, unsigned int idx)
 {
 	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		return word >> (CHAR_BIT * (s % sizeof(jstr_op_ty)));
+		return x >> (idx * CHAR_BIT);
 	else
-		return word << (CHAR_BIT * (s % sizeof(jstr_op_ty)));
+		return x >> (sizeof(x) - 1 - idx) * CHAR_BIT;
 }
 
-/* Mask off the bits defined for the S alignment value, or return WORD if
-   S is 0.  */
+/* Setup an word with each byte being c_in.  For instance, on a 64 bits
+   machine with input as 0xce the functions returns 0xcececececececece.  */
 static JSTR_INLINE jstr_op_ty
-pjstr_shift_find_last(jstr_op_ty word, uintptr_t s)
+pjstr_repeat_bytes(unsigned char c_in)
 {
-	s = s % sizeof(jstr_op_ty);
-	if (s == 0)
-		return word;
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		return word & ~(((jstr_op_ty)-1) << (s * CHAR_BIT));
-	else
-		return word & ~(((jstr_op_ty)-1) >> (s * CHAR_BIT));
+	return ((jstr_op_ty)-1 / 0xff) * c_in;
 }
 
-#endif /* PJSTR_STRING_SHIFT_H */
+#endif /* PJSTR_STRING_MISC_H */

@@ -10,12 +10,12 @@ extern "C" {
 }
 #endif /* __cplusplus */
 
-#include "_builder.h"
-#include "_config.h"
-#include "_jarr_macros.h"
-#include "_macros.h"
-#include "_pp_arrcpy_va_args.h"
-#include "_templates.h"
+#include "builder.h"
+#include "config.h"
+#include "jarr_macros.h"
+#include "macros.h"
+#include "pp_arrcpy_va_args.h"
+#include "templates.h"
 
 #define jarr(T, name)                                                             \
 	typedef struct pjarr_##name##_ty {                                        \

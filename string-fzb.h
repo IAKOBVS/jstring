@@ -19,7 +19,7 @@
 #ifndef PJSTR_STRING_FZB_H
 #define PJSTR_STRING_FZB_H 1
 
-#include "_string-fza.h"
+#include "string-fza.h"
 #include <endian.h>
 
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */

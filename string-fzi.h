@@ -21,7 +21,7 @@
 
 #include <limits.h>
 #include <endian.h>
-#include "_string-fza.h"
+#include "string-fza.h"
 
 static JSTR_INLINE int
 pjstr_clz (jstr_op_ty c)

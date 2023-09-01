@@ -13,15 +13,15 @@ extern "C" {
 #endif /* __cpluslus */
 
 #ifndef __cplusplus
-#	include "_pp_va_args_macros.h"
+#	include "pp_va_args_macros.h"
 #endif /* !__cpluslus */
 
-#include "_config.h"
-#include "_macros.h"
-#include "_templates.h"
+#include "config.h"
+#include "macros.h"
+#include "templates.h"
 
 #ifdef __cplusplus
-#	include "_jtraits.h"
+#	include "jtraits.h"
 #endif /* __cpluslus */
 
 #define PJSTR_MIN_ALLOC(new_cap)                          \
