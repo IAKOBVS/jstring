@@ -13,7 +13,7 @@ extern "C" {
 #endif /* __cpluslus */
 
 #ifndef __cplusplus
-#	include "pp_va_args_macros.h"
+#	include "jstr_pp_va_args_macros.h"
 #endif /* !__cpluslus */
 
 #include "config.h"

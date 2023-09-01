@@ -16,7 +16,7 @@ extern "C" {
 #include "config.h"
 #include "jstr_string.h"
 #include "jstr_macros.h"
-#include "pp_va_args_macros.h"
+#include "jstr_pp_va_args_macros.h"
 #include "jstr_replace.h"
 
 #define JREG_DEBUG 0

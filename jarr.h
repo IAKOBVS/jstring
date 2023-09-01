@@ -14,7 +14,7 @@ extern "C" {
 #include "config.h"
 #include "jarr_macros.h"
 #include "jstr_macros.h"
-#include "pp_arrcpy_va_args.h"
+#include "jstr_pp_arrcpy_va_args.h"
 #include "templates.h"
 
 #define jarr(T, name)                                                             \
