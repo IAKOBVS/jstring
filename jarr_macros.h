@@ -3,7 +3,7 @@
 
 #include "builder.h"
 #include "config.h"
-#include "macros.h"
+#include "jstr_macros.h"
 #include "templates.h"
 
 #ifdef __cplusplus

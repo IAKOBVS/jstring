@@ -1,7 +1,7 @@
 #ifndef PJSTR_STRING_FZI_H
 #define PJSTR_STRING_FZI_H 1
 
-#include "macros.h"
+#include "jstr_macros.h"
 
 #if JSTR_ARCH_ALPHA
 #	include "alpha-string-fzi.h"

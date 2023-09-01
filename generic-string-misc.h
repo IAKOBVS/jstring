@@ -22,7 +22,7 @@
 #include "string-optype.h"
 #include <endian.h>
 #include <limits.h>
-#include "macros.h"
+#include "jstr_macros.h"
 
 /* Extract the byte at index IDX from word X, with index 0 being the
    least significant byte.  */

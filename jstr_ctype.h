@@ -9,7 +9,7 @@ extern "C" {
 #endif /* __cpluslus */
 
 #include "jstr_ctype_table.h"
-#include "macros.h"
+#include "jstr_macros.h"
 #include <string.h>
 
 #ifdef __cplusplus

@@ -19,7 +19,7 @@
 #ifndef PJSTR_GENERIC_STRING_SHIFT_H
 #define PJSTR_GENERIC_STRING_SHIFT_H 1
 
-#include "macros.h"
+#include "jstr_macros.h"
 #include "generic-string-fza.h"
 #include <endian.h>
 #include <limits.h>

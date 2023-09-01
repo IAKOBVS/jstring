@@ -13,7 +13,7 @@ extern "C" {
 #include "builder.h"
 #include "config.h"
 #include "jarr_macros.h"
-#include "macros.h"
+#include "jstr_macros.h"
 #include "pp_arrcpy_va_args.h"
 #include "templates.h"
 

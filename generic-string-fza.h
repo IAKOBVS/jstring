@@ -19,7 +19,7 @@
 #ifndef PJSTR_GENERIC_STRING_FZA_H
 #define PJSTR_GENERIC_STRING_FZA_H 1
 
-#include "macros.h"
+#include "jstr_macros.h"
 #include "generic-string-misc.h"
 #include "string-optype.h"
 

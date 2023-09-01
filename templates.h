@@ -17,7 +17,7 @@ extern "C" {
 
 #include "config.h"
 #include "jtraits.h"
-#include "macros.h"
+#include "jstr_macros.h"
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE

@@ -1,7 +1,7 @@
 #ifndef PJSTR_STRING_MISC_H
 #define PJSTR_STRING_MISC_H 1
 
-#include "macros.h"
+#include "jstr_macros.h"
 
 #if JSTR_ARCH_GENERIC
 #	include "generic_string-misc.h"

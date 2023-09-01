@@ -17,7 +17,7 @@ extern "C" {
 #include "builder.h"
 #include "config.h"
 #include "jstr_ctype.h"
-#include "macros.h"
+#include "jstr_macros.h"
 
 #include "string-fza.h"
 #include "string-fzb.h"
