@@ -869,124 +869,6 @@ jstr_endswith_mem(const char *JSTR_RST const _hs,
 	return (_hsz < _nelen) ? 1 : memcmp(_hs + _hsz - _nelen, _ne, _nelen);
 }
 
-#define PJSTR_NUMTOSTR(_max_digits, _base)                                     \
-	do {                                                                   \
-		unsigned char *_d = (unsigned char *)_dst;                     \
-		unsigned char _sbuf[_max_digits];                              \
-		unsigned char *JSTR_RST _s = (unsigned char *)_sbuf;           \
-		unsigned int _neg = (_num < 0) ? (_num = -_num, 1) : 0;        \
-		unsigned char *const _end = (unsigned char *)_s + _max_digits; \
-		_s = _end - 1;                                                 \
-		do                                                             \
-			*_s-- = _num % _base + '0';                            \
-		while (_num /= 10);                                            \
-		if (_neg)                                                      \
-			*_s = '-';                                             \
-		else                                                           \
-			++_s;                                                  \
-		while (_s < _end)                                              \
-			*_d++ = *_s++;                                         \
-		*_d = '\0';                                                    \
-		return (char *)_d;                                             \
-	} while (0)
-
-#define PJSTR_UNUMTOSTR(_max_digits, _base)                   \
-	do {                                                  \
-		unsigned char *_d = (unsigned char *)_dst;    \
-		unsigned char _sbuf[_max_digits];             \
-		unsigned char *JSTR_RST _s = _sbuf;           \
-		unsigned char *const _end = _s + _max_digits; \
-		_s = _end - 1;                                \
-		do                                            \
-			*_s-- = _num % _base + '0';           \
-		while (_num /= 10);                           \
-		++_s;                                         \
-		while (_s < _end)                             \
-			*_d++ = *_s++;                        \
-		*_d = '\0';                                   \
-		return (char *)_d;                            \
-	} while (0)
-
-#define PJSTR_NUMTOSTR_ATTR  \
-	JSTR_MAYBE_UNUSED    \
-	JSTR_NONNULL_ALL     \
-	JSTR_WARN_UNUSED     \
-	JSTR_RETURNS_NONNULL \
-	JSTR_NOTHROW
-
-#define PJSTR_DEFINE_NUMTOSTR(_num_type, _func_name, _max) \
-	PJSTR_NUMTOSTR_ATTR                                \
-	static char *                                      \
-	_func_name(char *JSTR_RST const _dst,              \
-		   _num_type _num,                         \
-		   const unsigned int _base) JSTR_NOEXCEPT \
-	{                                                  \
-		PJSTR_NUMTOSTR(_max, _base);               \
-	}
-
-#define PJSTR_DEFINE_NUMTOSTR_BASE(_num_type, _func_name, _max, _base) \
-	PJSTR_NUMTOSTR_ATTR                                            \
-	static char *                                                  \
-	_func_name(char *JSTR_RST const _dst,                          \
-		   _num_type _num) JSTR_NOEXCEPT                       \
-	{                                                              \
-		PJSTR_NUMTOSTR(_max, _base);                           \
-	}
-
-#define PJSTR_DEFINE_UNUMTOSTR(_num_type, _func_name, _max) \
-	PJSTR_NUMTOSTR_ATTR                                 \
-	static char *                                       \
-	_func_name(char *JSTR_RST const _dst,               \
-		   _num_type _num,                          \
-		   const unsigned int _base) JSTR_NOEXCEPT  \
-	{                                                   \
-		PJSTR_UNUMTOSTR(_max, _base);               \
-	}
-
-#define PJSTR_DEFINE_UNUMTOSTR_BASE(_num_type, _func_name, _max, _base) \
-	PJSTR_NUMTOSTR_ATTR                                             \
-	static char *                                                   \
-	_func_name(char *JSTR_RST const _dst,                           \
-		   _num_type _num) JSTR_NOEXCEPT                        \
-	{                                                               \
-		PJSTR_UNUMTOSTR(_max, _base);                           \
-	}
-
-PJSTR_DEFINE_NUMTOSTR(int, jstr_itoa, PJSTR_MAX_INT_DIGITS)
-PJSTR_DEFINE_NUMTOSTR(long, jstr_ltoa, PJSTR_MAX_INT_DIGITS)
-PJSTR_DEFINE_NUMTOSTR(long long, jstr_lltoa, PJSTR_MAX_INT_DIGITS)
-PJSTR_DEFINE_UNUMTOSTR(unsigned int, jstr_utoa, PJSTR_MAX_INT_DIGITS)
-PJSTR_DEFINE_UNUMTOSTR(unsigned long, jstr_ultoa, PJSTR_MAX_INT_DIGITS)
-PJSTR_DEFINE_UNUMTOSTR(unsigned long long, jstr_ulltoa, PJSTR_MAX_INT_DIGITS)
-
-#define PJSTR_DEFINE_NUMTOSTRALL_BASE(_base)                                                       \
-	PJSTR_DEFINE_NUMTOSTR_BASE(int, jstr_itoa##_base, PJSTR_MAX_INT_DIGITS, _base)             \
-	PJSTR_DEFINE_NUMTOSTR_BASE(long, jstr_ltoa##_base, PJSTR_MAX_INT_DIGITS, _base)            \
-	PJSTR_DEFINE_NUMTOSTR_BASE(long long, jstr_lltoa##_base, PJSTR_MAX_INT_DIGITS, _base)      \
-	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned int, jstr_utoa##_base, PJSTR_MAX_INT_DIGITS, _base)   \
-	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned long, jstr_ultoa##_base, PJSTR_MAX_INT_DIGITS, _base) \
-	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned long long, jstr_ulltoa##_base, PJSTR_MAX_INT_DIGITS, _base)
-
-PJSTR_DEFINE_NUMTOSTRALL_BASE(2);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(3);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(4);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(5);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(6);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(7);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(8);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(9);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(10);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(11);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(12);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(13);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(14);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(15);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(16);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(17);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(18);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(19);
-PJSTR_DEFINE_NUMTOSTRALL_BASE(20);
-
 /*
   Count occurences of C in S.
   Return value:
@@ -1084,6 +966,137 @@ jstr_count(const char *JSTR_RST _s,
 		++_cnt, _s += _findlen;
 	return _cnt;
 }
+
+#define PJSTR_NUMTOSTR(_max_digits, _base)                                     \
+	do {                                                                   \
+		JSTR_ASSERT_IS_STR(_dst);                                      \
+		JSTR_ASSERT_IS_SIZE(_base);                                    \
+		JSTR_ASSERT_IS_SIZE(_max_digits);                              \
+		unsigned char *_d = (unsigned char *)_dst;                     \
+		unsigned char _sbuf[_max_digits];                              \
+		unsigned char *JSTR_RST _s = (unsigned char *)_sbuf;           \
+		unsigned int _neg = (_num < 0) ? (_num = -_num, 1) : 0;        \
+		unsigned char *const _end = (unsigned char *)_s + _max_digits; \
+		_s = _end - 1;                                                 \
+		do                                                             \
+			*_s-- = _num % _base + '0';                            \
+		while (_num /= 10);                                            \
+		if (_neg)                                                      \
+			*_s = '-';                                             \
+		else                                                           \
+			++_s;                                                  \
+		while (_s < _end)                                              \
+			*_d++ = *_s++;                                         \
+		*_d = '\0';                                                    \
+		return (char *)_d;                                             \
+	} while (0)
+
+#define PJSTR_UNUMTOSTR(_max_digits, _base)                   \
+	do {                                                  \
+		JSTR_ASSERT_IS_STR(_dst);                     \
+		JSTR_ASSERT_IS_SIZE(_base);                   \
+		JSTR_ASSERT_IS_SIZE(_max_digits);             \
+		unsigned char *_d = (unsigned char *)_dst;    \
+		unsigned char _sbuf[_max_digits];             \
+		unsigned char *JSTR_RST _s = _sbuf;           \
+		unsigned char *const _end = _s + _max_digits; \
+		_s = _end - 1;                                \
+		do                                            \
+			*_s-- = _num % _base + '0';           \
+		while (_num /= 10);                           \
+		++_s;                                         \
+		while (_s < _end)                             \
+			*_d++ = *_s++;                        \
+		*_d = '\0';                                   \
+		return (char *)_d;                            \
+	} while (0)
+
+#define PJSTR_NUMTOSTR_ATTR  \
+	JSTR_MAYBE_UNUSED    \
+	JSTR_NONNULL_ALL     \
+	JSTR_WARN_UNUSED     \
+	JSTR_RETURNS_NONNULL \
+	JSTR_NOTHROW
+
+#define PJSTR_DEFINE_NUMTOSTR(_num_type, _func_name, _max) \
+	PJSTR_NUMTOSTR_ATTR                                \
+	static char *                                      \
+	_func_name(char *JSTR_RST const _dst,              \
+		   _num_type _num,                         \
+		   const unsigned int _base) JSTR_NOEXCEPT \
+	{                                                  \
+		PJSTR_NUMTOSTR(_max, _base);               \
+	}
+
+#define PJSTR_DEFINE_NUMTOSTR_BASE(_num_type, _func_name, _max, _base) \
+	PJSTR_NUMTOSTR_ATTR                                            \
+	static char *                                                  \
+	_func_name(char *JSTR_RST const _dst,                          \
+		   _num_type _num) JSTR_NOEXCEPT                       \
+	{                                                              \
+		PJSTR_NUMTOSTR(_max, _base);                           \
+	}
+
+#define PJSTR_DEFINE_UNUMTOSTR(_num_type, _func_name, _max) \
+	PJSTR_NUMTOSTR_ATTR                                 \
+	static char *                                       \
+	_func_name(char *JSTR_RST const _dst,               \
+		   _num_type _num,                          \
+		   const unsigned int _base) JSTR_NOEXCEPT  \
+	{                                                   \
+		PJSTR_UNUMTOSTR(_max, _base);               \
+	}
+
+#define PJSTR_DEFINE_UNUMTOSTR_BASE(_num_type, _func_name, _max, _base) \
+	PJSTR_NUMTOSTR_ATTR                                             \
+	static char *                                                   \
+	_func_name(char *JSTR_RST const _dst,                           \
+		   _num_type _num) JSTR_NOEXCEPT                        \
+	{                                                               \
+		PJSTR_UNUMTOSTR(_max, _base);                           \
+	}
+
+PJSTR_DEFINE_NUMTOSTR(int, jstr_itoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_NUMTOSTR(long, jstr_ltoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_NUMTOSTR(long long, jstr_lltoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_UNUMTOSTR(unsigned int, jstr_utoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_UNUMTOSTR(unsigned long, jstr_ultoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_UNUMTOSTR(unsigned long long, jstr_ulltoa, PJSTR_MAX_INT_DIGITS)
+
+#define PJSTR_DEFINE_NUMTOSTRALL_BASE(_base)                                                       \
+	PJSTR_DEFINE_NUMTOSTR_BASE(int, jstr_itoa##_base, PJSTR_MAX_INT_DIGITS, _base)             \
+	PJSTR_DEFINE_NUMTOSTR_BASE(long, jstr_ltoa##_base, PJSTR_MAX_INT_DIGITS, _base)            \
+	PJSTR_DEFINE_NUMTOSTR_BASE(long long, jstr_lltoa##_base, PJSTR_MAX_INT_DIGITS, _base)      \
+	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned int, jstr_utoa##_base, PJSTR_MAX_INT_DIGITS, _base)   \
+	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned long, jstr_ultoa##_base, PJSTR_MAX_INT_DIGITS, _base) \
+	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned long long, jstr_ulltoa##_base, PJSTR_MAX_INT_DIGITS, _base)
+
+PJSTR_DEFINE_NUMTOSTRALL_BASE(2);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(3);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(4);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(5);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(6);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(7);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(8);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(9);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(10);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(11);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(12);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(13);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(14);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(15);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(16);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(17);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(18);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(19);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(20);
+
+#undef PJSTR_DEFINE_NUMTOSTRALL_BASE
+#undef PJSTR_DEFINE_NUMTOSTRALL
+#undef PJSTR_DEFINE_UNUMTOSTR_BASE
+#undef PJSTR_DEFINE_NUMTOSTR_BASE
+#undef PJSTR_DEFINE_UNUMTOSTR
+#undef PJSTR_DEFINE_NUMTOSTR
 
 #ifdef __cplusplus
 } /* extern C */
