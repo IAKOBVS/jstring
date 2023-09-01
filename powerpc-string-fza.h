@@ -25,7 +25,7 @@
 #include "string-optype.h"
 
 /* The functions return a byte mask.  */
-typedef jstr_op_ty jstr_op_ty;
+
 
 /* This function returns 0xff for each byte that is
    equal between X1 and X2.  */

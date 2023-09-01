@@ -26,7 +26,7 @@
    However, if we narrow jstr_op_ty to either 'int' or 'uint8_t', we get
    unnecessary truncation instructions from the 'unsigned long' type
    returned by __builtin_alpha_cmpbge.  */
-typedef jstr_op_ty jstr_op_ty;
+
 
 static JSTR_INLINE jstr_op_ty
 pjstr_find_zero_all (jstr_op_ty x)

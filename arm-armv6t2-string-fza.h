@@ -23,7 +23,7 @@
 #include "string-optype.h"
 
 /* The functions return a byte mask.  */
-typedef jstr_op_ty jstr_op_ty;
+
 
 /* This function returns at least one bit set within every byte
    of X that is zero.  */

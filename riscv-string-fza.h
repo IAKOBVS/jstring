@@ -26,7 +26,7 @@
 
 /* The functions return a byte mask.  */
 
-typedef jstr_op_ty jstr_op_ty;
+
 
 /* This function returns 0xff for each byte that is zero in X.  */
 static JSTR_INLINE jstr_op_ty
