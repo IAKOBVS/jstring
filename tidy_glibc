@@ -7,7 +7,7 @@ s/\(^\|[^_0-9A-Za-z]\)\(repeat_bytes\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\2\3/g;
 s/\(^\|[^_0-9A-Za-z]\)\(extractbyte\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\1\2\3/g;
 s/\(^\|[^_0-9A-Za-z]\)\(shift_\)/\1pjstr_\2/g;
 s/\(^\|[^_0-9A-Za-z]\)\(find_..\)/\1pjstr_\2/g;
-s/\(^\|[^_0-9A-Za-z]\)\(index\)_/\1pjstr_\2/g;
+s/\(^\|[^_0-9A-Za-z]\)\(index_\)/\1pjstr_\2/g;
 s/\(^\|[^_0-9A-Za-z]\)\(has_\)/\1pjstr_\2/g;
 s/\(^\|[^_0-9A-Za-z]\)\(clz\)/\1pjstr_\2/g;
 s/\(^\|[^_0-9A-Za-z]\)\(ctz\)/\1pjstr_\2/g;

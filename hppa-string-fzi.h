@@ -27,7 +27,7 @@
 _Static_assert (sizeof (jstr_op_ty) == 4, "64-bit not supported");
 
 static JSTR_INLINE unsigned int
-pjstr_indexfirst (jstr_op_ty c)
+pjstr_index_first (jstr_op_ty c)
 {
   unsigned int ret;
 
@@ -45,7 +45,7 @@ pjstr_indexfirst (jstr_op_ty c)
 }
 
 static JSTR_INLINE unsigned int
-pjstr_indexlast (jstr_op_ty c)
+pjstr_index_last (jstr_op_ty c)
 {
   unsigned int ret;
 
