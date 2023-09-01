@@ -20,13 +20,13 @@
 #define PJSTR_STRING_FZB_H 1
 
 #include <sys/cdefs.h>
-#include <string-optype.h>
+#include "string-optype.h"
 
 _Static_assert (sizeof (op_t) == 4, "64-bit not supported");
 
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
-static __always_inline _Bool
-has_zero (op_t x)
+static JSTR_INLINE _Bool
+pjstr_has_zero (op_t x)
 {
   /* It's more useful to expose a control transfer to the compiler
      than to expose a proper boolean result.  */
@@ -38,8 +38,8 @@ has_zero (op_t x)
 }
 
 /* Likewise, but for byte equality between X1 and X2.  */
-static __always_inline _Bool
-has_eq (op_t x1, op_t x2)
+static JSTR_INLINE _Bool
+pjstr_has_eq (op_t x1, op_t x2)
 {
   asm goto ("uxor,sbz %0,%1,%%r0\n\t"
 	    "b,n %l2" : : "r"(x1), "r"(x2) : : nbz);
@@ -49,8 +49,8 @@ has_eq (op_t x1, op_t x2)
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
-static __always_inline _Bool
-has_zero_eq (op_t x1, op_t x2)
+static JSTR_INLINE _Bool
+pjstr_has_zero_eq (op_t x1, op_t x2)
 {
   asm goto ("uxor,sbz %%r0,%0,%%r0\n\t"
 	    "uxor,nbz %0,%1,%%r0\n\t"

@@ -20,68 +20,68 @@
 #define PJSTR_STRING_FZC_H 1
 
 #include <endian.h>
-#include <string-fza.h>
-#include <string-fzi.h>
+#include "string-fza.h"
+#include "string-fzi.h"
 
 
 /* Given a word X that is known to contain a zero byte, return the index of
    the first such within the word in memory order.  */
-static __always_inline unsigned int
-index_first_zero (op_t x)
+static JSTR_INLINE unsigned int
+pjstr_first_zero (op_t x)
 {
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    x = find_zero_low (x);
+    x = pjstr_find_zero_low (x);
   else
-    x = find_zero_all (x);
-  return index_first (x);
+    x = pjstr_find_zero_all (x);
+  return pjstr_first (x);
 }
 
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
-static __always_inline unsigned int
-index_first_eq (op_t x1, op_t x2)
+static JSTR_INLINE unsigned int
+pjstr_first_eq (op_t x1, op_t x2)
 {
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    x1 = find_eq_low (x1, x2);
+    x1 = pjstr_find_eq_low (x1, x2);
   else
-    x1 = find_eq_all (x1, x2);
-  return index_first (x1);
+    x1 = pjstr_find_eq_all (x1, x2);
+  return pjstr_first (x1);
 }
 
 /* Similarly, but perform the search for zero within X1 or equality between
    X1 and X2.  */
-static __always_inline unsigned int
-index_first_zero_eq (op_t x1, op_t x2)
+static JSTR_INLINE unsigned int
+pjstr_first_zero_eq (op_t x1, op_t x2)
 {
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    x1 = find_zero_eq_low (x1, x2);
+    x1 = pjstr_find_zero_eq_low (x1, x2);
   else
-    x1 = find_zero_eq_all (x1, x2);
-  return index_first (x1);
+    x1 = pjstr_find_zero_eq_all (x1, x2);
+  return pjstr_first (x1);
 }
 
 /* Similarly, but perform the search for zero within X1 or inequality between
    X1 and X2.  */
-static __always_inline unsigned int
-index_first_zero_ne (op_t x1, op_t x2)
+static JSTR_INLINE unsigned int
+pjstr_first_zero_ne (op_t x1, op_t x2)
 {
-  return index_first (find_zero_ne_all (x1, x2));
+  return pjstr_first (pjstr_find_zero_ne_all (x1, x2));
 }
 
 /* Similarly, but search for the last zero within X.  */
-static __always_inline unsigned int
-index_last_zero (op_t x)
+static JSTR_INLINE unsigned int
+pjstr_last_zero (op_t x)
 {
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    x = find_zero_all (x);
+    x = pjstr_find_zero_all (x);
   else
-    x = find_zero_low (x);
-  return index_last (x);
+    x = pjstr_find_zero_low (x);
+  return pjstr_last (x);
 }
 
-static __always_inline unsigned int
-index_last_eq (op_t x1, op_t x2)
+static JSTR_INLINE unsigned int
+pjstr_last_eq (op_t x1, op_t x2)
 {
-  return index_last_zero (x1 ^ x2);
+  return pjstr_last_zero (x1 ^ x2);
 }
 
 #endif /* STRING_FZC_H */

@@ -20,33 +20,33 @@
 #define PJSTR_STRING_FZB_H 1
 
 #include <sys/cdefs.h>
-#include <string-optype.h>
+#include "string-optype.h"
 
 /* Note that since CMPBGE creates a bit mask rather than a byte mask,
    we cannot simply provide a target-specific string-fza.h.  */
 
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 
-static __always_inline _Bool
-has_zero (op_t x)
+static JSTR_INLINE _Bool
+pjstr_has_zero (op_t x)
 {
   return __builtin_alpha_cmpbge (0, x) != 0;
 }
 
 /* Likewise, but for byte equality between X1 and X2.  */
 
-static __always_inline _Bool
-has_eq (op_t x1, op_t x2)
+static JSTR_INLINE _Bool
+pjstr_has_eq (op_t x1, op_t x2)
 {
-  return has_zero (x1 ^ x2);
+  return pjstr_has_zero (x1 ^ x2);
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
 
-static __always_inline _Bool
-has_zero_eq (op_t x1, op_t x2)
+static JSTR_INLINE _Bool
+pjstr_has_zero_eq (op_t x1, op_t x2)
 {
-  return has_zero (x1) | has_eq (x1, x2);
+  return pjstr_has_zero (x1) | pjstr_has_eq (x1, x2);
 }
 
 #endif /* PJSTR_STRING_FZB_H */

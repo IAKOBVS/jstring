@@ -19,6 +19,8 @@ extern "C" {
 #include "jstr_ctype.h"
 #include "jstr_macros.h"
 
+#include "string-opthr.h"
+#include "string-optype.h"
 #include "string-fza.h"
 #include "string-fzb.h"
 #include "string-fzc.h"
@@ -34,7 +36,6 @@ extern "C" {
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) strstr(_hs, _ne)
 #endif /* HAVE_MEMMEM */
 
-typedef unsigned long int jstr_op_ty JSTR_MAY_ALIAS;
 #define JSTR_OPSIZ sizeof(jstr_op_ty)
 
 /*

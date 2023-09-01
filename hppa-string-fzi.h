@@ -19,17 +19,17 @@
 #ifndef PJSTR_STRING_FZI_H
 #define PJSTR_STRING_FZI_H 1
 
-#include <string-optype.h>
-#include <string-fza.h>
+#include "string-optype.h"
+#include "string-fza.h"
 
 _Static_assert (sizeof (op_t) == 4, "64-bit not supported");
 
-static __always_inline unsigned int
-index_first (find_t c)
+static JSTR_INLINE unsigned int
+pjstr_first (pjstr_find_t c)
 {
   unsigned int ret;
 
-  /* Since we have no clz insn, direct tests of the bytes is faster
+  /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,= %1,23,8,%%r0\n\t"
        "ldi 2,%0\n\t"
@@ -42,12 +42,12 @@ index_first (find_t c)
   return ret;
 }
 
-static __always_inline unsigned int
-index_last (find_t c)
+static JSTR_INLINE unsigned int
+pjstr_last (pjstr_find_t c)
 {
   unsigned int ret;
 
-  /* Since we have no ctz insn, direct tests of the bytes is faster
+  /* Since we have no pjstr_ctz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,= %1,15,8,%%r0\n\t"
        "ldi 1,%0\n\t"

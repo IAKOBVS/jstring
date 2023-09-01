@@ -16,54 +16,54 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _RISCVPJSTR_STRING_FZA_H
-#define _RISCVPJSTR_STRING_FZA_H 1
+#ifndef _RISCV_STRING_FZA_H
+#define _RISCV_STRING_FZA_H 1
 
 #ifdef __riscv_zbb
 /* With bitmap extension we can use orc.b to find all zero bytes.  */
-# include <string-misc.h>
-# include <string-optype.h>
+#include "string-misc.h"
+#include "string-optype.h"
 
 /* The functions return a byte mask.  */
-typedef op_t find_t;
+
 
 /* This function returns 0xff for each byte that is zero in X.  */
-static __always_inline find_t
-find_zero_all (op_t x)
+static JSTR_INLINE pjstr_find_t
+pjstr_find_zero_all (op_t x)
 {
-  find_t r;
+  pjstr_find_t r;
   asm ("orc.b %0, %1" : "=r" (r) : "r" (x));
   return ~r;
 }
 
 /* This function returns 0xff for each byte that is equal between X1 and
    X2.  */
-static __always_inline find_t
-find_eq_all (op_t x1, op_t x2)
+static JSTR_INLINE pjstr_find_t
+pjstr_find_eq_all (op_t x1, op_t x2)
 {
-  return find_zero_all (x1 ^ x2);
+  return pjstr_find_zero_all (x1 ^ x2);
 }
 
 /* Identify zero bytes in X1 or equality between X1 and X2.  */
-static __always_inline find_t
-find_zero_eq_all (op_t x1, op_t x2)
+static JSTR_INLINE pjstr_find_t
+pjstr_find_zero_eq_all (op_t x1, op_t x2)
 {
-  return find_zero_all (x1) | find_eq_all (x1, x2);
+  return pjstr_find_zero_all (x1) | pjstr_find_eq_all (x1, x2);
 }
 
 /* Identify zero bytes in X1 or inequality between X1 and X2.  */
-static __always_inline find_t
-find_zero_ne_all (op_t x1, op_t x2)
+static JSTR_INLINE pjstr_find_t
+pjstr_find_zero_ne_all (op_t x1, op_t x2)
 {
-  return find_zero_all (x1) | ~find_eq_all (x1, x2);
+  return pjstr_find_zero_all (x1) | ~pjstr_find_eq_all (x1, x2);
 }
 
 /* Define the "inexact" versions in terms of the exact versions.  */
-# define find_zero_low		find_zero_all
-# define find_eq_low		find_eq_all
-# define find_zero_eq_low	find_zero_eq_all
+# define pjstr_find_zero_low		pjstr_find_zero_all
+# define pjstr_find_eq_low		pjstr_find_eq_all
+# define pjstr_find_zero_eq_low	pjstr_find_zero_eq_all
 #else
-#include <sysdeps/generic/string-fza.h>
+#include "sysdeps/generic/string-fza.h"
 #endif
 
-#endif /* _RISCVPJSTR_STRING_FZA_H  */
+#endif /* _RISCV_STRING_FZA_H  */

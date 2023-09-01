@@ -20,16 +20,16 @@
 #define PJSTR_STRING_FZI_H
 
 #include <stdint.h>
-#include <string-optype.h>
-#include <string-fza.h>
+#include "string-optype.h"
+#include "string-fza.h"
 
 /* Note that since CMPBGE creates a bit mask rather than a byte mask,
    we cannot simply provide a target-specific string-fza.h.  */
 
-/* A subroutine for the index_zero functions.  Given a bitmask C,
+/* A subroutine for the pjstr_zero functions.  Given a bitmask C,
    return the index of the first bit set in memory order.  */
-static __always_inline unsigned int
-index_first (find_t c)
+static JSTR_INLINE unsigned int
+pjstr_first (pjstr_find_t c)
 {
 #ifdef __alpha_cix__
   return __builtin_ctzl (c);
@@ -42,8 +42,8 @@ index_first (find_t c)
 /* Similarly, but return the (memory order) index of the last bit
    that is non-zero.  Note that only the least 8 bits may be nonzero.  */
 
-static __always_inline unsigned int
-index_last (find_t x)
+static JSTR_INLINE unsigned int
+pjstr_last (pjstr_find_t x)
 {
 #ifdef __alpha_cix__
   return __builtin_clzl (x) ^ 63;

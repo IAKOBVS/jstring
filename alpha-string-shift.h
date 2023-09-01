@@ -21,19 +21,19 @@
 
 #include <limits.h>
 #include <stdint.h>
-#include <string-fza.h>
+#include "string-fza.h"
 
 /* Return the mask WORD shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
-static __always_inline find_t
-shift_find (find_t word, uintptr_t s)
+static JSTR_INLINE pjstr_find_t
+pjstr_shift_find (pjstr_find_t word, uintptr_t s)
 {
   return word >> (s % sizeof (op_t));
 }
 
 /* Mask off the bits defined the the S alignment value.  */
-static __always_inline find_t
-shift_find_last (find_t word, uintptr_t s)
+static JSTR_INLINE pjstr_find_t
+pjstr_shift_find_last (pjstr_find_t word, uintptr_t s)
 {
   s = s % sizeof (op_t);
   if (s == 0)

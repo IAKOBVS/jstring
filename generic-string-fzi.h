@@ -21,51 +21,51 @@
 
 #include <limits.h>
 #include <endian.h>
-#include <string-fza.h>
+#include "string-fza.h"
 
-static __always_inline int
-clz (find_t c)
+static JSTR_INLINE int
+pjstr_clz (pjstr_find_t c)
 {
-  if (sizeof (find_t) == sizeof (unsigned long))
+  if (sizeof (pjstr_find_t) == sizeof (unsigned long))
     return __builtin_clzl (c);
   else
     return __builtin_clzll (c);
 }
 
-static __always_inline int
-ctz (find_t c)
+static JSTR_INLINE int
+pjstr_ctz (pjstr_find_t c)
 {
-  if (sizeof (find_t) == sizeof (unsigned long))
+  if (sizeof (pjstr_find_t) == sizeof (unsigned long))
     return __builtin_ctzl (c);
   else
     return __builtin_ctzll (c);
 }
 
-/* A subroutine for the index_zero functions.  Given a test word C, return
+/* A subroutine for the pjstr_zero functions.  Given a test word C, return
    the (memory order) index of the first byte (in memory order) that is
    non-zero.  */
-static __always_inline unsigned int
-index_first (find_t c)
+static JSTR_INLINE unsigned int
+pjstr_first (pjstr_find_t c)
 {
   int r;
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    r = ctz (c);
+    r = pjstr_ctz (c);
   else
-    r = clz (c);
+    r = pjstr_clz (c);
   return r / CHAR_BIT;
 }
 
 /* Similarly, but return the (memory order) index of the last byte that is
    non-zero.  */
-static __always_inline unsigned int
-index_last (find_t c)
+static JSTR_INLINE unsigned int
+pjstr_last (pjstr_find_t c)
 {
   int r;
   if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    r = clz (c);
+    r = pjstr_clz (c);
   else
-    r = ctz (c);
-  return sizeof (find_t) - 1 - (r / CHAR_BIT);
+    r = pjstr_ctz (c);
+  return sizeof (pjstr_find_t) - 1 - (r / CHAR_BIT);
 }
 
 #endif /* STRING_FZI_H */

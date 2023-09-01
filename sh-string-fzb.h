@@ -20,11 +20,11 @@
 #define STRING_FZB_H 1
 
 #include <sys/cdefs.h>
-#include <string-optype.h>
+#include "string-optype.h"
 
 /* Determine if any bytes within X1 and X2 are equal.  */
-static __always_inline _Bool
-has_eq (op_t x1, op_t x2)
+static JSTR_INLINE _Bool
+pjstr_has_eq (op_t x1, op_t x2)
 {
   int ret;
 
@@ -39,17 +39,17 @@ has_eq (op_t x1, op_t x2)
 }
 
 /* Determine if any byte within X is zero.  */
-static __always_inline _Bool
-has_zero (op_t x)
+static JSTR_INLINE _Bool
+pjstr_has_zero (op_t x)
 {
-  return has_eq (x, 0);
+  return pjstr_has_eq (x, 0);
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
-static __always_inline _Bool
-has_zero_eq (op_t x1, op_t x2)
+static JSTR_INLINE _Bool
+pjstr_has_zero_eq (op_t x1, op_t x2)
 {
-  return has_zero (x1) | has_eq (x1, x2);
+  return pjstr_has_zero (x1) | pjstr_has_eq (x1, x2);
 }
 
 #endif /* STRING_FZB_H */

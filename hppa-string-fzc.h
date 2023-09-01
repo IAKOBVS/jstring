@@ -19,18 +19,18 @@
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
 
-#include <string-optype.h>
+#include "string-optype.h"
 
 _Static_assert (sizeof (op_t) == 4, "64-bit not supported");
 
 /* Given a word X that is known to contain a zero byte, return the
    index of the first such within the long in memory order.  */
-static __always_inline unsigned int
-index_first_zero (op_t x)
+static JSTR_INLINE unsigned int
+pjstr_first_zero (op_t x)
 {
   unsigned int ret;
 
-  /* Since we have no clz insn, direct tests of the bytes is faster
+  /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %1,23,8,%%r0\n\t"
        "ldi 2,%0\n\t"
@@ -44,20 +44,20 @@ index_first_zero (op_t x)
 }
 
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
-static __always_inline unsigned int
-index_first_eq (op_t x1, op_t x2)
+static JSTR_INLINE unsigned int
+pjstr_first_eq (op_t x1, op_t x2)
 {
-  return index_first_zero (x1 ^ x2);
+  return pjstr_first_zero (x1 ^ x2);
 }
 
 /* Similarly, but perform the search for zero within X1 or
    equality between X1 and X2.  */
-static __always_inline unsigned int
-index_first_zero_eq (op_t x1, op_t x2)
+static JSTR_INLINE unsigned int
+pjstr_first_zero_eq (op_t x1, op_t x2)
 {
   unsigned int ret;
 
-  /* Since we have no clz insn, direct tests of the bytes is faster
+  /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,= %1,23,8,%%r0\n\t"
        "extrw,u,<> %2,23,8,%%r0\n\t"
@@ -75,12 +75,12 @@ index_first_zero_eq (op_t x1, op_t x2)
 
 /* Similarly, but perform the search for zero within X1 or
    inequality between X1 and X2. */
-static __always_inline unsigned int
-index_first_zero_ne (op_t x1, op_t x2)
+static JSTR_INLINE unsigned int
+pjstr_first_zero_ne (op_t x1, op_t x2)
 {
   unsigned int ret;
 
-  /* Since we have no clz insn, direct tests of the bytes is faster
+  /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %2,23,8,%%r0\n\t"
        "extrw,u,<> %1,23,8,%%r0\n\t"
@@ -97,12 +97,12 @@ index_first_zero_ne (op_t x1, op_t x2)
 }
 
 /* Similarly, but search for the last zero within X.  */
-static __always_inline unsigned int
-index_last_zero (op_t x)
+static JSTR_INLINE unsigned int
+pjstr_last_zero (op_t x)
 {
   unsigned int ret;
 
-  /* Since we have no ctz insn, direct tests of the bytes is faster
+  /* Since we have no pjstr_ctz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %1,15,8,%%r0\n\t"
        "ldi 1,%0\n\t"
@@ -115,10 +115,10 @@ index_last_zero (op_t x)
   return ret;
 }
 
-static __always_inline unsigned int
-index_last_eq (op_t x1, op_t x2)
+static JSTR_INLINE unsigned int
+pjstr_last_eq (op_t x1, op_t x2)
 {
-  return index_last_zero (x1 ^ x2);
+  return pjstr_last_zero (x1 ^ x2);
 }
 
 #endif /* PJSTR_STRING_FZC_H */

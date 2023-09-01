@@ -20,30 +20,30 @@
 #define PJSTR_STRING_FZB_H 1
 
 #include <endian.h>
-#include <string-fza.h>
+#include "string-fza.h"
 
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 
-static __always_inline _Bool
-has_zero (op_t x)
+static JSTR_INLINE _Bool
+pjstr_has_zero (op_t x)
 {
-  return find_zero_low (x) != 0;
+  return pjstr_find_zero_low (x) != 0;
 }
 
 /* Likewise, but for byte equality between X1 and X2.  */
 
-static __always_inline _Bool
-has_eq (op_t x1, op_t x2)
+static JSTR_INLINE _Bool
+pjstr_has_eq (op_t x1, op_t x2)
 {
-  return find_eq_low (x1, x2) != 0;
+  return pjstr_find_eq_low (x1, x2) != 0;
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
 
-static __always_inline _Bool
-has_zero_eq (op_t x1, op_t x2)
+static JSTR_INLINE _Bool
+pjstr_has_zero_eq (op_t x1, op_t x2)
 {
-  return find_zero_eq_low (x1, x2);
+  return pjstr_find_zero_eq_low (x1, x2);
 }
 
 #endif /* PJSTR_STRING_FZB_H */

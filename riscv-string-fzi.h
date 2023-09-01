@@ -20,14 +20,14 @@
 #define PJSTR_STRING_RISCV_FZI_H 1
 
 #ifdef __riscv_zbb
-# include <sysdeps/generic/string-fzi.h>
+#include "sysdeps/generic/string-fzi.h"
 #else
-/* Without bitmap clz/ctz extensions, it is faster to direct test the bits
+/* Without bitmap pjstr_clz/pjstr_ctz extensions, it is faster to direct test the bits
    instead of calling compiler auxiliary functions.  */
-# include <string-optype.h>
+#include "string-optype.h"
 
-static __always_inline unsigned int
-index_first (find_t c)
+static JSTR_INLINE unsigned int
+pjstr_first (pjstr_find_t c)
 {
   if (c & 0x80U)
     return 0;
@@ -50,8 +50,8 @@ index_first (find_t c)
   return 7;
 }
 
-static __always_inline unsigned int
-index_last (find_t c)
+static JSTR_INLINE unsigned int
+pjstr_last (pjstr_find_t c)
 {
   if (sizeof (op_t) == 8)
     {
