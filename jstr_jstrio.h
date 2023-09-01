@@ -13,6 +13,7 @@ extern "C" {
 
 #include "builder.h"
 #include "jstr_macros.h"
+#include "jstr_string.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -302,8 +303,6 @@ pjstrio_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 #undef T
 #undef B
 
-#if JSTR_HAVE_MEMRCHR
-
 /*
    Returns jstrio_ext_ty based on the filename extension;
 */
@@ -317,13 +316,11 @@ static jstrio_ext_ty
 jstrio_ext_type_mem(const char *JSTR_RST _filename,
 		    const size_t _sz) JSTR_NOEXCEPT
 {
-	_filename = (char *)memrchr(_filename, '.', _sz);
+	_filename = (char *)jstr_memrchr(_filename, '.', _sz);
 	if (_filename == NULL)
 		return JSTRIO_UNKNOWN;
 	return pjstrio_ext_type(_filename + 1);
 }
-
-#endif /* HAVE_MEMRCHR */
 
 /*
    Returns jstrio_ext_ty based on the filename extension;
