@@ -4,7 +4,7 @@
 #include "jstr_macros.h"
 
 #if JSTR_ARCH_GENERIC
-#	include "generic_string-shift.h"
+#	include "generic-string-shift.h"
 #endif
 
 #endif /* PJSTR_STRING_SHIFT_H */

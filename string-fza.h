@@ -4,7 +4,7 @@
 #include "jstr_macros.h"
 
 #if JSTR_ARCH_GENERIC
-#	include "generic_string-fza.h"
+#	include "generic-string-fza.h"
 #endif
 
 #endif /* PJSTR_STRING_FZA_H */

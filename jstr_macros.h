@@ -697,7 +697,7 @@ case '~':
 #elif defined mips || defined __mips__ || defined __mips
 #	define JSTR_ARCH_MIPS 1
 #elif defined __sh__
-#	define JSTR_ARCH_SUPERH 1
+#	define JSTR_ARCH_SH 1
 #elif defined __powerpc || defined __powerpc__ || defined __powerpc64__ || defined __POWERPC__ || defined __ppc__ || defined __PPC__ || defined _ARCH_PPC
 #	define JSTR_ARCH_POWERPC 1
 #elif defined __PPC64__ || defined __ppc64__ || defined _ARCH_PPC64

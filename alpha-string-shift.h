@@ -1,4 +1,4 @@
-/* Miscellaneous functions used in string implementations.  Generic C version.
+/* Shift unaligned word read.  Alpha version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,30 +16,29 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_MISC_H
-#define PJSTR_STRING_MISC_H 1
+#ifndef PJSTR_STRING_SHIFT_H
+#define PJSTR_STRING_SHIFT_H 1
 
 #include <limits.h>
-#include <endian.h>
-#include <string-optype.h>
+#include <stdint.h>
+#include <string-fza.h>
 
-/* Extract the byte at index IDX from word X, with index 0 being the
-   least significant byte.  */
-static __always_inline unsigned char
-extractbyte (op_t x, unsigned int idx)
+/* Return the mask WORD shifted based on S_INT address value, to ignore
+   values not presented in the aligned word read.  */
+static __always_inline find_t
+shift_find (find_t word, uintptr_t s)
 {
-  if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    return x >> (idx * CHAR_BIT);
-  else
-    return x >> (sizeof (x) - 1 - idx) * CHAR_BIT;
+  return word >> (s % sizeof (op_t));
 }
 
-/* Setup an word with each byte being c_in.  For instance, on a 64 bits
-   machine with input as 0xce the functions returns 0xcececececececece.  */
-static __always_inline op_t
-repeat_bytes (unsigned char c_in)
+/* Mask off the bits defined the the S alignment value.  */
+static __always_inline find_t
+shift_find_last (find_t word, uintptr_t s)
 {
-  return ((op_t)-1 / 0xff) * c_in;
+  s = s % sizeof (op_t);
+  if (s == 0)
+    return word;
+  return word & ~((op_t)-1 << s);
 }
 
-#endif /* PJSTR_STRING_MISC_H */
+#endif /* PJSTR_STRING_SHIFT_H */

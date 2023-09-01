@@ -1,4 +1,4 @@
-/* Zero byte detection, boolean.  Generic C version.
+/* Zero byte detection; boolean.  SH4 version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,34 +16,40 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_FZB_H
-#define PJSTR_STRING_FZB_H 1
+#ifndef STRING_FZB_H
+#define STRING_FZB_H 1
 
-#include <endian.h>
-#include <string-fza.h>
+#include <sys/cdefs.h>
+#include <string-optype.h>
 
-/* Determine if any byte within X is zero.  This is a pure boolean test.  */
-
-static __always_inline _Bool
-has_zero (op_t x)
-{
-  return find_zero_low (x) != 0;
-}
-
-/* Likewise, but for byte equality between X1 and X2.  */
-
+/* Determine if any bytes within X1 and X2 are equal.  */
 static __always_inline _Bool
 has_eq (op_t x1, op_t x2)
 {
-  return find_eq_low (x1, x2) != 0;
+  int ret;
+
+  /* TODO: A compiler builtin for cmp/str would be much better.  It is
+     difficult to use asm goto here, because the range of bt/bf are
+     quite small.  */
+  asm("cmp/str %1,%2\n\t"
+      "movt %0"
+      : "=r" (ret) : "r" (x1), "r" (x2) : "t");
+
+  return ret;
+}
+
+/* Determine if any byte within X is zero.  */
+static __always_inline _Bool
+has_zero (op_t x)
+{
+  return has_eq (x, 0);
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
-
 static __always_inline _Bool
 has_zero_eq (op_t x1, op_t x2)
 {
-  return find_zero_eq_low (x1, x2);
+  return has_zero (x1) | has_eq (x1, x2);
 }
 
-#endif /* PJSTR_STRING_FZB_H */
+#endif /* STRING_FZB_H */

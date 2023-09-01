@@ -1,4 +1,4 @@
-/* Miscellaneous functions used in string implementations.  Generic C version.
+/* Zero byte detection; boolean.  Alpha version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,30 +16,37 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_MISC_H
-#define PJSTR_STRING_MISC_H 1
+#ifndef PJSTR_STRING_FZB_H
+#define PJSTR_STRING_FZB_H 1
 
-#include <limits.h>
-#include <endian.h>
+#include <sys/cdefs.h>
 #include <string-optype.h>
 
-/* Extract the byte at index IDX from word X, with index 0 being the
-   least significant byte.  */
-static __always_inline unsigned char
-extractbyte (op_t x, unsigned int idx)
+/* Note that since CMPBGE creates a bit mask rather than a byte mask,
+   we cannot simply provide a target-specific string-fza.h.  */
+
+/* Determine if any byte within X is zero.  This is a pure boolean test.  */
+
+static __always_inline _Bool
+has_zero (op_t x)
 {
-  if (__BYTE_ORDER == __LITTLE_ENDIAN)
-    return x >> (idx * CHAR_BIT);
-  else
-    return x >> (sizeof (x) - 1 - idx) * CHAR_BIT;
+  return __builtin_alpha_cmpbge (0, x) != 0;
 }
 
-/* Setup an word with each byte being c_in.  For instance, on a 64 bits
-   machine with input as 0xce the functions returns 0xcececececececece.  */
-static __always_inline op_t
-repeat_bytes (unsigned char c_in)
+/* Likewise, but for byte equality between X1 and X2.  */
+
+static __always_inline _Bool
+has_eq (op_t x1, op_t x2)
 {
-  return ((op_t)-1 / 0xff) * c_in;
+  return has_zero (x1 ^ x2);
 }
 
-#endif /* PJSTR_STRING_MISC_H */
+/* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
+
+static __always_inline _Bool
+has_zero_eq (op_t x1, op_t x2)
+{
+  return has_zero (x1) | has_eq (x1, x2);
+}
+
+#endif /* PJSTR_STRING_FZB_H */

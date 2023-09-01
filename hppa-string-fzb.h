@@ -1,4 +1,4 @@
-/* Zero byte detection, boolean.  Generic C version.
+/* Zero byte detection, boolean.  HPPA version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -19,31 +19,45 @@
 #ifndef PJSTR_STRING_FZB_H
 #define PJSTR_STRING_FZB_H 1
 
-#include <endian.h>
-#include <string-fza.h>
+#include <sys/cdefs.h>
+#include <string-optype.h>
+
+_Static_assert (sizeof (op_t) == 4, "64-bit not supported");
 
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
-
 static __always_inline _Bool
 has_zero (op_t x)
 {
-  return find_zero_low (x) != 0;
+  /* It's more useful to expose a control transfer to the compiler
+     than to expose a proper boolean result.  */
+  asm goto ("uxor,sbz %%r0,%0,%%r0\n\t"
+	    "b,n %l1" : : "r"(x) : : nbz);
+  return 1;
+ nbz:
+  return 0;
 }
 
 /* Likewise, but for byte equality between X1 and X2.  */
-
 static __always_inline _Bool
 has_eq (op_t x1, op_t x2)
 {
-  return find_eq_low (x1, x2) != 0;
+  asm goto ("uxor,sbz %0,%1,%%r0\n\t"
+	    "b,n %l2" : : "r"(x1), "r"(x2) : : nbz);
+  return 1;
+ nbz:
+  return 0;
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
-
 static __always_inline _Bool
 has_zero_eq (op_t x1, op_t x2)
 {
-  return find_zero_eq_low (x1, x2);
+  asm goto ("uxor,sbz %%r0,%0,%%r0\n\t"
+	    "uxor,nbz %0,%1,%%r0\n\t"
+	    "b,n %l2" : : "r"(x1), "r"(x2) : : sbz);
+  return 0;
+ sbz:
+  return 1;
 }
 
 #endif /* PJSTR_STRING_FZB_H */

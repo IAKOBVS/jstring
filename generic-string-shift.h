@@ -16,38 +16,37 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_GENERIC_STRING_SHIFT_H
-#define PJSTR_GENERIC_STRING_SHIFT_H 1
+#ifndef PJSTR_STRING_SHIFT_H
+#define PJSTR_STRING_SHIFT_H 1
 
-#include "jstr_macros.h"
-#include "generic-string-fza.h"
 #include <endian.h>
 #include <limits.h>
 #include <stdint.h>
+#include <string-fza.h>
 
 /* Return the mask WORD shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
-static JSTR_INLINE jstr_op_ty
-pjstr_shift_find(jstr_op_ty word, uintptr_t s)
+static __always_inline find_t
+shift_find (find_t word, uintptr_t s)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		return word >> (CHAR_BIT * (s % sizeof(jstr_op_ty)));
-	else
-		return word << (CHAR_BIT * (s % sizeof(jstr_op_ty)));
+  if (__BYTE_ORDER == __LITTLE_ENDIAN)
+    return word >> (CHAR_BIT * (s % sizeof (op_t)));
+  else
+    return word << (CHAR_BIT * (s % sizeof (op_t)));
 }
 
 /* Mask off the bits defined for the S alignment value, or return WORD if
    S is 0.  */
-static JSTR_INLINE jstr_op_ty
-pjstr_shift_find_last(jstr_op_ty word, uintptr_t s)
+static __always_inline find_t
+shift_find_last (find_t word, uintptr_t s)
 {
-	s = s % sizeof(jstr_op_ty);
-	if (s == 0)
-		return word;
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		return word & ~(((jstr_op_ty)-1) << (s * CHAR_BIT));
-	else
-		return word & ~(((jstr_op_ty)-1) >> (s * CHAR_BIT));
+  s = s % sizeof (op_t);
+  if (s == 0)
+    return word;
+  if (__BYTE_ORDER == __LITTLE_ENDIAN)
+    return word & ~(((op_t)-1) << (s * CHAR_BIT));
+  else
+    return word & ~(((op_t)-1) >> (s * CHAR_BIT));
 }
 
-#endif /* PJSTR_GENERIC_STRING_SHIFT_H */
+#endif /* PJSTR_STRING_SHIFT_H */
