@@ -3,8 +3,10 @@
 
 #include "macros.h"
 
-#if JSTR_ARCH_GENERIC
-#	include "generic_string-fzi.h"
+#if JSTR_ARCH_ALPHA
+#	include "alpha-string-fzi.h"
+#else
+#	include "generic-string-fzi.h"
 #endif
 
 #endif /* PJSTR_STRING_FZI_H */

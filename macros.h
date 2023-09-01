@@ -706,6 +706,8 @@ case '~':
 #	define JSTR_ARCH_SPARC 1
 #elif defined __m68k__
 #	define JSTR_ARCH_M68K 1
+#elif defined __alpha__
+#	define JSTR_ARCH_ALPHA 1
 #else
 #	define JSTR_ARCH_GENERIC 1
 #endif

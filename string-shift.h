@@ -7,4 +7,4 @@
 #	include "generic_string-shift.h"
 #endif
 
-#endif /* PJSTR_STRING_FZA_H */
+#endif /* PJSTR_STRING_SHIFT_H */

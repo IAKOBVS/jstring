@@ -1,5 +1,5 @@
-#ifndef PJSTR_STRING_FZC_H
-#define PJSTR_STRING_FZC_H 1
+#ifndef PJSTR_STRING_FZB_H
+#define PJSTR_STRING_FZB_H 1
 
 #include "macros.h"
 
