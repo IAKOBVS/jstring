@@ -796,7 +796,7 @@ jstr_rplc_mem(char **JSTR_RST const _s,
 			jstr_rplcchr_mem(*_s, *_find, *_rplc, *_sz);
 			return;
 		}
-		/* FALLTHROUGH */
+		/* fallthrough */
 	default: {
 		if (jstr_unlikely(_findlen == 0))
 			return;

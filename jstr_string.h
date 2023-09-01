@@ -14,17 +14,17 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "jstr_builder.h"
 #include "config.h"
+#include "jstr_builder.h"
 #include "jstr_ctype.h"
 #include "jstr_macros.h"
 
-#include "string-opthr.h"
-#include "string-optype.h"
 #include "string-fza.h"
 #include "string-fzb.h"
 #include "string-fzc.h"
 #include "string-fzi.h"
+#include "string-opthr.h"
+#include "string-optype.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +36,7 @@ extern "C" {
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) strstr(_hs, _ne)
 #endif /* HAVE_MEMMEM */
 
-#define JSTR_OPSIZ sizeof(pjstr_op_ty)
+#define PJSTR_OPSIZ sizeof(pjstr_op_ty)
 
 /*
   Return value:
@@ -322,43 +322,42 @@ jstr_memrchr(const void *JSTR_RST const _s,
 	if (jstr_unlikely(_n == 0))
 		return NULL;
 	const unsigned char *_end = (unsigned char *)_s + _n;
-	switch (_n % JSTR_OPSIZ) {
+	switch (_n % PJSTR_OPSIZ) {
 	case 7:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 6:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 5:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 4:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 3:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 2:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 1:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
-		/* FALLTHROUGH */
-	case 0:
-		break;
+		/* fallthrough */
+	case 0: break;
 	}
-	if (jstr_unlikely(_n < JSTR_OPSIZ))
+	if (jstr_unlikely(_n < PJSTR_OPSIZ))
 		return NULL;
 	const pjstr_op_ty *_p = (pjstr_op_ty *)_end;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	for (; _n; _n -= JSTR_OPSIZ, --_p)
+	for (; _n; _n -= PJSTR_OPSIZ, --_p)
 		if (pjstr_has_eq(*_p, _cc))
 			return (void *)(_p + pjstr_index_last_eq(*_p, _cc));
 	return NULL;
@@ -694,11 +693,11 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 	case 3:
 		if (!_t[*_p--])
 			return 0;
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 2:
 		if (!_t[*_p--])
 			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 1:
 		if (!_t[*_p--])
 			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
@@ -774,11 +773,11 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 	case 3:
 		if (!_t[*_p--])
 			return 0;
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 2:
 		if (!_t[*_p--])
 			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
-		/* FALLTHROUGH */
+		/* fallthrough */
 	case 1:
 		if (!_t[*_p--])
 			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
@@ -870,22 +869,7 @@ jstr_endswith_mem(const char *JSTR_RST const _hs,
 	return (_hsz < _nelen) ? 1 : memcmp(_hs + _hsz - _nelen, _ne, _nelen);
 }
 
-/*
-  Converts int to string.
-  Return value:
-  new pointer to '\0' in DST.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
-static char *
-jstr_itoa(char *JSTR_RST const _dst,
-	  int _num,
-	  const unsigned int _base)
-{
-#define PJSTR_NUMTOSTR(_max_digits)                                            \
+#define PJSTR_NUMTOSTR(_max_digits, _base)                                     \
 	do {                                                                   \
 		unsigned char *_d = (unsigned char *)_dst;                     \
 		unsigned char _sbuf[_max_digits];                              \
@@ -905,61 +889,8 @@ jstr_itoa(char *JSTR_RST const _dst,
 		*_d = '\0';                                                    \
 		return (char *)_d;                                             \
 	} while (0)
-	PJSTR_NUMTOSTR(PJSTR_MAX_INT_DIGITS);
-}
 
-/*
-  Converts long to string.
-  Return value:
-  new pointer to '\0' in DST.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
-static char *
-jstr_ltoa(char *JSTR_RST const _dst,
-	  long _num,
-	  const unsigned int _base)
-{
-	PJSTR_NUMTOSTR(PJSTR_MAX_LONG_DIGITS);
-}
-
-/*
-  Converts long long to string.
-  Return value:
-  new pointer to '\0' in DST.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
-static char *
-jstr_lltoa(char *JSTR_RST const _dst,
-	   long long _num,
-	   const unsigned int _base)
-{
-	PJSTR_NUMTOSTR(PJSTR_MAX_LONG_DIGITS);
-}
-
-/*
-  Converts unsigned int to string.
-  Return value:
-  new pointer to '\0' in DST.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
-static char *
-jstr_utoa(char *JSTR_RST const _dst,
-	  unsigned int _num,
-	  const unsigned int _base)
-{
-#define PJSTR_UNUMTOSTR(_max_digits)                          \
+#define PJSTR_UNUMTOSTR(_max_digits, _base)                   \
 	do {                                                  \
 		unsigned char *_d = (unsigned char *)_dst;    \
 		unsigned char _sbuf[_max_digits];             \
@@ -975,44 +906,86 @@ jstr_utoa(char *JSTR_RST const _dst,
 		*_d = '\0';                                   \
 		return (char *)_d;                            \
 	} while (0)
-	PJSTR_UNUMTOSTR(PJSTR_MAX_UINT_DIGITS);
-}
 
-/*
-  Converts unsigned long to string.
-  Return value:
-  new pointer to '\0' in DST.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
-static char *
-jstr_ultoa(char *JSTR_RST const _dst,
-	   unsigned long _num,
-	   const unsigned int _base)
-{
-	PJSTR_UNUMTOSTR(PJSTR_MAX_ULONG_DIGITS);
-}
+#define PJSTR_NUMTOSTR_ATTR  \
+	JSTR_MAYBE_UNUSED    \
+	JSTR_NONNULL_ALL     \
+	JSTR_WARN_UNUSED     \
+	JSTR_RETURNS_NONNULL \
+	JSTR_NOTHROW
 
-/*
-  Converts unsigned long long to string.
-  Return value:
-  new pointer to '\0' in DST.
-*/
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
-static char *
-jstr_ulltoa(char *JSTR_RST const _dst,
-	    unsigned long long _num,
-	    const unsigned int _base)
-{
-	PJSTR_UNUMTOSTR(PJSTR_MAX_ULONG_LONG_DIGITS);
-}
+#define PJSTR_DEFINE_NUMTOSTR(_num_type, _func_name, _max) \
+	PJSTR_NUMTOSTR_ATTR                                \
+	static char *                                      \
+	_func_name(char *JSTR_RST const _dst,              \
+		   _num_type _num,                         \
+		   const unsigned int _base) JSTR_NOEXCEPT \
+	{                                                  \
+		PJSTR_NUMTOSTR(_max, _base);               \
+	}
+
+#define PJSTR_DEFINE_NUMTOSTR_BASE(_num_type, _func_name, _max, _base) \
+	PJSTR_NUMTOSTR_ATTR                                            \
+	static char *                                                  \
+	_func_name(char *JSTR_RST const _dst,                          \
+		   _num_type _num) JSTR_NOEXCEPT                       \
+	{                                                              \
+		PJSTR_NUMTOSTR(_max, _base);                           \
+	}
+
+#define PJSTR_DEFINE_UNUMTOSTR(_num_type, _func_name, _max) \
+	PJSTR_NUMTOSTR_ATTR                                 \
+	static char *                                       \
+	_func_name(char *JSTR_RST const _dst,               \
+		   _num_type _num,                          \
+		   const unsigned int _base) JSTR_NOEXCEPT  \
+	{                                                   \
+		PJSTR_UNUMTOSTR(_max, _base);               \
+	}
+
+#define PJSTR_DEFINE_UNUMTOSTR_BASE(_num_type, _func_name, _max, _base) \
+	PJSTR_NUMTOSTR_ATTR                                             \
+	static char *                                                   \
+	_func_name(char *JSTR_RST const _dst,                           \
+		   _num_type _num) JSTR_NOEXCEPT                        \
+	{                                                               \
+		PJSTR_UNUMTOSTR(_max, _base);                           \
+	}
+
+PJSTR_DEFINE_NUMTOSTR(int, jstr_itoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_NUMTOSTR(long, jstr_ltoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_NUMTOSTR(long long, jstr_lltoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_UNUMTOSTR(unsigned int, jstr_utoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_UNUMTOSTR(unsigned long, jstr_ultoa, PJSTR_MAX_INT_DIGITS)
+PJSTR_DEFINE_UNUMTOSTR(unsigned long long, jstr_ulltoa, PJSTR_MAX_INT_DIGITS)
+
+#define PJSTR_DEFINE_NUMTOSTRALL_BASE(_base)                                                       \
+	PJSTR_DEFINE_NUMTOSTR_BASE(int, jstr_itoa##_base, PJSTR_MAX_INT_DIGITS, _base)             \
+	PJSTR_DEFINE_NUMTOSTR_BASE(long, jstr_ltoa##_base, PJSTR_MAX_INT_DIGITS, _base)            \
+	PJSTR_DEFINE_NUMTOSTR_BASE(long long, jstr_lltoa##_base, PJSTR_MAX_INT_DIGITS, _base)      \
+	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned int, jstr_utoa##_base, PJSTR_MAX_INT_DIGITS, _base)   \
+	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned long, jstr_ultoa##_base, PJSTR_MAX_INT_DIGITS, _base) \
+	PJSTR_DEFINE_UNUMTOSTR_BASE(unsigned long long, jstr_ulltoa##_base, PJSTR_MAX_INT_DIGITS, _base)
+
+PJSTR_DEFINE_NUMTOSTRALL_BASE(2);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(3);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(4);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(5);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(6);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(7);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(8);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(9);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(10);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(11);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(12);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(13);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(14);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(15);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(16);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(17);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(18);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(19);
+PJSTR_DEFINE_NUMTOSTRALL_BASE(20);
 
 /*
   Count occurences of C in S.
@@ -1028,10 +1001,10 @@ static size_t
 jstr_countc(const char *JSTR_RST _s,
 	    const int _c) JSTR_NOEXCEPT
 {
-	size_t cnt = 0;
+	size_t _cnt = 0;
 	while ((_s = strchr(_s, _c)))
-		++cnt;
-	return cnt;
+		++_cnt;
+	return _cnt;
 }
 
 /*
@@ -1049,11 +1022,11 @@ jstr_countc_mem(const char *JSTR_RST _s,
 		const int _c,
 		const size_t _n) JSTR_NOEXCEPT
 {
-	size_t cnt = 0;
+	size_t _cnt = 0;
 	const char *const _end = _s + _n;
 	while ((_s = (char *)memchr(_s, _c, _end - _s)))
-		++cnt;
-	return cnt;
+		++_cnt;
+	return _cnt;
 }
 
 #if JSTR_HAVE_MEMMEM
@@ -1078,11 +1051,11 @@ jstr_count_mem(const char *JSTR_RST _s,
 		return jstr_countc_mem(_s, *_find, _sz);
 	if (jstr_unlikely(_findlen == 0))
 		return 0;
-	size_t cnt = 0;
+	size_t _cnt = 0;
 	const char *const _end = _s + _sz;
 	while ((_s = (char *)memmem(_s, _end - _s, _find, _findlen)))
-		++cnt, _s += _findlen;
-	return cnt;
+		++_cnt, _s += _findlen;
+	return _cnt;
 }
 
 #endif
@@ -1106,10 +1079,10 @@ jstr_count(const char *JSTR_RST _s,
 	if (jstr_unlikely(_find[1] == '\0'))
 		return jstr_countc(_s, *_find);
 	const size_t _findlen = strlen(_find + 1) + 1;
-	size_t cnt = 0;
+	size_t _cnt = 0;
 	while ((_s = (char *)strstr(_s, _find)))
-		++cnt, _s += _findlen;
-	return cnt;
+		++_cnt, _s += _findlen;
+	return _cnt;
 }
 
 #ifdef __cplusplus
