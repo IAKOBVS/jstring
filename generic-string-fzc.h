@@ -16,16 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_ PJSTR_STRING_FZC_H
-#ifndef PJSTR_ PJSTR_STRING_FZC_H 1
+#ifndef PJSTR_STRING_FZC_H
+#define PJSTR_STRING_FZC_H 1
 
 #include "jstr_macros.h"
-
 
 #include <endian.h>
 #include "string-fza.h"
 #include "string-fzi.h"
-
 
 /* Given a word X that is known to contain a zero byte, return the index of
    the first such within the word in memory order.  */

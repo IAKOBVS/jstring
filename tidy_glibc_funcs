@@ -16,23 +16,29 @@ s/typedef jstr_op_ty jstr_op_ty;//g;
 s/__always_inline/JSTR_INLINE/g;
 s/sysdeps\/generic\///;
 s/\(#define.*\)/\1\n\n#include "jstr_macros.h"\n/;
-s/#ifndef[ \t]*\([^P][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
-s/#define[ \t]*\([^P][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
-s/PJSTR__/PJSTR_/g;
+s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
+s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define PJSTR_\1/g;
 ' *?string-fz*.h *?string-misc*.h *?string-shift*.h
 # remove duplicate include "jstr_macros.h"
-awk -i inplace 'BEGIN { dup = 0; fname = 0; }
+awk -i inplace 'BEGIN { dup = 0; fname = 0; last_line_blank; }
 	{
 		if (fname != FILENAME) {
-			dup = 0;
-			fname = FILENAME;
+			dup = 0
+			fname = FILENAME
+			last_line_blank = 0;
+		}
+		if ($0 != "") {
+			last_line_blank = 0
+		} else {
+			if (++last_line_blank >= 2)
+				next
 		}
 		if ($0 ~ /#[ \t]*include[ \t]*"jstr_macros/) {
 			if (dup == 0)
-				print;
-			dup = dup + 1;
+				print
+			dup = dup + 1
 		} else {
-			print;
+			print
 		}
 	}' *string-fz*
 rm -rf .-*

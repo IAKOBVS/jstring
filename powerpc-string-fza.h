@@ -16,11 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_ PJSTR_POWERPC_STRING_FZA_H
-#ifndef PJSTR_ PJSTR_POWERPC_STRING_FZA_H 1
+#ifndef PJSTR__POWERPC_STRING_FZA_H
+#define PJSTR__POWERPC_STRING_FZA_H 1
 
 #include "jstr_macros.h"
-
 
 /* PowerISA 2.05 (POWER6) provides cmpb instruction.  */
 #ifdef _ARCH_PWR6
@@ -28,7 +27,6 @@
 #include "string-optype.h"
 
 /* The functions return a byte mask.  */
-
 
 /* This function returns 0xff for each byte that is
    equal between X1 and X2.  */

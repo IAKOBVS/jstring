@@ -16,17 +16,15 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_ PJSTR_STRING_FZA_H
-#ifndef PJSTR_ PJSTR_STRING_FZA_H 1
+#ifndef PJSTR_STRING_FZA_H
+#define PJSTR_STRING_FZA_H 1
 
 #include "jstr_macros.h"
-
 
 #include "string-misc.h"
 #include "string-optype.h"
 
 /* The function return a byte mask.  */
-
 
 /* This function returns non-zero if any byte in X is zero.
    More specifically, at least one bit set within the least significant
