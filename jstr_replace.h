@@ -162,7 +162,7 @@ pjstr_rplcat_mem_realloc(char **JSTR_RST const _s,
 			 const size_t _rplclen,
 			 const size_t _findlen) JSTR_NOEXCEPT
 {
-	if (*_cap > *_sz + _rplclen - _findlen)
+	if (*_cap < *_sz + _rplclen - _findlen)
 		PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen, return NULL);
 	return pjstr_rplcat_mem_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
 }
@@ -713,7 +713,7 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-jstr_rplcallchrhr_mem(char *JSTR_RST _s,
+jstr_rplcallchr_mem(char *JSTR_RST _s,
 		      const int _find,
 		      const int _rplc,
 		      const size_t _sz) JSTR_NOEXCEPT
@@ -730,7 +730,7 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-jstr_rplcallchrhr(char *JSTR_RST _s,
+jstr_rplcallchr(char *JSTR_RST _s,
 		  const int _find,
 		  const int _rplc) JSTR_NOEXCEPT
 {

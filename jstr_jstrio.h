@@ -359,18 +359,18 @@ static int
 jstrio_is_binary_maybe(char *JSTR_RST const _buf,
 		       const size_t _sz) JSTR_NOEXCEPT
 {
-#define JSTR_BINARY_CHECK()                                                      \
-	do {                                                                     \
-		if (jstr_likely(_sz > PJSTR_ELF_SZ - 1)) {                        \
+#define JSTR_BINARY_CHECK()                                                        \
+	do {                                                                       \
+		if (jstr_likely(_sz > PJSTR_ELF_SZ - 1)) {                         \
 			if (jstr_unlikely(!memcmp(_buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
-				return 1;                                        \
-CHECK_UTF:;                                                                      \
-			unsigned char *JSTR_RST _s = (unsigned char *)_buf;      \
+				return 1;                                          \
+CHECK_UTF:;                                                                        \
+			unsigned char *JSTR_RST _s = (unsigned char *)_buf;        \
 			if (!memcmp(_s, PJSTR_UTF, PJSTR_UTF_SZ))                  \
-				return 0;                                        \
-		} else if (jstr_likely(_sz == PJSTR_UTF_SZ)) {                    \
-			goto CHECK_UTF;                                          \
-		}                                                                \
+				return 0;                                          \
+		} else if (jstr_likely(_sz == PJSTR_UTF_SZ)) {                     \
+			goto CHECK_UTF;                                            \
+		}                                                                  \
 	} while (0)
 	JSTR_BINARY_CHECK();
 	if (jstr_likely(_sz > 32)) {
@@ -451,7 +451,9 @@ pjstrio_alloc_file(const int alloc_exact,
 		goto _ERR;
 	if (jstr_unlikely(stat(_fname, _st)))
 		goto _ERR_CLOSE;
-	*_cap = alloc_exact ? _st->st_size : _st->st_size * 2;
+	*_cap = alloc_exact
+		? PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOCEXACT(_st->st_size + 1))
+		: PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOC(_st->st_size));
 	*_s = (char *)malloc(*_cap);
 	PJSTR_MALLOC_ERR(*_s, goto _ERR_CLOSE);
 	fread(*_s, 1, _st->st_size, _fp);

@@ -675,7 +675,7 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 		return 0;
 	if (jstr_unlikely(_reject[1] == '\0')) {
 		const char *const _p = (char *)jstr_memrchr(_s, *_reject, _sz);
-		return _p ? (_s + _sz - 1) - _p : _sz;
+		return _p ? (size_t)((_s + _sz - 1) - _p) : _sz;
 	}
 	if (jstr_unlikely(_sz == 0))
 		return 0;
