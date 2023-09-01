@@ -19,6 +19,10 @@
 #ifndef PJSTR_STRING_FZI_H
 #define PJSTR_STRING_FZI_H
 
+#include "jstr_macros.h"
+
+
+
 #include <stdint.h>
 #include "string-optype.h"
 #include "string-fza.h"

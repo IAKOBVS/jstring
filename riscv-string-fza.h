@@ -19,6 +19,10 @@
 #ifndef _RISCV_STRING_FZA_H
 #define _RISCV_STRING_FZA_H 1
 
+#include "jstr_macros.h"
+
+
+
 #ifdef __riscv_zbb
 /* With bitmap extension we can use orc.b to find all zero bytes.  */
 #include "string-misc.h"

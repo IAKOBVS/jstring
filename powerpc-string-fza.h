@@ -19,6 +19,10 @@
 #ifndef _POWERPC_STRING_FZA_H
 #define _POWERPC_STRING_FZA_H 1
 
+#include "jstr_macros.h"
+
+
+
 /* PowerISA 2.05 (POWER6) provides cmpb instruction.  */
 #ifdef _ARCH_PWR6
 #include "string-misc.h"

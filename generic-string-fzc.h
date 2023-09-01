@@ -19,6 +19,10 @@
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
 
+#include "jstr_macros.h"
+
+
+
 #include <endian.h>
 #include "string-fza.h"
 #include "string-fzi.h"

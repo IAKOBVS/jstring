@@ -19,6 +19,10 @@
 #ifndef PJSTR_STRING_RISCV_FZI_H
 #define PJSTR_STRING_RISCV_FZI_H 1
 
+#include "jstr_macros.h"
+
+
+
 #ifdef __riscv_zbb
 #include "string-fzi.h"
 #else

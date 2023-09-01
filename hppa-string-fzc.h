@@ -19,6 +19,10 @@
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
 
+#include "jstr_macros.h"
+
+
+
 #include "string-optype.h"
 
 _Static_assert (sizeof (jstr_op_ty) == 4, "64-bit not supported");
