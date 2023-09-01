@@ -1,0 +1,32 @@
+#!/bin/sh
+sed -i 's/#[ \t]*include[ \t]*<\(.*string.*\)>/#include "\1"/g;
+s/ _STRING/ PJSTR_STRING/;
+s/\(^\|[^_0-9A-Za-z]\)find_t\($\|[^_0-9A-Za-z]\)/\1jstr_op_ty\2/g;
+s/\(^\|[^_0-9A-Za-z]\)op_t\($\|[^_0-9A-Za-z]\)/\1jstr_op_ty\2/g;
+s/\(^\|[^_0-9A-Za-z]\)\(repeat_bytes\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\2\3/g;
+s/\(^\|[^_0-9A-Za-z]\)\(extractbyte\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\1\2\3/g;
+s/\(^\|[^_0-9A-Za-z]\)\(shift_\)/\1pjstr_\2/g;
+s/\(^\|[^_0-9A-Za-z]\)\(find_..\)/\1pjstr_\2/g;
+s/\(^\|[^_0-9A-Za-z]\)\(index\)_/\1pjstr_/g;
+s/\(^\|[^_0-9A-Za-z]\)\(has_\)/\1pjstr_\2/g;
+s/\(^\|[^_0-9A-Za-z]\)\(clz\)/\1pjstr_\2/g;
+s/\(^\|[^_0-9A-Za-z]\)\(ctz\)/\1pjstr_\2/g;
+s/typedef.*find_t.*;//g;
+s/__always_inline/JSTR_INLINE/g;
+s/\(#\sinclude.*\)/\1\n#include "jstr_macros.h"/' *string-fz*.h *string-misc*.h *string-shift*.h
+# remove duplicate include "jstr_macros.h"
+awk -i inplace 'BEGIN { dup = 0; fname = 0; }
+	{
+		if (fname != FILENAME) {
+			dup = 0;
+			fname = FILENAME;
+		}
+		if ($0 ~ /#[ \t]*include[ \t]*"jstr_macros/) {
+			if (dup == 0)
+				print;
+			dup = dup + 1;
+		} else {
+			print;
+		}
+	}' *string-fz*
+rm -rf .-*
