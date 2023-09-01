@@ -40,5 +40,5 @@ awk -i inplace 'BEGIN { dup = 0; fname = 0; last_line_blank; }
 		} else {
 			print
 		}
-	}' *string-fz*
+	}' *?string-fz*
 rm -rf .-*
