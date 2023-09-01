@@ -23,12 +23,12 @@
 
 #include "string-optype.h"
 
-_Static_assert (sizeof (jstr_op_ty) == 4, "64-bit not supported");
+_Static_assert (sizeof (pjstr_op_ty) == 4, "64-bit not supported");
 
 /* Given a word X that is known to contain a zero byte, return the
    index of the first such within the long in memory order.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero (jstr_op_ty x)
+pjstr_index_first_zero (pjstr_op_ty x)
 {
   unsigned int ret;
 
@@ -47,7 +47,7 @@ pjstr_index_first_zero (jstr_op_ty x)
 
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_eq (jstr_op_ty x1, jstr_op_ty x2)
+pjstr_index_first_eq (pjstr_op_ty x1, pjstr_op_ty x2)
 {
   return pjstr_index_first_zero (x1 ^ x2);
 }
@@ -55,7 +55,7 @@ pjstr_index_first_eq (jstr_op_ty x1, jstr_op_ty x2)
 /* Similarly, but perform the search for zero within X1 or
    equality between X1 and X2.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero_eq (jstr_op_ty x1, jstr_op_ty x2)
+pjstr_index_first_zero_eq (pjstr_op_ty x1, pjstr_op_ty x2)
 {
   unsigned int ret;
 
@@ -78,7 +78,7 @@ pjstr_index_first_zero_eq (jstr_op_ty x1, jstr_op_ty x2)
 /* Similarly, but perform the search for zero within X1 or
    inequality between X1 and X2. */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero_ne (jstr_op_ty x1, jstr_op_ty x2)
+pjstr_index_first_zero_ne (pjstr_op_ty x1, pjstr_op_ty x2)
 {
   unsigned int ret;
 
@@ -100,7 +100,7 @@ pjstr_index_first_zero_ne (jstr_op_ty x1, jstr_op_ty x2)
 
 /* Similarly, but search for the last zero within X.  */
 static JSTR_INLINE unsigned int
-pjstr_index_last_zero (jstr_op_ty x)
+pjstr_index_last_zero (pjstr_op_ty x)
 {
   unsigned int ret;
 
@@ -118,7 +118,7 @@ pjstr_index_last_zero (jstr_op_ty x)
 }
 
 static JSTR_INLINE unsigned int
-pjstr_index_last_eq (jstr_op_ty x1, jstr_op_ty x2)
+pjstr_index_last_eq (pjstr_op_ty x1, pjstr_op_ty x2)
 {
   return pjstr_index_last_zero (x1 ^ x2);
 }

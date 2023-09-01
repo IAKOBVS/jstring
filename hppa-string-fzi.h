@@ -24,10 +24,10 @@
 #include "string-optype.h"
 #include "string-fza.h"
 
-_Static_assert (sizeof (jstr_op_ty) == 4, "64-bit not supported");
+_Static_assert (sizeof (pjstr_op_ty) == 4, "64-bit not supported");
 
 static JSTR_INLINE unsigned int
-pjstr_index_first (jstr_op_ty c)
+pjstr_index_first (pjstr_op_ty c)
 {
   unsigned int ret;
 
@@ -45,7 +45,7 @@ pjstr_index_first (jstr_op_ty c)
 }
 
 static JSTR_INLINE unsigned int
-pjstr_index_last (jstr_op_ty c)
+pjstr_index_last (pjstr_op_ty c)
 {
   unsigned int ret;
 
