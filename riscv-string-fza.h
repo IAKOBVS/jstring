@@ -25,6 +25,7 @@
 #include "string-optype.h"
 
 /* The functions return a byte mask.  */
+
 typedef jstr_op_ty jstr_op_ty;
 
 /* This function returns 0xff for each byte that is zero in X.  */
@@ -63,7 +64,7 @@ pjstr_find_zero_ne_all (jstr_op_ty x1, jstr_op_ty x2)
 # define pjstr_find_eq_low		pjstr_find_eq_all
 # define pjstr_find_zero_eq_low	pjstr_find_zero_eq_all
 #else
-#include "sysdeps/generic/string-fza.h"
+#include "string-fza.h"
 #endif
 
 #endif /* _RISCV_STRING_FZA_H  */

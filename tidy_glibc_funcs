@@ -13,6 +13,7 @@ s/\(^\|[^_0-9A-Za-z]\)\(clz\)/\1pjstr_\2/g;
 s/\(^\|[^_0-9A-Za-z]\)\(ctz\)/\1pjstr_\2/g;
 s/typedef.*find_t.*;//g;
 s/__always_inline/JSTR_INLINE/g;
+s/sysdeps\/generic\///;
 s/\(#\sinclude.*\)/\1\n#include "jstr_macros.h"/' *string-fz*.h *string-misc*.h *string-shift*.h
 # remove duplicate include "jstr_macros.h"
 awk -i inplace 'BEGIN { dup = 0; fname = 0; }

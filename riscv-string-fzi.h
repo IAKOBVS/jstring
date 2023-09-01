@@ -20,7 +20,7 @@
 #define PJSTR_STRING_RISCV_FZI_H 1
 
 #ifdef __riscv_zbb
-#include "sysdeps/generic/string-fzi.h"
+#include "string-fzi.h"
 #else
 /* Without bitmap pjstr_clz/pjstr_ctz extensions, it is faster to direct test the bits
    instead of calling compiler auxiliary functions.  */

@@ -65,7 +65,7 @@ pjstr_find_zero_ne_all (jstr_op_ty x1, jstr_op_ty x2)
 # define pjstr_find_eq_low		pjstr_find_eq_all
 # define pjstr_find_zero_eq_low	pjstr_find_zero_eq_all
 #else
-#include "sysdeps/generic/string-fza.h"
+#include "string-fza.h"
 #endif /* _ARCH_PWR6  */
 
 #endif /* _POWERPC_STRING_FZA_H  */
