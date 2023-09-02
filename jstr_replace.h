@@ -1150,6 +1150,23 @@ jstr_rev_mem(char *JSTR_RST _s,
 }
 
 /*
+  Reverse S.
+  Return value:
+  pointer to '\0' in S.
+*/
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
+JSTR_RETURNS_NONNULL
+static char *
+jstr_rev_p(char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	const size_t _len = strlen(_s);
+	jstr_rev_mem(_s, _len);
+	return _s + _len;
+}
+
+/*
   Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
   pointer to '\0' in S;
