@@ -14,8 +14,8 @@ extern "C" {
 }
 #endif /* __cpluslus */
 
-#include "jstr_config.h"
 #include "jstr_builder.h"
+#include "jstr_config.h"
 #include "jstr_ctype.h"
 #include "jstr_macros.h"
 
@@ -332,7 +332,7 @@ JSTR_PURE
 static void *
 jstr_memrchr(const void *JSTR_RST _s,
 	     const int _c,
-	     size_t _n) JSTR_NOEXCEPT
+	     const size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(_s, _c, _n);
@@ -371,16 +371,18 @@ jstr_memrchr(const void *JSTR_RST _s,
 	}
 	const pjstr_op_ty *_sw = (pjstr_op_ty *)_end;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s;
-	for (; _sw >= _start; --_sw)
+	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s - 1;
+	for (; _sw > _start; --_sw)
 		if (pjstr_has_eq(*_sw, _cc))
 			return (void *)((unsigned char *)_sw + pjstr_index_last_eq(*_sw, _cc));
 	return NULL;
 #else
 	const unsigned char *_end = (unsigned char *)_s + _n;
-	while ((_n--) && (*_end != _c))
-		--_end;
-	return (_n) ? (void *)_end : NULL;
+	const unsigned char *_start = (unsigned char *)_s - 1;
+	while (_end > _start
+	       && *_end-- != _c)
+		;
+	return (_end == _start + 1) ? NULL : (void *)_end + 1;
 #endif
 }
 
