@@ -115,6 +115,22 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
+static size_t
+jstr_strnlen(const char *JSTR_RST const _s,
+	     const size_t _maxlen)
+{
+#if JSTR_HAVE_STRNLEN
+	return strnlen(_s, _maxlen);
+#else
+	const char *p = memchr(_s, '\0', _maxlen);
+	return p ? p - _s : _maxlen;
+#endif
+}
+
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+JSTR_NOTHROW
 static char *
 jstr_strdup(const char *JSTR_RST const _s)
 {
@@ -328,7 +344,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 				_off = (_off >= 8 ? _off : _mtc1) - 8;              \
 			}                                                           \
 			_hs -= shft1;                                               \
-		} while (_hs > _start);                                             \
+		} while (jstr_likely(_hs > _start));                                \
 		return NULL;                                                        \
 	} while (0)
 	if (jstr_unlikely(_nelen > 256))
