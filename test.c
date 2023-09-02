@@ -1,20 +1,26 @@
 #include "jstr.h"
+#include "string-optype.h"
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 
 	/* jarr(int, x); */
 	/* jarr_alloc_cat(&x, 1, 2, 3, 4); */
-	
+
 	jstr_ty s;
-#define S "hello world hello"
+#define S  "12345678"
 #define SL strlen(S)
-#define N "hello"
+#define N  "hello"
 	jstr_alloc_append_mem(&s.data, &s.size, &s.cap, S, SL);
-	void *p = jstr_strrstr(s.data, N);
-	if (p)
-		puts(p);
-	
+	void *old = s.data;
+	char *p = (char *)jstr_memrchr(s.data, '1', s.size);
+	printf("%p\n", old);
+	if (p) {
+		printf("%p\n", p);
+		printf("%s\n", p);
+	}
+
 	/* const char *s = "0123456789"; */
 	/* size_t i = jstr_strrspn(s, "01234567890"); */
 	/* printf("%zu\n", i); */
@@ -34,8 +40,7 @@ int main(int argc, char **argv)
 	/* jstr_debug(&s); */
 	/* jstr_free(s.data); */
 	/* return err; */
-	
+
 	/* jarr(int, x); */
 	/* jarr_alloc_cat(&x, 1); */
-
 }
