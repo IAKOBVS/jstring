@@ -272,7 +272,7 @@ JSTR_NOTHROW
 static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_ATTR_MAY_ALIAS
+#if JSTR_HAVE_ATTR_MAY_ALIAS && 0
 	pjstr_op_ty *_sw = (pjstr_op_ty *)_s;
 remainder:
 	if (jstr_unlikely(_s[0] == '\0'))
@@ -354,7 +354,7 @@ JSTR_NOTHROW
 static void
 jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_ATTR_MAY_ALIAS
+#if JSTR_HAVE_ATTR_MAY_ALIAS && 0
 	pjstr_op_ty *_sw = (pjstr_op_ty *)_s;
 remainder:
 	if (jstr_unlikely(_s[0] == '\0'))

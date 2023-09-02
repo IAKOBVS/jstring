@@ -1096,7 +1096,7 @@ jstr_rev_mem(char *JSTR_RST _s,
 	while (_sw < _ew) {
 		_c = *_sw;
 		*_sw++ = *_ew;
-		*_ew++ = _c;
+		*_ew-- = _c;
 	}
 #else
 #	if 1
