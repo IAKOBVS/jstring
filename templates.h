@@ -16,8 +16,8 @@ extern "C" {
 #endif /* _cpluslus */
 
 #include "config.h"
-#include "jtraits.h"
 #include "jstr_macros.h"
+#include "jtraits.h"
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
@@ -56,36 +56,36 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 			malloc_fail;                             \
 		}                                                \
 	} while (0)
-#define PJSTR_GROW(old_cap, new_cap)                                        \
-	do {                                                                \
-		JSTR_ASSERT_IS_SIZE(old_cap);                               \
-		JSTR_ASSERT_IS_SIZE(new_cap);                               \
-		while (((old_cap) *= JSTR_GROWTH) < (new_cap))              \
-			;                                                   \
+#define PJSTR_GROW(old_cap, new_cap)                                         \
+	do {                                                                 \
+		JSTR_ASSERT_IS_SIZE(old_cap);                                \
+		JSTR_ASSERT_IS_SIZE(new_cap);                                \
+		while (((old_cap) *= JSTR_GROWTH) < (new_cap))               \
+			;                                                    \
 		(old_cap) = PJSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
-#define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail)                   \
-	do {                                                              \
-		JSTR_ASSERT_IS_STR(p);                                    \
-		JSTR_ASSERT_IS_SIZE(old_cap);                             \
-		JSTR_ASSERT_IS_SIZE(new_cap);                             \
-		PJSTR_GROW(old_cap, new_cap);                             \
-		(p) = (char *)realloc(p, old_cap);                        \
-		PJSTR_MALLOC_ERR(p, malloc_fail);                         \
+#define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
+	do {                                            \
+		JSTR_ASSERT_IS_STR(p);                  \
+		JSTR_ASSERT_IS_SIZE(old_cap);           \
+		JSTR_ASSERT_IS_SIZE(new_cap);           \
+		PJSTR_GROW(old_cap, new_cap);           \
+		(p) = (char *)realloc(p, old_cap);      \
+		PJSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 
-#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail)              \
-	do {                                                              \
-		JSTR_ASSERT_IS_STR(p);                                    \
-		JSTR_ASSERT_IS_SIZE(old_cap);                             \
-		JSTR_ASSERT_IS_SIZE(new_cap);                             \
-		(old_cap) = PJSTR_ALIGN_UP_STR(new_cap); \
-		(p) = (char *)realloc(p, old_cap);                        \
-		PJSTR_MALLOC_ERR(p, malloc_fail);                         \
+#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
+	do {                                                 \
+		JSTR_ASSERT_IS_STR(p);                       \
+		JSTR_ASSERT_IS_SIZE(old_cap);                \
+		JSTR_ASSERT_IS_SIZE(new_cap);                \
+		(old_cap) = PJSTR_ALIGN_UP_STR(new_cap);     \
+		(p) = (char *)realloc(p, old_cap);           \
+		PJSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
 
 #if JSTR_HAVE_REALLOC_MREMAP
-#	define PJSTR_IS_MMAP(_cap) ((jstr_unlikely((_cap) > PJSTR_MIN_MMAP - 1)))
+#	define PJSTR_IS_MMAP(_cap) ((jstr_unlikely((_cap) > PJSTR_MIN_MMAP)))
 #endif /* HAVE_REALLOC_MREMAP */
 
 #ifdef __cplusplus
