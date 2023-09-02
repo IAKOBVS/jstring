@@ -115,6 +115,7 @@ JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
+JSTR_PURE
 static size_t
 jstr_strnlen(const char *JSTR_RST const _s,
 	     const size_t _maxlen)
