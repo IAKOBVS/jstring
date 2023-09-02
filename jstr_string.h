@@ -371,7 +371,7 @@ jstr_memrchr(const void *JSTR_RST _s,
 	}
 	const pjstr_op_ty *_sw = (pjstr_op_ty *)_end;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	const pjstr_op_ty *_start = (pjstr_op_ty *)_s;
+	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s;
 	for (; _sw >= _start; --_sw)
 		if (pjstr_has_eq(*_sw, _cc))
 			return (void *)((unsigned char *)_sw + pjstr_index_last_eq(*_sw, _cc));
