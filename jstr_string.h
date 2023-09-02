@@ -480,7 +480,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			 const char *JSTR_RST const _ne,
 			 const size_t _nelen) JSTR_NOEXCEPT
 {
-#define PPJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
+#define PJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
 	const unsigned char *_h = (unsigned char *)_hs;
 	const unsigned char *const _n = (unsigned char *)_ne;
 	const unsigned char *const _end = _h + _hslen - _nelen;
@@ -490,13 +490,13 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 	size_t _shift[256];
 	memset(_shift, 0, sizeof(_shift));
 	for (size_t _i = 1; _i < _mtc1; ++_i)
-		_shift[PPJSTR_HASH2_LOWER(_n + _i)] = _i;
-	const size_t _shft1 = _mtc1 - _shift[PPJSTR_HASH2_LOWER(_n + _mtc1)];
-	_shift[PPJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;
+		_shift[PJSTR_HASH2_LOWER(_n + _i)] = _i;
+	const size_t _shft1 = _mtc1 - _shift[PJSTR_HASH2_LOWER(_n + _mtc1)];
+	_shift[PJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;
 	do {
 		do {
 			_h += _mtc1;
-			_tmp = _shift[PPJSTR_HASH2_LOWER(_h)];
+			_tmp = _shift[PJSTR_HASH2_LOWER(_h)];
 		} while (!_tmp ^ (_h > _end));
 		_h -= _tmp;
 		if (_tmp < _mtc1)
@@ -509,7 +509,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		_h += _shft1;
 	} while (_h <= _end);
 	return NULL;
-#undef PPJSTR_HASH2_LOWER
+#undef PJSTR_HASH2_LOWER
 }
 
 /*
