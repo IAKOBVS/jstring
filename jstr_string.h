@@ -271,6 +271,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 	const size_t _mtc1 = _nelen - 1;
 	size_t _off = 0;
 	size_t _shift[256];
+	memset(_shift, 0, sizeof(_shift));
 	for (size_t _i = 1; jstr_likely(_i < _mtc1); ++_i)
 		_shift[PJSTR_HASH2(_ne + _i)] = _i;
 	const size_t shft1 = _mtc1 - _shift[PJSTR_HASH2(_ne + _mtc1)];
@@ -282,7 +283,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		} while (!_tmp && _hs > _start);
 		_hs -= _tmp;
 		if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {
-			if (!memcmp(_hs, _ne, _nelen))
+			if (!memcmp(_hs, _ne, _mtc1))
 				return (void *)_hs;
 			_off = (_off >= 8 ? _off : _mtc1) - 8;
 		}
@@ -451,6 +452,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 	const size_t _mtc1 = _nelen - 1;
 	size_t _off = 0;
 	size_t _shift[256];
+	memset(_shift, 0, sizeof(_shift));
 	for (size_t _i = 1; _i < _mtc1; ++_i)
 		_shift[PPJSTR_HASH2_LOWER(_n + _i)] = _i;
 	const size_t _shft1 = _mtc1 - _shift[PPJSTR_HASH2_LOWER(_n + _mtc1)];
@@ -541,7 +543,7 @@ pstrcasechr(const char *JSTR_RST _s,
 	return (char *)strpbrk(_s, _acc);
 }
 
-#if !JSTR_HAVE_STRCASESTR
+/* #if !JSTR_HAVE_STRCASESTR */
 
 /*
    Find NE in HS case-insensitively.
@@ -584,7 +586,7 @@ do3:
 	return pjstr_strcasestr_mem_bmh(_hs, _hslen, _ne, _nelen);
 }
 
-#endif /* !HAVE_STRCASESTR */
+/* #endif /1* !HAVE_STRCASESTR *1/ */
 
 /*
    Find NE in HS case-insensitively.
