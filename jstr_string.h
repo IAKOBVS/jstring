@@ -104,7 +104,7 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 		;
 	return (char *)(_sw - 1) + pjstr_index_first_zero_eq(*(_sw - 1), _cc);
 #	else
-	/* It seems that strchr() + strlen() is still faster */
+	/* It seems that strchr() + strlen() is still faster. */
 	const char *const _p = strchr(_s, _c);
 	return _p ? (char *)_p : (char *)_s + strlen(_s);
 #	endif
@@ -778,7 +778,6 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 	while (*_p);
 	_p = (unsigned char *)_s + _sz - 1;
 	switch (_sz % 4) {
-	case 0: break;
 	case 3:
 		if (!_t[*_p--])
 			return 0;
@@ -790,6 +789,7 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 	case 1:
 		if (!_t[*_p--])
 			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
+	case 0: break;
 	}
 	if (jstr_unlikely(_sz < 4))
 		return _sz;
