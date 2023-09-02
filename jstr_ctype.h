@@ -266,7 +266,7 @@ jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	pjstr_op_ty *_p = (pjstr_op_ty *)_s;
-	PJSTR_PTR_ALIGN_DOWN(_p, sizeof(*_p));
+	*_p = PJSTR_PTR_ALIGN_DOWN(_p, sizeof(*_p));
 	while (!pjstr_has_zero(*_p)) {
 		*(char *)_p = jstr_tolower_ascii(*_p);
 		((char *)_p)[1] = jstr_tolower_ascii(((char *)_p)[1]);
@@ -307,7 +307,7 @@ jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	pjstr_op_ty *_p = (pjstr_op_ty *)_s;
-	PJSTR_PTR_ALIGN_DOWN(_p, sizeof(*_p));
+	*_p = PJSTR_PTR_ALIGN_DOWN(_p, sizeof(*_p));
 	while (!pjstr_has_zero(*_p)) {
 		*(char *)_p = jstr_toupper_ascii(*_p);
 		((char *)_p)[1] = jstr_toupper_ascii(((char *)_p)[1]);
