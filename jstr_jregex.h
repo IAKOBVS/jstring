@@ -13,7 +13,7 @@ extern "C" {
 #endif /* __cpluslus */
 
 #include "jstr_builder.h"
-#include "config.h"
+#include "jstr_config.h"
 #include "jstr_string.h"
 #include "jstr_macros.h"
 #include "jstr_pp_va_args_macros.h"

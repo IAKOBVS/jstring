@@ -11,7 +11,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "jstr_builder.h"
-#include "config.h"
+#include "jstr_config.h"
 #include "jarr_macros.h"
 #include "jstr_macros.h"
 #include "jstr_pp_arrcpy_va_args.h"

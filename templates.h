@@ -15,7 +15,7 @@ extern "C" {
 #	include <utility>
 #endif /* _cpluslus */
 
-#include "config.h"
+#include "jstr_config.h"
 #include "jstr_macros.h"
 #include "jtraits.h"
 

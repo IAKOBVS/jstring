@@ -665,7 +665,7 @@ case '~':
 
 #define JSTR_RST JSTR_RESTRICT
 
-#include "config.h"
+#include "jstr_config.h"
 #include "libc-pointer-arith.h"
 
 #define PJSTR_ALIGN_UP_STR(base) PJSTR_ALIGN_UP(base, PJSTR_MALLOC_ALIGNMENT)
