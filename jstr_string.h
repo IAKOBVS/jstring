@@ -313,7 +313,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		do {
 			_hs -= _mtc1;
 			_tmp = _shift[PJSTR_HASH2(_hs)];
-		} while (!_tmp && _hs > _start);
+		} while (!_tmp ^ (_hs <= _start));
 		_hs -= _tmp;
 		if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {
 			if (!memcmp(_hs, _ne, _mtc1))
@@ -497,7 +497,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		do {
 			_h += _mtc1;
 			_tmp = _shift[PJSTR_HASH2_LOWER(_h)];
-		} while (!_tmp && (_h < _end));
+		} while (!_tmp ^ (_h >= _end));
 		_h -= _tmp;
 		if (_tmp < _mtc1)
 			continue;
