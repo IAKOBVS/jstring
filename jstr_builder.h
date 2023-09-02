@@ -433,19 +433,6 @@ jstr_cat_j(jstr_ty *JSTR_RST const _j,
 			*(_sz) = newsz;                                                                      \
 		} while (0)
 
-#	define jstr_alloc_cat_f(_s, _sz, ...)                                           \
-		do {                                                                     \
-			JSTR_ASSERT_IS_STR(*(_s));                                       \
-			JSTR_ASSERT_IS_SIZE(*(_sz));                                     \
-			JSTR_ASSERT_IS_SIZE(*(_cap));                                    \
-			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                  \
-			size_t _ARR_VA_ARGS[PJSTR_PP_NARG(__VA_ARGS__)];                 \
-			*(_sz) = PJSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			char *p = *(_s);                                                 \
-			PJSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);           \
-			*p = '\0';                                                       \
-		} while (0)
-
 #	define jstr_alloc_cat(_s, _sz, _cap, ...)                                       \
 		do {                                                                     \
 			JSTR_ASSERT_IS_STR(*(_s));                                       \
