@@ -258,7 +258,15 @@ jstr_isdigit_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 	return *(_s + strspn(_s, "0123456789")) == '\0';
 }
 
-JSTR_INLINE
+#ifdef __clang__
+#	pragma clang diagnostic ignored "-Wunknown-pragmas"
+#	pragma clang diagnostic push
+#elif defined __GNUC__
+#	pragma GCC diagnostic ignored "-Wanalyzer-allocation-size"
+#	pragma GCC diagnostic push
+#endif
+
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
@@ -305,6 +313,7 @@ remainder:
 	_s = (char *)_sw;
 	goto remainder;
 #else
+#	if 1
 	for (;;) {
 		if (jstr_unlikely(_s[0] == '\0'))
 			break;
@@ -319,23 +328,27 @@ remainder:
 			break;
 		_s[3] = jstr_tolower_ascii(!_s[3]);
 		if (jstr_unlikely(_s[4] == '\0'))
-			return;
+			break;
 		_s[4] = jstr_tolower_ascii(_s[4]);
 		if (jstr_unlikely(_s[5] == '\0'))
-			return;
+			break;
 		_s[5] = jstr_tolower_ascii(_s[5]);
 		if (jstr_unlikely(_s[6] == '\0'))
-			return;
+			break;
 		_s[6] = jstr_tolower_ascii(_s[6]);
 		if (jstr_unlikely(_s[7] == '\0'))
-			return;
+			break;
 		_s[7] = jstr_tolower_ascii(_s[7]);
 		_s += 8;
 	}
+#	else
+	for (; *_s; ++_s)
+		*_s = jstr_tolower_ascii(*_s);
+#	endif
 #endif
 }
 
-JSTR_INLINE
+JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
@@ -382,6 +395,7 @@ remainder:
 	_s = (char *)_sw;
 	goto remainder;
 #else
+#	if 1
 	for (;;) {
 		if (jstr_unlikely(_s[0] == '\0'))
 			break;
@@ -396,21 +410,31 @@ remainder:
 			break;
 		_s[3] = jstr_toupper_ascii(_s[3]);
 		if (jstr_unlikely(_s[4] == '\0'))
-			return;
+			break;
 		_s[4] = jstr_toupper_ascii(_s[4]);
 		if (jstr_unlikely(_s[5] == '\0'))
-			return;
+			break;
 		_s[5] = jstr_toupper_ascii(_s[5]);
 		if (jstr_unlikely(_s[6] == '\0'))
-			return;
+			break;
 		_s[6] = jstr_toupper_ascii(_s[6]);
 		if (jstr_unlikely(_s[7] == '\0'))
-			return;
+			break;
 		_s[7] = jstr_toupper_ascii(_s[7]);
 		_s += 8;
 	}
+#	else
+	for (; *_s; ++_s)
+		*_s = jstr_toupper_ascii(*_s);
+#	endif
 #endif
 }
+
+#ifdef __clang__
+#	pragma clang diagnositc pop
+#elif defined __GNUC__
+#	pragma GCC diagnostic pop
+#endif
 
 #ifdef __cplusplus
 } /* extern C */
