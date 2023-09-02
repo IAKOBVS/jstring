@@ -447,7 +447,7 @@ pjreg_base_rmall(const pjstr_flag_use_n_ty _flag,
 		if (jstr_unlikely(ptnlen == 0))
 			++_p;
 		else
-			pjstr_rmall_in_place(&_dst, &_old, &_p, ptnlen);
+			PJSTR_RMALL_IN_PLACE(_dst, _old, _p, _ptnlen);
 		if (jstr_unlikely(*_p == '\0'))
 			break;
 	}
@@ -567,7 +567,7 @@ pjreg_base_rplcall_mem(const pjstr_flag_use_n_ty _flag,
 		}
 		if (_rplclen <= _ptnlen) {
 			PJREG_DEB("_rplclen <= _ptnlen");
-			pjstr_rplcall_in_place(&_dst, &_old, (const uc **)&_p, _rplc, _rplclen, _ptnlen);
+			PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _ptnlen);
 			if (jstr_unlikely(*_p == '\0'))
 				break;
 			continue;
