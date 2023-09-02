@@ -266,7 +266,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 {
 #define PJSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 	const unsigned char *const _start = _hs - 1;
-	_hs += _hslen - _nelen;
+	_hs += _hslen;
 	size_t _tmp;
 	const size_t _mtc1 = _nelen - 1;
 	size_t _off = 0;

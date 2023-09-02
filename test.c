@@ -1,10 +1,19 @@
-#include "jarr.h"
+#include "jstr.h"
 
 int main(int argc, char **argv)
 {
 
-	jarr(int, x);
-	jarr_alloc_cat(&x, 1, 2, 3, 4);
+	/* jarr(int, x); */
+	/* jarr_alloc_cat(&x, 1, 2, 3, 4); */
+	
+	jstr_ty s;
+#define S "hello world hello"
+#define SL strlen(S)
+#define N "hello"
+	jstr_alloc_append_mem(&s.data, &s.size, &s.cap, S, SL);
+	void *p = jstr_strrstr(s.data, N);
+	if (p)
+		puts(p);
 	
 	/* const char *s = "0123456789"; */
 	/* size_t i = jstr_strrspn(s, "01234567890"); */
