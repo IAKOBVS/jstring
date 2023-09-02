@@ -313,7 +313,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		do {
 			_hs -= _mtc1;
 			_tmp = _shift[PJSTR_HASH2(_hs)];
-		} while (!_tmp ^ (_hs > _start));
+		} while (!_tmp ^ (_hs <= _start));
 		_hs -= _tmp;
 		if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {
 			if (!memcmp(_hs, _ne, _mtc1))
@@ -483,7 +483,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 #define PPJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
 	const unsigned char *_h = (unsigned char *)_hs;
 	const unsigned char *const _n = (unsigned char *)_ne;
-	const unsigned char *const _end = _h + _hslen - _nelen + 1;
+	const unsigned char *const _end = _h + _hslen - _nelen;
 	size_t _tmp;
 	const size_t _mtc1 = _nelen - 1;
 	size_t _off = 0;
@@ -497,7 +497,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		do {
 			_h += _mtc1;
 			_tmp = _shift[PPJSTR_HASH2_LOWER(_h)];
-		} while (!_tmp ^ (_h < _end));
+		} while (!_tmp ^ (_h > _end));
 		_h -= _tmp;
 		if (_tmp < _mtc1)
 			continue;
@@ -507,7 +507,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			_off = (_off >= 8 ? _off : _mtc1) - 8;
 		}
 		_h += _shft1;
-	} while (_h < _end);
+	} while (_h <= _end);
 	return NULL;
 #undef PPJSTR_HASH2_LOWER
 }
