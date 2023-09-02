@@ -92,9 +92,14 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 #if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(_s, _c);
 #else
-	const size_t _n = strlen(_s);
-	const void *const p = memchr(_s, _c, _n);
-	return (p != NULL) ? (char *)p : (char *)_s + _n;
+	pjstr_op_ty *_sw = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, PJSTR_OPSIZ);
+	pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
+	pjstr_op_ty _mask = pjstr_find_zero_eq_all(*_sw, _cc);
+	if (_mask)
+		return (char *)_sw + pjstr_index_first(_mask);
+	while ((!pjstr_has_zero_eq(*_sw++, _cc)))
+		;
+	return (char *)(_sw - 1) + pjstr_index_first_zero_eq(*(_sw - 1), _cc);
 #endif /* HAVE_STRCHRNUL */
 }
 
@@ -345,17 +350,16 @@ jstr_memrchr(const void *JSTR_RST const _s,
 	}
 	if (jstr_unlikely(_n < PJSTR_OPSIZ))
 		return NULL;
-	const pjstr_op_ty *_p = (pjstr_op_ty *)_end;
+	const pjstr_op_ty *_sw = (pjstr_op_ty *)_end;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	for (; _n; _n -= PJSTR_OPSIZ, --_p)
-		if (pjstr_has_eq(*_p, _cc))
-			return (void *)(_p + pjstr_index_last_eq(*_p, _cc));
+	for (; _n; _n -= PJSTR_OPSIZ, --_sw)
+		if (pjstr_has_eq(*_sw, _cc))
+			return (void *)(_sw + pjstr_index_last_eq(*_sw, _cc));
 	return NULL;
 #endif
 }
 
 /*
-
    Find last NE in HS.
    HS MUST be nul terminated.
    Return value:

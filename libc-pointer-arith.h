@@ -70,10 +70,10 @@
 
 /* Same as ALIGN_DOWN(), but automatically casts when base is a pointer.  */
 #define PJSTR_PTR_ALIGN_DOWN(base, size) \
-	(ALIGN_DOWN((uintptr_t)(base), (size)))
+	(PJSTR_ALIGN_DOWN((uintptr_t)(base), (size)))
 
 /* Same as ALIGN_UP(), but automatically casts when base is a pointer.  */
 #define PJSTR_PTR_ALIGN_UP(base, size) \
-	(ALIGN_UP((uintptr_t)(base), (size)))
+	(PJSTR_ALIGN_UP((uintptr_t)(base), (size)))
 
 #endif /* PJSTR_LIBC_POINTER_ARITH_H */
