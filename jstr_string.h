@@ -77,11 +77,13 @@ jstr_stpcpy(char *JSTR_RST const _dst,
 #if JSTR_HAVE_STPCPY
 	return stpcpy(_dst, _src);
 #else
-	const size_t slen = strlen(_src);
-	return memcpy(_dst, _src, slen + 1) + slen;
+	const size_t _len = strlen(_src);
+	return (char *)memcpy(_dst, _src, _len + 1) + _len;
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
+/* Copyright (C) 1991-2023 Free Software Foundation, Inc.
+   This function is part of the GNU C Library.  */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
@@ -564,11 +566,10 @@ pstrcasechr(const char *JSTR_RST _s,
 	return (char *)strpbrk(_s, _acc);
 }
 
-/* #if !JSTR_HAVE_STRCASESTR */
-
 /*
    Find NE in HS case-insensitively.
    HS MUST be nul terminated.
+   Will call strcasestr if available.
    Return value:
    Pointer to NE;
    NULL if not found.
@@ -578,36 +579,39 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
+#if JSTR_HAVE_STRCASESTR
+JSTR_INLINE
+#endif
 static char *
 jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 		    const size_t _hslen,
 		    const char *JSTR_RST const _ne,
 		    const size_t _nelen) JSTR_NOEXCEPT
 {
+#if JSTR_HAVE_STRCASESTR
+	return (char *)strcasestr(_hs, _ne);
+#else
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
 	case 0: return (char *)_hs;
 	case 1: return pstrcasechr_mem(_hs, *_ne, _hslen);
 	case 4:
-		if (!jstr_isalpha(_ne[3]))
-			goto do3;
-		break;
+		if (jstr_isalpha(_ne[3]))
+			break;
+		/* fallthrough */
 	case 3:
-do3:
-		if (!jstr_isalpha(_ne[2]))
-			goto do2;
-		break;
+		if (jstr_isalpha(_ne[2]))
+			break;
+		/* fallthrough */
 	case 2:
-do2:
 		if (!jstr_isalpha(_ne[0]) && !jstr_isalpha(_ne[1]))
 			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
 		break;
 	}
 	return pjstr_strcasestr_mem_bmh(_hs, _hslen, _ne, _nelen);
+#endif
 }
-
-/* #endif /1* !HAVE_STRCASESTR *1/ */
 
 /*
    Find NE in HS case-insensitively.

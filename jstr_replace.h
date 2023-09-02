@@ -11,8 +11,9 @@ extern "C" {
 #endif /* __cpluslus */
 
 #include "jstr_builder.h"
-#include "jstr_string.h"
+#include "jstr_ctype.h"
 #include "jstr_macros.h"
+#include "jstr_string.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -515,10 +516,10 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 pjstr_rmallchr_mem_p(const pjstr_flag_use_n_ty _flag,
-		       char *JSTR_RST const _s,
-		       const int _c,
-		       size_t _n,
-		       const size_t _sz) JSTR_NOEXCEPT
+		     char *JSTR_RST const _s,
+		     const int _c,
+		     size_t _n,
+		     const size_t _sz) JSTR_NOEXCEPT
 {
 	unsigned char *_dst = (unsigned char *)_s;
 	const unsigned char *_old = _dst;
@@ -543,8 +544,8 @@ JSTR_NOTHROW
 JSTR_MAYBE_UNUSED
 static char *
 jstr_rmallchr_mem_p(char *JSTR_RST const _s,
-		      const int _c,
-		      const size_t _sz) JSTR_NOEXCEPT
+		    const int _c,
+		    const size_t _sz) JSTR_NOEXCEPT
 {
 	return pjstr_rmallchr_mem_p(PJSTR_FLAG_USE_NOT_N, _s, _c, 0, _sz);
 }
@@ -561,7 +562,7 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 jstr_rmallchr_p(char *JSTR_RST const _s,
-		  const int _c) JSTR_NOEXCEPT
+		const int _c) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	unsigned char *_dst = (unsigned char *)_s;
@@ -714,9 +715,9 @@ JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
 jstr_rplcallchr_mem(char *JSTR_RST _s,
-		      const int _find,
-		      const int _rplc,
-		      const size_t _sz) JSTR_NOEXCEPT
+		    const int _find,
+		    const int _rplc,
+		    const size_t _sz) JSTR_NOEXCEPT
 {
 	const char *JSTR_RST const _end = _s + _sz;
 	while ((_s = (char *)memchr(_s, _find, _end - _s)))
@@ -731,8 +732,8 @@ JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
 jstr_rplcallchr(char *JSTR_RST _s,
-		  const int _find,
-		  const int _rplc) JSTR_NOEXCEPT
+		const int _find,
+		const int _rplc) JSTR_NOEXCEPT
 {
 	while ((_s = (strchr(_s, _find))))
 		*_s++ = _rplc;
@@ -1086,7 +1087,7 @@ jstr_trim_mem_p(char *JSTR_RST const _s,
 		memmove(_s, _s + _mv, (_sz - _mv) + 1);
 	unsigned char *_end = (unsigned char *)_s + (_sz - _mv) - 1;
 	const unsigned char *const _start = (unsigned char *)_s - 1;
-	while ((*_end == ' ' || *_end - '\t' >= '\r' - '\t')
+	while (jstr_isspace(*_end)
 	       && --_end != _start)
 		;
 	*++_end = '\0';
