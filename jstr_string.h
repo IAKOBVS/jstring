@@ -23,8 +23,10 @@ extern "C" {
 #include "string-fzb.h"
 #include "string-fzc.h"
 #include "string-fzi.h"
+#include "string-misc.h"
 #include "string-opthr.h"
 #include "string-optype.h"
+#include "string-shift.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -94,7 +96,7 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 #else
 	pjstr_op_ty *_sw = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, PJSTR_OPSIZ);
 	pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	pjstr_op_ty _mask = pjstr_find_zero_eq_all(*_sw, _cc);
+	pjstr_op_ty _mask = pjstr_shift_find(pjstr_find_zero_eq_all(*_sw, _cc), (uintptr_t)_s);
 	if (_mask)
 		return (char *)_sw + pjstr_index_first(_mask);
 	while ((!pjstr_has_zero_eq(*_sw++, _cc)))
@@ -114,11 +116,26 @@ jstr_strdup(const char *JSTR_RST const _s)
 	return (char *)strdup(_s);
 #else
 	const size_t len = strlen(_s) + 1;
-	void *p = malloc(len);
+	void *const p = malloc(len);
 	if (jstr_unlikely(p == NULL))
 		return NULL;
 	return (char *)memcpy(p, _s, len);
 #endif /* HAVE_STRCHRNUL */
+}
+
+JSTR_NONNULL_ALL
+JSTR_MAYBE_UNUSED
+JSTR_INLINE
+JSTR_NOTHROW
+static char *
+jstr_stpdup(const char *JSTR_RST const _s,
+	    size_t *JSTR_RST const _sz)
+{
+	*_sz = strlen(_s);
+	void *_p = malloc(*_sz + 1);
+	if (jstr_unlikely(_p == NULL))
+		return NULL;
+	return (char *)memcpy(_p, _s, *_sz + 1);
 }
 
 /* Copy no more than N bytes of SRC to DEST, stopping when C is found.
