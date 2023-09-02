@@ -1099,7 +1099,7 @@ jstr_rev_mem(char *JSTR_RST _s,
 		*_ew-- = _c;
 	}
 #else
-#	if 1
+#	if 0
 	char _c0, _c1, _c2, _c3;
 	size_t _i = 0;
 	switch (--_sz % 4) {
@@ -1138,7 +1138,7 @@ jstr_rev_mem(char *JSTR_RST _s,
 		_s[_sz - 2] = _c2;
 		_s[_sz - 3] = _c3;
 	}
-#	else
+#	else /* It seems that unrolling is slower */
 	char _c0;
 	for (size_t _i = 0; jstr_likely(_i < _sz); _i += 4, _sz -= 4) {
 		_c0 = _s[_i];
