@@ -273,8 +273,14 @@ static void
 jstr_tolower_mem(char *JSTR_RST _s,
 		 const size_t _sz) JSTR_NOEXCEPT
 {
+	/* It seems that 8 iterations is not much faster. */
+#define PJSTR_UNROLL_ITERATIONS 4
 #if 1
-	switch (_sz % 8) {
+	enum {
+		it = PJSTR_UNROLL_ITERATIONS,
+	};
+	switch (_sz % it) {
+#	if PJSTR_UNROLL_ITERATIONS == 8
 	case 7:
 		*_s = jstr_tolower_ascii(*_s);
 		++_s;
@@ -291,6 +297,7 @@ jstr_tolower_mem(char *JSTR_RST _s,
 		*_s = jstr_tolower_ascii(*_s);
 		++_s;
 		/* fallthrough */
+#	endif
 	case 3:
 		*_s = jstr_tolower_ascii(*_s);
 		++_s;
@@ -305,17 +312,18 @@ jstr_tolower_mem(char *JSTR_RST _s,
 		/* fallthrough */
 	case 0: break;
 	}
-	const char *_end = _s + _sz;
-	for (; jstr_likely(_s != _end);) {
+	const char *const _end = _s + _sz;
+	for (; jstr_likely(_s != _end); _s += it) {
 		_s[0] = jstr_tolower_ascii(_s[0]);
 		_s[1] = jstr_tolower_ascii(_s[1]);
 		_s[2] = jstr_tolower_ascii(_s[2]);
 		_s[3] = jstr_tolower_ascii(_s[3]);
+#	if PJSTR_UNROLL_ITERATIONS == 8
 		_s[4] = jstr_tolower_ascii(_s[4]);
 		_s[5] = jstr_tolower_ascii(_s[5]);
 		_s[6] = jstr_tolower_ascii(_s[6]);
 		_s[7] = jstr_tolower_ascii(_s[7]);
-		_s += 8;
+#	endif
 	}
 #else
 	for (; *_s; ++_s)
@@ -329,6 +337,7 @@ JSTR_NOTHROW
 static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
+	enum { it = PJSTR_UNROLL_ITERATIONS };
 #if JSTR_HAVE_ATTR_MAY_ALIAS && 0
 	pjstr_op_ty *_sw = (pjstr_op_ty *)_s;
 remainder:
@@ -371,7 +380,7 @@ remainder:
 	goto remainder;
 #else
 #	if 1
-	for (;;) {
+	for (;; _s += it) {
 		if (jstr_unlikely(_s[0] == '\0'))
 			break;
 		_s[0] = jstr_tolower_ascii(_s[0]);
@@ -384,6 +393,7 @@ remainder:
 		if (jstr_unlikely(_s[3] == '\0'))
 			break;
 		_s[3] = jstr_tolower_ascii(_s[3]);
+#		if PJSTR_UNROLL_ITERATIONS == 8
 		if (jstr_unlikely(_s[4] == '\0'))
 			break;
 		_s[4] = jstr_tolower_ascii(_s[4]);
@@ -396,7 +406,7 @@ remainder:
 		if (jstr_unlikely(_s[7] == '\0'))
 			break;
 		_s[7] = jstr_tolower_ascii(_s[7]);
-		_s += 8;
+#		endif
 	}
 #	else
 	for (; *_s; ++_s)
@@ -412,8 +422,10 @@ static void
 jstr_toupper_mem(char *JSTR_RST _s,
 		 const size_t _sz) JSTR_NOEXCEPT
 {
+	enum {it = PJSTR_UNROLL_ITERATIONS};
 #if 1
-	switch (_sz % 8) {
+	switch (_sz % it) {
+#if PJSTR_UNROLL_ITERATIONS == 8
 	case 7:
 		*_s = jstr_toupper_ascii(*_s);
 		++_s;
@@ -430,6 +442,7 @@ jstr_toupper_mem(char *JSTR_RST _s,
 		*_s = jstr_toupper_ascii(*_s);
 		++_s;
 		/* fallthrough */
+#endif
 	case 3:
 		*_s = jstr_toupper_ascii(*_s);
 		++_s;
@@ -444,17 +457,18 @@ jstr_toupper_mem(char *JSTR_RST _s,
 		/* fallthrough */
 	case 0: break;
 	}
-	const char *_end = _s + _sz;
-	for (; jstr_likely(_s != _end);) {
+	const char *const _end = _s + _sz;
+	for (; jstr_likely(_s < _end); _s += it) {
 		_s[0] = jstr_toupper_ascii(_s[0]);
 		_s[1] = jstr_toupper_ascii(_s[1]);
 		_s[2] = jstr_toupper_ascii(_s[2]);
 		_s[3] = jstr_toupper_ascii(_s[3]);
+#if PJSTR_UNROLL_ITERATIONS == 8
 		_s[4] = jstr_toupper_ascii(_s[4]);
 		_s[5] = jstr_toupper_ascii(_s[5]);
 		_s[6] = jstr_toupper_ascii(_s[6]);
 		_s[7] = jstr_toupper_ascii(_s[7]);
-		_s += 8;
+#endif
 	}
 #else
 	for (; *_s; ++_s)
@@ -468,6 +482,7 @@ JSTR_NOTHROW
 static void
 jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
+	enum {it = PJSTR_UNROLL_ITERATIONS};
 #if JSTR_HAVE_ATTR_MAY_ALIAS && 0
 	pjstr_op_ty *_sw = (pjstr_op_ty *)_s;
 remainder:
@@ -510,7 +525,7 @@ remainder:
 	goto remainder;
 #else
 #	if 1
-	for (;;) {
+	for (;; _s += it) {
 		if (jstr_unlikely(_s[0] == '\0'))
 			break;
 		_s[0] = jstr_toupper_ascii(_s[0]);
@@ -523,6 +538,7 @@ remainder:
 		if (jstr_unlikely(_s[3] == '\0'))
 			break;
 		_s[3] = jstr_toupper_ascii(_s[3]);
+#if PJSTR_UNROLL_ITERATIONS
 		if (jstr_unlikely(_s[4] == '\0'))
 			break;
 		_s[4] = jstr_toupper_ascii(_s[4]);
@@ -535,7 +551,7 @@ remainder:
 		if (jstr_unlikely(_s[7] == '\0'))
 			break;
 		_s[7] = jstr_toupper_ascii(_s[7]);
-		_s += 8;
+#endif
 	}
 #	else
 	for (; *_s; ++_s)
