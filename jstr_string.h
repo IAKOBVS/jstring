@@ -568,19 +568,19 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 	switch (_nelen) {
 	case 0: return (char *)_hs;
 	case 1: return pstrcasechr_mem(_hs, *_ne, _hslen);
-	case 2:
-do2:
-		if (jstr_islower(_ne[0]) && jstr_islower(_ne[1]))
-			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
+	case 4:
+		if (!jstr_isalpha(_ne[3]))
+			goto do3;
 		break;
 	case 3:
 do3:
-		if (jstr_islower(_ne[2]))
+		if (!jstr_isalpha(_ne[2]))
 			goto do2;
 		break;
-	case 4:
-		if (jstr_islower(_ne[3]))
-			goto do3;
+	case 2:
+do2:
+		if (!jstr_isalpha(_ne[0]) && !jstr_isalpha(_ne[1]))
+			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
 		break;
 	}
 	return pjstr_strcasestr_mem_bmh(_hs, _hslen, _ne, _nelen);
