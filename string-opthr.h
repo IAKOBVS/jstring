@@ -21,9 +21,9 @@
 
 /* Threshold value for when to enter the unrolled loops.  */
 #ifdef JSTR_ARCH_x86_32
-#	define JSTR_OP_TY_THRES 8
+#	define JSTR_OP_THRES 8
 #else
-#	define JSTR_OP_TY_THRES 16
+#	define JSTR_OP_THRES 16
 #endif
 
 #endif /* string-opthr.h */
