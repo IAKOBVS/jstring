@@ -94,7 +94,7 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 #if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(_s, _c);
 #else
-#	if 0
+#	if 0 && JSTR_HAVE_ATTR_MAY_ALIAS
 	pjstr_op_ty *_sw = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, PJSTR_OPSIZ);
 	pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 	pjstr_op_ty _mask = pjstr_shift_find(pjstr_find_zero_eq_all(*_sw, _cc), (uintptr_t)_s);
@@ -330,13 +330,13 @@ JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 JSTR_PURE
 static void *
-jstr_memrchr(const void *JSTR_RST const _s,
+jstr_memrchr(const void *JSTR_RST _s,
 	     const int _c,
-	     const size_t _n) JSTR_NOEXCEPT
+	     size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(_s, _c, _n);
-#else
+#elif JSTR_HAVE_ATTR_MAY_ALIAS
 	const unsigned char *_end = (unsigned char *)_s + _n;
 	switch (_n % PJSTR_OPSIZ) {
 	case 7:
@@ -376,6 +376,11 @@ jstr_memrchr(const void *JSTR_RST const _s,
 		if (pjstr_has_eq(*_sw, _cc))
 			return (void *)((unsigned char *)_sw + pjstr_index_last_eq(*_sw, _cc));
 	return NULL;
+#else
+	const unsigned char *_end = (unsigned char *)_s + _n;
+	while ((_n--) && (*_end != _c))
+		--_end;
+	return (_n) ? (void *)_end : NULL;
 #endif
 }
 
