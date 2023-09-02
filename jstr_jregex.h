@@ -437,14 +437,14 @@ pjreg_base_rmall(const pjstr_flag_use_n_ty _flag,
 	const unsigned char *_p = _dst;
 	const unsigned char *_old = _dst;
 	const unsigned char *const _end = _dst + *_sz;
-	size_t ptnlen;
+	size_t _ptnlen;
 	jreg_errcode_ty _ret = JREG_RET_NOMATCH;
 	while ((_flag & PJSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
 	       && PJREG_EXEC(_preg, (char *)_p, _end - _p, 1, &_rm, _eflags) == JREG_RET_NOERROR) {
 		_ret = JREG_RET_NOERROR;
-		ptnlen = _rm.rm_eo - _rm.rm_so;
+		_ptnlen = _rm.rm_eo - _rm.rm_so;
 		_p = _p + _rm.rm_so;
-		if (jstr_unlikely(ptnlen == 0))
+		if (jstr_unlikely(_ptnlen == 0))
 			++_p;
 		else
 			PJSTR_RMALL_IN_PLACE(_dst, _old, _p, _ptnlen);
