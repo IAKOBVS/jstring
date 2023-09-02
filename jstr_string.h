@@ -246,9 +246,9 @@ jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
-	while (((ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
-		+ !_n--)
-	       == 0)
+	puts("here");
+	while ((ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
+		^ !_n--)
 		;
 	return ret;
 #endif /* HAVE_STRNCASECMP */
@@ -279,7 +279,7 @@ jstr_strcasecmp(const char *JSTR_RST _s1,
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
 	while ((ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
-	       ^ !!*_p1)
+	       ^ !*_p1)
 		++_p1;
 	;
 	return ret;
