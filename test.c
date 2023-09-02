@@ -1,5 +1,7 @@
-#include "jstr.h"
-#include "string-optype.h"
+/* #include "jstr.h" */
+/* #include "string-optype.h" */
+
+#include "jstr_string.h"
 
 int
 main(int argc, char **argv)

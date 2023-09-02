@@ -17050,10 +17050,10 @@
 	const char *: 1,                           \
 	char *: 1,                                 \
 	default: 0)
-
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(...)			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(PJSTR_PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(num_args, ...) PJSTR_PP_CONCAT(PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_, num_args, __VA_ARGS__)
 #else
+#	define PJSTR_PP_IS_STR(_s)
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(...)
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(num_args, ...)
 #endif /* PJSTR_PP_HAVE_GENERIC */
