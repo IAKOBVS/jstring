@@ -12,6 +12,15 @@ extern "C" {
 #include "jstr_macros.h"
 #include <string.h>
 
+#include "string-fza.h"
+#include "string-fzb.h"
+#include "string-fzc.h"
+#include "string-fzi.h"
+#include "string-misc.h"
+#include "string-opthr.h"
+#include "string-optype.h"
+#include "string-shift.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
@@ -253,20 +262,82 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	while ((*_s = jstr_toupper_ascii(*_s)))
-		++_s;
+#if JSTR_HAVE_ATTR_MAY_ALIAS
+	pjstr_op_ty *_p = (pjstr_op_ty *)_s;
+	PJSTR_PTR_ALIGN_DOWN(_p, sizeof(*_p));
+	while (!pjstr_has_zero(*_p)) {
+		*(char *)_p = jstr_tolower_ascii(*_p);
+		((char *)_p)[1] = jstr_tolower_ascii(((char *)_p)[1]);
+		((char *)_p)[2] = jstr_tolower_ascii(((char *)_p)[2]);
+		((char *)_p)[3] = jstr_tolower_ascii(((char *)_p)[3]);
+		((char *)_p)[4] = jstr_tolower_ascii(((char *)_p)[4]);
+		((char *)_p)[5] = jstr_tolower_ascii(((char *)_p)[5]);
+		((char *)_p)[6] = jstr_tolower_ascii(((char *)_p)[6]);
+		((char *)_p)[7] = jstr_tolower_ascii(((char *)_p)[7]);
+		++_p;
+	}
+	for (int i = 0; i < pjstr_index_first_zero(*_p); ++i)
+		*((char *)_p + i) = jstr_tolower_ascii(*((char *)_p + i));
+#else
+	for (;;) {
+		if (!_s[0])
+			break;
+		_s[0] = jstr_tolower_ascii(!_s[0]);
+		if (!_s[1])
+			break;
+		_s[1] = jstr_tolower_ascii(!_s[1]);
+		if (!_s[2])
+			break;
+		_s[2] = jstr_tolower_ascii(!_s[2]);
+		if (!_s[3])
+			break;
+		_s[3] = jstr_tolower_ascii(!_s[3]);
+		_s += 4;
+	}
+#endif
 }
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
+jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	while ((*_s = jstr_tolower_ascii(*_s)))
-		++_s;
+#if JSTR_HAVE_ATTR_MAY_ALIAS
+	pjstr_op_ty *_p = (pjstr_op_ty *)_s;
+	PJSTR_PTR_ALIGN_DOWN(_p, sizeof(*_p));
+	while (!pjstr_has_zero(*_p)) {
+		*(char *)_p = jstr_toupper_ascii(*_p);
+		((char *)_p)[1] = jstr_toupper_ascii(((char *)_p)[1]);
+		((char *)_p)[2] = jstr_toupper_ascii(((char *)_p)[2]);
+		((char *)_p)[3] = jstr_toupper_ascii(((char *)_p)[3]);
+		((char *)_p)[4] = jstr_toupper_ascii(((char *)_p)[4]);
+		((char *)_p)[5] = jstr_toupper_ascii(((char *)_p)[5]);
+		((char *)_p)[6] = jstr_toupper_ascii(((char *)_p)[6]);
+		((char *)_p)[7] = jstr_toupper_ascii(((char *)_p)[7]);
+		++_p;
+	}
+	for (int i = 0; i < pjstr_index_first_zero(*_p); ++i)
+		*((char *)_p + i) = jstr_toupper_ascii(*((char *)_p + i));
+#else
+	for (;;) {
+		if (!_s[0])
+			break;
+		_s[0] = jstr_toupper_ascii(!_s[0]);
+		if (!_s[1])
+			break;
+		_s[1] = jstr_toupper_ascii(!_s[1]);
+		if (!_s[2])
+			break;
+		_s[2] = jstr_toupper_ascii(!_s[2]);
+		if (!_s[3])
+			break;
+		_s[3] = jstr_toupper_ascii(!_s[3]);
+		_s += 4;
+	}
+#endif
 }
 
 #ifdef __cplusplus
