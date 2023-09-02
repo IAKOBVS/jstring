@@ -4,7 +4,7 @@
 #include "jstr_builder.h"
 #include "jstr_config.h"
 #include "jstr_macros.h"
-#include "templates.h"
+#include "jstr_templates.h"
 
 #ifdef __cplusplus
 template <typename T, typename Other>

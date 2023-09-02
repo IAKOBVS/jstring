@@ -15,7 +15,7 @@ extern "C" {
 #include "jarr_macros.h"
 #include "jstr_macros.h"
 #include "jstr_pp_arrcpy_va_args.h"
-#include "templates.h"
+#include "jstr_templates.h"
 
 #define jarr(T, name)                                                             \
 	typedef struct pjarr_##name##_ty {                                        \

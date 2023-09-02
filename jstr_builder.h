@@ -18,7 +18,7 @@ extern "C" {
 
 #include "jstr_config.h"
 #include "jstr_macros.h"
-#include "templates.h"
+#include "jstr_templates.h"
 
 #ifdef __cplusplus
 #	include "jtraits.h"
