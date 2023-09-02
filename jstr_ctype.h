@@ -267,32 +267,33 @@ jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	pjstr_op_ty *_sw = (pjstr_op_ty *)_s;
 remainder:
-	if (!_s[0])
+	if (jstr_unlikely(_s[0] == '\0'))
 		return;
-	_s[0] = jstr_toupper_ascii(_s[0]);
-	if (!_s[1])
+	_s[0] = jstr_tolower_ascii(_s[0]);
+	if (jstr_unlikely(_s[1] == '\0'))
 		return;
-	_s[1] = jstr_toupper_ascii(_s[1]);
-	if (!_s[2])
+	_s[1] = jstr_tolower_ascii(_s[1]);
+	if (jstr_unlikely(_s[2] == '\0'))
 		return;
-	_s[2] = jstr_toupper_ascii(_s[2]);
-	if (!_s[3])
+	_s[2] = jstr_tolower_ascii(_s[2]);
+	if (jstr_unlikely(_s[3] == '\0'))
 		return;
-	_s[3] = jstr_toupper_ascii(_s[3]);
-	if (!_s[4])
+	_s[3] = jstr_tolower_ascii(_s[3]);
+	if (jstr_unlikely(_s[4] == '\0'))
 		return;
-	_s[4] = jstr_toupper_ascii(_s[4]);
-	if (!_s[5])
+	_s[4] = jstr_tolower_ascii(_s[4]);
+	if (jstr_unlikely(_s[5] == '\0'))
 		return;
-	_s[5] = jstr_toupper_ascii(_s[5]);
-	if (!_s[6])
+	_s[5] = jstr_tolower_ascii(_s[5]);
+	if (jstr_unlikely(_s[6] == '\0'))
 		return;
-	_s[6] = jstr_toupper_ascii(_s[6]);
-	if (!_s[7])
+	_s[6] = jstr_tolower_ascii(_s[6]);
+	if (jstr_unlikely(_s[7] == '\0'))
 		return;
+	_s[7] = jstr_tolower_ascii(_s[7]);
 	*_sw = PJSTR_PTR_ALIGN_DOWN(_sw, sizeof(*_sw));
-	while (!pjstr_has_zero(*_sw)) {
-		*(char *)_sw = jstr_tolower_ascii(*_sw);
+	for (; !pjstr_has_zero(*_sw); ++_sw) {
+		((char *)_sw)[0] = jstr_tolower_ascii(((char *)_sw)[0]);
 		((char *)_sw)[1] = jstr_tolower_ascii(((char *)_sw)[1]);
 		((char *)_sw)[2] = jstr_tolower_ascii(((char *)_sw)[2]);
 		((char *)_sw)[3] = jstr_tolower_ascii(((char *)_sw)[3]);
@@ -300,24 +301,36 @@ remainder:
 		((char *)_sw)[5] = jstr_tolower_ascii(((char *)_sw)[5]);
 		((char *)_sw)[6] = jstr_tolower_ascii(((char *)_sw)[6]);
 		((char *)_sw)[7] = jstr_tolower_ascii(((char *)_sw)[7]);
-		++_sw;
 	}
+	_s = (char *)_sw;
 	goto remainder;
 #else
 	for (;;) {
-		if (!_s[0])
+		if (jstr_unlikely(_s[0] == '\0'))
 			break;
 		_s[0] = jstr_tolower_ascii(!_s[0]);
-		if (!_s[1])
+		if (jstr_unlikely(_s[1] == '\0'))
 			break;
 		_s[1] = jstr_tolower_ascii(!_s[1]);
-		if (!_s[2])
+		if (jstr_unlikely(_s[2] == '\0'))
 			break;
 		_s[2] = jstr_tolower_ascii(!_s[2]);
-		if (!_s[3])
+		if (jstr_unlikely(_s[3] == '\0'))
 			break;
 		_s[3] = jstr_tolower_ascii(!_s[3]);
-		_s += 4;
+		if (jstr_unlikely(_s[4] == '\0'))
+			return;
+		_s[4] = jstr_tolower_ascii(_s[4]);
+		if (jstr_unlikely(_s[5] == '\0'))
+			return;
+		_s[5] = jstr_tolower_ascii(_s[5]);
+		if (jstr_unlikely(_s[6] == '\0'))
+			return;
+		_s[6] = jstr_tolower_ascii(_s[6]);
+		if (jstr_unlikely(_s[7] == '\0'))
+			return;
+		_s[7] = jstr_tolower_ascii(_s[7]);
+		_s += 8;
 	}
 #endif
 }
@@ -331,33 +344,33 @@ jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	pjstr_op_ty *_sw = (pjstr_op_ty *)_s;
 remainder:
-	if (!_s[0])
+	if (jstr_unlikely(_s[0] == '\0'))
 		return;
 	_s[0] = jstr_toupper_ascii(_s[0]);
-	if (!_s[1])
+	if (jstr_unlikely(_s[1] == '\0'))
 		return;
 	_s[1] = jstr_toupper_ascii(_s[1]);
-	if (!_s[2])
+	if (jstr_unlikely(_s[2] == '\0'))
 		return;
 	_s[2] = jstr_toupper_ascii(_s[2]);
-	if (!_s[3])
+	if (jstr_unlikely(_s[3] == '\0'))
 		return;
 	_s[3] = jstr_toupper_ascii(_s[3]);
-	if (!_s[4])
+	if (jstr_unlikely(_s[4] == '\0'))
 		return;
 	_s[4] = jstr_toupper_ascii(_s[4]);
-	if (!_s[5])
+	if (jstr_unlikely(_s[5] == '\0'))
 		return;
 	_s[5] = jstr_toupper_ascii(_s[5]);
-	if (!_s[6])
+	if (jstr_unlikely(_s[6] == '\0'))
 		return;
 	_s[6] = jstr_toupper_ascii(_s[6]);
-	if (!_s[7])
+	if (jstr_unlikely(_s[7] == '\0'))
 		return;
 	_s[7] = jstr_toupper_ascii(_s[7]);
 	*_sw = PJSTR_PTR_ALIGN_UP(*_sw, sizeof(*_sw));
-	while (!pjstr_has_zero(*_sw)) {
-		*(char *)_sw = jstr_toupper_ascii(*_sw);
+	for (; !pjstr_has_zero(*_sw); ++_sw) {
+		((char *)_sw)[0] = jstr_toupper_ascii(((char *)_sw)[0]);
 		((char *)_sw)[1] = jstr_toupper_ascii(((char *)_sw)[1]);
 		((char *)_sw)[2] = jstr_toupper_ascii(((char *)_sw)[2]);
 		((char *)_sw)[3] = jstr_toupper_ascii(((char *)_sw)[3]);
@@ -365,25 +378,36 @@ remainder:
 		((char *)_sw)[5] = jstr_toupper_ascii(((char *)_sw)[5]);
 		((char *)_sw)[6] = jstr_toupper_ascii(((char *)_sw)[6]);
 		((char *)_sw)[7] = jstr_toupper_ascii(((char *)_sw)[7]);
-		++_sw;
 	}
 	_s = (char *)_sw;
 	goto remainder;
 #else
 	for (;;) {
-		if (jstr_unlikely(_s[0]) == '\0')
+		if (jstr_unlikely(_s[0] == '\0'))
 			break;
 		_s[0] = jstr_toupper_ascii(_s[0]);
-		if (jstr_unlikely(_s[1]) == '\0')
+		if (jstr_unlikely(_s[1] == '\0'))
 			break;
 		_s[1] = jstr_toupper_ascii(_s[1]);
-		if (jstr_unlikely(_s[2]) == '\0')
+		if (jstr_unlikely(_s[2] == '\0'))
 			break;
 		_s[2] = jstr_toupper_ascii(_s[2]);
-		if (jstr_unlikely(_s[3]) == '\0')
+		if (jstr_unlikely(_s[3] == '\0'))
 			break;
 		_s[3] = jstr_toupper_ascii(_s[3]);
-		_s += 4;
+		if (jstr_unlikely(_s[4] == '\0'))
+			return;
+		_s[4] = jstr_toupper_ascii(_s[4]);
+		if (jstr_unlikely(_s[5] == '\0'))
+			return;
+		_s[5] = jstr_toupper_ascii(_s[5]);
+		if (jstr_unlikely(_s[6] == '\0'))
+			return;
+		_s[6] = jstr_toupper_ascii(_s[6]);
+		if (jstr_unlikely(_s[7] == '\0'))
+			return;
+		_s[7] = jstr_toupper_ascii(_s[7]);
+		_s += 8;
 	}
 #endif
 }
