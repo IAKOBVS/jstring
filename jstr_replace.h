@@ -44,7 +44,7 @@ extern "C" {
 /*
   Slip SRC into DST[AT].
   Return value:
-  pointer to '\0' in S.
+  ptr to '\0' in S.
   Assumes that S have enough space for SRC.
 */
 JSTR_INLINE
@@ -1104,7 +1104,7 @@ jstr_rev_mem(char *JSTR_RST _s,
 /*
   Reverse S.
   Return value:
-  pointer to '\0' in S.
+  ptr to '\0' in S.
 */
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -1118,7 +1118,7 @@ jstr_rev_p(char *JSTR_RST _s) JSTR_NOEXCEPT
 /*
   Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
-  pointer to '\0' in S;
+  ptr to '\0' in S;
   S if SLEN is 0.
 */
 JSTR_FUNC_RET_NONNULL
@@ -1143,7 +1143,7 @@ jstr_trim_mem_p(char *JSTR_RST const _s,
 /*
   Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
-  pointer to '\0' in S;
+  ptr to '\0' in S;
   S if SLEN is 0.
 */
 JSTR_FUNC_RET_NONNULL
@@ -1157,7 +1157,7 @@ jstr_trim_p(char *JSTR_RST const _s) JSTR_NOEXCEPT
 /*
   Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
-  pointer to '\0' in S;
+  ptr to '\0' in S;
   S if SLEN is 0.
 */
 JSTR_FUNC_VOID

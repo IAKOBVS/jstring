@@ -35,7 +35,7 @@ jstr_strnlen(const char *JSTR_RST const _s,
 
 /*
   Return value:
-  pointer to '\0' in DST.
+  ptr to '\0' in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -56,7 +56,7 @@ jstr_mempcpy(void *JSTR_RST const _dst,
 
 /*
   Return value:
-  pointer to '\0' in DST.
+  ptr to '\0' in DST.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
