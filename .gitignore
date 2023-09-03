@@ -11,3 +11,4 @@ cpp
 c
 ./gen_cpp
 *.gch
+glibc

@@ -1,5 +1,6 @@
 #!/bin/sh
+./update_glibc
 for file in $(echo *.h); do
-	perl _generate_func.pl "$file" &
+	perl generate_func.pl "$file" &
 done
 wait
