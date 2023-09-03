@@ -5,6 +5,7 @@
 extern "C" {
 #endif /* __cpluslus */
 #include <stdlib.h>
+#include <string.h>
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */
@@ -22,7 +23,7 @@ extern "C" {
 	JSTR_RETURNS_NONNULL \
 	JSTR_NOTHROW
 
-#define PJSTR_ULTOA_UNROLLED(_nptr, _number, __base)                                                                              \
+#define PJSTR_ULTOA_UNROLLED(_nptr, _number, _base)                                                                               \
 	do {                                                                                                                      \
 		JSTR_ASSERT_IS_STR(_nptr);                                                                                        \
 		JSTR_ASSERT_IS_SIZE(_number);                                                                                     \
@@ -107,12 +108,14 @@ extern "C" {
 		return _nptr;                                                                                                     \
 	} while (0)
 
-#define PJSTR_ULLTOA_UNROLLED(_nptr, _number, __base)                                                                                                                                                     \
+#if 0
+
+#define PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base)                                                                                                                                                      \
 	do {                                                                                                                                                                                              \
 		JSTR_ASSERT_IS_STR(_nptr);                                                                                                                                                                \
 		JSTR_ASSERT_IS_SIZE(_number);                                                                                                                                                             \
 		JSTR_ASSERT_IS_SIZE(_base);                                                                                                                                                               \
-		if (jstr_unlikely(_number <= 1)) {                                                                                                                                                        \
+		if (_number <= 1) {                                                                                                                                                                       \
 			_nptr[0] = _number % _base + '0';                                                                                                                                                 \
 			_nptr += 1;                                                                                                                                                                       \
 		} else if (_number <= 10) {                                                                                                                                                               \
@@ -362,22 +365,37 @@ extern "C" {
 		return _nptr;                                                                                                                                                                             \
 	} while (0)
 
-#define PJSTR_LTOA_UNROLLED(_nptr, _number, __base)           \
+#endif
+
+#define PJSTR_LTOA_UNROLLED(_nptr, _number, _base)           \
+	do {                                                 \
+		if (_number < 0) {                           \
+			_number = -_number;                  \
+			*_nptr++ = '-';                      \
+		}                                            \
+		PJSTR_ULTOA_UNROLLED(_nptr, _number, _base); \
+	} while (0)
+
+#define PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base)        \
+	do {                                                \
+		enum { _len = PJSTR_MAX_LONG_LONG_DIGITS }; \
+		char _s[_len + 1];                          \
+		_s[_len] = '\0';                            \
+		char *_p = _s + _len - 1;                   \
+		do                                          \
+			*_p-- = _number % _base + '0';      \
+		while (_number /= _base);                   \
+		memcpy(_nptr, _p + 1, _s + _len - _p);      \
+		return _nptr + (_s + _len - _p);            \
+	} while (0)
+
+#define PJSTR_LLTOA_UNROLLED(_nptr, _number, _base)           \
 	do {                                                  \
 		if (_number < 0) {                            \
 			_number = -_number;                   \
 			*_nptr++ = '-';                       \
 		}                                             \
-		PJSTR_ULTOA_UNROLLED(_nptr, _number, __base); \
-	} while (0)
-
-#define PJSTR_LLTOA_UNROLLED(_nptr, _number, __base)           \
-	do {                                                   \
-		if (_number < 0) {                             \
-			_number = -_number;                    \
-			*_nptr++ = '-';                        \
-		}                                              \
-		PJSTR_ULLTOA_UNROLLED(_nptr, _number, __base); \
+		PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base); \
 	} while (0)
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
@@ -387,7 +405,7 @@ jstr_itoa(char *_nptr,
 	  int _number,
 	  const unsigned int _base) JSTR_NOEXCEPT
 {
-	PJSTR_LTOA_UNROLLED(_nptr, _number, __base);
+	PJSTR_LTOA_UNROLLED(_nptr, _number, _base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
@@ -397,7 +415,7 @@ jstr_ltoa(char *_nptr,
 	  long _number,
 	  const unsigned int _base) JSTR_NOEXCEPT
 {
-	PJSTR_LTOA_UNROLLED(_nptr, _number, __base);
+	PJSTR_LTOA_UNROLLED(_nptr, _number, _base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
@@ -407,7 +425,7 @@ jstr_lltoa(char *_nptr,
 	   long long _number,
 	   const unsigned int _base) JSTR_NOEXCEPT
 {
-	PJSTR_LLTOA_UNROLLED(_nptr, _number, __base);
+	PJSTR_LLTOA_UNROLLED(_nptr, _number, _base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
@@ -417,7 +435,7 @@ jstr_utoa(char *_nptr,
 	  const unsigned int _number,
 	  const unsigned int _base) JSTR_NOEXCEPT
 {
-	PJSTR_ULTOA_UNROLLED(_nptr, _number, __base);
+	PJSTR_ULTOA_UNROLLED(_nptr, _number, _base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
@@ -427,17 +445,17 @@ jstr_ultoa(char *_nptr,
 	   const unsigned long _number,
 	   const unsigned int _base) JSTR_NOEXCEPT
 {
-	PJSTR_ULTOA_UNROLLED(_nptr, _number, __base);
+	PJSTR_ULTOA_UNROLLED(_nptr, _number, _base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
 jstr_ulltoa(char *_nptr,
-	    const unsigned long long _number,
+	    unsigned long long _number,
 	    const unsigned int _base) JSTR_NOEXCEPT
 {
-	PJSTR_ULLTOA_UNROLLED(_nptr, _number, __base);
+	PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base);
 }
 
 #undef PJSTR_ITOA_ATTR
