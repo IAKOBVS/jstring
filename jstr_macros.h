@@ -176,10 +176,10 @@
 #		define JSTR_NOTHROW
 #	endif
 #	if __has_attribute(__may_alias__)
-#		define JSTR_MAY_ALIAS __attribute__((__may_alias__))
+#		define JSTR_MAY_ALIAS		 __attribute__((__may_alias__))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	elif __has_attribute(may_alias)
-#		define JSTR_MAY_ALIAS __attribute__((may_alias))
+#		define JSTR_MAY_ALIAS		 __attribute__((may_alias))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	else
 #		define JSTR_MAY_ALIAS
@@ -721,5 +721,12 @@ case '~':
 #else
 #	define JSTR_ARCH_GENERIC 1
 #endif
+
+#define JSTR_FUNC_VOID	      JSTR_NOTHROW JSTR_MAYBE_UNUSED JSTR_NONNULL_ALL
+#define JSTR_FUNC	      JSTR_FUNC_VOID JSTR_WARN_UNUSED
+#define JSTR_FUNC_NOWARN JSTR_FUNC_VOID JSTR_WARN_UNUSED
+#define JSTR_FUNC_CONST	      JSTR_FUNC JSTR_CONST
+#define JSTR_FUNC_PURE	      JSTR_FUNC JSTR_PURE
+#define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #endif /* JSTR_MACROS_DEF_H */

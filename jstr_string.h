@@ -48,11 +48,7 @@ extern "C" {
 #if JSTR_HAVE_STRNCASECMP
 JSTR_INLINE
 #endif
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_PURE
 static int
 jstr_strncasecmp(const char *JSTR_RST _s1,
 		 const char *JSTR_RST _s2,
@@ -84,11 +80,7 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 #if JSTR_HAVE_STRNCASECMP
 JSTR_INLINE
 #endif
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_PURE
 static int
 jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
 		    const char *JSTR_RST const _s2,
@@ -113,10 +105,7 @@ jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
   0 if strings match;
   non-zero otherwise.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASECMP
 JSTR_INLINE
 #endif
@@ -139,11 +128,7 @@ jstr_strcasecmp(const char *JSTR_RST _s1,
 #endif
 }
 
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static void *
 pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		      const size_t _hslen,
@@ -194,11 +179,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 #if JSTR_HAVE_MEMRCHR
 JSTR_INLINE
 #endif
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
-JSTR_PURE
+JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *JSTR_RST _s,
 	     const int _c,
@@ -263,11 +244,7 @@ jstr_memrchr(const void *JSTR_RST _s,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_PURE
 static void *
 jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		 const size_t _hslen,
@@ -321,11 +298,7 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strrstr(const char *JSTR_RST const _hs,
@@ -334,11 +307,7 @@ jstr_strrstr(const char *JSTR_RST const _hs,
 	return (char *)jstr_strrstr_mem(_hs, strlen(_hs), _ne, strlen(_ne));
 }
 
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			 const size_t _hslen,
@@ -382,6 +351,8 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		} while (jstr_likely(_h < _end));                                                          \
 		return NULL;                                                                               \
 	} while (0)
+	if (jstr_unlikely(_hslen < _nelen))
+		return NULL;
 	if (jstr_unlikely(_nelen > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	PJSTR_STRCASESTR_BMH(uint8_t, int);
@@ -389,11 +360,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 #undef PJSTR_STRCASESTR_BMH
 }
 
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 		     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
@@ -463,11 +430,7 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 pstrcasechr_mem(const char *JSTR_RST _s,
@@ -487,11 +450,7 @@ pstrcasechr_mem(const char *JSTR_RST _s,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 pstrcasechr(const char *JSTR_RST _s,
@@ -511,11 +470,7 @@ pstrcasechr(const char *JSTR_RST _s,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASESTR
 JSTR_INLINE
 #endif
@@ -528,8 +483,6 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 #if JSTR_HAVE_STRCASESTR
 	return (char *)strcasestr(_hs, _ne);
 #else
-	if (jstr_unlikely(_hslen < _nelen))
-		return NULL;
 	switch (_nelen) {
 	case 4:
 		if (jstr_isalpha(_ne[3]))
@@ -559,11 +512,7 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
    Pointer to NE;
    NULL if not found.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASESTR
 JSTR_INLINE
 #endif
@@ -598,11 +547,7 @@ do3:
 /*
    Reverse of STRCSPN.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static size_t
 jstr_strrcspn_mem(const char *JSTR_RST const _s,
 		  const char *JSTR_RST const _reject,
@@ -660,12 +605,8 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 /*
    Reverse of STRCSPN.
 */
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
 JSTR_INLINE
-JSTR_NOTHROW
-JSTR_PURE
+JSTR_FUNC_PURE
 static size_t
 jstr_strrcspn(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _reject) JSTR_NOEXCEPT
@@ -676,11 +617,7 @@ jstr_strrcspn(const char *JSTR_RST const _s,
 /*
    Reverse of STRSPN.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static size_t
 jstr_strrspn_mem(const char *JSTR_RST const _s,
 		 const char *JSTR_RST const _accept,
@@ -740,12 +677,8 @@ jstr_strrspn_mem(const char *JSTR_RST const _s,
 /*
    Reverse of STRSPN.
 */
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
 JSTR_INLINE
-JSTR_NOTHROW
-JSTR_PURE
+JSTR_FUNC_PURE
 static size_t
 jstr_strrspn(const char *JSTR_RST const _s,
 	     const char *JSTR_RST const _accept) JSTR_NOEXCEPT
@@ -756,12 +689,8 @@ jstr_strrspn(const char *JSTR_RST const _s,
 /*
    Reverse of STRPBRK.
 */
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_NOTHROW
-JSTR_PURE
 static char *
 jstr_strrpbrk_mem(const char *JSTR_RST _s,
 		  const char *JSTR_RST const _accept,
@@ -774,12 +703,8 @@ jstr_strrpbrk_mem(const char *JSTR_RST _s,
 /*
    Reverse of STRPBRK.
 */
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_NOTHROW
-JSTR_PURE
 static char *
 jstr_strrpbrk(const char *JSTR_RST const _s,
 	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT
@@ -794,10 +719,7 @@ jstr_strrpbrk(const char *JSTR_RST const _s,
   1 if false.
 */
 JSTR_INLINE
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static int
 jstr_endswith_mem(const char *JSTR_RST const _hs,
 		  const char *JSTR_RST const _ne,
@@ -813,10 +735,7 @@ jstr_endswith_mem(const char *JSTR_RST const _hs,
   Occurences of C in S.
 */
 JSTR_INLINE
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static size_t
 jstr_countc(const char *JSTR_RST _s,
 	    const int _c) JSTR_NOEXCEPT
@@ -833,10 +752,7 @@ jstr_countc(const char *JSTR_RST _s,
   Occurences of C in S.
 */
 JSTR_INLINE
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static size_t
 jstr_countc_mem(const char *JSTR_RST _s,
 		const int _c,
@@ -856,11 +772,7 @@ jstr_countc_mem(const char *JSTR_RST _s,
   Return value:
   occurences of NE in HS.
 */
-JSTR_MAYBE_UNUSED
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static size_t
 jstr_count_mem(const char *JSTR_RST _s,
 	       const char *JSTR_RST const _find,
@@ -885,11 +797,7 @@ jstr_count_mem(const char *JSTR_RST _s,
   Return value:
   occurences of NE in HS.
 */
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static size_t
 jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _find) JSTR_NOEXCEPT

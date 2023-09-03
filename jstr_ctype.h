@@ -27,10 +27,7 @@ extern "C" {
 #endif /* __cpluslus */
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isupper(const int _c) JSTR_NOEXCEPT
 {
@@ -38,10 +35,7 @@ jstr_isupper(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_islower(const int _c) JSTR_NOEXCEPT
 {
@@ -49,10 +43,7 @@ jstr_islower(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isalnum(const int _c) JSTR_NOEXCEPT
 {
@@ -60,10 +51,7 @@ jstr_isalnum(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isdigit(const int _c) JSTR_NOEXCEPT
 {
@@ -71,10 +59,7 @@ jstr_isdigit(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isxdigit(const int _c) JSTR_NOEXCEPT
 {
@@ -82,10 +67,7 @@ jstr_isxdigit(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isblank(const int _c) JSTR_NOEXCEPT
 {
@@ -93,10 +75,7 @@ jstr_isblank(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isgraph(const int _c) JSTR_NOEXCEPT
 {
@@ -104,10 +83,7 @@ jstr_isgraph(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_ispunct(const int _c) JSTR_NOEXCEPT
 {
@@ -126,10 +102,7 @@ jstr_isspace(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isalpha(const int _c) JSTR_NOEXCEPT
 {
@@ -141,10 +114,7 @@ jstr_isalpha(const int _c) JSTR_NOEXCEPT
    toupper_ascii(EOF) != EOF;
 */
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_toupper_ascii(const int _c) JSTR_NOEXCEPT
 {
@@ -156,10 +126,7 @@ jstr_toupper_ascii(const int _c) JSTR_NOEXCEPT
    tolower_ascii(EOF) != EOF;
 */
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_tolower_ascii(const int _c) JSTR_NOEXCEPT
 {
@@ -167,10 +134,7 @@ jstr_tolower_ascii(const int _c) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isalnum_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -182,10 +146,7 @@ jstr_isalnum_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isalpha_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -197,10 +158,7 @@ jstr_isalpha_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_islower_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -212,10 +170,7 @@ jstr_islower_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_CONST
 static int
 jstr_isupper_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -227,10 +182,7 @@ jstr_isupper_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
-JSTR_WARN_UNUSED
+JSTR_FUNC_PURE
 static int
 jstr_isspace_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -238,10 +190,7 @@ jstr_isspace_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
-JSTR_WARN_UNUSED
+JSTR_FUNC_PURE
 static int
 jstr_isblank_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -249,10 +198,7 @@ jstr_isblank_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_PURE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static int
 jstr_isdigit_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
