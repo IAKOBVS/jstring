@@ -231,15 +231,14 @@ jstr_memrchr(const void *JSTR_RST _s,
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s - 1;
 	for (; _sw > _start; --_sw)
 		if (pjstr_has_eq(*_sw, _cc))
-			return (void *)((unsigned char *)_sw + pjstr_index_last_eq(*_sw, _cc));
+			return (void *)((char *)_sw + pjstr_index_last_eq(*_sw, _cc));
 	return NULL;
 #else
 	const unsigned char *_end = (unsigned char *)_s + _n;
-	const unsigned char *_start = (unsigned char *)_s - 1;
-	while (_end > _start
-	       && *_end-- != (unsigned char)_c)
-		;
-	return (_end == _start + 1) ? NULL : (void *)_end + 1;
+	const unsigned char *_start = (unsigned char *)_s;
+	while ((_end > _start) - (*_end != (unsigned char)_c) == 0)
+		--_end;
+	return (_end == _start + 1) ? NULL : (void *)(_end + 1);
 #endif
 }
 
