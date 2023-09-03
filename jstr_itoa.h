@@ -376,17 +376,20 @@ extern "C" {
 		PJSTR_ULTOA_UNROLLED(_nptr, _number, _base); \
 	} while (0)
 
-#define PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base)        \
-	do {                                                \
-		enum { _len = PJSTR_MAX_LONG_LONG_DIGITS }; \
-		char _s[_len + 1];                          \
-		_s[_len] = '\0';                            \
-		char *_p = _s + _len - 1;                   \
-		do                                          \
-			*_p-- = _number % _base + '0';      \
-		while (_number /= _base);                   \
-		memcpy(_nptr, _p + 1, _s + _len - _p);      \
-		return _nptr + (_s + _len - _p);            \
+#define PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base)         \
+	do {                                                 \
+		enum { _len = PJSTR_MAX_ULONG_LONG_DIGITS }; \
+		char _s[_len + 1];                           \
+		_s[_len] = '\0';                             \
+		char *_p = _s + _len - 1;                    \
+		do                                           \
+			*_p-- = _number % _base + '0';       \
+		while (_number /= _base);                    \
+		while (*++_p)                                \
+			*_nptr++ = *_p;                      \
+		*_nptr = '\0';                               \
+		memcpy(_nptr, _p + 1, _s + _len - _p);       \
+		return _nptr + (_s + _len - _p);             \
 	} while (0)
 
 #define PJSTR_LLTOA_UNROLLED(_nptr, _number, _base)           \
