@@ -833,6 +833,94 @@ jstr_count(const char *JSTR_RST _s,
 		return (char *)_d;                                             \
 	} while (0)
 
+#define PJSTR_NUMTOSTR_UNROLLED(_max_digits, _base)                                                                         \
+	do {                                                                                                                \
+		if (sizeof(_num) == sizeof(int))                                                                            \
+			num = abs(num);                                                                                     \
+		else if (sizeof(_num) == sizeof(long))                                                                      \
+			num = abs(labs);                                                                                    \
+		else if (sizeof(_num) == sizeof(long long))                                                                 \
+			num = abs(labs);                                                                                    \
+		if (jstr_unlikely(_num <= 1)) {                                                                             \
+			_s[0] = _num % _base + '0';                                                                         \
+			_s += 1;                                                                                            \
+		} else if (_num <= 10) {                                                                                    \
+			_s[0] = _num / _base % _base + '0';                                                                 \
+			_s[1] = _num % _base + '0';                                                                         \
+			_s += 2;                                                                                            \
+		} else if (_num <= 100) {                                                                                   \
+			_s[0] = _num / _base / _base % _base + '0';                                                         \
+			_s[1] = _num / _base % _base + '0';                                                                 \
+			_s[2] = _num % _base + '0';                                                                         \
+			_s += 3;                                                                                            \
+		} else if (_num <= 1000) {                                                                                  \
+			_s[0] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[1] = _num / _base / _base % _base + '0';                                                         \
+			_s[2] = _num / _base % _base + '0';                                                                 \
+			_s[3] = _num % _base + '0';                                                                         \
+			_s += 4;                                                                                            \
+		} else if (_num <= 10000) {                                                                                 \
+			_s[0] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[1] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[2] = _num / _base / _base % _base + '0';                                                         \
+			_s[3] = _num / _base % _base + '0';                                                                 \
+			_s[4] = _num % _base + '0';                                                                         \
+			_s += 5;                                                                                            \
+		} else if (_num <= 100000) {                                                                                \
+			_s[0] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[1] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[2] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[3] = _num / _base / _base % _base + '0';                                                         \
+			_s[4] = _num / _base % _base + '0';                                                                 \
+			_s[5] = _num % _base + '0';                                                                         \
+			_s += 6;                                                                                            \
+		} else if (_num <= 1000000) {                                                                               \
+			_s[0] = _num / _base / _base / _base / _base / _base / _base % _base + '0';                         \
+			_s[1] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[2] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[3] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[4] = _num / _base / _base % _base + '0';                                                         \
+			_s[5] = _num / _base % _base + '0';                                                                 \
+			_s[6] = _num % _base + '0';                                                                         \
+			_s += 7;                                                                                            \
+		} else if (_num <= 10000000) {                                                                              \
+			_s[0] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
+			_s[1] = _num / _base / _base / _base / _base / _base / _base % _base + '0';                         \
+			_s[2] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[3] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[4] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[5] = _num / _base / _base % _base + '0';                                                         \
+			_s[6] = _num / _base % _base + '0';                                                                 \
+			_s[7] = _num % _base + '0';                                                                         \
+			_s += 8;                                                                                            \
+		} else if (_num <= 100000000) {                                                                             \
+			_s[0] = _num / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';         \
+			_s[1] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
+			_s[2] = _num / _base / _base / _base / _base / _base / _base % _base + '0';                         \
+			_s[3] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[4] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[5] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[6] = _num / _base / _base % _base + '0';                                                         \
+			_s[7] = _num / _base % _base + '0';                                                                 \
+			_s[8] = _num % _base + '0';                                                                         \
+			_s += 9;                                                                                            \
+		} else /* if (_num <= 1000000000) */ {                                                                      \
+			_s[0] = _num / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0'; \
+			_s[1] = _num / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';         \
+			_s[2] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
+			_s[3] = _num / _base / _base / _base / _base / _base / _base % _base + '0';                         \
+			_s[4] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[5] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[6] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[7] = _num / _base / _base % _base + '0';                                                         \
+			_s[8] = _num / _base % _base + '0';                                                                 \
+			_s[9] = _num % _base + '0';                                                                         \
+			_s += 10;                                                                                           \
+		}                                                                                                           \
+		*_s = '\0';                                                                                                 \
+		return _s;                                                                                                  \
+	} while (0)
+
 #define PJSTR_UNUMTOSTR(_max_digits, _base)                   \
 	do {                                                  \
 		JSTR_ASSERT_IS_STR(_dst);                     \
@@ -853,6 +941,88 @@ jstr_count(const char *JSTR_RST _s,
 		return (char *)_d;                            \
 	} while (0)
 
+#define PJSTR_UNUMTOSTR_UNROLLED(_max_digits, _base)                                                                        \
+	do {                                                                                                                \
+		if (jstr_unlikely(_num <= 1)) {                                                                             \
+			_s[0] = _num % _base + '0';                                                                         \
+			_s += 1;                                                                                            \
+		} else if (_num <= 10) {                                                                                    \
+			_s[0] = _num / _base % _base + '0';                                                                 \
+			_s[1] = _num % _base + '0';                                                                         \
+			_s += 2;                                                                                            \
+		} else if (_num <= 100) {                                                                                   \
+			_s[0] = _num / _base / _base % _base + '0';                                                         \
+			_s[1] = _num / _base % _base + '0';                                                                 \
+			_s[2] = _num % _base + '0';                                                                         \
+			_s += 3;                                                                                            \
+		} else if (_num <= 1000) {                                                                                  \
+			_s[0] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[1] = _num / _base / _base % _base + '0';                                                         \
+			_s[2] = _num / _base % _base + '0';                                                                 \
+			_s[3] = _num % _base + '0';                                                                         \
+			_s += 4;                                                                                            \
+		} else if (_num <= 10000) {                                                                                 \
+			_s[0] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[1] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[2] = _num / _base / _base % _base + '0';                                                         \
+			_s[3] = _num / _base % _base + '0';                                                                 \
+			_s[4] = _num % _base + '0';                                                                         \
+			_s += 5;                                                                                            \
+		} else if (_num <= 100000) {                                                                                \
+			_s[0] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[1] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[2] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[3] = _num / _base / _base % _base + '0';                                                         \
+			_s[4] = _num / _base % _base + '0';                                                                 \
+			_s[5] = _num % _base + '0';                                                                         \
+			_s += 6;                                                                                            \
+		} else if (_num <= 1000000) {                                                                               \
+			_s[0] = _num / _base / _base / _base / _base / _base / _base % _base + '0';                         \
+			_s[1] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[2] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[3] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[4] = _num / _base / _base % _base + '0';                                                         \
+			_s[5] = _num / _base % _base + '0';                                                                 \
+			_s[6] = _num % _base + '0';                                                                         \
+			_s += 7;                                                                                            \
+		} else if (_num <= 10000000) {                                                                              \
+			_s[0] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
+			_s[1] = _num / _base / _base / _base / _base / _base / _base % _base + '0';                         \
+			_s[2] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[3] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[4] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[5] = _num / _base / _base % _base + '0';                                                         \
+			_s[6] = _num / _base % _base + '0';                                                                 \
+			_s[7] = _num % _base + '0';                                                                         \
+			_s += 8;                                                                                            \
+		} else if (_num <= 100000000) {                                                                             \
+			_s[0] = _num / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';         \
+			_s[1] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
+			_s[2] = _num / _base / _base / _base / _base / _base / _base % _base + '0';                         \
+			_s[3] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[4] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[5] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[6] = _num / _base / _base % _base + '0';                                                         \
+			_s[7] = _num / _base % _base + '0';                                                                 \
+			_s[8] = _num % _base + '0';                                                                         \
+			_s += 9;                                                                                            \
+		} else /* if (_num <= 1000000000) */ {                                                                      \
+			_s[0] = _num / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0'; \
+			_s[1] = _num / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';         \
+			_s[2] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
+			_s[3] = _num / _base / _base / _base / _base / _base / _base % _base + '0';                         \
+			_s[4] = _num / _base / _base / _base / _base / _base % _base + '0';                                 \
+			_s[5] = _num / _base / _base / _base / _base % _base + '0';                                         \
+			_s[6] = _num / _base / _base / _base % _base + '0';                                                 \
+			_s[7] = _num / _base / _base % _base + '0';                                                         \
+			_s[8] = _num / _base % _base + '0';                                                                 \
+			_s[9] = _num % _base + '0';                                                                         \
+			_s += 10;                                                                                           \
+		}                                                                                                           \
+		*_s = '\0';                                                                                                 \
+		return _s;                                                                                                  \
+	} while (0)
+
 #define PJSTR_NUMTOSTR_ATTR  \
 	JSTR_MAYBE_UNUSED    \
 	JSTR_NONNULL_ALL     \
@@ -863,39 +1033,39 @@ jstr_count(const char *JSTR_RST _s,
 #define PJSTR_DEFINE_NUMTOSTR(_num_type, _func_name, _max) \
 	PJSTR_NUMTOSTR_ATTR                                \
 	static char *                                      \
-	_func_name(char *JSTR_RST const _dst,              \
+	_func_name(char *JSTR_RST const _s,              \
 		   _num_type _num,                         \
 		   const unsigned int _base) JSTR_NOEXCEPT \
 	{                                                  \
-		PJSTR_NUMTOSTR(_max, _base);               \
+		PJSTR_NUMTOSTR_UNROLLED(_max, _base);               \
 	}
 
 #define PJSTR_DEFINE_NUMTOSTR_BASE(_num_type, _func_name, _max, _base) \
 	PJSTR_NUMTOSTR_ATTR                                            \
 	static char *                                                  \
-	_func_name(char *JSTR_RST const _dst,                          \
+	_func_name(char *JSTR_RST const _s,                          \
 		   _num_type _num) JSTR_NOEXCEPT                       \
 	{                                                              \
-		PJSTR_NUMTOSTR(_max, _base);                           \
+		PJSTR_NUMTOSTR_UNROLLED(_max, _base);                           \
 	}
 
 #define PJSTR_DEFINE_UNUMTOSTR(_num_type, _func_name, _max) \
 	PJSTR_NUMTOSTR_ATTR                                 \
 	static char *                                       \
-	_func_name(char *JSTR_RST const _dst,               \
+	_func_name(char *JSTR_RST const _s,               \
 		   _num_type _num,                          \
 		   const unsigned int _base) JSTR_NOEXCEPT  \
 	{                                                   \
-		PJSTR_UNUMTOSTR(_max, _base);               \
+		PJSTR_UNUMTOSTR_UNROLLED(_max, _base);               \
 	}
 
 #define PJSTR_DEFINE_UNUMTOSTR_BASE(_num_type, _func_name, _max, _base) \
 	PJSTR_NUMTOSTR_ATTR                                             \
 	static char *                                                   \
-	_func_name(char *JSTR_RST const _dst,                           \
+	_func_name(char *JSTR_RST const _s,                           \
 		   _num_type _num) JSTR_NOEXCEPT                        \
 	{                                                               \
-		PJSTR_UNUMTOSTR(_max, _base);                           \
+		PJSTR_UNUMTOSTR_UNROLLED(_max, _base);                           \
 	}
 
 PJSTR_DEFINE_NUMTOSTR(int, jstr_itoa, PJSTR_MAX_INT_DIGITS)
@@ -968,55 +1138,5 @@ PJSTR_DEFINE_NUMTOSTRALL_BASE(36);
 #undef PJSTR_MAX_ULONG_LONG_DIGITS
 #undef PJSTR_UNUMTOSTR
 #undef PJSTR_NUMTOSTR
-
-#if 0
-char *
-ltostr(char *JSTR_RST const _dst,
-       int _num) JSTR_NOEXCEPT
-{
-#define _base	    10
-#define _max_digits 10
-	unsigned char *_d = (unsigned char *)_dst;
-	unsigned char _sbuf[_max_digits];
-	unsigned char *JSTR_RST _s = _sbuf;
-	unsigned char *const _end = _s + _max_digits;
-	_s = _end - 1;
-	if (_num >= 1000000000) {
-do9:
-		_s[9] = _num / _base * _base * _base * _base * _base * _base * _base * _base * _base * _base % _base + '0';
-do8:
-		_s[8] = _num / _base * _base * _base * _base * _base * _base * _base * _base * _base % _base + '0';
-do7:
-		_s[7] = _num / _base * _base * _base * _base * _base * _base * _base * _base % _base + '0';
-do6:
-		_s[6] = _num / _base * _base * _base * _base * _base * _base * _base % _base + '0';
-do5:
-		_s[5] = _num / _base * _base * _base * _base * _base * _base % _base + '0';
-do4:
-		_s[4] = _num / _base * _base * _base * _base * _base % _base + '0';
-do3:
-		_s[3] = _num / _base * _base * _base * _base % _base + '0';
-do2:
-		_s[2] = _num / _base * _base * _base % _base + '0';
-do1:
-		_s[1] = _num / _base * _base % _base + '0';
-do0:
-		_s[0] = _num % _base + '0';
-	} else if (_num >= 100000000) {
-	} else if (_num >= 10000000) {
-	} else if (_num >= 1000000) {
-	} else if (_num >= 100000) {
-	} else if (_num >= 10000) {
-	} else if (_num >= 1000) {
-	} else if (_num >= 100) {
-	} else if (_num >= 10) {
-	} else if (_num >= 1) {
-	}
-	while (_s < _end)
-		*_d++ = *_s++;
-	*_d = '\0';
-	return (char *)_d;
-}
-#endif
 
 #endif /* JSTR_STRING_DEF_H */
