@@ -60,10 +60,9 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
-	while ((ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
-	       + !*_p1
-	       + !_n--
-	       == 0)
+	while (!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
+	       ^ !*_p1
+	       ^ !_n--)
 		++_p1;
 	return ret;
 #endif /* HAVE_STRNCASECMP */
@@ -90,7 +89,7 @@ jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
-	while ((ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
+	while (!(ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
 	       ^ !_n--)
 		;
 	return ret;
@@ -311,7 +310,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			 const char *JSTR_RST const _ne,
 			 const size_t _nelen) JSTR_NOEXCEPT
 {
-#define PJSTR_HASH2_LOWER(p)	    (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
+#define PJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                                 \
 	do {                                                                                               \
 		const unsigned char *_h = (unsigned char *)_hs;                                            \
