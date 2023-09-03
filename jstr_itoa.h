@@ -28,7 +28,7 @@ extern "C" {
 		JSTR_ASSERT_IS_STR(_nptr);                                                                                        \
 		JSTR_ASSERT_IS_SIZE(_number);                                                                                     \
 		JSTR_ASSERT_IS_SIZE(_base);                                                                                       \
-		if (jstr_unlikely(_number <= 1)) {                                                                                \
+		if (_number <= 1) {                                                                                \
 			_nptr[0] = _number % _base + '0';                                                                         \
 			_nptr += 1;                                                                                               \
 		} else if (_number <= 10) {                                                                                       \
