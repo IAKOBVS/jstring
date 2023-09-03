@@ -37,8 +37,6 @@ extern "C" {
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) strstr(_hs, _ne)
 #endif /* HAVE_MEMMEM */
 
-#define PJSTR_OPSIZ sizeof(pjstr_op_ty)
-
 /*
   Compare S1 with S2 case-insensitively.
   Return value:
@@ -189,7 +187,7 @@ jstr_memrchr(const void *JSTR_RST _s,
 	return (void *)memrchr(_s, _c, _n);
 #elif JSTR_HAVE_ATTR_MAY_ALIAS
 	const unsigned char *_end = (unsigned char *)_s + _n;
-	switch (_n % PJSTR_OPSIZ) {
+	switch (_n % sizeof(pjstr_op_ty)) {
 	case 7:
 		if (*_end-- == _c)
 			return (void *)(_end + 1);
