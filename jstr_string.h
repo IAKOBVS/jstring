@@ -41,6 +41,106 @@ extern "C" {
 
 #define PJSTR_OPSIZ sizeof(pjstr_op_ty)
 
+/*
+  Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+#if JSTR_HAVE_STRNCASECMP
+JSTR_INLINE
+#endif
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+JSTR_MAYBE_UNUSED
+static int
+jstr_strncasecmp(const char *JSTR_RST _s1,
+		 const char *JSTR_RST _s2,
+		 size_t _n) JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP
+	return strncasecmp(_s1, _s2, _n);
+#else
+	if (jstr_unlikely(_n == 0))
+		return 0;
+	const unsigned char *_p1 = (unsigned char *)_s1;
+	const unsigned char *_p2 = (unsigned char *)_s2;
+	int ret;
+	while ((ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
+	       + !*_p1
+	       + !_n--
+	       == 0)
+		++_p1;
+	return ret;
+#endif /* HAVE_STRNCASECMP */
+}
+
+/*
+  Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+#if JSTR_HAVE_STRNCASECMP
+JSTR_INLINE
+#endif
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_NOTHROW
+JSTR_MAYBE_UNUSED
+static int
+jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
+		    const char *JSTR_RST const _s2,
+		    size_t _n) JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP
+	return strncasecmp(_s1, _s2, _n);
+#else
+	const unsigned char *_p1 = (unsigned char *)_s1;
+	const unsigned char *_p2 = (unsigned char *)_s2;
+	int ret;
+	while ((ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
+	       ^ !_n--)
+		;
+	return ret;
+#endif /* HAVE_STRNCASECMP */
+}
+
+/*
+  Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+#if JSTR_HAVE_STRCASECMP
+JSTR_INLINE
+#endif
+JSTR_NOTHROW
+static int
+jstr_strcasecmp(const char *JSTR_RST _s1,
+		const char *JSTR_RST _s2) JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRCASECMP
+	return strcasecmp(_s1, _s2);
+#else
+	const unsigned char *_p1 = (unsigned char *)_s1;
+	const unsigned char *_p2 = (unsigned char *)_s2;
+	int ret;
+	while ((ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
+	       ^ !*_p1)
+		++_p1;
+	;
+	return ret;
+#endif
+}
+
 JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
