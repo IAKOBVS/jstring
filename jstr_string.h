@@ -62,8 +62,9 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
 	while (!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
-	       ^ !*_p1
-	       ^ !_n--)
+	       + !*_p1
+	       + !_n--
+	       == 1)
 		++_p1;
 	return ret;
 #endif /* HAVE_STRNCASECMP */
@@ -91,7 +92,8 @@ jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
 	while (!(ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
-	       ^ !_n--)
+	       + !_n--
+	       == 1)
 		;
 	return ret;
 #endif /* HAVE_STRNCASECMP */
@@ -118,8 +120,9 @@ jstr_strcasecmp(const char *JSTR_RST _s1,
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
-	while ((ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
-	       ^ !*_p1)
+	while (!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
+	       + !*_p1
+	       == 1)
 		++_p1;
 	;
 	return ret;
@@ -156,7 +159,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 			do {                                                      \
 				_hs -= _mtc1;                                     \
 				_tmp = _shift[PJSTR_HASH2(_hs)];                  \
-			} while (!_tmp ^ (_hs <= _start));                        \
+			} while (!_tmp - (_hs <= _start) == 0);                   \
 			_hs -= _tmp;                                              \
 			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {   \
 				if (!memcmp(_hs, _ne, _mtc1))                     \
@@ -262,7 +265,7 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		const uc *_n = (uc *)_ne;
 		const uint16_t _nw = _n[1] << 8 | _n[0];
 		uint16_t _hw = _h[0] << 8 | _h[-1];
-		for (_h -= 2; (_h == _start) ^ (_hw != _nw); _hw = _hw << 8 | *_h--)
+		for (_h -= 2; (_h != _start) + (_hw != _nw) == 2; _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -272,7 +275,7 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		const uc *_n = (uc *)_ne;
 		const uint32_t _nw = _n[2] << 24 | _n[1] << 16 | _n[0] << 8;
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8;
-		for (_h -= 3; (_h == _start) ^ (_hw != _nw); _hw = (_hw | *_h--) << 8)
+		for (_h -= 3; (_h != _start) + (_hw != _nw) == 2; _hw = (_hw | *_h--) << 8)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -282,7 +285,7 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		const uc *_n = (uc *)_ne;
 		const uint32_t _nw = _n[3] << 24 | _n[2] << 16 | _n[1] << 8 | _n[0];
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8 | _h[-3];
-		for (_h -= 4; (_h == _start) ^ (_hw != _nw); _hw = _hw << 8 | *_h--)
+		for (_h -= 4; (_h != _start) + (_hw != _nw) == 2; _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -336,7 +339,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[PJSTR_HASH2_LOWER(_h)];                                      \
-			} while (!_tmp ^ (_h >= _end));                                                    \
+			} while (!_tmp - (_h < _end) == 0);                                                \
 			_h -= _tmp;                                                                        \
 			if (_tmp < _mtc1)                                                                  \
 				continue;                                                                  \
@@ -394,7 +397,7 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[PJSTR_HASH2_LOWER(_h)];                                      \
-			} while (!_tmp ^ (_h > _end));                                                     \
+			} while (!_tmp - (_h <= _end) == 0);                                               \
 			_h -= _tmp;                                                                        \
 			if (_tmp < _mtc1)                                                                  \
 				goto CONT##table_type;                                                     \
@@ -470,7 +473,7 @@ pjstr_strcasestr2(const unsigned char *JSTR_RST _h,
 {
 	const uint16_t _nw = L(_n[0]) << 8 | L(_n[1]);
 	uint16_t _hw = L(_h[0]) << 8 | L(_h[1]);
-	for (_h++; !*_h ^ (_hw != _nw); _hw = _hw << 8 | L(*++_h))
+	for (_h++; !!*_h - (_hw != _nw) == 0; _hw = _hw << 8 | L(*++_h))
 		;
 	return _hw == _nw ? (char *)(_h - 1) : NULL;
 }
@@ -483,7 +486,7 @@ pjstr_strcasestr3(const unsigned char *JSTR_RST _h,
 {
 	const uint32_t _nw = L(_n[0]) << 24 | L(_n[1]) << 16 | L(_n[2]) << 8;
 	uint32_t _hw = L(_h[0]) << 24 | L(_h[1]) << 16 | L(_h[2]) << 8;
-	for (_h += 2; !*_h ^ (_hw != _nw); _hw = (_hw | L(*++_h)) << 8)
+	for (_h += 2; !!*_h - (_hw != _nw) == 0; _hw = (_hw | L(*++_h)) << 8)
 		;
 	return _hw == _nw ? (char *)(_h - 2) : NULL;
 }
@@ -496,7 +499,7 @@ pjstr_strcasestr4(const unsigned char *JSTR_RST _h,
 {
 	const uint32_t _nw = L(_n[0]) << 24 | L(_n[1]) << 16 | L(_n[2]) << 8 | L(_n[3]);
 	uint32_t _hw = L(_h[0]) << 24 | L(_h[1]) << 16 | L(_h[2]) << 8 | L(_h[3]);
-	for (_h += 3; !*_h ^ (_hw != _nw); _hw = _hw << 8 | L(*++_h))
+	for (_h += 3; !!*_h - (_hw != _nw) == 0; _hw = _hw << 8 | L(*++_h))
 		;
 	return _hw == _nw ? (char *)(_h - 3) : NULL;
 }
@@ -526,23 +529,26 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 #else
 	switch (_nelen) {
 	case 4:
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1])
-		    ^ !jstr_isalpha(_ne[2])
-		    ^ jstr_isalpha(_ne[3]))
+		if (jstr_isalpha(_ne[0])
+		    + jstr_isalpha(_ne[1])
+		    + jstr_isalpha(_ne[2])
+		    + jstr_isalpha(_ne[3])
+		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
 		break;
 	case 3:
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1])
-		    ^ !jstr_isalpha(_ne[2]))
+		if (jstr_isalpha(_ne[0])
+		    + jstr_isalpha(_ne[1])
+		    + jstr_isalpha(_ne[2])
+		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
 		break;
 	case 2:
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1]))
+		if (jstr_isalpha(_ne[0])
+		    + jstr_isalpha(_ne[1])
+		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
 
@@ -577,21 +583,24 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 	if (_ne[1] == '\0')
 		return pstrcasechr(_hs, *_ne);
 	if (_ne[2] == '\0') {
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1]))
+		if (jstr_isalpha(_ne[0])
+		    + jstr_isalpha(_ne[1])
+		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[3] == '\0') {
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1])
-		    ^ !jstr_isalpha(_ne[2]))
+		if (jstr_isalpha(_ne[0])
+		    + jstr_isalpha(_ne[1])
+		    + jstr_isalpha(_ne[2])
+		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[4] == '\0') {
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1])
-		    ^ !jstr_isalpha(_ne[2])
-		    ^ jstr_isalpha(_ne[3]))
+		if (jstr_isalpha(_ne[0])
+		    + jstr_isalpha(_ne[1])
+		    + jstr_isalpha(_ne[2])
+		    + jstr_isalpha(_ne[3])
+		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
 	}

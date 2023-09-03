@@ -3,93 +3,6 @@
 
 #include "jstr_string.h"
 
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static char *
-jstr_lltoa(char *JSTR_RST _s,
-	unsigned long long _num) JSTR_NOEXCEPT
-{
-	enum { _base = 10 };
-	if (_num <= 1) {
-		_s[0] = _num % _base + '0';
-		_s += 1;
-	} else if (_num <= 10) {
-		_s[0] = _num / _base % _base + '0';
-		_s[1] = _num % _base + '0';
-		_s += 2;
-	} else if (_num <= 100) {
-		_s[0] = _num / _base / _base % _base + '0';
-		_s[1] = _num / _base % _base + '0';
-		_s[2] = _num % _base + '0';
-		_s += 3;
-	} else if (_num <= 1000) {
-		_s[0] = _num / _base / _base / _base % _base + '0';
-		_s[1] = _num / _base / _base % _base + '0';
-		_s[2] = _num / _base % _base + '0';
-		_s[3] = _num % _base + '0';
-		_s += 4;
-	} else if (_num <= 10000) {
-		_s[0] = _num / _base / _base / _base / _base % _base + '0';
-		_s[1] = _num / _base / _base / _base % _base + '0';
-		_s[2] = _num / _base / _base % _base + '0';
-		_s[3] = _num / _base % _base + '0';
-		_s[4] = _num % _base + '0';
-		_s += 5;
-	} else if (_num <= 100000) {
-		_s[0] = _num / _base / _base / _base / _base / _base % _base + '0';
-		_s[1] = _num / _base / _base / _base / _base % _base + '0';
-		_s[2] = _num / _base / _base / _base % _base + '0';
-		_s[3] = _num / _base / _base % _base + '0';
-		_s[4] = _num / _base % _base + '0';
-		_s[5] = _num % _base + '0';
-		_s += 6;
-	} else if (_num <= 1000000) {
-		_s[0] = _num / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[1] = _num / _base / _base / _base / _base / _base % _base + '0';
-		_s[2] = _num / _base / _base / _base / _base % _base + '0';
-		_s[3] = _num / _base / _base / _base % _base + '0';
-		_s[4] = _num / _base / _base % _base + '0';
-		_s[5] = _num / _base % _base + '0';
-		_s[6] = _num % _base + '0';
-		_s += 7;
-	} else if (_num <= 10000000) {
-		_s[0] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[1] = _num / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[2] = _num / _base / _base / _base / _base / _base % _base + '0';
-		_s[3] = _num / _base / _base / _base / _base % _base + '0';
-		_s[4] = _num / _base / _base / _base % _base + '0';
-		_s[5] = _num / _base / _base % _base + '0';
-		_s[6] = _num / _base % _base + '0';
-		_s[7] = _num % _base + '0';
-		_s += 8;
-	} else if (_num <= 100000000) {
-		_s[0] = _num / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[1] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[2] = _num / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[3] = _num / _base / _base / _base / _base / _base % _base + '0';
-		_s[4] = _num / _base / _base / _base / _base % _base + '0';
-		_s[5] = _num / _base / _base / _base % _base + '0';
-		_s[6] = _num / _base / _base % _base + '0';
-		_s[7] = _num / _base % _base + '0';
-		_s[8] = _num % _base + '0';
-		_s += 9;
-	} else /* if (_num <= 1000000000) */ {
-		_s[0] = _num / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[1] = _num / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[2] = _num / _base / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[3] = _num / _base / _base / _base / _base / _base / _base % _base + '0';
-		_s[4] = _num / _base / _base / _base / _base / _base % _base + '0';
-		_s[5] = _num / _base / _base / _base / _base % _base + '0';
-		_s[6] = _num / _base / _base / _base % _base + '0';
-		_s[7] = _num / _base / _base % _base + '0';
-		_s[8] = _num / _base % _base + '0';
-		_s[9] = _num % _base + '0';
-		_s += 10;
-	}
-	*_s = '\0';
-	return _s;
-}
-
 int
 main(int argc, char **argv)
 {
@@ -97,9 +10,13 @@ main(int argc, char **argv)
 	/* printf("%c\n", 403 / 10 % 10 + '0'); */
 	/* printf("%c\n", 403 / 10 / 10 % 10 + '0'); */
 
-	char s[1024] = { 0 };
-	_ltostr(s, 12345);
-	puts(s);
+	char *s = "hello world";
+	char *p = jstr_strrstr(s, "he");
+	if (p)
+		puts(p);
+
+	/* char s[1024] = { 0 }; */
+	/* puts(s); */
 	/* putchar('\n'); */
 	/* fwrite(s, 1, 1024, stdout); */
 	/* putchar('\n'); */
