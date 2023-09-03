@@ -138,12 +138,6 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 #define PJSTR_HASH2(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 #define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                           \
 	do {                                                                      \
-		JSTR_ASSERT(sizeof(table_type) == sizeof(size_t)                  \
-			    || sizeof(table_type) == sizeof(uint8_t),             \
-			    "Table must be size_t or uint8_t.");                  \
-		JSTR_ASSERT(sizeof(ne_iterator_type) == sizeof(size_t)            \
-			    || sizeof(table_type) == sizeof(int),                 \
-			    "Needle iterator must be size_t or int.");            \
 		const unsigned char *const _start = _hs - 1;                      \
 		_hs += _hslen;                                                    \
 		size_t _tmp;                                                      \
