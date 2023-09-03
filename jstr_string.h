@@ -123,7 +123,7 @@ jstr_strnlen(const char *JSTR_RST const _s,
 #if JSTR_HAVE_STRNLEN
 	return strnlen(_s, _maxlen);
 #else
-	const char *p = memchr(_s, '\0', _maxlen);
+	const char *p = (char *)memchr(_s, '\0', _maxlen);
 	return p ? p - _s : _maxlen;
 #endif
 }
@@ -553,6 +553,73 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 #undef PJSTR_STRCASESTR_BMH
 }
 
+JSTR_PURE
+JSTR_NONNULL_ALL
+JSTR_WARN_UNUSED
+JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
+static char *
+pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
+		     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
+{
+#define PJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
+#define PJSTR_STRCASESTR_BMH(_shift_table_type, _ne_iterator_type)                                         \
+	do {                                                                                               \
+		const unsigned char *_h = (unsigned char *)_hs;                                            \
+		const char _ht[] = { (char)jstr_tolower_ascii(*_h), (char)jstr_toupper_ascii(*_h), '\0' }; \
+		_h = (unsigned char *)strpbrk((char *)_h, _ht);                                            \
+		if (_h == NULL)                                                                            \
+			return NULL;                                                                       \
+		size_t _hslen = jstr_strnlen((char *)_h, _nelen | 512);                                    \
+		if (_hslen < _nelen)                                                                       \
+			return NULL;                                                                       \
+		const unsigned char *const _n = (unsigned char *)_ne;                                      \
+		const unsigned char *_end = _h + _hslen - _nelen;                                          \
+		size_t _tmp;                                                                               \
+		const size_t _mtc1 = _nelen - 1;                                                           \
+		size_t _off = 0;                                                                           \
+		_shift_table_type _shift[256];                                                             \
+		(sizeof(_shift_table_type) == sizeof(size_t))                                              \
+		? memset(_shift, 0, sizeof(_shift))                                                        \
+		: (memset(_shift, 0, 64),                                                                  \
+		   memset(_shift + 64, 0, 64),                                                             \
+		   memset(_shift + 64 + 64, 0, 64),                                                        \
+		   memset(_shift + 64 + 64 + 64, 0, 64));                                                  \
+		for (_ne_iterator_type _i = 1; _i < (_ne_iterator_type)_mtc1; ++_i)                        \
+			_shift[PJSTR_HASH2_LOWER(_n + _i)] = _i;                                           \
+		const size_t _shft1 = _mtc1 - _shift[PJSTR_HASH2_LOWER(_n + _mtc1)];                       \
+		_shift[PJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                             \
+		for (;;) {                                                                                 \
+			do {                                                                               \
+				_h += _mtc1;                                                               \
+				_tmp = _shift[PJSTR_HASH2_LOWER(_h)];                                      \
+			} while (!_tmp ^ (_h > _end));                                                     \
+			_h -= _tmp;                                                                        \
+			if (_tmp < _mtc1)                                                                  \
+				goto CONT##_shift_table_type;                                              \
+			if (_mtc1 < 15 || !jstr_strcasecmp_mem((char *)_h + _off, (char *)_n + _off, 8)) { \
+				if (!jstr_strcasecmp_mem((char *)_h, (char *)_n, _mtc1))                   \
+					return (char *)_h;                                                 \
+				_off = (_off >= 8 ? _off : _mtc1) - 8;                                     \
+			}                                                                                  \
+			_h += _shft1;                                                                      \
+			CONT##_shift_table_type:;                                                          \
+			if (jstr_unlikely(_h > _end)) {                                                    \
+				_end += jstr_strnlen((char *)_end + _mtc1, 2048);                          \
+				if (_h > _end)                                                             \
+					return NULL;                                                       \
+			}                                                                                  \
+		}                                                                                          \
+		return NULL;                                                                               \
+	} while (0)
+	const size_t _nelen = strlen(_ne);
+	if (jstr_unlikely(_nelen > 256))
+		PJSTR_STRCASESTR_BMH(size_t, size_t);
+	PJSTR_STRCASESTR_BMH(uint8_t, int);
+#undef PJSTR_HASH2_LOWER
+#undef PJSTR_STRCASESTR_BMH
+}
+
 /*
    Find C in S case-insensitively.
    S MUST be nul terminated.
@@ -565,25 +632,15 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
+JSTR_INLINE
 static char *
 pstrcasechr_mem(const char *JSTR_RST _s,
 		const int _c,
 		const size_t _n) JSTR_NOEXCEPT
 {
-	char _acc[3];
-	switch (_c) {
-		JSTR_CASE_UPPER
-		_acc[0] = _c;
-		_acc[1] = _c - 'A' + 'a';
-		break;
-		JSTR_CASE_LOWER
-		_acc[0] = _c;
-		_acc[1] = _c - 'a' + 'A';
-		break;
-	default:
+	if (jstr_unlikely(!jstr_isalpha(_c)))
 		return (char *)memchr(_s, _c, _n);
-	}
-	_acc[2] = '\0';
+	const char _acc[] = { (char)jstr_tolower_ascii(_c), (char)jstr_toupper_ascii(_c), '\0' };
 	return (char *)strpbrk(_s, _acc);
 }
 
@@ -599,24 +656,14 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
+JSTR_INLINE
 static char *
 pstrcasechr(const char *JSTR_RST _s,
 	    const int _c) JSTR_NOEXCEPT
 {
-	char _acc[3];
-	switch (_c) {
-		JSTR_CASE_UPPER
-		_acc[0] = _c;
-		_acc[1] = _c - 'A' + 'a';
-		break;
-		JSTR_CASE_LOWER
-		_acc[0] = _c;
-		_acc[1] = _c - 'a' + 'A';
-		break;
-	default:
+	if (jstr_unlikely(!jstr_isalpha(_c)))
 		return (char *)strchr(_s, _c);
-	}
-	_acc[2] = '\0';
+	const char _acc[] = { (char)jstr_tolower_ascii(_c), (char)jstr_toupper_ascii(_c), '\0' };
 	return (char *)strpbrk(_s, _acc);
 }
 
@@ -650,16 +697,22 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 	switch (_nelen) {
 	case 0: return (char *)_hs;
 	case 1: return pstrcasechr_mem(_hs, *_ne, _hslen);
-	case 4:
-		if (jstr_isalpha(_ne[3]))
-			break;
-		/* fallthrough */
-	case 3:
-		if (jstr_isalpha(_ne[2]))
-			break;
-		/* fallthrough */
 	case 2:
-		if (!jstr_isalpha(_ne[0]) && !jstr_isalpha(_ne[1]))
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1]))
+			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
+		break;
+	case 3:
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1])
+		    ^ !jstr_isalpha(_ne[2]))
+			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
+		break;
+	case 4:
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1])
+		    ^ !jstr_isalpha(_ne[2])
+		    ^ jstr_isalpha(_ne[3]))
 			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
 		break;
 	}
@@ -669,6 +722,8 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 
 /*
    Find NE in HS case-insensitively.
+   HS MUST be nul terminated.
+   Will call strcasestr if available.
    Return value:
    Pointer to NE;
    NULL if not found.
@@ -677,10 +732,10 @@ JSTR_PURE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_MAYBE_UNUSED
-#ifdef JSTR_HAVE_STRCASESTR
+JSTR_NOTHROW
+#if JSTR_HAVE_STRCASESTR
 JSTR_INLINE
 #endif
-JSTR_NOTHROW
 static char *
 jstr_strcasestr(const char *JSTR_RST const _hs,
 		const char *JSTR_RST const _ne) JSTR_NOEXCEPT
@@ -688,30 +743,28 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 #if JSTR_HAVE_STRCASESTR
 	return (char *)strcasestr(_hs, _ne);
 #else
-	size_t _nelen;
-	if (_ne[0] == '\0')
+	if (jstr_unlikely(_ne[0] == '\0'))
 		return (char *)_hs;
 	if (_ne[1] == '\0')
 		return pstrcasechr(_hs, *_ne);
 	if (_ne[2] == '\0') {
-do2:
-		if (!jstr_isalpha(_ne[0]) && !jstr_isalpha(_ne[1]))
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1]))
 			return (char *)strstr(_hs, _ne);
-		_nelen = 2;
 	} else if (_ne[3] == '\0') {
-do3:
-		if (!jstr_isalpha(_ne[2]))
-			goto do2;
-		_nelen = 3;
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1])
+		    ^ !jstr_isalpha(_ne[2]))
+			return (char *)strstr(_hs, _ne);
 	} else if (_ne[4] == '\0') {
-		if (!jstr_isalpha(_ne[3]))
-			goto do3;
-		_nelen = 4;
-	} else {
-		_nelen = 4 + strlen(_ne + 4);
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1])
+		    ^ !jstr_isalpha(_ne[2])
+		    ^ jstr_isalpha(_ne[3]))
+			return (char *)strstr(_hs, _ne);
 	}
-	return pjstr_strcasestr_mem_bmh(_hs, strlen(_hs), _ne, _nelen);
-#endif /* HAVE_STRCASESTR */
+	return pjstr_strcasestr_bmh(_hs, _ne);
+#endif
 }
 
 /*
