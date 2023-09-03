@@ -336,90 +336,6 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
-{
-	enum { it = PJSTR_UNROLL_ITERATIONS };
-#if JSTR_HAVE_ATTR_MAY_ALIAS && 0
-	pjstr_op_ty *_sw = (pjstr_op_ty *)_s;
-remainder:
-	if (jstr_unlikely(_s[0] == '\0'))
-		return;
-	_s[0] = jstr_tolower_ascii(_s[0]);
-	if (jstr_unlikely(_s[1] == '\0'))
-		return;
-	_s[1] = jstr_tolower_ascii(_s[1]);
-	if (jstr_unlikely(_s[2] == '\0'))
-		return;
-	_s[2] = jstr_tolower_ascii(_s[2]);
-	if (jstr_unlikely(_s[3] == '\0'))
-		return;
-	_s[3] = jstr_tolower_ascii(_s[3]);
-	if (jstr_unlikely(_s[4] == '\0'))
-		return;
-	_s[4] = jstr_tolower_ascii(_s[4]);
-	if (jstr_unlikely(_s[5] == '\0'))
-		return;
-	_s[5] = jstr_tolower_ascii(_s[5]);
-	if (jstr_unlikely(_s[6] == '\0'))
-		return;
-	_s[6] = jstr_tolower_ascii(_s[6]);
-	if (jstr_unlikely(_s[7] == '\0'))
-		return;
-	_s[7] = jstr_tolower_ascii(_s[7]);
-	*_sw = PJSTR_PTR_ALIGN_DOWN(_sw, sizeof(*_sw));
-	for (; !pjstr_has_zero(*_sw); ++_sw) {
-		((char *)_sw)[0] = jstr_tolower_ascii(((char *)_sw)[0]);
-		((char *)_sw)[1] = jstr_tolower_ascii(((char *)_sw)[1]);
-		((char *)_sw)[2] = jstr_tolower_ascii(((char *)_sw)[2]);
-		((char *)_sw)[3] = jstr_tolower_ascii(((char *)_sw)[3]);
-		((char *)_sw)[4] = jstr_tolower_ascii(((char *)_sw)[4]);
-		((char *)_sw)[5] = jstr_tolower_ascii(((char *)_sw)[5]);
-		((char *)_sw)[6] = jstr_tolower_ascii(((char *)_sw)[6]);
-		((char *)_sw)[7] = jstr_tolower_ascii(((char *)_sw)[7]);
-	}
-	_s = (char *)_sw;
-	goto remainder;
-#else
-#	if 1
-	for (;; _s += it) {
-		if (jstr_unlikely(_s[0] == '\0'))
-			break;
-		_s[0] = jstr_tolower_ascii(_s[0]);
-		if (jstr_unlikely(_s[1] == '\0'))
-			break;
-		_s[1] = jstr_tolower_ascii(_s[1]);
-		if (jstr_unlikely(_s[2] == '\0'))
-			break;
-		_s[2] = jstr_tolower_ascii(_s[2]);
-		if (jstr_unlikely(_s[3] == '\0'))
-			break;
-		_s[3] = jstr_tolower_ascii(_s[3]);
-#		if PJSTR_UNROLL_ITERATIONS == 8
-		if (jstr_unlikely(_s[4] == '\0'))
-			break;
-		_s[4] = jstr_tolower_ascii(_s[4]);
-		if (jstr_unlikely(_s[5] == '\0'))
-			break;
-		_s[5] = jstr_tolower_ascii(_s[5]);
-		if (jstr_unlikely(_s[6] == '\0'))
-			break;
-		_s[6] = jstr_tolower_ascii(_s[6]);
-		if (jstr_unlikely(_s[7] == '\0'))
-			break;
-		_s[7] = jstr_tolower_ascii(_s[7]);
-#		endif
-	}
-#	else
-	for (; *_s; ++_s)
-		*_s = jstr_tolower_ascii(*_s);
-#	endif
-#endif
-}
-
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
-static void
 jstr_toupper_mem(char *JSTR_RST _s,
 		 const size_t _sz) JSTR_NOEXCEPT
 {
@@ -499,6 +415,23 @@ jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 #elif defined __GNUC__
 #	pragma GCC diagnostic pop
 #endif
+
+JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	size_t _len = jstr_strnlen(_s, 512);
+	if (_len < 512) {
+		jstr_tolower_mem(_s, jstr_strnlen(_s, 512));
+		return;
+	}
+	do {
+		jstr_tolower_mem(_s += _len, _len);
+		_len = jstr_strnlen(_s += _len, 2048);
+	} while (_len == 2048);
+}
 
 #ifdef __cplusplus
 } /* extern C */

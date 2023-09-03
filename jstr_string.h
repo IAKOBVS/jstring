@@ -533,26 +533,21 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
-	case 0: return (char *)_hs;
-	case 1: return pstrcasechr_mem(_hs, *_ne, _hslen);
+	case 4:
+		if (jstr_isalpha(_ne[3]))
+			break;
+		/* fallthrough */
+	case 3:
+		if (jstr_isalpha(_ne[2]))
+			break;
+		/* fallthrough */
 	case 2:
 		if (!jstr_isalpha(_ne[0])
 		    ^ jstr_isalpha(_ne[1]))
 			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
 		break;
-	case 3:
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1])
-		    ^ !jstr_isalpha(_ne[2]))
-			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
-		break;
-	case 4:
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1])
-		    ^ !jstr_isalpha(_ne[2])
-		    ^ jstr_isalpha(_ne[3]))
-			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
-		break;
+	case 1: return pstrcasechr_mem(_hs, *_ne, _hslen);
+	case 0: return (char *)_hs;
 	}
 	return pjstr_strcasestr_mem_bmh(_hs, _hslen, _ne, _nelen);
 #endif
@@ -586,20 +581,17 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 	if (_ne[1] == '\0')
 		return pstrcasechr(_hs, *_ne);
 	if (_ne[2] == '\0') {
+do2:
 		if (!jstr_isalpha(_ne[0])
 		    ^ jstr_isalpha(_ne[1]))
 			return (char *)strstr(_hs, _ne);
 	} else if (_ne[3] == '\0') {
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1])
-		    ^ !jstr_isalpha(_ne[2]))
-			return (char *)strstr(_hs, _ne);
+do3:
+		if (!jstr_isalpha(_ne[2]))
+			goto do2;
 	} else if (_ne[4] == '\0') {
-		if (!jstr_isalpha(_ne[0])
-		    ^ jstr_isalpha(_ne[1])
-		    ^ !jstr_isalpha(_ne[2])
-		    ^ jstr_isalpha(_ne[3]))
-			return (char *)strstr(_hs, _ne);
+		if (!jstr_isalpha(_ne[3]))
+			goto do3;
 	}
 	return pjstr_strcasestr_bmh(_hs, _ne);
 #endif
