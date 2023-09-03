@@ -822,7 +822,7 @@ jstr_count(const char *JSTR_RST _s,
 		_s = _end - 1;                                                 \
 		do                                                             \
 			*_s-- = _num % _base + '0';                            \
-		while (_num /= 10);                                            \
+		while (_num /= _base);                                         \
 		if (_neg)                                                      \
 			*_s = '-';                                             \
 		else                                                           \
@@ -845,7 +845,7 @@ jstr_count(const char *JSTR_RST _s,
 		_s = _end - 1;                                \
 		do                                            \
 			*_s-- = _num % _base + '0';           \
-		while (_num /= 10);                           \
+		while (_num /= _base);                        \
 		++_s;                                         \
 		while (_s < _end)                             \
 			*_d++ = *_s++;                        \
@@ -968,5 +968,55 @@ PJSTR_DEFINE_NUMTOSTRALL_BASE(36);
 #undef PJSTR_MAX_ULONG_LONG_DIGITS
 #undef PJSTR_UNUMTOSTR
 #undef PJSTR_NUMTOSTR
+
+#if 0
+char *
+ltostr(char *JSTR_RST const _dst,
+       int _num) JSTR_NOEXCEPT
+{
+#define _base	    10
+#define _max_digits 10
+	unsigned char *_d = (unsigned char *)_dst;
+	unsigned char _sbuf[_max_digits];
+	unsigned char *JSTR_RST _s = _sbuf;
+	unsigned char *const _end = _s + _max_digits;
+	_s = _end - 1;
+	if (_num >= 1000000000) {
+do9:
+		_s[9] = _num / _base * _base * _base * _base * _base * _base * _base * _base * _base * _base % _base + '0';
+do8:
+		_s[8] = _num / _base * _base * _base * _base * _base * _base * _base * _base * _base % _base + '0';
+do7:
+		_s[7] = _num / _base * _base * _base * _base * _base * _base * _base * _base % _base + '0';
+do6:
+		_s[6] = _num / _base * _base * _base * _base * _base * _base * _base % _base + '0';
+do5:
+		_s[5] = _num / _base * _base * _base * _base * _base * _base % _base + '0';
+do4:
+		_s[4] = _num / _base * _base * _base * _base * _base % _base + '0';
+do3:
+		_s[3] = _num / _base * _base * _base * _base % _base + '0';
+do2:
+		_s[2] = _num / _base * _base * _base % _base + '0';
+do1:
+		_s[1] = _num / _base * _base % _base + '0';
+do0:
+		_s[0] = _num % _base + '0';
+	} else if (_num >= 100000000) {
+	} else if (_num >= 10000000) {
+	} else if (_num >= 1000000) {
+	} else if (_num >= 100000) {
+	} else if (_num >= 10000) {
+	} else if (_num >= 1000) {
+	} else if (_num >= 100) {
+	} else if (_num >= 10) {
+	} else if (_num >= 1) {
+	}
+	while (_s < _end)
+		*_d++ = *_s++;
+	*_d = '\0';
+	return (char *)_d;
+}
+#endif
 
 #endif /* JSTR_STRING_DEF_H */

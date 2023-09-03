@@ -210,6 +210,7 @@ jstr_isdigit_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 #	pragma clang diagnostic push
 #elif defined __GNUC__
 #	pragma GCC diagnostic ignored "-Wanalyzer-allocation-size"
+#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #	pragma GCC diagnostic push
 #endif
 
@@ -218,7 +219,7 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 jstr_tolower_mem(char *JSTR_RST _s,
-		 const size_t _sz) JSTR_NOEXCEPT
+		 const size_t _sz)
 {
 	/* It seems that 8 iterations is not much faster. */
 #define PJSTR_UNROLL_ITERATIONS 4
@@ -229,41 +230,55 @@ jstr_tolower_mem(char *JSTR_RST _s,
 	enum {
 		it = PJSTR_UNROLL_ITERATIONS,
 	};
+	int skip;
 	switch (_sz % it) {
 #	if PJSTR_UNROLL_ITERATIONS == 8
 	case 7:
-		*_s = jstr_tolower_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 7;
+		goto do7;
 	case 6:
-		*_s = jstr_tolower_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 6;
+		goto do6;
 	case 5:
-		*_s = jstr_tolower_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 5;
+		goto do5;
 	case 4:
-		*_s = jstr_tolower_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 4;
+		goto do4;
 #	endif
 	case 3:
-		*_s = jstr_tolower_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 3;
+		goto do3;
 	case 2:
-		*_s = jstr_tolower_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 2;
+		goto do2;
 	case 1:
-		*_s = jstr_tolower_ascii(*_s);
-		++_s;
-		/* fallthrough */
-	case 0: break;
+		skip = 1;
+		goto do1;
+	case 0:
+		goto START_LOOP;
+		break;
+#	if PJSTR_UNROLL_ITERATIONS == 8
+do7:
+		_s[6] = jstr_tolower_ascii(_s[6]);
+do6:
+		_s[5] = jstr_tolower_ascii(_s[5]);
+do5:
+		_s[4] = jstr_tolower_ascii(_s[4]);
+do4:
+		_s[3] = jstr_tolower_ascii(_s[3]);
+#	endif
+do3:
+		_s[2] = jstr_tolower_ascii(_s[2]);
+do2:
+		_s[1] = jstr_tolower_ascii(_s[1]);
+do1:
+		_s[0] = jstr_tolower_ascii(_s[0]);
 	}
+	_s += skip;
+START_LOOP:;
 	const char *const _end = _s + _sz;
-	for (; jstr_likely(_s != _end); _s += it) {
+	for (; (_s != _end); _s += it) {
 		_s[0] = jstr_tolower_ascii(_s[0]);
 		_s[1] = jstr_tolower_ascii(_s[1]);
 		_s[2] = jstr_tolower_ascii(_s[2]);
@@ -283,48 +298,66 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 jstr_toupper_mem(char *JSTR_RST _s,
-		 const size_t _sz) JSTR_NOEXCEPT
+		 const size_t _sz)
 {
-	enum { it = PJSTR_UNROLL_ITERATIONS };
+	/* It seems that 8 iterations is not much faster. */
+#define PJSTR_UNROLL_ITERATIONS 4
 #if PJSTR_NO_UNROLL
 	for (; *_s; ++_s)
 		*_s = jstr_toupper_ascii(*_s);
 #else
+	enum {
+		it = PJSTR_UNROLL_ITERATIONS,
+	};
+	int skip;
 	switch (_sz % it) {
 #	if PJSTR_UNROLL_ITERATIONS == 8
 	case 7:
-		*_s = jstr_toupper_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 7;
+		goto do7;
 	case 6:
-		*_s = jstr_toupper_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 6;
+		goto do6;
 	case 5:
-		*_s = jstr_toupper_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 5;
+		goto do5;
 	case 4:
-		*_s = jstr_toupper_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 4;
+		goto do4;
 #	endif
 	case 3:
-		*_s = jstr_toupper_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 3;
+		goto do3;
 	case 2:
-		*_s = jstr_toupper_ascii(*_s);
-		++_s;
-		/* fallthrough */
+		skip = 2;
+		goto do2;
 	case 1:
-		*_s = jstr_toupper_ascii(*_s);
-		++_s;
-		/* fallthrough */
-	case 0: break;
+		skip = 1;
+		goto do1;
+	case 0:
+		goto START_LOOP;
+		break;
+#	if PJSTR_UNROLL_ITERATIONS == 8
+do7:
+		_s[6] = jstr_toupper_ascii(_s[6]);
+do6:
+		_s[5] = jstr_toupper_ascii(_s[5]);
+do5:
+		_s[4] = jstr_toupper_ascii(_s[4]);
+do4:
+		_s[3] = jstr_toupper_ascii(_s[3]);
+#	endif
+do3:
+		_s[2] = jstr_toupper_ascii(_s[2]);
+do2:
+		_s[1] = jstr_toupper_ascii(_s[1]);
+do1:
+		_s[0] = jstr_toupper_ascii(_s[0]);
 	}
+	_s += skip;
+START_LOOP:;
 	const char *const _end = _s + _sz;
-	for (; jstr_likely(_s < _end); _s += it) {
+	for (; (_s != _end); _s += it) {
 		_s[0] = jstr_toupper_ascii(_s[0]);
 		_s[1] = jstr_toupper_ascii(_s[1]);
 		_s[2] = jstr_toupper_ascii(_s[2]);
