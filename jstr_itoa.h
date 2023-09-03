@@ -414,7 +414,7 @@ jstr_lltoa(char *_nptr,
 PJSTR_ITOA_ATTR
 static char *
 jstr_utoa(char *_nptr,
-	  unsigned int _number,
+	  const unsigned int _number,
 	  const unsigned int _base) JSTR_NOEXCEPT
 {
 	PJSTR_ULTOA_UNROLLED(_nptr, _number, __base);
@@ -424,7 +424,7 @@ jstr_utoa(char *_nptr,
 PJSTR_ITOA_ATTR
 static char *
 jstr_ultoa(char *_nptr,
-	   unsigned long _number,
+	   const unsigned long _number,
 	   const unsigned int _base) JSTR_NOEXCEPT
 {
 	PJSTR_ULTOA_UNROLLED(_nptr, _number, __base);
@@ -434,85 +434,17 @@ jstr_ultoa(char *_nptr,
 PJSTR_ITOA_ATTR
 static char *
 jstr_ulltoa(char *_nptr,
-	    unsigned long long _number,
+	    const unsigned long long _number,
 	    const unsigned int _base) JSTR_NOEXCEPT
 {
 	PJSTR_ULLTOA_UNROLLED(_nptr, _number, __base);
 }
 
-#if 0
-
-#	define PJSTR_DEFINE_ITOA_BASE(_num_type, _func_name, _max) \
-		PJSTR_ITOA_ATTR                                     \
-	char *                                              \
-	_func_name(char *_nptr,                             \
-		   _num_type _number,
-
-#	define PJSTR_DEFINE_LLTOA_BASE(_num_type, _func_name, _max) \
-		PJSTR_ITOA_ATTR                                      \
-	char *                                               \
-	_func_name(char *_nptr,                              \
-		   _num_type _number,
-
-#	define PJSTR_DEFINE_UITOA_BASE(_num_type, _func_name, _max) \
-		PJSTR_ITOA_ATTR                                      \
-	char *                                               \
-	_func_name(char *_nptr,                              \
-		   _num_type _number,
-
-#	define PJSTR_DEFINE_ITOAALL_BASE(_base)                                                       \
-		PJSTR_DEFINE_ITOA_BASE(int, jstr_itoa##_base, PJSTR_MAX_INT_DIGITS, _base)             \
-		PJSTR_DEFINE_ITOA_BASE(long, jstr_ltoa##_base, PJSTR_MAX_INT_DIGITS, _base)            \
-		PJSTR_DEFINE_ITOA_BASE(long long, jstr_lltoa##_base, PJSTR_MAX_INT_DIGITS, _base)      \
-		PJSTR_DEFINE_UITOA_BASE(unsigned int, jstr_utoa##_base, PJSTR_MAX_INT_DIGITS, _base)   \
-		PJSTR_DEFINE_UITOA_BASE(unsigned long, jstr_ultoa##_base, PJSTR_MAX_INT_DIGITS, _base) \
-		PJSTR_DEFINE_UITOA_BASE(unsigned long long, jstr_ulltoa##_base, PJSTR_MAX_INT_DIGITS, _base)
-
-PJSTR_DEFINE_ITOAALL_BASE(2);
-PJSTR_DEFINE_ITOAALL_BASE(3);
-PJSTR_DEFINE_ITOAALL_BASE(4);
-PJSTR_DEFINE_ITOAALL_BASE(5);
-PJSTR_DEFINE_ITOAALL_BASE(6);
-PJSTR_DEFINE_ITOAALL_BASE(7);
-PJSTR_DEFINE_ITOAALL_BASE(8);
-PJSTR_DEFINE_ITOAALL_BASE(9);
-PJSTR_DEFINE_ITOAALL_BASE(10);
-PJSTR_DEFINE_ITOAALL_BASE(11);
-PJSTR_DEFINE_ITOAALL_BASE(12);
-PJSTR_DEFINE_ITOAALL_BASE(13);
-PJSTR_DEFINE_ITOAALL_BASE(14);
-PJSTR_DEFINE_ITOAALL_BASE(15);
-PJSTR_DEFINE_ITOAALL_BASE(16);
-PJSTR_DEFINE_ITOAALL_BASE(17);
-PJSTR_DEFINE_ITOAALL_BASE(18);
-PJSTR_DEFINE_ITOAALL_BASE(19);
-PJSTR_DEFINE_ITOAALL_BASE(20);
-PJSTR_DEFINE_ITOAALL_BASE(21);
-PJSTR_DEFINE_ITOAALL_BASE(22);
-PJSTR_DEFINE_ITOAALL_BASE(23);
-PJSTR_DEFINE_ITOAALL_BASE(24);
-PJSTR_DEFINE_ITOAALL_BASE(25);
-PJSTR_DEFINE_ITOAALL_BASE(26);
-PJSTR_DEFINE_ITOAALL_BASE(27);
-PJSTR_DEFINE_ITOAALL_BASE(28);
-PJSTR_DEFINE_ITOAALL_BASE(29);
-PJSTR_DEFINE_ITOAALL_BASE(30);
-PJSTR_DEFINE_ITOAALL_BASE(31);
-PJSTR_DEFINE_ITOAALL_BASE(32);
-PJSTR_DEFINE_ITOAALL_BASE(33);
-PJSTR_DEFINE_ITOAALL_BASE(34);
-PJSTR_DEFINE_ITOAALL_BASE(35);
-PJSTR_DEFINE_ITOAALL_BASE(36);
-
-#endif
-
-#undef PJSTR_DEFINE_ITOAALL_BASE
-#undef PJSTR_DEFINE_ITOAALL
-#undef PJSTR_DEFINE_UITOA_BASE
-#undef PJSTR_DEFINE_ITOA_BASE
-#undef PJSTR_DEFINE_UITOA
-#undef PJSTR_DEFINE_ITOA
 #undef PJSTR_ITOA_ATTR
+#undef PJSTR_ULLTOA_UNROLLED
+#undef PJSTR_ULTOA_UNROLLED
+#undef PJSTR_LLTOA_UNROLLED
+#undef PJSTR_LTOA_UNROLLED
 
 #ifdef __cplusplus
 } /* extern C */
