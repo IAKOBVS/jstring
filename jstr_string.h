@@ -15,9 +15,9 @@ extern "C" {
 #include "jstr_builder.h"
 #include "jstr_config.h"
 #include "jstr_ctype.h"
+#include "jstr_itoa.h"
 #include "jstr_macros.h"
 #include "jstr_std_string.h"
-#include "jstr_itoa.h"
 
 #include "string-fza.h"
 #include "string-fzb.h"
@@ -250,15 +250,16 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 {
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
+	typedef unsigned char uc;
 	switch (_nelen) {
 	case 0:
-		return (void *)((unsigned char *)_hs + _hslen);
+		return (void *)((uc *)_hs + _hslen);
 	case 1:
 		return (void *)jstr_memrchr(_hs, *(char *)_ne, _hslen);
 	case 2: {
-		const unsigned char *const _start = (unsigned char *)_hs - 1;
-		const unsigned char *_h = (unsigned char *)_hs + _hslen - 1;
-		const unsigned char *_n = (unsigned char *)_ne;
+		const uc *const _start = (uc *)_hs - 1;
+		const uc *_h = (uc *)_hs + _hslen - 1;
+		const uc *_n = (uc *)_ne;
 		const uint16_t _nw = _n[1] << 8 | _n[0];
 		uint16_t _hw = _h[0] << 8 | _h[-1];
 		for (_h -= 2; (_h == _start) ^ (_hw != _nw); _hw = _hw << 8 | *_h--)
@@ -266,9 +267,9 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	case 3: {
-		const unsigned char *const _start = (unsigned char *)_hs - 1;
-		const unsigned char *_h = (unsigned char *)_hs + _hslen - 1;
-		const unsigned char *_n = (unsigned char *)_ne;
+		const uc *const _start = (uc *)_hs - 1;
+		const uc *_h = (uc *)_hs + _hslen - 1;
+		const uc *_n = (uc *)_ne;
 		const uint32_t _nw = _n[2] << 24 | _n[1] << 16 | _n[0] << 8;
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8;
 		for (_h -= 3; (_h == _start) ^ (_hw != _nw); _hw = (_hw | *_h--) << 8)
@@ -276,16 +277,16 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	case 4: {
-		const unsigned char *const _start = (unsigned char *)_hs - 1;
-		const unsigned char *_h = (unsigned char *)_hs + _hslen - 1;
-		const unsigned char *_n = (unsigned char *)_ne;
+		const uc *const _start = (uc *)_hs - 1;
+		const uc *_h = (uc *)_hs + _hslen - 1;
+		const uc *_n = (uc *)_ne;
 		const uint32_t _nw = _n[3] << 24 | _n[2] << 16 | _n[1] << 8 | _n[0];
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8 | _h[-3];
 		for (_h -= 4; (_h == _start) ^ (_hw != _nw); _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
-	default: return pjstr_strrstr_mem_bmh((unsigned char *)_hs, _hslen, (unsigned char *)_ne, _nelen);
+	default: return pjstr_strrstr_mem_bmh((uc *)_hs, _hslen, (uc *)_ne, _nelen);
 	}
 }
 
@@ -459,6 +460,49 @@ pstrcasechr(const char *JSTR_RST _s,
 	return (char *)strpbrk(_s, _acc);
 }
 
+#define L
+
+JSTR_INLINE
+JSTR_FUNC_PURE
+static char *
+pjstr_strcasestr2(const unsigned char *JSTR_RST _h,
+		  const unsigned char *JSTR_RST _n) JSTR_NOEXCEPT
+{
+	const uint16_t _nw = L(_n[0]) << 8 | L(_n[1]);
+	uint16_t _hw = L(_h[0]) << 8 | L(_h[1]);
+	for (_h++; !*_h ^ (_hw != _nw); _hw = _hw << 8 | L(*++_h))
+		;
+	return _hw == _nw ? (char *)(_h - 1) : NULL;
+}
+
+JSTR_INLINE
+JSTR_FUNC_PURE
+static char *
+pjstr_strcasestr3(const unsigned char *JSTR_RST _h,
+		  const unsigned char *JSTR_RST _n) JSTR_NOEXCEPT
+{
+	const uint32_t _nw = L(_n[0]) << 24 | L(_n[1]) << 16 | L(_n[2]) << 8;
+	uint32_t _hw = L(_h[0]) << 24 | L(_h[1]) << 16 | L(_h[2]) << 8;
+	for (_h += 2; !*_h ^ (_hw != _nw); _hw = (_hw | L(*++_h)) << 8)
+		;
+	return _hw == _nw ? (char *)(_h - 2) : NULL;
+}
+
+JSTR_INLINE
+JSTR_FUNC_PURE
+static char *
+pjstr_strcasestr4(const unsigned char *JSTR_RST _h,
+		  const unsigned char *JSTR_RST _n) JSTR_NOEXCEPT
+{
+	const uint32_t _nw = L(_n[0]) << 24 | L(_n[1]) << 16 | L(_n[2]) << 8 | L(_n[3]);
+	uint32_t _hw = L(_h[0]) << 24 | L(_h[1]) << 16 | L(_h[2]) << 8 | L(_h[3]);
+	for (_h += 3; !*_h ^ (_hw != _nw); _hw = _hw << 8 | L(*++_h))
+		;
+	return _hw == _nw ? (char *)(_h - 3) : NULL;
+}
+
+#undef L
+
 /*
    Find NE in HS case-insensitively.
    HS MUST be nul terminated.
@@ -482,17 +526,26 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 #else
 	switch (_nelen) {
 	case 4:
-		if (jstr_isalpha(_ne[3]))
-			break;
-		/* fallthrough */
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1])
+		    ^ !jstr_isalpha(_ne[2])
+		    ^ jstr_isalpha(_ne[3]))
+			return (char *)strstr(_hs, _ne);
+		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
+		break;
 	case 3:
-		if (jstr_isalpha(_ne[2]))
-			break;
-		/* fallthrough */
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1])
+		    ^ !jstr_isalpha(_ne[2]))
+			return (char *)strstr(_hs, _ne);
+		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
+		break;
 	case 2:
 		if (!jstr_isalpha(_ne[0])
 		    ^ jstr_isalpha(_ne[1]))
-			return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
+			return (char *)strstr(_hs, _ne);
+		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
+
 		break;
 	case 1: return pstrcasechr_mem(_hs, *_ne, _hslen);
 	case 0: return (char *)_hs;
@@ -500,7 +553,6 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 	return pjstr_strcasestr_mem_bmh(_hs, _hslen, _ne, _nelen);
 #endif
 }
-
 /*
    Find NE in HS case-insensitively.
    HS MUST be nul terminated.
@@ -517,7 +569,7 @@ static char *
 jstr_strcasestr(const char *JSTR_RST const _hs,
 		const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR
+#if JSTR_HAVE_STRCASESTR && 0
 	return (char *)strcasestr(_hs, _ne);
 #else
 	if (jstr_unlikely(_ne[0] == '\0'))
@@ -525,17 +577,23 @@ jstr_strcasestr(const char *JSTR_RST const _hs,
 	if (_ne[1] == '\0')
 		return pstrcasechr(_hs, *_ne);
 	if (_ne[2] == '\0') {
-do2:
 		if (!jstr_isalpha(_ne[0])
 		    ^ jstr_isalpha(_ne[1]))
 			return (char *)strstr(_hs, _ne);
+		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[3] == '\0') {
-do3:
-		if (!jstr_isalpha(_ne[2]))
-			goto do2;
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1])
+		    ^ !jstr_isalpha(_ne[2]))
+			return (char *)strstr(_hs, _ne);
+		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[4] == '\0') {
-		if (!jstr_isalpha(_ne[3]))
-			goto do3;
+		if (!jstr_isalpha(_ne[0])
+		    ^ jstr_isalpha(_ne[1])
+		    ^ !jstr_isalpha(_ne[2])
+		    ^ jstr_isalpha(_ne[3]))
+			return (char *)strstr(_hs, _ne);
+		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
 	}
 	return pjstr_strcasestr_bmh(_hs, _ne);
 #endif
