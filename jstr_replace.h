@@ -241,8 +241,7 @@ RET:
 }
 
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC
 static char *
 pjstr_rplcat_mem(char **JSTR_RST const _s,
 		 size_t *JSTR_RST const _sz,
@@ -384,10 +383,7 @@ jstr_slipaftall_mem(char **JSTR_RST const _s,
   Pointer to '\0' in S;
 */
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmchr_mem_p(char *JSTR_RST _s,
 		 const int _c,
@@ -407,10 +403,7 @@ jstr_rmchr_mem_p(char *JSTR_RST _s,
   Pointer to '\0' in S;
 */
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmchr_p(char *JSTR_RST _s,
 	     const int _c) JSTR_NOEXCEPT
@@ -432,10 +425,7 @@ jstr_rmchr_p(char *JSTR_RST _s,
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmspn_p(char *JSTR_RST _s,
 	     const char *JSTR_RST _reject) JSTR_NOEXCEPT
@@ -473,10 +463,7 @@ typedef enum {
 } pjstr_flag_use_n_ty;
 
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 pjstr_rmallchr_mem_p(const pjstr_flag_use_n_ty _flag,
 		     char *JSTR_RST const _s,
@@ -500,11 +487,7 @@ pjstr_rmallchr_mem_p(const pjstr_flag_use_n_ty _flag,
   Return value:
   Pointer to '\0' in S.
 */
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallchr_mem_p(char *JSTR_RST const _s,
 		    const int _c,
@@ -518,11 +501,7 @@ jstr_rmallchr_mem_p(char *JSTR_RST const _s,
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallchr_p(char *JSTR_RST const _s,
 		const int _c) JSTR_NOEXCEPT
@@ -545,11 +524,7 @@ jstr_rmallchr_p(char *JSTR_RST const _s,
   Return value:
   Pointer to '\0' in S.
 */
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmnc_mem_p(char *JSTR_RST const _s,
 		const int _c,
@@ -565,10 +540,7 @@ jstr_rmnc_mem_p(char *JSTR_RST const _s,
   Pointer to '\0' in S;
 */
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmnc_p(char *JSTR_RST const _s,
 	    const int _c,
@@ -592,11 +564,7 @@ jstr_rmnc_p(char *JSTR_RST const _s,
   Return value:
   Pointer to '\0' in S.
 */
-JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_stripspn_p(char *JSTR_RST const _s,
 		const char *JSTR_RST const _rjct) JSTR_NOEXCEPT
@@ -616,10 +584,7 @@ jstr_stripspn_p(char *JSTR_RST const _s,
   Pointer to '\0' in S.
 */
 JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rm_mem_p(char *JSTR_RST const _s,
 	      const char *JSTR_RST const _find,
@@ -853,10 +818,7 @@ jstr_rmall_mem_p(char *JSTR_RST const _s,
   Pointer to '\0' in S.
 */
 JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
-JSTR_RETURNS_NONNULL
-JSTR_INLINE
-JSTR_NOTHROW
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmall_p(char *JSTR_RST const _s,
 	     const char *JSTR_RST const _find,
