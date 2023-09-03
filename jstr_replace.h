@@ -1210,6 +1210,8 @@ jstr_insert_mem(char **JSTR_RST const _s,
 
 /*
   Insert SRC after C in DST.
+  Return 0 on malloc error;
+  otherwise 1.
 */
 JSTR_INLINE
 JSTR_FUNC
@@ -1229,6 +1231,8 @@ jstr_insertaftchr_mem(char **JSTR_RST const _s,
 
 /*
   Insert SRC after end of NE in DST.
+  Return 0 on malloc error;
+  otherwise 1.
 */
 JSTR_FUNC
 static int
