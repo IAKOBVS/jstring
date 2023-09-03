@@ -61,13 +61,15 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
-	while (!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
+	while (!!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
 	       + !*_p1
 	       + !_n--
-	       == 1)
+	       == 0)
 		++_p1;
 	return ret;
 #endif /* HAVE_STRNCASECMP */
+	/* !!0 + !1 + !1 */
+	/* 0 + 0 + 0 */
 }
 
 /*
@@ -93,7 +95,7 @@ jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
 	int ret;
 	while (!(ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
 	       + !_n--
-	       == 1)
+	       == 0)
 		;
 	return ret;
 #endif /* HAVE_STRNCASECMP */
@@ -122,7 +124,7 @@ jstr_strcasecmp(const char *JSTR_RST _s1,
 	int ret;
 	while (!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
 	       + !*_p1
-	       == 1)
+	       == 0)
 		++_p1;
 	;
 	return ret;
@@ -265,7 +267,7 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		const uc *_n = (uc *)_ne;
 		const uint16_t _nw = _n[1] << 8 | _n[0];
 		uint16_t _hw = _h[0] << 8 | _h[-1];
-		for (_h -= 2; (_h != _start) + (_hw != _nw) == 2; _hw = _hw << 8 | *_h--)
+		for (_h -= 2; (_h != _start) - (_hw != _nw) == 0; _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -275,7 +277,7 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		const uc *_n = (uc *)_ne;
 		const uint32_t _nw = _n[2] << 24 | _n[1] << 16 | _n[0] << 8;
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8;
-		for (_h -= 3; (_h != _start) + (_hw != _nw) == 2; _hw = (_hw | *_h--) << 8)
+		for (_h -= 3; (_h != _start) - (_hw != _nw) == 0; _hw = (_hw | *_h--) << 8)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -285,7 +287,7 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 		const uc *_n = (uc *)_ne;
 		const uint32_t _nw = _n[3] << 24 | _n[2] << 16 | _n[1] << 8 | _n[0];
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8 | _h[-3];
-		for (_h -= 4; (_h != _start) + (_hw != _nw) == 2; _hw = _hw << 8 | *_h--)
+		for (_h -= 4; (_h != _start) - (_hw != _nw) == 0; _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
