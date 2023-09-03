@@ -276,7 +276,10 @@ jstr_tolower_mem(char *JSTR_RST _s,
 {
 	/* It seems that 8 iterations is not much faster. */
 #define PJSTR_UNROLL_ITERATIONS 4
-#if 1
+#if PJSTR_NO_UNROLL
+	for (; *_s; ++_s)
+		*_s = jstr_tolower_ascii(*_s);
+#else
 	enum {
 		it = PJSTR_UNROLL_ITERATIONS,
 	};
@@ -326,9 +329,6 @@ jstr_tolower_mem(char *JSTR_RST _s,
 		_s[7] = jstr_tolower_ascii(_s[7]);
 #	endif
 	}
-#else
-	for (; *_s; ++_s)
-		*_s = jstr_tolower_ascii(*_s);
 #endif
 }
 
@@ -340,7 +340,10 @@ jstr_toupper_mem(char *JSTR_RST _s,
 		 const size_t _sz) JSTR_NOEXCEPT
 {
 	enum { it = PJSTR_UNROLL_ITERATIONS };
-#if 1
+#if PJSTR_NO_UNROLL
+	for (; *_s; ++_s)
+		*_s = jstr_toupper_ascii(*_s);
+#else
 	switch (_sz % it) {
 #	if PJSTR_UNROLL_ITERATIONS == 8
 	case 7:
@@ -387,27 +390,7 @@ jstr_toupper_mem(char *JSTR_RST _s,
 		_s[7] = jstr_toupper_ascii(_s[7]);
 #	endif
 	}
-#else
-	for (; *_s; ++_s)
-		*_s = jstr_toupper_ascii(*_s);
 #endif
-}
-
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
-static void
-jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
-{
-	size_t _len = jstr_strnlen(_s, 512);
-	if (_len < 512) {
-		jstr_toupper_mem(_s, jstr_strnlen(_s, 512));
-		return;
-	}
-	do {
-		jstr_toupper_mem(_s += _len, _len);
-		_len = jstr_strnlen(_s += _len, 2048);
-	} while (_len == 2048);
 }
 
 #ifdef __clang__
@@ -420,8 +403,34 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
+jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+#if PSJTR_NO_UNROLL
+	for (; *_s; ++_s)
+		*_s = jstr_toupper_ascii(*_s);
+#else
+	size_t _len = jstr_strnlen(_s, 512);
+	if (_len < 512) {
+		jstr_toupper_mem(_s, jstr_strnlen(_s, 512));
+		return;
+	}
+	do {
+		jstr_toupper_mem(_s += _len, _len);
+		_len = jstr_strnlen(_s += _len, 2048);
+	} while (_len == 2048);
+#endif
+}
+
+JSTR_MAYBE_UNUSED
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
+#if PSJTR_NO_UNROLL
+	for (; *_s; ++_s)
+		*_s = jstr_tolower_ascii(*_s);
+#else
 	size_t _len = jstr_strnlen(_s, 512);
 	if (_len < 512) {
 		jstr_tolower_mem(_s, jstr_strnlen(_s, 512));
@@ -431,6 +440,7 @@ jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 		jstr_tolower_mem(_s += _len, _len);
 		_len = jstr_strnlen(_s += _len, 2048);
 	} while (_len == 2048);
+#endif
 }
 
 #ifdef __cplusplus
