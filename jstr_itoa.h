@@ -388,8 +388,7 @@ extern "C" {
 		while (*++_p)                                \
 			*_nptr++ = *_p;                      \
 		*_nptr = '\0';                               \
-		memcpy(_nptr, _p + 1, _s + _len - _p);       \
-		return _nptr + (_s + _len - _p);             \
+		return _nptr;                                \
 	} while (0)
 
 #define PJSTR_LLTOA_UNROLLED(_nptr, _number, _base)           \
