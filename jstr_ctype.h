@@ -224,8 +224,8 @@ jstr_tolower_mem(char *JSTR_RST _s,
 	/* It seems that 8 iterations is not much faster. */
 #define PJSTR_UNROLL_ITERATIONS 4
 #if PJSTR_NO_UNROLL
-	for (; *_s; ++_s)
-		*_s = jstr_tolower_ascii(*_s);
+	for (; (*_s = jstr_tolower_ascii(*_s)); ++_s)
+		;
 #else
 	enum {
 		it = PJSTR_UNROLL_ITERATIONS,
@@ -301,8 +301,8 @@ jstr_toupper_mem(char *JSTR_RST _s,
 	/* It seems that 8 iterations is not much faster. */
 #define PJSTR_UNROLL_ITERATIONS 4
 #if PJSTR_NO_UNROLL
-	for (; *_s; ++_s)
-		*_s = jstr_toupper_ascii(*_s);
+	for (; (*_s = jstr_toupper_ascii(*_s)); ++_s)
+		;
 #else
 	enum {
 		it = PJSTR_UNROLL_ITERATIONS,
@@ -381,8 +381,8 @@ static void
 jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 #if PSJTR_NO_UNROLL
-	for (; *_s; ++_s)
-		*_s = jstr_toupper_ascii(*_s);
+	for (; (*_s = jstr_toupper_ascii(*_s)); ++_s)
+		;
 #else
 	size_t _len = jstr_strnlen(_s, 512);
 	if (_len < 512) {
@@ -403,8 +403,8 @@ static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 #if PSJTR_NO_UNROLL
-	for (; *_s; ++_s)
-		*_s = jstr_tolower_ascii(*_s);
+	for (; *_s = jstr_tolower_ascii(*_s); ++_s)
+		;
 #else
 	size_t _len = jstr_strnlen(_s, 512);
 	if (_len < 512) {
