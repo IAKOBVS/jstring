@@ -62,9 +62,9 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
 	while (!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
-	       && *_p1
+	       && *_p1++
 	       && _n--)
-		++_p1;
+		;
 	return ret;
 #endif /* HAVE_STRNCASECMP */
 }
