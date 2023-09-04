@@ -277,9 +277,7 @@ do1:
 	}
 	_s += skip;
 START_LOOP:;
-	const char *const _end = _s + _sz;
-	for (; (_s != _end); _s += it) {
-		_s[0] = jstr_tolower_ascii(_s[0]);
+	for (; (_s[0] = jstr_tolower_ascii(_s[0])); _s += it) {
 		_s[1] = jstr_tolower_ascii(_s[1]);
 		_s[2] = jstr_tolower_ascii(_s[2]);
 		_s[3] = jstr_tolower_ascii(_s[3]);
@@ -356,9 +354,7 @@ do1:
 	}
 	_s += skip;
 START_LOOP:;
-	const char *const _end = _s + _sz;
-	for (; (_s != _end); _s += it) {
-		_s[0] = jstr_toupper_ascii(_s[0]);
+	for (; (_s[0] = jstr_toupper_ascii(_s[0])); _s += it) {
 		_s[1] = jstr_toupper_ascii(_s[1]);
 		_s[2] = jstr_toupper_ascii(_s[2]);
 		_s[3] = jstr_toupper_ascii(_s[3]);
