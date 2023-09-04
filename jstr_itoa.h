@@ -432,9 +432,9 @@ jstr_lltoa(char *_nptr,
 		_number = -_number;
 		*_nptr++ = '-';
 	}
-	if (jstr_unlikely(_number <= 99999999999))
-		PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base);
-	PJSTR_ULTOA_UNROLLED(_nptr, _number, _base);
+	if (jstr_likely(_number <= 9999999999))
+		PJSTR_ULTOA_UNROLLED(_nptr, _number, _base);
+	PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
@@ -464,9 +464,9 @@ jstr_ulltoa(char *_nptr,
 	    unsigned long long _number,
 	    const unsigned int _base) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(_number <= 99999999999))
-		PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base);
-	PJSTR_ULTOA_UNROLLED(_nptr, _number, _base);
+	if (jstr_likely(_number <= 9999999999))
+		PJSTR_ULTOA_UNROLLED(_nptr, _number, _base);
+	PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base);
 }
 
 #undef PJSTR_ITOA_ATTR
