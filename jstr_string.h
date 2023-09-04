@@ -834,7 +834,7 @@ JSTR_FUNC_PURE
 static size_t
 jstr_count_mem(const char *JSTR_RST _s,
 	       const char *JSTR_RST const _find,
-	       size_t _sz,
+	       const size_t _sz,
 	       const size_t _findlen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_findlen == 1))
