@@ -149,11 +149,6 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 #define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                           \
 	do {                                                                      \
-		const unsigned char *const _start = _hs - 1;                      \
-		_hs += _hslen;                                                    \
-		size_t _tmp;                                                      \
-		const size_t _mtc1 = _nelen - 1;                                  \
-		size_t _off = 0;                                                  \
 		table_type _shift[256];                                           \
 		(sizeof(table_type) == sizeof(size_t))                            \
 		? memset(_shift, 0, sizeof(_shift))                               \
@@ -180,6 +175,11 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 		} while (jstr_likely(_hs > _start));                              \
 		return NULL;                                                      \
 	} while (0)
+	const unsigned char *const _start = _hs - 1;
+	_hs += _hslen;
+	size_t _tmp;
+	const size_t _mtc1 = _nelen - 1;
+	size_t _off = 0;
 	if (jstr_unlikely(_nelen > 256))
 		PJSTR_STRRSTR_BMH(size_t, size_t);
 	PJSTR_STRRSTR_BMH(uint8_t, int);
@@ -328,12 +328,6 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 #define HL(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                               \
 	do {                                                                                             \
-		const unsigned char *_h = (unsigned char *)_hs;                                          \
-		const unsigned char *const _n = (unsigned char *)_ne;                                    \
-		const unsigned char *const _end = _h + _hslen - _nelen + 1;                              \
-		size_t _tmp;                                                                             \
-		const size_t _mtc1 = _nelen - 1;                                                         \
-		size_t _off = 0;                                                                         \
 		table_type _shift[256];                                                                  \
 		(sizeof(table_type) == sizeof(size_t))                                                   \
 		? memset(_shift, 0, sizeof(_shift))                                                      \
@@ -364,6 +358,12 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 	} while (0)
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
+	const unsigned char *_h = (unsigned char *)_hs;
+	const unsigned char *const _n = (unsigned char *)_ne;
+	const unsigned char *const _end = _h + _hslen - _nelen + 1;
+	size_t _tmp;
+	const size_t _mtc1 = _nelen - 1;
+	size_t _off = 0;
 	if (jstr_unlikely(_nelen > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	PJSTR_STRCASESTR_BMH(uint8_t, int);
@@ -379,12 +379,6 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 #define PJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                               \
 	do {                                                                                             \
-		const unsigned char *_h = (unsigned char *)_hs;                                          \
-		const unsigned char *const _n = (unsigned char *)_ne;                                    \
-		const unsigned char *_end = _h + _hslen - _nelen;                                        \
-		size_t _tmp;                                                                             \
-		const size_t _mtc1 = _nelen - 1;                                                         \
-		size_t _off = 0;                                                                         \
 		table_type _shift[256];                                                                  \
 		(sizeof(table_type) == sizeof(size_t))                                                   \
 		? memset(_shift, 0, sizeof(_shift))                                                      \
@@ -426,6 +420,12 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 	size_t _hslen = jstr_strnlen(_hs, _nelen | 512);
 	if (_hslen < _nelen)
 		return NULL;
+	const unsigned char *_h = (unsigned char *)_hs;
+	const unsigned char *const _n = (unsigned char *)_ne;
+	const unsigned char *_end = _h + _hslen - _nelen;
+	size_t _tmp;
+	const size_t _mtc1 = _nelen - 1;
+	size_t _off = 0;
 	if (jstr_unlikely(_nelen > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	PJSTR_STRCASESTR_BMH(uint8_t, int);
