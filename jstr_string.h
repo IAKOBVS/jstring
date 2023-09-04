@@ -373,6 +373,8 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 		size_t _hslen = jstr_strnlen((char *)_h, _nelen | 512);                                    \
 		if (_hslen < _nelen)                                                                       \
 			return NULL;                                                                       \
+		if (!jstr_strcasecmp_mem((char *)_h, (char *)_ne, _nelen))                                 \
+			return (char *)_h;                                                                 \
 		const unsigned char *const _n = (unsigned char *)_ne;                                      \
 		const unsigned char *_end = _h + _hslen - _nelen;                                          \
 		size_t _tmp;                                                                               \
