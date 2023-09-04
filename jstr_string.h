@@ -169,7 +169,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 			do {                                                      \
 				_hs -= _mtc1;                                     \
 				_tmp = _shift[H(_hs)];                            \
-			} while (!_tmp - (_hs <= _start) == 0);                   \
+			} while (!_tmp && _hs > _start);                          \
 			_hs -= _tmp;                                              \
 			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {   \
 				if (!memcmp(_hs, _ne, _mtc1))                     \
@@ -349,7 +349,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			do {                                                                             \
 				_h += _mtc1;                                                             \
 				_tmp = _shift[HL(_h)];                                                   \
-			} while (!_tmp && (_h < _end));                                                  \
+			} while (!_tmp && _h < _end);                                                    \
 			_h -= _tmp;                                                                      \
 			if (_tmp < _mtc1)                                                                \
 				continue;                                                                \
@@ -380,11 +380,6 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                               \
 	do {                                                                                             \
 		const unsigned char *_h = (unsigned char *)_hs;                                          \
-		size_t _hslen = jstr_strnlen((char *)_h, _nelen | 512);                                  \
-		if (_hslen < _nelen)                                                                     \
-			return NULL;                                                                     \
-		if (!jstr_strcasecmp_mem((char *)_h, (char *)_ne, _nelen))                               \
-			return (char *)_h;                                                               \
 		const unsigned char *const _n = (unsigned char *)_ne;                                    \
 		const unsigned char *_end = _h + _hslen - _nelen;                                        \
 		size_t _tmp;                                                                             \
@@ -428,6 +423,9 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 	if (!jstr_strcasecmp(_hs, _ne))
 		return (char *)_hs;
 	const size_t _nelen = strlen(_ne);
+	size_t _hslen = jstr_strnlen(_hs, _nelen | 512);
+	if (_hslen < _nelen)
+		return NULL;
 	if (jstr_unlikely(_nelen > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	PJSTR_STRCASESTR_BMH(uint8_t, int);
