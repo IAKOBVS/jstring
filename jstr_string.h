@@ -532,7 +532,6 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
-		break;
 	case 3:
 		if (jstr_isalpha(_ne[0])
 		    + jstr_isalpha(_ne[1])
@@ -540,15 +539,12 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
-		break;
 	case 2:
 		if (jstr_isalpha(_ne[0])
 		    + jstr_isalpha(_ne[1])
 		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
-
-		break;
 	case 1: return pstrcasechr_mem(_hs, *_ne, _hslen);
 	case 0: return (char *)_hs;
 	}
