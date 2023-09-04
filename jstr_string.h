@@ -250,43 +250,42 @@ jstr_strrstr_mem(const void *JSTR_RST const _hs,
 {
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
-	typedef unsigned char uc;
 	switch (_nelen) {
 	case 0:
-		return (void *)((uc *)_hs + _hslen);
+		return (void *)((unsigned char *)_hs + _hslen);
 	case 1:
 		return (void *)jstr_memrchr(_hs, *(char *)_ne, _hslen);
 	case 2: {
-		const uc *const _start = (uc *)_hs - 1;
-		const uc *_h = (uc *)_hs + _hslen - 1;
-		const uc *_n = (uc *)_ne;
+		const unsigned char *const _start = (unsigned char *)_hs - 1;
+		const unsigned char *_h = (unsigned char *)_hs + _hslen - 1;
+		const unsigned char *_n = (unsigned char *)_ne;
 		const uint16_t _nw = _n[1] << 8 | _n[0];
 		uint16_t _hw = _h[0] << 8 | _h[-1];
-		for (_h -= 2; (_h != _start) && (_hw != _nw); _hw = _hw << 8 | *_h--)
+		for (_h -= 2; _h != _start && _hw != _nw; _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	case 3: {
-		const uc *const _start = (uc *)_hs - 1;
-		const uc *_h = (uc *)_hs + _hslen - 1;
-		const uc *_n = (uc *)_ne;
+		const unsigned char *const _start = (unsigned char *)_hs - 1;
+		const unsigned char *_h = (unsigned char *)_hs + _hslen - 1;
+		const unsigned char *_n = (unsigned char *)_ne;
 		const uint32_t _nw = _n[2] << 24 | _n[1] << 16 | _n[0] << 8;
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8;
-		for (_h -= 3; (_h != _start) && (_hw != _nw); _hw = (_hw | *_h--) << 8)
+		for (_h -= 3; _h != _start && _hw != _nw; _hw = (_hw | *_h--) << 8)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
 	case 4: {
-		const uc *const _start = (uc *)_hs - 1;
-		const uc *_h = (uc *)_hs + _hslen - 1;
-		const uc *_n = (uc *)_ne;
+		const unsigned char *const _start = (unsigned char *)_hs - 1;
+		const unsigned char *_h = (unsigned char *)_hs + _hslen - 1;
+		const unsigned char *_n = (unsigned char *)_ne;
 		const uint32_t _nw = _n[3] << 24 | _n[2] << 16 | _n[1] << 8 | _n[0];
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8 | _h[-3];
-		for (_h -= 4; (_h != _start) && (_hw != _nw); _hw = _hw << 8 | *_h--)
+		for (_h -= 4; _h != _start && _hw != _nw; _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
-	default: return pjstr_strrstr_mem_bmh((uc *)_hs, _hslen, (uc *)_ne, _nelen);
+	default: return pjstr_strrstr_mem_bmh((unsigned char *)_hs, _hslen, (unsigned char *)_ne, _nelen);
 	}
 }
 
@@ -470,7 +469,7 @@ pjstr_strcasestr2(const unsigned char *JSTR_RST _h,
 {
 	const uint16_t _nw = L(_n[0]) << 8 | L(_n[1]);
 	uint16_t _hw = L(_h[0]) << 8 | L(_h[1]);
-	for (_h++; *_h && (_hw != _nw); _hw = _hw << 8 | L(*++_h))
+	for (_h++; *_h && _hw != _nw; _hw = _hw << 8 | L(*++_h))
 		;
 	return _hw == _nw ? (char *)(_h - 1) : NULL;
 }
@@ -483,7 +482,7 @@ pjstr_strcasestr3(const unsigned char *JSTR_RST _h,
 {
 	const uint32_t _nw = L(_n[0]) << 24 | L(_n[1]) << 16 | L(_n[2]) << 8;
 	uint32_t _hw = L(_h[0]) << 24 | L(_h[1]) << 16 | L(_h[2]) << 8;
-	for (_h += 2; *_h && (_hw != _nw); _hw = (_hw | L(*++_h)) << 8)
+	for (_h += 2; *_h && _hw != _nw; _hw = (_hw | L(*++_h)) << 8)
 		;
 	return _hw == _nw ? (char *)(_h - 2) : NULL;
 }
@@ -496,7 +495,7 @@ pjstr_strcasestr4(const unsigned char *JSTR_RST _h,
 {
 	const uint32_t _nw = L(_n[0]) << 24 | L(_n[1]) << 16 | L(_n[2]) << 8 | L(_n[3]);
 	uint32_t _hw = L(_h[0]) << 24 | L(_h[1]) << 16 | L(_h[2]) << 8 | L(_h[3]);
-	for (_h += 3; *_h && (_hw != _nw); _hw = _hw << 8 | L(*++_h))
+	for (_h += 3; *_h && _hw != _nw; _hw = _hw << 8 | L(*++_h))
 		;
 	return _hw == _nw ? (char *)(_h - 3) : NULL;
 }
