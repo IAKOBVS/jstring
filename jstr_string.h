@@ -387,7 +387,14 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 			_shift[PJSTR_HASH2_LOWER(_n + _i)] = _i;                                           \
 		const size_t _shft1 = _mtc1 - _shift[PJSTR_HASH2_LOWER(_n + _mtc1)];                       \
 		_shift[PJSTR_HASH2_LOWER(_n + _mtc1)] = _mtc1;                                             \
+		goto start_##table_type;                                                                   \
 		for (;;) {                                                                                 \
+			if (jstr_unlikely(_h > _end)) {                                                    \
+				_end += jstr_strnlen((char *)_end + _mtc1, 2048);                          \
+				if (_h > _end)                                                             \
+					return NULL;                                                       \
+			}                                                                                  \
+			start_##table_type:;                                                               \
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[PJSTR_HASH2_LOWER(_h)];                                      \
@@ -401,15 +408,11 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 				_off = (_off >= 8 ? _off : _mtc1) - 8;                                     \
 			}                                                                                  \
 			_h += _shft1;                                                                      \
-			CONT##table_type:;                                                                 \
-			if (jstr_unlikely(_h > _end)) {                                                    \
-				_end += jstr_strnlen((char *)_end + _mtc1, 2048);                          \
-				if (_h > _end)                                                             \
-					return NULL;                                                       \
-			}                                                                                  \
 		}                                                                                          \
 		return NULL;                                                                               \
 	} while (0)
+	if (!jstr_strcasecmp(_hs, _ne))
+		return (char *)_hs;
 	const size_t _nelen = strlen(_ne);
 	if (jstr_unlikely(_nelen > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
