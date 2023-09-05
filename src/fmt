@@ -1,0 +1,20 @@
+#!/bin/sh
+DIR_C=jstr
+fmt()
+{
+	clang-format -i --style=file:".clang-format" "$1"
+}
+fmt_if_needed()
+{
+	case $1 in
+	*_pp_*) ;;
+	*) fmt "$1" & ;;
+	esac
+}
+for f in $(echo *.h); do
+	fmt_if_needed "$f" &
+done
+for f in $(echo $DIR_C/*.h*); do
+	fmt_if_needed "$f" &
+done
+wait

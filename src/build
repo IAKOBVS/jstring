@@ -1,0 +1,7 @@
+#!/bin/sh
+./update_glibc
+for file in $(echo *.h); do
+	perl generate_func.pl "$file" &
+done
+wait
+mv jstr ..
