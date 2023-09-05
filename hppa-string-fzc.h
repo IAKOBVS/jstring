@@ -123,4 +123,4 @@ pjstr_index_last_eq (pjstr_op_ty x1, pjstr_op_ty x2)
   return pjstr_index_last_zero (x1 ^ x2);
 }
 
-#endif /* PJSTR_STRING_FZC_H */
+#endif /* _STRING_FZC_H */

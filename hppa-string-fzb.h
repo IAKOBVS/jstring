@@ -62,4 +62,4 @@ pjstr_has_zero_eq (pjstr_op_ty x1, pjstr_op_ty x2)
   return 1;
 }
 
-#endif /* PJSTR_STRING_FZB_H */
+#endif /* _STRING_FZB_H */

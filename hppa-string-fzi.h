@@ -62,4 +62,4 @@ pjstr_index_last (pjstr_op_ty c)
   return ret;
 }
 
-#endif /* PJSTR_STRING_FZI_H */
+#endif /* _STRING_FZI_H */

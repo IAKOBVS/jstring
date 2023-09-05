@@ -96,4 +96,4 @@ pjstr_find_zero_ne_all (pjstr_op_ty x1, pjstr_op_ty x2)
   return (ne2 | ~nz1) & ~m;
 }
 
-#endif /* PJSTR_STRING_FZA_H */
+#endif /* _STRING_FZA_H */

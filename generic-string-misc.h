@@ -45,4 +45,4 @@ pjstr_repeat_bytes (unsigned char c_in)
   return ((pjstr_op_ty)-1 / 0xff) * c_in;
 }
 
-#endif /* PJSTR_STRING_MISC_H */
+#endif /* _STRING_MISC_H */

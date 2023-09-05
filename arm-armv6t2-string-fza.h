@@ -72,4 +72,4 @@ pjstr_find_zero_ne_all (pjstr_op_ty x1, pjstr_op_ty x2)
 #define pjstr_find_zero_eq_low	pjstr_find_zero_eq_all
 
 
-#endif /* PJSTR_STRING_FZA_H */
+#endif /* _STRING_FZA_H */

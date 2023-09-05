@@ -44,4 +44,4 @@ pjstr_shift_find_last (pjstr_op_ty word, uintptr_t s)
   return word & ~((pjstr_op_ty)-1 << s);
 }
 
-#endif /* PJSTR_STRING_SHIFT_H */
+#endif /* _STRING_SHIFT_H */

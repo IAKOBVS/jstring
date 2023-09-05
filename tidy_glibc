@@ -1,26 +1,49 @@
 #!/bin/sh
-sed -i 's/#[ \t]*include[ \t]*<\(.*string.*\)>/#include "\1"/g;
-s/\(^\|[^_0-9A-Za-z]\)find_t\($\|[^_0-9A-Za-z]\)/\1pjstr_op_ty\2/g;
-s/\(^\|[^_0-9A-Za-z]\)op_t\($\|[^_0-9A-Za-z]\)/\1pjstr_op_ty\2/g;
-s/\(^\|[^_0-9A-Za-z]\)\(repeat_bytes\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\2\3/g;
-s/\(^\|[^_0-9A-Za-z]\)\(extractbyte\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\1\2\3/g;
-s/\(^\|[^_0-9A-Za-z]\)\(shift_\)/\1pjstr_\2/g;
-s/\(^\|[^_0-9A-Za-z]\)\(find_..\)/\1pjstr_\2/g;
-s/\(^\|[^_0-9A-Za-z]\)\(index_\)/\1pjstr_\2/g;
-s/\(^\|[^_0-9A-Za-z]\)\(has_\)/\1pjstr_\2/g;
-s/\(^\|[^_0-9A-Za-z]\)\(clz\)/\1pjstr_\2/g;
-s/\(^\|[^_0-9A-Za-z]\)\(ctz\)/\1pjstr_\2/g;
-s/\(^\|[^_0-9A-Za-z]\)_Bool\($\|[^_0-9A-Za-z]\)/\1int\2/g;
-s/typedef pjstr_op_ty pjstr_op_ty;//g;
-s/__always_inline/JSTR_INLINE/g;
-s/PJSTR__/PJSTR_/g;
-s/sysdeps\/generic\///;
-s/\(#define.*\)/\1\n\n#include "jstr_macros.h"\n/;
-s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
-s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define PJSTR_\1/g;
-' *?string-fz*.h *?string-misc*.h *?string-shift*.h
+# sed -i 's/#[ \t]*include[ \t]*<\(.*string.*\)>/#include "\1"/g;
+# s/\(^\|[^_0-9A-Za-z]\)find_t\($\|[^_0-9A-Za-z]\)/\1pjstr_op_ty\2/g;
+# s/\(^\|[^_0-9A-Za-z]\)op_t\($\|[^_0-9A-Za-z]\)/\1pjstr_op_ty\2/g;
+# s/\(^\|[^_0-9A-Za-z]\)\(repeat_bytes\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\2\3/g;
+# s/\(^\|[^_0-9A-Za-z]\)\(extractbyte\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\1\2\3/g;
+# s/\(^\|[^_0-9A-Za-z]\)\(shift_\)/\1pjstr_\2/g;
+# s/\(^\|[^_0-9A-Za-z]\)\(find_..\)/\1pjstr_\2/g;
+# s/\(^\|[^_0-9A-Za-z]\)\(index_\)/\1pjstr_\2/g;
+# s/\(^\|[^_0-9A-Za-z]\)\(has_\)/\1pjstr_\2/g;
+# s/\(^\|[^_0-9A-Za-z]\)\(clz\)/\1pjstr_\2/g;
+# s/\(^\|[^_0-9A-Za-z]\)\(ctz\)/\1pjstr_\2/g;
+# s/\(^\|[^_0-9A-Za-z]\)_Bool\($\|[^_0-9A-Za-z]\)/\1int\2/g;
+# s/typedef pjstr_op_ty pjstr_op_ty;//g;
+# s/__always_inline/JSTR_INLINE/g;
+# s/PJSTR__/PJSTR_/g;
+# s/sysdeps\/generic\///;
+# s/\(#define.*\)/\1\n\n#include "jstr_macros.h"\n/;
+# s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
+# s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define PJSTR_\1/g;
+# ' *?string-fz*.h *?string-misc*.h *?string-shift*.h
+for file in $(echo *?string-fz* *?string-misc*.h *?string-shift*.h); do
+	echo "$(sed 's/#[ \t]*include[ \t]*<\(.*string.*\)>/#include "\1"/g;
+	s/\(^\|[^_0-9A-Za-z]\)find_t\($\|[^_0-9A-Za-z]\)/\1pjstr_op_ty\2/g;
+	s/\(^\|[^_0-9A-Za-z]\)op_t\($\|[^_0-9A-Za-z]\)/\1pjstr_op_ty\2/g;
+	s/\(^\|[^_0-9A-Za-z]\)\(repeat_bytes\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\2\3/g;
+	s/\(^\|[^_0-9A-Za-z]\)\(extractbyte\)\($\|[^_0-9A-Za-z]\)/\1pjstr_\1\2\3/g;
+	s/\(^\|[^_0-9A-Za-z]\)\(shift_\)/\1pjstr_\2/g;
+	s/\(^\|[^_0-9A-Za-z]\)\(find_..\)/\1pjstr_\2/g;
+	s/\(^\|[^_0-9A-Za-z]\)\(index_\)/\1pjstr_\2/g;
+	s/\(^\|[^_0-9A-Za-z]\)\(has_\)/\1pjstr_\2/g;
+	s/\(^\|[^_0-9A-Za-z]\)\(clz\)/\1pjstr_\2/g;
+	s/\(^\|[^_0-9A-Za-z]\)\(ctz\)/\1pjstr_\2/g;
+	s/\(^\|[^_0-9A-Za-z]\)_Bool\($\|[^_0-9A-Za-z]\)/\1int\2/g;
+	s/typedef pjstr_op_ty pjstr_op_ty;//g;
+	s/__always_inline/JSTR_INLINE/g;
+	s/sysdeps\/generic\///;
+	s/\(#define.*\)/\1\n\n#include "jstr_macros.h"\n/;
+	s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
+	s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define PJSTR_\1/g;
+	s/PJSTR__/PJSTR_/g;
+	' "$file")" > "$file"
+done
 # remove duplicate include "jstr_macros.h"
-awk -i inplace 'BEGIN { dup = 0; fname = 0; last_line_blank; }
+for file in $(echo *?string-fz*); do
+	echo "$(awk 'BEGIN { dup = 0; fname = 0; last_line_blank; }
 	{
 		if (fname != FILENAME) {
 			dup = 0
@@ -40,5 +63,27 @@ awk -i inplace 'BEGIN { dup = 0; fname = 0; last_line_blank; }
 		} else {
 			print
 		}
-	}' *?string-fz*
+	}' "$file")" > "$file"
+done
+# awk -i inplace 'BEGIN { dup = 0; fname = 0; last_line_blank; }
+# 	{
+# 		if (fname != FILENAME) {
+# 			dup = 0
+# 			fname = FILENAME
+# 			last_line_blank = 0;
+# 		}
+# 		if ($0 != "") {
+# 			last_line_blank = 0
+# 		} else {
+# 			if (++last_line_blank >= 2)
+# 				next
+# 		}
+# 		if ($0 ~ /#[ \t]*include[ \t]*"jstr_macros/) {
+# 			if (dup == 0)
+# 				print
+# 			dup = dup + 1
+# 		} else {
+# 			print
+# 		}
+# 	}' *?string-fz*
 rm -rf .-*

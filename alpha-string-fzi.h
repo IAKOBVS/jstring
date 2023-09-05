@@ -61,4 +61,4 @@ pjstr_index_last (pjstr_op_ty x)
 #endif
 }
 
-#endif /* PJSTR_STRING_FZI_H */
+#endif /* _STRING_FZI_H */
