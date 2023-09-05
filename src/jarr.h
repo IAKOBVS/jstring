@@ -100,7 +100,7 @@ PJSTR_END_DECLS
 		memmove(PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j));                      \
 	} while (0)
 
-/* Pop PTR[size]. */
+/* Pop end of PTR. */
 #define jarr_pop_back(j)                                                                       \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
