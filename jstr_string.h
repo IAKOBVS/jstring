@@ -638,7 +638,6 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 	while (*_p++);
 	_p = (unsigned char *)_s + _sz - 1;
 	switch (_sz % 4) {
-	case 0: break;
 	case 3:
 		if (!_t[*_p--])
 			return 0;
@@ -650,6 +649,7 @@ jstr_strrcspn_mem(const char *JSTR_RST const _s,
 	case 1:
 		if (!_t[*_p--])
 			return ((unsigned char *)_s + _sz - 1) - (_p + 1);
+	case 0: break;
 	}
 	if (jstr_unlikely(_sz < 4))
 		return _sz;
