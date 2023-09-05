@@ -84,16 +84,15 @@ jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
 		    const char *JSTR_RST const _s2,
 		    size_t _n) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRNCASECMP
+#if JSTR_HAVE_STRNCASECMP && 0
 	return strncasecmp(_s1, _s2, _n);
 #else
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
-	int ret;
-	while (!(ret = jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
+	while (!(jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
 	       && _n--)
 		;
-	return ret;
+	return _n ? jstr_tolower_ascii(*(_p1 - 1)) - jstr_tolower_ascii(*(_p2 - 1)) : 0;
 #endif /* HAVE_STRNCASECMP */
 }
 
