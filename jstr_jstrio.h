@@ -313,10 +313,10 @@ JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_NOTHROW
 static jstrio_ext_ty
-jstrio_ext_type_mem(const char *JSTR_RST _filename,
+jstrio_ext_type_len(const char *JSTR_RST _filename,
 		    const size_t _sz) JSTR_NOEXCEPT
 {
-	_filename = (char *)jstr_memrchr(_filename, '.', _sz);
+	_filename = (char *)jstr_lenrchr(_filename, '.', _sz);
 	if (_filename == NULL)
 		return JSTRIO_UNKNOWN;
 	return pjstrio_ext_type(_filename + 1);

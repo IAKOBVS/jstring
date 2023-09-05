@@ -170,7 +170,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_allocexact_append_mem(char **JSTR_RST const _s,
+jstr_allocexact_append_len(char **JSTR_RST const _s,
 			   size_t *JSTR_RST const _sz,
 			   size_t *JSTR_RST const _cap,
 			   const char *JSTR_RST const _src,
@@ -188,7 +188,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_alloc_append_mem(char **JSTR_RST const _s,
+jstr_alloc_append_len(char **JSTR_RST const _s,
 		      size_t *JSTR_RST const _sz,
 		      size_t *JSTR_RST const _cap,
 		      const char *JSTR_RST const _src,
@@ -204,7 +204,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_allocmore_append_mem(char **JSTR_RST const _s,
+jstr_allocmore_append_len(char **JSTR_RST const _s,
 			  size_t *JSTR_RST const _sz,
 			  size_t *JSTR_RST const _cap,
 			  const char *JSTR_RST const _src,
@@ -249,7 +249,7 @@ jstr_debug(const jstr_ty *JSTR_RST const _j)
    Append SRC to DST.
    Use non-f version for bounds checking.
    Return value:
-   New _mem of S.
+   New _len of S.
 */
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
@@ -257,7 +257,7 @@ JSTR_INLINE
 JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
-jstr_append_mem_p_f(char *JSTR_RST const _s,
+jstr_append_len_p_f(char *JSTR_RST const _s,
 		    const char *JSTR_RST const _src,
 		    const size_t _sz,
 		    const size_t _srclen) JSTR_NOEXCEPT
@@ -274,7 +274,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_append_mem(char **JSTR_RST const _s,
+jstr_append_len(char **JSTR_RST const _s,
 		size_t *JSTR_RST const _sz,
 		size_t *JSTR_RST const _cap,
 		const char *JSTR_RST const _src,
@@ -282,7 +282,7 @@ jstr_append_mem(char **JSTR_RST const _s,
 {
 	if (*_cap < *_sz + _srclen)
 		PJSTR_REALLOC(*_s, *_cap, *_sz + _srclen, return);
-	*_sz = jstr_append_mem_p_f(*_s, _src, *_sz, _srclen) - *_s;
+	*_sz = jstr_append_len_p_f(*_s, _src, *_sz, _srclen) - *_s;
 }
 
 /*

@@ -39,6 +39,8 @@ my $G_MACRO_LONG_FUNCTION   = $G_NMSPC_UPP . '_LONG_FUNCTION';
 my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC|$G_NMSPC_REGEX)\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
 
+my $G_LEN_FUNC_SUFFIX = '_len';
+
 # mkdir($G_DIR_CPP);
 mkdir($G_DIR_C);
 
@@ -111,11 +113,11 @@ sub gen_nonmem_funcs
 		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME !~ /_mem(?:_|$)/) {
+		if ($FUNC_NAME !~ /$G_LEN_FUNC_SUFFIX(?:_|$)/) {
 			goto NEXT;
 		}
 		my $tmp = $FUNC_NAME;
-		$tmp =~ s/_mem//;
+		$tmp =~ s/$G_LEN_FUNC_SUFFIX//;
 		if ($g_in_h =~ /$tmp\(/) {
 			goto NEXT;
 		}
@@ -143,7 +145,7 @@ sub gen_nonmem_funcs
 			}
 		}
 		my $nmspc = ($decl =~ /$G_NMSPC/o) ? $G_NMSPC : $G_NMSPC_REGEX;
-		$decl =~ s/($nmspc\_\w*)_mem(\w*\()/$1$2/o;
+		$decl =~ s/($nmspc\_\w*)$G_LEN_FUNC_SUFFIX(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_regex_size_ptr($FUNC_NAME, $params);
 		$decl .= "$RETURN$FUNC_NAME(";

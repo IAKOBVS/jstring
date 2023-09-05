@@ -12,7 +12,7 @@ and
 #include <jstr/jstr.h>
 ```
 ## Function affixes: 
-- *_mem(): takes the length of the string
+- *_len(): takes the length of the string
 - *_p(): returns the new pointer to the end of the string
 - *_f(): assumes that there be enough space in the string: it will not grow it with realloc
 - *_now(): compiles regular expression now

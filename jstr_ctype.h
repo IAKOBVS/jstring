@@ -235,7 +235,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_tolower_mem(char *JSTR_RST _s,
+jstr_tolower_len(char *JSTR_RST _s,
 		 const size_t _sz)
 {
 	/* It seems that 8 iterations is not much faster. */
@@ -312,7 +312,7 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_toupper_mem(char *JSTR_RST _s,
+jstr_toupper_len(char *JSTR_RST _s,
 		 const size_t _sz)
 {
 	/* It seems that 8 iterations is not much faster. */
@@ -403,11 +403,11 @@ jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 #else
 	size_t _len = jstr_strnlen(_s, 512);
 	if (_len < 512) {
-		jstr_toupper_mem(_s, jstr_strnlen(_s, 512));
+		jstr_toupper_len(_s, jstr_strnlen(_s, 512));
 		return;
 	}
 	do {
-		jstr_toupper_mem(_s += _len, _len);
+		jstr_toupper_len(_s += _len, _len);
 		_len = jstr_strnlen(_s += _len, 2048);
 	} while (_len == 2048);
 #endif
@@ -425,11 +425,11 @@ jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 #else
 	size_t _len = jstr_strnlen(_s, 512);
 	if (_len < 512) {
-		jstr_tolower_mem(_s, jstr_strnlen(_s, 512));
+		jstr_tolower_len(_s, jstr_strnlen(_s, 512));
 		return;
 	}
 	do {
-		jstr_tolower_mem(_s += _len, _len);
+		jstr_tolower_len(_s += _len, _len);
 		_len = jstr_strnlen(_s += _len, 2048);
 	} while (_len == 2048);
 #endif
