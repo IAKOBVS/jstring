@@ -15,6 +15,12 @@ PJSTR_END_DECLS
 #include "jstr_pp_arrcpy_va_args.h"
 #include "jstr_templates.h"
 
+#if PJARR_NULLIFY_PTR_ON_DELETE
+#	define PJARR_NULLIFY(j) ((j)->data == NULL)
+#else
+#	define PJARR_NULLIFY(j)
+#endif
+
 #define jarr(T, name)                                                                          \
 	typedef struct pjarr_##name##_ty {                                                     \
 		T *PJARR_DATA_NAME;                                                            \
@@ -28,12 +34,6 @@ PJSTR_END_DECLS
 		free(PJARR_DATA(j));                                                           \
 		PJARR_NULLIFY(j);                                                              \
 	} while (0)
-
-#if PJARR_NULLIFY_PTR_ON_DELETE
-#	define PJARR_NULLIFY(j) ((j)->data == NULL)
-#else
-#	define PJARR_NULLIFY(j)
-#endif
 
 #define jarr_err_exit(j)                                                                       \
 	do {                                                                                   \
