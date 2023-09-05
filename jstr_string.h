@@ -504,7 +504,6 @@ pjstr_strcasestr4(const unsigned char *JSTR_RST _h,
 /*
    Find NE in HS case-insensitively.
    HS MUST be nul terminated.
-   Will call strcasestr if available.
    Return value:
    Pointer to NE;
    NULL if not found.
@@ -554,7 +553,6 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 /*
    Find NE in HS case-insensitively.
    HS MUST be nul terminated.
-   Will call strcasestr if available.
    Return value:
    Pointer to NE;
    NULL if not found.
