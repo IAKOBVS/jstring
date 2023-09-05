@@ -49,4 +49,3 @@ for file in $(echo *?string-fz*); do
 	}' "$file")" > "$file" &
 done
 wait
-rm -rfi .-string-*.h
