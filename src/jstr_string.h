@@ -8,9 +8,6 @@ PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _DEFAULT_SOURCE
-#include <strings.h>
-#endif
 PJSTR_END_DECLS
 
 #include "jstr_builder.h"

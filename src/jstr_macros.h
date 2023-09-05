@@ -591,7 +591,7 @@ case '~':
 	JSTR_CASE_DIGIT \
 	JSTR_CASE_ALPHA
 
-#if (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _BSD_SOURCE) \
+#if ((__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19)) && defined _BSD_SOURCE) \
 || defined _DEFAULT_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1
 #	define JSTR_HAVE_STRNCASECMP 1
