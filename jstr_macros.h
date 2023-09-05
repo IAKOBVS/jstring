@@ -668,7 +668,7 @@ case '~':
 #include "jstr_config.h"
 #include "libc-pointer-arith.h"
 
-#define PJSTR_ALIGN_UP_STR(base) PJSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define PJSTR_ALIGN_UP_STR(base)       PJSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define PJSTR_PTR_IS_ALIGNED_STR(base) PJSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if defined __x86_64__ || defined _M_X64
@@ -735,9 +735,17 @@ case '~':
 
 #define JSTR_FUNC_VOID	      JSTR_NOTHROW JSTR_MAYBE_UNUSED JSTR_NONNULL_ALL
 #define JSTR_FUNC	      JSTR_FUNC_VOID JSTR_WARN_UNUSED
-#define JSTR_FUNC_NOWARN JSTR_FUNC_VOID JSTR_WARN_UNUSED
+#define JSTR_FUNC_NOWARN      JSTR_FUNC_VOID JSTR_WARN_UNUSED
 #define JSTR_FUNC_CONST	      JSTR_FUNC JSTR_CONST
 #define JSTR_FUNC_PURE	      JSTR_FUNC JSTR_PURE
 #define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_RETURNS_NONNULL
+
+#ifdef __cplusplus
+#	define JSTR_BEGIN_DECLS extern "C" {
+#	define JSTR_END_DECLS	 }
+#else
+#	define JSTR_BEGIN_DECLS
+#	define JSTR_END_DECLS
+#endif
 
 #endif /* JSTR_MACROS_DEF_H */

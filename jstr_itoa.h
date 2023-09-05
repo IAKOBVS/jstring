@@ -1,20 +1,16 @@
 #ifndef JSTR_ITOA_DEF_H
 #define JSTR_ITOA_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+JSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #include "jstr_macros.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+JSTR_BEGIN_DECLS
 
 #define PJSTR_ITOA_ATTR      \
 	JSTR_MAYBE_UNUSED    \
@@ -474,8 +470,6 @@ jstr_ulltoa(char *_nptr,
 #undef PJSTR_LLTOA_UNROLLED
 #undef PJSTR_LTOA_UNROLLED
 
-#ifdef __cplusplus
-} /* extern C */
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #endif /* JSTR_ITOA_DEF_H */

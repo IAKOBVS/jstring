@@ -1,13 +1,11 @@
 #ifndef JSTR_CTYPE_DEF_H
 #define JSTR_CTYPE_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+JSTR_BEGIN_DECLS
 #include <string.h>
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #include "jstr_ctype_table.h"
 #include "jstr_macros.h"
@@ -22,9 +20,7 @@ extern "C" {
 #include "string-optype.h"
 #include "string-shift.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+JSTR_BEGIN_DECLS
 
 /* ASCII */
 JSTR_INLINE
@@ -435,8 +431,6 @@ jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 #endif
 }
 
-#ifdef __cplusplus
-} /* extern C */
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #endif /* JSTR_CTYPE_DEF_H */

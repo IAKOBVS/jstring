@@ -1,16 +1,14 @@
 #ifndef JSTR_STRING_DEF_H
 #define JSTR_STRING_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+JSTR_BEGIN_DECLS
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #include "jstr_builder.h"
 #include "jstr_config.h"
@@ -28,9 +26,7 @@ extern "C" {
 #include "string-optype.h"
 #include "string-shift.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+JSTR_BEGIN_DECLS
 
 #if JSTR_HAVE_MEMMEM
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) memmem(_hs, hlen, _ne, nlen)
@@ -227,7 +223,7 @@ jstr_lenrchr(const void *JSTR_RST _s,
 	const unsigned char *_end = (unsigned char *)_s + _n;
 	const unsigned char *_start = (unsigned char *)_s - 1;
 	while (*_end != (unsigned char)_c
-		&& _end-- < _start)
+	       && _end-- < _start)
 		;
 	return (_end == _start) ? NULL : (void *)_end;
 #endif
@@ -866,8 +862,6 @@ jstr_count(const char *JSTR_RST _s,
 	return _cnt;
 }
 
-#ifdef __cplusplus
-} /* extern C */
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #endif /* JSTR_STRING_DEF_H */

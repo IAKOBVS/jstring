@@ -1,23 +1,19 @@
 #ifndef JSTR_H_REPLACE_DEF
 #define JSTR_H_REPLACE_DEF 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+JSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #include "jstr_builder.h"
 #include "jstr_ctype.h"
 #include "jstr_macros.h"
 #include "jstr_string.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+JSTR_BEGIN_DECLS
 
 #define PJSTR_RMALL_IN_PLACE(dst, old, p, findlen)  \
 	do {                                        \
@@ -61,8 +57,6 @@ pjstr_slip_len_p_f(char *JSTR_RST const _s,
 		_sz - _at + 1);
 	memcpy(_s + _at, _src, _srclen);
 }
-
-#if JSTR_HAVE_REALLOC_MREMAP
 
 /*
   Slip SRC into DST[AT].
@@ -179,8 +173,6 @@ pjstr_rplcat_len_malloc(char **JSTR_RST const _s,
 	*_s = _tmp;
 	return _tmp + _at + _rplclen;
 }
-
-#endif /* HAVE_REALLOC_MREMAP */
 
 /*
   Slip SRC into DST[AT].
@@ -1216,8 +1208,6 @@ jstr_insertaft_len(char **JSTR_RST const _s,
 	return 1;
 }
 
-#ifdef __cplusplus
-} /* extern C */
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #endif /* JSTR_H_REPLACE_DEF */

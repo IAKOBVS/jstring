@@ -1,16 +1,17 @@
 #ifndef JSTR_BUILDER_DEF_H
 #define JSTR_BUILDER_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+JSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+JSTR_END_DECLS
+
 #ifdef __cplusplus
-}
 #	include <utility>
-#endif /* __cpluslus */
+#endif
 
 #ifndef __cplusplus
 #	include "jstr_pp_va_args_macros.h"
@@ -24,14 +25,14 @@ extern "C" {
 #	include "jtraits.h"
 #endif /* __cpluslus */
 
-#define PJSTR_MIN_ALLOC(new_cap)                          \
+#define PJSTR_MIN_ALLOC(new_cap)                           \
 	((new_cap < PJSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
 	 ? (PJSTR_MIN_CAP)                                 \
 	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
 
 #define PJSTR_MIN_ALLOCEXACT(new_cap) \
-	((new_cap < PJSTR_MIN_CAP)     \
-	 ? (PJSTR_MIN_CAP)             \
+	((new_cap < PJSTR_MIN_CAP)    \
+	 ? (PJSTR_MIN_CAP)            \
 	 : (new_cap))
 
 #define PJSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
@@ -132,9 +133,7 @@ typedef struct jstr_ty {
 
 } jstr_ty;
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+JSTR_BEGIN_DECLS
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -371,9 +370,7 @@ jstr_pop_front_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 	jstr_pop_front(_j->data, &_j->size);
 }
 
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+JSTR_END_DECLS
 
 #ifdef __cplusplus
 
