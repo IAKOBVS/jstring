@@ -176,11 +176,11 @@ static char *
 jstr_strchrnul(const char *JSTR_RST const _s,
 	       const int _c)
 {
-#if JSTR_HAVE_STRCHRNUL
+#if 0 && JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(_s, _c);
 #else
 #	if 0 && JSTR_HAVE_ATTR_MAY_ALIAS
-	pjstr_op_ty *_sw = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, PJSTR_OPSIZ);
+	pjstr_op_ty *_sw = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
 	pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 	pjstr_op_ty _mask = pjstr_shift_find(pjstr_find_zero_eq_all(*_sw, _cc), (uintptr_t)_s);
 	if (_mask)
@@ -189,7 +189,8 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 		;
 	return (char *)(_sw - 1) + pjstr_index_first_zero_eq(*(_sw - 1), _cc);
 #	else
-	/* It seems that strchr() + strlen() is still faster. */
+	/* strchr() + strlen() is only slightly slower when
+	   C is not in S but significantly faster otherwise. */
 	const char *const _p = strchr(_s, _c);
 	return _p ? (char *)_p : (char *)_s + strlen(_s);
 #	endif
