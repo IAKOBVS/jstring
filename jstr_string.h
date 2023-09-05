@@ -342,8 +342,6 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 		} while (_h < _end);                                                                       \
 		return NULL;                                                                               \
 	} while (0)
-	if (jstr_unlikely(_hslen < _nelen))
-		return NULL;
 	const unsigned char *_h = (unsigned char *)_hs;
 	const unsigned char *const _n = (unsigned char *)_ne;
 	const unsigned char *const _end = _h + _hslen - _nelen + 1;
@@ -520,7 +518,9 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 {
 #if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 	return (char *)strcasestr(_hs, _ne);
-#else /* seems to be much faster than glibc strcasestr */
+#else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
+	if (jstr_unlikely(_hslen < _nelen))
+		return NULL;
 	switch (_nelen) {
 	case 4:
 		if (jstr_isalpha(_ne[0])
@@ -567,7 +567,7 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 {
 #if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 	return (char *)strcasestr(_hs, _ne);
-#else /* seems to be much faster than glibc strcasestr */
+#else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
 	if (jstr_unlikely(_ne[0] == '\0'))
 		return (char *)_hs;
 	int _alpha1 = jstr_isalpha(*_ne);
@@ -586,12 +586,16 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 		if (_alpha1
 		    == 0)
 			return (char *)strstr(_hs, _ne);
+		if (jstr_unlikely(_hs[1] == '\0'))
+			return NULL;
 		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[3] == '\0') {
 		if (_alpha1
 		    + jstr_isalpha(_ne[2])
 		    == 0)
 			return (char *)strstr(_hs, _ne);
+		if (jstr_unlikely(_hs[1] == '\0') || jstr_unlikely(_hs[2] == '\0'))
+			return NULL;
 		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[4] == '\0') {
 		if (_alpha1
@@ -599,6 +603,8 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 		    + jstr_isalpha(_ne[3])
 		    == 0)
 			return (char *)strstr(_hs, _ne);
+		if (jstr_unlikely(_hs[1] == '\0' || jstr_unlikely(_hs[2] == '\0') || jstr_unlikely(_hs[3] == '\0')))
+			return NULL;
 		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
 	}
 	return pjstr_strcasestr_bmh(_hs, _ne);
