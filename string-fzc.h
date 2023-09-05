@@ -3,9 +3,7 @@
 
 #include "jstr_macros.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+JSTR_BEGIN_DECLS
 
 #if JSTR_ARCH_HPPA
 #	include "hppa-string-fzc.h"
@@ -13,8 +11,6 @@ extern "C" {
 #	include "generic-string-fzc.h"
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+JSTR_END_DECLS
 
 #endif /* PJSTR_SELECTOR_STRING_FZC_H */

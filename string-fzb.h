@@ -3,9 +3,7 @@
 
 #include "jstr_macros.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+JSTR_BEGIN_DECLS
 
 #if JSTR_ARCH_SH
 #	include "sh-string-fzb.h"
@@ -17,8 +15,6 @@ extern "C" {
 #	include "generic-string-fzb.h"
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+JSTR_END_DECLS
 
 #endif /* PJSTR_SELECTOR_STRING_FZB_H */
