@@ -78,10 +78,10 @@ static char *
 jstr_stpcpy(char *JSTR_RST _dst,
 	    const char *JSTR_RST _src) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STPCPY && 0
+#if JSTR_HAVE_STPCPY
 	return stpcpy(_dst, _src);
 #else
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
+#	if 0 && JSTR_HAVE_ATTR_MAY_ALIAS
 	size_t _len = (-(uintptr_t)_dst) % sizeof(pjstr_op_ty);
 	for (; _len--; ++_dst)
 		if (jstr_unlikely((*_dst++ = *_src++) == '\0'))
@@ -102,6 +102,7 @@ jstr_stpcpy(char *JSTR_RST _dst,
 		;
 	return _dst - 1;
 #	else
+	/* It seems that memcpy() + strlen() is still faster. */
 	const size_t _len = strlen(_src);
 	memcpy(_dst, _src, _len);
 	*(_dst + _len) = '\0';
