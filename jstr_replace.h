@@ -3,17 +3,17 @@
 
 #include "jstr_macros.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr_builder.h"
 #include "jstr_ctype.h"
 #include "jstr_macros.h"
 #include "jstr_string.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 #define PJSTR_RMALL_IN_PLACE(dst, old, p, findlen)  \
 	do {                                        \
@@ -1208,6 +1208,6 @@ jstr_insertaft_len(char **JSTR_RST const _s,
 	return 1;
 }
 
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #endif /* JSTR_H_REPLACE_DEF */

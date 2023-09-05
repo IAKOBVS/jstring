@@ -3,7 +3,7 @@
 
 #include "jstr_macros.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 #if JSTR_ARCH_HPPA
 #	include "hppa-string-fzc.h"
@@ -11,6 +11,6 @@ JSTR_BEGIN_DECLS
 #	include "generic-string-fzc.h"
 #endif
 
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #endif /* PJSTR_SELECTOR_STRING_FZC_H */

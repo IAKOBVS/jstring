@@ -3,12 +3,12 @@
 
 #include "jstr_macros.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr_builder.h"
 #include "jstr_config.h"
@@ -26,7 +26,7 @@ JSTR_END_DECLS
 #include "string-optype.h"
 #include "string-shift.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 #if JSTR_HAVE_MEMMEM
 #	define PJSTR_MEMMEM(_hs, hlen, _ne, nlen) memmem(_hs, hlen, _ne, nlen)
@@ -862,6 +862,6 @@ jstr_count(const char *JSTR_RST _s,
 	return _cnt;
 }
 
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #endif /* JSTR_STRING_DEF_H */

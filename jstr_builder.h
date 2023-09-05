@@ -3,11 +3,11 @@
 
 #include "jstr_macros.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #ifdef __cplusplus
 #	include <utility>
@@ -133,7 +133,7 @@ typedef struct jstr_ty {
 
 } jstr_ty;
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -370,7 +370,7 @@ jstr_pop_front_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
 	jstr_pop_front(_j->data, &_j->size);
 }
 
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #ifdef __cplusplus
 

@@ -741,11 +741,11 @@ case '~':
 #define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #ifdef __cplusplus
-#	define JSTR_BEGIN_DECLS extern "C" {
-#	define JSTR_END_DECLS	 }
+#	define PJSTR_BEGIN_DECLS extern "C" {
+#	define PJSTR_END_DECLS	 }
 #else
-#	define JSTR_BEGIN_DECLS
-#	define JSTR_END_DECLS
+#	define PJSTR_BEGIN_DECLS
+#	define PJSTR_END_DECLS
 #endif
 
 #endif /* JSTR_MACROS_DEF_H */

@@ -3,14 +3,14 @@
 
 #include "jstr_macros.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr_macros.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 #define PJSTR_ITOA_ATTR      \
 	JSTR_MAYBE_UNUSED    \
@@ -470,6 +470,6 @@ jstr_ulltoa(char *_nptr,
 #undef PJSTR_LLTOA_UNROLLED
 #undef PJSTR_LTOA_UNROLLED
 
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #endif /* JSTR_ITOA_DEF_H */

@@ -3,7 +3,7 @@
 
 #include "jstr_macros.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 #if JSTR_ARCH_POWERPC6
 #	include "powerpc-string-fza.h"
@@ -17,6 +17,6 @@ JSTR_BEGIN_DECLS
 #	include "generic-string-fza.h"
 #endif
 
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #endif /* PJSTR_SELECTOR_STRING_FZA_H */

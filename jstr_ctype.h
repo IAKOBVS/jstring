@@ -3,9 +3,9 @@
 
 #include "jstr_macros.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <string.h>
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr_ctype_table.h"
 #include "jstr_macros.h"
@@ -20,7 +20,7 @@ JSTR_END_DECLS
 #include "string-optype.h"
 #include "string-shift.h"
 
-JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 /* ASCII */
 JSTR_INLINE
@@ -431,6 +431,6 @@ jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 #endif
 }
 
-JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #endif /* JSTR_CTYPE_DEF_H */
