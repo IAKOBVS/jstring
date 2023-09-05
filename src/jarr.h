@@ -80,7 +80,7 @@ PJSTR_END_DECLS
 		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j), __VA_ARGS__);                           \
 	} while (0)
 
-/* Allocate elements to PTR. */
+/* Add elements to end of PTR. */
 #define jarr_cat(j, ...)                                                                       \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
