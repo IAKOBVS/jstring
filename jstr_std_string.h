@@ -185,7 +185,7 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 	pjstr_op_ty _mask = pjstr_shift_find(pjstr_find_zero_eq_all(*_sw, _cc), (uintptr_t)_s);
 	if (_mask)
 		return (char *)_sw + pjstr_index_first(_mask);
-	while ((!pjstr_has_zero_eq(*_sw++, _cc)))
+	while ((!pjstr_has_zero_eq(*++_sw, _cc)))
 		;
 	return (char *)(_sw - 1) + pjstr_index_first_zero_eq(*(_sw - 1), _cc);
 #	else
