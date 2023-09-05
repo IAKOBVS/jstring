@@ -103,8 +103,8 @@
 #endif /* restrict */
 
 #if (defined __GNUC__ && (__GNUC__ >= 3)) || (defined __clang__ && __has_builtin(__builtin_expect))
-#	define jstr_likely(x)	 __builtin_expect(!!(x), 1)
-#	define jstr_unlikely(x) __builtin_expect(!!(x), 0)
+#	define jstr_likely(x)	 __builtin_expect((x), 1)
+#	define jstr_unlikely(x) __builtin_expect((x), 0)
 #else
 #	define jstr_likely(x)	 (x)
 #	define jstr_unlikely(x) (x)
