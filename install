@@ -1,3 +1,0 @@
-#!/bin/sh
-./build
-sudo cp -rf jstr/*.h /usr/local/include/jstr

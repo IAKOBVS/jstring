@@ -12,3 +12,5 @@ c
 ./gen_cpp
 *.gch
 glibc
+test
+test.c

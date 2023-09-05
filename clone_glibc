@@ -1,6 +1,0 @@
-#!/bin/sh
-if [ -e glibc ]; then
-	cd glibc && git pull
-else
-	git clone https://sourceware.org/git/glibc.git
-fi
