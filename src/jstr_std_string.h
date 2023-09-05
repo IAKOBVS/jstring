@@ -46,7 +46,7 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static void *
-jstr_lenpcpy(void *JSTR_RST const _dst,
+jstr_mempcpy(void *JSTR_RST const _dst,
 	     const void *JSTR_RST const _src,
 	     const size_t _n) JSTR_NOEXCEPT
 {
@@ -113,7 +113,7 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
 static void *
-jstr_lenccpy(void *JSTR_RST _dst,
+jstr_memccpy(void *JSTR_RST _dst,
 	     const void *JSTR_RST _src,
 	     int _c,
 	     const size_t _n) JSTR_NOEXCEPT
@@ -123,7 +123,7 @@ jstr_lenccpy(void *JSTR_RST _dst,
 #else
 	void *p = (void *)memchr(_src, _c, _n);
 	if (p != NULL)
-		return jstr_lenpcpy(_dst, _src, (unsigned char *)p - (unsigned char *)_src + 1);
+		return jstr_mempcpy(_dst, _src, (unsigned char *)p - (unsigned char *)_src + 1);
 	memcpy(_dst, _src, _n);
 	return NULL;
 #endif /* HAVE_MEMCPY */
@@ -170,7 +170,7 @@ static char *
 jstr_strchrnul(const char *JSTR_RST const _s,
 	       const int _c)
 {
-#if 0 && JSTR_HAVE_STRCHRNUL
+#if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(_s, _c);
 #else
 #	if 0 && JSTR_HAVE_ATTR_MAY_ALIAS
