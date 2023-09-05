@@ -158,7 +158,7 @@ pjstr_strrstr_mem_bmh(const unsigned char *JSTR_RST _hs,
 				_off = (_off >= 8 ? _off : _mtc1) - 8;            \
 			}                                                         \
 			_hs -= shft1;                                             \
-		} while (jstr_likely(_hs > _start));                              \
+		} while (_hs > _start);                                           \
 		return NULL;                                                      \
 	} while (0)
 	const unsigned char *const _start = _hs - 1;
@@ -339,7 +339,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 				_off = (_off >= 8 ? _off : _mtc1) - 8;                                     \
 			}                                                                                  \
 			_h += _shft1;                                                                      \
-		} while (jstr_likely(_h < _end));                                                          \
+		} while (_h < _end);                                                                       \
 		return NULL;                                                                               \
 	} while (0)
 	if (jstr_unlikely(_hslen < _nelen))
@@ -387,7 +387,7 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[PJSTR_HASH2_LOWER(_h)];                                      \
-			} while (!_tmp && _h <= _end);                                                   \
+			} while (!_tmp && _h <= _end);                                                     \
 			_h -= _tmp;                                                                        \
 			if (_tmp < _mtc1)                                                                  \
 				continue;                                                                  \
