@@ -1,6 +1,8 @@
 #ifndef JSTR_MACROS_DEF_H
 #define JSTR_MACROS_DEF_H 1
 
+#include <features.h>
+
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L && !defined __cplusplus
 #	define JSTR_HAVE_GENERIC 1
 #endif /* HAVE_GENERIC */
