@@ -416,13 +416,6 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 #undef PJSTR_STRCASESTR_BMH
 }
 
-/*
-   Find C in S case-insensitively.
-   S MUST be nul terminated.
-   Return value:
-   Pointer to NE;
-   NULL if not found.
-*/
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
@@ -436,13 +429,6 @@ pstrcasechr_len(const char *JSTR_RST _s,
 	return (char *)strpbrk(_s, _acc);
 }
 
-/*
-   Find C in S case-insensitively.
-   S MUST be nul terminated.
-   Return value:
-   Pointer to NE;
-   NULL if not found.
-*/
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
