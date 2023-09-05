@@ -1,8 +1,6 @@
 #ifndef JSTR_STD_STRING_DEF_H
 #define JSTR_STD_STRING_DEF_H 1
 
-#include "jstr_macros.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cpluslus */
@@ -11,6 +9,17 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif /* __cpluslus */
+
+#include "jstr_macros.h"
+
+#include "string-fza.h"
+#include "string-fzb.h"
+#include "string-fzc.h"
+#include "string-fzi.h"
+#include "string-misc.h"
+#include "string-opthr.h"
+#include "string-optype.h"
+#include "string-shift.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,20 +67,46 @@ jstr_mempcpy(void *JSTR_RST const _dst,
   Return value:
   ptr to '\0' in DST.
 */
+#if JSTR_HAVE_STPCPY
 JSTR_INLINE
+#endif
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
-jstr_stpcpy(char *JSTR_RST const _dst,
-	    const char *JSTR_RST const _src) JSTR_NOEXCEPT
+jstr_stpcpy(char *JSTR_RST _dst,
+	    const char *JSTR_RST _src) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STPCPY
+#if JSTR_HAVE_STPCPY && 0
 	return stpcpy(_dst, _src);
 #else
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
+	size_t _len = (-(uintptr_t)_dst) % sizeof(pjstr_op_ty);
+	for (; _len--; ++_dst)
+		if (jstr_unlikely((*_dst++ = *_src++) == '\0'))
+			return _dst - 1;
+	if ((uintptr_t)_src % sizeof(pjstr_op_ty)) {
+		_len = strlen(_src);
+		memcpy(_dst, _src, _len);
+		return _dst + _len;
+	}
+	pjstr_op_ty *_dw = (pjstr_op_ty *)_dst;
+	pjstr_op_ty *_sw = (pjstr_op_ty *)_src;
+	while (!pjstr_has_zero(*_sw))
+		*_dw++ = *_sw++;
+	_len = pjstr_index_first_zero(*_sw);
+	_dst = (char *)_dw;
+	_src = (char *)_sw;
+	while ((*_dst++ = *_src++))
+		;
+	return _dst - 1;
+#	else
 	const size_t _len = strlen(_src);
-	return (char *)memcpy(_dst, _src, _len + 1) + _len;
+	memcpy(_dst, _src, _len);
+	*(_dst + _len) = '\0';
+	return _dst + _len;
+#	endif
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
@@ -115,7 +150,6 @@ jstr_stpcat(char *JSTR_RST _dst,
 	_dst += strlen(_dst);
 	return jstr_stpcpy(_dst, _src);
 }
-
 
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED

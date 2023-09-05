@@ -668,7 +668,8 @@ case '~':
 #include "jstr_config.h"
 #include "libc-pointer-arith.h"
 
-#define PJSTR_ALIGN_UP_STR(base) PJSTR_ALIGN_UP(base, PJSTR_MALLOC_ALIGNMENT)
+#define PJSTR_ALIGN_UP_STR(base) PJSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define PJSTR_PTR_IS_ALIGNED_STR(base) PJSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if defined __x86_64__ || defined _M_X64
 #	define JSTR_ARCH_x86_64 1

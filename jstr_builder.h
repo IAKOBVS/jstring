@@ -180,7 +180,8 @@ jstr_allocexact_append_mem(char **JSTR_RST const _s,
 	if (jstr_unlikely(*_s == NULL))
 		return;
 	*_sz = _srclen;
-	memcpy(*_s, _src, _srclen + 1);
+	memcpy(*_s, _src, _srclen);
+	*(*_s + _srclen) = '\0';
 }
 
 JSTR_INLINE
@@ -195,7 +196,8 @@ jstr_alloc_append_mem(char **JSTR_RST const _s,
 {
 	PJSTR_ALLOC_ONLY(*_s, *_cap, _srclen, return);
 	*_sz = _srclen;
-	memcpy(*_s, _src, _srclen + 1);
+	memcpy(*_s, _src, _srclen);
+	*(*_s + _srclen) = '\0';
 }
 
 JSTR_INLINE
@@ -210,7 +212,8 @@ jstr_allocmore_append_mem(char **JSTR_RST const _s,
 {
 	PJSTR_ALLOC_ONLY(*_s, *_cap, _srclen * 2, return);
 	*_sz = _srclen;
-	memcpy(*_s, _src, _srclen + 1);
+	memcpy(*_s, _src, _srclen);
+	*(*_s + _srclen) = '\0';
 }
 
 /*
@@ -259,7 +262,8 @@ jstr_append_mem_p_f(char *JSTR_RST const _s,
 		    const size_t _sz,
 		    const size_t _srclen) JSTR_NOEXCEPT
 {
-	memcpy(_s, _src, _srclen + 1);
+	memcpy(_s, _src, _srclen);
+	*(_s + _srclen) = '\0';
 	return _s + _sz + _srclen;
 }
 

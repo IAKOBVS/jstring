@@ -42,15 +42,15 @@
 /* Cast an integer VAL to void * pointer.  */
 #	define cast_to_pointer(val) ((void *)(uintptr_t)(val))
 
-/* Check if BASE is aligned on SIZE  */
-#	define PJSTR_PTR_IS_ALIGNED(base, size) \
-		((((uintptr_t)(base)) & (size - 1)) == 0)
-
 /* Returns the ptrdiff_t difference between P1 and P2.  */
 #	define PJSTR_PTR_DIFF(p1, p2) \
 		((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 
 #endif
+
+/* Check if BASE is aligned on SIZE  */
+#	define PJSTR_PTR_IS_ALIGNED(base, size) \
+		((((uintptr_t)(base)) & (size - 1)) == 0)
 
 /* Align a value by rounding down to closest size.
    e.g. Using size of 4096, we get this behavior:
