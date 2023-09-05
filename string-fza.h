@@ -7,7 +7,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#if JSTR_ARCH_PWR6
+#if JSTR_ARCH_POWERPC6
 #	include "powerpc-string-fza.h"
 #elif JSTR_ARCH_ALPHA
 #	include "alpha-string-fza.h"

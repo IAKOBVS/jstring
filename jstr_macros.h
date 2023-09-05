@@ -706,8 +706,18 @@ case '~':
 #	define JSTR_ARCH_POWERPC 1
 #elif defined __PPC64__ || defined __ppc64__ || defined _ARCH_PPC64
 #	define JSTR_ARCH_POWERPC64 1
+#elif defined _ARCH_PWR4
+#	define JSTR_ARCH_POWERPC4 1
+#elif defined _ARCH_PWR5X
+#	define JSTR_ARCH_POWERPC5X 1
 #elif defined _ARCH_PWR6
-#	define JSTR_ARCH_PWR6
+#	define JSTR_ARCH_POWERPC6 1
+#elif defined _ARCH_PWR7
+#	define JSTR_ARCH_POWERPC7 1
+#elif defined _ARCH_PWR8
+#	define JSTR_ARCH_POWERPC8 1
+#elif defined _ARCH_PWR9
+#	define JSTR_ARCH_POWERPC9 1
 #elif defined __sparc__ || defined __sparc
 #	define JSTR_ARCH_SPARC 1
 #elif defined __m68k__

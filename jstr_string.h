@@ -519,9 +519,9 @@ jstr_strcasestr_mem(const char *JSTR_RST const _hs,
 		    const char *JSTR_RST const _ne,
 		    const size_t _nelen) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR
+#if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 	return (char *)strcasestr(_hs, _ne);
-#else
+#else /* seems to be much faster than glibc strcasestr */
 	switch (_nelen) {
 	case 4:
 		if (jstr_isalpha(_ne[0])
@@ -567,9 +567,9 @@ static char *
 jstr_strcasestr(const char *JSTR_RST _hs,
 		const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR
+#if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 	return (char *)strcasestr(_hs, _ne);
-#else
+#else /* seems to be much faster than glibc strcasestr */
 	if (jstr_unlikely(_ne[0] == '\0'))
 		return (char *)_hs;
 	int _alpha1 = jstr_isalpha(*_ne);
