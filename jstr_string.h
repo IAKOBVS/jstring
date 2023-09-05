@@ -84,7 +84,7 @@ jstr_strcasecmp_len(const char *JSTR_RST const _s1,
 		    const char *JSTR_RST const _s2,
 		    size_t _n) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRNCASECMP && 0
+#if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(_s1, _s2, _n);
 #else
 	const unsigned char *_p1 = (unsigned char *)_s1;
