@@ -97,20 +97,6 @@ jstr_strcasecmp_mem(const char *JSTR_RST const _s1,
 #endif /* HAVE_STRNCASECMP */
 }
 
-#ifdef JSTR_HAVE_STRNCASECMP
-#	define PJSTR_STRCASECMP8(h, n, l) strncasecmp(h, n, l)
-#else
-#	define PJSTR_STRCASECMP8(h, n, l)                                   \
-		(!(jstr_tolower_ascii(_h[0]) == jstr_tolower_ascii(_h[0])    \
-		   && jstr_tolower_ascii(_h[1]) == jstr_tolower_ascii(_h[1]) \
-		   && jstr_tolower_ascii(_h[2]) == jstr_tolower_ascii(_h[2]) \
-		   && jstr_tolower_ascii(_h[3]) == jstr_tolower_ascii(_h[3]) \
-		   && jstr_tolower_ascii(_h[4]) == jstr_tolower_ascii(_h[4]) \
-		   && jstr_tolower_ascii(_h[5]) == jstr_tolower_ascii(_h[5]) \
-		   && jstr_tolower_ascii(_h[6]) == jstr_tolower_ascii(_h[6]) \
-		   && jstr_tolower_ascii(_h[7]) == jstr_tolower_ascii(_h[7])))
-#endif
-
 /*
   Compare S1 with S2 case-insensitively.
   Return value:
@@ -347,7 +333,7 @@ pjstr_strcasestr_mem_bmh(const char *JSTR_RST const _hs,
 			_h -= _tmp;                                                                      \
 			if (_tmp < _mtc1)                                                                \
 				continue;                                                                \
-			if (_mtc1 < 15 || !PJSTR_STRCASECMP8((char *)_h + _off, (char *)_n + _off, 8)) { \
+			if (_mtc1 < 15 || !jstr_strcasecmp_mem((char *)_h + _off, (char *)_n + _off, 8)) { \
 				if (!jstr_strcasecmp_mem((char *)_h, (char *)_n, _mtc1))                 \
 					return (char *)_h;                                               \
 				_off = (_off >= 8 ? _off : _mtc1) - 8;                                   \
@@ -405,7 +391,7 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 			_h -= _tmp;                                                                      \
 			if (_tmp < _mtc1)                                                                \
 				continue;                                                                \
-			if (_mtc1 < 15 || !PJSTR_STRCASECMP8((char *)_h + _off, (char *)_n + _off, 8)) { \
+			if (_mtc1 < 15 || !jstr_strcasecmp_mem((char *)_h + _off, (char *)_n + _off, 8)) { \
 				if (!jstr_strcasecmp_mem((char *)_h, (char *)_n, _mtc1))                 \
 					return (char *)_h;                                               \
 				_off = (_off >= 8 ? _off : _mtc1) - 8;                                   \
