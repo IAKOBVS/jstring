@@ -387,7 +387,7 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[PJSTR_HASH2_LOWER(_h)];                                      \
-			} while (!_tmp && (_h <= _end));                                                   \
+			} while (!_tmp && _h <= _end);                                                   \
 			_h -= _tmp;                                                                        \
 			if (_tmp < _mtc1)                                                                  \
 				continue;                                                                  \
