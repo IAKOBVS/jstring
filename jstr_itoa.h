@@ -23,381 +23,381 @@ extern "C" {
 	JSTR_RETURNS_NONNULL \
 	JSTR_NOTHROW
 
-#define PJSTR_ULTOA_UNROLLED(_nptr, _number, _base)                                                                               \
-	do {                                                                                                                      \
-		JSTR_ASSERT_IS_STR(_nptr);                                                                                        \
-		JSTR_ASSERT_IS_SIZE(_number);                                                                                     \
-		JSTR_ASSERT_IS_SIZE(_base);                                                                                       \
-		if (_number <= 9) {                                                                                               \
-			_nptr[0] = _number % _base + '0';                                                                         \
-			_nptr += 1;                                                                                               \
-		} else if (_number <= 99) {                                                                                       \
-			_nptr[0] = _number / _base % _base + '0';                                                                 \
-			_nptr[1] = _number % _base + '0';                                                                         \
-			_nptr += 2;                                                                                               \
-		} else if (_number <= 999) {                                                                                      \
-			_nptr[0] = _number / _base / _base % _base + '0';                                                         \
-			_nptr[1] = _number / _base % _base + '0';                                                                 \
-			_nptr[2] = _number % _base + '0';                                                                         \
-			_nptr += 3;                                                                                               \
-		} else if (_number <= 9999) {                                                                                     \
-			_nptr[0] = _number / _base / _base / _base % _base + '0';                                                 \
-			_nptr[1] = _number / _base / _base % _base + '0';                                                         \
-			_nptr[2] = _number / _base % _base + '0';                                                                 \
-			_nptr[3] = _number % _base + '0';                                                                         \
-			_nptr += 4;                                                                                               \
-		} else if (_number <= 99999) {                                                                                    \
-			_nptr[0] = _number / _base / _base / _base / _base % _base + '0';                                         \
-			_nptr[1] = _number / _base / _base / _base % _base + '0';                                                 \
-			_nptr[2] = _number / _base / _base % _base + '0';                                                         \
-			_nptr[3] = _number / _base % _base + '0';                                                                 \
-			_nptr[4] = _number % _base + '0';                                                                         \
-			_nptr += 5;                                                                                               \
-		} else if (_number <= 999999) {                                                                                   \
-			_nptr[0] = _number / _base / _base / _base / _base / _base % _base + '0';                                 \
-			_nptr[1] = _number / _base / _base / _base / _base % _base + '0';                                         \
-			_nptr[2] = _number / _base / _base / _base % _base + '0';                                                 \
-			_nptr[3] = _number / _base / _base % _base + '0';                                                         \
-			_nptr[4] = _number / _base % _base + '0';                                                                 \
-			_nptr[5] = _number % _base + '0';                                                                         \
-			_nptr += 6;                                                                                               \
-		} else if (_number <= 9999999) {                                                                                  \
-			_nptr[0] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                         \
-			_nptr[1] = _number / _base / _base / _base / _base / _base % _base + '0';                                 \
-			_nptr[2] = _number / _base / _base / _base / _base % _base + '0';                                         \
-			_nptr[3] = _number / _base / _base / _base % _base + '0';                                                 \
-			_nptr[4] = _number / _base / _base % _base + '0';                                                         \
-			_nptr[5] = _number / _base % _base + '0';                                                                 \
-			_nptr[6] = _number % _base + '0';                                                                         \
-			_nptr += 7;                                                                                               \
-		} else if (_number <= 99999999) {                                                                                 \
-			_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
-			_nptr[1] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                         \
-			_nptr[2] = _number / _base / _base / _base / _base / _base % _base + '0';                                 \
-			_nptr[3] = _number / _base / _base / _base / _base % _base + '0';                                         \
-			_nptr[4] = _number / _base / _base / _base % _base + '0';                                                 \
-			_nptr[5] = _number / _base / _base % _base + '0';                                                         \
-			_nptr[6] = _number / _base % _base + '0';                                                                 \
-			_nptr[7] = _number % _base + '0';                                                                         \
-			_nptr += 8;                                                                                               \
-		} else if (_number <= 999999999) {                                                                                \
-			_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';         \
-			_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
-			_nptr[2] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                         \
-			_nptr[3] = _number / _base / _base / _base / _base / _base % _base + '0';                                 \
-			_nptr[4] = _number / _base / _base / _base / _base % _base + '0';                                         \
-			_nptr[5] = _number / _base / _base / _base % _base + '0';                                                 \
-			_nptr[6] = _number / _base / _base % _base + '0';                                                         \
-			_nptr[7] = _number / _base % _base + '0';                                                                 \
-			_nptr[8] = _number % _base + '0';                                                                         \
-			_nptr += 9;                                                                                               \
-		} else {                                                                                                          \
-			_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0'; \
-			_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';         \
-			_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
-			_nptr[3] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                         \
-			_nptr[4] = _number / _base / _base / _base / _base / _base % _base + '0';                                 \
-			_nptr[5] = _number / _base / _base / _base / _base % _base + '0';                                         \
-			_nptr[6] = _number / _base / _base / _base % _base + '0';                                                 \
-			_nptr[7] = _number / _base / _base % _base + '0';                                                         \
-			_nptr[8] = _number / _base % _base + '0';                                                                 \
-			_nptr[9] = _number % _base + '0';                                                                         \
-			_nptr += 10;                                                                                              \
-		}                                                                                                                 \
-		*_nptr = '\0';                                                                                                    \
-		return _nptr;                                                                                                     \
+#define PJSTR_ULTOA_UNROLLED(nptr, number, base)                                                                      \
+	do {                                                                                                          \
+		JSTR_ASSERT_IS_STR(nptr);                                                                             \
+		JSTR_ASSERT_IS_SIZE(number);                                                                          \
+		JSTR_ASSERT_IS_SIZE(base);                                                                            \
+		if (number <= 9) {                                                                                    \
+			nptr[0] = number % base + '0';                                                                \
+			nptr += 1;                                                                                    \
+		} else if (number <= 99) {                                                                            \
+			nptr[0] = number / base % base + '0';                                                         \
+			nptr[1] = number % base + '0';                                                                \
+			nptr += 2;                                                                                    \
+		} else if (number <= 999) {                                                                           \
+			nptr[0] = number / base / base % base + '0';                                                  \
+			nptr[1] = number / base % base + '0';                                                         \
+			nptr[2] = number % base + '0';                                                                \
+			nptr += 3;                                                                                    \
+		} else if (number <= 9999) {                                                                          \
+			nptr[0] = number / base / base / base % base + '0';                                           \
+			nptr[1] = number / base / base % base + '0';                                                  \
+			nptr[2] = number / base % base + '0';                                                         \
+			nptr[3] = number % base + '0';                                                                \
+			nptr += 4;                                                                                    \
+		} else if (number <= 99999) {                                                                         \
+			nptr[0] = number / base / base / base / base % base + '0';                                    \
+			nptr[1] = number / base / base / base % base + '0';                                           \
+			nptr[2] = number / base / base % base + '0';                                                  \
+			nptr[3] = number / base % base + '0';                                                         \
+			nptr[4] = number % base + '0';                                                                \
+			nptr += 5;                                                                                    \
+		} else if (number <= 999999) {                                                                        \
+			nptr[0] = number / base / base / base / base / base % base + '0';                             \
+			nptr[1] = number / base / base / base / base % base + '0';                                    \
+			nptr[2] = number / base / base / base % base + '0';                                           \
+			nptr[3] = number / base / base % base + '0';                                                  \
+			nptr[4] = number / base % base + '0';                                                         \
+			nptr[5] = number % base + '0';                                                                \
+			nptr += 6;                                                                                    \
+		} else if (number <= 9999999) {                                                                       \
+			nptr[0] = number / base / base / base / base / base / base % base + '0';                      \
+			nptr[1] = number / base / base / base / base / base % base + '0';                             \
+			nptr[2] = number / base / base / base / base % base + '0';                                    \
+			nptr[3] = number / base / base / base % base + '0';                                           \
+			nptr[4] = number / base / base % base + '0';                                                  \
+			nptr[5] = number / base % base + '0';                                                         \
+			nptr[6] = number % base + '0';                                                                \
+			nptr += 7;                                                                                    \
+		} else if (number <= 99999999) {                                                                      \
+			nptr[0] = number / base / base / base / base / base / base / base % base + '0';               \
+			nptr[1] = number / base / base / base / base / base / base % base + '0';                      \
+			nptr[2] = number / base / base / base / base / base % base + '0';                             \
+			nptr[3] = number / base / base / base / base % base + '0';                                    \
+			nptr[4] = number / base / base / base % base + '0';                                           \
+			nptr[5] = number / base / base % base + '0';                                                  \
+			nptr[6] = number / base % base + '0';                                                         \
+			nptr[7] = number % base + '0';                                                                \
+			nptr += 8;                                                                                    \
+		} else if (number <= 999999999) {                                                                     \
+			nptr[0] = number / base / base / base / base / base / base / base / base % base + '0';        \
+			nptr[1] = number / base / base / base / base / base / base / base % base + '0';               \
+			nptr[2] = number / base / base / base / base / base / base % base + '0';                      \
+			nptr[3] = number / base / base / base / base / base % base + '0';                             \
+			nptr[4] = number / base / base / base / base % base + '0';                                    \
+			nptr[5] = number / base / base / base % base + '0';                                           \
+			nptr[6] = number / base / base % base + '0';                                                  \
+			nptr[7] = number / base % base + '0';                                                         \
+			nptr[8] = number % base + '0';                                                                \
+			nptr += 9;                                                                                    \
+		} else {                                                                                              \
+			nptr[0] = number / base / base / base / base / base / base / base / base / base % base + '0'; \
+			nptr[1] = number / base / base / base / base / base / base / base / base % base + '0';        \
+			nptr[2] = number / base / base / base / base / base / base / base % base + '0';               \
+			nptr[3] = number / base / base / base / base / base / base % base + '0';                      \
+			nptr[4] = number / base / base / base / base / base % base + '0';                             \
+			nptr[5] = number / base / base / base / base % base + '0';                                    \
+			nptr[6] = number / base / base / base % base + '0';                                           \
+			nptr[7] = number / base / base % base + '0';                                                  \
+			nptr[8] = number / base % base + '0';                                                         \
+			nptr[9] = number % base + '0';                                                                \
+			nptr += 10;                                                                                   \
+		}                                                                                                     \
+		*nptr = '\0';                                                                                         \
+		return nptr;                                                                                          \
 	} while (0)
 
 #if 0
 
-#	define PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base)                                                                                                                                                      \
-		do {                                                                                                                                                                                              \
-			JSTR_ASSERT_IS_STR(_nptr);                                                                                                                                                                \
-			JSTR_ASSERT_IS_SIZE(_number);                                                                                                                                                             \
-			JSTR_ASSERT_IS_SIZE(_base);                                                                                                                                                               \
-			if (_number <= 1) {                                                                                                                                                                       \
-				_nptr[0] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 1;                                                                                                                                                                       \
-			} else if (_number <= 10) {                                                                                                                                                               \
-				_nptr[0] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[1] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 2;                                                                                                                                                                       \
-			} else if (_number <= 100) {                                                                                                                                                              \
-				_nptr[0] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[1] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[2] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 3;                                                                                                                                                                       \
-			} else if (_number <= 1000) {                                                                                                                                                             \
-				_nptr[0] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[1] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[2] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[3] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 4;                                                                                                                                                                       \
-			} else if (_number <= 10000) {                                                                                                                                                            \
-				_nptr[0] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[1] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[2] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[3] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[4] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 5;                                                                                                                                                                       \
-			} else if (_number <= 100000) {                                                                                                                                                           \
-				_nptr[0] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[1] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[2] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[3] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[4] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[5] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 6;                                                                                                                                                                       \
-			} else if (_number <= 1000000) {                                                                                                                                                          \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[1] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[2] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[3] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[4] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[5] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[6] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 7;                                                                                                                                                                       \
-			} else if (_number <= 10000000) {                                                                                                                                                         \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[2] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[3] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[4] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[5] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[6] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[7] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 8;                                                                                                                                                                       \
-			} else if (_number <= 100000000) {                                                                                                                                                        \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[3] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[4] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[5] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[6] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[7] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[8] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 9;                                                                                                                                                                       \
-			} else if (_number <= 1000000000) {                                                                                                                                                       \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[4] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[5] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[6] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[7] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[8] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[9] = _number % _base + '0';                                                                                                                                                 \
-				_nptr += 10;                                                                                                                                                                      \
-			} else if (_number <= 10000000000) {                                                                                                                                                      \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[5] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[6] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[7] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[8] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[9] = _number / _base % _base + '0';                                                                                                                                         \
-				_nptr[10] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 11;                                                                                                                                                                      \
-			} else if (_number <= 100000000000) {                                                                                                                                                     \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[6] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[7] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[8] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[9] = _number / _base / _base % _base + '0';                                                                                                                                 \
-				_nptr[10] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[11] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 12;                                                                                                                                                                      \
-			} else if (_number <= 1000000000000) {                                                                                                                                                    \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                 \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[6] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[7] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[8] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[9] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[10] = _number / _base / _base % _base + '0';                                                                                                                                \
-				_nptr[11] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[12] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 13;                                                                                                                                                                      \
-			} else if (_number <= 10000000000000) {                                                                                                                                                   \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                         \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                 \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[6] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[7] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[8] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                 \
-				_nptr[9] = _number / _base / _base / _base % _base + '0';                                                                                                                         \
-				_nptr[10] = _number / _base / _base % _base + '0';                                                                                                                                \
-				_nptr[11] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[13] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 13;                                                                                                                                                                      \
-			} else if (_number <= 10000000000000) {                                                                                                                                                   \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                 \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                         \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                 \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[6] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[7] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[8] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[9] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[10] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                \
-				_nptr[11] = _number / _base / _base / _base % _base + '0';                                                                                                                        \
-				_nptr[12] = _number / _base / _base % _base + '0';                                                                                                                                \
-				_nptr[13] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[14] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 14;                                                                                                                                                                      \
-			} else if (_number <= 100000000000000) {                                                                                                                                                  \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                 \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                         \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                 \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[6] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[7] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[8] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[9] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                         \
-				_nptr[10] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                \
-				_nptr[11] = _number / _base / _base / _base % _base + '0';                                                                                                                        \
-				_nptr[12] = _number / _base / _base % _base + '0';                                                                                                                                \
-				_nptr[13] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[14] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 15;                                                                                                                                                                      \
-			} else if (_number <= 1000000000000000) {                                                                                                                                                 \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                         \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                 \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                         \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                 \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[6] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[7] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[8] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[9] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                 \
-				_nptr[10] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                        \
-				_nptr[11] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                \
-				_nptr[12] = _number / _base / _base / _base % _base + '0';                                                                                                                        \
-				_nptr[13] = _number / _base / _base % _base + '0';                                                                                                                                \
-				_nptr[14] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[15] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 16;                                                                                                                                                                      \
-			} else if (_number <= 10000000000000000) {                                                                                                                                                \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                         \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                 \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                         \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                 \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[6] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[7] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[8] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[9] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                         \
-				_nptr[10] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                \
-				_nptr[11] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                        \
-				_nptr[12] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                \
-				_nptr[13] = _number / _base / _base / _base % _base + '0';                                                                                                                        \
-				_nptr[14] = _number / _base / _base % _base + '0';                                                                                                                                \
-				_nptr[15] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[16] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 17;                                                                                                                                                                      \
-			} else if (_number <= 100000000000000000) {                                                                                                                                               \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';         \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                         \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                 \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                         \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                 \
-				_nptr[6] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[7] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[8] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[9] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                 \
-				_nptr[10] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                        \
-				_nptr[11] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                \
-				_nptr[12] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                        \
-				_nptr[13] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                \
-				_nptr[14] = _number / _base / _base / _base % _base + '0';                                                                                                                        \
-				_nptr[15] = _number / _base / _base % _base + '0';                                                                                                                                \
-				_nptr[16] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[17] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 18;                                                                                                                                                                      \
-			} else {                                                                                                                                                                                  \
-				_nptr[0] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0'; \
-				_nptr[1] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';         \
-				_nptr[2] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                 \
-				_nptr[3] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                         \
-				_nptr[4] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                 \
-				_nptr[5] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                         \
-				_nptr[6] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                 \
-				_nptr[7] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                         \
-				_nptr[8] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                 \
-				_nptr[8] = _number / _base / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                         \
-				_nptr[10] = _number / _base / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                \
-				_nptr[11] = _number / _base / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                        \
-				_nptr[12] = _number / _base / _base / _base / _base / _base / _base % _base + '0';                                                                                                \
-				_nptr[13] = _number / _base / _base / _base / _base / _base % _base + '0';                                                                                                        \
-				_nptr[14] = _number / _base / _base / _base / _base % _base + '0';                                                                                                                \
-				_nptr[15] = _number / _base / _base / _base % _base + '0';                                                                                                                        \
-				_nptr[16] = _number / _base / _base % _base + '0';                                                                                                                                \
-				_nptr[17] = _number / _base % _base + '0';                                                                                                                                        \
-				_nptr[18] = _number % _base + '0';                                                                                                                                                \
-				_nptr += 19;                                                                                                                                                                      \
-			}                                                                                                                                                                                         \
-			*_nptr = '\0';                                                                                                                                                                            \
-			return _nptr;                                                                                                                                                                             \
+#	define PJSTR_ULLTOA_UNROLLED(nptr, number, base)                                                                                                                                    \
+		do {                                                                                                                                                                         \
+			JSTR_ASSERT_IS_STR(nptr);                                                                                                                                            \
+			JSTR_ASSERT_IS_SIZE(number);                                                                                                                                         \
+			JSTR_ASSERT_IS_SIZE(base);                                                                                                                                           \
+			if (number <= 1) {                                                                                                                                                   \
+				nptr[0] = number % base + '0';                                                                                                                               \
+				nptr += 1;                                                                                                                                                   \
+			} else if (number <= 10) {                                                                                                                                           \
+				nptr[0] = number / base % base + '0';                                                                                                                        \
+				nptr[1] = number % base + '0';                                                                                                                               \
+				nptr += 2;                                                                                                                                                   \
+			} else if (number <= 100) {                                                                                                                                          \
+				nptr[0] = number / base / base % base + '0';                                                                                                                 \
+				nptr[1] = number / base % base + '0';                                                                                                                        \
+				nptr[2] = number % base + '0';                                                                                                                               \
+				nptr += 3;                                                                                                                                                   \
+			} else if (number <= 1000) {                                                                                                                                         \
+				nptr[0] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[1] = number / base / base % base + '0';                                                                                                                 \
+				nptr[2] = number / base % base + '0';                                                                                                                        \
+				nptr[3] = number % base + '0';                                                                                                                               \
+				nptr += 4;                                                                                                                                                   \
+			} else if (number <= 10000) {                                                                                                                                        \
+				nptr[0] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[1] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[2] = number / base / base % base + '0';                                                                                                                 \
+				nptr[3] = number / base % base + '0';                                                                                                                        \
+				nptr[4] = number % base + '0';                                                                                                                               \
+				nptr += 5;                                                                                                                                                   \
+			} else if (number <= 100000) {                                                                                                                                       \
+				nptr[0] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[1] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[2] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[3] = number / base / base % base + '0';                                                                                                                 \
+				nptr[4] = number / base % base + '0';                                                                                                                        \
+				nptr[5] = number % base + '0';                                                                                                                               \
+				nptr += 6;                                                                                                                                                   \
+			} else if (number <= 1000000) {                                                                                                                                      \
+				nptr[0] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[1] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[2] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[3] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[4] = number / base / base % base + '0';                                                                                                                 \
+				nptr[5] = number / base % base + '0';                                                                                                                        \
+				nptr[6] = number % base + '0';                                                                                                                               \
+				nptr += 7;                                                                                                                                                   \
+			} else if (number <= 10000000) {                                                                                                                                     \
+				nptr[0] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[1] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[2] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[3] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[4] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[5] = number / base / base % base + '0';                                                                                                                 \
+				nptr[6] = number / base % base + '0';                                                                                                                        \
+				nptr[7] = number % base + '0';                                                                                                                               \
+				nptr += 8;                                                                                                                                                   \
+			} else if (number <= 100000000) {                                                                                                                                    \
+				nptr[0] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[1] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[2] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[3] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[4] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[5] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[6] = number / base / base % base + '0';                                                                                                                 \
+				nptr[7] = number / base % base + '0';                                                                                                                        \
+				nptr[8] = number % base + '0';                                                                                                                               \
+				nptr += 9;                                                                                                                                                   \
+			} else if (number <= 1000000000) {                                                                                                                                   \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[1] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[2] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[3] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[4] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[5] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[6] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[7] = number / base / base % base + '0';                                                                                                                 \
+				nptr[8] = number / base % base + '0';                                                                                                                        \
+				nptr[9] = number % base + '0';                                                                                                                               \
+				nptr += 10;                                                                                                                                                  \
+			} else if (number <= 10000000000) {                                                                                                                                  \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[2] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[3] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[4] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[5] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[6] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[7] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[8] = number / base / base % base + '0';                                                                                                                 \
+				nptr[9] = number / base % base + '0';                                                                                                                        \
+				nptr[10] = number % base + '0';                                                                                                                              \
+				nptr += 11;                                                                                                                                                  \
+			} else if (number <= 100000000000) {                                                                                                                                 \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[3] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[4] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[5] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[6] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[7] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[8] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[9] = number / base / base % base + '0';                                                                                                                 \
+				nptr[10] = number / base % base + '0';                                                                                                                       \
+				nptr[11] = number % base + '0';                                                                                                                              \
+				nptr += 12;                                                                                                                                                  \
+			} else if (number <= 1000000000000) {                                                                                                                                \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[3] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[4] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[5] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[6] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[7] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[8] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[9] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[10] = number / base / base % base + '0';                                                                                                                \
+				nptr[11] = number / base % base + '0';                                                                                                                       \
+				nptr[12] = number % base + '0';                                                                                                                              \
+				nptr += 13;                                                                                                                                                  \
+			} else if (number <= 10000000000000) {                                                                                                                               \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[3] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[4] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[5] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[6] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[7] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[8] = number / base / base / base / base % base + '0';                                                                                                   \
+				nptr[9] = number / base / base / base % base + '0';                                                                                                          \
+				nptr[10] = number / base / base % base + '0';                                                                                                                \
+				nptr[11] = number / base % base + '0';                                                                                                                       \
+				nptr[13] = number % base + '0';                                                                                                                              \
+				nptr += 13;                                                                                                                                                  \
+			} else if (number <= 10000000000000) {                                                                                                                               \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
+				nptr[3] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[4] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[5] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[6] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[7] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[8] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[9] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[10] = number / base / base / base / base % base + '0';                                                                                                  \
+				nptr[11] = number / base / base / base % base + '0';                                                                                                         \
+				nptr[12] = number / base / base % base + '0';                                                                                                                \
+				nptr[13] = number / base % base + '0';                                                                                                                       \
+				nptr[14] = number % base + '0';                                                                                                                              \
+				nptr += 14;                                                                                                                                                  \
+			} else if (number <= 100000000000000) {                                                                                                                              \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
+				nptr[3] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[4] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[5] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[6] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[7] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[8] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[9] = number / base / base / base / base / base % base + '0';                                                                                            \
+				nptr[10] = number / base / base / base / base % base + '0';                                                                                                  \
+				nptr[11] = number / base / base / base % base + '0';                                                                                                         \
+				nptr[12] = number / base / base % base + '0';                                                                                                                \
+				nptr[13] = number / base % base + '0';                                                                                                                       \
+				nptr[14] = number % base + '0';                                                                                                                              \
+				nptr += 15;                                                                                                                                                  \
+			} else if (number <= 1000000000000000) {                                                                                                                             \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                      \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
+				nptr[3] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
+				nptr[4] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[5] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[6] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[7] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[8] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[9] = number / base / base / base / base / base / base % base + '0';                                                                                     \
+				nptr[10] = number / base / base / base / base / base % base + '0';                                                                                           \
+				nptr[11] = number / base / base / base / base % base + '0';                                                                                                  \
+				nptr[12] = number / base / base / base % base + '0';                                                                                                         \
+				nptr[13] = number / base / base % base + '0';                                                                                                                \
+				nptr[14] = number / base % base + '0';                                                                                                                       \
+				nptr[15] = number % base + '0';                                                                                                                              \
+				nptr += 16;                                                                                                                                                  \
+			} else if (number <= 10000000000000000) {                                                                                                                            \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';               \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                      \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
+				nptr[3] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
+				nptr[4] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
+				nptr[5] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[6] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[7] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[8] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[9] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
+				nptr[10] = number / base / base / base / base / base / base % base + '0';                                                                                    \
+				nptr[11] = number / base / base / base / base / base % base + '0';                                                                                           \
+				nptr[12] = number / base / base / base / base % base + '0';                                                                                                  \
+				nptr[13] = number / base / base / base % base + '0';                                                                                                         \
+				nptr[14] = number / base / base % base + '0';                                                                                                                \
+				nptr[15] = number / base % base + '0';                                                                                                                       \
+				nptr[16] = number % base + '0';                                                                                                                              \
+				nptr += 17;                                                                                                                                                  \
+			} else if (number <= 100000000000000000) {                                                                                                                           \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';        \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';               \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                      \
+				nptr[3] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
+				nptr[4] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
+				nptr[5] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
+				nptr[6] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[7] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[8] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[9] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
+				nptr[10] = number / base / base / base / base / base / base / base % base + '0';                                                                             \
+				nptr[11] = number / base / base / base / base / base / base % base + '0';                                                                                    \
+				nptr[12] = number / base / base / base / base / base % base + '0';                                                                                           \
+				nptr[13] = number / base / base / base / base % base + '0';                                                                                                  \
+				nptr[14] = number / base / base / base % base + '0';                                                                                                         \
+				nptr[15] = number / base / base % base + '0';                                                                                                                \
+				nptr[16] = number / base % base + '0';                                                                                                                       \
+				nptr[17] = number % base + '0';                                                                                                                              \
+				nptr += 18;                                                                                                                                                  \
+			} else {                                                                                                                                                             \
+				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0'; \
+				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';        \
+				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';               \
+				nptr[3] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                      \
+				nptr[4] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
+				nptr[5] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
+				nptr[6] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
+				nptr[7] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
+				nptr[8] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
+				nptr[8] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
+				nptr[10] = number / base / base / base / base / base / base / base / base % base + '0';                                                                      \
+				nptr[11] = number / base / base / base / base / base / base / base % base + '0';                                                                             \
+				nptr[12] = number / base / base / base / base / base / base % base + '0';                                                                                    \
+				nptr[13] = number / base / base / base / base / base % base + '0';                                                                                           \
+				nptr[14] = number / base / base / base / base % base + '0';                                                                                                  \
+				nptr[15] = number / base / base / base % base + '0';                                                                                                         \
+				nptr[16] = number / base / base % base + '0';                                                                                                                \
+				nptr[17] = number / base % base + '0';                                                                                                                       \
+				nptr[18] = number % base + '0';                                                                                                                              \
+				nptr += 19;                                                                                                                                                  \
+			}                                                                                                                                                                    \
+			*nptr = '\0';                                                                                                                                                        \
+			return nptr;                                                                                                                                                         \
 		} while (0)
 
 #endif
 
-#define PJSTR_LTOA_UNROLLED(_nptr, _number, _base)           \
-	do {                                                 \
-		if (_number < 0) {                           \
-			_number = -_number;                  \
-			*_nptr++ = '-';                      \
-		}                                            \
-		PJSTR_ULTOA_UNROLLED(_nptr, _number, _base); \
+#define PJSTR_LTOA_UNROLLED(nptr, number, base)           \
+	do {                                              \
+		if (number < 0) {                         \
+			number = -number;                 \
+			*nptr++ = '-';                    \
+		}                                         \
+		PJSTR_ULTOA_UNROLLED(nptr, number, base); \
 	} while (0)
 
-#define PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base)         \
+#define PJSTR_ULLTOA_UNROLLED(nptr, number, base)            \
 	do {                                                 \
 		enum { _len = PJSTR_MAX_ULONG_LONG_DIGITS }; \
 		char _s[_len + 1];                           \
 		_s[_len] = '\0';                             \
 		char *_p = _s + _len - 1;                    \
 		do                                           \
-			*_p-- = _number % _base + '0';       \
-		while (_number /= _base);                    \
+			*_p-- = number % base + '0';         \
+		while (number /= base);                      \
 		while (*++_p)                                \
-			*_nptr++ = *_p;                      \
-		*_nptr = '\0';                               \
-		return _nptr;                                \
+			*nptr++ = *_p;                       \
+		*nptr = '\0';                                \
+		return nptr;                                 \
 	} while (0)
 
-#define PJSTR_LLTOA_UNROLLED(_nptr, _number, _base)           \
-	do {                                                  \
-		if (_number < 0) {                            \
-			_number = -_number;                   \
-			*_nptr++ = '-';                       \
-		}                                             \
-		PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base); \
+#define PJSTR_LLTOA_UNROLLED(nptr, number, base)           \
+	do {                                               \
+		if (number < 0) {                          \
+			number = -number;                  \
+			*nptr++ = '-';                     \
+		}                                          \
+		PJSTR_ULLTOA_UNROLLED(nptr, number, base); \
 	} while (0)
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */

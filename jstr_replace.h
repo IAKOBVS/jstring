@@ -19,26 +19,26 @@ extern "C" {
 extern "C" {
 #endif /* __cpluslus */
 
-#define PJSTR_RMALL_IN_PLACE(_dst, _old, _p, _findlen)  \
-	do {                                            \
-		if (jstr_likely(_dst != _old))          \
-			memmove(_dst, _old, _p - _old); \
-		_dst += _p - _old;                      \
-		_old += _p - _old;                      \
-		_old += _findlen;                       \
-		_p += _findlen;                         \
+#define PJSTR_RMALL_IN_PLACE(dst, old, p, findlen)  \
+	do {                                        \
+		if (jstr_likely(dst != old))        \
+			memmove(dst, old, p - old); \
+		dst += p - old;                     \
+		old += p - old;                     \
+		old += findlen;                     \
+		p += findlen;                       \
 	} while (0)
 
-#define PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen) \
-	do {                                                              \
-		if (jstr_likely(_findlen != _rplclen && _dst != _old))    \
-			memmove(_dst, _old, _p - _old);                   \
-		_dst += _p - _old;                                        \
-		_old += _p - _old;                                        \
-		_old += _findlen;                                         \
-		_p += _findlen;                                           \
-		memcpy(_dst, _rplc, _rplclen);                            \
-		_dst += _rplclen;                                         \
+#define PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc, rplclen, findlen) \
+	do {                                                        \
+		if (jstr_likely(findlen != rplclen && dst != old))  \
+			memmove(dst, old, p - old);                 \
+		dst += p - old;                                     \
+		old += p - old;                                     \
+		old += findlen;                                     \
+		p += findlen;                                       \
+		memcpy(dst, rplc, rplclen);                         \
+		dst += rplclen;                                     \
 	} while (0)
 
 /*
