@@ -19,10 +19,6 @@
 #ifndef PJSTR_LIBC_POINTER_ARITH_H
 #define PJSTR_LIBC_POINTER_ARITH_H 1
 
-#if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
-#	define PJSTR_TYPEOF __typeof__
-#endif /* HAVE_TYPEOF */
-
 #include <stdint.h>
 
 #if 0
