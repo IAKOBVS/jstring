@@ -20,8 +20,9 @@ for file in $(echo *?string-fz* *?string-misc*.h *?string-shift*.h); do
 	s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
 	s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define PJSTR_\1/g;
 	s/PJSTR__/PJSTR_/g;
-	' "$file")" > "$file"
+	' "$file")" > "$file" &
 done
+wait
 # remove duplicate include "jstr_macros.h"
 for file in $(echo *?string-fz*); do
 	# shellcheck disable=SC2005
@@ -45,6 +46,7 @@ for file in $(echo *?string-fz*); do
 		} else {
 			print
 		}
-	}' "$file")" > "$file"
+	}' "$file")" > "$file" &
 done
-rm -rf .-*
+wait
+rm -rfi .-string-*.h
