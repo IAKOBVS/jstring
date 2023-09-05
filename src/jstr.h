@@ -1,13 +1,11 @@
 #ifndef JSTR_DEF_H
 #define JSTR_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+PJSTR_BEGIN_DECLS
 #include <features.h>
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+PJSTR_END_DECLS
 
 #include "jstr_builder.h"
 #include "jstr_ctype.h"

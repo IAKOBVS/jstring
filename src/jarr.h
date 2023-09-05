@@ -1,14 +1,12 @@
 #ifndef JARR_DEF_H
 #define JARR_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+#include "jstr_macros.h"
+
+PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+PJSTR_END_DECLS
 
 #include "jstr_builder.h"
 #include "jstr_config.h"

@@ -1,16 +1,12 @@
 #ifndef JSTR_STD_STRING_DEF_H
 #define JSTR_STD_STRING_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
-
-#include "jstr_macros.h"
+PJSTR_END_DECLS
 
 #include "string-fza.h"
 #include "string-fzb.h"
@@ -21,9 +17,7 @@ extern "C" {
 #include "string-optype.h"
 #include "string-shift.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+PJSTR_BEGIN_DECLS
 
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
@@ -197,8 +191,6 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 #endif
 }
 
-#ifdef __cplusplus
-} /* extern C */
-#endif /* __cpluslus */
+PJSTR_END_DECLS
 
 #endif /* JSTR_STD_STRING_DEF_H */

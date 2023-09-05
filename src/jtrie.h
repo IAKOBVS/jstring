@@ -1,21 +1,16 @@
 #ifndef JSTR_DEF_H
+
 #define JSTR_DEF_H 1
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-#include <stdlib.h>
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
 #include "jstr_macros.h"
+
+PJSTR_BEGIN_DECLS
+#include <stdlib.h>
+PJSTR_END_DECLS
+
 
 #define JTRIE_ASCII_SIZE 256
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 	JTRIE_RET_NOERROR = 0,
@@ -167,8 +162,6 @@ jtrie_match(const jtrie_node_ty *JSTR_RST const _root,
 	return jtrie_starts_with(_root, _word)->EOW;
 }
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+PJSTR_END_DECLS
 
 #endif /* JSTR_DEF_H */

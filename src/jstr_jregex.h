@@ -1,21 +1,18 @@
 #ifndef JREGEX_DEF_H
 #define JREGEX_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+PJSTR_BEGIN_DECLS
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+PJSTR_END_DECLS
 
 #include "jstr_builder.h"
 #include "jstr_config.h"
 #include "jstr_string.h"
-#include "jstr_macros.h"
 #include "jstr_pp_va_args_macros.h"
 #include "jstr_replace.h"
 
@@ -103,9 +100,7 @@ typedef enum {
 #	define JREG_HAVE_ERPAREN 1
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+PJSTR_BEGIN_DECLS
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
@@ -740,9 +735,7 @@ jreg_rplc_now_len(char **JSTR_RST const _s,
 	return jreg_rplc_len(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 }
 
-#ifdef __cplusplus
-} /* extern C */
-#endif /* __cpluslus */
+PJSTR_END_DECLS
 
 #undef PJREG_EXEC
 #undef PJREG_DEB

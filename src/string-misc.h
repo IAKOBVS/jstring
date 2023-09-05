@@ -3,14 +3,10 @@
 
 #include "jstr_macros.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+PJSTR_BEGIN_DECLS
 
 #include "generic-string-misc.h"
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+PJSTR_END_DECLS
 
 #endif /* PJSTR_STRING_MISC_H */

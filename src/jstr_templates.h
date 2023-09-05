@@ -1,23 +1,22 @@
 #ifndef JSTR_TEMPLATES_DEF_H
 #define JSTR_TEMPLATES_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+#include "jstr_macros.h"
+
+PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+PJSTR_END_DECLS
 
 #ifdef __cplusplus
 #	include <utility>
 #endif /* _cpluslus */
 
 #include "jstr_config.h"
-#include "jstr_macros.h"
 #include "jtraits.h"
+
+PJSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
@@ -48,6 +47,8 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 #endif
 	exit(1);
 }
+
+PJSTR_END_DECLS
 
 #define PJSTR_MALLOC_ERR(p, malloc_fail)                         \
 	do {                                                     \

@@ -1,23 +1,18 @@
 #ifndef JSTRIO_DEF_H
 #define JSTRIO_DEF_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+#include "jstr_macros.h"
+
+PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+PJSTR_END_DECLS
 
 #include "jstr_builder.h"
-#include "jstr_macros.h"
 #include "jstr_string.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cpluslus */
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 	JSTRIO_UNKNOWN = 0,
@@ -536,8 +531,6 @@ jstrio_allocexact_file_j(jstr_ty *JSTR_RST const _j,
 	return jstrio_allocexact_file(&_j->data, &_j->size, &_j->cap, _fname, _st);
 }
 
-#ifdef __cplusplus
-}
-#endif /* __cpluslus */
+PJSTR_END_DECLS
 
 #endif /* JSTRIO_DEF_H */
