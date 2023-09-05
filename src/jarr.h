@@ -71,7 +71,7 @@ PJSTR_END_DECLS
 #define jarr_alloc_cat(j, ...)                                                                 \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
-		PJARR_CHECK_VAL(PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
+		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
 		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, PJSTR_PP_NARG(__VA_ARGS__));                 \
 		PJARR_DATA(j) = PJARR_CAST(PJARR_DATA(j), malloc(PJARR_CAP(j)));               \
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
@@ -84,7 +84,7 @@ PJSTR_END_DECLS
 #define jarr_cat(j, ...)                                                                       \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
-		PJARR_CHECK_VAL(PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
+		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
 		if (jstr_unlikely(PJARR_CAP(j) <= (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)))) \
 			PJARR_REALLOC(j, PJARR_CAP(j), break);                                 \
 		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);             \
@@ -113,7 +113,7 @@ PJSTR_END_DECLS
 #define jarr_push_back(j, value)                                                               \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
-		PJARR_CHECK_VAL(value);                                                        \
+		PJARR_CHECK_VAL(j, value);                                                        \
 		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                                \
 			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH, break);              \
 		PJARR_DATA(j)                                                                  \
@@ -124,7 +124,7 @@ PJSTR_END_DECLS
 #define jarr_push_front(j, value)                                                              \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
-		PJARR_CHECK_VAL(value);                                                        \
+		PJARR_CHECK_VAL(j, value);                                                        \
 		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                                \
 			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH, break);              \
 		PJARR_MEMMOVE(PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++);                \
