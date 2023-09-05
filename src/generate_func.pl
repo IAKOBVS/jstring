@@ -62,7 +62,7 @@ sub usage
 
 sub script_needed
 {
-	if (system("test $G_FNAME -nt $G_DIR_C/$G_FNAME || test $0 -nt $G_DIR_C")) {
+	if (system("test $G_FNAME -nt $G_DIR_C/$G_FNAME")) {
 		exit;
 	}
 }
