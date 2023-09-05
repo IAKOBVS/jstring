@@ -54,7 +54,7 @@ PJSTR_END_DECLS
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                               \
 	} while (0)
 
-/* Allocate PTR. */
+/* Allocate PTR and pushing VAL. */
 #define jarr_alloc_push(j, value)                                                              \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
