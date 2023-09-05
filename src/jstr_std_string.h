@@ -32,7 +32,7 @@ jstr_strnlen(const char *JSTR_RST const _s,
 	return strnlen(_s, _maxlen);
 #else
 	const char *p = (char *)memchr(_s, '\0', _maxlen);
-	return p ? p - _s : _maxlen;
+	return p ? (size_t)(p - _s) : _maxlen;
 #endif
 }
 
