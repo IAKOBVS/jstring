@@ -5,7 +5,7 @@
 - works with any C string: functions will take a pointer to string, size, and capacity.
 - in-place string replacement
 - in-place regex string replacement
-- reverse standard string functions: strrstr, strrspn, etc.
+- reverse standard string functions: strrstr, strrspn, strrcspn, etc.
 
 ## Installation:
 
