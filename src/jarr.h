@@ -43,7 +43,7 @@ PJSTR_END_DECLS
 
 #undef PJARR_NULLIFY
 
-/* Alloappendmoree PTR. */
+/* Allocate PTR. */
 #define jarr_alloc(j, new_cap)                                                                 \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
@@ -54,7 +54,7 @@ PJSTR_END_DECLS
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                               \
 	} while (0)
 
-/* Alloappendmoree PTR and pushing VAL. */
+/* Allocate PTR and pushing VAL. */
 #define jarr_alloc_push(j, value)                                                              \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
@@ -67,7 +67,7 @@ PJSTR_END_DECLS
 		[0] = (value);                                                                 \
 	} while (0)
 
-/* Alloappendmoree elements to PTR. */
+/* Allocate and pushes to PTR. */
 #define jarr_alloc_appendmore(j, ...)                                                                 \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
