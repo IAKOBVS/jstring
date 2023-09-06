@@ -154,12 +154,12 @@ sub gen_nonmem_funcs
 			if ($G_LEN) {
 				if (/(\w*)$G_LEN_PTN/) {
 					my $var = $1;
-					$decl =~ s/,[_A-Za-z0-9]*$G_LEN_PTN//o;
+					$decl =~ s/,[ \t\n_0-9A-Za-z]*$G_LEN_PTN//o;
 					$_ = "strlen($var)";
 				}
 			} else {
 				if (!$size_ptr_var && /\w*$G_SIZE_PTN/) {
-					$decl =~ s/,[_A-Za-z0-9]*$G_SIZE_PTN//o;
+					$decl =~ s/,[ \t\n_0-9A-Za-z]*$G_SIZE_PTN//o;
 					$_ = "strlen($new_args[0])";
 				}
 			}
