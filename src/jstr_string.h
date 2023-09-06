@@ -492,14 +492,21 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 #endif
 static char *
-jstr_strcasestr_len(const char *JSTR_RST const _hs,
-		    const size_t _hslen,
+jstr_strcasestr_len(const char *JSTR_RST _hs,
+		    size_t _hslen,
 		    const char *JSTR_RST const _ne,
 		    const size_t _nelen) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 	return (char *)strcasestr(_hs, _ne);
 #else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
+	if ((unsigned char)(_nelen - 1) < 4) {
+		const char *const _start = _hs;
+		_hs = (char *)memchr(_hs, *_ne, _hslen);
+		if (jstr_unlikely(_hs == NULL))
+			return NULL;
+		_hslen -= _hs - _start;
+	}
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
@@ -556,9 +563,9 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 		const char _a[] = { (char)jstr_tolower_ascii(*_ne), (char)jstr_toupper_ascii(*_ne), '\0' };
 		_hs = strpbrk(_hs, _a);
 	} else {
-		_hs = strchr(_hs, (int)*_ne);
+		_hs = strchr(_hs, *_ne);
 	}
-	if (_hs == NULL)
+	if (jstr_unlikely(_hs == NULL))
 		return NULL;
 	if (_ne[1] == '\0')
 		return (char *)_hs;

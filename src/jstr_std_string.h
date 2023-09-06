@@ -75,39 +75,14 @@ jstr_stpcpy(char *JSTR_RST _dst,
 #if JSTR_HAVE_STPCPY
 	return stpcpy(_dst, _src);
 #else
-#	if 0 && JSTR_HAVE_ATTR_MAY_ALIAS
-	size_t _len = (-(uintptr_t)_dst) % sizeof(pjstr_op_ty);
-	for (; _len--; ++_dst)
-		if (jstr_unlikely((*_dst++ = *_src++) == '\0'))
-			return _dst - 1;
-	if ((uintptr_t)_src % sizeof(pjstr_op_ty)) {
-		_len = strlen(_src);
-		memcpy(_dst, _src, _len);
-		return _dst + _len;
-	}
-	pjstr_op_ty *_dw = (pjstr_op_ty *)_dst;
-	pjstr_op_ty *_sw = (pjstr_op_ty *)_src;
-	while (!pjstr_has_zero(*_sw))
-		*_dw++ = *_sw++;
-	_len = pjstr_index_first_zero(*_sw);
-	_dst = (char *)_dw;
-	_src = (char *)_sw;
-	while ((*_dst++ = *_src++))
-		;
-	return _dst - 1;
-#	else
-	/* It seems that memcpy() + strlen() is still faster. */
 	const size_t _len = strlen(_src);
 	memcpy(_dst, _src, _len);
 	*(_dst + _len) = '\0';
 	return _dst + _len;
-#	endif
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
-/* Copy no more than N bytes of SRC to DEST, stopping when C is found.
-   Return the position in DEST one byte past where C was copied, or
-   NULL if C was not found in the first N bytes of SRC.  */
+/* Copy until either N is 0 or C is found */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
 JSTR_INLINE
@@ -173,21 +148,8 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 #if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(_s, _c);
 #else
-#	if 0 && JSTR_HAVE_ATTR_MAY_ALIAS
-	pjstr_op_ty *_sw = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
-	pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	pjstr_op_ty _mask = pjstr_shift_find(pjstr_find_zero_eq_all(*_sw, _cc), (uintptr_t)_s);
-	if (_mask)
-		return (char *)_sw + pjstr_index_first(_mask);
-	while ((!pjstr_has_zero_eq(*++_sw, _cc)))
-		;
-	return (char *)(_sw - 1) + pjstr_index_first_zero_eq(*(_sw - 1), _cc);
-#	else
-	/* strchr() + strlen() is only slightly slower when
-	   C is not in S but significantly faster otherwise. */
 	const char *const _p = strchr(_s, _c);
 	return _p ? (char *)_p : (char *)_s + strlen(_s);
-#	endif
 #endif
 }
 
