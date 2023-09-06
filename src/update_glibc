@@ -1,5 +1,5 @@
 #!/bin/sh
-./clone_glibc
+./clone_glibc || exit
 find glibc -type f -name 'string-*fz*' -o -name 'string-*shift*' -o -name 'string-*misc*' |
 	sed 's/\(.*\)/\1 \1/; s/ .*sysdeps\/\(.*\)/ \1/; s/ \([^/]*\)\// \1-/ ;s/ \([^/]*\)\// \1-/' |
 	while read -r lines; do
