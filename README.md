@@ -20,7 +20,7 @@ and
 ## Function affixes: 
 
 - \*\_len(): takes the length of the string
-- \*\_p(): returns the new pointer to the end of the string
+- \*\_p(): returns a pointer to the end of the string
 - \*\_f(): assumes that there be enough space in the string: it will not grow it with realloc
 - \*\_now(): compiles regular expression now
 - P*() or p*(): private functions used internally
