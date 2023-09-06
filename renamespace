@@ -3,13 +3,13 @@ if [ -z "$1" ]; then
 	echo "Usage: ./renamespace <new_namespace>"
 	exit
 fi
-NEW_DIR="../$1"
+NEW_DIR="../jstr_$1"
 mkdir "$NEW_DIR"
 for file in $(echo jstr/*.h); do
 	# shellcheck disable=SC2005
 	echo "$(sed " 
 	s/\([^<\"_A-Za-z0-9]\)jstr_\([^t][^y]\)/\1$1_\2/g;
 	s/^jstr_\([^t][^y]\)/$1_\1/g;
-	" "$file")" > "$NEW_DIR/${file#*/*/}" &
+	" "$file")" > "$NEW_DIR/${file#*/}" &
 done
 wait
