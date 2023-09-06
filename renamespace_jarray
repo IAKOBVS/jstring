@@ -1,0 +1,13 @@
+#!/bin/sh
+if [ -z "$2" ]; then
+	echo "Usage: ./renamespace_jarray <path_to_lib> <new_namespace>"
+	exit
+fi
+for file in $(echo "$1"/*.h); do
+	# shellcheck disable=SC2005
+	echo "$(sed " 
+	s/\([^<\"_A-Za-z0-9]\)jarr_\([^t][^y]\)/\1$2_\2/g;
+	s/^jarr_\([^t][^y]\)/$2_\1/g;
+	" "$file")" > "$file"
+done
+wait
