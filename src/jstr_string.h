@@ -173,7 +173,7 @@ JSTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static void *
-jstr_lenrchr(const void *JSTR_RST _s,
+jstr_memrchr(const void *JSTR_RST _s,
 	     const int _c,
 	     const size_t _n) JSTR_NOEXCEPT
 {
@@ -249,7 +249,7 @@ jstr_strrstr_len(const void *JSTR_RST const _hs,
 	case 0:
 		return (void *)((unsigned char *)_hs + _hslen);
 	case 1:
-		return (void *)jstr_lenrchr(_hs, *(char *)_ne, _hslen);
+		return (void *)jstr_memrchr(_hs, *(char *)_ne, _hslen);
 	case 2: {
 		const unsigned char *const _start = (unsigned char *)_hs - 1;
 		const unsigned char *_h = (unsigned char *)_hs + _hslen - 1;
@@ -605,7 +605,7 @@ jstr_strrcspn_len(const char *JSTR_RST const _s,
 	if (jstr_unlikely(_reject[0] == '\0'))
 		return 0;
 	if (jstr_unlikely(_reject[1] == '\0')) {
-		const char *const _p = (char *)jstr_lenrchr(_s, *_reject, _sz);
+		const char *const _p = (char *)jstr_memrchr(_s, *_reject, _sz);
 		return _p ? (size_t)((_s + _sz - 1) - _p) : _sz;
 	}
 	if (jstr_unlikely(_sz == 0))
