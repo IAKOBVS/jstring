@@ -1,4 +1,4 @@
-# Jstring
+# jstring
 
 ## Features:
 
