@@ -113,11 +113,11 @@ sub gen_nonmem_funcs
 		if (!$decl && !$FUNC_NAME && !$params) {
 			goto NEXT;
 		}
-		if ($FUNC_NAME !~ /$G_LEN_FUNC_SUFFIX(?:_|$)/) {
+		if ($FUNC_NAME !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FUNC_SUFFIX(?:_|$)/o) {
 			goto NEXT;
 		}
 		my $tmp = $FUNC_NAME;
-		$tmp =~ s/$G_LEN_FUNC_SUFFIX//;
+		$tmp =~ s/$G_LEN_FUNC_SUFFIX//o;
 		if ($g_in_h =~ /$tmp\(/) {
 			goto NEXT;
 		}
@@ -154,12 +154,12 @@ sub gen_nonmem_funcs
 			if ($G_LEN) {
 				if (/(\w*)$G_LEN_PTN/) {
 					my $var = $1;
-					$decl =~ s/,[^,]*$G_LEN_PTN//o;
+					$decl =~ s/,[_A-Za-z0-9]*$G_LEN_PTN//o;
 					$_ = "strlen($var)";
 				}
 			} else {
 				if (!$size_ptr_var && /\w*$G_SIZE_PTN/) {
-					$decl =~ s/,[^,]*$G_SIZE_PTN//o;
+					$decl =~ s/,[_A-Za-z0-9]*$G_SIZE_PTN//o;
 					$_ = "strlen($new_args[0])";
 				}
 			}

@@ -21,7 +21,7 @@
 
 #include "jstr_macros.h"
 
-#ifdef __riscv_zbb
+#if defined __riscv_zbb || defined __riscv_xtheadbb
 #include "string-fzi.h"
 #else
 /* Without bitmap pjstr_clz/pjstr_ctz extensions, it is faster to direct test the bits

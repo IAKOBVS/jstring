@@ -4,4 +4,5 @@ for file in $(echo *.h); do
 	perl generate_func.pl "$file" &
 done
 wait
+rm -r ../jstr
 mv jstr ..
