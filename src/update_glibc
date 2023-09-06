@@ -3,6 +3,7 @@
 find glibc -type f -name 'string-*fz*' -o -name 'string-*shift*' -o -name 'string-*misc*' |
 	sed 's/\(.*\)/\1 \1/; s/ .*sysdeps\/\(.*\)/ \1/; s/ \([^/]*\)\// \1-/ ;s/ \([^/]*\)\// \1-/' |
 	while read -r lines; do
+		# shellcheck disable=SC2086
 		cp -f $lines &
 	done &
 	wait
