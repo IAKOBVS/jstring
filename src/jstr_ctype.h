@@ -222,7 +222,7 @@ jstr_isdigit_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 #	pragma clang diagnostic ignored "-Wunknown-pragmas"
 #	pragma clang diagnostic push
 #elif defined __GNUC__
-#	pragma GCC diagnostic ignored "-Wanalyzer-allocation-size"
+#	pragma GCC diagnostic ignored "-Wanalyzer-alloappendmoreion-size"
 #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #	pragma GCC diagnostic push
 #endif

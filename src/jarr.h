@@ -43,7 +43,7 @@ PJSTR_END_DECLS
 
 #undef PJARR_NULLIFY
 
-/* Allocate PTR. */
+/* Alloappendmoree PTR. */
 #define jarr_alloc(j, new_cap)                                                                 \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
@@ -54,7 +54,7 @@ PJSTR_END_DECLS
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                               \
 	} while (0)
 
-/* Allocate PTR and pushing VAL. */
+/* Alloappendmoree PTR and pushing VAL. */
 #define jarr_alloc_push(j, value)                                                              \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
@@ -67,8 +67,8 @@ PJSTR_END_DECLS
 		[0] = (value);                                                                 \
 	} while (0)
 
-/* Allocate elements to PTR. */
-#define jarr_alloc_cat(j, ...)                                                                 \
+/* Alloappendmoree elements to PTR. */
+#define jarr_alloc_appendmore(j, ...)                                                                 \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
 		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
@@ -81,7 +81,7 @@ PJSTR_END_DECLS
 	} while (0)
 
 /* Add elements to end of PTR. */
-#define jarr_cat(j, ...)                                                                       \
+#define jarr_appendmore(j, ...)                                                                       \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
 		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \

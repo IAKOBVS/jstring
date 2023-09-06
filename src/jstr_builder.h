@@ -260,8 +260,28 @@ jstr_append_len(char **JSTR_RST const _s,
 	if (*_cap < *_sz + _srclen)
 		PJSTR_REALLOC(*_s, *_cap, *_sz + _srclen, return);
 	memcpy(*_s + *_sz, _src, _srclen);
-	*(*_s + *_sz + _srclen) = '\0';
-	*_sz += _srclen;
+	*(*_s + (*_sz += _srclen)) = '\0';
+}
+
+/*
+   Assign SRC to DST.
+   S is NUL terminated.
+*/
+JSTR_INLINE
+JSTR_NONNULL_ALL
+JSTR_NOTHROW
+static void
+jstr_assign_len(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
+		const char *JSTR_RST const _src,
+		const size_t _srclen) JSTR_NOEXCEPT
+{
+	if (*_cap < _srclen)
+		PJSTR_REALLOC(*_s, *_cap, _srclen * JSTR_ALLOC_MULTIPLIER, return);
+	memcpy(*_s, _src, _srclen);
+	*(*_s + _srclen) = '\0';
+	*_sz = _srclen;
 }
 
 /*
@@ -362,11 +382,11 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_alloc_cat_j(jstr_ty *JSTR_RST const _j,
-		 Str &&arg,
-		 StrArgs &&...args) JSTR_NOEXCEPT
+jstr_alloc_appendmore_j(jstr_ty *JSTR_RST const _j,
+			Str &&arg,
+			StrArgs &&...args) JSTR_NOEXCEPT
 {
-	jstr_alloc_cat(&_j->data, &_j->size, &_j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr_alloc_appendmore(&_j->data, &_j->size, &_j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 /*
@@ -377,16 +397,16 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_cat_j(jstr_ty *JSTR_RST const _j,
-	   Str &&arg,
-	   StrArgs &&...args) JSTR_NOEXCEPT
+jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
+		  Str &&arg,
+		  StrArgs &&...args) JSTR_NOEXCEPT
 {
-	jstr_cat(&_j->data, &_j->size, &_j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr_appendmore(&_j->data, &_j->size, &_j->cap, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 #else
 
-#	define jstr_cat_f(_s, _sz, ...)                                                  \
+#	define jstr_appendmore_f(_s, _sz, ...)                                           \
 		do {                                                                      \
 			JSTR_ASSERT_IS_STR(*(_s));                                        \
 			JSTR_ASSERT_IS_SIZE(*(_sz));                                      \
@@ -398,7 +418,7 @@ jstr_cat_j(jstr_ty *JSTR_RST const _j,
 			*p = '\0';                                                        \
 		} while (0)
 
-#	define jstr_cat(_s, _sz, _cap, ...)                                                                 \
+#	define jstr_appendmore(_s, _sz, _cap, ...)                                                          \
 		do {                                                                                         \
 			JSTR_ASSERT_IS_STR(*(_s));                                                           \
 			JSTR_ASSERT_IS_SIZE(*(_sz));                                                         \
@@ -414,7 +434,7 @@ jstr_cat_j(jstr_ty *JSTR_RST const _j,
 			*(_sz) = newsz;                                                                      \
 		} while (0)
 
-#	define jstr_alloc_cat(_s, _sz, _cap, ...)                                       \
+#	define jstr_alloc_appendmore(_s, _sz, _cap, ...)                                \
 		do {                                                                     \
 			JSTR_ASSERT_IS_STR(*(_s));                                       \
 			JSTR_ASSERT_IS_SIZE(*(_sz));                                     \
@@ -430,8 +450,8 @@ jstr_cat_j(jstr_ty *JSTR_RST const _j,
 			*p = '\0';                                                       \
 		} while (0)
 
-#	define jstr_cat_j(_j, ...)	  jstr_cat(&((_j)->data), &((_j)->size), &((_j)->_cap), __VA_ARGS__)
-#	define jstr_alloc_cat_j(_j, ...) jstr_alloc_cat(&((_j)->data), &((_j)->size), &((_j)->_cap), __VA_ARGS__)
+#	define jstr_appendmore_j(_j, ...)	 jstr_appendmore(&((_j)->data), &((_j)->size), &((_j)->_cap), __VA_ARGS__)
+#	define jstr_alloc_appendmore_j(_j, ...) jstr_alloc_appendmore(&((_j)->data), &((_j)->size), &((_j)->_cap), __VA_ARGS__)
 
 #endif /* __cplusplus */
 

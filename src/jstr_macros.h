@@ -149,8 +149,8 @@
 #	endif /* JSTR_NONNULL */
 #	if __has_attribute(malloc)
 #		define JSTR_MALLOC				      __attribute__((malloc))
-#		define JSTR_MALLOC_DEALLOC(deallocator)	      __attribute__((malloc, deallocator))
-#		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
+#		define JSTR_MALLOC_DEALLOC(dealloappendmoreor)	      __attribute__((malloc, dealloappendmoreor))
+#		define JSTR_MALLOC_DEALLOC_PTR(dealloappendmoreor, ptr_idx) __attribute__((malloc, dealloappendmoreor, ptr_idx))
 #	endif /* JSTR_MALLOC */
 #	if __has_attribute(returns_nonnull)
 #		define JSTR_RETURNS_NONNULL __attribute__((returns_nonnull))
@@ -167,8 +167,8 @@
 #	else
 #		define JSTR_CONSTANT_P(p) 0
 #	endif /* __has_builtin(__builtin_constant_p) */
-#	if __has_builtin(deprecated)
-#		define JSTR_DEPRECATED(msg, replacement) __attribute__((deprecated(msg, replacement)))
+#	if __has_builtin(depreappendmoreed)
+#		define JSTR_DEPRECATED(msg, replacement) __attribute__((depreappendmoreed(msg, replacement)))
 #	else
 #		define JSTR_DEPRECATED(msg, replacement)
 #	endif /* JSTR_DEPRECATED */
@@ -199,8 +199,8 @@
 #	define JSTR_NONNULL_ALL
 #	define JSTR_NONNULL(args)
 #	define JSTR_MALLOC
-#	define JSTR_MALLOC_DEALLOC(deallocator)
-#	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
+#	define JSTR_MALLOC_DEALLOC(dealloappendmoreor)
+#	define JSTR_MALLOC_DEALLOC_PTR(dealloappendmoreor, ptr_idx)
 #	define JSTR_RETURNS_NONNULL
 #	define JSTR_CONSTANT_P(p) 0
 #	define JSTR_WARN_UNUSED
@@ -220,8 +220,8 @@
 #	define JSTR_NONNULL_ALL
 #	define JSTR_NONNULL(args)
 #	define JSTR_MALLOC
-#	define JSTR_MALLOC_DEALLOC(deallocator)
-#	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
+#	define JSTR_MALLOC_DEALLOC(dealloappendmoreor)
+#	define JSTR_MALLOC_DEALLOC_PTR(dealloappendmoreor, ptr_idx)
 #	define JSTR_CONSTANT_P(p) 0
 #	define JSTR_WARN_UNUSED
 #	define JSTR_DEPRECATED(msg, replacement)

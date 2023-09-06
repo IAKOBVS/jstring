@@ -139,7 +139,7 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
-jstr_stpcat(char *JSTR_RST _dst,
+jstr_stpappendmore(char *JSTR_RST _dst,
 	    const char *JSTR_RST _src) JSTR_NOEXCEPT
 {
 	_dst += strlen(_dst);

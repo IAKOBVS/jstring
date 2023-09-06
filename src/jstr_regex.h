@@ -709,7 +709,7 @@ jstr_reg_rplc_len(char **JSTR_RST const _s,
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR)
 	    || jstr_unlikely(_rm.rm_eo == _rm.rm_so))
 		return _ret;
-	if (jstr_unlikely(!pjstr_rplcat_len(_s, _sz, _cap, _rm.rm_so, _rplc, _rplclen, _rm.rm_eo - _rm.rm_so)))
+	if (jstr_unlikely(!pjstr_rplappendmore_len(_s, _sz, _cap, _rm.rm_so, _rplc, _rplclen, _rm.rm_eo - _rm.rm_so)))
 		return JSTR_REG_RET_MALLOC_ERROR;
 	return _ret;
 }
