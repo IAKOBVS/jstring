@@ -311,7 +311,7 @@ static jstr_io_ext_ty
 jstr_io_ext_type_len(const char *JSTR_RST _filename,
 		    const size_t _sz) JSTR_NOEXCEPT
 {
-	_filename = (char *)jstr_lenrchr(_filename, '.', _sz);
+	_filename = (char *)jstr_memrchr(_filename, '.', _sz);
 	if (_filename == NULL)
 		return JSTR_IO_UNKNOWN;
 	return pjstr_io_ext_type(_filename + 1);
