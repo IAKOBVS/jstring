@@ -34,5 +34,5 @@ and
 - fmt: formats code
 - renamespace: rename the namespace;<br>
 e.g., ./renamespace j: jstr\_\*() -> j\_\*().<br>
-The result will be placed in another directory called jstr\__namespace_
-- renamespace\_jarray: the same as renamespace but for jarray.h
+The result will be placed in another directory called jstr\_\<name\_of\_namespace\>
+- renamespace\_jarray: the same as renamespace but for jarray.h and is applied in-place to the specified directory
