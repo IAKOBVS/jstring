@@ -570,9 +570,8 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 	} else {
 		_hs = strchr(_hs, *_ne);
 	}
-	if (jstr_unlikely(_hs == NULL))
-		return NULL;
-	if (_ne[1] == '\0')
+	if (jstr_unlikely(_hs == NULL)
+	    || jstr_unlikely(_ne[1] == '\0'))
 		return (char *)_hs;
 	_alpha1 += jstr_isalpha(_ne[1]);
 	if (_ne[2] == '\0') {
