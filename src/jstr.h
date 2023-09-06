@@ -4,8 +4,8 @@
 #include "jstr_macros.h"
 #include "jstr_builder.h"
 #include "jstr_ctype.h"
-#include "jstr_jregex.h"
-#include "jstr_jstrio.h"
+#include "jstr_regex.h"
+#include "jstr_io.h"
 #include "jstr_replace.h"
 #include "jstr_string.h"
 
