@@ -169,7 +169,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_allocexact_append_len(char **JSTR_RST const _s,
+jstr_alloc_assign_len(char **JSTR_RST const _s,
 			   size_t *JSTR_RST const _sz,
 			   size_t *JSTR_RST const _cap,
 			   const char *JSTR_RST const _src,
@@ -187,7 +187,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_alloc_append_len(char **JSTR_RST const _s,
+jstr_alloc_assign_len(char **JSTR_RST const _s,
 		      size_t *JSTR_RST const _sz,
 		      size_t *JSTR_RST const _cap,
 		      const char *JSTR_RST const _src,
@@ -203,7 +203,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_allocmore_append_len(char **JSTR_RST const _s,
+jstr_alloc_assign_len(char **JSTR_RST const _s,
 			  size_t *JSTR_RST const _sz,
 			  size_t *JSTR_RST const _cap,
 			  const char *JSTR_RST const _src,
