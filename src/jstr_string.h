@@ -502,7 +502,12 @@ jstr_strcasestr_len(const char *JSTR_RST _hs,
 #else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
 	if ((unsigned char)(_nelen - 1) < 4) {
 		const char *const _start = _hs;
-		_hs = (char *)memchr(_hs, *_ne, _hslen);
+		if (jstr_isalpha(*_ne)) {
+			const char _a[] = { (char)jstr_tolower_ascii(*_ne), (char)jstr_toupper_ascii(*_ne), '\0' };
+			_hs = strpbrk(_hs, _a);
+		} else {
+			_hs = (char *)memchr(_hs, *_ne, _hslen);
+		}
 		if (jstr_unlikely(_hs == NULL))
 			return NULL;
 		_hslen -= _hs - _start;
