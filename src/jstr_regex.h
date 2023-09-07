@@ -894,6 +894,27 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 #	pragma clang diagnostic pop
 #endif
 
+JSTR_FUNC
+static jstr_reg_errcode_ty
+jstr_reg_rplc_len_bref_now(char **JSTR_RST const _s,
+		       size_t *JSTR_RST const _sz,
+		       size_t *JSTR_RST const _cap,
+		       const char *JSTR_RST const _ptn,
+		       const char *JSTR_RST const _rplc,
+		       size_t _rplclen,
+		       regex_t *JSTR_RST const _preg,
+		       const int _cflags,
+		       const int _eflags,
+		       const size_t _nmatch) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*_ptn == '\0'))
+		return JSTR_REG_RET_NOERROR;
+	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
+	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
+		return _ret;
+	return jstr_reg_rplc_len_bref(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags, _nmatch);
+}
+
 PJSTR_END_DECLS
 
 #undef PJSTR_REG_EXEC
