@@ -132,7 +132,10 @@ PJSTR_END_DECLS
 		[0] = (value);                                                                 \
 	} while (0)
 
+#define jarr_at(j, index) \
+	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : (fprintf(stderr, "%s:%d:%s\n", __FILE__, __LINE__, __func__), exit(1)))
+
 #define jarr_foreach(j, it) \
-	for (size_t it = 0, _max_elem_##it = (j)->size; it < _max_elem_##it; ++it)
+	for (size_t it = 0, _max_elem_##it = (j).size; it < _max_elem_##it; ++it)
 
 #endif /* JARR_DEF_H */
