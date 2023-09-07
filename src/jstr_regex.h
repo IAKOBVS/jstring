@@ -756,7 +756,7 @@ jstr_reg_rplc_now_len(char **JSTR_RST const _s,
 #	pragma GCC diagnostic push
 #endif
 
-#define JSTR_1TO9(c) (((c) > '0') & ((c) <= '9'))
+#define JSTR_1TO9(c) (((c) > '0') & ((c) < '9' + 1))
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
