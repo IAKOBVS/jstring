@@ -801,8 +801,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		_is_mmap = PJSTR_IS_MMAP(*_cap);
 		if (_is_mmap) {
 			_rplcbuf = (unsigned char *)malloc(_rplcbuflen);
-			if (jstr_unlikely(_rplcbuf == NULL))
-				return JSTR_REG_RET_MALLOC_ERROR;
+			PJSTR_MALLOC_ERR(_rplcbuf, return JSTR_REG_RET_MALLOC_ERROR);
 		} else
 #endif
 		{
@@ -811,8 +810,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 				_rplcbuf = *(unsigned char **)_s;
 				PJSTR_GROW(*_cap, *_sz + _rplcbuflen);
 				*_s = (char *)malloc(*_cap);
-				if (jstr_unlikely(*_s == NULL))
-					return JSTR_REG_RET_MALLOC_ERROR;
+				PJSTR_MALLOC_ERR(*_s, return JSTR_REG_RET_MALLOC_ERROR);
 				unsigned char *_dst = *(unsigned char **)_s;
 				const unsigned char *_src = (unsigned char *)_rplcbuf;
 				const unsigned char *const _endsrc = (unsigned char *)_rplcbuf + *_sz;
@@ -830,8 +828,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 				*_sz = _dst - *(unsigned char **)_s;
 			} else {
 				_rplcbuf = (unsigned char *)malloc(_rplcbuflen);
-				if (jstr_unlikely(_rplcbuf == NULL))
-					return JSTR_REG_RET_MALLOC_ERROR;
+				PJSTR_MALLOC_ERR(_rplcbuf, return JSTR_REG_RET_MALLOC_ERROR);
 			}
 		}
 		_rplcp = _rplcbuf;
