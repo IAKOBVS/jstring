@@ -57,7 +57,7 @@ jstr_strncasecmp(const char *JSTR_RST _s1,
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
-	while (!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
+	while (!(ret = jstr_tolower(*_p1) - jstr_tolower(*_p2++))
 	       && *_p1++
 	       && _n--)
 		;
@@ -85,10 +85,10 @@ jstr_strcasecmp_len(const char *JSTR_RST const _s1,
 #else
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
-	while (!(jstr_tolower_ascii(*_p1++) - jstr_tolower_ascii(*_p2++))
+	while (!(jstr_tolower(*_p1++) - jstr_tolower(*_p2++))
 	       && _n--)
 		;
-	return _n ? jstr_tolower_ascii(*(_p1 - 1)) - jstr_tolower_ascii(*(_p2 - 1)) : 0;
+	return _n ? jstr_tolower(*(_p1 - 1)) - jstr_tolower(*(_p2 - 1)) : 0;
 #endif /* HAVE_STRNCASECMP */
 }
 
@@ -113,7 +113,7 @@ jstr_strcasecmp(const char *JSTR_RST _s1,
 	const unsigned char *_p1 = (unsigned char *)_s1;
 	const unsigned char *_p2 = (unsigned char *)_s2;
 	int ret;
-	while (!(ret = jstr_tolower_ascii(*_p1) - jstr_tolower_ascii(*_p2++))
+	while (!(ret = jstr_tolower(*_p1) - jstr_tolower(*_p2++))
 	       && *_p1++)
 		;
 	return ret;
@@ -306,7 +306,7 @@ pjstr_strcasestr_len_bmh(const char *JSTR_RST const _hs,
 			 const char *JSTR_RST const _ne,
 			 const size_t _nelen) JSTR_NOEXCEPT
 {
-#define HL(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
+#define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                                 \
 	do {                                                                                               \
 		table_type _shift[256];                                                                    \
@@ -355,7 +355,7 @@ static char *
 pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 		     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
 {
-#define PJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower_ascii((p)[0])) - ((size_t)jstr_tolower_ascii((p)[-1]) << 3)) % 256)
+#define PJSTR_HASH2_LOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                                 \
 	do {                                                                                               \
 		table_type _shift[256];                                                                    \
@@ -421,7 +421,7 @@ pstrcasechr_len(const char *JSTR_RST _s,
 {
 	if (jstr_unlikely(!jstr_isalpha(_c)))
 		return (char *)memchr(_s, _c, _n);
-	const char _acc[] = { (char)jstr_tolower_ascii(_c), (char)jstr_toupper_ascii(_c), '\0' };
+	const char _acc[] = { (char)jstr_tolower(_c), (char)jstr_toupper(_c), '\0' };
 	return (char *)strpbrk(_s, _acc);
 }
 
@@ -433,11 +433,11 @@ pstrcasechr(const char *JSTR_RST _s,
 {
 	if (jstr_unlikely(!jstr_isalpha(_c)))
 		return (char *)strchr(_s, _c);
-	const char _acc[] = { (char)jstr_tolower_ascii(_c), (char)jstr_toupper_ascii(_c), '\0' };
+	const char _acc[] = { (char)jstr_tolower(_c), (char)jstr_toupper(_c), '\0' };
 	return (char *)strpbrk(_s, _acc);
 }
 
-#define L(c) jstr_tolower_ascii(c)
+#define L(c) jstr_tolower(c)
 
 JSTR_INLINE
 JSTR_FUNC_PURE
@@ -503,7 +503,7 @@ jstr_strcasestr_len(const char *JSTR_RST _hs,
 	if ((unsigned char)(_nelen - 1) < 4) {
 		const char *const _start = _hs;
 		if (jstr_isalpha(*_ne)) {
-			const char _a[] = { (char)jstr_tolower_ascii(*_ne), (char)jstr_toupper_ascii(*_ne), '\0' };
+			const char _a[] = { (char)jstr_tolower(*_ne), (char)jstr_toupper(*_ne), '\0' };
 			_hs = strpbrk(_hs, _a);
 		} else {
 			_hs = (char *)memchr(_hs, *_ne, _hslen);
@@ -565,7 +565,7 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 		return (char *)_hs;
 	int _alpha1 = jstr_isalpha(*_ne);
 	if (_alpha1) {
-		const char _a[] = { (char)jstr_tolower_ascii(*_ne), (char)jstr_toupper_ascii(*_ne), '\0' };
+		const char _a[] = { (char)jstr_tolower(*_ne), (char)jstr_toupper(*_ne), '\0' };
 		_hs = strpbrk(_hs, _a);
 	} else {
 		_hs = strchr(_hs, *_ne);

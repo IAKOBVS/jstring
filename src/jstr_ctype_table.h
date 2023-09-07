@@ -180,7 +180,7 @@ static const uint16_t pjstr_table_ctype[256] = {
 };
 
 JSTR_MAYBE_UNUSED
-static const unsigned char pjstr_table_tolower_ascii[256] = {
+static const unsigned char pjstr_table_tolower[256] = {
 	0,
 	1,
 	2,
@@ -441,7 +441,7 @@ static const unsigned char pjstr_table_tolower_ascii[256] = {
 };
 
 JSTR_MAYBE_UNUSED
-static const unsigned char pjstr_table_toupper_ascii[256] = {
+static const unsigned char pjstr_table_toupper[256] = {
 	0,
 	1,
 	2,

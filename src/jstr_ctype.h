@@ -117,26 +117,26 @@ jstr_isalpha(const int _c) JSTR_NOEXCEPT
 
 /*
    Will NOT handle EOF correctly.
-   toupper_ascii(EOF) != EOF;
+   toupper(EOF) != EOF;
 */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_toupper_ascii(const int _c) JSTR_NOEXCEPT
+jstr_toupper(const int _c) JSTR_NOEXCEPT
 {
-	return pjstr_table_toupper_ascii[(unsigned char)_c];
+	return pjstr_table_toupper[(unsigned char)_c];
 }
 
 /*
    Will NOT handle EOF correctly.
-   tolower_ascii(EOF) != EOF;
+   tolower(EOF) != EOF;
 */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_tolower_ascii(const int _c) JSTR_NOEXCEPT
+jstr_tolower(const int _c) JSTR_NOEXCEPT
 {
-	return pjstr_table_tolower_ascii[(unsigned char)_c];
+	return pjstr_table_tolower[(unsigned char)_c];
 }
 
 /* ASCII */
@@ -237,7 +237,7 @@ jstr_tolower_len(char *JSTR_RST _s,
 	/* It seems that 8 iterations is not much faster. */
 #define PJSTR_UNROLL_ITERATIONS 4
 #if PJSTR_NO_UNROLL
-	for (; (*_s = jstr_tolower_ascii(*_s)); ++_s)
+	for (; (*_s = jstr_tolower(*_s)); ++_s)
 		;
 #else
 	enum {
@@ -273,32 +273,32 @@ jstr_tolower_len(char *JSTR_RST _s,
 		break;
 #	if PJSTR_UNROLL_ITERATIONS == 8
 do7:
-		_s[6] = jstr_tolower_ascii(_s[6]);
+		_s[6] = jstr_tolower(_s[6]);
 do6:
-		_s[5] = jstr_tolower_ascii(_s[5]);
+		_s[5] = jstr_tolower(_s[5]);
 do5:
-		_s[4] = jstr_tolower_ascii(_s[4]);
+		_s[4] = jstr_tolower(_s[4]);
 do4:
-		_s[3] = jstr_tolower_ascii(_s[3]);
+		_s[3] = jstr_tolower(_s[3]);
 #	endif
 do3:
-		_s[2] = jstr_tolower_ascii(_s[2]);
+		_s[2] = jstr_tolower(_s[2]);
 do2:
-		_s[1] = jstr_tolower_ascii(_s[1]);
+		_s[1] = jstr_tolower(_s[1]);
 do1:
-		_s[0] = jstr_tolower_ascii(_s[0]);
+		_s[0] = jstr_tolower(_s[0]);
 	}
 	_s += skip;
 START_LOOP:;
-	for (; (_s[0] = jstr_tolower_ascii(_s[0])); _s += it) {
-		_s[1] = jstr_tolower_ascii(_s[1]);
-		_s[2] = jstr_tolower_ascii(_s[2]);
-		_s[3] = jstr_tolower_ascii(_s[3]);
+	for (; (_s[0] = jstr_tolower(_s[0])); _s += it) {
+		_s[1] = jstr_tolower(_s[1]);
+		_s[2] = jstr_tolower(_s[2]);
+		_s[3] = jstr_tolower(_s[3]);
 #	if PJSTR_UNROLL_ITERATIONS == 8
-		_s[4] = jstr_tolower_ascii(_s[4]);
-		_s[5] = jstr_tolower_ascii(_s[5]);
-		_s[6] = jstr_tolower_ascii(_s[6]);
-		_s[7] = jstr_tolower_ascii(_s[7]);
+		_s[4] = jstr_tolower(_s[4]);
+		_s[5] = jstr_tolower(_s[5]);
+		_s[6] = jstr_tolower(_s[6]);
+		_s[7] = jstr_tolower(_s[7]);
 #	endif
 	}
 #endif
@@ -314,7 +314,7 @@ jstr_toupper_len(char *JSTR_RST _s,
 	/* It seems that 8 iterations is not much faster. */
 #define PJSTR_UNROLL_ITERATIONS 4
 #if PJSTR_NO_UNROLL
-	for (; (*_s = jstr_toupper_ascii(*_s)); ++_s)
+	for (; (*_s = jstr_toupper(*_s)); ++_s)
 		;
 #else
 	enum {
@@ -350,32 +350,32 @@ jstr_toupper_len(char *JSTR_RST _s,
 		break;
 #	if PJSTR_UNROLL_ITERATIONS == 8
 do7:
-		_s[6] = jstr_toupper_ascii(_s[6]);
+		_s[6] = jstr_toupper(_s[6]);
 do6:
-		_s[5] = jstr_toupper_ascii(_s[5]);
+		_s[5] = jstr_toupper(_s[5]);
 do5:
-		_s[4] = jstr_toupper_ascii(_s[4]);
+		_s[4] = jstr_toupper(_s[4]);
 do4:
-		_s[3] = jstr_toupper_ascii(_s[3]);
+		_s[3] = jstr_toupper(_s[3]);
 #	endif
 do3:
-		_s[2] = jstr_toupper_ascii(_s[2]);
+		_s[2] = jstr_toupper(_s[2]);
 do2:
-		_s[1] = jstr_toupper_ascii(_s[1]);
+		_s[1] = jstr_toupper(_s[1]);
 do1:
-		_s[0] = jstr_toupper_ascii(_s[0]);
+		_s[0] = jstr_toupper(_s[0]);
 	}
 	_s += skip;
 START_LOOP:;
-	for (; (_s[0] = jstr_toupper_ascii(_s[0])); _s += it) {
-		_s[1] = jstr_toupper_ascii(_s[1]);
-		_s[2] = jstr_toupper_ascii(_s[2]);
-		_s[3] = jstr_toupper_ascii(_s[3]);
+	for (; (_s[0] = jstr_toupper(_s[0])); _s += it) {
+		_s[1] = jstr_toupper(_s[1]);
+		_s[2] = jstr_toupper(_s[2]);
+		_s[3] = jstr_toupper(_s[3]);
 #	if PJSTR_UNROLL_ITERATIONS == 8
-		_s[4] = jstr_toupper_ascii(_s[4]);
-		_s[5] = jstr_toupper_ascii(_s[5]);
-		_s[6] = jstr_toupper_ascii(_s[6]);
-		_s[7] = jstr_toupper_ascii(_s[7]);
+		_s[4] = jstr_toupper(_s[4]);
+		_s[5] = jstr_toupper(_s[5]);
+		_s[6] = jstr_toupper(_s[6]);
+		_s[7] = jstr_toupper(_s[7]);
 #	endif
 	}
 #endif
@@ -394,7 +394,7 @@ static void
 jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 #if PSJTR_NO_UNROLL
-	for (; (*_s = jstr_toupper_ascii(*_s)); ++_s)
+	for (; (*_s = jstr_toupper(*_s)); ++_s)
 		;
 #else
 	size_t _len = jstr_strnlen(_s, 512);
@@ -416,7 +416,7 @@ static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 #if PSJTR_NO_UNROLL
-	for (; *_s = jstr_tolower_ascii(*_s); ++_s)
+	for (; *_s = jstr_tolower(*_s); ++_s)
 		;
 #else
 	size_t _len = jstr_strnlen(_s, 512);
