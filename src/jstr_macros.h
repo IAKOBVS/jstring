@@ -379,7 +379,7 @@ case 'X':               \
 case 'Y':               \
 case 'Z':
 
-#define JSTR_CASE_XDIGIT\
+#define JSTR_CASE_XDIGIT \
 JSTR_CASE_DIGIT \
 case 'a':                 \
 case 'b':                 \
