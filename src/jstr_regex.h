@@ -353,6 +353,14 @@ jstr_reg_match_now_len(const char *JSTR_RST const _s,
 
 #endif /* JSTR_REG_EF_STARTEND */
 
+#ifdef __clang__
+#	pragma clang diagnostic ignored "-Wunknown-warning-option"
+#	pragma clang diagnostic push
+#elif defined __GNUC__
+#	pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#	pragma GCC diagnostic push
+#endif
+
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
@@ -372,6 +380,12 @@ jstr_reg_rm(char *JSTR_RST const _s,
 	*_sz -= (_rm.rm_eo - _rm.rm_so);
 	return _ret;
 }
+
+#ifdef __clang__
+#	pragma clang diagnostic pop
+#elif defined __GNUC__
+#	pragma GCC diagnostic pop
+#endif
 
 JSTR_FUNC
 JSTR_INLINE
@@ -496,9 +510,8 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 			   const regex_t *JSTR_RST const _preg,
 			   const int _eflags) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(_rplclen == 0)) {
+	if (jstr_unlikely(_rplclen == 0))
 		return jstr_reg_rmall(*_s, _sz, _preg, _eflags);
-	}
 	regmatch_t _rm;
 	size_t _ptnlen;
 	unsigned char *_tmp;
@@ -693,91 +706,6 @@ jstr_reg_rplcn_now_len(char **JSTR_RST const _s,
 	return jstr_reg_rplcn_len(_s, _sz, _cap, _rplc, _n, _rplclen, _preg, _eflags);
 }
 
-#if 1
-
-/* TODO: handle backreferences */
-JSTR_INLINE
-JSTR_FUNC
-static jstr_reg_errcode_ty
-jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
-		       size_t *JSTR_RST const _sz,
-		       size_t *JSTR_RST const _cap,
-		       const char *JSTR_RST const _rplc,
-		       size_t _rplclen,
-		       const regex_t *JSTR_RST const _preg,
-		       const int _eflags,
-		       const int _nmatch) JSTR_NOEXCEPT
-{
-	regmatch_t _rm[10];
-	const jstr_reg_errcode_ty _ret = PJSTR_REG_EXEC(_preg, *_s, *_sz, _nmatch, _rm, _eflags);
-	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR)
-	    || jstr_unlikely(_rm->rm_eo == _rm->rm_so))
-		return _ret;
-	const unsigned char *_p = (unsigned char *)_rplc;
-	const unsigned char *_end = (unsigned char *)_rplc + _rplclen;
-	for (; (_p = (unsigned char *)memchr(_p, '\\', _end - _p)); ++_p)
-		if (jstr_likely(jstr_isdigit(*++_p)))
-			_rplclen += _rm[*_p].rm_eo - _rm[*_p].rm_so - 2;
-		else if (jstr_unlikely(*_p == '\0'))
-			break;
-	_p = (unsigned char *)_rplc;
-	const unsigned char *_old;
-	unsigned char *_rplcp;
-	if (jstr_unlikely(_rplclen > 256)) {
-		unsigned char *_rplcbuf = (unsigned char *)malloc(_rplclen);
-		_rplcp = _rplcbuf;
-		if (jstr_unlikely(_rplcp == NULL))
-			return JSTR_REG_RET_MALLOC_ERROR;
-		for (;; ++_p) {
-			_old = _p;
-			_p = (unsigned char *)memchr((char *)_p, '\\', _end - _p);
-			if (jstr_unlikely(_p == NULL))
-				break;
-			if (jstr_likely(jstr_isdigit(*++_p))) {
-				memcpy(_rplcp, _p, _old - _p);
-				_rplcp += _old - _p;
-				_rplclen -= 2;
-			} else if (jstr_unlikely(*_p == '\0')) {
-				break;
-			} else {
-				_rplcp[0] = _p[-1];
-				_rplcp[1] = _p[0];
-				_rplcp += 2;
-			}
-		}
-		if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rplcbuf, _rplclen, _rm[0].rm_eo - _rm[0].rm_so) == NULL)) {
-			free(_rplcbuf);
-			return JSTR_REG_RET_MALLOC_ERROR;
-		}
-		free(_rplcbuf);
-	} else {
-		unsigned char _rplcbuf[256];
-		_rplcp = _rplcbuf;
-		for (;; ++_p) {
-			_old = _p;
-			_p = (unsigned char *)memchr((char *)_p, '\\', _end - _p);
-			if (jstr_unlikely(_p == NULL))
-				break;
-			if (jstr_likely(jstr_isdigit(*++_p))) {
-				memcpy(_rplcp, _p, _old - _p);
-				_rplcp += _old - _p;
-				_rplclen -= 2;
-			} else if (jstr_unlikely(*_p == '\0')) {
-				break;
-			} else {
-				_rplcp[0] = _p[-1];
-				_rplcp[1] = _p[0];
-				_rplcp += 2;
-			}
-		}
-		if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rplcbuf, _rplclen, _rm[0].rm_eo - _rm[0].rm_so) == NULL))
-			return JSTR_REG_RET_MALLOC_ERROR;
-	}
-	return _ret;
-}
-
-#endif
-
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
@@ -819,6 +747,106 @@ jstr_reg_rplc_now_len(char **JSTR_RST const _s,
 		return _ret;
 	return jstr_reg_rplc_len(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 }
+
+#ifdef __clang__
+#	pragma clang diagnostic ignored "-Wunknown-warning-option"
+#	pragma clang diagnostic push
+#elif defined __GNUC__
+#	pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#	pragma GCC diagnostic push
+#endif
+
+#define JSTR_1TO9(c) (((c) > '0') & ((c) <= '9'))
+
+JSTR_FUNC
+static jstr_reg_errcode_ty
+jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
+		       size_t *JSTR_RST const _sz,
+		       size_t *JSTR_RST const _cap,
+		       const char *JSTR_RST const _rplc,
+		       size_t _rplclen,
+		       const regex_t *JSTR_RST const _preg,
+		       const int _eflags,
+		       const size_t _nmatch) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(_rplclen == 0))
+		return jstr_reg_rm(*_s, _sz, _preg, _eflags);
+	regmatch_t _rm[10];
+	const jstr_reg_errcode_ty _ret = PJSTR_REG_EXEC(_preg, *_s, *_sz, _nmatch, _rm, _eflags);
+	const size_t _ptnlen = _rm[0].rm_eo - _rm[0].rm_so;
+	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR)
+	    || jstr_unlikely(!_ptnlen))
+		return _ret;
+	const unsigned char *_p = (unsigned char *)_rplc;
+	const unsigned char *const _end = (unsigned char *)_rplc + _rplclen;
+	size_t _rplcbuflen = _rplclen;
+	for (; (_p = (unsigned char *)memchr(_p, '\\', _end - _p)); ++_p) {
+		++_p;
+		if (jstr_likely(JSTR_1TO9(*_p)))
+			_rplcbuflen = _rplcbuflen + (_rm[*_p - '0'].rm_eo - _rm[*_p - '0'].rm_so) - 2;
+		else if (jstr_unlikely(*_p == '\0'))
+			break;
+	}
+	if (jstr_unlikely(_rplcbuflen == _rplclen))
+		return jstr_reg_rplc_len(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
+	_p = (unsigned char *)_rplc;
+	const unsigned char *_old;
+	unsigned char *_rplcp;
+	if (jstr_unlikely(_rplclen > 256)) {
+		unsigned char *_rplcbuf = (unsigned char *)malloc(_rplclen);
+		if (jstr_unlikely(_rplcbuf == NULL))
+			return JSTR_REG_RET_MALLOC_ERROR;
+		_rplcp = _rplcbuf;
+#define PJSTR_CREAT_RPLC_BREF                                                                                            \
+	do {                                                                                                             \
+		for (;; ++_p) {                                                                                          \
+			_old = _p;                                                                                       \
+			_p = (unsigned char *)memchr((char *)_p, '\\', _end - _p);                                       \
+			if (jstr_unlikely(_p++ == NULL)) {                                                               \
+				memcpy(_rplcp, _old, _end - _old);                                                       \
+				*(_rplcp + (_end - _old)) = '\0';                                                        \
+				break;                                                                                   \
+			}                                                                                                \
+			if (jstr_likely(JSTR_1TO9(*_p))) {                                                               \
+				if (jstr_likely(_p != _old)) {                                                           \
+					memmove(_rplcp, _old, (_p - 1) - _old);                                          \
+					_rplcp += (_p - 1) - _old;                                                       \
+				}                                                                                        \
+				memcpy(_rplcp, *_s + _rm[*_p - '0'].rm_so, _rm[*_p - '0'].rm_eo - _rm[*_p - '0'].rm_so); \
+				_rplcp += _rm[*_p - '0'].rm_eo - _rm[*_p - '0'].rm_so;                                   \
+			} else if (jstr_unlikely(*_p == '\0')) {                                                         \
+				break;                                                                                   \
+			} else {                                                                                         \
+				_rplcp[0] = _p[-1];                                                                      \
+				_rplcp[1] = _p[0];                                                                       \
+				_rplcp += 2;                                                                             \
+			}                                                                                                \
+		}                                                                                                        \
+	} while (0)
+		PJSTR_CREAT_RPLC_BREF;
+		if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rplcbuf, _rplcbuflen, _ptnlen) == NULL)) {
+			free(_rplcbuf);
+			return JSTR_REG_RET_MALLOC_ERROR;
+		}
+		free(_rplcbuf);
+	} else {
+		unsigned char _rplcbuf[256];
+		_rplcp = _rplcbuf;
+		PJSTR_CREAT_RPLC_BREF;
+		if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rplcbuf, _rplcbuflen, _ptnlen) == NULL))
+			return JSTR_REG_RET_MALLOC_ERROR;
+	}
+	return _ret;
+#undef PJSTR_CREAT_RPLC_BREF
+}
+
+#undef JSTR_1TO9
+
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#elif defined __clang__
+#	pragma clang diagnostic pop
+#endif
 
 PJSTR_END_DECLS
 

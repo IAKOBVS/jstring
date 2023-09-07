@@ -418,20 +418,20 @@ jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
 			*p = '\0';                                                        \
 		} while (0)
 
-#	define jstr_appendmore(_s, _sz, _cap, ...)                                                          \
-		do {                                                                                         \
-			JSTR_ASSERT_IS_STR(*(_s));                                                           \
-			JSTR_ASSERT_IS_SIZE(*(_sz));                                                         \
-			JSTR_ASSERT_IS_SIZE(*(_cap));                                                        \
-			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                      \
-			size_t _ARR_VA_ARGS[PJSTR_PP_NARG(__VA_ARGS__)];                                     \
+#	define jstr_appendmore(_s, _sz, _cap, ...)                                                             \
+		do {                                                                                            \
+			JSTR_ASSERT_IS_STR(*(_s));                                                              \
+			JSTR_ASSERT_IS_SIZE(*(_sz));                                                            \
+			JSTR_ASSERT_IS_SIZE(*(_cap));                                                           \
+			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                         \
+			size_t _ARR_VA_ARGS[PJSTR_PP_NARG(__VA_ARGS__)];                                        \
 			const size_t _NEW_SZ = *(_sz) + PJSTR_PP_STRLEN_ARR_VA_ARGS(_ARR_VA_ARGS, __VA_ARGS__); \
-			if (*(_cap) < _NEW_SZ)                                                                 \
-				PJSTR_REALLOC(*(_s), *(_cap), _NEW_SZ + 1, break);                             \
-			char *p = *(_s) + *(_sz);                                                            \
-			PJSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);                               \
-			*p = '\0';                                                                           \
-			*(_sz) = _NEW_SZ;                                                                      \
+			if (*(_cap) < _NEW_SZ)                                                                  \
+				PJSTR_REALLOC(*(_s), *(_cap), _NEW_SZ + 1, break);                              \
+			char *p = *(_s) + *(_sz);                                                               \
+			PJSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);                                  \
+			*p = '\0';                                                                              \
+			*(_sz) = _NEW_SZ;                                                                       \
 		} while (0)
 
 #	define jstr_alloc_appendmore(_s, _sz, _cap, ...)                                \
