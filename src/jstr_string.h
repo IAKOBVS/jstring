@@ -502,25 +502,27 @@ jstr_strcasestr_len(const char *JSTR_RST _hs,
 #else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
 	if (jstr_unlikely(_nelen == 0))
 		return (char *)_hs;
-	int _is_alpha0;
-	if ((unsigned char)(_nelen - 1) < 4) {
-		const char *const _start = _hs;
-		_is_alpha0 = jstr_isalpha(*_ne);
-		if (_is_alpha0) {
-			const char _a[] = { (char)jstr_tolower(*_ne), (char)jstr_toupper(*_ne), '\0' };
-			_hs = strpbrk(_hs, _a);
-		} else {
-			_hs = (char *)memchr(_hs, *_ne, _hslen);
-		}
-		if (_hs == NULL
-		    || _nelen == 1)
-			return (char *)_hs;
-		_hslen -= _hs - _start;
+	if (_hslen > 4) {
+		if (jstr_unlikely(_hslen < _nelen))
+			return NULL;
+		return pjstr_strcasestr_len_bmh(_hs, _hslen, _ne, _nelen);
 	}
+	const int _is_alpha0 = jstr_isalpha(*_ne);
+	const char *const _start = _hs;
+	if (_is_alpha0) {
+		const char _a[] = { (char)jstr_tolower(*_ne), (char)jstr_toupper(*_ne), '\0' };
+		_hs = strpbrk(_hs, _a);
+	} else {
+		_hs = (char *)memchr(_hs, *_ne, _hslen);
+	}
+	if (_hs == NULL
+	    || _nelen == 1)
+		return (char *)_hs;
+	_hslen -= _hs - _start;
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
-	case 4:
+	default: /* case 4: */
 		if (_is_alpha0
 		    + jstr_isalpha(_ne[1])
 		    + jstr_isalpha(_ne[2])
@@ -542,7 +544,6 @@ jstr_strcasestr_len(const char *JSTR_RST _hs,
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
 	}
-	return pjstr_strcasestr_len_bmh(_hs, _hslen, _ne, _nelen);
 #endif
 }
 
