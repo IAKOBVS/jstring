@@ -230,8 +230,7 @@ jstr_memrchr(const void *JSTR_RST _s,
 }
 
 /*
-   Find last NE in HS.
-   HS MUST be nul terminated.
+   Find last NE in HS (ASCII).
    Return value:
    Pointer to NE;
    NULL if not found.
@@ -456,8 +455,7 @@ pjstr_strcasestr4(const unsigned char *JSTR_RST _h,
 #undef L
 
 /*
-   Find NE in HS case-insensitively.
-   HS MUST be nul terminated.
+   Find NE in HS case-insensitively (ASCII).
    Return value:
    Pointer to NE;
    NULL if not found.
@@ -524,7 +522,6 @@ jstr_strcasestr_len(const char *JSTR_RST _hs,
 
 /*
    Find NE in HS case-insensitively.
-   HS MUST be nul terminated.
    Return value:
    Pointer to NE;
    NULL if not found.
