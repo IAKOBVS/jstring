@@ -500,23 +500,28 @@ jstr_strcasestr_len(const char *JSTR_RST _hs,
 #if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 	return (char *)strcasestr(_hs, _ne);
 #else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
+	if (jstr_unlikely(_nelen == 0))
+		return (char *)_hs;
+	int _is_alpha0;
 	if ((unsigned char)(_nelen - 1) < 4) {
 		const char *const _start = _hs;
-		if (jstr_isalpha(*_ne)) {
+		_is_alpha0 = jstr_isalpha(*_ne);
+		if (_is_alpha0) {
 			const char _a[] = { (char)jstr_tolower(*_ne), (char)jstr_toupper(*_ne), '\0' };
 			_hs = strpbrk(_hs, _a);
 		} else {
 			_hs = (char *)memchr(_hs, *_ne, _hslen);
 		}
-		if (jstr_unlikely(_hs == NULL))
-			return NULL;
+		if (_hs == NULL
+		    || _nelen == 1)
+			return (char *)_hs;
 		_hslen -= _hs - _start;
 	}
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
 	switch (_nelen) {
 	case 4:
-		if (jstr_isalpha(_ne[0])
+		if (_is_alpha0
 		    + jstr_isalpha(_ne[1])
 		    + jstr_isalpha(_ne[2])
 		    + jstr_isalpha(_ne[3])
@@ -524,20 +529,18 @@ jstr_strcasestr_len(const char *JSTR_RST _hs,
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
 	case 3:
-		if (jstr_isalpha(_ne[0])
+		if (_is_alpha0
 		    + jstr_isalpha(_ne[1])
 		    + jstr_isalpha(_ne[2])
 		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
 	case 2:
-		if (jstr_isalpha(_ne[0])
+		if (_is_alpha0
 		    + jstr_isalpha(_ne[1])
 		    == 0)
 			return (char *)strstr(_hs, _ne);
 		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
-	case 1: return pstrcasechr_len(_hs, *_ne, _hslen);
-	case 0: return (char *)_hs;
 	}
 	return pjstr_strcasestr_len_bmh(_hs, _hslen, _ne, _nelen);
 #endif
@@ -563,8 +566,8 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 #else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
 	if (jstr_unlikely(_ne[0] == '\0'))
 		return (char *)_hs;
-	int _alpha1 = jstr_isalpha(*_ne);
-	if (_alpha1) {
+	int _is_alpha0 = jstr_isalpha(*_ne);
+	if (_is_alpha0) {
 		const char _a[] = { (char)jstr_tolower(*_ne), (char)jstr_toupper(*_ne), '\0' };
 		_hs = strpbrk(_hs, _a);
 	} else {
@@ -573,16 +576,16 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 	if (jstr_unlikely(_hs == NULL)
 	    || jstr_unlikely(_ne[1] == '\0'))
 		return (char *)_hs;
-	_alpha1 += jstr_isalpha(_ne[1]);
+	_is_alpha0 += jstr_isalpha(_ne[1]);
 	if (_ne[2] == '\0') {
-		if (_alpha1
+		if (_is_alpha0
 		    == 0)
 			return (char *)strstr(_hs, _ne);
 		if (jstr_unlikely(_hs[1] == '\0'))
 			return NULL;
 		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[3] == '\0') {
-		if (_alpha1
+		if (_is_alpha0
 		    + jstr_isalpha(_ne[2])
 		    == 0)
 			return (char *)strstr(_hs, _ne);
@@ -591,7 +594,7 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 			return NULL;
 		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[4] == '\0') {
-		if (_alpha1
+		if (_is_alpha0
 		    + jstr_isalpha(_ne[2])
 		    + jstr_isalpha(_ne[3])
 		    == 0)
