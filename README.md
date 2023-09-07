@@ -23,6 +23,7 @@ and
 - \*\_p(): returns a pointer to the end of the string
 - \*\_f(): assumes that there be enough space in the string: it will not grow it with realloc
 - \*\_now(): compiles regular expression now
+- \*\_bref(): enables backreferences in the replacement string
 - P\*() or p\*(): private functions used internally
 
 ## Scripts:
