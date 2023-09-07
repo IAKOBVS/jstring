@@ -190,7 +190,7 @@ jstr_reg_exec_len(const regex_t *JSTR_RST _preg,
 	default:
 #	if JSTR_ERR_MSG_ON_REGEX_ERROR
 		jstr_reg_error(_ret, _preg);
-#	endif /* JSTR_ERR_MSG_ON_REGEX_ERROR */
+#	endif
 	case JSTR_REG_RET_NOMATCH:
 	case JSTR_REG_RET_NOERROR:
 		break;

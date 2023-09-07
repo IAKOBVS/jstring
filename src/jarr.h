@@ -132,4 +132,7 @@ PJSTR_END_DECLS
 		[0] = (value);                                                                 \
 	} while (0)
 
+#define jarr_foreach(j, it) \
+	for (size_t it = 0, _max_elem_##it = (j)->size; it < _max_elem_##it; ++it)
+
 #endif /* JARR_DEF_H */
