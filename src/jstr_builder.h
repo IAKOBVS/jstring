@@ -237,7 +237,7 @@ static void
 jstr_debug(const jstr_ty *JSTR_RST const _j)
 {
 	fprintf(stderr, "size:%zu\ncapacity:%zu\n", _j->size, _j->capacity);
-	fprintf(stderr, "strlen:%zu\n", strlen(_j->data));
+	fprintf(stderr, "strlen():%zu\n", strlen(_j->data));
 	fprintf(stderr, "data puts:%s\n", _j->data);
 	fputs("data:", stderr);
 	fwrite(_j->data, 1, _j->size, stderr);
