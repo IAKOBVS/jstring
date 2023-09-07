@@ -516,15 +516,15 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 	size_t _ptnlen;
 	unsigned char *_tmp;
 	jstr_reg_errcode_ty _ret = JSTR_REG_RET_NOMATCH;
-	typedef unsigned char uc;
-	unsigned char *_dst = *(uc **)_s;
+	typedef unsigned char u;
+	unsigned char *_dst = *(u **)_s;
 	unsigned char *_p = _dst;
 	const unsigned char *_old = _dst;
 #if JSTR_HAVE_REALLOC_MREMAP
 	const int _is_mmap = PJSTR_IS_MMAP(*_cap);
 #endif /* HAVE_REALLOC_MREMAP */
 	while ((_flag & PJSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
-	       && PJSTR_REG_EXEC(_preg, (char *)_p, (*(uc **)_s + *_sz) - _p, 1, &_rm, _eflags) == JSTR_REG_RET_NOERROR) {
+	       && PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, 1, &_rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		_ret = JSTR_REG_RET_NOERROR;
 		_ptnlen = _rm.rm_eo - _rm.rm_so;
 		_p += _rm.rm_so;
@@ -550,7 +550,7 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 				_dst += (_p - _old);
 				memmove(_dst + _rplclen,
 					_p + _ptnlen,
-					(*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
+					(*(u **)_s + *_sz) - (_p + _ptnlen) + 1);
 				memcpy(_dst, _rplc, _rplclen);
 				_dst += _rplclen;
 				_old = _dst;
@@ -558,7 +558,7 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 				PJSTR_REG_DEB("dst == old");
 				memmove(_p + _rplclen,
 					_p + _ptnlen,
-					(*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
+					(*(u **)_s + *_sz) - (_p + _ptnlen) + 1);
 				memcpy(_p, _rplc, _rplclen);
 			}
 		} else {
@@ -567,32 +567,32 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 			if (jstr_unlikely(_is_mmap)) {
 				if (_dst != _old)
 					memmove(_dst, _old, _p - _old);
-				_tmp = *(uc **)_s;
+				_tmp = *(u **)_s;
 				PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _ptnlen, return JSTR_REG_RET_MALLOC_ERROR);
 				memmove(_p + _rplclen,
 					_p + _ptnlen,
 					(_tmp + *_sz) - (_p + _ptnlen) + 1);
 				memcpy(_p, _rplc, _rplclen);
-				_p = *(uc **)_s + (_p - _tmp);
-				_dst = *(uc **)_s + (_dst - _tmp) + _rplclen;
+				_p = *(u **)_s + (_p - _tmp);
+				_dst = *(u **)_s + (_dst - _tmp) + _rplclen;
 				_old = _dst;
 			} else
 #endif /* HAVE_REALLOC_MREMAP */
 			{
 				PJSTR_GROW(*_cap, *_sz + _rplclen - _ptnlen);
-				_tmp = (uc *)malloc(*_cap);
+				_tmp = (u *)malloc(*_cap);
 				PJSTR_MALLOC_ERR(_tmp, return JSTR_REG_RET_MALLOC_ERROR);
 				if (_dst != _old) {
-					memcpy(_tmp, *(uc **)_s, _dst - *(uc **)_s);
-					memcpy(_tmp + (_dst - *(uc **)_s),
+					memcpy(_tmp, *(u **)_s, _dst - *(u **)_s);
+					memcpy(_tmp + (_dst - *(u **)_s),
 					       _old,
 					       _p - _old);
-					_dst = _tmp + (_dst - *(uc **)_s);
+					_dst = _tmp + (_dst - *(u **)_s);
 					memcpy(_dst, _rplc, _rplclen);
 					_dst += _rplclen;
 					memcpy(_dst,
 					       _p,
-					       (*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
+					       (*(u **)_s + *_sz) - (_p + _ptnlen) + 1);
 					_old = _dst;
 				} else {
 #if 0
@@ -603,21 +603,21 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 #		pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #		pragma GCC diagnostic push
 #	endif
-					memcpy(_tmp, *_s, _p - *(uc **)_s);
+					memcpy(_tmp, *_s, _p - *(u **)_s);
 #	ifdef __GNUC__
 #		pragma GCC diagnostic pop
 #	elif defined __clang__
 #		pragma clang diagnostic pop
 #	endif
 #else
-					memcpy(_tmp, *_s, _p - *(uc **)_s);
+					memcpy(_tmp, *_s, _p - *(u **)_s);
 #endif
-					memcpy(_tmp + (_p - *(uc **)_s), _rplc, _rplclen);
-					memcpy(_tmp + (_p - (*(uc **)_s + _rplclen)),
+					memcpy(_tmp + (_p - *(u **)_s), _rplc, _rplclen);
+					memcpy(_tmp + (_p - (*(u **)_s + _rplclen)),
 					       _p + _ptnlen,
-					       (*(uc **)_s + *_sz) - (_p + _ptnlen) + 1);
+					       (*(u **)_s + *_sz) - (_p + _ptnlen) + 1);
 				}
-				_p = _tmp + (_p - *(uc **)_s);
+				_p = _tmp + (_p - *(u **)_s);
 				free(*_s);
 				*_s = (char *)_tmp;
 			}
@@ -628,8 +628,8 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 			break;
 	}
 	if (_dst != _old) {
-		memmove(_dst, _old, (*(uc **)_s + *_sz) - _old + 1);
-		*_sz = (_dst + (*(uc **)_s + *_sz - _old)) - *(uc **)_s;
+		memmove(_dst, _old, (*(u **)_s + *_sz) - _old + 1);
+		*_sz = (_dst + (*(u **)_s + *_sz - _old)) - *(u **)_s;
 	}
 	return _ret;
 }
@@ -792,7 +792,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	_p = (unsigned char *)_rplc;
 	const unsigned char *_old;
 	unsigned char *_rplcp;
-	if (jstr_unlikely(1 || _rplcbuflen > 256)) {
+	if (jstr_unlikely(_rplcbuflen > 256)) {
 		unsigned char *_rplcbuf;
 		enum { IS_MMAP = 1,
 		       IS_MALLOC = 1 << 1 };
