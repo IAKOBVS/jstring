@@ -437,7 +437,7 @@ pstrcasechr(const char *JSTR_RST _s,
 	return (char *)strpbrk(_s, _acc);
 }
 
-#define L
+#define L(c) jstr_tolower_ascii(c)
 
 JSTR_INLINE
 JSTR_FUNC_PURE
