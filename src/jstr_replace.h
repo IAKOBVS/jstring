@@ -865,7 +865,7 @@ pjstr_rplcall_len(const pjstr_flag_use_n_ty _flag,
 		*_sz = pjstr_rmall_len_p(_flag, *_s, _find, _n, *_sz, _findlen) - *_s;
 		return 1;
 	}
-	if (jstr_unlikely(_findlen == 1 && _rplclen == 1)) {
+	if (jstr_unlikely((_findlen == 1) & (_rplclen == 1))) {
 		jstr_rplcchr_len(*_s, *_find, *_rplc, *_sz);
 		return 1;
 	}
