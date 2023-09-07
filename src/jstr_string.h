@@ -412,31 +412,6 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 #undef PJSTR_STRCASESTR_BMH
 }
 
-JSTR_FUNC_PURE
-JSTR_INLINE
-static char *
-pstrcasechr_len(const char *JSTR_RST _s,
-		const int _c,
-		const size_t _n) JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(!jstr_isalpha(_c)))
-		return (char *)memchr(_s, _c, _n);
-	const char _acc[] = { (char)jstr_tolower(_c), (char)jstr_toupper(_c), '\0' };
-	return (char *)strpbrk(_s, _acc);
-}
-
-JSTR_FUNC_PURE
-JSTR_INLINE
-static char *
-pstrcasechr(const char *JSTR_RST _s,
-	    const int _c) JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(!jstr_isalpha(_c)))
-		return (char *)strchr(_s, _c);
-	const char _acc[] = { (char)jstr_tolower(_c), (char)jstr_toupper(_c), '\0' };
-	return (char *)strpbrk(_s, _acc);
-}
-
 #define L(c) jstr_tolower(c)
 
 JSTR_INLINE
