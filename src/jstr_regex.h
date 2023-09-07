@@ -693,7 +693,7 @@ jstr_reg_rplcn_now_len(char **JSTR_RST const _s,
 	return jstr_reg_rplcn_len(_s, _sz, _cap, _rplc, _n, _rplclen, _preg, _eflags);
 }
 
-/* #if 0 */
+#if 0
 
 /* TODO: handle backreferences */
 JSTR_INLINE
