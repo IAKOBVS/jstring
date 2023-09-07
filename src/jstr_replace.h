@@ -874,22 +874,22 @@ pjstr_rplcall_len(const pjstr_flag_use_n_ty _flag,
 	if (_flag & PJSTR_FLAG_USE_N)
 		if (jstr_unlikely(_n == 0))
 			return 1;
-	typedef unsigned char uc;
-	const unsigned char *_p = *(uc **)_s;
+	typedef unsigned char u;
+	const unsigned char *_p = *(u **)_s;
 	const unsigned char *_old = _p;
-	unsigned char *_dst = *(uc **)_s;
+	unsigned char *_dst = *(u **)_s;
 #if JSTR_HAVE_REALLOC_MREMAP
 	const int is_mmap = PJSTR_IS_MMAP(*_cap);
 #endif /* HAVE_REALLOC_MREMAP */
-	while ((_p = (uc *)PJSTR_MEMMEM((char *)_p, (*(uc **)_s + *_sz) - _p, _find, _findlen))) {
+	while ((_p = (u *)PJSTR_MEMMEM((char *)_p, (*(u **)_s + *_sz) - _p, _find, _findlen))) {
 		if (_rplclen <= _findlen)
 			PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen);
 #if JSTR_HAVE_REALLOC_MREMAP
 		else if (jstr_unlikely(is_mmap))
-			_p = (uc *)pjstr_rplcat_len_realloc(_s, _sz, _cap, _p - *(uc **)_s, _rplc, _rplclen, _findlen);
+			_p = (u *)pjstr_rplcat_len_realloc(_s, _sz, _cap, _p - *(u **)_s, _rplc, _rplclen, _findlen);
 #endif /* HAVE_REALLOC_MREMAP */
 		else
-			_p = (uc *)pjstr_rplcat_len_malloc(_s, _sz, _cap, _p - *(uc **)_s, _rplc, _rplclen, _findlen);
+			_p = (u *)pjstr_rplcat_len_malloc(_s, _sz, _cap, _p - *(u **)_s, _rplc, _rplclen, _findlen);
 		if (jstr_unlikely(_p == NULL))
 			return 0;
 		if (_flag & PJSTR_FLAG_USE_N)
@@ -897,8 +897,8 @@ pjstr_rplcall_len(const pjstr_flag_use_n_ty _flag,
 				break;
 	}
 	if (_rplclen < _findlen) {
-		memmove(_dst, _old, *(uc **)_s + *_sz - _old + 1);
-		*_sz = (char *)_dst + (*(uc **)_s + *_sz - _old) - *_s;
+		memmove(_dst, _old, *(u **)_s + *_sz - _old + 1);
+		*_sz = (char *)_dst + (*(u **)_s + *_sz - _old) - *_s;
 	}
 	return 1;
 }

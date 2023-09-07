@@ -792,7 +792,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	_p = (unsigned char *)_rplc;
 	const unsigned char *_old;
 	unsigned char *_rplcp;
-	if (jstr_unlikely(_rplcbuflen > 256)) {
+	if (jstr_unlikely(1 || _rplcbuflen > 256)) {
 		unsigned char *_rplcbuf;
 		enum { IS_MMAP = 1,
 		       IS_MALLOC = 1 << 1 };
@@ -813,10 +813,21 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 				*_s = (char *)malloc(*_cap);
 				if (jstr_unlikely(*_s == NULL))
 					return JSTR_REG_RET_MALLOC_ERROR;
-				memcpy(*_s, _rplcbuf, _rm[0].rm_eo);
-				memcpy(*_s + _rm[0].rm_eo + _rplcbuflen,
-				       _rplcbuf + _rm[0].rm_eo + _rplcbuflen,
-				       (*_s + *_sz) - (*_s + _rm[0].rm_eo + _rplcbuflen));
+				unsigned char *_dst = *(unsigned char **)_s;
+				const unsigned char *_src = (unsigned char *)_rplcbuf;
+				const unsigned char *const _endsrc = (unsigned char *)_rplcbuf + *_sz;
+				if (jstr_likely(_rm[0].rm_so)) {
+					memcpy(_dst, _src, _rm[0].rm_so);
+					_dst += _rm[0].rm_so;
+					_src += _rm[0].rm_so;
+				}
+				memcpy(_dst, _src, _ptnlen);
+				_dst += _rplcbuflen;
+				_src += _ptnlen;
+				memcpy(_dst, _src, _endsrc - _src);
+				_dst += _endsrc - _src;
+				*_dst = '\0';
+				*_sz = _dst - *(unsigned char **)_s;
 			} else {
 				_rplcbuf = (unsigned char *)malloc(_rplcbuflen);
 				if (jstr_unlikely(_rplcbuf == NULL))
@@ -852,7 +863,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	} while (0)
 		PJSTR_CREAT_RPLC_BREF;
 		if (_is_mmap & IS_MALLOC) {
-			memcpy(*_s + _rm[0].rm_eo, _rplcbuf, _rplcbuflen);
+			memcpy(*_s + _rm[0].rm_so, _rplcbuf, _rplcbuflen);
 		}
 #if JSTR_HAVE_REALLOC_MREMAP
 		else if (_is_mmap) {
