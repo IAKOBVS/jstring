@@ -796,9 +796,11 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		unsigned char *_rplcbuf;
 		enum { IS_MMAP = 1,
 		       IS_MALLOC = 1 << 1 };
-		int _is_mmap;
-#if JSTR_HAVE_REALLOC_MREMAP
-		_is_mmap = PJSTR_IS_MMAP(*_cap);
+		int _is_mmap =
+#if !JSTR_HAVE_REALLOC_MREMAP
+		0;
+#else
+		PJSTR_IS_MMAP(*_cap);
 		if (_is_mmap) {
 			_rplcbuf = (unsigned char *)malloc(_rplcbuflen);
 			PJSTR_MALLOC_ERR(_rplcbuf, return JSTR_REG_RET_MALLOC_ERROR);
@@ -898,15 +900,15 @@ JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_rplc_len_bref_now(char **JSTR_RST const _s,
-		       size_t *JSTR_RST const _sz,
-		       size_t *JSTR_RST const _cap,
-		       const char *JSTR_RST const _ptn,
-		       const char *JSTR_RST const _rplc,
-		       size_t _rplclen,
-		       regex_t *JSTR_RST const _preg,
-		       const int _cflags,
-		       const int _eflags,
-		       const size_t _nmatch) JSTR_NOEXCEPT
+			   size_t *JSTR_RST const _sz,
+			   size_t *JSTR_RST const _cap,
+			   const char *JSTR_RST const _ptn,
+			   const char *JSTR_RST const _rplc,
+			   size_t _rplclen,
+			   regex_t *JSTR_RST const _preg,
+			   const int _cflags,
+			   const int _eflags,
+			   const size_t _nmatch) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JSTR_REG_RET_NOERROR;
