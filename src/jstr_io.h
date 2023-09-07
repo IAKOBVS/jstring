@@ -512,7 +512,7 @@ jstr_io_alloc_file_j(jstr_ty *JSTR_RST const _j,
 		    const char *JSTR_RST const _fname,
 		    struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
 {
-	return jstr_io_alloc_file(&_j->data, &_j->size, &_j->cap, _fname, _st);
+	return jstr_io_alloc_file(&_j->data, &_j->size, &_j->capacity, _fname, _st);
 }
 
 /*
@@ -528,7 +528,7 @@ jstr_io_allocexact_file_j(jstr_ty *JSTR_RST const _j,
 			 const char *JSTR_RST const _fname,
 			 struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
 {
-	return jstr_io_allocexact_file(&_j->data, &_j->size, &_j->cap, _fname, _st);
+	return jstr_io_allocexact_file(&_j->data, &_j->size, &_j->capacity, _fname, _st);
 }
 
 PJSTR_END_DECLS

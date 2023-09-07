@@ -136,7 +136,7 @@ PJSTR_END_DECLS
 	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : (__FILE__, __LINE__, __func__, "index out of bounds"))
 
 #define jarr_foreach(j, it) \
-	for (size_t it = 0, _max_elem_##it = (j).size; it < _max_elem_##it; ++it)
+	for (size_t it = 0, _max_elem_##it = (j)->size; it < _max_elem_##it; ++it)
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
