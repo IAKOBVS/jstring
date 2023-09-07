@@ -805,7 +805,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		} else
 #endif
 		{
-			if (*_cap >= _rplcbuflen && *_cap < *_sz + _rplcbuflen) {
+			if ((*_cap >= _rplcbuflen) & (*_cap < *_sz + _rplcbuflen)) {
 				_is_mmap |= IS_MALLOC;
 				_rplcbuf = *(unsigned char **)_s;
 				PJSTR_GROW(*_cap, *_sz + _rplcbuflen);

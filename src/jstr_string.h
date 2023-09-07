@@ -255,7 +255,7 @@ jstr_strrstr_len(const void *JSTR_RST const _hs,
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint16_t _nw = _n[1] << 8 | _n[0];
 		uint16_t _hw = _h[0] << 8 | _h[-1];
-		for (_h -= 2; _h != _start && _hw != _nw; _hw = _hw << 8 | *_h--)
+		for (_h -= 2; (_h != _start) & (_hw != _nw); _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -265,7 +265,7 @@ jstr_strrstr_len(const void *JSTR_RST const _hs,
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint32_t _nw = _n[2] << 24 | _n[1] << 16 | _n[0] << 8;
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8;
-		for (_h -= 3; _h != _start && _hw != _nw; _hw = (_hw | *_h--) << 8)
+		for (_h -= 3; (_h != _start) & (_hw != _nw); _hw = (_hw | *_h--) << 8)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -275,7 +275,7 @@ jstr_strrstr_len(const void *JSTR_RST const _hs,
 		const unsigned char *_n = (unsigned char *)_ne;
 		const uint32_t _nw = _n[3] << 24 | _n[2] << 16 | _n[1] << 8 | _n[0];
 		uint32_t _hw = _h[0] << 24 | _h[-1] << 16 | _h[-2] << 8 | _h[-3];
-		for (_h -= 4; _h != _start && _hw != _nw; _hw = _hw << 8 | *_h--)
+		for (_h -= 4; (_h != _start) & (_hw != _nw); _hw = _hw << 8 | *_h--)
 			;
 		return _hw == _nw ? (void *)(_h + 1) : NULL;
 	}
@@ -323,7 +323,7 @@ pjstr_strcasestr_len_bmh(const char *JSTR_RST const _hs,
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[HL(_h)];                                                     \
-			} while (!_tmp && _h < _end);                                                      \
+			} while ((!_tmp) & (_h < _end));                                                      \
 			_h -= _tmp;                                                                        \
 			if (_tmp < _mtc1)                                                                  \
 				continue;                                                                  \
@@ -379,7 +379,7 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[PJSTR_HASH2_LOWER(_h)];                                      \
-			} while (!_tmp && _h <= _end);                                                     \
+			} while ((!_tmp) & (_h <= _end));                                                  \
 			_h -= _tmp;                                                                        \
 			if (_tmp < _mtc1)                                                                  \
 				continue;                                                                  \
