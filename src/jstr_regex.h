@@ -894,6 +894,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 #	pragma clang diagnostic pop
 #endif
 
+JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_rplc_len_bref_now(char **JSTR_RST const _s,
