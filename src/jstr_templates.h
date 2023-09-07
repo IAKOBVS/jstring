@@ -124,8 +124,8 @@ template <size_t N>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_assign(size_t *JSTR_RST _sz,
-	   char **dst,
-	   const char (&src)[N]) JSTR_NOEXCEPT
+		  char **dst,
+		  const char (&src)[N]) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, N - 1);
 	*dst += N - 1;
@@ -137,8 +137,8 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 appendmore_assign(size_t *_sz,
-	   char **dst,
-	   const char *JSTR_RST src) JSTR_NOEXCEPT
+		  char **dst,
+		  const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_STPCPY
 	char *const _new = stpcpy(*dst, src);
@@ -164,9 +164,9 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(size_t *_sz,
-		char **dst,
-		Str &&_arg,
-		StrArgs &&..._args) JSTR_NOEXCEPT
+		       char **dst,
+		       Str &&_arg,
+		       StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	appendmore_assign(_sz, dst, std::forward<Str>(_arg));
 	appendmore_loop_assign(_sz, dst, std::forward<StrArgs>(_args)...);
@@ -178,8 +178,8 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(char **dst,
-		Str &&_arg,
-		StrArgs &&..._args) JSTR_NOEXCEPT
+		       Str &&_arg,
+		       StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	appendmore_assign(dst, std::forward<Str>(_arg));
 	appendmore_loop_assign(dst, std::forward<StrArgs>(_args)...);
@@ -227,8 +227,8 @@ template <size_t N>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_assign(char **JSTR_RST const dst,
-	   size_t **JSTR_RST strlen_arr,
-	   const char (&src)[N]) JSTR_NOEXCEPT
+		  size_t **JSTR_RST strlen_arr,
+		  const char (&src)[N]) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, N - 1);
 	*dst += N - 1;
@@ -240,8 +240,8 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
 appendmore_assign(char **JSTR_RST dst,
-	   size_t **JSTR_RST strlen_arr,
-	   const char *JSTR_RST src) JSTR_NOEXCEPT
+		  size_t **JSTR_RST strlen_arr,
+		  const char *JSTR_RST src) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, *(*strlen_arr));
 	*dst += *(*strlen_arr)++;
@@ -260,9 +260,9 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(char **dst,
-		size_t *strlen_arr,
-		Str &&_arg,
-		StrArgs &&..._args) JSTR_NOEXCEPT
+		       size_t *strlen_arr,
+		       Str &&_arg,
+		       StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	appendmore_assign(dst, &strlen_arr, std::forward<Str>(_arg));
 	appendmore_loop_assign(dst, strlen_arr, std::forward<StrArgs>(_args)...);
@@ -281,10 +281,10 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_alloc_appendmore(char **JSTR_RST const _s,
-	       size_t *const _sz,
-	       size_t *const _cap,
-	       Str &&_arg,
-	       StrArgs &&..._args) JSTR_NOEXCEPT
+		      size_t *const _sz,
+		      size_t *const _cap,
+		      Str &&_arg,
+		      StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(_args)];
 	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
@@ -306,9 +306,9 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_alloc_appendmore_f(char *JSTR_RST const _s,
-		 size_t *const _sz,
-		 Str &&_arg,
-		 StrArgs &&..._args) JSTR_NOEXCEPT
+			size_t *const _sz,
+			Str &&_arg,
+			StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(_args)];
 #	if 0
@@ -330,16 +330,17 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_appendmore(char **JSTR_RST const _s,
-	 size_t *const _sz,
-	 size_t *const _cap,
-	 Str &&_arg,
-	 StrArgs &&..._args) JSTR_NOEXCEPT
+		size_t *const _sz,
+		size_t *const _cap,
+		Str &&_arg,
+		StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(_args)];
+	const size_t newsz =
 #	if 0
-	const size_t newsz = *_sz + jstr::_priv::strlen_args(std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
+	*_sz + jstr::_priv::strlen_args(std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	else
-	const size_t newsz = *_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
+	*_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 #	endif
 	if (*_cap < *_sz)
 		PJSTR_REALLOC(*_s, *_cap, newsz + 1, return);
@@ -363,9 +364,9 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_appendmore_f(char *_s,
-	   size_t *JSTR_RST _sz,
-	   Str &&_arg,
-	   StrArgs &&..._args) JSTR_NOEXCEPT
+		  size_t *JSTR_RST _sz,
+		  Str &&_arg,
+		  StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	_s += *_sz;
 	jstr::_priv::appendmore_loop_assign(_sz, &_s, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
