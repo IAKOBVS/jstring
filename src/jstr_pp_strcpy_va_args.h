@@ -8517,13 +8517,13 @@
 
 #	if defined(__GLIBC__)
 #		if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) || defined(_GNU_SOURCE))
-#			define PJSTR_PP_STRCPY_TO_DST(dst, strlen_arr_ptr, src) \
+#			define PJSTR_PP_STRCPY(dst, strlen_arr_ptr, src) \
 				do {                                             \
 					dst = stpcpy(dst, src);                  \
 				} while (0)
 #		endif /* HAVE_STPCPY */
 #	else
-#		define PJSTR_PP_STRCPY_TO_DST(dst, strlen_arr_ptr, src) \
+#		define PJSTR_PP_STRCPY(dst, strlen_arr_ptr, src) \
 			do {                                             \
 				memcpy(dst, src, strlen_arr_ptr);        \
 				dst += strlen_arr_ptr;                   \
@@ -8532,13 +8532,13 @@
 
 #else
 
-#	define PJSTR_PP_STRCPY_TO_DST(DST, STRLEN_ARRAY, INDEX, ...) \
-		JSTR_PP_STRCPY_TO_DST_HELPER(DST, ((STRLEN_ARRAY)[(INDEX)]), PJSTR_PP_EXTRACT_ARGS((INDEX), __VA_ARGS__))
+#	define PJSTR_PP_STRCPY(DST, STRLEN_ARRAY, INDEX, ...) \
+		PJSTR_PP_STRCPY_HELPER(DST, ((STRLEN_ARRAY)[(INDEX)]), PJSTR_PP_EXTRACT_ARGS(INDEX, __VA_ARGS__), __VA_ARGS__)
 
-#	define PJSTR_PP_STRCPY_TO_DST_HELPER(DST, STRLEN_ARRAY, SRC) \
+#	define PJSTR_PP_STRCPY_HELPER(DST, STRLEN, SRC, ...) \
 		do {                                                  \
-			memcpy(DST, SRC, STRLEN_ARRAY);               \
-			DST += STRLEN_ARRAY;                          \
+			memcpy(DST, SRC, STRLEN);               \
+			DST += STRLEN;                          \
 		} while (0)
 
 #endif
