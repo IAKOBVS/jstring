@@ -122,7 +122,7 @@ typedef struct jstr_ty {
 	debug_print(void) JSTR_NOEXCEPT
 	{
 		fprintf(stderr, "size:%zu\ncapacity:%zu\n", this->size, this->capacity);
-		fprintf(stderr, "strlen:%zu\n", strlen(this->data));
+		fprintf(stderr, "strlen():%zu\n", strlen(this->data));
 		fprintf(stderr, "data puts():%s\n", this->data);
 		fputs("data:", stderr);
 		fwrite(this->data, 1, this->size, stderr);
