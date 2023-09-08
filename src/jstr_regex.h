@@ -867,23 +867,24 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			}
 			PJSTR_MALLOC_ERR(_rdst, goto cleanup);
 			PJSTR_CREAT_RPLC_BREF(_rdst);
-			if (_rplclen <= _findlen)
-				PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen);
-			else if (*_cap > *_sz + _rdstlen - _findlen)
-				PJSTR_REG_RPLCALL_SMALL_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp, goto cleanup);
-			else
-				PJSTR_REG_RPLCALL_BIG_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp, goto cleanup);
+#define PJSTR_RPLCALL_BREF(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail)                    \
+	if (rplc_dstlen <= findlen)                                                                          \
+		PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc_dst, rplc_dstlen, findlen);                         \
+	else if (*_cap > *_sz + rplc_dstlen - findlen)                                                       \
+		PJSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail); \
+	else                                                                                                 \
+		PJSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail);
+			PJSTR_RPLCALL_BREF(_dst, _old, _p, _rdst, _rdstlen, _findlen, _tmp, goto cleanup);
 		} else {
 			PJSTR_CREAT_RPLC_BREF(_rdst_stack);
-			if (_rplclen <= _findlen)
-				PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen);
-			else if (*_cap > *_sz + _rdstlen - _findlen)
-				PJSTR_REG_RPLCALL_SMALL_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp, goto cleanup);
-			else
-				PJSTR_REG_RPLCALL_BIG_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp, goto cleanup);
+			PJSTR_RPLCALL_BREF(_dst, _old, _p, _rdst_stack, _rdstlen, _findlen, _tmp, goto cleanup);
 		}
 	}
 cleanup:
+	if (_dst != _old) {
+		memmove(_dst, _old, (*(u **)_s + *_sz) - _old + 1);
+		*_sz = (_dst + (*(u **)_s + *_sz - _old)) - *(u **)_s;
+	}
 	if (_rdst)
 		free(_rdst);
 	return _ret;
@@ -993,5 +994,8 @@ PJSTR_END_DECLS
 #undef PJSTR_REG_EXEC
 #undef PJSTR_REG_LOG
 #undef JSTR_REG_DEBUG
+
+#undef PJSTR_REG_RPLCALL_SMALL_RPLC
+#undef PJSTR_REG_RPLCALL_BIG_RPLC
 
 #endif /* JSTR_REGEX_DEF_H */
