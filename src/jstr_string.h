@@ -323,7 +323,7 @@ pjstr_strcasestr_len_bmh(const char *JSTR_RST const _hs,
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[HL(_h)];                                                     \
-			} while ((!_tmp) & (_h < _end));                                                      \
+			} while ((!_tmp) & (_h < _end));                                                   \
 			_h -= _tmp;                                                                        \
 			if (_tmp < _mtc1)                                                                  \
 				continue;                                                                  \
@@ -547,7 +547,7 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 		_hs = strchr(_hs, *_ne);
 	}
 	if (jstr_unlikely(_hs == NULL)
-	    || jstr_unlikely(_ne[1] == '\0'))
+	    || !jstr_strcasecmp(_hs, _ne))
 		return (char *)_hs;
 	_is_alpha0 += jstr_isalpha(_ne[1]);
 	if (_ne[2] == '\0') {
