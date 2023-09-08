@@ -186,11 +186,11 @@ jstr_slip_len(char **JSTR_RST const _s,
 	      const char *JSTR_RST const _rplc,
 	      const size_t _rplclen) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_REALLOC_MREMAP
+#if JSTR_COPY_IF_NO_MREMAP
 	if (PJSTR_IS_MMAP(*_cap))
-		return pjstr_slip_len_realloc(_s, _sz, _cap, _at, _rplc, _rplclen);
-#endif /* HAVE_REALLOC_MREMAP */
-	return pjstr_slip_len_malloc(_s, _sz, _cap, _at, _rplc, _rplclen);
+		return pjstr_slip_len_malloc(_s, _sz, _cap, _at, _rplc, _rplclen);
+#endif /* COPY_IF_NO_MREMAP */
+	return pjstr_slip_len_realloc(_s, _sz, _cap, _at, _rplc, _rplclen);
 }
 
 JSTR_FUNC
@@ -209,23 +209,23 @@ pjstr_rplcat_len_may_lower(char **JSTR_RST const _s,
 	} else if (*_cap > *_sz + _rplclen - _findlen) {
 		return pjstr_rplcat_len_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
 	} else {
-#if JSTR_HAVE_REALLOC_MREMAP
+#if JSTR_COPY_IF_NO_MREMAP
 		if (PJSTR_IS_MMAP(*_cap)) {
-			PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _findlen, return NULL);
-			return pjstr_rplcat_len_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
+			PJSTR_GROW(*_cap, *_sz + _rplclen - _findlen);
+			char *const _tmp = (char *)malloc(*_cap);
+			PJSTR_MALLOC_ERR(_tmp, return NULL);
+			memcpy(_tmp, *_s, _at);
+			memcpy(_tmp + _at, _rplc, _rplclen);
+			memcpy(_tmp + _at + _rplclen,
+			       *_s + _at + _findlen,
+			       *_sz - _at + _findlen + 1);
+			free(*_s);
+			*_s = _tmp;
 		}
 #else
-		PJSTR_GROW(*_cap, *_sz + _rplclen - _findlen);
-		char *const _tmp = (char *)malloc(*_cap);
-		PJSTR_MALLOC_ERR(_tmp, return NULL);
-		memcpy(_tmp, *_s, _at);
-		memcpy(_tmp + _at, _rplc, _rplclen);
-		memcpy(_tmp + _at + _rplclen,
-		       *_s + _at + _findlen,
-		       *_sz - _at + _findlen + 1);
-		free(*_s);
-		*_s = _tmp;
-#endif /* HAVE_REALLOC_MREMAP */
+		PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _findlen, return NULL);
+		return pjstr_rplcat_len_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
+#endif /* COPY_IF_NO_MREMAP */
 	}
 	*_sz += _rplclen - _findlen;
 ret:
@@ -243,10 +243,10 @@ pjstr_rplcat_len(char **JSTR_RST const _s,
 		 const size_t _rplclen,
 		 const size_t _findlen) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_REALLOC_MREMAP
+#if JSTR_COPY_IF_NO_MREMAP
 	if (PJSTR_IS_MMAP(*_cap))
 		return pjstr_rplcat_len_realloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
-#endif /* HAVE_REALLOC_MREMAP */
+#endif /* COPY_IF_NO_MREMAP */
 	return pjstr_rplcat_len_malloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
 }
 
@@ -287,17 +287,17 @@ jstr_slipaftallchr_len(char **JSTR_RST const _s,
 {
 	size_t off = 0;
 	const char *_p;
-#if JSTR_HAVE_REALLOC_MREMAP
-	const int is_mmap = PJSTR_IS_MMAP(*_cap);
-#endif /* HAVE_REALLOC_MREMAP */
+#if JSTR_COPY_IF_NO_MREMAP
+	const int _must_copy = PJSTR_IS_MMAP(*_cap);
+#endif /* COPY_IF_NO_MREMAP */
 	while ((_p = (char *)memchr(*_s + off, _c, *_sz - off))) {
 		off = _p - *_s;
-#if JSTR_HAVE_REALLOC_MREMAP
-		if (jstr_unlikely(is_mmap)) {
-			if (jstr_unlikely(!pjstr_slip_len_realloc(_s, _sz, _cap, off, _src, _srclen)))
+#if JSTR_COPY_IF_NO_MREMAP
+		if (jstr_unlikely(_must_copy)) {
+			if (jstr_unlikely(!pjstr_slip_len_malloc(_s, _sz, _cap, off, _src, _srclen)))
 				return 0;
 		} else
-#endif /* HAVE_REALLOC_MREMAP */
+#endif /* COPY_IF_NO_MREMAP */
 			if (jstr_unlikely(!pjstr_slip_len_realloc(_s, _sz, _cap, off, _src, _srclen)))
 				return 0;
 		off += _srclen + 1;
@@ -351,18 +351,18 @@ jstr_slipaftall_len(char **JSTR_RST const _s,
 		return 1;
 	size_t off = 0;
 	const char *_p;
-#if JSTR_HAVE_REALLOC_MREMAP
-	const int is_mmap = PJSTR_IS_MMAP(*_cap);
-#endif /* HAVE_REALLOC_MREMAP */
+#if JSTR_COPY_IF_NO_MREMAP
+	const int _must_copy = PJSTR_IS_MMAP(*_cap);
+#endif /* COPY_IF_NO_MREMAP */
 	while ((_p = (char *)PJSTR_MEMMEM(*_s + off, *_sz - off, _find, _findlen))) {
 		off = _p - *_s;
-#if JSTR_HAVE_REALLOC_MREMAP
-		if (jstr_unlikely(is_mmap)) {
-			if (jstr_unlikely(!pjstr_slip_len_realloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen)))
+#if JSTR_COPY_IF_NO_MREMAP
+		if (jstr_unlikely(_must_copy)) {
+			if (jstr_unlikely(!pjstr_slip_len_malloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen)))
 				return 0;
 		} else
-#endif /* HAVE_REALLOC_MREMAP */
-			if (jstr_unlikely(!pjstr_slip_len_malloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen)))
+#endif /* COPY_IF_NO_MREMAP */
+			if (jstr_unlikely(!pjstr_slip_len_realloc(_s, _sz, _cap, _p - *_s + _findlen, _src, _srclen)))
 				return 0;
 		off += _findlen + _srclen;
 	}
@@ -878,18 +878,18 @@ pjstr_rplcall_len(const pjstr_flag_use_n_ty _flag,
 	const unsigned char *_p = *(u **)_s;
 	const unsigned char *_old = _p;
 	unsigned char *_dst = *(u **)_s;
-#if JSTR_HAVE_REALLOC_MREMAP
-	const int is_mmap = PJSTR_IS_MMAP(*_cap);
-#endif /* HAVE_REALLOC_MREMAP */
+#if JSTR_COPY_IF_NO_MREMAP
+	const int _must_copy = PJSTR_IS_MMAP(*_cap);
+#endif /* COPY_IF_NO_MREMAP */
 	while ((_p = (u *)PJSTR_MEMMEM((char *)_p, (*(u **)_s + *_sz) - _p, _find, _findlen))) {
 		if (_rplclen <= _findlen)
 			PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen);
-#if JSTR_HAVE_REALLOC_MREMAP
-		else if (jstr_unlikely(is_mmap))
-			_p = (u *)pjstr_rplcat_len_realloc(_s, _sz, _cap, _p - *(u **)_s, _rplc, _rplclen, _findlen);
-#endif /* HAVE_REALLOC_MREMAP */
-		else
+#if JSTR_COPY_IF_NO_MREMAP
+		else if (jstr_unlikely(_must_copy))
 			_p = (u *)pjstr_rplcat_len_malloc(_s, _sz, _cap, _p - *(u **)_s, _rplc, _rplclen, _findlen);
+#endif /* COPY_IF_NO_MREMAP */
+		else
+			_p = (u *)pjstr_rplcat_len_realloc(_s, _sz, _cap, _p - *(u **)_s, _rplc, _rplclen, _findlen);
 		if (jstr_unlikely(_p == NULL))
 			return 0;
 		if (_flag & PJSTR_FLAG_USE_N)

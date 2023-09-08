@@ -527,9 +527,9 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 	unsigned char *_dst = *(u **)_s;
 	unsigned char *_p = _dst;
 	const unsigned char *_old = _dst;
-#if JSTR_HAVE_REALLOC_MREMAP
-	const int _is_mmap = PJSTR_IS_MMAP(*_cap);
-#endif /* HAVE_REALLOC_MREMAP */
+#if JSTR_COPY_IF_NO_MREMAP
+	const int _must_copy = PJSTR_IS_MMAP(*_cap);
+#endif /* JSTR_COPY_IF_NO_MREMAP */
 	while ((_flag & PJSTR_FLAG_USE_N ? _n-- : 1)
 	       && PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, 1, &_rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		_ret = JSTR_REG_RET_NOERROR;
@@ -570,22 +570,8 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 			}
 		} else {
 			PJSTR_REG_DEB("_cap <= *_sz + _rplclen - _ptnlen");
-#if JSTR_HAVE_REALLOC_MREMAP
-			if (jstr_unlikely(_is_mmap)) {
-				if (_dst != _old)
-					memmove(_dst, _old, _p - _old);
-				_tmp = *(u **)_s;
-				PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _ptnlen, return JSTR_REG_RET_ENOMEM);
-				memmove(_p + _rplclen,
-					_p + _ptnlen,
-					(_tmp + *_sz) - (_p + _ptnlen) + 1);
-				memcpy(_p, _rplc, _rplclen);
-				_p = *(u **)_s + (_p - _tmp);
-				_dst = *(u **)_s + (_dst - _tmp) + _rplclen;
-				_old = _dst;
-			} else
-#endif /* HAVE_REALLOC_MREMAP */
-			{
+#if JSTR_COPY_IF_NO_MREMAP
+			if (jstr_unlikely(_must_copy)) {
 				PJSTR_GROW(*_cap, *_sz + _rplclen - _ptnlen);
 				_tmp = (u *)malloc(*_cap);
 				PJSTR_MALLOC_ERR(_tmp, return JSTR_REG_RET_ENOMEM);
@@ -602,23 +588,7 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 					       (*(u **)_s + *_sz) - (_p + _ptnlen) + 1);
 					_old = _dst;
 				} else {
-#if 0
-#	ifdef __clang__
-#		pragma clang diagnostic ignored "-Wunknown-warning-option"
-#		pragma clang diagnostic push
-#	elif defined __GNUC__
-#		pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#		pragma GCC diagnostic push
-#	endif
 					memcpy(_tmp, *_s, _p - *(u **)_s);
-#	ifdef __GNUC__
-#		pragma GCC diagnostic pop
-#	elif defined __clang__
-#		pragma clang diagnostic pop
-#	endif
-#else
-					memcpy(_tmp, *_s, _p - *(u **)_s);
-#endif
 					memcpy(_tmp + (_p - *(u **)_s), _rplc, _rplclen);
 					memcpy(_tmp + (_p - (*(u **)_s + _rplclen)),
 					       _p + _ptnlen,
@@ -627,6 +597,20 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 				_p = _tmp + (_p - *(u **)_s);
 				free(*_s);
 				*_s = (char *)_tmp;
+			} else
+#endif /* JSTR_COPY_IF_NO_MREMAP */
+			{
+				if (_dst != _old)
+					memmove(_dst, _old, _p - _old);
+				_tmp = *(u **)_s;
+				PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen - _ptnlen, return JSTR_REG_RET_ENOMEM);
+				memmove(_p + _rplclen,
+					_p + _ptnlen,
+					(_tmp + *_sz) - (_p + _ptnlen) + 1);
+				memcpy(_p, _rplc, _rplclen);
+				_p = *(u **)_s + (_p - _tmp);
+				_dst = *(u **)_s + (_dst - _tmp) + _rplclen;
+				_old = _dst;
 			}
 		}
 		*_sz += _rplclen - _ptnlen;
@@ -804,7 +788,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	_rsrc = (unsigned char *)_rplc;
 	if (jstr_unlikely(_rdstlen > 256)) {
 		unsigned char *_rdst;
-#if !JSTR_HAVE_REALLOC_MREMAP
+#if !JSTR_COPY_IF_NO_MREMAP
 		_flag = 0;
 #else
 		_flag = PJSTR_IS_MMAP(*_cap);
@@ -873,13 +857,13 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		PJSTR_CREAT_RPLC_BREF;
 		if (_flag & IS_MALLOC) {
 			memcpy(*_s + _rm[0].rm_so, _rdst, _rdstlen);
-#if JSTR_HAVE_REALLOC_MREMAP
+#if JSTR_COPY_IF_NO_MREMAP
 		} else if (_flag & IS_MMAP) {
-			if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL))
+			if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL))
 				_ret = JSTR_REG_RET_ENOMEM;
 #endif
 		} else {
-			if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL))
+			if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL))
 				_ret = JSTR_REG_RET_ENOMEM;
 		}
 		free(_rdst);
@@ -947,7 +931,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		_rsrc = (unsigned char *)_rplc;
 		if (jstr_unlikely(_rdstlen > 256)) {
 			unsigned char *_rdst;
-#if !JSTR_HAVE_REALLOC_MREMAP
+#if !JSTR_COPY_IF_NO_MREMAP
 			_flag = 0;
 #else
 			_flag = PJSTR_IS_MMAP(*_cap);
@@ -1016,7 +1000,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			PJSTR_CREAT_RPLC_BREF;
 			if (_flag & IS_MALLOC) {
 				memcpy(*_s + _rm[0].rm_so, _rdst, _rdstlen);
-#if JSTR_HAVE_REALLOC_MREMAP
+#if JSTR_COPY_IF_NO_MREMAP
 			} else if (_flag & IS_MMAP) {
 				if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL)) {
 					free(_rdst);

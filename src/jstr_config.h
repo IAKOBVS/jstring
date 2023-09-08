@@ -15,6 +15,14 @@
 
 #define PJSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
+/*
+   realloc() must malloc(), memcpy(),
+   free() for mmaped chunks.
+*/
+#ifndef JSTR_COPY_IF_NO_MREMAP
+#	define JSTR_COPY_IF_NO_MREMAP 0
+#endif
+
 #ifndef PJSTR_NO_UNROLL
 #	define PJSTR_NO_UNROLL 0
 #endif

@@ -85,9 +85,9 @@ PJSTR_END_DECLS
 		PJSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
 
-#if JSTR_HAVE_REALLOC_MREMAP
+#if JSTR_COPY_IF_NO_MREMAP
 #	define PJSTR_IS_MMAP(cap) ((jstr_unlikely(cap) > PJSTR_MIN_MMAP))
-#endif /* HAVE_REALLOC_MREMAP */
+#endif /* COPY_IF_NO_MREMAP */
 
 #ifdef __cplusplus
 

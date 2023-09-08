@@ -1,6 +1,8 @@
 #ifndef JSTR_MACROS_DEF_H
 #define JSTR_MACROS_DEF_H 1
 
+#include "jstr_config.h"
+#include "libc-pointer-arith.h"
 #include <features.h>
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L && !defined __cplusplus
@@ -380,18 +382,18 @@ case 'Y':               \
 case 'Z':
 
 #define JSTR_CASE_XDIGIT \
-JSTR_CASE_DIGIT \
-case 'a':                 \
-case 'b':                 \
-case 'c':                 \
-case 'd':                 \
-case 'e':                 \
-case 'f':                 \
-case 'A':                 \
-case 'B':                 \
-case 'C':                 \
-case 'D':                 \
-case 'E':                 \
+	JSTR_CASE_DIGIT  \
+case 'a':                \
+case 'b':                \
+case 'c':                \
+case 'd':                \
+case 'e':                \
+case 'f':                \
+case 'A':                \
+case 'B':                \
+case 'C':                \
+case 'D':                \
+case 'E':                \
 case 'F':
 
 #define JSTR_CASE_BLANK \
@@ -661,14 +663,12 @@ case '~':
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
 
-#if defined __linux__ && defined __GLIBC__
-#	define JSTR_HAVE_REALLOC_MREMAP 1
+#if defined __linux__ || defined __GLIBC__
+#	undef JSTR_COPY_IF_NO_MREMAP
+#	define JSTR_COPY_IF_NO_MREMAP 0
 #endif /* Gnu */
 
 #define JSTR_RST JSTR_RESTRICT
-
-#include "jstr_config.h"
-#include "libc-pointer-arith.h"
 
 #define PJSTR_ALIGN_UP_STR(base)       PJSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define PJSTR_PTR_IS_ALIGNED_STR(base) PJSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
@@ -744,7 +744,7 @@ case '~':
 
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS extern "C" {
-#	define PJSTR_END_DECLS	 }
+#	define PJSTR_END_DECLS	  }
 #else
 #	define PJSTR_BEGIN_DECLS
 #	define PJSTR_END_DECLS
