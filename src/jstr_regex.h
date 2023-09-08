@@ -1126,16 +1126,16 @@ JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_rplcn_len_bref_now(char **JSTR_RST const _s,
-			      size_t *JSTR_RST const _sz,
-			      size_t *JSTR_RST const _cap,
-			      const char *JSTR_RST const _ptn,
-			      const char *JSTR_RST const _rplc,
-			      size_t _n,
-			      size_t _rplclen,
-			      regex_t *JSTR_RST const _preg,
-			      const int _cflags,
-			      const int _eflags,
-			      const size_t _nmatch) JSTR_NOEXCEPT
+			    size_t *JSTR_RST const _sz,
+			    size_t *JSTR_RST const _cap,
+			    const char *JSTR_RST const _ptn,
+			    const char *JSTR_RST const _rplc,
+			    size_t _n,
+			    size_t _rplclen,
+			    regex_t *JSTR_RST const _preg,
+			    const int _cflags,
+			    const int _eflags,
+			    const size_t _nmatch) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_ptn == '\0'))
 		return JSTR_REG_RET_NOERROR;
