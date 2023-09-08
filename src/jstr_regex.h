@@ -867,13 +867,15 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			}
 			PJSTR_MALLOC_ERR(_rdst, goto cleanup);
 			PJSTR_CREAT_RPLC_BREF(_rdst);
-#define PJSTR_RPLCALL_BREF(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail)                    \
-	if (rplc_dstlen <= findlen)                                                                          \
-		PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc_dst, rplc_dstlen, findlen);                         \
-	else if (*_cap > *_sz + rplc_dstlen - findlen)                                                       \
-		PJSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail); \
-	else                                                                                                 \
-		PJSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail);
+#define PJSTR_RPLCALL_BREF(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail)                            \
+	do {                                                                                                         \
+		if (rplc_dstlen <= findlen)                                                                          \
+			PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc_dst, rplc_dstlen, findlen);                         \
+		else if (*_cap > *_sz + rplc_dstlen - findlen)                                                       \
+			PJSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail); \
+		else                                                                                                 \
+			PJSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail);   \
+	} while (0)
 			PJSTR_RPLCALL_BREF(_dst, _old, _p, _rdst, _rdstlen, _findlen, _tmp, goto cleanup);
 		} else {
 			PJSTR_CREAT_RPLC_BREF(_rdst_stack);
