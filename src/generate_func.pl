@@ -23,7 +23,7 @@ my $G_STRUCT_VAR  = 'j';
 
 my $G_STRUCT_DATA = 'data';
 my $G_STRUCT_SIZE = 'size';
-my $G_STRUCT_CAP  = 'cap';
+my $G_STRUCT_CAP  = 'capacity';
 
 my $G_CAP_PTN  = 'cap';
 my $G_SIZE_PTN = 'sz';
