@@ -740,10 +740,10 @@ jstr_reg_rplc_len_now(char **JSTR_RST const _s,
 }
 
 #ifdef __clang__
-#	pragma clang diagnostic ignored "-Wunknown-warning-option"
+/* #	pragma clang diagnostic ignored "-Wunknown-warning-option" */
 #	pragma clang diagnostic push
 #elif defined __GNUC__
-#	pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+/* #	pragma GCC diagnostic ignored "-Wmaybe-uninitialized" */
 #	pragma GCC diagnostic push
 #endif
 
@@ -900,7 +900,9 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	regmatch_t _rm[10];
 	jstr_reg_errcode_ty _ret = JSTR_REG_RET_NOERROR;
 	size_t _rdstlen = _rplclen;
-	size_t _rdstcap = 0;
+	size_t _rdstcap;
+	unsigned char _rdst_stack[256];
+	unsigned char *_rdst = NULL;
 	const unsigned char *_rsrc;
 	const unsigned char *const _rend = (unsigned char *)_rplc + _rplclen;
 	enum { MUST_COPY = 1,
@@ -913,8 +915,9 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		_ret = PJSTR_REG_EXEC(_preg, *_s + _off, *_sz - _off, _nmatch, _rm, _eflags);
 		_findlen = _rm[0].rm_eo - _rm[0].rm_so;
 		if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR)
-		    || jstr_unlikely(_findlen == 0))
-			return _ret;
+		    || jstr_unlikely(_findlen == 0)) {
+			goto cleanup;
+		}
 		_rsrc = (unsigned char *)_rplc;
 		_rdstlen = _rplclen;
 		_rm[0].rm_so += _off;
@@ -931,9 +934,8 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			return jstr_reg_rplc_len(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 		_rsrc = (unsigned char *)_rplc;
 		if (jstr_unlikely(_rdstlen > 256)) {
-			unsigned char *_rdst;
-#if JSTR_COPY_IF_NO_MREMAP || 1
-			/* _flag = PJSTR_IS_MMAP(*_cap); */
+#if JSTR_COPY_IF_NO_MREMAP
+			_flag = PJSTR_IS_MMAP(*_cap);
 			if (_flag & MUST_COPY) {
 				if (*_cap >= _rdstlen && *_cap < *_sz + _rdstlen) {
 					_flag |= IS_MALLOC;
@@ -957,26 +959,28 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 					*_dst = '\0';
 					*_sz = _dst - *(unsigned char **)_s;
 				} else {
-					if (_rdstcap < _rdstlen) {
-						if (jstr_unlikely(_rdstcap == 0)) {
-							_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
-							_rdst = (unsigned char *)malloc(_rdstcap);
-						} else {
-							PJSTR_GROW(_rdstcap, _rdstlen);
-							_rdst = (unsigned char *)realloc(_rdst, _rdstcap);
-						}
-						PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
+					if (jstr_unlikely(_rdst == NULL)) {
+						_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
+						_rdst = (unsigned char *)malloc(_rdstcap);
+					} else if (_rdstcap < _rdstlen) {
+						PJSTR_GROW(_rdstcap, _rdstlen);
+						_rdst = (unsigned char *)realloc(_rdst, _rdstcap);
 					}
+					PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
 				}
 			} else
 #endif
 			{
-				if (_rdstcap < _rdstlen) {
-					_rdst = (unsigned char *)malloc(_rdstlen);
+				if (jstr_unlikely(_rdst == NULL)) {
+					_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
+					_rdst = (unsigned char *)malloc(_rdstcap);
+					PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
+				} else if (_rdstcap < _rdstlen) {
+					PJSTR_GROW(_rdstcap, _rdstlen);
+					_rdst = (unsigned char *)realloc(_rdst, _rdstcap);
 					PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
 				}
-			}
-#define PJSTR_CREAT_RPLC_BREF                                                                \
+#define PJSTR_CREAT_RPLC_BREF(_rdst)                                                         \
 	do {                                                                                 \
 		unsigned char *_rdstp = _rdst;                                               \
 		const unsigned char *_old;                                                   \
@@ -1006,31 +1010,36 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			}                                                                    \
 		}                                                                            \
 	} while (0)
-			PJSTR_CREAT_RPLC_BREF;
+				PJSTR_CREAT_RPLC_BREF(_rdst);
 #if JSTR_COPY_IF_NO_MREMAP
-			if (_flag & IS_MALLOC) {
-				memcpy(*_s + _rm[0].rm_so, _rdst, _rdstlen);
-			} else if (_flag & MUST_COPY) {
-				if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL)) {
-					free(_rdst);
-					return JSTR_REG_RET_ENOMEM;
-				}
-			} else
+				if (_flag & IS_MALLOC) {
+					memcpy(*_s + _rm[0].rm_so, _rdst, _rdstlen);
+				} else if (_flag & MUST_COPY) {
+					if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL)) {
+						_ret = JSTR_REG_RET_NOERROR;
+						goto cleanup_force;
+					}
+				} else
 #endif
-			{
-				if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL)) {
-					free(_rdst);
-					return JSTR_REG_RET_ENOMEM;
+				{
+					if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL)) {
+						_ret = JSTR_REG_RET_NOERROR;
+						goto cleanup_force;
+					}
 				}
 			}
-			free(_rdst);
 		} else {
-			unsigned char _rdst[256];
-			PJSTR_CREAT_RPLC_BREF;
-			if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL))
-				return JSTR_REG_RET_ENOMEM;
+			PJSTR_CREAT_RPLC_BREF(_rdst_stack);
+			if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst_stack, _rdstlen, _findlen) == NULL)) {
+				_ret = JSTR_REG_RET_NOERROR;
+				goto cleanup_force;
+			}
 		}
 	}
+cleanup:
+	if (_rdst)
+cleanup_force:
+		free(_rdst);
 	return _ret;
 #undef PJSTR_CREAT_RPLC_BREF
 }
@@ -1044,6 +1053,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 #endif
 
 JSTR_FUNC
+JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_reg_rplcall_len_bref(char **JSTR_RST const _s,
 			  size_t *JSTR_RST const _sz,
