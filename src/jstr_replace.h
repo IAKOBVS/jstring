@@ -467,7 +467,7 @@ pjstr_rmallchr_len_p(const pjstr_flag_use_n_ty _flag,
 	const unsigned char *_old = _dst;
 	const unsigned char *_p = _dst;
 	const unsigned char *const _end = _dst + _sz;
-	while ((_flag & PJSTR_FLAG_USE_N ? jstr_likely(_n--) : 1)
+	while ((_flag & PJSTR_FLAG_USE_N ? _n-- : 1)
 	       && (_p = (unsigned char *)memchr(_p, _c, _end - _p)))
 		PJSTR_RMALL_IN_PLACE(_dst, _old, _p, 1);
 	memmove(_dst, _old, _end - _old + 1);
@@ -542,7 +542,7 @@ jstr_rmnc_p(char *JSTR_RST const _s,
 	unsigned char *_dst = (unsigned char *)_s;
 	const unsigned char *_old = _dst;
 	const unsigned char *_p = _dst;
-	while (jstr_likely(_n--) && *(_p = (unsigned char *)strchrnul((char *)_p, _c)))
+	while (_n-- && *(_p = (unsigned char *)strchrnul((char *)_p, _c)))
 		PJSTR_RMALL_IN_PLACE(_dst, _old, _p, 1);
 	memmove(_dst, _old, _p - _old + 1);
 	return (char *)_dst + (_p - _old);
@@ -665,7 +665,7 @@ jstr_rplcnc_len(char *JSTR_RST _s,
 		const size_t _sz) JSTR_NOEXCEPT
 {
 	const char *JSTR_RST const _end = _s + _sz;
-	while (jstr_likely(_n--) && (_s = (char *)memchr(_s, _find, _end - _s)))
+	while (_n-- && (_s = (char *)memchr(_s, _find, _end - _s)))
 		*_s++ = _rplc;
 }
 
@@ -679,7 +679,7 @@ jstr_rplcnc(char *JSTR_RST _s,
 	    const int _rplc,
 	    size_t _n) JSTR_NOEXCEPT
 {
-	while (jstr_likely(_n--) && (_s = strchr(_s, _find)))
+	while (_n-- && (_s = strchr(_s, _find)))
 		*_s++ = _rplc;
 }
 
