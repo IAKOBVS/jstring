@@ -392,8 +392,6 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 		}                                                                                          \
 		return NULL;                                                                               \
 	} while (0)
-	if (!jstr_strcasecmp(_hs, _ne))
-		return (char *)_hs;
 	const size_t _nelen = strlen(_ne);
 	size_t _hslen = jstr_strnlen(_hs, _nelen | 512);
 	if (_hslen < _nelen)
