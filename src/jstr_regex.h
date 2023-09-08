@@ -273,12 +273,13 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_reg_search_now(const char *JSTR_RST const _s,
+		    const char *JSTR_RST const _ptn,
 		    regex_t *JSTR_RST const _preg,
 		    regmatch_t *JSTR_RST const _pmatch,
 		    const int _cflags,
 		    const int _eflags) JSTR_NOEXCEPT
 {
-	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _s, _cflags);
+	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
 	return jstr_reg_search(_s, _preg, _pmatch, _eflags);
