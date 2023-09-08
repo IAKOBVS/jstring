@@ -1017,14 +1017,14 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 				} else if (_flag & MUST_COPY) {
 					if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL)) {
 						_ret = JSTR_REG_RET_NOERROR;
-						goto cleanup_force;
+						goto cleanup_force_free;
 					}
 				} else
 #endif
 				{
 					if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL)) {
 						_ret = JSTR_REG_RET_NOERROR;
-						goto cleanup_force;
+						goto cleanup_force_free;
 					}
 				}
 			}
@@ -1032,13 +1032,13 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			PJSTR_CREAT_RPLC_BREF(_rdst_stack);
 			if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst_stack, _rdstlen, _findlen) == NULL)) {
 				_ret = JSTR_REG_RET_NOERROR;
-				goto cleanup_force;
+				goto cleanup;
 			}
 		}
 	}
 cleanup:
 	if (_rdst)
-cleanup_force:
+cleanup_force_free:
 		free(_rdst);
 	return _ret;
 #undef PJSTR_CREAT_RPLC_BREF
@@ -1053,7 +1053,6 @@ cleanup_force:
 #endif
 
 JSTR_FUNC
-JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_reg_rplcall_len_bref(char **JSTR_RST const _s,
 			  size_t *JSTR_RST const _sz,

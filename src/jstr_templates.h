@@ -61,7 +61,7 @@ PJSTR_END_DECLS
 	do {                                                                 \
 		JSTR_ASSERT_IS_SIZE(old_cap);                                \
 		JSTR_ASSERT_IS_SIZE(new_cap);                                \
-		while (((old_cap) *= JSTR_GROWTH) < (new_cap))               \
+		while ((old_cap *= JSTR_GROWTH) < (new_cap))                 \
 			;                                                    \
 		(old_cap) = PJSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
