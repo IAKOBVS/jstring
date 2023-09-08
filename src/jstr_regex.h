@@ -788,9 +788,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	_rsrc = (unsigned char *)_rplc;
 	if (jstr_unlikely(_rdstlen > 256)) {
 		unsigned char *_rdst;
-#if !JSTR_COPY_IF_NO_MREMAP
-		_flag = 0;
-#else
+#if JSTR_COPY_IF_NO_MREMAP
 		_flag = PJSTR_IS_MMAP(*_cap);
 		if (_flag & MUST_COPY) {
 			if (*_cap >= _rdstlen && *_cap < *_sz + _rdstlen) {
@@ -861,7 +859,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		} else if (_flag & MUST_COPY) {
 			if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL))
 				_ret = JSTR_REG_RET_ENOMEM;
-		} else 
+		} else
 #endif
 		{
 			if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL))
@@ -902,6 +900,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	regmatch_t _rm[10];
 	jstr_reg_errcode_ty _ret = JSTR_REG_RET_NOERROR;
 	size_t _rdstlen = _rplclen;
+	size_t _rdstcap = 0;
 	const unsigned char *_rsrc;
 	const unsigned char *const _rend = (unsigned char *)_rplc + _rplclen;
 	enum { MUST_COPY = 1,
@@ -933,10 +932,8 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		_rsrc = (unsigned char *)_rplc;
 		if (jstr_unlikely(_rdstlen > 256)) {
 			unsigned char *_rdst;
-#if !JSTR_COPY_IF_NO_MREMAP
-			_flag = 0;
-#else
-			_flag = PJSTR_IS_MMAP(*_cap);
+#if JSTR_COPY_IF_NO_MREMAP || 1
+			/* _flag = PJSTR_IS_MMAP(*_cap); */
 			if (_flag & MUST_COPY) {
 				if (*_cap >= _rdstlen && *_cap < *_sz + _rdstlen) {
 					_flag |= IS_MALLOC;
@@ -960,14 +957,24 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 					*_dst = '\0';
 					*_sz = _dst - *(unsigned char **)_s;
 				} else {
-					_rdst = (unsigned char *)malloc(_rdstlen);
-					PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
+					if (_rdstcap < _rdstlen) {
+						if (jstr_unlikely(_rdstcap == 0)) {
+							_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
+							_rdst = (unsigned char *)malloc(_rdstcap);
+						} else {
+							PJSTR_GROW(_rdstcap, _rdstlen);
+							_rdst = (unsigned char *)realloc(_rdst, _rdstcap);
+						}
+						PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
+					}
 				}
 			} else
 #endif
 			{
-				_rdst = (unsigned char *)malloc(_rdstlen);
-				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
+				if (_rdstcap < _rdstlen) {
+					_rdst = (unsigned char *)malloc(_rdstlen);
+					PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
+				}
 			}
 #define PJSTR_CREAT_RPLC_BREF                                                                \
 	do {                                                                                 \
@@ -1008,7 +1015,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 					free(_rdst);
 					return JSTR_REG_RET_ENOMEM;
 				}
-			} else 
+			} else
 #endif
 			{
 				if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL)) {
