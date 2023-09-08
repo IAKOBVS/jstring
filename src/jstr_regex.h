@@ -739,14 +739,6 @@ jstr_reg_rplc_len_now(char **JSTR_RST const _s,
 	return jstr_reg_rplc_len(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 }
 
-#ifdef __clang__
-/* #	pragma clang diagnostic ignored "-Wunknown-warning-option" */
-#	pragma clang diagnostic push
-#elif defined __GNUC__
-/* #	pragma GCC diagnostic ignored "-Wmaybe-uninitialized" */
-#	pragma GCC diagnostic push
-#endif
-
 #define JSTR_1TO9(c) (((c) > '0') & ((c) < '9' + 1))
 
 JSTR_FUNC
@@ -1014,12 +1006,6 @@ cleanup_force_free:
 }
 
 #undef JSTR_1TO9
-
-#ifdef __GNUC__
-#	pragma GCC diagnostic pop
-#elif defined __clang__
-#	pragma clang diagnostic pop
-#endif
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
