@@ -833,14 +833,13 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	u *_p = _dst;
 	u *_tmp;
 	const u *const _rend = (unsigned char *)_rplc + _rplclen;
-	size_t _off = 0;
 	size_t _findlen;
 	enum { MUST_COPY = 1,
 	       IS_MALLOC = 1 << 1,
 	       HAS_NOT_BREF = 1 << 2 };
-	for (; ((_nflag & PJSTR_FLAG_USE_N) ? _n-- : 1)
-	       && _off < *_sz;
-	     _off = _rm[0].rm_so + _rdstlen + 1) {
+	for (; ((_nflag & PJSTR_FLAG_USE_N) ? _n-- : 1);
+	     *_sz += _rdstlen - _findlen,
+	     _p += _rdstlen) {
 		_ret = PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, _nmatch, _rm, _eflags);
 		_findlen = _rm[0].rm_eo - _rm[0].rm_so;
 		if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR)
