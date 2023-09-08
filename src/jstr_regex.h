@@ -19,10 +19,10 @@ PJSTR_END_DECLS
 #define JSTR_REG_DEBUG 0
 
 #if JSTR_REG_DEBUG
-#	define PJSTR_REG_DEB(x) jstr_pp_cout(x)
+#	define PJSTR_REG_LOG(x) jstr_pp_cout(x)
 #else
-#	define PJSTR_REG_DEB(x)
-#endif /* PJSTR_REG_DEB */
+#	define PJSTR_REG_LOG(x)
+#endif /* PJSTR_REG_LOG */
 
 /* POSIX cflags */
 #define JSTR_REG_CF_EXTENDED REG_EXTENDED
@@ -536,23 +536,23 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 		_findlen = _rm.rm_eo - _rm.rm_so;
 		_p += _rm.rm_so;
 		if (jstr_unlikely(_findlen == 0)) {
-			PJSTR_REG_DEB("jstr_unlikely(_findlen == 0)");
+			PJSTR_REG_LOG("jstr_unlikely(_findlen == 0)");
 			++_p;
 			if (jstr_unlikely(*_p == '\0'))
 				break;
 			continue;
 		}
 		if (_rplclen <= _findlen) {
-			PJSTR_REG_DEB("_rplclen <= _findlen");
+			PJSTR_REG_LOG("_rplclen <= _findlen");
 			PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen);
 			if (jstr_unlikely(*_p == '\0'))
 				break;
 			continue;
 		}
 		if (*_cap > *_sz + _rplclen - _findlen) {
-			PJSTR_REG_DEB("*_cap > *_sz + _rplclen - _findlen");
+			PJSTR_REG_LOG("*_cap > *_sz + _rplclen - _findlen");
 			if (_dst != _old) {
-				PJSTR_REG_DEB("dst != old");
+				PJSTR_REG_LOG("dst != old");
 				memmove(_dst, _old, _p - _old);
 				_dst += (_p - _old);
 				memmove(_dst + _rplclen,
@@ -562,14 +562,14 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 				_dst += _rplclen;
 				_old = _dst;
 			} else {
-				PJSTR_REG_DEB("dst == old");
+				PJSTR_REG_LOG("dst == old");
 				memmove(_p + _rplclen,
 					_p + _findlen,
 					(*(u **)_s + *_sz) - (_p + _findlen) + 1);
 				memcpy(_p, _rplc, _rplclen);
 			}
 		} else {
-			PJSTR_REG_DEB("_cap <= *_sz + _rplclen - _findlen");
+			PJSTR_REG_LOG("_cap <= *_sz + _rplclen - _findlen");
 #if JSTR_COPY_IF_NO_MREMAP
 			if (jstr_unlikely(_must_copy)) {
 				PJSTR_GROW(*_cap, *_sz + _rplclen - _findlen);
@@ -1120,7 +1120,7 @@ jstr_reg_rplcn_len_bref_now(char **JSTR_RST const _s,
 PJSTR_END_DECLS
 
 #undef PJSTR_REG_EXEC
-#undef PJSTR_REG_DEB
+#undef PJSTR_REG_LOG
 #undef JSTR_REG_DEBUG
 
 #endif /* JSTR_REGEX_DEF_H */
