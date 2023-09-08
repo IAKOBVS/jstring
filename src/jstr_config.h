@@ -16,8 +16,9 @@
 #define PJSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
 /*
-   realloc() must malloc(), memcpy(),
-   free() for mmaped chunks.
+   realloc() must malloc(), memcpy(), free() for mmaped chunks if realloc does not use mremap.
+   Mremap may be available on  __linux__ || __GLIBC__?
+   Enable JSTR_COPY_IF_NO_MREMAP if you know that mremap is not available.
 */
 #ifndef JSTR_COPY_IF_NO_MREMAP
 #	define JSTR_COPY_IF_NO_MREMAP 0
