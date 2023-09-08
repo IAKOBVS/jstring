@@ -907,8 +907,9 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	       IS_MALLOC = 1 << 1,
 	       HAS_NOT_BREF = 1 << 2 };
 	int _flag = HAS_NOT_BREF;
-	size_t _ptnlen;
-	for (size_t _off = 0; ((_nflag & PJSTR_FLAG_USE_N) ? _n-- : 1) && _off < *_sz; _off = _rm[0].rm_so + _rdstlen + 1) {
+	for (size_t _off = 0, _ptnlen;
+	     ((_nflag & PJSTR_FLAG_USE_N) ? _n-- : 1) && _off < *_sz;
+	     _off = _rm[0].rm_so + _rdstlen + 1) {
 		_ret = PJSTR_REG_EXEC(_preg, *_s + _off, *_sz - _off, _nmatch, _rm, _eflags);
 		_ptnlen = _rm[0].rm_eo - _rm[0].rm_so;
 		if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR)
