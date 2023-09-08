@@ -205,7 +205,7 @@ pjstr_rplcat_len_may_lower(char **JSTR_RST const _s,
 {
 	if (jstr_unlikely(_rplclen == _findlen)) {
 		memcpy(*_s + _at, _rplc, _rplclen);
-		goto RET;
+		goto ret;
 	} else if (*_cap > *_sz + _rplclen - _findlen) {
 		return pjstr_rplcat_len_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
 	} else {
@@ -228,7 +228,7 @@ pjstr_rplcat_len_may_lower(char **JSTR_RST const _s,
 #endif /* HAVE_REALLOC_MREMAP */
 	}
 	*_sz += _rplclen - _findlen;
-RET:
+ret:
 	return *_s + _at + _rplclen;
 }
 

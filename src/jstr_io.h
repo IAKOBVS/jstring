@@ -359,12 +359,12 @@ jstr_io_is_binary_maybe(char *JSTR_RST const _buf,
 		if (jstr_likely(_sz > PJSTR_ELF_SZ - 1)) {                         \
 			if (jstr_unlikely(!memcmp(_buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
 				return 1;                                          \
-CHECK_UTF:;                                                                        \
+check_utf:;                                                                        \
 			unsigned char *JSTR_RST _s = (unsigned char *)_buf;        \
 			if (!memcmp(_s, PJSTR_UTF, PJSTR_UTF_SZ))                  \
 				return 0;                                          \
 		} else if (jstr_likely(_sz == PJSTR_UTF_SZ)) {                     \
-			goto CHECK_UTF;                                            \
+			goto check_utf;                                            \
 		}                                                                  \
 	} while (0)
 	JSTR_BINARY_CHECK();
@@ -443,22 +443,22 @@ pjstr_io_alloc_file(const int alloc_exact,
 {
 	FILE *JSTR_RST const _fp = fopen(_fname, "r");
 	if (jstr_unlikely(_fp == NULL))
-		goto _ERR;
+		goto err;
 	if (jstr_unlikely(stat(_fname, _st)))
-		goto _ERR_CLOSE;
+		goto err_close;
 	*_cap = alloc_exact
 		? PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOCEXACT(_st->st_size + 1))
 		: PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOC(_st->st_size));
 	*_s = (char *)malloc(*_cap);
-	PJSTR_MALLOC_ERR(*_s, goto _ERR_CLOSE);
+	PJSTR_MALLOC_ERR(*_s, goto err_close);
 	fread(*_s, 1, _st->st_size, _fp);
 	fclose(_fp);
 	*(*_s + _st->st_size) = '\0';
 	*_sz = _st->st_size;
 	return 0;
-_ERR_CLOSE:
+err_close:
 	fclose(_fp);
-_ERR:
+err:
 	perror("");
 	return 1;
 }

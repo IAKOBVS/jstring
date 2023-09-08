@@ -269,7 +269,7 @@ jstr_tolower_len(char *JSTR_RST _s,
 		skip = 1;
 		goto do1;
 	case 0:
-		goto START_LOOP;
+		goto start_loop;
 		break;
 #	if PJSTR_UNROLL_ITERATIONS == 8
 do7:
@@ -289,7 +289,7 @@ do1:
 		_s[0] = jstr_tolower(_s[0]);
 	}
 	_s += skip;
-START_LOOP:;
+start_loop:;
 	for (; (_s[0] = jstr_tolower(_s[0])); _s += it) {
 		_s[1] = jstr_tolower(_s[1]);
 		_s[2] = jstr_tolower(_s[2]);
@@ -346,7 +346,7 @@ jstr_toupper_len(char *JSTR_RST _s,
 		skip = 1;
 		goto do1;
 	case 0:
-		goto START_LOOP;
+		goto start_loop;
 		break;
 #	if PJSTR_UNROLL_ITERATIONS == 8
 do7:
@@ -366,7 +366,7 @@ do1:
 		_s[0] = jstr_toupper(_s[0]);
 	}
 	_s += skip;
-START_LOOP:;
+start_loop:;
 	for (; (_s[0] = jstr_toupper(_s[0])); _s += it) {
 		_s[1] = jstr_toupper(_s[1]);
 		_s[2] = jstr_toupper(_s[2]);
