@@ -450,8 +450,8 @@ jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
 			*p = '\0';                                                       \
 		} while (0)
 
-#	define jstr_appendmore_j(_j, ...)	 jstr_appendmore(&((_j)->data), &((_j)->size), &((_j)-capacity), __VA_ARGS__)
-#	define jstr_alloc_appendmore_j(_j, ...) jstr_alloc_appendmore(&((_j)->data), &((_j)->size), &((_j)-capacity), __VA_ARGS__)
+#	define jstr_appendmore_j(_j, ...)	 jstr_appendmore(&((_j)->data), &((_j)->size), &((_j)->capacity), __VA_ARGS__)
+#	define jstr_alloc_appendmore_j(_j, ...) jstr_alloc_appendmore(&((_j)->data), &((_j)->size), &((_j)->capacity), __VA_ARGS__)
 
 #endif /* __cplusplus */
 
