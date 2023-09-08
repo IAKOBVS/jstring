@@ -793,11 +793,6 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 #else
 		_flag = PJSTR_IS_MMAP(*_cap);
 		if (_flag & IS_MMAP) {
-			_rdst = (unsigned char *)malloc(_rdstlen);
-			PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
-		} else
-#endif
-		{
 			if (*_cap >= _rdstlen && *_cap < *_sz + _rdstlen) {
 				_flag |= IS_MALLOC;
 				_rdst = *(unsigned char **)_s;
@@ -823,6 +818,11 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 				_rdst = (unsigned char *)malloc(_rdstlen);
 				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
 			}
+		} else
+#endif
+		{
+			_rdst = (unsigned char *)malloc(_rdstlen);
+			PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
 		}
 #define PJSTR_CREAT_RPLC_BREF                                                                \
 	do {                                                                                 \
@@ -937,11 +937,6 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 #else
 			_flag = PJSTR_IS_MMAP(*_cap);
 			if (_flag & IS_MMAP) {
-				_rdst = (unsigned char *)malloc(_rdstlen);
-				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
-			} else
-#endif
-			{
 				if (*_cap >= _rdstlen && *_cap < *_sz + _rdstlen) {
 					_flag |= IS_MALLOC;
 					_rdst = *(unsigned char **)_s;
@@ -967,6 +962,11 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 					_rdst = (unsigned char *)malloc(_rdstlen);
 					PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
 				}
+			} else
+#endif
+			{
+				_rdst = (unsigned char *)malloc(_rdstlen);
+				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
 			}
 #define PJSTR_CREAT_RPLC_BREF                                                                \
 	do {                                                                                 \
