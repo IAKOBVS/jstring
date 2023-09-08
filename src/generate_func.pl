@@ -105,30 +105,30 @@ sub gen_nonmem_funcs
 	my @NEW_LNS;
 	foreach (@OLD_LNS) {
 		if ($_ !~ $G_RE_FUNC) {
-			goto next;
+			goto CONT;
 		}
 		my $decl      = $1;
 		my $FUNC_NAME = $2;
 		my $params    = $3;
 		if (!$decl && !$FUNC_NAME && !$params) {
-			goto next;
+			goto CONT;
 		}
 		if ($FUNC_NAME !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FUNC_SUFFIX(?:_|$)/o) {
-			goto next;
+			goto CONT;
 		}
 		my $tmp = $FUNC_NAME;
 		$tmp =~ s/$G_LEN_FUNC_SUFFIX//o;
 		if ($g_in_h =~ /$tmp\(/) {
-			goto next;
+			goto CONT;
 		}
 		if ($G_FNAME =~ /$G_IGNORE_FILE/o) {
-			goto next;
+			goto CONT;
 		}
 		if ($_ !~ $G_RE_DEFINE) {
-			goto next;
+			goto CONT;
 		}
 		if ($FUNC_NAME =~ /^p/) {
-			goto next;
+			goto CONT;
 		}
 		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
 			$decl =~ s/static/$G_MACRO_INLINE\n$G_MACRO_MAYBE_UNUSED\nstatic/o;
@@ -170,7 +170,7 @@ sub gen_nonmem_funcs
 		push(@NEW_LNS, $_);
 		push(@NEW_LNS, $decl);
 		next;
-	  next:
+	  CONT:
 		push(@NEW_LNS, $_);
 	}
 	return @NEW_LNS;
@@ -182,34 +182,34 @@ sub gen_struct_funcs
 	my $out_h;
 	foreach (@LINES) {
 		if ($_ !~ $G_RE_FUNC) {
-			goto next;
+			goto CONT;
 		}
 		my $decl      = $1;
 		my $FUNC_NAME = $2;
 		my $params    = $3;
 		if (!$decl && !$FUNC_NAME && !$params) {
-			goto next;
+			goto CONT;
 		}
 		$params =~ s/\)/,/;
 		my $HAS_SZ  = ($params =~ /$G_SIZE_PTN(?:,|\))/o) ? 1 : 0;
 		my $HAS_CAP = ($params =~ /$G_CAP_PTN(?:,|\))/o)  ? 1 : 0;
 		if (!$HAS_SZ && !$HAS_CAP) {
-			goto next;
+			goto CONT;
 		}
 		if ($G_FNAME =~ /$G_IGNORE_FILE/o) {
-			goto next;
+			goto CONT;
 		}
 		if ($params =~ /\.\.\./) {
-			goto next;
+			goto CONT;
 		}
 		if ($_ !~ $G_RE_DEFINE) {
-			goto next;
+			goto CONT;
 		}
 		if ($FUNC_NAME =~ /^p/) {
-			goto next;
+			goto CONT;
 		}
 		if ($g_in_h =~ /$FUNC_NAME/) {
-			goto next;
+			goto CONT;
 		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
 		if ($RETURN) {
@@ -289,7 +289,7 @@ sub gen_struct_funcs
 		$out_h .= $_;
 		$out_h .= $decl;
 		next;
-	  next:
+	  CONT:
 		$_     .= "\n\n";
 		$out_h .= $_;
 	}
