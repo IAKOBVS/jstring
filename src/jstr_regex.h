@@ -1002,13 +1002,13 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 				memcpy(*_s + _rm[0].rm_so, _rdst, _rdstlen);
 #if JSTR_COPY_IF_NO_MREMAP
 			} else if (_flag & IS_MMAP) {
-				if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL)) {
+				if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL)) {
 					free(_rdst);
 					return JSTR_REG_RET_ENOMEM;
 				}
 #endif
 			} else {
-				if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL)) {
+				if (jstr_unlikely(pjstr_rplcat_len_realloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _ptnlen) == NULL)) {
 					free(_rdst);
 					return JSTR_REG_RET_ENOMEM;
 				}
