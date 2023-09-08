@@ -771,7 +771,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	const unsigned char *_rsrc = (unsigned char *)_rplc;
 	const unsigned char *const _rend = (unsigned char *)_rplc + _rplclen;
 	size_t _rdstlen = _rplclen;
-	enum { IS_MMAP = 1,
+	enum { MUST_COPY = 1,
 	       IS_MALLOC = 1 << 1,
 	       HAS_NOT_BREF = 1 << 2 };
 	int _flag = HAS_NOT_BREF;
@@ -792,7 +792,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		_flag = 0;
 #else
 		_flag = PJSTR_IS_MMAP(*_cap);
-		if (_flag & IS_MMAP) {
+		if (_flag & MUST_COPY) {
 			if (*_cap >= _rdstlen && *_cap < *_sz + _rdstlen) {
 				_flag |= IS_MALLOC;
 				_rdst = *(unsigned char **)_s;
@@ -858,7 +858,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 #if JSTR_COPY_IF_NO_MREMAP
 		if (_flag & IS_MALLOC) {
 			memcpy(*_s + _rm[0].rm_so, _rdst, _rdstlen);
-		} else if (_flag & IS_MMAP) {
+		} else if (_flag & MUST_COPY) {
 			if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL))
 				_ret = JSTR_REG_RET_ENOMEM;
 		} else 
@@ -904,7 +904,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	size_t _rdstlen = _rplclen;
 	const unsigned char *_rsrc;
 	const unsigned char *const _rend = (unsigned char *)_rplc + _rplclen;
-	enum { IS_MMAP = 1,
+	enum { MUST_COPY = 1,
 	       IS_MALLOC = 1 << 1,
 	       HAS_NOT_BREF = 1 << 2 };
 	int _flag = HAS_NOT_BREF;
@@ -937,7 +937,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			_flag = 0;
 #else
 			_flag = PJSTR_IS_MMAP(*_cap);
-			if (_flag & IS_MMAP) {
+			if (_flag & MUST_COPY) {
 				if (*_cap >= _rdstlen && *_cap < *_sz + _rdstlen) {
 					_flag |= IS_MALLOC;
 					_rdst = *(unsigned char **)_s;
@@ -1003,7 +1003,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 #if JSTR_COPY_IF_NO_MREMAP
 			if (_flag & IS_MALLOC) {
 				memcpy(*_s + _rm[0].rm_so, _rdst, _rdstlen);
-			} else if (_flag & IS_MMAP) {
+			} else if (_flag & MUST_COPY) {
 				if (jstr_unlikely(pjstr_rplcat_len_malloc(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL)) {
 					free(_rdst);
 					return JSTR_REG_RET_ENOMEM;
