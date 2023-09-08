@@ -245,9 +245,9 @@ pjstr_rplcat_len(char **JSTR_RST const _s,
 {
 #if JSTR_COPY_IF_NO_MREMAP
 	if (PJSTR_IS_MMAP(*_cap))
-		return pjstr_rplcat_len_realloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
+		return pjstr_rplcat_len_malloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
 #endif /* COPY_IF_NO_MREMAP */
-	return pjstr_rplcat_len_malloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
+	return pjstr_rplcat_len_realloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
 }
 
 /*
