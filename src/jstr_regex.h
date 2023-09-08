@@ -747,7 +747,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		_flag = 0;
 		++_rsrc;
 		if (jstr_likely(JSTR_1TO9(*_rsrc)))
-			_rdstlen = _rdstlen + (_rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so) - 2;
+			_rdstlen = _rdstlen + ((_rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so)) - 2;
 		else if (jstr_unlikely(*_rsrc == '\0'))
 			break;
 	}
@@ -768,20 +768,20 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 			if (jstr_unlikely(rsrc++ == NULL)) {                                    \
 				memcpy(_rplc_dstp, _rplc_old, rplc_end - _rplc_old);            \
 				*(_rplc_dstp + (rplc_end - _rplc_old)) = '\0';                  \
-				rplc_len = (_rplc_dstp + (rplc_end - _rplc_old)) - rplc_dst;    \
 				break;                                                          \
 			}                                                                       \
 			if (jstr_likely(JSTR_1TO9(*rsrc))) {                                    \
 				if (jstr_likely(rsrc != _rplc_old)) {                           \
 					memmove(_rplc_dstp, _rplc_old, (rsrc - 1) - _rplc_old); \
 					_rplc_dstp += (rsrc - 1) - _rplc_old;                   \
+					_rplc_old += (rsrc - 1) - _rplc_old;                    \
+					rsrc += (rsrc - 1) - _rplc_old;                         \
 				}                                                               \
 				memcpy(_rplc_dstp,                                              \
 				       *_s + _rm[*rsrc - '0'].rm_so,                            \
 				       _rm[*rsrc - '0'].rm_eo - _rm[*rsrc - '0'].rm_so);        \
 				_rplc_dstp += _rm[*rsrc - '0'].rm_eo - _rm[*rsrc - '0'].rm_so;  \
 			} else if (jstr_unlikely(*rsrc == '\0')) {                              \
-				rplc_len = rsrc - rplc_dst;                                     \
 				break;                                                          \
 			} else {                                                                \
 				_rplc_dstp[0] = rsrc[-1];                                       \
@@ -842,9 +842,9 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	       IS_MALLOC = 1 << 1,
 	       HAS_NOT_BREF = 1 << 2 };
 	while ((_nflag & PJSTR_FLAG_USE_N) ? _n-- : 1) {
-		_ret = PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, _nmatch, _rm, _eflags);
-		if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
+		if (jstr_unlikely(PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, _nmatch, _rm, _eflags) != JSTR_REG_RET_NOERROR))
 			break;
+		_ret = JSTR_REG_RET_NOERROR;
 		_findlen = _rm[0].rm_eo - _rm[0].rm_so;
 		if (jstr_unlikely(_findlen == 0)) {
 			if (jstr_unlikely(*++_p == '\0'))
