@@ -222,7 +222,7 @@ jstr_memrchr(const void *JSTR_RST _s,
 			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
 	return NULL;
 #	else
-	const unsigned char *_start = (unsigned char *)_s - 1;
+	const unsigned char *const _start = (unsigned char *)_s - 1;
 	for (; _end > _start; _end -= 8) {
 		if ((_end[0] == _c))
 			return (void *)_end;

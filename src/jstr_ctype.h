@@ -146,7 +146,7 @@ static int
 jstr_isalnum_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
-		return 1;
+		return 0;
 	while (jstr_isalnum(*_s++))
 		;
 	return (*_s - 1) == '\0';
@@ -159,7 +159,7 @@ static int
 jstr_isalpha_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
-		return 1;
+		return 0;
 	while (jstr_isalpha(*_s++))
 		;
 	return (*_s - 1) == '\0';
@@ -172,7 +172,7 @@ static int
 jstr_islower_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
-		return 1;
+		return 0;
 	while (jstr_islower(*_s++))
 		;
 	return (*_s - 1) == '\0';
