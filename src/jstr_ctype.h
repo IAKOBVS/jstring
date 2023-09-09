@@ -320,9 +320,8 @@ start_loop:;
 #	pragma GCC diagnostic pop
 #endif
 
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC_VOID
+JSTR_INLINE
 static void
 jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
@@ -330,9 +329,8 @@ jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 		++_s;
 }
 
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC_VOID
+JSTR_INLINE
 static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
