@@ -41,7 +41,6 @@ my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
 
 my $G_LEN_FUNC_SUFFIX = '_len';
 
-# mkdir($G_DIR_CPP);
 mkdir($G_DIR_C);
 
 my $g_in_h = get_file_str($G_FNAME);
@@ -73,10 +72,19 @@ sub get_file_str
 	open(my $FH, '<', $FILENAME)
 	  or die("Can't open $FILENAME\n");
 	my $g_in_h = '';
+	my @def;
+	my @undef;
+	my @lines;
 	while (<$FH>) {
 		$g_in_h .= $_;
+		push(@lines, $_);
 	}
 	close($FH);
+	foreach (@lines) {
+		if (/^[ \t]*#[ \t]*undef[ \t]*((?:[^P][^J][^S][^T][^R]|[^J][^S][^T][^R])[A-Z0-9]+)/) {
+			$g_in_h =~ s/$1/PJSTR_$1/g;
+		}
+	}
 	return $g_in_h;
 }
 
@@ -297,13 +305,6 @@ sub gen_struct_funcs
 	$out_h =~ s/\n\n*$/\n/g;
 	return ($out_h);
 }
-
-# sub update_includes
-# {
-# 	my ($includes) = @_;
-# 	$includes =~ s/((?:^|\n)[ \t]*#[ \t]*include[ \t]*")_/$1/go;
-# 	return $includes;
-# }
 
 sub get_regex_size_ptr
 {
