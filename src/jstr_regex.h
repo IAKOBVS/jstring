@@ -754,17 +754,16 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		unsigned char *_rdst;
 		_rdst = (unsigned char *)malloc(_rdstlen);
 		PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
-#define PJSTR_CREAT_RPLC_BREF(rplc_dst, rplc_len, rplc, rplc_end)                                \
+#define PJSTR_CREAT_RPLC_BREF(string, rplc_dst, rplc_len, rplc, rplc_end)                        \
 	do {                                                                                     \
 		unsigned char *_rplc_dstp = rplc_dst;                                            \
 		const unsigned char *_rplc_old;                                                  \
 		const unsigned char *_rsrc = (unsigned char *)rplc;                              \
 		for (;; ++_rsrc) {                                                               \
 			_rplc_old = _rsrc;                                                       \
-			_rsrc = (unsigned char *)memchr((char *)_rsrc, '\\', rplc_end - _rsrc);  \
+			_rsrc = (unsigned char *)memchr(_rsrc, '\\', rplc_end - _rsrc);          \
 			if (jstr_unlikely(_rsrc++ == NULL)) {                                    \
 				memcpy(_rplc_dstp, _rplc_old, rplc_end - _rplc_old);             \
-				*(_rplc_dstp + (rplc_end - _rplc_old)) = '\0';                   \
 				break;                                                           \
 			}                                                                        \
 			if (jstr_likely(JSTR_1TO9(*_rsrc))) {                                    \
@@ -775,7 +774,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 					_rsrc += (_rsrc - 1) - _rplc_old;                        \
 				}                                                                \
 				memcpy(_rplc_dstp,                                               \
-				       *_s + _rm[*_rsrc - '0'].rm_so,                            \
+				       string + _rm[*_rsrc - '0'].rm_so,                         \
 				       _rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so);       \
 				_rplc_dstp += _rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so; \
 			} else if (jstr_unlikely(*_rsrc == '\0')) {                              \
@@ -787,20 +786,18 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 			}                                                                        \
 		}                                                                                \
 	} while (0)
-		PJSTR_CREAT_RPLC_BREF(_rdst, _rdstlen, _rplc, _rend);
+		PJSTR_CREAT_RPLC_BREF(*_s, _rdst, _rdstlen, _rplc, _rend);
 		if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL))
 			_ret = JSTR_REG_RET_ENOMEM;
 		free(_rdst);
 	} else {
 		unsigned char _rdst[256];
-		PJSTR_CREAT_RPLC_BREF(_rdst, _rdstlen, _rplc, _rend);
+		PJSTR_CREAT_RPLC_BREF(*_s, _rdst, _rdstlen, _rplc, _rend);
 		if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL))
 			_ret = JSTR_REG_RET_ENOMEM;
 	}
 	return _ret;
 }
-
-#if 1
 
 JSTR_INLINE
 JSTR_FUNC
@@ -831,8 +828,8 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	unsigned char *_dst = *(u **)_s;
 	const unsigned char *_old = _dst;
 	unsigned char *_p = _dst;
-	unsigned char *_tmp;
 	const unsigned char *const _rend = (u *)_rplc + _rplclen;
+	unsigned char *_tmp;
 	size_t _findlen;
 	while ((_nflag & PJSTR_FLAG_USE_N) ? _n-- : 1) {
 		if (jstr_unlikely(PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, _nmatch, _rm, _eflags) != JSTR_REG_RET_NOERROR))
@@ -860,9 +857,9 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 				_rdst = (u *)realloc(_rdst, _rdstcap);
 				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_NOERROR);
 			}
-#	define PJSTR_RPLCALL_BREF(dst, old, p, rplc, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail)                    \
+#	define PJSTR_RPLCALL_BREF(string, dst, old, p, rplc, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail)            \
 		do {                                                                                                       \
-			PJSTR_CREAT_RPLC_BREF(rplc_dst, rplc_dstlen, rplc, _rend);                                         \
+			PJSTR_CREAT_RPLC_BREF(string, rplc_dst, rplc_dstlen, rplc, _rend);                                 \
 			if (rplc_dstlen <= findlen)                                                                        \
 				PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc_dst, rplc_dstlen, findlen);                       \
 			else if (*_cap > *_sz + rplc_dstlen - findlen)                                                     \
@@ -870,9 +867,9 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			else                                                                                               \
 				PJSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail); \
 		} while (0)
-			PJSTR_RPLCALL_BREF(_dst, _old, _p, _rplc, _rdst, _rdstlen, _findlen, _tmp, _ret = JSTR_REG_RET_ENOMEM; goto cleanup);
+			PJSTR_RPLCALL_BREF(_p - _rm[0].rm_so, _dst, _old, _p, _rplc, _rdst, _rdstlen, _findlen, _tmp, _ret = JSTR_REG_RET_ENOMEM; goto cleanup);
 		} else {
-			PJSTR_RPLCALL_BREF(_dst, _old, _p, _rplc, _rdst_stack, _rdstlen, _findlen, _tmp, _ret = JSTR_REG_RET_ENOMEM; goto cleanup);
+			PJSTR_RPLCALL_BREF(_p - _rm[0].rm_so, _dst, _old, _p, _rplc, _rdst_stack, _rdstlen, _findlen, _tmp, _ret = JSTR_REG_RET_ENOMEM; goto cleanup);
 		}
 		if (jstr_unlikely(*_p == '\0'))
 			break;
@@ -961,8 +958,6 @@ jstr_reg_rplcall_len_bref_now(char **JSTR_RST const _s,
 		return _ret;
 	return jstr_reg_rplcall_len_bref(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags, _nmatch);
 }
-
-#endif
 
 #undef JSTR_1TO9
 
