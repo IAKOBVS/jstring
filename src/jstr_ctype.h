@@ -116,6 +116,7 @@ jstr_isalpha(const int _c) JSTR_NOEXCEPT
 }
 
 /*
+   ASCII.
    Will NOT handle EOF correctly.
    toupper(EOF) != EOF;
 */
@@ -128,6 +129,7 @@ jstr_toupper(const int _c) JSTR_NOEXCEPT
 }
 
 /*
+   ASCII.
    Will NOT handle EOF correctly.
    tolower(EOF) != EOF;
 */
@@ -145,11 +147,18 @@ JSTR_FUNC_CONST
 static int
 jstr_isalnum_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_s == '\0'))
-		return 0;
-	while (jstr_isalnum(*_s++))
-		;
-	return (*_s - 1) == '\0';
+#define PJSTR_IS_CTYPE_STR(CTYPE)               \
+	do {                                    \
+		if (jstr_unlikely(*_s == '\0')) \
+			return 0;               \
+		while (jstr_##CTYPE(*_s++)      \
+		       && jstr_##CTYPE(*_s++)   \
+		       && jstr_##CTYPE(*_s++)   \
+		       && jstr_##CTYPE(*_s++))  \
+			;                       \
+		return (*_s - 1) == '\0';       \
+	} while (0)
+	PJSTR_IS_CTYPE_STR(isalnum);
 }
 
 /* ASCII */
@@ -158,11 +167,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isalpha_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_s == '\0'))
-		return 0;
-	while (jstr_isalpha(*_s++))
-		;
-	return (*_s - 1) == '\0';
+	PJSTR_IS_CTYPE_STR(isalpha);
 }
 
 /* ASCII */
@@ -171,11 +176,7 @@ JSTR_FUNC_CONST
 static int
 jstr_islower_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_s == '\0'))
-		return 0;
-	while (jstr_islower(*_s++))
-		;
-	return (*_s - 1) == '\0';
+	PJSTR_IS_CTYPE_STR(islower);
 }
 
 /* ASCII */
@@ -184,11 +185,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isupper_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_s == '\0'))
-		return 1;
-	while (jstr_isupper(*_s++))
-		;
-	return *(_s - 1) == '\0';
+	PJSTR_IS_CTYPE_STR(isupper);
 }
 
 /* ASCII */
@@ -234,7 +231,6 @@ static void
 jstr_tolower_str_len(char *JSTR_RST _s,
 		     const size_t _sz)
 {
-	/* 8 iterations is not that much faster. */
 	unsigned char _skip;
 	switch (_sz % 4) {
 	case 3:
@@ -271,7 +267,6 @@ static void
 jstr_toupper_str_len(char *JSTR_RST _s,
 		     const size_t _sz)
 {
-	/* 8 iterations is not that much faster. */
 	unsigned char _skip;
 	switch (_sz % 4) {
 	case 3:
