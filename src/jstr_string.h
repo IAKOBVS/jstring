@@ -224,21 +224,21 @@ jstr_memrchr(const void *JSTR_RST _s,
 #	else
 	const unsigned char *const _start = (unsigned char *)_s - 1;
 	for (; _end > _start; _end -= 8) {
-		if ((_end[0] == _c))
+		if (_end[0] == _c)
 			return (void *)_end;
-		if ((_end[-1] == _c))
+		if (_end[-1] == _c)
 			return (void *)(_end - 1);
-		if ((_end[-2] == _c))
+		if (_end[-2] == _c)
 			return (void *)(_end - 2);
-		if ((_end[-3] == _c))
+		if (_end[-3] == _c)
 			return (void *)(_end - 3);
-		if ((_end[-4] == _c))
+		if (_end[-4] == _c)
 			return (void *)(_end - 4);
-		if ((_end[-5] == _c))
+		if (_end[-5] == _c)
 			return (void *)(_end - 5);
-		if ((_end[-6] == _c))
+		if (_end[-6] == _c)
 			return (void *)(_end - 6);
-		if ((_end[-7] == _c))
+		if (_end[-7] == _c)
 			return (void *)(_end - 7);
 	}
 	return NULL;
