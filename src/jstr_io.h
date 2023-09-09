@@ -1,5 +1,5 @@
-#ifndef JSTR_IO_DEF_H
-#define JSTR_IO_DEF_H 1
+#ifndef JSTR_IO__H
+#define JSTR_IO__H 1
 
 #include "jstr_macros.h"
 
@@ -533,4 +533,4 @@ jstr_io_allocexact_file_j(jstr_ty *JSTR_RST const _j,
 
 PJSTR_END_DECLS
 
-#endif /* JSTR_IO_DEF_H */
+#endif /* JSTR_IO__H */

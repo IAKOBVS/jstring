@@ -1,5 +1,5 @@
-#ifndef PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_DEF_H
-#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_DEF_H 1
+#ifndef PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS__H
+#define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS__H 1
 
 #include "jstr_pp_va_args_tools.h"
 
@@ -17063,4 +17063,4 @@
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(num_args, ...)
 #endif /* PJSTR_PP_HAVE_GENERIC */
 
-#endif /* PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_DEF_H */
+#endif /* PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS__H */

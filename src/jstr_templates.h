@@ -1,5 +1,5 @@
-#ifndef JSTR_TEMPLATES_DEF_H
-#define JSTR_TEMPLATES_DEF_H 1
+#ifndef JSTR_TEMPLATES__H
+#define JSTR_TEMPLATES__H 1
 
 #include "jstr_macros.h"
 
@@ -375,4 +375,4 @@ jstr_appendmore_f(char *_s,
 
 #endif /* __cplusplus */
 
-#endif /* JSTR_TMPLATES_DEF_H */
+#endif /* JSTR_TMPLATES__H */

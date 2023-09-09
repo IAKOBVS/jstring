@@ -1,5 +1,5 @@
-#ifndef JSTR_STD_STRING_DEF_H
-#define JSTR_STD_STRING_DEF_H 1
+#ifndef JSTR_STD_STRING__H
+#define JSTR_STD_STRING__H 1
 
 #include "jstr_macros.h"
 
@@ -155,4 +155,4 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 
 PJSTR_END_DECLS
 
-#endif /* JSTR_STD_STRING_DEF_H */
+#endif /* JSTR_STD_STRING__H */

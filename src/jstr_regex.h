@@ -1,5 +1,5 @@
-#ifndef JSTR_REGEX_DEF_H
-#define JSTR_REGEX_DEF_H 1
+#ifndef JSTR_REGEX__H
+#define JSTR_REGEX__H 1
 
 #include "jstr_macros.h"
 
@@ -968,4 +968,4 @@ PJSTR_END_DECLS
 #undef PJSTR_REG_RPLCALL_SMALL_RPLC
 #undef PJSTR_REG_RPLCALL_BIG_RPLC
 
-#endif /* JSTR_REGEX_DEF_H */
+#endif /* JSTR_REGEX__H */

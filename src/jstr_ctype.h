@@ -1,5 +1,5 @@
-#ifndef JSTR_CTYPE_DEF_H
-#define JSTR_CTYPE_DEF_H 1
+#ifndef JSTR_CTYPE__H
+#define JSTR_CTYPE__H 1
 
 #include "jstr_macros.h"
 
@@ -342,4 +342,4 @@ PJSTR_END_DECLS
 
 #undef PJSTR_IS_CTYPE_STR
 
-#endif /* JSTR_CTYPE_DEF_H */
+#endif /* JSTR_CTYPE__H */

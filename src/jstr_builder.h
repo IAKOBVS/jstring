@@ -1,5 +1,5 @@
-#ifndef JSTR_BUILDER_DEF_H
-#define JSTR_BUILDER_DEF_H 1
+#ifndef JSTR_BUILDER__H
+#define JSTR_BUILDER__H 1
 
 #include "jstr_macros.h"
 
@@ -455,4 +455,4 @@ jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
 
 #endif /* __cplusplus */
 
-#endif /* JSTR_BUILDER DEF_H */
+#endif /* JSTR_BUILDER _H */

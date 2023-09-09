@@ -1,5 +1,5 @@
-#ifndef JSTR_ITOA_DEF_H
-#define JSTR_ITOA_DEF_H 1
+#ifndef JSTR_ITOA__H
+#define JSTR_ITOA__H 1
 
 #include "jstr_macros.h"
 
@@ -472,4 +472,4 @@ jstr_ulltoa(char *_nptr,
 
 PJSTR_END_DECLS
 
-#endif /* JSTR_ITOA_DEF_H */
+#endif /* JSTR_ITOA__H */
