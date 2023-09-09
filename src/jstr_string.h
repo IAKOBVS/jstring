@@ -223,7 +223,7 @@ jstr_memrchr(const void *JSTR_RST _s,
 	const unsigned char *_end = (unsigned char *)_s + _n;
 	const unsigned char *_start = (unsigned char *)_s - 1;
 	while (*_end != (unsigned char)_c
-	       && _end-- < _start)
+	       && _end-- > _start)
 		;
 	return (_end == _start) ? NULL : (void *)_end;
 #endif
