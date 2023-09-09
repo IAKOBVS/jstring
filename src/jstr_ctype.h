@@ -326,8 +326,8 @@ JSTR_NOTHROW
 static void
 jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	for (; (*_s = jstr_toupper(*_s)); ++_s)
-		;
+	while ((*_s = jstr_toupper(*_s)))
+		++_s;
 }
 
 JSTR_MAYBE_UNUSED
@@ -336,8 +336,8 @@ JSTR_NOTHROW
 static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	for (; (*_s = jstr_tolower(*_s)); ++_s)
-		;
+	while ((*_s = jstr_tolower(*_s)))
+		++_s;
 }
 
 PJSTR_END_DECLS
