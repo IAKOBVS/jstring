@@ -194,7 +194,7 @@ JSTR_FUNC_PURE
 static int
 jstr_isspace_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	return *(_s + strspn(_s, "\t\n\v\f\r ")) == '\0';
+	PJSTR_IS_CTYPE_STR(isspace);
 }
 
 /* ASCII */
@@ -203,7 +203,7 @@ JSTR_FUNC_PURE
 static int
 jstr_isblank_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	return *(_s + strspn(_s, " \t")) == '\0';
+	PJSTR_IS_CTYPE_STR(isblank);
 }
 
 /* ASCII */
@@ -212,7 +212,25 @@ JSTR_FUNC_PURE
 static int
 jstr_isdigit_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-	return *(_s + strspn(_s, "0123456789")) == '\0';
+	PJSTR_IS_CTYPE_STR(isdigit);
+}
+
+/* ASCII */
+JSTR_INLINE
+JSTR_FUNC_PURE
+static int
+jstr_isxdigit_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	PJSTR_IS_CTYPE_STR(isxdigit);
+}
+
+/* ASCII */
+JSTR_INLINE
+JSTR_FUNC_PURE
+static int
+jstr_ispunct_str(const char *JSTR_RST _s) JSTR_NOEXCEPT
+{
+	PJSTR_IS_CTYPE_STR(ispunct);
 }
 
 #ifdef __clang__
