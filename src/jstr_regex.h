@@ -532,6 +532,7 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 	unsigned char *_p = _dst;
 	const unsigned char *_old = _dst;
 	while ((_flag & PJSTR_FLAG_USE_N ? _n-- : 1)
+	       && *_p
 	       && PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, 1, &_rm, _eflags) == JSTR_REG_RET_NOERROR) {
 		_ret = JSTR_REG_RET_NOERROR;
 		_findlen = _rm.rm_eo - _rm.rm_so;
@@ -590,8 +591,6 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 		} else {
 			PJSTR_REG_RPLCALL_BIG_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp, return JSTR_REG_RET_ENOMEM);
 		}
-		if (jstr_unlikely(*_p == '\0'))
-			break;
 	}
 	if (_dst != _old) {
 		memmove(_dst, _old, (*(u **)_s + *_sz) - _old + 1);
@@ -739,11 +738,12 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	for (const unsigned char *_rsrc = (unsigned char *)_rplc;
 	     (_rsrc = (unsigned char *)memchr(_rsrc, '\\', _rend - _rsrc));
 	     ++_rsrc) {
-		_no_bref = 0;
 		if (jstr_likely(jstr_isdigit(*++_rsrc)))
 			_rdstlen = _rdstlen + ((_rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so)) - 2;
-		else if (jstr_unlikely(*_rsrc == '\0'))
+		else if (jstr_unlikely(*_rsrc == '\0')) {
+			_no_bref = 0;
 			break;
+		}
 	}
 	if (jstr_unlikely(_no_bref))
 		return jstr_reg_rplc_len(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
@@ -828,21 +828,23 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	const unsigned char *const _rend = (u *)_rplc + _rplclen;
 	unsigned char *_tmp;
 	size_t _findlen;
-	while ((_nflag & PJSTR_FLAG_USE_N) ? _n-- : 1) {
-		if (jstr_unlikely(PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, _nmatch, _rm, _eflags) != JSTR_REG_RET_NOERROR))
-			break;
+	while (((_nflag & PJSTR_FLAG_USE_N) ? _n-- : 1)
+	       && *_p
+	       && PJSTR_REG_EXEC(_preg, (char *)_p, (*(u **)_s + *_sz) - _p, _nmatch, _rm, _eflags) != JSTR_REG_RET_NOERROR) {
 		_ret = JSTR_REG_RET_NOERROR;
 		_findlen = _rm[0].rm_eo - _rm[0].rm_so;
-		if (jstr_unlikely(_findlen == 0))
+		if (jstr_unlikely(_findlen == 0)) {
 			++_p;
+			continue;
+		}
 		_p += _rm[0].rm_so;
 		_rdstlen = _rplclen;
-		for (const unsigned char *_rsrc = (u *)_rplc; (_rsrc = (u *)memchr(_rsrc, '\\', _rend - _rsrc)); ++_rsrc) {
+		for (const unsigned char *_rsrc = (u *)_rplc;
+		     *_rsrc
+		     && (_rsrc = (u *)memchr(_rsrc, '\\', _rend - _rsrc));
+		     ++_rsrc)
 			if (jstr_likely(jstr_isdigit(*++_rsrc)))
 				_rdstlen = _rdstlen + (_rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so) - 2;
-			else if (jstr_unlikely(*_rsrc == '\0'))
-				break;
-		}
 		if (jstr_unlikely(_rdstlen > 256)) {
 			if (jstr_unlikely(_rdst == NULL)) {
 				_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
@@ -867,8 +869,6 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		} else {
 			PJSTR_RPLCALL_BREF(_p - _rm[0].rm_so, _dst, _old, _p, _rplc, _rdst_stack, _rdstlen, _findlen, _tmp, _ret = JSTR_REG_RET_ENOMEM; goto cleanup);
 		}
-		if (jstr_unlikely(*_p == '\0'))
-			break;
 	}
 	if (_dst != _old) {
 		memmove(_dst, _old, (*(u **)_s + *_sz) - _old + 1);
