@@ -231,56 +231,23 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_tolower_len(char *JSTR_RST _s,
-		 const size_t _sz)
+jstr_tolower_str_len(char *JSTR_RST _s,
+		     const size_t _sz)
 {
-	/* It seems that 8 iterations is not much faster. */
-#define PJSTR_UNROLL_ITERATIONS 4
-#if PJSTR_NO_UNROLL
-	for (; (*_s = jstr_tolower(*_s)); ++_s)
-		;
-#else
-	enum {
-		it = PJSTR_UNROLL_ITERATIONS,
-	};
-	int skip;
-	switch (_sz % it) {
-#	if PJSTR_UNROLL_ITERATIONS == 8
-	case 7:
-		skip = 7;
-		goto do7;
-	case 6:
-		skip = 6;
-		goto do6;
-	case 5:
-		skip = 5;
-		goto do5;
-	case 4:
-		skip = 4;
-		goto do4;
-#	endif
+	/* 8 iterations is not that much faster. */
+	unsigned char _skip;
+	switch (_sz % 4) {
 	case 3:
-		skip = 3;
+		_skip = 3;
 		goto do3;
 	case 2:
-		skip = 2;
+		_skip = 2;
 		goto do2;
 	case 1:
-		skip = 1;
+		_skip = 1;
 		goto do1;
 	case 0:
 		goto start_loop;
-		break;
-#	if PJSTR_UNROLL_ITERATIONS == 8
-do7:
-		_s[6] = jstr_tolower(_s[6]);
-do6:
-		_s[5] = jstr_tolower(_s[5]);
-do5:
-		_s[4] = jstr_tolower(_s[4]);
-do4:
-		_s[3] = jstr_tolower(_s[3]);
-#	endif
 do3:
 		_s[2] = jstr_tolower(_s[2]);
 do2:
@@ -288,76 +255,36 @@ do2:
 do1:
 		_s[0] = jstr_tolower(_s[0]);
 	}
-	_s += skip;
+	_s += _skip;
 start_loop:;
-	for (; (_s[0] = jstr_tolower(_s[0])); _s += it) {
+	for (; (_s[0] = jstr_tolower(_s[0])); _s += 4) {
 		_s[1] = jstr_tolower(_s[1]);
 		_s[2] = jstr_tolower(_s[2]);
 		_s[3] = jstr_tolower(_s[3]);
-#	if PJSTR_UNROLL_ITERATIONS == 8
-		_s[4] = jstr_tolower(_s[4]);
-		_s[5] = jstr_tolower(_s[5]);
-		_s[6] = jstr_tolower(_s[6]);
-		_s[7] = jstr_tolower(_s[7]);
-#	endif
 	}
-#endif
 }
 
 JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_toupper_len(char *JSTR_RST _s,
-		 const size_t _sz)
+jstr_toupper_str_len(char *JSTR_RST _s,
+		     const size_t _sz)
 {
-	/* It seems that 8 iterations is not much faster. */
-#define PJSTR_UNROLL_ITERATIONS 4
-#if PJSTR_NO_UNROLL
-	for (; (*_s = jstr_toupper(*_s)); ++_s)
-		;
-#else
-	enum {
-		it = PJSTR_UNROLL_ITERATIONS,
-	};
-	int skip;
-	switch (_sz % it) {
-#	if PJSTR_UNROLL_ITERATIONS == 8
-	case 7:
-		skip = 7;
-		goto do7;
-	case 6:
-		skip = 6;
-		goto do6;
-	case 5:
-		skip = 5;
-		goto do5;
-	case 4:
-		skip = 4;
-		goto do4;
-#	endif
+	/* 8 iterations is not that much faster. */
+	unsigned char _skip;
+	switch (_sz % 4) {
 	case 3:
-		skip = 3;
+		_skip = 3;
 		goto do3;
 	case 2:
-		skip = 2;
+		_skip = 2;
 		goto do2;
 	case 1:
-		skip = 1;
+		_skip = 1;
 		goto do1;
 	case 0:
 		goto start_loop;
-		break;
-#	if PJSTR_UNROLL_ITERATIONS == 8
-do7:
-		_s[6] = jstr_toupper(_s[6]);
-do6:
-		_s[5] = jstr_toupper(_s[5]);
-do5:
-		_s[4] = jstr_toupper(_s[4]);
-do4:
-		_s[3] = jstr_toupper(_s[3]);
-#	endif
 do3:
 		_s[2] = jstr_toupper(_s[2]);
 do2:
@@ -365,20 +292,13 @@ do2:
 do1:
 		_s[0] = jstr_toupper(_s[0]);
 	}
-	_s += skip;
+	_s += _skip;
 start_loop:;
-	for (; (_s[0] = jstr_toupper(_s[0])); _s += it) {
+	for (; (_s[0] = jstr_toupper(_s[0])); _s += 4) {
 		_s[1] = jstr_toupper(_s[1]);
 		_s[2] = jstr_toupper(_s[2]);
 		_s[3] = jstr_toupper(_s[3]);
-#	if PJSTR_UNROLL_ITERATIONS == 8
-		_s[4] = jstr_toupper(_s[4]);
-		_s[5] = jstr_toupper(_s[5]);
-		_s[6] = jstr_toupper(_s[6]);
-		_s[7] = jstr_toupper(_s[7]);
-#	endif
 	}
-#endif
 }
 
 #ifdef __clang__
@@ -393,20 +313,8 @@ JSTR_NOTHROW
 static void
 jstr_toupper_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-#if PSJTR_NO_UNROLL
 	for (; (*_s = jstr_toupper(*_s)); ++_s)
 		;
-#else
-	size_t _len = jstr_strnlen(_s, 512);
-	if (_len < 512) {
-		jstr_toupper_len(_s, jstr_strnlen(_s, 512));
-		return;
-	}
-	do {
-		jstr_toupper_len(_s += _len, _len);
-		_len = jstr_strnlen(_s += _len, 2048);
-	} while (_len == 2048);
-#endif
 }
 
 JSTR_MAYBE_UNUSED
@@ -415,20 +323,8 @@ JSTR_NOTHROW
 static void
 jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 {
-#if PSJTR_NO_UNROLL
-	for (; *_s = jstr_tolower(*_s); ++_s)
+	for (; (*_s = jstr_tolower(*_s)); ++_s)
 		;
-#else
-	size_t _len = jstr_strnlen(_s, 512);
-	if (_len < 512) {
-		jstr_tolower_len(_s, jstr_strnlen(_s, 512));
-		return;
-	}
-	do {
-		jstr_tolower_len(_s += _len, _len);
-		_len = jstr_strnlen(_s += _len, 2048);
-	} while (_len == 2048);
-#endif
 }
 
 PJSTR_END_DECLS
