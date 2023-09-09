@@ -875,9 +875,6 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		do {                                                                                                       \
 			if (rplc_dstlen <= findlen) {                                                                      \
 				PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc_dst, rplc_dstlen, findlen);                       \
-				if (jstr_unlikely(*_p == '\0'))                                                            \
-					break;                                                                             \
-				continue;                                                                                  \
 			} else if (*_cap > *_sz + rplc_dstlen - findlen) {                                                 \
 				PJSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp);            \
 			} else {                                                                                           \
@@ -890,8 +887,6 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 			PJSTR_CREAT_RPLC_BREF(_rdst_stack, _rdstlen, _rsrc, _rend);
 			PJSTR_RPLCALL_BREF(_dst, _old, _p, _rdst_stack, _rdstlen, _findlen, _tmp, _ret = JSTR_REG_RET_ENOMEM; goto cleanup);
 		}
-		*_sz += _rdstlen - _findlen;
-		_p += _rdstlen;
 		if (jstr_unlikely(*_p == '\0'))
 			break;
 	}
