@@ -32,7 +32,7 @@ and
 - \*\_f(): assumes that there be enough space in the string: it will not grow it with realloc
 - \*\_now(): compiles regular expression now
 - \*\_bref(): enables backreferences for the replacement string
-- P\*() or p\*(): private functions used internally
+- P\*() or p\*(): private functions or macros used internally
 
 ## Scripts:
 
