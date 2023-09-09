@@ -405,8 +405,6 @@ jstr_reg_rm_now(char *JSTR_RST const _s,
 		const int _cflags,
 		const int _eflags) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
@@ -480,8 +478,6 @@ jstr_reg_rmn_now(char *JSTR_RST const _s,
 		 const int _cflags,
 		 const int _eflags) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
@@ -498,8 +494,6 @@ jstr_reg_rmall_now(char *JSTR_RST const _s,
 		   const int _cflags,
 		   const int _eflags) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
@@ -641,8 +635,6 @@ jstr_reg_rplcall_len_now(char **JSTR_RST const _s,
 			 const int _cflags,
 			 const int _eflags) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
@@ -663,8 +655,6 @@ jstr_reg_rplcn_len_now(char **JSTR_RST const _s,
 		       const int _cflags,
 		       const int _eflags) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
@@ -705,8 +695,6 @@ jstr_reg_rplc_len_now(char **JSTR_RST const _s,
 		      const int _cflags,
 		      const int _eflags) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
@@ -925,8 +913,6 @@ jstr_reg_rplcn_len_bref_now(char **JSTR_RST const _s,
 			    const int _eflags,
 			    const size_t _nmatch) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
@@ -947,8 +933,6 @@ jstr_reg_rplcall_len_bref_now(char **JSTR_RST const _s,
 			      const int _eflags,
 			      const size_t _nmatch) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
@@ -969,8 +953,6 @@ jstr_reg_rplc_len_bref_now(char **JSTR_RST const _s,
 			   const int _eflags,
 			   const size_t _nmatch) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_ptn == '\0'))
-		return JSTR_REG_RET_NOERROR;
 	const jstr_reg_errcode_ty _ret = jstr_reg_comp(_preg, _ptn, _cflags);
 	if (jstr_unlikely(_ret != JSTR_REG_RET_NOERROR))
 		return _ret;
