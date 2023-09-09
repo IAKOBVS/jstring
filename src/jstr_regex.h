@@ -714,8 +714,6 @@ jstr_reg_rplc_len_now(char **JSTR_RST const _s,
 	return jstr_reg_rplc_len(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags);
 }
 
-#define JSTR_1TO9(c) (((c) > '0') & ((c) < '9' + 1))
-
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
@@ -742,8 +740,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	     (_rsrc = (unsigned char *)memchr(_rsrc, '\\', _rend - _rsrc));
 	     ++_rsrc) {
 		_no_bref = 0;
-		++_rsrc;
-		if (jstr_likely(JSTR_1TO9(*_rsrc)))
+		if (jstr_likely(jstr_isdigit(*++_rsrc)))
 			_rdstlen = _rdstlen + ((_rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so)) - 2;
 		else if (jstr_unlikely(*_rsrc == '\0'))
 			break;
@@ -762,11 +759,11 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		for (;; ++_rsrc) {                                                               \
 			_rplc_old = _rsrc;                                                       \
 			_rsrc = (unsigned char *)memchr(_rsrc, '\\', rplc_end - _rsrc);          \
-			if (jstr_unlikely(_rsrc++ == NULL)) {                                    \
+			if (jstr_unlikely(_rsrc == NULL)) {                                      \
 				memcpy(_rplc_dstp, _rplc_old, rplc_end - _rplc_old);             \
 				break;                                                           \
 			}                                                                        \
-			if (jstr_likely(JSTR_1TO9(*_rsrc))) {                                    \
+			if (jstr_likely(jstr_isdigit(*++_rsrc))) {                               \
 				if (jstr_likely(_rsrc != _rplc_old)) {                           \
 					memmove(_rplc_dstp, _rplc_old, (_rsrc - 1) - _rplc_old); \
 					_rplc_dstp += (_rsrc - 1) - _rplc_old;                   \
@@ -841,8 +838,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		_p += _rm[0].rm_so;
 		_rdstlen = _rplclen;
 		for (const unsigned char *_rsrc = (u *)_rplc; (_rsrc = (u *)memchr(_rsrc, '\\', _rend - _rsrc)); ++_rsrc) {
-			++_rsrc;
-			if (jstr_likely(JSTR_1TO9(*_rsrc)))
+			if (jstr_likely(jstr_isdigit(*++_rsrc)))
 				_rdstlen = _rdstlen + (_rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so) - 2;
 			else if (jstr_unlikely(*_rsrc == '\0'))
 				break;
@@ -958,8 +954,6 @@ jstr_reg_rplcall_len_bref_now(char **JSTR_RST const _s,
 		return _ret;
 	return jstr_reg_rplcall_len_bref(_s, _sz, _cap, _rplc, _rplclen, _preg, _eflags, _nmatch);
 }
-
-#undef JSTR_1TO9
 
 JSTR_INLINE
 JSTR_FUNC
