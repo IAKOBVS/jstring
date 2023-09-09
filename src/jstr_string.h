@@ -497,21 +497,20 @@ jstr_strcasestr_len(const char *JSTR_RST _hs,
 	default: /* case 4: */
 		if (_is_alpha0
 		    + jstr_isalpha(_ne[2])
-		    + jstr_isalpha(_ne[3])
-		    == 0)
-			return (char *)strstr(_hs, _ne);
-		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
+		    + jstr_isalpha(_ne[3]))
+			return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
+		break;
 	case 3:
 		if (_is_alpha0
-		    + jstr_isalpha(_ne[2])
-		    == 0)
-			return (char *)strstr(_hs, _ne);
-		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
+		    + jstr_isalpha(_ne[2]))
+			return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
+		break;
 	case 2:
-		if (_is_alpha0 == 0)
-			return (char *)strstr(_hs, _ne);
-		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
+		if (_is_alpha0)
+			return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
+		break;
 	}
+	return (char *)strstr(_hs, _ne);
 #endif
 }
 
@@ -546,29 +545,29 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 		return (char *)_hs;
 	_is_alpha0 += jstr_isalpha(_ne[1]);
 	if (_ne[2] == '\0') {
+		if (jstr_unlikely(_hs[1] == '\0'))
+			return NULL;
 		if (_is_alpha0
 		    == 0)
 			return (char *)strstr(_hs, _ne);
-		if (jstr_unlikely(_hs[1] == '\0'))
-			return NULL;
 		return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[3] == '\0') {
+		if (jstr_unlikely(_hs[1] == '\0')
+		    || jstr_unlikely(_hs[2] == '\0'))
+			return NULL;
 		if (_is_alpha0
 		    + jstr_isalpha(_ne[2])
 		    == 0)
 			return (char *)strstr(_hs, _ne);
-		if (jstr_unlikely(_hs[1] == '\0')
-		    || jstr_unlikely(_hs[2] == '\0'))
-			return NULL;
 		return pjstr_strcasestr3((unsigned char *)_hs, (unsigned char *)_ne);
 	} else if (_ne[4] == '\0') {
+		if (jstr_unlikely(_hs[1] == '\0' || jstr_unlikely(_hs[2] == '\0') || jstr_unlikely(_hs[3] == '\0')))
+			return NULL;
 		if (_is_alpha0
 		    + jstr_isalpha(_ne[2])
 		    + jstr_isalpha(_ne[3])
 		    == 0)
 			return (char *)strstr(_hs, _ne);
-		if (jstr_unlikely(_hs[1] == '\0' || jstr_unlikely(_hs[2] == '\0') || jstr_unlikely(_hs[3] == '\0')))
-			return NULL;
 		return pjstr_strcasestr4((unsigned char *)_hs, (unsigned char *)_ne);
 	}
 	return pjstr_strcasestr_bmh(_hs, _ne);
