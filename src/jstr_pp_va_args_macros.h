@@ -3,11 +3,7 @@
 
 #include "jstr_pp_st_assert.h"
 #include "jstr_pp_strcpy_va_args.h"
-#if 1
-#	include "jstr_pp_strlen2_va_args.h"
-#else
-#	include "jstr_pp_strlen_va_args.h"
-#endif
+#include "jstr_pp_strlen_va_args.h"
 #include "jstr_pp_va_args_tools.h"
 
 #define PJSTR_PP_CONCATENATE(A, B) \
