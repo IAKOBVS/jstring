@@ -799,7 +799,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		unsigned char _rdst[256];
 		PJSTR_CREAT_RPLC_BREF(_rdst, _rdstlen, _rsrc, _rend);
 		if (jstr_unlikely(pjstr_rplcat_len(_s, _sz, _cap, _rm[0].rm_so, (char *)_rdst, _rdstlen, _findlen) == NULL))
-			return JSTR_REG_RET_ENOMEM;
+			_ret = JSTR_REG_RET_ENOMEM;
 	}
 	return _ret;
 }
@@ -829,15 +829,15 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	jstr_reg_errcode_ty _ret = JSTR_REG_RET_NOERROR;
 	size_t _rdstlen = _rplclen;
 	size_t _rdstcap = 0;
+	unsigned char _rdst_stack[256];
+	unsigned char *_rdst = NULL;
+	const unsigned char *_rsrc;
 	typedef unsigned char u;
-	u _rdst_stack[256];
-	u *_rdst;
-	const u *_rsrc;
-	u *_dst = *(u **)_s;
-	const u *_old = _dst;
-	u *_p = _dst;
-	u *_tmp;
-	const u *const _rend = (unsigned char *)_rplc + _rplclen;
+	unsigned char *_dst = *(u **)_s;
+	const unsigned char *_old = _dst;
+	unsigned char *_p = _dst;
+	unsigned char *_tmp;
+	const unsigned char *const _rend = (u *)_rplc + _rplclen;
 	size_t _findlen;
 	enum { MUST_COPY = 1,
 	       IS_MALLOC = 1 << 1,
@@ -864,14 +864,13 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		}
 		_rsrc = (u *)_rplc;
 		if (jstr_unlikely(_rdstlen > 256)) {
-			if (_rdstcap < _rdstlen) {
-				if (jstr_unlikely(_rdstcap == 0)) {
-					_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
-					_rdst = (u *)malloc(_rdstcap);
-				} else {
-					PJSTR_GROW(_rdstcap, _rdstlen);
-					_rdst = (u *)realloc(_rdst, _rdstcap);
-				}
+			if (jstr_unlikely(_rdst == NULL)) {
+				_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
+				_rdst = (u *)malloc(_rdstcap);
+				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_NOERROR);
+			} else if (_rdstcap < _rdstlen) {
+				PJSTR_GROW(_rdstcap, _rdstlen);
+				_rdst = (u *)realloc(_rdst, _rdstcap);
 				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_NOERROR);
 			}
 #	define PJSTR_RPLCALL_BREF(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail)                          \
@@ -903,7 +902,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		*_sz = (_dst + (*(u **)_s + *_sz - _old)) - *(u **)_s;
 	}
 cleanup:
-	if (_rdstcap)
+	if (_rdst)
 		free(_rdst);
 	return _ret;
 #	undef PJSTR_CREAT_RPLC_BREF
