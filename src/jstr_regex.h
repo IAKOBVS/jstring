@@ -542,14 +542,6 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 				break;
 			continue;
 		}
-		if (_rplclen <= _findlen) {
-			PJSTR_REG_LOG("_rplclen <= _findlen");
-			PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen);
-			if (jstr_unlikely(*_p == '\0'))
-				break;
-			continue;
-		}
-		if (*_cap > *_sz + _rplclen - _findlen) {
 #define PJSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc, rplclen, findlen, tmp)       \
 	do {                                                                         \
 		PJSTR_REG_LOG("*_cap > *_sz + _rplclen - findlen");                  \
@@ -570,9 +562,9 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 				(*(unsigned char **)_s + *_sz) - (p + findlen) + 1); \
 			memcpy(p, _rplc, _rplclen);                                  \
 		}                                                                    \
+		*_sz += rplclen - findlen;                                           \
+		p += rplclen;                                                        \
 	} while (0)
-			PJSTR_REG_RPLCALL_SMALL_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp);
-		} else {
 #define PJSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc, rplclen, findlen, tmp, malloc_fail) \
 	do {                                                                              \
 		PJSTR_REG_LOG("_cap <= *_sz + _rplclen - _findlen");                      \
@@ -587,11 +579,17 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 		p = *(unsigned char **)_s + (p - tmp);                                    \
 		dst = *(unsigned char **)_s + (dst - tmp) + _rplclen;                     \
 		old = dst;                                                                \
+		*_sz += rplclen - findlen;                                                \
+		p += rplclen;                                                             \
 	} while (0)
+		if (_rplclen <= _findlen) {
+			PJSTR_REG_LOG("_rplclen <= _findlen");
+			PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen);
+		} else if (*_cap > *_sz + _rplclen - _findlen) {
+			PJSTR_REG_RPLCALL_SMALL_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp);
+		} else {
 			PJSTR_REG_RPLCALL_BIG_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp, return JSTR_REG_RET_ENOMEM);
 		}
-		*_sz += _rplclen - _findlen;
-		_p += _rplclen;
 		if (jstr_unlikely(*_p == '\0'))
 			break;
 	}
