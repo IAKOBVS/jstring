@@ -754,7 +754,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 		unsigned char *_rdst;
 		_rdst = (unsigned char *)malloc(_rdstlen);
 		PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_ENOMEM);
-#define PJSTR_CREAT_RPLC_BREF(string, rplc_dst, rplc_len, rplc, rplc_end)                        \
+#define PJSTR_CREAT_RPLC_BREF(ptr_passed_to_reg, rplc_dst, rplc_len, rplc, rplc_end)             \
 	do {                                                                                     \
 		unsigned char *_rplc_dstp = rplc_dst;                                            \
 		const unsigned char *_rplc_old;                                                  \
@@ -774,7 +774,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 					_rsrc += (_rsrc - 1) - _rplc_old;                        \
 				}                                                                \
 				memcpy(_rplc_dstp,                                               \
-				       string + _rm[*_rsrc - '0'].rm_so,                         \
+				       ptr_passed_to_reg + _rm[*_rsrc - '0'].rm_so,              \
 				       _rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so);       \
 				_rplc_dstp += _rm[*_rsrc - '0'].rm_eo - _rm[*_rsrc - '0'].rm_so; \
 			} else if (jstr_unlikely(*_rsrc == '\0')) {                              \
@@ -857,16 +857,16 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 				_rdst = (u *)realloc(_rdst, _rdstcap);
 				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_NOERROR);
 			}
-#	define PJSTR_RPLCALL_BREF(string, dst, old, p, rplc, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail)            \
-		do {                                                                                                       \
-			PJSTR_CREAT_RPLC_BREF(string, rplc_dst, rplc_dstlen, rplc, _rend);                                 \
-			if (rplc_dstlen <= findlen)                                                                        \
-				PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc_dst, rplc_dstlen, findlen);                       \
-			else if (*_cap > *_sz + rplc_dstlen - findlen)                                                     \
-				PJSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp);            \
-			else                                                                                               \
-				PJSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail); \
-		} while (0)
+#define PJSTR_RPLCALL_BREF(ptr_passed_to_reg, dst, old, p, rplc, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail) \
+	do {                                                                                                       \
+		PJSTR_CREAT_RPLC_BREF(ptr_passed_to_reg, rplc_dst, rplc_dstlen, rplc, _rend);                      \
+		if (rplc_dstlen <= findlen)                                                                        \
+			PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc_dst, rplc_dstlen, findlen);                       \
+		else if (*_cap > *_sz + rplc_dstlen - findlen)                                                     \
+			PJSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp);            \
+		else                                                                                               \
+			PJSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail); \
+	} while (0)
 			PJSTR_RPLCALL_BREF(_p - _rm[0].rm_so, _dst, _old, _p, _rplc, _rdst, _rdstlen, _findlen, _tmp, _ret = JSTR_REG_RET_ENOMEM; goto cleanup);
 		} else {
 			PJSTR_RPLCALL_BREF(_p - _rm[0].rm_so, _dst, _old, _p, _rplc, _rdst_stack, _rdstlen, _findlen, _tmp, _ret = JSTR_REG_RET_ENOMEM; goto cleanup);
@@ -882,7 +882,7 @@ cleanup:
 	if (_rdst)
 		free(_rdst);
 	return _ret;
-#	undef PJSTR_CREAT_RPLC_BREF
+#undef PJSTR_CREAT_RPLC_BREF
 }
 
 JSTR_FUNC
