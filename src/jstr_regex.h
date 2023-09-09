@@ -804,7 +804,7 @@ jstr_reg_rplc_len_bref(char **JSTR_RST const _s,
 	return _ret;
 }
 
-#if 0
+#if 1
 
 JSTR_INLINE
 JSTR_FUNC
@@ -828,10 +828,10 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 	regmatch_t _rm[10];
 	jstr_reg_errcode_ty _ret = JSTR_REG_RET_NOERROR;
 	size_t _rdstlen = _rplclen;
-	size_t _rdstcap;
+	size_t _rdstcap = 0;
 	typedef unsigned char u;
 	u _rdst_stack[256];
-	u *_rdst = NULL;
+	u *_rdst;
 	const u *_rsrc;
 	u *_dst = *(u **)_s;
 	const u *_old = _dst;
@@ -864,13 +864,14 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		}
 		_rsrc = (u *)_rplc;
 		if (jstr_unlikely(_rdstlen > 256)) {
-			if (jstr_unlikely(_rdst == NULL)) {
-				_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
-				_rdst = (u *)malloc(_rdstcap);
-				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_NOERROR);
-			} else if (_rdstcap < _rdstlen) {
-				PJSTR_GROW(_rdstcap, _rdstlen);
-				_rdst = (u *)realloc(_rdst, _rdstcap);
+			if (_rdstcap < _rdstlen) {
+				if (jstr_unlikely(_rdstcap == 0)) {
+					_rdstcap = PJSTR_PTR_ALIGN_UP(_rdstlen, PJSTR_MALLOC_ALIGNMENT);
+					_rdst = (u *)malloc(_rdstcap);
+				} else {
+					PJSTR_GROW(_rdstcap, _rdstlen);
+					_rdst = (u *)realloc(_rdst, _rdstcap);
+				}
 				PJSTR_MALLOC_ERR(_rdst, return JSTR_REG_RET_NOERROR);
 			}
 #	define PJSTR_RPLCALL_BREF(dst, old, p, rplc_dst, rplc_dstlen, findlen, tmp, malloc_fail)                          \
@@ -902,7 +903,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
 		*_sz = (_dst + (*(u **)_s + *_sz - _old)) - *(u **)_s;
 	}
 cleanup:
-	if (_rdst)
+	if (_rdstcap)
 		free(_rdst);
 	return _ret;
 #	undef PJSTR_CREAT_RPLC_BREF

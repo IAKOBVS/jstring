@@ -836,7 +836,7 @@ static size_t
 jstr_count(const char *JSTR_RST _s,
 	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*_find == '\0'))
+	if (jstr_unlikely(_find[0] == '\0'))
 		return 0;
 	if (jstr_unlikely(_find[1] == '\0'))
 		return jstr_countc(_s, *_find);
