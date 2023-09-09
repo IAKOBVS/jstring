@@ -1,5 +1,5 @@
-#ifndef JSTR_BUILDER__H
-#define JSTR_BUILDER__H 1
+#ifndef JSTR_BUILDER_H
+#define JSTR_BUILDER_H 1
 
 #include "jstr_macros.h"
 

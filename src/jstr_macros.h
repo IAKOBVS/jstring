@@ -1,5 +1,5 @@
-#ifndef JSTR_MACROS__H
-#define JSTR_MACROS__H 1
+#ifndef JSTR_MACROS_H
+#define JSTR_MACROS_H 1
 
 #include "jstr_config.h"
 #include "libc-pointer-arith.h"
@@ -750,4 +750,4 @@ case '~':
 #	define PJSTR_END_DECLS
 #endif
 
-#endif /* JSTR_MACROS__H */
+#endif /* JSTR_MACROS_H */

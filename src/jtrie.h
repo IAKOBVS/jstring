@@ -1,6 +1,6 @@
-#ifndef JSTR__H
+#ifndef JSTR_H
 
-#define JSTR__H 1
+#define JSTR_H 1
 #include "jstr_macros.h"
 
 PJSTR_BEGIN_DECLS
@@ -164,4 +164,4 @@ jtrie_match(const jtrie_node_ty *JSTR_RST const _root,
 
 PJSTR_END_DECLS
 
-#endif /* JSTR__H */
+#endif /* JSTR_H */

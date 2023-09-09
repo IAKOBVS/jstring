@@ -1,5 +1,5 @@
-#ifndef JARR_MACROS__H
-#define JARR_MACROS__H 1
+#ifndef JARR_MACROS_H
+#define JARR_MACROS_H 1
 
 #include "jstr_macros.h"
 
@@ -79,4 +79,4 @@ PJARR_CAST(T, Other other)
 #	define PJARR_CHECK_VAL(j, value) JSTR_ASSERT(sizeof(*PJARR_DATA(j)) == value, "Passing illegal value incompatible with the array type.")
 #endif
 
-#endif /* JARR_MACROS__H */
+#endif /* JARR_MACROS_H */

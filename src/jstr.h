@@ -1,5 +1,5 @@
-#ifndef JSTR__H
-#define JSTR__H 1
+#ifndef JSTR_H
+#define JSTR_H 1
 
 #include "jstr_macros.h"
 #include "jstr_builder.h"
@@ -9,4 +9,4 @@
 #include "jstr_replace.h"
 #include "jstr_string.h"
 
-#endif /* JSTR__H */
+#endif /* JSTR_H */

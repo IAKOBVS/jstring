@@ -1,5 +1,5 @@
-#ifndef PJSTR_PP_VA_ARGS_MACROS__H
-#define PJSTR_PP_VA_ARGS_MACROS__H 1
+#ifndef PJSTR_PP_VA_ARGS_MACROS_H
+#define PJSTR_PP_VA_ARGS_MACROS_H 1
 
 #include "jstr_pp_st_assert.h"
 #include "jstr_pp_strcpy_va_args.h"
@@ -80,4 +80,4 @@
 #	define jstr_pp_cout(x)
 #endif /* __cplusplus */
 
-#endif /* PJSTR_PP_VA_ARGS_MACROS__H */
+#endif /* PJSTR_PP_VA_ARGS_MACROS_H */

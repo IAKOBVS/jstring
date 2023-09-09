@@ -1,5 +1,5 @@
-#ifndef JSTR_STRING__H
-#define JSTR_STRING__H 1
+#ifndef JSTR_STRING_H
+#define JSTR_STRING_H 1
 
 #include "jstr_macros.h"
 
@@ -859,4 +859,4 @@ jstr_count(const char *JSTR_RST _s,
 
 PJSTR_END_DECLS
 
-#endif /* JSTR_STRING__H */
+#endif /* JSTR_STRING_H */

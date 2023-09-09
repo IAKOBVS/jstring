@@ -1,5 +1,5 @@
-#ifndef JTRAITS__H
-#define JTRAITS__H 1
+#ifndef JTRAITS_H
+#define JTRAITS_H 1
 
 #ifdef __cplusplus
 
@@ -97,4 +97,4 @@ jtraits_assert_jtraits_are_same(Arg &&, Args &&...) JSTR_NOEXCEPT
 
 #endif /* __cplusplus */
 
-#endif /* JTRAITS__H */
+#endif /* JTRAITS_H */

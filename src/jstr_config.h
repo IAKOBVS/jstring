@@ -1,5 +1,5 @@
-#ifndef JSTR_CONFIG__H
-#define JSTR_CONFIG__H 1
+#ifndef JSTR_CONFIG_H
+#define JSTR_CONFIG_H 1
 
 #define PJSTR_MAX_UINT_DIGITS	    10
 #define PJSTR_MAX_ULONG_DIGITS	    19
@@ -77,4 +77,4 @@
 #	define JSTR_NULLIFY_PTR_ON_DELETE 1
 #endif
 
-#endif /* JSTR_CONFIG__H */
+#endif /* JSTR_CONFIG_H */

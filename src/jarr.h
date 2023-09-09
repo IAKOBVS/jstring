@@ -1,5 +1,5 @@
-#ifndef JARR__H
-#define JARR__H 1
+#ifndef JARR_H
+#define JARR_H 1
 
 #include "jstr_macros.h"
 
@@ -149,4 +149,4 @@ static void PJARR_ERR(const char *FILE_,
 	exit(1);
 }
 
-#endif /* JARR__H */
+#endif /* JARR_H */
