@@ -174,12 +174,13 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *JSTR_RST _s,
-	     const int _c,
+	     int _c,
 	     const size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(_s, _c, _n);
-#elif JSTR_HAVE_ATTR_MAY_ALIAS
+#else
+	_c = (unsigned char)_c;
 	const unsigned char *_end = (unsigned char *)_s + _n;
 	switch (_n % sizeof(pjstr_op_ty)) {
 	case 7:
@@ -212,20 +213,36 @@ jstr_memrchr(const void *JSTR_RST _s,
 		/* fallthrough */
 	case 0: break;
 	}
-	const pjstr_op_ty *_sw = (pjstr_op_ty *)_end;
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
+	const pjstr_op_ty *_w = (pjstr_op_ty *)_end;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s - 1;
-	for (; _sw > _start; --_sw)
-		if (pjstr_has_eq(*_sw, _cc))
-			return (void *)((char *)_sw + pjstr_index_last_eq(*_sw, _cc));
+	for (; _w > _start; --_w)
+		if (pjstr_has_eq(*_w, _cc))
+			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
 	return NULL;
-#else
-	const unsigned char *_end = (unsigned char *)_s + _n;
+#	else
 	const unsigned char *_start = (unsigned char *)_s - 1;
-	while (*_end != (unsigned char)_c
-	       && _end-- > _start)
-		;
-	return (_end == _start) ? NULL : (void *)_end;
+	for (; _end > _start; _end -= 8) {
+		if ((_end[0] == _c))
+			return (void *)_end;
+		if ((_end[-1] == _c))
+			return (void *)(_end - 1);
+		if ((_end[-2] == _c))
+			return (void *)(_end - 2);
+		if ((_end[-3] == _c))
+			return (void *)(_end - 3);
+		if ((_end[-4] == _c))
+			return (void *)(_end - 4);
+		if ((_end[-5] == _c))
+			return (void *)(_end - 5);
+		if ((_end[-6] == _c))
+			return (void *)(_end - 6);
+		if ((_end[-7] == _c))
+			return (void *)(_end - 7);
+	}
+	return NULL;
+#	endif
 #endif
 }
 
