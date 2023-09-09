@@ -342,4 +342,6 @@ jstr_tolower_str(char *JSTR_RST _s) JSTR_NOEXCEPT
 
 PJSTR_END_DECLS
 
+#undef PJSTR_IS_CTYPE_STR
+
 #endif /* JSTR_CTYPE_DEF_H */
