@@ -58,61 +58,6 @@ pjstr_slip_len_p_f(char *JSTR_RST const _s,
 	memcpy(_s + _at, _src, _srclen);
 }
 
-/*
-  Slip SRC into DST[AT].
-  Return 0 on malloc error;
-  otherwise, 1.
-*/
-JSTR_INLINE
-JSTR_FUNC
-static int
-pjstr_slip_len_realloc(char **JSTR_RST const _s,
-		       size_t *JSTR_RST const _sz,
-		       size_t *JSTR_RST const _cap,
-		       const size_t _at,
-		       const char *JSTR_RST const _rplc,
-		       const size_t _rplclen) JSTR_NOEXCEPT
-{
-	if (*_cap < *_sz + _rplclen)
-		PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen, return 0);
-	pjstr_slip_len_p_f(*_s, _at, _rplc, *_sz, _rplclen);
-	*_sz += _rplclen;
-	return 1;
-}
-
-/*
-  Slip SRC into DST[AT].
-  Return 0 on malloc error;
-  otherwise, 1.
-*/
-JSTR_INLINE
-JSTR_FUNC
-static int
-pjstr_slip_len_malloc(char **JSTR_RST const _s,
-		      size_t *JSTR_RST const _sz,
-		      size_t *JSTR_RST const _cap,
-		      const size_t _at,
-		      const char *JSTR_RST const _rplc,
-		      const size_t _rplclen) JSTR_NOEXCEPT
-{
-	if (*_cap > *_sz + _rplclen) {
-		pjstr_slip_len_p_f(*_s, _at, _rplc, *_sz, _rplclen);
-	} else {
-		PJSTR_GROW(*_cap, *_sz + _rplclen);
-		char *const _tmp = (char *)malloc(*_cap);
-		PJSTR_MALLOC_ERR(_tmp, return 0);
-		memcpy(_tmp, *_s, _at);
-		memcpy(_tmp + _at, _rplc, _rplclen);
-		memcpy(_tmp + _at + _rplclen,
-		       *_s + _at,
-		       *_sz - _at + 1);
-		free(*_s);
-		*_s = _tmp;
-	}
-	*_sz += _rplclen;
-	return 1;
-}
-
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -131,49 +76,6 @@ pjstr_rplcat_len_f(char *JSTR_RST const _s,
 	return _s + _at + _rplclen;
 }
 
-JSTR_INLINE
-JSTR_FUNC
-static char *
-pjstr_rplcat_len_realloc(char **JSTR_RST const _s,
-			 size_t *JSTR_RST const _sz,
-			 size_t *JSTR_RST const _cap,
-			 const size_t _at,
-			 const char *JSTR_RST const _rplc,
-			 const size_t _rplclen,
-			 const size_t _findlen) JSTR_NOEXCEPT
-{
-	if (*_cap < *_sz + _rplclen - _findlen)
-		PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen, return NULL);
-	return pjstr_rplcat_len_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
-}
-
-JSTR_INLINE
-JSTR_FUNC
-static char *
-pjstr_rplcat_len_malloc(char **JSTR_RST const _s,
-			size_t *JSTR_RST const _sz,
-			size_t *JSTR_RST const _cap,
-			const size_t _at,
-			const char *JSTR_RST const _rplc,
-			const size_t _rplclen,
-			const size_t _findlen) JSTR_NOEXCEPT
-{
-	if (*_cap > *_sz + _rplclen - _findlen)
-		return pjstr_rplcat_len_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
-	PJSTR_GROW(*_cap, *_sz + _rplclen - _findlen);
-	char *const _tmp = (char *)malloc(*_cap);
-	PJSTR_MALLOC_ERR(_tmp, return NULL);
-	memcpy(_tmp, *_s, _at);
-	memcpy(_tmp + _at, _rplc, _rplclen);
-	memcpy(_tmp + _at + _rplclen,
-	       *_s + _at + _findlen,
-	       *_sz - (_at + _findlen) + 1);
-	free(*_s);
-	*_sz += _rplclen - _findlen;
-	*_s = _tmp;
-	return _tmp + _at + _rplclen;
-}
-
 /*
   Slip SRC into DST[AT].
 */
@@ -186,7 +88,11 @@ jstr_slip_len(char **JSTR_RST const _s,
 	      const char *JSTR_RST const _rplc,
 	      const size_t _rplclen) JSTR_NOEXCEPT
 {
-	return pjstr_slip_len_realloc(_s, _sz, _cap, _at, _rplc, _rplclen);
+	if (*_cap < *_sz + _rplclen)
+		PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen, return 0);
+	pjstr_slip_len_p_f(*_s, _at, _rplc, *_sz, _rplclen);
+	*_sz += _rplclen;
+	return 1;
 }
 
 JSTR_FUNC
@@ -224,7 +130,9 @@ pjstr_rplcat_len(char **JSTR_RST const _s,
 		 const size_t _rplclen,
 		 const size_t _findlen) JSTR_NOEXCEPT
 {
-	return pjstr_rplcat_len_realloc(_s, _sz, _cap, _at, _rplc, _rplclen, _findlen);
+	if (*_cap < *_sz + _rplclen - _findlen)
+		PJSTR_REALLOC(*_s, *_cap, *_sz + _rplclen, return NULL);
+	return pjstr_rplcat_len_f(*_s, _sz, _at, _rplc, _rplclen, _findlen);
 }
 
 /*
