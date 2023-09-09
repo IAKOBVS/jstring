@@ -80,9 +80,13 @@ sub get_file_str
 		push(@lines, $_);
 	}
 	close($FH);
+	# prefix temporary macros with PJSTR_ to avoid naming conflicts
 	foreach (@lines) {
-		if (/^[ \t]*#[ \t]*undef[ \t]*((?:[^P][^J][^S][^T][^R]|[^J][^S][^T][^R])[A-Z0-9]+)/) {
-			$g_in_h =~ s/$1/PJSTR_$1/g;
+		if (/^[ \t]*#[ \t]*undef[ \t]*([_A-Z0-9]*)/) {
+			my $macro = $1;
+			if ($macro !~ /^(?:PJSTR|JSTR|pjstr|jstr)/) {
+				$g_in_h =~ s/([^_0-9A-Za-z]|^)$macro([^_0-9A-Za-z]|$)/$1PJSTR_$macro$2/g;
+			}
 		}
 	}
 	return $g_in_h;
