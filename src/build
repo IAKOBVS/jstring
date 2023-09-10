@@ -1,11 +1,3 @@
 #!/bin/sh
-# ./update-glibc
-for file in $(echo *.h); do
-	{
-		if [ -e ../jstr/"$file" ]; then
-			test "$file" -ot ../jstr/"$file" && exit 0
-		fi
-		perl generate-func.pl "$file" > ../jstr/"$file"
-	} &
-done
-wait
+./update-glibc
+./build-funcs
