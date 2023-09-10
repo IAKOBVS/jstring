@@ -11,10 +11,59 @@ PJSTR_END_DECLS
 
 #ifdef __cplusplus
 #	include <utility>
-#endif /* _cpluslus */
+#	include "jtraits.h"
+#endif /* __cpluslus */
 
 #include "jstr-config.h"
-#include "jtraits.h"
+#include "jstr-struct.h"
+
+#define PJSTR_MALLOC_ERR(p, malloc_fail)                         \
+	do {                                                     \
+		if (jstr_unlikely((p) == NULL)) {                \
+			pjstr_err(__FILE__, __LINE__, __func__); \
+			malloc_fail;                             \
+		}                                                \
+	} while (0)
+#define PJSTR_GROW(old_cap, new_cap)                                         \
+	do {                                                                 \
+		JSTR_ASSERT_IS_SIZE(old_cap);                                \
+		JSTR_ASSERT_IS_SIZE(new_cap);                                \
+		while ((old_cap *= JSTR_GROWTH) < (new_cap))                 \
+			;                                                    \
+		(old_cap) = PJSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
+	} while (0)
+#define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
+	do {                                            \
+		JSTR_ASSERT_IS_STR(p);                  \
+		JSTR_ASSERT_IS_SIZE(old_cap);           \
+		JSTR_ASSERT_IS_SIZE(new_cap);           \
+		PJSTR_GROW(old_cap, new_cap);           \
+		(p) = (char *)realloc(p, old_cap);      \
+		PJSTR_MALLOC_ERR(p, malloc_fail);       \
+	} while (0)
+#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
+	do {                                                 \
+		JSTR_ASSERT_IS_STR(p);                       \
+		JSTR_ASSERT_IS_SIZE(old_cap);                \
+		JSTR_ASSERT_IS_SIZE(new_cap);                \
+		(old_cap) = PJSTR_ALIGN_UP_STR(new_cap);     \
+		(p) = (char *)realloc(p, old_cap);           \
+		PJSTR_MALLOC_ERR(p, malloc_fail);            \
+	} while (0)
+#define PJSTR_MIN_ALLOC(new_cap)                           \
+	((new_cap < PJSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
+	 ? (PJSTR_MIN_CAP)                                 \
+	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
+#define PJSTR_MIN_ALLOCEXACT(new_cap) \
+	((new_cap < PJSTR_MIN_CAP)    \
+	 ? (PJSTR_MIN_CAP)            \
+	 : (new_cap))
+#define PJSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
+	do {                                        \
+		(_cap) = PJSTR_MIN_ALLOC(new_cap);  \
+		(p) = (char *)malloc((_cap));       \
+		PJSTR_MALLOC_ERR((p), do_fail);     \
+	} while (0)
 
 #define R JSTR_RESTRICT
 
@@ -52,39 +101,6 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 
 PJSTR_END_DECLS
 
-#define PJSTR_MALLOC_ERR(p, malloc_fail)                         \
-	do {                                                     \
-		if (jstr_unlikely((p) == NULL)) {                \
-			pjstr_err(__FILE__, __LINE__, __func__); \
-			malloc_fail;                             \
-		}                                                \
-	} while (0)
-#define PJSTR_GROW(old_cap, new_cap)                                         \
-	do {                                                                 \
-		JSTR_ASSERT_IS_SIZE(old_cap);                                \
-		JSTR_ASSERT_IS_SIZE(new_cap);                                \
-		while ((old_cap *= JSTR_GROWTH) < (new_cap))                 \
-			;                                                    \
-		(old_cap) = PJSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
-	} while (0)
-#define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
-	do {                                            \
-		JSTR_ASSERT_IS_STR(p);                  \
-		JSTR_ASSERT_IS_SIZE(old_cap);           \
-		JSTR_ASSERT_IS_SIZE(new_cap);           \
-		PJSTR_GROW(old_cap, new_cap);           \
-		(p) = (char *)realloc(p, old_cap);      \
-		PJSTR_MALLOC_ERR(p, malloc_fail);       \
-	} while (0)
-#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
-	do {                                                 \
-		JSTR_ASSERT_IS_STR(p);                       \
-		JSTR_ASSERT_IS_SIZE(old_cap);                \
-		JSTR_ASSERT_IS_SIZE(new_cap);                \
-		(old_cap) = PJSTR_ALIGN_UP_STR(new_cap);     \
-		(p) = (char *)realloc(p, old_cap);           \
-		PJSTR_MALLOC_ERR(p, malloc_fail);            \
-	} while (0)
 #ifdef __cplusplus
 
 namespace jstr {
@@ -307,11 +323,7 @@ jstr_alloc_appendmore_f(char *R const _s,
 			StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(_args)];
-#	if 0
-	*_sz = jstr::_priv::strlen_args(std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
-#	else
 	*_sz = jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
-#	endif
 	jstr::_priv::appendmore_loop_assign(&_s, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*_s = '\0';
 }
@@ -332,20 +344,11 @@ jstr_appendmore(char *R *R const _s,
 		StrArgs &&..._args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(_args)];
-	const size_t newsz =
-#	if 0
-	*_sz + jstr::_priv::strlen_args(std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
-#	else
-	*_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
-#	endif
+	const size_t newsz = *_sz + jstr::_priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	if (*_cap < *_sz)
 		PJSTR_REALLOC(*_s, *_cap, newsz + 1, return);
 	char *p = *_s + *_sz;
-#	if 0
-	jstr::_priv::appendmore_loop_assign(&p, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
-#	else
 	jstr::_priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
-#	endif
 	*p = '\0';
 	*_sz = newsz;
 }
@@ -367,6 +370,36 @@ jstr_appendmore_f(char *_s,
 	_s += *_sz;
 	jstr::_priv::appendmore_loop_assign(_sz, &_s, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
 	*_s = '\0';
+}
+
+/*
+  Insert multiple strings to S.
+*/
+template <typename Str,
+	  typename... StrArgs,
+	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
+JSTR_INLINE
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
+jstr_alloc_appendmore_j(jstr_ty *R const _j,
+			Str &&arg,
+			StrArgs &&...args) JSTR_NOEXCEPT
+{
+	jstr_alloc_appendmore(&_j->data, &_j->size, &_j->capacity, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+}
+
+/*
+  Append multiple strings to end of S.
+*/
+template <typename Str,
+	  typename... StrArgs,
+	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
+JSTR_INLINE
+JSTR_NONNULL_ALL JSTR_NOTHROW static void
+jstr_appendmore_j(jstr_ty *R const _j,
+		  Str &&arg,
+		  StrArgs &&...args) JSTR_NOEXCEPT
+{
+	jstr_appendmore(&_j->data, &_j->size, &_j->capacity, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 }
 
 #endif /* __cplusplus */

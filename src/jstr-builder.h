@@ -9,9 +9,7 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#ifdef __cplusplus
-#	include <utility>
-#endif
+#include "jstr-templates.h"
 
 #ifndef __cplusplus
 #	include "jstr-pp-va-args-macros.h"
@@ -19,26 +17,6 @@ PJSTR_END_DECLS
 
 #include "jstr-config.h"
 #include "jstr-macros.h"
-#include "jstr-templates.h"
-
-#ifdef __cplusplus
-#	include "jtraits.h"
-#endif /* __cpluslus */
-
-#define PJSTR_MIN_ALLOC(new_cap)                           \
-	((new_cap < PJSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
-	 ? (PJSTR_MIN_CAP)                                 \
-	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
-#define PJSTR_MIN_ALLOCEXACT(new_cap) \
-	((new_cap < PJSTR_MIN_CAP)    \
-	 ? (PJSTR_MIN_CAP)            \
-	 : (new_cap))
-#define PJSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
-	do {                                        \
-		(_cap) = PJSTR_MIN_ALLOC(new_cap);  \
-		(p) = (char *)malloc((_cap));       \
-		PJSTR_MALLOC_ERR((p), do_fail);     \
-	} while (0)
 
 #define R JSTR_RESTRICT
 
@@ -55,79 +33,6 @@ jstr_err(char *R const p) JSTR_NOEXCEPT
 	if (jstr_unlikely(p == NULL))
 		pjstr_err_exit();
 }
-
-PJSTR_END_DECLS
-
-typedef struct jstr_ty {
-	char *data;
-	size_t size;
-	size_t capacity;
-#ifdef __cplusplus
-	JSTR_INLINE
-	jstr_ty(void) JSTR_NOEXCEPT
-	{
-		this->data = NULL;
-	}
-#	if JSTR_FREE_ON_DESTRUCTOR_CPP
-	JSTR_INLINE
-	~jstr_ty(void) JSTR_NOEXCEPT
-	{
-		::free(this->data);
-#		if JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP
-		this->data = NULL;
-#		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
-	}
-#	endif /* JSTR_FREE_ON_DESTRUCTOR_CPP */
-	/*
-	  free(STR) and set STR to NULL.
-	*/
-	JSTR_INLINE
-	void
-	free(void) JSTR_NOEXCEPT
-	{
-		::free(this->data);
-#	if JSTR_NULLIFY_PTR_ON_DELETE
-		this->data = NULL;
-#	endif /* JSTR_NULLIFY_PTR_ON_DELETE */
-	}
-	/*
-	  exit(1) if ptr is NULL.
-	*/
-	JSTR_INLINE
-	void
-	err_exit(void) JSTR_NOEXCEPT
-	{
-		if (jstr_unlikely(this->data == NULL))
-			pjstr_err_exit();
-	}
-	JSTR_INLINE
-	void
-	print(void) JSTR_NOEXCEPT
-	{
-		fwrite(this->data, 1, this->size, stdout);
-	}
-	JSTR_INLINE
-	void
-	print_stderr(void) JSTR_NOEXCEPT
-	{
-		fwrite(this->data, 1, this->size, stderr);
-	}
-	JSTR_INLINE
-	void
-	debug_print(void) JSTR_NOEXCEPT
-	{
-		fprintf(stderr, "size:%zu\ncapacity:%zu\n", this->size, this->capacity);
-		fprintf(stderr, "strlen():%zu\n", strlen(this->data));
-		fprintf(stderr, "data puts():%s\n", this->data);
-		fputs("data:", stderr);
-		fwrite(this->data, 1, this->size, stderr);
-		fputc('\n', stderr);
-	}
-#endif /* __cpluslus */
-
-} jstr_ty;
-
-PJSTR_BEGIN_DECLS
 
 JSTR_INLINE
 JSTR_NONNULL_ALL
@@ -421,39 +326,7 @@ jstr_pop_front_j(jstr_ty *R const _j) JSTR_NOEXCEPT
 
 PJSTR_END_DECLS
 
-#ifdef __cplusplus
-
-/*
-  Insert multiple strings to S.
-*/
-template <typename Str,
-	  typename... StrArgs,
-	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
-JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_alloc_appendmore_j(jstr_ty *R const _j,
-			Str &&arg,
-			StrArgs &&...args) JSTR_NOEXCEPT
-{
-	jstr_alloc_appendmore(&_j->data, &_j->size, &_j->capacity, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-}
-
-/*
-  Append multiple strings to end of S.
-*/
-template <typename Str,
-	  typename... StrArgs,
-	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
-JSTR_INLINE
-JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_appendmore_j(jstr_ty *R const _j,
-		  Str &&arg,
-		  StrArgs &&...args) JSTR_NOEXCEPT
-{
-	jstr_appendmore(&_j->data, &_j->size, &_j->capacity, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
-}
-
-#else
+#ifndef __cplusplus
 
 #	define jstr_appendmore_f(_s, _sz, ...)                                           \
 		do {                                                                      \
