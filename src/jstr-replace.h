@@ -1050,7 +1050,6 @@ jstr_rev_p(char *R _s) JSTR_NOEXCEPT
   Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
   ptr to '\0' in S;
-  S if SLEN is 0.
 */
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -1079,7 +1078,6 @@ jstr_trim_len_p(char *R _s,
   Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
   ptr to '\0' in S;
-  S if SLEN is 0.
 */
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
@@ -1093,7 +1091,6 @@ jstr_trim_p(char *R const _s) JSTR_NOEXCEPT
   Trim leading and trailing [\n\t\v\r ] in S.
   Return value:
   ptr to '\0' in S;
-  S if SLEN is 0.
 */
 JSTR_FUNC_VOID
 JSTR_INLINE
