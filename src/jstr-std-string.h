@@ -21,11 +21,8 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_NOTHROW
-JSTR_PURE
 static size_t
 jstr_strnlen(const char *R const _s,
 	     const size_t _maxlen)
@@ -42,11 +39,8 @@ jstr_strnlen(const char *R const _s,
   Return value:
   ptr to '\0' in DST.
 */
+JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
 static void *
 jstr_mempcpy(void *R const _dst,
 	     const void *R const _src,
@@ -63,13 +57,8 @@ jstr_mempcpy(void *R const _dst,
   Return value:
   ptr to '\0' in DST.
 */
-#if JSTR_HAVE_STPCPY
+JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
-#endif
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
 static char *
 jstr_stpcpy(char *R _dst,
 	    const char *R _src) JSTR_NOEXCEPT
@@ -85,10 +74,8 @@ jstr_stpcpy(char *R _dst,
 }
 
 /* Copy until either N is 0 or C is found */
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_FUNC
 JSTR_INLINE
-JSTR_NOTHROW
 static void *
 jstr_memccpy(void *R _dst,
 	     const void *R _src,
@@ -110,39 +97,34 @@ jstr_memccpy(void *R _dst,
   Return value:
   Pointer to '\0' in DST.
 */
+JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
 static char *
-jstr_stpappendmore(char *R _dst,
-		   const char *R _src) JSTR_NOEXCEPT
+jstr_stpcat(char *R _dst,
+	    const char *R _src) JSTR_NOEXCEPT
 {
 	_dst += strlen(_dst);
 	return jstr_stpcpy(_dst, _src);
 }
 
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_FUNC
 JSTR_INLINE
-JSTR_NOTHROW
 static char *
-jstr_stpdup(const char *R const _s,
-	    size_t *R const _sz)
+jstr_strdup(const char *R const _s)
 {
-	*_sz = strlen(_s);
-	void *_p = malloc(*_sz + 1);
+#if JSTR_HAVE_STRDUP
+	return strdup(_s);
+#else
+	const size_t _len = strlen(_s) + 1;
+	void *_p = malloc(_len);
 	if (jstr_unlikely(_p == NULL))
 		return NULL;
-	return (char *)memcpy(_p, _s, *_sz + 1);
+	return (char *)memcpy(_p, _s, _len);
+#endif
 }
 
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
-JSTR_RETURNS_NONNULL
-JSTR_NOTHROW
 static char *
 jstr_strchrnul(const char *R const _s,
 	       const int _c)
