@@ -509,9 +509,9 @@ jstr_strcasestr_len(const char *R _hs,
 	    || !jstr_strncasecmp(_hs, _ne, _nelen))
 		return (char *)_hs;
 	_hslen -= _hs - _start;
-	_is_alpha0 += jstr_isalpha(_ne[1]);
 	if (jstr_unlikely(_hslen < _nelen))
 		return NULL;
+	_is_alpha0 += jstr_isalpha(_ne[1]);
 	switch (_nelen) {
 	default: /* case 4: */
 		if (_is_alpha0
@@ -529,7 +529,7 @@ jstr_strcasestr_len(const char *R _hs,
 			return pjstr_strcasestr2((unsigned char *)_hs, (unsigned char *)_ne);
 		break;
 	}
-	return (char *)strstr(_hs, _ne);
+	return (char *)PJSTR_MEMMEM(_hs, _hslen, _ne, _nelen);
 #endif
 }
 
