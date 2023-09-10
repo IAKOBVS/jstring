@@ -157,9 +157,9 @@ static void
 jstr_free(char *R p) JSTR_NOEXCEPT
 {
 	free(p);
-#if JSTR_NULLIFY_PTR_ON_DELETE
+#if JSTR_NULLIFY_PTR_ON_FREE
 	p = NULL;
-#endif /* JSTR_NULLIFY_PTR_ON_DELETE */
+#endif /* JSTR_NULLIFY_PTR_ON_FREE */
 }
 
 JSTR_INLINE

@@ -15,7 +15,7 @@ PJSTR_END_DECLS
 #include "jstr-pp-arrcpy-va-args.h"
 #include "jstr-templates.h"
 
-#if PJARR_NULLIFY_PTR_ON_DELETE
+#if PJARR_NULLIFY_PTR_ON_FREE
 #	define PJARR_NULLIFY(j) ((j)->data == NULL)
 #else
 #	define PJARR_NULLIFY(j)
