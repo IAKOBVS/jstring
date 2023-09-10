@@ -8,8 +8,6 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr-macros.h"
-
 #define R JSTR_RESTRICT
 
 PJSTR_BEGIN_DECLS
