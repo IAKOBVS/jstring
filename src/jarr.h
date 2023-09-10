@@ -16,9 +16,9 @@ PJSTR_END_DECLS
 #include "jstr-templates.h"
 
 #if PJARR_NULLIFY_PTR_ON_DELETE
-#	define PJARR_NULLIFY(j) ((j)->data == NULL)
+#	define PJSTR_PJARR_NULLIFY(j) ((j)->data == NULL)
 #else
-#	define PJARR_NULLIFY(j)
+#	define PJSTR_PJARR_NULLIFY(j)
 #endif
 
 #define jarr(T, name)                                                                          \
@@ -28,20 +28,17 @@ PJSTR_END_DECLS
 		size_t PJARR_CAPACITY_NAME;                                                    \
 	} pjarr_##name##_ty;                                                                   \
 	pjarr_##name##_ty name;
-
 #define jarr_free(j)                                                                           \
 	do {                                                                                   \
 		free(PJARR_DATA(j));                                                           \
-		PJARR_NULLIFY(j);                                                              \
+		PJSTR_PJARR_NULLIFY(j);                                                              \
 	} while (0)
-
 #define jarr_err_exit(j)                                                                       \
 	do {                                                                                   \
 		if (jstr_unlikely((j)->data == NULL))                                          \
 			pjstr_err_exit(__FILE__, __LINE__, __func__);                          \
 	} while (0)
-
-#undef PJARR_NULLIFY
+#undef PJSTR_PJARR_NULLIFY
 
 /* Allocate PTR. */
 #define jarr_alloc(j, new_cap)                                                                 \
@@ -53,7 +50,6 @@ PJSTR_END_DECLS
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                               \
 	} while (0)
-
 /* Allocate PTR and pushing VAL. */
 #define jarr_alloc_push(j, value)                                                              \
 	do {                                                                                   \
@@ -66,7 +62,6 @@ PJSTR_END_DECLS
 		PJARR_DATA(j)                                                                  \
 		[0] = (value);                                                                 \
 	} while (0)
-
 /* Allocate and pushes to PTR. */
 #define jarr_alloc_appendmore(j, ...)                                                                 \
 	do {                                                                                   \
@@ -79,7 +74,6 @@ PJSTR_END_DECLS
 		PJARR_SZ(j) = PJSTR_PP_NARG(__VA_ARGS__);                                      \
 		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j), __VA_ARGS__);                           \
 	} while (0)
-
 /* Add elements to end of PTR. */
 #define jarr_appendmore(j, ...)                                                                       \
 	do {                                                                                   \
@@ -90,7 +84,6 @@ PJSTR_END_DECLS
 		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);             \
 		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                     \
 	} while (0)
-
 /* Pop PTR[0]. */
 #define jarr_pop_front(j)                                                                      \
 	do {                                                                                   \
@@ -99,7 +92,6 @@ PJSTR_END_DECLS
 			break;                                                                 \
 		memmove(PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j));                      \
 	} while (0)
-
 /* Pop end of PTR. */
 #define jarr_pop_back(j)                                                                       \
 	do {                                                                                   \
@@ -108,7 +100,6 @@ PJSTR_END_DECLS
 			break;                                                                 \
 		*(PJARR_DATA(j) + --PJARR_SZ(j)) = '\0';                                       \
 	} while (0)
-
 /* Push VAL to back of PTR. */
 #define jarr_push_back(j, value)                                                               \
 	do {                                                                                   \
@@ -119,7 +110,6 @@ PJSTR_END_DECLS
 		PJARR_DATA(j)                                                                  \
 		[PJARR_SZ(j)++] = (value);                                                     \
 	} while (0)
-
 /* Push VAL to front of P. */
 #define jarr_push_front(j, value)                                                              \
 	do {                                                                                   \
@@ -131,13 +121,10 @@ PJSTR_END_DECLS
 		PJARR_DATA(j)                                                                  \
 		[0] = (value);                                                                 \
 	} while (0)
-
 #define jarr_at(j, index) \
 	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : (__FILE__, __LINE__, __func__, "index out of bounds"))
-
 #define jarr_foreach(j, it) \
 	for (size_t it = 0, _max_elem_##it = (j)->size; it < _max_elem_##it; ++it)
-
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
 static void PJARR_ERR(const char *FILE_,

@@ -1,21 +1,17 @@
 /* string-fzc.h -- zero byte detection with indexes.  HPPA version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
-
    The GNU C Library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
-
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
 
@@ -31,7 +27,6 @@ static JSTR_INLINE unsigned int
 pjstr_index_first_zero (pjstr_op_ty x)
 {
   unsigned int ret;
-
   /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %1,23,8,%%r0\n\t"
@@ -41,7 +36,6 @@ pjstr_index_first_zero (pjstr_op_ty x)
        "extrw,u,<> %1,7,8,%%r0\n\t"
        "ldi 0,%0"
        : "=r"(ret) : "r"(x), "0"(3));
-
   return ret;
 }
 
@@ -58,7 +52,6 @@ static JSTR_INLINE unsigned int
 pjstr_index_first_zero_eq (pjstr_op_ty x1, pjstr_op_ty x2)
 {
   unsigned int ret;
-
   /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,= %1,23,8,%%r0\n\t"
@@ -71,7 +64,6 @@ pjstr_index_first_zero_eq (pjstr_op_ty x1, pjstr_op_ty x2)
        "extrw,u,<> %2,7,8,%%r0\n\t"
        "ldi 0,%0"
        : "=r"(ret) : "r"(x1), "r"(x1 ^ x2), "0"(3));
-
   return ret;
 }
 
@@ -81,7 +73,6 @@ static JSTR_INLINE unsigned int
 pjstr_index_first_zero_ne (pjstr_op_ty x1, pjstr_op_ty x2)
 {
   unsigned int ret;
-
   /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %2,23,8,%%r0\n\t"
@@ -94,7 +85,6 @@ pjstr_index_first_zero_ne (pjstr_op_ty x1, pjstr_op_ty x2)
        "extrw,u,<> %1,7,8,%%r0\n\t"
        "ldi 0,%0"
        : "=r"(ret) : "r"(x1), "r"(x1 ^ x2), "0"(3));
-
   return ret;
 }
 
@@ -103,7 +93,6 @@ static JSTR_INLINE unsigned int
 pjstr_index_last_zero (pjstr_op_ty x)
 {
   unsigned int ret;
-
   /* Since we have no pjstr_ctz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %1,15,8,%%r0\n\t"
@@ -113,7 +102,6 @@ pjstr_index_last_zero (pjstr_op_ty x)
        "extrw,u,<> %1,31,8,%%r0\n\t"
        "ldi 3,%0"
        : "=r"(ret) : "r"(x), "0"(0));
-
   return ret;
 }
 

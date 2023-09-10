@@ -34,7 +34,6 @@ _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18,
 	29, 28, 27, 26, 25, 24, 23, 22, 21, 20,           \
 	19, 18, 17, 16, 15, 14, 13, 12, 11, 10,           \
 	9, 8, 7, 6, 5, 4, 3, 2, 1, 0
-
 #define PJSTR_PP_EXTRACT_ARGS(num_args, ...)																																																																																																																		 PJSTR_PP_EXTRACT_ARGS_##num_args(__VA_ARGS__)
 #define PJSTR_PP_EXTRACT_ARGS_0(arg0, ...)																																																																																																																		 arg0
 #define PJSTR_PP_EXTRACT_ARGS_1(arg0, arg1, ...)																																																																																																																	 arg1

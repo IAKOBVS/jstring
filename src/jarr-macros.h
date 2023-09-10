@@ -44,7 +44,6 @@ PJARR_CAST(T, Other other)
 		JSTR_ASSERT_IS_SIZE(PJARR_SZ(j));  \
 		JSTR_ASSERT_IS_SIZE(PJARR_CAP(j)); \
 	} while (0)
-
 #define PJARR_GROW(old_cap, new_cap)                                         \
 	do {                                                                 \
 		JSTR_ASSERT_IS_SIZE(old_cap);                                \
@@ -53,7 +52,6 @@ PJARR_CAST(T, Other other)
 			;                                                    \
 		(old_cap) = PJSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
-
 #define PJARR_REALLOC(j, new_cap, malloc_fail)                                                                    \
 	do {                                                                                                      \
 		PJARR_CHECK_ARG(j);                                                                               \
@@ -63,7 +61,6 @@ PJARR_CAST(T, Other other)
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), malloc_fail);                                                                                       \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                  \
 	} while (0)
-
 #define PJARR_REALLOCEXACT(j, new_cap, malloc_fail)                                                                \
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
@@ -72,7 +69,6 @@ PJARR_CAST(T, Other other)
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), malloc_fail);                                                      \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                   \
 	} while (0)
-
 #if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF
 #	define PJARR_CHECK_VAL(j, value) JSTR_ASSERT(JSTR_SAME_TYPE(value, *PJARR_DATA(j)), "Passing illegal value incompatible with the array type.")
 #else

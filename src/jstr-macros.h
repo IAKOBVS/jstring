@@ -33,31 +33,24 @@
 #	define JSTR_GENERIC_CASE_STR(_bool) \
 		char * : _bool,              \
 			 const char * : _bool
-
 #	define JSTR_GENERIC_CASE_STR_STACK(_bool, _s) \
 		char(*)[sizeof(_s)] : 1,               \
 		const char(*)[sizeof(_s)] : 1
-
 #	define JSTR_GENERIC_CASE_CHAR(_bool) \
 		char : _bool,                 \
 		       const char : _bool
-
 #	define JSTR_IS_SIZE(_expr) _Generic((_expr), \
 	JSTR_GENERIC_CASE_SIZE(1),                    \
 	default: 0)
-
 #	define JSTR_IS_STR(_expr) _Generic((_expr), \
 	JSTR_GENERIC_CASE_STR(1),                    \
 	default: 0)
-
 #	define JSTR_IS_STR_STACK(_expr) _Generic((_expr), \
 	JSTR_GENERIC_CASE_STR_STACK(1, _expr),             \
 	default: 0)
-
 #	define JSTR_IS_CHAR(_expr) _Generic((_expr), \
 	JSTR_GENERIC_CASE_CHAR(1),                    \
 	default: 0)
-
 #	define JSTR_ASSERT_IS_SIZE(_expr) \
 		JSTR_ASSERT(JSTR_IS_SIZE(_expr), "Passing non-number as number argument!");
 #	define JSTR_ASSERT_IS_STR(_expr) \
@@ -582,19 +575,15 @@ case '~':
 #define JSTR_CASE_VOWEL       \
 	JSTR_CASE_VOWEL_UPPER \
 	JSTR_CASE_VOWEL_LOWER
-
 #define JSTR_CASE_CONSONANT       \
 	JSTR_CASE_CONSONANT_UPPER \
 	JSTR_CASE_CONSONANT_LOWER
-
 #define JSTR_CASE_ALPHA \
 	JSTR_CASE_LOWER \
 	JSTR_CASE_UPPER
-
 #define JSTR_CASE_ALNUM \
 	JSTR_CASE_DIGIT \
 	JSTR_CASE_ALPHA
-
 #if ((__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19)) && defined _BSD_SOURCE) \
 || defined _DEFAULT_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1

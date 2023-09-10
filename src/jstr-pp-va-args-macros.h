@@ -8,10 +8,8 @@
 
 #define PJSTR_PP_CONCATENATE(A, B) \
 	PJSTR_PP_CONCATENATE_(A, B)
-
 #define PJSTR_PP_CONCATENATE_(A, B) \
 	A##B
-
 #ifndef __cplusplus
 #	define PJSTR_PP_PRINTF_FORMAT(x) _Generic((x),                       \
 						       unsigned char              \

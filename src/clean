@@ -1,13 +1,2 @@
 #!/bin/sh
-rm -rf ./jstr
-shebang="#!/bin/sh"
-cmd="cd .. && ./build"
-cp_build()
-{
-	mkdir -p "$1"
-	fname=$1/build
-	echo "$shebang" >"$fname"
-	echo "$cmd" >>"$fname"
-	chmod +x "$fname"
-}
-cp_build jstr
+rm -rf ../jstr/*.h

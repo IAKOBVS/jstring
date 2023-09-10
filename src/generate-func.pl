@@ -9,13 +9,8 @@ my $G_FNAME_BASE = $G_FNAME;
 $G_FNAME_BASE =~ s/^_//;
 my $G_DIR_C = 'jstr';
 
-script_needed();
-
-my $G_OUT_C = "$G_DIR_C/$G_FNAME_BASE";
-
 my $G_IGNORE_FILE = 'private';
 
-my $G_NMSPC_REGEX = 'jreg';
 my $G_NMSPC       = 'jstr';
 my $G_NMSPC_UPP   = uc($G_NMSPC);
 my $G_STR_STRUCT  = 'jstr_ty';
@@ -36,12 +31,10 @@ my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
 my $G_MACRO_LONG_FUNCTION   = $G_NMSPC_UPP . '_LONG_FUNCTION';
 
-my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC|$G_NMSPC_REGEX)\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
+my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC)\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
 
 my $G_LEN_FUNC_SUFFIX = '_len';
-
-mkdir($G_DIR_C);
 
 my $g_in_h = get_file_str($G_FNAME);
 $g_in_h = tidy_newlines($g_in_h);
@@ -49,7 +42,7 @@ $g_in_h = tidy_newlines($g_in_h);
 my @LNS = gen_nonmem_funcs($g_in_h);
 my ($out_h) = gen_struct_funcs(@LNS);
 
-print_to_file($G_OUT_C, $out_h);
+print $out_h;
 
 sub usage
 {
@@ -59,27 +52,20 @@ sub usage
 	}
 }
 
-sub script_needed
-{
-	if (system("test $G_FNAME -ot ../jstr/$G_FNAME")) {
-		exit;
-	}
-}
-
 sub get_file_str
 {
 	my ($FILENAME) = @_;
+	my $g_in_h = '';
+	my @lines;
 	open(my $FH, '<', $FILENAME)
 	  or die("Can't open $FILENAME\n");
-	my $g_in_h = '';
-	my @def;
-	my @undef;
-	my @lines;
 	while (<$FH>) {
 		$g_in_h .= $_;
 		push(@lines, $_);
 	}
 	close($FH);
+	my @def;
+	my @undef;
 	# prefix temporary macros with PJSTR_ to avoid naming conflicts
 	foreach (@lines) {
 		if (/^[ \t]*#[ \t]*undef[ \t]*([_A-Z0-9]*)/) {
@@ -99,15 +85,6 @@ sub tidy_newlines
 	$IN_H =~ s/\n\n\n*\t/\n\t/g;
 	$IN_H =~ s/\n\n\n* /\n /g;
 	return $IN_H;
-}
-
-sub print_to_file
-{
-	my ($OUT_C, $BUF) = @_;
-	open(my $FH, '>', $OUT_C)
-	  or die("Can't open $OUT_C\n");
-	print $FH $BUF;
-	close($FH);
 }
 
 sub gen_nonmem_funcs
@@ -156,8 +133,7 @@ sub gen_nonmem_funcs
 				push(@new_args, $_);
 			}
 		}
-		my $nmspc = ($decl =~ /$G_NMSPC/o) ? $G_NMSPC : $G_NMSPC_REGEX;
-		$decl =~ s/($nmspc\_\w*)$G_LEN_FUNC_SUFFIX(\w*\()/$1$2/o;
+		$decl =~ s/($G_NMSPC\_\w*)$G_LEN_FUNC_SUFFIX(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_regex_size_ptr($FUNC_NAME, $params);
 		$decl .= "$RETURN$FUNC_NAME(";
@@ -220,7 +196,7 @@ sub gen_struct_funcs
 		if ($FUNC_NAME =~ /^p/) {
 			goto CONT;
 		}
-		if ($g_in_h =~ /$FUNC_NAME/) {
+		if ($g_in_h =~ /$FUNC_NAME\_j/) {
 			goto CONT;
 		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
@@ -278,7 +254,7 @@ sub gen_struct_funcs
 		$body .= "$G_STRUCT_VAR->$G_STRUCT_DATA, ";
 		for (my $i = 1 ; $i <= $#new_args ; ++$i) {
 			if ($new_args[$i] =~ /$G_SIZE_PTN/o) {
-				if ($FUNC_NAME =~ /$G_NMSPC_REGEX/ && is_size_ptr($params)) {
+				if ($FUNC_NAME =~ /$G_NMSPC/ && is_size_ptr($params)) {
 					$new_args[$i] = "&$G_STRUCT_VAR->$G_STRUCT_SIZE";
 				} else {
 					$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
@@ -313,7 +289,7 @@ sub gen_struct_funcs
 sub get_regex_size_ptr
 {
 	my ($FUNC_NAME, $params) = @_;
-	if ($FUNC_NAME =~ /$G_NMSPC_REGEX/o) {
+	if ($FUNC_NAME =~ /$G_NMSPC/o) {
 		$params =~ /size_t[ \t]*\*[ \t]*$G_MACRO_RESTRICT[ \t][^\n]*(\w*sz)/o;
 		return $1;
 	}

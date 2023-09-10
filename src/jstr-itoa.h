@@ -18,7 +18,6 @@ PJSTR_BEGIN_DECLS
 	JSTR_WARN_UNUSED     \
 	JSTR_RETURNS_NONNULL \
 	JSTR_NOTHROW
-
 #define PJSTR_ULTOA_UNROLLED(nptr, number, base)                                                                      \
 	do {                                                                                                          \
 		JSTR_ASSERT_IS_STR(nptr);                                                                             \
@@ -103,7 +102,6 @@ PJSTR_BEGIN_DECLS
 		*nptr = '\0';                                                                                         \
 		return nptr;                                                                                          \
 	} while (0)
-
 #if 0
 
 #	define PJSTR_ULLTOA_UNROLLED(nptr, number, base)                                                                                                                                    \
@@ -360,7 +358,6 @@ PJSTR_BEGIN_DECLS
 			*nptr = '\0';                                                                                                                                                        \
 			return nptr;                                                                                                                                                         \
 		} while (0)
-
 #endif
 
 #define PJSTR_LTOA_UNROLLED(nptr, number, base)           \
@@ -371,7 +368,6 @@ PJSTR_BEGIN_DECLS
 		}                                         \
 		PJSTR_ULTOA_UNROLLED(nptr, number, base); \
 	} while (0)
-
 #define PJSTR_ULLTOA_UNROLLED(nptr, number, base)            \
 	do {                                                 \
 		enum { _len = PJSTR_MAX_ULONG_LONG_DIGITS }; \
@@ -386,7 +382,6 @@ PJSTR_BEGIN_DECLS
 		*nptr = '\0';                                \
 		return nptr;                                 \
 	} while (0)
-
 #define PJSTR_LLTOA_UNROLLED(nptr, number, base)           \
 	do {                                               \
 		if (number < 0) {                          \
@@ -395,7 +390,6 @@ PJSTR_BEGIN_DECLS
 		}                                          \
 		PJSTR_ULLTOA_UNROLLED(nptr, number, base); \
 	} while (0)
-
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *

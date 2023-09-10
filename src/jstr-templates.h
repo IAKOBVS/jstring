@@ -74,7 +74,6 @@ PJSTR_END_DECLS
 		(p) = (char *)realloc(p, old_cap);      \
 		PJSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
-
 #define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
 	do {                                                 \
 		JSTR_ASSERT_IS_STR(p);                       \
@@ -84,7 +83,6 @@ PJSTR_END_DECLS
 		(p) = (char *)realloc(p, old_cap);           \
 		PJSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
-
 #ifdef __cplusplus
 
 namespace jstr {

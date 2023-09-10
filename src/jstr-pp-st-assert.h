@@ -8522,10 +8522,8 @@
 		PJSTR_PP_ST_ASSERT_IS_T(EXPR_TYPE, 125, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_T(EXPR_TYPE, 126, __VA_ARGS__); \
 	} while (0)
-
 #define PJSTR_PP_ST_ASSERT_IS_T(EXPR_TYPE, INDEX, ...) \
 	PJSTR_PP_ST_ASSERT(PJSTR_PP_SAME_TYPE((EXPR_TYPE), PJSTR_PP_EXTRACT_ARGS(INDEX, __VA_ARGS__)), "Passing the wrong data type!")
-
 #ifdef PJSTR_PP_HAVE_GENERIC
 #	define PJSTR_PP_SAME_TYPE(x, y) _Generic((x), \
 	typeof(y): 1,                                  \
@@ -17046,10 +17044,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(125, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(126, __VA_ARGS__); \
 	} while (0)
-
 #define PJSTR_PP_ST_ASSERT_IS_STR(INDEX, ...) \
 	PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(INDEX, __VA_ARGS__)), "Passing non-string as string argument!")
-
 #ifdef PJSTR_PP_HAVE_GENERIC
 #	define PJSTR_PP_IS_STR(_s) _Generic((_s), \
 	const char *: 1,                           \

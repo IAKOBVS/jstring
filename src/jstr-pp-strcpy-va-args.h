@@ -8512,7 +8512,6 @@
 		PJSTR_PP_STRCPY(DST, STRLEN_ARRAY, 125, __VA_ARGS__); \
 		PJSTR_PP_STRCPY(DST, STRLEN_ARRAY, 126, __VA_ARGS__); \
 	} while (0)
-
 #if 0 /* Use strlen array */
 
 #	if defined(__GLIBC__)
@@ -8534,13 +8533,11 @@
 
 #	define PJSTR_PP_STRCPY(DST, STRLEN_ARRAY, INDEX, ...) \
 		PJSTR_PP_STRCPY_HELPER(DST, ((STRLEN_ARRAY)[(INDEX)]), PJSTR_PP_EXTRACT_ARGS(INDEX, __VA_ARGS__), __VA_ARGS__)
-
 #	define PJSTR_PP_STRCPY_HELPER(DST, STRLEN, SRC, ...) \
 		do {                                                  \
 			memcpy(DST, SRC, STRLEN);               \
 			DST += STRLEN;                          \
 		} while (0)
-
 #endif
 
 #define PJSTR_PP_STRCPY_VA_ARGS_HELPER(DST, NUM_ARGS, STRLEN_ARRAY, ...) PJSTR_PP_CONCAT(PJSTR_PP_STRCPY_VA_ARGS_, NUM_ARGS, DST, STRLEN_ARRAY, __VA_ARGS__)

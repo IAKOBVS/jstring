@@ -29,19 +29,16 @@ PJSTR_END_DECLS
 	((new_cap < PJSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
 	 ? (PJSTR_MIN_CAP)                                 \
 	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
-
 #define PJSTR_MIN_ALLOCEXACT(new_cap) \
 	((new_cap < PJSTR_MIN_CAP)    \
 	 ? (PJSTR_MIN_CAP)            \
 	 : (new_cap))
-
 #define PJSTR_ALLOC_ONLY(p, _cap, new_cap, do_fail) \
 	do {                                        \
 		(_cap) = PJSTR_MIN_ALLOC(new_cap);  \
 		(p) = (char *)malloc((_cap));       \
 		PJSTR_MALLOC_ERR((p), do_fail);     \
 	} while (0)
-
 /*
   exit(1) if ptr is NULL.
 */
@@ -58,15 +55,12 @@ typedef struct jstr_ty {
 	char *data;
 	size_t size;
 	size_t capacity;
-
 #ifdef __cplusplus
-
 	JSTR_INLINE
 	jstr_ty(void) JSTR_NOEXCEPT
 	{
 		this->data = NULL;
 	}
-
 #	if JSTR_FREE_ON_DESTRUCTOR_CPP
 	JSTR_INLINE
 	~jstr_ty(void) JSTR_NOEXCEPT
@@ -76,9 +70,7 @@ typedef struct jstr_ty {
 		this->data = NULL;
 #		endif /* JSTR_NULLIFY_PTR_ON_DESTRUCTOR_CPP */
 	}
-
 #	endif /* JSTR_FREE_ON_DESTRUCTOR_CPP */
-
 	/*
 	  free(STR) and set STR to NULL.
 	*/
@@ -91,7 +83,6 @@ typedef struct jstr_ty {
 		this->data = NULL;
 #	endif /* JSTR_NULLIFY_PTR_ON_DELETE */
 	}
-
 	/*
 	  exit(1) if ptr is NULL.
 	*/
@@ -102,21 +93,18 @@ typedef struct jstr_ty {
 		if (jstr_unlikely(this->data == NULL))
 			pjstr_err_exit();
 	}
-
 	JSTR_INLINE
 	void
 	print(void) JSTR_NOEXCEPT
 	{
 		fwrite(this->data, 1, this->size, stdout);
 	}
-
 	JSTR_INLINE
 	void
 	print_stderr(void) JSTR_NOEXCEPT
 	{
 		fwrite(this->data, 1, this->size, stderr);
 	}
-
 	JSTR_INLINE
 	void
 	debug_print(void) JSTR_NOEXCEPT
@@ -128,7 +116,6 @@ typedef struct jstr_ty {
 		fwrite(this->data, 1, this->size, stderr);
 		fputc('\n', stderr);
 	}
-
 #endif /* __cpluslus */
 
 } jstr_ty;
@@ -184,6 +171,17 @@ jstr_allocexact_assign_len(char **JSTR_RST const _s,
 }
 
 JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static void
+jstr_allocexact_assign(char **JSTR_RST const _s,
+			   size_t *JSTR_RST const _sz,
+			   size_t *JSTR_RST const _cap,
+			   const char *JSTR_RST const _src) JSTR_NOEXCEPT
+{
+	return jstr_allocexact_assign_len(_s, _sz, _cap, _src, strlen(_src));
+}
+
+JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
@@ -200,6 +198,17 @@ jstr_alloc_assign_len(char **JSTR_RST const _s,
 }
 
 JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static void
+jstr_alloc_assign(char **JSTR_RST const _s,
+		      size_t *JSTR_RST const _sz,
+		      size_t *JSTR_RST const _cap,
+		      const char *JSTR_RST const _src) JSTR_NOEXCEPT
+{
+	return jstr_alloc_assign_len(_s, _sz, _cap, _src, strlen(_src));
+}
+
+JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
@@ -213,6 +222,17 @@ jstr_allocmore_assign_len(char **JSTR_RST const _s,
 	*_sz = _srclen;
 	memcpy(*_s, _src, _srclen);
 	*(*_s + _srclen) = '\0';
+}
+
+JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static void
+jstr_allocmore_assign(char **JSTR_RST const _s,
+			  size_t *JSTR_RST const _sz,
+			  size_t *JSTR_RST const _cap,
+			  const char *JSTR_RST const _src) JSTR_NOEXCEPT
+{
+	return jstr_allocmore_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
 
 /*
@@ -263,6 +283,17 @@ jstr_append_len(char **JSTR_RST const _s,
 	*(*_s + (*_sz += _srclen)) = '\0';
 }
 
+JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static void
+jstr_append(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
+		const char *JSTR_RST const _src) JSTR_NOEXCEPT
+{
+	return jstr_append_len(_s, _sz, _cap, _src, strlen(_src));
+}
+
 /*
    Assign SRC to DST.
    S is NUL terminated.
@@ -282,6 +313,17 @@ jstr_assign_len(char **JSTR_RST const _s,
 	memcpy(*_s, _src, _srclen);
 	*(*_s + _srclen) = '\0';
 	*_sz = _srclen;
+}
+
+JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static void
+jstr_assign(char **JSTR_RST const _s,
+		size_t *JSTR_RST const _sz,
+		size_t *JSTR_RST const _cap,
+		const char *JSTR_RST const _src) JSTR_NOEXCEPT
+{
+	return jstr_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
 
 /*
@@ -417,7 +459,6 @@ jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
 			PJSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);            \
 			*p = '\0';                                                        \
 		} while (0)
-
 #	define jstr_appendmore(_s, _sz, _cap, ...)                                                             \
 		do {                                                                                            \
 			JSTR_ASSERT_IS_STR(*(_s));                                                              \
@@ -433,7 +474,6 @@ jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
 			*p = '\0';                                                                              \
 			*(_sz) = _NEW_SZ;                                                                       \
 		} while (0)
-
 #	define jstr_alloc_appendmore(_s, _sz, _cap, ...)                                \
 		do {                                                                     \
 			JSTR_ASSERT_IS_STR(*(_s));                                       \
@@ -449,7 +489,6 @@ jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
 			PJSTR_PP_STRCPY_VA_ARGS(p, _ARR_VA_ARGS, __VA_ARGS__);           \
 			*p = '\0';                                                       \
 		} while (0)
-
 #	define jstr_appendmore_j(_j, ...)	 jstr_appendmore(&((_j)->data), &((_j)->size), &((_j)->capacity), __VA_ARGS__)
 #	define jstr_alloc_appendmore_j(_j, ...) jstr_alloc_appendmore(&((_j)->data), &((_j)->size), &((_j)->capacity), __VA_ARGS__)
 
