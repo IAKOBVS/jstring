@@ -1,10 +1,15 @@
 #!/bin/sh
-for file in $(echo *.h); do
-	{
-		if [ -e ../jstr/"$file" ]; then
-			test "$file" -ot ../jstr/"$file" && exit 0
-		fi
-		perl generate-func.pl "$file" > ../jstr/"$file"
-	} &
+update_if_needed()
+{
+	if [ -e ../jstr/"$1" ]; then
+		test "$1" -ot ../jstr/"$1" && exit 0
+	fi
+}
+perl generate-func.pl "$file" > ../jstr/"$file"
+for file in $(echo *.h | grep -v '-string-.*\.h$'); do
+	update_if_needed "$file" &
+done &
+./tidy-glibc || exit 0
+for file in $(echo *-string-.*.h); do
+	update_if_needed "$file" &
 done
-wait
