@@ -10,7 +10,7 @@ PJSTR_BEGIN_DECLS
 #else
 #	include "generic-string-shift.h"
 #endif
-	
+
 PJSTR_END_DECLS
 
 #endif /* PJSTR_SELECTOR_STRING_SHIFT_H */

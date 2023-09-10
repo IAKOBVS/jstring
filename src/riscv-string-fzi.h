@@ -18,55 +18,54 @@
 #include "jstr-macros.h"
 
 #if defined __riscv_zbb || defined __riscv_xtheadbb
-#include "string-fzi.h"
+#	include "string-fzi.h"
 #else
 /* Without bitmap pjstr_clz/pjstr_ctz extensions, it is faster to direct test the bits
    instead of calling compiler auxiliary functions.  */
-#include "string-optype.h"
+#	include "string-optype.h"
 
 static JSTR_INLINE unsigned int
-pjstr_index_first (pjstr_op_ty c)
+pjstr_index_first(pjstr_op_ty c)
 {
-  if (c & 0x80U)
-    return 0;
-  if (c & 0x8000U)
-    return 1;
-  if (c & 0x800000U)
-    return 2;
-  if (sizeof (pjstr_op_ty) == 4)
-    return 3;
-  if (c & 0x80000000U)
-    return 3;
-  if (c & 0x8000000000UL)
-    return 4;
-  if (c & 0x800000000000UL)
-    return 5;
-  if (c & 0x80000000000000UL)
-    return 6;
-  return 7;
+	if (c & 0x80U)
+		return 0;
+	if (c & 0x8000U)
+		return 1;
+	if (c & 0x800000U)
+		return 2;
+	if (sizeof(pjstr_op_ty) == 4)
+		return 3;
+	if (c & 0x80000000U)
+		return 3;
+	if (c & 0x8000000000UL)
+		return 4;
+	if (c & 0x800000000000UL)
+		return 5;
+	if (c & 0x80000000000000UL)
+		return 6;
+	return 7;
 }
 
 static JSTR_INLINE unsigned int
-pjstr_index_last (pjstr_op_ty c)
+pjstr_index_last(pjstr_op_ty c)
 {
-  if (sizeof (pjstr_op_ty) == 8)
-    {
-      if (c & 0x8000000000000000UL)
-	return 7;
-      if (c & 0x80000000000000UL)
-	return 6;
-      if (c & 0x800000000000UL)
-	return 5;
-      if (c & 0x8000000000UL)
-	return 4;
-    }
-  if (c & 0x80000000U)
-    return 3;
-  if (c & 0x800000U)
-    return 2;
-  if (c & 0x8000U)
-    return 1;
-  return 0;
+	if (sizeof(pjstr_op_ty) == 8) {
+		if (c & 0x8000000000000000UL)
+			return 7;
+		if (c & 0x80000000000000UL)
+			return 6;
+		if (c & 0x800000000000UL)
+			return 5;
+		if (c & 0x8000000000UL)
+			return 4;
+	}
+	if (c & 0x80000000U)
+		return 3;
+	if (c & 0x800000U)
+		return 2;
+	if (c & 0x8000U)
+		return 1;
+	return 0;
 }
 #endif
 

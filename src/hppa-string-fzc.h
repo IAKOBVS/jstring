@@ -19,96 +19,100 @@
 
 #include "string-optype.h"
 
-_Static_assert (sizeof (pjstr_op_ty) == 4, "64-bit not supported");
+_Static_assert(sizeof(pjstr_op_ty) == 4, "64-bit not supported");
 
 /* Given a word X that is known to contain a zero byte, return the
    index of the first such within the long in memory order.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero (pjstr_op_ty x)
+pjstr_index_first_zero(pjstr_op_ty x)
 {
-  unsigned int ret;
-  /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
-     than loading up the constants to do the masking.  */
-  asm ("extrw,u,<> %1,23,8,%%r0\n\t"
-       "ldi 2,%0\n\t"
-       "extrw,u,<> %1,15,8,%%r0\n\t"
-       "ldi 1,%0\n\t"
-       "extrw,u,<> %1,7,8,%%r0\n\t"
-       "ldi 0,%0"
-       : "=r"(ret) : "r"(x), "0"(3));
-  return ret;
+	unsigned int ret;
+	/* Since we have no pjstr_clz insn, direct tests of the bytes is faster
+	   than loading up the constants to do the masking.  */
+	asm("extrw,u,<> %1,23,8,%%r0\n\t"
+	    "ldi 2,%0\n\t"
+	    "extrw,u,<> %1,15,8,%%r0\n\t"
+	    "ldi 1,%0\n\t"
+	    "extrw,u,<> %1,7,8,%%r0\n\t"
+	    "ldi 0,%0"
+	    : "=r"(ret)
+	    : "r"(x), "0"(3));
+	return ret;
 }
 
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_eq (pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_index_first_eq(pjstr_op_ty x1, pjstr_op_ty x2)
 {
-  return pjstr_index_first_zero (x1 ^ x2);
+	return pjstr_index_first_zero(x1 ^ x2);
 }
 
 /* Similarly, but perform the search for zero within X1 or
    equality between X1 and X2.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero_eq (pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_index_first_zero_eq(pjstr_op_ty x1, pjstr_op_ty x2)
 {
-  unsigned int ret;
-  /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
-     than loading up the constants to do the masking.  */
-  asm ("extrw,u,= %1,23,8,%%r0\n\t"
-       "extrw,u,<> %2,23,8,%%r0\n\t"
-       "ldi 2,%0\n\t"
-       "extrw,u,= %1,15,8,%%r0\n\t"
-       "extrw,u,<> %2,15,8,%%r0\n\t"
-       "ldi 1,%0\n\t"
-       "extrw,u,= %1,7,8,%%r0\n\t"
-       "extrw,u,<> %2,7,8,%%r0\n\t"
-       "ldi 0,%0"
-       : "=r"(ret) : "r"(x1), "r"(x1 ^ x2), "0"(3));
-  return ret;
+	unsigned int ret;
+	/* Since we have no pjstr_clz insn, direct tests of the bytes is faster
+	   than loading up the constants to do the masking.  */
+	asm("extrw,u,= %1,23,8,%%r0\n\t"
+	    "extrw,u,<> %2,23,8,%%r0\n\t"
+	    "ldi 2,%0\n\t"
+	    "extrw,u,= %1,15,8,%%r0\n\t"
+	    "extrw,u,<> %2,15,8,%%r0\n\t"
+	    "ldi 1,%0\n\t"
+	    "extrw,u,= %1,7,8,%%r0\n\t"
+	    "extrw,u,<> %2,7,8,%%r0\n\t"
+	    "ldi 0,%0"
+	    : "=r"(ret)
+	    : "r"(x1), "r"(x1 ^ x2), "0"(3));
+	return ret;
 }
 
 /* Similarly, but perform the search for zero within X1 or
    inequality between X1 and X2. */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero_ne (pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_index_first_zero_ne(pjstr_op_ty x1, pjstr_op_ty x2)
 {
-  unsigned int ret;
-  /* Since we have no pjstr_clz insn, direct tests of the bytes is faster
-     than loading up the constants to do the masking.  */
-  asm ("extrw,u,<> %2,23,8,%%r0\n\t"
-       "extrw,u,<> %1,23,8,%%r0\n\t"
-       "ldi 2,%0\n\t"
-       "extrw,u,<> %2,15,8,%%r0\n\t"
-       "extrw,u,<> %1,15,8,%%r0\n\t"
-       "ldi 1,%0\n\t"
-       "extrw,u,<> %2,7,8,%%r0\n\t"
-       "extrw,u,<> %1,7,8,%%r0\n\t"
-       "ldi 0,%0"
-       : "=r"(ret) : "r"(x1), "r"(x1 ^ x2), "0"(3));
-  return ret;
+	unsigned int ret;
+	/* Since we have no pjstr_clz insn, direct tests of the bytes is faster
+	   than loading up the constants to do the masking.  */
+	asm("extrw,u,<> %2,23,8,%%r0\n\t"
+	    "extrw,u,<> %1,23,8,%%r0\n\t"
+	    "ldi 2,%0\n\t"
+	    "extrw,u,<> %2,15,8,%%r0\n\t"
+	    "extrw,u,<> %1,15,8,%%r0\n\t"
+	    "ldi 1,%0\n\t"
+	    "extrw,u,<> %2,7,8,%%r0\n\t"
+	    "extrw,u,<> %1,7,8,%%r0\n\t"
+	    "ldi 0,%0"
+	    : "=r"(ret)
+	    : "r"(x1), "r"(x1 ^ x2), "0"(3));
+	return ret;
 }
 
 /* Similarly, but search for the last zero within X.  */
 static JSTR_INLINE unsigned int
-pjstr_index_last_zero (pjstr_op_ty x)
+pjstr_index_last_zero(pjstr_op_ty x)
 {
-  unsigned int ret;
-  /* Since we have no pjstr_ctz insn, direct tests of the bytes is faster
-     than loading up the constants to do the masking.  */
-  asm ("extrw,u,<> %1,15,8,%%r0\n\t"
-       "ldi 1,%0\n\t"
-       "extrw,u,<> %1,23,8,%%r0\n\t"
-       "ldi 2,%0\n\t"
-       "extrw,u,<> %1,31,8,%%r0\n\t"
-       "ldi 3,%0"
-       : "=r"(ret) : "r"(x), "0"(0));
-  return ret;
+	unsigned int ret;
+	/* Since we have no pjstr_ctz insn, direct tests of the bytes is faster
+	   than loading up the constants to do the masking.  */
+	asm("extrw,u,<> %1,15,8,%%r0\n\t"
+	    "ldi 1,%0\n\t"
+	    "extrw,u,<> %1,23,8,%%r0\n\t"
+	    "ldi 2,%0\n\t"
+	    "extrw,u,<> %1,31,8,%%r0\n\t"
+	    "ldi 3,%0"
+	    : "=r"(ret)
+	    : "r"(x), "0"(0));
+	return ret;
 }
 
 static JSTR_INLINE unsigned int
-pjstr_index_last_eq (pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_index_last_eq(pjstr_op_ty x1, pjstr_op_ty x2)
 {
-  return pjstr_index_last_zero (x1 ^ x2);
+	return pjstr_index_last_zero(x1 ^ x2);
 }
 
 #endif /* _STRING_FZC_H */

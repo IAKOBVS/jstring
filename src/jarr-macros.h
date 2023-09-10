@@ -24,7 +24,7 @@ PJARR_CAST(T, Other other)
 
 #define PJARR_DATA_NAME data
 #define PJARR_SIZE_NAME size
-#define PJARR_CAP_NAME capacity
+#define PJARR_CAP_NAME	capacity
 
 #define PJARR_ELEMSZ(j) (sizeof((PJARR_DATA(j))[0]))
 #define PJARR_ARRSZ(j)	(sizeof(PJARR_DATA(j)) / sizeof((PJARR_DATA(j))[0]))

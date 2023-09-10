@@ -8535,38 +8535,38 @@
 #	define PJSTR_PP_ST_ASSERT_IS_T_VA_ARGS_HELPER(num_args, EXPR_TYPE, ...)
 #endif /* PJSTR_PP_HAVE_GENERIC */
 
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_1(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_1(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_2(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_2(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_3(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_3(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_4(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_4(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(3, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_5(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_5(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(3, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(4, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_6(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_6(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__); \
@@ -8574,8 +8574,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(4, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(5, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_7(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_7(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__); \
@@ -8584,8 +8584,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(5, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(6, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_8(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_8(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__); \
@@ -8595,8 +8595,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(6, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(7, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_9(...)    \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_9(...)           \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__); \
@@ -8607,8 +8607,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(7, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(8, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_10(...)   \
-	do {                                        \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_10(...)          \
+	do {                                               \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__); \
@@ -8620,8 +8620,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(8, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(9, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_11(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_11(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8634,8 +8634,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(9, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(10, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_12(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_12(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8649,8 +8649,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(10, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(11, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_13(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_13(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8665,8 +8665,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(11, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(12, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_14(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_14(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8682,8 +8682,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(12, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(13, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_15(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_15(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8700,8 +8700,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(13, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(14, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_16(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_16(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8719,8 +8719,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(14, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(15, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_17(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_17(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8739,8 +8739,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(15, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(16, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_18(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_18(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8760,8 +8760,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(16, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(17, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_19(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_19(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8782,8 +8782,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(17, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(18, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_20(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_20(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8805,8 +8805,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(18, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(19, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_21(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_21(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8829,8 +8829,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(19, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(20, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_22(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_22(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8854,8 +8854,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(20, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(21, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_23(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_23(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8880,8 +8880,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(21, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(22, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_24(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_24(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8907,8 +8907,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(22, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(23, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_25(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_25(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8935,8 +8935,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(23, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(24, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_26(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_26(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8964,8 +8964,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(24, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(25, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_27(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_27(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -8994,8 +8994,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(25, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(26, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_28(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_28(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9025,8 +9025,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(26, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(27, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_29(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_29(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9057,8 +9057,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(27, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(28, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_30(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_30(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9090,8 +9090,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(28, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(29, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_31(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_31(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9124,8 +9124,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(29, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(30, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_32(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_32(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9159,8 +9159,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(30, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(31, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_33(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_33(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9195,8 +9195,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(31, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(32, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_34(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_34(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9232,8 +9232,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(32, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(33, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_35(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_35(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9270,8 +9270,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(33, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(34, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_36(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_36(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9309,8 +9309,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(34, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(35, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_37(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_37(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9349,8 +9349,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(35, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(36, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_38(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_38(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9390,8 +9390,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(36, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(37, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_39(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_39(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9432,8 +9432,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(37, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(38, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_40(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_40(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9475,8 +9475,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(38, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(39, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_41(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_41(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9519,8 +9519,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(39, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(40, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_42(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_42(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9564,8 +9564,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(40, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(41, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_43(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_43(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9610,8 +9610,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(41, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(42, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_44(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_44(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9657,8 +9657,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(42, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(43, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_45(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_45(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9705,8 +9705,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(43, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(44, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_46(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_46(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9754,8 +9754,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(44, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(45, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_47(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_47(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9804,8 +9804,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(45, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(46, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_48(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_48(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9855,8 +9855,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(46, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(47, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_49(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_49(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9907,8 +9907,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(47, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(48, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_50(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_50(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -9960,8 +9960,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(48, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(49, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_51(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_51(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10014,8 +10014,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(49, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(50, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_52(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_52(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10069,8 +10069,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(50, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(51, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_53(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_53(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10125,8 +10125,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(51, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(52, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_54(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_54(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10182,8 +10182,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(52, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(53, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_55(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_55(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10240,8 +10240,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(53, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(54, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_56(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_56(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10299,8 +10299,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(54, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(55, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_57(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_57(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10359,8 +10359,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(55, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(56, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_58(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_58(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10420,8 +10420,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(56, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(57, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_59(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_59(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10482,8 +10482,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(57, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(58, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_60(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_60(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10545,8 +10545,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(58, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(59, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_61(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_61(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10609,8 +10609,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(59, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(60, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_62(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_62(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10674,8 +10674,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(60, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(61, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_63(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_63(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10740,8 +10740,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(61, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(62, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_64(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_64(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10807,8 +10807,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(62, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(63, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_65(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_65(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10875,8 +10875,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(63, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(64, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_66(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_66(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -10944,8 +10944,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(64, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(65, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_67(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_67(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11014,8 +11014,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(65, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(66, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_68(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_68(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11085,8 +11085,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(66, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(67, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_69(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_69(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11157,8 +11157,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(67, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(68, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_70(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_70(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11230,8 +11230,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(68, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(69, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_71(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_71(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11304,8 +11304,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(69, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(70, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_72(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_72(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11379,8 +11379,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(70, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(71, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_73(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_73(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11455,8 +11455,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(71, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(72, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_74(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_74(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11532,8 +11532,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(72, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(73, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_75(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_75(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11610,8 +11610,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(73, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(74, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_76(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_76(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11689,8 +11689,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(74, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(75, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_77(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_77(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11769,8 +11769,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(75, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(76, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_78(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_78(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11850,8 +11850,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(76, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(77, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_79(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_79(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -11932,8 +11932,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(77, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(78, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_80(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_80(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12015,8 +12015,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(78, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(79, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_81(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_81(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12099,8 +12099,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(79, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(80, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_82(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_82(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12184,8 +12184,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(80, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(81, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_83(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_83(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12270,8 +12270,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(81, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(82, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_84(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_84(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12357,8 +12357,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(82, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(83, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_85(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_85(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12445,8 +12445,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(83, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(84, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_86(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_86(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12534,8 +12534,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(84, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(85, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_87(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_87(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12624,8 +12624,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(85, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(86, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_88(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_88(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12715,8 +12715,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(86, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(87, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_89(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_89(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12807,8 +12807,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(87, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(88, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_90(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_90(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12900,8 +12900,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(88, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(89, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_91(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_91(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -12994,8 +12994,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(89, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(90, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_92(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_92(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13089,8 +13089,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(90, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(91, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_93(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_93(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13185,8 +13185,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(91, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(92, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_94(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_94(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13282,8 +13282,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(92, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(93, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_95(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_95(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13380,8 +13380,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(93, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(94, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_96(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_96(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13479,8 +13479,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(94, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(95, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_97(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_97(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13579,8 +13579,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(95, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(96, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_98(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_98(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13680,8 +13680,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(96, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(97, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_99(...)    \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_99(...)           \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13782,8 +13782,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(97, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(98, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_100(...)   \
-	do {                                         \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_100(...)          \
+	do {                                                \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);  \
@@ -13885,8 +13885,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(98, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(99, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_101(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_101(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -13989,8 +13989,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(99, __VA_ARGS__);  \
 		PJSTR_PP_ST_ASSERT_IS_STR(100, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_102(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_102(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14094,8 +14094,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(100, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(101, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_103(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_103(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14200,8 +14200,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(101, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(102, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_104(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_104(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14307,8 +14307,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(102, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(103, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_105(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_105(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14415,8 +14415,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(103, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(104, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_106(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_106(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14524,8 +14524,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(104, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(105, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_107(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_107(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14634,8 +14634,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(105, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(106, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_108(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_108(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14745,8 +14745,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(106, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(107, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_109(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_109(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14857,8 +14857,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(107, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(108, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_110(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_110(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -14970,8 +14970,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(108, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(109, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_111(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_111(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -15084,8 +15084,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(109, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(110, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_112(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_112(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -15199,8 +15199,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(110, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(111, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_113(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_113(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -15315,8 +15315,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(111, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(112, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_114(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_114(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -15432,8 +15432,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(112, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(113, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_115(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_115(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -15550,8 +15550,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(113, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(114, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_116(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_116(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -15669,8 +15669,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(114, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(115, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_117(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_117(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -15789,8 +15789,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(115, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(116, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_118(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_118(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -15910,8 +15910,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(116, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(117, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_119(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_119(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -16032,8 +16032,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(117, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(118, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_120(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_120(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -16155,8 +16155,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(118, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(119, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_121(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_121(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -16279,8 +16279,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(119, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(120, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_122(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_122(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -16404,8 +16404,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(120, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(121, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_123(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_123(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -16530,8 +16530,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(121, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(122, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_124(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_124(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -16657,8 +16657,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(122, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(123, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_125(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_125(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -16785,8 +16785,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(123, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(124, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_126(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_126(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \
@@ -16914,8 +16914,8 @@
 		PJSTR_PP_ST_ASSERT_IS_STR(124, __VA_ARGS__); \
 		PJSTR_PP_ST_ASSERT_IS_STR(125, __VA_ARGS__); \
 	} while (0)
-#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_127(...)    \
-	do {                                          \
+#define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_127(...)           \
+	do {                                                 \
 		PJSTR_PP_ST_ASSERT_IS_STR(0, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(1, __VA_ARGS__);   \
 		PJSTR_PP_ST_ASSERT_IS_STR(2, __VA_ARGS__);   \

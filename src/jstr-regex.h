@@ -76,9 +76,9 @@ typedef enum {
 #endif
 } jstr_reg_errcode_ty;
 
-#define JSTR_REG_HAVE_RET_ENOMEM 1
-#define JSTR_REG_HAVE_RET_NOERROR      1
-#define JSTR_REG_HAVE_RET_NOMATCH      1
+#define JSTR_REG_HAVE_RET_ENOMEM  1
+#define JSTR_REG_HAVE_RET_NOERROR 1
+#define JSTR_REG_HAVE_RET_NOMATCH 1
 
 /* POSIX regcomp return values */
 #define JSTR_REG_HAVE_RET_BADPAT   1
@@ -612,11 +612,11 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcall(char **R const _s,
-		     size_t *R const _sz,
-		     size_t *R const _cap,
-		     const char *R const _rplc,
-		     const regex_t *R const _preg,
-		     const int _eflags) JSTR_NOEXCEPT
+		 size_t *R const _sz,
+		 size_t *R const _cap,
+		 const char *R const _rplc,
+		 const regex_t *R const _preg,
+		 const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcall_len(_s, _sz, _cap, _rplc, strlen(_rplc), _preg, _eflags);
 }
@@ -640,12 +640,12 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcn(char **R const _s,
-		   size_t *R const _sz,
-		   size_t *R const _cap,
-		   const char *R const _rplc,
-		   const size_t _n,
-		   const regex_t *R const _preg,
-		   const int _eflags) JSTR_NOEXCEPT
+	       size_t *R const _sz,
+	       size_t *R const _cap,
+	       const char *R const _rplc,
+	       const size_t _n,
+	       const regex_t *R const _preg,
+	       const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcn_len(_s, _sz, _cap, _rplc, _n, strlen(_rplc), _preg, _eflags);
 }
@@ -673,13 +673,13 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcall_now(char **R const _s,
-			 size_t *R const _sz,
-			 size_t *R const _cap,
-			 const char *R const _ptn,
-			 const char *R const _rplc,
-			 regex_t *R const _preg,
-			 const int _cflags,
-			 const int _eflags) JSTR_NOEXCEPT
+		     size_t *R const _sz,
+		     size_t *R const _cap,
+		     const char *R const _ptn,
+		     const char *R const _rplc,
+		     regex_t *R const _preg,
+		     const int _cflags,
+		     const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcall_len_now(_s, _sz, _cap, _ptn, _rplc, strlen(_rplc), _preg, _cflags, _eflags);
 }
@@ -688,11 +688,11 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcall_now_j(jstr_ty *R const j,
-			 const char *R const _ptn,
-			 const char *R const _rplc,
-			 regex_t *R const _preg,
-			 const int _cflags,
-			 const int _eflags) JSTR_NOEXCEPT
+		       const char *R const _ptn,
+		       const char *R const _rplc,
+		       regex_t *R const _preg,
+		       const int _cflags,
+		       const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcall_now(&j->data, &j->size, &j->capacity, _ptn, _rplc, _preg, _cflags, _eflags);
 }
@@ -721,14 +721,14 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcn_now(char **R const _s,
-		       size_t *R const _sz,
-		       size_t *R const _cap,
-		       const char *R const _ptn,
-		       const char *R const _rplc,
-		       const size_t _n,
-		       regex_t *R const _preg,
-		       const int _cflags,
-		       const int _eflags) JSTR_NOEXCEPT
+		   size_t *R const _sz,
+		   size_t *R const _cap,
+		   const char *R const _ptn,
+		   const char *R const _rplc,
+		   const size_t _n,
+		   regex_t *R const _preg,
+		   const int _cflags,
+		   const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcn_len_now(_s, _sz, _cap, _ptn, _rplc, _n, strlen(_rplc), _preg, _cflags, _eflags);
 }
@@ -737,12 +737,12 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcn_now_j(jstr_ty *R const j,
-		       const char *R const _ptn,
-		       const char *R const _rplc,
-		       const size_t _n,
-		       regex_t *R const _preg,
-		       const int _cflags,
-		       const int _eflags) JSTR_NOEXCEPT
+		     const char *R const _ptn,
+		     const char *R const _rplc,
+		     const size_t _n,
+		     regex_t *R const _preg,
+		     const int _cflags,
+		     const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcn_now(&j->data, &j->size, &j->capacity, _ptn, _rplc, _n, _preg, _cflags, _eflags);
 }
@@ -772,11 +772,11 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplc(char **R const _s,
-		  size_t *R const _sz,
-		  size_t *R const _cap,
-		  const char *R const _rplc,
-		  const regex_t *R const _preg,
-		  const int _eflags) JSTR_NOEXCEPT
+	      size_t *R const _sz,
+	      size_t *R const _cap,
+	      const char *R const _rplc,
+	      const regex_t *R const _preg,
+	      const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplc_len(_s, _sz, _cap, _rplc, strlen(_rplc), _preg, _eflags);
 }
@@ -804,13 +804,13 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplc_now(char **R const _s,
-		      size_t *R const _sz,
-		      size_t *R const _cap,
-		      const char *R const _ptn,
-		      const char *R const _rplc,
-		      regex_t *R const _preg,
-		      const int _cflags,
-		      const int _eflags) JSTR_NOEXCEPT
+		  size_t *R const _sz,
+		  size_t *R const _cap,
+		  const char *R const _ptn,
+		  const char *R const _rplc,
+		  regex_t *R const _preg,
+		  const int _cflags,
+		  const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplc_len_now(_s, _sz, _cap, _ptn, _rplc, strlen(_rplc), _preg, _cflags, _eflags);
 }
@@ -819,11 +819,11 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplc_now_j(jstr_ty *R const j,
-		      const char *R const _ptn,
-		      const char *R const _rplc,
-		      regex_t *R const _preg,
-		      const int _cflags,
-		      const int _eflags) JSTR_NOEXCEPT
+		    const char *R const _ptn,
+		    const char *R const _rplc,
+		    regex_t *R const _preg,
+		    const int _cflags,
+		    const int _eflags) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplc_now(&j->data, &j->size, &j->capacity, _ptn, _rplc, _preg, _cflags, _eflags);
 }
@@ -915,12 +915,12 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplc_bref(char **R const _s,
-		       size_t *R const _sz,
-		       size_t *R const _cap,
-		       const char *R const _rplc,
-		       const regex_t *R const _preg,
-		       const int _eflags,
-		       const size_t _nmatch) JSTR_NOEXCEPT
+		   size_t *R const _sz,
+		   size_t *R const _cap,
+		   const char *R const _rplc,
+		   const regex_t *R const _preg,
+		   const int _eflags,
+		   const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplc_len_bref(_s, _sz, _cap, _rplc, strlen(_rplc), _preg, _eflags, _nmatch);
 }
@@ -929,10 +929,10 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplc_bref_j(jstr_ty *R const j,
-		       const char *R const _rplc,
-		       const regex_t *R const _preg,
-		       const int _eflags,
-		       const size_t _nmatch) JSTR_NOEXCEPT
+		     const char *R const _rplc,
+		     const regex_t *R const _preg,
+		     const int _eflags,
+		     const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplc_bref(&j->data, &j->size, &j->capacity, _rplc, _preg, _eflags, _nmatch);
 }
@@ -1040,12 +1040,12 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcall_bref(char **R const _s,
-			  size_t *R const _sz,
-			  size_t *R const _cap,
-			  const char *R const _rplc,
-			  const regex_t *R const _preg,
-			  const int _eflags,
-			  const size_t _nmatch) JSTR_NOEXCEPT
+		      size_t *R const _sz,
+		      size_t *R const _cap,
+		      const char *R const _rplc,
+		      const regex_t *R const _preg,
+		      const int _eflags,
+		      const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcall_len_bref(_s, _sz, _cap, _rplc, strlen(_rplc), _preg, _eflags, _nmatch);
 }
@@ -1054,10 +1054,10 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcall_bref_j(jstr_ty *R const j,
-			  const char *R const _rplc,
-			  const regex_t *R const _preg,
-			  const int _eflags,
-			  const size_t _nmatch) JSTR_NOEXCEPT
+			const char *R const _rplc,
+			const regex_t *R const _preg,
+			const int _eflags,
+			const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcall_bref(&j->data, &j->size, &j->capacity, _rplc, _preg, _eflags, _nmatch);
 }
@@ -1081,13 +1081,13 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcn_bref(char **R const _s,
-			size_t *R const _sz,
-			size_t *R const _cap,
-			const char *R const _rplc,
-			size_t _n,
-			const regex_t *R const _preg,
-			const int _eflags,
-			const size_t _nmatch) JSTR_NOEXCEPT
+		    size_t *R const _sz,
+		    size_t *R const _cap,
+		    const char *R const _rplc,
+		    size_t _n,
+		    const regex_t *R const _preg,
+		    const int _eflags,
+		    const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcn_len_bref(_s, _sz, _cap, _rplc, _n, strlen(_rplc), _preg, _eflags, _nmatch);
 }
@@ -1096,11 +1096,11 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcn_bref_j(jstr_ty *R const j,
-			const char *R const _rplc,
-			size_t _n,
-			const regex_t *R const _preg,
-			const int _eflags,
-			const size_t _nmatch) JSTR_NOEXCEPT
+		      const char *R const _rplc,
+		      size_t _n,
+		      const regex_t *R const _preg,
+		      const int _eflags,
+		      const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcn_bref(&j->data, &j->size, &j->capacity, _rplc, _n, _preg, _eflags, _nmatch);
 }
@@ -1130,15 +1130,15 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcn_bref_now(char **R const _s,
-			    size_t *R const _sz,
-			    size_t *R const _cap,
-			    const char *R const _ptn,
-			    const char *R const _rplc,
-			    size_t _n,
-			    regex_t *R const _preg,
-			    const int _cflags,
-			    const int _eflags,
-			    const size_t _nmatch) JSTR_NOEXCEPT
+			size_t *R const _sz,
+			size_t *R const _cap,
+			const char *R const _ptn,
+			const char *R const _rplc,
+			size_t _n,
+			regex_t *R const _preg,
+			const int _cflags,
+			const int _eflags,
+			const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcn_len_bref_now(_s, _sz, _cap, _ptn, _rplc, _n, strlen(_rplc), _preg, _cflags, _eflags, _nmatch);
 }
@@ -1147,13 +1147,13 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcn_bref_now_j(jstr_ty *R const j,
-			    const char *R const _ptn,
-			    const char *R const _rplc,
-			    size_t _n,
-			    regex_t *R const _preg,
-			    const int _cflags,
-			    const int _eflags,
-			    const size_t _nmatch) JSTR_NOEXCEPT
+			  const char *R const _ptn,
+			  const char *R const _rplc,
+			  size_t _n,
+			  regex_t *R const _preg,
+			  const int _cflags,
+			  const int _eflags,
+			  const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcn_bref_now(&j->data, &j->size, &j->capacity, _ptn, _rplc, _n, _preg, _cflags, _eflags, _nmatch);
 }
@@ -1182,14 +1182,14 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcall_bref_now(char **R const _s,
-			      size_t *R const _sz,
-			      size_t *R const _cap,
-			      const char *R const _ptn,
-			      const char *R const _rplc,
-			      regex_t *R const _preg,
-			      const int _cflags,
-			      const int _eflags,
-			      const size_t _nmatch) JSTR_NOEXCEPT
+			  size_t *R const _sz,
+			  size_t *R const _cap,
+			  const char *R const _ptn,
+			  const char *R const _rplc,
+			  regex_t *R const _preg,
+			  const int _cflags,
+			  const int _eflags,
+			  const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcall_len_bref_now(_s, _sz, _cap, _ptn, _rplc, strlen(_rplc), _preg, _cflags, _eflags, _nmatch);
 }
@@ -1198,12 +1198,12 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplcall_bref_now_j(jstr_ty *R const j,
-			      const char *R const _ptn,
-			      const char *R const _rplc,
-			      regex_t *R const _preg,
-			      const int _cflags,
-			      const int _eflags,
-			      const size_t _nmatch) JSTR_NOEXCEPT
+			    const char *R const _ptn,
+			    const char *R const _rplc,
+			    regex_t *R const _preg,
+			    const int _cflags,
+			    const int _eflags,
+			    const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplcall_bref_now(&j->data, &j->size, &j->capacity, _ptn, _rplc, _preg, _cflags, _eflags, _nmatch);
 }
@@ -1232,14 +1232,14 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplc_bref_now(char **R const _s,
-			   size_t *R const _sz,
-			   size_t *R const _cap,
-			   const char *R const _ptn,
-			   const char *R const _rplc,
-			   regex_t *R const _preg,
-			   const int _cflags,
-			   const int _eflags,
-			   const size_t _nmatch) JSTR_NOEXCEPT
+		       size_t *R const _sz,
+		       size_t *R const _cap,
+		       const char *R const _ptn,
+		       const char *R const _rplc,
+		       regex_t *R const _preg,
+		       const int _cflags,
+		       const int _eflags,
+		       const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplc_len_bref_now(_s, _sz, _cap, _ptn, _rplc, strlen(_rplc), _preg, _cflags, _eflags, _nmatch);
 }
@@ -1248,12 +1248,12 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
 jstr_reg_rplc_bref_now_j(jstr_ty *R const j,
-			   const char *R const _ptn,
-			   const char *R const _rplc,
-			   regex_t *R const _preg,
-			   const int _cflags,
-			   const int _eflags,
-			   const size_t _nmatch) JSTR_NOEXCEPT
+			 const char *R const _ptn,
+			 const char *R const _rplc,
+			 regex_t *R const _preg,
+			 const int _cflags,
+			 const int _eflags,
+			 const size_t _nmatch) JSTR_NOEXCEPT
 {
 	return jstr_reg_rplc_bref_now(&j->data, &j->size, &j->capacity, _ptn, _rplc, _preg, _cflags, _eflags, _nmatch);
 }

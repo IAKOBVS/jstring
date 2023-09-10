@@ -117,7 +117,7 @@ JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
 jstr_stpappendmore(char *R _dst,
-	    const char *R _src) JSTR_NOEXCEPT
+		   const char *R _src) JSTR_NOEXCEPT
 {
 	_dst += strlen(_dst);
 	return jstr_stpcpy(_dst, _src);

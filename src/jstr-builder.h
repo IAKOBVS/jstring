@@ -181,9 +181,9 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
 jstr_allocexact_assign(char **R const _s,
-			   size_t *R const _sz,
-			   size_t *R const _cap,
-			   const char *R const _src) JSTR_NOEXCEPT
+		       size_t *R const _sz,
+		       size_t *R const _cap,
+		       const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_allocexact_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -208,9 +208,9 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
 jstr_alloc_assign(char **R const _s,
-		      size_t *R const _sz,
-		      size_t *R const _cap,
-		      const char *R const _src) JSTR_NOEXCEPT
+		  size_t *R const _sz,
+		  size_t *R const _cap,
+		  const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_alloc_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -235,9 +235,9 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
 jstr_allocmore_assign(char **R const _s,
-			  size_t *R const _sz,
-			  size_t *R const _cap,
-			  const char *R const _src) JSTR_NOEXCEPT
+		      size_t *R const _sz,
+		      size_t *R const _cap,
+		      const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_allocmore_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -294,9 +294,9 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
 jstr_append(char **R const _s,
-		size_t *R const _sz,
-		size_t *R const _cap,
-		const char *R const _src) JSTR_NOEXCEPT
+	    size_t *R const _sz,
+	    size_t *R const _cap,
+	    const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_append_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -326,9 +326,9 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
 jstr_assign(char **R const _s,
-		size_t *R const _sz,
-		size_t *R const _cap,
-		const char *R const _src) JSTR_NOEXCEPT
+	    size_t *R const _sz,
+	    size_t *R const _cap,
+	    const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }

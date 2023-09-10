@@ -262,7 +262,8 @@ jstr_tolower_str_len(char *R _s,
 	case 1:
 		_skip = 1;
 		goto do1;
-	case 0: break;
+	case 0:
+		break;
 do3:
 		_s[2] = jstr_tolower(_s[2]);
 do2:
@@ -296,7 +297,8 @@ jstr_toupper_str_len(char *R _s,
 	case 1:
 		_skip = 1;
 		goto do1;
-	case 0: break;
+	case 0:
+		break;
 do3:
 		_s[2] = jstr_toupper(_s[2]);
 do2:
