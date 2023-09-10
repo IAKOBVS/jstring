@@ -1067,7 +1067,8 @@ jstr_trim_len_p(char *R _s,
 	while (jstr_isspace(*_s++))
 		;
 	--_s;
-	memmove(_start + 1, _s, _end - (unsigned char *)_s + 1);
+	memmove(_start + 1, _s, _end - (unsigned char *)_s);
+	*(_start + (_end - (unsigned char *)_s + 1)) = '\0';
 	return (char *)(_end - (unsigned char *)_s);
 }
 
