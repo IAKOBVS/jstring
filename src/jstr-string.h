@@ -796,6 +796,8 @@ static size_t
 jstr_countc(const char *R _s,
 	    const int _c) JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(*_s == '\0'))
+		return 0;
 	size_t _cnt = 0;
 	while ((_s = strchr(_s, _c)))
 		++_cnt;
@@ -812,10 +814,12 @@ JSTR_FUNC_PURE
 static size_t
 jstr_countc_len(const char *R _s,
 		const int _c,
-		const size_t _n) JSTR_NOEXCEPT
+		const size_t _sz) JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(_sz == 0))
+		return 0;
 	size_t _cnt = 0;
-	const char *const _end = _s + _n;
+	const char *const _end = _s + _sz;
 	while ((_s = (char *)memchr(_s, _c, _end - _s)))
 		++_cnt;
 	return _cnt;
