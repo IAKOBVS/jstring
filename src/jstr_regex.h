@@ -74,7 +74,7 @@ typedef enum {
 #endif
 } jstr_reg_errcode_ty;
 
-#define JSTR_REG_HAVE_RET_MALLOC_ERROR 1
+#define JSTR_REG_HAVE_RET_ENOMEM 1
 #define JSTR_REG_HAVE_RET_NOERROR      1
 #define JSTR_REG_HAVE_RET_NOMATCH      1
 
