@@ -48,7 +48,7 @@ pjtrie_free_recur(jtrie_node_ty *R _node) JSTR_NOEXCEPT
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-jtrie_free(jtrie_node_ty **R _node) JSTR_NOEXCEPT
+jtrie_free(jtrie_node_ty *R *R _node) JSTR_NOEXCEPT
 {
 	pjtrie_free_recur(*_node);
 }

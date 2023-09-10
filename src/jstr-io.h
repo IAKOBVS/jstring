@@ -436,7 +436,7 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
 pjstr_io_alloc_file(const int alloc_exact,
-		    char **R const _s,
+		    char *R *R const _s,
 		    size_t *R const _sz,
 		    size_t *R const _cap,
 		    const char *R const _fname,
@@ -473,7 +473,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
-jstr_io_alloc_file(char **R const _s,
+jstr_io_alloc_file(char *R *R const _s,
 		   size_t *R const _sz,
 		   size_t *R const _cap,
 		   const char *R const _fname,
@@ -491,7 +491,7 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
-jstr_io_allocexact_file(char **R const _s,
+jstr_io_allocexact_file(char *R *R const _s,
 			size_t *R const _sz,
 			size_t *R const _cap,
 			const char *R const _fname,

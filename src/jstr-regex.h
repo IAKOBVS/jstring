@@ -504,7 +504,7 @@ jstr_reg_rmall_now(char *R const _s,
 JSTR_FUNC
 static jstr_reg_errcode_ty
 pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
-			   char **R const _s,
+			   char *R *R const _s,
 			   size_t *R const _sz,
 			   size_t *R const _cap,
 			   const char *R const _rplc,
@@ -597,7 +597,7 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplcall_len(char **R const _s,
+jstr_reg_rplcall_len(char *R *R const _s,
 		     size_t *R const _sz,
 		     size_t *R const _cap,
 		     const char *R const _rplc,
@@ -611,7 +611,7 @@ jstr_reg_rplcall_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplcall(char **R const _s,
+jstr_reg_rplcall(char *R *R const _s,
 		 size_t *R const _sz,
 		 size_t *R const _cap,
 		 const char *R const _rplc,
@@ -624,7 +624,7 @@ jstr_reg_rplcall(char **R const _s,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplcn_len(char **R const _s,
+jstr_reg_rplcn_len(char *R *R const _s,
 		   size_t *R const _sz,
 		   size_t *R const _cap,
 		   const char *R const _rplc,
@@ -639,7 +639,7 @@ jstr_reg_rplcn_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplcn(char **R const _s,
+jstr_reg_rplcn(char *R *R const _s,
 	       size_t *R const _sz,
 	       size_t *R const _cap,
 	       const char *R const _rplc,
@@ -653,7 +653,7 @@ jstr_reg_rplcn(char **R const _s,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplcall_len_now(char **R const _s,
+jstr_reg_rplcall_len_now(char *R *R const _s,
 			 size_t *R const _sz,
 			 size_t *R const _cap,
 			 const char *R const _ptn,
@@ -672,7 +672,7 @@ jstr_reg_rplcall_len_now(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplcall_now(char **R const _s,
+jstr_reg_rplcall_now(char *R *R const _s,
 		     size_t *R const _sz,
 		     size_t *R const _cap,
 		     const char *R const _ptn,
@@ -700,7 +700,7 @@ jstr_reg_rplcall_now_j(jstr_ty *R const j,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplcn_len_now(char **R const _s,
+jstr_reg_rplcn_len_now(char *R *R const _s,
 		       size_t *R const _sz,
 		       size_t *R const _cap,
 		       const char *R const _ptn,
@@ -720,7 +720,7 @@ jstr_reg_rplcn_len_now(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplcn_now(char **R const _s,
+jstr_reg_rplcn_now(char *R *R const _s,
 		   size_t *R const _sz,
 		   size_t *R const _cap,
 		   const char *R const _ptn,
@@ -750,7 +750,7 @@ jstr_reg_rplcn_now_j(jstr_ty *R const j,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplc_len(char **R const _s,
+jstr_reg_rplc_len(char *R *R const _s,
 		  size_t *R const _sz,
 		  size_t *R const _cap,
 		  const char *R const _rplc,
@@ -771,7 +771,7 @@ jstr_reg_rplc_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplc(char **R const _s,
+jstr_reg_rplc(char *R *R const _s,
 	      size_t *R const _sz,
 	      size_t *R const _cap,
 	      const char *R const _rplc,
@@ -784,7 +784,7 @@ jstr_reg_rplc(char **R const _s,
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_reg_rplc_len_now(char **R const _s,
+jstr_reg_rplc_len_now(char *R *R const _s,
 		      size_t *R const _sz,
 		      size_t *R const _cap,
 		      const char *R const _ptn,
@@ -803,7 +803,7 @@ jstr_reg_rplc_len_now(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplc_now(char **R const _s,
+jstr_reg_rplc_now(char *R *R const _s,
 		  size_t *R const _sz,
 		  size_t *R const _cap,
 		  const char *R const _ptn,
@@ -830,7 +830,7 @@ jstr_reg_rplc_now_j(jstr_ty *R const j,
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplc_len_bref(char **R const _s,
+jstr_reg_rplc_len_bref(char *R *R const _s,
 		       size_t *R const _sz,
 		       size_t *R const _cap,
 		       const char *R const _rplc,
@@ -914,7 +914,7 @@ jstr_reg_rplc_len_bref(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplc_bref(char **R const _s,
+jstr_reg_rplc_bref(char *R *R const _s,
 		   size_t *R const _sz,
 		   size_t *R const _cap,
 		   const char *R const _rplc,
@@ -941,7 +941,7 @@ JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
 pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty _nflag,
-				char **R const _s,
+				char *R *R const _s,
 				size_t *R const _sz,
 				size_t *R const _cap,
 				const char *R const _rplc,
@@ -1024,7 +1024,7 @@ cleanup:
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplcall_len_bref(char **R const _s,
+jstr_reg_rplcall_len_bref(char *R *R const _s,
 			  size_t *R const _sz,
 			  size_t *R const _cap,
 			  const char *R const _rplc,
@@ -1039,7 +1039,7 @@ jstr_reg_rplcall_len_bref(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplcall_bref(char **R const _s,
+jstr_reg_rplcall_bref(char *R *R const _s,
 		      size_t *R const _sz,
 		      size_t *R const _cap,
 		      const char *R const _rplc,
@@ -1064,7 +1064,7 @@ jstr_reg_rplcall_bref_j(jstr_ty *R const j,
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplcn_len_bref(char **R const _s,
+jstr_reg_rplcn_len_bref(char *R *R const _s,
 			size_t *R const _sz,
 			size_t *R const _cap,
 			const char *R const _rplc,
@@ -1080,7 +1080,7 @@ jstr_reg_rplcn_len_bref(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplcn_bref(char **R const _s,
+jstr_reg_rplcn_bref(char *R *R const _s,
 		    size_t *R const _sz,
 		    size_t *R const _cap,
 		    const char *R const _rplc,
@@ -1108,7 +1108,7 @@ jstr_reg_rplcn_bref_j(jstr_ty *R const j,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplcn_len_bref_now(char **R const _s,
+jstr_reg_rplcn_len_bref_now(char *R *R const _s,
 			    size_t *R const _sz,
 			    size_t *R const _cap,
 			    const char *R const _ptn,
@@ -1129,7 +1129,7 @@ jstr_reg_rplcn_len_bref_now(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplcn_bref_now(char **R const _s,
+jstr_reg_rplcn_bref_now(char *R *R const _s,
 			size_t *R const _sz,
 			size_t *R const _cap,
 			const char *R const _ptn,
@@ -1161,7 +1161,7 @@ jstr_reg_rplcn_bref_now_j(jstr_ty *R const j,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplcall_len_bref_now(char **R const _s,
+jstr_reg_rplcall_len_bref_now(char *R *R const _s,
 			      size_t *R const _sz,
 			      size_t *R const _cap,
 			      const char *R const _ptn,
@@ -1181,7 +1181,7 @@ jstr_reg_rplcall_len_bref_now(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplcall_bref_now(char **R const _s,
+jstr_reg_rplcall_bref_now(char *R *R const _s,
 			  size_t *R const _sz,
 			  size_t *R const _cap,
 			  const char *R const _ptn,
@@ -1211,7 +1211,7 @@ jstr_reg_rplcall_bref_now_j(jstr_ty *R const j,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rplc_len_bref_now(char **R const _s,
+jstr_reg_rplc_len_bref_now(char *R *R const _s,
 			   size_t *R const _sz,
 			   size_t *R const _cap,
 			   const char *R const _ptn,
@@ -1231,7 +1231,7 @@ jstr_reg_rplc_len_bref_now(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static jstr_reg_errcode_ty
-jstr_reg_rplc_bref_now(char **R const _s,
+jstr_reg_rplc_bref_now(char *R *R const _s,
 		       size_t *R const _sz,
 		       size_t *R const _cap,
 		       const char *R const _ptn,

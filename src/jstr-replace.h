@@ -81,7 +81,7 @@ pjstr_rplcat_len_f(char *R const _s,
 */
 JSTR_FUNC
 static int
-jstr_slip_len(char **R const _s,
+jstr_slip_len(char *R *R const _s,
 	      size_t *R const _sz,
 	      size_t *R const _cap,
 	      const size_t _at,
@@ -98,7 +98,7 @@ jstr_slip_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slip(char **R const _s,
+jstr_slip(char *R *R const _s,
 	  size_t *R const _sz,
 	  size_t *R const _cap,
 	  const size_t _at,
@@ -109,7 +109,7 @@ jstr_slip(char **R const _s,
 
 JSTR_FUNC
 static char *
-pjstr_rplcat_len_may_lower(char **R const _s,
+pjstr_rplcat_len_may_lower(char *R *R const _s,
 			   size_t *R const _sz,
 			   size_t *R const _cap,
 			   const size_t _at,
@@ -134,7 +134,7 @@ ret:
 JSTR_INLINE
 JSTR_FUNC
 static char *
-pjstr_rplcat_len(char **R const _s,
+pjstr_rplcat_len(char *R *R const _s,
 		 size_t *R const _sz,
 		 size_t *R const _cap,
 		 const size_t _at,
@@ -155,7 +155,7 @@ pjstr_rplcat_len(char **R const _s,
 JSTR_INLINE
 JSTR_FUNC
 static int
-jstr_slipaftchr_len(char **R const _s,
+jstr_slipaftchr_len(char *R *R const _s,
 		    size_t *R const _sz,
 		    size_t *R const _cap,
 		    const int _c,
@@ -171,7 +171,7 @@ jstr_slipaftchr_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slipaftchr(char **R const _s,
+jstr_slipaftchr(char *R *R const _s,
 		size_t *R const _sz,
 		size_t *R const _cap,
 		const int _c,
@@ -187,7 +187,7 @@ jstr_slipaftchr(char **R const _s,
 */
 JSTR_FUNC
 static int
-jstr_slipaftallchr_len(char **R const _s,
+jstr_slipaftallchr_len(char *R *R const _s,
 		       size_t *R const _sz,
 		       size_t *R const _cap,
 		       const int _c,
@@ -208,7 +208,7 @@ jstr_slipaftallchr_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slipaftallchr(char **R const _s,
+jstr_slipaftallchr(char *R *R const _s,
 		   size_t *R const _sz,
 		   size_t *R const _cap,
 		   const int _c,
@@ -224,7 +224,7 @@ jstr_slipaftallchr(char **R const _s,
 */
 JSTR_FUNC
 static int
-jstr_slipaft_len(char **R const _s,
+jstr_slipaft_len(char *R *R const _s,
 		 size_t *R const _sz,
 		 size_t *R const _cap,
 		 const char *R const _find,
@@ -245,7 +245,7 @@ jstr_slipaft_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slipaft(char **R const _s,
+jstr_slipaft(char *R *R const _s,
 	     size_t *R const _sz,
 	     size_t *R const _cap,
 	     const char *R const _find,
@@ -261,7 +261,7 @@ jstr_slipaft(char **R const _s,
 */
 JSTR_FUNC
 static int
-jstr_slipaftall_len(char **R const _s,
+jstr_slipaftall_len(char *R *R const _s,
 		    size_t *R const _sz,
 		    size_t *R const _cap,
 		    const char *R const _find,
@@ -287,7 +287,7 @@ jstr_slipaftall_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slipaftall(char **R const _s,
+jstr_slipaftall(char *R *R const _s,
 		size_t *R const _sz,
 		size_t *R const _cap,
 		const char *R const _find,
@@ -617,7 +617,7 @@ jstr_rplcnc(char *R _s,
 */
 JSTR_FUNC
 static int
-jstr_rplc_len(char **R const _s,
+jstr_rplc_len(char *R *R const _s,
 	      size_t *R const _sz,
 	      size_t *R const _cap,
 	      const char *R const _find,
@@ -649,7 +649,7 @@ jstr_rplc_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_rplc(char **R const _s,
+jstr_rplc(char *R *R const _s,
 	  size_t *R const _sz,
 	  size_t *R const _cap,
 	  const char *R const _find,
@@ -665,7 +665,7 @@ jstr_rplc(char **R const _s,
 */
 JSTR_FUNC_VOID
 static int
-jstr_rplclast_len(char **R const _s,
+jstr_rplclast_len(char *R *R const _s,
 		  size_t *R const _sz,
 		  size_t *R const _cap,
 		  const char *R const _find,
@@ -684,7 +684,7 @@ jstr_rplclast_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_rplclast(char **R const _s,
+jstr_rplclast(char *R *R const _s,
 	      size_t *R const _sz,
 	      size_t *R const _cap,
 	      const char *R const _find,
@@ -803,7 +803,7 @@ JSTR_INLINE
 JSTR_FUNC
 static int
 pjstr_rplcall_len(const pjstr_flag_use_n_ty _flag,
-		  char **R const _s,
+		  char *R *R const _s,
 		  size_t *R const _sz,
 		  size_t *R const _cap,
 		  const char *R const _find,
@@ -854,7 +854,7 @@ pjstr_rplcall_len(const pjstr_flag_use_n_ty _flag,
 */
 JSTR_FUNC
 static int
-jstr_rplcn_len(char **R const _s,
+jstr_rplcn_len(char *R *R const _s,
 	       size_t *R const _sz,
 	       size_t *R const _cap,
 	       const char *R const _find,
@@ -869,7 +869,7 @@ jstr_rplcn_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_rplcn(char **R const _s,
+jstr_rplcn(char *R *R const _s,
 	   size_t *R const _sz,
 	   size_t *R const _cap,
 	   const char *R const _find,
@@ -886,7 +886,7 @@ jstr_rplcn(char **R const _s,
 */
 JSTR_FUNC
 static int
-jstr_rplcall_len(char **R const _s,
+jstr_rplcall_len(char *R *R const _s,
 		 size_t *R const _sz,
 		 size_t *R const _cap,
 		 const char *R const _find,
@@ -900,7 +900,7 @@ jstr_rplcall_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_rplcall(char **R const _s,
+jstr_rplcall(char *R *R const _s,
 	     size_t *R const _sz,
 	     size_t *R const _cap,
 	     const char *R const _find,
@@ -1122,7 +1122,7 @@ pjstr_insert_len_f(char *R const _s,
 JSTR_INLINE
 JSTR_FUNC
 static int
-jstr_insert_len(char **R const _s,
+jstr_insert_len(char *R *R const _s,
 		size_t *R const _sz,
 		size_t *R const _cap,
 		const size_t _at,
@@ -1141,7 +1141,7 @@ jstr_insert_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_insert(char **R const _s,
+jstr_insert(char *R *R const _s,
 	    size_t *R const _sz,
 	    size_t *R const _cap,
 	    const size_t _at,
@@ -1158,7 +1158,7 @@ jstr_insert(char **R const _s,
 JSTR_INLINE
 JSTR_FUNC
 static int
-jstr_insertaftchr_len(char **R const _s,
+jstr_insertaftchr_len(char *R *R const _s,
 		      size_t *R const _sz,
 		      size_t *R const _cap,
 		      const int _c,
@@ -1174,7 +1174,7 @@ jstr_insertaftchr_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_insertaftchr(char **R const _s,
+jstr_insertaftchr(char *R *R const _s,
 		  size_t *R const _sz,
 		  size_t *R const _cap,
 		  const int _c,
@@ -1190,7 +1190,7 @@ jstr_insertaftchr(char **R const _s,
 */
 JSTR_FUNC
 static int
-jstr_insertaft_len(char **R const _s,
+jstr_insertaft_len(char *R *R const _s,
 		   size_t *R const _sz,
 		   size_t *R const _cap,
 		   const char *R const _find,
@@ -1211,7 +1211,7 @@ jstr_insertaft_len(char **R const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_insertaft(char **R const _s,
+jstr_insertaft(char *R *R const _s,
 	       size_t *R const _sz,
 	       size_t *R const _cap,
 	       const char *R const _find,
