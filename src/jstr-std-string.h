@@ -119,7 +119,9 @@ jstr_strdup(const char *R const _s)
 	void *_p = malloc(_len);
 	if (jstr_unlikely(_p == NULL))
 		return NULL;
-	return (char *)memcpy(_p, _s, _len);
+	memcpy(_p, _s, _len - 1);
+	*((char *)_p + _len - 1) = '\0';
+	return _p;
 #endif
 }
 
