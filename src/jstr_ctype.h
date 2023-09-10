@@ -260,17 +260,15 @@ jstr_tolower_str_len(char *JSTR_RST _s,
 	case 1:
 		_skip = 1;
 		goto do1;
-	case 0:
-		goto start_loop;
+	case 0: break;
 do3:
 		_s[2] = jstr_tolower(_s[2]);
 do2:
 		_s[1] = jstr_tolower(_s[1]);
 do1:
 		_s[0] = jstr_tolower(_s[0]);
+		_s += _skip;
 	}
-	_s += _skip;
-start_loop:;
 	for (; (_s[0] = jstr_tolower(_s[0])); _s += 4) {
 		_s[1] = jstr_tolower(_s[1]);
 		_s[2] = jstr_tolower(_s[2]);
@@ -296,17 +294,15 @@ jstr_toupper_str_len(char *JSTR_RST _s,
 	case 1:
 		_skip = 1;
 		goto do1;
-	case 0:
-		goto start_loop;
+	case 0: break;
 do3:
 		_s[2] = jstr_toupper(_s[2]);
 do2:
 		_s[1] = jstr_toupper(_s[1]);
 do1:
 		_s[0] = jstr_toupper(_s[0]);
+		_s += _skip;
 	}
-	_s += _skip;
-start_loop:;
 	for (; (_s[0] = jstr_toupper(_s[0])); _s += 4) {
 		_s[1] = jstr_toupper(_s[1]);
 		_s[2] = jstr_toupper(_s[2]);
