@@ -61,7 +61,7 @@ sub usage
 
 sub script_needed
 {
-	if (system("test $G_FNAME -nt $G_DIR_C/$G_FNAME || test $G_FNAME -nt ../jstr/$G_FNAME")) {
+	if (system("test $G_FNAME -ot ../jstr/$G_FNAME")) {
 		exit;
 	}
 }
