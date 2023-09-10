@@ -71,7 +71,7 @@ sub get_file_str
 		if (/^[ \t]*#[ \t]*undef[ \t]*([_A-Z0-9]*)/) {
 			my $macro = $1;
 			if ($macro !~ /^(?:PJSTR|JSTR|pjstr|jstr)/) {
-				$g_in_h =~ s/([^_0-9A-Za-z]|^)$macro([^_0-9A-Za-z]|$)/$1PJSTR_$macro$2/g;
+				$g_in_h =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1PJSTR_$macro$2/g;
 			}
 		}
 	}
