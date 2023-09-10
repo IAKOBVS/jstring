@@ -10,7 +10,7 @@ PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
-#include "jarr_macros.h"
+#include "jarr-macros.h"
 #include "jstr-macros.h"
 #include "jstr-pp-arrcpy-va-args.h"
 #include "jstr-templates.h"
