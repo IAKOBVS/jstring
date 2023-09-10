@@ -16,7 +16,7 @@ typedef enum {
 	JSTR_ISUPPER = 1 << 9,
 	JSTR_ISXDIGIT = 1 << 10,
 	JSTR_ISBLANK = 1 << 11
-} jstr_ascii_type_ty;
+} jstr_ctype_ty;
 
 JSTR_MAYBE_UNUSED
 static const uint16_t pjstr_table_ctype[256] = {

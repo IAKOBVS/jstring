@@ -119,6 +119,31 @@ jstr_isalpha(const int _c) JSTR_NOEXCEPT
 
 /*
    ASCII.
+   For example: jstr_isctype(C, JSTR_ISLOWER | JSTR_ISDIGIT) checks if C is either lowercase or a number.
+   types:
+   JSTR_ISALNUM.
+   JSTR_ISALPHA.
+   JSTR_ISCNTRL.
+   JSTR_ISDIGIT.
+   JSTR_ISGRAPH.
+   JSTR_ISLOWER.
+   JSTR_ISPRINT.
+   JSTR_ISPUNCT.
+   JSTR_ISSPACE.
+   JSTR_ISUPPER.
+   JSTR_ISXDIGIT.
+   JSTR_ISBLANK.
+*/
+JSTR_INLINE
+JSTR_FUNC_CONST
+static int
+jstr_isctype(const int _c, jstr_ctype_ty _type) JSTR_NOEXCEPT
+{
+	return pjstr_table_ctype[(unsigned char)_c] & _type;
+}
+
+/*
+   ASCII.
    Will NOT handle EOF correctly.
    toupper(EOF) != EOF;
 */
