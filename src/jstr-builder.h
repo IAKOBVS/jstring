@@ -39,17 +39,24 @@ PJSTR_END_DECLS
 		(p) = (char *)malloc((_cap));       \
 		PJSTR_MALLOC_ERR((p), do_fail);     \
 	} while (0)
+
+#define R JSTR_RESTRICT
+
+PJSTR_BEGIN_DECLS
+
 /*
   exit(1) if ptr is NULL.
 */
 JSTR_INLINE
 JSTR_NOTHROW
 static void
-jstr_err(char *JSTR_RST const p) JSTR_NOEXCEPT
+jstr_err(char *R const p) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(p == NULL))
 		pjstr_err_exit();
 }
+
+PJSTR_END_DECLS
 
 typedef struct jstr_ty {
 	char *data;
@@ -126,9 +133,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_alloc(char **JSTR_RST const _s,
-	   size_t *JSTR_RST const _sz,
-	   size_t *JSTR_RST const _cap,
+jstr_alloc(char **R const _s,
+	   size_t *R const _sz,
+	   size_t *R const _cap,
 	   const size_t _top)
 {
 	*_sz = 0;
@@ -141,9 +148,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_allocexact(char **JSTR_RST const _s,
-		size_t *JSTR_RST const _sz,
-		size_t *JSTR_RST const _cap,
+jstr_allocexact(char **R const _s,
+		size_t *R const _sz,
+		size_t *R const _cap,
 		const size_t _top) JSTR_NOEXCEPT
 {
 	*_sz = 0;
@@ -156,10 +163,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_allocexact_assign_len(char **JSTR_RST const _s,
-			   size_t *JSTR_RST const _sz,
-			   size_t *JSTR_RST const _cap,
-			   const char *JSTR_RST const _src,
+jstr_allocexact_assign_len(char **R const _s,
+			   size_t *R const _sz,
+			   size_t *R const _cap,
+			   const char *R const _src,
 			   const size_t _srclen) JSTR_NOEXCEPT
 {
 	jstr_allocexact(_s, _sz, _cap, _srclen + 1);
@@ -173,10 +180,10 @@ jstr_allocexact_assign_len(char **JSTR_RST const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
-jstr_allocexact_assign(char **JSTR_RST const _s,
-			   size_t *JSTR_RST const _sz,
-			   size_t *JSTR_RST const _cap,
-			   const char *JSTR_RST const _src) JSTR_NOEXCEPT
+jstr_allocexact_assign(char **R const _s,
+			   size_t *R const _sz,
+			   size_t *R const _cap,
+			   const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_allocexact_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -185,10 +192,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_alloc_assign_len(char **JSTR_RST const _s,
-		      size_t *JSTR_RST const _sz,
-		      size_t *JSTR_RST const _cap,
-		      const char *JSTR_RST const _src,
+jstr_alloc_assign_len(char **R const _s,
+		      size_t *R const _sz,
+		      size_t *R const _cap,
+		      const char *R const _src,
 		      const size_t _srclen) JSTR_NOEXCEPT
 {
 	PJSTR_ALLOC_ONLY(*_s, *_cap, _srclen, return);
@@ -200,10 +207,10 @@ jstr_alloc_assign_len(char **JSTR_RST const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
-jstr_alloc_assign(char **JSTR_RST const _s,
-		      size_t *JSTR_RST const _sz,
-		      size_t *JSTR_RST const _cap,
-		      const char *JSTR_RST const _src) JSTR_NOEXCEPT
+jstr_alloc_assign(char **R const _s,
+		      size_t *R const _sz,
+		      size_t *R const _cap,
+		      const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_alloc_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -212,10 +219,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_allocmore_assign_len(char **JSTR_RST const _s,
-			  size_t *JSTR_RST const _sz,
-			  size_t *JSTR_RST const _cap,
-			  const char *JSTR_RST const _src,
+jstr_allocmore_assign_len(char **R const _s,
+			  size_t *R const _sz,
+			  size_t *R const _cap,
+			  const char *R const _src,
 			  const size_t _srclen) JSTR_NOEXCEPT
 {
 	PJSTR_ALLOC_ONLY(*_s, *_cap, _srclen * 2, return);
@@ -227,10 +234,10 @@ jstr_allocmore_assign_len(char **JSTR_RST const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
-jstr_allocmore_assign(char **JSTR_RST const _s,
-			  size_t *JSTR_RST const _sz,
-			  size_t *JSTR_RST const _cap,
-			  const char *JSTR_RST const _src) JSTR_NOEXCEPT
+jstr_allocmore_assign(char **R const _s,
+			  size_t *R const _sz,
+			  size_t *R const _cap,
+			  const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_allocmore_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -242,7 +249,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_free(char *JSTR_RST p) JSTR_NOEXCEPT
+jstr_free(char *R p) JSTR_NOEXCEPT
 {
 	free(p);
 #if JSTR_NULLIFY_PTR_ON_DELETE
@@ -254,7 +261,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_debug(const jstr_ty *JSTR_RST const _j)
+jstr_debug(const jstr_ty *R const _j)
 {
 	fprintf(stderr, "size:%zu\ncapacity:%zu\n", _j->size, _j->capacity);
 	fprintf(stderr, "strlen():%zu\n", strlen(_j->data));
@@ -271,10 +278,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_append_len(char **JSTR_RST const _s,
-		size_t *JSTR_RST const _sz,
-		size_t *JSTR_RST const _cap,
-		const char *JSTR_RST const _src,
+jstr_append_len(char **R const _s,
+		size_t *R const _sz,
+		size_t *R const _cap,
+		const char *R const _src,
 		const size_t _srclen) JSTR_NOEXCEPT
 {
 	if (*_cap < *_sz + _srclen)
@@ -286,10 +293,10 @@ jstr_append_len(char **JSTR_RST const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
-jstr_append(char **JSTR_RST const _s,
-		size_t *JSTR_RST const _sz,
-		size_t *JSTR_RST const _cap,
-		const char *JSTR_RST const _src) JSTR_NOEXCEPT
+jstr_append(char **R const _s,
+		size_t *R const _sz,
+		size_t *R const _cap,
+		const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_append_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -302,10 +309,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_assign_len(char **JSTR_RST const _s,
-		size_t *JSTR_RST const _sz,
-		size_t *JSTR_RST const _cap,
-		const char *JSTR_RST const _src,
+jstr_assign_len(char **R const _s,
+		size_t *R const _sz,
+		size_t *R const _cap,
+		const char *R const _src,
 		const size_t _srclen) JSTR_NOEXCEPT
 {
 	if (*_cap < _srclen)
@@ -318,10 +325,10 @@ jstr_assign_len(char **JSTR_RST const _s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static void
-jstr_assign(char **JSTR_RST const _s,
-		size_t *JSTR_RST const _sz,
-		size_t *JSTR_RST const _cap,
-		const char *JSTR_RST const _src) JSTR_NOEXCEPT
+jstr_assign(char **R const _s,
+		size_t *R const _sz,
+		size_t *R const _cap,
+		const char *R const _src) JSTR_NOEXCEPT
 {
 	return jstr_assign_len(_s, _sz, _cap, _src, strlen(_src));
 }
@@ -334,9 +341,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_push_back(char **JSTR_RST const _s,
-	       size_t *JSTR_RST const _sz,
-	       size_t *JSTR_RST const _cap,
+jstr_push_back(char **R const _s,
+	       size_t *R const _sz,
+	       size_t *R const _cap,
 	       const char _c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
@@ -353,9 +360,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_push_front(char **JSTR_RST const _s,
-		size_t *JSTR_RST const _sz,
-		size_t *JSTR_RST const _cap,
+jstr_push_front(char **R const _s,
+		size_t *R const _sz,
+		size_t *R const _cap,
 		const char _c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_cap == *_sz + 1))
@@ -369,8 +376,8 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_pop_back(char *JSTR_RST const _s,
-	      size_t *JSTR_RST const _sz) JSTR_NOEXCEPT
+jstr_pop_back(char *R const _s,
+	      size_t *R const _sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_sz == 0))
 		return;
@@ -384,7 +391,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_pop_back_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+jstr_pop_back_j(jstr_ty *R const _j) JSTR_NOEXCEPT
 {
 	jstr_pop_back(_j->data, &_j->size);
 }
@@ -394,8 +401,8 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_pop_front(char *JSTR_RST const _s,
-	       size_t *JSTR_RST const _sz) JSTR_NOEXCEPT
+jstr_pop_front(char *R const _s,
+	       size_t *R const _sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_sz == 0))
 		return;
@@ -407,7 +414,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_pop_front_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+jstr_pop_front_j(jstr_ty *R const _j) JSTR_NOEXCEPT
 {
 	jstr_pop_front(_j->data, &_j->size);
 }
@@ -424,7 +431,7 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_alloc_appendmore_j(jstr_ty *JSTR_RST const _j,
+jstr_alloc_appendmore_j(jstr_ty *R const _j,
 			Str &&arg,
 			StrArgs &&...args) JSTR_NOEXCEPT
 {
@@ -439,7 +446,7 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
+jstr_appendmore_j(jstr_ty *R const _j,
 		  Str &&arg,
 		  StrArgs &&...args) JSTR_NOEXCEPT
 {
@@ -493,5 +500,7 @@ jstr_appendmore_j(jstr_ty *JSTR_RST const _j,
 #	define jstr_alloc_appendmore_j(_j, ...) jstr_alloc_appendmore(&((_j)->data), &((_j)->size), &((_j)->capacity), __VA_ARGS__)
 
 #endif /* __cplusplus */
+
+#undef R
 
 #endif /* JSTR_BUILDER _H */

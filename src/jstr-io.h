@@ -12,6 +12,8 @@ PJSTR_END_DECLS
 #include "jstr-builder.h"
 #include "jstr-string.h"
 
+#define R JSTR_RESTRICT
+
 PJSTR_BEGIN_DECLS
 
 typedef enum {
@@ -33,7 +35,7 @@ JSTR_NOINLINE
 JSTR_PURE
 JSTR_NOTHROW
 static jstr_io_ext_ty
-pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
+pjstr_io_ext_type(const char *R _ext) JSTR_NOEXCEPT
 {
 	S {
 	case 'a':
@@ -307,7 +309,7 @@ JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_NOTHROW
 static jstr_io_ext_ty
-jstr_io_ext_type_len(const char *JSTR_RST _filename,
+jstr_io_ext_type_len(const char *R _filename,
 		    const size_t _sz) JSTR_NOEXCEPT
 {
 	_filename = (char *)jstr_memrchr(_filename, '.', _sz);
@@ -326,7 +328,7 @@ JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_NOTHROW
 static jstr_io_ext_ty
-jstr_io_ext_type(const char *JSTR_RST _filename) JSTR_NOEXCEPT
+jstr_io_ext_type(const char *R _filename) JSTR_NOEXCEPT
 {
 	_filename = strrchr(_filename, '.');
 	if (_filename == NULL)
@@ -350,7 +352,7 @@ JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_io_is_binary_maybe(char *JSTR_RST const _buf,
+jstr_io_is_binary_maybe(char *R const _buf,
 		       const size_t _sz) JSTR_NOEXCEPT
 {
 #define JSTR_BINARY_CHECK()                                                        \
@@ -359,7 +361,7 @@ jstr_io_is_binary_maybe(char *JSTR_RST const _buf,
 			if (jstr_unlikely(!memcmp(_buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
 				return 1;                                          \
 check_utf:;                                                                        \
-			unsigned char *JSTR_RST _s = (unsigned char *)_buf;        \
+			unsigned char *R _s = (unsigned char *)_buf;        \
 			if (!memcmp(_s, PJSTR_UTF, PJSTR_UTF_SZ))                  \
 				return 0;                                          \
 		} else if (jstr_likely(_sz == PJSTR_UTF_SZ)) {                     \
@@ -386,7 +388,7 @@ JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_io_is_binary_maybe_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+jstr_io_is_binary_maybe_j(jstr_ty *R const _j) JSTR_NOEXCEPT
 {
 	return jstr_io_is_binary_maybe(_j->data, _j->size);
 }
@@ -400,7 +402,7 @@ JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_NOTHROW
 static int
-jstr_io_is_binary(const char *JSTR_RST const _buf,
+jstr_io_is_binary(const char *R const _buf,
 		 const size_t _sz) JSTR_NOEXCEPT
 {
 	JSTR_BINARY_CHECK();
@@ -424,7 +426,7 @@ JSTR_PURE
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_io_is_binary_j(jstr_ty *JSTR_RST const _j) JSTR_NOEXCEPT
+jstr_io_is_binary_j(jstr_ty *R const _j) JSTR_NOEXCEPT
 {
 	return jstr_io_is_binary(_j->data, _j->size);
 }
@@ -434,13 +436,13 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
 pjstr_io_alloc_file(const int alloc_exact,
-		   char **JSTR_RST const _s,
-		   size_t *JSTR_RST const _sz,
-		   size_t *JSTR_RST const _cap,
-		   const char *JSTR_RST const _fname,
-		   struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
+		   char **R const _s,
+		   size_t *R const _sz,
+		   size_t *R const _cap,
+		   const char *R const _fname,
+		   struct stat *R const _st) JSTR_NOEXCEPT
 {
-	FILE *JSTR_RST const _fp = fopen(_fname, "r");
+	FILE *R const _fp = fopen(_fname, "r");
 	if (jstr_unlikely(_fp == NULL))
 		goto err;
 	if (jstr_unlikely(stat(_fname, _st)))
@@ -471,11 +473,11 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
-jstr_io_alloc_file(char **JSTR_RST const _s,
-		  size_t *JSTR_RST const _sz,
-		  size_t *JSTR_RST const _cap,
-		  const char *JSTR_RST const _fname,
-		  struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
+jstr_io_alloc_file(char **R const _s,
+		  size_t *R const _sz,
+		  size_t *R const _cap,
+		  const char *R const _fname,
+		  struct stat *R const _st) JSTR_NOEXCEPT
 {
 	return pjstr_io_alloc_file(0, _s, _sz, _cap, _fname, _st);
 }
@@ -489,11 +491,11 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
-jstr_io_allocexact_file(char **JSTR_RST const _s,
-		       size_t *JSTR_RST const _sz,
-		       size_t *JSTR_RST const _cap,
-		       const char *JSTR_RST const _fname,
-		       struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
+jstr_io_allocexact_file(char **R const _s,
+		       size_t *R const _sz,
+		       size_t *R const _cap,
+		       const char *R const _fname,
+		       struct stat *R const _st) JSTR_NOEXCEPT
 {
 	return pjstr_io_alloc_file(1, _s, _sz, _cap, _fname, _st);
 }
@@ -507,9 +509,9 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
-jstr_io_alloc_file_j(jstr_ty *JSTR_RST const _j,
-		    const char *JSTR_RST const _fname,
-		    struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
+jstr_io_alloc_file_j(jstr_ty *R const _j,
+		    const char *R const _fname,
+		    struct stat *R const _st) JSTR_NOEXCEPT
 {
 	return jstr_io_alloc_file(&_j->data, &_j->size, &_j->capacity, _fname, _st);
 }
@@ -523,13 +525,15 @@ JSTR_WARN_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
-jstr_io_allocexact_file_j(jstr_ty *JSTR_RST const _j,
-			 const char *JSTR_RST const _fname,
-			 struct stat *JSTR_RST const _st) JSTR_NOEXCEPT
+jstr_io_allocexact_file_j(jstr_ty *R const _j,
+			 const char *R const _fname,
+			 struct stat *R const _st) JSTR_NOEXCEPT
 {
 	return jstr_io_allocexact_file(&_j->data, &_j->size, &_j->capacity, _fname, _st);
 }
 
 PJSTR_END_DECLS
+
+#undef R
 
 #endif /* JSTR_IO_H */

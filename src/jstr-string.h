@@ -26,6 +26,8 @@ PJSTR_END_DECLS
 #include "string-optype.h"
 #include "string-shift.h"
 
+#define R JSTR_RESTRICT
+
 PJSTR_BEGIN_DECLS
 
 #if JSTR_HAVE_MEMMEM
@@ -45,8 +47,8 @@ JSTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static int
-jstr_strncasecmp(const char *JSTR_RST _s1,
-		 const char *JSTR_RST _s2,
+jstr_strncasecmp(const char *R _s1,
+		 const char *R _s2,
 		 size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRNCASECMP
@@ -76,8 +78,8 @@ JSTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static int
-jstr_strcasecmp_len(const char *JSTR_RST const _s1,
-		    const char *JSTR_RST const _s2,
+jstr_strcasecmp_len(const char *R const _s1,
+		    const char *R const _s2,
 		    size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRNCASECMP
@@ -104,8 +106,8 @@ JSTR_INLINE
 #endif
 JSTR_NOTHROW
 static int
-jstr_strcasecmp(const char *JSTR_RST _s1,
-		const char *JSTR_RST _s2) JSTR_NOEXCEPT
+jstr_strcasecmp(const char *R _s1,
+		const char *R _s2) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASECMP
 	return strcasecmp(_s1, _s2);
@@ -122,9 +124,9 @@ jstr_strcasecmp(const char *JSTR_RST _s1,
 
 JSTR_FUNC_PURE
 static void *
-pjstr_strrstr_len_bmh(const unsigned char *JSTR_RST _hs,
+pjstr_strrstr_len_bmh(const unsigned char *R _hs,
 		      const size_t _hslen,
-		      const unsigned char *JSTR_RST const _ne,
+		      const unsigned char *R const _ne,
 		      const size_t _nelen) JSTR_NOEXCEPT
 {
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
@@ -173,7 +175,7 @@ JSTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static void *
-jstr_memrchr(const void *JSTR_RST _s,
+jstr_memrchr(const void *R _s,
 	     int _c,
 	     const size_t _n) JSTR_NOEXCEPT
 {
@@ -254,9 +256,9 @@ jstr_memrchr(const void *JSTR_RST _s,
 */
 JSTR_FUNC_PURE
 static void *
-jstr_strrstr_len(const void *JSTR_RST const _hs,
+jstr_strrstr_len(const void *R const _hs,
 		 const size_t _hslen,
-		 const void *JSTR_RST const _ne,
+		 const void *R const _ne,
 		 const size_t _nelen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_hslen < _nelen))
@@ -309,17 +311,17 @@ jstr_strrstr_len(const void *JSTR_RST const _hs,
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_strrstr(const char *JSTR_RST const _hs,
-	     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
+jstr_strrstr(const char *R const _hs,
+	     const char *R const _ne) JSTR_NOEXCEPT
 {
 	return (char *)jstr_strrstr_len(_hs, strlen(_hs), _ne, strlen(_ne));
 }
 
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasestr_len_bmh(const char *JSTR_RST const _hs,
+pjstr_strcasestr_len_bmh(const char *R const _hs,
 			 const size_t _hslen,
-			 const char *JSTR_RST const _ne,
+			 const char *R const _ne,
 			 const size_t _nelen) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
@@ -368,8 +370,8 @@ pjstr_strcasestr_len_bmh(const char *JSTR_RST const _hs,
 
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
-		     const char *JSTR_RST const _ne) JSTR_NOEXCEPT
+pjstr_strcasestr_bmh(const char *R const _hs,
+		     const char *R const _ne) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                                 \
@@ -431,8 +433,8 @@ pjstr_strcasestr_bmh(const char *JSTR_RST const _hs,
 JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasestr2(const unsigned char *JSTR_RST _h,
-		  const unsigned char *JSTR_RST _n) JSTR_NOEXCEPT
+pjstr_strcasestr2(const unsigned char *R _h,
+		  const unsigned char *R _n) JSTR_NOEXCEPT
 {
 	const uint16_t _nw = L(_n[0]) << 8 | L(_n[1]);
 	uint16_t _hw = L(_h[0]) << 8 | L(_h[1]);
@@ -444,8 +446,8 @@ pjstr_strcasestr2(const unsigned char *JSTR_RST _h,
 JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasestr3(const unsigned char *JSTR_RST _h,
-		  const unsigned char *JSTR_RST _n) JSTR_NOEXCEPT
+pjstr_strcasestr3(const unsigned char *R _h,
+		  const unsigned char *R _n) JSTR_NOEXCEPT
 {
 	const uint32_t _nw = L(_n[0]) << 24 | L(_n[1]) << 16 | L(_n[2]) << 8;
 	uint32_t _hw = L(_h[0]) << 24 | L(_h[1]) << 16 | L(_h[2]) << 8;
@@ -457,8 +459,8 @@ pjstr_strcasestr3(const unsigned char *JSTR_RST _h,
 JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasestr4(const unsigned char *JSTR_RST _h,
-		  const unsigned char *JSTR_RST _n) JSTR_NOEXCEPT
+pjstr_strcasestr4(const unsigned char *R _h,
+		  const unsigned char *R _n) JSTR_NOEXCEPT
 {
 	const uint32_t _nw = L(_n[0]) << 24 | L(_n[1]) << 16 | L(_n[2]) << 8 | L(_n[3]);
 	uint32_t _hw = L(_h[0]) << 24 | L(_h[1]) << 16 | L(_h[2]) << 8 | L(_h[3]);
@@ -480,9 +482,9 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 #endif
 static char *
-jstr_strcasestr_len(const char *JSTR_RST _hs,
+jstr_strcasestr_len(const char *R _hs,
 		    size_t _hslen,
-		    const char *JSTR_RST const _ne,
+		    const char *R const _ne,
 		    const size_t _nelen) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
@@ -542,8 +544,8 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 #endif
 static char *
-jstr_strcasestr(const char *JSTR_RST _hs,
-		const char *JSTR_RST const _ne) JSTR_NOEXCEPT
+jstr_strcasestr(const char *R _hs,
+		const char *R const _ne) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 	return (char *)strcasestr(_hs, _ne);
@@ -593,8 +595,8 @@ jstr_strcasestr(const char *JSTR_RST _hs,
 */
 JSTR_FUNC_PURE
 static size_t
-jstr_strrcspn_len(const char *JSTR_RST const _s,
-		  const char *JSTR_RST const _reject,
+jstr_strrcspn_len(const char *R const _s,
+		  const char *R const _reject,
 		  size_t _sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_reject[0] == '\0'))
@@ -652,8 +654,8 @@ jstr_strrcspn_len(const char *JSTR_RST const _s,
 JSTR_INLINE
 JSTR_FUNC_PURE
 static size_t
-jstr_strrcspn(const char *JSTR_RST const _s,
-	      const char *JSTR_RST const _reject) JSTR_NOEXCEPT
+jstr_strrcspn(const char *R const _s,
+	      const char *R const _reject) JSTR_NOEXCEPT
 {
 	return jstr_strrcspn_len(_s, _reject, strlen(_s));
 }
@@ -663,8 +665,8 @@ jstr_strrcspn(const char *JSTR_RST const _s,
 */
 JSTR_FUNC_PURE
 static size_t
-jstr_strrspn_len(const char *JSTR_RST const _s,
-		 const char *JSTR_RST const _accept,
+jstr_strrspn_len(const char *R const _s,
+		 const char *R const _accept,
 		 size_t _sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_accept == '\0'))
@@ -724,8 +726,8 @@ jstr_strrspn_len(const char *JSTR_RST const _s,
 JSTR_INLINE
 JSTR_FUNC_PURE
 static size_t
-jstr_strrspn(const char *JSTR_RST const _s,
-	     const char *JSTR_RST const _accept) JSTR_NOEXCEPT
+jstr_strrspn(const char *R const _s,
+	     const char *R const _accept) JSTR_NOEXCEPT
 {
 	return jstr_strrspn_len(_s, _accept, strlen(_s));
 }
@@ -736,8 +738,8 @@ jstr_strrspn(const char *JSTR_RST const _s,
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_strrpbrk_len(const char *JSTR_RST _s,
-		  const char *JSTR_RST const _accept,
+jstr_strrpbrk_len(const char *R _s,
+		  const char *R const _accept,
 		  const size_t _sz) JSTR_NOEXCEPT
 {
 	_s = _s + _sz - jstr_strrcspn_len(_s, _accept, _sz);
@@ -750,8 +752,8 @@ jstr_strrpbrk_len(const char *JSTR_RST _s,
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_strrpbrk(const char *JSTR_RST const _s,
-	      const char *JSTR_RST const _accept) JSTR_NOEXCEPT
+jstr_strrpbrk(const char *R const _s,
+	      const char *R const _accept) JSTR_NOEXCEPT
 {
 	return jstr_strrpbrk_len(_s, _accept, strlen(_s));
 }
@@ -765,8 +767,8 @@ jstr_strrpbrk(const char *JSTR_RST const _s,
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_endswith_len(const char *JSTR_RST const _hs,
-		  const char *JSTR_RST const _ne,
+jstr_endswith_len(const char *R const _hs,
+		  const char *R const _ne,
 		  const size_t _hsz,
 		  const size_t _nelen) JSTR_NOEXCEPT
 {
@@ -776,8 +778,8 @@ jstr_endswith_len(const char *JSTR_RST const _hs,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_endswith(const char *JSTR_RST const _hs,
-	      const char *JSTR_RST const _ne,
+jstr_endswith(const char *R const _hs,
+	      const char *R const _ne,
 	      const size_t _hsz) JSTR_NOEXCEPT
 {
 	return jstr_endswith_len(_hs, _ne, _hsz, strlen(_ne));
@@ -791,7 +793,7 @@ jstr_endswith(const char *JSTR_RST const _hs,
 JSTR_INLINE
 JSTR_FUNC_PURE
 static size_t
-jstr_countc(const char *JSTR_RST _s,
+jstr_countc(const char *R _s,
 	    const int _c) JSTR_NOEXCEPT
 {
 	size_t _cnt = 0;
@@ -808,7 +810,7 @@ jstr_countc(const char *JSTR_RST _s,
 JSTR_INLINE
 JSTR_FUNC_PURE
 static size_t
-jstr_countc_len(const char *JSTR_RST _s,
+jstr_countc_len(const char *R _s,
 		const int _c,
 		const size_t _n) JSTR_NOEXCEPT
 {
@@ -828,8 +830,8 @@ jstr_countc_len(const char *JSTR_RST _s,
 */
 JSTR_FUNC_PURE
 static size_t
-jstr_count_len(const char *JSTR_RST _s,
-	       const char *JSTR_RST const _find,
+jstr_count_len(const char *R _s,
+	       const char *R const _find,
 	       const size_t _sz,
 	       const size_t _findlen) JSTR_NOEXCEPT
 {
@@ -853,8 +855,8 @@ jstr_count_len(const char *JSTR_RST _s,
 */
 JSTR_FUNC_PURE
 static size_t
-jstr_count(const char *JSTR_RST _s,
-	   const char *JSTR_RST const _find) JSTR_NOEXCEPT
+jstr_count(const char *R _s,
+	   const char *R const _find) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(_find[0] == '\0'))
 		return 0;
@@ -868,5 +870,7 @@ jstr_count(const char *JSTR_RST _s,
 }
 
 PJSTR_END_DECLS
+
+#undef R
 
 #endif /* JSTR_STRING_H */

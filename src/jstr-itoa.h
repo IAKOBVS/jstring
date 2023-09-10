@@ -10,6 +10,8 @@ PJSTR_END_DECLS
 
 #include "jstr-macros.h"
 
+#define R JSTR_RESTRICT
+
 PJSTR_BEGIN_DECLS
 
 #define PJSTR_ITOA_ATTR      \
@@ -393,7 +395,7 @@ PJSTR_BEGIN_DECLS
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_itoa(char *_nptr,
+jstr_itoa(char *R _nptr,
 	  int _number,
 	  const unsigned int _base) JSTR_NOEXCEPT
 {
@@ -403,7 +405,7 @@ jstr_itoa(char *_nptr,
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_ltoa(char *_nptr,
+jstr_ltoa(char *R _nptr,
 	  long _number,
 	  const unsigned int _base) JSTR_NOEXCEPT
 {
@@ -413,7 +415,7 @@ jstr_ltoa(char *_nptr,
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_lltoa(char *_nptr,
+jstr_lltoa(char *R _nptr,
 	   long long _number,
 	   const unsigned int _base) JSTR_NOEXCEPT
 {
@@ -429,7 +431,7 @@ jstr_lltoa(char *_nptr,
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_utoa(char *_nptr,
+jstr_utoa(char *R _nptr,
 	  const unsigned int _number,
 	  const unsigned int _base) JSTR_NOEXCEPT
 {
@@ -439,7 +441,7 @@ jstr_utoa(char *_nptr,
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_ultoa(char *_nptr,
+jstr_ultoa(char *R _nptr,
 	   const unsigned long _number,
 	   const unsigned int _base) JSTR_NOEXCEPT
 {
@@ -449,7 +451,7 @@ jstr_ultoa(char *_nptr,
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_ulltoa(char *_nptr,
+jstr_ulltoa(char *R _nptr,
 	    unsigned long long _number,
 	    const unsigned int _base) JSTR_NOEXCEPT
 {
@@ -458,12 +460,14 @@ jstr_ulltoa(char *_nptr,
 	PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base);
 }
 
+PJSTR_END_DECLS
+
+#undef R
+
 #undef PJSTR_ITOA_ATTR
 #undef PJSTR_ULLTOA_UNROLLED
 #undef PJSTR_ULTOA_UNROLLED
 #undef PJSTR_LLTOA_UNROLLED
 #undef PJSTR_LTOA_UNROLLED
-
-PJSTR_END_DECLS
 
 #endif /* JSTR_ITOA_H */

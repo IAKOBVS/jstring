@@ -17,6 +17,8 @@ PJSTR_END_DECLS
 #include "string-optype.h"
 #include "string-shift.h"
 
+#define R JSTR_RESTRICT
+
 PJSTR_BEGIN_DECLS
 
 JSTR_NONNULL_ALL
@@ -25,7 +27,7 @@ JSTR_INLINE
 JSTR_NOTHROW
 JSTR_PURE
 static size_t
-jstr_strnlen(const char *JSTR_RST const _s,
+jstr_strnlen(const char *R const _s,
 	     const size_t _maxlen)
 {
 #if JSTR_HAVE_STRNLEN
@@ -46,8 +48,8 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static void *
-jstr_mempcpy(void *JSTR_RST const _dst,
-	     const void *JSTR_RST const _src,
+jstr_mempcpy(void *R const _dst,
+	     const void *R const _src,
 	     const size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMPCPY
@@ -69,8 +71,8 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
-jstr_stpcpy(char *JSTR_RST _dst,
-	    const char *JSTR_RST _src) JSTR_NOEXCEPT
+jstr_stpcpy(char *R _dst,
+	    const char *R _src) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STPCPY
 	return stpcpy(_dst, _src);
@@ -88,8 +90,8 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
 static void *
-jstr_memccpy(void *JSTR_RST _dst,
-	     const void *JSTR_RST _src,
+jstr_memccpy(void *R _dst,
+	     const void *R _src,
 	     int _c,
 	     const size_t _n) JSTR_NOEXCEPT
 {
@@ -114,8 +116,8 @@ JSTR_WARN_UNUSED
 JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
-jstr_stpappendmore(char *JSTR_RST _dst,
-	    const char *JSTR_RST _src) JSTR_NOEXCEPT
+jstr_stpappendmore(char *R _dst,
+	    const char *R _src) JSTR_NOEXCEPT
 {
 	_dst += strlen(_dst);
 	return jstr_stpcpy(_dst, _src);
@@ -126,8 +128,8 @@ JSTR_MAYBE_UNUSED
 JSTR_INLINE
 JSTR_NOTHROW
 static char *
-jstr_stpdup(const char *JSTR_RST const _s,
-	    size_t *JSTR_RST const _sz)
+jstr_stpdup(const char *R const _s,
+	    size_t *R const _sz)
 {
 	*_sz = strlen(_s);
 	void *_p = malloc(*_sz + 1);
@@ -142,7 +144,7 @@ JSTR_INLINE
 JSTR_RETURNS_NONNULL
 JSTR_NOTHROW
 static char *
-jstr_strchrnul(const char *JSTR_RST const _s,
+jstr_strchrnul(const char *R const _s,
 	       const int _c)
 {
 #if JSTR_HAVE_STRCHRNUL
@@ -154,5 +156,7 @@ jstr_strchrnul(const char *JSTR_RST const _s,
 }
 
 PJSTR_END_DECLS
+
+#undef R
 
 #endif /* JSTR_STD_STRING_H */
