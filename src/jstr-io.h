@@ -20,11 +20,11 @@ typedef enum {
 	JSTR_IO_BINARY,
 } jstr_io_ext_ty;
 
-#define PJSTR_S switch (*_ext++)
-#define PJSTR_T  \
+#define S switch (*_ext++)
+#define T  \
 case '\0': \
 	return JSTR_IO_TEXT
-#define PJSTR_B  \
+#define B  \
 case '\0': \
 	return JSTR_IO_BINARY
 JSTR_WARN_UNUSED
@@ -35,19 +35,19 @@ JSTR_NOTHROW
 static jstr_io_ext_ty
 pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 {
-	PJSTR_S {
+	S {
 	case 'a':
-		PJSTR_S {
-			PJSTR_B; /* a */
+		S {
+			B; /* a */
 		}
 		break;
 	case 'b':
-		PJSTR_S {
+		S {
 		case 'i':
-			PJSTR_S {
+			S {
 			case 'n':
-				PJSTR_S {
-					PJSTR_B; /* bin */
+				S {
+					B; /* bin */
 				}
 				break;
 			}
@@ -55,45 +55,45 @@ pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		}
 		break;
 	case 'C':
-		PJSTR_S {
-			PJSTR_T; /* C */
+		S {
+			T; /* C */
 		}
 		break;
 	case 'c':
-		PJSTR_S {
-			PJSTR_T; /* c */
+		S {
+			T; /* c */
 		case 'c':
-			PJSTR_S {
-				PJSTR_T; /* cc */
+			S {
+				T; /* cc */
 			}
 			break;
 		case 'p':
-			PJSTR_S {
+			S {
 			case 'p':
-				PJSTR_S {
-					PJSTR_T; /* cpp */
+				S {
+					T; /* cpp */
 				}
 			}
 			break;
 		case 's':
-			PJSTR_S {
-				PJSTR_T; /* cs */
+			S {
+				T; /* cs */
 			}
 			break;
 		}
 		break;
 	case 'm':
-		PJSTR_S {
+		S {
 		case 'd':
-			PJSTR_S {
-				PJSTR_T; /* md */
+			S {
+				T; /* md */
 			}
 			break;
 		case 'k':
-			PJSTR_S {
+			S {
 			case 'v':
-				PJSTR_S {
-					PJSTR_B; /* mkv */
+				S {
+					B; /* mkv */
 				}
 				break;
 			}
@@ -101,38 +101,38 @@ pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		}
 		break;
 	case 'g':
-		PJSTR_S {
+		S {
 		case 'z':
-			PJSTR_S {
-				PJSTR_B; /* gz */
+			S {
+				B; /* gz */
 			}
 			break;
 		}
 		break;
 	case 'h':
-		PJSTR_S {
-			PJSTR_T; /* h */
+		S {
+			T; /* h */
 		case 'h':
-			PJSTR_S {
-				PJSTR_T; /* hh */
+			S {
+				T; /* hh */
 			}
 			break;
 		case 'p':
-			PJSTR_S {
+			S {
 			case 'p':
-				PJSTR_S {
-					PJSTR_T; /* hpp */
+				S {
+					T; /* hpp */
 				}
 				break;
 			}
 			break;
 		case 't':
-			PJSTR_S {
+			S {
 			case 'm':
-				PJSTR_S {
+				S {
 				case 'l':
-					PJSTR_S {
-						PJSTR_T; /* html */
+					S {
+						T; /* html */
 					}
 					break;
 				}
@@ -142,19 +142,19 @@ pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		}
 		break;
 	case 'j':
-		PJSTR_S {
+		S {
 		case 'p':
-			PJSTR_S {
+			S {
 			case 'g':
-				PJSTR_S {
-					PJSTR_B; /* jpg */
+				S {
+					B; /* jpg */
 				}
 				break;
 			case 'e':
-				PJSTR_S {
+				S {
 				case 'g':
-					PJSTR_S {
-						PJSTR_B; /* jpeg */
+					S {
+						B; /* jpeg */
 					}
 					break;
 				}
@@ -162,13 +162,13 @@ pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 			}
 			break;
 		case 's':
-			PJSTR_S {
-				PJSTR_T; /* js */
+			S {
+				T; /* js */
 			case 'o':
-				PJSTR_S {
+				S {
 				case 'n':
-					PJSTR_S {
-						PJSTR_T; /* json */
+					S {
+						T; /* json */
 					}
 					break;
 				}
@@ -178,51 +178,51 @@ pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		}
 		break;
 	case 'o':
-		PJSTR_S {
-			PJSTR_B; /* o */
+		S {
+			B; /* o */
 		}
 		break;
 	case 'p':
-		PJSTR_S {
+		S {
 		case 'l':
-			PJSTR_S {
-				PJSTR_T; /* pl */
+			S {
+				T; /* pl */
 			}
 			break;
 		case 'm':
-			PJSTR_S {
-				PJSTR_T; /* pm */
+			S {
+				T; /* pm */
 			}
 			break;
 		case 'y':
-			PJSTR_S {
-				PJSTR_T; /* py */
+			S {
+				T; /* py */
 			case 'i':
-				PJSTR_S {
-					PJSTR_T; /* pyi */
+				S {
+					T; /* pyi */
 				}
 				break;
 			case 'c':
-				PJSTR_S {
-					PJSTR_B; /* pyc */
+				S {
+					B; /* pyc */
 				}
 				break;
 			}
 			break;
 		case 'n':
-			PJSTR_S {
+			S {
 			case 'g':
-				PJSTR_S {
-					PJSTR_B; /* png */
+				S {
+					B; /* png */
 				}
 				break;
 			}
 			break;
 		case 'd':
-			PJSTR_S {
+			S {
 			case 'f':
-				PJSTR_S {
-					PJSTR_B; /* pdf */
+				S {
+					B; /* pdf */
 				}
 				break;
 			}
@@ -230,46 +230,46 @@ pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		}
 		break;
 	case 's':
-		PJSTR_S {
+		S {
 		case 'h':
-			PJSTR_S {
-				PJSTR_T; /* sh */
+			S {
+				T; /* sh */
 			}
 			break;
 		case 'o':
-			PJSTR_T; /* s */
-			PJSTR_S {
-				PJSTR_B; /* so */
+			T; /* s */
+			S {
+				B; /* so */
 			}
 			break;
 		}
 		break;
 	case 'r':
-		PJSTR_S {
+		S {
 		case 's':
-			PJSTR_S {
-				PJSTR_T; /* rs */
+			S {
+				T; /* rs */
 			}
 			break;
 		}
 		break;
-	case 'PJSTR_S':
-		PJSTR_S {
-			PJSTR_T; /* PJSTR_S */
+	case 'S':
+		S {
+			T; /* S */
 		}
 		break;
 	case 't':
-		PJSTR_S {
+		S {
 		case 's':
-			PJSTR_S {
-				PJSTR_T; /* ts */
+			S {
+				T; /* ts */
 			}
 			break;
 		case 'x':
-			PJSTR_S {
+			S {
 			case 't':
-				PJSTR_S {
-					PJSTR_T; /* txt */
+				S {
+					T; /* txt */
 				}
 				break;
 			}
@@ -277,12 +277,12 @@ pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 		}
 		break;
 	case 'w':
-		PJSTR_S {
+		S {
 		case 'a':
-			PJSTR_S {
+			S {
 			case 'v':
-				PJSTR_S {
-					PJSTR_B; /* wav */
+				S {
+					B; /* wav */
 				}
 				break;
 			}
@@ -293,9 +293,9 @@ pjstr_io_ext_type(const char *JSTR_RST _ext) JSTR_NOEXCEPT
 	return JSTR_IO_UNKNOWN;
 }
 
-#undef PJSTR_S
-#undef PJSTR_T
-#undef PJSTR_B
+#undef S
+#undef T
+#undef B
 
 /*
    Returns jstr_io_ext_ty based on the filename extension;
