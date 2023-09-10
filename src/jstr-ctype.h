@@ -120,7 +120,7 @@ jstr_isalpha(const int _c) JSTR_NOEXCEPT
 /*
    ASCII.
    For example: jstr_isctype(C, JSTR_ISLOWER | JSTR_ISDIGIT) checks if C is either lowercase or a number.
-   types:
+   Types:
    JSTR_ISALNUM.
    JSTR_ISALPHA.
    JSTR_ISCNTRL.

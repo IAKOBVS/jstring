@@ -711,7 +711,7 @@ case '~':
 #	define JSTR_ARCH_ALPHA 1
 #elif defined __hppa__
 #	define JSTR_ARCH_HPPA 1
-#elif defined __riscv_zbb
+#elif defined __riscv_zbb || defined __riscv_xtheadbb
 #	define JSTR_ARCH_RISCV 1
 #else
 #	define JSTR_ARCH_GENERIC 1
