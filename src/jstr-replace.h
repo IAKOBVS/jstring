@@ -1054,7 +1054,7 @@ jstr_rev_p(char *R _s) JSTR_NOEXCEPT
 */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_trim_len_p(char *R const _s,
+jstr_trim_len_p(char *R _s,
 		const size_t _sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*_s == '\0'))
@@ -1063,12 +1063,16 @@ jstr_trim_len_p(char *R const _s,
 	if (_mv)
 		memmove(_s, _s + _mv, (_sz - _mv) + 1);
 	unsigned char *_end = (unsigned char *)_s + (_sz - _mv) - 1;
-	const unsigned char *const _start = (unsigned char *)_s - 1;
+	unsigned char *const _start = (unsigned char *)_s - 1;
 	while (jstr_isspace(*_end)
 	       && --_end != _start)
 		;
 	*++_end = '\0';
-	return (char *)_end;
+	while (jstr_isspace(*_s++))
+		;
+	--_s;
+	memmove(_start + 1, _s, _end - (unsigned char *)_s + 1);
+	return (char *)(_end - (unsigned char *)_s);
 }
 
 /*
