@@ -1,7 +1,7 @@
 #ifndef JSTR_MACROS_H
 #define JSTR_MACROS_H 1
 
-#include "jstr_config.h"
+#include "jstr-config.h"
 #include "libc-pointer-arith.h"
 #include <features.h>
 

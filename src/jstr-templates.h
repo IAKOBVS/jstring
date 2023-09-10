@@ -1,7 +1,7 @@
 #ifndef JSTR_TEMPLATES_H
 #define JSTR_TEMPLATES_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdio.h>
@@ -13,7 +13,7 @@ PJSTR_END_DECLS
 #	include <utility>
 #endif /* _cpluslus */
 
-#include "jstr_config.h"
+#include "jstr-config.h"
 #include "jtraits.h"
 
 PJSTR_BEGIN_DECLS

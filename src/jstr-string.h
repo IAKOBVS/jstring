@@ -1,7 +1,7 @@
 #ifndef JSTR_STRING_H
 #define JSTR_STRING_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdint.h>
@@ -10,12 +10,12 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr_builder.h"
-#include "jstr_config.h"
-#include "jstr_ctype.h"
-#include "jstr_itoa.h"
-#include "jstr_macros.h"
-#include "jstr_std_string.h"
+#include "jstr-builder.h"
+#include "jstr-config.h"
+#include "jstr-ctype.h"
+#include "jstr-itoa.h"
+#include "jstr-macros.h"
+#include "jstr-std-string.h"
 
 #include "string-fza.h"
 #include "string-fzb.h"

@@ -1,10 +1,10 @@
 #ifndef PJSTR_PP_VA_ARGS_MACROS_H
 #define PJSTR_PP_VA_ARGS_MACROS_H 1
 
-#include "jstr_pp_st_assert.h"
-#include "jstr_pp_strcpy_va_args.h"
-#include "jstr_pp_strlen_va_args.h"
-#include "jstr_pp_va_args_tools.h"
+#include "jstr-pp-st-assert.h"
+#include "jstr-pp-strcpy-va-args.h"
+#include "jstr-pp-strlen-va-args.h"
+#include "jstr-pp-va-args-tools.h"
 
 #define PJSTR_PP_CONCATENATE(A, B) \
 	PJSTR_PP_CONCATENATE_(A, B)

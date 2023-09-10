@@ -1,15 +1,15 @@
 #ifndef JSTR_CTYPE_H
 #define JSTR_CTYPE_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr_ctype_table.h"
-#include "jstr_macros.h"
-#include "jstr_std_string.h"
+#include "jstr-ctype-table.h"
+#include "jstr-macros.h"
+#include "jstr-std-string.h"
 
 #include "string-fza.h"
 #include "string-fzb.h"

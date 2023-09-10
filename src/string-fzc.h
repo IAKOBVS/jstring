@@ -1,7 +1,7 @@
 #ifndef PJSTR_SELECTOR_STRING_FZC_H
 #define PJSTR_SELECTOR_STRING_FZC_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 

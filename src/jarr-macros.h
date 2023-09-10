@@ -1,15 +1,15 @@
 #ifndef JARR_MACROS_H
 #define JARR_MACROS_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr_builder.h"
-#include "jstr_config.h"
-#include "jstr_templates.h"
+#include "jstr-builder.h"
+#include "jstr-config.h"
+#include "jstr-templates.h"
 
 #ifdef __cplusplus
 template <typename T, typename Other>

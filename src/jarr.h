@@ -1,19 +1,19 @@
 #ifndef JARR_H
 #define JARR_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr_builder.h"
-#include "jstr_config.h"
+#include "jstr-builder.h"
+#include "jstr-config.h"
 #include "jarr_macros.h"
-#include "jstr_macros.h"
-#include "jstr_pp_arrcpy_va_args.h"
-#include "jstr_templates.h"
+#include "jstr-macros.h"
+#include "jstr-pp-arrcpy-va-args.h"
+#include "jstr-templates.h"
 
 #if PJARR_NULLIFY_PTR_ON_DELETE
 #	define PJARR_NULLIFY(j) ((j)->data == NULL)

@@ -19,7 +19,7 @@
 #ifndef PJSTR_STRING_FZB_H
 #define PJSTR_STRING_FZB_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 #include <sys/cdefs.h>
 #include "string-optype.h"

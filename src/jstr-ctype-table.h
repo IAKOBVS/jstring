@@ -1,7 +1,7 @@
 #ifndef JSTR_CTYPE_TABLE_H
 #define JSTR_CTYPE_TABLE_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 typedef enum {
 	JSTR_ISALNUM = 1,

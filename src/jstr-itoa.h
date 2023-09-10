@@ -1,14 +1,14 @@
 #ifndef JSTR_ITOA_H
 #define JSTR_ITOA_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 

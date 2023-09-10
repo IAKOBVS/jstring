@@ -1,7 +1,7 @@
 #ifndef JSTR_REGEX_H
 #define JSTR_REGEX_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <regex.h>
@@ -10,11 +10,11 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr_builder.h"
-#include "jstr_config.h"
-#include "jstr_pp_va_args_macros.h"
-#include "jstr_replace.h"
-#include "jstr_string.h"
+#include "jstr-builder.h"
+#include "jstr-config.h"
+#include "jstr-pp-va-args-macros.h"
+#include "jstr-replace.h"
+#include "jstr-string.h"
 
 #ifndef JSTR_REG_DEBUG
 #	define JSTR_REG_DEBUG 0

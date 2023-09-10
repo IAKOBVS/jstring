@@ -19,7 +19,7 @@
 #ifndef PJSTR_STRING_OPTYPE_H
 #define PJSTR_STRING_OPTYPE_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 #if JSTR_ARCH_X86_32
 typedef unsigned long long int pjstr_op_ty JSTR_MAY_ALIAS;
