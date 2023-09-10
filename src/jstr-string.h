@@ -56,8 +56,8 @@ jstr_strncasecmp(const char *R _s1,
 #else
 	if (jstr_unlikely(_n == 0))
 		return 0;
-	const unsigned char *_p1 = (unsigned char *)_s1;
-	const unsigned char *_p2 = (unsigned char *)_s2;
+	const unsigned char *R _p1 = (unsigned char *)_s1;
+	const unsigned char *R _p2 = (unsigned char *)_s2;
 	int ret;
 	while (!(ret = jstr_tolower(*_p1) - jstr_tolower(*_p2++))
 	       && *_p1++
@@ -85,8 +85,8 @@ jstr_strcasecmp_len(const char *R const _s1,
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(_s1, _s2, _n);
 #else
-	const unsigned char *_p1 = (unsigned char *)_s1;
-	const unsigned char *_p2 = (unsigned char *)_s2;
+	const unsigned char *R _p1 = (unsigned char *)_s1;
+	const unsigned char *R _p2 = (unsigned char *)_s2;
 	while (!(jstr_tolower(*_p1++) - jstr_tolower(*_p2++))
 	       && _n--)
 		;
@@ -112,8 +112,8 @@ jstr_strcasecmp(const char *R _s1,
 #if JSTR_HAVE_STRCASECMP
 	return strcasecmp(_s1, _s2);
 #else
-	const unsigned char *_p1 = (unsigned char *)_s1;
-	const unsigned char *_p2 = (unsigned char *)_s2;
+	const unsigned char *R _p1 = (unsigned char *)_s1;
+	const unsigned char *R _p2 = (unsigned char *)_s2;
 	int ret;
 	while (!(ret = jstr_tolower(*_p1) - jstr_tolower(*_p2++))
 	       && *_p1++)
