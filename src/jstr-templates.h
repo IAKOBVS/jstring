@@ -16,15 +16,17 @@ PJSTR_END_DECLS
 #include "jstr-config.h"
 #include "jtraits.h"
 
+#define R JSTR_RESTRICT
+
 PJSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
 JSTR_NOTHROW
 static void
-pjstr_err(const char *JSTR_RST const FILE_,
+pjstr_err(const char *R const FILE_,
 	  const int LINE_,
-	  const char *JSTR_RST const func_) JSTR_NOEXCEPT
+	  const char *R const func_) JSTR_NOEXCEPT
 {
 #if JSTR_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
@@ -117,7 +119,7 @@ strlen_args(Str &&_s,
 template <size_t N>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-appendmore_assign(size_t *JSTR_RST _sz,
+appendmore_assign(size_t *R _sz,
 		  char **dst,
 		  const char (&src)[N]) JSTR_NOEXCEPT
 {
@@ -132,7 +134,7 @@ JSTR_NOTHROW
 static void
 appendmore_assign(size_t *_sz,
 		  char **dst,
-		  const char *JSTR_RST src) JSTR_NOEXCEPT
+		  const char *R src) JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_STPCPY
 	char *const _new = stpcpy(*dst, src);
@@ -196,7 +198,7 @@ JSTR_WARN_UNUSED
 JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static size_t
-strlen(size_t **JSTR_RST strlen_arr,
+strlen(size_t **R strlen_arr,
        Str &&_arg) JSTR_NOEXCEPT
 {
 	return ((*(*strlen_arr)++) = ::strlen(std::forward<Str>(_arg)));
@@ -220,8 +222,8 @@ strlen_args(size_t *strlen_arr,
 template <size_t N>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-appendmore_assign(char **JSTR_RST const dst,
-		  size_t **JSTR_RST strlen_arr,
+appendmore_assign(char **R const dst,
+		  size_t **R strlen_arr,
 		  const char (&src)[N]) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, N - 1);
@@ -233,9 +235,9 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-appendmore_assign(char **JSTR_RST dst,
-		  size_t **JSTR_RST strlen_arr,
-		  const char *JSTR_RST src) JSTR_NOEXCEPT
+appendmore_assign(char **R dst,
+		  size_t **R strlen_arr,
+		  const char *R src) JSTR_NOEXCEPT
 {
 	memcpy(*dst, src, *(*strlen_arr));
 	*dst += *(*strlen_arr)++;
@@ -274,7 +276,7 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_alloc_appendmore(char **JSTR_RST const _s,
+jstr_alloc_appendmore(char **R const _s,
 		      size_t *const _sz,
 		      size_t *const _cap,
 		      Str &&_arg,
@@ -299,7 +301,7 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_alloc_appendmore_f(char *JSTR_RST const _s,
+jstr_alloc_appendmore_f(char *R const _s,
 			size_t *const _sz,
 			Str &&_arg,
 			StrArgs &&..._args) JSTR_NOEXCEPT
@@ -323,7 +325,7 @@ template <typename Str,
 	  typename = typename std::enable_if<jtraits_are_strings<Str, StrArgs...>(), int>::type>
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
-jstr_appendmore(char **JSTR_RST const _s,
+jstr_appendmore(char **R const _s,
 		size_t *const _sz,
 		size_t *const _cap,
 		Str &&_arg,
@@ -358,7 +360,7 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_appendmore_f(char *_s,
-		  size_t *JSTR_RST _sz,
+		  size_t *R _sz,
 		  Str &&_arg,
 		  StrArgs &&..._args) JSTR_NOEXCEPT
 {
@@ -368,5 +370,7 @@ jstr_appendmore_f(char *_s,
 }
 
 #endif /* __cplusplus */
+
+#undef R
 
 #endif /* JSTR_TMPLATES_H */
