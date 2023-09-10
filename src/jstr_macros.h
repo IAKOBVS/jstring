@@ -663,11 +663,6 @@ case '~':
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
 
-#if defined __linux__ || defined __GLIBC__
-#	undef JSTR_COPY_IF_NO_MREMAP
-#	define JSTR_COPY_IF_NO_MREMAP 0
-#endif /* Gnu */
-
 #define JSTR_RST JSTR_RESTRICT
 
 #define PJSTR_ALIGN_UP_STR(base)       PJSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
