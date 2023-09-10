@@ -16,9 +16,9 @@ PJSTR_END_DECLS
 #include "jstr-templates.h"
 
 #if PJARR_NULLIFY_PTR_ON_DELETE
-#	define PJSTR_PJARR_NULLIFY(j) ((j)->data == NULL)
+#	define PJARR_NULLIFY(j) ((j)->data == NULL)
 #else
-#	define PJSTR_PJARR_NULLIFY(j)
+#	define PJARR_NULLIFY(j)
 #endif
 
 #define jarr(T, name)                                                                          \
@@ -31,14 +31,14 @@ PJSTR_END_DECLS
 #define jarr_free(j)                                                                           \
 	do {                                                                                   \
 		free(PJARR_DATA(j));                                                           \
-		PJSTR_PJARR_NULLIFY(j);                                                              \
+		PJARR_NULLIFY(j);                                                              \
 	} while (0)
 #define jarr_err_exit(j)                                                                       \
 	do {                                                                                   \
 		if (jstr_unlikely((j)->data == NULL))                                          \
 			pjstr_err_exit(__FILE__, __LINE__, __func__);                          \
 	} while (0)
-#undef PJSTR_PJARR_NULLIFY
+#undef PJARR_NULLIFY
 
 /* Allocate PTR. */
 #define jarr_alloc(j, new_cap)                                                                 \
