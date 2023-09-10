@@ -4,7 +4,6 @@
 #include "jstr_macros.h"
 
 PJSTR_BEGIN_DECLS
-#include <assert.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
