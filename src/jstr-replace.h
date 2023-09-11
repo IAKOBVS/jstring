@@ -255,7 +255,7 @@ jstr_slipaft(char *R *R const _s,
 }
 
 /*
-  Slip SRC after all _end of NE in DST.
+  Slip SRC after all end of NE in DST.
   Return 0 on malloc error;
   otherwise, 1.
 */

@@ -741,7 +741,7 @@ jstr_strrpbrk(const char *R const _s,
 }
 
 /*
-  Checks if S2 is in _end of S1.
+  Checks if S2 is in end of S1.
   Return value:
   0 if true;
   1 if false.
@@ -757,6 +757,12 @@ jstr_endswith_len(const char *R const _hs,
 	return (_hsz < _nelen) ? 1 : memcmp(_hs + _hsz - _nelen, _ne, _nelen);
 }
 
+/*
+  Checks if S2 is in end of S1.
+  Return value:
+  0 if true;
+  1 if false.
+*/
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
@@ -766,6 +772,39 @@ jstr_endswith(const char *R const _hs,
 {
 	return jstr_endswith_len(_hs, _ne, _hsz, strlen(_ne));
 }
+
+/*
+  Checks if S1 starts with S2.
+  Return value:
+  0 if true;
+  1 if false.
+*/
+JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static int
+jstr_startswith_len(const char *R const _hs,
+		const char *R const _ne,
+		const size_t _hsz,
+		const size_t _nelen) JSTR_NOEXCEPT
+{
+	return (_hsz < _nelen) ? 1 : memcmp(_hs, _ne, _nelen);
+}
+
+/*
+  Checks if S1 starts wtih S2.
+  Return value:
+  0 if true;
+  1 if false.
+*/
+JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static int
+jstr_startswith(const char *R const _hs,
+		const char *R const _ne) JSTR_NOEXCEPT
+{
+	return jstr_startswith_len(_hs, _ne, strlen(_hs), strlen(_ne));
+}
+
 
 /*
   Count occurences of C in S.
