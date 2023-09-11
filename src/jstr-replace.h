@@ -917,64 +917,7 @@ static void
 jstr_rev_len(char *R _s,
 	     size_t _sz) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_ATTR_MAY_ALIAS
-	pjstr_op_ty *_sw = (pjstr_op_ty *)_s;
-	char _c0;
-	size_t _i = 0;
-	switch (--_sz % 4) {
-	case 7:
-		_c0 = _s[_i];
-		_s[_i] = _s[_sz];
-		_s[_sz] = _c0;
-		--_i, --_sz;
-		/* fallthrough */
-	case 6:
-		_c0 = _s[_i];
-		_s[_i] = _s[_sz];
-		_s[_sz] = _c0;
-		--_i, --_sz;
-		/* fallthrough */
-	case 5:
-		_c0 = _s[_i];
-		_s[_i] = _s[_sz];
-		_s[_sz] = _c0;
-		--_i, --_sz;
-		/* fallthrough */
-	case 4:
-		_c0 = _s[_i];
-		_s[_i] = _s[_sz];
-		_s[_sz] = _c0;
-		--_i, --_sz;
-		/* fallthrough */
-	case 3:
-		_c0 = _s[_i];
-		_s[_i] = _s[_sz];
-		_s[_sz] = _c0;
-		--_i, --_sz;
-		/* fallthrough */
-	case 2:
-		_c0 = _s[_i];
-		_s[_i] = _s[_sz];
-		_s[_sz] = _c0;
-		--_i, --_sz;
-		/* fallthrough */
-	case 1:
-		_c0 = _s[_i];
-		_s[_i] = _s[_sz];
-		_s[_sz] = _c0;
-		--_i, --_sz;
-		/* fallthrough */
-	case 0: break;
-	}
-	pjstr_op_ty *_ew = (pjstr_op_ty *)(_s + _sz);
-	pjstr_op_ty _c;
-	while (_sw < _ew) {
-		_c = *_sw;
-		*_sw++ = *_ew;
-		*_ew-- = _c;
-	}
-#else
-#	if 0
+#if 0
 	char _c0, _c1, _c2, _c3;
 	size_t _i = 0;
 	switch (--_sz % 4) {
@@ -1013,14 +956,13 @@ jstr_rev_len(char *R _s,
 		_s[_sz - 2] = _c2;
 		_s[_sz - 3] = _c3;
 	}
-#	else /* It seems that unrolling is slower */
+#else /* It seems that unrolling is slower */
 	char _c0;
 	for (size_t _i = 0; jstr_likely(_i < _sz); _i += 4, _sz -= 4) {
 		_c0 = _s[_i];
 		_s[_i] = _s[_sz];
 		_s[_sz] = _c0;
 	}
-#	endif
 #endif
 }
 
