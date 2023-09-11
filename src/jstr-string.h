@@ -143,11 +143,10 @@ pjstr_strrstr_len_bmh(const unsigned char *R _hs,
 			_shift[H(_ne + _i)] = _i;                                 \
 		const size_t shft1 = _mtc1 - _shift[H(_ne + _mtc1)];              \
 		_shift[H(_ne + _mtc1)] = _mtc1;                                   \
-		goto table_type##start;                                           \
 		do {                                                              \
 			do {                                                      \
 				_hs -= _mtc1;                                     \
-				table_type##start : _tmp = _shift[H(_hs)];        \
+				_tmp = _shift[H(_hs)];                            \
 			} while (!_tmp && _hs > _start);                          \
 			_hs -= _tmp;                                              \
 			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {   \
@@ -159,8 +158,8 @@ pjstr_strrstr_len_bmh(const unsigned char *R _hs,
 		} while (_hs > _start);                                           \
 		return NULL;                                                      \
 	} while (0)
-	const unsigned char *const _start = _hs - 1;
-	_hs += _hslen - _nelen;
+	const unsigned char *const _start = _hs + _nelen;
+	_hs += _hslen - 1;
 	size_t _tmp;
 	const size_t _mtc1 = _nelen - 1;
 	size_t _off = 0;
