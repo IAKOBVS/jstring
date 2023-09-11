@@ -184,7 +184,6 @@ jstr_memrchr(const void *R _s,
 #else
 	_c = (unsigned char)_c;
 	const unsigned char *_end = (unsigned char *)_s + _n;
-#	if JSTR_HAVE_ATTR_MAY_ALIAS && 0
 	switch (_n % sizeof(pjstr_op_ty)) {
 	case 7:
 		if (*_end-- == _c)
@@ -216,6 +215,7 @@ jstr_memrchr(const void *R _s,
 		/* fallthrough */
 	case 0: break;
 	}
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
 	const pjstr_op_ty *_w = (pjstr_op_ty *)_end;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s - 1;
@@ -224,80 +224,15 @@ jstr_memrchr(const void *R _s,
 			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
 	return NULL;
 #	else
-#		if 0
-	switch (_n % 4) {
-	case 3:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 2:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 1:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 0: break;
-	}
-	const unsigned char *const _start = (unsigned char *)_s - 1;
-	for (; _end > _start; _end -= 4) {
-		if (_end[0] == _c)
-			return (void *)_end;
-		if (_end[-1] == _c)
-			return (void *)(_end - 1);
-		if (_end[-2] == _c)
-			return (void *)(_end - 2);
-		if (_end[-3] == _c)
-			return (void *)(_end - 3);
-	}
-	return NULL;
-#		else
-	switch (_n % sizeof(pjstr_op_ty)) {
-	case 7:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 6:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 5:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 4:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 3:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 2:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 1:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 0: break;
-	}
-#define LOADW(p) (p[0] << 56 | p[1] << 48 | p[2] << 40 | p[3] << 32 | p[4] << 24 | p[5] << 16 | p[6] << 8 | p[7])
 	pjstr_op_ty _w;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-	const unsigned char *const _start = _s - 1;
-	for (; _end > _start; _end -= sizeof(pjstr_op_ty)) {
-		_w = LOADW(_end);
-		if (pjstr_has_eq(_w, _cc))
+	const unsigned char *const _start = (unsigned char *)_s - 1;
+	for (; _end > _start; _end -= sizeof(pjstr_op_ty))
+		if (pjstr_has_eq(_w = pjstr_uctow(_end), _cc))
 			return (void *)(_end + pjstr_index_last_eq(_w, _cc));
-	}
 	return NULL;
-#		endif
 #	endif
 #endif
-#undef LOADW
 }
 
 /*
