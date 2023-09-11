@@ -398,7 +398,7 @@ pjstr_strcasestr_bmh(const char *R const _hs,
 			do {                                                                               \
 				_h += _mtc1;                                                               \
 				_tmp = _shift[HL(_h)];                                                     \
-			} while ((!_tmp) & (_h <= _end));                                                  \
+			} while ((!_tmp) & (_h < _end));                                                  \
 			_h -= _tmp;                                                                        \
 			if (_tmp < _mtc1)                                                                  \
 				continue;                                                                  \
@@ -417,7 +417,7 @@ pjstr_strcasestr_bmh(const char *R const _hs,
 		return NULL;
 	const unsigned char *_h = (unsigned char *)_hs;
 	const unsigned char *const _n = (unsigned char *)_ne;
-	const unsigned char *_end = _h + _hl - _nl;
+	const unsigned char *_end = _h + _hl - _nl + 1;
 	size_t _tmp;
 	const size_t _mtc1 = _nl - 1;
 	size_t _off = 0;
