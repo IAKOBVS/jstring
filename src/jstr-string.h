@@ -215,23 +215,21 @@ jstr_memrchr(const void *R _s,
 		/* fallthrough */
 	case 0: break;
 	}
+	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
 	const pjstr_op_ty *_w = (pjstr_op_ty *)_end;
-	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s - 1;
 	for (; _w > _start; --_w)
 		if (pjstr_has_eq(*_w, _cc))
 			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
-	return NULL;
 #	else
 	pjstr_op_ty _w;
-	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 	const unsigned char *const _start = (unsigned char *)_s - 1;
 	for (; _end > _start; _end -= sizeof(pjstr_op_ty))
 		if (pjstr_has_eq(_w = pjstr_uctow(_end), _cc))
 			return (void *)(_end + pjstr_index_last_eq(_w, _cc));
-	return NULL;
 #	endif
+	return NULL;
 #endif
 }
 
