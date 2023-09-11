@@ -11,7 +11,7 @@ PJSTR_BEGIN_DECLS
 JSTR_INLINE
 JSTR_FUNC_PURE
 static pjstr_op_ty
-pjstr_ctow(const char *JSTR_RESTRICT const _ch)
+pjstr_ctoword(const char *JSTR_RESTRICT const _ch)
 {
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	return *(pjstr_op_ty *)_ch;
@@ -26,9 +26,9 @@ pjstr_ctow(const char *JSTR_RESTRICT const _ch)
 JSTR_INLINE
 JSTR_FUNC_PURE
 static pjstr_op_ty
-pjstr_uctow(const unsigned char *JSTR_RESTRICT const _ch)
+pjstr_uctoword(const unsigned char *JSTR_RESTRICT const _ch)
 {
-	return pjstr_ctow((char *)_ch);
+	return pjstr_ctoword((char *)_ch);
 }
 
 PJSTR_END_DECLS

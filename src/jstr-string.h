@@ -223,9 +223,8 @@ jstr_memrchr(const void *R _s,
 		if (pjstr_has_eq(*_w, _cc))
 			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
 #	else
-	pjstr_op_ty _w;
 	const unsigned char *const _start = (unsigned char *)_s - 1;
-	for (; _end > _start; _end -= sizeof(pjstr_op_ty))
+	for (pjstr_op_ty _w; _end > _start; _end -= sizeof(pjstr_op_ty))
 		if (pjstr_has_eq(_w = pjstr_uctow(_end), _cc))
 			return (void *)(_end + pjstr_index_last_eq(_w, _cc));
 #	endif
