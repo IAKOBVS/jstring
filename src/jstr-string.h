@@ -184,6 +184,7 @@ jstr_memrchr(const void *R _s,
 #else
 	_c = (unsigned char)_c;
 	const unsigned char *_end = (unsigned char *)_s + _n;
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
 	switch (_n % sizeof(pjstr_op_ty)) {
 	case 7:
 		if (*_end-- == _c)
@@ -215,7 +216,6 @@ jstr_memrchr(const void *R _s,
 		/* fallthrough */
 	case 0: break;
 	}
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
 	const pjstr_op_ty *_w = (pjstr_op_ty *)_end;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s - 1;
@@ -224,8 +224,23 @@ jstr_memrchr(const void *R _s,
 			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
 	return NULL;
 #	else
+	switch (_n % 4) {
+	case 3:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* fallthrough */
+	case 2:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* fallthrough */
+	case 1:
+		if (*_end-- == _c)
+			return (void *)(_end + 1);
+		/* fallthrough */
+	case 0: break;
+	}
 	const unsigned char *const _start = (unsigned char *)_s - 1;
-	for (; _end > _start; _end -= 8) {
+	for (; _end > _start; _end -= 4) {
 		if (_end[0] == _c)
 			return (void *)_end;
 		if (_end[-1] == _c)
@@ -234,14 +249,6 @@ jstr_memrchr(const void *R _s,
 			return (void *)(_end - 2);
 		if (_end[-3] == _c)
 			return (void *)(_end - 3);
-		if (_end[-4] == _c)
-			return (void *)(_end - 4);
-		if (_end[-5] == _c)
-			return (void *)(_end - 5);
-		if (_end[-6] == _c)
-			return (void *)(_end - 6);
-		if (_end[-7] == _c)
-			return (void *)(_end - 7);
 	}
 	return NULL;
 #	endif
