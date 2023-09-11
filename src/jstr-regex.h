@@ -582,8 +582,10 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty _flag,
 			PJSTR_REG_LOG("_rplclen <= _findlen");
 			PJSTR_RPLCALL_IN_PLACE(_dst, _old, _p, _rplc, _rplclen, _findlen);
 		} else if (*_cap > *_sz + _rplclen - _findlen) {
+			PJSTR_REG_LOG("*_cap > *_sz + _rplclen - _findlen");
 			PJSTR_REG_RPLCALL_SMALL_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp);
 		} else {
+			PJSTR_REG_LOG("else");
 			PJSTR_REG_RPLCALL_BIG_RPLC(_dst, _old, _p, _rplc, _rplclen, _findlen, _tmp, return JSTR_REG_RET_ENOMEM);
 		}
 	}
