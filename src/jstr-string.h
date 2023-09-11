@@ -150,7 +150,7 @@ pjstr_strrstr_len_bmh(const unsigned char *R _hs,
 			} while (!_tmp && _hs > _start);                          \
 			_hs -= _tmp;                                              \
 			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {   \
-				if (!memcmp(_hs, _ne, _nelen))                     \
+				if (!memcmp(_hs, _ne, _nelen))                    \
 					return (void *)_hs;                       \
 				_off = (_off >= 8 ? _off : _mtc1) - 8;            \
 			}                                                         \
