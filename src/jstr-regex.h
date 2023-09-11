@@ -1022,6 +1022,7 @@ cleanup:
 		free(_rdst);
 	return _ret;
 #undef PJSTR_CREAT_RPLC_BREF
+#undef PJSTR_RPLCALL_BREF
 }
 
 JSTR_FUNC
