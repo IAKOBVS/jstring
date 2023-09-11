@@ -147,7 +147,7 @@ pjstr_strrstr_len_bmh(const unsigned char *R _hs,
 			do {                                                      \
 				_hs -= _mtc1;                                     \
 				_tmp = _shift[H(_hs)];                            \
-			} while (!_tmp && _hs > _start);                          \
+			} while (!_tmp & (_hs > _start));                         \
 			_hs -= _tmp;                                              \
 			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {   \
 				if (!memcmp(_hs, _ne, _nl))                       \
