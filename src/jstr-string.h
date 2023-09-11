@@ -125,9 +125,9 @@ jstr_strcasecmp(const char *R _s1,
 JSTR_FUNC_PURE
 static void *
 pjstr_strrstr_len_bmh(const unsigned char *R _hs,
-		      const size_t _hslen,
+		      const size_t _hl,
 		      const unsigned char *R const _ne,
-		      const size_t _nelen) JSTR_NOEXCEPT
+		      const size_t _nl) JSTR_NOEXCEPT
 {
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 #define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                           \
@@ -150,7 +150,7 @@ pjstr_strrstr_len_bmh(const unsigned char *R _hs,
 			} while (!_tmp && _hs > _start);                          \
 			_hs -= _tmp;                                              \
 			if (_mtc1 < 15 || !memcmp(_hs + _off, _ne + _off, 8)) {   \
-				if (!memcmp(_hs, _ne, _nelen))                    \
+				if (!memcmp(_hs, _ne, _nl))                       \
 					return (void *)_hs;                       \
 				_off = (_off >= 8 ? _off : _mtc1) - 8;            \
 			}                                                         \
@@ -158,12 +158,12 @@ pjstr_strrstr_len_bmh(const unsigned char *R _hs,
 		} while (_hs > _start);                                           \
 		return NULL;                                                      \
 	} while (0)
-	const unsigned char *const _start = _hs + _nelen - 1;
-	_hs += _hslen - 1;
+	const unsigned char *const _start = _hs + _nl - 1;
+	_hs += _hl - 1;
 	size_t _tmp;
-	const size_t _mtc1 = _nelen - 1;
+	const size_t _mtc1 = _nl - 1;
 	size_t _off = 0;
-	if (jstr_unlikely(_nelen > 256))
+	if (jstr_unlikely(_nl > 256))
 		PJSTR_STRRSTR_BMH(size_t, size_t);
 	PJSTR_STRRSTR_BMH(uint8_t, int);
 #undef H
@@ -320,9 +320,9 @@ jstr_strrstr(const char *R const _hs,
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr_len_bmh(const char *R const _hs,
-			 const size_t _hslen,
+			 const size_t _hl,
 			 const char *R const _ne,
-			 const size_t _nelen) JSTR_NOEXCEPT
+			 const size_t _nl) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                                 \
@@ -357,11 +357,11 @@ pjstr_strcasestr_len_bmh(const char *R const _hs,
 	} while (0)
 	const unsigned char *_h = (unsigned char *)_hs;
 	const unsigned char *const _n = (unsigned char *)_ne;
-	const unsigned char *const _end = _h + _hslen - _nelen + 1;
+	const unsigned char *const _end = _h + _hl - _nl + 1;
 	size_t _tmp;
-	const size_t _mtc1 = _nelen - 1;
+	const size_t _mtc1 = _nl - 1;
 	size_t _off = 0;
-	if (jstr_unlikely(_nelen > 256))
+	if (jstr_unlikely(_nl > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	PJSTR_STRCASESTR_BMH(uint8_t, int);
 #undef HL
@@ -411,17 +411,17 @@ pjstr_strcasestr_bmh(const char *R const _hs,
 		}                                                                                          \
 		return NULL;                                                                               \
 	} while (0)
-	const size_t _nelen = strlen(_ne);
-	size_t _hslen = jstr_strnlen(_hs, _nelen | 512);
-	if (_hslen < _nelen)
+	const size_t _nl = strlen(_ne);
+	size_t _hl = jstr_strnlen(_hs, _nl | 512);
+	if (_hl < _nl)
 		return NULL;
 	const unsigned char *_h = (unsigned char *)_hs;
 	const unsigned char *const _n = (unsigned char *)_ne;
-	const unsigned char *_end = _h + _hslen - _nelen;
+	const unsigned char *_end = _h + _hl - _nl;
 	size_t _tmp;
-	const size_t _mtc1 = _nelen - 1;
+	const size_t _mtc1 = _nl - 1;
 	size_t _off = 0;
-	if (jstr_unlikely(_nelen > 256))
+	if (jstr_unlikely(_nl > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	PJSTR_STRCASESTR_BMH(uint8_t, int);
 #undef HL
