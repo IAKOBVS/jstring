@@ -158,7 +158,7 @@ pjstr_strrstr_len_bmh(const unsigned char *R _hs,
 		} while (_hs > _start);                                           \
 		return NULL;                                                      \
 	} while (0)
-	const unsigned char *const _start = _hs + _nelen;
+	const unsigned char *const _start = _hs + _nelen - 1;
 	_hs += _hslen - 1;
 	size_t _tmp;
 	const size_t _mtc1 = _nelen - 1;
