@@ -5,7 +5,7 @@ update_if_needed()
 		test "$1" -ot ../jstr/"$1" && exit 0
 	fi
 	perl generate-func.pl "$file" > ../jstr/"$file"
-	echo $file
+	echo "Built $file."
 }
 mkdir -p ../jstr
 for file in $(echo jstr-*.h); do
@@ -14,5 +14,5 @@ done &
 ./update-glibc || exit 0
 for file in $(echo *.h | tr ' ' '\n' | grep -v 'jstr'); do
 	update_if_needed "$file" &
-done
+done &
 wait
