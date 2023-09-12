@@ -498,13 +498,13 @@ jstr_strcasestr_len(const char *R hs,
 	is_alpha0 += jstr_isalpha(ne[1]);
 	switch (nelen) {
 	default: /* case 4: */
-		if (_is_alpha0
+		if (is_alpha0
 		    + jstr_isalpha(ne[2])
 		    + jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((unsigned char *)hs, (unsigned char *)ne);
 		break;
 	case 3:
-		if (_is_alpha0
+		if (is_alpha0
 		    + jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((unsigned char *)hs, (unsigned char *)ne);
 		break;
@@ -557,14 +557,14 @@ jstr_strcasestr(const char *R hs,
 		if (jstr_unlikely(hs[1] == '\0')
 		    || jstr_unlikely(hs[2] == '\0'))
 			return NULL;
-		if (_is_alpha0
+		if (is_alpha0
 		    + jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((unsigned char *)hs, (unsigned char *)ne);
 		return (char *)strstr(hs, ne);
 	} else if (ne[4] == '\0') {
 		if (jstr_unlikely(hs[1] == '\0' || jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0')))
 			return NULL;
-		if (_is_alpha0
+		if (is_alpha0
 		    + jstr_isalpha(ne[2])
 		    + jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((unsigned char *)hs, (unsigned char *)ne);

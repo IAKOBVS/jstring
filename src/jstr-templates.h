@@ -59,10 +59,10 @@ PJSTR_END_DECLS
 	 ? (PJSTR_MIN_CAP)            \
 	 : (new_cap))
 #define PJSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
-	do {                                        \
+	do {                                       \
 		(cap) = PJSTR_MIN_ALLOC(new_cap);  \
 		(p) = (char *)malloc((cap));       \
-		PJSTR_MALLOC_ERR((p), do_fail);     \
+		PJSTR_MALLOC_ERR((p), do_fail);    \
 	} while (0)
 
 #define R JSTR_RESTRICT
@@ -126,10 +126,10 @@ JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static size_t
 strlen_args(Str &&s,
-	    StrArgs &&..._args) JSTR_NOEXCEPT
+	    StrArgs &&...args) JSTR_NOEXCEPT
 {
 	return strlen(std::forward<Str>(s))
-	       + strlen_args(std::forward<StrArgs>(_args)...);
+	       + strlen_args(std::forward<StrArgs>(args)...);
 }
 
 template <size_t N>
@@ -178,10 +178,10 @@ JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(size_t *sz,
 		       char **dst,
 		       Str &&_arg,
-		       StrArgs &&..._args) JSTR_NOEXCEPT
+		       StrArgs &&...args) JSTR_NOEXCEPT
 {
 	appendmore_assign(sz, dst, std::forward<Str>(_arg));
-	appendmore_loop_assign(sz, dst, std::forward<StrArgs>(_args)...);
+	appendmore_loop_assign(sz, dst, std::forward<StrArgs>(args)...);
 }
 
 template <typename Str,
@@ -191,10 +191,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(char **dst,
 		       Str &&_arg,
-		       StrArgs &&..._args) JSTR_NOEXCEPT
+		       StrArgs &&...args) JSTR_NOEXCEPT
 {
 	appendmore_assign(dst, std::forward<Str>(_arg));
-	appendmore_loop_assign(dst, std::forward<StrArgs>(_args)...);
+	appendmore_loop_assign(dst, std::forward<StrArgs>(args)...);
 }
 
 JSTR_WARN_UNUSED
@@ -229,10 +229,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static size_t
 strlen_args(size_t *strlen_arr,
 	    Str &&s,
-	    StrArgs &&..._args) JSTR_NOEXCEPT
+	    StrArgs &&...args) JSTR_NOEXCEPT
 {
 	return strlen(&strlen_arr, std::forward<Str>(s))
-	       + strlen_args(strlen_arr, std::forward<StrArgs>(_args)...);
+	       + strlen_args(strlen_arr, std::forward<StrArgs>(args)...);
 }
 
 template <size_t N>
@@ -274,13 +274,13 @@ JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(char **dst,
 		       size_t *strlen_arr,
 		       Str &&_arg,
-		       StrArgs &&..._args) JSTR_NOEXCEPT
+		       StrArgs &&...args) JSTR_NOEXCEPT
 {
 	appendmore_assign(dst, &strlen_arr, std::forward<Str>(_arg));
-	appendmore_loop_assign(dst, strlen_arr, std::forward<StrArgs>(_args)...);
+	appendmore_loop_assign(dst, strlen_arr, std::forward<StrArgs>(args)...);
 }
 
-} // namespace _priv
+} // namespace priv
 
 } // namespace jstr
 
@@ -296,15 +296,15 @@ jstr_alloc_appendmore(char *R *R const s,
 		      size_t *const sz,
 		      size_t *const cap,
 		      Str &&_arg,
-		      StrArgs &&..._args) JSTR_NOEXCEPT
+		      StrArgs &&...args) JSTR_NOEXCEPT
 {
-	size_t strlen_arr[1 + sizeof...(_args)];
-	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
+	size_t strlen_arr[1 + sizeof...(args)];
+	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
 	*cap = *sz * 2;
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, return);
 	char *p = *s;
-	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
+	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
 }
 
@@ -320,11 +320,11 @@ JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_alloc_appendmore_f(char *R const s,
 			size_t *const sz,
 			Str &&_arg,
-			StrArgs &&..._args) JSTR_NOEXCEPT
+			StrArgs &&...args) JSTR_NOEXCEPT
 {
-	size_t strlen_arr[1 + sizeof...(_args)];
-	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
-	jstr::priv::appendmore_loop_assign(&s, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
+	size_t strlen_arr[1 + sizeof...(args)];
+	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
+	jstr::priv::appendmore_loop_assign(&s, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
 
@@ -341,14 +341,14 @@ jstr_appendmore(char *R *R const s,
 		size_t *const sz,
 		size_t *const cap,
 		Str &&_arg,
-		StrArgs &&..._args) JSTR_NOEXCEPT
+		StrArgs &&...args) JSTR_NOEXCEPT
 {
-	size_t strlen_arr[1 + sizeof...(_args)];
-	const size_t newsz = *sz + jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
+	size_t strlen_arr[1 + sizeof...(args)];
+	const size_t newsz = *sz + jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
 	if (*cap < *sz)
 		PJSTR_REALLOC(*s, *cap, newsz + 1, return);
 	char *p = *s + *sz;
-	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
+	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
 	*sz = newsz;
 }
@@ -365,10 +365,10 @@ JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_appendmore_f(char *s,
 		  size_t *R sz,
 		  Str &&_arg,
-		  StrArgs &&..._args) JSTR_NOEXCEPT
+		  StrArgs &&...args) JSTR_NOEXCEPT
 {
 	s += *sz;
-	jstr::priv::appendmore_loop_assign(sz, &s, std::forward<Str>(_arg), std::forward<StrArgs>(_args)...);
+	jstr::priv::appendmore_loop_assign(sz, &s, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
 
