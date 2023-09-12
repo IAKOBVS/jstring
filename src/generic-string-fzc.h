@@ -14,75 +14,62 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
-
 #include "jstr-macros.h"
-
-#include "jstr-macros.h"
-
-
-
+#include <endian.h>
 #include "string-fza.h"
 #include "string-fzi.h"
-#include <endian.h>
-
 /* Given a word X that is known to contain a zero byte, return the index of
    the first such within the word in memory order.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero(pjstr_op_ty x)
+pjstr_index_first_zero (pjstr_op_ty x)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		x = pjstr_find_zero_low(x);
-	else
-		x = pjstr_find_zero_all(x);
-	return pjstr_index_first(x);
+  if (__BYTE_ORDER == __LITTLE_ENDIAN)
+    x = pjstr_find_zero_low (x);
+  else
+    x = pjstr_find_zero_all (x);
+  return pjstr_index_first (x);
 }
-
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_eq(pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_index_first_eq (pjstr_op_ty x1, pjstr_op_ty x2)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		x1 = pjstr_find_eq_low(x1, x2);
-	else
-		x1 = pjstr_find_eq_all(x1, x2);
-	return pjstr_index_first(x1);
+  if (__BYTE_ORDER == __LITTLE_ENDIAN)
+    x1 = pjstr_find_eq_low (x1, x2);
+  else
+    x1 = pjstr_find_eq_all (x1, x2);
+  return pjstr_index_first (x1);
 }
-
 /* Similarly, but perform the search for zero within X1 or equality between
    X1 and X2.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero_eq(pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_index_first_zero_eq (pjstr_op_ty x1, pjstr_op_ty x2)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		x1 = pjstr_find_zero_eq_low(x1, x2);
-	else
-		x1 = pjstr_find_zero_eq_all(x1, x2);
-	return pjstr_index_first(x1);
+  if (__BYTE_ORDER == __LITTLE_ENDIAN)
+    x1 = pjstr_find_zero_eq_low (x1, x2);
+  else
+    x1 = pjstr_find_zero_eq_all (x1, x2);
+  return pjstr_index_first (x1);
 }
-
 /* Similarly, but perform the search for zero within X1 or inequality between
    X1 and X2.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first_zero_ne(pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_index_first_zero_ne (pjstr_op_ty x1, pjstr_op_ty x2)
 {
-	return pjstr_index_first(pjstr_find_zero_ne_all(x1, x2));
+  return pjstr_index_first (pjstr_find_zero_ne_all (x1, x2));
 }
-
 /* Similarly, but search for the last zero within X.  */
 static JSTR_INLINE unsigned int
-pjstr_index_last_zero(pjstr_op_ty x)
+pjstr_index_last_zero (pjstr_op_ty x)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		x = pjstr_find_zero_all(x);
-	else
-		x = pjstr_find_zero_low(x);
-	return pjstr_index_last(x);
+  if (__BYTE_ORDER == __LITTLE_ENDIAN)
+    x = pjstr_find_zero_all (x);
+  else
+    x = pjstr_find_zero_low (x);
+  return pjstr_index_last (x);
 }
-
 static JSTR_INLINE unsigned int
-pjstr_index_last_eq(pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_index_last_eq (pjstr_op_ty x1, pjstr_op_ty x2)
 {
-	return pjstr_index_last_zero(x1 ^ x2);
+  return pjstr_index_last_zero (x1 ^ x2);
 }
-
 #endif /* STRING_FZC_H */

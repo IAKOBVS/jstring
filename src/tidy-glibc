@@ -20,32 +20,22 @@ for file in $(echo *?string-fz* *?string-misc*.h *?string-shift*.h); do
 	s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
 	s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define PJSTR_\1/g;
 	s/PJSTR__/PJSTR_/g;
-	' "$file")" > "$file" &
+	' "$file")" >"$file" &
 done
 wait
-# remove duplicate include "jstr-macros.h"
-for file in $(echo *?string-fz*); do
+for file in $(echo *?string-fz* *?string-misc*.h *?string-shift*.h); do
 	# shellcheck disable=SC2005
-	echo "$(awk 'BEGIN { dup = 0; fname = 0; last_line_blank; }
-	{
-		if (fname != FILENAME) {
-			dup = 0
-			fname = FILENAME
-			last_line_blank = 0;
-		}
-		if ($0 != "") {
-			last_line_blank = 0
-		} else {
-			if (++last_line_blank >= 2)
+	echo "$(awk '
+	BEGIN {
+		dup = 0
+	}
+	$0 != "" {
+		if ($0 ~ /jstr-macros\.h/) {
+			if (dup)
 				next
+			dup = 1
 		}
-		if ($0 ~ /#[ \t]*include[ \t]*"jstr-macros/) {
-			if (dup == 0)
-				print
-			dup = dup + 1
-		} else {
-			print
-		}
-	}' "$file")" > "$file" &
+		print
+	}' "$file")" >"$file" &
 done
 wait

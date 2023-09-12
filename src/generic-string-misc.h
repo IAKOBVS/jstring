@@ -14,45 +14,25 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_MISC_H
 #define PJSTR_STRING_MISC_H 1
-
 #include "jstr-macros.h"
-
-
-#include "jstr-macros.h"
-
-
-#include "jstr-macros.h"
-
-
-#include "jstr-macros.h"
-
-
-#include "jstr-macros.h"
-
-
-#include "jstr-macros.h"
-
-#include "string-optype.h"
-#include <endian.h>
 #include <limits.h>
-
+#include <endian.h>
+#include "string-optype.h"
 /* Extract the byte at index IDX from word X, with index 0 being the
    least significant byte.  */
 static JSTR_INLINE unsigned char
-pjstr_extractbyte(pjstr_op_ty x, unsigned int idx)
+pjstr_extractbyte (pjstr_op_ty x, unsigned int idx)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		return x >> (idx * CHAR_BIT);
-	else
-		return x >> (sizeof(x) - 1 - idx) * CHAR_BIT;
+  if (__BYTE_ORDER == __LITTLE_ENDIAN)
+    return x >> (idx * CHAR_BIT);
+  else
+    return x >> (sizeof (x) - 1 - idx) * CHAR_BIT;
 }
-
 /* Setup an word with each byte being c_in.  For instance, on a 64 bits
    machine with input as 0xce the functions returns 0xcececececececece.  */
 static JSTR_INLINE pjstr_op_ty
-pjstr_repeat_bytes(unsigned char c_in)
+pjstr_repeat_bytes (unsigned char c_in)
 {
-	return ((pjstr_op_ty)-1 / 0xff) * c_in;
+  return ((pjstr_op_ty)-1 / 0xff) * c_in;
 }
-
 #endif /* _STRING_MISC_H */
