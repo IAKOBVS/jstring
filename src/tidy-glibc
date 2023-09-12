@@ -16,14 +16,14 @@ for file in $(echo *?string-fz* *?string-misc*.h *?string-shift*.h); do
 	s/typedef pjstr_op_ty pjstr_op_ty;//g;
 	s/__always_inline/JSTR_INLINE/g;
 	s/sysdeps\/generic\///;
-	s/\(#define.*\)/\1\n\n#include "jstr_macros.h"\n/;
+	s/\(#define.*\)/\1\n\n#include "jstr-macros.h"\n/;
 	s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
 	s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define PJSTR_\1/g;
 	s/PJSTR__/PJSTR_/g;
 	' "$file")" > "$file" &
 done
 wait
-# remove duplicate include "jstr_macros.h"
+# remove duplicate include "jstr-macros.h"
 for file in $(echo *?string-fz*); do
 	# shellcheck disable=SC2005
 	echo "$(awk 'BEGIN { dup = 0; fname = 0; last_line_blank; }
@@ -39,7 +39,7 @@ for file in $(echo *?string-fz*); do
 			if (++last_line_blank >= 2)
 				next
 		}
-		if ($0 ~ /#[ \t]*include[ \t]*"jstr_macros/) {
+		if ($0 ~ /#[ \t]*include[ \t]*"jstr-macros/) {
 			if (dup == 0)
 				print
 			dup = dup + 1
