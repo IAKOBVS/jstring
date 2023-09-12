@@ -657,9 +657,9 @@ jstr_strrspn_len(const char *R const s,
 		return 0;
 	if (jstr_unlikely(accept[1] == '\0')) {
 		const char *p = s + sz - 1;
-		while (*p == *accept)
-			--p;
-		return (s + sz - 1) - p;
+		while (*p-- == *accept)
+			;
+		return (s + sz - 1) - (p + 1);
 	}
 	const unsigned char *p = (unsigned char *)accept;
 	unsigned char t[256];
