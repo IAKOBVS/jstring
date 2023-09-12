@@ -209,16 +209,20 @@ jstr_memrchr(const void *R _s,
 	const unsigned char *const _start = (u *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
 	pjstr_op_ty _w;
 	if (_p != _end) {
-		if (pjstr_has_eq(_w = pjstr_uctoword(_p), _cc)) {
+		_w = pjstr_uctoword(_p);
+		if (pjstr_has_eq(_w, _cc)) {
 			const unsigned char *const _ret = _p + pjstr_index_last_eq(_w, _cc);
 			if ((uintptr_t)(_ret - (u *)_s) <= _end - (u *)_s)
 				return (void *)_ret;
 		}
 	}
-	for (_p -= sizeof(pjstr_op_ty); _p > _start; _p -= sizeof(pjstr_op_ty))
-		if (pjstr_has_eq(_w = pjstr_uctoword(_p), _cc))
+	for (_p -= sizeof(pjstr_op_ty); _p > _start; _p -= sizeof(pjstr_op_ty)) {
+		_w = pjstr_uctoword(_p);
+		if (pjstr_has_eq(_w, _cc))
 			return (void *)(_p + pjstr_index_last_eq(_w, _cc));
-	if (pjstr_has_eq(_w = pjstr_uctoword(_start), _cc)) {
+	}
+	_w = pjstr_uctoword(_start);
+	if (pjstr_has_eq(_w, _cc)) {
 		_p = _start + pjstr_index_last_eq(_w, _cc);
 		if ((uintptr_t)(_p - (u *)_s) <= _end - (u *)_s)
 			return (void *)_p;
