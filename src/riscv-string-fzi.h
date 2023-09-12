@@ -15,7 +15,7 @@
 #ifndef PJSTR_STRING_RISCV_FZI_H
 #define PJSTR_STRING_RISCV_FZI_H 1
 
-#include "jstr_macros.h"
+#include "jstr-macros.h"
 
 
 #include "jstr-macros.h"
