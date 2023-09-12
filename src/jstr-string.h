@@ -182,6 +182,8 @@ jstr_memrchr(const void *R _s,
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(_s, _c, _n);
 #else
+	if (jstr_unlikely(_n == 0))
+		return NULL;
 	typedef unsigned char u;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
