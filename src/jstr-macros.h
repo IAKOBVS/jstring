@@ -30,15 +30,15 @@
 					      long : expr,             \
 						     long long : expr, \
 								 unsigned long long : expr
-#	define JSTR_GENERIC_CASE_STR(bool) \
-		char * : bool,              \
-			 const char * : bool
-#	define JSTR_GENERIC_CASE_STR_STACK(bool, s) \
-		char(*)[sizeof(s)] : 1,               \
+#	define JSTR_GENERIC_CASE_STR(bool_) \
+		char * : bool_,              \
+			 const char * : bool_
+#	define JSTR_GENERIC_CASE_STR_STACK(bool_, s) \
+		char(*)[sizeof(s)] : 1,              \
 		const char(*)[sizeof(s)] : 1
-#	define JSTR_GENERIC_CASE_CHAR(bool) \
-		char : bool,                 \
-		       const char : bool
+#	define JSTR_GENERIC_CASE_CHAR(bool_) \
+		char : bool_,                 \
+		       const char : bool_
 #	define JSTR_IS_SIZE(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_SIZE(1),                  \
 	default: 0)

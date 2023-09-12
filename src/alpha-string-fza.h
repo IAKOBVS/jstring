@@ -22,27 +22,27 @@
    unnecessary truncation instructions from the 'unsigned long' type
    returned by __builtin_alpha_cmpbge.  */
 static JSTR_INLINE pjstr_op_ty
-pjstr_find_zero_all (pjstr_op_ty x)
+pjstr_find_zero_all(pjstr_op_ty x)
 {
-  return __builtin_alpha_cmpbge (0, x);
+	return __builtin_alpha_cmpbge(0, x);
 }
 static JSTR_INLINE pjstr_op_ty
-pjstr_find_eq_all (pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_find_eq_all(pjstr_op_ty x1, pjstr_op_ty x2)
 {
-  return pjstr_find_zero_all (x1 ^ x2);
+	return pjstr_find_zero_all(x1 ^ x2);
 }
 static JSTR_INLINE pjstr_op_ty
-pjstr_find_zero_eq_all (pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_find_zero_eq_all(pjstr_op_ty x1, pjstr_op_ty x2)
 {
-  return pjstr_find_zero_all (x1) | pjstr_find_zero_all (x1 ^ x2);
+	return pjstr_find_zero_all(x1) | pjstr_find_zero_all(x1 ^ x2);
 }
 static JSTR_INLINE pjstr_op_ty
-pjstr_find_zero_ne_all (pjstr_op_ty x1, pjstr_op_ty x2)
+pjstr_find_zero_ne_all(pjstr_op_ty x1, pjstr_op_ty x2)
 {
-  return pjstr_find_zero_all (x1) | (pjstr_find_zero_all (x1 ^ x2) ^ 0xff);
+	return pjstr_find_zero_all(x1) | (pjstr_find_zero_all(x1 ^ x2) ^ 0xff);
 }
 /* Define the "inexact" versions in terms of the exact versions.  */
-#define pjstr_find_zero_low		pjstr_find_zero_all
-#define pjstr_find_eq_low		pjstr_find_eq_all
-#define pjstr_find_zero_eq_low	pjstr_find_zero_eq_all
+#define pjstr_find_zero_low    pjstr_find_zero_all
+#define pjstr_find_eq_low      pjstr_find_eq_all
+#define pjstr_find_zero_eq_low pjstr_find_zero_eq_all
 #endif /* _STRING_FZA_H */
