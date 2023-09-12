@@ -179,28 +179,28 @@ jstr_memrchr(const void *R _s,
 	     int _c,
 	     const size_t _n) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMRCHR
+#if JSTR_HAVE_MEMRCHR && 0
 	return (void *)memrchr(_s, _c, _n);
 #else
 	typedef unsigned char u;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
+#	if JSTR_HAVE_ATTR_MAY_ALIAS && 1
 	const unsigned char *const _end = (unsigned char *)_s + _n;
 	const pjstr_op_ty *_w = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_end, sizeof(pjstr_op_ty));
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
 	if ((u *)_w != _end) {
 		if (pjstr_has_eq(*_w, _cc)) {
 			unsigned char *const _ret = (u *)_w + pjstr_index_last_eq(*_w, _cc);
-			if ((_ret <= _end) & (_ret >= (u *)_start))
+			if ((uintptr_t)(_ret - (u *)_s) <= _end - (u *)_s)
 				return (void *)_ret;
 		}
 	}
 	for (--_w; _w > _start; --_w)
 		if (pjstr_has_eq(*_w, _cc))
-			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
+			return (void *)((u *)_w + pjstr_index_last_eq(*_w, _cc));
 	if (pjstr_has_eq(*_start, _cc)) {
 		_w = (pjstr_op_ty *)((u *)_start + pjstr_index_last_eq(*_start, _cc));
-		if (((void *)_w >= _s) & ((u *)_w <= _end))
+		if ((uintptr_t)((u *)_w - (u *)_s) <= _end - (u *)_s)
 			return (void *)_w;
 	}
 #	else
@@ -211,7 +211,7 @@ jstr_memrchr(const void *R _s,
 	if (_p != _end) {
 		if (pjstr_has_eq(_w = pjstr_uctoword(_p), _cc)) {
 			const unsigned char *const _ret = _p + pjstr_index_last_eq(_w, _cc);
-			if ((_ret <= _end) & (_ret >= _start))
+			if ((uintptr_t)(_ret - (u *)_s) <= _end - (u *)_s)
 				return (void *)_ret;
 		}
 	}
@@ -220,7 +220,7 @@ jstr_memrchr(const void *R _s,
 			return (void *)(_p + pjstr_index_last_eq(_w, _cc));
 	if (pjstr_has_eq(_w = pjstr_uctoword(_start), _cc)) {
 		_p = _start + pjstr_index_last_eq(_w, _cc);
-		if (((void *)_p >= _s) & (_p <= _end))
+		if ((uintptr_t)(_p - (u *)_s) <= _end - (u *)_s)
 			return (void *)_p;
 	}
 #	endif
