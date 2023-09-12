@@ -179,12 +179,12 @@ jstr_memrchr(const void *R _s,
 	     int _c,
 	     const size_t _n) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMRCHR && 0
+#if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(_s, _c, _n);
 #else
 	typedef unsigned char u;
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
-#	if JSTR_HAVE_ATTR_MAY_ALIAS && 1
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
 	const unsigned char *const _end = (unsigned char *)_s + _n;
 	const pjstr_op_ty *_w = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_end, sizeof(pjstr_op_ty));
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
