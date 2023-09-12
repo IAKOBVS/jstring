@@ -370,15 +370,15 @@ PJSTR_BEGIN_DECLS
 	} while (0)
 #define PJSTR_ULLTOA_UNROLLED(nptr, number, base)            \
 	do {                                                 \
-		enum { _len = PJSTR_MAX_ULONG_LONG_DIGITS }; \
-		char _s[_len + 1];                           \
-		_s[_len] = '\0';                             \
-		char *_p = _s + _len - 1;                    \
+		enum { len = PJSTR_MAX_ULONG_LONG_DIGITS }; \
+		char s[len + 1];                           \
+		s[len] = '\0';                             \
+		char *p = s + len - 1;                    \
 		do                                           \
-			*_p-- = number % base + '0';         \
+			*p-- = number % base + '0';         \
 		while (number /= base);                      \
-		while (*++_p)                                \
-			*nptr++ = *_p;                       \
+		while (*++p)                                \
+			*nptr++ = *p;                       \
 		*nptr = '\0';                                \
 		return nptr;                                 \
 	} while (0)
@@ -395,72 +395,72 @@ PJSTR_BEGIN_DECLS
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
-jstr_itoa(char *R _nptr,
-	  int _number,
-	  const unsigned int _base) JSTR_NOEXCEPT
+jstr_itoa(char *R nptr,
+	  int number,
+	  const unsigned int base) JSTR_NOEXCEPT
 {
-	PJSTR_ITOA_UNROLLED(_nptr, _number, _base);
+	PJSTR_ITOA_UNROLLED(nptr, number, base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_lltoa(char *R _nptr,
-	   long long _number,
-	   const unsigned int _base) JSTR_NOEXCEPT
+jstr_lltoa(char *R nptr,
+	   long long number,
+	   const unsigned int base) JSTR_NOEXCEPT
 {
-	if (_number < 0) {
-		_number = -_number;
-		*_nptr++ = '-';
+	if (number < 0) {
+		number = -number;
+		*nptr++ = '-';
 	}
-	if (jstr_likely(_number <= 9999999999))
-		PJSTR_UTOA_UNROLLED(_nptr, _number, _base);
-	PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base);
+	if (jstr_likely(number <= 9999999999))
+		PJSTR_UTOA_UNROLLED(nptr, number, base);
+	PJSTR_ULLTOA_UNROLLED(nptr, number, base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
-jstr_ltoa(char *R _nptr,
-	  long _number,
-	  const unsigned int _base) JSTR_NOEXCEPT
+jstr_ltoa(char *R nptr,
+	  long number,
+	  const unsigned int base) JSTR_NOEXCEPT
 {
-	return jstr_lltoa(_nptr, _number, _base);
+	return jstr_lltoa(nptr, number, base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
-jstr_utoa(char *R _nptr,
-	  const unsigned int _number,
-	  const unsigned int _base) JSTR_NOEXCEPT
+jstr_utoa(char *R nptr,
+	  const unsigned int number,
+	  const unsigned int base) JSTR_NOEXCEPT
 {
-	PJSTR_UTOA_UNROLLED(_nptr, _number, _base);
+	PJSTR_UTOA_UNROLLED(nptr, number, base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_ulltoa(char *R _nptr,
-	    unsigned long long _number,
-	    const unsigned int _base) JSTR_NOEXCEPT
+jstr_ulltoa(char *R nptr,
+	    unsigned long long number,
+	    const unsigned int base) JSTR_NOEXCEPT
 {
-	if (jstr_likely(_number <= 9999999999))
-		PJSTR_UTOA_UNROLLED(_nptr, _number, _base);
-	PJSTR_ULLTOA_UNROLLED(_nptr, _number, _base);
+	if (jstr_likely(number <= 9999999999))
+		PJSTR_UTOA_UNROLLED(nptr, number, base);
+	PJSTR_ULLTOA_UNROLLED(nptr, number, base);
 }
 
 /* Returns ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
-jstr_ultoa(char *R _nptr,
-	   const unsigned long _number,
-	   const unsigned int _base) JSTR_NOEXCEPT
+jstr_ultoa(char *R nptr,
+	   const unsigned long number,
+	   const unsigned int base) JSTR_NOEXCEPT
 {
-	return jstr_ulltoa(_nptr, _number, _base);
+	return jstr_ulltoa(nptr, number, base);
 }
 
 PJSTR_END_DECLS

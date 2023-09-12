@@ -24,14 +24,14 @@ PJSTR_BEGIN_DECLS
 JSTR_FUNC_PURE
 JSTR_INLINE
 static size_t
-jstr_strnlen(const char *R const _s,
-	     const size_t _maxlen)
+jstr_strnlen(const char *R const s,
+	     const size_t maxlen)
 {
 #if JSTR_HAVE_STRNLEN
-	return strnlen(_s, _maxlen);
+	return strnlen(s, maxlen);
 #else
-	const char *p = (char *)memchr(_s, '\0', _maxlen);
-	return p ? (size_t)(p - _s) : _maxlen;
+	const char *p = (char *)memchr(s, '\0', maxlen);
+	return p ? (size_t)(p - s) : maxlen;
 #endif
 }
 
@@ -42,14 +42,14 @@ jstr_strnlen(const char *R const _s,
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static void *
-jstr_mempcpy(void *R const _dst,
-	     const void *R const _src,
-	     const size_t _n) JSTR_NOEXCEPT
+jstr_mempcpy(void *R const dst,
+	     const void *R const src,
+	     const size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMPCPY
-	return mempcpy(_dst, _src, _n);
+	return mempcpy(dst, src, n);
 #else
-	return (char *)memcpy(_dst, _src, _n) + _n;
+	return (char *)memcpy(dst, src, n) + n;
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
@@ -60,16 +60,16 @@ jstr_mempcpy(void *R const _dst,
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
-jstr_stpcpy(char *R _dst,
-	    const char *R _src) JSTR_NOEXCEPT
+jstr_stpcpy(char *R dst,
+	    const char *R src) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STPCPY
-	return stpcpy(_dst, _src);
+	return stpcpy(dst, src);
 #else
-	const size_t _len = strlen(_src);
-	memcpy(_dst, _src, _len);
-	*(_dst + _len) = '\0';
-	return _dst + _len;
+	const size_t len = strlen(src);
+	memcpy(dst, src, len);
+	*(dst + len) = '\0';
+	return dst + len;
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
@@ -77,18 +77,18 @@ jstr_stpcpy(char *R _dst,
 JSTR_FUNC
 JSTR_INLINE
 static void *
-jstr_memccpy(void *R _dst,
-	     const void *R _src,
-	     int _c,
-	     const size_t _n) JSTR_NOEXCEPT
+jstr_memccpy(void *R dst,
+	     const void *R src,
+	     int c,
+	     const size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMCCPY
-	return memccpy(_dst, _src, _c, _n);
+	return memccpy(dst, src, c, n);
 #else
-	void *p = (void *)memchr(_src, _c, _n);
+	void *p = (void *)memchr(src, c, n);
 	if (p != NULL)
-		return jstr_mempcpy(_dst, _src, (unsigned char *)p - (unsigned char *)_src + 1);
-	memcpy(_dst, _src, _n);
+		return jstr_mempcpy(dst, src, (unsigned char *)p - (unsigned char *)src + 1);
+	memcpy(dst, src, n);
 	return NULL;
 #endif /* HAVE_MEMCPY */
 }
@@ -100,42 +100,42 @@ jstr_memccpy(void *R _dst,
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
-jstr_stpcat(char *R _dst,
-	    const char *R _src) JSTR_NOEXCEPT
+jstr_stpcat(char *R dst,
+	    const char *R src) JSTR_NOEXCEPT
 {
-	_dst += strlen(_dst);
-	return jstr_stpcpy(_dst, _src);
+	dst += strlen(dst);
+	return jstr_stpcpy(dst, src);
 }
 
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strdup(const char *R const _s)
+jstr_strdup(const char *R const s)
 {
 #if JSTR_HAVE_STRDUP
-	return strdup(_s);
+	return strdup(s);
 #else
-	const size_t _len = strlen(_s) + 1;
-	char *_p = (char *)malloc(_len);
-	if (jstr_unlikely(_p == NULL))
+	const size_t len = strlen(s) + 1;
+	char *p = (char *)malloc(len);
+	if (jstr_unlikely(p == NULL))
 		return NULL;
-	memcpy(_p, _s, _len - 1);
-	*(_p + _len - 1) = '\0';
-	return _p;
+	memcpy(p, s, len - 1);
+	*(p + len - 1) = '\0';
+	return p;
 #endif
 }
 
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
-jstr_strchrnul(const char *R const _s,
-	       const int _c)
+jstr_strchrnul(const char *R const s,
+	       const int c)
 {
 #if JSTR_HAVE_STRCHRNUL
-	return (char *)strchrnul(_s, _c);
+	return (char *)strchrnul(s, c);
 #else
-	const char *const _p = strchr(_s, _c);
-	return _p ? (char *)_p : (char *)_s + strlen(_s);
+	const char *const p = strchr(s, c);
+	return p ? (char *)p : (char *)s + strlen(s);
 #endif
 }
 

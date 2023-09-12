@@ -28,72 +28,72 @@ PJSTR_BEGIN_DECLS
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isupper(const int _c) JSTR_NOEXCEPT
+jstr_isupper(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISUPPER;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISUPPER;
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_islower(const int _c) JSTR_NOEXCEPT
+jstr_islower(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISLOWER;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISLOWER;
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isalnum(const int _c) JSTR_NOEXCEPT
+jstr_isalnum(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISALNUM;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISALNUM;
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isdigit(const int _c) JSTR_NOEXCEPT
+jstr_isdigit(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISDIGIT;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISDIGIT;
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isxdigit(const int _c) JSTR_NOEXCEPT
+jstr_isxdigit(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISXDIGIT;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISXDIGIT;
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isblank(const int _c) JSTR_NOEXCEPT
+jstr_isblank(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISBLANK;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISBLANK;
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isgraph(const int _c) JSTR_NOEXCEPT
+jstr_isgraph(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISGRAPH;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISGRAPH;
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_ispunct(const int _c) JSTR_NOEXCEPT
+jstr_ispunct(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISPUNCT;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISPUNCT;
 }
 
 /* ASCII */
@@ -103,18 +103,18 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 JSTR_WARN_UNUSED
 static int
-jstr_isspace(const int _c) JSTR_NOEXCEPT
+jstr_isspace(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISSPACE;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISSPACE;
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isalpha(const int _c) JSTR_NOEXCEPT
+jstr_isalpha(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & JSTR_ISALPHA;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISALPHA;
 }
 
 /*
@@ -137,9 +137,9 @@ jstr_isalpha(const int _c) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isctype(const int _c, jstr_ctype_ty _type) JSTR_NOEXCEPT
+jstr_isctype(const int c, jstr_ctype_ty type) JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)_c] & _type;
+	return pjstr_table_ctype[(unsigned char)c] & type;
 }
 
 /*
@@ -150,9 +150,9 @@ jstr_isctype(const int _c, jstr_ctype_ty _type) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_toupper(const int _c) JSTR_NOEXCEPT
+jstr_toupper(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_toupper[(unsigned char)_c];
+	return pjstr_table_toupper[(unsigned char)c];
 }
 
 /*
@@ -163,27 +163,27 @@ jstr_toupper(const int _c) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_tolower(const int _c) JSTR_NOEXCEPT
+jstr_tolower(const int c) JSTR_NOEXCEPT
 {
-	return pjstr_table_tolower[(unsigned char)_c];
+	return pjstr_table_tolower[(unsigned char)c];
 }
 
 /* ASCII */
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isalnum_str(const char *R _s) JSTR_NOEXCEPT
+jstr_isalnum_str(const char *R s) JSTR_NOEXCEPT
 {
 #define PJSTR_IS_CTYPE_STR(CTYPE)               \
 	do {                                    \
-		if (jstr_unlikely(*_s == '\0')) \
+		if (jstr_unlikely(*s == '\0')) \
 			return 0;               \
-		while (jstr_##CTYPE(*_s++)      \
-		       && jstr_##CTYPE(*_s++)   \
-		       && jstr_##CTYPE(*_s++)   \
-		       && jstr_##CTYPE(*_s++))  \
+		while (jstr_##CTYPE(*s++)      \
+		       && jstr_##CTYPE(*s++)   \
+		       && jstr_##CTYPE(*s++)   \
+		       && jstr_##CTYPE(*s++))  \
 			;                       \
-		return (*_s - 1) == '\0';       \
+		return (*s - 1) == '\0';       \
 	} while (0)
 	PJSTR_IS_CTYPE_STR(isalnum);
 }
@@ -192,7 +192,7 @@ jstr_isalnum_str(const char *R _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isalpha_str(const char *R _s) JSTR_NOEXCEPT
+jstr_isalpha_str(const char *R s) JSTR_NOEXCEPT
 {
 	PJSTR_IS_CTYPE_STR(isalpha);
 }
@@ -201,7 +201,7 @@ jstr_isalpha_str(const char *R _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_islower_str(const char *R _s) JSTR_NOEXCEPT
+jstr_islower_str(const char *R s) JSTR_NOEXCEPT
 {
 	PJSTR_IS_CTYPE_STR(islower);
 }
@@ -210,7 +210,7 @@ jstr_islower_str(const char *R _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isupper_str(const char *R _s) JSTR_NOEXCEPT
+jstr_isupper_str(const char *R s) JSTR_NOEXCEPT
 {
 	PJSTR_IS_CTYPE_STR(isupper);
 }
@@ -219,7 +219,7 @@ jstr_isupper_str(const char *R _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_isspace_str(const char *R _s) JSTR_NOEXCEPT
+jstr_isspace_str(const char *R s) JSTR_NOEXCEPT
 {
 	PJSTR_IS_CTYPE_STR(isspace);
 }
@@ -228,7 +228,7 @@ jstr_isspace_str(const char *R _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_isblank_str(const char *R _s) JSTR_NOEXCEPT
+jstr_isblank_str(const char *R s) JSTR_NOEXCEPT
 {
 	PJSTR_IS_CTYPE_STR(isblank);
 }
@@ -237,7 +237,7 @@ jstr_isblank_str(const char *R _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_isdigit_str(const char *R _s) JSTR_NOEXCEPT
+jstr_isdigit_str(const char *R s) JSTR_NOEXCEPT
 {
 	PJSTR_IS_CTYPE_STR(isdigit);
 }
@@ -246,7 +246,7 @@ jstr_isdigit_str(const char *R _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_isxdigit_str(const char *R _s) JSTR_NOEXCEPT
+jstr_isxdigit_str(const char *R s) JSTR_NOEXCEPT
 {
 	PJSTR_IS_CTYPE_STR(isxdigit);
 }
@@ -255,7 +255,7 @@ jstr_isxdigit_str(const char *R _s) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_ispunct_str(const char *R _s) JSTR_NOEXCEPT
+jstr_ispunct_str(const char *R s) JSTR_NOEXCEPT
 {
 	PJSTR_IS_CTYPE_STR(ispunct);
 }
@@ -273,34 +273,34 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_tolower_str_len(char *R _s,
-		     const size_t _sz)
+jstr_tolower_str_len(char *R s,
+		     const size_t sz)
 {
-	unsigned char _skip;
-	switch (_sz % 4) {
+	unsigned char skip;
+	switch (sz % 4) {
 	case 3:
-		_skip = 3;
+		skip = 3;
 		goto do3;
 	case 2:
-		_skip = 2;
+		skip = 2;
 		goto do2;
 	case 1:
-		_skip = 1;
+		skip = 1;
 		goto do1;
 	case 0:
 		break;
 do3:
-		_s[2] = jstr_tolower(_s[2]);
+		s[2] = jstr_tolower(s[2]);
 do2:
-		_s[1] = jstr_tolower(_s[1]);
+		s[1] = jstr_tolower(s[1]);
 do1:
-		_s[0] = jstr_tolower(_s[0]);
-		_s += _skip;
+		s[0] = jstr_tolower(s[0]);
+		s += skip;
 	}
-	for (; (_s[0] = jstr_tolower(_s[0])); _s += 4) {
-		_s[1] = jstr_tolower(_s[1]);
-		_s[2] = jstr_tolower(_s[2]);
-		_s[3] = jstr_tolower(_s[3]);
+	for (; (s[0] = jstr_tolower(s[0])); s += 4) {
+		s[1] = jstr_tolower(s[1]);
+		s[2] = jstr_tolower(s[2]);
+		s[3] = jstr_tolower(s[3]);
 	}
 }
 
@@ -308,34 +308,34 @@ JSTR_MAYBE_UNUSED
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static void
-jstr_toupper_str_len(char *R _s,
-		     const size_t _sz)
+jstr_toupper_str_len(char *R s,
+		     const size_t sz)
 {
-	unsigned char _skip;
-	switch (_sz % 4) {
+	unsigned char skip;
+	switch (sz % 4) {
 	case 3:
-		_skip = 3;
+		skip = 3;
 		goto do3;
 	case 2:
-		_skip = 2;
+		skip = 2;
 		goto do2;
 	case 1:
-		_skip = 1;
+		skip = 1;
 		goto do1;
 	case 0:
 		break;
 do3:
-		_s[2] = jstr_toupper(_s[2]);
+		s[2] = jstr_toupper(s[2]);
 do2:
-		_s[1] = jstr_toupper(_s[1]);
+		s[1] = jstr_toupper(s[1]);
 do1:
-		_s[0] = jstr_toupper(_s[0]);
-		_s += _skip;
+		s[0] = jstr_toupper(s[0]);
+		s += skip;
 	}
-	for (; (_s[0] = jstr_toupper(_s[0])); _s += 4) {
-		_s[1] = jstr_toupper(_s[1]);
-		_s[2] = jstr_toupper(_s[2]);
-		_s[3] = jstr_toupper(_s[3]);
+	for (; (s[0] = jstr_toupper(s[0])); s += 4) {
+		s[1] = jstr_toupper(s[1]);
+		s[2] = jstr_toupper(s[2]);
+		s[3] = jstr_toupper(s[3]);
 	}
 }
 
@@ -348,19 +348,19 @@ do1:
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_toupper_str(char *R _s) JSTR_NOEXCEPT
+jstr_toupper_str(char *R s) JSTR_NOEXCEPT
 {
-	while ((*_s = jstr_toupper(*_s)))
-		++_s;
+	while ((*s = jstr_toupper(*s)))
+		++s;
 }
 
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_tolower_str(char *R _s) JSTR_NOEXCEPT
+jstr_tolower_str(char *R s) JSTR_NOEXCEPT
 {
-	while ((*_s = jstr_tolower(*_s)))
-		++_s;
+	while ((*s = jstr_tolower(*s)))
+		++s;
 }
 
 PJSTR_END_DECLS
