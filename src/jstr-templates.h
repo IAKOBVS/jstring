@@ -153,9 +153,9 @@ appendmore_assign(size_t *sz,
 		  const char *R src) JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_STPCPY
-	char *const new = stpcpy(*dst, src);
-	*sz += new - *dst;
-	*dst = new;
+	char *const tmp = stpcpy(*dst, src);
+	*sz += tmp - *dst;
+	*dst = tmp;
 #	else
 	const size_t len = strlen(*dst);
 	memcpy(*dst, src, len);
