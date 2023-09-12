@@ -29,9 +29,9 @@ PJSTR_END_DECLS
 #define R JSTR_RESTRICT
 
 #if JSTR_HAVE_MEMMEM
-#	define PJSTR_MEMMEM(hs, hlen, ne, nlen) memmem(hs, hlen, ne, nlen)
+#	define PJSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
 #else
-#	define PJSTR_MEMMEM(hs, hlen, ne, nlen) strstr(hs, ne)
+#	define PJSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
 #endif /* HAVE_MEMMEM */
 
 PJSTR_BEGIN_DECLS
