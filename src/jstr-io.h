@@ -355,18 +355,18 @@ static int
 jstr_io_is_binary_maybe(char *R const buf,
 			const size_t sz) JSTR_NOEXCEPT
 {
-#define JSTR_BINARY_CHECK()                                                        \
-	do {                                                                       \
+#define JSTR_BINARY_CHECK()                                                       \
+	do {                                                                      \
 		if (jstr_likely(sz > PJSTR_ELF_SZ - 1)) {                         \
 			if (jstr_unlikely(!memcmp(buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
-				return 1;                                          \
-check_utf:;                                                                        \
-			unsigned char *R s = (unsigned char *)buf;               \
+				return 1;                                         \
+check_utf:;                                                                       \
+			unsigned char *R s = (unsigned char *)buf;                \
 			if (!memcmp(s, PJSTR_UTF, PJSTR_UTF_SZ))                  \
-				return 0;                                          \
+				return 0;                                         \
 		} else if (jstr_likely(sz == PJSTR_UTF_SZ)) {                     \
-			goto check_utf;                                            \
-		}                                                                  \
+			goto check_utf;                                           \
+		}                                                                 \
 	} while (0)
 	JSTR_BINARY_CHECK();
 	if (jstr_likely(sz > 32)) {
@@ -448,8 +448,8 @@ pjstr_io_alloc_file(const int alloc_exact,
 	if (jstr_unlikely(stat(fname, st)))
 		goto err_close;
 	*cap = alloc_exact
-		? PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOCEXACT(st->st_size + 1))
-		: PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOC(st->st_size));
+	       ? PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOCEXACT(st->st_size + 1))
+	       : PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOC(st->st_size));
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, goto err_close);
 	fread(*s, 1, st->st_size, fp);

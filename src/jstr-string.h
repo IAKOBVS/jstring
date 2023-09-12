@@ -130,33 +130,33 @@ pjstr_strrstr_len_bmh(const unsigned char *R hs,
 		      const size_t nl) JSTR_NOEXCEPT
 {
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                           \
-	do {                                                                      \
-		table_type shift[256];                                           \
-		(sizeof(table_type) == sizeof(size_t))                            \
-		? memset(shift, 0, sizeof(shift))                               \
-		: (memset(shift, 0, 64),                                         \
-		   memset(shift + 64, 0, 64),                                    \
-		   memset(shift + 64 + 64, 0, 64),                               \
-		   memset(shift + 64 + 64 + 64, 0, 64));                         \
+#define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                       \
+	do {                                                                  \
+		table_type shift[256];                                        \
+		(sizeof(table_type) == sizeof(size_t))                        \
+		? memset(shift, 0, sizeof(shift))                             \
+		: (memset(shift, 0, 64),                                      \
+		   memset(shift + 64, 0, 64),                                 \
+		   memset(shift + 64 + 64, 0, 64),                            \
+		   memset(shift + 64 + 64 + 64, 0, 64));                      \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i) \
 			shift[H(ne + i)] = i;                                 \
 		const size_t shft1 = mtc1 - shift[H(ne + mtc1)];              \
 		shift[H(ne + mtc1)] = mtc1;                                   \
-		do {                                                              \
-			do {                                                      \
-				hs -= mtc1;                                     \
-				tmp = shift[H(hs)];                            \
-			} while (!tmp & (hs > start));                         \
-			hs -= tmp;                                              \
-			if (mtc1 < 15 || !memcmp(hs + off, ne + off, 8)) {   \
-				if (!memcmp(hs, ne, nl))                       \
-					return (void *)hs;                       \
+		do {                                                          \
+			do {                                                  \
+				hs -= mtc1;                                   \
+				tmp = shift[H(hs)];                           \
+			} while (!tmp & (hs > start));                        \
+			hs -= tmp;                                            \
+			if (mtc1 < 15 || !memcmp(hs + off, ne + off, 8)) {    \
+				if (!memcmp(hs, ne, nl))                      \
+					return (void *)hs;                    \
 				off = (off >= 8 ? off : mtc1) - 8;            \
-			}                                                         \
-			hs -= shft1;                                             \
-		} while (hs > start);                                           \
-		return NULL;                                                      \
+			}                                                     \
+			hs -= shft1;                                          \
+		} while (hs > start);                                         \
+		return NULL;                                                  \
 	} while (0)
 	const unsigned char *const start = hs + nl - 1;
 	hs += hl - 1;
@@ -311,35 +311,35 @@ pjstr_strcasestr_len_bmh(const char *R const hs,
 			 const size_t nl) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                                 \
-	do {                                                                                               \
-		table_type shift[256];                                                                    \
-		(sizeof(table_type) == sizeof(size_t))                                                     \
-		? memset(shift, 0, sizeof(shift))                                                        \
-		: (memset(shift, 0, 64),                                                                  \
-		   memset(shift + 64, 0, 64),                                                             \
-		   memset(shift + 64 + 64, 0, 64),                                                        \
-		   memset(shift + 64 + 64 + 64, 0, 64));                                                  \
-		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                          \
-			shift[HL(n + i)] = i;                                                          \
+#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                            \
+	do {                                                                                          \
+		table_type shift[256];                                                                \
+		(sizeof(table_type) == sizeof(size_t))                                                \
+		? memset(shift, 0, sizeof(shift))                                                     \
+		: (memset(shift, 0, 64),                                                              \
+		   memset(shift + 64, 0, 64),                                                         \
+		   memset(shift + 64 + 64, 0, 64),                                                    \
+		   memset(shift + 64 + 64 + 64, 0, 64));                                              \
+		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                         \
+			shift[HL(n + i)] = i;                                                         \
 		const size_t shft1 = mtc1 - shift[HL(n + mtc1)];                                      \
-		shift[HL(n + mtc1)] = mtc1;                                                            \
-		do {                                                                                       \
-			do {                                                                               \
-				h += mtc1;                                                               \
-				tmp = shift[HL(h)];                                                     \
-			} while ((!tmp) & (h < end));                                                   \
-			h -= tmp;                                                                        \
-			if (tmp < mtc1)                                                                  \
-				continue;                                                                  \
+		shift[HL(n + mtc1)] = mtc1;                                                           \
+		do {                                                                                  \
+			do {                                                                          \
+				h += mtc1;                                                            \
+				tmp = shift[HL(h)];                                                   \
+			} while ((!tmp) & (h < end));                                                 \
+			h -= tmp;                                                                     \
+			if (tmp < mtc1)                                                               \
+				continue;                                                             \
 			if (mtc1 < 15 || !jstr_strcasecmp_len((char *)h + off, (char *)n + off, 8)) { \
-				if (!jstr_strcasecmp_len((char *)h, (char *)n, mtc1))                   \
-					return (char *)h;                                                 \
-				off = (off >= 8 ? off : mtc1) - 8;                                     \
-			}                                                                                  \
-			h += shft1;                                                                      \
-		} while (h < end);                                                                       \
-		return NULL;                                                                               \
+				if (!jstr_strcasecmp_len((char *)h, (char *)n, mtc1))                 \
+					return (char *)h;                                             \
+				off = (off >= 8 ? off : mtc1) - 8;                                    \
+			}                                                                             \
+			h += shft1;                                                                   \
+		} while (h < end);                                                                    \
+		return NULL;                                                                          \
 	} while (0)
 	const unsigned char *h = (unsigned char *)hs;
 	const unsigned char *const n = (unsigned char *)ne;
@@ -360,42 +360,42 @@ pjstr_strcasestr_bmh(const unsigned char *R hs,
 		     const unsigned char *R ne) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                                   \
-	do {                                                                                                 \
-		table_type shift[256];                                                                      \
-		(sizeof(table_type) == sizeof(size_t))                                                       \
-		? memset(shift, 0, sizeof(shift))                                                          \
-		: (memset(shift, 0, 64),                                                                    \
-		   memset(shift + 64, 0, 64),                                                               \
-		   memset(shift + 64 + 64, 0, 64),                                                          \
-		   memset(shift + 64 + 64 + 64, 0, 64));                                                    \
-		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                            \
-			shift[HL(ne + i)] = i;                                                           \
+#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                              \
+	do {                                                                                            \
+		table_type shift[256];                                                                  \
+		(sizeof(table_type) == sizeof(size_t))                                                  \
+		? memset(shift, 0, sizeof(shift))                                                       \
+		: (memset(shift, 0, 64),                                                                \
+		   memset(shift + 64, 0, 64),                                                           \
+		   memset(shift + 64 + 64, 0, 64),                                                      \
+		   memset(shift + 64 + 64 + 64, 0, 64));                                                \
+		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                           \
+			shift[HL(ne + i)] = i;                                                          \
 		const size_t shft1 = mtc1 - shift[HL(ne + mtc1)];                                       \
-		shift[HL(ne + mtc1)] = mtc1;                                                             \
-		goto start_##table_type;                                                                     \
-		for (;;) {                                                                                   \
-			if (jstr_unlikely(hs >= end)) {                                                    \
-				end += jstr_strnlen((char *)end + mtc1, 2048);                            \
-				if (hs > end)                                                              \
-					return NULL;                                                         \
-			}                                                                                    \
-			start_##table_type:;                                                                 \
-			do {                                                                                 \
-				hs += mtc1;                                                                \
-				tmp = shift[HL(hs)];                                                      \
-			} while ((!tmp) & (hs < end));                                                    \
-			hs -= tmp;                                                                         \
-			if (tmp < mtc1)                                                                    \
-				continue;                                                                    \
+		shift[HL(ne + mtc1)] = mtc1;                                                            \
+		goto start_##table_type;                                                                \
+		for (;;) {                                                                              \
+			if (jstr_unlikely(hs >= end)) {                                                 \
+				end += jstr_strnlen((char *)end + mtc1, 2048);                          \
+				if (hs > end)                                                           \
+					return NULL;                                                    \
+			}                                                                               \
+			start_##table_type:;                                                            \
+			do {                                                                            \
+				hs += mtc1;                                                             \
+				tmp = shift[HL(hs)];                                                    \
+			} while ((!tmp) & (hs < end));                                                  \
+			hs -= tmp;                                                                      \
+			if (tmp < mtc1)                                                                 \
+				continue;                                                               \
 			if (mtc1 < 15 || !jstr_strcasecmp_len((char *)hs + off, (char *)ne + off, 8)) { \
-				if (!jstr_strcasecmp_len((char *)hs, (char *)ne, mtc1))                   \
-					return (char *)hs;                                                  \
-				off = (off >= 8 ? off : mtc1) - 8;                                       \
-			}                                                                                    \
-			hs += shft1;                                                                       \
-		}                                                                                            \
-		return NULL;                                                                                 \
+				if (!jstr_strcasecmp_len((char *)hs, (char *)ne, mtc1))                 \
+					return (char *)hs;                                              \
+				off = (off >= 8 ? off : mtc1) - 8;                                      \
+			}                                                                               \
+			hs += shft1;                                                                    \
+		}                                                                                       \
+		return NULL;                                                                            \
 	} while (0)
 	const size_t nl = strlen((char *)ne);
 	size_t hl = jstr_strnlen((char *)hs, nl | 512);
@@ -700,7 +700,7 @@ jstr_strrspn_len(const char *R const s,
 	} while ((sz != 0) & (c0 & c1 & c2 & c3));
 	size_t cnt = ((unsigned char *)s + sz - 1) - p;
 	return ((c0 & c1) == 0)
-	       ? cnt + _c0
+	       ? cnt + c0
 	       : cnt + c2 + 2;
 }
 

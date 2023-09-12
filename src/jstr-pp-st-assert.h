@@ -17048,8 +17048,8 @@
 	PJSTR_PP_ST_ASSERT(PJSTR_PP_IS_STR(PJSTR_PP_EXTRACT_ARGS(INDEX, __VA_ARGS__)), "Passing non-string as string argument!")
 #ifdef PJSTR_PP_HAVE_GENERIC
 #	define PJSTR_PP_IS_STR(s) _Generic((s), \
-	const char *: 1,                           \
-	char *: 1,                                 \
+	const char *: 1,                         \
+	char *: 1,                               \
 	default: 0)
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(...)			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(PJSTR_PP_NARG(__VA_ARGS__), __VA_ARGS__)
 #	define PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_HELPER(num_args, ...) PJSTR_PP_CONCAT(PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS_, num_args, __VA_ARGS__)

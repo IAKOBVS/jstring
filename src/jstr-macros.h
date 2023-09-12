@@ -29,27 +29,27 @@
 				     size_t : expr,                    \
 					      long : expr,             \
 						     long long : expr, \
-								 unsigned long long : _expr
-#	define JSTR_GENERIC_CASE_STR(_bool) \
-		char * : _bool,              \
-			 const char * : _bool
-#	define JSTR_GENERIC_CASE_STR_STACK(_bool, s) \
+								 unsigned long long : expr
+#	define JSTR_GENERIC_CASE_STR(bool) \
+		char * : bool,              \
+			 const char * : bool
+#	define JSTR_GENERIC_CASE_STR_STACK(bool, s) \
 		char(*)[sizeof(s)] : 1,               \
 		const char(*)[sizeof(s)] : 1
-#	define JSTR_GENERIC_CASE_CHAR(_bool) \
-		char : _bool,                 \
-		       const char : _bool
+#	define JSTR_GENERIC_CASE_CHAR(bool) \
+		char : bool,                 \
+		       const char : bool
 #	define JSTR_IS_SIZE(expr) _Generic((expr), \
-	JSTR_GENERIC_CASE_SIZE(1),                    \
+	JSTR_GENERIC_CASE_SIZE(1),                  \
 	default: 0)
 #	define JSTR_IS_STR(expr) _Generic((expr), \
-	JSTR_GENERIC_CASE_STR(1),                    \
+	JSTR_GENERIC_CASE_STR(1),                  \
 	default: 0)
 #	define JSTR_IS_STR_STACK(expr) _Generic((expr), \
-	JSTR_GENERIC_CASE_STR_STACK(1, expr),             \
+	JSTR_GENERIC_CASE_STR_STACK(1, expr),            \
 	default: 0)
 #	define JSTR_IS_CHAR(expr) _Generic((expr), \
-	JSTR_GENERIC_CASE_CHAR(1),                    \
+	JSTR_GENERIC_CASE_CHAR(1),                  \
 	default: 0)
 #	define JSTR_ASSERT_IS_SIZE(expr) \
 		JSTR_ASSERT(JSTR_IS_SIZE(expr), "Passing non-number as number argument!");
@@ -57,18 +57,18 @@
 		JSTR_ASSERT(JSTR_IS_STR(expr), "Passing non-string as string argument!");
 #	define JSTR_ASSERT_IS_CHAR(expr) \
 		JSTR_ASSERT(JSTR_IS_CHAR(expr), "Passing non-char as char argument!");
-#	define JSTR_ASSERT_TYPECHECK(_expr_ty, expr) \
-		JSTR_ASSERT(JSTR_SAME_TYPE(_expr_ty, expr), "Passing the wrong data type!");
+#	define JSTR_ASSERT_TYPECHECK(expr_ty, expr) \
+		JSTR_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
 #else
 #	define JSTR_GENERIC_CASE_SIZE(expr)
-#	define JSTR_GENERIC_CASE_STR(_bool)
-#	define JSTR_GENERIC_CASE_CHAR(_bool)
+#	define JSTR_GENERIC_CASE_STR(bool)
+#	define JSTR_GENERIC_CASE_CHAR(bool)
 #	define JSTR_IS_STR(expr)
 #	define JSTR_IS_CHAR(expr)
 #	define JSTR_ASSERT_IS_SIZE(expr)
 #	define JSTR_ASSERT_IS_STR(expr)
 #	define JSTR_ASSERT_IS_CHAR(expr)
-#	define JSTR_ASSERT_TYPECHECK(_expr_ty, expr)
+#	define JSTR_ASSERT_TYPECHECK(expr_ty, expr)
 #endif /* __GNUC__ || __clang__ */
 
 #if __cplusplus > 199711L
@@ -78,12 +78,12 @@
 #endif
 
 #ifdef static_assert
-#	define JSTR_HAVE_STATIC_ASSERT		  1
-#	define JSTR_ASSERT(expr, msg)		  static_assert(expr, msg)
+#	define JSTR_HAVE_STATIC_ASSERT		 1
+#	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg) static_assert(expr, msg);
 #elif __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_ASSERT(expr, msg) _Static_assert(expr, msg)
+#	define JSTR_ASSERT(expr, msg)	_Static_assert(expr, msg)
 #else
 #	define JSTR_ASSERT(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg)
