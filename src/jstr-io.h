@@ -11,6 +11,7 @@ PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-string.h"
+#include "jstr-io-table.h"
 
 #define R JSTR_RESTRICT
 
@@ -352,7 +353,7 @@ JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
-jstr_io_is_binary_maybe(char *R const buf,
+jstr_io_is_binary_maybe(const char *R buf,
 			const size_t sz) JSTR_NOEXCEPT
 {
 #define JSTR_BINARY_CHECK()                                                       \
@@ -369,14 +370,13 @@ check_utf:;                                                                     
 		}                                                                 \
 	} while (0)
 	JSTR_BINARY_CHECK();
-	if (jstr_likely(sz > 32)) {
-		const char old = *(buf + sz);
-		*(buf + 32) = '\0';
-		const int ret = strcspn(buf, JSTR_UNPRINTABLE) != 32;
-		*(buf + 32) = old;
-		return ret;
-	}
 	return strcspn(buf, JSTR_UNPRINTABLE) != sz;
+	const unsigned char *const end = (unsigned char *)buf + PJSTR_MAX(sz, 64) + 1;
+	const unsigned char *s = (unsigned char *)buf;
+	while (s < end)
+		if (pjstr_io_reject_table[*s++])
+			return 1;
+	return 0;
 }
 
 /*
