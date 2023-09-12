@@ -12,7 +12,6 @@
 ```
 sudo ./install
 ```
-and
 ```
 #include <jstr/jstr.h>
 ```
@@ -20,7 +19,6 @@ or
 ```
 ./build && cp -rf ./jstr ./path/to/library
 ```
-and
 ```
 #include "./jstr/jstr.h"
 ```
