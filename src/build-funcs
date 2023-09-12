@@ -6,10 +6,10 @@ update_if_needed()
 	fi
 }
 perl generate-func.pl "$file" > ../jstr/"$file"
-for file in $(echo *.h | grep -v '-string-.*\.h$'); do
+for file in $(echo j*.h); do
 	update_if_needed "$file" &
 done &
 ./tidy-glibc || exit 0
-for file in $(echo *-string-.*.h); do
+for file in $(echo *-string-*.h); do
 	update_if_needed "$file" &
 done
