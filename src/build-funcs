@@ -4,8 +4,8 @@ update_if_needed()
 	if [ -e ../jstr/"$1" ]; then
 		test "$1" -ot ../jstr/"$1" && exit 0
 	fi
+	perl generate-func.pl "$file" > ../jstr/"$file"
 }
-perl generate-func.pl "$file" > ../jstr/"$file"
 for file in $(echo j*.h); do
 	update_if_needed "$file" &
 done &
