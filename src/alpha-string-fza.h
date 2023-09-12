@@ -15,6 +15,9 @@
 #ifndef PJSTR_STRING_FZA_H
 #define PJSTR_STRING_FZA_H 1
 
+#include "jstr_macros.h"
+
+
 #include "jstr-macros.h"
 
 #include "string-misc.h"
@@ -51,8 +54,11 @@ pjstr_find_zero_ne_all(pjstr_op_ty x1, pjstr_op_ty x2)
 /* Define the "inexact" versions in terms of the exact versions.  */
 #define pjstr_find_zero_low pjstr_find_zero_all
 
+
 #define pjstr_find_eq_low pjstr_find_eq_all
 
+
 #define pjstr_find_zero_eq_low pjstr_find_zero_eq_all
+
 
 #endif /* _STRING_FZA_H */

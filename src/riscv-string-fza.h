@@ -15,6 +15,9 @@
 #ifndef PJSTR_RISCV_STRING_FZA_H
 #define PJSTR_RISCV_STRING_FZA_H 1
 
+#include "jstr_macros.h"
+
+
 #include "jstr-macros.h"
 
 #if defined __riscv_zbb || defined __riscv_xtheadbb

@@ -15,6 +15,12 @@
 #ifndef PJSTR_STRING_SHIFT_H
 #define PJSTR_STRING_SHIFT_H 1
 
+#include "jstr_macros.h"
+
+
+#include "jstr_macros.h"
+
+
 #include "jstr-macros.h"
 
 #include "string-fza.h"

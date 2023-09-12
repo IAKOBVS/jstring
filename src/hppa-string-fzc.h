@@ -15,6 +15,9 @@
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
 
+#include "jstr_macros.h"
+
+
 #include "jstr-macros.h"
 
 #include "string-optype.h"
