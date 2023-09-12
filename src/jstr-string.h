@@ -232,6 +232,48 @@ jstr_memrchr(const void *R _s,
 #endif
 }
 
+/* TODO: this */
+
+#if 0
+
+#	if JSTR_HAVE_MEMRCHR
+JSTR_INLINE
+#	endif
+JSTR_FUNC_PURE
+static void *
+jstr_memrchr(const void *R _s,
+	      int _c,
+	      const size_t _n) JSTR_NOEXCEPT
+{
+#	if JSTR_HAVE_MEMRCHR
+	return (void *)memrchr(_s, _c, _n);
+#	elif JSTR_HAVE_ATTR_MAY_ALIAS
+	typedef unsigned char uc;
+	const uc *const _end = (unsigned char *)_s + _n;
+	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
+	const pjstr_op_ty *_w = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_end, sizeof(pjstr_op_ty));
+	const pjstr_op_ty *const _start = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
+	if ((uc *)_w != _end)
+		if (pjstr_has_eq(*_w, _cc)) {
+			uc *_ret = (unsigned char *)_w + pjstr_index_last_eq(*_w, _cc);
+			if ((_ret <= _end) & (_ret >= (uc *)_start))
+				return (char *)_ret;
+		}
+	for (--_w; _w != _start; --_w)
+		if (pjstr_has_eq(*_w, _cc))
+			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
+	if (pjstr_has_eq(*_start, _cc)) {
+		_w = (pjstr_op_ty *)((uc *)_start + pjstr_index_last_eq(*_start, _cc));
+		return (((void *)_w >= _s) & ((uc *)_w <= _end)) ? (void *)_w : NULL;
+	}
+#	else
+	static_assert(0, "not implemented");
+#	endif
+	return NULL;
+}
+
+#endif
+
 /*
    Find last NE in HS (ASCII).
    Return value:
@@ -783,9 +825,9 @@ JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
 jstr_startswith_len(const char *R const _hs,
-		const char *R const _ne,
-		const size_t _hsz,
-		const size_t _nelen) JSTR_NOEXCEPT
+		    const char *R const _ne,
+		    const size_t _hsz,
+		    const size_t _nelen) JSTR_NOEXCEPT
 {
 	return (_hsz < _nelen) ? 1 : memcmp(_hs, _ne, _nelen);
 }
@@ -804,7 +846,6 @@ jstr_startswith(const char *R const _hs,
 {
 	return jstr_startswith_len(_hs, _ne, strlen(_hs), strlen(_ne));
 }
-
 
 /*
   Count occurences of C in S.
