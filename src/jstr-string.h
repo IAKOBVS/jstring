@@ -28,13 +28,13 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
-
 #if JSTR_HAVE_MEMMEM
 #	define PJSTR_MEMMEM(hs, hlen, ne, nlen) memmem(hs, hlen, ne, nlen)
 #else
 #	define PJSTR_MEMMEM(hs, hlen, ne, nlen) strstr(hs, ne)
 #endif /* HAVE_MEMMEM */
+
+PJSTR_BEGIN_DECLS
 
 /*
   Compare S1 with S2 case-insensitively.
