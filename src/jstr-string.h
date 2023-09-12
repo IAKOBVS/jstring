@@ -188,12 +188,9 @@ jstr_memrchr(const void *R _s,
 	const unsigned char *const _end = (unsigned char *)_s + _n;
 	const pjstr_op_ty *_w = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_end, sizeof(pjstr_op_ty));
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
-	/* End is not aligned. */
 	if ((u *)_w != _end) {
-		/* Found a match. */
 		if (pjstr_has_eq(*_w, _cc)) {
 			unsigned char *const _ret = (u *)_w + pjstr_index_last_eq(*_w, _cc);
-			/* Check if it is within bounds. */
 			if ((_ret <= _end) & (_ret >= (u *)_start))
 				return (void *)_ret;
 		}
@@ -211,12 +208,9 @@ jstr_memrchr(const void *R _s,
 	const unsigned char *_p = (u *)PJSTR_PTR_ALIGN_DOWN(_end, sizeof(pjstr_op_ty));
 	const unsigned char *const _start = (u *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
 	pjstr_op_ty _w;
-	/* End is not aligned. */
 	if (_p != _end) {
-		/* Found a match. */
 		if (pjstr_has_eq(_w = pjstr_uctoword(_p), _cc)) {
 			const unsigned char *const _ret = _p + pjstr_index_last_eq(_w, _cc);
-			/* Check if it is within bounds. */
 			if ((_ret <= _end) & (_ret >= _start))
 				return (void *)_ret;
 		}
