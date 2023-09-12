@@ -179,6 +179,9 @@
 #		define JSTR_MAY_ALIAS		 __attribute__((may_alias))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	else
+#		ifdef __GNUC__
+#			define JSTR_HAVE_ATTR_MAY_ALIAS
+#		endif
 #		define JSTR_MAY_ALIAS
 #	endif
 

@@ -176,103 +176,64 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *R _s,
-	     int _c,
-	     const size_t _n) JSTR_NOEXCEPT
+	      int _c,
+	      const size_t _n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(_s, _c, _n);
 #else
-	_c = (unsigned char)_c;
-	const unsigned char *_end = (unsigned char *)_s + _n;
-	switch (_n % sizeof(pjstr_op_ty)) {
-	case 7:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 6:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 5:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 4:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 3:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 2:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 1:
-		if (*_end-- == _c)
-			return (void *)(_end + 1);
-		/* fallthrough */
-	case 0: break;
-	}
 	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
+	typedef unsigned char u;
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
-	const pjstr_op_ty *_w = (pjstr_op_ty *)_end;
-	const pjstr_op_ty *const _start = (pjstr_op_ty *)_s - 1;
-	for (; _w > _start; --_w)
-		if (pjstr_has_eq(*_w, _cc))
-			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
-#	else
-	const unsigned char *const _start = (unsigned char *)_s - 1;
-	for (pjstr_op_ty _w; _end > _start; _end -= sizeof(pjstr_op_ty))
-		if (pjstr_has_eq(_w = pjstr_uctow(_end), _cc))
-			return (void *)(_end + pjstr_index_last_eq(_w, _cc));
-#	endif
-	return NULL;
-#endif
-}
-
-/* TODO: this */
-
-#if 1
-
-#	if JSTR_HAVE_MEMRCHR
-JSTR_INLINE
-#	endif
-JSTR_FUNC_PURE
-static void *
-_jstr_memrchr(const void *R _s,
-	      int _c,
-	      const size_t _n) JSTR_NOEXCEPT
-{
-#	if JSTR_HAVE_MEMRCHR && 0
-	return (void *)memrchr(_s, _c, _n);
-#	elif JSTR_HAVE_ATTR_MAY_ALIAS
 	const unsigned char *const _end = (unsigned char *)_s + _n;
-	const pjstr_op_ty _cc = pjstr_repeat_bytes(_c);
 	const pjstr_op_ty *_w = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_end, sizeof(pjstr_op_ty));
 	const pjstr_op_ty *const _start = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
-	typedef unsigned char uc;
-	if ((uc *)_w != _end)
+	/* End is not aligned. */
+	if ((u *)_w != _end) {
+		/* Found a match. */
 		if (pjstr_has_eq(*_w, _cc)) {
-			uc *_ret = (unsigned char *)_w + pjstr_index_last_eq(*_w, _cc);
-			if ((_ret <= _end) & (_ret >= (uc *)_start))
-				return (char *)_ret;
+			unsigned char *const _ret = (u *)_w + pjstr_index_last_eq(*_w, _cc);
+			/* Check if it is within bounds. */
+			if ((_ret <= _end) & (_ret >= (u *)_start))
+				return (void *)_ret;
 		}
-	for (--_w; _w >= _start; --_w)
+	}
+	for (--_w; _w > _start; --_w)
 		if (pjstr_has_eq(*_w, _cc))
 			return (void *)((char *)_w + pjstr_index_last_eq(*_w, _cc));
 	if (pjstr_has_eq(*_start, _cc)) {
-		_w = (pjstr_op_ty *)((uc *)_start + pjstr_index_last_eq(*_start, _cc));
-		return (((void *)_w >= _s) & ((uc *)_w <= _end)) ? (void *)_w : NULL;
+		_w = (pjstr_op_ty *)((u *)_start + pjstr_index_last_eq(*_start, _cc));
+		if (((void *)_w >= _s) & ((u *)_w <= _end))
+			return (void *)_w;
 	}
 #	else
-	static_assert(0, "not implemented");
+	const unsigned char *const _end = (unsigned char *)_s + _n;
+	const unsigned char *_p = (u *)PJSTR_PTR_ALIGN_DOWN(_end, sizeof(pjstr_op_ty));
+	const unsigned char *const _start = (u *)PJSTR_PTR_ALIGN_DOWN(_s, sizeof(pjstr_op_ty));
+	pjstr_op_ty _w;
+	/* End is not aligned. */
+	if (_p != _end) {
+		/* Found a match. */
+		_w = pjstr_uctoword(_p);
+		if (pjstr_has_eq(_w, _cc)) {
+			const unsigned char *const _ret = _p + pjstr_index_last_eq(_w, _cc);
+			/* Check if it is within bounds. */
+			if ((_ret <= _end) & (_ret >= _start))
+				return (void *)_ret;
+		}
+	}
+	for (_p -= sizeof(pjstr_op_ty); _p > _start; _p -= sizeof(pjstr_op_ty))
+		if (pjstr_has_eq(_w = pjstr_uctoword(_p), _cc))
+			return (void *)(_p + pjstr_index_last_eq(_w, _cc));
+	if (pjstr_has_eq(_w = pjstr_uctoword(_start), _cc)) {
+		_p = _start + pjstr_index_last_eq(_w, _cc);
+		if (((void *)_p >= _s) & (_p <= _end))
+			return (void *)_p;
+	}
 #	endif
 	return NULL;
-}
-
 #endif
+}
 
 /*
    Find last NE in HS (ASCII).

@@ -851,7 +851,7 @@ jstr_reg_rplc_len_bref(char *R *R const _s,
 		return _ret;
 	const unsigned char *const _rend = (unsigned char *)_rplc + _rplclen;
 	size_t _rdstlen = _rplclen;
-	int _no_bref = 1;
+	unsigned char _no_bref = 1;
 	for (const unsigned char *_rsrc = (unsigned char *)_rplc;
 	     (_rsrc = (unsigned char *)memchr(_rsrc, '\\', _rend - _rsrc));
 	     ++_rsrc) {
