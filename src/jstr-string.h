@@ -214,8 +214,7 @@ jstr_memrchr(const void *R _s,
 	/* End is not aligned. */
 	if (_p != _end) {
 		/* Found a match. */
-		_w = pjstr_uctoword(_p);
-		if (pjstr_has_eq(_w, _cc)) {
+		if (pjstr_has_eq(_w = pjstr_uctoword(_p), _cc)) {
 			const unsigned char *const _ret = _p + pjstr_index_last_eq(_w, _cc);
 			/* Check if it is within bounds. */
 			if ((_ret <= _end) & (_ret >= _start))
