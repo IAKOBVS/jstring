@@ -122,7 +122,7 @@ sub gen_nonmem_funcs
 		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
 			$decl =~ s/static/$G_MACRO_INLINE\n$G_MACRO_MAYBE_UNUSED\nstatic/o;
 		}
-		my $PTR    = ($decl =~ /\([^,)]*\*\*/) ? '&'       : '';
+		my $PTR    = ($decl =~ /\*.*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/)       ? 'return ' : '';
 		$params =~ s/\)/,/;
 		my @OLD_ARGS = split(/\s/, $params);
@@ -216,7 +216,7 @@ sub gen_struct_funcs
 			$RETURN          = '';
 			$RETURNS_END_PTR = 1;
 		}
-		my $PTR = ($decl =~ /\([^,)]*\*\*/) ? '&' : '';
+		my $PTR = ($decl =~ /\([^,)]*\*.*\*/) ? '&' : '';
 		if ($HAS_SZ && $decl =~ /\w*$G_SIZE_PTN(,|\))/o) {
 			if ($1 eq ')') {
 				$decl =~ s/[^(,]*$G_SIZE_PTN(?:,|\))/)/o;
@@ -290,7 +290,7 @@ sub get_regex_size_ptr
 {
 	my ($FUNC_NAME, $params) = @_;
 	if ($FUNC_NAME =~ /$G_NMSPC/o) {
-		$params =~ /size_t[ \t]*\*[ \t]*$G_MACRO_RESTRICT[ \t][^\n]*(\w*sz)/o;
+		$params =~ /\*.*\*.*(\w*sz)/o;
 		return $1;
 	}
 	return 0;
@@ -299,11 +299,11 @@ sub get_regex_size_ptr
 sub is_str_ptr
 {
 	my ($params) = @_;
-	return ($params =~ /[^,\)]*\*\*[^,\)]*s[,\)]/o) ? 1 : 0;
+	return ($params =~ /\*.*\*.*s[,\)]/o) ? 1 : 0;
 }
 
 sub is_size_ptr
 {
 	my ($params) = @_;
-	return ($params =~ /size_t[^,\)]*\*[^,\)]*sz[,\)]/) ? 1 : 0;
+	return ($params =~ /\*.*sz[,\)]/) ? 1 : 0;
 }

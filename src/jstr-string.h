@@ -176,7 +176,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *R s,
-	     int c,
+	     const int c,
 	     const size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR

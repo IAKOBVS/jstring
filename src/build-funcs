@@ -5,11 +5,14 @@ update_if_needed()
 		test "$1" -ot ../jstr/"$1" && exit 0
 	fi
 	perl generate-func.pl "$file" > ../jstr/"$file"
+	echo $file
 }
-for file in $(echo j*.h); do
+mkdir -p ../jstr
+for file in $(echo jstr-*.h); do
 	update_if_needed "$file" &
 done &
-./tidy-glibc || exit 0
-for file in $(echo *-string-*.h); do
+./update-glibc || exit 0
+for file in $(echo *.h | tr ' ' '\n' | grep -v 'jstr'); do
 	update_if_needed "$file" &
 done
+wait

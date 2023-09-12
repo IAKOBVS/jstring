@@ -2,7 +2,7 @@
 #define JSTR_MACROS_H 1
 
 #include "jstr-config.h"
-#include "libc-pointer-arith.h"
+#include "jstr-pointer-arith.h"
 #include <features.h>
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L && !defined __cplusplus
