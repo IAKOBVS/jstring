@@ -960,8 +960,9 @@ jstr_trim_len_p(char *R s,
 {
 	if (jstr_unlikely(*s == '\0'))
 		return s + sz;
-	unsigned char *end = (unsigned char *)s + sz - 1;
-	unsigned char *const start = (unsigned char *)s - 1;
+	typedef unsigned char u;
+	unsigned char *end = (u *)s + sz - 1;
+	unsigned char *const start = (u *)s - 1;
 	while (jstr_isspace(*end)
 	       && --end != start)
 		;
@@ -969,9 +970,9 @@ jstr_trim_len_p(char *R s,
 	while (jstr_isspace(*s++))
 		;
 	--s;
-	memmove(start + 1, s, end - (unsigned char *)s);
-	*(start + (end - (unsigned char *)s + 1)) = '\0';
-	return (char *)(end - (unsigned char *)s);
+	memmove(start + 1, s, end - (u *)s);
+	*(start + (end - (u *)s + 1)) = '\0';
+	return (char *)(end - (u *)s);
 }
 
 /*
