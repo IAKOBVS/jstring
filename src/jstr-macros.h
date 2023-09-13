@@ -74,7 +74,7 @@
 #	define JSTR_ASSERT_TYPECHECK(expr_ty, expr)
 #endif /* __GNUC__ || __clang__ */
 
-#if __cplusplus > 199711L
+#if defined __cplusplus && __cplusplus > 199711L
 #	define JSTR_NOEXCEPT noexcept
 #else
 #	define JSTR_NOEXCEPT
@@ -590,21 +590,21 @@ case '~':
 #endif /* Misc || Xopen */
 
 #ifdef _GNU_SOURCE
-#	define JSTR_HAVE_MEMMEM	     1
-#	define JSTR_HAVE_MEMRCHR	     1
-#	define JSTR_HAVE_STRCHRNUL	     1
-#	define JSTR_HAVE_FGETS_UNLOCKED     1
-#	define JSTR_HAVE_FPUTS_UNLOCKED     1
-#	define JSTR_HAVE_GETWC_UNLOCKED     1
+#	define JSTR_HAVE_MEMMEM	    1
+#	define JSTR_HAVE_MEMRCHR	    1
+#	define JSTR_HAVE_STRCHRNUL	    1
+#	define JSTR_HAVE_FGETS_UNLOCKED    1
+#	define JSTR_HAVE_FPUTS_UNLOCKED    1
+#	define JSTR_HAVE_GETWC_UNLOCKED    1
 #	define JSTR_HAVE_GETWCHAR_UNLOCKED 1
-#	define JSTR_HAVE_FGETWC_UNLOCKED    1
-#	define JSTR_HAVE_FPUTWC_UNLOCKED    1
-#	define JSTR_HAVE_PUTWCHAR_UNLOCKED  1
-#	define JSTR_HAVE_FGETWS_UNLOCKED    1
-#	define JSTR_HAVE_FPUTWS_UNLOCKED    1
-#	define JSTR_HAVE_WMEMPCPY	     1
-#	define JSTR_HAVE_MEMPCPY	     1
-#	define JSTR_HAVE_STRCASESTR	     1
+#	define JSTR_HAVE_FGETWC_UNLOCKED   1
+#	define JSTR_HAVE_FPUTWC_UNLOCKED   1
+#	define JSTR_HAVE_PUTWCHAR_UNLOCKED 1
+#	define JSTR_HAVE_FGETWS_UNLOCKED   1
+#	define JSTR_HAVE_FPUTWS_UNLOCKED   1
+#	define JSTR_HAVE_WMEMPCPY	    1
+#	define JSTR_HAVE_MEMPCPY	    1
+#	define JSTR_HAVE_STRCASESTR	    1
 #endif /* Gnu */
 
 #if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 24) && _POSIX_C_SOURCE >= 199309L) \
