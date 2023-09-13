@@ -310,7 +310,7 @@ jstr_alloc_appendmore(char *R *R const s,
 
 /*
    Insert multiple strings to S.
-   Assumes that S have enough space.
+   Assume that S have enough space.
 */
 template <typename Str,
 	  typename... StrArgs,
@@ -330,7 +330,7 @@ jstr_alloc_appendmore_f(char *R const s,
 
 /*
    Append multiple strings to end of S.
-   Assumes that S have enough space.
+   Assume that S have enough space.
 */
 template <typename Str,
 	  typename... StrArgs,
@@ -355,7 +355,7 @@ jstr_appendmore(char *R *R const s,
 
 /*
    Append multiple strings to end of S.
-   Assumes that S have enough space.
+   Assume that S have enough space.
 */
 template <typename Str,
 	  typename... StrArgs,

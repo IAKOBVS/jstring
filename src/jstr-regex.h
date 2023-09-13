@@ -217,8 +217,8 @@ jstr_reg_exec_len(const regex_t *R preg,
 #endif /* JSTR_REG_EF_STARTEND */
 
 /*
-   Checks if S matches precompiled regex.
-   Returns return value of regexec.
+   Check if S matches precompiled regex.
+   Return return value of regexec.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -231,8 +231,8 @@ jstr_reg_match(const char *R const s,
 }
 
 /*
-   Checks if S matches PTN.
-   Returns return value of regexec or regcomp if it fails.
+   Check if S matches PTN.
+   Return return value of regexec or regcomp if it fails.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -250,9 +250,9 @@ jstr_reg_match_now(const char *R const s,
 }
 
 /*
-   Searches pattern in S.
-   Returns return value of regexec.
-   Stores offset of matched pattern in pmatch.
+   Search pattern in S.
+   Return return value of regexec.
+   Store offset of matched pattern in pmatch.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -266,9 +266,9 @@ jstr_reg_search(const char *R const s,
 }
 
 /*
-   Searches pattern in S.
-   Returns return value of regexec or regcomp if it fails.
-   Stores offset of matched pattern in pmatch.
+   Search pattern in S.
+   Return return value of regexec or regcomp if it fails.
+   Store offset of matched pattern in pmatch.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -289,9 +289,9 @@ jstr_reg_search_now(const char *R const s,
 #ifdef JSTR_REG_EF_STARTEND
 
 /*
-   Searches pattern in S.
-   Returns return value of regexec.
-   Stores offset of matched pattern in pmatch.
+   Search pattern in S.
+   Return return value of regexec.
+   Store offset of matched pattern in pmatch.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -306,9 +306,9 @@ jstr_reg_search_len_now(const char *R const s,
 }
 
 /*
-   Searches pattern in S.
-   Returns return value of regexec.
-   Stores offset of matched pattern in pmatch.
+   Search pattern in S.
+   Return return value of regexec.
+   Store offset of matched pattern in pmatch.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -327,8 +327,8 @@ jstr_reg_search_len(const char *R const s,
 	return jstr_reg_search_len_now(s, sz, preg, pmatch, eflags);
 }
 /*
-   Checks if S matches PTN.
-   Returns return value of regexec or regcomp if it fails.
+   Check if S matches PTN.
+   Return return value of regexec or regcomp if it fails.
 */
 JSTR_FUNC
 JSTR_INLINE

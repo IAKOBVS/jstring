@@ -41,7 +41,7 @@ PJSTR_BEGIN_DECLS
   Slip SRC into DST[AT].
   Return value:
   ptr to '\0' in S.
-  Assumes that S have enough space for SRC.
+  Assume that S have enough space for SRC.
 */
 JSTR_INLINE
 JSTR_FUNC_VOID
@@ -78,6 +78,8 @@ pjstr_rplcat_len_f(char *R const s,
 
 /*
   Slip SRC into DST[AT].
+  Return 0 on malloc error;
+  otherwise 1.
 */
 JSTR_FUNC
 static int
@@ -1013,7 +1015,7 @@ jstr_trim_j(jstr_ty *R const j) JSTR_NOEXCEPT
 
 /*
   Insert SRC into DST[AT].
-  Assumes that S have enough space for SRC.
+  Assume that S have enough space for SRC.
   Return value:
 */
 JSTR_INLINE

@@ -718,7 +718,7 @@ jstr_strrpbrk(const char *R const s,
 }
 
 /*
-  Checks if S2 is in end of S1.
+  Check if S2 is in end of S1.
   Return value:
   0 if true;
   1 if false.
@@ -735,7 +735,7 @@ jstr_endswith_len(const char *R const hs,
 }
 
 /*
-  Checks if S2 is in end of S1.
+  Check if S2 is in end of S1.
   Return value:
   0 if true;
   1 if false.
@@ -751,7 +751,7 @@ jstr_endswith(const char *R const hs,
 }
 
 /*
-  Checks if S1 starts with S2.
+  Check if S1 starts with S2.
   Return value:
   0 if true;
   1 if false.
@@ -768,7 +768,7 @@ jstr_startswith_len(const char *R const hs,
 }
 
 /*
-  Checks if S1 starts wtih S2.
+  Check if S1 starts wtih S2.
   Return value:
   0 if true;
   1 if false.

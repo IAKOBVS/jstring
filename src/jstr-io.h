@@ -301,7 +301,7 @@ pjstr_io_ext_type(const char *R ext) JSTR_NOEXCEPT
 #undef B
 
 /*
-   Returns jstr_io_ext_ty based on the filename extension;
+   Return jstr_io_ext_ty based on the filename extension;
 */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
@@ -320,7 +320,7 @@ jstr_io_ext_type_len(const char *R filename,
 }
 
 /*
-   Returns jstr_io_ext_ty based on the filename extension;
+   Return jstr_io_ext_ty based on the filename extension;
 */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
@@ -344,7 +344,7 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 
 /*/usr/local/code/c/jstring/src
 
-   Checks if the first 32 bytes or fewer contain any unprintable character.
+   Check if the first 32 bytes or fewer contain any unprintable character.
    File must be nul terminated.
 */
 JSTR_NONNULL_ALL
@@ -379,7 +379,7 @@ check_utf:;                                                                     
 }
 
 /*
-   Checks if the first 32 bytes or fewer contain any unprintable character.
+   Check if the first 32 bytes or fewer contain any unprintable character.
    File must be nul terminated.
 */
 JSTR_NONNULL_ALL
@@ -393,7 +393,7 @@ jstr_io_is_binary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
 }
 
 /*
-   Checks the whole file for a NUL byte.
+   Check the whole file for a NUL byte.
 */
 JSTR_NONNULL_ALL
 JSTR_MAYBE_UNUSED
@@ -415,7 +415,7 @@ jstr_io_is_binary(const char *R const buf,
 #undef PJSTR_UTF_SZ
 
 /*
-   Checks the whole file for any unprintable character.
+   Check the whole file for any unprintable character.
    File must be nul terminated.
 */
 JSTR_NONNULL_ALL

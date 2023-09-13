@@ -36,7 +36,7 @@
 /* Cast an integer VAL to void * pointer.  */
 #	define cast_to_pointer(val) ((void *)(uintptr_t)(val))
 
-/* Returns the ptrdiff_t difference between P1 and P2.  */
+/* Return the ptrdiff_t difference between P1 and P2.  */
 #	define PJSTR_PTR_DIFF(p1, p2) \
 		((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 #endif

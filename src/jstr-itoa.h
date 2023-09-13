@@ -391,7 +391,7 @@ PJSTR_BEGIN_DECLS
 		PJSTR_ULLTOA_UNROLLED(nptr, number, base); \
 	} while (0)
 
-/* Returns ptr to '\0' after the last digit in the DEST string. */
+/* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
@@ -402,7 +402,7 @@ jstr_itoa(char *R nptr,
 	PJSTR_ITOA_UNROLLED(nptr, number, base);
 }
 
-/* Returns ptr to '\0' after the last digit in the DEST string. */
+/* Return ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
 jstr_lltoa(char *R nptr,
@@ -418,7 +418,7 @@ jstr_lltoa(char *R nptr,
 	PJSTR_ULLTOA_UNROLLED(nptr, number, base);
 }
 
-/* Returns ptr to '\0' after the last digit in the DEST string. */
+/* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
@@ -429,7 +429,7 @@ jstr_ltoa(char *R nptr,
 	return jstr_lltoa(nptr, number, base);
 }
 
-/* Returns ptr to '\0' after the last digit in the DEST string. */
+/* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
@@ -440,7 +440,7 @@ jstr_utoa(char *R nptr,
 	PJSTR_UTOA_UNROLLED(nptr, number, base);
 }
 
-/* Returns ptr to '\0' after the last digit in the DEST string. */
+/* Return ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
 jstr_ulltoa(char *R nptr,
@@ -452,7 +452,7 @@ jstr_ulltoa(char *R nptr,
 	PJSTR_ULLTOA_UNROLLED(nptr, number, base);
 }
 
-/* Returns ptr to '\0' after the last digit in the DEST string. */
+/* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
