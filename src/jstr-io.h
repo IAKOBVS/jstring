@@ -342,9 +342,8 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 #define PJSTR_UTF    "\xEF\xBB\xBF"
 #define PJSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
-#define JSTR_UNPRINTABLE "\x01\x02\x03\x04\x05\x06\x07\x08\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x7F"
+/*/usr/local/code/c/jstring/src
 
-/*
    Checks if the first 32 bytes or fewer contain any unprintable character.
    File must be nul terminated.
 */
@@ -362,15 +361,13 @@ jstr_io_is_binary_maybe(const char *R buf,
 			if (jstr_unlikely(!memcmp(buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
 				return 1;                                         \
 check_utf:;                                                                       \
-			unsigned char *R s = (unsigned char *)buf;                \
-			if (!memcmp(s, PJSTR_UTF, PJSTR_UTF_SZ))                  \
+			if (!memcmp(buf, PJSTR_UTF, PJSTR_UTF_SZ))                  \
 				return 0;                                         \
 		} else if (jstr_likely(sz == PJSTR_UTF_SZ)) {                     \
 			goto check_utf;                                           \
 		}                                                                 \
 	} while (0)
 	JSTR_BINARY_CHECK();
-	return strcspn(buf, JSTR_UNPRINTABLE) != sz;
 	const unsigned char *const end = (unsigned char *)buf + PJSTR_MAX(sz, 64) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
@@ -414,7 +411,6 @@ jstr_io_is_binary(const char *R const buf,
 #undef PJSTR_ELF_SZ
 #undef PJSTR_UTF
 #undef PJSTR_UTF_SZ
-#undef JSTR_UNPRINTABLE
 
 /*
    Checks the whole file for any unprintable character.
