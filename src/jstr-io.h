@@ -367,8 +367,10 @@ check_utf:;                                                                     
 			goto check_utf;                                           \
 		}                                                                 \
 	} while (0)
+	if (jstr_unlikely(sz == 0))
+		return 0;
 	JSTR_BINARY_CHECK();
-	const unsigned char *const end = (unsigned char *)buf + PJSTR_MAX(sz, 64) + 1;
+	const unsigned char *const end = (unsigned char *)buf + PJSTR_MIN(sz, 64) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
 		if (pjstr_io_reject_table[*s++])

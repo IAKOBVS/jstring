@@ -239,13 +239,8 @@
 #	define JSTR_NOINLINE
 #endif /* noinline */
 
-#ifndef PJSTR_MAX
-#	define PJSTR_MAX(a, b) (((a) > (b)) ? (a) : (b))
-#endif /* Max */
-
-#ifndef JSTR_MIN
-#	define JSTR_MIN(a, b) (((a) < (b)) ? (a) : (b))
-#endif /* Min */
+#define PJSTR_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define PJSTR_MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 #define JSTR_CASE_VOWEL_LOWER \
 case 'a':                     \
