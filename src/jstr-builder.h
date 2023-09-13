@@ -287,7 +287,7 @@ jstr_pop_back(char *R const s,
 {
 	if (jstr_unlikely(*sz == 0))
 		return;
-	s[(*sz)-- - 1] = '\0';
+	s[--*sz] = '\0';
 }
 
 /*
