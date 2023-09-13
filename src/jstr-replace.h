@@ -917,7 +917,6 @@ static void
 jstr_rev_len(char *R s,
 	     size_t sz) JSTR_NOEXCEPT
 {
-#if 0
 	char c0, c1, c2, c3;
 	size_t i = 0;
 	switch (--sz % 4) {
@@ -956,14 +955,6 @@ jstr_rev_len(char *R s,
 		s[sz - 2] = c2;
 		s[sz - 3] = c3;
 	}
-#else /* It seems that unrolling is slower */
-	char c0;
-	for (size_t i = 0; jstr_likely(i < sz); i += 4, sz -= 4) {
-		c0 = s[i];
-		s[i] = s[sz];
-		s[sz] = c0;
-	}
-#endif
 }
 
 JSTR_INLINE

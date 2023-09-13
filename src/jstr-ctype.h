@@ -276,27 +276,8 @@ static void
 jstr_tolower_str_len(char *R s,
 		     const size_t sz)
 {
-	unsigned char skip;
-	switch (sz % 4) {
-	case 3:
-		skip = 3;
-		goto do3;
-	case 2:
-		skip = 2;
-		goto do2;
-	case 1:
-		skip = 1;
-		goto do1;
-	case 0:
-		break;
-do3:
-		s[2] = jstr_tolower(s[2]);
-do2:
-		s[1] = jstr_tolower(s[1]);
-do1:
-		s[0] = jstr_tolower(s[0]);
-		s += skip;
-	}
+	for (int i = sz % 4; i-- > 0; ++s)
+		*s = jstr_tolower(*s);
 	for (; (s[0] = jstr_tolower(s[0])); s += 4) {
 		s[1] = jstr_tolower(s[1]);
 		s[2] = jstr_tolower(s[2]);
@@ -311,27 +292,8 @@ static void
 jstr_toupper_str_len(char *R s,
 		     const size_t sz)
 {
-	unsigned char skip;
-	switch (sz % 4) {
-	case 3:
-		skip = 3;
-		goto do3;
-	case 2:
-		skip = 2;
-		goto do2;
-	case 1:
-		skip = 1;
-		goto do1;
-	case 0:
-		break;
-do3:
-		s[2] = jstr_toupper(s[2]);
-do2:
-		s[1] = jstr_toupper(s[1]);
-do1:
-		s[0] = jstr_toupper(s[0]);
-		s += skip;
-	}
+	for (int i = sz % 4; i-- > 0; ++s)
+		*s = jstr_toupper(*s);
 	for (; (s[0] = jstr_toupper(s[0])); s += 4) {
 		s[1] = jstr_toupper(s[1]);
 		s[2] = jstr_toupper(s[2]);

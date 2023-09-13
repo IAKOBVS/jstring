@@ -598,20 +598,9 @@ jstr_strrcspn_len(const char *R const s,
 		t[*p] = 1;
 	while (*p++);
 	p = (unsigned char *)s + sz - 1;
-	switch (sz % 4) {
-	case 3:
-		if (!t[*p--])
-			return 0;
-		/* fallthrough */
-	case 2:
-		if (!t[*p--])
+	for (int i = sz % 4; i-- > 0;)
+		if (t[*p--])
 			return ((unsigned char *)s + sz - 1) - (p + 1);
-		/* fallthrough */
-	case 1:
-		if (!t[*p--])
-			return ((unsigned char *)s + sz - 1) - (p + 1);
-	case 0: break;
-	}
 	if (jstr_unlikely(sz < 4))
 		return sz;
 	unsigned int c0, c1, c2, c3;
@@ -622,7 +611,7 @@ jstr_strrcspn_len(const char *R const s,
 		c3 = t[p[-3]];
 		p -= 4;
 		sz -= 4;
-	} while ((sz != 0) & (c0 | c1 | c2 | c3));
+	} while (((sz == 0) | c0 | c1 | c2 | c3) == 0);
 	size_t cnt = ((unsigned char *)s + sz - 1) - p;
 	return ((c0 | c1) != 0)
 	       ? cnt - c0 + 1
@@ -670,20 +659,9 @@ jstr_strrspn_len(const char *R const s,
 		t[*p++] = 1;
 	while (*p);
 	p = (unsigned char *)s + sz - 1;
-	switch (sz % 4) {
-	case 3:
-		if (!t[*p--])
-			return 0;
-		/* fallthrough */
-	case 2:
+	for (int i = sz % 4; i-- > 0;)
 		if (!t[*p--])
 			return ((unsigned char *)s + sz - 1) - (p + 1);
-		/* fallthrough */
-	case 1:
-		if (!t[*p--])
-			return ((unsigned char *)s + sz - 1) - (p + 1);
-	case 0: break;
-	}
 	if (jstr_unlikely(sz < 4))
 		return sz;
 	unsigned int c0, c1, c2, c3;
