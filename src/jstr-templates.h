@@ -177,10 +177,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(size_t *sz,
 		       char **dst,
-		       Str &&_arg,
+		       Str &&arg,
 		       StrArgs &&...args) JSTR_NOEXCEPT
 {
-	appendmore_assign(sz, dst, std::forward<Str>(_arg));
+	appendmore_assign(sz, dst, std::forward<Str>(arg));
 	appendmore_loop_assign(sz, dst, std::forward<StrArgs>(args)...);
 }
 
@@ -190,10 +190,10 @@ template <typename Str,
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(char **dst,
-		       Str &&_arg,
+		       Str &&arg,
 		       StrArgs &&...args) JSTR_NOEXCEPT
 {
-	appendmore_assign(dst, std::forward<Str>(_arg));
+	appendmore_assign(dst, std::forward<Str>(arg));
 	appendmore_loop_assign(dst, std::forward<StrArgs>(args)...);
 }
 
@@ -215,9 +215,9 @@ JSTR_PURE
 JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static size_t
 strlen(size_t *R *R strlen_arr,
-       Str &&_arg) JSTR_NOEXCEPT
+       Str &&arg) JSTR_NOEXCEPT
 {
-	return ((*(*strlen_arr)++) = ::strlen(std::forward<Str>(_arg)));
+	return ((*(*strlen_arr)++) = ::strlen(std::forward<Str>(arg)));
 }
 
 template <typename Str,
@@ -273,10 +273,10 @@ JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 appendmore_loop_assign(char **dst,
 		       size_t *strlen_arr,
-		       Str &&_arg,
+		       Str &&arg,
 		       StrArgs &&...args) JSTR_NOEXCEPT
 {
-	appendmore_assign(dst, &strlen_arr, std::forward<Str>(_arg));
+	appendmore_assign(dst, &strlen_arr, std::forward<Str>(arg));
 	appendmore_loop_assign(dst, strlen_arr, std::forward<StrArgs>(args)...);
 }
 
@@ -295,16 +295,16 @@ JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_alloc_appendmore(char *R *R const s,
 		      size_t *const sz,
 		      size_t *const cap,
-		      Str &&_arg,
+		      Str &&arg,
 		      StrArgs &&...args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(args)];
-	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
+	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*cap = *sz * 2;
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, return);
 	char *p = *s;
-	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
+	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
 }
 
@@ -319,12 +319,12 @@ JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_alloc_appendmore_f(char *R const s,
 			size_t *const sz,
-			Str &&_arg,
+			Str &&arg,
 			StrArgs &&...args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(args)];
-	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
-	jstr::priv::appendmore_loop_assign(&s, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
+	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
+	jstr::priv::appendmore_loop_assign(&s, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
 
@@ -340,15 +340,15 @@ JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_appendmore(char *R *R const s,
 		size_t *const sz,
 		size_t *const cap,
-		Str &&_arg,
+		Str &&arg,
 		StrArgs &&...args) JSTR_NOEXCEPT
 {
 	size_t strlen_arr[1 + sizeof...(args)];
-	const size_t newsz = *sz + jstr::priv::strlen_args(strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
+	const size_t newsz = *sz + jstr::priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	if (*cap < *sz)
 		PJSTR_REALLOC(*s, *cap, newsz + 1, return);
 	char *p = *s + *sz;
-	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
+	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
 	*sz = newsz;
 }
@@ -364,11 +364,11 @@ JSTR_INLINE
 JSTR_NONNULL_ALL JSTR_NOTHROW static void
 jstr_appendmore_f(char *s,
 		  size_t *R sz,
-		  Str &&_arg,
+		  Str &&arg,
 		  StrArgs &&...args) JSTR_NOEXCEPT
 {
 	s += *sz;
-	jstr::priv::appendmore_loop_assign(sz, &s, std::forward<Str>(_arg), std::forward<StrArgs>(args)...);
+	jstr::priv::appendmore_loop_assign(sz, &s, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*s = '\0';
 }
 
