@@ -157,12 +157,12 @@ pjstr_rplcat_len(char *R *R const s,
 JSTR_INLINE
 JSTR_FUNC
 static int
-jstr_slipaftchr_len(char *R *R const s,
-		    size_t *R const sz,
-		    size_t *R const cap,
-		    const int c,
-		    const char *R const src,
-		    const size_t srclen) JSTR_NOEXCEPT
+jstr_slipafterchr_len(char *R *R const s,
+		      size_t *R const sz,
+		      size_t *R const cap,
+		      const int c,
+		      const char *R const src,
+		      const size_t srclen) JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(*s, c, *sz);
 	if (p != NULL)
@@ -173,13 +173,13 @@ jstr_slipaftchr_len(char *R *R const s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slipaftchr(char *R *R const s,
-		size_t *R const sz,
-		size_t *R const cap,
-		const int c,
-		const char *R const src) JSTR_NOEXCEPT
+jstr_slipafterchr(char *R *R const s,
+		  size_t *R const sz,
+		  size_t *R const cap,
+		  const int c,
+		  const char *R const src) JSTR_NOEXCEPT
 {
-	return jstr_slipaftchr_len(s, sz, cap, c, src, strlen(src));
+	return jstr_slipafterchr_len(s, sz, cap, c, src, strlen(src));
 }
 
 /*
@@ -189,12 +189,12 @@ jstr_slipaftchr(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_slipaftallchr_len(char *R *R const s,
-		       size_t *R const sz,
-		       size_t *R const cap,
-		       const int c,
-		       const char *R const src,
-		       const size_t srclen) JSTR_NOEXCEPT
+jstr_slipafterallchr_len(char *R *R const s,
+			 size_t *R const sz,
+			 size_t *R const cap,
+			 const int c,
+			 const char *R const src,
+			 const size_t srclen) JSTR_NOEXCEPT
 {
 	size_t off = 0;
 	const char *p;
@@ -210,13 +210,13 @@ jstr_slipaftallchr_len(char *R *R const s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slipaftallchr(char *R *R const s,
-		   size_t *R const sz,
-		   size_t *R const cap,
-		   const int c,
-		   const char *R const src) JSTR_NOEXCEPT
+jstr_slipafterallchr(char *R *R const s,
+		     size_t *R const sz,
+		     size_t *R const cap,
+		     const int c,
+		     const char *R const src) JSTR_NOEXCEPT
 {
-	return jstr_slipaftallchr_len(s, sz, cap, c, src, strlen(src));
+	return jstr_slipafterallchr_len(s, sz, cap, c, src, strlen(src));
 }
 
 /*
@@ -226,16 +226,16 @@ jstr_slipaftallchr(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_slipaft_len(char *R *R const s,
-		 size_t *R const sz,
-		 size_t *R const cap,
-		 const char *R const find,
-		 const char *R const src,
-		 const size_t findlen,
-		 const size_t srclen) JSTR_NOEXCEPT
+jstr_slipafter_len(char *R *R const s,
+		   size_t *R const sz,
+		   size_t *R const cap,
+		   const char *R const find,
+		   const char *R const src,
+		   const size_t findlen,
+		   const size_t srclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 1))
-		return jstr_slipaftchr_len(s, sz, cap, *find, src, srclen);
+		return jstr_slipafterchr_len(s, sz, cap, *find, src, srclen);
 	if (jstr_unlikely(findlen == 0))
 		return 1;
 	const char *const p = (char *)PJSTR_MEMMEM(*s, *sz, find, findlen);
@@ -247,13 +247,13 @@ jstr_slipaft_len(char *R *R const s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slipaft(char *R *R const s,
-	     size_t *R const sz,
-	     size_t *R const cap,
-	     const char *R const find,
-	     const char *R const src) JSTR_NOEXCEPT
+jstr_slipafter(char *R *R const s,
+	       size_t *R const sz,
+	       size_t *R const cap,
+	       const char *R const find,
+	       const char *R const src) JSTR_NOEXCEPT
 {
-	return jstr_slipaft_len(s, sz, cap, find, src, strlen(find), strlen(src));
+	return jstr_slipafter_len(s, sz, cap, find, src, strlen(find), strlen(src));
 }
 
 /*
@@ -263,16 +263,16 @@ jstr_slipaft(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_slipaftall_len(char *R *R const s,
-		    size_t *R const sz,
-		    size_t *R const cap,
-		    const char *R const find,
-		    const char *R const src,
-		    const size_t findlen,
-		    const size_t srclen) JSTR_NOEXCEPT
+jstr_slipafterall_len(char *R *R const s,
+		      size_t *R const sz,
+		      size_t *R const cap,
+		      const char *R const find,
+		      const char *R const src,
+		      const size_t findlen,
+		      const size_t srclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 1))
-		return jstr_slipaftallchr_len(s, sz, cap, *find, src, srclen);
+		return jstr_slipafterallchr_len(s, sz, cap, *find, src, srclen);
 	if (jstr_unlikely(findlen == 0))
 		return 1;
 	size_t off = 0;
@@ -289,13 +289,13 @@ jstr_slipaftall_len(char *R *R const s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_slipaftall(char *R *R const s,
-		size_t *R const sz,
-		size_t *R const cap,
-		const char *R const find,
-		const char *R const src) JSTR_NOEXCEPT
+jstr_slipafterall(char *R *R const s,
+		  size_t *R const sz,
+		  size_t *R const cap,
+		  const char *R const find,
+		  const char *R const src) JSTR_NOEXCEPT
 {
-	return jstr_slipaftall_len(s, sz, cap, find, src, strlen(find), strlen(src));
+	return jstr_slipafterall_len(s, sz, cap, find, src, strlen(find), strlen(src));
 }
 
 /*
@@ -1073,12 +1073,12 @@ jstr_insert(char *R *R const s,
 JSTR_INLINE
 JSTR_FUNC
 static int
-jstr_insertaftchr_len(char *R *R const s,
-		      size_t *R const sz,
-		      size_t *R const cap,
-		      const int c,
-		      const char *R const src,
-		      const size_t srclen) JSTR_NOEXCEPT
+jstr_insertafterchr_len(char *R *R const s,
+			size_t *R const sz,
+			size_t *R const cap,
+			const int c,
+			const char *R const src,
+			const size_t srclen) JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(*s, c, *sz);
 	if (p != NULL)
@@ -1089,13 +1089,13 @@ jstr_insertaftchr_len(char *R *R const s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_insertaftchr(char *R *R const s,
-		  size_t *R const sz,
-		  size_t *R const cap,
-		  const int c,
-		  const char *R const src) JSTR_NOEXCEPT
+jstr_insertafterchr(char *R *R const s,
+		    size_t *R const sz,
+		    size_t *R const cap,
+		    const int c,
+		    const char *R const src) JSTR_NOEXCEPT
 {
-	return jstr_insertaftchr_len(s, sz, cap, c, src, strlen(src));
+	return jstr_insertafterchr_len(s, sz, cap, c, src, strlen(src));
 }
 
 /*
@@ -1105,16 +1105,16 @@ jstr_insertaftchr(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_insertaft_len(char *R *R const s,
-		   size_t *R const sz,
-		   size_t *R const cap,
-		   const char *R const find,
-		   const char *R const src,
-		   const size_t findlen,
-		   const size_t srclen) JSTR_NOEXCEPT
+jstr_insertafter_len(char *R *R const s,
+		     size_t *R const sz,
+		     size_t *R const cap,
+		     const char *R const find,
+		     const char *R const src,
+		     const size_t findlen,
+		     const size_t srclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 1))
-		return jstr_insertaftchr_len(s, sz, cap, *find, src, srclen);
+		return jstr_insertafterchr_len(s, sz, cap, *find, src, srclen);
 	if (jstr_unlikely(findlen == 0))
 		return 1;
 	const char *const p = (char *)PJSTR_MEMMEM(*s, *sz, find, findlen);
@@ -1126,13 +1126,13 @@ jstr_insertaft_len(char *R *R const s,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_insertaft(char *R *R const s,
-	       size_t *R const sz,
-	       size_t *R const cap,
-	       const char *R const find,
-	       const char *R const src) JSTR_NOEXCEPT
+jstr_insertafter(char *R *R const s,
+		 size_t *R const sz,
+		 size_t *R const cap,
+		 const char *R const find,
+		 const char *R const src) JSTR_NOEXCEPT
 {
-	return jstr_insertaft_len(s, sz, cap, find, src, strlen(find), strlen(src));
+	return jstr_insertafter_len(s, sz, cap, find, src, strlen(find), strlen(src));
 }
 
 PJSTR_END_DECLS
