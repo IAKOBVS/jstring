@@ -34,7 +34,7 @@
 		char * : bool_,              \
 			 const char * : bool_
 #	define JSTR_GENERIC_CASE_STR_STACK(bool_, s) \
-		char(*)[sizeof(s)] : 1,              \
+		char(*)[sizeof(s)] : 1,               \
 		const char(*)[sizeof(s)] : 1
 #	define JSTR_GENERIC_CASE_CHAR(bool_) \
 		char : bool_,                 \
@@ -725,6 +725,75 @@ case '~':
 #else
 #	define PJSTR_BEGIN_DECLS
 #	define PJSTR_END_DECLS
+#endif
+
+#if JSTR_USE_UNLOCKED_IO
+#	if JSTR_HAVE_FGETS_UNLOCKED
+#		define fgets(s, n, stream) fgets_unlocked(s, n, stream)
+#	endif
+#	if JSTR_HAVE_FPUTS_UNLOCKED
+#		define fputs(s, stream) fputs_unlocked(s, stream)
+#	endif
+#	if JSTR_HAVE_GETWC_UNLOCKED
+/* #		define getwc(stream) getwc_unlocked(stream) */
+#	endif
+#	if JSTR_HAVE_GETWCCHAR_UNLOCKED
+/* #		define getwcchar(stream) getwcchar_unlocked(stream) */
+#	endif
+#	if JSTR_HAVE_FGETWC_UNLOCKED
+/* #		define fgetwc(stream) fgetwc_unlocked(stream) */
+#	endif
+#	if JSTR_HAVE_FPUTWC_UNLOCKED
+/* #		define fputwc(wc, stream) fputwc_unlocked(wc, stream) */
+#	endif
+#	if JSTR_HAVE_PUTWCHAR_UNLOCKED
+/* #		define putwchar(wc, stream) putwchar_unlocked(wc, stream) */
+#	endif
+#	if JSTR_HAVE_FGETWS_UNLOCKED
+/* #		define fgetws(stream) fgetws_unlocked(stream) */
+#	endif
+#	if JSTR_HAVE_FPUTWS_UNLOCKED
+/* #		define fputws(stream) fputws_unlocked(stream) */
+#	endif
+#	if JSTR_HAVE_GETC_UNLOCKED
+#		define getc(stream) getc_unlocked(stream)
+#	endif
+#	if JSTR_HAVE_GETCHAR_UNLOCKED
+#		define getchar() getchar_unlocked()
+#	endif
+#	if JSTR_HAVE_PUTC_UNLOCKED
+#		define putc(c, stream) putc_unlocked(c, stream)
+#	endif
+#	if JSTR_HAVE_PUTCHAR_UNLOCKED
+#		define putchar(c) putchar_unlocked(c)
+#	endif
+#	if JSTR_HAVE_FREAD_UNLOCKED
+#		define fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
+#	endif
+#	if JSTR_HAVE_FWRITE_UNLOCKED
+#		define fwrite(ptr, size, n, stream) fwrite_unlocked(ptr, size, n, stream)
+#	endif
+#	if JSTR_HAVE_FPUTC_UNLOCKED
+#		define fputc(stream) fputc_unlocked(stream)
+#	endif
+#	if JSTR_HAVE_FGETC_UNLOCKED
+#		define fgetc(stream) fgetc_unlocked(stream)
+#	endif
+#	if JSTR_HAVE_CLEARERR_UNLOCKED
+#		define clearerr(stream) clearerr_unlocked(stream)
+#	endif
+#	if JSTR_HAVE_FEOF_UNLOCKED
+#		define feof(stream) feof_unlocked(stream)
+#	endif
+#	if JSTR_HAVE_FERROR_UNLOCKED
+#		define ferror(stream) ferror_unlocked(stream)
+#	endif
+#	if JSTR_HAVE_FILENO_UNLOCKED
+#		define fileno(stream) fileno_unlocked(stream)
+#	endif
+#	if JSTR_HAVE_FFLUSH_UNLOCKED
+#		define fflush(stream) fflush_unlocked(stream)
+#	endif
 #endif
 
 #endif /* JSTR_MACROS_H */
