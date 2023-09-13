@@ -441,8 +441,10 @@ pjstr_reg_base_rmall(const pjstr_flag_use_n_ty flag,
 		if (jstr_unlikely(*p == '\0'))
 			break;
 	}
-	if (jstr_likely(dst != old))
-		memmove(dst, old, end - old + 1);
+	if (jstr_likely(dst != old)) {
+		memmove(dst, old, end - old);
+		dst[end - old] = '\0';
+	}
 	*sz = (char *)dst + (end - old) - s;
 	return ret;
 }
@@ -590,7 +592,8 @@ pjstr_reg_base_rplcall_len(const pjstr_flag_use_n_ty flag,
 		}
 	}
 	if (dst != old) {
-		memmove(dst, old, (*(u **)s + *sz) - old + 1);
+		memmove(dst, old, (*(u **)s + *sz) - old);
+		dst[(*(u **)s + *sz) - old] = '\0';
 		*sz = (dst + (*(u **)s + *sz - old)) - *(u **)s;
 	}
 	return ret;
@@ -959,7 +962,8 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty nflag,
 			PJSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rdstp, rdstlen, findlen, tmp, ret = JSTR_REG_RET_ENOMEM; goto cleanup);
 	}
 	if (dst != old) {
-		memmove(dst, old, (*(u **)s + *sz) - old + 1);
+		memmove(dst, old, (*(u **)s + *sz) - old);
+		dst[(*(u **)s + *sz) - old] = '\0';
 		*sz = (dst + (*(u **)s + *sz - old)) - *(u **)s;
 	}
 cleanup:

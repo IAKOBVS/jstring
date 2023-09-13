@@ -68,7 +68,7 @@ jstr_stpcpy(char *R dst,
 #else
 	const size_t len = strlen(src);
 	memcpy(dst, src, len);
-	*(dst + len) = '\0';
+	dst[len] = '\0';
 	return dst + len;
 #endif /* !JSTR_HAVE_STPCPY */
 }
@@ -86,8 +86,12 @@ jstr_memccpy(void *R dst,
 	return memccpy(dst, src, c, n);
 #else
 	void *p = (void *)memchr(src, c, n);
-	if (p != NULL)
-		return jstr_mempcpy(dst, src, (unsigned char *)p - (unsigned char *)src + 1);
+	if (p != NULL) {
+		typedef unsigned char u;
+		memcpy(dst, src, (u *)p - (u *)src);
+		*((u *)dst + ((u *)p - (u *)src)) = '\0';
+		return (void *)((u *)dst + ((u *)p - (u *)src));
+	}
 	memcpy(dst, src, n);
 	return NULL;
 #endif /* HAVE_MEMCPY */

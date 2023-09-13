@@ -272,7 +272,8 @@ jstr_push_front(char *R *R const s,
 {
 	if (jstr_unlikely(*cap == *sz + 1))
 		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
-	memmove(*s + 1, *s, (*sz)++ + 1);
+	memmove(*s + 1, *s, *sz);
+	*(*s + ++*sz) = '\0';
 	**s = c;
 }
 
