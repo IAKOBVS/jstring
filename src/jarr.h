@@ -63,7 +63,7 @@ PJSTR_END_DECLS
 		[0] = (value);                                                                 \
 	} while (0)
 /* Allocate and pushes to PTR. */
-#define jarr_alloc_appendmore(j, ...)                                                                 \
+#define jarr_alloc_assign(j, ...)                                                                 \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
 		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
