@@ -981,7 +981,7 @@ jstr_trim_len_p(char *R s,
 	--s;
 	memmove(start + 1, s, end - (u *)s);
 	(start + 1)[end - (u *)s] = '\0';
-	return (char *)(end - (u *)s);
+	return (char *)start + (end - (u *)s);
 }
 
 /*
