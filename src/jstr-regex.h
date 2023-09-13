@@ -892,7 +892,7 @@ jstr_reg_rplc_bref(char *R *R const s,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty nflag,
+pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty flag,
 				char *R *R const s,
 				size_t *R const sz,
 				size_t *R const cap,
@@ -904,7 +904,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty nflag,
 				const size_t nmatch) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplclen == 0)) {
-		if (nflag & PJSTR_FLAG_USE_N)
+		if (flag & PJSTR_FLAG_USE_N)
 			return jstr_reg_rmn(*s, sz, n, preg, eflags);
 		return jstr_reg_rmall(*s, sz, preg, eflags);
 	}
@@ -922,7 +922,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty nflag,
 	const unsigned char *const rend = (u *)rplc + rplclen;
 	unsigned char *tmp;
 	size_t findlen;
-	while (((nflag & PJSTR_FLAG_USE_N) ? n-- : 1)
+	while (((flag & PJSTR_FLAG_USE_N) ? n-- : 1)
 	       && *p
 	       && PJSTR_REG_EXEC(preg, (char *)p, (*(u **)s + *sz) - p, nmatch, rm, eflags) != JSTR_REG_RET_NOERROR) {
 		ret = JSTR_REG_RET_NOERROR;

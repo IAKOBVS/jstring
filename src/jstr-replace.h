@@ -400,6 +400,8 @@ pjstr_rmallchr_len_p(const pjstr_flag_use_n_ty flag,
 	while ((flag & PJSTR_FLAG_USE_N ? n-- : 1)
 	       && (p = (unsigned char *)memchr(p, c, end - p)))
 		PJSTR_RMALL_IN_PLACE(dst, old, p, 1);
+	if (jstr_unlikely(dst == (unsigned char *)s))
+		return s + sz;
 	memmove(dst, old, end - old);
 	dst[end - old] = '\0';
 	return (char *)dst + (end - old);
@@ -433,8 +435,10 @@ jstr_rmallchr_p(char *R const s,
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
-	while (*(p = (unsigned char *)strchrnul((char *)p, c)))
+	while (*(p = (unsigned char *)jstr_strchrnul((char *)p, c)))
 		PJSTR_RMALL_IN_PLACE(dst, old, p, 1);
+	if (jstr_unlikely(dst == (unsigned char *)s))
+		return (char *)p;
 	memmove(dst, old, p - old);
 	dst[p - old] = '\0';
 	return (char *)dst + (p - old);
@@ -476,6 +480,8 @@ jstr_rmnc_p(char *R const s,
 	const unsigned char *p = dst;
 	while (n-- && *(p = (unsigned char *)strchrnul((char *)p, c)))
 		PJSTR_RMALL_IN_PLACE(dst, old, p, 1);
+	if (jstr_unlikely(dst == (unsigned char *)s))
+		return s + n;
 	memmove(dst, old, p - old);
 	dst[p - old] = '\0';
 	return (char *)dst + (p - old);
@@ -499,6 +505,8 @@ jstr_stripspn_p(char *R const s,
 	const unsigned char *p = dst;
 	while (*(p += strcspn((char *)p, rjct)))
 		PJSTR_RMALL_IN_PLACE(dst, old, p, 1);
+	if (jstr_unlikely(dst == (unsigned char *)s))
+		return (char *)p;
 	memmove(dst, old, p - old);
 	dst[p - old] = '\0';
 	return (char *)dst + (p - old);
@@ -714,19 +722,15 @@ pjstr_rmall_len_p(const pjstr_flag_use_n_ty flag,
 		return pjstr_rmallchr_len_p(flag, s, *find, n, sz);
 	if (jstr_unlikely(findlen == 0))
 		return s + sz;
-	if (flag & PJSTR_FLAG_USE_N)
-		if (jstr_unlikely(n == 0))
-			return s + sz;
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *old = dst;
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
-	while ((p = (unsigned char *)PJSTR_MEMMEM((char *)p, end - p, find, findlen))) {
+	while (((flag & PJSTR_FLAG_USE_N) ? n-- : 1)
+	       && (p = (unsigned char *)PJSTR_MEMMEM((char *)p, end - p, find, findlen)))
 		PJSTR_RMALL_IN_PLACE(dst, old, p, findlen);
-		if (flag & PJSTR_FLAG_USE_N)
-			if (jstr_unlikely(!--n))
-				break;
-	}
+	if (jstr_unlikely(dst == (unsigned char *)s))
+		return s + sz;
 	memmove(dst, old, end - old);
 	dst[end - old] = '\0';
 	return (char *)dst + (end - old);
@@ -830,24 +834,21 @@ pjstr_rplcall_len(const pjstr_flag_use_n_ty flag,
 	}
 	if (jstr_unlikely(findlen == 0))
 		return 1;
-	if (flag & PJSTR_FLAG_USE_N)
-		if (jstr_unlikely(n == 0))
-			return 1;
 	typedef unsigned char u;
 	const unsigned char *p = *(u **)s;
 	const unsigned char *old = p;
 	unsigned char *dst = *(u **)s;
-	while ((p = (u *)PJSTR_MEMMEM((char *)p, (*(u **)s + *sz) - p, find, findlen))) {
+	while (((flag & PJSTR_FLAG_USE_N) ? n-- : 1)
+	       && (p = (u *)PJSTR_MEMMEM((char *)p, (*(u **)s + *sz) - p, find, findlen))) {
 		if (rplclen <= findlen)
 			PJSTR_RPLCALL_IN_PLACE(dst, old, p, rplc, rplclen, findlen);
 		else
 			p = (u *)pjstr_rplcat_len(s, sz, cap, p - *(u **)s, rplc, rplclen, findlen);
 		if (jstr_unlikely(p == NULL))
 			return 0;
-		if (flag & PJSTR_FLAG_USE_N)
-			if (jstr_unlikely(!--n))
-				break;
 	}
+	if (jstr_unlikely(dst == (unsigned char *)s))
+		return 1;
 	if (rplclen < findlen) {
 		memmove(dst, old, *(u **)s + *sz - old);
 		dst[*(u **)s + *sz - old] = '\0';
