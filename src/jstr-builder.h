@@ -79,7 +79,7 @@ jstr_allocexact_assign_len(char *R *R const s,
 		return;
 	*sz = srclen;
 	memcpy(*s, src, srclen);
-	*(*s + srclen) = '\0';
+	(*s)[srclen] = '\0';
 }
 
 JSTR_INLINE
@@ -106,7 +106,7 @@ jstr_alloc_assign_len(char *R *R const s,
 	PJSTR_ALLOC_ONLY(*s, *cap, srclen, return);
 	*sz = srclen;
 	memcpy(*s, src, srclen);
-	*(*s + srclen) = '\0';
+	(*s)[srclen] = '\0';
 }
 
 JSTR_INLINE
@@ -133,7 +133,7 @@ jstr_allocmore_assign_len(char *R *R const s,
 	PJSTR_ALLOC_ONLY(*s, *cap, srclen * 2, return);
 	*sz = srclen;
 	memcpy(*s, src, srclen);
-	*(*s + srclen) = '\0';
+	(*s)[srclen] = '\0';
 }
 
 JSTR_INLINE
@@ -223,7 +223,7 @@ jstr_assign_len(char *R *R const s,
 	if (*cap < srclen)
 		PJSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, return);
 	memcpy(*s, src, srclen);
-	*(*s + srclen) = '\0';
+	(*s)[srclen] = '\0';
 	*sz = srclen;
 }
 
@@ -253,8 +253,8 @@ jstr_push_back(char *R *R const s,
 {
 	if (jstr_unlikely(*cap == *sz + 1))
 		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
-	*(*s + *sz) = c;
-	*(*s + ++*sz) = '\0';
+	(*s)[*sz] = c;
+	(*s)[++*sz] = '\0';
 }
 
 /*
@@ -273,7 +273,7 @@ jstr_push_front(char *R *R const s,
 	if (jstr_unlikely(*cap == *sz + 1))
 		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
 	memmove(*s + 1, *s, *sz);
-	*(*s + ++*sz) = '\0';
+	(*s)[++*sz] = '\0';
 	**s = c;
 }
 

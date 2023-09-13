@@ -313,7 +313,7 @@ jstr_rmchr_len_p(char *R s,
 	if (jstr_unlikely(s == NULL))
 		return s + sz;
 	memmove(s, s + 1, sz - (s - start));
-	*(s + (sz - (s - start))) = '\0';
+	s[sz - (s - start)] = '\0';
 	return s + sz - (s - start);
 }
 
@@ -980,7 +980,7 @@ jstr_trim_len_p(char *R s,
 		;
 	--s;
 	memmove(start + 1, s, end - (u *)s);
-	*(start + (end - (u *)s + 1)) = '\0';
+	(start + 1)[end - (u *)s] = '\0';
 	return (char *)(end - (u *)s);
 }
 
@@ -1044,7 +1044,7 @@ jstr_insert_len(char *R *R const s,
 	if (at + srclen > *sz) {
 		PJSTR_REALLOC(*s, *cap, at + srclen + 1, return 0);
 		*sz = at + srclen;
-		*(*s + *sz) = '\0';
+		(*s)[*sz] = '\0';
 	}
 	pjstr_insert_len_f(*s, at, src, srclen);
 	return 1;

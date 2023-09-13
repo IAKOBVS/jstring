@@ -454,7 +454,7 @@ pjstr_io_alloc_file(const int alloc_exact,
 	PJSTR_MALLOC_ERR(*s, goto err_close);
 	fread(*s, 1, st->st_size, fp);
 	fclose(fp);
-	*(*s + st->st_size) = '\0';
+	(*s)[st->st_size] = '\0';
 	*sz = st->st_size;
 	return 0;
 err_close:

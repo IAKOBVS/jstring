@@ -124,7 +124,7 @@ jstr_strdup(const char *R const s)
 	if (jstr_unlikely(p == NULL))
 		return NULL;
 	memcpy(p, s, len - 1);
-	*(p + len - 1) = '\0';
+	p[len - 1] = '\0';
 	return p;
 #endif
 }
