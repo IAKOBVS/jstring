@@ -10,8 +10,8 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #include "jstr-builder.h"
-#include "jstr-string.h"
 #include "jstr-io-table.h"
+#include "jstr-string.h"
 
 #define R JSTR_RESTRICT
 
@@ -361,7 +361,7 @@ jstr_io_is_binary_maybe(const char *R buf,
 			if (jstr_unlikely(!memcmp(buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
 				return 1;                                         \
 check_utf:;                                                                       \
-			if (!memcmp(buf, PJSTR_UTF, PJSTR_UTF_SZ))                  \
+			if (!memcmp(buf, PJSTR_UTF, PJSTR_UTF_SZ))                \
 				return 0;                                         \
 		} else if (jstr_likely(sz == PJSTR_UTF_SZ)) {                     \
 			goto check_utf;                                           \
