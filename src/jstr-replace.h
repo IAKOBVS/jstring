@@ -915,7 +915,7 @@ jstr_rplcall(char *R *R const s,
 JSTR_FUNC_VOID
 static void
 jstr_rev_len(char *R s,
-	     size_t sz) JSTR_NOEXCEPT
+	     const size_t sz) JSTR_NOEXCEPT
 {
 	int c;
 	char *e = s + sz - 1;
