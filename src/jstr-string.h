@@ -186,8 +186,8 @@ jstr_memrchr(const void *R s,
 		return NULL;
 	typedef unsigned char u;
 	const pjstr_op_ty cc = pjstr_repeat_bytes(c);
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
 	const unsigned char *const end = (unsigned char *)s + n;
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
 	const pjstr_op_ty *w = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(end, sizeof(pjstr_op_ty));
 	const pjstr_op_ty *const start = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(pjstr_op_ty));
 	if ((u *)w != end) {
@@ -206,7 +206,6 @@ jstr_memrchr(const void *R s,
 			return (void *)w;
 	}
 #	else
-	const unsigned char *const end = (unsigned char *)s + n;
 	const unsigned char *p = (u *)PJSTR_PTR_ALIGN_DOWN(end, sizeof(pjstr_op_ty));
 	const unsigned char *const start = (u *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(pjstr_op_ty));
 	pjstr_op_ty w;
@@ -888,7 +887,7 @@ jstr_count(const char *R s,
 		return jstr_countc(s, *find);
 	const size_t findlen = strlen(find + 1) + 1;
 	size_t cnt = 0;
-	while ((s = (char *)strstr(s, find)))
+	while ((s = strstr(s, find)))
 		++cnt, s += findlen;
 	return cnt;
 }
