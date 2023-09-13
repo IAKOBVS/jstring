@@ -917,43 +917,12 @@ static void
 jstr_rev_len(char *R s,
 	     size_t sz) JSTR_NOEXCEPT
 {
-	char c0, c1, c2, c3;
-	size_t i = 0;
-	switch (--sz % 4) {
-	case 3:
-		c0 = s[i];
-		s[i] = s[sz];
-		s[sz] = c0;
-		--i, --sz;
-		/* fallthrough */
-	case 2:
-		c0 = s[i];
-		s[i] = s[sz];
-		s[sz] = c0;
-		--i, --sz;
-		/* fallthrough */
-	case 1:
-		c0 = s[i];
-		s[i] = s[sz];
-		s[sz] = c0;
-		--i, --sz;
-		/* fallthrough */
-	case 0: break;
-	}
-	for (; jstr_likely(i + 4 <= sz); i += 4, sz -= 4) {
-		c0 = s[i];
-		c1 = s[i + 1];
-		c2 = s[i + 2];
-		c3 = s[i + 3];
-		s[i] = s[sz];
-		s[i + 1] = s[sz - 1];
-		s[i + 2] = s[sz - 2];
-		s[i + 2] = s[sz - 2];
-		s[i + 3] = s[sz - 3];
-		s[sz] = c0;
-		s[sz - 1] = c1;
-		s[sz - 2] = c2;
-		s[sz - 3] = c3;
+	int c;
+	char *e = s + sz - 1;
+	while (s < e) {
+		c = *s;
+		*s++ = *e;
+		*e-- = c;
 	}
 }
 
