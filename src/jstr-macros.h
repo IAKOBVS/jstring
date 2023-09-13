@@ -596,7 +596,7 @@ case '~':
 #	define JSTR_HAVE_FGETS_UNLOCKED     1
 #	define JSTR_HAVE_FPUTS_UNLOCKED     1
 #	define JSTR_HAVE_GETWC_UNLOCKED     1
-#	define JSTR_HAVE_GETWCCHAR_UNLOCKED 1
+#	define JSTR_HAVE_GETWCHAR_UNLOCKED 1
 #	define JSTR_HAVE_FGETWC_UNLOCKED    1
 #	define JSTR_HAVE_FPUTWC_UNLOCKED    1
 #	define JSTR_HAVE_PUTWCHAR_UNLOCKED  1
@@ -735,25 +735,25 @@ case '~':
 #		define fputs(s, stream) fputs_unlocked(s, stream)
 #	endif
 #	if JSTR_HAVE_GETWC_UNLOCKED
-/* #		define getwc(stream) getwc_unlocked(stream) */
+#		define getwc(stream) getwc_unlocked(stream)
 #	endif
-#	if JSTR_HAVE_GETWCCHAR_UNLOCKED
-/* #		define getwcchar(stream) getwcchar_unlocked(stream) */
+#	if JSTR_HAVE_GETWCHAR_UNLOCKED
+#		define getwchar() getwchar_unlocked()
 #	endif
 #	if JSTR_HAVE_FGETWC_UNLOCKED
-/* #		define fgetwc(stream) fgetwc_unlocked(stream) */
+#		define fgetwc(stream) fgetwc_unlocked(stream)
 #	endif
 #	if JSTR_HAVE_FPUTWC_UNLOCKED
-/* #		define fputwc(wc, stream) fputwc_unlocked(wc, stream) */
+#		define fputwc(wc, stream) fputwc_unlocked(wc, stream)
 #	endif
 #	if JSTR_HAVE_PUTWCHAR_UNLOCKED
-/* #		define putwchar(wc, stream) putwchar_unlocked(wc, stream) */
+#		define putwchar(wc) putwchar_unlocked(wc)
 #	endif
 #	if JSTR_HAVE_FGETWS_UNLOCKED
-/* #		define fgetws(stream) fgetws_unlocked(stream) */
+#		define fgetws(ws, n, stream) fgetws_unlocked(ws, n, stream)
 #	endif
 #	if JSTR_HAVE_FPUTWS_UNLOCKED
-/* #		define fputws(stream) fputws_unlocked(stream) */
+#		define fputws(ws, stream) fputws_unlocked(ws, stream)
 #	endif
 #	if JSTR_HAVE_GETC_UNLOCKED
 #		define getc(stream) getc_unlocked(stream)
