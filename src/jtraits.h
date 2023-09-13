@@ -26,8 +26,8 @@ JSTR_INLINE JSTR_NOTHROW static constexpr int
 jtraits_are_strings() JSTR_NOEXCEPT
 {
 	using namespace std;
-	return (jtraits_is_same_decay<const char *, Str>()
-		|| jtraits_is_same_decay<char *, Str>());
+	return jtraits_is_same_decay<const char *, Str>()
+		|| jtraits_is_same_decay<char *, Str>();
 }
 
 template <typename Str, typename... StrArgs, typename = typename std::enable_if<sizeof...(StrArgs) != 0>::type>
