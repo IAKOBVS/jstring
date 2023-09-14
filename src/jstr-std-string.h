@@ -119,12 +119,12 @@ jstr_strdup(const char *R const s)
 #if JSTR_HAVE_STRDUP
 	return strdup(s);
 #else
-	const size_t len = strlen(s) + 1;
-	char *p = (char *)malloc(len);
+	const size_t len = strlen(s);
+	char *p = (char *)malloc(len + 1);
 	if (jstr_unlikely(p == NULL))
 		return NULL;
-	memcpy(p, s, len - 1);
-	p[len - 1] = '\0';
+	memcpy(p, s, len);
+	p[len] = '\0';
 	return p;
 #endif
 }
