@@ -477,7 +477,7 @@ jstr_strcasestr_len(const char *R hs,
 	} else {
 		hs = (char *)memchr(hs, *ne, hslen);
 	}
-	if (hs == NULL
+	if (jstr_unlikely(hs == NULL)
 	    || !jstr_strncasecmp(hs, ne, nelen))
 		return (char *)hs;
 	hslen -= hs - start;
