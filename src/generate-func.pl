@@ -5,8 +5,6 @@ use warnings;
 usage();
 
 my $G_FNAME      = $ARGV[0];
-my $G_FNAME_BASE = $G_FNAME;
-$G_FNAME_BASE =~ s/^_//;
 my $G_DIR_C = 'jstr';
 
 my $G_IGNORE_FILE = 'private';
