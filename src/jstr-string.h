@@ -188,9 +188,10 @@ jstr_memrchr(const void *R s,
 	typedef unsigned char u;
 	const jstr_word_ty cc = jstr_word_repeat_bytes(c);
 	const unsigned char *const end = (unsigned char *)s + n;
+	enum { WORDSIZ = sizeof(jstr_word_ty) };
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
-	const jstr_word_ty *w = (jstr_word_ty *)PJSTR_PTR_ALIGN_DOWN(end, sizeof(jstr_word_ty));
-	const jstr_word_ty *const start = (jstr_word_ty *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	const jstr_word_ty *w = (jstr_word_ty *)PJSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
+	const jstr_word_ty *const start = (jstr_word_ty *)PJSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
 	if ((u *)w != end) {
 		if (jstr_word_has_eq(*w, cc)) {
 			const unsigned char *const ret = (u *)w + jstr_word_index_last_eq(*w, cc);
@@ -207,8 +208,8 @@ jstr_memrchr(const void *R s,
 			return (void *)w;
 	}
 #	else
-	const unsigned char *p = (u *)PJSTR_PTR_ALIGN_DOWN(end, sizeof(jstr_word_ty));
-	const unsigned char *const start = (u *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	const unsigned char *p = (u *)PJSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
+	const unsigned char *const start = (u *)PJSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
 	jstr_word_ty w;
 	if (p != end) {
 		w = pjstr_uctoword(p);
@@ -218,7 +219,7 @@ jstr_memrchr(const void *R s,
 				return (void *)ret;
 		}
 	}
-	while ((p -= sizeof(jstr_word_ty)) > start) {
+	while ((p -= WORDSIZ) > start) {
 		w = pjstr_uctoword(p);
 		if (jstr_word_has_eq(w, cc))
 			return (void *)(p + jstr_word_index_last_eq(w, cc));
