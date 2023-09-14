@@ -129,12 +129,12 @@ pjstr_strrstr_len_bmh(const unsigned char *R hs,
 		      const unsigned char *R const ne,
 		      const size_t nl) JSTR_NOEXCEPT
 {
-#define BZERO_SHIFT(shift) ((sizeof((shift)) / sizeof(*(shift)) == sizeof(size_t)) \
-			    ? memset(shift, 0, sizeof(shift))                      \
-			    : (memset(shift, 0, 64),                               \
-			       memset(shift + 64, 0, 64),                          \
-			       memset(shift + 64 + 64, 0, 64),                     \
-			       memset(shift + 64 + 64 + 64, 0, 64)))
+#define BZERO_SHIFT(shift) ((sizeof(shift) == 256)                  \
+			    ? (memset(shift, 0, 64),                \
+			       memset(shift + 64, 0, 64),           \
+			       memset(shift + 64 + 64, 0, 64),      \
+			       memset(shift + 64 + 64 + 64, 0, 64)) \
+			    : memset(shift, 0, sizeof(shift)))
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 #define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                       \
 	do {                                                                  \
@@ -580,10 +580,7 @@ jstr_strrcspn_len(const char *R const s,
 	if (jstr_unlikely(sz == 0))
 		return 0;
 	unsigned char t[256];
-	memset(t, 0, 64);
-	memset(t + 64, 0, 64);
-	memset(t + 128, 0, 64);
-	memset(t + 192, 0, 64);
+	BZERO_SHIFT(t);
 	const unsigned char *p = (unsigned char *)reject;
 	do
 		t[*p] = 1;
@@ -642,10 +639,7 @@ jstr_strrspn_len(const char *R const s,
 	}
 	const unsigned char *p = (unsigned char *)accept;
 	unsigned char t[256];
-	memset(t, 0, 64);
-	memset(t + 64, 0, 64);
-	memset(t + 128, 0, 64);
-	memset(t + 192, 0, 64);
+	BZERO_SHIFT(t);
 	do
 		t[*p++] = 1;
 	while (*p);
@@ -864,5 +858,6 @@ jstr_count(const char *R s,
 PJSTR_END_DECLS
 
 #undef R
+#undef BZERO_SHIFT
 
 #endif /* JSTR_STRING_H */
