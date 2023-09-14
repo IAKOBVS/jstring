@@ -129,17 +129,17 @@ pjstr_strrstr_len_bmh(const unsigned char *R hs,
 		      const unsigned char *R const ne,
 		      const size_t nl) JSTR_NOEXCEPT
 {
-#define BZERO_SHIFT(shift) ((sizeof(shift) == 256)                  \
-			    ? (memset(shift, 0, 64),                \
-			       memset(shift + 64, 0, 64),           \
-			       memset(shift + 64 + 64, 0, 64),      \
-			       memset(shift + 64 + 64 + 64, 0, 64)) \
-			    : memset(shift, 0, sizeof(shift)))
+#define BZERO(shift) ((sizeof(shift) == 256)                  \
+		      ? (memset(shift, 0, 64),                \
+			 memset(shift + 64, 0, 64),           \
+			 memset(shift + 64 + 64, 0, 64),      \
+			 memset(shift + 64 + 64 + 64, 0, 64)) \
+		      : memset(shift, 0, sizeof(shift)))
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
 #define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                       \
 	do {                                                                  \
 		table_type shift[256];                                        \
-		BZERO_SHIFT(shift);                                           \
+		BZERO(shift);                                                 \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i) \
 			shift[H(ne + i)] = i;                                 \
 		const size_t shft1 = mtc1 - shift[H(ne + mtc1)];              \
@@ -314,7 +314,7 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                            \
 	do {                                                                                          \
 		table_type shift[256];                                                                \
-		BZERO_SHIFT(shift);                                                                   \
+		BZERO(shift);                                                                         \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                         \
 			shift[HL(n + i)] = i;                                                         \
 		const size_t shft1 = mtc1 - shift[HL(n + mtc1)];                                      \
@@ -356,7 +356,7 @@ pjstr_strcasestr_bmh(const unsigned char *R h,
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                            \
 	do {                                                                                          \
 		table_type shift[256];                                                                \
-		BZERO_SHIFT(shift);                                                                   \
+		BZERO(shift);                                                                         \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                         \
 			shift[HL(n + i)] = i;                                                         \
 		const size_t shft1 = mtc1 - shift[HL(n + mtc1)];                                      \
@@ -580,7 +580,7 @@ jstr_strrcspn_len(const char *R const s,
 	if (jstr_unlikely(sz == 0))
 		return 0;
 	unsigned char t[256];
-	BZERO_SHIFT(t);
+	BZERO(t);
 	const unsigned char *p = (unsigned char *)reject;
 	do
 		t[*p] = 1;
@@ -639,7 +639,7 @@ jstr_strrspn_len(const char *R const s,
 	}
 	const unsigned char *p = (unsigned char *)accept;
 	unsigned char t[256];
-	BZERO_SHIFT(t);
+	BZERO(t);
 	do
 		t[*p++] = 1;
 	while (*p);
@@ -858,6 +858,6 @@ jstr_count(const char *R s,
 PJSTR_END_DECLS
 
 #undef R
-#undef BZERO_SHIFT
+#undef BZERO
 
 #endif /* JSTR_STRING_H */
