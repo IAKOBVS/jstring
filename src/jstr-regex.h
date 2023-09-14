@@ -125,7 +125,7 @@ jstr_reg_error(const int reg_errcode,
 	       const regex_t *R const preg) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(reg_errcode == JSTR_REG_RET_ENOMEM)) {
-		fprintf(stderr, "cannot allocate memory\n");
+		fputs("cannot allocate memory\n", stderr);
 		return;
 	}
 	char buf[64];
