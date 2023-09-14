@@ -480,7 +480,7 @@ jstr_strcasestr_len(const char *R hs,
 	if (hs == NULL
 	    || !jstr_strncasecmp(hs, ne, nelen))
 		return (char *)hs;
-	hslen -= hs - start;
+	hslen -= ++hs - start;
 	if (jstr_unlikely(hslen < nelen))
 		return NULL;
 	is_alpha0 += jstr_isalpha(ne[1]);
@@ -534,23 +534,24 @@ jstr_strcasestr(const char *R hs,
 	if (jstr_unlikely(hs == NULL)
 	    || !jstr_strcasecmp(hs, ne))
 		return (char *)hs;
+	++hs;
+	if (jstr_unlikely(hs[0] == '\0')
+		|| jstr_unlikely(hs[1] == '\0'))
+		return NULL;
 	is_alpha0 += jstr_isalpha(ne[1]);
 	if (ne[2] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0'))
-			return NULL;
 		if (is_alpha0)
 			return pjstr_strcasestr2((unsigned char *)hs, (unsigned char *)ne);
 		return (char *)strstr(hs, ne);
 	} else if (ne[3] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0')
-		    || jstr_unlikely(hs[2] == '\0'))
+		if (jstr_unlikely(hs[2] == '\0'))
 			return NULL;
 		if (is_alpha0
 		    + jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((unsigned char *)hs, (unsigned char *)ne);
 		return (char *)strstr(hs, ne);
 	} else if (ne[4] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0' || jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0')))
+		if (jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0'))
 			return NULL;
 		if (is_alpha0
 		    + jstr_isalpha(ne[2])
