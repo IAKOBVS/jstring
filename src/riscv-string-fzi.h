@@ -18,11 +18,11 @@
 #if defined __riscv_zbb || defined __riscv_xtheadbb
 #	include "string-fzi.h"
 #else
-/* Without bitmap pjstr_clz/pjstr_ctz extensions, it is faster to direct test the bits
+/* Without bitmap jstr_word_clz/jstr_word_ctz extensions, it is faster to direct test the bits
    instead of calling compiler auxiliary functions.  */
 #	include "string-optype.h"
 static JSTR_INLINE unsigned int
-pjstr_index_first(pjstr_op_ty c)
+jstr_word_index_first(jstr_word_ty c)
 {
 	if (c & 0x80U)
 		return 0;
@@ -30,7 +30,7 @@ pjstr_index_first(pjstr_op_ty c)
 		return 1;
 	if (c & 0x800000U)
 		return 2;
-	if (sizeof(pjstr_op_ty) == 4)
+	if (sizeof(jstr_word_ty) == 4)
 		return 3;
 	if (c & 0x80000000U)
 		return 3;
@@ -43,9 +43,9 @@ pjstr_index_first(pjstr_op_ty c)
 	return 7;
 }
 static JSTR_INLINE unsigned int
-pjstr_index_last(pjstr_op_ty c)
+jstr_word_index_last(jstr_word_ty c)
 {
-	if (sizeof(pjstr_op_ty) == 8) {
+	if (sizeof(jstr_word_ty) == 8) {
 		if (c & 0x8000000000000000UL)
 			return 7;
 		if (c & 0x80000000000000UL)

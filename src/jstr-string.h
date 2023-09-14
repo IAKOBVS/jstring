@@ -186,46 +186,46 @@ jstr_memrchr(const void *R s,
 	if (jstr_unlikely(n == 0))
 		return NULL;
 	typedef unsigned char u;
-	const pjstr_op_ty cc = pjstr_repeat_bytes(c);
+	const jstr_word_ty cc = jstr_word_repeat_bytes(c);
 	const unsigned char *const end = (unsigned char *)s + n;
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
-	const pjstr_op_ty *w = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(end, sizeof(pjstr_op_ty));
-	const pjstr_op_ty *const start = (pjstr_op_ty *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(pjstr_op_ty));
+	const jstr_word_ty *w = (jstr_word_ty *)PJSTR_PTR_ALIGN_DOWN(end, sizeof(jstr_word_ty));
+	const jstr_word_ty *const start = (jstr_word_ty *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
 	if ((u *)w != end) {
-		if (pjstr_has_eq(*w, cc)) {
-			const unsigned char *const ret = (u *)w + pjstr_index_last_eq(*w, cc);
+		if (jstr_word_has_eq(*w, cc)) {
+			const unsigned char *const ret = (u *)w + jstr_word_index_last_eq(*w, cc);
 			if ((uintptr_t)(ret - (u *)s) <= end - (u *)s)
 				return (void *)ret;
 		}
 	}
 	for (--w; w > start; --w)
-		if (pjstr_has_eq(*w, cc))
-			return (void *)((u *)w + pjstr_index_last_eq(*w, cc));
-	if (pjstr_has_eq(*start, cc)) {
-		w = (pjstr_op_ty *)((u *)start + pjstr_index_last_eq(*start, cc));
+		if (jstr_word_has_eq(*w, cc))
+			return (void *)((u *)w + jstr_word_index_last_eq(*w, cc));
+	if (jstr_word_has_eq(*start, cc)) {
+		w = (jstr_word_ty *)((u *)start + jstr_word_index_last_eq(*start, cc));
 		if ((uintptr_t)((u *)w - (u *)s) <= end - (u *)s)
 			return (void *)w;
 	}
 #	else
-	const unsigned char *p = (u *)PJSTR_PTR_ALIGN_DOWN(end, sizeof(pjstr_op_ty));
-	const unsigned char *const start = (u *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(pjstr_op_ty));
-	pjstr_op_ty w;
+	const unsigned char *p = (u *)PJSTR_PTR_ALIGN_DOWN(end, sizeof(jstr_word_ty));
+	const unsigned char *const start = (u *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	jstr_word_ty w;
 	if (p != end) {
 		w = pjstr_uctoword(p);
-		if (pjstr_has_eq(w, cc)) {
-			const unsigned char *const ret = p + pjstr_index_last_eq(w, cc);
+		if (jstr_word_has_eq(w, cc)) {
+			const unsigned char *const ret = p + jstr_word_index_last_eq(w, cc);
 			if ((uintptr_t)(ret - (u *)s) <= end - (u *)s)
 				return (void *)ret;
 		}
 	}
-	for (p -= sizeof(pjstr_op_ty); p > start; p -= sizeof(pjstr_op_ty)) {
+	for (p -= sizeof(jstr_word_ty); p > start; p -= sizeof(jstr_word_ty)) {
 		w = pjstr_uctoword(p);
-		if (pjstr_has_eq(w, cc))
-			return (void *)(p + pjstr_index_last_eq(w, cc));
+		if (jstr_word_has_eq(w, cc))
+			return (void *)(p + jstr_word_index_last_eq(w, cc));
 	}
 	w = pjstr_uctoword(start);
-	if (pjstr_has_eq(w, cc)) {
-		p = start + pjstr_index_last_eq(w, cc);
+	if (jstr_word_has_eq(w, cc)) {
+		p = start + jstr_word_index_last_eq(w, cc);
 		if ((uintptr_t)(p - (u *)s) <= end - (u *)s)
 			return (void *)p;
 	}

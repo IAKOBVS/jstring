@@ -20,10 +20,10 @@
 #include <stdint.h>
 /* Note that since CMPBGE creates a bit mask rather than a byte mask,
    we cannot simply provide a target-specific string-fza.h.  */
-/* A subroutine for the pjstr_index_zero functions.  Given a bitmask C,
+/* A subroutine for the jstr_word_index_zero functions.  Given a bitmask C,
    return the index of the first bit set in memory order.  */
 static JSTR_INLINE unsigned int
-pjstr_index_first(pjstr_op_ty c)
+jstr_word_index_first(jstr_word_ty c)
 {
 #ifdef __alpha_cix__
 	return __builtin_ctzl(c);
@@ -35,7 +35,7 @@ pjstr_index_first(pjstr_op_ty c)
 /* Similarly, but return the (memory order) index of the last bit
    that is non-zero.  Note that only the least 8 bits may be nonzero.  */
 static JSTR_INLINE unsigned int
-pjstr_index_last(pjstr_op_ty x)
+jstr_word_index_last(jstr_word_ty x)
 {
 #ifdef __alpha_cix__
 	return __builtin_clzl(x) ^ 63;

@@ -19,20 +19,20 @@
 #include <endian.h>
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 static JSTR_INLINE int
-pjstr_has_zero(pjstr_op_ty x)
+jstr_word_has_zero(jstr_word_ty x)
 {
-	return pjstr_find_zero_low(x) != 0;
+	return jstr_word_find_zero_low(x) != 0;
 }
 /* Likewise, but for byte equality between X1 and X2.  */
 static JSTR_INLINE int
-pjstr_has_eq(pjstr_op_ty x1, pjstr_op_ty x2)
+jstr_word_has_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
-	return pjstr_find_eq_low(x1, x2) != 0;
+	return jstr_word_find_eq_low(x1, x2) != 0;
 }
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
 static JSTR_INLINE int
-pjstr_has_zero_eq(pjstr_op_ty x1, pjstr_op_ty x2)
+jstr_word_has_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
-	return pjstr_find_zero_eq_low(x1, x2);
+	return jstr_word_find_zero_eq_low(x1, x2);
 }
 #endif /* _STRING_FZB_H */

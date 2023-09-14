@@ -18,31 +18,31 @@
 #include "string-misc.h"
 #include "string-optype.h"
 /* The CMPBGE instruction creates a bit mask rather than a byte mask.
-   However, if we narrow pjstr_op_ty to either 'int' or 'uint8_t', we get
+   However, if we narrow jstr_word_ty to either 'int' or 'uint8_t', we get
    unnecessary truncation instructions from the 'unsigned long' type
    returned by __builtin_alpha_cmpbge.  */
-static JSTR_INLINE pjstr_op_ty
-pjstr_find_zero_all(pjstr_op_ty x)
+static JSTR_INLINE jstr_word_ty
+jstr_word_find_zero_all(jstr_word_ty x)
 {
 	return __builtin_alpha_cmpbge(0, x);
 }
-static JSTR_INLINE pjstr_op_ty
-pjstr_find_eq_all(pjstr_op_ty x1, pjstr_op_ty x2)
+static JSTR_INLINE jstr_word_ty
+jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-	return pjstr_find_zero_all(x1 ^ x2);
+	return jstr_word_find_zero_all(x1 ^ x2);
 }
-static JSTR_INLINE pjstr_op_ty
-pjstr_find_zero_eq_all(pjstr_op_ty x1, pjstr_op_ty x2)
+static JSTR_INLINE jstr_word_ty
+jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-	return pjstr_find_zero_all(x1) | pjstr_find_zero_all(x1 ^ x2);
+	return jstr_word_find_zero_all(x1) | jstr_word_find_zero_all(x1 ^ x2);
 }
-static JSTR_INLINE pjstr_op_ty
-pjstr_find_zero_ne_all(pjstr_op_ty x1, pjstr_op_ty x2)
+static JSTR_INLINE jstr_word_ty
+jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-	return pjstr_find_zero_all(x1) | (pjstr_find_zero_all(x1 ^ x2) ^ 0xff);
+	return jstr_word_find_zero_all(x1) | (jstr_word_find_zero_all(x1 ^ x2) ^ 0xff);
 }
 /* Define the "inexact" versions in terms of the exact versions.  */
-#define pjstr_find_zero_low    pjstr_find_zero_all
-#define pjstr_find_eq_low      pjstr_find_eq_all
-#define pjstr_find_zero_eq_low pjstr_find_zero_eq_all
+#define jstr_word_find_zero_low    jstr_word_find_zero_all
+#define jstr_word_find_eq_low      jstr_word_find_eq_all
+#define jstr_word_find_zero_eq_low jstr_word_find_zero_eq_all
 #endif /* _STRING_FZA_H */
