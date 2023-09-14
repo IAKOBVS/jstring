@@ -198,7 +198,7 @@ jstr_memrchr(const void *R s,
 				return (void *)ret;
 		}
 	}
-	for (--w; w > start; --w)
+	while (--w > start)
 		if (jstr_word_has_eq(*w, cc))
 			return (void *)((u *)w + jstr_word_index_last_eq(*w, cc));
 	if (jstr_word_has_eq(*start, cc)) {
@@ -218,7 +218,7 @@ jstr_memrchr(const void *R s,
 				return (void *)ret;
 		}
 	}
-	for (p -= sizeof(jstr_word_ty); p > start; p -= sizeof(jstr_word_ty)) {
+	while ((p -= sizeof(jstr_word_ty)) > start) {
 		w = pjstr_uctoword(p);
 		if (jstr_word_has_eq(w, cc))
 			return (void *)(p + jstr_word_index_last_eq(w, cc));
