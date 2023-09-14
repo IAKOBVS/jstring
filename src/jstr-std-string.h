@@ -79,7 +79,7 @@ JSTR_INLINE
 static void *
 jstr_memccpy(void *R dst,
 	     const void *R src,
-	     int c,
+	     const int c,
 	     const size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMCCPY
