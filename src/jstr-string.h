@@ -211,7 +211,7 @@ jstr_memrchr(const void *R s,
 	const unsigned char *const start = (u *)PJSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
 	jstr_word_ty w;
 	if (p != end) {
-		w = jstr_word_uctoword(p);
+		w = pjstr_uctoword(p);
 		if (jstr_word_has_eq(w, cc)) {
 			const unsigned char *const ret = p + jstr_word_index_last_eq(w, cc);
 			if ((uintptr_t)(ret - (u *)s) <= end - (u *)s)
@@ -219,11 +219,11 @@ jstr_memrchr(const void *R s,
 		}
 	}
 	for (p -= sizeof(jstr_word_ty); p > start; p -= sizeof(jstr_word_ty)) {
-		w = jstr_word_uctoword(p);
+		w = pjstr_uctoword(p);
 		if (jstr_word_has_eq(w, cc))
 			return (void *)(p + jstr_word_index_last_eq(w, cc));
 	}
-	w = jstr_word_uctoword(start);
+	w = pjstr_uctoword(start);
 	if (jstr_word_has_eq(w, cc)) {
 		p = start + jstr_word_index_last_eq(w, cc);
 		if ((uintptr_t)(p - (u *)s) <= end - (u *)s)
@@ -480,7 +480,7 @@ jstr_strcasestr_len(const char *R hs,
 	if (hs == NULL
 	    || !jstr_strncasecmp(hs, ne, nelen))
 		return (char *)hs;
-	hslen -= ++hs - start;
+	hslen -= hs - start;
 	if (jstr_unlikely(hslen < nelen))
 		return NULL;
 	is_alpha0 += jstr_isalpha(ne[1]);
@@ -534,24 +534,23 @@ jstr_strcasestr(const char *R hs,
 	if (jstr_unlikely(hs == NULL)
 	    || !jstr_strcasecmp(hs, ne))
 		return (char *)hs;
-	++hs;
-	if (jstr_unlikely(hs[0] == '\0')
-		|| jstr_unlikely(hs[1] == '\0'))
-		return NULL;
 	is_alpha0 += jstr_isalpha(ne[1]);
 	if (ne[2] == '\0') {
+		if (jstr_unlikely(hs[1] == '\0'))
+			return NULL;
 		if (is_alpha0)
 			return pjstr_strcasestr2((unsigned char *)hs, (unsigned char *)ne);
 		return (char *)strstr(hs, ne);
 	} else if (ne[3] == '\0') {
-		if (jstr_unlikely(hs[2] == '\0'))
+		if (jstr_unlikely(hs[1] == '\0')
+		    || jstr_unlikely(hs[2] == '\0'))
 			return NULL;
 		if (is_alpha0
 		    + jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((unsigned char *)hs, (unsigned char *)ne);
 		return (char *)strstr(hs, ne);
 	} else if (ne[4] == '\0') {
-		if (jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0'))
+		if (jstr_unlikely(hs[1] == '\0' || jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0')))
 			return NULL;
 		if (is_alpha0
 		    + jstr_isalpha(ne[2])
