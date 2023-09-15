@@ -71,6 +71,7 @@ PJSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
+JSTR_COLD
 JSTR_NOTHROW
 static void
 pjstr_err(const char *R const FILE_,
@@ -88,6 +89,7 @@ pjstr_err(const char *R const FILE_,
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
+JSTR_COLD
 JSTR_NOTHROW
 static void
 pjstr_err_exit(void) JSTR_NOEXCEPT
