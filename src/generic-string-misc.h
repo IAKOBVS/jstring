@@ -23,7 +23,7 @@
 static JSTR_INLINE unsigned char
 jstr_word_extractbyte(jstr_word_ty x, unsigned int idx)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+	if (JSTR_ENDIAN_LITTLE)
 		return x >> (idx * CHAR_BIT);
 	else
 		return x >> (sizeof(x) - 1 - idx) * CHAR_BIT;

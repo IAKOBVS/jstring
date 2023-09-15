@@ -1,3 +1,4 @@
 #!/bin/sh
+./check-little-endian
 ./update-glibc
 ./build-funcs

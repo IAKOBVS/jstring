@@ -19,7 +19,9 @@ for file in $(echo *?string-fz* *?string-misc*.h *?string-shift*.h); do
 	s/\(#define.*\)/\1\n\n#include "jstr-macros.h"\n/;
 	s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef PJSTR_\1/g;
 	s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define PJSTR_\1/g;
-	s/PJSTR__/PJSTR_/g;' "$file")" >"$file" &
+	s/PJSTR__/PJSTR_/g;
+	s/if (__BYTE_ORDER == __LITTLE_ENDIAN)/JSTR_ENDIAN_LITTLE/g;
+	' "$file")" >"$file" &
 done
 wait
 for file in $(echo *?string-fz* *?string-misc*.h *?string-shift*.h); do

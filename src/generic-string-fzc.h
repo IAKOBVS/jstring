@@ -23,7 +23,7 @@
 static JSTR_INLINE unsigned int
 jstr_word_index_first_zero(jstr_word_ty x)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+	if (JSTR_ENDIAN_LITTLE)
 		x = jstr_word_find_zero_low(x);
 	else
 		x = jstr_word_find_zero_all(x);
@@ -33,7 +33,7 @@ jstr_word_index_first_zero(jstr_word_ty x)
 static JSTR_INLINE unsigned int
 jstr_word_index_first_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+	if (JSTR_ENDIAN_LITTLE)
 		x1 = jstr_word_find_eq_low(x1, x2);
 	else
 		x1 = jstr_word_find_eq_all(x1, x2);
@@ -44,7 +44,7 @@ jstr_word_index_first_eq(jstr_word_ty x1, jstr_word_ty x2)
 static JSTR_INLINE unsigned int
 jstr_word_index_first_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+	if (JSTR_ENDIAN_LITTLE)
 		x1 = jstr_word_find_zero_eq_low(x1, x2);
 	else
 		x1 = jstr_word_find_zero_eq_all(x1, x2);
@@ -61,7 +61,7 @@ jstr_word_index_first_zero_ne(jstr_word_ty x1, jstr_word_ty x2)
 static JSTR_INLINE unsigned int
 jstr_word_index_last_zero(jstr_word_ty x)
 {
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+	if (JSTR_ENDIAN_LITTLE)
 		x = jstr_word_find_zero_all(x);
 	else
 		x = jstr_word_find_zero_low(x);

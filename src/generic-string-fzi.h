@@ -41,7 +41,7 @@ static JSTR_INLINE unsigned int
 jstr_word_index_first(jstr_word_ty c)
 {
 	int r;
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+	if (JSTR_ENDIAN_LITTLE)
 		r = jstr_word_ctz(c);
 	else
 		r = jstr_word_clz(c);
@@ -53,7 +53,7 @@ static JSTR_INLINE unsigned int
 jstr_word_index_last(jstr_word_ty c)
 {
 	int r;
-	if (__BYTE_ORDER == __LITTLE_ENDIAN)
+	if (JSTR_ENDIAN_LITTLE)
 		r = jstr_word_clz(c);
 	else
 		r = jstr_word_ctz(c);
