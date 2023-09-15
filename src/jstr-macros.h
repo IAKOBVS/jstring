@@ -712,6 +712,16 @@ case '~':
 #	define JSTR_ARCH_GENERIC 1
 #endif
 
+#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || defined(__BIG_ENDIAN__) || defined(__ARMEB__) || defined(__THUMBEB__) || defined(__AARCH64EB__) || defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
+#	undef JSTR_ENDIAN_BIG
+#	define JSTR_ENDIAN_BIG 1
+#	undef JSTR_ENDIAN_LITTLE
+#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || defined(__LITTLE_ENDIAN__) || defined(__ARMEL__) || defined(__THUMBEL__) || defined(__AARCH64EL__) || defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
+#	undef JSTR_ENDIAN_LITTLE
+#	define JSTR_ENDIAN_LITTLE 1
+#	undef JSTR_ENDIAN_BIG
+#endif
+
 #define JSTR_FUNC_VOID	      JSTR_NOTHROW JSTR_MAYBE_UNUSED JSTR_NONNULL_ALL
 #define JSTR_FUNC	      JSTR_FUNC_VOID JSTR_WARN_UNUSED
 #define JSTR_FUNC_NOWARN      JSTR_FUNC_VOID JSTR_WARN_UNUSED

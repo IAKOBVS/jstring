@@ -9,6 +9,12 @@
 #define PJSTR_MAX_LONG_DIGITS	   (PJSTR_MAX_ULONG_DIGITS + 1)
 #define PJSTR_MAX_LONG_LONG_DIGITS (PJSTR_MAX_ULONG_LONG_DIGITS + 1)
 
+#define JSTR_ENDIAN_LITTLE 0
+
+#if !JSTR_ENDIAN_LITTLE
+#	define JSTR_ENDIAN_BIG 1
+#endif
+
 #define PJSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 16)
 
 #define PJSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
