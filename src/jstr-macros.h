@@ -836,23 +836,23 @@ case '~':
 #endif
 
 /* Needle length over which memmem would be faster than strstr. */
-#define PJSTR_MEMMEM_THRES	17
+#define JSTR_MEMMEM_THRES	17
 
 /* Only use memmem for long needles or if it is implemented in assembly. */
 #if JSTR_HAVE_MEMMEM
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED
-#		define PJSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
+#		define JSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
 #	else
 #		if JSTR_HAVE_STRSTR_OPTIMIZED
-#			define PJSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen > PJSTR_MEMMEM_THRES) ? memmem(hs, hslen, ne, nelen) : strstr(hs, ne))
+#			define JSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen > JSTR_MEMMEM_THRES) ? memmem(hs, hslen, ne, nelen) : strstr(hs, ne))
 #		else
-#			define PJSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
+#			define JSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
 #		endif
 #	endif
 #else
-#	define PJSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
+#	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
 #endif /* HAVE_MEMMEM */
 
-#undef PJSTR_MEMMEM_THRES
+#undef JSTR_MEMMEM_THRES
 
 #endif /* JSTR_MACROS_H */

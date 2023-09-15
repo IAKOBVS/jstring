@@ -827,7 +827,7 @@ jstr_count_len(const char *R s,
 		return 0;
 	size_t cnt = 0;
 	const char *const end = s + sz;
-	while ((s = (char *)PJSTR_MEMMEM(s, end - s, find, findlen)))
+	while ((s = (char *)JSTR_MEMMEM(s, end - s, find, findlen)))
 		++cnt, s += findlen;
 	return cnt;
 }
