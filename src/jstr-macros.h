@@ -838,7 +838,8 @@ case '~':
 /* Needle length over which memmem would be faster than strstr. */
 #define JSTR_MEMMEM_THRES	17
 
-/* Only use memmem for long needles or if it is implemented in assembly. */
+/* Only use memmem for long needles or if it is implemented in assembly.
+   It seems to be slower than strstr for short needles. */
 #if JSTR_HAVE_MEMMEM
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED
 #		define JSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
