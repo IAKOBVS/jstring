@@ -278,6 +278,8 @@ jstr_tolower_str_len(char *R s,
 {
 	for (int i = sz % 4; i-- > 0; ++s)
 		*s = jstr_tolower(*s);
+	if (jstr_unlikely(sz < 4))
+		return;
 	for (; (s[0] = jstr_tolower(s[0])); s += 4) {
 		s[1] = jstr_tolower(s[1]);
 		s[2] = jstr_tolower(s[2]);
@@ -294,6 +296,8 @@ jstr_toupper_str_len(char *R s,
 {
 	for (int i = sz % 4; i-- > 0; ++s)
 		*s = jstr_toupper(*s);
+	if (jstr_unlikely(sz < 4))
+		return;
 	for (; (s[0] = jstr_toupper(s[0])); s += 4) {
 		s[1] = jstr_toupper(s[1]);
 		s[2] = jstr_toupper(s[2]);
