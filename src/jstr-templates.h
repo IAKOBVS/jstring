@@ -50,17 +50,17 @@ PJSTR_END_DECLS
 		(p) = (char *)realloc(p, old_cap);           \
 		PJSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
-#define PJSTR_MIN_ALLOC(new_cap)                           \
-	((new_cap < PJSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
-	 ? (PJSTR_MIN_CAP)                                 \
+#define JSTR_MIN_ALLOC(new_cap)                           \
+	((new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
+	 ? (JSTR_MIN_CAP)                                 \
 	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
-#define PJSTR_MIN_ALLOCEXACT(new_cap) \
-	((new_cap < PJSTR_MIN_CAP)    \
-	 ? (PJSTR_MIN_CAP)            \
+#define JSTR_MIN_ALLOCEXACT(new_cap) \
+	((new_cap < JSTR_MIN_CAP)    \
+	 ? (JSTR_MIN_CAP)            \
 	 : (new_cap))
 #define PJSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
 	do {                                       \
-		(cap) = PJSTR_MIN_ALLOC(new_cap);  \
+		(cap) = JSTR_MIN_ALLOC(new_cap);  \
 		(p) = (char *)malloc((cap));       \
 		PJSTR_MALLOC_ERR((p), do_fail);    \
 	} while (0)

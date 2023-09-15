@@ -55,7 +55,7 @@ PJSTR_END_DECLS
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
 		PJARR_SZ(j) = 1;                                                               \
-		PJARR_CAP(j) = PJSTR_MIN_CAP;                                                  \
+		PJARR_CAP(j) = JSTR_MIN_CAP;                                                  \
 		PJARR_DATA(j) = malloc(PJARR_CAP(j));                                          \
 		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                               \

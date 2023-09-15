@@ -370,7 +370,7 @@ check_utf:;                                                                     
 	if (jstr_unlikely(sz == 0))
 		return 0;
 	JSTR_BINARY_CHECK();
-	const unsigned char *const end = (unsigned char *)buf + PJSTR_MIN(sz, 64) + 1;
+	const unsigned char *const end = (unsigned char *)buf + JSTR_MIN(sz, 64) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
 		if (pjstr_io_reject_table[*s++])
@@ -446,8 +446,8 @@ pjstr_io_alloc_file(const int alloc_exact,
 	if (jstr_unlikely(stat(fname, st)))
 		goto err_close;
 	*cap = alloc_exact
-	       ? PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOCEXACT(st->st_size + 1))
-	       : PJSTR_ALIGN_UP_STR(PJSTR_MIN_ALLOC(st->st_size));
+	       ? PJSTR_ALIGN_UP_STR(JSTR_MIN_ALLOCEXACT(st->st_size + 1))
+	       : PJSTR_ALIGN_UP_STR(JSTR_MIN_ALLOC(st->st_size));
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, goto err_close);
 	fread(*s, 1, st->st_size, fp);

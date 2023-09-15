@@ -370,7 +370,7 @@ PJSTR_BEGIN_DECLS
 	} while (0)
 #define PJSTR_ULLTOA_UNROLLED(nptr, number, base)           \
 	do {                                                \
-		enum { len = PJSTR_MAX_ULONG_LONG_DIGITS }; \
+		enum { len = JSTR_MAX_ULONG_LONG_DIGITS }; \
 		char s[len + 1];                            \
 		s[len] = '\0';                              \
 		char *p = s + len - 1;                      \

@@ -5,8 +5,8 @@
 #include "jstr-pointer-arith.h"
 #include <features.h>
 
-#define PJSTR_MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define PJSTR_MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define JSTR_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define JSTR_MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 #if !defined __cplusplus && defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1

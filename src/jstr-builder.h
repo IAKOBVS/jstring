@@ -44,7 +44,7 @@ jstr_alloc(char *R *R const s,
 	   const size_t top)
 {
 	*sz = 0;
-	*cap = PJSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(top));
+	*cap = JSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(top));
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, return);
 }
@@ -59,7 +59,7 @@ jstr_allocexact(char *R *R const s,
 		const size_t top) JSTR_NOEXCEPT
 {
 	*sz = 0;
-	*cap = PJSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(top));
+	*cap = JSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(top));
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, return);
 }
@@ -363,7 +363,7 @@ PJSTR_END_DECLS
 			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                \
 			size_t ARR_VA_ARGS[PJSTR_PP_NARG(__VA_ARGS__)];                \
 			*(sz) = PJSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
-			*(cap) = PJSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(*(sz)));           \
+			*(cap) = JSTR_MIN_ALLOC(PJSTR_ALIGN_UP_STR(*(sz)));           \
 			*(s) = malloc(*(cap));                                         \
 			PJSTR_MALLOC_ERR(*((s)), break);                               \
 			char *p = *(s);                                                \
