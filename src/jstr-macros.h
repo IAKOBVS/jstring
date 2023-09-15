@@ -652,9 +652,9 @@ case '~':
 #define PJSTR_PTR_IS_ALIGNED_STR(base) PJSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if defined __x86_64__ || defined _M_X64
-#	define JSTR_ARCH_x86_64 1
+#	define JSTR_ARCH_X86_64 1
 #elif defined i386 || defined __i386__ || defined __i386 || defined _M_IX86
-#	define JSTR_ARCH_x86_32 1
+#	define JSTR_ARCH_X86_32 1
 #elif defined __ARM_ARCH_2__
 #	define JSTR_ARCH_ARM2 1
 #elif defined __ARM_ARCH_3__ || defined __ARM_ARCH_3M__
@@ -709,6 +709,8 @@ case '~':
 #	define JSTR_ARCH_HPPA 1
 #elif defined __riscv_zbb || defined __riscv_xtheadbb
 #	define JSTR_ARCH_RISCV 1
+#elif defined __s390x__
+#	define JSTR_ARCH_S390 1
 #else
 #	define JSTR_ARCH_GENERIC 1
 #endif
@@ -824,5 +826,32 @@ case '~':
 #		define fflush(stream) fflush_unlocked(stream)
 #	endif
 #endif
+
+#if defined __GLIBC__ && JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
+#	define JSTR_HAVE_MEMMEM_OPTIMIZED 1
+#endif
+
+#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
+#	define PSJTR_HAVE_STRSTR_OPTIMIZED 1
+#endif
+
+/* Needle length at which memmem would be faster than strstr. */
+#define PJSTR_MEMMEM_THRES	18
+#define PJSTR_USE_MEMMEM(nelen) (nelen >= PJSTR_MEMMEM_THRES)
+
+/* Only use memmem for long needles or if it is implemented in assembly. */
+#if JSTR_HAVE_MEMMEM
+#	if JSTR_HAVE_MEMMEM_OPTIMIZED
+#		define PJSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
+#	else
+#		if JSTR_HAVE_STRSTR_OPTIMIZED
+#			define PJSTR_MEMMEM(hs, hslen, ne, nelen) (PJSTR_USE_MEMMEM(nelen) ? memmem(hs, hslen, ne, nelen) : strstr(hs, ne))
+#		else
+#			define PJSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
+#		endif
+#	endif
+#else
+#	define PJSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
+#endif /* HAVE_MEMMEM */
 
 #endif /* JSTR_MACROS_H */

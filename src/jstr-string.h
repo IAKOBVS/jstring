@@ -27,12 +27,6 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#if JSTR_HAVE_MEMMEM
-#	define PJSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
-#else
-#	define PJSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
-#endif /* HAVE_MEMMEM */
-
 PJSTR_BEGIN_DECLS
 
 /*
@@ -400,48 +394,54 @@ pjstr_strcasestr_bmh(const unsigned char *R h,
 #undef PJSTR_STRCASESTR_BMH
 }
 
-#define L(c) jstr_tolower(c)
+#define PJSTR_DEFINE_STRSTR(name)                                                           \
+	JSTR_INLINE                                                                         \
+	JSTR_FUNC_PURE                                                                      \
+	static char *                                                                       \
+	pjstr_##name##2(const unsigned char *R h,                                           \
+			const unsigned char *R n)JSTR_NOEXCEPT                              \
+	{                                                                                   \
+		const uint16_t nw = L(n[0]) << 8 | L(n[1]);                                 \
+		uint16_t hw = L(h[0]) << 8 | L(h[1]);                                       \
+		for (h++; *h && hw != nw; hw = hw << 8 | L(*++h))                           \
+			;                                                                   \
+		return hw == nw ? (char *)(h - 1) : NULL;                                   \
+	}                                                                                   \
+                                                                                            \
+	JSTR_INLINE                                                                         \
+	JSTR_FUNC_PURE                                                                      \
+	static char *                                                                       \
+	pjstr_##name##3(const unsigned char *R h,                                           \
+			const unsigned char *R n)JSTR_NOEXCEPT                              \
+	{                                                                                   \
+		const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;           \
+		uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;                 \
+		for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)                      \
+			;                                                                   \
+		return hw == nw ? (char *)(h - 2) : NULL;                                   \
+	}                                                                                   \
+                                                                                            \
+	JSTR_INLINE                                                                         \
+	JSTR_FUNC_PURE                                                                      \
+	static char *                                                                       \
+	pjstr_##name##4(const unsigned char *R h,                                           \
+			const unsigned char *R n)JSTR_NOEXCEPT                              \
+	{                                                                                   \
+		const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]); \
+		uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);       \
+		for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))                        \
+			;                                                                   \
+		return hw == nw ? (char *)(h - 3) : NULL;                                   \
+	}
 
-JSTR_INLINE
-JSTR_FUNC_PURE
-static char *
-pjstr_strcasestr2(const unsigned char *R h,
-		  const unsigned char *R n) JSTR_NOEXCEPT
-{
-	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
-	uint16_t hw = L(h[0]) << 8 | L(h[1]);
-	for (h++; *h && hw != nw; hw = hw << 8 | L(*++h))
-		;
-	return hw == nw ? (char *)(h - 1) : NULL;
-}
-
-JSTR_INLINE
-JSTR_FUNC_PURE
-static char *
-pjstr_strcasestr3(const unsigned char *R h,
-		  const unsigned char *R n) JSTR_NOEXCEPT
-{
-	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
-	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
-	for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)
-		;
-	return hw == nw ? (char *)(h - 2) : NULL;
-}
-
-JSTR_INLINE
-JSTR_FUNC_PURE
-static char *
-pjstr_strcasestr4(const unsigned char *R h,
-		  const unsigned char *R n) JSTR_NOEXCEPT
-{
-	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
-	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
-	for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))
-		;
-	return hw == nw ? (char *)(h - 3) : NULL;
-}
-
+#define L(c) (c)
+PJSTR_DEFINE_STRSTR(strstr);
 #undef L
+#define L(c) jstr_tolower(c)
+PJSTR_DEFINE_STRSTR(strcasestr);
+#undef L
+
+#undef PJSTR_DEFINE_STRSTR
 
 /*
    Find NE in HS case-insensitively (ASCII).
@@ -485,23 +485,23 @@ jstr_strcasestr_len(const char *R hs,
 		return NULL;
 	is_alpha0 += jstr_isalpha(ne[1]);
 	switch (nelen) {
-	default: /* case 4: */
-		if (is_alpha0
-		    + jstr_isalpha(ne[2])
-		    + jstr_isalpha(ne[3]))
-			return pjstr_strcasestr4((unsigned char *)hs, (unsigned char *)ne);
+	case 2:
+		if (is_alpha0)
+			return pjstr_strcasestr2((unsigned char *)hs, (unsigned char *)ne);
 		break;
 	case 3:
 		if (is_alpha0
 		    + jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((unsigned char *)hs, (unsigned char *)ne);
 		break;
-	case 2:
-		if (is_alpha0)
-			return pjstr_strcasestr2((unsigned char *)hs, (unsigned char *)ne);
+	default: /* case 4: */
+		if (is_alpha0
+		    + jstr_isalpha(ne[2])
+		    + jstr_isalpha(ne[3]))
+			return pjstr_strcasestr4((unsigned char *)hs, (unsigned char *)ne);
 		break;
 	}
-	return (char *)PJSTR_MEMMEM(hs, hslen, ne, nelen);
+	return (char *)strstr(hs, ne);
 #endif
 }
 
@@ -827,7 +827,7 @@ jstr_count_len(const char *R s,
 		return 0;
 	size_t cnt = 0;
 	const char *const end = s + sz;
-	while ((s = (char *)memmem(s, end - s, find, findlen)))
+	while ((s = (char *)PJSTR_MEMMEM(s, end - s, find, findlen)))
 		++cnt, s += findlen;
 	return cnt;
 }
