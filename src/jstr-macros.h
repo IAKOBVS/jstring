@@ -23,7 +23,7 @@
 #	define JSTR_IS_TYPE(T, x) _Generic((x), \
 	T: 1,                                    \
 	default: 0)
-#endif /* HAVE_TYPEOF && JSTR_HAVE_GENERIC */
+#endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #if (defined __GNUC__ || defined __clang__) && JSTR_HAVE_GENERIC
 #	define JSTR_GENERIC_CASE_SIZE(expr)                           \
