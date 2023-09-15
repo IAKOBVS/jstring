@@ -394,54 +394,48 @@ pjstr_strcasestr_bmh(const unsigned char *R h,
 #undef PJSTR_STRCASESTR_BMH
 }
 
-#define PJSTR_DEFINE_STRSTR(name)                                                           \
-	JSTR_INLINE                                                                         \
-	JSTR_FUNC_PURE                                                                      \
-	static char *                                                                       \
-	pjstr_##name##2(const unsigned char *R h,                                           \
-			const unsigned char *R n)JSTR_NOEXCEPT                              \
-	{                                                                                   \
-		const uint16_t nw = L(n[0]) << 8 | L(n[1]);                                 \
-		uint16_t hw = L(h[0]) << 8 | L(h[1]);                                       \
-		for (h++; *h && hw != nw; hw = hw << 8 | L(*++h))                           \
-			;                                                                   \
-		return hw == nw ? (char *)(h - 1) : NULL;                                   \
-	}                                                                                   \
-                                                                                            \
-	JSTR_INLINE                                                                         \
-	JSTR_FUNC_PURE                                                                      \
-	static char *                                                                       \
-	pjstr_##name##3(const unsigned char *R h,                                           \
-			const unsigned char *R n)JSTR_NOEXCEPT                              \
-	{                                                                                   \
-		const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;           \
-		uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;                 \
-		for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)                      \
-			;                                                                   \
-		return hw == nw ? (char *)(h - 2) : NULL;                                   \
-	}                                                                                   \
-                                                                                            \
-	JSTR_INLINE                                                                         \
-	JSTR_FUNC_PURE                                                                      \
-	static char *                                                                       \
-	pjstr_##name##4(const unsigned char *R h,                                           \
-			const unsigned char *R n)JSTR_NOEXCEPT                              \
-	{                                                                                   \
-		const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]); \
-		uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);       \
-		for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))                        \
-			;                                                                   \
-		return hw == nw ? (char *)(h - 3) : NULL;                                   \
-	}
-
-#define L(c) (c)
-PJSTR_DEFINE_STRSTR(strstr);
-#undef L
 #define L(c) jstr_tolower(c)
-PJSTR_DEFINE_STRSTR(strcasestr);
-#undef L
 
-#undef PJSTR_DEFINE_STRSTR
+JSTR_INLINE
+JSTR_FUNC_PURE
+static char *
+pjstr_strcasestr2(const unsigned char *R h,
+		const unsigned char *R n)JSTR_NOEXCEPT
+{
+	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
+	uint16_t hw = L(h[0]) << 8 | L(h[1]);
+	for (h++; *h && hw != nw; hw = hw << 8 | L(*++h))
+		;
+	return hw == nw ? (char *)(h - 1) : NULL;
+}
+
+JSTR_INLINE
+JSTR_FUNC_PURE
+static char *
+pjstr_strcasestr3(const unsigned char *R h,
+		const unsigned char *R n)JSTR_NOEXCEPT
+{
+	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
+	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
+	for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)
+		;
+	return hw == nw ? (char *)(h - 2) : NULL;
+}
+
+JSTR_INLINE
+JSTR_FUNC_PURE
+static char *
+pjstr_strcasestr4(const unsigned char *R h,
+		const unsigned char *R n)JSTR_NOEXCEPT
+{
+	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
+	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
+	for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))
+		;
+	return hw == nw ? (char *)(h - 3) : NULL;
+}
+
+#undef L
 
 /*
    Find NE in HS case-insensitively (ASCII).
