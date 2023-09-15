@@ -46,8 +46,8 @@ JSTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static int
-jstr_strncasecmp(const char *R s1,
-		 const char *R s2,
+jstr_strncasecmp(const char *R const s1,
+		 const char *R const s2,
 		 size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRNCASECMP
