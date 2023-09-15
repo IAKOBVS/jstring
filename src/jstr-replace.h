@@ -846,7 +846,7 @@ pjstr_rplcall_len(const pjstr_flag_use_n_ty flag,
 		if (jstr_unlikely(p == NULL))
 			return 0;
 	}
-	if (jstr_unlikely(dst == (unsigned char *)s))
+	if (jstr_unlikely(dst == (u *)s))
 		return 1;
 	if (rplclen < findlen) {
 		memmove(dst, old, *(u **)s + *sz - old);
