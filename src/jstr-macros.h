@@ -609,7 +609,7 @@ case '~':
 #endif /* Gnu */
 
 #if ((__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
-|| ((__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE)  \
+|| ((__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE)    \
 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
 #	define JSTR_HAVE_GETC_UNLOCKED	   1
 #	define JSTR_HAVE_GETCHAR_UNLOCKED 1
@@ -836,7 +836,7 @@ case '~':
 #endif
 
 /* Needle length over which memmem would be faster than strstr. */
-#define JSTR_MEMMEM_THRES	17
+#define JSTR_MEMMEM_THRES 17
 
 /* Only use memmem for long needles or if it is implemented in assembly.
    It seems to be slower than strstr for short needles. */
@@ -853,6 +853,8 @@ case '~':
 #else
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
 #endif /* HAVE_MEMMEM */
+
+#define JSTR_STRSTR_LEN(hs, hslen, ne, nelen) JSTR_STRSTR_LEN(hs, hslen, ne, nelen)
 
 #undef JSTR_MEMMEM_THRES
 

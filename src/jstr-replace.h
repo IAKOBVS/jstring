@@ -238,7 +238,7 @@ jstr_slipafter_len(char *R *R const s,
 		return jstr_slipafterchr_len(s, sz, cap, *find, src, srclen);
 	if (jstr_unlikely(findlen == 0))
 		return 1;
-	const char *const p = (char *)JSTR_MEMMEM(*s, *sz, find, findlen);
+	const char *const p = JSTR_STRSTR_LEN(*s, *sz, find, findlen);
 	if (p != NULL)
 		return jstr_slip_len(s, sz, cap, p - *s + findlen, src, srclen);
 	return 1;
@@ -277,7 +277,7 @@ jstr_slipafterall_len(char *R *R const s,
 		return 1;
 	size_t off = 0;
 	const char *p;
-	while ((p = (char *)JSTR_MEMMEM(*s + off, *sz - off, find, findlen))) {
+	while ((p = JSTR_STRSTR_LEN(*s + off, *sz - off, find, findlen))) {
 		off = p - *s;
 		if (jstr_unlikely(!jstr_slip_len(s, sz, cap, p - *s + findlen, src, srclen)))
 			return 0;
@@ -529,7 +529,7 @@ jstr_rm_len_p(char *R const s,
 {
 	if (jstr_unlikely(findlen == 0))
 		return s + sz;
-	char *const p = (char *)JSTR_MEMMEM(s, sz, find, findlen);
+	char *const p = JSTR_STRSTR_LEN(s, sz, find, findlen);
 	if (jstr_unlikely(p == NULL))
 		return s + sz;
 	memmove(p, p + findlen, (s + sz) - p);
@@ -653,7 +653,7 @@ jstr_rplc_len(char *R *R const s,
 		}
 	} else if (jstr_unlikely(findlen == 0))
 		return 1;
-	char *p = (char *)JSTR_MEMMEM(*s, *sz, find, findlen);
+	char *p = JSTR_STRSTR_LEN(*s, *sz, find, findlen);
 	if (jstr_unlikely(p == NULL))
 		return 1;
 	return jstr_slip_len(s, sz, cap, p - *s, rplc, rplclen);
@@ -1114,7 +1114,7 @@ jstr_insertafter_len(char *R *R const s,
 		return jstr_insertafterchr_len(s, sz, cap, *find, src, srclen);
 	if (jstr_unlikely(findlen == 0))
 		return 1;
-	const char *const p = (char *)JSTR_MEMMEM(*s, *sz, find, findlen);
+	const char *const p = JSTR_STRSTR_LEN(*s, *sz, find, findlen);
 	if (p != NULL)
 		return jstr_insert_len(s, sz, cap, p - *s + findlen, src, srclen);
 	return 1;
