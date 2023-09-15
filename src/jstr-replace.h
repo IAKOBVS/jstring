@@ -642,25 +642,21 @@ jstr_rplc_len(char *R *R const s,
 	      const size_t findlen,
 	      const size_t rplclen) JSTR_NOEXCEPT
 {
-	switch (rplclen) {
-	case 0:
+	if (jstr_unlikely(rplclen == 0)) {
 		*sz = jstr_rm_len_p(*s, find, *sz, findlen) - *s;
 		return 1;
-	case 1:
+	}
+	if (jstr_unlikely(rplclen == 1)) {
 		if (jstr_unlikely(findlen == 1)) {
 			jstr_rplcchr_len(*s, *find, *rplc, *sz);
 			return 1;
 		}
-		/* fallthrough */
-	default: {
-		if (jstr_unlikely(findlen == 0))
-			return 1;
-		char *p = (char *)PJSTR_MEMMEM(*s, *sz, find, findlen);
-		if (jstr_unlikely(p == NULL))
-			return 1;
-		return jstr_slip_len(s, sz, cap, p - *s, rplc, rplclen);
-	}
-	}
+	} else if (jstr_unlikely(findlen == 0))
+		return 1;
+	char *p = (char *)PJSTR_MEMMEM(*s, *sz, find, findlen);
+	if (jstr_unlikely(p == NULL))
+		return 1;
+	return jstr_slip_len(s, sz, cap, p - *s, rplc, rplclen);
 }
 
 JSTR_INLINE
@@ -830,11 +826,12 @@ pjstr_rplcall_len(const pjstr_flag_use_n_ty flag,
 		*sz = pjstr_rmall_len_p(flag, *s, find, n, *sz, findlen) - *s;
 		return 1;
 	}
-	if (jstr_unlikely((findlen == 1) & (rplclen == 1))) {
-		jstr_rplcchr_len(*s, *find, *rplc, *sz);
-		return 1;
-	}
-	if (jstr_unlikely(findlen == 0))
+	if (jstr_unlikely(findlen == 1)) {
+		if (jstr_unlikely(rplclen == 1)) {
+			jstr_rplcchr_len(*s, *find, *rplc, *sz);
+			return 1;
+		}
+	} else if (jstr_unlikely(findlen == 0))
 		return 1;
 	typedef unsigned char u;
 	const unsigned char *p = *(u **)s;
