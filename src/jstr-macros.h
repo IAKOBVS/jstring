@@ -8,7 +8,7 @@
 #define PJSTR_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define PJSTR_MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L && !defined __cplusplus
+#if !defined __cplusplus && defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1
 #endif /* HAVE_GENERIC */
 
@@ -16,7 +16,7 @@
 #	define JSTR_HAVE_TYPEOF 1
 #endif /* HAVE_TYPEOF */
 
-#if defined JSTR_HAVE_TYPEOF && defined JSTR_HAVE_GENERIC
+#if JSTR_HAVE_TYPEOF && JSTR_HAVE_GENERIC
 #	define JSTR_SAME_TYPE(x, y) _Generic((x), \
 	__typeof__(y): 1,                          \
 	default: 0)
