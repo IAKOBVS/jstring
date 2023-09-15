@@ -854,7 +854,7 @@ case '~':
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
 #endif /* HAVE_MEMMEM */
 
-#define JSTR_STRSTR_LEN(hs, hslen, ne, nelen) (char *)JSTR_MEMMEM(hs, hslen, ne, nelen)
+#define JSTR_STRSTR_LEN(hs, hslen, ne, nelen) ((char *)JSTR_MEMMEM(hs, hslen, ne, nelen))
 
 #undef JSTR_MEMMEM_THRES
 
