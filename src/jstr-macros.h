@@ -608,7 +608,7 @@ case '~':
 #	define JSTR_HAVE_STRCASESTR	    1
 #endif /* Gnu */
 
-#if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 24) && _POSIX_C_SOURCE >= 199309L) \
+#if ((__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
 || ((__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE)  \
 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
 #	define JSTR_HAVE_GETC_UNLOCKED	   1
@@ -617,7 +617,7 @@ case '~':
 #	define JSTR_HAVE_PUTCHAR_UNLOCKED 1
 #endif /* Posix || Bsd  */
 
-#if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 19) && defined _DEFAULT_SOURCE) \
+#if ((__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 19)) && defined _DEFAULT_SOURCE) \
 || defined _SVID_SOURCE || defined _BSD_SOURCE
 #	define JSTR_HAVE_FREAD_UNLOCKED    1
 #	define JSTR_HAVE_FWRITE_UNLOCKED   1
@@ -639,7 +639,7 @@ case '~':
 
 #if _XOPEN_SOURCE >= 500                                                                      \
 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19 && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
-|| (__GLIBC__ > 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ >= 12 && __POSIX_C_SOURCE >= 200809L)
+|| ((__GLIBC__ > 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ >= 12) && __POSIX_C_SOURCE >= 200809L)
 #	define JSTR_HAVE_STRDUP 1
 #endif /* Xopen || Bsd || Svid || Posix */
 
