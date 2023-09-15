@@ -304,19 +304,30 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 			 const unsigned char *R n,
 			 const size_t nl) JSTR_NOEXCEPT
 {
-#define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
+#define H(p)  (((size_t)(((p)[0])) - ((size_t)((p)[-1]) << 3)) % 256)
+#define H0(p) (((size_t)(jstr_toupper((p)[0])) - ((size_t)jstr_toupper((p)[-1]) << 3)) % 256)
+#define H1(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
+#define H2(p) (((size_t)(jstr_toupper((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
+#define H3(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_toupper((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                            \
 	do {                                                                                          \
 		table_type shift[256];                                                                \
 		BZERO(shift);                                                                         \
-		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i)                         \
-			shift[HL(n + i)] = i;                                                         \
-		const size_t shft1 = mtc1 - shift[HL(n + mtc1)];                                      \
-		shift[HL(n + mtc1)] = mtc1;                                                           \
+		for (ne_iterator_type i = 1; i < (ne_iterator_type)mtc1; ++i) {                       \
+			shift[H0(n + i)] = i;                                                         \
+			shift[H1(n + i)] = i;                                                         \
+			shift[H2(n + i)] = i;                                                         \
+			shift[H3(n + i)] = i;                                                         \
+		}                                                                                     \
+		const size_t shft1 = mtc1 - shift[H0(n + mtc1)];                                      \
+		shift[H0(n + mtc1)] = mtc1;                                                           \
+		shift[H1(n + mtc1)] = mtc1;                                                           \
+		shift[H2(n + mtc1)] = mtc1;                                                           \
+		shift[H3(n + mtc1)] = mtc1;                                                           \
 		do {                                                                                  \
 			do {                                                                          \
 				h += mtc1;                                                            \
-				tmp = shift[HL(h)];                                                   \
+				tmp = shift[H(h)];                                                    \
 			} while ((!tmp) & (h < end));                                                 \
 			h -= tmp;                                                                     \
 			if (tmp < mtc1)                                                               \
@@ -337,7 +348,11 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 	if (jstr_unlikely(nl > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	PJSTR_STRCASESTR_BMH(uint8_t, int);
-#undef HL
+#undef H
+#undef H0
+#undef H1
+#undef H2
+#undef H3
 #undef PJSTR_STRCASESTR_BMH
 }
 
@@ -400,7 +415,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr2(const unsigned char *R h,
-		const unsigned char *R n)JSTR_NOEXCEPT
+		  const unsigned char *R n) JSTR_NOEXCEPT
 {
 	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
 	uint16_t hw = L(h[0]) << 8 | L(h[1]);
@@ -413,7 +428,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr3(const unsigned char *R h,
-		const unsigned char *R n)JSTR_NOEXCEPT
+		  const unsigned char *R n) JSTR_NOEXCEPT
 {
 	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
 	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
@@ -426,7 +441,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr4(const unsigned char *R h,
-		const unsigned char *R n)JSTR_NOEXCEPT
+		  const unsigned char *R n) JSTR_NOEXCEPT
 {
 	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
 	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
