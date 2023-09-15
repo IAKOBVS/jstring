@@ -120,13 +120,29 @@ jstr_strdup(const char *R const s)
 	return strdup(s);
 #else
 	const size_t len = strlen(s);
-	char *p = (char *)malloc(len + 1);
+	char *const p = (char *)malloc(len + 1);
 	if (jstr_unlikely(p == NULL))
 		return NULL;
 	memcpy(p, s, len);
 	p[len] = '\0';
 	return p;
 #endif
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_strdup_len(size_t *R sz,
+		const char *R const src,
+		const size_t srclen)
+{
+	char *const p = (char *)malloc(srclen + 1);
+	if (jstr_unlikely(p == NULL))
+		return NULL;
+	memcpy(p, src, srclen);
+	p[srclen] = '\0';
+	*sz = srclen;
+	return p;
 }
 
 JSTR_FUNC_RET_NONNULL
