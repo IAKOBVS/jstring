@@ -37,28 +37,28 @@
 #	define cast_to_pointer(val) ((void *)(uintptr_t)(val))
 
 /* Return the ptrdiff_t difference between P1 and P2.  */
-#	define PJSTR_PTR_DIFF(p1, p2) \
+#	define JSTR_PTR_DIFF(p1, p2) \
 		((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 #endif
 
 /* Check if BASE is aligned on SIZE  */
-#define PJSTR_PTR_IS_ALIGNED(base, size) \
+#define JSTR_PTR_IS_ALIGNED(base, size) \
 	((((uintptr_t)(base)) & (size - 1)) == 0)
 /* Align a value by rounding down to closest size.
    e.g. Using size of 4096, we get this behavior:
 	{4095, 4096, 4097} = {0, 4096, 4096}.  */
-#define PJSTR_ALIGN_DOWN(base, size) ((base) & -((uintptr_t)(size)))
+#define JSTR_ALIGN_DOWN(base, size) ((base) & -((uintptr_t)(size)))
 
 /* Align a value by rounding up to closest size.
    e.g. Using size of 4096, we get this behavior:
 	{4095, 4096, 4097} = {4096, 4096, 8192}.
   Note: The size argument has side effects (expanded multiple times).  */
-#define PJSTR_ALIGN_UP(base, size) PJSTR_ALIGN_DOWN((base) + (size)-1, (size))
+#define JSTR_ALIGN_UP(base, size) JSTR_ALIGN_DOWN((base) + (size)-1, (size))
 
 /* Same as ALIGN_DOWN(), but automatically casts when base is a pointer.  */
-#define PJSTR_PTR_ALIGN_DOWN(base, size) \
-	(PJSTR_ALIGN_DOWN((uintptr_t)(base), (size)))
+#define JSTR_PTR_ALIGN_DOWN(base, size) \
+	(JSTR_ALIGN_DOWN((uintptr_t)(base), (size)))
 /* Same as ALIGN_UP(), but automatically casts when base is a pointer.  */
-#define PJSTR_PTR_ALIGN_UP(base, size) \
-	(PJSTR_ALIGN_UP((uintptr_t)(base), (size)))
+#define JSTR_PTR_ALIGN_UP(base, size) \
+	(JSTR_ALIGN_UP((uintptr_t)(base), (size)))
 #endif /* PJSTR_LIBC_POINTER_ARITH_H */

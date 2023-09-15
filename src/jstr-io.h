@@ -446,8 +446,8 @@ pjstr_io_alloc_file(const int alloc_exact,
 	if (jstr_unlikely(stat(fname, st)))
 		goto err_close;
 	*cap = alloc_exact
-	       ? PJSTR_ALIGN_UP_STR(JSTR_MIN_ALLOCEXACT(st->st_size + 1))
-	       : PJSTR_ALIGN_UP_STR(JSTR_MIN_ALLOC(st->st_size));
+	       ? JSTR_ALIGN_UP_STR(JSTR_MIN_ALLOCEXACT(st->st_size + 1))
+	       : JSTR_ALIGN_UP_STR(JSTR_MIN_ALLOC(st->st_size));
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, goto err_close);
 	fread(*s, 1, st->st_size, fp);

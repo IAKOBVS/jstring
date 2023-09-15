@@ -648,8 +648,8 @@ case '~':
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
 
-#define PJSTR_ALIGN_UP_STR(base)       PJSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
-#define PJSTR_PTR_IS_ALIGNED_STR(base) PJSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_UP_STR(base)       JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if defined __x86_64__ || defined _M_X64
 #	define JSTR_ARCH_X86_64 1

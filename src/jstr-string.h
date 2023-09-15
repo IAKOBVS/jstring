@@ -183,8 +183,8 @@ jstr_memrchr(const void *R s,
 	const unsigned char *const end = (unsigned char *)s + n;
 	enum { WORDSIZ = sizeof(jstr_word_ty) };
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
-	const jstr_word_ty *w = (jstr_word_ty *)PJSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
-	const jstr_word_ty *const start = (jstr_word_ty *)PJSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
+	const jstr_word_ty *w = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
+	const jstr_word_ty *const start = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
 	if ((u *)w != end) {
 		if (jstr_word_has_eq(*w, cc)) {
 			const unsigned char *const ret = (u *)w + jstr_word_index_last_eq(*w, cc);
@@ -201,8 +201,8 @@ jstr_memrchr(const void *R s,
 			return (void *)w;
 	}
 #	else
-	const unsigned char *p = (u *)PJSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
-	const unsigned char *const start = (u *)PJSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
+	const unsigned char *p = (u *)JSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
+	const unsigned char *const start = (u *)JSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
 	jstr_word_ty w;
 	if (p != end) {
 		w = jstr_word_uctow(p);

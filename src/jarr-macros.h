@@ -35,7 +35,7 @@ PJARR_CAST(T, Other other)
 #define PJARR_MEMMOVE(j, dst, src, n) memmove(dst, src, (n)*PJARR_ELEMSZ(j))
 #define PJARR_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*PJARR_ELEMSZ(j))
 
-#define PJARR_ALIGN_UP(new_cap)		 PJSTR_ALIGN_UP(new_cap, PJSTR_MALLOC_ALIGNMENT)
+#define PJARR_ALIGN_UP(new_cap)		 JSTR_ALIGN_UP(new_cap, PJSTR_MALLOC_ALIGNMENT)
 #define PJARR_MIN_ALLOC(j, new_cap)	 JSTR_MIN_ALLOCEXACT(PJARR_ALIGN_UP((size_t)(((new_cap)*PJARR_ELEMSZ(j) * PJARR_ALLOC_MULTIPLIER))))
 #define PJARR_MIN_ALLOCEXACT(j, new_cap) JSTR_MIN_ALLOCEXACT(PJARR_ALIGN_UP((new_cap)*PJARR_ELEMSZ(j)))
 
@@ -50,7 +50,7 @@ PJARR_CAST(T, Other other)
 		JSTR_ASSERT_IS_SIZE(new_cap);                                \
 		while (((old_cap) *= PJARR_GROWTH) < (new_cap))              \
 			;                                                    \
-		(old_cap) = PJSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
+		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define PJARR_REALLOC(j, new_cap, malloc_fail)                                                                    \
 	do {                                                                                                      \

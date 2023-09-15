@@ -941,7 +941,7 @@ pjstr_reg_base_rplcall_len_bref(const pjstr_flag_use_n_ty flag,
 				rdstlen = rdstlen + (rm[*rsrc - '0'].rm_eo - rm[*rsrc - '0'].rm_so) - 2;
 		if (jstr_unlikely(rdstlen > 256)) {
 			if (jstr_unlikely(rdst == NULL)) {
-				rdstcap = PJSTR_PTR_ALIGN_UP(rdstlen, PJSTR_MALLOC_ALIGNMENT);
+				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, PJSTR_MALLOC_ALIGNMENT);
 				rdst = (u *)malloc(rdstcap);
 				PJSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_NOERROR);
 			} else if (rdstcap < rdstlen) {
