@@ -713,12 +713,26 @@ case '~':
 #endif
 
 #ifdef __BYTE_ORDER
-#	if __BYTE_ORDER == __BIG_ENDIAN || defined __BIG_ENDIAN__ || defined __ARMEB__ || defined __THUMBEB__ || defined __AARCH64EB__ || defined _MIBSEB || defined __MIBSEB || defined __MIBSEB__
+#	if __BYTE_ORDER == __BIG_ENDIAN \
+	|| defined __BIG_ENDIAN__        \
+	|| defined __ARMEB__             \
+	|| defined __THUMBEB__           \
+	|| defined __AARCH64EB__         \
+	|| defined _MIBSEB               \
+	|| defined __MIBSEB              \
+	|| defined __MIBSEB__
 #		undef JSTR_ENDIAN_BIG
 #		undef JSTR_ENDIAN_LITTLE
 #		define JSTR_ENDIAN_BIG	   1
 #		define JSTR_ENDIAN_LITTLE 0
-#	elif __BYTE_ORDER == __LITTLE_ENDIAN || defined __LITTLE_ENDIAN__ || defined __ARMEL__ || defined __THUMBEL__ || defined __AARCH64EL__ || defined _MIPSEL || defined __MIPSEL || defined __MIPSEL__
+#	elif __BYTE_ORDER == __LITTLE_ENDIAN \
+	|| defined __LITTLE_ENDIAN__          \
+	|| defined __ARMEL__                  \
+	|| defined __THUMBEL__                \
+	|| defined __AARCH64EL__              \
+	|| defined _MIPSEL                    \
+	|| defined __MIPSEL                   \
+	|| defined __MIPSEL__
 #		undef JSTR_ENDIAN_LITTLE
 #		undef JSTR_ENDIAN_BIG
 #		define JSTR_ENDIAN_LITTLE 1
