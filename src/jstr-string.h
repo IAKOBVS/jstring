@@ -464,10 +464,11 @@ jstr_strcasestr_len(const char *R hs,
 #else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
 	if (jstr_unlikely(nelen == 0))
 		return (char *)hs;
+	typedef unsigned char u;
 	if (hslen > 4) {
 		if (jstr_unlikely(hslen < nelen))
 			return NULL;
-		return pjstr_strcasestr_len_bmh((unsigned char *)hs, hslen, (unsigned char *)ne, nelen);
+		return pjstr_strcasestr_len_bmh((u *)hs, hslen, (u *)ne, nelen);
 	}
 	int is_alpha0 = jstr_isalpha(*ne);
 	const char *const start = hs;
@@ -487,18 +488,18 @@ jstr_strcasestr_len(const char *R hs,
 	switch (nelen) {
 	case 2:
 		if (is_alpha0)
-			return pjstr_strcasestr2((unsigned char *)hs, (unsigned char *)ne);
+			return pjstr_strcasestr2((u *)hs, (u *)ne);
 		break;
 	case 3:
 		if (is_alpha0
 		    + jstr_isalpha(ne[2]))
-			return pjstr_strcasestr3((unsigned char *)hs, (unsigned char *)ne);
+			return pjstr_strcasestr3((u *)hs, (u *)ne);
 		break;
 	default: /* case 4: */
 		if (is_alpha0
 		    + jstr_isalpha(ne[2])
 		    + jstr_isalpha(ne[3]))
-			return pjstr_strcasestr4((unsigned char *)hs, (unsigned char *)ne);
+			return pjstr_strcasestr4((u *)hs, (u *)ne);
 		break;
 	}
 	return (char *)strstr(hs, ne);
