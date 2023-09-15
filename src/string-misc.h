@@ -16,10 +16,24 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	return *(jstr_word_ty *)p;
 #else
-	if (JSTR_ENDIAN_LITTLE)
-		return (jstr_word_ty)p[7] << 56 | (jstr_word_ty)p[6] << 48 | (jstr_word_ty)p[5] << 40 | (jstr_word_ty)p[4] << 32 | (jstr_word_ty)p[3] << 24 | (jstr_word_ty)p[2] << 16 | (jstr_word_ty)p[1] << 8 | (jstr_word_ty)p[0];
-	else
-		return (jstr_word_ty)p[7] >> 56 | (jstr_word_ty)p[6] >> 48 | (jstr_word_ty)p[5] >> 40 | (jstr_word_ty)p[4] >> 32 | (jstr_word_ty)p[3] >> 24 | (jstr_word_ty)p[2] >> 16 | (jstr_word_ty)p[1] >> 8 | (jstr_word_ty)p[0];
+	typedef jstr_word_ty w;
+	if (JSTR_ENDIAN_LITTLE) {
+		switch (sizeof(w)) {
+		case 8: return (w)p[7] << 56 | (w)p[6] << 48 | (w)p[5] << 40 | (w)p[4] << 32 | (w)p[3] << 24 | (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
+		case 7: return (w)p[6] << 48 | (w)p[5] << 40 | (w)p[4] << 32 | (w)p[3] << 24 | (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
+		case 6: return (w)p[5] << 40 | (w)p[4] << 32 | (w)p[3] << 24 | (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
+		case 5: return (w)p[4] << 32 | (w)p[3] << 24 | (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
+		case 4: return (w)p[3] << 24 | (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
+		}
+	} else {
+		switch (sizeof(w)) {
+		case 8: return (w)p[7] >> 56 | (w)p[6] >> 48 | (w)p[5] >> 40 | (w)p[4] >> 32 | (w)p[3] >> 24 | (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
+		case 7: return (w)p[6] >> 48 | (w)p[5] >> 40 | (w)p[4] >> 32 | (w)p[3] >> 24 | (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
+		case 6: return (w)p[5] >> 40 | (w)p[4] >> 32 | (w)p[3] >> 24 | (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
+		case 5: return (w)p[4] >> 32 | (w)p[3] >> 24 | (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
+		case 4: return (w)p[3] >> 24 | (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
+		}
+	}
 #endif
 }
 
@@ -36,10 +50,24 @@ JSTR_FUNC_PURE
 static jstr_word_ty
 jstr_word_ctow_rev(const char *JSTR_RESTRICT const p)
 {
-	if (JSTR_ENDIAN_LITTLE)
-		return (jstr_word_ty)p[0] << 56 | (jstr_word_ty)p[1] << 48 | (jstr_word_ty)p[2] << 40 | (jstr_word_ty)p[3] << 32 | (jstr_word_ty)p[4] << 24 | (jstr_word_ty)p[5] << 16 | (jstr_word_ty)p[6] << 8 | (jstr_word_ty)p[7];
-	else
-		return (jstr_word_ty)p[0] >> 56 | (jstr_word_ty)p[1] >> 48 | (jstr_word_ty)p[2] >> 40 | (jstr_word_ty)p[3] >> 32 | (jstr_word_ty)p[4] >> 24 | (jstr_word_ty)p[5] >> 16 | (jstr_word_ty)p[6] >> 8 | (jstr_word_ty)p[7];
+	typedef jstr_word_ty w;
+	if (JSTR_ENDIAN_LITTLE) {
+		switch (sizeof(w)) {
+		case 8: return (w)p[0] << 56 | (w)p[1] << 48 | (w)p[2] << 40 | (w)p[3] << 32 | (w)p[4] << 24 | (w)p[5] << 16 | (w)p[6] << 8 | (w)p[7];
+		case 7: return (w)p[0] << 56 | (w)p[1] << 48 | (w)p[2] << 40 | (w)p[3] << 32 | (w)p[4] << 24 | (w)p[5] << 16 | (w)p[6] << 8;
+		case 6: return (w)p[0] << 56 | (w)p[1] << 48 | (w)p[2] << 40 | (w)p[3] << 32 | (w)p[4] << 24 | (w)p[5] << 16;
+		case 5: return (w)p[0] << 56 | (w)p[1] << 48 | (w)p[2] << 40 | (w)p[3] << 32 | (w)p[4] << 24;
+		case 4: return (w)p[0] << 56 | (w)p[1] << 48 | (w)p[2] << 40 | (w)p[3] << 32;
+		}
+	} else {
+		switch (sizeof(w)) {
+		case 8: return (w)p[0] >> 56 | (w)p[1] >> 48 | (w)p[2] >> 40 | (w)p[3] >> 32 | (w)p[4] >> 24 | (w)p[5] >> 16 | (w)p[6] >> 8 | (w)p[7];
+		case 7: return (w)p[0] >> 56 | (w)p[1] >> 48 | (w)p[2] >> 40 | (w)p[3] >> 32 | (w)p[4] >> 24 | (w)p[5] >> 16 | (w)p[6] >> 8;
+		case 6: return (w)p[0] >> 56 | (w)p[1] >> 48 | (w)p[2] >> 40 | (w)p[3] >> 32 | (w)p[4] >> 24 | (w)p[5] >> 16;
+		case 5: return (w)p[0] >> 56 | (w)p[1] >> 48 | (w)p[2] >> 40 | (w)p[3] >> 32 | (w)p[4] >> 24;
+		case 4: return (w)p[0] >> 56 | (w)p[1] >> 48 | (w)p[2] >> 40 | (w)p[3] >> 32;
+		}
+	}
 }
 
 JSTR_INLINE
