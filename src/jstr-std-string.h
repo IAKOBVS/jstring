@@ -30,7 +30,7 @@ jstr_strnlen(const char *R const s,
 #if JSTR_HAVE_STRNLEN
 	return strnlen(s, maxlen);
 #else
-	const char *p = (char *)memchr(s, '\0', maxlen);
+	const char *const p = (char *)memchr(s, '\0', maxlen);
 	return p ? (size_t)(p - s) : maxlen;
 #endif
 }
