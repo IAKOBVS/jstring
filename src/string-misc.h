@@ -22,7 +22,7 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 #else
 #	define SH(idx) \
 		(JSTR_ENDIAN_LITTLE ? ((jstr_word_ty)p[(idx)] << ((idx)*CHAR_BIT)) : ((jstr_word_ty)p[(idx)] >> ((idx)*CHAR_BIT)))
-	/* generated with ../bin/generate-ctow 2 64 */
+	/* Generated with ../bin/generate-ctow 2 64. */
 	switch (sizeof(jstr_word_ty)) {
 	case 2: return SH(1) | SH(0);
 	case 3: return SH(2) | SH(1) | SH(0);
