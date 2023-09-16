@@ -44,6 +44,7 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 		PJSTR_WORD_CTOW(<<);
 	else
 		PJSTR_WORD_CTOW(>>);
+#undef PJSTR_WORD_CTOW
 #endif
 }
 
