@@ -18,7 +18,7 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 {
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	return *(jstr_word_ty *)p;
-/* #else */
+#else
 #	define SH(idx) \
 		(JSTR_ENDIAN_LITTLE ? ((jstr_word_ty)p[(idx)] << ((idx)*8)) : ((jstr_word_ty)p[(idx)] >> ((idx)*8)))
 	switch (sizeof(jstr_word_ty)) {
