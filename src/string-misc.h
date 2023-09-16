@@ -35,6 +35,8 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 		case 6: return (w)p[5] << 40 | (w)p[4] << 32 | (w)p[3] << 24 | (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
 		case 5: return (w)p[4] << 32 | (w)p[3] << 24 | (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
 		case 4: return (w)p[3] << 24 | (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
+		case 3: return (w)p[2] << 16 | (w)p[1] << 8 | (w)p[0];
+		case 2: return (w)p[1] << 8 | (w)p[0];
 		}
 	} else {
 		switch (sizeof(w)) {
@@ -51,6 +53,8 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 		case 6: return (w)p[5] >> 40 | (w)p[4] >> 32 | (w)p[3] >> 24 | (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
 		case 5: return (w)p[4] >> 32 | (w)p[3] >> 24 | (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
 		case 4: return (w)p[3] >> 24 | (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
+		case 3: return (w)p[2] >> 16 | (w)p[1] >> 8 | (w)p[0];
+		case 2: return (w)p[1] >> 8 | (w)p[0];
 		}
 	}
 #endif
