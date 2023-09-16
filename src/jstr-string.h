@@ -419,7 +419,7 @@ pjstr_strcasestr2(const unsigned char *R h,
 {
 	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
 	uint16_t hw = L(h[0]) << 8 | L(h[1]);
-	for (h++; *h && hw != nw; hw = hw << 8 | L(*++h))
+	for (h++; (*h != '\0') & (hw != nw); hw = hw << 8 | L(*++h))
 		;
 	return hw == nw ? (char *)(h - 1) : NULL;
 }
@@ -432,7 +432,7 @@ pjstr_strcasestr3(const unsigned char *R h,
 {
 	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
 	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
-	for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)
+	for (h += 2; (*h != '\0') & (hw != nw); hw = (hw | L(*++h)) << 8)
 		;
 	return hw == nw ? (char *)(h - 2) : NULL;
 }
@@ -445,7 +445,7 @@ pjstr_strcasestr4(const unsigned char *R h,
 {
 	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
 	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
-	for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))
+	for (h += 3; (*h != '\0') & (hw != nw); hw = hw << 8 | L(*++h))
 		;
 	return hw == nw ? (char *)(h - 3) : NULL;
 }
