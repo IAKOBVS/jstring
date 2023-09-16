@@ -85,7 +85,7 @@ jstr_memccpy(void *R dst,
 #if JSTR_HAVE_MEMCCPY
 	return memccpy(dst, src, c, n);
 #else
-	void *p = (void *)memchr(src, c, n);
+	const void *const p = (void *)memchr(src, c, n);
 	if (p != NULL) {
 		typedef unsigned char u;
 		memcpy(dst, src, (u *)p - (u *)src);
