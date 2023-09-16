@@ -102,9 +102,9 @@ PJSTR_BEGIN_DECLS
 		*nptr = '\0';                                                                                         \
 		return nptr;                                                                                          \
 	} while (0)
-#if 0
 
-#	define PJSTR_ULLTOA_UNROLLED(nptr, number, base)                                                                                                                                    \
+#if 1
+#	define PJSTR_ULTOA_UNROLLED(nptr, number, base)                                                                                                                                     \
 		do {                                                                                                                                                                         \
 			JSTR_ASSERT_IS_STR(nptr);                                                                                                                                            \
 			JSTR_ASSERT_IS_SIZE(number);                                                                                                                                         \
@@ -358,6 +358,25 @@ PJSTR_BEGIN_DECLS
 			*nptr = '\0';                                                                                                                                                        \
 			return nptr;                                                                                                                                                         \
 		} while (0)
+#else
+#	define PJSTR_ULTOA_UNROLLED(nptr, number, base)                 \
+		do {                                                     \
+			if (jstr_likely(number <= 9999999999)) {         \
+				PJSTR_UTOA_UNROLLED(nptr, number, base); \
+				break;                                   \
+			}                                                \
+			enum { len = JSTR_MAX_ULONG_LONG_DIGITS };       \
+			char s[len + 1];                                 \
+			s[len] = '\0';                                   \
+			char *p = s + len - 1;                           \
+			do                                               \
+				*p-- = number % base + '0';              \
+			while (number /= base);                          \
+			while (*++p)                                     \
+				*nptr++ = *p;                            \
+			*nptr = '\0';                                    \
+			return nptr;                                     \
+		} while (0)
 #endif
 
 #define PJSTR_ITOA_UNROLLED(nptr, number, base)          \
@@ -368,27 +387,13 @@ PJSTR_BEGIN_DECLS
 		}                                        \
 		PJSTR_UTOA_UNROLLED(nptr, number, base); \
 	} while (0)
-#define PJSTR_ULLTOA_UNROLLED(nptr, number, base)           \
-	do {                                                \
-		enum { len = JSTR_MAX_ULONG_LONG_DIGITS }; \
-		char s[len + 1];                            \
-		s[len] = '\0';                              \
-		char *p = s + len - 1;                      \
-		do                                          \
-			*p-- = number % base + '0';         \
-		while (number /= base);                     \
-		while (*++p)                                \
-			*nptr++ = *p;                       \
-		*nptr = '\0';                               \
-		return nptr;                                \
-	} while (0)
-#define PJSTR_LLTOA_UNROLLED(nptr, number, base)           \
-	do {                                               \
-		if (number < 0) {                          \
-			number = -number;                  \
-			*nptr++ = '-';                     \
-		}                                          \
-		PJSTR_ULLTOA_UNROLLED(nptr, number, base); \
+#define PJSTR_LLTOA_UNROLLED(nptr, number, base)          \
+	do {                                              \
+		if (number < 0) {                         \
+			number = -number;                 \
+			*nptr++ = '-';                    \
+		}                                         \
+		PJSTR_ULTOA_UNROLLED(nptr, number, base); \
 	} while (0)
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
@@ -415,7 +420,7 @@ jstr_lltoa(char *R nptr,
 	}
 	if (jstr_likely(number <= 9999999999))
 		PJSTR_UTOA_UNROLLED(nptr, number, base);
-	PJSTR_ULLTOA_UNROLLED(nptr, number, base);
+	PJSTR_ULTOA_UNROLLED(nptr, number, base);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
@@ -447,9 +452,7 @@ jstr_ulltoa(char *R nptr,
 	    unsigned long long number,
 	    const unsigned int base) JSTR_NOEXCEPT
 {
-	if (jstr_likely(number <= 9999999999))
-		PJSTR_UTOA_UNROLLED(nptr, number, base);
-	PJSTR_ULLTOA_UNROLLED(nptr, number, base);
+	PJSTR_ULTOA_UNROLLED(nptr, number, base);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
@@ -468,7 +471,7 @@ PJSTR_END_DECLS
 #undef R
 
 #undef PJSTR_ITOA_ATTR
-#undef PJSTR_ULLTOA_UNROLLED
+#undef PJSTR_ULTOA_UNROLLED
 #undef PJSTR_ULTOA_UNROLLED
 #undef PJSTR_LLTOA_UNROLLED
 #undef PJSTR_LTOA_UNROLLED
