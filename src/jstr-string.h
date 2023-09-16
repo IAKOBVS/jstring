@@ -468,9 +468,9 @@ jstr_strcasestr_len(const char *R hs,
 		    const char *R const ne,
 		    const size_t nelen) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
+#if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
-#else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
+#else
 	if (jstr_unlikely(nelen == 0))
 		return (char *)hs;
 	typedef unsigned char u;
@@ -529,9 +529,9 @@ static char *
 jstr_strcasestr(const char *R hs,
 		const char *R const ne) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
+#if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
-#else /* It seems to be much faster than glibc strcasestr which seems to use strcasestr.c */
+#else
 	if (jstr_unlikely(ne[0] == '\0'))
 		return (char *)hs;
 	int is_alpha0 = jstr_isalpha(*ne);

@@ -648,7 +648,7 @@ case '~':
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
 
-#define JSTR_ALIGN_UP_STR(base)       JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if defined __x86_64__ || defined _M_X64
@@ -853,6 +853,13 @@ case '~':
 #else
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
 #endif /* HAVE_MEMMEM */
+
+/* Only use libc strcasestr if it is implemented in assembly. */
+#if JSTR_HAVE_STRCASESTR
+#	if JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8
+#		define JSTR_HAVE_STRCASESTR_OPTIMIZED
+#	endif
+#endif
 
 #define JSTR_STRSTR_LEN(hs, hslen, ne, nelen) ((char *)JSTR_MEMMEM(hs, hslen, ne, nelen))
 
