@@ -109,32 +109,32 @@ PJSTR_BEGIN_DECLS
 			JSTR_ASSERT_IS_STR(nptr);                                                                                                                                            \
 			JSTR_ASSERT_IS_SIZE(number);                                                                                                                                         \
 			JSTR_ASSERT_IS_SIZE(base);                                                                                                                                           \
-			if (number <= 1) {                                                                                                                                                   \
+			if (number <= 9) {                                                                                                                                                   \
 				nptr[0] = number % base + '0';                                                                                                                               \
 				nptr += 1;                                                                                                                                                   \
-			} else if (number <= 10) {                                                                                                                                           \
+			} else if (number <= 99) {                                                                                                                                           \
 				nptr[0] = number / base % base + '0';                                                                                                                        \
 				nptr[1] = number % base + '0';                                                                                                                               \
 				nptr += 2;                                                                                                                                                   \
-			} else if (number <= 100) {                                                                                                                                          \
+			} else if (number <= 999) {                                                                                                                                          \
 				nptr[0] = number / base / base % base + '0';                                                                                                                 \
 				nptr[1] = number / base % base + '0';                                                                                                                        \
 				nptr[2] = number % base + '0';                                                                                                                               \
 				nptr += 3;                                                                                                                                                   \
-			} else if (number <= 1000) {                                                                                                                                         \
+			} else if (number <= 9999) {                                                                                                                                         \
 				nptr[0] = number / base / base / base % base + '0';                                                                                                          \
 				nptr[1] = number / base / base % base + '0';                                                                                                                 \
 				nptr[2] = number / base % base + '0';                                                                                                                        \
 				nptr[3] = number % base + '0';                                                                                                                               \
 				nptr += 4;                                                                                                                                                   \
-			} else if (number <= 10000) {                                                                                                                                        \
+			} else if (number <= 99999) {                                                                                                                                        \
 				nptr[0] = number / base / base / base / base % base + '0';                                                                                                   \
 				nptr[1] = number / base / base / base % base + '0';                                                                                                          \
 				nptr[2] = number / base / base % base + '0';                                                                                                                 \
 				nptr[3] = number / base % base + '0';                                                                                                                        \
 				nptr[4] = number % base + '0';                                                                                                                               \
 				nptr += 5;                                                                                                                                                   \
-			} else if (number <= 100000) {                                                                                                                                       \
+			} else if (number <= 999999) {                                                                                                                                       \
 				nptr[0] = number / base / base / base / base / base % base + '0';                                                                                            \
 				nptr[1] = number / base / base / base / base % base + '0';                                                                                                   \
 				nptr[2] = number / base / base / base % base + '0';                                                                                                          \
@@ -142,7 +142,7 @@ PJSTR_BEGIN_DECLS
 				nptr[4] = number / base % base + '0';                                                                                                                        \
 				nptr[5] = number % base + '0';                                                                                                                               \
 				nptr += 6;                                                                                                                                                   \
-			} else if (number <= 1000000) {                                                                                                                                      \
+			} else if (number <= 9999999) {                                                                                                                                      \
 				nptr[0] = number / base / base / base / base / base / base % base + '0';                                                                                     \
 				nptr[1] = number / base / base / base / base / base % base + '0';                                                                                            \
 				nptr[2] = number / base / base / base / base % base + '0';                                                                                                   \
@@ -151,7 +151,7 @@ PJSTR_BEGIN_DECLS
 				nptr[5] = number / base % base + '0';                                                                                                                        \
 				nptr[6] = number % base + '0';                                                                                                                               \
 				nptr += 7;                                                                                                                                                   \
-			} else if (number <= 10000000) {                                                                                                                                     \
+			} else if (number <= 99999999) {                                                                                                                                     \
 				nptr[0] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
 				nptr[1] = number / base / base / base / base / base / base % base + '0';                                                                                     \
 				nptr[2] = number / base / base / base / base / base % base + '0';                                                                                            \
@@ -161,7 +161,7 @@ PJSTR_BEGIN_DECLS
 				nptr[6] = number / base % base + '0';                                                                                                                        \
 				nptr[7] = number % base + '0';                                                                                                                               \
 				nptr += 8;                                                                                                                                                   \
-			} else if (number <= 100000000) {                                                                                                                                    \
+			} else if (number <= 999999999) {                                                                                                                                    \
 				nptr[0] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
 				nptr[1] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
 				nptr[2] = number / base / base / base / base / base / base % base + '0';                                                                                     \
@@ -172,7 +172,7 @@ PJSTR_BEGIN_DECLS
 				nptr[7] = number / base % base + '0';                                                                                                                        \
 				nptr[8] = number % base + '0';                                                                                                                               \
 				nptr += 9;                                                                                                                                                   \
-			} else if (number <= 1000000000) {                                                                                                                                   \
+			} else if (number <= 9999999999) {                                                                                                                                   \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
 				nptr[1] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
 				nptr[2] = number / base / base / base / base / base / base / base % base + '0';                                                                              \
@@ -184,7 +184,7 @@ PJSTR_BEGIN_DECLS
 				nptr[8] = number / base % base + '0';                                                                                                                        \
 				nptr[9] = number % base + '0';                                                                                                                               \
 				nptr += 10;                                                                                                                                                  \
-			} else if (number <= 10000000000) {                                                                                                                                  \
+			} else if (number <= 99999999999) {                                                                                                                                  \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
 				nptr[2] = number / base / base / base / base / base / base / base / base % base + '0';                                                                       \
@@ -197,7 +197,7 @@ PJSTR_BEGIN_DECLS
 				nptr[9] = number / base % base + '0';                                                                                                                        \
 				nptr[10] = number % base + '0';                                                                                                                              \
 				nptr += 11;                                                                                                                                                  \
-			} else if (number <= 100000000000) {                                                                                                                                 \
+			} else if (number <= 999999999999) {                                                                                                                                 \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
 				nptr[2] = number / base / base / base / base / base / base / base / base / base % base + '0';                                                                \
@@ -211,7 +211,7 @@ PJSTR_BEGIN_DECLS
 				nptr[10] = number / base % base + '0';                                                                                                                       \
 				nptr[11] = number % base + '0';                                                                                                                              \
 				nptr += 12;                                                                                                                                                  \
-			} else if (number <= 1000000000000) {                                                                                                                                \
+			} else if (number <= 9999999999999) {                                                                                                                                \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
 				nptr[2] = number / base / base / base / base / base / base / base / base / base / base % base + '0';                                                         \
@@ -226,7 +226,7 @@ PJSTR_BEGIN_DECLS
 				nptr[11] = number / base % base + '0';                                                                                                                       \
 				nptr[12] = number % base + '0';                                                                                                                              \
 				nptr += 13;                                                                                                                                                  \
-			} else if (number <= 10000000000000) {                                                                                                                               \
+			} else if (number <= 99999999999999) {                                                                                                                               \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                                  \
@@ -242,7 +242,7 @@ PJSTR_BEGIN_DECLS
 				nptr[11] = number / base % base + '0';                                                                                                                       \
 				nptr[13] = number % base + '0';                                                                                                                              \
 				nptr += 13;                                                                                                                                                  \
-			} else if (number <= 10000000000000) {                                                                                                                               \
+			} else if (number <= 99999999999999) {                                                                                                                               \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
 				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
@@ -259,7 +259,7 @@ PJSTR_BEGIN_DECLS
 				nptr[13] = number / base % base + '0';                                                                                                                       \
 				nptr[14] = number % base + '0';                                                                                                                              \
 				nptr += 14;                                                                                                                                                  \
-			} else if (number <= 100000000000000) {                                                                                                                              \
+			} else if (number <= 999999999999999) {                                                                                                                              \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
 				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                           \
@@ -276,7 +276,7 @@ PJSTR_BEGIN_DECLS
 				nptr[13] = number / base % base + '0';                                                                                                                       \
 				nptr[14] = number % base + '0';                                                                                                                              \
 				nptr += 15;                                                                                                                                                  \
-			} else if (number <= 1000000000000000) {                                                                                                                             \
+			} else if (number <= 9999999999999999) {                                                                                                                             \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                      \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
 				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                                    \
@@ -294,7 +294,7 @@ PJSTR_BEGIN_DECLS
 				nptr[14] = number / base % base + '0';                                                                                                                       \
 				nptr[15] = number % base + '0';                                                                                                                              \
 				nptr += 16;                                                                                                                                                  \
-			} else if (number <= 10000000000000000) {                                                                                                                            \
+			} else if (number <= 99999999999999999) {                                                                                                                            \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';               \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                      \
 				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                             \
@@ -313,7 +313,7 @@ PJSTR_BEGIN_DECLS
 				nptr[15] = number / base % base + '0';                                                                                                                       \
 				nptr[16] = number % base + '0';                                                                                                                              \
 				nptr += 17;                                                                                                                                                  \
-			} else if (number <= 100000000000000000) {                                                                                                                           \
+			} else if (number <= 999999999999999999) {                                                                                                                           \
 				nptr[0] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';        \
 				nptr[1] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';               \
 				nptr[2] = number / base / base / base / base / base / base / base / base / base / base / base / base / base / base / base % base + '0';                      \
