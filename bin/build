@@ -1,2 +1,8 @@
 #!/bin/sh
-cc ./is-little-endian.c -o is-little-endian
+for file in $(echo *.c); do
+	{
+	bin="${file%.*}"
+	test -e "$bin" && test "$file" -ot "$bin" && exit 0
+	cc -O3 "$file" -o "$bin"
+	} &
+done
