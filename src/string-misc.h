@@ -7,6 +7,7 @@ PJSTR_BEGIN_DECLS
 
 #include "generic-string-misc.h"
 #include <endian.h>
+#include <limits.h>
 
 #pragma GCC diagnostic ignored "-Wshift-count-overflow"
 #pragma GCC diagnostic push
@@ -20,7 +21,7 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 	return *(jstr_word_ty *)p;
 #else
 #	define SH(idx) \
-		(JSTR_ENDIAN_LITTLE ? ((jstr_word_ty)p[(idx)] << ((idx)*8)) : ((jstr_word_ty)p[(idx)] >> ((idx)*8)))
+		(JSTR_ENDIAN_LITTLE ? ((jstr_word_ty)p[(idx)] << ((idx)*CHAR_BIT)) : ((jstr_word_ty)p[(idx)] >> ((idx)*CHAR_BIT)))
 	/* generated with ../bin/generate-ctow 2 64 */
 	switch (sizeof(jstr_word_ty)) {
 	case 2: return SH(1) | SH(0);
