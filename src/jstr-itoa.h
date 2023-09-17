@@ -383,7 +383,7 @@ PJSTR_BEGIN_DECLS
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
-jstr_itoa(char *R nptr,
+jstr_itoa_p(char *R nptr,
 	  int number,
 	  const unsigned int base) JSTR_NOEXCEPT
 {
@@ -397,7 +397,7 @@ jstr_itoa(char *R nptr,
 /* Return ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_lltoa(char *R nptr,
+jstr_lltoa_p(char *R nptr,
 	   long long number,
 	   const unsigned int base) JSTR_NOEXCEPT
 {
@@ -412,18 +412,18 @@ jstr_lltoa(char *R nptr,
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
-jstr_ltoa(char *R nptr,
+jstr_ltoa_p(char *R nptr,
 	  long number,
 	  const unsigned int base) JSTR_NOEXCEPT
 {
-	return jstr_lltoa(nptr, number, base);
+	return jstr_lltoa_p(nptr, number, base);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
-jstr_utoa(char *R nptr,
+jstr_utoa_p(char *R nptr,
 	  const unsigned int number,
 	  const unsigned int base) JSTR_NOEXCEPT
 {
@@ -433,7 +433,7 @@ jstr_utoa(char *R nptr,
 /* Return ptr to '\0' after the last digit in the DEST string. */
 PJSTR_ITOA_ATTR
 static char *
-jstr_ulltoa(char *R nptr,
+jstr_ulltoa_p(char *R nptr,
 	    unsigned long long number,
 	    const unsigned int base) JSTR_NOEXCEPT
 {
@@ -444,11 +444,11 @@ jstr_ulltoa(char *R nptr,
 JSTR_INLINE
 PJSTR_ITOA_ATTR
 static char *
-jstr_ultoa(char *R nptr,
+jstr_ultoa_p(char *R nptr,
 	   const unsigned long number,
 	   const unsigned int base) JSTR_NOEXCEPT
 {
-	return jstr_ulltoa(nptr, number, base);
+	return jstr_ulltoa_p(nptr, number, base);
 }
 
 PJSTR_END_DECLS
