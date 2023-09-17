@@ -833,12 +833,11 @@ case '~':
 
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
+/* Needle length over which memmem would be faster than strstr. */
+#	define JSTR_MEMMEM_THRES 17
 #endif
 
-/* Needle length over which memmem would be faster than strstr. */
-#define JSTR_MEMMEM_THRES 17
-
-/* Only use memmem for long needles or if it is implemented in assembly.
+/* Only use memmem for long needles or when it is implemented in assembly.
    It seems to be slower than strstr for short needles. */
 #if JSTR_HAVE_MEMMEM
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED
@@ -854,7 +853,7 @@ case '~':
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
 #endif /* HAVE_MEMMEM */
 
-/* Only use libc strcasestr if it is implemented in assembly. */
+/* Only use libc strcasestr when it is implemented in assembly. */
 #if JSTR_HAVE_STRCASESTR
 #	if JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8
 #		define JSTR_HAVE_STRCASESTR_OPTIMIZED
