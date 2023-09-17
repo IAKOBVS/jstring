@@ -567,14 +567,13 @@ jstr_strrcspn_len(const char *R const s,
 		  const char *R const reject,
 		  size_t sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(reject[0] == '\0'))
-		return 0;
+	if (jstr_unlikely(reject[0] == '\0')
+	    || jstr_unlikely(sz == 0))
+		return sz;
 	if (jstr_unlikely(reject[1] == '\0')) {
 		const char *const p = (char *)jstr_memrchr(s, *reject, sz);
-		return p ? (size_t)((s + sz - 1) - p) : sz;
+		return p ? (size_t)((s + sz) - p) : sz;
 	}
-	if (jstr_unlikely(sz == 0))
-		return 0;
 	unsigned char t[256];
 	BZERO(t);
 	const unsigned char *p = (unsigned char *)reject;
@@ -584,7 +583,7 @@ jstr_strrcspn_len(const char *R const s,
 	p = (unsigned char *)s + sz - 1;
 	for (int i = sz % 4; i-- > 0;)
 		if (t[*p--])
-			return ((unsigned char *)s + sz - 1) - (p + 1);
+			return ((unsigned char *)s + sz) - (p + 1);
 	if (jstr_unlikely(sz < 4))
 		return sz;
 	unsigned int c0, c1, c2, c3;
@@ -596,7 +595,7 @@ jstr_strrcspn_len(const char *R const s,
 		p -= 4;
 		sz -= 4;
 	} while (((sz == 0) | c0 | c1 | c2 | c3) == 0);
-	size_t cnt = ((unsigned char *)s + sz - 1) - p;
+	size_t cnt = ((unsigned char *)s + sz) - p;
 	return ((c0 | c1) != 0)
 	       ? cnt - c0 + 1
 	       : cnt - c2 + 3;
@@ -623,15 +622,14 @@ jstr_strrspn_len(const char *R const s,
 		 const char *R const accept,
 		 size_t sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*accept == '\0'))
-		return 0;
-	if (jstr_unlikely(sz == 0))
+	if (jstr_unlikely(*accept == '\0')
+	    || jstr_unlikely(sz == 0))
 		return 0;
 	if (jstr_unlikely(accept[1] == '\0')) {
 		const char *p = s + sz - 1;
-		while (*p-- == *accept)
+		while ((p != s) && (*p-- == *accept))
 			;
-		return (s + sz - 1) - (p + 1);
+		return (s + sz) - (p + 1);
 	}
 	const unsigned char *p = (unsigned char *)accept;
 	unsigned char t[256];
@@ -642,7 +640,7 @@ jstr_strrspn_len(const char *R const s,
 	p = (unsigned char *)s + sz - 1;
 	for (int i = sz % 4; i-- > 0;)
 		if (!t[*p--])
-			return ((unsigned char *)s + sz - 1) - (p + 1);
+			return ((unsigned char *)s + sz) - (p + 1);
 	if (jstr_unlikely(sz < 4))
 		return sz;
 	unsigned int c0, c1, c2, c3;
@@ -654,7 +652,7 @@ jstr_strrspn_len(const char *R const s,
 		p -= 4;
 		sz -= 4;
 	} while ((sz != 0) & (c0 & c1 & c2 & c3));
-	size_t cnt = ((unsigned char *)s + sz - 1) - p;
+	size_t cnt = ((unsigned char *)s + sz) - p;
 	return ((c0 & c1) == 0)
 	       ? cnt + c0
 	       : cnt + c2 + 2;
@@ -682,8 +680,8 @@ jstr_strrpbrk_len(const char *R s,
 		  const char *R const accept,
 		  const size_t sz) JSTR_NOEXCEPT
 {
-	s = s + sz - jstr_strrcspn_len(s, accept, sz);
-	return *s ? (char *)s : NULL;
+	const size_t len = jstr_strrcspn_len(s, accept, sz);
+	return (len != sz) ? (char *)(s + sz - len) : NULL;
 }
 
 /*
