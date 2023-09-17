@@ -122,11 +122,12 @@ PJSTR_END_DECLS
 		[0] = (value);                                                                 \
 	} while (0)
 #define jarr_at(j, index) \
-	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : (__FILE__, __LINE__, __func__, "index out of bounds"))
+	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : PJARR_ERR(__FILE__, __LINE__, __func__, "index out of bounds"))
 #define jarr_foreach(j, iterator) \
 	for (size_t iterator = 0, _max_elem_##iterator = (j)->size; iterator < _max_elem_##iterator; ++iterator)
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
+JSTR_COLD
 static void PJARR_ERR(const char *FILE_,
 		const int LINE_,
 		const char *func_,
