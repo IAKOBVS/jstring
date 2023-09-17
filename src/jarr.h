@@ -27,7 +27,7 @@ PJSTR_END_DECLS
 		size_t PJARR_SIZE_NAME;                                                        \
 		size_t PJARR_CAPACITY_NAME;                                                    \
 	} jarr_##name##_ty;                                                                   \
-	pjarr_##name##_ty name;
+	jarr_##name##_ty name;
 #define jarr_free(j)                                                                           \
 	do {                                                                                   \
 		free(PJARR_DATA(j));                                                           \
