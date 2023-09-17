@@ -10,8 +10,7 @@ template <typename T, typename Arg>
 JSTR_INLINE JSTR_NOTHROW static constexpr int
 jtraits_is_same_decay() JSTR_NOEXCEPT
 {
-	using namespace std;
-	return is_same<T, typename decay<Arg>::type>::value;
+	return std::is_same<T, typename std::decay<Arg>::type>::value;
 }
 
 template <typename T, typename Arg>
@@ -25,7 +24,6 @@ template <typename Str>
 JSTR_INLINE JSTR_NOTHROW static constexpr int
 jtraits_are_strings() JSTR_NOEXCEPT
 {
-	using namespace std;
 	return jtraits_is_same_decay<const char *, Str>()
 		|| jtraits_is_same_decay<char *, Str>();
 }
