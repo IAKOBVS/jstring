@@ -832,7 +832,7 @@ case '~':
 #endif
 
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
-#	define PSJTR_HAVE_STRSTR_OPTIMIZED 1
+#	define JSTR_HAVE_STRSTR_OPTIMIZED 1
 #endif
 
 /* Needle length over which memmem would be faster than strstr. */
