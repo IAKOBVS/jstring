@@ -456,7 +456,6 @@ jstr_strcasestr_len(const char *R hs,
 {
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
-	static_assert(0, "");
 #else
 	if (jstr_unlikely(nelen == 0))
 		return (char *)hs;
