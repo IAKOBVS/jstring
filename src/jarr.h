@@ -21,12 +21,12 @@ PJSTR_END_DECLS
 #	define PJARR_NULLIFY(j)
 #endif
 
-#define jarr(T, name)                                                                          \
+#define jarr_ty(T, name)                                                                          \
 	typedef struct pjarr_##name##_ty {                                                     \
 		T *PJARR_DATA_NAME;                                                            \
 		size_t PJARR_SIZE_NAME;                                                        \
 		size_t PJARR_CAPACITY_NAME;                                                    \
-	} pjarr_##name##_ty;                                                                   \
+	} jarr_##name##_ty;                                                                   \
 	pjarr_##name##_ty name;
 #define jarr_free(j)                                                                           \
 	do {                                                                                   \
