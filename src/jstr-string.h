@@ -381,9 +381,11 @@ pjstr_strcasestr_bmh(const unsigned char *R h,
 		return NULL;                                                                        \
 	} while (0)
 	const size_t nl = strlen((char *)n);
-	size_t hl = jstr_strnlen((char *)h, nl | 512);
+	const size_t hl = jstr_strnlen((char *)h, nl | 512);
 	if (hl < nl)
 		return NULL;
+	if (!jstr_strncasecmp((char *)h, (char *)n, nl))
+		return (char *)h;
 	const unsigned char *end = h + hl - nl + 1;
 	size_t tmp;
 	const size_t m1 = nl - 1;
@@ -460,7 +462,7 @@ jstr_strcasestr_len(const char *R hs,
 	if (jstr_unlikely(nelen == 0))
 		return (char *)hs;
 	typedef unsigned char u;
-	if (hslen > 4) {
+	if (nelen > 4) {
 		if (jstr_unlikely(hslen < nelen))
 			return NULL;
 		return pjstr_strcasestr_len_bmh((u *)hs, hslen, (u *)ne, nelen);
@@ -473,8 +475,7 @@ jstr_strcasestr_len(const char *R hs,
 	} else {
 		hs = (char *)memchr(hs, *ne, hslen);
 	}
-	if (jstr_unlikely(hs == NULL)
-	    || !jstr_strncasecmp(hs, ne, nelen))
+	if (jstr_unlikely(hs == NULL))
 		return (char *)hs;
 	hslen -= hs - start;
 	if (jstr_unlikely(hslen < nelen))
@@ -527,8 +528,7 @@ jstr_strcasestr(const char *R hs,
 	} else {
 		hs = strchr(hs, *ne);
 	}
-	if (jstr_unlikely(hs == NULL)
-	    || !jstr_strcasecmp(hs, ne))
+	if (jstr_unlikely(hs == NULL))
 		return (char *)hs;
 	is_alpha0 += jstr_isalpha(ne[1]);
 	typedef unsigned char u;
