@@ -318,7 +318,7 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 			do {                                                                        \
 				h += m1;                                                            \
 				tmp = shift[HL(h)];                                                 \
-			} while ((!tmp) & (h < end));                                               \
+			} while (!tmp & (h < end));                                                 \
 			h -= tmp;                                                                   \
 			if (tmp < m1)                                                               \
 				continue;                                                           \
