@@ -304,30 +304,20 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 			 const unsigned char *R n,
 			 const size_t nl) JSTR_NOEXCEPT
 {
-#define H(p)  (((size_t)(((p)[0])) - ((size_t)((p)[-1]) << 3)) % 256)
-#define H0(p) (((size_t)(jstr_toupper((p)[0])) - ((size_t)jstr_toupper((p)[-1]) << 3)) % 256)
-#define H1(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define H2(p) (((size_t)(jstr_toupper((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define H3(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_toupper((p)[-1]) << 3)) % 256)
+#define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                          \
 	do {                                                                                        \
 		table_type shift[256];                                                              \
 		BZERO(shift);                                                                       \
 		for (ne_iterator_type i = 1; i < (ne_iterator_type)m1; ++i) {                       \
-			shift[H0(n + i)] = i;                                                       \
-			shift[H1(n + i)] = i;                                                       \
-			shift[H2(n + i)] = i;                                                       \
-			shift[H3(n + i)] = i;                                                       \
+			shift[HL(n + i)] = i;                                                       \
 		}                                                                                   \
-		const size_t shift1 = m1 - shift[H0(n + m1)];                                       \
-		shift[H0(n + m1)] = m1;                                                             \
-		shift[H1(n + m1)] = m1;                                                             \
-		shift[H2(n + m1)] = m1;                                                             \
-		shift[H3(n + m1)] = m1;                                                             \
+		const size_t shift1 = m1 - shift[HL(n + m1)];                                       \
+		shift[HL(n + m1)] = m1;                                                             \
 		do {                                                                                \
 			do {                                                                        \
 				h += m1;                                                            \
-				tmp = shift[H(h)];                                                  \
+				tmp = shift[HL(h)];                                                 \
 			} while ((!tmp) & (h < end));                                               \
 			h -= tmp;                                                                   \
 			if (tmp < m1)                                                               \
@@ -348,11 +338,7 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 	if (jstr_unlikely(nl > 256))
 		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	PJSTR_STRCASESTR_BMH(uint8_t, int);
-#undef H
-#undef H0
-#undef H1
-#undef H2
-#undef H3
+#undef HL
 #undef PJSTR_STRCASESTR_BMH
 }
 
