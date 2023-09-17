@@ -531,27 +531,28 @@ jstr_strcasestr(const char *R hs,
 	    || !jstr_strcasecmp(hs, ne))
 		return (char *)hs;
 	is_alpha0 += jstr_isalpha(ne[1]);
+	typedef unsigned char u;
 	if (ne[2] == '\0') {
 		if (jstr_unlikely(hs[1] == '\0'))
 			return NULL;
 		if (is_alpha0)
-			return pjstr_strcasestr2((unsigned char *)hs, (unsigned char *)ne);
+			return pjstr_strcasestr2((u *)hs, (u *)ne);
 	} else if (ne[3] == '\0') {
 		if (jstr_unlikely(hs[1] == '\0')
 		    || jstr_unlikely(hs[2] == '\0'))
 			return NULL;
 		if (is_alpha0
 		    + jstr_isalpha(ne[2]))
-			return pjstr_strcasestr3((unsigned char *)hs, (unsigned char *)ne);
+			return pjstr_strcasestr3((u *)hs, (u *)ne);
 	} else if (ne[4] == '\0') {
 		if (jstr_unlikely(hs[1] == '\0' || jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0')))
 			return NULL;
 		if (is_alpha0
 		    + jstr_isalpha(ne[2])
 		    + jstr_isalpha(ne[3]))
-			return pjstr_strcasestr4((unsigned char *)hs, (unsigned char *)ne);
+			return pjstr_strcasestr4((u *)hs, (u *)ne);
 	} else {
-		return pjstr_strcasestr_bmh((unsigned char *)hs, (unsigned char *)ne);
+		return pjstr_strcasestr_bmh((u *)hs, (u *)ne);
 	}
 	return (char *)strstr(hs, ne);
 #endif
