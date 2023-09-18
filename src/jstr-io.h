@@ -331,7 +331,7 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static int
-jstr_is_binary(const char *R const buf,
+jstr_isbinary(const char *R const buf,
 	       const size_t n,
 	       const size_t sz) JSTR_NOEXCEPT
 {
@@ -355,7 +355,7 @@ jstr_is_binary(const char *R const buf,
 */
 JSTR_FUNC
 static int
-jstr_io_is_binary_maybe(const char *R const buf,
+jstr_io_isbinary_maybe(const char *R const buf,
 			const size_t sz) JSTR_NOEXCEPT
 {
 #define JSTR_BINARY_CHECK()                                                         \
@@ -387,9 +387,9 @@ check_utf:;                                                                     
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_io_is_binary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
+jstr_io_isbinary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
 {
-	return jstr_io_is_binary_maybe(j->data, j->size);
+	return jstr_io_isbinary_maybe(j->data, j->size);
 }
 
 /*
@@ -398,7 +398,7 @@ jstr_io_is_binary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 static int
-jstr_io_is_binary(const char *R const buf,
+jstr_io_isbinary(const char *R const buf,
 		  const size_t sz) JSTR_NOEXCEPT
 {
 	JSTR_BINARY_CHECK();
@@ -418,9 +418,9 @@ jstr_io_is_binary(const char *R const buf,
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_io_is_binary_j(jstr_ty *R const j) JSTR_NOEXCEPT
+jstr_io_isbinary_j(jstr_ty *R const j) JSTR_NOEXCEPT
 {
-	return jstr_io_is_binary(j->data, j->size);
+	return jstr_io_isbinary(j->data, j->size);
 }
 
 JSTR_INLINE
