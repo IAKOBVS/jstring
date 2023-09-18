@@ -565,15 +565,15 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_DO_REG = (JSTR_IO_FTW_MATCH_FNAME << 1),
 	/* Call FUNC on directories. */
 	JSTR_IO_FTW_DO_DIR = (JSTR_IO_FTW_DO_REG << 1),
-	/* Only search the current directory. */
-	JSTR_IO_FTW_MAXDEPTH_1 = (JSTR_IO_FTW_DO_DIR << 1),
+	/* Do not search subdirectories. */
+	JSTR_IO_FTW_NO_RECUR = (JSTR_IO_FTW_DO_DIR << 1),
 } jstr_io_ftw_flag_ty;
 
 /*
    Call FUNC on entries found recursively that matches GLOB.
-   If GLOB is NULL, match all regular files.
-   If match_fulpath is non-zero, match the fulpath instead of directory to GLOB.
-   If either DO_REG or DO_DIR flag is used, FUNC will not be applied to other filetypes.
+   If either the DO_REG or DO_DIR flag is used, FUNC will not be applied to other filetypes.
+   If the MATCH_FNAME flag is used, match only the filename with the GLOB.
+   If GLOB is NULL, all entries match.
    ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
    FUNC therefore must correctly interpret ARG.
    Jflags:
@@ -646,7 +646,7 @@ do_reg:
 		func(fulpath, arg);
 		continue;
 do_dir:
-		if (jflags & JSTR_IO_FTW_MAXDEPTH_1)
+		if (jflags & JSTR_IO_FTW_NO_RECUR)
 			continue;
 		P_JSTR_IO_FILL_PATH();
 #if JSTR_HAVE_DIRENT_D_TYPE
