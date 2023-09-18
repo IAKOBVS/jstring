@@ -4,29 +4,29 @@
 #include "jstr-pp-va-args-tools.h"
 
 #define P_JSTR_PP_STRCPY_VA_ARGS_1(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_2(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_3(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_4(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 3, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_5(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__); \
@@ -34,7 +34,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 4, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_6(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__); \
@@ -43,7 +43,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 5, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_7(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__); \
@@ -53,7 +53,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 6, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_8(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__); \
@@ -64,7 +64,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 7, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_9(DST, STRLEN_ARRAY, ...)           \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__); \
@@ -76,7 +76,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 8, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_10(DST, STRLEN_ARRAY, ...)          \
-	do {                                                        \
+	do {                                                         \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__); \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__); \
@@ -89,7 +89,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 9, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_11(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -103,7 +103,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 10, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_12(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -118,7 +118,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 11, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_13(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -134,7 +134,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 12, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_14(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -151,7 +151,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 13, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_15(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -169,7 +169,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 14, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_16(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -188,7 +188,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 15, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_17(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -208,7 +208,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 16, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_18(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -229,7 +229,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 17, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_19(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -251,7 +251,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 18, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_20(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -274,7 +274,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 19, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_21(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -298,7 +298,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 20, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_22(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -323,7 +323,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 21, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_23(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -349,7 +349,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 22, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_24(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -376,7 +376,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 23, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_25(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -404,7 +404,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 24, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_26(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -433,7 +433,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 25, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_27(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -463,7 +463,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 26, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_28(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -494,7 +494,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 27, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_29(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -526,7 +526,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 28, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_30(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -559,7 +559,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 29, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_31(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -593,7 +593,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 30, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_32(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -628,7 +628,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 31, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_33(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -664,7 +664,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 32, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_34(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -701,7 +701,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 33, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_35(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -739,7 +739,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 34, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_36(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -778,7 +778,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 35, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_37(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -818,7 +818,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 36, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_38(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -859,7 +859,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 37, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_39(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -901,7 +901,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 38, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_40(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -944,7 +944,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 39, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_41(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -988,7 +988,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 40, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_42(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1033,7 +1033,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 41, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_43(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1079,7 +1079,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 42, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_44(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1126,7 +1126,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 43, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_45(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1174,7 +1174,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 44, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_46(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1223,7 +1223,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 45, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_47(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1273,7 +1273,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 46, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_48(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1324,7 +1324,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 47, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_49(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1376,7 +1376,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 48, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_50(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1429,7 +1429,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 49, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_51(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1483,7 +1483,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 50, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_52(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1538,7 +1538,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 51, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_53(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1594,7 +1594,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 52, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_54(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1651,7 +1651,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 53, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_55(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1709,7 +1709,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 54, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_56(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1768,7 +1768,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 55, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_57(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1828,7 +1828,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 56, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_58(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1889,7 +1889,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 57, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_59(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -1951,7 +1951,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 58, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_60(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2014,7 +2014,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 59, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_61(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2078,7 +2078,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 60, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_62(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2143,7 +2143,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 61, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_63(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2209,7 +2209,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 62, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_64(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2276,7 +2276,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 63, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_65(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2344,7 +2344,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 64, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_66(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2413,7 +2413,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 65, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_67(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2483,7 +2483,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 66, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_68(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2554,7 +2554,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 67, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_69(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2626,7 +2626,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 68, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_70(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2699,7 +2699,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 69, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_71(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2773,7 +2773,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 70, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_72(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2848,7 +2848,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 71, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_73(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -2924,7 +2924,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 72, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_74(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3001,7 +3001,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 73, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_75(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3079,7 +3079,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 74, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_76(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3158,7 +3158,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 75, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_77(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3238,7 +3238,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 76, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_78(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3319,7 +3319,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 77, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_79(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3401,7 +3401,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 78, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_80(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3484,7 +3484,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 79, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_81(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3568,7 +3568,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 80, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_82(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3653,7 +3653,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 81, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_83(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3739,7 +3739,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 82, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_84(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3826,7 +3826,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 83, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_85(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -3914,7 +3914,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 84, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_86(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4003,7 +4003,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 85, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_87(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4093,7 +4093,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 86, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_88(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4184,7 +4184,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 87, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_89(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4276,7 +4276,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 88, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_90(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4369,7 +4369,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 89, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_91(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4463,7 +4463,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 90, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_92(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4558,7 +4558,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 91, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_93(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4654,7 +4654,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 92, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_94(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4751,7 +4751,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 93, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_95(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4849,7 +4849,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 94, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_96(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -4948,7 +4948,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 95, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_97(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -5048,7 +5048,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 96, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_98(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -5149,7 +5149,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 97, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_99(DST, STRLEN_ARRAY, ...)           \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -5251,7 +5251,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 98, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_100(DST, STRLEN_ARRAY, ...)          \
-	do {                                                         \
+	do {                                                          \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);  \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);  \
@@ -5354,7 +5354,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 99, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_101(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -5458,7 +5458,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 100, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_102(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -5563,7 +5563,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 101, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_103(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -5669,7 +5669,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 102, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_104(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -5776,7 +5776,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 103, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_105(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -5884,7 +5884,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 104, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_106(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -5993,7 +5993,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 105, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_107(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -6103,7 +6103,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 106, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_108(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -6214,7 +6214,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 107, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_109(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -6326,7 +6326,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 108, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_110(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -6439,7 +6439,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 109, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_111(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -6553,7 +6553,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 110, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_112(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -6668,7 +6668,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 111, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_113(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -6784,7 +6784,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 112, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_114(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -6901,7 +6901,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 113, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_115(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7019,7 +7019,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 114, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_116(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7138,7 +7138,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 115, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_117(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7258,7 +7258,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 116, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_118(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7379,7 +7379,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 117, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_119(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7501,7 +7501,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 118, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_120(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7624,7 +7624,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 119, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_121(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7748,7 +7748,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 120, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_122(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7873,7 +7873,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 121, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_123(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -7999,7 +7999,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 122, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_124(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -8126,7 +8126,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 123, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_125(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -8254,7 +8254,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 124, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_126(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -8383,7 +8383,7 @@
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 125, __VA_ARGS__); \
 	} while (0)
 #define P_JSTR_PP_STRCPY_VA_ARGS_127(DST, STRLEN_ARRAY, ...)           \
-	do {                                                          \
+	do {                                                           \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 0, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 1, __VA_ARGS__);   \
 		P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, 2, __VA_ARGS__);   \
@@ -8517,15 +8517,15 @@
 #	if defined(__GLIBC__)
 #		if (((__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && (_POSIX_C_SOURCE >= 200809L) || defined(_GNU_SOURCE))
 #			define P_JSTR_PP_STRCPY(dst, strlen_arr_ptr, src) \
-				do {                                      \
-					dst = stpcpy(dst, src);           \
+				do {                                       \
+					dst = stpcpy(dst, src);            \
 				} while (0)
 #		endif /* HAVE_STPCPY */
 #	else
 #		define P_JSTR_PP_STRCPY(dst, strlen_arr_ptr, src) \
-			do {                                      \
-				memcpy(dst, src, strlen_arr_ptr); \
-				dst += strlen_arr_ptr;            \
+			do {                                       \
+				memcpy(dst, src, strlen_arr_ptr);  \
+				dst += strlen_arr_ptr;             \
 			} while (0)
 #	endif /* HAVE_STPCPY */
 
@@ -8534,13 +8534,13 @@
 #	define P_JSTR_PP_STRCPY(DST, STRLEN_ARRAY, INDEX, ...) \
 		P_JSTR_PP_STRCPY_HELPER(DST, ((STRLEN_ARRAY)[(INDEX)]), P_JSTR_PP_EXTRACT_ARGS(INDEX, __VA_ARGS__), __VA_ARGS__)
 #	define P_JSTR_PP_STRCPY_HELPER(DST, STRLEN, SRC, ...) \
-		do {                                          \
-			memcpy(DST, SRC, STRLEN);             \
-			DST += STRLEN;                        \
+		do {                                           \
+			memcpy(DST, SRC, STRLEN);              \
+			DST += STRLEN;                         \
 		} while (0)
 #endif
 
 #define P_JSTR_PP_STRCPY_VA_ARGS_HELPER(DST, NUM_ARGS, STRLEN_ARRAY, ...) P_JSTR_PP_CONCAT(P_JSTR_PP_STRCPY_VA_ARGS_, NUM_ARGS, DST, STRLEN_ARRAY, __VA_ARGS__)
-#define P_JSTR_PP_STRCPY_VA_ARGS(DST, STRLEN_ARRAY, ...)			 P_JSTR_PP_STRCPY_VA_ARGS_HELPER(DST, P_JSTR_PP_NARG(__VA_ARGS__), STRLEN_ARRAY, __VA_ARGS__)
+#define P_JSTR_PP_STRCPY_VA_ARGS(DST, STRLEN_ARRAY, ...)		  P_JSTR_PP_STRCPY_VA_ARGS_HELPER(DST, P_JSTR_PP_NARG(__VA_ARGS__), STRLEN_ARRAY, __VA_ARGS__)
 
 #endif /* JSTR_STRCPY_VA_ARGS_H */

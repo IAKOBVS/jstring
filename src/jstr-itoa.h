@@ -12,13 +12,13 @@ P_JSTR_END_DECLS
 
 P_JSTR_BEGIN_DECLS
 
-#define P_JSTR_ITOA_ATTR      \
+#define P_JSTR_ITOA_ATTR     \
 	JSTR_MAYBE_UNUSED    \
 	JSTR_NONNULL_ALL     \
 	JSTR_WARN_UNUSED     \
 	JSTR_RETURNS_NONNULL \
 	JSTR_NOTHROW
-#define P_JSTR_UTOA_UNROLLED(nptr, number, base)                                                                       \
+#define P_JSTR_UTOA_UNROLLED(nptr, number, base)                                                                      \
 	do {                                                                                                          \
 		JSTR_ASSERT_IS_STR(nptr);                                                                             \
 		JSTR_ASSERT_IS_SIZE(number);                                                                          \
@@ -104,7 +104,7 @@ P_JSTR_BEGIN_DECLS
 	} while (0)
 
 #if 1
-#	define P_JSTR_ULTOA_UNROLLED(nptr, number, base)                                                                                                                                     \
+#	define P_JSTR_ULTOA_UNROLLED(nptr, number, base)                                                                                                                                    \
 		do {                                                                                                                                                                         \
 			JSTR_ASSERT_IS_STR(nptr);                                                                                                                                            \
 			JSTR_ASSERT_IS_SIZE(number);                                                                                                                                         \
@@ -360,22 +360,22 @@ P_JSTR_BEGIN_DECLS
 		} while (0)
 #else
 #	define P_JSTR_ULTOA_UNROLLED(nptr, number, base)                 \
-		do {                                                     \
-			if (jstr_likely(number <= 9999999999)) {         \
+		do {                                                      \
+			if (jstr_likely(number <= 9999999999)) {          \
 				P_JSTR_UTOA_UNROLLED(nptr, number, base); \
-				break;                                   \
-			}                                                \
-			enum { len = JSTR_MAX_ULONG_LONG_DIGITS };       \
-			char s[len + 1];                                 \
-			s[len] = '\0';                                   \
-			char *p = s + len - 1;                           \
-			do                                               \
-				*p-- = number % base + '0';              \
-			while (number /= base);                          \
-			while (*++p)                                     \
-				*nptr++ = *p;                            \
-			*nptr = '\0';                                    \
-			return nptr;                                     \
+				break;                                    \
+			}                                                 \
+			enum { len = JSTR_MAX_ULONG_LONG_DIGITS };        \
+			char s[len + 1];                                  \
+			s[len] = '\0';                                    \
+			char *p = s + len - 1;                            \
+			do                                                \
+				*p-- = number % base + '0';               \
+			while (number /= base);                           \
+			while (*++p)                                      \
+				*nptr++ = *p;                             \
+			*nptr = '\0';                                     \
+			return nptr;                                      \
 		} while (0)
 #endif
 
@@ -384,8 +384,8 @@ JSTR_INLINE
 P_JSTR_ITOA_ATTR
 static char *
 jstr_itoa_p(char *R nptr,
-	  int number,
-	  const unsigned int base) JSTR_NOEXCEPT
+	    int number,
+	    const unsigned int base) JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
@@ -398,8 +398,8 @@ jstr_itoa_p(char *R nptr,
 P_JSTR_ITOA_ATTR
 static char *
 jstr_lltoa_p(char *R nptr,
-	   long long number,
-	   const unsigned int base) JSTR_NOEXCEPT
+	     long long number,
+	     const unsigned int base) JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
@@ -413,8 +413,8 @@ JSTR_INLINE
 P_JSTR_ITOA_ATTR
 static char *
 jstr_ltoa_p(char *R nptr,
-	  long number,
-	  const unsigned int base) JSTR_NOEXCEPT
+	    long number,
+	    const unsigned int base) JSTR_NOEXCEPT
 {
 	return jstr_lltoa_p(nptr, number, base);
 }
@@ -424,8 +424,8 @@ JSTR_INLINE
 P_JSTR_ITOA_ATTR
 static char *
 jstr_utoa_p(char *R nptr,
-	  const unsigned int number,
-	  const unsigned int base) JSTR_NOEXCEPT
+	    const unsigned int number,
+	    const unsigned int base) JSTR_NOEXCEPT
 {
 	P_JSTR_UTOA_UNROLLED(nptr, number, base);
 }
@@ -434,8 +434,8 @@ jstr_utoa_p(char *R nptr,
 P_JSTR_ITOA_ATTR
 static char *
 jstr_ulltoa_p(char *R nptr,
-	    unsigned long long number,
-	    const unsigned int base) JSTR_NOEXCEPT
+	      unsigned long long number,
+	      const unsigned int base) JSTR_NOEXCEPT
 {
 	P_JSTR_ULTOA_UNROLLED(nptr, number, base);
 }
@@ -445,8 +445,8 @@ JSTR_INLINE
 P_JSTR_ITOA_ATTR
 static char *
 jstr_ultoa_p(char *R nptr,
-	   const unsigned long number,
-	   const unsigned int base) JSTR_NOEXCEPT
+	     const unsigned long number,
+	     const unsigned int base) JSTR_NOEXCEPT
 {
 	return jstr_ulltoa_p(nptr, number, base);
 }

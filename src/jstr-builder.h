@@ -329,46 +329,46 @@ P_JSTR_END_DECLS
 
 #ifndef __cplusplus
 
-#	define jstr_appendmore_f(s, sz, ...)                                           \
-		do {                                                                    \
-			JSTR_ASSERT_IS_STR(*(s));                                       \
-			JSTR_ASSERT_IS_SIZE(*(sz));                                     \
+#	define jstr_appendmore_f(s, sz, ...)                                            \
+		do {                                                                     \
+			JSTR_ASSERT_IS_STR(*(s));                                        \
+			JSTR_ASSERT_IS_SIZE(*(sz));                                      \
 			P_JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                 \
 			size_t ARR_VA_ARGS[P_JSTR_PP_NARG(__VA_ARGS__)];                 \
 			*(sz) += P_JSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
-			char *p = *(s) + *(sz);                                         \
+			char *p = *(s) + *(sz);                                          \
 			P_JSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);           \
-			*p = '\0';                                                      \
+			*p = '\0';                                                       \
 		} while (0)
-#	define jstr_appendmore(s, sz, cap, ...)                                                             \
-		do {                                                                                         \
-			JSTR_ASSERT_IS_STR(*(s));                                                            \
-			JSTR_ASSERT_IS_SIZE(*(sz));                                                          \
-			JSTR_ASSERT_IS_SIZE(*(cap));                                                         \
+#	define jstr_appendmore(s, sz, cap, ...)                                                              \
+		do {                                                                                          \
+			JSTR_ASSERT_IS_STR(*(s));                                                             \
+			JSTR_ASSERT_IS_SIZE(*(sz));                                                           \
+			JSTR_ASSERT_IS_SIZE(*(cap));                                                          \
 			P_JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                      \
 			size_t ARR_VA_ARGS[P_JSTR_PP_NARG(__VA_ARGS__)];                                      \
 			const size_t NEW_SZ = *(sz) + P_JSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
-			if (*(cap) < NEW_SZ)                                                                 \
+			if (*(cap) < NEW_SZ)                                                                  \
 				P_JSTR_REALLOC(*(s), *(cap), NEW_SZ + 1, break);                              \
-			char *p = *(s) + *(sz);                                                              \
+			char *p = *(s) + *(sz);                                                               \
 			P_JSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);                                \
-			*p = '\0';                                                                           \
-			*(sz) = NEW_SZ;                                                                      \
+			*p = '\0';                                                                            \
+			*(sz) = NEW_SZ;                                                                       \
 		} while (0)
-#	define jstr_alloc_appendmore(s, sz, cap, ...)                                 \
-		do {                                                                   \
-			JSTR_ASSERT_IS_STR(*(s));                                      \
-			JSTR_ASSERT_IS_SIZE(*(sz));                                    \
-			JSTR_ASSERT_IS_SIZE(*(cap));                                   \
+#	define jstr_alloc_appendmore(s, sz, cap, ...)                                  \
+		do {                                                                    \
+			JSTR_ASSERT_IS_STR(*(s));                                       \
+			JSTR_ASSERT_IS_SIZE(*(sz));                                     \
+			JSTR_ASSERT_IS_SIZE(*(cap));                                    \
 			P_JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                \
 			size_t ARR_VA_ARGS[P_JSTR_PP_NARG(__VA_ARGS__)];                \
 			*(sz) = P_JSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
-			*(cap) = JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(*(sz)));           \
-			*(s) = malloc(*(cap));                                         \
+			*(cap) = JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(*(sz)));              \
+			*(s) = malloc(*(cap));                                          \
 			P_JSTR_MALLOC_ERR(*((s)), break);                               \
-			char *p = *(s);                                                \
+			char *p = *(s);                                                 \
 			P_JSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);          \
-			*p = '\0';                                                     \
+			*p = '\0';                                                      \
 		} while (0)
 #	define jstr_appendmore_j(j, ...)	jstr_appendmore(&((j)->data), &((j)->size), &((j)->capacity), __VA_ARGS__)
 #	define jstr_alloc_appendmore_j(j, ...) jstr_alloc_appendmore(&((j)->data), &((j)->size), &((j)->capacity), __VA_ARGS__)

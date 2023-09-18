@@ -66,7 +66,7 @@ PJARR_CAST(T, Other other)
 		PJARR_CHECK_ARG(j);                                                                                \
 		PJARR_CAP(j) = PJARR_ALIGN_UP(PJARR_CAP(j) * PJARR_ELEMSZ);                                        \
 		PJARR_DATA(j) = PJARR_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
-		P_JSTR_MALLOC_ERR(PJARR_DATA(j), malloc_fail);                                                      \
+		P_JSTR_MALLOC_ERR(PJARR_DATA(j), malloc_fail);                                                     \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                   \
 	} while (0)
 #if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF

@@ -12,36 +12,36 @@
 	A##B
 #ifndef __cplusplus
 #	define P_JSTR_PP_PRINTF_FORMAT(x) _Generic((x), \
-	unsigned char: "%hhu\n",                        \
-	unsigned char *: "%s\n",                        \
-	char: "%c\n",                                   \
-	char *: "%s\n",                                 \
-	short: "%hd\n",                                 \
-	unsigned short: "%hu\n",                        \
-	unsigned int: "%u\n",                           \
-	int: "%d\n",                                    \
-	double: "%f\n",                                 \
-	long double: "%Lf\n",                           \
-	float: "%f\n",                                  \
-	size_t: "%zu\n",                                \
-	long: "%ld\n",                                  \
-	long long: "%lld\n",                            \
-	unsigned long long: "%llu\n",                   \
-                                                        \
-	const unsigned char: "%hhu\n",                  \
-	const unsigned char *: "%s\n",                  \
-	const char: "%c\n",                             \
-	const char *: "%s\n",                           \
-	const short: "%hd\n",                           \
-	const unsigned short: "%hu\n",                  \
-	const unsigned int: "%u\n",                     \
-	const int: "%d\n",                              \
-	const double: "%f\n",                           \
-	const long double: "%Lf\n",                     \
-	const float: "%f\n",                            \
-	const size_t: "%zu\n",                          \
-	const long: "%ld\n",                            \
-	const long long: "%lld\n",                      \
+	unsigned char: "%hhu\n",                         \
+	unsigned char *: "%s\n",                         \
+	char: "%c\n",                                    \
+	char *: "%s\n",                                  \
+	short: "%hd\n",                                  \
+	unsigned short: "%hu\n",                         \
+	unsigned int: "%u\n",                            \
+	int: "%d\n",                                     \
+	double: "%f\n",                                  \
+	long double: "%Lf\n",                            \
+	float: "%f\n",                                   \
+	size_t: "%zu\n",                                 \
+	long: "%ld\n",                                   \
+	long long: "%lld\n",                             \
+	unsigned long long: "%llu\n",                    \
+                                                         \
+	const unsigned char: "%hhu\n",                   \
+	const unsigned char *: "%s\n",                   \
+	const char: "%c\n",                              \
+	const char *: "%s\n",                            \
+	const short: "%hd\n",                            \
+	const unsigned short: "%hu\n",                   \
+	const unsigned int: "%u\n",                      \
+	const int: "%d\n",                               \
+	const double: "%f\n",                            \
+	const long double: "%Lf\n",                      \
+	const float: "%f\n",                             \
+	const size_t: "%zu\n",                           \
+	const long: "%ld\n",                             \
+	const long long: "%lld\n",                       \
 	const unsigned long long: "%llu\n")
 #	define jstr_pp_cout(x) printf(P_JSTR_PP_PRINTF_FORMAT(x), x)
 #else

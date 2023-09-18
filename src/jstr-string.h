@@ -118,9 +118,9 @@ jstr_strcasecmp(const char *R s1,
 JSTR_FUNC_PURE
 static void *
 p_jstr_strrstr_len_bmh(const unsigned char *R hs,
-		      const size_t hl,
-		      const unsigned char *R const ne,
-		      const size_t nl) JSTR_NOEXCEPT
+		       const size_t hl,
+		       const unsigned char *R const ne,
+		       const size_t nl) JSTR_NOEXCEPT
 {
 #define BZERO(shift) ((sizeof(shift) == 256)                  \
 		      ? (memset(shift, 0, 64),                \
@@ -129,7 +129,7 @@ p_jstr_strrstr_len_bmh(const unsigned char *R hs,
 			 memset(shift + 64 + 64 + 64, 0, 64)) \
 		      : memset(shift, 0, sizeof(shift)))
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define P_JSTR_STRRSTR_BMH(table_type, ne_iterator_type)                     \
+#define P_JSTR_STRRSTR_BMH(table_type, ne_iterator_type)                    \
 	do {                                                                \
 		table_type shift[256];                                      \
 		BZERO(shift);                                               \
@@ -300,12 +300,12 @@ jstr_strrstr(const char *R const hs,
 JSTR_FUNC_PURE
 static char *
 p_jstr_strcasestr_len_bmh(const unsigned char *R h,
-			 const size_t hl,
-			 const unsigned char *R n,
-			 const size_t nl) JSTR_NOEXCEPT
+			  const size_t hl,
+			  const unsigned char *R n,
+			  const size_t nl) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define P_JSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                          \
+#define P_JSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                         \
 	do {                                                                                        \
 		table_type shift[256];                                                              \
 		BZERO(shift);                                                                       \
@@ -345,10 +345,10 @@ p_jstr_strcasestr_len_bmh(const unsigned char *R h,
 JSTR_FUNC_PURE
 static char *
 p_jstr_strcasestr_bmh(const unsigned char *R h,
-		     const unsigned char *R n) JSTR_NOEXCEPT
+		      const unsigned char *R n) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define P_JSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                          \
+#define P_JSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                         \
 	do {                                                                                        \
 		table_type shift[256];                                                              \
 		BZERO(shift);                                                                       \
@@ -403,7 +403,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
 p_jstr_strcasestr2(const unsigned char *R h,
-		  const unsigned char *R n) JSTR_NOEXCEPT
+		   const unsigned char *R n) JSTR_NOEXCEPT
 {
 	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
 	uint16_t hw = L(h[0]) << 8 | L(h[1]);
@@ -416,7 +416,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
 p_jstr_strcasestr3(const unsigned char *R h,
-		  const unsigned char *R n) JSTR_NOEXCEPT
+		   const unsigned char *R n) JSTR_NOEXCEPT
 {
 	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
 	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
@@ -429,7 +429,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
 p_jstr_strcasestr4(const unsigned char *R h,
-		  const unsigned char *R n) JSTR_NOEXCEPT
+		   const unsigned char *R n) JSTR_NOEXCEPT
 {
 	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
 	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);

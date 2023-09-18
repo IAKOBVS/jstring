@@ -18,13 +18,13 @@ P_JSTR_END_DECLS
 #include "jstr-struct.h"
 
 #define P_JSTR_MALLOC_ERR(p, malloc_fail)                         \
-	do {                                                     \
-		if (jstr_unlikely((p) == NULL)) {                \
+	do {                                                      \
+		if (jstr_unlikely((p) == NULL)) {                 \
 			p_jstr_err(__FILE__, __LINE__, __func__); \
-			malloc_fail;                             \
-		}                                                \
+			malloc_fail;                              \
+		}                                                 \
 	} while (0)
-#define P_JSTR_GROW(old_cap, new_cap)                                         \
+#define P_JSTR_GROW(old_cap, new_cap)                                        \
 	do {                                                                 \
 		JSTR_ASSERT_IS_SIZE(old_cap);                                \
 		JSTR_ASSERT_IS_SIZE(new_cap);                                \
@@ -33,21 +33,21 @@ P_JSTR_END_DECLS
 		(old_cap) = JSTR_ALIGN_UP(old_cap, P_JSTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define P_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
-	do {                                            \
-		JSTR_ASSERT_IS_STR(p);                  \
-		JSTR_ASSERT_IS_SIZE(old_cap);           \
-		JSTR_ASSERT_IS_SIZE(new_cap);           \
+	do {                                             \
+		JSTR_ASSERT_IS_STR(p);                   \
+		JSTR_ASSERT_IS_SIZE(old_cap);            \
+		JSTR_ASSERT_IS_SIZE(new_cap);            \
 		P_JSTR_GROW(old_cap, new_cap);           \
-		(p) = (char *)realloc(p, old_cap);      \
+		(p) = (char *)realloc(p, old_cap);       \
 		P_JSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
 #define P_JSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
-	do {                                                 \
-		JSTR_ASSERT_IS_STR(p);                       \
-		JSTR_ASSERT_IS_SIZE(old_cap);                \
-		JSTR_ASSERT_IS_SIZE(new_cap);                \
-		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);     \
-		(p) = (char *)realloc(p, old_cap);           \
+	do {                                                  \
+		JSTR_ASSERT_IS_STR(p);                        \
+		JSTR_ASSERT_IS_SIZE(old_cap);                 \
+		JSTR_ASSERT_IS_SIZE(new_cap);                 \
+		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);       \
+		(p) = (char *)realloc(p, old_cap);            \
 		P_JSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
 #define JSTR_MIN_ALLOC(new_cap)                           \
@@ -59,9 +59,9 @@ P_JSTR_END_DECLS
 	 ? (JSTR_MIN_CAP)            \
 	 : (new_cap))
 #define P_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
-	do {                                       \
-		(cap) = JSTR_MIN_ALLOC(new_cap);  \
-		(p) = (char *)malloc((cap));       \
+	do {                                        \
+		(cap) = JSTR_MIN_ALLOC(new_cap);    \
+		(p) = (char *)malloc((cap));        \
 		P_JSTR_MALLOC_ERR((p), do_fail);    \
 	} while (0)
 
@@ -75,8 +75,8 @@ JSTR_COLD
 JSTR_NOTHROW
 static void
 p_jstr_err(const char *R const FILE_,
-	  const int LINE_,
-	  const char *R const func_) JSTR_NOEXCEPT
+	   const int LINE_,
+	   const char *R const func_) JSTR_NOEXCEPT
 {
 #if JSTR_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);

@@ -355,17 +355,17 @@ static int
 jstr_io_is_binary_maybe(const char *R buf,
 			const size_t sz) JSTR_NOEXCEPT
 {
-#define JSTR_BINARY_CHECK()                                                       \
-	do {                                                                      \
-		if (jstr_likely(sz > P_JSTR_ELF_SZ - 1)) {                         \
+#define JSTR_BINARY_CHECK()                                                         \
+	do {                                                                        \
+		if (jstr_likely(sz > P_JSTR_ELF_SZ - 1)) {                          \
 			if (jstr_unlikely(!memcmp(buf, P_JSTR_ELF, P_JSTR_ELF_SZ))) \
-				return 1;                                         \
-check_utf:;                                                                       \
+				return 1;                                           \
+check_utf:;                                                                         \
 			if (!memcmp(buf, P_JSTR_UTF, P_JSTR_UTF_SZ))                \
-				return 0;                                         \
-		} else if (jstr_likely(sz == P_JSTR_UTF_SZ)) {                     \
-			goto check_utf;                                           \
-		}                                                                 \
+				return 0;                                           \
+		} else if (jstr_likely(sz == P_JSTR_UTF_SZ)) {                      \
+			goto check_utf;                                             \
+		}                                                                   \
 	} while (0)
 	if (jstr_unlikely(sz == 0))
 		return 0;
@@ -434,11 +434,11 @@ JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
 p_jstr_io_alloc_file(const int alloc_exact,
-		    char *R *R const s,
-		    size_t *R const sz,
-		    size_t *R const cap,
-		    const char *R const fname,
-		    struct stat *R const st) JSTR_NOEXCEPT
+		     char *R *R const s,
+		     size_t *R const sz,
+		     size_t *R const cap,
+		     const char *R const fname,
+		     struct stat *R const st) JSTR_NOEXCEPT
 {
 	FILE *R const fp = fopen(fname, "r");
 	if (jstr_unlikely(fp == NULL))

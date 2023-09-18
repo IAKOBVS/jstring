@@ -174,7 +174,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isalnum_str(const char *R s) JSTR_NOEXCEPT
 {
-#define P_JSTR_IS_CTYPE_STR(CTYPE)              \
+#define P_JSTR_IS_CTYPE_STR(CTYPE)             \
 	do {                                   \
 		if (jstr_unlikely(*s == '\0')) \
 			return 0;              \

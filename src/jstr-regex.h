@@ -416,11 +416,11 @@ JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
 p_jstr_reg_base_rmall(const p_jstr_flag_use_n_ty flag,
-		     char *R const s,
-		     size_t *R const sz,
-		     size_t n,
-		     const regex_t *R const preg,
-		     const int eflags) JSTR_NOEXCEPT
+		      char *R const s,
+		      size_t *R const sz,
+		      size_t n,
+		      const regex_t *R const preg,
+		      const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
 	unsigned char *dst = (unsigned char *)s;
@@ -506,14 +506,14 @@ jstr_reg_rmall_now(char *R const s,
 JSTR_FUNC
 static jstr_reg_errcode_ty
 p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
-			   char *R *R const s,
-			   size_t *R const sz,
-			   size_t *R const cap,
-			   const char *R const rplc,
-			   size_t n,
-			   const size_t rplclen,
-			   const regex_t *R const preg,
-			   const int eflags) JSTR_NOEXCEPT
+			    char *R *R const s,
+			    size_t *R const sz,
+			    size_t *R const cap,
+			    const char *R const rplc,
+			    size_t n,
+			    const size_t rplclen,
+			    const regex_t *R const preg,
+			    const int eflags) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplclen == 0)) {
 		if (flag & P_JSTR_FLAG_USE_N)
@@ -540,11 +540,11 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 				break;
 			continue;
 		}
-#define P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc, rplclen, findlen, tmp)     \
+#define P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc, rplclen, findlen, tmp)    \
 	do {                                                                       \
-		P_JSTR_REG_LOG("*cap > *sz + rplclen - findlen");                   \
+		P_JSTR_REG_LOG("*cap > *sz + rplclen - findlen");                  \
 		if (dst != old) {                                                  \
-			P_JSTR_REG_LOG("dst != old");                               \
+			P_JSTR_REG_LOG("dst != old");                              \
 			memmove(dst, old, p - old);                                \
 			dst += (p - old);                                          \
 			memmove(dst + rplclen,                                     \
@@ -554,7 +554,7 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 			dst += rplclen;                                            \
 			old = dst;                                                 \
 		} else {                                                           \
-			P_JSTR_REG_LOG("dst == old");                               \
+			P_JSTR_REG_LOG("dst == old");                              \
 			memmove(p + rplclen,                                       \
 				p + findlen,                                       \
 				(*(unsigned char **)s + *sz) - (p + findlen) + 1); \
@@ -564,21 +564,21 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 		p += rplclen;                                                      \
 	} while (0)
 #define P_JSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc, rplclen, findlen, tmp, malloc_fail) \
-	do {                                                                              \
+	do {                                                                               \
 		P_JSTR_REG_LOG("cap <= *sz + rplclen - findlen");                          \
-		if (dst != old)                                                           \
-			memmove(dst, old, p - old);                                       \
-		tmp = *(unsigned char **)s;                                               \
+		if (dst != old)                                                            \
+			memmove(dst, old, p - old);                                        \
+		tmp = *(unsigned char **)s;                                                \
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen - findlen, malloc_fail);            \
-		memmove(p + rplclen,                                                      \
-			p + findlen,                                                      \
-			(tmp + *sz) - (p + findlen) + 1);                                 \
-		memcpy(p, rplc, rplclen);                                                 \
-		p = *(unsigned char **)s + (p - tmp);                                     \
-		dst = *(unsigned char **)s + (dst - tmp) + rplclen;                       \
-		old = dst;                                                                \
-		*sz += rplclen - findlen;                                                 \
-		p += rplclen;                                                             \
+		memmove(p + rplclen,                                                       \
+			p + findlen,                                                       \
+			(tmp + *sz) - (p + findlen) + 1);                                  \
+		memcpy(p, rplc, rplclen);                                                  \
+		p = *(unsigned char **)s + (p - tmp);                                      \
+		dst = *(unsigned char **)s + (dst - tmp) + rplclen;                        \
+		old = dst;                                                                 \
+		*sz += rplclen - findlen;                                                  \
+		p += rplclen;                                                              \
 	} while (0)
 		if (rplclen <= findlen) {
 			P_JSTR_REG_LOG("rplclen <= findlen");
@@ -835,7 +835,7 @@ jstr_reg_rplc_len_bref(char *R *R const s,
 	} else {
 		rdst = rdst_stack;
 	}
-#define P_JSTR_CREAT_RPLC_BREF(ptr_passed_to_reg, rplc_dst, rplc_len, rplc, rplc_end)   \
+#define P_JSTR_CREAT_RPLC_BREF(ptr_passed_to_reg, rplc_dst, rplc_len, rplc, rplc_end)  \
 	do {                                                                           \
 		unsigned char *rp = rplc_dst;                                          \
 		const unsigned char *rold;                                             \
@@ -893,15 +893,15 @@ JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
 p_jstr_reg_base_rplcall_len_bref(const p_jstr_flag_use_n_ty flag,
-				char *R *R const s,
-				size_t *R const sz,
-				size_t *R const cap,
-				const char *R const rplc,
-				size_t n,
-				size_t rplclen,
-				const regex_t *R const preg,
-				const int eflags,
-				const size_t nmatch) JSTR_NOEXCEPT
+				 char *R *R const s,
+				 size_t *R const sz,
+				 size_t *R const cap,
+				 const char *R const rplc,
+				 size_t n,
+				 size_t rplclen,
+				 const regex_t *R const preg,
+				 const int eflags,
+				 const size_t nmatch) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplclen == 0)) {
 		if (flag & P_JSTR_FLAG_USE_N)

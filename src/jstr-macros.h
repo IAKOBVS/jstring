@@ -752,7 +752,7 @@ case '~':
 
 #ifdef __cplusplus
 #	define P_JSTR_BEGIN_DECLS extern "C" {
-#	define P_JSTR_END_DECLS	  }
+#	define P_JSTR_END_DECLS   }
 #else
 #	define P_JSTR_BEGIN_DECLS
 #	define P_JSTR_END_DECLS
@@ -833,8 +833,8 @@ case '~':
 
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
-	/* Needle length over which memmem would be faster than strstr. */
-	enum { JSTR_MEMMEM_THRES = 17 };
+/* Needle length over which memmem would be faster than strstr. */
+enum { JSTR_MEMMEM_THRES = 17 };
 #endif
 
 /* Only use memmem for long needles or when it is implemented in assembly.
