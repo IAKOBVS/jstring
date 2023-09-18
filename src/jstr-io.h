@@ -645,13 +645,7 @@ do_dir:
 #endif
 		if (jflags & JSTR_IO_FTW_DO_DIR)
 			func(fulpath, arg);
-		jstr_io_ftw_reg(fulpath,
-				tmp_dlen,
-				fnmatch_glob,
-				fnmatch_flags,
-				jflags,
-				func,
-				arg);
+		jstr_io_ftw_reg(fulpath, tmp_dlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
 		continue;
 	}
 	closedir(dp);
