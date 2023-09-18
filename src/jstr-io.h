@@ -587,12 +587,12 @@ JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
 jstr_io_ftw(const char *R const dir,
-		const size_t dlen,
-		const char *R const fnmatch_glob,
-		const int fnmatch_flags,
-		const jstr_io_ftw_flag_ty jflags,
-		void (*func)(const char *fname, const void *arg),
-		const void *R const arg)
+	    const size_t dlen,
+	    const char *R const fnmatch_glob,
+	    const int fnmatch_flags,
+	    const jstr_io_ftw_flag_ty jflags,
+	    void (*func)(const char *fname, const void *arg),
+	    const void *R const arg)
 {
 	DIR *R const dp = opendir(dir);
 	if (jstr_unlikely(dp == NULL))
@@ -628,6 +628,9 @@ jstr_io_ftw(const char *R const dir,
 		if (jflags & (JSTR_IO_FTW_DO_DIR | JSTR_IO_FTW_DO_REG))
 			continue;
 do_reg:
+		if ((jflags & JSTR_IO_FTW_DO_DIR)
+		    && !(jflags & JSTR_IO_FTW_DO_REG))
+			return;
 		if (fnmatch_glob) {
 			if (jflags & JSTR_IO_FTW_MATCH_FNAME) {
 				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
@@ -661,7 +664,10 @@ do_dir:
 		tmp_dlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir;
 #	endif
 #endif
-		if (jflags & JSTR_IO_FTW_DO_DIR)
+		if ((jflags & JSTR_IO_FTW_DO_REG)
+		    && (jflags & JSTR_IO_FTW_DO_DIR))
+			func(fulpath, arg);
+		else
 			func(fulpath, arg);
 		jstr_io_ftw(fulpath, tmp_dlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
 		continue;
