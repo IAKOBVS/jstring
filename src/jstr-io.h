@@ -342,8 +342,7 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 #define P_JSTR_UTF    "\xEF\xBB\xBF"
 #define P_JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
-/*/usr/local/code/c/jstring/src
-
+/*
    Check if the first 32 bytes or fewer contain any unprintable character.
    File must be nul terminated.
 */
