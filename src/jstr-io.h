@@ -586,7 +586,7 @@ typedef enum jstr_io_ftw_flag_ty {
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-jstr_io_ftw_reg(const char *R const dir,
+jstr_io_ftw(const char *R const dir,
 		const size_t dlen,
 		const char *R const fnmatch_glob,
 		const int fnmatch_flags,
@@ -663,7 +663,7 @@ do_dir:
 #endif
 		if (jflags & JSTR_IO_FTW_DO_DIR)
 			func(fulpath, arg);
-		jstr_io_ftw_reg(fulpath, tmp_dlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
+		jstr_io_ftw(fulpath, tmp_dlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
 		continue;
 	}
 	closedir(dp);
