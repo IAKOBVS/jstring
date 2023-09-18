@@ -599,7 +599,7 @@ jstr_io_ftw_reg(const char *R const dir,
 			continue;
 		if (S_ISREG(st.st_mode))
 			goto do_reg;
-		else if (S_ISDIR(st.st_mode))
+		if (S_ISDIR(st.st_mode))
 			goto do_dir;
 		continue;
 #endif /* HAVE_D_TYPE */
