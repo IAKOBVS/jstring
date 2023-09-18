@@ -517,7 +517,7 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 }
 
 enum {
-	JSTR_IO_FNAME_MAX = 4906,
+	JSTR_IO_MAX_FNAME = 4906,
 };
 
 /*
@@ -535,7 +535,7 @@ jstr_io_do_all_files(const char *R const dir,
 	DIR *R dp = opendir(dir);
 	if (jstr_unlikely(dp == NULL))
 		return;
-	char fulpath[JSTR_IO_FNAME_MAX];
+	char fulpath[JSTR_IO_MAX_FNAME];
 #if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
 	struct stat st;
 #endif
@@ -582,7 +582,7 @@ jstr_io_do_all_files_match(const char *R const dir,
 	DIR *R dp = opendir(dir);
 	if (jstr_unlikely(dp == NULL))
 		return;
-	char fulpath[JSTR_IO_FNAME_MAX];
+	char fulpath[JSTR_IO_MAX_FNAME];
 #if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
 	struct stat st;
 #endif
