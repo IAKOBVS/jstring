@@ -322,7 +322,7 @@ p_jstr_strcasestr_len_bmh(const unsigned char *R h,
 			h -= tmp;                                                                   \
 			if (tmp < m1)                                                               \
 				continue;                                                           \
-			if (m1 < 15 || !jstr_strcasecmp_len((char *)h + off, (char *)n + off, 8)) { \
+			if (m1 < 15 || !jstr_strcasecmp_len((char *)(h + off), (char *)(n + off), 8)) { \
 				if (!jstr_strcasecmp_len((char *)h, (char *)n, m1))                 \
 					return (char *)h;                                           \
 				off = (off >= 8 ? off : m1) - 8;                                    \
@@ -359,7 +359,7 @@ p_jstr_strcasestr_bmh(const unsigned char *R h,
 		goto start_##table_type;                                                            \
 		for (;;) {                                                                          \
 			if (jstr_unlikely(h >= end)) {                                              \
-				end += jstr_strnlen((char *)end + m1, 2048);                        \
+				end += jstr_strnlen((char *)(end + m1), 2048);                        \
 				if (h > end)                                                        \
 					return NULL;                                                \
 			}                                                                           \
@@ -371,7 +371,7 @@ p_jstr_strcasestr_bmh(const unsigned char *R h,
 			h -= tmp;                                                                   \
 			if (tmp < m1)                                                               \
 				continue;                                                           \
-			if (m1 < 15 || !jstr_strcasecmp_len((char *)h + off, (char *)n + off, 8)) { \
+			if (m1 < 15 || !jstr_strcasecmp_len((char *)(h + off), (char *)(n + off), 8)) { \
 				if (!jstr_strcasecmp_len((char *)h, (char *)n, m1))                 \
 					return (char *)h;                                           \
 				off = (off >= 8 ? off : m1) - 8;                                    \

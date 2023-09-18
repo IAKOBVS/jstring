@@ -155,7 +155,7 @@ jstr_strchrnul(const char *R const s,
 	return (char *)strchrnul(s, c);
 #else
 	const char *const p = strchr(s, c);
-	return p ? (char *)p : (char *)s + strlen(s);
+	return p ? (char *)p : (char *)(s + strlen(s));
 #endif
 }
 

@@ -366,7 +366,7 @@ jstr_rmspn_p(char *R s,
 		memmove(dst, old, p - old);
 		dst[p - old] = '\0';
 	}
-	return (char *)dst + (p - old);
+	return (char *)(dst + (p - old));
 }
 
 /*
@@ -406,7 +406,7 @@ p_jstr_rmallchr_len_p(const p_jstr_flag_use_n_ty flag,
 		return s + sz;
 	memmove(dst, old, end - old);
 	dst[end - old] = '\0';
-	return (char *)dst + (end - old);
+	return (char *)(dst + (end - old));
 }
 
 /*
@@ -443,7 +443,7 @@ jstr_rmallchr_p(char *R const s,
 		return (char *)p;
 	memmove(dst, old, p - old);
 	dst[p - old] = '\0';
-	return (char *)dst + (p - old);
+	return (char *)(dst + (p - old));
 #else
 	return jstr_rmallchr_len_p(s, c, strlen(s));
 #endif /* HAVE_STRCHRNUL */
@@ -486,7 +486,7 @@ jstr_rmnc_p(char *R const s,
 		return s + n;
 	memmove(dst, old, p - old);
 	dst[p - old] = '\0';
-	return (char *)dst + (p - old);
+	return (char *)(dst + (p - old));
 #else
 	return jstr_rmnc_len_p(s, c, n, strlen(s));
 #endif /* HAVE_STRCHRNUL */
@@ -511,7 +511,7 @@ jstr_stripspn_p(char *R const s,
 		return (char *)p;
 	memmove(dst, old, p - old);
 	dst[p - old] = '\0';
-	return (char *)dst + (p - old);
+	return (char *)(dst + (p - old));
 }
 
 /*
@@ -731,7 +731,7 @@ p_jstr_rmall_len_p(const p_jstr_flag_use_n_ty flag,
 		return s + sz;
 	memmove(dst, old, end - old);
 	dst[end - old] = '\0';
-	return (char *)dst + (end - old);
+	return (char *)(dst + (end - old));
 }
 
 /*
@@ -851,7 +851,7 @@ p_jstr_rplcall_len(const p_jstr_flag_use_n_ty flag,
 	if (rplclen < findlen) {
 		memmove(dst, old, *(u **)s + *sz - old);
 		dst[*(u **)s + *sz - old] = '\0';
-		*sz = (char *)dst + (*(u **)s + *sz - old) - *s;
+		*sz = (char *)(dst + (*(u **)s + *sz - old)) - *s;
 	}
 	return 1;
 }
@@ -981,7 +981,7 @@ jstr_trim_len_p(char *R s,
 	--s;
 	memmove(start + 1, s, end - (u *)s);
 	(start + 1)[end - (u *)s] = '\0';
-	return (char *)start + (end - (u *)s);
+	return (char *)(start + (end - (u *)s));
 }
 
 /*

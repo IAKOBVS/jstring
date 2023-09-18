@@ -445,7 +445,7 @@ p_jstr_reg_base_rmall(const p_jstr_flag_use_n_ty flag,
 		memmove(dst, old, end - old);
 		dst[end - old] = '\0';
 	}
-	*sz = (char *)dst + (end - old) - s;
+	*sz = (char *)(dst + (end - old)) - s;
 	return ret;
 }
 
