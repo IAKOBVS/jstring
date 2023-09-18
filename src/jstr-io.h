@@ -4,6 +4,8 @@
 #include "jstr-macros.h"
 
 P_JSTR_BEGIN_DECLS
+#include <dirent.h>
+#include <fnmatch.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -332,8 +334,8 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_isbinary(const char *R const buf,
-	       const size_t n,
-	       const size_t sz) JSTR_NOEXCEPT
+	      const size_t n,
+	      const size_t sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
@@ -356,7 +358,7 @@ jstr_isbinary(const char *R const buf,
 JSTR_FUNC
 static int
 jstr_io_isbinary_maybe(const char *R const buf,
-			const size_t sz) JSTR_NOEXCEPT
+		       const size_t sz) JSTR_NOEXCEPT
 {
 #define JSTR_BINARY_CHECK()                                                         \
 	do {                                                                        \
@@ -399,7 +401,7 @@ jstr_io_isbinary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static int
 jstr_io_isbinary(const char *R const buf,
-		  const size_t sz) JSTR_NOEXCEPT
+		 const size_t sz) JSTR_NOEXCEPT
 {
 	JSTR_BINARY_CHECK();
 	return strlen(buf) != sz;
@@ -512,6 +514,106 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 			  struct stat *R const st) JSTR_NOEXCEPT
 {
 	return jstr_io_allocexact_file(&j->data, &j->size, &j->capacity, fname, st);
+}
+
+enum {
+	JSTR_IO_FNAME_MAX = 4906,
+};
+
+/*
+   Execute func on all regular files found recursively.
+*/
+JSTR_FUNC_VOID
+static void
+jstr_io_do_all_files(const char *R const dir,
+		     const size_t dlen,
+		     void (*func)(const char *R const fname, const void *R const arg),
+		     const void *R const arg)
+{
+	DIR *R dp = opendir(dir);
+	if (jstr_unlikely(dp == NULL))
+		return;
+	char fulpath[JSTR_IO_FNAME_MAX];
+#if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
+	struct stat st;
+#endif
+	for (struct dirent *R ep; (ep = readdir(dp));) {
+#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_TYPE
+		switch (ep->d_type) {
+		case DT_REG: goto do_reg;
+		case DT_DIR: goto do_dir;
+		}
+#else
+		if (jstr_unlikely(stat(dir, &st)))
+			continue;
+		if (S_ISREG(st.st_mode))
+			goto do_reg;
+		else if (S_ISDIR(st.st_mode))
+			goto do_dir;
+#endif /* HAVE_D_TYPE */
+do_reg:
+		strcpy(fulpath + dlen, ep->d_name);
+		func(fulpath, arg);
+		continue;
+do_dir:
+		jstr_io_do_all_files(fulpath,
+				     jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+				     func,
+				     arg);
+		continue;
+	}
+	closedir(dp);
+}
+
+/*
+   Execute func on all regular files found recursively that match the fnmatch glob.
+*/
+JSTR_FUNC_VOID
+static void
+jstr_io_do_all_files_match(const char *R const dir,
+			   const size_t dlen,
+			   const char *R const fn_glob,
+			   const int fn_flags,
+			   void (*func)(const char *R const fname, const void *R const arg),
+			   const void *R const arg)
+{
+	DIR *R dp = opendir(dir);
+	if (jstr_unlikely(dp == NULL))
+		return;
+	char fulpath[JSTR_IO_FNAME_MAX];
+#if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
+	struct stat st;
+#endif
+	for (struct dirent *R ep; (ep = readdir(dp));) {
+#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_TYPE
+		switch (ep->d_type) {
+		case DT_REG: goto do_reg;
+		case DT_DIR: goto do_dir;
+		}
+#else
+		if (jstr_unlikely(stat(dir, &st)))
+			continue;
+		if (S_ISREG(st.st_mode))
+			goto do_reg;
+		else if (S_ISDIR(st.st_mode))
+			goto do_dir;
+#endif /* HAVE_D_TYPE */
+do_reg:
+		if (fnmatch(fn_glob, ep->d_name, fn_flags))
+			continue;
+		strcpy(fulpath + dlen, ep->d_name);
+		func(fulpath, arg);
+		continue;
+do_dir:
+		jstr_io_do_all_files_match(fulpath,
+					   jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+					   fn_glob,
+					   fn_flags,
+					   func,
+					   arg);
+		continue;
+	}
+	closedir(dp);
 }
 
 P_JSTR_END_DECLS
