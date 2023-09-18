@@ -604,9 +604,11 @@ jstr_io_ftw_reg(const char *R const dir,
 	size_t tmp_dlen;
 #endif
 	for (const struct dirent *R ep; (ep = readdir(dp));) {
+		/* Ignore . and .. . */
 		if (jstr_unlikely((ep->d_name)[0] == '.')
-		    && (jstr_unlikely(((ep->d_name)[1] == '\0')
-				      | ((ep->d_name)[1] == '.'))))
+		    && (jstr_unlikely(((ep->d_name)[1] == '\0'))
+			|| (jstr_unlikely((ep->d_name)[1] == '.')))
+		    && jstr_unlikely((ep->d_name)[2] == '\0'))
 			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
