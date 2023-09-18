@@ -543,7 +543,9 @@ jstr_io_ftw_reg(const char *R const dir,
 		return;
 	char fulpath[JSTR_IO_MAX_FNAME];
 	fulpath[0] = '\0';
-#if !JSTR_HAVE_DIRENT_D_TYPE
+#if JSTR_HAVE_DIRENT_D_TYPE
+	size_t tmp_dlen;
+#else
 	struct stat st;
 #endif
 	for (struct dirent *R ep; (ep = readdir(dp));) {
@@ -554,8 +556,10 @@ jstr_io_ftw_reg(const char *R const dir,
 			goto do_dir;
 		continue;
 #else
-		if (jstr_unlikely(fulpath[0] == '\0'))
+		if (jstr_unlikely(fulpath[0] == '\0')) {
 			memcpy(fulpath, dir, dlen);
+			tmp_dlen = jstr_stpcpy(fulpath + dlen, ep->d_name) - fulpath;
+		}
 		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
 		if (S_ISREG(st.st_mode))
@@ -567,7 +571,7 @@ jstr_io_ftw_reg(const char *R const dir,
 do_reg:
 		if (fnmatch_glob) {
 			if (match_fulpath) {
-#if !JSTR_HAVE_DIRENT_D_TYPE
+#if JSTR_HAVE_DIRENT_D_TYPE
 				if (jstr_unlikely(fulpath[0] == '\0'))
 					memcpy(fulpath, dir, dlen);
 #endif
@@ -577,7 +581,7 @@ do_reg:
 				continue;
 			}
 		} else {
-#if !JSTR_HAVE_DIRENT_D_TYPE
+#if JSTR_HAVE_DIRENT_D_TYPE
 			if (jstr_unlikely(fulpath[0] == '\0'))
 				memcpy(fulpath, dir, dlen);
 #endif
@@ -594,24 +598,40 @@ do_dir:
 		if (jstr_unlikely((ep->d_name)[0] == '.')
 		    && jstr_unlikely((ep->d_name)[1] == '\0'))
 			continue;
-#if !JSTR_HAVE_DIRENT_D_TYPE
+#if JSTR_HAVE_DIRENT_D_TYPE
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
 #endif
-#if JSTR_HAVE_DIRENT_D_TYPE
+#if defined _GNU_SOURCE && _DIRENT_HAVE_D_NAMLEN && JSTR_HAVE_DIRENT_D_TYPE
 		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
 		(ep->d_name)[dlen + ep->d_namlen] = '\0';
 		jstr_io_ftw_reg(fulpath,
 				dlen + ep->d_namlen,
-#else
-		jstr_io_ftw_reg(fulpath,
-				jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
-#endif
 				fnmatch_glob,
 				fnmatch_flags,
 				match_fulpath,
 				func,
 				arg);
+#else
+#	if JSTR_HAVE_DIRENT_D_TYPE
+		jstr_io_ftw_reg(fulpath,
+				jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+				dlen2,
+				fnmatch_glob,
+				fnmatch_flags,
+				match_fulpath,
+				func,
+				arg);
+#	else
+		jstr_io_ftw_reg(fulpath,
+				tmp_dlen,
+				fnmatch_glob,
+				fnmatch_flags,
+				match_fulpath,
+				func,
+				arg);
+#	endif
+#endif
 		continue;
 	}
 	closedir(dp);
