@@ -521,7 +521,7 @@ enum {
 };
 
 /*
-   Execute FUNC on all regular files found recursively.
+   Calls FUNC on all regular files found recursively.
    ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
    FUNC therefore must be a helper function which correctly interprets ARG.
 */
