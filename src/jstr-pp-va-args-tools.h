@@ -1,13 +1,19 @@
 #ifndef P_JSTR_PP_VA_ARGS_TOOLS_H
 #define P_JSTR_PP_VA_ARGS_TOOLS_H 1
 
-#if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
-#	define P_JSTR_PP_HAVE_TYPEOF 1
-#endif /* P_JSTR_PP_HAVE_TYPEOF */
+#if defined static_assert
+#	define P_JSTR_PP_HAVE_STATIC_ASSERT   1
+#	define P_JSTR_PP_ST_ASSERT(expr, msg) static_assert(expr, msg)
+#elif __STDC_VERSION__ >= 201112L
+#	define P_JSTR_PP_HAVE_STATIC_ASSERT   1
+#	define P_JSTR_PP_ST_ASSERT(expr, msg) _Static_assert(expr, msg)
+#else
+#	define P_JSTR_PP_ST_ASSERT(expr, msg)
+#endif /* JSTR_NOTHROW */
 
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-#	define P_JSTR_PP_HAVE_GENERIC 1
-#endif /* P_JSTR_PP_HAVE_GENERIC */
+#if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
+#	define PP_JSTR_PP_HAVE_TYPEOF 1
+#endif /* HAVE_TYPEOF */
 
 #define P_JSTR_PP_CONCAT(a, b, ...) a##b(__VA_ARGS__)
 

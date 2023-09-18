@@ -3,16 +3,6 @@
 
 #include "jstr-pp-va-args-tools.h"
 
-#if defined(static_assert)
-#	define P_JSTR_PP_HAVE_STATIC_ASSERT   1
-#	define P_JSTR_PP_ST_ASSERT(expr, msg) static_assert(expr, msg)
-#elif __STDC_VERSION__ >= 201112L
-#	define P_JSTR_PP_HAVE_STATIC_ASSERT   1
-#	define P_JSTR_PP_ST_ASSERT(expr, msg) _Static_assert(expr, msg)
-#else
-#	define P_JSTR_PP_ST_ASSERT(expr, msg)
-#endif /* JSTR_NOTHROW */
-
 #define P_JSTR_PP_ST_ASSERT_IS_T_VA_ARGS_1(EXPR_TYPE, ...)           \
 	do {                                                         \
 		P_JSTR_PP_ST_ASSERT_IS_T(EXPR_TYPE, 0, __VA_ARGS__); \
@@ -8524,9 +8514,9 @@
 	} while (0)
 #define P_JSTR_PP_ST_ASSERT_IS_T(EXPR_TYPE, INDEX, ...) \
 	P_JSTR_PP_ST_ASSERT(P_JSTR_PP_SAME_TYPE((EXPR_TYPE), P_JSTR_PP_EXTRACT_ARGS(INDEX, __VA_ARGS__)), "Passing the wrong data type!")
-#ifdef P_JSTR_PP_HAVE_GENERIC
+#if P_JSTR_PP_HAVE_GENERIC && P_JSTR_PP_HAVE_TYPEOF
 #	define P_JSTR_PP_SAME_TYPE(x, y) _Generic((x), \
-	typeof(y): 1,                                   \
+	__typeof__(y): 1,                               \
 	default: 0)
 #	define P_JSTR_PP_ST_ASSERT_IS_T_VA_ARGS(EXPR_TYPE, ...)		  P_JSTR_PP_ST_ASSERT_IS_T_VA_ARGS_HELPER(P_JSTR_PP_NARG(__VA_ARGS__), EXPR_TYPE, __VA_ARGS__)
 #	define P_JSTR_PP_ST_ASSERT_IS_T_VA_ARGS_HELPER(num_args, EXPR_TYPE, ...) P_JSTR_PP_CONCAT(P_JSTR_PP_ST_ASSERT_IS_T_VA_ARGS_, num_args, EXPR_TYPE, __VA_ARGS__)
@@ -17044,9 +17034,10 @@
 		P_JSTR_PP_ST_ASSERT_IS_STR(125, __VA_ARGS__); \
 		P_JSTR_PP_ST_ASSERT_IS_STR(126, __VA_ARGS__); \
 	} while (0)
+
 #define P_JSTR_PP_ST_ASSERT_IS_STR(INDEX, ...) \
 	P_JSTR_PP_ST_ASSERT(P_JSTR_PP_IS_STR(P_JSTR_PP_EXTRACT_ARGS(INDEX, __VA_ARGS__)), "Passing non-string as string argument!")
-#ifdef P_JSTR_PP_HAVE_GENERIC
+#if P_JSTR_PP_HAVE_GENERIC && P_JSTR_PP_HAVE_TYPEOF
 #	define P_JSTR_PP_IS_STR(s) _Generic((s), \
 	const char *: 1,                          \
 	char *: 1,                                \
