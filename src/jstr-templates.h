@@ -20,7 +20,7 @@ P_JSTR_END_DECLS
 #define P_JSTR_MALLOC_ERR(p, malloc_fail)                         \
 	do {                                                     \
 		if (jstr_unlikely((p) == NULL)) {                \
-			pjstr_err(__FILE__, __LINE__, __func__); \
+			p_jstr_err(__FILE__, __LINE__, __func__); \
 			malloc_fail;                             \
 		}                                                \
 	} while (0)
@@ -74,7 +74,7 @@ JSTR_NOINLINE
 JSTR_COLD
 JSTR_NOTHROW
 static void
-pjstr_err(const char *R const FILE_,
+p_jstr_err(const char *R const FILE_,
 	  const int LINE_,
 	  const char *R const func_) JSTR_NOEXCEPT
 {
@@ -92,7 +92,7 @@ JSTR_NOINLINE
 JSTR_COLD
 JSTR_NOTHROW
 static void
-pjstr_err_exit(void) JSTR_NOEXCEPT
+p_jstr_err_exit(void) JSTR_NOEXCEPT
 {
 #if JSTR_ERR_MSG_ON_MALLOC_ERROR
 	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", __FILE__, __LINE__, __func__);

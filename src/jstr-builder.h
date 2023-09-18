@@ -31,7 +31,7 @@ static void
 jstr_err(char *R const p) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(p == NULL))
-		pjstr_err_exit();
+		p_jstr_err_exit();
 }
 
 JSTR_INLINE

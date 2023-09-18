@@ -36,7 +36,7 @@ JSTR_NOINLINE
 JSTR_PURE
 JSTR_NOTHROW
 static jstr_io_ext_ty
-pjstr_io_ext_type(const char *R ext) JSTR_NOEXCEPT
+p_jstr_io_ext_type(const char *R ext) JSTR_NOEXCEPT
 {
 	S {
 	case 'a':
@@ -316,7 +316,7 @@ jstr_io_ext_type_len(const char *R filename,
 	filename = (char *)jstr_memrchr(filename, '.', sz);
 	if (filename == NULL)
 		return JSTR_IO_UNKNOWN;
-	return pjstr_io_ext_type(filename + 1);
+	return p_jstr_io_ext_type(filename + 1);
 }
 
 /*
@@ -334,7 +334,7 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 	filename = strrchr(filename, '.');
 	if (filename == NULL)
 		return JSTR_IO_UNKNOWN;
-	return pjstr_io_ext_type(filename + 1);
+	return p_jstr_io_ext_type(filename + 1);
 }
 
 #define P_JSTR_ELF    "\x7f\ELF"
@@ -373,7 +373,7 @@ check_utf:;                                                                     
 	const unsigned char *const end = (unsigned char *)buf + JSTR_MIN(sz, 64) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
-		if (pjstr_io_reject_table[*s++])
+		if (p_jstr_io_reject_table[*s++])
 			return 1;
 	return 0;
 }
@@ -433,7 +433,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
 static int
-pjstr_io_alloc_file(const int alloc_exact,
+p_jstr_io_alloc_file(const int alloc_exact,
 		    char *R *R const s,
 		    size_t *R const sz,
 		    size_t *R const cap,
@@ -477,7 +477,7 @@ jstr_io_alloc_file(char *R *R const s,
 		   const char *R const fname,
 		   struct stat *R const st) JSTR_NOEXCEPT
 {
-	return pjstr_io_alloc_file(0, s, sz, cap, fname, st);
+	return p_jstr_io_alloc_file(0, s, sz, cap, fname, st);
 }
 
 /*
@@ -495,7 +495,7 @@ jstr_io_allocexact_file(char *R *R const s,
 			const char *R const fname,
 			struct stat *R const st) JSTR_NOEXCEPT
 {
-	return pjstr_io_alloc_file(1, s, sz, cap, fname, st);
+	return p_jstr_io_alloc_file(1, s, sz, cap, fname, st);
 }
 
 /*

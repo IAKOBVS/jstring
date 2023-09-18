@@ -31,7 +31,7 @@ or
 - \*\_now(): compiles regular expression now
 - \*\_bref(): enables backreferences for the replacement string.<br>
 \\0 is interpreted as referring to the whole matched string
-- P\*() or p\*(): private functions or macros used internally
+- P_\*() or p_\*(): private functions or macros used internally
 
 ## Scripts:
 
