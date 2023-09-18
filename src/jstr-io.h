@@ -625,6 +625,7 @@ jstr_io_ftw(const char *R const dir,
 		if (S_ISDIR(st.st_mode))
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
+		/* If either DO_DIR or DO_REG is used, ignore other entries */
 		if (jflags & (JSTR_IO_FTW_DO_DIR | JSTR_IO_FTW_DO_REG))
 			continue;
 do_reg:
