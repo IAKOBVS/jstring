@@ -521,22 +521,22 @@ enum {
 };
 
 /*
-   Calls FUNC on all regular files found recursively that matches GLOB.
-   If GLOB is NULL, call FUNC for all regular files.
+   Call FUNC on regular files found recursively that matches GLOB.
+   If GLOB is NULL, match all regular files.
    If match_fulpath is non-zero, match the fulpath instead of directory to GLOB.
    ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
-   FUNC therefore must be a helper function which correctly interprets ARG.
+   FUNC therefore must correctly interpret ARG.
 */
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-jstr_io_files_do_matched(const char *R const dir,
-			 const size_t dlen,
-			 const char *R const fnmatch_glob,
-			 const int fnmatch_flags,
-			 const int match_fulpath,
-			 void (*func)(const char *R const fname, const void *R const arg),
-			 const void *R const arg)
+jstr_io_ftw_reg(const char *R const dir,
+		const size_t dlen,
+		const char *R const fnmatch_glob,
+		const int fnmatch_flags,
+		const int match_fulpath,
+		void (*func)(const char *R const fname, const void *R const arg),
+		const void *R const arg)
 {
 	DIR *R dp = opendir(dir);
 	if (jstr_unlikely(dp == NULL))
@@ -585,13 +585,13 @@ do_reg:
 do_dir:
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
-		jstr_io_files_do_matched(fulpath,
-					 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
-					 fnmatch_glob,
-					 fnmatch_flags,
-					 match_fulpath,
-					 func,
-					 arg);
+		jstr_io_ftw_reg(fulpath,
+				jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+				fnmatch_glob,
+				fnmatch_flags,
+				match_fulpath,
+				func,
+				arg);
 		continue;
 	}
 	closedir(dp);
