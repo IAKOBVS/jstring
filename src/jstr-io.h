@@ -570,7 +570,7 @@ typedef enum jstr_io_ftw_flag_ty {
 } jstr_io_ftw_flag_ty;
 
 /*
-   Call FUNC on regular files found recursively that matches GLOB.
+   Call FUNC on entries found recursively that matches GLOB.
    If GLOB is NULL, match all regular files.
    If match_fulpath is non-zero, match the fulpath instead of directory to GLOB.
    If either DO_REG or DO_DIR flag is used, FUNC will not be applied to other filetypes.
