@@ -644,7 +644,7 @@ case '~':
 
 #if _XOPEN_SOURCE >= 500                                                                      \
 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19 && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
-|| ((__GLIBC__ > 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ >= 12) && __POSIX_C_SOURCE >= 200809L)
+|| ((__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 12)) && __POSIX_C_SOURCE >= 200809L)
 #	define JSTR_HAVE_STRDUP 1
 #endif /* Xopen || Bsd || Svid || Posix */
 
