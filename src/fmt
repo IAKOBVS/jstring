@@ -10,7 +10,7 @@ fmt_if_needed()
 	*) fmt "$1" & ;;
 	esac
 }
-for f in $(echo *.h); do
+for f in $(echo *.h *.c); do
 	fmt_if_needed "$f" &
 done
 wait
