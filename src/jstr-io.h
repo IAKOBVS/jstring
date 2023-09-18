@@ -521,71 +521,20 @@ enum {
 };
 
 /*
-   Calls FUNC on all regular files found recursively.
+   Calls FUNC on all regular files found recursively that matches GLOB.
+   If GLOB is NULL, call FUNC for all regular files.
+   If match_fulpath is non-zero, match the fulpath instead of directory to GLOB.
    ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
    FUNC therefore must be a helper function which correctly interprets ARG.
 */
-JSTR_FUNC_VOID
-static void
-jstr_io_files_do(const char *R const dir,
-		 const size_t dlen,
-		 void (*func)(const char *R const fname, const void *R const arg),
-		 const void *R const arg)
-{
-	DIR *R dp = opendir(dir);
-	if (jstr_unlikely(dp == NULL))
-		return;
-	char fulpath[JSTR_IO_MAX_FNAME];
-	fulpath[0] = '\0';
-#if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
-	struct stat st;
-#endif
-	for (struct dirent *R ep; (ep = readdir(dp));) {
-#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_TYPE
-		switch (ep->d_type) {
-		case DT_REG: goto do_reg;
-		case DT_DIR: goto do_dir;
-		}
-#else
-		if (jstr_unlikely(stat(dir, &st)))
-			continue;
-		if (S_ISREG(st.st_mode))
-			goto do_reg;
-		else if (S_ISDIR(st.st_mode))
-			goto do_dir;
-#endif /* HAVE_D_TYPE */
-do_reg:
-		if (jstr_unlikely(fulpath[0] == '\0'))
-			memcpy(fulpath, dir, dlen);
-#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
-		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
-		fulpath[dlen + ep->d_namlen] = '\0';
-#else
-		strcpy(fulpath + dlen, ep->d_name);
-#endif
-		func(fulpath, arg);
-		continue;
-do_dir:
-		if (jstr_unlikely(fulpath[0] == '\0'))
-			memcpy(fulpath, dir, dlen);
-		jstr_io_files_do(fulpath,
-				 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
-				 func,
-				 arg);
-		continue;
-	}
-	closedir(dp);
-}
-
-/*
-   Equivalent to jstr_io_files_do for files that match the fnmatch glob pattern.
-*/
-JSTR_FUNC_VOID
+JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
 static void
 jstr_io_files_do_matched(const char *R const dir,
 			 const size_t dlen,
 			 const char *R const fnmatch_glob,
 			 const int fnmatch_flags,
+			 const int match_fulpath,
 			 void (*func)(const char *R const fname, const void *R const arg),
 			 const void *R const arg)
 {
@@ -612,71 +561,19 @@ jstr_io_files_do_matched(const char *R const dir,
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
 do_reg:
-		if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
-			continue;
-		if (jstr_unlikely(fulpath[0] == '\0'))
-			memcpy(fulpath, dir, dlen);
-#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
-		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
-		fulpath[dlen + ep->d_namlen] = '\0';
-#else
-		strcpy(fulpath + dlen, ep->d_name);
-#endif
-		func(fulpath, arg);
-		continue;
-do_dir:
-		if (jstr_unlikely(fulpath[0] == '\0'))
-			memcpy(fulpath, dir, dlen);
-		jstr_io_files_do_matched(fulpath,
-					 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
-					 fnmatch_glob,
-					 fnmatch_flags,
-					 func,
-					 arg);
-		continue;
-	}
-	closedir(dp);
-}
-
-/*
-   Equivalent to jstr_io_files_do_matched where the pattern matches the whole pathname.
-*/
-JSTR_FUNC_VOID
-static void
-jstr_io_files_do_matched_path(const char *R const dir,
-			      const size_t dlen,
-			      const char *R const fnmatch_glob,
-			      const int fnmatch_flags,
-			      void (*func)(const char *R const fname, const void *R const arg),
-			      const void *R const arg)
-{
-	DIR *R dp = opendir(dir);
-	if (jstr_unlikely(dp == NULL))
-		return;
-	char fulpath[JSTR_IO_MAX_FNAME];
-	fulpath[0] = '\0';
-#if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
-	struct stat st;
-#endif
-	for (struct dirent *R ep; (ep = readdir(dp));) {
-#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_TYPE
-		switch (ep->d_type) {
-		case DT_REG: goto do_reg;
-		case DT_DIR: goto do_dir;
+		if (fnmatch_glob) {
+			if (match_fulpath) {
+				if (jstr_unlikely(fulpath[0] == '\0'))
+					memcpy(fulpath, dir, dlen);
+				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
+					continue;
+			} else if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags)) {
+				continue;
+			}
+		} else {
+			if (jstr_unlikely(fulpath[0] == '\0'))
+				memcpy(fulpath, dir, dlen);
 		}
-#else
-		if (jstr_unlikely(stat(dir, &st)))
-			continue;
-		if (S_ISREG(st.st_mode))
-			goto do_reg;
-		else if (S_ISDIR(st.st_mode))
-			goto do_dir;
-#endif /* HAVE_D_TYPE */
-do_reg:
-		if (jstr_unlikely(fulpath[0] == '\0'))
-			memcpy(fulpath, dir, dlen);
-		if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
-			continue;
 #if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
 		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
 		fulpath[dlen + ep->d_namlen] = '\0';
@@ -692,6 +589,7 @@ do_dir:
 					 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
 					 fnmatch_glob,
 					 fnmatch_flags,
+					 match_fulpath,
 					 func,
 					 arg);
 		continue;
