@@ -326,11 +326,6 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 	return p_jstr_io_ext_type(filename + 1);
 }
 
-#define P_JSTR_ELF    "\x7f\ELF"
-#define P_JSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
-#define P_JSTR_UTF    "\xEF\xBB\xBF"
-#define P_JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
-
 /*
    Check MIN(N, SZ) bytes for any unprintable character.
 */
@@ -349,6 +344,11 @@ jstr_is_binary(const char *R const buf,
 			return 1;
 	return 0;
 }
+
+#define P_JSTR_ELF    "\x7f\ELF"
+#define P_JSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
+#define P_JSTR_UTF    "\xEF\xBB\xBF"
+#define P_JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
 /*
    Check if the first 64 bytes or fewer contain any unprintable character.
