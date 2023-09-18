@@ -89,7 +89,7 @@
 #ifdef static_assert
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)	static_assert(expr, msg)
-#elif __STDC_VERSION__ >= 201112L
+#elif defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)	_Static_assert(expr, msg)
 #else

@@ -11,7 +11,7 @@ P_JSTR_END_DECLS
 
 #include "jstr-templates.h"
 
-#ifndef __cplusplus
+#if !defined __cplusplus || !(__cplusplus >= 199711L)
 #	include "jstr-pp-va-args-macros.h"
 #endif /* !__cpluslus */
 
@@ -327,7 +327,7 @@ jstr_pop_front_j(jstr_ty *R const j) JSTR_NOEXCEPT
 
 P_JSTR_END_DECLS
 
-#ifndef __cplusplus
+#if !defined __cplusplus && !(__cplusplus >= 199711L)
 
 #	define jstr_appendmore_f(s, sz, ...)                                            \
 		do {                                                                     \

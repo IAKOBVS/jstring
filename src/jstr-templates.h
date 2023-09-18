@@ -103,7 +103,7 @@ p_jstr_err_exit(void) JSTR_NOEXCEPT
 
 P_JSTR_END_DECLS
 
-#ifdef __cplusplus
+#if defined __cplusplus && __cplusplus >= 199711L
 
 namespace jstr {
 
