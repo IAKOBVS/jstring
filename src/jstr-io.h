@@ -573,6 +573,7 @@ typedef enum jstr_io_ftw_flag_ty {
    Call FUNC on entries found recursively that matches GLOB.
    If either the DO_REG or DO_DIR flag is used, FUNC will not be applied to other filetypes.
    If the MATCH_FNAME flag is used, match only the filename with the GLOB.
+   If the NO_RECUR flag is used, do not search subdirectories.
    If GLOB is NULL, all entries match.
    ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
    FUNC therefore must correctly interpret ARG.
@@ -580,7 +581,7 @@ typedef enum jstr_io_ftw_flag_ty {
    JSTR_IO_FTW_MATCH_FNAME.
    JSTR_IO_FTW_DO_REG.
    JSTR_IO_FTW_DO_DIR.
-   JSTR_IO_FTW_DO_MAXDEPTH_1.
+   JSTR_IO_FTW_NO_RECUR
 */
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
