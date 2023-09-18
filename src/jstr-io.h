@@ -520,6 +520,15 @@ enum {
 	JSTR_IO_MAX_FNAME = 4906,
 };
 
+JSTR_INLINE
+static char *
+p_jstr_io_append_path_p(char *R const path_end,
+		      const char *R fname)
+{
+	*path_end = '/';
+	return jstr_stpcpy(path_end + 1, fname);
+}
+
 /*
    Call FUNC on regular files found recursively that matches GLOB.
    If GLOB is NULL, match all regular files.
@@ -544,9 +553,9 @@ jstr_io_ftw_reg(const char *R const dir,
 	char fulpath[JSTR_IO_MAX_FNAME];
 	fulpath[0] = '\0';
 #if JSTR_HAVE_DIRENT_D_TYPE
-	size_t tmp_dlen;
 #else
 	struct stat st;
+	size_t tmp_dlen;
 #endif
 	for (struct dirent *R ep; (ep = readdir(dp));) {
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -556,10 +565,9 @@ jstr_io_ftw_reg(const char *R const dir,
 			goto do_dir;
 		continue;
 #else
-		if (jstr_unlikely(fulpath[0] == '\0')) {
+		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
-			tmp_dlen = jstr_stpcpy(fulpath + dlen, ep->d_name) - fulpath;
-		}
+		tmp_dlen = p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
 		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
 		if (S_ISREG(st.st_mode))
@@ -587,10 +595,12 @@ do_reg:
 #endif
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
+#	if defined _GNU_SOURCE && _DIRENT_HAVE_D_NAMLEN
 		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
 		fulpath[dlen + ep->d_namlen] = '\0';
-#else
+#	else
 		strcpy(fulpath + dlen, ep->d_name);
+#	endif
 #endif
 		func(fulpath, arg);
 		continue;
@@ -615,7 +625,7 @@ do_dir:
 #else
 #	if JSTR_HAVE_DIRENT_D_TYPE
 		jstr_io_ftw_reg(fulpath,
-				jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+				p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir,
 				dlen2,
 				fnmatch_glob,
 				fnmatch_flags,
