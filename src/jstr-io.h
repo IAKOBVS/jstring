@@ -584,8 +584,8 @@ JSTR_FUNC_VOID
 static void
 jstr_io_files_do_matched(const char *R const dir,
 			 const size_t dlen,
-			 const char *R const fn_glob,
-			 const int fn_flags,
+			 const char *R const fnmatch_glob,
+			 const int fnmatch_flags,
 			 void (*func)(const char *R const fname, const void *R const arg),
 			 const void *R const arg)
 {
@@ -612,7 +612,7 @@ jstr_io_files_do_matched(const char *R const dir,
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
 do_reg:
-		if (fnmatch(fn_glob, ep->d_name, fn_flags))
+		if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
 			continue;
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
@@ -629,8 +629,8 @@ do_dir:
 			memcpy(fulpath, dir, dlen);
 		jstr_io_files_do_matched(fulpath,
 					 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
-					 fn_glob,
-					 fn_flags,
+					 fnmatch_glob,
+					 fnmatch_flags,
 					 func,
 					 arg);
 		continue;
@@ -645,8 +645,8 @@ JSTR_FUNC_VOID
 static void
 jstr_io_files_do_matched_path(const char *R const dir,
 			      const size_t dlen,
-			      const char *R const fn_glob,
-			      const int fn_flags,
+			      const char *R const fnmatch_glob,
+			      const int fnmatch_flags,
 			      void (*func)(const char *R const fname, const void *R const arg),
 			      const void *R const arg)
 {
@@ -675,7 +675,7 @@ jstr_io_files_do_matched_path(const char *R const dir,
 do_reg:
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
-		if (fnmatch(fn_glob, fulpath, fn_flags))
+		if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 			continue;
 #if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
 		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
@@ -690,8 +690,8 @@ do_dir:
 			memcpy(fulpath, dir, dlen);
 		jstr_io_files_do_matched(fulpath,
 					 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
-					 fn_glob,
-					 fn_flags,
+					 fnmatch_glob,
+					 fnmatch_flags,
 					 func,
 					 arg);
 		continue;
