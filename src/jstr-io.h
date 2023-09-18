@@ -521,7 +521,9 @@ enum {
 };
 
 /*
-   Execute func on all regular files found recursively.
+   Execute FUNC on all regular files found recursively.
+   ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
+   FUNC therefore must be a helper function which correctly interprets ARG.
 */
 JSTR_FUNC_VOID
 static void
@@ -566,7 +568,7 @@ do_dir:
 }
 
 /*
-   Execute func on all regular files found recursively that match the fnmatch glob.
+   Equivalent to jstr_io_do_all_files_match for files that match the fnmatch glob pattern.
 */
 JSTR_FUNC_VOID
 static void
