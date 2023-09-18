@@ -836,6 +836,10 @@ case '~':
 #	define JSTR_HAVE_DIRENT_D_TYPE 1
 #endif
 
+#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
+#	define JSTR_HAVE_DIRENT_D_NAMLEN 1
+#endif
+
 #if defined __GLIBC__ && JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
 #	define JSTR_HAVE_MEMMEM_OPTIMIZED 1
 #endif

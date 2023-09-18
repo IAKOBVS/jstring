@@ -578,22 +578,19 @@ jstr_io_ftw_reg(const char *R const dir,
 		return;
 	char fulpath[JSTR_IO_MAX_FNAME];
 	fulpath[0] = '\0';
-#if JSTR_HAVE_DIRENT_D_TYPE
-#else
+#if !JSTR_HAVE_DIRENT_D_TYPE
 	struct stat st;
 	size_t tmp_dlen;
 #endif
 	for (const struct dirent *R ep; (ep = readdir(dp));) {
-		puts(fulpath);
 		if (jstr_unlikely((ep->d_name)[0] == '.')
-		    && jstr_unlikely((ep->d_name)[1] == '\0'))
+		    && (jstr_unlikely(((ep->d_name)[1] == '\0') | ((ep->d_name)[1] == '.'))))
 			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
 			goto do_reg;
-		if (ep->d_type == DT_DIR) {
+		if (ep->d_type == DT_DIR)
 			goto do_dir;
-		}
 		continue;
 #else
 		P_JSTR_IO_FILL_PATH();
@@ -616,13 +613,10 @@ do_reg:
 				continue;
 			}
 		} else {
-#if JSTR_HAVE_DIRENT_D_TYPE
-			if (jstr_unlikely(fulpath[0] == '\0'))
-				memcpy(fulpath, dir, dlen);
-#endif
+			P_JSTR_IO_FILL_PATH();
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
-#	if defined _GNU_SOURCE && _DIRENT_HAVE_D_NAMLEN
+#	if JSTR_HAVE_DIRENT_D_NAMLEN
 		p_jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen);
 #	else
 		p_jstr_io_append_path(fulpath + dlen, ep->d_name);
@@ -632,34 +626,22 @@ do_reg:
 		continue;
 do_dir:
 		P_JSTR_IO_FILL_PATH();
-#if defined _GNU_SOURCE && _DIRENT_HAVE_D_NAMLEN && JSTR_HAVE_DIRENT_D_TYPE
-		p_Jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen);
 		jstr_io_ftw_reg(fulpath,
-				dlen + ep->d_namlen,
-				fnmatch_glob,
-				fnmatch_flags,
-				match_fulpath,
-				func,
-				arg);
-#else
-#	if JSTR_HAVE_DIRENT_D_TYPE
-		jstr_io_ftw_reg(fulpath,
-				p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir,
-				fnmatch_glob,
-				fnmatch_flags,
-				match_fulpath,
-				func,
-				arg);
+#if JSTR_HAVE_DIRENT_D_TYPE
+#	if JSTR_HAVE_DIRENT_D_NAMLEN
+				(p_jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen),
+				 dlen + 1 + ep->d_namlen),
 #	else
-		jstr_io_ftw_reg(fulpath,
+				p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir,
+#	endif
+#else
 				tmp_dlen,
+#endif
 				fnmatch_glob,
 				fnmatch_flags,
 				match_fulpath,
 				func,
 				arg);
-#	endif
-#endif
 		continue;
 	}
 	closedir(dp);
