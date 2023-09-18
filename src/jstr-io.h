@@ -521,28 +521,31 @@ enum {
 };
 
 JSTR_INLINE
+JSTR_FUNC_RET_NONNULL
 static char *
-p_jstr_io_append_path_p(char *R const path_end,
-			const char *R fname)
+jstr_io_append_path_p(char *R const path_end,
+		      const char *R fname)
 {
 	*path_end = '/';
 	return jstr_stpcpy(path_end + 1, fname);
 }
 
 JSTR_INLINE
+JSTR_FUNC_NOWARN
 static void
-p_jstr_io_append_path(char *R const path_end,
-		      const char *R fname)
+jstr_io_append_path(char *R const path_end,
+		    const char *R fname)
 {
 	*path_end = '/';
 	strcpy(path_end + 1, fname);
 }
 
 JSTR_INLINE
+JSTR_FUNC_NOWARN
 static void
-p_jstr_io_append_path_len(char *R const path_end,
-			  const char *R fname,
-			  const size_t flen)
+jstr_io_append_path_len(char *R const path_end,
+			const char *R fname,
+			const size_t flen)
 {
 	*path_end = '/';
 	memcpy(path_end + 1, fname, flen);
@@ -600,7 +603,7 @@ jstr_io_ftw_reg(const char *R const dir,
 		continue;
 #else
 		P_JSTR_IO_FILL_PATH();
-		tmp_dlen = p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
+		tmp_dlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
 		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
 		if (S_ISREG(st.st_mode))
@@ -624,9 +627,9 @@ do_reg:
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
-		p_jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen);
+		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen);
 #	else
-		p_jstr_io_append_path(fulpath + dlen, ep->d_name);
+		jstr_io_append_path(fulpath + dlen, ep->d_name);
 #	endif
 #endif
 		func(fulpath, arg);
@@ -637,10 +640,10 @@ do_dir:
 		P_JSTR_IO_FILL_PATH();
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
-		p_jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dir;
+		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dir;
 		tmp_dlen = dlen + 1 + ep->d_namlen;
 #	else
-		tmp_dlen = p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir;
+		tmp_dlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir;
 #	endif
 #endif
 		if (jflags & JSTR_IO_FTW_DO_DIR)
