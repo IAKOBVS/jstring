@@ -559,8 +559,11 @@ jstr_io_append_path_len(char *R const path_end,
 	} while (0)
 
 typedef enum jstr_io_ftw_flag_ty {
+	/* Match glob with the filename instead of the whole path. */
 	JSTR_IO_FTW_MATCH_FNAME = (1),
+	/* Call FUNC on regular files. */
 	JSTR_IO_FTW_DO_REG = (JSTR_IO_FTW_MATCH_FNAME << 1),
+	/* Call FUNC on directories. */
 	JSTR_IO_FTW_DO_DIR = (JSTR_IO_FTW_DO_REG << 1),
 	/* Only search the current directory. */
 	JSTR_IO_FTW_MAXDEPTH_1 = (JSTR_IO_FTW_DO_DIR << 1),
@@ -570,8 +573,14 @@ typedef enum jstr_io_ftw_flag_ty {
    Call FUNC on regular files found recursively that matches GLOB.
    If GLOB is NULL, match all regular files.
    If match_fulpath is non-zero, match the fulpath instead of directory to GLOB.
+   If either DO_REG or DO_DIR flag is used, FUNC will not be applied to other filetypes.
    ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
    FUNC therefore must correctly interpret ARG.
+   Jflags:
+   JSTR_IO_FTW_MATCH_FNAME.
+   JSTR_IO_FTW_DO_REG.
+   JSTR_IO_FTW_DO_DIR.
+   JSTR_IO_FTW_DO_MAXDEPTH_1.
 */
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
