@@ -543,38 +543,46 @@ jstr_io_ftw_reg(const char *R const dir,
 		return;
 	char fulpath[JSTR_IO_MAX_FNAME];
 	fulpath[0] = '\0';
-#if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
+#if !JSTR_HAVE_DIRENT_D_TYPE
 	struct stat st;
 #endif
 	for (struct dirent *R ep; (ep = readdir(dp));) {
-#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_TYPE
-		switch (ep->d_type) {
-		case DT_REG: goto do_reg;
-		case DT_DIR: goto do_dir;
-		}
+#if JSTR_HAVE_DIRENT_D_TYPE
+		if (ep->d_type == DT_REG)
+			goto do_reg;
+		if (ep->d_type == DT_DIR)
+			goto do_dir;
+		continue;
 #else
-		if (jstr_unlikely(stat(dir, &st)))
+		if (jstr_unlikely(fulpath[0] == '\0'))
+			memcpy(fulpath, dir, dlen);
+		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
 		if (S_ISREG(st.st_mode))
 			goto do_reg;
 		else if (S_ISDIR(st.st_mode))
 			goto do_dir;
+		continue;
 #endif /* HAVE_D_TYPE */
 do_reg:
 		if (fnmatch_glob) {
 			if (match_fulpath) {
+#if !JSTR_HAVE_DIRENT_D_TYPE
 				if (jstr_unlikely(fulpath[0] == '\0'))
 					memcpy(fulpath, dir, dlen);
+#endif
 				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 					continue;
 			} else if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags)) {
 				continue;
 			}
 		} else {
+#if !JSTR_HAVE_DIRENT_D_TYPE
 			if (jstr_unlikely(fulpath[0] == '\0'))
 				memcpy(fulpath, dir, dlen);
+#endif
 		}
-#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
+#if JSTR_HAVE_DIRENT_D_TYPE
 		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
 		fulpath[dlen + ep->d_namlen] = '\0';
 #else
@@ -586,9 +594,11 @@ do_dir:
 		if (jstr_unlikely((ep->d_name)[0] == '.')
 		    && jstr_unlikely((ep->d_name)[1] == '\0'))
 			continue;
+#if !JSTR_HAVE_DIRENT_D_TYPE
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
-#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
+#endif
+#if JSTR_HAVE_DIRENT_D_TYPE
 		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
 		(ep->d_name)[dlen + ep->d_namlen] = '\0';
 		jstr_io_ftw_reg(fulpath,
