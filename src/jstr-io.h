@@ -558,6 +558,7 @@ p_jstr_io_append_path_len(char *R const path_end,
 typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_MATCH_FULPATH = 1,
 	JSTR_IO_FTW_DO_DIR = 1 << 1,
+	JSTR_IO_FTW_MAXDEPTH_1 = 1 << 2,
 } jstr_io_ftw_flag_ty;
 
 /*
@@ -631,6 +632,8 @@ do_reg:
 		func(fulpath, arg);
 		continue;
 do_dir:
+		if (jflags & JSTR_IO_FTW_MAXDEPTH_1)
+			continue;
 		P_JSTR_IO_FILL_PATH();
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
