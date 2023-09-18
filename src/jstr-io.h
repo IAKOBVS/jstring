@@ -609,8 +609,9 @@ do_reg:
 				P_JSTR_IO_FILL_PATH();
 				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 					continue;
-			} else if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags)) {
-				continue;
+			} else {
+				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
+					continue;
 			}
 		} else {
 			P_JSTR_IO_FILL_PATH();
