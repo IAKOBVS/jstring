@@ -523,10 +523,30 @@ enum {
 JSTR_INLINE
 static char *
 p_jstr_io_append_path_p(char *R const path_end,
-		      const char *R fname)
+			const char *R fname)
 {
 	*path_end = '/';
 	return jstr_stpcpy(path_end + 1, fname);
+}
+
+JSTR_INLINE
+static void
+p_jstr_io_append_path(char *R const path_end,
+		      const char *R fname)
+{
+	*path_end = '/';
+	strcpy(path_end + 1, fname);
+}
+
+JSTR_INLINE
+static void
+p_jstr_io_append_path_len(char *R const path_end,
+			  const char *R fname,
+			  const size_t flen)
+{
+	*path_end = '/';
+	memcpy(path_end + 1, fname, flen);
+	path_end[1 + flen] = '\0';
 }
 
 /*
@@ -547,7 +567,7 @@ jstr_io_ftw_reg(const char *R const dir,
 		void (*func)(const char *fname, const void *arg),
 		const void *R const arg)
 {
-	DIR *R dp = opendir(dir);
+	DIR *R const dp = opendir(dir);
 	if (jstr_unlikely(dp == NULL))
 		return;
 	char fulpath[JSTR_IO_MAX_FNAME];
@@ -561,10 +581,17 @@ jstr_io_ftw_reg(const char *R const dir,
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
 			goto do_reg;
-		if (ep->d_type == DT_DIR)
+		if (ep->d_type == DT_DIR) {
+			if (jstr_unlikely((ep->d_name)[0] == '.')
+			    && jstr_unlikely((ep->d_name)[1] == '\0'))
+				continue;
 			goto do_dir;
+		}
 		continue;
 #else
+		if (jstr_unlikely((ep->d_name)[0] == '.')
+		    && jstr_unlikely((ep->d_name)[1] == '\0'))
+			continue;
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
 		tmp_dlen = p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
@@ -596,25 +623,22 @@ do_reg:
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if defined _GNU_SOURCE && _DIRENT_HAVE_D_NAMLEN
-		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
-		fulpath[dlen + ep->d_namlen] = '\0';
+		fulpath[dlen] = '/';
+		memcpy(fulpath + dlen + 1, ep->d_name, ep->d_namlen);
+		fulpath[dlen + 1 + ep->d_namlen] = '\0';
 #	else
-		strcpy(fulpath + dlen, ep->d_name);
+		p_jstr_io_append_path(fulpath + dlen, ep->d_name);
 #	endif
 #endif
 		func(fulpath, arg);
 		continue;
 do_dir:
-		if (jstr_unlikely((ep->d_name)[0] == '.')
-		    && jstr_unlikely((ep->d_name)[1] == '\0'))
-			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
 #endif
 #if defined _GNU_SOURCE && _DIRENT_HAVE_D_NAMLEN && JSTR_HAVE_DIRENT_D_TYPE
-		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
-		(ep->d_name)[dlen + ep->d_namlen] = '\0';
+		p_Jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen);
 		jstr_io_ftw_reg(fulpath,
 				dlen + ep->d_namlen,
 				fnmatch_glob,
@@ -626,7 +650,6 @@ do_dir:
 #	if JSTR_HAVE_DIRENT_D_TYPE
 		jstr_io_ftw_reg(fulpath,
 				p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir,
-				dlen2,
 				fnmatch_glob,
 				fnmatch_flags,
 				match_fulpath,
