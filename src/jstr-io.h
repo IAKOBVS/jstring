@@ -1,5 +1,5 @@
-#ifndef JSTR_IO_H
-#define JSTR_IO_H 1
+#ifndef JSTR_IO_FILETYPE_H
+#define JSTR_IO_FILETYPE_H 1
 
 #include "jstr-macros.h"
 
@@ -20,18 +20,18 @@ P_JSTR_END_DECLS
 P_JSTR_BEGIN_DECLS
 
 typedef enum {
-	JSTR_IO_UNKNOWN = 0,
-	JSTR_IO_TEXT,
-	JSTR_IO_BINARY,
+	JSTR_IO_FILETYPE_UNKNOWN = 0,
+	JSTR_IO_FILETYPE_TEXT,
+	JSTR_IO_FILETYPE_BINARY,
 } jstr_io_ext_ty;
 
 #define S switch (*ext++)
 #define T  \
 case '\0': \
-	return JSTR_IO_TEXT
+	return JSTR_IO_FILETYPE_TEXT
 #define B  \
 case '\0': \
-	return JSTR_IO_BINARY
+	return JSTR_IO_FILETYPE_BINARY
 JSTR_FUNC_PURE
 JSTR_NOINLINE
 static jstr_io_ext_ty
@@ -292,7 +292,7 @@ p_jstr_io_ext_type(const char *R ext) JSTR_NOEXCEPT
 		}
 		break;
 	}
-	return JSTR_IO_UNKNOWN;
+	return JSTR_IO_FILETYPE_UNKNOWN;
 }
 
 #undef S
@@ -310,7 +310,7 @@ jstr_io_ext_type_len(const char *R filename,
 {
 	filename = (char *)jstr_memrchr(filename, '.', sz);
 	if (filename == NULL)
-		return JSTR_IO_UNKNOWN;
+		return JSTR_IO_FILETYPE_UNKNOWN;
 	return p_jstr_io_ext_type(filename + 1);
 }
 
@@ -324,7 +324,7 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 {
 	filename = strrchr(filename, '.');
 	if (filename == NULL)
-		return JSTR_IO_UNKNOWN;
+		return JSTR_IO_FILETYPE_UNKNOWN;
 	return p_jstr_io_ext_type(filename + 1);
 }
 
@@ -555,6 +555,11 @@ p_jstr_io_append_path_len(char *R const path_end,
 			memcpy(fulpath, dir, dlen);    \
 	} while (0)
 
+typedef enum jstr_io_ftw_flag_ty {
+	JSTR_IO_FTW_MATCH_FULPATH = 1,
+	JSTR_IO_FTW_DO_DIR = 1 << 1,
+} jstr_io_ftw_flag_ty;
+
 /*
    Call FUNC on regular files found recursively that matches GLOB.
    If GLOB is NULL, match all regular files.
@@ -569,7 +574,7 @@ jstr_io_ftw_reg(const char *R const dir,
 		const size_t dlen,
 		const char *R const fnmatch_glob,
 		const int fnmatch_flags,
-		const int match_fulpath,
+		const jstr_io_ftw_flag_ty jflags,
 		void (*func)(const char *fname, const void *arg),
 		const void *R const arg)
 {
@@ -605,7 +610,7 @@ jstr_io_ftw_reg(const char *R const dir,
 #endif /* HAVE_D_TYPE */
 do_reg:
 		if (fnmatch_glob) {
-			if (match_fulpath) {
+			if (jflags & JSTR_IO_FTW_MATCH_FULPATH) {
 				P_JSTR_IO_FILL_PATH();
 				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 					continue;
@@ -627,20 +632,21 @@ do_reg:
 		continue;
 do_dir:
 		P_JSTR_IO_FILL_PATH();
-		jstr_io_ftw_reg(fulpath,
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
-				(p_jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen),
-				 dlen + 1 + ep->d_namlen),
+		p_jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dir;
+		tmp_dlen = dlen + 1 + ep->d_namlen;
 #	else
-				p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir,
+		tmp_dlen = p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir;
 #	endif
-#else
-				tmp_dlen,
 #endif
+		if (jflags & JSTR_IO_FTW_DO_DIR)
+			func(fulpath, arg);
+		jstr_io_ftw_reg(fulpath,
+				tmp_dlen,
 				fnmatch_glob,
 				fnmatch_flags,
-				match_fulpath,
+				jflags,
 				func,
 				arg);
 		continue;
