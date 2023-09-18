@@ -555,12 +555,14 @@ jstr_io_do_all_files(const char *R const dir,
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
 do_reg:
-		if (fulpath[0] == '\0')
+		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
 		strcpy(fulpath + dlen, ep->d_name);
 		func(fulpath, arg);
 		continue;
 do_dir:
+		if (jstr_unlikely(fulpath[0] == '\0'))
+			memcpy(fulpath, dir, dlen);
 		jstr_io_do_all_files(fulpath,
 				     jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
 				     func,
@@ -607,12 +609,14 @@ jstr_io_do_all_files_match(const char *R const dir,
 do_reg:
 		if (fnmatch(fn_glob, ep->d_name, fn_flags))
 			continue;
-		if (fulpath[0] == '\0')
+		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
 		strcpy(fulpath + dlen, ep->d_name);
 		func(fulpath, arg);
 		continue;
 do_dir:
+		if (jstr_unlikely(fulpath[0] == '\0'))
+			memcpy(fulpath, dir, dlen);
 		jstr_io_do_all_files_match(fulpath,
 					   jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
 					   fn_glob,
