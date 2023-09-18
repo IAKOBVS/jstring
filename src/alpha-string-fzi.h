@@ -12,8 +12,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
-#ifndef PJSTR_STRING_FZI_H
-#define PJSTR_STRING_FZI_H
+#ifndef P_JSTR__STRING_FZI_H
+#define P_JSTR__STRING_FZI_H
 #include "jstr-macros.h"
 #include "string-fza.h"
 #include "string-optype.h"

@@ -3,10 +3,10 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #include "string-fza.h"
 #include "string-fzb.h"
@@ -19,7 +19,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -159,7 +159,7 @@ jstr_strchrnul(const char *R const s,
 #endif
 }
 
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #undef R
 

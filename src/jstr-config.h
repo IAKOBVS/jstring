@@ -23,7 +23,7 @@
 
 #define JSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 16)
 
-#define PJSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
+#define P_JSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
 #ifndef PJARR_GROWTH
 #	define PJARR_GROWTH 1.5

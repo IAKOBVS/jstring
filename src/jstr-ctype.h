@@ -3,9 +3,9 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 #include <string.h>
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #include "jstr-ctype-table.h"
 #include "jstr-macros.h"
@@ -22,7 +22,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 
 /* ASCII */
 JSTR_INLINE
@@ -174,7 +174,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isalnum_str(const char *R s) JSTR_NOEXCEPT
 {
-#define PJSTR_IS_CTYPE_STR(CTYPE)              \
+#define P_JSTR_IS_CTYPE_STR(CTYPE)              \
 	do {                                   \
 		if (jstr_unlikely(*s == '\0')) \
 			return 0;              \
@@ -185,7 +185,7 @@ jstr_isalnum_str(const char *R s) JSTR_NOEXCEPT
 			;                      \
 		return (*s - 1) == '\0';       \
 	} while (0)
-	PJSTR_IS_CTYPE_STR(isalnum);
+	P_JSTR_IS_CTYPE_STR(isalnum);
 }
 
 /* ASCII */
@@ -194,7 +194,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isalpha_str(const char *R s) JSTR_NOEXCEPT
 {
-	PJSTR_IS_CTYPE_STR(isalpha);
+	P_JSTR_IS_CTYPE_STR(isalpha);
 }
 
 /* ASCII */
@@ -203,7 +203,7 @@ JSTR_FUNC_CONST
 static int
 jstr_islower_str(const char *R s) JSTR_NOEXCEPT
 {
-	PJSTR_IS_CTYPE_STR(islower);
+	P_JSTR_IS_CTYPE_STR(islower);
 }
 
 /* ASCII */
@@ -212,7 +212,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isupper_str(const char *R s) JSTR_NOEXCEPT
 {
-	PJSTR_IS_CTYPE_STR(isupper);
+	P_JSTR_IS_CTYPE_STR(isupper);
 }
 
 /* ASCII */
@@ -221,7 +221,7 @@ JSTR_FUNC_PURE
 static int
 jstr_isspace_str(const char *R s) JSTR_NOEXCEPT
 {
-	PJSTR_IS_CTYPE_STR(isspace);
+	P_JSTR_IS_CTYPE_STR(isspace);
 }
 
 /* ASCII */
@@ -230,7 +230,7 @@ JSTR_FUNC_PURE
 static int
 jstr_isblank_str(const char *R s) JSTR_NOEXCEPT
 {
-	PJSTR_IS_CTYPE_STR(isblank);
+	P_JSTR_IS_CTYPE_STR(isblank);
 }
 
 /* ASCII */
@@ -239,7 +239,7 @@ JSTR_FUNC_PURE
 static int
 jstr_isdigit_str(const char *R s) JSTR_NOEXCEPT
 {
-	PJSTR_IS_CTYPE_STR(isdigit);
+	P_JSTR_IS_CTYPE_STR(isdigit);
 }
 
 /* ASCII */
@@ -248,7 +248,7 @@ JSTR_FUNC_PURE
 static int
 jstr_isxdigit_str(const char *R s) JSTR_NOEXCEPT
 {
-	PJSTR_IS_CTYPE_STR(isxdigit);
+	P_JSTR_IS_CTYPE_STR(isxdigit);
 }
 
 /* ASCII */
@@ -257,7 +257,7 @@ JSTR_FUNC_PURE
 static int
 jstr_ispunct_str(const char *R s) JSTR_NOEXCEPT
 {
-	PJSTR_IS_CTYPE_STR(ispunct);
+	P_JSTR_IS_CTYPE_STR(ispunct);
 }
 
 #ifdef __clang__
@@ -329,9 +329,9 @@ jstr_tolower_str(char *R s) JSTR_NOEXCEPT
 		++s;
 }
 
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #undef R
-#undef PJSTR_IS_CTYPE_STR
+#undef P_JSTR_IS_CTYPE_STR
 
 #endif /* JSTR_CTYPE_H */

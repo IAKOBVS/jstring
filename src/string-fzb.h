@@ -1,9 +1,9 @@
-#ifndef PJSTR_SELECTOR_STRING_FZB_H
-#define PJSTR_SELECTOR_STRING_FZB_H 1
+#ifndef P_JSTR_SELECTOR_STRING_FZB_H
+#define P_JSTR_SELECTOR_STRING_FZB_H 1
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 
 #if JSTR_ARCH_SH
 #	include "sh-string-fzb.h"
@@ -15,6 +15,6 @@ PJSTR_BEGIN_DECLS
 #	include "generic-string-fzb.h"
 #endif
 
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
-#endif /* PJSTR_SELECTOR_STRING_FZB_H */
+#endif /* P_JSTR_SELECTOR_STRING_FZB_H */

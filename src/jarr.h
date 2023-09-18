@@ -3,10 +3,10 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
@@ -47,7 +47,7 @@ PJSTR_END_DECLS
 		PJARR_SZ(j) = 0;                                                               \
 		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, new_cap);                                    \
 		PJARR_DATA(j) = malloc(PJARR_CAP(j));                                          \
-		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
+		P_JSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                               \
 	} while (0)
 /* Allocate PTR and pushing VAL. */
@@ -57,7 +57,7 @@ PJSTR_END_DECLS
 		PJARR_SZ(j) = 1;                                                               \
 		PJARR_CAP(j) = JSTR_MIN_CAP;                                                  \
 		PJARR_DATA(j) = malloc(PJARR_CAP(j));                                          \
-		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
+		P_JSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                               \
 		PJARR_DATA(j)                                                                  \
 		[0] = (value);                                                                 \
@@ -66,23 +66,23 @@ PJSTR_END_DECLS
 #define jarr_alloc_assign(j, ...)                                                                 \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
-		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
-		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, PJSTR_PP_NARG(__VA_ARGS__));                 \
+		PJARR_CHECK_VAL(j, P_JSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
+		PJARR_CAP(j) = PJARR_MIN_ALLOC(j, P_JSTR_PP_NARG(__VA_ARGS__));                 \
 		PJARR_DATA(j) = PJARR_CAST(PJARR_DATA(j), malloc(PJARR_CAP(j)));               \
-		PJSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
+		P_JSTR_MALLOC_ERR(PJARR_DATA(j), break);                                        \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                               \
-		PJARR_SZ(j) = PJSTR_PP_NARG(__VA_ARGS__);                                      \
-		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j), __VA_ARGS__);                           \
+		PJARR_SZ(j) = P_JSTR_PP_NARG(__VA_ARGS__);                                      \
+		P_JSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j), __VA_ARGS__);                           \
 	} while (0)
 /* Add elements to end of PTR. */
 #define jarr_appendmore(j, ...)                                                                       \
 	do {                                                                                   \
 		PJARR_CHECK_ARG(j);                                                            \
-		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
-		if (jstr_unlikely(PJARR_CAP(j) <= (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)))) \
+		PJARR_CHECK_VAL(j, P_JSTR_PP_FIRST_ARG(__VA_ARGS__));                              \
+		if (jstr_unlikely(PJARR_CAP(j) <= (PJARR_SZ(j) + P_JSTR_PP_NARG(__VA_ARGS__)))) \
 			PJARR_REALLOC(j, PJARR_CAP(j), break);                                 \
-		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);             \
-		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                     \
+		P_JSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);             \
+		PJARR_SZ(j) += P_JSTR_PP_NARG(__VA_ARGS__);                                     \
 	} while (0)
 /* Pop PTR[0]. */
 #define jarr_pop_front(j)                                                                      \

@@ -12,8 +12,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
-#ifndef PJSTR_RISCV_STRING_FZA_H
-#define PJSTR_RISCV_STRING_FZA_H 1
+#ifndef P_JSTR_RISCV_STRING_FZA_H
+#define P_JSTR_RISCV_STRING_FZA_H 1
 #include "jstr-macros.h"
 #if defined __riscv_zbb || defined __riscv_xtheadbb
 /* With bitmap extension we can use orc.b to find all zero bytes.  */

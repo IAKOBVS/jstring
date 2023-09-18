@@ -3,7 +3,7 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 #include <stddef.h>
 
 typedef struct jstr_ty {
@@ -12,6 +12,6 @@ typedef struct jstr_ty {
 	size_t capacity;
 } jstr_ty;
 
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #endif /* JSTR_STRUCT_H */

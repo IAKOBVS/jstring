@@ -1,17 +1,17 @@
-#ifndef PJSTR_PP_VA_ARGS_MACROS_H
-#define PJSTR_PP_VA_ARGS_MACROS_H 1
+#ifndef P_JSTR_PP_VA_ARGS_MACROS_H
+#define P_JSTR_PP_VA_ARGS_MACROS_H 1
 
 #include "jstr-pp-st-assert.h"
 #include "jstr-pp-strcpy-va-args.h"
 #include "jstr-pp-strlen-va-args.h"
 #include "jstr-pp-va-args-tools.h"
 
-#define PJSTR_PP_CONCATENATE(A, B) \
-	PJSTR_PP_CONCATENATE_(A, B)
-#define PJSTR_PP_CONCATENATE_(A, B) \
+#define P_JSTR_PP_CONCATENATE(A, B) \
+	P_JSTR_PP_CONCATENATE_(A, B)
+#define P_JSTR_PP_CONCATENATE_(A, B) \
 	A##B
 #ifndef __cplusplus
-#	define PJSTR_PP_PRINTF_FORMAT(x) _Generic((x), \
+#	define P_JSTR_PP_PRINTF_FORMAT(x) _Generic((x), \
 	unsigned char: "%hhu\n",                        \
 	unsigned char *: "%s\n",                        \
 	char: "%c\n",                                   \
@@ -43,9 +43,9 @@
 	const long: "%ld\n",                            \
 	const long long: "%lld\n",                      \
 	const unsigned long long: "%llu\n")
-#	define jstr_pp_cout(x) printf(PJSTR_PP_PRINTF_FORMAT(x), x)
+#	define jstr_pp_cout(x) printf(P_JSTR_PP_PRINTF_FORMAT(x), x)
 #else
 #	define jstr_pp_cout(x)
 #endif /* __cplusplus */
 
-#endif /* PJSTR_PP_VA_ARGS_MACROS_H */
+#endif /* P_JSTR_PP_VA_ARGS_MACROS_H */

@@ -3,11 +3,11 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #ifdef __cplusplus
 #	include <utility>
@@ -17,38 +17,38 @@ PJSTR_END_DECLS
 #include "jstr-config.h"
 #include "jstr-struct.h"
 
-#define PJSTR_MALLOC_ERR(p, malloc_fail)                         \
+#define P_JSTR_MALLOC_ERR(p, malloc_fail)                         \
 	do {                                                     \
 		if (jstr_unlikely((p) == NULL)) {                \
 			pjstr_err(__FILE__, __LINE__, __func__); \
 			malloc_fail;                             \
 		}                                                \
 	} while (0)
-#define PJSTR_GROW(old_cap, new_cap)                                         \
+#define P_JSTR_GROW(old_cap, new_cap)                                         \
 	do {                                                                 \
 		JSTR_ASSERT_IS_SIZE(old_cap);                                \
 		JSTR_ASSERT_IS_SIZE(new_cap);                                \
 		while ((old_cap *= JSTR_GROWTH) < (new_cap))                 \
 			;                                                    \
-		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
+		(old_cap) = JSTR_ALIGN_UP(old_cap, P_JSTR_MALLOC_ALIGNMENT); \
 	} while (0)
-#define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
+#define P_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
 	do {                                            \
 		JSTR_ASSERT_IS_STR(p);                  \
 		JSTR_ASSERT_IS_SIZE(old_cap);           \
 		JSTR_ASSERT_IS_SIZE(new_cap);           \
-		PJSTR_GROW(old_cap, new_cap);           \
+		P_JSTR_GROW(old_cap, new_cap);           \
 		(p) = (char *)realloc(p, old_cap);      \
-		PJSTR_MALLOC_ERR(p, malloc_fail);       \
+		P_JSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
-#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
+#define P_JSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
 	do {                                                 \
 		JSTR_ASSERT_IS_STR(p);                       \
 		JSTR_ASSERT_IS_SIZE(old_cap);                \
 		JSTR_ASSERT_IS_SIZE(new_cap);                \
 		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);     \
 		(p) = (char *)realloc(p, old_cap);           \
-		PJSTR_MALLOC_ERR(p, malloc_fail);            \
+		P_JSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
 #define JSTR_MIN_ALLOC(new_cap)                           \
 	((new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
@@ -58,16 +58,16 @@ PJSTR_END_DECLS
 	((new_cap < JSTR_MIN_CAP)    \
 	 ? (JSTR_MIN_CAP)            \
 	 : (new_cap))
-#define PJSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
+#define P_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
 	do {                                       \
 		(cap) = JSTR_MIN_ALLOC(new_cap);  \
 		(p) = (char *)malloc((cap));       \
-		PJSTR_MALLOC_ERR((p), do_fail);    \
+		P_JSTR_MALLOC_ERR((p), do_fail);    \
 	} while (0)
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
@@ -101,7 +101,7 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 	exit(1);
 }
 
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #ifdef __cplusplus
 
@@ -304,7 +304,7 @@ jstr_alloc_appendmore(char *R *R const s,
 	*sz = jstr::priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*cap = *sz * 2;
 	*s = (char *)malloc(*cap);
-	PJSTR_MALLOC_ERR(*s, return);
+	P_JSTR_MALLOC_ERR(*s, return);
 	char *p = *s;
 	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';
@@ -348,7 +348,7 @@ jstr_appendmore(char *R *R const s,
 	size_t strlen_arr[1 + sizeof...(args)];
 	const size_t newsz = *sz + jstr::priv::strlen_args(strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	if (*cap < *sz)
-		PJSTR_REALLOC(*s, *cap, newsz + 1, return);
+		P_JSTR_REALLOC(*s, *cap, newsz + 1, return);
 	char *p = *s + *sz;
 	jstr::priv::appendmore_loop_assign(&p, strlen_arr, std::forward<Str>(arg), std::forward<StrArgs>(args)...);
 	*p = '\0';

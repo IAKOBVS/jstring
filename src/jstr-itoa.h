@@ -3,22 +3,22 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 
-#define PJSTR_ITOA_ATTR      \
+#define P_JSTR_ITOA_ATTR      \
 	JSTR_MAYBE_UNUSED    \
 	JSTR_NONNULL_ALL     \
 	JSTR_WARN_UNUSED     \
 	JSTR_RETURNS_NONNULL \
 	JSTR_NOTHROW
-#define PJSTR_UTOA_UNROLLED(nptr, number, base)                                                                       \
+#define P_JSTR_UTOA_UNROLLED(nptr, number, base)                                                                       \
 	do {                                                                                                          \
 		JSTR_ASSERT_IS_STR(nptr);                                                                             \
 		JSTR_ASSERT_IS_SIZE(number);                                                                          \
@@ -104,7 +104,7 @@ PJSTR_BEGIN_DECLS
 	} while (0)
 
 #if 1
-#	define PJSTR_ULTOA_UNROLLED(nptr, number, base)                                                                                                                                     \
+#	define P_JSTR_ULTOA_UNROLLED(nptr, number, base)                                                                                                                                     \
 		do {                                                                                                                                                                         \
 			JSTR_ASSERT_IS_STR(nptr);                                                                                                                                            \
 			JSTR_ASSERT_IS_SIZE(number);                                                                                                                                         \
@@ -359,10 +359,10 @@ PJSTR_BEGIN_DECLS
 			return nptr;                                                                                                                                                         \
 		} while (0)
 #else
-#	define PJSTR_ULTOA_UNROLLED(nptr, number, base)                 \
+#	define P_JSTR_ULTOA_UNROLLED(nptr, number, base)                 \
 		do {                                                     \
 			if (jstr_likely(number <= 9999999999)) {         \
-				PJSTR_UTOA_UNROLLED(nptr, number, base); \
+				P_JSTR_UTOA_UNROLLED(nptr, number, base); \
 				break;                                   \
 			}                                                \
 			enum { len = JSTR_MAX_ULONG_LONG_DIGITS };       \
@@ -381,7 +381,7 @@ PJSTR_BEGIN_DECLS
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
-PJSTR_ITOA_ATTR
+P_JSTR_ITOA_ATTR
 static char *
 jstr_itoa_p(char *R nptr,
 	  int number,
@@ -391,11 +391,11 @@ jstr_itoa_p(char *R nptr,
 		number = -number;
 		*nptr++ = '-';
 	}
-	PJSTR_UTOA_UNROLLED(nptr, number, base);
+	P_JSTR_UTOA_UNROLLED(nptr, number, base);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
-PJSTR_ITOA_ATTR
+P_JSTR_ITOA_ATTR
 static char *
 jstr_lltoa_p(char *R nptr,
 	   long long number,
@@ -405,12 +405,12 @@ jstr_lltoa_p(char *R nptr,
 		number = -number;
 		*nptr++ = '-';
 	}
-	PJSTR_ULTOA_UNROLLED(nptr, number, base);
+	P_JSTR_ULTOA_UNROLLED(nptr, number, base);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
-PJSTR_ITOA_ATTR
+P_JSTR_ITOA_ATTR
 static char *
 jstr_ltoa_p(char *R nptr,
 	  long number,
@@ -421,28 +421,28 @@ jstr_ltoa_p(char *R nptr,
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
-PJSTR_ITOA_ATTR
+P_JSTR_ITOA_ATTR
 static char *
 jstr_utoa_p(char *R nptr,
 	  const unsigned int number,
 	  const unsigned int base) JSTR_NOEXCEPT
 {
-	PJSTR_UTOA_UNROLLED(nptr, number, base);
+	P_JSTR_UTOA_UNROLLED(nptr, number, base);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
-PJSTR_ITOA_ATTR
+P_JSTR_ITOA_ATTR
 static char *
 jstr_ulltoa_p(char *R nptr,
 	    unsigned long long number,
 	    const unsigned int base) JSTR_NOEXCEPT
 {
-	PJSTR_ULTOA_UNROLLED(nptr, number, base);
+	P_JSTR_ULTOA_UNROLLED(nptr, number, base);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_INLINE
-PJSTR_ITOA_ATTR
+P_JSTR_ITOA_ATTR
 static char *
 jstr_ultoa_p(char *R nptr,
 	   const unsigned long number,
@@ -451,13 +451,13 @@ jstr_ultoa_p(char *R nptr,
 	return jstr_ulltoa_p(nptr, number, base);
 }
 
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #undef R
 
-#undef PJSTR_ITOA_ATTR
-#undef PJSTR_ULTOA_UNROLLED
-#undef PJSTR_ULTOA_UNROLLED
-#undef PJSTR_LTOA_UNROLLED
+#undef P_JSTR_ITOA_ATTR
+#undef P_JSTR_ULTOA_UNROLLED
+#undef P_JSTR_ULTOA_UNROLLED
+#undef P_JSTR_LTOA_UNROLLED
 
 #endif /* JSTR_ITOA_H */

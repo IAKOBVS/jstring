@@ -3,11 +3,11 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #include "jstr-templates.h"
 
@@ -20,7 +20,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 
 /*
   exit(1) if ptr is NULL.
@@ -46,7 +46,7 @@ jstr_alloc(char *R *R const s,
 	*sz = 0;
 	*cap = JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(top));
 	*s = (char *)malloc(*cap);
-	PJSTR_MALLOC_ERR(*s, return);
+	P_JSTR_MALLOC_ERR(*s, return);
 }
 
 JSTR_INLINE
@@ -61,7 +61,7 @@ jstr_allocexact(char *R *R const s,
 	*sz = 0;
 	*cap = JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(top));
 	*s = (char *)malloc(*cap);
-	PJSTR_MALLOC_ERR(*s, return);
+	P_JSTR_MALLOC_ERR(*s, return);
 }
 
 JSTR_INLINE
@@ -103,7 +103,7 @@ jstr_alloc_assign_len(char *R *R const s,
 		      const char *R const src,
 		      const size_t srclen) JSTR_NOEXCEPT
 {
-	PJSTR_ALLOC_ONLY(*s, *cap, srclen, return);
+	P_JSTR_ALLOC_ONLY(*s, *cap, srclen, return);
 	*sz = srclen;
 	memcpy(*s, src, srclen);
 	(*s)[srclen] = '\0';
@@ -130,7 +130,7 @@ jstr_allocmore_assign_len(char *R *R const s,
 			  const char *R const src,
 			  const size_t srclen) JSTR_NOEXCEPT
 {
-	PJSTR_ALLOC_ONLY(*s, *cap, srclen * 2, return);
+	P_JSTR_ALLOC_ONLY(*s, *cap, srclen * 2, return);
 	*sz = srclen;
 	memcpy(*s, src, srclen);
 	(*s)[srclen] = '\0';
@@ -190,7 +190,7 @@ jstr_append_len(char *R *R const s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + srclen)
-		PJSTR_REALLOC(*s, *cap, *sz + srclen, return);
+		P_JSTR_REALLOC(*s, *cap, *sz + srclen, return);
 	memcpy(*s + *sz, src, srclen);
 	*(*s + (*sz += srclen)) = '\0';
 }
@@ -221,7 +221,7 @@ jstr_assign_len(char *R *R const s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
-		PJSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, return);
+		P_JSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, return);
 	memcpy(*s, src, srclen);
 	(*s)[srclen] = '\0';
 	*sz = srclen;
@@ -252,7 +252,7 @@ jstr_push_back(char *R *R const s,
 	       const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
+		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
 	(*s)[*sz] = c;
 	(*s)[++*sz] = '\0';
 }
@@ -271,7 +271,7 @@ jstr_push_front(char *R *R const s,
 		const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
+		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
 	memmove(*s + 1, *s, *sz);
 	(*s)[++*sz] = '\0';
 	**s = c;
@@ -325,7 +325,7 @@ jstr_pop_front_j(jstr_ty *R const j) JSTR_NOEXCEPT
 	jstr_pop_front(j->data, &j->size);
 }
 
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #ifndef __cplusplus
 
@@ -333,11 +333,11 @@ PJSTR_END_DECLS
 		do {                                                                    \
 			JSTR_ASSERT_IS_STR(*(s));                                       \
 			JSTR_ASSERT_IS_SIZE(*(sz));                                     \
-			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                 \
-			size_t ARR_VA_ARGS[PJSTR_PP_NARG(__VA_ARGS__)];                 \
-			*(sz) += PJSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
+			P_JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                 \
+			size_t ARR_VA_ARGS[P_JSTR_PP_NARG(__VA_ARGS__)];                 \
+			*(sz) += P_JSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
 			char *p = *(s) + *(sz);                                         \
-			PJSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);           \
+			P_JSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);           \
 			*p = '\0';                                                      \
 		} while (0)
 #	define jstr_appendmore(s, sz, cap, ...)                                                             \
@@ -345,13 +345,13 @@ PJSTR_END_DECLS
 			JSTR_ASSERT_IS_STR(*(s));                                                            \
 			JSTR_ASSERT_IS_SIZE(*(sz));                                                          \
 			JSTR_ASSERT_IS_SIZE(*(cap));                                                         \
-			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                      \
-			size_t ARR_VA_ARGS[PJSTR_PP_NARG(__VA_ARGS__)];                                      \
-			const size_t NEW_SZ = *(sz) + PJSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
+			P_JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                                      \
+			size_t ARR_VA_ARGS[P_JSTR_PP_NARG(__VA_ARGS__)];                                      \
+			const size_t NEW_SZ = *(sz) + P_JSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
 			if (*(cap) < NEW_SZ)                                                                 \
-				PJSTR_REALLOC(*(s), *(cap), NEW_SZ + 1, break);                              \
+				P_JSTR_REALLOC(*(s), *(cap), NEW_SZ + 1, break);                              \
 			char *p = *(s) + *(sz);                                                              \
-			PJSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);                                \
+			P_JSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);                                \
 			*p = '\0';                                                                           \
 			*(sz) = NEW_SZ;                                                                      \
 		} while (0)
@@ -360,14 +360,14 @@ PJSTR_END_DECLS
 			JSTR_ASSERT_IS_STR(*(s));                                      \
 			JSTR_ASSERT_IS_SIZE(*(sz));                                    \
 			JSTR_ASSERT_IS_SIZE(*(cap));                                   \
-			PJSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                \
-			size_t ARR_VA_ARGS[PJSTR_PP_NARG(__VA_ARGS__)];                \
-			*(sz) = PJSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
+			P_JSTR_PP_ST_ASSERT_IS_STR_VA_ARGS(__VA_ARGS__);                \
+			size_t ARR_VA_ARGS[P_JSTR_PP_NARG(__VA_ARGS__)];                \
+			*(sz) = P_JSTR_PP_STRLEN_ARR_VA_ARGS(ARR_VA_ARGS, __VA_ARGS__); \
 			*(cap) = JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(*(sz)));           \
 			*(s) = malloc(*(cap));                                         \
-			PJSTR_MALLOC_ERR(*((s)), break);                               \
+			P_JSTR_MALLOC_ERR(*((s)), break);                               \
 			char *p = *(s);                                                \
-			PJSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);          \
+			P_JSTR_PP_STRCPY_VA_ARGS(p, ARR_VA_ARGS, __VA_ARGS__);          \
 			*p = '\0';                                                     \
 		} while (0)
 #	define jstr_appendmore_j(j, ...)	jstr_appendmore(&((j)->data), &((j)->size), &((j)->capacity), __VA_ARGS__)

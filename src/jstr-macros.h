@@ -648,8 +648,8 @@ case '~':
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
 
-#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
-#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)
+#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, P_JSTR_MALLOC_ALIGNMENT)
 
 #if defined __x86_64__ || defined _M_X64
 #	define JSTR_ARCH_X86_64 1
@@ -751,11 +751,11 @@ case '~':
 #define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #ifdef __cplusplus
-#	define PJSTR_BEGIN_DECLS extern "C" {
-#	define PJSTR_END_DECLS	  }
+#	define P_JSTR_BEGIN_DECLS extern "C" {
+#	define P_JSTR_END_DECLS	  }
 #else
-#	define PJSTR_BEGIN_DECLS
-#	define PJSTR_END_DECLS
+#	define P_JSTR_BEGIN_DECLS
+#	define P_JSTR_END_DECLS
 #endif
 
 #if JSTR_USE_UNLOCKED_IO

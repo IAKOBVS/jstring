@@ -12,8 +12,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
-#ifndef PJSTR_STRING_FZC_H
-#define PJSTR_STRING_FZC_H 1
+#ifndef P_JSTR_STRING_FZC_H
+#define P_JSTR_STRING_FZC_H 1
 #include "jstr-macros.h"
 #include "string-optype.h"
 _Static_assert(sizeof(jstr_word_ty) == 4, "64-bit not supported");

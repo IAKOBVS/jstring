@@ -3,11 +3,11 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-io-table.h"
@@ -15,7 +15,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+P_JSTR_BEGIN_DECLS
 
 typedef enum {
 	JSTR_IO_UNKNOWN = 0,
@@ -337,10 +337,10 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 	return pjstr_io_ext_type(filename + 1);
 }
 
-#define PJSTR_ELF    "\x7f\ELF"
-#define PJSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
-#define PJSTR_UTF    "\xEF\xBB\xBF"
-#define PJSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
+#define P_JSTR_ELF    "\x7f\ELF"
+#define P_JSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
+#define P_JSTR_UTF    "\xEF\xBB\xBF"
+#define P_JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
 /*/usr/local/code/c/jstring/src
 
@@ -357,13 +357,13 @@ jstr_io_is_binary_maybe(const char *R buf,
 {
 #define JSTR_BINARY_CHECK()                                                       \
 	do {                                                                      \
-		if (jstr_likely(sz > PJSTR_ELF_SZ - 1)) {                         \
-			if (jstr_unlikely(!memcmp(buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
+		if (jstr_likely(sz > P_JSTR_ELF_SZ - 1)) {                         \
+			if (jstr_unlikely(!memcmp(buf, P_JSTR_ELF, P_JSTR_ELF_SZ))) \
 				return 1;                                         \
 check_utf:;                                                                       \
-			if (!memcmp(buf, PJSTR_UTF, PJSTR_UTF_SZ))                \
+			if (!memcmp(buf, P_JSTR_UTF, P_JSTR_UTF_SZ))                \
 				return 0;                                         \
-		} else if (jstr_likely(sz == PJSTR_UTF_SZ)) {                     \
+		} else if (jstr_likely(sz == P_JSTR_UTF_SZ)) {                     \
 			goto check_utf;                                           \
 		}                                                                 \
 	} while (0)
@@ -409,10 +409,10 @@ jstr_io_is_binary(const char *R const buf,
 }
 
 #undef JSTR_BINARY_CHECK
-#undef PJSTR_ELF
-#undef PJSTR_ELF_SZ
-#undef PJSTR_UTF
-#undef PJSTR_UTF_SZ
+#undef P_JSTR_ELF
+#undef P_JSTR_ELF_SZ
+#undef P_JSTR_UTF
+#undef P_JSTR_UTF_SZ
 
 /*
    Check the whole file for any unprintable character.
@@ -449,7 +449,7 @@ pjstr_io_alloc_file(const int alloc_exact,
 	       ? JSTR_ALIGN_UP_STR(JSTR_MIN_ALLOCEXACT(st->st_size + 1))
 	       : JSTR_ALIGN_UP_STR(JSTR_MIN_ALLOC(st->st_size));
 	*s = (char *)malloc(*cap);
-	PJSTR_MALLOC_ERR(*s, goto err_close);
+	P_JSTR_MALLOC_ERR(*s, goto err_close);
 	fread(*s, 1, st->st_size, fp);
 	fclose(fp);
 	(*s)[st->st_size] = '\0';
@@ -530,7 +530,7 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 	return jstr_io_allocexact_file(&j->data, &j->size, &j->capacity, fname, st);
 }
 
-PJSTR_END_DECLS
+P_JSTR_END_DECLS
 
 #undef R
 
