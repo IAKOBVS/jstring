@@ -557,7 +557,12 @@ jstr_io_do_all_files(const char *R const dir,
 do_reg:
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
+#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
+		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
+		fulpath[dlen + ep->d_namlen] = '\0';
+#else
 		strcpy(fulpath + dlen, ep->d_name);
+#endif
 		func(fulpath, arg);
 		continue;
 do_dir:
