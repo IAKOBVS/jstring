@@ -287,7 +287,7 @@ appendmore_loop_assign(char **dst,
 } // namespace jstr
 
 /*
-   Insert multiple strings to S.
+   Append multiple strings to S.
 */
 template <typename Str,
 	  typename... StrArgs,
