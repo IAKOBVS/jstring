@@ -560,6 +560,8 @@ jstr_strcasestr(const char *R hs,
 
 /*
    Reverse of STRCSPN.
+   Return the offset from S if found;
+   otherwise, return S + SZ.
 */
 JSTR_FUNC_PURE
 static size_t
@@ -572,7 +574,7 @@ jstr_strrcspn_len(const char *R const s,
 		return sz;
 	if (jstr_unlikely(reject[1] == '\0')) {
 		const char *const p = (char *)jstr_memrchr(s, *reject, sz);
-		return p ? (size_t)((s + sz) - p) : sz;
+		return p ? p - s : sz;
 	}
 	unsigned char t[256];
 	BZERO(t);
@@ -583,7 +585,7 @@ jstr_strrcspn_len(const char *R const s,
 	p = (unsigned char *)s + sz - 1;
 	for (int i = sz % 4; i-- > 0;)
 		if (t[*p--])
-			return ((unsigned char *)s + sz) - (p + 1);
+			return (p + 1) - (unsigned char *)s;
 	if (jstr_unlikely(sz < 4))
 		return sz;
 	unsigned int c0, c1, c2, c3;
@@ -596,9 +598,7 @@ jstr_strrcspn_len(const char *R const s,
 		sz -= 4;
 	} while (((sz == 0) | c0 | c1 | c2 | c3) == 0);
 	size_t cnt = ((unsigned char *)s + sz) - p;
-	return ((c0 | c1) != 0)
-	       ? cnt - c0 + 1
-	       : cnt - c2 + 3;
+	return sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
 }
 
 /*
@@ -615,6 +615,8 @@ jstr_strrcspn(const char *R const s,
 
 /*
    Reverse of STRSPN.
+   Return the offset from S if found;
+   otherwise, return S + SZ.
 */
 JSTR_FUNC_PURE
 static size_t
@@ -624,12 +626,12 @@ jstr_strrspn_len(const char *R const s,
 {
 	if (jstr_unlikely(*accept == '\0')
 	    || jstr_unlikely(sz == 0))
-		return 0;
+		return sz;
 	if (jstr_unlikely(accept[1] == '\0')) {
 		const char *p = s + sz - 1;
-		while ((p != s) && (*p-- == *accept))
-			;
-		return (s + sz) - (p + 1);
+		while ((p != s) && (*p == *accept))
+			--p;
+		return p - s;
 	}
 	const unsigned char *p = (unsigned char *)accept;
 	unsigned char t[256];
@@ -640,7 +642,7 @@ jstr_strrspn_len(const char *R const s,
 	p = (unsigned char *)s + sz - 1;
 	for (int i = sz % 4; i-- > 0;)
 		if (!t[*p--])
-			return ((unsigned char *)s + sz) - (p + 1);
+			return (p + 1) - (unsigned char *)s;
 	if (jstr_unlikely(sz < 4))
 		return sz;
 	unsigned int c0, c1, c2, c3;
@@ -653,13 +655,13 @@ jstr_strrspn_len(const char *R const s,
 		sz -= 4;
 	} while ((sz != 0) & (c0 & c1 & c2 & c3));
 	size_t cnt = ((unsigned char *)s + sz) - p;
-	return ((c0 & c1) == 0)
-	       ? cnt + c0
-	       : cnt + c2 + 2;
+	return sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2);
 }
 
 /*
    Reverse of STRSPN.
+   Return the offset from S if found;
+   otherwise, return S + SZ.
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
