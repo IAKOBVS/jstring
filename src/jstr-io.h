@@ -584,12 +584,19 @@ do_reg:
 		continue;
 do_dir:
 		if (jstr_unlikely((ep->d_name)[0] == '.')
-			&& jstr_unlikely((ep->d_name)[1] == '\0'))
+		    && jstr_unlikely((ep->d_name)[1] == '\0'))
 			continue;
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
+#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
+		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
+		(ep->d_name)[dlen + ep->d_namlen] = '\0';
+		jstr_io_ftw_reg(fulpath,
+				dlen + ep->d_namlen,
+#else
 		jstr_io_ftw_reg(fulpath,
 				jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+#endif
 				fnmatch_glob,
 				fnmatch_flags,
 				match_fulpath,
