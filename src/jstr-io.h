@@ -630,7 +630,7 @@ jstr_io_ftw(const char *R const dir,
 do_reg:
 		if ((jflags & JSTR_IO_FTW_DO_DIR)
 		    && !(jflags & JSTR_IO_FTW_DO_REG))
-			return;
+			continue;
 		if (fnmatch_glob) {
 			if (jflags & JSTR_IO_FTW_MATCH_FNAME) {
 				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
