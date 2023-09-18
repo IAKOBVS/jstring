@@ -559,9 +559,11 @@ jstr_io_append_path_len(char *R const path_end,
 	} while (0)
 
 typedef enum jstr_io_ftw_flag_ty {
-	JSTR_IO_FTW_MATCH_FULPATH = 1,
-	JSTR_IO_FTW_DO_DIR = 1 << 1,
-	JSTR_IO_FTW_MAXDEPTH_1 = 1 << 2,
+	JSTR_IO_FTW_MATCH_FNAME = (1),
+	JSTR_IO_FTW_DO_REG = (JSTR_IO_FTW_MATCH_FNAME << 1),
+	JSTR_IO_FTW_DO_DIR = (JSTR_IO_FTW_DO_REG << 1),
+	/* Only search the current directory. */
+	JSTR_IO_FTW_MAXDEPTH_1 = (JSTR_IO_FTW_DO_DIR << 1),
 } jstr_io_ftw_flag_ty;
 
 /*
@@ -600,7 +602,6 @@ jstr_io_ftw_reg(const char *R const dir,
 			goto do_reg;
 		if (ep->d_type == DT_DIR)
 			goto do_dir;
-		continue;
 #else
 		P_JSTR_IO_FILL_PATH();
 		tmp_dlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
@@ -610,16 +611,17 @@ jstr_io_ftw_reg(const char *R const dir,
 			goto do_reg;
 		if (S_ISDIR(st.st_mode))
 			goto do_dir;
-		continue;
 #endif /* HAVE_D_TYPE */
+		if (jflags & (JSTR_IO_FTW_DO_DIR | JSTR_IO_FTW_DO_REG))
+			continue;
 do_reg:
 		if (fnmatch_glob) {
-			if (jflags & JSTR_IO_FTW_MATCH_FULPATH) {
-				P_JSTR_IO_FILL_PATH();
-				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
+			if (jflags & JSTR_IO_FTW_MATCH_FNAME) {
+				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
 					continue;
 			} else {
-				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
+				P_JSTR_IO_FILL_PATH();
+				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 					continue;
 			}
 		} else {

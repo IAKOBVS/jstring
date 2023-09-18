@@ -382,8 +382,8 @@ jstr_rmspn_j(jstr_ty *R const j,
 }
 
 typedef enum {
-	P_JSTR_FLAG_USE_N = 1,
-	P_JSTR_FLAG_USE_NOT_N = 1 << 1,
+	P_JSTR_FLAG_USE_N = (1),
+	P_JSTR_FLAG_USE_NOT_N = (P_JSTR_FLAG_USE_N << 1),
 } p_jstr_flag_use_n_ty;
 
 JSTR_INLINE
