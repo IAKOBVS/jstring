@@ -536,6 +536,7 @@ jstr_io_do_all_files(const char *R const dir,
 	if (jstr_unlikely(dp == NULL))
 		return;
 	char fulpath[JSTR_IO_MAX_FNAME];
+	fulpath[0] = '\0';
 #if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
 	struct stat st;
 #endif
@@ -554,6 +555,8 @@ jstr_io_do_all_files(const char *R const dir,
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
 do_reg:
+		if (fulpath[0] == '\0')
+			memcpy(fulpath, dir, dlen);
 		strcpy(fulpath + dlen, ep->d_name);
 		func(fulpath, arg);
 		continue;
@@ -583,6 +586,7 @@ jstr_io_do_all_files_match(const char *R const dir,
 	if (jstr_unlikely(dp == NULL))
 		return;
 	char fulpath[JSTR_IO_MAX_FNAME];
+	fulpath[0] = '\0';
 #if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
 	struct stat st;
 #endif
@@ -603,6 +607,8 @@ jstr_io_do_all_files_match(const char *R const dir,
 do_reg:
 		if (fnmatch(fn_glob, ep->d_name, fn_flags))
 			continue;
+		if (fulpath[0] == '\0')
+			memcpy(fulpath, dir, dlen);
 		strcpy(fulpath + dlen, ep->d_name);
 		func(fulpath, arg);
 		continue;
