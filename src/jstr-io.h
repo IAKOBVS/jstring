@@ -535,7 +535,7 @@ jstr_io_ftw_reg(const char *R const dir,
 		const char *R const fnmatch_glob,
 		const int fnmatch_flags,
 		const int match_fulpath,
-		void (*func)(const char *R const fname, const void *R const arg),
+		void (*func)(const char *fname, const void *arg),
 		const void *R const arg)
 {
 	DIR *R dp = opendir(dir);
@@ -583,6 +583,9 @@ do_reg:
 		func(fulpath, arg);
 		continue;
 do_dir:
+		if (jstr_unlikely((ep->d_name)[0] == '.')
+			&& jstr_unlikely((ep->d_name)[1] == '\0'))
+			continue;
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
 		jstr_io_ftw_reg(fulpath,
