@@ -527,10 +527,10 @@ enum {
 */
 JSTR_FUNC_VOID
 static void
-jstr_io_do_all_files(const char *R const dir,
-		     const size_t dlen,
-		     void (*func)(const char *R const fname, const void *R const arg),
-		     const void *R const arg)
+jstr_io_files_do(const char *R const dir,
+		 const size_t dlen,
+		 void (*func)(const char *R const fname, const void *R const arg),
+		 const void *R const arg)
 {
 	DIR *R dp = opendir(dir);
 	if (jstr_unlikely(dp == NULL))
@@ -568,26 +568,26 @@ do_reg:
 do_dir:
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
-		jstr_io_do_all_files(fulpath,
-				     jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
-				     func,
-				     arg);
+		jstr_io_files_do(fulpath,
+				 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+				 func,
+				 arg);
 		continue;
 	}
 	closedir(dp);
 }
 
 /*
-   Equivalent to jstr_io_do_all_files_match for files that match the fnmatch glob pattern.
+   Equivalent to jstr_io_files_do for files that match the fnmatch glob pattern.
 */
 JSTR_FUNC_VOID
 static void
-jstr_io_do_all_files_match(const char *R const dir,
-			   const size_t dlen,
-			   const char *R const fn_glob,
-			   const int fn_flags,
-			   void (*func)(const char *R const fname, const void *R const arg),
-			   const void *R const arg)
+jstr_io_files_do_matched(const char *R const dir,
+			 const size_t dlen,
+			 const char *R const fn_glob,
+			 const int fn_flags,
+			 void (*func)(const char *R const fname, const void *R const arg),
+			 const void *R const arg)
 {
 	DIR *R dp = opendir(dir);
 	if (jstr_unlikely(dp == NULL))
@@ -627,12 +627,73 @@ do_reg:
 do_dir:
 		if (jstr_unlikely(fulpath[0] == '\0'))
 			memcpy(fulpath, dir, dlen);
-		jstr_io_do_all_files_match(fulpath,
-					   jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
-					   fn_glob,
-					   fn_flags,
-					   func,
-					   arg);
+		jstr_io_files_do_matched(fulpath,
+					 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+					 fn_glob,
+					 fn_flags,
+					 func,
+					 arg);
+		continue;
+	}
+	closedir(dp);
+}
+
+/*
+   Equivalent to jstr_io_files_do_matched where the pattern matches the whole pathname.
+*/
+JSTR_FUNC_VOID
+static void
+jstr_io_files_do_matched_path(const char *R const dir,
+			      const size_t dlen,
+			      const char *R const fn_glob,
+			      const int fn_flags,
+			      void (*func)(const char *R const fname, const void *R const arg),
+			      const void *R const arg)
+{
+	DIR *R dp = opendir(dir);
+	if (jstr_unlikely(dp == NULL))
+		return;
+	char fulpath[JSTR_IO_MAX_FNAME];
+	fulpath[0] = '\0';
+#if !defined _GNU_SOURCE || !defined _DIRENT_HAVE_D_TYPE
+	struct stat st;
+#endif
+	for (struct dirent *R ep; (ep = readdir(dp));) {
+#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_TYPE
+		switch (ep->d_type) {
+		case DT_REG: goto do_reg;
+		case DT_DIR: goto do_dir;
+		}
+#else
+		if (jstr_unlikely(stat(dir, &st)))
+			continue;
+		if (S_ISREG(st.st_mode))
+			goto do_reg;
+		else if (S_ISDIR(st.st_mode))
+			goto do_dir;
+#endif /* HAVE_D_TYPE */
+do_reg:
+		if (jstr_unlikely(fulpath[0] == '\0'))
+			memcpy(fulpath, dir, dlen);
+		if (fnmatch(fn_glob, fulpath, fn_flags))
+			continue;
+#if defined _GNU_SOURCE && defined _DIRENT_HAVE_D_NAMLEN
+		memcpy(fulpath + dlen, ep->d_name, ep->d_namlen);
+		fulpath[dlen + ep->d_namlen] = '\0';
+#else
+		strcpy(fulpath + dlen, ep->d_name);
+#endif
+		func(fulpath, arg);
+		continue;
+do_dir:
+		if (jstr_unlikely(fulpath[0] == '\0'))
+			memcpy(fulpath, dir, dlen);
+		jstr_io_files_do_matched(fulpath,
+					 jstr_stpcpy(fulpath + dlen, ep->d_name) - dir,
+					 fn_glob,
+					 fn_flags,
+					 func,
+					 arg);
 		continue;
 	}
 	closedir(dp);
