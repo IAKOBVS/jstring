@@ -449,17 +449,18 @@ p_jstr_io_alloc_file(const int alloc_exact,
 	fclose(fp);
 	(*s)[st->st_size] = '\0';
 	*sz = st->st_size;
-	return 0;
+	return 1;
 err_close:
 	fclose(fp);
 err:
 	perror("");
-	return 1;
+	return 0;
 }
 
 /*
    Return value:
-   0 if no errors.
+   0 on error;
+   otherwise 1.
 */
 JSTR_FUNC
 static int
@@ -474,7 +475,8 @@ jstr_io_alloc_file(char *R *R const s,
 
 /*
    Return value:
-   0 if no errors.
+   0 on error;
+   otherwise 1.
 */
 JSTR_MAYBE_UNUSED
 JSTR_WARN_UNUSED
@@ -492,7 +494,8 @@ jstr_io_allocexact_file(char *R *R const s,
 
 /*
    Return value:
-   0 if no errors.
+   0 on error;
+   otherwise 1.
 */
 JSTR_FUNC
 static int
@@ -505,7 +508,8 @@ jstr_io_alloc_file_j(jstr_ty *R const j,
 
 /*
    Return value:
-   0 if no errors.
+   0 on error;
+   otherwise 1.
 */
 JSTR_FUNC
 static int
@@ -607,8 +611,8 @@ jstr_io_ftw(const char *R const dir,
 		/* Ignore . and .. . */
 		if (jstr_unlikely((ep->d_name)[0] == '.')
 		    && (jstr_unlikely(((ep->d_name)[1] == '\0'))
-			|| (jstr_unlikely((ep->d_name)[1] == '.')))
-		    && jstr_unlikely((ep->d_name)[2] == '\0'))
+			|| ((jstr_unlikely((ep->d_name)[1] == '.'))
+		    && jstr_unlikely((ep->d_name)[2] == '\0'))))
 			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
