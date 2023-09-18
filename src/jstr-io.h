@@ -549,6 +549,12 @@ p_jstr_io_append_path_len(char *R const path_end,
 	path_end[1 + flen] = '\0';
 }
 
+#define P_JSTR_IO_FILL_PATH()                          \
+	do {                                           \
+		if (jstr_unlikely(fulpath[0] == '\0')) \
+			memcpy(fulpath, dir, dlen);    \
+	} while (0)
+
 /*
    Call FUNC on regular files found recursively that matches GLOB.
    If GLOB is NULL, match all regular files.
@@ -577,23 +583,20 @@ jstr_io_ftw_reg(const char *R const dir,
 	struct stat st;
 	size_t tmp_dlen;
 #endif
-	for (struct dirent *R ep; (ep = readdir(dp));) {
+	for (const struct dirent *R ep; (ep = readdir(dp));) {
+		puts(fulpath);
+		if (jstr_unlikely((ep->d_name)[0] == '.')
+		    && jstr_unlikely((ep->d_name)[1] == '\0'))
+			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
 			goto do_reg;
 		if (ep->d_type == DT_DIR) {
-			if (jstr_unlikely((ep->d_name)[0] == '.')
-			    && jstr_unlikely((ep->d_name)[1] == '\0'))
-				continue;
 			goto do_dir;
 		}
 		continue;
 #else
-		if (jstr_unlikely((ep->d_name)[0] == '.')
-		    && jstr_unlikely((ep->d_name)[1] == '\0'))
-			continue;
-		if (jstr_unlikely(fulpath[0] == '\0'))
-			memcpy(fulpath, dir, dlen);
+		P_JSTR_IO_FILL_PATH();
 		tmp_dlen = p_jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
 		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
@@ -606,10 +609,7 @@ jstr_io_ftw_reg(const char *R const dir,
 do_reg:
 		if (fnmatch_glob) {
 			if (match_fulpath) {
-#if JSTR_HAVE_DIRENT_D_TYPE
-				if (jstr_unlikely(fulpath[0] == '\0'))
-					memcpy(fulpath, dir, dlen);
-#endif
+				P_JSTR_IO_FILL_PATH();
 				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 					continue;
 			} else if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags)) {
@@ -623,9 +623,7 @@ do_reg:
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if defined _GNU_SOURCE && _DIRENT_HAVE_D_NAMLEN
-		fulpath[dlen] = '/';
-		memcpy(fulpath + dlen + 1, ep->d_name, ep->d_namlen);
-		fulpath[dlen + 1 + ep->d_namlen] = '\0';
+		p_jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen);
 #	else
 		p_jstr_io_append_path(fulpath + dlen, ep->d_name);
 #	endif
@@ -633,10 +631,7 @@ do_reg:
 		func(fulpath, arg);
 		continue;
 do_dir:
-#if JSTR_HAVE_DIRENT_D_TYPE
-		if (jstr_unlikely(fulpath[0] == '\0'))
-			memcpy(fulpath, dir, dlen);
-#endif
+		P_JSTR_IO_FILL_PATH();
 #if defined _GNU_SOURCE && _DIRENT_HAVE_D_NAMLEN && JSTR_HAVE_DIRENT_D_TYPE
 		p_Jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen);
 		jstr_io_ftw_reg(fulpath,
@@ -669,6 +664,8 @@ do_dir:
 	}
 	closedir(dp);
 }
+
+#undef P_JSTR_IO_FILL_PATH
 
 P_JSTR_END_DECLS
 
