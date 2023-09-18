@@ -332,12 +332,30 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 #define P_JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
 /*
-   Check if the first 32 bytes or fewer contain any unprintable character.
-   File must be nul terminated.
+   Check MIN(N, SZ) bytes for any unprintable character.
 */
 JSTR_FUNC
 static int
-jstr_io_is_binary_maybe(const char *R buf,
+jstr_is_binary(const char *R const buf,
+	       const size_t n,
+	       const size_t sz) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(sz == 0))
+		return 0;
+	const unsigned char *const end = (unsigned char *)buf + JSTR_MIN(n, sz);
+	const unsigned char *s = (unsigned char *)buf;
+	while (s < end)
+		if (p_jstr_io_reject_table[*s++])
+			return 1;
+	return 0;
+}
+
+/*
+   Check if the first 64 bytes or fewer contain any unprintable character.
+*/
+JSTR_FUNC
+static int
+jstr_io_is_binary_maybe(const char *R const buf,
 			const size_t sz) JSTR_NOEXCEPT
 {
 #define JSTR_BINARY_CHECK()                                                         \
@@ -365,7 +383,6 @@ check_utf:;                                                                     
 
 /*
    Check if the first 32 bytes or fewer contain any unprintable character.
-   File must be nul terminated.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -377,6 +394,7 @@ jstr_io_is_binary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
 
 /*
    Check the whole file for a NUL byte.
+   File must be nul terminated.
 */
 JSTR_FUNC_PURE
 static int
