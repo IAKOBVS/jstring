@@ -615,7 +615,7 @@ case '~':
 
 #if ((defined __GLIBC__ && __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
 || ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE)    \
-|| (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
+|| (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
 #	define JSTR_HAVE_GETC_UNLOCKED	   1
 #	define JSTR_HAVE_GETCHAR_UNLOCKED 1
 #	define JSTR_HAVE_PUTC_UNLOCKED	   1
@@ -635,7 +635,7 @@ case '~':
 #	define JSTR_HAVE_FFLUSH_UNLOCKED   1
 #endif /* Default || Svid || Bsd */
 
-#if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && _POSIX_C_SOURCE >= 200809L \
+#if (defined __GLIBC__ && __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && _POSIX_C_SOURCE >= 200809L \
 || defined _GNU_SOURCE
 #	define JSTR_HAVE_STPCPY  1
 #	define JSTR_HAVE_STRNLEN 1
