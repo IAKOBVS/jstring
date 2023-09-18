@@ -30,11 +30,8 @@ case '\0': \
 #define B  \
 case '\0': \
 	return JSTR_IO_BINARY
-JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
+JSTR_FUNC_PURE
 JSTR_NOINLINE
-JSTR_PURE
-JSTR_NOTHROW
 static jstr_io_ext_ty
 p_jstr_io_ext_type(const char *R ext) JSTR_NOEXCEPT
 {
@@ -303,12 +300,8 @@ p_jstr_io_ext_type(const char *R ext) JSTR_NOEXCEPT
 /*
    Return jstr_io_ext_ty based on the filename extension;
 */
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_PURE
-JSTR_NOTHROW
 static jstr_io_ext_ty
 jstr_io_ext_type_len(const char *R filename,
 		     const size_t sz) JSTR_NOEXCEPT
@@ -322,12 +315,8 @@ jstr_io_ext_type_len(const char *R filename,
 /*
    Return jstr_io_ext_ty based on the filename extension;
 */
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
 JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_PURE
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static jstr_io_ext_ty
 jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 {
@@ -346,10 +335,7 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
    Check if the first 32 bytes or fewer contain any unprintable character.
    File must be nul terminated.
 */
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC
 static int
 jstr_io_is_binary_maybe(const char *R buf,
 			const size_t sz) JSTR_NOEXCEPT
@@ -381,10 +367,8 @@ check_utf:;                                                                     
    Check if the first 32 bytes or fewer contain any unprintable character.
    File must be nul terminated.
 */
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_PURE
+JSTR_INLINE
 static int
 jstr_io_is_binary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
 {
@@ -394,11 +378,7 @@ jstr_io_is_binary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
 /*
    Check the whole file for a NUL byte.
 */
-JSTR_NONNULL_ALL
-JSTR_MAYBE_UNUSED
-JSTR_WARN_UNUSED
-JSTR_PURE
-JSTR_NOTHROW
+JSTR_FUNC_PURE
 static int
 jstr_io_is_binary(const char *R const buf,
 		  const size_t sz) JSTR_NOEXCEPT
@@ -417,11 +397,8 @@ jstr_io_is_binary(const char *R const buf,
    Check the whole file for any unprintable character.
    File must be nul terminated.
 */
-JSTR_NONNULL_ALL
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_PURE
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
 static int
 jstr_io_is_binary_j(jstr_ty *R const j) JSTR_NOEXCEPT
 {
@@ -429,8 +406,7 @@ jstr_io_is_binary_j(jstr_ty *R const j) JSTR_NOEXCEPT
 }
 
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC
 static int
 p_jstr_io_alloc_file(const int alloc_exact,
 		     char *R *R const s,
@@ -465,10 +441,7 @@ err:
    Return value:
    0 if no errors.
 */
-JSTR_MAYBE_UNUSED
-JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC
 static int
 jstr_io_alloc_file(char *R *R const s,
 		   size_t *R const sz,
@@ -501,10 +474,7 @@ jstr_io_allocexact_file(char *R *R const s,
    Return value:
    0 if no errors.
 */
-JSTR_MAYBE_UNUSED
-JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC
 static int
 jstr_io_alloc_file_j(jstr_ty *R const j,
 		     const char *R const fname,
@@ -517,10 +487,7 @@ jstr_io_alloc_file_j(jstr_ty *R const j,
    Return value:
    0 if no errors.
 */
-JSTR_MAYBE_UNUSED
-JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC
 static int
 jstr_io_allocexact_file_j(jstr_ty *R const j,
 			  const char *R const fname,
