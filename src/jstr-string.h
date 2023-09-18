@@ -247,7 +247,7 @@ jstr_strrstr_len(const void *R const hs,
 	case 0:
 		return (void *)((unsigned char *)hs + hslen);
 	case 1:
-		return (void *)jstr_memrchr(hs, *(char *)ne, hslen);
+		return (void *)jstr_memrchr(hs, *(unsigned char *)ne, hslen);
 	case 2: {
 		const unsigned char *const start = (unsigned char *)hs - 1;
 		const unsigned char *h = (unsigned char *)hs + hslen - 1;
