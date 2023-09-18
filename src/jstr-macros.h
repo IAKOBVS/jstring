@@ -87,8 +87,8 @@
 #endif
 
 #ifdef static_assert
-#	define JSTR_HAVE_STATIC_ASSERT		 1
-#	define JSTR_ASSERT(expr, msg)		 static_assert(expr, msg)
+#	define JSTR_HAVE_STATIC_ASSERT 1
+#	define JSTR_ASSERT(expr, msg)	static_assert(expr, msg)
 #elif __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)	_Static_assert(expr, msg)
@@ -845,14 +845,10 @@ enum { JSTR_MEMMEM_THRES = 17 };
 /* Only use memmem for long needles or when it is implemented in assembly.
    It seems to be slower than strstr for short needles. */
 #if JSTR_HAVE_MEMMEM
-#	if JSTR_HAVE_MEMMEM_OPTIMIZED
+#	if JSTR_HAVE_MEMMEM_OPTIMIZED || !JSTR_HAVE_STRSTR_OPTIMIZED
 #		define JSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
 #	else
-#		if JSTR_HAVE_STRSTR_OPTIMIZED
-#			define JSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen > JSTR_MEMMEM_THRES) ? memmem(hs, hslen, ne, nelen) : strstr(hs, ne))
-#		else
-#			define JSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
-#		endif
+#		define JSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen > JSTR_MEMMEM_THRES) ? memmem(hs, hslen, ne, nelen) : strstr(hs, ne))
 #	endif
 #else
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
