@@ -25,12 +25,12 @@
 
 #define P_JSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
-#ifndef PJARR_GROWTH
-#	define PJARR_GROWTH 1.5
+#ifndef P_JARR_GROWTH
+#	define P_JARR_GROWTH 1.5
 #endif
 
-#ifndef PJARR_ALLOC_MULTIPLIER
-#	define PJARR_ALLOC_MULTIPLIER 1.5
+#ifndef P_JARR_ALLOC_MULTIPLIER
+#	define P_JARR_ALLOC_MULTIPLIER 1.5
 #endif
 
 #ifndef JSTR_GROWTH
@@ -57,8 +57,8 @@
 #	define JSTR_NULLIFY_PTR_ON_FREE 0
 #endif
 
-#ifndef PJARR_NULLIFY_PTR_ON_FREE
-#	define PJARR_NULLIFY_PTR_ON_FREE 0
+#ifndef P_JARR_NULLIFY_PTR_ON_FREE
+#	define P_JARR_NULLIFY_PTR_ON_FREE 0
 #endif
 
 #endif /* JSTR_CONFIG_H */
