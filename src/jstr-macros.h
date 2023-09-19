@@ -763,7 +763,7 @@ case '~':
 #	define P_JSTR_END_DECLS
 #endif
 
-#if JSTR_USE_UNLOCKED_IO
+#ifdef JSTR_USE_UNLOCKED_IO
 #	if JSTR_HAVE_FGETS_UNLOCKED
 #		define fgets(s, n, stream) fgets_unlocked(s, n, stream)
 #	endif
