@@ -233,6 +233,7 @@ jstr_alloc_assign(char *R *R const s,
 }
 
 /*
+   Last arg must be NULL.
    Return value:
    0 on malloc error;
    otherwise 1.
@@ -264,6 +265,7 @@ jstr_alloc_assignmore(char *R *R const s,
 }
 
 /*
+   Last arg must be NULL.
    Return value:
    0 on malloc error;
    otherwise 1.
