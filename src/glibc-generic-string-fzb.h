@@ -16,7 +16,7 @@
 #define P_JSTR_STRING_FZB_H 1
 #include "jstr-macros.h"
 #include <endian.h>
-#include "string-fza.h"
+#include "jstr-string-fza.h"
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 static JSTR_INLINE int
 jstr_word_has_zero (jstr_word_ty x)

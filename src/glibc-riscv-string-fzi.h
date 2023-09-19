@@ -16,11 +16,11 @@
 #define P_JSTR_STRING_RISCV_FZI_H 1
 #include "jstr-macros.h"
 #if defined __riscv_zbb || defined __riscv_xtheadbb
-#include "string-fzi.h"
+#include "jstr-string-fzi.h"
 #else
 /* Without bitmap jstr_word_clz/jstr_word_ctz extensions, it is faster to direct test the bits
    instead of calling compiler auxiliary functions.  */
-#include "string-optype.h"
+#include "jstr-string-optype.h"
 static JSTR_INLINE unsigned int
 jstr_word_index_first (jstr_word_ty c)
 {

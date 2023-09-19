@@ -16,8 +16,8 @@
 #define P_JSTR_STRING_FZI_H
 #include "jstr-macros.h"
 #include <stdint.h>
-#include "string-optype.h"
-#include "string-fza.h"
+#include "jstr-string-optype.h"
+#include "jstr-string-fza.h"
 /* Note that since CMPBGE creates a bit mask rather than a byte mask,
    we cannot simply provide a target-specific string-fza.h.  */
 /* A subroutine for the jstr_word_index_zero functions.  Given a bitmask C,

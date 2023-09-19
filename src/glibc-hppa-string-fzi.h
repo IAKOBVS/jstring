@@ -15,8 +15,8 @@
 #ifndef P_JSTR_STRING_FZI_H
 #define P_JSTR_STRING_FZI_H 1
 #include "jstr-macros.h"
-#include "string-optype.h"
-#include "string-fza.h"
+#include "jstr-string-optype.h"
+#include "jstr-string-fza.h"
 _Static_assert (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 static JSTR_INLINE unsigned int
 jstr_word_index_first (jstr_word_ty c)

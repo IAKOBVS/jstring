@@ -17,13 +17,13 @@
 #include "jstr-macros.h"
 #include <limits.h>
 #include <endian.h>
-#include "string-optype.h"
+#include "jstr-string-optype.h"
 /* Extract the byte at index IDX from word X, with index 0 being the
    least significant byte.  */
 static JSTR_INLINE unsigned char
 jstr_word_extractbyte (jstr_word_ty x, unsigned int idx)
 {
-  JSTR_ENDIAN_LITTLE
+  if (JSTR_ENDIAN_LITTLE)
     return x >> (idx * CHAR_BIT);
   else
     return x >> (sizeof (x) - 1 - idx) * CHAR_BIT;

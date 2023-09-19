@@ -17,8 +17,8 @@
 #include "jstr-macros.h"
 #if defined __riscv_zbb || defined __riscv_xtheadbb
 /* With bitmap extension we can use orc.b to find all zero bytes.  */
-#include "string-misc.h"
-#include "string-optype.h"
+#include "jstr-string-misc.h"
+#include "jstr-string-optype.h"
 /* The functions return a byte mask.  */
 /* This function returns 0xff for each byte that is zero in X.  */
 static JSTR_INLINE jstr_word_ty
@@ -57,6 +57,6 @@ jstr_word_find_zero_ne_all (jstr_word_ty x1, jstr_word_ty x2)
 # define jstr_word_find_eq_low		jstr_word_find_eq_all
 # define jstr_word_find_zero_eq_low	jstr_word_find_zero_eq_all
 #else
-#include "string-fza.h"
+#include "jstr-string-fza.h"
 #endif
 #endif /* _RISCV_STRING_FZA_H  */

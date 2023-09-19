@@ -21,7 +21,8 @@ for file in $(echo glibc-*.h); do
 	s/#ifndef[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#ifndef P_JSTR_\1/g;
 	s/#define[ \t]*\([^P ][^J][^S][^T][^R][_A-Za-z0-9]*_H\)/#define P_JSTR_\1/g;
 	s/P_JSTR__/P_JSTR_/g;
-	s/if (__BYTE_ORDER == __LITTLE_ENDIAN)/JSTR_ENDIAN_LITTLE/g;
+	s/if (__BYTE_ORDER == __LITTLE_ENDIAN)/if (JSTR_ENDIAN_LITTLE)/g;
+	s/include[ \t]*"string\-/include "jstr-string-/g;
 	' "$file")" >"$file" &
 done
 wait

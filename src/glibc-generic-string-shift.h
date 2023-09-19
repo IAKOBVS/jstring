@@ -18,13 +18,13 @@
 #include <endian.h>
 #include <limits.h>
 #include <stdint.h>
-#include "string-fza.h"
+#include "jstr-string-fza.h"
 /* Return the mask WORD shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
 static JSTR_INLINE jstr_word_ty
 jstr_word_shift_find (jstr_word_ty word, uintptr_t s)
 {
-  JSTR_ENDIAN_LITTLE
+  if (JSTR_ENDIAN_LITTLE)
     return word >> (CHAR_BIT * (s % sizeof (jstr_word_ty)));
   else
     return word << (CHAR_BIT * (s % sizeof (jstr_word_ty)));
@@ -37,7 +37,7 @@ jstr_word_shift_find_last (jstr_word_ty word, uintptr_t s)
   s = s % sizeof (jstr_word_ty);
   if (s == 0)
     return word;
-  JSTR_ENDIAN_LITTLE
+  if (JSTR_ENDIAN_LITTLE)
     return word & ~(((jstr_word_ty)-1) << (s * CHAR_BIT));
   else
     return word & ~(((jstr_word_ty)-1) >> (s * CHAR_BIT));

@@ -17,7 +17,7 @@
 #include "jstr-macros.h"
 #include <limits.h>
 #include <stdint.h>
-#include "string-fza.h"
+#include "jstr-string-fza.h"
 /* Return the mask WORD shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
 static JSTR_INLINE jstr_word_ty

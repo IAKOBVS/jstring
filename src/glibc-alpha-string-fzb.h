@@ -16,7 +16,7 @@
 #define P_JSTR_STRING_FZB_H 1
 #include "jstr-macros.h"
 #include <sys/cdefs.h>
-#include "string-optype.h"
+#include "jstr-string-optype.h"
 /* Note that since CMPBGE creates a bit mask rather than a byte mask,
    we cannot simply provide a target-specific string-fza.h.  */
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */

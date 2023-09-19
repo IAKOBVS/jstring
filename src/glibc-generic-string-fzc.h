@@ -16,14 +16,14 @@
 #define P_JSTR_STRING_FZC_H 1
 #include "jstr-macros.h"
 #include <endian.h>
-#include "string-fza.h"
-#include "string-fzi.h"
+#include "jstr-string-fza.h"
+#include "jstr-string-fzi.h"
 /* Given a word X that is known to contain a zero byte, return the index of
    the first such within the word in memory order.  */
 static JSTR_INLINE unsigned int
 jstr_word_index_first_zero (jstr_word_ty x)
 {
-  JSTR_ENDIAN_LITTLE
+  if (JSTR_ENDIAN_LITTLE)
     x = jstr_word_find_zero_low (x);
   else
     x = jstr_word_find_zero_all (x);
@@ -33,7 +33,7 @@ jstr_word_index_first_zero (jstr_word_ty x)
 static JSTR_INLINE unsigned int
 jstr_word_index_first_eq (jstr_word_ty x1, jstr_word_ty x2)
 {
-  JSTR_ENDIAN_LITTLE
+  if (JSTR_ENDIAN_LITTLE)
     x1 = jstr_word_find_eq_low (x1, x2);
   else
     x1 = jstr_word_find_eq_all (x1, x2);
@@ -44,7 +44,7 @@ jstr_word_index_first_eq (jstr_word_ty x1, jstr_word_ty x2)
 static JSTR_INLINE unsigned int
 jstr_word_index_first_zero_eq (jstr_word_ty x1, jstr_word_ty x2)
 {
-  JSTR_ENDIAN_LITTLE
+  if (JSTR_ENDIAN_LITTLE)
     x1 = jstr_word_find_zero_eq_low (x1, x2);
   else
     x1 = jstr_word_find_zero_eq_all (x1, x2);
@@ -61,7 +61,7 @@ jstr_word_index_first_zero_ne (jstr_word_ty x1, jstr_word_ty x2)
 static JSTR_INLINE unsigned int
 jstr_word_index_last_zero (jstr_word_ty x)
 {
-  JSTR_ENDIAN_LITTLE
+  if (JSTR_ENDIAN_LITTLE)
     x = jstr_word_find_zero_all (x);
   else
     x = jstr_word_find_zero_low (x);

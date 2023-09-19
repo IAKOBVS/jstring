@@ -16,7 +16,7 @@
 #define P_JSTR_STRING_FZB_H 1
 #include "jstr-macros.h"
 #include <sys/cdefs.h>
-#include "string-optype.h"
+#include "jstr-string-optype.h"
 _Static_assert (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 static JSTR_INLINE int

@@ -16,7 +16,7 @@
 #define P_JSTR_STRING_FZB_H 1
 #include "jstr-macros.h"
 #include <sys/cdefs.h>
-#include "string-optype.h"
+#include "jstr-string-optype.h"
 /* Determine if any bytes within X1 and X2 are equal.  */
 static JSTR_INLINE int
 jstr_word_has_eq (jstr_word_ty x1, jstr_word_ty x2)
