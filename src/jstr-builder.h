@@ -14,11 +14,15 @@ P_JSTR_END_DECLS
 #include "jstr-macros.h"
 #include "jstr-std-string.h"
 
+P_JSTR_BEGIN_DECLS
+
 typedef struct jstr_ty {
 	char *data;
 	size_t size;
 	size_t capacity;
 } jstr_ty;
+
+P_JSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
