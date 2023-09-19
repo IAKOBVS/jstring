@@ -501,39 +501,47 @@ jstr_assign(char *R *R const s,
 /*
    Push C to end of S.
    S is NUL terminated.
+   Return value:
+   0 on malloc error;
+   otherwise 1.
 */
 JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_NOTHROW
-static void
+static int
 jstr_push_back(char *R *R const s,
 	       size_t *R const sz,
 	       size_t *R const cap,
 	       const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
+		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return 0);
 	(*s)[*sz] = c;
 	(*s)[++*sz] = '\0';
+	return 1;
 }
 
 /*
    Push C to end of S.
    S is NUL terminated.
+   Return value:
+   0 on malloc error;
+   otherwise 1.
 */
 JSTR_FUNC_VOID
 JSTR_INLINE
-static void
+static int
 jstr_push_front(char *R *R const s,
 		size_t *R const sz,
 		size_t *R const cap,
 		const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return);
+		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return 0);
 	memmove(*s + 1, *s, *sz);
 	(*s)[++*sz] = '\0';
 	**s = c;
+	return 1;
 }
 
 /* Pop s[size]. */
