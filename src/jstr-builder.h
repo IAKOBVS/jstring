@@ -239,7 +239,6 @@ jstr_alloc_assign(char *R *R const s,
 */
 JSTR_SENTINEL
 JSTR_FUNC
-JSTR_INLINE
 static int
 jstr_alloc_assignmore(char *R *R const s,
 		      size_t *R const sz,
@@ -271,7 +270,6 @@ jstr_alloc_assignmore(char *R *R const s,
 */
 JSTR_SENTINEL
 JSTR_FUNC
-JSTR_INLINE
 static int
 jstr_appendmore(char *R *R const s,
 		size_t *R const sz,
