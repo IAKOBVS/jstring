@@ -323,7 +323,6 @@ jstr_appendmore(char *R *R const s,
 	while ((arg = va_arg(ap, char *)))
 		p = jstr_stpcpy(p, arg);
 	va_end(ap);
-	*p = '\0';
 	return 1;
 }
 
@@ -354,7 +353,6 @@ jstr_appendmore_j(jstr_ty *R const j,
 	while ((arg = va_arg(ap, char *)))
 		p = jstr_stpcpy(p, arg);
 	va_end(ap);
-	*p = '\0';
 	return 1;
 }
 
