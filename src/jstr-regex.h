@@ -12,7 +12,6 @@ P_JSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
-#include "jstr-pp-va-args-macros.h"
 #include "jstr-replace.h"
 #include "jstr-string.h"
 
@@ -23,7 +22,7 @@ P_JSTR_END_DECLS
 #endif
 
 #if JSTR_REG_DEBUG
-#	define P_JSTR_REG_LOG(x) jstr_pp_cout(x)
+#	define P_JSTR_REG_LOG(x) fputs(x, stderr)
 #else
 #	define P_JSTR_REG_LOG(x)
 #endif /* P_JSTR_REG_LOG */
