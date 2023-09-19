@@ -23,8 +23,6 @@ typedef struct jtrie_node_ty {
 	unsigned int EOW;
 } jtrie_node_ty;
 
-typedef jtrie_node_ty *jtrie_ty;
-
 JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
