@@ -4,7 +4,6 @@
 #include "jstr-macros.h"
 
 P_JSTR_BEGIN_DECLS
-#define _GNU_SOURCE
 #include <dirent.h>
 #include <fnmatch.h>
 #include <stdio.h>
