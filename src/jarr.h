@@ -13,7 +13,6 @@ P_JSTR_END_DECLS
 #include "jarr-macros.h"
 #include "jstr-macros.h"
 #include "jstr-pp-arrcpy-va-args.h"
-#include "jstr-templates.h"
 
 #if PJARR_NULLIFY_PTR_ON_FREE
 #	define PJARR_NULLIFY(j) ((j)->data == NULL)
