@@ -16,5 +16,5 @@
 #define P_JSTR_I386_STRING_OPTHR_H 1
 #include "jstr-macros.h"
 /* Threshold value for when to enter the unrolled loops.  */
-#define JSTR_WORD_THRES	8
+#define JSTR_WORD_THRES 8
 #endif /* I386_STRING_OPTHR_H */

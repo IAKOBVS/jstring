@@ -17,39 +17,39 @@
 #include "jstr-macros.h"
 /* PowerISA 2.05 (POWER6) provides cmpb instruction.  */
 #ifdef _ARCH_PWR6
-#include "jstr-string-misc.h"
-#include "jstr-string-optype.h"
+#	include "jstr-string-misc.h"
+#	include "jstr-string-optype.h"
 /* The functions return a byte mask.  */
 /* This function returns 0xff for each byte that is
    equal between X1 and X2.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return __builtin_cmpb (x1, x2);
+	return __builtin_cmpb(x1, x2);
 }
 /* This function returns 0xff for each byte that is zero in X.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find_zero_all (jstr_word_ty x)
+jstr_word_find_zero_all(jstr_word_ty x)
 {
-  return jstr_word_find_eq_all (x, 0);
+	return jstr_word_find_eq_all(x, 0);
 }
 /* Identify zero bytes in X1 or equality between X1 and X2.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find_zero_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1) | jstr_word_find_eq_all (x1, x2);
+	return jstr_word_find_zero_all(x1) | jstr_word_find_eq_all(x1, x2);
 }
 /* Identify zero bytes in X1 or inequality between X1 and X2.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find_zero_ne_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1) | ~jstr_word_find_eq_all (x1, x2);
+	return jstr_word_find_zero_all(x1) | ~jstr_word_find_eq_all(x1, x2);
 }
 /* Define the "inexact" versions in terms of the exact versions.  */
-# define jstr_word_find_zero_low		jstr_word_find_zero_all
-# define jstr_word_find_eq_low		jstr_word_find_eq_all
-# define jstr_word_find_zero_eq_low	jstr_word_find_zero_eq_all
+#	define jstr_word_find_zero_low	   jstr_word_find_zero_all
+#	define jstr_word_find_eq_low	   jstr_word_find_eq_all
+#	define jstr_word_find_zero_eq_low jstr_word_find_zero_eq_all
 #else
-#include "jstr-string-fza.h"
+#	include "jstr-string-fza.h"
 #endif /* _ARCH_PWR6  */
 #endif /* _POWERPC_STRING_FZA_H  */

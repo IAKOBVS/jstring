@@ -15,5 +15,5 @@
 #ifndef P_JSTR_STRING_OPTYPE_H
 #define P_JSTR_STRING_OPTYPE_H 1
 #include "jstr-macros.h"
-typedef unsigned long long int __attribute__ ((__may_alias__)) jstr_word_ty;
+typedef unsigned long long int __attribute__((__may_alias__)) jstr_word_ty;
 #endif /* string-optype.h */
