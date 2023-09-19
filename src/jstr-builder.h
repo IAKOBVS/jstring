@@ -50,17 +50,17 @@ P_JSTR_END_DECLS
 		(p) = (char *)realloc(p, old_cap);            \
 		P_JSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
-#define JSTR_MIN_ALLOC(new_cap)                           \
+#define P_JSTR_MIN_ALLOC(new_cap)                         \
 	((new_cap < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
 	 ? (JSTR_MIN_CAP)                                 \
 	 : (new_cap * JSTR_ALLOC_MULTIPLIER))
-#define JSTR_MIN_ALLOCEXACT(new_cap) \
-	((new_cap < JSTR_MIN_CAP)    \
-	 ? (JSTR_MIN_CAP)            \
+#define P_JSTR_MIN_ALLOCEXACT(new_cap) \
+	((new_cap < JSTR_MIN_CAP)      \
+	 ? (JSTR_MIN_CAP)              \
 	 : (new_cap))
 #define P_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail)                  \
 	do {                                                         \
-		(cap) = JSTR_MIN_ALLOC(new_cap);                     \
+		(cap) = P_JSTR_MIN_ALLOC(new_cap);                   \
 		(cap) = JSTR_ALIGN_UP(cap, P_JSTR_MALLOC_ALIGNMENT); \
 		(p) = (char *)malloc((cap));                         \
 		P_JSTR_MALLOC_ERR((p), do_fail);                     \
@@ -94,7 +94,7 @@ jstr_alloc(char *R *R const s,
 	   const size_t top)
 {
 	*sz = 0;
-	*cap = JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(top));
+	*cap = P_JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(top));
 	*s = (char *)malloc(*cap);
 	P_JSTR_MALLOC_ERR(*s, return 0);
 	return 1;
@@ -114,7 +114,7 @@ jstr_allocexact(char *R *R const s,
 		const size_t top) JSTR_NOEXCEPT
 {
 	*sz = 0;
-	*cap = JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(top));
+	*cap = P_JSTR_MIN_ALLOC(JSTR_ALIGN_UP_STR(top));
 	*s = (char *)malloc(*cap);
 	P_JSTR_MALLOC_ERR(*s, return 0);
 	return 1;
