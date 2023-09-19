@@ -10,10 +10,15 @@ P_JSTR_BEGIN_DECLS
 #include <string.h>
 P_JSTR_END_DECLS
 
-#include "jstr-templates.h"
-
 #include "jstr-config.h"
 #include "jstr-macros.h"
+#include "jstr-std-string.h"
+
+typedef struct jstr_ty {
+	char *data;
+	size_t size;
+	size_t capacity;
+} jstr_ty;
 
 #define R JSTR_RESTRICT
 
@@ -68,6 +73,38 @@ P_JSTR_END_DECLS
 
 P_JSTR_BEGIN_DECLS
 
+JSTR_MAYBE_UNUSED
+JSTR_NOINLINE
+JSTR_COLD
+JSTR_NOTHROW
+static void
+p_jstr_err_exit(const char *R FILE_,
+		const int LINE_,
+		const char *R func_) JSTR_NOEXCEPT
+{
+	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
+	perror("");
+	exit(1);
+}
+
+JSTR_MAYBE_UNUSED
+JSTR_NOINLINE
+JSTR_COLD
+JSTR_NOTHROW
+static void
+p_jstr_err(const char *R FILE_,
+	   const int LINE_,
+	   const char *R func_) JSTR_NOEXCEPT
+{
+#if JSTR_ERR_MSG_ON_MALLOC_ERROR
+	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
+	perror("");
+#endif
+#if JSTR_EXIT_ON_MALLOC_ERROR
+	exit(1);
+#endif
+}
+
 /*
   exit(1) if ptr is NULL.
 */
@@ -77,7 +114,7 @@ static void
 jstr_err(char *R const p) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(p == NULL))
-		p_jstr_err_exit();
+		p_jstr_err_exit(__FILE__, __LINE__, __func__);
 }
 
 /*
@@ -221,14 +258,9 @@ jstr_alloc_assignmore(char *R *R const s,
 	char *p = *s;
 	va_start(ap, cap);
 	while ((arg = va_arg(ap, char *)))
-#if JSTR_HAVE_STPCPY
-		p = stpcpy(p, arg);
-#else
-		while (*arg)
-			*p++ = *arg++;
-#endif
-	*p = '\0';
+		p = jstr_stpcpy(p, arg);
 	va_end(ap);
+	*p = '\0';
 	return 1;
 }
 
@@ -259,14 +291,9 @@ jstr_appendmore(char *R *R const s,
 	*sz += arglen;
 	va_start(ap, cap);
 	while ((arg = va_arg(ap, char *)))
-#if JSTR_HAVE_STPCPY
-		p = stpcpy(p, arg);
-#else
-		while (*arg)
-			*p++ = *arg++;
-#endif
-	*p = '\0';
+		p = jstr_stpcpy(p, arg);
 	va_end(ap);
+	*p = '\0';
 	return 1;
 }
 
