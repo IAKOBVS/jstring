@@ -556,12 +556,6 @@ jstr_io_append_path_len(char *R const path_end,
 	path_end[1 + flen] = '\0';
 }
 
-#define P_JSTR_IO_FILL_PATH()                          \
-	do {                                           \
-		if (jstr_unlikely(fulpath[0] == '\0')) \
-			memcpy(fulpath, dir, dlen);    \
-	} while (0)
-
 typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with the filename instead of the whole path. */
 	JSTR_IO_FTW_MATCH_FNAME = (1),
@@ -571,7 +565,29 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_DO_DIR = (JSTR_IO_FTW_DO_REG << 1),
 	/* Do not search subdirectories. */
 	JSTR_IO_FTW_NO_RECUR = (JSTR_IO_FTW_DO_DIR << 1),
+	/* Do not execute stat. The struct passed to FUNC is undefined. */
+	JSTR_IO_FTW_NO_STAT = (JSTR_IO_FTW_NO_RECUR << 1),
+	/* Only execute stat on regular files. */
+	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NO_STAT << 1),
 } jstr_io_ftw_flag_ty;
+
+#define P_JSTR_IO_FILL_PATH()                          \
+	do {                                           \
+		if (jstr_unlikely(fulpath[0] == '\0')) \
+			memcpy(fulpath, dir, dlen);    \
+	} while (0)
+
+#if JSTR_HAVE_DIRENT_D_TYPE
+#	define P_JSTR_STAT_IF_NEEDED(filename, st)          \
+		do {                                         \
+			if (!(jflags & JSTR_IO_FTW_NO_STAT)) \
+				stat(filename, st);          \
+		} while (0)
+#else
+#	define P_JSTR_STAT_IF_NEEDED(filename, st) \
+		do {                                \
+		} while (0)
+#endif
 
 /*
    Call FUNC on entries found recursively that matches GLOB.
@@ -595,7 +611,7 @@ jstr_io_ftw(const char *R const dir,
 	    const char *R const fnmatch_glob,
 	    const int fnmatch_flags,
 	    const jstr_io_ftw_flag_ty jflags,
-	    void (*func)(const char *fname, const void *arg),
+	    void (*func)(const char *fname, const struct stat *st, const void *arg),
 	    const void *R const arg)
 {
 	DIR *R const dp = opendir(dir);
@@ -603,8 +619,8 @@ jstr_io_ftw(const char *R const dir,
 		return;
 	char fulpath[JSTR_IO_MAX_FNAME];
 	fulpath[0] = '\0';
-#if !JSTR_HAVE_DIRENT_D_TYPE
 	struct stat st;
+#if !JSTR_HAVE_DIRENT_D_TYPE
 	size_t tmp_dlen;
 #endif
 	for (const struct dirent *R ep; (ep = readdir(dp));) {
@@ -655,7 +671,17 @@ do_reg:
 		jstr_io_append_path(fulpath + dlen, ep->d_name);
 #	endif
 #endif
-		func(fulpath, arg);
+		if (jflags & JSTR_IO_FTW_STAT_REG) {
+#if JSTR_HAVE_DIRENT_D_TYPE
+			if (ep->d_type == DT_REG)
+#else
+			if (S_ISREG(st.st_mode))
+#endif
+				P_JSTR_STAT_IF_NEEDED(fulpath, &st);
+		} else {
+			P_JSTR_STAT_IF_NEEDED(fulpath, &st);
+		}
+		func(fulpath, &st, arg);
 		continue;
 do_dir:
 		if (jflags & JSTR_IO_FTW_NO_RECUR)
@@ -669,11 +695,13 @@ do_dir:
 		tmp_dlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir;
 #	endif
 #endif
+		if (!(jflags & JSTR_IO_FTW_STAT_REG))
+			P_JSTR_STAT_IF_NEEDED(fulpath, &st);
 		if ((jflags & JSTR_IO_FTW_DO_REG)
 		    && (jflags & JSTR_IO_FTW_DO_DIR))
-			func(fulpath, arg);
+			func(fulpath, &st, arg);
 		else
-			func(fulpath, arg);
+			func(fulpath, &st, arg);
 		jstr_io_ftw(fulpath, tmp_dlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
 		continue;
 	}
@@ -681,6 +709,7 @@ do_dir:
 }
 
 #undef P_JSTR_IO_FILL_PATH
+#undef P_JSTR_STAT_IF_NEEDED
 
 P_JSTR_END_DECLS
 
