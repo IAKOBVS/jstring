@@ -2,8 +2,11 @@
 #define JSTR_MACROS_H 1
 
 #include "jstr-config.h"
-#include "jstr-pointer-arith.h"
 #include <features.h>
+
+#include "jstr-pointer-arith.h"
+#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)
+#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, P_JSTR_MALLOC_ALIGNMENT)
 
 #define JSTR_MAX(x, y)	   (((x) > (y)) ? (x) : (y))
 #define JSTR_MIN(x, y)	   (((x) < (y)) ? (x) : (y))
@@ -652,9 +655,6 @@ case '~':
 #	define JSTR_HAVE_STRDUPA  1
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
-
-#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)
-#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, P_JSTR_MALLOC_ALIGNMENT)
 
 #if defined __x86_64__ || defined _M_X64
 #	define JSTR_ARCH_X86_64 1
