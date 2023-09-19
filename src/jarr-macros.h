@@ -9,7 +9,6 @@ P_JSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
-#include "jstr-templates.h"
 
 #ifdef __cplusplus
 template <typename T, typename Other>
