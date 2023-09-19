@@ -63,12 +63,12 @@ sub get_file_str
 	close($FH);
 	my @def;
 	my @undef;
-	# prefix temporary macros with P_JSTR__ to avoid naming conflicts
+	# prefix temporary macros with P_JSTR_ to avoid naming conflicts
 	foreach (@lines) {
 		if (/^[ \t]*#[ \t]*undef[ \t]*([_A-Z0-9]*)/) {
 			my $macro = $1;
 			if ($macro !~ /^(?:P_JSTR|JSTR|pjstr|jstr)/) {
-				$g_in_h =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1P_JSTR__$macro$2/g;
+				$g_in_h =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1P_JSTR_$macro$2/g;
 			}
 		}
 	}

@@ -273,6 +273,36 @@ jstr_alloc_assignmore(char *R *R const s,
 JSTR_SENTINEL
 JSTR_FUNC
 static int
+jstr_alloc_assignmore_j(jstr_ty *R const j,
+			...) JSTR_NOEXCEPT
+{
+	const char *arg;
+	j->size = 0;
+	va_list ap;
+	va_start(ap, j);
+	while ((arg = va_arg(ap, char *)))
+		j->size += strlen(arg);
+	va_end(ap);
+	j->capacity = j->size;
+	P_JSTR_ALLOC_ONLY(j->data, j->capacity, j->size, return 0);
+	char *p = j->data;
+	va_start(ap, j);
+	while ((arg = va_arg(ap, char *)))
+		p = jstr_stpcpy(p, arg);
+	va_end(ap);
+	*p = '\0';
+	return 1;
+}
+
+/*
+   Last arg must be NULL.
+   Return value:
+   0 on malloc error;
+   otherwise 1.
+*/
+JSTR_SENTINEL
+JSTR_FUNC
+static int
 jstr_appendmore(char *R *R const s,
 		size_t *R const sz,
 		size_t *R const cap,
@@ -290,6 +320,37 @@ jstr_appendmore(char *R *R const s,
 	char *p = *s + *sz;
 	*sz += arglen;
 	va_start(ap, cap);
+	while ((arg = va_arg(ap, char *)))
+		p = jstr_stpcpy(p, arg);
+	va_end(ap);
+	*p = '\0';
+	return 1;
+}
+
+/*
+   Last arg must be NULL.
+   Return value:
+   0 on malloc error;
+   otherwise 1.
+*/
+JSTR_SENTINEL
+JSTR_FUNC
+static int
+jstr_appendmore_j(jstr_ty *R const j,
+		  ...) JSTR_NOEXCEPT
+{
+	const char *arg;
+	size_t arglen = 0;
+	va_list ap;
+	va_start(ap, j);
+	while ((arg = va_arg(ap, char *)))
+		arglen += strlen(arg);
+	va_end(ap);
+	if (j->capacity < j->size + arglen)
+		P_JSTR_REALLOC(j->data, j->capacity, j->size + arglen, return 0);
+	char *p = j->data + j->size;
+	j->size += arglen;
+	va_start(ap, j);
 	while ((arg = va_arg(ap, char *)))
 		p = jstr_stpcpy(p, arg);
 	va_end(ap);
