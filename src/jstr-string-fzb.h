@@ -9,7 +9,7 @@ P_JSTR_BEGIN_DECLS
 #elif JSTR_ARCH_HPPA
 #	include "glibc-hppa-string-fzb.h"
 #else
-#	include "generic-string-fzb.h"
+#	include "glibc-generic-string-fzb.h"
 #endif
 P_JSTR_END_DECLS
 #endif /* P_JSTR_SELECTOR_STRING_FZB_H */

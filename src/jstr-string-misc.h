@@ -2,7 +2,7 @@
 #define P_JSTR_SELECTOR_STRING_MISC_H 1
 #include "jstr-macros.h"
 P_JSTR_BEGIN_DECLS
-#include "generic-string-misc.h"
+#include "glibc-generic-string-misc.h"
 #include <endian.h>
 #include <limits.h>
 #pragma GCC diagnostic ignored "-Wshift-count-overflow"
