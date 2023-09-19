@@ -8,14 +8,14 @@ P_JSTR_BEGIN_DECLS
 #include <string.h>
 P_JSTR_END_DECLS
 
-#include "string-fza.h"
-#include "string-fzb.h"
-#include "string-fzc.h"
-#include "string-fzi.h"
-#include "string-misc.h"
-#include "string-opthr.h"
-#include "string-optype.h"
-#include "string-shift.h"
+#include "jstr-string-fza.h"
+#include "jstr-string-fzb.h"
+#include "jstr-string-fzc.h"
+#include "jstr-string-fzi.h"
+#include "jstr-string-misc.h"
+#include "jstr-string-opthr.h"
+#include "jstr-string-optype.h"
+#include "jstr-string-shift.h"
 
 #define R JSTR_RESTRICT
 

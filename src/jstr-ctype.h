@@ -11,15 +11,6 @@ P_JSTR_END_DECLS
 #include "jstr-macros.h"
 #include "jstr-std-string.h"
 
-#include "string-fza.h"
-#include "string-fzb.h"
-#include "string-fzc.h"
-#include "string-fzi.h"
-#include "string-misc.h"
-#include "string-opthr.h"
-#include "string-optype.h"
-#include "string-shift.h"
-
 #define R JSTR_RESTRICT
 
 P_JSTR_BEGIN_DECLS
