@@ -11,7 +11,7 @@ mkdir -p ../jstr
 for file in $(echo *.h | tr ' ' '\n' | grep -v 'glibc'); do
 	update_if_needed "$file" &
 done &
-./update-glibc || exit 0
+./update-glibc
 for file in $(echo glibc-*.h); do
 	update_if_needed "$file" &
 done &
