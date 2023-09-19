@@ -865,7 +865,7 @@ enum { JSTR_MEMMEM_THRES = 17 };
 /* Only use libc strcasestr when it is implemented in assembly. */
 #if JSTR_HAVE_STRCASESTR
 #	if JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8
-#		define JSTR_HAVE_STRCASESTR_OPTIMIZED
+#		define JSTR_HAVE_STRCASESTR_OPTIMIZED 1
 #	endif
 #endif
 
