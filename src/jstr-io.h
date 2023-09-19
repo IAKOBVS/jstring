@@ -4,6 +4,7 @@
 #include "jstr-macros.h"
 
 P_JSTR_BEGIN_DECLS
+#define _GNU_SOURCE
 #include <dirent.h>
 #include <fnmatch.h>
 #include <stdio.h>
@@ -612,7 +613,7 @@ jstr_io_ftw(const char *R const dir,
 		if (jstr_unlikely((ep->d_name)[0] == '.')
 		    && (jstr_unlikely(((ep->d_name)[1] == '\0'))
 			|| ((jstr_unlikely((ep->d_name)[1] == '.'))
-		    && jstr_unlikely((ep->d_name)[2] == '\0'))))
+			    && jstr_unlikely((ep->d_name)[2] == '\0'))))
 			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
