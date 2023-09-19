@@ -574,7 +574,7 @@ jstr_strrcspn_len(const char *R const s,
 		return sz;
 	if (jstr_unlikely(reject[1] == '\0')) {
 		const char *const p = (char *)jstr_memrchr(s, *reject, sz);
-		return p ? p - s : sz;
+		return p ? (size_t)(p - s) : sz;
 	}
 	unsigned char t[256];
 	BZERO(t);
