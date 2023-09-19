@@ -565,9 +565,9 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_DO_DIR = (JSTR_IO_FTW_DO_REG << 1),
 	/* Do not search subdirectories. */
 	JSTR_IO_FTW_NO_RECUR = (JSTR_IO_FTW_DO_DIR << 1),
-	/* Do not execute stat. The struct passed to FUNC is undefined. */
+	/* Do not call stat. The struct passed to FUNC is undefined. */
 	JSTR_IO_FTW_NO_STAT = (JSTR_IO_FTW_NO_RECUR << 1),
-	/* Only execute stat on regular files. */
+	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NO_STAT << 1),
 } jstr_io_ftw_flag_ty;
 
@@ -597,9 +597,11 @@ typedef enum jstr_io_ftw_flag_ty {
    FUNC therefore must correctly interpret ARG.
    Jflags:
    JSTR_IO_FTW_MATCH_FNAME: match fname instead of fulpath.
-   JSTR_IO_FTW_DO_REG.
-   JSTR_IO_FTW_DO_DIR.
    JSTR_IO_FTW_NO_RECUR: do not search subdirectories.
+   JSTR_IO_FTW_NO_STAT: do not call stat. Passed stat is undefined.
+   JSTR_IO_FTW_STAT_REG: only call stat on regular files.
+   JSTR_IO_FTW_DO_REG: avoid calling FUNC on other filetypes.
+   JSTR_IO_FTW_DO_DIR: avoid calling FUNC on other filetypes.
 */
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
