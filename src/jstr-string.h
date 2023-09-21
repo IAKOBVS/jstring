@@ -13,7 +13,6 @@ P_JSTR_END_DECLS
 #include "jstr-builder.h"
 #include "jstr-config.h"
 #include "jstr-ctype.h"
-#include "jstr-itoa.h"
 #include "jstr-std-string.h"
 
 #include "jstr-string-fza.h"
@@ -853,7 +852,7 @@ jstr_count(const char *R s,
 
 P_JSTR_END_DECLS
 
-#undef R
 #undef BZERO
+#undef R
 
 #endif /* JSTR_STRING_H */
