@@ -31,7 +31,6 @@ or
 - \*\_len(): takes the length of the string
 - \*\_p(): returns a pointer to the end of the string
 - \*\_f(): assumes that there be enough space in the string: it will not grow it with realloc
-- \*\_now(): compiles regular expression now
 - \*\_bref(): enables backreferences for the replacement string.<br>
 \\0 is interpreted as referring to the whole matched string
 - P_\*() or p_\*(): private functions or macros used internally
