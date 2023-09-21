@@ -592,18 +592,24 @@ jstr_pop_front_j(jstr_ty *R const j) JSTR_NOEXCEPT
 	jstr_pop_front(j->data, &j->size);
 }
 
+/*
+   Do nothing if new_cap < cap.
+*/
 JSTR_FUNC
 static int
 jstr_reserve(char *R *R const s,
 	     size_t *R const cap,
 	     const size_t new_cap)
 {
-	if (new_cap <= *cap)
+	if (new_cap < *cap)
 		return 1;
-	P_JSTR_REALLOC(*s, *cap, new_cap, return 0);
+	P_JSTR_REALLOC(*s, *cap, new_cap + 1, return 0);
 	return 1;
 }
 
+/*
+   Do nothing if new_cap < cap.
+*/
 JSTR_FUNC
 JSTR_INLINE
 static int
@@ -613,18 +619,24 @@ jstr_reserve_j(jstr_ty *R const j,
 	return jstr_reserve(&j->data, &j->capacity, new_cap);
 }
 
+/*
+   Do nothing if new_cap < cap.
+*/
 JSTR_FUNC
 static int
 jstr_reserveexact(char *R *R const s,
 		  size_t *R const cap,
 		  const size_t new_cap)
 {
-	if (new_cap <= *cap)
+	if (new_cap < *cap)
 		return 1;
-	P_JSTR_REALLOCEXACT(*s, *cap, new_cap, return 0);
+	P_JSTR_REALLOCEXACT(*s, *cap, new_cap + 1, return 0);
 	return 1;
 }
 
+/*
+   Do nothing if new_cap < cap.
+*/
 JSTR_FUNC
 JSTR_INLINE
 static int
