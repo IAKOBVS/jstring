@@ -777,7 +777,7 @@ jstr_countc(const char *R s,
 		return 0;
 	size_t cnt = 0;
 	while ((s = strchr(s, c)))
-		++cnt;
+		++s, ++cnt;
 	return cnt;
 }
 
@@ -798,7 +798,7 @@ jstr_countc_len(const char *R s,
 	size_t cnt = 0;
 	const char *const end = s + sz;
 	while ((s = (char *)memchr(s, c, end - s)))
-		++cnt;
+		++s, ++cnt;
 	return cnt;
 }
 
