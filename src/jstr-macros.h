@@ -107,7 +107,7 @@
 #elif defined _MSC_VER
 #	define JSTR_RESTRICT __restrict
 #else
-#	define JSTR_RESTRICT 1
+#	define JSTR_RESTRICT
 #endif /* restrict */
 
 #if (defined __GNUC__ && (__GNUC__ >= 3)) \
