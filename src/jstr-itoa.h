@@ -28,12 +28,18 @@ jstr_ulltoa_p(char *R nptr,
 	      unsigned long long number,
 	      const unsigned int base) JSTR_NOEXCEPT
 {
-	char *const start = nptr;
+	char *start = nptr;
 	do
 		*nptr++ = number % base + '0';
 	while (number /= base);
 	*nptr = '\0';
-	jstr_rev_len(start, nptr - start);
+	char *e = nptr;
+	int c;
+	while (start < e) {
+		c = *start;
+		*start++ = *e;
+		*e-- = c;
+	}
 	return nptr;
 }
 
