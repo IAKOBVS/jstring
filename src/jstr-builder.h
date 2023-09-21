@@ -59,12 +59,12 @@ P_JSTR_END_DECLS
 	((new_cap < JSTR_MIN_CAP)      \
 	 ? (JSTR_MIN_CAP)              \
 	 : (new_cap))
-#define P_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail)                  \
-	do {                                                         \
-		(cap) = P_JSTR_MIN_ALLOC(new_cap);                   \
-		(cap) = JSTR_ALIGN_UP(cap, P_JSTR_MALLOC_ALIGNMENT); \
-		(p) = (char *)malloc((cap));                         \
-		P_JSTR_MALLOC_ERR((p), do_fail);                     \
+#define P_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
+	do {                                        \
+		(cap) = P_JSTR_MIN_ALLOC(new_cap);  \
+		(cap) = JSTR_ALIGN_UP_STR(cap);     \
+		(p) = (char *)malloc((cap));        \
+		P_JSTR_MALLOC_ERR((p), do_fail);    \
 	} while (0)
 
 P_JSTR_BEGIN_DECLS
