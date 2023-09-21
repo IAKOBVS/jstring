@@ -809,7 +809,7 @@ jstr_countc_len(const char *R s,
 */
 JSTR_FUNC_PURE
 #if !JSTR_HAVE_MEMMEM
-JSTR_DEPRECATED("Define _GNU_SOURCE or use jstr_count() since memmem is not available and SZ is likely wasted.")
+JSTR_DEPRECATED("SIZE may be wasted since memmem is not available.")
 #endif
 static size_t
 jstr_count_len(const char *R s,
