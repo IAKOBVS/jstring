@@ -132,31 +132,47 @@ p_jstr_err_exit(void) JSTR_NOEXCEPT
 	exit(1);
 }
 
-/* Print error message if P is NULL. */
+/* Print error message with __FILE__:__LINE__:__func__. */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_err(char *R const p) JSTR_NOEXCEPT
+jstr_err_debug(void) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(p == NULL))
+	p_jstr_err_debug(__FILE__, __LINE__, __func__);
+}
+
+/* Print error message with __FILE__:__LINE__:__func__ and exit. */
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_err_exit_debug(void) JSTR_NOEXCEPT
+{
+	p_jstr_err_exit_debug(__FILE__, __LINE__, __func__);
+}
+
+/* Print error message. */
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_err(void) JSTR_NOEXCEPT
+{
 #if JSTR_DEBUG
-		p_jstr_err_debug(__FILE__, __LINE__, __func__);
+	jstr_err_debug();
 #else
-		p_jstr_err();
+	p_jstr_err();
 #endif
 }
 
-/* Print error message and exit(1) if P is NULL. */
+/* Print error message and exit. */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_err_exit(char *R const p) JSTR_NOEXCEPT
+jstr_err_exit(void) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(p == NULL))
 #if JSTR_DEBUG
-		p_jstr_err_exit_debug(__FILE__, __LINE__, __func__);
+	jstr_err_exit_debug();
 #else
-		p_jstr_err_exit();
+	p_jstr_err_exit();
 #endif
 }
 
