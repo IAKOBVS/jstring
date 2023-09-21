@@ -117,6 +117,7 @@ p_jstr_err(const char *R FILE_,
 	perror(func_);
 }
 
+/* Print error message if P is NULL. */
 JSTR_INLINE
 JSTR_NOTHROW
 static void
@@ -126,6 +127,7 @@ jstr_err(char *R const p) JSTR_NOEXCEPT
 		p_jstr_err(__FILE__, __LINE__, __func__);
 }
 
+/* Print error message and exit(1) if P is NULL. */
 JSTR_INLINE
 JSTR_NOTHROW
 static void
