@@ -48,7 +48,7 @@ JSTR_INLINE
 P_JSTR_ITOA_ATTR
 static char *
 jstr_ultoa_p(char *R nptr,
-	     const unsigned long number,
+	     unsigned long number,
 	     const unsigned int base) JSTR_NOEXCEPT
 {
 	return jstr_ulltoa_p(nptr, number, base);
@@ -59,7 +59,7 @@ JSTR_INLINE
 P_JSTR_ITOA_ATTR
 static char *
 jstr_utoa_p(char *R nptr,
-	    const unsigned int number,
+	    unsigned int number,
 	    const unsigned int base) JSTR_NOEXCEPT
 {
 	return jstr_ulltoa_p(nptr, number, base);
