@@ -819,7 +819,8 @@ jstr_count_len(const char *R s,
 {
 	if (jstr_unlikely(findlen == 1))
 		return jstr_countc_len(s, *find, sz);
-	if (jstr_unlikely(findlen == 0))
+	if (jstr_unlikely(findlen == 0)
+	    || jstr_unlikely(sz == 0))
 		return 0;
 	size_t cnt = 0;
 #if JSTR_HAVE_MEMMEM
@@ -847,6 +848,8 @@ jstr_count(const char *R s,
 		return 0;
 	if (jstr_unlikely(find[1] == '\0'))
 		return jstr_countc(s, *find);
+	if (jstr_unlikely(*s == '\0'))
+		return 0;
 	const size_t findlen = strlen(find);
 	size_t cnt = 0;
 	while ((s = strstr(s, find)))
