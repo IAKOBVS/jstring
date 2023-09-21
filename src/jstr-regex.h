@@ -942,11 +942,11 @@ p_jstr_reg_base_rplcall_len_bref(const p_jstr_flag_use_n_ty flag,
 			if (jstr_unlikely(rdst == NULL)) {
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, P_JSTR_MALLOC_ALIGNMENT);
 				rdst = (u *)malloc(rdstcap);
-				P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_NOERROR);
+				P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ENOMEM);
 			} else if (rdstcap < rdstlen) {
-				P_JSTR_GROW(rdstcap, rdstlen);
+				rdstcap = p_jstr_grow(rdstcap, rdstlen);
 				rdst = (u *)realloc(rdst, rdstcap);
-				P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_NOERROR);
+				P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ENOMEM);
 			}
 			rdstp = rdst;
 		} else {

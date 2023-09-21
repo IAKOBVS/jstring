@@ -33,20 +33,12 @@ P_JSTR_END_DECLS
 			malloc_fail;                              \
 		}                                                 \
 	} while (0)
-#define P_JSTR_GROW(old_cap, new_cap)                                        \
-	do {                                                                 \
-		JSTR_ASSERT_IS_SIZE(old_cap);                                \
-		JSTR_ASSERT_IS_SIZE(new_cap);                                \
-		while ((old_cap *= JSTR_GROWTH) < (new_cap))                 \
-			;                                                    \
-		(old_cap) = JSTR_ALIGN_UP(old_cap, P_JSTR_MALLOC_ALIGNMENT); \
-	} while (0)
 #define P_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
 	do {                                             \
 		JSTR_ASSERT_IS_STR(p);                   \
 		JSTR_ASSERT_IS_SIZE(old_cap);            \
 		JSTR_ASSERT_IS_SIZE(new_cap);            \
-		P_JSTR_GROW(old_cap, new_cap);           \
+		old_cap = p_jstr_grow(old_cap, new_cap); \
 		(p) = (char *)realloc(p, old_cap);       \
 		P_JSTR_MALLOC_ERR(p, malloc_fail);       \
 	} while (0)
@@ -76,6 +68,17 @@ P_JSTR_END_DECLS
 	} while (0)
 
 P_JSTR_BEGIN_DECLS
+
+JSTR_FUNC_CONST
+JSTR_INLINE
+static size_t
+p_jstr_grow(size_t cap,
+	    const size_t new_cap)
+{
+	while ((cap *= JSTR_GROWTH) < new_cap)
+		;
+	return JSTR_ALIGN_UP(cap, P_JSTR_MALLOC_ALIGNMENT);
+}
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
