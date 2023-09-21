@@ -802,14 +802,15 @@ jstr_countc_len(const char *R s,
 	return cnt;
 }
 
-#if JSTR_HAVE_MEMMEM
-
 /*
   Count occurences of NE in HS.
   Return value:
   occurences of NE in HS.
 */
 JSTR_FUNC_PURE
+#if !JSTR_HAVE_MEMMEM
+JSTR_DEPRECATED("Define _GNU_SOURCE or use jstr_count() since memmem is not available and SZ is likely wasted.")
+#endif
 static size_t
 jstr_count_len(const char *R s,
 	       const char *R const find,
@@ -821,13 +822,16 @@ jstr_count_len(const char *R s,
 	if (jstr_unlikely(findlen == 0))
 		return 0;
 	size_t cnt = 0;
+#if JSTR_HAVE_MEMMEM
 	const char *const end = s + sz;
 	while ((s = JSTR_STRSTR_LEN(s, end - s, find, findlen)))
 		++cnt, s += findlen;
+#else
+	while ((s = strstr(s, find)))
+		++cnt, s += findlen;
+#endif
 	return cnt;
 }
-
-#endif
 
 /*
   Count occurences of NE in HS.

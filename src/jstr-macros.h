@@ -174,8 +174,10 @@
 #	else
 #		define JSTR_CONSTANT_P(p) 0
 #	endif
-#	if __has_builtin(deprecated)
-#		define JSTR_DEPRECATED(msg, replacement) __attribute__((deprecated(msg, replacement)))
+#	if __has_attribute(__deprecated__)
+#		define JSTR_DEPRECATED(msg) __attribute__((__deprecated__(msg)))
+#	elif __has_attribute(deprecated)
+#		define JSTR_DEPRECATED(msg) __attribute__((deprecated(msg)))
 #	else
 #		define JSTR_DEPRECATED(msg, replacement)
 #	endif
