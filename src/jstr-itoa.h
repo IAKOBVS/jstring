@@ -33,12 +33,12 @@ jstr_ulltoa_p(char *R nptr,
 		*nptr++ = number % base + '0';
 	while (number /= base);
 	*nptr = '\0';
-	char *e = nptr;
+	char *end = nptr;
 	int c;
-	while (start < e) {
+	while (start < end) {
 		c = *start;
-		*start++ = *e;
-		*e-- = c;
+		*start++ = *end;
+		*end-- = c;
 	}
 	return nptr;
 }
@@ -106,8 +106,5 @@ P_JSTR_END_DECLS
 #undef R
 
 #undef P_JSTR_ITOA_ATTR
-#undef P_JSTR_ULTOA_UNROLLED
-#undef P_JSTR_ULTOA_UNROLLED
-#undef P_JSTR_LTOA_UNROLLED
 
 #endif /* JSTR_ITOA_H */
