@@ -10,9 +10,7 @@
 ## Error handling: 
 Functions that return int error codes return 0 as error. The programmer is expected to check the return values.<br>
 
-Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit.<br>
-
-For more comprehensive error messages, use the \*\_debug\(\) functions or define JSTR\_DEBUG 1; this will also print the filename, line number, and function in which the error occured.
+Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit. For more comprehensive error messages, use the \*\_debug\(\) functions or define JSTR\_DEBUG 1; this will also print the filename, line number, and function in which the error occured.
 
 ## Installation:
 
