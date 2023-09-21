@@ -453,7 +453,6 @@ p_jstr_io_alloc_file(const int alloc_exact,
 err_close:
 	fclose(fp);
 err:
-	perror("");
 	return 0;
 }
 

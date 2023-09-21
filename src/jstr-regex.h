@@ -42,9 +42,9 @@ P_JSTR_END_DECLS
 #	define JSTR_REG_EF_STARTEND REG_STARTEND
 #endif /* REG_STARTEND */
 
+P_JSTR_BEGIN_DECLS
+
 typedef enum {
-	/* Cannot allocate memory */
-	JSTR_REG_RET_ENOMEM,
 #ifdef REG_ENOSYS
 	JSTR_REG_RET_ENOSYS = REG_ENOSYS,
 #endif
@@ -104,52 +104,84 @@ typedef enum {
 #	define JSTR_REG_HAVE_ERPAREN 1
 #endif
 
-P_JSTR_BEGIN_DECLS
-
-JSTR_NONNULL_ALL
 JSTR_INLINE
-JSTR_NOTHROW
+JSTR_FUNC_VOID
 static void
 jstr_reg_free(regex_t *R const preg)
 {
 	regfree(preg);
 }
 
-JSTR_NOINLINE
 JSTR_COLD
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_VOID
+JSTR_NOINLINE
 static void
-jstr_reg_error(const int reg_errcode,
-	       const regex_t *R const preg) JSTR_NOEXCEPT
+p_jstr_reg_err_print(const int errcode,
+		     const regex_t *R const preg) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(reg_errcode == JSTR_REG_RET_ENOMEM)) {
-		fputs("cannot allocate memory\n", stderr);
-		return;
-	}
 	char buf[64];
-	regerror(reg_errcode, preg, buf, 32);
+	regerror(errcode, preg, buf, 32);
 	fprintf(stderr, "%s\n", buf);
 }
 
-JSTR_FUNC_PURE
+JSTR_COLD
+JSTR_FUNC_VOID
+JSTR_NOINLINE
+static void
+p_jstr_reg_err_print_exit(const int errcode,
+			  const regex_t *R const preg) JSTR_NOEXCEPT
+{
+	char buf[64];
+	regerror(errcode, preg, buf, 32);
+	fprintf(stderr, "%s\n", buf);
+	exit(1);
+}
+
+#define P_JSTR_REG_NOERR(errcode) jstr_likely(errcode == JSTR_REG_RET_NOERROR || errcode == JSTR_REG_RET_NOMATCH)
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_reg_err_exit(jstr_reg_errcode_ty errcode,
+		  const regex_t *R const preg) JSTR_NOEXCEPT
+{
+	if (P_JSTR_REG_NOERR(errcode))
+		return;
+	p_jstr_reg_err_print_exit(errcode, preg);
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_reg_err_print(jstr_reg_errcode_ty errcode,
+		   const regex_t *R const preg) JSTR_NOEXCEPT
+{
+	if (P_JSTR_REG_NOERR(errcode))
+		return;
+	p_jstr_reg_err_print(errcode, preg);
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_reg_err(jstr_reg_errcode_ty errcode,
+	     const regex_t *R const preg,
+	     char *R const errbuf,
+	     const size_t errbuf_size) JSTR_NOEXCEPT
+{
+	if (P_JSTR_REG_NOERR(errcode))
+		return;
+	regerror(errcode, preg, errbuf, errbuf_size);
+}
+
+JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_reg_comp(regex_t *R const preg,
 	      const char *R const ptn,
 	      const int cflags) JSTR_NOEXCEPT
 {
-	const jstr_reg_errcode_ty ret = (jstr_reg_errcode_ty)regcomp(preg, ptn, cflags);
-	switch (ret) {
-	default:
-#if JSTR_ERR_MSG_ON_REGEX_ERROR
-		jstr_reg_error(ret, preg);
-#endif /* JSTR_ERR_MSG_ON_REGEX_ERROR */
-	case JSTR_REG_RET_NOMATCH:
-	case JSTR_REG_RET_NOERROR:
-		break;
-	}
-	return ret;
+	return (jstr_reg_errcode_ty)regcomp(preg, ptn, cflags);
 }
 
 JSTR_NONNULL(1)
@@ -165,17 +197,7 @@ jstr_reg_exec(const regex_t *R preg,
 	      regmatch_t *R const pmatch,
 	      const int eflags)
 {
-	const jstr_reg_errcode_ty ret = (jstr_reg_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags);
-	switch (ret) {
-	default:
-#if JSTR_ERR_MSG_ON_REGEX_ERROR
-		jstr_reg_error(ret, preg);
-#endif /* JSTR_ERR_MSG_ON_REGEX_ERROR */
-	case JSTR_REG_RET_NOMATCH:
-	case JSTR_REG_RET_NOERROR:
-		break;
-	}
-	return ret;
+	return (jstr_reg_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags);
 }
 
 #ifdef JSTR_REG_EF_STARTEND
@@ -192,17 +214,7 @@ jstr_reg_exec_len(const regex_t *R preg,
 {
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
-	const jstr_reg_errcode_ty ret = (jstr_reg_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags | REG_STARTEND);
-	switch (ret) {
-	default:
-#	if JSTR_ERR_MSG_ON_REGEX_ERROR
-		jstr_reg_error(ret, preg);
-#	endif
-	case JSTR_REG_RET_NOMATCH:
-	case JSTR_REG_RET_NOERROR:
-		break;
-	}
-	return ret;
+	return (jstr_reg_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags | REG_STARTEND);
 }
 
 #endif /* JSTR_REG_EF_ REG_STARTEND */
@@ -587,7 +599,7 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 			P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc, rplclen, findlen, tmp);
 		} else {
 			P_JSTR_REG_LOG("else");
-			P_JSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc, rplclen, findlen, tmp, return JSTR_REG_RET_ENOMEM);
+			P_JSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc, rplclen, findlen, tmp, return JSTR_REG_RET_ESPACE);
 		}
 	}
 	if (dst != old) {
@@ -741,7 +753,7 @@ jstr_reg_rplc_len(char *R *R const s,
 	    || jstr_unlikely(rm.rm_eo == rm.rm_so))
 		return ret;
 	if (jstr_unlikely(p_jstr_rplcat_len(s, sz, cap, rm.rm_so, rplc, rplclen, rm.rm_eo - rm.rm_so) == NULL))
-		return JSTR_REG_RET_ENOMEM;
+		return JSTR_REG_RET_ESPACE;
 	return ret;
 }
 
@@ -830,7 +842,7 @@ jstr_reg_rplc_len_bref(char *R *R const s,
 	unsigned char rdst_stack[256];
 	if (jstr_unlikely(rdstlen > 256)) {
 		rdst = (unsigned char *)malloc(rdstlen);
-		P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ENOMEM);
+		P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ESPACE);
 	} else {
 		rdst = rdst_stack;
 	}
@@ -868,7 +880,7 @@ jstr_reg_rplc_len_bref(char *R *R const s,
 	} while (0)
 	P_JSTR_CREAT_RPLC_BREF(*s, rdst, rdstlen, rplc, rend);
 	if (jstr_unlikely(p_jstr_rplcat_len(s, sz, cap, rm[0].rm_so, (char *)rdst, rdstlen, findlen) == NULL))
-		ret = JSTR_REG_RET_ENOMEM;
+		ret = JSTR_REG_RET_ESPACE;
 	if (rdst != rdst_stack)
 		free(rdst);
 	return ret;
@@ -942,11 +954,11 @@ p_jstr_reg_base_rplcall_len_bref(const p_jstr_flag_use_n_ty flag,
 			if (jstr_unlikely(rdst == NULL)) {
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, P_JSTR_MALLOC_ALIGNMENT);
 				rdst = (u *)malloc(rdstcap);
-				P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ENOMEM);
+				P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ESPACE);
 			} else if (rdstcap < rdstlen) {
 				rdstcap = p_jstr_grow(rdstcap, rdstlen);
 				rdst = (u *)realloc(rdst, rdstcap);
-				P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ENOMEM);
+				P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ESPACE);
 			}
 			rdstp = rdst;
 		} else {
@@ -958,7 +970,7 @@ p_jstr_reg_base_rplcall_len_bref(const p_jstr_flag_use_n_ty flag,
 		else if (*cap > *sz + rdstlen - findlen)
 			P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rdstp, rdstlen, findlen, tmp);
 		else
-			P_JSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rdstp, rdstlen, findlen, tmp, ret = JSTR_REG_RET_ENOMEM; goto cleanup);
+			P_JSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rdstp, rdstlen, findlen, tmp, ret = JSTR_REG_RET_ESPACE; goto cleanup);
 	}
 	if (dst != old) {
 		memmove(dst, old, (*(u **)s + *sz) - old);
@@ -1150,5 +1162,6 @@ P_JSTR_END_DECLS
 
 #undef P_JSTR_REG_RPLCALL_SMALL_RPLC
 #undef P_JSTR_REG_RPLCALL_BIG_RPLC
+#undef P_JSTR_REG_NOERR
 
 #endif /* JSTR_REGEX_H */

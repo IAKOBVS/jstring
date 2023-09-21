@@ -1,6 +1,10 @@
 #ifndef JSTR_CONFIG_H
 #define JSTR_CONFIG_H 1
 
+#ifndef JSTR_DEBUG
+#	define JSTR_DEBUG 0
+#endif
+
 #define JSTR_ENDIAN_LITTLE 1
 
 #if JSTR_ENDIAN_LITTLE
@@ -31,18 +35,6 @@
 
 #ifndef JSTR_ALLOC_MULTIPLIER
 #	define JSTR_ALLOC_MULTIPLIER 2
-#endif
-
-#ifndef JSTR_EXIT_ON_MALLOC_ERROR
-#	define JSTR_EXIT_ON_MALLOC_ERROR 1
-#endif
-
-#ifndef JSTR_ERR_MSG_ON_MALLOC_ERROR
-#	define JSTR_ERR_MSG_ON_MALLOC_ERROR 1
-#endif
-
-#ifndef JSTR_ERR_MSG_ON_REGEX_ERROR
-#	define JSTR_ERR_MSG_ON_REGEX_ERROR 1
 #endif
 
 #ifndef JSTR_NULLIFY_PTR_ON_FREE

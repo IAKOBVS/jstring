@@ -26,13 +26,23 @@ P_JSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define P_JSTR_MALLOC_ERR(p, malloc_fail)                         \
-	do {                                                      \
-		if (jstr_unlikely((p) == NULL)) {                 \
-			p_jstr_err(__FILE__, __LINE__, __func__); \
-			malloc_fail;                              \
-		}                                                 \
-	} while (0)
+#if JSTR_DEBUG
+#	define P_JSTR_MALLOC_ERR(p, malloc_fail)                              \
+		do {                                                           \
+			if (jstr_unlikely((p) == NULL)) {                      \
+				p_jstr_err_exit(__FILE__, __LINE__, __func__); \
+				malloc_fail;                                   \
+			}                                                      \
+		} while (0)
+#else
+#	define P_JSTR_MALLOC_ERR(p, malloc_fail)         \
+		do {                                      \
+			if (jstr_unlikely((p) == NULL)) { \
+				malloc_fail;              \
+			}                                 \
+		} while (0)
+#endif
+
 #define P_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
 	do {                                             \
 		JSTR_ASSERT_IS_STR(p);                   \
@@ -81,16 +91,16 @@ p_jstr_grow(size_t cap,
 }
 
 JSTR_MAYBE_UNUSED
-JSTR_NOINLINE
 JSTR_COLD
 JSTR_NOTHROW
+JSTR_NOINLINE
 static void
 p_jstr_err_exit(const char *R FILE_,
 		const int LINE_,
 		const char *R func_) JSTR_NOEXCEPT
 {
-	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
-	perror("");
+	fprintf(stderr, "%s:%d:", FILE_, LINE_);
+	perror(func_);
 	exit(1);
 }
 
@@ -103,22 +113,23 @@ p_jstr_err(const char *R FILE_,
 	   const int LINE_,
 	   const char *R func_) JSTR_NOEXCEPT
 {
-#if JSTR_ERR_MSG_ON_MALLOC_ERROR
-	fprintf(stderr, "%s:%d:%s\n:Can't malloc:", FILE_, LINE_, func_);
-	perror("");
-#endif
-#if JSTR_EXIT_ON_MALLOC_ERROR
-	exit(1);
-#endif
+	fprintf(stderr, "%s:%d:", FILE_, LINE_);
+	perror(func_);
 }
 
-/*
-  exit(1) if ptr is NULL.
-*/
 JSTR_INLINE
 JSTR_NOTHROW
 static void
 jstr_err(char *R const p) JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(p == NULL))
+		p_jstr_err(__FILE__, __LINE__, __func__);
+}
+
+JSTR_INLINE
+JSTR_NOTHROW
+static void
+jstr_err_exit(char *R const p) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(p == NULL))
 		p_jstr_err_exit(__FILE__, __LINE__, __func__);
