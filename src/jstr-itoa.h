@@ -33,7 +33,7 @@ jstr_ulltoa_p(char *R nptr,
 		*nptr++ = number % base + '0';
 	while (number /= base);
 	*nptr = '\0';
-	char *end = nptr;
+	char *end = nptr - 1;
 	int c;
 	while (start < end) {
 		c = *start;
