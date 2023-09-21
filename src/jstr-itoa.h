@@ -33,14 +33,14 @@ jstr_ulltoa_p(char *R nptr,
 		*nptr++ = number % base + '0';
 	while (number /= base);
 	*nptr = '\0';
-	char *end = nptr - 1;
+	const char *const end = nptr;
 	int c;
-	while (start < end) {
+	while (start < --nptr) {
 		c = *start;
-		*start++ = *end;
-		*end-- = c;
+		*start++ = *nptr;
+		*nptr-- = c;
 	}
-	return nptr;
+	return (char *)end;
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
