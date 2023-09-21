@@ -20,7 +20,7 @@ or
 ./build && cp -rf ./jstr /path/to/library
 ```
 ```
-#include "./jstr/jstr.h"
+#include "/path/to/jstr/jstr.h"
 ```
 
 ## Error handling: 
