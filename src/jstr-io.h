@@ -559,23 +559,23 @@ jstr_io_append_path_len(char *R const path_end,
 
 typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with the filename instead of the whole path. */
-	JSTR_IO_FTW_MATCH_FNAME = (1),
-	/* Call FUNC on regular files. */
-	JSTR_IO_FTW_DO_REG = (JSTR_IO_FTW_MATCH_FNAME << 1),
-	/* Call FUNC on directories. */
+	JSTR_IO_FTW_MATCH_PATH = (1),
+	/* Call FN on regular files. */
+	JSTR_IO_FTW_DO_REG = (JSTR_IO_FTW_MATCH_PATH << 1),
+	/* Call FN on directories. */
 	JSTR_IO_FTW_DO_DIR = (JSTR_IO_FTW_DO_REG << 1),
 	/* Do not search subdirectories. */
 	JSTR_IO_FTW_NO_RECUR = (JSTR_IO_FTW_DO_DIR << 1),
-	/* Do not call stat. The struct passed to FUNC is undefined. */
+	/* Do not call stat. The struct passed to FN is undefined. */
 	JSTR_IO_FTW_NO_STAT = (JSTR_IO_FTW_NO_RECUR << 1),
 	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NO_STAT << 1),
 } jstr_io_ftw_flag_ty;
 
-#define GET_FULPATH()                                  \
-	do {                                           \
-		if (jstr_unlikely(fulpath[0] == '\0')) \
-			memcpy(fulpath, dir, dlen);    \
+#define GET_FULPATH()                                   \
+	do {                                            \
+		if (jstr_unlikely(fulpath[0] == '\0'))  \
+			memcpy(fulpath, dirpath, dlen); \
 	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -583,10 +583,12 @@ typedef enum jstr_io_ftw_flag_ty {
 		do {                   \
 			GET_FULPATH(); \
 		} while (0)
-#	define STAT_MAYBE(filename, st)                     \
-		do {                                         \
-			if (!(jflags & JSTR_IO_FTW_NO_STAT)) \
-				stat(filename, st);          \
+#	define STAT_MAYBE(filename, st)                         \
+		do {                                             \
+			if (jflags & JSTR_IO_FTW_NO_STAT)        \
+				sb.st_mode = DTTOIF(ep->d_type); \
+			else                                     \
+				stat(filename, st);              \
 		} while (0)
 #else
 #	define GET_FULPATH_MAYBE() \
@@ -598,35 +600,35 @@ typedef enum jstr_io_ftw_flag_ty {
 #endif
 
 /*
-   Call FUNC on entries found recursively that matches GLOB.
-   If either the DO_REG or DO_DIR flag is used, FUNC will not be applied to other filetypes.
+   Call FN on entries found recursively that matches GLOB.
+   If either the DO_REG or DO_DIR flag is used, FN will not be applied to other filetypes.
    If GLOB is NULL, all entries match.
-   ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
-   FUNC therefore must correctly interpret ARG.
+   ARG is a ptr to struct which contains additional arguments to be passed to FN.
+   FN therefore must correctly interpret ARG.
    Jflags:
-   JSTR_IO_FTW_MATCH_FNAME: match fname instead of fulpath.
+   JSTR_IO_FTW_MATCH_PATH: match dirpath instead of fulpath.
    JSTR_IO_FTW_NO_RECUR: do not search subdirectories.
-   JSTR_IO_FTW_NO_STAT: do not call stat. Passed stat is undefined.
+   JSTR_IO_FTW_NO_STAT: do not call stat. Only sb.mode is defined.
    JSTR_IO_FTW_STAT_REG: only call stat on regular files.
-   JSTR_IO_FTW_DO_REG: avoid calling FUNC on other filetypes.
-   JSTR_IO_FTW_DO_DIR: avoid calling FUNC on other filetypes.
+   JSTR_IO_FTW_DO_REG: avoid calling FN on other filetypes.
+   JSTR_IO_FTW_DO_DIR: avoid calling FN on other filetypes.
 */
 JSTR_FUNC_MAY_NULL
 static void
-jstr_io_ftw_len(const char *R const dir,
+jstr_io_ftw_len(const char *R const dirpath,
 		const size_t dlen,
-		const char *R const fnmatch_glob,
-		const int fnmatch_flags,
+		const char *R const fn_glob,
+		const int fn_flags,
 		const jstr_io_ftw_flag_ty jflags,
-		void (*func)(const char *fname, const struct stat *st, const void *arg),
+		void (*fn)(const char *dirpath, const struct stat *sb, const void *arg),
 		const void *R const arg)
 {
-	DIR *R const dp = opendir(dir);
+	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
 		return;
 	char fulpath[JSTR_IO_MAX_FNAME];
 	fulpath[0] = '\0';
-	struct stat st;
+	struct stat sb;
 	size_t fulpathlen;
 	for (const struct dirent *R ep; (ep = readdir(dp));) {
 		/* Ignore . and .. . */
@@ -643,11 +645,11 @@ jstr_io_ftw_len(const char *R const dir,
 #else
 		GET_FULPATH();
 		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
-		if (jstr_unlikely(stat(fulpath, &st)))
+		if (jstr_unlikely(stat(fulpath, &sb)))
 			continue;
-		if (S_ISREG(st.st_mode))
+		if (S_ISREG(sb.st_mode))
 			goto do_reg;
-		if (S_ISDIR(st.st_mode))
+		if (S_ISDIR(sb.st_mode))
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
 		/* If either DO_DIR or DO_REG is used, ignore other filetypes. */
@@ -657,13 +659,13 @@ do_reg:
 		if ((jflags & JSTR_IO_FTW_DO_DIR)
 		    && !(jflags & JSTR_IO_FTW_DO_REG))
 			continue;
-		if (fnmatch_glob) {
-			if (jflags & JSTR_IO_FTW_MATCH_FNAME) {
-				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
+		if (fn_glob) {
+			if (jflags & JSTR_IO_FTW_MATCH_PATH) {
+				GET_FULPATH_MAYBE();
+				if (fnmatch(fn_glob, fulpath, fn_flags))
 					continue;
 			} else {
-				GET_FULPATH_MAYBE();
-				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
+				if (fnmatch(fn_glob, ep->d_name, fn_flags))
 					continue;
 			}
 		} else {
@@ -680,13 +682,13 @@ do_reg:
 #if JSTR_HAVE_DIRENT_D_TYPE
 			if (ep->d_type == DT_REG)
 #else
-			if (S_ISREG(st.st_mode))
+			if (S_ISREG(sb.st_mode))
 #endif
-				STAT_MAYBE(fulpath, &st);
+				STAT_MAYBE(fulpath, &sb);
 		} else {
-			STAT_MAYBE(fulpath, &st);
+			STAT_MAYBE(fulpath, &sb);
 		}
-		func(fulpath, &st, arg);
+		fn(fulpath, &sb, arg);
 		continue;
 do_dir:
 		if (jflags & JSTR_IO_FTW_NO_RECUR)
@@ -694,20 +696,20 @@ do_dir:
 		GET_FULPATH_MAYBE();
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
-		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dir;
+		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dirpath;
 		fulpathlen = dlen + 1 + ep->d_namlen;
 #	else
-		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir;
+		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dirpath;
 #	endif
 #endif
 		if (!(jflags & JSTR_IO_FTW_STAT_REG))
-			STAT_MAYBE(fulpath, &st);
+			STAT_MAYBE(fulpath, &sb);
 		if ((jflags & JSTR_IO_FTW_DO_REG)
 		    && (jflags & JSTR_IO_FTW_DO_DIR))
-			func(fulpath, &st, arg);
+			fn(fulpath, &sb, arg);
 		else
-			func(fulpath, &st, arg);
-		jstr_io_ftw_len(fulpath, fulpathlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
+			fn(fulpath, &sb, arg);
+		jstr_io_ftw_len(fulpath, fulpathlen, fn_glob, fn_flags, jflags, fn, arg);
 		continue;
 	}
 	closedir(dp);
@@ -718,30 +720,30 @@ do_dir:
 #undef STAT_MAYBE
 
 /*
-   Call FUNC on entries found recursively that matches GLOB.
-   If either the DO_REG or DO_DIR flag is used, FUNC will not be applied to other filetypes.
+   Call FN on entries found recursively that matches GLOB.
+   If either the DO_REG or DO_DIR flag is used, FN will not be applied to other filetypes.
    If GLOB is NULL, all entries match.
-   ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
-   FUNC therefore must correctly interpret ARG.
+   ARG is a ptr to struct which contains additional arguments to be passed to FN.
+   FN therefore must correctly interpret ARG.
    Jflags:
-   JSTR_IO_FTW_MATCH_FNAME: match fname instead of fulpath.
+   JSTR_IO_FTW_MATCH_PATH: match FULPATH instead of filename.
    JSTR_IO_FTW_NO_RECUR: do not search subdirectories.
    JSTR_IO_FTW_NO_STAT: do not call stat. Passed stat is undefined.
    JSTR_IO_FTW_STAT_REG: only call stat on regular files.
-   JSTR_IO_FTW_DO_REG: avoid calling FUNC on other filetypes.
-   JSTR_IO_FTW_DO_DIR: avoid calling FUNC on other filetypes.
+   JSTR_IO_FTW_DO_REG: avoid calling FN on other filetypes.
+   JSTR_IO_FTW_DO_DIR: avoid calling FN on other filetypes.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
 static void
-jstr_io_ftw(const char *R const dir,
-	    const char *R const fnmatch_glob,
-	    const int fnmatch_flags,
+jstr_io_ftw(const char *R const dirpath,
+	    const char *R const fn_glob,
+	    const int fn_flags,
 	    const jstr_io_ftw_flag_ty jflags,
-	    void (*func)(const char *fname, const struct stat *st, const void *arg),
+	    void (*fn)(const char *dirpath, const struct stat *sb, const void *arg),
 	    const void *R const arg)
 {
-	jstr_io_ftw_len(dir, strlen(dir), fnmatch_glob, fnmatch_flags, jflags, func, arg);
+	jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn, arg);
 }
 
 P_JSTR_END_DECLS

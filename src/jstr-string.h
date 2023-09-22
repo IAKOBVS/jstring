@@ -767,7 +767,6 @@ jstr_startswith(const char *R const hs,
   Return value:
   Occurences of C in S.
 */
-JSTR_INLINE
 JSTR_FUNC_PURE
 static size_t
 jstr_countc(const char *R s,
@@ -786,7 +785,6 @@ jstr_countc(const char *R s,
   Return value:
   Occurences of C in S.
 */
-JSTR_INLINE
 JSTR_FUNC_PURE
 static size_t
 jstr_countc_len(const char *R s,
