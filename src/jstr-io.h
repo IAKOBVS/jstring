@@ -309,9 +309,7 @@ jstr_io_ext_type_len(const char *R filename,
 		     const size_t sz) JSTR_NOEXCEPT
 {
 	filename = (char *)jstr_memrchr(filename, '.', sz);
-	if (filename == NULL)
-		return JSTR_IO_FT_UNKNOWN;
-	return p_jstr_io_ext_type(filename + 1);
+	return filename ? p_jstr_io_ext_type(filename + 1) : JSTR_IO_FT_UNKNOWN;
 }
 
 /*
@@ -323,9 +321,7 @@ static jstr_io_ext_ty
 jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 {
 	filename = strrchr(filename, '.');
-	if (filename == NULL)
-		return JSTR_IO_FT_UNKNOWN;
-	return p_jstr_io_ext_type(filename + 1);
+	return filename ? p_jstr_io_ext_type(filename + 1) : JSTR_IO_FT_UNKNOWN;
 }
 
 /*
