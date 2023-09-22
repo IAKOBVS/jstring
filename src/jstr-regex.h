@@ -202,10 +202,10 @@ jstr_reg_exec_len(const regex_t *R preg,
 {
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
-	return (jstr_reg_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags | REG_STARTEND);
+	return (jstr_reg_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags | JSTR_REG_EF_STARTEND);
 }
 
-#endif /* JSTR_REG_EF_ REG_STARTEND */
+#endif /* JSTR_REG_EF_STARTEND */
 
 #ifdef JSTR_REG_EF_STARTEND
 #	define P_JSTR_REG_EXEC(preg, s, sz, nmatch, pmatch, eflags) \
