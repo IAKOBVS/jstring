@@ -627,9 +627,7 @@ jstr_io_ftw_len(const char *R const dir,
 	char fulpath[JSTR_IO_MAX_FNAME];
 	fulpath[0] = '\0';
 	struct stat st;
-#if !JSTR_HAVE_DIRENT_D_TYPE
 	size_t tmp_dlen;
-#endif
 	for (const struct dirent *R ep; (ep = readdir(dp));) {
 		/* Ignore . and .. . */
 		if (jstr_unlikely((ep->d_name)[0] == '.')
