@@ -442,7 +442,6 @@ jstr_io_fwrite_j(const jstr_ty *R const j,
 }
 
 JSTR_FUNC
-JSTR_INLINE
 static int
 jstr_io_fwrite_file(const char *R const s,
 		    const size_t sz,
