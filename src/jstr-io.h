@@ -579,12 +579,21 @@ typedef enum jstr_io_ftw_flag_ty {
 	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
-#	define P_JSTR_STAT_IF_NEEDED(filename, st)          \
-		do {                                         \
-			if (!(jflags & JSTR_IO_FTW_NO_STAT)) \
-				stat(filename, st);          \
+#	define P_JSTR_IO_FILL_PATH_IF_NEEDED() \
+		do {                            \
+			P_JSTR_IO_FILL_PATH();  \
+		} while (0)
+#	define P_JSTR_STAT_IF_NEEDED(filename, st)       \
+		do {                                      \
+			if (jflags & JSTR_IO_FTW_NO_STAT) \
+				;                         \
+			else                              \
+				stat(filename, st);       \
 		} while (0)
 #else
+#	define P_JSTR_IO_FILL_PATH_IF_NEEDED() \
+		do {                            \
+		} while (0)
 #	define P_JSTR_STAT_IF_NEEDED(filename, st) \
 		do {                                \
 		} while (0)
@@ -662,9 +671,7 @@ do_reg:
 					continue;
 			}
 		} else {
-#if JSTR_HAVE_DIRENT_D_TYPE
-			P_JSTR_IO_FILL_PATH();
-#endif
+			P_JSTR_IO_FILL_PATH_IF_NEEDED();
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -688,7 +695,7 @@ do_reg:
 do_dir:
 		if (jflags & JSTR_IO_FTW_NO_RECUR)
 			continue;
-		P_JSTR_IO_FILL_PATH();
+		P_JSTR_IO_FILL_PATH_IF_NEEDED();
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
 		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dir;
