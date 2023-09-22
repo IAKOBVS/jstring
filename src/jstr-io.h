@@ -795,12 +795,12 @@ typedef enum jstr_io_ftw_flag_ty {
    ARG is a ptr to struct which contains additional arguments to be passed to FN.
    FN therefore must correctly interpret ARG.
    Jflags (prefixed with JSTR_IO_FTW_):
+   REG: avoid calling FN on other filetypes.
+   DIR: avoid calling FN on other filetypes.
    MATCH_PATH: match dirpath instead of fulpath.
    NO_SUBDIR: do not traverse subdirectories.
    NO_STAT: do not call stat. Only sb.mode is defined.
    STAT_REG: only call stat on regular files.
-   REG: avoid calling FN on other filetypes.
-   DIR: avoid calling FN on other filetypes.
 */
 JSTR_FUNC_MAY_NULL
 static void
@@ -919,12 +919,12 @@ do_dir:
    ARG is a ptr to struct which contains additional arguments to be passed to FN.
    FN therefore must correctly interpret ARG.
    Jflags (prefixed with JSTR_IO_FTW_):
+   REG: avoid calling FN on other filetypes.
+   DIR: avoid calling FN on other filetypes.
    MATCH_PATH: match FULPATH instead of filename.
    NO_SUBDIR: do not traverse subdirectories.
    NO_STAT: do not call stat. Only sb.mode is defined.
    STAT_REG: only call stat on regular files.
-   REG: avoid calling FN on other filetypes.
-   DIR: avoid calling FN on other filetypes.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
