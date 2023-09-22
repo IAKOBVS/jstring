@@ -572,16 +572,16 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NO_STAT << 1),
 } jstr_io_ftw_flag_ty;
 
-#define FILL_PATH()                                    \
+#define GET_FULPATH()                                  \
 	do {                                           \
 		if (jstr_unlikely(fulpath[0] == '\0')) \
 			memcpy(fulpath, dir, dlen);    \
 	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
-#	define FILL_PATH_MAYBE()    \
-		do {                 \
-			FILL_PATH(); \
+#	define GET_FULPATH_MAYBE()    \
+		do {                   \
+			GET_FULPATH(); \
 		} while (0)
 #	define STAT_MAYBE(filename, st)                     \
 		do {                                         \
@@ -589,8 +589,8 @@ typedef enum jstr_io_ftw_flag_ty {
 				stat(filename, st);          \
 		} while (0)
 #else
-#	define FILL_PATH_MAYBE() \
-		do {              \
+#	define GET_FULPATH_MAYBE() \
+		do {                \
 		} while (0)
 #	define STAT_MAYBE(filename, st) \
 		do {                     \
@@ -641,7 +641,7 @@ jstr_io_ftw_len(const char *R const dir,
 		if (ep->d_type == DT_DIR)
 			goto do_dir;
 #else
-		FILL_PATH();
+		GET_FULPATH();
 		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
 		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
@@ -662,12 +662,12 @@ do_reg:
 				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
 					continue;
 			} else {
-				FILL_PATH_MAYBE();
+				GET_FULPATH_MAYBE();
 				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 					continue;
 			}
 		} else {
-			FILL_PATH_MAYBE();
+			GET_FULPATH_MAYBE();
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -691,7 +691,7 @@ do_reg:
 do_dir:
 		if (jflags & JSTR_IO_FTW_NO_RECUR)
 			continue;
-		FILL_PATH_MAYBE();
+		GET_FULPATH_MAYBE();
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
 		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dir;
@@ -713,8 +713,8 @@ do_dir:
 	closedir(dp);
 }
 
-#undef FILL_PATH
-#undef FILL_PATH_MAYBE
+#undef GET_FULPATH
+#undef GET_FULPATH_MAYBE
 #undef STAT_MAYBE
 
 /*
