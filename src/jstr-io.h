@@ -425,6 +425,60 @@ jstr_io_isbinary_j(jstr_ty *R const j) JSTR_NOEXCEPT
 	return jstr_io_isbinary(j->data, j->size);
 }
 
+#if JSTR_HAVE_POPEN
+
+JSTR_FUNC
+static int
+jstr_io_alloc_popen(char *R *R const s,
+		    size_t *R const sz,
+		    size_t *R const cap,
+		    const char *R const cmd) JSTR_NOEXCEPT
+{
+	FILE *R const fp = popen(cmd, "r");
+	char *p;
+	if (jstr_unlikely(fp == NULL))
+		goto err;
+	enum { MINBUF = BUFSIZ };
+	char buf[MINBUF];
+	p = buf;
+	int c;
+	while (((c = getc(fp)) != EOF)
+	       & (p - buf != MINBUF))
+		*p++ = c;
+	if (jstr_unlikely(p - buf == MINBUF))
+		*cap = MINBUF;
+	*cap = P_JSTR_MIN_ALLOC(p - buf);
+	*cap = JSTR_ALIGN_UP_STR(*cap);
+	*s = (char *)malloc(*cap);
+	P_JSTR_MALLOC_ERR(*s, goto err_close);
+	memcpy(*s, buf, p - buf);
+	if (jstr_unlikely(p - buf == MINBUF)) {
+		p = *s + (p - buf);
+		const char *old;
+		while ((c = getc(fp)) != EOF) {
+			if (jstr_unlikely((size_t)(p - *s) >= *cap)) {
+				old = *s;
+				P_JSTR_REALLOCEXACT(*s, *cap, *cap * 2, goto err_close);
+				p = *s + (p - old);
+			}
+			*p++ = c;
+		}
+		*p = '\0';
+		*sz = p - *s;
+	} else {
+		(*s)[p - buf] = '\0';
+		*sz = p - buf;
+	}
+	pclose(fp);
+	return 1;
+err_close:
+	pclose(fp);
+err:
+	return 0;
+}
+
+#endif
+
 JSTR_INLINE
 JSTR_FUNC
 static int

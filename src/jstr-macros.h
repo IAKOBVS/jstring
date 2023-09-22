@@ -10,9 +10,9 @@
 
 #define JSTR_MAX(x, y)	   (((x) > (y)) ? (x) : (y))
 #define JSTR_MIN(x, y)	   (((x) < (y)) ? (x) : (y))
-#define JSTR_MIN3(x, y, z) ((x < y) ? ((x < z) ? x : z) : ((y < z) ? y : z))
-#define JSTR_MAX3(x, y, z) ((x > y) ? ((x > z) ? x : z) : ((y > z) ? y : z))
-#define JSTR_MID3(x, y, z) ((x > y) ? ((x < z) ? x : z) : ((y < z) ? y : z))
+#define JSTR_MIN3(x, y, z) (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
+#define JSTR_MAX3(x, y, z) (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
+#define JSTR_MID3(x, y, z) (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
 
 #if !defined __cplusplus && defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1
@@ -657,6 +657,12 @@ case '~':
 #	define JSTR_HAVE_STRDUPA  1
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
+
+#if (defined __GLIBC__ && (__GLIBC__ < 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _BSD_SOURCE || defined _SVID_SOURCE) \
+|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2)
+#	define JSTR_HAVE_POPEN	 1
+#	define JSTR_HAVE_PCLOSE 1
+#endif
 
 #if defined __x86_64__ || defined _M_X64
 #	define JSTR_ARCH_X86_64 1
