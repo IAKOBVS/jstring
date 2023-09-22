@@ -457,11 +457,11 @@ jstr_allocmore_assign(char *R *R const s,
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_free(char *R p) JSTR_NOEXCEPT
+jstr_free(char *R *R p) JSTR_NOEXCEPT
 {
-	free(p);
+	free(*p);
 #if JSTR_NULLIFY_PTR_ON_FREE
-	p = NULL;
+	*p = NULL;
 #endif /* JSTR_NULLIFY_PTR_ON_FREE */
 }
 
@@ -476,6 +476,14 @@ jstr_debug(const jstr_ty *R const j)
 	fputs("data:", stderr);
 	fwrite(j->data, 1, j->size, stderr);
 	fputc('\n', stderr);
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_print(const jstr_ty *R const j)
+{
+	fwrite(j->data, 1, j->size, stdout);
 }
 
 /*

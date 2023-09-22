@@ -974,8 +974,7 @@ p_jstr_reg_base_rplcall_bref_len(const p_jstr_flag_use_n_ty flag,
 		*sz = (dst + (*(u **)s + *sz - old)) - *(u **)s;
 	}
 cleanup:
-	if (rdst)
-		free(rdst);
+	free(rdst);
 	return ret;
 #undef P_JSTR_CREAT_RPLC_BREF
 }
