@@ -518,12 +518,16 @@ jstr_io_alloc_popen_fread(char *R *R const s,
 				p = *s + (p - old);
 			}
 		}
+		if (jstr_unlikely(ferror(fp)))
+			goto err_close_free;
 		*p = '\0';
 	} else {
 		(*s)[p - buf] = '\0';
 	}
 	pclose(fp);
 	return 1;
+err_close_free:
+	free(*s);
 err_close:
 	pclose(fp);
 err:
