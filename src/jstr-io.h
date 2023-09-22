@@ -433,7 +433,7 @@ jstr_io_fwrite(const char *R const s,
 	       FILE *R const fp) JSTR_NOEXCEPT
 {
 	fwrite(s, 1, sz, fp);
-	return ferror(fp) ? 0 : 1;
+	return ferror(fp) == 0;
 }
 
 JSTR_FUNC
