@@ -28,7 +28,7 @@ or
 
 Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit. For more comprehensive error messages, use the \*\_debug\(\) functions or
 ```
-define JSTR_DEBUG 1
+#define JSTR_DEBUG 1
 ```
 before including "jstr.h". This will make them print the filename, line number, and function in which the error occured.
 
