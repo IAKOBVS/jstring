@@ -493,6 +493,8 @@ jstr_io_alloc_popen_fread(char *R *R const s,
 	enum { MINBUF = BUFSIZ };
 	char buf[MINBUF];
 	p = buf + fread(buf, 1, MINBUF, fp);
+	if (jstr_unlikely(ferror(fp)))
+		goto err_close;
 	*cap = P_JSTR_MIN_ALLOC(p - buf);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
@@ -555,10 +557,14 @@ p_jstr_io_alloc_file(const int alloc_exact,
 	*s = (char *)malloc(*cap);
 	P_JSTR_MALLOC_ERR(*s, goto err_close);
 	fread(*s, 1, st->st_size, fp);
+	if (jstr_unlikely(ferror(fp)))
+		goto err_close_free;
 	fclose(fp);
 	(*s)[st->st_size] = '\0';
 	*sz = st->st_size;
 	return 1;
+err_close_free:
+	free(*s);
 err_close:
 	fclose(fp);
 err:
