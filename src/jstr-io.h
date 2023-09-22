@@ -608,17 +608,17 @@ typedef enum jstr_io_ftw_flag_ty {
 
 /*
    Call FN on entries found recursively that matches GLOB.
-   If either the DO_REG or DO_DIR flag is used, FN will not be applied to other filetypes.
+   If either the DO_REG or DO_DIR flag is used, FN will not be called on other filetypes.
    If GLOB is NULL, all entries match.
    ARG is a ptr to struct which contains additional arguments to be passed to FN.
    FN therefore must correctly interpret ARG.
-   Jflags:
-   JSTR_IO_FTW_MATCH_PATH: match dirpath instead of fulpath.
-   JSTR_IO_FTW_NO_SUBDIR: do not traverse subdirectories.
-   JSTR_IO_FTW_NO_STAT: do not call stat. Only sb.mode is defined.
-   JSTR_IO_FTW_STAT_REG: only call stat on regular files.
-   JSTR_IO_FTW_DO_REG: avoid calling FN on other filetypes.
-   JSTR_IO_FTW_DO_DIR: avoid calling FN on other filetypes.
+   Jflags (prefixed with JSTR_IO_FTW_):
+   MATCH_PATH: match dirpath instead of fulpath.
+   NO_SUBDIR: do not traverse subdirectories.
+   NO_STAT: do not call stat. Only sb.mode is defined.
+   STAT_REG: only call stat on regular files.
+   DO_REG: avoid calling FN on other filetypes.
+   DO_DIR: avoid calling FN on other filetypes.
 */
 JSTR_FUNC_MAY_NULL
 static void
@@ -674,6 +674,7 @@ do_reg:
 			} else {
 				if (fnmatch(fn_glob, ep->d_name, fn_flags))
 					continue;
+				GET_PATH_MAYBE();
 			}
 		} else {
 			GET_PATH_MAYBE();
@@ -731,17 +732,17 @@ do_dir:
 
 /*
    Call FN on entries found recursively that matches GLOB.
-   If either the DO_REG or DO_DIR flag is used, FN will not be applied to other filetypes.
+   If either the DO_REG or DO_DIR flag is used, FN will not be called on other filetypes.
    If GLOB is NULL, all entries match.
    ARG is a ptr to struct which contains additional arguments to be passed to FN.
    FN therefore must correctly interpret ARG.
-   Jflags:
-   JSTR_IO_FTW_MATCH_PATH: match FULPATH instead of filename.
-   JSTR_IO_FTW_NO_SUBDIR: do not traverse subdirectories.
-   JSTR_IO_FTW_NO_STAT: do not call stat. Only sb.mode is defined.
-   JSTR_IO_FTW_STAT_REG: only call stat on regular files.
-   JSTR_IO_FTW_DO_REG: avoid calling FN on other filetypes.
-   JSTR_IO_FTW_DO_DIR: avoid calling FN on other filetypes.
+   Jflags (prefixed with JSTR_IO_FTW_):
+   MATCH_PATH: match FULPATH instead of filename.
+   NO_SUBDIR: do not traverse subdirectories.
+   NO_STAT: do not call stat. Only sb.mode is defined.
+   STAT_REG: only call stat on regular files.
+   DO_REG: avoid calling FN on other filetypes.
+   DO_DIR: avoid calling FN on other filetypes.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
