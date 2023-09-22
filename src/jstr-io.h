@@ -607,13 +607,13 @@ typedef enum jstr_io_ftw_flag_ty {
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-jstr_io_ftw(const char *R const dir,
-	    const size_t dlen,
-	    const char *R const fnmatch_glob,
-	    const int fnmatch_flags,
-	    const jstr_io_ftw_flag_ty jflags,
-	    void (*func)(const char *fname, const struct stat *st, const void *arg),
-	    const void *R const arg)
+jstr_io_ftw_len(const char *R const dir,
+		const size_t dlen,
+		const char *R const fnmatch_glob,
+		const int fnmatch_flags,
+		const jstr_io_ftw_flag_ty jflags,
+		void (*func)(const char *fname, const struct stat *st, const void *arg),
+		const void *R const arg)
 {
 	DIR *R const dp = opendir(dir);
 	if (jstr_unlikely(dp == NULL))
@@ -703,7 +703,7 @@ do_dir:
 			func(fulpath, &st, arg);
 		else
 			func(fulpath, &st, arg);
-		jstr_io_ftw(fulpath, tmp_dlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
+		jstr_io_ftw_len(fulpath, tmp_dlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
 		continue;
 	}
 	closedir(dp);
@@ -711,6 +711,33 @@ do_dir:
 
 #undef P_JSTR_IO_FILL_PATH
 #undef P_JSTR_STAT_IF_NEEDED
+
+/*
+   Call FUNC on entries found recursively that matches GLOB.
+   If either the DO_REG or DO_DIR flag is used, FUNC will not be applied to other filetypes.
+   If GLOB is NULL, all entries match.
+   ARG is a ptr to struct which contains additional arguments to be passed to FUNC.
+   FUNC therefore must correctly interpret ARG.
+   Jflags:
+   JSTR_IO_FTW_MATCH_FNAME: match fname instead of fulpath.
+   JSTR_IO_FTW_NO_RECUR: do not search subdirectories.
+   JSTR_IO_FTW_NO_STAT: do not call stat. Passed stat is undefined.
+   JSTR_IO_FTW_STAT_REG: only call stat on regular files.
+   JSTR_IO_FTW_DO_REG: avoid calling FUNC on other filetypes.
+   JSTR_IO_FTW_DO_DIR: avoid calling FUNC on other filetypes.
+*/
+JSTR_MAYBE_UNUSED
+JSTR_NOTHROW
+static void
+jstr_io_ftw(const char *R const dir,
+	    const char *R const fnmatch_glob,
+	    const int fnmatch_flags,
+	    const jstr_io_ftw_flag_ty jflags,
+	    void (*func)(const char *fname, const struct stat *st, const void *arg),
+	    const void *R const arg)
+{
+	jstr_io_ftw_len(dir, strlen(dir), fnmatch_glob, fnmatch_flags, jflags, func, arg);
+}
 
 P_JSTR_END_DECLS
 
