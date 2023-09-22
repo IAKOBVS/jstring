@@ -425,6 +425,56 @@ jstr_io_isbinary_j(jstr_ty *R const j) JSTR_NOEXCEPT
 	return jstr_io_isbinary(j->data, j->size);
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_io_fwrite(const char *R const s,
+	       const size_t sz,
+	       FILE *R const fp) JSTR_NOEXCEPT
+{
+	fwrite(s, 1, sz, fp);
+	return ferror(fp) ? 0 : 1;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_io_fwrite_j(const jstr_ty *R const j,
+		 FILE *R const fp) JSTR_NOEXCEPT
+{
+	return jstr_io_fwrite(j->data, j->size, fp);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_io_fwrite_file(const char *R const s,
+		    const size_t sz,
+		    const char *R const fname,
+		    const char *R const modes) JSTR_NOEXCEPT
+{
+	FILE *R const fp = fopen(fname, modes);
+	if (jstr_unlikely(fp == NULL))
+		return 0;
+	if (jstr_unlikely(!jstr_io_fwrite(s, sz, fp)))
+		goto err;
+	fclose(fp);
+	return 1;
+err:
+	fclose(fp);
+	return 0;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_io_fwrite_file_j(const jstr_ty *R const j,
+		      const char *R const fname,
+		      const char *R const modes) JSTR_NOEXCEPT
+{
+	return jstr_io_fwrite_file(j->data, j->size, fname, modes);
+}
+
 #if JSTR_HAVE_POPEN
 
 #	if 0 /* broken */
@@ -482,9 +532,9 @@ err:
 JSTR_FUNC
 static int
 jstr_io_alloc_popen(char *R *R const s,
-			  size_t *R const sz,
-			  size_t *R const cap,
-			  const char *R const cmd) JSTR_NOEXCEPT
+		    size_t *R const sz,
+		    size_t *R const cap,
+		    const char *R const cmd) JSTR_NOEXCEPT
 {
 	FILE *R const fp = popen(cmd, "r");
 	if (jstr_unlikely(fp == NULL))
