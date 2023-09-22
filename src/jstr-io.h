@@ -572,30 +572,28 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NO_STAT << 1),
 } jstr_io_ftw_flag_ty;
 
-#define P_JSTR_IO_FILL_PATH()                          \
+#define FILL_PATH()                                    \
 	do {                                           \
 		if (jstr_unlikely(fulpath[0] == '\0')) \
 			memcpy(fulpath, dir, dlen);    \
 	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
-#	define P_JSTR_IO_FILL_PATH_IF_NEEDED() \
-		do {                            \
-			P_JSTR_IO_FILL_PATH();  \
+#	define FILL_PATH_MAYBE()    \
+		do {                 \
+			FILL_PATH(); \
 		} while (0)
-#	define P_JSTR_STAT_IF_NEEDED(filename, st)       \
-		do {                                      \
-			if (jflags & JSTR_IO_FTW_NO_STAT) \
-				;                         \
-			else                              \
-				stat(filename, st);       \
+#	define STAT_MAYBE(filename, st)                     \
+		do {                                         \
+			if (!(jflags & JSTR_IO_FTW_NO_STAT)) \
+				stat(filename, st);          \
 		} while (0)
 #else
-#	define P_JSTR_IO_FILL_PATH_IF_NEEDED() \
-		do {                            \
+#	define FILL_PATH_MAYBE() \
+		do {              \
 		} while (0)
-#	define P_JSTR_STAT_IF_NEEDED(filename, st) \
-		do {                                \
+#	define STAT_MAYBE(filename, st) \
+		do {                     \
 		} while (0)
 #endif
 
@@ -645,7 +643,7 @@ jstr_io_ftw_len(const char *R const dir,
 		if (ep->d_type == DT_DIR)
 			goto do_dir;
 #else
-		P_JSTR_IO_FILL_PATH();
+		FILL_PATH();
 		tmp_dlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
 		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
@@ -666,12 +664,12 @@ do_reg:
 				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
 					continue;
 			} else {
-				P_JSTR_IO_FILL_PATH_IF_NEEDED();
+				FILL_PATH_MAYBE();
 				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 					continue;
 			}
 		} else {
-			P_JSTR_IO_FILL_PATH_IF_NEEDED();
+			FILL_PATH_MAYBE();
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -686,16 +684,16 @@ do_reg:
 #else
 			if (S_ISREG(st.st_mode))
 #endif
-				P_JSTR_STAT_IF_NEEDED(fulpath, &st);
+				STAT_MAYBE(fulpath, &st);
 		} else {
-			P_JSTR_STAT_IF_NEEDED(fulpath, &st);
+			STAT_MAYBE(fulpath, &st);
 		}
 		func(fulpath, &st, arg);
 		continue;
 do_dir:
 		if (jflags & JSTR_IO_FTW_NO_RECUR)
 			continue;
-		P_JSTR_IO_FILL_PATH_IF_NEEDED();
+		FILL_PATH_MAYBE();
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
 		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dir;
@@ -705,7 +703,7 @@ do_dir:
 #	endif
 #endif
 		if (!(jflags & JSTR_IO_FTW_STAT_REG))
-			P_JSTR_STAT_IF_NEEDED(fulpath, &st);
+			STAT_MAYBE(fulpath, &st);
 		if ((jflags & JSTR_IO_FTW_DO_REG)
 		    && (jflags & JSTR_IO_FTW_DO_DIR))
 			func(fulpath, &st, arg);
@@ -717,8 +715,9 @@ do_dir:
 	closedir(dp);
 }
 
-#undef P_JSTR_IO_FILL_PATH
-#undef P_JSTR_STAT_IF_NEEDED
+#undef FILL_PATH
+#undef FILL_PATH_MAYBE
+#undef STAT_MAYBE
 
 /*
    Call FUNC on entries found recursively that matches GLOB.
