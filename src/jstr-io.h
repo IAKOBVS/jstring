@@ -572,7 +572,7 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NO_STAT << 1),
 } jstr_io_ftw_flag_ty;
 
-#define GET_FULPATH()                                   \
+#define GET_PATH()                                      \
 	do {                                            \
 		if (jstr_unlikely(fulpath[0] == '\0'))  \
 			memcpy(fulpath, dirpath, dlen); \
@@ -583,9 +583,9 @@ typedef enum jstr_io_ftw_flag_ty {
 		do {                                     \
 			sb.st_mode = DTTOIF(ep->d_type); \
 		} while (0)
-#	define GET_FULPATH_MAYBE()    \
-		do {                   \
-			GET_FULPATH(); \
+#	define GET_PATH_MAYBE()    \
+		do {                \
+			GET_PATH(); \
 		} while (0)
 #	define STAT_MAYBE(filename, st)                  \
 		do {                                      \
@@ -598,8 +598,8 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define GET_STAT_MODE_MAYBE() \
 		do {                  \
 		} while (0)
-#	define GET_FULPATH_MAYBE() \
-		do {                \
+#	define GET_PATH_MAYBE() \
+		do {             \
 		} while (0)
 #	define STAT_MAYBE(filename, st) \
 		do {                     \
@@ -614,7 +614,7 @@ typedef enum jstr_io_ftw_flag_ty {
    FN therefore must correctly interpret ARG.
    Jflags:
    JSTR_IO_FTW_MATCH_PATH: match dirpath instead of fulpath.
-   JSTR_IO_FTW_NO_SUBDIR: do not search subdirectories.
+   JSTR_IO_FTW_NO_SUBDIR: do not traverse subdirectories.
    JSTR_IO_FTW_NO_STAT: do not call stat. Only sb.mode is defined.
    JSTR_IO_FTW_STAT_REG: only call stat on regular files.
    JSTR_IO_FTW_DO_REG: avoid calling FN on other filetypes.
@@ -650,7 +650,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 		if (ep->d_type == DT_DIR)
 			goto do_dir;
 #else
-		GET_FULPATH();
+		GET_PATH();
 		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
 		if (jstr_unlikely(stat(fulpath, &sb)))
 			continue;
@@ -668,7 +668,7 @@ do_reg:
 			continue;
 		if (fn_glob) {
 			if (jflags & JSTR_IO_FTW_MATCH_PATH) {
-				GET_FULPATH_MAYBE();
+				GET_PATH_MAYBE();
 				if (fnmatch(fn_glob, fulpath, fn_flags))
 					continue;
 			} else {
@@ -676,7 +676,7 @@ do_reg:
 					continue;
 			}
 		} else {
-			GET_FULPATH_MAYBE();
+			GET_PATH_MAYBE();
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -702,7 +702,7 @@ do_reg:
 do_dir:
 		if (jflags & JSTR_IO_FTW_NO_SUBDIR)
 			continue;
-		GET_FULPATH_MAYBE();
+		GET_PATH_MAYBE();
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
 		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dirpath;
@@ -724,8 +724,8 @@ do_dir:
 	closedir(dp);
 }
 
-#undef GET_FULPATH
-#undef GET_FULPATH_MAYBE
+#undef GET_PATH
+#undef GET_PATH_MAYBE
 #undef STAT_MAYBE
 #undef GET_STAT_MODE_MAYBE
 
@@ -737,8 +737,8 @@ do_dir:
    FN therefore must correctly interpret ARG.
    Jflags:
    JSTR_IO_FTW_MATCH_PATH: match FULPATH instead of filename.
-   JSTR_IO_FTW_NO_SUBDIR: do not search subdirectories.
-   JSTR_IO_FTW_NO_STAT: do not call stat. Passed stat is undefined.
+   JSTR_IO_FTW_NO_SUBDIR: do not traverse subdirectories.
+   JSTR_IO_FTW_NO_STAT: do not call stat. Only sb.mode is defined.
    JSTR_IO_FTW_STAT_REG: only call stat on regular files.
    JSTR_IO_FTW_DO_REG: avoid calling FN on other filetypes.
    JSTR_IO_FTW_DO_DIR: avoid calling FN on other filetypes.
