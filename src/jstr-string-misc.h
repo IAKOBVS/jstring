@@ -5,8 +5,10 @@ P_JSTR_BEGIN_DECLS
 #include "glibc-generic-string-misc.h"
 #include <endian.h>
 #include <limits.h>
-#pragma GCC diagnostic ignored "-Wshift-count-overflow"
-#pragma GCC diagnostic push
+#if __GNUC__ || defined __clang__
+#	pragma GCC diagnostic ignored "-Wshift-count-overflow"
+#	pragma GCC diagnostic push
+#endif
 JSTR_INLINE
 JSTR_FUNC_PURE
 static jstr_word_ty
@@ -93,6 +95,8 @@ jstr_word_uctow(const unsigned char *JSTR_RESTRICT const p)
 {
 	return jstr_word_ctow((char *)p);
 }
-#pragma GCC diagnostic pop
+#if __GNUC__ || defined __clang__
+#	pragma GCC diagnostic pop
+#endif
 P_JSTR_END_DECLS
 #endif /* P_JSTR_STRING_MISC_H */
