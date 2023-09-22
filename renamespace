@@ -3,7 +3,7 @@ if [ -z "$1" ]; then
 	echo "Usage: ./renamespace <new_namespace>"
 	exit
 fi
-NEW_DIR="../jstr_$1"
+NEW_DIR="./jstr_$1"
 mkdir "$NEW_DIR"
 for file in $(echo jstr/*.h); do
 	# shellcheck disable=SC2005
