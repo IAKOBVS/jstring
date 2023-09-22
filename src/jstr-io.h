@@ -722,11 +722,11 @@ typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with the filename instead of the whole path. */
 	JSTR_IO_FTW_MATCH_PATH = (1),
 	/* Call FN on regular files. */
-	JSTR_IO_FTW_DO_REG = (JSTR_IO_FTW_MATCH_PATH << 1),
+	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCH_PATH << 1),
 	/* Call FN on directories. */
-	JSTR_IO_FTW_DO_DIR = (JSTR_IO_FTW_DO_REG << 1),
+	JSTR_IO_FTW_DIR = (JSTR_IO_FTW_REG << 1),
 	/* Do not traverse subdirectories. */
-	JSTR_IO_FTW_NO_SUBDIR = (JSTR_IO_FTW_DO_DIR << 1),
+	JSTR_IO_FTW_NO_SUBDIR = (JSTR_IO_FTW_DIR << 1),
 	/* Do not call stat. Only sb.st_mode is defined. */
 	JSTR_IO_FTW_NO_STAT = (JSTR_IO_FTW_NO_SUBDIR << 1),
 	/* Only call stat on regular files. */
@@ -790,7 +790,7 @@ typedef enum jstr_io_ftw_flag_ty {
 
 /*
    Call FN on entries found recursively that matches GLOB.
-   If either the DO_REG or DO_DIR flag is used, FN will not be called on other filetypes.
+   If either the REG or DIR flag is used, FN will not be called on other filetypes.
    If GLOB is NULL, all entries match.
    ARG is a ptr to struct which contains additional arguments to be passed to FN.
    FN therefore must correctly interpret ARG.
@@ -799,8 +799,8 @@ typedef enum jstr_io_ftw_flag_ty {
    NO_SUBDIR: do not traverse subdirectories.
    NO_STAT: do not call stat. Only sb.mode is defined.
    STAT_REG: only call stat on regular files.
-   DO_REG: avoid calling FN on other filetypes.
-   DO_DIR: avoid calling FN on other filetypes.
+   REG: avoid calling FN on other filetypes.
+   DIR: avoid calling FN on other filetypes.
 */
 JSTR_FUNC_MAY_NULL
 static void
@@ -841,12 +841,12 @@ jstr_io_ftw_len(const char *R const dirpath,
 		if (S_ISDIR(sb.st_mode))
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
-		/* If either DO_DIR or DO_REG is used, ignore other filetypes. */
-		if (jflags & (JSTR_IO_FTW_DO_DIR | JSTR_IO_FTW_DO_REG))
+		/* If either DIR or REG is used, ignore other filetypes. */
+		if (jflags & (JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG))
 			continue;
 do_reg:
-		if ((jflags & JSTR_IO_FTW_DO_DIR)
-		    && !(jflags & JSTR_IO_FTW_DO_REG))
+		if ((jflags & JSTR_IO_FTW_DIR)
+		    && !(jflags & JSTR_IO_FTW_REG))
 			continue;
 		if (fn_glob) {
 			if (jflags & JSTR_IO_FTW_MATCH_PATH) {
@@ -896,8 +896,8 @@ do_dir:
 #endif
 		if (!(jflags & JSTR_IO_FTW_STAT_REG))
 			STAT_MAYBE(fulpath, &sb);
-		if ((jflags & JSTR_IO_FTW_DO_REG)
-		    && (jflags & JSTR_IO_FTW_DO_DIR))
+		if ((jflags & JSTR_IO_FTW_REG)
+		    && (jflags & JSTR_IO_FTW_DIR))
 			fn(fulpath, &sb, arg);
 		else
 			fn(fulpath, &sb, arg);
@@ -914,7 +914,7 @@ do_dir:
 
 /*
    Call FN on entries found recursively that matches GLOB.
-   If either the DO_REG or DO_DIR flag is used, FN will not be called on other filetypes.
+   If either the REG or DIR flag is used, FN will not be called on other filetypes.
    If GLOB is NULL, all entries match.
    ARG is a ptr to struct which contains additional arguments to be passed to FN.
    FN therefore must correctly interpret ARG.
@@ -923,8 +923,8 @@ do_dir:
    NO_SUBDIR: do not traverse subdirectories.
    NO_STAT: do not call stat. Only sb.mode is defined.
    STAT_REG: only call stat on regular files.
-   DO_REG: avoid calling FN on other filetypes.
-   DO_DIR: avoid calling FN on other filetypes.
+   REG: avoid calling FN on other filetypes.
+   DIR: avoid calling FN on other filetypes.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
