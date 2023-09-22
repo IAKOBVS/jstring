@@ -481,7 +481,7 @@ err:
 
 JSTR_FUNC
 static int
-jstr_io_alloc_popen_fread(char *R *R const s,
+jstr_io_alloc_popen(char *R *R const s,
 			  size_t *R const sz,
 			  size_t *R const cap,
 			  const char *R const cmd) JSTR_NOEXCEPT
