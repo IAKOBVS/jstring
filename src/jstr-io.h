@@ -604,8 +604,7 @@ typedef enum jstr_io_ftw_flag_ty {
    JSTR_IO_FTW_DO_REG: avoid calling FUNC on other filetypes.
    JSTR_IO_FTW_DO_DIR: avoid calling FUNC on other filetypes.
 */
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_MAY_NULL
 static void
 jstr_io_ftw_len(const char *R const dir,
 		const size_t dlen,
@@ -663,7 +662,9 @@ do_reg:
 					continue;
 			}
 		} else {
+#if JSTR_HAVE_DIRENT_D_TYPE
 			P_JSTR_IO_FILL_PATH();
+#endif
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -726,8 +727,8 @@ do_dir:
    JSTR_IO_FTW_DO_REG: avoid calling FUNC on other filetypes.
    JSTR_IO_FTW_DO_DIR: avoid calling FUNC on other filetypes.
 */
-JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_FUNC_MAY_NULL
+JSTR_INLINE
 static void
 jstr_io_ftw(const char *R const dir,
 	    const char *R const fnmatch_glob,
