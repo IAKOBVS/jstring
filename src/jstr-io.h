@@ -522,7 +522,7 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 }
 
 enum {
-	JSTR_IO_MAX_FNAME = 4906,
+	JSTR_IO_MAX_FNAME = 4096,
 };
 
 JSTR_INLINE
@@ -553,8 +553,7 @@ jstr_io_append_path_len(char *R const path_end,
 			const size_t flen)
 {
 	*path_end = '/';
-	memcpy(path_end + 1, fname, flen);
-	path_end[1 + flen] = '\0';
+	memcpy(path_end + 1, fname, flen + 1);
 }
 
 typedef enum jstr_io_ftw_flag_ty {
@@ -604,6 +603,27 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define STAT_MAYBE(filename, st) \
 		do {                     \
 		} while (0)
+#endif
+
+#ifdef _DIRENT_HAVE_D_NAMLEN
+#	ifndef _D_EXACT_NAMLEN
+#		define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
+#	endif
+#	ifndef _D_ALLOC_NAMLEN
+#		define _D_ALLOC_NAMLEN(d) (_D_EXACT_NAMLEN(d) + 1)
+#	endif
+#else
+#	ifndef _D_EXACT_NAMLEN
+#		define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
+#	endif
+#	ifndef _D_ALLOC_NAMLEN
+#		ifdef _DIRENT_HAVE_D_RECLEN
+#			define _D_ALLOC_NAMLEN(d) (((char *)(d) + (d)->d_reclen) - &(d)->d_name[0])
+#		else
+#			define _D_ALLOC_NAMLEN(d) (sizeof(d)->d_name > 1 ? sizeof(d)->d_name \
+									  : _D_EXACT_NAMLEN(d) + 1)
+#		endif
+#	endif
 #endif
 
 /*

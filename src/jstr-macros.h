@@ -839,6 +839,10 @@ case '~':
 #	define JSTR_HAVE_DIRENT_D_TYPE 1
 #endif
 
+#if defined __GLIBC__ && defined _DIRENT_HAVE_D_RECLEN
+#	define JSTR_HAVE_DIRENT_D_RECLEN 1
+#endif
+
 #if defined __GLIBC__ && defined _DIRENT_HAVE_D_NAMLEN
 #	define JSTR_HAVE_DIRENT_D_NAMLEN 1
 #endif
