@@ -490,7 +490,7 @@ jstr_io_alloc_popen_fread(char *R *R const s,
 	if (jstr_unlikely(fp == NULL))
 		goto err;
 	char *p;
-	enum { MINBUF = BUFSIZ };
+	enum { MINBUF = 4096 };
 	char buf[MINBUF];
 	p = buf + fread(buf, 1, MINBUF, fp);
 	if (jstr_unlikely(ferror(fp)))
