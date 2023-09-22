@@ -26,7 +26,7 @@ P_JSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#ifdef JSTR_DEBUG
+#if JSTR_DEBUG
 #	define P_JSTR_MALLOC_ERR(p, malloc_fail)                                    \
 		do {                                                                 \
 			if (jstr_unlikely((p) == NULL)) {                            \

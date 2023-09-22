@@ -43,7 +43,7 @@
 
 /* Check if BASE is aligned on SIZE  */
 #define JSTR_PTR_IS_ALIGNED(base, size) \
-	((((uintptr_t)(base)) & (size - 1)) == 0)
+	((((uintptr_t)(base)) & ((size) - 1)) == 0)
 /* Align a value by rounding down to closest size.
    e.g. Using size of 4096, we get this behavior:
 	{4095, 4096, 4097} = {0, 4096, 4096}.  */

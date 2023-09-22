@@ -427,6 +427,8 @@ jstr_io_isbinary_j(jstr_ty *R const j) JSTR_NOEXCEPT
 
 #if JSTR_HAVE_POPEN
 
+#	if 0 /* broken */
+
 JSTR_FUNC
 static int
 jstr_io_alloc_popen(char *R *R const s,
@@ -435,9 +437,9 @@ jstr_io_alloc_popen(char *R *R const s,
 		    const char *R const cmd) JSTR_NOEXCEPT
 {
 	FILE *R const fp = popen(cmd, "r");
-	char *p;
 	if (jstr_unlikely(fp == NULL))
 		goto err;
+	char *p;
 	enum { MINBUF = BUFSIZ };
 	char buf[MINBUF];
 	p = buf;
@@ -445,8 +447,6 @@ jstr_io_alloc_popen(char *R *R const s,
 	while (((c = getc(fp)) != EOF)
 	       & (p - buf != MINBUF))
 		*p++ = c;
-	if (jstr_unlikely(p - buf == MINBUF))
-		*cap = MINBUF;
 	*cap = P_JSTR_MIN_ALLOC(p - buf);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
@@ -456,9 +456,9 @@ jstr_io_alloc_popen(char *R *R const s,
 		p = *s + (p - buf);
 		const char *old;
 		while ((c = getc(fp)) != EOF) {
-			if (jstr_unlikely((size_t)(p - *s) >= *cap)) {
+			if (jstr_unlikely((size_t)(p - *s) == *cap)) {
 				old = *s;
-				P_JSTR_REALLOCEXACT(*s, *cap, *cap * 2, goto err_close);
+				P_JSTR_REALLOCEXACT(*s, *cap, (size_t)(*cap * JSTR_GROWTH), goto err_close);
 				p = *s + (p - old);
 			}
 			*p++ = c;
@@ -476,6 +476,59 @@ err_close:
 err:
 	return 0;
 }
+
+#	else
+
+JSTR_FUNC
+static int
+jstr_io_alloc_popen_fread(char *R *R const s,
+			  size_t *R const sz,
+			  size_t *R const cap,
+			  const char *R const cmd) JSTR_NOEXCEPT
+{
+	FILE *R const fp = popen(cmd, "r");
+	if (jstr_unlikely(fp == NULL))
+		goto err;
+	char *p;
+	enum { MINBUF = BUFSIZ };
+	char buf[MINBUF];
+	p = buf + fread(buf, 1, MINBUF, fp);
+	*cap = P_JSTR_MIN_ALLOC(p - buf);
+	*cap = JSTR_ALIGN_UP_STR(*cap);
+	*s = (char *)malloc(*cap);
+	P_JSTR_MALLOC_ERR(*s, goto err_close);
+	memcpy(*s, buf, p - buf);
+	*sz = p - buf;
+	if (jstr_unlikely(p - buf == MINBUF)) {
+		p = *s + (p - buf);
+		const char *old;
+		size_t req_size;
+		for (;;) {
+			req_size = *cap - *sz;
+			old = p;
+			p += fread(p, 1, req_size, fp);
+			*sz += (p - old);
+			if ((size_t)(p - old) < req_size)
+				break;
+			if ((size_t)(p - *s) == *cap) {
+				old = *s;
+				P_JSTR_REALLOCEXACT(*s, *cap, (size_t)(*cap * JSTR_GROWTH), goto err_close);
+				p = *s + (p - old);
+			}
+		}
+		*p = '\0';
+	} else {
+		(*s)[p - buf] = '\0';
+	}
+	pclose(fp);
+	return 1;
+err_close:
+	pclose(fp);
+err:
+	return 0;
+}
+
+#	endif
 
 #endif
 
