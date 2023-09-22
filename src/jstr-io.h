@@ -627,7 +627,7 @@ jstr_io_ftw_len(const char *R const dir,
 	char fulpath[JSTR_IO_MAX_FNAME];
 	fulpath[0] = '\0';
 	struct stat st;
-	size_t tmp_dlen;
+	size_t fulpathlen;
 	for (const struct dirent *R ep; (ep = readdir(dp));) {
 		/* Ignore . and .. . */
 		if (jstr_unlikely((ep->d_name)[0] == '.')
@@ -642,7 +642,7 @@ jstr_io_ftw_len(const char *R const dir,
 			goto do_dir;
 #else
 		FILL_PATH();
-		tmp_dlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
+		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
 		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
 		if (S_ISREG(st.st_mode))
@@ -695,9 +695,9 @@ do_dir:
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
 		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dir;
-		tmp_dlen = dlen + 1 + ep->d_namlen;
+		fulpathlen = dlen + 1 + ep->d_namlen;
 #	else
-		tmp_dlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir;
+		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dir;
 #	endif
 #endif
 		if (!(jflags & JSTR_IO_FTW_STAT_REG))
@@ -707,7 +707,7 @@ do_dir:
 			func(fulpath, &st, arg);
 		else
 			func(fulpath, &st, arg);
-		jstr_io_ftw_len(fulpath, tmp_dlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
+		jstr_io_ftw_len(fulpath, fulpathlen, fnmatch_glob, fnmatch_flags, jflags, func, arg);
 		continue;
 	}
 	closedir(dp);
