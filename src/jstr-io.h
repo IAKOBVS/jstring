@@ -564,10 +564,10 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_DO_REG = (JSTR_IO_FTW_MATCH_PATH << 1),
 	/* Call FN on directories. */
 	JSTR_IO_FTW_DO_DIR = (JSTR_IO_FTW_DO_REG << 1),
-	/* Do not search subdirectories. */
-	JSTR_IO_FTW_NO_RECUR = (JSTR_IO_FTW_DO_DIR << 1),
-	/* Do not call stat. The struct passed to FN is undefined. */
-	JSTR_IO_FTW_NO_STAT = (JSTR_IO_FTW_NO_RECUR << 1),
+	/* Do not traverse subdirectories. */
+	JSTR_IO_FTW_NO_SUBDIR = (JSTR_IO_FTW_DO_DIR << 1),
+	/* Do not call stat. Only sb.st_mode is defined. */
+	JSTR_IO_FTW_NO_STAT = (JSTR_IO_FTW_NO_SUBDIR << 1),
 	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NO_STAT << 1),
 } jstr_io_ftw_flag_ty;
@@ -579,18 +579,25 @@ typedef enum jstr_io_ftw_flag_ty {
 	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
+#	define GET_STAT_MODE_MAYBE()                    \
+		do {                                     \
+			sb.st_mode = DTTOIF(ep->d_type); \
+		} while (0)
 #	define GET_FULPATH_MAYBE()    \
 		do {                   \
 			GET_FULPATH(); \
 		} while (0)
-#	define STAT_MAYBE(filename, st)                         \
-		do {                                             \
-			if (jflags & JSTR_IO_FTW_NO_STAT)        \
-				sb.st_mode = DTTOIF(ep->d_type); \
-			else                                     \
-				stat(filename, st);              \
+#	define STAT_MAYBE(filename, st)                  \
+		do {                                      \
+			if (jflags & JSTR_IO_FTW_NO_STAT) \
+				GET_STAT_MODE_MAYBE();    \
+			else                              \
+				stat(filename, st);       \
 		} while (0)
 #else
+#	define GET_STAT_MODE_MAYBE() \
+		do {                  \
+		} while (0)
 #	define GET_FULPATH_MAYBE() \
 		do {                \
 		} while (0)
@@ -607,7 +614,7 @@ typedef enum jstr_io_ftw_flag_ty {
    FN therefore must correctly interpret ARG.
    Jflags:
    JSTR_IO_FTW_MATCH_PATH: match dirpath instead of fulpath.
-   JSTR_IO_FTW_NO_RECUR: do not search subdirectories.
+   JSTR_IO_FTW_NO_SUBDIR: do not search subdirectories.
    JSTR_IO_FTW_NO_STAT: do not call stat. Only sb.mode is defined.
    JSTR_IO_FTW_STAT_REG: only call stat on regular files.
    JSTR_IO_FTW_DO_REG: avoid calling FN on other filetypes.
@@ -685,13 +692,15 @@ do_reg:
 			if (S_ISREG(sb.st_mode))
 #endif
 				STAT_MAYBE(fulpath, &sb);
+			else
+				GET_STAT_MODE_MAYBE();
 		} else {
 			STAT_MAYBE(fulpath, &sb);
 		}
 		fn(fulpath, &sb, arg);
 		continue;
 do_dir:
-		if (jflags & JSTR_IO_FTW_NO_RECUR)
+		if (jflags & JSTR_IO_FTW_NO_SUBDIR)
 			continue;
 		GET_FULPATH_MAYBE();
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -718,6 +727,7 @@ do_dir:
 #undef GET_FULPATH
 #undef GET_FULPATH_MAYBE
 #undef STAT_MAYBE
+#undef GET_STAT_MODE_MAYBE
 
 /*
    Call FN on entries found recursively that matches GLOB.
@@ -727,7 +737,7 @@ do_dir:
    FN therefore must correctly interpret ARG.
    Jflags:
    JSTR_IO_FTW_MATCH_PATH: match FULPATH instead of filename.
-   JSTR_IO_FTW_NO_RECUR: do not search subdirectories.
+   JSTR_IO_FTW_NO_SUBDIR: do not search subdirectories.
    JSTR_IO_FTW_NO_STAT: do not call stat. Passed stat is undefined.
    JSTR_IO_FTW_STAT_REG: only call stat on regular files.
    JSTR_IO_FTW_DO_REG: avoid calling FN on other filetypes.
