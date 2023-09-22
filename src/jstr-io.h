@@ -1,5 +1,5 @@
-#ifndef JSTR_IO_FILETYPE_H
-#define JSTR_IO_FILETYPE_H 1
+#ifndef JSTR_IO_H
+#define JSTR_IO_H 1
 
 #include "jstr-macros.h"
 
@@ -20,18 +20,18 @@ P_JSTR_END_DECLS
 P_JSTR_BEGIN_DECLS
 
 typedef enum {
-	JSTR_IO_FILETYPE_UNKNOWN = 0,
-	JSTR_IO_FILETYPE_TEXT,
-	JSTR_IO_FILETYPE_BINARY,
+	JSTR_IO_FT_UNKNOWN = 0,
+	JSTR_IO_FT_TEXT,
+	JSTR_IO_FT_BINARY,
 } jstr_io_ext_ty;
 
 #define S switch (*ext++)
 #define T  \
 case '\0': \
-	return JSTR_IO_FILETYPE_TEXT
+	return JSTR_IO_FT_TEXT
 #define B  \
 case '\0': \
-	return JSTR_IO_FILETYPE_BINARY
+	return JSTR_IO_FT_BINARY
 JSTR_FUNC_PURE
 JSTR_NOINLINE
 static jstr_io_ext_ty
@@ -292,7 +292,7 @@ p_jstr_io_ext_type(const char *R ext) JSTR_NOEXCEPT
 		}
 		break;
 	}
-	return JSTR_IO_FILETYPE_UNKNOWN;
+	return JSTR_IO_FT_UNKNOWN;
 }
 
 #undef S
@@ -310,7 +310,7 @@ jstr_io_ext_type_len(const char *R filename,
 {
 	filename = (char *)jstr_memrchr(filename, '.', sz);
 	if (filename == NULL)
-		return JSTR_IO_FILETYPE_UNKNOWN;
+		return JSTR_IO_FT_UNKNOWN;
 	return p_jstr_io_ext_type(filename + 1);
 }
 
@@ -324,7 +324,7 @@ jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
 {
 	filename = strrchr(filename, '.');
 	if (filename == NULL)
-		return JSTR_IO_FILETYPE_UNKNOWN;
+		return JSTR_IO_FT_UNKNOWN;
 	return p_jstr_io_ext_type(filename + 1);
 }
 
