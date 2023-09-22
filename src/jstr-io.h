@@ -666,7 +666,7 @@ do_reg:
 				if (fnmatch(fnmatch_glob, ep->d_name, fnmatch_flags))
 					continue;
 			} else {
-				P_JSTR_IO_FILL_PATH();
+				P_JSTR_IO_FILL_PATH_IF_NEEDED();
 				if (fnmatch(fnmatch_glob, fulpath, fnmatch_flags))
 					continue;
 			}
