@@ -861,7 +861,7 @@ jstr_count(const char *R s,
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_len(const char *R *R const save_ptr,
-		const char *R end,
+		const char *R const end,
 		const char *R const ne,
 		const size_t nelen) JSTR_NOEXCEPT
 {
