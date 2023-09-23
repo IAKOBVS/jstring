@@ -876,7 +876,7 @@ jstr_strtok_len(const char *R *R const save_ptr,
 		*save_ptr = s;
 		return NULL;
 	}
-	const char *p = strstr(s, ne);
+	const char *const p = strstr(s, ne);
 	*save_ptr = p ? p : end;
 	return (char *)s;
 }
@@ -901,7 +901,7 @@ jstr_strtok(const char *R *R const save_ptr,
 		*save_ptr = s;
 		return NULL;
 	}
-	const char *p = strstr(s, ne);
+	const char *const p = strstr(s, ne);
 	*save_ptr = p ? p : (s + strlen(s));
 	return (char *)s;
 }
