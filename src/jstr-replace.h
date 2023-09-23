@@ -70,8 +70,7 @@ p_jstr_rplcat_len_f(char *R const s,
 {
 	memmove(s + at + rplclen,
 		s + at + findlen,
-		*sz - (at + findlen));
-	*(s + at + rplclen) = '\0';
+		*sz - (at + findlen) + 1);
 	memcpy(s + at, rplc, rplclen);
 	*sz += rplclen - findlen;
 	return s + at + rplclen;
@@ -318,8 +317,7 @@ jstr_rmchr_len_p(char *R s,
 	s = (char *)memchr(s, c, sz);
 	if (jstr_unlikely(s == NULL))
 		return s + sz;
-	memmove(s, s + 1, sz - (s - start));
-	s[sz - (s - start)] = '\0';
+	memmove(s, s + 1, sz - (s - start) + 1);
 	return s + sz - (s - start);
 }
 
@@ -366,10 +364,8 @@ jstr_rmspn_p(char *R s,
 		if (jstr_unlikely(*p == '\0'))
 			break;
 	}
-	if (jstr_likely(dst != old)) {
-		memmove(dst, old, p - old);
-		dst[p - old] = '\0';
-	}
+	if (jstr_likely(dst != old))
+		memmove(dst, old, p - old + 1);
 	return (char *)(dst + (p - old));
 }
 
@@ -408,8 +404,7 @@ p_jstr_rmallchr_len_p(const p_jstr_flag_use_n_ty flag,
 		P_JSTR_RMALL_IN_PLACE(dst, old, p, 1);
 	if (jstr_unlikely(dst == (unsigned char *)s))
 		return s + sz;
-	memmove(dst, old, end - old);
-	dst[end - old] = '\0';
+	memmove(dst, old, end - old + 1);
 	return (char *)(dst + (end - old));
 }
 
@@ -445,8 +440,7 @@ jstr_rmallchr_p(char *R const s,
 		P_JSTR_RMALL_IN_PLACE(dst, old, p, 1);
 	if (jstr_unlikely(dst == (unsigned char *)s))
 		return (char *)p;
-	memmove(dst, old, p - old);
-	dst[p - old] = '\0';
+	memmove(dst, old, p - old + 1);
 	return (char *)(dst + (p - old));
 #else
 	return jstr_rmallchr_len_p(s, c, strlen(s));
@@ -488,8 +482,7 @@ jstr_rmnc_p(char *R const s,
 		P_JSTR_RMALL_IN_PLACE(dst, old, p, 1);
 	if (jstr_unlikely(dst == (unsigned char *)s))
 		return s + n;
-	memmove(dst, old, p - old);
-	dst[p - old] = '\0';
+	memmove(dst, old, p - old + 1);
 	return (char *)(dst + (p - old));
 #else
 	return jstr_rmnc_len_p(s, c, n, strlen(s));
@@ -513,8 +506,7 @@ jstr_stripspn_p(char *R const s,
 		P_JSTR_RMALL_IN_PLACE(dst, old, p, 1);
 	if (jstr_unlikely(dst == (unsigned char *)s))
 		return (char *)p;
-	memmove(dst, old, p - old);
-	dst[p - old] = '\0';
+	memmove(dst, old, p - old + 1);
 	return (char *)(dst + (p - old));
 }
 
@@ -733,8 +725,7 @@ p_jstr_rmall_len_p(const p_jstr_flag_use_n_ty flag,
 		P_JSTR_RMALL_IN_PLACE(dst, old, p, findlen);
 	if (jstr_unlikely(dst == (unsigned char *)s))
 		return s + sz;
-	memmove(dst, old, end - old);
-	dst[end - old] = '\0';
+	memmove(dst, old, end - old + 1);
 	return (char *)(dst + (end - old));
 }
 
@@ -853,8 +844,7 @@ p_jstr_rplcall_len(const p_jstr_flag_use_n_ty flag,
 	if (jstr_unlikely(dst == (u *)s))
 		return 1;
 	if (rplclen < findlen) {
-		memmove(dst, old, *(u **)s + *sz - old);
-		dst[*(u **)s + *sz - old] = '\0';
+		memmove(dst, old, *(u **)s + *sz - old + 1);
 		*sz = (char *)(dst + (*(u **)s + *sz - old)) - *s;
 	}
 	return 1;
@@ -983,8 +973,7 @@ jstr_trim_len_p(char *R s,
 	while (jstr_isspace(*s++))
 		;
 	--s;
-	memmove(start + 1, s, end - (u *)s);
-	(start + 1)[end - (u *)s] = '\0';
+	memmove(start + 1, s, end - (u *)s + 1);
 	return (char *)(start + (end - (u *)s));
 }
 

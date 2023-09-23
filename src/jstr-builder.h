@@ -244,8 +244,7 @@ jstr_allocexact_assign_len(char *R *R const s,
 	if (jstr_unlikely(!jstr_allocexact(s, sz, cap, srclen + 1)))
 		return 0;
 	*sz = srclen;
-	memcpy(*s, src, srclen);
-	(*s)[srclen] = '\0';
+	memcpy(*s, src, srclen + 1);
 	return 1;
 }
 
@@ -281,8 +280,7 @@ jstr_alloc_assign_len(char *R *R const s,
 {
 	P_JSTR_ALLOC_ONLY(*s, *cap, srclen, goto err);
 	*sz = srclen;
-	memcpy(*s, src, srclen);
-	(*s)[srclen] = '\0';
+	memcpy(*s, src, srclen + 1);
 	return 1;
 err:
 	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
@@ -461,8 +459,7 @@ jstr_allocmore_assign_len(char *R *R const s,
 {
 	P_JSTR_ALLOC_ONLY(*s, *cap, srclen * 2, goto err);
 	*sz = srclen;
-	memcpy(*s, src, srclen);
-	(*s)[srclen] = '\0';
+	memcpy(*s, src, srclen + 1);
 	return 1;
 err:
 	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
@@ -541,8 +538,8 @@ jstr_append_len(char *R *R const s,
 {
 	if (*cap < *sz + srclen)
 		P_JSTR_REALLOC(*s, *cap, *sz + srclen, goto err);
-	memcpy(*s + *sz, src, srclen);
-	*(*s + (*sz += srclen)) = '\0';
+	memcpy(*s + *sz, src, srclen + 1);
+	*sz += srclen;
 	return 1;
 err:
 	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
@@ -583,8 +580,7 @@ jstr_assign_len(char *R *R const s,
 {
 	if (*cap < srclen)
 		P_JSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, goto err);
-	memcpy(*s, src, srclen);
-	(*s)[srclen] = '\0';
+	memcpy(*s, src, srclen + 1);
 	*sz = srclen;
 	return 1;
 err:
@@ -651,8 +647,7 @@ jstr_push_front(char *R *R const s,
 {
 	if (jstr_unlikely(*cap == *sz + 1))
 		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
-	memmove(*s + 1, *s, *sz);
-	(*s)[++*sz] = '\0';
+	memmove(*s + 1, *s, ++*sz);
 	**s = c;
 	return 1;
 err:
