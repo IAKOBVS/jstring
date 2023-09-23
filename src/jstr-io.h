@@ -684,7 +684,7 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 }
 
 enum {
-	JSTR_IO_MAX_FNAME = 4096,
+	JSTR_IO_MAX_PATH = 4096,
 };
 
 JSTR_INLINE
@@ -815,7 +815,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
 		return;
-	char fulpath[JSTR_IO_MAX_FNAME];
+	char fulpath[JSTR_IO_MAX_PATH];
 	fulpath[0] = '\0';
 	struct stat sb;
 	size_t fulpathlen;
