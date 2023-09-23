@@ -187,10 +187,10 @@ jstr_strstrnul(const char *R const hs,
 */
 JSTR_FUNC_PURE
 static char *
-jstr_strtok_len(const char *R *R const save_ptr,
-		const char *R const end,
-		const char *R const ne,
-		const size_t nelen) JSTR_NOEXCEPT
+jstr_strtok_ne_len(const char *R *R const save_ptr,
+		   const char *R const end,
+		   const char *R const ne,
+		   const size_t nelen) JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
 	if (jstr_unlikely(*s == '\0')) {
@@ -213,8 +213,8 @@ jstr_strtok_len(const char *R *R const save_ptr,
 */
 JSTR_FUNC_PURE
 static char *
-jstr_strtok(const char *R *R const save_ptr,
-	    const char *R const ne) JSTR_NOEXCEPT
+jstr_strtok_ne(const char *R *R const save_ptr,
+	       const char *R const ne) JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
 	if (jstr_unlikely(*s == '\0')) {
@@ -229,6 +229,31 @@ jstr_strtok(const char *R *R const save_ptr,
 		return NULL;
 	}
 	*save_ptr = jstr_strstrnul(s, ne);
+	return (char *)s;
+}
+
+#include <stdio.h>
+
+/*
+   Non-destructive strtok.
+   Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok(const char *R *R const save_ptr,
+	    const char *R const delim) JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	s += strspn(s, delim);
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = s + strcspn(s, delim);
 	return (char *)s;
 }
 
