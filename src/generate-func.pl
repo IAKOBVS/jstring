@@ -20,11 +20,11 @@ my $G_CAP_PTN  = 'cap';
 my $G_SIZE_PTN = 'sz';
 my $G_LEN_PTN  = 'len';
 
-my $G_MACRO_INLINE          = $G_NMSPC_UPP . '_INLINE';
-my $G_MACRO_MAYBE_UNUSED    = $G_NMSPC_UPP . '_MAYBE_UNUSED';
-my $G_MACRO_RESTRICT        = $G_NMSPC_UPP . '_RESTRICT';
-my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
-my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
+my $G_MCR_INLINE          = $G_NMSPC_UPP . '_INLINE';
+my $G_MCR_MAYBE_UNUSED    = $G_NMSPC_UPP . '_MAYBE_UNUSED';
+my $G_MCR_RESTRICT        = $G_NMSPC_UPP . '_RESTRICT';
+my $G_MCR_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
+my $G_MCR_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
 
 my $G_RE_FN     = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC)\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
@@ -106,8 +106,8 @@ sub gen_nonmem_funcs
 		{
 			goto CONT;
 		}
-		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
-			$decl =~ s/static/$G_MACRO_INLINE\n$G_MACRO_MAYBE_UNUSED\nstatic/o;
+		if ($decl !~ /$G_MCR_INLINE[^_]/o) {
+			$decl =~ s/static/$G_MCR_INLINE\n$G_MCR_MAYBE_UNUSED\nstatic/o;
 		}
 		my $PTR    = ($decl =~ /\*.*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/) ? 'return ' : '';
@@ -177,18 +177,18 @@ sub gen_struct_funcs
 		}
 		my $RETURN = ($decl =~ /void/) ? '' : 'return ';
 		if ($RETURN) {
-			$decl =~ s/$G_MACRO_RETURNS_NONNULL//;
+			$decl =~ s/$G_MCR_RETURNS_NONNULL//;
 		}
 		my $RETURNS_END_PTR = 0;
 		$decl =~ s/$FN/$FN\_j/;
-		if ($decl !~ /$G_MACRO_INLINE[^_]/o) {
-			$decl =~ s/static/$G_MACRO_INLINE\n$G_MACRO_MAYBE_UNUSED\nstatic/o;
+		if ($decl !~ /$G_MCR_INLINE[^_]/o) {
+			$decl =~ s/static/$G_MCR_INLINE\n$G_MCR_MAYBE_UNUSED\nstatic/o;
 		}
 		if ($FN =~ /_p(?:_|$)/) {
 			$decl =~ s/.*Return value:(?:.|\n)*?(\*\/|\/\/)/$1/;
 			$decl =~ s/_p//;
 			$decl =~ s/static\s*(?:char|void)\s\*/static void /;
-			$decl =~ s/[ \t]*$G_MACRO_WARN_UNUSED[ \t]*\n//o;
+			$decl =~ s/[ \t]*$G_MCR_WARN_UNUSED[ \t]*\n//o;
 			$RETURN          = '';
 			$RETURNS_END_PTR = 1;
 		}
@@ -211,7 +211,7 @@ sub gen_struct_funcs
 		my $CONST            = ($OLD_ARGS[0] =~ 'const')                     ? 'const ' : '';
 		my $CONST_STRUCT_PTR = ($params      =~ /[^\n]*const[^\n]*(?:,|\))/) ? 'const ' : '';
 		my $LAST             = ($params      =~ /,/)                         ? ','      : ')';
-		my $tmp              = "($CONST$G_STR_STRUCT *$G_MACRO_RESTRICT $CONST_STRUCT_PTR" . "j$LAST";
+		my $tmp              = "($CONST$G_STR_STRUCT *$G_MCR_RESTRICT $CONST_STRUCT_PTR" . "j$LAST";
 		$decl =~ s/\(.+?$LAST/$tmp/;
 		$decl =~ s/,\s*\)/)/g;
 		$decl .= "\n{\n\t";
