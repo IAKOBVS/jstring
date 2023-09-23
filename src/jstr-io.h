@@ -683,10 +683,6 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 	return jstr_io_allocexact_file(&j->data, &j->size, &j->capacity, fname, st);
 }
 
-enum {
-	JSTR_IO_MAX_PATH = 4096,
-};
-
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -738,6 +734,10 @@ jstr_io_append_path_len(char *R const path_end,
 #		endif
 #	endif
 #endif
+
+enum {
+	JSTR_IO_MAX_PATH = 4096,
+};
 
 typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with the filename instead of the whole path. */
