@@ -718,6 +718,27 @@ jstr_io_append_path_len(char *R const path_end,
 	memcpy(path_end + 1, fname, flen + 1);
 }
 
+#ifdef _DIRENT_HAVE_D_NAMLEN
+#	ifndef _D_EXACT_NAMLEN
+#		define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
+#	endif
+#	ifndef _D_ALLOC_NAMLEN
+#		define _D_ALLOC_NAMLEN(d) (_D_EXACT_NAMLEN(d) + 1)
+#	endif
+#else
+#	ifndef _D_EXACT_NAMLEN
+#		define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
+#	endif
+#	ifndef _D_ALLOC_NAMLEN
+#		ifdef _DIRENT_HAVE_D_RECLEN
+#			define _D_ALLOC_NAMLEN(d) (((char *)(d) + (d)->d_reclen) - &(d)->d_name[0])
+#		else
+#			define _D_ALLOC_NAMLEN(d) (sizeof(d)->d_name > 1 ? sizeof(d)->d_name \
+									  : _D_EXACT_NAMLEN(d) + 1)
+#		endif
+#	endif
+#endif
+
 typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with the filename instead of the whole path. */
 	JSTR_IO_FTW_MATCH_PATH = (1),
@@ -765,27 +786,6 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define STAT_MAYBE(filename, st) \
 		do {                     \
 		} while (0)
-#endif
-
-#ifdef _DIRENT_HAVE_D_NAMLEN
-#	ifndef _D_EXACT_NAMLEN
-#		define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
-#	endif
-#	ifndef _D_ALLOC_NAMLEN
-#		define _D_ALLOC_NAMLEN(d) (_D_EXACT_NAMLEN(d) + 1)
-#	endif
-#else
-#	ifndef _D_EXACT_NAMLEN
-#		define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
-#	endif
-#	ifndef _D_ALLOC_NAMLEN
-#		ifdef _DIRENT_HAVE_D_RECLEN
-#			define _D_ALLOC_NAMLEN(d) (((char *)(d) + (d)->d_reclen) - &(d)->d_name[0])
-#		else
-#			define _D_ALLOC_NAMLEN(d) (sizeof(d)->d_name > 1 ? sizeof(d)->d_name \
-									  : _D_EXACT_NAMLEN(d) + 1)
-#		endif
-#	endif
 #endif
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *sb);
