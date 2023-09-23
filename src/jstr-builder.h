@@ -27,9 +27,9 @@ P_JSTR_END_DECLS
 #define R JSTR_RESTRICT
 
 #if JSTR_NULLIFY_MEMBERS_ON_FREE
-#	define P_JSTR_NULLIFY_MEMBERS_MAYBE(sz) ((sz) = 0, (cap) = 0)
+#	define P_JSTR_NULLIFY_MEMBERS(sz) ((sz) = 0, (cap) = 0)
 #else
-#	define P_JSTR_NULLIFY_MEMBERS_MAYBE(sz, cap)
+#	define P_JSTR_NULLIFY_MEMBERS(sz, cap)
 #endif
 
 #if JSTR_DEBUG
@@ -199,7 +199,7 @@ jstr_alloc(char *R *R const s,
 	P_JSTR_ALLOC_ONLY(*s, *cap, top, goto err);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -223,7 +223,7 @@ jstr_allocexact(char *R *R const s,
 	P_JSTR_MALLOC_ERR(*s, goto err);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -242,14 +242,11 @@ jstr_allocexact_assign_len(char *R *R const s,
 			   const size_t srclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(!jstr_allocexact(s, sz, cap, srclen + 1)))
-		goto err;
+		return 0;
 	*sz = srclen;
 	memcpy(*s, src, srclen);
 	(*s)[srclen] = '\0';
 	return 1;
-err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
-	return 0;
 }
 
 /*
@@ -288,7 +285,7 @@ jstr_alloc_assign_len(char *R *R const s,
 	(*s)[srclen] = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -340,7 +337,7 @@ jstr_alloc_assignmore(char *R *R const s,
 	*p = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -374,7 +371,7 @@ jstr_alloc_assignmore_j(jstr_ty *R const j,
 	*p = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -410,7 +407,7 @@ jstr_appendmore(char *R *R const s,
 	va_end(ap);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -444,7 +441,7 @@ jstr_appendmore_j(jstr_ty *R const j,
 	va_end(ap);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -468,7 +465,7 @@ jstr_allocmore_assign_len(char *R *R const s,
 	(*s)[srclen] = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -548,7 +545,7 @@ jstr_append_len(char *R *R const s,
 	*(*s + (*sz += srclen)) = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -591,7 +588,7 @@ jstr_assign_len(char *R *R const s,
 	*sz = srclen;
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -633,7 +630,7 @@ jstr_push_back(char *R *R const s,
 	(*s)[++*sz] = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -659,7 +656,7 @@ jstr_push_front(char *R *R const s,
 	**s = c;
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -721,7 +718,7 @@ jstr_reserve(char *R *R const s,
 	P_JSTR_REALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -751,7 +748,7 @@ jstr_reserveexact(char *R *R const s,
 	P_JSTR_REALLOCEXACT(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 

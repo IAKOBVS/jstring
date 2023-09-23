@@ -96,7 +96,7 @@ jstr_slip_len(char *R *R const s,
 	*sz += rplclen;
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 

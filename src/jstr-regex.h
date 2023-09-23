@@ -597,7 +597,7 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 err:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return JSTR_REG_RET_ESPACE;
 #endif
 }
@@ -983,7 +983,7 @@ err:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
 	free(*s);
-	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 #endif
 	return JSTR_REG_RET_ESPACE;
 #undef P_JSTR_CREAT_RPLC_BREF
