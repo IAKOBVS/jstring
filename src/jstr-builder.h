@@ -312,7 +312,7 @@ jstr_alloc_assign(char *R *R const s,
    otherwise 1.
 */
 JSTR_SENTINEL
-JSTR_FUNC
+JSTR_FUNC_MAY_NULL
 static int
 jstr_alloc_assignmore(char *R *R const s,
 		      size_t *R const sz,
@@ -348,7 +348,7 @@ err:
    otherwise 1.
 */
 JSTR_SENTINEL
-JSTR_FUNC
+JSTR_FUNC_MAY_NULL
 static int
 jstr_alloc_assignmore_j(jstr_ty *R const j,
 			...) JSTR_NOEXCEPT
@@ -382,7 +382,7 @@ err:
    otherwise 1.
 */
 JSTR_SENTINEL
-JSTR_FUNC
+JSTR_FUNC_MAY_NULL
 static int
 jstr_appendmore(char *R *R const s,
 		size_t *R const sz,
@@ -418,7 +418,7 @@ err:
    otherwise 1.
 */
 JSTR_SENTINEL
-JSTR_FUNC
+JSTR_FUNC_MAY_NULL
 static int
 jstr_appendmore_j(jstr_ty *R const j,
 		  ...) JSTR_NOEXCEPT

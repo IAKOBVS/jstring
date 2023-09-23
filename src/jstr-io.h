@@ -605,7 +605,7 @@ p_jstr_io_alloc_file(const int alloc_exact,
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
 	P_JSTR_MALLOC_ERR(*s, goto err_close);
-	if (jstr_unlikely(st->st_size != fread(*s, 1, st->st_size, fp)))
+	if (jstr_unlikely((size_t)st->st_size != fread(*s, 1, st->st_size, fp)))
 		goto err_close_free;
 	fclose(fp);
 	(*s)[st->st_size] = '\0';
