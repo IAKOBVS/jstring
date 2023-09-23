@@ -851,6 +851,20 @@ jstr_count(const char *R s,
 	return cnt;
 }
 
+/*
+   Return ptr to start of line, or BEGIN if no newline was found.
+*/
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_start_of_line(const char *const begin,
+		   const char *end) JSTR_NOEXCEPT
+{
+	return (end = (char *)jstr_memrchr(begin, '\n', end - begin))
+	       ? (char *)end + 1
+	       : (char *)begin;
+}
+
 P_JSTR_END_DECLS
 
 #undef BZERO

@@ -892,7 +892,9 @@ do_dir:
 		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - dirpath;
 #	endif
 #endif
-		if (!(jflags & JSTR_IO_FTW_STAT_REG))
+		if (jflags & JSTR_IO_FTW_STAT_REG)
+			GET_STAT_MODE_MAYBE();
+		else
 			STAT_MAYBE(fulpath, &st);
 		if ((jflags & JSTR_IO_FTW_REG)
 		    && (jflags & JSTR_IO_FTW_DIR))

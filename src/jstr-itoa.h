@@ -104,7 +104,6 @@ jstr_itoa_p(char *R nptr,
 P_JSTR_END_DECLS
 
 #undef R
-
 #undef P_JSTR_ITOA_ATTR
 
 #endif /* JSTR_ITOA_H */
