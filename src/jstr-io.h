@@ -6,6 +6,7 @@
 P_JSTR_BEGIN_DECLS
 #include <dirent.h>
 #include <fnmatch.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -735,7 +736,11 @@ jstr_io_append_path_len(char *R const path_end,
 #endif
 
 enum {
+#ifdef PATH_MAX
+	JSTR_IO_MAX_PATH = PATH_MAX,
+#else
 	JSTR_IO_MAX_PATH = 4096,
+#endif
 };
 
 typedef enum jstr_io_ftw_flag_ty {
