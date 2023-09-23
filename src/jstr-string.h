@@ -855,6 +855,53 @@ jstr_count(const char *R s,
 	return cnt;
 }
 
+/* Non-destructive strtok. Instead of nul-termination, use the save_ptr to know the length of the string. */
+JSTR_FUNC_PURE
+static char *
+jstr_strtok_len(const char *R *R const save_ptr,
+		const char *R end,
+		const char *R const ne,
+		const size_t nelen) JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	if (!strncmp(s, ne, nelen))
+		s += nelen;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	const char *p = strstr(s, ne);
+	*save_ptr = p ? p : end;
+	return (char *)s;
+}
+
+/* Non-destructive strtok. Instead of nul-termination, use the save_ptr to know the length of the string. */
+JSTR_FUNC_PURE
+static char *
+jstr_strtok(const char *R *R const save_ptr,
+	    const char *R const ne) JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	const size_t nelen = strlen(ne);
+	if (!strncmp(s, ne, nelen))
+		s += nelen;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	const char *p = strstr(s, ne);
+	*save_ptr = p ? p : (s + strlen(s));
+	return (char *)s;
+}
+
 P_JSTR_END_DECLS
 
 #undef BZERO

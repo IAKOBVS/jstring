@@ -150,6 +150,16 @@ jstr_strchrnul(const char *R const s,
 #endif
 }
 
+JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
+static char *
+jstr_strstrnul(const char *R const hs,
+	       const char *R const ne)
+{
+	const char *const p = strstr(hs, ne);
+	return p ? (char *)p : (char *)hs + strlen(hs);
+}
+
 P_JSTR_END_DECLS
 
 #undef R
