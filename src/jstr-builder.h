@@ -26,6 +26,12 @@ P_JSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
+#if JSTR_NULLIFY_MEMBERS_ON_FREE
+#	define P_JSTR_NULLIFY_MEMBERS_MAYBE(sz) ((sz) = 0, (cap) = 0)
+#else
+#	define P_JSTR_NULLIFY_MEMBERS_MAYBE(sz, cap)
+#endif
+
 #if JSTR_DEBUG
 #	define P_JSTR_MALLOC_ERR(p, malloc_fail)                                    \
 		do {                                                                 \
@@ -190,8 +196,11 @@ jstr_alloc(char *R *R const s,
 	   const size_t top)
 {
 	*sz = 0;
-	P_JSTR_ALLOC_ONLY(*s, *cap, top, return 0);
+	P_JSTR_ALLOC_ONLY(*s, *cap, top, goto err);
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -211,8 +220,11 @@ jstr_allocexact(char *R *R const s,
 	*cap = P_JSTR_MIN_ALLOCEXACT(top);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
-	P_JSTR_MALLOC_ERR(*s, return 0);
+	P_JSTR_MALLOC_ERR(*s, goto err);
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -230,11 +242,14 @@ jstr_allocexact_assign_len(char *R *R const s,
 			   const size_t srclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(!jstr_allocexact(s, sz, cap, srclen + 1)))
-		return 0;
+		goto err;
 	*sz = srclen;
 	memcpy(*s, src, srclen);
 	(*s)[srclen] = '\0';
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -267,11 +282,14 @@ jstr_alloc_assign_len(char *R *R const s,
 		      const char *R const src,
 		      const size_t srclen) JSTR_NOEXCEPT
 {
-	P_JSTR_ALLOC_ONLY(*s, *cap, srclen, return 0);
+	P_JSTR_ALLOC_ONLY(*s, *cap, srclen, goto err);
 	*sz = srclen;
 	memcpy(*s, src, srclen);
 	(*s)[srclen] = '\0';
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -312,14 +330,18 @@ jstr_alloc_assignmore(char *R *R const s,
 		*sz += strlen(arg);
 	va_end(ap);
 	*cap = *sz;
-	P_JSTR_ALLOC_ONLY(*s, *cap, *sz, return 0);
-	char *p = *s;
+	char *p;
+	P_JSTR_ALLOC_ONLY(*s, *cap, *sz, goto err);
+	p = *s;
 	va_start(ap, cap);
 	while ((arg = va_arg(ap, char *)))
 		p = jstr_stpcpy(p, arg);
 	va_end(ap);
 	*p = '\0';
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -342,14 +364,18 @@ jstr_alloc_assignmore_j(jstr_ty *R const j,
 		j->size += strlen(arg);
 	va_end(ap);
 	j->capacity = j->size;
-	P_JSTR_ALLOC_ONLY(j->data, j->capacity, j->size, return 0);
-	char *p = j->data;
+	char *p;
+	P_JSTR_ALLOC_ONLY(j->data, j->capacity, j->size, goto err);
+	p = j->data;
 	va_start(ap, j);
 	while ((arg = va_arg(ap, char *)))
 		p = jstr_stpcpy(p, arg);
 	va_end(ap);
 	*p = '\0';
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -373,15 +399,19 @@ jstr_appendmore(char *R *R const s,
 	while ((arg = va_arg(ap, char *)))
 		arglen += strlen(arg);
 	va_end(ap);
+	char *p;
 	if (*cap < *sz + arglen)
-		P_JSTR_REALLOC(*s, *cap, *sz + arglen, return 0);
-	char *p = *s + *sz;
+		P_JSTR_REALLOC(*s, *cap, *sz + arglen, goto err);
+	p = *s + *sz;
 	*sz += arglen;
 	va_start(ap, cap);
 	while ((arg = va_arg(ap, char *)))
 		p = jstr_stpcpy(p, arg);
 	va_end(ap);
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -403,15 +433,19 @@ jstr_appendmore_j(jstr_ty *R const j,
 	while ((arg = va_arg(ap, char *)))
 		arglen += strlen(arg);
 	va_end(ap);
+	char *p;
 	if (j->capacity < j->size + arglen)
-		P_JSTR_REALLOC(j->data, j->capacity, j->size + arglen, return 0);
-	char *p = j->data + j->size;
+		P_JSTR_REALLOC(j->data, j->capacity, j->size + arglen, goto err);
+	p = j->data + j->size;
 	j->size += arglen;
 	va_start(ap, j);
 	while ((arg = va_arg(ap, char *)))
 		p = jstr_stpcpy(p, arg);
 	va_end(ap);
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -428,11 +462,14 @@ jstr_allocmore_assign_len(char *R *R const s,
 			  const char *R const src,
 			  const size_t srclen) JSTR_NOEXCEPT
 {
-	P_JSTR_ALLOC_ONLY(*s, *cap, srclen * 2, return 0);
+	P_JSTR_ALLOC_ONLY(*s, *cap, srclen * 2, goto err);
 	*sz = srclen;
 	memcpy(*s, src, srclen);
 	(*s)[srclen] = '\0';
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -457,12 +494,16 @@ jstr_allocmore_assign(char *R *R const s,
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_free(char *R *R p) JSTR_NOEXCEPT
+jstr_free(jstr_ty *const j) JSTR_NOEXCEPT
 {
-	free(*p);
+	free(j->data);
 #if JSTR_NULLIFY_PTR_ON_FREE
-	*p = NULL;
-#endif /* JSTR_NULLIFY_PTR_ON_FREE */
+	j->data = NULL;
+#endif
+#if JSTR_NULLIFY_MEMBERS_ON_FREE
+	j->capacity = 0;
+	j->size = 0;
+#endif
 }
 
 JSTR_FUNC_VOID
@@ -502,10 +543,13 @@ jstr_append_len(char *R *R const s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + srclen)
-		P_JSTR_REALLOC(*s, *cap, *sz + srclen, return 0);
+		P_JSTR_REALLOC(*s, *cap, *sz + srclen, goto err);
 	memcpy(*s + *sz, src, srclen);
 	*(*s + (*sz += srclen)) = '\0';
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -541,11 +585,14 @@ jstr_assign_len(char *R *R const s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
-		P_JSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, return 0);
+		P_JSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, goto err);
 	memcpy(*s, src, srclen);
 	(*s)[srclen] = '\0';
 	*sz = srclen;
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -581,10 +628,13 @@ jstr_push_back(char *R *R const s,
 	       const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return 0);
+		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
 	(*s)[*sz] = c;
 	(*s)[++*sz] = '\0';
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -603,11 +653,14 @@ jstr_push_front(char *R *R const s,
 		const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return 0);
+		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
 	memmove(*s + 1, *s, *sz);
 	(*s)[++*sz] = '\0';
 	**s = c;
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /* Pop s[size]. */
@@ -665,8 +718,11 @@ jstr_reserve(char *R *R const s,
 {
 	if (new_cap < *cap)
 		return 1;
-	P_JSTR_REALLOC(*s, *cap, new_cap + 1, return 0);
+	P_JSTR_REALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*
@@ -692,8 +748,11 @@ jstr_reserveexact(char *R *R const s,
 {
 	if (new_cap < *cap)
 		return 1;
-	P_JSTR_REALLOCEXACT(*s, *cap, new_cap + 1, return 0);
+	P_JSTR_REALLOCEXACT(*s, *cap, new_cap + 1, goto err);
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 /*

@@ -91,10 +91,13 @@ jstr_slip_len(char *R *R const s,
 	      const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + rplclen)
-		P_JSTR_REALLOC(*s, *cap, *sz + rplclen, return 0);
+		P_JSTR_REALLOC(*s, *cap, *sz + rplclen, goto err);
 	p_jstr_slip_len_p_f(*s, at, rplc, *sz, rplclen);
 	*sz += rplclen;
 	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS_MAYBE(*sz, *cap);
+	return 0;
 }
 
 JSTR_INLINE
@@ -1042,12 +1045,14 @@ jstr_insert_len(char *R *R const s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (at + srclen > *sz) {
-		P_JSTR_REALLOC(*s, *cap, at + srclen + 1, return 0);
+		P_JSTR_REALLOC(*s, *cap, at + srclen + 1, goto err);
 		*sz = at + srclen;
 		(*s)[*sz] = '\0';
 	}
 	p_jstr_insert_len_f(*s, at, src, srclen);
 	return 1;
+err:
+	return 0;
 }
 
 JSTR_INLINE
