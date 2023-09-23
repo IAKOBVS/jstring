@@ -902,6 +902,18 @@ jstr_line_next(const char *s) JSTR_NOEXCEPT
 	       : NULL;
 }
 
+/*
+   Return the number of lines. Starts with 1.
+*/
+JSTR_FUNC_PURE
+JSTR_INLINE
+static size_t
+jstr_line_number(const char *begin,
+		 const char *end) JSTR_NOEXCEPT
+{
+	return jstr_countc_len(begin, '\n', end - begin) + 1;
+}
+
 P_JSTR_END_DECLS
 
 #undef BZERO
