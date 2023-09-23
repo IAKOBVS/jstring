@@ -886,4 +886,15 @@ enum { JSTR_MEMMEM_THRES = 17 };
 
 #undef JSTR_MEMMEM_THRES
 
+#ifdef __cplusplus
+template <typename T, typename Other>
+static T
+P_JSTR_CAST(T, Other other)
+{
+	return (T)other;
+}
+#else
+#	define P_JSTR_CAST(T, other) other
+#endif /* __cpluslus */
+
 #endif /* JSTR_MACROS_H */

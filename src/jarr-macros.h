@@ -10,17 +10,6 @@ P_JSTR_END_DECLS
 #include "jstr-builder.h"
 #include "jstr-config.h"
 
-#ifdef __cplusplus
-template <typename T, typename Other>
-static T
-P_JARR_CAST(T, Other other)
-{
-	return (T)other;
-}
-#else
-#	define P_JARR_CAST(T, other) other
-#endif /* __cpluslus */
-
 #define P_JARR_DATA_NAME	    data
 #define P_JARR_SIZE_NAME	    size
 #define P_JARR_CAPACITY_NAME capacity
@@ -56,7 +45,7 @@ P_JARR_CAST(T, Other other)
 		P_JARR_CHECK_ARG(j);                                                                               \
 		P_JARR_GROW(P_JARR_CAP(j), new_cap);                                                                \
 		P_JARR_CAP(j) = P_JARR_ALIGN_UP(P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                    \
-		P_JARR_DATA(j) = P_JARR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                   \
+		P_JARR_DATA(j) = P_JSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                   \
 		P_JSTR_MALLOC_ERR(P_JARR_DATA(j), malloc_fail);                                                                                       \
 		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                  \
 	} while (0)
@@ -64,7 +53,7 @@ P_JARR_CAST(T, Other other)
 	do {                                                                                                       \
 		P_JARR_CHECK_ARG(j);                                                                                \
 		P_JARR_CAP(j) = P_JARR_ALIGN_UP(P_JARR_CAP(j) * P_JARR_ELEMSZ);                                        \
-		P_JARR_DATA(j) = P_JARR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j))); \
+		P_JARR_DATA(j) = P_JSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j))); \
 		P_JSTR_MALLOC_ERR(P_JARR_DATA(j), malloc_fail);                                                     \
 		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                   \
 	} while (0)

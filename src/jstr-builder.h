@@ -49,14 +49,14 @@ P_JSTR_END_DECLS
 		} while (0)
 #endif
 
-#define P_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail) \
-	do {                                             \
-		JSTR_ASSERT_IS_STR(p);                   \
-		JSTR_ASSERT_IS_SIZE(old_cap);            \
-		JSTR_ASSERT_IS_SIZE(new_cap);            \
-		old_cap = p_jstr_grow(old_cap, new_cap); \
-		(p) = (char *)realloc(p, old_cap);       \
-		P_JSTR_MALLOC_ERR(p, malloc_fail);       \
+#define P_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail)   \
+	do {                                               \
+		JSTR_ASSERT_IS_STR(p);                     \
+		JSTR_ASSERT_IS_SIZE(old_cap);              \
+		JSTR_ASSERT_IS_SIZE(new_cap);              \
+		old_cap = p_jstr_grow(old_cap, new_cap);   \
+		(p) = P_JSTR_CAST(p, realloc(p, old_cap)); \
+		P_JSTR_MALLOC_ERR(p, malloc_fail);         \
 	} while (0)
 #define P_JSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
 	do {                                                  \
@@ -64,7 +64,7 @@ P_JSTR_END_DECLS
 		JSTR_ASSERT_IS_SIZE(old_cap);                 \
 		JSTR_ASSERT_IS_SIZE(new_cap);                 \
 		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);       \
-		(p) = (char *)realloc(p, old_cap);            \
+		(p) = P_JSTR_CAST(p, realloc(p, old_cap));    \
 		P_JSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
 #define P_JSTR_MIN_ALLOC(new_cap)                           \
@@ -75,12 +75,12 @@ P_JSTR_END_DECLS
 	(((new_cap) < JSTR_MIN_CAP)    \
 	 ? (JSTR_MIN_CAP)              \
 	 : (new_cap))
-#define P_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail) \
-	do {                                        \
-		(cap) = P_JSTR_MIN_ALLOC(new_cap);  \
-		(cap) = JSTR_ALIGN_UP_STR(cap);     \
-		(p) = (char *)malloc((cap));        \
-		P_JSTR_MALLOC_ERR((p), do_fail);    \
+#define P_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail)  \
+	do {                                         \
+		(cap) = P_JSTR_MIN_ALLOC(new_cap);   \
+		(cap) = JSTR_ALIGN_UP_STR(cap);      \
+		(p) = P_JSTR_CAST(p, malloc((cap))); \
+		P_JSTR_MALLOC_ERR((p), do_fail);     \
 	} while (0)
 
 P_JSTR_BEGIN_DECLS
