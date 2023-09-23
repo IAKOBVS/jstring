@@ -855,7 +855,9 @@ jstr_count(const char *R s,
 	return cnt;
 }
 
-/* Non-destructive strtok. Instead of nul-termination, use the save_ptr to know the length of the string. */
+/*
+   Non-destructive strtok. Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_len(const char *R *R const save_ptr,
@@ -879,7 +881,9 @@ jstr_strtok_len(const char *R *R const save_ptr,
 	return (char *)s;
 }
 
-/* Non-destructive strtok. Instead of nul-termination, use the save_ptr to know the length of the string. */
+/*
+   Non-destructive strtok. Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
 JSTR_FUNC_PURE
 static char *
 jstr_strtok(const char *R *R const save_ptr,
