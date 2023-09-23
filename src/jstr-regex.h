@@ -952,7 +952,7 @@ p_jstr_reg_base_rplcall_bref_len(const p_jstr_flag_use_n_ty flag,
 #	pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak"
 #	pragma GCC diagnostic push
 #endif
-				/* False-positive. */
+				/* False-positive leak. */
 				P_JSTR_MALLOC_ERR(rdst, goto err); /* NOLINT */
 #if defined __GNUC__ || defined __clang__
 #	pragma GCC diagnostic pop
