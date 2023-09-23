@@ -7,8 +7,6 @@ usage();
 my $G_FNAME = $ARGV[0];
 my $G_DIR_C = 'jstr';
 
-my $G_IGNORE_FILE = 'private';
-
 my $G_NMSPC      = 'jstr';
 my $G_NMSPC_UPP  = uc($G_NMSPC);
 my $G_STR_STRUCT = 'jstr_ty';
@@ -94,9 +92,9 @@ sub gen_nonmem_funcs
 		if ($_ !~ $G_RE_FUNC) {
 			goto CONT;
 		}
-		my $decl      = $1;
-		my $FN = $2;
-		my $params    = $3;
+		my $decl   = $1;
+		my $FN     = $2;
+		my $params = $3;
 		if (!$decl && !$FN && !$params) {
 			goto CONT;
 		}
@@ -106,8 +104,7 @@ sub gen_nonmem_funcs
 		my $tmp = $FN;
 		$tmp =~ s/$G_LEN_FUNC_SUFFIX//o;
 		if (   ($g_in_h =~ /$tmp\(/)
-			|| ($G_FNAME   =~ /$G_IGNORE_FILE/o)
-			|| ($_         !~ $G_RE_DEFINE)
+			|| ($_  !~ $G_RE_DEFINE)
 			|| ($FN =~ /^p/))
 		{
 			goto CONT;
@@ -165,9 +162,9 @@ sub gen_struct_funcs
 		if ($_ !~ $G_RE_FUNC) {
 			goto CONT;
 		}
-		my $decl      = $1;
-		my $FN = $2;
-		my $params    = $3;
+		my $decl   = $1;
+		my $FN     = $2;
+		my $params = $3;
 		if (!$decl && !$FN && !$params) {
 			goto CONT;
 		}
@@ -175,11 +172,10 @@ sub gen_struct_funcs
 		my $HAS_SZ  = ($params =~ /$G_SIZE_PTN(?:,|\))/o) ? 1 : 0;
 		my $HAS_CAP = ($params =~ /$G_CAP_PTN(?:,|\))/o)  ? 1 : 0;
 		if (   (!$HAS_SZ && !$HAS_CAP)
-			|| ($G_FNAME   =~ /$G_IGNORE_FILE/o)
-			|| ($params    =~ /\.\.\./)
-			|| ($_         !~ $G_RE_DEFINE)
-			|| ($FN =~ /^p/)
-			|| ($g_in_h    =~ /$FN\_j/))
+			|| ($params =~ /\.\.\./)
+			|| ($_      !~ $G_RE_DEFINE)
+			|| ($FN     =~ /^p/)
+			|| ($g_in_h =~ /$FN\_j/))
 		{
 			goto CONT;
 		}
