@@ -232,8 +232,6 @@ jstr_strtok_ne(const char *R *R const save_ptr,
 	return (char *)s;
 }
 
-#include <stdio.h>
-
 /*
    Non-destructive strtok.
    Instead of nul-termination, use the save_ptr to know the length of the string.
