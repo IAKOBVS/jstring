@@ -852,17 +852,54 @@ jstr_count(const char *R s,
 }
 
 /*
-   Return ptr to start of line, or BEGIN if no newline was found.
+   Return value:
+   ptr to beginning of line;
+   BEGIN if no newline was found.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_start_of_line(const char *const begin,
-		   const char *end) JSTR_NOEXCEPT
+jstr_line_begin(const char *const begin,
+		const char *end) JSTR_NOEXCEPT
 {
 	return (end = (char *)jstr_memrchr(begin, '\n', end - begin))
 	       ? (char *)end + 1
 	       : (char *)begin;
+}
+
+/*
+   Return value:
+   ptr to next line;
+   NULL if no newline was found.
+*/
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_line_next_len(const char *const begin,
+		   const char *end) JSTR_NOEXCEPT
+{
+	return (end = (char *)memchr(begin, '\n', end - begin))
+	       ? ((*(end + 1) != '\0')
+		  ? (char *)end + 1
+		  : NULL)
+	       : NULL;
+}
+
+/*
+   Return value:
+   ptr to next line;
+   NULL if no newline was found.
+*/
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_line_next(const char *s) JSTR_NOEXCEPT
+{
+	return (s = strchr(s, '\n'))
+	       ? ((*(s + 1) != '\0')
+		  ? (char *)s + 1
+		  : NULL)
+	       : NULL;
 }
 
 P_JSTR_END_DECLS
