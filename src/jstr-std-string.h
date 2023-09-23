@@ -150,6 +150,27 @@ jstr_strchrnul(const char *R const s,
 #endif
 }
 
+#if defined __GNUC__ || defined __clang__
+#	pragma GCC diagnostic ignored "-Wunused-parameter"
+#	pragma GCC diagnostic push
+#endif
+
+JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
+static char *
+jstr_strstrnul_len(const char *R const hs,
+		   const size_t hslen,
+		   const char *R const ne,
+		   const size_t nelen)
+{
+	const char *const p = JSTR_STRSTR_LEN(hs, hslen, ne, nelen);
+	return p ? (char *)p : (char *)hs + hslen;
+}
+
+#if defined __GNUC__ || defined __clang__
+#	pragma GCC diagnostic pop
+#endif
+
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
@@ -158,6 +179,55 @@ jstr_strstrnul(const char *R const hs,
 {
 	const char *const p = strstr(hs, ne);
 	return p ? (char *)p : (char *)hs + strlen(hs);
+}
+
+/*
+   Non-destructive strtok. Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok_len(const char *R *R const save_ptr,
+		const char *R const end,
+		const char *R const ne,
+		const size_t nelen) JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	if (!strncmp(s, ne, nelen))
+		s += nelen;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = jstr_strstrnul_len(s, end - s, ne, nelen);
+	return (char *)s;
+}
+
+/*
+   Non-destructive strtok. Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok(const char *R *R const save_ptr,
+	    const char *R const ne) JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	const size_t nelen = strlen(ne);
+	if (!strncmp(s, ne, nelen))
+		s += nelen;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = jstr_strstrnul(s, ne);
+	return (char *)s;
 }
 
 P_JSTR_END_DECLS
