@@ -759,7 +759,7 @@ static int
 jstr_startswith(const char *R const hs,
 		const char *R const ne) JSTR_NOEXCEPT
 {
-	return jstr_startswith_len(hs, ne, strlen(hs), strlen(ne));
+	return strncmp(hs, ne, strlen(ne));
 }
 
 /*
