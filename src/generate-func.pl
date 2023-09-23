@@ -26,10 +26,10 @@ my $G_MACRO_RESTRICT        = $G_NMSPC_UPP . '_RESTRICT';
 my $G_MACRO_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MACRO_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
 
-my $G_RE_FUNC   = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC)\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
+my $G_RE_FN     = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC)\_.*?)\(((?:.|\n)*?\)\s*\w*NOEXCEPT))/;
 my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
 
-my $G_LEN_FUNC_SUFFIX = '_len';
+my $G_LEN_FN_SUFFIX = '_len';
 
 my $g_in_h = get_file_str($G_FNAME);
 $g_in_h = tidy_newlines($g_in_h);
@@ -89,20 +89,17 @@ sub gen_nonmem_funcs
 	my @OLD_LNS = split(/\n\n/, $FILE_STR);
 	my @new_lns;
 	foreach (@OLD_LNS) {
-		if ($_ !~ $G_RE_FUNC) {
-			goto CONT;
-		}
 		my $decl   = $1;
 		my $FN     = $2;
 		my $params = $3;
-		if (!$decl && !$FN && !$params) {
-			goto CONT;
-		}
-		if ($FN !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FUNC_SUFFIX(?:_|$)/o) {
+		if (   ($_ !~ $G_RE_FN)
+			|| (!$decl && !$FN && !$params)
+			|| ($FN !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FN_SUFFIX(?:_|$)/o))
+		{
 			goto CONT;
 		}
 		my $tmp = $FN;
-		$tmp =~ s/$G_LEN_FUNC_SUFFIX//o;
+		$tmp =~ s/$G_LEN_FN_SUFFIX//o;
 		if (   ($g_in_h =~ /$tmp\(/)
 			|| ($_  !~ $G_RE_DEFINE)
 			|| ($FN =~ /^p/))
@@ -123,7 +120,7 @@ sub gen_nonmem_funcs
 				push(@new_args, $_);
 			}
 		}
-		$decl =~ s/($G_NMSPC\_\w*)$G_LEN_FUNC_SUFFIX(\w*\()/$1$2/o;
+		$decl =~ s/($G_NMSPC\_\w*)$G_LEN_FN_SUFFIX(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_regex_size_ptr($FN, $params);
 		$decl .= "$RETURN$FN(";
@@ -159,13 +156,12 @@ sub gen_struct_funcs
 	my (@LINES) = @_;
 	my $out_h;
 	foreach (@LINES) {
-		if ($_ !~ $G_RE_FUNC) {
-			goto CONT;
-		}
 		my $decl   = $1;
 		my $FN     = $2;
 		my $params = $3;
-		if (!$decl && !$FN && !$params) {
+		if (   ($_ !~ $G_RE_FN)
+			|| (!$decl && !$FN && !$params))
+		{
 			goto CONT;
 		}
 		$params =~ s/\)/,/;
