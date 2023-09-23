@@ -862,9 +862,8 @@ static char *
 jstr_line_begin(const char *const begin,
 		const char *end) JSTR_NOEXCEPT
 {
-	return (end = (char *)jstr_memrchr(begin, '\n', end - begin))
-	       ? (char *)end + 1
-	       : (char *)begin;
+	end = (char *)jstr_memrchr(begin, '\n', end - begin);
+	return (char *)(end ? end + 1 : begin);
 }
 
 /*
@@ -878,7 +877,8 @@ static char *
 jstr_line_next_len(const char *const begin,
 		   const char *end) JSTR_NOEXCEPT
 {
-	return (end = (char *)memchr(begin, '\n', end - begin))
+	end = (char *)memchr(begin, '\n', end - begin);
+	return end
 	       ? ((*(end + 1) != '\0')
 		  ? (char *)end + 1
 		  : NULL)
@@ -895,7 +895,8 @@ JSTR_INLINE
 static char *
 jstr_line_next(const char *s) JSTR_NOEXCEPT
 {
-	return (s = strchr(s, '\n'))
+	s = strchr(s, '\n');
+	return s
 	       ? ((*(s + 1) != '\0')
 		  ? (char *)s + 1
 		  : NULL)
