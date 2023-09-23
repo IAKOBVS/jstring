@@ -788,6 +788,8 @@ typedef enum jstr_io_ftw_flag_ty {
 #	endif
 #endif
 
+typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *sb);
+
 /*
    Call FN on entries found recursively that matches GLOB.
    If either the REG or DIR flag is used, FN will not be called on other filetypes.
@@ -809,8 +811,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 		const char *R const fn_glob,
 		const int fn_flags,
 		const jstr_io_ftw_flag_ty jflags,
-		void (*fn)(const char *dirpath, const struct stat *sb, const void *arg),
-		const void *R const arg)
+		jstr_io_ftw_func_ty fn)
 {
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
@@ -880,7 +881,7 @@ do_reg:
 		} else {
 			STAT_MAYBE(fulpath, &sb);
 		}
-		fn(fulpath, &sb, arg);
+		fn(fulpath, &sb);
 		continue;
 do_dir:
 		if (jflags & JSTR_IO_FTW_NO_SUBDIR)
@@ -898,10 +899,10 @@ do_dir:
 			STAT_MAYBE(fulpath, &sb);
 		if ((jflags & JSTR_IO_FTW_REG)
 		    && (jflags & JSTR_IO_FTW_DIR))
-			fn(fulpath, &sb, arg);
+			fn(fulpath, &sb);
 		else
-			fn(fulpath, &sb, arg);
-		jstr_io_ftw_len(fulpath, fulpathlen, fn_glob, fn_flags, jflags, fn, arg);
+			fn(fulpath, &sb);
+		jstr_io_ftw_len(fulpath, fulpathlen, fn_glob, fn_flags, jflags, fn);
 		continue;
 	}
 	closedir(dp);
@@ -933,10 +934,9 @@ jstr_io_ftw(const char *R const dirpath,
 	    const char *R const fn_glob,
 	    const int fn_flags,
 	    const jstr_io_ftw_flag_ty jflags,
-	    void (*fn)(const char *dirpath, const struct stat *sb, const void *arg),
-	    const void *R const arg)
+	    jstr_io_ftw_func_ty fn)
 {
-	jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn, arg);
+	jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn);
 }
 
 P_JSTR_END_DECLS
