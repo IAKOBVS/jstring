@@ -806,9 +806,6 @@ jstr_countc_len(const char *R s,
   occurences of NE in HS.
 */
 JSTR_FUNC_PURE
-#if !JSTR_HAVE_MEMMEM
-JSTR_DEPRECATED("SIZE may be wasted since memmem is not available.")
-#endif
 static size_t
 jstr_count_len(const char *R s,
 	       const char *R const find,
