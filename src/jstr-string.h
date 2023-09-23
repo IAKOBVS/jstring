@@ -821,11 +821,10 @@ jstr_count_len(const char *R s,
 #if JSTR_HAVE_MEMMEM
 	const char *const end = s + sz;
 	while ((s = JSTR_STRSTR_LEN(s, end - s, find, findlen)))
-		++cnt, s += findlen;
 #else
 	while ((s = strstr(s, find)))
-		++cnt, s += findlen;
 #endif
+		++cnt, s += findlen;
 	return cnt;
 }
 
