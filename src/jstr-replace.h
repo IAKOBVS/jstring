@@ -70,7 +70,8 @@ p_jstr_rplcat_len_f(char *R const s,
 {
 	memmove(s + at + rplclen,
 		s + at + findlen,
-		*sz - (at + findlen) + 1);
+		*sz - (at + findlen));
+	*(s + at + rplclen) = '\0';
 	memcpy(s + at, rplc, rplclen);
 	*sz += rplclen - findlen;
 	return s + at + rplclen;
