@@ -474,7 +474,7 @@ jstr_io_fwrite_file_j(const jstr_ty *R const j,
 
 #if JSTR_HAVE_POPEN
 
-#	if 0 /* broken: reads fewer characters. */
+#	if 0 /* broken */
 
 JSTR_FUNC
 static int
@@ -758,7 +758,7 @@ typedef enum jstr_io_ftw_flag_ty {
 	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NOSTAT << 1),
 	/* Ignore hidden entries. */
-	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1)
+	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1),
 } jstr_io_ftw_flag_ty;
 
 #define GET_PATH()                                      \
@@ -795,6 +795,12 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
+#if JSTR_ENDIAN_LITTLE
+#	define SH <<
+#else
+#	define SH >>
+#endif
+
 JSTR_PURE
 JSTR_INLINE
 static int
@@ -804,6 +810,8 @@ p_jstr_io_is_relative(const char *R const fname)
 	       && ((fname[1] == '\0')
 		   || ((fname[1] == '.') && (fname[2] == '\0')));
 }
+
+#undef SH
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *st);
 
