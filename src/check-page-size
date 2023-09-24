@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "$(sed "s/#[ \t]*define[ \t]*JSTR_MAX_STACK_ARRAY.*/#define JSTR_MAX_STACK_ARRAY $(getconf PAGE_SIZE)/" ./jstr-macros.h)" > ./jstr-macros.h
