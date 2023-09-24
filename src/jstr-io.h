@@ -5,12 +5,12 @@
 
 P_JSTR_BEGIN_DECLS
 #include <dirent.h>
-#include <unistd.h>
 #include <fnmatch.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <unistd.h>
 P_JSTR_END_DECLS
 
 #include "jstr-builder.h"
@@ -793,6 +793,37 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
+#if JSTR_ENDIAN_LITTLE
+#	define SH <<
+#else
+#	define SH >>
+#endif
+
+JSTR_PURE
+JSTR_INLINE
+static int
+p_jstr_io_is_relative(const char *R const fname)
+{
+	typedef const uint16_t w2 JSTR_MAY_ALIAS;
+	typedef const uint32_t w4 JSTR_MAY_ALIAS;
+	w2 n1 = '.' | '\0' SH 8;
+	w4 n2 = '.' | '.' SH 8 | '\0' SH 16;
+#if JSTR_HAVE_ATTR_MAY_ALIAS && 0
+	return (*(w2 *)fname != n1) & (*(w4 *)fname != n2);
+#else
+	w4 h = fname[0] | fname[1] SH 8 | fname[2] SH 16;
+	return ((w2)h != n1) & (h != n2);
+#	if 0
+	if ((fname[0] == '.')
+	    && (((fname[1] == '\0'))
+		|| (((fname[1] == '.'))
+		    && (fname[2] == '\0'))))
+#	endif
+#endif
+}
+
+#undef SH
+
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *st);
 
 /*
@@ -825,10 +856,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	size_t fulpathlen;
 	for (const struct dirent *R ep; (ep = readdir(dp));) {
 		/* Ignore . and .. . */
-		if (jstr_unlikely((ep->d_name)[0] == '.')
-		    && (jstr_unlikely(((ep->d_name)[1] == '\0'))
-			|| ((jstr_unlikely((ep->d_name)[1] == '.'))
-			    && jstr_unlikely((ep->d_name)[2] == '\0'))))
+		if (p_jstr_io_is_relative(ep->d_name))
 			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
