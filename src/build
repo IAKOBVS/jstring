@@ -1,4 +1,5 @@
 #!/bin/sh
 ./check-little-endian
+./check-page-size
 ./update-glibc
 ./build-funcs
