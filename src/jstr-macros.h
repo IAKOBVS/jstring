@@ -1,8 +1,22 @@
 #ifndef JSTR_MACROS_H
 #define JSTR_MACROS_H 1
 
-#include "jstr-config.h"
 #include <features.h>
+#include <stdlib.h>
+#include "jstr-config.h"
+
+#if defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__
+#	define JSTR_HAVE_VLA 0
+#else
+#	include <alloca.h>
+#	define JSTR_HAVE_VLA 1
+#endif
+
+#ifdef alloca
+#	define JSTR_HAVE_ALLOCA 1
+#else
+#	define JSTR_HAVE_ALLOCA 0
+#endif
 
 #include "jstr-pointer-arith.h"
 #define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)

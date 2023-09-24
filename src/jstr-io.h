@@ -742,6 +742,11 @@ enum {
 #else
 	JSTR_IO_MAX_PATH = 4096,
 #endif
+#ifdef NAME_MAX
+	JSTR_IO_NAME_MAX = NAME_MAX
+#else
+	JSTR_IO_NAME_MAX = 255
+#endif
 };
 
 typedef enum jstr_io_ftw_flag_ty {
@@ -831,7 +836,15 @@ jstr_io_ftw_len(const char *R const dirpath,
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
 		return;
+#if JSTR_HAVE_VLA
+	char fulpath[dlen + JSTR_IO_NAME_MAX + 1];
+#else
+#	if JSTR_HAVE_ALLOCA
+	char *R fulpath = P_JSTR_CAST(fulpath, alloca(dlen + JSTR_IO_NAME_MAX + 1));
+#	else
 	char fulpath[JSTR_IO_MAX_PATH];
+#	endif
+#endif
 	fulpath[0] = '\0';
 	struct stat st;
 	size_t fulpathlen;
