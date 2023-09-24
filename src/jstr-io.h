@@ -856,7 +856,8 @@ jstr_io_ftw_len(const char *R const dirpath,
 	fulpath[0] = '\0';
 	struct stat st;
 	size_t fulpathlen;
-	for (const struct dirent *R ep; (ep = readdir(dp));) {
+	const struct dirent *R ep;
+	while ((ep = readdir(dp))) {
 		/* Ignore . and .. . */
 		if (p_jstr_io_is_relative(ep->d_name)
 		    | ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
