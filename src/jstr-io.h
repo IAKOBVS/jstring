@@ -918,7 +918,9 @@ do_reg:
 		fn(fulpath, &st);
 		continue;
 do_dir:
-		if (jflags & JSTR_IO_FTW_NOSUBDIR)
+		if ((jflags & JSTR_IO_FTW_NOSUBDIR)
+		    && (jflags & JSTR_IO_FTW_REG)
+		    && !(jflags & JSTR_IO_FTW_DIR))
 			continue;
 		GET_PATH_MAYBE();
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -938,6 +940,8 @@ do_dir:
 			fn(fulpath, &st);
 		else
 			fn(fulpath, &st);
+		if (jflags & JSTR_IO_FTW_NOSUBDIR)
+			continue;
 		jstr_io_ftw_len(fulpath, fulpathlen, fn_glob, fn_flags, jflags, fn);
 		continue;
 	}
