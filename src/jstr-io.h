@@ -24,7 +24,7 @@ P_JSTR_BEGIN_DECLS
 typedef enum {
 	JSTR_IO_FT_UNKNOWN = 0,
 	JSTR_IO_FT_TEXT,
-	JSTR_IO_FT_BINARY,
+	JSTR_IO_FT_BINARY
 } jstr_io_ext_ty;
 
 #define S switch (*ext++)
@@ -758,7 +758,7 @@ typedef enum jstr_io_ftw_flag_ty {
 	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NOSTAT << 1),
 	/* Ignore hidden entries. */
-	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1),
+	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1)
 } jstr_io_ftw_flag_ty;
 
 #define GET_PATH()                                      \

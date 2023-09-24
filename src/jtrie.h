@@ -15,7 +15,7 @@ P_JSTR_BEGIN_DECLS
 
 typedef enum {
 	JTRIE_RET_NOERROR = 0,
-	JTRIE_RET_MALLOC_ERROR = 1,
+	JTRIE_RET_MALLOC_ERROR = 1
 } jtrie_errcode_ty;
 
 typedef struct jtrie_node_ty {
@@ -78,7 +78,7 @@ jtrie_insert(jtrie_node_ty *R const root,
 
 typedef enum {
 	PJTRIE_FLAG_REMOVE_NOT_PREFIXES = 0,
-	PJTRIE_FLAG_REMOVE_PREFIXES = 1,
+	PJTRIE_FLAG_REMOVE_PREFIXES = 1
 } p_jtrie_flag_rm_prefixes_ty;
 
 JSTR_NONNULL_ALL

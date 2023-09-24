@@ -87,7 +87,7 @@ typedef enum {
 #	define JSTR_REG_ESIZE JSTR_REG_ESIZE
 #endif
 #ifdef REG_RET_ERPAREN
-	JSTR_REG_ERPAREN = REG_RET_ERPAREN,
+	JSTR_REG_ERPAREN = REG_RET_ERPAREN
 #	define JSTR_REG_ERPAREN JSTR_REG_ERPAREN
 #endif
 } jstr_reg_errcode_ty;
