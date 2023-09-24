@@ -795,12 +795,6 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
-#if JSTR_ENDIAN_LITTLE
-#	define SH <<
-#else
-#	define SH >>
-#endif
-
 JSTR_PURE
 JSTR_INLINE
 static int
@@ -810,8 +804,6 @@ p_jstr_io_is_relative(const char *R const fname)
 	       && ((fname[1] == '\0')
 		   || ((fname[1] == '.') && (fname[2] == '\0')));
 }
-
-#undef SH
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *st);
 
