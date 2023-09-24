@@ -840,7 +840,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	char fulpath[dlen + JSTR_IO_NAME_MAX + 1];
 #else
 #	if JSTR_HAVE_ALLOCA
-	char *R fulpath = P_JSTR_CAST(fulpath, alloca(dlen + JSTR_IO_NAME_MAX + 1));
+	char *R fulpath = (char *)alloca(dlen + JSTR_IO_NAME_MAX + 1);
 #	else
 	char fulpath[JSTR_IO_MAX_PATH];
 #	endif
