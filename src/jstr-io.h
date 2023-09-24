@@ -751,9 +751,9 @@ typedef enum jstr_io_ftw_flag_ty {
 	/* Call FN on directories. */
 	JSTR_IO_FTW_DIR = (JSTR_IO_FTW_REG << 1),
 	/* Do not traverse subdirectories. */
-	JSTR_IO_FTW_NO_SUBDIR = (JSTR_IO_FTW_DIR << 1),
+	JSTR_IO_FTW_NOSUBDIR = (JSTR_IO_FTW_DIR << 1),
 	/* Do not call stat. Only sb.st_mode is defined. */
-	JSTR_IO_FTW_NOSTAT = (JSTR_IO_FTW_NO_SUBDIR << 1),
+	JSTR_IO_FTW_NOSTAT = (JSTR_IO_FTW_NOSUBDIR << 1),
 	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NOSTAT << 1),
 } jstr_io_ftw_flag_ty;
@@ -802,7 +802,7 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *st);
    REG: avoid calling FN on other filetypes.
    DIR: avoid calling FN on other filetypes.
    MATCH_PATH: match dirpath instead of fulpath.
-   NO_SUBDIR: do not traverse subdirectories.
+   NOSUBDIR: do not traverse subdirectories.
    NOSTAT: do not call stat. Only st.mode is defined.
    STAT_REG: only call stat on regular files.
 */
@@ -886,7 +886,7 @@ do_reg:
 		fn(fulpath, &st);
 		continue;
 do_dir:
-		if (jflags & JSTR_IO_FTW_NO_SUBDIR)
+		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
 		GET_PATH_MAYBE();
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -925,7 +925,7 @@ do_dir:
    REG: avoid calling FN on other filetypes.
    DIR: avoid calling FN on other filetypes.
    MATCH_PATH: match FULPATH instead of filename.
-   NO_SUBDIR: do not traverse subdirectories.
+   NOSUBDIR: do not traverse subdirectories.
    NOSTAT: do not call stat. Only st.mode is defined.
    STAT_REG: only call stat on regular files.
 */
