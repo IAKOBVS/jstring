@@ -804,17 +804,17 @@ JSTR_INLINE
 static int
 p_jstr_io_is_relative(const char *R const fname)
 {
-	typedef const uint16_t w2 JSTR_MAY_ALIAS;
-	typedef const uint32_t w4 JSTR_MAY_ALIAS;
-	w2 n1 = '.' | '\0' SH 8;
-	w4 n2 = '.' | '.' SH 8 | '\0' SH 16;
-#if JSTR_HAVE_ATTR_MAY_ALIAS && 0
-	return (*(w2 *)fname != n1) & (*(w4 *)fname != n2);
+	const uint16_t n1 = '.' | '\0' SH 8;
+	const uint32_t n2 = '.' | '.' SH 8 | '\0' SH 16;
+#if JSTR_HAVE_ATTR_MAY_ALIAS
+	typedef uint16_t w2 JSTR_MAY_ALIAS;
+	typedef uint32_t w4 JSTR_MAY_ALIAS;
+	return (*(w2 *)fname == n1) | ((*(w4 *)fname | '\0' SH 24) == n2);
 #else
-	w4 h = fname[0] | fname[1] SH 8 | fname[2] SH 16;
-	return ((w2)h != n1) & (h != n2);
+	uint32_t h = fname[0] | fname[1] SH 8 | fname[2] SH 16;
+	return ((uint16_t)h == n1) | (h == n2);
 #	if 0
-	if ((fname[0] == '.')
+	return ((fname[0] == '.')
 	    && (((fname[1] == '\0'))
 		|| (((fname[1] == '.'))
 		    && (fname[2] == '\0'))))
