@@ -474,7 +474,7 @@ jstr_io_fwrite_file_j(const jstr_ty *R const j,
 
 #if JSTR_HAVE_POPEN
 
-#	if 0 /* broken */
+#	if 0 /* broken: reads fewer characters. */
 
 JSTR_FUNC
 static int
