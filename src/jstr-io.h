@@ -836,6 +836,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
 		return;
+	/* Use VLA or alloca or static array. */
 #if JSTR_HAVE_VLA
 	char fulpath[dlen + JSTR_IO_NAME_MAX + 1];
 #else
