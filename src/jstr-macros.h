@@ -18,7 +18,10 @@
 #	define JSTR_HAVE_ALLOCA 0
 #endif
 
+#define JSTR_MAX_STACK_ARRAY 4096
+
 #include "jstr-pointer-arith.h"
+
 #define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, P_JSTR_MALLOC_ALIGNMENT)
 
