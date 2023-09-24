@@ -806,21 +806,17 @@ JSTR_INLINE
 static int
 p_jstr_io_is_relative(const char *R const fname)
 {
+	/* POSIX does not guarantee d_name[256]. So we can't do this. */
+#if 0 && JSTR_HAVE_ATTR_MAY_ALIAS
 	const uint16_t n1 = '.' | '\0' SH 8;
 	const uint32_t n2 = '.' | '.' SH 8 | '\0' SH 16;
-#if JSTR_HAVE_ATTR_MAY_ALIAS
 	typedef uint16_t w2 JSTR_MAY_ALIAS;
 	typedef uint32_t w4 JSTR_MAY_ALIAS;
 	return (*(w2 *)fname == n1) | ((*(w4 *)fname | '\0' SH 24) == n2);
 #else
-	uint32_t h = fname[0] | fname[1] SH 8 | fname[2] SH 16;
-	return ((uint16_t)h == n1) | (h == n2);
-#	if 0
-	return ((fname[0] == '.')
-	    && (((fname[1] == '\0'))
-		|| (((fname[1] == '.'))
-		    && (fname[2] == '\0'))))
-#	endif
+	return (fname[0] == '.')
+	       && ((fname[1] == '\0')
+		   || ((fname[1] == '.') && (fname[2] == '\0')));
 #endif
 }
 
