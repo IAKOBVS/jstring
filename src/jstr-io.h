@@ -768,7 +768,7 @@ typedef enum jstr_io_ftw_flag_ty {
 
 #define GET_PATH()                                      \
 	do {                                            \
-		if (jstr_unlikely(fulpath[0] == '\0'))  \
+		if (jstr_unlikely(fulpathlen == 0))     \
 			memcpy(fulpath, dirpath, dlen); \
 	} while (0)
 
@@ -836,7 +836,6 @@ jstr_io_ftw_len(const char *R const dirpath,
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
 		return;
-	/* Use VLA or alloca or static array. */
 #if JSTR_HAVE_VLA
 	char fulpath[dlen + JSTR_IO_NAME_MAX + 1];
 #else
@@ -846,9 +845,8 @@ jstr_io_ftw_len(const char *R const dirpath,
 	char fulpath[JSTR_IO_MAX_PATH];
 #	endif
 #endif
-	fulpath[0] = '\0';
+	size_t fulpathlen = 0;
 	struct stat st;
-	size_t fulpathlen;
 	const struct dirent *R ep;
 	while ((ep = readdir(dp))) {
 		/* Ignore . and .. . */
