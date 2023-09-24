@@ -5,6 +5,7 @@
 
 P_JSTR_BEGIN_DECLS
 #include <dirent.h>
+#include <unistd.h>
 #include <fnmatch.h>
 #include <limits.h>
 #include <stdio.h>
@@ -773,12 +774,12 @@ typedef enum jstr_io_ftw_flag_ty {
 		do {                \
 			GET_PATH(); \
 		} while (0)
-#	define STAT_MAYBE(filename, st)                  \
-		do {                                      \
+#	define STAT_MAYBE(filename, st)                 \
+		do {                                     \
 			if (jflags & JSTR_IO_FTW_NOSTAT) \
-				GET_STAT_MODE_MAYBE();    \
-			else                              \
-				stat(filename, st);       \
+				GET_STAT_MODE_MAYBE();   \
+			else                             \
+				stat(filename, st);      \
 		} while (0)
 #else
 #	define GET_STAT_MODE_MAYBE() \
