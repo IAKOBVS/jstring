@@ -757,6 +757,8 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_NOSTAT = (JSTR_IO_FTW_NOSUBDIR << 1),
 	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NOSTAT << 1),
+	/* Ignore hidden entries. */
+	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1),
 } jstr_io_ftw_flag_ty;
 
 #define GET_PATH()                                      \
@@ -856,7 +858,8 @@ jstr_io_ftw_len(const char *R const dirpath,
 	size_t fulpathlen;
 	for (const struct dirent *R ep; (ep = readdir(dp));) {
 		/* Ignore . and .. . */
-		if (p_jstr_io_is_relative(ep->d_name))
+		if (p_jstr_io_is_relative(ep->d_name)
+		    | ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
