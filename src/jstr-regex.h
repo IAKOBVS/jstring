@@ -828,8 +828,8 @@ jstr_reg_rplc_bref_len(char *R *R const s,
 	if (jstr_unlikely(no_bref))
 		return jstr_reg_rplc_len(s, sz, cap, rplc, rplclen, preg, eflags);
 	unsigned char *rdst;
-	unsigned char rdst_stack[256];
-	if (jstr_unlikely(rdstlen > 256)) {
+	unsigned char rdst_stack[4096];
+	if (jstr_unlikely(rdstlen > 4096)) {
 		rdst = (unsigned char *)malloc(rdstlen);
 		P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ESPACE);
 	} else {
@@ -911,7 +911,7 @@ p_jstr_reg_base_rplcall_bref_len(const p_jstr_flag_use_n_ty flag,
 	regmatch_t rm[10];
 	size_t rdstlen = rplclen;
 	size_t rdstcap = 0;
-	unsigned char rdst_stack[256];
+	unsigned char rdst_stack[4096];
 	unsigned char *rdst = NULL;
 	unsigned char *rdstp;
 	typedef unsigned char u;
@@ -937,7 +937,7 @@ p_jstr_reg_base_rplcall_bref_len(const p_jstr_flag_use_n_ty flag,
 		     ++rsrc)
 			if (jstr_likely(jstr_isdigit(*++rsrc)))
 				rdstlen = rdstlen + (rm[*rsrc - '0'].rm_eo - rm[*rsrc - '0'].rm_so) - 2;
-		if (jstr_unlikely(rdstlen > 256)) {
+		if (jstr_unlikely(rdstlen > 4096)) {
 			if (jstr_unlikely(rdst == NULL)) {
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, P_JSTR_MALLOC_ALIGNMENT);
 				rdst = (u *)malloc(rdstcap);
