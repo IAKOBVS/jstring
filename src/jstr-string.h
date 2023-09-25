@@ -748,7 +748,7 @@ jstr_startswith_len(const char *R const hs,
 }
 
 /*
-  Check if S1 starts wtih S2.
+  Check if S1 starts with S2.
   Return value:
   0 if true;
   1 if false.
