@@ -766,10 +766,13 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1),
 } jstr_io_ftw_flag_ty;
 
-#define GET_PATH()                                      \
-	do {                                            \
-		if (jstr_unlikely(fulpathlen == 0))     \
-			memcpy(fulpath, dirpath, dlen); \
+#define FILL_PATH()                                                  \
+	do {                                                         \
+		if (jstr_unlikely(fulpathlen == 0)) {                \
+			if (jstr_unlikely(dirpath[dlen - 1] == '/')) \
+				--dlen;                              \
+			memcpy(fulpath, dirpath, dlen);              \
+		}                                                    \
 	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -777,9 +780,9 @@ typedef enum jstr_io_ftw_flag_ty {
 		do {                                     \
 			sb.st_mode = DTTOIF(ep->d_type); \
 		} while (0)
-#	define GET_PATH_MAYBE()    \
-		do {                \
-			GET_PATH(); \
+#	define FILL_PATH_MAYBE()    \
+		do {                 \
+			FILL_PATH(); \
 		} while (0)
 #	define STAT_MAYBE(filename, st)                 \
 		do {                                     \
@@ -792,8 +795,8 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define GET_STAT_MODE_MAYBE() \
 		do {                  \
 		} while (0)
-#	define GET_PATH_MAYBE() \
-		do {             \
+#	define FILL_PATH_MAYBE() \
+		do {              \
 		} while (0)
 #	define STAT_MAYBE(filename, st) \
 		do {                     \
@@ -827,7 +830,7 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *st);
 JSTR_FUNC_MAY_NULL
 static void
 jstr_io_ftw_len(const char *R const dirpath,
-		const size_t dlen,
+		size_t dlen,
 		const char *R const fn_glob,
 		const int fn_flags,
 		const jstr_io_ftw_flag_ty jflags,
@@ -859,7 +862,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 		if (ep->d_type == DT_DIR)
 			goto do_dir;
 #else
-		GET_PATH();
+		FILL_PATH();
 		fulpathlen = jstr_io_append_path_p(fulpath + dlen, ep->d_name) - fulpath;
 		if (jstr_unlikely(stat(fulpath, &st)))
 			continue;
@@ -877,16 +880,16 @@ do_reg:
 			continue;
 		if (fn_glob) {
 			if (jflags & JSTR_IO_FTW_MATCH_PATH) {
-				GET_PATH_MAYBE();
+				FILL_PATH_MAYBE();
 				if (fnmatch(fn_glob, fulpath, fn_flags))
 					continue;
 			} else {
 				if (fnmatch(fn_glob, ep->d_name, fn_flags))
 					continue;
-				GET_PATH_MAYBE();
+				FILL_PATH_MAYBE();
 			}
 		} else {
-			GET_PATH_MAYBE();
+			FILL_PATH_MAYBE();
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -914,7 +917,7 @@ do_dir:
 		    && (jflags & JSTR_IO_FTW_REG)
 		    && !(jflags & JSTR_IO_FTW_DIR))
 			continue;
-		GET_PATH_MAYBE();
+		FILL_PATH_MAYBE();
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
 		jstr_io_append_path_len(fulpath + dlen, ep->d_name, ep->d_namlen) - dirpath;
@@ -940,8 +943,8 @@ do_dir:
 	closedir(dp);
 }
 
-#undef GET_PATH
-#undef GET_PATH_MAYBE
+#undef FILL_PATH
+#undef FILL_PATH_MAYBE
 #undef STAT_MAYBE
 #undef GET_STAT_MODE_MAYBE
 
