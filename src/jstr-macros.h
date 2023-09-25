@@ -911,7 +911,7 @@ P_JSTR_CAST(T, Other other)
 	return (T)other;
 }
 #else
-#	define P_JSTR_CAST(T, other) other
+#	define P_JSTR_CAST(T, other) (other)
 #endif /* __cpluslus */
 
 #endif /* JSTR_MACROS_H */
