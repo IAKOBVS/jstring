@@ -957,7 +957,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 {
 	if (jstr_unlikely(dlen == 0))
 		return;
-	p_jstr_io_ftw_len(dirpath, dlen - (dirpath[dlen - 1] == '/'), fn_glob, fn_flags, jflags, fn);
+	p_jstr_io_ftw_len(dirpath, dlen - ((dirpath[dlen - 1] == '/') & (dlen != 1)), fn_glob, fn_flags, jflags, fn);
 }
 
 /*
