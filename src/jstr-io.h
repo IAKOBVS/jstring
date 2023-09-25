@@ -688,7 +688,7 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_io_append_path_p(char *R const path_end,
-		      const char *R fname)
+		      const char *R fname) JSTR_NOEXCEPT
 {
 	*path_end = '/';
 	return jstr_stpcpy(path_end + 1, fname);
@@ -698,7 +698,7 @@ JSTR_INLINE
 JSTR_FUNC_NOWARN
 static void
 jstr_io_append_path(char *R const path_end,
-		    const char *R fname)
+		    const char *R fname) JSTR_NOEXCEPT
 {
 	*path_end = '/';
 	strcpy(path_end + 1, fname);
@@ -709,7 +709,7 @@ JSTR_FUNC_NOWARN
 static void
 jstr_io_append_path_len(char *R const path_end,
 			const char *R fname,
-			const size_t flen)
+			const size_t flen) JSTR_NOEXCEPT
 {
 	*path_end = '/';
 	memcpy(path_end + 1, fname, flen + 1);
@@ -803,7 +803,7 @@ typedef enum jstr_io_ftw_flag_ty {
 JSTR_PURE
 JSTR_INLINE
 static int
-p_jstr_io_is_relative(const char *R const fname)
+p_jstr_io_is_relative(const char *R const fname) JSTR_NOEXCEPT
 {
 	return (fname[0] == '.')
 	       && ((fname[1] == '\0')
@@ -831,7 +831,7 @@ p_jstr_io_ftw_len(const char *R const dirpath,
 		  const char *R const fn_glob,
 		  const int fn_flags,
 		  const jstr_io_ftw_flag_ty jflags,
-		  jstr_io_ftw_func_ty fn)
+		  jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
@@ -953,7 +953,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 		const char *R const fn_glob,
 		const int fn_flags,
 		const jstr_io_ftw_flag_ty jflags,
-		jstr_io_ftw_func_ty fn)
+		jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dlen == 0))
 		return;
@@ -979,7 +979,7 @@ jstr_io_ftw(const char *R const dirpath,
 	    const char *R const fn_glob,
 	    const int fn_flags,
 	    const jstr_io_ftw_flag_ty jflags,
-	    jstr_io_ftw_func_ty fn)
+	    jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
 	jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn);
 }
