@@ -142,7 +142,7 @@ jstr_strchrnul(const char *R const s,
 	return (char *)strchrnul(s, c);
 #else
 	const char *const p = strchr(s, c);
-	return p ? (char *)p : (char *)(s + strlen(s));
+	return (char *)(p ? p : s + strlen(s));
 #endif
 }
 
@@ -160,7 +160,7 @@ jstr_strstrnul_len(const char *R const hs,
 		   const size_t nelen)
 {
 	const char *const p = JSTR_STRSTR_LEN(hs, hslen, ne, nelen);
-	return p ? (char *)p : (char *)hs + hslen;
+	return (char *)(p ? p : hs + hslen);
 }
 
 #if defined __GNUC__ || defined __clang__
@@ -174,7 +174,7 @@ jstr_strstrnul(const char *R const hs,
 	       const char *R const ne)
 {
 	const char *const p = strstr(hs, ne);
-	return p ? (char *)p : (char *)hs + strlen(hs);
+	return (char *)(p ? p : hs + strlen(hs));
 }
 
 /*

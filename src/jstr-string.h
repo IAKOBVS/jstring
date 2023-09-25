@@ -700,8 +700,8 @@ jstr_strrpbrk(const char *R const s,
 /*
   Check if S2 is in end of S1.
   Return value:
-  0 if true;
-  1 if false.
+  1 if true;
+  0 if false.
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
@@ -711,47 +711,48 @@ jstr_endswith_len(const char *R const hs,
 		  const char *R const ne,
 		  const size_t nelen) JSTR_NOEXCEPT
 {
-	return (hslen < nelen) ? 1 : memcmp(hs + hslen - nelen, ne, nelen);
+	return (hslen >= nelen) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
 }
 
 /*
   Check if S2 is in end of S1.
   Return value:
-  0 if true;
-  1 if false.
+  1 if true;
+  0 if false.
 */
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
 jstr_endswith(const char *R const hs,
-	      const char *R const ne,
-	      const size_t hslen) JSTR_NOEXCEPT
+	      const char *R const ne) JSTR_NOEXCEPT
 {
-	return jstr_endswith_len(hs, hslen, ne, strlen(ne));
+	const size_t nelen = strlen(ne);
+	const size_t hslen = jstr_strnlen(ne, nelen);
+	return (hslen >= nelen) ? jstr_endswith_len(hs, hslen, ne, nelen) : 0;
 }
 
 /*
   Check if S1 starts with S2.
   Return value:
-  0 if true;
-  1 if false.
+  1 if true;
+  0 if false.
 */
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
 jstr_startswith_len(const char *R const hs,
-		    const char *R const ne,
 		    const size_t hslen,
+		    const char *R const ne,
 		    const size_t nelen) JSTR_NOEXCEPT
 {
-	return (hslen < nelen) ? 1 : memcmp(hs, ne, nelen);
+	return (hslen >= nelen) ? memcmp(hs, ne, nelen) : 1;
 }
 
 /*
   Check if S1 starts with S2.
   Return value:
-  0 if true;
-  1 if false.
+  1 if true;
+  0 if false.
 */
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
@@ -759,7 +760,7 @@ static int
 jstr_startswith(const char *R const hs,
 		const char *R const ne) JSTR_NOEXCEPT
 {
-	return strncmp(hs, ne, strlen(ne));
+	return !strncmp(hs, ne, strlen(ne));
 }
 
 /*
