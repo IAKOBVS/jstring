@@ -908,7 +908,6 @@ jstr_line_next(const char *s) JSTR_NOEXCEPT
    Return the number of newlines + 1.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
 static size_t
 jstr_line_number(const char *begin,
 		 const char *const end) JSTR_NOEXCEPT
