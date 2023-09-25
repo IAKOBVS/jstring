@@ -745,7 +745,7 @@ jstr_startswith_len(const char *R const hs,
 		    const char *R const ne,
 		    const size_t nelen) JSTR_NOEXCEPT
 {
-	return (hslen >= nelen) ? memcmp(hs, ne, nelen) : 1;
+	return (hslen >= nelen) ? !memcmp(hs, ne, nelen) : 0;
 }
 
 /*
