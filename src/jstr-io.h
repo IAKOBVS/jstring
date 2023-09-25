@@ -302,28 +302,28 @@ p_jstr_io_ext_type(const char *R ext) JSTR_NOEXCEPT
 #undef B
 
 /*
-   Return jstr_io_ext_ty based on the filename extension;
+   Return jstr_io_ext_ty based on the FNAME extension;
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
 static jstr_io_ext_ty
-jstr_io_ext_type_len(const char *R filename,
+jstr_io_ext_type_len(const char *R fname,
 		     const size_t sz) JSTR_NOEXCEPT
 {
-	filename = (char *)jstr_memrchr(filename, '.', sz);
-	return filename ? p_jstr_io_ext_type(filename + 1) : JSTR_IO_FT_UNKNOWN;
+	fname = (char *)jstr_memrchr(fname, '.', sz);
+	return fname ? p_jstr_io_ext_type(fname + 1) : JSTR_IO_FT_UNKNOWN;
 }
 
 /*
-   Return jstr_io_ext_ty based on the filename extension;
+   Return jstr_io_ext_ty based on the FNAME extension;
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
 static jstr_io_ext_ty
-jstr_io_ext_type(const char *R filename) JSTR_NOEXCEPT
+jstr_io_ext_type(const char *R fname) JSTR_NOEXCEPT
 {
-	filename = strrchr(filename, '.');
-	return filename ? p_jstr_io_ext_type(filename + 1) : JSTR_IO_FT_UNKNOWN;
+	fname = strrchr(fname, '.');
+	return fname ? p_jstr_io_ext_type(fname + 1) : JSTR_IO_FT_UNKNOWN;
 }
 
 /*
@@ -750,7 +750,7 @@ enum {
 };
 
 typedef enum jstr_io_ftw_flag_ty {
-	/* Match glob with the filename instead of the whole path. */
+	/* Match glob with the fname instead of the whole path. */
 	JSTR_IO_FTW_MATCH_PATH = (1),
 	/* Call FN on regular files. */
 	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCH_PATH << 1),
@@ -781,12 +781,12 @@ typedef enum jstr_io_ftw_flag_ty {
 		do {                 \
 			FILL_PATH(); \
 		} while (0)
-#	define STAT_MAYBE(filename, st)                 \
+#	define STAT_MAYBE(fname, st)                 \
 		do {                                     \
 			if (jflags & JSTR_IO_FTW_NOSTAT) \
 				GET_STAT_MODE_MAYBE();   \
 			else                             \
-				stat(filename, st);      \
+				stat(fname, st);      \
 		} while (0)
 #else
 #	define GET_STAT_MODE_MAYBE() \
@@ -795,7 +795,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define FILL_PATH_MAYBE() \
 		do {              \
 		} while (0)
-#	define STAT_MAYBE(filename, st) \
+#	define STAT_MAYBE(fname, st) \
 		do {                     \
 		} while (0)
 #endif
@@ -965,7 +965,7 @@ jstr_io_ftw_len(const char *R const dirpath,
    Jflags (prefixed with JSTR_IO_FTW_):
    REG: avoid calling FN on other filetypes.
    DIR: avoid calling FN on other filetypes.
-   MATCH_PATH: match FULPATH instead of filename.
+   MATCH_PATH: match FULPATH instead of fname.
    NOSUBDIR: do not traverse subdirectories.
    NOSTAT: do not call stat. Only st.mode is defined.
    STAT_REG: only call stat on regular files.
