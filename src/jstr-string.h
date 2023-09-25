@@ -911,9 +911,14 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static size_t
 jstr_line_number(const char *begin,
-		 const char *end) JSTR_NOEXCEPT
+		 const char *const end) JSTR_NOEXCEPT
 {
-	return jstr_countc_len(begin, '\n', end - begin) + 1;
+	if (jstr_unlikely(begin == end))
+		return 0;
+	size_t cnt = 1;
+	while ((begin = (char *)memchr(begin, '\n', end - begin)))
+		++begin, ++cnt;
+	return cnt;
 }
 
 P_JSTR_END_DECLS
