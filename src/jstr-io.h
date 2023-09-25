@@ -781,12 +781,12 @@ typedef enum jstr_io_ftw_flag_ty {
 		do {                 \
 			FILL_PATH(); \
 		} while (0)
-#	define STAT_MAYBE(fname, st)                 \
+#	define STAT_MAYBE(fname, st)                    \
 		do {                                     \
 			if (jflags & JSTR_IO_FTW_NOSTAT) \
 				GET_STAT_MODE_MAYBE();   \
 			else                             \
-				stat(fname, st);      \
+				stat(fname, st);         \
 		} while (0)
 #else
 #	define GET_STAT_MODE_MAYBE() \
@@ -796,7 +796,7 @@ typedef enum jstr_io_ftw_flag_ty {
 		do {              \
 		} while (0)
 #	define STAT_MAYBE(fname, st) \
-		do {                     \
+		do {                  \
 		} while (0)
 #endif
 
@@ -955,7 +955,9 @@ jstr_io_ftw_len(const char *R const dirpath,
 		const jstr_io_ftw_flag_ty jflags,
 		jstr_io_ftw_func_ty fn)
 {
-	p_jstr_io_ftw_len(dirpath, (dirpath[JSTR_MIN(dlen, 1) - 1] != '/') ? dlen - 1 : dlen, fn_glob, fn_flags, jflags, fn);
+	if (jstr_unlikely(dlen == 0))
+		return;
+	p_jstr_io_ftw_len(dirpath, dlen - (dirpath[dlen - 1] == '/'), fn_glob, fn_flags, jflags, fn);
 }
 
 /*
