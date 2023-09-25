@@ -708,10 +708,10 @@ JSTR_FUNC_PURE
 static int
 jstr_endswith_len(const char *R const hs,
 		  const char *R const ne,
-		  const size_t hsz,
+		  const size_t hslen,
 		  const size_t nelen) JSTR_NOEXCEPT
 {
-	return (hsz < nelen) ? 1 : memcmp(hs + hsz - nelen, ne, nelen);
+	return (hslen < nelen) ? 1 : memcmp(hs + hslen - nelen, ne, nelen);
 }
 
 /*
@@ -725,9 +725,9 @@ JSTR_MAYBE_UNUSED
 static int
 jstr_endswith(const char *R const hs,
 	      const char *R const ne,
-	      const size_t hsz) JSTR_NOEXCEPT
+	      const size_t hslen) JSTR_NOEXCEPT
 {
-	return jstr_endswith_len(hs, ne, hsz, strlen(ne));
+	return jstr_endswith_len(hs, ne, hslen, strlen(ne));
 }
 
 /*
@@ -741,10 +741,10 @@ JSTR_MAYBE_UNUSED
 static int
 jstr_startswith_len(const char *R const hs,
 		    const char *R const ne,
-		    const size_t hsz,
+		    const size_t hslen,
 		    const size_t nelen) JSTR_NOEXCEPT
 {
-	return (hsz < nelen) ? 1 : memcmp(hs, ne, nelen);
+	return (hslen < nelen) ? 1 : memcmp(hs, ne, nelen);
 }
 
 /*
