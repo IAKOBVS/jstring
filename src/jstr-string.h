@@ -728,7 +728,7 @@ jstr_endswith(const char *R const hs,
 {
 	const size_t nelen = strlen(ne);
 	const size_t hslen = jstr_strnlen(ne, nelen);
-	return (hslen >= nelen) ? jstr_endswith_len(hs, hslen, ne, nelen) : 0;
+	return (hslen >= nelen) ? jstr_endswith_len(hs, hslen + strlen(hs + hslen), ne, nelen) : 0;
 }
 
 /*
