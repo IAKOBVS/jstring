@@ -740,10 +740,10 @@ jstr_endswith(const char *R const hs,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_startswith_len(const char *R const hs,
-		    const size_t hslen,
-		    const char *R const ne,
-		    const size_t nelen) JSTR_NOEXCEPT
+jstr_starts_len(const char *R const hs,
+		const size_t hslen,
+		const char *R const ne,
+		const size_t nelen) JSTR_NOEXCEPT
 {
 	return (hslen >= nelen) ? !memcmp(hs, ne, nelen) : 0;
 }
@@ -757,8 +757,8 @@ jstr_startswith_len(const char *R const hs,
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
-jstr_startswith(const char *R const hs,
-		const char *R const ne) JSTR_NOEXCEPT
+jstr_starts(const char *R const hs,
+	    const char *R const ne) JSTR_NOEXCEPT
 {
 	return !strncmp(hs, ne, strlen(ne));
 }

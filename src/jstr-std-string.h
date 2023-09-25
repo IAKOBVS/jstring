@@ -120,16 +120,23 @@ jstr_strdup(const char *R const s)
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strdup_len(size_t *R sz,
-		const char *R const src,
-		const size_t srclen)
+jstr_memdup(const char *R const src,
+	    const size_t srclen)
 {
-	char *const p = (char *)malloc(srclen + 1);
+	char *const p = (char *)malloc(srclen);
 	if (jstr_unlikely(p == NULL))
 		return NULL;
-	memcpy(p, src, srclen + 1);
-	*sz = srclen;
+	memcpy(p, src, srclen);
 	return p;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_strdup_len(const char *R const src,
+		const size_t srclen)
+{
+	return jstr_memdup(src, srclen + 1);
 }
 
 JSTR_FUNC_RET_NONNULL
