@@ -766,13 +766,10 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1),
 } jstr_io_ftw_flag_ty;
 
-#define FILL_PATH()                                                  \
-	do {                                                         \
-		if (jstr_unlikely(fulpathlen == 0)) {                \
-			if (jstr_unlikely(dirpath[dlen - 1] == '/')) \
-				--dlen;                              \
-			memcpy(fulpath, dirpath, dlen);              \
-		}                                                    \
+#define FILL_PATH()                                     \
+	do {                                            \
+		if (jstr_unlikely(fulpathlen == 0))     \
+			memcpy(fulpath, dirpath, dlen); \
 	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -829,12 +826,12 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *st);
 */
 JSTR_FUNC_MAY_NULL
 static void
-jstr_io_ftw_len(const char *R const dirpath,
-		size_t dlen,
-		const char *R const fn_glob,
-		const int fn_flags,
-		const jstr_io_ftw_flag_ty jflags,
-		jstr_io_ftw_func_ty fn)
+p_jstr_io_ftw_len(const char *R const dirpath,
+		  const size_t dlen,
+		  const char *R const fn_glob,
+		  const int fn_flags,
+		  const jstr_io_ftw_flag_ty jflags,
+		  jstr_io_ftw_func_ty fn)
 {
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
@@ -937,7 +934,7 @@ do_dir:
 			fn(fulpath, &st);
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
-		jstr_io_ftw_len(fulpath, fulpathlen, fn_glob, fn_flags, jflags, fn);
+		p_jstr_io_ftw_len(fulpath, fulpathlen, fn_glob, fn_flags, jflags, fn);
 		continue;
 	}
 	closedir(dp);
@@ -947,6 +944,19 @@ do_dir:
 #undef FILL_PATH_MAYBE
 #undef STAT_MAYBE
 #undef GET_STAT_MODE_MAYBE
+
+JSTR_FUNC_MAY_NULL
+JSTR_INLINE
+static void
+jstr_io_ftw_len(const char *R const dirpath,
+		const size_t dlen,
+		const char *R const fn_glob,
+		const int fn_flags,
+		const jstr_io_ftw_flag_ty jflags,
+		jstr_io_ftw_func_ty fn)
+{
+	p_jstr_io_ftw_len(dirpath, (dirpath[JSTR_MIN(dlen, 1) - 1] != '/') ? dlen - 1 : dlen, fn_glob, fn_flags, jflags, fn);
+}
 
 /*
    Call FN on entries found recursively that matches GLOB.
