@@ -707,8 +707,8 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_endswith_len(const char *R const hs,
-		  const char *R const ne,
 		  const size_t hslen,
+		  const char *R const ne,
 		  const size_t nelen) JSTR_NOEXCEPT
 {
 	return (hslen < nelen) ? 1 : memcmp(hs + hslen - nelen, ne, nelen);
@@ -727,7 +727,7 @@ jstr_endswith(const char *R const hs,
 	      const char *R const ne,
 	      const size_t hslen) JSTR_NOEXCEPT
 {
-	return jstr_endswith_len(hs, ne, hslen, strlen(ne));
+	return jstr_endswith_len(hs, hslen, ne, strlen(ne));
 }
 
 /*
