@@ -1,9 +1,9 @@
 #ifndef JSTR_MACROS_H
 #define JSTR_MACROS_H 1
 
+#include "jstr-config.h"
 #include <features.h>
 #include <stdlib.h>
-#include "jstr-config.h"
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__
 #	define JSTR_HAVE_VLA 0
@@ -517,7 +517,7 @@ case 122:               \
 case 123:               \
 case 124:               \
 case 125:               \
-case 126
+case 126:
 
 #define JSTR_CASE_PRINT \
 	JSTR_CASE_GRAPH \
