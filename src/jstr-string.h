@@ -296,6 +296,7 @@ jstr_strrstr(const char *R const hs,
 	return (char *)jstr_strrstr_len(hs, strlen(hs), ne, strlen(ne));
 }
 
+/* Heavily inspired by glibc memmem. */
 JSTR_FUNC_PURE
 static char *
 p_jstr_strcasestr_len_bmh(const unsigned char *R h,
@@ -341,6 +342,7 @@ p_jstr_strcasestr_len_bmh(const unsigned char *R h,
 #undef P_JSTR_STRCASESTR_BMH
 }
 
+/* Heavily inspired by glibc memmem. */
 JSTR_FUNC_PURE
 static char *
 p_jstr_strcasestr_bmh(const unsigned char *R h,
