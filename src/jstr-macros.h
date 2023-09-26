@@ -877,7 +877,7 @@ case '~':
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
 /* Needle length over which memmem would be faster than strstr. */
-enum { JSTR_MEMMEM_THRES = 17 };
+enum { JSTR_MEMMEM_THRES = 18 };
 #endif
 
 /* Only use memmem for long needles or when it is implemented in assembly.
@@ -886,7 +886,7 @@ enum { JSTR_MEMMEM_THRES = 17 };
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || !JSTR_HAVE_STRSTR_OPTIMIZED
 #		define JSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
 #	else
-#		define JSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen <= JSTR_MEMMEM_THRES) ? strstr(hs, ne) : memmem(hs, hslen, ne, nelen))
+#		define JSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen < JSTR_MEMMEM_THRES) ? strstr(hs, ne) : memmem(hs, hslen, ne, nelen))
 #	endif
 #else
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)

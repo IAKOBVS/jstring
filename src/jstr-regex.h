@@ -595,8 +595,8 @@ err:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
 	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
-	return JSTR_REG_RET_ESPACE;
 #endif
+	return JSTR_REG_RET_ESPACE;
 }
 
 JSTR_INLINE
