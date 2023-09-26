@@ -1055,6 +1055,7 @@ jstr_insert_len(char *R *R const s,
 	p_jstr_insert_len_f(*s, at, src, srclen);
 	return 1;
 err:
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
