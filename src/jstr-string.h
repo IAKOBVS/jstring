@@ -77,6 +77,8 @@ jstr_strcasecmp_len(const char *R const s1,
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
+	if (jstr_unlikely(n == 0))
+		return 0;
 	const unsigned char *R p1 = (unsigned char *)s1;
 	const unsigned char *R p2 = (unsigned char *)s2;
 	while (!(jstr_tolower(*p1++) - jstr_tolower(*p2++))
