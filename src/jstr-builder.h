@@ -612,8 +612,7 @@ jstr_assign(char *R *R const s,
    otherwise 1.
 */
 JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC
 static int
 jstr_push_back(char *R *R const s,
 	       size_t *R const sz,

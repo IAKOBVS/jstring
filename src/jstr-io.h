@@ -642,10 +642,7 @@ jstr_io_alloc_file(char *R *R const s,
    0 on error;
    otherwise 1.
 */
-JSTR_MAYBE_UNUSED
-JSTR_WARN_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC
 static int
 jstr_io_allocexact_file(char *R *R const s,
 			size_t *R const sz,

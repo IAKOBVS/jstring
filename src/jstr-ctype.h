@@ -88,11 +88,8 @@ jstr_ispunct(const int c) JSTR_NOEXCEPT
 }
 
 /* ASCII */
+JSTR_FUNC_CONST
 JSTR_INLINE
-JSTR_CONST
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
-JSTR_WARN_UNUSED
 static int
 jstr_isspace(const int c) JSTR_NOEXCEPT
 {
@@ -260,9 +257,7 @@ jstr_ispunct_str(const char *R s) JSTR_NOEXCEPT
 #	pragma GCC diagnostic push
 #endif
 
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC_VOID
 static void
 jstr_tolower_str_len(char *R s,
 		     const size_t sz)
@@ -278,9 +273,7 @@ jstr_tolower_str_len(char *R s,
 	}
 }
 
-JSTR_MAYBE_UNUSED
-JSTR_NONNULL_ALL
-JSTR_NOTHROW
+JSTR_FUNC_VOID
 static void
 jstr_toupper_str_len(char *R s,
 		     const size_t sz)

@@ -98,7 +98,6 @@ JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASECMP
 JSTR_INLINE
 #endif
-JSTR_NOTHROW
 static int
 jstr_strcasecmp(const char *R s1,
 		const char *R s2) JSTR_NOEXCEPT
