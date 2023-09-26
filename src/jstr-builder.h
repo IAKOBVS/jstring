@@ -700,6 +700,7 @@ jstr_pop_front_j(jstr_ty *R const j) JSTR_NOEXCEPT
 
 /*
    Do nothing if new_cap < cap.
+   Return 0 on malloc error.
 */
 JSTR_FUNC
 static int
@@ -718,6 +719,7 @@ err:
 
 /*
    Do nothing if new_cap < cap.
+   Return 0 on malloc error.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -730,6 +732,7 @@ jstr_reserve_j(jstr_ty *R const j,
 
 /*
    Do nothing if new_cap < cap.
+   Return 0 on malloc error.
 */
 JSTR_FUNC
 static int
@@ -748,6 +751,7 @@ err:
 
 /*
    Do nothing if new_cap < cap.
+   Return 0 on malloc error.
 */
 JSTR_FUNC
 JSTR_INLINE
