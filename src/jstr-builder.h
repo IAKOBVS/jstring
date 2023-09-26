@@ -162,7 +162,7 @@ JSTR_INLINE
 static void
 jstr_err(void) JSTR_NOEXCEPT
 {
-#ifdef JSTR_DEBUG
+#if JSTR_DEBUG
 	jstr_err_debug();
 #else
 	p_jstr_err();
@@ -175,7 +175,7 @@ JSTR_INLINE
 static void
 jstr_err_exit(void) JSTR_NOEXCEPT
 {
-#ifdef JSTR_DEBUG
+#if JSTR_DEBUG
 	jstr_err_exit_debug();
 #else
 	p_jstr_err_exit();
