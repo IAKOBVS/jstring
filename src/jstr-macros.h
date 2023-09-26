@@ -886,7 +886,7 @@ enum { JSTR_MEMMEM_THRES = 17 };
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || !JSTR_HAVE_STRSTR_OPTIMIZED
 #		define JSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
 #	else
-#		define JSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen > JSTR_MEMMEM_THRES) ? memmem(hs, hslen, ne, nelen) : strstr(hs, ne))
+#		define JSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen <= JSTR_MEMMEM_THRES) ? strstr(hs, ne) : memmem(hs, hslen, ne, nelen))
 #	endif
 #else
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
