@@ -875,13 +875,13 @@ jstr_line_begin(const char *const begin,
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next_len(const char *const begin,
-		   const char *end) JSTR_NOEXCEPT
+jstr_line_next_len(const char *begin,
+		   const char *const end) JSTR_NOEXCEPT
 {
-	end = (char *)memchr(begin, '\n', end - begin);
-	return end
-	       ? ((*(end + 1) != '\0')
-		  ? (char *)end + 1
+	begin = (char *)memchr(begin, '\n', end - begin);
+	return begin
+	       ? ((*(begin + 1) != '\0')
+		  ? (char *)begin + 1
 		  : NULL)
 	       : NULL;
 }
