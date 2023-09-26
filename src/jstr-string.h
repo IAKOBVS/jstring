@@ -906,6 +906,7 @@ jstr_line_next(const char *s) JSTR_NOEXCEPT
 
 /*
    Return the number of newlines + 1.
+   Return 0 if string is empty.
 */
 JSTR_FUNC_PURE
 static size_t
