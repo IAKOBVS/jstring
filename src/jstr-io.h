@@ -809,18 +809,6 @@ p_jstr_io_is_relative(const char *R const fname) JSTR_NOEXCEPT
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *st);
 
-/*
-   Call FN on entries found recursively that matches GLOB.
-   If either the REG or DIR flag is used, FN will not be called on other filetypes.
-   If GLOB is NULL, all entries match.
-   Jflags (prefixed with JSTR_IO_FTW_):
-   REG: avoid calling FN on other filetypes.
-   DIR: avoid calling FN on other filetypes.
-   MATCH_PATH: match dirpath instead of fulpath.
-   NOSUBDIR: do not traverse subdirectories.
-   NOSTAT: do not call stat. Only st.mode is defined.
-   STAT_REG: only call stat on regular files.
-*/
 JSTR_FUNC_MAY_NULL
 static void
 p_jstr_io_ftw_len(const char *R const dirpath,
@@ -942,9 +930,21 @@ do_dir:
 #undef STAT_MAYBE
 #undef GET_STAT_MODE_MAYBE
 
+/*
+   Call FN on entries found recursively that matches GLOB.
+   If either the REG or DIR flag is used, FN will not be called on other filetypes.
+   If GLOB is NULL, all entries match.
+   Jflags (prefixed with JSTR_IO_FTW_):
+   REG: avoid calling FN on other filetypes.
+   DIR: avoid calling FN on other filetypes.
+   MATCH_PATH: match dirpath instead of fulpath.
+   NOSUBDIR: do not traverse subdirectories.
+   NOSTAT: do not call stat. Only st.mode is defined.
+   STAT_REG: only call stat on regular files.
+*/
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
-static void
+static int
 jstr_io_ftw_len(const char *R const dirpath,
 		const size_t dlen,
 		const char *R const fn_glob,
@@ -953,8 +953,9 @@ jstr_io_ftw_len(const char *R const dirpath,
 		jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dlen == 0))
-		return;
+		return 0;
 	p_jstr_io_ftw_len(dirpath, dlen - ((dirpath[dlen - 1] == '/') & (dlen != 1)), fn_glob, fn_flags, jflags, fn);
+	return 1;
 }
 
 /*
@@ -971,14 +972,14 @@ jstr_io_ftw_len(const char *R const dirpath,
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
-static void
+static int
 jstr_io_ftw(const char *R const dirpath,
 	    const char *R const fn_glob,
 	    const int fn_flags,
 	    const jstr_io_ftw_flag_ty jflags,
 	    jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
-	jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn);
+	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn);
 }
 
 P_JSTR_END_DECLS
