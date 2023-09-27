@@ -484,6 +484,7 @@ jstr_strcasestr_len(const char *R hs,
 		return NULL;
 	is_alpha0 &= jstr_isalpha(ne[1]);
 	switch (nelen) {
+	case 1: return (char *)hs;
 	case 2:
 		if (is_alpha0)
 			return p_jstr_strcasestr2((u *)hs, (u *)ne);
@@ -530,7 +531,8 @@ jstr_strcasestr(const char *R hs,
 	} else {
 		hs = strchr(hs, *ne);
 	}
-	if (jstr_unlikely(hs == NULL))
+	if (ne[1] == '\0'
+	    || jstr_unlikely(hs == NULL))
 		return (char *)hs;
 	is_alpha0 &= jstr_isalpha(ne[1]);
 	typedef unsigned char u;
