@@ -150,16 +150,17 @@ p_jstr_strrstr_len_bmh(const unsigned char *R hs,
 			}                                                   \
 			hs -= shift1;                                       \
 		} while (hs > start);                                       \
-		return NULL;                                                \
 	} while (0)
 	const unsigned char *const start = hs + nl - 1;
 	hs += hl - 1;
 	size_t tmp;
 	const size_t m1 = nl - 1;
 	size_t off = 0;
-	if (jstr_unlikely(nl > 256))
+	if (jstr_likely(nl < 257))
+		P_JSTR_STRRSTR_BMH(uint8_t, int);
+	else
 		P_JSTR_STRRSTR_BMH(size_t, size_t);
-	P_JSTR_STRRSTR_BMH(uint8_t, int);
+	return NULL;
 #undef H
 #undef P_JSTR_STRRSTR_BMH
 }
@@ -380,7 +381,6 @@ p_jstr_strcasestr_bmh(const unsigned char *R h,
 			}                                                                               \
 			h += shift1;                                                                    \
 		}                                                                                       \
-		return NULL;                                                                            \
 	} while (0)
 	const size_t nl = strlen((char *)n);
 	const size_t hl = jstr_strnlen((char *)h, nl | 512);
@@ -392,9 +392,11 @@ p_jstr_strcasestr_bmh(const unsigned char *R h,
 	size_t tmp;
 	const size_t m1 = nl - 1;
 	size_t off = 0;
-	if (jstr_unlikely(nl > 256))
+	if (jstr_likely(nl < 257))
+		P_JSTR_STRCASESTR_BMH(uint8_t, int);
+	else
 		P_JSTR_STRCASESTR_BMH(size_t, size_t);
-	P_JSTR_STRCASESTR_BMH(uint8_t, int);
+	return NULL;
 #undef HL
 #undef P_JSTR_STRCASESTR_BMH
 }
