@@ -190,8 +190,8 @@ jstr_strstrnul(const char *R const hs,
 */
 JSTR_FUNC_PURE
 static char *
-jstr_strtok_ne_len(const char *R *R const save_ptr,
-		   const char *R const end,
+jstr_strtok_ne_len(const char **const save_ptr,
+		   const char *const end,
 		   const char *R const ne,
 		   const size_t nelen) JSTR_NOEXCEPT
 {
@@ -216,7 +216,7 @@ jstr_strtok_ne_len(const char *R *R const save_ptr,
 */
 JSTR_FUNC_PURE
 static char *
-jstr_strtok_ne(const char *R *R const save_ptr,
+jstr_strtok_ne(const char **const save_ptr,
 	       const char *R const ne) JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
