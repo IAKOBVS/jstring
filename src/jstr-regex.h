@@ -122,7 +122,7 @@ p_jstr_reg_err_exit_print(const int errcode,
 	char buf[64];
 	regerror(errcode, preg, buf, 32);
 	fprintf(stderr, "%s\n", buf);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 #define P_JSTR_REG_NOERR(errcode) jstr_likely(errcode == JSTR_REG_RET_NOERROR || errcode == JSTR_REG_RET_NOMATCH)

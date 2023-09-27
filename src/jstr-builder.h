@@ -107,7 +107,7 @@ p_jstr_err_exit_debug(const char *R FILE_,
 {
 	fprintf(stderr, "%s:%d:", FILE_, LINE_);
 	perror(func_);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 JSTR_FUNC_VOID
@@ -135,7 +135,7 @@ static void
 p_jstr_err_exit(void) JSTR_NOEXCEPT
 {
 	perror("");
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 /* Print error message with __FILE__:__LINE__:__func__. */

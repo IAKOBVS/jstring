@@ -157,7 +157,7 @@ static void P_JARR_ERR_EXIT_MSG(const char *JSTR_RESTRICT FILE_,
 		const char *JSTR_RESTRICT msg)
 {
 	fprintf(stderr, "%s:%d:%s:%s\n", FILE_, LINE_, func_, msg);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 JSTR_MAYBE_UNUSED
@@ -168,7 +168,7 @@ static void P_JARR_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
 		const char *JSTR_RESTRICT func_)
 {
 	fprintf(stderr, "%s:%d:%s\n", FILE_, LINE_, func_);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 P_JSTR_END_DECLS
