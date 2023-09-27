@@ -531,8 +531,8 @@ jstr_strcasestr(const char *R hs,
 	} else {
 		hs = strchr(hs, *ne);
 	}
-	if (ne[1] == '\0'
-	    || jstr_unlikely(hs == NULL))
+	if (jstr_unlikely(hs == NULL)
+	    || ne[1] == '\0')
 		return (char *)hs;
 	is_alpha0 += jstr_isalpha(ne[1]);
 	typedef unsigned char u;
