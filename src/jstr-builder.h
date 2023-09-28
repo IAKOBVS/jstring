@@ -51,7 +51,6 @@ P_JSTR_END_DECLS
 
 #define P_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail)   \
 	do {                                               \
-		JSTR_ASSERT_IS_STR(p);                     \
 		JSTR_ASSERT_IS_SIZE(old_cap);              \
 		JSTR_ASSERT_IS_SIZE(new_cap);              \
 		old_cap = p_jstr_grow(old_cap, new_cap);   \
@@ -60,7 +59,6 @@ P_JSTR_END_DECLS
 	} while (0)
 #define P_JSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
 	do {                                                  \
-		JSTR_ASSERT_IS_STR(p);                        \
 		JSTR_ASSERT_IS_SIZE(old_cap);                 \
 		JSTR_ASSERT_IS_SIZE(new_cap);                 \
 		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);       \
