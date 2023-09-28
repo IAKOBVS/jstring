@@ -5,6 +5,7 @@
 
 P_JSTR_BEGIN_DECLS
 #include <dirent.h>
+#include <fcntl.h>
 #include <fnmatch.h>
 #include <limits.h>
 #include <stdio.h>
@@ -445,6 +446,35 @@ jstr_io_fwrite_j(const jstr_ty *R const j,
 
 JSTR_FUNC
 static int
+jstr_io_write_file(const char *R const s,
+		   const size_t sz,
+		   const char *R const fname,
+		   const int oflag) JSTR_NOEXCEPT
+{
+	const int fd = open(fname, O_WRONLY | oflag);
+	if (jstr_unlikely(fd == -1))
+		return 0;
+	if (jstr_unlikely(write(fd, s, sz) == -1))
+		goto err;
+	close(fd);
+	return 1;
+err:
+	close(fd);
+	return 0;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_io_write_file_j(const jstr_ty *R const j,
+		     const char *R const fname,
+		     const int oflag) JSTR_NOEXCEPT
+{
+	return jstr_io_write_file(j->data, j->size, fname, oflag);
+}
+
+JSTR_FUNC
+static int
 jstr_io_fwrite_file(const char *R const s,
 		    const size_t sz,
 		    const char *R const fname,
@@ -595,8 +625,8 @@ p_jstr_io_alloc_file(const int alloc_exact,
 		     const char *R const fname,
 		     struct stat *R const st) JSTR_NOEXCEPT
 {
-	FILE *R const fp = fopen(fname, "r");
-	if (jstr_unlikely(fp == NULL))
+	int fd = open(fname, O_RDONLY);
+	if (jstr_unlikely(fd == -1))
 		goto err;
 	if (jstr_unlikely(stat(fname, st)))
 		goto err_close;
@@ -607,16 +637,16 @@ p_jstr_io_alloc_file(const int alloc_exact,
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
 	P_JSTR_MALLOC_ERR(*s, goto err_close);
-	if (jstr_unlikely((size_t)st->st_size != fread(*s, 1, st->st_size, fp)))
+	if (jstr_unlikely((size_t)st->st_size != read(fd, *s, st->st_size)))
 		goto err_close_free;
-	fclose(fp);
+	close(fd);
 	(*s)[st->st_size] = '\0';
 	*sz = st->st_size;
 	return 1;
 err_close_free:
 	free(*s);
 err_close:
-	fclose(fp);
+	close(fd);
 err:
 	return 0;
 }
