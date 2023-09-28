@@ -535,19 +535,19 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 				break;
 			continue;
 		}
-#define P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp)    \
+#define P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp)   \
 	do {                                                                       \
 		P_JSTR_REG_LOG("*cap > *sz + rplclen - findlen");                  \
-		if (dst != oldp) {                                                  \
+		if (dst != oldp) {                                                 \
 			P_JSTR_REG_LOG("dst != old");                              \
-			memmove(dst, oldp, p - oldp);                                \
-			dst += (p - oldp);                                          \
+			memmove(dst, oldp, p - oldp);                              \
+			dst += (p - oldp);                                         \
 			memmove(dst + rplclen,                                     \
 				p + findlen,                                       \
 				(*(unsigned char **)s + *sz) - (p + findlen) + 1); \
 			memcpy(dst, rplc, rplclen);                                \
 			dst += rplclen;                                            \
-			oldp = dst;                                                 \
+			oldp = dst;                                                \
 		} else {                                                           \
 			P_JSTR_REG_LOG("dst == old");                              \
 			memmove(p + rplclen,                                       \
@@ -559,21 +559,21 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 		p += rplclen;                                                      \
 	} while (0)
 #define P_JSTR_REG_RPLCALL_BIG_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp, malloc_fail) \
-	do {                                                                               \
-		P_JSTR_REG_LOG("cap <= *sz + rplclen - findlen");                          \
+	do {                                                                                \
+		P_JSTR_REG_LOG("cap <= *sz + rplclen - findlen");                           \
 		if (dst != oldp)                                                            \
-			memmove(dst, oldp, p - oldp);                                        \
-		tmp = *(unsigned char **)s;                                                \
-		P_JSTR_REALLOC(*s, *cap, *sz + rplclen - findlen, malloc_fail);            \
-		memmove(p + rplclen,                                                       \
-			p + findlen,                                                       \
-			(tmp + *sz) - (p + findlen) + 1);                                  \
-		memcpy(p, rplc, rplclen);                                                  \
-		p = *(unsigned char **)s + (p - tmp);                                      \
-		dst = *(unsigned char **)s + (dst - tmp) + rplclen;                        \
+			memmove(dst, oldp, p - oldp);                                       \
+		tmp = *(unsigned char **)s;                                                 \
+		P_JSTR_REALLOC(*s, *cap, *sz + rplclen - findlen, malloc_fail);             \
+		memmove(p + rplclen,                                                        \
+			p + findlen,                                                        \
+			(tmp + *sz) - (p + findlen) + 1);                                   \
+		memcpy(p, rplc, rplclen);                                                   \
+		p = *(unsigned char **)s + (p - tmp);                                       \
+		dst = *(unsigned char **)s + (dst - tmp) + rplclen;                         \
 		oldp = dst;                                                                 \
-		*sz += rplclen - findlen;                                                  \
-		p += rplclen;                                                              \
+		*sz += rplclen - findlen;                                                   \
+		p += rplclen;                                                               \
 	} while (0)
 		if (rplclen <= findlen) {
 			P_JSTR_REG_LOG("rplclen <= findlen");
