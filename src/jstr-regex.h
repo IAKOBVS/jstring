@@ -424,7 +424,7 @@ p_jstr_reg_base_rmall(const p_jstr_flag_use_n_ty flag,
 	regmatch_t rm;
 	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *p = dst;
-	const unsigned char *old = dst;
+	const unsigned char *oldp = dst;
 	const unsigned char *const end = dst + *sz;
 	size_t findlen;
 	jstr_reg_errcode_ty ret = JSTR_REG_RET_NOMATCH;
@@ -436,13 +436,13 @@ p_jstr_reg_base_rmall(const p_jstr_flag_use_n_ty flag,
 		if (jstr_unlikely(findlen == 0))
 			++p;
 		else
-			P_JSTR_RMALL_IN_PLACE(dst, old, p, findlen);
+			P_JSTR_RMALL_IN_PLACE(dst, oldp, p, findlen);
 		if (jstr_unlikely(*p == '\0'))
 			break;
 	}
-	if (jstr_likely(dst != old))
-		memmove(dst, old, end - old + 1);
-	*sz = (char *)(dst + (end - old)) - s;
+	if (jstr_likely(dst != oldp))
+		memmove(dst, oldp, end - oldp + 1);
+	*sz = (char *)(dst + (end - oldp)) - s;
 	return ret;
 }
 
@@ -523,7 +523,7 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 	typedef unsigned char u;
 	unsigned char *dst = *(u **)s;
 	unsigned char *p = dst;
-	const unsigned char *old = dst;
+	const unsigned char *oldp = dst;
 	while ((flag & P_JSTR_FLAG_USE_N ? n-- : 1)
 	       && *p
 	       && P_JSTR_REG_EXEC(preg, (char *)p, (*(u **)s + *sz) - p, 1, &rm, eflags) == JSTR_REG_RET_NOERROR) {
@@ -535,19 +535,19 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 				break;
 			continue;
 		}
-#define P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc, rplclen, findlen, tmp)    \
+#define P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp)    \
 	do {                                                                       \
 		P_JSTR_REG_LOG("*cap > *sz + rplclen - findlen");                  \
-		if (dst != old) {                                                  \
+		if (dst != oldp) {                                                  \
 			P_JSTR_REG_LOG("dst != old");                              \
-			memmove(dst, old, p - old);                                \
-			dst += (p - old);                                          \
+			memmove(dst, oldp, p - oldp);                                \
+			dst += (p - oldp);                                          \
 			memmove(dst + rplclen,                                     \
 				p + findlen,                                       \
 				(*(unsigned char **)s + *sz) - (p + findlen) + 1); \
 			memcpy(dst, rplc, rplclen);                                \
 			dst += rplclen;                                            \
-			old = dst;                                                 \
+			oldp = dst;                                                 \
 		} else {                                                           \
 			P_JSTR_REG_LOG("dst == old");                              \
 			memmove(p + rplclen,                                       \
@@ -558,11 +558,11 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 		*sz += rplclen - findlen;                                          \
 		p += rplclen;                                                      \
 	} while (0)
-#define P_JSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc, rplclen, findlen, tmp, malloc_fail) \
+#define P_JSTR_REG_RPLCALL_BIG_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp, malloc_fail) \
 	do {                                                                               \
 		P_JSTR_REG_LOG("cap <= *sz + rplclen - findlen");                          \
-		if (dst != old)                                                            \
-			memmove(dst, old, p - old);                                        \
+		if (dst != oldp)                                                            \
+			memmove(dst, oldp, p - oldp);                                        \
 		tmp = *(unsigned char **)s;                                                \
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen - findlen, malloc_fail);            \
 		memmove(p + rplclen,                                                       \
@@ -571,24 +571,24 @@ p_jstr_reg_base_rplcall_len(const p_jstr_flag_use_n_ty flag,
 		memcpy(p, rplc, rplclen);                                                  \
 		p = *(unsigned char **)s + (p - tmp);                                      \
 		dst = *(unsigned char **)s + (dst - tmp) + rplclen;                        \
-		old = dst;                                                                 \
+		oldp = dst;                                                                 \
 		*sz += rplclen - findlen;                                                  \
 		p += rplclen;                                                              \
 	} while (0)
 		if (rplclen <= findlen) {
 			P_JSTR_REG_LOG("rplclen <= findlen");
-			P_JSTR_RPLCALL_IN_PLACE(dst, old, p, rplc, rplclen, findlen);
+			P_JSTR_RPLCALL_IN_PLACE(dst, oldp, p, rplc, rplclen, findlen);
 		} else if (*cap > *sz + rplclen - findlen) {
 			P_JSTR_REG_LOG("*cap > *sz + rplclen - findlen");
-			P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rplc, rplclen, findlen, tmp);
+			P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp);
 		} else {
 			P_JSTR_REG_LOG("else");
-			P_JSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rplc, rplclen, findlen, tmp, goto err);
+			P_JSTR_REG_RPLCALL_BIG_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp, goto err);
 		}
 	}
-	if (dst != old) {
-		memmove(dst, old, (*(u **)s + *sz) - old + 1);
-		*sz = (dst + (*(u **)s + *sz - old)) - *(u **)s;
+	if (dst != oldp) {
+		memmove(dst, oldp, (*(u **)s + *sz) - oldp + 1);
+		*sz = (dst + (*(u **)s + *sz - oldp)) - *(u **)s;
 	}
 	return JSTR_REG_RET_NOERROR;
 err:
@@ -916,7 +916,7 @@ p_jstr_reg_base_rplcall_bref_len(const p_jstr_flag_use_n_ty flag,
 	unsigned char *rdstp;
 	typedef unsigned char u;
 	unsigned char *dst = *(u **)s;
-	const unsigned char *old = dst;
+	const unsigned char *oldp = dst;
 	unsigned char *p = dst;
 	const unsigned char *const rend = (u *)rplc + rplclen;
 	unsigned char *tmp;
@@ -961,15 +961,15 @@ p_jstr_reg_base_rplcall_bref_len(const p_jstr_flag_use_n_ty flag,
 		}
 		P_JSTR_CREAT_RPLC_BREF(p - rm[0].rm_so, rdstp, rdstlen, rplc, rend);
 		if (rdstlen <= findlen)
-			P_JSTR_RPLCALL_IN_PLACE(dst, old, p, rdstp, rdstlen, findlen);
+			P_JSTR_RPLCALL_IN_PLACE(dst, oldp, p, rdstp, rdstlen, findlen);
 		else if (*cap > *sz + rdstlen - findlen)
-			P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, old, p, rdstp, rdstlen, findlen, tmp);
+			P_JSTR_REG_RPLCALL_SMALL_RPLC(dst, oldp, p, rdstp, rdstlen, findlen, tmp);
 		else
-			P_JSTR_REG_RPLCALL_BIG_RPLC(dst, old, p, rdstp, rdstlen, findlen, tmp, goto err_free);
+			P_JSTR_REG_RPLCALL_BIG_RPLC(dst, oldp, p, rdstp, rdstlen, findlen, tmp, goto err_free);
 	}
-	if (dst != old) {
-		memmove(dst, old, (*(u **)s + *sz) - old + 1);
-		*sz = (dst + (*(u **)s + *sz - old)) - *(u **)s;
+	if (dst != oldp) {
+		memmove(dst, oldp, (*(u **)s + *sz) - oldp + 1);
+		*sz = (dst + (*(u **)s + *sz - oldp)) - *(u **)s;
 	}
 	free(rdst);
 	return JSTR_REG_RET_NOERROR;

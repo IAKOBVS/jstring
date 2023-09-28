@@ -17,25 +17,25 @@ P_JSTR_END_DECLS
 
 P_JSTR_BEGIN_DECLS
 
-#define P_JSTR_RMALL_IN_PLACE(dst, old, p, findlen) \
-	do {                                        \
-		if (jstr_likely(dst != old))        \
-			memmove(dst, old, p - old); \
-		dst += p - old;                     \
-		old += p - old;                     \
-		old += findlen;                     \
-		p += findlen;                       \
+#define P_JSTR_RMALL_IN_PLACE(dst, oldp, p, findlen)  \
+	do {                                          \
+		if (jstr_likely(dst != oldp))         \
+			memmove(dst, oldp, p - oldp); \
+		dst += p - oldp;                      \
+		oldp += p - oldp;                     \
+		oldp += findlen;                      \
+		p += findlen;                         \
 	} while (0)
-#define P_JSTR_RPLCALL_IN_PLACE(dst, old, p, rplc, rplclen, findlen) \
-	do {                                                         \
-		if (jstr_likely(findlen != rplclen && dst != old))   \
-			memmove(dst, old, p - old);                  \
-		dst += p - old;                                      \
-		old += p - old;                                      \
-		old += findlen;                                      \
-		p += findlen;                                        \
-		memcpy(dst, rplc, rplclen);                          \
-		dst += rplclen;                                      \
+#define P_JSTR_RPLCALL_IN_PLACE(dst, oldp, p, rplc, rplclen, findlen) \
+	do {                                                          \
+		if (jstr_likely(findlen != rplclen && dst != oldp))   \
+			memmove(dst, oldp, p - oldp);                 \
+		dst += p - oldp;                                      \
+		oldp += p - oldp;                                     \
+		oldp += findlen;                                      \
+		p += findlen;                                         \
+		memcpy(dst, rplc, rplclen);                           \
+		dst += rplclen;                                       \
 	} while (0)
 /*
   Slip SRC into DST[AT].
