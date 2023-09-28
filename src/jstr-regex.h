@@ -295,7 +295,7 @@ jstr_reg_search_now(const char *R const s,
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_reg_search_len_now(const char *R const s,
+jstr_reg_search_len(const char *R const s,
 			const size_t sz,
 			regex_t *R const preg,
 			regmatch_t *R const pmatch,
@@ -312,7 +312,7 @@ jstr_reg_search_len_now(const char *R const s,
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_reg_search_len(const char *R const s,
+jstr_reg_search_len_now(const char *R const s,
 		    const char *R const ptn,
 		    const size_t sz,
 		    regex_t *R const preg,
@@ -323,7 +323,7 @@ jstr_reg_search_len(const char *R const s,
 	const jstr_reg_errcode_ty ret = jstr_reg_comp(preg, ptn, cflags);
 	if (jstr_unlikely(ret != JSTR_REG_RET_NOERROR))
 		return ret;
-	return jstr_reg_search_len_now(s, sz, preg, pmatch, eflags);
+	return jstr_reg_search_len(s, sz, preg, pmatch, eflags);
 }
 /*
    Check if S matches PTN.
