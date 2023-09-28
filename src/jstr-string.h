@@ -298,7 +298,9 @@ static char *
 jstr_strrstr(const char *R const hs,
 	     const char *R const ne) JSTR_NOEXCEPT
 {
-	return (char *)jstr_strrstr_len(hs, strlen(hs), ne, strlen(ne));
+	const size_t nelen = strlen(ne);
+	const size_t hslen = jstr_strnlen(ne, nelen);
+	return (hslen >= nelen) ? (char *)jstr_strrstr_len(hs, hslen + strlen(hs + hslen), ne, nelen) : NULL;
 }
 
 /* Heavily inspired by glibc memmem. */
