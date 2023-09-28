@@ -242,17 +242,23 @@ jstr_strrstr_len(const void *R const hs,
 		 const void *R const ne,
 		 const size_t nelen) JSTR_NOEXCEPT
 {
+	typedef unsigned char u;
 	if (jstr_unlikely(hslen < nelen))
 		return NULL;
+	if (jstr_unlikely(nelen == 0))
+		return (u *)hs + hslen;
+	if (nelen > 4)
+		return p_jstr_strrstr_len_bmh((u *)hs, hslen, (unsigned char *)ne, nelen);
+	const unsigned char *h = (u *)jstr_memrchr(hs, *(char *)ne, hslen);
+	if (jstr_unlikely(h == NULL)
+	    || (uintptr_t)((u *)h - (u *)hs) < nelen)
+		return NULL;
 	switch (nelen) {
-	case 0:
-		return (void *)((unsigned char *)hs + hslen);
 	case 1:
-		return (void *)jstr_memrchr(hs, *(unsigned char *)ne, hslen);
+		return (void *)hs;
 	case 2: {
-		const unsigned char *const start = (unsigned char *)hs - 1;
-		const unsigned char *h = (unsigned char *)hs + hslen - 1;
-		const unsigned char *n = (unsigned char *)ne;
+		const unsigned char *const start = (u *)hs - 1;
+		const unsigned char *n = (u *)ne;
 		const uint16_t nw = n[1] << 8 | n[0];
 		uint16_t hw = h[0] << 8 | h[-1];
 		for (h -= 2; (h != start) & (hw != nw); hw = hw << 8 | *h--)
@@ -260,26 +266,23 @@ jstr_strrstr_len(const void *R const hs,
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
 	case 3: {
-		const unsigned char *const start = (unsigned char *)hs - 1;
-		const unsigned char *h = (unsigned char *)hs + hslen - 1;
-		const unsigned char *n = (unsigned char *)ne;
+		const unsigned char *const start = (u *)hs - 1;
+		const unsigned char *n = (u *)ne;
 		const uint32_t nw = n[2] << 24 | n[1] << 16 | n[0] << 8;
 		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8;
 		for (h -= 3; (h != start) & (hw != nw); hw = (hw | *h--) << 8)
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
-	case 4: {
-		const unsigned char *const start = (unsigned char *)hs - 1;
-		const unsigned char *h = (unsigned char *)hs + hslen - 1;
-		const unsigned char *n = (unsigned char *)ne;
+	default: { /* case 4: */
+		const unsigned char *const start = (u *)hs - 1;
+		const unsigned char *n = (u *)ne;
 		const uint32_t nw = n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
 		for (h -= 4; (h != start) & (hw != nw); hw = hw << 8 | *h--)
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
-	default: return p_jstr_strrstr_len_bmh((unsigned char *)hs, hslen, (unsigned char *)ne, nelen);
 	}
 }
 
@@ -463,14 +466,13 @@ jstr_strcasestr_len(const char *R hs,
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
+	if (jstr_unlikely(hslen < nelen))
+		return NULL;
 	if (jstr_unlikely(nelen == 0))
 		return (char *)hs;
 	typedef unsigned char u;
-	if (nelen > 4) {
-		if (jstr_unlikely(hslen < nelen))
-			return NULL;
+	if (nelen > 4)
 		return p_jstr_strcasestr_len_bmh((u *)hs, hslen, (u *)ne, nelen);
-	}
 	int is_alpha0 = jstr_isalpha(*ne);
 	const char *const start = hs;
 	if (is_alpha0) {
@@ -479,11 +481,15 @@ jstr_strcasestr_len(const char *R hs,
 	} else {
 		hs = (char *)memchr(hs, *ne, hslen);
 	}
-	if (jstr_unlikely(hs == NULL))
-		return (char *)hs;
-	hslen -= hs - start;
-	if (jstr_unlikely(hslen < nelen))
+#	if JSTR_HAVE_MEMMEM
+	if (jstr_unlikely(hs == NULL)
+	    || (hslen -= hs - start) < nelen)
 		return NULL;
+#	else
+	if (jstr_unlikely(hs == NULL)
+	    || hs - start < nelen)
+		return NULL;
+#	endif
 	is_alpha0 += jstr_isalpha(ne[1]);
 	switch (nelen) {
 	case 1: return (char *)hs;
