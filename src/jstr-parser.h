@@ -49,6 +49,9 @@ end:
 	return 1;
 }
 
+/*
+   Check if S contains a C function.
+*/
 JSTR_FUNC_PURE
 static int
 jstr_match_func_len_maybe(const char *R s,
@@ -68,6 +71,9 @@ jstr_match_func_len_maybe(const char *R s,
 	return 1;
 }
 
+/*
+   Check if S contains a C function.
+*/
 JSTR_FUNC_PURE
 static int
 jstr_match_func_maybe(const char *R s)
