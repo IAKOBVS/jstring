@@ -48,7 +48,11 @@ typedef enum {
 #ifdef REG_ENOSYS
 	JSTR_REG_RET_ENOSYS = REG_ENOSYS,
 #endif
+#if defined REG_NOERROR
 	JSTR_REG_RET_NOERROR = REG_NOERROR,
+#else
+	JSTR_REG_RET_NOERROR = 0,
+#endif
 #define JSTR_REG_RET_NOERROR JSTR_REG_RET_NOERROR
 	JSTR_REG_RET_NOMATCH = REG_NOMATCH,
 #define JSTR_REG_RET_NOMATCH JSTR_REG_RET_NOMATCH
@@ -226,7 +230,7 @@ jstr_reg_match(const char *R const s,
 	       regex_t *R const preg,
 	       const int eflags) JSTR_NOEXCEPT
 {
-	return jstr_reg_exec(preg, s, 0, NULL, eflags | JSTR_REG_EF_NOSUB);
+	return jstr_reg_exec(preg, s, 0, NULL, eflags);
 }
 
 /*
@@ -296,12 +300,12 @@ JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_reg_search_len(const char *R const s,
-			const size_t sz,
-			regex_t *R const preg,
-			regmatch_t *R const pmatch,
-			const int eflags) JSTR_NOEXCEPT
+		    const size_t sz,
+		    regex_t *R const preg,
+		    regmatch_t *R const pmatch,
+		    const int eflags) JSTR_NOEXCEPT
 {
-	return jstr_reg_exec_len(preg, s, sz, 1, pmatch, eflags | JSTR_REG_EF_NOSUB);
+	return jstr_reg_exec_len(preg, s, sz, 1, pmatch, eflags);
 }
 
 /*
@@ -309,27 +313,28 @@ jstr_reg_search_len(const char *R const s,
    Return return value of regexec.
    Store offset of matched pattern in pmatch.
 */
-JSTR_FUNC
+JSTR_FUNC_PURE
 JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_reg_search_len_now(const char *R const s,
-		    const char *R const ptn,
-		    const size_t sz,
-		    regex_t *R const preg,
-		    regmatch_t *R const pmatch,
-		    const int cflags,
-		    const int eflags) JSTR_NOEXCEPT
+			const char *R const ptn,
+			const size_t sz,
+			regex_t *R const preg,
+			regmatch_t *R const pmatch,
+			const int cflags,
+			const int eflags) JSTR_NOEXCEPT
 {
 	const jstr_reg_errcode_ty ret = jstr_reg_comp(preg, ptn, cflags);
 	if (jstr_unlikely(ret != JSTR_REG_RET_NOERROR))
 		return ret;
 	return jstr_reg_search_len(s, sz, preg, pmatch, eflags);
 }
+
 /*
    Check if S matches PTN.
    Return return value of regexec or regcomp if it fails.
 */
-JSTR_FUNC
+JSTR_FUNC_PURE
 JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_reg_match_len(const char *R const s,
@@ -338,13 +343,15 @@ jstr_reg_match_len(const char *R const s,
 		   const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	return jstr_reg_exec_len(preg, s, sz, 0, &rm, eflags | JSTR_REG_EF_NOSUB | JSTR_REG_EF_STARTEND);
+	return jstr_reg_exec_len(preg, s, sz, 0, &rm, eflags | JSTR_REG_EF_STARTEND);
 }
 
-JSTR_NONNULL_ALL
+/*
+   Check if S matches PTN.
+   Return return value of regexec or regcomp if it fails.
+*/
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
 static jstr_reg_errcode_ty
 jstr_reg_match_len_now(const char *R const s,
 		       const char *R const ptn,
