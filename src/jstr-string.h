@@ -334,15 +334,16 @@ p_jstr_strcasestr_len_bmh(const unsigned char *R h,
 			}                                                                               \
 			h += shift1;                                                                    \
 		} while (h < end);                                                                      \
-		return NULL;                                                                            \
 	} while (0)
 	const unsigned char *const end = h + hl - nl + 1;
 	size_t tmp;
 	const size_t m1 = nl - 1;
 	size_t off = 0;
-	if (jstr_unlikely(nl > 256))
+	if (jstr_likely(nl < 257))
+		P_JSTR_STRCASESTR_BMH(uint8_t, int);
+	else
 		P_JSTR_STRCASESTR_BMH(size_t, size_t);
-	P_JSTR_STRCASESTR_BMH(uint8_t, int);
+	return NULL;
 #undef HL
 #undef P_JSTR_STRCASESTR_BMH
 }
