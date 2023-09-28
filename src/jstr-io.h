@@ -618,7 +618,7 @@ err:
 JSTR_INLINE
 JSTR_FUNC
 static int
-p_jstr_io_alloc_file(const int alloc_exact,
+p_jstr_io_alloc_read(const int alloc_exact,
 		     char *R *R const s,
 		     size_t *R const sz,
 		     size_t *R const cap,
@@ -658,13 +658,13 @@ err:
 */
 JSTR_FUNC
 static int
-jstr_io_alloc_file(char *R *R const s,
+jstr_io_alloc_read(char *R *R const s,
 		   size_t *R const sz,
 		   size_t *R const cap,
 		   const char *R const fname,
 		   struct stat *R const st) JSTR_NOEXCEPT
 {
-	return p_jstr_io_alloc_file(0, s, sz, cap, fname, st);
+	return p_jstr_io_alloc_read(0, s, sz, cap, fname, st);
 }
 
 /*
@@ -680,7 +680,7 @@ jstr_io_allocexact_file(char *R *R const s,
 			const char *R const fname,
 			struct stat *R const st) JSTR_NOEXCEPT
 {
-	return p_jstr_io_alloc_file(1, s, sz, cap, fname, st);
+	return p_jstr_io_alloc_read(1, s, sz, cap, fname, st);
 }
 
 /*
@@ -690,11 +690,11 @@ jstr_io_allocexact_file(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_io_alloc_file_j(jstr_ty *R const j,
+jstr_io_alloc_read_j(jstr_ty *R const j,
 		     const char *R const fname,
 		     struct stat *R const st) JSTR_NOEXCEPT
 {
-	return jstr_io_alloc_file(&j->data, &j->size, &j->capacity, fname, st);
+	return jstr_io_alloc_read(&j->data, &j->size, &j->capacity, fname, st);
 }
 
 /*
