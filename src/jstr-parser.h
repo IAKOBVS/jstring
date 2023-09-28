@@ -57,24 +57,14 @@ jstr_match_func_len_maybe(const char *R s,
 	if (jstr_unlikely(sz == 0))
 		return 0;
 	const char *const end = s + sz;
-	s = (char *)memchr(s, '(', sz);
-	if (jstr_unlikely(s == NULL))
-		return 0;
-	if (jstr_unlikely(++s != end))
-		return 0;
-	s = (char *)memchr(s, ')', end - s);
-	if (jstr_unlikely(s == NULL))
-		return 0;
-	if (jstr_unlikely(++s != end))
-		return 0;
-	s = (char *)memchr(s, '{', end - s);
-	if (jstr_unlikely(s == NULL))
-		return 0;
-	if (jstr_unlikely(++s != end))
-		return 0;
-	s = (char *)memchr(s, '}', end - s);
-	if (jstr_unlikely(s == NULL))
-		return 0;
+	const char *find = "(){}";
+	while (*find) {
+		s = (char *)memchr(s, *find++, sz);
+		if (jstr_unlikely(s == NULL))
+			return 0;
+		if (jstr_unlikely(++s == end))
+			return 0;
+	}
 	return 1;
 }
 
@@ -84,24 +74,14 @@ jstr_match_func_maybe(const char *R s)
 {
 	if (jstr_unlikely(*s == '\0'))
 		return 0;
-	s = strchr(s, '(');
-	if (jstr_unlikely(s == NULL))
-		return 0;
-	if (jstr_unlikely(*++s == '\0'))
-		return 0;
-	s = strchr(s, ')');
-	if (jstr_unlikely(s == NULL))
-		return 0;
-	if (jstr_unlikely(*++s == '\0'))
-		return 0;
-	s = strchr(s, '{');
-	if (jstr_unlikely(s == NULL))
-		return 0;
-	if (jstr_unlikely(*++s == '\0'))
-		return 0;
-	s = strchr(s, '}');
-	if (jstr_unlikely(s == NULL))
-		return 0;
+	const char *find = "(){}";
+	while (*find) {
+		s = strchr(s, *find++);
+		if (jstr_unlikely(s == NULL))
+			return 0;
+		if (jstr_unlikely(*++s == '\0'))
+			return 0;
+	}
 	return 1;
 }
 
