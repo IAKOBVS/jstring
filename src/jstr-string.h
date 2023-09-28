@@ -247,7 +247,7 @@ p_jstr_strrstr_len(const void *R const hs,
 	if (jstr_unlikely(nelen == 0))
 		return (u *)hs + hslen;
 	const unsigned char *h = (u *)jstr_memrchr(hs, *(char *)ne, hslen);
-	if (jstr_unlikely(h == NULL)
+	if (h == NULL
 	    || (uintptr_t)((u *)h - (u *)hs) < nelen)
 		return NULL;
 	switch (nelen) {
@@ -496,7 +496,7 @@ jstr_strcasestr_len(const char *R hs,
 	} else {
 		hs = (char *)memchr(hs, *ne, hslen);
 	}
-	if (jstr_unlikely(hs == NULL)
+	if (hs == NULL
 #	if JSTR_HAVE_MEMMEM
 	    || (hslen -= hs - start) < nelen
 #	else
@@ -553,7 +553,7 @@ jstr_strcasestr(const char *R hs,
 	} else {
 		hs = strchr(hs, *ne);
 	}
-	if (jstr_unlikely(hs == NULL)
+	if (hs == NULL
 	    || ne[1] == '\0')
 		return (char *)hs;
 	is_alpha0 += jstr_isalpha(ne[1]);
