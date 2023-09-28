@@ -58,13 +58,13 @@ jstr_match_func_len_maybe(const char *R s,
 		return 0;
 	const char *const end = s + sz;
 	const char *find = "(){}";
-	while (*find) {
-		s = (char *)memchr(s, *find++, sz);
+	do {
+		s = (char *)memchr(s, *find, sz);
 		if (jstr_unlikely(s == NULL))
 			return 0;
 		if (jstr_unlikely(++s == end))
 			return 0;
-	}
+	} while (*++find);
 	return 1;
 }
 
@@ -75,13 +75,13 @@ jstr_match_func_maybe(const char *R s)
 	if (jstr_unlikely(*s == '\0'))
 		return 0;
 	const char *find = "(){}";
-	while (*find) {
-		s = strchr(s, *find++);
+	do {
+		s = strchr(s, *find);
 		if (jstr_unlikely(s == NULL))
 			return 0;
 		if (jstr_unlikely(*++s == '\0'))
 			return 0;
-	}
+	} while (*++find);
 	return 1;
 }
 
