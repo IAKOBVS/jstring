@@ -481,15 +481,14 @@ jstr_strcasestr_len(const char *R hs,
 	} else {
 		hs = (char *)memchr(hs, *ne, hslen);
 	}
+	if (jstr_unlikely(hs == NULL)
 #	if JSTR_HAVE_MEMMEM
-	if (jstr_unlikely(hs == NULL)
-	    || (hslen -= hs - start) < nelen)
-		return NULL;
+	    || (hslen -= hs - start) < nelen
 #	else
-	if (jstr_unlikely(hs == NULL)
-	    || hs - start < nelen)
-		return NULL;
+	    || hs - start < nelen
 #	endif
+	)
+		return NULL;
 	is_alpha0 += jstr_isalpha(ne[1]);
 	switch (nelen) {
 	case 1: return (char *)hs;
