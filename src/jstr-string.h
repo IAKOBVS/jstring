@@ -245,10 +245,10 @@ jstr_strrstr_len(const void *R const hs,
 	typedef unsigned char u;
 	if (jstr_unlikely(hslen < nelen))
 		return NULL;
-	if (jstr_unlikely(nelen == 0))
-		return (u *)hs + hslen;
 	if (nelen > 4)
 		return p_jstr_strrstr_len_bmh((u *)hs, hslen, (unsigned char *)ne, nelen);
+	if (jstr_unlikely(nelen == 0))
+		return (u *)hs + hslen;
 	const unsigned char *h = (u *)jstr_memrchr(hs, *(char *)ne, hslen);
 	if (jstr_unlikely(h == NULL)
 	    || (uintptr_t)((u *)h - (u *)hs) < nelen)
@@ -467,13 +467,13 @@ jstr_strcasestr_len(const char *R hs,
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
+	typedef unsigned char u;
 	if (jstr_unlikely(hslen < nelen))
 		return NULL;
-	if (jstr_unlikely(nelen == 0))
-		return (char *)hs;
-	typedef unsigned char u;
 	if (nelen > 4)
 		return p_jstr_strcasestr_len_bmh((u *)hs, hslen, (u *)ne, nelen);
+	if (jstr_unlikely(nelen == 0))
+		return (char *)hs;
 	int is_alpha0 = jstr_isalpha(*ne);
 	const char *const start = hs;
 	if (is_alpha0) {
