@@ -949,6 +949,46 @@ jstr_line_number(const char *begin,
 	return cnt;
 }
 
+JSTR_FUNC_PURE
+static int
+jstr_match_func_len_maybe(const char *s,
+		    const size_t sz)
+{
+	s = (char *)memchr(s, '(', sz);
+	if (jstr_unlikely(s == NULL))
+		return 0;
+	s = (char *)memchr(s + 1, ')', sz);
+	if (jstr_unlikely(s == NULL))
+		return 0;
+	s = (char *)memchr(s + 1, '{', sz);
+	if (jstr_unlikely(s == NULL))
+		return 0;
+	s = (char *)memchr(s, '}', sz);
+	if (jstr_unlikely(s == NULL))
+		return 0;
+	return 1;
+}
+
+JSTR_FUNC_PURE
+static int
+jstr_match_func_maybe(const char *s,
+		    const size_t sz)
+{
+	s = strchr(s, '(');
+	if (jstr_unlikely(s == NULL))
+		return 0;
+	s = strchr(s + 1, ')');
+	if (jstr_unlikely(s == NULL))
+		return 0;
+	s = strchr(s + 1, '{');
+	if (jstr_unlikely(s == NULL))
+		return 0;
+	s = strchr(s, '}');
+	if (jstr_unlikely(s == NULL))
+		return 0;
+	return 1;
+}
+
 P_JSTR_END_DECLS
 
 #undef BZERO

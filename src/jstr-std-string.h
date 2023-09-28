@@ -186,6 +186,7 @@ jstr_strstrnul(const char *R const hs,
 
 /*
    Non-destructive strtok.
+   END must be NUL terminated.
    Instead of nul-termination, use the save_ptr to know the length of the string.
 */
 JSTR_FUNC_PURE
