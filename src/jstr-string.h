@@ -115,6 +115,7 @@ jstr_strcasecmp(const char *R s1,
 #endif
 }
 
+/* Heavily inspired by glibc memmem. */
 JSTR_FUNC_PURE
 static void *
 p_jstr_strrstr_len_bmh(const unsigned char *R hs,
