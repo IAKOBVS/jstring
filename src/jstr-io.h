@@ -711,6 +711,41 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 	return jstr_io_allocexact_file(&j->data, &j->size, &j->capacity, fname, st);
 }
 
+/*
+   Expand every ~ to /home/username.
+   Return value:
+   0 on error;
+   otherwise 1.
+*/
+JSTR_FUNC
+static int
+jstr_io_expand_tilde(char *R *R s,
+		     size_t *R sz,
+		     size_t *R cap)
+{
+	const char *R const home = getenv("HOME");
+	if (jstr_unlikely(home == NULL))
+		return 0;
+	const size_t len = strlen(home);
+	const char *tmp;
+	char *p = *s;
+	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
+		if (jstr_unlikely(*sz + len >= *cap)) {
+			tmp = *s;
+			P_JSTR_REALLOC(*s, *cap, *sz + len, goto err);
+			p = *s + (p - tmp);
+		}
+		memmove(p + len, p + 1, strlen(p) + 1);
+		memcpy(p, home, len);
+		p += len;
+		*sz += (len - 1);
+	}
+	return 1;
+err:
+	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	return 0;
+}
+
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
