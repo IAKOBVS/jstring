@@ -135,7 +135,7 @@ p_jstr_err_exit(void) JSTR_NOEXCEPT
 	exit(EXIT_FAILURE);
 }
 
-/* Print error message with __FILE__:__LINE__:__func__. */
+/* Print error message: __FILE__:__LINE__:__func__:strerror(errno). */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
@@ -144,7 +144,7 @@ jstr_err_debug(void) JSTR_NOEXCEPT
 	p_jstr_err_debug(__FILE__, __LINE__, __func__);
 }
 
-/* Print error message with __FILE__:__LINE__:__func__ and exit. */
+/* Print error message: __FILE__:__LINE__:__func__:strerror(errno) and exit. */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
