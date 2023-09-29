@@ -7,6 +7,7 @@ P_JSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <stdarg.h>
 P_JSTR_END_DECLS
 
 #include "jstr-builder.h"
@@ -14,6 +15,8 @@ P_JSTR_END_DECLS
 #include "jarr-macros.h"
 #include "jstr-macros.h"
 #include "jstr-pp-arrcpy-va-args.h"
+
+#define R JSTR_RESTRICT
 
 #if JARR_NULLIFY_MEMBERS_ON_FREE
 #	define P_JARR_NULLIFY_MEMBERS(j) ((j)->size = 0, (j)->cap = 0)
@@ -172,5 +175,7 @@ static void P_JARR_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
 }
 
 P_JSTR_END_DECLS
+
+#undef R
 
 #endif /* JARR_H */
