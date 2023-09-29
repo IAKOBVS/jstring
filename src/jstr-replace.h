@@ -632,20 +632,16 @@ jstr_replacenc(char *R s,
 		*s++ = rplc;
 }
 
-/*
-  Replace first SEARCH in S with REPLACE.
-  Return 0 on malloc error;
-  otherwise, 1.
-*/
 JSTR_FUNC
 static int
-jstr_replace_len(char *R *R const s,
-		 size_t *R const sz,
-		 size_t *R const cap,
-		 const char *R const find,
-		 const char *R const rplc,
-		 const size_t findlen,
-		 const size_t rplclen) JSTR_NOEXCEPT
+p_jstr_replace_len(char *R *R const s,
+		   size_t *R const sz,
+		   size_t *R const cap,
+		   const size_t start_idx,
+		   const char *R const find,
+		   const char *R const rplc,
+		   const size_t findlen,
+		   const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplclen == 0)) {
 		*sz = jstr_rm_len_p(*s, find, *sz, findlen) - *s;
@@ -664,16 +660,41 @@ jstr_replace_len(char *R *R const s,
 	return jstr_slip_len(s, sz, cap, p - *s, rplc, rplclen);
 }
 
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
+/*
+  Replace first SEARCH in S with REPLACE.
+  Return 0 on malloc error;
+  otherwise, 1.
+*/
+JSTR_FUNC
 static int
-jstr_replace(char *R *R const s,
-	     size_t *R const sz,
-	     size_t *R const cap,
-	     const char *R const find,
-	     const char *R const rplc) JSTR_NOEXCEPT
+jstr_replace_len(char *R *R const s,
+		 size_t *R const sz,
+		 size_t *R const cap,
+		 const char *R const find,
+		 const char *R const rplc,
+		 const size_t findlen,
+		 const size_t rplclen) JSTR_NOEXCEPT
 {
-	return jstr_replace_len(s, sz, cap, find, rplc, strlen(find), strlen(rplc));
+	return p_jstr_replace_len(s, sz, cap, 0, find, rplc, findlen, rplclen);
+}
+
+/*
+  Replace first SEARCH in S with REPLACE.
+  Return 0 on malloc error;
+  otherwise, 1.
+*/
+JSTR_FUNC
+static int
+jstr_replace_len_from(char *R *R const s,
+		      size_t *R const sz,
+		      size_t *R const cap,
+		      const size_t start_idx,
+		      const char *R const find,
+		      const char *R const rplc,
+		      const size_t findlen,
+		      const size_t rplclen) JSTR_NOEXCEPT
+{
+	return p_jstr_replace_len(s, sz, cap, start_idx, find, rplc, findlen, rplclen);
 }
 
 /*
@@ -697,18 +718,6 @@ jstr_replacelast_len(char *R *R const s,
 	if (jstr_unlikely(p == NULL))
 		return 1;
 	return p_jstr_replaceat_len_may_lower(s, sz, cap, p - *s, rplc, rplclen, findlen) ? 1 : 0;
-}
-
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static int
-jstr_replacelast(char *R *R const s,
-		 size_t *R const sz,
-		 size_t *R const cap,
-		 const char *R const find,
-		 const char *R const rplc) JSTR_NOEXCEPT
-{
-	return jstr_replacelast_len(s, sz, cap, find, rplc, strlen(find), strlen(rplc));
 }
 
 JSTR_FUNC_RET_NONNULL
@@ -820,27 +829,28 @@ p_jstr_replaceall_len(const p_jstr_flag_use_n_ty flag,
 		      char *R *R const s,
 		      size_t *R const sz,
 		      size_t *R const cap,
+		      const size_t start_idx,
 		      const char *R const find,
 		      const char *R const rplc,
 		      size_t n,
 		      const size_t findlen,
 		      const size_t rplclen) JSTR_NOEXCEPT
 {
+	typedef unsigned char u;
+	unsigned char *dst = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0)) {
-		*sz = p_jstr_rmall_len_p(flag, *s, find, n, *sz, findlen) - *s;
+		*sz = p_jstr_rmall_len_p(flag, (char *)dst, find, n, *sz - start_idx, findlen) - *s;
 		return 1;
 	}
 	if (jstr_unlikely(findlen == 1)) {
 		if (jstr_unlikely(rplclen == 1)) {
-			jstr_replacechr_len(*s, *find, *rplc, *sz);
+			jstr_replacechr_len((char *)dst, *find, *rplc, *sz - start_idx);
 			return 1;
 		}
 	} else if (jstr_unlikely(findlen == 0))
 		return 1;
-	typedef unsigned char u;
-	const unsigned char *p = *(u **)s;
+	const unsigned char *p = dst;
 	const unsigned char *old = p;
-	unsigned char *dst = *(u **)s;
 	while (((flag & P_JSTR_FLAG_USE_N) ? n-- : 1)
 	       && (p = (u *)JSTR_MEMMEM((char *)p, (*(u **)s + *sz) - p, find, findlen))) {
 		if (rplclen <= findlen)
@@ -875,20 +885,27 @@ jstr_replacen_len(char *R *R const s,
 		  const size_t findlen,
 		  const size_t rplclen) JSTR_NOEXCEPT
 {
-	return p_jstr_replaceall_len(P_JSTR_FLAG_USE_N, s, sz, cap, find, rplc, n, findlen, rplclen);
+	return p_jstr_replaceall_len(P_JSTR_FLAG_USE_N, s, sz, cap, 0, find, rplc, n, findlen, rplclen);
 }
 
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
+/*
+  Replace N SEARCH in S with REPLACE.
+  Return 0 on malloc error;
+  otherwise, 1.
+*/
+JSTR_FUNC
 static int
-jstr_replacen(char *R *R const s,
-	      size_t *R const sz,
-	      size_t *R const cap,
-	      const char *R const find,
-	      const char *R const rplc,
-	      size_t n) JSTR_NOEXCEPT
+jstr_replacen_len_from(char *R *R const s,
+		       size_t *R const sz,
+		       size_t *R const cap,
+		       const size_t start_idx,
+		       const char *R const find,
+		       const char *R const rplc,
+		       size_t n,
+		       const size_t findlen,
+		       const size_t rplclen) JSTR_NOEXCEPT
 {
-	return jstr_replacen_len(s, sz, cap, find, rplc, n, strlen(find), strlen(rplc));
+	return p_jstr_replaceall_len(P_JSTR_FLAG_USE_N, s, sz, cap, start_idx, find, rplc, n, findlen, rplclen);
 }
 
 /*
@@ -906,19 +923,26 @@ jstr_replaceall_len(char *R *R const s,
 		    const size_t findlen,
 		    const size_t rplclen) JSTR_NOEXCEPT
 {
-	return p_jstr_replaceall_len(P_JSTR_FLAG_USE_NOT_N, s, sz, cap, find, rplc, 0, findlen, rplclen);
+	return p_jstr_replaceall_len(P_JSTR_FLAG_USE_NOT_N, s, sz, cap, 0, find, rplc, 0, findlen, rplclen);
 }
 
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
+/*
+  Replace all SEARCH in S with REPLACE.
+  Return 0 on malloc error;
+  otherwise, 1.
+*/
+JSTR_FUNC
 static int
-jstr_replaceall(char *R *R const s,
-		size_t *R const sz,
-		size_t *R const cap,
-		const char *R const find,
-		const char *R const rplc) JSTR_NOEXCEPT
+jstr_replaceall_len_from(char *R *R const s,
+			 size_t *R const sz,
+			 size_t *R const cap,
+			 const size_t start_idx,
+			 const char *R const find,
+			 const char *R const rplc,
+			 const size_t findlen,
+			 const size_t rplclen) JSTR_NOEXCEPT
 {
-	return jstr_replaceall_len(s, sz, cap, find, rplc, strlen(find), strlen(rplc));
+	return p_jstr_replaceall_len(P_JSTR_FLAG_USE_NOT_N, s, sz, cap, start_idx, find, rplc, 0, findlen, rplclen);
 }
 
 /*
