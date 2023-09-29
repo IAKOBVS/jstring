@@ -21,7 +21,7 @@ JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_parser_fn_decl_comp(regex_t *R preg)
 {
-	return jstr_reg_comp(preg, "[^(){}]*[_A-Za-z][_0-9A-Za-z]*[ \n\t]*\\([_A-Za-z][_0-9A-Za-z]*\\)[ \n\t]*([^(){};]*\\()\\)[^(){};]*{", 0);
+	return jstr_reg_comp(preg, "[^(){}]*[_A-Za-z][_0-9A-Za-z]*[ \n\t]*\\([_A-Za-z][_0-9A-Za-z]*\\)[ \n\t]*([^(){};]*\\()\\)[^(){};]*{.*}", 0);
 }
 
 JSTR_FUNC_VOID
@@ -44,17 +44,15 @@ jstr_parser_fn_decl_gen(char *R const s,
 {
 	char *tmp;
 	char *tok;
-	char *savepp;
 	char *savep = s;
 	const char *const end = s + sz;
 	regmatch_t pm[3];
 	for (int c, c1, ret;
 	     (tok = jstr_strtok_ne_len((const char **)&savep, end, sep, seplen));
-	     *savepp = c) {
-		savepp = (savep != end) ? savep - seplen : savep;
-		c = *savepp;
-		*savepp = '\0';
-		if (jstr_reg_exec_len(preg, tok, savepp - tok, 3, pm, 0) == JSTR_REG_RET_NOERROR) {
+	     *savep = c) {
+		c = *savep;
+		*savep = '\0';
+		if (jstr_reg_exec_len(preg, tok, savep - tok, 3, pm, 0) == JSTR_REG_RET_NOERROR) {
 			tmp = tok + pm[1].rm_eo;
 			c1 = *tmp;
 			*tmp = '\0';
@@ -72,7 +70,7 @@ jstr_parser_fn_decl_gen(char *R const s,
 			if (*tmp == '#') {
 				tmp = jstr_skip_blanks(tmp + 1);
 				/* tok is a macro. */
-				if (jstr_starts_len(tmp, savepp - tmp, "define", strlen("define")))
+				if (jstr_starts_len(tmp, savep - tmp, "define", strlen("define")))
 					continue;
 			}
 			fwrite(tok, 1, pm[2].rm_eo, stdout);
