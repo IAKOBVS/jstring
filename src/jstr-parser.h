@@ -36,6 +36,10 @@ typedef struct jstr_parser_func_ty {
 	const char *fn_e;
 	const char *brk;
 	const char *brk_e;
+	const char **args;
+	const char **args_e;
+	size_t args_num;
+	size_t _args_cap;
 } jstr_parser_func_ty;
 
 JSTR_FUNC
