@@ -34,10 +34,10 @@ jstr_parser_fn_free(regex_t *R preg)
 JSTR_FUNC_VOID
 static void
 jstr_parser_fn_decl_gen(const regex_t *R preg,
-			  char *R s,
-			  const char *sep,
-			  const size_t sz,
-			  const size_t seplen)
+			char *R s,
+			const char *sep,
+			const size_t sz,
+			const size_t seplen)
 {
 	char *tok;
 	char *savep = s;
