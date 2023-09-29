@@ -101,6 +101,11 @@ err:
 	return 0;
 }
 
+/*
+  Slip SRC into DST[AT].
+  Return 0 on malloc error;
+  otherwise 1.
+*/
 JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
@@ -979,6 +984,20 @@ jstr_skip_blanks(const char *R s)
 	while (jstr_isblank(*s++))
 		;
 	return (char *)s - 1;
+}
+
+/*
+   Return ptr to first non-space character from END to BEGIN.
+*/
+JSTR_INLINE
+JSTR_PURE
+static char *
+jstr_skip_blanksr(const char *begin,
+		  const char *end)
+{
+	while (end != begin && jstr_isblank(*end))
+		--end;
+	return (char *)end;
 }
 
 /*

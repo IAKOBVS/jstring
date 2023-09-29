@@ -7,6 +7,7 @@
 #include "jstr-regex.h"
 
 P_JSTR_BEGIN_DECLS
+#include <fnmatch.h>
 #include <stdlib.h>
 #include <string.h>
 P_JSTR_END_DECLS
@@ -20,7 +21,7 @@ JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_parser_fn_decl_comp(regex_t *R preg)
 {
-	return jstr_reg_comp(preg, "\\([^(){}]*[_0-9A-Za-z]*[ \n\t]*[_A-Za-z][_0-9A-Za-z]*[ \n\t]*([^(){}}]*)\\)[^(){}]*{", 0);
+	return jstr_reg_comp(preg, "[^(){}]*[_A-Za-z][_0-9A-Za-z]*[ \n\t]*\\([_A-Za-z][_0-9A-Za-z]*\\)[ \n\t]*([^(){}}]*\\()\\)[^(){}]*{", 0);
 }
 
 JSTR_FUNC_VOID
@@ -33,37 +34,48 @@ jstr_parser_fn_free(regex_t *R preg)
 
 JSTR_FUNC_VOID
 static void
-jstr_parser_fn_decl_gen(const regex_t *R preg,
-			char *R s,
-			const char *sep,
+jstr_parser_fn_decl_gen(char *R const s,
+			const char *R const fn_glob,
+			const char *R const sep,
+			const regex_t *R const preg,
 			const size_t sz,
+			const int fn_flags,
 			const size_t seplen)
 {
-	const char *tmp;
+	char *tmp;
 	char *tok;
 	char *savepp;
 	char *savep = s;
 	const char *const end = s + sz;
-	regmatch_t pm[2];
-	for (int c;
+	regmatch_t pm[3];
+	for (int c, c1, ret;
 	     (tok = jstr_strtok_ne_len((const char **)&savep, end, sep, seplen));
 	     *savepp = c) {
 		savepp = (savep != end) ? savep - seplen : savep;
 		c = *savepp;
 		*savepp = '\0';
-		if (jstr_reg_exec_len(preg, tok, savepp - tok, 2, pm, 0) == JSTR_REG_RET_NOERROR) {
+		if (jstr_reg_exec_len(preg, tok, savepp - tok, 3, pm, 0) == JSTR_REG_RET_NOERROR) {
+			tmp = tok + pm[1].rm_eo;
+			c1 = *tmp;
+			*tmp = '\0';
+			/* Move ptr to start of function name.
+			TODO: fix the regex such that we need not do this. */
+			while (tmp != tok
+			       && jstr_isctype(*--tmp, JSTR_ISWORD))
+				;
+			ret = fnmatch(fn_glob, ++tmp, fn_flags);
+			*(tok + pm[1].rm_eo) = c1;
+			if (ret)
+				continue;
 			/* Check if tok is a macro. */
 			tmp = jstr_skip_blanks(tok);
 			if (*tmp == '#') {
 				tmp = jstr_skip_blanks(tmp + 1);
+				/* tok is a macro. */
 				if (jstr_starts_len(tmp, savepp - tmp, "define", strlen("define")))
-					/* tok is a macro. */
 					continue;
 			}
-			fwrite(tok + pm[1].rm_so,
-			       1,
-			       pm[1].rm_eo - pm[1].rm_so,
-			       stdout);
+			fwrite(tok, 1, pm[2].rm_eo, stdout);
 			putchar(';');
 			putchar('\n');
 		}
