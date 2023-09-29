@@ -60,6 +60,8 @@ jstr_parser_func_match(const regex_t *R preg,
 	return 0;
 }
 
+#if 0 /* broken */
+
 JSTR_FUNC_VOID
 static void
 jstr_parser_func_fill_args(jstr_parser_func_ty *R p)
@@ -78,8 +80,14 @@ jstr_parser_func_fill_args(jstr_parser_func_ty *R p)
 		       && jstr_isctype(*s, JSTR_ISWORD))
 			++s;
 		p->args_e[p->args_num++] = s;
+		if (*s == ',')
+			continue;
+		if (*s == ')')
+			break;
 	}
 }
+
+#endif
 
 JSTR_FUNC_VOID
 JSTR_INLINE
