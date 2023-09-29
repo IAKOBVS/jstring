@@ -24,6 +24,14 @@ jstr_parser_fn_decl_comp(regex_t *R preg)
 }
 
 JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_parser_fn_free(regex_t *R preg)
+{
+	jstr_reg_free(preg);
+}
+
+JSTR_FUNC_VOID
 static void
 jstr_parser_fn_decl_gen(const regex_t *R preg,
 			  char *R s,
@@ -141,14 +149,6 @@ jstr_parser_fn_fill_args(jstr_parser_fn_ty *R p)
 }
 
 #endif
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_parser_fn_free(regex_t *R preg)
-{
-	jstr_reg_free(preg);
-}
 
 P_JSTR_END_DECLS
 
