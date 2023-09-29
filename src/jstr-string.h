@@ -501,7 +501,7 @@ jstr_strcasestr_len(const char *R hs,
 #	if JSTR_HAVE_MEMMEM
 	    || (hslen -= hs - start) < nelen
 #	else
-	    || hs - start < nelen
+	    || (size_t)(hs - start) < nelen
 #	endif
 	)
 		return NULL;
