@@ -34,8 +34,8 @@ jstr_parser_tok(const char **const save_ptr,
 typedef struct jstr_parser_func_ty {
 	const char *fn;
 	const char *fn_e;
-	const char *brk;
-	const char *brk_e;
+	const char *brc;
+	const char *brc_e;
 	const char **args;
 	const char **args_e;
 	size_t args_num;
@@ -45,7 +45,7 @@ typedef struct jstr_parser_func_ty {
 JSTR_FUNC
 static int
 jstr_parser_func_match(const regex_t *R preg,
-		       const char *R s,
+		       const char *R const s,
 		       const size_t sz,
 		       jstr_parser_func_ty *R p)
 {
@@ -53,11 +53,32 @@ jstr_parser_func_match(const regex_t *R preg,
 	if (jstr_reg_exec_len(preg, s, sz, 2, pm, 0) == JSTR_REG_RET_NOERROR) {
 		p->fn = s + pm[1].rm_so;
 		p->fn_e = s + pm[1].rm_eo;
-		p->brk = s + pm[2].rm_so;
-		p->brk_e = s + pm[3].rm_so;
+		p->brc = s + pm[2].rm_so;
+		p->brc_e = s + pm[3].rm_so;
 		return 1;
 	}
 	return 0;
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_parser_func_fill_args(jstr_parser_func_ty *R p)
+{
+	const char *s = p->brc;
+	const char *const e = p->brc_e;
+	p->args_num = 0;
+	for (; s >= e; ++s) {
+		if (jstr_isspace(*s))
+			continue;
+		if (jstr_isctype(*s, JSTR_ISWORD))
+			p->args[p->args_num] = s;
+		else
+			break;
+		while (s >= e
+		       && jstr_isctype(*s, JSTR_ISWORD))
+			++s;
+		p->args_e[p->args_num++] = s;
+	}
 }
 
 JSTR_FUNC_VOID
