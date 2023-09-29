@@ -39,14 +39,14 @@ jstr_parser_fn_decl_gen(const regex_t *R preg,
 			const size_t sz,
 			const size_t seplen)
 {
-	char *tok;
-	char *savep = s;
-	char *savepp;
-	const char *const end = s + sz;
 	const char *tmp;
-	int c;
+	char *tok;
+	char *savepp;
+	char *savep = s;
+	const char *const end = s + sz;
 	regmatch_t pm[2];
-	for (; (tok = jstr_strtok_ne_len((const char **)&savep, end, sep, seplen));
+	for (int c;
+	     (tok = jstr_strtok_ne_len((const char **)&savep, end, sep, seplen));
 	     *savepp = c) {
 		savepp = (savep != end) ? savep - seplen : savep;
 		c = *savepp;
@@ -66,7 +66,6 @@ jstr_parser_fn_decl_gen(const regex_t *R preg,
 			       stdout);
 			fwrite(";\n", 1, 2, stdout);
 		}
-		*savepp = c;
 	}
 }
 
