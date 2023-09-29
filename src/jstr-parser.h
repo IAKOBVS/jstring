@@ -21,7 +21,7 @@ JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_parser_fn_decl_comp(regex_t *R preg)
 {
-	return jstr_reg_comp(preg, "[^(){}]*[_A-Za-z][_0-9A-Za-z]*[ \n\t]*\\([_A-Za-z][_0-9A-Za-z]*\\)[ \n\t]*([^(){}}]*\\()\\)[^(){}]*{", 0);
+	return jstr_reg_comp(preg, "[^(){}]*[_A-Za-z][_0-9A-Za-z]*[ \n\t]*\\([_A-Za-z][_0-9A-Za-z]*\\)[ \n\t]*([^(){};]*\\()\\)[^(){};]*{", 0);
 }
 
 JSTR_FUNC_VOID
@@ -35,12 +35,12 @@ jstr_parser_fn_free(regex_t *R preg)
 JSTR_FUNC_VOID
 static void
 jstr_parser_fn_decl_gen(char *R const s,
-			const char *R const fn_glob,
 			const char *R const sep,
 			const regex_t *R const preg,
+			const char *R const fn_glob,
 			const size_t sz,
-			const int fn_flags,
-			const size_t seplen)
+			const size_t seplen,
+			const int fn_flags)
 {
 	char *tmp;
 	char *tok;
@@ -59,7 +59,7 @@ jstr_parser_fn_decl_gen(char *R const s,
 			c1 = *tmp;
 			*tmp = '\0';
 			/* Move ptr to start of function name.
-			TODO: fix the regex such that we need not do this. */
+			TODO: fix the regex such that pm[1].rm_so points to the start of the function name. */
 			while (tmp != tok
 			       && jstr_isctype(*--tmp, JSTR_ISWORD))
 				;
@@ -68,7 +68,7 @@ jstr_parser_fn_decl_gen(char *R const s,
 			if (ret)
 				continue;
 			/* Check if tok is a macro. */
-			tmp = jstr_skip_blanks(tok);
+			tok = jstr_skip_blanks(tok);
 			if (*tmp == '#') {
 				tmp = jstr_skip_blanks(tmp + 1);
 				/* tok is a macro. */
