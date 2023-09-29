@@ -4,6 +4,7 @@
 #include "jstr-macros.h"
 
 P_JSTR_BEGIN_DECLS
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -103,8 +104,7 @@ p_jstr_err_exit_debug(const char *R FILE_,
 		      const int LINE_,
 		      const char *R func_) JSTR_NOEXCEPT
 {
-	fprintf(stderr, "%s:%d:", FILE_, LINE_);
-	perror(func_);
+	fprintf(stderr, "%s:%d:%s:%s", FILE_, LINE_, func_, strerror(errno));
 	exit(EXIT_FAILURE);
 }
 
@@ -115,8 +115,7 @@ p_jstr_err_debug(const char *R FILE_,
 		 const int LINE_,
 		 const char *R func_) JSTR_NOEXCEPT
 {
-	fprintf(stderr, "%s:%d:", FILE_, LINE_);
-	perror(func_);
+	fprintf(stderr, "%s:%d:%s:%s", FILE_, LINE_, func_, strerror(errno));
 }
 
 JSTR_FUNC_VOID
@@ -124,7 +123,7 @@ JSTR_INLINE
 static void
 p_jstr_err(void) JSTR_NOEXCEPT
 {
-	perror("");
+	fputs(strerror(errno), stderr);
 }
 
 JSTR_FUNC_VOID
@@ -132,7 +131,7 @@ JSTR_NOINLINE
 static void
 p_jstr_err_exit(void) JSTR_NOEXCEPT
 {
-	perror("");
+	fputs(strerror(errno), stderr);
 	exit(EXIT_FAILURE);
 }
 
