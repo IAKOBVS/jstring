@@ -40,10 +40,10 @@ typedef struct jstr_parser_func_ty {
 
 JSTR_FUNC
 static int
-jstr_parser_func_match_len(const regex_t *R preg,
-			   const char *R s,
-			   const size_t sz,
-			   jstr_parser_func_ty *R p)
+jstr_parser_func_match(const regex_t *R preg,
+		       const char *R s,
+		       const size_t sz,
+		       jstr_parser_func_ty *R p)
 {
 	regmatch_t pm[4];
 	if (jstr_reg_exec_len(preg, s, sz, 2, pm, 0) == JSTR_REG_RET_NOERROR) {
@@ -51,22 +51,6 @@ jstr_parser_func_match_len(const regex_t *R preg,
 		p->fn_e = s + pm[1].rm_eo;
 		p->brk = s + pm[2].rm_so;
 		p->brk_e = s + pm[3].rm_so;
-		return 1;
-	}
-	return 0;
-}
-
-JSTR_FUNC
-static int
-jstr_parser_func_match(const regex_t *R preg,
-		       const char *R s,
-		       const char **fn,
-		       const char **fn_e)
-{
-	regmatch_t pm[2];
-	if (jstr_reg_exec(preg, s, 2, pm, 0) == JSTR_REG_RET_NOERROR) {
-		*fn = s + pm[1].rm_so;
-		*fn_e = s + pm[1].rm_eo;
 		return 1;
 	}
 	return 0;
