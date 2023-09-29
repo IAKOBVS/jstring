@@ -37,6 +37,7 @@ P_JSTR_BEGIN_DECLS
 		memcpy(dst, rplc, rplclen);                           \
 		dst += rplclen;                                       \
 	} while (0)
+
 /*
   Slip SRC into DST[AT].
   Return value:
@@ -963,6 +964,19 @@ static char *
 jstr_skip_spaces(const char *R s)
 {
 	while (jstr_isspace(*s++))
+		;
+	return (char *)s - 1;
+}
+
+/*
+   Return ptr to first non-space character.
+*/
+JSTR_INLINE
+JSTR_PURE
+static char *
+jstr_skip_blanks(const char *R s)
+{
+	while (jstr_isblank(*s++))
 		;
 	return (char *)s - 1;
 }
