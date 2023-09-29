@@ -4,6 +4,7 @@
 #include "jstr-builder.h"
 #include "jstr-ctype.h"
 #include "jstr-macros.h"
+#include "jstr-regex.h"
 
 P_JSTR_BEGIN_DECLS
 #include <stdlib.h>
@@ -14,81 +15,69 @@ P_JSTR_END_DECLS
 
 P_JSTR_BEGIN_DECLS
 
-JSTR_FUNC_VOID
-static int
-jstr_match_func_name(const char *R s,
-		     const char **fn,
-		     const char **fn_e)
+JSTR_FUNC
+JSTR_INLINE
+static jstr_reg_errcode_ty
+jstr_parser_func_comp(regex_t *R preg)
 {
-	int flag = 0;
-	enum { IN_ALPHA = (0 << 1) };
-	for (;; ++s) {
-		switch (*s) {
-			JSTR_CASE_ALNUM
-		case '_':
-			if (flag == 0) {
-				*fn = s;
-				flag &= IN_ALPHA;
-			}
-			break;
-		case '\t':
-		case ' ':
-			if (flag & IN_ALPHA)
-				return 0;
-			break;
-		case ')':
-		case ',':
-			goto end;
-		default:
-		case '\0':
-			return 0;
-		}
+	return jstr_reg_comp(preg, "\\([_A-Za-z][_A-Za-z0-9]*\\)[ \t]*\\((\\).*\\()\\).*{.*}", 0);
+}
+
+JSTR_FUNC
+static char *
+jstr_parser_tok(const char **const save_ptr,
+		const char *const end)
+{
+	return jstr_strtok_ne_len(save_ptr, end, "\n\n", 2);
+}
+
+typedef struct jstr_parser_func_ty {
+	const char *fn;
+	const char *fn_e;
+	const char *brk;
+	const char *brk_e;
+} jstr_parser_func_ty;
+
+JSTR_FUNC
+static int
+jstr_parser_func_match_len(const regex_t *R preg,
+			   const char *R s,
+			   const size_t sz,
+			   jstr_parser_func_ty *R p)
+{
+	regmatch_t pm[4];
+	if (jstr_reg_exec_len(preg, s, sz, 2, pm, 0) == JSTR_REG_RET_NOERROR) {
+		p->fn = s + pm[1].rm_so;
+		p->fn_e = s + pm[1].rm_eo;
+		p->brk = s + pm[2].rm_so;
+		p->brk_e = s + pm[3].rm_so;
+		return 1;
 	}
-end:
-	*fn_e = s;
-	return 1;
+	return 0;
 }
 
-/*
-   Check if S contains a C function.
-*/
-JSTR_FUNC_PURE
+JSTR_FUNC
 static int
-jstr_match_func_len_maybe(const char *R s,
-			  const size_t sz)
+jstr_parser_func_match(const regex_t *R preg,
+		       const char *R s,
+		       const char **fn,
+		       const char **fn_e)
 {
-	if (jstr_unlikely(sz == 0))
-		return 0;
-	const char *const end = s + sz;
-	const char *find = "(){}";
-	do {
-		s = (char *)memchr(s, *find, sz);
-		if (jstr_unlikely(s == NULL))
-			return 0;
-		if (jstr_unlikely(++s == end))
-			return 0;
-	} while (*++find);
-	return 1;
+	regmatch_t pm[2];
+	if (jstr_reg_exec(preg, s, 2, pm, 0) == JSTR_REG_RET_NOERROR) {
+		*fn = s + pm[1].rm_so;
+		*fn_e = s + pm[1].rm_eo;
+		return 1;
+	}
+	return 0;
 }
 
-/*
-   Check if S contains a C function.
-*/
-JSTR_FUNC_PURE
-static int
-jstr_match_func_maybe(const char *R s)
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_parser_func_free(regex_t *R preg)
 {
-	if (jstr_unlikely(*s == '\0'))
-		return 0;
-	const char *find = "(){}";
-	do {
-		s = strchr(s, *find);
-		if (jstr_unlikely(s == NULL))
-			return 0;
-		if (jstr_unlikely(*++s == '\0'))
-			return 0;
-	} while (*++find);
-	return 1;
+	jstr_reg_free(preg);
 }
 
 P_JSTR_END_DECLS
