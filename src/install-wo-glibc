@@ -1,0 +1,3 @@
+#!/bin/sh
+./build-wo-glibc
+sudo cp -rf jstr/*.h /usr/local/include/jstr
