@@ -132,10 +132,11 @@ p_jstr_replaceat_len_may_lower(char *R *R const s,
 		memcpy(*s + at, rplc, rplclen);
 		goto ret;
 	} else if (*cap > *sz + rplclen - findlen) {
+replace:
 		return p_jstr_replaceat_len_f(*s, sz, at, rplc, rplclen, findlen);
 	} else {
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen - findlen, goto err);
-		return p_jstr_replaceat_len_f(*s, sz, at, rplc, rplclen, findlen);
+		goto replace;
 	}
 	*sz += rplclen - findlen;
 ret:
