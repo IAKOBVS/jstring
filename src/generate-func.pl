@@ -34,7 +34,7 @@ my $G_LEN_FN_SUFFIX = '_len';
 my $g_in_h = get_file_str($G_FNAME);
 $g_in_h = tidy_newlines($g_in_h);
 
-my @LNS = gen_nonmem_funcs($g_in_h);
+my @LNS = gen_nonlen_funcs($g_in_h);
 my ($out_h) = gen_struct_funcs(@LNS);
 
 print $out_h;
@@ -83,7 +83,7 @@ sub tidy_newlines
 	return $in_h;
 }
 
-sub gen_nonmem_funcs
+sub gen_nonlen_funcs
 {
 	my ($FILE_STR) = @_;
 	my @OLD_LNS = split(/\n\n/, $FILE_STR);
