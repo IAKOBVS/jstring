@@ -46,7 +46,8 @@ jstr_parser_fn_decl_gen(const regex_t *R preg,
 	const char *tmp;
 	int c;
 	regmatch_t pm[2];
-	while ((tok = jstr_strtok_ne_len((const char **)&savep, end, sep, seplen))) {
+	for (; (tok = jstr_strtok_ne_len((const char **)&savep, end, sep, seplen));
+	     *savepp = c) {
 		savepp = (savep != end) ? savep - seplen : savep;
 		c = *savepp;
 		*savepp = '\0';
@@ -57,7 +58,7 @@ jstr_parser_fn_decl_gen(const regex_t *R preg,
 				tmp = jstr_skip_blanks(tmp + 1);
 				if (jstr_starts_len(tmp, savepp - tmp, "define", strlen("define")))
 					/* tok is a macro. */
-					goto not_fn;
+					continue;
 			}
 			fwrite(tok + pm[1].rm_so,
 			       1,
@@ -65,7 +66,6 @@ jstr_parser_fn_decl_gen(const regex_t *R preg,
 			       stdout);
 			fwrite(";\n", 1, 2, stdout);
 		}
-not_fn:
 		*savepp = c;
 	}
 }
