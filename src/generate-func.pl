@@ -89,11 +89,13 @@ sub gen_nonlen_funcs
 	my @OLD_LNS = split(/\n\n/, $FILE_STR);
 	my @new_lns;
 	foreach (@OLD_LNS) {
+		if ($_ !~ $G_RE_FN) {
+			goto CONT;
+		}
 		my $decl   = $1;
 		my $FN     = $2;
 		my $params = $3;
-		if (   ($_ !~ $G_RE_FN)
-			|| (!$decl && !$FN && !$params)
+		if (   (!$decl && !$FN && !$params)
 			|| ($FN !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FN_SUFFIX(?:_|$)/o))
 		{
 			goto CONT;
@@ -156,12 +158,13 @@ sub gen_struct_funcs
 	my (@LINES) = @_;
 	my $out_h;
 	foreach (@LINES) {
+		if ($_ !~ $G_RE_FN) {
+			goto CONT;
+		}
 		my $decl   = $1;
 		my $FN     = $2;
 		my $params = $3;
-		if (   ($_ !~ $G_RE_FN)
-			|| (!$decl && !$FN && !$params))
-		{
+		if (!$decl && !$FN && !$params) {
 			goto CONT;
 		}
 		$params =~ s/\)/,/;
