@@ -62,7 +62,7 @@ jstr_parser_fn_decl_gen(char *R const s,
 			       && jstr_isctype(*--tmp, JSTR_ISWORD))
 				;
 			ret = fnmatch(fn_glob, ++tmp, fn_flags);
-			*(tmp + pm[1].rm_eo) = c1;
+			*(tok + pm[1].rm_eo) = c1;
 			if (ret)
 				continue;
 			/* Check if tok is a macro. */
