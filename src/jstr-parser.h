@@ -47,15 +47,9 @@ jstr_parser_fn_decl_gen(const regex_t *R preg,
 	int c;
 	regmatch_t pm[2];
 	while ((tok = jstr_strtok_ne_len((const char **)&savep, end, sep, seplen))) {
-		if (savep == end) {
-			savepp = savep;
-			c = *savepp;
-			*savepp = '\0';
-		} else {
-			savepp = savep - seplen;
-			c = *savepp;
-			*savepp = '\0';
-		}
+		savepp = (savep != end) ? savep - seplen : savep;
+		c = *savepp;
+		*savepp = '\0';
 		if (jstr_reg_exec_len(preg, tok, savepp - tok, 2, pm, 0) == JSTR_REG_RET_NOERROR) {
 			/* Check if tok is a macro. */
 			tmp = jstr_skip_blanks(tok);
