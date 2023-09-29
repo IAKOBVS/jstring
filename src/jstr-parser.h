@@ -64,7 +64,8 @@ jstr_parser_fn_decl_gen(const regex_t *R preg,
 			       1,
 			       pm[1].rm_eo - pm[1].rm_so,
 			       stdout);
-			fwrite(";\n", 1, 2, stdout);
+			putchar(';');
+			putchar('\n');
 		}
 	}
 }
