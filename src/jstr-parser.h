@@ -60,7 +60,7 @@ jstr_parser_func_match(const regex_t *R preg,
 	return 0;
 }
 
-#if 0 /* broken */
+#if 0 /* unfinished */
 
 JSTR_FUNC_VOID
 static void
