@@ -18,14 +18,14 @@ P_JSTR_BEGIN_DECLS
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_parser_func_decl_comp(regex_t *R preg)
+jstr_parser_fn_decl_comp(regex_t *R preg)
 {
 	return jstr_reg_comp(preg, "\\([^(){}]*[_0-9A-Za-z]*[ \n\t]*[_A-Za-z][_0-9A-Za-z]*[ \n\t]*([^(){}}]*)\\)[^(){}]*{", 0);
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_parser_func_decl_gen(const regex_t *R preg,
+jstr_parser_fn_decl_gen(const regex_t *R preg,
 			  char *R s,
 			  const char *sep,
 			  const size_t sz,
@@ -55,7 +55,7 @@ jstr_parser_func_decl_gen(const regex_t *R preg,
 				tmp = jstr_skip_blanks(tmp + 1);
 				if (jstr_starts_len(tmp, savepp - tmp, "define", strlen("define")))
 					/* tok is a macro. */
-					goto not_func;
+					goto not_fn;
 			}
 			fwrite(tok + pm[1].rm_so,
 			       1,
@@ -63,7 +63,7 @@ jstr_parser_func_decl_gen(const regex_t *R preg,
 			       stdout);
 			fwrite(";\n", 1, 2, stdout);
 		}
-not_func:
+not_fn:
 		*savepp = c;
 	}
 }
@@ -73,7 +73,7 @@ not_func:
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_parser_func_comp(regex_t *R preg)
+jstr_parser_fn_comp(regex_t *R preg)
 {
 	return jstr_reg_comp(preg, "\\([_A-Za-z][_A-Za-z0-9]*\\)[ \n\t]*\\((\\)[^)]*\\()\\)[^{)]*{[^}]*}", 0);
 }
@@ -86,7 +86,7 @@ jstr_parser_tok(const char **const save_ptr,
 	return jstr_strtok_ne_len(save_ptr, end, "\n\n", 2);
 }
 
-typedef struct jstr_parser_func_ty {
+typedef struct jstr_parser_fn_ty {
 	const char *fn;
 	const char *fn_e;
 	const char *brc;
@@ -95,14 +95,14 @@ typedef struct jstr_parser_func_ty {
 	const char **args_e;
 	size_t args_num;
 	size_t _args_cap;
-} jstr_parser_func_ty;
+} jstr_parser_fn_ty;
 
 JSTR_FUNC
 static int
-jstr_parser_func_match(const regex_t *R preg,
+jstr_parser_fn_match(const regex_t *R preg,
 		       const char *R const s,
 		       const size_t sz,
-		       jstr_parser_func_ty *R p)
+		       jstr_parser_fn_ty *R p)
 {
 	regmatch_t pm[4];
 	if (jstr_reg_exec_len(preg, s, sz, 2, pm, 0) == JSTR_REG_RET_NOERROR) {
@@ -117,7 +117,7 @@ jstr_parser_func_match(const regex_t *R preg,
 
 JSTR_FUNC_VOID
 static void
-jstr_parser_func_fill_args(jstr_parser_func_ty *R p)
+jstr_parser_fn_fill_args(jstr_parser_fn_ty *R p)
 {
 	const char *s = p->brc;
 	const char *const e = p->brc_e;
@@ -145,7 +145,7 @@ jstr_parser_func_fill_args(jstr_parser_func_ty *R p)
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_parser_func_free(regex_t *R preg)
+jstr_parser_fn_free(regex_t *R preg)
 {
 	jstr_reg_free(preg);
 }
