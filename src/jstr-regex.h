@@ -376,17 +376,14 @@ jstr_reg_match_len_now(const char *R const s,
 #endif
 
 JSTR_FUNC
-JSTR_INLINE
 static jstr_reg_errcode_ty
-p_jstr_reg_rm(char *R s,
-	      size_t *R const sz,
-	      const size_t start_idx,
-	      const regex_t *R const preg,
-	      const int eflags) JSTR_NOEXCEPT
+jstr_reg_rm(char *R const s,
+	    size_t *R const sz,
+	    const regex_t *R const preg,
+	    const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	s += start_idx;
-	const jstr_reg_errcode_ty ret = P_JSTR_REG_EXEC(preg, s, *sz - start_idx, 1, &rm, eflags);
+	const jstr_reg_errcode_ty ret = P_JSTR_REG_EXEC(preg, s, *sz, 1, &rm, eflags);
 	if (jstr_unlikely(ret != JSTR_REG_RET_NOERROR)
 	    || jstr_unlikely(rm.rm_eo == rm.rm_so))
 		return ret;
@@ -402,43 +399,6 @@ p_jstr_reg_rm(char *R s,
 #elif defined __GNUC__
 #	pragma GCC diagnostic pop
 #endif
-
-JSTR_FUNC
-static jstr_reg_errcode_ty
-jstr_reg_rm(char *R const s,
-	    size_t *R const sz,
-	    const regex_t *R const preg,
-	    const int eflags) JSTR_NOEXCEPT
-{
-	return p_jstr_reg_rm(s, sz, 0, preg, eflags);
-}
-
-JSTR_FUNC
-JSTR_INLINE
-static jstr_reg_errcode_ty
-jstr_reg_rm_from(char *R const s,
-		 size_t *R const sz,
-		 const size_t start_idx,
-		 const regex_t *R const preg,
-		 const int eflags) JSTR_NOEXCEPT
-{
-	return p_jstr_reg_rm(s, sz, start_idx, preg, eflags);
-}
-
-JSTR_FUNC
-JSTR_INLINE
-static jstr_reg_errcode_ty
-jstr_reg_rm_from_now(char *R const s,
-		     size_t *R const sz,
-		     const size_t start_idx,
-		     const char *R const ptn,
-		     regex_t *R const preg,
-		     const int cflags,
-		     const int eflags) JSTR_NOEXCEPT
-{
-	P_JSTR_REG_COMP_NOW();
-	return jstr_reg_rm_from(s, sz, start_idx, preg, eflags);
-}
 
 JSTR_FUNC
 JSTR_INLINE
@@ -460,13 +420,12 @@ static jstr_reg_errcode_ty
 p_jstr_reg_rmall(const p_jstr_flag_use_n_ty flag,
 		 char *R const s,
 		 size_t *R const sz,
-		 const size_t start_idx,
 		 size_t n,
 		 const regex_t *R const preg,
 		 const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	unsigned char *dst = (unsigned char *)s + start_idx;
+	unsigned char *dst = (unsigned char *)s;
 	const unsigned char *p = dst;
 	const unsigned char *oldp = dst;
 	const unsigned char *const end = *(unsigned char **)s + *sz;
@@ -492,65 +451,12 @@ p_jstr_reg_rmall(const p_jstr_flag_use_n_ty flag,
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_rmall_from(char *R const s,
-		    size_t *R const sz,
-		    const size_t start_idx,
-		    const regex_t *R const preg,
-		    const int eflags) JSTR_NOEXCEPT
-{
-	return p_jstr_reg_rmall(P_JSTR_FLAG_USE_NOT_N, s, sz, start_idx, 0, preg, eflags);
-}
-
-JSTR_FUNC
-static jstr_reg_errcode_ty
-jstr_reg_rmall_from_now(char *R const s,
-			size_t *R const sz,
-			const size_t start_idx,
-			const char *R const ptn,
-			regex_t *R const preg,
-			const int cflags,
-			const int eflags) JSTR_NOEXCEPT
-{
-	P_JSTR_REG_COMP_NOW();
-	return jstr_reg_rmall_from(s, sz, start_idx, preg, eflags);
-}
-
-JSTR_FUNC
-static jstr_reg_errcode_ty
-jstr_reg_rmn_from(char *R const s,
-		  size_t *R const sz,
-		  const size_t start_idx,
-		  const size_t n,
-		  const regex_t *R const preg,
-		  const int eflags) JSTR_NOEXCEPT
-{
-	return p_jstr_reg_rmall(P_JSTR_FLAG_USE_NOT_N, s, sz, start_idx, n, preg, eflags);
-}
-
-JSTR_FUNC
-JSTR_INLINE
-static jstr_reg_errcode_ty
-jstr_reg_rmn_from_now(char *R const s,
-		      size_t *R const sz,
-		      const size_t start_idx,
-		      const size_t n,
-		      const char *R const ptn,
-		      regex_t *R const preg,
-		      const int cflags,
-		      const int eflags) JSTR_NOEXCEPT
-{
-	P_JSTR_REG_COMP_NOW();
-	return jstr_reg_rmn_from(s, sz, start_idx, n, preg, eflags);
-}
-
-JSTR_FUNC
-static jstr_reg_errcode_ty
 jstr_reg_rmall(char *R const s,
 	       size_t *R const sz,
 	       const regex_t *R const preg,
 	       const int eflags) JSTR_NOEXCEPT
 {
-	return p_jstr_reg_rmall(P_JSTR_FLAG_USE_NOT_N, s, sz, 0, 0, preg, eflags);
+	return p_jstr_reg_rmall(P_JSTR_FLAG_USE_NOT_N, s, sz, 0, preg, eflags);
 }
 
 JSTR_FUNC
@@ -561,7 +467,7 @@ jstr_reg_rmn(char *R const s,
 	     const regex_t *R const preg,
 	     const int eflags) JSTR_NOEXCEPT
 {
-	return p_jstr_reg_rmall(P_JSTR_FLAG_USE_N, s, sz, 0, n, preg, eflags);
+	return p_jstr_reg_rmall(P_JSTR_FLAG_USE_N, s, sz, n, preg, eflags);
 }
 
 JSTR_FUNC
