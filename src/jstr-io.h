@@ -841,14 +841,14 @@ typedef enum jstr_io_ftw_flag_ty {
 				pathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath; \
 			} while (0)
 #	endif
-#	define GET_STAT_MODE_MAYBE()                    \
+#	define GET_STAT_MODE()                          \
 		do {                                     \
 			sb.st_mode = DTTOIF(ep->d_type); \
 		} while (0)
-#	define STAT_MAYBE(fname, st)                    \
+#	define STAT(fname, st)                          \
 		do {                                     \
 			if (jflags & JSTR_IO_FTW_NOSTAT) \
-				GET_STAT_MODE_MAYBE();   \
+				GET_STAT_MODE();         \
 			else                             \
 				stat(fname, st);         \
 		} while (0)
@@ -856,11 +856,11 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define FILL_PATH() \
 		do {        \
 		} while (0)
-#	define GET_STAT_MODE_MAYBE() \
-		do {                  \
+#	define GET_STAT_MODE() \
+		do {            \
 		} while (0)
-#	define STAT_MAYBE(fname, st) \
-		do {                  \
+#	define STAT(fname, st) \
+		do {            \
 		} while (0)
 #endif
 
@@ -919,27 +919,29 @@ do_reg:
 		if ((jflags & JSTR_IO_FTW_DIR)
 		    && !(jflags & JSTR_IO_FTW_REG))
 			continue;
-		if (fn_glob) {
+		if (fn_glob != NULL) {
 			if (jflags & JSTR_IO_FTW_MATCH_PATH) {
+				FILL_PATH();
 				if (fnmatch(fn_glob, dirpath, fn_flags))
 					continue;
 			} else {
 				if (fnmatch(fn_glob, ep->d_name, fn_flags))
 					continue;
 			}
+		} else {
+			FILL_PATH();
 		}
-		FILL_PATH();
 		if (jflags & JSTR_IO_FTW_STAT_REG) {
 #if JSTR_HAVE_DIRENT_D_TYPE
 			if (ep->d_type == DT_REG)
 #else
 			if (S_ISREG(st.st_mode))
 #endif
-				STAT_MAYBE(dirpath, &st);
+				STAT(dirpath, &st);
 			else
-				GET_STAT_MODE_MAYBE();
+				GET_STAT_MODE();
 		} else {
-			STAT_MAYBE(dirpath, &st);
+			STAT(dirpath, &st);
 		}
 		fn(dirpath, pathlen, &st);
 		continue;
@@ -950,9 +952,9 @@ do_dir:
 			continue;
 		FILL_PATH();
 		if (jflags & JSTR_IO_FTW_STAT_REG)
-			GET_STAT_MODE_MAYBE();
+			GET_STAT_MODE();
 		else
-			STAT_MAYBE(dirpath, &st);
+			STAT(dirpath, &st);
 		if ((jflags & JSTR_IO_FTW_REG)
 		    && (jflags & JSTR_IO_FTW_DIR))
 			fn(dirpath, pathlen, &st);
@@ -967,8 +969,8 @@ do_dir:
 }
 
 #undef FILL_PATH
-#undef STAT_MAYBE
-#undef GET_STAT_MODE_MAYBE
+#undef STAT
+#undef GET_STAT_MODE
 
 /*
    Call FN on entries found recursively that matches GLOB.
