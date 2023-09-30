@@ -738,17 +738,17 @@ p_jstr_io_expand_tilde(char *R s,
    Expand every ~ to /home/username.
    Assume that S has enough space.
    Return value:
-   0 on error;
-   otherwise 1.
+   ptr to '\0' in S;
+   NULL on error.
 */
 JSTR_FUNC
-static int
-jstr_io_expand_tilde(char *R s,
-		     size_t sz)
+static char *
+jstr_io_expand_tilde_p_unsafe(char *R s,
+			      size_t sz)
 {
 	const char *R const home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
-		return 0;
+		return NULL;
 	const size_t len = strlen(home);
 	char *p = s;
 	while ((p = (char *)memchr(p, '~', (s + sz) - p))) {
@@ -757,7 +757,7 @@ jstr_io_expand_tilde(char *R s,
 		p += len;
 		sz += (len - 1);
 	}
-	return 1;
+	return s + sz;
 }
 
 /*
@@ -768,9 +768,9 @@ jstr_io_expand_tilde(char *R s,
 */
 JSTR_FUNC
 static int
-jstr_io_expand_tilde_safe(char *R *R s,
-			  size_t *R sz,
-			  size_t *R cap)
+jstr_io_expand_tilde(char *R *R s,
+		     size_t *R sz,
+		     size_t *R cap)
 {
 	const char *R const home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
