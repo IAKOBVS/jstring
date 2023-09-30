@@ -998,7 +998,25 @@ jstr_io_ftw_len(const char *R const dirpath,
 		--dlen;
 	char fulpath[JSTR_IO_MAX_PATH];
 	memcpy(fulpath, dirpath, dlen + 1);
-	p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
+	struct stat st;
+	if (jstr_unlikely(stat(fulpath, &st)))
+		return 0;
+	if (S_ISDIR(st.st_mode)) {
+		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
+		return 1;
+	}
+	if (jflags & JSTR_IO_FTW_REG) {
+		if (!S_ISREG(st.st_mode))
+			return 0;
+		if (fn_glob != NULL)
+			if (fnmatch(fn_glob, fulpath, fn_flags))
+				return 0;
+	} else {
+		if (fn_glob != NULL)
+			if (fnmatch(fn_glob, fulpath, fn_flags))
+				return 0;
+	}
+	fn(fulpath, dlen, &st);
 	return 1;
 }
 
@@ -1015,6 +1033,7 @@ jstr_io_ftw_len(const char *R const dirpath,
    STAT_REG: only call stat on regular files.
 */
 JSTR_FUNC_MAY_NULL
+JSTR_INLINE
 static int
 jstr_io_ftw(const char *R const dirpath,
 	    const char *R const fn_glob,
@@ -1022,16 +1041,7 @@ jstr_io_ftw(const char *R const dirpath,
 	    const jstr_io_ftw_flag_ty jflags,
 	    jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*dirpath == '\0'))
-		return 0;
-	char fulpath[JSTR_IO_MAX_PATH];
-	size_t dlen = jstr_stpcpy(fulpath, dirpath) - fulpath;
-	while (dlen != 1
-	       && fulpath[dlen - 1] == '/')
-		--dlen;
-	fulpath[dlen] = '\0';
-	p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
-	return 1;
+	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn);
 }
 
 P_JSTR_END_DECLS
