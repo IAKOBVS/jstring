@@ -944,7 +944,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 	struct stat st;
 	const struct dirent *R ep;
 	while ((ep = readdir(dp))) {
-		/* Ignore . and .. . */
+		/* Ignore "." and "..". */
 		if (IS_RELATIVE(ep->d_name)
 		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
@@ -955,6 +955,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 			goto do_dir;
 #else
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
+		/* Get fulpath for stat(). */
 		jstr_io_append_path_len(dirpath + dlen, ep->d_name, ep->d_namlen);
 		pathlen = dlen + 1 + ep->d_namlen;
 #	else
