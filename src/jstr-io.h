@@ -630,18 +630,18 @@ p_jstr_io_alloc_file(const int alloc_exact,
 		goto err;
 	if (jstr_unlikely(fstat(fd, st)))
 		goto err_close;
+	*sz = st->st_size;
 	if (alloc_exact)
-		*cap = P_JSTR_MIN_ALLOCEXACT(st->st_size + 1);
+		*cap = P_JSTR_MIN_ALLOCEXACT(*sz + 1);
 	else
-		*cap = P_JSTR_MIN_ALLOC(st->st_size);
+		*cap = P_JSTR_MIN_ALLOC(*sz);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
 	P_JSTR_MALLOC_ERR(*s, goto err_close);
-	if (jstr_unlikely(st->st_size != read(fd, *s, st->st_size)))
+	if (jstr_unlikely(*sz != read(fd, *s, *sz)))
 		goto err_close_free;
 	close(fd);
-	(*s)[st->st_size] = '\0';
-	*sz = st->st_size;
+	(*s)[*sz] = '\0';
 	return 1;
 err_close_free:
 	free(*s);
