@@ -864,15 +864,7 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
-JSTR_PURE
-JSTR_INLINE
-static int
-p_jstr_io_is_relative(const char *R const fname) JSTR_NOEXCEPT
-{
-	return (fname[0] == '.')
-	       && ((fname[1] == '\0')
-		   || ((fname[1] == '.') && (fname[2] == '\0')));
-}
+#define IS_RELATIVE(fname) ((fname[0] == '.') && ((fname[1] == '\0') || ((fname[1] == '.') && (fname[2] == '\0'))))
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   size_t dlen,
@@ -895,7 +887,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 	const struct dirent *R ep;
 	while ((ep = readdir(dp))) {
 		/* Ignore . and .. . */
-		if (p_jstr_io_is_relative(ep->d_name)
+		if (IS_RELATIVE(ep->d_name)
 		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -968,6 +960,7 @@ do_dir:
 	closedir(dp);
 }
 
+#undef IS_RELATIVE
 #undef FILL_PATH
 #undef STAT
 #undef GET_STAT_MODE
