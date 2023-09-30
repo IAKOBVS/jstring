@@ -4,6 +4,7 @@
 #include "jstr-config.h"
 #include <features.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__
 #	define JSTR_HAVE_VLA 0
@@ -836,7 +837,7 @@ case '~':
 #		define fwrite(ptr, size, n, stream) fwrite_unlocked(ptr, size, n, stream)
 #	endif
 #	if JSTR_HAVE_FPUTC_UNLOCKED
-#		define fputc(stream) fputc_unlocked(stream)
+#		define fputc(c, stream) fputc_unlocked(c, stream)
 #	endif
 #	if JSTR_HAVE_FGETC_UNLOCKED
 #		define fgetc(stream) fgetc_unlocked(stream)
