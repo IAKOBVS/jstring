@@ -1003,11 +1003,12 @@ do_dir:
 			GET_STAT_MODE();
 		else
 			STAT(dirpath, &st);
-		if ((jflags & JSTR_IO_FTW_REG)
-		    && (jflags & JSTR_IO_FTW_DIR))
+		if (jflags & JSTR_IO_FTW_REG) {
+			if (jflags & JSTR_IO_FTW_DIR)
+				fn(dirpath, pathlen, &st);
+		} else {
 			fn(dirpath, pathlen, &st);
-		else
-			fn(dirpath, pathlen, &st);
+		}
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
 		p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn);
