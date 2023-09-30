@@ -950,7 +950,8 @@ p_jstr_io_ftw_len(char *R dirpath,
 		  const char *R const fn_glob,
 		  const int fn_flags,
 		  const jstr_io_ftw_flag_ty jflags,
-		  jstr_io_ftw_func_ty fn
+		  jstr_io_ftw_func_ty fn,
+		  struct stat *R const st
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 		  ,
 		  int fd
@@ -968,7 +969,6 @@ p_jstr_io_ftw_len(char *R dirpath,
 	if (jstr_unlikely(dp == NULL))
 		return;
 	size_t pathlen = 0;
-	struct stat st;
 	const struct dirent *R ep;
 	while ((ep = readdir(dp))) {
 		/* Ignore "." and "..". */
@@ -982,16 +982,16 @@ p_jstr_io_ftw_len(char *R dirpath,
 			goto do_dir;
 #else
 #	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0)))
+		if (jstr_unlikely(fstatat(fd, ep->d_name, st, 0)))
 			continue;
 #	else
 		FILL_PATH_ALWAYS();
-		if (jstr_unlikely(stat(dirpath, &st)))
+		if (jstr_unlikely(stat(dirpath, st)))
 			continue;
 #	endif /* ATFILE */
-		if (S_ISREG(st.st_mode))
+		if (S_ISREG(st->st_mode))
 			goto do_reg;
-		if (S_ISDIR(st.st_mode))
+		if (S_ISDIR(st->st_mode))
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
 		/* If true, ignore other types of files. */
@@ -1018,7 +1018,7 @@ do_reg:
 #if JSTR_HAVE_DIRENT_D_TYPE
 			if (ep->d_type == DT_REG)
 #else
-			if (S_ISREG(st.st_mode))
+			if (S_ISREG(st->st_mode))
 #endif
 				STAT();
 			else
@@ -1026,7 +1026,7 @@ do_reg:
 		} else {
 			STAT_OR_MODE();
 		}
-		fn(dirpath, pathlen, &st);
+		fn(dirpath, pathlen, st);
 		continue;
 do_dir:
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
@@ -1040,9 +1040,9 @@ do_dir:
 			STAT_OR_MODE();
 		if (jflags & JSTR_IO_FTW_REG) {
 			if (jflags & JSTR_IO_FTW_DIR)
-				fn(dirpath, pathlen, &st);
+				fn(dirpath, pathlen, st);
 		} else {
-			fn(dirpath, pathlen, &st);
+			fn(dirpath, pathlen, st);
 		}
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
@@ -1050,10 +1050,10 @@ do_dir:
 		const int fd_tmp = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd_tmp == -1))
 			continue;
-		p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, fd_tmp);
+		p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp);
 		close(fd_tmp);
 #else
-		p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn);
+		p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st);
 #endif
 		continue;
 	}
@@ -1120,10 +1120,10 @@ jstr_io_ftw_len(const char *R const dirpath,
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, fd);
+		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
 		close(fd);
 #else
-		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
+		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st);
 #endif
 		return 1;
 	}
