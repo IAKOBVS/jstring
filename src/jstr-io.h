@@ -859,7 +859,8 @@ p_jstr_io_is_relative(const char *R const fname) JSTR_NOEXCEPT
 		   || ((fname[1] == '.') && (fname[2] == '\0')));
 }
 
-typedef int (*jstr_io_ftw_func_ty)(const char *dirpath, const struct stat *st);
+typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
+				   const struct stat *st);
 
 JSTR_FUNC_MAY_NULL
 static void
