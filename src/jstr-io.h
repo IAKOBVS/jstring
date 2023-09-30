@@ -451,7 +451,7 @@ jstr_io_write_file(const char *R const s,
 		   const char *R const fname,
 		   const int oflag) JSTR_NOEXCEPT
 {
-	const int fd = open(fname, O_WRONLY | oflag);
+	const int fd = open(fname, oflag | O_WRONLY);
 	if (jstr_unlikely(fd == -1))
 		return 0;
 	if (jstr_unlikely(write(fd, s, sz) == -1))
