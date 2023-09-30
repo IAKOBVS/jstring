@@ -872,18 +872,12 @@ typedef enum jstr_io_ftw_flag_ty {
 	/* Do not call stat. Only st.st_mode is defined. */
 	JSTR_IO_FTW_NOSTAT = (JSTR_IO_FTW_NOSUBDIR << 1),
 	/* Only call stat on regular files. */
-	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NOSTAT << 1),
+	JSTR_IO_FTW_STATREG = (JSTR_IO_FTW_NOSTAT << 1),
 	/* Ignore hidden entries. */
-	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1),
+	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STATREG << 1),
 	/* Expand ~/ to /home/username/ if the first char is '~'. */
 	JSTR_IO_FTW_EXPTILDE = (JSTR_IO_FTW_NOHIDDEN << 1),
 } jstr_io_ftw_flag_ty;
-
-#define STAT_CHK()                                     \
-	do {                                           \
-		if (jstr_unlikely(stat(dirpath, &st))) \
-			continue;                      \
-	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -898,27 +892,34 @@ typedef enum jstr_io_ftw_flag_ty {
 				pathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath; \
 			} while (0)
 #	endif
-#	define GET_STAT_MODE()                          \
+#	define STAT()                                         \
+		do {                                           \
+			if (jstr_unlikely(stat(dirpath, &st))) \
+				continue;                      \
+		} while (0)
+#	define STAT_MODE()                              \
 		do {                                     \
 			st.st_mode = DTTOIF(ep->d_type); \
 		} while (0)
-#	define STAT()                                     \
-		do {                                       \
-			if (jflags & JSTR_IO_FTW_NOSTAT) { \
-				GET_STAT_MODE();           \
-			} else {                           \
-				STAT_CHK();                \
-			}                                  \
+#	define STAT_OR_MODE()                           \
+		do {                                     \
+			if (jflags & JSTR_IO_FTW_NOSTAT) \
+				STAT_MODE();             \
+			else                             \
+				STAT();                  \
 		} while (0)
 #else
+#	define STAT() \
+		do {   \
+		} while (0)
 #	define FILL_PATH() \
 		do {        \
 		} while (0)
-#	define GET_STAT_MODE() \
-		do {            \
+#	define STAT_MODE() \
+		do {        \
 		} while (0)
-#	define STAT() \
-		do {   \
+#	define STAT_OR_MODE() \
+		do {           \
 		} while (0)
 #endif
 
@@ -955,19 +956,20 @@ p_jstr_io_ftw_len(char *R dirpath,
 			goto do_dir;
 #else
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
-		/* Get fulpath for stat(). */
+		/* Must stat() and get fulpath. */
 		jstr_io_append_path_len(dirpath + dlen, ep->d_name, ep->d_namlen);
 		pathlen = dlen + 1 + ep->d_namlen;
 #	else
 		pathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath;
 #	endif
-		STAT_CHK();
+		if (jstr_unlikely(stat(dirpath, &st)))
+			continue;
 		if (S_ISREG(st.st_mode))
 			goto do_reg;
 		if (S_ISDIR(st.st_mode))
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
-		/* If either DIR or REG is used, ignore other types of files. */
+		/* If true, ignore other types of files. */
 		if (jflags & (JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG))
 			continue;
 do_reg:
@@ -986,7 +988,7 @@ do_reg:
 		} else {
 			FILL_PATH();
 		}
-		if (jflags & JSTR_IO_FTW_STAT_REG) {
+		if (jflags & JSTR_IO_FTW_STATREG) {
 #if JSTR_HAVE_DIRENT_D_TYPE
 			if (ep->d_type == DT_REG)
 #else
@@ -994,9 +996,9 @@ do_reg:
 #endif
 				STAT();
 			else
-				GET_STAT_MODE();
+				STAT_MODE();
 		} else {
-			STAT();
+			STAT_OR_MODE();
 		}
 		fn(dirpath, pathlen, &st);
 		continue;
@@ -1006,10 +1008,10 @@ do_dir:
 		    && !(jflags & JSTR_IO_FTW_DIR))
 			continue;
 		FILL_PATH();
-		if (jflags & JSTR_IO_FTW_STAT_REG)
-			GET_STAT_MODE();
+		if (jflags & JSTR_IO_FTW_STATREG)
+			STAT_MODE();
 		else
-			STAT();
+			STAT_OR_MODE();
 		if (jflags & JSTR_IO_FTW_REG) {
 			if (jflags & JSTR_IO_FTW_DIR)
 				fn(dirpath, pathlen, &st);
@@ -1026,8 +1028,8 @@ do_dir:
 
 #undef IS_RELATIVE
 #undef FILL_PATH
-#undef STAT
-#undef GET_STAT_MODE
+#undef STAT_OR_MODE
+#undef STAT_MODE
 
 /*
    Call FN on entries found recursively that matches GLOB.
@@ -1039,7 +1041,7 @@ do_dir:
    MATCHPATH: match dirpath instead of fulpath.
    NOSUBDIR: do not traverse subdirectories.
    NOSTAT: do not call stat. Only st.mode is defined.
-   STAT_REG: only call stat on regular files.
+   STATREG: only call stat on regular files.
 */
 JSTR_FUNC_MAY_NULL
 static int
@@ -1085,8 +1087,6 @@ jstr_io_ftw_len(const char *R const dirpath,
 	return 1;
 }
 
-#undef STAT_CHK
-
 /*
    Call FN on entries found recursively that matches GLOB.
    If either the REG or DIR flag is used, FN will not be called on other filetypes.
@@ -1097,7 +1097,7 @@ jstr_io_ftw_len(const char *R const dirpath,
    MATCHPATH: match FULPATH instead of fname.
    NOSUBDIR: do not traverse subdirectories.
    NOSTAT: do not call stat. Only st.mode is defined.
-   STAT_REG: only call stat on regular files.
+   STATREG: only call stat on regular files.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
