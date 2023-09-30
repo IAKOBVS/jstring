@@ -973,9 +973,9 @@ p_jstr_io_ftw_len(char *R dirpath,
 		if (jflags & (JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG))
 			continue;
 do_reg:
-		if ((jflags & JSTR_IO_FTW_DIR)
-		    && !(jflags & JSTR_IO_FTW_REG))
-			continue;
+		if (jflags & JSTR_IO_FTW_DIR)
+			if (!(jflags & JSTR_IO_FTW_REG))
+				continue;
 		if (fn_glob != NULL) {
 			if (jflags & JSTR_IO_FTW_MATCHPATH) {
 				FILL_PATH();
@@ -984,6 +984,7 @@ do_reg:
 			} else {
 				if (fnmatch(fn_glob, ep->d_name, fn_flags))
 					continue;
+				FILL_PATH();
 			}
 		} else {
 			FILL_PATH();
@@ -1003,10 +1004,10 @@ do_reg:
 		fn(dirpath, pathlen, &st);
 		continue;
 do_dir:
-		if ((jflags & JSTR_IO_FTW_NOSUBDIR)
-		    && (jflags & JSTR_IO_FTW_REG)
-		    && !(jflags & JSTR_IO_FTW_DIR))
-			continue;
+		if (jflags & JSTR_IO_FTW_NOSUBDIR)
+			if (jflags & JSTR_IO_FTW_REG)
+				if (!(jflags & JSTR_IO_FTW_DIR))
+					continue;
 		FILL_PATH();
 		if (jflags & JSTR_IO_FTW_STATREG)
 			STAT_MODE();
