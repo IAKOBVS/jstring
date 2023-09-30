@@ -899,7 +899,7 @@ enum { JSTR_MEMMEM_THRES = 18 };
 #	endif
 #endif
 
-#define JSTR_STRSTR_LEN(hs, hslen, ne, nelen) ((char *)JSTR_MEMMEM(hs, hslen, ne, nelen))
+#define JSTR_STRSTR_LEN(hs, hslen, ne, nelen) (char *)JSTR_MEMMEM(hs, hslen, ne, nelen)
 
 #undef JSTR_MEMMEM_THRES
 

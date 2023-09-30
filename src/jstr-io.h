@@ -993,10 +993,11 @@ jstr_io_ftw_len(const char *R const dirpath,
 {
 	if (jstr_unlikely(dlen == 0))
 		return 0;
+	while (dlen != 1
+	       && dirpath[dlen - 1] == '/')
+		--dlen;
 	char fulpath[JSTR_IO_MAX_PATH];
 	memcpy(fulpath, dirpath, dlen + 1);
-	if (jstr_unlikely(fulpath[dlen - 1] == '/') && dlen != 1)
-		fulpath[--dlen] = '\0';
 	p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
 	return 1;
 }
@@ -1025,8 +1026,10 @@ jstr_io_ftw(const char *R const dirpath,
 		return 0;
 	char fulpath[JSTR_IO_MAX_PATH];
 	size_t dlen = jstr_stpcpy(fulpath, dirpath) - fulpath;
-	if (jstr_unlikely(fulpath[dlen - 1] == '/') && dlen != 1)
-		fulpath[--dlen] = '\0';
+	while (dlen != 1
+	       && fulpath[dlen - 1] == '/')
+		--dlen;
+	fulpath[dlen] = '\0';
 	p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
 	return 1;
 }

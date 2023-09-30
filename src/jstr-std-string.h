@@ -12,6 +12,21 @@ P_JSTR_END_DECLS
 
 P_JSTR_BEGIN_DECLS
 
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_strstr_len(const char *R const hs,
+		const size_t hslen,
+		const char *R const ne,
+		const size_t nelen)
+{
+#if !JSTR_HAVE_MEMMEM
+	(void)hslen;
+	(void)nelen;
+#endif
+	return JSTR_STRSTR_LEN(hs, hslen, ne, nelen);
+}
+
 JSTR_FUNC_PURE
 JSTR_INLINE
 static size_t
