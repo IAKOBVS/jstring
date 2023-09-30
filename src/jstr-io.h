@@ -862,9 +862,9 @@ enum {
 
 typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with the fname instead of the whole path. */
-	JSTR_IO_FTW_MATCH_PATH = (1),
+	JSTR_IO_FTW_MATCHPATH = (1),
 	/* Call FN on regular files. */
-	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCH_PATH << 1),
+	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCHPATH << 1),
 	/* Call FN on directories. */
 	JSTR_IO_FTW_DIR = (JSTR_IO_FTW_REG << 1),
 	/* Do not traverse subdirectories. */
@@ -875,8 +875,8 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NOSTAT << 1),
 	/* Ignore hidden entries. */
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1),
-	/* Expand ~/ to /home/username/ if the first char is ~. */
-	JSTR_IO_FTW_EXP_TILDE = (JSTR_IO_FTW_NOHIDDEN << 1),
+	/* Expand ~/ to /home/username/ if the first char is '~'. */
+	JSTR_IO_FTW_EXPTILDE = (JSTR_IO_FTW_NOHIDDEN << 1),
 } jstr_io_ftw_flag_ty;
 
 #define STAT_CHK()                                     \
@@ -975,7 +975,7 @@ do_reg:
 		    && !(jflags & JSTR_IO_FTW_REG))
 			continue;
 		if (fn_glob != NULL) {
-			if (jflags & JSTR_IO_FTW_MATCH_PATH) {
+			if (jflags & JSTR_IO_FTW_MATCHPATH) {
 				FILL_PATH();
 				if (fnmatch(fn_glob, dirpath, fn_flags))
 					continue;
@@ -1036,7 +1036,7 @@ do_dir:
    Jflags (prefixed with JSTR_IO_FTW_):
    REG: avoid calling FN on other filetypes.
    DIR: avoid calling FN on other filetypes.
-   MATCH_PATH: match dirpath instead of fulpath.
+   MATCHPATH: match dirpath instead of fulpath.
    NOSUBDIR: do not traverse subdirectories.
    NOSTAT: do not call stat. Only st.mode is defined.
    STAT_REG: only call stat on regular files.
@@ -1056,7 +1056,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	       && dirpath[dlen - 1] == '/')
 		--dlen;
 	char fulpath[JSTR_IO_MAX_PATH];
-	if (jflags & JSTR_IO_FTW_EXP_TILDE) {
+	if (jflags & JSTR_IO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {
 			const char *R const home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
@@ -1094,7 +1094,7 @@ jstr_io_ftw_len(const char *R const dirpath,
    Jflags (prefixed with JSTR_IO_FTW_):
    REG: avoid calling FN on other filetypes.
    DIR: avoid calling FN on other filetypes.
-   MATCH_PATH: match FULPATH instead of fname.
+   MATCHPATH: match FULPATH instead of fname.
    NOSUBDIR: do not traverse subdirectories.
    NOSTAT: do not call stat. Only st.mode is defined.
    STAT_REG: only call stat on regular files.
