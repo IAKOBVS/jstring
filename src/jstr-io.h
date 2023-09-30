@@ -896,7 +896,12 @@ p_jstr_io_ftw_len(char *R dirpath,
 		if (ep->d_type == DT_DIR)
 			goto do_dir;
 #else
+#	if JSTR_HAVE_DIRENT_D_NAMLEN
+		jstr_io_append_path_len(dirpath + dlen, ep->d_name, ep->d_namlen);
+		pathlen = dlen + 1 + ep->d_namlen;
+#	else
 		pathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath;
+#	endif
 		if (jstr_unlikely(stat(dirpath, &st)))
 			continue;
 		if (S_ISREG(st.st_mode))
