@@ -869,7 +869,7 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_DIR = (JSTR_IO_FTW_REG << 1),
 	/* Do not traverse subdirectories. */
 	JSTR_IO_FTW_NOSUBDIR = (JSTR_IO_FTW_DIR << 1),
-	/* Do not call stat. Only sb.st_mode is defined. */
+	/* Do not call stat. Only st.st_mode is defined. */
 	JSTR_IO_FTW_NOSTAT = (JSTR_IO_FTW_NOSUBDIR << 1),
 	/* Only call stat on regular files. */
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NOSTAT << 1),
@@ -894,14 +894,14 @@ typedef enum jstr_io_ftw_flag_ty {
 #	endif
 #	define GET_STAT_MODE()                          \
 		do {                                     \
-			sb.st_mode = DTTOIF(ep->d_type); \
+			st.st_mode = DTTOIF(ep->d_type); \
 		} while (0)
-#	define STAT(fname, st)                          \
+#	define STAT()                                   \
 		do {                                     \
 			if (jflags & JSTR_IO_FTW_NOSTAT) \
 				GET_STAT_MODE();         \
 			else                             \
-				stat(fname, st);         \
+				stat(dirpath, &st);      \
 		} while (0)
 #else
 #	define FILL_PATH() \
@@ -910,8 +910,8 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define GET_STAT_MODE() \
 		do {            \
 		} while (0)
-#	define STAT(fname, st) \
-		do {            \
+#	define STAT() \
+		do {   \
 		} while (0)
 #endif
 
@@ -985,11 +985,11 @@ do_reg:
 #else
 			if (S_ISREG(st.st_mode))
 #endif
-				STAT(dirpath, &st);
+				STAT();
 			else
 				GET_STAT_MODE();
 		} else {
-			STAT(dirpath, &st);
+			STAT();
 		}
 		fn(dirpath, pathlen, &st);
 		continue;
@@ -1002,7 +1002,7 @@ do_dir:
 		if (jflags & JSTR_IO_FTW_STAT_REG)
 			GET_STAT_MODE();
 		else
-			STAT(dirpath, &st);
+			STAT();
 		if (jflags & JSTR_IO_FTW_REG) {
 			if (jflags & JSTR_IO_FTW_DIR)
 				fn(dirpath, pathlen, &st);
