@@ -1005,17 +1005,12 @@ jstr_io_ftw_len(const char *R const dirpath,
 		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
 		return 1;
 	}
-	if (jflags & JSTR_IO_FTW_REG) {
+	if (jflags & JSTR_IO_FTW_REG)
 		if (!S_ISREG(st.st_mode))
 			return 0;
-		if (fn_glob != NULL)
-			if (fnmatch(fn_glob, fulpath, fn_flags))
-				return 0;
-	} else {
-		if (fn_glob != NULL)
-			if (fnmatch(fn_glob, fulpath, fn_flags))
-				return 0;
-	}
+	if (fn_glob != NULL)
+		if (fnmatch(fn_glob, fulpath, fn_flags))
+			return 0;
 	fn(fulpath, dlen, &st);
 	return 1;
 }
