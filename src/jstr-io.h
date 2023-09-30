@@ -712,6 +712,55 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 }
 
 /*
+   Expand ~/some_dir to /home/username/some_dir.
+   Assume that S has enough space.
+   Return value:
+   0 on error;
+   otherwise 1.
+*/
+JSTR_FUNC
+static int
+p_jstr_io_expand_tilde(char *R s,
+		       size_t sz)
+{
+	if (*s != '~')
+		return 1;
+	const char *R const home = getenv("HOME");
+	if (jstr_unlikely(home == NULL))
+		return 0;
+	const size_t len = strlen(home);
+	memmove(s + len, s + 1, (s + sz) - (s + 1) + 1);
+	memcpy(s, home, len);
+	return 1;
+}
+
+/*
+   Expand every ~ to /home/username.
+   Assume that S has enough space.
+   Return value:
+   0 on error;
+   otherwise 1.
+*/
+JSTR_FUNC
+static int
+jstr_io_expand_tilde(char *R s,
+		     size_t sz)
+{
+	const char *R const home = getenv("HOME");
+	if (jstr_unlikely(home == NULL))
+		return 0;
+	const size_t len = strlen(home);
+	char *p = s;
+	while ((p = (char *)memchr(p, '~', (s + sz) - p))) {
+		memmove(p + len, p + 1, (s + sz) - (p + 1) + 1);
+		memcpy(p, home, len);
+		p += len;
+		sz += (len - 1);
+	}
+	return 1;
+}
+
+/*
    Expand every ~ to /home/username.
    Return value:
    0 on error;
@@ -719,9 +768,9 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 */
 JSTR_FUNC
 static int
-jstr_io_expand_tilde(char *R *R s,
-		     size_t *R sz,
-		     size_t *R cap)
+jstr_io_expand_tilde_safe(char *R *R s,
+			  size_t *R sz,
+			  size_t *R cap)
 {
 	const char *R const home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
@@ -735,7 +784,7 @@ jstr_io_expand_tilde(char *R *R s,
 			P_JSTR_REALLOC(*s, *cap, *sz + len, goto err);
 			p = *s + (p - tmp);
 		}
-		memmove(p + len, p + 1, strlen(p) + 1);
+		memmove(p + len, p + 1, (*s + *sz) - (p + 1) + 1);
 		memcpy(p, home, len);
 		p += len;
 		*sz += (len - 1);
@@ -826,6 +875,8 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_STAT_REG = (JSTR_IO_FTW_NOSTAT << 1),
 	/* Ignore hidden entries. */
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STAT_REG << 1),
+	/* Expand ~/ to /home/username/ if the first char is ~. */
+	JSTR_IO_FTW_EXP_TILDE = (JSTR_IO_FTW_NOHIDDEN << 1),
 } jstr_io_ftw_flag_ty;
 
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -997,7 +1048,18 @@ jstr_io_ftw_len(const char *R const dirpath,
 	       && dirpath[dlen - 1] == '/')
 		--dlen;
 	char fulpath[JSTR_IO_MAX_PATH];
-	memcpy(fulpath, dirpath, dlen + 1);
+	if (jflags & JSTR_IO_FTW_EXP_TILDE) {
+		if (*dirpath == '~') {
+			const char *R const home = getenv("HOME");
+			if (jstr_unlikely(home == NULL))
+				return 0;
+			const size_t homelen = jstr_stpcpy(fulpath, home) - fulpath;
+			memcpy(fulpath + homelen, dirpath + 1, dlen);
+			dlen += homelen - 1;
+		}
+	} else {
+		memcpy(fulpath, dirpath, dlen + 1);
+	}
 	struct stat st;
 	if (jstr_unlikely(stat(fulpath, &st)))
 		return 0;
