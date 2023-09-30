@@ -967,7 +967,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 		if (S_ISDIR(st.st_mode))
 			goto do_dir;
 #endif /* HAVE_D_TYPE */
-		/* If either DIR or REG is used, ignore other filetypes. */
+		/* If either DIR or REG is used, ignore other types of files. */
 		if (jflags & (JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG))
 			continue;
 do_reg:
