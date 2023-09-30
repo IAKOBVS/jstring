@@ -1071,7 +1071,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	struct stat st;
 	if (jstr_unlikely(stat(fulpath, &st)))
 		return 0;
-	if (S_ISDIR(st.st_mode)) {
+	if (jstr_likely(S_ISDIR(st.st_mode))) {
 		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
 		return 1;
 	}
