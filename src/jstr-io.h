@@ -879,7 +879,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 	while ((ep = readdir(dp))) {
 		/* Ignore . and .. . */
 		if (p_jstr_io_is_relative(ep->d_name)
-		    | ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
+		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
