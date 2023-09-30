@@ -879,13 +879,10 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_EXP_TILDE = (JSTR_IO_FTW_NOHIDDEN << 1),
 } jstr_io_ftw_flag_ty;
 
-#define STAT_CHK()                                       \
-	do {                                             \
-		if (jstr_unlikely(stat(dirpath, &st))) { \
-			if (errno != EACCES)             \
-				return 0;                \
-			continue;                        \
-		}                                        \
+#define STAT_CHK()                                     \
+	do {                                           \
+		if (jstr_unlikely(stat(dirpath, &st))) \
+			continue;                      \
 	} while (0)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -932,7 +929,7 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   const struct stat *st);
 
 JSTR_FUNC_MAY_NULL
-static int
+static void
 p_jstr_io_ftw_len(char *R dirpath,
 		  const size_t dlen,
 		  const char *R const fn_glob,
@@ -942,7 +939,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 {
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
-		return errno == EACCES;
+		return;
 	size_t pathlen = 0;
 	struct stat st;
 	const struct dirent *R ep;
@@ -1020,12 +1017,10 @@ do_dir:
 		}
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
-		if (jstr_unlikely(!p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn)))
-			return 0;
+		p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn);
 		continue;
 	}
 	closedir(dp);
-	return 1;
 }
 
 #undef IS_RELATIVE
@@ -1074,8 +1069,10 @@ jstr_io_ftw_len(const char *R const dirpath,
 	}
 	struct stat st;
 	STAT_CHK();
-	if (S_ISDIR(st.st_mode))
-		return p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
+	if (S_ISDIR(st.st_mode)) {
+		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
+		return 1;
+	}
 	if (jflags & JSTR_IO_FTW_REG)
 		if (!S_ISREG(st.st_mode))
 			return 0;
