@@ -829,6 +829,18 @@ typedef enum jstr_io_ftw_flag_ty {
 } jstr_io_ftw_flag_ty;
 
 #if JSTR_HAVE_DIRENT_D_TYPE
+#	if JSTR_HAVE_DIRENT_D_NAMLEN
+#		define FILL_PATH()                                                                \
+			do {                                                                       \
+				jstr_io_append_path_len(dirpath + dlen, ep->d_name, ep->d_namlen); \
+				pathlen = dlen + 1 + ep->d_namlen;                                 \
+			} while (0)
+#	else
+#		define FILL_PATH()                                                                    \
+			do {                                                                           \
+				pathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath; \
+			} while (0)
+#	endif
 #	define GET_STAT_MODE_MAYBE()                    \
 		do {                                     \
 			sb.st_mode = DTTOIF(ep->d_type); \
@@ -841,6 +853,9 @@ typedef enum jstr_io_ftw_flag_ty {
 				stat(fname, st);         \
 		} while (0)
 #else
+#	define FILL_PATH() \
+		do {        \
+		} while (0)
 #	define GET_STAT_MODE_MAYBE() \
 		do {                  \
 		} while (0)
@@ -860,6 +875,7 @@ p_jstr_io_is_relative(const char *R const fname) JSTR_NOEXCEPT
 }
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
+				   size_t dlen,
 				   const struct stat *st);
 
 JSTR_FUNC_MAY_NULL
@@ -874,7 +890,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 	DIR *R const dp = opendir(dirpath);
 	if (jstr_unlikely(dp == NULL))
 		return;
-	size_t fulpathlen = 0;
+	size_t pathlen = 0;
 	struct stat st;
 	const struct dirent *R ep;
 	while ((ep = readdir(dp))) {
@@ -888,7 +904,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 		if (ep->d_type == DT_DIR)
 			goto do_dir;
 #else
-		fulpathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath;
+		pathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath;
 		if (jstr_unlikely(stat(dirpath, &st)))
 			continue;
 		if (S_ISREG(st.st_mode))
@@ -911,15 +927,8 @@ do_reg:
 				if (fnmatch(fn_glob, ep->d_name, fn_flags))
 					continue;
 			}
-		} else {
 		}
-#if JSTR_HAVE_DIRENT_D_TYPE
-#	if JSTR_HAVE_DIRENT_D_NAMLEN
-		jstr_io_append_path_len(dirpath + dlen, ep->d_name, ep->d_namlen);
-#	else
-		jstr_io_append_path(dirpath + dlen, ep->d_name);
-#	endif
-#endif
+		FILL_PATH();
 		if (jflags & JSTR_IO_FTW_STAT_REG) {
 #if JSTR_HAVE_DIRENT_D_TYPE
 			if (ep->d_type == DT_REG)
@@ -932,38 +941,32 @@ do_reg:
 		} else {
 			STAT_MAYBE(dirpath, &st);
 		}
-		fn(dirpath, &st);
+		fn(dirpath, pathlen, &st);
 		continue;
 do_dir:
 		if ((jflags & JSTR_IO_FTW_NOSUBDIR)
 		    && (jflags & JSTR_IO_FTW_REG)
 		    && !(jflags & JSTR_IO_FTW_DIR))
 			continue;
-#if JSTR_HAVE_DIRENT_D_TYPE
-#	if JSTR_HAVE_DIRENT_D_NAMLEN
-		jstr_io_append_path_len(dirpath + dlen, ep->d_name, ep->d_namlen) - dirpath;
-		fulpathlen = dlen + 1 + ep->d_namlen;
-#	else
-		fulpathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath;
-#	endif
-#endif
+		FILL_PATH();
 		if (jflags & JSTR_IO_FTW_STAT_REG)
 			GET_STAT_MODE_MAYBE();
 		else
 			STAT_MAYBE(dirpath, &st);
 		if ((jflags & JSTR_IO_FTW_REG)
 		    && (jflags & JSTR_IO_FTW_DIR))
-			fn(dirpath, &st);
+			fn(dirpath, pathlen, &st);
 		else
-			fn(dirpath, &st);
+			fn(dirpath, pathlen, &st);
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
-		p_jstr_io_ftw_len(dirpath, fulpathlen, fn_glob, fn_flags, jflags, fn);
+		p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn);
 		continue;
 	}
 	closedir(dp);
 }
 
+#undef FILL_PATH
 #undef STAT_MAYBE
 #undef GET_STAT_MODE_MAYBE
 
@@ -980,7 +983,6 @@ do_dir:
    STAT_REG: only call stat on regular files.
 */
 JSTR_FUNC_MAY_NULL
-JSTR_INLINE
 static int
 jstr_io_ftw_len(const char *R const dirpath,
 		size_t dlen,
@@ -993,11 +995,8 @@ jstr_io_ftw_len(const char *R const dirpath,
 		return 0;
 	char fulpath[JSTR_IO_MAX_PATH];
 	memcpy(fulpath, dirpath, dlen + 1);
-	if (jstr_unlikely(fulpath[dlen - 1] == '/')
-	    && dlen != 1) {
-		--dlen;
-		fulpath[dlen - 1] = '\0';
-	}
+	if (jstr_unlikely(fulpath[dlen - 1] == '/') && dlen != 1)
+		fulpath[--dlen] = '\0';
 	p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
 	return 1;
 }
@@ -1015,7 +1014,6 @@ jstr_io_ftw_len(const char *R const dirpath,
    STAT_REG: only call stat on regular files.
 */
 JSTR_FUNC_MAY_NULL
-JSTR_INLINE
 static int
 jstr_io_ftw(const char *R const dirpath,
 	    const char *R const fn_glob,
@@ -1027,11 +1025,8 @@ jstr_io_ftw(const char *R const dirpath,
 		return 0;
 	char fulpath[JSTR_IO_MAX_PATH];
 	size_t dlen = jstr_stpcpy(fulpath, dirpath) - fulpath;
-	if (jstr_unlikely(fulpath[dlen - 1] == '/')
-	    && dlen != 1) {
-		--dlen;
-		fulpath[dlen - 1] = '\0';
-	}
+	if (jstr_unlikely(fulpath[dlen - 1] == '/') && dlen != 1)
+		fulpath[--dlen] = '\0';
 	p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn);
 	return 1;
 }
