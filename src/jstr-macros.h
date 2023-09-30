@@ -3,8 +3,8 @@
 
 #include "jstr-config.h"
 #include <features.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__
 #	define JSTR_HAVE_VLA 0
@@ -788,6 +788,18 @@ case '~':
 #else
 #	define P_JSTR_BEGIN_DECLS
 #	define P_JSTR_END_DECLS
+#endif
+
+#ifdef __USE_XOPEN2K8
+#	define JSTR_HAVE_FDOPENDIR 1
+#else
+#	define JSTR_HAVE_FDOPENDIR 1
+#endif
+
+#ifdef _ATFILE_SOURCE
+#	define JSTR_HAVE_ATFILE 1
+#else
+#	define JSTR_HAVE_ATFILE 0
 #endif
 
 #ifdef JSTR_USE_UNLOCKED_IO
