@@ -959,7 +959,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 		  ) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-	fd = openat(fd, dirpath, O_RDONLY | O_DIRECTORY);
+	fd = openat(fd, dirpath, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		return;
 	DIR *R const dp = fdopendir(fd);
@@ -970,7 +970,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 		return;
 	size_t pathlen = 0;
 	const struct dirent *R ep;
-	while ((ep = readdir(dp))) {
+	while ((ep = readdir(dp)) != NULL) {
 		/* Ignore "." and "..". */
 		if (IS_RELATIVE(ep->d_name)
 		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
