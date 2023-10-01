@@ -1137,6 +1137,9 @@ ftw:
 #endif
 		return 1;
 	}
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+	close(fd);
+#endif
 	if (jflags & JSTR_IO_FTW_REG)
 		if (!S_ISREG(st.st_mode))
 			return 0;
