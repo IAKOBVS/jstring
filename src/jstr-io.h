@@ -1113,12 +1113,22 @@ jstr_io_ftw_len(const char *R const dirpath,
 	if (jstr_unlikely(fd == -1))
 		return 0;
 	struct stat st;
+	/* This avoids things like //usr/cache. */
+	if (jstr_unlikely(dlen == 1)
+	    && jstr_unlikely(*dirpath == '/')) {
+#if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
+		close(fd);
+#endif
+		dlen = 0;
+		goto ftw;
+	}
 	if (jstr_unlikely(fstat(fd, &st)))
 		return 0;
 #if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
 	close(fd);
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
+ftw:
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
 		close(fd);
