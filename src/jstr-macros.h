@@ -793,7 +793,7 @@ case '~':
 #ifdef __USE_XOPEN2K8
 #	define JSTR_HAVE_FDOPENDIR 1
 #else
-#	define JSTR_HAVE_FDOPENDIR 1
+#	define JSTR_HAVE_FDOPENDIR 0
 #endif
 
 #ifdef _ATFILE_SOURCE
@@ -869,6 +869,10 @@ case '~':
 #	if JSTR_HAVE_FFLUSH_UNLOCKED
 #		define fflush(stream) fflush_unlocked(stream)
 #	endif
+#endif
+
+#if defined _POSIX_C_SOURCE
+#	define JSTR_HAVE_FDOPEN 1
 #endif
 
 #if defined __GLIBC__ && defined _DIRENT_HAVE_D_TYPE
