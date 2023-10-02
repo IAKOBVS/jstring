@@ -618,30 +618,27 @@ err:
 JSTR_INLINE
 JSTR_FUNC
 static int
-pjstr_io_alloc_file(const int alloc_exact,
-		    char *R *R const s,
-		    size_t *R const sz,
-		    size_t *R const cap,
-		    const char *R const fname,
-		    struct stat *R const st) JSTR_NOEXCEPT
+pjstr_io_alloc_file_len(const int alloc_exact,
+			char *R *R const s,
+			size_t *R const sz,
+			size_t *R const cap,
+			const char *R const fname,
+			const size_t filesz) JSTR_NOEXCEPT
 {
 	const int fd = open(fname, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
-	if (jstr_unlikely(fstat(fd, st)))
-		goto err_close;
-	*sz = st->st_size;
 	if (alloc_exact)
-		*cap = P_JSTR_MIN_ALLOCEXACT(*sz + 1);
+		*cap = P_JSTR_MIN_ALLOCEXACT(filesz + 1);
 	else
-		*cap = P_JSTR_MIN_ALLOC(*sz);
+		*cap = P_JSTR_MIN_ALLOC(filesz);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
 	P_JSTR_MALLOC_ERR(*s, goto err_close);
-	if (jstr_unlikely(*sz != (size_t)read(fd, *s, *sz)))
+	if (jstr_unlikely(filesz != (size_t)read(fd, *s, filesz)))
 		goto err_close_free;
 	close(fd);
-	(*s)[*sz] = '\0';
+	(*s)[filesz] = '\0';
 	return 1;
 err_close_free:
 	free(*s);
@@ -662,9 +659,9 @@ jstr_io_alloc_file(char *R *R const s,
 		   size_t *R const sz,
 		   size_t *R const cap,
 		   const char *R const fname,
-		   struct stat *R const st) JSTR_NOEXCEPT
+		   const size_t filesz) JSTR_NOEXCEPT
 {
-	return pjstr_io_alloc_file(0, s, sz, cap, fname, st);
+	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, filesz);
 }
 
 /*
@@ -678,9 +675,9 @@ jstr_io_allocexact_file(char *R *R const s,
 			size_t *R const sz,
 			size_t *R const cap,
 			const char *R const fname,
-			struct stat *R const st) JSTR_NOEXCEPT
+			const size_t filesz) JSTR_NOEXCEPT
 {
-	return pjstr_io_alloc_file(1, s, sz, cap, fname, st);
+	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, filesz);
 }
 
 /*
@@ -690,11 +687,15 @@ jstr_io_allocexact_file(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_io_alloc_file_j(jstr_ty *R const j,
-		     const char *R const fname,
-		     struct stat *R const st) JSTR_NOEXCEPT
+jstr_io_alloc_file_len(char *R *R const s,
+		       size_t *R const sz,
+		       size_t *R const cap,
+		       const char *R const fname,
+		       struct stat *R st) JSTR_NOEXCEPT
 {
-	return jstr_io_alloc_file(&j->data, &j->size, &j->capacity, fname, st);
+	if (jstr_unlikely(stat(fname, st)))
+		return 0;
+	return jstr_io_alloc_file(s, sz, cap, fname, st->st_size);
 }
 
 /*
@@ -704,11 +705,15 @@ jstr_io_alloc_file_j(jstr_ty *R const j,
 */
 JSTR_FUNC
 static int
-jstr_io_allocexact_file_j(jstr_ty *R const j,
-			  const char *R const fname,
-			  struct stat *R const st) JSTR_NOEXCEPT
+jstr_io_allocexact_file_len(char *R *R const s,
+			    size_t *R const sz,
+			    size_t *R const cap,
+			    const char *R const fname,
+			    struct stat *R st) JSTR_NOEXCEPT
 {
-	return jstr_io_allocexact_file(&j->data, &j->size, &j->capacity, fname, st);
+	if (jstr_unlikely(stat(fname, st)))
+		return 0;
+	return jstr_io_allocexact_file(s, sz, cap, fname, st->st_size);
 }
 
 /*
