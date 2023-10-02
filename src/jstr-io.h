@@ -896,7 +896,7 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
-#define GOOD_ERR() (errno == EACCES || errno == ENOENT)
+#define NON_FATAL_ERR() jstr_likely(errno == EACCES || errno == ENOENT)
 
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	define FILL_PATH() FILL_PATH_ALWAYS()
@@ -904,7 +904,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #		define STAT()                                                        \
 			do {                                                          \
 				if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0))) { \
-					if (GOOD_ERR())                               \
+					if (NON_FATAL_ERR())                          \
 						continue;                             \
 					return 0;                                     \
 				}                                                     \
@@ -913,7 +913,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #		define STAT()                                         \
 			do {                                           \
 				if (jstr_unlikely(stat(dirpath, &st))) \
-					if (GOOD_ERR())                \
+					if (NON_FATAL_ERR())           \
 						continue;              \
 				return 0;                              \
 			} while (0)
@@ -975,11 +975,8 @@ p_jstr_io_ftw_len(char *R dirpath,
 #else
 	opendir(dirpath);
 #endif
-	if (jstr_unlikely(dp == NULL)) {
-		if (GOOD_ERR())
-			return 1;
-		return 0;
-	}
+	if (jstr_unlikely(dp == NULL))
+		return NON_FATAL_ERR();
 	size_t pathlen = 0;
 	const struct dirent *R ep;
 	while ((ep = readdir(dp)) != NULL) {
@@ -1110,7 +1107,7 @@ err_closedir:
 #undef STAT_OR_MODE
 #undef STAT_MODE
 #undef STAT
-#undef GOOD_ERR
+#undef NON_FATAL_ERR
 
 /*
    Call FN on entries found recursively that matches GLOB.
