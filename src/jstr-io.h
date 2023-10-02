@@ -953,7 +953,8 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
-#define IS_RELATIVE(fname) ((fname[0] == '.') && ((fname[1] == '\0') || ((fname[1] == '.') && (fname[2] == '\0'))))
+#define ISDOT(fname) \
+	((fname[0] == '.') && ((fname[1] == '\0') || ((fname[1] == '.') && (fname[2] == '\0'))))
 
 #if JSTR_HAVE_FCHDIR
 #	define CD(path, fd) jstr_unlikely(fchdir(path))
@@ -1010,7 +1011,7 @@ pjstr_io_ftw_len(char *R dirpath,
 	const struct dirent *R ep;
 	while ((ep = readdir(dp)) != NULL) {
 		/* Ignore "." and "..". */
-		if (IS_RELATIVE(ep->d_name)
+		if (ISDOT(ep->d_name)
 		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
 #if !JSTR_HAVE_DIRENT_D_TYPE
@@ -1239,7 +1240,7 @@ err_closefd:
 }
 
 #undef ST
-#undef IS_RELATIVE
+#undef ISDOT
 #undef FILL_PATH
 #undef FILL_PATH_ALWAYS
 #undef STAT_OR_MODE
