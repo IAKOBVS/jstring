@@ -894,34 +894,18 @@ typedef enum jstr_io_ftw_flag_ty {
 
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	define FILL_PATH() FILL_PATH_ALWAYS()
-#	if JSTR_HAVE_FDOPENDIR
-#		if JSTR_HAVE_ATFILE
-#			define STAT()                                                      \
-				do {                                                        \
-					if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0))) \
-						continue;                                   \
-				} while (0)
-#		else
-#			define STAT()                                            \
-				do {                                              \
-					if (jstr_unlikely(stat(ep->d_name, &st))) \
-						continue;                         \
-				} while (0)
-#		endif
+#	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#		define STAT()                                                      \
+			do {                                                        \
+				if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0))) \
+					continue;                                   \
+			} while (0)
 #	else
-#		if JSTR_HAVE_FCHDIR
-#			define STAT()                                            \
-				do {                                              \
-					if (jstr_unlikely(stat(ep->d_name, &st))) \
-						continue;                         \
-				} while (0)
-#		else
-#			define STAT()                                         \
-				do {                                           \
-					if (jstr_unlikely(stat(dirpath, &st))) \
-						continue;                      \
-				} while (0)
-#		endif
+#		define STAT()                                         \
+			do {                                           \
+				if (jstr_unlikely(stat(dirpath, &st))) \
+					continue;                      \
+			} while (0)
 #	endif
 #	define STAT_MODE()                              \
 		do {                                     \
@@ -935,7 +919,7 @@ typedef enum jstr_io_ftw_flag_ty {
 				STAT();                  \
 		} while (0)
 #else
-#	if JSTR_HAVE_FDOPENDIR
+#	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 #		define FILL_PATH() FILL_PATH_ALWAYS()
 #	else
 #		define FILL_PATH() \
@@ -953,30 +937,7 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
-#define ISDOT(fname) \
-	((fname[0] == '.') && ((fname[1] == '\0') || ((fname[1] == '.') && (fname[2] == '\0'))))
-
-#if JSTR_HAVE_FCHDIR
-#	define CD(path, fd) jstr_unlikely(fchdir(path))
-#else
-#	define CD(path, fd) jstr_unlikely(chdir(fd))
-#endif
-
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-#	define ST(fd, fname, st) jstr_unlikely(fstatat(fd, fname, st, 0))
-#else
-#	define ST(fd, fname, st) jstr_unlikely(stat(fname, st))
-#endif
-
-#if JSTR_HAVE_DIRENT_D_TYPE
-#	define ISREG(st_mode, d_type) (d_type == DT_REG)
-#	define ISDIR(st_mode, d_type) (d_type == DT_DIR)
-#else
-#	define ISREG(st_mode, d_type) (S_ISREG(st_mode))
-#	define ISDIR(st_mode, d_type) (S_ISDIR(st_mode))
-#endif
-
-#define FD_CHK(fd) (jstr_unlikely(fd == -1))
+#define IS_RELATIVE(fname) ((fname[0] == '.') && ((fname[1] == '\0') || ((fname[1] == '.') && (fname[2] == '\0'))))
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   size_t dlen,
@@ -984,26 +945,23 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 
 JSTR_FUNC_MAY_NULL
 static int
-pjstr_io_ftw_len(char *R dirpath,
-		 const size_t dlen,
-		 const char *R const fn_glob,
-		 const int fn_flags,
-		 const jstr_io_ftw_flag_ty jflags,
-		 jstr_io_ftw_func_ty fn,
-		 struct stat *R const st
-#if JSTR_HAVE_FDOPENDIR
-		 ,
-		 const int fd
+p_jstr_io_ftw_len(char *R dirpath,
+		  const size_t dlen,
+		  const char *R const fn_glob,
+		  const int fn_flags,
+		  const jstr_io_ftw_flag_ty jflags,
+		  jstr_io_ftw_func_ty fn,
+		  struct stat *R const st
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+		  ,
+		  int fd
 #endif
-		 ) JSTR_NOEXCEPT
+		  ) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_FDOPENDIR
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 	DIR *R const dp = fdopendir(fd);
 #else
 	DIR *R const dp = opendir(dirpath);
-#endif
-#if JSTR_HAVE_FDOPENDIR
-	int fd_tmp;
 #endif
 	if (jstr_unlikely(dp == NULL))
 		return 1;
@@ -1011,20 +969,34 @@ pjstr_io_ftw_len(char *R dirpath,
 	const struct dirent *R ep;
 	while ((ep = readdir(dp)) != NULL) {
 		/* Ignore "." and "..". */
-		if (ISDOT(ep->d_name)
+		if (IS_RELATIVE(ep->d_name)
 		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
-#if !JSTR_HAVE_DIRENT_D_TYPE
-#	if !JSTR_HAVE_FDOPENDIR
-		FILL_PATH_ALWAYS();
-#	endif
-		if (ST(fd, ep->d_name, st))
-			continue;
-#endif
-		if (ISREG(st->st_mode, ep->d_type))
+		/* Exit if path is longer than PATH_MAX. */
+		if (jstr_unlikely(dlen + _D_ALLOC_NAMLEN(ep)) > 4096) {
+			errno = ENAMETOOLONG;
+			closedir(dp);
+			return 0;
+		}
+#if JSTR_HAVE_DIRENT_D_TYPE
+		if (ep->d_type == DT_REG)
 			goto do_reg;
-		if (ISDIR(st->st_mode, ep->d_type))
+		if (ep->d_type == DT_DIR)
 			goto do_dir;
+#else
+#	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+		if (jstr_unlikely(fstatat(fd, ep->d_name, st, 0)))
+			continue;
+#	else
+		FILL_PATH_ALWAYS();
+		if (jstr_unlikely(stat(dirpath, st)))
+			continue;
+#	endif /* ATFILE */
+		if (S_ISREG(st->st_mode))
+			goto do_reg;
+		if (S_ISDIR(st->st_mode))
+			goto do_dir;
+#endif /* HAVE_D_TYPE */
 		/* If true, ignore other types of files. */
 		if (jflags & (JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG))
 			continue;
@@ -1046,7 +1018,11 @@ do_reg:
 			FILL_PATH();
 		}
 		if (jflags & JSTR_IO_FTW_STATREG) {
-			if (ISREG(st->st_mode, ep->d_type))
+#if JSTR_HAVE_DIRENT_D_TYPE
+			if (ep->d_type == DT_REG)
+#else
+			if (S_ISREG(st->st_mode))
+#endif
 				STAT();
 			else
 				STAT_MODE();
@@ -1073,62 +1049,37 @@ do_dir:
 		}
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
-#if JSTR_HAVE_FDOPENDIR
-#	if JSTR_HAVE_ATFILE
-		fd_tmp = openat(fd, ep->d_name, O_RDONLY);
-		if (FD_CHK(fd_tmp))
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+		const int fd_tmp = openat(fd, ep->d_name, O_RDONLY);
+		if (jstr_unlikely(fd_tmp == -1))
 			continue;
-		pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp);
-		close(fd_tmp);
-#	else
-		fd_tmp = open(ep->d_name, O_RDONLY);
-		if (FD_CHK(fd_tmp))
-			continue;
-		if (CD(ep->d_name, fd_tmp)) {
+		if (jstr_unlikely(!p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp))) {
 			close(fd_tmp);
-			continue;
-		}
-		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp))) {
-			close(fd_tmp);
-			goto err_closedir;
+			closedir(dp);
+			return 0;
 		}
 		close(fd_tmp);
-		if (jstr_unlikely(chdir("..")))
-			goto err_closedir;
-#	endif
 #else
-#	if JSTR_HAVE_FCHDIR
-		if (jstr_unlikely(chdir(ep->d_name)))
-			continue;
-#	endif
-		pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st);
-#	if JSTR_HAVE_FCHDIR
-		if (jstr_unlikely(chdir("..")))
-			goto err_closedir;
-#	endif
+		if (jstr_unlikely(!p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st))) {
+			closedir(dp);
+			return 0;
+		}
 #endif
 		continue;
 	}
 	closedir(dp);
 	return 1;
-#if (JSTR_HAVE_FDOPENDIR && !JSTR_HAVE_ATFILE) || JSTR_HAVE_FCHDIR
-err_closedir:
-	closedir(dp);
-	return 0;
-#endif
 }
+
+#undef IS_RELATIVE
+#undef FILL_PATH
+#undef FILL_PATH_ALWAYS
+#undef STAT_OR_MODE
+#undef STAT_MODE
+#undef STAT
 
 /*
    Call FN on entries found recursively that matches GLOB.
-   If either the REG or DIR flag is used, FN will not be called on other filetypes.
-   If GLOB is NULL, all entries match.
-   Jflags (prefixed with JSTR_IO_FTW_):
-   REG: avoid calling FN on other filetypes.
-   DIR: avoid calling FN on other filetypes.
-   MATCHPATH: match dirpath instead of fulpath.
-   NOSUBDIR: do not traverse subdirectories.
-   NOSTAT: do not call stat. Only st.mode is defined.
-   STATREG: only call stat on regular files.
 */
 JSTR_FUNC_MAY_NULL
 static int
@@ -1141,7 +1092,8 @@ jstr_io_ftw_len(const char *R const dirpath,
 {
 	if (jstr_unlikely(dlen == 0))
 		return 0;
-	while (dlen != 1 && dirpath[dlen - 1] == '/')
+	while (dlen != 1
+	       && dirpath[dlen - 1] == '/')
 		--dlen;
 	char fulpath[JSTR_IO_MAX_PATH];
 	if (jflags & JSTR_IO_FTW_EXPTILDE) {
@@ -1157,66 +1109,31 @@ jstr_io_ftw_len(const char *R const dirpath,
 		memcpy(fulpath, dirpath, dlen + 1);
 	}
 	const int fd = open(fulpath, O_RDONLY);
-	if (FD_CHK(fd))
+	if (jstr_unlikely(fd == -1))
 		return 0;
 	struct stat st;
 	/* This avoids things like //usr/cache. */
 	if (jstr_unlikely(dlen == 1)
 	    && jstr_unlikely(*dirpath == '/')) {
+#if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
+		close(fd);
+#endif
 		dlen = 0;
 		goto ftw;
 	}
 	if (jstr_unlikely(fstat(fd, &st)))
-		goto err_closefd;
-	if (jstr_likely(S_ISDIR(st.st_mode))) {
-ftw:;
-#if JSTR_HAVE_FDOPENDIR
-#	if JSTR_HAVE_ATFILE
-		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
-#	else
-#		if JSTR_HAVE_FCHDIR
-		const int fd_curr = open(".", O_RDONLY);
-		if (jstr_unlikely(fd_curr == -1))
-			goto err_closefd;
-		if (jstr_unlikely(fchdir(fd)))
-			goto err_closefd;
-		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
-		if (jstr_unlikely(fchdir(fd_curr))) {
-			close(fd_curr);
-			goto err_closefd;
-		}
-		close(fd_curr);
-#		else
-		if (jstr_unlikely(chdir(dirpath)))
-			goto err_closefd;
-		char cwd[JSTR_IO_MAX_PATH];
-		if (jstr_unlikely(getcwd(cwd, JSTR_IO_MAX_PATH) == NULL))
-			goto err_closefd;
-		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
-		if (jstr_unlikely(chdir(cwd)))
-			goto err_closefd;
-#		endif
-#	endif
-#else
-#	if JSTR_HAVE_FCHDIR
-		const int fd_curr = open(".", O_RDONLY);
-		if (jstr_unlikely(fd_curr == -1))
-			goto err_closefd;
-		if (jstr_unlikely(fchdir(fd))) {
-			close(fd_curr);
-			goto err_closefd;
-		}
-#	endif
-		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st);
-#	if JSTR_HAVE_FCHDIR
-		if (jstr_unlikely(fchdir(fd_curr))) {
-			close(fd_curr);
-			goto err_closefd;
-		}
-		close(fd_curr);
-#	endif
+		return 0;
+#if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
+	close(fd);
 #endif
+	if (jstr_likely(S_ISDIR(st.st_mode))) {
+ftw:
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
 		close(fd);
+#else
+		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st);
+#endif
 		return 1;
 	}
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
@@ -1230,35 +1147,10 @@ ftw:;
 			return 0;
 	fn(fulpath, dlen, &st);
 	return 1;
-err_closefd:
-	close(fd);
-	return 0;
 }
-
-#undef ST
-#undef ISDOT
-#undef FILL_PATH
-#undef FILL_PATH_ALWAYS
-#undef STAT_OR_MODE
-#undef STAT_MODE
-#undef STAT
-#undef CD
-#undef ST
-#undef FD_CHK
-#undef ISREG
-#undef ISDIR
 
 /*
    Call FN on entries found recursively that matches GLOB.
-   If either the REG or DIR flag is used, FN will not be called on other filetypes.
-   If GLOB is NULL, all entries match.
-   Jflags (prefixed with JSTR_IO_FTW_):
-   REG: avoid calling FN on other filetypes.
-   DIR: avoid calling FN on other filetypes.
-   MATCHPATH: match FULPATH instead of fname.
-   NOSUBDIR: do not traverse subdirectories.
-   NOSTAT: do not call stat. Only st.mode is defined.
-   STATREG: only call stat on regular files.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
