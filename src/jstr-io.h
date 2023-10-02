@@ -958,10 +958,11 @@ p_jstr_io_ftw_len(char *R dirpath,
 #endif
 		  ) JSTR_NOEXCEPT
 {
+	DIR *R const dp =
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-	DIR *R const dp = fdopendir(fd);
+	fdopendir(fd);
 #else
-	DIR *R const dp = opendir(dirpath);
+	opendir(dirpath);
 #endif
 	if (jstr_unlikely(dp == NULL))
 		return 1;
