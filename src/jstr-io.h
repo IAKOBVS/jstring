@@ -725,7 +725,7 @@ jstr_io_allocexact_file_len(char *R *R const s,
 JSTR_FUNC
 static char *
 jstr_io_expand_tilde_first(char *R s,
-			   const size_t sz)
+			   const size_t sz) JSTR_NOEXCEPT
 {
 	if (*s != '~')
 		return s + sz;
@@ -748,7 +748,7 @@ jstr_io_expand_tilde_first(char *R s,
 JSTR_FUNC
 static char *
 jstr_io_expand_tilde_p_unsafe(char *R s,
-			      size_t sz)
+			      size_t sz) JSTR_NOEXCEPT
 {
 	const char *R const home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
@@ -774,7 +774,7 @@ JSTR_FUNC
 static int
 jstr_io_expand_tilde(char *R *R s,
 		     size_t *R sz,
-		     size_t *R cap)
+		     size_t *R cap) JSTR_NOEXCEPT
 {
 	const char *R const home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
