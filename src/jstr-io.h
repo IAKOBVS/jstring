@@ -849,9 +849,9 @@ jstr_io_append_path_len(char *R const path_end,
 
 enum {
 #ifdef PATH_MAX
-	JSTR_IO_MAX_PATH = PATH_MAX,
+	JSTR_IO_PATH_MAX = PATH_MAX,
 #else
-	JSTR_IO_MAX_PATH = 4096,
+	JSTR_IO_PATH_MAX = 4096,
 #endif
 #ifdef NAME_MAX
 	JSTR_IO_NAME_MAX = NAME_MAX
@@ -972,23 +972,29 @@ p_jstr_io_ftw_len(char *R dirpath,
 		if (IS_RELATIVE(ep->d_name)
 		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
+#if JSTR_HAVE_DIRENT_D_NAMLEN
 		/* Exit if path is longer than PATH_MAX. */
-		if (JSTR_HAVE_DIRENT_D_TYPE || JSTR_HAVE_DIRENT_D_RECLEN || sizeof(ep->d_name) > 1) {
-			if (jstr_unlikely(dlen + _D_ALLOC_NAMLEN(ep)) > JSTR_IO_MAX_PATH) {
-				if (dlen - JSTR_IO_NAME_MAX < JSTR_IO_MAX_PATH
-				    && dlen + strlen(ep->d_name) >= JSTR_IO_MAX_PATH) {
+		if (dlen + ep->d_namlen > JSTR_IO_PATH_MAX) {
+			errno = ENAMETOOLONG;
+			goto err_closedir;
+		}
+#else
+		if (!JSTR_HAVE_DIRENT_D_TYPE || JSTR_HAVE_DIRENT_D_RECLEN || sizeof(ep->d_name) > 1) {
+			if (jstr_unlikely(dlen + _D_ALLOC_NAMLEN(ep)) > JSTR_IO_PATH_MAX) {
+				if (dlen - JSTR_IO_NAME_MAX < JSTR_IO_PATH_MAX
+				    && dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX) {
 					errno = ENAMETOOLONG;
-					closedir(dp);
-					return 0;
+					goto err_closedir;
 				}
 			}
 		} else {
-			if (jstr_unlikely(dlen + strlen(ep->d_name) >= JSTR_IO_MAX_PATH)) {
+			if (jstr_unlikely(dlen >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX)
+			    && dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX) {
 				errno = ENAMETOOLONG;
-				closedir(dp);
-				return 0;
+				goto err_closedir;
 			}
 		}
+#endif
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
 			goto do_reg;
@@ -1066,20 +1072,20 @@ do_dir:
 			continue;
 		if (jstr_unlikely(!p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp))) {
 			close(fd_tmp);
-			closedir(dp);
-			return 0;
+			goto err_closedir;
 		}
 		close(fd_tmp);
 #else
-		if (jstr_unlikely(!p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st))) {
-			closedir(dp);
-			return 0;
-		}
+		if (jstr_unlikely(!p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st)))
+			goto err_closedir;
 #endif
 		continue;
 	}
 	closedir(dp);
 	return 1;
+err_closedir:
+	closedir(dp);
+	return 0;
 }
 
 #undef IS_RELATIVE
@@ -1106,7 +1112,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	while (dlen != 1
 	       && dirpath[dlen - 1] == '/')
 		--dlen;
-	char fulpath[JSTR_IO_MAX_PATH];
+	char fulpath[JSTR_IO_PATH_MAX];
 	if (jflags & JSTR_IO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {
 			const char *R const home = getenv("HOME");
