@@ -76,7 +76,7 @@ jstr_stpcpy_len(char *R const dst,
 		const char *R const src,
 		const size_t n)
 {
-	*(char *)jstr_mempcpy(dst, src, n) = '\0';
+	jstr_stpcpy_len(dst, src, n);
 	return dst + n;
 }
 
