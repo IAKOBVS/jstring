@@ -21,7 +21,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isupper(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISUPPER;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISUPPER;
 }
 
 /* ASCII */
@@ -30,7 +30,7 @@ JSTR_FUNC_CONST
 static int
 jstr_islower(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISLOWER;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISLOWER;
 }
 
 /* ASCII */
@@ -39,7 +39,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isalnum(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISALNUM;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISALNUM;
 }
 
 /* ASCII */
@@ -48,7 +48,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isdigit(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISDIGIT;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISDIGIT;
 }
 
 /* ASCII */
@@ -57,7 +57,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isxdigit(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISXDIGIT;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISXDIGIT;
 }
 
 /* ASCII */
@@ -66,7 +66,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isblank(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISBLANK;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISBLANK;
 }
 
 /* ASCII */
@@ -75,7 +75,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isgraph(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISGRAPH;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISGRAPH;
 }
 
 /* ASCII */
@@ -84,7 +84,7 @@ JSTR_FUNC_CONST
 static int
 jstr_ispunct(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISPUNCT;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISPUNCT;
 }
 
 /* ASCII */
@@ -93,7 +93,7 @@ JSTR_INLINE
 static int
 jstr_isspace(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISSPACE;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISSPACE;
 }
 
 /* ASCII */
@@ -102,7 +102,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isalpha(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & JSTR_ISALPHA;
+	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISALPHA;
 }
 
 /*
@@ -128,7 +128,7 @@ JSTR_FUNC_CONST
 static int
 jstr_isctype(const int c, jstr_ctype_ty type) JSTR_NOEXCEPT
 {
-	return p_jstr_table_ctype[(unsigned char)c] & type;
+	return pjstr_table_ctype[(unsigned char)c] & type;
 }
 
 /*
@@ -141,7 +141,7 @@ JSTR_FUNC_CONST
 static int
 jstr_toupper(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_toupper[(unsigned char)c];
+	return pjstr_table_toupper[(unsigned char)c];
 }
 
 /*
@@ -154,7 +154,7 @@ JSTR_FUNC_CONST
 static int
 jstr_tolower(const int c) JSTR_NOEXCEPT
 {
-	return p_jstr_table_tolower[(unsigned char)c];
+	return pjstr_table_tolower[(unsigned char)c];
 }
 
 /* ASCII */

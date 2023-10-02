@@ -49,7 +49,7 @@ P_JSTR_END_DECLS
 #define jarr_err_exit(j)                                                                                                                        \
 	do {                                                                                                                                    \
 		if (jstr_unlikely((j)->data == NULL))                                                                                           \
-			p_jstr_err_exit(__FILE__, __LINE__, __func__);                                                                          \
+			pjstr_err_exit(__FILE__, __LINE__, __func__);                                                                          \
 	} while (0)
 #undef P_JARR_NULLIFY
 

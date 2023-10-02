@@ -37,7 +37,7 @@ P_JSTR_END_DECLS
 #	define P_JSTR_MALLOC_ERR(p, malloc_fail)                                    \
 		do {                                                                 \
 			if (jstr_unlikely((p) == NULL)) {                            \
-				p_jstr_err_exit_debug(__FILE__, __LINE__, __func__); \
+				pjstr_err_exit_debug(__FILE__, __LINE__, __func__); \
 				malloc_fail;                                         \
 			}                                                            \
 		} while (0)
@@ -54,7 +54,7 @@ P_JSTR_END_DECLS
 	do {                                               \
 		JSTR_ASSERT_IS_SIZE(old_cap);              \
 		JSTR_ASSERT_IS_SIZE(new_cap);              \
-		old_cap = p_jstr_grow(old_cap, new_cap);   \
+		old_cap = pjstr_grow(old_cap, new_cap);   \
 		(p) = P_JSTR_CAST(p, realloc(p, old_cap)); \
 		P_JSTR_MALLOC_ERR(p, malloc_fail);         \
 	} while (0)
@@ -87,7 +87,7 @@ P_JSTR_BEGIN_DECLS
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
-p_jstr_grow(size_t cap,
+pjstr_grow(size_t cap,
 	    const size_t new_cap)
 {
 	while ((cap *= JSTR_GROWTH) < new_cap)
@@ -100,7 +100,7 @@ JSTR_COLD
 JSTR_NOTHROW
 JSTR_NOINLINE
 static void
-p_jstr_err_exit_debug(const char *R FILE_,
+pjstr_err_exit_debug(const char *R FILE_,
 		      const int LINE_,
 		      const char *R func_) JSTR_NOEXCEPT
 {
@@ -111,7 +111,7 @@ p_jstr_err_exit_debug(const char *R FILE_,
 JSTR_FUNC_VOID
 JSTR_NOINLINE
 static void
-p_jstr_err_debug(const char *R FILE_,
+pjstr_err_debug(const char *R FILE_,
 		 const int LINE_,
 		 const char *R func_) JSTR_NOEXCEPT
 {
@@ -121,7 +121,7 @@ p_jstr_err_debug(const char *R FILE_,
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-p_jstr_err(void) JSTR_NOEXCEPT
+pjstr_err(void) JSTR_NOEXCEPT
 {
 	fputs(strerror(errno), stderr);
 }
@@ -129,7 +129,7 @@ p_jstr_err(void) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_NOINLINE
 static void
-p_jstr_err_exit(void) JSTR_NOEXCEPT
+pjstr_err_exit(void) JSTR_NOEXCEPT
 {
 	fputs(strerror(errno), stderr);
 	exit(EXIT_FAILURE);
@@ -141,7 +141,7 @@ JSTR_INLINE
 static void
 jstr_err_debug(void) JSTR_NOEXCEPT
 {
-	p_jstr_err_debug(__FILE__, __LINE__, __func__);
+	pjstr_err_debug(__FILE__, __LINE__, __func__);
 }
 
 /* Print error message: __FILE__:__LINE__:__func__:strerror(errno) and exit. */
@@ -150,7 +150,7 @@ JSTR_INLINE
 static void
 jstr_err_exit_debug(void) JSTR_NOEXCEPT
 {
-	p_jstr_err_exit_debug(__FILE__, __LINE__, __func__);
+	pjstr_err_exit_debug(__FILE__, __LINE__, __func__);
 }
 
 /* Print error message. */
@@ -162,7 +162,7 @@ jstr_err(void) JSTR_NOEXCEPT
 #if JSTR_DEBUG
 	jstr_err_debug();
 #else
-	p_jstr_err();
+	pjstr_err();
 #endif
 }
 
@@ -175,7 +175,7 @@ jstr_err_exit(void) JSTR_NOEXCEPT
 #if JSTR_DEBUG
 	jstr_err_exit_debug();
 #else
-	p_jstr_err_exit();
+	pjstr_err_exit();
 #endif
 }
 
