@@ -42,7 +42,7 @@ before including "jstr.h". This will make them print the filename, line number, 
 The index passed by the user is assumed to be not out of bounds.
 - \*\_bref(): enable backreferences for the replacement string.<br>
 \\0 is interpreted as referring to the whole matched string
-- P_\*() or p_\*(): private functions or macros used internally
+- P_\*() or p\*(): private functions or macros used internally
 
 ## Scripts:
 
