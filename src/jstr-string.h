@@ -935,12 +935,25 @@ jstr_line_next(const char *s) JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
+jstr_line_next_len_nul(const char *begin,
+		       const char *const end) JSTR_NOEXCEPT
+{
+	return (char *)((begin = jstr_line_next_len_nul(begin, end)) ? begin : end);
+}
+
+/*
+   Return value:
+   ptr to next line or '\0'.
+*/
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
 jstr_line_next_nul(const char *s) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(s, '\n');
 #else
-	return (char *)(jstr_line_next(s) ? s : s + strlen(s));
+	return (char *)((s = jstr_line_next(s)) ? s : s + strlen(s));
 #endif
 }
 
