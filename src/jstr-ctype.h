@@ -15,113 +15,56 @@ P_JSTR_END_DECLS
 
 P_JSTR_BEGIN_DECLS
 
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isupper(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISUPPER;
-}
+#define P_JSTR_IS_CTYPE(ctype, ctype_enum)                               \
+	/* ASCII */                                                      \
+	JSTR_INLINE                                                      \
+	JSTR_FUNC_CONST                                                  \
+	static int                                                       \
+	jstr_##ctype(const int c) JSTR_NOEXCEPT                          \
+	{                                                                \
+		return pjstr_table_ctype[(unsigned char)c] & ctype_enum; \
+	}
 
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_islower(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISLOWER;
-}
+P_JSTR_IS_CTYPE(isalpha, JSTR_ISALPHA);
+P_JSTR_IS_CTYPE(islower, JSTR_ISLOWER);
+P_JSTR_IS_CTYPE(isupper, JSTR_ISUPPER);
+P_JSTR_IS_CTYPE(isspace, JSTR_ISSPACE);
+P_JSTR_IS_CTYPE(isblank, JSTR_ISBLANK);
+P_JSTR_IS_CTYPE(isdigit, JSTR_ISDIGIT);
+P_JSTR_IS_CTYPE(isxdigit, JSTR_ISXDIGIT);
+P_JSTR_IS_CTYPE(ispunct, JSTR_ISPUNCT);
 
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isalnum(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISALNUM;
-}
+#undef P_JSTR_IS_CTYPE
 
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isdigit(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISDIGIT;
-}
+#define P_JSTR_IS_CTYPE_STR(ctype)                        \
+	/* ASCII */                                       \
+	JSTR_INLINE                                       \
+	JSTR_FUNC_PURE                                    \
+	static int                                        \
+	jstr_##ctype##_str(const char *R s) JSTR_NOEXCEPT \
+	{                                                 \
+		if (jstr_unlikely(*s == '\0'))            \
+			return 0;                         \
+		while (jstr_##ctype(*s++)                 \
+		       && jstr_##ctype(*s++)              \
+		       && jstr_##ctype(*s++)              \
+		       && jstr_##ctype(*s++))             \
+			;                                 \
+		return (*s - 1) == '\0';                  \
+	}
 
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isxdigit(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISXDIGIT;
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isblank(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISBLANK;
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isgraph(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISGRAPH;
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_ispunct(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISPUNCT;
-}
-
-/* ASCII */
-JSTR_FUNC_CONST
-JSTR_INLINE
-static int
-jstr_isspace(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISSPACE;
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isalpha(const int c) JSTR_NOEXCEPT
-{
-	return pjstr_table_ctype[(unsigned char)c] & JSTR_ISALPHA;
-}
+P_JSTR_IS_CTYPE_STR(isalpha);
+P_JSTR_IS_CTYPE_STR(islower);
+P_JSTR_IS_CTYPE_STR(isupper);
+P_JSTR_IS_CTYPE_STR(isspace);
+P_JSTR_IS_CTYPE_STR(isblank);
+P_JSTR_IS_CTYPE_STR(isdigit);
+P_JSTR_IS_CTYPE_STR(isxdigit);
+P_JSTR_IS_CTYPE_STR(ispunct);
 
 /*
    ASCII.
    For example: jstr_isctype(C, JSTR_ISLOWER | JSTR_ISDIGIT) checks if C is either lowercase or a number.
-   Types:
-   JSTR_ISALNUM.
-   JSTR_ISALPHA.
-   JSTR_ISCNTRL.
-   JSTR_ISDIGIT.
-   JSTR_ISGRAPH.
-   JSTR_ISLOWER.
-   JSTR_ISPRINT.
-   JSTR_ISPUNCT.
-   JSTR_ISSPACE.
-   JSTR_ISUPPER.
-   JSTR_ISXDIGIT.
-   JSTR_ISBLANK.
-   JSTR_ISWORD.
 */
 JSTR_INLINE
 JSTR_FUNC_CONST
@@ -157,97 +100,7 @@ jstr_tolower(const int c) JSTR_NOEXCEPT
 	return pjstr_table_tolower[(unsigned char)c];
 }
 
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isalnum_str(const char *R s) JSTR_NOEXCEPT
-{
-#define P_JSTR_IS_CTYPE_STR(CTYPE)             \
-	do {                                   \
-		if (jstr_unlikely(*s == '\0')) \
-			return 0;              \
-		while (jstr_##CTYPE(*s++)      \
-		       && jstr_##CTYPE(*s++)   \
-		       && jstr_##CTYPE(*s++)   \
-		       && jstr_##CTYPE(*s++))  \
-			;                      \
-		return (*s - 1) == '\0';       \
-	} while (0)
-	P_JSTR_IS_CTYPE_STR(isalnum);
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isalpha_str(const char *R s) JSTR_NOEXCEPT
-{
-	P_JSTR_IS_CTYPE_STR(isalpha);
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_islower_str(const char *R s) JSTR_NOEXCEPT
-{
-	P_JSTR_IS_CTYPE_STR(islower);
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isupper_str(const char *R s) JSTR_NOEXCEPT
-{
-	P_JSTR_IS_CTYPE_STR(isupper);
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_PURE
-static int
-jstr_isspace_str(const char *R s) JSTR_NOEXCEPT
-{
-	P_JSTR_IS_CTYPE_STR(isspace);
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_PURE
-static int
-jstr_isblank_str(const char *R s) JSTR_NOEXCEPT
-{
-	P_JSTR_IS_CTYPE_STR(isblank);
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_PURE
-static int
-jstr_isdigit_str(const char *R s) JSTR_NOEXCEPT
-{
-	P_JSTR_IS_CTYPE_STR(isdigit);
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_PURE
-static int
-jstr_isxdigit_str(const char *R s) JSTR_NOEXCEPT
-{
-	P_JSTR_IS_CTYPE_STR(isxdigit);
-}
-
-/* ASCII */
-JSTR_INLINE
-JSTR_FUNC_PURE
-static int
-jstr_ispunct_str(const char *R s) JSTR_NOEXCEPT
-{
-	P_JSTR_IS_CTYPE_STR(ispunct);
-}
+#undef P_JSTR_IS_CTYPE_STR
 
 #ifdef __clang__
 #	pragma clang diagnostic ignored "-Wunknown-pragmas"
@@ -317,6 +170,5 @@ jstr_tolower_str(char *R s) JSTR_NOEXCEPT
 P_JSTR_END_DECLS
 
 #undef R
-#undef P_JSTR_IS_CTYPE_STR
 
 #endif /* JSTR_CTYPE_H */

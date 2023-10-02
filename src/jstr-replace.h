@@ -932,6 +932,21 @@ jstr_skip_ctype(const char *R s,
 }
 
 /*
+   Return ptr to first non-ctype character from END to begin.
+*/
+JSTR_INLINE
+JSTR_PURE
+static char *
+jstr_skip_ctype_rev(const char *begin,
+		    const char *end,
+		    const jstr_ctype_ty ctype)
+{
+	while (end != begin && jstr_isctype(*end, ctype))
+		--end;
+	return (char *)end;
+}
+
+/*
    Return ptr to first non-space character.
 */
 JSTR_INLINE
@@ -939,9 +954,7 @@ JSTR_PURE
 static char *
 jstr_skip_spaces(const char *R s)
 {
-	while (jstr_isspace(*s++))
-		;
-	return (char *)s - 1;
+	return jstr_skip_ctype(s, JSTR_ISSPACE);
 }
 
 /*
@@ -953,9 +966,7 @@ static char *
 jstr_skip_spaces_rev(const char *begin,
 		     const char *end)
 {
-	while (end != begin && jstr_isspace(*end))
-		--end;
-	return (char *)end;
+	return jstr_skip_ctype_rev(begin, end, JSTR_ISSPACE);
 }
 
 /*
