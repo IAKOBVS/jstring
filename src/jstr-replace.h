@@ -62,7 +62,7 @@ p_jstr_slip_len_p_f(char *R const s,
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
-p_jstr_replaceat_len_f(char *R const s,
+jstr_replaceat_len_f(char *R const s,
 		       size_t *R const sz,
 		       const size_t at,
 		       const char *R const rplc,
@@ -101,26 +101,9 @@ err:
 	return 0;
 }
 
-/*
-  Slip SRC into DST[AT].
-  Return 0 on malloc error;
-  otherwise 1.
-*/
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static int
-jstr_slip(char *R *R const s,
-	  size_t *R const sz,
-	  size_t *R const cap,
-	  const size_t at,
-	  const char *R const rplc) JSTR_NOEXCEPT
-{
-	return jstr_slip_len(s, sz, cap, at, rplc, strlen(rplc));
-}
-
 JSTR_FUNC
 static char *
-p_jstr_replaceat_len_may_lower(char *R *R const s,
+jstr_replaceat_len_may_lower(char *R *R const s,
 			       size_t *R const sz,
 			       size_t *R const cap,
 			       const size_t at,
@@ -135,7 +118,7 @@ p_jstr_replaceat_len_may_lower(char *R *R const s,
 	}
 	if (*cap <= *sz + rplclen - findlen)
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen - findlen, goto err);
-	return p_jstr_replaceat_len_f(*s, sz, at, rplc, rplclen, findlen);
+	return jstr_replaceat_len_f(*s, sz, at, rplc, rplclen, findlen);
 err:
 	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return NULL;
@@ -144,7 +127,7 @@ err:
 JSTR_INLINE
 JSTR_FUNC
 static char *
-p_jstr_replaceat_len(char *R *R const s,
+jstr_replaceat_len(char *R *R const s,
 		     size_t *R const sz,
 		     size_t *R const cap,
 		     const size_t at,
@@ -154,7 +137,7 @@ p_jstr_replaceat_len(char *R *R const s,
 {
 	if (*cap < *sz + rplclen - findlen)
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen, return NULL);
-	return p_jstr_replaceat_len_f(*s, sz, at, rplc, rplclen, findlen);
+	return jstr_replaceat_len_f(*s, sz, at, rplc, rplclen, findlen);
 }
 
 /*
@@ -176,18 +159,6 @@ jstr_slipafterchr_len(char *R *R const s,
 	if (p != NULL)
 		return jstr_slip_len(s, sz, cap, p - *s + 1, src, srclen);
 	return 1;
-}
-
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static int
-jstr_slipafterchr(char *R *R const s,
-		  size_t *R const sz,
-		  size_t *R const cap,
-		  const int c,
-		  const char *R const src) JSTR_NOEXCEPT
-{
-	return jstr_slipafterchr_len(s, sz, cap, c, src, strlen(src));
 }
 
 /*
@@ -215,18 +186,6 @@ jstr_slipafterallchr_len(char *R *R const s,
 	return 1;
 }
 
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static int
-jstr_slipafterallchr(char *R *R const s,
-		     size_t *R const sz,
-		     size_t *R const cap,
-		     const int c,
-		     const char *R const src) JSTR_NOEXCEPT
-{
-	return jstr_slipafterallchr_len(s, sz, cap, c, src, strlen(src));
-}
-
 /*
   Slip SRC after end of NE in DST.
   Return 0 on malloc error;
@@ -250,18 +209,6 @@ jstr_slipafter_len(char *R *R const s,
 	if (p != NULL)
 		return jstr_slip_len(s, sz, cap, p - *s + findlen, src, srclen);
 	return 1;
-}
-
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static int
-jstr_slipafter(char *R *R const s,
-	       size_t *R const sz,
-	       size_t *R const cap,
-	       const char *R const find,
-	       const char *R const src) JSTR_NOEXCEPT
-{
-	return jstr_slipafter_len(s, sz, cap, find, src, strlen(find), strlen(src));
 }
 
 /*
@@ -292,18 +239,6 @@ jstr_slipafterall_len(char *R *R const s,
 		off += findlen + srclen;
 	}
 	return 1;
-}
-
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static int
-jstr_slipafterall(char *R *R const s,
-		  size_t *R const sz,
-		  size_t *R const cap,
-		  const char *R const find,
-		  const char *R const src) JSTR_NOEXCEPT
-{
-	return jstr_slipafterall_len(s, sz, cap, find, src, strlen(find), strlen(src));
 }
 
 /*
@@ -713,7 +648,7 @@ jstr_replacelast_len(char *R *R const s,
 	char *p = (char *)jstr_strrstr_len(*s, *sz, find, findlen);
 	if (jstr_unlikely(p == NULL))
 		return 1;
-	return p_jstr_replaceat_len_may_lower(s, sz, cap, p - *s, rplc, rplclen, findlen) ? 1 : 0;
+	return jstr_replaceat_len_may_lower(s, sz, cap, p - *s, rplc, rplclen, findlen) ? 1 : 0;
 }
 
 JSTR_FUNC_RET_NONNULL
@@ -852,7 +787,7 @@ p_jstr_replaceall_len(const p_jstr_flag_use_n_ty flag,
 		if (rplclen <= findlen)
 			P_JSTR_RPLCALL_IN_PLACE(dst, old, p, rplc, rplclen, findlen);
 		else
-			p = (u *)p_jstr_replaceat_len(s, sz, cap, p - *(u **)s, rplc, rplclen, findlen);
+			p = (u *)jstr_replaceat_len(s, sz, cap, p - *(u **)s, rplc, rplclen, findlen);
 		if (jstr_unlikely(p == NULL))
 			return 0;
 	}
