@@ -1006,8 +1006,8 @@ p_jstr_io_ftw_len(char *R dirpath,
 				goto err_closedir;
 			}
 		}
-#endif
 		errno = 0;
+#endif
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
 			goto do_reg;
@@ -1107,7 +1107,6 @@ err_closedir:
 #undef STAT_OR_MODE
 #undef STAT_MODE
 #undef STAT
-#undef NON_FATAL_ERR
 
 /*
    Call FN on entries found recursively that matches GLOB.
@@ -1122,7 +1121,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 		jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dlen == 0))
-		return 0;
+		return -1;
 	while (dlen != 1
 	       && dirpath[dlen - 1] == '/')
 		--dlen;
@@ -1131,7 +1130,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 		if (*dirpath == '~') {
 			const char *R const home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
-				return 0;
+				return -1;
 			const size_t homelen = jstr_stpcpy(fulpath, home) - fulpath;
 			memcpy(fulpath + homelen, dirpath + 1, dlen);
 			dlen += homelen - 1;
@@ -1141,7 +1140,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	}
 	const int fd = open(fulpath, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
-		return 0;
+		return -1;
 	struct stat st;
 	/* This avoids things like //usr/cache. */
 	if (jstr_unlikely(dlen == 1)
@@ -1153,12 +1152,13 @@ jstr_io_ftw_len(const char *R const dirpath,
 		goto ftw;
 	}
 	if (jstr_unlikely(fstat(fd, &st)))
-		return 0;
+		return -1;
 #if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
 	close(fd);
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
+		errno = 0;
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
 		close(fd);
@@ -1172,16 +1172,26 @@ ftw:
 #endif
 	if (jflags & JSTR_IO_FTW_REG)
 		if (!S_ISREG(st.st_mode))
-			return 0;
+			return -1;
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
-			return 0;
+			return -1;
 	fn(fulpath, dlen, &st);
-	return 1;
+	if (jstr_likely(NON_FATAL_ERR())) {
+		errno = 0;
+		return 0;
+	}
+	return -1;
 }
+
+#undef NON_FATAL_ERR
 
 /*
    Call FN on entries found recursively that matches GLOB.
+   Return value:
+   -1 on error;
+   0 on success or non-fatal errors: EACCES or ENOENT.
+   If EACCES or ENOENT is encountered, set errno to 0 and continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
@@ -1192,6 +1202,7 @@ jstr_io_ftw(const char *R const dirpath,
 	    const jstr_io_ftw_flag_ty jflags,
 	    jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
+
 	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn);
 }
 
