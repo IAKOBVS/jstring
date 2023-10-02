@@ -59,6 +59,16 @@ jstr_mempcpy(void *R const dst,
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
+JSTR_INLINE
+JSTR_FUNC_NOWARN
+static void
+jstr_strcpy_len(char *R const dst,
+		const char *R const src,
+		const size_t n)
+{
+	*(char *)jstr_mempcpy(dst, src, n) = '\0';
+}
+
 /*
   Return value:
   ptr to '\0' in DST.
@@ -73,7 +83,7 @@ jstr_stpcpy(char *R dst,
 	return stpcpy(dst, src);
 #else
 	const size_t len = strlen(src);
-	memcpy(dst, src, len + 1);
+	jstr_strcpy_len(dst, src, len);
 	return dst + len;
 #endif /* !JSTR_HAVE_STPCPY */
 }
@@ -93,8 +103,7 @@ jstr_memccpy(void *R dst,
 	const void *const p = (void *)memchr(src, c, n);
 	if (p != NULL) {
 		typedef unsigned char u;
-		memcpy(dst, src, (u *)p - (u *)src + 1);
-		return (void *)((u *)dst + ((u *)p - (u *)src));
+		return jstr_mempcpy(dst, src, (u *)p - (u *)src + 1);
 	}
 	memcpy(dst, src, n);
 	return NULL;
@@ -127,7 +136,7 @@ jstr_strdup(const char *R const s)
 	char *const p = (char *)malloc(len + 1);
 	if (jstr_unlikely(p == NULL))
 		return NULL;
-	memcpy(p, s, len + 1);
+	jstr_strcpy_len(p, s, len);
 	return p;
 #endif
 }

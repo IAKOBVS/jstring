@@ -828,7 +828,7 @@ jstr_io_append_path_len(char *R const path_end,
 			const size_t flen) JSTR_NOEXCEPT
 {
 	*path_end = '/';
-	memcpy(path_end + 1, fname, flen + 1);
+	jstr_strcpy_len(path_end + 1, fname, flen);
 }
 
 #ifdef _DIRENT_HAVE_D_NAMLEN
@@ -1130,7 +1130,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 			dlen += homelen - 1;
 		}
 	} else {
-		memcpy(fulpath, dirpath, dlen + 1);
+		jstr_strcpy_len(fulpath, dirpath, dlen);
 	}
 	const int fd = open(fulpath, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
