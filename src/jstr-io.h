@@ -454,7 +454,7 @@ jstr_io_write_file(const char *R const s,
 	const int fd = open(fname, oflag | O_WRONLY);
 	if (jstr_unlikely(fd == -1))
 		return 0;
-	if (jstr_unlikely(write(fd, s, sz) != sz))
+	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
 		goto err;
 	close(fd);
 	return 1;
@@ -638,7 +638,7 @@ pjstr_io_alloc_file(const int alloc_exact,
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
 	P_JSTR_MALLOC_ERR(*s, goto err_close);
-	if (jstr_unlikely(*sz != read(fd, *s, *sz)))
+	if (jstr_unlikely(*sz != (size_t)read(fd, *s, *sz)))
 		goto err_close_free;
 	close(fd);
 	(*s)[*sz] = '\0';
@@ -894,18 +894,34 @@ typedef enum jstr_io_ftw_flag_ty {
 
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	define FILL_PATH() FILL_PATH_ALWAYS()
-#	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-#		define STAT()                                                      \
-			do {                                                        \
-				if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0))) \
-					continue;                                   \
-			} while (0)
+#	if JSTR_HAVE_FDOPENDIR
+#		if JSTR_HAVE_ATFILE
+#			define STAT()                                                      \
+				do {                                                        \
+					if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0))) \
+						continue;                                   \
+				} while (0)
+#		else
+#			define STAT()                                            \
+				do {                                              \
+					if (jstr_unlikely(stat(ep->d_name, &st))) \
+						continue;                         \
+				} while (0)
+#		endif
 #	else
-#		define STAT()                                         \
-			do {                                           \
-				if (jstr_unlikely(stat(dirpath, &st))) \
-					continue;                      \
-			} while (0)
+#		if JSTR_HAVE_FCHDIR
+#			define STAT()                                            \
+				do {                                              \
+					if (jstr_unlikely(stat(ep->d_name, &st))) \
+						continue;                         \
+				} while (0)
+#		else
+#			define STAT()                                         \
+				do {                                           \
+					if (jstr_unlikely(stat(dirpath, &st))) \
+						continue;                      \
+				} while (0)
+#		endif
 #	endif
 #	define STAT_MODE()                              \
 		do {                                     \
@@ -919,7 +935,7 @@ typedef enum jstr_io_ftw_flag_ty {
 				STAT();                  \
 		} while (0)
 #else
-#	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#	if JSTR_HAVE_FDOPENDIR
 #		define FILL_PATH() FILL_PATH_ALWAYS()
 #	else
 #		define FILL_PATH() \
@@ -939,6 +955,28 @@ typedef enum jstr_io_ftw_flag_ty {
 
 #define IS_RELATIVE(fname) ((fname[0] == '.') && ((fname[1] == '\0') || ((fname[1] == '.') && (fname[2] == '\0'))))
 
+#if JSTR_HAVE_FCHDIR
+#	define CD(path, fd) jstr_unlikely(fchdir(path))
+#else
+#	define CD(path, fd) jstr_unlikely(chdir(fd))
+#endif
+
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#	define ST(fd, fname, st) jstr_unlikely(fstatat(fd, fname, st, 0))
+#else
+#	define ST(fd, fname, st) jstr_unlikely(stat(fname, st))
+#endif
+
+#if JSTR_HAVE_DIRENT_D_TYPE
+#	define ISREG(st_mode, d_type) (d_type == DT_REG)
+#	define ISDIR(st_mode, d_type) (d_type == DT_DIR)
+#else
+#	define ISREG(st_mode, d_type) (S_ISREG(st_mode))
+#	define ISDIR(st_mode, d_type) (S_ISDIR(st_mode))
+#endif
+
+#define FD_CHK(fd) (jstr_unlikely(fd == -1))
+
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   size_t dlen,
 				   const struct stat *st);
@@ -952,13 +990,13 @@ pjstr_io_ftw_len(char *R dirpath,
 		 const jstr_io_ftw_flag_ty jflags,
 		 jstr_io_ftw_func_ty fn,
 		 struct stat *R const st
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if JSTR_HAVE_FDOPENDIR
 		 ,
-		 int fd
+		 const int fd
 #endif
 		 ) JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if JSTR_HAVE_FDOPENDIR
 	DIR *R const dp = fdopendir(fd);
 #else
 	DIR *R const dp = opendir(dirpath);
@@ -972,27 +1010,20 @@ pjstr_io_ftw_len(char *R dirpath,
 	const struct dirent *R ep;
 	while ((ep = readdir(dp)) != NULL) {
 		/* Ignore "." and "..". */
-		if (IS_RELATIVE(ep->d_name) || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
+		if (IS_RELATIVE(ep->d_name)
+		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
-#if JSTR_HAVE_DIRENT_D_TYPE
-		if (ep->d_type == DT_REG)
-			goto do_reg;
-		if (ep->d_type == DT_DIR)
-			goto do_dir;
-#else
-#	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		if (jstr_unlikely(fstatat(fd, ep->d_name, st, 0)))
-			continue;
-#	else
+#if !JSTR_HAVE_DIRENT_D_TYPE
+#	if !JSTR_HAVE_FDOPENDIR
 		FILL_PATH_ALWAYS();
-		if (jstr_unlikely(stat(dirpath, st)))
+#	endif
+		if (ST(fd, ep->d_name, st))
 			continue;
-#	endif /* ATFILE */
-		if (S_ISREG(st->st_mode))
+#endif
+		if (ISREG(st->st_mode, ep->d_type))
 			goto do_reg;
-		if (S_ISDIR(st->st_mode))
+		if (ISDIR(st->st_mode, ep->d_type))
 			goto do_dir;
-#endif /* HAVE_D_TYPE */
 		/* If true, ignore other types of files. */
 		if (jflags & (JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG))
 			continue;
@@ -1045,22 +1076,18 @@ do_dir:
 		}
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if JSTR_HAVE_FDOPENDIR
+#	if JSTR_HAVE_ATFILE
 		fd_tmp = openat(fd, ep->d_name, O_RDONLY);
-		if (jstr_unlikely(fd_tmp == -1))
+		if (FD_CHK(fd_tmp))
 			continue;
 		pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp);
 		close(fd_tmp);
-#elif JSTR_HAVE_FDOPENDIR
-		fd_tmp = open(ep->d_name, O_RDONLY);
-		if (jstr_unlikely(fd_tmp == -1))
-			continue;
-#	if JSTR_HAVE_FDOPEN
-		if (jstr_unlikely(fchdir(fd_tmp)))
 #	else
-		if (jstr_unlikely(chdir(ep->d_name)))
-#	endif
-		{
+		fd_tmp = open(ep->d_name, O_RDONLY);
+		if (FD_CHK(fd_tmp))
+			continue;
+		if (CD(ep->d_name, fd_tmp)) {
 			close(fd_tmp);
 			continue;
 		}
@@ -1071,26 +1098,28 @@ do_dir:
 		close(fd_tmp);
 		if (jstr_unlikely(chdir("..")))
 			goto err_closedir;
+#	endif
 #else
+#	if JSTR_HAVE_FCHDIR
+		if (jstr_unlikely(chdir(ep->d_name)))
+			continue;
+#	endif
 		pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st);
+#	if JSTR_HAVE_FCHDIR
+		if (jstr_unlikely(chdir("..")))
+			goto err_closedir;
+#	endif
 #endif
 		continue;
 	}
 	closedir(dp);
 	return 1;
-#if JSTR_HAVE_FDOPENDIR && !JSTR_HAVE_ATFILE
+#if (JSTR_HAVE_FDOPENDIR && !JSTR_HAVE_ATFILE) || JSTR_HAVE_FCHDIR
 err_closedir:
 	closedir(dp);
 	return 0;
 #endif
 }
-
-#undef IS_RELATIVE
-#undef FILL_PATH
-#undef FILL_PATH_ALWAYS
-#undef STAT_OR_MODE
-#undef STAT_MODE
-#undef STAT
 
 /*
    Call FN on entries found recursively that matches GLOB.
@@ -1115,8 +1144,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 {
 	if (jstr_unlikely(dlen == 0))
 		return 0;
-	while (dlen != 1
-	       && dirpath[dlen - 1] == '/')
+	while (dlen != 1 && dirpath[dlen - 1] == '/')
 		--dlen;
 	char fulpath[JSTR_IO_MAX_PATH];
 	if (jflags & JSTR_IO_FTW_EXPTILDE) {
@@ -1132,32 +1160,28 @@ jstr_io_ftw_len(const char *R const dirpath,
 		memcpy(fulpath, dirpath, dlen + 1);
 	}
 	const int fd = open(fulpath, O_RDONLY);
-	if (jstr_unlikely(fd == -1))
+	if (FD_CHK(fd))
 		return 0;
 	struct stat st;
 	/* This avoids things like //usr/cache. */
 	if (jstr_unlikely(dlen == 1)
 	    && jstr_unlikely(*dirpath == '/')) {
-#if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
-		close(fd);
-#endif
 		dlen = 0;
 		goto ftw;
 	}
 	if (jstr_unlikely(fstat(fd, &st)))
-		return 0;
-#if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
-	close(fd);
-#endif
+		goto err_closefd;
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
-ftw:
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+ftw:;
+#if JSTR_HAVE_FDOPENDIR
+#	if JSTR_HAVE_ATFILE
 		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
-		close(fd);
-#elif JSTR_HAVE_FDOPENDIR
-		int fd_curr;
-		fd_curr = open(".", O_RDONLY);
-		if (jstr_unlikely(fd == -1))
+#	else
+#		if JSTR_HAVE_FCHDIR
+		const int fd_curr = open(".", O_RDONLY);
+		if (jstr_unlikely(fd_curr == -1))
+			goto err_closefd;
+		if (jstr_unlikely(fchdir(fd)))
 			goto err_closefd;
 		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
 		if (jstr_unlikely(fchdir(fd_curr))) {
@@ -1165,9 +1189,37 @@ ftw:
 			goto err_closefd;
 		}
 		close(fd_curr);
+#		else
+		if (jstr_unlikely(chdir(dirpath)))
+			goto err_closefd;
+		char cwd[JSTR_IO_MAX_PATH];
+		if (jstr_unlikely(getcwd(cwd, JSTR_IO_MAX_PATH) == NULL))
+			goto err_closefd;
+		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
+		if (jstr_unlikely(chdir(cwd)))
+			goto err_closefd;
+#		endif
+#	endif
 #else
+#	if JSTR_HAVE_FCHDIR
+		const int fd_curr = open(".", O_RDONLY);
+		if (jstr_unlikely(fd_curr == -1))
+			goto err_closefd;
+		if (jstr_unlikely(fchdir(fd))) {
+			close(fd_curr);
+			goto err_closefd;
+		}
+#	endif
 		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st);
+#	if JSTR_HAVE_FCHDIR
+		if (jstr_unlikely(fchdir(fd_curr))) {
+			close(fd_curr);
+			goto err_closefd;
+		}
+		close(fd_curr);
+#	endif
 #endif
+		close(fd);
 		return 1;
 	}
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
@@ -1181,12 +1233,23 @@ ftw:
 			return 0;
 	fn(fulpath, dlen, &st);
 	return 1;
-#if JSTR_HAVE_FDOPENDIR && !JSTR_HAVE_ATFILE
 err_closefd:
 	close(fd);
 	return 0;
-#endif
 }
+
+#undef ST
+#undef IS_RELATIVE
+#undef FILL_PATH
+#undef FILL_PATH_ALWAYS
+#undef STAT_OR_MODE
+#undef STAT_MODE
+#undef STAT
+#undef CD
+#undef ST
+#undef FD_CHK
+#undef ISREG
+#undef ISDIR
 
 /*
    Call FN on entries found recursively that matches GLOB.

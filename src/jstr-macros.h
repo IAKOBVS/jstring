@@ -790,10 +790,8 @@ case '~':
 #	define P_JSTR_END_DECLS
 #endif
 
-#ifdef __USE_XOPEN2K8
-#	define JSTR_HAVE_FDOPENDIR 1
-#else
-#	define JSTR_HAVE_FDOPENDIR 0
+#if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500 || (_XOPEN_SOURCE - 0) >= 700
+#	define JSTR_HAVE_FCHDIR 1
 #endif
 
 #ifdef _ATFILE_SOURCE
