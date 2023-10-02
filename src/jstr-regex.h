@@ -485,11 +485,8 @@ p_jstr_reg_replaceall_len(const p_jstr_flag_use_n_ty flag,
 {
 	typedef unsigned char u;
 	unsigned char *p = *(u **)s + start_idx;
-	if (jstr_unlikely(rplclen == 0)) {
-		if (flag & P_JSTR_FLAG_USE_N)
-			return jstr_reg_rmn((char *)p, sz - start_idx, n, preg, eflags);
-		return jstr_reg_rmall((char *)p, sz - start_idx, preg, eflags);
-	}
+	if (jstr_unlikely(rplclen == 0))
+		return p_jstr_reg_rmall(flag, (char *)p, sz - start_idx, n, preg, eflags);
 	unsigned char *dst = p;
 	const unsigned char *oldp = p;
 	unsigned char *tmp;
@@ -587,7 +584,7 @@ jstr_reg_replaceall_len_from_unsafe(char *R *R const s,
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_reg_replaceall_len_unsafe(rom_now(char *R *R const s,
+jstr_reg_replaceall_len_unsafe_from_now(char *R *R const s,
 			      size_t *R const sz,
 			      size_t *R const cap,
 			      const size_t start_idx,
@@ -735,7 +732,7 @@ jstr_reg_replace_len_from_unsafe(char *R *R const s,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replace_len_unsafe(rom_now(char *R *R const s,
+jstr_reg_replace_len_unsafe_from_now(char *R *R const s,
 			   size_t *R const sz,
 			   size_t *R const cap,
 			   const size_t start_idx,
@@ -866,11 +863,8 @@ p_jstr_reg_replaceall_bref_len(const p_jstr_flag_use_n_ty flag,
 {
 	typedef unsigned char u;
 	unsigned char *p = *(u **)s + start_idx;
-	if (jstr_unlikely(rplclen == 0)) {
-		if (flag & P_JSTR_FLAG_USE_N)
-			return jstr_reg_rmn((char *)p, sz, n, preg, eflags);
-		return jstr_reg_rmall((char *)p, sz, preg, eflags);
-	}
+	if (jstr_unlikely(rplclen == 0))
+		return p_jstr_reg_rmall(flag, (char *)p, sz, n, preg, eflags);
 	unsigned char *dst = p;
 	const unsigned char *oldp = p;
 	regmatch_t rm[10];
@@ -1008,7 +1002,7 @@ jstr_reg_replacen_bref_len_from_unsafe(char *R *R const s,
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replacen_bref_len_unsafe(rom_now(char *R *R const s,
+jstr_reg_replacen_bref_len_unsafe_from_now(char *R *R const s,
 				 size_t *R const sz,
 				 size_t *R const cap,
 				 const size_t start_idx,
