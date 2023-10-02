@@ -798,8 +798,8 @@ jstr_starts(const char *R const hs,
 */
 JSTR_FUNC_PURE
 static size_t
-jstr_countc(const char *R s,
-	    const int c) JSTR_NOEXCEPT
+jstr_countchr(const char *R s,
+	      const int c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
 		return 0;
@@ -816,9 +816,9 @@ jstr_countc(const char *R s,
 */
 JSTR_FUNC_PURE
 static size_t
-jstr_countc_len(const char *R s,
-		const int c,
-		const size_t sz) JSTR_NOEXCEPT
+jstr_countchr_len(const char *R s,
+		  const int c,
+		  const size_t sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
@@ -842,7 +842,7 @@ jstr_count_len(const char *R s,
 	       const size_t findlen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 1))
-		return jstr_countc_len(s, *find, sz);
+		return jstr_countchr_len(s, *find, sz);
 	if (jstr_unlikely(findlen == 0)
 	    || jstr_unlikely(sz == 0))
 		return 0;
@@ -870,7 +870,7 @@ jstr_count(const char *R s,
 	if (jstr_unlikely(find[0] == '\0'))
 		return 0;
 	if (jstr_unlikely(find[1] == '\0'))
-		return jstr_countc(s, *find);
+		return jstr_countchr(s, *find);
 	if (jstr_unlikely(*s == '\0'))
 		return 0;
 	const size_t findlen = strlen(find);
