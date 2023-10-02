@@ -996,6 +996,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 			}
 		}
 #endif
+		errno = 0;
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
 			goto do_reg;
