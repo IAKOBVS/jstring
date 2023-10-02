@@ -431,7 +431,7 @@ jstr_io_fwrite(const char *R const s,
 	       const size_t sz,
 	       FILE *R const fp) JSTR_NOEXCEPT
 {
-	return fwrite(s, 1, sz, fp) != sz;
+	return fwrite(s, 1, sz, fp) == sz;
 }
 
 JSTR_FUNC
