@@ -47,7 +47,7 @@ P_JSTR_BEGIN_DECLS
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-p_jstr_slip_len_p_unsafe(char *R const s,
+jstr_slip_unsafe(char *R const s,
 		    const size_t at,
 		    const char *R const src,
 		    const size_t sz,
@@ -93,7 +93,7 @@ jstr_slip_len(char *R *R const s,
 {
 	if (*cap < *sz + rplclen)
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen, goto err);
-	p_jstr_slip_len_p_unsafe(*s, at, rplc, *sz, rplclen);
+	jstr_slip_unsafe(*s, at, rplc, *sz, rplclen);
 	*sz += rplclen;
 	return 1;
 err:
