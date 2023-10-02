@@ -47,7 +47,7 @@ P_JSTR_BEGIN_DECLS
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-p_jstr_slip_len_p_f(char *R const s,
+p_jstr_slip_len_p_unsafe(char *R const s,
 		    const size_t at,
 		    const char *R const src,
 		    const size_t sz,
@@ -62,7 +62,7 @@ p_jstr_slip_len_p_f(char *R const s,
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_replaceat_len_f(char *R const s,
+jstr_replaceat_len_unsafe(char *R const s,
 		       size_t *R const sz,
 		       const size_t at,
 		       const char *R const rplc,
@@ -93,7 +93,7 @@ jstr_slip_len(char *R *R const s,
 {
 	if (*cap < *sz + rplclen)
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen, goto err);
-	p_jstr_slip_len_p_f(*s, at, rplc, *sz, rplclen);
+	p_jstr_slip_len_p_unsafe(*s, at, rplc, *sz, rplclen);
 	*sz += rplclen;
 	return 1;
 err:
@@ -118,7 +118,7 @@ jstr_replaceat_len_may_lower(char *R *R const s,
 	}
 	if (*cap <= *sz + rplclen - findlen)
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen - findlen, goto err);
-	return jstr_replaceat_len_f(*s, sz, at, rplc, rplclen, findlen);
+	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
 err:
 	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return NULL;
@@ -137,7 +137,7 @@ jstr_replaceat_len(char *R *R const s,
 {
 	if (*cap < *sz + rplclen - findlen)
 		P_JSTR_REALLOC(*s, *cap, *sz + rplclen, return NULL);
-	return jstr_replaceat_len_f(*s, sz, at, rplc, rplclen, findlen);
+	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
 }
 
 /*
@@ -616,7 +616,7 @@ jstr_replace_len(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_replace_len_from(char *R *R const s,
+jstr_replace_len_from_unsafe(char *R *R const s,
 		      size_t *R const sz,
 		      size_t *R const cap,
 		      const size_t start_idx,
@@ -826,7 +826,7 @@ jstr_replacen_len(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_replacen_len_from(char *R *R const s,
+jstr_replacen_len_from_unsafe(char *R *R const s,
 		       size_t *R const sz,
 		       size_t *R const cap,
 		       const size_t start_idx,
@@ -864,7 +864,7 @@ jstr_replaceall_len(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_replaceall_len_from(char *R *R const s,
+jstr_replaceall_len_from_unsafe(char *R *R const s,
 			 size_t *R const sz,
 			 size_t *R const cap,
 			 const size_t start_idx,
@@ -1015,7 +1015,7 @@ jstr_trim_j(jstr_ty *R const j) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-p_jstr_insert_len_f(char *R const s,
+p_jstr_insert_len_unsafe(char *R const s,
 		    const size_t at,
 		    const char *R const src,
 		    const size_t srclen) JSTR_NOEXCEPT
@@ -1043,7 +1043,7 @@ jstr_insert_len(char *R *R const s,
 		*sz = at + srclen;
 		(*s)[*sz] = '\0';
 	}
-	p_jstr_insert_len_f(*s, at, src, srclen);
+	p_jstr_insert_len_unsafe(*s, at, src, srclen);
 	return 1;
 err:
 	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);

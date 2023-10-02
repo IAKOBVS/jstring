@@ -572,7 +572,7 @@ err:
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replaceall_len_from(char *R *R const s,
+jstr_reg_replaceall_len_from_unsafe(char *R *R const s,
 			  size_t *R const sz,
 			  size_t *R const cap,
 			  const size_t start_idx,
@@ -587,7 +587,7 @@ jstr_reg_replaceall_len_from(char *R *R const s,
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_reg_replaceall_len_from_now(char *R *R const s,
+jstr_reg_replaceall_len_unsafe(rom_now(char *R *R const s,
 			      size_t *R const sz,
 			      size_t *R const cap,
 			      const size_t start_idx,
@@ -604,7 +604,7 @@ jstr_reg_replaceall_len_from_now(char *R *R const s,
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replacen_len_from(char *R *R const s,
+jstr_reg_replacen_len_from_unsafe(char *R *R const s,
 			size_t *R const sz,
 			size_t *R const cap,
 			const size_t start_idx,
@@ -720,7 +720,7 @@ jstr_reg_replace_len(char *R *R const s,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replace_len_from(char *R *R const s,
+jstr_reg_replace_len_from_unsafe(char *R *R const s,
 		       size_t *R const sz,
 		       size_t *R const cap,
 		       const size_t start_idx,
@@ -735,7 +735,7 @@ jstr_reg_replace_len_from(char *R *R const s,
 JSTR_INLINE
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replace_len_from_now(char *R *R const s,
+jstr_reg_replace_len_unsafe(rom_now(char *R *R const s,
 			   size_t *R const sz,
 			   size_t *R const cap,
 			   const size_t start_idx,
@@ -747,7 +747,7 @@ jstr_reg_replace_len_from_now(char *R *R const s,
 			   const int eflags) JSTR_NOEXCEPT
 {
 	P_JSTR_REG_COMP_NOW();
-	return jstr_reg_replace_len_from(s, sz, cap, start_idx, rplc, rplclen, preg, eflags);
+	return jstr_reg_replace_len_from_unsafe(s, sz, cap, start_idx, rplc, rplclen, preg, eflags);
 }
 
 JSTR_FUNC
@@ -977,7 +977,7 @@ jstr_reg_replacen_bref_len(char *R *R const s,
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replaceall_bref_len_from(char *R *R const s,
+jstr_reg_replaceall_bref_len_from_unsafe(char *R *R const s,
 			       size_t *R const sz,
 			       size_t *R const cap,
 			       const size_t start_idx,
@@ -992,7 +992,7 @@ jstr_reg_replaceall_bref_len_from(char *R *R const s,
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replacen_bref_len_from(char *R *R const s,
+jstr_reg_replacen_bref_len_from_unsafe(char *R *R const s,
 			     size_t *R const sz,
 			     size_t *R const cap,
 			     const size_t start_idx,
@@ -1008,7 +1008,7 @@ jstr_reg_replacen_bref_len_from(char *R *R const s,
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
-jstr_reg_replacen_bref_len_from_now(char *R *R const s,
+jstr_reg_replacen_bref_len_unsafe(rom_now(char *R *R const s,
 				 size_t *R const sz,
 				 size_t *R const cap,
 				 const size_t start_idx,
