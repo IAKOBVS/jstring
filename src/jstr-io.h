@@ -715,23 +715,23 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
    Expand ~/some_dir to /home/username/some_dir.
    Assume that S has enough space.
    Return value:
-   0 on error;
-   otherwise 1.
+   ptr to '\0' in S.
+   NULL on error.
 */
 JSTR_FUNC
-static int
+static char *
 jstr_io_expand_tilde_first(char *R s,
 			   const size_t sz)
 {
 	if (*s != '~')
-		return 1;
+		return s + sz;
 	const char *R const home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
-		return 0;
+		return NULL;
 	const size_t len = strlen(home);
 	memmove(s + len, s + 1, (s + sz) - (s + 1) + 1);
 	memcpy(s, home, len);
-	return 1;
+	return s + sz + len - 1;
 }
 
 /*
