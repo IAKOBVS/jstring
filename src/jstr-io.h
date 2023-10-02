@@ -1110,6 +1110,10 @@ err_closedir:
 
 /*
    Call FN on entries found recursively that matches GLOB.
+   Return value:
+   -1 on error;
+   0 on success or non-fatal errors: EACCES or ENOENT.
+   If EACCES or ENOENT is encountered, set errno to 0 and continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
 static int
