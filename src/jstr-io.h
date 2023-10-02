@@ -896,19 +896,26 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
+#define GOOD_ERR() (errno == EACCES || errno == ENOENT)
+
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	define FILL_PATH() FILL_PATH_ALWAYS()
 #	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-#		define STAT()                                                      \
-			do {                                                        \
-				if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0))) \
-					continue;                                   \
+#		define STAT()                                                        \
+			do {                                                          \
+				if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0))) { \
+					if (GOOD_ERR())                               \
+						continue;                             \
+					return 0;                                     \
+				}                                                     \
 			} while (0)
 #	else
 #		define STAT()                                         \
 			do {                                           \
 				if (jstr_unlikely(stat(dirpath, &st))) \
-					continue;                      \
+					if (GOOD_ERR())                \
+						continue;              \
+				return 0;                              \
 			} while (0)
 #	endif
 #	define STAT_MODE()                              \
@@ -968,8 +975,11 @@ p_jstr_io_ftw_len(char *R dirpath,
 #else
 	opendir(dirpath);
 #endif
-	if (jstr_unlikely(dp == NULL))
-		return 1;
+	if (jstr_unlikely(dp == NULL)) {
+		if (GOOD_ERR())
+			return 1;
+		return 0;
+	}
 	size_t pathlen = 0;
 	const struct dirent *R ep;
 	while ((ep = readdir(dp)) != NULL) {
@@ -1100,6 +1110,7 @@ err_closedir:
 #undef STAT_OR_MODE
 #undef STAT_MODE
 #undef STAT
+#undef GOOD_ERR
 
 /*
    Call FN on entries found recursively that matches GLOB.
