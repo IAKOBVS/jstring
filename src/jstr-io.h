@@ -973,16 +973,21 @@ p_jstr_io_ftw_len(char *R dirpath,
 		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
 		/* Exit if path is longer than PATH_MAX. */
-		if (jstr_unlikely(dlen + _D_ALLOC_NAMLEN(ep)) > 4096) {
-#if !_DIRENT_HAVE_D_NAMLEN
-			if (dlen + _D_ALLOC_NAMLEN(ep) <= 4096 + sizeof(*ep))
-				if (dlen + strlen(ep->d_name) >= 4096)
-#endif
-				{
+		if (JSTR_HAVE_DIRENT_D_TYPE || JSTR_HAVE_DIRENT_D_RECLEN || sizeof(ep->d_name) > 1) {
+			if (jstr_unlikely(dlen + _D_ALLOC_NAMLEN(ep)) > 4096) {
+				if (dlen + _D_ALLOC_NAMLEN(ep) <= 4096 + sizeof(*ep)
+				    && (dlen + strlen(ep->d_name) >= 4096)) {
 					errno = ENAMETOOLONG;
 					closedir(dp);
 					return 0;
 				}
+			}
+		} else {
+			if (jstr_unlikely(dlen + strlen(ep->d_name) >= 4096)) {
+				errno = ENAMETOOLONG;
+				closedir(dp);
+				return 0;
+			}
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
