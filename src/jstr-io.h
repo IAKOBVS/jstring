@@ -1046,11 +1046,7 @@ do_reg:
 			FILL_PATH();
 		}
 		if (jflags & JSTR_IO_FTW_STATREG) {
-#if JSTR_HAVE_DIRENT_D_TYPE
-			if (ep->d_type == DT_REG)
-#else
-			if (S_ISREG(st->st_mode))
-#endif
+			if (ISREG(st->st_mode, ep->d_type))
 				STAT();
 			else
 				STAT_MODE();

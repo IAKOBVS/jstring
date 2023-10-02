@@ -790,14 +790,22 @@ case '~':
 #	define P_JSTR_END_DECLS
 #endif
 
-#if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500 || (_XOPEN_SOURCE - 0) >= 700
+#if __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
 #	define JSTR_HAVE_FCHDIR 1
+#else
+#	define JSTR_HAVE_FCHDIR 0
 #endif
 
 #ifdef _ATFILE_SOURCE
 #	define JSTR_HAVE_ATFILE 1
 #else
 #	define JSTR_HAVE_ATFILE 0
+#endif
+
+#ifdef __USE_XOPEN2K8
+#	define JSTR_HAVE_FDOPENDIR 1
+#else
+#	define JSTR_HAVE_FDOPENDIR 0
 #endif
 
 #ifdef JSTR_USE_UNLOCKED_IO
@@ -867,10 +875,6 @@ case '~':
 #	if JSTR_HAVE_FFLUSH_UNLOCKED
 #		define fflush(stream) fflush_unlocked(stream)
 #	endif
-#endif
-
-#if defined _POSIX_C_SOURCE
-#	define JSTR_HAVE_FDOPEN 1
 #endif
 
 #if defined __GLIBC__ && defined _DIRENT_HAVE_D_TYPE
