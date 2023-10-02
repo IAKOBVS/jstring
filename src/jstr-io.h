@@ -619,11 +619,11 @@ JSTR_INLINE
 JSTR_FUNC
 static int
 pjstr_io_alloc_file(const int alloc_exact,
-		     char *R *R const s,
-		     size_t *R const sz,
-		     size_t *R const cap,
-		     const char *R const fname,
-		     struct stat *R const st) JSTR_NOEXCEPT
+		    char *R *R const s,
+		    size_t *R const sz,
+		    size_t *R const cap,
+		    const char *R const fname,
+		    struct stat *R const st) JSTR_NOEXCEPT
 {
 	const int fd = open(fname, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
@@ -720,8 +720,8 @@ jstr_io_allocexact_file_j(jstr_ty *R const j,
 */
 JSTR_FUNC
 static int
-pjstr_io_expand_tilde(char *R s,
-		       size_t sz)
+jstr_io_expand_tilde_first(char *R s,
+			   const size_t sz)
 {
 	if (*s != '~')
 		return 1;
@@ -946,17 +946,17 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 JSTR_FUNC_MAY_NULL
 static void
 pjstr_io_ftw_len(char *R dirpath,
-		  const size_t dlen,
-		  const char *R const fn_glob,
-		  const int fn_flags,
-		  const jstr_io_ftw_flag_ty jflags,
-		  jstr_io_ftw_func_ty fn,
-		  struct stat *R const st
+		 const size_t dlen,
+		 const char *R const fn_glob,
+		 const int fn_flags,
+		 const jstr_io_ftw_flag_ty jflags,
+		 jstr_io_ftw_func_ty fn,
+		 struct stat *R const st
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		  ,
-		  int fd
+		 ,
+		 int fd
 #endif
-		  ) JSTR_NOEXCEPT
+		 ) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 	fd = openat(fd, dirpath, O_RDONLY);
