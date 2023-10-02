@@ -454,7 +454,7 @@ jstr_io_write_file(const char *R const s,
 	const int fd = open(fname, oflag | O_WRONLY);
 	if (jstr_unlikely(fd == -1))
 		return 0;
-	if (jstr_unlikely(write(fd, s, sz) == -1))
+	if (jstr_unlikely(write(fd, s, sz) != sz))
 		goto err;
 	close(fd);
 	return 1;
