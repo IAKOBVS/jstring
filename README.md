@@ -36,7 +36,7 @@ before including "jstr.h". This will make them print the filename, line number, 
 
 - \*\_len(): take the length of the string
 - \*\_p(): return a pointer to the end of the string
-- \*\_f(): assume that there be enough space in the string: it will not grow it with realloc
+- \*\_unsafe(): assume that there be enough space in the string: it will not grow it with realloc
 - \*\_now(): compile regular expression now or prints error message now
 - \*\_from(): instead of searching the whole string, start the search from an index.<br>
 The index passed by the user is assumed to be not out of bounds.
