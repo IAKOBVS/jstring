@@ -974,9 +974,15 @@ p_jstr_io_ftw_len(char *R dirpath,
 			continue;
 		/* Exit if path is longer than PATH_MAX. */
 		if (jstr_unlikely(dlen + _D_ALLOC_NAMLEN(ep)) > 4096) {
-			errno = ENAMETOOLONG;
-			closedir(dp);
-			return 0;
+#if !_DIRENT_HAVE_D_NAMLEN
+			if (dlen + _D_ALLOC_NAMLEN(ep) <= 4096 + sizeof(*ep))
+				if (dlen + strlen(ep->d_name) >= 4096)
+#endif
+				{
+					errno = ENAMETOOLONG;
+					closedir(dp);
+					return 0;
+				}
 		}
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
