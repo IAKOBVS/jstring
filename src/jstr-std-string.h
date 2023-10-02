@@ -69,6 +69,17 @@ jstr_strcpy_len(char *R const dst,
 	*(char *)jstr_mempcpy(dst, src, n) = '\0';
 }
 
+JSTR_INLINE
+JSTR_FUNC_NOWARN
+static char *
+jstr_stpcpy_len(char *R const dst,
+		const char *R const src,
+		const size_t n)
+{
+	*(char *)jstr_mempcpy(dst, src, n) = '\0';
+	return dst + n;
+}
+
 /*
   Return value:
   ptr to '\0' in DST.
@@ -82,9 +93,7 @@ jstr_stpcpy(char *R dst,
 #if JSTR_HAVE_STPCPY
 	return stpcpy(dst, src);
 #else
-	const size_t len = strlen(src);
-	jstr_strcpy_len(dst, src, len);
-	return dst + len;
+	return jstr_stpcpy_len(dst, src, strlen(src));
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
