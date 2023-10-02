@@ -1202,7 +1202,6 @@ jstr_io_ftw(const char *R const dirpath,
 	    const jstr_io_ftw_flag_ty jflags,
 	    jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
-
 	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn);
 }
 
