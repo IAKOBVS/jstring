@@ -24,7 +24,8 @@ or
 ```
 
 ## Error handling: 
-(int)0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
+0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
+Some POSIX-like functions may return -1 as error.<br>
 
 Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit. For more comprehensive error messages, use the \*\_debug\(\) functions or
 ```
