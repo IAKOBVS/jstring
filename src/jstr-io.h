@@ -1162,7 +1162,6 @@ jstr_io_ftw_len(const char *R const dirpath,
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
-		errno = 0;
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
 		close(fd);
