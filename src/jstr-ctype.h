@@ -48,7 +48,8 @@ jstr_tolower(const int c) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isctype(const int c, jstr_ctype_ty type) JSTR_NOEXCEPT
+jstr_isctype(const int c,
+	     const jstr_ctype_ty type) JSTR_NOEXCEPT
 {
 	return pjstr_table_ctype[(unsigned char)c] & type;
 }
@@ -105,7 +106,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_isctype_str(const char *R s,
-		 jstr_ctype_ty ctype) JSTR_NOEXCEPT
+		 const jstr_ctype_ty ctype) JSTR_NOEXCEPT
 {
 	P_JSTR_ISCTYPE_STR_IMPL(ctype);
 }
@@ -156,23 +157,22 @@ P_JSTR_REPEAT_CTYPE(P_JSTR_SKIP_CTYPE)
 #undef P_JSTR_SKIP_CTYPE_IMPL
 #undef P_JSTR_SKIP_CTYPE
 
-#define P_JSTR_SKIP_CTYPE_REV_IMPL(ctype, ctype_enum)                    \
+#define P_JSTR_SKIP_CTYPE_REV_IMPL(ctype_enum)                           \
 	do {                                                             \
 		while (begin != end && jstr_isctype(*end--, ctype_enum)) \
 			;                                                \
 		return (char *)end;                                      \
 	} while (0)
 
-#define P_JSTR_SKIP_CTYPE_REV(ctype, ctype_enum)               \
-	/* ASCII. */                                           \
-	JSTR_INLINE                                            \
-	JSTR_PURE                                              \
-	static char *                                          \
-	jstr_skip_##ctype##_rev(const char *const begin,       \
-				const char *end,               \
-				const jstr_ctype_ty ctype)     \
-	{                                                      \
-		P_JSTR_SKIP_CTYPE_REV_IMPL(ctype, ctype_enum); \
+#define P_JSTR_SKIP_CTYPE_REV(ctype, ctype_enum)         \
+	/* ASCII. */                                     \
+	JSTR_INLINE                                      \
+	JSTR_PURE                                        \
+	static char *                                    \
+	jstr_skip_##ctype##_rev(const char *const begin, \
+				const char *end)         \
+	{                                                \
+		P_JSTR_SKIP_CTYPE_REV_IMPL(ctype_enum);  \
 	}
 
 P_JSTR_REPEAT_CTYPE(P_JSTR_SKIP_CTYPE_REV)
