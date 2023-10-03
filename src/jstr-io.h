@@ -941,6 +941,7 @@ pjstr_io_ftw_len(char *R dirpath,
 			goto err_closedir;
 		}
 #else
+		/* Only call strlen() if needed. */
 		if (jstr_unlikely(dlen >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX)
 		    && dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX) {
 			errno = ENAMETOOLONG;
