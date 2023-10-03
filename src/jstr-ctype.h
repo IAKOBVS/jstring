@@ -72,6 +72,8 @@ P_JSTR_IS_CTYPE_STR(isdigit);
 P_JSTR_IS_CTYPE_STR(isxdigit);
 P_JSTR_IS_CTYPE_STR(ispunct);
 
+#undef P_JSTR_IS_CTYPE_STR
+
 /*
    ASCII.
    For example: jstr_isctype(C, JSTR_ISLOWER | JSTR_ISDIGIT) checks if C is either lowercase or a number.
@@ -109,8 +111,6 @@ jstr_tolower(const int c) JSTR_NOEXCEPT
 {
 	return pjstr_table_tolower[(unsigned char)c];
 }
-
-#undef P_JSTR_IS_CTYPE_STR
 
 #ifdef __clang__
 #	pragma clang diagnostic ignored "-Wunknown-pragmas"
