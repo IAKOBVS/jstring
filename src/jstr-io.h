@@ -1179,7 +1179,7 @@ ftw:
 	close(fd);
 #endif
 	if (jflags & JSTR_IO_FTW_REG)
-		if (!S_ISREG(st.st_mode))
+		if (jstr_unlikely(!S_ISREG(st.st_mode)))
 			return 1;
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
