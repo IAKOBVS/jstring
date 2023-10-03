@@ -1075,7 +1075,7 @@ err_closedir:
 
 /*
    Call FN() on files found recursively that matches GLOB.
-   If FN() returns 0, processing will stop.
+   If FN() returns 0, stop processing.
    Return value:
    0 on error;
    1 on success or non-fatal errors (EACCES or ENOENT) encountered on some entries.
@@ -1157,7 +1157,7 @@ ftw:
 
 /*
    Call FN() on files found recursively that matches GLOB.
-   If FN() returns 0, processing will stop.
+   If FN() returns 0, stop processing.
    Return value:
    0 on error;
    1 on success or non-fatal errors (EACCES or ENOENT) encountered on some entries.
