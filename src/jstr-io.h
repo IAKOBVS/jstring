@@ -1040,11 +1040,11 @@ err_closedir:
 
 /*
    Call FN() on entries found recursively that matches GLOB.
+   If FN() return 0, processing will stop.
    Return value:
    0 on error;
-   1 on success or non-fatal errors: EACCES or ENOENT encountered on some entries.
-   If EACCES or ENOENT is encountered on an entry, continue processing other entries.
-   If FN() returns 0, processing will stop.
+   1 on success or non-fatal errors (EACCES or ENOENT) encountered on some entries.
+   If a non-fatal error is encountered, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(6)
@@ -1122,11 +1122,11 @@ ftw:
 
 /*
    Call FN() on entries found recursively that matches GLOB.
+   If FN() return 0, processing will stop.
    Return value:
    0 on error;
-   1 on success or non-fatal errors: EACCES or ENOENT encountered on some entries.
-   If EACCES or ENOENT is encountered on an entry, continue processing other entries.
-   If FN() returns 0, processing will stop.
+   1 on success or non-fatal errors (EACCES or ENOENT) encountered on some entries.
+   If a non-fatal error is encountered, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(5)
