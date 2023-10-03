@@ -247,7 +247,7 @@ jstr_toupper_str_len(char *R s,
 
 P_JSTR_END_DECLS
 
-#undef R
 #undef P_JSTR_REPEAT_CTYPE
+#undef R
 
 #endif /* JSTR_CTYPE_H */
