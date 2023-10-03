@@ -758,16 +758,6 @@ jstr_io_append_path_p(char *R const path_end,
 JSTR_INLINE
 JSTR_FUNC_NOWARN
 static void
-jstr_io_append_path(char *R const path_end,
-		    const char *R fname) JSTR_NOEXCEPT
-{
-	*path_end = '/';
-	strcpy(path_end + 1, fname);
-}
-
-JSTR_INLINE
-JSTR_FUNC_NOWARN
-static void
 jstr_io_append_path_len(char *R const path_end,
 			const char *R fname,
 			const size_t flen) JSTR_NOEXCEPT
