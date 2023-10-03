@@ -4,6 +4,7 @@
 #include "jstr-macros.h"
 
 P_JSTR_BEGIN_DECLS
+#include <errno.h>
 #include <string.h>
 P_JSTR_END_DECLS
 
@@ -41,6 +42,20 @@ jstr_tolower(const int c) JSTR_NOEXCEPT
 	return pjstr_table_tolower[(unsigned char)c];
 }
 
+#define P_JSTR_REPEAT_CTYPE(FUNC)   \
+	FUNC(alpha, JSTR_ISALPHA)   \
+	FUNC(lower, JSTR_ISLOWER)   \
+	FUNC(upper, JSTR_ISUPPER)   \
+	FUNC(space, JSTR_ISSPACE)   \
+	FUNC(blank, JSTR_ISBLANK)   \
+	FUNC(digit, JSTR_ISDIGIT)   \
+	FUNC(xdigit, JSTR_ISXDIGIT) \
+	FUNC(punct, JSTR_ISPUNCT)   \
+	FUNC(graph, JSTR_ISGRAPH)   \
+	FUNC(print, JSTR_ISPRINT)   \
+	FUNC(cntrl, JSTR_ISCNTRL)   \
+	FUNC(word, JSTR_ISWORD)
+
 /*
    ASCII.
    For example: jstr_isctype(C, JSTR_ISLOWER | JSTR_ISDIGIT) checks if C is either lowercase or a digit.
@@ -54,52 +69,51 @@ jstr_isctype(const int c,
 	return pjstr_table_ctype[(unsigned char)c] & type;
 }
 
-#define P_JSTR_REPEAT_CTYPE(FUNC)   \
-	FUNC(alpha, JSTR_ISALPHA)   \
-	FUNC(lower, JSTR_ISLOWER)   \
-	FUNC(upper, JSTR_ISUPPER)   \
-	FUNC(space, JSTR_ISSPACE)   \
-	FUNC(blank, JSTR_ISBLANK)   \
-	FUNC(digit, JSTR_ISDIGIT)   \
-	FUNC(xdigit, JSTR_ISXDIGIT) \
-	FUNC(punct, JSTR_ISPUNCT)   \
-	FUNC(word, JSTR_ISWORD)
-
-#define P_JSTR_ISCTYPE(ctype, ctype_enum)                                \
-	/* ASCII. */                                                     \
-	JSTR_INLINE                                                      \
-	JSTR_FUNC_CONST                                                  \
-	static int                                                       \
-	jstr_is##ctype(const int c) JSTR_NOEXCEPT                        \
-	{                                                                \
-		return pjstr_table_ctype[(unsigned char)c] & ctype_enum; \
+#define P_JSTR_ISCTYPE(ctype, ctype_enum)           \
+	/* ASCII. */                                \
+	JSTR_INLINE                                 \
+	JSTR_FUNC_CONST                             \
+	static int                                  \
+	jstr_is##ctype(const int c) JSTR_NOEXCEPT   \
+	{                                           \
+		return jstr_isctype(c, ctype_enum); \
 	}
 
 P_JSTR_REPEAT_CTYPE(P_JSTR_ISCTYPE);
 
 #undef P_JSTR_ISCTYPE
 
-#define P_JSTR_ISCTYPE_STR_IMPL(ctype_enum)                    \
-	do {                                                   \
-		if (jstr_unlikely(*s == '\0'))                 \
-			return 0;                              \
-		while (jstr_isctype(s[0], ctype_enum)) {       \
-			if (!jstr_isctype(s[1], ctype_enum)) { \
-				s += 1;                        \
-				break;                         \
-			}                                      \
-			if (!jstr_isctype(s[2], ctype_enum)) { \
-				s += 2;                        \
-				break;                         \
-			}                                      \
-			if (!jstr_isctype(s[3], ctype_enum)) { \
-				s += 3;                        \
-				break;                         \
-			}                                      \
-			s += 4;                                \
-		}                                              \
-		return *s == '\0';                             \
-	} while (0)
+/* ASCII. */
+JSTR_INLINE
+JSTR_PURE
+static char *
+jstr_skip_ctype(const char *R s,
+		const jstr_ctype_ty ctype)
+{
+	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
+		while (*s != '\0'
+		       && jstr_isctype(*s++, ctype))
+			;
+		return (char *)s - 1;
+	}
+	while (jstr_isctype(*s++, ctype))
+		;
+	return (char *)s - 1;
+}
+
+#define P_JSTR_SKIP_CTYPE(ctype, ctype_enum)           \
+	/* ASCII. */                                   \
+	JSTR_INLINE                                    \
+	JSTR_PURE                                      \
+	static char *                                  \
+	jstr_skip_##ctype(const char *R s)             \
+	{                                              \
+		return jstr_skip_ctype(s, ctype_enum); \
+	}
+
+P_JSTR_REPEAT_CTYPE(P_JSTR_SKIP_CTYPE)
+
+#undef P_JSTR_SKIP_CTYPE
 
 /* ASCII. */
 JSTR_INLINE
@@ -108,7 +122,7 @@ static int
 jstr_isctype_str(const char *R s,
 		 const jstr_ctype_ty ctype) JSTR_NOEXCEPT
 {
-	P_JSTR_ISCTYPE_STR_IMPL(ctype);
+	return jstr_likely(*s) && *(jstr_skip_ctype(s, ctype) + 1) == '\0';
 }
 
 #define P_JSTR_ISCTYPE_STR(ctype, ctype_enum)               \
@@ -118,68 +132,43 @@ jstr_isctype_str(const char *R s,
 	static int                                          \
 	jstr_is##ctype##_str(const char *R s) JSTR_NOEXCEPT \
 	{                                                   \
-		P_JSTR_ISCTYPE_STR_IMPL(ctype_enum);        \
+		return jstr_isctype_str(s, ctype_enum);     \
 	}
 
 P_JSTR_REPEAT_CTYPE(P_JSTR_ISCTYPE_STR)
 
 #undef P_JSTR_ISCTYPE_STR
-#undef P_JSTR_ISCTYPE_STR_IMPL
 
 /* ASCII. */
 JSTR_INLINE
 JSTR_PURE
 static char *
-jstr_skip_ctype(const char *R s,
-		const jstr_ctype_ty ctype)
+jstr_skip_ctype_rev(const char *const begin,
+		    const char *end,
+		    const jstr_ctype_ty ctype)
 {
-#define P_JSTR_SKIP_CTYPE_IMPL(ctype_enum)             \
-	do {                                           \
-		while (jstr_isctype(*s++, ctype_enum)) \
-			;                              \
-		return (char *)s - 1;                  \
-	} while (0)
-	P_JSTR_SKIP_CTYPE_IMPL(ctype);
+	while (begin != end
+	       && jstr_isctype(*end--, ctype))
+		;
+	return (char *)end;
 }
 
-#define P_JSTR_SKIP_CTYPE(ctype, ctype_enum)        \
-	/* ASCII. */                                \
-	JSTR_INLINE                                 \
-	JSTR_PURE                                   \
-	static char *                               \
-	jstr_skip_##ctype(const char *R s)          \
-	{                                           \
-		P_JSTR_SKIP_CTYPE_IMPL(ctype_enum); \
-	}
-
-P_JSTR_REPEAT_CTYPE(P_JSTR_SKIP_CTYPE)
-
-#undef P_JSTR_SKIP_CTYPE_IMPL
-#undef P_JSTR_SKIP_CTYPE
-
-#define P_JSTR_SKIP_CTYPE_REV_IMPL(ctype_enum)                           \
-	do {                                                             \
-		while (begin != end && jstr_isctype(*end--, ctype_enum)) \
-			;                                                \
-		return (char *)end;                                      \
-	} while (0)
-
-#define P_JSTR_SKIP_CTYPE_REV(ctype, ctype_enum)         \
-	/* ASCII. */                                     \
-	JSTR_INLINE                                      \
-	JSTR_PURE                                        \
-	static char *                                    \
-	jstr_skip_##ctype##_rev(const char *const begin, \
-				const char *end)         \
-	{                                                \
-		P_JSTR_SKIP_CTYPE_REV_IMPL(ctype_enum);  \
+#define P_JSTR_SKIP_CTYPE_REV(ctype, ctype_enum)                    \
+	/* ASCII. */                                                \
+	JSTR_INLINE                                                 \
+	JSTR_PURE                                                   \
+	static char *                                               \
+	jstr_skip_##ctype##_rev(const char *const begin,            \
+				const char *end)                    \
+	{                                                           \
+		return jstr_skip_ctype_rev(begin, end, ctype_enum); \
 	}
 
 P_JSTR_REPEAT_CTYPE(P_JSTR_SKIP_CTYPE_REV)
 
 #undef P_JSTR_SKIP_CTYPE_REV
-#undef P_JSTR_SKIP_CTYPE_REV_IMPL
 
+/* ASCII. */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
@@ -189,6 +178,7 @@ jstr_toupper_str(char *R s) JSTR_NOEXCEPT
 		++s;
 }
 
+/* ASCII. */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
@@ -207,6 +197,7 @@ jstr_tolower_str(char *R s) JSTR_NOEXCEPT
 #	pragma GCC diagnostic push
 #endif
 
+/* ASCII. */
 JSTR_FUNC_VOID
 static void
 jstr_tolower_str_len(char *R s,
@@ -223,6 +214,7 @@ jstr_tolower_str_len(char *R s,
 	}
 }
 
+/* ASCII. */
 JSTR_FUNC_VOID
 static void
 jstr_toupper_str_len(char *R s,
