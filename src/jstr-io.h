@@ -931,7 +931,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
 			continue;
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-		/* Exit if path is longer than PATH_MAX. */
+		/* Exit if DIRPATH is longer than PATH_MAX. */
 		if (dlen + ep->d_namlen >= JSTR_IO_PATH_MAX) {
 			errno = ENAMETOOLONG;
 			goto err_closedir;
