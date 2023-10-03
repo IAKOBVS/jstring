@@ -25,14 +25,15 @@ P_JSTR_BEGIN_DECLS
 		return pjstr_table_ctype[(unsigned char)c] & ctype_enum; \
 	}
 
-P_JSTR_IS_CTYPE(isalpha, JSTR_ISALPHA);
-P_JSTR_IS_CTYPE(islower, JSTR_ISLOWER);
-P_JSTR_IS_CTYPE(isupper, JSTR_ISUPPER);
-P_JSTR_IS_CTYPE(isspace, JSTR_ISSPACE);
-P_JSTR_IS_CTYPE(isblank, JSTR_ISBLANK);
-P_JSTR_IS_CTYPE(isdigit, JSTR_ISDIGIT);
-P_JSTR_IS_CTYPE(isxdigit, JSTR_ISXDIGIT);
-P_JSTR_IS_CTYPE(ispunct, JSTR_ISPUNCT);
+P_JSTR_IS_CTYPE(isalpha, JSTR_ISALPHA)
+P_JSTR_IS_CTYPE(islower, JSTR_ISLOWER)
+P_JSTR_IS_CTYPE(isupper, JSTR_ISUPPER)
+P_JSTR_IS_CTYPE(isspace, JSTR_ISSPACE)
+P_JSTR_IS_CTYPE(isblank, JSTR_ISBLANK)
+P_JSTR_IS_CTYPE(isdigit, JSTR_ISDIGIT)
+P_JSTR_IS_CTYPE(isxdigit, JSTR_ISXDIGIT)
+P_JSTR_IS_CTYPE(ispunct, JSTR_ISPUNCT)
+P_JSTR_IS_CTYPE(isword, JSTR_ISWORD)
 
 #undef P_JSTR_IS_CTYPE
 
@@ -63,14 +64,15 @@ P_JSTR_IS_CTYPE(ispunct, JSTR_ISPUNCT);
 		return *s == '\0';                        \
 	}
 
-P_JSTR_IS_CTYPE_STR(isalpha);
-P_JSTR_IS_CTYPE_STR(islower);
-P_JSTR_IS_CTYPE_STR(isupper);
-P_JSTR_IS_CTYPE_STR(isspace);
-P_JSTR_IS_CTYPE_STR(isblank);
-P_JSTR_IS_CTYPE_STR(isdigit);
-P_JSTR_IS_CTYPE_STR(isxdigit);
-P_JSTR_IS_CTYPE_STR(ispunct);
+P_JSTR_IS_CTYPE_STR(isalpha)
+P_JSTR_IS_CTYPE_STR(islower)
+P_JSTR_IS_CTYPE_STR(isupper)
+P_JSTR_IS_CTYPE_STR(isspace)
+P_JSTR_IS_CTYPE_STR(isblank)
+P_JSTR_IS_CTYPE_STR(isdigit)
+P_JSTR_IS_CTYPE_STR(isxdigit)
+P_JSTR_IS_CTYPE_STR(ispunct)
+P_JSTR_IS_CTYPE_STR(isword)
 
 #undef P_JSTR_IS_CTYPE_STR
 
