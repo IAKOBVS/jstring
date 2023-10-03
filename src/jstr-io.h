@@ -1006,7 +1006,6 @@ p_jstr_io_ftw_len(char *R dirpath,
 				goto err_closedir;
 			}
 		}
-		errno = 0;
 #endif
 #if JSTR_HAVE_DIRENT_D_TYPE
 		if (ep->d_type == DT_REG)
@@ -1112,8 +1111,8 @@ err_closedir:
    Call FN on entries found recursively that matches GLOB.
    Return value:
    0 on error;
-   1 on success or non-fatal errors: EACCES or ENOENT encountered on some files.
-   If EACCES or ENOENT is encountered on a file, set errno to 0 and continue processing other entries.
+   1 on success or non-fatal errors: EACCES or ENOENT encountered on some entries.
+   If EACCES or ENOENT is encountered on an entry,  continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
 static int
@@ -1181,16 +1180,12 @@ ftw:
 #endif
 	if (jflags & JSTR_IO_FTW_REG)
 		if (!S_ISREG(st.st_mode))
-			return 0;
+			return 1;
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
-			return 0;
+			return 1;
 	fn(fulpath, dlen, &st);
-	if (jstr_likely(NONFATAL_ERR())) {
-		errno = 0;
-		return 1;
-	}
-	return 0;
+	return 1;
 }
 
 #undef NONFATAL_ERR
@@ -1199,8 +1194,8 @@ ftw:
    Call FN on entries found recursively that matches GLOB.
    Return value:
    0 on error;
-   1 on success or non-fatal errors: EACCES or ENOENT encountered on some files.
-   If EACCES or ENOENT is encountered on a file, set errno to 0 and continue processing other entries.
+   1 on success or non-fatal errors: EACCES or ENOENT encountered on some entries.
+   If EACCES or ENOENT is encountered on an entry,  continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
