@@ -902,7 +902,7 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 
 JSTR_FUNC_MAY_NULL
 static int
-p_jstr_io_ftw_len(char *R dirpath,
+pjstr_io_ftw_len(char *R dirpath,
 		  const size_t dlen,
 		  const char *R const fn_glob,
 		  const int fn_flags,
@@ -1018,13 +1018,13 @@ do_dir:
 		const int fd_tmp = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd_tmp == -1))
 			continue;
-		if (jstr_unlikely(!p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp))) {
+		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp))) {
 			close(fd_tmp);
 			goto err_closedir;
 		}
 		close(fd_tmp);
 #else
-		if (jstr_unlikely(!p_jstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st)))
+		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st)))
 			goto err_closedir;
 #endif
 		continue;
@@ -1105,10 +1105,10 @@ jstr_io_ftw_len(const char *R const dirpath,
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
+		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
 		close(fd);
 #else
-		p_jstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st);
+		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st);
 #endif
 		return 1;
 	}
