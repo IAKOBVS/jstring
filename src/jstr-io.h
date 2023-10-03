@@ -800,10 +800,13 @@ enum {
 #endif
 };
 
+/* If JSTR_IO_ACTION_RETVAL is passed, use these as return values of FN(). */
 typedef enum jstr_io_ftw_actionretval_ty {
 	JSTR_IO_FTW_RET_STOP = 0,
 	JSTR_IO_FTW_RET_CONTINUE,
+	/* Skip sibling entries. */
 	JSTR_IO_FTW_RET_SKIP_SIBLINGS,
+	/* Skip subdirectories. */
 	JSTR_IO_FTW_RET_SKIP_SUBTREE,
 } jstr_io_ftw_actionretval_ty;
 
@@ -824,6 +827,7 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STATREG << 1),
 	/* Expand ~/ to /home/username/ if the first char is '~'. */
 	JSTR_IO_FTW_EXPTILDE = (JSTR_IO_FTW_NOHIDDEN << 1),
+	/* Handle FN() return value according to jstr_io_ftw_actionretval_ty. */
 	JSTR_IO_FTW_ACTIONRETVAL = (JSTR_IO_FTW_EXPTILDE << 1)
 } jstr_io_ftw_flag_ty;
 
@@ -996,7 +1000,8 @@ do_reg:
 		}
 		ret = fn(dirpath, pathlen, st);
 		if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
-			if (ret == JSTR_IO_FTW_RET_CONTINUE || ret == JSTR_IO_FTW_RET_SKIP_SUBTREE)
+			if (ret == JSTR_IO_FTW_RET_CONTINUE
+			    || ret == JSTR_IO_FTW_RET_SKIP_SUBTREE)
 				continue;
 			else if (ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
 				break;
@@ -1025,7 +1030,8 @@ do_dir:
 			if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
 				if (ret == JSTR_IO_FTW_RET_CONTINUE)
 					continue;
-				else if (ret == JSTR_IO_FTW_RET_SKIP_SUBTREE || ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
+				else if (ret == JSTR_IO_FTW_RET_SKIP_SUBTREE
+					 || ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
 					break;
 				else /* RET_STOP */
 					goto err_closedir;
