@@ -800,6 +800,13 @@ enum {
 #endif
 };
 
+typedef enum jstr_io_ftw_actionretval_ty {
+	JSTR_IO_FTW_RET_STOP = 0,
+	JSTR_IO_FTW_RET_CONTINUE,
+	JSTR_IO_FTW_RET_SKIP_SIBLINGS,
+	JSTR_IO_FTW_RET_SKIP_SUBTREE,
+} jstr_io_ftw_actionretval_ty;
+
 typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with the fname instead of the whole path. */
 	JSTR_IO_FTW_MATCHPATH = (1),
@@ -817,6 +824,7 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STATREG << 1),
 	/* Expand ~/ to /home/username/ if the first char is '~'. */
 	JSTR_IO_FTW_EXPTILDE = (JSTR_IO_FTW_NOHIDDEN << 1),
+	JSTR_IO_FTW_ACTIONRETVAL = (JSTR_IO_FTW_EXPTILDE << 1)
 } jstr_io_ftw_flag_ty;
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -916,6 +924,7 @@ pjstr_io_ftw_len(char *R dirpath,
 		return NONFATAL_ERR();
 	size_t pathlen = 0;
 	const struct dirent *R ep;
+	int ret;
 	while ((ep = readdir(dp)) != NULL) {
 		/* Ignore "." and "..". */
 		if (IS_RELATIVE(ep->d_name)
@@ -985,8 +994,18 @@ do_reg:
 		} else {
 			STAT_OR_MODE();
 		}
-		if (jstr_unlikely(!fn(dirpath, pathlen, st)))
-			goto err_closedir;
+		ret = fn(dirpath, pathlen, st);
+		if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
+			if (ret == JSTR_IO_FTW_RET_CONTINUE || ret == JSTR_IO_FTW_RET_SKIP_SUBTREE)
+				continue;
+			else if (ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
+				break;
+			else /* RET_STOP */
+				goto err_closedir;
+		} else {
+			if (jstr_unlikely(!ret))
+				goto err_closedir;
+		}
 		continue;
 do_dir:
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
@@ -998,14 +1017,23 @@ do_dir:
 			STAT_MODE();
 		else
 			STAT_OR_MODE();
-		if (jflags & JSTR_IO_FTW_REG) {
-			if (jflags & JSTR_IO_FTW_DIR)
-				if (jstr_unlikely(!fn(dirpath, pathlen, st)))
+		do {
+			if (jflags & JSTR_IO_FTW_REG)
+				if (!(jflags & JSTR_IO_FTW_DIR))
+					break;
+			ret = fn(dirpath, dlen, st);
+			if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
+				if (ret == JSTR_IO_FTW_RET_CONTINUE)
+					continue;
+				else if (ret == JSTR_IO_FTW_RET_SKIP_SUBTREE || ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
+					break;
+				else /* RET_STOP */
 					goto err_closedir;
-		} else {
-			if (jstr_unlikely(!fn(dirpath, pathlen, st)))
-				goto err_closedir;
-		}
+			} else {
+				if (jstr_unlikely(!ret))
+					goto err_closedir;
+			}
+		} while (0);
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
