@@ -891,19 +891,20 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   const struct stat *st);
 
 JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(6)
 static int
 pjstr_io_ftw_len(char *R dirpath,
-		  const size_t dlen,
-		  const char *R const fn_glob,
-		  const int fn_flags,
-		  const jstr_io_ftw_flag_ty jflags,
-		  jstr_io_ftw_func_ty fn,
-		  struct stat *R const st
+		 const size_t dlen,
+		 const char *R const fn_glob,
+		 const int fn_flags,
+		 const int jflags,
+		 int (*fn)(const char *, size_t, const struct stat *),
+		 struct stat *R const st
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		  ,
-		  int fd
+		 ,
+		 int fd
 #endif
-		  ) JSTR_NOEXCEPT
+		 ) JSTR_NOEXCEPT
 {
 	DIR *R const dp =
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
@@ -1042,13 +1043,14 @@ err_closedir:
    If EACCES or ENOENT is encountered on an entry, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(6)
 static int
 jstr_io_ftw_len(const char *R const dirpath,
 		size_t dlen,
 		const char *R const fn_glob,
 		const int fn_flags,
-		const jstr_io_ftw_flag_ty jflags,
-		jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
+		const int jstr_io_ftw_flag,
+		int (*fn)(const char *, size_t, const struct stat *)) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dlen == 0)) {
 		errno = ENOENT;
@@ -1062,7 +1064,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	       && dirpath[dlen - 1] == '/')
 		--dlen;
 	char fulpath[JSTR_IO_PATH_MAX];
-	if (jflags & JSTR_IO_FTW_EXPTILDE) {
+	if (jstr_io_ftw_flag & JSTR_IO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {
 			const char *R const home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
@@ -1095,17 +1097,17 @@ jstr_io_ftw_len(const char *R const dirpath,
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st, fd);
+		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jstr_io_ftw_flag, fn, &st, fd);
 		close(fd);
 #else
-		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jflags, fn, &st);
+		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jstr_io_ftw_flag, fn, &st);
 #endif
 		return 1;
 	}
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 	close(fd);
 #endif
-	if (jflags & JSTR_IO_FTW_REG)
+	if (jstr_io_ftw_flag & JSTR_IO_FTW_REG)
 		if (jstr_unlikely(!S_ISREG(st.st_mode)))
 			return 1;
 	if (fn_glob != NULL)
@@ -1123,15 +1125,16 @@ ftw:
    If EACCES or ENOENT is encountered on an entry, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(5)
 JSTR_INLINE
 static int
 jstr_io_ftw(const char *R const dirpath,
 	    const char *R const fn_glob,
 	    const int fn_flags,
-	    const jstr_io_ftw_flag_ty jflags,
-	    jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
+	    const int jstr_io_ftw_flag,
+	    int (*fn)(const char *, size_t, const struct stat *)) JSTR_NOEXCEPT
 {
-	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jflags, fn);
+	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jstr_io_ftw_flag, fn);
 }
 
 P_JSTR_END_DECLS
