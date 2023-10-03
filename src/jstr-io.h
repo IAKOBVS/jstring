@@ -938,7 +938,7 @@ p_jstr_io_ftw_len(char *R dirpath,
 		}
 #else
 		if (!JSTR_HAVE_DIRENT_D_TYPE || JSTR_HAVE_DIRENT_D_RECLEN || sizeof(ep->d_name) > 1) {
-			if (jstr_unlikely(dlen + _D_ALLOC_NAMLEN(ep)) > JSTR_IO_PATH_MAX) {
+			if (jstr_unlikely(dlen + _D_ALLOC_NAMLEN(ep) > JSTR_IO_PATH_MAX)) {
 				if (dlen - JSTR_IO_NAME_MAX < JSTR_IO_PATH_MAX
 				    && dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX) {
 					errno = ENAMETOOLONG;
