@@ -803,9 +803,9 @@ enum {
 typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with the fname instead of the whole path. */
 	JSTR_IO_FTW_MATCHPATH = (1),
-	/* Call FN on regular files. */
+	/* Call FN() on regular files. */
 	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCHPATH << 1),
-	/* Call FN on directories. */
+	/* Call FN() on directories. */
 	JSTR_IO_FTW_DIR = (JSTR_IO_FTW_REG << 1),
 	/* Do not traverse subdirectories. */
 	JSTR_IO_FTW_NOSUBDIR = (JSTR_IO_FTW_DIR << 1),
@@ -985,7 +985,8 @@ do_reg:
 		} else {
 			STAT_OR_MODE();
 		}
-		fn(dirpath, pathlen, st);
+		if (jstr_unlikely(!fn(dirpath, pathlen, st)))
+			goto err_closedir;
 		continue;
 do_dir:
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
@@ -999,9 +1000,11 @@ do_dir:
 			STAT_OR_MODE();
 		if (jflags & JSTR_IO_FTW_REG) {
 			if (jflags & JSTR_IO_FTW_DIR)
-				fn(dirpath, pathlen, st);
+				if (jstr_unlikely(!fn(dirpath, pathlen, st)))
+					goto err_closedir;
 		} else {
-			fn(dirpath, pathlen, st);
+			if (jstr_unlikely(!fn(dirpath, pathlen, st)))
+				goto err_closedir;
 		}
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
@@ -1036,11 +1039,12 @@ err_closedir:
 #undef NONFATAL_ERR
 
 /*
-   Call FN on entries found recursively that matches GLOB.
+   Call FN() on entries found recursively that matches GLOB.
    Return value:
    0 on error;
    1 on success or non-fatal errors: EACCES or ENOENT encountered on some entries.
    If EACCES or ENOENT is encountered on an entry, continue processing other entries.
+   If FN() returns 0, processing will stop.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(6)
@@ -1113,16 +1117,16 @@ ftw:
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
 			return 1;
-	fn(fulpath, dlen, &st);
-	return 1;
+	return fn(fulpath, dlen, &st);
 }
 
 /*
-   Call FN on entries found recursively that matches GLOB.
+   Call FN() on entries found recursively that matches GLOB.
    Return value:
    0 on error;
    1 on success or non-fatal errors: EACCES or ENOENT encountered on some entries.
    If EACCES or ENOENT is encountered on an entry, continue processing other entries.
+   If FN() returns 0, processing will stop.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(5)
