@@ -891,14 +891,14 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   const struct stat *st);
 
 JSTR_FUNC_MAY_NULL
-JSTR_NONNULL(6)
+JSTR_NONNULL(3)
 static int
 pjstr_io_ftw_len(char *R dirpath,
 		 const size_t dlen,
+		 int (*fn)(const char *, size_t, const struct stat *),
+		 const int jflags,
 		 const char *R const fn_glob,
 		 const int fn_flags,
-		 const int jflags,
-		 int (*fn)(const char *, size_t, const struct stat *),
 		 struct stat *R const st
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 		 ,
@@ -1012,13 +1012,13 @@ do_dir:
 		const int fd_tmp = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd_tmp == -1))
 			continue;
-		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st, fd_tmp))) {
+		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn, jflags, fn_glob, fn_flags, st, fd_tmp))) {
 			close(fd_tmp);
 			goto err_closedir;
 		}
 		close(fd_tmp);
 #else
-		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn_glob, fn_flags, jflags, fn, st)))
+		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn, jflags, fn_glob, fn_flags, st)))
 			goto err_closedir;
 #endif
 		continue;
@@ -1047,14 +1047,14 @@ err_closedir:
    If a non-fatal error is encountered, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
-JSTR_NONNULL(6)
+JSTR_NONNULL(3)
 static int
 jstr_io_ftw_len(const char *R const dirpath,
 		size_t dlen,
-		const char *R const fn_glob,
-		const int fn_flags,
+		int (*fn)(const char *, size_t, const struct stat *),
 		const int jstr_io_ftw_flag,
-		int (*fn)(const char *, size_t, const struct stat *)) JSTR_NOEXCEPT
+		const char *R const fn_glob,
+		const int fn_flags) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dlen == 0)) {
 		errno = ENOENT;
@@ -1101,10 +1101,10 @@ jstr_io_ftw_len(const char *R const dirpath,
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jstr_io_ftw_flag, fn, &st, fd);
+		pjstr_io_ftw_len(fulpath, dlen, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st, fd);
 		close(fd);
 #else
-		pjstr_io_ftw_len(fulpath, dlen, fn_glob, fn_flags, jstr_io_ftw_flag, fn, &st);
+		pjstr_io_ftw_len(fulpath, dlen, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st);
 #endif
 		return 1;
 	}
@@ -1129,16 +1129,16 @@ ftw:
    If a non-fatal error is encountered, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
-JSTR_NONNULL(5)
+JSTR_NONNULL(2)
 JSTR_INLINE
 static int
 jstr_io_ftw(const char *R const dirpath,
-	    const char *R const fn_glob,
-	    const int fn_flags,
+	    int (*fn)(const char *, size_t, const struct stat *),
 	    const int jstr_io_ftw_flag,
-	    int (*fn)(const char *, size_t, const struct stat *)) JSTR_NOEXCEPT
+	    const char *R const fn_glob,
+	    const int fn_flags) JSTR_NOEXCEPT
 {
-	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn_glob, fn_flags, jstr_io_ftw_flag, fn);
+	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn, jstr_io_ftw_flag, fn_glob, fn_flags);
 }
 
 P_JSTR_END_DECLS
