@@ -197,7 +197,11 @@ jstr_tolower_str(char *R s) JSTR_NOEXCEPT
 #	pragma GCC diagnostic push
 #endif
 
-/* ASCII. */
+/*
+   ASCII.
+   Will NOT handle EOF correctly.
+   tolower(EOF) != EOF;
+*/
 JSTR_FUNC_VOID
 static void
 jstr_tolower_str_len(char *R s,
@@ -214,7 +218,10 @@ jstr_tolower_str_len(char *R s,
 	}
 }
 
-/* ASCII. */
+/* ASCII.
+   Will not correctly handle EOF.
+   toupper(EOF) != EOF.
+*/
 JSTR_FUNC_VOID
 static void
 jstr_toupper_str_len(char *R s,
