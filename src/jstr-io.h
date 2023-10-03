@@ -1111,8 +1111,8 @@ err_closedir:
 /*
    Call FN on entries found recursively that matches GLOB.
    Return value:
-   -1 on error;
-   0 on success or non-fatal errors: EACCES or ENOENT encountered on some files.
+   0 on error;
+   1 on success or non-fatal errors: EACCES or ENOENT encountered on some files.
    If EACCES or ENOENT is encountered on a file, set errno to 0 and continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
@@ -1124,8 +1124,14 @@ jstr_io_ftw_len(const char *R const dirpath,
 		const jstr_io_ftw_flag_ty jflags,
 		jstr_io_ftw_func_ty fn) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(dlen == 0))
-		return -1;
+	if (jstr_unlikely(dlen == 0)) {
+		errno = ENOENT;
+		return 0;
+	}
+	if (jstr_unlikely(dlen >= JSTR_IO_PATH_MAX)) {
+		errno = ENAMETOOLONG;
+		return 0;
+	}
 	while (dlen != 1
 	       && dirpath[dlen - 1] == '/')
 		--dlen;
@@ -1134,7 +1140,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 		if (*dirpath == '~') {
 			const char *R const home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
-				return -1;
+				return 0;
 			const size_t homelen = jstr_stpcpy(fulpath, home) - fulpath;
 			memcpy(fulpath + homelen, dirpath + 1, dlen);
 			dlen += homelen - 1;
@@ -1144,7 +1150,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	}
 	const int fd = open(fulpath, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
-		return -1;
+		return 0;
 	struct stat st;
 	/* This avoids things like //usr/cache. */
 	if (jstr_unlikely(dlen == 1)
@@ -1156,7 +1162,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 		goto ftw;
 	}
 	if (jstr_unlikely(fstat(fd, &st)))
-		return -1;
+		return 0;
 #if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
 	close(fd);
 #endif
@@ -1175,16 +1181,16 @@ ftw:
 #endif
 	if (jflags & JSTR_IO_FTW_REG)
 		if (!S_ISREG(st.st_mode))
-			return -1;
+			return 0;
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
-			return -1;
+			return 0;
 	fn(fulpath, dlen, &st);
 	if (jstr_likely(NON_FATAL_ERR())) {
 		errno = 0;
-		return 0;
+		return 1;
 	}
-	return -1;
+	return 0;
 }
 
 #undef NON_FATAL_ERR
@@ -1192,8 +1198,8 @@ ftw:
 /*
    Call FN on entries found recursively that matches GLOB.
    Return value:
-   -1 on error;
-   0 on success or non-fatal errors: EACCES or ENOENT encountered on some files.
+   0 on error;
+   1 on success or non-fatal errors: EACCES or ENOENT encountered on some files.
    If EACCES or ENOENT is encountered on a file, set errno to 0 and continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL

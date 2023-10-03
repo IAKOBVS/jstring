@@ -25,7 +25,6 @@ or
 
 ## Error handling: 
 0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
-Some POSIX-like functions may return -1 as error. errno is never set to 0 unless documented.<br>
 
 Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit. For more comprehensive error messages, use the \*\_debug\(\) functions or
 ```
