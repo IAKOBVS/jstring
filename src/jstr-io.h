@@ -503,58 +503,6 @@ jstr_io_fwrite_file_j(const jstr_ty *R const j,
 
 #if JSTR_HAVE_POPEN
 
-#	if 0 /* broken */
-
-JSTR_FUNC
-static int
-jstr_io_alloc_popen(char *R *R const s,
-		    size_t *R const sz,
-		    size_t *R const cap,
-		    const char *R const cmd) JSTR_NOEXCEPT
-{
-	FILE *R const fp = popen(cmd, "r");
-	if (jstr_unlikely(fp == NULL))
-		goto err;
-	char *p;
-	enum { MINBUF = BUFSIZ };
-	char buf[MINBUF];
-	p = buf;
-	int c;
-	while (((c = getc(fp)) != EOF)
-	       & (p - buf != MINBUF))
-		*p++ = c;
-	*cap = P_JSTR_MIN_ALLOC(p - buf);
-	*cap = JSTR_ALIGN_UP_STR(*cap);
-	*s = (char *)malloc(*cap);
-	P_JSTR_MALLOC_ERR(*s, goto err_close);
-	memcpy(*s, buf, p - buf);
-	if (jstr_unlikely(p - buf == MINBUF)) {
-		p = *s + (p - buf);
-		const char *old;
-		while ((c = getc(fp)) != EOF) {
-			if (jstr_unlikely((size_t)(p - *s) == *cap)) {
-				old = *s;
-				P_JSTR_REALLOCEXACT(*s, *cap, (size_t)(*cap * JSTR_GROWTH), goto err_close);
-				p = *s + (p - old);
-			}
-			*p++ = c;
-		}
-		*p = '\0';
-		*sz = p - *s;
-	} else {
-		(*s)[p - buf] = '\0';
-		*sz = p - buf;
-	}
-	pclose(fp);
-	return 1;
-err_close:
-	pclose(fp);
-err:
-	return 0;
-}
-
-#	else
-
 JSTR_FUNC
 static int
 jstr_io_alloc_popen(char *R *R const s,
@@ -609,8 +557,6 @@ err_close:
 err:
 	return 0;
 }
-
-#	endif
 
 #endif
 
@@ -904,7 +850,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #		define STAT()                                                        \
 			do {                                                          \
 				if (jstr_unlikely(fstatat(fd, ep->d_name, &st, 0))) { \
-					if (NONFATAL_ERR())                          \
+					if (NONFATAL_ERR())                           \
 						continue;                             \
 					return 0;                                     \
 				}                                                     \
@@ -913,7 +859,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #		define STAT()                                         \
 			do {                                           \
 				if (jstr_unlikely(stat(dirpath, &st))) \
-					if (NONFATAL_ERR())           \
+					if (NONFATAL_ERR())            \
 						continue;              \
 				return 0;                              \
 			} while (0)
