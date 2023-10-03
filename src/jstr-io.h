@@ -1058,7 +1058,7 @@ err_closedir:
    Return value:
    0 on error;
    1 on success or non-fatal errors: EACCES or ENOENT encountered on some entries.
-   If EACCES or ENOENT is encountered on an entry,  continue processing other entries.
+   If EACCES or ENOENT is encountered on an entry, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
 static int
@@ -1141,7 +1141,7 @@ ftw:
    Return value:
    0 on error;
    1 on success or non-fatal errors: EACCES or ENOENT encountered on some entries.
-   If EACCES or ENOENT is encountered on an entry,  continue processing other entries.
+   If EACCES or ENOENT is encountered on an entry, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
