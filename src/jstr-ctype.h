@@ -45,12 +45,22 @@ P_JSTR_IS_CTYPE(ispunct, JSTR_ISPUNCT);
 	{                                                 \
 		if (jstr_unlikely(*s == '\0'))            \
 			return 0;                         \
-		while (jstr_##ctype(*s++)                 \
-		       && jstr_##ctype(*s++)              \
-		       && jstr_##ctype(*s++)              \
-		       && jstr_##ctype(*s++))             \
-			;                                 \
-		return (*s - 1) == '\0';                  \
+		while (jstr_##ctype(s[0])) {              \
+			if (!jstr_##ctype(s[1])) {        \
+				s += 1;                   \
+				break;                    \
+			}                                 \
+			if (!jstr_##ctype(s[2])) {        \
+				s += 2;                   \
+				break;                    \
+			}                                 \
+			if (!jstr_##ctype(s[3])) {        \
+				s += 3;                   \
+				break;                    \
+			}                                 \
+			s += 4;                           \
+		}                                         \
+		return *s == '\0';                        \
 	}
 
 P_JSTR_IS_CTYPE_STR(isalpha);
