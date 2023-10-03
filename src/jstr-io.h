@@ -28,6 +28,20 @@ typedef enum {
 	JSTR_IO_FT_BINARY
 } jstr_io_ext_ty;
 
+enum {
+#ifdef PATH_MAX
+	JSTR_IO_PATH_MAX = PATH_MAX,
+#else
+	JSTR_IO_PATH_MAX = 4096,
+#endif
+#ifdef NAME_MAX
+	JSTR_IO_NAME_MAX = NAME_MAX,
+#else
+	JSTR_IO_NAME_MAX = 255,
+#endif
+	JSTR_IO_BINARY_CHECK_MAX = 64
+};
+
 #define S switch (*ext++)
 #define T  \
 case '\0': \
@@ -352,7 +366,7 @@ jstr_isbinary(const char *R const buf,
 #define P_JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
 /*
-   Check if the first 64 bytes or fewer contain any unprintable character.
+   Check if the first JSTR_IO_BINARY_CHECK_MAX bytes or fewer contain any unprintable character.
 */
 JSTR_FUNC
 static int
@@ -374,7 +388,7 @@ check_utf:;                                                                     
 	if (jstr_unlikely(sz == 0))
 		return 0;
 	JSTR_BINARY_CHECK();
-	const unsigned char *const end = (unsigned char *)buf + JSTR_MIN(sz, 64) + 1;
+	const unsigned char *const end = (unsigned char *)buf + JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
 		if (pjstr_io_reject_table[*s++])
@@ -584,6 +598,7 @@ pjstr_io_alloc_file_len(const int alloc_exact,
 		goto err_close_free;
 	close(fd);
 	(*s)[filesz] = '\0';
+	*sz = filesz;
 	return 1;
 err_close_free:
 	free(*s);
@@ -600,11 +615,11 @@ err:
 */
 JSTR_FUNC
 static int
-jstr_io_alloc_file(char *R *R const s,
-		   size_t *R const sz,
-		   size_t *R const cap,
-		   const char *R const fname,
-		   const size_t filesz) JSTR_NOEXCEPT
+jstr_io_alloc_file_len(char *R *R const s,
+		       size_t *R const sz,
+		       size_t *R const cap,
+		       const char *R const fname,
+		       const size_t filesz) JSTR_NOEXCEPT
 {
 	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, filesz);
 }
@@ -632,15 +647,15 @@ jstr_io_allocexact_file(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_io_alloc_file_len(char *R *R const s,
-		       size_t *R const sz,
-		       size_t *R const cap,
-		       const char *R const fname,
-		       struct stat *R st) JSTR_NOEXCEPT
+jstr_io_alloc_file(char *R *R const s,
+		   size_t *R const sz,
+		   size_t *R const cap,
+		   const char *R const fname,
+		   struct stat *R st) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(fname, st)))
 		return 0;
-	return jstr_io_alloc_file(s, sz, cap, fname, st->st_size);
+	return jstr_io_alloc_file_len(s, sz, cap, fname, st->st_size);
 }
 
 /*
@@ -786,19 +801,6 @@ jstr_io_append_path_len(char *R const path_end,
 #		endif
 #	endif
 #endif
-
-enum {
-#ifdef PATH_MAX
-	JSTR_IO_PATH_MAX = PATH_MAX,
-#else
-	JSTR_IO_PATH_MAX = 4096,
-#endif
-#ifdef NAME_MAX
-	JSTR_IO_NAME_MAX = NAME_MAX
-#else
-	JSTR_IO_NAME_MAX = 255
-#endif
-};
 
 /* If JSTR_IO_ACTION_RETVAL is passed, use these as return values of FN(). */
 typedef enum jstr_io_ftw_actionretval_ty {
