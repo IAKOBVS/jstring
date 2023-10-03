@@ -811,7 +811,7 @@ typedef enum jstr_io_ftw_actionretval_ty {
 } jstr_io_ftw_actionretval_ty;
 
 typedef enum jstr_io_ftw_flag_ty {
-	/* Match glob with the fname instead of the whole path. */
+	/* Match glob with FULPATH instead of d_name. */
 	JSTR_IO_FTW_MATCHPATH = (1),
 	/* Call FN() on regular files. */
 	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCHPATH << 1),
@@ -1074,7 +1074,7 @@ err_closedir:
 #undef NONFATAL_ERR
 
 /*
-   Call FN() on entries found recursively that matches GLOB.
+   Call FN() on files found recursively that matches GLOB.
    If FN() return 0, processing will stop.
    Return value:
    0 on error;
@@ -1156,7 +1156,7 @@ ftw:
 }
 
 /*
-   Call FN() on entries found recursively that matches GLOB.
+   Call FN() on files found recursively that matches GLOB.
    If FN() return 0, processing will stop.
    Return value:
    0 on error;
