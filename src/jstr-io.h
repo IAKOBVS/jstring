@@ -1052,6 +1052,7 @@ err_closedir:
 #undef STAT_OR_MODE
 #undef STAT_MODE
 #undef STAT
+#undef NONFATAL_ERR
 
 /*
    Call FN on entries found recursively that matches GLOB.
@@ -1133,8 +1134,6 @@ ftw:
 	fn(fulpath, dlen, &st);
 	return 1;
 }
-
-#undef NONFATAL_ERR
 
 /*
    Call FN on entries found recursively that matches GLOB.
