@@ -898,8 +898,6 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
-#define IS_RELATIVE(fname) ((fname[0] == '.') && ((fname[1] == '\0') || ((fname[1] == '.') && (fname[2] == '\0'))))
-
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   size_t dlen,
 				   const struct stat *st);
@@ -932,10 +930,16 @@ pjstr_io_ftw_len(char *R dirpath,
 	const struct dirent *R ep;
 	int ret;
 	while ((ep = readdir(dp)) != NULL) {
-		/* Ignore "." and "..". */
-		if (IS_RELATIVE(ep->d_name)
-		    || ((jflags & JSTR_IO_FTW_NOHIDDEN) && (ep->d_name)[0] == '.'))
-			continue;
+		if (jflags & JSTR_IO_FTW_NOHIDDEN) {
+			/* Ignore hidden files. */
+			if (ep->d_name[0] == '.')
+				continue;
+		} else {
+			/* Ignore "." and "..". */
+			if (ep->d_name[0] == '.'
+			    && (ep->d_name[1] == '\0' || (ep->d_name[1] == '.' && ep->d_name[2] == '\0')))
+				continue;
+		}
 #if JSTR_HAVE_DIRENT_D_NAMLEN
 		/* Exit if DIRPATH is longer than PATH_MAX. */
 		if (dlen + ep->d_namlen >= JSTR_IO_PATH_MAX) {
@@ -1067,7 +1071,6 @@ err_closedir:
 	return 0;
 }
 
-#undef IS_RELATIVE
 #undef FILL_PATH
 #undef FILL_PATH_ALWAYS
 #undef STAT_OR_MODE
