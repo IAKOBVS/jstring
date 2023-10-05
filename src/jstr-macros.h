@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <sys/cdefs.h>
 
+#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)
+#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, P_JSTR_MALLOC_ALIGNMENT)
+
 #if defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__
 #	define JSTR_HAVE_VLA 0
 #else
@@ -23,9 +26,6 @@
 #endif
 
 #define JSTR_PAGE_SIZE 4096
-
-#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)
-#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, P_JSTR_MALLOC_ALIGNMENT)
 
 #define JSTR_MAX(x, y)	   (((x) > (y)) ? (x) : (y))
 #define JSTR_MIN(x, y)	   (((x) < (y)) ? (x) : (y))
