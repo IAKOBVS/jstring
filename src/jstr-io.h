@@ -1123,7 +1123,6 @@ jstr_io_ftw_len(const char *R const dirpath,
 	if (jstr_unlikely(fd == -1))
 		return 0;
 	struct stat st;
-	int ret;
 	/* This avoids things like //usr/cache. */
 	if (jstr_unlikely(dlen == 1)
 	    && jstr_unlikely(*dirpath == '/')) {
@@ -1144,7 +1143,7 @@ ftw:
 			if (jstr_io_ftw_flag & JSTR_IO_FTW_REG)
 				if (!(jstr_io_ftw_flag & JSTR_IO_FTW_DIR))
 					break;
-			ret = fn(dirpath, dlen, &st);
+			const int ret = fn(dirpath, dlen, &st);
 			if (jstr_io_ftw_flag & JSTR_IO_FTW_ACTIONRETVAL) {
 				if (jstr_unlikely(ret != JSTR_IO_FTW_RET_CONTINUE)) {
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
