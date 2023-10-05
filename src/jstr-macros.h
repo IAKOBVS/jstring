@@ -972,8 +972,6 @@ enum { JSTR_MEMMEM_THRES = 18 };
 
 #define JSTR_STRSTR_LEN(hs, hslen, ne, nelen) (char *)JSTR_MEMMEM(hs, hslen, ne, nelen)
 
-#undef JSTR_MEMMEM_THRES
-
 #ifdef __cplusplus
 template <typename T, typename Other>
 static T
