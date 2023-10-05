@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/cdefs.h>
+#include <assert.h>
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__
 #	define JSTR_HAVE_VLA 0
@@ -106,6 +107,12 @@
 #	define JSTR_NOEXCEPT noexcept
 #else
 #	define JSTR_NOEXCEPT
+#endif
+
+#if defined __ASSERT_FUNCTION
+#	define JSTR_ASSERT_FUNC __ASSERT_FUNCTION
+#else
+#	define JSTR_ASSERT_FUNC __func__
 #endif
 
 #ifdef static_assert
