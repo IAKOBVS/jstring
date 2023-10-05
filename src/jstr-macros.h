@@ -37,7 +37,8 @@
 #	define JSTR_HAVE_GENERIC 1
 #endif /* HAVE_GENERIC */
 
-#if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
+#if (defined __GNUC__ && (__GNUC__ >= 4)) \
+|| (defined __clang__ && (__clang_major__ >= 3))
 #	define JSTR_HAVE_TYPEOF 1
 #endif /* HAVE_TYPEOF */
 
@@ -173,23 +174,44 @@
 #endif /* unlikely */
 
 #if defined __GNUC__ || defined __clang__
-#	define JSTR_INLINE __attribute__((always_inline)) inline
-#	if JSTR_HAS_ATTRIBUTE(pure)
+#	if JSTR_HAS_ATTRIBUTE(__always_inline__)
+#		define JSTR_INLINE __attribute__((__always_inline__)) inline
+#	elif JSTR_HAS_ATTRIBUTE(always_inline)
+#		define JSTR_INLINE always_inline((always_inline)) inline
+#	else
+#		define JSTR_INLINE inline
+#	endif
+#	if JSTR_HAS_ATTRIBUTE(__noinline__)
+#		define JSTR_NOINLINE __attribute__((__noinline__))
+#	elif JSTR_HAS_ATTRIBUTE(noinline)
+#		define JSTR_NOINLINE __attribute__((noinline))
+#	else
+#		define JSTR_NOINLINE
+#	endif
+#	if JSTR_HAS_ATTRIBUTE(__pure__)
+#		define JSTR_PURE __attribute__((__pure__))
+#	elif JSTR_HAS_ATTRIBUTE(pure)
 #		define JSTR_PURE __attribute__((pure))
 #	else
 #		define JSTR_PURE
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(const)
+#	if JSTR_HAS_ATTRIBUTE(__const__)
+#		define JSTR_CONST __attribute__((__const__))
+#	elif JSTR_HAS_ATTRIBUTE(const)
 #		define JSTR_CONST __attribute__((const))
 #	else
 #		define JSTR_CONST
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(flatten)
+#	if JSTR_HAS_ATTRIBUTE(__flatten__)
+#		define JSTR_FLATTEN __attribute__((__flatten__))
+#	elif JSTR_HAS_ATTRIBUTE(flatten)
 #		define JSTR_FLATTEN __attribute__((flatten))
 #	else
 #		define JSTR_FLATTEN
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(cold)
+#	if JSTR_HAS_ATTRIBUTE(__cold__)
+#		define JSTR_COLD __attribute__((__cold__))
+#	elif JSTR_HAS_ATTRIBUTE(cold)
 #		define JSTR_COLD __attribute__((cold))
 #	else
 #		define JSTR_COLD
@@ -216,12 +238,16 @@
 #		define JSTR_MALLOC_DEALLOC(deallocator)	      __attribute__((malloc, deallocator))
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(returns_nonnull)
+#	if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
+#		define JSTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))
+#	elif JSTR_HAS_ATTRIBUTE(returns_nonnull)
 #		define JSTR_RETURNS_NONNULL __attribute__((returns_nonnull))
 #	else
 #		define JSTR_RETURNS_NONNULL
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(warn_unused_result)
+#	if JSTR_HAS_ATTRIBUTE(__warn_unused_result__)
+#		define JSTR_WARN_UNUSED __attribute__((__warn_unused_result__))
+#	elif JSTR_HAS_ATTRIBUTE(warn_unused_result)
 #		define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
 #	else
 #		define JSTR_WARN_UNUSED
@@ -261,16 +287,7 @@
 #	else
 #		define JSTR_MAYBE_UNUSED
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__noinline__)
-#		define JSTR_NOINLINE __attribute__((__noinline__))
-#	elif JSTR_HAS_ATTRIBUTE(noinline)
-#		define JSTR_NOINLINE __attribute__((noinline))
-#	elif defined _MSC_VER
-#		define JSTR_NOINLINE __declspec(noinline)
-#	endif
-
 #elif defined _MSC_VER
-
 #	define JSTR_INLINE   __forceinline inline
 #	define JSTR_NOINLINE __declspec(noinline)
 #	define JSTR_PURE     __declspec(noalias)
@@ -289,11 +306,9 @@
 #	define JSTR_DEPRECATED(msg, replacement)
 #	define JSTR_NOTHROW __declspec(nothrow)
 #	define JSTR_MAY_ALIAS
-#	define JSTR_NOINLINE
+#	define JSTR_NOINLINE __delspec(noinline)
 #	define JSTR_MAYBE_UNUSED
-
 #else
-
 #	define JSTR_INLINE inline
 #	define JSTR_NOINLINE
 #	define JSTR_PURE
@@ -313,7 +328,6 @@
 #	define JSTR_MAY_ALIAS
 #	define JSTR_NOINLINE
 #	define JSTR_MAYBE_UNUSED
-
 #endif /* Gnuc || clang || msvc */
 
 #define JSTR_CASE_VOWEL_LOWER \
