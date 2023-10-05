@@ -928,6 +928,9 @@ pjstr_io_ftw_len(char *R dirpath,
 	size_t pathlen = 0;
 	const struct dirent *R ep;
 	int ret;
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+	int fd_tmp;
+#endif
 	while ((ep = readdir(dp)) != NULL) {
 		if (jflags & JSTR_IO_FTW_NOHIDDEN) {
 			/* Ignore hidden files. */
@@ -1049,7 +1052,7 @@ do_dir:
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-		const int fd_tmp = openat(fd, ep->d_name, O_RDONLY);
+		fd_tmp = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd_tmp == -1))
 			continue;
 		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn, jflags, fn_glob, fn_flags, st, fd_tmp))) {
@@ -1119,23 +1122,24 @@ jstr_io_ftw_len(const char *R const dirpath,
 	} else {
 		jstr_strcpy_len(fulpath, dirpath, dlen);
 	}
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 	const int fd = open(fulpath, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		return 0;
+#endif
 	struct stat st;
 	/* This avoids things like //usr/cache. */
 	if (jstr_unlikely(dlen == 1)
 	    && jstr_unlikely(*dirpath == '/')) {
-#if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
-		close(fd);
-#endif
 		dlen = 0;
 		goto ftw;
 	}
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE && 0
 	if (jstr_unlikely(fstat(fd, &st)))
 		return 0;
-#if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
-	close(fd);
+#else
+	if (jstr_unlikely(stat(fulpath, &st)))
+		return 0;
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
