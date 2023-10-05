@@ -5,6 +5,7 @@
 #include <features.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/cdefs.h>
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__
 #	define JSTR_HAVE_VLA 0
@@ -128,7 +129,10 @@
 #	define JSTR_RESTRICT
 #endif /* restrict */
 
-#if (defined __GNUC__ && (__GNUC__ >= 3)) \
+#if defined __glibc_unlikely && defined __glibc_likely
+#	define jstr_likely(x)	 __glibc_likely(x)
+#	define jstr_unlikely(x) __glibc_unlikely(x)
+#elif (defined __GNUC__ && (__GNUC__ >= 3)) \
 || (defined __clang__ && __has_builtin(__builtin_expect))
 #	define jstr_likely(x)	 __builtin_expect((x), 1)
 #	define jstr_unlikely(x) __builtin_expect((x), 0)
