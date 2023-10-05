@@ -188,62 +188,6 @@ jstr_tolower_str(char *R s) JSTR_NOEXCEPT
 		++s;
 }
 
-#ifdef __clang__
-#	pragma clang diagnostic ignored "-Wunknown-pragmas"
-#	pragma clang diagnostic push
-#elif defined __GNUC__
-#	pragma GCC diagnostic ignored "-Wanalyzer-allocation-size"
-#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#	pragma GCC diagnostic push
-#endif
-
-/*
-   ASCII.
-   Will NOT handle EOF correctly.
-   tolower(EOF) != EOF;
-*/
-JSTR_FUNC_VOID
-static void
-jstr_tolower_str_len(char *R s,
-		     const size_t sz)
-{
-	for (int i = sz % 4; i-- > 0; ++s)
-		*s = jstr_tolower(*s);
-	if (jstr_unlikely(sz < 4))
-		return;
-	for (; (s[0] = jstr_tolower(s[0])); s += 4) {
-		s[1] = jstr_tolower(s[1]);
-		s[2] = jstr_tolower(s[2]);
-		s[3] = jstr_tolower(s[3]);
-	}
-}
-
-/* ASCII.
-   Will not correctly handle EOF.
-   toupper(EOF) != EOF.
-*/
-JSTR_FUNC_VOID
-static void
-jstr_toupper_str_len(char *R s,
-		     const size_t sz)
-{
-	for (int i = sz % 4; i-- > 0; ++s)
-		*s = jstr_toupper(*s);
-	if (jstr_unlikely(sz < 4))
-		return;
-	for (; (s[0] = jstr_toupper(s[0])); s += 4) {
-		s[1] = jstr_toupper(s[1]);
-		s[2] = jstr_toupper(s[2]);
-		s[3] = jstr_toupper(s[3]);
-	}
-}
-
-#ifdef __clang__
-#	pragma clang diagnositc pop
-#elif defined __GNUC__
-#	pragma GCC diagnostic pop
-#endif
-
 P_JSTR_END_DECLS
 
 #undef P_JSTR_REPEAT_CTYPE
