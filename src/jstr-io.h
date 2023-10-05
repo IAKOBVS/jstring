@@ -918,11 +918,10 @@ pjstr_io_ftw_len(char *R dirpath,
 #endif
 		 ) JSTR_NOEXCEPT
 {
-	DIR *R const dp =
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-	fdopendir(fd);
+	DIR *R const dp = fdopendir(fd);
 #else
-	opendir(dirpath);
+	DIR *R const dp = opendir(dirpath);
 #endif
 	if (jstr_unlikely(dp == NULL))
 		return NONFATAL_ERR();
@@ -1140,6 +1139,12 @@ jstr_io_ftw_len(const char *R const dirpath,
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
+		do {
+			if (jstr_io_ftw_flag & JSTR_IO_FTW_REG)
+				if (!(jstr_io_ftw_flag & JSTR_IO_FTW_DIR))
+					break;
+			fn(fulpath, dlen, &st);
+		} while (0);
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 		pjstr_io_ftw_len(fulpath, dlen, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st, fd);
 		close(fd);
