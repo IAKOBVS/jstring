@@ -148,7 +148,7 @@
 #else
 #	define jstr_likely(x)	 (x)
 #	define jstr_unlikely(x) (x)
-#endif /* __has_builtin(__builtin_expect) */
+#endif /* unlikely */
 
 #if defined __GNUC__ || defined __clang__
 #	define JSTR_INLINE __attribute__((always_inline)) inline
@@ -207,7 +207,9 @@
 #		else
 #			define JSTR_DEPRECATED(msg, replacement)
 #		endif
-#		if __has_attribute(nothrow)
+#		if __has_attribute(__nothrow__)
+#			define JSTR_NOTHROW __attribute__((__nothrow__))
+#		elif __has_attribute(nothrow)
 #			define JSTR_NOTHROW __attribute__((nothrow))
 #		else
 #			define JSTR_NOTHROW
