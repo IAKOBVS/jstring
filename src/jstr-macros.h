@@ -136,20 +136,6 @@
 #	define JSTR_RESTRICT
 #endif /* restrict */
 
-#if defined __glibc_unlikely && defined __glibc_likely
-#	define jstr_likely(x)	 __glibc_likely(x)
-#	define jstr_unlikely(x) __glibc_unlikely(x)
-#elif (defined __GNUC__ && (__GNUC__ >= 3)) \
-|| (defined __clang__ && defined __has_builtin)
-#	if __has_builtin(__builtin_expect)
-#		define jstr_likely(x)	 __builtin_expect((x), 1)
-#		define jstr_unlikely(x) __builtin_expect((x), 0)
-#	endif
-#else
-#	define jstr_likely(x)	 (x)
-#	define jstr_unlikely(x) (x)
-#endif /* unlikely */
-
 #if defined __glibc_has_attribute
 #	define JSTR_HAS_ATTRIBUTE(attr) __glibc_has_attribute(attr)
 #elif defined __has_attribute
@@ -173,6 +159,19 @@
 #else
 #	define JSTR_HAS_EXTENSION(ext) (0)
 #endif
+
+#if defined __glibc_unlikely && defined __glibc_likely
+#	define jstr_likely(x)	 __glibc_likely(x)
+#	define jstr_unlikely(x) __glibc_unlikely(x)
+#elif (defined __GNUC__ && (__GNUC__ >= 3)) || (defined __clang__)
+#	if JSTR_HAS_BUILTIN(__builtin_expect)
+#		define jstr_likely(x)	 __builtin_expect((x), 1)
+#		define jstr_unlikely(x) __builtin_expect((x), 0)
+#	endif
+#else
+#	define jstr_likely(x)	 (x)
+#	define jstr_unlikely(x) (x)
+#endif /* unlikely */
 
 #if defined __GNUC__ || defined __clang__
 #	define JSTR_INLINE __attribute__((always_inline)) inline
