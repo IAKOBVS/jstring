@@ -266,10 +266,10 @@
 #	else
 #		define JSTR_NOTHROW
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__may_alias__) || defined __GNUC__
+#	if JSTR_HAS_ATTRIBUTE(__may_alias__)
 #		define JSTR_MAY_ALIAS		 __attribute__((__may_alias__))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
-#	elif JSTR_HAS_ATTRIBUTE(may_alias) || defined __GNUC__
+#	elif JSTR_HAS_ATTRIBUTE(may_alias)
 #		define JSTR_MAY_ALIAS		 __attribute__((may_alias))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	else
