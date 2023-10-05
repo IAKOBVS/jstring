@@ -1033,19 +1033,19 @@ do_dir:
 				if (!(jflags & JSTR_IO_FTW_DIR))
 					break;
 			ret = fn(dirpath, dlen, st);
-			if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
-				if (ret == JSTR_IO_FTW_RET_CONTINUE)
-					continue;
-				else if (ret == JSTR_IO_FTW_RET_SKIP_SUBTREE
-					 || ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
-					break;
-				else /* RET_STOP */
-					goto err_closedir;
-			} else {
-				if (jstr_unlikely(!ret))
-					goto err_closedir;
-			}
 		} while (0);
+		if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
+			if (ret == JSTR_IO_FTW_RET_CONTINUE)
+				continue;
+			else if (ret == JSTR_IO_FTW_RET_SKIP_SUBTREE
+				 || ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
+				break;
+			else /* RET_STOP */
+				goto err_closedir;
+		} else {
+			if (jstr_unlikely(!ret))
+				goto err_closedir;
+		}
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
