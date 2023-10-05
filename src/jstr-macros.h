@@ -255,6 +255,20 @@
 #	else
 #		define JSTR_BUILTIN_CONSTANT_P(p) 0
 #	endif
+#	if JSTR_HAS_ATTRIBUTE(__unused__)
+#		define JSTR_MAYBE_UNUSED __attribute__((__unused__))
+#	elif JSTR_HAS_ATTRIBUTE(unused)
+#		define JSTR_MAYBE_UNUSED __attribute__((unused))
+#	else
+#		define JSTR_MAYBE_UNUSED
+#	endif
+#	if JSTR_HAS_ATTRIBUTE(__noinline__)
+#		define JSTR_NOINLINE __attribute__((__noinline__))
+#	elif JSTR_HAS_ATTRIBUTE(noinline)
+#		define JSTR_NOINLINE __attribute__((noinline))
+#	elif defined _MSC_VER
+#		define JSTR_NOINLINE __declspec(noinline)
+#	endif
 
 #elif defined _MSC_VER
 
@@ -276,6 +290,8 @@
 #	define JSTR_DEPRECATED(msg, replacement)
 #	define JSTR_NOTHROW __declspec(nothrow)
 #	define JSTR_MAY_ALIAS
+#	define JSTR_NOINLINE
+#	define JSTR_MAYBE_UNUSED
 
 #else
 
@@ -296,22 +312,10 @@
 #	define JSTR_DEPRECATED(msg, replacement)
 #	define JSTR_NOTHROW
 #	define JSTR_MAY_ALIAS
+#	define JSTR_NOINLINE
+#	define JSTR_MAYBE_UNUSED
 
 #endif /* Gnuc || clang || msvc */
-
-#if defined __GNUC__ || defined __clang__
-#	define JSTR_MAYBE_UNUSED __attribute__((unused))
-#else
-#	define JSTR_MAYBE_UNUSED
-#endif /* maybe_unused */
-
-#if defined __GNUC__ || defined __clang__
-#	define JSTR_NOINLINE __attribute__((noinline))
-#elif defined _MSC_VER
-#	define JSTR_NOINLINE __declspec(noinline)
-#else
-#	define JSTR_NOINLINE
-#endif /* noinline */
 
 #define JSTR_CASE_VOWEL_LOWER \
 case 'a':                     \
