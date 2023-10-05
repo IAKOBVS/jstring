@@ -195,12 +195,17 @@
 #	else
 #		define JSTR_COLD
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(sentinel)
+#	if JSTR_HAS_ATTRIBUTE(__sentinel__)
+#		define JSTR_SENTINEL __attribute__((__sentinel__))
+#	elif JSTR_HAS_ATTRIBUTE(sentinel)
 #		define JSTR_SENTINEL __attribute__((sentinel))
 #	else
 #		define JSTR_SENTINEL
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(nonnull)
+#	if JSTR_HAS_ATTRIBUTE(__nonnull__)
+#		define JSTR_NONNULL_ALL   __attribute__((__nonnull__))
+#		define JSTR_NONNULL(args) __attribute__((__nonnull__(args)))
+#	elif JSTR_HAS_ATTRIBUTE(nonnull)
 #		define JSTR_NONNULL_ALL   __attribute__((nonnull))
 #		define JSTR_NONNULL(args) __attribute__((nonnull(args)))
 #	else
