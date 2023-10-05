@@ -2,6 +2,7 @@
 #define JSTR_MACROS_H 1
 
 #include "jstr-config.h"
+#include "jstr-pointer-arith.h"
 #include <assert.h>
 #include <features.h>
 #include <stdio.h>
@@ -21,9 +22,7 @@
 #	define JSTR_HAVE_ALLOCA 0
 #endif
 
-#define JSTR_MAX_STACK_ARRAY 4096
-
-#include "jstr-pointer-arith.h"
+#define JSTR_PAGE_SIZE 4096
 
 #define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, P_JSTR_MALLOC_ALIGNMENT)

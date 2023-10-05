@@ -799,8 +799,8 @@ jstr_reg_replace_bref_len(char *R *R const s,
 	if (jstr_unlikely(no_bref))
 		return jstr_reg_replace_len(s, sz, cap, rplc, rplclen, preg, eflags);
 	unsigned char *rdst;
-	unsigned char rdst_stack[JSTR_MAX_STACK_ARRAY];
-	if (jstr_unlikely(rdstlen > JSTR_MAX_STACK_ARRAY)) {
+	unsigned char rdst_stack[JSTR_PAGE_SIZE];
+	if (jstr_unlikely(rdstlen > JSTR_PAGE_SIZE)) {
 		rdst = (unsigned char *)malloc(rdstlen);
 		P_JSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ESPACE);
 	} else {
@@ -870,7 +870,7 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 	regmatch_t rm[10];
 	size_t rdstlen = rplclen;
 	size_t rdstcap = 0;
-	unsigned char rdst_stack[JSTR_MAX_STACK_ARRAY];
+	unsigned char rdst_stack[JSTR_PAGE_SIZE];
 	unsigned char *rdst = NULL;
 	unsigned char *rdstp;
 	const unsigned char *const rend = (u *)rplc + rplclen;
@@ -892,7 +892,7 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 		     ++rsrc)
 			if (jstr_likely(jstr_isdigit(*++rsrc)))
 				rdstlen = rdstlen + (rm[*rsrc - '0'].rm_eo - rm[*rsrc - '0'].rm_so) - 2;
-		if (jstr_unlikely(rdstlen > JSTR_MAX_STACK_ARRAY)) {
+		if (jstr_unlikely(rdstlen > JSTR_PAGE_SIZE)) {
 			if (jstr_unlikely(rdst == NULL)) {
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, P_JSTR_MALLOC_ALIGNMENT);
 				rdst = (u *)malloc(rdstcap);

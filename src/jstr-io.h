@@ -528,7 +528,7 @@ jstr_io_alloc_popen(char *R *R const s,
 	if (jstr_unlikely(fp == NULL))
 		goto err;
 	char *p;
-	enum { MINBUF = JSTR_MAX_STACK_ARRAY };
+	enum { MINBUF = JSTR_PAGE_SIZE };
 	char buf[MINBUF];
 	p = buf + fread(buf, 1, MINBUF, fp);
 	if (jstr_unlikely(ferror(fp)))
