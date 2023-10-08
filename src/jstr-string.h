@@ -259,7 +259,7 @@ pjstr_strrstr_len(const void *R const hs,
 		const unsigned char *n = (u *)ne;
 		const uint16_t nw = n[1] << 8 | n[0];
 		uint16_t hw = h[0] << 8 | h[-1];
-		for (h -= 2; (h != start) & (hw != nw); hw = hw << 8 | *h--)
+		for (h -= 2; h != start && hw != nw; hw = hw << 8 | *h--)
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
@@ -268,7 +268,7 @@ pjstr_strrstr_len(const void *R const hs,
 		const unsigned char *n = (u *)ne;
 		const uint32_t nw = n[2] << 24 | n[1] << 16 | n[0] << 8;
 		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8;
-		for (h -= 3; (h != start) & (hw != nw); hw = (hw | *h--) << 8)
+		for (h -= 3; h != start && hw != nw; hw = (hw | *h--) << 8)
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
@@ -277,7 +277,7 @@ pjstr_strrstr_len(const void *R const hs,
 		const unsigned char *n = (u *)ne;
 		const uint32_t nw = n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		for (h -= 4; (h != start) & (hw != nw); hw = hw << 8 | *h--)
+		for (h -= 4; h != start && hw != nw; hw = hw << 8 | *h--)
 			;
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
