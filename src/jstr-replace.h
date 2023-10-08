@@ -616,7 +616,7 @@ jstr_replace_len(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_replace_len_from_unsafe(char *R *R const s,
+jstr_replace_len_from(char *R *R const s,
 			     size_t *R const sz,
 			     size_t *R const cap,
 			     const size_t start_idx,
@@ -826,7 +826,7 @@ jstr_replacen_len(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_replacen_len_from_unsafe(char *R *R const s,
+jstr_replacen_len_from(char *R *R const s,
 			      size_t *R const sz,
 			      size_t *R const cap,
 			      const size_t start_idx,
@@ -864,7 +864,7 @@ jstr_replaceall_len(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_replaceall_len_from_unsafe(char *R *R const s,
+jstr_replaceall_len_from(char *R *R const s,
 				size_t *R const sz,
 				size_t *R const cap,
 				const size_t start_idx,
