@@ -24,6 +24,8 @@ for file in $(echo glibc-*.h); do
 	s/P_JSTR__/P_JSTR_/g;
 	s/if (__BYTE_ORDER == __LITTLE_ENDIAN)/if (JSTR_ENDIAN_LITTLE)/g;
 	s/include[ \t]*"string\-/include "jstr-string-/g;
+	s/__attribute__((__may_alias__))/JSTR_MAY_ALIAS/g;
+	s/__attribute__((may_alias))/JSTR_MAY_ALIAS/g;
 	' "$file")" >"$file" &
 done
 wait
