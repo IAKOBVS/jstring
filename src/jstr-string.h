@@ -949,9 +949,7 @@ jstr_line_next_nul(const char *s) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, '\n');
-	if (s && *(s + 1))
-		return (char *)s + 1;
-	return NULL;
+	return (s && *(s + 1)) ? (char *)s + 1 : NULL;
 #else
 	s = jstr_line_next(s);
 	return (char *)(s ? s : s + strlen(s));
