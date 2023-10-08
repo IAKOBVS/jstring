@@ -907,9 +907,7 @@ jstr_line_next_len(const char *begin,
 		   const char *const end) JSTR_NOEXCEPT
 {
 	begin = (char *)memchr(begin, '\n', end - begin);
-	if (begin && *(begin + 1))
-		return (char *)begin + 1;
-	return NULL;
+	return (begin && *(begin + 1)) ? (char *)begin + 1 : NULL;
 }
 
 /*
@@ -923,9 +921,7 @@ static char *
 jstr_line_next(const char *s) JSTR_NOEXCEPT
 {
 	s = strchr(s, '\n');
-	if (s && *(s + 1))
-		return (char *)s + 1;
-	return NULL;
+	return (s && *(s + 1)) ? (char *)s + 1 : NULL;
 }
 
 /*
