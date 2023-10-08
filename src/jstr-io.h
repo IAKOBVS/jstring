@@ -42,41 +42,6 @@ enum {
 	JSTR_IO_BINARY_CHECK_MAX = 64
 };
 
-JSTR_FUNC
-static char *
-jstr_io_dirname_len(char *R path,
-		    const size_t sz)
-{
-	if (jstr_unlikely(*path == '/')) {
-		if (jstr_unlikely(*(path + 1) == '\0'))
-			return path + 1;
-	} else if (jstr_unlikely(*path == '\0')) {
-		return NULL;
-	}
-	char *p = path + sz - 1;
-	while (*p == '/'
-	       && p != path)
-		--p;
-	*(p + 1) = '\0';
-	const char *const end = p;
-	p = (char *)jstr_memrchr(path, '/', p - path);
-	if (jstr_unlikely(p == NULL))
-		return (char *)end;
-	while (--p != path
-	       && *p == '/')
-		;
-	if (p != path)
-		*(p + 1) = '\0';
-	return (char *)(p - path);
-}
-
-JSTR_FUNC
-static char *
-jstr_io_dirname(char *R path)
-{
-	return jstr_io_dirname_len(path, strlen(path));
-}
-
 #define S switch (*ext++)
 #define T  \
 case '\0': \
