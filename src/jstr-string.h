@@ -934,7 +934,8 @@ static char *
 jstr_line_next_len_nul(const char *begin,
 		       const char *const end) JSTR_NOEXCEPT
 {
-	return (char *)((begin = jstr_line_next_len(begin, end)) ? begin : end);
+	begin = jstr_line_next_len(begin, end);
+	return (char *)(begin ? begin : end);
 }
 
 /*
