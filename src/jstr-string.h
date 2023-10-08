@@ -230,6 +230,28 @@ jstr_memrchr(const void *R s,
 #endif
 }
 
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strrchrnul(const void *R s,
+		const int c) JSTR_NOEXCEPT
+{
+	const size_t len = strlen((char *)s);
+	const char *const p = (char *)jstr_memrchr(s, c, len);
+	return p ? (char *)p : (char *)s + len;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static void *
+jstr_memchrnul(const void *R s,
+	       const int c,
+	       const size_t n) JSTR_NOEXCEPT
+{
+	const char *const p = (char *)jstr_memrchr(s, c, n);
+	return (void *)(p ? p : (char *)s + n);
+}
+
 JSTR_INLINE
 JSTR_FUNC_PURE
 static void *
