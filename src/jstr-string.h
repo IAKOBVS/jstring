@@ -956,7 +956,8 @@ jstr_line_next_nul(const char *s) JSTR_NOEXCEPT
 		return (char *)s + 1;
 	return NULL;
 #else
-	return (char *)((s = jstr_line_next(s)) ? s : s + strlen(s));
+	s = jstr_line_next(s);
+	return (char *)(s ? s : s + strlen(s));
 #endif
 }
 
