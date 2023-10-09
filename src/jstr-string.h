@@ -852,9 +852,9 @@ static int
 jstr_ends(const char *R const hs,
 	  const char *R const ne) JSTR_NOEXCEPT
 {
-	const size_t nelen = strlen(ne);
-	const size_t hslen = jstr_strnlen(ne, nelen);
-	return (hslen >= nelen) ? !memcmp(hs + (hslen + strlen(hs + hslen)) - nelen, ne, nelen) : 0;
+	const size_t hslen = strlen(hs);
+	const size_t nelen = jstr_strnlen(ne, hslen);
+	return (hslen > nelen || (hslen == nelen && *(ne + nelen) == '\0')) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
 }
 
 /*
