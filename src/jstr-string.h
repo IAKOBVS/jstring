@@ -1079,6 +1079,8 @@ jstr_fmt_thousand_sep_len(char *R nptr,
 			  size_t sz,
 			  const int separator)
 {
+	if (jstr_unlikely(sz == 0))
+		return nptr;
 	char *end = nptr + sz;
 	if (*nptr == '-') {
 		++nptr;
