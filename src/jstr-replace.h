@@ -101,6 +101,22 @@ err:
 	return 0;
 }
 
+JSTR_INLINE
+JSTR_FUNC
+static char *
+pjstr_replaceat_len_higher(char *R *R const s,
+			   size_t *R const sz,
+			   size_t *R const cap,
+			   const size_t at,
+			   const char *R const rplc,
+			   const size_t rplclen,
+			   const size_t findlen) JSTR_NOEXCEPT
+{
+	if (*cap < *sz + rplclen - findlen)
+		PJSTR_REALLOC(*s, *cap, *sz + rplclen, return NULL);
+	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
+}
+
 JSTR_FUNC
 static char *
 jstr_replaceat_len(char *R *R const s,
@@ -116,28 +132,7 @@ jstr_replaceat_len(char *R *R const s,
 		*sz += rplclen - findlen;
 		return *s + at + rplclen;
 	}
-	if (*cap <= *sz + rplclen - findlen)
-		PJSTR_REALLOC(*s, *cap, *sz + rplclen - findlen, goto err);
-	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
-err:
-	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
-	return NULL;
-}
-
-JSTR_INLINE
-JSTR_FUNC
-static char *
-pjstr_replaceat_len_higher(char *R *R const s,
-			   size_t *R const sz,
-			   size_t *R const cap,
-			   const size_t at,
-			   const char *R const rplc,
-			   const size_t rplclen,
-			   const size_t findlen) JSTR_NOEXCEPT
-{
-	if (*cap < *sz + rplclen - findlen)
-		PJSTR_REALLOC(*s, *cap, *sz + rplclen, return NULL);
-	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
+	return pjstr_replaceat_len_higher(s, sz, cap, at, rplc, rplclen, findlen);
 }
 
 /*
