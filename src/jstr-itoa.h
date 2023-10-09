@@ -105,7 +105,7 @@ jstr_itoa_p(char *R nptr,
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
-jstr_ulltoa_sep_p(char *R nptr,
+jstr_ulltoa_p_sep(char *R nptr,
 		  unsigned long long number,
 		  const unsigned int base,
 		  const int separator)
@@ -146,31 +146,31 @@ jstr_ulltoa_sep_p(char *R nptr,
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_ultoa_sep_p(char *R nptr,
+jstr_ultoa_p_sep(char *R nptr,
 		 unsigned long number,
 		 const unsigned int base,
 		 const int separator)
 {
-	return jstr_ulltoa_sep_p(nptr, number, base, separator);
+	return jstr_ulltoa_p_sep(nptr, number, base, separator);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_utoa_sep_p(char *R nptr,
+jstr_utoa_p_sep(char *R nptr,
 		unsigned int number,
 		const unsigned int base,
 		const int separator)
 {
-	return jstr_ulltoa_sep_p(nptr, number, base, separator);
+	return jstr_ulltoa_p_sep(nptr, number, base, separator);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_lltoa_sep_p(char *R nptr,
+jstr_lltoa_p_sep(char *R nptr,
 		 long long number,
 		 const unsigned int base,
 		 const int separator)
@@ -179,31 +179,31 @@ jstr_lltoa_sep_p(char *R nptr,
 		number = -number;
 		*nptr++ = '-';
 	}
-	return jstr_ulltoa_sep_p(nptr, number, base, separator);
+	return jstr_ulltoa_p_sep(nptr, number, base, separator);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_ltoa_sep_p(char *R nptr,
+jstr_ltoa_p_sep(char *R nptr,
 		long number,
 		const unsigned int base,
 		const int separator)
 {
-	return jstr_lltoa_sep_p(nptr, number, base, separator);
+	return jstr_lltoa_p_sep(nptr, number, base, separator);
 }
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_itoa_sep_p(char *R nptr,
+jstr_itoa_p_sep(char *R nptr,
 		int number,
 		const unsigned int base,
 		const int separator)
 {
-	return jstr_lltoa_sep_p(nptr, number, base, separator);
+	return jstr_lltoa_p_sep(nptr, number, base, separator);
 }
 
 P_JSTR_END_DECLS
