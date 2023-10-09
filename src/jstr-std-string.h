@@ -292,6 +292,46 @@ jstr_strtok(const char *R *R const save_ptr,
 	return (char *)s;
 }
 
+JSTR_FUNC_PURE
+JSTR_INLINE
+static int
+jstr_atoi(const char *R const s)
+{
+	return strtol(s, NULL, 0);
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static long
+jstr_atol(const char *R const s)
+{
+	return strtol(s, NULL, 0);
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static long long
+jstr_atoll(const char *R const s)
+{
+	return strtoll(s, NULL, 0);
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static double
+jstr_atod(const char *R const s)
+{
+	return strtod(s, NULL);
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static float
+jstr_atof(const char *R const s)
+{
+	return strtof(s, NULL);
+}
+
 PJSTR_END_DECLS
 
 #undef R
