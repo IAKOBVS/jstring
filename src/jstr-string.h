@@ -785,6 +785,7 @@ jstr_strchr_inv(const char *R s,
 /*
    Return value:
    pointer to non-C in S.
+   S + N if C is not found.
 */
 JSTR_FUNC_PURE
 static char *
@@ -804,6 +805,7 @@ jstr_memchrnul_inv(const void *R const s,
 /*
    Return value:
    pointer to non-C in S.
+   NULL if C is not found.
 */
 JSTR_FUNC_PURE
 static void *
