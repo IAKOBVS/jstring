@@ -117,6 +117,12 @@ pjstr_replaceat_len_higher(char *R *R const s,
 	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
 }
 
+/*
+   Replace RPLC in S with FIND.
+   Return value:
+   ptr to RPLC in S + RPLCLEN;
+   NULL on error.
+*/
 JSTR_FUNC
 static char *
 jstr_replaceat_len(char *R *R const s,
