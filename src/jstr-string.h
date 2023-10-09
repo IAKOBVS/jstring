@@ -1067,26 +1067,30 @@ jstr_line_number(const char *begin,
 	return cnt;
 }
 
+/*
+   Add thousand separator.
+*/
 JSTR_FUNC
 static char *
 jstr_thousand_sep_len(char *R nptr,
 		      size_t sz,
 		      const int separator)
 {
-	const char *start = nptr;
-	const char *end = nptr + sz;
-	if (*start == '-') {
-		++start;
+	if (sz <= 3) {
+		return nptr + sz;
+	}
+	if (*nptr == '-') {
+		if (sz == 4)
+			return nptr + sz;
+		++nptr;
 		--sz;
 	}
-	if (sz <= 3)
-		return nptr + sz;
-	nptr = (char *)end - 1;
-	const int ccnt = (sz - 1) / 3;
-	end += ccnt;
-	int cnt = ccnt;
+	int cnt = (sz - 1) / 3;
+	const char *const start = nptr;
+	char *const end = nptr + sz + cnt;
+	*end = '\0';
+	nptr += (sz - 1);
 	int n = 0;
-	*(nptr + ccnt + 1) = '\0';
 	while (nptr >= start) {
 		*(nptr + cnt) = *nptr;
 		--nptr;
@@ -1100,7 +1104,11 @@ jstr_thousand_sep_len(char *R nptr,
 	return (char *)end;
 }
 
+/*
+   Add thousand separator.
+*/
 JSTR_FUNC
+JSTR_INLINE
 static char *
 jstr_thousand_sep(char *R nptr,
 		  const int separator)
