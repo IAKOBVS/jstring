@@ -133,7 +133,7 @@ JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static jtrie_node_ty *
-jtrie_starts_with(const jtrie_node_ty *R const root,
+jtrie_starts(const jtrie_node_ty *R const root,
 		  const char *R const word) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*word == '\0'))
@@ -160,7 +160,7 @@ static int
 jtrie_match(const jtrie_node_ty *R const root,
 	    const char *R const word) JSTR_NOEXCEPT
 {
-	return jtrie_starts_with(root, word)->EOW;
+	return jtrie_starts(root, word)->EOW;
 }
 
 PJSTR_END_DECLS
