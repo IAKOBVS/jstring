@@ -1002,7 +1002,7 @@ jstr_insert_len(char *R *R const s,
 	if (at + srclen > *sz) {
 		PJSTR_REALLOC(*s, *cap, at + srclen + 1, goto err);
 		*sz = at + srclen;
-		(*s)[*sz] = '\0';
+		*(*s + *sz) = '\0';
 	}
 	pjstr_insert_len_unsafe(*s, at, src, srclen);
 	return 1;
