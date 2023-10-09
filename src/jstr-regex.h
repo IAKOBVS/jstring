@@ -695,7 +695,7 @@ pjstr_reg_replace_len(char *R *R const s,
 	if (jstr_unlikely(ret != JSTR_REG_RET_NOERROR)
 	    || jstr_unlikely(rm.rm_eo == rm.rm_so))
 		return ret;
-	if (jstr_unlikely(jstr_replaceat_len(s, sz, cap, rm.rm_so + start_idx, rplc, rplclen, rm.rm_eo - rm.rm_so) == NULL))
+	if (jstr_unlikely(pjstr_replaceat_len_higher(s, sz, cap, rm.rm_so + start_idx, rplc, rplclen, rm.rm_eo - rm.rm_so) == NULL))
 		return JSTR_REG_RET_ESPACE;
 	return ret;
 }
@@ -839,7 +839,7 @@ jstr_reg_replace_bref_len(char *R *R const s,
 		}                                                                      \
 	} while (0)
 	PJSTR_CREAT_RPLC_BREF(*s, rdst, rdstlen, rplc, rend);
-	if (jstr_unlikely(jstr_replaceat_len(s, sz, cap, rm[0].rm_so, (char *)rdst, rdstlen, findlen) == NULL))
+	if (jstr_unlikely(pjstr_replaceat_len_higher(s, sz, cap, rm[0].rm_so, (char *)rdst, rdstlen, findlen) == NULL))
 		ret = JSTR_REG_RET_ESPACE;
 	if (rdst != rdst_stack)
 		free(rdst);
