@@ -1079,9 +1079,8 @@ jstr_fmt_thousand_sep_len(char *R nptr,
 			  size_t sz,
 			  const int separator)
 {
-	if (sz <= 3) {
+	if (sz <= 3)
 		return nptr + sz;
-	}
 	if (*nptr == '-') {
 		if (sz == 4)
 			return nptr + sz;
