@@ -1068,13 +1068,14 @@ jstr_line_number(const char *begin,
 }
 
 /*
-   Add thousand separator.
+   Add thousand separator to NPTR.
+   For example: 1234 -> 1,234.
 */
 JSTR_FUNC
 static char *
-jstr_thousand_sep_len(char *R nptr,
-		      size_t sz,
-		      const int separator)
+jstr_fmt_thousand_sep_len(char *R nptr,
+			  size_t sz,
+			  const int separator)
 {
 	if (sz <= 3) {
 		return nptr + sz;
@@ -1105,15 +1106,16 @@ jstr_thousand_sep_len(char *R nptr,
 }
 
 /*
-   Add thousand separator.
+   Add thousand separator to NPTR.
+   For example: 1234 -> 1,234.
 */
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_thousand_sep(char *R nptr,
-		  const int separator)
+jstr_fmt_thousand_sep(char *R nptr,
+		      const int separator)
 {
-	return jstr_thousand_sep_len(nptr, strlen(nptr), separator);
+	return jstr_fmt_thousand_sep_len(nptr, strlen(nptr), separator);
 }
 
 PJSTR_END_DECLS

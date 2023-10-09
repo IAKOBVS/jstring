@@ -18,21 +18,21 @@ PJSTR_BEGIN_DECLS
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
-jstr_ulltoa_p(char *R nptr,
+jstr_ulltoa_p(char *R dst,
 	      unsigned long long number,
 	      const unsigned int base) JSTR_NOEXCEPT
 {
-	char *start = nptr;
+	char *start = dst;
 	do
-		*nptr++ = number % base + '0';
+		*dst++ = number % base + '0';
 	while (number /= base);
-	const char *const end = nptr;
-	*nptr-- = '\0';
+	const char *const end = dst;
+	*dst-- = '\0';
 	int c;
-	while (start < nptr) {
+	while (start < dst) {
 		c = *start;
-		*start++ = *nptr;
-		*nptr-- = c;
+		*start++ = *dst;
+		*dst-- = c;
 	}
 	return (char *)end;
 }
@@ -42,15 +42,15 @@ JSTR_FUNC
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
 static char *
-jstr_lltoa_p(char *R nptr,
+jstr_lltoa_p(char *R dst,
 	     long long number,
 	     const unsigned int base) JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
-		*nptr++ = '-';
+		*dst++ = '-';
 	}
-	return jstr_ulltoa_p(nptr, number, base);
+	return jstr_ulltoa_p(dst, number, base);
 }
 
 #define PJSTR_ULLTOA(type, name, u)                                       \
@@ -59,11 +59,11 @@ jstr_lltoa_p(char *R nptr,
 	JSTR_RETURNS_NONNULL                                              \
 	JSTR_INLINE                                                       \
 	static char *                                                     \
-	jstr_##name##_p(char *R nptr,                                     \
+	jstr_##name##_p(char *R dst,                                      \
 			type number,                                      \
 			const unsigned int base) JSTR_NOEXCEPT            \
 	{                                                                 \
-		return jstr_##u##lltoa_p(nptr, number, base);             \
+		return jstr_##u##lltoa_p(dst, number, base);              \
 	}
 
 PJSTR_ULLTOA(unsigned long, ultoa, u)
@@ -77,39 +77,39 @@ PJSTR_ULLTOA(int, itoa, )
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
-jstr_ulltoa_p_sep(char *R nptr,
+jstr_ulltoa_p_sep(char *R dst,
 		  unsigned long long number,
 		  const unsigned int base,
 		  const int separator)
 {
-	char *start = nptr;
+	char *start = dst;
 	int n = 0;
 	int c;
 	for (unsigned long long loop;;) {
 		c = number % base + '0';
 		loop = number /= base;
 		if (++n != 3) {
-			*nptr++ = c;
+			*dst++ = c;
 			if (jstr_unlikely(loop == 0))
 				break;
 		} else {
 			if (loop) {
-				*nptr = c;
-				*(nptr + 1) = separator;
-				nptr += 2;
+				*dst = c;
+				*(dst + 1) = separator;
+				dst += 2;
 			} else {
-				*nptr++ = c;
+				*dst++ = c;
 				break;
 			}
 			n = 0;
 		}
 	}
-	const char *const end = nptr;
-	*nptr-- = '\0';
-	while (start < nptr) {
+	const char *const end = dst;
+	*dst-- = '\0';
+	while (start < dst) {
 		c = *start;
-		*start++ = *nptr;
-		*nptr-- = c;
+		*start++ = *dst;
+		*dst-- = c;
 	}
 	return (char *)end;
 }
@@ -118,30 +118,30 @@ jstr_ulltoa_p_sep(char *R nptr,
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_lltoa_p_sep(char *R nptr,
+jstr_lltoa_p_sep(char *R dst,
 		 long long number,
 		 const unsigned int base,
 		 const int separator)
 {
 	if (number < 0) {
 		number = -number;
-		*nptr++ = '-';
+		*dst++ = '-';
 	}
-	return jstr_ulltoa_p_sep(nptr, number, base, separator);
+	return jstr_ulltoa_p_sep(dst, number, base, separator);
 }
 
-#define PJSTR_ULLTOA_SEP(type, name, u)                                      \
-	/* Return ptr to '\0' after the last digit in the DEST string. */    \
-	JSTR_FUNC                                                            \
-	JSTR_RETURNS_NONNULL                                                 \
-	JSTR_INLINE                                                          \
-	static char *                                                        \
-	jstr_##name##_p_sep(char *R nptr,                                    \
-			    type number,                                     \
-			    const unsigned int base,                         \
-			    const int separator) JSTR_NOEXCEPT               \
-	{                                                                    \
-		return jstr_##u##lltoa_p_sep(nptr, number, base, separator); \
+#define PJSTR_ULLTOA_SEP(type, name, u)                                     \
+	/* Return ptr to '\0' after the last digit in the DEST string. */   \
+	JSTR_FUNC                                                           \
+	JSTR_RETURNS_NONNULL                                                \
+	JSTR_INLINE                                                         \
+	static char *                                                       \
+	jstr_##name##_p_sep(char *R dst,                                    \
+			    type number,                                    \
+			    const unsigned int base,                        \
+			    const int separator) JSTR_NOEXCEPT              \
+	{                                                                   \
+		return jstr_##u##lltoa_p_sep(dst, number, base, separator); \
 	}
 
 PJSTR_ULLTOA_SEP(unsigned long, ultoa, u)
