@@ -748,6 +748,75 @@ jstr_strrpbrk(const char *R const s,
 }
 
 /*
+   Return value:
+   pointer to non-C in S;
+   pointer to '\0' if C is not found;
+   S if C is '\0';
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strchrnul_inv(const char *R s,
+		   int c)
+{
+	if (jstr_unlikely(c == '\0'))
+		return (char *)s;
+	c = (char)c;
+	while (*s++ == c)
+		;
+	--s;
+	return (char *)s - 1;
+}
+
+/*
+   Return value:
+   pointer to non-C in S;
+   NULL if C is not found.
+*/
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strchr_inv(const char *R s,
+		int c)
+{
+	s = jstr_strchrnul_inv(s, c);
+	return *s ? (char *)s : NULL;
+}
+
+/*
+   Return value:
+   pointer to non-C in S.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_memchrnul_inv(const void *R const s,
+		   int c,
+		   size_t n)
+{
+	const unsigned char *p = (unsigned char *)s;
+	const unsigned char *end = p + n;
+	c = (unsigned char)c;
+	while (p != end
+	       && *p == c)
+		++p;
+	return (char *)p;
+}
+
+/*
+   Return value:
+   pointer to non-C in S.
+*/
+JSTR_FUNC_PURE
+static void *
+jstr_memchr_inv(const void *R s,
+		int c,
+		size_t n)
+{
+	const void *const end = (unsigned char *)s + n;
+	s = (void *)jstr_memchrnul_inv(s, c, n);
+	return (s != end) ? (void *)s : NULL;
+}
+
+/*
   Check if S2 is in end of S1.
   Return value:
   1 if true;
