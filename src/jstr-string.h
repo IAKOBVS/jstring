@@ -258,13 +258,9 @@ static void *
 pjstr_strrstr_len(const void *R const hs,
 		  const size_t hslen,
 		  const void *R const ne,
-		  const size_t nelen,
-		  const int check_hl_gt_ne) JSTR_NOEXCEPT
+		  const size_t nelen) JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	if (check_hl_gt_ne)
-		if (jstr_unlikely(hslen < nelen))
-			return NULL;
 	if (nelen > 4)
 		return pjstr_strrstr_len_bmh((u *)hs, hslen, (unsigned char *)ne, nelen);
 	if (jstr_unlikely(nelen == 0))
@@ -319,7 +315,9 @@ jstr_strrstr_len(const void *R const hs,
 		 const void *R const ne,
 		 const size_t nelen) JSTR_NOEXCEPT
 {
-	return pjstr_strrstr_len(hs, hslen, ne, nelen, 1);
+	if (jstr_unlikely(hslen < nelen))
+		return NULL;
+	return pjstr_strrstr_len(hs, hslen, ne, nelen);
 }
 
 /*
@@ -333,9 +331,15 @@ static char *
 jstr_strrstr(const char *R const hs,
 	     const char *R const ne) JSTR_NOEXCEPT
 {
-	const size_t nelen = strlen(ne);
-	const size_t hslen = jstr_strnlen(ne, nelen);
-	return (hslen >= nelen) ? (char *)pjstr_strrstr_len(hs, hslen + strlen(hs + hslen), ne, nelen, 0) : NULL;
+	const size_t hslen = strlen(hs);
+	const size_t nelen = jstr_strnlen(ne, hslen);
+	if (jstr_likely(hslen > nelen))
+		return (char *)pjstr_strrstr_len(hs, hslen, ne, nelen);
+	if (hslen == nelen)
+		if (*(ne + nelen) == '\0'
+		    && !memcmp(hs, ne, nelen))
+			return (char *)hs;
+	return NULL;
 }
 
 /* Heavily inspired by glibc memmem. */
