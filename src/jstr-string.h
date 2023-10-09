@@ -1084,7 +1084,7 @@ jstr_fmt_thousand_sep_len(char *R nptr,
 		++nptr;
 		--sz;
 	}
-	if (sz <= 3)
+	if (sz < 4)
 		return end;
 	int cnt = (sz - 1) / 3;
 	end += cnt;
