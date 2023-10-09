@@ -1079,19 +1079,18 @@ jstr_fmt_thousand_sep_len(char *R nptr,
 			  size_t sz,
 			  const int separator)
 {
-	if (sz <= 3)
-		return nptr + sz;
+	char *end = nptr + sz;
 	if (*nptr == '-') {
-		if (sz == 4)
-			return nptr + sz;
 		++nptr;
 		--sz;
 	}
+	if (sz <= 3)
+		return end;
 	int cnt = (sz - 1) / 3;
-	const char *const start = nptr;
-	char *const end = nptr + sz + cnt;
+	end += cnt;
 	*end = '\0';
 	nptr += (sz - 1);
+	const char *const start = nptr;
 	int n = 0;
 	while (nptr >= start) {
 		*(nptr + cnt) = *nptr;
