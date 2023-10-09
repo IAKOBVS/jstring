@@ -12,8 +12,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
-#ifndef P_JSTR_I386_STRING_OPTHR_H
-#define P_JSTR_I386_STRING_OPTHR_H 1
+#ifndef PJSTR_I386_STRING_OPTHR_H
+#define PJSTR_I386_STRING_OPTHR_H 1
 #include "jstr-macros.h"
 /* Threshold value for when to enter the unrolled loops.  */
 #define JSTR_WORD_THRES 8

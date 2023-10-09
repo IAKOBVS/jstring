@@ -3,12 +3,12 @@
 
 #include "jstr-macros.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <stdarg.h>
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
@@ -60,7 +60,7 @@ P_JSTR_END_DECLS
 		P_JARR_SZ(j) = 0;                                                                                                               \
 		P_JARR_CAP(j) = P_JARR_MIN_ALLOC(j, new_cap);                                                                                   \
 		P_JARR_DATA(j) = malloc(P_JARR_CAP(j));                                                                                         \
-		P_JSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS_ERR(j); break;);                                                       \
+		PJSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS_ERR(j); break;);                                                       \
 		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                                              \
 	} while (0)
 /* Allocate PTR and pushing VAL. */
@@ -70,7 +70,7 @@ P_JSTR_END_DECLS
 		P_JARR_SZ(j) = 1;                                                                                                               \
 		P_JARR_CAP(j) = JSTR_MIN_CAP;                                                                                                   \
 		P_JARR_DATA(j) = malloc(P_JARR_CAP(j));                                                                                         \
-		P_JSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS_ERR(j); break;);                                                       \
+		PJSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS_ERR(j); break;);                                                       \
 		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                                              \
 		P_JARR_DATA(j)                                                                                                                  \
 		[0] = (value);                                                                                                                  \
@@ -79,23 +79,23 @@ P_JSTR_END_DECLS
 #define jarr_alloc_assign(j, ...)                                                                                                               \
 	do {                                                                                                                                    \
 		P_JARR_CHECK_ARG(j);                                                                                                            \
-		P_JARR_CHECK_VAL(j, P_JSTR_PP_FIRST_ARG(__VA_ARGS__));                                                                          \
-		P_JARR_CAP(j) = P_JARR_MIN_ALLOC(j, P_JSTR_PP_NARG(__VA_ARGS__));                                                               \
+		P_JARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                                                                          \
+		P_JARR_CAP(j) = P_JARR_MIN_ALLOC(j, PJSTR_PP_NARG(__VA_ARGS__));                                                               \
 		P_JARR_DATA(j) = P_JARR_CAST(P_JARR_DATA(j), malloc(P_JARR_CAP(j)));                                                            \
-		P_JSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS_ERR(j); break;);                                                       \
+		PJSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS_ERR(j); break;);                                                       \
 		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                                              \
-		P_JARR_SZ(j) = P_JSTR_PP_NARG(__VA_ARGS__);                                                                                     \
-		P_JSTR_PP_ARRCPY_VA_ARGS(P_JARR_DATA(j), __VA_ARGS__);                                                                          \
+		P_JARR_SZ(j) = PJSTR_PP_NARG(__VA_ARGS__);                                                                                     \
+		PJSTR_PP_ARRCPY_VA_ARGS(P_JARR_DATA(j), __VA_ARGS__);                                                                          \
 	} while (0)
 /* Add elements to end of PTR. */
 #define jarr_appendmore(j, ...)                                                                                                                 \
 	do {                                                                                                                                    \
 		P_JARR_CHECK_ARG(j);                                                                                                            \
-		P_JARR_CHECK_VAL(j, P_JSTR_PP_FIRST_ARG(__VA_ARGS__));                                                                          \
-		if (jstr_unlikely(P_JARR_CAP(j) <= (P_JARR_SZ(j) + P_JSTR_PP_NARG(__VA_ARGS__))))                                               \
+		P_JARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                                                                          \
+		if (jstr_unlikely(P_JARR_CAP(j) <= (P_JARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__))))                                               \
 			P_JARR_REALLOC(j, P_JARR_CAP(j), P_JARR_NULLIFY_MEMBERS_ERR(j); break;);                                                \
-		P_JSTR_PP_ARRCPY_VA_ARGS(P_JARR_DATA(j) + P_JARR_SZ(j), __VA_ARGS__);                                                           \
-		P_JARR_SZ(j) += P_JSTR_PP_NARG(__VA_ARGS__);                                                                                    \
+		PJSTR_PP_ARRCPY_VA_ARGS(P_JARR_DATA(j) + P_JARR_SZ(j), __VA_ARGS__);                                                           \
+		P_JARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                                                                    \
 	} while (0)
 /* Pop PTR[0]. */
 #define jarr_pop_front(j)                                                                                                                       \
@@ -139,7 +139,7 @@ P_JSTR_END_DECLS
 #define jarr_foreach(j, iterator)                                                                                                               \
 	for (size_t iterator = 0, _max_elem_##iterator = (j)->size; iterator < _max_elem_##iterator; ++iterator)
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
@@ -174,7 +174,7 @@ static void P_JARR_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
 	exit(EXIT_FAILURE);
 }
 
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #undef R
 

@@ -3,19 +3,19 @@
 
 #include "jstr-macros.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr-config.h"
 #include "jstr-macros.h"
 #include "jstr-std-string.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 typedef struct jstr_ty {
 	char *data;
@@ -23,18 +23,18 @@ typedef struct jstr_ty {
 	size_t capacity;
 } jstr_ty;
 
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
 #if JSTR_NULLIFY_MEMBERS_ON_FREE
-#	define P_JSTR_NULLIFY_MEMBERS(sz) ((sz) = 0, (cap) = 0)
+#	define PJSTR_NULLIFY_MEMBERS(sz) ((sz) = 0, (cap) = 0)
 #else
-#	define P_JSTR_NULLIFY_MEMBERS(sz, cap)
+#	define PJSTR_NULLIFY_MEMBERS(sz, cap)
 #endif
 
 #if JSTR_DEBUG
-#	define P_JSTR_MALLOC_ERR(p, malloc_fail)                                    \
+#	define PJSTR_MALLOC_ERR(p, malloc_fail)                                    \
 		do {                                                                 \
 			if (jstr_unlikely((p) == NULL)) {                            \
 				pjstr_err_exit_debug(__FILE__, __LINE__, __func__); \
@@ -42,7 +42,7 @@ P_JSTR_END_DECLS
 			}                                                            \
 		} while (0)
 #else
-#	define P_JSTR_MALLOC_ERR(p, malloc_fail)         \
+#	define PJSTR_MALLOC_ERR(p, malloc_fail)         \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
 				malloc_fail;              \
@@ -50,39 +50,39 @@ P_JSTR_END_DECLS
 		} while (0)
 #endif
 
-#define P_JSTR_REALLOC(p, old_cap, new_cap, malloc_fail)   \
+#define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail)   \
 	do {                                               \
 		JSTR_ASSERT_IS_SIZE(old_cap);              \
 		JSTR_ASSERT_IS_SIZE(new_cap);              \
 		old_cap = pjstr_grow(old_cap, new_cap);   \
-		(p) = P_JSTR_CAST(p, realloc(p, old_cap)); \
-		P_JSTR_MALLOC_ERR(p, malloc_fail);         \
+		(p) = PJSTR_CAST(p, realloc(p, old_cap)); \
+		PJSTR_MALLOC_ERR(p, malloc_fail);         \
 	} while (0)
-#define P_JSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
+#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
 	do {                                                  \
 		JSTR_ASSERT_IS_SIZE(old_cap);                 \
 		JSTR_ASSERT_IS_SIZE(new_cap);                 \
 		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);       \
-		(p) = P_JSTR_CAST(p, realloc(p, old_cap));    \
-		P_JSTR_MALLOC_ERR(p, malloc_fail);            \
+		(p) = PJSTR_CAST(p, realloc(p, old_cap));    \
+		PJSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
-#define P_JSTR_MIN_ALLOC(new_cap)                           \
+#define PJSTR_MIN_ALLOC(new_cap)                           \
 	(((new_cap) < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
 	 ? (JSTR_MIN_CAP)                                   \
 	 : ((new_cap)*JSTR_ALLOC_MULTIPLIER))
-#define P_JSTR_MIN_ALLOCEXACT(new_cap) \
+#define PJSTR_MIN_ALLOCEXACT(new_cap) \
 	(((new_cap) < JSTR_MIN_CAP)    \
 	 ? (JSTR_MIN_CAP)              \
 	 : (new_cap))
-#define P_JSTR_ALLOC_ONLY(p, cap, new_cap, do_fail)  \
+#define PJSTR_ALLOC_ONLY(p, cap, new_cap, do_fail)  \
 	do {                                         \
-		(cap) = P_JSTR_MIN_ALLOC(new_cap);   \
+		(cap) = PJSTR_MIN_ALLOC(new_cap);   \
 		(cap) = JSTR_ALIGN_UP_STR(cap);      \
-		(p) = P_JSTR_CAST(p, malloc((cap))); \
-		P_JSTR_MALLOC_ERR((p), do_fail);     \
+		(p) = PJSTR_CAST(p, malloc((cap))); \
+		PJSTR_MALLOC_ERR((p), do_fail);     \
 	} while (0)
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_CONST
 JSTR_INLINE
@@ -92,7 +92,7 @@ pjstr_grow(size_t cap,
 {
 	while ((cap *= JSTR_GROWTH) < new_cap)
 		;
-	return JSTR_ALIGN_UP(cap, P_JSTR_MALLOC_ALIGNMENT);
+	return JSTR_ALIGN_UP(cap, PJSTR_MALLOC_ALIGNMENT);
 }
 
 JSTR_MAYBE_UNUSED
@@ -193,10 +193,10 @@ jstr_alloc(char *R *R const s,
 	   const size_t top)
 {
 	*sz = 0;
-	P_JSTR_ALLOC_ONLY(*s, *cap, top, goto err);
+	PJSTR_ALLOC_ONLY(*s, *cap, top, goto err);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -214,13 +214,13 @@ jstr_allocexact(char *R *R const s,
 		const size_t top) JSTR_NOEXCEPT
 {
 	*sz = 0;
-	*cap = P_JSTR_MIN_ALLOCEXACT(top);
+	*cap = PJSTR_MIN_ALLOCEXACT(top);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
-	P_JSTR_MALLOC_ERR(*s, goto err);
+	PJSTR_MALLOC_ERR(*s, goto err);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -275,12 +275,12 @@ jstr_alloc_assign_len(char *R *R const s,
 		      const char *R const src,
 		      const size_t srclen) JSTR_NOEXCEPT
 {
-	P_JSTR_ALLOC_ONLY(*s, *cap, srclen, goto err);
+	PJSTR_ALLOC_ONLY(*s, *cap, srclen, goto err);
 	*sz = srclen;
 	jstr_strcpy_len(*s, src, srclen);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -323,7 +323,7 @@ jstr_alloc_assignmore(char *R *R const s,
 	va_end(ap);
 	*cap = *sz;
 	char *p;
-	P_JSTR_ALLOC_ONLY(*s, *cap, *sz, goto err);
+	PJSTR_ALLOC_ONLY(*s, *cap, *sz, goto err);
 	p = *s;
 	va_start(ap, cap);
 	while ((arg = va_arg(ap, char *)))
@@ -332,7 +332,7 @@ jstr_alloc_assignmore(char *R *R const s,
 	*p = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -357,7 +357,7 @@ jstr_alloc_assignmore_j(jstr_ty *R const j,
 	va_end(ap);
 	j->capacity = j->size;
 	char *p;
-	P_JSTR_ALLOC_ONLY(j->data, j->capacity, j->size, goto err);
+	PJSTR_ALLOC_ONLY(j->data, j->capacity, j->size, goto err);
 	p = j->data;
 	va_start(ap, j);
 	while ((arg = va_arg(ap, char *)))
@@ -366,7 +366,7 @@ jstr_alloc_assignmore_j(jstr_ty *R const j,
 	*p = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -393,7 +393,7 @@ jstr_appendmore(char *R *R const s,
 	va_end(ap);
 	char *p;
 	if (*cap < *sz + arglen)
-		P_JSTR_REALLOC(*s, *cap, *sz + arglen, goto err);
+		PJSTR_REALLOC(*s, *cap, *sz + arglen, goto err);
 	p = *s + *sz;
 	*sz += arglen;
 	va_start(ap, cap);
@@ -402,7 +402,7 @@ jstr_appendmore(char *R *R const s,
 	va_end(ap);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -427,7 +427,7 @@ jstr_appendmore_j(jstr_ty *R const j,
 	va_end(ap);
 	char *p;
 	if (j->capacity < j->size + arglen)
-		P_JSTR_REALLOC(j->data, j->capacity, j->size + arglen, goto err);
+		PJSTR_REALLOC(j->data, j->capacity, j->size + arglen, goto err);
 	p = j->data + j->size;
 	j->size += arglen;
 	va_start(ap, j);
@@ -436,7 +436,7 @@ jstr_appendmore_j(jstr_ty *R const j,
 	va_end(ap);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -454,12 +454,12 @@ jstr_allocmore_assign_len(char *R *R const s,
 			  const char *R const src,
 			  const size_t srclen) JSTR_NOEXCEPT
 {
-	P_JSTR_ALLOC_ONLY(*s, *cap, srclen * 2, goto err);
+	PJSTR_ALLOC_ONLY(*s, *cap, srclen * 2, goto err);
 	*sz = srclen;
 	jstr_strcpy_len(*s, src, srclen);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -534,12 +534,12 @@ jstr_append_len(char *R *R const s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + srclen)
-		P_JSTR_REALLOC(*s, *cap, *sz + srclen, goto err);
+		PJSTR_REALLOC(*s, *cap, *sz + srclen, goto err);
 	jstr_strcpy_len(*s + *sz, src, srclen);
 	*sz += srclen;
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -576,12 +576,12 @@ jstr_assign_len(char *R *R const s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
-		P_JSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, goto err);
+		PJSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, goto err);
 	jstr_strcpy_len(*s, src, srclen);
 	*sz = srclen;
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -617,12 +617,12 @@ jstr_push_back(char *R *R const s,
 	       const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
+		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
 	(*s)[*sz] = c;
 	(*s)[++*sz] = '\0';
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -642,12 +642,12 @@ jstr_push_front(char *R *R const s,
 		const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		P_JSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
+		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
 	memmove(*s + 1, *s, ++*sz);
 	**s = c;
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -707,10 +707,10 @@ jstr_reserve(char *R *R const s,
 {
 	if (new_cap < *cap)
 		return 1;
-	P_JSTR_REALLOC(*s, *cap, new_cap + 1, goto err);
+	PJSTR_REALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -739,10 +739,10 @@ jstr_reserveexact(char *R *R const s,
 {
 	if (new_cap < *cap)
 		return 1;
-	P_JSTR_REALLOCEXACT(*s, *cap, new_cap + 1, goto err);
+	PJSTR_REALLOCEXACT(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -759,7 +759,7 @@ jstr_reserveexact_j(jstr_ty *R const j,
 	return jstr_reserveexact(&j->data, &j->capacity, new_cap);
 }
 
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #undef R
 

@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <sys/cdefs.h>
 
-#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, P_JSTR_MALLOC_ALIGNMENT)
-#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, P_JSTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__
 #	define JSTR_HAVE_VLA 0
@@ -842,11 +842,11 @@ case '~':
 #define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #ifdef __cplusplus
-#	define P_JSTR_BEGIN_DECLS extern "C" {
-#	define P_JSTR_END_DECLS   }
+#	define PJSTR_BEGIN_DECLS extern "C" {
+#	define PJSTR_END_DECLS   }
 #else
-#	define P_JSTR_BEGIN_DECLS
-#	define P_JSTR_END_DECLS
+#	define PJSTR_BEGIN_DECLS
+#	define PJSTR_END_DECLS
 #endif
 
 #if __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
@@ -988,12 +988,12 @@ enum { JSTR_MEMMEM_THRES = 18 };
 #ifdef __cplusplus
 template <typename T, typename Other>
 static T
-P_JSTR_CAST(T, Other other)
+PJSTR_CAST(T, Other other)
 {
 	return (T)other;
 }
 #else
-#	define P_JSTR_CAST(T, other) (other)
+#	define PJSTR_CAST(T, other) (other)
 #endif /* __cpluslus */
 
 #endif /* JSTR_MACROS_H */

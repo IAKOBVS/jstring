@@ -12,8 +12,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
-#ifndef P_JSTR_STRING_OPTYPE_H
-#define P_JSTR_STRING_OPTYPE_H 1
+#ifndef PJSTR_STRING_OPTYPE_H
+#define PJSTR_STRING_OPTYPE_H 1
 #include "jstr-macros.h"
 typedef unsigned long long int JSTR_MAY_ALIAS jstr_word_ty;
 #endif /* string-optype.h */

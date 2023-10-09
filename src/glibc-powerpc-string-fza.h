@@ -12,8 +12,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
-#ifndef P_JSTR_POWERPC_STRING_FZA_H
-#define P_JSTR_POWERPC_STRING_FZA_H 1
+#ifndef PJSTR_POWERPC_STRING_FZA_H
+#define PJSTR_POWERPC_STRING_FZA_H 1
 #include "jstr-macros.h"
 /* PowerISA 2.05 (POWER6) provides cmpb instruction.  */
 #ifdef _ARCH_PWR6

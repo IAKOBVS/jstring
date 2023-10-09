@@ -1,5 +1,5 @@
-#ifndef P_JSTR_SELECTOR_STRING_OPTYPE_H
-#define P_JSTR_SELECTOR_STRING_OPTYPE_H 1
+#ifndef PJSTR_SELECTOR_STRING_OPTYPE_H
+#define PJSTR_SELECTOR_STRING_OPTYPE_H 1
 
 #include "jstr-macros.h"
 
@@ -9,4 +9,4 @@
 #	include "glibc-generic-string-optype.h"
 #endif
 
-#endif /* P_JSTR_SELECTOR_STRING_OPTYPE_H */
+#endif /* PJSTR_SELECTOR_STRING_OPTYPE_H */

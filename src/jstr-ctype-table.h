@@ -3,7 +3,7 @@
 
 #include "jstr-macros.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 	JSTR_ISALNUM = (1),
@@ -691,6 +691,6 @@ static const unsigned char pjstr_table_toupper[256] = {
 	255,
 };
 
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #endif /* JSTR_CTYPE_TABLE_H */

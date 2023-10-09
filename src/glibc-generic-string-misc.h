@@ -12,8 +12,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
-#ifndef P_JSTR_STRING_MISC_H
-#define P_JSTR_STRING_MISC_H 1
+#ifndef PJSTR_STRING_MISC_H
+#define PJSTR_STRING_MISC_H 1
 #include "jstr-macros.h"
 #include "jstr-string-optype.h"
 #include <endian.h>

@@ -3,9 +3,9 @@
 
 #include "jstr-macros.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <string.h>
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
@@ -23,9 +23,9 @@ P_JSTR_END_DECLS
 #define P_JARR_MEMMOVE(j, dst, src, n) memmove(dst, src, (n)*P_JARR_ELEMSZ(j))
 #define P_JARR_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*P_JARR_ELEMSZ(j))
 
-#define P_JARR_ALIGN_UP(new_cap)		 JSTR_ALIGN_UP(new_cap, P_JSTR_MALLOC_ALIGNMENT)
-#define P_JARR_MIN_ALLOC(j, new_cap)	 P_JSTR_MIN_ALLOCEXACT(P_JARR_ALIGN_UP((size_t)(((new_cap)*P_JARR_ELEMSZ(j) * P_JARR_ALLOC_MULTIPLIER))))
-#define P_JARR_MIN_ALLOCEXACT(j, new_cap) P_JSTR_MIN_ALLOCEXACT(P_JARR_ALIGN_UP((new_cap)*P_JARR_ELEMSZ(j)))
+#define P_JARR_ALIGN_UP(new_cap)		 JSTR_ALIGN_UP(new_cap, PJSTR_MALLOC_ALIGNMENT)
+#define P_JARR_MIN_ALLOC(j, new_cap)	 PJSTR_MIN_ALLOCEXACT(P_JARR_ALIGN_UP((size_t)(((new_cap)*P_JARR_ELEMSZ(j) * P_JARR_ALLOC_MULTIPLIER))))
+#define P_JARR_MIN_ALLOCEXACT(j, new_cap) PJSTR_MIN_ALLOCEXACT(P_JARR_ALIGN_UP((new_cap)*P_JARR_ELEMSZ(j)))
 
 #define P_JARR_CHECK_ARG(j)                         \
 	do {                                       \
@@ -38,23 +38,23 @@ P_JSTR_END_DECLS
 		JSTR_ASSERT_IS_SIZE(new_cap);                                \
 		while (((old_cap) *= P_JARR_GROWTH) < (new_cap))              \
 			;                                                    \
-		(old_cap) = JSTR_ALIGN_UP(old_cap, P_JSTR_MALLOC_ALIGNMENT); \
+		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define P_JARR_REALLOC(j, new_cap, malloc_fail)                                                                    \
 	do {                                                                                                      \
 		P_JARR_CHECK_ARG(j);                                                                               \
 		P_JARR_GROW(P_JARR_CAP(j), new_cap);                                                                \
 		P_JARR_CAP(j) = P_JARR_ALIGN_UP(P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                    \
-		P_JARR_DATA(j) = P_JSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                   \
-		P_JSTR_MALLOC_ERR(P_JARR_DATA(j), malloc_fail);                                                                                       \
+		P_JARR_DATA(j) = PJSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                   \
+		PJSTR_MALLOC_ERR(P_JARR_DATA(j), malloc_fail);                                                                                       \
 		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                  \
 	} while (0)
 #define P_JARR_REALLOCEXACT(j, new_cap, malloc_fail)                                                                \
 	do {                                                                                                       \
 		P_JARR_CHECK_ARG(j);                                                                                \
 		P_JARR_CAP(j) = P_JARR_ALIGN_UP(P_JARR_CAP(j) * P_JARR_ELEMSZ);                                        \
-		P_JARR_DATA(j) = P_JSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j))); \
-		P_JSTR_MALLOC_ERR(P_JARR_DATA(j), malloc_fail);                                                     \
+		P_JARR_DATA(j) = PJSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j))); \
+		PJSTR_MALLOC_ERR(P_JARR_DATA(j), malloc_fail);                                                     \
 		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                   \
 	} while (0)
 #if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF

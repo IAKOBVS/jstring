@@ -3,14 +3,14 @@
 
 #include "jstr-macros.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 JSTR_FUNC
 JSTR_INLINE
@@ -292,7 +292,7 @@ jstr_strtok(const char *R *R const save_ptr,
 	return (char *)s;
 }
 
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #undef R
 

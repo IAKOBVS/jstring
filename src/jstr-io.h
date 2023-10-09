@@ -3,7 +3,7 @@
 
 #include "jstr-macros.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <dirent.h>
 #include <fcntl.h>
 #include <fnmatch.h>
@@ -12,7 +12,7 @@ P_JSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-io-table.h"
@@ -20,7 +20,7 @@ P_JSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 	JSTR_IO_FT_UNKNOWN = 0,
@@ -360,10 +360,10 @@ jstr_isbinary(const char *R const buf,
 	return 0;
 }
 
-#define P_JSTR_ELF    "\x7f\ELF"
-#define P_JSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
-#define P_JSTR_UTF    "\xEF\xBB\xBF"
-#define P_JSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
+#define PJSTR_ELF    "\x7f\ELF"
+#define PJSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
+#define PJSTR_UTF    "\xEF\xBB\xBF"
+#define PJSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
 /*
    Check if the first JSTR_IO_BINARY_CHECK_MAX bytes or fewer contain any unprintable character.
@@ -375,13 +375,13 @@ jstr_io_isbinary_maybe(const char *R const buf,
 {
 #define JSTR_BINARY_CHECK()                                                         \
 	do {                                                                        \
-		if (jstr_likely(sz > P_JSTR_ELF_SZ - 1)) {                          \
-			if (jstr_unlikely(!memcmp(buf, P_JSTR_ELF, P_JSTR_ELF_SZ))) \
+		if (jstr_likely(sz > PJSTR_ELF_SZ - 1)) {                          \
+			if (jstr_unlikely(!memcmp(buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
 				return 1;                                           \
 check_utf:;                                                                         \
-			if (!memcmp(buf, P_JSTR_UTF, P_JSTR_UTF_SZ))                \
+			if (!memcmp(buf, PJSTR_UTF, PJSTR_UTF_SZ))                \
 				return 0;                                           \
-		} else if (jstr_likely(sz == P_JSTR_UTF_SZ)) {                      \
+		} else if (jstr_likely(sz == PJSTR_UTF_SZ)) {                      \
 			goto check_utf;                                             \
 		}                                                                   \
 	} while (0)
@@ -421,10 +421,10 @@ jstr_io_isbinary(const char *R const buf,
 }
 
 #undef JSTR_BINARY_CHECK
-#undef P_JSTR_ELF
-#undef P_JSTR_ELF_SZ
-#undef P_JSTR_UTF
-#undef P_JSTR_UTF_SZ
+#undef PJSTR_ELF
+#undef PJSTR_ELF_SZ
+#undef PJSTR_UTF
+#undef PJSTR_UTF_SZ
 
 /*
    Check the whole file for any unprintable character.
@@ -533,10 +533,10 @@ jstr_io_alloc_popen(char *R *R const s,
 	p = buf + fread(buf, 1, MINBUF, fp);
 	if (jstr_unlikely(ferror(fp)))
 		goto err_close;
-	*cap = P_JSTR_MIN_ALLOC(p - buf);
+	*cap = PJSTR_MIN_ALLOC(p - buf);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
-	P_JSTR_MALLOC_ERR(*s, goto err_close);
+	PJSTR_MALLOC_ERR(*s, goto err_close);
 	memcpy(*s, buf, p - buf);
 	*sz = p - buf;
 	if (jstr_unlikely(p - buf == MINBUF)) {
@@ -552,7 +552,7 @@ jstr_io_alloc_popen(char *R *R const s,
 				break;
 			if ((size_t)(p - *s) == *cap) {
 				old = *s;
-				P_JSTR_REALLOCEXACT(*s, *cap, (size_t)(*cap * JSTR_GROWTH), goto err_close);
+				PJSTR_REALLOCEXACT(*s, *cap, (size_t)(*cap * JSTR_GROWTH), goto err_close);
 				p = *s + (p - old);
 			}
 		}
@@ -588,12 +588,12 @@ pjstr_io_alloc_file_len(const int alloc_exact,
 	if (jstr_unlikely(fd == -1))
 		goto err;
 	if (alloc_exact)
-		*cap = P_JSTR_MIN_ALLOCEXACT(filesz + 1);
+		*cap = PJSTR_MIN_ALLOCEXACT(filesz + 1);
 	else
-		*cap = P_JSTR_MIN_ALLOC(filesz);
+		*cap = PJSTR_MIN_ALLOC(filesz);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
-	P_JSTR_MALLOC_ERR(*s, goto err_close);
+	PJSTR_MALLOC_ERR(*s, goto err_close);
 	if (jstr_unlikely(filesz != (size_t)read(fd, *s, filesz)))
 		goto err_close_free;
 	close(fd);
@@ -746,7 +746,7 @@ jstr_io_expand_tilde(char *R *R s,
 	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
-			P_JSTR_REALLOC(*s, *cap, *sz + len, goto err);
+			PJSTR_REALLOC(*s, *cap, *sz + len, goto err);
 			p = *s + (p - tmp);
 		}
 		memmove(p + len, p + 1, (*s + *sz) - (p + 1) + 1);
@@ -756,7 +756,7 @@ jstr_io_expand_tilde(char *R *R s,
 	}
 	return 1;
 err:
-	P_JSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 	return 0;
 }
 
@@ -1205,7 +1205,7 @@ jstr_io_ftw(const char *R const dirpath,
 	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn, jstr_io_ftw_flag, fn_glob, fn_flags);
 }
 
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #undef R
 

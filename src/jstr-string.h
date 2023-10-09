@@ -3,12 +3,12 @@
 
 #include "jstr-macros.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
@@ -26,7 +26,7 @@ P_JSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 /*
   Compare S1 with S2 case-insensitively.
@@ -130,7 +130,7 @@ pjstr_strrstr_len_bmh(const unsigned char *R hs,
 			 memset(shift + 64 + 64 + 64, 0, 64)) \
 		      : memset(shift, 0, sizeof(shift)))
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define P_JSTR_STRRSTR_BMH(table_type, ne_iterator_type)                    \
+#define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                    \
 	do {                                                                \
 		table_type shift[256];                                      \
 		BZERO(shift);                                               \
@@ -158,12 +158,12 @@ pjstr_strrstr_len_bmh(const unsigned char *R hs,
 	const size_t m1 = nl - 1;
 	size_t off = 0;
 	if (jstr_likely(nl < 257))
-		P_JSTR_STRRSTR_BMH(uint8_t, int);
+		PJSTR_STRRSTR_BMH(uint8_t, int);
 	else
-		P_JSTR_STRRSTR_BMH(size_t, size_t);
+		PJSTR_STRRSTR_BMH(size_t, size_t);
 	return NULL;
 #undef H
-#undef P_JSTR_STRRSTR_BMH
+#undef PJSTR_STRRSTR_BMH
 }
 
 #if JSTR_HAVE_MEMRCHR
@@ -347,7 +347,7 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 			 const size_t nl) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define P_JSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                             \
+#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                             \
 	do {                                                                                            \
 		table_type shift[256];                                                                  \
 		BZERO(shift);                                                                           \
@@ -377,12 +377,12 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 	const size_t m1 = nl - 1;
 	size_t off = 0;
 	if (jstr_likely(nl < 257))
-		P_JSTR_STRCASESTR_BMH(uint8_t, int);
+		PJSTR_STRCASESTR_BMH(uint8_t, int);
 	else
-		P_JSTR_STRCASESTR_BMH(size_t, size_t);
+		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	return NULL;
 #undef HL
-#undef P_JSTR_STRCASESTR_BMH
+#undef PJSTR_STRCASESTR_BMH
 }
 
 /* Heavily inspired by glibc memmem. */
@@ -392,7 +392,7 @@ pjstr_strcasestr_bmh(const unsigned char *R h,
 		     const unsigned char *R n) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define P_JSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                             \
+#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                             \
 	do {                                                                                            \
 		table_type shift[256];                                                                  \
 		BZERO(shift);                                                                           \
@@ -434,12 +434,12 @@ pjstr_strcasestr_bmh(const unsigned char *R h,
 	const size_t m1 = nl - 1;
 	size_t off = 0;
 	if (jstr_likely(nl < 257))
-		P_JSTR_STRCASESTR_BMH(uint8_t, int);
+		PJSTR_STRCASESTR_BMH(uint8_t, int);
 	else
-		P_JSTR_STRCASESTR_BMH(size_t, size_t);
+		PJSTR_STRCASESTR_BMH(size_t, size_t);
 	return NULL;
 #undef HL
-#undef P_JSTR_STRCASESTR_BMH
+#undef PJSTR_STRCASESTR_BMH
 }
 
 #define L(c) jstr_tolower(c)
@@ -1067,7 +1067,7 @@ jstr_line_number(const char *begin,
 	return cnt;
 }
 
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #undef BZERO
 #undef R

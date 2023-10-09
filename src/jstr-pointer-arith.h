@@ -12,8 +12,8 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
-#ifndef P_JSTR_LIBC_POINTER_ARITH_H
-#define P_JSTR_LIBC_POINTER_ARITH_H 1
+#ifndef PJSTR_LIBC_POINTER_ARITH_H
+#define PJSTR_LIBC_POINTER_ARITH_H 1
 
 #include <stdint.h>
 
@@ -61,4 +61,4 @@
 /* Same as ALIGN_UP(), but automatically casts when base is a pointer.  */
 #define JSTR_PTR_ALIGN_UP(base, size) \
 	(JSTR_ALIGN_UP((uintptr_t)(base), (size)))
-#endif /* P_JSTR_LIBC_POINTER_ARITH_H */
+#endif /* PJSTR_LIBC_POINTER_ARITH_H */

@@ -3,15 +3,15 @@
 #define JSTR_H 1
 #include "jstr-macros.h"
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdlib.h>
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #define JTRIE_ASCII_SIZE 256
 
 #define R JSTR_RESTRICT
 
-P_JSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 	JTRIE_RET_NOERROR = 0,
@@ -163,7 +163,7 @@ jtrie_match(const jtrie_node_ty *R const root,
 	return jtrie_starts_with(root, word)->EOW;
 }
 
-P_JSTR_END_DECLS
+PJSTR_END_DECLS
 
 #undef R
 
