@@ -846,7 +846,6 @@ jstr_ends_len(const char *R const hs,
   1 if true;
   0 if false.
 */
-JSTR_INLINE
 JSTR_MAYBE_UNUSED
 static int
 jstr_ends(const char *R const hs,
