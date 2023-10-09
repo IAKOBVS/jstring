@@ -93,8 +93,8 @@ jstr_ulltoa_p_sep(char *R nptr,
 			if (jstr_unlikely(loop == 0))
 				break;
 		} else {
-			if (jstr_likely(loop)) {
-				*(nptr) = c;
+			if (loop) {
+				*nptr = c;
 				*(nptr + 1) = separator;
 				nptr += 2;
 			} else {

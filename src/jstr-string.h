@@ -130,7 +130,7 @@ pjstr_strrstr_len_bmh(const unsigned char *R hs,
 			 memset(shift + 64 + 64 + 64, 0, 64)) \
 		      : memset(shift, 0, sizeof(shift)))
 #define H(p) (((size_t)(p)[0] - ((size_t)(p)[-1] << 3)) % 256)
-#define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                    \
+#define PJSTR_STRRSTR_BMH(table_type, ne_iterator_type)                     \
 	do {                                                                \
 		table_type shift[256];                                      \
 		BZERO(shift);                                               \
@@ -347,7 +347,7 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 			 const size_t nl) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                             \
+#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                              \
 	do {                                                                                            \
 		table_type shift[256];                                                                  \
 		BZERO(shift);                                                                           \
@@ -392,7 +392,7 @@ pjstr_strcasestr_bmh(const unsigned char *R h,
 		     const unsigned char *R n) JSTR_NOEXCEPT
 {
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                             \
+#define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                              \
 	do {                                                                                            \
 		table_type shift[256];                                                                  \
 		BZERO(shift);                                                                           \
@@ -1065,6 +1065,47 @@ jstr_line_number(const char *begin,
 	while ((begin = (char *)memchr(begin, '\n', end - begin)))
 		++begin, ++cnt;
 	return cnt;
+}
+
+JSTR_FUNC
+static char *
+jstr_thousand_sep_len(char *R nptr,
+		      size_t sz,
+		      const int separator)
+{
+	const char *start = nptr;
+	const char *end = nptr + sz;
+	if (*start == '-') {
+		++start;
+		--sz;
+	}
+	if (sz <= 3)
+		return nptr + sz;
+	nptr = (char *)end - 1;
+	const int ccnt = (sz - 1) / 3;
+	end += ccnt;
+	int cnt = ccnt;
+	int n = 0;
+	*(nptr + ccnt + 1) = '\0';
+	while (nptr >= start) {
+		*(nptr + cnt) = *nptr;
+		--nptr;
+		if (++n == 3) {
+			*(nptr + cnt) = separator;
+			if (jstr_unlikely(--cnt == 0))
+				break;
+			n = 0;
+		}
+	}
+	return (char *)end;
+}
+
+JSTR_FUNC
+static char *
+jstr_thousand_sep(char *R nptr,
+		  const int separator)
+{
+	return jstr_thousand_sep_len(nptr, strlen(nptr), separator);
 }
 
 PJSTR_END_DECLS
