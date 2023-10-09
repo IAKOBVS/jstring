@@ -14,7 +14,10 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-/* Return ptr to '\0' after the last digit in the DEST string. */
+/*
+   Return value:
+   ptr to '\0' after the last digit in the DEST string.
+*/
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
@@ -37,7 +40,10 @@ jstr_ulltoa_p(char *R dst,
 	return (char *)end;
 }
 
-/* Return ptr to '\0' after the last digit in the DEST string. */
+/*
+   Return value:
+   ptr to '\0' after the last digit in the DEST string.
+*/
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
@@ -53,17 +59,20 @@ jstr_lltoa_p(char *R dst,
 	return jstr_ulltoa_p(dst, number, base);
 }
 
-#define PJSTR_ULLTOA(type, name, u)                                       \
-	/* Return ptr to '\0' after the last digit in the DEST string. */ \
-	JSTR_FUNC                                                         \
-	JSTR_RETURNS_NONNULL                                              \
-	JSTR_INLINE                                                       \
-	static char *                                                     \
-	jstr_##name##_p(char *R dst,                                      \
-			type number,                                      \
-			const unsigned int base) JSTR_NOEXCEPT            \
-	{                                                                 \
-		return jstr_##u##lltoa_p(dst, number, base);              \
+#define PJSTR_ULLTOA(type, name, u)                             \
+	/*                                                      \
+	   Return value:                                        \
+	   ptr to '\0' after the last digit in the DEST string. \
+	*/                                                      \
+	JSTR_FUNC                                               \
+	JSTR_RETURNS_NONNULL                                    \
+	JSTR_INLINE                                             \
+	static char *                                           \
+	jstr_##name##_p(char *R dst,                            \
+			type number,                            \
+			const unsigned int base) JSTR_NOEXCEPT  \
+	{                                                       \
+		return jstr_##u##lltoa_p(dst, number, base);    \
 	}
 
 PJSTR_ULLTOA(unsigned long, ultoa, u)
@@ -73,7 +82,10 @@ PJSTR_ULLTOA(int, itoa, )
 
 #undef PJSTR_ULLTOA
 
-/* Return ptr to '\0' after the last digit in the DEST string. */
+/*
+   Return value:
+   ptr to '\0' after the last digit in the DEST string.
+*/
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
@@ -114,7 +126,10 @@ jstr_ulltoa_p_sep(char *R dst,
 	return (char *)end;
 }
 
-/* Return ptr to '\0' after the last digit in the DEST string. */
+/*
+   Return value:
+   ptr to '\0' after the last digit in the DEST string.
+*/
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -131,7 +146,10 @@ jstr_lltoa_p_sep(char *R dst,
 }
 
 #define PJSTR_ULLTOA_SEP(type, name, u)                                     \
-	/* Return ptr to '\0' after the last digit in the DEST string. */   \
+	/*                                                                  \
+	   Return value:                                                    \
+	   ptr to '\0' after the last digit in the DEST string.             \
+	*/                                                                  \
 	JSTR_FUNC                                                           \
 	JSTR_RETURNS_NONNULL                                                \
 	JSTR_INLINE                                                         \

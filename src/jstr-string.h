@@ -1069,6 +1069,8 @@ jstr_line_number(const char *begin,
 
 /*
    Add thousand separator to NPTR.
+   Return value:
+   ptr to '\0' in NPTR.
    For example: 1234 -> 1,234.
 */
 JSTR_FUNC
@@ -1107,6 +1109,8 @@ jstr_fmt_thousand_sep_len(char *R nptr,
 
 /*
    Add thousand separator to NPTR.
+   Return value:
+   ptr to '\0' in NPTR.
    For example: 1234 -> 1,234.
 */
 JSTR_FUNC
