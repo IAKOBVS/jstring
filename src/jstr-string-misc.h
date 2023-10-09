@@ -12,7 +12,7 @@ P_JSTR_BEGIN_DECLS
 JSTR_INLINE
 JSTR_FUNC_PURE
 static jstr_word_ty
-jstr_word_ctow(const char *JSTR_RESTRICT const p)
+jstr_word_ctoword(const char *JSTR_RESTRICT const p)
 {
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	return *(jstr_word_ty *)p;
@@ -20,7 +20,7 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 	JSTR_ASSERT(sizeof(jstr_word_ty) >= 2 && sizeof(jstr_word_ty) <= 64, "");
 #	define SH(idx) \
 		(JSTR_ENDIAN_LITTLE ? ((jstr_word_ty)p[(idx)] << ((idx)*CHAR_BIT)) : ((jstr_word_ty)p[(idx)] >> ((idx)*CHAR_BIT)))
-	/* Generated with ../bin/generate-ctow 2 64. */
+	/* Generated with ../bin/generate-ctoword 2 64. */
 	switch (sizeof(jstr_word_ty)) {
 	case 2: return SH(1) | SH(0);
 	case 3: return SH(2) | SH(1) | SH(0);
@@ -92,9 +92,9 @@ jstr_word_ctow(const char *JSTR_RESTRICT const p)
 JSTR_INLINE
 JSTR_FUNC_PURE
 static jstr_word_ty
-jstr_word_uctow(const unsigned char *JSTR_RESTRICT const p)
+jstr_word_uctoword(const unsigned char *JSTR_RESTRICT const p)
 {
-	return jstr_word_ctow((char *)p);
+	return jstr_word_ctoword((char *)p);
 }
 #if __GNUC__ || defined __clang__
 #	pragma GCC diagnostic pop
