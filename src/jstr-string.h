@@ -1089,8 +1089,8 @@ jstr_fmt_thousand_sep_len(char *R nptr,
 	int cnt = (sz - 1) / 3;
 	end += cnt;
 	*end = '\0';
-	nptr += (sz - 1);
 	const char *const start = nptr;
+	nptr += (sz - 1);
 	int n = 0;
 	while (nptr >= start) {
 		*(nptr + cnt) = *nptr;
