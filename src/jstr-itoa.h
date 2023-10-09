@@ -42,30 +42,6 @@ JSTR_FUNC
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
 static char *
-jstr_ultoa_p(char *R nptr,
-	     unsigned long number,
-	     const unsigned int base) JSTR_NOEXCEPT
-{
-	return jstr_ulltoa_p(nptr, number, base);
-}
-
-/* Return ptr to '\0' after the last digit in the DEST string. */
-JSTR_FUNC
-JSTR_RETURNS_NONNULL
-JSTR_INLINE
-static char *
-jstr_utoa_p(char *R nptr,
-	    unsigned int number,
-	    const unsigned int base) JSTR_NOEXCEPT
-{
-	return jstr_ulltoa_p(nptr, number, base);
-}
-
-/* Return ptr to '\0' after the last digit in the DEST string. */
-JSTR_FUNC
-JSTR_RETURNS_NONNULL
-JSTR_INLINE
-static char *
 jstr_lltoa_p(char *R nptr,
 	     long long number,
 	     const unsigned int base) JSTR_NOEXCEPT
@@ -77,29 +53,25 @@ jstr_lltoa_p(char *R nptr,
 	return jstr_ulltoa_p(nptr, number, base);
 }
 
-/* Return ptr to '\0' after the last digit in the DEST string. */
-JSTR_FUNC
-JSTR_RETURNS_NONNULL
-JSTR_INLINE
-static char *
-jstr_ltoa_p(char *R nptr,
-	    long number,
-	    const unsigned int base) JSTR_NOEXCEPT
-{
-	return jstr_lltoa_p(nptr, number, base);
-}
+#define P_JSTR_ULLTOA(type, name, func)                                   \
+	/* Return ptr to '\0' after the last digit in the DEST string. */ \
+	JSTR_FUNC                                                         \
+	JSTR_RETURNS_NONNULL                                              \
+	JSTR_INLINE                                                       \
+	static char *                                                     \
+	jstr_##name(char *R nptr,                                         \
+		    type number,                                          \
+		    const unsigned int base) JSTR_NOEXCEPT                \
+	{                                                                 \
+		return func(nptr, number, base);                          \
+	}
 
-/* Return ptr to '\0' after the last digit in the DEST string. */
-JSTR_FUNC
-JSTR_RETURNS_NONNULL
-JSTR_INLINE
-static char *
-jstr_itoa_p(char *R nptr,
-	    int number,
-	    const unsigned int base) JSTR_NOEXCEPT
-{
-	return jstr_lltoa_p(nptr, number, base);
-}
+P_JSTR_ULLTOA(unsigned long, ultoa_p, jstr_ulltoa_p)
+P_JSTR_ULLTOA(unsigned int, utoa_p, jstr_ulltoa_p)
+P_JSTR_ULLTOA(long, ltoa_p, jstr_lltoa_p)
+P_JSTR_ULLTOA(int, itoa_p, jstr_lltoa_p)
+
+#undef P_JSTR_ULLTOA
 
 /* Return ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
@@ -146,30 +118,6 @@ jstr_ulltoa_p_sep(char *R nptr,
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_ultoa_p_sep(char *R nptr,
-		 unsigned long number,
-		 const unsigned int base,
-		 const int separator)
-{
-	return jstr_ulltoa_p_sep(nptr, number, base, separator);
-}
-
-/* Return ptr to '\0' after the last digit in the DEST string. */
-JSTR_FUNC
-JSTR_INLINE
-static char *
-jstr_utoa_p_sep(char *R nptr,
-		unsigned int number,
-		const unsigned int base,
-		const int separator)
-{
-	return jstr_ulltoa_p_sep(nptr, number, base, separator);
-}
-
-/* Return ptr to '\0' after the last digit in the DEST string. */
-JSTR_FUNC
-JSTR_INLINE
-static char *
 jstr_lltoa_p_sep(char *R nptr,
 		 long long number,
 		 const unsigned int base,
@@ -182,29 +130,26 @@ jstr_lltoa_p_sep(char *R nptr,
 	return jstr_ulltoa_p_sep(nptr, number, base, separator);
 }
 
-/* Return ptr to '\0' after the last digit in the DEST string. */
-JSTR_FUNC
-JSTR_INLINE
-static char *
-jstr_ltoa_p_sep(char *R nptr,
-		long number,
-		const unsigned int base,
-		const int separator)
-{
-	return jstr_lltoa_p_sep(nptr, number, base, separator);
-}
+#define P_JSTR_ULLTOA_SEP(type, name, func)                               \
+	/* Return ptr to '\0' after the last digit in the DEST string. */ \
+	JSTR_FUNC                                                         \
+	JSTR_RETURNS_NONNULL                                              \
+	JSTR_INLINE                                                       \
+	static char *                                                     \
+	jstr_##name(char *R nptr,                                         \
+		    type number,                                          \
+		    const unsigned int base,                              \
+		    const int separator) JSTR_NOEXCEPT                    \
+	{                                                                 \
+		return func(nptr, number, base, separator);               \
+	}
 
-/* Return ptr to '\0' after the last digit in the DEST string. */
-JSTR_FUNC
-JSTR_INLINE
-static char *
-jstr_itoa_p_sep(char *R nptr,
-		int number,
-		const unsigned int base,
-		const int separator)
-{
-	return jstr_lltoa_p_sep(nptr, number, base, separator);
-}
+P_JSTR_ULLTOA_SEP(unsigned long, ultoa_p_sep, jstr_ulltoa_p_sep)
+P_JSTR_ULLTOA_SEP(unsigned int, utoa_p_sep, jstr_ulltoa_p_sep)
+P_JSTR_ULLTOA_SEP(long, ltoa_p_sep, jstr_lltoa_p_sep)
+P_JSTR_ULLTOA_SEP(int, itoa_p_sep, jstr_lltoa_p_sep)
+
+#undef P_JSTR_ULLTOA_SEP
 
 P_JSTR_END_DECLS
 
