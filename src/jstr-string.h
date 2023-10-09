@@ -1077,7 +1077,7 @@ JSTR_FUNC
 static char *
 jstr_fmt_thousand_sep_len(char *R nptr,
 			  size_t sz,
-			  const int separator)
+			  const int separator) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return nptr;
@@ -1117,7 +1117,7 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_fmt_thousand_sep(char *R nptr,
-		      const int separator)
+		      const int separator) JSTR_NOEXCEPT
 {
 	return jstr_fmt_thousand_sep_len(nptr, strlen(nptr), separator);
 }
