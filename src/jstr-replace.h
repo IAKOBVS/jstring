@@ -976,7 +976,7 @@ jstr_trim_j(jstr_ty *R const j) JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-pjstr_insert_len_unsafe(char *R const s,
+jstr_insert_len_unsafe(char *R const s,
 			const size_t at,
 			const char *R const src,
 			const size_t srclen) JSTR_NOEXCEPT
@@ -1004,7 +1004,7 @@ jstr_insert_len(char *R *R const s,
 		*sz = at + srclen;
 		*(*s + *sz) = '\0';
 	}
-	pjstr_insert_len_unsafe(*s, at, src, srclen);
+	jstr_insert_len_unsafe(*s, at, src, srclen);
 	return 1;
 err:
 	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
