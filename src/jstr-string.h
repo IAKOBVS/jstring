@@ -838,23 +838,6 @@ jstr_ends_len(const char *R const hs,
 }
 
 /*
-  Check if S2 is in end of S1.
-  Return value:
-  1 if true;
-  0 if false.
-*/
-JSTR_MAYBE_UNUSED
-static int
-jstr_ends(const char *R const hs,
-	  const char *R const ne) JSTR_NOEXCEPT
-{
-	/* Avoid using strnlen for NE since NELEN > HSLEN should be rare. */
-	const size_t hslen = strlen(hs);
-	const size_t nelen = strlen(ne);
-	return jstr_likely(hslen >= nelen) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
-}
-
-/*
   Check if S1 starts with S2.
   Return value:
   1 if true;
