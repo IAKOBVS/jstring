@@ -12,7 +12,7 @@ PJSTR_BEGIN_DECLS
 JSTR_INLINE
 JSTR_FUNC_PURE
 static jstr_word_ty
-jstr_word_ctoword(const void *JSTR_RESTRICT const p)
+jstr_word_toword(const void *JSTR_RESTRICT const p)
 {
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	return *(jstr_word_ty *)p;
