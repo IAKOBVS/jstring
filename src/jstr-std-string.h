@@ -207,10 +207,11 @@ jstr_strdup(const char *R const s)
 #else
 	const size_t len = strlen(s);
 	char *const p = (char *)malloc(len + 1);
-	if (jstr_unlikely(p == NULL))
-		return NULL;
-	jstr_strcpy_len(p, s, len);
-	return p;
+	if (jstr_likely(p != NULL)) {
+		jstr_strcpy_len(p, s, len);
+		return p;
+	}
+	return NULL;
 #endif
 }
 
@@ -222,10 +223,11 @@ jstr_memdup(const char *R const src,
 	    const size_t srclen)
 {
 	char *const p = (char *)malloc(srclen);
-	if (jstr_unlikely(p == NULL))
-		return NULL;
-	memcpy(p, src, srclen);
-	return p;
+	if (jstr_likely(p != NULL)) {
+		memcpy(p, src, srclen);
+		return p;
+	}
+	return NULL;
 }
 
 JSTR_MALLOC
@@ -236,10 +238,11 @@ jstr_strdup_len(const char *R const src,
 		const size_t srclen)
 {
 	char *const p = jstr_memdup(src, srclen);
-	if (jstr_unlikely(p == NULL))
-		return NULL;
-	*(p + srclen) = '\0';
-	return p + srclen;
+	if (jstr_likely(p != NULL)) {
+		*(p + srclen) = '\0';
+		return p;
+	}
+	return NULL;
 }
 
 JSTR_FUNC_RET_NONNULL
