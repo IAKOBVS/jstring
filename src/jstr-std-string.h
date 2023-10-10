@@ -90,6 +90,16 @@ jstr_stpmove_len(char *R dst,
 	return jstr_strmove_len(dst, src, n) + n;
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_stpmove_len_may_eq(char *R dst,
+			const char *R src,
+			const size_t n)
+{
+	return ((dst != src) ? jstr_strmove_len(dst, src, n) : dst) + n;
+}
+
 JSTR_FUNC_NOWARN
 JSTR_INLINE
 static char *

@@ -506,7 +506,7 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 	do {                                                                       \
 		PJSTR_REG_LOG("*cap > *sz + rplclen - findlen");                   \
 		if (dst != oldp) {                                                 \
-			PJSTR_REG_LOG("dst != old");                               \
+			PJSTR_REG_LOG("dst != oldp");                               \
 			memmove(dst, oldp, p - oldp);                              \
 			dst += (p - oldp);                                         \
 			memmove(dst + rplclen,                                     \
@@ -516,7 +516,7 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 			dst += rplclen;                                            \
 			oldp = dst;                                                \
 		} else {                                                           \
-			PJSTR_REG_LOG("dst == old");                               \
+			PJSTR_REG_LOG("dst == oldp");                               \
 			memmove(p + rplclen,                                       \
 				p + findlen,                                       \
 				(*(unsigned char **)s + *sz) - (p + findlen) + 1); \
