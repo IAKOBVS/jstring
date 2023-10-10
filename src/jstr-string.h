@@ -789,6 +789,7 @@ jstr_strchr_inv(const char *R s,
    S + N if C is not found.
 */
 JSTR_FUNC_PURE
+JSTR_INLINE
 static char *
 jstr_memchrnul_inv(const void *R const s,
 		   int c,
