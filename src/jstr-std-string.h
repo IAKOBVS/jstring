@@ -24,7 +24,7 @@ jstr_strstr_len(const char *R const hs,
 	(void)hslen;
 	(void)nelen;
 #endif
-	return JSTR_STRSTR_LEN(hs, hslen, ne, nelen);
+	return (char *)JSTR_MEMMEM(hs, hslen, ne, nelen);
 }
 
 JSTR_FUNC_PURE
@@ -90,6 +90,9 @@ jstr_stpmove_len(char *R dst,
 	return jstr_strmove_len(dst, src, n) + n;
 }
 
+/*
+   Avoid memmove if DST == SRC.
+*/
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -261,7 +264,7 @@ jstr_strstrnul_len(const char *R const hs,
 		   const char *R const ne,
 		   const size_t nelen)
 {
-	const char *const p = JSTR_STRSTR_LEN(hs, hslen, ne, nelen);
+	const char *const p = jstr_strstr_len(hs, hslen, ne, nelen);
 	return (char *)(p ? p : hs + hslen);
 }
 

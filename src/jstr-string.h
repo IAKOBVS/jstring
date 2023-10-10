@@ -550,7 +550,7 @@ jstr_strcasestr_len(const char *R hs,
 			return pjstr_strcasestr4((u *)hs, (u *)ne);
 		break;
 	}
-	return JSTR_STRSTR_LEN(hs, hslen, ne, nelen);
+	return jstr_strstr_len(hs, hslen, ne, nelen);
 #endif
 }
 
@@ -946,7 +946,7 @@ jstr_count_len(const char *R s,
 	size_t cnt = 0;
 #if JSTR_HAVE_MEMMEM
 	const char *const end = s + sz;
-	while ((s = JSTR_STRSTR_LEN(s, end - s, find, findlen)))
+	while ((s = jstr_strstr_len(s, end - s, find, findlen)))
 #else
 	while ((s = strstr(s, find)))
 #endif
