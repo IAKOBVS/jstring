@@ -59,14 +59,36 @@ jstr_mempcpy(void *R const dst,
 #endif /* !JSTR_HAVE_STPCPY */
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_strmove(char *R dst,
+	     const char *R src)
+{
+	*(char *)jstr_mempcpy(dst, src, strlen(src)) = '\0';
+	return dst;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_stpmove(char *R dst,
+	     const char *R src)
+{
+	const size_t len = strlen(src);
+	*(char *)jstr_mempcpy(dst, src, len) = '\0';
+	return dst + len;
+}
+
 JSTR_INLINE
 JSTR_FUNC_NOWARN
-static void
+static char *
 jstr_strcpy_len(char *R const dst,
 		const char *R const src,
 		const size_t n)
 {
 	*(char *)jstr_mempcpy(dst, src, n) = '\0';
+	return dst;
 }
 
 JSTR_INLINE
@@ -76,8 +98,7 @@ jstr_stpcpy_len(char *R const dst,
 		const char *R const src,
 		const size_t n)
 {
-	jstr_strcpy_len(dst, src, n);
-	return dst + n;
+	return jstr_strcpy_len(dst, src, n) + n;
 }
 
 /*

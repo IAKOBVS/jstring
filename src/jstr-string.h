@@ -333,13 +333,13 @@ jstr_strrstr(const char *R const hs,
 {
 	const size_t hslen = strlen(hs);
 	const size_t nelen = jstr_strnlen(ne, hslen);
-	if (jstr_likely(hslen > nelen))
+	if (hslen > nelen)
 		return (char *)pjstr_strrstr_len(hs, hslen, ne, nelen);
-	if (hslen == nelen)
-		if (*(ne + nelen) == '\0'
-		    && !memcmp(hs, ne, nelen))
-			return (char *)hs;
-	return NULL;
+	return (hslen == nelen
+		&& *(ne + nelen) == '\0'
+		&& !memcmp(hs, ne, nelen))
+	       ? (char *)hs
+	       : NULL;
 }
 
 /* Heavily inspired by glibc memmem. */
