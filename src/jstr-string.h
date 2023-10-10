@@ -331,15 +331,12 @@ static char *
 jstr_strrstr(const char *R const hs,
 	     const char *R const ne) JSTR_NOEXCEPT
 {
+	/* Avoid using strnlen for NE since NELEN > HSLEN should be rare. */
 	const size_t hslen = strlen(hs);
-	const size_t nelen = jstr_strnlen(ne, hslen);
-	if (hslen > nelen)
+	const size_t nelen = strlen(ne);
+	if (jstr_likely(hslen > nelen))
 		return (char *)pjstr_strrstr_len(hs, hslen, ne, nelen);
-	return (hslen == nelen
-		&& *(ne + nelen) == '\0'
-		&& !memcmp(hs, ne, nelen))
-	       ? (char *)hs
-	       : NULL;
+	return (hslen == nelen) && !memcmp(hs, ne, nelen) ? (char *)hs : NULL;
 }
 
 /* Heavily inspired by glibc memmem. */
@@ -837,7 +834,7 @@ jstr_ends_len(const char *R const hs,
 	      const char *R const ne,
 	      const size_t nelen) JSTR_NOEXCEPT
 {
-	return (hslen >= nelen) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
+	return jstr_likely(hslen >= nelen) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
 }
 
 /*
@@ -851,9 +848,10 @@ static int
 jstr_ends(const char *R const hs,
 	  const char *R const ne) JSTR_NOEXCEPT
 {
+	/* Avoid using strnlen for NE since NELEN > HSLEN should be rare. */
 	const size_t hslen = strlen(hs);
-	const size_t nelen = jstr_strnlen(ne, hslen);
-	return (hslen > nelen || (hslen == nelen && *(ne + nelen) == '\0')) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
+	const size_t nelen = strlen(ne);
+	return jstr_likely(hslen >= nelen) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
 }
 
 /*
@@ -870,7 +868,7 @@ jstr_starts_len(const char *R const hs,
 		const char *R const ne,
 		const size_t nelen) JSTR_NOEXCEPT
 {
-	return (hslen >= nelen) ? !memcmp(hs, ne, nelen) : 0;
+	return jstr_likely(hslen >= nelen) ? !memcmp(hs, ne, nelen) : 0;
 }
 
 /*
