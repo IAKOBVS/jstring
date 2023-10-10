@@ -35,14 +35,14 @@ PJSTR_END_DECLS
 
 #if JSTR_DEBUG
 #	define PJSTR_MALLOC_ERR(p, malloc_fail)                                    \
-		do {                                                                 \
-			if (jstr_unlikely((p) == NULL)) {                            \
+		do {                                                                \
+			if (jstr_unlikely((p) == NULL)) {                           \
 				pjstr_err_exit_debug(__FILE__, __LINE__, __func__); \
-				malloc_fail;                                         \
-			}                                                            \
+				malloc_fail;                                        \
+			}                                                           \
 		} while (0)
 #else
-#	define PJSTR_MALLOC_ERR(p, malloc_fail)         \
+#	define PJSTR_MALLOC_ERR(p, malloc_fail)          \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
 				malloc_fail;              \
@@ -51,33 +51,33 @@ PJSTR_END_DECLS
 #endif
 
 #define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail)   \
-	do {                                               \
-		JSTR_ASSERT_IS_SIZE(old_cap);              \
-		JSTR_ASSERT_IS_SIZE(new_cap);              \
+	do {                                              \
+		JSTR_ASSERT_IS_SIZE(old_cap);             \
+		JSTR_ASSERT_IS_SIZE(new_cap);             \
 		old_cap = pjstr_grow(old_cap, new_cap);   \
 		(p) = PJSTR_CAST(p, realloc(p, old_cap)); \
 		PJSTR_MALLOC_ERR(p, malloc_fail);         \
 	} while (0)
 #define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
-	do {                                                  \
-		JSTR_ASSERT_IS_SIZE(old_cap);                 \
-		JSTR_ASSERT_IS_SIZE(new_cap);                 \
-		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);       \
+	do {                                                 \
+		JSTR_ASSERT_IS_SIZE(old_cap);                \
+		JSTR_ASSERT_IS_SIZE(new_cap);                \
+		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);      \
 		(p) = PJSTR_CAST(p, realloc(p, old_cap));    \
 		PJSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
-#define PJSTR_MIN_ALLOC(new_cap)                           \
+#define PJSTR_MIN_ALLOC(new_cap)                            \
 	(((new_cap) < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
 	 ? (JSTR_MIN_CAP)                                   \
 	 : ((new_cap)*JSTR_ALLOC_MULTIPLIER))
 #define PJSTR_MIN_ALLOCEXACT(new_cap) \
-	(((new_cap) < JSTR_MIN_CAP)    \
-	 ? (JSTR_MIN_CAP)              \
+	(((new_cap) < JSTR_MIN_CAP)   \
+	 ? (JSTR_MIN_CAP)             \
 	 : (new_cap))
 #define PJSTR_ALLOC_ONLY(p, cap, new_cap, do_fail)  \
-	do {                                         \
+	do {                                        \
 		(cap) = PJSTR_MIN_ALLOC(new_cap);   \
-		(cap) = JSTR_ALIGN_UP_STR(cap);      \
+		(cap) = JSTR_ALIGN_UP_STR(cap);     \
 		(p) = PJSTR_CAST(p, malloc((cap))); \
 		PJSTR_MALLOC_ERR((p), do_fail);     \
 	} while (0)
@@ -88,7 +88,7 @@ JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
 pjstr_grow(size_t cap,
-	    const size_t new_cap)
+	   const size_t new_cap)
 {
 	while ((cap *= JSTR_GROWTH) < new_cap)
 		;
@@ -101,8 +101,8 @@ JSTR_NOTHROW
 JSTR_NOINLINE
 static void
 pjstr_err_exit_debug(const char *R FILE_,
-		      const int LINE_,
-		      const char *R func_) JSTR_NOEXCEPT
+		     const int LINE_,
+		     const char *R func_) JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%d:%s:%s", FILE_, LINE_, func_, strerror(errno));
 	exit(EXIT_FAILURE);
@@ -112,8 +112,8 @@ JSTR_FUNC_VOID
 JSTR_NOINLINE
 static void
 pjstr_err_debug(const char *R FILE_,
-		 const int LINE_,
-		 const char *R func_) JSTR_NOEXCEPT
+		const int LINE_,
+		const char *R func_) JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%d:%s:%s", FILE_, LINE_, func_, strerror(errno));
 }
@@ -643,7 +643,7 @@ jstr_push_front(char *R *R const s,
 {
 	if (jstr_unlikely(*cap == *sz + 1))
 		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
-	memmove(*s + 1, *s, ++*sz);
+	jstr_strmove_len(*s + 1, *s, (*sz)++);
 	**s = c;
 	return 1;
 err:

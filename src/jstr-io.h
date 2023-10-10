@@ -373,17 +373,17 @@ static int
 jstr_io_isbinary_maybe(const char *R const buf,
 		       const size_t sz) JSTR_NOEXCEPT
 {
-#define JSTR_BINARY_CHECK()                                                         \
-	do {                                                                        \
-		if (jstr_likely(sz > PJSTR_ELF_SZ - 1)) {                          \
+#define JSTR_BINARY_CHECK()                                                       \
+	do {                                                                      \
+		if (jstr_likely(sz > PJSTR_ELF_SZ - 1)) {                         \
 			if (jstr_unlikely(!memcmp(buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
-				return 1;                                           \
-check_utf:;                                                                         \
+				return 1;                                         \
+check_utf:;                                                                       \
 			if (!memcmp(buf, PJSTR_UTF, PJSTR_UTF_SZ))                \
-				return 0;                                           \
-		} else if (jstr_likely(sz == PJSTR_UTF_SZ)) {                      \
-			goto check_utf;                                             \
-		}                                                                   \
+				return 0;                                         \
+		} else if (jstr_likely(sz == PJSTR_UTF_SZ)) {                     \
+			goto check_utf;                                           \
+		}                                                                 \
 	} while (0)
 	if (jstr_unlikely(sz == 0))
 		return 0;
@@ -694,7 +694,7 @@ jstr_io_expand_tilde_first(char *R s,
 	if (jstr_unlikely(home == NULL))
 		return NULL;
 	const size_t len = strlen(home);
-	memmove(s + len, s + 1, (s + sz) - (s + 1) + 1);
+	jstr_strmove_len(s + len, s + 1, (s + sz) - (s + 1));
 	memcpy(s, home, len);
 	return s + sz + len - 1;
 }
@@ -717,7 +717,7 @@ jstr_io_expand_tilde_p_unsafe(char *R s,
 	const size_t len = strlen(home);
 	char *p = s;
 	while ((p = (char *)memchr(p, '~', (s + sz) - p))) {
-		memmove(p + len, p + 1, (s + sz) - (p + 1) + 1);
+		jstr_strmove_len(p + len, p + 1, (s + sz) - (p + 1));
 		memcpy(p, home, len);
 		p += len;
 		sz += (len - 1);
@@ -749,7 +749,7 @@ jstr_io_expand_tilde(char *R *R s,
 			PJSTR_REALLOC(*s, *cap, *sz + len, goto err);
 			p = *s + (p - tmp);
 		}
-		memmove(p + len, p + 1, (*s + *sz) - (p + 1) + 1);
+		jstr_strmove_len(p + len, p + 1, (*s + *sz) - (p + 1));
 		memcpy(p, home, len);
 		p += len;
 		*sz += (len - 1);
