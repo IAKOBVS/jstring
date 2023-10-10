@@ -750,7 +750,7 @@ jstr_strrpbrk(const char *R const s,
 
 /*
    Return value:
-   pointer to non-C in S;
+   pointer to first non-C in S;
    pointer to '\0' if C is not found;
    S if C is '\0';
 */
@@ -770,7 +770,7 @@ jstr_strchrnul_inv(const char *R s,
 
 /*
    Return value:
-   pointer to non-C in S;
+   pointer to first non-C in S;
    NULL if C is not found.
 */
 JSTR_FUNC_PURE
