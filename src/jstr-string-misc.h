@@ -9,6 +9,9 @@ PJSTR_BEGIN_DECLS
 #	pragma GCC diagnostic ignored "-Wshift-count-overflow"
 #	pragma GCC diagnostic push
 #endif
+/*
+   P must be aligned.
+*/
 JSTR_INLINE
 JSTR_FUNC_PURE
 static jstr_word_ty
