@@ -256,7 +256,7 @@ jstr_rmchr_len_p(char *R s,
 {
 	const char *const start = s;
 	s = (char *)memchr(s, c, sz);
-	return s ? jstr_strmove_len(s, s + 1, sz - (s - start)) : s + sz;
+	return s ? jstr_stpmove_len(s, s + 1, sz - (s - start)) : s + sz;
 }
 
 /*
@@ -272,7 +272,7 @@ jstr_rmchr_p(char *R s,
 {
 #if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, c);
-	return *s ? jstr_strmove_len(s, s + 1, strlen(s)) : s;
+	return *s ? jstr_stpmove_len(s, s + 1, strlen(s)) : s;
 #else
 	return jstr_rmchr_len_p(s, c, strlen(s));
 #endif /* HAVE_STRCHRNUL */
@@ -296,9 +296,7 @@ jstr_rmspn_p(char *R s,
 		findlen = strspn(p, reject);
 		PJSTR_RMALL_IN_PLACE(dst, old, p, findlen);
 	}
-	if (jstr_likely(dst != old))
-		jstr_strmove_len(dst, old, p - old);
-	return (dst + (p - old));
+	return (dst != old) ? jstr_stpmove_len(dst, old, p - old) : dst + (p - old);
 }
 
 /*
@@ -429,7 +427,7 @@ jstr_stripspn_p(char *R const s,
 	const char *p = dst;
 	while (*(p += strcspn(p, rjct)))
 		PJSTR_RMALL_IN_PLACE(dst, old, p, 1);
-	return (dst != s) ? jstr_strmove_len(dst, old, p - old) : (char *)p;
+	return (dst != s) ? jstr_stpmove_len(dst, old, p - old) : (char *)p;
 }
 
 /*
