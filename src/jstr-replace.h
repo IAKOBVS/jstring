@@ -555,17 +555,18 @@ pjstr_replace_len(char *R *R const s,
 		  const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplclen == 0)) {
-		*sz = jstr_rm_len_p(*s, find, *sz, findlen) - *s;
+		*sz = jstr_rm_len_p(*s + start_idx, find, *sz - start_idx, findlen) - *s;
 		return 1;
 	}
 	if (jstr_unlikely(rplclen == 1)) {
 		if (jstr_unlikely(findlen == 1)) {
-			jstr_replacechr_len(*s, *find, *rplc, *sz);
+			jstr_replacechr_len(*s + start_idx, *find, *rplc, *sz - start_idx);
 			return 1;
 		}
-	} else if (jstr_unlikely(findlen == 0))
+	}
+	if (jstr_unlikely(findlen == 0))
 		return 1;
-	char *p = jstr_strstr_len(*s, *sz, find, findlen);
+	char *p = jstr_strstr_len(*s + start_idx, *sz - start_idx, find, findlen);
 	if (jstr_unlikely(p == NULL))
 		return 1;
 	return jstr_slip_len(s, sz, cap, p - *s, rplc, rplclen);
