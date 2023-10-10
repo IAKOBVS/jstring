@@ -207,7 +207,7 @@ jstr_memrchr(const void *R s,
 	const unsigned char *const start = (u *)JSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
 	jstr_word_ty w;
 	if (p != end) {
-		w = jstr_word_uctoword(p);
+		w = jstr_word_toword(p);
 		if (jstr_word_has_eq(w, cc)) {
 			const unsigned char *const ret = p + jstr_word_index_last_eq(w, cc);
 			if ((uintptr_t)(ret - (u *)s) <= (size_t)(end - (u *)s))
@@ -215,11 +215,11 @@ jstr_memrchr(const void *R s,
 		}
 	}
 	while ((p -= WORDSIZ) > start) {
-		w = jstr_word_uctoword(p);
+		w = jstr_word_toword(p);
 		if (jstr_word_has_eq(w, cc))
 			return (void *)(p + jstr_word_index_last_eq(w, cc));
 	}
-	w = jstr_word_uctoword(start);
+	w = jstr_word_toword(start);
 	if (jstr_word_has_eq(w, cc)) {
 		p = start + jstr_word_index_last_eq(w, cc);
 		if ((uintptr_t)(p - (u *)s) <= (size_t)(end - (u *)s))
