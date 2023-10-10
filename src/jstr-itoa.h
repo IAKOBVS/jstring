@@ -83,6 +83,7 @@ PJSTR_ULLTOA(int, itoa, )
 #undef PJSTR_ULLTOA
 
 /*
+   Convert number to string with thousand separator.
    Return value:
    ptr to '\0' after the last digit in the DEST string.
 */
@@ -127,6 +128,7 @@ jstr_ulltoa_p_sep(char *R dst,
 }
 
 /*
+   Convert number to string with thousand separator.
    Return value:
    ptr to '\0' after the last digit in the DEST string.
 */
@@ -147,6 +149,7 @@ jstr_lltoa_p_sep(char *R dst,
 
 #define PJSTR_ULLTOA_SEP(type, name, u)                                     \
 	/*                                                                  \
+   	   Convert number to string with thousand separator.
 	   Return value:                                                    \
 	   ptr to '\0' after the last digit in the DEST string.             \
 	*/                                                                  \
