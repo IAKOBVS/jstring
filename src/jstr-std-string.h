@@ -119,9 +119,7 @@ static char *
 jstr_stpmove(char *R dst,
 	     const char *R src)
 {
-	const size_t len = strlen(src);
-	*(char *)jstr_mempmove(dst, src, len) = '\0';
-	return dst + len;
+	return jstr_stpmove_len(dst, src, strlen(src));
 }
 
 JSTR_INLINE
