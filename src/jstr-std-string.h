@@ -62,8 +62,8 @@ jstr_mempcpy(void *R const dst,
 JSTR_FUNC
 JSTR_INLINE
 static void *
-jstr_mempmove(void *R dst,
-	      const void *R src,
+jstr_mempmove(void *dst,
+	      const void *src,
 	      const size_t n)
 {
 	return (char *)memmove(dst, src, n) + n;
@@ -72,8 +72,8 @@ jstr_mempmove(void *R dst,
 JSTR_FUNC_NOWARN
 JSTR_INLINE
 static char *
-jstr_strmove_len(char *R dst,
-		 const char *R src,
+jstr_strmove_len(char *dst,
+		 const char *src,
 		 const size_t n)
 {
 	*(char *)jstr_mempmove(dst, src, n) = '\0';
@@ -83,8 +83,8 @@ jstr_strmove_len(char *R dst,
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_stpmove_len(char *R dst,
-		 const char *R src,
+jstr_stpmove_len(char *dst,
+		 const char *src,
 		 const size_t n)
 {
 	return jstr_strmove_len(dst, src, n) + n;
@@ -96,8 +96,8 @@ jstr_stpmove_len(char *R dst,
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_stpmove_len_may_eq(char *R dst,
-			const char *R src,
+jstr_stpmove_len_may_eq(char *dst,
+			const char *src,
 			const size_t n)
 {
 	return ((dst != src) ? jstr_stpmove_len(dst, src, n) : dst) + n;
@@ -106,8 +106,8 @@ jstr_stpmove_len_may_eq(char *R dst,
 JSTR_FUNC_NOWARN
 JSTR_INLINE
 static char *
-jstr_strmove(char *R dst,
-	     const char *R src)
+jstr_strmove(char *dst,
+	     const char *src)
 {
 	*(char *)jstr_mempmove(dst, src, strlen(src)) = '\0';
 	return dst;
@@ -116,8 +116,8 @@ jstr_strmove(char *R dst,
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_stpmove(char *R dst,
-	     const char *R src)
+jstr_stpmove(char *dst,
+	     const char *src)
 {
 	return jstr_stpmove_len(dst, src, strlen(src));
 }
