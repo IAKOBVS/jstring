@@ -100,7 +100,7 @@ jstr_stpmove_len_may_eq(char *R dst,
 			const char *R src,
 			const size_t n)
 {
-	return ((dst != src) ? jstr_strmove_len(dst, src, n) : dst) + n;
+	return ((dst != src) ? jstr_stpmove_len(dst, src, n) : dst) + n;
 }
 
 JSTR_FUNC_NOWARN
