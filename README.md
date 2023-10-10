@@ -22,6 +22,8 @@ or
 #include "/path/to/jstr/jstr.h"
 ```
 
+Some headers may need to be explicitly included since they rely on POSIX.
+
 ## Error handling: 
 0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
 
