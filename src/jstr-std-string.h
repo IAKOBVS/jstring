@@ -78,6 +78,16 @@ jstr_strmove_len(char *dst,
 	return dst;
 }
 
+JSTR_FUNC_NOWARN
+JSTR_INLINE
+static char *
+jstr_strmove(char *dst,
+	     const char *src)
+{
+	*(char *)jstr_mempmove(dst, src, strlen(src)) = '\0';
+	return dst;
+}
+
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -99,16 +109,6 @@ jstr_stpmove_len_may_eq(char *dst,
 			const size_t n)
 {
 	return ((dst != src) ? jstr_stpmove_len(dst, src, n) : dst) + n;
-}
-
-JSTR_FUNC_NOWARN
-JSTR_INLINE
-static char *
-jstr_strmove(char *dst,
-	     const char *src)
-{
-	*(char *)jstr_mempmove(dst, src, strlen(src)) = '\0';
-	return dst;
 }
 
 JSTR_FUNC
