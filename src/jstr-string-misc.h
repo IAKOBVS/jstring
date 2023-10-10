@@ -10,7 +10,7 @@ PJSTR_BEGIN_DECLS
 #	pragma GCC diagnostic push
 #endif
 /*
-   P must be aligned.
+   P must be aligned to sizeof(jstr_word_ty).
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
