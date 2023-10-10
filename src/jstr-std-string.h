@@ -196,6 +196,7 @@ jstr_stpcat(char *R dst,
 	return jstr_stpcpy(dst, src);
 }
 
+JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -213,6 +214,7 @@ jstr_strdup(const char *R const s)
 #endif
 }
 
+JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -226,13 +228,18 @@ jstr_memdup(const char *R const src,
 	return p;
 }
 
+JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_strdup_len(const char *R const src,
 		const size_t srclen)
 {
-	return jstr_memdup(src, srclen + 1);
+	char *const p = jstr_memdup(src, srclen);
+	if (jstr_unlikely(p == NULL))
+		return NULL;
+	*(p + srclen) = '\0';
+	return p + srclen;
 }
 
 JSTR_FUNC_RET_NONNULL
