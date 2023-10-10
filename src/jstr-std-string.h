@@ -20,11 +20,9 @@ jstr_strstr_len(const char *R const hs,
 		const char *R const ne,
 		const size_t nelen)
 {
-#if !JSTR_HAVE_MEMMEM
+	return (char *)JSTR_MEMMEM(hs, hslen, ne, nelen);
 	(void)hslen;
 	(void)nelen;
-#endif
-	return (char *)JSTR_MEMMEM(hs, hslen, ne, nelen);
 }
 
 JSTR_FUNC_PURE
@@ -259,11 +257,6 @@ jstr_strchrnul(const char *R const s,
 #endif
 }
 
-#if defined __GNUC__ || defined __clang__
-#	pragma GCC diagnostic ignored "-Wunused-parameter"
-#	pragma GCC diagnostic push
-#endif
-
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
@@ -274,11 +267,8 @@ jstr_strstrnul_len(const char *R const hs,
 {
 	const char *const p = jstr_strstr_len(hs, hslen, ne, nelen);
 	return (char *)(p ? p : hs + hslen);
+	(void)nelen;
 }
-
-#if defined __GNUC__ || defined __clang__
-#	pragma GCC diagnostic pop
-#endif
 
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
