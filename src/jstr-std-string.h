@@ -91,7 +91,7 @@ jstr_stpmove_len(char *dst,
 }
 
 /*
-   Avoid memmove if DST == SRC.
+   Avoid strmove if DST == SRC.
 */
 JSTR_FUNC
 JSTR_INLINE
