@@ -1121,6 +1121,25 @@ jstr_reg_replace_bref_len_now(char *R *R const s,
 	return jstr_reg_replace_bref_len(s, sz, cap, rplc, rplclen, preg, eflags, nmatch);
 }
 
+JSTR_INLINE
+JSTR_FUNC
+static jstr_reg_errcode_ty
+jstr_reg_replace_bref_len_from_now(char *R *R const s,
+				   size_t *R const sz,
+				   size_t *R const cap,
+				   const size_t start_idx,
+				   const char *R const ptn,
+				   const char *R const rplc,
+				   size_t rplclen,
+				   regex_t *R const preg,
+				   const int cflags,
+				   const int eflags,
+				   const size_t nmatch) JSTR_NOEXCEPT
+{
+	PJSTR_REG_COMP_NOW();
+	return jstr_reg_replace_bref_len_from(s, sz, cap, start_idx, rplc, rplclen, preg, eflags, nmatch);
+}
+
 PJSTR_END_DECLS
 
 #undef R
