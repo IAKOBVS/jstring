@@ -66,10 +66,10 @@ PJSTR_END_DECLS
 		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);         \
 		PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail);   \
 	} while (0)
-#define PJSTR_REALLOCEXACT_MAY_MALLOC(p, old_cap, new_cap, malloc_fail)                       \
-	do {                                                                                  \
-		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);                                    \
-		PJSTR_REALLOCEXACT(p, JSTR_MAX(old_cap, JSTR_MIN_CAP), new_cap, malloc_fail); \
+#define PJSTR_REALLOCEXACT_MAY_MALLOC(p, old_cap, new_cap, malloc_fail) \
+	do {                                                            \
+		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);              \
+		PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail);   \
 	} while (0)
 
 PJSTR_BEGIN_DECLS
