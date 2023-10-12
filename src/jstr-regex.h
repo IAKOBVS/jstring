@@ -908,13 +908,12 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, PJSTR_MALLOC_ALIGNMENT);
 				rdst_heap = (u *)malloc(rdstcap);
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
-				rdstp = rdst_heap;
 			} else if (rdstcap < rdstlen) {
 				rdstcap = pjstr_grow(rdstcap, rdstlen);
 				rdst_heap = (u *)realloc(rdst_heap, rdstcap);
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
-				rdstp = rdst_heap;
 			}
+			rdstp = rdst_heap;
 		} else {
 			if (jstr_unlikely(rdst_heap == NULL))
 				rdstp = rdst_stack;
