@@ -917,7 +917,8 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 				rdstp = rdst_heap;
 			}
 		} else {
-			rdstp = rdst_stack;
+			if (jstr_unlikely(rdst_heap == NULL))
+				rdstp = rdst_stack;
 		}
 		pjstr_reg_creat_rplc_bref((u *)p - rm[0].rm_so, rm, (u *)rdstp, (u *)rplc, rplclen);
 		if (rdstlen <= findlen)
