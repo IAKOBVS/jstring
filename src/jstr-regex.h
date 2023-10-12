@@ -599,7 +599,7 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 err:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
-	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(sz, cap);
 #endif
 	return JSTR_REG_RET_ESPACE;
 }
@@ -908,7 +908,7 @@ err:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
 	free(*s);
-	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(sz, cap);
 #endif
 	return JSTR_REG_RET_ESPACE;
 }
@@ -1013,7 +1013,7 @@ err:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
 	free(*s);
-	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(sz, cap);
 #endif
 	return JSTR_REG_RET_ESPACE;
 #undef PJSTR_CREAT_RPLC_BREF

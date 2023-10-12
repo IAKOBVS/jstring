@@ -97,7 +97,7 @@ jstr_slip_len(char *R *R const s,
 	*sz += rplclen;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(sz, cap);
 	return 0;
 }
 
@@ -113,8 +113,11 @@ pjstr_replaceat_len_higher(char *R *R const s,
 			   const size_t findlen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + rplclen - findlen)
-		PJSTR_REALLOC(*s, *cap, *sz + rplclen, return NULL);
+		PJSTR_REALLOC(*s, *cap, *sz + rplclen, goto err);
 	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
+err:
+	PJSTR_NULLIFY_MEMBERS(sz, cap);
+	return 0;
 }
 
 /*
@@ -982,7 +985,7 @@ jstr_insert_len(char *R *R const s,
 	jstr_insert_len_unsafe(*s, at, src, srclen);
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
+	PJSTR_NULLIFY_MEMBERS(sz, cap);
 	return 0;
 }
 
