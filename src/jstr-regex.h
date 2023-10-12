@@ -909,9 +909,7 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 				rdst_heap = (u *)malloc(rdstcap);
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
 			} else if (rdstcap < rdstlen) {
-				rdstcap = pjstr_grow(rdstcap, rdstlen);
-				rdst_heap = (u *)realloc(rdst_heap, rdstcap);
-				PJSTR_MALLOC_ERR(rdst_heap, goto err);
+				PJSTR_REALLOC(rdst_heap, rdstcap, rdstlen, goto err);
 			}
 			rdstp = rdst_heap;
 		} else {
