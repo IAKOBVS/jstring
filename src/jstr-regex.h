@@ -805,7 +805,7 @@ pjstr_reg_creat_rplc_bref(const unsigned char *R mtc,
 			if (jstr_likely(rplc != rold)) {
 				memmove(rdst, rold, (rplc - 1) - rold);
 				rdst += (rplc - 1) - rold;
-				rplc += (rplc - 1) - rold;
+				rplc += (rplc - 2) - rold;
 			}
 			memcpy(rdst,
 			       mtc + rm[*rplc - '0'].rm_so,
