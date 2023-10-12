@@ -100,6 +100,8 @@ static size_t
 pjstr_grow(size_t cap,
 	   const size_t new_cap)
 {
+	if (jstr_unlikely(cap == 0))
+		cap = JSTR_MIN_CAP;
 	while ((cap *= JSTR_GROWTH) < new_cap)
 		;
 	return JSTR_ALIGN_UP(cap, PJSTR_MALLOC_ALIGNMENT);
