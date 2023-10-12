@@ -829,7 +829,7 @@ jstr_reg_replace_bref_len(char *R *R const s,
 			  size_t *R const cap,
 			  const char *R const rplc,
 			  size_t rplclen,
-			  const regex_t *R const preg,
+			  regex_t *R const preg,
 			  const int eflags,
 			  const size_t nmatch) JSTR_NOEXCEPT
 {
@@ -850,7 +850,7 @@ jstr_reg_replace_bref_len(char *R *R const s,
 	unsigned char rdst_stack[JSTR_PAGE_SIZE];
 	if (jstr_unlikely(rdstlen > JSTR_PAGE_SIZE)) {
 		rdst = (u *)malloc(rdstlen);
-		PJSTR_MALLOC_ERR(rdst, return JSTR_REG_RET_ESPACE);
+		PJSTR_MALLOC_ERR(rdst, goto err);
 	} else {
 		rdst = rdst_stack;
 	}
@@ -860,6 +860,13 @@ jstr_reg_replace_bref_len(char *R *R const s,
 	if (rdst != rdst_stack)
 		free(rdst);
 	return ret;
+err:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	jstr_reg_free(preg);
+	free(*s);
+	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
+#endif
+	return JSTR_REG_RET_ESPACE;
 }
 
 JSTR_INLINE
