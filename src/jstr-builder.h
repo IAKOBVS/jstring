@@ -242,27 +242,6 @@ jstr_free(jstr_ty *const j) JSTR_NOEXCEPT
 #endif
 }
 
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_alloc(char *R *R s,
-	   size_t *R sz,
-	   size_t *R cap,
-	   const size_t top)
-{
-	*sz = 0;
-	PJSTR_ALLOC_ONLY(*s, *cap, top, goto err);
-	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
-}
-
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
 static int
@@ -306,9 +285,9 @@ jstr_cat(char *R *R s,
 		;
 	va_end(ap);
 	va_start(ap, cap);
-	const int ret = pjstr_cat(s, sz, cap, ap, arglen);
+	arglen = pjstr_cat(s, sz, cap, ap, arglen);
 	va_end(ap);
-	return ret;
+	return arglen;
 }
 
 /*
@@ -330,9 +309,9 @@ jstr_cat_j(jstr_ty *R j,
 		;
 	va_end(ap);
 	va_start(ap, j);
-	const int ret = pjstr_cat(&j->data, &j->size, &j->capacity, ap, arglen);
+	arglen = pjstr_cat(&j->data, &j->size, &j->capacity, ap, arglen);
 	va_end(ap);
-	return ret;
+	return arglen;
 }
 
 /*
@@ -361,22 +340,6 @@ err:
 }
 
 /*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_append(char *R *R s,
-	    size_t *R sz,
-	    size_t *R cap,
-	    const char *R src) JSTR_NOEXCEPT
-{
-	return jstr_append_len(s, sz, cap, src, strlen(src));
-}
-
-/*
    Assign SRC to DST.
    S is NUL terminated.
    Return value:
@@ -400,22 +363,6 @@ jstr_assign_len(char *R *R s,
 err:
 	PJSTR_NULLIFY_MEMBERS(sz, cap);
 	return 0;
-}
-
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_assign(char *R *R s,
-	    size_t *R sz,
-	    size_t *R cap,
-	    const char *R src) JSTR_NOEXCEPT
-{
-	return jstr_assign_len(s, sz, cap, src, strlen(src));
 }
 
 /*
