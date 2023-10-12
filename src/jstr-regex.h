@@ -887,8 +887,8 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 	size_t rdstlen;
 	size_t rdstcap = 0;
 	unsigned char rdst_stack[JSTR_PAGE_SIZE];
+	unsigned char *rdstp = rdst_stack;
 	unsigned char *rdst_heap = NULL;
-	unsigned char *rdstp = NULL;
 	unsigned char *tmp;
 	size_t findlen;
 	int has_bref;
@@ -913,9 +913,6 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 				PJSTR_REALLOC(rdst_heap, rdstcap, rdstlen, goto err);
 				rdstp = rdst_heap;
 			}
-		} else {
-			if (jstr_unlikely(rdst_heap == NULL))
-				rdstp = rdst_stack;
 		}
 		pjstr_reg_creat_rplc_bref((u *)p, rm, (u *)rdstp, (u *)rplc, rplclen);
 		p += rm[0].rm_so;
