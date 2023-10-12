@@ -319,10 +319,10 @@ jstr_alloc_assign(char *R *R s,
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_alloc_assignmore(char *R *R s,
-		      size_t *R sz,
-		      size_t *R cap,
-		      ...) JSTR_NOEXCEPT
+jstr_alloc_cat(char *R *R s,
+	       size_t *R sz,
+	       size_t *R cap,
+	       ...) JSTR_NOEXCEPT
 {
 	const char *arg;
 	*sz = 0;
@@ -355,8 +355,8 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_alloc_assignmore_j(jstr_ty *R j,
-			...) JSTR_NOEXCEPT
+jstr_alloc_cat_j(jstr_ty *R j,
+		 ...) JSTR_NOEXCEPT
 {
 	const char *arg;
 	j->size = 0;
@@ -389,10 +389,10 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_concat(char *R *R s,
-		size_t *R sz,
-		size_t *R cap,
-		...) JSTR_NOEXCEPT
+jstr_cat(char *R *R s,
+	 size_t *R sz,
+	 size_t *R cap,
+	 ...) JSTR_NOEXCEPT
 {
 	const char *arg;
 	size_t arglen = 0;
@@ -425,8 +425,8 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_concat_j(jstr_ty *R j,
-		  ...) JSTR_NOEXCEPT
+jstr_cat_j(jstr_ty *R j,
+	   ...) JSTR_NOEXCEPT
 {
 	const char *arg;
 	size_t arglen = 0;
