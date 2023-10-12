@@ -82,7 +82,7 @@ JSTR_FUNC_VOID
 JSTR_NOINLINE
 static void
 pjstr_nullify_members(size_t *R size,
-		      size_t *R cap)
+		      size_t *R cap) JSTR_NOEXCEPT
 {
 	*size = 0;
 	*cap = 0;
@@ -98,7 +98,7 @@ JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
 pjstr_grow(size_t cap,
-	   const size_t new_cap)
+	   const size_t new_cap) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(cap == 0))
 		cap = JSTR_MIN_CAP;
@@ -194,7 +194,7 @@ jstr_err_exit(void) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_debug(const jstr_ty *R j)
+jstr_debug(const jstr_ty *R j) JSTR_NOEXCEPT
 {
 	fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
 	fprintf(stderr, "strlen():%zu\n", strlen(j->data));
@@ -207,7 +207,7 @@ jstr_debug(const jstr_ty *R j)
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_print(const jstr_ty *R j)
+jstr_print(const jstr_ty *R j) JSTR_NOEXCEPT
 {
 	fwrite(j->data, 1, j->size, stdout);
 }
@@ -217,7 +217,7 @@ JSTR_INLINE
 static void
 jstr_init(char *R *R s,
 	  size_t *R sz,
-	  size_t *R cap)
+	  size_t *R cap) JSTR_NOEXCEPT
 {
 	*s = NULL;
 	*sz = 0;
@@ -467,7 +467,7 @@ JSTR_FUNC
 static int
 jstr_reserve(char *R *R s,
 	     size_t *R cap,
-	     const size_t new_cap)
+	     const size_t new_cap) JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return 1;
@@ -483,23 +483,10 @@ err:
    Return 0 on malloc error.
 */
 JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_reserve_j(jstr_ty *R j,
-	       const size_t new_cap)
-{
-	return jstr_reserve(&j->data, &j->capacity, new_cap);
-}
-
-/*
-   Do nothing if new_cap < cap.
-   Return 0 on malloc error.
-*/
-JSTR_FUNC
 static int
 jstr_reserveexact(char *R *R s,
 		  size_t *R cap,
-		  const size_t new_cap)
+		  const size_t new_cap) JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return 1;
