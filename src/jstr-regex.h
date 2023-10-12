@@ -942,6 +942,7 @@ err:
 #undef PJSTR_CREAT_RPLC_BREF
 }
 
+/* False-positive memory leak. */
 #ifdef __GNUC__
 #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #	pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak"
