@@ -944,6 +944,7 @@ err:
 
 #ifdef __GNUC__
 #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
+#	pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak"
 #	pragma GCC diagnostic push
 #endif
 
