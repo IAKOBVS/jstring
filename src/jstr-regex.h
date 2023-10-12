@@ -888,7 +888,7 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 	size_t rdstcap = 0;
 	unsigned char rdst_stack[JSTR_PAGE_SIZE];
 	unsigned char *rdst_heap = NULL;
-	unsigned char *rdstp;
+	unsigned char *rdstp = NULL;
 	unsigned char *tmp;
 	size_t findlen;
 	int has_bref;
@@ -908,10 +908,11 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, PJSTR_MALLOC_ALIGNMENT);
 				rdst_heap = (u *)malloc(rdstcap);
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
+				rdstp = rdst_heap;
 			} else if (rdstcap < rdstlen) {
 				PJSTR_REALLOC(rdst_heap, rdstcap, rdstlen, goto err);
+				rdstp = rdst_heap;
 			}
-			rdstp = rdst_heap;
 		} else {
 			if (jstr_unlikely(rdst_heap == NULL))
 				rdstp = rdst_stack;
