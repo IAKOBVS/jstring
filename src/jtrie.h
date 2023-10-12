@@ -79,13 +79,13 @@ jtrie_insert(jtrie_node_ty *R const root,
 typedef enum {
 	PJTRIE_FLAG_REMOVE_NOT_PREFIXES = 0,
 	PJTRIE_FLAG_REMOVE_PREFIXES = 1
-} p_jtrie_flag_rm_prefixes_ty;
+} p_jtrie_flag_remove_prefixes_ty;
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_NOTHROW
 static void
-p_jtrie_remove(p_jtrie_flag_rm_prefixes_ty flag,
+p_jtrie_remove(p_jtrie_flag_remove_prefixes_ty flag,
 	      jtrie_node_ty *R const root,
 	      const char *R const word) JSTR_NOEXCEPT
 {
