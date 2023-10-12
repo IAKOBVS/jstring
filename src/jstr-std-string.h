@@ -172,8 +172,7 @@ jstr_memccpy(void *R dst,
 #else
 	const void *const p = (void *)memchr(src, c, n);
 	if (p != NULL) {
-		typedef unsigned char u;
-		return jstr_mempcpy(dst, src, (u *)p - (u *)src + 1);
+		return jstr_stpcpy_len(dst, src, (char *)p - (char *)src);
 	}
 	memcpy(dst, src, n);
 	return NULL;
