@@ -67,7 +67,7 @@ jstr_mempmove(void *dst,
 	return (char *)memmove(dst, src, n) + n;
 }
 
-JSTR_FUNC_NOWARN
+JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
 jstr_strmove_len(char *dst,
@@ -78,7 +78,7 @@ jstr_strmove_len(char *dst,
 	return dst;
 }
 
-JSTR_FUNC_NOWARN
+JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
 jstr_strmove(char *dst,
@@ -121,7 +121,7 @@ jstr_stpmove(char *dst,
 }
 
 JSTR_INLINE
-JSTR_FUNC_NOWARN
+JSTR_FUNC_VOID
 static char *
 jstr_strcpy_len(char *R const dst,
 		const char *R const src,
@@ -132,7 +132,7 @@ jstr_strcpy_len(char *R const dst,
 }
 
 JSTR_INLINE
-JSTR_FUNC_NOWARN
+JSTR_FUNC_VOID
 static char *
 jstr_stpcpy_len(char *R const dst,
 		const char *R const src,

@@ -771,7 +771,7 @@ jstr_io_append_path_p(char *R const path_end,
 }
 
 JSTR_INLINE
-JSTR_FUNC_NOWARN
+JSTR_FUNC_VOID
 static void
 jstr_io_append_path_len(char *R const path_end,
 			const char *R fname,
