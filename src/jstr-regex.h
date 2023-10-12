@@ -909,6 +909,7 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, PJSTR_MALLOC_ALIGNMENT);
 				rdst = (u *)malloc(rdstcap);
 				PJSTR_MALLOC_ERR(rdst, goto err);
+				rdstp = rdst;
 			} else if (rdstcap < rdstlen) {
 				rdstcap = pjstr_grow(rdstcap, rdstlen);
 				rdst = (u *)realloc(rdst, rdstcap);
@@ -921,8 +922,8 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 #if defined __GNUC__ || defined __clang__
 #	pragma GCC diagnostic pop
 #endif
+				rdstp = rdst;
 			}
-			rdstp = rdst;
 		} else {
 			rdstp = rdst_stack;
 		}
