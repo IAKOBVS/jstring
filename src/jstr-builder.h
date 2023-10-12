@@ -71,8 +71,8 @@ PJSTR_END_DECLS
 		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);              \
 		PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail);   \
 	} while (0)
-#define PJSTR_MIN_ALLOC(cap)	  ((cap > JSTR_MIN_CAP) ? (cap * JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
-#define PJSTR_MIN_ALLOCEXACT(cap) ((cap > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
+#define PJSTR_MIN_ALLOCEXACT(cap)	  ((cap > JSTR_MIN_CAP) ? (cap * JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
+#define PJSTR_MIN_ALLOCEXACTEXACT(cap) ((cap > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
 
 #if JSTR_NULLIFY_MEMBERS_ON_FREE
 #	define PJSTR_NULLIFY_MEMBERS(sz, cap) (pjstr_nullify_members(sz, cap))

@@ -24,8 +24,8 @@ PJSTR_END_DECLS
 #define P_JARR_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*P_JARR_ELEMSZ(j))
 
 #define P_JARR_ALIGN_UP(new_cap)		 JSTR_ALIGN_UP(new_cap, PJSTR_MALLOC_ALIGNMENT)
-#define P_JARR_MIN_ALLOC(j, new_cap)	 PJSTR_MIN_ALLOCEXACT(P_JARR_ALIGN_UP((size_t)(((new_cap)*P_JARR_ELEMSZ(j) * P_JARR_ALLOC_MULTIPLIER))))
-#define P_JARR_MIN_ALLOCEXACT(j, new_cap) PJSTR_MIN_ALLOCEXACT(P_JARR_ALIGN_UP((new_cap)*P_JARR_ELEMSZ(j)))
+#define P_JARR_MIN_ALLOC(j, new_cap)	 PJSTR_MIN_ALLOCEXACTEXACT(P_JARR_ALIGN_UP((size_t)(((new_cap)*P_JARR_ELEMSZ(j) * P_JARR_ALLOC_MULTIPLIER))))
+#define P_JARR_MIN_ALLOCEXACT(j, new_cap) PJSTR_MIN_ALLOCEXACTEXACT(P_JARR_ALIGN_UP((new_cap)*P_JARR_ELEMSZ(j)))
 
 #define P_JARR_CHECK_ARG(j)                         \
 	do {                                       \

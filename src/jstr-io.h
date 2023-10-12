@@ -514,7 +514,7 @@ jstr_io_alloc_popen(char *R *R s,
 	p = buf + fread(buf, 1, MINBUF, fp);
 	if (jstr_unlikely(ferror(fp)))
 		goto err_close;
-	*cap = PJSTR_MIN_ALLOC(p - buf);
+	*cap = PJSTR_MIN_ALLOCEXACT(p - buf);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, goto err_close);
@@ -569,9 +569,9 @@ pjstr_io_alloc_file_len(const int alloc_exact,
 	if (jstr_unlikely(fd == -1))
 		goto err;
 	if (alloc_exact)
-		*cap = PJSTR_MIN_ALLOCEXACT(filesz + 1);
+		*cap = PJSTR_MIN_ALLOCEXACTEXACT(filesz + 1);
 	else
-		*cap = PJSTR_MIN_ALLOC(filesz);
+		*cap = PJSTR_MIN_ALLOCEXACT(filesz);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, goto err_close);
