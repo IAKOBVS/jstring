@@ -887,7 +887,7 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 	size_t rdstlen;
 	size_t rdstcap = 0;
 	unsigned char rdst_stack[JSTR_PAGE_SIZE];
-	unsigned char *rdst = NULL;
+	unsigned char *rdst_heap = NULL;
 	unsigned char *rdstp;
 	unsigned char *tmp;
 	size_t findlen;
@@ -905,24 +905,16 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 		if (jstr_unlikely(has_bref == 0))
 			return jstr_reg_replaceall_len(s, sz, cap, rplc, rplclen, preg, eflags);
 		if (jstr_unlikely(rdstlen > JSTR_PAGE_SIZE)) {
-			if (jstr_unlikely(rdst == NULL)) {
+			if (jstr_unlikely(rdst_heap == NULL)) {
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, PJSTR_MALLOC_ALIGNMENT);
-				rdst = (u *)malloc(rdstcap);
-				PJSTR_MALLOC_ERR(rdst, goto err);
-				rdstp = rdst;
+				rdst_heap = (u *)malloc(rdstcap);
+				PJSTR_MALLOC_ERR(rdst_heap, goto err);
+				rdstp = rdst_heap;
 			} else if (rdstcap < rdstlen) {
 				rdstcap = pjstr_grow(rdstcap, rdstlen);
-				rdst = (u *)realloc(rdst, rdstcap);
-#if defined __GNUC__ || defined __clang__
-#	pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak"
-#	pragma GCC diagnostic push
-#endif
-				/* False-positive leak. */
-				PJSTR_MALLOC_ERR(rdst, goto err); /* NOLINT */
-#if defined __GNUC__ || defined __clang__
-#	pragma GCC diagnostic pop
-#endif
-				rdstp = rdst;
+				rdst_heap = (u *)realloc(rdst_heap, rdstcap);
+				PJSTR_MALLOC_ERR(rdst_heap, goto err);
+				rdstp = rdst_heap;
 			}
 		} else {
 			rdstp = rdst_stack;
@@ -937,13 +929,13 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 	}
 	if (dst != oldp)
 		*sz = jstr_stpmove_len((char *)dst, (char *)oldp, (*(u **)s + *sz) - oldp) - *s;
-	free(rdst);
+	free(rdst_heap);
 	return JSTR_REG_RET_NOERROR;
 err_free:
-	free(rdst);
+	free(rdst_heap);
 err:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
-	jstr_reg_free(preg); /* NOLINT */
+	jstr_reg_free(preg);
 	free(*s);
 	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 #endif
