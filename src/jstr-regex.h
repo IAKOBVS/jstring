@@ -546,7 +546,6 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 	do {                                                                    \
 		PJSTR_REG_LOG("*cap > *sz + rplclen - findlen");                \
 		typedef unsigned char uc;                                       \
-		typedef char ch;                                                \
 		if (dst != oldp) {                                              \
 			PJSTR_REG_LOG("dst != oldp");                           \
 			memmove(dst, oldp, p - oldp);                           \
@@ -570,7 +569,6 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 #define PJSTR_REG_RPLCALL_BIG_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp, malloc_fail) \
 	do {                                                                               \
 		typedef unsigned char uc;                                                  \
-		typedef char ch;                                                           \
 		PJSTR_REG_LOG("cap <= *sz + rplclen - findlen");                           \
 		if (dst != oldp)                                                           \
 			memmove(dst, oldp, p - oldp);                                      \
