@@ -189,6 +189,57 @@ jstr_err_exit(void) JSTR_NOEXCEPT
 #endif
 }
 
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_debug(const jstr_ty *R j)
+{
+	fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
+	fprintf(stderr, "strlen():%zu\n", strlen(j->data));
+	fprintf(stderr, "data puts:%s\n", j->data);
+	fputs("data:", stderr);
+	fwrite(j->data, 1, j->size, stderr);
+	fputc('\n', stderr);
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_print(const jstr_ty *R j)
+{
+	fwrite(j->data, 1, j->size, stdout);
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_init(char *R *R s,
+	  size_t *R sz,
+	  size_t *R cap)
+{
+	*s = NULL;
+	*sz = 0;
+	*cap = 0;
+}
+
+/*
+  free(p) and set p to NULL.
+*/
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_free(jstr_ty *const j) JSTR_NOEXCEPT
+{
+	free(j->data);
+#if JSTR_NULLIFY_PTR_ON_FREE
+	j->data = NULL;
+#endif
+#if JSTR_NULLIFY_MEMBERS_ON_FREE
+	j->capacity = 0;
+	j->size = 0;
+#endif
+}
+
 /*
    Return value:
    0 on malloc error;
@@ -210,170 +261,22 @@ err:
 	return 0;
 }
 
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_allocexact(char *R *R s,
-		size_t *R sz,
-		size_t *R cap,
-		const size_t top) JSTR_NOEXCEPT
-{
-	*sz = 0;
-	*cap = PJSTR_MIN_ALLOCEXACT(top);
-	*cap = JSTR_ALIGN_UP_STR(*cap);
-	*s = (char *)malloc(*cap);
-	PJSTR_MALLOC_ERR(*s, goto err);
-	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
-}
-
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_allocexact_assign_len(char *R *R s,
-			   size_t *R sz,
-			   size_t *R cap,
-			   const char *R src,
-			   const size_t srclen) JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(!jstr_allocexact(s, sz, cap, srclen + 1)))
-		return 0;
-	*sz = srclen;
-	jstr_strcpy_len(*s, src, srclen);
-	return 1;
-}
-
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_allocexact_assign(char *R *R s,
-		       size_t *R sz,
-		       size_t *R cap,
-		       const char *R src) JSTR_NOEXCEPT
-{
-	return jstr_allocexact_assign_len(s, sz, cap, src, strlen(src));
-}
-
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_alloc_assign_len(char *R *R s,
-		      size_t *R sz,
-		      size_t *R cap,
-		      const char *R src,
-		      const size_t srclen) JSTR_NOEXCEPT
-{
-	PJSTR_ALLOC_ONLY(*s, *cap, srclen, goto err);
-	*sz = srclen;
-	jstr_strcpy_len(*s, src, srclen);
-	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
-}
-
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_alloc_assign(char *R *R s,
-		  size_t *R sz,
-		  size_t *R cap,
-		  const char *R src) JSTR_NOEXCEPT
-{
-	return jstr_alloc_assign_len(s, sz, cap, src, strlen(src));
-}
-
-/*
-   Last arg must be NULL.
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
+JSTR_INLINE
 static int
-jstr_alloc_cat(char *R *R s,
-	       size_t *R sz,
-	       size_t *R cap,
-	       ...) JSTR_NOEXCEPT
+pjstr_cat(char *R *R s,
+	  size_t *R sz,
+	  size_t *R cap,
+	  va_list ap,
+	  const size_t arglen) JSTR_NOEXCEPT
 {
-	const char *arg;
-	*sz = 0;
-	va_list ap;
-	va_start(ap, cap);
-	while ((arg = va_arg(ap, char *)))
-		*sz += strlen(arg);
-	va_end(ap);
-	*cap = *sz;
 	char *p;
-	PJSTR_ALLOC_ONLY(*s, *cap, *sz, goto err);
-	p = *s;
-	va_start(ap, cap);
-	while ((arg = va_arg(ap, char *)))
-		p = jstr_stpcpy(p, arg);
-	va_end(ap);
-	*p = '\0';
-	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
-}
-
-/*
-   Last arg must be NULL.
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_SENTINEL
-JSTR_FUNC_MAY_NULL
-static int
-jstr_alloc_cat_j(jstr_ty *R j,
-		 ...) JSTR_NOEXCEPT
-{
-	const char *arg;
-	j->size = 0;
-	va_list ap;
-	va_start(ap, j);
-	while ((arg = va_arg(ap, char *)))
-		j->size += strlen(arg);
-	va_end(ap);
-	j->capacity = j->size;
-	char *p;
-	PJSTR_ALLOC_ONLY(j->data, j->capacity, j->size, goto err);
-	p = j->data;
-	va_start(ap, j);
-	while ((arg = va_arg(ap, char *)))
-		p = jstr_stpcpy(p, arg);
-	va_end(ap);
-	*p = '\0';
+	if (*cap < *sz + arglen)
+		PJSTR_REALLOC(*s, *cap, *sz + arglen, goto err);
+	p = *s + *sz;
+	*sz += arglen;
+	for (const char *R arg; (arg = va_arg(ap, char *)); p = jstr_stpcpy(p, arg))
+		;
 	return 1;
 err:
 	PJSTR_NULLIFY_MEMBERS(sz, cap);
@@ -394,26 +297,16 @@ jstr_cat(char *R *R s,
 	 size_t *R cap,
 	 ...) JSTR_NOEXCEPT
 {
-	const char *arg;
-	size_t arglen = 0;
 	va_list ap;
 	va_start(ap, cap);
-	while ((arg = va_arg(ap, char *)))
-		arglen += strlen(arg);
+	size_t arglen = 0;
+	for (const char *R arg; (arg = va_arg(ap, char *)); arglen += strlen(arg))
+		;
 	va_end(ap);
-	char *p;
-	if (*cap < *sz + arglen)
-		PJSTR_REALLOC(*s, *cap, *sz + arglen, goto err);
-	p = *s + *sz;
-	*sz += arglen;
 	va_start(ap, cap);
-	while ((arg = va_arg(ap, char *)))
-		p = jstr_stpcpy(p, arg);
+	const int ret = pjstr_cat(s, sz, cap, ap, arglen);
 	va_end(ap);
-	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
+	return ret;
 }
 
 /*
@@ -428,104 +321,16 @@ static int
 jstr_cat_j(jstr_ty *R j,
 	   ...) JSTR_NOEXCEPT
 {
-	const char *arg;
-	size_t arglen = 0;
 	va_list ap;
 	va_start(ap, j);
-	while ((arg = va_arg(ap, char *)))
-		arglen += strlen(arg);
+	size_t arglen = 0;
+	for (const char *R arg; (arg = va_arg(ap, char *)); arglen += strlen(arg))
+		;
 	va_end(ap);
-	char *p;
-	if (j->capacity < j->size + arglen)
-		PJSTR_REALLOC(j->data, j->capacity, j->size + arglen, goto err);
-	p = j->data + j->size;
-	j->size += arglen;
 	va_start(ap, j);
-	while ((arg = va_arg(ap, char *)))
-		p = jstr_stpcpy(p, arg);
+	const int ret = pjstr_cat(&j->data, &j->size, &j->capacity, ap, arglen);
 	va_end(ap);
-	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
-}
-
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_allocmore_assign_len(char *R *R s,
-			  size_t *R sz,
-			  size_t *R cap,
-			  const char *R src,
-			  const size_t srclen) JSTR_NOEXCEPT
-{
-	PJSTR_ALLOC_ONLY(*s, *cap, srclen * 2, goto err);
-	*sz = srclen;
-	jstr_strcpy_len(*s, src, srclen);
-	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
-}
-
-/*
-   Return value:
-   0 on malloc error;
-   otherwise 1.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_allocmore_assign(char *R *R s,
-		      size_t *R sz,
-		      size_t *R cap,
-		      const char *R src) JSTR_NOEXCEPT
-{
-	return jstr_allocmore_assign_len(s, sz, cap, src, strlen(src));
-}
-
-/*
-  free(p) and set p to NULL.
-*/
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_free(jstr_ty *const j) JSTR_NOEXCEPT
-{
-	free(j->data);
-#if JSTR_NULLIFY_PTR_ON_FREE
-	j->data = NULL;
-#endif
-#if JSTR_NULLIFY_MEMBERS_ON_FREE
-	j->capacity = 0;
-	j->size = 0;
-#endif
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_debug(const jstr_ty *R j)
-{
-	fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
-	fprintf(stderr, "strlen():%zu\n", strlen(j->data));
-	fprintf(stderr, "data puts:%s\n", j->data);
-	fputs("data:", stderr);
-	fwrite(j->data, 1, j->size, stderr);
-	fputc('\n', stderr);
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_print(const jstr_ty *R j)
-{
-	fwrite(j->data, 1, j->size, stdout);
+	return ret;
 }
 
 /*
