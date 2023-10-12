@@ -60,20 +60,16 @@ PJSTR_END_DECLS
 		(p) = PJSTR_CAST(p, realloc(p, old_cap));    \
 		PJSTR_MALLOC_ERR(p, malloc_fail);            \
 	} while (0)
-#define PJSTR_MIN_ALLOC(new_cap)                            \
-	(((new_cap) < JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER) \
-	 ? (JSTR_MIN_CAP)                                   \
-	 : ((new_cap)*JSTR_ALLOC_MULTIPLIER))
-#define PJSTR_MIN_ALLOCEXACT(new_cap) \
-	(((new_cap) < JSTR_MIN_CAP)   \
-	 ? (JSTR_MIN_CAP)             \
-	 : (new_cap))
-#define PJSTR_ALLOC_ONLY(p, cap, new_cap, do_fail)  \
-	do {                                        \
-		(cap) = PJSTR_MIN_ALLOC(new_cap);   \
-		(cap) = JSTR_ALIGN_UP_STR(cap);     \
-		(p) = PJSTR_CAST(p, malloc((cap))); \
-		PJSTR_MALLOC_ERR((p), do_fail);     \
+
+#define PJSTR_REALLOC_MAY_MALLOC(p, old_cap, new_cap, malloc_fail) \
+	do {                                                       \
+		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);         \
+		PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail);   \
+	} while (0)
+#define PJSTR_REALLOCEXACT_MAY_MALLOC(p, old_cap, new_cap, malloc_fail)                       \
+	do {                                                                                  \
+		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);                                    \
+		PJSTR_REALLOCEXACT(p, JSTR_MAX(old_cap, JSTR_MIN_CAP), new_cap, malloc_fail); \
 	} while (0)
 
 PJSTR_BEGIN_DECLS
@@ -100,8 +96,6 @@ static size_t
 pjstr_grow(size_t cap,
 	   const size_t new_cap) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(cap == 0))
-		cap = JSTR_MIN_CAP;
 	while ((cap *= JSTR_GROWTH) < new_cap)
 		;
 	return JSTR_ALIGN_UP(cap, PJSTR_MALLOC_ALIGNMENT);
@@ -253,7 +247,7 @@ pjstr_cat(char *R *R s,
 {
 	char *p;
 	if (*cap < *sz + arglen)
-		PJSTR_REALLOC(*s, *cap, *sz + arglen, goto err);
+		PJSTR_REALLOC_MAY_MALLOC(*s, *cap, *sz + arglen, goto err);
 	p = *s + *sz;
 	*sz += arglen;
 	for (const char *R arg; (arg = va_arg(ap, char *)); p = jstr_stpcpy(p, arg))
@@ -330,7 +324,7 @@ jstr_append_len(char *R *R s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + srclen)
-		PJSTR_REALLOC(*s, *cap, *sz + srclen, goto err);
+		PJSTR_REALLOC_MAY_MALLOC(*s, *cap, *sz + srclen, goto err);
 	jstr_strcpy_len(*s + *sz, src, srclen);
 	*sz += srclen;
 	return 1;
@@ -356,7 +350,7 @@ jstr_assign_len(char *R *R s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
-		PJSTR_REALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, goto err);
+		PJSTR_REALLOC_MAY_MALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, goto err);
 	jstr_strcpy_len(*s, src, srclen);
 	*sz = srclen;
 	return 1;
@@ -381,7 +375,7 @@ jstr_push_back(char *R *R s,
 	       const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
+		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
 	(*s)[*sz] = c;
 	(*s)[++*sz] = '\0';
 	return 1;
@@ -406,7 +400,7 @@ jstr_push_front(char *R *R s,
 		const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		PJSTR_REALLOCEXACT(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
+		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
 	jstr_strmove_len(*s + 1, *s, (*sz)++);
 	**s = c;
 	return 1;
@@ -427,17 +421,6 @@ jstr_pop_back(char *R s,
 	s[--*sz] = '\0';
 }
 
-/*
-   Pop s[size].
-*/
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_pop_back_j(jstr_ty *R j) JSTR_NOEXCEPT
-{
-	jstr_pop_back(j->data, &j->size);
-}
-
 /* Pop s[0]. */
 JSTR_FUNC_VOID
 JSTR_INLINE
@@ -448,15 +431,6 @@ jstr_pop_front(char *R s,
 	if (jstr_unlikely(*sz == 0))
 		return;
 	memmove(s, s + 1, (*sz)--);
-}
-
-/* Pop s[0]. */
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_pop_front_j(jstr_ty *R j) JSTR_NOEXCEPT
-{
-	jstr_pop_front(j->data, &j->size);
 }
 
 /*
@@ -471,7 +445,7 @@ jstr_reserve(char *R *R s,
 {
 	if (new_cap < *cap)
 		return 1;
-	PJSTR_REALLOC(*s, *cap, new_cap + 1, goto err);
+	PJSTR_REALLOC_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
 	PJSTR_NULLIFY_MEMBERS(sz, cap);
@@ -490,24 +464,11 @@ jstr_reserveexact(char *R *R s,
 {
 	if (new_cap < *cap)
 		return 1;
-	PJSTR_REALLOCEXACT(*s, *cap, new_cap + 1, goto err);
+	PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
 	PJSTR_NULLIFY_MEMBERS(sz, cap);
 	return 0;
-}
-
-/*
-   Do nothing if new_cap < cap.
-   Return 0 on malloc error.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_reserveexact_j(jstr_ty *R j,
-		    const size_t new_cap)
-{
-	return jstr_reserveexact(&j->data, &j->capacity, new_cap);
 }
 
 PJSTR_END_DECLS
