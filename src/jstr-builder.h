@@ -483,15 +483,6 @@ jstr_io_fwrite(const char *R s,
 	return fwrite(s, 1, sz, fp) == sz;
 }
 
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_io_fwrite_j(const jstr_ty *R j,
-		 FILE *R fp) JSTR_NOEXCEPT
-{
-	return jstr_io_fwrite(j->data, j->size, fp);
-}
-
 PJSTR_END_DECLS
 
 #undef R
