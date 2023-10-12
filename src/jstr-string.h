@@ -187,13 +187,12 @@ jstr_memrchr(const void *R s,
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
 	const jstr_word_ty *w = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
 	const jstr_word_ty *const start = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
-	if ((u *)w != end) {
+	if ((u *)w != end)
 		if (jstr_word_has_eq(*w, cc)) {
 			const unsigned char *const ret = (u *)w + jstr_word_index_last_eq(*w, cc);
 			if ((uintptr_t)(ret - (u *)s) <= (size_t)(end - (u *)s))
 				return (void *)ret;
 		}
-	}
 	while (--w > start)
 		if (jstr_word_has_eq(*w, cc))
 			return (void *)((u *)w + jstr_word_index_last_eq(*w, cc));
