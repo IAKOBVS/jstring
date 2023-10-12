@@ -942,6 +942,11 @@ err:
 #undef PJSTR_CREAT_RPLC_BREF
 }
 
+#ifdef __GNUC__
+#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
+#	pragma GCC diagnostic push
+#endif
+
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_replaceall_bref_len(char *R *R const s,
@@ -1017,6 +1022,10 @@ jstr_reg_replacen_bref_len_from_now(char *R *R const s,
 {
 	return pjstr_reg_replaceall_bref_len(PJSTR_FLAG_USE_N, s, sz, cap, start_idx, rplc, n, rplclen, preg, eflags, nmatch);
 }
+
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif
 
 JSTR_INLINE
 JSTR_FUNC
