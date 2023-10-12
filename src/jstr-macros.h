@@ -233,7 +233,11 @@
 #		define JSTR_NONNULL_ALL
 #		define JSTR_NONNULL(args)
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(malloc)
+#	if JSTR_HAS_ATTRIBUTE(__malloc__)
+#		define JSTR_MALLOC				      __attribute__((__malloc__))
+#		define JSTR_MALLOC_DEALLOC(deallocator)	      __attribute__((__malloc__, deallocator))
+#		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__, deallocator, ptr_idx))
+#	elif JSTR_HAS_ATTRIBUTE(malloc)
 #		define JSTR_MALLOC				      __attribute__((malloc))
 #		define JSTR_MALLOC_DEALLOC(deallocator)	      __attribute__((malloc, deallocator))
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
