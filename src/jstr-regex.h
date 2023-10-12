@@ -900,7 +900,6 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 			++p;
 			continue;
 		}
-		p += rm[0].rm_so;
 		has_bref = pjstr_reg_strlen_rplc_dst(rm, (u *)rplc, rplclen, &rdstlen);
 		if (jstr_unlikely(has_bref == 0))
 			return jstr_reg_replaceall_len(s, sz, cap, rplc, rplclen, preg, eflags);
@@ -920,7 +919,8 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 			if (jstr_unlikely(rdst_heap == NULL))
 				rdstp = rdst_stack;
 		}
-		pjstr_reg_creat_rplc_bref((u *)p - rm[0].rm_so, rm, (u *)rdstp, (u *)rplc, rplclen);
+		pjstr_reg_creat_rplc_bref((u *)p, rm, (u *)rdstp, (u *)rplc, rplclen);
+		p += rm[0].rm_so;
 		if (rdstlen <= findlen)
 			PJSTR_RPLCALL_IN_PLACE(dst, oldp, p, rdstp, rdstlen, findlen);
 		else if (*cap > *sz + rdstlen - findlen)
