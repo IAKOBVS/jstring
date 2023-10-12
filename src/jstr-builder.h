@@ -72,6 +72,12 @@ PJSTR_END_DECLS
 		PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail);   \
 	} while (0)
 
+#if JSTR_NULLIFY_MEMBERS_ON_FREE
+#	define PJSTR_NULLIFY_MEMBERS(sz, cap) (pjstr_nullify_members(sz, cap))
+#else
+#	define PJSTR_NULLIFY_MEMBERS(sz, cap)
+#endif
+
 PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_VOID
@@ -83,12 +89,6 @@ pjstr_nullify_members(size_t *R size,
 	*size = 0;
 	*cap = 0;
 }
-
-#if JSTR_NULLIFY_MEMBERS_ON_FREE
-#	define PJSTR_NULLIFY_MEMBERS(sz, cap) (pjstr_nullify_members(sz, cap))
-#else
-#	define PJSTR_NULLIFY_MEMBERS(sz, cap)
-#endif
 
 JSTR_FUNC_CONST
 JSTR_INLINE
