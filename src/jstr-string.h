@@ -252,15 +252,22 @@ jstr_memchrnul(const void *R s,
 	return (void *)(p ? p : (char *)s + n);
 }
 
-JSTR_INLINE
+/*
+   Find last NE in HS (ASCII).
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
 JSTR_FUNC_PURE
 static void *
-pjstr_strrstr_len(const void *R const hs,
-		  const size_t hslen,
-		  const void *R const ne,
-		  const size_t nelen) JSTR_NOEXCEPT
+jstr_strrstr_len(const void *R const hs,
+		 const size_t hslen,
+		 const void *R const ne,
+		 const size_t nelen) JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	if (jstr_unlikely(hslen < nelen))
+		return NULL;
 	if (nelen > 4)
 		return pjstr_strrstr_len_bmh((u *)hs, hslen, (unsigned char *)ne, nelen);
 	if (jstr_unlikely(nelen == 0))
@@ -300,43 +307,6 @@ pjstr_strrstr_len(const void *R const hs,
 		return hw == nw ? (void *)(h + 1) : NULL;
 	}
 	}
-}
-
-/*
-   Find last NE in HS (ASCII).
-   Return value:
-   Pointer to NE;
-   NULL if not found.
-*/
-JSTR_FUNC_PURE
-static void *
-jstr_strrstr_len(const void *R const hs,
-		 const size_t hslen,
-		 const void *R const ne,
-		 const size_t nelen) JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(hslen < nelen))
-		return NULL;
-	return pjstr_strrstr_len(hs, hslen, ne, nelen);
-}
-
-/*
-   Find last NE in HS.
-   Return value:
-   Pointer to NE;
-   NULL if not found.
-*/
-JSTR_FUNC_PURE
-static char *
-jstr_strrstr(const char *R const hs,
-	     const char *R const ne) JSTR_NOEXCEPT
-{
-	/* Avoid using strnlen for NE since NELEN > HSLEN should be rare. */
-	const size_t hslen = strlen(hs);
-	const size_t nelen = strlen(ne);
-	if (jstr_likely(hslen > nelen))
-		return (char *)pjstr_strrstr_len(hs, hslen, ne, nelen);
-	return (hslen == nelen) && !memcmp(hs, ne, nelen) ? (char *)hs : NULL;
 }
 
 /* Heavily inspired by glibc memmem. */
