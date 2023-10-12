@@ -389,7 +389,7 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_appendmore(char *R *R s,
+jstr_concat(char *R *R s,
 		size_t *R sz,
 		size_t *R cap,
 		...) JSTR_NOEXCEPT
@@ -425,7 +425,7 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_appendmore_j(jstr_ty *R j,
+jstr_concat_j(jstr_ty *R j,
 		  ...) JSTR_NOEXCEPT
 {
 	const char *arg;

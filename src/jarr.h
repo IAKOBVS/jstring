@@ -88,7 +88,7 @@ PJSTR_END_DECLS
 		PJSTR_PP_ARRCPY_VA_ARGS(P_JARR_DATA(j), __VA_ARGS__);                                                                          \
 	} while (0)
 /* Add elements to end of PTR. */
-#define jarr_appendmore(j, ...)                                                                                                                 \
+#define jarr_concat(j, ...)                                                                                                                 \
 	do {                                                                                                                                    \
 		P_JARR_CHECK_ARG(j);                                                                                                            \
 		P_JARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                                                                          \
