@@ -376,17 +376,21 @@ jstr_reg_match_len_now(const char *R const s,
 #endif
 
 JSTR_FUNC
+JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_reg_remove(char *R const s,
-	    size_t *R const sz,
-	    const regex_t *R const preg,
-	    const int eflags) JSTR_NOEXCEPT
+pjstr_reg_remove(char *R const s,
+		 size_t *R const sz,
+		 const size_t start_idx,
+		 const regex_t *R const preg,
+		 const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	const jstr_reg_errcode_ty ret = PJSTR_REG_EXEC(preg, s, *sz, 1, &rm, eflags);
+	const jstr_reg_errcode_ty ret = PJSTR_REG_EXEC(preg, s + start_idx, *sz - start_idx, 1, &rm, eflags);
 	if (jstr_unlikely(ret != JSTR_REG_RET_NOERROR)
 	    || jstr_unlikely(rm.rm_eo == rm.rm_so))
 		return ret;
+	rm.rm_so += start_idx;
+	rm.rm_eo += start_idx;
 	jstr_strmove_len(s + rm.rm_so,
 			 s + rm.rm_eo,
 			 *sz - (rm.rm_eo - rm.rm_so));
@@ -401,28 +405,64 @@ jstr_reg_remove(char *R const s,
 #endif
 
 JSTR_FUNC
+static jstr_reg_errcode_ty
+jstr_reg_remove(char *R const s,
+		size_t *R const sz,
+		const regex_t *R const preg,
+		const int eflags) JSTR_NOEXCEPT
+{
+	return pjstr_reg_remove(s, sz, 0, preg, eflags);
+}
+
+JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
 jstr_reg_remove_now(char *R const s,
-		size_t *R const sz,
-		const char *R const ptn,
-		regex_t *R const preg,
-		const int cflags,
-		const int eflags) JSTR_NOEXCEPT
+		    size_t *R const sz,
+		    const char *R const ptn,
+		    regex_t *R const preg,
+		    const int cflags,
+		    const int eflags) JSTR_NOEXCEPT
 {
 	PJSTR_REG_COMP_NOW();
 	return jstr_reg_remove(s, sz, preg, eflags);
 }
 
 JSTR_FUNC
+static jstr_reg_errcode_ty
+jstr_reg_remove_from(char *R const s,
+		     size_t *R const sz,
+		     const size_t start_idx,
+		     const regex_t *R const preg,
+		     const int eflags) JSTR_NOEXCEPT
+{
+	return pjstr_reg_remove(s, sz, start_idx, preg, eflags);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static jstr_reg_errcode_ty
+jstr_reg_remove_from_now(char *R const s,
+			 size_t *R const sz,
+			 const size_t start_idx,
+			 const char *R const ptn,
+			 regex_t *R const preg,
+			 const int cflags,
+			 const int eflags) JSTR_NOEXCEPT
+{
+	PJSTR_REG_COMP_NOW();
+	return jstr_reg_remove_from(s, sz, start_idx, preg, eflags);
+}
+
+JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
 pjstr_reg_removeall(const pjstr_flag_use_n_ty flag,
-		char *R const s,
-		size_t *R const sz,
-		size_t n,
-		const regex_t *R const preg,
-		const int eflags) JSTR_NOEXCEPT
+		    char *R const s,
+		    size_t *R const sz,
+		    size_t n,
+		    const regex_t *R const preg,
+		    const int eflags) JSTR_NOEXCEPT
 {
 	regmatch_t rm;
 	unsigned char *dst = (unsigned char *)s;
@@ -451,9 +491,9 @@ pjstr_reg_removeall(const pjstr_flag_use_n_ty flag,
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_removeall(char *R const s,
-	       size_t *R const sz,
-	       const regex_t *R const preg,
-	       const int eflags) JSTR_NOEXCEPT
+		   size_t *R const sz,
+		   const regex_t *R const preg,
+		   const int eflags) JSTR_NOEXCEPT
 {
 	return pjstr_reg_removeall(PJSTR_FLAG_USE_NOT_N, s, sz, 0, preg, eflags);
 }
@@ -461,10 +501,10 @@ jstr_reg_removeall(char *R const s,
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_removen(char *R const s,
-	     size_t *R const sz,
-	     const size_t n,
-	     const regex_t *R const preg,
-	     const int eflags) JSTR_NOEXCEPT
+		 size_t *R const sz,
+		 const size_t n,
+		 const regex_t *R const preg,
+		 const int eflags) JSTR_NOEXCEPT
 {
 	return pjstr_reg_removeall(PJSTR_FLAG_USE_N, s, sz, n, preg, eflags);
 }
