@@ -823,24 +823,28 @@ pjstr_reg_creat_rplc_bref(const unsigned char *R mtc,
 }
 
 JSTR_FUNC
+JSTR_INLINE
 static jstr_reg_errcode_ty
-jstr_reg_replace_bref_len(char *R *R const s,
-			  size_t *R const sz,
-			  size_t *R const cap,
-			  const char *R const rplc,
-			  size_t rplclen,
-			  regex_t *R const preg,
-			  const int eflags,
-			  const size_t nmatch) JSTR_NOEXCEPT
+pjstr_reg_replace_bref_len(char *R *R const s,
+			   size_t *R const sz,
+			   size_t *R const cap,
+			   const size_t start_idx,
+			   const char *R const rplc,
+			   size_t rplclen,
+			   regex_t *R const preg,
+			   const int eflags,
+			   const size_t nmatch) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplclen == 0))
-		return jstr_reg_rm(*s, sz, preg, eflags);
+		return jstr_reg_rm(*s + start_idx, sz - start_idx, preg, eflags);
 	regmatch_t rm[10];
-	jstr_reg_errcode_ty ret = PJSTR_REG_EXEC(preg, *s, *sz, nmatch, rm, eflags);
+	jstr_reg_errcode_ty ret = PJSTR_REG_EXEC(preg, *s + start_idx, *sz - start_idx, nmatch, rm, eflags);
 	const size_t findlen = rm[0].rm_eo - rm[0].rm_so;
 	if (jstr_unlikely(ret != JSTR_REG_RET_NOERROR)
 	    || jstr_unlikely(findlen == 0))
 		return ret;
+	rm[0].rm_so += start_idx;
+	rm[0].rm_eo += start_idx;
 	typedef unsigned char u;
 	size_t rdstlen = rplclen;
 	const int has_bref = pjstr_reg_strlen_rplc_dst(rm, (u *)rplc, rplclen, &rdstlen);
@@ -867,6 +871,35 @@ err:
 	PJSTR_NULLIFY_MEMBERS(*sz, *cap);
 #endif
 	return JSTR_REG_RET_ESPACE;
+}
+
+JSTR_FUNC
+static jstr_reg_errcode_ty
+jstr_reg_replace_bref_len(char *R *R const s,
+			  size_t *R const sz,
+			  size_t *R const cap,
+			  const char *R const rplc,
+			  size_t rplclen,
+			  regex_t *R const preg,
+			  const int eflags,
+			  const size_t nmatch) JSTR_NOEXCEPT
+{
+	return pjstr_reg_replace_bref_len(s, sz, cap, 0, rplc, rplclen, preg, eflags, nmatch);
+}
+
+JSTR_FUNC
+static jstr_reg_errcode_ty
+jstr_reg_replace_bref_len_from(char *R *R const s,
+			       size_t *R const sz,
+			       size_t *R const cap,
+			       const size_t start_idx,
+			       const char *R const rplc,
+			       size_t rplclen,
+			       regex_t *R const preg,
+			       const int eflags,
+			       const size_t nmatch) JSTR_NOEXCEPT
+{
+	return pjstr_reg_replace_bref_len(s, sz, cap, start_idx, rplc, rplclen, preg, eflags, nmatch);
 }
 
 JSTR_INLINE
@@ -909,7 +942,7 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 		}
 		has_bref = pjstr_reg_strlen_rplc_dst(rm, (u *)rplc, rplclen, &rdstlen);
 		if (jstr_unlikely(has_bref == 0))
-			return jstr_reg_replaceall_len(s, sz, cap, rplc, rplclen, preg, eflags);
+			return jstr_reg_replaceall_len_from(s, sz, cap, p - (u *)s, rplc, rplclen, preg, eflags);
 		if (jstr_unlikely(rdstlen > JSTR_PAGE_SIZE)) {
 			if (jstr_unlikely(rdst_heap == NULL)) {
 				rdstcap = JSTR_PTR_ALIGN_UP(rdstlen, PJSTR_MALLOC_ALIGNMENT);
