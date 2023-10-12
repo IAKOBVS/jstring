@@ -71,6 +71,8 @@ PJSTR_END_DECLS
 		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);              \
 		PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail);   \
 	} while (0)
+#define PJSTR_MIN_ALLOC(cap)	  ((cap > JSTR_MIN_CAP) ? (cap * JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
+#define PJSTR_MIN_ALLOCEXACT(cap) ((cap > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
 
 #if JSTR_NULLIFY_MEMBERS_ON_FREE
 #	define PJSTR_NULLIFY_MEMBERS(sz, cap) (pjstr_nullify_members(sz, cap))
@@ -469,6 +471,25 @@ jstr_reserveexact(char *R *R s,
 err:
 	PJSTR_NULLIFY_MEMBERS(sz, cap);
 	return 0;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_io_fwrite(const char *R s,
+	       const size_t sz,
+	       FILE *R fp) JSTR_NOEXCEPT
+{
+	return fwrite(s, 1, sz, fp) == sz;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_io_fwrite_j(const jstr_ty *R j,
+		 FILE *R fp) JSTR_NOEXCEPT
+{
+	return jstr_io_fwrite(j->data, j->size, fp);
 }
 
 PJSTR_END_DECLS

@@ -439,25 +439,6 @@ jstr_io_isbinary_j(jstr_ty *R j) JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_io_fwrite(const char *R s,
-	       const size_t sz,
-	       FILE *R fp) JSTR_NOEXCEPT
-{
-	return fwrite(s, 1, sz, fp) == sz;
-}
-
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_io_fwrite_j(const jstr_ty *R j,
-		 FILE *R fp) JSTR_NOEXCEPT
-{
-	return jstr_io_fwrite(j->data, j->size, fp);
-}
-
-JSTR_FUNC
 static int
 jstr_io_write_file(const char *R s,
 		   const size_t sz,
@@ -902,7 +883,7 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   size_t dlen,
 				   const struct stat *st);
 
-JSTR_FUNC_MAY_NULL
+JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(3)
 static int
 pjstr_io_ftw_len(char *R dirpath,
