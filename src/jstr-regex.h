@@ -798,6 +798,7 @@ pjstr_reg_creat_rplc_bref(const unsigned char *R mtc,
 		rold = rplc;
 		rplc = (unsigned char *)memchr(rplc, '\\', rplc_e - rplc);
 		if (jstr_unlikely(rplc == NULL)) {
+end:
 			memcpy(rdst, rold, rplc_e - rold);
 			break;
 		}
@@ -812,7 +813,7 @@ pjstr_reg_creat_rplc_bref(const unsigned char *R mtc,
 			       rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so);
 			rdst += rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so;
 		} else if (jstr_unlikely(*rplc == '\0')) {
-			break;
+			goto end;
 		} else {
 			rdst[0] = rplc[-1];
 			rdst[1] = rplc[0];
