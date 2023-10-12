@@ -197,9 +197,9 @@ jstr_err_exit(void) JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_alloc(char *R *R const s,
-	   size_t *R const sz,
-	   size_t *R const cap,
+jstr_alloc(char *R *R s,
+	   size_t *R sz,
+	   size_t *R cap,
 	   const size_t top)
 {
 	*sz = 0;
@@ -218,9 +218,9 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_allocexact(char *R *R const s,
-		size_t *R const sz,
-		size_t *R const cap,
+jstr_allocexact(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
 		const size_t top) JSTR_NOEXCEPT
 {
 	*sz = 0;
@@ -242,10 +242,10 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_allocexact_assign_len(char *R *R const s,
-			   size_t *R const sz,
-			   size_t *R const cap,
-			   const char *R const src,
+jstr_allocexact_assign_len(char *R *R s,
+			   size_t *R sz,
+			   size_t *R cap,
+			   const char *R src,
 			   const size_t srclen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(!jstr_allocexact(s, sz, cap, srclen + 1)))
@@ -263,10 +263,10 @@ jstr_allocexact_assign_len(char *R *R const s,
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_allocexact_assign(char *R *R const s,
-		       size_t *R const sz,
-		       size_t *R const cap,
-		       const char *R const src) JSTR_NOEXCEPT
+jstr_allocexact_assign(char *R *R s,
+		       size_t *R sz,
+		       size_t *R cap,
+		       const char *R src) JSTR_NOEXCEPT
 {
 	return jstr_allocexact_assign_len(s, sz, cap, src, strlen(src));
 }
@@ -279,10 +279,10 @@ jstr_allocexact_assign(char *R *R const s,
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_alloc_assign_len(char *R *R const s,
-		      size_t *R const sz,
-		      size_t *R const cap,
-		      const char *R const src,
+jstr_alloc_assign_len(char *R *R s,
+		      size_t *R sz,
+		      size_t *R cap,
+		      const char *R src,
 		      const size_t srclen) JSTR_NOEXCEPT
 {
 	PJSTR_ALLOC_ONLY(*s, *cap, srclen, goto err);
@@ -302,10 +302,10 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_alloc_assign(char *R *R const s,
-		  size_t *R const sz,
-		  size_t *R const cap,
-		  const char *R const src) JSTR_NOEXCEPT
+jstr_alloc_assign(char *R *R s,
+		  size_t *R sz,
+		  size_t *R cap,
+		  const char *R src) JSTR_NOEXCEPT
 {
 	return jstr_alloc_assign_len(s, sz, cap, src, strlen(src));
 }
@@ -319,9 +319,9 @@ jstr_alloc_assign(char *R *R const s,
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_alloc_assignmore(char *R *R const s,
-		      size_t *R const sz,
-		      size_t *R const cap,
+jstr_alloc_assignmore(char *R *R s,
+		      size_t *R sz,
+		      size_t *R cap,
 		      ...) JSTR_NOEXCEPT
 {
 	const char *arg;
@@ -355,7 +355,7 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_alloc_assignmore_j(jstr_ty *R const j,
+jstr_alloc_assignmore_j(jstr_ty *R j,
 			...) JSTR_NOEXCEPT
 {
 	const char *arg;
@@ -389,9 +389,9 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_appendmore(char *R *R const s,
-		size_t *R const sz,
-		size_t *R const cap,
+jstr_appendmore(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
 		...) JSTR_NOEXCEPT
 {
 	const char *arg;
@@ -425,7 +425,7 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 static int
-jstr_appendmore_j(jstr_ty *R const j,
+jstr_appendmore_j(jstr_ty *R j,
 		  ...) JSTR_NOEXCEPT
 {
 	const char *arg;
@@ -458,10 +458,10 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_allocmore_assign_len(char *R *R const s,
-			  size_t *R const sz,
-			  size_t *R const cap,
-			  const char *R const src,
+jstr_allocmore_assign_len(char *R *R s,
+			  size_t *R sz,
+			  size_t *R cap,
+			  const char *R src,
 			  const size_t srclen) JSTR_NOEXCEPT
 {
 	PJSTR_ALLOC_ONLY(*s, *cap, srclen * 2, goto err);
@@ -481,10 +481,10 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_allocmore_assign(char *R *R const s,
-		      size_t *R const sz,
-		      size_t *R const cap,
-		      const char *R const src) JSTR_NOEXCEPT
+jstr_allocmore_assign(char *R *R s,
+		      size_t *R sz,
+		      size_t *R cap,
+		      const char *R src) JSTR_NOEXCEPT
 {
 	return jstr_allocmore_assign_len(s, sz, cap, src, strlen(src));
 }
@@ -510,7 +510,7 @@ jstr_free(jstr_ty *const j) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_debug(const jstr_ty *R const j)
+jstr_debug(const jstr_ty *R j)
 {
 	fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
 	fprintf(stderr, "strlen():%zu\n", strlen(j->data));
@@ -523,7 +523,7 @@ jstr_debug(const jstr_ty *R const j)
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_print(const jstr_ty *R const j)
+jstr_print(const jstr_ty *R j)
 {
 	fwrite(j->data, 1, j->size, stdout);
 }
@@ -537,10 +537,10 @@ jstr_print(const jstr_ty *R const j)
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_append_len(char *R *R const s,
-		size_t *R const sz,
-		size_t *R const cap,
-		const char *R const src,
+jstr_append_len(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
+		const char *R src,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + srclen)
@@ -561,10 +561,10 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_append(char *R *R const s,
-	    size_t *R const sz,
-	    size_t *R const cap,
-	    const char *R const src) JSTR_NOEXCEPT
+jstr_append(char *R *R s,
+	    size_t *R sz,
+	    size_t *R cap,
+	    const char *R src) JSTR_NOEXCEPT
 {
 	return jstr_append_len(s, sz, cap, src, strlen(src));
 }
@@ -579,10 +579,10 @@ jstr_append(char *R *R const s,
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_assign_len(char *R *R const s,
-		size_t *R const sz,
-		size_t *R const cap,
-		const char *R const src,
+jstr_assign_len(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
+		const char *R src,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
@@ -603,10 +603,10 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_assign(char *R *R const s,
-	    size_t *R const sz,
-	    size_t *R const cap,
-	    const char *R const src) JSTR_NOEXCEPT
+jstr_assign(char *R *R s,
+	    size_t *R sz,
+	    size_t *R cap,
+	    const char *R src) JSTR_NOEXCEPT
 {
 	return jstr_assign_len(s, sz, cap, src, strlen(src));
 }
@@ -621,9 +621,9 @@ jstr_assign(char *R *R const s,
 JSTR_INLINE
 JSTR_FUNC
 static int
-jstr_push_back(char *R *R const s,
-	       size_t *R const sz,
-	       size_t *R const cap,
+jstr_push_back(char *R *R s,
+	       size_t *R sz,
+	       size_t *R cap,
 	       const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
@@ -646,9 +646,9 @@ err:
 JSTR_FUNC_VOID
 JSTR_INLINE
 static int
-jstr_push_front(char *R *R const s,
-		size_t *R const sz,
-		size_t *R const cap,
+jstr_push_front(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
 		const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
@@ -665,8 +665,8 @@ err:
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_pop_back(char *R const s,
-	      size_t *R const sz) JSTR_NOEXCEPT
+jstr_pop_back(char *R s,
+	      size_t *R sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*sz == 0))
 		return;
@@ -679,7 +679,7 @@ jstr_pop_back(char *R const s,
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_pop_back_j(jstr_ty *R const j) JSTR_NOEXCEPT
+jstr_pop_back_j(jstr_ty *R j) JSTR_NOEXCEPT
 {
 	jstr_pop_back(j->data, &j->size);
 }
@@ -688,8 +688,8 @@ jstr_pop_back_j(jstr_ty *R const j) JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_pop_front(char *R const s,
-	       size_t *R const sz) JSTR_NOEXCEPT
+jstr_pop_front(char *R s,
+	       size_t *R sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*sz == 0))
 		return;
@@ -700,7 +700,7 @@ jstr_pop_front(char *R const s,
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_pop_front_j(jstr_ty *R const j) JSTR_NOEXCEPT
+jstr_pop_front_j(jstr_ty *R j) JSTR_NOEXCEPT
 {
 	jstr_pop_front(j->data, &j->size);
 }
@@ -711,8 +711,8 @@ jstr_pop_front_j(jstr_ty *R const j) JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static int
-jstr_reserve(char *R *R const s,
-	     size_t *R const cap,
+jstr_reserve(char *R *R s,
+	     size_t *R cap,
 	     const size_t new_cap)
 {
 	if (new_cap < *cap)
@@ -731,7 +731,7 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_reserve_j(jstr_ty *R const j,
+jstr_reserve_j(jstr_ty *R j,
 	       const size_t new_cap)
 {
 	return jstr_reserve(&j->data, &j->capacity, new_cap);
@@ -743,8 +743,8 @@ jstr_reserve_j(jstr_ty *R const j,
 */
 JSTR_FUNC
 static int
-jstr_reserveexact(char *R *R const s,
-		  size_t *R const cap,
+jstr_reserveexact(char *R *R s,
+		  size_t *R cap,
 		  const size_t new_cap)
 {
 	if (new_cap < *cap)
@@ -763,7 +763,7 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_reserveexact_j(jstr_ty *R const j,
+jstr_reserveexact_j(jstr_ty *R j,
 		    const size_t new_cap)
 {
 	return jstr_reserveexact(&j->data, &j->capacity, new_cap);

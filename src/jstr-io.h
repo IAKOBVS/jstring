@@ -346,7 +346,7 @@ jstr_io_ext_type(const char *R fname) JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static int
-jstr_isbinary(const char *R const buf,
+jstr_isbinary(const char *R buf,
 	      const size_t n,
 	      const size_t sz) JSTR_NOEXCEPT
 {
@@ -370,7 +370,7 @@ jstr_isbinary(const char *R const buf,
 */
 JSTR_FUNC
 static int
-jstr_io_isbinary_maybe(const char *R const buf,
+jstr_io_isbinary_maybe(const char *R buf,
 		       const size_t sz) JSTR_NOEXCEPT
 {
 #define JSTR_BINARY_CHECK()                                                       \
@@ -402,7 +402,7 @@ check_utf:;                                                                     
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_io_isbinary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
+jstr_io_isbinary_maybe_j(jstr_ty *R j) JSTR_NOEXCEPT
 {
 	return jstr_io_isbinary_maybe(j->data, j->size);
 }
@@ -413,7 +413,7 @@ jstr_io_isbinary_maybe_j(jstr_ty *R const j) JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 static int
-jstr_io_isbinary(const char *R const buf,
+jstr_io_isbinary(const char *R buf,
 		 const size_t sz) JSTR_NOEXCEPT
 {
 	JSTR_BINARY_CHECK();
@@ -433,7 +433,7 @@ jstr_io_isbinary(const char *R const buf,
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_io_isbinary_j(jstr_ty *R const j) JSTR_NOEXCEPT
+jstr_io_isbinary_j(jstr_ty *R j) JSTR_NOEXCEPT
 {
 	return jstr_io_isbinary(j->data, j->size);
 }
@@ -441,9 +441,9 @@ jstr_io_isbinary_j(jstr_ty *R const j) JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_io_fwrite(const char *R const s,
+jstr_io_fwrite(const char *R s,
 	       const size_t sz,
-	       FILE *R const fp) JSTR_NOEXCEPT
+	       FILE *R fp) JSTR_NOEXCEPT
 {
 	return fwrite(s, 1, sz, fp) == sz;
 }
@@ -451,17 +451,17 @@ jstr_io_fwrite(const char *R const s,
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_io_fwrite_j(const jstr_ty *R const j,
-		 FILE *R const fp) JSTR_NOEXCEPT
+jstr_io_fwrite_j(const jstr_ty *R j,
+		 FILE *R fp) JSTR_NOEXCEPT
 {
 	return jstr_io_fwrite(j->data, j->size, fp);
 }
 
 JSTR_FUNC
 static int
-jstr_io_write_file(const char *R const s,
+jstr_io_write_file(const char *R s,
 		   const size_t sz,
-		   const char *R const fname,
+		   const char *R fname,
 		   const int oflag) JSTR_NOEXCEPT
 {
 	const int fd = open(fname, oflag | O_WRONLY);
@@ -479,8 +479,8 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_io_write_file_j(const jstr_ty *R const j,
-		     const char *R const fname,
+jstr_io_write_file_j(const jstr_ty *R j,
+		     const char *R fname,
 		     const int oflag) JSTR_NOEXCEPT
 {
 	return jstr_io_write_file(j->data, j->size, fname, oflag);
@@ -488,12 +488,12 @@ jstr_io_write_file_j(const jstr_ty *R const j,
 
 JSTR_FUNC
 static int
-jstr_io_fwrite_file(const char *R const s,
+jstr_io_fwrite_file(const char *R s,
 		    const size_t sz,
-		    const char *R const fname,
-		    const char *R const modes) JSTR_NOEXCEPT
+		    const char *R fname,
+		    const char *R modes) JSTR_NOEXCEPT
 {
-	FILE *R const fp = fopen(fname, modes);
+	FILE *R fp = fopen(fname, modes);
 	if (jstr_unlikely(fp == NULL))
 		return 0;
 	if (jstr_unlikely(!jstr_io_fwrite(s, sz, fp)))
@@ -508,9 +508,9 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_io_fwrite_file_j(const jstr_ty *R const j,
-		      const char *R const fname,
-		      const char *R const modes) JSTR_NOEXCEPT
+jstr_io_fwrite_file_j(const jstr_ty *R j,
+		      const char *R fname,
+		      const char *R modes) JSTR_NOEXCEPT
 {
 	return jstr_io_fwrite_file(j->data, j->size, fname, modes);
 }
@@ -519,12 +519,12 @@ jstr_io_fwrite_file_j(const jstr_ty *R const j,
 
 JSTR_FUNC
 static int
-jstr_io_alloc_popen(char *R *R const s,
-		    size_t *R const sz,
-		    size_t *R const cap,
-		    const char *R const cmd) JSTR_NOEXCEPT
+jstr_io_alloc_popen(char *R *R s,
+		    size_t *R sz,
+		    size_t *R cap,
+		    const char *R cmd) JSTR_NOEXCEPT
 {
-	FILE *R const fp = popen(cmd, "r");
+	FILE *R fp = popen(cmd, "r");
 	if (jstr_unlikely(fp == NULL))
 		goto err;
 	char *p;
@@ -578,10 +578,10 @@ JSTR_INLINE
 JSTR_FUNC
 static int
 pjstr_io_alloc_file_len(const int alloc_exact,
-			char *R *R const s,
-			size_t *R const sz,
-			size_t *R const cap,
-			const char *R const fname,
+			char *R *R s,
+			size_t *R sz,
+			size_t *R cap,
+			const char *R fname,
 			const size_t filesz) JSTR_NOEXCEPT
 {
 	const int fd = open(fname, O_RDONLY);
@@ -615,10 +615,10 @@ err:
 */
 JSTR_FUNC
 static int
-jstr_io_alloc_file_len(char *R *R const s,
-		       size_t *R const sz,
-		       size_t *R const cap,
-		       const char *R const fname,
+jstr_io_alloc_file_len(char *R *R s,
+		       size_t *R sz,
+		       size_t *R cap,
+		       const char *R fname,
 		       const size_t filesz) JSTR_NOEXCEPT
 {
 	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, filesz);
@@ -631,10 +631,10 @@ jstr_io_alloc_file_len(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_io_allocexact_file(char *R *R const s,
-			size_t *R const sz,
-			size_t *R const cap,
-			const char *R const fname,
+jstr_io_allocexact_file(char *R *R s,
+			size_t *R sz,
+			size_t *R cap,
+			const char *R fname,
 			const size_t filesz) JSTR_NOEXCEPT
 {
 	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, filesz);
@@ -647,10 +647,10 @@ jstr_io_allocexact_file(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_io_alloc_file(char *R *R const s,
-		   size_t *R const sz,
-		   size_t *R const cap,
-		   const char *R const fname,
+jstr_io_alloc_file(char *R *R s,
+		   size_t *R sz,
+		   size_t *R cap,
+		   const char *R fname,
 		   struct stat *R st) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(fname, st)))
@@ -665,10 +665,10 @@ jstr_io_alloc_file(char *R *R const s,
 */
 JSTR_FUNC
 static int
-jstr_io_allocexact_file_len(char *R *R const s,
-			    size_t *R const sz,
-			    size_t *R const cap,
-			    const char *R const fname,
+jstr_io_allocexact_file_len(char *R *R s,
+			    size_t *R sz,
+			    size_t *R cap,
+			    const char *R fname,
 			    struct stat *R st) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(fname, st)))
@@ -690,7 +690,7 @@ jstr_io_expand_tilde_first(char *R s,
 {
 	if (*s != '~')
 		return s + sz;
-	const char *R const home = getenv("HOME");
+	const char *R home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
 		return NULL;
 	const size_t len = strlen(home);
@@ -711,7 +711,7 @@ static char *
 jstr_io_expand_tilde_p_unsafe(char *R s,
 			      size_t sz) JSTR_NOEXCEPT
 {
-	const char *R const home = getenv("HOME");
+	const char *R home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
 		return NULL;
 	const size_t len = strlen(home);
@@ -737,7 +737,7 @@ jstr_io_expand_tilde(char *R *R s,
 		     size_t *R sz,
 		     size_t *R cap) JSTR_NOEXCEPT
 {
-	const char *R const home = getenv("HOME");
+	const char *R home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
 		return 0;
 	const size_t len = strlen(home);
@@ -763,7 +763,7 @@ err:
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_io_append_path_p(char *R const path_end,
+jstr_io_append_path_p(char *R path_end,
 		      const char *R fname) JSTR_NOEXCEPT
 {
 	*path_end = '/';
@@ -773,7 +773,7 @@ jstr_io_append_path_p(char *R const path_end,
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-jstr_io_append_path_len(char *R const path_end,
+jstr_io_append_path_len(char *R path_end,
 			const char *R fname,
 			const size_t flen) JSTR_NOEXCEPT
 {
@@ -909,9 +909,9 @@ pjstr_io_ftw_len(char *R dirpath,
 		 const size_t dlen,
 		 int (*fn)(const char *, size_t, const struct stat *),
 		 const int jflags,
-		 const char *R const fn_glob,
+		 const char *R fn_glob,
 		 const int fn_flags,
-		 struct stat *R const st
+		 struct stat *R st
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 		 ,
 		 int fd
@@ -919,9 +919,9 @@ pjstr_io_ftw_len(char *R dirpath,
 		 ) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-	DIR *R const dp = fdopendir(fd);
+	DIR *R dp = fdopendir(fd);
 #else
-	DIR *R const dp = opendir(dirpath);
+	DIR *R dp = opendir(dirpath);
 #endif
 	if (jstr_unlikely(dp == NULL))
 		return NONFATAL_ERR();
@@ -1091,11 +1091,11 @@ err_closedir:
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(3)
 static int
-jstr_io_ftw_len(const char *R const dirpath,
+jstr_io_ftw_len(const char *R dirpath,
 		size_t dlen,
 		int (*fn)(const char *, size_t, const struct stat *),
 		const int jstr_io_ftw_flag,
-		const char *R const fn_glob,
+		const char *R fn_glob,
 		const int fn_flags) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dlen == 0)) {
@@ -1112,7 +1112,7 @@ jstr_io_ftw_len(const char *R const dirpath,
 	char fulpath[JSTR_IO_PATH_MAX];
 	if (jstr_io_ftw_flag & JSTR_IO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {
-			const char *R const home = getenv("HOME");
+			const char *R home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
 				return 0;
 			const size_t homelen = jstr_stpcpy(fulpath, home) - fulpath;
@@ -1196,10 +1196,10 @@ JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(2)
 JSTR_INLINE
 static int
-jstr_io_ftw(const char *R const dirpath,
+jstr_io_ftw(const char *R dirpath,
 	    int (*fn)(const char *, size_t, const struct stat *),
 	    const int jstr_io_ftw_flag,
-	    const char *R const fn_glob,
+	    const char *R fn_glob,
 	    const int fn_flags) JSTR_NOEXCEPT
 {
 	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn, jstr_io_ftw_flag, fn_glob, fn_flags);
