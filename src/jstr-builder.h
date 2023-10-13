@@ -418,9 +418,8 @@ static void
 jstr_pop_back(char *R s,
 	      size_t *R sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*sz == 0))
-		return;
-	s[--*sz] = '\0';
+	if (jstr_likely(*sz != 0))
+		s[--*sz] = '\0';
 }
 
 /* Pop s[0]. */
@@ -430,9 +429,8 @@ static void
 jstr_pop_front(char *R s,
 	       size_t *R sz) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*sz == 0))
-		return;
-	memmove(s, s + 1, (*sz)--);
+	if (jstr_likely(*sz != 0))
+		memmove(s, s + 1, (*sz)--);
 }
 
 /*
