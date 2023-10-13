@@ -881,7 +881,9 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 				   const struct stat *st);
 
 JSTR_FUNC_VOID_MAY_NULL
+JSTR_NONNULL(1)
 JSTR_NONNULL(3)
+JSTR_NONNULL(5)
 static int
 pjstr_io_ftw_len(char *R dirpath,
 		 const size_t dlen,
@@ -1067,6 +1069,7 @@ err_closedir:
    If a non-fatal error is encountered, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(1)
 JSTR_NONNULL(3)
 static int
 jstr_io_ftw_len(const char *R dirpath,
@@ -1171,6 +1174,7 @@ ftw:
    If a non-fatal error is encountered, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(1)
 JSTR_NONNULL(2)
 JSTR_INLINE
 static int

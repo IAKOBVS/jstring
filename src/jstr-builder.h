@@ -127,6 +127,8 @@ pjstr_grow(size_t cap,
 }
 
 JSTR_FUNC_VOID_MAY_NULL
+JSTR_NONNULL(1)
+JSTR_NONNULL(3)
 JSTR_NOINLINE
 JSTR_COLD
 static void
@@ -140,6 +142,8 @@ pjstr_err_exit(const char *R filename,
 }
 
 JSTR_FUNC_VOID_MAY_NULL
+JSTR_NONNULL(1)
+JSTR_NONNULL(3)
 JSTR_NOINLINE
 JSTR_COLD
 static void
@@ -338,7 +342,7 @@ jstr_init(char *R *R s,
 	*cap = 0;
 }
 
-JSTR_FUNC_MAY_NULL
+JSTR_FUNC
 JSTR_INLINE
 static int
 pjstr_cat(char *R *R s,
@@ -364,6 +368,9 @@ pjstr_cat(char *R *R s,
 */
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(1)
+JSTR_NONNULL(2)
+JSTR_NONNULL(3)
 static int
 jstr_cat(char *R *R s,
 	 size_t *R sz,
@@ -392,6 +399,7 @@ jstr_cat(char *R *R s,
 */
 JSTR_SENTINEL
 JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(1)
 static int
 jstr_cat_j(jstr_ty *R j,
 	   ...) JSTR_NOEXCEPT
