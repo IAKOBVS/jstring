@@ -254,8 +254,8 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removechr_len_p(char *R s,
-		 const int c,
-		 const size_t sz) JSTR_NOEXCEPT
+		     const int c,
+		     const size_t sz) JSTR_NOEXCEPT
 {
 	const char *const start = s;
 	s = (char *)memchr(s, c, sz);
@@ -271,7 +271,7 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removechr_p(char *R s,
-	     const int c) JSTR_NOEXCEPT
+		 const int c) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, c);
@@ -289,7 +289,7 @@ jstr_removechr_p(char *R s,
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removespn_p(char *R s,
-	     const char *R reject) JSTR_NOEXCEPT
+		 const char *R reject) JSTR_NOEXCEPT
 {
 	char *dst = s;
 	const char *oldp = dst;
@@ -309,7 +309,7 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_removespn_j(jstr_ty *R j,
-	     const char *R reject) JSTR_NOEXCEPT
+		 const char *R reject) JSTR_NOEXCEPT
 {
 	j->size = jstr_removespn_p(j->data, reject) - j->data;
 }
@@ -323,10 +323,10 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 pjstr_removeallchr_len_p(const pjstr_flag_use_n_ty flag,
-		     char *R s,
-		     const int c,
-		     size_t n,
-		     const size_t sz) JSTR_NOEXCEPT
+			 char *R s,
+			 const int c,
+			 size_t n,
+			 const size_t sz) JSTR_NOEXCEPT
 {
 	char *dst = s;
 	const char *oldp = dst;
@@ -346,8 +346,8 @@ pjstr_removeallchr_len_p(const pjstr_flag_use_n_ty flag,
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removeallchr_len_p(char *R s,
-		    const int c,
-		    const size_t sz) JSTR_NOEXCEPT
+			const int c,
+			const size_t sz) JSTR_NOEXCEPT
 {
 	return pjstr_removeallchr_len_p(PJSTR_FLAG_USE_NOT_N, s, c, 0, sz);
 }
@@ -360,7 +360,7 @@ jstr_removeallchr_len_p(char *R s,
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removeallchr_p(char *R s,
-		const int c) JSTR_NOEXCEPT
+		    const int c) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	char *dst = s;
@@ -382,9 +382,9 @@ jstr_removeallchr_p(char *R s,
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removenc_len_p(char *R s,
-		const int c,
-		const size_t n,
-		const size_t sz) JSTR_NOEXCEPT
+		    const int c,
+		    const size_t n,
+		    const size_t sz) JSTR_NOEXCEPT
 {
 	return pjstr_removeallchr_len_p(PJSTR_FLAG_USE_N, s, c, n, sz);
 }
@@ -398,8 +398,8 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removenc_p(char *R s,
-	    const int c,
-	    size_t n) JSTR_NOEXCEPT
+		const int c,
+		size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	char *dst = s;
@@ -442,9 +442,9 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_remove_len_p(char *R s,
-	      const char *R find,
-	      const size_t sz,
-	      const size_t findlen) JSTR_NOEXCEPT
+		  const char *R find,
+		  const size_t sz,
+		  const size_t findlen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 0))
 		return s + sz;
@@ -639,11 +639,11 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 pjstr_removeall_len_p(const pjstr_flag_use_n_ty flag,
-		  char *R s,
-		  const char *R find,
-		  size_t n,
-		  size_t sz,
-		  const size_t findlen) JSTR_NOEXCEPT
+		      char *R s,
+		      const char *R find,
+		      size_t n,
+		      size_t sz,
+		      const size_t findlen) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 1))
 		return pjstr_removeallchr_len_p(flag, s, *find, n, sz);
@@ -669,10 +669,10 @@ pjstr_removeall_len_p(const pjstr_flag_use_n_ty flag,
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removen_len_p(char *R s,
-	       const char *R find,
-	       size_t n,
-	       size_t sz,
-	       const size_t findlen) JSTR_NOEXCEPT
+		   const char *R find,
+		   size_t n,
+		   size_t sz,
+		   const size_t findlen) JSTR_NOEXCEPT
 {
 	return pjstr_removeall_len_p(PJSTR_FLAG_USE_N, s, find, n, sz, findlen);
 }
@@ -685,9 +685,9 @@ jstr_removen_len_p(char *R s,
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removeall_len_p(char *R s,
-		 const char *R find,
-		 size_t sz,
-		 const size_t findlen) JSTR_NOEXCEPT
+		     const char *R find,
+		     size_t sz,
+		     const size_t findlen) JSTR_NOEXCEPT
 {
 	return pjstr_removeall_len_p(PJSTR_FLAG_USE_NOT_N, s, find, 0, sz, findlen);
 }
@@ -701,8 +701,8 @@ JSTR_WARN_UNUSED
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removeall_p(char *R s,
-	     const char *R find,
-	     const size_t findlen) JSTR_NOEXCEPT
+		 const char *R find,
+		 const size_t findlen) JSTR_NOEXCEPT
 {
 	return jstr_removeall_len_p(s, find, strlen(s), findlen);
 }
@@ -716,8 +716,8 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_removeall_len_j(jstr_ty *R j,
-		 const char *R find,
-		 const size_t findlen) JSTR_NOEXCEPT
+		     const char *R find,
+		     const size_t findlen) JSTR_NOEXCEPT
 {
 	j->size = jstr_removeall_len_p(j->data, find, j->size, findlen) - j->data;
 }
@@ -731,7 +731,7 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_removeall_j(jstr_ty *R j,
-	     const char *R find) JSTR_NOEXCEPT
+		 const char *R find) JSTR_NOEXCEPT
 {
 	return jstr_removeall_len_j(j, find, strlen(find));
 }
@@ -1060,7 +1060,7 @@ jstr_insertafter_len(char *R *R s,
 }
 
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
+JSTR_FUNC
 static int
 jstr_insertafter(char *R *R s,
 		 size_t *R sz,

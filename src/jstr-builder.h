@@ -28,12 +28,12 @@ PJSTR_END_DECLS
 #define R JSTR_RESTRICT
 
 #if JSTR_DEBUG
-#	define PJSTR_MALLOC_ERR(p, malloc_fail)                                    \
-		do {                                                                \
-			if (jstr_unlikely((p) == NULL)) {                           \
+#	define PJSTR_MALLOC_ERR(p, malloc_fail)                                            \
+		do {                                                                        \
+			if (jstr_unlikely((p) == NULL)) {                                   \
 				pjstr_err_exit_debug(__FILE__, __LINE__, JSTR_ASSERT_FUNC); \
-				malloc_fail;                                        \
-			}                                                           \
+				malloc_fail;                                                \
+			}                                                                   \
 		} while (0)
 #else
 #	define PJSTR_MALLOC_ERR(p, malloc_fail)          \
@@ -71,7 +71,7 @@ PJSTR_END_DECLS
 		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);              \
 		PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail);   \
 	} while (0)
-#define JSTR_MIN_ALLOC(cap)	  (((cap) > JSTR_MIN_CAP) ? ((cap) * JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
+#define JSTR_MIN_ALLOC(cap)	 (((cap) > JSTR_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
 #define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
 
 #if JSTR_NULLIFY_MEMBERS_ON_FREE
@@ -479,6 +479,61 @@ jstr_io_fwrite(const char *R s,
 	       FILE *R fp) JSTR_NOEXCEPT
 {
 	return fwrite(s, 1, sz, fp) == sz;
+}
+
+JSTR_FORMAT(printf, 4, 5)
+JSTR_FUNC
+static int
+jstr_sprintf(char *R *R s,
+	     size_t *R sz,
+	     size_t *R cap,
+	     const char *R fmt,
+	     ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	size_t arglen = 0;
+	for (const char *f = fmt, *R arg;;) {
+		arg = va_arg(ap, char *);
+		if (*f == '%') {
+			switch (*++f) {
+			case 's':
+				arglen = strlen(arg);
+				break;
+			case 'c':
+			case 'u':
+				++arglen;
+				break;
+			case '%':
+				arglen += 2;
+				break;
+			default:
+				arglen += 19;
+				break;
+			case '\0':
+				errno = EINVAL;
+				va_end(ap);
+				goto err;
+			}
+		} else {
+			++arglen;
+			if (jstr_unlikely(*f == '\0'))
+				break;
+		}
+	}
+	va_end(ap);
+	if (*cap <= arglen)
+		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	va_start(ap, fmt);
+	int ret;
+	ret = vsprintf(*s, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely(ret < 0))
+		goto err;
+	*sz = ret;
+	return 1;
+err:
+	return 0;
 }
 
 PJSTR_END_DECLS

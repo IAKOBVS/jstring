@@ -174,6 +174,11 @@
 #endif /* unlikely */
 
 #if defined __GNUC__ || defined __clang__
+#	if JSTR_HAS_ATTRIBUTE(__format__)
+#		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
+#	elif JSTR_HAS_ATTRIBUTE(format)
+#		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((format(archetype, string_index, first_to_check)))
+#	endif
 #	if JSTR_HAS_ATTRIBUTE(__always_inline__)
 #		define JSTR_INLINE __attribute__((__always_inline__)) inline
 #	elif JSTR_HAS_ATTRIBUTE(always_inline)
@@ -837,13 +842,13 @@ case '~':
 #	endif
 #endif
 
-#define JSTR_FUNC_VOID JSTR_NOTHROW JSTR_MAYBE_UNUSED
-#define JSTR_FUNC_VOID_MAY_NULL JSTR_FUNC_VOID JSTR_NONNULL_ALL
-#define JSTR_FUNC	      JSTR_FUNC_VOID JSTR_WARN_UNUSED
-#define JSTR_FUNC_MAY_NULL    JSTR_NOTHROW JSTR_MAYBE_UNUSED JSTR_WARN_UNUSED
-#define JSTR_FUNC_CONST	      JSTR_FUNC JSTR_CONST
-#define JSTR_FUNC_PURE	      JSTR_FUNC JSTR_PURE
-#define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_RETURNS_NONNULL
+#define JSTR_FUNC_VOID_MAY_NULL JSTR_NOTHROW JSTR_MAYBE_UNUSED
+#define JSTR_FUNC_VOID		JSTR_FUNC_VOID_MAY_NULL JSTR_NONNULL_ALL
+#define JSTR_FUNC_MAY_NULL	JSTR_FUNC_VOID_MAY_NULL JSTR_WARN_UNUSED
+#define JSTR_FUNC		JSTR_FUNC_MAY_NULL JSTR_NONNULL_ALL
+#define JSTR_FUNC_CONST		JSTR_FUNC JSTR_CONST
+#define JSTR_FUNC_PURE		JSTR_FUNC JSTR_PURE
+#define JSTR_FUNC_RET_NONNULL	JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS extern "C" {
