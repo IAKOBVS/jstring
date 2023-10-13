@@ -664,8 +664,11 @@ cont_switch:
 				++lflag;
 				goto cont_switch;
 			case 't':
+				lflag = PTR_T;
+				goto cont_switch;
 			case 'z':
-				lflag = 2;
+				lflag = SIZE_T;
+				goto cont_switch;
 			case 'h':
 			case 'j':
 			case 0:
@@ -678,10 +681,10 @@ cont_switch:
 			case 7:
 			case 8:
 			case 9:
-				break;
+				goto cont_switch;
+einval:
 			/* case '\0': */
 			default:
-einval:
 				errno = EINVAL;
 				return -1;
 get_arg:
