@@ -605,6 +605,7 @@ err_free:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	free(s);
 #endif
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
