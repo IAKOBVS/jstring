@@ -50,8 +50,8 @@
 	T: 1,                                    \
 	default: 0)
 #else
-#	define JSTR_SAME_TYPE(x, y) (sizeof(x) == sizeof(y))
-#	define JSTR_IS_TYPE(T, x)
+#	define JSTR_SAME_TYPE(x, y) (1)
+#	define JSTR_IS_TYPE(T, x) (1)
 #endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #ifdef static_assert
