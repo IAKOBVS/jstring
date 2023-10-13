@@ -737,7 +737,6 @@ jstr_io_expand_tilde(char *R *R s,
 	}
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
 	return 0;
 }
 

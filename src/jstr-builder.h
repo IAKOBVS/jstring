@@ -146,14 +146,50 @@ jstr_debug(const jstr_ty *R j) JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static int
+jstr_reserve_always(char *R *R s,
+		    size_t *R sz,
+		    size_t *R cap,
+		    const size_t new_cap) JSTR_NOEXCEPT
+{
+	PJSTR_REALLOC_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
+	return 1;
+err:
+	pjstr_nullify_members(sz, cap);
+	return 0;
+}
+
+/*
+   Do nothing if new_cap < cap.
+   Return 0 on malloc error.
+*/
+JSTR_FUNC
+static int
+jstr_reserveexact_always(char *R *R s,
+			 size_t *R sz,
+			 size_t *R cap,
+			 const size_t new_cap) JSTR_NOEXCEPT
+{
+	PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
+	return 1;
+err:
+	pjstr_nullify_members(sz, cap);
+	return 0;
+}
+
+/*
+   Do nothing if new_cap < cap.
+   Return 0 on malloc error.
+*/
+JSTR_FUNC
+static int
 jstr_reserve(char *R *R s,
+	     size_t *R sz,
 	     size_t *R cap,
 	     const size_t new_cap) JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return 1;
-	PJSTR_REALLOC_MAY_MALLOC(*s, *cap, new_cap + 1, return 0);
-	return 1;
+	return jstr_reserve_always(s, sz, cap, new_cap);
 }
 
 /*
@@ -163,13 +199,13 @@ jstr_reserve(char *R *R s,
 JSTR_FUNC
 static int
 jstr_reserveexact(char *R *R s,
+		  size_t *R sz,
 		  size_t *R cap,
 		  const size_t new_cap) JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return 1;
-	PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, new_cap + 1, return 0);
-	return 1;
+	return jstr_reserveexact_always(s, sz, cap, new_cap);
 }
 
 JSTR_FUNC_VOID
@@ -327,7 +363,8 @@ jstr_assign_len(char *R *R s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
-		PJSTR_REALLOC_MAY_MALLOC(*s, *cap, srclen * JSTR_ALLOC_MULTIPLIER, return 0);
+		if (jstr_unlikely(!jstr_reserveexact_always(s, sz, cap, srclen * JSTR_ALLOC_MULTIPLIER)))
+			return 0;
 	jstr_strcpy_len(*s, src, srclen);
 	*sz = srclen;
 	return 1;
@@ -349,7 +386,8 @@ jstr_push_back(char *R *R s,
 	       const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return 0);
+		if (jstr_unlikely(!jstr_reserveexact_always(s, sz, cap, *sz * JSTR_ALLOC_MULTIPLIER)))
+			return 0;
 	*(*s + *sz) = c;
 	*(*s + ++*sz) = '\0';
 	return 1;
@@ -467,7 +505,7 @@ jstr_asprintf(char *R *R s,
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
-	if (jstr_unlikely(!jstr_reserveexact(s, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
+	if (jstr_unlikely(!jstr_reserveexact(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
 		goto err;
 	va_start(ap, fmt);
 	arglen = vsprintf(*s, fmt, ap);
@@ -495,7 +533,7 @@ jstr_asprintf_j(jstr_ty *R j,
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
-	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
+	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
 		goto err;
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data, fmt, ap);
@@ -529,7 +567,7 @@ jstr_asprintf_cat(char *R *R s,
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
 	arglen += *sz;
-	if (jstr_unlikely(!jstr_reserveexact(s, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
+	if (jstr_unlikely(!jstr_reserveexact(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
 		goto err;
 	va_start(ap, fmt);
 	arglen = vsprintf(*s + *sz, fmt, ap);
@@ -561,7 +599,7 @@ jstr_asprintf_cat_j(jstr_ty *R j,
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
 	arglen += j->size;
-	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
+	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
 		goto err;
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data + j->size, fmt, ap);
@@ -593,7 +631,7 @@ jstr_asprintf_from(char *R *R s,
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
 	arglen += start_idx;
-	if (jstr_unlikely(!jstr_reserveexact(s, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
+	if (jstr_unlikely(!jstr_reserveexact(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
 		goto err;
 	va_start(ap, fmt);
 	arglen = vsprintf(*s + start_idx, fmt, ap);
@@ -623,7 +661,7 @@ jstr_asprintf_from_j(jstr_ty *R j,
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
 	arglen += start_idx;
-	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
+	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
 		goto err;
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data + start_idx, fmt, ap);
