@@ -5,6 +5,7 @@
 
 PJSTR_BEGIN_DECLS
 #include <errno.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -544,7 +545,13 @@ JSTR_INLINE
 static unsigned int
 pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 {
-	enum { MAX_DIGITS = 19 + 19 };
+	enum { MAX_INT = CHAR_BIT * sizeof(int) * 2,
+	       MAX_LONG = CHAR_BIT * sizeof(long) * 2,
+	       MAX_LONG_LONG = CHAR_BIT * sizeof(long long) * 2,
+	       MAX_FLT = CHAR_BIT * sizeof(float) * 2,
+	       MAX_DBL = CHAR_BIT * sizeof(double) * 2,
+	       MAX_LDBL = CHAR_BIT * sizeof(long double) * 2
+	};
 	unsigned int arglen = 0;
 	for (const char *f = fmt, *R arg;;) {
 		if (*f == '%') {
@@ -566,7 +573,7 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 				++arglen;
 				break;
 			default:
-				arglen += MAX_DIGITS;
+				arglen += MAX_DBL;
 				break;
 			case '\0':
 				errno = EINVAL;
