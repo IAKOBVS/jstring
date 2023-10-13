@@ -553,13 +553,11 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 	       MAX_LDBL = CHAR_BIT * sizeof(long double) * 2
 	};
 	unsigned int arglen = 0;
-	unsigned int errno_len = 0;
-	for (const char *f = fmt, *R arg;; ++f) {
-		if (*f == '%') {
-			arg = va_arg(ap, const char *);
-			switch (*++f) {
+	for (unsigned int errno_len = 0;; ++fmt) {
+		if (*fmt == '%') {
+			switch (*++fmt) {
 			case 's':
-				arglen = strlen(arg);
+				arglen = strlen(va_arg(ap, const char *));
 				break;
 			case 'c':
 				++arglen;
@@ -568,7 +566,7 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 				arglen += 2;
 				break;
 			case '\\':
-				if (jstr_unlikely(*++f == '\0')) {
+				if (jstr_unlikely(*++fmt == '\0')) {
 					errno = EINVAL;
 					return -1;
 				}
@@ -607,17 +605,19 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 			case 'm':
 				if (errno_len == 0)
 					arglen += strlen(strerror(errno));
+				else
+					arglen += errno_len;
 				break;
 			/* case '\0': */
 			default:
 				errno = EINVAL;
 				return -1;
 			}
+			va_arg(ap, char *);
 		} else {
 			++arglen;
-			if (jstr_unlikely(*f == '\0'))
+			if (jstr_unlikely(*fmt == '\0'))
 				break;
-			va_arg(ap, const void *);
 		}
 	}
 	return arglen;
