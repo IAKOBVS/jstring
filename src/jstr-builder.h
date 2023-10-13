@@ -330,8 +330,8 @@ jstr_push_back(char *R *R s,
 {
 	if (jstr_unlikely(*cap == *sz + 1))
 		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, goto err);
-	(*s)[*sz] = c;
-	(*s)[++*sz] = '\0';
+	*(*s + *sz) = c;
+	*(*s + ++*sz) = '\0';
 	return 1;
 err:
 	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
@@ -371,7 +371,7 @@ jstr_pop_back(char *R s,
 	      size_t *R sz) JSTR_NOEXCEPT
 {
 	if (jstr_likely(*sz != 0))
-		s[--*sz] = '\0';
+		*(s + --*sz) = '\0';
 }
 
 /* Pop s[0]. */
