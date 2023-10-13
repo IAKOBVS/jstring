@@ -434,8 +434,7 @@ jstr_append_len(char *R *R s,
 		const char *R src,
 		const size_t srclen) JSTR_NOEXCEPT
 {
-	if (*cap < *sz + srclen)
-		PJSTR_REALLOC_MAY_MALLOC(*s, *cap, *sz + srclen, return 0);
+	JSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
 	jstr_strcpy_len(*s + *sz, src, srclen);
 	*sz += srclen;
 	return 1;
@@ -548,9 +547,9 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 	enum { MAX_INT = CHAR_BIT * sizeof(int) * 2,
 	       MAX_LONG = CHAR_BIT * sizeof(long) * 2,
 	       MAX_LONG_LONG = CHAR_BIT * sizeof(long long) * 2,
-	       MAX_FLT = CHAR_BIT * sizeof(float) * 2,
-	       MAX_DBL = CHAR_BIT * sizeof(double) * 2,
-	       MAX_LDBL = CHAR_BIT * sizeof(long double) * 2
+	       MAX_FLT = CHAR_BIT * sizeof(float) * 2 + 1,
+	       MAX_DBL = CHAR_BIT * sizeof(double) * 2 + 1,
+	       MAX_LDBL = CHAR_BIT * sizeof(long double) * 2 + 1
 	};
 	unsigned int arglen = 0;
 	for (unsigned int errno_len = 0;; ++fmt) {
