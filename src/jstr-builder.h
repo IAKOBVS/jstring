@@ -73,15 +73,11 @@ PJSTR_END_DECLS
 	} while (0)
 
 #if JSTR_NULLIFY_MEMBERS_ON_FREE
-#	define PJSTR_NULLIFY_MEMBERS(sz, cap) (pjstr_nullify_members(sz, cap))
 #else
-#	define PJSTR_NULLIFY_MEMBERS(sz, cap)
 #endif
 
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
-#	define PJSTR_NULLIFY_MEMBERS_ERR(sz, cap) PJSTR_NULLIFY_MEMBERS(sz, cap)
 #else
-#	define PJSTR_NULLIFY_MEMBERS_ERR(sz, cap)
 #endif
 
 #define JSTR_MIN_ALLOC(cap)	 (((cap) > JSTR_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
@@ -208,7 +204,6 @@ pjstr_cat(char *R *R s,
 		;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -283,7 +278,6 @@ jstr_append_len(char *R *R s,
 	*sz += srclen;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -309,7 +303,6 @@ jstr_assign_len(char *R *R s,
 	*sz = srclen;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -334,7 +327,6 @@ jstr_push_back(char *R *R s,
 	*(*s + ++*sz) = '\0';
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -359,7 +351,6 @@ jstr_push_front(char *R *R s,
 	**s = c;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -400,7 +391,6 @@ jstr_reserve(char *R *R s,
 	PJSTR_REALLOC_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -419,7 +409,6 @@ jstr_reserveexact(char *R *R s,
 	PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -505,7 +494,36 @@ err_free:
 	free(*s);
 #endif
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
+	return 0;
+}
+
+JSTR_FORMAT(printf, 2, 3)
+JSTR_FUNC
+static int
+jstr_asprintf_j(jstr_ty *R j,
+		const char *R fmt,
+		...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	unsigned int arglen = pjstr_asprintf_strlen(ap, fmt);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err;
+	if (j->capacity <= arglen)
+		PJSTR_REALLOCEXACT_MAY_MALLOC(j->data, j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	va_start(ap, fmt);
+	arglen = vsprintf(j->data, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err_free;
+	j->size = arglen;
+	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(j->data);
+#endif
+err:
 	return 0;
 }
 
@@ -542,7 +560,40 @@ err_free:
 	free(*s);
 #endif
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
+	return 0;
+}
+
+/*
+   Concatenate ... to end of S.
+*/
+JSTR_FORMAT(printf, 2, 3)
+JSTR_FUNC
+static int
+jstr_asprintf_cat_j(jstr_ty *R j,
+		    const char *R fmt,
+		    ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	unsigned int arglen = pjstr_asprintf_strlen(ap, fmt);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err;
+	arglen += j->size;
+	if (j->capacity <= arglen)
+		PJSTR_REALLOCEXACT_MAY_MALLOC(j->data, j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	va_start(ap, fmt);
+	arglen = vsprintf(j->data + j->size, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err_free;
+	j->size += arglen;
+	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(j->data);
+#endif
+err:
 	return 0;
 }
 
@@ -577,7 +628,38 @@ err_free:
 	free(*s);
 #endif
 err:
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
+	return 0;
+}
+
+JSTR_FORMAT(printf, 3, 4)
+JSTR_FUNC
+static int
+jstr_asprintf_from_j(jstr_ty *R j,
+		     const size_t start_idx,
+		     const char *R fmt,
+		     ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	unsigned int arglen = pjstr_asprintf_strlen(ap, fmt);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err;
+	arglen += start_idx;
+	if (j->capacity <= arglen)
+		PJSTR_REALLOCEXACT_MAY_MALLOC(j->data, j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	va_start(ap, fmt);
+	arglen = vsprintf(j->data + start_idx, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err_free;
+	j->size = arglen + start_idx;
+	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(j->data);
+#endif
+err:
 	return 0;
 }
 
@@ -605,7 +687,32 @@ err_free:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	free(s);
 #endif
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
+	return 0;
+}
+
+/*
+   Assume that S has enough space.
+   Use jstr_asprintf to grow S.
+*/
+JSTR_FORMAT(printf, 2, 3)
+JSTR_FUNC
+static int
+jstr_sprintf_j(jstr_ty *R j,
+	       const char *R fmt,
+	       ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	const unsigned int ret = vsprintf(j->data, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely((int)ret < 0))
+		goto err_free;
+	j->size = ret;
+	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(j->data);
+#endif
 	return 0;
 }
 
@@ -634,7 +741,33 @@ err_free:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	free(s);
 #endif
-	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
+	return 0;
+}
+
+/*
+   Assume that S has enough space.
+   Use jstr_asprintf to grow S.
+*/
+JSTR_FORMAT(printf, 3, 4)
+JSTR_FUNC
+static int
+jstr_sprintf_from_j(jstr_ty *R j,
+		    const size_t start_idx,
+		    const char *R fmt,
+		    ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	const unsigned int ret = vsprintf(j->data + start_idx, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely((int)ret < 0))
+		goto err_free;
+	j->size = ret + start_idx;
+	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(j->data);
+#endif
 	return 0;
 }
 
