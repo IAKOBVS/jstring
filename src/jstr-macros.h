@@ -40,6 +40,8 @@
 #if (defined __GNUC__ && (__GNUC__ >= 4)) \
 || (defined __clang__ && (__clang_major__ >= 3))
 #	define JSTR_HAVE_TYPEOF 1
+#else
+#	define JSTR_HAVE_TYPEOF 0
 #endif /* HAVE_TYPEOF */
 
 #if JSTR_HAVE_TYPEOF && JSTR_HAVE_GENERIC
@@ -50,8 +52,8 @@
 	T: 1,                                    \
 	default: 0)
 #else
-#	define JSTR_SAME_TYPE(x, y) (1)
-#	define JSTR_IS_TYPE(T, x)   (1)
+#	define JSTR_SAME_TYPE(x, y) 1
+#	define JSTR_IS_TYPE(T, x)   1
 #endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #ifdef static_assert
@@ -61,6 +63,7 @@
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)	_Static_assert(expr, msg)
 #else
+#	define JSTR_HAVE_STATIC_ASSERT 0
 #	define JSTR_ASSERT(expr, msg)
 #	define JSTR_ASSERT_SEMICOLON(expr, msg)
 #endif /* static_assert */
@@ -1015,13 +1018,13 @@ case '~':
 #if defined __GLIBC__ && JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
 #	define JSTR_HAVE_MEMMEM_OPTIMIZED 1
 #else
-#	define JSTR_HAVE_MEMMEM_OPTIMIZED 1
+#	define JSTR_HAVE_MEMMEM_OPTIMIZED 0
 #endif
 
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
 #else
-#	define JSTR_HAVE_STRSTR_OPTIMIZED 1
+#	define JSTR_HAVE_STRSTR_OPTIMIZED 0
 /* Needle length over which memmem would be faster than strstr. */
 enum { JSTR_MEMMEM_THRES = 18 };
 #endif
@@ -1043,6 +1046,10 @@ enum { JSTR_MEMMEM_THRES = 18 };
 #	if JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8
 #		define JSTR_HAVE_STRCASESTR_OPTIMIZED 1
 #	endif
+#endif
+
+#ifndef JSTR_HAVE_STRCASESTR_OPTIMIZED
+#	define JSTR_HAVE_STRCASESTR_OPTIMIZED 0
 #endif
 
 #ifdef __cplusplus
