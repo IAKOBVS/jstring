@@ -484,28 +484,35 @@ jstr_io_fwrite(const char *R s,
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static int
-jstr_sprintf(char *R *R s,
-	     size_t *R sz,
-	     size_t *R cap,
-	     const char *R fmt,
-	     ...)
+jstr_asprintf(char *R *R s,
+	      size_t *R sz,
+	      size_t *R cap,
+	      const char *R fmt,
+	      ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
 	size_t arglen = 0;
 	for (const char *f = fmt, *R arg;;) {
-		arg = va_arg(ap, char *);
 		if (*f == '%') {
+			arg = va_arg(ap, const char *);
 			switch (*++f) {
 			case 's':
 				arglen = strlen(arg);
 				break;
+			case '%':
+				arglen += 2;
+				break;
+			case '\\':
+				if (jstr_unlikely(*++f == '\0')) {
+					errno = EINVAL;
+					va_end(ap);
+					goto err;
+				}
+				/* fallthrough */
 			case 'c':
 			case 'u':
 				++arglen;
-				break;
-			case '%':
-				arglen += 2;
 				break;
 			default:
 				arglen += 19;
@@ -517,8 +524,9 @@ jstr_sprintf(char *R *R s,
 			}
 		} else {
 			++arglen;
-			if (jstr_unlikely(*f == '\0'))
+			if (jstr_unlikely(*f++ == '\0'))
 				break;
+			va_arg(ap, const void *);
 		}
 	}
 	va_end(ap);
@@ -534,6 +542,28 @@ jstr_sprintf(char *R *R s,
 	return 1;
 err:
 	return 0;
+}
+
+/*
+   Assume that S has enough space.
+   Use jstr_asprintf to grow S.
+*/
+JSTR_FORMAT(printf, 3, 4)
+JSTR_FUNC
+static int
+jstr_sprintf(char *R s,
+	     size_t *R sz,
+	     const char *R fmt,
+	     ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	const int ret = vsprintf(s, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely(ret < 0))
+		return 0;
+	*sz = ret;
+	return 1;
 }
 
 PJSTR_END_DECLS
