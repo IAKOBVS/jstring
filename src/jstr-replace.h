@@ -92,13 +92,10 @@ jstr_slip_len(char *R *R s,
 	      const size_t rplclen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + rplclen)
-		PJSTR_REALLOC(*s, *cap, *sz + rplclen, goto err);
+		PJSTR_REALLOC(*s, *cap, *sz + rplclen, return 0);
 	jstr_slip_unsafe(*s, at, rplc, *sz, rplclen);
 	*sz += rplclen;
 	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
 }
 
 JSTR_INLINE
@@ -113,11 +110,8 @@ pjstr_replaceat_len_higher(char *R *R s,
 			   const size_t findlen) JSTR_NOEXCEPT
 {
 	if (*cap < *sz + rplclen - findlen)
-		PJSTR_REALLOC(*s, *cap, *sz + rplclen, goto err);
+		PJSTR_REALLOC(*s, *cap, *sz + rplclen, return 0);
 	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
 }
 
 /*
@@ -976,15 +970,12 @@ jstr_insert_len(char *R *R s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (at + srclen > *sz) {
-		PJSTR_REALLOC(*s, *cap, at + srclen + 1, goto err);
+		PJSTR_REALLOC(*s, *cap, at + srclen + 1, return 0);
 		*sz = at + srclen;
 		*(*s + *sz) = '\0';
 	}
 	jstr_insert_len_unsafe(*s, at, src, srclen);
 	return 1;
-err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-	return 0;
 }
 
 JSTR_INLINE
