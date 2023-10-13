@@ -1026,8 +1026,8 @@ case '~':
 #else
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 0
 /* Needle length over which memmem would be faster than strstr. */
-enum { JSTR_MEMMEM_THRES = 18 };
 #endif
+enum { JSTR_MEMMEM_THRES = 18 };
 
 /* Only use memmem for long needles or when it is implemented in assembly.
    It seems to be slower than strstr for short needles. */

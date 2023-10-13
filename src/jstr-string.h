@@ -56,7 +56,7 @@ jstr_strncasecmp(const char *R s1,
 	       && n--)
 		;
 	return ret;
-#endif /* HAVE_STRNCASECMP */
+#endif
 }
 
 /*
@@ -85,7 +85,7 @@ jstr_strcasecmp_len(const char *R s1,
 	       && n--)
 		;
 	return n ? jstr_tolower(*(p1 - 1)) - jstr_tolower(*(p2 - 1)) : 0;
-#endif /* HAVE_STRNCASECMP */
+#endif
 }
 
 /*
