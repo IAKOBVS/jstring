@@ -567,6 +567,7 @@ jstr_asprintf_append(char *R *R s,
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
+	arglen += *sz;
 	if (*cap <= arglen)
 		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
@@ -596,6 +597,7 @@ jstr_asprintf_from(char *R *R s,
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
+	arglen += start_idx;
 	if (*cap <= arglen)
 		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
@@ -603,7 +605,8 @@ jstr_asprintf_from(char *R *R s,
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
-	*sz += arglen;
+	if (arglen > *sz)
+		*sz = arglen;
 	return 1;
 err:
 	return 0;
