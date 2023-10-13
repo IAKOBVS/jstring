@@ -381,7 +381,7 @@ jstr_removeallchr_p(char *R s,
 */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_removenc_len_p(char *R s,
+jstr_removenchr_len_p(char *R s,
 		    const int c,
 		    const size_t n,
 		    const size_t sz) JSTR_NOEXCEPT
@@ -397,7 +397,7 @@ jstr_removenc_len_p(char *R s,
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_removenc_p(char *R s,
+jstr_removenchr_p(char *R s,
 		const int c,
 		size_t n) JSTR_NOEXCEPT
 {
@@ -411,7 +411,7 @@ jstr_removenc_p(char *R s,
 		return s + n;
 	return jstr_stpmove_len(dst, oldp, p - oldp);
 #else
-	return jstr_removenc_len_p(s, c, n, strlen(s));
+	return jstr_removenchr_len_p(s, c, n, strlen(s));
 #endif /* HAVE_STRCHRNUL */
 }
 
@@ -521,7 +521,7 @@ jstr_replaceallchr(char *R s,
 */
 JSTR_FUNC_VOID
 static void
-jstr_replacenc_len(char *R s,
+jstr_replacenchr_len(char *R s,
 		   const int find,
 		   const int rplc,
 		   size_t n,
@@ -537,7 +537,7 @@ jstr_replacenc_len(char *R s,
 */
 JSTR_FUNC_VOID
 static void
-jstr_replacenc(char *R s,
+jstr_replacenchr(char *R s,
 	       const int find,
 	       const int rplc,
 	       size_t n) JSTR_NOEXCEPT
