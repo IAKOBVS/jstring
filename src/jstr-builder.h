@@ -570,8 +570,7 @@ jstr_asprintf_from(char *R *R s,
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
 		goto err_free;
-	if (arglen > *sz)
-		*sz = arglen;
+	*sz = arglen + start_idx;
 	return 1;
 err_free:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
@@ -601,6 +600,35 @@ jstr_sprintf(char *R s,
 	if (jstr_unlikely((int)ret < 0))
 		goto err_free;
 	*sz = ret;
+	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(s);
+#endif
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
+	return 0;
+}
+
+/*
+   Assume that S has enough space.
+   Use jstr_asprintf to grow S.
+*/
+JSTR_FORMAT(printf, 4, 5)
+JSTR_FUNC
+static int
+jstr_sprintf_from(char *R s,
+		  size_t *R sz,
+		  const size_t start_idx,
+		  const char *R fmt,
+		  ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	const unsigned int ret = vsprintf(s + start_idx, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely((int)ret < 0))
+		goto err_free;
+	*sz = ret + start_idx;
 	return 1;
 err_free:
 #if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
