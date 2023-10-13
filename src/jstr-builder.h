@@ -28,12 +28,12 @@ PJSTR_END_DECLS
 #define R JSTR_RESTRICT
 
 #if JSTR_DEBUG
-#	define PJSTR_MALLOC_ERR(p, malloc_fail)                                            \
-		do {                                                                        \
-			if (jstr_unlikely((p) == NULL)) {                                   \
-				pjstr_err_exit_debug(__FILE__, __LINE__, JSTR_ASSERT_FUNC); \
-				malloc_fail;                                                \
-			}                                                                   \
+#	define PJSTR_MALLOC_ERR(p, malloc_fail)          \
+		do {                                      \
+			if (jstr_unlikely((p) == NULL)) { \
+				jstr_err_exit("");        \
+				malloc_fail;              \
+			}                                 \
 		} while (0)
 #else
 #	define PJSTR_MALLOC_ERR(p, malloc_fail)          \
@@ -90,6 +90,7 @@ PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_VOID
 JSTR_NOINLINE
+JSTR_COLD
 static void
 pjstr_nullify_members(size_t *R size,
 		      size_t *R cap) JSTR_NOEXCEPT
@@ -109,89 +110,33 @@ pjstr_grow(size_t cap,
 	return JSTR_ALIGN_UP(cap, PJSTR_MALLOC_ALIGNMENT);
 }
 
-JSTR_MAYBE_UNUSED
+JSTR_FUNC_VOID_MAY_NULL
+JSTR_NOINLINE
 JSTR_COLD
-JSTR_NOTHROW
-JSTR_NOINLINE
 static void
-pjstr_err_exit_debug(const char *R FILE_,
-		     const int LINE_,
-		     const char *R func_) JSTR_NOEXCEPT
+pjstr_err_exit(const char *R filename,
+	       const unsigned int line,
+	       const char *R func,
+	       const char *R msg)
 {
-	fprintf(stderr, "%s:%d:%s:%s", FILE_, LINE_, func_, strerror(errno));
+	fprintf(stderr, "%s:%u:%s:%s\n", filename, line, func, msg);
 	exit(EXIT_FAILURE);
 }
 
-JSTR_FUNC_VOID
+JSTR_FUNC_VOID_MAY_NULL
 JSTR_NOINLINE
+JSTR_COLD
 static void
-pjstr_err_debug(const char *R FILE_,
-		const int LINE_,
-		const char *R func_) JSTR_NOEXCEPT
+pjstr_err(const char *R filename,
+	  const unsigned int line,
+	  const char *R func,
+	  const char *R msg)
 {
-	fprintf(stderr, "%s:%d:%s:%s", FILE_, LINE_, func_, strerror(errno));
+	fprintf(stderr, "%s:%u:%s:%s\n", filename, line, func, msg);
 }
 
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-pjstr_err(void) JSTR_NOEXCEPT
-{
-	fputs(strerror(errno), stderr);
-}
-
-JSTR_FUNC_VOID
-JSTR_NOINLINE
-static void
-pjstr_err_exit(void) JSTR_NOEXCEPT
-{
-	fputs(strerror(errno), stderr);
-	exit(EXIT_FAILURE);
-}
-
-/* Print error message: __FILE__:__LINE__:JSTR_ASSERT_FUNC:strerror(errno). */
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_err_debug(void) JSTR_NOEXCEPT
-{
-	pjstr_err_debug(__FILE__, __LINE__, JSTR_ASSERT_FUNC);
-}
-
-/* Print error message: __FILE__:__LINE__:JSTR_ASSERT_FUNC:strerror(errno) and exit. */
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_err_exit_debug(void) JSTR_NOEXCEPT
-{
-	pjstr_err_exit_debug(__FILE__, __LINE__, JSTR_ASSERT_FUNC);
-}
-
-/* Print error message. */
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_err(void) JSTR_NOEXCEPT
-{
-#if JSTR_DEBUG
-	jstr_err_debug();
-#else
-	pjstr_err();
-#endif
-}
-
-/* Print error message and exit. */
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_err_exit(void) JSTR_NOEXCEPT
-{
-#if JSTR_DEBUG
-	jstr_err_exit_debug();
-#else
-	pjstr_err_exit();
-#endif
-}
+#define jstr_err(msg)	   pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
+#define jstr_err_exit(msg) pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
 
 JSTR_FUNC_VOID
 JSTR_INLINE
@@ -200,7 +145,7 @@ jstr_debug(const jstr_ty *R j) JSTR_NOEXCEPT
 {
 	fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
 	fprintf(stderr, "strlen():%zu\n", strlen(j->data));
-	fprintf(stderr, "data puts:%s\n", j->data);
+	fprintf(stderr, "data puts():%s\n", j->data);
 	fputs("data:", stderr);
 	fwrite(j->data, 1, j->size, stderr);
 	fputc('\n', stderr);
@@ -511,7 +456,6 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 				}
 				/* fallthrough */
 			case 'c':
-			case 'u':
 				++arglen;
 				break;
 			default:
