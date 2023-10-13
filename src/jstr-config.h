@@ -41,4 +41,8 @@
 #	define JSTR_ALLOC_MULTIPLIER 2
 #endif
 
+#ifndef JSTR_EXIT_ON_ERROR
+#	define JSTR_EXIT_ON_ERROR 0
+#endif
+
 #endif /* JSTR_CONFIG_H */

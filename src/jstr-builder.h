@@ -27,7 +27,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#if JSTR_DEBUG
+#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define PJSTR_MALLOC_ERR(p, malloc_fail)          \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
@@ -76,17 +76,6 @@ PJSTR_END_DECLS
 #define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
 
 PJSTR_BEGIN_DECLS
-
-JSTR_FUNC_VOID
-JSTR_NOINLINE
-JSTR_COLD
-static void
-pjstr_nullify_members(size_t *R size,
-		      size_t *R cap) JSTR_NOEXCEPT
-{
-	*size = 0;
-	*cap = 0;
-}
 
 JSTR_FUNC_CONST
 JSTR_INLINE
