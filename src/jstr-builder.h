@@ -28,52 +28,88 @@ PJSTR_END_DECLS
 #define R JSTR_RESTRICT
 
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
-#	define PJSTR_MALLOC_ERR(p, malloc_fail)          \
+#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
 				jstr_err_exit("");        \
-				malloc_fail;              \
+				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
 #else
-#	define PJSTR_MALLOC_ERR(p, malloc_fail)          \
+#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
-				malloc_fail;              \
+				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
 #endif
 
-#define PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail)   \
-	do {                                              \
-		JSTR_ASSERT_IS_SIZE(old_cap);             \
-		JSTR_ASSERT_IS_SIZE(new_cap);             \
-		old_cap = pjstr_grow(old_cap, new_cap);   \
-		(p) = PJSTR_CAST(p, realloc(p, old_cap)); \
-		PJSTR_MALLOC_ERR(p, malloc_fail);         \
-	} while (0)
-#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail) \
+#define PJSTR_REALLOC(p, old_cap, new_cap, do_on_malloc_err) \
 	do {                                                 \
 		JSTR_ASSERT_IS_SIZE(old_cap);                \
 		JSTR_ASSERT_IS_SIZE(new_cap);                \
-		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);      \
+		old_cap = pjstr_grow(old_cap, new_cap);      \
 		(p) = PJSTR_CAST(p, realloc(p, old_cap));    \
-		PJSTR_MALLOC_ERR(p, malloc_fail);            \
+		PJSTR_MALLOC_ERR(p, do_on_malloc_err);       \
+	} while (0)
+#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, do_on_malloc_err) \
+	do {                                                      \
+		JSTR_ASSERT_IS_SIZE(old_cap);                     \
+		JSTR_ASSERT_IS_SIZE(new_cap);                     \
+		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);           \
+		(p) = PJSTR_CAST(p, realloc(p, old_cap));         \
+		PJSTR_MALLOC_ERR(p, do_on_malloc_err);            \
 	} while (0)
 
-#define PJSTR_REALLOC_MAY_MALLOC(p, old_cap, new_cap, malloc_fail) \
-	do {                                                       \
-		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);         \
-		PJSTR_REALLOC(p, old_cap, new_cap, malloc_fail);   \
-	} while (0)
-#define PJSTR_REALLOCEXACT_MAY_MALLOC(p, old_cap, new_cap, malloc_fail) \
+#define PJSTR_REALLOC_MAY_MALLOC(p, old_cap, new_cap, do_on_malloc_err) \
 	do {                                                            \
 		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);              \
-		PJSTR_REALLOCEXACT(p, old_cap, new_cap, malloc_fail);   \
+		PJSTR_REALLOC(p, old_cap, new_cap, do_on_malloc_err);   \
+	} while (0)
+#define PJSTR_REALLOCEXACT_MAY_MALLOC(p, old_cap, new_cap, do_on_malloc_err) \
+	do {                                                                 \
+		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);                   \
+		PJSTR_REALLOCEXACT(p, old_cap, new_cap, do_on_malloc_err);   \
 	} while (0)
 
 #define JSTR_MIN_ALLOC(cap)	 (((cap) > JSTR_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
 #define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
+#define jstr_err(msg)		 pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
+#define jstr_err_exit(msg)	 pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
+
+#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+#	define PJSTR_EXIT_MAYBE() jstr_err_exit("")
+#else
+#	define PJSTR_EXIT_MAYBE() \
+		do {               \
+		} while (0)
+#endif
+
+#define JSTR_RESERVE_ALWAYS_NONZERO(s, sz, cap, new_cap, do_on_malloc_err) \
+	if (jstr_unlikely(!jstr_reserve_always_nonzero(s, sz, cap, new_cap))) {    \
+		PJSTR_EXIT_MAYBE();                                        \
+		do_on_malloc_err;                                          \
+	}
+#define JSTR_RESERVE_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err)      \
+	if (jstr_unlikely(!jstr_reserve_always(s, sz, cap, new_cap))) { \
+		PJSTR_EXIT_MAYBE();                                     \
+		do_on_malloc_err;                                       \
+	}
+#define JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err)      \
+	if (jstr_unlikely(!jstr_reserveexact_always(s, sz, cap, new_cap))) { \
+		PJSTR_EXIT_MAYBE();                                          \
+		do_on_malloc_err;                                            \
+	}
+#define JSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err)      \
+	if (jstr_unlikely(!jstr_reserve(s, sz, cap, new_cap))) { \
+		PJSTR_EXIT_MAYBE();                              \
+		do_on_malloc_err;                                \
+	}
+#define JSTR_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err)      \
+	if (jstr_unlikely(!jstr_reserveexact(s, sz, cap, new_cap))) { \
+		PJSTR_EXIT_MAYBE();                                   \
+		do_on_malloc_err;                                     \
+	}
 
 PJSTR_BEGIN_DECLS
 
@@ -137,41 +173,124 @@ jstr_debug(const jstr_ty *R j) JSTR_NOEXCEPT
 	fputc('\n', stderr);
 }
 
-#define jstr_err(msg)	   pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
-#define jstr_err_exit(msg) pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
+/*
+  free(p) and set p to NULL.
+*/
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_free(char *R *R s,
+	  size_t *R sz,
+	  size_t *R cap) JSTR_NOEXCEPT
+{
+	free(*s);
+	*s = NULL;
+	*cap = 0;
+	*sz = 0;
+}
 
 /*
-   Return 0 on malloc error.
+  free(p) and set p to NULL.
 */
-JSTR_FUNC
-static int
-jstr_reserve_always(char *R *R s,
-		    size_t *R sz,
-		    size_t *R cap,
-		    const size_t new_cap) JSTR_NOEXCEPT
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_free_j(jstr_ty *R j) JSTR_NOEXCEPT
 {
-	PJSTR_REALLOC_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
-	return 1;
-err:
+	jstr_free(&j->data, &j->size, &j->capacity);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+pjstr_reallocexact(char *R *R s,
+		   size_t *R sz,
+		   size_t *R cap,
+		   size_t new_cap)
+{
+	*cap = JSTR_ALIGN_UP_STR(new_cap);
+	*s = (char *)realloc(*s, *cap);
+	if (jstr_likely(*s != NULL))
+		return 1;
 	pjstr_nullify_members(sz, cap);
+#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+	jstr_err_exit("");
+#endif
 	return 0;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+pjstr_realloc(char *R *R s,
+	      size_t *R sz,
+	      size_t *R cap,
+	      size_t new_cap)
+{
+	*cap = pjstr_grow(*cap, new_cap);
+	*s = (char *)realloc(*s, *cap);
+	if (jstr_likely(*s != NULL))
+		return 1;
+	pjstr_nullify_members(sz, cap);
+#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+	jstr_err_exit("");
+#endif
+	return 0;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+pjstr_realloc_may_zero(char *R *R s,
+		       size_t *R sz,
+		       size_t *R cap,
+		       size_t new_cap)
+{
+	if (jstr_unlikely(*sz != 0))
+		*cap = JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
+	return pjstr_reallocexact(s, sz, cap, new_cap);
 }
 
 /*
    Return 0 on malloc error.
 */
 JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_reserve_always(char *R *R s,
+		    size_t *R sz,
+		    size_t *R cap,
+		    const size_t new_cap) JSTR_NOEXCEPT
+{
+	return pjstr_realloc_may_zero(s, sz, cap, new_cap);
+}
+
+/*
+   Return 0 on malloc error.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_reserve_always_nonzero(char *R *R s,
+			    size_t *R sz,
+			    size_t *R cap,
+			    const size_t new_cap) JSTR_NOEXCEPT
+{
+	return pjstr_realloc(s, sz, cap, new_cap);
+}
+
+/*
+   Return 0 on malloc error.
+*/
+JSTR_FUNC
+JSTR_INLINE
 static int
 jstr_reserveexact_always(char *R *R s,
 			 size_t *R sz,
 			 size_t *R cap,
 			 const size_t new_cap) JSTR_NOEXCEPT
 {
-	PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
-	return 1;
-err:
-	pjstr_nullify_members(sz, cap);
-	return 0;
+	return pjstr_reallocexact(s, sz, cap, new_cap + 1);
 }
 
 /*
@@ -179,6 +298,7 @@ err:
    Return 0 on malloc error.
 */
 JSTR_FUNC
+JSTR_INLINE
 static int
 jstr_reserve(char *R *R s,
 	     size_t *R sz,
@@ -195,6 +315,7 @@ jstr_reserve(char *R *R s,
    Return 0 on malloc error.
 */
 JSTR_FUNC
+JSTR_INLINE
 static int
 jstr_reserveexact(char *R *R s,
 		  size_t *R sz,
@@ -226,33 +347,6 @@ jstr_init(char *R *R s,
 	*cap = 0;
 }
 
-/*
-  free(p) and set p to NULL.
-*/
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_free(char *R *R s,
-	  size_t *R sz,
-	  size_t *R cap) JSTR_NOEXCEPT
-{
-	free(*s);
-	*s = NULL;
-	*cap = 0;
-	*sz = 0;
-}
-
-/*
-  free(p) and set p to NULL.
-*/
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_free_j(jstr_ty *R j) JSTR_NOEXCEPT
-{
-	jstr_free(&j->data, &j->size, &j->capacity);
-}
-
 JSTR_FUNC_MAY_NULL
 JSTR_INLINE
 static int
@@ -263,8 +357,7 @@ pjstr_cat(char *R *R s,
 	  const size_t arglen) JSTR_NOEXCEPT
 {
 	char *p;
-	if (*cap < *sz + arglen)
-		PJSTR_REALLOC_MAY_MALLOC(*s, *cap, *sz + arglen, return 0);
+	JSTR_RESERVE(s, sz, cap, *sz + arglen, return 0);
 	p = *s + *sz;
 	*sz += arglen;
 	for (const char *R arg; (arg = va_arg(ap, char *)); p = jstr_stpcpy(p, arg))
@@ -292,6 +385,8 @@ jstr_cat(char *R *R s,
 	for (const char *R arg; (arg = va_arg(ap, char *)); arglen += strlen(arg))
 		;
 	va_end(ap);
+	if (jstr_unlikely(arglen == 0))
+		return 0;
 	va_start(ap, cap);
 	arglen = pjstr_cat(s, sz, cap, ap, arglen);
 	va_end(ap);
@@ -316,6 +411,8 @@ jstr_cat_j(jstr_ty *R j,
 	for (const char *R arg; (arg = va_arg(ap, char *)); arglen += strlen(arg))
 		;
 	va_end(ap);
+	if (jstr_unlikely(arglen == 0))
+		return 0;
 	va_start(ap, j);
 	arglen = pjstr_cat(&j->data, &j->size, &j->capacity, ap, arglen);
 	va_end(ap);
@@ -361,8 +458,7 @@ jstr_assign_len(char *R *R s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
-		if (jstr_unlikely(!jstr_reserveexact_always(s, sz, cap, srclen * JSTR_ALLOC_MULTIPLIER)))
-			return 0;
+		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, srclen * JSTR_ALLOC_MULTIPLIER, return 0);
 	jstr_strcpy_len(*s, src, srclen);
 	*sz = srclen;
 	return 1;
@@ -384,8 +480,7 @@ jstr_push_back(char *R *R s,
 	       const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		if (jstr_unlikely(!jstr_reserveexact_always(s, sz, cap, *sz * JSTR_ALLOC_MULTIPLIER)))
-			return 0;
+		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
 	*(*s + *sz) = c;
 	*(*s + ++*sz) = '\0';
 	return 1;
@@ -407,7 +502,7 @@ jstr_push_front(char *R *R s,
 		const char c) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
-		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, *sz * JSTR_ALLOC_MULTIPLIER, return 0);
+		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
 	jstr_strmove_len(*s + 1, *s, (*sz)++);
 	**s = c;
 	return 1;
@@ -503,8 +598,7 @@ jstr_asprintf(char *R *R s,
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
-	if (jstr_unlikely(!jstr_reserveexact(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
-		goto err;
+	JSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(*s, fmt, ap);
 	va_end(ap);
@@ -514,6 +608,7 @@ jstr_asprintf(char *R *R s,
 	return 1;
 err_free:
 	jstr_free(s, sz, cap);
+	PJSTR_EXIT_MAYBE();
 err:
 	return 0;
 }
@@ -531,8 +626,7 @@ jstr_asprintf_j(jstr_ty *R j,
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
-	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
-		goto err;
+	JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data, fmt, ap);
 	va_end(ap);
@@ -542,6 +636,7 @@ jstr_asprintf_j(jstr_ty *R j,
 	return 1;
 err_free:
 	jstr_free_j(j);
+	PJSTR_EXIT_MAYBE();
 err:
 	return 0;
 }
@@ -565,8 +660,7 @@ jstr_asprintf_cat(char *R *R s,
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
 	arglen += *sz;
-	if (jstr_unlikely(!jstr_reserveexact(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
-		goto err;
+	JSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
@@ -576,6 +670,7 @@ jstr_asprintf_cat(char *R *R s,
 	return 1;
 err_free:
 	jstr_free(s, sz, cap);
+	PJSTR_EXIT_MAYBE();
 err:
 	return 0;
 }
@@ -597,8 +692,7 @@ jstr_asprintf_cat_j(jstr_ty *R j,
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
 	arglen += j->size;
-	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
-		goto err;
+	JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
@@ -608,6 +702,7 @@ jstr_asprintf_cat_j(jstr_ty *R j,
 	return 1;
 err_free:
 	jstr_free_j(j);
+	PJSTR_EXIT_MAYBE();
 err:
 	return 0;
 }
@@ -629,8 +724,7 @@ jstr_asprintf_from(char *R *R s,
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
 	arglen += start_idx;
-	if (jstr_unlikely(!jstr_reserveexact(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER)))
-		goto err;
+	JSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
@@ -640,6 +734,7 @@ jstr_asprintf_from(char *R *R s,
 	return 1;
 err_free:
 	jstr_free(s, sz, cap);
+	PJSTR_EXIT_MAYBE();
 err:
 	return 0;
 }
@@ -659,8 +754,7 @@ jstr_asprintf_from_j(jstr_ty *R j,
 	if (jstr_unlikely((int)arglen < 0))
 		goto err;
 	arglen += start_idx;
-	if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER)))
-		goto err;
+	JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
@@ -670,6 +764,7 @@ jstr_asprintf_from_j(jstr_ty *R j,
 	return 1;
 err_free:
 	jstr_free_j(j);
+	PJSTR_EXIT_MAYBE();
 err:
 	return 0;
 }
@@ -696,8 +791,10 @@ jstr_sprintf(char *R *R s,
 	*sz = ret;
 	return 1;
 err_free:
-	if (errno != EINVAL)
+	if (errno != EINVAL) {
 		jstr_free(s, sz, cap);
+		PJSTR_EXIT_MAYBE();
+	}
 	return 0;
 }
 
@@ -721,8 +818,10 @@ jstr_sprintf_j(jstr_ty *R j,
 	j->size = ret;
 	return 1;
 err_free:
-	if (errno != EINVAL)
+	if (errno != EINVAL) {
 		jstr_free_j(j);
+		PJSTR_EXIT_MAYBE();
+	}
 	return 0;
 }
 
@@ -749,8 +848,10 @@ jstr_sprintf_from(char *R *R s,
 	*sz = ret + start_idx;
 	return 1;
 err_free:
-	if (errno != EINVAL)
+	if (errno != EINVAL) {
 		jstr_free(s, sz, cap);
+		PJSTR_EXIT_MAYBE();
+	}
 	return 0;
 }
 
@@ -775,8 +876,10 @@ jstr_sprintf_from_j(jstr_ty *R j,
 	j->size = ret + start_idx;
 	return 1;
 err_free:
-	if (errno != EINVAL)
+	if (errno != EINVAL) {
 		jstr_free_j(j);
+		PJSTR_EXIT_MAYBE();
+	}
 	return 0;
 }
 

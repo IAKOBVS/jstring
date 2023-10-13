@@ -91,8 +91,7 @@ jstr_slip_len(char *R *R s,
 	      const char *R rplc,
 	      const size_t rplclen) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(!jstr_reserve(s, sz, cap, *sz + rplclen)))
-		return 0;
+	JSTR_RESERVE(s, sz, cap, *sz + rplclen, return 0);
 	jstr_slip_unsafe(*s, at, rplc, *sz, rplclen);
 	*sz += rplclen;
 	return 1;
@@ -109,8 +108,7 @@ pjstr_replaceat_len_higher(char *R *R s,
 			   const size_t rplclen,
 			   const size_t findlen) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(!jstr_reserve(s, sz, cap, *sz + rplclen - findlen)))
-		return 0;
+	JSTR_RESERVE(s, sz, cap, *sz + rplclen - findlen, return 0);
 	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
 }
 
@@ -970,8 +968,7 @@ jstr_insert_len(char *R *R s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (at + srclen > *sz) {
-		if (jstr_unlikely(!jstr_reserve_always(s, sz, cap, at + srclen + 1)))
-			return 0;
+		JSTR_RESERVE_ALWAYS(s, sz, cap, at + srclen + 1, return 0);
 		*sz = at + srclen;
 		*(*s + *sz) = '\0';
 	}

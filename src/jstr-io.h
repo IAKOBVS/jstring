@@ -533,7 +533,7 @@ jstr_io_alloc_popen(char *R *R s,
 				break;
 			if ((size_t)(p - *s) == *cap) {
 				old = *s;
-				PJSTR_REALLOCEXACT(*s, *cap, (size_t)(*cap * JSTR_GROWTH), goto err_close);
+				JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, (size_t)(*cap * JSTR_GROWTH), goto err_close);
 				p = *s + (p - old);
 			}
 		}
@@ -727,8 +727,7 @@ jstr_io_expand_tilde(char *R *R s,
 	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
-			if (jstr_unlikely(!jstr_reserve_always(s, sz, cap, *sz + len)))
-				return 0;
+			JSTR_RESERVE_ALWAYS(s, sz, cap, *sz + len, return 0);
 			p = *s + (p - tmp);
 		}
 		jstr_strmove_len(p + len, p + 1, (*s + *sz) - (p + 1));

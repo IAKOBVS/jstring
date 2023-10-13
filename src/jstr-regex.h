@@ -566,25 +566,23 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 		*sz += rplclen - findlen;                                       \
 		p += rplclen;                                                   \
 	} while (0)
-#define PJSTR_REG_RPLCALL_BIG_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp, malloc_fail)      \
-	do {                                                                                    \
-		typedef unsigned char uc;                                                       \
-		PJSTR_REG_LOG("cap <= *sz + rplclen - findlen");                                \
-		if (dst != oldp)                                                                \
-			memmove(dst, oldp, p - oldp);                                           \
-		tmp = *(uc **)s;                                                                \
-		if (jstr_unlikely(!jstr_reserve_always(s, sz, cap, *sz + rplclen - findlen))) { \
-			malloc_fail;                                                            \
-		}                                                                               \
-		jstr_strmove_len(p + rplclen,                                                   \
-				 p + findlen,                                                   \
-				 (tmp + *sz) - (p + findlen));                                  \
-		memcpy(p, rplc, rplclen);                                                       \
-		p = *(uc **)s + (p - tmp);                                                      \
-		dst = *(uc **)s + (dst - tmp) + rplclen;                                        \
-		oldp = dst;                                                                     \
-		*sz += rplclen - findlen;                                                       \
-		p += rplclen;                                                                   \
+#define PJSTR_REG_RPLCALL_BIG_RPLC(dst, oldp, p, rplc, rplclen, findlen, tmp, do_on_malloc_err)     \
+	do {                                                                                        \
+		typedef unsigned char uc;                                                           \
+		PJSTR_REG_LOG("cap <= *sz + rplclen - findlen");                                    \
+		if (dst != oldp)                                                                    \
+			memmove(dst, oldp, p - oldp);                                               \
+		tmp = *(uc **)s;                                                                    \
+		JSTR_RESERVE_ALWAYS_NONZERO(s, sz, cap, *sz + rplclen - findlen, do_on_malloc_err); \
+		jstr_strmove_len(p + rplclen,                                                       \
+				 p + findlen,                                                       \
+				 (tmp + *sz) - (p + findlen));                                      \
+		memcpy(p, rplc, rplclen);                                                           \
+		p = *(uc **)s + (p - tmp);                                                          \
+		dst = *(uc **)s + (dst - tmp) + rplclen;                                            \
+		oldp = dst;                                                                         \
+		*sz += rplclen - findlen;                                                           \
+		p += rplclen;                                                                       \
 	} while (0)
 		if (rplclen <= findlen) {
 			PJSTR_REG_LOG("rplclen <= findlen");
