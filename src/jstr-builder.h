@@ -663,7 +663,8 @@ jstr_sprintf(char *R *R s,
 	*sz = ret;
 	return 1;
 err_free:
-	jstr_free(s, sz, cap);
+	if (errno != EINVAL)
+		jstr_free(s, sz, cap);
 	return 0;
 }
 
@@ -687,7 +688,8 @@ jstr_sprintf_j(jstr_ty *R j,
 	j->size = ret;
 	return 1;
 err_free:
-	jstr_free_j(j);
+	if (errno != EINVAL)
+		jstr_free_j(j);
 	return 0;
 }
 
@@ -714,7 +716,8 @@ jstr_sprintf_from(char *R *R s,
 	*sz = ret + start_idx;
 	return 1;
 err_free:
-	jstr_free(s, sz, cap);
+	if (errno != EINVAL)
+		jstr_free(s, sz, cap);
 	return 0;
 }
 
@@ -739,7 +742,8 @@ jstr_sprintf_from_j(jstr_ty *R j,
 	j->size = ret + start_idx;
 	return 1;
 err_free:
-	jstr_free_j(j);
+	if (errno != EINVAL)
+		jstr_free_j(j);
 	return 0;
 }
 
