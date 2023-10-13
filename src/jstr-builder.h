@@ -510,7 +510,7 @@ err:
 }
 
 /*
-   Append ... to end of S.
+   Concatenate ... to end of S.
 */
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
