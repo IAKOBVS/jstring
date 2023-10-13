@@ -589,8 +589,7 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 			case 'p':
 			case 'l':
 			case 'z':
-				/* chars written
-   %m - strlen(strerror(errno)) */
+				/* chars written */
 			case 'n':
 				arglen += MAX_LONG_LONG;
 				break;
