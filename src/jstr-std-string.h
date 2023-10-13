@@ -54,7 +54,7 @@ jstr_mempcpy(void *R dst,
 	return mempcpy(dst, src, n);
 #else
 	return (char *)memcpy(dst, src, n) + n;
-#endif /* !JSTR_HAVE_STPCPY */
+#endif
 }
 
 JSTR_FUNC
@@ -199,9 +199,6 @@ JSTR_INLINE
 static char *
 jstr_strdup(const char *R s)
 {
-#if JSTR_HAVE_STRDUP
-	return strdup(s);
-#else
 	const size_t len = strlen(s);
 	char *const p = (char *)malloc(len + 1);
 	if (jstr_likely(p != NULL)) {
@@ -209,7 +206,6 @@ jstr_strdup(const char *R s)
 		return p;
 	}
 	return NULL;
-#endif
 }
 
 JSTR_MALLOC

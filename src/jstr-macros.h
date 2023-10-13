@@ -51,7 +51,7 @@
 	default: 0)
 #else
 #	define JSTR_SAME_TYPE(x, y) (1)
-#	define JSTR_IS_TYPE(T, x) (1)
+#	define JSTR_IS_TYPE(T, x)   (1)
 #endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #ifdef static_assert
@@ -141,7 +141,7 @@
 #elif defined __has_attribute
 #	define JSTR_HAS_ATTRIBUTE(attr) __has_attribute(attr)
 #else
-#	define JSTR_HAS_ATTRIBUTE(attr) (0)
+#	define JSTR_HAS_ATTRIBUTE(attr) 0
 #endif
 
 #if defined __glibc_has_builtin
@@ -149,7 +149,7 @@
 #elif defined __has_builtin
 #	define JSTR_HAS_BUILTIN(name) __has_builtin(name)
 #else
-#	define JSTR_HAS_BUILTIN(name) (0)
+#	define JSTR_HAS_BUILTIN(name) 0
 #endif
 
 #if defined __glibc_has_extension
@@ -157,7 +157,7 @@
 #elif defined __has_extension
 #	define JSTR_HAS_EXTENSION(ext) __has_extension(ext)
 #else
-#	define JSTR_HAS_EXTENSION(ext) (0)
+#	define JSTR_HAS_EXTENSION(ext) 0
 #endif
 
 #if defined __glibc_unlikely && defined __glibc_likely
@@ -283,6 +283,7 @@
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	else
 #		define JSTR_MAY_ALIAS
+#		define JSTR_HAVE_ATTR_MAY_ALIAS 0
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__unused__)
 #		define JSTR_MAYBE_UNUSED __attribute__((__unused__))
@@ -680,10 +681,15 @@ case '~':
 || defined _DEFAULT_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1
 #	define JSTR_HAVE_STRNCASECMP 1
+#else
+#	define JSTR_HAVE_STRCASECMP  0
+#	define JSTR_HAVE_STRNCASECMP 0
 #endif
 
 #ifdef _XOPEN_SOURCE
 #	define JSTR_HAVE_MEMCCPY 1
+#else
+#	define JSTR_HAVE_MEMCCPY 0
 #endif /* Misc || Xopen */
 
 #ifdef _GNU_SOURCE
@@ -702,6 +708,22 @@ case '~':
 #	define JSTR_HAVE_WMEMPCPY	    1
 #	define JSTR_HAVE_MEMPCPY	    1
 #	define JSTR_HAVE_STRCASESTR	    1
+#else
+#	define JSTR_HAVE_MEMMEM	    0
+#	define JSTR_HAVE_MEMRCHR	    0
+#	define JSTR_HAVE_STRCHRNUL	    0
+#	define JSTR_HAVE_FGETS_UNLOCKED    0
+#	define JSTR_HAVE_FPUTS_UNLOCKED    0
+#	define JSTR_HAVE_GETWC_UNLOCKED    0
+#	define JSTR_HAVE_GETWCHAR_UNLOCKED 0
+#	define JSTR_HAVE_FGETWC_UNLOCKED   0
+#	define JSTR_HAVE_FPUTWC_UNLOCKED   0
+#	define JSTR_HAVE_PUTWCHAR_UNLOCKED 0
+#	define JSTR_HAVE_FGETWS_UNLOCKED   0
+#	define JSTR_HAVE_FPUTWS_UNLOCKED   0
+#	define JSTR_HAVE_WMEMPCPY	    0
+#	define JSTR_HAVE_MEMPCPY	    0
+#	define JSTR_HAVE_STRCASESTR	    0
 #endif /* Gnu */
 
 #if ((defined __GLIBC__ && __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 24)) && _POSIX_C_SOURCE >= 199309L) \
@@ -711,6 +733,11 @@ case '~':
 #	define JSTR_HAVE_GETCHAR_UNLOCKED 1
 #	define JSTR_HAVE_PUTC_UNLOCKED	   1
 #	define JSTR_HAVE_PUTCHAR_UNLOCKED 1
+#else
+#	define JSTR_HAVE_GETC_UNLOCKED	   0
+#	define JSTR_HAVE_GETCHAR_UNLOCKED 0
+#	define JSTR_HAVE_PUTC_UNLOCKED	   0
+#	define JSTR_HAVE_PUTCHAR_UNLOCKED 0
 #endif /* Posix || Bsd  */
 
 #if ((defined __GLIBC__ && __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 19)) && defined _DEFAULT_SOURCE) \
@@ -724,6 +751,16 @@ case '~':
 #	define JSTR_HAVE_FERROR_UNLOCKED   1
 #	define JSTR_HAVE_FILENO_UNLOCKED   1
 #	define JSTR_HAVE_FFLUSH_UNLOCKED   1
+#else
+#	define JSTR_HAVE_FREAD_UNLOCKED    0
+#	define JSTR_HAVE_FWRITE_UNLOCKED   0
+#	define JSTR_HAVE_FPUTC_UNLOCKED    0
+#	define JSTR_HAVE_FGETC_UNLOCKED    0
+#	define JSTR_HAVE_CLEARERR_UNLOCKED 0
+#	define JSTR_HAVE_FEOF_UNLOCKED	    0
+#	define JSTR_HAVE_FERROR_UNLOCKED   0
+#	define JSTR_HAVE_FILENO_UNLOCKED   0
+#	define JSTR_HAVE_FFLUSH_UNLOCKED   0
 #endif /* Default || Svid || Bsd */
 
 #if (defined __GLIBC__ && __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)) && _POSIX_C_SOURCE >= 200809L \
@@ -731,23 +768,35 @@ case '~':
 #	define JSTR_HAVE_STPCPY  1
 #	define JSTR_HAVE_STRNLEN 1
 #	define JSTR_HAVE_STRNDUP 1
+#else
+#	define JSTR_HAVE_STPCPY  0
+#	define JSTR_HAVE_STRNLEN 0
+#	define JSTR_HAVE_STRNDUP 0
 #endif /* Posix || Gnu */
 
 #if defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 500                                                                  \
 || (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19 && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
 || ((defined __GLIBC__ && __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 12)) && __POSIX_C_SOURCE >= 200809L)
 #	define JSTR_HAVE_STRDUP 1
+#else
+#	define JSTR_HAVE_STRDUP 0
 #endif /* Xopen || Bsd || Svid || Posix */
 
 #ifdef _GNU_SOURCE
 #	define JSTR_HAVE_STRDUPA  1
 #	define JSTR_HAVE_STRNDUPA 1
+#else
+#	define JSTR_HAVE_STRDUPA  0
+#	define JSTR_HAVE_STRNDUPA 0
 #endif /* Gnu */
 
 #if (defined __GLIBC__ && (__GLIBC__ < 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _BSD_SOURCE || defined _SVID_SOURCE) \
 || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2)
 #	define JSTR_HAVE_POPEN	 1
 #	define JSTR_HAVE_PCLOSE 1
+#else
+#	define JSTR_HAVE_POPEN	 0
+#	define JSTR_HAVE_PCLOSE 0
 #endif
 
 #if defined __x86_64__ || defined _M_X64
@@ -965,9 +1014,13 @@ case '~':
 
 #if defined __GLIBC__ && JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
 #	define JSTR_HAVE_MEMMEM_OPTIMIZED 1
+#else
+#	define JSTR_HAVE_MEMMEM_OPTIMIZED 1
 #endif
 
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
+#	define JSTR_HAVE_STRSTR_OPTIMIZED 1
+#else
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
 /* Needle length over which memmem would be faster than strstr. */
 enum { JSTR_MEMMEM_THRES = 18 };
