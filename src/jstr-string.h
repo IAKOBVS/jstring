@@ -268,7 +268,7 @@ jstr_strrstr_len(const void *R hs,
 	if (jstr_unlikely(hslen < nelen))
 		return NULL;
 	if (nelen > 4)
-		return pjstr_strrstr_len_bmh((u *)hs, hslen, (unsigned char *)ne, nelen);
+		return pjstr_strrstr_len_bmh((u *)hs, hslen, (u *)ne, nelen);
 	if (jstr_unlikely(nelen == 0))
 		return (u *)hs + hslen;
 	const unsigned char *h = (u *)jstr_memrchr(hs, *(char *)ne, hslen);
