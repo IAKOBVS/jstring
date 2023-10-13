@@ -573,7 +573,7 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 		if (dst != oldp)                                                                    \
 			memmove(dst, oldp, p - oldp);                                               \
 		tmp = *(uc **)s;                                                                    \
-		JSTR_RESERVE_ALWAYS_NONZERO(s, sz, cap, *sz + rplclen - findlen, do_on_malloc_err); \
+		JSTR_RESERVE_ALWAYS_NOMALLOC(s, sz, cap, *sz + rplclen - findlen, do_on_malloc_err); \
 		jstr_strmove_len(p + rplclen,                                                       \
 				 p + findlen,                                                       \
 				 (tmp + *sz) - (p + findlen));                                      \

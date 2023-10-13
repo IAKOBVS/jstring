@@ -968,7 +968,7 @@ jstr_insert_len(char *R *R s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (at + srclen > *sz) {
-		JSTR_RESERVE_ALWAYS(s, sz, cap, at + srclen + 1, return 0);
+		JSTR_RESERVE_ALWAYS(s, sz, cap, at + srclen, return 0);
 		*sz = at + srclen;
 		*(*s + *sz) = '\0';
 	}

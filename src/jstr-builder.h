@@ -92,7 +92,7 @@ PJSTR_END_DECLS
 		do_on_malloc_err;                                       \
 	}
 
-#define JSTR_RESERVE_ALWAYS_NONZERO(s, sz, cap, new_cap, do_on_malloc_err) \
+#define JSTR_RESERVE_ALWAYS_NOMALLOC(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserve_always_nonzero, s, sz, cap, new_cap, do_on_malloc_err)
 #define JSTR_RESERVE_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserve_always, s, sz, cap, new_cap, do_on_malloc_err)
