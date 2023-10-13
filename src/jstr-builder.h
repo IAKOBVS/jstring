@@ -80,6 +80,12 @@ PJSTR_END_DECLS
 #	define PJSTR_NULLIFY_MEMBERS(sz, cap)
 #endif
 
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+#	define PJSTR_NULLIFY_MEMBERS_ERR(sz, cap) PJSTR_NULLIFY_MEMBERS(sz, cap)
+#else
+#	define PJSTR_NULLIFY_MEMBERS_ERR(sz, cap)
+#endif
+
 PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_VOID
@@ -256,7 +262,7 @@ pjstr_cat(char *R *R s,
 		;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -331,7 +337,7 @@ jstr_append_len(char *R *R s,
 	*sz += srclen;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -357,7 +363,7 @@ jstr_assign_len(char *R *R s,
 	*sz = srclen;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -382,7 +388,7 @@ jstr_push_back(char *R *R s,
 	(*s)[++*sz] = '\0';
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -407,7 +413,7 @@ jstr_push_front(char *R *R s,
 	**s = c;
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -448,7 +454,7 @@ jstr_reserve(char *R *R s,
 	PJSTR_REALLOC_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -467,7 +473,7 @@ jstr_reserveexact(char *R *R s,
 	PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, new_cap + 1, goto err);
 	return 1;
 err:
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -545,10 +551,15 @@ jstr_asprintf(char *R *R s,
 	arglen = vsprintf(*s, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
-		goto err;
+		goto err_free;
 	*sz = arglen;
 	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(*s);
+#endif
 err:
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -577,10 +588,15 @@ jstr_asprintf_cat(char *R *R s,
 	arglen = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
-		goto err;
+		goto err_free;
 	*sz += arglen;
 	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(*s);
+#endif
 err:
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -607,11 +623,16 @@ jstr_asprintf_from(char *R *R s,
 	arglen = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen < 0))
-		goto err;
+		goto err_free;
 	if (arglen > *sz)
 		*sz = arglen;
 	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(*s);
+#endif
 err:
+	PJSTR_NULLIFY_MEMBERS_ERR(sz, cap);
 	return 0;
 }
 
@@ -632,9 +653,14 @@ jstr_sprintf(char *R s,
 	const int ret = vsprintf(s, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
-		return 0;
+		goto err_free;
 	*sz = ret;
 	return 1;
+err_free:
+#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
+	free(s);
+#endif
+	return 0;
 }
 
 PJSTR_END_DECLS
