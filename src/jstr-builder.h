@@ -10,6 +10,7 @@ PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 PJSTR_END_DECLS
 
 #include "jstr-config.h"
@@ -544,51 +545,56 @@ JSTR_INLINE
 static unsigned int
 pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 {
-	enum { MAX_INT = CHAR_BIT * sizeof(int) * 2,
-	       MAX_LONG = CHAR_BIT * sizeof(long) * 2,
-	       MAX_LONG_LONG = CHAR_BIT * sizeof(long long) * 2,
-	       MAX_FLT = CHAR_BIT * sizeof(float) * 2 + 1,
-	       MAX_DBL = CHAR_BIT * sizeof(double) * 2 + 1,
-	       MAX_LDBL = CHAR_BIT * sizeof(long double) * 2 + 1
+	enum {
+		MAX_WINT = CHAR_BIT * sizeof(wint_t) * 2,
+		MAX_INT = CHAR_BIT * sizeof(int) * 2,
+		MAX_LONG = CHAR_BIT * sizeof(long) * 2,
+		MAX_LONG_LONG = CHAR_BIT * sizeof(long long) * 2,
+		MAX_FLT = CHAR_BIT * sizeof(float) * 2 + 1,
+		MAX_DBL = CHAR_BIT * sizeof(double) * 2 + 1,
+		MAX_LDBL = CHAR_BIT * sizeof(long double) * 2 + 1,
+		MAX_PTR = (sizeof(uintptr_t) == sizeof(unsigned long)) ? MAX_LONG : MAX_LONG_LONG
 	};
 	unsigned int arglen = 0;
-	for (unsigned int errno_len = 0;; ++fmt) {
+	for (unsigned int errno_len = 0, lflag = 0;; ++fmt) {
+		enum { LONG = 1,
+		       LONG_LONG = 2,
+		};
 		if (*fmt == '%') {
+cont_switch:
 			switch (*++fmt) {
 			case 's':
 				arglen = strlen(va_arg(ap, const char *));
 				break;
 			case 'c':
-				++arglen;
-				break;
-			case '%':
-				arglen += 2;
-				break;
-			case '\\':
-				if (jstr_unlikely(*++fmt == '\0')) {
-					errno = EINVAL;
-					return -1;
-				}
-				++arglen;
-				break;
+				if (jstr_likely(lflag == 0))
+					++arglen;
+				else
+					arglen += MAX_INT;
+				goto get_arg;
 				/* int */
 			case 'd':
 			case 'i':
 			case 'u':
 			case 'x':
 			case 'X':
-				arglen += MAX_INT;
-				break;
+				if (lflag == 0) {
+					arglen += MAX_INT;
+				} else {
+					arglen += (lflag & LONG) ? MAX_LONG : MAX_LONG_LONG;
+					lflag = 0;
+				}
+				goto get_arg;
 			case 'o':
 				arglen += MAX_LONG;
-				break;
-				/* long long */
+				goto get_arg;
+				/* ptr */
 			case 'p':
-			case 'l':
-			case 'z':
+				arglen += MAX_PTR;
+				goto get_arg;
 				/* chars written */
 			case 'n':
-				arglen += MAX_LONG_LONG;
+				arglen += MAX_INT;
 				break;
 				/* double */
 			case 'a':
@@ -599,7 +605,22 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 			case 'F':
 			case 'g':
 			case 'G':
-				arglen += MAX_DBL;
+				if (lflag == 0) {
+					arglen += MAX_DBL;
+				} else {
+					arglen += MAX_LDBL;
+					lflag = 0;
+				}
+				goto get_arg;
+			case '%':
+				arglen += 2;
+				break;
+			case '\\':
+				if (jstr_unlikely(*++fmt == '\0')) {
+					errno = EINVAL;
+					return -1;
+				}
+				++arglen;
 				break;
 			case 'm':
 				if (errno_len == 0)
@@ -607,12 +628,44 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 				else
 					arglen += errno_len;
 				break;
+			/* flags */
+			case '#':
+			case '0':
+			case ' ':
+			case '\'':
+			/* precision */
+			case '.':
+			case '*':
+			/* field width */
+			case '-':
+			case '+':
+			/* length modifier */
+			case 'l':
+				++lflag;
+				goto cont_switch;
+			case 't':
+			case 'z':
+				lflag += 2;
+			case 'h':
+			case 'j':
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				break;
 			/* case '\0': */
 			default:
 				errno = EINVAL;
 				return -1;
+get_arg:
+				va_arg(ap, void *);
 			}
-			va_arg(ap, char *);
 		} else {
 			++arglen;
 			if (jstr_unlikely(*fmt == '\0'))
