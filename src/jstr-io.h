@@ -727,7 +727,8 @@ jstr_io_expand_tilde(char *R *R s,
 	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
-			PJSTR_REALLOC(*s, *cap, *sz + len, goto err);
+			if (jstr_unlikely(!jstr_reserve_always(s, sz, cap, *sz + len)))
+				return 0;
 			p = *s + (p - tmp);
 		}
 		jstr_strmove_len(p + len, p + 1, (*s + *sz) - (p + 1));
@@ -736,8 +737,6 @@ jstr_io_expand_tilde(char *R *R s,
 		*sz += (len - 1);
 	}
 	return 1;
-err:
-	return 0;
 }
 
 JSTR_INLINE

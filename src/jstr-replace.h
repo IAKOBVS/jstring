@@ -91,8 +91,8 @@ jstr_slip_len(char *R *R s,
 	      const char *R rplc,
 	      const size_t rplclen) JSTR_NOEXCEPT
 {
-	if (*cap < *sz + rplclen)
-		PJSTR_REALLOC(*s, *cap, *sz + rplclen, return 0);
+	if (jstr_unlikely(!jstr_reserve(s, sz, cap, *sz + rplclen)))
+		return 0;
 	jstr_slip_unsafe(*s, at, rplc, *sz, rplclen);
 	*sz += rplclen;
 	return 1;
@@ -109,8 +109,8 @@ pjstr_replaceat_len_higher(char *R *R s,
 			   const size_t rplclen,
 			   const size_t findlen) JSTR_NOEXCEPT
 {
-	if (*cap < *sz + rplclen - findlen)
-		PJSTR_REALLOC(*s, *cap, *sz + rplclen, return 0);
+	if (jstr_unlikely(!jstr_reserve(s, sz, cap, *sz + rplclen - findlen)))
+		return 0;
 	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
 }
 
@@ -376,9 +376,9 @@ jstr_removeallchr_p(char *R s,
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removenchr_len_p(char *R s,
-		    const int c,
-		    const size_t n,
-		    const size_t sz) JSTR_NOEXCEPT
+		      const int c,
+		      const size_t n,
+		      const size_t sz) JSTR_NOEXCEPT
 {
 	return pjstr_removeallchr_len_p(PJSTR_FLAG_USE_N, s, c, n, sz);
 }
@@ -392,8 +392,8 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_removenchr_p(char *R s,
-		const int c,
-		size_t n) JSTR_NOEXCEPT
+		  const int c,
+		  size_t n) JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	char *dst = s;
@@ -514,10 +514,10 @@ jstr_replaceallchr(char *R s,
 JSTR_FUNC_VOID
 static void
 jstr_replacenchr_len(char *R s,
-		   const int find,
-		   const int rplc,
-		   size_t n,
-		   const size_t sz) JSTR_NOEXCEPT
+		     const int find,
+		     const int rplc,
+		     size_t n,
+		     const size_t sz) JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
 	while (n-- && (s = (char *)memchr(s, find, end - s)))
@@ -530,9 +530,9 @@ jstr_replacenchr_len(char *R s,
 JSTR_FUNC_VOID
 static void
 jstr_replacenchr(char *R s,
-	       const int find,
-	       const int rplc,
-	       size_t n) JSTR_NOEXCEPT
+		 const int find,
+		 const int rplc,
+		 size_t n) JSTR_NOEXCEPT
 {
 	while (n-- && (s = strchr(s, find)))
 		*s++ = rplc;
@@ -970,7 +970,8 @@ jstr_insert_len(char *R *R s,
 		const size_t srclen) JSTR_NOEXCEPT
 {
 	if (at + srclen > *sz) {
-		PJSTR_REALLOC(*s, *cap, at + srclen + 1, return 0);
+		if (jstr_unlikely(!jstr_reserve_always(s, sz, cap, at + srclen + 1)))
+			return 0;
 		*sz = at + srclen;
 		*(*s + *sz) = '\0';
 	}
