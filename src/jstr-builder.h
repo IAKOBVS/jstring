@@ -629,6 +629,7 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
    %lu - unsigned long
    %llu - unsigned long long
    %p - pointer
+   %n - chars written
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 4, 5)
@@ -675,6 +676,7 @@ err:
    %lu - unsigned long
    %llu - unsigned long long
    %p - pointer
+   %n - chars written
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 2, 3)
@@ -719,6 +721,7 @@ err:
    %lu - unsigned long
    %llu - unsigned long long
    %p - pointer
+   %n - chars written
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 4, 5)
@@ -766,6 +769,7 @@ err:
    %lu - unsigned long
    %llu - unsigned long long
    %p - pointer
+   %n - chars written
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 2, 3)
@@ -811,6 +815,7 @@ err:
    %lu - unsigned long
    %llu - unsigned long long
    %p - pointer
+   %n - chars written
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 5, 6)
@@ -859,6 +864,7 @@ err:
    %lu - unsigned long
    %llu - unsigned long long
    %p - pointer
+   %n - chars written
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 3, 4)
