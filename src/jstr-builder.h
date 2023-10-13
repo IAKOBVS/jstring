@@ -539,7 +539,6 @@ jstr_io_fwrite(const char *R s,
 {
 	return fwrite(s, 1, sz, fp) == sz;
 }
-
 JSTR_FUNC
 JSTR_INLINE
 static unsigned int
@@ -560,6 +559,9 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 			case 's':
 				arglen = strlen(arg);
 				break;
+			case 'c':
+				++arglen;
+				break;
 			case '%':
 				arglen += 2;
 				break;
@@ -568,14 +570,37 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 					errno = EINVAL;
 					return -1;
 				}
-				/* fallthrough */
-			case 'c':
 				++arglen;
 				break;
-			default:
+				/* int */
+			case 'd':
+			case 'i':
+			case 'u':
+			case 'x':
+			case 'X':
+				arglen += MAX_INT;
+				break;
+			case 'o':
+				arglen += MAX_LONG;
+				break;
+				/* double */
+			case 'a':
+			case 'A':
+			case 'e':
+			case 'E':
+			case 'f':
+			case 'F':
+			case 'g':
+			case 'G':
 				arglen += MAX_DBL;
 				break;
-			case '\0':
+				/* long long */
+			case 'p':
+			case 'l':
+			case 'z':
+				arglen += MAX_LONG_LONG;
+				break;
+			default:
 				errno = EINVAL;
 				return -1;
 			}
@@ -589,6 +614,22 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 	return arglen;
 }
 
+/*
+   Return 0 on error.
+   Supported format:
+   %s - string
+   %c - char
+   %% - %
+   %d, %i, %u, %o, %x, %X - int
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double
+   %zu - size_t
+   %l - long
+   %ll - long long
+   %lu - unsigned long
+   %llu - unsigned long long
+   %p - pointer
+   Otherwise, return 0 and set errno to EINVAL.
+*/
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static int
@@ -619,6 +660,22 @@ err:
 	return 0;
 }
 
+/*
+   Return 0 on error.
+   Supported format:
+   %s - string
+   %c - char
+   %% - %
+   %d, %i, %u, %o, %x, %X - int
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double
+   %zu - size_t
+   %l - long
+   %ll - long long
+   %lu - unsigned long
+   %llu - unsigned long long
+   %p - pointer
+   Otherwise, return 0 and set errno to EINVAL.
+*/
 JSTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static int
@@ -648,7 +705,20 @@ err:
 }
 
 /*
-   Concatenate ... to end of S.
+   Return 0 on error.
+   Supported format:
+   %s - string
+   %c - char
+   %% - %
+   %d, %i, %u, %o, %x, %X - int
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double
+   %zu - size_t
+   %l - long
+   %ll - long long
+   %lu - unsigned long
+   %llu - unsigned long long
+   %p - pointer
+   Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
@@ -682,7 +752,20 @@ err:
 }
 
 /*
-   Concatenate ... to end of S.
+   Return 0 on error.
+   Supported format:
+   %s - string
+   %c - char
+   %% - %
+   %d, %i, %u, %o, %x, %X - int
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double
+   %zu - size_t
+   %l - long
+   %ll - long long
+   %lu - unsigned long
+   %llu - unsigned long long
+   %p - pointer
+   Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
@@ -713,6 +796,22 @@ err:
 	return 0;
 }
 
+/*
+   Return 0 on error.
+   Supported format:
+   %s - string
+   %c - char
+   %% - %
+   %d, %i, %u, %o, %x, %X - int
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double
+   %zu - size_t
+   %l - long
+   %ll - long long
+   %lu - unsigned long
+   %llu - unsigned long long
+   %p - pointer
+   Otherwise, return 0 and set errno to EINVAL.
+*/
 JSTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 static int
@@ -745,6 +844,22 @@ err:
 	return 0;
 }
 
+/*
+   Return 0 on error.
+   Supported format:
+   %s - string
+   %c - char
+   %% - %
+   %d, %i, %u, %o, %x, %X - int
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double
+   %zu - size_t
+   %l - long
+   %ll - long long
+   %lu - unsigned long
+   %llu - unsigned long long
+   %p - pointer
+   Otherwise, return 0 and set errno to EINVAL.
+*/
 JSTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static int
