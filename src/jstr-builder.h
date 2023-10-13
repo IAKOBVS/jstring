@@ -135,9 +135,6 @@ pjstr_err(const char *R filename,
 	fprintf(stderr, "%s:%u:%s:%s\n", filename, line, func, msg);
 }
 
-#define jstr_err(msg)	   pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
-#define jstr_err_exit(msg) pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
-
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
@@ -150,6 +147,9 @@ jstr_debug(const jstr_ty *R j) JSTR_NOEXCEPT
 	fwrite(j->data, 1, j->size, stderr);
 	fputc('\n', stderr);
 }
+
+#define jstr_err(msg)	   pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
+#define jstr_err_exit(msg) pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
 
 JSTR_FUNC_VOID
 JSTR_INLINE
