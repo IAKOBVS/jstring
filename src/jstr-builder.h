@@ -552,6 +552,9 @@ err:
 	return 0;
 }
 
+/*
+   Append ... to end of S.
+*/
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static int
