@@ -467,9 +467,8 @@ jstr_replacechr_len(char *R s,
 		    const size_t sz) JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, find, sz);
-	if (jstr_unlikely(s == NULL))
-		return;
-	*s = rplc;
+	if (jstr_likely(s != NULL))
+		*s = rplc;
 }
 
 /*
@@ -483,9 +482,8 @@ jstr_replacechr(char *R s,
 		const int rplc) JSTR_NOEXCEPT
 {
 	s = strchr(s, find);
-	if (jstr_unlikely(s == NULL))
-		return;
-	*s = rplc;
+	if (jstr_likely(s != NULL))
+		*s = rplc;
 }
 
 /*
