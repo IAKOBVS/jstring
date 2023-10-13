@@ -599,11 +599,8 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 		*sz = jstr_stpmove_len(dst, oldp, (*(u **)s + *sz) - oldp) - *s;
 	return JSTR_REG_RET_NOERROR;
 err:
-#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
-	free(*s);
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-#endif
+	jstr_free(s, sz, cap);
 	return JSTR_REG_RET_ESPACE;
 }
 
@@ -908,11 +905,8 @@ pjstr_reg_replace_bref_len(char *R *R s,
 		free(rdst);
 	return ret;
 err:
-#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
-	free(*s);
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-#endif
+	jstr_free(s, sz, cap);
 	return JSTR_REG_RET_ESPACE;
 }
 
@@ -1013,11 +1007,8 @@ pjstr_reg_replaceall_bref_len(const pjstr_flag_use_n_ty flag,
 err_free:
 	free(rdst_heap);
 err:
-#if JSTR_FREE_ALL_RESOURCES_ON_MALLOC_ERROR
 	jstr_reg_free(preg);
-	free(*s);
-	PJSTR_NULLIFY_MEMBERS(sz, cap);
-#endif
+	jstr_free(s, sz, cap);
 	return JSTR_REG_RET_ESPACE;
 }
 

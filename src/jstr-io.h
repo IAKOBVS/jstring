@@ -546,7 +546,7 @@ jstr_io_alloc_popen(char *R *R s,
 	pclose(fp);
 	return 1;
 err_close_free:
-	free(*s);
+	jstr_free(s, sz, cap);
 err_close:
 	pclose(fp);
 err:
@@ -582,7 +582,7 @@ pjstr_io_alloc_file_len(const int alloc_exact,
 	*sz = filesz;
 	return 1;
 err_close_free:
-	free(*s);
+	jstr_free(s, sz, cap);
 err_close:
 	close(fd);
 err:
