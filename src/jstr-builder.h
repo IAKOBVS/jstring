@@ -626,19 +626,19 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 /*
    Return 0 on error.
    Supported format:
-   %s - string
-   %c - char
-   %% - %
-   %d, %i, %u, %o, %x, %X - int
-   %a, %A, %e, %E, %f, %F, %g, %G - float/double
-   %zu - size_t
-   %l - long
-   %ll - long long
-   %lu - unsigned long
-   %llu - unsigned long long
-   %p - pointer
-   %n - chars written
-   %m - strlen(strerror(errno))
+   %s - string.
+   %c - char.
+   %% - %.
+   %d, %i, %u, %o, %x, %X - int.
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double.
+   %zu - size_t.
+   %l - long.
+   %ll - long long.
+   %lu - unsigned long.
+   %llu - unsigned long long.
+   %p - pointer.
+   %n - chars written.
+   %m - strlen(strerror(errno)).
    Otherwise, return 0 and set errno to EINVAL.
    Flags, width, precision, and length modifiers are not supported.
 */
@@ -675,19 +675,19 @@ err:
 /*
    Return 0 on error.
    Supported format:
-   %s - string
-   %c - char
-   %% - %
-   %d, %i, %u, %o, %x, %X - int
-   %a, %A, %e, %E, %f, %F, %g, %G - float/double
-   %zu - size_t
-   %l - long
-   %ll - long long
-   %lu - unsigned long
-   %llu - unsigned long long
-   %p - pointer
-   %n - chars written
-   %m - strlen(strerror(errno))
+   %s - string.
+   %c - char.
+   %% - %.
+   %d, %i, %u, %o, %x, %X - int.
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double.
+   %zu - size_t.
+   %l - long.
+   %ll - long long.
+   %lu - unsigned long.
+   %llu - unsigned long long.
+   %p - pointer.
+   %n - chars written.
+   %m - strlen(strerror(errno)).
    Otherwise, return 0 and set errno to EINVAL.
    Flags, width, precision, and length modifiers are not supported.
 */
@@ -722,19 +722,19 @@ err:
 /*
    Return 0 on error.
    Supported format:
-   %s - string
-   %c - char
-   %% - %
-   %d, %i, %u, %o, %x, %X - int
-   %a, %A, %e, %E, %f, %F, %g, %G - float/double
-   %zu - size_t
-   %l - long
-   %ll - long long
-   %lu - unsigned long
-   %llu - unsigned long long
-   %p - pointer
-   %n - chars written
-   %m - strlen(strerror(errno))
+   %s - string.
+   %c - char.
+   %% - %.
+   %d, %i, %u, %o, %x, %X - int.
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double.
+   %zu - size_t.
+   %l - long.
+   %ll - long long.
+   %lu - unsigned long.
+   %llu - unsigned long long.
+   %p - pointer.
+   %n - chars written.
+   %m - strlen(strerror(errno)).
    Otherwise, return 0 and set errno to EINVAL.
    Flags, width, precision, and length modifiers are not supported.
 */
@@ -772,19 +772,19 @@ err:
 /*
    Return 0 on error.
    Supported format:
-   %s - string
-   %c - char
-   %% - %
-   %d, %i, %u, %o, %x, %X - int
-   %a, %A, %e, %E, %f, %F, %g, %G - float/double
-   %zu - size_t
-   %l - long
-   %ll - long long
-   %lu - unsigned long
-   %llu - unsigned long long
-   %p - pointer
-   %n - chars written
-   %m - strlen(strerror(errno))
+   %s - string.
+   %c - char.
+   %% - %.
+   %d, %i, %u, %o, %x, %X - int.
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double.
+   %zu - size_t.
+   %l - long.
+   %ll - long long.
+   %lu - unsigned long.
+   %llu - unsigned long long.
+   %p - pointer.
+   %n - chars written.
+   %m - strlen(strerror(errno)).
    Otherwise, return 0 and set errno to EINVAL.
    Flags, width, precision, and length modifiers are not supported.
 */
@@ -820,19 +820,19 @@ err:
 /*
    Return 0 on error.
    Supported format:
-   %s - string
-   %c - char
-   %% - %
-   %d, %i, %u, %o, %x, %X - int
-   %a, %A, %e, %E, %f, %F, %g, %G - float/double
-   %zu - size_t
-   %l - long
-   %ll - long long
-   %lu - unsigned long
-   %llu - unsigned long long
-   %p - pointer
-   %n - chars written
-   %m - strlen(strerror(errno))
+   %s - string.
+   %c - char.
+   %% - %.
+   %d, %i, %u, %o, %x, %X - int.
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double.
+   %zu - size_t.
+   %l - long.
+   %ll - long long.
+   %lu - unsigned long.
+   %llu - unsigned long long.
+   %p - pointer.
+   %n - chars written.
+   %m - strlen(strerror(errno)).
    Otherwise, return 0 and set errno to EINVAL.
    Flags, width, precision, and length modifiers are not supported.
 */
@@ -871,19 +871,19 @@ err:
 /*
    Return 0 on error.
    Supported format:
-   %s - string
-   %c - char
-   %% - %
-   %d, %i, %u, %o, %x, %X - int
-   %a, %A, %e, %E, %f, %F, %g, %G - float/double
-   %zu - size_t
-   %l - long
-   %ll - long long
-   %lu - unsigned long
-   %llu - unsigned long long
-   %p - pointer
-   %n - chars written
-   %m - strlen(strerror(errno))
+   %s - string.
+   %c - char.
+   %% - %.
+   %d, %i, %u, %o, %x, %X - int.
+   %a, %A, %e, %E, %f, %F, %g, %G - float/double.
+   %zu - size_t.
+   %l - long.
+   %ll - long long.
+   %lu - unsigned long.
+   %llu - unsigned long long.
+   %p - pointer.
+   %n - chars written.
+   %m - strlen(strerror(errno)).
    Otherwise, return 0 and set errno to EINVAL.
    Flags, width, precision, and length modifiers are not supported.
 */
