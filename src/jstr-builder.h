@@ -481,18 +481,12 @@ jstr_io_fwrite(const char *R s,
 	return fwrite(s, 1, sz, fp) == sz;
 }
 
-JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
-static int
-jstr_asprintf(char *R *R s,
-	      size_t *R sz,
-	      size_t *R cap,
-	      const char *R fmt,
-	      ...)
+JSTR_INLINE
+static unsigned int
+pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 {
-	va_list ap;
-	va_start(ap, fmt);
-	size_t arglen = 0;
+	unsigned int arglen = 0;
 	for (const char *f = fmt, *R arg;;) {
 		if (*f == '%') {
 			arg = va_arg(ap, const char *);
@@ -506,8 +500,7 @@ jstr_asprintf(char *R *R s,
 			case '\\':
 				if (jstr_unlikely(*++f == '\0')) {
 					errno = EINVAL;
-					va_end(ap);
-					goto err;
+					return -1;
 				}
 				/* fallthrough */
 			case 'c':
@@ -519,8 +512,7 @@ jstr_asprintf(char *R *R s,
 				break;
 			case '\0':
 				errno = EINVAL;
-				va_end(ap);
-				goto err;
+				return -1;
 			}
 		} else {
 			++arglen;
@@ -529,16 +521,89 @@ jstr_asprintf(char *R *R s,
 			va_arg(ap, const void *);
 		}
 	}
+	return arglen;
+}
+
+JSTR_FORMAT(printf, 4, 5)
+JSTR_FUNC
+static int
+jstr_asprintf(char *R *R s,
+	      size_t *R sz,
+	      size_t *R cap,
+	      const char *R fmt,
+	      ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	unsigned int arglen = pjstr_asprintf_strlen(ap, fmt);
 	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err;
 	if (*cap <= arglen)
 		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
-	int ret;
-	ret = vsprintf(*s, fmt, ap);
+	arglen = vsprintf(*s, fmt, ap);
 	va_end(ap);
-	if (jstr_unlikely(ret < 0))
+	if (jstr_unlikely((int)arglen < 0))
 		goto err;
-	*sz = ret;
+	*sz = arglen;
+	return 1;
+err:
+	return 0;
+}
+
+JSTR_FORMAT(printf, 4, 5)
+JSTR_FUNC
+static int
+jstr_asprintf_append(char *R *R s,
+		     size_t *R sz,
+		     size_t *R cap,
+		     const char *R fmt,
+		     ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	unsigned int arglen = pjstr_asprintf_strlen(ap, fmt);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err;
+	if (*cap <= arglen)
+		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	va_start(ap, fmt);
+	arglen = vsprintf(*s + *sz, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err;
+	*sz += arglen;
+	return 1;
+err:
+	return 0;
+}
+
+JSTR_FORMAT(printf, 5, 6)
+JSTR_FUNC
+static int
+jstr_asprintf_from(char *R *R s,
+		   size_t *R sz,
+		   size_t *R cap,
+		   const size_t start_idx,
+		   const char *R fmt,
+		   ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	unsigned int arglen = pjstr_asprintf_strlen(ap, fmt);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err;
+	if (*cap <= arglen)
+		PJSTR_REALLOCEXACT_MAY_MALLOC(*s, *cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	va_start(ap, fmt);
+	arglen = vsprintf(*s + start_idx, fmt, ap);
+	va_end(ap);
+	if (jstr_unlikely((int)arglen < 0))
+		goto err;
+	*sz += arglen;
 	return 1;
 err:
 	return 0;
