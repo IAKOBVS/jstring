@@ -31,7 +31,7 @@ PJSTR_END_DECLS
 #	define PJSTR_MALLOC_ERR(p, malloc_fail)                                    \
 		do {                                                                \
 			if (jstr_unlikely((p) == NULL)) {                           \
-				pjstr_err_exit_debug(__FILE__, __LINE__, __func__); \
+				pjstr_err_exit_debug(__FILE__, __LINE__, JSTR_ASSERT_FUNC); \
 				malloc_fail;                                        \
 			}                                                           \
 		} while (0)
@@ -143,22 +143,22 @@ pjstr_err_exit(void) JSTR_NOEXCEPT
 	exit(EXIT_FAILURE);
 }
 
-/* Print error message: __FILE__:__LINE__:__func__:strerror(errno). */
+/* Print error message: __FILE__:__LINE__:JSTR_ASSERT_FUNC:strerror(errno). */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_err_debug(void) JSTR_NOEXCEPT
 {
-	pjstr_err_debug(__FILE__, __LINE__, __func__);
+	pjstr_err_debug(__FILE__, __LINE__, JSTR_ASSERT_FUNC);
 }
 
-/* Print error message: __FILE__:__LINE__:__func__:strerror(errno) and exit. */
+/* Print error message: __FILE__:__LINE__:JSTR_ASSERT_FUNC:strerror(errno) and exit. */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_err_exit_debug(void) JSTR_NOEXCEPT
 {
-	pjstr_err_exit_debug(__FILE__, __LINE__, __func__);
+	pjstr_err_exit_debug(__FILE__, __LINE__, JSTR_ASSERT_FUNC);
 }
 
 /* Print error message. */

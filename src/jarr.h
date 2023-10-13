@@ -21,7 +21,7 @@ PJSTR_END_DECLS
 #if JARR_NULLIFY_MEMBERS_ON_FREE
 #	define P_JARR_NULLIFY_MEMBERS(j) ((j)->size = 0, (j)->cap = 0)
 #if JARR_DEBUG
-#	define P_JARR_NULLIFY_MEMBERS_ERR(j) (P_JARR_NULLIFY_MEMBERS(j), P_JARR_ERR_EXIT(__FILE__, __LINE__, __func__))
+#	define P_JARR_NULLIFY_MEMBERS_ERR(j) (P_JARR_NULLIFY_MEMBERS(j), P_JARR_ERR_EXIT(__FILE__, __LINE__, JSTR_ASSERT_FUNC))
 #endif
 #else
 #	define P_JARR_NULLIFY_MEMBERS(j)
@@ -49,7 +49,7 @@ PJSTR_END_DECLS
 #define jarr_err_exit(j)                                                                                                                        \
 	do {                                                                                                                                    \
 		if (jstr_unlikely((j)->data == NULL))                                                                                           \
-			pjstr_err_exit(__FILE__, __LINE__, __func__);                                                                          \
+			pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC);                                                                          \
 	} while (0)
 #undef P_JARR_NULLIFY
 
@@ -135,7 +135,7 @@ PJSTR_END_DECLS
 		[0] = (value);                                                                                                                  \
 	} while (0)
 #define jarr_at(j, index)                                                                                                                       \
-	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : (P_JARR_ERR_EXIT_MSG(__FILE__, __LINE__, __func__, "Index out of bounds.")))
+	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : (P_JARR_ERR_EXIT_MSG(__FILE__, __LINE__, JSTR_ASSERT_FUNC, "Index out of bounds.")))
 #define jarr_foreach(j, iterator)                                                                                                               \
 	for (size_t iterator = 0, _max_elem_##iterator = (j)->size; iterator < _max_elem_##iterator; ++iterator)
 
