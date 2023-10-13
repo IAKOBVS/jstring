@@ -492,6 +492,7 @@ JSTR_INLINE
 static unsigned int
 pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 {
+	enum { MAX_DIGITS = 19 + 19 };
 	unsigned int arglen = 0;
 	for (const char *f = fmt, *R arg;;) {
 		if (*f == '%') {
@@ -514,7 +515,7 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 				++arglen;
 				break;
 			default:
-				arglen += 19;
+				arglen += MAX_DIGITS;
 				break;
 			case '\0':
 				errno = EINVAL;
