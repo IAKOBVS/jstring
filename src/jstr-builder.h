@@ -555,11 +555,11 @@ err:
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static int
-jstr_asprintf_append(char *R *R s,
-		     size_t *R sz,
-		     size_t *R cap,
-		     const char *R fmt,
-		     ...)
+jstr_asprintf_cat(char *R *R s,
+		  size_t *R sz,
+		  size_t *R cap,
+		  const char *R fmt,
+		  ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
