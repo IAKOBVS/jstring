@@ -539,6 +539,7 @@ jstr_io_fwrite(const char *R s,
 {
 	return fwrite(s, 1, sz, fp) == sz;
 }
+
 JSTR_FUNC
 JSTR_INLINE
 static unsigned int
@@ -552,6 +553,7 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 	       MAX_LDBL = CHAR_BIT * sizeof(long double) * 2
 	};
 	unsigned int arglen = 0;
+	unsigned int errno_len = 0;
 	for (const char *f = fmt, *R arg;; ++f) {
 		if (*f == '%') {
 			arg = va_arg(ap, const char *);
@@ -583,6 +585,15 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 			case 'o':
 				arglen += MAX_LONG;
 				break;
+				/* long long */
+			case 'p':
+			case 'l':
+			case 'z':
+				/* chars written
+   %m - strlen(strerror(errno)) */
+			case 'n':
+				arglen += MAX_LONG_LONG;
+				break;
 				/* double */
 			case 'a':
 			case 'A':
@@ -594,11 +605,9 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 			case 'G':
 				arglen += MAX_DBL;
 				break;
-				/* long long */
-			case 'p':
-			case 'l':
-			case 'z':
-				arglen += MAX_LONG_LONG;
+			case 'm':
+				if (errno_len == 0)
+					arglen += strlen(strerror(errno));
 				break;
 			/* case '\0': */
 			default:
@@ -630,6 +639,7 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
    %llu - unsigned long long
    %p - pointer
    %n - chars written
+   %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 4, 5)
@@ -677,6 +687,7 @@ err:
    %llu - unsigned long long
    %p - pointer
    %n - chars written
+   %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 2, 3)
@@ -722,6 +733,7 @@ err:
    %llu - unsigned long long
    %p - pointer
    %n - chars written
+   %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 4, 5)
@@ -770,6 +782,7 @@ err:
    %llu - unsigned long long
    %p - pointer
    %n - chars written
+   %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 2, 3)
@@ -816,6 +829,7 @@ err:
    %llu - unsigned long long
    %p - pointer
    %n - chars written
+   %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 5, 6)
@@ -865,6 +879,7 @@ err:
    %llu - unsigned long long
    %p - pointer
    %n - chars written
+   %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 3, 4)
