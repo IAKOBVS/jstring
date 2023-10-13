@@ -650,9 +650,9 @@ jstr_sprintf(char *R s,
 {
 	va_list ap;
 	va_start(ap, fmt);
-	const int ret = vsprintf(s, fmt, ap);
+	const unsigned int ret = vsprintf(s, fmt, ap);
 	va_end(ap);
-	if (jstr_unlikely(ret < 0))
+	if (jstr_unlikely((int)ret < 0))
 		goto err_free;
 	*sz = ret;
 	return 1;
