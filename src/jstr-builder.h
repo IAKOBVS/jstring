@@ -137,11 +137,10 @@ jstr_debug(const jstr_ty *R j) JSTR_NOEXCEPT
 	fputc('\n', stderr);
 }
 
-#define jstr_err(msg)				      pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
-#define jstr_err_exit(msg)			      pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
+#define jstr_err(msg)	   pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
+#define jstr_err_exit(msg) pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
 
 /*
-   Do nothing if new_cap < cap.
    Return 0 on malloc error.
 */
 JSTR_FUNC
@@ -159,7 +158,6 @@ err:
 }
 
 /*
-   Do nothing if new_cap < cap.
    Return 0 on malloc error.
 */
 JSTR_FUNC
