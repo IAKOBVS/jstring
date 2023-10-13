@@ -640,6 +640,7 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
    %n - chars written
    %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
+   Flags, width, precision, and length modifiers are not supported.
 */
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
@@ -688,6 +689,7 @@ err:
    %n - chars written
    %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
+   Flags, width, precision, and length modifiers are not supported.
 */
 JSTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
@@ -734,6 +736,7 @@ err:
    %n - chars written
    %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
+   Flags, width, precision, and length modifiers are not supported.
 */
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
@@ -783,6 +786,7 @@ err:
    %n - chars written
    %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
+   Flags, width, precision, and length modifiers are not supported.
 */
 JSTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
@@ -830,6 +834,7 @@ err:
    %n - chars written
    %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
+   Flags, width, precision, and length modifiers are not supported.
 */
 JSTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
@@ -880,6 +885,7 @@ err:
    %n - chars written
    %m - strlen(strerror(errno))
    Otherwise, return 0 and set errno to EINVAL.
+   Flags, width, precision, and length modifiers are not supported.
 */
 JSTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
