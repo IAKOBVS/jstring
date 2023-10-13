@@ -553,12 +553,13 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 		MAX_FLT = CHAR_BIT * sizeof(float) * 2 + 1,
 		MAX_DBL = CHAR_BIT * sizeof(double) * 2 + 1,
 		MAX_LDBL = CHAR_BIT * sizeof(long double) * 2 + 1,
-		MAX_PTR = (sizeof(uintptr_t) == sizeof(unsigned long)) ? MAX_LONG : MAX_LONG_LONG
 	};
 	unsigned int arglen = 0;
 	for (unsigned int errno_len = 0, lflag = 0;; ++fmt) {
 		enum { LONG = 1,
 		       LONG_LONG = 2,
+		       SIZE_T = (sizeof(size_t) == sizeof(unsigned long)) ? LONG : LONG_LONG,
+		       PTR_T = (sizeof(uintptr_t) == sizeof(unsigned long)) ? LONG : LONG_LONG
 		};
 		if (*fmt == '%') {
 cont_switch:
@@ -567,10 +568,14 @@ cont_switch:
 				arglen = strlen(va_arg(ap, const char *));
 				break;
 			case 'c':
-				if (jstr_likely(lflag == 0))
+				if (jstr_likely(lflag == 0)) {
 					++arglen;
-				else
+				} else if (lflag & LONG) {
 					arglen += MAX_INT;
+					lflag = 0;
+				} else {
+					goto einval;
+				}
 				goto get_arg;
 				/* int */
 			case 'd':
@@ -581,16 +586,31 @@ cont_switch:
 				if (lflag == 0) {
 					arglen += MAX_INT;
 				} else {
-					arglen += (lflag & LONG) ? MAX_LONG : MAX_LONG_LONG;
+					if (lflag & LONG)
+						arglen = MAX_LONG;
+					else if (lflag & LONG_LONG)
+						arglen = MAX_LONG_LONG;
+					else
+						goto einval;
 					lflag = 0;
 				}
 				goto get_arg;
 			case 'o':
-				arglen += MAX_LONG;
+				if (lflag == 0) {
+					arglen += MAX_LONG;
+				} else {
+					if (lflag & LONG)
+						arglen += MAX_LONG;
+					else if (lflag & LONG_LONG)
+						arglen += MAX_LONG_LONG;
+					else
+						goto einval;
+					lflag = 0;
+				}
 				goto get_arg;
 				/* ptr */
 			case 'p':
-				arglen += MAX_PTR;
+				arglen += PTR_T;
 				goto get_arg;
 				/* chars written */
 			case 'n':
@@ -607,19 +627,19 @@ cont_switch:
 			case 'G':
 				if (lflag == 0) {
 					arglen += MAX_DBL;
-				} else {
+				} else if (lflag & LONG) {
 					arglen += MAX_LDBL;
 					lflag = 0;
+				} else {
+					goto einval;
 				}
 				goto get_arg;
 			case '%':
 				arglen += 2;
 				break;
 			case '\\':
-				if (jstr_unlikely(*++fmt == '\0')) {
-					errno = EINVAL;
-					return -1;
-				}
+				if (jstr_unlikely(*++fmt == '\0'))
+					goto einval;
 				++arglen;
 				break;
 			case 'm':
@@ -645,7 +665,7 @@ cont_switch:
 				goto cont_switch;
 			case 't':
 			case 'z':
-				lflag += 2;
+				lflag = 2;
 			case 'h':
 			case 'j':
 			case 0:
@@ -661,6 +681,7 @@ cont_switch:
 				break;
 			/* case '\0': */
 			default:
+einval:
 				errno = EINVAL;
 				return -1;
 get_arg:
