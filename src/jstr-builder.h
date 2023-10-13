@@ -119,7 +119,7 @@ pjstr_err_exit(const char *R filename,
 	       const char *R func,
 	       const char *R msg)
 {
-	fprintf(stderr, "%s:%u:%s:%s\n", filename, line, func, msg);
+	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
 	exit(EXIT_FAILURE);
 }
 
@@ -132,7 +132,7 @@ pjstr_err(const char *R filename,
 	  const char *R func,
 	  const char *R msg)
 {
-	fprintf(stderr, "%s:%u:%s:%s\n", filename, line, func, msg);
+	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
 }
 
 JSTR_FUNC_VOID
