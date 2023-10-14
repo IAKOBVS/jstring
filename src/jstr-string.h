@@ -766,8 +766,8 @@ JSTR_NOEXCEPT
 
 /*
    Return value:
-   pointer to first non-C in S;
-   pointer to '\0' if C is not found;
+   ptr to first non-C in S;
+   ptr to '\0' if C is not found;
    S if C is '\0';
 */
 JSTR_FUNC_PURE
@@ -785,14 +785,14 @@ jstr_strchrnul_inv(const char *R s,
 
 /*
    Return value:
-   pointer to first non-C in S;
+   ptr to first non-C in S;
    NULL if C is not found.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strchr_inv(const char *R s,
-		int c)
+		const int c)
 {
 	s = jstr_strchrnul_inv(s, c);
 	return *s ? (char *)s : NULL;
@@ -800,7 +800,7 @@ jstr_strchr_inv(const char *R s,
 
 /*
    Return value:
-   pointer to non-C in S.
+   ptr to first non-C in S.
    S + N if C is not found.
 */
 JSTR_FUNC_PURE
@@ -821,19 +821,55 @@ jstr_memchrnul_inv(const void *R s,
 
 /*
    Return value:
-   pointer to non-C in S.
+   ptr to first non-C in S.
    NULL if C is not found.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
 jstr_memchr_inv(const void *R s,
-		int c,
-		size_t n)
+		const int c,
+		const size_t n)
 {
 	const void *const end = (unsigned char *)s + n;
 	s = (void *)jstr_memchrnul_inv(s, c, n);
 	return (s != end) ? (void *)s : NULL;
+}
+
+/*
+   Return value:
+   ptr to first non-C in S from S + N - 1
+   NULL if C is not found.
+*/
+JSTR_FUNC_PURE
+JSTR_INLINE
+static void *
+jstr_memrchr_inv(const void *R s,
+		 int c,
+		 const size_t n)
+{
+	const unsigned char *end = (unsigned char *)s + n - 1;
+	const unsigned char *const start = (unsigned char *)s;
+	c = (unsigned char)c;
+	while (end >= start
+	       && *end == c)
+		--end;
+	return (end >= start) ? (void *)end : NULL;
+}
+
+/*
+   Return value:
+   ptr to first non-C in S from S + strlen(S) - 1
+   NULL if C is not found.
+*/
+JSTR_FUNC_PURE
+JSTR_INLINE
+static void *
+jstr_strrchr_inv(const void *R s,
+		 int c,
+		 const size_t n)
+{
+	return jstr_memrchr_inv((char *)s, c, n);
 }
 
 /*
@@ -983,18 +1019,18 @@ JSTR_NOEXCEPT
 
 /*
    Return value:
-   ptr to beginning of line;
+   ptr to startning of line;
    BEGIN if no newline was found.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_begin(const char *const begin,
+jstr_line_start(const char *const start,
 		const char *end)
 JSTR_NOEXCEPT
 {
-	end = (char *)jstr_memrchr(begin, '\n', end - begin);
-	return (char *)(end ? end + 1 : begin);
+	end = (char *)jstr_memrchr(start, '\n', end - start);
+	return (char *)(end ? end + 1 : start);
 }
 
 /*
@@ -1005,12 +1041,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next_len(const char *begin,
+jstr_line_next_len(const char *start,
 		   const char *const end)
 JSTR_NOEXCEPT
 {
-	begin = (char *)memchr(begin, '\n', end - begin);
-	return (begin && *(begin + 1)) ? (char *)begin + 1 : NULL;
+	start = (char *)memchr(start, '\n', end - start);
+	return (start && *(start + 1)) ? (char *)start + 1 : NULL;
 }
 
 /*
@@ -1035,12 +1071,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next_len_nul(const char *begin,
+jstr_line_next_len_nul(const char *start,
 		       const char *const end)
 JSTR_NOEXCEPT
 {
-	begin = jstr_line_next_len(begin, end);
-	return (char *)(begin ? begin : end);
+	start = jstr_line_next_len(start, end);
+	return (char *)(start ? start : end);
 }
 
 /*
@@ -1069,15 +1105,15 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 static size_t
-jstr_line_number(const char *begin,
+jstr_line_number(const char *start,
 		 const char *const end)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(begin == end))
+	if (jstr_unlikely(start == end))
 		return 0;
 	size_t cnt = 1;
-	while ((begin = (char *)memchr(begin, '\n', end - begin)))
-		++begin, ++cnt;
+	while ((start = (char *)memchr(start, '\n', end - start)))
+		++start, ++cnt;
 	return cnt;
 }
 

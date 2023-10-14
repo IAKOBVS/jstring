@@ -733,7 +733,7 @@ get_arg:
    %ll - long long.
    %lu - unsigned long.
    %llu - unsigned long long.
-   %p - pointer.
+   %p - ptr.
    %n - chars written.
    %m - strlen(strerror(errno)).
    Otherwise, return 0 and set errno to EINVAL.

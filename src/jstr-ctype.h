@@ -150,11 +150,11 @@ PJSTR_REPEAT_CTYPE(PJSTR_ISCTYPE_STR)
 JSTR_INLINE
 JSTR_PURE
 static char *
-jstr_skip_ctype_rev(const char *const begin,
+jstr_skip_ctype_rev(const char *const start,
 		    const char *end,
 		    const jstr_ctype_ty ctype)
 {
-	while (begin != end
+	while (start != end
 	       && jstr_isctype(*end--, ctype))
 		;
 	return (char *)end;
@@ -165,11 +165,11 @@ jstr_skip_ctype_rev(const char *const begin,
 	JSTR_INLINE                                                 \
 	JSTR_PURE                                                   \
 	static char *                                               \
-	jstr_skip_##ctype##_rev(const char *const begin,            \
+	jstr_skip_##ctype##_rev(const char *const start,            \
 				const char *end)                    \
 	JSTR_NOEXCEPT                                               \
 	{                                                           \
-		return jstr_skip_ctype_rev(begin, end, ctype_enum); \
+		return jstr_skip_ctype_rev(start, end, ctype_enum); \
 	}
 
 PJSTR_REPEAT_CTYPE(PJSTR_SKIP_CTYPE_REV)
