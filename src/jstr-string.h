@@ -1056,10 +1056,11 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, '\n');
-	return (s && *(s + 1)) ? (char *)s + 1 : NULL;
+	return (char *)((*s && *(s + 1)) ? s + 1 : s);
 #else
-	s = jstr_line_next(s);
-	return (char *)(s ? s : s + strlen(s));
+	const char *const start = s;
+	s = strchr(s, '\n');
+	return (char *)((s && *(s + 1)) ? s + 1 : start + strlen(start));
 #endif
 }
 
