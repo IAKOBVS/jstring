@@ -1022,7 +1022,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next(const char *s)
+jstr_line_next(const char *R s)
 JSTR_NOEXCEPT
 {
 	s = strchr(s, '\n');
@@ -1051,7 +1051,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next_nul(const char *s)
+jstr_line_next_nul(const char *R s)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
