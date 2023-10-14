@@ -780,7 +780,6 @@ jstr_strchrnul_inv(const char *R s,
 	c = (char)c;
 	while (*s++ == c)
 		;
-	--s;
 	return (char *)s - 1;
 }
 
