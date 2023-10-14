@@ -23,7 +23,8 @@ JSTR_RETURNS_NONNULL
 static char *
 jstr_ulltoa_p(char *R dst,
 	      unsigned long long number,
-	      const unsigned int base) JSTR_NOEXCEPT
+	      const unsigned int base)
+JSTR_NOEXCEPT
 {
 	char *start = dst;
 	do
@@ -50,7 +51,8 @@ JSTR_INLINE
 static char *
 jstr_lltoa_p(char *R dst,
 	     long long number,
-	     const unsigned int base) JSTR_NOEXCEPT
+	     const unsigned int base)
+JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
@@ -70,7 +72,8 @@ jstr_lltoa_p(char *R dst,
 	static char *                                           \
 	jstr_##name##_p(char *R dst,                            \
 			type number,                            \
-			const unsigned int base) JSTR_NOEXCEPT  \
+			const unsigned int base)                \
+	JSTR_NOEXCEPT                                           \
 	{                                                       \
 		return jstr_##u##lltoa_p(dst, number, base);    \
 	}
@@ -94,6 +97,7 @@ jstr_ulltoa_p_sep(char *R dst,
 		  unsigned long long number,
 		  const unsigned int base,
 		  const int separator)
+JSTR_NOEXCEPT
 {
 	char *start = dst;
 	int n = 0;
@@ -139,6 +143,7 @@ jstr_lltoa_p_sep(char *R dst,
 		 long long number,
 		 const unsigned int base,
 		 const int separator)
+JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
@@ -149,7 +154,7 @@ jstr_lltoa_p_sep(char *R dst,
 
 #define PJSTR_ULLTOA_SEP(type, name, u)                                     \
 	/*                                                                  \
-   	   Convert number to string with thousand separator.
+	   Convert number to string with thousand separator.                \
 	   Return value:                                                    \
 	   ptr to '\0' after the last digit in the DEST string.             \
 	*/                                                                  \
@@ -160,7 +165,8 @@ jstr_lltoa_p_sep(char *R dst,
 	jstr_##name##_p_sep(char *R dst,                                    \
 			    type number,                                    \
 			    const unsigned int base,                        \
-			    const int separator) JSTR_NOEXCEPT              \
+			    const int separator)                            \
+	JSTR_NOEXCEPT                                                       \
 	{                                                                   \
 		return jstr_##u##lltoa_p_sep(dst, number, base, separator); \
 	}

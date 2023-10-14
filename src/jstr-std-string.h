@@ -48,7 +48,8 @@ JSTR_INLINE
 static void *
 jstr_mempcpy(void *R dst,
 	     const void *R src,
-	     const size_t n) JSTR_NOEXCEPT
+	     const size_t n)
+JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMPCPY
 	return mempcpy(dst, src, n);
@@ -149,7 +150,8 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 jstr_stpcpy(char *R dst,
-	    const char *R src) JSTR_NOEXCEPT
+	    const char *R src)
+JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STPCPY
 	return stpcpy(dst, src);
@@ -165,7 +167,8 @@ static void *
 jstr_memccpy(void *R dst,
 	     const void *R src,
 	     const int c,
-	     const size_t n) JSTR_NOEXCEPT
+	     const size_t n)
+JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMCCPY
 	return memccpy(dst, src, c, n);
@@ -187,7 +190,8 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 jstr_stpcat(char *R dst,
-	    const char *R src) JSTR_NOEXCEPT
+	    const char *R src)
+JSTR_NOEXCEPT
 {
 	dst += strlen(dst);
 	return jstr_stpcpy(dst, src);
@@ -285,7 +289,8 @@ static char *
 jstr_strtok_ne_len(const char **const save_ptr,
 		   const char *const end,
 		   const char *R ne,
-		   const size_t nelen) JSTR_NOEXCEPT
+		   const size_t nelen)
+JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
 	if (jstr_unlikely(*s == '\0')) {
@@ -309,7 +314,8 @@ jstr_strtok_ne_len(const char **const save_ptr,
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_ne(const char **const save_ptr,
-	       const char *R ne) JSTR_NOEXCEPT
+	       const char *R ne)
+JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
 	if (jstr_unlikely(*s == '\0')) {
@@ -334,7 +340,8 @@ jstr_strtok_ne(const char **const save_ptr,
 JSTR_FUNC_PURE
 static char *
 jstr_strtok(const char *R *R save_ptr,
-	    const char *R delim) JSTR_NOEXCEPT
+	    const char *R delim)
+JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
 	if (jstr_unlikely(*s == '\0')) {

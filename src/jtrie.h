@@ -27,7 +27,8 @@ JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static jtrie_node_ty *
-jtrie_init(void) JSTR_NOEXCEPT
+jtrie_init(void)
+JSTR_NOEXCEPT
 {
 	return (jtrie_node_ty *)calloc(1, sizeof(jtrie_node_ty));
 }
@@ -35,7 +36,8 @@ jtrie_init(void) JSTR_NOEXCEPT
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-p_jtrie_free_recur(jtrie_node_ty *R node) JSTR_NOEXCEPT
+p_jtrie_free_recur(jtrie_node_ty *R node)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(node == NULL))
 		return;
@@ -48,7 +50,8 @@ p_jtrie_free_recur(jtrie_node_ty *R node) JSTR_NOEXCEPT
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-jtrie_free(jtrie_node_ty *R *R node) JSTR_NOEXCEPT
+jtrie_free(jtrie_node_ty *R *R node)
+JSTR_NOEXCEPT
 {
 	p_jtrie_free_recur(*node);
 }
@@ -59,7 +62,8 @@ JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static jtrie_errcode_ty
 jtrie_insert(jtrie_node_ty *R root,
-	     const char *R word) JSTR_NOEXCEPT
+	     const char *R word)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*word == '\0'))
 		return JTRIE_RET_NOERROR;
@@ -86,8 +90,9 @@ JSTR_INLINE
 JSTR_NOTHROW
 static void
 p_jtrie_remove(p_jtrie_flag_remove_prefixes_ty flag,
-	      jtrie_node_ty *R root,
-	      const char *R word) JSTR_NOEXCEPT
+	       jtrie_node_ty *R root,
+	       const char *R word)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*word == '\0'))
 		return;
@@ -108,7 +113,8 @@ JSTR_INLINE
 JSTR_NOTHROW
 static void
 jtrie_remove(jtrie_node_ty *R root,
-	     const char *R word) JSTR_NOEXCEPT
+	     const char *R word)
+JSTR_NOEXCEPT
 {
 	return p_jtrie_remove(PJTRIE_FLAG_REMOVE_NOT_PREFIXES, root, word);
 }
@@ -118,7 +124,8 @@ JSTR_INLINE
 JSTR_NOTHROW
 static void
 jtrie_removeprefixes(jtrie_node_ty *R root,
-		     const char *R word) JSTR_NOEXCEPT
+		     const char *R word)
+JSTR_NOEXCEPT
 {
 	return p_jtrie_remove(PJTRIE_FLAG_REMOVE_PREFIXES, root, word);
 }
@@ -134,7 +141,8 @@ JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static jtrie_node_ty *
 jtrie_starts(const jtrie_node_ty *R root,
-		  const char *R word) JSTR_NOEXCEPT
+	     const char *R word)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*word == '\0'))
 		return NULL;
@@ -158,7 +166,8 @@ JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static int
 jtrie_match(const jtrie_node_ty *R root,
-	    const char *R word) JSTR_NOEXCEPT
+	    const char *R word)
+JSTR_NOEXCEPT
 {
 	return jtrie_starts(root, word)->EOW;
 }
