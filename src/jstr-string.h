@@ -499,18 +499,17 @@ JSTR_NOEXCEPT
 	const char *const start = hs;
 	if (is_alpha0) {
 		const char a[] = { (char)jstr_tolower(*ne), (char)jstr_toupper(*ne), '\0' };
-		hs = strpbrk(hs, a);
+		hs = jstr_strpbrk(hs, a);
 	} else {
 		hs = (char *)memchr(hs, *ne, hslen);
 	}
-	if (hs == NULL
 #	if JSTR_HAVE_MEMMEM
-	    || (hslen -= hs - start) < nelen
-#	else
-	    || (size_t)(hs - start) < nelen
-#	endif
-	)
+	if (hs == NULL || (hslen -= hs - start) < nelen)
 		return NULL;
+#	else
+	if (hs == NULL || (size_t)(hs - start) < nelen)
+		return NULL;
+#	endif
 	is_alpha0 += jstr_isalpha(ne[1]);
 	switch (nelen) {
 	case 1: return (char *)hs;
@@ -557,7 +556,7 @@ JSTR_NOEXCEPT
 	int is_alpha0 = jstr_isalpha(*ne);
 	if (is_alpha0) {
 		const char a[] = { (char)jstr_tolower(*ne), (char)jstr_toupper(*ne), '\0' };
-		hs = strpbrk(hs, a);
+		hs = jstr_strpbrk(hs, a);
 	} else {
 		hs = strchr(hs, *ne);
 	}

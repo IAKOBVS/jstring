@@ -279,6 +279,21 @@ jstr_strstrnul(const char *R hs,
 	return (char *)(p ? p : hs + strlen(hs));
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_strpbrk(const char *R s,
+	     const char *R accept)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRPBRK_OPTIMIZED
+	return (char *)strpbrk(s, accept);
+#else
+	s += strcspn(s, accept);
+	return *s ? (char *)s : NULL;
+#endif
+}
+
 /*
    Non-destructive strtok.
    END must be NUL terminated.

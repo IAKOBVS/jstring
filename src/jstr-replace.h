@@ -324,8 +324,8 @@ typedef enum {
 	PJSTR_FLAG_USE_NOT_N = (PJSTR_FLAG_USE_N << 1)
 } pjstr_flag_use_n_ty;
 
-JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
 static char *
 pjstr_removeallchr_len_p(const pjstr_flag_use_n_ty flag,
 			 char *R s,
@@ -374,12 +374,12 @@ JSTR_NOEXCEPT
 	char *dst = s;
 	const char *oldp = dst;
 	const char *p = dst;
-	while (*(p = jstr_strchrnul(p, c)))
+	while (*(p = strchrnul(p, c)))
 		PJSTR_RMALL_IN_PLACE(dst, oldp, p, 1);
 	return (dst != s) ? jstr_stpmove_len(dst, oldp, p - oldp) : (char *)p;
 #else
 	return jstr_removeallchr_len_p(s, c, strlen(s));
-#endif /* HAVE_STRCHRNUL */
+#endif
 }
 
 /*
