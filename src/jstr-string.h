@@ -468,6 +468,43 @@ JSTR_NOEXCEPT
 
 #undef L
 
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+pjstr_strcasechr_alpha(const char *R s,
+		       int c)
+{
+#if JSTR_HAVE_STRCSPN_OPTIMIZED
+	const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
+	s = (char *)strcspn(s, a);
+	return *s ? (char *)s : NULL;
+#else
+	c = (char)jstr_tolower(c);
+	while (*s && jstr_tolower(*s) != c)
+		++s;
+	return *s ? (char *)s : NULL;
+#endif
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strcasechr_len(const char *R s,
+		    const int c,
+		    const size_t n)
+{
+	return jstr_isalpha(c) ? pjstr_strcasechr_alpha(s, c) : (char *)memchr(s, c, n);
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strcasechr(const char *R s,
+		const int c)
+{
+	return jstr_isalpha(c) ? pjstr_strcasechr_alpha(s, c) : (char *)strchr(s, c);
+}
+
 /*
    Find NE in HS case-insensitively (ASCII).
    Return value:
@@ -497,12 +534,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	int is_alpha0 = jstr_isalpha(*ne);
 	const char *const start = hs;
-	if (is_alpha0) {
-		const char a[] = { (char)jstr_tolower(*ne), (char)jstr_toupper(*ne), '\0' };
-		hs = jstr_strpbrk(hs, a);
-	} else {
-		hs = (char *)memchr(hs, *ne, hslen);
-	}
+	hs = is_alpha0 ? pjstr_strcasechr_alpha(hs, *ne) : (char *)memchr(hs, *ne, hslen);
 #	if JSTR_HAVE_MEMMEM
 	if (hs == NULL || (hslen -= hs - start) < nelen)
 		return NULL;
@@ -554,12 +586,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ne[0] == '\0'))
 		return (char *)hs;
 	int is_alpha0 = jstr_isalpha(*ne);
-	if (is_alpha0) {
-		const char a[] = { (char)jstr_tolower(*ne), (char)jstr_toupper(*ne), '\0' };
-		hs = jstr_strpbrk(hs, a);
-	} else {
-		hs = strchr(hs, *ne);
-	}
+	hs = is_alpha0 ? pjstr_strcasechr_alpha(hs, *ne) : strchr(hs, *ne);
 	if (hs == NULL
 	    || ne[1] == '\0')
 		return (char *)hs;

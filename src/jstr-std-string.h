@@ -242,7 +242,7 @@ jstr_strdup_len(const char *R src,
 	return NULL;
 }
 
-JSTR_FUNC_RET_NONNULL
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strchrnul(const char *R s,
@@ -256,7 +256,7 @@ jstr_strchrnul(const char *R s,
 #endif
 }
 
-JSTR_FUNC_RET_NONNULL
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strstrnul_len(const char *R hs,
@@ -269,7 +269,7 @@ jstr_strstrnul_len(const char *R hs,
 	(void)nelen;
 }
 
-JSTR_FUNC_RET_NONNULL
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strstrnul(const char *R hs,
@@ -279,7 +279,7 @@ jstr_strstrnul(const char *R hs,
 	return (char *)(p ? p : hs + strlen(hs));
 }
 
-JSTR_FUNC
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strpbrk(const char *R s,
