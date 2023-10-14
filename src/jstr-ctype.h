@@ -27,7 +27,7 @@ static int
 jstr_toupper(const int c)
 JSTR_NOEXCEPT
 {
-	return pjstr_table_toupper[(unsigned char)c];
+	return pjstr_ctype_toupper[(unsigned char)c];
 }
 
 /*
@@ -41,7 +41,7 @@ static int
 jstr_tolower(const int c)
 JSTR_NOEXCEPT
 {
-	return pjstr_table_tolower[(unsigned char)c];
+	return pjstr_ctype_tolower[(unsigned char)c];
 }
 
 #define PJSTR_REPEAT_CTYPE(FUNC)    \
@@ -69,7 +69,7 @@ jstr_isctype(const int c,
 	     const jstr_ctype_ty type)
 JSTR_NOEXCEPT
 {
-	return pjstr_table_ctype[(unsigned char)c] & type;
+	return pjstr_ctype[(unsigned char)c] & type;
 }
 
 #define PJSTR_ISCTYPE(ctype, ctype_enum)            \
