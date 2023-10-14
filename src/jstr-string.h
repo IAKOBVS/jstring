@@ -477,13 +477,12 @@ pjstr_strcasechr_isalpha(const char *R s,
 #if JSTR_HAVE_STRCSPN_OPTIMIZED
 	const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
 	s = (char *)strcspn(s, a);
-	return *s ? (char *)s : NULL;
 #else
 	c = (char)jstr_tolower(c);
 	while (*s && jstr_tolower(*s) != c)
 		++s;
-	return *s ? (char *)s : NULL;
 #endif
+	return *s ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
