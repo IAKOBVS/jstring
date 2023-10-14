@@ -589,8 +589,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	int is_isalpha0 = jstr_isalpha(*ne);
 	hs = is_isalpha0 ? pjstr_strcasechr_isalpha(hs, *ne) : strchr(hs, *ne);
-	if (hs == NULL
-	    || ne[1] == '\0')
+	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
 	is_isalpha0 += jstr_isalpha(ne[1]);
 	typedef unsigned char u;
