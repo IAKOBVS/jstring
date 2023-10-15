@@ -23,6 +23,13 @@
 
 #define JSTR_PAGE_SIZE 4096
 
+#ifndef __GLIBC_PREREQ
+#	define JSTR_GLIBC_PREREQ(maj, min) \
+		(defined __GLIBC__ && ((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min)))
+#else
+#	define JSTR_GLIBC_PREREQ(maj, min) (defined __GLIBC__ && __GLIBC_PREREQ(maj, min))
+#endif
+
 #define JSTR_MAX(x, y)	   (((x) > (y)) ? (x) : (y))
 #define JSTR_MIN(x, y)	   (((x) < (y)) ? (x) : (y))
 #define JSTR_MIN3(x, y, z) (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
