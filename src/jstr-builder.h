@@ -625,12 +625,14 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 		PTR_T = (sizeof(uintptr_t) == sizeof(unsigned long)) ? LONG : LONG_LONG
 	};
 	unsigned int arglen = 0;
+	const char *arg;
 	for (unsigned int errno_len = 0, lflag = 0;; ++fmt) {
 		if (*fmt == '%') {
 cont_switch:
 			switch (*++fmt) {
 			case 's':
-				arglen = strlen(va_arg(ap, const char *));
+				arg = va_arg(ap, const char *);
+				arglen = arg ? strlen(arg) : sizeof("(null)") - 1;
 				break;
 			case 'c':
 				if (jstr_likely(lflag == 0)) {
