@@ -112,12 +112,21 @@ jstr_ulltoa_p_sep(char *R dst,
 		  const int separator)
 JSTR_NOEXCEPT
 {
+#define CONV(base)                            \
+	c = pjstr_itoa_digits[number % base]; \
+	loop = number /= base;                \
+	break
 	char *start = dst;
 	int n = 0;
 	int c;
 	for (unsigned long long loop;;) {
-		c = pjstr_itoa_digits[number % base];
-		loop = number /= base;
+		switch (base) {
+		case 10: CONV(10);
+		case 2: CONV(2);
+		case 8: CONV(8);
+		case 16: CONV(16);
+		default: CONV(base);
+		}
 		if (++n != 3) {
 			*dst++ = c;
 			if (jstr_unlikely(loop == 0))
@@ -142,6 +151,7 @@ JSTR_NOEXCEPT
 		*dst-- = c;
 	}
 	return (char *)end;
+#undef CONV
 }
 
 /*
