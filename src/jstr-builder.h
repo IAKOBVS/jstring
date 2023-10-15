@@ -632,7 +632,7 @@ cont_switch:
 			switch (*++fmt) {
 			case 's':
 				arg = va_arg(ap, const char *);
-				arglen = arg ? strlen(arg) : sizeof("(null)") - 1;
+				arglen = jstr_likely(arg != NULL) ? strlen(arg) : sizeof("(null)") - 1;
 				break;
 			case 'c':
 				if (jstr_likely(lflag == 0)) {
