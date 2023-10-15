@@ -678,7 +678,8 @@ cont_switch:
 				/* ptr */
 			case 'p':
 				arg = va_arg(ap, const char *);
-				arglen = jstr_likely(arg != NULL) ? PTR_T : sizeof("(null)") - 1;
+				/* max + 2 to make room for the 0x at the start of the number. */
+				arglen = jstr_likely(arg != NULL) ? (PTR_T + 2) : sizeof("(null)") - 1;
 				break;
 				/* chars written */
 			case 'n':
