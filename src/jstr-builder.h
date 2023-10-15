@@ -612,10 +612,10 @@ static unsigned int
 pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 {
 	enum {
-		MAX_WINT = CHAR_BIT * sizeof(wint_t) * 2,
-		MAX_INT = CHAR_BIT * sizeof(int) * 2,
-		MAX_LONG = CHAR_BIT * sizeof(long) * 2,
-		MAX_LONG_LONG = CHAR_BIT * sizeof(long long) * 2,
+		MAX_WINT = CHAR_BIT * sizeof(wint_t),
+		MAX_INT = CHAR_BIT * sizeof(int),
+		MAX_LONG = CHAR_BIT * sizeof(long),
+		MAX_LONG_LONG = CHAR_BIT * sizeof(long long),
 		MAX_FLT = CHAR_BIT * sizeof(float) * 2 + 1,
 		MAX_DBL = CHAR_BIT * sizeof(double) * 2 + 1,
 		MAX_LDBL = CHAR_BIT * sizeof(long double) * 2 + 1,
