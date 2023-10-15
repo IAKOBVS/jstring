@@ -26,10 +26,19 @@ jstr_ulltoa_p(char *R dst,
 	      const unsigned int base)
 JSTR_NOEXCEPT
 {
+#define LOOP_BASE(base)                       \
+	do                                    \
+		*dst++ = number % base + '0'; \
+	while ((number /= base) != 0);        \
+	break
 	char *start = dst;
-	do
-		*dst++ = number % base + '0';
-	while (number /= base);
+	switch (base) {
+	case 10: LOOP_BASE(10);
+	case 2: LOOP_BASE(2);
+	case 8: LOOP_BASE(8);
+	case 16: LOOP_BASE(16);
+	default: LOOP_BASE(base);
+	}
 	const char *const end = dst;
 	*dst-- = '\0';
 	int c;
