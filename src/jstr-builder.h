@@ -677,8 +677,9 @@ cont_switch:
 				goto get_arg;
 				/* ptr */
 			case 'p':
-				arglen += PTR_T;
-				goto get_arg;
+				arg = va_arg(ap, const char *);
+				arglen = jstr_likely(arg != NULL) ? PTR_T : sizeof("(null)") - 1;
+				break;
 				/* chars written */
 			case 'n':
 				arglen += MAX_INT;
