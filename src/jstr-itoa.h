@@ -129,17 +129,14 @@ JSTR_NOEXCEPT
 		}
 		if (++n != 3) {
 			*dst++ = c;
-			if (jstr_unlikely(loop == 0))
+			if (loop == 0)
 				break;
 		} else {
-			if (loop) {
-				*dst = c;
-				*(dst + 1) = separator;
-				dst += 2;
-			} else {
-				*dst++ = c;
+			*dst = c;
+			if (loop == 0)
 				break;
-			}
+			*(dst + 1) = separator;
+			dst += 2;
 			n = 0;
 		}
 	}
