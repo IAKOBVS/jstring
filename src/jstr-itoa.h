@@ -14,6 +14,9 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+JSTR_MAYBE_UNUSED
+static const char *R const pjstr_itoa_digits = "0123456789abcdefghijklmnopqrstuvwxyz";
+
 /*
    Return value:
    ptr to '\0' after the last digit in the DEST string.
@@ -26,10 +29,10 @@ jstr_ulltoa_p(char *R dst,
 	      const unsigned int base)
 JSTR_NOEXCEPT
 {
-#define LOOP_BASE(base)                       \
-	do                                    \
-		*dst++ = number % base + '0'; \
-	while ((number /= base) != 0);        \
+#define LOOP_BASE(base)                                    \
+	do                                                 \
+		*dst++ = pjstr_itoa_digits[number % base]; \
+	while ((number /= base) != 0);                     \
 	break
 	char *start = dst;
 	switch (base) {
@@ -39,6 +42,7 @@ JSTR_NOEXCEPT
 	case 16: LOOP_BASE(16);
 	default: LOOP_BASE(base);
 	}
+#undef LOOP_BASE
 	const char *const end = dst;
 	*dst-- = '\0';
 	int c;
