@@ -116,6 +116,8 @@ JSTR_NOEXCEPT
 	c = pjstr_itoa_digits[number % base]; \
 	loop = number /= base;                \
 	break
+	if (number <= 999)
+		return jstr_ulltoa_p(dst, number, base);
 	char *start = dst;
 	int n = 0;
 	int c;
