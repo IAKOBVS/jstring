@@ -116,7 +116,7 @@ JSTR_NOEXCEPT
 	int n = 0;
 	int c;
 	for (unsigned long long loop;;) {
-		c = number % base + '0';
+		c = pjstr_itoa_digits[number % base];
 		loop = number /= base;
 		if (++n != 3) {
 			*dst++ = c;
