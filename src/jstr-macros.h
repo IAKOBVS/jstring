@@ -775,7 +775,7 @@ case '~':
 #if JSTR_GLIBC_PREREQ(2, 19) && _DEFAULT_SOURCE \
 || defined __GLIBC__ && (_SVID_SOURCE || _BSD_SOURCE)
 #	define JSTR_HAVE_QECVT_R 1
-#	define JSTR_HAVE_QCVT_R  1
+#	define JSTR_HAVE_QFCVT_R  1
 #	define JSTR_HAVE_ECVT_R  1
 #	define JSTR_HAVE_FCVT_R  1
 #endif
