@@ -636,7 +636,7 @@ JSTR_NOEXCEPT
   Return 0 on malloc error;
   otherwise, 1.
 */
-JSTR_FUNC_VOID
+JSTR_FUNC
 static int
 jstr_replacelast_len(char *R *R s,
 		     size_t *R sz,

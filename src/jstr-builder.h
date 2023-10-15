@@ -434,6 +434,30 @@ JSTR_NOEXCEPT
 	return arglen;
 }
 
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_append_len_unsafe(char *R s,
+		       size_t *R sz,
+		       const char *R src,
+		       const size_t srclen)
+JSTR_NOEXCEPT
+{
+	jstr_strcpy_len(s + *sz, src, srclen);
+	*sz += srclen;
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_append_unsafe(char *R s,
+		   size_t *R sz,
+		   const char *R src)
+JSTR_NOEXCEPT
+{
+	*sz = jstr_stpcpy(s + *sz, src) - s;
+}
+
 /*
    Append SRC to DST.
    Return value:
@@ -451,8 +475,7 @@ jstr_append_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	JSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
-	jstr_strcpy_len(*s + *sz, src, srclen);
-	*sz += srclen;
+	jstr_append_len_unsafe(*s, sz, src, srclen);
 	return 1;
 }
 
@@ -480,6 +503,18 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
+JSTR_INLINE
+JSTR_FUNC_VOID
+static void
+jstr_push_back_unsafe(char *R *R s,
+		      size_t *R sz,
+		      const char c)
+JSTR_NOEXCEPT
+{
+	*(*s + *sz) = c;
+	*(*s + ++*sz) = '\0';
+}
+
 /*
    Push C to end of S.
    S is NUL terminated.
@@ -498,9 +533,20 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
-	*(*s + *sz) = c;
-	*(*s + ++*sz) = '\0';
+	jstr_push_back_unsafe(s, sz, c);
 	return 1;
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_push_front_unsafe(char *R s,
+		size_t *R sz,
+		const char c)
+JSTR_NOEXCEPT
+{
+	jstr_strmove_len(s + 1, s, (*sz)++);
+	*s = c;
 }
 
 /*
@@ -510,7 +556,7 @@ JSTR_NOEXCEPT
    0 on malloc error;
    otherwise 1.
 */
-JSTR_FUNC_VOID
+JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_push_front(char *R *R s,
@@ -521,8 +567,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap == *sz + 1))
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
-	jstr_strmove_len(*s + 1, *s, (*sz)++);
-	**s = c;
+	jstr_push_front_unsafe(*s, sz, c);
 	return 1;
 }
 
