@@ -772,6 +772,14 @@ case '~':
 #	define JSTR_HAVE_QGCVT 1
 #endif
 
+#if JSTR_GLIBC_PREREQ(2, 19) && _DEFAULT_SOURCE \
+|| defined __GLIBC__ && (_SVID_SOURCE || _BSD_SOURCE)
+#	define JSTR_HAVE_QECVT_R 1
+#	define JSTR_HAVE_QCVT_R  1
+#	define JSTR_HAVE_ECVT_R  1
+#	define JSTR_HAVE_FCVT_R  1
+#endif
+
 #if defined __x86_64__ || defined _M_X64
 #	define JSTR_ARCH_X86_64 1
 #elif defined i386 || defined __i386__ || defined __i386 || defined _M_IX86
