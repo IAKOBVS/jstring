@@ -541,8 +541,8 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_push_front_unsafe(char *R s,
-		size_t *R sz,
-		const char c)
+		       size_t *R sz,
+		       const char c)
 JSTR_NOEXCEPT
 {
 	jstr_strmove_len(s + 1, s, (*sz)++);
@@ -619,14 +619,13 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 		MAX_FLT = CHAR_BIT * sizeof(float) * 2 + 1,
 		MAX_DBL = CHAR_BIT * sizeof(double) * 2 + 1,
 		MAX_LDBL = CHAR_BIT * sizeof(long double) * 2 + 1,
+		LONG = 1,
+		LONG_LONG = 2,
+		SIZE_T = (sizeof(size_t) == sizeof(unsigned long)) ? LONG : LONG_LONG,
+		PTR_T = (sizeof(uintptr_t) == sizeof(unsigned long)) ? LONG : LONG_LONG
 	};
 	unsigned int arglen = 0;
 	for (unsigned int errno_len = 0, lflag = 0;; ++fmt) {
-		enum { LONG = 1,
-		       LONG_LONG = 2,
-		       SIZE_T = (sizeof(size_t) == sizeof(unsigned long)) ? LONG : LONG_LONG,
-		       PTR_T = (sizeof(uintptr_t) == sizeof(unsigned long)) ? LONG : LONG_LONG
-		};
 		if (*fmt == '%') {
 cont_switch:
 			switch (*++fmt) {
