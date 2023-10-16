@@ -118,7 +118,6 @@ JSTR_NOEXCEPT
 #endif
 }
 
-/* Heavily inspired by glibc memmem. */
 JSTR_FUNC_PURE
 static void *
 pjstr_strrstr_len_bmh(const unsigned char *R hs,
@@ -127,6 +126,8 @@ pjstr_strrstr_len_bmh(const unsigned char *R hs,
 		      const size_t nl)
 JSTR_NOEXCEPT
 {
+/* Based on glibc memmem.
+   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 #define BZERO(shift) ((sizeof(shift) == 256)                  \
 		      ? (memset(shift, 0, 64),                \
 			 memset(shift + 64, 0, 64),           \
@@ -317,7 +318,6 @@ JSTR_NOEXCEPT
 	}
 }
 
-/* Heavily inspired by glibc memmem. */
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr_len_bmh(const unsigned char *R h,
@@ -326,6 +326,8 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 			 const size_t nl)
 JSTR_NOEXCEPT
 {
+/* Based on glibc memmem.
+   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                              \
 	do {                                                                                            \
@@ -365,13 +367,14 @@ JSTR_NOEXCEPT
 #undef PJSTR_STRCASESTR_BMH
 }
 
-/* Heavily inspired by glibc memmem. */
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr_bmh(const unsigned char *R h,
 		     const unsigned char *R n)
 JSTR_NOEXCEPT
 {
+/* Based on glibc memmem.
+   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 #define HL(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
 #define PJSTR_STRCASESTR_BMH(table_type, ne_iterator_type)                                              \
 	do {                                                                                            \
