@@ -55,6 +55,15 @@ JSTR_NOEXCEPT
 	l->capacity = 0;
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static size_t
+jstr_l_index(jstr_l_ty *R l,
+	     jstr_ty *R curr)
+{
+	return curr - l->data;
+}
+
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
