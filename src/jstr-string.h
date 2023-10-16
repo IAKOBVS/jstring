@@ -472,19 +472,33 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-pjstr_strcasechr_isalpha(const char *R s,
+pjstr_strcasechr_generic(const char *R s,
 			 int c)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCSPN_OPTIMIZED
-	const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
-	s = (char *)strcspn(s, a);
-#else
 	c = (char)jstr_tolower(c);
 	while (*s && jstr_tolower(*s) != c)
 		++s;
-#endif
 	return *s ? (char *)s : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+pjstr_strcasechr_len(const char *R s,
+		     const int c,
+		     const int n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRCSPN_OPTIMIZED
+	if (n > JSTR_STRCASECHR_STRCSPN_THRES) {
+		const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
+		s += strcspn(s, a);
+		return *s ? (char *)s : NULL;
+	}
+#endif
+	return pjstr_strcasechr_generic(s, c);
+	(void)n;
 }
 
 /*
@@ -500,7 +514,9 @@ jstr_strcasechr_len(const char *R s,
 		    const size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_isalpha(c) ? pjstr_strcasechr_isalpha(s, c) : (char *)memchr(s, c, n);
+	if (jstr_isalpha(c))
+		return pjstr_strcasechr_len(s, c, n);
+	return (char *)memchr(s, c, n);
 }
 
 /*
@@ -515,7 +531,7 @@ jstr_strcasechr(const char *R s,
 		const int c)
 JSTR_NOEXCEPT
 {
-	return jstr_isalpha(c) ? pjstr_strcasechr_isalpha(s, c) : (char *)strchr(s, c);
+	return jstr_isalpha(c) ? pjstr_strcasechr_generic(s, c) : (char *)strchr(s, c);
 }
 
 /*
@@ -547,7 +563,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	int is_isalpha0 = jstr_isalpha(*ne);
 	const char *const start = hs;
-	hs = is_isalpha0 ? pjstr_strcasechr_isalpha(hs, *ne) : (char *)memchr(hs, *ne, hslen);
+	hs = is_isalpha0 ? jstr_strcasechr_len(hs, *ne, nelen) : (char *)memchr(hs, *ne, hslen);
 #	if JSTR_HAVE_MEMMEM
 	if (hs == NULL || (hslen -= hs - start) < nelen)
 		return NULL;
@@ -601,7 +617,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ne[0] == '\0'))
 		return (char *)hs;
 	int is_isalpha0 = jstr_isalpha(*ne);
-	hs = is_isalpha0 ? pjstr_strcasechr_isalpha(hs, *ne) : strchr(hs, *ne);
+	hs = is_isalpha0 ? pjstr_strcasechr_generic(hs, *ne) : strchr(hs, *ne);
 	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
 	if (jstr_unlikely(hs[1] == '\0'))
@@ -1168,7 +1184,7 @@ JSTR_NOEXCEPT
 	end += cnt;
 	const char *const start = nptr;
 	nptr += (sz - 1);
-	for (int n = 0; nptr >= start; ) {
+	for (int n = 0; nptr >= start;) {
 		*(nptr + cnt) = *nptr;
 		--nptr;
 		if (++n == 3) {

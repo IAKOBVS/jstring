@@ -994,9 +994,11 @@ case '~':
 
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
-/* Needle length over which memmem would be faster than strstr. */
 #endif
-enum { JSTR_MEMMEM_THRES = 18 };
+/* Needle length over which memmem would be faster than strstr. */
+enum { JSTR_MEMMEM_THRES = 18,
+       /* Haystack length over which an optimized strcspn would be faster than a byte loop. */
+       JSTR_STRCASECHR_STRCSPN_THRES = 24 };
 
 /* Only use memmem for long needles or when it is implemented in assembly.
    It seems to be slower than strstr for short needles. */
