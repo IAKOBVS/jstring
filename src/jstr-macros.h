@@ -790,22 +790,20 @@ case '~':
 #	define JSTR_ARCH_ARM3 1
 #elif defined __ARM_ARCH_4T__ || defined __TARGET_ARM_4T
 #	define JSTR_ARCH_ARM4T 1
-#elif defined __ARM_ARCH_5_ || defined __ARM_ARCH_5E_
+#elif __ARM_ARCH_5__ || defined __ARM_ARCH_5E__      \
+|| defined__ARM_ARCH_5T__ || defined__ARM_ARCH_5TE__ \
+|| defined__ARM_ARCH_5TEJ__
 #	define JSTR_ARCH_ARM5 1
 #elif defined __ARM_ARCH_6T2_ || defined __ARM_ARCH_6T2_
 #	define JSTR_ARCH_ARM6T2 1
-#elif defined __ARM_ARCH_6__ || defined __ARM_ARCH_6J__ || defined __ARM_ARCH_6K__ || defined __ARM_ARCH_6Z__ || defined __ARM_ARCH_6ZK__
+#elif __ARM_ARCH_6__ || defined__ARM_ARCH_6J__       \
+|| defined__ARM_ARCH_6Z__ || defined__ARM_ARCH_6ZK__ \
+|| defined__ARM_ARCH_6K__ || defined__ARM_ARCH_6T2__
 #	define JSTR_ARCH_ARM6 1
-#elif defined __ARM_ARCH_7__ || defined __ARM_ARCH_7A__ || defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__ || defined __ARM_ARCH_7S__
+#elif __ARM_ARCH_7__ || defined__ARM_ARCH_7A__      \
+|| defined__ARM_ARCH_7R__ || defined__ARM_ARCH_7M__ \
+|| defined__ARM_ARCH_7EM__ || defined __ARM_ARCH_7S__
 #	define JSTR_ARCH_ARM7 1
-#elif defined __ARM_ARCH_7A__ || defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__ || defined __ARM_ARCH_7S__
-#	define JSTR_ARCH_ARM7A 1
-#elif defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__ || defined __ARM_ARCH_7S__
-#	define JSTR_ARCH_ARM7R 1
-#elif defined __ARM_ARCH_7M__
-#	define JSTR_ARCH_ARM7M 1
-#elif defined __ARM_ARCH_7S__
-#	define JSTR_ARCH_ARM7S 1
 #elif defined __aarch64__ || defined _M_ARM64
 #	define JSTR_ARCH_ARM64 1
 #elif defined mips || defined __mips__ || defined __mips
