@@ -112,6 +112,7 @@ JSTR_FUNC_VOID
 static void
 pjstr_nullify_members(size_t *R sz,
 		      size_t *R cap)
+JSTR_NOEXCEPT
 {
 	*sz = 0;
 	*cap = 0;
@@ -139,6 +140,7 @@ pjstr_err_exit(const char *R filename,
 	       const unsigned int line,
 	       const char *R func,
 	       const char *R msg)
+JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
 	exit(EXIT_FAILURE);
@@ -154,6 +156,7 @@ pjstr_err(const char *R filename,
 	  const unsigned int line,
 	  const char *R func,
 	  const char *R msg)
+JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
 }
@@ -208,6 +211,7 @@ pjstr_reallocexact(char *R *R s,
 		   size_t *R sz,
 		   size_t *R cap,
 		   size_t new_cap)
+JSTR_NOEXCEPT
 {
 	*cap = JSTR_ALIGN_UP_STR(new_cap);
 	*s = (char *)realloc(*s, *cap);
@@ -227,6 +231,7 @@ pjstr_realloc(char *R *R s,
 	      size_t *R sz,
 	      size_t *R cap,
 	      size_t new_cap)
+JSTR_NOEXCEPT
 {
 	*cap = pjstr_grow(*cap, new_cap);
 	*s = (char *)realloc(*s, *cap);
@@ -246,6 +251,7 @@ pjstr_realloc_may_zero(char *R *R s,
 		       size_t *R sz,
 		       size_t *R cap,
 		       size_t new_cap)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*sz != 0))
 		*cap = JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
@@ -610,6 +616,7 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 pjstr_asprintf_strlen(va_list ap, const char *R fmt)
+JSTR_NOEXCEPT
 {
 	enum {
 		MAX_WINT = CHAR_BIT * sizeof(wint_t),
@@ -794,6 +801,7 @@ jstr_asprintf(char *R *R s,
 	      size_t *R cap,
 	      const char *R fmt,
 	      ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -827,6 +835,7 @@ static int
 jstr_asprintf_j(jstr_ty *R j,
 		const char *R fmt,
 		...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -862,6 +871,7 @@ jstr_asprintf_cat(char *R *R s,
 		  size_t *R cap,
 		  const char *R fmt,
 		  ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -896,6 +906,7 @@ static int
 jstr_asprintf_cat_j(jstr_ty *R j,
 		    const char *R fmt,
 		    ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -933,6 +944,7 @@ jstr_asprintf_from(char *R *R s,
 		   const size_t start_idx,
 		   const char *R fmt,
 		   ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -968,6 +980,7 @@ jstr_asprintf_from_j(jstr_ty *R j,
 		     const size_t start_idx,
 		     const char *R fmt,
 		     ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1003,10 +1016,11 @@ jstr_sprintf(char *R *R s,
 	     size_t *R cap,
 	     const char *R fmt,
 	     ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	const unsigned int ret = vsprintf(*s, fmt, ap);
+	const int ret = vsprintf(*s, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err_free;
@@ -1030,6 +1044,7 @@ static int
 jstr_sprintf_j(jstr_ty *R j,
 	       const char *R fmt,
 	       ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1060,6 +1075,7 @@ jstr_sprintf_from(char *R *R s,
 		  const size_t start_idx,
 		  const char *R fmt,
 		  ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1088,6 +1104,7 @@ jstr_sprintf_from_j(jstr_ty *R j,
 		    const size_t start_idx,
 		    const char *R fmt,
 		    ...)
+JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);

@@ -473,6 +473,7 @@ JSTR_INLINE
 static char *
 pjstr_strcasechr_isalpha(const char *R s,
 			 int c)
+JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCSPN_OPTIMIZED
 	const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
@@ -496,6 +497,7 @@ static char *
 jstr_strcasechr_len(const char *R s,
 		    const int c,
 		    const size_t n)
+JSTR_NOEXCEPT
 {
 	return jstr_isalpha(c) ? pjstr_strcasechr_isalpha(s, c) : (char *)memchr(s, c, n);
 }
@@ -510,6 +512,7 @@ JSTR_INLINE
 static char *
 jstr_strcasechr(const char *R s,
 		const int c)
+JSTR_NOEXCEPT
 {
 	return jstr_isalpha(c) ? pjstr_strcasechr_isalpha(s, c) : (char *)strchr(s, c);
 }
@@ -789,6 +792,7 @@ JSTR_FUNC_PURE
 static char *
 jstr_strchrnul_inv(const char *R s,
 		   int c)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(c == '\0'))
 		return (char *)s;
@@ -808,6 +812,7 @@ JSTR_INLINE
 static char *
 jstr_strchr_inv(const char *R s,
 		const int c)
+JSTR_NOEXCEPT
 {
 	s = jstr_strchrnul_inv(s, c);
 	return *s ? (char *)s : NULL;
@@ -824,6 +829,7 @@ static char *
 jstr_memchrnul_inv(const void *R s,
 		   int c,
 		   size_t n)
+JSTR_NOEXCEPT
 {
 	const unsigned char *p = (unsigned char *)s;
 	const unsigned char *end = p + n;
@@ -845,6 +851,7 @@ static void *
 jstr_memchr_inv(const void *R s,
 		const int c,
 		const size_t n)
+JSTR_NOEXCEPT
 {
 	const void *const end = (unsigned char *)s + n;
 	s = (void *)jstr_memchrnul_inv(s, c, n);
@@ -862,6 +869,7 @@ static void *
 jstr_memrchr_inv(const void *R s,
 		 int c,
 		 const size_t n)
+JSTR_NOEXCEPT
 {
 	const unsigned char *end = (unsigned char *)s + n - 1;
 	const unsigned char *const start = (unsigned char *)s;
@@ -883,6 +891,7 @@ static void *
 jstr_strrchr_inv(const void *R s,
 		 int c,
 		 const size_t n)
+JSTR_NOEXCEPT
 {
 	return jstr_memrchr_inv((char *)s, c, n);
 }
