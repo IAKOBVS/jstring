@@ -810,7 +810,9 @@ case '~':
 #	define JSTR_ARCH_MIPS 1
 #elif defined __sh__
 #	define JSTR_ARCH_SH 1
-#elif defined __powerpc || defined __powerpc__ || defined __powerpc64__ || defined __POWERPC__ || defined __ppc__ || defined __PPC__ || defined _ARCH_PPC
+#elif defined __powerpc || defined __powerpc__  \
+|| defined __powerpc64__ || defined __POWERPC__ \
+|| defined __ppc__ || defined __PPC__ || defined _ARCH_PPC
 #	define JSTR_ARCH_POWERPC 1
 #elif defined __PPC64__ || defined __ppc64__ || defined _ARCH_PPC64
 #	define JSTR_ARCH_POWERPC64 1
