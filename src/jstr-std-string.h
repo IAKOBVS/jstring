@@ -207,6 +207,9 @@ JSTR_NOEXCEPT
 	return jstr_stpcpy(dst, src);
 }
 
+/*
+   strlen(S) is saved to SZ.
+*/
 JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
