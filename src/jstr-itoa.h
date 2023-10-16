@@ -201,6 +201,63 @@ PJSTR_ULLTOA_SEP(int, itoa, )
 
 #undef PJSTR_ULLTOA_SEP
 
+/*
+   Add thousand separator to NPTR containing a number without fractions.
+   Return value:
+   ptr to '\0' in NPTR.
+   For example: 1234 -> 1,234.
+*/
+JSTR_FUNC
+static char *
+jstr_fmt_thousand_sep_len(char *R nptr,
+			  size_t sz,
+			  const int separator)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(sz == 0))
+		return nptr;
+	char *end = nptr + sz;
+	if (*nptr == '-') {
+		++nptr;
+		--sz;
+	}
+	if (sz < 4)
+		return end;
+	int cnt = (sz - 1) / 3;
+	end += cnt;
+	*end = '\0';
+	const char *const start = nptr;
+	nptr += (sz - 1);
+	int n = 0;
+	while (nptr >= start) {
+		*(nptr + cnt) = *nptr;
+		--nptr;
+		if (++n == 3) {
+			*(nptr + cnt) = separator;
+			if (jstr_unlikely(--cnt == 0))
+				break;
+			n = 0;
+		}
+	}
+	return (char *)end;
+}
+
+/*
+   Add thousand separator to NPTR containing a number without fractions.
+   Return value:
+   ptr to '\0' in NPTR.
+   For example: 1234 -> 1,234.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_fmt_thousand_sep(char *R nptr,
+		      const int separator)
+JSTR_NOEXCEPT
+{
+	return jstr_fmt_thousand_sep_len(nptr, strlen(nptr), separator);
+}
+
 PJSTR_END_DECLS
 
 #undef R
