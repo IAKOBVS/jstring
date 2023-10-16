@@ -999,7 +999,7 @@ enum {
 	/* Needle length over which memmem would be faster than strstr. */
 	JSTR_MEMMEM_THRES = 18,
 	/* Iterations over which an optimized strcspn would be faster than a byte loop. */
-	JSTR_STRCASECHR_STRCSPN_THRES = 24
+	JSTR_STRCASECHR_THRES = 24
 };
 
 /* Only use memmem for long needles or when it is implemented in assembly.
