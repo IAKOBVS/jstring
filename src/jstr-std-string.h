@@ -211,13 +211,14 @@ JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strdup(const char *R s)
+jstr_strdup(const char *R s,
+	    size_t *R sz)
 JSTR_NOEXCEPT
 {
-	const size_t len = strlen(s);
-	char *const p = (char *)malloc(len + 1);
+	*sz = strlen(s);
+	char *const p = (char *)malloc(*sz + 1);
 	if (jstr_likely(p != NULL)) {
-		jstr_strcpy_len(p, s, len);
+		jstr_strcpy_len(p, s, *sz);
 		return p;
 	}
 	return NULL;
@@ -247,7 +248,7 @@ jstr_strdup_len(const char *R src,
 		const size_t srclen)
 JSTR_NOEXCEPT
 {
-	char *const p = jstr_memdup(src, srclen);
+	char *const p = jstr_memdup(src, srclen + 1);
 	if (jstr_likely(p != NULL)) {
 		*(p + srclen) = '\0';
 		return p;
