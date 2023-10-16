@@ -997,7 +997,7 @@ case '~':
 #endif
 /* Needle length over which memmem would be faster than strstr. */
 enum { JSTR_MEMMEM_THRES = 18,
-       /* Haystack length over which an optimized strcspn would be faster than a byte loop. */
+       /* Number of iterations over which an optimized strcspn would be faster than a byte loop. */
        JSTR_STRCASECHR_STRCSPN_THRES = 24 };
 
 /* Only use memmem for long needles or when it is implemented in assembly.
