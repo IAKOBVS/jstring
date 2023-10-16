@@ -405,7 +405,7 @@ JSTR_NOEXCEPT
 		;
 	va_end(ap);
 	if (jstr_unlikely(arglen == 0))
-		return 0;
+		return 1;
 	va_start(ap, cap);
 	arglen = pjstr_cat(s, sz, cap, ap, arglen);
 	va_end(ap);
@@ -433,7 +433,7 @@ JSTR_NOEXCEPT
 		;
 	va_end(ap);
 	if (jstr_unlikely(arglen == 0))
-		return 0;
+		return 1;
 	va_start(ap, j);
 	arglen = pjstr_cat(&j->data, &j->size, &j->capacity, ap, arglen);
 	va_end(ap);

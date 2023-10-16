@@ -44,6 +44,17 @@ JSTR_NOEXCEPT
 	return l->data + at;
 }
 
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_l_init(jstr_l_ty *R l)
+JSTR_NOEXCEPT
+{
+	l->data = NULL;
+	l->size = 0;
+	l->capacity = 0;
+}
+
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
@@ -86,15 +97,24 @@ JSTR_NOEXCEPT
 	return (new_cap > l->capacity) ? jstr_l_reserve_always(l, new_cap) : 1;
 }
 
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_l_init(jstr_l_ty *R l)
+JSTR_FUNC
+static int
+jstr_l_add_len_unsafe(jstr_l_ty *R l,
+		      const char *R s,
+		      const size_t slen)
 JSTR_NOEXCEPT
 {
-	l->data = NULL;
-	l->size = 0;
-	l->capacity = 0;
+	if (jstr_unlikely(!jstr_append_len(&l->data[l->size].data,
+					   &l->data[l->size].size,
+					   &l->data[l->size].capacity,
+					   s,
+					   slen)))
+		goto err_str;
+	++l->size;
+	return 1;
+err_str:
+	pjstr_nullify_members(&l->data[l->size].size, &l->data[l->size].capacity);
+	return 0;
 }
 
 JSTR_FUNC
@@ -106,19 +126,42 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(!jstr_l_reserve(l, l->capacity + slen)))
 		goto err;
-	if (jstr_unlikely(!jstr_append_len(&l->data[l->size].data,
-					   &l->data[l->size].size,
-					   &l->data[l->size].capacity,
-					   s,
-					   slen)))
-		goto err_str;
-	++l->size;
+	if (jstr_unlikely(!jstr_l_add_len_unsafe(l, s, slen)))
+		goto err;
 	return 1;
-err_str:
-	pjstr_nullify_members(&l->data[l->size].size, &l->data[l->size].capacity);
 err:
 	pjstr_nullify_members(&l->size, &l->capacity);
 	return 0;
+}
+
+JSTR_SENTINEL
+JSTR_FUNC_VOID_MAY_NULL
+JSTR_NONNULL(1)
+static int
+jstr_l_cat(jstr_l_ty *R l,
+	   ...)
+JSTR_NOEXCEPT
+{
+	va_list ap;
+	const char *R arg;
+	va_start(ap, l);
+	int argc = 0;
+	for (; va_arg(ap, char *); ++argc)
+		;
+	va_end(ap);
+	if (jstr_unlikely(argc == 0))
+		return 1;
+	if (jstr_unlikely(!jstr_l_reserve(l, argc)))
+		return 0;
+	va_start(ap, l);
+	while ((arg = va_arg(ap, char *)))
+		if (jstr_unlikely(!jstr_l_add_len_unsafe(l, arg, strlen(arg)))) {
+			va_end(ap);
+			return 0;
+		}
+	l->size += argc;
+	va_end(ap);
+	return 1;
 }
 
 JSTR_FUNC_PURE
