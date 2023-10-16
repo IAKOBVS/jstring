@@ -485,6 +485,11 @@ pjstr_strcasechr_isalpha(const char *R s,
 	return *s ? (char *)s : NULL;
 }
 
+/*
+   Return value:
+   ptr to first C in S ignoring case;
+   NULL if not found.
+*/
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
@@ -495,6 +500,11 @@ jstr_strcasechr_len(const char *R s,
 	return jstr_isalpha(c) ? pjstr_strcasechr_isalpha(s, c) : (char *)memchr(s, c, n);
 }
 
+/*
+   Return value:
+   ptr to first C in S ignoring case;
+   NULL if not found.
+*/
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
