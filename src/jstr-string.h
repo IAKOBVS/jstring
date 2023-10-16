@@ -188,45 +188,46 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	const jstr_word_ty cc = jstr_word_repeat_bytes(c);
 	const unsigned char *const end = (unsigned char *)s + n;
-	enum { WORDSIZ = sizeof(jstr_word_ty) };
+	const unsigned char *const start = (unsigned char *)s;
+	enum { WSIZ = sizeof(jstr_word_ty) };
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
-	const jstr_word_ty *w = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
-	const jstr_word_ty *const start = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
+	const jstr_word_ty *w = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(end, WSIZ);
+	const jstr_word_ty *const lbyte = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, WSIZ);
 	if ((u *)w != end)
 		if (jstr_word_has_eq(*w, cc)) {
 			const unsigned char *const ret = (u *)w + jstr_word_index_last_eq(*w, cc);
-			if ((uintptr_t)(ret - (u *)s) <= (size_t)(end - (u *)s))
+			if (ret - start <= end - start)
 				return (void *)ret;
 		}
-	while (--w > start)
+	while (--w > lbyte)
 		if (jstr_word_has_eq(*w, cc))
 			return (void *)((u *)w + jstr_word_index_last_eq(*w, cc));
-	if (jstr_word_has_eq(*start, cc)) {
-		w = (jstr_word_ty *)((u *)start + jstr_word_index_last_eq(*start, cc));
-		if ((uintptr_t)((u *)w - (u *)s) <= (size_t)(end - (u *)s))
+	if (jstr_word_has_eq(*lbyte, cc)) {
+		w = (jstr_word_ty *)((u *)lbyte + jstr_word_index_last_eq(*lbyte, cc));
+		if (((u *)w - start) <= end - start)
 			return (void *)w;
 	}
 #	else
-	const unsigned char *p = (u *)JSTR_PTR_ALIGN_DOWN(end, WORDSIZ);
-	const unsigned char *const start = (u *)JSTR_PTR_ALIGN_DOWN(s, WORDSIZ);
+	const unsigned char *p = (u *)JSTR_PTR_ALIGN_DOWN(end, WSIZ);
+	const unsigned char *const lbyte = (u *)JSTR_PTR_ALIGN_DOWN(s, WSIZ);
 	jstr_word_ty w;
 	if (p != end) {
 		w = jstr_word_toword(p);
 		if (jstr_word_has_eq(w, cc)) {
 			const unsigned char *const ret = p + jstr_word_index_last_eq(w, cc);
-			if ((uintptr_t)(ret - (u *)s) <= (size_t)(end - (u *)s))
+			if (ret - start <= end - start)
 				return (void *)ret;
 		}
 	}
-	while ((p -= WORDSIZ) > start) {
+	while ((p -= WSIZ) > lbyte) {
 		w = jstr_word_toword(p);
 		if (jstr_word_has_eq(w, cc))
 			return (void *)(p + jstr_word_index_last_eq(w, cc));
 	}
-	w = jstr_word_toword(start);
+	w = jstr_word_toword(lbyte);
 	if (jstr_word_has_eq(w, cc)) {
-		p = start + jstr_word_index_last_eq(w, cc);
-		if ((uintptr_t)(p - (u *)s) <= (size_t)(end - (u *)s))
+		p = lbyte + jstr_word_index_last_eq(w, cc);
+		if (p - start <= end - start)
 			return (void *)p;
 	}
 #	endif
