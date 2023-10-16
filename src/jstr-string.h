@@ -488,6 +488,20 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
+pjstr_strcasechr_generic_len(const char *R s,
+			     int c,
+			     size_t n)
+JSTR_NOEXCEPT
+{
+	c = (char)jstr_tolower(c);
+	while (n-- && jstr_tolower(*s) != c)
+		++s;
+	return *s ? (char *)s : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
 pjstr_strcasechr_len(const char *R s,
 		     const int c,
 		     const int n)
