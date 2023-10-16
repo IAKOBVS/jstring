@@ -998,7 +998,7 @@ case '~':
 enum {
 	/* Needle length over which memmem would be faster than strstr. */
 	JSTR_MEMMEM_THRES = 18,
-	/* Iterations over which an optimized strcspn would be faster than a byte loop. */
+	/* Number of iterations over which an optimized strcspn would be faster than a byte loop. */
 	JSTR_STRCASECHR_THRES = 24
 };
 
