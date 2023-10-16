@@ -134,6 +134,7 @@ err:
 	return 0;
 }
 
+/* Last arg must be NULL. */
 JSTR_SENTINEL
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
@@ -154,14 +155,18 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(!jstr_l_reserve(l, argc)))
 		return 0;
 	va_start(ap, l);
-	while ((arg = va_arg(ap, char *)))
-		if (jstr_unlikely(!jstr_l_add_len_unsafe(l, arg, strlen(arg)))) {
-			va_end(ap);
-			return 0;
-		}
-	l->size += argc;
+	jstr_ty *j = l->data;
+	for (size_t arglen; (arg = va_arg(ap, char *));) {
+		arglen = strlen(arg);
+		if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->size, &j->capacity, arglen)))
+			goto err_va_end;
+		jstr_append_len_unsafe(j->data, &j->size, arg, arglen);
+	}
 	va_end(ap);
 	return 1;
+err_va_end:
+	va_end(ap);
+	return 0;
 }
 
 JSTR_FUNC_PURE
