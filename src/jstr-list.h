@@ -76,6 +76,22 @@ JSTR_NOEXCEPT
 	return curr - l->data;
 }
 
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_l_free(jstr_l_ty *R l)
+JSTR_NOEXCEPT
+{
+	if (jstr_likely(l->data != NULL)) {
+		for (size_t i = 0; i < l->size; ++i)
+			free(l->data[i].data);
+		free(l->data);
+		l->data = NULL;
+		l->size = 0;
+		l->capacity = 0;
+	}
+}
+
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
@@ -179,15 +195,19 @@ JSTR_NOEXCEPT
 		return 1;
 	JSTR_L_RESERVE(l, argc, return 0);
 	va_start(ap, l);
-	jstr_ty *j = l->data;
-	for (size_t arglen; (arg = va_arg(ap, char *));) {
+	argc = 0;
+	for (size_t arglen; (arg = va_arg(ap, char *)); ++argc) {
 		arglen = strlen(arg);
-		JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen, goto err_va_end);
-		jstr_append_len_unsafe(j->data, &j->size, arg, arglen);
+		if (jstr_unlikely(
+		    !jstr_assign_len(
+		    &l->data[argc].data, &l->data[argc].size, &l->data[argc].capacity, arg, arglen)))
+			goto err_free_l;
 	}
+	l->size = argc;
 	va_end(ap);
 	return 1;
-err_va_end:
+err_free_l:
+	jstr_l_free(l);
 	va_end(ap);
 	return 0;
 }
@@ -281,22 +301,6 @@ JSTR_NOEXCEPT
 {
 	jstr_ty *p = jstr_l_ends_len(l, s, slen);
 	pjstr_l_delete(l, p);
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_l_free(jstr_l_ty *R l)
-JSTR_NOEXCEPT
-{
-	if (jstr_likely(l->data != NULL)) {
-		for (size_t i = 0; i < l->size; ++i)
-			free(l->data[i].data);
-		free(l->data);
-		l->data = NULL;
-		l->size = 0;
-		l->capacity = 0;
-	}
 }
 
 PJSTR_END_DECLS

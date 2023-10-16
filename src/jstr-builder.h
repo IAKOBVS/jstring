@@ -478,10 +478,7 @@ JSTR_NOEXCEPT
    0 on malloc error;
    otherwise 1.
 */
-JSTR_FUNC_MAY_NULL
-JSTR_NONNULL(2)
-JSTR_NONNULL(3)
-JSTR_NONNULL(4)
+JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_append_len(char *R *R s,
@@ -503,10 +500,28 @@ JSTR_NOEXCEPT
    0 on malloc error;
    otherwise 1.
 */
-JSTR_FUNC_MAY_NULL
-JSTR_NONNULL(2)
-JSTR_NONNULL(3)
-JSTR_NONNULL(4)
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_assign_len_unsafe(char *R *R s,
+		       size_t *R sz,
+		       const char *R src,
+		       const size_t srclen)
+JSTR_NOEXCEPT
+{
+	jstr_strcpy_len(*s, src, srclen);
+	*sz = srclen;
+	return 1;
+}
+
+/*
+   Assign SRC to DST.
+   S is NUL terminated.
+   Return value:
+   0 on malloc error;
+   otherwise 1.
+*/
+JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_assign_len(char *R *R s,
@@ -518,9 +533,7 @@ JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, srclen * JSTR_ALLOC_MULTIPLIER, return 0);
-	jstr_strcpy_len(*s, src, srclen);
-	*sz = srclen;
-	return 1;
+	return jstr_assign_len_unsafe(s, sz, src, srclen);
 }
 
 JSTR_INLINE
