@@ -1139,9 +1139,8 @@ JSTR_NOEXCEPT
 	s = strchrnul(s, '\n');
 	return (char *)((*s && *(s + 1)) ? s + 1 : s);
 #else
-	const char *const start = s;
-	s = strchr(s, '\n');
-	return (char *)((s && *(s + 1)) ? s + 1 : start + strlen(start));
+	const char *const p = strchr(s, '\n');
+	return (char *)((p && *(p + 1)) ? p + 1 : s + strlen(s));
 #endif
 }
 
