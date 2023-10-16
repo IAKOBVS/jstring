@@ -236,9 +236,11 @@ jstr_l_starts_len(const jstr_l_ty *R l,
 		  const size_t slen)
 JSTR_NOEXCEPT
 {
-	for (size_t i = 0; i < l->size; ++i)
-		if (jstr_starts_len(l->data[i].data, l->data[i].size, s, slen))
-			return l->data + i;
+	const jstr_ty *j = l->data;
+	const jstr_ty *end = l->data + l->size;
+	for (; j < end; ++j)
+		if (jstr_starts_len(j->data, j->size, s, slen))
+			return (jstr_ty *)j->data;
 	return NULL;
 }
 
@@ -249,9 +251,11 @@ jstr_l_ends_len(const jstr_l_ty *R l,
 		const size_t slen)
 JSTR_NOEXCEPT
 {
-	for (size_t i = 0; i < l->size; ++i)
-		if (jstr_ends_len(l->data[i].data, l->data[i].size, s, slen))
-			return l->data + i;
+	const jstr_ty *j = l->data;
+	const jstr_ty *end = l->data + l->size;
+	for (; j < end; ++j)
+		if (jstr_ends_len(j->data, j->size, s, slen))
+			return (jstr_ty *)j->data;
 	return NULL;
 }
 
