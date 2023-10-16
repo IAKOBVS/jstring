@@ -4,6 +4,7 @@
 #include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 PJSTR_END_DECLS
@@ -24,17 +25,17 @@ static const char *R const pjstr_itoa_digits = "0123456789abcdefghijklmnopqrstuv
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
-jstr_ulltoa_p(char *R dst,
-	      unsigned long long number,
+jstr_ulltoa_p(unsigned long long number,
+	      char *R buf,
 	      const unsigned int base)
 JSTR_NOEXCEPT
 {
 #define LOOP_BASE(base)                                    \
 	do                                                 \
-		*dst++ = pjstr_itoa_digits[number % base]; \
+		*buf++ = pjstr_itoa_digits[number % base]; \
 	while ((number /= base) != 0);                     \
 	break
-	char *start = dst;
+	char *start = buf;
 	switch (base) {
 	case 10: LOOP_BASE(10);
 	case 2: LOOP_BASE(2);
@@ -43,13 +44,13 @@ JSTR_NOEXCEPT
 	default: LOOP_BASE(base);
 	}
 #undef LOOP_BASE
-	const char *const end = dst;
-	*dst-- = '\0';
+	const char *const end = buf;
+	*buf-- = '\0';
 	int c;
-	while (start < dst) {
+	while (start < buf) {
 		c = *start;
-		*start++ = *dst;
-		*dst-- = c;
+		*start++ = *buf;
+		*buf-- = c;
 	}
 	return (char *)end;
 }
@@ -62,16 +63,16 @@ JSTR_FUNC
 JSTR_RETURNS_NONNULL
 JSTR_INLINE
 static char *
-jstr_lltoa_p(char *R dst,
-	     long long number,
+jstr_lltoa_p(long long number,
+	     char *R buf,
 	     const unsigned int base)
 JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
-		*dst++ = '-';
+		*buf++ = '-';
 	}
-	return jstr_ulltoa_p(dst, number, base);
+	return jstr_ulltoa_p(number, buf, base);
 }
 
 #define PJSTR_ULLTOA(type, name, u)                             \
@@ -83,12 +84,12 @@ JSTR_NOEXCEPT
 	JSTR_RETURNS_NONNULL                                    \
 	JSTR_INLINE                                             \
 	static char *                                           \
-	jstr_##name##_p(char *R dst,                            \
-			type number,                            \
+	jstr_##name##_p(type number,                            \
+			char *R buf,                            \
 			const unsigned int base)                \
 	JSTR_NOEXCEPT                                           \
 	{                                                       \
-		return jstr_##u##lltoa_p(dst, number, base);    \
+		return jstr_##u##lltoa_p(number, buf, base);    \
 	}
 
 PJSTR_ULLTOA(unsigned long, ultoa, u)
@@ -106,8 +107,8 @@ PJSTR_ULLTOA(int, itoa, )
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
-jstr_ulltoa_p_sep(char *R dst,
-		  unsigned long long number,
+jstr_ulltoa_p_sep(unsigned long long number,
+		  char *R buf,
 		  const unsigned int base,
 		  const int separator)
 JSTR_NOEXCEPT
@@ -117,8 +118,8 @@ JSTR_NOEXCEPT
 	loop = number /= base;                \
 	break
 	if (number <= 999)
-		return jstr_ulltoa_p(dst, number, base);
-	char *start = dst;
+		return jstr_ulltoa_p(number, buf, base);
+	char *start = buf;
 	int n = 0;
 	int c;
 	for (unsigned long long loop;;) {
@@ -130,24 +131,24 @@ JSTR_NOEXCEPT
 		default: CONV(base);
 		}
 		if (++n != 3) {
-			*dst++ = c;
+			*buf++ = c;
 			if (loop == 0)
 				break;
 		} else {
-			*dst = c;
+			*buf = c;
 			if (loop == 0)
 				break;
-			*(dst + 1) = separator;
-			dst += 2;
+			*(buf + 1) = separator;
+			buf += 2;
 			n = 0;
 		}
 	}
-	const char *const end = dst;
-	*dst-- = '\0';
-	while (start < dst) {
+	const char *const end = buf;
+	*buf-- = '\0';
+	while (start < buf) {
 		c = *start;
-		*start++ = *dst;
-		*dst-- = c;
+		*start++ = *buf;
+		*buf-- = c;
 	}
 	return (char *)end;
 #undef CONV
@@ -161,17 +162,17 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_lltoa_p_sep(char *R dst,
-		 long long number,
+jstr_lltoa_p_sep(long long number,
+		 char *R buf,
 		 const unsigned int base,
 		 const int separator)
 JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
-		*dst++ = '-';
+		*buf++ = '-';
 	}
-	return jstr_ulltoa_p_sep(dst, number, base, separator);
+	return jstr_ulltoa_p_sep(number, buf, base, separator);
 }
 
 #define PJSTR_ULLTOA_SEP(type, name, u)                                     \
@@ -184,13 +185,13 @@ JSTR_NOEXCEPT
 	JSTR_RETURNS_NONNULL                                                \
 	JSTR_INLINE                                                         \
 	static char *                                                       \
-	jstr_##name##_p_sep(char *R dst,                                    \
-			    type number,                                    \
+	jstr_##name##_p_sep(type number,                                    \
+			    char *R buf,                                    \
 			    const unsigned int base,                        \
 			    const int separator)                            \
 	JSTR_NOEXCEPT                                                       \
 	{                                                                   \
-		return jstr_##u##lltoa_p_sep(dst, number, base, separator); \
+		return jstr_##u##lltoa_p_sep(number, buf, base, separator); \
 	}
 
 PJSTR_ULLTOA_SEP(unsigned long, ultoa, u)
