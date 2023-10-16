@@ -195,12 +195,12 @@ JSTR_NOEXCEPT
 		return 1;
 	JSTR_L_RESERVE(l, argc, return 0);
 	va_start(ap, l);
-	argc = 0;
-	for (size_t arglen; (arg = va_arg(ap, char *)); ++argc) {
+	jstr_ty *j = l->data + l->size;
+	for (size_t arglen; (arg = va_arg(ap, char *)); ++j) {
 		arglen = strlen(arg);
 		if (jstr_unlikely(
 		    !jstr_assign_len(
-		    &l->data[argc].data, &l->data[argc].size, &l->data[argc].capacity, arg, arglen)))
+		    &j->data, &j->size, &j->capacity, arg, arglen)))
 			goto err_free_l;
 	}
 	l->size = argc;
