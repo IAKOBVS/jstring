@@ -591,10 +591,10 @@ JSTR_NOEXCEPT
 	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
 	is_isalpha0 += jstr_isalpha(ne[1]);
-	typedef unsigned char u;
-	size_t nelen;
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
+	typedef unsigned char u;
+	size_t nelen;
 	if (ne[2] == '\0') {
 		if (is_isalpha0)
 			return pjstr_strcasestr2((u *)hs, (u *)ne);
