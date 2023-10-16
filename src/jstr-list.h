@@ -8,6 +8,17 @@
 
 #define R JSTR_RESTRICT
 
+#define PJSTR_L_RESERVE_FAIL(func, list, new_cap, do_on_malloc_err) \
+	if (jstr_unlikely(!func(list, new_cap))) {                  \
+		PJSTR_EXIT_MAYBE();                                 \
+		do_on_malloc_err;                                   \
+	}
+
+#define JSTR_L_RESERVE(list, new_cap, do_on_malloc_err) \
+	PJSTR_L_RESERVE_FAIL(jstr_l_reserve, list, new_cap, do_on_malloc_err)
+#define JSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_malloc_err) \
+	PJSTR_L_RESERVE_FAIL(jstr_l_reserve_always, list, new_cap, do_on_malloc_err)
+
 PJSTR_BEGIN_DECLS
 
 typedef struct jstr_l_ty {
@@ -103,7 +114,9 @@ jstr_l_reserve(jstr_l_ty *R l,
 	       size_t new_cap)
 JSTR_NOEXCEPT
 {
-	return (new_cap > l->capacity) ? jstr_l_reserve_always(l, new_cap) : 1;
+	if (new_cap > l->capacity)
+		JSTR_L_RESERVE_ALWAYS(l, new_cap, return 0);
+	return 1;
 }
 
 JSTR_FUNC
@@ -113,11 +126,13 @@ jstr_l_add_len_unsafe(jstr_l_ty *R l,
 		      const size_t slen)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(!jstr_append_len(&l->data[l->size].data,
-					   &l->data[l->size].size,
-					   &l->data[l->size].capacity,
-					   s,
-					   slen)))
+	if (jstr_unlikely(
+	    !jstr_append_len(
+	    &l->data[l->size].data,
+	    &l->data[l->size].size,
+	    &l->data[l->size].capacity,
+	    s,
+	    slen)))
 		goto err_str;
 	++l->size;
 	return 1;
@@ -133,9 +148,9 @@ jstr_l_add_len(jstr_l_ty *R l,
 	       const size_t slen)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(!jstr_l_reserve(l, l->capacity + slen)))
-		goto err;
-	if (jstr_unlikely(!jstr_l_add_len_unsafe(l, s, slen)))
+	JSTR_L_RESERVE(l, l->capacity + slen, goto err);
+	if (jstr_unlikely(
+	    !jstr_l_add_len_unsafe(l, s, slen)))
 		goto err;
 	return 1;
 err:
@@ -161,14 +176,12 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return 1;
-	if (jstr_unlikely(!jstr_l_reserve(l, argc)))
-		return 0;
+	JSTR_L_RESERVE(l, argc, return 0);
 	va_start(ap, l);
 	jstr_ty *j = l->data;
 	for (size_t arglen; (arg = va_arg(ap, char *));) {
 		arglen = strlen(arg);
-		if (jstr_unlikely(!jstr_reserveexact(&j->data, &j->size, &j->capacity, arglen)))
-			goto err_va_end;
+		JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen, goto err_va_end);
 		jstr_append_len_unsafe(j->data, &j->size, arg, arglen);
 	}
 	va_end(ap);
