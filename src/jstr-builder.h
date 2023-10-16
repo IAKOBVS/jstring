@@ -206,6 +206,14 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
+static jstr_ty *
+jstr_end(const jstr_ty *R j)
+{
+	return (jstr_ty *)j->data + j->size;
+}
+
+JSTR_FUNC
+JSTR_INLINE
 static int
 pjstr_reallocexact(char *R *R s,
 		   size_t *R sz,
