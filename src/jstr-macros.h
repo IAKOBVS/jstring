@@ -13,11 +13,11 @@
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if !(defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__)
-#	include <alloca.h>
 #	define JSTR_HAVE_VLA 1
 #endif
 
 #ifdef alloca
+#	include <alloca.h>
 #	define JSTR_HAVE_ALLOCA 1
 #endif
 

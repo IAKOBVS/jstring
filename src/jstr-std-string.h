@@ -10,6 +10,14 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
+#if (defined __GNUC__ || defined __clang__) && defined _GNU_SOURCE
+#	define jstr_strdupa_len(dst_ptr, src, n) ({  \
+		const char *const *const p = dst_ptr; \
+		*p = (char *)alloca(n + 1);           \
+		jstr_strcpy_len(*p, src, n);          \
+	})
+#endif
+
 PJSTR_BEGIN_DECLS
 
 JSTR_FUNC
@@ -214,14 +222,14 @@ JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strdup(const char *R s,
-	    size_t *R sz)
+jstr_strdup_p(const char *R s,
+	      size_t *R n)
 JSTR_NOEXCEPT
 {
-	*sz = strlen(s);
-	char *const p = (char *)malloc(*sz + 1);
+	*n = strlen(s);
+	char *const p = (char *)malloc(*n + 1);
 	if (jstr_likely(p != NULL)) {
-		jstr_strcpy_len(p, s, *sz);
+		jstr_strcpy_len(p, s, *n);
 		return p;
 	}
 	return NULL;
@@ -231,13 +239,13 @@ JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_memdup(const char *R src,
-	    const size_t srclen)
+jstr_memdup(const char *R s,
+	    const size_t n)
 JSTR_NOEXCEPT
 {
-	char *const p = (char *)malloc(srclen);
+	char *const p = (char *)malloc(n);
 	if (jstr_likely(p != NULL)) {
-		memcpy(p, src, srclen);
+		memcpy(p, s, n);
 		return p;
 	}
 	return NULL;
@@ -247,16 +255,24 @@ JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strdup_len(const char *R src,
-		const size_t srclen)
+jstr_strdup_len(const char *R s,
+		const size_t n)
 JSTR_NOEXCEPT
 {
-	char *const p = jstr_memdup(src, srclen + 1);
-	if (jstr_likely(p != NULL)) {
-		*(p + srclen) = '\0';
-		return p;
-	}
+	char *const p = (char *)malloc(n + 1);
+	if (jstr_likely(p != NULL))
+		return jstr_strcpy_len(p, s, n);
 	return NULL;
+}
+
+JSTR_MALLOC
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_strdup(const char *R s)
+JSTR_NOEXCEPT
+{
+	return jstr_strdup_len(s, strlen(s));
 }
 
 JSTR_FUNC_PURE
