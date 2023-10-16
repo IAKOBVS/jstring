@@ -108,9 +108,7 @@ sub gen_nonlen_funcs
 		{
 			goto CONT;
 		}
-		if ($decl !~ /$G_MCR_INLINE[^_]/o) {
-			$decl =~ s/static/$G_MCR_INLINE\n$G_MCR_MAYBE_UNUSED\nstatic/o;
-		}
+		$decl = add_inline($decl);
 		my $PTR    = ($decl =~ /\*.*\*/) ? '&'       : '';
 		my $RETURN = ($_    =~ /return/) ? 'return ' : '';
 		$params =~ s/\)/,/;
@@ -184,9 +182,7 @@ sub gen_struct_funcs
 		}
 		my $RETURNS_END_PTR = 0;
 		$decl =~ s/$FN/$FN\_j/;
-		if ($decl !~ /$G_MCR_INLINE[^_]/o) {
-			$decl =~ s/static/$G_MCR_INLINE\n$G_MCR_MAYBE_UNUSED\nstatic/o;
-		}
+		$decl = add_inline($decl);
 		if ($FN =~ /_p(?:_|$)/) {
 			$decl =~ s/.*Return value:(?:.|\n)*?(\*\/|\/\/)/$1/;
 			$decl =~ s/_p//;
@@ -285,4 +281,13 @@ sub is_size_ptr
 {
 	my ($params) = @_;
 	return ($params =~ /\*.*sz[,\)]/) ? 1 : 0;
+}
+
+sub add_inline
+{
+	my ($decl) = @_;
+	if ($decl !~ /$G_MCR_INLINE[^_]/o) {
+		$decl =~ s/static/$G_MCR_INLINE\n$G_MCR_MAYBE_UNUSED\nstatic/o;
+	}
+	return $decl;
 }
