@@ -40,40 +40,6 @@ PJSTR_END_DECLS
 	} while (0)
 #undef P_JARR_NULLIFY
 
-/* Allocate PTR. */
-#define jarr_alloc(j, new_cap)                                                                                                                          \
-	do {                                                                                                                                            \
-		P_JARR_CHECK_ARG(j);                                                                                                                    \
-		P_JARR_SZ(j) = 0;                                                                                                                       \
-		P_JARR_CAP(j) = P_JARR_MIN_ALLOC(j, new_cap);                                                                                           \
-		P_JARR_DATA(j) = malloc(P_JARR_CAP(j));                                                                                                 \
-		PJSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS(j); break;);                                                                \
-		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                                                      \
-	} while (0)
-/* Allocate PTR and pushing VAL. */
-#define jarr_alloc_push(j, value)                                                                                                                       \
-	do {                                                                                                                                            \
-		P_JARR_CHECK_ARG(j);                                                                                                                    \
-		P_JARR_SZ(j) = 1;                                                                                                                       \
-		P_JARR_CAP(j) = JSTR_MIN_CAP;                                                                                                           \
-		P_JARR_DATA(j) = malloc(P_JARR_CAP(j));                                                                                                 \
-		PJSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS(j); break;);                                                                \
-		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                                                      \
-		P_JARR_DATA(j)                                                                                                                          \
-		[0] = (value);                                                                                                                          \
-	} while (0)
-/* Allocate and pushes to PTR. */
-#define jarr_alloc_assign(j, ...)                                                                                                                       \
-	do {                                                                                                                                            \
-		P_JARR_CHECK_ARG(j);                                                                                                                    \
-		P_JARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                                                                                   \
-		P_JARR_CAP(j) = P_JARR_MIN_ALLOC(j, PJSTR_PP_NARG(__VA_ARGS__));                                                                        \
-		P_JARR_DATA(j) = P_JARR_CAST(P_JARR_DATA(j), malloc(P_JARR_CAP(j)));                                                                    \
-		PJSTR_MALLOC_ERR(P_JARR_DATA(j), P_JARR_NULLIFY_MEMBERS(j); break;);                                                                \
-		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                                                      \
-		P_JARR_SZ(j) = PJSTR_PP_NARG(__VA_ARGS__);                                                                                              \
-		PJSTR_PP_ARRCPY_VA_ARGS(P_JARR_DATA(j), __VA_ARGS__);                                                                                   \
-	} while (0)
 /* Add elements to end of PTR. */
 #define jarr_cat(j, ...)                                                                                                                                \
 	do {                                                                                                                                            \

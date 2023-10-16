@@ -36,6 +36,8 @@ PJSTR_END_DECLS
 	do {                                                                \
 		JSTR_ASSERT_IS_SIZE(old_cap);                               \
 		JSTR_ASSERT_IS_SIZE(new_cap);                               \
+		if (jstr_unlikely(old_cap == 0))                            \
+			old_cap = JSTR_MIN_CAP / P_JARR_ALLOC_MULTIPLIER;   \
 		while (((old_cap) *= P_JARR_GROWTH) < (new_cap))            \
 			;                                                   \
 		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
