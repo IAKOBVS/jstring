@@ -593,22 +593,21 @@ JSTR_NOEXCEPT
 	is_isalpha0 += jstr_isalpha(ne[1]);
 	typedef unsigned char u;
 	size_t nelen;
+	if (jstr_unlikely(hs[1] == '\0'))
+		return NULL;
 	if (ne[2] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0'))
-			return NULL;
 		if (is_isalpha0)
 			return pjstr_strcasestr2((u *)hs, (u *)ne);
 		nelen = 2;
 	} else if (ne[3] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0')
-		    || jstr_unlikely(hs[2] == '\0'))
+		if (jstr_unlikely(hs[2] == '\0'))
 			return NULL;
 		if (is_isalpha0
 		    + jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((u *)hs, (u *)ne);
 		nelen = 3;
 	} else if (ne[4] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0' || jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0')))
+		if (jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0'))
 			return NULL;
 		if (is_isalpha0
 		    + jstr_isalpha(ne[2])
