@@ -493,6 +493,8 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCSPN_OPTIMIZED
 	if (n > JSTR_STRCASECHR_STRCSPN_THRES) {
 		const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
+		if (jstr_tolower(*s) == a[0])
+			return (char *)s;
 		s += strcspn(s, a);
 		return *s ? (char *)s : NULL;
 	}
