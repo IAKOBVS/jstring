@@ -19,7 +19,7 @@ typedef struct jstr_l_ty {
 JSTR_CONST
 JSTR_INLINE
 static jstr_ty *
-jstr_l_start(jstr_l_ty *R l)
+jstr_l_start(const jstr_l_ty *R l)
 JSTR_NOEXCEPT
 {
 	return l->data;
@@ -28,7 +28,7 @@ JSTR_NOEXCEPT
 JSTR_CONST
 JSTR_INLINE
 static jstr_ty *
-jstr_l_end(jstr_l_ty *R l)
+jstr_l_end(const jstr_l_ty *R l)
 JSTR_NOEXCEPT
 {
 	return l->data + l->size;
@@ -37,7 +37,7 @@ JSTR_NOEXCEPT
 JSTR_CONST
 JSTR_INLINE
 static jstr_ty *
-jstr_l_at(jstr_l_ty *R l,
+jstr_l_at(const jstr_l_ty *R l,
 	  const size_t at)
 JSTR_NOEXCEPT
 {
@@ -176,11 +176,13 @@ jstr_l_find_len(const jstr_l_ty *R l,
 		const size_t slen)
 JSTR_NOEXCEPT
 {
-	for (size_t i = 0; i < l->size; ++i)
-		if (slen == l->data[i].size
-		    && *s == *(l->data[i].data)
-		    && !memcmp(s, l->data[i].data, slen))
-			return l->data + i;
+	const jstr_ty *p = l->data;
+	const jstr_ty *const end = jstr_l_end(l);
+	for (; p < end; ++l)
+		if (slen == p->size
+		    && *s == *(p->data)
+		    && !memcmp(s, p->data, slen))
+			return (jstr_ty *)p;
 	return NULL;
 }
 
