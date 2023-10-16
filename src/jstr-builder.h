@@ -543,7 +543,7 @@ jstr_push_back(char *R *R s,
 	       const char c)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*cap == *sz + 1))
+	if (jstr_unlikely(*cap <= *sz + 1))
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
 	jstr_push_back_unsafe(s, sz, c);
 	return 1;
@@ -577,7 +577,7 @@ jstr_push_front(char *R *R s,
 		const char c)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*cap == *sz + 1))
+	if (jstr_unlikely(*cap <= *sz + 1))
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
 	jstr_push_front_unsafe(*s, sz, c);
 	return 1;
