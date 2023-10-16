@@ -144,7 +144,7 @@ jstr_l_add_len_unsafe(jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
-	    !jstr_append_len(
+	    !jstr_assign_len(
 	    &l->data[l->size].data,
 	    &l->data[l->size].size,
 	    &l->data[l->size].capacity,
