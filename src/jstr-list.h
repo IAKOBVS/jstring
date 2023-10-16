@@ -71,6 +71,7 @@ JSTR_INLINE
 static size_t
 jstr_l_index(jstr_l_ty *R l,
 	     jstr_ty *R curr)
+JSTR_NOEXCEPT
 {
 	return curr - l->data;
 }
