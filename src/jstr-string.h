@@ -255,7 +255,7 @@ jstr_memchrnul(const void *R s,
 	       const size_t n)
 JSTR_NOEXCEPT
 {
-	const char *const p = (char *)jstr_memrchr(s, c, n);
+	const void *const p = jstr_memrchr(s, c, n);
 	return (void *)(p ? p : (char *)s + n);
 }
 
