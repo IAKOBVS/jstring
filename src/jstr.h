@@ -7,5 +7,6 @@
 #include "jstr-macros.h"
 #include "jstr-replace.h"
 #include "jstr-string.h"
+#include "jstr-list.h"
 
 #endif /* JSTR_H */

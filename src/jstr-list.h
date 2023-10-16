@@ -8,8 +8,6 @@
 
 #define R JSTR_RESTRICT
 
-#define JSTR_L_ALIGN_UP()
-
 PJSTR_BEGIN_DECLS
 
 typedef struct jstr_l_ty {
