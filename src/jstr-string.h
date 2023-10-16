@@ -1166,11 +1166,9 @@ JSTR_NOEXCEPT
 		return end;
 	int cnt = (sz - 1) / 3;
 	end += cnt;
-	*end = '\0';
 	const char *const start = nptr;
 	nptr += (sz - 1);
-	int n = 0;
-	while (nptr >= start) {
+	for (int n = 0; nptr >= start; ) {
 		*(nptr + cnt) = *nptr;
 		--nptr;
 		if (++n == 3) {
@@ -1180,6 +1178,7 @@ JSTR_NOEXCEPT
 			n = 0;
 		}
 	}
+	*end = '\0';
 	return (char *)end;
 }
 
