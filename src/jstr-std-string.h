@@ -19,6 +19,7 @@ jstr_strstr_len(const char *R hs,
 		const size_t hslen,
 		const char *R ne,
 		const size_t nelen)
+JSTR_NOEXCEPT
 {
 	return (char *)JSTR_MEMMEM(hs, hslen, ne, nelen);
 	(void)hslen;
@@ -30,6 +31,7 @@ JSTR_INLINE
 static size_t
 jstr_strnlen(const char *R s,
 	     const size_t maxlen)
+JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRNLEN
 	return strnlen(s, maxlen);
@@ -64,6 +66,7 @@ static void *
 jstr_mempmove(void *dst,
 	      const void *src,
 	      const size_t n)
+JSTR_NOEXCEPT
 {
 	return (char *)memmove(dst, src, n) + n;
 }
@@ -74,6 +77,7 @@ static char *
 jstr_strmove_len(void *dst,
 		 const void *src,
 		 const size_t n)
+JSTR_NOEXCEPT
 {
 	*(char *)jstr_mempmove(dst, src, n) = '\0';
 	return (char *)dst;
@@ -84,6 +88,7 @@ JSTR_INLINE
 static char *
 jstr_strmove(void *dst,
 	     const void *src)
+JSTR_NOEXCEPT
 {
 	*(char *)jstr_mempmove(dst, src, strlen((char *)src)) = '\0';
 	return (char *)dst;
@@ -95,6 +100,7 @@ static char *
 jstr_stpmove_len(void *dst,
 		 const void *src,
 		 const size_t n)
+JSTR_NOEXCEPT
 {
 	return jstr_strmove_len(dst, src, n) + n;
 }
@@ -104,6 +110,7 @@ JSTR_INLINE
 static char *
 jstr_stpmove(void *dst,
 	     const void *src)
+JSTR_NOEXCEPT
 {
 	return jstr_stpmove_len(dst, src, strlen((char *)src));
 }
@@ -117,6 +124,7 @@ static char *
 jstr_stpmove_len_may_eq(void *dst,
 			const void *src,
 			const size_t n)
+JSTR_NOEXCEPT
 {
 	return ((dst != src) ? jstr_stpmove_len(dst, src, n) : (char *)dst) + n;
 }
@@ -127,6 +135,7 @@ static char *
 jstr_strcpy_len(void *R dst,
 		const void *R src,
 		const size_t n)
+JSTR_NOEXCEPT
 {
 	*(char *)jstr_mempcpy(dst, src, n) = '\0';
 	return (char *)dst;
@@ -138,6 +147,7 @@ static char *
 jstr_stpcpy_len(void *R dst,
 		const void *R src,
 		const size_t n)
+JSTR_NOEXCEPT
 {
 	return jstr_strcpy_len(dst, src, n) + n;
 }
@@ -202,6 +212,7 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_strdup(const char *R s)
+JSTR_NOEXCEPT
 {
 	const size_t len = strlen(s);
 	char *const p = (char *)malloc(len + 1);
@@ -218,6 +229,7 @@ JSTR_INLINE
 static char *
 jstr_memdup(const char *R src,
 	    const size_t srclen)
+JSTR_NOEXCEPT
 {
 	char *const p = (char *)malloc(srclen);
 	if (jstr_likely(p != NULL)) {
@@ -233,6 +245,7 @@ JSTR_INLINE
 static char *
 jstr_strdup_len(const char *R src,
 		const size_t srclen)
+JSTR_NOEXCEPT
 {
 	char *const p = jstr_memdup(src, srclen);
 	if (jstr_likely(p != NULL)) {
@@ -247,6 +260,7 @@ JSTR_INLINE
 static char *
 jstr_strchrnul(const char *R s,
 	       const int c)
+JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(s, c);
@@ -263,6 +277,7 @@ jstr_strstrnul_len(const char *R hs,
 		   const size_t hslen,
 		   const char *R ne,
 		   const size_t nelen)
+JSTR_NOEXCEPT
 {
 	const char *const p = jstr_strstr_len(hs, hslen, ne, nelen);
 	return (char *)(p ? p : hs + hslen);
@@ -274,6 +289,7 @@ JSTR_INLINE
 static char *
 jstr_strstrnul(const char *R hs,
 	       const char *R ne)
+JSTR_NOEXCEPT
 {
 	const char *const p = strstr(hs, ne);
 	return (char *)(p ? p : hs + strlen(hs));
@@ -376,6 +392,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static int
 jstr_atoi(const char *R s)
+JSTR_NOEXCEPT
 {
 	return strtol(s, NULL, 0);
 }
@@ -384,6 +401,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static long
 jstr_atol(const char *R s)
+JSTR_NOEXCEPT
 {
 	return strtol(s, NULL, 0);
 }
@@ -392,6 +410,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static long long
 jstr_atoll(const char *R s)
+JSTR_NOEXCEPT
 {
 	return strtoll(s, NULL, 0);
 }
@@ -400,6 +419,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static double
 jstr_atod(const char *R s)
+JSTR_NOEXCEPT
 {
 	return strtod(s, NULL);
 }
@@ -408,6 +428,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static float
 jstr_atof(const char *R s)
+JSTR_NOEXCEPT
 {
 	return strtof(s, NULL);
 }

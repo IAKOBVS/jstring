@@ -107,6 +107,7 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_reg_free(regex_t *R preg)
+JSTR_NOEXCEPT
 {
 	regfree(preg);
 }
@@ -201,6 +202,7 @@ jstr_reg_exec(const regex_t *R preg,
 	      const size_t nmatch,
 	      regmatch_t *R pmatch,
 	      const int eflags)
+JSTR_NOEXCEPT
 {
 	return (jstr_reg_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags);
 }
@@ -216,6 +218,7 @@ jstr_reg_exec_len(const regex_t *R preg,
 		  const size_t nmatch,
 		  regmatch_t *R pmatch,
 		  const int eflags)
+JSTR_NOEXCEPT
 {
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
@@ -843,6 +846,7 @@ pjstr_reg_strlen_rplc_dst(const regmatch_t *R rm,
 			  unsigned char *R rplc,
 			  const size_t rplclen,
 			  size_t *R rdstlen)
+JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
 	const unsigned char *const rplc_e = rplc + rplclen;
@@ -866,6 +870,7 @@ pjstr_reg_creat_rplc_bref(const unsigned char *R mtc,
 			  unsigned char *R rdst,
 			  unsigned char *R rplc,
 			  const size_t rplclen)
+JSTR_NOEXCEPT
 {
 	const unsigned char *rold;
 	const unsigned char *const rplc_e = rplc + rplclen;
