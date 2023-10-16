@@ -470,7 +470,10 @@ JSTR_NOEXCEPT
    0 on malloc error;
    otherwise 1.
 */
-JSTR_FUNC
+JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(2)
+JSTR_NONNULL(3)
+JSTR_NONNULL(4)
 JSTR_INLINE
 static int
 jstr_append_len(char *R *R s,
@@ -492,7 +495,10 @@ JSTR_NOEXCEPT
    0 on malloc error;
    otherwise 1.
 */
-JSTR_FUNC
+JSTR_FUNC_MAY_NULL
+JSTR_NONNULL(2)
+JSTR_NONNULL(3)
+JSTR_NONNULL(4)
 JSTR_INLINE
 static int
 jstr_assign_len(char *R *R s,
