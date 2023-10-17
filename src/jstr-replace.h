@@ -1147,22 +1147,6 @@ JSTR_NOEXCEPT
 	return jstr_insertafter_len(s, sz, cap, find, src, strlen(find), strlen(src));
 }
 
-/* Escape any ESC character in S with a backslash. */
-JSTR_FUNC_VOID
-static void
-jstr_escapespn_unsafe(char *R s,
-		      size_t sz,
-		      const char *R esc)
-{
-	const char *end = s + sz;
-	while (*(s += strspn(s, esc))
-	       && *(s += strcspn(s, esc))) {
-		jstr_strmove_len(s + 1, s, end++ - s);
-		*s = '\\';
-		s += 2;
-	}
-}
-
 PJSTR_END_DECLS
 
 #undef R
