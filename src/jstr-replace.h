@@ -342,7 +342,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Remove REJECT in S.
+  Remove all REJECT in S.
 */
 JSTR_INLINE
 JSTR_FUNC_VOID
