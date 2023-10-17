@@ -100,7 +100,7 @@ PJSTR_END_DECLS
 #define JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact_always, s, sz, cap, new_cap, do_on_malloc_err)
 #define JSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserveexact, s, sz, cap, new_cap, do_on_malloc_err)
+	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 #define JSTR_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact, s, sz, cap, new_cap, do_on_malloc_err)
 
@@ -494,6 +494,50 @@ JSTR_NOEXCEPT
 }
 
 /*
+   Only prepend NUL if S is empty.
+   Return value:
+   0 on malloc error;
+   otherwise 1.
+*/
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_prepend_len_unsafe(char *R s,
+			size_t *R sz,
+			const char *R src,
+			const size_t srclen)
+JSTR_NOEXCEPT
+{
+	if (jstr_likely(*s != 0))
+		jstr_strmove_len(s + srclen, s, *sz);
+	else
+		*(s + srclen) = '\0';
+	memcpy(s, src, srclen);
+	*sz += srclen;
+}
+
+/*
+   Only prepend NUL if S is empty.
+   Return value:
+   0 on malloc error;
+   otherwise 1.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_prepend_len(char *R *R s,
+		 size_t *R sz,
+		 size_t *R cap,
+		 const char *R src,
+		 const size_t srclen)
+JSTR_NOEXCEPT
+{
+	JSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
+	jstr_prepend_len_unsafe(*s, sz, src, srclen);
+	return 1;
+}
+
+/*
    Assign SRC to DST.
    S is NUL terminated.
    Return value:
@@ -539,13 +583,13 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-jstr_push_back_unsafe(char *R *R s,
+jstr_push_back_unsafe(char *R s,
 		      size_t *R sz,
 		      const char c)
 JSTR_NOEXCEPT
 {
-	*(*s + *sz) = c;
-	*(*s + ++*sz) = '\0';
+	*(s + *sz) = c;
+	*(s + ++*sz) = '\0';
 }
 
 /*
@@ -566,7 +610,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
-	jstr_push_back_unsafe(s, sz, c);
+	jstr_push_back_unsafe(*s, sz, c);
 	return 1;
 }
 
