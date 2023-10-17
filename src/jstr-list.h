@@ -281,8 +281,7 @@ jstr_l_delete_len(jstr_l_ty *R l,
 		  const size_t slen)
 JSTR_NOEXCEPT
 {
-	jstr_ty *p = jstr_l_find_len(l, s, slen);
-	pjstr_l_delete(l, p);
+	pjstr_l_delete(l, jstr_l_find_len(l, s, slen));
 }
 
 JSTR_FUNC_VOID
@@ -292,8 +291,7 @@ jstr_l_delete_starts_len(jstr_l_ty *R l,
 			 const size_t slen)
 JSTR_NOEXCEPT
 {
-	jstr_ty *p = jstr_l_starts_len(l, s, slen);
-	pjstr_l_delete(l, p);
+	pjstr_l_delete(l, jstr_l_starts_len(l, s, slen));
 }
 
 JSTR_FUNC_VOID
@@ -303,8 +301,7 @@ jstr_l_delete_ends_len(jstr_l_ty *R l,
 		       const size_t slen)
 JSTR_NOEXCEPT
 {
-	jstr_ty *p = jstr_l_ends_len(l, s, slen);
-	pjstr_l_delete(l, p);
+	pjstr_l_delete(l, jstr_l_ends_len(l, s, slen));
 }
 
 PJSTR_END_DECLS
