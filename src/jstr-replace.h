@@ -285,6 +285,41 @@ JSTR_NOEXCEPT
 }
 
 /*
+  Replace all REJECT in S with RPLC.
+  Return value:
+  Pointer to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_replacespn_p(char *R s,
+		  const char *R reject,
+		  const int rplc)
+JSTR_NOEXCEPT
+{
+	const char *p;
+	while (*s && (*(s += strcspn(s, reject)))) {
+		for (p = s + strspn(s, reject); s < p; *s++ = rplc)
+			;
+	}
+	return s;
+}
+
+/*
+  Replace all REJECT in S with RPLC.
+  Return value:
+  Pointer to '\0' in S;
+*/
+JSTR_FUNC_VOID
+static void
+jstr_replacespn_j(jstr_ty *R j,
+		  const char *R reject,
+		  const int rplc)
+JSTR_NOEXCEPT
+{
+	j->size = jstr_replacespn_p(j->data, reject, rplc) - j->data;
+}
+
+/*
   Remove all REJECT in S.
   Return value:
   Pointer to '\0' in S;
@@ -1110,6 +1145,22 @@ jstr_insertafter(char *R *R s,
 JSTR_NOEXCEPT
 {
 	return jstr_insertafter_len(s, sz, cap, find, src, strlen(find), strlen(src));
+}
+
+/* Escape any ESC character in S with a backslash. */
+JSTR_FUNC_VOID
+static void
+jstr_escapespn_unsafe(char *R s,
+		      size_t sz,
+		      const char *R esc)
+{
+	const char *end = s + sz;
+	while (*(s += strspn(s, esc))
+	       && *(s += strcspn(s, esc))) {
+		jstr_strmove_len(s + 1, s, end++ - s);
+		*s = '\\';
+		s += 2;
+	}
 }
 
 PJSTR_END_DECLS
