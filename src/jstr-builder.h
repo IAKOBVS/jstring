@@ -94,15 +94,15 @@ PJSTR_END_DECLS
 	}
 
 #define JSTR_RESERVE_ALWAYS_NOMALLOC(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserve_always_nonzero, s, sz, cap, new_cap, do_on_malloc_err)
-#define JSTR_RESERVE_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserve_always, s, sz, cap, new_cap, do_on_malloc_err)
+	PJSTR_RESERVE_FAIL(jstr_reserve_always_nomalloc, s, sz, cap, new_cap, do_on_malloc_err)
 #define JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact_always, s, sz, cap, new_cap, do_on_malloc_err)
-#define JSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 #define JSTR_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact, s, sz, cap, new_cap, do_on_malloc_err)
+#define JSTR_RESERVE_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
+	PJSTR_RESERVE_FAIL(jstr_reserve_always, s, sz, cap, new_cap, do_on_malloc_err)
+#define JSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
+	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 
 PJSTR_BEGIN_DECLS
 
@@ -287,7 +287,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_reserve_always_nonzero(char *R *R s,
+jstr_reserve_always_nomalloc(char *R *R s,
 			    size_t *R sz,
 			    size_t *R cap,
 			    const size_t new_cap)
