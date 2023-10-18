@@ -496,22 +496,23 @@ JSTR_NOEXCEPT
 	c = (char)jstr_tolower(c);
 	while (n-- && jstr_tolower(*s) != c)
 		++s;
-	return *s ? (char *)s : NULL;
+	return (n == 0) ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 pjstr_strcasechr_len(const char *R s,
-		     const int c,
+		     int c,
 		     const int n)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCSPN_OPTIMIZED
 	if (n > JSTR_STRCASECHR_THRES * 2) {
-		const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
-		if (jstr_tolower(*s) == a[0])
+		c = (char)jstr_tolower(c);
+		if (jstr_tolower(*s) == c)
 			return (char *)s;
+		const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0' };
 		s += strcspn(s, a);
 		return *s ? (char *)s : NULL;
 	}
