@@ -30,6 +30,21 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+JSTR_FUNC_PURE
+JSTR_INLINE
+static size_t
+jstr_strnlen(const char *R s,
+	     const size_t maxlen)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNLEN
+	return strnlen(s, maxlen);
+#else
+	const char *const p = (char *)memchr(s, '\0', maxlen);
+	return p ? (size_t)(p - s) : maxlen;
+#endif
+}
+
 JSTR_INLINE
 static const char *
 jstr_sadd(uintptr_t x, uintptr_t y)
@@ -97,33 +112,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-static char *
-jstr_strnchrnul(const char *R s,
-		const int c,
-		const size_t n)
-JSTR_NOEXCEPT
-{
-	/* Based on glibc strchrnul released under the terms of the GNU Lesser General Public License.
-	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-	uintptr_t s_int = (uintptr_t)s;
-	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	jstr_word_ty word = *word_ptr;
-	const char *lbyte = jstr_sadd(s_int, n - 1);
-	const jstr_word_ty *lword = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
-	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
-	if (mask != 0)
-		return (char *)s + jstr_word_index_first(mask);
-	if (word_ptr == lword)
-		return NULL;
-	do
-		word = *++word_ptr;
-	while (word_ptr != lword && !jstr_word_has_zero_eq(word, repeated_c));
-	word_ptr = (jstr_word_ty *)(char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
-	return ((char *)word_ptr <= lbyte) ? (char *)word_ptr : NULL;
-}
-
-JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strnchr(const char *R s,
@@ -131,8 +119,7 @@ jstr_strnchr(const char *R s,
 	     const size_t n)
 JSTR_NOEXCEPT
 {
-	s = jstr_strnchrnul(s, c, n);
-	return *(unsigned char *)s == (unsigned char)c ? (char *)s : NULL;
+	return (char *)memchr(s, c, jstr_strnlen(s, n));
 }
 
 JSTR_FUNC_PURE
@@ -171,21 +158,6 @@ JSTR_NOEXCEPT
 	return (char *)JSTR_MEMMEM(hs, hslen, ne, nelen);
 	(void)hslen;
 	(void)nelen;
-}
-
-JSTR_FUNC_PURE
-JSTR_INLINE
-static size_t
-jstr_strnlen(const char *R s,
-	     const size_t maxlen)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STRNLEN
-	return strnlen(s, maxlen);
-#else
-	const char *const p = (char *)memchr(s, '\0', maxlen);
-	return p ? (size_t)(p - s) : maxlen;
-#endif
 }
 
 /*
