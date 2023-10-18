@@ -428,8 +428,8 @@ JSTR_NOEXCEPT
 
 #define L(c) jstr_tolower(c)
 
-JSTR_INLINE
 JSTR_FUNC_PURE
+JSTR_INLINE
 static char *
 pjstr_strcasestr2(const unsigned char *R h,
 		  const unsigned char *R n)
@@ -442,8 +442,8 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(h - 1) : NULL;
 }
 
-JSTR_INLINE
 JSTR_FUNC_PURE
+JSTR_INLINE
 static char *
 pjstr_strcasestr3(const unsigned char *R h,
 		  const unsigned char *R n)
@@ -456,8 +456,8 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(h - 2) : NULL;
 }
 
-JSTR_INLINE
 JSTR_FUNC_PURE
+JSTR_INLINE
 static char *
 pjstr_strcasestr4(const unsigned char *R h,
 		  const unsigned char *R n)
