@@ -112,7 +112,7 @@ pjstr_replaceat_len_higher(char *R *R s,
 			   const size_t findlen)
 JSTR_NOEXCEPT
 {
-	JSTR_RESERVE(s, sz, cap, *sz + rplclen - findlen, return 0);
+	JSTR_RESERVE(s, sz, cap, *sz + rplclen - findlen, return NULL);
 	return jstr_replaceat_len_unsafe(*s, sz, at, rplc, rplclen, findlen);
 }
 
@@ -624,7 +624,7 @@ JSTR_NOEXCEPT
 	char *p = jstr_strstr_len(*s + start_idx, *sz - start_idx, find, findlen);
 	if (jstr_unlikely(p == NULL))
 		return 1;
-	return jstr_insert_len(s, sz, cap, p - *s, rplc, rplclen);
+	return jstr_replaceat_len(s, sz, cap, p - *s, rplc, rplclen, findlen) != NULL;
 }
 
 /*
