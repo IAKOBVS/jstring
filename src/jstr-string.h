@@ -516,7 +516,7 @@ JSTR_NOEXCEPT
 		return *s ? (char *)s : NULL;
 	}
 #endif
-	return pjstr_strcasechr_generic(s, c);
+	return pjstr_strcasechr_generic_len(s, c, n);
 	(void)n;
 }
 

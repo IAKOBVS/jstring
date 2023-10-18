@@ -29,6 +29,8 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
+#define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); ptr < jstr_ty_end_; ++ptr)
+
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
@@ -288,9 +290,9 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_reserve_always_nomalloc(char *R *R s,
-			    size_t *R sz,
-			    size_t *R cap,
-			    const size_t new_cap)
+			     size_t *R sz,
+			     size_t *R cap,
+			     const size_t new_cap)
 JSTR_NOEXCEPT
 {
 	return pjstr_realloc(s, sz, cap, new_cap + 1);
@@ -930,6 +932,7 @@ err:
 }
 
 /*
+   Append ... to end of S.
    Return 0 on error.
    Supports only some conversions: see jstr_asprintf().
    Otherwise, return 0 and set errno to EINVAL.
@@ -937,11 +940,11 @@ err:
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static int
-jstr_asprintf_cat(char *R *R s,
-		  size_t *R sz,
-		  size_t *R cap,
-		  const char *R fmt,
-		  ...)
+jstr_asprintf_append(char *R *R s,
+		     size_t *R sz,
+		     size_t *R cap,
+		     const char *R fmt,
+		     ...)
 JSTR_NOEXCEPT
 {
 	va_list ap;
@@ -967,6 +970,7 @@ err:
 }
 
 /*
+   Append ... to end of S.
    Return 0 on error.
    Supports only some conversions: see jstr_asprintf().
    Otherwise, return 0 and set errno to EINVAL.
@@ -974,9 +978,9 @@ err:
 JSTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static int
-jstr_asprintf_cat_j(jstr_ty *R j,
-		    const char *R fmt,
-		    ...)
+jstr_asprintf_append_j(jstr_ty *R j,
+		       const char *R fmt,
+		       ...)
 JSTR_NOEXCEPT
 {
 	va_list ap;
