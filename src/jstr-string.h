@@ -15,15 +15,6 @@ PJSTR_END_DECLS
 #include "jstr-ctype.h"
 #include "jstr-std-string.h"
 
-#include "jstr-string-fza.h"
-#include "jstr-string-fzb.h"
-#include "jstr-string-fzc.h"
-#include "jstr-string-fzi.h"
-#include "jstr-string-misc.h"
-#include "jstr-string-opthr.h"
-#include "jstr-string-optype.h"
-#include "jstr-string-shift.h"
-
 #define R JSTR_RESTRICT
 
 PJSTR_BEGIN_DECLS
@@ -171,115 +162,49 @@ JSTR_NOEXCEPT
 #undef PJSTR_STRRSTR_BMH
 }
 
-#if JSTR_HAVE_MEMRCHR
-JSTR_INLINE
-#endif
 JSTR_FUNC_PURE
+JSTR_INLINE
 static void *
-jstr_memrchr(const void *R s,
-	     const int c,
-	     const size_t n)
+pjstr_memmem2(const unsigned char *h,
+	      const unsigned char *R n,
+	      const unsigned char *end)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(s, c, n);
-#else
-	if (jstr_unlikely(n == 0))
-		return NULL;
-	typedef unsigned char u;
-	const jstr_word_ty cc = jstr_word_repeat_bytes(c);
-	const unsigned char *const end = (unsigned char *)s + n;
-	enum { WSIZ = sizeof(jstr_word_ty) };
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
-	const jstr_word_ty *w = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(end, WSIZ);
-	const jstr_word_ty *const lbyte = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, WSIZ);
-	if ((u *)w != end)
-		if (jstr_word_has_eq(*w, cc)) {
-			const unsigned char *const ret = (u *)w + jstr_word_index_last_eq(*w, cc);
-			return (ret <= end) ? (void *)ret : NULL;
-		}
-	while (--w > lbyte)
-		if (jstr_word_has_eq(*w, cc))
-			return (void *)((u *)w + jstr_word_index_last_eq(*w, cc));
-	if (jstr_word_has_eq(*lbyte, cc)) {
-		w = (jstr_word_ty *)((u *)lbyte + jstr_word_index_last_eq(*lbyte, cc));
-		if (((u *)w - (u *)s) <= end - (u *)s)
-			return (void *)w;
-	}
-#	else
-	const unsigned char *p = (u *)JSTR_PTR_ALIGN_DOWN(end, WSIZ);
-	const unsigned char *const lbyte = (u *)JSTR_PTR_ALIGN_DOWN((u *)s, WSIZ);
-	jstr_word_ty w;
-	if (p != end) {
-		w = jstr_word_toword(p);
-		if (jstr_word_has_eq(w, cc)) {
-			const unsigned char *const ret = p + jstr_word_index_last_eq(w, cc);
-			return (ret <= end) ? (void *)ret : NULL;
-		}
-	}
-	while ((p -= WSIZ) > lbyte) {
-		w = jstr_word_toword(p);
-		if (jstr_word_has_eq(w, cc))
-			return (void *)(p + jstr_word_index_last_eq(w, cc));
-	}
-	w = jstr_word_toword(lbyte);
-	if (jstr_word_has_eq(w, cc)) {
-		p = lbyte + jstr_word_index_last_eq(w, cc);
-		if (p - (u *)s <= end - (u *)s)
-			return (void *)p;
-	}
-#	endif
-	return NULL;
-#endif
-}
-
-JSTR_FUNC_PURE
-static char *
-jstr_strnchr(const char *R s,
-	     const int c,
-	     const size_t n)
-JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(n == 0))
-		return (char *)s;
-	typedef unsigned char u;
-	const jstr_word_ty cc = jstr_word_repeat_bytes(c);
-	const unsigned char *const end = (unsigned char *)s + n;
-	const unsigned char *const start = (unsigned char *)s;
-	enum { WSIZ = sizeof(jstr_word_ty) };
-	const jstr_word_ty *w = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, WSIZ);
-	if ((char *)w != s) {
-		if (jstr_word_has_eq(*w, cc)) {
-			const char *const ret = (char *)w + jstr_word_index_first_eq(*w, cc);
-			if (ret <= start) {
-			}
-		}
-	}
-	/* return (void *)memchr(s, c, jstr_strnlen((char *)s, n)); */
-}
-
-JSTR_FUNC_PURE
-JSTR_INLINE
-static char *
-jstr_strrchrnul(const char *R s,
-		const int c)
-JSTR_NOEXCEPT
-{
-	const size_t len = strlen(s);
-	const char *const p = (char *)jstr_memrchr(s, c, len);
-	return (char *)(p ? p : s + len);
+	const uint16_t nw = n[0] << 8 | n[1];
+	uint16_t hw = h[0] << 8 | h[1];
+	for (++h; h <= end && hw != nw; hw = hw << 8 | *++h)
+		;
+	return hw == nw ? (char *)(h - 1) : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-jstr_memchrnul(const void *R s,
-	       const int c,
-	       const size_t n)
+pjstr_memmem3(const unsigned char *h,
+	      const unsigned char *R n,
+	      const unsigned char *end)
 JSTR_NOEXCEPT
 {
-	const void *const p = jstr_memrchr(s, c, n);
-	return (void *)(p ? p : (char *)s + n);
+	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8;
+	uint32_t hw = h[0] << 24 | h[1] << 16 | h[2] << 8;
+	for (h += 2; h <= end && hw != nw; hw = (hw | *++h) << 8)
+		;
+	return hw == nw ? (char *)(h - 2) : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static void *
+pjstr_memmem4(const unsigned char *h,
+	      const unsigned char *R n,
+	      const unsigned char *end)
+JSTR_NOEXCEPT
+{
+	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
+	uint32_t hw = h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
+	for (h += 3; h <= end && hw != nw; hw = hw << 8 | *++h)
+		;
+	return hw == nw ? (char *)(h - 3) : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -321,9 +246,19 @@ JSTR_NOEXCEPT
 				h += shift1;                                                       \
 			} while (h <= end);                                                        \
 		} while (0)
+	typedef unsigned char u;
+	if (jstr_unlikely(hl < nl))
+		return NULL;
 	const unsigned char *h = (unsigned char *)hs;
 	const unsigned char *n = (unsigned char *)ne;
 	const unsigned char *const end = h + hl - nl;
+	switch (nl) {
+	case 0: return (void *)hs;
+	case 1: return (void *)memchr(hs, *(u *)ne, nl);
+	case 2: return pjstr_memmem2(h, n, end);
+	case 3: return pjstr_memmem3(h, n, end);
+	case 4: return pjstr_memmem4(h, n, end);
+	}
 	size_t tmp;
 	const size_t m1 = nl - 1;
 	size_t off = 0;
@@ -525,7 +460,7 @@ JSTR_NOEXCEPT
 {
 	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
 	uint16_t hw = L(h[0]) << 8 | L(h[1]);
-	for (h++; *h && hw != nw; hw = hw << 8 | L(*++h))
+	for (++h; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
 	return hw == nw ? (char *)(h - 1) : NULL;
 }

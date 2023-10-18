@@ -8,6 +8,15 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
+#include "jstr-string-fza.h"
+#include "jstr-string-fzb.h"
+#include "jstr-string-fzc.h"
+#include "jstr-string-fzi.h"
+#include "jstr-string-misc.h"
+#include "jstr-string-opthr.h"
+#include "jstr-string-optype.h"
+#include "jstr-string-shift.h"
+
 #define R JSTR_RESTRICT
 
 #if JSTR_HAVE_ALLOCA
@@ -20,6 +29,135 @@ PJSTR_END_DECLS
 #endif
 
 PJSTR_BEGIN_DECLS
+
+JSTR_INLINE
+static const char *
+jstr_sadd(uintptr_t x, uintptr_t y)
+{
+	return (const char *)(y > UINTPTR_MAX - x ? UINTPTR_MAX : x + y);
+}
+
+#if JSTR_HAVE_MEMRCHR
+JSTR_INLINE
+#endif
+JSTR_FUNC_PURE
+static void *
+jstr_memrchr(const void *R s,
+	     const int c,
+	     const size_t n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_MEMRCHR
+	return (void *)memrchr(s, c, n);
+#else
+	/* Taken from glibc memrchr released under the terms of the GNU Lesser General Public License.
+	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
+	if (jstr_unlikely(n == 0))
+		return NULL;
+	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	uintptr_t s_int = (uintptr_t)s;
+	jstr_word_ty word = *word_ptr;
+	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
+	const char *lbyte = jstr_sadd(s_int, n - 1);
+	const jstr_word_ty *lword = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
+	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_eq_all(word, repeated_c), s_int);
+	if (mask != 0) {
+		char *ret = (char *)s + jstr_word_index_first(mask);
+		return (ret <= lbyte) ? ret : NULL;
+	}
+	if (word_ptr == lword)
+		return NULL;
+	word = jstr_word_toword(++word_ptr);
+	while (word_ptr != lword) {
+		if (jstr_word_has_eq(word, repeated_c))
+			return (char *)word_ptr + jstr_word_index_first_eq(word, repeated_c);
+		word = jstr_word_toword(++word_ptr);
+	}
+	if (jstr_word_has_eq(word, repeated_c)) {
+		char *ret = (char *)word_ptr + jstr_word_index_first_eq(word, repeated_c);
+		if (ret <= lbyte)
+			return ret;
+	}
+	return NULL;
+#endif
+}
+
+JSTR_FUNC_PURE
+static char *
+jstr_strchrnul(const char *R s,
+	       const int c)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRCHRNUL
+	return (char *)strchrnul(s, c);
+#else
+	const char *const start = s;
+	return (char *)((s = strchr(s, c)) ? s : start + strlen(start));
+#endif
+}
+
+JSTR_FUNC_PURE
+static char *
+jstr_strnchrnul(const char *R s,
+		const int c,
+		const size_t n)
+JSTR_NOEXCEPT
+{
+	/* Based on glibc strchrnul released under the terms of the GNU Lesser General Public License.
+	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
+	uintptr_t s_int = (uintptr_t)s;
+	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
+	jstr_word_ty word = *word_ptr;
+	const char *lbyte = jstr_sadd(s_int, n - 1);
+	const jstr_word_ty *lword = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
+	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
+	if (mask != 0)
+		return (char *)s + jstr_word_index_first(mask);
+	if (word_ptr == lword)
+		return NULL;
+	do
+		word = *++word_ptr;
+	while (word_ptr != lword && !jstr_word_has_zero_eq(word, repeated_c));
+	word_ptr = (jstr_word_ty *)(char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
+	return ((char *)word_ptr <= lbyte) ? (char *)word_ptr : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strnchr(const char *R s,
+	     const int c,
+	     const size_t n)
+JSTR_NOEXCEPT
+{
+	s = jstr_strnchrnul(s, c, n);
+	return *(unsigned char *)s == (unsigned char)c ? (char *)s : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strrchrnul(const char *R s,
+		const int c)
+JSTR_NOEXCEPT
+{
+	const size_t len = strlen(s);
+	const char *const p = (char *)jstr_memrchr(s, c, len);
+	return (char *)(p ? p : s + len);
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static void *
+jstr_memchrnul(const void *R s,
+	       const int c,
+	       const size_t n)
+JSTR_NOEXCEPT
+{
+	const void *const p = jstr_memrchr(s, c, n);
+	return (void *)(p ? p : (char *)s + n);
+}
 
 JSTR_FUNC
 JSTR_INLINE
@@ -274,21 +412,6 @@ jstr_strdup(const char *R s)
 JSTR_NOEXCEPT
 {
 	return jstr_strdup_len(s, strlen(s));
-}
-
-JSTR_FUNC_PURE
-JSTR_INLINE
-static char *
-jstr_strchrnul(const char *R s,
-	       const int c)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STRCHRNUL
-	return (char *)strchrnul(s, c);
-#else
-	const char *const p = strchr(s, c);
-	return (char *)(p ? p : s + strlen(s));
-#endif
 }
 
 JSTR_FUNC_PURE
