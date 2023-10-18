@@ -941,6 +941,42 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
+jstr_caseends_len(const char *R hs,
+		  const size_t hslen,
+		  const char *R ne,
+		  const size_t nelen)
+JSTR_NOEXCEPT
+{
+	return jstr_likely(hslen >= nelen) ? !jstr_strncasecmp(hs + hslen - nelen, ne, nelen) : 0;
+}
+
+/*
+  Check if S2 is in end of S1.
+  Return value:
+  1 if true;
+  0 if false.
+*/
+JSTR_INLINE
+JSTR_FUNC_PURE
+static int
+jstr_caseends(const char *R hs,
+	      const size_t hslen,
+	      const char *R ne,
+	      const size_t nelen)
+JSTR_NOEXCEPT
+{
+	return !jstr_strncasecmp(hs + hslen - nelen, ne, nelen);
+}
+
+/*
+  Check if S2 is in end of S1.
+  Return value:
+  1 if true;
+  0 if false.
+*/
+JSTR_INLINE
+JSTR_FUNC_PURE
+static int
 jstr_ends_len(const char *R hs,
 	      const size_t hslen,
 	      const char *R ne,
@@ -948,6 +984,40 @@ jstr_ends_len(const char *R hs,
 JSTR_NOEXCEPT
 {
 	return jstr_likely(hslen >= nelen) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
+}
+
+/*
+  Check if S1 starts with S2 case-insensitively.
+  Return value:
+  1 if true;
+  0 if false.
+*/
+JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static int
+jstr_casestarts_len(const char *R hs,
+		    const size_t hslen,
+		    const char *R ne,
+		    const size_t nelen)
+JSTR_NOEXCEPT
+{
+	return jstr_likely(hslen >= nelen) ? !jstr_strcasecmp_len(hs, ne, nelen) : 0;
+}
+
+/*
+  Check if S1 starts with S2 case-insensitively.
+  Return value:
+  1 if true;
+  0 if false.
+*/
+JSTR_INLINE
+JSTR_MAYBE_UNUSED
+static int
+jstr_casestarts(const char *R hs,
+		const char *R ne)
+JSTR_NOEXCEPT
+{
+	return jstr_strncasecmp(hs, ne, strlen(ne));
 }
 
 /*
