@@ -205,7 +205,7 @@ jstr_insertafter_len(char *R *R s,
 		     const size_t srclen)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(findlen == 1))
+	if (findlen == 1)
 		return jstr_insertafterchr_len(s, sz, cap, *find, src, srclen);
 	if (jstr_unlikely(findlen == 0))
 		return 1;
@@ -231,7 +231,7 @@ jstr_insertafterall_len(char *R *R s,
 			const size_t srclen)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(findlen == 1))
+	if (findlen == 1)
 		return jstr_insertafterallchr_len(s, sz, cap, *find, src, srclen);
 	if (jstr_unlikely(findlen == 0))
 		return 1;
@@ -613,8 +613,8 @@ JSTR_NOEXCEPT
 		*sz = jstr_remove_len_p(*s + start_idx, find, *sz - start_idx, findlen) - *s;
 		return 1;
 	}
-	if (jstr_unlikely(rplclen == 1)) {
-		if (jstr_unlikely(findlen == 1)) {
+	if (rplclen == 1) {
+		if (findlen == 1) {
 			jstr_replacechr_len(*s + start_idx, *find, *rplc, *sz - start_idx);
 			return 1;
 		}
@@ -701,7 +701,7 @@ pjstr_removeall_len_p(const pjstr_flag_use_n_ty flag,
 		      const size_t findlen)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(findlen == 1))
+	if (findlen == 1)
 		return pjstr_removeallchr_len_p(flag, s, *find, n, sz);
 	if (jstr_unlikely(findlen == 0))
 		return s + sz;
@@ -817,8 +817,8 @@ JSTR_NOEXCEPT
 		*sz = pjstr_removeall_len_p(flag, dst, find, n, *sz - start_idx, findlen) - *s;
 		return 1;
 	}
-	if (jstr_unlikely(findlen == 1)) {
-		if (jstr_unlikely(rplclen == 1)) {
+	if (findlen == 1) {
+		if (rplclen == 1) {
 			jstr_replacechr_len(dst, *find, *rplc, *sz - start_idx);
 			return 1;
 		}
@@ -1123,7 +1123,7 @@ jstr_putafter_len(char *R *R s,
 		  const size_t srclen)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(findlen == 1))
+	if (findlen == 1)
 		return jstr_putafterchr_len(s, sz, cap, *find, src, srclen);
 	if (jstr_unlikely(findlen == 0))
 		return 1;
