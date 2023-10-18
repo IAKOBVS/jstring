@@ -48,10 +48,10 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_insert_unsafe(char *R s,
-		 const size_t at,
-		 const char *R src,
-		 const size_t sz,
-		 const size_t srclen)
+		   const size_t at,
+		   const char *R src,
+		   const size_t sz,
+		   const size_t srclen)
 JSTR_NOEXCEPT
 {
 	memmove(s + at + srclen,
@@ -87,11 +87,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_insert_len(char *R *R s,
-	      size_t *R sz,
-	      size_t *R cap,
-	      const size_t at,
-	      const char *R rplc,
-	      const size_t rplclen)
+		size_t *R sz,
+		size_t *R cap,
+		const size_t at,
+		const char *R rplc,
+		const size_t rplclen)
 JSTR_NOEXCEPT
 {
 	JSTR_RESERVE(s, sz, cap, *sz + rplclen, return 0);
@@ -150,11 +150,11 @@ JSTR_INLINE
 JSTR_FUNC
 static int
 jstr_insertafterchr_len(char *R *R s,
-		      size_t *R sz,
-		      size_t *R cap,
-		      const int c,
-		      const char *R src,
-		      const size_t srclen)
+			size_t *R sz,
+			size_t *R cap,
+			const int c,
+			const char *R src,
+			const size_t srclen)
 JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(*s, c, *sz);
@@ -171,11 +171,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_insertafterallchr_len(char *R *R s,
-			 size_t *R sz,
-			 size_t *R cap,
-			 const int c,
-			 const char *R src,
-			 const size_t srclen)
+			   size_t *R sz,
+			   size_t *R cap,
+			   const int c,
+			   const char *R src,
+			   const size_t srclen)
 JSTR_NOEXCEPT
 {
 	size_t off = 0;
@@ -197,12 +197,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_insertafter_len(char *R *R s,
-		   size_t *R sz,
-		   size_t *R cap,
-		   const char *R find,
-		   const char *R src,
-		   const size_t findlen,
-		   const size_t srclen)
+		     size_t *R sz,
+		     size_t *R cap,
+		     const char *R find,
+		     const char *R src,
+		     const size_t findlen,
+		     const size_t srclen)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 1))
@@ -223,12 +223,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_insertafterall_len(char *R *R s,
-		      size_t *R sz,
-		      size_t *R cap,
-		      const char *R find,
-		      const char *R src,
-		      const size_t findlen,
-		      const size_t srclen)
+			size_t *R sz,
+			size_t *R cap,
+			const char *R find,
+			const char *R src,
+			const size_t findlen,
+			const size_t srclen)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 1))
