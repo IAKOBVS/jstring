@@ -61,7 +61,7 @@ JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static jtrie_errcode_ty
-jtrie_insert(jtrie_node_ty *R root,
+jtrie_add(jtrie_node_ty *R root,
 	     const char *R word)
 JSTR_NOEXCEPT
 {
