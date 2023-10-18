@@ -39,7 +39,7 @@ PJSTR_BEGIN_DECLS
 	} while (0)
 
 /*
-  Slip SRC into DST[AT].
+  Insert SRC into DST[AT].
   Return value:
   ptr to '\0' in S.
   Assume that S have enough space for SRC.
@@ -80,7 +80,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Slip SRC into DST[AT].
+  Insert SRC into DST[AT].
   Return 0 on malloc error;
   otherwise 1.
 */
@@ -142,7 +142,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Slip SRC after C in DST.
+  Insert SRC after C in DST.
   Return 0 on malloc error;
   otherwise, 1.
 */
@@ -164,7 +164,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Slip SRC after all C in DST.
+  Insert SRC after all C in DST.
   Return 0 on malloc error;
   otherwise, 1.
 */
@@ -190,7 +190,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Slip SRC after end of NE in DST.
+  Insert SRC after end of NE in DST.
   Return 0 on malloc error;
   otherwise, 1.
 */
@@ -216,7 +216,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Slip SRC after all end of NE in DST.
+  Insert SRC after all end of NE in DST.
   Return 0 on malloc error;
   otherwise, 1.
 */
