@@ -124,18 +124,6 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 JSTR_INLINE
-static char *
-jstr_strrchrnul(const char *R s,
-		const int c)
-JSTR_NOEXCEPT
-{
-	const size_t len = strlen(s);
-	const char *const p = (char *)jstr_memrchr(s, c, len);
-	return (char *)(p ? p : s + len);
-}
-
-JSTR_FUNC_PURE
-JSTR_INLINE
 static void *
 jstr_memchrnul(const void *R s,
 	       const int c,
