@@ -984,9 +984,8 @@ JSTR_NOEXCEPT
 	       && --end != start)
 		;
 	*++end = '\0';
-	while (jstr_isspace(*s++))
-		;
-	--s;
+	while (jstr_isspace(*s))
+		++s;
 	return jstr_stpmove_len(start + 1, s, end - (u *)s);
 }
 
