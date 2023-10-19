@@ -51,11 +51,10 @@ JSTR_NOEXCEPT
 	JSTR_BZERO_ARRAY(shift);
 #if PJSTR_MEMMEM_SHORT_NEEDLE
 	for (int i = 1; i < (int)m1; ++i)
-		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
 #else
 	for (size_t i = 1; i < m1; ++i)
-		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
 #endif
+		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
 	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
 	goto start;
