@@ -1117,11 +1117,9 @@ jstr_countchr_len(const char *R s,
 		  const size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(sz == 0))
-		return 0;
 	size_t cnt = 0;
 	const char *const end = s + sz;
-	while ((s = (char *)memchr(s, c, end - s)))
+	while (*s && (s = (char *)memchr(s, c, end - s)))
 		++s, ++cnt;
 	return cnt;
 }
@@ -1141,15 +1139,14 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(findlen == 1))
 		return jstr_countchr_len(s, *find, sz);
-	if (jstr_unlikely(findlen == 0)
-	    || jstr_unlikely(sz == 0))
+	if (jstr_unlikely(findlen == 0))
 		return 0;
 	size_t cnt = 0;
 #if JSTR_HAVE_MEMMEM
 	const char *const end = s + sz;
-	while ((s = jstr_strstr_len(s, end - s, find, findlen)))
+	while (*s && (s = jstr_strstr_len(s, end - s, find, findlen)))
 #else
-	while ((s = strstr(s, find)))
+	while (*s && (s = strstr(s, find)))
 #endif
 		++cnt, s += findlen;
 	return cnt;
