@@ -41,12 +41,7 @@ JSTR_NOEXCEPT
 #endif
 	/* Based on glibc memmem and strstr released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-#if PJSTR_MEMMEM_REVERSE
-	const unsigned char *const start = hs;
-	hs += hl - 1;
-#else
 	const unsigned char *end = hs + hl - nl;
-#endif
 	size_t tmp;
 	const size_t m1 = nl - 1;
 	size_t off = 0;
@@ -58,7 +53,7 @@ JSTR_NOEXCEPT
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
 	goto start;
 	do {
-#if PJSTR_MEMMEM_CHECK_EOL && !PJSTR_MEMMEM_REVERSE /* As in strstr() where we don't know where HAYSTACKLEN needs to be updated. */
+#if PJSTR_MEMMEM_CHECK_EOL /* As in strstr() where we don't know where HAYSTACKLEN needs to be updated. */
 		if (jstr_unlikely(hs > end)) {
 			end += jstr_strnlen((char *)(end + m1), 2048);
 			if (hs > end)
@@ -67,42 +62,18 @@ JSTR_NOEXCEPT
 #endif
 start:;
 		do {
-#if PJSTR_MEMMEM_REVERSE
-			hs -= m1;
-#else
 			hs += m1;
-#endif
 			tmp = shift[PJSTR_MEMMEM_HASH2(hs)];
-		}
-#if PJSTR_MEMMEM_REVERSE
-		while (!tmp & (hs >= start));
-#else
-		while (!tmp & (hs <= end));
-#endif
+		} while (!tmp & (hs <= end));
 		hs -= tmp;
-#if !PJSTR_MEMMEM_REVERSE
 		if (tmp < m1)
 			continue;
-#endif
 		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FN((char *)(hs + off), (char *)(ne + off), 8)) {
-#if PJSTR_MEMMEM_REVERSE
 			if (!PJSTR_MEMMEM_CMP_FN((char *)hs, (char *)ne, m1))
-#else
-			if (!PJSTR_MEMMEM_CMP_FN((char *)hs, (char *)ne, nl))
-#endif
 				return (PJSTR_MEMMEM_RETTYPE)hs;
 			off = (off >= 8 ? off : m1) - 8;
 		}
-#if PJSTR_MEMMEM_REVERSE
-		hs -= shift1;
-#else
 		hs += shift1;
-#endif
-	}
-#if PJSTR_MEMMEM_REVERSE
-	while (hs >= start);
-#else
-	while (hs <= end);
-#endif
+	} while (hs <= end);
 	return NULL;
 }
