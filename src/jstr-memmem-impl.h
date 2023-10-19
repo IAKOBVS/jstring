@@ -86,7 +86,11 @@ start:;
 			continue;
 #endif
 		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FN((char *)(hs + off), (char *)(ne + off), 8)) {
+#if PJSTR_MEMMEM_REVERSE
+			if (!PJSTR_MEMMEM_CMP_FN((char *)hs, (char *)ne, m1))
+#else
 			if (!PJSTR_MEMMEM_CMP_FN((char *)hs, (char *)ne, nl))
+#endif
 				return (PJSTR_MEMMEM_RETTYPE)hs;
 			off = (off >= 8 ? off : m1) - 8;
 		}
