@@ -8,7 +8,6 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr-ctype.h"
 #include "jstr-string-fza.h"
 #include "jstr-string-fzb.h"
 #include "jstr-string-fzc.h"
@@ -38,6 +37,42 @@ jstr_bzero(void *R s,
 	   const size_t n)
 {
 	return memset(s, 0, n);
+}
+
+JSTR_INLINE
+JSTR_FUNC_VOID
+static char *
+jstr_stpset(char *R s,
+	    const int c)
+{
+	const size_t n = strlen(s);
+	return (char *)memset(s, c, n) + n;
+}
+
+JSTR_INLINE
+JSTR_FUNC_VOID
+static char *
+jstr_strset(char *R s,
+	    const int c)
+{
+	const size_t n = strlen(s);
+	return (char *)memset(s, c, n);
+}
+
+JSTR_INLINE
+JSTR_FUNC_VOID
+static char *
+jstr_strzero(char *R s)
+{
+	return jstr_strset(s, 0);
+}
+
+JSTR_INLINE
+JSTR_FUNC_VOID
+static char *
+jstr_stpzero(char *R s)
+{
+	return jstr_stpset(s, 0);
 }
 
 JSTR_FUNC_PURE
