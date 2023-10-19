@@ -173,7 +173,7 @@ JSTR_NOEXCEPT
 {
 /* Based on glibc memmem released under the terms of the GNU Lesser General Public License.
    Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-#define JSTR_MEMMEM_HASH2(p) (((size_t)(((p)[0])) - ((size_t)((p)[-1]) << 3)) % 256)
+#define PJSTR_MEMMEM_HASH2(p) (((size_t)(((p)[0])) - ((size_t)((p)[-1]) << 3)) % 256)
 #define PJSTR_MEMMEM_BMH_IMPL(hs, hl, ne, nl, table_type, cmp_func, hash_func, update_haystack_len)     \
 	do {                                                                                            \
 		const unsigned char *end = hs + hl - nl;                                                \
@@ -236,7 +236,7 @@ JSTR_NOEXCEPT
 	case 3: return pjstr_memmem3(h, n, h + hl - nl);
 	case 4: return pjstr_memmem4(h, n, h + hl - nl);
 	}
-	PJSTR_MEMMEM_BMH(h, hl, n, nl, memcmp, JSTR_MEMMEM_HASH2, 0);
+	PJSTR_MEMMEM_BMH(h, hl, n, nl, memcmp, PJSTR_MEMMEM_HASH2, 0);
 #else
 	return memmem(hs, hl, ne, nl);
 #endif
@@ -277,7 +277,7 @@ jstr_strnstr(const char *R hs,
 		return NULL;
 	hl -= h - (u *)hs;
 	const unsigned char *nd = (u *)ne;
-	PJSTR_MEMMEM_BMH(h, hl, nd, nl, memcmp, JSTR_MEMMEM_HASH2, 0);
+	PJSTR_MEMMEM_BMH(h, hl, nd, nl, memcmp, PJSTR_MEMMEM_HASH2, 0);
 }
 
 /*
@@ -346,8 +346,8 @@ pjstr_strcasestr_len_bmh(const unsigned char *R h,
 			 const size_t nl)
 JSTR_NOEXCEPT
 {
-#define JSTR_MEMMEM_HASH2_TOLOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
-	PJSTR_MEMMEM_BMH(h, hl, n, nl, jstr_strcasecmp_len, JSTR_MEMMEM_HASH2_TOLOWER, 0);
+#define PJSTR_MEMMEM_HASH2_TOLOWER(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)jstr_tolower((p)[-1]) << 3)) % 256)
+	PJSTR_MEMMEM_BMH(h, hl, n, nl, jstr_strcasecmp_len, PJSTR_MEMMEM_HASH2_TOLOWER, 0);
 }
 
 JSTR_FUNC_PURE
@@ -362,7 +362,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (!jstr_strcasecmp_len((char *)h, (char *)n, nl))
 		return (char *)h;
-	PJSTR_MEMMEM_BMH(h, hl, n, nl, jstr_strcasecmp_len, JSTR_MEMMEM_HASH2_TOLOWER, 1);
+	PJSTR_MEMMEM_BMH(h, hl, n, nl, jstr_strcasecmp_len, PJSTR_MEMMEM_HASH2_TOLOWER, 1);
 }
 
 #define L(c) jstr_tolower(c)
