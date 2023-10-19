@@ -35,6 +35,7 @@ JSTR_FUNC_VOID
 static void *
 jstr_bzero(void *R s,
 	   const size_t n)
+JSTR_NOEXCEPT
 {
 	return memset(s, 0, n);
 }
@@ -44,6 +45,7 @@ JSTR_FUNC_VOID
 static char *
 jstr_stpset(char *R s,
 	    const int c)
+JSTR_NOEXCEPT
 {
 	const size_t n = strlen(s);
 	return (char *)memset(s, c, n) + n;
@@ -54,6 +56,7 @@ JSTR_FUNC_VOID
 static char *
 jstr_strset(char *R s,
 	    const int c)
+JSTR_NOEXCEPT
 {
 	const size_t n = strlen(s);
 	return (char *)memset(s, c, n);
@@ -63,6 +66,7 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static char *
 jstr_strzero(char *R s)
+JSTR_NOEXCEPT
 {
 	return jstr_strset(s, 0);
 }
@@ -71,6 +75,7 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static char *
 jstr_stpzero(char *R s)
+JSTR_NOEXCEPT
 {
 	return jstr_stpset(s, 0);
 }
@@ -93,6 +98,7 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 static const char *
 jstr_sadd(uintptr_t x, uintptr_t y)
+JSTR_NOEXCEPT
 {
 	return (const char *)(y > UINTPTR_MAX - x ? UINTPTR_MAX : x + y);
 }
