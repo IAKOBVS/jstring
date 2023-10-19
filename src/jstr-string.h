@@ -307,6 +307,8 @@ jstr_strnstr(const char *R hs,
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((u *)hs, (u *)ne, (u *)hs + n);
 	const size_t nl = strlen(ne);
+	if (jstr_unlikely(n < nl))
+		return NULL;
 	size_t hl = jstr_strnlen(hs, n);
 	if (jstr_unlikely(hl < nl))
 		return NULL;
