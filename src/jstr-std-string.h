@@ -30,8 +30,8 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-JSTR_INLINE
 JSTR_FUNC_VOID
+JSTR_INLINE
 static void *
 jstr_bzero(void *R s,
 	   const size_t n)
@@ -40,8 +40,8 @@ JSTR_NOEXCEPT
 	return memset(s, 0, n);
 }
 
-JSTR_INLINE
 JSTR_FUNC_VOID
+JSTR_INLINE
 static char *
 jstr_stpset(char *R s,
 	    const int c)
@@ -51,8 +51,8 @@ JSTR_NOEXCEPT
 	return (char *)memset(s, c, n) + n;
 }
 
-JSTR_INLINE
 JSTR_FUNC_VOID
+JSTR_INLINE
 static char *
 jstr_strset(char *R s,
 	    const int c)
@@ -62,8 +62,8 @@ JSTR_NOEXCEPT
 	return (char *)memset(s, c, n);
 }
 
-JSTR_INLINE
 JSTR_FUNC_VOID
+JSTR_INLINE
 static char *
 jstr_strzero(char *R s)
 JSTR_NOEXCEPT
@@ -71,8 +71,8 @@ JSTR_NOEXCEPT
 	return jstr_strset(s, 0);
 }
 
-JSTR_INLINE
 JSTR_FUNC_VOID
+JSTR_INLINE
 static char *
 jstr_stpzero(char *R s)
 JSTR_NOEXCEPT
