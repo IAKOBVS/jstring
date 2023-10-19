@@ -278,7 +278,7 @@ jstr_strnstr(const char *R hs,
 #include "jstr-memmem.h"
 
 /*
-   Find last NE in HS (ASCII).
+   Find last NE in HS.
    Return value:
    Pointer to NE;
    NULL if not found.
