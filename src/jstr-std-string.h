@@ -28,7 +28,24 @@ PJSTR_END_DECLS
 		} while (0)
 #endif
 
+#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                  \
+				     ? (memset(array, c, 64),                \
+					memset(array + 64, c, 64),           \
+					memset(array + 64 + 64, c, 64),      \
+					memset(array + 64 + 64 + 64, c, 64)) \
+				     : memset(array, c, sizeof(array)))
+#define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
+
 PJSTR_BEGIN_DECLS
+
+JSTR_INLINE
+JSTR_FUNC_VOID
+static void *
+jstr_bzero(void *s,
+	   const size_t n)
+{
+	return memset(s, 0, n);
+}
 
 JSTR_FUNC_PURE
 JSTR_INLINE
