@@ -885,6 +885,10 @@ cont_switch:
 					padlen = *fmt - '0';
 					for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
 						;
+					if (jstr_unlikely(padlen > INT_MAX)) {
+						errno = EOVERFLOW;
+						return -1;
+					}
 					arglen += padlen;
 					state = DEFAULT;
 				}
