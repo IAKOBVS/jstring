@@ -726,6 +726,15 @@ pjstr_asprintf_strlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
 	enum {
+		NOT_LONG = 0,
+		LONG,
+		LONG_LONG,
+	}; /* lflag */
+	enum {
+		DEFAULT = 0,
+		PAD,
+	}; /* state */
+	enum {
 		MAX_WINT = CHAR_BIT * sizeof(wint_t),
 		MAX_INT = CHAR_BIT * sizeof(int),
 		MAX_LONG = CHAR_BIT * sizeof(long),
@@ -733,14 +742,16 @@ JSTR_NOEXCEPT
 		MAX_FLT = CHAR_BIT * sizeof(float) * 2 + 1,
 		MAX_DBL = CHAR_BIT * sizeof(double) * 2 + 1,
 		MAX_LDBL = CHAR_BIT * sizeof(long double) * 2 + 1,
-		LONG = 1,
-		LONG_LONG = 2,
 		SIZE_T = (sizeof(size_t) == sizeof(unsigned long)) ? LONG : LONG_LONG,
 		PTR_T = (sizeof(uintptr_t) == sizeof(unsigned long)) ? LONG : LONG_LONG
 	};
 	int arglen = 0;
 	const char *arg;
-	for (unsigned int errno_len = 0, lflag = 0;; ++fmt) {
+	int errno_len = 0;
+	int lflag = NOT_LONG; /* long flag */
+	int state = DEFAULT;
+	unsigned int padlen;
+	for (;; ++fmt) {
 		if (*fmt == '%') {
 cont_switch:
 			switch (*++fmt) {
@@ -749,11 +760,11 @@ cont_switch:
 				arglen = jstr_likely(arg != NULL) ? strlen(arg) : sizeof("(null)") - 1;
 				break;
 			case 'c':
-				if (jstr_likely(lflag == 0)) {
+				if (jstr_likely(lflag == NOT_LONG)) {
 					++arglen;
 				} else if (lflag & LONG) {
 					arglen += MAX_INT;
-					lflag = 0;
+					lflag = NOT_LONG;
 				} else {
 					goto einval;
 				}
@@ -764,7 +775,7 @@ cont_switch:
 			case 'u':
 			case 'x':
 			case 'X':
-				if (lflag == 0) {
+				if (lflag == NOT_LONG) {
 					arglen += MAX_INT;
 				} else {
 					if (lflag & LONG)
@@ -773,11 +784,11 @@ cont_switch:
 						arglen = MAX_LONG_LONG;
 					else
 						goto einval;
-					lflag = 0;
+					lflag = NOT_LONG;
 				}
 				goto get_arg;
 			case 'o':
-				if (lflag == 0) {
+				if (lflag == NOT_LONG) {
 					arglen += MAX_LONG;
 				} else {
 					if (lflag & LONG)
@@ -786,7 +797,7 @@ cont_switch:
 						arglen += MAX_LONG_LONG;
 					else
 						goto einval;
-					lflag = 0;
+					lflag = NOT_LONG;
 				}
 				goto get_arg;
 				/* ptr */
@@ -808,11 +819,11 @@ cont_switch:
 			case 'F':
 			case 'g':
 			case 'G':
-				if (lflag == 0) {
+				if (lflag == NOT_LONG) {
 					arglen += MAX_DBL;
 				} else if (lflag & LONG) {
 					arglen += MAX_LDBL;
-					lflag = 0;
+					lflag = NOT_LONG;
 				} else {
 					goto einval;
 				}
@@ -831,6 +842,10 @@ cont_switch:
 				else
 					arglen += errno_len;
 				break;
+			/* padding */
+			case '-':
+			case '+':
+				state = PAD;
 			/* flags */
 			case '#':
 			case '0':
@@ -839,9 +854,7 @@ cont_switch:
 			/* precision */
 			case '.':
 			case '*':
-			/* field width */
-			case '-':
-			case '+':
+				goto cont_switch;
 			/* length modifier */
 			case 'l':
 				++lflag;
@@ -854,6 +867,7 @@ cont_switch:
 				goto cont_switch;
 			case 'h':
 			case 'j':
+				goto cont_switch;
 			case 0:
 			case 1:
 			case 2:
@@ -864,6 +878,13 @@ cont_switch:
 			case 7:
 			case 8:
 			case 9:
+				if (state == PAD) {
+					padlen = *fmt - '0';
+					for (; *fmt; ++fmt, padlen *= 10)
+						;
+					arglen += padlen;
+					state = DEFAULT;
+				}
 				goto cont_switch;
 einval:
 			/* case '\0': */
