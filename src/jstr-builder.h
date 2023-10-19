@@ -901,6 +901,7 @@ einval:
 get_arg:
 				va_arg(ap, void *);
 			}
+			state = DEFAULT;
 		} else {
 			++arglen;
 			if (jstr_unlikely(*fmt == '\0'))
