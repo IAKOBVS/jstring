@@ -294,45 +294,45 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	if (jstr_unlikely(hslen < nelen))
 		return NULL;
-	if (nelen > 4)
+	/* if (nelen > 4) */
 		return pjstr_strrstr_len((char *)hs, hslen, (char *)ne, nelen);
-	if (jstr_unlikely(nelen == 0))
-		return (char *)hs + hslen;
-	const unsigned char *h = (u *)jstr_memrchr(hs, *(char *)ne, hslen);
-	if (h == NULL
-	    || (uintptr_t)(h - (u *)hs) < nelen)
-		return NULL;
-	switch (nelen) {
-	case 1:
-		return (char *)h;
-	case 2: {
-		const unsigned char *const start = (u *)hs;
-		const unsigned char *n = (u *)ne;
-		const uint16_t nw = n[1] << 8 | n[0];
-		uint16_t hw = h[0] << 8 | h[-1];
-		for (h -= 2; h >= start && hw != nw; hw = hw << 8 | *h--)
-			;
-		return hw == nw ? (char *)(h + 1) : NULL;
-	}
-	case 3: {
-		const unsigned char *const start = (u *)hs;
-		const unsigned char *n = (u *)ne;
-		const uint32_t nw = n[2] << 24 | n[1] << 16 | n[0] << 8;
-		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8;
-		for (h -= 3; h >= start && hw != nw; hw = (hw | *h--) << 8)
-			;
-		return hw == nw ? (char *)(h + 1) : NULL;
-	}
-	default: { /* case 4: */
-		const unsigned char *const start = (u *)hs;
-		const unsigned char *n = (u *)ne;
-		const uint32_t nw = n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
-		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		for (h -= 4; h >= start && hw != nw; hw = hw << 8 | *h--)
-			;
-		return hw == nw ? (char *)(h + 1) : NULL;
-	}
-	}
+	/* if (jstr_unlikely(nelen == 0)) */
+	/* 	return (char *)hs + hslen; */
+	/* const unsigned char *h = (u *)jstr_memrchr(hs, *(char *)ne, hslen); */
+	/* if (h == NULL */
+	/*     || (uintptr_t)((u *)hs + hslen - (u *)h) < nelen) */
+	/* 	return NULL; */
+	/* switch (nelen) { */
+	/* case 1: */
+	/* 	return (char *)h; */
+	/* case 2: { */
+	/* 	const unsigned char *const start = (u *)hs; */
+	/* 	const unsigned char *n = (u *)ne; */
+	/* 	const uint16_t nw = n[1] << 8 | n[0]; */
+	/* 	uint16_t hw = h[0] << 8 | h[-1]; */
+	/* 	for (h -= 2; h >= start && hw != nw; hw = hw << 8 | *h--) */
+	/* 		; */
+	/* 	return hw == nw ? (char *)(h + 1) : NULL; */
+	/* } */
+	/* case 3: { */
+	/* 	const unsigned char *const start = (u *)hs; */
+	/* 	const unsigned char *n = (u *)ne; */
+	/* 	const uint32_t nw = n[2] << 24 | n[1] << 16 | n[0] << 8; */
+	/* 	uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8; */
+	/* 	for (h -= 3; h >= start && hw != nw; hw = (hw | *h--) << 8) */
+	/* 		; */
+	/* 	return hw == nw ? (char *)(h + 1) : NULL; */
+	/* } */
+	/* default: { /1* case 4: *1/ */
+	/* 	const unsigned char *const start = (u *)hs; */
+	/* 	const unsigned char *n = (u *)ne; */
+	/* 	const uint32_t nw = n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0]; */
+	/* 	uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3]; */
+	/* 	for (h -= 4; h >= start && hw != nw; hw = hw << 8 | *h--) */
+	/* 		; */
+	/* 	return hw == nw ? (char *)(h + 1) : NULL; */
+	/* } */
+	/* } */
 }
 
 #define PJSTR_MEMMEM_FN	       pjstr_strcasestr

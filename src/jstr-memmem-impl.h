@@ -49,25 +49,14 @@ JSTR_NOEXCEPT
 	size_t shift[256];
 #endif
 	JSTR_BZERO_ARRAY(shift);
-#if PJSTR_MEMMEM_REVERSE
-#	if PJSTR_MEMMEM_SHORT_NEEDLE
-	for (int i = m1, j = 1; i > 0; --i, ++j)
-#	else
-	for (size_t i = m1, j = 1; i > 0; --i, ++j)
-#	endif
-		shift[PJSTR_MEMMEM_HASH2(ne + i)] = j;
-	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + 1)];
-	shift[PJSTR_MEMMEM_HASH2(ne + 1)] = m1;
-#else
-#	if PJSTR_MEMMEM_SHORT_NEEDLE
+#if PJSTR_MEMMEM_SHORT_NEEDLE
 	for (int i = 1; i < (int)m1; ++i)
-#	else
+#else
 	for (size_t i = 1; i < m1; ++i)
-#	endif
+#endif
 		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
 	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
-#endif
 	goto start;
 	do {
 #if PJSTR_MEMMEM_CHECK_EOL && !PJSTR_MEMMEM_REVERSE /* As in strstr() where we don't know where HAYSTACKLEN needs to be updated. */
@@ -88,13 +77,14 @@ start:;
 		}
 #if PJSTR_MEMMEM_REVERSE
 		while (!tmp & (hs >= start));
-		hs += tmp;
 #else
 		while (!tmp & (hs <= end));
-		hs -= tmp;
 #endif
+		hs -= tmp;
+#if !PJSTR_MEMMEM_REVERSE
 		if (tmp < m1)
 			continue;
+#endif
 		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FN((char *)(hs + off), (char *)(ne + off), 8)) {
 #if PJSTR_MEMMEM_REVERSE
 			if (!PJSTR_MEMMEM_CMP_FN((char *)hs, (char *)ne, m1))
