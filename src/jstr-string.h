@@ -210,13 +210,22 @@ jstr_memmem(const void *R hs,
 	    const size_t nl)
 JSTR_NOEXCEPT
 {
+	typedef unsigned char u;
 #if JSTR_HAVE_MEMMEM
+#	if defined __GLIBC__ && !JSTR_HAVE_MEMMEM_OPTIMIZED && !defined __OpenBSD__ && !defined __FreeBSD__
+	if (jstr_unlikely(hl < nl))
+		return NULL;
+	if (nl == 3)
+		return pjstr_memmem3((u *)hs, (u *)ne, (u *)hs + hl - nl);
+	if (nl == 4)
+		return pjstr_memmem3((u *)hs, (u *)ne, (u *)hs + hl - nl);
+#	endif
 	return memmem(hs, hl, ne, nl);
 #else
 	if (jstr_unlikely(hl < nl))
 		return NULL;
-	const unsigned char *const h = (unsigned char *)hs;
-	const unsigned char *const n = (unsigned char *)ne;
+	const unsigned char *const h = (u *)hs;
+	const unsigned char *const n = (u *)ne;
 	switch (nl) {
 	case 0: return (void *)hs;
 	case 1: return (void *)memchr(hs, *n, nl);
