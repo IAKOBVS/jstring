@@ -12,12 +12,101 @@ PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
-#include "jstr-ctype.h"
 #include "jstr-std-string.h"
 
 #define R JSTR_RESTRICT
 
 PJSTR_BEGIN_DECLS
+
+/*
+  Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+#if JSTR_HAVE_STRNCASECMP
+JSTR_INLINE
+#endif
+JSTR_FUNC_PURE
+static int
+jstr_strncasecmp(const char *R s1,
+		 const char *R s2,
+		 size_t n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP
+	return strncasecmp(s1, s2, n);
+#else
+	if (jstr_unlikely(n == 0))
+		return 0;
+	const unsigned char *R p1 = (unsigned char *)s1;
+	const unsigned char *R p2 = (unsigned char *)s2;
+	int ret;
+	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++))
+	       && *p1++
+	       && n--)
+		;
+	return ret;
+#endif
+}
+
+/*
+  Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+#if JSTR_HAVE_STRNCASECMP
+JSTR_INLINE
+#endif
+JSTR_FUNC_PURE
+static int
+jstr_strcasecmp_len(const char *R s1,
+		    const char *R s2,
+		    size_t n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP
+	return strncasecmp(s1, s2, n);
+#else
+	if (jstr_unlikely(n == 0))
+		return 0;
+	const unsigned char *R p1 = (unsigned char *)s1;
+	const unsigned char *R p2 = (unsigned char *)s2;
+	while (!(jstr_tolower(*p1++) - jstr_tolower(*p2++))
+	       && n--)
+		;
+	return n ? jstr_tolower(*(p1 - 1)) - jstr_tolower(*(p2 - 1)) : 0;
+#endif
+}
+
+/*
+  Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+JSTR_FUNC_PURE
+#if JSTR_HAVE_STRCASECMP
+JSTR_INLINE
+#endif
+static int
+jstr_strcasecmp(const char *R s1,
+		const char *R s2)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRCASECMP
+	return strcasecmp(s1, s2);
+#else
+	const unsigned char *R p1 = (unsigned char *)s1;
+	const unsigned char *R p2 = (unsigned char *)s2;
+	int ret;
+	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++))
+	       && *p1++)
+		;
+	return ret;
+#endif
+}
 
 JSTR_FUNC_PURE
 static void *
