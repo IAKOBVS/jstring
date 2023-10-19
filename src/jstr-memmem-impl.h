@@ -32,7 +32,7 @@ JSTR_CONCAT(PJSTR_MEMMEM_FN, _long_impl)
  const size_t nl)
 JSTR_NOEXCEPT
 {
-	/* Based on glibc memmem released under the terms of the GNU Lesser General Public License.
+	/* Based on glibc memmem and strstr released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 #if PJSTR_MEMMEM_REVERSE
 	const unsigned char *const start = hs;
