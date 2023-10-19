@@ -62,6 +62,9 @@ JSTR_NOEXCEPT
 	return (char *)memset(s, c, n);
 }
 
+/*
+   Return pointer to '\0' in S.
+*/
 JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
@@ -71,6 +74,9 @@ JSTR_NOEXCEPT
 	return jstr_strset(s, 0);
 }
 
+/*
+   Return pointer to '\0' in S.
+*/
 JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
