@@ -32,12 +32,23 @@ PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_VOID
 JSTR_INLINE
-static void *
+static void
 jstr_bzero(void *R s,
 	   const size_t n)
 JSTR_NOEXCEPT
 {
-	return memset(s, 0, n);
+	memset(s, 0, n);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_bcmp(const void *R s1,
+	  const void *R s2,
+	  const size_t n)
+JSTR_NOEXCEPT
+{
+	return memcmp(s1, s2, n);
 }
 
 JSTR_FUNC_VOID

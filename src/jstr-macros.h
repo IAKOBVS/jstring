@@ -788,6 +788,12 @@ case '~':
 #	define JSTR_HAVE_FCVT_R  1
 #endif
 
+#if defined _DEFAULT_SOURCE || !defined __USE_XOPEN2K8
+#	define JSTR_HAVE_BCMP 1
+#	define JSTR_HAVE_BCOPY 1
+#	define JSTR_HAVE_BZERO 1
+#endif
+
 #if defined __x86_64__ || defined _M_X64
 #	define JSTR_ARCH_X86_64 1
 #elif defined i386 || defined __i386__ || defined __i386 || defined _M_IX86
