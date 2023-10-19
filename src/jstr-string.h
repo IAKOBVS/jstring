@@ -316,14 +316,10 @@ JSTR_NOEXCEPT
 	default: {
 		const uint32_t nw = n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		if (nelen == 4) {
-			for (h -= 3; h >= start && hw != nw; hw = hw << 8 | *--h)
-				;
-			return hw == nw ? (char *)h : NULL;
-		}
 		for (h -= 3; h >= start; hw = hw << 8 | *--h)
-			if (hw == nw && !memcmp(h, n, nelen))
-				return (char *)h;
+			if (hw == nw)
+				if (nelen == 4 || !memcmp(h, n, nelen))
+					return (char *)h;
 		return NULL;
 	}
 	}
