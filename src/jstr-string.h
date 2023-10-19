@@ -193,12 +193,13 @@ JSTR_NOEXCEPT
 		goto start_##table_type;                                                                \
 		do {                                                                                    \
 			/* As in strstr() where we don't know the haystacklen and need to update it. */ \
-			if (update_haystack_len)                                                        \
+			if (update_haystack_len) {                                                      \
 				if (jstr_unlikely(hs > end)) {                                          \
 					end += jstr_strnlen((char *)(end + m1), 2048);                  \
 					if (hs > end)                                                   \
 						return NULL;                                            \
 				}                                                                       \
+			}                                                                               \
 			start_##table_type:;                                                            \
 			do {                                                                            \
 				hs += m1;                                                               \
