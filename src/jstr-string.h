@@ -272,7 +272,7 @@ jstr_strnstr(const char *R hs,
 	return pjstr_strnstr(hs, hl, ne, nl);
 }
 
-#define PJSTR_MEMMEM_FN	     pjstr_strrstr
+#define PJSTR_MEMMEM_FN	     pjstr_strrstr_len
 #define PJSTR_MEMMEM_RETTYPE char *
 #define PJSTR_MEMMEM_REVERSE (1)
 #include "jstr-memmem.h"
@@ -295,7 +295,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hslen < nelen))
 		return NULL;
 	if (nelen > 4)
-		return pjstr_strrstr((char *)hs, hslen, (char *)ne, nelen);
+		return pjstr_strrstr_len((char *)hs, hslen, (char *)ne, nelen);
 	if (jstr_unlikely(nelen == 0))
 		return (char *)hs + hslen;
 	const unsigned char *h = (u *)jstr_memrchr(hs, *(char *)ne, hslen);
