@@ -60,7 +60,7 @@ JSTR_NOEXCEPT
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
 	goto start;
 	do {
-#if PJSTR_MEMMEM_CHECK_EOL && !PJSTR_MEMMEM_REVESE /* As in strstr() where we don't know the haystacklen and need to update it. */
+#if PJSTR_MEMMEM_CHECK_EOL && !PJSTR_MEMMEM_REVESE /* As in strstr() where we don't know where HAYSTACKLEN needs to be updated. */
 		if (jstr_unlikely(hs > end)) {
 			end += jstr_strnlen((char *)(end + m1), 2048);
 			if (hs > end)
