@@ -32,6 +32,13 @@ JSTR_CONCAT(PJSTR_MEMMEM_FN, _long_impl)
  const size_t nl)
 JSTR_NOEXCEPT
 {
+#if PJSTR_MEMMEM_SHORT_NEEDLE
+	typedef int idx_ty;
+	typedef uint8_t arr_ty;
+#else
+	typedef size_t idx_ty;
+	typedef size_t arr_ty;
+#endif
 	/* Based on glibc memmem and strstr released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 #if PJSTR_MEMMEM_REVERSE
@@ -43,17 +50,9 @@ JSTR_NOEXCEPT
 	size_t tmp;
 	const size_t m1 = nl - 1;
 	size_t off = 0;
-#if PJSTR_MEMMEM_SHORT_NEEDLE
-	uint8_t shift[256];
-#else
-	size_t shift[256];
-#endif
+	arr_ty shift[256];
 	JSTR_BZERO_ARRAY(shift);
-#if PJSTR_MEMMEM_SHORT_NEEDLE
-	for (int i = 1; i < (int)m1; ++i)
-#else
-	for (size_t i = 1; i < m1; ++i)
-#endif
+	for (idx_ty i = 1; i < (idx_ty)m1; ++i)
 		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
 	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
