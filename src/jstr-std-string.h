@@ -64,7 +64,7 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, n);
-	/* #else */
+#else
 	/* Taken from glibc memrchr released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(n == 0))
