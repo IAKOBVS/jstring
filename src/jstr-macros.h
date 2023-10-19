@@ -10,10 +10,11 @@
 #include <sys/cdefs.h>
 
 #define JSTR_CONCAT_HELPER(x, y) x##y
-#define JSTR_CONCAT(x, y) JSTR_CONCAT_HELPER(x, y)
+#define JSTR_CONCAT(x, y)	 JSTR_CONCAT_HELPER(x, y)
+#define JSTR_STRINGIFY(x)	 #x
 
 #define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
-#define JSTR_ALIGN_DOWN_STR(base)	      JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if !(defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__)
@@ -64,14 +65,17 @@
 #endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #ifdef static_assert
+#	include <assert.h>
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)	static_assert(expr, msg)
 #elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
+#	include <assert.h>
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)	_Static_assert(expr, msg)
 #else
-#	define JSTR_ASSERT(expr, msg)
-#	define JSTR_ASSERT_SEMICOLON(expr, msg)
+#	define JSTR_ASSERT(expr, msg) \
+		do {                   \
+		} while (0)
 #endif /* static_assert */
 
 #if (defined __GNUC__ || defined __clang__) && JSTR_HAVE_GENERIC
