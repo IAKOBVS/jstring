@@ -745,6 +745,8 @@ JSTR_NOEXCEPT
 		SIZE_T = (sizeof(size_t) == sizeof(unsigned long)) ? LONG : LONG_LONG,
 		PTR_T = (sizeof(uintptr_t) == sizeof(unsigned long)) ? LONG : LONG_LONG
 	};
+	/* Use size_t because we are calculating the length for the buffer conservatively
+	   and it may be much larger than the actual length. */
 	size_t arglen = 0;
 	const char *arg;
 	int errno_len = 0;
@@ -1042,7 +1044,7 @@ JSTR_NOEXCEPT
 	va_start(ap, fmt);
 	size_t arglen = pjstr_asprintf_strlen(ap, fmt);
 	va_end(ap);
-	if (jstr_unlikely(arglen == - 1))
+	if (jstr_unlikely(arglen == -1))
 		goto err;
 	arglen += j->size;
 	JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
