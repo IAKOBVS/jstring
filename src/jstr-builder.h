@@ -508,7 +508,7 @@ jstr_appendnchr_unsafe(char *R s,
 		       const size_t n)
 JSTR_NOEXCEPT
 {
-	memset(s, c, n);
+	memset(s + *sz, c, n);
 	*sz += n;
 }
 
@@ -527,6 +527,44 @@ JSTR_NOEXCEPT
 {
 	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
 	jstr_appendnchr_unsafe(*s, sz, c, n);
+	return 1;
+}
+
+/*
+   Prepend N Cs to S.
+*/
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_prependnchr_unsafe(char *R s,
+			size_t *R sz,
+			const int c,
+			const size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_likely(*sz != 0))
+		jstr_strmove_len(s + n, s, *sz);
+	else
+		*(s + n) = '\0';
+	memset(s, c, n);
+	*sz += n;
+}
+
+/*
+   Prepend N Cs to S.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_prependnchr(char *R *R s,
+		 size_t *R sz,
+		 size_t *R cap,
+		 const int c,
+		 const size_t n)
+JSTR_NOEXCEPT
+{
+	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
+	jstr_prependnchr_unsafe(*s, sz, c, n);
 	return 1;
 }
 
