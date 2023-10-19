@@ -34,7 +34,7 @@ PJSTR_BEGIN_DECLS
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void *
-jstr_bzero(void *s,
+jstr_bzero(void *R s,
 	   const size_t n)
 {
 	return memset(s, 0, n);
