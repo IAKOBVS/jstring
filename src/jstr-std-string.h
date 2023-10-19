@@ -64,14 +64,14 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, n);
-#else
+	/* #else */
 	/* Taken from glibc memrchr released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(n == 0))
 		return NULL;
 	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
 	uintptr_t s_int = (uintptr_t)s;
-	jstr_word_ty word = *word_ptr;
+	jstr_word_ty word = jstr_word_toword(word_ptr);
 	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
 	const char *lbyte = jstr_sadd(s_int, n - 1);
 	const jstr_word_ty *lword = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
