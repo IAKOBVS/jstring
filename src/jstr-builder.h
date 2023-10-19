@@ -496,6 +496,40 @@ JSTR_NOEXCEPT
 }
 
 /*
+   Append N Cs to end of S.
+*/
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_appendnchr_unsafe(char *R s,
+		       size_t *R sz,
+		       const int c,
+		       const size_t n)
+JSTR_NOEXCEPT
+{
+	memset(s, c, n);
+	*sz += n;
+}
+
+/*
+   Append N Cs to end of S.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_appendnchr(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
+		const int c,
+		const size_t n)
+JSTR_NOEXCEPT
+{
+	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
+	jstr_appendnchr_unsafe(*s, sz, c, n);
+	return 1;
+}
+
+/*
    Only prepend NUL if S is empty.
    Return value:
    0 on malloc error;
