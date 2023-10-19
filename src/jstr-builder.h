@@ -224,7 +224,8 @@ pjstr_reallocexact(char *R *R s,
 		   size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*cap = JSTR_ALIGN_UP_STR(new_cap);
+	*cap = JSTR_MAX(JSTR_MIN_CAP, new_cap);
+	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)realloc(*s, *cap);
 	if (jstr_likely(*s != NULL))
 		return 1;
@@ -265,7 +266,7 @@ pjstr_realloc_may_zero(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*sz != 0))
-		*cap = JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
+		*cap = JSTR_MIN_CAP / 1.5;
 	return pjstr_reallocexact(s, sz, cap, new_cap + 1);
 }
 
