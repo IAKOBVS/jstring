@@ -163,14 +163,6 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(h - 3) : NULL;
 }
 
-#define PJSTR_MEMMEM_RETTYPE	       void *
-#define PJSTR_MEMMEM_TABLE_TY	       size_t
-#define PJSTR_MEMMEM_HASH_FN(p)	       (((size_t)(((p)[0])) - ((size_t)((p)[-1]) << 3)) % 256)
-#define PJSTR_MEMMEM_CMP_FN(s1, s2, n) memcmp(s1, s2, n)
-#define PJSTR_MEMMEM_CHECK_EOL	       (0)
-#define PJSTR_MEMMEM_FN		       pjstr_memmem
-#include "jstr-memmem.h"
-
 JSTR_FUNC_PURE
 static void *
 jstr_memmem(const void *R hs,
