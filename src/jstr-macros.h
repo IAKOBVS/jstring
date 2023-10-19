@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <sys/cdefs.h>
 
+#define JSTR_CONCAT_HELPER(x, y) x##y
+#define JSTR_CONCAT(x, y) JSTR_CONCAT_HELPER(x, y)
+
 #define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_ALIGN_DOWN_STR(base)	      JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
@@ -1040,5 +1043,13 @@ PJSTR_CAST(T, Other other)
 #else
 #	define PJSTR_CAST(T, other) (other)
 #endif /* __cpluslus */
+
+#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                  \
+				     ? (memset(array, c, 64),                \
+					memset(array + 64, c, 64),           \
+					memset(array + 64 + 64, c, 64),      \
+					memset(array + 64 + 64 + 64, c, 64)) \
+				     : memset(array, c, sizeof(array)))
+#define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
 
 #endif /* JSTR_MACROS_H */
