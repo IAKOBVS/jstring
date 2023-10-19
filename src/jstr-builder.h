@@ -14,6 +14,7 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #include "jstr-config.h"
+#include "jstr-ctype.h"
 #include "jstr-macros.h"
 #include "jstr-std-string.h"
 
@@ -882,7 +883,7 @@ cont_switch:
 			case 9:
 				if (state == PAD) {
 					padlen = *fmt - '0';
-					for (; *fmt; ++fmt, padlen *= 10)
+					for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
 						;
 					arglen += padlen;
 					state = DEFAULT;
