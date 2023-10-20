@@ -1076,19 +1076,6 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static int
-jstr_put(char *R *R s,
-	 size_t *R sz,
-	 size_t *R cap,
-	 const size_t at,
-	 const char *R src)
-JSTR_NOEXCEPT
-{
-	return jstr_put_len(s, sz, cap, at, src, strlen(src));
-}
-
 /*
   Put SRC after C in DST.
   Return 0 on malloc error;
@@ -1109,19 +1096,6 @@ JSTR_NOEXCEPT
 	if (p != NULL)
 		return jstr_put_len(s, sz, cap, p - *s + 1, src, srclen);
 	return 1;
-}
-
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static int
-jstr_putafterchr(char *R *R s,
-		 size_t *R sz,
-		 size_t *R cap,
-		 const int c,
-		 const char *R src)
-JSTR_NOEXCEPT
-{
-	return jstr_putafterchr_len(s, sz, cap, c, src, strlen(src));
 }
 
 /*
@@ -1148,19 +1122,6 @@ JSTR_NOEXCEPT
 	if (p != NULL)
 		return jstr_put_len(s, sz, cap, p - *s + findlen, src, srclen);
 	return 1;
-}
-
-JSTR_INLINE
-JSTR_FUNC
-static int
-jstr_putafter(char *R *R s,
-	      size_t *R sz,
-	      size_t *R cap,
-	      const char *R find,
-	      const char *R src)
-JSTR_NOEXCEPT
-{
-	return jstr_putafter_len(s, sz, cap, find, src, strlen(find), strlen(src));
 }
 
 PJSTR_END_DECLS
