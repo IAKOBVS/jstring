@@ -17,26 +17,40 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-#define PJSTR_RMALL_IN_PLACE(dst, oldp, p, findlen)   \
-	do {                                          \
-		if (jstr_likely(dst != oldp))         \
-			memmove(dst, oldp, p - oldp); \
-		dst += p - oldp;                      \
-		oldp += p - oldp;                     \
-		oldp += findlen;                      \
-		p += findlen;                         \
-	} while (0)
-#define PJSTR_RPLCALL_IN_PLACE(dst, oldp, p, rplc, rplclen, findlen) \
-	do {                                                         \
-		if (jstr_likely(findlen != rplclen && dst != oldp))  \
-			memmove(dst, oldp, p - oldp);                \
-		dst += p - oldp;                                     \
-		oldp += p - oldp;                                    \
-		oldp += findlen;                                     \
-		p += findlen;                                        \
-		memcpy(dst, rplc, rplclen);                          \
-		dst += rplclen;                                      \
-	} while (0)
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+pjstr_removeall_in_place(unsigned char **dst,
+			 const unsigned char **oldp,
+			 const unsigned char **p,
+			 const size_t findlen)
+{
+	if (jstr_likely(*dst != *oldp))
+		memmove(*dst, *oldp, *p - *oldp);
+	*dst += *p - *oldp;
+	*oldp += *p - *oldp;
+	*p += findlen;
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+pjstr_replaceall_in_place(unsigned char **dst,
+			  const unsigned char **oldp,
+			  const unsigned char **p,
+			  const unsigned char *rplc,
+			  const size_t rplclen,
+			  const size_t findlen)
+{
+	typedef unsigned char u;
+	if (jstr_likely(findlen != rplclen && *dst != *oldp))
+		memmove(*dst, *oldp, *p - *oldp);
+	*dst += *p - *oldp;
+	*oldp += *p - *oldp;
+	*oldp += findlen;
+	*p += findlen;
+	*dst = (u *)jstr_mempcpy(*dst, rplc, rplclen);
+}
 
 /*
   Insert SRC into DST[AT].
@@ -330,14 +344,12 @@ jstr_removespn_p(char *R s,
 		 const char *R reject)
 JSTR_NOEXCEPT
 {
-	char *dst = s;
-	const char *oldp = dst;
-	const char *p = dst;
-	size_t findlen;
-	while (*p && (*(p += strcspn(p, reject)))) {
-		findlen = strspn(p, reject);
-		PJSTR_RMALL_IN_PLACE(dst, oldp, p, findlen);
-	}
+	typedef unsigned char u;
+	unsigned char *dst = (u *)s;
+	const unsigned char *oldp = dst;
+	const unsigned char *p = dst;
+	for (; *p && (*(p += strcspn((char *)p, reject))); pjstr_removeall_in_place(&dst, &oldp, &p, strspn((char *)p, reject)))
+		;
 	return jstr_stpmove_len_may_eq(dst, oldp, p - oldp);
 }
 
@@ -369,14 +381,15 @@ pjstr_removeallchr_len_p(const pjstr_flag_use_n_ty flag,
 			 const size_t sz)
 JSTR_NOEXCEPT
 {
-	char *dst = s;
-	const char *oldp = dst;
-	const char *p = dst;
-	const char *const end = dst + sz;
+	typedef unsigned char u;
+	unsigned char *dst = (u *)s;
+	const unsigned char *oldp = dst;
+	const unsigned char *p = dst;
+	const unsigned char *const end = dst + sz;
 	while ((flag & PJSTR_FLAG_USE_N ? n-- : 1)
-	       && (p = (char *)memchr(p, c, end - p)))
-		PJSTR_RMALL_IN_PLACE(dst, oldp, p, 1);
-	return (dst != s) ? jstr_stpmove_len(dst, oldp, end - oldp) : s + sz;
+	       && (p = (u *)memchr(p, c, end - p)))
+		pjstr_removeall_in_place(&dst, &oldp, &p, 1);
+	return (dst != (u *)s) ? jstr_stpmove_len(dst, oldp, end - oldp) : s + sz;
 }
 
 /*
@@ -406,12 +419,13 @@ jstr_removeallchr_p(char *R s,
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
-	char *dst = s;
-	const char *oldp = dst;
-	const char *p = dst;
-	while (*(p = strchrnul(p, c)))
-		PJSTR_RMALL_IN_PLACE(dst, oldp, p, 1);
-	return (dst != s) ? jstr_stpmove_len(dst, oldp, p - oldp) : (char *)p;
+	typedef unsigned char u;
+	unsigned char *dst = (u *)s;
+	const unsigned char *oldp = dst;
+	const unsigned char *p = dst;
+	while (*(p = (u *)strchrnul((char *)p, c)))
+		pjstr_removeall_in_place(&dst, &oldp, &p, 1);
+	return (dst != (u *)s) ? jstr_stpmove_len(dst, oldp, p - oldp) : (char *)p;
 #else
 	return jstr_removeallchr_len_p(s, c, strlen(s));
 #endif
@@ -447,12 +461,13 @@ jstr_removenchr_p(char *R s,
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
-	char *dst = s;
-	const char *oldp = dst;
-	const char *p = dst;
-	while (n-- && *(p = strchrnul(p, c)))
-		PJSTR_RMALL_IN_PLACE(dst, oldp, p, 1);
-	if (jstr_unlikely(dst == s))
+	typedef unsigned char u;
+	unsigned char *dst = (u *)s;
+	const unsigned char *oldp = dst;
+	const unsigned char *p = dst;
+	while (n-- && *(p = (u *)strchrnul((char *)p, c)))
+		pjstr_removeall_in_place(&dst, &oldp, &p, 1);
+	if (jstr_unlikely(dst == (u *)s))
 		return s + n;
 	return jstr_stpmove_len(dst, oldp, p - oldp);
 #else
@@ -471,11 +486,12 @@ jstr_stripspn_p(char *R s,
 		const char *R rjct)
 JSTR_NOEXCEPT
 {
-	char *dst = s;
-	const char *oldp = dst;
-	const char *p = dst;
-	while (*(p += strcspn(p, rjct)))
-		PJSTR_RMALL_IN_PLACE(dst, oldp, p, 1);
+	typedef unsigned char u;
+	unsigned char *dst = (u *)s;
+	const unsigned char *oldp = dst;
+	const unsigned char *p = dst;
+	while (*(p += strcspn((char *)p, rjct)))
+		pjstr_removeall_in_place(&dst, &oldp, &p, 1);
 	return jstr_stpmove_len_may_eq(dst, oldp, p - oldp);
 }
 
@@ -705,14 +721,15 @@ JSTR_NOEXCEPT
 		return pjstr_removeallchr_len_p(flag, s, *find, n, sz);
 	if (jstr_unlikely(findlen == 0))
 		return s + sz;
-	char *dst = s;
-	const char *oldp = dst;
-	const char *p = dst;
-	const char *const end = dst + sz;
+	typedef unsigned char u;
+	unsigned char *dst = (u *)s;
+	const unsigned char *oldp = dst;
+	const unsigned char *p = dst;
+	const unsigned char *const end = dst + sz;
 	while (((flag & PJSTR_FLAG_USE_N) ? n-- : 1)
-	       && (p = (char *)JSTR_MEMMEM(p, end - p, find, findlen)))
-		PJSTR_RMALL_IN_PLACE(dst, oldp, p, findlen);
-	if (jstr_unlikely(dst == s))
+	       && (p = (u *)jstr_strstr_len(p, end - p, find, findlen)))
+		pjstr_removeall_in_place(&dst, &oldp, &p, findlen);
+	if (jstr_unlikely(dst == (u *)s))
 		return s + sz;
 	return jstr_stpmove_len(dst, oldp, end - oldp);
 }
@@ -812,33 +829,34 @@ pjstr_replaceall_len(const pjstr_flag_use_n_ty flag,
 		     const size_t rplclen)
 JSTR_NOEXCEPT
 {
-	char *dst = *s + start_idx;
+	typedef unsigned char u;
+	unsigned char *dst = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0)) {
-		*sz = pjstr_removeall_len_p(flag, dst, find, n, *sz - start_idx, findlen) - *s;
+		*sz = pjstr_removeall_len_p(flag, (char *)dst, find, n, *sz - start_idx, findlen) - *s;
 		return 1;
 	}
 	if (findlen == 1) {
 		if (rplclen == 1) {
-			jstr_replacechr_len(dst, *find, *rplc, *sz - start_idx);
+			jstr_replacechr_len((char *)dst, *find, *rplc, *sz - start_idx);
 			return 1;
 		}
 	} else if (jstr_unlikely(findlen == 0))
 		return 1;
-	const char *p = dst;
-	const char *oldp = p;
+	const unsigned char *p = dst;
+	const unsigned char *oldp = p;
 	while (((flag & PJSTR_FLAG_USE_N) ? n-- : 1)
-	       && (p = jstr_strstr_len(p, (*s + *sz) - p, find, findlen))) {
+	       && (p = (u *)jstr_strstr_len(p, (*s + *sz) - (char *)p, find, findlen))) {
 		if (rplclen <= findlen)
-			PJSTR_RPLCALL_IN_PLACE(dst, oldp, p, rplc, rplclen, findlen);
+			pjstr_replaceall_in_place(&dst, &oldp, &p, (u *)rplc, rplclen, findlen);
 		else
-			p = pjstr_replaceat_len_higher(s, sz, cap, p - *s, rplc, rplclen, findlen);
+			p = (u *)pjstr_replaceat_len_higher(s, sz, cap, p - *(u **)s, rplc, rplclen, findlen);
 		if (jstr_unlikely(p == NULL))
 			return 0;
 	}
-	if (jstr_unlikely(dst == *s))
+	if (jstr_unlikely(dst == *(u **)s))
 		return 1;
 	if (rplclen < findlen)
-		*sz = jstr_stpmove_len(dst, oldp, *s + *sz - oldp) - *s;
+		*sz = jstr_stpmove_len(dst, oldp, *(u **)s + *sz - oldp) - *s;
 	return 1;
 }
 

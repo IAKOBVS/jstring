@@ -206,13 +206,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strstr_len(const char *R hs,
+jstr_strstr_len(const void *R hs,
 		const size_t hslen,
-		const char *R ne,
+		const void *R ne,
 		const size_t nelen)
 JSTR_NOEXCEPT
 {
-	return (char *)JSTR_MEMMEM(hs, hslen, ne, nelen);
+	return (char *)JSTR_MEMMEM((char *)hs, hslen, (char *)ne, nelen);
 	(void)hslen;
 	(void)nelen;
 }
