@@ -210,10 +210,10 @@ jstr_memmem(const void *R hs,
 	    const size_t nl)
 JSTR_NOEXCEPT
 {
-	typedef unsigned char u;
 #if JSTR_HAVE_MEMMEM
 	return memmem(hs, hl, ne, nl);
 #else
+	typedef unsigned char u;
 	if (jstr_unlikely(hl < nl))
 		return NULL;
 	const unsigned char *const h = (u *)hs;
