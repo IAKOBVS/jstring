@@ -910,16 +910,15 @@ cont_switch:
 			case 'h':
 			case 'j':
 				goto cont_switch;
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			case 9:
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
 				if (state == PAD) {
 					padlen = *fmt - '0';
 					for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
@@ -935,13 +934,17 @@ cont_switch:
 einval:
 			/* case '\0': */
 			default:
-				errno = EINVAL;
-				return -1;
+				if (jstr_unlikely(*(fmt - 1) == '%')) {
+					errno = EINVAL;
+					return -1;
+				}
+				goto string;
 get_arg:
 				va_arg(ap, void *);
 			}
 			state = DEFAULT;
 		} else {
+string:
 			++arglen;
 			if (jstr_unlikely(*fmt == '\0'))
 				break;

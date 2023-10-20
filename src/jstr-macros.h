@@ -9,6 +9,14 @@
 #include <stdlib.h>
 #include <sys/cdefs.h>
 
+#if JSTR_DEBUG
+#	define JSTR_PRINT_DEBUG(...) fprintf(stderr, __VA_ARGS__)
+#else
+#	define JSTR_PRINT_DEBUG(...) \
+		do {                       \
+		} while (0)
+#endif
+
 #define JSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)	 JSTR_CONCAT_HELPER(x, y)
 #define JSTR_STRINGIFY(x)	 #x
@@ -789,7 +797,7 @@ case '~':
 #endif
 
 #if defined _DEFAULT_SOURCE || !defined __USE_XOPEN2K8
-#	define JSTR_HAVE_BCMP 1
+#	define JSTR_HAVE_BCMP	1
 #	define JSTR_HAVE_BCOPY 1
 #	define JSTR_HAVE_BZERO 1
 #endif
