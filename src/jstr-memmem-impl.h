@@ -18,14 +18,18 @@
 #	define PJSTR_MEMMEM_CMP_FN memcmp
 #endif
 
+#if PJSTR_MEMMEM_SHORT_NEEDLE
+#	undef PJSTR_MEMMEM_FN_IMPL
+#	define PJSTR_MEMMEM_FN_IMPL JSTR_CONCAT(PJSTR_, JSTR_CONCAT(PJSTR_MEMMEM_FN, _short_ne_impl))
+#else
+#	undef PJSTR_MEMMEM_FN_IMPL
+#	define PJSTR_MEMMEM_FN_IMPL JSTR_CONCAT(PJSTR_, JSTR_CONCAT(PJSTR_MEMMEM_FN, _long_ne_impl))
+#endif
+
 JSTR_FUNC_PURE
 JSTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
-#if PJSTR_MEMMEM_SHORT_NEEDLE
-JSTR_CONCAT(PJSTR_MEMMEM_FN, _short_impl)
-#else
-JSTR_CONCAT(PJSTR_MEMMEM_FN, _long_impl)
-#endif
+PJSTR_MEMMEM_FN_IMPL
 (const unsigned char *JSTR_RESTRICT hs,
  const size_t hl,
  const unsigned char *JSTR_RESTRICT ne,
