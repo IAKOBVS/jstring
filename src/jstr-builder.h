@@ -195,6 +195,16 @@ JSTR_NOEXCEPT
 	*sz = 0;
 }
 
+JSTR_FUNC_VOID
+JSTR_NOINLINE
+static void
+pjstr_free_err(char *R *R s,
+	       size_t *R sz,
+	       size_t *R cap)
+{
+	jstr_free(s, sz, cap);
+}
+
 /*
   free(p) and set p to NULL.
 */
@@ -1025,6 +1035,18 @@ string:
 	return arglen;
 }
 
+JSTR_FUNC_VOID
+JSTR_NOINLINE
+static void
+pjstr_sprintf_err(char *R *R s,
+		  size_t *R sz,
+		  size_t *R cap)
+{
+
+	jstr_free(s, sz, cap);
+	PJSTR_EXIT_MAYBE();
+}
+
 /*
    Return 0 on error.
    Supported conversions:
@@ -1068,8 +1090,7 @@ JSTR_NOEXCEPT
 	*sz = arglen;
 	return 1;
 err_free:
-	jstr_free(s, sz, cap);
-	PJSTR_EXIT_MAYBE();
+	pjstr_sprintf_err(s, sz, cap);
 err:
 	return 0;
 }
@@ -1102,8 +1123,7 @@ JSTR_NOEXCEPT
 	j->size = arglen;
 	return 1;
 err_free:
-	jstr_free_j(j);
-	PJSTR_EXIT_MAYBE();
+	pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
 err:
 	return 0;
 }
@@ -1140,8 +1160,7 @@ JSTR_NOEXCEPT
 	*sz += arglen;
 	return 1;
 err_free:
-	jstr_free(s, sz, cap);
-	PJSTR_EXIT_MAYBE();
+	pjstr_sprintf_err(s, sz, cap);
 err:
 	return 0;
 }
@@ -1176,8 +1195,7 @@ JSTR_NOEXCEPT
 	j->size += arglen;
 	return 1;
 err_free:
-	jstr_free_j(j);
-	PJSTR_EXIT_MAYBE();
+	pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
 err:
 	return 0;
 }
@@ -1214,8 +1232,7 @@ JSTR_NOEXCEPT
 	*sz = arglen + start_idx;
 	return 1;
 err_free:
-	jstr_free(s, sz, cap);
-	PJSTR_EXIT_MAYBE();
+	pjstr_sprintf_err(s, sz, cap);
 err:
 	return 0;
 }
@@ -1250,8 +1267,7 @@ JSTR_NOEXCEPT
 	j->size = arglen + start_idx;
 	return 1;
 err_free:
-	jstr_free_j(j);
-	PJSTR_EXIT_MAYBE();
+	pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
 err:
 	return 0;
 }
@@ -1279,10 +1295,8 @@ JSTR_NOEXCEPT
 	*sz = ret;
 	return 1;
 err_free:
-	if (errno != EINVAL) {
-		jstr_free(s, sz, cap);
-		PJSTR_EXIT_MAYBE();
-	}
+	if (errno != EINVAL)
+		pjstr_sprintf_err(s, sz, cap);
 	return 0;
 }
 
@@ -1307,10 +1321,8 @@ JSTR_NOEXCEPT
 	j->size = ret;
 	return 1;
 err_free:
-	if (errno != EINVAL) {
-		jstr_free_j(j);
-		PJSTR_EXIT_MAYBE();
-	}
+	if (errno != EINVAL)
+		pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
 	return 0;
 }
 
@@ -1338,10 +1350,8 @@ JSTR_NOEXCEPT
 	*sz = ret + start_idx;
 	return 1;
 err_free:
-	if (errno != EINVAL) {
-		jstr_free(s, sz, cap);
-		PJSTR_EXIT_MAYBE();
-	}
+	if (errno != EINVAL)
+		pjstr_sprintf_err(s, sz, cap);
 	return 0;
 }
 
@@ -1367,10 +1377,8 @@ JSTR_NOEXCEPT
 	j->size = ret + start_idx;
 	return 1;
 err_free:
-	if (errno != EINVAL) {
-		jstr_free_j(j);
-		PJSTR_EXIT_MAYBE();
-	}
+	if (errno != EINVAL)
+		pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
 	return 0;
 }
 
