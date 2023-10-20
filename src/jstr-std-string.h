@@ -137,7 +137,7 @@ JSTR_NOEXCEPT
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_UP(s + n, sizeof(jstr_word_ty));
+	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_UP((unsigned char *)s + n, sizeof(jstr_word_ty));
 	uintptr_t s_int = (uintptr_t)s + n;
 	jstr_word_ty word = jstr_word_toword(--word_ptr);
 	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
