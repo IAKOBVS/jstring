@@ -212,14 +212,6 @@ JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
 #if JSTR_HAVE_MEMMEM
-#	if defined __GLIBC__ && !JSTR_HAVE_MEMMEM_OPTIMIZED && !defined __OpenBSD__ && !defined __FreeBSD__
-	if (jstr_unlikely(hl < nl))
-		return NULL;
-	if (nl == 3)
-		return pjstr_memmem3((u *)hs, (u *)ne, (u *)hs + hl - nl);
-	if (nl == 4)
-		return pjstr_memmem3((u *)hs, (u *)ne, (u *)hs + hl - nl);
-#	endif
 	return memmem(hs, hl, ne, nl);
 #else
 	if (jstr_unlikely(hl < nl))
