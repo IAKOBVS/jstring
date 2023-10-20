@@ -24,6 +24,7 @@ pjstr_removeall_in_place(unsigned char **dst,
 			 const unsigned char **oldp,
 			 const unsigned char **p,
 			 const size_t findlen)
+JSTR_NOEXCEPT
 {
 	if (jstr_likely(*dst != *oldp))
 		memmove(*dst, *oldp, *p - *oldp);
@@ -41,6 +42,7 @@ pjstr_replaceall_in_place(unsigned char **dst,
 			  const unsigned char *rplc,
 			  const size_t rplclen,
 			  const size_t findlen)
+JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
 	if (jstr_likely(findlen != rplclen && *dst != *oldp))
