@@ -239,7 +239,6 @@ JSTR_NOEXCEPT
 
 #define PJSTR_MEMMEM_FN	       pjstr_strnstr
 #define PJSTR_MEMMEM_RETTYPE   char *
-#define PJSTR_MEMMEM_CHECK_EOL (1)
 #include "jstr-memmem.h"
 
 JSTR_FUNC_PURE
