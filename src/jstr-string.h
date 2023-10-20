@@ -505,6 +505,8 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
+	(void)hslen;
+	(void)nelen;
 #else
 	typedef unsigned char u;
 	if (jstr_unlikely(hslen < nelen))
