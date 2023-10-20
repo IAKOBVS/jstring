@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/cdefs.h>
+#include <stdarg.h>
 
 #if JSTR_DEBUG
 #	define JSTR_PRINT_DEBUG(...) fprintf(stderr, __VA_ARGS__)

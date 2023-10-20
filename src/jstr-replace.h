@@ -367,15 +367,10 @@ JSTR_NOEXCEPT
 	j->size = jstr_removespn_p(j->data, reject) - j->data;
 }
 
-typedef enum {
-	PJSTR_FLAG_USE_N = (1),
-	PJSTR_FLAG_USE_NOT_N = (PJSTR_FLAG_USE_N << 1)
-} pjstr_flag_use_n_ty;
-
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
-pjstr_removeallchr_len_p(const pjstr_flag_use_n_ty flag,
+pjstr_removeallchr_len_p(const int use_n,
 			 char *R s,
 			 const int c,
 			 size_t n,
@@ -387,7 +382,7 @@ JSTR_NOEXCEPT
 	const unsigned char *oldp = dst;
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
-	while ((flag & PJSTR_FLAG_USE_N ? n-- : 1)
+	while ((use_n & 1 ? n-- : 1)
 	       && (p = (u *)memchr(p, c, end - p)))
 		pjstr_removeall_in_place(&dst, &oldp, &p, 1);
 	return (dst != (u *)s) ? jstr_stpmove_len(dst, oldp, end - oldp) : s + sz;
@@ -405,7 +400,7 @@ jstr_removeallchr_len_p(char *R s,
 			const size_t sz)
 JSTR_NOEXCEPT
 {
-	return pjstr_removeallchr_len_p(PJSTR_FLAG_USE_NOT_N, s, c, 0, sz);
+	return pjstr_removeallchr_len_p(0, s, c, 0, sz);
 }
 
 /*
@@ -445,7 +440,7 @@ jstr_removenchr_len_p(char *R s,
 		      const size_t sz)
 JSTR_NOEXCEPT
 {
-	return pjstr_removeallchr_len_p(PJSTR_FLAG_USE_N, s, c, n, sz);
+	return pjstr_removeallchr_len_p(1, s, c, n, sz);
 }
 
 /*
@@ -710,7 +705,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
-pjstr_removeall_len_p(const pjstr_flag_use_n_ty flag,
+pjstr_removeall_len_p(const int use_n,
 		      char *R s,
 		      const char *R find,
 		      size_t n,
@@ -719,7 +714,7 @@ pjstr_removeall_len_p(const pjstr_flag_use_n_ty flag,
 JSTR_NOEXCEPT
 {
 	if (findlen == 1)
-		return pjstr_removeallchr_len_p(flag, s, *find, n, sz);
+		return pjstr_removeallchr_len_p(use_n, s, *find, n, sz);
 	if (jstr_unlikely(findlen == 0))
 		return s + sz;
 	typedef unsigned char u;
@@ -727,7 +722,7 @@ JSTR_NOEXCEPT
 	const unsigned char *oldp = dst;
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
-	while (((flag & PJSTR_FLAG_USE_N) ? n-- : 1)
+	while ((use_n ? n-- : 1)
 	       && (p = (u *)jstr_strstr_len(p, end - p, find, findlen)))
 		pjstr_removeall_in_place(&dst, &oldp, &p, findlen);
 	if (jstr_unlikely(dst == (u *)s))
@@ -749,7 +744,7 @@ jstr_removen_len_p(char *R s,
 		   const size_t findlen)
 JSTR_NOEXCEPT
 {
-	return pjstr_removeall_len_p(PJSTR_FLAG_USE_N, s, find, n, sz, findlen);
+	return pjstr_removeall_len_p(1, s, find, n, sz, findlen);
 }
 
 /*
@@ -765,7 +760,7 @@ jstr_removeall_len_p(char *R s,
 		     const size_t findlen)
 JSTR_NOEXCEPT
 {
-	return pjstr_removeall_len_p(PJSTR_FLAG_USE_NOT_N, s, find, 0, sz, findlen);
+	return pjstr_removeall_len_p(0, s, find, 0, sz, findlen);
 }
 
 /*
@@ -818,7 +813,7 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC
 static int
-pjstr_replaceall_len(const pjstr_flag_use_n_ty flag,
+pjstr_replaceall_len(const int use_n,
 		     char *R *R s,
 		     size_t *R sz,
 		     size_t *R cap,
@@ -833,7 +828,7 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	unsigned char *dst = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0)) {
-		*sz = pjstr_removeall_len_p(flag, (char *)dst, find, n, *sz - start_idx, findlen) - *s;
+		*sz = pjstr_removeall_len_p(use_n, (char *)dst, find, n, *sz - start_idx, findlen) - *s;
 		return 1;
 	}
 	if (findlen == 1) {
@@ -845,7 +840,7 @@ JSTR_NOEXCEPT
 		return 1;
 	const unsigned char *p = dst;
 	const unsigned char *oldp = p;
-	while (((flag & PJSTR_FLAG_USE_N) ? n-- : 1)
+	while ((use_n ? n-- : 1)
 	       && (p = (u *)jstr_strstr_len(p, (*s + *sz) - (char *)p, find, findlen))) {
 		if (rplclen <= findlen)
 			pjstr_replaceall_in_place(&dst, &oldp, &p, (u *)rplc, rplclen, findlen);
@@ -878,7 +873,7 @@ jstr_replacen_len(char *R *R s,
 		  const size_t rplclen)
 JSTR_NOEXCEPT
 {
-	return pjstr_replaceall_len(PJSTR_FLAG_USE_N, s, sz, cap, 0, find, rplc, n, findlen, rplclen);
+	return pjstr_replaceall_len(1, s, sz, cap, 0, find, rplc, n, findlen, rplclen);
 }
 
 /*
@@ -899,7 +894,7 @@ jstr_replacen_len_from(char *R *R s,
 		       const size_t rplclen)
 JSTR_NOEXCEPT
 {
-	return pjstr_replaceall_len(PJSTR_FLAG_USE_N, s, sz, cap, start_idx, find, rplc, n, findlen, rplclen);
+	return pjstr_replaceall_len(1, s, sz, cap, start_idx, find, rplc, n, findlen, rplclen);
 }
 
 /*
@@ -918,7 +913,7 @@ jstr_replaceall_len(char *R *R s,
 		    const size_t rplclen)
 JSTR_NOEXCEPT
 {
-	return pjstr_replaceall_len(PJSTR_FLAG_USE_NOT_N, s, sz, cap, 0, find, rplc, 0, findlen, rplclen);
+	return pjstr_replaceall_len(0, s, sz, cap, 0, find, rplc, 0, findlen, rplclen);
 }
 
 /*
@@ -938,7 +933,7 @@ jstr_replaceall_len_from(char *R *R s,
 			 const size_t rplclen)
 JSTR_NOEXCEPT
 {
-	return pjstr_replaceall_len(PJSTR_FLAG_USE_NOT_N, s, sz, cap, start_idx, find, rplc, 0, findlen, rplclen);
+	return pjstr_replaceall_len(0, s, sz, cap, start_idx, find, rplc, 0, findlen, rplclen);
 }
 
 /*
