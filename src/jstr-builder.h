@@ -920,7 +920,7 @@ cont_switch:
 			case '8':
 			case '9':
 				if (state == PAD) {
-					padlen = *fmt - '0';
+					padlen = *fmt - '0' + (*fmt != 9);
 					for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
 						;
 					if (jstr_unlikely(padlen > INT_MAX)) {
