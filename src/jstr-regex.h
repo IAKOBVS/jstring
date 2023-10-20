@@ -874,6 +874,7 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *rold;
 	const unsigned char *const rplc_e = rplc + rplclen;
+	size_t breflen;
 	for (;; ++rplc) {
 		rold = rplc;
 		rplc = (unsigned char *)memchr(rplc, '\\', rplc_e - rplc);
@@ -883,10 +884,9 @@ JSTR_NOEXCEPT
 				rdst += (rplc - 1) - rold;
 				rplc += (rplc - 1) - rold - 1;
 			}
-			memcpy(rdst,
-			       mtc + rm[*rplc - '0'].rm_so,
-			       rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so);
-			rdst += rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so;
+			breflen = rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so;
+			memcpy(rdst, mtc + rm[*rplc - '0'].rm_so, breflen);
+			rdst += breflen;
 		} else if (jstr_unlikely(*rplc == '\0')) {
 			break;
 		} else {
