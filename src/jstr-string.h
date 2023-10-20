@@ -518,7 +518,7 @@ JSTR_NOEXCEPT
 	if (hs == NULL || (hslen -= hs - start) < nelen)
 		return NULL;
 #	else
-	if (hs == NULL || (size_t)(hs - start) < nelen)
+	if (hs == NULL || (uintptr_t)(hs - start) < nelen)
 		return NULL;
 #	endif
 	is_alpha += jstr_isalpha(ne[1]);
