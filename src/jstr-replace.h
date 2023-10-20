@@ -46,8 +46,7 @@ pjstr_replaceall_in_place(unsigned char **dst,
 	if (jstr_likely(findlen != rplclen && *dst != *oldp))
 		memmove(*dst, *oldp, *p - *oldp);
 	*dst += *p - *oldp;
-	*oldp += *p - *oldp;
-	*oldp += findlen;
+	*oldp += (*p - *oldp) + findlen;
 	*p += findlen;
 	*dst = (u *)jstr_mempcpy(*dst, rplc, rplclen);
 }
