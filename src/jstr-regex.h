@@ -877,11 +877,6 @@ JSTR_NOEXCEPT
 	for (;; ++rplc) {
 		rold = rplc;
 		rplc = (unsigned char *)memchr(rplc, '\\', rplc_e - rplc);
-		if (jstr_unlikely(rplc == NULL)) {
-end:
-			memcpy(rdst, rold, rplc_e - rold);
-			break;
-		}
 		if (jstr_likely(jstr_isdigit(*++rplc))) {
 			if (jstr_likely(rplc != rold)) {
 				memmove(rdst, rold, (rplc - 1) - rold);
@@ -893,13 +888,15 @@ end:
 			       rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so);
 			rdst += rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so;
 		} else if (jstr_unlikely(*rplc == '\0')) {
-			goto end;
+			break;
 		} else {
 			rdst[0] = rplc[-1];
 			rdst[1] = rplc[0];
 			rdst += 2;
 		}
 	}
+	if (jstr_unlikely(rplc == NULL))
+		memcpy(rdst, rold, rplc_e - rold);
 }
 
 JSTR_FUNC
