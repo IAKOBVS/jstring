@@ -695,9 +695,7 @@ jstr_replacelast_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	const char *const p = (char *)jstr_strrstr_len(*s, *sz, find, findlen);
-	if (jstr_unlikely(p == NULL))
-		return 1;
-	return jstr_replaceat_len(s, sz, cap, p - *s, rplc, rplclen, findlen) ? 1 : 0;
+	return p && jstr_replaceat_len(s, sz, cap, p - *s, rplc, rplclen, findlen);
 }
 
 JSTR_FUNC_RET_NONNULL
