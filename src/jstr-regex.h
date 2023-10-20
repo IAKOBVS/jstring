@@ -624,9 +624,9 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	unsigned char *dst = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0))
 		return pjstr_reg_removeall(flag, *s, sz, start_idx, n, preg, eflags);
+	unsigned char *dst = *(u **)s + start_idx;
 	unsigned char *p = dst;
 	const unsigned char *oldp = dst;
 	size_t findlen;
@@ -799,7 +799,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret != JSTR_REG_RET_NOERROR)
 	    || jstr_unlikely(rm.rm_eo == rm.rm_so))
 		return ret;
-	if (jstr_unlikely(pjstr_replaceat_len_higher(s, sz, cap, rm.rm_so + start_idx, rplc, rplclen, rm.rm_eo - rm.rm_so) == NULL))
+	if (jstr_unlikely(!pjstr_replaceat_len_higher(s, sz, cap, rm.rm_so + start_idx, rplc, rplclen, rm.rm_eo - rm.rm_so)))
 		return JSTR_REG_RET_ESPACE;
 	return ret;
 }
@@ -966,8 +966,8 @@ JSTR_NOEXCEPT
 	} else {
 		rdst = rdst_stack;
 	}
-	pjstr_reg_creat_rplc_bref((u *)*s, rm, (u *)rdst, (u *)rplc, rplclen);
-	if (jstr_unlikely(pjstr_replaceat_len_higher(s, sz, cap, rm[0].rm_so, (char *)rdst, rdstlen, findlen) == NULL))
+	pjstr_reg_creat_rplc_bref(*(u **)s, rm, (u *)rdst, (u *)rplc, rplclen);
+	if (jstr_unlikely(!pjstr_replaceat_len_higher(s, sz, cap, rm[0].rm_so, (char *)rdst, rdstlen, findlen)))
 		ret = JSTR_REG_RET_ESPACE;
 	if (rdst != rdst_stack)
 		free(rdst);
@@ -1066,7 +1066,7 @@ JSTR_NOEXCEPT
 		if (rdstlen <= findlen)
 			pjstr_replaceall_in_place(&dst, &oldp, (const u **)&p, rdstp, rdstlen, findlen);
 		else if (*cap > *sz + rdstlen - findlen)
-			pjstr_reg_replaceall_small_rplc((u *)*s, sz, &dst, &oldp, &p, rdstp, rdstlen, findlen);
+			pjstr_reg_replaceall_small_rplc(*(u **)s, sz, &dst, &oldp, &p, rdstp, rdstlen, findlen);
 		else if (jstr_unlikely(!pjstr_reg_replaceall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, rdstp, rdstlen, findlen)))
 			goto err_free;
 	}
@@ -1081,13 +1081,6 @@ err:
 	jstr_free(s, sz, cap);
 	return JSTR_REG_RET_ESPACE;
 }
-
-/* False-positive memory leak. */
-#ifdef __GNUC__
-/* #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value" */
-/* #	pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak" */
-#	pragma GCC diagnostic push
-#endif
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
@@ -1169,10 +1162,6 @@ JSTR_NOEXCEPT
 {
 	return pjstr_reg_replaceall_bref_len(PJSTR_FLAG_USE_N, s, sz, cap, start_idx, rplc, n, rplclen, preg, eflags, nmatch);
 }
-
-#ifdef __GNUC__
-#	pragma GCC diagnostic pop
-#endif
 
 JSTR_INLINE
 JSTR_FUNC
