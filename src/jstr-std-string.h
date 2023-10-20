@@ -156,8 +156,6 @@ JSTR_NOEXCEPT
 		word = jstr_word_toword(--word_ptr);
 	}
 	if (jstr_word_has_eq(word, repeated_c)) {
-		/* We found a match, but it might be in a byte past the end of the
-		   array.  */
 		char *ret = (char *)word_ptr + jstr_word_index_last_eq(word, repeated_c);
 		if (ret >= (char *)s)
 			return ret;
