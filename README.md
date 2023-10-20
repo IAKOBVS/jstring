@@ -5,8 +5,8 @@
 - works with any C string type: functions will take a pointer to string, size, and capacity.
 - in-place literal string and regex replacement: supports backreferences and searching from a specific index.
 - reverse standard string functions: memrchr, strrstr, strrspn, strrcspn.
-- extensions to standard string functions: strnstr, strnchr, strcasestr\_len
-- string formatting: asprintf (implemented with vsprintf, which is standard)
+- extensions to standard string functions: strnstr, strnchr, strcasestr\_len.
+- string formatting: asprintf (implemented with vsprintf, which is standard).
 
 ## Installation:
 
