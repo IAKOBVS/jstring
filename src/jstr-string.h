@@ -113,7 +113,7 @@ JSTR_INLINE
 static char *
 pjstr_strnstr2(const unsigned char *h,
 	       const unsigned char *R n,
-	       const unsigned char *end)
+	       const unsigned char *const end)
 JSTR_NOEXCEPT
 {
 	const uint16_t nw = n[0] << 8 | n[1];
@@ -128,7 +128,7 @@ JSTR_INLINE
 static char *
 pjstr_strnstr3(const unsigned char *h,
 	       const unsigned char *R n,
-	       const unsigned char *end)
+	       const unsigned char *const end)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8;
@@ -143,7 +143,7 @@ JSTR_INLINE
 static char *
 pjstr_strnstr4(const unsigned char *h,
 	       const unsigned char *R n,
-	       const unsigned char *end)
+	       const unsigned char *const end)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
@@ -158,7 +158,7 @@ JSTR_INLINE
 static void *
 pjstr_memmem2(const unsigned char *h,
 	      const unsigned char *R n,
-	      const unsigned char *end)
+	      const unsigned char *const end)
 JSTR_NOEXCEPT
 {
 	const uint16_t nw = n[0] << 8 | n[1];
@@ -173,7 +173,7 @@ JSTR_INLINE
 static void *
 pjstr_memmem3(const unsigned char *h,
 	      const unsigned char *R n,
-	      const unsigned char *end)
+	      const unsigned char *const end)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8;
@@ -188,7 +188,7 @@ JSTR_INLINE
 static void *
 pjstr_memmem4(const unsigned char *h,
 	      const unsigned char *R n,
-	      const unsigned char *end)
+	      const unsigned char *const end)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
@@ -229,8 +229,8 @@ JSTR_NOEXCEPT
 #endif
 }
 
-#define PJSTR_MEMMEM_FN	       pjstr_strnstr
-#define PJSTR_MEMMEM_RETTYPE   char *
+#define PJSTR_MEMMEM_FN	     pjstr_strnstr
+#define PJSTR_MEMMEM_RETTYPE char *
 #include "jstr-memmem.h"
 
 JSTR_FUNC_PURE
