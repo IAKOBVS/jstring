@@ -339,11 +339,11 @@ pjstr_strcasestr_bmh(const char *R h,
 		     const char *R n)
 JSTR_NOEXCEPT
 {
-	const size_t nl = strlen((char *)n);
-	const size_t hl = jstr_strnlen((char *)h, nl | 512);
+	const size_t nl = strlen(n);
+	const size_t hl = jstr_strnlen(h, nl | 512);
 	if (hl < nl)
 		return NULL;
-	if (!jstr_strcasecmp_len((char *)h, (char *)n, nl))
+	if (!jstr_strcasecmp_len(h, n, nl))
 		return (char *)h;
 	return pjstr_strcasestr(h, hl, n, nl);
 }
