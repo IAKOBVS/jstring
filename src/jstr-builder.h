@@ -462,28 +462,38 @@ JSTR_NOEXCEPT
 	return arglen;
 }
 
-JSTR_FUNC_VOID
+JSTR_FUNC
 JSTR_INLINE
-static void
-jstr_append_len_unsafe(char *R s,
-		       size_t *R sz,
-		       const char *R src,
-		       const size_t srclen)
+static char *
+jstr_append_len_p_unsafe(char *R s,
+			 const size_t sz,
+			 const char *R src,
+			 const size_t srclen)
 JSTR_NOEXCEPT
 {
-	jstr_strcpy_len(s + *sz, src, srclen);
-	*sz += srclen;
+	return jstr_strcpy_len(s + sz, src, srclen);
 }
 
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_append_unsafe(char *R s,
-		   size_t *R sz,
+		   const size_t sz,
 		   const char *R src)
 JSTR_NOEXCEPT
 {
-	*sz = jstr_stpcpy(s + *sz, src) - s;
+	strcpy(s + sz, src);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_append_p_unsafe(char *R s,
+		     const size_t sz,
+		     const char *R src)
+JSTR_NOEXCEPT
+{
+	return jstr_stpcpy(s + sz, src);
 }
 
 /*
@@ -503,24 +513,23 @@ jstr_append_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	JSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
-	jstr_append_len_unsafe(*s, sz, src, srclen);
+	*sz = jstr_append_len_p_unsafe(*s, *sz, src, srclen) - *s;
 	return 1;
 }
 
 /*
    Append N Cs to end of S.
 */
-JSTR_FUNC_VOID
+JSTR_FUNC
 JSTR_INLINE
-static void
-jstr_appendnchr_unsafe(char *R s,
-		       size_t *R sz,
-		       const int c,
-		       const size_t n)
+static char *
+jstr_appendnchr_p_unsafe(char *R s,
+			 const size_t sz,
+			 const int c,
+			 const size_t n)
 JSTR_NOEXCEPT
 {
-	memset(s + *sz, c, n);
-	*sz += n;
+	return (char *)memset(s + sz, c, n) + n;
 }
 
 /*
@@ -537,28 +546,27 @@ jstr_appendnchr(char *R *R s,
 JSTR_NOEXCEPT
 {
 	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
-	jstr_appendnchr_unsafe(*s, sz, c, n);
+	*sz = jstr_appendnchr_p_unsafe(*s, *sz, c, n) - *s;
 	return 1;
 }
 
 /*
    Prepend N Cs to S.
 */
-JSTR_FUNC_VOID
+JSTR_FUNC
 JSTR_INLINE
-static void
-jstr_prependnchr_unsafe(char *R s,
-			size_t *R sz,
-			const int c,
-			const size_t n)
+static char *
+jstr_prependnchr_p_unsafe(char *R s,
+			  const size_t sz,
+			  const int c,
+			  const size_t n)
 JSTR_NOEXCEPT
 {
-	if (jstr_likely(*sz != 0))
-		jstr_strmove_len(s + n, s, *sz);
+	if (jstr_likely(sz != 0))
+		jstr_strmove_len(s + n, s, sz);
 	else
 		*(s + n) = '\0';
-	memset(s, c, n);
-	*sz += n;
+	return (char *)memset(s, c, n) + n;
 }
 
 /*
@@ -575,7 +583,7 @@ jstr_prependnchr(char *R *R s,
 JSTR_NOEXCEPT
 {
 	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
-	jstr_prependnchr_unsafe(*s, sz, c, n);
+	*sz = jstr_prependnchr_p_unsafe(*s, *sz, c, n) - *s;
 	return 1;
 }
 
@@ -632,16 +640,13 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 JSTR_INLINE
-static int
-jstr_assign_len_unsafe(char *R *R s,
-		       size_t *R sz,
-		       const char *R src,
-		       const size_t srclen)
+static char *
+jstr_assign_len_p_unsafe(char *R s,
+			 const char *R src,
+			 const size_t srclen)
 JSTR_NOEXCEPT
 {
-	jstr_strcpy_len(*s, src, srclen);
-	*sz = srclen;
-	return 1;
+	return jstr_stpcpy_len(s, src, srclen);
 }
 
 /*
@@ -663,7 +668,8 @@ JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, srclen * JSTR_ALLOC_MULTIPLIER, return 0);
-	return jstr_assign_len_unsafe(s, sz, src, srclen);
+	*sz = jstr_assign_len_p_unsafe(*s, src, srclen) - *s;
+	return 1;
 }
 
 JSTR_INLINE
