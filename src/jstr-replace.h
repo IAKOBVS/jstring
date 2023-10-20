@@ -496,8 +496,8 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S.
 */
-JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
 static char *
 jstr_removeat_len_p(char *R s,
 		    const size_t at,
@@ -701,6 +701,7 @@ JSTR_NOEXCEPT
   Return ptr to '\0' in S.
 */
 JSTR_FUNC
+JSTR_INLINE
 static char *
 jstr_removelast_len_p(char *R s,
 		      size_t sz,
@@ -718,6 +719,7 @@ JSTR_NOEXCEPT
   otherwise, 1.
 */
 JSTR_FUNC
+JSTR_INLINE
 static int
 jstr_replacelast_len(char *R *R s,
 		     size_t *R sz,
@@ -1066,8 +1068,8 @@ JSTR_NOEXCEPT
   Assume that S have enough space for SRC.
   Return value:
 */
-JSTR_INLINE
 JSTR_FUNC_VOID
+JSTR_INLINE
 static void
 jstr_put_len_unsafe(char *R s,
 		    const size_t at,
@@ -1083,8 +1085,8 @@ JSTR_NOEXCEPT
   Return 0 on malloc error;
   otherwise 1.
 */
-JSTR_INLINE
 JSTR_FUNC
+JSTR_INLINE
 static int
 jstr_put_len(char *R *R s,
 	     size_t *R sz,
@@ -1108,8 +1110,8 @@ JSTR_NOEXCEPT
   Return 0 on malloc error;
   otherwise 1.
 */
-JSTR_INLINE
 JSTR_FUNC
+JSTR_INLINE
 static int
 jstr_putafterchr_len(char *R *R s,
 		     size_t *R sz,
