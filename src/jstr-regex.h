@@ -1015,7 +1015,7 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	unsigned char *p = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0))
-		return pjstr_reg_removeall(flag, (char *)p, sz, n, preg, eflags);
+		return pjstr_reg_removeall(flag, (char *)p, sz - start_idx, n, preg, eflags);
 	unsigned char *dst = p;
 	const unsigned char *oldp = p;
 	regmatch_t rm[10];
@@ -1071,8 +1071,8 @@ err:
 
 /* False-positive memory leak. */
 #ifdef __GNUC__
-#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#	pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak"
+/* #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value" */
+/* #	pragma GCC diagnostic ignored "-Wanalyzer-malloc-leak" */
 #	pragma GCC diagnostic push
 #endif
 
