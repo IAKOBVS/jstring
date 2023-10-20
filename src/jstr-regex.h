@@ -479,13 +479,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
-pjstr_reg_removeall(const pjstr_flag_use_n_ty flag,
-		    char *R s,
+pjstr_reg_removeall(char *R s,
 		    size_t *R sz,
-		    const size_t start_idx,
-		    size_t n,
 		    const regex_t *R preg,
-		    const int eflags)
+		    const int eflags,
+		    const pjstr_flag_use_n_ty flag,
+		    size_t n,
+		    const size_t start_idx)
 JSTR_NOEXCEPT
 {
 	regmatch_t rm;
@@ -520,7 +520,7 @@ jstr_reg_removeall(char *R s,
 		   const int eflags)
 JSTR_NOEXCEPT
 {
-	return pjstr_reg_removeall(PJSTR_FLAG_USE_NOT_N, s, sz, 0, 0, preg, eflags);
+	return pjstr_reg_removeall(s, sz, preg, eflags, PJSTR_FLAG_USE_NOT_N, 0, 0);
 }
 
 JSTR_FUNC
@@ -532,7 +532,7 @@ jstr_reg_removen(char *R s,
 		 const int eflags)
 JSTR_NOEXCEPT
 {
-	return pjstr_reg_removeall(PJSTR_FLAG_USE_N, s, sz, 0, n, preg, eflags);
+	return pjstr_reg_removeall(s, sz, preg, eflags, PJSTR_FLAG_USE_N, n, 0);
 }
 
 JSTR_FUNC
@@ -544,7 +544,7 @@ jstr_reg_removeall_from(char *R s,
 			const int eflags)
 JSTR_NOEXCEPT
 {
-	return pjstr_reg_removeall(PJSTR_FLAG_USE_NOT_N, s, sz, start_idx, 0, preg, eflags);
+	return pjstr_reg_removeall(s, sz, preg, eflags, PJSTR_FLAG_USE_NOT_N, 0, start_idx);
 }
 
 JSTR_FUNC_VOID
@@ -625,7 +625,7 @@ JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
 	if (jstr_unlikely(rplclen == 0))
-		return pjstr_reg_removeall(flag, *s, sz, start_idx, n, preg, eflags);
+		return pjstr_reg_removeall(*s, sz, preg, eflags, flag, n, start_idx);
 	unsigned char *dst = *(u **)s + start_idx;
 	unsigned char *p = dst;
 	const unsigned char *oldp = dst;
@@ -1028,7 +1028,7 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	unsigned char *p = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0))
-		return pjstr_reg_removeall(flag, *s, sz, start_idx, n, preg, eflags);
+		return pjstr_reg_removeall(*s, sz, preg, eflags, flag, n, start_idx);
 	unsigned char *dst = p;
 	const unsigned char *oldp = p;
 	regmatch_t rm[10];
