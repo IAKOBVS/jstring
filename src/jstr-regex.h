@@ -968,6 +968,11 @@ err:
 	return JSTR_REG_RET_ESPACE;
 }
 
+#ifdef __GNUC__
+#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
+#	pragma GCC diagnostic push
+#endif
+
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_replace_bref_len(char *R *R s,
@@ -998,6 +1003,10 @@ JSTR_NOEXCEPT
 {
 	return pjstr_reg_replace_bref_len(s, sz, cap, rplc, rplclen, preg, eflags, nmatch, start_idx);
 }
+
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif
 
 JSTR_INLINE
 JSTR_FUNC
