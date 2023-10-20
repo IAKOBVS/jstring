@@ -886,12 +886,8 @@ cont_switch:
 				break;
 			/* padding */
 			case '*':
-				arg = va_arg(ap, const char *);
-				if (jstr_unlikely(arg == NULL)) {
-					errno = EINVAL;
-					return -1;
-				}
-				arglen += (int)(long)arg;
+				/* Get length of padding from argument. */
+				arglen += va_arg(ap, int);
 				goto cont_switch;
 			case '-':
 				state = PAD;
