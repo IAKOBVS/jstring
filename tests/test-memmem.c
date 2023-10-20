@@ -1,13 +1,6 @@
 #define __STRICT_ANSI__
 
-#include "../src/jstr.h"
-#include <assert.h>
-
-#define PRINT(fmt, ...) \
-	fprintf(stderr, fmt, __VA_ARGS__)
-
-#define SUCCESS() \
-	PRINT("%s succeeded.\n", argv[0])
+#include "test.h"
 
 #define T_STRSTR(fn, simple_fn, ...)                               \
 	do {                                                       \
