@@ -698,8 +698,7 @@ JSTR_NOEXCEPT
 
 /*
   Replace last SEARCH in S with REPLACE.
-  Return 0 on malloc error;
-  otherwise, 1.
+  Return ptr to '\0' in S.
 */
 JSTR_FUNC
 static char *
