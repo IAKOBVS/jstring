@@ -11,9 +11,9 @@
 #include <stdarg.h>
 
 #if JSTR_DEBUG
-#	define JSTR_PRINT_DEBUG(...) fprintf(stderr, __VA_ARGS__)
+#	define JSTR_PRINT_LOG(...) fprintf(stderr, __VA_ARGS__)
 #else
-#	define JSTR_PRINT_DEBUG(...) \
+#	define JSTR_PRINT_LOG(...) \
 		do {                       \
 		} while (0)
 #endif

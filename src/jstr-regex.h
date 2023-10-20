@@ -17,16 +17,6 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#ifndef JSTR_REG_DEBUG
-#	define JSTR_REG_DEBUG 0
-#endif
-
-#if JSTR_REG_DEBUG
-#	define PJSTR_REG_LOG(x) fputs(x, stderr)
-#else
-#	define PJSTR_REG_LOG(x)
-#endif /* PJSTR_REG_LOG */
-
 #define PJSTR_REG_COMP_NOW()                                                      \
 	do {                                                                      \
 		const jstr_reg_errcode_ty ret = jstr_reg_comp(preg, ptn, cflags); \
@@ -561,7 +551,7 @@ pjstr_reg_replaceall_small_rplc(unsigned char *s,
 {
 	typedef unsigned char u;
 	if (*dst != *oldp) {
-		PJSTR_REG_LOG("*dst != *oldp");
+		JSTR_PRINT_LOG("*dst != *oldp");
 		*dst = (u *)jstr_mempmove(*dst, *oldp, *p - *oldp);
 		jstr_strmove_len(*dst + rplclen,
 				 *p + findlen,
@@ -569,7 +559,7 @@ pjstr_reg_replaceall_small_rplc(unsigned char *s,
 		*dst = (u *)jstr_mempcpy(*dst, rplc, rplclen);
 		*oldp = *dst;
 	} else {
-		PJSTR_REG_LOG("*dst == *oldp");
+		JSTR_PRINT_LOG("*dst == *oldp");
 		jstr_strmove_len(*p + rplclen,
 				 *p + findlen,
 				 s + *sz - (*p + findlen));
@@ -592,7 +582,7 @@ pjstr_reg_replaceall_big_rplc(unsigned char **s,
 			      const size_t rplclen,
 			      const size_t findlen)
 {
-	PJSTR_REG_LOG("cap <= *sz + rplclen - findlen");
+	JSTR_PRINT_LOG("cap <= *sz + rplclen - findlen");
 	if (*dst != *oldp)
 		memmove(*dst, *oldp, *p - *oldp);
 	const unsigned char *tmp = *s;
@@ -637,19 +627,19 @@ JSTR_NOEXCEPT
 		findlen = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
 		if (jstr_unlikely(findlen == 0)) {
-			PJSTR_REG_LOG("jstr_unlikely(findlen == 0)");
+			JSTR_PRINT_LOG("jstr_unlikely(findlen == 0)");
 			if (jstr_unlikely(*++p == '\0'))
 				break;
 			continue;
 		}
 		if (rplclen <= findlen) {
-			PJSTR_REG_LOG("rplclen <= findlen");
+			JSTR_PRINT_LOG("rplclen <= findlen");
 			pjstr_replaceall_in_place(&dst, &oldp, (const u **)&p, (u *)rplc, rplclen, findlen);
 		} else if (*cap > *sz + rplclen - findlen) {
-			PJSTR_REG_LOG("*cap > *sz + rplclen - findlen");
+			JSTR_PRINT_LOG("*cap > *sz + rplclen - findlen");
 			pjstr_reg_replaceall_small_rplc(*(u **)s, sz, &dst, &oldp, &p, (u *)rplc, rplclen, findlen);
 		} else {
-			PJSTR_REG_LOG("else");
+			JSTR_PRINT_LOG("else");
 			if (jstr_unlikely(!pjstr_reg_replaceall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, (u *)rplc, rplclen, findlen)))
 				goto err;
 		}
@@ -1249,7 +1239,7 @@ PJSTR_END_DECLS
 #undef R
 
 #undef PJSTR_REG_EXEC
-#undef PJSTR_REG_LOG
+#undef JSTR_PRINT_LOG
 #undef JSTR_REG_DEBUG
 
 #undef PJSTR_REG_NOERR
