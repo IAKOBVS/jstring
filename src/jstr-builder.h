@@ -462,6 +462,7 @@ JSTR_NOEXCEPT
 	return arglen;
 }
 
+/* Return ptr to '\0' in S. */
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -471,7 +472,7 @@ jstr_append_len_p_unsafe(char *R s,
 			 const size_t srclen)
 JSTR_NOEXCEPT
 {
-	return jstr_strcpy_len(s + sz, src, srclen);
+	return jstr_strcpy_len(s + sz, src, srclen) + srclen;
 }
 
 JSTR_FUNC_VOID
@@ -485,6 +486,7 @@ JSTR_NOEXCEPT
 	strcpy(s + sz, src);
 }
 
+/* Return ptr to '\0' in S. */
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -517,9 +519,7 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
-/*
-   Append N Cs to end of S.
-*/
+/* Append N Cs to end of S. */
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -634,9 +634,7 @@ JSTR_NOEXCEPT
 /*
    Assign SRC to DST.
    S is NUL terminated.
-   Return value:
-   0 on malloc error;
-   otherwise 1.
+   Return ptr to '\0' in S.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -653,7 +651,7 @@ JSTR_NOEXCEPT
    Assign SRC to DST.
    S is NUL terminated.
    Return value:
-   0 on malloc error;
+   0 on malloc error
    otherwise 1.
 */
 JSTR_FUNC
