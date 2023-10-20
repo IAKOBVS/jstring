@@ -848,7 +848,6 @@ JSTR_NOEXCEPT
 	enum {
 		DEFAULT = 0,
 		PAD,
-		UNSIGNED,
 	}; /* state */
 	enum {
 		MAX_WINT = CHAR_BIT * sizeof(wint_t),
@@ -889,7 +888,6 @@ cont_switch:
 				goto get_arg;
 				/* int */
 			case 'u':
-				state |= UNSIGNED;
 				/* fallthrough */
 			case 'd':
 			case 'i':
@@ -951,11 +949,6 @@ cont_switch:
 			case '%':
 				arglen += 2;
 				break;
-			case '\\':
-				if (jstr_unlikely(*++fmt == '\0'))
-					goto einval;
-				++arglen;
-				break;
 			case 'm':
 				if (errno_len == 0)
 					arglen += strlen(strerror(errno));
@@ -968,7 +961,7 @@ cont_switch:
 				arglen += va_arg(ap, int);
 				goto cont_switch;
 			case '-':
-				state &= PAD;
+				state = PAD;
 			/* flags */
 			case '+':
 			case '#':
@@ -1000,7 +993,7 @@ cont_switch:
 			case '7':
 			case '8':
 			case '9':
-				if (state &= PAD) {
+				if (state == PAD) {
 					padlen = *fmt - '0' + (*fmt != 9);
 					for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
 						;
@@ -1025,6 +1018,7 @@ einval:
 				state = DEFAULT;
 				goto string;
 			}
+			state = DEFAULT;
 		} else {
 string:
 			++arglen;
