@@ -9,39 +9,39 @@
 #define SUCCESS() \
 	PRINT("%s succeeded.\n", argv[0])
 
-#define T_STRSTR(fn1, fn2, ...)                               \
-	do {                                                  \
-		assert(fn1(__VA_ARGS__) == fn2(__VA_ARGS__)); \
+#define T_STRSTR(fn, simple_fn, ...)                               \
+	do {                                                       \
+		assert(fn(__VA_ARGS__) == simple_fn(__VA_ARGS__)); \
 	} while (0)
 
-#define T_FN(TEST_FN, fn1, fn2)                                                              \
-	do {                                                                                 \
-		PRINT("Testing %s against %s.\n", JSTR_STRINGIFY(fn1), JSTR_STRINGIFY(fn2)); \
-		TEST_FN(fn1, fn2, "yxxxyxxxxy", "xxx");                                      \
-		TEST_FN(fn1, fn2, "yxxxyxxy", "xxx");                                        \
-		TEST_FN(fn1, fn2, "xxx", "xxx");                                             \
-		TEST_FN(fn1, fn2, "xxx", "x");                                               \
-		TEST_FN(fn1, fn2, "xxx", "yyy");                                             \
-		TEST_FN(fn1, fn2, "x", "xxx");                                               \
-		TEST_FN(fn1, fn2, "xxx", "");                                                \
-		TEST_FN(fn1, fn2, "", "xxx");                                                \
-		TEST_FN(fn1, fn2, "", "");                                                   \
+#define T_FN(TEST_FN, fn, simple_fn)                         \
+	do {                                                 \
+		PRINT("Testing %s.\n", JSTR_STRINGIFY(fn));  \
+		TEST_FN(fn, simple_fn, "yxxxyxxxxy", "xxx"); \
+		TEST_FN(fn, simple_fn, "yxxxyxxy", "xxx");   \
+		TEST_FN(fn, simple_fn, "xxx", "xxx");        \
+		TEST_FN(fn, simple_fn, "xxx", "x");          \
+		TEST_FN(fn, simple_fn, "xxx", "yyy");        \
+		TEST_FN(fn, simple_fn, "x", "xxx");          \
+		TEST_FN(fn, simple_fn, "xxx", "");           \
+		TEST_FN(fn, simple_fn, "", "xxx");           \
+		TEST_FN(fn, simple_fn, "", "");              \
 	} while (0)
 
 #define GET_LEN(x) x, strlen(x)
 
-#define T_FN_MEM(TEST_FN, fn1, fn2)                                                         \
-	do {                                                                                \
-		PRINT("Testing %s against %s\n", JSTR_STRINGIFY(fn1), JSTR_STRINGIFY(fn2)); \
-		TEST_FN(fn1, fn2, GET_LEN("yxxxyxxxxy"), GET_LEN("xxx"));                   \
-		TEST_FN(fn1, fn2, GET_LEN("yxxxyxxy"), GET_LEN("xxx"));                     \
-		TEST_FN(fn1, fn2, GET_LEN("xxx"), GET_LEN("xxx"));                          \
-		TEST_FN(fn1, fn2, GET_LEN("xxx"), GET_LEN("x"));                            \
-		TEST_FN(fn1, fn2, GET_LEN("xxx"), GET_LEN("yyy"));                          \
-		TEST_FN(fn1, fn2, GET_LEN("x"), GET_LEN("xxx"));                            \
-		TEST_FN(fn1, fn2, GET_LEN("xxx"), GET_LEN(""));                             \
-		TEST_FN(fn1, fn2, GET_LEN(""), GET_LEN("xxx"));                             \
-		TEST_FN(fn1, fn2, GET_LEN(""), GET_LEN(""));                                \
+#define T_FN_MEM(TEST_FN, fn, simple_fn)                                       \
+	do {                                                                   \
+		PRINT("Testing %s.\n", JSTR_STRINGIFY(fn));                    \
+		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxxxy"), GET_LEN("xxx")); \
+		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxy"), GET_LEN("xxx"));   \
+		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("xxx"));        \
+		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("x"));          \
+		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("yyy"));        \
+		TEST_FN(fn, simple_fn, GET_LEN("x"), GET_LEN("xxx"));          \
+		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN(""));           \
+		TEST_FN(fn, simple_fn, GET_LEN(""), GET_LEN("xxx"));           \
+		TEST_FN(fn, simple_fn, GET_LEN(""), GET_LEN(""));              \
 	} while (0)
 
 #define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
