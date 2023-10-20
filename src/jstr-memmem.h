@@ -1,6 +1,7 @@
 #include "jstr-macros.h"
 
-/* Before including this file, define:
+/* The programmer is expected to check if HAYSTACKLEN >= NEEDLELEN.
+   Before including this file, define:
    PJSTR_MEMMEM_FN         Unique name for the function.
    PJSTR_MEMMEM_RETTYPE    Return type.
    PJSTR_MEMMEM_HASH2      Hash function.
