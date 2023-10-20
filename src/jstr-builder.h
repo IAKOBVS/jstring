@@ -759,6 +759,71 @@ JSTR_NOEXCEPT
 	return fwrite(s, 1, sz, fp) == sz;
 }
 
+#if 0
+
+JSTR_FUNC
+static int
+pjstr_asprintf_count_udigits(unsigned long long number)
+{
+	int len;
+	if (sizeof(unsigned long long) == 8) {
+		if (number < 9)
+			len = 1;
+		else if (number <= 99)
+			len = 2;
+		else if (number <= 999)
+			len = 3;
+		else if (number <= 9999)
+			len = 4;
+		else if (number <= 99999)
+			len = 5;
+		else if (number <= 999999)
+			len = 6;
+		else if (number <= 9999999)
+			len = 7;
+		else if (number <= 99999999)
+			len = 8;
+		else if (number <= 999999999)
+			len = 9;
+		else if (number <= 9999999999)
+			len = 10;
+		else if (number <= 99999999999)
+			len = 11;
+		else if (number <= 999999999999)
+			len = 12;
+		else if (number <= 9999999999999)
+			len = 13;
+		else if (number <= 99999999999999)
+			len = 14;
+		else if (number <= 999999999999999)
+			len = 15;
+		else if (number <= 9999999999999999)
+			len = 16;
+		else if (number <= 99999999999999999)
+			len = 17;
+		else if (number <= 999999999999999999)
+			len = 18;
+		else
+			len = 19;
+	} else {
+		len = 1;
+		while (number /= 10)
+			++len;
+	}
+	return len * 2 + 1;
+}
+
+JSTR_FUNC
+static int
+pjstr_asprintf_count_digits(long long number)
+{
+	if (number < 0)
+		number = -number;
+	return pjstr_asprintf_count_udigits(number);
+}
+
+#endif
+
 JSTR_FUNC
 JSTR_INLINE
 static size_t
@@ -773,6 +838,7 @@ JSTR_NOEXCEPT
 	enum {
 		DEFAULT = 0,
 		PAD,
+		UNSIGNED,
 	}; /* state */
 	enum {
 		MAX_WINT = CHAR_BIT * sizeof(wint_t),
@@ -812,9 +878,11 @@ cont_switch:
 				}
 				goto get_arg;
 				/* int */
+			case 'u':
+				state |= UNSIGNED;
+				/* fallthrough */
 			case 'd':
 			case 'i':
-			case 'u':
 			case 'x':
 			case 'X':
 				if (lflag == NOT_LONG) {
@@ -890,7 +958,7 @@ cont_switch:
 				arglen += va_arg(ap, int);
 				goto cont_switch;
 			case '-':
-				state = PAD;
+				state &= PAD;
 			/* flags */
 			case '+':
 			case '#':
@@ -922,7 +990,7 @@ cont_switch:
 			case '7':
 			case '8':
 			case '9':
-				if (state == PAD) {
+				if (state &= PAD) {
 					padlen = *fmt - '0' + (*fmt != 9);
 					for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
 						;
