@@ -452,7 +452,6 @@ JSTR_NOEXCEPT
 {
 	const char *const p = jstr_strstr_len(hs, hslen, ne, nelen);
 	return (char *)(p ? p : hs + hslen);
-	(void)hslen;
 	(void)nelen;
 }
 
