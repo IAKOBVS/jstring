@@ -292,7 +292,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(nelen == 0))
 		return (char *)hs + hslen;
 	const unsigned char *h = (u *)jstr_memrchr(hs, *((char *)ne + nelen - 1), hslen);
-	if (h == NULL || (uintptr_t)(h - (u *)hs) < nelen)
+	if (h == NULL || (uintptr_t)((u *)h - (u *)hs + 1) < nelen)
 		return NULL;
 	const unsigned char *const start = (u *)hs;
 	const unsigned char *const n = (u *)ne;
