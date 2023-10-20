@@ -126,7 +126,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-pjstr_strnstr3(const unsigned char *h,
+pjstr_strnstr3(const unsigned char *R h,
 	       const unsigned char *R n,
 	       const unsigned char *end)
 JSTR_NOEXCEPT
@@ -141,7 +141,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-pjstr_strnstr4(const unsigned char *h,
+pjstr_strnstr4(const unsigned char *R h,
 	       const unsigned char *R n,
 	       const unsigned char *end)
 JSTR_NOEXCEPT
