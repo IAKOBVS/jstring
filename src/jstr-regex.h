@@ -482,13 +482,14 @@ static jstr_reg_errcode_ty
 pjstr_reg_removeall(const pjstr_flag_use_n_ty flag,
 		    char *R s,
 		    size_t *R sz,
+		    const size_t start_idx,
 		    size_t n,
 		    const regex_t *R preg,
 		    const int eflags)
 JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	unsigned char *dst = (unsigned char *)s;
+	unsigned char *dst = (unsigned char *)s + start_idx;
 	const unsigned char *p = dst;
 	const unsigned char *oldp = dst;
 	const unsigned char *const end = *(unsigned char **)s + *sz;
@@ -519,7 +520,7 @@ jstr_reg_removeall(char *R s,
 		   const int eflags)
 JSTR_NOEXCEPT
 {
-	return pjstr_reg_removeall(PJSTR_FLAG_USE_NOT_N, s, sz, 0, preg, eflags);
+	return pjstr_reg_removeall(PJSTR_FLAG_USE_NOT_N, s, sz, 0, 0, preg, eflags);
 }
 
 JSTR_FUNC
@@ -531,7 +532,19 @@ jstr_reg_removen(char *R s,
 		 const int eflags)
 JSTR_NOEXCEPT
 {
-	return pjstr_reg_removeall(PJSTR_FLAG_USE_N, s, sz, n, preg, eflags);
+	return pjstr_reg_removeall(PJSTR_FLAG_USE_N, s, sz, 0, n, preg, eflags);
+}
+
+JSTR_FUNC
+static jstr_reg_errcode_ty
+jstr_reg_removeall_from(char *R s,
+			size_t *R sz,
+			const size_t start_idx,
+			const regex_t *R preg,
+			const int eflags)
+JSTR_NOEXCEPT
+{
+	return pjstr_reg_removeall(PJSTR_FLAG_USE_NOT_N, s, sz, start_idx, 0, preg, eflags);
 }
 
 JSTR_FUNC_VOID
@@ -613,7 +626,7 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	unsigned char *dst = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0))
-		return pjstr_reg_removeall(flag, (char *)dst, sz - start_idx, n, preg, eflags);
+		return pjstr_reg_removeall(flag, *s, sz, start_idx, n, preg, eflags);
 	unsigned char *p = dst;
 	const unsigned char *oldp = dst;
 	size_t findlen;
@@ -931,7 +944,7 @@ pjstr_reg_replace_bref_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplclen == 0))
-		return jstr_reg_remove(*s + start_idx, sz - start_idx, preg, eflags);
+		return jstr_reg_remove_from(*s, sz, start_idx, preg, eflags);
 	regmatch_t rm[10];
 	jstr_reg_errcode_ty ret = PJSTR_REG_EXEC(preg, *s + start_idx, *sz - start_idx, nmatch, rm, eflags);
 	const size_t findlen = rm[0].rm_eo - rm[0].rm_so;
@@ -1015,7 +1028,7 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	unsigned char *p = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0))
-		return pjstr_reg_removeall(flag, (char *)p, sz - start_idx, n, preg, eflags);
+		return pjstr_reg_removeall(flag, *s, sz, start_idx, n, preg, eflags);
 	unsigned char *dst = p;
 	const unsigned char *oldp = p;
 	regmatch_t rm[10];
