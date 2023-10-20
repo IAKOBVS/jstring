@@ -574,13 +574,11 @@ JSTR_NOEXCEPT
 		typedef unsigned char uc;                                       \
 		if (dst != oldp) {                                              \
 			PJSTR_REG_LOG("dst != oldp");                           \
-			memmove(dst, oldp, p - oldp);                           \
-			dst += (p - oldp);                                      \
+			dst = (u *)jstr_mempmove(dst, oldp, p - oldp);          \
 			jstr_strmove_len(dst + rplclen,                         \
 					 p + findlen,                           \
 					 (*(uc **)s + *sz) - (p + findlen));    \
-			memcpy(dst, rplc, rplclen);                             \
-			dst += rplclen;                                         \
+			dst = (u *)jstr_mempcpy(dst, rplc, rplclen);            \
 			oldp = dst;                                             \
 		} else {                                                        \
 			PJSTR_REG_LOG("dst == oldp");                           \
@@ -872,21 +870,18 @@ pjstr_reg_creat_rplc_bref(const unsigned char *R mtc,
 			  const size_t rplclen)
 JSTR_NOEXCEPT
 {
+	typedef unsigned char u;
 	const unsigned char *rold;
 	const unsigned char *const rplc_e = rplc + rplclen;
-	size_t breflen;
 	for (;; ++rplc) {
 		rold = rplc;
-		rplc = (unsigned char *)memchr(rplc, '\\', rplc_e - rplc);
+		rplc = (u *)memchr(rplc, '\\', rplc_e - rplc);
 		if (jstr_likely(jstr_isdigit(*++rplc))) {
 			if (jstr_likely(rplc != rold)) {
-				memmove(rdst, rold, (rplc - 1) - rold);
-				rdst += (rplc - 1) - rold;
+				rdst = (u *)jstr_mempmove(rdst, rold, (rplc - 1) - rold);
 				rplc += (rplc - 1) - rold - 1;
 			}
-			breflen = rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so;
-			memcpy(rdst, mtc + rm[*rplc - '0'].rm_so, breflen);
-			rdst += breflen;
+			rdst = (u *)jstr_mempcpy(rdst, mtc + rm[*rplc - '0'].rm_so, rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so);
 		} else if (jstr_unlikely(*rplc == '\0')) {
 			break;
 		} else {
