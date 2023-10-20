@@ -1182,9 +1182,9 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_fmt_thousand_sep_len(char *R nptr,
-			  size_t sz,
-			  const int separator)
+jstr_fmt_add_thousand_sep_len(char *R nptr,
+			      size_t sz,
+			      const int separator)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
@@ -1223,11 +1223,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_fmt_thousand_sep(char *R nptr,
-		      const int separator)
+jstr_fmt_add_thousand_sep(char *R nptr,
+			  const int separator)
 JSTR_NOEXCEPT
 {
-	return jstr_fmt_thousand_sep_len(nptr, strlen(nptr), separator);
+	return jstr_fmt_add_thousand_sep_len(nptr, strlen(nptr), separator);
 }
 
 PJSTR_END_DECLS
