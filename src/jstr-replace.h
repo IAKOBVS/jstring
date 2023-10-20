@@ -499,6 +499,24 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
+jstr_removeat_len_p(char *R s,
+		    const size_t at,
+		    const size_t sz,
+		    const size_t findlen)
+JSTR_NOEXCEPT
+{
+	memmove(s + at, s + at + findlen, (s + sz) - (s + at));
+	return s + sz - findlen;
+}
+
+/*
+  Remove first HS in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
+JSTR_INLINE
+JSTR_FUNC_RET_NONNULL
+static char *
 jstr_remove_len_p(char *R s,
 		  const char *R find,
 		  const size_t sz,
@@ -676,6 +694,23 @@ jstr_replace_len_from(char *R *R s,
 JSTR_NOEXCEPT
 {
 	return pjstr_replace_len(s, sz, cap, start_idx, find, rplc, findlen, rplclen);
+}
+
+/*
+  Replace last SEARCH in S with REPLACE.
+  Return 0 on malloc error;
+  otherwise, 1.
+*/
+JSTR_FUNC
+static char *
+jstr_removelast_len_p(char *R s,
+		      size_t sz,
+		      const char *R find,
+		      const size_t findlen)
+JSTR_NOEXCEPT
+{
+	const char *const p = (char *)jstr_strrstr_len(s, sz, find, findlen);
+	return p ? jstr_removeat_len_p(s, p - s, sz, findlen) : s + sz;
 }
 
 /*
