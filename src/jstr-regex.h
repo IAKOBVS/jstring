@@ -611,11 +611,11 @@ pjstr_reg_replaceall_len(const pjstr_flag_use_n_ty flag,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	unsigned char *p = *(u **)s + start_idx;
+	unsigned char *dst = *(u **)s + start_idx;
 	if (jstr_unlikely(rplclen == 0))
-		return pjstr_reg_removeall(flag, (char *)p, sz - start_idx, n, preg, eflags);
-	unsigned char *dst = p;
-	const unsigned char *oldp = p;
+		return pjstr_reg_removeall(flag, (char *)dst, sz - start_idx, n, preg, eflags);
+	unsigned char *p = dst;
+	const unsigned char *oldp = dst;
 	size_t findlen;
 	regmatch_t rm;
 	while ((flag & PJSTR_FLAG_USE_N ? n-- : 1)
@@ -631,10 +631,10 @@ JSTR_NOEXCEPT
 		}
 		if (rplclen <= findlen) {
 			PJSTR_REG_LOG("rplclen <= findlen");
-			pjstr_replaceall_in_place(&dst, &oldp, &p, (u *)rplc, rplclen, findlen);
+			pjstr_replaceall_in_place(&dst, &oldp, (const u **)&p, (u *)rplc, rplclen, findlen);
 		} else if (*cap > *sz + rplclen - findlen) {
 			PJSTR_REG_LOG("*cap > *sz + rplclen - findlen");
-			pjstr_reg_replaceall_small_rplc((u *)*s, sz, &dst, &oldp, &p, (u *)rplc, rplclen, findlen);
+			pjstr_reg_replaceall_small_rplc(*(u **)s, sz, &dst, &oldp, &p, (u *)rplc, rplclen, findlen);
 		} else {
 			PJSTR_REG_LOG("else");
 			if (jstr_unlikely(!pjstr_reg_replaceall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, (u *)rplc, rplclen, findlen)))
@@ -1024,7 +1024,6 @@ JSTR_NOEXCEPT
 	unsigned char rdst_stack[JSTR_PAGE_SIZE];
 	unsigned char *rdstp = rdst_stack;
 	unsigned char *rdst_heap = NULL;
-	unsigned char *tmp;
 	size_t findlen;
 	int has_bref;
 	while (((flag & PJSTR_FLAG_USE_N) ? n-- : 1)
@@ -1052,7 +1051,7 @@ JSTR_NOEXCEPT
 		pjstr_reg_creat_rplc_bref((u *)p, rm, (u *)rdstp, (u *)rplc, rplclen);
 		p += rm[0].rm_so;
 		if (rdstlen <= findlen)
-			pjstr_replaceall_in_place(&dst, &oldp, &p, rdstp, rdstlen, findlen);
+			pjstr_replaceall_in_place(&dst, &oldp, (const u **)&p, rdstp, rdstlen, findlen);
 		else if (*cap > *sz + rdstlen - findlen)
 			pjstr_reg_replaceall_small_rplc((u *)*s, sz, &dst, &oldp, &p, rdstp, rdstlen, findlen);
 		else if (jstr_unlikely(!pjstr_reg_replaceall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, rdstp, rdstlen, findlen)))

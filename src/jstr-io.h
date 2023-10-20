@@ -906,7 +906,7 @@ typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
 JSTR_NONNULL(3)
-JSTR_NONNULL(5)
+JSTR_NONNULL(7)
 static int
 pjstr_io_ftw_len(char *R dirpath,
 		 const size_t dlen,
