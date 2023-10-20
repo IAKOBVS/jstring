@@ -885,17 +885,24 @@ cont_switch:
 					arglen += errno_len;
 				break;
 			/* padding */
+			case '*':
+				arg = va_arg(ap, const char *);
+				if (jstr_unlikely(arg == NULL)) {
+					errno = EINVAL;
+					return -1;
+				}
+				arglen += (int)(long)arg;
+				goto cont_switch;
 			case '-':
-			case '+':
 				state = PAD;
 			/* flags */
+			case '+':
 			case '#':
 			case '0':
 			case ' ':
 			case '\'':
 			/* precision */
 			case '.':
-			case '*':
 				goto cont_switch;
 			/* length modifier */
 			case 'l':
@@ -931,6 +938,9 @@ cont_switch:
 					state = DEFAULT;
 				}
 				goto cont_switch;
+get_arg:
+				va_arg(ap, void *);
+				break;
 einval:
 			/* case '\0': */
 			default:
@@ -938,11 +948,9 @@ einval:
 					errno = EINVAL;
 					return -1;
 				}
+				state = DEFAULT;
 				goto string;
-get_arg:
-				va_arg(ap, void *);
 			}
-			state = DEFAULT;
 		} else {
 string:
 			++arglen;
