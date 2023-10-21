@@ -179,11 +179,10 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
 static char *
-jstr_strnchr(const char *R s,
-	     const int c,
-	     const size_t n)
+jstr_strnchrnul(const char *R s,
+		const int c,
+		const size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
@@ -197,19 +196,34 @@ JSTR_NOEXCEPT
 	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
 		char *ret = (char *)s + jstr_word_index_first(mask);
-		return (ret <= lbyte && *ret) ? ret : NULL;
+		return (ret <= lbyte) ? ret : NULL;
 	}
 	if (word_ptr == lword)
 		return NULL;
 	word = jstr_word_toword(++word_ptr);
 	do {
-		if (jstr_word_has_zero_eq(word, repeated_c)) {
-			char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
-			return *ret ? ret : NULL;
-		}
+		if (jstr_word_has_zero_eq(word, repeated_c))
+			return (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
 		word = jstr_word_toword(++word_ptr);
 	} while (word_ptr != lword);
+	if (jstr_word_has_zero_eq(word, repeated_c)) {
+		char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
+		if (ret <= lbyte)
+			return ret;
+	}
 	return NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strnchr(const char *R s,
+	     const int c,
+	     const size_t n)
+JSTR_NOEXCEPT
+{
+	s = jstr_strnchrnul(s, c, n);
+	return *s ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
