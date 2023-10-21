@@ -838,10 +838,15 @@ pjstr_asprintf_count_digits(long long number)
 
 #endif
 
+/*
+   Return size of allocation needed for vsprintf.
+   Return value:
+   size of allocation;
+   -1 on error.
+*/
 JSTR_FUNC
-JSTR_INLINE
-static size_t
-pjstr_asprintf_strlen(va_list ap, const char *R fmt)
+static int
+jstr_vsprintf_strlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
 	enum {
@@ -1030,6 +1035,8 @@ string:
 				break;
 		}
 	}
+	if (jstr_unlikely(arglen > INT_MAX))
+		arglen = INT_MAX;
 	return arglen;
 }
 
@@ -1075,7 +1082,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	size_t arglen = pjstr_asprintf_strlen(ap, fmt);
+	size_t arglen = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen == -1))
 		goto err;
@@ -1108,7 +1115,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	size_t arglen = pjstr_asprintf_strlen(ap, fmt);
+	size_t arglen = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen == -1))
 		goto err;
@@ -1144,7 +1151,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	size_t arglen = pjstr_asprintf_strlen(ap, fmt);
+	size_t arglen = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen == -1))
 		goto err;
@@ -1179,7 +1186,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	size_t arglen = pjstr_asprintf_strlen(ap, fmt);
+	size_t arglen = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen == -1))
 		goto err;
@@ -1216,7 +1223,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	size_t arglen = pjstr_asprintf_strlen(ap, fmt);
+	size_t arglen = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen == -1))
 		goto err;
@@ -1251,7 +1258,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	size_t arglen = pjstr_asprintf_strlen(ap, fmt);
+	size_t arglen = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely((int)arglen == -1))
 		goto err;
