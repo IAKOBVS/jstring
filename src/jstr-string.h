@@ -1250,20 +1250,23 @@ JSTR_NOEXCEPT
 	int i = sz % 3;
 	for (int j = i; j--;)
 		*dst++ = *src++;
-	if (*src) {
-		if (i)
-			*dst++ = separator;
-		for (i = 0; *src; ++i) {
-			if (i == 3) {
-				*dst = separator;
-				*(dst + 1) = *src++;
-				dst += 2;
-				i = 0;
-			} else {
-				*dst++ = *src++;
-			}
+	if (*src == '\0')
+		goto ret;
+	if (i) {
+		*dst++ = separator;
+		i = 0;
+	}
+	for (; *src; ++i) {
+		if (i == 3) {
+			*dst = separator;
+			*(dst + 1) = *src++;
+			dst += 2;
+			i = 0;
+		} else {
+			*dst++ = *src++;
 		}
 	}
+ret:
 	*dst = '\0';
 	return dst;
 }
