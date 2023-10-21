@@ -185,6 +185,8 @@ jstr_strnchr(const char *R s,
 	     const size_t n)
 JSTR_NOEXCEPT
 {
+	/* Based on glibc memchr and strchrnul released under the terms of the GNU Lesser General Public License.
+	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(n == 0)
 	    || jstr_unlikely(*s == '\0'))
 		return NULL;
