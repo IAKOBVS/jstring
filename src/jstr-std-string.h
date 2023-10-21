@@ -202,13 +202,8 @@ JSTR_NOEXCEPT
 	if (word_ptr == lword)
 		return NULL;
 	word = jstr_word_toword(++word_ptr);
-	do {
-		if (jstr_word_has_zero_eq(word, repeated_c)) {
-			char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
-			return *ret ? ret : NULL;
-		}
-		word = jstr_word_toword(++word_ptr);
-	} while (word_ptr != lword);
+	for (; word_ptr != lword && !jstr_word_has_zero_eq(word, repeated_c); word = jstr_word_toword(++word_ptr))
+		;
 	if (jstr_word_has_zero_eq(word, repeated_c)) {
 		char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
 		if (ret <= lbyte && *ret)
