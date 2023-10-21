@@ -1182,18 +1182,17 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_fmt_add_thousep_len(char *R nptr,
-			 size_t sz,
-			 const int separator)
+jstr_fmt_thousep_len_p(char *R nptr,
+		       const int separator,
+		       size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(sz == 0))
-		return nptr;
 	char *end = nptr + sz;
 	if (*nptr == '-') {
 		++nptr;
 		--sz;
-	}
+	} else if (jstr_unlikely(sz == 0))
+		return nptr;
 	if (sz < 4)
 		return end;
 	int cnt = (sz - 1) / 3;
@@ -1223,11 +1222,66 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_fmt_add_thousep(char *R nptr,
-		     const int separator)
+jstr_fmt_thousep_p(char *R nptr,
+		   const int separator)
 JSTR_NOEXCEPT
 {
-	return jstr_fmt_add_thousep_len(nptr, strlen(nptr), separator);
+	return jstr_fmt_thousep_len_p(nptr, separator, strlen(nptr));
+}
+
+/*
+   Copy SRC to DST and adding thousand separator.
+   Return value:
+   ptr to '\0' in DST.
+*/
+JSTR_FUNC
+static char *
+jstr_fmt_thousepcpy_len_p(char *R dst,
+			  const char *R src,
+			  const int separator,
+			  size_t sz)
+JSTR_NOEXCEPT
+{
+	if (*src == '-') {
+		*dst++ = '-';
+		++src;
+		--sz;
+	}
+	int i = sz % 3;
+	for (int j = i; j--;)
+		*dst++ = *src++;
+	if (*src) {
+		if (i)
+			*dst++ = separator;
+		for (i = 0; *src; ++i) {
+			if (i == 3) {
+				*dst = separator;
+				*(dst + 1) = *src++;
+				dst += 2;
+				i = 0;
+			} else {
+				*dst++ = *src++;
+			}
+		}
+	}
+	*dst = '\0';
+	return dst;
+}
+
+/*
+   Copy SRC to DST and adding thousand separator.
+   Return value:
+   ptr to '\0' in DST.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_fmt_thousepcpy_p(char *R dst,
+		      const char *R src,
+		      const int separator)
+JSTR_NOEXCEPT
+{
+	return jstr_fmt_thousepcpy_len_p(dst, src, separator, strlen(src));
 }
 
 PJSTR_END_DECLS

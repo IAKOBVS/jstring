@@ -37,13 +37,18 @@ JSTR_NOEXCEPT
 	break
 	char *start = buf;
 	switch (base) {
-	case 10: LOOP_BASE(10);
+	case 10:
+		if (number <= 9) {
+			*buf = number + '0';
+			*(buf + 1) = '\0';
+			return buf + 1;
+		}
+		LOOP_BASE(10);
 	case 2: LOOP_BASE(2);
 	case 8: LOOP_BASE(8);
 	case 16: LOOP_BASE(16);
 	default: LOOP_BASE(base);
 	}
-#undef LOOP_BASE
 	const char *const end = buf;
 	*buf-- = '\0';
 	int c;
@@ -53,6 +58,7 @@ JSTR_NOEXCEPT
 		*buf-- = c;
 	}
 	return (char *)end;
+#undef LOOP_BASE
 }
 
 /*
