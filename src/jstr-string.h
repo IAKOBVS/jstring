@@ -1147,13 +1147,8 @@ static char *
 jstr_line_next_nul(const char *R s)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCHRNUL
-	s = strchrnul(s, '\n');
+	s = jstr_strchrnul(s, '\n');
 	return (char *)((*s && *(s + 1)) ? s + 1 : s);
-#else
-	const char *const p = strchr(s, '\n');
-	return (char *)((p && *(p + 1)) ? p + 1 : s + strlen(s));
-#endif
 }
 
 /*
