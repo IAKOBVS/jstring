@@ -107,10 +107,10 @@ PJSTR_ULLTOA(int, itoa, )
 JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
-jstr_ulltoa_p_sep(unsigned long long number,
-		  char *R buf,
-		  const unsigned int base,
-		  const int separator)
+jstr_ulltoa_p_thousep(unsigned long long number,
+		      char *R buf,
+		      const unsigned int base,
+		      const int separator)
 JSTR_NOEXCEPT
 {
 #define CONV(base)                            \
@@ -162,36 +162,36 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_lltoa_p_sep(long long number,
-		 char *R buf,
-		 const unsigned int base,
-		 const int separator)
+jstr_lltoa_p_thousep(long long number,
+		     char *R buf,
+		     const unsigned int base,
+		     const int separator)
 JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
 		*buf++ = '-';
 	}
-	return jstr_ulltoa_p_sep(number, buf, base, separator);
+	return jstr_ulltoa_p_thousep(number, buf, base, separator);
 }
 
-#define PJSTR_ULLTOA_SEP(type, name, u)                                     \
-	/*                                                                  \
-	   Convert number to string with thousand separator.                \
-	   Return value:                                                    \
-	   ptr to '\0' after the last digit in the DEST string.             \
-	*/                                                                  \
-	JSTR_FUNC                                                           \
-	JSTR_RETURNS_NONNULL                                                \
-	JSTR_INLINE                                                         \
-	static char *                                                       \
-	jstr_##name##_p_sep(type number,                                    \
-			    char *R buf,                                    \
-			    const unsigned int base,                        \
-			    const int separator)                            \
-	JSTR_NOEXCEPT                                                       \
-	{                                                                   \
-		return jstr_##u##lltoa_p_sep(number, buf, base, separator); \
+#define PJSTR_ULLTOA_SEP(type, name, u)                                         \
+	/*                                                                      \
+	   Convert number to string with thousand separator.                    \
+	   Return value:                                                        \
+	   ptr to '\0' after the last digit in the DEST string.                 \
+	*/                                                                      \
+	JSTR_FUNC                                                               \
+	JSTR_RETURNS_NONNULL                                                    \
+	JSTR_INLINE                                                             \
+	static char *                                                           \
+	jstr_##name##_p_thousep(type number,                                    \
+				char *R buf,                                    \
+				const unsigned int base,                        \
+				const int separator)                            \
+	JSTR_NOEXCEPT                                                           \
+	{                                                                       \
+		return jstr_##u##lltoa_p_thousep(number, buf, base, separator); \
 	}
 
 PJSTR_ULLTOA_SEP(unsigned long, ultoa, u)
