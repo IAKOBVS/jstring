@@ -137,7 +137,7 @@ JSTR_NOEXCEPT
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_UP((unsigned char *)s + n, sizeof(jstr_word_ty));
+	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((unsigned char *)s + n, sizeof(jstr_word_ty));
 	uintptr_t s_int = (uintptr_t)s + n;
 	jstr_word_ty word = jstr_word_toword(--word_ptr);
 	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
@@ -186,7 +186,30 @@ jstr_strnchr(const char *R s,
 	     const size_t n)
 JSTR_NOEXCEPT
 {
-	return (char *)memchr(s, c, jstr_strnlen(s, n));
+	if (jstr_unlikely(n == 0))
+		return NULL;
+	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	uintptr_t s_int = (uintptr_t)s;
+	jstr_word_ty word = jstr_word_toword(word_ptr);
+	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
+	const char *lbyte = jstr_sadd(s_int, n - 1);
+	const jstr_word_ty *lword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
+	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
+	if (mask != 0) {
+		char *ret = (char *)s + jstr_word_index_first(mask);
+		return (ret <= lbyte && *ret) ? ret : NULL;
+	}
+	if (word_ptr == lword)
+		return NULL;
+	word = jstr_word_toword(++word_ptr);
+	do {
+		if (jstr_word_has_zero_eq(word, repeated_c)) {
+			char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
+			return *ret ? ret : NULL;
+		}
+		word = jstr_word_toword(++word_ptr);
+	} while (word_ptr != lword);
+	return NULL;
 }
 
 JSTR_FUNC_PURE
