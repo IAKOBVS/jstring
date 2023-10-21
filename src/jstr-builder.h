@@ -839,7 +839,7 @@ pjstr_asprintf_count_digits(long long number)
 #endif
 
 /*
-   Return size of allocation needed for vsprintf.
+   Return size of allocation needed for sprintf.
    Return value:
    size of allocation;
    -1 on error.
