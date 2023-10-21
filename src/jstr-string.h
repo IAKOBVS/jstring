@@ -1195,16 +1195,16 @@ JSTR_NOEXCEPT
 		return nptr;
 	if (sz < 4)
 		return end;
-	int cnt = (sz - 1) / 3;
-	end += cnt;
+	int dif = (sz - 1) / 3;
+	end += dif;
 	const char *const start = nptr;
 	nptr += (sz - 1);
 	for (int n = 0; nptr >= start;) {
-		*(nptr + cnt) = *nptr;
+		*(nptr + dif) = *nptr;
 		--nptr;
 		if (++n == 3) {
-			*(nptr + cnt) = separator;
-			if (jstr_unlikely(--cnt == 0))
+			*(nptr + dif) = separator;
+			if (jstr_unlikely(--dif == 0))
 				break;
 			n = 0;
 		}
