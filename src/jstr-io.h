@@ -684,8 +684,8 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_io_expand_tilde_first(char *R s,
-			   const size_t sz)
+jstr_io_expand_tilde_p_first(char *R s,
+			     const size_t sz)
 JSTR_NOEXCEPT
 {
 	if (*s != '~')
