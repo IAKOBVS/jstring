@@ -1175,7 +1175,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Add thousand separator to NPTR containing a number without fractions.
+   Add thousand separator to NPTR.
    Return value:
    ptr to '\0' in NPTR.
    For example: 1234 -> 1,234.
@@ -1214,7 +1214,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Add thousand separator to NPTR containing a number without fractions.
+   Add thousand separator to NPTR.
    Return value:
    ptr to '\0' in NPTR.
    For example: 1234 -> 1,234.
