@@ -1173,7 +1173,7 @@ JSTR_NOEXCEPT
    Add thousand separator to NPTR.
    Return value:
    ptr to '\0' in NPTR.
-   For example: 1234 -> 1,234.
+   For example: 1234 becomes 1,234.
 */
 JSTR_FUNC
 static char *
@@ -1212,7 +1212,7 @@ JSTR_NOEXCEPT
    Add thousand separator to NPTR.
    Return value:
    ptr to '\0' in NPTR.
-   For example: 1234 -> 1,234.
+   For example: 1234 becomes 1,234.
 */
 JSTR_FUNC
 JSTR_INLINE
