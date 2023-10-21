@@ -1225,7 +1225,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Copy SRC to DST and adding thousand separator.
+   Copy SRC to DST, adding thousand separator.
    Return value:
    ptr to '\0' in DST.
 */
@@ -1267,7 +1267,7 @@ ret:
 }
 
 /*
-   Copy SRC to DST and adding thousand separator.
+   Copy SRC to DST, adding thousand separator.
    Return value:
    ptr to '\0' in DST.
 */
