@@ -237,7 +237,7 @@ JSTR_FUNC_PURE
 static char *
 jstr_strnstr(const char *R hs,
 	     const char *R ne,
-	     const size_t n)
+	     size_t n)
 {
 	typedef unsigned char u;
 	if (jstr_unlikely(n == 0)
@@ -245,8 +245,11 @@ jstr_strnstr(const char *R hs,
 		return NULL;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
-	if (ne[1] == '\0')
-		return jstr_strnchr(hs, *ne, n);
+	const char *start = hs;
+	hs = jstr_strnchr(hs, *ne, n);
+	n = hs - start;
+	if (hs == NULL || ne[1] == '\0')
+		return (char *)hs;
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
 	if (ne[2] == '\0')
@@ -262,13 +265,12 @@ jstr_strnstr(const char *R hs,
 	const size_t nl = strlen(ne);
 	if (jstr_unlikely(n < nl))
 		return NULL;
-	size_t hl = jstr_strnlen(hs, n);
+	size_t hl = jstr_strnlen(hs, nl);
 	if (jstr_unlikely(hl < nl))
 		return NULL;
-	const char *h = (char *)memchr(hs, *ne, hl);
-	if (jstr_unlikely(h == NULL))
-		return NULL;
-	hl -= h - hs;
+	if (!memcmp(hs, ne, nl))
+		return (char *)hs;
+	hl += jstr_strnlen(hs + hl, n - hl);
 	return pjstr_strnstr(hs, hl, ne, nl);
 }
 
