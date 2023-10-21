@@ -15,6 +15,8 @@
 #define PJSTR_MEMMEM_SHORT_NEEDLE 1
 #include "jstr-memmem-impl.h"
 
+PJSTR_BEGIN_DECLS
+
 JSTR_FUNC_PURE
 JSTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
@@ -53,6 +55,8 @@ PJSTR_MEMMEM_FN(const PJSTR_MEMMEM_RETTYPE JSTR_RESTRICT hs,
 		return PJSTR_MEMMEM_FN_SHORT((unsigned char *)hs, hl, (unsigned char *)ne, nl);
 	return PJSTR_MEMMEM_FN_LONG((unsigned char *)hs, hl, (unsigned char *)ne, nl);
 }
+
+PJSTR_END_DECLS
 
 #undef PJSTR_MEMMEM_FN
 #undef PJSTR_MEMMEM_RETTYPE
