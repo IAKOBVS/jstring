@@ -211,27 +211,27 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static void *
 jstr_memmem(const void *R hs,
-	    const size_t hl,
+	    const size_t hslen,
 	    const void *R ne,
-	    const size_t nl)
+	    const size_t nelen)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMMEM
-	return memmem(hs, hl, ne, nl);
+	return memmem(hs, hslen, ne, nelen);
 #else
 	typedef unsigned char u;
-	if (jstr_unlikely(hl < nl))
+	if (jstr_unlikely(hslen < nelen))
 		return NULL;
 	const unsigned char *const h = (u *)hs;
 	const unsigned char *const n = (u *)ne;
-	switch (nl) {
+	switch (nelen) {
 	case 0: return (void *)hs;
-	case 1: return (void *)memchr(hs, *n, nl);
-	case 2: return pjstr_memmem2(h, n, h + hl - nl);
-	case 3: return pjstr_memmem3(h, n, h + hl - nl);
-	case 4: return pjstr_memmem4(h, n, h + hl - nl);
+	case 1: return (void *)memchr(hs, *n, nelen);
+	case 2: return pjstr_memmem2(h, n, h + hslen - nelen);
+	case 3: return pjstr_memmem3(h, n, h + hslen - nelen);
+	case 4: return pjstr_memmem4(h, n, h + hslen - nelen);
 	}
-	return pjstr_memmem(h, hl, n, nl);
+	return pjstr_memmem(h, hslen, n, nelen);
 #endif
 }
 
@@ -243,13 +243,13 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
 jstr_memnmem(const void *R hs,
-	     const size_t hl,
+	     const size_t hslen,
 	     const void *R ne,
-	     const size_t nl,
+	     const size_t nelen,
 	     const size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_memmem(hs, JSTR_MIN(hl, n), ne, nl);
+	return jstr_memmem(hs, JSTR_MIN(hslen, n), ne, nelen);
 }
 
 JSTR_FUNC_PURE
@@ -1041,12 +1041,11 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_caseends(const char *R hs,
-	      const size_t hslen,
-	      const char *R ne,
-	      const size_t nelen)
+	      const char *R ne)
 JSTR_NOEXCEPT
 {
-	return !jstr_strncasecmp(hs + hslen - nelen, ne, nelen);
+	const size_t nl = strlen(ne);
+	return !jstr_strncasecmp(hs + strlen(hs) - nl, ne, nl);
 }
 
 /*
