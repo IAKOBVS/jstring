@@ -5,6 +5,7 @@
 - works with any C string type: functions will take a pointer to string, size, and capacity.
 - in-place literal string and regex replacement: supports backreferences and searching from a specific index.
 - reverse standard string functions: memrchr(), strrstr(), strrspn(), strrcspn().
+- standard string functions for non-nul terminated strings: memspn(), memcspn(), mempbrk().
 - extensions to standard string functions: strnstr(), strnchr(), strcasestr\_len().
 - string formatting: asprintf() (implemented with vsprintf, which is standard) and vsprintf\_strlen() for checking the size of allocation needed for sprintf().
 
@@ -37,7 +38,8 @@ before including any jstr-\* header. This will make them print the filename, lin
 
 ## Function affixes: 
 
-- \*\_len(): take the length of the string
+- \*\_mem\*(): the string is not nul-terminated, the length is known from the size
+- \*\_len(): take the length of the nul-terminated string
 - \*\_p(): return a pointer to the end of the string
 - \*\_unsafe(): assume that there be enough space in the string: it will not grow it with realloc
 - \*\_now(): compile regular expression now or prints error message now
