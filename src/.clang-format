@@ -96,6 +96,8 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+  - jstr_foreach
+  - jstr_l_foreach
 IfMacros:
   - KJ_IF_MAYBE
   - S
