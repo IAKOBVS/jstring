@@ -18,6 +18,26 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+/* basename() for non nul-terminated strings. */
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_basename_len(const char *R fname,
+		  const size_t sz)
+{
+	const char *const p = (char *)memchr(fname, '/', sz);
+	return p ? (char *)p + 1 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_basename(const char *R fname)
+{
+	const char *const p = strchr(fname, '/');
+	return p ? (char *)p + 1 : NULL;
+}
+
 /*
   Compare S1 with S2 case-insensitively.
   Return value:
@@ -1030,7 +1050,7 @@ jstr_caseends_len(const char *R hs,
 		  const size_t nelen)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hslen >= nelen) ? !jstr_strncasecmp(hs + hslen - nelen, ne, nelen) : 0;
+	return jstr_likely(hslen >= nelen) ? !jstr_strcasecmp_len(hs + hslen - nelen, ne, nelen) : 0;
 }
 
 /*
@@ -1073,8 +1093,8 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
 static int
 jstr_casestarts_len(const char *R hs,
 		    const size_t hslen,
@@ -1091,8 +1111,8 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
 static int
 jstr_casestarts(const char *R hs,
 		const char *R ne)
@@ -1107,8 +1127,8 @@ JSTR_NOEXCEPT
   NELEN if true;
   0 if false.
 */
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
 static int
 jstr_casestartsnul_len(const char *R hs,
 		       const size_t hslen,
@@ -1125,8 +1145,8 @@ JSTR_NOEXCEPT
   NELEN if true;
   0 if false.
 */
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
 static size_t
 jstr_casestartsnul(const char *R hs,
 		   const char *R ne)
@@ -1146,8 +1166,8 @@ JSTR_NOEXCEPT
   NELEN if true;
   0 if false.
 */
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
 static size_t
 jstr_startsnul_len(const char *R hs,
 		   const size_t hslen,
@@ -1164,8 +1184,8 @@ JSTR_NOEXCEPT
   NELEN if true;
   0 if false.
 */
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
 static size_t
 jstr_startsnul(const char *R hs,
 	       const char *R ne)
@@ -1185,8 +1205,8 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
 static int
 jstr_starts_len(const char *R hs,
 		const size_t hslen,
@@ -1203,8 +1223,8 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
+JSTR_FUNC_PURE
 JSTR_INLINE
-JSTR_MAYBE_UNUSED
 static int
 jstr_starts(const char *R hs,
 	    const char *R ne)
