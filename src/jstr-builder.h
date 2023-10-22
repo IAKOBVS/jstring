@@ -260,9 +260,7 @@ JSTR_NOEXCEPT
 	if (jstr_likely(*s != NULL))
 		return 1;
 	pjstr_nullify_members(sz, cap);
-#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
-	jstr_err_exit("");
-#endif
+	PJSTR_EXIT_MAYBE();
 	return 0;
 }
 
@@ -777,63 +775,36 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static int
-pjstr_asprintf_count_udigits(unsigned long long number)
+pjstr_sprintf_count_udigits(unsigned long long number,
+			    const unsigned int base)
 {
+#	define LOOP_BASE(base)                                                              \
+		for (len = 1, ldigit = 1; (number /= base) != 0; len *= 10, ldigit = number) \
+			;                                                                    \
+		return ldigit * number
 	int len;
-	if (sizeof(unsigned long long) == 8) {
-		if (number < 9)
-			len = 1;
-		else if (number <= 99)
-			len = 2;
-		else if (number <= 999)
-			len = 3;
-		else if (number <= 9999)
-			len = 4;
-		else if (number <= 99999)
-			len = 5;
-		else if (number <= 999999)
-			len = 6;
-		else if (number <= 9999999)
-			len = 7;
-		else if (number <= 99999999)
-			len = 8;
-		else if (number <= 999999999)
-			len = 9;
-		else if (number <= 9999999999)
-			len = 10;
-		else if (number <= 99999999999)
-			len = 11;
-		else if (number <= 999999999999)
-			len = 12;
-		else if (number <= 9999999999999)
-			len = 13;
-		else if (number <= 99999999999999)
-			len = 14;
-		else if (number <= 999999999999999)
-			len = 15;
-		else if (number <= 9999999999999999)
-			len = 16;
-		else if (number <= 99999999999999999)
-			len = 17;
-		else if (number <= 999999999999999999)
-			len = 18;
-		else
-			len = 19;
-	} else {
-		len = 1;
-		while (number /= 10)
-			++len;
+	int ldigit;
+	switch (base) {
+	case 10:
+		if (number <= 9)
+			return number;
+		LOOP_BASE(10);
+	case 2: LOOP_BASE(2);
+	case 8: LOOP_BASE(8);
+	case 16: LOOP_BASE(16);
+	default: LOOP_BASE(base);
 	}
-	return len * 2 + 1;
+#	undef LOOP_BASE
 }
 
 JSTR_FUNC
 static int
-pjstr_asprintf_count_digits(long long number)
+pjstr_sprintf_count_digits(long long number,
+			   const unsigned int base)
 {
 	if (number < 0)
 		number = -number;
-	return pjstr_asprintf_count_udigits(number);
+	return pjstr_sprintf_count_udigits(number, base);
 }
 
 #endif
@@ -888,7 +859,7 @@ cont_switch:
 			case 'c':
 				if (jstr_likely(lflag == NOT_LONG)) {
 					++arglen;
-				} else if (lflag & LONG) {
+				} else if (lflag == LONG) {
 					arglen += MAX_INT;
 					lflag = NOT_LONG;
 				} else {
@@ -897,7 +868,6 @@ cont_switch:
 				goto get_arg;
 				/* int */
 			case 'u':
-				/* fallthrough */
 			case 'd':
 			case 'i':
 			case 'x':
@@ -905,9 +875,9 @@ cont_switch:
 				if (lflag == NOT_LONG) {
 					arglen += MAX_INT;
 				} else {
-					if (lflag & LONG)
+					if (lflag == LONG)
 						arglen = MAX_LONG;
-					else if (lflag & LONG_LONG)
+					else if (lflag == LONG_LONG)
 						arglen = MAX_LONG_LONG;
 					else
 						goto einval;
@@ -918,9 +888,9 @@ cont_switch:
 				if (lflag == NOT_LONG) {
 					arglen += MAX_LONG;
 				} else {
-					if (lflag & LONG)
+					if (lflag == LONG)
 						arglen += MAX_LONG;
-					else if (lflag & LONG_LONG)
+					else if (lflag == LONG_LONG)
 						arglen += MAX_LONG_LONG;
 					else
 						goto einval;
@@ -948,7 +918,7 @@ cont_switch:
 			case 'G':
 				if (lflag == NOT_LONG) {
 					arglen += MAX_DBL;
-				} else if (lflag & LONG) {
+				} else if (lflag == LONG) {
 					arglen += MAX_LDBL;
 					lflag = NOT_LONG;
 				} else {
@@ -1274,7 +1244,7 @@ err:
 
 /*
    Assume that S has enough space.
-   Use jstr_asprintf to grow S.
+   Use jstr_asprintf() to grow S.
 */
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
@@ -1302,7 +1272,7 @@ err_free:
 
 /*
    Assume that S has enough space.
-   Use jstr_asprintf to grow S.
+   Use jstr_asprintf() to grow S.
 */
 JSTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
@@ -1328,7 +1298,7 @@ err_free:
 
 /*
    Assume that S has enough space.
-   Use jstr_asprintf to grow S.
+   Use jstr_asprintf() to grow S.
 */
 JSTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
@@ -1357,7 +1327,7 @@ err_free:
 
 /*
    Assume that S has enough space.
-   Use jstr_asprintf to grow S.
+   Use jstr_asprintf() to grow S.
 */
 JSTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
