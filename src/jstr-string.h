@@ -647,7 +647,7 @@ JSTR_FUNC_PURE
 static size_t
 jstr_strrcspn_len(const char *R s,
 		  const char *R reject,
-		  size_t sz)
+		  const size_t sz)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -710,7 +710,7 @@ JSTR_FUNC_PURE
 static size_t
 jstr_strrspn_len(const char *R s,
 		 const char *R accept,
-		 size_t sz)
+		 const size_t sz)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -848,7 +848,7 @@ JSTR_FUNC_PURE
 static size_t
 jstr_memcspn(const char *R s,
 	     const char *R reject,
-	     size_t sz)
+	     const size_t sz)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
