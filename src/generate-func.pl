@@ -199,11 +199,11 @@ sub gen_struct_funcs
 				$decl =~ s/[^(,]*$G_SIZE_PTN,//o;
 			}
 		}
-		if ($HAS_CAP && $decl =~ /\w*$G_CAP_PTN(,|\))/o) {
+		if ($HAS_CAP && $decl =~ /\w*\s*$G_CAP_PTN(,|\))/o) {
 			if ($1 eq ')') {
-				$decl =~ s/[^(,]*$G_CAP_PTN(?:,|\))/)/o;
+				$decl =~ s/[^(,]*\s*$G_CAP_PTN(?:,|\))/)/o;
 			} elsif ($1 eq ',') {
-				$decl =~ s/[^(,]*$G_CAP_PTN,//o;
+				$decl =~ s/[^(,]*\s*$G_CAP_PTN,//o;
 			}
 		}
 		my @OLD_ARGS         = split(/\s/, $params);
@@ -234,7 +234,7 @@ sub gen_struct_funcs
 				} else {
 					$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
 				}
-			} elsif ($new_args[$i] =~ /\s+$G_CAP_PTN/o) {
+			} elsif ($new_args[$i] eq $G_CAP_PTN) {
 				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_CAP";
 			}
 			$body .= "$new_args[$i], ";
