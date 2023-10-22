@@ -787,18 +787,68 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(sz < 4))
 		return sz;
 	p = (u *)JSTR_PTR_ALIGN_DOWN(p, 4);
+	const unsigned char *const end = (u *)s + sz;
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
-		c1 = t[p[-1]];
-		c2 = t[p[-2]];
-		c3 = t[p[-3]];
-		p -= 4;
-		sz -= 4;
-	} while ((sz != 0) & (c0 & c1 & c2 & c3));
-	size_t cnt = ((u *)s + sz) - p;
+		c1 = t[p[1]];
+		c2 = t[p[2]];
+		c3 = t[p[3]];
+		p += 4;
+	} while ((p < end) & (c0 & c1 & c2 & c3));
+	size_t cnt = p - (unsigned char *)p;
 	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
 	return (cnt < sz) ? cnt : sz;
+}
+
+JSTR_FUNC_PURE
+static size_t
+jstr_memcspn(const char *R s,
+	     const char *R reject,
+	     size_t sz)
+JSTR_NOEXCEPT
+{
+	typedef unsigned char u;
+	if (jstr_unlikely(*reject == '\0')
+	    || jstr_unlikely(sz == 0))
+		return sz;
+	if (jstr_unlikely(reject[1] == '\0'))
+		return (char *)jstr_memchrnul(s, *reject, sz) - s;
+	unsigned char t[256];
+	JSTR_BZERO_ARRAY(t);
+	const unsigned char *p = (u *)reject;
+	do
+		t[*p] = 1;
+	while (*p++);
+	p = (u *)s + sz - 1;
+	for (int i = 0, n = sz % 4; n-- > 0; ++i)
+		if (t[p[i]])
+			return (p + i) - (u *)s;
+	if (jstr_unlikely(sz < 4))
+		return sz;
+	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
+	unsigned int c0, c1, c2, c3;
+	do {
+		c0 = t[p[0]];
+		c1 = t[p[1]];
+		c2 = t[p[2]];
+		c3 = t[p[3]];
+		p -= 4;
+	} while (((p <= (u *)s) | c0 | c1 | c2 | c3) == 0);
+	size_t cnt = p - (u *)s;
+	cnt = sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
+	return (cnt < sz) ? cnt : sz;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_mempbrk(const char *R s,
+	     const char *R accept,
+	     const size_t sz)
+{
+	s += jstr_memcspn(s, accept, sz);
+	return *s ? (char *)s : NULL;
 }
 
 /*
