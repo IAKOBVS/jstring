@@ -169,7 +169,7 @@ jstr_l_add_len(jstr_l_ty *R l,
 	       const size_t slen)
 JSTR_NOEXCEPT
 {
-	JSTR_L_RESERVE(l, l->capacity + slen, goto err);
+	JSTR_L_RESERVE(l, (l->capacity != 0) ? (l->capacity * 2) : 2, goto err);
 	if (jstr_unlikely(
 	    !jstr_l_add_len_unsafe(l, s, slen)))
 		goto err;
