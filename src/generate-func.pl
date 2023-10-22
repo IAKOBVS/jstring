@@ -124,9 +124,9 @@ sub gen_nonlen_funcs
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_regex_size_ptr($FN, $params);
 		$decl .= "$RETURN$FN(";
-		my $G_LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
+		my $LEN = ($params =~ /$G_LEN_PTN/o) ? 1 : 0;
 		foreach (@new_args) {
-			if ($G_LEN) {
+			if ($LEN) {
 				if (/(\w*)$G_LEN_PTN/) {
 					my $var = $1;
 					$decl =~ s/,[ \t\n_0-9A-Za-z]*$G_LEN_PTN//o;
