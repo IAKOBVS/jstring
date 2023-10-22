@@ -771,7 +771,7 @@ JSTR_NOEXCEPT
 	return fwrite(s, 1, sz, fp) == sz;
 }
 
-#if 0
+#if 1
 
 JSTR_FUNC
 static int
@@ -875,6 +875,7 @@ cont_switch:
 				if (lflag == NOT_LONG) {
 					arglen += MAX_INT;
 				} else {
+islong:
 					if (lflag == LONG)
 						arglen = MAX_LONG;
 					else if (lflag == LONG_LONG)
@@ -888,13 +889,7 @@ cont_switch:
 				if (lflag == NOT_LONG) {
 					arglen += MAX_LONG;
 				} else {
-					if (lflag == LONG)
-						arglen += MAX_LONG;
-					else if (lflag == LONG_LONG)
-						arglen += MAX_LONG_LONG;
-					else
-						goto einval;
-					lflag = NOT_LONG;
+					goto islong;
 				}
 				goto get_arg;
 				/* ptr */

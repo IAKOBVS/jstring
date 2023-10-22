@@ -637,7 +637,7 @@ JSTR_NOEXCEPT
 	for (int i = 0, n = sz % 4; n-- > 0; --i)
 		if (t[p[i]])
 			return (p + i) - (u *)s;
-	if (jstr_unlikely(sz < 4))
+	if (sz < 4)
 		return sz;
 	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
@@ -698,7 +698,7 @@ JSTR_NOEXCEPT
 	for (int i = 0, n = sz % 4; n-- > 0; --i)
 		if (!t[p[i]])
 			return (p + i) - (u *)s;
-	if (jstr_unlikely(sz < 4))
+	if (sz < 4)
 		return sz;
 	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
@@ -784,7 +784,7 @@ JSTR_NOEXCEPT
 	for (int i = 0, n = sz % 4; n-- > 0; ++i)
 		if (!t[p[i]])
 			return (p + i) - (u *)s;
-	if (jstr_unlikely(sz < 4))
+	if (sz < 4)
 		return sz;
 	p = (u *)JSTR_PTR_ALIGN_DOWN(p, 4);
 	const unsigned char *const end = (u *)s + sz;
@@ -824,7 +824,7 @@ JSTR_NOEXCEPT
 	for (int i = 0, n = sz % 4; n-- > 0; ++i)
 		if (t[p[i]])
 			return (p + i) - (u *)s;
-	if (jstr_unlikely(sz < 4))
+	if (sz < 4)
 		return sz;
 	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
