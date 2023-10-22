@@ -647,8 +647,7 @@ JSTR_NOEXCEPT
 		c2 = t[p[-2]];
 		c3 = t[p[-3]];
 		p -= 4;
-		sz -= 4;
-	} while (((sz == 0) | c0 | c1 | c2 | c3) == 0);
+	} while (((p <= (u *)s) | c0 | c1 | c2 | c3) == 0);
 	size_t cnt = ((u *)s + sz) - p;
 	cnt = sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
 	return (cnt < sz) ? cnt : sz;
@@ -709,8 +708,7 @@ JSTR_NOEXCEPT
 		c2 = t[p[-2]];
 		c3 = t[p[-3]];
 		p -= 4;
-		sz -= 4;
-	} while ((sz != 0) & (c0 & c1 & c2 & c3));
+	} while ((p < (u *)s) & (c0 & c1 & c2 & c3));
 	size_t cnt = ((u *)s + sz) - p;
 	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
 	return (cnt < sz) ? cnt : sz;
@@ -759,49 +757,49 @@ JSTR_NOEXCEPT
 	return jstr_strrpbrk_len(s, accept, strlen(s));
 }
 
-#if 0
-
 JSTR_FUNC_PURE
 static size_t
-jstr_memspn(const char *R str,
+jstr_memspn(const char *R s,
 	    const char *R accept,
 	    size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(accept[0] == '\0')
+	typedef unsigned char u;
+	if (jstr_unlikely(*accept == '\0')
 	    || jstr_unlikely(sz == 0))
-		return 0;
+		return sz;
 	if (jstr_unlikely(accept[1] == '\0')) {
-		const char *a = str;
-		for (; sz-- && *str == *accept; str++)
+		const char *p = s;
+		for (; sz-- && (*p == *accept); ++p)
 			;
-		return str - a;
+		return p - s;
 	}
+	const unsigned char *p = (u *)accept;
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
-	unsigned char *s = (unsigned char *)accept;
-	const unsigned char *end = s + sz;
 	do
-		t[*s++] = 1;
-	while (*s);
-	s = (unsigned char *)str;
-	for (int i = sz % 4, n = 0; n-- > 0; ++i)
-		if (!t[s[i]])
-			return i;
-	s = (unsigned char *)JSTR_PTR_ALIGN_DOWN(str, 4);
+		t[*p++] = 1;
+	while (*p);
+	p = (u *)s;
+	for (int i = 0, n = sz % 4; n-- > 0; ++i)
+		if (!t[p[i]])
+			return (p + i) - (u *)s;
+	if (jstr_unlikely(sz < 4))
+		return sz;
+	p = (u *)JSTR_PTR_ALIGN_DOWN(p, 4);
 	unsigned int c0, c1, c2, c3;
 	do {
-		s += 4;
-		c0 = t[s[0]];
-		c1 = t[s[1]];
-		c2 = t[s[2]];
-		c3 = t[s[3]];
-	} while ((sz != 0) & ((c0 & c1 & c2 & c3) != 0));
-	size_t count = s - (unsigned char *)s;
-	return (c0 & c1) == 0 ? count + c0 : count + c2 + 2;
+		c0 = t[p[0]];
+		c1 = t[p[-1]];
+		c2 = t[p[-2]];
+		c3 = t[p[-3]];
+		p -= 4;
+		sz -= 4;
+	} while ((sz != 0) & (c0 & c1 & c2 & c3));
+	size_t cnt = ((u *)s + sz) - p;
+	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
+	return (cnt < sz) ? cnt : sz;
 }
-
-#endif
 
 /*
    Return value:
