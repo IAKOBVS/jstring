@@ -19,15 +19,6 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#if JSTR_HAVE_ALLOCA
-#	define jstr_strdupa_len(dst_ptr, src, n)             \
-		do {                                          \
-			const char *const *const p = dst_ptr; \
-			*p = (char *)alloca(n + 1);           \
-			jstr_strcpy_len(*p, src, n);          \
-		} while (0)
-#endif
-
 PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_VOID

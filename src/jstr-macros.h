@@ -31,7 +31,6 @@
 #endif
 
 #if defined _GNU_SOURCE || defined alloca
-#	include <alloca.h>
 #	define JSTR_HAVE_ALLOCA 1
 #endif
 
