@@ -170,6 +170,18 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
+JSTR_INLINE
+static void *
+jstr_memnchr(const void *R s,
+	     const int c,
+	     const size_t sz,
+	     const size_t n)
+JSTR_NOEXCEPT
+{
+	return (void *)memchr(s, c, JSTR_MIN(n, sz));
+}
+
+JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *R s,
 	     const int c,
@@ -233,6 +245,19 @@ JSTR_NOEXCEPT
 	return (char *)JSTR_MEMMEM((char *)hs, hslen, (char *)ne, nelen);
 	(void)hslen;
 	(void)nelen;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_strnstr_len(const void *R hs,
+		 const size_t hslen,
+		 const void *R ne,
+		 const size_t nelen,
+		 const size_t n)
+JSTR_NOEXCEPT
+{
+	return jstr_strstr_len(hs, JSTR_MIN(hslen, n), ne, nelen);
 }
 
 /*

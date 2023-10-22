@@ -153,6 +153,8 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(h - 3) : NULL;
 }
 
+#if !JSTR_HAVE_MEMMEM
+
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
@@ -198,6 +200,8 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(h - 3) : NULL;
 }
 
+#endif
+
 #if !JSTR_HAVE_MEMMEM
 #	define PJSTR_MEMMEM_FN	     pjstr_memmem
 #	define PJSTR_MEMMEM_RETTYPE void *
@@ -234,6 +238,19 @@ JSTR_NOEXCEPT
 #define PJSTR_MEMMEM_FN	     pjstr_strnstr
 #define PJSTR_MEMMEM_RETTYPE char *
 #include "jstr-memmem.h"
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static void *
+jstr_memnmem(const void *R hs,
+	     const size_t hl,
+	     const void *R ne,
+	     const size_t nl,
+	     const size_t n)
+JSTR_NOEXCEPT
+{
+	return jstr_memmem(hs, JSTR_MIN(hl, n), ne, nl);
+}
 
 JSTR_FUNC_PURE
 static char *
