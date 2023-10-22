@@ -362,9 +362,10 @@ PJSTR_DELETE(, find);
 PJSTR_DELETE(case, casefind);
 PJSTR_DELETE(starts, starts);
 PJSTR_DELETE(casestarts, casestarts);
-PJSTR_END_DECLS
 
 #undef PJSTR_DELETE
+
+PJSTR_END_DECLS
 
 #undef JSTR_RESTRICT
 
