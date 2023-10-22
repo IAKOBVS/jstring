@@ -142,11 +142,9 @@ JSTR_NOEXCEPT
 	if (word_ptr == sword)
 		return NULL;
 	word = jstr_word_toword(--word_ptr);
-	while (word_ptr != sword) {
+	for (; word_ptr != sword; word = jstr_word_toword(--word_ptr))
 		if (jstr_word_has_eq(word, repeated_c))
 			return (char *)word_ptr + jstr_word_index_last_eq(word, repeated_c);
-		word = jstr_word_toword(--word_ptr);
-	}
 	if (jstr_word_has_eq(word, repeated_c)) {
 		char *ret = (char *)word_ptr + jstr_word_index_last_eq(word, repeated_c);
 		if (ret >= (char *)s)
