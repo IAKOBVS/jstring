@@ -894,6 +894,7 @@ static char *
 jstr_mempbrk(const char *R s,
 	     const char *R accept,
 	     const size_t sz)
+JSTR_NOEXCEPT
 {
 	s += jstr_memcspn(s, accept, sz);
 	return *s ? (char *)s : NULL;
