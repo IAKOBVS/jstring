@@ -74,6 +74,7 @@ JSTR_NOEXCEPT
 
 /*
   Compare S1 with S2 case-insensitively.
+  N must be lower than the length of S1 or S2.
   Return value:
   0 if strings match;
   non-zero otherwise.
@@ -1157,7 +1158,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_tolower(*hs) == jstr_tolower(*ne)) {
 		const size_t nelen = strlen(ne);
-		if (!jstr_strcasecmp_len(hs, ne, nelen))
+		if (!jstr_strncasecmp(hs, ne, nelen))
 			return nelen;
 	}
 	return 0;
