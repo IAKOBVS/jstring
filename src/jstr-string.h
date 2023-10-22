@@ -198,9 +198,11 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(h - 3) : NULL;
 }
 
-#define PJSTR_MEMMEM_FN	     pjstr_memmem
-#define PJSTR_MEMMEM_RETTYPE void *
-#include "jstr-memmem.h"
+#if !JSTR_HAVE_MEMMEM
+#	define PJSTR_MEMMEM_FN	     pjstr_memmem
+#	define PJSTR_MEMMEM_RETTYPE void *
+#	include "jstr-memmem.h"
+#endif
 
 JSTR_FUNC_PURE
 static void *
@@ -328,12 +330,13 @@ JSTR_NOEXCEPT
 	}
 }
 
-#define PJSTR_MEMMEM_FN	       pjstr_strcasestr
-#define PJSTR_MEMMEM_RETTYPE   char *
-#define PJSTR_MEMMEM_CMP_FN    jstr_strcasecmp_len
-#define PJSTR_MEMMEM_HASH2(p)  (((size_t)(jstr_tolower((p)[0])) - ((size_t)(jstr_tolower((p)[-1])) << 3)) % 256)
-#define PJSTR_MEMMEM_CHECK_EOL (1)
-#include "jstr-memmem.h"
+#if !JSTR_HAVE_STRCASESTR_OPTIMIZED
+#	define PJSTR_MEMMEM_FN	       pjstr_strcasestr
+#	define PJSTR_MEMMEM_RETTYPE   char *
+#	define PJSTR_MEMMEM_CMP_FN    jstr_strcasecmp_len
+#	define PJSTR_MEMMEM_HASH2(p)  (((size_t)(jstr_tolower((p)[0])) - ((size_t)(jstr_tolower((p)[-1])) << 3)) % 256)
+#	define PJSTR_MEMMEM_CHECK_EOL (1)
+#	include "jstr-memmem.h"
 
 JSTR_FUNC_PURE
 static char *
@@ -349,8 +352,7 @@ JSTR_NOEXCEPT
 		return (char *)h;
 	return pjstr_strcasestr(h, hl, n, nl);
 }
-
-#define L(c) jstr_tolower(c)
+#	define L(c) jstr_tolower(c)
 
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -394,7 +396,9 @@ JSTR_NOEXCEPT
 	return hw == nw ? (char *)(h - 3) : NULL;
 }
 
-#undef L
+#	undef L
+
+#endif /* HAVE_STRCASESTR_OPTIMIZED */
 
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -478,11 +482,13 @@ JSTR_NOEXCEPT
 	return jstr_isalpha(c) ? pjstr_strcasechr_generic(s, c) : (char *)strchr(s, c);
 }
 
-#define PJSTR_MEMMEM_FN	      pjstr_strcasestr_len
-#define PJSTR_MEMMEM_RETTYPE  char *
-#define PJSTR_MEMMEM_CMP_FN   jstr_strcasecmp_len
-#define PJSTR_MEMMEM_HASH2(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)(jstr_tolower((p)[-1])) << 3)) % 256)
-#include "jstr-memmem.h"
+#if !JSTR_HAVE_STRCASESTR_OPTIMIZED
+#	define PJSTR_MEMMEM_FN	      pjstr_strcasestr_len
+#	define PJSTR_MEMMEM_RETTYPE  char *
+#	define PJSTR_MEMMEM_CMP_FN   jstr_strcasecmp_len
+#	define PJSTR_MEMMEM_HASH2(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)(jstr_tolower((p)[-1])) << 3)) % 256)
+#	include "jstr-memmem.h"
+#endif
 
 /*
    Find NE in HS case-insensitively (ASCII).
