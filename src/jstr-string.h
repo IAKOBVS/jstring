@@ -257,6 +257,7 @@ static char *
 jstr_strnstr(const char *R hs,
 	     const char *R ne,
 	     size_t n)
+JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
 	if (jstr_unlikely(n == 0)
