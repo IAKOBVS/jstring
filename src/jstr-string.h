@@ -1044,8 +1044,7 @@ jstr_caseends(const char *R hs,
 	      const char *R ne)
 JSTR_NOEXCEPT
 {
-	const size_t nl = strlen(ne);
-	return !jstr_strncasecmp(hs + strlen(hs) - nl, ne, nl);
+	return jstr_caseends_len(hs, strlen(hs), ne, strlen(ne));
 }
 
 /*
@@ -1097,7 +1096,9 @@ jstr_casestarts(const char *R hs,
 		const char *R ne)
 JSTR_NOEXCEPT
 {
-	return jstr_strncasecmp(hs, ne, strlen(ne));
+	if (jstr_unlikely(*ne == '\0'))
+		return 1;
+	return (jstr_tolower(*hs) == jstr_tolower(*ne)) ? jstr_strncasecmp(hs, ne, strlen(ne)) : 0;
 }
 
 /*
@@ -1131,7 +1132,9 @@ jstr_starts(const char *R hs,
 	    const char *R ne)
 JSTR_NOEXCEPT
 {
-	return !strncmp(hs, ne, strlen(ne));
+	if (jstr_unlikely(*ne == '\0'))
+		return 1;
+	return (*hs == *ne) ? !strncmp(hs, ne, strlen(ne)) : 0;
 }
 
 /*
