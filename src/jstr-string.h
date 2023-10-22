@@ -635,13 +635,13 @@ JSTR_NOEXCEPT
 	while (*p++);
 	p = (u *)s + sz - 1;
 	for (int i = 0, n = sz % 4;; --i) {
-		if (n == 0) {
+		if (t[p[i]])
+			return (p + i) - (u *)s;
+		if (--n == 0) {
 			if (sz < 4)
 				return sz;
 			break;
 		}
-		if (t[p[i]])
-			return (p + i) - (u *)s;
 	}
 	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
@@ -699,14 +699,14 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (u *)s + sz - 1;
-	for (int i = 0, n = sz % 4;; --i, --n) {
-		if (n == 0) {
+	for (int i = 0, n = sz % 4;; --i) {
+		if (!t[p[i]])
+			return (p + i) - (u *)s;
+		if (--n == 0) {
 			if (sz < 4)
 				return sz;
 			break;
 		}
-		if (!t[p[i]])
-			return (p + i) - (u *)s;
 	}
 	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
@@ -789,14 +789,14 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (u *)s;
-	for (int i = 0, n = sz % 4;; ++i, --n) {
-		if (n == 0) {
+	for (int i = 0, n = sz % 4;; ++i) {
+		if (!t[p[i]])
+			return (p + i) - (u *)s;
+		if (--n == 0) {
 			if (sz < 4)
 				return sz;
 			break;
 		}
-		if (!t[p[i]])
-			return (p + i) - (u *)s;
 	}
 	p = (u *)JSTR_PTR_ALIGN_DOWN(p, 4);
 	const unsigned char *const end = (u *)s + sz;
@@ -833,14 +833,14 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (u *)s + sz - 1;
-	for (int i = 0, n = sz % 4;; ++i, --n) {
-		if (n == 0) {
+	for (int i = 0, n = sz % 4;; ++i) {
+		if (t[p[i]])
+			return (p + i) - (u *)s;
+		if (--n == 0) {
 			if (sz < 4)
 				return sz;
 			break;
 		}
-		if (t[p[i]])
-			return (p + i) - (u *)s;
 	}
 	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
