@@ -272,7 +272,10 @@ jstr_strnstr(const char *R hs,
 		return NULL;
 	if (!memcmp(hs, ne, nl))
 		return (char *)hs;
-	hl += jstr_strnlen(hs + hl, n - hl);
+	if (jstr_unlikely(*++hs == '\0'))
+		return NULL;
+	--hl;
+	hl = hl + jstr_strnlen(hs + hl, n - hl);
 	return pjstr_strnstr(hs, hl, ne, nl);
 }
 
@@ -550,7 +553,9 @@ JSTR_NOEXCEPT
 	}
 	if (!memcmp(hs, ne, nelen))
 		return (char *)hs;
-	return jstr_strstr_len(hs, hslen, ne, nelen);
+	if (jstr_unlikely(*++hs == '\0'))
+		return NULL;
+	return jstr_strstr_len(hs, hslen - 1, ne, nelen);
 #endif
 }
 
@@ -609,7 +614,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(*++hs == '\0'))
 		return NULL;
-	return (char *)strstr(hs + 1, ne);
+	return (char *)strstr(hs, ne);
 #endif
 }
 
