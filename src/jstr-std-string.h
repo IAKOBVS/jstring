@@ -128,12 +128,13 @@ JSTR_NOEXCEPT
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((unsigned char *)s + n, sizeof(jstr_word_ty));
+	typedef jstr_word_ty w_ty;
+	const w_ty *word_ptr = (w_ty *)JSTR_PTR_ALIGN_UP((unsigned char *)s + n, sizeof(w_ty));
 	uintptr_t s_int = (uintptr_t)s + n;
-	jstr_word_ty word = jstr_word_toword(--word_ptr);
-	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	const jstr_word_ty *sword = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	jstr_word_ty mask = jstr_word_shift_find_last(jstr_word_find_eq_all(word, repeated_c), s_int);
+	w_ty word = jstr_word_toword(--word_ptr);
+	w_ty repeated_c = jstr_word_repeat_bytes(c);
+	const w_ty *const sword = (w_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(w_ty));
+	w_ty mask = jstr_word_shift_find_last(jstr_word_find_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
 		char *ret = (char *)word_ptr + jstr_word_index_last(mask);
 		return ret >= (char *)s ? ret : NULL;
@@ -193,13 +194,14 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n == 0)
 	    || jstr_unlikely(*s == '\0'))
 		return NULL;
-	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	typedef jstr_word_ty w_ty;
+	const w_ty *word_ptr = (w_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(w_ty));
 	uintptr_t s_int = (uintptr_t)s;
-	jstr_word_ty word = jstr_word_toword(word_ptr);
-	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	const char *lbyte = jstr_sadd(s_int, n - 1);
-	const jstr_word_ty *lword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
-	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
+	w_ty word = jstr_word_toword(word_ptr);
+	w_ty repeated_c = jstr_word_repeat_bytes(c);
+	const char *const lbyte = jstr_sadd(s_int, n - 1);
+	const w_ty *const lword = (w_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(w_ty));
+	w_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
 		char *ret = (char *)s + jstr_word_index_first(mask);
 		return (ret <= lbyte && *ret) ? ret : NULL;
