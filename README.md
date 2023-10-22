@@ -38,16 +38,17 @@ before including any jstr-\* header. This will make them print the filename, lin
 
 ## Function affixes: 
 
-- \*\_mem\*(): the string is not nul-terminated, the length is known from the size
+- \*\_mem\*(): the string need not be nul-terminated
 - \*\_len(): take the length of the nul-terminated string
-- \*\_p(): return a pointer to the end of the string
+- \*str\*\_len(): the string must be nul-termimated. The size is only used to save a strlen()
+- \*stp\*(), \*\_p(): return a pointer to the end of the string
 - \*\_unsafe(): assume that there be enough space in the string: it will not grow it with realloc
 - \*\_now(): compile regular expression now or prints error message now
 - \*\_from(): instead of searching the whole string, start the search from an index.<br>
 The index passed by the user is assumed to be not out of bounds.
 - \*\_bref(): enable backreferences for the replacement string.<br>
 \\0 is interpreted as referring to the whole matched string
-- P_\*() or p\*(): private functions or macros used internally
+- P_\*(), p\*(): private functions or macros used internally
 
 ## Scripts:
 
