@@ -272,10 +272,11 @@ jstr_strnstr(const char *R hs,
 		return NULL;
 	if (!memcmp(hs, ne, nl))
 		return (char *)hs;
-	if (jstr_unlikely(*++hs == '\0'))
+	if (jstr_unlikely(hl == nl))
 		return NULL;
+	++hs;
 	--hl;
-	hl = hl + jstr_strnlen(hs + hl, n - hl);
+	hl += jstr_strnlen(hs + hl, n - hl);
 	return pjstr_strnstr(hs, hl, ne, nl);
 }
 
@@ -353,7 +354,9 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (!jstr_strcasecmp_len(h, n, nl))
 		return (char *)h;
-	return pjstr_strcasestr(h, hl, n, nl);
+	if (jstr_unlikely(hl == nl))
+		return NULL;
+	return pjstr_strcasestr(h + 1, hl - 1, n, nl);
 }
 #	define L(c) jstr_tolower(c)
 
@@ -553,9 +556,9 @@ JSTR_NOEXCEPT
 	}
 	if (!memcmp(hs, ne, nelen))
 		return (char *)hs;
-	if (jstr_unlikely(*++hs == '\0'))
+	if (jstr_unlikely(hslen == nelen))
 		return NULL;
-	return jstr_strstr_len(hs, hslen - 1, ne, nelen);
+	return jstr_strstr_len(hs + 1, hslen - 1, ne, nelen);
 #endif
 }
 
@@ -612,9 +615,9 @@ JSTR_NOEXCEPT
 	}
 	if (!memcmp(hs, ne, nelen))
 		return (char *)hs;
-	if (jstr_unlikely(*++hs == '\0'))
+	if (jstr_unlikely(hs[nelen] == '\0'))
 		return NULL;
-	return (char *)strstr(hs, ne);
+	return (char *)strstr(hs + 1, ne);
 #endif
 }
 
