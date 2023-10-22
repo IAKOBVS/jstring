@@ -1090,6 +1090,22 @@ JSTR_NOEXCEPT
 }
 
 /*
+  Check if S2 is in end of S1.
+  Return value:
+  1 if true;
+  0 if false.
+*/
+JSTR_INLINE
+JSTR_FUNC_PURE
+static int
+jstr_ends(const char *R hs,
+	  const char *R ne)
+JSTR_NOEXCEPT
+{
+	return jstr_ends_len(hs, strlen(hs), ne, strlen(ne));
+}
+
+/*
   Check if S1 starts with S2 case-insensitively.
   Return value:
   1 if true;
