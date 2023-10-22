@@ -24,6 +24,7 @@ JSTR_INLINE
 static char *
 jstr_basename_len(const char *R fname,
 		  const size_t sz)
+JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(fname, '/', sz);
 	return p ? (char *)p + 1 : NULL;
@@ -33,6 +34,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_basename(const char *R fname)
+JSTR_NOEXCEPT
 {
 	const char *const p = strchr(fname, '/');
 	return p ? (char *)p + 1 : NULL;
