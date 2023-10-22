@@ -1014,22 +1014,17 @@ cont_switch:
 					state = DEFAULT;
 				}
 				goto cont_switch;
-get_arg:
-				va_arg(ap, void *);
-				break;
 einval:
 			/* case '\0': */
 			default:
-				if (jstr_unlikely(*(fmt - 1) == '%')) {
-					errno = EINVAL;
-					return -1;
-				}
-				state = DEFAULT;
-				goto string;
+				errno = EINVAL;
+				return -1;
+get_arg:
+				va_arg(ap, void *);
+				break;
 			}
 			state = DEFAULT;
 		} else {
-string:
 			++arglen;
 			if (jstr_unlikely(*fmt == '\0'))
 				break;
