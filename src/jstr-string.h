@@ -851,7 +851,7 @@ JSTR_NOEXCEPT
 		c2 = t[p[2]];
 		c3 = t[p[3]];
 		p -= 4;
-	} while (((p > end) | c0 | c1 | c2 | c3) == 0);
+	} while (((p >= end) | c0 | c1 | c2 | c3) == 0);
 	size_t cnt = p - (u *)s;
 	cnt = sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
 	return (cnt < sz) ? cnt : sz;
