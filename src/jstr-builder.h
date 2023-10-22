@@ -30,7 +30,9 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); ptr < jstr_ty_end_; ++ptr)
+#define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); \
+				  ptr < jstr_ty_end_;                                                       \
+				  ++ptr)
 
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \

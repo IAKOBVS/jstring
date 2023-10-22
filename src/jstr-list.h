@@ -19,7 +19,9 @@
 #define JSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_malloc_err) \
 	PJSTR_L_RESERVE_FAIL(jstr_l_reserve_always, list, new_cap, do_on_malloc_err)
 
-#define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = ((l)->data) + ((l)->size); p < jstr_l_ty_end_; ++p)
+#define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = ((l)->data) + ((l)->size); \
+				  p < jstr_l_ty_end_;                                                          \
+				  ++p)
 
 PJSTR_BEGIN_DECLS
 
