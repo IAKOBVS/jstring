@@ -814,7 +814,7 @@ JSTR_NOEXCEPT
 		c3 = t[p[3]];
 		p += 4;
 	} while ((p < end) & (c0 & c1 & c2 & c3));
-	size_t cnt = p - (unsigned char *)p;
+	size_t cnt = p - (u *)p;
 	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
 	return (cnt < sz) ? cnt : sz;
 }
