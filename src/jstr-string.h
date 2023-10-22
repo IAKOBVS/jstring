@@ -646,7 +646,7 @@ JSTR_NOEXCEPT
 		c3 = t[p[-3]];
 		p -= 4;
 		sz -= 4;
-	} while (((sz == 0) | c0 | c1 | c2 | c3) == 0);
+	} while (((sz != 0) | c0 | c1 | c2 | c3) == 0);
 	size_t cnt = ((unsigned char *)s + sz) - p;
 	return sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
 }
