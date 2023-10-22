@@ -234,7 +234,7 @@ sub gen_struct_funcs
 				} else {
 					$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_SIZE";
 				}
-			} elsif ($new_args[$i] =~ /$G_CAP_PTN/o) {
+			} elsif ($new_args[$i] =~ /\s+$G_CAP_PTN/o) {
 				$new_args[$i] = $PTR . "$G_STRUCT_VAR->$G_STRUCT_CAP";
 			}
 			$body .= "$new_args[$i], ";
