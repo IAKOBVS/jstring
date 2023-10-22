@@ -619,6 +619,7 @@ jstr_strrcspn_len(const char *R s,
 		  size_t sz)
 JSTR_NOEXCEPT
 {
+	typedef unsigned char u;
 	if (jstr_unlikely(reject[0] == '\0')
 	    || jstr_unlikely(sz == 0))
 		return sz;
@@ -628,16 +629,17 @@ JSTR_NOEXCEPT
 	}
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
-	const unsigned char *p = (unsigned char *)reject;
+	const unsigned char *p = (u *)reject;
 	do
 		t[*p] = 1;
 	while (*p++);
-	p = (unsigned char *)s + sz - 1;
-	for (int i = sz % 4; i-- > 0;)
-		if (t[*p--])
-			return (p + 1) - (unsigned char *)s;
+	p = (u *)s + sz - 1;
+	for (int i = 0, n = sz % 4; n-- > 0; --i)
+		if (t[p[i]])
+			return (p + i) - (u *)s;
 	if (jstr_unlikely(sz < 4))
 		return sz;
+	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
@@ -647,8 +649,9 @@ JSTR_NOEXCEPT
 		p -= 4;
 		sz -= 4;
 	} while (((sz == 0) | c0 | c1 | c2 | c3) == 0);
-	size_t cnt = ((unsigned char *)s + sz) - p;
-	return sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
+	size_t cnt = ((u *)s + sz) - p;
+	cnt = sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
+	return (cnt < sz) ? cnt : sz;
 }
 
 /*
@@ -676,6 +679,7 @@ jstr_strrspn_len(const char *R s,
 		 size_t sz)
 JSTR_NOEXCEPT
 {
+	typedef unsigned char u;
 	if (jstr_unlikely(*accept == '\0')
 	    || jstr_unlikely(sz == 0))
 		return sz;
@@ -685,18 +689,19 @@ JSTR_NOEXCEPT
 			--p;
 		return p - s;
 	}
-	const unsigned char *p = (unsigned char *)accept;
+	const unsigned char *p = (u *)accept;
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
 	do
 		t[*p++] = 1;
 	while (*p);
-	p = (unsigned char *)s + sz - 1;
+	p = (u *)s + sz - 1;
 	for (int i = 0, n = sz % 4; n-- > 0; --i)
 		if (!t[p[i]])
-			return (p + i) - (unsigned char *)s;
+			return (p + i) - (u *)s;
 	if (jstr_unlikely(sz < 4))
 		return sz;
+	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
@@ -706,8 +711,9 @@ JSTR_NOEXCEPT
 		p -= 4;
 		sz -= 4;
 	} while ((sz != 0) & (c0 & c1 & c2 & c3));
-	size_t cnt = ((unsigned char *)s + sz) - p;
-	return sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2);
+	size_t cnt = ((u *)s + sz) - p;
+	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
+	return (cnt < sz) ? cnt : sz;
 }
 
 /*
