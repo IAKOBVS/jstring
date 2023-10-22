@@ -3,7 +3,7 @@
 ## Features:
 
 - works with any C string type: functions will take a pointer to string, size, and capacity
-- in-place literal string and regex replacement: supports backreferences and searching from a specific index
+- in-place literal string and regex replacement: supports backreferences and searching from a specified index
 - reverse standard string functions: memrchr(), strrstr(), strrspn(), strrcspn()
 - standard string functions for non-nul terminated strings: memspn(), memcspn(), mempbrk()
 - extensions to standard string functions: strnstr(), strnchr(), strcasestr\_len()
