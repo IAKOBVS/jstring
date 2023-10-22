@@ -510,9 +510,7 @@ jstr_strcasechr_len(const char *R s,
 		    const size_t n)
 JSTR_NOEXCEPT
 {
-	if (jstr_isalpha(c))
-		return pjstr_strcasechr_len(s, c, n);
-	return (char *)memchr(s, c, n);
+	return (jstr_isalpha(c)) ? pjstr_strcasechr_len(s, c, n) : (char *)memchr(s, c, n);
 }
 
 /*
