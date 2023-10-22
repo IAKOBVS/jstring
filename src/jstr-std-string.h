@@ -129,7 +129,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n == 0))
 		return NULL;
 	typedef jstr_word_ty w_ty;
-	const w_ty *word_ptr = (w_ty *)JSTR_PTR_ALIGN_UP((unsigned char *)s + n, sizeof(w_ty));
+	const w_ty *word_ptr = (w_ty *)JSTR_PTR_ALIGN_UP(s + n, sizeof(w_ty));
 	uintptr_t s_int = (uintptr_t)s + n;
 	w_ty word = jstr_word_toword(--word_ptr);
 	w_ty repeated_c = jstr_word_repeat_bytes(c);
