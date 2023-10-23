@@ -1011,7 +1011,73 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Trim leading and trailing [\n\t\v\r ] in S.
+  Trim leading and trailing jstr_isspace() chars in S.
+  Return value:
+  ptr to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_trimend_len_p(char *R s,
+		   const size_t sz)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	char *end = jstr_skip_space_rev(s, s + sz - 1);
+	*++end = '\0';
+	return end;
+}
+
+/*
+  Trim leading and trailing jstr_isspace() chars in S.
+  Return value:
+  ptr to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
+static char *
+jstr_trimend_p(char *R s)
+JSTR_NOEXCEPT
+{
+	return jstr_trimend_len_p(s, strlen(s));
+}
+
+/*
+  Trim leading and trailing jstr_isspace() chars in S.
+  Return value:
+  ptr to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_trimstart_len_p(char *R s,
+		     const size_t sz)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	const char *const start = jstr_skip_space(s);
+	return jstr_stpmove_len_may_eq(s, start, (s + sz) - start);
+}
+
+/*
+  Trim leading jstr_isspace() chars in S.
+  Return value:
+  ptr to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
+static char *
+jstr_trimstart_p(char *R s)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	const char *const start = jstr_skip_space(s);
+	return jstr_stpmove_len_may_eq(s, start, strlen(start));
+}
+
+/*
+  Trim leading and trailing jstr_isspace() chars in S.
   Return value:
   ptr to '\0' in S;
 */
@@ -1022,21 +1088,14 @@ jstr_trim_len_p(char *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
-		return s + sz;
-	typedef unsigned char u;
-	unsigned char *end = (u *)s + sz - 1;
-	unsigned char *const start = (u *)s - 1;
-	while (jstr_isspace(*end)
-	       && --end != start)
-		;
-	*++end = '\0';
-	while (jstr_isspace(*s))
-		++s;
-	return jstr_stpmove_len(start + 1, s, end - (u *)s);
+		return s;
+	const char *const end = jstr_skip_space_rev(s, s + sz - 1) + 1;
+	const char *const start = jstr_skip_space(s);
+	return jstr_stpmove_len_may_eq(s, start, end - start);
 }
 
 /*
-  Trim leading and trailing [\n\t\v\r ] in S.
+  Trim leading and trailing jstr_isspace() chars in S.
   Return value:
   ptr to '\0' in S;
 */
