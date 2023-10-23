@@ -64,12 +64,12 @@
 #	define JSTR_SAME_TYPE(x, y) _Generic((x), \
 	__typeof__(y): 1,                          \
 	default: 0)
-#	define JSTR_IS_TYPE(T, x) _Generic((x), \
+#	define PJSTR_IS_TYPE(T, x) _Generic((x), \
 	T: 1,                                    \
 	default: 0)
 #else
 #	define JSTR_SAME_TYPE(x, y) 1
-#	define JSTR_IS_TYPE(T, x)   1
+#	define PJSTR_IS_TYPE(T, x)   1
 #endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #ifdef static_assert
@@ -103,32 +103,34 @@
 #	define JSTR_GENERIC_CASE_CHAR(bool_) \
 		char : bool_,                 \
 		       const char : bool_
-#	define JSTR_IS_SIZE(expr) _Generic((expr), \
+#	define PJSTR_IS_SIZE(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_SIZE(1),                  \
 	default: 0)
-#	define JSTR_IS_STR(expr) _Generic((expr), \
+#	define PJSTR_IS_STR(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_STR(1),                  \
 	default: 0)
-#	define JSTR_IS_STR_STACK(expr) _Generic((expr), \
+#	define PJSTR_IS_STR_STACK(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_STR_STACK(1, expr),            \
 	default: 0)
-#	define JSTR_IS_CHAR(expr) _Generic((expr), \
+#	define PJSTR_IS_CHAR(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_CHAR(1),                  \
 	default: 0)
 #	define JSTR_ASSERT_IS_SIZE(expr) \
-		JSTR_ASSERT(JSTR_IS_SIZE(expr), "Passing non-number as number argument!");
+		JSTR_ASSERT(PJSTR_IS_SIZE(expr), "Passing non-number as number argument!");
 #	define JSTR_ASSERT_IS_STR(expr) \
-		JSTR_ASSERT(JSTR_IS_STR(expr), "Passing non-string as string argument!");
+		JSTR_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
 #	define JSTR_ASSERT_IS_CHAR(expr) \
-		JSTR_ASSERT(JSTR_IS_CHAR(expr), "Passing non-char as char argument!");
+		JSTR_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
 #	define JSTR_ASSERT_TYPECHECK(expr_ty, expr) \
 		JSTR_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
 #else
 #	define JSTR_GENERIC_CASE_SIZE(expr)
 #	define JSTR_GENERIC_CASE_STR(bool)
 #	define JSTR_GENERIC_CASE_CHAR(bool)
-#	define JSTR_IS_STR(expr)
-#	define JSTR_IS_CHAR(expr)
+#	define PJSTR_IS_SIZE(expr)
+#	define PJSTR_IS_STR(expr)
+#	define PJSTR_IS_STR_STACK(expr)
+#	define PJSTR_IS_CHAR(expr)
 #	define JSTR_ASSERT_IS_SIZE(expr)
 #	define JSTR_ASSERT_IS_STR(expr)
 #	define JSTR_ASSERT_IS_CHAR(expr)
