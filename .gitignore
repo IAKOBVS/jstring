@@ -13,3 +13,5 @@ c
 ./gen_cpp
 *.gch
 glibc
+./bin/generate-ctow
+./bin/is-little-endian
