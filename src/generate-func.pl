@@ -232,7 +232,7 @@ sub gen_struct_funcs
 		$func_body .= "$G_STRCT_VAR->$G_STRCT_DATA, ";
 		for (my $i = 1 ; $i <= $#clean_args ; ++$i) {
 			if (index($clean_args[$i], $G_SIZE_VAR) != -1) {
-				if ($FUNC_NAME =~ /$G_NMSPC/ && using_size_ptr($params)) {
+				if (index($FUNC_NAME, $G_NMSPC) != -1 && using_size_ptr($params)) {
 					$clean_args[$i] = "&$G_STRCT_VAR->$G_STRCT_SIZE";
 				} else {
 					$clean_args[$i] = $PTR . "$G_STRCT_VAR->$G_STRCT_SIZE";
