@@ -1141,8 +1141,10 @@ JSTR_NOEXCEPT
 		goto ftw;
 	}
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE && 0
-	if (jstr_unlikely(fstat(fd, &st)))
+	if (jstr_unlikely(fstat(fd, &st))) {
+		close(fd);
 		return 0;
+	}
 #else
 	if (jstr_unlikely(stat(fulpath, &st)))
 		return 0;
