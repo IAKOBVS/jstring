@@ -1140,7 +1140,7 @@ JSTR_NOEXCEPT
 		dlen = 0;
 		goto ftw;
 	}
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE && 0
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 	if (jstr_unlikely(fstat(fd, &st))) {
 		close(fd);
 		return 0;
