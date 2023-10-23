@@ -105,13 +105,13 @@ jstr_insert_len(char *R *R s,
 		size_t *R sz,
 		size_t *R cap,
 		const size_t at,
-		const char *R rplc,
-		const size_t rplclen)
+		const char *R src,
+		const size_t srclen)
 JSTR_NOEXCEPT
 {
-	JSTR_RESERVE(s, sz, cap, *sz + rplclen, return 0);
-	jstr_insert_unsafe(*s, at, rplc, *sz, rplclen);
-	*sz += rplclen;
+	JSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
+	jstr_insert_unsafe(*s, at, src, *sz, srclen);
+	*sz += srclen;
 	return 1;
 }
 
