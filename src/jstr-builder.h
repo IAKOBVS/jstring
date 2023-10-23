@@ -383,6 +383,15 @@ JSTR_NOEXCEPT
 	*cap = 0;
 }
 
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_init_j(jstr_ty *R j)
+JSTR_NOEXCEPT
+{
+	jstr_init(&j->data, &j->size, &j->capacity);
+}
+
 JSTR_FUNC
 JSTR_INLINE
 static int
