@@ -427,23 +427,18 @@ JSTR_NOEXCEPT
 }
 
 /*
-   strlen(S) is saved to SZ.
+   Return ptr to '\0' in *s.
 */
 JSTR_MALLOC
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strdup_p(const char *R s,
-	      size_t *R n)
+jstr_strdup_p(const char *R *R s)
 JSTR_NOEXCEPT
 {
-	*n = strlen(s);
-	char *const p = (char *)malloc(*n + 1);
-	if (jstr_likely(p != NULL)) {
-		jstr_strcpy_len(p, s, *n);
-		return p;
-	}
-	return NULL;
+	size_t n = strlen(*s);
+	char *const p = (char *)malloc(n + 1);
+	return (jstr_likely(p != NULL)) ? jstr_strcpy_len(p, *s, n) + n : NULL;
 }
 
 JSTR_MALLOC
