@@ -134,6 +134,28 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 JSTR_INLINE
+static int
+jstr_cmp(const void *R s1,
+	 const size_t sz1,
+	 const void *R s2,
+	 const size_t sz2)
+{
+	return (sz1 == sz2) ? memcmp(s1, s2, sz1) : *(unsigned char *)s1 - *(unsigned char *)s2;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static int
+jstr_casecmp(const char *R s1,
+	     const size_t sz1,
+	     const char *R s2,
+	     const size_t sz2)
+{
+	return (sz1 == sz2) ? jstr_strcasecmp(s1, s2) : *s1 - *s2;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
 static char *
 pjstr_strnstr2(const unsigned char *h,
 	       const unsigned char *R n,
