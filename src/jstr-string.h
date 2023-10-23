@@ -625,7 +625,7 @@ JSTR_NOEXCEPT
 	if (hs == NULL || (uintptr_t)(hs - start) < nelen)
 		return NULL;
 #	endif
-	is_alpha += jstr_isalpha(ne[1]);
+	is_alpha |= jstr_isalpha(ne[1]);
 	switch (nelen) {
 	case 1: return (char *)hs;
 	case 2:
@@ -634,13 +634,13 @@ JSTR_NOEXCEPT
 		break;
 	case 3:
 		if (is_alpha
-		    + jstr_isalpha(ne[2]))
+		    | jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((u *)hs, (u *)ne);
 		break;
 	default: /* case 4: */
 		if (is_alpha
-		    + jstr_isalpha(ne[2])
-		    + jstr_isalpha(ne[3]))
+		    | jstr_isalpha(ne[2])
+		    | jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((u *)hs, (u *)ne);
 		break;
 	}
@@ -678,7 +678,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
-	is_isalpha0 += jstr_isalpha(ne[1]);
+	is_isalpha0 |= jstr_isalpha(ne[1]);
 	typedef unsigned char u;
 	size_t nelen;
 	if (ne[2] == '\0') {
@@ -689,15 +689,15 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(hs[2] == '\0'))
 			return NULL;
 		if (is_isalpha0
-		    + jstr_isalpha(ne[2]))
+		    | jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((u *)hs, (u *)ne);
 		nelen = 3;
 	} else if (ne[4] == '\0') {
 		if (jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0'))
 			return NULL;
 		if (is_isalpha0
-		    + jstr_isalpha(ne[2])
-		    + jstr_isalpha(ne[3]))
+		    | jstr_isalpha(ne[2])
+		    | jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((u *)hs, (u *)ne);
 		nelen = 4;
 	} else {
