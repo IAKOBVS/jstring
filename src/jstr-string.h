@@ -18,12 +18,13 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+/* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
-jstr_repeat_p_len(char *R dst,
-		  const char *R src,
-		  const size_t srcsz,
-		  size_t n)
+jstr_repeatcpy_p_len(char *R dst,
+		     const char *R src,
+		     const size_t srcsz,
+		     size_t n)
 {
 	if (jstr_likely(srcsz > 1))
 		for (; n--;)
@@ -32,6 +33,16 @@ jstr_repeat_p_len(char *R dst,
 		dst = (char *)memset(dst, *src, n) + n;
 	*dst = '\0';
 	return dst;
+}
+
+/* Return ptr to '\0' in DST. */
+JSTR_FUNC
+static char *
+jstr_repeatcpy_p(char *R dst,
+		 const char *R src,
+		 const size_t n)
+{
+	return jstr_repeatcpy_p_len(dst, src, strlen(src), n);
 }
 
 /* basename() for non nul-terminated strings. */
