@@ -96,10 +96,9 @@ jstr_skip_ctype(const char *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
-		while (*s != '\0'
-		       && jstr_isctype(*s++, ctype))
-			;
-		return (char *)s - 1;
+		while (*s && jstr_isctype(*s, ctype))
+			++s;
+		return (char *)s;
 	}
 	while (jstr_isctype(*s++, ctype))
 		;
@@ -157,8 +156,8 @@ jstr_skip_ctype_rev(const char *const start,
 JSTR_NOEXCEPT
 {
 	while (start != end
-	       && jstr_isctype(*end--, ctype))
-		;
+	       && jstr_isctype(*end, ctype))
+		--end;
 	return (char *)end;
 }
 
