@@ -681,14 +681,15 @@ JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_FUNC_VOID
-static void
-jstr_push_back_unsafe(char *R s,
-		      size_t *R sz,
-		      const char c)
+static char *
+jstr_push_back_p_unsafe(char *R s,
+			const size_t sz,
+			const char c)
 JSTR_NOEXCEPT
 {
-	*(s + *sz) = c;
-	*(s + ++*sz) = '\0';
+	*(s + sz) = c;
+	*(s + sz) = '\0';
+	return s + sz + 1;
 }
 
 /*
@@ -709,20 +710,21 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
-	jstr_push_back_unsafe(*s, sz, c);
+	*sz = jstr_push_back_p_unsafe(*s, *sz, c) - *s;
 	return 1;
 }
 
 JSTR_FUNC_VOID
 JSTR_INLINE
-static void
-jstr_push_front_unsafe(char *R s,
-		       size_t *R sz,
-		       const char c)
+static char *
+jstr_push_front_p_unsafe(char *R s,
+			 const size_t sz,
+			 const char c)
 JSTR_NOEXCEPT
 {
-	jstr_strmove_len(s + 1, s, (*sz)++);
+	jstr_strmove_len(s + 1, s, sz);
 	*s = c;
+	return s + sz + 1;
 }
 
 /*
@@ -743,32 +745,38 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
 		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
-	jstr_push_front_unsafe(*s, sz, c);
+	*sz = jstr_push_front_p_unsafe(*s, *sz, c) - *s;
 	return 1;
 }
 
 /* Pop s[size]. */
 JSTR_FUNC_VOID
 JSTR_INLINE
-static void
-jstr_pop_back(char *R s,
-	      size_t *R sz)
+static char *
+jstr_pop_back_p(char *R s,
+		const size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_likely(*sz != 0))
-		*(s + --*sz) = '\0';
+	if (jstr_likely(sz != 0)) {
+		*(s + sz) = '\0';
+		return s + sz - 1;
+	}
+	return 0;
 }
 
 /* Pop s[0]. */
 JSTR_FUNC_VOID
 JSTR_INLINE
-static void
-jstr_pop_front(char *R s,
-	       size_t *R sz)
+static char *
+jstr_pop_front_p(char *R s,
+		 const size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_likely(*sz != 0))
-		memmove(s, s + 1, (*sz)--);
+	if (jstr_likely(sz != 0)) {
+		memmove(s, s + 1, sz);
+		return s + sz - 1;
+	}
+	return 0;
 }
 
 JSTR_FUNC
