@@ -400,6 +400,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	return pjstr_strcasestr(h + 1, hl - 1, n, nl);
 }
+
 #	define L(c) jstr_tolower(c)
 
 JSTR_FUNC_PURE
