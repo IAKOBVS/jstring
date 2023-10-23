@@ -18,6 +18,22 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+JSTR_FUNC
+static char *
+jstr_repeat_p_len(char *R dst,
+		  const char *R src,
+		  const size_t srcsz,
+		  size_t n)
+{
+	if (jstr_likely(srcsz > 1))
+		for (; n--;)
+			dst = (char *)jstr_mempcpy(dst, src, srcsz);
+	else if (srcsz == 1)
+		dst = (char *)memset(dst, *src, n) + n;
+	*dst = '\0';
+	return dst;
+}
+
 /* basename() for non nul-terminated strings. */
 JSTR_FUNC_PURE
 JSTR_INLINE
