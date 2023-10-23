@@ -1,9 +1,10 @@
 #ifndef JSTR_LIST_H
 #define JSTR_LIST_H
 
+#include "jstr-macros.h"
+
 #include "jstr-builder.h"
 #include "jstr-config.h"
-#include "jstr-macros.h"
 #include "jstr-string.h"
 
 #define R JSTR_RESTRICT
@@ -367,6 +368,6 @@ PJSTR_DELETE(casestarts, casestarts);
 
 PJSTR_END_DECLS
 
-#undef JSTR_RESTRICT
+#undef R
 
 #endif /* JSTR_LIST_H */
