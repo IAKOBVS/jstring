@@ -532,7 +532,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_appendnchr_p_unsafe(char *R s,
+jstr_set_append_p_unsafe(char *R s,
 			 const size_t sz,
 			 const int c,
 			 const size_t n)
@@ -547,7 +547,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_appendnchr(char *R *R s,
+jstr_set_append(char *R *R s,
 		size_t *R sz,
 		size_t *R cap,
 		const int c,
@@ -555,7 +555,7 @@ jstr_appendnchr(char *R *R s,
 JSTR_NOEXCEPT
 {
 	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
-	*sz = jstr_appendnchr_p_unsafe(*s, *sz, c, n) - *s;
+	*sz = jstr_set_append_p_unsafe(*s, *sz, c, n) - *s;
 	return 1;
 }
 
