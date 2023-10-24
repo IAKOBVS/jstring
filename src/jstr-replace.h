@@ -45,7 +45,8 @@ pjstr_replaceall_in_place(unsigned char **dst,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	if (jstr_likely(findlen != rplclen && *dst != *oldp))
+	if (jstr_likely(findlen != rplclen)
+	    && jstr_likely(*dst != *oldp))
 		memmove(*dst, *oldp, *p - *oldp);
 	*dst += *p - *oldp;
 	*oldp += (*p - *oldp) + findlen;
@@ -549,7 +550,7 @@ jstr_replacechr_len(char *R s,
 JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, find, sz);
-	if (jstr_likely(s != NULL))
+	if (s != NULL)
 		*s = rplc;
 }
 
@@ -565,7 +566,7 @@ jstr_replacechr(char *R s,
 JSTR_NOEXCEPT
 {
 	s = strchr(s, find);
-	if (jstr_likely(s != NULL))
+	if (s != NULL)
 		*s = rplc;
 }
 
@@ -655,9 +656,9 @@ JSTR_NOEXCEPT
 	} else if (jstr_unlikely(findlen == 0))
 		return 1;
 	char *p = jstr_strstr_len(*s + start_idx, *sz - start_idx, find, findlen);
-	if (jstr_unlikely(p == NULL))
-		return 1;
-	return jstr_replaceat_len(s, sz, cap, p - *s, rplc, rplclen, findlen) != NULL;
+	if (p != NULL)
+		return jstr_replaceat_len(s, sz, cap, p - *s, rplc, rplclen, findlen) != NULL;
+	return 1;
 }
 
 /*
