@@ -647,13 +647,12 @@ JSTR_NOEXCEPT
 		*sz = jstr_remove_len_p(*s + start_idx, find, *sz - start_idx, findlen) - *s;
 		return 1;
 	}
-	if (rplclen == 1) {
-		if (findlen == 1) {
+	if (findlen == 1) {
+		if (rplclen == 1) {
 			jstr_replacechr_len(*s + start_idx, *find, *rplc, *sz - start_idx);
 			return 1;
 		}
-	}
-	if (jstr_unlikely(findlen == 0))
+	} else if (jstr_unlikely(findlen == 0))
 		return 1;
 	char *p = jstr_strstr_len(*s + start_idx, *sz - start_idx, find, findlen);
 	if (jstr_unlikely(p == NULL))
