@@ -481,7 +481,7 @@ jstr_append_len_p_unsafe(char *R s,
 			 const size_t srclen)
 JSTR_NOEXCEPT
 {
-	return jstr_strcpy_len(s + sz, src, srclen) + srclen;
+	return jstr_stpcpy_len(s + sz, src, srclen);
 }
 
 JSTR_FUNC_VOID

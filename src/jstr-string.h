@@ -23,6 +23,7 @@ JSTR_INLINE
 static char *
 jstr_cpy_p(char *R dst,
 	   const jstr_ty *R src)
+JSTR_NOEXCEPT
 {
 	return jstr_stpcpy_len(dst, src->data, src->size);
 }
@@ -32,6 +33,7 @@ JSTR_INLINE
 static int
 jstr_dup(jstr_ty *R dst,
 	 const jstr_ty *R src)
+JSTR_NOEXCEPT
 {
 	dst->data = (char *)malloc(src->capacity);
 	PJSTR_MALLOC_ERR(dst->data, return 0);
@@ -47,6 +49,7 @@ static char *
 jstr_repeat_p_len_unsafe(char *R s,
 			 const size_t sz,
 			 size_t n)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n < 2))
 		return s + sz;
@@ -71,6 +74,7 @@ jstr_repeat_len(char *R *R s,
 		size_t *R sz,
 		size_t *R cap,
 		const size_t n)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n < 2))
 		return 1;
@@ -86,6 +90,7 @@ jstr_repeatcpy_p_len(char *R dst,
 		     const char *R src,
 		     const size_t srcsz,
 		     size_t n)
+JSTR_NOEXCEPT
 {
 	if (jstr_likely(srcsz > 1))
 		while (n--)
@@ -102,6 +107,7 @@ static char *
 jstr_repeatcpy_p(char *R dst,
 		 const char *R src,
 		 const size_t n)
+JSTR_NOEXCEPT
 {
 	return jstr_repeatcpy_p_len(dst, src, strlen(src), n);
 }
