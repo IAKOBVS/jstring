@@ -27,7 +27,7 @@ jstr_repeatcpy_p_len(char *R dst,
 		     size_t n)
 {
 	if (jstr_likely(srcsz > 1))
-		for (; n--;)
+		while (n--)
 			dst = (char *)jstr_mempcpy(dst, src, srcsz);
 	else if (srcsz == 1)
 		dst = (char *)memset(dst, *src, n) + n;
