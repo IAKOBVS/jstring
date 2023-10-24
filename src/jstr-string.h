@@ -27,6 +27,19 @@ jstr_cpy_p(const jstr_ty *R src,
 	return jstr_stpcpy_len(dst, src->data, src->size);
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_dup(jstr_ty *R dst,
+	 const jstr_ty *R src)
+{
+	dst->data = (char *)realloc(src->data, src->capacity);
+	PJSTR_MALLOC_ERR(dst->data, return 0);
+	dst->size = src->size;
+	dst->capacity = src->capacity;
+	return 1;
+}
+
 /* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
