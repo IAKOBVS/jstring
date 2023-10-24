@@ -48,6 +48,9 @@ jstr_repeat_p_len_unsafe(char *R s,
 			 const size_t sz,
 			 size_t n)
 {
+	if (jstr_unlikely(n < 2))
+		return s + sz;
+	--n;
 	if (jstr_likely(sz > 1))
 		while (n--)
 			s = (char *)jstr_mempmove(s + sz, s, sz);
@@ -67,8 +70,10 @@ static int
 jstr_repeat_len(char *R *R s,
 		size_t *R sz,
 		size_t *R cap,
-		size_t n)
+		const size_t n)
 {
+	if (jstr_unlikely(n < 2))
+		return 1;
 	JSTR_RESERVE(s, sz, cap, *sz * n, return 0);
 	*sz = jstr_repeat_p_len_unsafe(*s, *sz, n) - *s;
 	return 1;
