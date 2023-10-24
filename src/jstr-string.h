@@ -44,6 +44,39 @@ jstr_dup(jstr_ty *R dst,
 /* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
+jstr_repeat_p_len_unsafe(char *R s,
+			 const size_t sz,
+			 size_t n)
+{
+	if (jstr_likely(sz > 1))
+		while (n--)
+			s = (char *)jstr_mempmove(s + sz, s, sz);
+	else if (sz == 1)
+		s = (char *)memset(s, *s, n) + n;
+	*s = '\0';
+	return s;
+}
+
+/*
+   Return value:
+   0 on error;
+   1 otherwise.
+*/
+JSTR_FUNC
+static int
+jstr_repeat_len(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
+		size_t n)
+{
+	JSTR_RESERVE(s, sz, cap, *sz * n, return 0);
+	*sz = jstr_repeat_p_len_unsafe(*s, *sz, n) - *s;
+	return 1;
+}
+
+/* Return ptr to '\0' in DST. */
+JSTR_FUNC
+static char *
 jstr_repeatcpy_p_len(char *R dst,
 		     const char *R src,
 		     const size_t srcsz,
