@@ -26,6 +26,8 @@
 
 #define jstr_l_foreach_idx(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); i < jstr_l_ty_end_; ++i)
 
+#define JSTR_L_INIT {0}
+
 PJSTR_BEGIN_DECLS
 
 typedef struct jstr_l_ty {
@@ -60,17 +62,6 @@ jstr_l_at(const jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	return l->data + at;
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_l_init(jstr_l_ty *R l)
-JSTR_NOEXCEPT
-{
-	l->data = NULL;
-	l->size = 0;
-	l->capacity = 0;
 }
 
 JSTR_FUNC
