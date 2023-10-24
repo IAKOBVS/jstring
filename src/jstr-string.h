@@ -1554,9 +1554,9 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_fmt_thousep_len_p(char *R nptr,
-		       const int separator,
-		       size_t sz)
+jstr_thousep_len_p(char *R nptr,
+		   const int separator,
+		   size_t sz)
 JSTR_NOEXCEPT
 {
 	char *end = nptr + sz;
@@ -1594,11 +1594,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_fmt_thousep_p(char *R nptr,
-		   const int separator)
+jstr_thousep_p(char *R nptr,
+	       const int separator)
 JSTR_NOEXCEPT
 {
-	return jstr_fmt_thousep_len_p(nptr, separator, strlen(nptr));
+	return jstr_thousep_len_p(nptr, separator, strlen(nptr));
 }
 
 /*
@@ -1608,10 +1608,10 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_fmt_thousepcpy_len_p(char *R dst,
-			  const char *R src,
-			  const int separator,
-			  size_t sz)
+jstr_thousepcpy_len_p(char *R dst,
+		      const char *R src,
+		      const int separator,
+		      size_t sz)
 JSTR_NOEXCEPT
 {
 	if (*src == '-') {
@@ -1651,12 +1651,12 @@ ret:
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_fmt_thousepcpy_p(char *R dst,
-		      const char *R src,
-		      const int separator)
+jstr_thousepcpy_p(char *R dst,
+		  const char *R src,
+		  const int separator)
 JSTR_NOEXCEPT
 {
-	return jstr_fmt_thousepcpy_len_p(dst, src, separator, strlen(src));
+	return jstr_thousepcpy_len_p(dst, src, separator, strlen(src));
 }
 
 PJSTR_END_DECLS
