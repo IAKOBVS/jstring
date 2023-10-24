@@ -360,9 +360,9 @@ JSTR_NOEXCEPT
 	}
 
 PJSTR_DELETE(, find);
-PJSTR_DELETE(case, casefind);
-PJSTR_DELETE(starts, starts);
-PJSTR_DELETE(casestarts, casestarts);
+PJSTR_DELETE(_case, casefind);
+PJSTR_DELETE(_starts, starts);
+PJSTR_DELETE(_casestarts, casestarts);
 
 #undef PJSTR_DELETE
 
