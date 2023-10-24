@@ -26,7 +26,10 @@
 
 #define jstr_l_foreach_idx(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); i < jstr_l_ty_end_; ++i)
 
-#define JSTR_L_INIT {0}
+#define JSTR_L_INIT \
+	{           \
+		0   \
+	}
 
 PJSTR_BEGIN_DECLS
 
@@ -252,9 +255,7 @@ jstr_l_find_len(const jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
-		if (slen == j->size
-		    && *s == *(j->data)
-		    && !memcmp(s, j->data, slen))
+		if (jstr_cmp(j->data, j->size, s, slen))
 			return j;
 	return NULL;
 }
@@ -267,9 +268,7 @@ jstr_l_casefind_len(const jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
-		if (slen == j->size
-		    && *s == *(j->data)
-		    && !jstr_strcasecmp_len(s, j->data, slen))
+		if (jstr_casecmp(j->data, j->size, s, slen))
 			return j;
 	return NULL;
 }
