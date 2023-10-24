@@ -1085,6 +1085,22 @@ JSTR_NOEXCEPT
 }
 
 /*
+  Trim leading jstr_isspace() chars in S.
+*/
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_trimstart(char *R s)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return;
+	const char *const start = jstr_skip_space(s);
+	if (jstr_likely(s != start))
+		jstr_strmove_len(s, start, strlen(start));
+}
+
+/*
   Trim leading and trailing jstr_isspace() chars in S.
   Return value:
   ptr to '\0' in S;
