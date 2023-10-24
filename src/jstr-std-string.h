@@ -334,20 +334,6 @@ JSTR_NOEXCEPT
 	return jstr_stpmove_len(dst, src, strlen((char *)src));
 }
 
-/*
-   Avoid strmove if DST == SRC.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static char *
-jstr_stpmove_len_may_eq(void *dst,
-			const void *src,
-			const size_t n)
-JSTR_NOEXCEPT
-{
-	return ((dst != src) ? jstr_stpmove_len(dst, src, n) : (char *)dst) + n;
-}
-
 JSTR_INLINE
 JSTR_FUNC_VOID
 static char *

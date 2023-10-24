@@ -351,7 +351,9 @@ JSTR_NOEXCEPT
 	const unsigned char *p = dst;
 	for (; *p && (*(p += strcspn((char *)p, reject))); pjstr_removeall_in_place(&dst, &oldp, &p, strspn((char *)p, reject)))
 		;
-	return jstr_stpmove_len_may_eq(dst, oldp, p - oldp);
+	if (jstr_likely(p != oldp))
+		return jstr_stpmove_len(dst, oldp, p - oldp);
+	return (char *)p;
 }
 
 /*
@@ -488,7 +490,9 @@ JSTR_NOEXCEPT
 	const unsigned char *p = dst;
 	while (*(p += strcspn((char *)p, rjct)))
 		pjstr_removeall_in_place(&dst, &oldp, &p, 1);
-	return jstr_stpmove_len_may_eq(dst, oldp, p - oldp);
+	if (jstr_likely(p != oldp))
+		return jstr_stpmove_len(dst, oldp, p - oldp);
+	return (char *)p;
 }
 
 /*
@@ -1056,7 +1060,9 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	const char *const start = jstr_skip_space(s);
-	return jstr_stpmove_len_may_eq(s, start, (s + sz) - start);
+	if (jstr_likely(s != start))
+		return jstr_stpmove_len(s, start, (s + sz) - start);
+	return s + sz;
 }
 
 /*
@@ -1073,7 +1079,9 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	const char *const start = jstr_skip_space(s);
-	return jstr_stpmove_len_may_eq(s, start, strlen(start));
+	if (jstr_likely(s != start))
+		return jstr_stpmove_len(s, start, strlen(start));
+	return s + strlen(start);
 }
 
 /*
@@ -1091,7 +1099,9 @@ JSTR_NOEXCEPT
 		return s;
 	const char *const end = jstr_skip_space_rev(s, s + sz - 1) + 1;
 	const char *const start = jstr_skip_space(s);
-	return jstr_stpmove_len_may_eq(s, start, end - start);
+	if (jstr_likely(start != s))
+		return jstr_stpmove_len(s, start, end - start);
+	return s + sz;
 }
 
 /*
