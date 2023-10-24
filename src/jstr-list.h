@@ -297,6 +297,18 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
+jstr_l_strchr_inv(const jstr_l_ty *R l,
+		  const int c)
+JSTR_NOEXCEPT
+{
+	jstr_l_foreach (l, j)
+		if (jstr_strchr_inv(j->data, c))
+			return j;
+	return NULL;
+}
+
+JSTR_FUNC_PURE
+static jstr_ty *
 jstr_l_strstr_len(const jstr_l_ty *R l,
 		  const char *R s,
 		  const size_t slen)
@@ -396,6 +408,24 @@ jstr_l_delete_len(jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_len(l, s, slen));
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_l_delete_strchr(jstr_l_ty *R l,
+		     const int c)
+JSTR_NOEXCEPT
+{
+	pjstr_l_delete(l, jstr_l_strchr(l, c));
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_l_delete_strchr_inv(jstr_l_ty *R l,
+			 const int c)
+JSTR_NOEXCEPT
+{
+	pjstr_l_delete(l, jstr_l_strchr_inv(l, c));
 }
 
 JSTR_FUNC_VOID
