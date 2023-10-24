@@ -21,8 +21,8 @@ PJSTR_BEGIN_DECLS
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_cpy_p(const jstr_ty *R src,
-	   char *R dst)
+jstr_cpy_p(char *R dst,
+	   const jstr_ty *R src)
 {
 	return jstr_stpcpy_len(dst, src->data, src->size);
 }
@@ -33,8 +33,9 @@ static int
 jstr_dup(jstr_ty *R dst,
 	 const jstr_ty *R src)
 {
-	dst->data = (char *)realloc(src->data, src->capacity);
+	dst->data = (char *)malloc(src->capacity);
 	PJSTR_MALLOC_ERR(dst->data, return 0);
+	dst->size = jstr_cpy_p(dst->data, dst) - dst->data;
 	dst->size = src->size;
 	dst->capacity = src->capacity;
 	return 1;
