@@ -452,7 +452,7 @@ JSTR_NOEXCEPT
 {
 	char *const p = (char *)malloc(n + 1);
 	if (jstr_likely(p != NULL))
-		return jstr_strcpy_len(p, s, n);
+		return jstr_stpcpy_len(p, s, n);
 	return NULL;
 }
 
