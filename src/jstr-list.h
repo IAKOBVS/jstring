@@ -285,6 +285,18 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
+jstr_l_strchr(const jstr_l_ty *R l,
+	      const int c)
+JSTR_NOEXCEPT
+{
+	jstr_l_foreach (l, j)
+		if (memchr(j->data, c, j->size))
+			return j;
+	return NULL;
+}
+
+JSTR_FUNC_PURE
+static jstr_ty *
 jstr_l_strstr_len(const jstr_l_ty *R l,
 		  const char *R s,
 		  const size_t slen)

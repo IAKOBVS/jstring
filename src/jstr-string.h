@@ -1063,7 +1063,7 @@ JSTR_NOEXCEPT
 /*
    Return value:
    ptr to first non-C in S;
-   NULL if C is not found.
+   NULL if non-C is not found.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
