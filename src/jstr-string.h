@@ -18,6 +18,15 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_cpy_p(const jstr_ty *R src,
+	   char *R dst)
+{
+	return jstr_stpcpy_len(dst, src->data, src->size);
+}
+
 /* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
