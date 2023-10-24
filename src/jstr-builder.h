@@ -30,6 +30,8 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
+#define JSTR_INIT {0}
+
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); \
 				  ptr < jstr_ty_end_;                                                       \
 				  ++ptr)
@@ -370,28 +372,6 @@ jstr_print(const jstr_ty *R j)
 JSTR_NOEXCEPT
 {
 	fwrite(j->data, 1, j->size, stdout);
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_init(char *R *R s,
-	  size_t *R sz,
-	  size_t *R cap)
-JSTR_NOEXCEPT
-{
-	*s = NULL;
-	*sz = 0;
-	*cap = 0;
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_init_j(jstr_ty *R j)
-JSTR_NOEXCEPT
-{
-	jstr_init(&j->data, &j->size, &j->capacity);
 }
 
 JSTR_FUNC

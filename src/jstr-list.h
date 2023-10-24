@@ -402,7 +402,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_len(jstr_l_ty *R l,
+jstr_l_len_delete(jstr_l_ty *R l,
 		  const char *R s,
 		  const size_t slen)
 JSTR_NOEXCEPT
@@ -412,7 +412,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_strchr(jstr_l_ty *R l,
+jstr_l_strchr_delete(jstr_l_ty *R l,
 		     const int c)
 JSTR_NOEXCEPT
 {
@@ -421,7 +421,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_strchr_inv(jstr_l_ty *R l,
+jstr_l_strchr_inv_delete(jstr_l_ty *R l,
 			 const int c)
 JSTR_NOEXCEPT
 {
@@ -430,7 +430,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_strstr_len(jstr_l_ty *R l,
+jstr_l_strstr_len_delete(jstr_l_ty *R l,
 			 const char *R s,
 			 const size_t slen)
 JSTR_NOEXCEPT
@@ -440,7 +440,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_strcasestr_len(jstr_l_ty *R l,
+jstr_l_strcasestr_len_delete(jstr_l_ty *R l,
 			     const char *R s,
 			     const size_t slen)
 JSTR_NOEXCEPT
@@ -450,7 +450,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_starts_len(jstr_l_ty *R l,
+jstr_l_starts_len_delete(jstr_l_ty *R l,
 			 const char *R s,
 			 const size_t slen)
 JSTR_NOEXCEPT
@@ -460,7 +460,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_ends_len(jstr_l_ty *R l,
+jstr_l_ends_len_delete(jstr_l_ty *R l,
 		       const char *R s,
 		       const size_t slen)
 JSTR_NOEXCEPT
@@ -470,7 +470,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_case_len(jstr_l_ty *R l,
+jstr_l_case_len_delete(jstr_l_ty *R l,
 		       const char *R s,
 		       const size_t slen)
 JSTR_NOEXCEPT
@@ -480,7 +480,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_casestarts_len(jstr_l_ty *R l,
+jstr_l_casestarts_len_delete(jstr_l_ty *R l,
 			     const char *R s,
 			     const size_t slen)
 JSTR_NOEXCEPT
@@ -490,7 +490,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_delete_caseends_len(jstr_l_ty *R l,
+jstr_l_caseends_len_delete(jstr_l_ty *R l,
 			   const char *R s,
 			   const size_t slen)
 JSTR_NOEXCEPT
