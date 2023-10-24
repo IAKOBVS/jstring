@@ -595,7 +595,7 @@ jstr_replaceallchr(char *R s,
 		   const int rplc)
 JSTR_NOEXCEPT
 {
-	while ((s = (strchr(s, find))))
+	while ((s = strchr(s, find)))
 		*s++ = rplc;
 }
 
