@@ -34,6 +34,8 @@ PJSTR_END_DECLS
 				  ptr < jstr_ty_end_;                                                       \
 				  ++ptr)
 
+#define jstr_foreach_idx(j, i) for (size_t i = 0, const jstr_j_ty_end_ = ((j)->size); i < jstr_j_ty_end_; ++i)
+
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \

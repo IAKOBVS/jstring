@@ -24,6 +24,8 @@
 				  p < jstr_l_ty_end_;                                                          \
 				  ++p)
 
+#define jstr_l_foreach_idx(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); i < jstr_l_ty_end_; ++i)
+
 PJSTR_BEGIN_DECLS
 
 typedef struct jstr_l_ty {
