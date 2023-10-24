@@ -348,23 +348,65 @@ JSTR_NOEXCEPT
 	}
 }
 
-#define PJSTR_DELETE(name, cmp_func)                                    \
-	JSTR_FUNC_VOID                                                  \
-	static void                                                     \
-	jstr_l_delete##name##_len(jstr_l_ty *R l,                       \
-				  const char *R s,                      \
-				  const size_t slen)                    \
-	JSTR_NOEXCEPT                                                   \
-	{                                                               \
-		pjstr_l_delete(l, jstr_l_##cmp_func##_len(l, s, slen)); \
-	}
+JSTR_FUNC_VOID
+static void
+jstr_l_delete_len(jstr_l_ty *R l,
+		  const char *R s,
+		  const size_t slen)
+JSTR_NOEXCEPT
+{
+	pjstr_l_delete(l, jstr_l_find_len(l, s, slen));
+}
 
-PJSTR_DELETE(, find);
-PJSTR_DELETE(_starts, starts);
-PJSTR_DELETE(_ends, ends);
-PJSTR_DELETE(_case, casefind);
-PJSTR_DELETE(_casestarts, casestarts);
-PJSTR_DELETE(_caseends, caseends);
+JSTR_FUNC_VOID
+static void
+jstr_l_delete_starts_len(jstr_l_ty *R l,
+			 const char *R s,
+			 const size_t slen)
+JSTR_NOEXCEPT
+{
+	pjstr_l_delete(l, jstr_l_starts_len(l, s, slen));
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_l_delete_ends_len(jstr_l_ty *R l,
+		       const char *R s,
+		       const size_t slen)
+JSTR_NOEXCEPT
+{
+	pjstr_l_delete(l, jstr_l_ends_len(l, s, slen));
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_l_delete_case_len(jstr_l_ty *R l,
+		       const char *R s,
+		       const size_t slen)
+JSTR_NOEXCEPT
+{
+	pjstr_l_delete(l, jstr_l_casefind_len(l, s, slen));
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_l_delete_casestarts_len(jstr_l_ty *R l,
+			     const char *R s,
+			     const size_t slen)
+JSTR_NOEXCEPT
+{
+	pjstr_l_delete(l, jstr_l_casestarts_len(l, s, slen));
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_l_delete_caseends_len(jstr_l_ty *R l,
+			   const char *R s,
+			   const size_t slen)
+JSTR_NOEXCEPT
+{
+	pjstr_l_delete(l, jstr_l_caseends_len(l, s, slen));
+}
 
 #undef PJSTR_DELETE
 
