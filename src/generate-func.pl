@@ -67,7 +67,7 @@ sub get_file_str
 	foreach (@lines) {
 		if (/^[ \t]*#[ \t]*undef[ \t]*([_A-Z0-9]*)/) {
 			my $macro = $1;
-			if ($macro !~ /^(?:PJSTR|JSTR|pjstr|jstr)/) {
+			if ($macro !~ /^[Pp]{0,1}[Jj][Ss][Tt][Rr]/) {
 				$in_header =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1PJSTR_$macro$2/g;
 			}
 		}
@@ -109,7 +109,6 @@ sub gen_nonlen_funcs
 
 		# my $PTR    = ($decl =~ /\*.*\*/)         ? '&'       : '';
 		my $RETURN = (index($_, 'return') != -1) ? 'return ' : '';
-		$params =~ s/\)/,/;
 		$decl   =~ s/($G_NMSPC\_\w*)$G_LEN_FN_SUFFIX(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_size_ptr($FN_NAME, $params);
@@ -159,16 +158,25 @@ sub gen_struct_funcs
 		{
 			goto CONT;
 		}
-		$params =~ s/\)/,/;
-		my $HAS_SZ  = ($params =~ /$G_SIZE_VAR(?:,|\))/o) ? 1 : 0;
-		my $HAS_CAP = ($params =~ /$G_CAP_VAR(?:,|\))/o)  ? 1 : 0;
-		if ($HAS_SZ) {
-			$decl =~ s/[^(,]*$G_SIZE_VAR\)/)/;
+		my $has_sz = 0;
+		if ($params =~ /$G_SIZE_VAR(,|\))/) {
+			$has_sz = 1;
+			if ($1 eq ',') {
+				$decl =~ s/[^(,]*$G_SIZE_VAR,//o;
+			} else {
+				$decl =~ s/[^(,]*$G_SIZE_VAR\)/)/o;
+			}
 		}
-		if ($HAS_CAP) {
-			$decl =~ s/[^(,]*$G_CAP_VAR\)/)/;
+		my $has_cap = 0;
+		if ($params =~ /\W$G_CAP_VAR(,|\))/) {
+			$has_cap = 1;
+			if ($1 eq ',') {
+				$decl =~ s/[^(,]*\W$G_CAP_VAR,//;
+			} else {
+				$decl =~ s/[^(,]*\W$G_CAP_VAR\)/)/;
+			}
 		}
-		if (!$HAS_SZ && !$HAS_CAP) {
+		if (!$has_sz && !$has_cap) {
 			goto CONT;
 		}
 		my $RETURN          = (index($decl, 'void') != -1) ? '' : 'return ';
@@ -185,7 +193,7 @@ sub gen_struct_funcs
 		}
 		my $PTR = ($decl =~ /\([^,)]*\*.*\*/) ? '&' : '';
 		{
-			my $CONST = ($params =~ /\s*const/)      ? 'const ' : '';
+			my $CONST = ($params =~ /^\s*const/)      ? 'const ' : '';
 			my $lc    = (rindex($params, ',') != -1) ? ','      : ')';
 			my $tmp   = "($CONST$G_STR_STRCT *$G_MCR_RESTRICT " . "j$lc";
 			$decl =~ s/\(.+?$lc/$tmp/;
@@ -286,6 +294,7 @@ sub is_private_fn
 sub convert_params_to_array
 {
 	my ($params) = @_;
+	$params =~ s/\)/,/;
 	my @args = split(/\s/, $params);
 	my @vars;
 	foreach (@args) {

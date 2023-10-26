@@ -1,3 +1,6 @@
 #!/bin/sh
+cd ../bin || exit
+./build
+cd - || exit
 ./check-little-endian
 ./check-page-size

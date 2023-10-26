@@ -530,7 +530,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_set_p_len(char *R *R s,
+jstr_set_len(char *R *R s,
 	       size_t *R sz,
 	       size_t *R cap,
 	       const int c,
