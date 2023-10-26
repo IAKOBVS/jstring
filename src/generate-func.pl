@@ -94,16 +94,15 @@ sub gen_nonlen_funcs
 		if (   !defined($decl)
 			|| !defined($FN_NAME)
 			|| !defined($params)
-			|| $FN_NAME !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FN_SUFFIX(?:_|$)/o)
+			|| $FN_NAME !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FN_SUFFIX(?:_|$)/o
+			|| $_       !~ $G_RE_FN
+			|| is_private_fn($FN_NAME))
 		{
 			goto CONT;
 		}
 		my $base_fn_name = $FN_NAME;
 		$base_fn_name =~ s/$G_LEN_FN_SUFFIX//o;
-		if (   ($g_in_header =~ /$base_fn_name\(/)
-			|| ($_         !~ $G_RE_FN)
-			|| is_private_fn($FN_NAME))
-		{
+		if ($g_in_header =~ /$base_fn_name\(/) {
 			goto CONT;
 		}
 		$decl = add_inline($decl);
@@ -111,20 +110,13 @@ sub gen_nonlen_funcs
 		# my $PTR    = ($decl =~ /\*.*\*/)         ? '&'       : '';
 		my $RETURN = (index($_, 'return') != -1) ? 'return ' : '';
 		$params =~ s/\)/,/;
-		my @RAW_ARGS = split(/\s/, $params);
-		my @clean_args;
-		foreach (@RAW_ARGS) {
-			if (/,$/) {
-				s/,//;
-				push(@clean_args, $_);
-			}
-		}
 		$decl =~ s/($G_NMSPC\_\w*)$G_LEN_FN_SUFFIX(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_size_ptr($FN_NAME, $params);
 		$decl .= "$RETURN$FN_NAME(";
 		my $LEN = (index($params, $G_LEN_VAR) != -1) ? 1 : 0;
-		foreach (@clean_args) {
+		my @args = convert_params_to_array($params);
+		foreach (@args) {
 			if ($LEN) {
 				if (/(\w*)$G_LEN_VAR/) {
 					my $var = $1;
@@ -134,7 +126,7 @@ sub gen_nonlen_funcs
 			} else {
 				if (!$size_ptr_var && /\w*$G_SIZE_VAR/) {
 					$decl =~ s/,[ \t\n_0-9A-Za-z]*$G_SIZE_VAR//o;
-					$_ = "strlen($clean_args[0])";
+					$_ = "strlen($args[0])";
 				}
 			}
 			$decl .= "$_, ";
@@ -156,24 +148,23 @@ sub gen_struct_funcs
 	my $out_header;
 	foreach (@LINES) {
 		my ($decl, $FN_NAME, $params) = get_fn($_);
-		if (!defined($decl) || !defined($FN_NAME) || !defined($params)) {
-			goto CONT;
-		}
-		$params =~ s/\)/,/;
-		my $HAS_SZ  = ($params =~ /$G_SIZE_VAR(?:,|\))/o) ? 1 : 0;
-		my $HAS_CAP = ($params =~ /$G_CAP_VAR(?:,|\))/o)  ? 1 : 0;
-		if (   (!$HAS_SZ && !$HAS_CAP)
+		if (   !defined($decl)
+			|| !defined($FN_NAME)
+			|| !defined($params)
 			|| index($params, "...") != -1
-			|| $_         !~ $G_RE_FN
+			|| $_ !~ $G_RE_FN
 			|| is_private_fn($FN_NAME)
 			|| index($g_in_header, "$FN_NAME\_j") != -1)
 		{
 			goto CONT;
 		}
-		my $RETURN = (index($decl, 'void') != -1) ? '' : 'return ';
-		if ($RETURN) {
-			$decl =~ s/$G_MCR_RETURNS_NONNULL//;
+		$params =~ s/\)/,/;
+		my $HAS_SZ  = ($params =~ /$G_SIZE_VAR(?:,|\))/o) ? 1 : 0;
+		my $HAS_CAP = ($params =~ /$G_CAP_VAR(?:,|\))/o)  ? 1 : 0;
+		if (!$HAS_SZ && !$HAS_CAP) {
+			goto CONT;
 		}
+		my $RETURN = (index($decl, 'void') != -1) ? '' : 'return ';
 		my $RETURNS_END_PTR = 0;
 		$decl =~ s/$FN_NAME/$FN_NAME\_j/;
 		$decl = add_inline($decl);
@@ -194,40 +185,31 @@ sub gen_struct_funcs
 			my $lchar = $1;
 			$decl =~ s/[^(,]*$G_CAP_VAR$lchar/)/;
 		}
-		my @RAW_ARGS        = split(/\s/, $params);
-		my $CONST           = (index($RAW_ARGS[0], 'const') != -1)     ? 'const ' : '';
-		my $CONST_STRCT_PTR = ($params =~ /[^\n]*const[^\n]*(?:,|\))/) ? 'const ' : '';
+		my $CONST = ($params =~ /\s*const/) ? 'const ' : '';
 		{
-			my $LAST = (index($params, ',') != -1) ? ',' : ')';
-			my $tmp  = "($CONST$G_STR_STRCT *$G_MCR_RESTRICT $CONST_STRCT_PTR" . "j$LAST";
-			$decl =~ s/\(.+?$LAST/$tmp/;
+			my $LCHAR = (index($params, ',') != -1) ? ',' : ')';
+			my $tmp  = "($CONST$G_STR_STRCT *$G_MCR_RESTRICT" . "j$LCHAR";
+			$decl =~ s/\(.+?$LCHAR/$tmp/;
 		}
 		$decl =~ s/,\s*\)/)/g;
 		$decl .= "\n{\n\t";
 		my $func_body = "$RETURN$FN_NAME(";
-		my @clean_args;
-
-		foreach (@RAW_ARGS) {
-			if (/,$/) {
-				s/,//;
-				push(@clean_args, $_);
-			}
-		}
 		if (using_str_ptr($params)) {
 			$func_body .= $PTR;
 		}
 		$func_body .= "$G_STRCT_VAR->$G_STRCT_DATA, ";
-		for (my $i = 1 ; $i <= $#clean_args ; ++$i) {
-			if (index($clean_args[$i], $G_SIZE_VAR) != -1) {
+		my @args  = convert_params_to_array($params);
+		for (my $i = 1 ; $i <= $#args ; ++$i) {
+			if (index($args[$i], $G_SIZE_VAR) != -1) {
 				if (index($FN_NAME, $G_NMSPC) != -1 && using_size_ptr($params)) {
-					$clean_args[$i] = "&$G_STRCT_VAR->$G_STRCT_SIZE";
+					$args[$i] = "&$G_STRCT_VAR->$G_STRCT_SIZE";
 				} else {
-					$clean_args[$i] = $PTR . "$G_STRCT_VAR->$G_STRCT_SIZE";
+					$args[$i] = $PTR . "$G_STRCT_VAR->$G_STRCT_SIZE";
 				}
-			} elsif ($clean_args[$i] eq $G_CAP_VAR) {
-				$clean_args[$i] = $PTR . "$G_STRCT_VAR->$G_STRCT_CAP";
+			} elsif ($args[$i] eq $G_CAP_VAR) {
+				$args[$i] = $PTR . "$G_STRCT_VAR->$G_STRCT_CAP";
 			}
-			$func_body .= "$clean_args[$i], ";
+			$func_body .= "$args[$i], ";
 		}
 		$func_body =~ s/, $//;
 		$func_body .= ")";
@@ -300,4 +282,17 @@ sub is_private_fn
 {
 	my ($fn_name) = @_;
 	return $fn_name =~ /^p/ || $fn_name =~ /^P/;
+}
+
+sub convert_params_to_array
+{
+	my ($params) = @_;
+	my @args = split(/\s/, $params);
+	my @vars;
+	foreach (@args) {
+		if (index($_, ',') != -1) {
+			push(@vars, $_);
+		}
+	}
+	return @vars;
 }
