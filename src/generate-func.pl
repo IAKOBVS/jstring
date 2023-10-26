@@ -53,8 +53,7 @@ sub get_file_str
 	my ($FILENAME) = @_;
 	my $in_header = '';
 	my @lines;
-	open(my $FH, '<', $FILENAME)
-	  or die("Can't open $FILENAME\n");
+	open(my $FH, '<', $FILENAME) or die("Can't open $FILENAME\n");
 	while (<$FH>) {
 		$in_header .= $_;
 		push(@lines, $_);
@@ -102,14 +101,12 @@ sub gen_nonlen_funcs
 		}
 		my $base_fn_name = $FN_NAME;
 		$base_fn_name =~ s/$G_LEN_FN_SUFFIX//o;
-		if ($g_in_header =~ /$base_fn_name\(/) {
-			goto CONT;
-		}
+		if ($g_in_header =~ /$base_fn_name\(/) { goto CONT; }
 		$decl = add_inline($decl);
 
 		# my $PTR    = ($decl =~ /\*.*\*/)         ? '&'       : '';
 		my $RETURN = (index($_, 'return') != -1) ? 'return ' : '';
-		$decl   =~ s/($G_NMSPC\_\w*)$G_LEN_FN_SUFFIX(\w*\()/$1$2/o;
+		$decl =~ s/($G_NMSPC\_\w*)$G_LEN_FN_SUFFIX(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_size_ptr($FN_NAME, $params);
 		$decl .= "$RETURN$FN_NAME(";
@@ -176,9 +173,7 @@ sub gen_struct_funcs
 				$decl =~ s/[^(,]*\W$G_CAP_VAR\)/)/;
 			}
 		}
-		if (!$has_sz && !$has_cap) {
-			goto CONT;
-		}
+		if (!$has_sz && !$has_cap) { goto CONT; }
 		my $RETURN          = (index($decl, 'void') != -1) ? '' : 'return ';
 		my $RETURNS_END_PTR = 0;
 		$decl =~ s/$FN_NAME/$FN_NAME\_j/;
@@ -193,7 +188,7 @@ sub gen_struct_funcs
 		}
 		my $PTR = ($decl =~ /\([^,)]*\*.*\*/) ? '&' : '';
 		{
-			my $CONST = ($params =~ /^\s*const/)      ? 'const ' : '';
+			my $CONST = ($params =~ /^\s*const/)     ? 'const ' : '';
 			my $lc    = (rindex($params, ',') != -1) ? ','      : ')';
 			my $tmp   = "($CONST$G_STR_STRCT *$G_MCR_RESTRICT " . "j$lc";
 			$decl =~ s/\(.+?$lc/$tmp/;
@@ -201,9 +196,7 @@ sub gen_struct_funcs
 		$decl =~ s/,\s*\)/)/g;
 		$decl .= "\n{\n\t";
 		my $func_body = "$RETURN$FN_NAME(";
-		if (using_str_ptr($params)) {
-			$func_body .= $PTR;
-		}
+		if (using_str_ptr($params)) { $func_body .= $PTR; }
 		$func_body .= "$G_STRCT_VAR->$G_STRCT_DATA, ";
 		my @args = convert_params_to_array($params);
 		for (my $i = 1 ; $i <= $#args ; ++$i) {
