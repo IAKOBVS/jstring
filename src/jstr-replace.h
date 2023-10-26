@@ -45,7 +45,8 @@ pjstr_replaceall_in_place(unsigned char **dst,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	if (jstr_likely(findlen != rplclen && *dst != *oldp))
+	if (jstr_likely(findlen != rplclen)
+	    && jstr_likely(*dst != *oldp))
 		memmove(*dst, *oldp, *p - *oldp);
 	*dst += *p - *oldp;
 	*oldp += (*p - *oldp) + findlen;
@@ -351,7 +352,9 @@ JSTR_NOEXCEPT
 	const unsigned char *p = dst;
 	for (; *p && (*(p += strcspn((char *)p, reject))); pjstr_removeall_in_place(&dst, &oldp, &p, strspn((char *)p, reject)))
 		;
-	return jstr_stpmove_len_may_eq(dst, oldp, p - oldp);
+	if (jstr_likely(p != oldp))
+		return jstr_stpmove_len(dst, oldp, p - oldp);
+	return (char *)p;
 }
 
 /*
@@ -488,7 +491,9 @@ JSTR_NOEXCEPT
 	const unsigned char *p = dst;
 	while (*(p += strcspn((char *)p, rjct)))
 		pjstr_removeall_in_place(&dst, &oldp, &p, 1);
-	return jstr_stpmove_len_may_eq(dst, oldp, p - oldp);
+	if (jstr_likely(p != oldp))
+		return jstr_stpmove_len(dst, oldp, p - oldp);
+	return (char *)p;
 }
 
 /*
@@ -545,7 +550,7 @@ jstr_replacechr_len(char *R s,
 JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, find, sz);
-	if (jstr_likely(s != NULL))
+	if (s != NULL)
 		*s = rplc;
 }
 
@@ -561,7 +566,7 @@ jstr_replacechr(char *R s,
 JSTR_NOEXCEPT
 {
 	s = strchr(s, find);
-	if (jstr_likely(s != NULL))
+	if (s != NULL)
 		*s = rplc;
 }
 
@@ -591,7 +596,7 @@ jstr_replaceallchr(char *R s,
 		   const int rplc)
 JSTR_NOEXCEPT
 {
-	while ((s = (strchr(s, find))))
+	while ((s = strchr(s, find)))
 		*s++ = rplc;
 }
 
@@ -643,18 +648,17 @@ JSTR_NOEXCEPT
 		*sz = jstr_remove_len_p(*s + start_idx, find, *sz - start_idx, findlen) - *s;
 		return 1;
 	}
-	if (rplclen == 1) {
-		if (findlen == 1) {
+	if (findlen == 1) {
+		if (rplclen == 1) {
 			jstr_replacechr_len(*s + start_idx, *find, *rplc, *sz - start_idx);
 			return 1;
 		}
-	}
-	if (jstr_unlikely(findlen == 0))
+	} else if (jstr_unlikely(findlen == 0))
 		return 1;
 	char *p = jstr_strstr_len(*s + start_idx, *sz - start_idx, find, findlen);
-	if (jstr_unlikely(p == NULL))
-		return 1;
-	return jstr_replaceat_len(s, sz, cap, p - *s, rplc, rplclen, findlen) != NULL;
+	if (p != NULL)
+		return jstr_replaceat_len(s, sz, cap, p - *s, rplc, rplclen, findlen) != NULL;
+	return 1;
 }
 
 /*
@@ -1056,7 +1060,9 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	const char *const start = jstr_skip_space(s);
-	return jstr_stpmove_len_may_eq(s, start, (s + sz) - start);
+	if (jstr_likely(s != start))
+		return jstr_stpmove_len(s, start, (s + sz) - start);
+	return s + sz;
 }
 
 /*
@@ -1073,7 +1079,25 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	const char *const start = jstr_skip_space(s);
-	return jstr_stpmove_len_may_eq(s, start, strlen(start));
+	if (jstr_likely(s != start))
+		return jstr_stpmove_len(s, start, strlen(start));
+	return s + strlen(start);
+}
+
+/*
+  Trim leading jstr_isspace() chars in S.
+*/
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_trimstart(char *R s)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return;
+	const char *const start = jstr_skip_space(s);
+	if (jstr_likely(s != start))
+		jstr_strmove_len(s, start, strlen(start));
 }
 
 /*
@@ -1091,7 +1115,9 @@ JSTR_NOEXCEPT
 		return s;
 	const char *const end = jstr_skip_space_rev(s, s + sz - 1) + 1;
 	const char *const start = jstr_skip_space(s);
-	return jstr_stpmove_len_may_eq(s, start, end - start);
+	if (jstr_likely(start != s))
+		return jstr_stpmove_len(s, start, end - start);
+	return s + sz;
 }
 
 /*

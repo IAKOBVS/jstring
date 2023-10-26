@@ -18,6 +18,71 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_cpy_p(char *R dst,
+	   const jstr_ty *R src)
+JSTR_NOEXCEPT
+{
+	return jstr_stpcpy_len(dst, src->data, src->size);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_dup(jstr_ty *R dst,
+	 const jstr_ty *R src)
+JSTR_NOEXCEPT
+{
+	dst->data = (char *)malloc(src->capacity);
+	PJSTR_MALLOC_ERR(dst->data, return 0);
+	dst->size = jstr_cpy_p(dst->data, dst) - dst->data;
+	dst->size = src->size;
+	dst->capacity = src->capacity;
+	return 1;
+}
+
+/* Return ptr to '\0' in DST. */
+JSTR_FUNC
+static char *
+jstr_repeat_p_len_unsafe(char *R s,
+			 const size_t sz,
+			 size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(n < 2))
+		return s + sz;
+	--n;
+	if (jstr_likely(sz > 1))
+		while (n--)
+			s = (char *)jstr_mempmove(s + sz, s, sz);
+	else if (sz == 1)
+		s = (char *)memset(s, *s, n) + n;
+	*s = '\0';
+	return s;
+}
+
+/*
+   Return value:
+   0 on error;
+   1 otherwise.
+*/
+JSTR_FUNC
+static int
+jstr_repeat_len(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
+		const size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(n < 2))
+		return 1;
+	JSTR_RESERVE(s, sz, cap, *sz * n, return 0);
+	*sz = jstr_repeat_p_len_unsafe(*s, *sz, n) - *s;
+	return 1;
+}
+
 /* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
@@ -25,9 +90,10 @@ jstr_repeatcpy_p_len(char *R dst,
 		     const char *R src,
 		     const size_t srcsz,
 		     size_t n)
+JSTR_NOEXCEPT
 {
 	if (jstr_likely(srcsz > 1))
-		for (; n--;)
+		while (n--)
 			dst = (char *)jstr_mempcpy(dst, src, srcsz);
 	else if (srcsz == 1)
 		dst = (char *)memset(dst, *src, n) + n;
@@ -41,6 +107,7 @@ static char *
 jstr_repeatcpy_p(char *R dst,
 		 const char *R src,
 		 const size_t n)
+JSTR_NOEXCEPT
 {
 	return jstr_repeatcpy_p_len(dst, src, strlen(src), n);
 }
@@ -996,7 +1063,7 @@ JSTR_NOEXCEPT
 /*
    Return value:
    ptr to first non-C in S;
-   NULL if C is not found.
+   NULL if non-C is not found.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1493,9 +1560,9 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_fmt_thousep_len_p(char *R nptr,
-		       const int separator,
-		       size_t sz)
+jstr_thousep_len_p(char *R nptr,
+		   const int separator,
+		   size_t sz)
 JSTR_NOEXCEPT
 {
 	char *end = nptr + sz;
@@ -1533,11 +1600,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_fmt_thousep_p(char *R nptr,
-		   const int separator)
+jstr_thousep_p(char *R nptr,
+	       const int separator)
 JSTR_NOEXCEPT
 {
-	return jstr_fmt_thousep_len_p(nptr, separator, strlen(nptr));
+	return jstr_thousep_len_p(nptr, separator, strlen(nptr));
 }
 
 /*
@@ -1547,10 +1614,10 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_fmt_thousepcpy_len_p(char *R dst,
-			  const char *R src,
-			  const int separator,
-			  size_t sz)
+jstr_thousepcpy_len_p(char *R dst,
+		      const char *R src,
+		      const int separator,
+		      size_t sz)
 JSTR_NOEXCEPT
 {
 	if (*src == '-') {
@@ -1590,12 +1657,12 @@ ret:
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_fmt_thousepcpy_p(char *R dst,
-		      const char *R src,
-		      const int separator)
+jstr_thousepcpy_p(char *R dst,
+		  const char *R src,
+		  const int separator)
 JSTR_NOEXCEPT
 {
-	return jstr_fmt_thousepcpy_len_p(dst, src, separator, strlen(src));
+	return jstr_thousepcpy_len_p(dst, src, separator, strlen(src));
 }
 
 PJSTR_END_DECLS

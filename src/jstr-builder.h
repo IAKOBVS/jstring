@@ -30,9 +30,13 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
+#define JSTR_INIT {0}
+
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); \
 				  ptr < jstr_ty_end_;                                                       \
 				  ++ptr)
+
+#define jstr_foreach_idx(j, i) for (size_t i = 0, const jstr_j_ty_end_ = ((j)->size); i < jstr_j_ty_end_; ++i)
 
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
@@ -370,28 +374,6 @@ JSTR_NOEXCEPT
 	fwrite(j->data, 1, j->size, stdout);
 }
 
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_init(char *R *R s,
-	  size_t *R sz,
-	  size_t *R cap)
-JSTR_NOEXCEPT
-{
-	*s = NULL;
-	*sz = 0;
-	*cap = 0;
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_init_j(jstr_ty *R j)
-JSTR_NOEXCEPT
-{
-	jstr_init(&j->data, &j->size, &j->capacity);
-}
-
 JSTR_FUNC
 JSTR_INLINE
 static int
@@ -481,7 +463,7 @@ jstr_append_len_p_unsafe(char *R s,
 			 const size_t srclen)
 JSTR_NOEXCEPT
 {
-	return jstr_strcpy_len(s + sz, src, srclen) + srclen;
+	return jstr_stpcpy_len(s + sz, src, srclen);
 }
 
 JSTR_FUNC_VOID

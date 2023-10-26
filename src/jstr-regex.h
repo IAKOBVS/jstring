@@ -198,7 +198,6 @@ JSTR_NOEXCEPT
 }
 
 #ifdef JSTR_REG_EF_STARTEND
-
 JSTR_FUNC_PURE
 JSTR_INLINE
 static jstr_reg_errcode_ty
@@ -214,10 +213,6 @@ JSTR_NOEXCEPT
 	pmatch->rm_eo = sz;
 	return (jstr_reg_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags | JSTR_REG_EF_STARTEND);
 }
-
-#endif /* JSTR_REG_EF_STARTEND */
-
-#ifdef JSTR_REG_EF_STARTEND
 #	define PJSTR_REG_EXEC(preg, s, sz, nmatch, pmatch, eflags) \
 		jstr_reg_exec_len(preg, s, sz, nmatch, pmatch, eflags)
 #else
@@ -374,14 +369,6 @@ JSTR_NOEXCEPT
 
 #endif /* JSTR_REG_EF_STARTEND */
 
-#ifdef __clang__
-#	pragma clang diagnostic ignored "-Wunknown-warning-option"
-#	pragma clang diagnostic push
-#elif defined __GNUC__
-#	pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#	pragma GCC diagnostic push
-#endif
-
 JSTR_FUNC
 JSTR_INLINE
 static jstr_reg_errcode_ty
@@ -405,12 +392,6 @@ JSTR_NOEXCEPT
 	*sz -= (rm.rm_eo - rm.rm_so);
 	return ret;
 }
-
-#ifdef __clang__
-#	pragma clang diagnostic pop
-#elif defined __GNUC__
-#	pragma GCC diagnostic pop
-#endif
 
 JSTR_FUNC
 static jstr_reg_errcode_ty
@@ -968,11 +949,6 @@ err:
 	return JSTR_REG_RET_ESPACE;
 }
 
-#ifdef __GNUC__
-#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#	pragma GCC diagnostic push
-#endif
-
 JSTR_FUNC
 static jstr_reg_errcode_ty
 jstr_reg_replace_bref_len(char *R *R s,
@@ -1003,10 +979,6 @@ JSTR_NOEXCEPT
 {
 	return pjstr_reg_replace_bref_len(s, sz, cap, rplc, rplclen, preg, eflags, nmatch, start_idx);
 }
-
-#ifdef __GNUC__
-#	pragma GCC diagnostic pop
-#endif
 
 JSTR_INLINE
 JSTR_FUNC
