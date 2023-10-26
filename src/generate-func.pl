@@ -63,7 +63,7 @@ sub get_file_str
 	my @def;
 	my @undef;
 
-	# prefix temporary macros with PJSTR_ to avoid naming conflicts
+	# prefix temporary macros with $G_NMSPC_UPP to avoid naming conflicts
 	foreach (@lines) {
 		if (/^[ \t]*#[ \t]*undef[ \t]*([_A-Z0-9]*)/) {
 			my $macro = $1;
@@ -110,12 +110,13 @@ sub gen_nonlen_funcs
 		# my $PTR    = ($decl =~ /\*.*\*/)         ? '&'       : '';
 		my $RETURN = (index($_, 'return') != -1) ? 'return ' : '';
 		$params =~ s/\)/,/;
-		$decl =~ s/($G_NMSPC\_\w*)$G_LEN_FN_SUFFIX(\w*\()/$1$2/o;
+		$decl   =~ s/($G_NMSPC\_\w*)$G_LEN_FN_SUFFIX(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
 		my $size_ptr_var = get_size_ptr($FN_NAME, $params);
 		$decl .= "$RETURN$FN_NAME(";
-		my $LEN = (index($params, $G_LEN_VAR) != -1) ? 1 : 0;
+		my $LEN  = (index($params, $G_LEN_VAR) != -1) ? 1 : 0;
 		my @args = convert_params_to_array($params);
+
 		foreach (@args) {
 			if ($LEN) {
 				if (/(\w*)$G_LEN_VAR/) {
@@ -161,10 +162,16 @@ sub gen_struct_funcs
 		$params =~ s/\)/,/;
 		my $HAS_SZ  = ($params =~ /$G_SIZE_VAR(?:,|\))/o) ? 1 : 0;
 		my $HAS_CAP = ($params =~ /$G_CAP_VAR(?:,|\))/o)  ? 1 : 0;
+		if ($HAS_SZ) {
+			$decl =~ s/[^(,]*$G_SIZE_VAR\)/)/;
+		}
+		if ($HAS_CAP) {
+			$decl =~ s/[^(,]*$G_CAP_VAR\)/)/;
+		}
 		if (!$HAS_SZ && !$HAS_CAP) {
 			goto CONT;
 		}
-		my $RETURN = (index($decl, 'void') != -1) ? '' : 'return ';
+		my $RETURN          = (index($decl, 'void') != -1) ? '' : 'return ';
 		my $RETURNS_END_PTR = 0;
 		$decl =~ s/$FN_NAME/$FN_NAME\_j/;
 		$decl = add_inline($decl);
@@ -177,19 +184,11 @@ sub gen_struct_funcs
 			$RETURNS_END_PTR = 1;
 		}
 		my $PTR = ($decl =~ /\([^,)]*\*.*\*/) ? '&' : '';
-		if ($HAS_SZ && $decl =~ /\w*$G_SIZE_VAR(,|\))/o) {
-			my $lchar = $1;
-			$decl =~ s/[^(,]*$G_SIZE_VAR$lchar/)/;
-		}
-		if ($HAS_CAP && $decl =~ /\w*\s*$G_CAP_VAR(,|\))/o) {
-			my $lchar = $1;
-			$decl =~ s/[^(,]*$G_CAP_VAR$lchar/)/;
-		}
-		my $CONST = ($params =~ /\s*const/) ? 'const ' : '';
 		{
-			my $LCHAR = (index($params, ',') != -1) ? ',' : ')';
-			my $tmp  = "($CONST$G_STR_STRCT *$G_MCR_RESTRICT" . "j$LCHAR";
-			$decl =~ s/\(.+?$LCHAR/$tmp/;
+			my $CONST = ($params =~ /\s*const/)      ? 'const ' : '';
+			my $lc    = (rindex($params, ',') != -1) ? ','      : ')';
+			my $tmp   = "($CONST$G_STR_STRCT *$G_MCR_RESTRICT" . "j$lc";
+			$decl =~ s/\(.+?$lc/$tmp/;
 		}
 		$decl =~ s/,\s*\)/)/g;
 		$decl .= "\n{\n\t";
@@ -198,7 +197,7 @@ sub gen_struct_funcs
 			$func_body .= $PTR;
 		}
 		$func_body .= "$G_STRCT_VAR->$G_STRCT_DATA, ";
-		my @args  = convert_params_to_array($params);
+		my @args = convert_params_to_array($params);
 		for (my $i = 1 ; $i <= $#args ; ++$i) {
 			if (index($args[$i], $G_SIZE_VAR) != -1) {
 				if (index($FN_NAME, $G_NMSPC) != -1 && using_size_ptr($params)) {
@@ -291,6 +290,7 @@ sub convert_params_to_array
 	my @vars;
 	foreach (@args) {
 		if (index($_, ',') != -1) {
+			$_ =~ s/,//;
 			push(@vars, $_);
 		}
 	}

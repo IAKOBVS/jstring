@@ -21,14 +21,14 @@ PJSTR_END_DECLS
 #define P_JARR_NULLIFY_MEMBERS(j) ((j)->size = 0, (j)->cap = 0)
 #define P_JARR_NULLIFY(j) ((j)->data == NULL, P_JARR_NULLIFY_MEMBERS(j))
 
-#define jarr_init(j) ((j)->data) = NULL, ((j)->size) = 0, ((j)->capacity = 0)
+#define JARR_INIT {0}
 #define jarr_ty(T, name)                                                                                                                                \
 	typedef struct pjarr_##name##_ty {                                                                                                              \
 		T *P_JARR_DATA_NAME;                                                                                                                    \
 		size_t P_JARR_SIZE_NAME;                                                                                                                \
 		size_t P_JARR_CAPACITY_NAME;                                                                                                            \
 	} jarr_##name##_ty;                                                                                                                             \
-	jarr_##name##_ty name;
+	jarr_##name##_ty name
 #define jarr_free(j)                                                                                                                                    \
 	do {                                                                                                                                            \
 		free(P_JARR_DATA(j));                                                                                                                   \
