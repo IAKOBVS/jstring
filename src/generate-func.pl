@@ -20,6 +20,8 @@ my $G_CAP_VAR  = 'cap';
 my $G_SIZE_VAR = 'sz';
 my $G_LEN_VAR  = 'len';
 
+my $G_RETURNS_PTR_SUFFIX = 'p';
+
 my $G_MCR_INLINE          = $G_NMSPC_UPP . '_INLINE';
 my $G_MCR_MAYBE_UNUSED    = $G_NMSPC_UPP . '_MAYBE_UNUSED';
 my $G_MCR_RESTRICT        = $G_NMSPC_UPP . '_RESTRICT';
@@ -88,19 +90,19 @@ sub gen_nonlen_funcs
 	my @OLD_LINES = split(/\n\n/, $FILE_STR);
 	my @new_lines;
 	foreach (@OLD_LINES) {
-		my ($decl, $FUNC_NAME, $params) = get_fn($_);
+		my ($decl, $FN_NAME, $params) = get_fn($_);
 		if (   !defined($decl)
-			|| !defined($FUNC_NAME)
+			|| !defined($FN_NAME)
 			|| !defined($params)
-			|| $FUNC_NAME !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FN_SUFFIX(?:_|$)/o)
+			|| $FN_NAME !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FN_SUFFIX(?:_|$)/o)
 		{
 			goto CONT;
 		}
-		my $base_fn_name = $FUNC_NAME;
+		my $base_fn_name = $FN_NAME;
 		$base_fn_name =~ s/$G_LEN_FN_SUFFIX//o;
 		if (   ($g_in_header =~ /$base_fn_name\(/)
 			|| ($_         !~ $G_RE_FN)
-			|| ($FUNC_NAME =~ /^p/))
+			|| is_private_fn($FN_NAME))
 		{
 			goto CONT;
 		}
@@ -119,8 +121,8 @@ sub gen_nonlen_funcs
 		}
 		$decl =~ s/($G_NMSPC\_\w*)$G_LEN_FN_SUFFIX(\w*\()/$1$2/o;
 		$decl .= "\n{\n\t";
-		my $size_ptr_var = get_size_ptr($FUNC_NAME, $params);
-		$decl .= "$RETURN$FUNC_NAME(";
+		my $size_ptr_var = get_size_ptr($FN_NAME, $params);
+		$decl .= "$RETURN$FN_NAME(";
 		my $LEN = (index($params, $G_LEN_VAR) != -1) ? 1 : 0;
 		foreach (@clean_args) {
 			if ($LEN) {
@@ -153,8 +155,8 @@ sub gen_struct_funcs
 	my (@LINES) = @_;
 	my $out_header;
 	foreach (@LINES) {
-		my ($decl, $FUNC_NAME, $params) = get_fn($_);
-		if (!defined($decl) || !defined($FUNC_NAME) || !defined($params)) {
+		my ($decl, $FN_NAME, $params) = get_fn($_);
+		if (!defined($decl) || !defined($FN_NAME) || !defined($params)) {
 			goto CONT;
 		}
 		$params =~ s/\)/,/;
@@ -163,8 +165,8 @@ sub gen_struct_funcs
 		if (   (!$HAS_SZ && !$HAS_CAP)
 			|| index($params, "...") != -1
 			|| $_         !~ $G_RE_FN
-			|| $FUNC_NAME =~ /^p/
-			|| index($g_in_header, "$FUNC_NAME\_j") != -1)
+			|| is_private_fn($FN_NAME)
+			|| index($g_in_header, "$FN_NAME\_j") != -1)
 		{
 			goto CONT;
 		}
@@ -173,9 +175,9 @@ sub gen_struct_funcs
 			$decl =~ s/$G_MCR_RETURNS_NONNULL//;
 		}
 		my $RETURNS_END_PTR = 0;
-		$decl =~ s/$FUNC_NAME/$FUNC_NAME\_j/;
+		$decl =~ s/$FN_NAME/$FN_NAME\_j/;
 		$decl = add_inline($decl);
-		if ($FUNC_NAME =~ /_p(?:_|$)/) {
+		if ($FN_NAME =~ /_p(?:_|$)/) {
 			$decl =~ s/.*Return value:(?:.|\n)*?(\*\/|\/\/)/$1/;
 			$decl =~ s/_p//;
 			$decl =~ s/static\s*(?:char|void)\s\*/static void /;
@@ -202,7 +204,7 @@ sub gen_struct_funcs
 		}
 		$decl =~ s/,\s*\)/)/g;
 		$decl .= "\n{\n\t";
-		my $func_body = "$RETURN$FUNC_NAME(";
+		my $func_body = "$RETURN$FN_NAME(";
 		my @clean_args;
 
 		foreach (@RAW_ARGS) {
@@ -217,7 +219,7 @@ sub gen_struct_funcs
 		$func_body .= "$G_STRCT_VAR->$G_STRCT_DATA, ";
 		for (my $i = 1 ; $i <= $#clean_args ; ++$i) {
 			if (index($clean_args[$i], $G_SIZE_VAR) != -1) {
-				if (index($FUNC_NAME, $G_NMSPC) != -1 && using_size_ptr($params)) {
+				if (index($FN_NAME, $G_NMSPC) != -1 && using_size_ptr($params)) {
 					$clean_args[$i] = "&$G_STRCT_VAR->$G_STRCT_SIZE";
 				} else {
 					$clean_args[$i] = $PTR . "$G_STRCT_VAR->$G_STRCT_SIZE";
@@ -292,4 +294,10 @@ sub get_fn
 		$params  = $3;
 	}
 	return ($decl, $fn_name, $params);
+}
+
+sub is_private_fn
+{
+	my ($fn_name) = @_;
+	return $fn_name =~ /^p/ || $fn_name =~ /^P/;
 }
