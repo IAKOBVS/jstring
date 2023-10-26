@@ -187,7 +187,7 @@ sub gen_struct_funcs
 		{
 			my $CONST = ($params =~ /\s*const/)      ? 'const ' : '';
 			my $lc    = (rindex($params, ',') != -1) ? ','      : ')';
-			my $tmp   = "($CONST$G_STR_STRCT *$G_MCR_RESTRICT" . "j$lc";
+			my $tmp   = "($CONST$G_STR_STRCT *$G_MCR_RESTRICT " . "j$lc";
 			$decl =~ s/\(.+?$lc/$tmp/;
 		}
 		$decl =~ s/,\s*\)/)/g;
