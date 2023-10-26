@@ -26,8 +26,7 @@ my $G_MCR_RESTRICT        = $G_NMSPC_UPP . '_RESTRICT';
 my $G_MCR_WARN_UNUSED     = $G_NMSPC_UPP . '_WARN_UNUSED';
 my $G_MCR_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
 
-my $G_RE_FN     = qr/[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC)\_.*?)\(((?:.|\n)*?\)[^{]*))/;
-my $G_RE_DEFINE = qr/\([^)]*\)[^{]*{[^}]*}/;
+my $G_RE_FN = qr/\([^)]*\)[^{]*{[^}]*}/;
 
 my $G_LEN_FN_SUFFIX = '_len';
 
@@ -89,21 +88,18 @@ sub gen_nonlen_funcs
 	my @OLD_LINES = split(/\n\n/, $FILE_STR);
 	my @new_lines;
 	foreach (@OLD_LINES) {
-		if ($_ !~ $G_RE_FN) {
-			goto CONT;
-		}
-		my $decl      = $1;
-		my $FUNC_NAME = $2;
-		my $params    = $3;
-		if (   (!$decl && !$FUNC_NAME && !$params)
-			|| ($FUNC_NAME !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FN_SUFFIX(?:_|$)/o))
+		my ($decl, $FUNC_NAME, $params) = get_fn($_);
+		if (   !defined($decl)
+			|| !defined($FUNC_NAME)
+			|| !defined($params)
+			|| $FUNC_NAME !~ /$G_NMSPC[_0-9_A-Za-z]*$G_LEN_FN_SUFFIX(?:_|$)/o)
 		{
 			goto CONT;
 		}
-		my $tmp = $FUNC_NAME;
-		$tmp =~ s/$G_LEN_FN_SUFFIX//o;
-		if (   ($g_in_header =~ /$tmp\(/)
-			|| ($_         !~ $G_RE_DEFINE)
+		my $base_fn_name = $FUNC_NAME;
+		$base_fn_name =~ s/$G_LEN_FN_SUFFIX//o;
+		if (   ($g_in_header =~ /$base_fn_name\(/)
+			|| ($_         !~ $G_RE_FN)
 			|| ($FUNC_NAME =~ /^p/))
 		{
 			goto CONT;
@@ -157,23 +153,18 @@ sub gen_struct_funcs
 	my (@LINES) = @_;
 	my $out_header;
 	foreach (@LINES) {
-		if ($_ !~ $G_RE_FN) {
-			goto CONT;
-		}
-		my $decl      = $1;
-		my $FUNC_NAME = $2;
-		my $params    = $3;
-		if (!$decl && !$FUNC_NAME && !$params) {
+		my ($decl, $FUNC_NAME, $params) = get_fn($_);
+		if (!defined($decl) || !defined($FUNC_NAME) || !defined($params)) {
 			goto CONT;
 		}
 		$params =~ s/\)/,/;
 		my $HAS_SZ  = ($params =~ /$G_SIZE_VAR(?:,|\))/o) ? 1 : 0;
 		my $HAS_CAP = ($params =~ /$G_CAP_VAR(?:,|\))/o)  ? 1 : 0;
 		if (   (!$HAS_SZ && !$HAS_CAP)
-			|| (index($params, "...") != -1)
-			|| ($_         !~ $G_RE_DEFINE)
-			|| ($FUNC_NAME =~ /^p/)
-			|| (index($g_in_header, "$FUNC_NAME\_j") != -1))
+			|| index($params, "...") != -1
+			|| $_         !~ $G_RE_FN
+			|| $FUNC_NAME =~ /^p/
+			|| index($g_in_header, "$FUNC_NAME\_j") != -1)
 		{
 			goto CONT;
 		}
@@ -194,18 +185,12 @@ sub gen_struct_funcs
 		}
 		my $PTR = ($decl =~ /\([^,)]*\*.*\*/) ? '&' : '';
 		if ($HAS_SZ && $decl =~ /\w*$G_SIZE_VAR(,|\))/o) {
-			if ($1 eq ')') {
-				$decl =~ s/[^(,]*$G_SIZE_VAR(?:,|\))/)/o;
-			} elsif ($1 eq ',') {
-				$decl =~ s/[^(,]*$G_SIZE_VAR,//o;
-			}
+			my $lchar = $1;
+			$decl =~ s/[^(,]*$G_SIZE_VAR$lchar/)/;
 		}
 		if ($HAS_CAP && $decl =~ /\w*\s*$G_CAP_VAR(,|\))/o) {
-			if ($1 eq ')') {
-				$decl =~ s/[^(,]*\s*$G_CAP_VAR(?:,|\))/)/o;
-			} elsif ($1 eq ',') {
-				$decl =~ s/[^(,]*\s*$G_CAP_VAR,//o;
-			}
+			my $lchar = $1;
+			$decl =~ s/[^(,]*$G_CAP_VAR$lchar/)/;
 		}
 		my @RAW_ARGS        = split(/\s/, $params);
 		my $CONST           = (index($RAW_ARGS[0], 'const') != -1)     ? 'const ' : '';
@@ -293,4 +278,18 @@ sub add_inline
 		$decl =~ s/static/$G_MCR_INLINE\n$G_MCR_MAYBE_UNUSED\nstatic/o;
 	}
 	return $decl;
+}
+
+sub get_fn
+{
+	my ($string) = @_;
+	my $decl     = undef;
+	my $fn_name  = undef;
+	my $params   = undef;
+	if ($string =~ /[ \t]*((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC)\_.*?)\(((?:.|\n)*?\)[^{]*))/o) {
+		$decl    = $1;
+		$fn_name = $2;
+		$params  = $3;
+	}
+	return ($decl, $fn_name, $params);
 }
