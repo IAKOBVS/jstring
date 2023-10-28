@@ -210,10 +210,10 @@ $file_str = file_namespace_macros($file_str, "PJSTR_", ("PJSTR", "pjstr", "JSTR"
 my @file_blocks = file_to_blocks($file_str);
 my $out_str     = '';
 foreach (@file_blocks) {
+	$out_str .= "$_\n";
 	my @arg;
 	my ($attr, $rettype, $name, $body) = fn_get(\@arg, $_);
 	if (defined($attr)) {
-		$out_str .= "$_\n";
 		my $base_name = $name;
 		$base_name =~ s/_len(_|$)/$1/;
 		if ($name =~ /^jstr_/ && $name != $base_name && index($file_str, $base_name . '(') == -1) {
