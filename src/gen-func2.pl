@@ -245,4 +245,3 @@ foreach (@file_blocks) {
 		}
 	}
 }
-print $out_str;
