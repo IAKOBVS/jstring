@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+# @returns {void}
 sub usage {
 	if ($#ARGV == -1) {
 		print('Usage: ./' . $0 . ' <file>');
@@ -10,7 +11,7 @@ sub usage {
 }
 
 # @param {$} fname
-# @return {$} file_str
+# @returns {$} file_str
 sub file_get_str {
 	my ($fname) = @_;
 	my $file_str;
@@ -73,7 +74,6 @@ sub arg_to_string {
 
 # @param {$} arg
 # @param {$} add
-# @returns {@}
 sub arg_push {
 	my ($argRef, $add) = @_;
 	push(@$argRef, $add);
@@ -95,7 +95,6 @@ sub arg_index {
 # @param {$} arg
 # @param {$} insert
 # @param {$} index
-# @returns {@}
 sub arg_insert {
 	my ($arg_ref, $insert, $i) = @_;
 	for (my $j = $#$arg_ref - 1 ; $i <= $j ; --$j) {
@@ -108,7 +107,6 @@ sub arg_insert {
 # @param {$} arg
 # @param {$} insert
 # @param {$} after
-# @returns {@}
 sub arg_insert_after {
 	my ($arg_ref, $insert, $after) = @_;
 	my $i = arg_index($arg_ref, $after);
@@ -118,7 +116,6 @@ sub arg_insert_after {
 # @param {$} arg
 # @param {$} find
 # @param {$} replace
-# @returns {@}
 sub arg_replace {
 	my ($arg_ref, $find, $replace) = @_;
 	my $i = arg_index($arg_ref, $find);
@@ -127,7 +124,6 @@ sub arg_replace {
 
 # @param {$} arg
 # @param {$} remove
-# @returns {@}
 sub arg_remove {
 	my ($arg_ref, $remove) = @_;
 	my $i = arg_index($arg_ref, $remove);
@@ -137,7 +133,6 @@ sub arg_remove {
 # @param {$} block_str
 # @returns {$} rettype
 # @returns {$} name
-# @returns {$} arg
 # @returns {$} body
 sub fn_get {
 	my ($arg_ref, $block_str) = @_;
