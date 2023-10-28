@@ -24,15 +24,15 @@ sub file_get_str {
 
 # @param {$} file_str
 # @param {$} prefix
-# @param {$} ignore_prefix_ref
+# @param {$} ignore_prefix
 # @returns {$}
 sub file_namespace_macros {
-	my ($file_str, $prefix, $ignore_prefix_ref) = @_;
+	my ($file_str, $prefix, @ignore_prefix) = @_;
 	my @lines = split(/\n/, $file_str);
 	foreach (@lines) {
 		if (/^[ \t]*#[ \t]*undef[ \t]+([_A-Z0-9]+)/) {
 			my $macro = $1;
-			foreach (@$ignore_prefix_ref) {
+			foreach (@ignore_prefix) {
 				my $i = index($macro, $_);
 				if ($i == -1 || $i != 0) {
 					$file_str =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1$prefix$macro$2/g;
@@ -145,6 +145,13 @@ sub arg_get_var {
 	return $1;
 }
 
+# @param {$} arg
+# @returns {$}
+sub arg_is_ptr_ptr {
+	my ($arg) = @_;
+	return $arg =~ /\*(?:.|\n)*\*/;
+}
+
 # @param {$} block_str
 # @returns {$} rettype
 # @returns {$} name
@@ -197,36 +204,43 @@ sub file_to_blocks {
 	return split(/\n\n/, $file_string);
 }
 
-sub xprint {
-	my ($arg) = @_;
-	print $arg;
-}
-
 usage();
-my $file_str    = file_get_str($ARGV[0]);
+my $file_str = file_get_str($ARGV[0]);
+$file_str = file_namespace_macros($file_str, "PJSTR_", ("PJSTR", "pjstr", "JSTR", "jstr"));
 my @file_blocks = file_to_blocks($file_str);
-my $out_str = '';
+my $out_str     = '';
 foreach (@file_blocks) {
 	my @arg;
 	my ($attr, $rettype, $name, $body) = fn_get(\@arg, $_);
 	if (defined($attr)) {
 		$out_str .= "$_\n";
-		if ($name =~ /^jstr_/ && $name =~ /_len(?:_|$)/) {
-			$name =~ s/_len(_|$)/$1/;
+		my $base_name = $name;
+		$base_name =~ s/_len(_|$)/$1/;
+		if ($name =~ /^jstr_/ && $name != $base_name && index($file_str, $base_name . '(') == -1) {
+			$name = $base_name;
 			$body = '';
-			if ($rettype eq 'void') {
-				$body = 'return ';
-			}
+			$body = 'return ' if ($rettype eq 'void');
 			$body .= $name . '_len(';
-			for (my $i = 0 ; $i <= $#arg ; ++$i) {
+			for (my $i = 0 ; $i < $#arg ; ++$i) {
 				my $var = arg_get_var($arg[$i]);
-				if (index(arg_get_rettype($arg[$i]), 'size_t') && index($var, 'len')) {
-					$body .= 'strlen(' . arg_get_var($arg[arg_index(\@arg, $var)]) . ')';
+				my $ret = arg_get_rettype($arg[$i]);
+				if (index($ret, 'size_t') != -1 && index($var, 'len') != -1
+					|| $var =~ /sz$/)
+				{
+					my $base_var = $var;
+					$base_var =~ s/(?:z|_*len)\s*$//;
+					my $str_i   = arg_index(\@arg, $base_var);
+					my $str_var = arg_get_var($arg[$str_i]);
+					my $deref   = arg_is_ptr_ptr($str_var) ? '*' : '';
+					$body .= 'strlen(' . $deref . $str_var . ')';
+					splice(@arg, $i);
+				} else {
+					$body .= $var;
 				}
-				$body .= $var . ', ';
+				$body .= ', ';
 			}
-			$body =~ s/, //;
-			$body .= ");";
+			$body =~ s/, $//;
+			$body    .= ");";
 			$out_str .= fn_to_string($attr, $rettype, $name, \@arg, $body);
 		}
 	}

@@ -230,22 +230,22 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static int
 jstr_cmp(const void *R s1,
-	 const size_t sz1,
+	 const size_t s1len,
 	 const void *R s2,
-	 const size_t sz2)
+	 const size_t s2len)
 {
-	return (sz1 == sz2) ? memcmp(s1, s2, sz1) : *(unsigned char *)s1 - *(unsigned char *)s2;
+	return (s1len == s2len) ? memcmp(s1, s2, s1len) : *(unsigned char *)s1 - *(unsigned char *)s2;
 }
 
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
 jstr_casecmp(const char *R s1,
-	     const size_t sz1,
+	     const size_t s1len,
 	     const char *R s2,
-	     const size_t sz2)
+	     const size_t s2len)
 {
-	return (sz1 == sz2) ? jstr_strcasecmp(s1, s2) : *s1 - *s2;
+	return (s1len == s2len) ? jstr_strcasecmp(s1, s2) : *s1 - *s2;
 }
 
 JSTR_FUNC_PURE
@@ -1617,15 +1617,15 @@ static char *
 jstr_thousepcpy_len_p(char *R dst,
 		      const char *R src,
 		      const int separator,
-		      size_t sz)
+		      size_t srclen)
 JSTR_NOEXCEPT
 {
 	if (*src == '-') {
 		*dst++ = '-';
 		++src;
-		--sz;
+		--srclen;
 	}
-	int i = sz % 3;
+	int i = srclen % 3;
 	for (int j = i; j--;)
 		*dst++ = *src++;
 	if (*src == '\0')
