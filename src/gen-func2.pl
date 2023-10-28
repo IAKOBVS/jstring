@@ -2,7 +2,6 @@
 use strict;
 use warnings;
 
-# @returns {void}
 sub usage {
 	if ($#ARGV == -1) {
 		print('Usage: ./' . $0 . ' <file>');
@@ -62,7 +61,7 @@ sub arg_to_array {
 	return @arg_arr;
 }
 
-# @param {@} arg
+# @param {@} arg_ref
 # @returns {$} arg_str
 sub arg_to_string {
 	my ($arg_ref) = @_;
@@ -72,14 +71,14 @@ sub arg_to_string {
 	return $arg_str;
 }
 
-# @param {$} arg
+# @param {$} arg_ref
 # @param {$} add
 sub arg_push {
-	my ($argRef, $add) = @_;
-	push(@$argRef, $add);
+	my ($arg_ref, $add) = @_;
+	push(@$arg_ref, $add);
 }
 
-# @param {$} arg
+# @param {$} arg_ref
 # @param {$} find
 # @returns {$}
 sub arg_index {
@@ -92,7 +91,7 @@ sub arg_index {
 	return -1;
 }
 
-# @param {$} arg
+# @param {$} arg_ref
 # @param {$} insert
 # @param {$} index
 sub arg_insert {
@@ -104,7 +103,7 @@ sub arg_insert {
 }
 
 
-# @param {$} arg
+# @param {$} arg_ref
 # @param {$} insert
 # @param {$} after
 sub arg_insert_after {
@@ -113,7 +112,7 @@ sub arg_insert_after {
 	@$arg_ref = arg_insert($arg_ref, $insert, $i + 1) if ($i != -1);
 }
 
-# @param {$} arg
+# @param {$} arg_ref
 # @param {$} find
 # @param {$} replace
 sub arg_replace {
@@ -122,12 +121,28 @@ sub arg_replace {
 	@$arg_ref[$i] = $replace if ($i != -1);
 }
 
-# @param {$} arg
+# @param {$} arg_ref
 # @param {$} remove
 sub arg_remove {
 	my ($arg_ref, $remove) = @_;
 	my $i = arg_index($arg_ref, $remove);
 	splice(@$arg_ref, $i) if ($i != -1);
+}
+
+# @param {$} arg
+# @returns {$}
+sub arg_get_rettype {
+	my ($arg) = @_;
+	$arg =~ /^\s*(\w+\s*[* \t\n]*)/;
+	return $1;
+}
+
+# @param {$} arg
+# @returns {$}
+sub arg_get_var {
+	my ($arg) = @_;
+	$arg =~ /(\w+)\s*$/;
+	return $1;
 }
 
 # @param {$} block_str
@@ -149,7 +164,7 @@ sub fn_get {
 
 # @param {$} rettype
 # @param {$} name
-# @param {$} arg
+# @param {$} arg_ref
 # @param {$} body
 # @returns {$} fn_string
 sub fn_to_string {
@@ -182,15 +197,38 @@ sub file_to_blocks {
 	return split(/\n\n/, $file_string);
 }
 
-# usage();
+sub xprint {
+	my ($arg) = @_;
+	print $arg;
+}
 
-my $file_str    = file_get_str("./jstr-string.h");
+usage();
+my $file_str    = file_get_str($ARGV[0]);
 my @file_blocks = file_to_blocks($file_str);
+my $out_str = '';
 foreach (@file_blocks) {
 	my @arg;
 	my ($attr, $rettype, $name, $body) = fn_get(\@arg, $_);
 	if (defined($attr)) {
-		print fn_to_string($attr, $rettype, $name, \@arg, $body);
-		print "\n";
+		$out_str .= "$_\n";
+		if ($name =~ /^jstr_/ && $name =~ /_len(?:_|$)/) {
+			$name =~ s/_len(_|$)/$1/;
+			$body = '';
+			if ($rettype eq 'void') {
+				$body = 'return ';
+			}
+			$body .= $name . '_len(';
+			for (my $i = 0 ; $i <= $#arg ; ++$i) {
+				my $var = arg_get_var($arg[$i]);
+				if (index(arg_get_rettype($arg[$i]), 'size_t') && index($var, 'len')) {
+					$body .= 'strlen(' . arg_get_var($arg[arg_index(\@arg, $var)]) . ')';
+				}
+				$body .= $var . ', ';
+			}
+			$body =~ s/, //;
+			$body .= ");";
+			$out_str .= fn_to_string($attr, $rettype, $name, \@arg, $body);
+		}
 	}
 }
+print $out_str;
