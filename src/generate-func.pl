@@ -26,7 +26,7 @@ my $G_MCR_RETURNS_NONNULL = $G_NMSPC_UPP . '_RETURNS_NONNULL';
 my $G_FN_SUFFIX_RETURNS_END_PTR = '_p';
 my $G_FN_SUFFIX_LEN             = '_len';
 
-my $fname     = $ARGV[0];
+my $fname       = $ARGV[0];
 my $g_in_header = get_file_str($fname);
 $g_in_header = tidy_newlines($g_in_header);
 
@@ -258,6 +258,19 @@ sub get_fn {
 		$params  = $3;
 	}
 	return ($decl, $fn_name, $params);
+}
+
+sub get_fn2 {
+	my ($string) = @_;
+	my $decl     = undef;
+	my $fn_name  = undef;
+	my @params   = undef;
+	if ($string =~ /((?:\/\*|\/\/|$G_NMSPC_UPP\_|static)\s+\w+\s+(\w*(?:$G_NMSPC)\_.*?)\(((?:.|\n)*?\)[^(){}]*))/o) {
+		$decl    = $1;
+		$fn_name = $2;
+		@params  = convert_params_to_array($3);
+	}
+	return ($decl, $fn_name, @params);
 }
 
 sub is_private_fn {
