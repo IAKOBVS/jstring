@@ -198,5 +198,4 @@ foreach (@file_blocks) {
 		print fn_to_string($attr, $rettype, $name, \@arg, $body);
 		print "\n";
 	}
-
 }
