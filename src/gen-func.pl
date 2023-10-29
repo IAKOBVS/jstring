@@ -45,6 +45,7 @@ foreach (@file_blocks) {
 			}
 			$body =~ s/, $//;
 			$body    .= ");";
+			$attr    .= "\nJSTR_INLINE\n" if (index($attr, "JSTR_INLINE") == -1);
 			$out_str .= jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n";
 		}
 	}
