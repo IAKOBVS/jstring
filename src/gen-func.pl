@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-do "./jlib.pm";
+do "./jlib.pl";
 
 sub usage {
 	if ($#ARGV == -1) {
@@ -16,7 +16,7 @@ jl_file_namespace_macros(\$file_str, "PJSTR_", ("PJSTR", "pjstr", "JSTR", "jstr"
 my @file_blocks = jl_file_to_blocks($file_str);
 my $out_str     = '';
 foreach (@file_blocks) {
-	$out_str .= "$_\n";
+	$out_str .= "$_\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
 	if (jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)) {
 		my $base_name = $name;
@@ -44,7 +44,7 @@ foreach (@file_blocks) {
 			}
 			$body =~ s/, $//;
 			$body    .= ");";
-			$out_str .= jl_fn_to_string($attr, $rettype, $name, \@arg, $body);
+			$out_str .= jl_fn_to_string($attr, $rettype, $name, \@arg, $body) . "\n";
 		}
 	}
 }

@@ -108,8 +108,8 @@ sub jl_arg_insert
 sub jl_arg_insert_after
 {
 	my ($arg_ref, $insert, $after) = @_;
-	my $i = arg_index($arg_ref, $after);
-	@$arg_ref = arg_insert($arg_ref, $insert, $i + 1) if ($i != -1);
+	my $i = jl_arg_index($arg_ref, $after);
+	@$arg_ref = jl_arg_insert($arg_ref, $insert, $i + 1) if ($i != -1);
 }
 
 # @param {$} arg_ref
@@ -118,7 +118,7 @@ sub jl_arg_insert_after
 sub jl_arg_replace
 {
 	my ($arg_ref, $find, $replace) = @_;
-	my $i = arg_index($arg_ref, $find);
+	my $i = jl_arg_index($arg_ref, $find);
 	@$arg_ref[$i] = $replace if ($i != -1);
 }
 
@@ -127,7 +127,7 @@ sub jl_arg_replace
 sub jl_arg_remove
 {
 	my ($arg_ref, $remove) = @_;
-	my $i = arg_index($arg_ref, $remove);
+	my $i = jl_arg_index($arg_ref, $remove);
 	splice(@$arg_ref, $i) if ($i != -1);
 }
 
@@ -171,7 +171,7 @@ sub jl_fn_get
 		$$attr_ref    = $1               if (defined($attr_ref));
 		$$rettype_ref = $2               if (defined($rettype_ref));
 		$$name_ref    = $3               if (defined($name_ref));
-		@$arg_ref     = arg_to_array($4) if (defined($arg_ref));
+		@$arg_ref     = jl_arg_to_array($4) if (defined($arg_ref));
 		$$body_ref    = $5               if (defined($body_ref));
 		return 1;
 	}
@@ -186,7 +186,7 @@ sub jl_fn_get
 sub jl_fn_to_string
 {
 	my ($attr, $rettype, $name, $arg_ref, $body) = @_;
-	my $arg    = arg_to_string($arg_ref);
+	my $arg    = jl_arg_to_string($arg_ref);
 	my $fn_str = "$attr\n$rettype $name($arg)\n{$body}";
 	return $fn_str;
 }
