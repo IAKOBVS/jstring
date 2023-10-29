@@ -11,9 +11,9 @@ sub usage {
 }
 
 usage();
-my $file_str = jl_file_get_str($ARGV[0]);
-jl_file_namespace_macros(\$file_str, "PJSTR_", ("PJSTR", "pjstr", "JSTR", "jstr"));
-my @file_blocks = jl_file_to_blocks($file_str);
+my $file_str = jl_file_get_str(\$ARGV[0]);
+jl_file_namespace_macros(\$file_str, \"PJSTR_", \("PJSTR", "pjstr", "JSTR", "jstr"));
+my @file_blocks = jl_file_to_blocks(\$file_str);
 my $out_str     = '';
 foreach (@file_blocks) {
 	$out_str .= "$_\n\n";
@@ -25,16 +25,16 @@ foreach (@file_blocks) {
 			$name = $base_name;
 			$body = (($rettype eq 'void') ? '' : 'return ') . '_len(';
 			for (my $i = 0 ; $i < $#arg ; ++$i) {
-				my $var = jl_arg_get_var($arg[$i]);
-				my $ret = jl_arg_get_rettype($arg[$i]);
+				my $var = jl_arg_get_var(\$arg[$i]);
+				my $ret = jl_arg_get_rettype(\$arg[$i]);
 				if (index($ret, 'size_t') != -1 && index($var, 'len') != -1
 					|| $var =~ /sz$/)
 				{
 					my $base_var = $var;
 					$base_var =~ s/(?:z|_*len)\s*$//;
 					my $str_i   = jl_arg_index(\@arg, $base_var);
-					my $str_var = jl_arg_get_var($arg[$str_i]);
-					my $deref   = jl_arg_is_ptr_ptr($str_var) ? '*' : '';
+					my $str_var = jl_arg_get_var(\$arg[$str_i]);
+					my $deref   = jl_arg_is_ptr_ptr(\$str_var) ? '*' : '';
 					$body .= 'strlen(' . $deref . $str_var . ')';
 					splice(@arg, $i);
 				} else {
