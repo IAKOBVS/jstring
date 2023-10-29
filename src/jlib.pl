@@ -43,118 +43,118 @@ sub jl_file_tidy_newlines {
 	$$file_str_ref =~ s/\n\n\n* /\n /g;
 }
 
-# @param {$} arg_ref
+# @param {$} arg_str_ref
 # @returns {@}
 sub jl_arg_to_array {
-	my ($arg_ref) = @_;
-	my @arg_arr = split(/,/, $$arg_ref);
+	my ($arg_str_ref) = @_;
+	my @arg_arr = split(/,/, $$arg_str_ref);
 	return @arg_arr;
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @returns {$} arg_str
 sub jl_arg_to_string {
-	my ($arg_ref) = @_;
+	my ($arg_arr_ref) = @_;
 	my $arg_str = '';
-	$arg_str .= "$_," foreach (@$arg_ref);
+	$arg_str .= "$_," foreach (@$arg_arr_ref);
 	$arg_str =~ s/,$//;
 	return $arg_str;
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @param {$} add_ref
 sub jl_arg_push {
-	my ($arg_ref, $add_ref) = @_;
-	push(@$arg_ref, $$add_ref);
+	my ($arg_arr_ref, $add_ref) = @_;
+	push(@$arg_arr_ref, $$add_ref);
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @param {$} find_ref
 # @returns {$}
 sub jl_arg_index {
-	my ($arg_ref, $find_ref) = @_;
-	for (my $i = 0 ; $i < $#$arg_ref ; ++$i) {
-		if (index(@$arg_ref[$i], $$find_ref) != -1) {
+	my ($arg_arr_ref, $find_ref) = @_;
+	for (my $i = 0 ; $i < $#$arg_arr_ref ; ++$i) {
+		if (index(@$arg_arr_ref[$i], $$find_ref) != -1) {
 			return $i;
 		}
 	}
 	return -1;
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @param {$} insert_ref
 # @param {$} index
 sub jl_arg_insert {
-	my ($arg_ref, $insert_ref, $i) = @_;
-	for (my $j = $#$arg_ref - 1 ; $i <= $j ; --$j) {
-		@$arg_ref[ $j + 1 ] = @$arg_ref[$j];
+	my ($arg_arr_ref, $insert_ref, $i) = @_;
+	for (my $j = $#$arg_arr_ref - 1 ; $i <= $j ; --$j) {
+		@$arg_arr_ref[ $j + 1 ] = @$arg_arr_ref[$j];
 	}
-	@$arg_ref[$i] = $$insert_ref;
+	@$arg_arr_ref[$i] = $$insert_ref;
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @param {$} insert_ref
 # @param {$} after_ref
 sub jl_arg_insert_after {
-	my ($arg_ref, $insert_ref, $after_ref) = @_;
-	my $i = jl_arg_index($$arg_ref, $$after_ref);
-	@$arg_ref = jl_arg_insert($$arg_ref, $$insert_ref, $i + 1) if ($i != -1);
+	my ($arg_arr_ref, $insert_ref, $after_ref) = @_;
+	my $i = jl_arg_index($arg_arr_ref, $$after_ref);
+	@$arg_arr_ref = jl_arg_insert($arg_arr_ref, $$insert_ref, $i + 1) if ($i != -1);
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @param {$} find_ref
 # @param {$} replace_ref
 sub jl_arg_replace {
-	my ($arg_ref, $find_ref, $replace_ref) = @_;
-	my $i = jl_arg_index($$arg_ref, $$find_ref);
-	@$arg_ref[$i] = $$replace_ref if ($i != -1);
+	my ($arg_arr_ref, $find_ref, $replace_ref) = @_;
+	my $i = jl_arg_index($arg_arr_ref, $$find_ref);
+	@$arg_arr_ref[$i] = $$replace_ref if ($i != -1);
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @param {$} remove_ref
 sub jl_arg_remove {
-	my ($arg_ref, $remove_ref) = @_;
-	my $i = jl_arg_index($$arg_ref, $$remove_ref);
-	splice(@$arg_ref, $i) if ($i != -1);
+	my ($arg_arr_ref, $remove_ref) = @_;
+	my $i = jl_arg_index($arg_arr_ref, $$remove_ref);
+	splice(@$arg_arr_ref, $i) if ($i != -1);
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @returns {$}
 sub jl_arg_get_rettype {
-	my ($arg_ref) = @_;
-	$$arg_ref =~ /^\s*(\w+\s*[* \t\n]*)/;
+	my ($arg_arr_ref) = @_;
+	$$arg_arr_ref =~ /^\s*(\w+\s*[* \t\n]*)/;
 	return $1;
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @returns {$}
 sub jl_arg_get_var {
-	my ($arg_ref) = @_;
-	$$arg_ref =~ /(\w+)\s*$/;
+	my ($arg_arr_ref) = @_;
+	$$arg_arr_ref =~ /(\w+)\s*$/;
 	return $1;
 }
 
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @returns {$}
 sub jl_arg_is_ptr_ptr {
-	my ($arg_ref) = @_;
-	return $$arg_ref =~ /\*(?:.|\n)*\*/;
+	my ($arg_arr_ref) = @_;
+	return $$arg_arr_ref =~ /\*(?:.|\n)*\*/;
 }
 
 # @param {$} block_str_ref
 # @param {$} attr_ref
 # @param {$} rettype_ref
 # @param {$} name_ref
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @param {$} body_ref
 # @returns {$}
 sub jl_fn_get {
-	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_ref, $body_ref) = @_;
+	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref) = @_;
 	if ($$block_str_ref =~ /((?:.|\n)*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/) {
 		$$attr_ref    = $1                  if (defined($attr_ref));
 		$$rettype_ref = $2                  if (defined($rettype_ref));
 		$$name_ref    = $3                  if (defined($name_ref));
-		@$arg_ref     = jl_arg_to_array($4) if (defined($arg_ref));
+		@$arg_arr_ref = jl_arg_to_array($4) if (defined($arg_arr_ref));
 		$$body_ref    = $5                  if (defined($body_ref));
 		return 1;
 	}
@@ -163,12 +163,12 @@ sub jl_fn_get {
 
 # @param {$} rettype_ref
 # @param {$} name_ref
-# @param {$} arg_ref
+# @param {$} arg_arr_ref
 # @param {$} body_ref
 # @returns {$} fn_string
 sub jl_fn_to_string {
-	my ($attr_ref, $rettype_ref, $name_ref, $arg_ref, $body_ref) = @_;
-	my $arg = jl_arg_to_string($$arg_ref);
+	my ($attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref) = @_;
+	my $arg = jl_arg_to_string($arg_arr_ref);
 	return $$attr_ref . "\n" . $$rettype_ref . ' ' . $$name_ref . '(' . $arg . ")\n{" . $$body_ref . "}";
 }
 
