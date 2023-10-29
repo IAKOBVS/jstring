@@ -24,26 +24,25 @@ sub file_get_str
 	return $file_str;
 }
 
-# @param {$} file_str
+# @param {$} file_str_ref
 # @param {$} prefix
 # @param {$} ignore_prefix
 # @returns {$}
 sub file_namespace_macros
 {
-	my ($file_str, $prefix, @ignore_prefix) = @_;
-	my @lines = split(/\n/, $file_str);
+	my ($file_str_ref, $prefix, @ignore_prefix) = @_;
+	my @lines = split(/\n/, $$file_str_ref);
 	foreach (@lines) {
 		if (/^[ \t]*#[ \t]*undef[ \t]+([_A-Z0-9]+)/) {
 			my $macro = $1;
 			foreach (@ignore_prefix) {
 				my $i = index($macro, $_);
 				if ($i == -1 || $i != 0) {
-					$file_str =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1$prefix$macro$2/g;
+					$$file_str_ref =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1$prefix$macro$2/g;
 				}
 			}
 		}
 	}
-	return $file_str;
 }
 
 # @param {$} file_str
@@ -228,7 +227,7 @@ sub file_to_blocks
 
 usage();
 my $file_str = file_get_str($ARGV[0]);
-$file_str = file_namespace_macros($file_str, "PJSTR_", ("PJSTR", "pjstr", "JSTR", "jstr"));
+file_namespace_macros(\$file_str, "PJSTR_", ("PJSTR", "pjstr", "JSTR", "jstr"));
 my @file_blocks = file_to_blocks($file_str);
 my $out_str     = '';
 foreach (@file_blocks) {
