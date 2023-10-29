@@ -11,13 +11,13 @@ sub usage {
 }
 
 usage();
-my $file_str = jl_file_get_str(\$ARGV[0]);
+my $file_str      = jl_file_get_str(\$ARGV[0]);
 my @ignore_prefix = ("PJSTR", "pjstr", "JSTR", "jstr");
 jl_file_namespace_macros(\$file_str, \"PJSTR_", \@ignore_prefix);
 my @file_blocks = jl_file_to_blocks(\$file_str);
 my $out_str     = '';
 foreach (@file_blocks) {
-	$out_str .= "$_\n\n";
+	$out_str .= $_ . "\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
 	if (jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)) {
 		my $base_name = $name;
