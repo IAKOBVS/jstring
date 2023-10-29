@@ -20,12 +20,12 @@ sub jl_file_get_str {
 # @param {$} ignore_prefix_ref
 # @returns {$}
 sub jl_file_namespace_macros {
-	my ($file_str_ref, $prefix_ref, $ignore_prefix) = @_;
+	my ($file_str_ref, $prefix_ref, $ignore_prefix_ref) = @_;
 	my @lines = split(/\n/, $$file_str_ref);
 	foreach (@lines) {
 		if (/^[ \t]*#[ \t]*undef[ \t]+([_A-Z0-9]+)/) {
 			my $macro = $1;
-			foreach (@$ignore_prefix) {
+			foreach (@$ignore_prefix_ref) {
 				my $i = index($macro, $_);
 				if ($i == -1 || $i != 0) {
 					$$file_str_ref =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1$$prefix_ref$macro$2/g;
@@ -154,7 +154,7 @@ sub jl_fn_get {
 		$$attr_ref    = $1                  if (defined($attr_ref));
 		$$rettype_ref = $2                  if (defined($rettype_ref));
 		$$name_ref    = $3                  if (defined($name_ref));
-		@$arg_arr_ref = jl_arg_to_array($4) if (defined($arg_arr_ref));
+		@$arg_arr_ref = jl_arg_to_array(\$4) if (defined($arg_arr_ref));
 		$$body_ref    = $5                  if (defined($body_ref));
 		return 1;
 	}

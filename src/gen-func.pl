@@ -12,7 +12,8 @@ sub usage {
 
 usage();
 my $file_str = jl_file_get_str(\$ARGV[0]);
-jl_file_namespace_macros(\$file_str, \"PJSTR_", \("PJSTR", "pjstr", "JSTR", "jstr"));
+my @ignore_prefix = ("PJSTR", "pjstr", "JSTR", "jstr");
+jl_file_namespace_macros(\$file_str, \"PJSTR_", \@ignore_prefix);
 my @file_blocks = jl_file_to_blocks(\$file_str);
 my $out_str     = '';
 foreach (@file_blocks) {
@@ -32,7 +33,7 @@ foreach (@file_blocks) {
 				{
 					my $base_var = $var;
 					$base_var =~ s/(?:z|_*len)\s*$//;
-					my $str_i   = jl_arg_index(\@arg, $base_var);
+					my $str_i   = jl_arg_index(\@arg, \$base_var);
 					my $str_var = jl_arg_get_var(\$arg[$str_i]);
 					my $deref   = jl_arg_is_ptr_ptr(\$str_var) ? '*' : '';
 					$body .= 'strlen(' . $deref . $str_var . ')';
@@ -44,7 +45,7 @@ foreach (@file_blocks) {
 			}
 			$body =~ s/, $//;
 			$body    .= ");";
-			$out_str .= jl_fn_to_string($attr, $rettype, $name, \@arg, $body) . "\n";
+			$out_str .= jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n";
 		}
 	}
 }
