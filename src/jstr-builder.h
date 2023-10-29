@@ -30,7 +30,10 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define JSTR_INIT {0}
+#define JSTR_INIT \
+	{         \
+		0 \
+	}
 
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); \
 				  ptr < jstr_ty_end_;                                                       \
@@ -365,6 +368,17 @@ JSTR_NOEXCEPT
 	return jstr_reserveexact_always(s, sz, cap, new_cap);
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_shrink_to_fit(char *R *R s,
+		   size_t *R sz,
+		   size_t *R cap)
+{
+	JSTR_RESERVEEXACT(s, sz, cap, *sz + 1, return 0);
+	return 1;
+}
+
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
@@ -531,10 +545,10 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_set_len(char *R *R s,
-	       size_t *R sz,
-	       size_t *R cap,
-	       const int c,
-	       const size_t n)
+	     size_t *R sz,
+	     size_t *R cap,
+	     const int c,
+	     const size_t n)
 JSTR_NOEXCEPT
 {
 	if (n > *sz) {
