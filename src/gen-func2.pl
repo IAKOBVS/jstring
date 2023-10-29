@@ -176,11 +176,11 @@ sub fn_get
 {
 	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_ref, $body_ref) = @_;
 	if ($$block_str_ref =~ /((?:.|\n)*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/) {
-		$$attr_ref    = $1               if ($attr_ref);
-		$$rettype_ref = $2               if ($rettype_ref);
-		$$name_ref    = $3               if ($name_ref);
-		@$arg_ref     = arg_to_array($4) if ($arg_ref);
-		$$body_ref    = $5               if ($body_ref);
+		$$attr_ref    = $1               if (defined($attr_ref));
+		$$rettype_ref = $2               if (defined($rettype_ref));
+		$$name_ref    = $3               if (defined($name_ref));
+		@$arg_ref     = arg_to_array($4) if (defined($arg_ref));
+		$$body_ref    = $5               if (defined($body_ref));
 		return 1;
 	}
 	return 0;
@@ -233,7 +233,7 @@ my $out_str     = '';
 foreach (@file_blocks) {
 	$out_str .= "$_\n";
 	my ($attr, $rettype, $name, @arg, $body);
-	if (fn_get(\$_, \$attr, \$rettype, \$name, \@arg, 0)) {
+	if (fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)) {
 		my $base_name = $name;
 		$base_name =~ s/_len(_|$)/$1/;
 		if ($name =~ /^jstr_/ && $name != $base_name && index($file_str, $base_name . '(') == -1) {
