@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 
-sub usage {
+sub usage
+{
 	if ($#ARGV == -1) {
 		print('Usage: ./' . $0 . ' <file>');
 		exit;
@@ -11,7 +12,8 @@ sub usage {
 
 # @param {$} fname
 # @returns {$} file_str
-sub file_get_str {
+sub file_get_str
+{
 	my ($fname) = @_;
 	my $file_str;
 	local $/;
@@ -26,7 +28,8 @@ sub file_get_str {
 # @param {$} prefix
 # @param {$} ignore_prefix
 # @returns {$}
-sub file_namespace_macros {
+sub file_namespace_macros
+{
 	my ($file_str, $prefix, @ignore_prefix) = @_;
 	my @lines = split(/\n/, $file_str);
 	foreach (@lines) {
@@ -45,7 +48,8 @@ sub file_namespace_macros {
 
 # @param {$} file_str
 # @returns {$}
-sub file_tidy_newlines {
+sub file_tidy_newlines
+{
 	my ($file_str) = @_;
 	$file_str =~ s/(\n[ \t].*)\n\n\n*/$1\n/g;
 	$file_str =~ s/\n\n\n*\t/\n\t/g;
@@ -55,7 +59,8 @@ sub file_tidy_newlines {
 
 # @param {$} arg
 # @returns {@}
-sub arg_to_array {
+sub arg_to_array
+{
 	my ($arg) = @_;
 	my @arg_arr = split(/,/, $arg);
 	return @arg_arr;
@@ -63,7 +68,8 @@ sub arg_to_array {
 
 # @param {@} arg_ref
 # @returns {$} arg_str
-sub arg_to_string {
+sub arg_to_string
+{
 	my ($arg_ref) = @_;
 	my $arg_str = '';
 	$arg_str .= "$_," foreach (@$arg_ref);
@@ -73,7 +79,8 @@ sub arg_to_string {
 
 # @param {$} arg_ref
 # @param {$} add
-sub arg_push {
+sub arg_push
+{
 	my ($arg_ref, $add) = @_;
 	push(@$arg_ref, $add);
 }
@@ -81,7 +88,8 @@ sub arg_push {
 # @param {$} arg_ref
 # @param {$} find
 # @returns {$}
-sub arg_index {
+sub arg_index
+{
 	my ($arg_ref, $find) = @_;
 	for (my $i = 0 ; $i < $#$arg_ref ; ++$i) {
 		if (index(@$arg_ref[$i], $find) != -1) {
@@ -94,7 +102,8 @@ sub arg_index {
 # @param {$} arg_ref
 # @param {$} insert
 # @param {$} index
-sub arg_insert {
+sub arg_insert
+{
 	my ($arg_ref, $insert, $i) = @_;
 	for (my $j = $#$arg_ref - 1 ; $i <= $j ; --$j) {
 		@$arg_ref[ $j + 1 ] = @$arg_ref[$j];
@@ -102,11 +111,11 @@ sub arg_insert {
 	@$arg_ref[$i] = $insert;
 }
 
-
 # @param {$} arg_ref
 # @param {$} insert
 # @param {$} after
-sub arg_insert_after {
+sub arg_insert_after
+{
 	my ($arg_ref, $insert, $after) = @_;
 	my $i = arg_index($arg_ref, $after);
 	@$arg_ref = arg_insert($arg_ref, $insert, $i + 1) if ($i != -1);
@@ -115,7 +124,8 @@ sub arg_insert_after {
 # @param {$} arg_ref
 # @param {$} find
 # @param {$} replace
-sub arg_replace {
+sub arg_replace
+{
 	my ($arg_ref, $find, $replace) = @_;
 	my $i = arg_index($arg_ref, $find);
 	@$arg_ref[$i] = $replace if ($i != -1);
@@ -123,7 +133,8 @@ sub arg_replace {
 
 # @param {$} arg_ref
 # @param {$} remove
-sub arg_remove {
+sub arg_remove
+{
 	my ($arg_ref, $remove) = @_;
 	my $i = arg_index($arg_ref, $remove);
 	splice(@$arg_ref, $i) if ($i != -1);
@@ -131,7 +142,8 @@ sub arg_remove {
 
 # @param {$} arg
 # @returns {$}
-sub arg_get_rettype {
+sub arg_get_rettype
+{
 	my ($arg) = @_;
 	$arg =~ /^\s*(\w+\s*[* \t\n]*)/;
 	return $1;
@@ -139,7 +151,8 @@ sub arg_get_rettype {
 
 # @param {$} arg
 # @returns {$}
-sub arg_get_var {
+sub arg_get_var
+{
 	my ($arg) = @_;
 	$arg =~ /(\w+)\s*$/;
 	return $1;
@@ -147,26 +160,31 @@ sub arg_get_var {
 
 # @param {$} arg
 # @returns {$}
-sub arg_is_ptr_ptr {
+sub arg_is_ptr_ptr
+{
 	my ($arg) = @_;
 	return $arg =~ /\*(?:.|\n)*\*/;
 }
 
-# @param {$} block_str
-# @returns {$} rettype
-# @returns {$} name
-# @returns {$} body
-sub fn_get {
-	my ($arg_ref, $block_str) = @_;
-	if ($block_str =~ /((?:.|\n)*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/) {
-		my $attr    = $1;
-		my $rettype = $2;
-		my $name    = $3;
-		@$arg_ref = arg_to_array($4);
-		my $body = $5;
-		return ($attr, $rettype, $name, $body);
+# @param {$} block_str_ref
+# @param {$} attr_ref
+# @param {$} rettype_ref
+# @param {$} name_ref
+# @param {$} arg_ref
+# @param {$} body_ref
+# @returns {$}
+sub fn_get
+{
+	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_ref, $body_ref) = @_;
+	if ($$block_str_ref =~ /((?:.|\n)*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/) {
+		$$attr_ref    = $1               if ($attr_ref);
+		$$rettype_ref = $2               if ($rettype_ref);
+		$$name_ref    = $3               if ($name_ref);
+		@$arg_ref     = arg_to_array($4) if ($arg_ref);
+		$$body_ref    = $5               if ($body_ref);
+		return 1;
 	}
-	return;
+	return 0;
 }
 
 # @param {$} rettype
@@ -174,7 +192,8 @@ sub fn_get {
 # @param {$} arg_ref
 # @param {$} body
 # @returns {$} fn_string
-sub fn_to_string {
+sub fn_to_string
+{
 	my ($attr, $rettype, $name, $arg_ref, $body) = @_;
 	my $arg    = arg_to_string($arg_ref);
 	my $fn_str = "$attr\n$rettype $name($arg)\n{$body}";
@@ -184,7 +203,8 @@ sub fn_to_string {
 # @param {$} name
 # @param {$} prefix
 # @returns {$}
-sub name_prepend {
+sub name_prepend
+{
 	my ($name, $prefix) = @_;
 	return $prefix . $name;
 }
@@ -192,14 +212,16 @@ sub name_prepend {
 # @param {$} name
 # @param {$} suffix
 # @returns {$}
-sub name_append {
+sub name_append
+{
 	my ($name, $suffix) = @_;
 	return $name . $suffix;
 }
 
 # @param {$} file_string
 # @returns {@}
-sub file_to_blocks {
+sub file_to_blocks
+{
 	my ($file_string) = @_;
 	return split(/\n\n/, $file_string);
 }
@@ -211,15 +233,13 @@ my @file_blocks = file_to_blocks($file_str);
 my $out_str     = '';
 foreach (@file_blocks) {
 	$out_str .= "$_\n";
-	my @arg;
-	my ($attr, $rettype, $name, $body) = fn_get(\@arg, $_);
-	if (defined($attr)) {
+	my ($attr, $rettype, $name, @arg, $body);
+	if (fn_get(\$_, \$attr, \$rettype, \$name, \@arg, 0)) {
 		my $base_name = $name;
 		$base_name =~ s/_len(_|$)/$1/;
 		if ($name =~ /^jstr_/ && $name != $base_name && index($file_str, $base_name . '(') == -1) {
 			$name = $base_name;
-			$body = '';
-			$body = 'return ' if ($rettype eq 'void');
+			$body = ($rettype eq 'void') ? '' : 'return ';
 			$body .= $name . '_len(';
 			for (my $i = 0 ; $i < $#arg ; ++$i) {
 				my $var = arg_get_var($arg[$i]);
