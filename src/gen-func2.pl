@@ -238,8 +238,7 @@ foreach (@file_blocks) {
 		$base_name =~ s/_len(_|$)/$1/;
 		if ($name =~ /^jstr_/ && $name != $base_name && index($file_str, $base_name . '(') == -1) {
 			$name = $base_name;
-			$body = ($rettype eq 'void') ? '' : 'return ';
-			$body .= $name . '_len(';
+			$body = (($rettype eq 'void') ? '' : 'return ') . '_len(';
 			for (my $i = 0 ; $i < $#arg ; ++$i) {
 				my $var = arg_get_var($arg[$i]);
 				my $ret = arg_get_rettype($arg[$i]);
