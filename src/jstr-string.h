@@ -46,7 +46,7 @@ JSTR_NOEXCEPT
 /* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
-jstr_repeat_p_len_unsafe(char *R s,
+jstr_repeat_len_p_unsafe(char *R s,
 			 const size_t sz,
 			 size_t n)
 JSTR_NOEXCEPT
@@ -79,14 +79,14 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n < 2))
 		return 1;
 	JSTR_RESERVE(s, sz, cap, *sz * n, return 0);
-	*sz = jstr_repeat_p_len_unsafe(*s, *sz, n) - *s;
+	*sz = jstr_repeat_len_p_unsafe(*s, *sz, n) - *s;
 	return 1;
 }
 
 /* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
-jstr_repeatcpy_p_len(char *R dst,
+jstr_repeatcpy_len_p(char *R dst,
 		     const char *R src,
 		     const size_t srcsz,
 		     size_t n)
@@ -109,7 +109,7 @@ jstr_repeatcpy_p(char *R dst,
 		 const size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_repeatcpy_p_len(dst, src, strlen(src), n);
+	return jstr_repeatcpy_len_p(dst, src, strlen(src), n);
 }
 
 /* basename() for non nul-terminated strings. */

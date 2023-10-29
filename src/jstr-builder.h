@@ -527,10 +527,10 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_set_p_len_unsafe(char *R s,
-		      const size_t sz,
-		      const int c,
-		      const size_t n)
+jstr_strset_len_p_unsafe(char *R s,
+			 const size_t sz,
+			 const int c,
+			 const size_t n)
 JSTR_NOEXCEPT
 {
 	memset(s, c, n);
@@ -544,11 +544,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_set_len(char *R *R s,
-	     size_t *R sz,
-	     size_t *R cap,
-	     const int c,
-	     const size_t n)
+jstr_strset_len(char *R *R s,
+		size_t *R sz,
+		size_t *R cap,
+		const int c,
+		const size_t n)
 JSTR_NOEXCEPT
 {
 	if (n > *sz) {
@@ -566,10 +566,10 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_set_append_p_unsafe(char *R s,
-			 const size_t sz,
-			 const int c,
-			 const size_t n)
+jstr_strset_append_len_p_unsafe(char *R s,
+				const size_t sz,
+				const int c,
+				const size_t n)
 JSTR_NOEXCEPT
 {
 	return (char *)memset(s + sz, c, n) + n;
@@ -581,15 +581,15 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_set_append(char *R *R s,
-		size_t *R sz,
-		size_t *R cap,
-		const int c,
-		const size_t n)
+jstr_strset_append(char *R *R s,
+		   size_t *R sz,
+		   size_t *R cap,
+		   const int c,
+		   const size_t n)
 JSTR_NOEXCEPT
 {
 	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
-	*sz = jstr_set_append_p_unsafe(*s, *sz, c, n) - *s;
+	*sz = jstr_strset_append_len_p_unsafe(*s, *sz, c, n) - *s;
 	return 1;
 }
 
