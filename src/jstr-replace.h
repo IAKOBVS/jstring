@@ -1255,9 +1255,12 @@ jstr_toCamelCaseP(char *R s)
 	for (; *src; ++src)
 		if (jstr_likely(*src != '_'))
 			*s++ = *src;
-		else
+		else {
 start:
 			*s++ = jstr_toupper(*++src);
+			if (jstr_unlikely(*src == '\0'))
+				break;
+		}
 	*s = '\0';
 	return s;
 }
