@@ -62,7 +62,7 @@ JSTR_WARN_UNUSED
 JSTR_NOTHROW
 static jtrie_errcode_ty
 jtrie_add(jtrie_node_ty *R root,
-	     const char *R word)
+	  const char *R word)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*word == '\0'))

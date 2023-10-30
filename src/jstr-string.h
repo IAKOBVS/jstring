@@ -78,7 +78,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n < 2))
 		return 1;
-	JSTR_RESERVE(s, sz, cap, *sz * n, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz * n, return 0);
 	*sz = jstr_repeat_len_p_unsafe(*s, *sz, n) - *s;
 	return 1;
 }

@@ -611,7 +611,7 @@ pjstr_re_rplcall_big_rplc(unsigned char **s,
 	if (*dst != *oldp)
 		memmove(*dst, *oldp, *p - *oldp);
 	const unsigned char *tmp = *s;
-	JSTR_RESERVE_ALWAYS_NOMALLOC((char **)s, sz, cap, *sz + rplclen - findlen, return 0);
+	PJSTR_RESERVE_ALWAYS_NOMALLOC((char **)s, sz, cap, *sz + rplclen - findlen, return 0);
 	jstr_strmove_len(*p + rplclen,
 			 *p + findlen,
 			 (tmp + *sz) - (*p + findlen));

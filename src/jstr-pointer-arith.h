@@ -23,18 +23,18 @@
 #	define __ptr_type(type) (__builtin_classify_type((type)0) == 5)
 
 /* intptr_t if P is true, or T if P is false.  */
-#	define __integer_if_ptr_type_sub(T, P)                      \
+#	define __integer_if_ptr_type_sub(T, P)                          \
 		__typeof__(*(0 ? (__typeof__(0 ? (T *)0 : (void *)(P)))0 \
 			       : (__typeof__(0 ? (intptr_t *)0 : (void *)(!(P))))0))
 /* intptr_t if EXPR has a ptr type, or the type of EXPR otherwise.  */
 #	define __integer_if_ptr_type(expr)                                \
 		__integer_if_ptr_type_sub(__typeof__((__typeof__(expr))0), \
-					      __ptr_type(__typeof__(expr)))
+					  __ptr_type(__typeof__(expr)))
 /* Cast an integer or a ptr VAL to integer with proper type.  */
 #	define cast_to_integer(val) ((__integer_if_ptr_type(val))(val))
 
 /* Cast an integer VAL to void * ptr.  */
-#	define cast_to_ptr(val) ((void *)(uintptr_t)(val))
+#	define cast_to_ptr(val)     ((void *)(uintptr_t)(val))
 
 /* Return the ptrdiff_t difference between P1 and P2.  */
 #	define JSTR_PTR_DIFF(p1, p2) \

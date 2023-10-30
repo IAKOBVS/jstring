@@ -29,11 +29,10 @@
 JSTR_FUNC_PURE
 JSTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
-PJSTR_MEMMEM_FN_IMPL
-(const unsigned char *JSTR_RESTRICT hs,
- const size_t hl,
- const unsigned char *JSTR_RESTRICT ne,
- const size_t nl)
+PJSTR_MEMMEM_FN_IMPL(const unsigned char *JSTR_RESTRICT hs,
+		     const size_t hl,
+		     const unsigned char *JSTR_RESTRICT ne,
+		     const size_t nl)
 JSTR_NOEXCEPT
 {
 #if PJSTR_MEMMEM_SHORT_NEEDLE

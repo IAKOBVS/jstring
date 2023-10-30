@@ -105,15 +105,15 @@ PJSTR_END_DECLS
 		do_on_malloc_err;                                       \
 	}
 
-#define JSTR_RESERVE_ALWAYS_NOMALLOC(s, sz, cap, new_cap, do_on_malloc_err) \
+#define PJSTR_RESERVE_ALWAYS_NOMALLOC(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserve_always_nomalloc, s, sz, cap, new_cap, do_on_malloc_err)
-#define JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
+#define PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact_always, s, sz, cap, new_cap, do_on_malloc_err)
-#define JSTR_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err) \
+#define PJSTR_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact, s, sz, cap, new_cap, do_on_malloc_err)
-#define JSTR_RESERVE_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
+#define PJSTR_RESERVE_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserve_always, s, sz, cap, new_cap, do_on_malloc_err)
-#define JSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
+#define PJSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 
 PJSTR_BEGIN_DECLS
@@ -375,7 +375,7 @@ jstr_shrink_to_fit(char *R *R s,
 		   size_t *R sz,
 		   size_t *R cap)
 {
-	JSTR_RESERVEEXACT(s, sz, cap, *sz + 1, return 0);
+	PJSTR_RESERVEEXACT(s, sz, cap, *sz + 1, return 0);
 	return 1;
 }
 
@@ -399,7 +399,7 @@ pjstr_cat(char *R *R s,
 JSTR_NOEXCEPT
 {
 	char *p;
-	JSTR_RESERVE(s, sz, cap, *sz + arglen, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz + arglen, return 0);
 	p = *s + *sz;
 	*sz += arglen;
 	for (const char *R arg; (arg = va_arg(ap, char *)); p = jstr_stpcpy(p, arg))
@@ -519,7 +519,7 @@ jstr_append_len(char *R *R s,
 		const size_t srclen)
 JSTR_NOEXCEPT
 {
-	JSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
 	*sz = jstr_append_len_p_unsafe(*s, *sz, src, srclen) - *s;
 	return 1;
 }
@@ -552,7 +552,7 @@ jstr_strset_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (n > *sz) {
-		JSTR_RESERVE(s, sz, cap, n, return 0);
+		PJSTR_RESERVE(s, sz, cap, n, return 0);
 		memset(*s, c, n);
 		*(*s + n) = '\0';
 		*sz = n;
@@ -588,7 +588,7 @@ jstr_strset_append(char *R *R s,
 		   const size_t n)
 JSTR_NOEXCEPT
 {
-	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz + n, return 0);
 	*sz = jstr_strset_append_len_p_unsafe(*s, *sz, c, n) - *s;
 	return 1;
 }
@@ -625,7 +625,7 @@ jstr_prependnchr(char *R *R s,
 		 const size_t n)
 JSTR_NOEXCEPT
 {
-	JSTR_RESERVE(s, sz, cap, *sz + n, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz + n, return 0);
 	*sz = jstr_prependnchr_p_unsafe(*s, *sz, c, n) - *s;
 	return 1;
 }
@@ -669,7 +669,7 @@ jstr_prepend_len(char *R *R s,
 		 const size_t srclen)
 JSTR_NOEXCEPT
 {
-	JSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
 	jstr_prepend_len_unsafe(*s, sz, src, srclen);
 	return 1;
 }
@@ -708,7 +708,7 @@ jstr_assign_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (*cap < srclen)
-		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, srclen * JSTR_ALLOC_MULTIPLIER, return 0);
+		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, srclen * JSTR_ALLOC_MULTIPLIER, return 0);
 	*sz = jstr_assign_len_p_unsafe(*s, src, srclen) - *s;
 	return 1;
 }
@@ -743,7 +743,7 @@ jstr_push_back(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
+		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
 	*sz = jstr_push_back_p_unsafe(*s, *sz, c) - *s;
 	return 1;
 }
@@ -778,7 +778,7 @@ jstr_push_front(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		JSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
+		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
 	*sz = jstr_push_front_p_unsafe(*s, *sz, c) - *s;
 	return 1;
 }
@@ -1099,7 +1099,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(arglen == -1))
 		goto err;
-	JSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	PJSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(*s, fmt, ap);
 	va_end(ap);
@@ -1132,7 +1132,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(arglen == -1))
 		goto err;
-	JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data, fmt, ap);
 	va_end(ap);
@@ -1169,7 +1169,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(arglen == -1))
 		goto err;
 	arglen += *sz;
-	JSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	PJSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
@@ -1204,7 +1204,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(arglen == -1))
 		goto err;
 	arglen += j->size;
-	JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
@@ -1241,7 +1241,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(arglen == -1))
 		goto err;
 	arglen += start_idx;
-	JSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	PJSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
@@ -1276,7 +1276,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(arglen == -1))
 		goto err;
 	arglen += start_idx;
-	JSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
 	arglen = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
