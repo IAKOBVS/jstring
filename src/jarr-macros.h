@@ -38,18 +38,19 @@ PJSTR_END_DECLS
 		JSTR_ASSERT_IS_SIZE(new_cap);                               \
 		if (jstr_unlikely(old_cap == 0))                            \
 			old_cap = JSTR_MIN_CAP / P_JARR_ALLOC_MULTIPLIER;   \
-		while (((old_cap) *= P_JARR_GROWTH) < (new_cap))            \
-			;                                                   \
+		do                                                          \
+			(old_cap) *= P_JARR_GROWTH;                         \
+		while ((old_cap) < (new_cap));                              \
 		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
-#define P_JARR_REALLOC(j, new_cap, do_on_malloc_err)                                                                   \
-	do {                                                                                                           \
-		P_JARR_CHECK_ARG(j);                                                                                   \
-		P_JARR_GROW(P_JARR_CAP(j), new_cap);                                                                   \
-		P_JARR_CAP(j) = P_JARR_ALIGN_UP(P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                     \
-		P_JARR_DATA(j) = PJSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j)));                                   \
-		PJSTR_MALLOC_ERR(P_JARR_DATA(j), do_on_malloc_err);                                                                                       \
-		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                     \
+#define P_JARR_REALLOC(j, new_cap, do_on_malloc_err)                                                                    \
+	do {                                                                                                            \
+		P_JARR_CHECK_ARG(j);                                                                                    \
+		P_JARR_GROW(P_JARR_CAP(j), new_cap);                                                                    \
+		P_JARR_CAP(j) = P_JARR_ALIGN_UP(P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                      \
+		P_JARR_DATA(j) = PJSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j))); \
+		PJSTR_MALLOC_ERR(P_JARR_DATA(j), do_on_malloc_err);                                                     \
+		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                      \
 	} while (0)
 #define P_JARR_REALLOCEXACT(j, new_cap, do_on_malloc_err)                                                               \
 	do {                                                                                                            \
