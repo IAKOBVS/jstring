@@ -1240,7 +1240,7 @@ JSTR_NOEXCEPT
 /* Convert snake_case to camelCase. */
 JSTR_FUNC
 static char *
-jstr_toCamelCase_p(char *R s)
+jstr_toCamelCaseP(char *R s)
 {
 #if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, '_');
