@@ -1642,6 +1642,11 @@ JSTR_NOEXCEPT
 		++src;
 		--srclen;
 	}
+	if (srclen < 4) {
+		while ((*dst++ = *src++))
+			;
+		return dst - 1;
+	}
 	int i = srclen % 3;
 	for (int j = i; j--;)
 		*dst++ = *src++;
