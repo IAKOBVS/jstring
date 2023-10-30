@@ -492,6 +492,23 @@ JSTR_NOEXCEPT
 	}
 }
 
+/*
+   Find last NE in HS.
+   Return value:
+   Pointer to NE;
+   NULL if not found.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_memrmem(const void *R hs,
+	     const size_t hslen,
+	     const void *R ne,
+	     const size_t nelen)
+JSTR_NOEXCEPT
+{
+	return jstr_strrstr_len(hs, hslen, ne, nelen);
+}
+
 #if !JSTR_HAVE_STRCASESTR_OPTIMIZED
 #	define PJSTR_MEMMEM_FN	       pjstr_strcasestr
 #	define PJSTR_MEMMEM_RETTYPE   char *
