@@ -18,7 +18,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define P_JARR_NULLIFY_MEMBERS(j) ((j)->size = 0, (j)->cap = 0)
+#define P_JARR_NULLIFY_MEMBERS(j) (P_JARR_SZ(j) = 0, P_JARR_CAP(j) = 0)
 #define P_JARR_NULLIFY(j) ((j)->data == NULL, P_JARR_NULLIFY_MEMBERS(j))
 
 #define JARR_INIT {0}

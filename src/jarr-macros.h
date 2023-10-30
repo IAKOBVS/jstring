@@ -47,7 +47,7 @@ PJSTR_END_DECLS
 		P_JARR_CHECK_ARG(j);                                                                                   \
 		P_JARR_GROW(P_JARR_CAP(j), new_cap);                                                                   \
 		P_JARR_CAP(j) = P_JARR_ALIGN_UP(P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                     \
-		P_JARR_DATA(j) = PJSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j));                                   \
+		P_JARR_DATA(j) = PJSTR_CAST(P_JARR_DATA(j), realloc(P_JARR_DATA(j), P_JARR_CAP(j) * P_JARR_ELEMSZ(j)));                                   \
 		PJSTR_MALLOC_ERR(P_JARR_DATA(j), do_on_malloc_err);                                                                                       \
 		P_JARR_CAP(j) /= P_JARR_ELEMSZ(j);                                                                     \
 	} while (0)
