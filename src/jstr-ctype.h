@@ -201,6 +201,7 @@ JSTR_NOEXCEPT
 
 /*
    Copy SRC to DST touppered.
+   Return pointer to '\0' in DST.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -216,6 +217,7 @@ JSTR_NOEXCEPT
 
 /*
    Copy SRC to DST tolowered.
+   Return pointer to '\0' in DST.
 */
 JSTR_FUNC
 JSTR_INLINE
