@@ -1237,6 +1237,53 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
+/* Convert snake_case to camelCase. */
+JSTR_FUNC
+static char *
+jstr_toCamelCase_p(char *R s)
+{
+#if JSTR_HAVE_STRCHRNUL
+	s = strchrnul(s, '_');
+#else
+	for (; *s && *s != '_'; ++s)
+		;
+#endif
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	const char *src = s;
+	goto start;
+	for (; *src; ++src)
+		if (jstr_likely(*src != '_'))
+			*s++ = *src;
+		else
+start:
+			*s++ = jstr_toupper(*++src);
+	*s = '\0';
+	return s;
+}
+
+/* Convert camelCase to snake_case. */
+JSTR_FUNC
+static char *
+jstr_to_snake_case_p(char *R s)
+{
+	for (*s = jstr_tolower(*s); *s && !jstr_isupper(*s); ++s)
+		;
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	const char *end = s + strlen(s);
+	goto start;
+	for (; *s; ++s)
+		if (jstr_isupper(*s)) {
+start:
+			jstr_strmove_len(s + 1, s, end++ - s);
+			*s++ = '_';
+			*s = jstr_tolower(*s);
+		}
+	*s = '\0';
+	return s;
+}
+
 PJSTR_END_DECLS
 
 #undef R
