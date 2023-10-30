@@ -1,6 +1,6 @@
 #!/bin/sh
 for file in $(echo glibc-*.h); do
 	#shellcheck disable=SC2005
-	echo "$(perl ./renamespace-glibc.pl "$file")" >"$file" &
+	echo "$(perl renamespace-glibc.pl "$file")" >"$file" &
 done
 wait

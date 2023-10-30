@@ -1,16 +1,4 @@
 #!/bin/sh
 ./clone-glibc || exit 1
-find glibc -type f -name 'string-*fz*' -o -name 'string-*shift*' -o -name 'string-*misc*' -o -name 'string-*op*.h' |
-	sed '
-	s/\(.*\)/\1 \1/;
-	s/ .*sysdeps\/\(.*\)/ \1/;
-	s/ \([^/]*\)\// \1-/ ;
-	s/ \([^/]*\)\// \1-/;
-	s/ / glibc-/
-	' |
-	while read -r lines; do
-		# shellcheck disable=SC2086
-		cp -f $lines &
-	done &
-	wait
+perl update-glibc.pl
 ./tidy-glibc
