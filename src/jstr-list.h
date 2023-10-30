@@ -24,7 +24,9 @@
 				  p < jstr_l_ty_end_;                                                          \
 				  ++p)
 
-#define jstr_l_foreachi(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); i < jstr_l_ty_end_; ++i)
+#define jstr_l_foreachi(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); \
+				   i < jstr_l_ty_end_;                               \
+				   ++i)
 
 #define JSTR_L_INIT \
 	{           \
