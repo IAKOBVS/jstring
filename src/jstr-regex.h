@@ -184,7 +184,7 @@ JSTR_NONNULL(1)
 JSTR_NONNULL(2)
 JSTR_INLINE
 JSTR_WARN_UNUSED
-JSTR_PURE
+JSTR_FUNC_PURE
 JSTR_NOTHROW
 static jstr_re_errcode_ty
 jstr_re_exec(const regex_t *R preg,
