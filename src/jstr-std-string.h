@@ -180,6 +180,9 @@ JSTR_NOEXCEPT
 	return (const char *)(y > UINTPTR_MAX - x ? UINTPTR_MAX : x + y);
 }
 
+/*
+   strchr() before s + N.
+*/
 JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *R s,
