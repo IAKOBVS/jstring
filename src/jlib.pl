@@ -6,11 +6,10 @@ use warnings;
 # @returns {$} file_str
 sub jl_file_get_str {
 	my ($fname_ref) = @_;
-	my $file_str;
 	local $/;
 	open(my $FH, '<', $$fname_ref)
 	  or die("Can't open $$fname_ref\n");
-	$file_str = <$FH>;
+	my $file_str = <$FH>;
 	close($FH);
 	return $file_str;
 }
@@ -151,11 +150,11 @@ sub jl_arg_is_ptr_ptr {
 sub jl_fn_get {
 	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref) = @_;
 	if ($$block_str_ref =~ /((?:.|\n)*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/) {
-		$$attr_ref    = $1                  if (defined($attr_ref));
-		$$rettype_ref = $2                  if (defined($rettype_ref));
-		$$name_ref    = $3                  if (defined($name_ref));
+		$$attr_ref    = $1                   if (defined($attr_ref));
+		$$rettype_ref = $2                   if (defined($rettype_ref));
+		$$name_ref    = $3                   if (defined($name_ref));
 		@$arg_arr_ref = jl_arg_to_array(\$4) if (defined($arg_arr_ref));
-		$$body_ref    = $5                  if (defined($body_ref));
+		$$body_ref    = $5                   if (defined($body_ref));
 		return 1;
 	}
 	return 0;
