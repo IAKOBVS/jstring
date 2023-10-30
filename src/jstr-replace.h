@@ -1241,7 +1241,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static char *
 jstr_toCamelCaseP(char *R s)
+JSTR_NOEXCEPT
 {
+
 #if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, '_');
 #else
@@ -1269,6 +1271,7 @@ start:
 JSTR_FUNC
 static char *
 jstr_to_snake_case_p(char *R s)
+JSTR_NOEXCEPT
 {
 	for (*s = jstr_tolower(*s); *s && !jstr_isupper(*s); ++s)
 		;
