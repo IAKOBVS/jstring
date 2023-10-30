@@ -103,14 +103,6 @@ JSTR_NOEXCEPT
 #endif
 }
 
-JSTR_INLINE
-static const char *
-jstr_sadd(uintptr_t x, uintptr_t y)
-JSTR_NOEXCEPT
-{
-	return (const char *)(y > UINTPTR_MAX - x ? UINTPTR_MAX : x + y);
-}
-
 #if JSTR_HAVE_MEMRCHR
 JSTR_INLINE
 #endif
@@ -180,6 +172,14 @@ JSTR_NOEXCEPT
 	return (void *)memchr(s, c, JSTR_MIN(n, sz));
 }
 
+JSTR_INLINE
+static const char *
+pjstr_sadd(uintptr_t x, uintptr_t y)
+JSTR_NOEXCEPT
+{
+	return (const char *)(y > UINTPTR_MAX - x ? UINTPTR_MAX : x + y);
+}
+
 JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *R s,
@@ -197,7 +197,7 @@ JSTR_NOEXCEPT
 	uintptr_t s_int = (uintptr_t)s;
 	w_ty word = jstr_word_toword(word_ptr);
 	w_ty repeated_c = jstr_word_repeat_bytes(c);
-	const char *const lbyte = jstr_sadd(s_int, n - 1);
+	const char *const lbyte = pjstr_sadd(s_int, n - 1);
 	const w_ty *const lword = (w_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(w_ty));
 	w_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
