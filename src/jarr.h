@@ -90,7 +90,7 @@ PJSTR_END_DECLS
 	} while (0)
 #define jarr_at(j, index)                                                                                                                               \
 	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : (P_JARR_ERR_EXIT_MSG(__FILE__, __LINE__, JSTR_ASSERT_FUNC, "Index out of bounds.")))
-#define jarr_foreach(j, iterator)                                                                                                                       \
+#define jarr_foreachi(j, iterator)                                                                                                                       \
 	for (size_t iterator = 0, _max_elem_##iterator = (j)->size; iterator < _max_elem_##iterator; ++iterator)
 
 PJSTR_BEGIN_DECLS
