@@ -124,22 +124,22 @@ PJSTR_REPEAT_CTYPE(PJSTR_SKIP_CTYPE)
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_isctype_str(const char *R s,
-		 const jstr_ctype_ty ctype)
+jstr_isctypestr(const char *R s,
+		const jstr_ctype_ty ctype)
 JSTR_NOEXCEPT
 {
 	return jstr_likely(*s) && *(jstr_skip_ctype(s, ctype) + 1) == '\0';
 }
 
-#define PJSTR_ISCTYPE_STR(ctype, ctype_enum)            \
-	/* ASCII. */                                    \
-	JSTR_INLINE                                     \
-	JSTR_FUNC_PURE                                  \
-	static int                                      \
-	jstr_is##ctype##_str(const char *R s)           \
-	JSTR_NOEXCEPT                                   \
-	{                                               \
-		return jstr_isctype_str(s, ctype_enum); \
+#define PJSTR_ISCTYPE_STR(ctype, ctype_enum)           \
+	/* ASCII. */                                   \
+	JSTR_INLINE                                    \
+	JSTR_FUNC_PURE                                 \
+	static int                                     \
+	jstr_is##ctype##str(const char *R s)           \
+	JSTR_NOEXCEPT                                  \
+	{                                              \
+		return jstr_isctypestr(s, ctype_enum); \
 	}
 
 PJSTR_REPEAT_CTYPE(PJSTR_ISCTYPE_STR)
@@ -181,7 +181,7 @@ PJSTR_REPEAT_CTYPE(PJSTR_SKIP_CTYPE_REV)
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_toupper_str(char *R s)
+jstr_toupperstr(char *R s)
 JSTR_NOEXCEPT
 {
 	while ((*s = jstr_toupper(*s)))
@@ -192,11 +192,41 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_tolower_str(char *R s)
+jstr_tolowerstr(char *R s)
 JSTR_NOEXCEPT
 {
 	while ((*s = jstr_tolower(*s)))
 		++s;
+}
+
+/*
+   Copy SRC to DST touppered.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_toupperstrcpy_p(char *R dst,
+		     const char *R src)
+JSTR_NOEXCEPT
+{
+	while ((*dst++ = jstr_tolower(*src++)))
+		;
+	return dst - 1;
+}
+
+/*
+   Copy SRC to DST tolowered.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_tolowerstrcpy_p(char *R dst,
+		     const char *R src)
+JSTR_NOEXCEPT
+{
+	while ((*dst++ = jstr_tolower(*src++)))
+		;
+	return dst - 1;
 }
 
 PJSTR_END_DECLS
