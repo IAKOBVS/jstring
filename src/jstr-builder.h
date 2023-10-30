@@ -824,7 +824,7 @@ JSTR_NOEXCEPT
 	return fwrite(s, 1, sz, fp) == sz;
 }
 
-#if 1
+#if 0
 
 JSTR_FUNC
 static int
