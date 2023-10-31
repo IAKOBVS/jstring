@@ -15,9 +15,9 @@
 		do_on_malloc_err;                                   \
 	}
 
-#define JSTR_L_RESERVE(list, new_cap, do_on_malloc_err) \
+#define PJSTR_L_RESERVE(list, new_cap, do_on_malloc_err) \
 	PJSTR_L_RESERVE_FAIL(jstr_l_reserve, list, new_cap, do_on_malloc_err)
-#define JSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_malloc_err) \
+#define PJSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_malloc_err) \
 	PJSTR_L_RESERVE_FAIL(jstr_l_reserve_always, list, new_cap, do_on_malloc_err)
 
 #define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = ((l)->data) + ((l)->size); \
@@ -135,7 +135,7 @@ jstr_l_reserve(jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
-		JSTR_L_RESERVE_ALWAYS(l, new_cap, return 0);
+		PJSTR_L_RESERVE_ALWAYS(l, new_cap, return 0);
 	return 1;
 }
 
@@ -168,7 +168,7 @@ jstr_l_add_len(jstr_l_ty *R l,
 	       const size_t slen)
 JSTR_NOEXCEPT
 {
-	JSTR_L_RESERVE(l, (l->capacity != 0) ? (l->capacity * 2) : 2, goto err);
+	PJSTR_L_RESERVE(l, (l->capacity != 0) ? (l->capacity * 2) : 2, goto err);
 	if (jstr_unlikely(
 	    !jstr_l_add_len_unsafe(l, s, slen)))
 		goto err;
@@ -196,7 +196,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return 1;
-	JSTR_L_RESERVE(l, argc, return 0);
+	PJSTR_L_RESERVE(l, argc, return 0);
 	va_start(ap, l);
 	jstr_ty *j = l->data;
 	l->size = 0;
@@ -232,7 +232,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return 1;
-	JSTR_L_RESERVE(l, argc, return 0);
+	PJSTR_L_RESERVE(l, argc, return 0);
 	va_start(ap, l);
 	jstr_ty *j = l->data + l->size;
 	for (size_t arglen; (arg = va_arg(ap, char *)); ++j) {
