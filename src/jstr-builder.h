@@ -826,6 +826,19 @@ JSTR_NOEXCEPT
 	return fwrite(s, 1, sz, fp) == sz;
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_io_fwriteln(const char *R s,
+		 const size_t sz,
+		 FILE *R fp)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(fwrite(s, 1, sz, fp) != sz))
+		return 0;
+	return fputc('\n', fp) == '\n';
+}
+
 #if 0
 
 JSTR_FUNC
