@@ -1648,10 +1648,8 @@ JSTR_NOEXCEPT
 		return dst - 1;
 	}
 	int i = srclen % 3;
-	for (int j = i; j--;)
-		*dst++ = *src++;
-	if (*src == '\0')
-		goto ret;
+	for (int j = i; j--; *dst++ = *src++)
+		;
 	if (i) {
 		*dst++ = separator;
 		i = 0;
@@ -1666,7 +1664,6 @@ JSTR_NOEXCEPT
 			*dst++ = *src++;
 		}
 	}
-ret:
 	*dst = '\0';
 	return dst;
 }
