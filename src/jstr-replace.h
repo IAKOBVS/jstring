@@ -301,7 +301,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Replace all REJECT in S with RPLC.
+  Replace first group of REJECT in S with RPLC.
 */
 JSTR_FUNC_VOID
 static void
@@ -317,7 +317,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Replace all REJECT in S with RPLC.
+  Replace first group of REJECT in S with RPLC.
   Return value:
   Pointer to '\0' in S;
 */
@@ -338,7 +338,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Replace all REJECT in S with RPLC.
+  Replace first group of REJECT in S with RPLC.
   Return value:
   Pointer to '\0' in S;
 */
@@ -379,7 +379,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Remove all REJECT in S.
+  Remove first group of REJECT in S.
   Return value:
   Pointer to '\0' in S;
 */
@@ -398,7 +398,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Remove all REJECT in S.
+  Remove first group of REJECT in S.
   Return value:
   Pointer to '\0' in S;
 */
