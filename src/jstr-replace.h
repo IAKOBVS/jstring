@@ -312,8 +312,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)
 	    && (*(s += strcspn(s, reject))))
-		for (const char *const p = s + strspn(s, reject); s < p; *s++ = rplc)
-			;
+		memset(s, rplc, strspn(s, reject));
 }
 
 /*
@@ -330,8 +329,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)
 	    && (*(s += strcspn(s, reject)))) {
-		for (const char *const p = s + strspn(s, reject); s < p; *s++ = rplc)
-			;
+		s = jstr_stpset_len(s, rplc, strspn(s, reject));
 		return s + strlen(s);
 	}
 	return s;
@@ -355,8 +353,7 @@ JSTR_NOEXCEPT
 		if (*(s += strcspn(s, reject))) {
 			const char *const p = s + strspn(s, reject);
 			end += (p - s);
-			for (; s < p; *s++ = rplc)
-				;
+			memset(s, rplc, p - s);
 			return (char *)end;
 		}
 	}
@@ -375,10 +372,8 @@ jstr_rplcallspn_p(char *R s,
 		  const int rplc)
 JSTR_NOEXCEPT
 {
-	const char *p;
-	while (*s && (*(s += strcspn(s, reject))))
-		for (p = s + strspn(s, reject); s < p; *s++ = rplc)
-			;
+	for (; *s && (*(s += strcspn(s, reject))); s = jstr_stpset_len(s, rplc, strspn(s, reject)))
+		;
 	return s;
 }
 

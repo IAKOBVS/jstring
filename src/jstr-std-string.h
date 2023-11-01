@@ -21,6 +21,26 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+JSTR_FUNC
+JSTR_INLINE
+static void *
+jstr_mempset(void *s,
+	     const int c,
+	     const size_t n)
+{
+	return (char *)memset(s, c, n) + n;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_stpset_len(char *s,
+		const int c,
+		const size_t n)
+{
+	return (char *)memset(s, c, n) + n;
+}
+
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
