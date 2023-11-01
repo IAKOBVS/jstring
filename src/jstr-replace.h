@@ -302,6 +302,22 @@ JSTR_NOEXCEPT
 
 /*
   Replace all REJECT in S with RPLC.
+*/
+JSTR_FUNC_VOID
+static void
+jstr_rplcspn(char *R s,
+	     const char *R reject,
+	     const int rplc)
+JSTR_NOEXCEPT
+{
+	if (jstr_likely(*s)
+	    && (*(s += strcspn(s, reject))))
+		for (const char *const p = s + strspn(s, reject); s < p; *s++ = rplc)
+			;
+}
+
+/*
+  Replace all REJECT in S with RPLC.
   Return value:
   Pointer to '\0' in S;
 */
@@ -312,10 +328,12 @@ jstr_rplcspn_p(char *R s,
 	       const int rplc)
 JSTR_NOEXCEPT
 {
-	const char *p;
-	while (*s && (*(s += strcspn(s, reject))))
-		for (p = s + strspn(s, reject); s < p; *s++ = rplc)
+	if (jstr_likely(*s)
+	    && (*(s += strcspn(s, reject)))) {
+		for (const char *const p = s + strspn(s, reject); s < p; *s++ = rplc)
 			;
+		return s + strlen(s);
+	}
 	return s;
 }
 
@@ -324,14 +342,40 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_FUNC_VOID
-static void
-jstr_rplcspn_j(jstr_ty *R j,
-	       const char *R reject,
-	       const int rplc)
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_rplcspn_len_p(char *R s,
+		   const char *R reject,
+		   const size_t sz,
+		   const int rplc)
 JSTR_NOEXCEPT
 {
-	j->size = jstr_rplcspn_p(j->data, reject, rplc) - j->data;
+	if (jstr_likely(*s)
+	    && (*(s += strcspn(s, reject)))) {
+		for (const char *const p = s + strspn(s, reject); s < p; *s++ = rplc)
+			;
+		return s + sz;
+	}
+	return s;
+}
+
+/*
+  Replace all REJECT in S with RPLC.
+  Return value:
+  Pointer to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_rplcallspn_p(char *R s,
+		  const char *R reject,
+		  const int rplc)
+JSTR_NOEXCEPT
+{
+	const char *p;
+	while (*s && (*(s += strcspn(s, reject))))
+		for (p = s + strspn(s, reject); s < p; *s++ = rplc)
+			;
+	return s;
 }
 
 /*
@@ -345,6 +389,45 @@ jstr_rmspn_p(char *R s,
 	     const char *R reject)
 JSTR_NOEXCEPT
 {
+	if (jstr_likely(*s)
+	    && (*(s += strcspn(s, reject)))) {
+		char *const p = s + strspn(s, reject);
+		return jstr_stpmove_len(p, s, strlen(s));
+	}
+	return s;
+}
+
+/*
+  Remove all REJECT in S.
+  Return value:
+  Pointer to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_rmspn_len_p(char *R s,
+		 const char *R reject,
+		 const size_t sz)
+JSTR_NOEXCEPT
+{
+	if (jstr_likely(*s)
+	    && (*(s += strcspn(s, reject)))) {
+		char *const p = s + strspn(s, reject);
+		return jstr_stpmove_len(p, s, sz);
+	}
+	return s;
+}
+
+/*
+  Remove all REJECT in S.
+  Return value:
+  Pointer to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_rmallspn_p(char *R s,
+		const char *R reject)
+JSTR_NOEXCEPT
+{
 	typedef unsigned char u;
 	unsigned char *dst = (u *)s;
 	const unsigned char *oldp = dst;
@@ -354,19 +437,6 @@ JSTR_NOEXCEPT
 	if (jstr_likely(p != oldp))
 		return jstr_stpmove_len(dst, oldp, p - oldp);
 	return (char *)p;
-}
-
-/*
-  Remove all REJECT in S.
-*/
-JSTR_INLINE
-JSTR_FUNC_VOID
-static void
-jstr_rmspn_j(jstr_ty *R j,
-	     const char *R reject)
-JSTR_NOEXCEPT
-{
-	j->size = jstr_rmspn_p(j->data, reject) - j->data;
 }
 
 JSTR_FUNC_RET_NONNULL
@@ -814,37 +884,6 @@ JSTR_NOEXCEPT
 	return jstr_rmall_len_p(s, find, strlen(s), findlen);
 }
 
-/*
-  Remove all SEARC in S.
-  Return value:
-  Pointer to '\0' in S.
-*/
-JSTR_INLINE
-JSTR_FUNC_VOID
-static void
-jstr_rmall_len_j(jstr_ty *R j,
-		 const char *R find,
-		 const size_t findlen)
-JSTR_NOEXCEPT
-{
-	j->size = jstr_rmall_len_p(j->data, find, j->size, findlen) - j->data;
-}
-
-/*
-  Remove all SEARC in S.
-  Return value:
-  Pointer to '\0' in S.
-*/
-JSTR_INLINE
-JSTR_FUNC_VOID
-static void
-jstr_rmall_j(jstr_ty *R j,
-	     const char *R find)
-JSTR_NOEXCEPT
-{
-	return jstr_rmall_len_j(j, find, strlen(find));
-}
-
 JSTR_INLINE
 JSTR_FUNC
 static int
@@ -1131,20 +1170,6 @@ jstr_trim_p(char *R s)
 JSTR_NOEXCEPT
 {
 	return jstr_trim_len_p(s, strlen(s));
-}
-
-/*
-  Trim leading and trailing [\n\t\v\r ] in S.
-  Return value:
-  ptr to '\0' in S;
-*/
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_trim_j(jstr_ty *R j)
-JSTR_NOEXCEPT
-{
-	j->size = jstr_trim_len_p(j->data, j->size) - j->data;
 }
 
 /*
