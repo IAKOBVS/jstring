@@ -1,2 +1,2 @@
 #!/bin/sh
-cd ./src && ./clean
+./src/clean

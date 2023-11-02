@@ -1,4 +1,5 @@
 #!/bin/sh
+cd "$(dirname "$0")" || exit
 for file in $(echo _glibc-*.h); do
 	#shellcheck disable=SC2005
 	echo "$(perl renamespace-glibc.pl "$file")" >"$file" &
