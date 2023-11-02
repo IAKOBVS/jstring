@@ -21,6 +21,8 @@ main()
 			1, 2, 3, 4, 5);
 	T(jarr_pop_front(&j),
 			2, 3, 4, 5);
+	T(jarr_push_front(&j, 1),
+			1, 2, 3, 4, 5);
 	jarr_free(&j);
 	return 0;
 }
