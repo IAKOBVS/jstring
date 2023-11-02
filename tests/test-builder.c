@@ -38,11 +38,11 @@ main(int argc, char **argv)
 	const char *hello4 = "hello hello hello hello";
 	assert(jstr_assign_len(&j.data, &j.size, &j.capacity, hello4, strlen(hello4)));
 	expected = "world hello hello hello";
-	T_APPEND(jstr_replace_len, &j.data, &j.size, &j.capacity, "hello", "world", strlen("hello"), strlen("world"));
+	T_APPEND(jstr_rplc_len, &j.data, &j.size, &j.capacity, "hello", "world", strlen("hello"), strlen("world"));
 
 	assert(jstr_assign_len(&j.data, &j.size, &j.capacity, hello4, strlen(hello4)));
 	expected = "world world world world";
-	T_APPEND(jstr_replaceall_len, &j.data, &j.size, &j.capacity, "hello", "world", strlen("hello"), strlen("world"));
+	T_APPEND(jstr_rplcall_len, &j.data, &j.size, &j.capacity, "hello", "world", strlen("hello"), strlen("world"));
 
 	SUCCESS();
 	return 0;
