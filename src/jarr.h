@@ -5,9 +5,7 @@
 
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
-#include <stdarg.h>
 PJSTR_END_DECLS
 
 #include "jstr-builder.h"
