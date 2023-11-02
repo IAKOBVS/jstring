@@ -111,20 +111,20 @@ PJSTR_END_DECLS
 #define jarr_pop_front(j)                                                 \
 	do {                                                              \
 		PJARR_CHECK_ARG(j);                                       \
-		if (jstr_unlikely(PJARR_CAP(j) == 0))                     \
+		if (jstr_unlikely(PJARR_CAP(j) == 0)) {                   \
 			PJARR_NULLIFY_MEMBERS(j);                         \
-		break;                                                    \
-		;                                                         \
+			break;                                            \
+		};                                                        \
 		memmove(PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j)); \
 	} while (0)
 /* Pop end of PTR. */
 #define jarr_pop_back(j)                                 \
 	do {                                             \
 		PJARR_CHECK_ARG(j);                      \
-		if (jstr_unlikely(PJARR_CAP(j) == 0))    \
+		if (jstr_unlikely(PJARR_CAP(j) == 0)) {  \
 			PJARR_NULLIFY_MEMBERS(j);        \
-		break;                                   \
-		;                                        \
+			break;                           \
+		};                                       \
 		*(PJARR_DATA(j) + --PJARR_SZ(j)) = '\0'; \
 	} while (0)
 /* Push VAL to back of PTR. */
