@@ -64,36 +64,11 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 JSTR_INLINE
-static char *
-jstr_stpset(char *R s,
-	    const int c)
-JSTR_NOEXCEPT
-{
-	const size_t n = strlen(s);
-	return (char *)memset(s, c, n) + n;
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
-static char *
-jstr_strset(char *R s,
-	    const int c)
-JSTR_NOEXCEPT
-{
-	const size_t n = strlen(s);
-	return (char *)memset(s, c, n);
-}
-
-/*
-   Return pointer to '\0' in S.
-*/
-JSTR_FUNC_VOID
-JSTR_INLINE
-static char *
+static void
 jstr_strzero(char *R s)
 JSTR_NOEXCEPT
 {
-	return jstr_strset(s, 0);
+	memset(s, 0, strlen(s));
 }
 
 /*
@@ -105,7 +80,8 @@ static char *
 jstr_stpzero(char *R s)
 JSTR_NOEXCEPT
 {
-	return jstr_stpset(s, 0);
+	const size_t n = strlen(s);
+	return (char *)memset(s, 0, n) + n;
 }
 
 JSTR_FUNC_PURE

@@ -529,6 +529,28 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
+JSTR_FUNC_VOID
+JSTR_INLINE
+static char *
+jstr_stpset(char *R s,
+	    const int c)
+JSTR_NOEXCEPT
+{
+	const size_t n = strlen(s);
+	return (char *)memset(s, c, n) + n;
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_strset(char *R s,
+	    const int c)
+JSTR_NOEXCEPT
+{
+	const size_t n = strlen(s);
+	memset(s, c, n);
+}
+
 JSTR_FUNC
 JSTR_INLINE
 static char *
