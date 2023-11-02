@@ -2,9 +2,7 @@
 for header in $(echo ./tests/*.c); do
 	{
 	basename=${header%.*}
-	if ! test -e "$basename" || test "$basename" -ot "$header"; then
-		cc "$header" -o "$basename"
-	fi
+	cc "$header" -o "$basename"
 	./"$basename"
 	} &
 done

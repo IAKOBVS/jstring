@@ -592,7 +592,7 @@ JSTR_NOEXCEPT
 	c = (char)jstr_tolower(c);
 	for (; *s && jstr_tolower(*s) != c; ++s)
 		;
-	return (*s && jstr_tolower(*s) != c) ? (char *)s : NULL;
+	return (*s && jstr_tolower(*s) == c) ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -606,7 +606,7 @@ JSTR_NOEXCEPT
 	c = (char)jstr_tolower(c);
 	for (; n-- && jstr_tolower(*s) != c; ++s)
 		;
-	return (n && jstr_tolower(*s) != c) ? (char *)s : NULL;
+	return (n && jstr_tolower(*s) == c) ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -757,6 +757,8 @@ JSTR_NOEXCEPT
 	hs = is_isalpha0 ? pjstr_strcasechr_generic(hs, *ne) : strchr(hs, *ne);
 	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
+	if (hs == NULL)
+		assert(0);
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
 	is_isalpha0 |= jstr_isalpha(ne[1]);
