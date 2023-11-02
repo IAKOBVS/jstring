@@ -35,6 +35,9 @@ PJSTR_END_DECLS
 		0 \
 	}
 
+#define jstr_at(j, idx) \
+	(jstr_likely(i < ((j)->size)) ? (((j)->data) + i) : (jstr_err_exit("Index out of bounds."), (char *)0));
+
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); \
 				  ptr < jstr_ty_end_;                                                       \
 				  ++ptr)
@@ -90,8 +93,8 @@ PJSTR_END_DECLS
 
 #define JSTR_MIN_ALLOC(cap)	 (((cap) > JSTR_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
 #define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
-#define jstr_err(msg)		 pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
-#define jstr_err_exit(msg)	 pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg);
+#define jstr_err(msg)		 pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
+#define jstr_err_exit(msg)	 pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
 
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define PJSTR_EXIT_MAYBE() jstr_err_exit("")
