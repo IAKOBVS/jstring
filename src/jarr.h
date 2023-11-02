@@ -93,7 +93,7 @@ PJSTR_END_DECLS
 #define PJARR_REALLOCEXACT(j, new_cap)                                                                             \
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
-		PJARR_CAP(j) = PJARR_ALIGN_UP(PJARR_CAP(j) * PJARR_ELEMSZ);                                        \
+		PJARR_CAP(j) = PJARR_ALIGN_UP(PJARR_CAP(j) * PJARR_ELEMSZ(j));                                        \
 		PJARR_DATA(j) = PJSTR_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
 		if (jarr_chk(j))                                                                                   \
 			break;                                                                                     \
@@ -178,7 +178,7 @@ PJSTR_END_DECLS
 		[0] = (value);                                                  \
 	} while (0)
 #define jarr_at(j, idx) \
-	(jstr_likely(idx < PJARR_SZ(j)) ? (PJARR_DATA(j) + (idx)) : (jstr_err_exit("Index out of bounds."), 0))
+	(jstr_likely(idx < PJARR_SZ(j)) ? (PJARR_DATA(j) + (idx)) : (jstr_err_exit("Index out of bounds."), PJARR_DATA(j)))
 #define jarr_foreachi(j, iterator) \
 	for (size_t iterator = 0, _max_elem_##iterator = (j)->size; iterator < _max_elem_##iterator; ++iterator)
 
