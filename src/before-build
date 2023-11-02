@@ -1,7 +1,5 @@
 #!/bin/sh
 cd "$(dirname "$0")" || exit
-cd ../bin || exit
-./build
-cd - || exit
+../bin/build
 ./check-little-endian
 ./check-page-size

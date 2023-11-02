@@ -1,4 +1,19 @@
 #!/bin/sh
 cd "$(dirname "$0")" || exit
 ./before-build
-./build-funcs
+update_if_needed()
+{
+	out_fname=../jstr/$1
+	test -e "$out_fname" &&
+		test "$1" -ot "$out_fname" && exit 0
+	perl generate-func.pl "$1" >"$out_fname"
+	echo "Built $1."
+}
+mkdir -p ../jstr
+for file in $(echo *.h | tr ' ' '\n' | grep -v '^_glibc'); do
+	update_if_needed "$file" &
+done &
+for file in $(echo _glibc-*.h); do
+	update_if_needed "$file" &
+done
+wait

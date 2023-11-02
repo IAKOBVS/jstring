@@ -1,4 +1,0 @@
-#!/bin/sh
-cd "$(dirname "$0")" || exit
-./before-build
-./build-funcs '0' 

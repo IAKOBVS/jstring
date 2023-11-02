@@ -1,4 +1,0 @@
-#!/bin/sh
-cd "$(dirname "$0")" || exit
-./build-wo-glibc
-sudo cp -rf jstr/*.h /usr/local/include/jstr
