@@ -91,6 +91,7 @@ PJSTR_END_DECLS
 	do {                         \
 		free(PJARR_DATA(j)); \
 		PJARR_NULLIFY(j);    \
+		PJARR_NULLIFY(j);    \
 	} while (0)
 #define jarr_err_exit(j)                                                      \
 	do {                                                                  \
@@ -195,6 +196,5 @@ PJARR_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
 PJSTR_END_DECLS
 
 #undef R
-#undef PJARR_NULLIFY
 
 #endif /* JARR_H */
