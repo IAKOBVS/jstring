@@ -45,6 +45,25 @@ PJSTR_END_DECLS
 #define PJARR_MIN_ALLOC(j, new_cap)	 JSTR_MIN_ALLOC(PJARR_ALIGN_UP((size_t)(((new_cap)*PJARR_ELEMSZ(j) * PJARR_ALLOC_MULTIPLIER))))
 #define PJARR_MIN_ALLOCEXACT(j, new_cap) JSTR_MIN_ALLOCEXACT(PJARR_ALIGN_UP((new_cap)*PJARR_ELEMSZ(j)))
 
+#define jarr_chk(j)	   (jstr_unlikely(PJARR_DATA(j) == NULL))
+#define jarr_err(msg)	   jstr_err(msg)
+#define jarr_err_exit(msg) jstr_err_exit(msg)
+
+#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+#	define PJARR_MALLOC_ERR(j, do_on_malloc_err)         \
+		if (jstr_unlikely((PJARR_DATA(j)) == NULL)) { \
+			PJARR_NULLIFY_MEMBERS(j);             \
+			do_on_malloc_err;                     \
+			jstr_err_exit("");                    \
+		}
+#else
+#	define PJARR_MALLOC_ERR(j, do_on_malloc_err)         \
+		if (jstr_unlikely((PJARR_DATA(j)) == NULL)) { \
+			PJARR_NULLIFY_MEMBERS(j);             \
+			do_on_malloc_err;                     \
+		}
+#endif
+
 #define PJARR_CHECK_ARG(j)                         \
 	do {                                       \
 		JSTR_ASSERT_IS_SIZE(PJARR_SZ(j));  \
@@ -61,21 +80,23 @@ PJSTR_END_DECLS
 		while ((old_cap) < (new_cap));                              \
 		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
-#define PJARR_REALLOC(j, new_cap, do_on_malloc_err)                                                                \
+#define PJARR_REALLOC(j, new_cap)                                                                                  \
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
 		PJARR_GROW(PJARR_CAP(j), new_cap);                                                                 \
 		PJARR_CAP(j) = PJARR_ALIGN_UP(PJARR_CAP(j) * PJARR_ELEMSZ(j));                                     \
 		PJARR_DATA(j) = PJSTR_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
-		PJSTR_MALLOC_ERR(PJARR_DATA(j), do_on_malloc_err);                                                 \
+		if (jarr_chk(j))                                                                                   \
+			break;                                                                                     \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                   \
 	} while (0)
-#define PJARR_REALLOCEXACT(j, new_cap, do_on_malloc_err)                                                           \
+#define PJARR_REALLOCEXACT(j, new_cap)                                                                             \
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
 		PJARR_CAP(j) = PJARR_ALIGN_UP(PJARR_CAP(j) * PJARR_ELEMSZ);                                        \
 		PJARR_DATA(j) = PJSTR_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
-		PJSTR_MALLOC_ERR(PJARR_DATA(j), do_on_malloc_err);                                                 \
+		if (jarr_chk(j))                                                                                   \
+			break;                                                                                     \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                   \
 	} while (0)
 #if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF
@@ -84,30 +105,34 @@ PJSTR_END_DECLS
 #	define PJARR_CHECK_VAL(j, value) JSTR_ASSERT(sizeof(*PJARR_DATA(j)) == value, "Passing illegal value incompatible with the array type.")
 #endif
 
-#define PJARR_NULLIFY_MEMBERS(j) (PJARR_SZ(j) = 0, PJARR_CAP(j) = 0)
-#define PJARR_NULLIFY(j)	 ((j)->data == NULL, PJARR_NULLIFY_MEMBERS(j))
+#define PJARR_NULLIFY_MEMBERS(j)  \
+	do {                      \
+		PJARR_SZ(j) = 0;  \
+		PJARR_CAP(j) = 0; \
+	} while (0)
+#define PJARR_NULLIFY(j)                  \
+	do {                              \
+		PJARR_DATA(j) = NULL;     \
+		PJARR_NULLIFY_MEMBERS(j); \
+	} while (0)
 
 #define jarr_free(j)                 \
 	do {                         \
 		free(PJARR_DATA(j)); \
 		PJARR_NULLIFY(j);    \
-		PJARR_NULLIFY(j);    \
-	} while (0)
-#define jarr_err_exit(j)                                                      \
-	do {                                                                  \
-		if (jstr_unlikely((j)->data == NULL))                         \
-			pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC); \
 	} while (0)
 
 /* Add elements to end of PTR. */
-#define jarr_cat(j, ...)                                                                       \
-	do {                                                                                   \
-		PJARR_CHECK_ARG(j);                                                            \
-		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                           \
-		if (jstr_unlikely(PJARR_CAP(j) <= (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)))) \
-			PJARR_REALLOC(j, PJARR_CAP(j), PJARR_NULLIFY_MEMBERS(j); break;);      \
-		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);             \
-		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                     \
+#define jarr_cat(j, ...)                                                                         \
+	do {                                                                                     \
+		PJARR_CHECK_ARG(j);                                                              \
+		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                             \
+		if (jstr_unlikely(PJARR_CAP(j) <= (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)))) { \
+			PJARR_REALLOC(j, (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)));            \
+			PJARR_MALLOC_ERR(j, break)                                               \
+		}                                                                                \
+		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);               \
+		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                       \
 	} while (0)
 /* Pop PTR[0]. */
 #define jarr_pop_front(j)                                                 \
@@ -116,7 +141,7 @@ PJSTR_END_DECLS
 		if (jstr_unlikely(PJARR_CAP(j) == 0)) {                   \
 			PJARR_NULLIFY_MEMBERS(j);                         \
 			break;                                            \
-		};                                                        \
+		}                                                         \
 		memmove(PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j)); \
 	} while (0)
 /* Pop end of PTR. */
@@ -126,29 +151,31 @@ PJSTR_END_DECLS
 		if (jstr_unlikely(PJARR_CAP(j) == 0)) {  \
 			PJARR_NULLIFY_MEMBERS(j);        \
 			break;                           \
-		};                                       \
+		}                                        \
 		*(PJARR_DATA(j) + --PJARR_SZ(j)) = '\0'; \
 	} while (0)
 /* Push VAL to back of PTR. */
-#define jarr_push_back(j, value)                                                                             \
-	do {                                                                                                 \
-		PJARR_CHECK_ARG(j);                                                                          \
-		PJARR_CHECK_VAL(j, value);                                                                   \
-		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                                              \
-			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH, PJARR_NULLIFY_MEMBERS(j); break;); \
-		PJARR_DATA(j)                                                                                \
-		[PJARR_SZ(j)++] = (value);                                                                   \
+#define jarr_push_back(j, value)                                           \
+	do {                                                               \
+		PJARR_CHECK_ARG(j);                                        \
+		PJARR_CHECK_VAL(j, value);                                 \
+		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))            \
+			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH); \
+		PJARR_MALLOC_ERR(j, break)                                 \
+		PJARR_DATA(j)                                              \
+		[PJARR_SZ(j)++] = (value);                                 \
 	} while (0)
 /* Push VAL to front of P. */
-#define jarr_push_front(j, value)                                                                            \
-	do {                                                                                                 \
-		PJARR_CHECK_ARG(j);                                                                          \
-		PJARR_CHECK_VAL(j, value);                                                                   \
-		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                                              \
-			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH, PJARR_NULLIFY_MEMBERS(j); break;); \
-		PJARR_MEMMOVE(PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++);                              \
-		PJARR_DATA(j)                                                                                \
-		[0] = (value);                                                                               \
+#define jarr_push_front(j, value)                                               \
+	do {                                                                    \
+		PJARR_CHECK_ARG(j);                                             \
+		PJARR_CHECK_VAL(j, value);                                      \
+		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                 \
+			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH);      \
+		PJARR_MALLOC_ERR(j, break)                                      \
+		PJARR_MEMMOVE(PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++); \
+		PJARR_DATA(j)                                                   \
+		[0] = (value);                                                  \
 	} while (0)
 #define jarr_at(j, index) \
 	((jstr_likely(index < (j)->size)) ? ((j)->data)[(index)] : (PJARR_ERR_EXIT_MSG(__FILE__, __LINE__, JSTR_ASSERT_FUNC, "Index out of bounds.")))
@@ -172,24 +199,12 @@ JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
 JSTR_COLD
 static void
-PJARR_ERR_EXIT_MSG(const char *JSTR_RESTRICT FILE_,
-		   const int LINE_,
-		   const char *JSTR_RESTRICT func_,
-		   const char *JSTR_RESTRICT msg)
-{
-	fprintf(stderr, "%s:%d:%s:%s\n", FILE_, LINE_, func_, msg);
-	exit(EXIT_FAILURE);
-}
-
-JSTR_MAYBE_UNUSED
-JSTR_NOINLINE
-JSTR_COLD
-static void
 PJARR_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
 	       const int LINE_,
-	       const char *JSTR_RESTRICT func_)
+	       const char *JSTR_RESTRICT func_,
+	       const char *JSTR_RESTRICT msg)
 {
-	fprintf(stderr, "%s:%d:%s\n", FILE_, LINE_, func_);
+	fprintf(stderr, "%s:%d:%s:%s\n", FILE_, LINE_, func_, msg);
 	exit(EXIT_FAILURE);
 }
 
