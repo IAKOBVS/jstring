@@ -592,7 +592,7 @@ JSTR_NOEXCEPT
 	c = (char)jstr_tolower(c);
 	for (; *s && jstr_tolower(*s) != c; ++s)
 		;
-	return (*s && jstr_tolower(*s) == c) ? (char *)s : NULL;
+	return *s ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -606,7 +606,7 @@ JSTR_NOEXCEPT
 	c = (char)jstr_tolower(c);
 	for (; n-- && jstr_tolower(*s) != c; ++s)
 		;
-	return (n && jstr_tolower(*s) == c) ? (char *)s : NULL;
+	return n ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE

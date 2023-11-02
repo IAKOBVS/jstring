@@ -5,7 +5,10 @@
 #include <assert.h>
 
 #define PRINT(fmt, ...) \
-	fprintf(stderr, fmt, __VA_ARGS__)
+	printf(fmt, __VA_ARGS__)
+
+#define PRINTERR(fmt, ...) \
+	fprintf(stdout, fmt, __VA_ARGS__)
 
 #define SUCCESS() \
 	PRINT("%s succeeded.\n", argv[0])
