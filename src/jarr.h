@@ -14,7 +14,7 @@ PJSTR_END_DECLS
 #include "jstr-config.h"
 #include "jarr-macros.h"
 #include "jstr-macros.h"
-#include "jstr-pp-arrcpy-va-args.h"
+#include "_jstr-pp-arrcpy-va-args.h"
 
 #define R JSTR_RESTRICT
 

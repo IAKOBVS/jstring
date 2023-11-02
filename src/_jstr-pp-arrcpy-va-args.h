@@ -1,7 +1,7 @@
 #ifndef PJSTR_PP_ARRCPY_VA_ARGS_H
 #define PJSTR_PP_ARRCPY_VA_ARGS_H 1
 
-#include "jstr-pp-va-args-tools.h"
+#include "_jstr-pp-va-args-tools.h"
 
 #define PJSTR_PP_ARRCPY_VA_ARGS_1(DEST, ...)                   \
 	do {                                                   \
