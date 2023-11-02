@@ -430,7 +430,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (!memcmp(hs, ne, nl))
 		return (char *)hs;
-	if (jstr_unlikely(hl == nl))
+	if (hl == nl)
 		return NULL;
 	++hs;
 	--hl;
