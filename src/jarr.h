@@ -104,7 +104,9 @@ PJSTR_END_DECLS
 #if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF
 #	define PJARR_CHECK_VAL(j, value) JSTR_ASSERT(JSTR_SAME_TYPE(value, *PJARR_DATA(j)), "Passing illegal value incompatible with the array type.")
 #else
-#	define PJARR_CHECK_VAL(j, value) JSTR_ASSERT(sizeof(*PJARR_DATA(j)) == value, "Passing illegal value incompatible with the array type.")
+#	define PJARR_CHECK_VAL(j, value) \
+		do {                      \
+		} while (0)
 #endif
 
 #define PJARR_NULLIFY_MEMBERS(j)  \
