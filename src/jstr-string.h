@@ -709,20 +709,22 @@ JSTR_NOEXCEPT
 	if (hs == NULL || (uintptr_t)(hs - start) < nelen)
 		return NULL;
 #	endif
-	is_alpha |= jstr_isalpha(ne[1]);
 	switch (nelen) {
 	case 1: return (char *)hs;
 	case 2:
-		if (is_alpha)
+		if (is_alpha
+		    | jstr_isalpha(ne[1]))
 			return pjstr_strcasestr2((u *)hs, (u *)ne);
 		break;
 	case 3:
 		if (is_alpha
+		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((u *)hs, (u *)ne);
 		break;
 	default: /* case 4: */
 		if (is_alpha
+		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2])
 		    | jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((u *)hs, (u *)ne);
