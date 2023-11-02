@@ -13,7 +13,7 @@
 #define PJSTR_MEMMEM_FN_LONG  JSTR_CONCAT(PJSTR_MEMMEM_FN, _long_ne)
 
 #define PJSTR_MEMMEM_SHORT_NEEDLE 1
-#include "jstr-memmem-impl.h"
+#include "_jstr-memmem-impl.h"
 
 PJSTR_BEGIN_DECLS
 
@@ -30,7 +30,7 @@ JSTR_NOEXCEPT
 }
 
 #undef PJSTR_MEMMEM_SHORT_NEEDLE
-#include "jstr-memmem-impl.h"
+#include "_jstr-memmem-impl.h"
 
 JSTR_FUNC_PURE
 JSTR_NOINLINE
