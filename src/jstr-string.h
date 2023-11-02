@@ -589,10 +589,10 @@ pjstr_strcasechr_generic(const char *R s,
 			 int c)
 JSTR_NOEXCEPT
 {
-	for (c = (char)jstr_tolower(c); *s; ++s)
-		if (jstr_tolower(*s) == c)
-			return (char *)s;
-	return NULL;
+	c = (char)jstr_tolower(c);
+	for (; *s && jstr_tolower(*s) != c; ++s)
+		;
+	return (*s && jstr_tolower(*s) != c) ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -603,10 +603,10 @@ jstr_memcasechr(const char *R s,
 		size_t n)
 JSTR_NOEXCEPT
 {
-	for (c = (char)jstr_tolower(c); n--; ++s)
-		if (jstr_tolower(*s) == c)
-			return (char *)s;
-	return NULL;
+	c = (char)jstr_tolower(c);
+	for (; n-- && jstr_tolower(*s) != c; ++s)
+		;
+	return (n && jstr_tolower(*s) != c) ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
