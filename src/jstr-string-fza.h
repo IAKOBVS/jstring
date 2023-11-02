@@ -3,15 +3,15 @@
 #include "jstr-macros.h"
 PJSTR_BEGIN_DECLS
 #if JSTR_ARCH_POWERPC6
-#	include "glibc-powerpc-string-fza.h"
+#	include "_glibc-powerpc-string-fza.h"
 #elif JSTR_ARCH_ALPHA
-#	include "glibc-alpha-string-fza.h"
+#	include "_glibc-alpha-string-fza.h"
 #elif JSTR_ARCH_RISCV
-#	include "glibc-riscv-string-fza.h"
+#	include "_glibc-riscv-string-fza.h"
 #elif JSTR_ARCH_ARM6T2
-#	include "glibc-arm-armv6t2-string-fza.h"
+#	include "_glibc-arm-armv6t2-string-fza.h"
 #else
-#	include "glibc-generic-string-fza.h"
+#	include "_glibc-generic-string-fza.h"
 #endif
 PJSTR_END_DECLS
 #endif /* PJSTR_SELECTOR_STRING_FZA_H */

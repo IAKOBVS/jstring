@@ -2,7 +2,7 @@
 #define PJSTR_SELECTOR_STRING_MISC_H 1
 #include "jstr-macros.h"
 PJSTR_BEGIN_DECLS
-#include "glibc-generic-string-misc.h"
+#include "_glibc-generic-string-misc.h"
 #include <endian.h>
 #include <limits.h>
 #if __GNUC__ || defined __clang__

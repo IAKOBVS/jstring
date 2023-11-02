@@ -3,9 +3,9 @@
 #include "jstr-macros.h"
 PJSTR_BEGIN_DECLS
 #if JSTR_ARCH_ALPHA
-#	include "glibc-alpha-string-shift.h"
+#	include "_glibc-alpha-string-shift.h"
 #else
-#	include "glibc-generic-string-shift.h"
+#	include "_glibc-generic-string-shift.h"
 #endif
 PJSTR_END_DECLS
 #endif /* PJSTR_SELECTOR_STRING_SHIFT_H */
