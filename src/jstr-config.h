@@ -25,12 +25,12 @@
 
 #define PJSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
-#ifndef P_JARR_GROWTH
-#	define P_JARR_GROWTH 1.5
+#ifndef PJARR_GROWTH
+#	define PJARR_GROWTH 1.5
 #endif
 
-#ifndef P_JARR_ALLOC_MULTIPLIER
-#	define P_JARR_ALLOC_MULTIPLIER 1.5
+#ifndef PJARR_ALLOC_MULTIPLIER
+#	define PJARR_ALLOC_MULTIPLIER 1.5
 #endif
 
 #ifndef JSTR_GROWTH
