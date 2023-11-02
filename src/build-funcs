@@ -8,11 +8,11 @@ update_if_needed()
 	echo "Built $1."
 }
 mkdir -p ../jstr
-for file in $(echo *.h | tr ' ' '\n' | grep -v 'glibc'); do
+for file in $(echo *.h | tr ' ' '\n' | grep -v '_glibc'); do
 	update_if_needed "$file" &
 done &
 [ "$1" = '0' ] || ./update-glibc
-for file in $(echo glibc-*.h); do
+for file in $(echo _glibc-*.h); do
 	update_if_needed "$file" &
 done
 wait
