@@ -19,6 +19,19 @@ PJSTR_END_DECLS
 #define PJARR_SIZE_NAME	    size
 #define PJARR_CAPACITY_NAME capacity
 
+#define JARR_INIT \
+	{         \
+		0 \
+	}
+
+#define jarr_ty(T, name)                    \
+	typedef struct pjarr_##name##_ty {  \
+		T *PJARR_DATA_NAME;         \
+		size_t PJARR_SIZE_NAME;     \
+		size_t PJARR_CAPACITY_NAME; \
+	} jarr_##name##_ty;                 \
+	jarr_##name##_ty name
+
 #define PJARR_ELEMSZ(j) (sizeof((PJARR_DATA(j))[0]))
 #define PJARR_ARRSZ(j)	(sizeof(PJARR_DATA(j)) / sizeof((PJARR_DATA(j))[0]))
 #define PJARR_DATA(j)	((j)->PJARR_DATA_NAME)
@@ -74,17 +87,6 @@ PJSTR_END_DECLS
 #define PJARR_NULLIFY_MEMBERS(j) (PJARR_SZ(j) = 0, PJARR_CAP(j) = 0)
 #define PJARR_NULLIFY(j)	 ((j)->data == NULL, PJARR_NULLIFY_MEMBERS(j))
 
-#define JARR_INIT \
-	{         \
-		0 \
-	}
-#define jarr_ty(T, name)                    \
-	typedef struct pjarr_##name##_ty {  \
-		T *PJARR_DATA_NAME;         \
-		size_t PJARR_SIZE_NAME;     \
-		size_t PJARR_CAPACITY_NAME; \
-	} jarr_##name##_ty;                 \
-	jarr_##name##_ty name
 #define jarr_free(j)                 \
 	do {                         \
 		free(PJARR_DATA(j)); \
@@ -95,7 +97,6 @@ PJSTR_END_DECLS
 		if (jstr_unlikely((j)->data == NULL))                         \
 			pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC); \
 	} while (0)
-#undef PJARR_NULLIFY
 
 /* Add elements to end of PTR. */
 #define jarr_cat(j, ...)                                                                       \
@@ -194,5 +195,6 @@ PJARR_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
 PJSTR_END_DECLS
 
 #undef R
+#undef PJARR_NULLIFY
 
 #endif /* JARR_H */
