@@ -589,10 +589,10 @@ pjstr_strcasechr_generic(const char *R s,
 			 int c)
 JSTR_NOEXCEPT
 {
-	c = (char)jstr_tolower(c);
-	while (*s && jstr_tolower(*s) != c)
-		++s;
-	return *s ? (char *)s : NULL;
+	for (c = (char)jstr_tolower(c); *s; ++s)
+		if (jstr_tolower(*s) == c)
+			return (char *)s;
+	return NULL;
 }
 
 JSTR_FUNC_PURE
@@ -603,10 +603,10 @@ jstr_memcasechr(const char *R s,
 		size_t n)
 JSTR_NOEXCEPT
 {
-	c = (char)jstr_tolower(c);
-	while (n-- && jstr_tolower(*s) != c)
-		++s;
-	return (n == 0) ? (char *)s : NULL;
+	for (c = (char)jstr_tolower(c); n--; ++s)
+		if (jstr_tolower(*s) == c)
+			return (char *)s;
+	return NULL;
 }
 
 JSTR_FUNC_PURE
@@ -702,13 +702,8 @@ JSTR_NOEXCEPT
 	int is_alpha = jstr_isalpha(*ne);
 	const char *const start = hs;
 	hs = is_alpha ? pjstr_strcasechr_len(hs, *ne, nelen) : (char *)memchr(hs, *ne, hslen);
-#	if JSTR_HAVE_MEMMEM
 	if (hs == NULL || (hslen -= hs - start) < nelen)
 		return NULL;
-#	else
-	if (hs == NULL || (uintptr_t)(hs - start) < nelen)
-		return NULL;
-#	endif
 	switch (nelen) {
 	case 1: return (char *)hs;
 	case 2:
