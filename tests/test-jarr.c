@@ -6,6 +6,7 @@
 		int expected[] = { __VA_ARGS__ };                 \
 		func;                                             \
 		assert(j.data);                                   \
+		assert(j.size == ASZ(expected));                  \
 		assert(!memcmp(j.data, expected, ASZ(expected))); \
 	} while (0)
 
