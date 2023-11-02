@@ -125,6 +125,19 @@ PJSTR_END_DECLS
 	} while (0)
 
 /* Add elements to end of PTR. */
+#define jarr_assign(j, ...)                                                     \
+	do {                                                                    \
+		PJARR_CHECK_ARG(j);                                             \
+		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));            \
+		if (jstr_unlikely(PJARR_CAP(j) < PJSTR_PP_NARG(__VA_ARGS__))) { \
+			jarr_reserve(j, PJSTR_PP_NARG(__VA_ARGS__));            \
+			PJARR_MALLOC_ERR(j, break)                              \
+		}                                                               \
+		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_SZ(j), __VA_ARGS__);              \
+		PJARR_SZ(j) = PJSTR_PP_NARG(__VA_ARGS__);                       \
+	} while (0)
+
+/* Add elements to end of PTR. */
 #define jarr_cat(j, ...)                                                                        \
 	do {                                                                                    \
 		PJARR_CHECK_ARG(j);                                                             \
