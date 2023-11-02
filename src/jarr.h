@@ -80,7 +80,7 @@ PJSTR_END_DECLS
 		while ((old_cap) < (new_cap));                              \
 		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
-#define PJARR_REALLOC(j, new_cap)                                                                                  \
+#define jarr_reserve(j, new_cap)                                                                                  \
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
 		PJARR_GROW(PJARR_CAP(j), new_cap);                                                                 \
@@ -90,7 +90,7 @@ PJSTR_END_DECLS
 			break;                                                                                     \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                   \
 	} while (0)
-#define PJARR_REALLOCEXACT(j, new_cap)                                                                             \
+#define jarr_reserveexact(j, new_cap)                                                                             \
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
 		PJARR_CAP(j) = PJARR_ALIGN_UP(PJARR_CAP(j) * PJARR_ELEMSZ(j));                                        \
@@ -128,7 +128,7 @@ PJSTR_END_DECLS
 		PJARR_CHECK_ARG(j);                                                              \
 		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                             \
 		if (jstr_unlikely(PJARR_CAP(j) <= (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)))) { \
-			PJARR_REALLOC(j, (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)));            \
+			jarr_reserve(j, (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)));            \
 			PJARR_MALLOC_ERR(j, break)                                               \
 		}                                                                                \
 		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);               \
@@ -160,7 +160,7 @@ PJSTR_END_DECLS
 		PJARR_CHECK_ARG(j);                                        \
 		PJARR_CHECK_VAL(j, value);                                 \
 		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))            \
-			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH); \
+			jarr_reserveexact(j, PJARR_SZ(j) * PJARR_GROWTH); \
 		PJARR_MALLOC_ERR(j, break)                                 \
 		PJARR_DATA(j)                                              \
 		[PJARR_SZ(j)++] = (value);                                 \
@@ -171,7 +171,7 @@ PJSTR_END_DECLS
 		PJARR_CHECK_ARG(j);                                             \
 		PJARR_CHECK_VAL(j, value);                                      \
 		if (jstr_unlikely(PJARR_CAP(j) == PJARR_SZ(j)))                 \
-			PJARR_REALLOCEXACT(j, PJARR_SZ(j) * PJARR_GROWTH);      \
+			jarr_reserveexact(j, PJARR_SZ(j) * PJARR_GROWTH);      \
 		PJARR_MALLOC_ERR(j, break)                                      \
 		PJARR_MEMMOVE(PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++); \
 		PJARR_DATA(j)                                                   \
