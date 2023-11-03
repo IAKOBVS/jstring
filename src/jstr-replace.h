@@ -79,7 +79,7 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_rplcat_len_unsafe(char *R s,
+pjstr_rplcat_len_unsafe(char *R s,
 		       size_t *R sz,
 		       const size_t at,
 		       const char *R rplc,
@@ -129,7 +129,7 @@ pjstr_rplcat_len_higher(char *R *R s,
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + rplc_len - find_len, return NULL);
-	return jstr_rplcat_len_unsafe(*s, sz, at, rplc, rplc_len, find_len);
+	return pjstr_rplcat_len_unsafe(*s, sz, at, rplc, rplc_len, find_len);
 }
 
 /*

@@ -23,7 +23,12 @@ sub jl_file_namespace_macros {
 	my @lines = split(/\n/, $$file_str_ref);
 	foreach (@lines) {
 		if (/^[ \t]*#[ \t]*undef[ \t]+([_A-Z0-9]+)/) {
-			my $macro = $1;
+			my $macro       = $1;
+			my $is_prefixed = 0;
+			foreach (@$ignore_prefix_ref) {
+				$is_prefixed = 1 if (index($macro, $_) == 0);
+			}
+			next if ($is_prefixed);
 			foreach (@$ignore_prefix_ref) {
 				my $i = index($macro, $_);
 				if ($i == -1 || $i != 0) {
@@ -48,6 +53,10 @@ sub jl_file_tidy_newlines {
 sub jl_arg_to_array {
 	my ($arg_str_ref) = @_;
 	my @arg_arr = split(/,/, $$arg_str_ref);
+	foreach (@arg_arr) {
+		s/^\s*//;
+		s/\s*$//;
+	}
 	return @arg_arr;
 }
 
@@ -74,9 +83,7 @@ sub jl_arg_push {
 sub jl_arg_index {
 	my ($arg_arr_ref, $find_ref) = @_;
 	for (my $i = 0; $i < $#$arg_arr_ref; ++$i) {
-		if (index(@$arg_arr_ref[$i], $$find_ref) != -1) {
-			return $i;
-		}
+		return $i if ($$arg_arr_ref[$i] =~ /$$find_ref$/);
 	}
 	return -1;
 }
@@ -87,9 +94,9 @@ sub jl_arg_index {
 sub jl_arg_insert {
 	my ($arg_arr_ref, $insert_ref, $i) = @_;
 	for (my $j = $#$arg_arr_ref - 1; $i <= $j; --$j) {
-		@$arg_arr_ref[ $j + 1 ] = @$arg_arr_ref[$j];
+		$$arg_arr_ref[ $j + 1 ] = $$arg_arr_ref[$j];
 	}
-	@$arg_arr_ref[$i] = $$insert_ref;
+	$$arg_arr_ref[$i] = $$insert_ref;
 }
 
 # @param {$} arg_arr_ref
@@ -107,7 +114,7 @@ sub jl_arg_insert_after {
 sub jl_arg_replace {
 	my ($arg_arr_ref, $find_ref, $replace_ref) = @_;
 	my $i = jl_arg_index($arg_arr_ref, $$find_ref);
-	@$arg_arr_ref[$i] = $$replace_ref if ($i != -1);
+	$$arg_arr_ref[$i] = $$replace_ref if ($i != -1);
 }
 
 # @param {$} arg_arr_ref
@@ -168,7 +175,7 @@ sub jl_fn_get {
 	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref)
 	  = @_;
 	if ($$block_str_ref =~
-/((?:.|\n)*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/
+/^((?:.|\n)*?(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/
 	  )
 	{
 		$$name_ref = $3 if (defined($name_ref));

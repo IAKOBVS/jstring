@@ -13,9 +13,9 @@ PJSTR_BEGIN_DECLS
 #include <wchar.h>
 PJSTR_END_DECLS
 
+#include "_jstr-macros.h"
 #include "jstr-config.h"
 #include "jstr-ctype.h"
-#include "_jstr-macros.h"
 #include "jstr-std-string.h"
 
 PJSTR_BEGIN_DECLS
@@ -531,17 +531,6 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 JSTR_INLINE
-static char *
-jstr_stpset(char *R s,
-	    const int c)
-JSTR_NOEXCEPT
-{
-	const size_t len = strlen(s);
-	return (char *)memset(s, c, len) + len;
-}
-
-JSTR_FUNC_VOID
-JSTR_INLINE
 static void
 jstr_strset(char *R s,
 	    const int c)
@@ -663,21 +652,21 @@ JSTR_NOEXCEPT
    0 on malloc error;
    otherwise 1.
 */
-JSTR_FUNC_VOID
+JSTR_FUNC
 JSTR_INLINE
-static void
-jstr_prepend_len_unsafe(char *R s,
-			size_t *R sz,
-			const char *R src,
-			const size_t src_len)
+static char *
+jstr_prepend_len_p_unsafe(char *R s,
+			  const size_t sz,
+			  const char *R src,
+			  const size_t src_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s != 0))
-		jstr_strmove_len(s + src_len, s, *sz);
+		jstr_strmove_len(s + src_len, s, sz);
 	else
 		*(s + src_len) = '\0';
 	memcpy(s, src, src_len);
-	*sz += src_len;
+	return s + sz + src_len;
 }
 
 /*
@@ -697,7 +686,7 @@ jstr_prepend_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return 0);
-	jstr_prepend_len_unsafe(*s, sz, src, src_len);
+	*sz = jstr_prepend_len_p_unsafe(*s, *sz, src, src_len) - *s;
 	return 1;
 }
 

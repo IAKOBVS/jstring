@@ -16,6 +16,6 @@ update_if_needed()
 	echo "Built $in_fname."
 }
 for file in $(echo *.h); do
-	update_if_needed "$file"
+	update_if_needed "$file" &
 done
 wait

@@ -21,6 +21,136 @@ PJSTR_BEGIN_DECLS
 JSTR_FUNC
 JSTR_INLINE
 static char *
+jstr_strstr_len(const void *R hs,
+		const size_t hs_len,
+		const void *R ne,
+		const size_t ne_len)
+JSTR_NOEXCEPT
+{
+	return (char *)JSTR_MEMMEM((char *)hs, hs_len, (char *)ne, ne_len);
+	(void)hs_len;
+	(void)ne_len;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_strnstr_len(const void *R hs,
+		 const size_t hs_len,
+		 const void *R ne,
+		 const size_t ne_len,
+		 const size_t sz)
+JSTR_NOEXCEPT
+{
+	return jstr_strstr_len(hs, JSTR_MIN(hs_len, sz), ne, ne_len);
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strstrnul_len(const char *R hs,
+		   const size_t hs_len,
+		   const char *R ne,
+		   const size_t ne_len)
+JSTR_NOEXCEPT
+{
+	const char *const p = jstr_strstr_len(hs, hs_len, ne, ne_len);
+	return (char *)(p ? p : hs + hs_len);
+	(void)ne_len;
+}
+
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strstrnul(const char *R hs,
+	       const char *R ne)
+JSTR_NOEXCEPT
+{
+	const char *const p = strstr(hs, ne);
+	return (char *)(p ? p : hs + strlen(hs));
+}
+
+/*
+   Non-destructive strtok.
+   END must be NUL terminated.
+   Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok_ne_len(const char **const save_ptr,
+		   const char *const end,
+		   const char *R ne,
+		   const size_t ne_len)
+JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	if (!strncmp(s, ne, ne_len))
+		s += ne_len;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = jstr_strstrnul_len(s, end - s, ne, ne_len);
+	return (char *)s;
+}
+
+/*
+   Non-destructive strtok.
+   Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok_ne(const char **const save_ptr,
+	       const char *R ne)
+JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	const size_t ne_len = strlen(ne);
+	if (!strncmp(s, ne, ne_len))
+		s += ne_len;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = jstr_strstrnul(s, ne);
+	return (char *)s;
+}
+
+/*
+   Non-destructive strtok.
+   Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok(const char *R *R save_ptr,
+	    const char *R delim)
+JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	s += strspn(s, delim);
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = s + strcspn(s, delim);
+	return (char *)s;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
 jstr_cpy_p(char *R dst,
 	   const jstr_ty *R src)
 JSTR_NOEXCEPT
@@ -447,9 +577,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strrstr_len(const void *R hs,
-		const size_t hs_len,
-		const void *R ne,
-		const size_t ne_len)
+		 const size_t hs_len,
+		 const void *R ne,
+		 const size_t ne_len)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -682,9 +812,9 @@ JSTR_INLINE
 #endif
 static char *
 jstr_strcasestr_len(const char *R hs,
-		   size_t hs_len,
-		   const char *R ne,
-		   const size_t ne_len)
+		    size_t hs_len,
+		    const char *R ne,
+		    const size_t ne_len)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
