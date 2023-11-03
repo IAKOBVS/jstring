@@ -1,7 +1,7 @@
 #ifndef JSTR_CTYPE_H
 #define JSTR_CTYPE_H 1
 
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <errno.h>
@@ -9,7 +9,7 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #include "jstr-ctype-table.h"
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 #include "jstr-std-string.h"
 
 #define R JSTR_RESTRICT

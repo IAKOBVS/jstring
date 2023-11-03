@@ -1,7 +1,7 @@
 #ifndef JSTR_IO_TABLE_H
 #define JSTR_IO_TABLE_H 1
 
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 
 JSTR_MAYBE_UNUSED
 static const unsigned char pjstr_io_reject_table[256] = {

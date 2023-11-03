@@ -1,6 +1,6 @@
 #ifndef PJSTR_SELECTOR_STRING_FZA_H
 #define PJSTR_SELECTOR_STRING_FZA_H 1
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 PJSTR_BEGIN_DECLS
 #if JSTR_ARCH_POWERPC6
 #	include "_glibc-powerpc-string-fza.h"

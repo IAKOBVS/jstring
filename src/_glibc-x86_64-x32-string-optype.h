@@ -14,6 +14,6 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_OPTYPE_H
 #define PJSTR_STRING_OPTYPE_H 1
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 typedef unsigned long long int JSTR_MAY_ALIAS jstr_word_ty;
 #endif /* string-optype.h */

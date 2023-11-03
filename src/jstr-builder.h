@@ -1,7 +1,7 @@
 #ifndef JSTR_BUILDER_H
 #define JSTR_BUILDER_H 1
 
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <errno.h>
@@ -15,7 +15,7 @@ PJSTR_END_DECLS
 
 #include "jstr-config.h"
 #include "jstr-ctype.h"
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 #include "jstr-std-string.h"
 
 PJSTR_BEGIN_DECLS

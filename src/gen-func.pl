@@ -10,28 +10,24 @@ sub usage {
 	}
 }
 
+my $fname = $ARGV[0];
+my $ATTR_INLINE   = 'JSTR_INLINE';
+my $ATTR_RESTRICT = 'JSTR_RESTRICT';
+my $VAR_JSTRING = 'j';
+my $JSTRING     = 'jstr_ty';
+my $DATA = 'data';
+my $SIZE = 'size';
+my $CAP  = 'capacity';
+my $VAR_DATA = 's';
+my $VAR_SIZE = 'sz';
+my $VAR_CAP  = 'cap';
+my $J_PREFIX = '_j';
+
 sub add_inline {
 	my ($attr_str_ref, $inline_attr_ref) = @_;
 	$$attr_str_ref .= "\n" . $$inline_attr_ref
 	  if (index($$attr_str_ref, $$inline_attr_ref) == -1);
 }
-
-usage();
-my $ATTR_INLINE   = 'JSTR_INLINE';
-my $ATTR_RESTRICT = 'JSTR_RESTRICT';
-
-my $VAR_JSTRING = 'j';
-my $JSTRING     = 'jstr_ty';
-
-my $DATA = 'data';
-my $SIZE = 'size';
-my $CAP  = 'capacity';
-
-my $VAR_DATA = 's';
-my $VAR_SIZE = 'sz';
-my $VAR_CAP  = 'cap';
-
-my $J_PREFIX = '_j';
 
 sub grepped {
 	my ($arr_ref, $str_ref) = @_;
@@ -41,7 +37,9 @@ sub grepped {
 	return 0;
 }
 
-my $file_str      = jl_file_get_str(\$ARGV[0]);
+usage();
+
+my $file_str      = jl_file_get_str(\$fname);
 my @ignore_prefix = ("PJSTR", "pjstr", "JSTR", "jstr");
 jl_file_namespace_macros(\$file_str, \"PJSTR_", \@ignore_prefix);
 my $file_str2 = '';
@@ -61,7 +59,7 @@ foreach (jl_file_to_blocks(\$file_str)) {
 	next if (grepped(\@func_arr, \$base_name));
 	add_inline(\$attr, \$ATTR_INLINE);
 	$body = (($rettype eq 'void') ? '' : 'return ') . $name . '_len(';
-	for (my $i = 0; $i <= $#arg; ++$i) {
+	for (my $i = 0; $i < scalar(@arg); ++$i) {
 		my $var = jl_arg_get_var(\$arg[$i]);
 		if (
 			index($arg[$i], 'size_t') != -1
@@ -104,7 +102,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$body = (($rettype eq 'void') ? '' : 'return ') . $name . '(';
 	$name = $base_name . $J_PREFIX;
 	my $need_j = 0;
-	for (my $i = 0; $i <= $#arg; ++$i) {
+	for (my $i = 0; $i < scalar(@arg); ++$i) {
 		my $var = jl_arg_get_var(\$arg[$i]);
 		if ($var eq $VAR_DATA) {
 			my $deref = (jl_arg_is_ptr_ptr(\$arg[$i]) ? '&' : '');

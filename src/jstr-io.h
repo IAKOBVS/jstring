@@ -1,7 +1,7 @@
 #ifndef JSTR_IO_H
 #define JSTR_IO_H 1
 
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <dirent.h>

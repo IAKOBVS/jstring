@@ -14,7 +14,7 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_SHIFT_H
 #define PJSTR_STRING_SHIFT_H 1
-#include "jstr-macros.h"
+#include "_jstr-macros.h"
 #include "jstr-string-fza.h"
 #include <limits.h>
 #include <stdint.h>
