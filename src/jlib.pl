@@ -199,7 +199,7 @@ sub jl_fn_to_string {
 	my $arg = jl_arg_to_string($arg_arr_ref);
 	return
 		$$attr_ref . "\n"
-	  . $$rettype_ref . ' '
+	  . $$rettype_ref . "\n"
 	  . $$name_ref . '('
 	  . $arg . ")\n{"
 	  . $$body_ref . "}";
