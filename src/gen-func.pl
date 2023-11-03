@@ -4,10 +4,7 @@ use warnings;
 do "./jlib.pl";
 
 sub usage {
-	if ($#ARGV == -1) {
-		print('Usage: ./' . $0 . ' <file>');
-		exit;
-	}
+	die('Usage: ./' . $0 . ' <file>') if ($#ARGV == -1);
 }
 
 my $fname             = $ARGV[0];
