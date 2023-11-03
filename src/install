@@ -1,4 +1,11 @@
 #!/bin/sh
 cd "$(dirname "$0")" || exit
-./build
+if [ "$(echo ./*.h)" -ne "$(echo ../jstr/*.h)" ]; then
+	if test -e /bin/clang-format || test -e /usr/bin/clang-format; then
+		for file in $(echo ../jstr/*.h); do
+			clang-format -i --style=file:".clang-format" "$file"
+		done
+	fi
+	./build
+fi
 sudo cp -rf jstr/*.h /usr/local/include/jstr
