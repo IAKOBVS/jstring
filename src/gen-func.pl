@@ -49,6 +49,7 @@ jl_file_namespace_macros(\$file_str1, \"PJSTR_", \@ignore_prefix);
 my $file_str2 = '';
 my @func_arr;
 
+# generate non *_len() functions
 foreach (jl_file_to_blocks(\$file_str1)) {
 	$file_str2 .= $_ . "\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
@@ -99,6 +100,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 
 my $file_str3 = '';
 
+# generate *_j() functions
 foreach (jl_file_to_blocks(\$file_str2)) {
 	$file_str3 .= $_ . "\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
