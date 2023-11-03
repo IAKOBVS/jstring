@@ -26,9 +26,9 @@ JSTR_INLINE
 static void *
 jstr_mempset(void *s,
 	     const int c,
-	     const size_t n)
+	     const size_t sz)
 {
-	return (char *)memset(s, c, n) + n;
+	return (char *)memset(s, c, sz) + sz;
 }
 
 JSTR_FUNC
@@ -36,19 +36,19 @@ JSTR_INLINE
 static char *
 jstr_stpset_len(char *s,
 		const int c,
-		const size_t n)
+		const size_t sz)
 {
-	return (char *)memset(s, c, n) + n;
+	return (char *)memset(s, c, sz) + sz;
 }
 
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_bzero(void *R s,
-	   const size_t n)
+	   const size_t sz)
 JSTR_NOEXCEPT
 {
-	memset(s, 0, n);
+	memset(s, 0, sz);
 }
 
 JSTR_FUNC
@@ -56,10 +56,10 @@ JSTR_INLINE
 static int
 jstr_bcmp(const void *R s1,
 	  const void *R s2,
-	  const size_t n)
+	  const size_t sz)
 JSTR_NOEXCEPT
 {
-	return memcmp(s1, s2, n);
+	return memcmp(s1, s2, sz);
 }
 
 JSTR_FUNC_VOID
@@ -80,8 +80,8 @@ static char *
 jstr_stpzero(char *R s)
 JSTR_NOEXCEPT
 {
-	const size_t n = strlen(s);
-	return (char *)memset(s, 0, n) + n;
+	const size_t sz = strlen(s);
+	return (char *)memset(s, 0, sz) + sz;
 }
 
 JSTR_FUNC_PURE
@@ -106,19 +106,19 @@ JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *R s,
 	     const int c,
-	     const size_t n)
+	     const size_t sz)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(s, c, n);
+	return (void *)memrchr(s, c, sz);
 #else
 	/* Taken from glibc memrchr released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-	if (jstr_unlikely(n == 0))
+	if (jstr_unlikely(sz == 0))
 		return NULL;
 	typedef jstr_word_ty w_ty;
-	const w_ty *word_ptr = (w_ty *)JSTR_PTR_ALIGN_UP(s + n, sizeof(w_ty));
-	uintptr_t s_int = (uintptr_t)s + n;
+	const w_ty *word_ptr = (w_ty *)JSTR_PTR_ALIGN_UP(s + sz, sizeof(w_ty));
+	uintptr_t s_int = (uintptr_t)s + sz;
 	w_ty word = jstr_word_toword(--word_ptr);
 	w_ty repeated_c = jstr_word_repeat_bytes(c);
 	const w_ty *const sword = (w_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(w_ty));
@@ -183,12 +183,12 @@ JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *R s,
 	     const int c,
-	     const size_t n)
+	     const size_t sz)
 JSTR_NOEXCEPT
 {
 	/* Based on glibc memchr and strchrnul released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-	if (jstr_unlikely(n == 0)
+	if (jstr_unlikely(sz == 0)
 	    || jstr_unlikely(*s == '\0'))
 		return NULL;
 	typedef jstr_word_ty w_ty;
@@ -196,7 +196,7 @@ JSTR_NOEXCEPT
 	uintptr_t s_int = (uintptr_t)s;
 	w_ty word = jstr_word_toword(word_ptr);
 	w_ty repeated_c = jstr_word_repeat_bytes(c);
-	const char *const lbyte = pjstr_sadd(s_int, n - 1);
+	const char *const lbyte = pjstr_sadd(s_int, sz - 1);
 	const w_ty *const lword = (w_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(w_ty));
 	w_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
@@ -225,11 +225,11 @@ JSTR_INLINE
 static void *
 jstr_memchrnul(const void *R s,
 	       const int c,
-	       const size_t n)
+	       const size_t sz)
 JSTR_NOEXCEPT
 {
-	const void *const p = jstr_memrchr(s, c, n);
-	return (void *)(p ? p : (char *)s + n);
+	const void *const p = jstr_memrchr(s, c, sz);
+	return (void *)(p ? p : (char *)s + sz);
 }
 
 JSTR_FUNC
@@ -253,10 +253,10 @@ jstr_strnstr_len(const void *R hs,
 		 const size_t hs_len,
 		 const void *R ne,
 		 const size_t ne_len,
-		 const size_t n)
+		 const size_t sz)
 JSTR_NOEXCEPT
 {
-	return jstr_strstr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
+	return jstr_strstr_len(hs, JSTR_MIN(hs_len, sz), ne, ne_len);
 }
 
 /*
@@ -268,13 +268,13 @@ JSTR_INLINE
 static void *
 jstr_mempcpy(void *R dst,
 	     const void *R src,
-	     const size_t n)
+	     const size_t sz)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMPCPY
-	return mempcpy(dst, src, n);
+	return mempcpy(dst, src, sz);
 #else
-	return (char *)memcpy(dst, src, n) + n;
+	return (char *)memcpy(dst, src, sz) + sz;
 #endif
 }
 
@@ -283,10 +283,10 @@ JSTR_INLINE
 static void *
 jstr_mempmove(void *dst,
 	      const void *src,
-	      const size_t n)
+	      const size_t sz)
 JSTR_NOEXCEPT
 {
-	return (char *)memmove(dst, src, n) + n;
+	return (char *)memmove(dst, src, sz) + sz;
 }
 
 JSTR_FUNC_VOID
@@ -294,10 +294,10 @@ JSTR_INLINE
 static void
 jstr_strmove_len(void *dst,
 		 const void *src,
-		 const size_t n)
+		 const size_t sz)
 JSTR_NOEXCEPT
 {
-	*(char *)jstr_mempmove(dst, src, n) = '\0';
+	*(char *)jstr_mempmove(dst, src, sz) = '\0';
 }
 
 JSTR_FUNC_VOID
@@ -315,11 +315,11 @@ JSTR_INLINE
 static char *
 jstr_stpmove_len(void *dst,
 		 const void *src,
-		 const size_t n)
+		 const size_t sz)
 JSTR_NOEXCEPT
 {
-	jstr_strmove_len(dst, src, n);
-	return (char *)dst + n;
+	jstr_strmove_len(dst, src, sz);
+	return (char *)dst + sz;
 }
 
 JSTR_FUNC
@@ -337,10 +337,10 @@ JSTR_FUNC_VOID
 static void
 jstr_strcpy_len(void *R dst,
 		const void *R src,
-		const size_t n)
+		const size_t sz)
 JSTR_NOEXCEPT
 {
-	*(char *)jstr_mempcpy(dst, src, n) = '\0';
+	*(char *)jstr_mempcpy(dst, src, sz) = '\0';
 }
 
 JSTR_INLINE
@@ -348,11 +348,11 @@ JSTR_FUNC_VOID
 static char *
 jstr_stpcpy_len(void *R dst,
 		const void *R src,
-		const size_t n)
+		const size_t sz)
 JSTR_NOEXCEPT
 {
-	jstr_strcpy_len(dst, src, n);
-	return (char *)dst + n;
+	jstr_strcpy_len(dst, src, sz);
+	return (char *)dst + sz;
 }
 
 /*
@@ -380,17 +380,17 @@ static void *
 jstr_memccpy(void *R dst,
 	     const void *R src,
 	     const int c,
-	     const size_t n)
+	     const size_t sz)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMCCPY
-	return memccpy(dst, src, c, n);
+	return memccpy(dst, src, c, sz);
 #else
-	const void *const p = (void *)memchr(src, c, n);
+	const void *const p = (void *)memchr(src, c, sz);
 	if (p != NULL) {
 		return jstr_stpcpy_len(dst, src, (char *)p - (char *)src);
 	}
-	memcpy(dst, src, n);
+	memcpy(dst, src, sz);
 	return NULL;
 #endif /* HAVE_MEMCPY */
 }
@@ -420,9 +420,9 @@ static char *
 jstr_strdup_p(const char *R *R s)
 JSTR_NOEXCEPT
 {
-	size_t n = strlen(*s);
-	char *const p = (char *)malloc(n + 1);
-	return (jstr_likely(p != NULL)) ? jstr_stpcpy_len(p, *s, n) : NULL;
+	size_t sz = strlen(*s);
+	char *const p = (char *)malloc(sz + 1);
+	return (jstr_likely(p != NULL)) ? jstr_stpcpy_len(p, *s, sz) : NULL;
 }
 
 JSTR_MALLOC
@@ -430,12 +430,12 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_memdup(const char *R s,
-	    const size_t n)
+	    const size_t sz)
 JSTR_NOEXCEPT
 {
-	char *const p = (char *)malloc(n);
+	char *const p = (char *)malloc(sz);
 	if (jstr_likely(p != NULL)) {
-		memcpy(p, s, n);
+		memcpy(p, s, sz);
 		return p;
 	}
 	return NULL;
@@ -446,12 +446,12 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_strdup_len(const char *R s,
-		const size_t n)
+		const size_t sz)
 JSTR_NOEXCEPT
 {
-	char *const p = (char *)malloc(n + 1);
+	char *const p = (char *)malloc(sz + 1);
 	if (jstr_likely(p != NULL))
-		return jstr_stpcpy_len(p, s, n);
+		return jstr_stpcpy_len(p, s, sz);
 	return NULL;
 }
 

@@ -536,8 +536,8 @@ jstr_stpset(char *R s,
 	    const int c)
 JSTR_NOEXCEPT
 {
-	const size_t n = strlen(s);
-	return (char *)memset(s, c, n) + n;
+	const size_t len = strlen(s);
+	return (char *)memset(s, c, len) + len;
 }
 
 JSTR_FUNC_VOID
@@ -547,8 +547,8 @@ jstr_strset(char *R s,
 	    const int c)
 JSTR_NOEXCEPT
 {
-	const size_t n = strlen(s);
-	memset(s, c, n);
+	const size_t len = strlen(s);
+	memset(s, c, len);
 }
 
 JSTR_FUNC
