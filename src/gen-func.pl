@@ -33,7 +33,7 @@ sub add_inline {
 sub grepped {
 	my ($arr_ref, $str_ref) = @_;
 	foreach (@$arr_ref) {
-		return 1 if ($_ eq $$str_ref);
+		return 1 if (index($_, $$str_ref) != -1);
 	}
 	return 0;
 }
@@ -53,7 +53,8 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 	next
 	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
 		|| $name !~ /^jstr_/
-		|| grepped(\@arg, \"..."));
+		|| grepped(\@arg, \"...")
+		|| scalar(@arg) == 0);
 	push(@func_arr, $name);
 	next if ($name !~ /$LEN_PREFIX/o
 		|| $name =~ /$J_PREFIX$/o);
@@ -104,15 +105,16 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	next
 	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
 		|| $name !~ /^jstr_/
-		|| $name =~ /$J_PREFIX$/o);
+		|| $name =~ /$J_PREFIX$/o
+		|| scalar(@arg) == 0);
 	my $has_size_or_cap = 0;
 	my $has_variadic    = 0;
 	foreach (@arg) {
-		if ($_ eq $VAR_SIZE || $_ eq $VAR_CAP) {
+		if ($_ =~ /$VAR_SIZE$/ || $_ =~ /$VAR_CAP$/) {
 			$has_size_or_cap = 1;
-			last;
-		} elsif ($_ eq '...') {
+		} elsif (index($_, '...') != -1) {
 			$has_variadic = 1;
+			last;
 		}
 	}
 	next if ($has_size_or_cap == 0 || $has_variadic);

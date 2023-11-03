@@ -2,6 +2,7 @@
 #define JSTR_BUILDER_H 1
 
 #include "_jstr-macros.h"
+#include "jstr-struct.h"
 
 PJSTR_BEGIN_DECLS
 #include <errno.h>
@@ -17,16 +18,6 @@ PJSTR_END_DECLS
 #include "jstr-config.h"
 #include "jstr-ctype.h"
 #include "jstr-std-string.h"
-
-PJSTR_BEGIN_DECLS
-
-typedef struct jstr_ty {
-	char *data;
-	size_t size;
-	size_t capacity;
-} jstr_ty;
-
-PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 

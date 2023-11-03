@@ -187,9 +187,9 @@ sub jl_fn_get {
 		{
 			return 0;
 		}
+		@$arg_arr_ref = jl_arg_to_array(\$4) if (defined($arg_arr_ref));
 		$$attr_ref    = $1                   if (defined($attr_ref));
 		$$rettype_ref = $2                   if (defined($rettype_ref));
-		@$arg_arr_ref = jl_arg_to_array(\$4) if (defined($arg_arr_ref));
 		$$body_ref    = $5                   if (defined($body_ref));
 		return 1;
 	}
