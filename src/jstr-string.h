@@ -35,6 +35,15 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
+jstr_strstr(const void *R hs,
+	    const void *R ne)
+{
+	return strstr((char *)hs, (char *)ne);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
 jstr_strnstr_len(const void *R hs,
 		 const size_t hs_len,
 		 const void *R ne,
