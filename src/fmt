@@ -1,4 +1,5 @@
 #!/bin/sh
+cd "$(dirname "$0")" || exit
 fmt()
 {
 	clang-format -i --style=file:".clang-format" "$1"
