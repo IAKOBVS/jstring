@@ -168,7 +168,7 @@ JSTR_NOEXCEPT
 
 /*
   Compare S1 with S2 case-insensitively.
-  N must be lower than the length of S1 or S2.
+  N must be lower than the _length of S1 or S2.
   Return value:
   0 if strings match;
   non-zero otherwise.
@@ -230,22 +230,22 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static int
 jstr_cmp(const void *R s1,
-	 const size_t s1len,
+	 const size_t s1_len,
 	 const void *R s2,
-	 const size_t s2len)
+	 const size_t s2_len)
 {
-	return (s1len == s2len) ? memcmp(s1, s2, s1len) : *(unsigned char *)s1 - *(unsigned char *)s2;
+	return (s1_len == s2_len) ? memcmp(s1, s2, s1_len) : *(unsigned char *)s1 - *(unsigned char *)s2;
 }
 
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
 jstr_casecmp(const char *R s1,
-	     const size_t s1len,
+	     const size_t s1_len,
 	     const char *R s2,
-	     const size_t s2len)
+	     const size_t s2_len)
 {
-	return (s1len == s2len) ? jstr_strcasecmp(s1, s2) : *s1 - *s2;
+	return (s1_len == s2_len) ? jstr_strcasecmp(s1, s2) : *s1 - *s2;
 }
 
 JSTR_FUNC_PURE
@@ -351,27 +351,27 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static void *
 jstr_memmem(const void *R hs,
-	    const size_t hslen,
+	    const size_t hs_len,
 	    const void *R ne,
-	    const size_t nelen)
+	    const size_t ne_len)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMMEM
-	return memmem(hs, hslen, ne, nelen);
+	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef unsigned char u;
-	if (jstr_unlikely(hslen < nelen))
+	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	const unsigned char *const h = (u *)hs;
 	const unsigned char *const n = (u *)ne;
-	switch (nelen) {
+	switch (ne_len) {
 	case 0: return (void *)hs;
-	case 1: return (void *)memchr(hs, *n, nelen);
-	case 2: return pjstr_memmem2(h, n, h + hslen - nelen);
-	case 3: return pjstr_memmem3(h, n, h + hslen - nelen);
-	case 4: return pjstr_memmem4(h, n, h + hslen - nelen);
+	case 1: return (void *)memchr(hs, *n, ne_len);
+	case 2: return pjstr_memmem2(h, n, h + hs_len - ne_len);
+	case 3: return pjstr_memmem3(h, n, h + hs_len - ne_len);
+	case 4: return pjstr_memmem4(h, n, h + hs_len - ne_len);
 	}
-	return pjstr_memmem(h, hslen, n, nelen);
+	return pjstr_memmem(h, hs_len, n, ne_len);
 #endif
 }
 
@@ -383,13 +383,13 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
 jstr_memnmem(const void *R hs,
-	     const size_t hslen,
+	     const size_t hs_len,
 	     const void *R ne,
-	     const size_t nelen,
+	     const size_t ne_len,
 	     const size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_memmem(hs, JSTR_MIN(hslen, n), ne, nelen);
+	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
 JSTR_FUNC_PURE
@@ -422,20 +422,20 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((u *)hs, (u *)ne, (u *)hs + n);
-	const size_t nl = strlen(ne);
-	if (jstr_unlikely(n < nl))
+	const size_t ne_len = strlen(ne);
+	if (jstr_unlikely(n < ne_len))
 		return NULL;
-	size_t hl = jstr_strnlen(hs, nl);
-	if (jstr_unlikely(hl < nl))
+	size_t hs_len = jstr_strnlen(hs, ne_len);
+	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (!memcmp(hs, ne, nl))
+	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
-	if (hl == nl)
+	if (hs_len == ne_len)
 		return NULL;
 	++hs;
-	--hl;
-	hl += jstr_strnlen(hs + hl, n - hl);
-	return pjstr_strnstr(hs, hl, ne, nl);
+	--hs_len;
+	hs_len += jstr_strnlen(hs + hs_len, n - hs_len);
+	return pjstr_strnstr(hs, hs_len, ne, ne_len);
 }
 
 /*
@@ -447,22 +447,22 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strrstr_len(const void *R hs,
-		 const size_t hslen,
-		 const void *R ne,
-		 const size_t nelen)
+		const size_t hs_len,
+		const void *R ne,
+		const size_t ne_len)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	if (jstr_unlikely(hslen < nelen))
+	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (jstr_unlikely(nelen == 0))
-		return (char *)hs + hslen;
-	const unsigned char *h = (u *)jstr_memrchr(hs, *((char *)ne + nelen - 1), hslen);
-	if (h == NULL || (uintptr_t)((u *)h - (u *)hs + 1) < nelen)
+	if (jstr_unlikely(ne_len == 0))
+		return (char *)hs + hs_len;
+	const unsigned char *h = (u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
+	if (h == NULL || (uintptr_t)((u *)h - (u *)hs + 1) < ne_len)
 		return NULL;
 	const unsigned char *const start = (u *)hs;
 	const unsigned char *const n = (u *)ne;
-	switch (nelen) {
+	switch (ne_len) {
 	case 1:
 		return (char *)h;
 	case 2: {
@@ -484,7 +484,7 @@ JSTR_NOEXCEPT
 		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
 		for (h -= 3; h >= start; hw = hw << 8 | *--h) {
 			if (hw == nw)
-				if (nelen == 4 || !memcmp(h, n, nelen))
+				if (ne_len == 4 || !memcmp(h, n, ne_len))
 					return (char *)h;
 		}
 		return NULL;
@@ -501,12 +501,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_memrmem(const void *R hs,
-	     const size_t hslen,
+	     const size_t hs_len,
 	     const void *R ne,
-	     const size_t nelen)
+	     const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_strrstr_len(hs, hslen, ne, nelen);
+	return jstr_strrstr_len(hs, hs_len, ne, ne_len);
 }
 
 #if !JSTR_HAVE_STRCASESTR_OPTIMIZED
@@ -523,15 +523,15 @@ pjstr_strcasestr_bmh(const char *R h,
 		     const char *R n)
 JSTR_NOEXCEPT
 {
-	const size_t nl = strlen(n);
-	const size_t hl = jstr_strnlen(h, nl | 512);
-	if (hl < nl)
+	const size_t ne_len = strlen(n);
+	const size_t hs_len = jstr_strnlen(h, ne_len | 512);
+	if (hs_len < ne_len)
 		return NULL;
-	if (!jstr_strcasecmp_len(h, n, nl))
+	if (!jstr_strcasecmp_len(h, n, ne_len))
 		return (char *)h;
-	if (jstr_unlikely(hl == nl))
+	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr(h + 1, hl - 1, n, nl);
+	return pjstr_strcasestr(h + 1, hs_len - 1, n, ne_len);
 }
 
 #	define L(c) jstr_tolower(c)
@@ -682,29 +682,29 @@ JSTR_INLINE
 #endif
 static char *
 jstr_strcasestr_len(const char *R hs,
-		    size_t hslen,
-		    const char *R ne,
-		    const size_t nelen)
+		   size_t hs_len,
+		   const char *R ne,
+		   const size_t ne_len)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
-	(void)hslen;
-	(void)nelen;
+	(void)hs_len;
+	(void)ne_len;
 #else
 	typedef unsigned char u;
-	if (jstr_unlikely(hslen < nelen))
+	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (nelen > 4)
-		return pjstr_strcasestr_len(hs, hslen, ne, nelen);
-	if (jstr_unlikely(nelen == 0))
+	if (ne_len > 4)
+		return pjstr_strcasestr_len(hs, hs_len, ne, ne_len);
+	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
 	int is_alpha = jstr_isalpha(*ne);
 	const char *const start = hs;
-	hs = is_alpha ? pjstr_strcasechr_len(hs, *ne, nelen) : (char *)memchr(hs, *ne, hslen);
-	if (hs == NULL || (hslen -= hs - start) < nelen)
+	hs = is_alpha ? pjstr_strcasechr_len(hs, *ne, ne_len) : (char *)memchr(hs, *ne, hs_len);
+	if (hs == NULL || (hs_len -= hs - start) < ne_len)
 		return NULL;
-	switch (nelen) {
+	switch (ne_len) {
 	case 1: return (char *)hs;
 	case 2:
 		if (is_alpha
@@ -725,11 +725,11 @@ JSTR_NOEXCEPT
 			return pjstr_strcasestr4((u *)hs, (u *)ne);
 		break;
 	}
-	if (!memcmp(hs, ne, nelen))
+	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
-	if (jstr_unlikely(hslen == nelen))
+	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return jstr_strstr_len(hs + 1, hslen - 1, ne, nelen);
+	return jstr_strstr_len(hs + 1, hs_len - 1, ne, ne_len);
 #endif
 }
 
@@ -763,18 +763,18 @@ JSTR_NOEXCEPT
 		return NULL;
 	is_isalpha0 |= jstr_isalpha(ne[1]);
 	typedef unsigned char u;
-	size_t nelen;
+	size_t ne_len;
 	if (ne[2] == '\0') {
 		if (is_isalpha0)
 			return pjstr_strcasestr2((u *)hs, (u *)ne);
-		nelen = 2;
+		ne_len = 2;
 	} else if (ne[3] == '\0') {
 		if (jstr_unlikely(hs[2] == '\0'))
 			return NULL;
 		if (is_isalpha0
 		    | jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((u *)hs, (u *)ne);
-		nelen = 3;
+		ne_len = 3;
 	} else if (ne[4] == '\0') {
 		if (jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0'))
 			return NULL;
@@ -782,13 +782,13 @@ JSTR_NOEXCEPT
 		    | jstr_isalpha(ne[2])
 		    | jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((u *)hs, (u *)ne);
-		nelen = 4;
+		ne_len = 4;
 	} else {
 		return pjstr_strcasestr_bmh(hs, ne);
 	}
-	if (!memcmp(hs, ne, nelen))
+	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
-	if (jstr_unlikely(hs[nelen] == '\0'))
+	if (jstr_unlikely(hs[ne_len] == '\0'))
 		return NULL;
 	return (char *)strstr(hs + 1, ne);
 #endif
@@ -935,8 +935,8 @@ jstr_strrpbrk_len(const char *R s,
 		  const size_t sz)
 JSTR_NOEXCEPT
 {
-	const size_t len = jstr_strrcspn_len(s, accept, sz);
-	return (len != sz) ? (char *)(s + sz - len) : NULL;
+	const size_t _len = jstr_strrcspn_len(s, accept, sz);
+	return (_len != sz) ? (char *)(s + sz - _len) : NULL;
 }
 
 /*
@@ -1180,12 +1180,12 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_caseends_len(const char *R hs,
-		  const size_t hslen,
+		  const size_t hs_len,
 		  const char *R ne,
-		  const size_t nelen)
+		  const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hslen >= nelen) ? !jstr_strcasecmp_len(hs + hslen - nelen, ne, nelen) : 0;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmp_len(hs + hs_len - ne_len, ne, ne_len) : 0;
 }
 
 /*
@@ -1214,12 +1214,12 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_ends_len(const char *R hs,
-	      const size_t hslen,
+	      const size_t hs_len,
 	      const char *R ne,
-	      const size_t nelen)
+	      const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hslen >= nelen) ? !memcmp(hs + hslen - nelen, ne, nelen) : 0;
+	return jstr_likely(hs_len >= ne_len) ? !memcmp(hs + hs_len - ne_len, ne, ne_len) : 0;
 }
 
 /*
@@ -1248,12 +1248,12 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static int
 jstr_casestarts_len(const char *R hs,
-		    const size_t hslen,
+		    const size_t hs_len,
 		    const char *R ne,
-		    const size_t nelen)
+		    const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hslen >= nelen) ? !jstr_strcasecmp_len(hs, ne, nelen) : 0;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmp_len(hs, ne, ne_len) : 0;
 }
 
 /*
@@ -1282,12 +1282,12 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static int
 jstr_casestartsnul_len(const char *R hs,
-		       const size_t hslen,
+		       const size_t hs_len,
 		       const char *R ne,
-		       const size_t nelen)
+		       const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hslen >= nelen) ? !jstr_strcasecmp_len(hs, ne, nelen) : nelen;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmp_len(hs, ne, ne_len) : ne_len;
 }
 
 /*
@@ -1304,9 +1304,9 @@ jstr_casestartsnul(const char *R hs,
 JSTR_NOEXCEPT
 {
 	if (jstr_tolower(*hs) == jstr_tolower(*ne)) {
-		const size_t nelen = strlen(ne);
-		if (!jstr_strncasecmp(hs, ne, nelen))
-			return nelen;
+		const size_t ne_len = strlen(ne);
+		if (!jstr_strncasecmp(hs, ne, ne_len))
+			return ne_len;
 	}
 	return 0;
 }
@@ -1321,12 +1321,12 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static size_t
 jstr_startsnul_len(const char *R hs,
-		   const size_t hslen,
+		   const size_t hs_len,
 		   const char *R ne,
-		   const size_t nelen)
+		   const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hslen >= nelen) && !memcmp(hs, ne, nelen) ? nelen : 0;
+	return jstr_likely(hs_len >= ne_len) && !memcmp(hs, ne, ne_len) ? ne_len : 0;
 }
 
 /*
@@ -1343,9 +1343,9 @@ jstr_startsnul(const char *R hs,
 JSTR_NOEXCEPT
 {
 	if (*hs == *ne) {
-		const size_t nelen = strlen(ne);
-		if (!strncmp(hs, ne, nelen))
-			return nelen;
+		const size_t ne_len = strlen(ne);
+		if (!strncmp(hs, ne, ne_len))
+			return ne_len;
 	}
 	return 0;
 }
@@ -1360,12 +1360,12 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static int
 jstr_starts_len(const char *R hs,
-		const size_t hslen,
+		const size_t hs_len,
 		const char *R ne,
-		const size_t nelen)
+		const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hslen >= nelen) ? !memcmp(hs, ne, nelen) : 0;
+	return jstr_likely(hs_len >= ne_len) ? !memcmp(hs, ne, ne_len) : 0;
 }
 
 /*
@@ -1432,21 +1432,21 @@ static size_t
 jstr_count_len(const char *R s,
 	       const char *R find,
 	       const size_t sz,
-	       const size_t findlen)
+	       const size_t find_len)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(findlen == 1))
+	if (jstr_unlikely(find_len == 1))
 		return jstr_countchr_len(s, *find, sz);
-	if (jstr_unlikely(findlen == 0))
+	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
 #if JSTR_HAVE_MEMMEM
 	const char *const end = s + sz;
-	while (*s && (s = jstr_strstr_len(s, end - s, find, findlen)))
+	while (*s && (s = jstr_strstr_len(s, end - s, find, find_len)))
 #else
 	while (*s && (s = strstr(s, find)))
 #endif
-		++cnt, s += findlen;
+		++cnt, s += find_len;
 	return cnt;
 }
 
@@ -1467,10 +1467,10 @@ JSTR_NOEXCEPT
 		return jstr_countchr(s, *find);
 	if (jstr_unlikely(*s == '\0'))
 		return 0;
-	const size_t findlen = strlen(find);
+	const size_t find_len = strlen(find);
 	size_t cnt = 0;
 	while ((s = strstr(s, find)))
-		++cnt, s += findlen;
+		++cnt, s += find_len;
 	return cnt;
 }
 
@@ -1633,20 +1633,20 @@ static char *
 jstr_thousepcpy_len_p(char *R dst,
 		      const char *R src,
 		      const int separator,
-		      size_t srclen)
+		      size_t src_len)
 JSTR_NOEXCEPT
 {
 	if (*src == '-') {
 		*dst++ = '-';
 		++src;
-		--srclen;
+		--src_len;
 	}
-	if (srclen < 4) {
+	if (src_len < 4) {
 		while ((*dst++ = *src++))
 			;
 		return dst - 1;
 	}
-	int i = srclen % 3;
+	int i = src_len % 3;
 	for (int j = i; j--; *dst++ = *src++)
 		;
 	if (i) {

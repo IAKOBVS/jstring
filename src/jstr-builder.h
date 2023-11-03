@@ -400,13 +400,13 @@ pjstr_cat(char *R *R s,
 	  size_t *R sz,
 	  size_t *R cap,
 	  va_list ap,
-	  const size_t arglen)
+	  const size_t arg_len)
 JSTR_NOEXCEPT
 {
 	char *p;
-	PJSTR_RESERVE(s, sz, cap, *sz + arglen, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz + arg_len, return 0);
 	p = *s + *sz;
-	*sz += arglen;
+	*sz += arg_len;
 	for (const char *R arg; (arg = va_arg(ap, char *)); p = jstr_stpcpy(p, arg))
 		;
 	return 1;
@@ -432,16 +432,16 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, cap);
-	size_t arglen = 0;
-	for (const char *R arg; (arg = va_arg(ap, char *)); arglen += strlen(arg))
+	size_t arg_len = 0;
+	for (const char *R arg; (arg = va_arg(ap, char *)); arg_len += strlen(arg))
 		;
 	va_end(ap);
-	if (jstr_unlikely(arglen == 0))
+	if (jstr_unlikely(arg_len == 0))
 		return 1;
 	va_start(ap, cap);
-	arglen = pjstr_cat(s, sz, cap, ap, arglen);
+	arg_len = pjstr_cat(s, sz, cap, ap, arg_len);
 	va_end(ap);
-	return arglen;
+	return arg_len;
 }
 
 /*
@@ -460,16 +460,16 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, j);
-	size_t arglen = 0;
-	for (const char *R arg; (arg = va_arg(ap, char *)); arglen += strlen(arg))
+	size_t arg_len = 0;
+	for (const char *R arg; (arg = va_arg(ap, char *)); arg_len += strlen(arg))
 		;
 	va_end(ap);
-	if (jstr_unlikely(arglen == 0))
+	if (jstr_unlikely(arg_len == 0))
 		return 1;
 	va_start(ap, j);
-	arglen = pjstr_cat(&j->data, &j->size, &j->capacity, ap, arglen);
+	arg_len = pjstr_cat(&j->data, &j->size, &j->capacity, ap, arg_len);
 	va_end(ap);
-	return arglen;
+	return arg_len;
 }
 
 /* Return ptr to '\0' in S. */
@@ -479,10 +479,10 @@ static char *
 jstr_append_len_p_unsafe(char *R s,
 			 const size_t sz,
 			 const char *R src,
-			 const size_t srclen)
+			 const size_t src_len)
 JSTR_NOEXCEPT
 {
-	return jstr_stpcpy_len(s + sz, src, srclen);
+	return jstr_stpcpy_len(s + sz, src, src_len);
 }
 
 JSTR_FUNC_VOID
@@ -521,11 +521,11 @@ jstr_append_len(char *R *R s,
 		size_t *R sz,
 		size_t *R cap,
 		const char *R src,
-		const size_t srclen)
+		const size_t src_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
-	*sz = jstr_append_len_p_unsafe(*s, *sz, src, srclen) - *s;
+	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return 0);
+	*sz = jstr_append_len_p_unsafe(*s, *sz, src, src_len) - *s;
 	return 1;
 }
 
@@ -626,10 +626,10 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_prependnchr_p_unsafe(char *R s,
-			  const size_t sz,
-			  const int c,
-			  const size_t n)
+jstr_strset_prepend_p_unsafe(char *R s,
+			     const size_t sz,
+			     const int c,
+			     const size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0))
@@ -645,15 +645,15 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_prependnchr(char *R *R s,
-		 size_t *R sz,
-		 size_t *R cap,
-		 const int c,
-		 const size_t n)
+jstr_strset_prepend(char *R *R s,
+		    size_t *R sz,
+		    size_t *R cap,
+		    const int c,
+		    const size_t n)
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + n, return 0);
-	*sz = jstr_prependnchr_p_unsafe(*s, *sz, c, n) - *s;
+	*sz = jstr_strset_prepend_p_unsafe(*s, *sz, c, n) - *s;
 	return 1;
 }
 
@@ -669,15 +669,15 @@ static void
 jstr_prepend_len_unsafe(char *R s,
 			size_t *R sz,
 			const char *R src,
-			const size_t srclen)
+			const size_t src_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s != 0))
-		jstr_strmove_len(s + srclen, s, *sz);
+		jstr_strmove_len(s + src_len, s, *sz);
 	else
-		*(s + srclen) = '\0';
-	memcpy(s, src, srclen);
-	*sz += srclen;
+		*(s + src_len) = '\0';
+	memcpy(s, src, src_len);
+	*sz += src_len;
 }
 
 /*
@@ -693,11 +693,11 @@ jstr_prepend_len(char *R *R s,
 		 size_t *R sz,
 		 size_t *R cap,
 		 const char *R src,
-		 const size_t srclen)
+		 const size_t src_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + srclen, return 0);
-	jstr_prepend_len_unsafe(*s, sz, src, srclen);
+	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return 0);
+	jstr_prepend_len_unsafe(*s, sz, src, src_len);
 	return 1;
 }
 
@@ -711,10 +711,10 @@ JSTR_INLINE
 static char *
 jstr_assign_len_p_unsafe(char *R s,
 			 const char *R src,
-			 const size_t srclen)
+			 const size_t src_len)
 JSTR_NOEXCEPT
 {
-	return jstr_stpcpy_len(s, src, srclen);
+	return jstr_stpcpy_len(s, src, src_len);
 }
 
 /*
@@ -731,12 +731,12 @@ jstr_assign_len(char *R *R s,
 		size_t *R sz,
 		size_t *R cap,
 		const char *R src,
-		const size_t srclen)
+		const size_t src_len)
 JSTR_NOEXCEPT
 {
-	if (*cap < srclen)
-		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, srclen * JSTR_ALLOC_MULTIPLIER, return 0);
-	*sz = jstr_assign_len_p_unsafe(*s, src, srclen) - *s;
+	if (*cap < src_len)
+		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, src_len * JSTR_ALLOC_MULTIPLIER, return 0);
+	*sz = jstr_assign_len_p_unsafe(*s, src, src_len) - *s;
 	return 1;
 }
 
@@ -935,7 +935,7 @@ JSTR_NOEXCEPT
 	};
 	/* Use size_t because we are calculating the length for the buffer conservatively
 	   and it may be much larger than the actual length. */
-	size_t arglen = 0;
+	size_t arg_len = 0;
 	const char *arg;
 	int errno_len = 0;
 	int lflag = NOT_LONG; /* long flag */
@@ -947,13 +947,13 @@ cont_switch:
 			switch (*++fmt) {
 			case 's':
 				arg = va_arg(ap, const char *);
-				arglen = jstr_likely(arg != NULL) ? strlen(arg) : sizeof("(null)") - 1;
+				arg_len = jstr_likely(arg != NULL) ? strlen(arg) : sizeof("(null)") - 1;
 				break;
 			case 'c':
 				if (jstr_likely(lflag == NOT_LONG)) {
-					++arglen;
+					++arg_len;
 				} else if (lflag == LONG) {
-					arglen += MAX_INT;
+					arg_len += MAX_INT;
 					lflag = NOT_LONG;
 				} else {
 					goto einval;
@@ -966,13 +966,13 @@ cont_switch:
 			case 'x':
 			case 'X':
 				if (lflag == NOT_LONG) {
-					arglen += MAX_INT;
+					arg_len += MAX_INT;
 				} else {
 islong:
 					if (lflag == LONG)
-						arglen = MAX_LONG;
+						arg_len = MAX_LONG;
 					else if (lflag == LONG_LONG)
-						arglen = MAX_LONG_LONG;
+						arg_len = MAX_LONG_LONG;
 					else
 						goto einval;
 					lflag = NOT_LONG;
@@ -980,7 +980,7 @@ islong:
 				goto get_arg;
 			case 'o':
 				if (lflag == NOT_LONG) {
-					arglen += MAX_LONG;
+					arg_len += MAX_LONG;
 				} else {
 					goto islong;
 				}
@@ -989,11 +989,11 @@ islong:
 			case 'p':
 				arg = va_arg(ap, const char *);
 				/* max + 2 to make room for the 0x at the start of the number. */
-				arglen = jstr_likely(arg != NULL) ? (PTR_T + 2) : sizeof("(nil)") - 1;
+				arg_len = jstr_likely(arg != NULL) ? (PTR_T + 2) : sizeof("(nil)") - 1;
 				break;
 				/* chars written */
 			case 'n':
-				arglen += MAX_INT;
+				arg_len += MAX_INT;
 				break;
 				/* double */
 			case 'a':
@@ -1005,27 +1005,27 @@ islong:
 			case 'g':
 			case 'G':
 				if (lflag == NOT_LONG) {
-					arglen += MAX_DBL;
+					arg_len += MAX_DBL;
 				} else if (lflag == LONG) {
-					arglen += MAX_LDBL;
+					arg_len += MAX_LDBL;
 					lflag = NOT_LONG;
 				} else {
 					goto einval;
 				}
 				goto get_arg;
 			case '%':
-				arglen += 2;
+				arg_len += 2;
 				break;
 			case 'm':
 				if (errno_len == 0)
-					arglen += strlen(strerror(errno));
+					arg_len += strlen(strerror(errno));
 				else
-					arglen += errno_len;
+					arg_len += errno_len;
 				break;
 			/* padding */
 			case '*':
 				/* Get length of padding from argument. */
-				arglen += va_arg(ap, int);
+				arg_len += va_arg(ap, int);
 				goto cont_switch;
 			case '-':
 				state = PAD;
@@ -1068,7 +1068,7 @@ islong:
 						errno = EOVERFLOW;
 						return -1;
 					}
-					arglen += padlen;
+					arg_len += padlen;
 					state = DEFAULT;
 				}
 				goto cont_switch;
@@ -1083,14 +1083,14 @@ get_arg:
 			}
 			state = DEFAULT;
 		} else {
-			++arglen;
+			++arg_len;
 			if (jstr_unlikely(*fmt == '\0'))
 				break;
 		}
 	}
-	if (jstr_unlikely(arglen > INT_MAX))
-		arglen = INT_MAX;
-	return arglen;
+	if (jstr_unlikely(arg_len > INT_MAX))
+		arg_len = INT_MAX;
+	return arg_len;
 }
 
 JSTR_FUNC_VOID
@@ -1135,17 +1135,17 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arglen = jstr_vsprintf_strlen(ap, fmt);
+	int arg_len = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
-	if (jstr_unlikely(arglen == -1))
+	if (jstr_unlikely(arg_len == -1))
 		goto err;
-	PJSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	PJSTR_RESERVEEXACT(s, sz, cap, arg_len * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
-	arglen = vsprintf(*s, fmt, ap);
+	arg_len = vsprintf(*s, fmt, ap);
 	va_end(ap);
-	if (jstr_unlikely(arglen < 0))
+	if (jstr_unlikely(arg_len < 0))
 		goto err_free;
-	*sz = arglen;
+	*sz = arg_len;
 	return 1;
 err_free:
 	pjstr_sprintf_err(s, sz, cap);
@@ -1168,17 +1168,17 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arglen = jstr_vsprintf_strlen(ap, fmt);
+	int arg_len = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
-	if (jstr_unlikely(arglen == -1))
+	if (jstr_unlikely(arg_len == -1))
 		goto err;
-	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arg_len * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
-	arglen = vsprintf(j->data, fmt, ap);
+	arg_len = vsprintf(j->data, fmt, ap);
 	va_end(ap);
-	if (jstr_unlikely(arglen < 0))
+	if (jstr_unlikely(arg_len < 0))
 		goto err_free;
-	j->size = arglen;
+	j->size = arg_len;
 	return 1;
 err_free:
 	pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
@@ -1204,18 +1204,18 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arglen = jstr_vsprintf_strlen(ap, fmt);
+	int arg_len = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
-	if (jstr_unlikely(arglen == -1))
+	if (jstr_unlikely(arg_len == -1))
 		goto err;
-	arglen += *sz;
-	PJSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	arg_len += *sz;
+	PJSTR_RESERVEEXACT(s, sz, cap, arg_len * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
-	arglen = vsprintf(*s + *sz, fmt, ap);
+	arg_len = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
-	if (jstr_unlikely(arglen < 0))
+	if (jstr_unlikely(arg_len < 0))
 		goto err_free;
-	*sz += arglen;
+	*sz += arg_len;
 	return 1;
 err_free:
 	pjstr_sprintf_err(s, sz, cap);
@@ -1239,18 +1239,18 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arglen = jstr_vsprintf_strlen(ap, fmt);
+	int arg_len = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
-	if (jstr_unlikely(arglen == -1))
+	if (jstr_unlikely(arg_len == -1))
 		goto err;
-	arglen += j->size;
-	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	arg_len += j->size;
+	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arg_len * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
-	arglen = vsprintf(j->data + j->size, fmt, ap);
+	arg_len = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
-	if (jstr_unlikely(arglen < 0))
+	if (jstr_unlikely(arg_len < 0))
 		goto err_free;
-	j->size += arglen;
+	j->size += arg_len;
 	return 1;
 err_free:
 	pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
@@ -1276,18 +1276,18 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arglen = jstr_vsprintf_strlen(ap, fmt);
+	int arg_len = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
-	if (jstr_unlikely(arglen == -1))
+	if (jstr_unlikely(arg_len == -1))
 		goto err;
-	arglen += start_idx;
-	PJSTR_RESERVEEXACT(s, sz, cap, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	arg_len += start_idx;
+	PJSTR_RESERVEEXACT(s, sz, cap, arg_len * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
-	arglen = vsprintf(*s + start_idx, fmt, ap);
+	arg_len = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
-	if (jstr_unlikely(arglen < 0))
+	if (jstr_unlikely(arg_len < 0))
 		goto err_free;
-	*sz = arglen + start_idx;
+	*sz = arg_len + start_idx;
 	return 1;
 err_free:
 	pjstr_sprintf_err(s, sz, cap);
@@ -1311,18 +1311,18 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arglen = jstr_vsprintf_strlen(ap, fmt);
+	int arg_len = jstr_vsprintf_strlen(ap, fmt);
 	va_end(ap);
-	if (jstr_unlikely(arglen == -1))
+	if (jstr_unlikely(arg_len == -1))
 		goto err;
-	arglen += start_idx;
-	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arglen * JSTR_ALLOC_MULTIPLIER, goto err);
+	arg_len += start_idx;
+	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, arg_len * JSTR_ALLOC_MULTIPLIER, goto err);
 	va_start(ap, fmt);
-	arglen = vsprintf(j->data + start_idx, fmt, ap);
+	arg_len = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
-	if (jstr_unlikely(arglen < 0))
+	if (jstr_unlikely(arg_len < 0))
 		goto err_free;
-	j->size = arglen + start_idx;
+	j->size = arg_len + start_idx;
 	return 1;
 err_free:
 	pjstr_sprintf_err(&j->data, &j->size, &j->capacity);

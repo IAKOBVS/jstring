@@ -236,27 +236,27 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_strstr_len(const void *R hs,
-		const size_t hslen,
+		const size_t hs_len,
 		const void *R ne,
-		const size_t nelen)
+		const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return (char *)JSTR_MEMMEM((char *)hs, hslen, (char *)ne, nelen);
-	(void)hslen;
-	(void)nelen;
+	return (char *)JSTR_MEMMEM((char *)hs, hs_len, (char *)ne, ne_len);
+	(void)hs_len;
+	(void)ne_len;
 }
 
 JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_strnstr_len(const void *R hs,
-		 const size_t hslen,
+		 const size_t hs_len,
 		 const void *R ne,
-		 const size_t nelen,
+		 const size_t ne_len,
 		 const size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_strstr_len(hs, JSTR_MIN(hslen, n), ne, nelen);
+	return jstr_strstr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
 /*
@@ -469,14 +469,14 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strstrnul_len(const char *R hs,
-		   const size_t hslen,
+		   const size_t hs_len,
 		   const char *R ne,
-		   const size_t nelen)
+		   const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	const char *const p = jstr_strstr_len(hs, hslen, ne, nelen);
-	return (char *)(p ? p : hs + hslen);
-	(void)nelen;
+	const char *const p = jstr_strstr_len(hs, hs_len, ne, ne_len);
+	return (char *)(p ? p : hs + hs_len);
+	(void)ne_len;
 }
 
 JSTR_FUNC_PURE
@@ -515,7 +515,7 @@ static char *
 jstr_strtok_ne_len(const char **const save_ptr,
 		   const char *const end,
 		   const char *R ne,
-		   const size_t nelen)
+		   const size_t ne_len)
 JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
@@ -523,13 +523,13 @@ JSTR_NOEXCEPT
 		*save_ptr = s;
 		return NULL;
 	}
-	if (!strncmp(s, ne, nelen))
-		s += nelen;
+	if (!strncmp(s, ne, ne_len))
+		s += ne_len;
 	if (jstr_unlikely(*s == '\0')) {
 		*save_ptr = s;
 		return NULL;
 	}
-	*save_ptr = jstr_strstrnul_len(s, end - s, ne, nelen);
+	*save_ptr = jstr_strstrnul_len(s, end - s, ne, ne_len);
 	return (char *)s;
 }
 
@@ -548,9 +548,9 @@ JSTR_NOEXCEPT
 		*save_ptr = s;
 		return NULL;
 	}
-	const size_t nelen = strlen(ne);
-	if (!strncmp(s, ne, nelen))
-		s += nelen;
+	const size_t ne_len = strlen(ne);
+	if (!strncmp(s, ne, ne_len))
+		s += ne_len;
 	if (jstr_unlikely(*s == '\0')) {
 		*save_ptr = s;
 		return NULL;

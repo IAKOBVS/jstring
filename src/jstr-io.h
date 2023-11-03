@@ -838,12 +838,12 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define FILL_PATH_ALWAYS()                                                         \
 		do {                                                                       \
 			jstr_io_append_path_len(dirpath + dlen, ep->d_name, ep->d_namlen); \
-			pathlen = dlen + 1 + ep->d_namlen;                                 \
+			path_len = dlen + 1 + ep->d_namlen;                                 \
 		} while (0)
 #else
 #	define FILL_PATH_ALWAYS()                                                             \
 		do {                                                                           \
-			pathlen = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath; \
+			path_len = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath; \
 		} while (0)
 #endif
 
@@ -929,7 +929,7 @@ JSTR_NOEXCEPT
 #endif
 	if (jstr_unlikely(dp == NULL))
 		return NONFATAL_ERR();
-	size_t pathlen = 0;
+	size_t path_len = 0;
 	const struct dirent *R ep;
 	int ret;
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
@@ -1011,7 +1011,7 @@ do_reg:
 		} else {
 			STAT_OR_MODE();
 		}
-		ret = fn(dirpath, pathlen, st);
+		ret = fn(dirpath, path_len, st);
 		if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
 			if (ret == JSTR_IO_FTW_RET_CONTINUE
 			    || ret == JSTR_IO_FTW_RET_SKIP_SUBTREE)
@@ -1059,13 +1059,13 @@ do_dir:
 		fd_tmp = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd_tmp == -1))
 			continue;
-		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn, jflags, fn_glob, fn_flags, st, fd_tmp))) {
+		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st, fd_tmp))) {
 			close(fd_tmp);
 			goto err_closedir;
 		}
 		close(fd_tmp);
 #else
-		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, pathlen, fn, jflags, fn_glob, fn_flags, st)))
+		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
 			goto err_closedir;
 #endif
 		continue;
