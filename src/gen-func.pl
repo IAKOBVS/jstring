@@ -105,10 +105,18 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	next
 	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
 		|| $name !~ /^jstr_/
-		|| $name =~ /$J_PREFIX$/o
-		|| grepped(\@arg,  \"...")
-		|| !grepped(\@arg, \$VAR_SIZE)
-		|| !grepped(\@arg, \$VAR_CAP));
+		|| $name =~ /$J_PREFIX$/o);
+	my $has_size_or_cap = 0;
+	my $has_variadic    = 0;
+	foreach (@arg) {
+		if ($_ eq $VAR_SIZE || $_ eq $VAR_CAP) {
+			$has_size_or_cap = 1;
+			last;
+		} elsif ($_ eq '...') {
+			$has_variadic = 1;
+		}
+	}
+	next if ($has_size_or_cap == 0 || $has_variadic);
 	my $base_name = $name;
 	$base_name =~ s/$LEN_PREFIX(_|$)/$1/o;
 	next if (grepped(\@func_arr, \($base_name . $J_PREFIX)));
