@@ -708,7 +708,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_io_expand_tilde_p_unsafe(char *R s,
+jstr_io_expand_tilde_unsafe_p(char *R s,
 			      size_t sz)
 JSTR_NOEXCEPT
 {

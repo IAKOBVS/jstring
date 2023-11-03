@@ -467,7 +467,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_append_len_p_unsafe(char *R s,
+jstr_append_len_unsafe_p(char *R s,
 			 const size_t sz,
 			 const char *R src,
 			 const size_t src_len)
@@ -491,7 +491,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_append_p_unsafe(char *R s,
+jstr_append_unsafe_p(char *R s,
 		     const size_t sz,
 		     const char *R src)
 JSTR_NOEXCEPT
@@ -516,7 +516,7 @@ jstr_append_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return 0);
-	*sz = jstr_append_len_p_unsafe(*s, *sz, src, src_len) - *s;
+	*sz = jstr_append_len_unsafe_p(*s, *sz, src, src_len) - *s;
 	return 1;
 }
 
@@ -534,7 +534,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strset_len_p_unsafe(char *R s,
+jstr_strset_len_unsafe_p(char *R s,
 			 const size_t sz,
 			 const int c,
 			 const size_t n)
@@ -573,7 +573,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strset_append_len_p_unsafe(char *R s,
+jstr_strset_append_len_unsafe_p(char *R s,
 				const size_t sz,
 				const int c,
 				const size_t n)
@@ -596,7 +596,7 @@ jstr_strset_append(char *R *R s,
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + n, return 0);
-	*sz = jstr_strset_append_len_p_unsafe(*s, *sz, c, n) - *s;
+	*sz = jstr_strset_append_len_unsafe_p(*s, *sz, c, n) - *s;
 	return 1;
 }
 
@@ -606,7 +606,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_strset_prepend_p_unsafe(char *R s,
+jstr_strset_prepend_unsafe_p(char *R s,
 			     const size_t sz,
 			     const int c,
 			     const size_t n)
@@ -633,7 +633,7 @@ jstr_strset_prepend(char *R *R s,
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + n, return 0);
-	*sz = jstr_strset_prepend_p_unsafe(*s, *sz, c, n) - *s;
+	*sz = jstr_strset_prepend_unsafe_p(*s, *sz, c, n) - *s;
 	return 1;
 }
 
@@ -646,7 +646,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_prepend_len_p_unsafe(char *R s,
+jstr_prepend_len_unsafe_p(char *R s,
 			  const size_t sz,
 			  const char *R src,
 			  const size_t src_len)
@@ -677,7 +677,7 @@ jstr_prepend_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return 0);
-	*sz = jstr_prepend_len_p_unsafe(*s, *sz, src, src_len) - *s;
+	*sz = jstr_prepend_len_unsafe_p(*s, *sz, src, src_len) - *s;
 	return 1;
 }
 
@@ -689,7 +689,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_assign_len_p_unsafe(char *R s,
+jstr_assign_len_unsafe_p(char *R s,
 			 const char *R src,
 			 const size_t src_len)
 JSTR_NOEXCEPT
@@ -716,14 +716,14 @@ JSTR_NOEXCEPT
 {
 	if (*cap < src_len)
 		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, src_len * JSTR_ALLOC_MULTIPLIER, return 0);
-	*sz = jstr_assign_len_p_unsafe(*s, src, src_len) - *s;
+	*sz = jstr_assign_len_unsafe_p(*s, src, src_len) - *s;
 	return 1;
 }
 
 JSTR_INLINE
 JSTR_FUNC_VOID
 static char *
-jstr_push_back_p_unsafe(char *R s,
+jstr_push_back_unsafe_p(char *R s,
 			const size_t sz,
 			const char c)
 JSTR_NOEXCEPT
@@ -751,14 +751,14 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
 		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
-	*sz = jstr_push_back_p_unsafe(*s, *sz, c) - *s;
+	*sz = jstr_push_back_unsafe_p(*s, *sz, c) - *s;
 	return 1;
 }
 
 JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
-jstr_push_front_p_unsafe(char *R s,
+jstr_push_front_unsafe_p(char *R s,
 			 const size_t sz,
 			 const char c)
 JSTR_NOEXCEPT
@@ -786,7 +786,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
 		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0);
-	*sz = jstr_push_front_p_unsafe(*s, *sz, c) - *s;
+	*sz = jstr_push_front_unsafe_p(*s, *sz, c) - *s;
 	return 1;
 }
 

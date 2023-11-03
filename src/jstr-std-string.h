@@ -67,10 +67,10 @@ JSTR_INLINE
 static int
 jstr_bcmp(const void *R s1,
 	  const void *R s2,
-	  const size_t sz)
+	  const size_t n)
 JSTR_NOEXCEPT
 {
-	return memcmp(s1, s2, sz);
+	return memcmp(s1, s2, n);
 }
 
 JSTR_FUNC_VOID

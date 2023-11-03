@@ -176,7 +176,7 @@ JSTR_NOEXCEPT
 /* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
-jstr_repeat_len_p_unsafe(char *R s,
+jstr_repeat_len_unsafe_p(char *R s,
 			 const size_t sz,
 			 size_t n)
 JSTR_NOEXCEPT
@@ -209,7 +209,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n < 2))
 		return 1;
 	PJSTR_RESERVE(s, sz, cap, *sz * n, return 0);
-	*sz = jstr_repeat_len_p_unsafe(*s, *sz, n) - *s;
+	*sz = jstr_repeat_len_unsafe_p(*s, *sz, n) - *s;
 	return 1;
 }
 

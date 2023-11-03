@@ -12,8 +12,11 @@ my $ATTR_INLINE       = 'JSTR_INLINE';
 my $ATTR_RESTRICT     = 'JSTR_RESTRICT';
 my $ATTR_DEFAULT      = 'JSTR_FUNC';
 my $ATTR_DEFAULT_VOID = 'JSTR_FUNC_VOID';
-my $VAR_JSTRING       = 'j';
+my $ATTR_RET_NONNULL = 'JSTR_FUNC_RET_NONNULL';
 my $JSTRING           = 'jstr_ty';
+my $JSTRING_LIST      = 'jstr_l_ty';
+my $VAR_JSTRING       = 'j';
+my $VAR_JSTRING_LIST  = 'l';
 my $DATA              = 'data';
 my $SIZE              = 'size';
 my $CAP               = 'capacity';
@@ -28,6 +31,12 @@ sub add_inline {
 	my ($attr_str_ref, $inline_attr_ref) = @_;
 	$$attr_str_ref .= "\n" . $$inline_attr_ref
 	  if (index($$attr_str_ref, $$inline_attr_ref) == -1);
+}
+
+sub rm_nonnull {
+	my ($attr_str_ref, $ret_nonnull_attr_ref) = @_;
+	$$attr_str_ref =~ s/$$ret_nonnull_attr_ref//;
+	$$attr_str_ref =~ s/\n\n\n//;
 }
 
 sub grepped {
@@ -48,7 +57,7 @@ my @func_arr;
 
 # generate non *_len() functions
 foreach (jl_file_to_blocks(\$file_str1)) {
-	$file_str2 .= $_ . "\n\n";
+	$file_str2 .= "$_\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
 	next
 	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
@@ -60,7 +69,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 		|| $name =~ /$J_PREFIX$/o);
 	my $base_name = $name;
 	$base_name =~ s/$LEN_PREFIX(_|$)/$1/o;
-	next if (index($file_str1, $base_name . '(') != -1);
+	next if (index($file_str1, "$base_name(") != -1);
 	add_inline(\$attr, \$ATTR_INLINE);
 	$body = (($rettype eq 'void') ? '' : 'return ') . $name . '(';
 	$name = $base_name;
@@ -82,7 +91,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 			} else {
 				goto DO_NOTHING;
 			}
-			$body .= 'strlen((char *)' . $var_str . ')';
+			$body .= "strlen((char *)$var_str)";
 			splice(@arg, $i--, 1);
 		} else {
 		  DO_NOTHING:
@@ -94,6 +103,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 	$body .= ");";
 	$file_str2 .=
 	  jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
+	push(@func_arr, $name);
 }
 
 my $file_str3 = '';
@@ -106,7 +116,8 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
 		|| $name !~ /^jstr_/
 		|| $name =~ /$J_PREFIX$/o
-		|| scalar(@arg) == 0);
+		|| scalar(@arg) == 0
+		|| index($name, 'unsafe') != -1);
 	my $has_size_or_cap = 0;
 	my $has_variadic    = 0;
 	foreach (@arg) {
@@ -118,37 +129,50 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 		}
 	}
 	next if ($has_size_or_cap == 0 || $has_variadic);
-	my $base_name = $name;
-	$base_name =~ s/$LEN_PREFIX(_|$)/$1/o;
-	next if (grepped(\@func_arr, \($base_name . $J_PREFIX)));
+	my $j_name = $name . $J_PREFIX;
+	next if (grepped(\@func_arr, \($j_name)));
+	my $returns_end_ptr = 0;
 	if ($rettype eq 'void') {
 		$body = '';
 	} else {
 		if ($name =~ /_p(?:_|$)/) {
-			$body    = $JSTRING . '->' . $VAR_SIZE . ' = ';
-			$rettype = 'void';
+			$returns_end_ptr = 1;
+			$body            = "$VAR_JSTRING->$SIZE = ";
+			$rettype         = 'void';
 			$attr =~ s/$ATTR_DEFAULT(\W|$)/$ATTR_DEFAULT_VOID$1/o;
+		} elsif (grepped(\@func_arr, \($name . '_p'))) {
+			next;
 		} else {
 			$body = 'return ';
 		}
 	}
 	$body .= $name . '(';
-	$name = $base_name . $J_PREFIX;
+	$name = $j_name;
 	$name =~ s/_p(_|$)/$1/;
+	my $VAR_STRUCT;
 	for (my $i = 0; $i < scalar(@arg); ++$i) {
 		my $var = jl_arg_get_var(\$arg[$i]);
-		if ($var eq $VAR_DATA) {
+		if ($i == 0) {
 			my $deref = (jl_arg_is_ptr_ptr(\$arg[$i]) ? '&' : '');
-			$body .= $deref . $VAR_JSTRING . '->' . $DATA;
+			my $STRUCT;
+			if (index($arg[0], $JSTRING_LIST) != -1) {
+				$STRUCT = $JSTRING_LIST;
+				$body .= "$deref$VAR_JSTRING";
+				$VAR_STRUCT = $VAR_JSTRING_LIST;
+			} else {
+				$STRUCT = $JSTRING;
+				$body .= "$deref$VAR_JSTRING->$DATA";
+				$VAR_STRUCT = $VAR_JSTRING;
+			}
 			$arg[$i] = jl_arg_is_const(\$arg[$i]) ? 'const ' : '';
-			$arg[$i] .= $JSTRING . ' *' . $ATTR_RESTRICT . ' j';
+			$arg[$i] .= $STRUCT . ' *' . $ATTR_RESTRICT . ' j';
 		} elsif ($var eq $VAR_SIZE) {
 			my $deref = (jl_arg_is_ptr(\$arg[$i]) ? '&' : '');
-			$body .= $VAR_JSTRING . '->' . $SIZE;
+			$body .= "$deref$VAR_STRUCT->$SIZE";
 			splice(@arg, $i--, 1);
 		} elsif ($var eq $VAR_CAP) {
 			my $deref = (jl_arg_is_ptr(\$arg[$i]) ? '&' : '');
-			$body .= $deref . $VAR_JSTRING . '->' . $CAP;
+			$body .= "$deref$VAR_STRUCT->$CAP";
 			splice(@arg, $i--, 1);
 		} else {
 			$body .= $var;
@@ -156,11 +180,15 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 		$body .= ', ';
 	}
 	$body =~ s/, $//;
-	$body .= ");";
+	$body .= ')';
+	$body .= ' - ' . $VAR_STRUCT . '->' . $DATA if ($returns_end_ptr);
+	$body .= ";";
+	rm_nonnull(\$attr, \$ATTR_RET_NONNULL);
 	add_inline(\$attr, \$ATTR_INLINE);
 	$file_str3 .=
 	  jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
 	push(@func_arr, $name);
+  NEXT:
 }
 
 $file_str3 =~ s/\n\n*$/\n/;
