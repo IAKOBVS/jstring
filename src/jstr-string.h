@@ -37,6 +37,7 @@ JSTR_INLINE
 static char *
 jstr_strstr(const void *R hs,
 	    const void *R ne)
+JSTR_NOEXCEPT
 {
 	return strstr((char *)hs, (char *)ne);
 }
