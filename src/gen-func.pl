@@ -188,7 +188,6 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$file_str3 .=
 	  jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
 	push(@func_arr, $name);
-  NEXT:
 }
 
 $file_str3 =~ s/\n\n*$/\n/;
