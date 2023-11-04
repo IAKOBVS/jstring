@@ -243,7 +243,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return 1;
-	PJSTR_L_RESERVE(l, argc, return 0);
+	PJSTR_L_RESERVE(l, l->size + argc, return 0);
 	va_start(ap, l);
 	jstr_ty *j = l->data + l->size;
 	for (size_t arglen; (arg = va_arg(ap, char *)); ++j, ++l->size) {
