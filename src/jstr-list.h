@@ -304,7 +304,7 @@ jstr_l_assign_len(jstr_l_ty *R l,
 		  const char *R s,
 		  const size_t s_len)
 {
-	return pjstr_l_alloc_assign_len(&((l->data + idx)->data), &((l->data + idx)->size), &((l->data + idx)->capacity), s, s_len);
+	return pjstr_l_alloc_assign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
 }
 
 JSTR_FUNC_PURE
