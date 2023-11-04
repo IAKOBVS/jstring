@@ -62,10 +62,22 @@ JSTR_INLINE
 static void
 jstr_l_debug(const jstr_l_ty *R l)
 {
-	fprintf(stderr, "size:%zu\ncap:%zu\n\n", l->size, l->capacity);
+	fprintf(stderr, "size:%zu\n"
+			"cap:%zu\n"
+			"\n",
+		l->size,
+		l->capacity);
 	jstr_l_foreach (l, p) {
-		fprintf(stderr, "size:%zu\ncap:%zu\n", p->size, p->capacity);
-		fprintf(stderr, "data:%s\n\n", p->data);
+		fprintf(stderr,
+			"idx:%zu\n"
+			"size:%zu\n"
+			"cap:%zu\n",
+			p - l->data,
+			p->size,
+			p->capacity);
+		fprintf(stderr, "data:%s\n"
+				"\n",
+			p->data);
 	}
 }
 
@@ -174,10 +186,8 @@ JSTR_FUNC_VOID
 static void
 jstr_l_popback(jstr_l_ty *R l)
 {
-	if (jstr_likely(l->size)) {
-		free(jstr_l_at(l, l->size)->data);
-		--l->size;
-	}
+	if (jstr_likely(l->size))
+		free(jstr_l_at(l, --l->size)->data);
 }
 
 JSTR_FUNC_VOID
