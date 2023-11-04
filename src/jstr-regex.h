@@ -1199,6 +1199,26 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC
 static jstr_re_errcode_ty
+jstr_re_rplcall_bref_len_from_now(regex_t *R preg,
+				  char *R *R s,
+				  size_t *R sz,
+				  size_t *R cap,
+				  const size_t start_idx,
+				  const char *R ptn,
+				  const char *R rplc,
+				  size_t rplc_len,
+				  const int cflags,
+				  const int eflags,
+				  const size_t nmatch)
+JSTR_NOEXCEPT
+{
+	PJSTR_RE_COMP_NOW();
+	return jstr_re_rplcall_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch);
+}
+
+JSTR_INLINE
+JSTR_FUNC
+static jstr_re_errcode_ty
 jstr_re_rplcall_bref_len_now(regex_t *R preg,
 			     char *R *R s,
 			     size_t *R sz,
