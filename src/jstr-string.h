@@ -1319,7 +1319,7 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_caseends_len(const char *R hs,
+jstr_endscase_len(const char *R hs,
 		  const size_t hs_len,
 		  const char *R ne,
 		  const size_t ne_len)
@@ -1337,11 +1337,11 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static int
-jstr_caseends(const char *R hs,
+jstr_endscase(const char *R hs,
 	      const char *R ne)
 JSTR_NOEXCEPT
 {
-	return jstr_caseends_len(hs, strlen(hs), ne, strlen(ne));
+	return jstr_endscase_len(hs, strlen(hs), ne, strlen(ne));
 }
 
 /*
@@ -1387,7 +1387,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_casestarts_len(const char *R hs,
+jstr_startscase_len(const char *R hs,
 		    const size_t hs_len,
 		    const char *R ne,
 		    const size_t ne_len)
@@ -1405,7 +1405,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_casestarts(const char *R hs,
+jstr_startscase(const char *R hs,
 		const char *R ne)
 JSTR_NOEXCEPT
 {
@@ -1421,7 +1421,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_casestartsnul_len(const char *R hs,
+jstr_startscasenul_len(const char *R hs,
 		       const size_t hs_len,
 		       const char *R ne,
 		       const size_t ne_len)
@@ -1439,7 +1439,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static size_t
-jstr_casestartsnul(const char *R hs,
+jstr_startscasenul(const char *R hs,
 		   const char *R ne)
 JSTR_NOEXCEPT
 {
