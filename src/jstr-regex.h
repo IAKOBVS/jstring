@@ -656,9 +656,9 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static int
 pjstr_re_strlenrplcdst(const regmatch_t *R rm,
-			 unsigned char *R rplc,
-			 const size_t rplc_len,
-			 size_t *R rdst_len)
+		       unsigned char *R rplc,
+		       const size_t rplc_len,
+		       size_t *R rdst_len)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -679,10 +679,10 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 pjstr_re_creatrplcbref(const unsigned char *R mtc,
-			 const regmatch_t *R rm,
-			 unsigned char *R rdst,
-			 unsigned char *R rplc,
-			 const size_t rplc_len)
+		       const regmatch_t *R rm,
+		       unsigned char *R rdst,
+		       unsigned char *R rplc,
+		       const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -754,6 +754,7 @@ JSTR_NOEXCEPT
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
 				rdstp = rdst_heap;
 			} else if (rdstcap < rdst_len) {
+				rdstcap = pjstr_grow(rdstcap, rdst_len);
 				PJSTR_REALLOC(rdst_heap, rdstcap, rdst_len, goto err);
 				rdstp = rdst_heap;
 			}
