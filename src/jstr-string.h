@@ -49,10 +49,10 @@ jstr_strnstr_len(const void *R hs,
 		 const size_t hs_len,
 		 const void *R ne,
 		 const size_t ne_len,
-		 const size_t sz)
+		 const size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_strstr_len(hs, JSTR_MIN(hs_len, sz), ne, ne_len);
+	return jstr_strstr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
 JSTR_FUNC_PURE
