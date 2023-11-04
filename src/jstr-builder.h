@@ -290,9 +290,9 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_reservealways(char *R *R s,
-		    size_t *R sz,
-		    size_t *R cap,
-		    const size_t new_cap)
+		   size_t *R sz,
+		   size_t *R cap,
+		   const size_t new_cap)
 JSTR_NOEXCEPT
 {
 	return pjstr_realloc_may_zero(s, sz, cap, new_cap + 1);
@@ -305,9 +305,9 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_reservealways_nomalloc(char *R *R s,
-			     size_t *R sz,
-			     size_t *R cap,
-			     const size_t new_cap)
+			    size_t *R sz,
+			    size_t *R cap,
+			    const size_t new_cap)
 JSTR_NOEXCEPT
 {
 	return pjstr_realloc(s, sz, cap, new_cap + 1);
@@ -799,7 +799,7 @@ jstr_popback_p(char *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0)) {
-		*(s + sz) = '\0';
+		*(s + sz - 1) = '\0';
 		return s + sz - 1;
 	}
 	return s;
