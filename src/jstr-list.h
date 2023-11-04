@@ -18,7 +18,7 @@
 #define PJSTR_L_RESERVE(list, new_cap, do_on_malloc_err) \
 	PJSTR_L_RESERVE_FAIL(jstr_l_reserve, list, new_cap, do_on_malloc_err)
 #define PJSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_malloc_err) \
-	PJSTR_L_RESERVE_FAIL(jstr_l_reserve_always, list, new_cap, do_on_malloc_err)
+	PJSTR_L_RESERVE_FAIL(jstr_l_reservealways, list, new_cap, do_on_malloc_err)
 
 #define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = ((l)->data) + ((l)->size); \
 				  p < jstr_l_ty_end_;                                                          \
@@ -46,10 +46,10 @@ JSTR_INLINE
 static void
 jstr_l_debug(const jstr_l_ty *R l)
 {
-	fprintf(stderr, "size:%zu\ncap:%zu\nelems:\n", l->size, l->capacity);
+	fprintf(stderr, "size:%zu\ncap:%zu\n\n", l->size, l->capacity);
 	jstr_l_foreach (l, p) {
 		fprintf(stderr, "size:%zu\ncap:%zu\n", p->size, p->capacity);
-		fprintf(stderr, "data:%s\n", p->data);
+		fprintf(stderr, "data:%s\n\n", p->data);
 	}
 }
 
@@ -98,8 +98,8 @@ jstr_l_free(jstr_l_ty *R l)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
-		for (size_t i = 0; i < l->size; ++i)
-			free(l->data[i].data);
+		jstr_l_foreach (l, p)
+			free(p->data);
 		free(l->data);
 		l->data = NULL;
 		l->size = 0;
@@ -124,7 +124,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_l_reserve_always(jstr_l_ty *R l,
+jstr_l_reservealways(jstr_l_ty *R l,
 		      size_t new_cap)
 JSTR_NOEXCEPT
 {
@@ -160,9 +160,9 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
 	    !jstr_assign_len(
-	    &l->data[l->size].data,
-	    &l->data[l->size].size,
-	    &l->data[l->size].capacity,
+	    &((l->data + l->size)->data),
+	    &((l->data + l->size)->size),
+	    &((l->data + l->size)->capacity),
 	    s,
 	    s_len)))
 		goto err_str;
@@ -180,7 +180,7 @@ jstr_l_add_len(jstr_l_ty *R l,
 	       const size_t s_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_L_RESERVE(l, (l->capacity != 0) ? (l->capacity * 2) : 2, goto err);
+	PJSTR_L_RESERVE(l, l->size + 1, goto err);
 	if (jstr_unlikely(
 	    !jstr_l_add_len_unsafe(l, s, s_len)))
 		goto err;
@@ -209,9 +209,9 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(argc == 0))
 		return 1;
 	PJSTR_L_RESERVE(l, argc, return 0);
-	va_start(ap, l);
 	jstr_ty *j = l->data;
 	l->size = 0;
+	va_start(ap, l);
 	for (size_t arglen; (arg = va_arg(ap, char *)); ++j) {
 		arglen = strlen(arg);
 		if (jstr_unlikely(
@@ -405,7 +405,7 @@ JSTR_FUNC_VOID_MAY_NULL
 JSTR_INLINE
 static void
 pjstr_l_delete(jstr_l_ty *l,
-	       jstr_ty *p)
+	       jstr_ty *const p)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->size) && p) {
