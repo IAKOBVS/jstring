@@ -164,6 +164,21 @@ jstr_l_popback(jstr_l_ty *R l)
 	}
 }
 
+JSTR_FUNC_VOID
+static void
+jstr_l_popfront(jstr_l_ty *R l)
+{
+	if (jstr_likely(l->size)) {
+		if (jstr_likely(l->size > 1))
+			memmove(l->data, l->data + 1, (jstr_l_end(l) - (l->data + 1)) * sizeof(*l->data));
+		free(l->data->data);
+		l->data->data = NULL;
+		l->data->size = 0;
+		l->data->capacity = 0;
+		--l->size;
+	}
+}
+
 JSTR_FUNC
 static int
 jstr_l_pushfront_len_unsafe(jstr_l_ty *R l,
