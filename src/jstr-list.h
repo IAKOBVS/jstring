@@ -131,6 +131,7 @@ JSTR_NOEXCEPT
 	new_cap = pjstr_l_grow(l->capacity, new_cap);
 	l->data = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
 	PJSTR_MALLOC_ERR(l->data, goto err);
+	memset(l->data + l->size, 0, (new_cap - l->size) * sizeof(*l->data));
 	l->capacity = new_cap;
 	return 1;
 err:
