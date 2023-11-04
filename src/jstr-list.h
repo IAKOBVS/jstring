@@ -261,6 +261,16 @@ err_free_l:
 	return 0;
 }
 
+JSTR_FUNC
+static int
+jstr_l_assign_len(jstr_l_ty *R l,
+		  const size_t idx,
+		  const char *R s,
+		  const size_t s_len)
+{
+	return jstr_assign_len(&((l->data + idx)->data), &((l->data + idx)->size), &((l->data + idx)->capacity), s, s_len);
+}
+
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_len(const jstr_l_ty *R l,
