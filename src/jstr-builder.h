@@ -802,7 +802,7 @@ JSTR_NOEXCEPT
 		*(s + sz) = '\0';
 		return s + sz - 1;
 	}
-	return 0;
+	return s;
 }
 
 /* Pop s[0]. */
@@ -817,7 +817,7 @@ JSTR_NOEXCEPT
 		memmove(s, s + 1, sz);
 		return s + sz - 1;
 	}
-	return 0;
+	return s;
 }
 
 JSTR_FUNC
