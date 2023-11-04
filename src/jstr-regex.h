@@ -17,12 +17,13 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define jstr_re_chk(errcode) jstr_unlikely(errcode != JSTR_RE_RET_NOERROR && errcode != JSTR_RE_RET_NOMATCH)
+#define jstr_re_comp_chk(errcode) jstr_unlikely(errcode != JSTR_RE_RET_NOERROR)
+#define jstr_re_exec_chk(errcode) (jstr_re_comp_chk(errcode) && jstr_unlikely(errcode != JSTR_RE_RET_NOMATCH))
 
 #define PJSTR_RE_COMP_NOW()                                                     \
 	do {                                                                    \
 		const jstr_re_errcode_ty ret = jstr_re_comp(preg, ptn, cflags); \
-		if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR))                  \
+		if (jstr_re_comp_chk(ret))                                      \
 			return ret;                                             \
 	} while (0)
 
@@ -138,7 +139,7 @@ jstr_re_err_exit(jstr_re_errcode_ty errcode,
 		 const regex_t *R preg)
 JSTR_NOEXCEPT
 {
-	if (jstr_re_chk(errcode))
+	if (jstr_re_exec_chk(errcode))
 		pjstr_re_err_exit_print(errcode, preg);
 }
 
@@ -149,7 +150,7 @@ jstr_re_err_print(jstr_re_errcode_ty errcode,
 		  const regex_t *R preg)
 JSTR_NOEXCEPT
 {
-	if (jstr_re_chk(errcode))
+	if (jstr_re_exec_chk(errcode))
 		pjstr_re_err_print(errcode, preg);
 }
 
@@ -162,7 +163,7 @@ jstr_re_err(jstr_re_errcode_ty errcode,
 	    const size_t errbuf_size)
 JSTR_NOEXCEPT
 {
-	if (jstr_re_chk(errcode))
+	if (jstr_re_exec_chk(errcode))
 		regerror(errcode, preg, errbuf, errbuf_size);
 }
 
