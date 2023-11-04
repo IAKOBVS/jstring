@@ -152,7 +152,7 @@ PJSTR_END_DECLS
 		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                      \
 	} while (0)
 /* Pop PTR[0]. */
-#define jarr_pop_front(j)                                                 \
+#define jarr_popfront(j)                                                 \
 	do {                                                              \
 		PJARR_CHECK_ARG(j);                                       \
 		if (jstr_unlikely(PJARR_CAP(j) == 0)) {                   \
@@ -162,7 +162,7 @@ PJSTR_END_DECLS
 		memmove(PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j)); \
 	} while (0)
 /* Pop end of PTR. */
-#define jarr_pop_back(j)                                 \
+#define jarr_popback(j)                                 \
 	do {                                             \
 		PJARR_CHECK_ARG(j);                      \
 		if (jstr_unlikely(PJARR_CAP(j) == 0)) {  \
@@ -172,7 +172,7 @@ PJSTR_END_DECLS
 		*(PJARR_DATA(j) + --PJARR_SZ(j)) = '\0'; \
 	} while (0)
 /* Push VAL to back of PTR. */
-#define jarr_push_back(j, value)                                           \
+#define jarr_pushback(j, value)                                           \
 	do {                                                               \
 		PJARR_CHECK_ARG(j);                                        \
 		PJARR_CHECK_VAL(j, value);                                 \
@@ -185,7 +185,7 @@ PJSTR_END_DECLS
 		*(PJARR_DATA(j) + PJARR_SZ(j)++) = (value);                \
 	} while (0)
 /* Push VAL to front of P. */
-#define jarr_push_front(j, value)                                                  \
+#define jarr_pushfront(j, value)                                                  \
 	do {                                                                       \
 		PJARR_CHECK_ARG(j);                                                \
 		PJARR_CHECK_VAL(j, value);                                         \
