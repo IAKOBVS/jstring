@@ -153,19 +153,20 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-pjstr_l_alloc_assign_len(jstr_l_ty *R l,
-			 const size_t idx,
-			 const char *R s,
-			 const size_t s_len)
+pjstr_l_alloc_assign_len(char *R *R s,
+			 size_t *R sz,
+			 size_t *R cap,
+			 const char *R src,
+			 const size_t src_len)
 {
-	jstr_l_at(l, idx)->capacity = JSTR_ALIGN_UP_STR(s_len + 1);
-	jstr_l_at(l, idx)->data = (char *)malloc(jstr_l_at(l, idx)->capacity);
-	PJSTR_MALLOC_ERR(jstr_l_at(l, idx)->data, goto err);
-	jstr_strcpy_len(jstr_l_at(l, idx)->data, s, s_len);
-	jstr_l_at(l, idx)->size = s_len;
+	*cap = JSTR_ALIGN_UP_STR(src_len + 1);
+	*s = (char *)malloc(*cap);
+	PJSTR_MALLOC_ERR(*s, goto err);
+	jstr_strcpy_len(*s, src, src_len);
+	*sz = src_len;
 	return 1;
 err:
-	jstr_l_free(l);
+	pjstr_nullify_members(sz, cap);
 	return 0;
 }
 
@@ -200,9 +201,6 @@ jstr_l_pushfront_len_unsafe(jstr_l_ty *R l,
 {
 	if (jstr_likely(l->size))
 		memmove(l->data + 1, l->data, (jstr_l_end(l) - (l->data)) * sizeof(*l->data));
-	l->data->size = 0;
-	l->data->capacity = 0;
-	l->data->data = NULL;
 	if (jstr_unlikely(
 	    !pjstr_l_alloc_assign_len(
 	    &l->data->data,
@@ -288,9 +286,6 @@ JSTR_NOEXCEPT
 	PJSTR_L_RESERVE(l, l->size + argc, return 0);
 	va_start(ap, l);
 	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size) {
-		j->data = NULL;
-		j->size = 0;
-		j->cap = 0;
 		if (jstr_unlikely(
 		    !pjstr_l_alloc_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
