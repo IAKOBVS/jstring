@@ -194,12 +194,12 @@ JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *R s,
 	     const int c,
-	     const size_t sz)
+	     const size_t n)
 JSTR_NOEXCEPT
 {
 	/* Based on glibc memchr and strchrnul released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-	if (jstr_unlikely(sz == 0)
+	if (jstr_unlikely(n == 0)
 	    || jstr_unlikely(*s == '\0'))
 		return NULL;
 	typedef jstr_word_ty w_ty;
@@ -207,7 +207,7 @@ JSTR_NOEXCEPT
 	uintptr_t s_int = (uintptr_t)s;
 	w_ty word = jstr_word_toword(word_ptr);
 	w_ty repeated_c = jstr_word_repeat_bytes(c);
-	const char *const lbyte = pjstr_sadd(s_int, sz - 1);
+	const char *const lbyte = pjstr_sadd(s_int, n - 1);
 	const w_ty *const lword = (w_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(w_ty));
 	w_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
