@@ -8,9 +8,9 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
+#include "_jstr-macros.h"
 #include "jstr-builder.h"
 #include "jstr-ctype.h"
-#include "_jstr-macros.h"
 #include "jstr-string.h"
 
 #define R JSTR_RESTRICT
@@ -80,11 +80,11 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 pjstr_rplcat_len_unsafe(char *R s,
-		       size_t *R sz,
-		       const size_t at,
-		       const char *R rplc,
-		       const size_t rplc_len,
-		       const size_t find_len)
+			size_t *R sz,
+			const size_t at,
+			const char *R rplc,
+			const size_t rplc_len,
+			const size_t find_len)
 JSTR_NOEXCEPT
 {
 	memmove(s + at + rplc_len,
@@ -809,18 +809,16 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
 static char *
-pjstr_rmall_len_p(const int use_n,
-		  char *R s,
-		  const char *R find,
-		  size_t n,
-		  size_t sz,
-		  const size_t find_len)
+jstr_rmn_len_p(char *R s,
+	       size_t sz,
+	       const char *R find,
+	       const size_t find_len,
+	       size_t n)
 JSTR_NOEXCEPT
 {
 	if (find_len == 1)
-		return pjstr_rmallchr_len_p(use_n, s, *find, n, sz);
+		return pjstr_rmallchr_len_p(1, s, *find, n, sz);
 	if (jstr_unlikely(find_len == 0))
 		return s + sz;
 	typedef unsigned char u;
@@ -828,8 +826,7 @@ JSTR_NOEXCEPT
 	const unsigned char *oldp = dst;
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
-	while ((use_n ? n-- : 1)
-	       && (p = (u *)jstr_strstr_len(p, end - p, find, find_len)))
+	while (n-- && (p = (u *)jstr_strstr_len(p, end - p, find, find_len)))
 		pjstr_rmallinplace(&dst, &oldp, &p, find_len);
 	if (jstr_unlikely(dst == (u *)s))
 		return s + sz;
@@ -837,73 +834,40 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Remove N SEARC in S.
-  Return value:
-  Pointer to '\0' in S.
-*/
-JSTR_FUNC_RET_NONNULL
-static char *
-jstr_rmn_len_p(char *R s,
-	       const char *R find,
-	       size_t n,
-	       size_t sz,
-	       const size_t find_len)
-JSTR_NOEXCEPT
-{
-	return pjstr_rmall_len_p(1, s, find, n, sz, find_len);
-}
-
-/*
   Remove all SEARC in S.
   Return value:
   Pointer to '\0' in S.
 */
 JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
 static char *
 jstr_rmall_len_p(char *R s,
-		 const char *R find,
 		 size_t sz,
+		 const char *R find,
 		 const size_t find_len)
 JSTR_NOEXCEPT
 {
-	return pjstr_rmall_len_p(0, s, find, 0, sz, find_len);
-}
-
-/*
-  Remove all SEARC in S.
-  Return value:
-  Pointer to '\0' in S.
-*/
-JSTR_WARN_UNUSED
-JSTR_FUNC_RET_NONNULL
-static char *
-jstr_rmall_p(char *R s,
-	     const char *R find,
-	     const size_t find_len)
-JSTR_NOEXCEPT
-{
-	return jstr_rmall_len_p(s, find, strlen(s), find_len);
+	return jstr_rmn_len_p(s, sz, find, find_len, -1);
 }
 
 JSTR_INLINE
 JSTR_FUNC
 static int
-pjstr_rplcall_len(const int use_n,
-		  char *R *R s,
-		  size_t *R sz,
-		  size_t *R cap,
-		  const size_t start_idx,
-		  const char *R find,
-		  const char *R rplc,
-		  size_t n,
-		  const size_t find_len,
-		  const size_t rplc_len)
+jstr_rplcn_len_from(char *R *R s,
+		    size_t *R sz,
+		    size_t *R cap,
+		    const size_t start_idx,
+		    const char *R find,
+		    const size_t find_len,
+		    const char *R rplc,
+		    const size_t rplc_len,
+		    size_t n)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
 	unsigned char *dst = *(u **)s + start_idx;
 	if (jstr_unlikely(rplc_len == 0)) {
-		*sz = pjstr_rmall_len_p(use_n, (char *)dst, find, n, *sz - start_idx, find_len) - *s;
+		*sz = jstr_rmn_len_p((char *)dst, *sz - start_idx, find, find_len, n) - *s;
 		return 1;
 	}
 	if (find_len == 1) {
@@ -915,8 +879,7 @@ JSTR_NOEXCEPT
 		return 1;
 	const unsigned char *p = dst;
 	const unsigned char *oldp = p;
-	while ((use_n ? n-- : 1)
-	       && (p = (u *)jstr_strstr_len(p, (*s + *sz) - (char *)p, find, find_len))) {
+	while (n-- && (p = (u *)jstr_strstr_len(p, (*s + *sz) - (char *)p, find, find_len))) {
 		if (rplc_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, &p, (u *)rplc, rplc_len, find_len);
 		else
@@ -937,6 +900,7 @@ JSTR_NOEXCEPT
   otherwise, 1.
 */
 JSTR_FUNC
+JSTR_INLINE
 static int
 jstr_rplcn_len(char *R *R s,
 	       size_t *R sz,
@@ -948,28 +912,7 @@ jstr_rplcn_len(char *R *R s,
 	       const size_t rplc_len)
 JSTR_NOEXCEPT
 {
-	return pjstr_rplcall_len(1, s, sz, cap, 0, find, rplc, n, find_len, rplc_len);
-}
-
-/*
-  Replace N SEARCH in S with REPLACE.
-  Return 0 on malloc error;
-  otherwise, 1.
-*/
-JSTR_FUNC
-static int
-jstr_rplcn_len_from(char *R *R s,
-		    size_t *R sz,
-		    size_t *R cap,
-		    const size_t start_idx,
-		    const char *R find,
-		    const char *R rplc,
-		    size_t n,
-		    const size_t find_len,
-		    const size_t rplc_len)
-JSTR_NOEXCEPT
-{
-	return pjstr_rplcall_len(1, s, sz, cap, start_idx, find, rplc, n, find_len, rplc_len);
+	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, n);
 }
 
 /*
@@ -978,25 +921,7 @@ JSTR_NOEXCEPT
   otherwise, 1.
 */
 JSTR_FUNC
-static int
-jstr_rplcall_len(char *R *R s,
-		 size_t *R sz,
-		 size_t *R cap,
-		 const char *R find,
-		 const char *R rplc,
-		 const size_t find_len,
-		 const size_t rplc_len)
-JSTR_NOEXCEPT
-{
-	return pjstr_rplcall_len(0, s, sz, cap, 0, find, rplc, 0, find_len, rplc_len);
-}
-
-/*
-  Replace all SEARCH in S with REPLACE.
-  Return 0 on malloc error;
-  otherwise, 1.
-*/
-JSTR_FUNC
+JSTR_INLINE
 static int
 jstr_rplcall_len_from(char *R *R s,
 		      size_t *R sz,
@@ -1008,7 +933,27 @@ jstr_rplcall_len_from(char *R *R s,
 		      const size_t rplc_len)
 JSTR_NOEXCEPT
 {
-	return pjstr_rplcall_len(0, s, sz, cap, start_idx, find, rplc, 0, find_len, rplc_len);
+	return jstr_rplcn_len_from(s, sz, cap, start_idx, find, find_len, rplc, rplc_len, -1);
+}
+
+/*
+  Replace N SEARCH in S with REPLACE.
+  Return 0 on malloc error;
+  otherwise, 1.
+*/
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_rplcall_len(char *R *R s,
+		 size_t *R sz,
+		 size_t *R cap,
+		 const char *R find,
+		 const char *R rplc,
+		 const size_t find_len,
+		 const size_t rplc_len)
+JSTR_NOEXCEPT
+{
+	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, -1);
 }
 
 /*
