@@ -44,6 +44,22 @@ typedef struct jstr_l_ty {
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
+jstr_l_free(jstr_l_ty *R l)
+JSTR_NOEXCEPT
+{
+	if (jstr_likely(l->data != NULL)) {
+		jstr_l_foreach (l, p)
+			free(p->data);
+		free(l->data);
+		l->data = NULL;
+		l->size = 0;
+		l->capacity = 0;
+	}
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
 jstr_l_debug(const jstr_l_ty *R l)
 {
 	fprintf(stderr, "size:%zu\ncap:%zu\n\n", l->size, l->capacity);
@@ -91,22 +107,6 @@ JSTR_NOEXCEPT
 	return curr - l->data;
 }
 
-JSTR_FUNC_VOID
-JSTR_INLINE
-static void
-jstr_l_free(jstr_l_ty *R l)
-JSTR_NOEXCEPT
-{
-	if (jstr_likely(l->data != NULL)) {
-		jstr_l_foreach (l, p)
-			free(p->data);
-		free(l->data);
-		l->data = NULL;
-		l->size = 0;
-		l->capacity = 0;
-	}
-}
-
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
@@ -131,7 +131,6 @@ JSTR_NOEXCEPT
 	new_cap = pjstr_l_grow(l->capacity, new_cap);
 	l->data = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
 	PJSTR_MALLOC_ERR(l->data, goto err);
-	memset(l->data + l->size, 0, (new_cap - l->size) * sizeof(*l->data));
 	l->capacity = new_cap;
 	return 1;
 err:
@@ -151,15 +150,31 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
+JSTR_FUNC
+JSTR_INLINE
+static int
+pjstr_l_alloc_assign_len(jstr_l_ty *R l,
+			 const size_t idx,
+			 const char *R s,
+			 const size_t s_len)
+{
+	jstr_l_at(l, idx)->capacity = JSTR_ALIGN_UP_STR(s_len + 1);
+	jstr_l_at(l, idx)->data = (char *)malloc(jstr_l_at(l, idx)->capacity);
+	PJSTR_MALLOC_ERR(jstr_l_at(l, idx)->data, goto err);
+	jstr_strcpy_len(jstr_l_at(l, idx)->data, s, s_len);
+	jstr_l_at(l, idx)->size = s_len;
+	return 1;
+err:
+	jstr_l_free(l);
+	return 0;
+}
+
 JSTR_FUNC_VOID
 static void
 jstr_l_popback(jstr_l_ty *R l)
 {
 	if (jstr_likely(l->size)) {
 		free(jstr_l_at(l, l->size)->data);
-		jstr_l_at(l, l->size)->data = NULL;
-		jstr_l_at(l, l->size)->size = 0;
-		jstr_l_at(l, l->size)->capacity = 0;
 		--l->size;
 	}
 }
@@ -169,12 +184,10 @@ static void
 jstr_l_popfront(jstr_l_ty *R l)
 {
 	if (jstr_likely(l->size)) {
-		if (jstr_likely(l->size > 1))
-			memmove(l->data, l->data + 1, (jstr_l_end(l) - (l->data + 1)) * sizeof(*l->data));
 		free(l->data->data);
-		l->data->data = NULL;
-		l->data->size = 0;
-		l->data->capacity = 0;
+		if (jstr_likely(l->size > 1)) {
+			memmove(l->data, l->data + 1, (jstr_l_end(l) - (l->data + 1)) * sizeof(*l->data));
+		}
 		--l->size;
 	}
 }
@@ -185,19 +198,22 @@ jstr_l_pushfront_len_unsafe(jstr_l_ty *R l,
 			    const char *R s,
 			    const size_t s_len)
 {
-	memmove(l->data + 1, l->data, l->size++ * sizeof(*l->data));
+	if (jstr_likely(l->size))
+		memmove(l->data + 1, l->data, (jstr_l_end(l) - (l->data)) * sizeof(*l->data));
 	l->data->size = 0;
 	l->data->capacity = 0;
+	l->data->data = NULL;
 	if (jstr_unlikely(
-	    !jstr_assign_len(
+	    !pjstr_l_alloc_assign_len(
 	    &l->data->data,
 	    &l->data->size,
 	    &l->data->capacity,
 	    s,
 	    s_len)))
-		goto err_str;
+		goto err;
+	++l->size;
 	return 1;
-err_str:
+err:
 	jstr_l_free(l);
 	return 0;
 }
@@ -223,7 +239,7 @@ jstr_l_pushback_len_unsafe(jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
-	    !jstr_assign_len(
+	    !pjstr_l_alloc_assign_len(
 	    &jstr_l_at(l, l->size)->data,
 	    &jstr_l_at(l, l->size)->size,
 	    &jstr_l_at(l, l->size)->capacity,
@@ -271,10 +287,14 @@ JSTR_NOEXCEPT
 		return 1;
 	PJSTR_L_RESERVE(l, l->size + argc, return 0);
 	va_start(ap, l);
-	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size)
+	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size) {
+		j->data = NULL;
+		j->size = 0;
+		j->cap = 0;
 		if (jstr_unlikely(
-		    !jstr_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
+		    !pjstr_l_alloc_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
+	}
 	va_end(ap);
 	return 1;
 err_free_l:
@@ -290,7 +310,7 @@ jstr_l_assign_len(jstr_l_ty *R l,
 		  const char *R s,
 		  const size_t s_len)
 {
-	return jstr_assign_len(&((l->data + idx)->data), &((l->data + idx)->size), &((l->data + idx)->capacity), s, s_len);
+	return pjstr_l_alloc_assign_len(&((l->data + idx)->data), &((l->data + idx)->size), &((l->data + idx)->capacity), s, s_len);
 }
 
 JSTR_FUNC_PURE
