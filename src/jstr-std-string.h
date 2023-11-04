@@ -179,6 +179,18 @@ JSTR_NOEXCEPT
 	return (void *)memchr(s, c, JSTR_MIN(n, sz));
 }
 
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+jstr_strnchr_len(const void *R s,
+		 const int c,
+		 const size_t sz,
+		 const size_t n)
+JSTR_NOEXCEPT
+{
+	return (char *)jstr_memnchr(s, c, sz, n);
+}
+
 JSTR_INLINE
 static const char *
 pjstr_sadd(uintptr_t x, uintptr_t y)
