@@ -655,7 +655,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static int
-pjstr_re_strlen_rplc_dst(const regmatch_t *R rm,
+pjstr_re_strlenrplcdst(const regmatch_t *R rm,
 			 unsigned char *R rplc,
 			 const size_t rplc_len,
 			 size_t *R rdst_len)
@@ -678,7 +678,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-pjstr_re_creat_rplc_bref(const unsigned char *R mtc,
+pjstr_re_creatrplcbref(const unsigned char *R mtc,
 			 const regmatch_t *R rm,
 			 unsigned char *R rdst,
 			 unsigned char *R rplc,
@@ -744,7 +744,7 @@ JSTR_NOEXCEPT
 			++p;
 			continue;
 		}
-		has_bref = pjstr_re_strlen_rplc_dst(rm, (u *)rplc, rplc_len, &rdst_len);
+		has_bref = pjstr_re_strlenrplcdst(rm, (u *)rplc, rplc_len, &rdst_len);
 		if (jstr_unlikely(has_bref == 0))
 			return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > JSTR_PAGE_SIZE)) {
@@ -758,7 +758,7 @@ JSTR_NOEXCEPT
 				rdstp = rdst_heap;
 			}
 		}
-		pjstr_re_creat_rplc_bref((u *)p, rm, (u *)rdstp, (u *)rplc, rplc_len);
+		pjstr_re_creatrplcbref((u *)p, rm, (u *)rdstp, (u *)rplc, rplc_len);
 		p += rm[0].rm_so;
 		if (rdst_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const u **)&p, rdstp, rdst_len, find_len);
