@@ -111,7 +111,7 @@ pjstr_re_err_print(const int errcode,
 JSTR_NOEXCEPT
 {
 	char buf[64];
-	regerror(errcode, preg, buf, 32);
+	regerror(errcode, preg, buf, sizeof(buf));
 	fprintf(stderr, "%s\n", buf);
 }
 
