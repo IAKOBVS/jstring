@@ -283,8 +283,6 @@ JSTR_NOEXCEPT
 	return jstr_re_search(preg, s, pmatch, eflags);
 }
 
-#ifdef JSTR_RE_EF_STARTEND
-
 /*
    Search pattern in S.
    Return return value of regexec.
@@ -359,8 +357,6 @@ JSTR_NOEXCEPT
 	PJSTR_RE_COMP_NOW();
 	return jstr_re_match_len(preg, s, sz, eflags);
 }
-
-#endif /* JSTR_RE_EF_STARTEND */
 
 JSTR_FUNC
 static jstr_re_errcode_ty
@@ -541,8 +537,7 @@ JSTR_NOEXCEPT
 	const unsigned char *oldp = dst;
 	size_t find_len;
 	regmatch_t rm;
-	while (n-- && *p
-	       && jstr_re_exec_len(preg, (char *)p, (*(u **)s + *sz) - p, 1, &rm, eflags) == JSTR_RE_RET_NOERROR) {
+	while (n-- && *p && jstr_re_exec_len(preg, (char *)p, (*(u **)s + *sz) - p, 1, &rm, eflags) == JSTR_RE_RET_NOERROR) {
 		find_len = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
 		if (jstr_unlikely(find_len == 0)) {
