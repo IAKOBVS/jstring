@@ -151,42 +151,88 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
+JSTR_FUNC_VOID
+static void
+jstr_l_popback(jstr_l_ty *R l)
+{
+	if (jstr_likely(l->size)) {
+		free(jstr_l_at(l, l->size)->data);
+		jstr_l_at(l, l->size)->data = NULL;
+		jstr_l_at(l, l->size)->size = 0;
+		jstr_l_at(l, l->size)->capacity = 0;
+		--l->size;
+	}
+}
+
 JSTR_FUNC
 static int
-jstr_l_add_len_unsafe(jstr_l_ty *R l,
-		      const char *R s,
-		      const size_t s_len)
-JSTR_NOEXCEPT
+jstr_l_pushfront_len_unsafe(jstr_l_ty *R l,
+			    const char *R s,
+			    const size_t s_len)
 {
+	memmove(l->data + 1, l->data, l->size++ * sizeof(*l->data));
+	l->data->size = 0;
+	l->data->capacity = 0;
 	if (jstr_unlikely(
 	    !jstr_assign_len(
-	    &((l->data + l->size)->data),
-	    &((l->data + l->size)->size),
-	    &((l->data + l->size)->capacity),
+	    &l->data->data,
+	    &l->data->size,
+	    &l->data->capacity,
 	    s,
 	    s_len)))
 		goto err_str;
-	++l->size;
 	return 1;
 err_str:
-	pjstr_nullify_members(&l->data[l->size].size, &l->data[l->size].capacity);
+	jstr_l_free(l);
 	return 0;
 }
 
 JSTR_FUNC
 static int
-jstr_l_add_len(jstr_l_ty *R l,
-	       const char *R s,
-	       const size_t s_len)
+jstr_l_pushfront_len(jstr_l_ty *R l,
+		     const char *R s,
+		     const size_t s_len)
+{
+	PJSTR_L_RESERVE(l, l->size + 1, goto err);
+	return jstr_l_pushfront_len_unsafe(l, s, s_len);
+err:
+	jstr_l_free(l);
+	return 0;
+}
+
+JSTR_FUNC
+static int
+jstr_l_pushback_len_unsafe(jstr_l_ty *R l,
+			   const char *R s,
+			   const size_t s_len)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(
+	    !jstr_assign_len(
+	    &jstr_l_at(l, l->size)->data,
+	    &jstr_l_at(l, l->size)->size,
+	    &jstr_l_at(l, l->size)->capacity,
+	    s,
+	    s_len)))
+		goto err;
+	++l->size;
+	return 1;
+err:
+	jstr_l_free(l);
+	return 0;
+}
+
+JSTR_FUNC
+static int
+jstr_l_pushback_len(jstr_l_ty *R l,
+		    const char *R s,
+		    const size_t s_len)
 JSTR_NOEXCEPT
 {
 	PJSTR_L_RESERVE(l, l->size + 1, goto err);
-	if (jstr_unlikely(
-	    !jstr_l_add_len_unsafe(l, s, s_len)))
-		goto err;
-	return 1;
+	return jstr_l_pushback_len_unsafe(l, s, s_len);
 err:
-	pjstr_nullify_members(&l->size, &l->capacity);
+	jstr_l_free(l);
 	return 0;
 }
 
