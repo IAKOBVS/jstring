@@ -17,6 +17,8 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
+#define jstr_re_chk(errcode) jstr_unlikely(errcode != JSTR_RE_RET_NOERROR && errcode != JSTR_RE_RET_NOMATCH)
+
 #define PJSTR_RE_COMP_NOW()                                                     \
 	do {                                                                    \
 		const jstr_re_errcode_ty ret = jstr_re_comp(preg, ptn, cflags); \
@@ -129,8 +131,6 @@ JSTR_NOEXCEPT
 	exit(EXIT_FAILURE);
 }
 
-#define PJSTR_RE_NOERR(errcode) jstr_likely(errcode == JSTR_RE_RET_NOERROR || errcode == JSTR_RE_RET_NOMATCH)
-
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
@@ -138,9 +138,8 @@ jstr_re_err_exit(jstr_re_errcode_ty errcode,
 		 const regex_t *R preg)
 JSTR_NOEXCEPT
 {
-	if (PJSTR_RE_NOERR(errcode))
-		return;
-	pjstr_re_err_exit_print(errcode, preg);
+	if (jstr_re_chk(errcode))
+		pjstr_re_err_exit_print(errcode, preg);
 }
 
 JSTR_FUNC_VOID
@@ -150,9 +149,8 @@ jstr_re_err_print(jstr_re_errcode_ty errcode,
 		  const regex_t *R preg)
 JSTR_NOEXCEPT
 {
-	if (PJSTR_RE_NOERR(errcode))
-		return;
-	pjstr_re_err_print(errcode, preg);
+	if (jstr_re_chk(errcode))
+		pjstr_re_err_print(errcode, preg);
 }
 
 JSTR_FUNC_VOID
@@ -164,9 +162,8 @@ jstr_re_err(jstr_re_errcode_ty errcode,
 	    const size_t errbuf_size)
 JSTR_NOEXCEPT
 {
-	if (PJSTR_RE_NOERR(errcode))
-		return;
-	regerror(errcode, preg, errbuf, errbuf_size);
+	if (jstr_re_chk(errcode))
+		regerror(errcode, preg, errbuf, errbuf_size);
 }
 
 JSTR_FUNC
@@ -879,12 +876,8 @@ PJSTR_END_DECLS
 
 #undef R
 
-#undef jstr_re_exec_len
 #undef JSTR_PRINT_LOG
 #undef JSTR_RE_DEBUG
-
-#undef PJSTR_RE_NOERR
-
 #undef PJSTR_RE_COMP_NOW
 
 #endif /* JSTR_REEX_H */
