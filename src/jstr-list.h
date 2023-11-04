@@ -208,12 +208,13 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(argc == 0))
 		return 1;
 	PJSTR_L_RESERVE(l, argc, return 0);
+	jstr_ty *j = l->data;
 	l->size = 0;
 	va_start(ap, l);
-	for (size_t arglen; (arg = va_arg(ap, char *));) {
+	for (size_t arglen; (arg = va_arg(ap, char *)); ++j, ++l->size) {
 		arglen = strlen(arg);
 		if (jstr_unlikely(
-		    !jstr_l_add_len_unsafe(l, arg, arglen)))
+		    !jstr_assign_len(&j->data, &j->size, &j->capacity, arg, arglen)))
 			goto err_free_l;
 	}
 	va_end(ap);
@@ -245,10 +246,10 @@ JSTR_NOEXCEPT
 	PJSTR_L_RESERVE(l, argc, return 0);
 	va_start(ap, l);
 	jstr_ty *j = l->data + l->size;
-	for (size_t arglen; (arg = va_arg(ap, char *)); ++j) {
+	for (size_t arglen; (arg = va_arg(ap, char *)); ++j, ++l->size) {
 		arglen = strlen(arg);
 		if (jstr_unlikely(
-		    !jstr_l_add_len_unsafe(l, arg, arglen)))
+		    !jstr_assign_len(&j->data, &j->size, &j->capacity, arg, arglen)))
 			goto err_free_l;
 	}
 	va_end(ap);
