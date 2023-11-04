@@ -15,13 +15,13 @@ main()
 	jarr_ty(int, j) = JARR_INIT;
 	T(jarr_cat(&j, 1, 2, 3, 4, 5),
 			1, 2, 3, 4, 5);
-	T(jarr_push_back(&j, 6),
+	T(jarr_pushback(&j, 6),
 			1, 2, 3, 4, 5, 6);
-	T(jarr_pop_back(&j),
+	T(jarr_popback(&j),
 			1, 2, 3, 4, 5);
-	T(jarr_pop_front(&j),
+	T(jarr_popfront(&j),
 			2, 3, 4, 5);
-	T(jarr_push_front(&j, 1),
+	T(jarr_pushfront(&j, 1),
 			1, 2, 3, 4, 5);
 	jarr_free(&j);
 	return 0;
