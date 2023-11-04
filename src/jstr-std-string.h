@@ -384,7 +384,7 @@ JSTR_NOEXCEPT
 #else
 	const void *const p = (void *)memchr(src, c, sz);
 	if (p != NULL) {
-		return jstr_stpcpy_len(dst, src, (char *)p - (char *)src);
+		return jstr_stpcpy_len(dst, src, (const char *)p - (const char *)src);
 	}
 	memcpy(dst, src, sz);
 	return NULL;

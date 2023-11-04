@@ -221,7 +221,7 @@ jstr_l_pushfront_len(jstr_l_ty *R l,
 		     const char *R s,
 		     const size_t s_len)
 {
-	PJSTR_L_RESERVE(l, l->size + 1, goto err);
+	PJSTR_L_RESERVE(l, l->size + 1, goto err)
 	return jstr_l_pushfront_len_unsafe(l, s, s_len);
 err:
 	jstr_l_free(l);
@@ -257,7 +257,7 @@ jstr_l_pushback_len(jstr_l_ty *R l,
 		    const size_t s_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_L_RESERVE(l, l->size + 1, goto err);
+	PJSTR_L_RESERVE(l, l->size + 1, goto err)
 	return jstr_l_pushback_len_unsafe(l, s, s_len);
 err:
 	jstr_l_free(l);
@@ -282,7 +282,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return 1;
-	PJSTR_L_RESERVE(l, l->size + argc, return 0);
+	PJSTR_L_RESERVE(l, l->size + argc, return 0)
 	va_start(ap, l);
 	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size) {
 		if (jstr_unlikely(

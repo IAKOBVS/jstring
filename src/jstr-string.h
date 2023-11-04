@@ -218,7 +218,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n < 2))
 		return 1;
-	PJSTR_RESERVE(s, sz, cap, *sz * n, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz * n, return 0)
 	*sz = jstr_repeat_len_unsafe_p(*s, *sz, n) - *s;
 	return 1;
 }
@@ -396,8 +396,8 @@ pjstr_strnstr2(const unsigned char *h,
 	       const unsigned char *const end)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = n[0] << 8 | n[1];
-	uint16_t hw = h[0] << 8 | h[1];
+	const uint16_t nw = (uint16_t)(n[0] << 8 | n[1]);
+	uint16_t hw = (uint16_t)(h[0] << 8 | h[1]);
 	for (++h; *h && h <= end && hw != nw; hw = hw << 8 | *++h)
 		;
 	return hw == nw ? (char *)(h - 1) : NULL;
@@ -411,8 +411,8 @@ pjstr_strnstr3(const unsigned char *h,
 	       const unsigned char *const end)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8;
-	uint32_t hw = h[0] << 24 | h[1] << 16 | h[2] << 8;
+	const uint32_t nw = (uint32_t)(n[0] << 24 | n[1] << 16 | n[2] << 8);
+	uint32_t hw = (uint32_t)(h[0] << 24 | h[1] << 16 | h[2] << 8);
 	for (h += 2; *h && h <= end && hw != nw; hw = (hw | *++h) << 8)
 		;
 	return hw == nw ? (char *)(h - 2) : NULL;
@@ -426,8 +426,8 @@ pjstr_strnstr4(const unsigned char *h,
 	       const unsigned char *const end)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
-	uint32_t hw = h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
+	const uint32_t nw = (uint32_t)(n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3]);
+	uint32_t hw = (uint32_t)(h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3]);
 	for (h += 3; *h && h <= end && hw != nw; hw = hw << 8 | *++h)
 		;
 	return hw == nw ? (char *)(h - 3) : NULL;
@@ -443,8 +443,8 @@ pjstr_memmem2(const unsigned char *h,
 	      const unsigned char *const end)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = n[0] << 8 | n[1];
-	uint16_t hw = h[0] << 8 | h[1];
+	const uint16_t nw = (uint16_t)(n[0] << 8 | n[1]);
+	uint16_t hw = (uint16_t)(h[0] << 8 | h[1]);
 	for (++h; h <= end && hw != nw; hw = hw << 8 | *++h)
 		;
 	return hw == nw ? (char *)(h - 1) : NULL;
@@ -458,8 +458,8 @@ pjstr_memmem3(const unsigned char *h,
 	      const unsigned char *const end)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8;
-	uint32_t hw = h[0] << 24 | h[1] << 16 | h[2] << 8;
+	const uint32_t nw = (uint32_t)(n[0] << 24 | n[1] << 16 | n[2] << 8);
+	uint32_t hw = (uint32_t)(h[0] << 24 | h[1] << 16 | h[2] << 8);
 	for (h += 2; h <= end && hw != nw; hw = (hw | *++h) << 8)
 		;
 	return hw == nw ? (char *)(h - 2) : NULL;
@@ -473,8 +473,8 @@ pjstr_memmem4(const unsigned char *h,
 	      const unsigned char *const end)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
-	uint32_t hw = h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
+	const uint32_t nw = (uint32_t)(n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3]);
+	uint32_t hw = (uint32_t)(h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3]);
 	for (h += 3; h <= end && hw != nw; hw = hw << 8 | *++h)
 		;
 	return hw == nw ? (char *)(h - 3) : NULL;
@@ -597,31 +597,31 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
-	const unsigned char *h = (u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
+	const unsigned char *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
 	if (h == NULL || (uintptr_t)((u *)h - (u *)hs + 1) < ne_len)
 		return NULL;
-	const unsigned char *const start = (u *)hs;
-	const unsigned char *const n = (u *)ne;
+	const unsigned char *const start = (const u *)hs;
+	const unsigned char *const n = (const u *)ne;
 	switch (ne_len) {
 	case 1:
 		return (char *)h;
 	case 2: {
-		const uint16_t nw = n[1] << 8 | n[0];
-		uint16_t hw = h[0] << 8 | h[-1];
+		const uint16_t nw = (uint16_t)(n[1] << 8 | n[0]);
+		uint16_t hw = (uint16_t)(h[0] << 8 | h[-1]);
 		for (--h; h >= start && hw != nw; hw = hw << 8 | *--h)
 			;
 		return hw == nw ? (char *)h : NULL;
 	}
 	case 3: {
-		const uint32_t nw = n[2] << 24 | n[1] << 16 | n[0] << 8;
-		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8;
+		const uint32_t nw = (uint32_t)(n[2] << 24 | n[1] << 16 | n[0] << 8);
+		uint32_t hw = (uint32_t)(h[0] << 24 | h[-1] << 16 | h[-2] << 8);
 		for (h -= 2; h >= start && hw != nw; hw = (hw | *--h) << 8)
 			;
 		return hw == nw ? (char *)h : NULL;
 	}
 	default: {
-		const uint32_t nw = n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
-		uint32_t hw = h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
+		const uint32_t nw = (uint32_t)(n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0]);
+		uint32_t hw = (uint32_t)(h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3]);
 		for (h -= 3; h >= start; hw = hw << 8 | *--h) {
 			if (hw == nw)
 				if (ne_len == 4 || !memcmp(h, n, ne_len))
@@ -683,8 +683,8 @@ pjstr_strcasestr2(const unsigned char *R h,
 		  const unsigned char *R n)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
-	uint16_t hw = L(h[0]) << 8 | L(h[1]);
+	const uint16_t nw = (uint32_t)(L(n[0]) << 8 | L(n[1]));
+	uint16_t hw = (uint32_t)(L(h[0]) << 8 | L(h[1]));
 	for (++h; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
 	return hw == nw ? (char *)(h - 1) : NULL;
@@ -697,8 +697,8 @@ pjstr_strcasestr3(const unsigned char *R h,
 		  const unsigned char *R n)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
-	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
+	const uint32_t nw = (uint32_t)(L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8);
+	uint32_t hw = (uint32_t)(L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8);
 	for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)
 		;
 	return hw == nw ? (char *)(h - 2) : NULL;
@@ -711,8 +711,8 @@ pjstr_strcasestr4(const unsigned char *R h,
 		  const unsigned char *R n)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
-	uint32_t hw = L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
+	const uint32_t nw = (uint32_t)(L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]));
+	uint32_t hw = (uint32_t)(L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]));
 	for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
 	return hw == nw ? (char *)(h - 3) : NULL;
@@ -849,20 +849,20 @@ JSTR_NOEXCEPT
 	case 2:
 		if (is_alpha
 		    | jstr_isalpha(ne[1]))
-			return pjstr_strcasestr2((u *)hs, (u *)ne);
+			return pjstr_strcasestr2((const u *)hs, (const u *)ne);
 		break;
 	case 3:
 		if (is_alpha
 		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2]))
-			return pjstr_strcasestr3((u *)hs, (u *)ne);
+			return pjstr_strcasestr3((const u *)hs, (const u *)ne);
 		break;
 	default: /* case 4: */
 		if (is_alpha
 		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2])
 		    | jstr_isalpha(ne[3]))
-			return pjstr_strcasestr4((u *)hs, (u *)ne);
+			return pjstr_strcasestr4((const u *)hs, (const u *)ne);
 		break;
 	}
 	if (!memcmp(hs, ne, ne_len))
@@ -906,14 +906,14 @@ JSTR_NOEXCEPT
 	size_t ne_len;
 	if (ne[2] == '\0') {
 		if (is_isalpha0)
-			return pjstr_strcasestr2((u *)hs, (u *)ne);
+			return pjstr_strcasestr2((const u *)hs, (const u *)ne);
 		ne_len = 2;
 	} else if (ne[3] == '\0') {
 		if (jstr_unlikely(hs[2] == '\0'))
 			return NULL;
 		if (is_isalpha0
 		    | jstr_isalpha(ne[2]))
-			return pjstr_strcasestr3((u *)hs, (u *)ne);
+			return pjstr_strcasestr3((const u *)hs, (const u *)ne);
 		ne_len = 3;
 	} else if (ne[4] == '\0') {
 		if (jstr_unlikely(hs[2] == '\0') || jstr_unlikely(hs[3] == '\0'))
@@ -921,7 +921,7 @@ JSTR_NOEXCEPT
 		if (is_isalpha0
 		    | jstr_isalpha(ne[2])
 		    | jstr_isalpha(ne[3]))
-			return pjstr_strcasestr4((u *)hs, (u *)ne);
+			return pjstr_strcasestr4((const u *)hs, (const u *)ne);
 		ne_len = 4;
 	} else {
 		return pjstr_strcasestr_bmh(hs, ne);
@@ -956,7 +956,7 @@ JSTR_NOEXCEPT
 	}
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
-	const unsigned char *p = (u *)reject;
+	const unsigned char *p = (const u *)reject;
 	do
 		t[*p] = 1;
 	while (*p++);
@@ -1729,7 +1729,7 @@ JSTR_NOEXCEPT
 		return nptr;
 	if (sz < 4)
 		return end;
-	int dif = (sz - 1) / 3;
+	size_t dif = (sz - 1) / 3;
 	end += dif;
 	const char *const start = nptr;
 	nptr += (sz - 1);
@@ -1737,7 +1737,7 @@ JSTR_NOEXCEPT
 		*(nptr + dif) = *nptr;
 		--nptr;
 		if (++n == 3) {
-			*(nptr + dif) = separator;
+			*(nptr + dif) = (char)separator;
 			if (jstr_unlikely(--dif == 0))
 				break;
 			n = 0;

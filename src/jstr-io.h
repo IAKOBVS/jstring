@@ -546,7 +546,7 @@ JSTR_NOEXCEPT
 				break;
 			if ((size_t)(p - *s) == *cap) {
 				old = *s;
-				PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, (size_t)(*cap * JSTR_GROWTH), goto err_close);
+				PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, (size_t)(*cap * JSTR_GROWTH), goto err_close)
 				p = *s + (p - old);
 			}
 		}
@@ -748,7 +748,7 @@ JSTR_NOEXCEPT
 	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
-			PJSTR_RESERVE_ALWAYS(s, sz, cap, *sz + len, return 0);
+			PJSTR_RESERVE_ALWAYS(s, sz, cap, *sz + len, return 0)
 			p = *s + (p - tmp);
 		}
 		jstr_strmove_len(p + len, p + 1, (*s + *sz) - (p + 1));
