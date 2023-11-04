@@ -125,13 +125,12 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_l_reservealways(jstr_l_ty *R l,
-		      size_t new_cap)
+		     size_t new_cap)
 JSTR_NOEXCEPT
 {
 	new_cap = pjstr_l_grow(l->capacity, new_cap);
 	l->data = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
-	if (jstr_unlikely(l->data == NULL))
-		goto err;
+	PJSTR_MALLOC_ERR(l->data, goto err);
 	l->capacity = new_cap;
 	return 1;
 err:
@@ -209,13 +208,12 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(argc == 0))
 		return 1;
 	PJSTR_L_RESERVE(l, argc, return 0);
-	jstr_ty *j = l->data;
 	l->size = 0;
 	va_start(ap, l);
-	for (size_t arglen; (arg = va_arg(ap, char *)); ++j) {
+	for (size_t arglen; (arg = va_arg(ap, char *));) {
 		arglen = strlen(arg);
 		if (jstr_unlikely(
-		    !jstr_l_add_len(l, arg, arglen)))
+		    !jstr_l_add_len_unsafe(l, arg, arglen)))
 			goto err_free_l;
 	}
 	va_end(ap);
@@ -250,7 +248,7 @@ JSTR_NOEXCEPT
 	for (size_t arglen; (arg = va_arg(ap, char *)); ++j) {
 		arglen = strlen(arg);
 		if (jstr_unlikely(
-		    !jstr_l_add_len(l, arg, arglen)))
+		    !jstr_l_add_len_unsafe(l, arg, arglen)))
 			goto err_free_l;
 	}
 	va_end(ap);
