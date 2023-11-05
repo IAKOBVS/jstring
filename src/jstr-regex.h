@@ -222,24 +222,6 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Check if S matches PTN.
-   Return return value of regexec or regcomp if it fails.
-*/
-JSTR_FUNC_PURE
-JSTR_INLINE
-static jstr_re_errcode_ty
-jstr_re_match_now(regex_t *R preg,
-		  const char *R s,
-		  const char *R ptn,
-		  const int cflags,
-		  const int eflags)
-JSTR_NOEXCEPT
-{
-	PJSTR_RE_COMP_NOW();
-	return jstr_re_match(preg, s, eflags);
-}
-
-/*
    Search pattern in S.
    Return return value of regexec.
    Store offset of matched pattern in pmatch.
