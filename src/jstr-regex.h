@@ -229,24 +229,6 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Check if S matches PTN.
-   Return return value of regexec or regcomp if it fails.
-*/
-JSTR_FUNC_PURE
-JSTR_INLINE
-static jstr_re_errcode_ty
-jstr_re_match_now(regex_t *R preg,
-		  const char *R s,
-		  const char *R ptn,
-		  const int cflags,
-		  const int eflags)
-JSTR_NOEXCEPT
-{
-	PJSTR_RE_COMP_NOW();
-	return jstr_re_match(preg, s, eflags);
-}
-
-/*
    Search pattern in S.
    Return return value of regexec.
    Store offset of matched pattern in pmatch.
@@ -261,26 +243,6 @@ jstr_re_search(const regex_t *R preg,
 JSTR_NOEXCEPT
 {
 	return jstr_re_exec(preg, s, 1, pmatch, eflags);
-}
-
-/*
-   Search pattern in S.
-   Return return value of regexec or regcomp if it fails.
-   Store offset of matched pattern in pmatch.
-*/
-JSTR_FUNC_PURE
-JSTR_INLINE
-static jstr_re_errcode_ty
-jstr_re_search_now(regex_t *R preg,
-		   const char *R s,
-		   const char *R ptn,
-		   regmatch_t *R pmatch,
-		   const int cflags,
-		   const int eflags)
-JSTR_NOEXCEPT
-{
-	PJSTR_RE_COMP_NOW();
-	return jstr_re_search(preg, s, pmatch, eflags);
 }
 
 /*
@@ -302,27 +264,6 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Search pattern in S.
-   Return return value of regexec.
-   Store offset of matched pattern in pmatch.
-*/
-JSTR_FUNC_PURE
-JSTR_INLINE
-static jstr_re_errcode_ty
-jstr_re_search_len_now(regex_t *R preg,
-		       const char *R s,
-		       const char *R ptn,
-		       const size_t sz,
-		       regmatch_t *R pmatch,
-		       const int cflags,
-		       const int eflags)
-JSTR_NOEXCEPT
-{
-	PJSTR_RE_COMP_NOW();
-	return jstr_re_search_len(preg, s, sz, pmatch, eflags);
-}
-
-/*
    Check if S matches PTN.
    Return return value of regexec or regcomp if it fails.
 */
@@ -337,25 +278,6 @@ JSTR_NOEXCEPT
 {
 	regmatch_t rm;
 	return jstr_re_exec_len(preg, s, sz, 0, &rm, eflags | JSTR_RE_EF_STARTEND);
-}
-
-/*
-   Check if S matches PTN.
-   Return return value of regexec or regcomp if it fails.
-*/
-JSTR_FUNC_PURE
-JSTR_INLINE
-static jstr_re_errcode_ty
-jstr_re_match_len_now(regex_t *R preg,
-		      const char *R s,
-		      const char *R ptn,
-		      const size_t sz,
-		      const int cflags,
-		      const int eflags)
-JSTR_NOEXCEPT
-{
-	PJSTR_RE_COMP_NOW();
-	return jstr_re_match_len(preg, s, sz, eflags);
 }
 
 JSTR_FUNC
