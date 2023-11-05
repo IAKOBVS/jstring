@@ -51,34 +51,6 @@ PJSTR_END_DECLS
 		} while (0)
 #endif
 
-#define PJSTR_REALLOC(p, old_cap, new_cap, do_on_malloc_err) \
-	do {                                                 \
-		JSTR_ASSERT_IS_SIZE(old_cap);                \
-		JSTR_ASSERT_IS_SIZE(new_cap);                \
-		old_cap = pjstr_grow(old_cap, new_cap);      \
-		(p) = PJSTR_CAST(p, realloc(p, old_cap));    \
-		PJSTR_MALLOC_ERR(p, do_on_malloc_err);       \
-	} while (0)
-#define PJSTR_REALLOCEXACT(p, old_cap, new_cap, do_on_malloc_err) \
-	do {                                                      \
-		JSTR_ASSERT_IS_SIZE(old_cap);                     \
-		JSTR_ASSERT_IS_SIZE(new_cap);                     \
-		(old_cap) = JSTR_ALIGN_UP_STR(new_cap);           \
-		(p) = PJSTR_CAST(p, realloc(p, old_cap));         \
-		PJSTR_MALLOC_ERR(p, do_on_malloc_err);            \
-	} while (0)
-
-#define PJSTR_REALLOC_MAY_MALLOC(p, old_cap, new_cap, do_on_malloc_err) \
-	do {                                                            \
-		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);              \
-		PJSTR_REALLOC(p, old_cap, new_cap, do_on_malloc_err);   \
-	} while (0)
-#define PJSTR_REALLOCEXACT_MAY_MALLOC(p, old_cap, new_cap, do_on_malloc_err) \
-	do {                                                                 \
-		old_cap = JSTR_MAX(old_cap, JSTR_MIN_CAP);                   \
-		PJSTR_REALLOCEXACT(p, old_cap, new_cap, do_on_malloc_err);   \
-	} while (0)
-
 #define JSTR_MIN_ALLOC(cap)	 (((cap) > JSTR_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
 #define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
 #define jstr_err(msg)		 pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
