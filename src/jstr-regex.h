@@ -681,8 +681,8 @@ JSTR_NOEXCEPT
 #	pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #	pragma GCC diagnostic push
 #elif defined __GNUC__
-/* #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value" */
-/* #	pragma GCC diagnostic push */
+#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
+#	pragma GCC diagnostic push
 #endif
 		if (rdst_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const u **)&p, rdstp, rdst_len, find_len); /* false-positive? */
