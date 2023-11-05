@@ -14,7 +14,7 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZI_H
 #define PJSTR_STRING_FZI_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #include "jstr-string-fza.h"
 #include <endian.h>
 #include <limits.h>

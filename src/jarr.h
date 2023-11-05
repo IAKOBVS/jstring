@@ -1,14 +1,14 @@
 #ifndef JARR_H
 #define JARR_H 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #include "_jstr-pp-arrcpy-va-args.h"
 #include "jstr-builder.h"
 #include "jstr-config.h"

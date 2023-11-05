@@ -1,7 +1,7 @@
 #ifndef JSTR_ITOA_H
 #define JSTR_ITOA_H 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <math.h>

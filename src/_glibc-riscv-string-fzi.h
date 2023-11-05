@@ -14,7 +14,7 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_RISCV_FZI_H
 #define PJSTR_STRING_RISCV_FZI_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #if defined __riscv_zbb || defined __riscv_xtheadbb
 #	include "jstr-string-fzi.h"
 #else

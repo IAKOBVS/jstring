@@ -1,6 +1,6 @@
 #ifndef PJSTR_SELECTOR_STRING_FZB_H
 #define PJSTR_SELECTOR_STRING_FZB_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 PJSTR_BEGIN_DECLS
 #if JSTR_ARCH_SH
 #	include "_glibc-sh-string-fzb.h"

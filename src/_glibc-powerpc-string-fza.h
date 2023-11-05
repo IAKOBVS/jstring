@@ -14,7 +14,7 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_POWERPC_STRING_FZA_H
 #define PJSTR_POWERPC_STRING_FZA_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 /* PowerISA 2.05 (POWER6) provides cmpb instruction.  */
 #ifdef _ARCH_PWR6
 #	include "jstr-string-misc.h"

@@ -1,7 +1,7 @@
 #ifndef JSTR_LIST_H
 #define JSTR_LIST_H
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 #include "jstr-builder.h"
 #include "jstr-config.h"

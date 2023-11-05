@@ -1,7 +1,7 @@
 #ifndef JSTR_REEX_H
 #define JSTR_REEX_H 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <regex.h>

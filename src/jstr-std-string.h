@@ -1,7 +1,7 @@
 #ifndef JSTR_STD_STRING_H
 #define JSTR_STD_STRING_H 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #include "jstr-struct.h"
 
 PJSTR_BEGIN_DECLS

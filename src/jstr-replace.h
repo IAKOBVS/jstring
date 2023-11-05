@@ -1,14 +1,14 @@
 #ifndef JSTR_H_REPLACE_DEF
 #define JSTR_H_REPLACE_DEF 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #include "jstr-builder.h"
 #include "jstr-ctype.h"
 #include "jstr-string.h"
