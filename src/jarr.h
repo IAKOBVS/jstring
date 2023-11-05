@@ -8,10 +8,10 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
+#include "_jstr-macros.h"
 #include "_jstr-pp-arrcpy-va-args.h"
 #include "jstr-builder.h"
 #include "jstr-config.h"
-#include "_jstr-macros.h"
 
 #define R JSTR_RESTRICT
 
@@ -152,7 +152,7 @@ PJSTR_END_DECLS
 		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                      \
 	} while (0)
 /* Pop PTR[0]. */
-#define jarr_popfront(j)                                                 \
+#define jarr_popfront(j)                                                  \
 	do {                                                              \
 		PJARR_CHECK_ARG(j);                                       \
 		if (jstr_unlikely(PJARR_CAP(j) == 0)) {                   \
@@ -162,7 +162,7 @@ PJSTR_END_DECLS
 		memmove(PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j)); \
 	} while (0)
 /* Pop end of PTR. */
-#define jarr_popback(j)                                 \
+#define jarr_popback(j)                                  \
 	do {                                             \
 		PJARR_CHECK_ARG(j);                      \
 		if (jstr_unlikely(PJARR_CAP(j) == 0)) {  \
@@ -172,7 +172,7 @@ PJSTR_END_DECLS
 		*(PJARR_DATA(j) + --PJARR_SZ(j)) = '\0'; \
 	} while (0)
 /* Push VAL to back of PTR. */
-#define jarr_pushback(j, value)                                           \
+#define jarr_pushback(j, value)                                            \
 	do {                                                               \
 		PJARR_CHECK_ARG(j);                                        \
 		PJARR_CHECK_VAL(j, value);                                 \
@@ -185,7 +185,7 @@ PJSTR_END_DECLS
 		*(PJARR_DATA(j) + PJARR_SZ(j)++) = (value);                \
 	} while (0)
 /* Push VAL to front of P. */
-#define jarr_pushfront(j, value)                                                  \
+#define jarr_pushfront(j, value)                                                   \
 	do {                                                                       \
 		PJARR_CHECK_ARG(j);                                                \
 		PJARR_CHECK_VAL(j, value);                                         \
@@ -198,10 +198,17 @@ PJSTR_END_DECLS
 		PJARR_MEMMOVE(j, PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++); \
 		*PJARR_DATA(j) = (value);                                          \
 	} while (0)
-#define jarr_at(j, idx) \
-	(jstr_likely(idx < PJARR_SZ(j)) ? (PJARR_DATA(j) + (idx)) : (jstr_err_exit("Index out of bounds."), PJARR_DATA(j)))
+
 #define jarr_foreachi(j, iterator) \
 	for (size_t iterator = 0, _max_elem_##iterator = (j)->size; iterator < _max_elem_##iterator; ++iterator)
+
+#if JSTR_DEBUG
+#	define jarr_at(j, idx) \
+		(jstr_likely(idx < PJARR_SZ(j)) ? (PJARR_DATA(j) + (idx)) : (jstr_err_exit("Index out of bounds."), PJARR_DATA(j)))
+#else
+#	define jarr_at(j, idx) \
+		(PJARR_DATA(j) + (idx))
+#endif
 
 PJSTR_BEGIN_DECLS
 

@@ -26,9 +26,6 @@ PJSTR_END_DECLS
 		0 \
 	}
 
-#define jstr_at(j, idx) \
-	(jstr_likely(i < ((j)->size)) ? (((j)->data) + i) : (jstr_err_exit("Index out of bounds."), (char *)0));
-
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); \
 				  ptr < jstr_ty_end_;                                                       \
 				  ++ptr)
@@ -181,6 +178,20 @@ JSTR_NOEXCEPT
 	fputs("data:", stderr);
 	fwrite(j->data, 1, j->size, stderr);
 	fputc('\n', stderr);
+}
+
+JSTR_CONST
+JSTR_INLINE
+static char *
+jstr_at(const jstr_ty *R j,
+	const size_t idx)
+JSTR_NOEXCEPT
+{
+#if JSTR_DEBUG
+	if (jstr_unlikely(idx >= j->size))
+		jstr_err_exit("Index out of bounds.");
+#endif
+	return j->data + idx;
 }
 
 /*
