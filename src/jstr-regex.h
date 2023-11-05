@@ -653,8 +653,7 @@ JSTR_NOEXCEPT
 	unsigned char *rdst_heap = NULL;
 	size_t find_len;
 	int has_bref;
-	while (n-- && *p
-	       && jstr_re_exec_len(preg, (char *)p, (*(u **)s + *sz) - p, nmatch, rm, eflags) == JSTR_RE_RET_NOERROR) {
+	while (n-- && *p && jstr_re_exec_len(preg, (char *)p, (*(u **)s + *sz) - p, nmatch, rm, eflags) == JSTR_RE_RET_NOERROR) {
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		if (jstr_unlikely(find_len == 0)) {
 			++p;
@@ -671,7 +670,8 @@ JSTR_NOEXCEPT
 				rdstp = rdst_heap;
 			} else if (rdstcap < rdst_len) {
 				rdstcap = pjstr_grow(rdstcap, rdst_len);
-				PJSTR_REALLOC(rdst_heap, rdstcap, rdst_len, goto err);
+				rdst_heap = (u *)realloc(rdst_heap, rdstcap);
+				PJSTR_MALLOC_ERR(rdst_heap, goto err);
 				rdstp = rdst_heap;
 			}
 		}
@@ -681,8 +681,8 @@ JSTR_NOEXCEPT
 #	pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #	pragma GCC diagnostic push
 #elif defined __GNUC__
-#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#	pragma GCC diagnostic push
+/* #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value" */
+/* #	pragma GCC diagnostic push */
 #endif
 		if (rdst_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const u **)&p, rdstp, rdst_len, find_len); /* false-positive? */
