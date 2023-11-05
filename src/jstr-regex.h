@@ -647,7 +647,8 @@ JSTR_NOEXCEPT
 	regmatch_t rm[10];
 	size_t rdst_len;
 	size_t rdstcap = 0;
-	unsigned char rdst_stack[JSTR_PAGE_SIZE];
+	enum { BUFSZ = 256 };
+	unsigned char rdst_stack[BUFSZ];
 	unsigned char *rdstp = rdst_stack;
 	unsigned char *rdst_heap = NULL;
 	size_t find_len;
@@ -662,7 +663,7 @@ JSTR_NOEXCEPT
 		has_bref = pjstr_re_strlenrplcdst(rm, (u *)rplc, rplc_len, &rdst_len);
 		if (jstr_unlikely(has_bref == 0))
 			return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
-		if (jstr_unlikely(rdst_len > JSTR_PAGE_SIZE)) {
+		if (jstr_unlikely(rdst_len > BUFSZ)) {
 			if (jstr_unlikely(rdst_heap == NULL)) {
 				rdstcap = JSTR_PTR_ALIGN_UP(rdst_len, PJSTR_MALLOC_ALIGNMENT);
 				rdst_heap = (u *)malloc(rdstcap);
