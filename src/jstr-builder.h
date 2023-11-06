@@ -42,12 +42,20 @@ PJSTR_END_DECLS
 				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
+#	define JSTR_ASSERT_DEBUG(expr, msg)        \
+		do {                                \
+			if (jstr_unlikely(!(expr))) \
+				jstr_err_exit(msg); \
+		} while (0)
 #else
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
 				do_on_malloc_err;         \
 			}                                 \
+		} while (0)
+#	define JSTR_ASSERT_DEBUG(expr, msg) \
+		do {                         \
 		} while (0)
 #endif
 
@@ -159,10 +167,7 @@ jstr_at(const jstr_ty *R j,
 	const size_t idx)
 JSTR_NOEXCEPT
 {
-#if JSTR_DEBUG
-	if (jstr_unlikely(idx >= j->size))
-		jstr_err_exit("Index out of bounds.");
-#endif
+	JSTR_ASSERT_DEBUG(idx < j->size, "Index out of bounds");
 	return j->data + idx;
 }
 
