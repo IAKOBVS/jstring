@@ -9,7 +9,7 @@
 
 #define T_FN(TEST_FN, fn, simple_fn)                         \
 	do {                                                 \
-		PRINT("Testing %s.\n", JSTR_STRINGIFY(fn));  \
+		PRINT("Testing %s.\n", JSTR_STRINGIFY(fn) "()");  \
 		TEST_FN(fn, simple_fn, "yxxxyxxxxy", "xxx"); \
 		TEST_FN(fn, simple_fn, "yxxxyxxy", "xxx");   \
 		TEST_FN(fn, simple_fn, "xxx", "xxx");        \
@@ -25,7 +25,7 @@
 
 #define T_FN_MEM(TEST_FN, fn, simple_fn)                                       \
 	do {                                                                   \
-		PRINT("Testing %s.\n", JSTR_STRINGIFY(fn));                    \
+		PRINT("Testing %s.\n", JSTR_STRINGIFY(fn) "()");                    \
 		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxxxy"), GET_LEN("xxx")); \
 		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxy"), GET_LEN("xxx"));   \
 		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("xxx"));        \

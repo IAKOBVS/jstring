@@ -13,4 +13,15 @@
 #define SUCCESS() \
 	PRINT("%s succeeded.\n", argv[0])
 
+#define ASSERT(expr, result, expected)            \
+	do {                                      \
+		if (jstr_unlikely(!(expr))) {     \
+			PRINTERR("result:%s\n"    \
+				 "expected:%s\n", \
+				 result,          \
+				 expected);       \
+			assert(expr);             \
+		}                                 \
+	} while (0)
+
 #endif /* JSTR_TEST_H */

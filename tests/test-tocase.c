@@ -1,16 +1,26 @@
 #include "test.h"
 
-#define T(func, string, expected)                      \
-	do {                                           \
-		char s[1024] = string;                 \
-		char *p = func(s);                     \
-		assert(strlen(s) == strlen(expected)); \
-		assert(p - s == strlen(expected));     \
-		assert(!strcmp(s, expected));          \
+#define T(func, string, expected)                                   \
+	do {                                                        \
+		char s[1024] = string;                              \
+		const char *const p = func(s);                      \
+		ASSERT(strlen(s) == strlen(expected), s, expected); \
+		ASSERT(p - s == strlen(expected), s, expected);     \
+		ASSERT(!strcmp(s, expected), s, expected);          \
+	} while (0)
+
+#define T_CPY(func, string, expected)                                   \
+	do {                                                            \
+		char dst[1024];                                         \
+		const char *const p = func(dst, string);                \
+		ASSERT(strlen(dst) == strlen(expected), dst, expected); \
+		ASSERT(p - dst == strlen(expected), dst, expected);     \
+		ASSERT(!strcmp(dst, expected), dst, expected);          \
+		ASSERT(!strcmp(dst, expected), dst, expected);          \
 	} while (0)
 
 int
-main()
+main(int argc, char **argv)
 {
 	T(jstr_toCamelCaseP, "", "");
 	T(jstr_toCamelCaseP, "hello", "hello");
@@ -18,5 +28,12 @@ main()
 	T(jstr_to_snake_case_p, "", "");
 	T(jstr_to_snake_case_p, "hello", "hello");
 	T(jstr_to_snake_case_p, "helloWorld", "hello_world");
+	T_CPY(jstr_toCamelCaseCpyP, "", "");
+	T_CPY(jstr_toCamelCaseCpyP, "hello", "hello");
+	T_CPY(jstr_toCamelCaseCpyP, "hello_world", "helloWorld");
+	T_CPY(jstr_to_snake_case_cpy_p, "", "");
+	T_CPY(jstr_to_snake_case_cpy_p, "hello", "hello");
+	T_CPY(jstr_to_snake_case_cpy_p, "helloWorld", "hello_world");
+	SUCCESS();
 	return 0;
 }

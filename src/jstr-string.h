@@ -1622,8 +1622,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_start(const char *const start,
-		const char *end)
+jstr_linestart(const char *const start,
+	       const char *end)
 JSTR_NOEXCEPT
 {
 	end = (char *)jstr_memrchr(start, '\n', end - start);
@@ -1638,8 +1638,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next_len(const char *start,
-		   const char *const end)
+jstr_linenext_len(const char *start,
+		  const char *const end)
 JSTR_NOEXCEPT
 {
 	start = (char *)memchr(start, '\n', end - start);
@@ -1654,7 +1654,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next(const char *R s)
+jstr_linenext(const char *R s)
 JSTR_NOEXCEPT
 {
 	s = strchr(s, '\n');
@@ -1668,11 +1668,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next_len_nul(const char *start,
-		       const char *const end)
+jstr_linenext_len_nul(const char *start,
+		      const char *const end)
 JSTR_NOEXCEPT
 {
-	start = jstr_line_next_len(start, end);
+	start = jstr_linenext_len(start, end);
 	return (char *)(start ? start : end);
 }
 
@@ -1683,7 +1683,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_line_next_nul(const char *R s)
+jstr_linenext_nul(const char *R s)
 JSTR_NOEXCEPT
 {
 	s = jstr_strchrnul(s, '\n');
@@ -1696,8 +1696,8 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 static size_t
-jstr_line_number(const char *start,
-		 const char *const end)
+jstr_linenumber(const char *start,
+		const char *const end)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(start == end))

@@ -1,13 +1,13 @@
 #include "test.h"
 
-#define T(string, expected_result)                                          \
-	do {                                                                \
-		char s[1024];                                               \
-		memcpy(s, string, strlen(string) + 1);                      \
-		assert(jstr_thousep_p(s, ',') == s + strlen(s));            \
-		assert(!strcmp(s, expected_result));                        \
-		assert(jstr_thousepcpy_p(s, string, ',') == s + strlen(s)); \
-		assert(!strcmp(s, expected_result));                        \
+#define T(string, expected_result)                                                              \
+	do {                                                                                    \
+		char s[1024];                                                                   \
+		memcpy(s, string, strlen(string) + 1);                                          \
+		ASSERT(jstr_thousep_p(s, ',') == s + strlen(s), s, expected_result);            \
+		ASSERT(!strcmp(s, expected_result), s, expected_result);                        \
+		ASSERT(jstr_thousepcpy_p(s, string, ',') == s + strlen(s), s, expected_result); \
+		ASSERT(!strcmp(s, expected_result), s, expected_result);                        \
 	} while (0)
 
 int
