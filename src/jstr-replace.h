@@ -1211,6 +1211,7 @@ JSTR_NOEXCEPT
 /*
    Convert snake_case to camelCase.
    Return ptr to '\0' in S.
+   Leading underscores are preserved.
 */
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -1241,6 +1242,7 @@ start:
 /*
    Convert snake_case to camelCase.
    Return ptr to '\0' in DST.
+   Leading underscores are preserved.
 */
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -1265,6 +1267,7 @@ JSTR_NOEXCEPT
 /*
    Convert camelCase to snake_case.
    Return ptr to '\0' in S.
+   Leading underscores are preserved.
 */
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -1294,6 +1297,7 @@ start:
 /*
    Convert camelCase to snake_case.
    Return ptr to '\0' in DST.
+   Leading underscores are preserved.
 */
 JSTR_FUNC_RET_NONNULL
 static char *
