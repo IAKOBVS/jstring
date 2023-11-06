@@ -8,10 +8,10 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr-macros.h"
 #include "_jstr-pp-arrcpy-va-args.h"
 #include "jstr-builder.h"
 #include "jstr-config.h"
+#include "jstr-macros.h"
 
 #define R JSTR_RESTRICT
 
@@ -201,6 +201,9 @@ PJSTR_END_DECLS
 
 #define jarr_foreachi(j, iterator) \
 	for (size_t iterator = 0, _max_elem_##iterator = (j)->size; iterator < _max_elem_##iterator; ++iterator)
+
+#define jarr_start(j, p) PJARR_DATA(j)
+#define jarr_end(j, p)	 (PJARR_DATA(j) + PJARR_SZ(j))
 
 #if JSTR_DEBUG
 #	define jarr_at(j, idx) \

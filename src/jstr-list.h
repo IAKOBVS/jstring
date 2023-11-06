@@ -20,8 +20,8 @@
 #define PJSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_malloc_err) \
 	PJSTR_L_RESERVE_FAIL(jstr_l_reservealways, list, new_cap, do_on_malloc_err)
 
-#define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = ((l)->data) + ((l)->size); \
-				  p < jstr_l_ty_end_;                                                          \
+#define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = jstr_l_end(l); \
+				  p < jstr_l_ty_end_;                                              \
 				  ++p)
 
 #define jstr_l_foreachi(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); \
@@ -40,6 +40,24 @@ typedef struct jstr_l_ty {
 	size_t size;
 	size_t capacity;
 } jstr_l_ty;
+
+JSTR_CONST
+JSTR_INLINE
+static jstr_ty *
+jstr_l_start(const jstr_l_ty *R l)
+JSTR_NOEXCEPT
+{
+	return l->data;
+}
+
+JSTR_CONST
+JSTR_INLINE
+static jstr_ty *
+jstr_l_end(const jstr_l_ty *R l)
+JSTR_NOEXCEPT
+{
+	return l->data + l->size;
+}
 
 JSTR_FUNC_VOID
 JSTR_INLINE
@@ -79,24 +97,6 @@ jstr_l_debug(const jstr_l_ty *R l)
 				"\n",
 			p->data);
 	}
-}
-
-JSTR_CONST
-JSTR_INLINE
-static jstr_ty *
-jstr_l_start(const jstr_l_ty *R l)
-JSTR_NOEXCEPT
-{
-	return l->data;
-}
-
-JSTR_CONST
-JSTR_INLINE
-static jstr_ty *
-jstr_l_end(const jstr_l_ty *R l)
-JSTR_NOEXCEPT
-{
-	return l->data + l->size;
 }
 
 JSTR_CONST

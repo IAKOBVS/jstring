@@ -14,9 +14,9 @@ PJSTR_BEGIN_DECLS
 #include <wchar.h>
 PJSTR_END_DECLS
 
-#include "jstr-macros.h"
 #include "jstr-config.h"
 #include "jstr-ctype.h"
+#include "jstr-macros.h"
 #include "jstr-std-string.h"
 
 #define R JSTR_RESTRICT
@@ -203,6 +203,14 @@ jstr_free_j(jstr_ty *R j)
 JSTR_NOEXCEPT
 {
 	jstr_free(&j->data, &j->size, &j->capacity);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static jstr_ty *
+jstr_start(const jstr_ty *R j)
+{
+	return (jstr_ty *)j->data;
 }
 
 JSTR_FUNC
