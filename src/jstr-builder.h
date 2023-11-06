@@ -167,7 +167,7 @@ jstr_at(const jstr_ty *R j,
 	const size_t idx)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(idx < j->capacity, "Index out of bounds.");
+	JSTR_ASSERT_DEBUG(idx <= j->size, "Index out of bounds.");
 	return j->data + idx;
 }
 
