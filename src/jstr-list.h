@@ -41,7 +41,7 @@ typedef struct jstr_l_ty {
 	size_t capacity;
 } jstr_l_ty;
 
-JSTR_CONST
+JSTR_FUNC_CONST
 JSTR_INLINE
 static jstr_ty *
 jstr_l_start(const jstr_l_ty *R l)
@@ -50,7 +50,7 @@ JSTR_NOEXCEPT
 	return l->data;
 }
 
-JSTR_CONST
+JSTR_FUNC_CONST
 JSTR_INLINE
 static jstr_ty *
 jstr_l_end(const jstr_l_ty *R l)
@@ -113,11 +113,11 @@ JSTR_NOEXCEPT
 	return l->data + idx;
 }
 
-JSTR_FUNC
+JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
-jstr_l_index(jstr_l_ty *l,
-	     jstr_ty *curr)
+jstr_l_index(jstr_l_ty *R l,
+	     jstr_ty *R curr)
 JSTR_NOEXCEPT
 {
 	return curr - l->data;

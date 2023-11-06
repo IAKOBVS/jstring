@@ -152,7 +152,7 @@ JSTR_NOEXCEPT
 	fputc('\n', stderr);
 }
 
-JSTR_CONST
+JSTR_FUNC_CONST
 JSTR_INLINE
 static char *
 jstr_at(const jstr_ty *R j,
@@ -164,6 +164,15 @@ JSTR_NOEXCEPT
 		jstr_err_exit("Index out of bounds.");
 #endif
 	return j->data + idx;
+}
+
+JSTR_FUNC_CONST
+JSTR_INLINE
+static size_t
+jstr_index(const jstr_ty *R j,
+	   const char *R curr)
+{
+	return curr - j->data;
 }
 
 /*
