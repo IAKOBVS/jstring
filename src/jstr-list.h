@@ -116,8 +116,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static size_t
-jstr_l_index(jstr_l_ty *R l,
-	     jstr_ty *R curr)
+jstr_l_index(jstr_l_ty *l,
+	     jstr_ty *curr)
 JSTR_NOEXCEPT
 {
 	return curr - l->data;
