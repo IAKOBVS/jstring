@@ -4,7 +4,7 @@
 
 #define T_APPEND(fn, ...)                                                                              \
 	do {                                                                                           \
-		PRINT("Testing %s.\n", JSTR_STRINGIFY(fn) "()");                                       \
+		TESTING(fn);                                                                           \
 		ret = fn(__VA_ARGS__);                                                                 \
 		if (ret == 0) {                                                                        \
 			fprintf(stderr, "%s", JSTR_STRINGIFY(fn) "()");                                \

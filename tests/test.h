@@ -24,4 +24,6 @@
 		}                                 \
 	} while (0)
 
+#define TESTING(func) PRINT("Testing %s.\n", JSTR_STRINGIFY(func) "()")
+
 #endif /* JSTR_TEST_H */

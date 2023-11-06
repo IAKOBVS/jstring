@@ -22,18 +22,26 @@
 int
 main(int argc, char **argv)
 {
+	TESTING(jstr_toCamelCaseP);
 	T(jstr_toCamelCaseP, "", "");
 	T(jstr_toCamelCaseP, "hello", "hello");
 	T(jstr_toCamelCaseP, "hello_world", "helloWorld");
-	T(jstr_to_snake_case_p, "", "");
-	T(jstr_to_snake_case_p, "hello", "hello");
-	T(jstr_to_snake_case_p, "helloWorld", "hello_world");
+
+	TESTING(jstr_tocamelCaseCpyP);
 	T_CPY(jstr_toCamelCaseCpyP, "", "");
 	T_CPY(jstr_toCamelCaseCpyP, "hello", "hello");
 	T_CPY(jstr_toCamelCaseCpyP, "hello_world", "helloWorld");
+
+	TESTING(jstr_to_snake_case_p);
+	T(jstr_to_snake_case_p, "", "");
+	T(jstr_to_snake_case_p, "hello", "hello");
+	T(jstr_to_snake_case_p, "helloWorld", "hello_world");
+
+	TESTING(jstr_to_snake_case_cpy_p);
 	T_CPY(jstr_to_snake_case_cpy_p, "", "");
 	T_CPY(jstr_to_snake_case_cpy_p, "hello", "hello");
 	T_CPY(jstr_to_snake_case_cpy_p, "helloWorld", "hello_world");
+
 	SUCCESS();
 	return 0;
 }
