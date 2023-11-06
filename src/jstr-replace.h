@@ -8,9 +8,9 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "jstr-macros.h"
 #include "jstr-builder.h"
 #include "jstr-ctype.h"
+#include "jstr-macros.h"
 #include "jstr-string.h"
 
 #define R JSTR_RESTRICT
@@ -1208,8 +1208,11 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
-/* Convert snake_case to camelCase. */
-JSTR_FUNC
+/*
+   Convert snake_case to camelCase.
+   Return ptr to '\0' in S.
+*/
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_toCamelCaseP(char *R s)
 JSTR_NOEXCEPT
@@ -1238,8 +1241,11 @@ start:
 	return s;
 }
 
-/* Convert camelCase to snake_case. */
-JSTR_FUNC
+/*
+   Convert camelCase to snake_case.
+   Return ptr to '\0' in S.
+*/
+JSTR_FUNC_RET_NONNULL
 static char *
 jstr_to_snake_case_p(char *R s)
 JSTR_NOEXCEPT
