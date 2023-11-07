@@ -391,7 +391,7 @@ jstr_casecmp(const char *R s1,
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-pjstr_strnstr2(const unsigned char *h,
+pjstr_strnstr2(const unsigned char *R h,
 	       const unsigned char *R const n,
 	       size_t l)
 JSTR_NOEXCEPT
@@ -406,7 +406,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-pjstr_strnstr3(const unsigned char *h,
+pjstr_strnstr3(const unsigned char *R h,
 	       const unsigned char *R const n,
 	       size_t l)
 JSTR_NOEXCEPT
@@ -421,7 +421,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-pjstr_strnstr4(const unsigned char *h,
+pjstr_strnstr4(const unsigned char *R h,
 	       const unsigned char *R const n,
 	       size_t l)
 JSTR_NOEXCEPT
@@ -438,7 +438,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-pjstr_memmem2(const unsigned char *h,
+pjstr_memmem2(const unsigned char *R h,
 	      const unsigned char *R const n,
 	      size_t l)
 JSTR_NOEXCEPT
@@ -453,7 +453,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-pjstr_memmem3(const unsigned char *h,
+pjstr_memmem3(const unsigned char *R h,
 	      const unsigned char *R const n,
 	      size_t l)
 JSTR_NOEXCEPT
@@ -468,7 +468,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-pjstr_memmem4(const unsigned char *h,
+pjstr_memmem4(const unsigned char *R h,
 	      const unsigned char *R const n,
 	      size_t l)
 JSTR_NOEXCEPT
