@@ -535,7 +535,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strnstr(const char *R hs,
-	     const char *R ne,
+	     const char *R const ne,
 	     size_t n)
 JSTR_NOEXCEPT
 {
@@ -588,7 +588,7 @@ JSTR_FUNC_PURE
 static char *
 jstr_strrstr_len(const void *R hs,
 		 const size_t hs_len,
-		 const void *R ne,
+		 const void *R const ne,
 		 const size_t ne_len)
 JSTR_NOEXCEPT
 {
@@ -683,7 +683,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 pjstr_strcasestr2(const unsigned char *R h,
-		  const unsigned char *R n)
+		  const unsigned char *R const n)
 JSTR_NOEXCEPT
 {
 	const uint16_t nw = (uint32_t)L(n[0]) << 8 | L(n[1]);
@@ -697,7 +697,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 pjstr_strcasestr3(const unsigned char *R h,
-		  const unsigned char *R n)
+		  const unsigned char *R const n)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
@@ -711,7 +711,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 pjstr_strcasestr4(const unsigned char *R h,
-		  const unsigned char *R n)
+		  const unsigned char *R const n)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
