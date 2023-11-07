@@ -165,7 +165,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 				$VAR_STRUCT = $VAR_JSTRING;
 			}
 			$arg[$i] = jl_arg_is_const(\$arg[$i]) ? 'const ' : '';
-			$arg[$i] .= $STRUCT . ' *' . $ATTR_RESTRICT . ' j';
+			$arg[$i] .= "$STRUCT *$ATTR_RESTRICT j";
 		} elsif ($var eq $VAR_SIZE) {
 			my $deref = (jl_arg_is_ptr(\$arg[$i]) ? '&' : '');
 			$body .= "$deref$VAR_STRUCT->$SIZE";
@@ -181,7 +181,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	}
 	$body =~ s/, $//;
 	$body .= ')';
-	$body .= ' - ' . $VAR_STRUCT . '->' . $DATA if ($returns_end_ptr);
+	$body .= " - $VAR_STRUCT->$DATA" if ($returns_end_ptr);
 	$body .= ";";
 	rm_nonnull(\$attr, \$ATTR_RET_NONNULL);
 	add_inline(\$attr, \$ATTR_INLINE);
