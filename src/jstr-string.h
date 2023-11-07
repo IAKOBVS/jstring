@@ -845,7 +845,8 @@ JSTR_NOEXCEPT
 	int is_alpha = jstr_isalpha(*ne);
 	const char *const start = hs;
 	hs = is_alpha ? pjstr_strcasechr_len(hs, *ne, ne_len) : (char *)memchr(hs, *ne, hs_len);
-	if (hs == NULL || (hs_len -= hs - start) < ne_len)
+	hs_len -= hs - start;
+	if (hs == NULL || hs_len < ne_len)
 		return NULL;
 	switch (ne_len) {
 	case 1: return (char *)hs;
