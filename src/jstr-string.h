@@ -369,23 +369,23 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_cmp(const void *R s1,
-	 const size_t s1_len,
-	 const void *R s2,
-	 const size_t s2_len)
+jstr_cmpeq(const void *R s1,
+	   const size_t s1_len,
+	   const void *R s2,
+	   const size_t s2_len)
 {
-	return (s1_len == s2_len) ? memcmp(s1, s2, s1_len) : *(unsigned char *)s1 - *(unsigned char *)s2;
+	return (s1_len == s2_len) ? memcmp(s1, s2, s1_len) : 1;
 }
 
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_casecmp(const char *R s1,
-	     const size_t s1_len,
-	     const char *R s2,
-	     const size_t s2_len)
+jstr_cmpcaseeq(const char *R s1,
+	       const size_t s1_len,
+	       const char *R s2,
+	       const size_t s2_len)
 {
-	return (s1_len == s2_len) ? jstr_strcasecmp(s1, s2) : *s1 - *s2;
+	return (s1_len == s2_len) ? jstr_strcasecmp(s1, s2) : 1;
 }
 
 JSTR_FUNC_PURE

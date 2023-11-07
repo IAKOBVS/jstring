@@ -325,8 +325,7 @@ jstr_l_find_len(const jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
-		if (s_len == j->size
-		    && !memcmp(s, j->data, s_len))
+		if (!jstr_cmpeq(s, s_len, j->data, j->size))
 			return j;
 	return NULL;
 }
@@ -339,8 +338,7 @@ jstr_l_find_case_len(const jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
-		if (s_len == j->size
-		    && !jstr_strcasecmp_len(s, j->data, s_len))
+		if (!jstr_cmpcaseeq(s, s_len, j->data, j->size))
 			return j;
 	return NULL;
 }
