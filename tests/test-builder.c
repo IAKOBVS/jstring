@@ -25,7 +25,7 @@ int
 main(int argc, char **argv)
 {
 	int ret;
-	char *expected;
+	const char *expected;
 	expected = "hello world";
 	T_APPEND(jstr_cat, &j.data, &j.size, &j.capacity, "hello", " ", "world", NULL);
 	expected = "hello world";
