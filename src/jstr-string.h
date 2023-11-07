@@ -598,7 +598,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
 	const unsigned char *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
-	if (h == NULL || (uintptr_t)((u *)h - (u *)hs + 1) < ne_len)
+	if (h == NULL || (uintptr_t)((u *)h + 1 - (u *)hs) < ne_len)
 		return NULL;
 	const unsigned char *const start = (const u *)hs;
 	const unsigned char *const n = (const u *)ne;
@@ -674,7 +674,7 @@ JSTR_NOEXCEPT
 		return (char *)h;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr(h + 1, hs_len - 1, n, ne_len);
+	return pjstr_strcasestr(h, hs_len, n, ne_len);
 }
 
 #	define L(c) jstr_tolower(c)
@@ -845,8 +845,7 @@ JSTR_NOEXCEPT
 	int is_alpha = jstr_isalpha(*ne);
 	const char *const start = hs;
 	hs = is_alpha ? pjstr_strcasechr_len(hs, *ne, ne_len) : (char *)memchr(hs, *ne, hs_len);
-	hs_len -= hs - start;
-	if (hs == NULL || hs_len < ne_len)
+	if (hs == NULL || (hs_len -= hs - start) < ne_len)
 		return NULL;
 	switch (ne_len) {
 	case 1: return (char *)hs;
@@ -873,7 +872,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return jstr_strstr_len(hs + 1, hs_len - 1, ne, ne_len);
+	return jstr_strstr_len(hs, hs_len, ne, ne_len);
 #endif
 }
 
@@ -932,7 +931,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs[ne_len] == '\0'))
 		return NULL;
-	return (char *)strstr(hs + 1, ne);
+	return (char *)strstr(hs, ne);
 #endif
 }
 
