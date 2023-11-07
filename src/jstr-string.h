@@ -610,14 +610,18 @@ JSTR_NOEXCEPT
 		uint16_t hw = (uint16_t)h[0] << 8 | h[-1];
 		for (--h; h >= start && hw != nw; hw = hw << 8 | *--h)
 			;
-		return hw == nw ? (char *)h : NULL;
+		if (hw == nw)
+			return (char *)h;
+		break;
 	}
 	case 3: {
 		const uint32_t nw = (uint32_t)n[2] << 24 | n[1] << 16 | n[0] << 8;
 		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8;
 		for (h -= 2; h >= start && hw != nw; hw = (hw | *--h) << 8)
 			;
-		return hw == nw ? (char *)h : NULL;
+		if (hw == nw)
+			return (char *)h;
+		break;
 	}
 	default:
 		h -= (ne_len - 4);
@@ -630,9 +634,9 @@ JSTR_NOEXCEPT
 				if (ne_len == 4 || !memcmp(h, n, ne_len))
 					return (char *)h;
 		}
-		return NULL;
 	}
 	}
+	return NULL;
 }
 
 /*
