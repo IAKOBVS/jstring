@@ -893,11 +893,11 @@ pjstr_sprintf_count_digits(long long number,
    size of allocation;
    -1 on error.
 */
+JSTR_FUNC
 #if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
 || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
 JSTR_INLINE
 #endif
-JSTR_FUNC
 static int
 jstr_vsprintf_strlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
