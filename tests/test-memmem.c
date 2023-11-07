@@ -2,55 +2,15 @@
 
 #include "test.h"
 
-#define T_STRSTR(fn, simple_fn, ...)                           \
-	do {                                                   \
-		const char *result = fn(__VA_ARGS__);          \
-		const char *expected = simple_fn(__VA_ARGS__); \
-		ASSERT(result == expected, result, expected);  \
-	} while (0)
-
-#define T_FN(TEST_FN, fn, simple_fn)                               \
-	do {                                                       \
-		TESTING(fn);                                       \
-		TEST_FN(fn, simple_fn, "yyyyyxxxyxxxxy", "yyyyy"); \
-		TEST_FN(fn, simple_fn, "yxxxyxxxxy", "xxxx");      \
-		TEST_FN(fn, simple_fn, "yxxxyxxxxy", "xxx");       \
-		TEST_FN(fn, simple_fn, "yxxxyxxy", "xxx");         \
-		TEST_FN(fn, simple_fn, "xxx", "xxx");              \
-		TEST_FN(fn, simple_fn, "xxx", "x");                \
-		TEST_FN(fn, simple_fn, "xxx", "yyy");              \
-		TEST_FN(fn, simple_fn, "x", "xxx");                \
-		TEST_FN(fn, simple_fn, "xxx", "");                 \
-		TEST_FN(fn, simple_fn, "", "xxx");                 \
-		TEST_FN(fn, simple_fn, "", "");                    \
-	} while (0)
-
-#define GET_LEN(x) x, strlen(x)
-
-#define T_FN_MEM(TEST_FN, fn, simple_fn)                                             \
-	do {                                                                         \
-		TESTING(fn);                                                         \
-		TEST_FN(fn, simple_fn, GET_LEN("yyyyyxxxyxxxxy"), GET_LEN("yyyyy")); \
-		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxxxy"), GET_LEN("xxxx"));      \
-		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxxxy"), GET_LEN("xxx"));       \
-		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxy"), GET_LEN("xxx"));         \
-		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("xxx"));              \
-		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("x"));                \
-		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("yyy"));              \
-		TEST_FN(fn, simple_fn, GET_LEN("x"), GET_LEN("xxx"));                \
-		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN(""));                 \
-		TEST_FN(fn, simple_fn, GET_LEN(""), GET_LEN("xxx"));                 \
-		TEST_FN(fn, simple_fn, GET_LEN(""), GET_LEN(""));                    \
-	} while (0)
-
 #define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
 #define TOUPPER(c) (unsigned char)(((c) >= 'a' && (c) <= 'z') ? ((c) - 'a' + 'A') : (c))
 
 char *
-simple_strrstr(const char *h, const char *n)
+simple_strrstr_len(const char *h,
+                   const size_t hl,
+                   const char *n,
+                   const size_t nl)
 {
-	const size_t hl = strlen(h);
-	const size_t nl = strlen(n);
 	if (hl < nl)
 		return NULL;
 	const char *p = h + hl - nl;
@@ -61,10 +21,17 @@ simple_strrstr(const char *h, const char *n)
 }
 
 char *
+simple_strrstr(const char *h,
+               const char *n)
+{
+	return simple_strrstr_len(h, strlen(h), n, strlen(n));
+}
+
+char *
 simple_memmem(const char *h,
-	      const size_t hl,
-	      const char *n,
-	      const size_t nl)
+              const size_t hl,
+              const char *n,
+              const size_t nl)
 {
 	if (nl == 0)
 		return (char *)h;
@@ -81,15 +48,15 @@ simple_memmem(const char *h,
 
 char *
 simple_strstr(const char *h,
-	      const char *n)
+              const char *n)
 {
 	return simple_memmem(h, strlen(h), n, strlen(n));
 }
 
 int
 simple_strncasecmp(const char *s1,
-		   const char *s2,
-		   size_t n)
+                   const char *s2,
+                   size_t n)
 {
 	if (n == 0)
 		return 0;
@@ -101,9 +68,9 @@ simple_strncasecmp(const char *s1,
 
 char *
 simple_strcasestr_len(const char *h,
-		      const size_t hl,
-		      const char *n,
-		      const size_t nl)
+                      const size_t hl,
+                      const char *n,
+                      const size_t nl)
 {
 	if (nl == 0)
 		return (char *)h;
@@ -120,7 +87,7 @@ simple_strcasestr_len(const char *h,
 
 char *
 simple_strcasestr(const char *h,
-		  const char *n)
+                  const char *n)
 {
 	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
 }
@@ -131,13 +98,72 @@ jstr_strrstr(const char *h, const char *n)
 	return jstr_strrstr_len(h, strlen(h), n, strlen(n));
 }
 
+#define T_STRSTR(fn, simple_fn)                                                           \
+	do {                                                                              \
+		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {                     \
+			const char *const result = fn(hs_ne[i].hs, hs_ne[i].ne);          \
+			const char *const expected = simple_fn(hs_ne[i].hs, hs_ne[i].ne); \
+			ASSERT(result == expected, result, expected);                     \
+		}                                                                         \
+	} while (0)
+
+#define T_STRSTR_LEN(fn, simple_fn)                                                                                                 \
+	do {                                                                                                                        \
+		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {                                                               \
+			const char *const result = fn(hs_ne[i].hs, strlen(hs_ne[i].hs), hs_ne[i].ne, strlen(hs_ne[i].ne));          \
+			const char *const expected = simple_fn(hs_ne[i].hs, strlen(hs_ne[i].hs), hs_ne[i].ne, strlen(hs_ne[i].ne)); \
+			ASSERT(result == expected, result, expected);                                                               \
+		}                                                                                                                   \
+	} while (0)
+
 int
 main(int argc, char **argv)
 {
-	T_FN(T_STRSTR, jstr_strrstr, simple_strrstr);
-	T_FN(T_STRSTR, jstr_strcasestr, simple_strcasestr);
-	T_FN_MEM(T_STRSTR, jstr_memmem, simple_memmem);
-	T_FN_MEM(T_STRSTR, jstr_strcasestr_len, simple_strcasestr_len);
+	struct hs_ne_ty {
+		const char *hs;
+		const char *ne;
+	} hs_ne[] = {
+		{"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+                 "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
+		{ "xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+                 "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
+		{ "xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxx",
+                 "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
+		{ "yxxyyyyxyxxxxy",
+                 "yyyyy"		                                                                                                                                                                                                                                                    },
+		{ "yyyyyxxxyxxxxy",
+                 "yyyyy"		                                                                                                                                                                                                                                                    },
+		{ "yxyyyxxxyxxxxyyyy",
+                 "yyyyy"		                                                                                                                                                                                                                                                    },
+		{ "yxxyyyyxyxxxxy",
+                 "yyyyy"		                                                                                                                                                                                                                                                    },
+		{ "yyyyyxxxyxxxxy",
+                 "yyyyy"		                                                                                                                                                                                                                                                    },
+		{ "yxxxyxxxxy",
+                 "xxxx"		                                                                                                                                                                                                                                                     },
+		{ "yxxxyxxxxy",
+                 "xxx"		                                                                                                                                                                                                                                                      },
+		{ "yxxxyxxy",
+                 "xxx"		                                                                                                                                                                                                                                                      },
+		{ "xxx",
+                 "xxx"		                                                                                                                                                                                                                                                      },
+		{ "xxx",
+                 "x"		                                                                                                                                                                                                                                                        },
+		{ "xxx",
+                 "yyy"		                                                                                                                                                                                                                                                      },
+		{ "x",
+                 "xxx"		                                                                                                                                                                                                                                                      },
+		{ "xxx",
+                 ""		                                                                                                                                                                                                                                                         },
+		{ "",
+                 "xxx"		                                                                                                                                                                                                                                                      },
+		{ "",
+                 ""		                                                                                                                                                                                                                                                         }
+	};
+	T_STRSTR(jstr_strcasestr, simple_strcasestr);
+	T_STRSTR_LEN(jstr_strcasestr_len, simple_strcasestr_len);
+	T_STRSTR_LEN(jstr_memmem, simple_memmem);
+	T_STRSTR_LEN(jstr_strrstr_len, simple_strrstr_len);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }

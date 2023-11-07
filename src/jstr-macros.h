@@ -22,6 +22,8 @@
 #define JSTR_CONCAT(x, y)	 JSTR_CONCAT_HELPER(x, y)
 #define JSTR_STRINGIFY(x)	 #x
 
+#define JSTR_ARRAY_SIZE(array) (sizeof(array) / sizeof(*(array)))
+
 #define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
