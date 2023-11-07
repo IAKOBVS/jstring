@@ -1,7 +1,7 @@
 #ifndef JSTR_CTYPE_TABLE_H
 #define JSTR_CTYPE_TABLE_H 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 

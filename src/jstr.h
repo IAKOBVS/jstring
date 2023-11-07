@@ -5,7 +5,7 @@
 #include "jstr-ctype.h"
 #include "jstr-itoa.h"
 #include "jstr-list.h"
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #include "jstr-replace.h"
 #include "jstr-string.h"
 

@@ -1,4 +1,4 @@
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 /* The programmer is expected to check if HAYSTACKLEN >= NEEDLELEN.
    Before including this file, define:

@@ -1,7 +1,7 @@
 #ifndef JSTR_LIST_H
 #define JSTR_LIST_H
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
@@ -20,8 +20,8 @@
 #define PJSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_malloc_err) \
 	PJSTR_L_RESERVE_FAIL(jstr_l_reservealways, list, new_cap, do_on_malloc_err)
 
-#define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = ((l)->data) + ((l)->size); \
-				  p < jstr_l_ty_end_;                                                          \
+#define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = jstr_l_end(l); \
+				  p < jstr_l_ty_end_;                                              \
 				  ++p)
 
 #define jstr_l_foreachi(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); \
@@ -40,6 +40,24 @@ typedef struct jstr_l_ty {
 	size_t size;
 	size_t capacity;
 } jstr_l_ty;
+
+JSTR_FUNC_CONST
+JSTR_INLINE
+static jstr_ty *
+jstr_l_start(const jstr_l_ty *R l)
+JSTR_NOEXCEPT
+{
+	return l->data;
+}
+
+JSTR_FUNC_CONST
+JSTR_INLINE
+static jstr_ty *
+jstr_l_end(const jstr_l_ty *R l)
+JSTR_NOEXCEPT
+{
+	return l->data + l->size;
+}
 
 JSTR_FUNC_VOID
 JSTR_INLINE
@@ -84,32 +102,15 @@ jstr_l_debug(const jstr_l_ty *R l)
 JSTR_CONST
 JSTR_INLINE
 static jstr_ty *
-jstr_l_start(const jstr_l_ty *R l)
-JSTR_NOEXCEPT
-{
-	return l->data;
-}
-
-JSTR_CONST
-JSTR_INLINE
-static jstr_ty *
-jstr_l_end(const jstr_l_ty *R l)
-JSTR_NOEXCEPT
-{
-	return l->data + l->size;
-}
-
-JSTR_CONST
-JSTR_INLINE
-static jstr_ty *
 jstr_l_at(const jstr_l_ty *R l,
-	  const size_t at)
+	  const size_t idx)
 JSTR_NOEXCEPT
 {
-	return l->data + at;
+	JSTR_ASSERT_DEBUG(idx <= l->size, "Index out of bounds.");
+	return l->data + idx;
 }
 
-JSTR_FUNC
+JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
 jstr_l_index(jstr_l_ty *R l,
@@ -294,11 +295,10 @@ JSTR_NOEXCEPT
 		return 1;
 	PJSTR_L_RESERVE(l, l->size + argc, return 0)
 	va_start(ap, l);
-	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size) {
+	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size)
 		if (jstr_unlikely(
 		    !pjstr_l_alloc_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
-	}
 	va_end(ap);
 	return 1;
 err_free_l:

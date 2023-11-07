@@ -14,7 +14,7 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_I386_STRING_OPTHR_H
 #define PJSTR_I386_STRING_OPTHR_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 /* Threshold value for when to enter the unrolled loops.  */
 #define JSTR_WORD_THRES 8
 #endif /* I386_STRING_OPTHR_H */

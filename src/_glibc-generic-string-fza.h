@@ -14,7 +14,7 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZA_H
 #define PJSTR_STRING_FZA_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #include "jstr-string-misc.h"
 #include "jstr-string-optype.h"
 /* The function return a byte mask.  */

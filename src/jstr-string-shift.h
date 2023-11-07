@@ -1,6 +1,6 @@
 #ifndef PJSTR_SELECTOR_STRING_SHIFT_H
 #define PJSTR_SELECTOR_STRING_SHIFT_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 PJSTR_BEGIN_DECLS
 #if JSTR_ARCH_ALPHA
 #	include "_glibc-alpha-string-shift.h"

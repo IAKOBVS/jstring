@@ -1,7 +1,7 @@
 #ifndef JSTR_REEX_H
 #define JSTR_REEX_H 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <regex.h>
@@ -646,8 +646,7 @@ JSTR_NOEXCEPT
 	unsigned char *rdst_heap = NULL;
 	size_t find_len;
 	int has_bref;
-	while (n-- && *p
-	       && jstr_re_exec_len(preg, (char *)p, (*(u **)s + *sz) - p, nmatch, rm, eflags) == JSTR_RE_RET_NOERROR) {
+	while (n-- && *p && jstr_re_exec_len(preg, (char *)p, (*(u **)s + *sz) - p, nmatch, rm, eflags) == JSTR_RE_RET_NOERROR) {
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		if (jstr_unlikely(find_len == 0)) {
 			++p;
@@ -664,7 +663,8 @@ JSTR_NOEXCEPT
 				rdstp = rdst_heap;
 			} else if (rdstcap < rdst_len) {
 				rdstcap = pjstr_grow(rdstcap, rdst_len);
-				PJSTR_REALLOC(rdst_heap, rdstcap, rdst_len, goto err);
+				rdst_heap = (u *)realloc(rdst_heap, rdstcap);
+				PJSTR_MALLOC_ERR(rdst_heap, goto err);
 				rdstp = rdst_heap;
 			}
 		}

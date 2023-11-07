@@ -14,7 +14,7 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_RISCV_STRING_FZA_H
 #define PJSTR_RISCV_STRING_FZA_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #if defined __riscv_zbb || defined __riscv_xtheadbb
 /* With bitmap extension we can use orc.b to find all zero bytes.  */
 #	include "jstr-string-misc.h"

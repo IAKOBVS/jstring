@@ -14,7 +14,7 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_MISC_H
 #define PJSTR_STRING_MISC_H 1
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #include "jstr-string-optype.h"
 #include <endian.h>
 #include <limits.h>

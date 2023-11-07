@@ -1,7 +1,7 @@
 #ifndef PJSTR_SELECTOR_STRING_OPTYPE_H
 #define PJSTR_SELECTOR_STRING_OPTYPE_H 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 #if JSTR_ARCH_X86_32
 #	include "_glibc-x86_64-x32-string-optype.h"

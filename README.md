@@ -55,7 +55,6 @@ before including any jstr-\* header. This will make them print the filename, lin
 - \*str\*\_len(): the string must be nul-termimated. The size is only used to save a strlen()
 - \*stp\*(), \*\_p(), \*\P(): return a pointer to the end of the string
 - \*\_unsafe(): assume that there be enough space in the string: the string will not be grown
-- \*\_now(): compile regular expression now or prints error message now
 - \*\_from(): instead of searching the whole string, start the search from an index.<br>
 The index passed by the user is assumed to be not out of bounds.
 - \*\_bref(): enable backreferences for the replacement string.<br>

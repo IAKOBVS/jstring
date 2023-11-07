@@ -1,7 +1,7 @@
 #ifndef JSTR_IO_H
 #define JSTR_IO_H 1
 
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 #include <dirent.h>
@@ -762,7 +762,7 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_io_append_path_p(char *R path_end,
+jstr_io_appendpath_p(char *R path_end,
 		      const char *R fname)
 JSTR_NOEXCEPT
 {
@@ -773,7 +773,7 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-jstr_io_append_path_len(char *R path_end,
+jstr_io_appendpath_len(char *R path_end,
 			const char *R fname,
 			const size_t flen)
 JSTR_NOEXCEPT
@@ -837,13 +837,13 @@ typedef enum jstr_io_ftw_flag_ty {
 #if JSTR_HAVE_DIRENT_D_NAMLEN
 #	define FILL_PATH_ALWAYS()                                                         \
 		do {                                                                       \
-			jstr_io_append_path_len(dirpath + dlen, ep->d_name, ep->d_namlen); \
+			jstr_io_appendpath_len(dirpath + dlen, ep->d_name, ep->d_namlen); \
 			path_len = dlen + 1 + ep->d_namlen;                                 \
 		} while (0)
 #else
 #	define FILL_PATH_ALWAYS()                                                             \
 		do {                                                                           \
-			path_len = jstr_io_append_path_p(dirpath + dlen, ep->d_name) - dirpath; \
+			path_len = jstr_io_appendpath_p(dirpath + dlen, ep->d_name) - dirpath; \
 		} while (0)
 #endif
 

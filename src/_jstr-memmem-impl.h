@@ -1,4 +1,4 @@
-#include "_jstr-macros.h"
+#include "jstr-macros.h"
 #include "jstr-std-string.h"
 #include <string.h>
 

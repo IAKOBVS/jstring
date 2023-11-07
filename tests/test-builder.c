@@ -2,19 +2,19 @@
 
 #include "test.h"
 
-#define T_APPEND(fn, ...)                                                            \
-	do {                                                                         \
-		PRINT("Testing %s.\n", JSTR_STRINGIFY(fn));                          \
-		ret = fn(__VA_ARGS__);                                               \
-		if (ret == 0) {                                                      \
-			fprintf(stderr, "%s", JSTR_STRINGIFY(fn));                   \
-			jstr_err_exit("");                                           \
-		}                                                                    \
-		assert(strcmp(j.data, expected) == 0);                               \
-		assert(j.size == strlen(expected));                                  \
-		assert(memcmp(j.data, expected, j.size) == 0);                       \
-		assert(strlen(expected) != 0 && j.size != 0 && j.capacity > j.size); \
-		jstr_free_j(&j);                                                     \
+#define T_APPEND(fn, ...)                                                                              \
+	do {                                                                                           \
+		TESTING(fn);                                                                           \
+		ret = fn(__VA_ARGS__);                                                                 \
+		if (ret == 0) {                                                                        \
+			fprintf(stderr, "%s", JSTR_STRINGIFY(fn) "()");                                \
+			jstr_err_exit("");                                                             \
+		}                                                                                      \
+		ASSERT(strcmp(j.data, expected) == 0, j.data, expected);                               \
+		ASSERT(j.size == strlen(expected), j.data, expected);                                  \
+		ASSERT(memcmp(j.data, expected, j.size) == 0, j.data, expected);                       \
+		ASSERT(strlen(expected) != 0 && j.size != 0 && j.capacity > j.size, j.data, expected); \
+		jstr_free_j(&j);                                                                       \
 	} while (0)
 
 jstr_ty j = { 0 };
