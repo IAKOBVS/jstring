@@ -1,4 +1,5 @@
 #!/bin/sh
+cd "$(dirname "$0")" || exit
 for header in $(echo ./tests/*.c); do
 	{
 	basename=${header%.*}

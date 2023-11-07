@@ -2,9 +2,11 @@
 
 #include "test.h"
 
-#define T_STRSTR(fn, simple_fn, ...)                               \
-	do {                                                       \
-		assert(fn(__VA_ARGS__) == simple_fn(__VA_ARGS__)); \
+#define T_STRSTR(fn, simple_fn, ...)                           \
+	do {                                                   \
+		const char *result = fn(__VA_ARGS__);          \
+		const char *expected = simple_fn(__VA_ARGS__); \
+		ASSERT(result == expected, result, expected);  \
 	} while (0)
 
 #define T_FN(TEST_FN, fn, simple_fn)                               \
@@ -132,30 +134,10 @@ jstr_strrstr(const char *h, const char *n)
 int
 main(int argc, char **argv)
 {
-	/* T_FN(T_STRSTR, jstr_strrstr, simple_strrstr); */
-	/* T_FN(T_STRSTR, jstr_strcasestr, simple_strcasestr); */
-	/* T_FN_MEM(T_STRSTR, jstr_memmem, simple_memmem); */
-	/* T_FN_MEM(T_STRSTR, jstr_strcasestr_len, simple_strcasestr_len); */
-
-	char *p;
-
-	p = jstr_strcasestr_len(GET_LEN("yyyyyxxxyxxxxy"), GET_LEN("yyyyy"));
-	if (p)
-		puts(p);
-	p = simple_strcasestr_len(GET_LEN("yyyyyxxxyxxxxy"), GET_LEN("yyyyy"));
-	if (p)
-		puts(p);
-
-	PRINT("nonlen:\n", NULL);
-	PRINT("strcasestr:\n", NULL);
-	p = jstr_strcasestr("yyyyyxxxyxxxxy", "yyyyy");
-	if (p)
-		puts(p);
-	PRINT("simple_strcasestr:\n", NULL);
-	p = simple_strcasestr("yyyyyxxxyxxxxy", "yyyyy");
-	if (p)
-		puts(p);
-
+	T_FN(T_STRSTR, jstr_strrstr, simple_strrstr);
+	T_FN(T_STRSTR, jstr_strcasestr, simple_strcasestr);
+	T_FN_MEM(T_STRSTR, jstr_memmem, simple_memmem);
+	T_FN_MEM(T_STRSTR, jstr_strcasestr_len, simple_strcasestr_len);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }
