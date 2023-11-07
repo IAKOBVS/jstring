@@ -11,7 +11,7 @@
 	} while (0)
 
 int
-main()
+main(int argc, char **argv)
 {
 	jarr_ty(int, j) = JARR_INIT;
 	TESTING(jarr_cat);
@@ -50,5 +50,6 @@ main()
 	  4,
 	  5);
 	jarr_free(&j);
+	SUCCESS();
 	return 0;
 }

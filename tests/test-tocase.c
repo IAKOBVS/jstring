@@ -3,6 +3,9 @@
 #define T(func, string, expected)                                   \
 	do {                                                        \
 		char s[1024] = string;                              \
+		JSTR_ASSERT(sizeof(s) > 2 * strlen(string)          \
+		            && sizeof(s) > 2 * strlen(expected),    \
+		            "");                                    \
 		const char *const p = func(s);                      \
 		ASSERT(strlen(s) == strlen(expected), s, expected); \
 		ASSERT(p - s == strlen(expected), s, expected);     \
@@ -12,6 +15,9 @@
 #define T_CPY(func, string, expected)                                   \
 	do {                                                            \
 		char dst[1024];                                         \
+		JSTR_ASSERT(sizeof(dst) > 2 * strlen(string)            \
+		            && sizeof(dst) > 2 * strlen(expected),      \
+		            "");                                        \
 		const char *const p = func(dst, string);                \
 		ASSERT(strlen(dst) == strlen(expected), dst, expected); \
 		ASSERT(p - dst == strlen(expected), dst, expected);     \
