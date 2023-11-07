@@ -1073,6 +1073,7 @@ get_arg:
 				break;
 		}
 	}
+	++arg_len;
 	if (jstr_unlikely(arg_len > INT_MAX))
 		arg_len = INT_MAX;
 	return arg_len;
