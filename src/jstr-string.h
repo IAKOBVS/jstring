@@ -619,7 +619,10 @@ JSTR_NOEXCEPT
 			;
 		return hw == nw ? (char *)h : NULL;
 	}
-	default: {
+	default:
+		h -= (ne_len - 4);
+		/* fallthrough */
+	case 4: {
 		const uint32_t nw = (uint32_t)(n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0]);
 		uint32_t hw = (uint32_t)(h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3]);
 		for (h -= 3; h >= start; hw = hw << 8 | *--h) {
@@ -897,8 +900,6 @@ JSTR_NOEXCEPT
 	hs = is_isalpha0 ? pjstr_strcasechr_generic(hs, *ne) : strchr(hs, *ne);
 	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
-	if (hs == NULL)
-		assert(0);
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
 	is_isalpha0 |= jstr_isalpha(ne[1]);

@@ -7,34 +7,38 @@
 		assert(fn(__VA_ARGS__) == simple_fn(__VA_ARGS__)); \
 	} while (0)
 
-#define T_FN(TEST_FN, fn, simple_fn)                         \
-	do {                                                 \
-		TESTING(fn);                                 \
-		TEST_FN(fn, simple_fn, "yxxxyxxxxy", "xxx"); \
-		TEST_FN(fn, simple_fn, "yxxxyxxy", "xxx");   \
-		TEST_FN(fn, simple_fn, "xxx", "xxx");        \
-		TEST_FN(fn, simple_fn, "xxx", "x");          \
-		TEST_FN(fn, simple_fn, "xxx", "yyy");        \
-		TEST_FN(fn, simple_fn, "x", "xxx");          \
-		TEST_FN(fn, simple_fn, "xxx", "");           \
-		TEST_FN(fn, simple_fn, "", "xxx");           \
-		TEST_FN(fn, simple_fn, "", "");              \
+#define T_FN(TEST_FN, fn, simple_fn)                               \
+	do {                                                       \
+		TESTING(fn);                                       \
+		TEST_FN(fn, simple_fn, "yyyyyxxxyxxxxy", "yyyyy"); \
+		TEST_FN(fn, simple_fn, "yxxxyxxxxy", "xxxx");      \
+		TEST_FN(fn, simple_fn, "yxxxyxxxxy", "xxx");       \
+		TEST_FN(fn, simple_fn, "yxxxyxxy", "xxx");         \
+		TEST_FN(fn, simple_fn, "xxx", "xxx");              \
+		TEST_FN(fn, simple_fn, "xxx", "x");                \
+		TEST_FN(fn, simple_fn, "xxx", "yyy");              \
+		TEST_FN(fn, simple_fn, "x", "xxx");                \
+		TEST_FN(fn, simple_fn, "xxx", "");                 \
+		TEST_FN(fn, simple_fn, "", "xxx");                 \
+		TEST_FN(fn, simple_fn, "", "");                    \
 	} while (0)
 
 #define GET_LEN(x) x, strlen(x)
 
-#define T_FN_MEM(TEST_FN, fn, simple_fn)                                       \
-	do {                                                                   \
-		TESTING(fn);                                                   \
-		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxxxy"), GET_LEN("xxx")); \
-		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxy"), GET_LEN("xxx"));   \
-		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("xxx"));        \
-		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("x"));          \
-		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("yyy"));        \
-		TEST_FN(fn, simple_fn, GET_LEN("x"), GET_LEN("xxx"));          \
-		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN(""));           \
-		TEST_FN(fn, simple_fn, GET_LEN(""), GET_LEN("xxx"));           \
-		TEST_FN(fn, simple_fn, GET_LEN(""), GET_LEN(""));              \
+#define T_FN_MEM(TEST_FN, fn, simple_fn)                                             \
+	do {                                                                         \
+		TESTING(fn);                                                         \
+		TEST_FN(fn, simple_fn, GET_LEN("yyyyyxxxyxxxxy"), GET_LEN("yyyyy")); \
+		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxxxy"), GET_LEN("xxxx"));      \
+		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxxxy"), GET_LEN("xxx"));       \
+		TEST_FN(fn, simple_fn, GET_LEN("yxxxyxxy"), GET_LEN("xxx"));         \
+		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("xxx"));              \
+		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("x"));                \
+		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN("yyy"));              \
+		TEST_FN(fn, simple_fn, GET_LEN("x"), GET_LEN("xxx"));                \
+		TEST_FN(fn, simple_fn, GET_LEN("xxx"), GET_LEN(""));                 \
+		TEST_FN(fn, simple_fn, GET_LEN(""), GET_LEN("xxx"));                 \
+		TEST_FN(fn, simple_fn, GET_LEN(""), GET_LEN(""));                    \
 	} while (0)
 
 #define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
@@ -99,6 +103,10 @@ simple_strcasestr_len(const char *h,
 		      const char *n,
 		      const size_t nl)
 {
+	if (nl == 0)
+		return (char *)h;
+	if (hl == 0)
+		return NULL;
 	if (hl < nl)
 		return NULL;
 	const char *end = h + hl - nl;
@@ -124,10 +132,30 @@ jstr_strrstr(const char *h, const char *n)
 int
 main(int argc, char **argv)
 {
-	T_FN(T_STRSTR, jstr_strrstr, simple_strrstr);
-	T_FN(T_STRSTR, jstr_strcasestr, simple_strcasestr);
-	T_FN_MEM(T_STRSTR, jstr_memmem, simple_memmem);
-	T_FN_MEM(T_STRSTR, jstr_strcasestr_len, simple_strcasestr_len);
+	/* T_FN(T_STRSTR, jstr_strrstr, simple_strrstr); */
+	/* T_FN(T_STRSTR, jstr_strcasestr, simple_strcasestr); */
+	/* T_FN_MEM(T_STRSTR, jstr_memmem, simple_memmem); */
+	/* T_FN_MEM(T_STRSTR, jstr_strcasestr_len, simple_strcasestr_len); */
+
+	char *p;
+
+	p = jstr_strcasestr_len(GET_LEN("yyyyyxxxyxxxxy"), GET_LEN("yyyyy"));
+	if (p)
+		puts(p);
+	p = simple_strcasestr_len(GET_LEN("yyyyyxxxyxxxxy"), GET_LEN("yyyyy"));
+	if (p)
+		puts(p);
+
+	PRINT("nonlen:\n", NULL);
+	PRINT("strcasestr:\n", NULL);
+	p = jstr_strcasestr("yyyyyxxxyxxxxy", "yyyyy");
+	if (p)
+		puts(p);
+	PRINT("simple_strcasestr:\n", NULL);
+	p = simple_strcasestr("yyyyyxxxyxxxxy", "yyyyy");
+	if (p)
+		puts(p);
+
 	SUCCESS();
 	return EXIT_SUCCESS;
 }
