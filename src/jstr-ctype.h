@@ -206,8 +206,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_stpcpy_toupper(char *R dst,
-		    const char *R src)
+jstr_toupperstrcpy_p(char *R dst,
+		     const char *R src)
 JSTR_NOEXCEPT
 {
 	while ((*dst++ = jstr_tolower(*src++)))
@@ -222,8 +222,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static char *
-jstr_stpcpy_tolower(char *R dst,
-		    const char *R src)
+jstr_tolowerstrcpy_p(char *R dst,
+		     const char *R src)
 JSTR_NOEXCEPT
 {
 	while ((*dst++ = jstr_tolower(*src++)))
