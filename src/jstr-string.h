@@ -570,7 +570,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
-	if (jstr_unlikely(hs_len == ne_len))
+	if (hs_len == ne_len)
 		return NULL;
 	++hs;
 	--hs_len;
@@ -672,7 +672,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (!jstr_strcasecmp_len(h, n, ne_len))
 		return (char *)h;
-	if (jstr_unlikely(hs_len == ne_len))
+	if (hs_len == ne_len)
 		return NULL;
 	return pjstr_strcasestr(h, hs_len, n, ne_len);
 }
@@ -870,7 +870,7 @@ JSTR_NOEXCEPT
 	}
 	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
-	if (jstr_unlikely(hs_len == ne_len))
+	if (hs_len == ne_len)
 		return NULL;
 	return jstr_strstr_len(hs, hs_len, ne, ne_len);
 #endif
