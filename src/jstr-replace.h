@@ -15,7 +15,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_NAMESPACE
+PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_VOID
 JSTR_INLINE
@@ -1596,7 +1596,7 @@ JSTR_NOEXCEPT
 	return jstr_thousepcpy_len_p(dst, src, separator, strlen(src));
 }
 
-PJSTR_END_NAMESPACE
+PJSTR_END_DECLS
 
 #undef R
 

@@ -20,7 +20,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_NAMESPACE
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 	JSTR_IO_FT_UNKNOWN = 0,
@@ -1074,7 +1074,7 @@ JSTR_NOEXCEPT
 	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn, jstr_io_ftw_flag, fn_glob, fn_flags);
 }
 
-PJSTR_END_NAMESPACE
+PJSTR_END_DECLS
 
 #undef R
 

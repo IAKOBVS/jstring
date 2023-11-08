@@ -881,13 +881,9 @@ case '~':
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS     extern "C" {
 #	define PJSTR_END_DECLS       }
-#	define PJSTR_BEGIN_NAMESPACE PJSTR_BEGIN_DECLS
-#	define PJSTR_END_NAMESPACE   PJSTR_END_DECLS
 #else
 #	define PJSTR_BEGIN_DECLS
 #	define PJSTR_END_DECLS
-#	define PJSTR_BEGIN_NAMESPACE
-#	define PJSTR_END_NAMESPACE
 #endif
 
 #if __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8

@@ -87,7 +87,7 @@ PJSTR_END_DECLS
 #define PJSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 
-PJSTR_BEGIN_NAMESPACE
+PJSTR_BEGIN_DECLS
 
 #ifndef __cplusplus
 
@@ -1424,7 +1424,7 @@ err_free:
 	return 0;
 }
 
-PJSTR_END_NAMESPACE
+PJSTR_END_DECLS
 
 #undef R
 

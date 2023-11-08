@@ -32,7 +32,7 @@ PJSTR_END_DECLS
 #	define JSTR_RE_EF_STARTEND REG_STARTEND
 #endif /* REG_STARTEND */
 
-PJSTR_BEGIN_NAMESPACE
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 #ifdef REG_ENOSYS
@@ -808,7 +808,7 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, 1);
 }
 
-PJSTR_END_NAMESPACE
+PJSTR_END_DECLS
 
 #undef R
 

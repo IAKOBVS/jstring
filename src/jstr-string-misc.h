@@ -14,7 +14,7 @@ PJSTR_END_DECLS
 #	pragma GCC diagnostic push
 #endif
 
-PJSTR_BEGIN_NAMESPACE
+PJSTR_BEGIN_DECLS
 
 /* P must be aligned to sizeof(jstr_word_ty). */
 JSTR_INLINE
@@ -99,7 +99,7 @@ JSTR_NOEXCEPT
 #endif
 }
 
-PJSTR_END_NAMESPACE
+PJSTR_END_DECLS
 
 #if __GNUC__ || defined __clang__
 #	pragma GCC diagnostic pop
