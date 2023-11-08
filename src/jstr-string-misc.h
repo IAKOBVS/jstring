@@ -1,14 +1,20 @@
 #ifndef PJSTR_SELECTOR_STRING_MISC_H
 #define PJSTR_SELECTOR_STRING_MISC_H 1
 #include "jstr-macros.h"
+
 PJSTR_BEGIN_DECLS
-#include "_glibc-generic-string-misc.h"
 #include <endian.h>
 #include <limits.h>
+PJSTR_END_DECLS
+
+#include "_glibc-generic-string-misc.h"
+
 #if __GNUC__ || defined __clang__
 #	pragma GCC diagnostic ignored "-Wshift-count-overflow"
 #	pragma GCC diagnostic push
 #endif
+
+PJSTR_BEGIN_NAMESPACE
 
 /* P must be aligned to sizeof(jstr_word_ty). */
 JSTR_INLINE
@@ -93,8 +99,10 @@ JSTR_NOEXCEPT
 #endif
 }
 
+PJSTR_END_NAMESPACE
+
 #if __GNUC__ || defined __clang__
 #	pragma GCC diagnostic pop
 #endif
-PJSTR_END_DECLS
+
 #endif /* PJSTR_STRING_MISC_H */

@@ -13,7 +13,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_NAMESPACE
 
 JSTR_MAYBE_UNUSED
 static const char *R const pjstr_itoa_digits = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -207,7 +207,7 @@ PJSTR_ULLTOA_SEP(int, itoa, )
 
 #undef PJSTR_ULLTOA_SEP
 
-PJSTR_END_DECLS
+PJSTR_END_NAMESPACE
 
 #undef R
 

@@ -7,7 +7,7 @@ PJSTR_BEGIN_DECLS
 #include <stddef.h>
 PJSTR_END_DECLS
 
-PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_NAMESPACE
 
 typedef struct jstr_ty {
 	char *data;
@@ -15,6 +15,6 @@ typedef struct jstr_ty {
 	size_t capacity;
 } jstr_ty;
 
-PJSTR_END_DECLS
+PJSTR_END_NAMESPACE
 
 #endif /* JSTR_STRUCT_H */

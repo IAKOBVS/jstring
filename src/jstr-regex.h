@@ -17,9 +17,6 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define jstr_re_comp_chk(errcode) jstr_unlikely(errcode != JSTR_RE_RET_NOERROR)
-#define jstr_re_exec_chk(errcode) (jstr_re_comp_chk(errcode) && jstr_unlikely(errcode != JSTR_RE_RET_NOMATCH))
-
 /* POSIX cflags */
 #define JSTR_RE_CF_EXTENDED REG_EXTENDED
 #define JSTR_RE_CF_ICASE    REG_ICASE
@@ -35,7 +32,7 @@ PJSTR_END_DECLS
 #	define JSTR_RE_EF_STARTEND REG_STARTEND
 #endif /* REG_STARTEND */
 
-PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_NAMESPACE
 
 typedef enum {
 #ifdef REG_ENOSYS
@@ -88,6 +85,33 @@ typedef enum {
 #	define JSTR_RE_ERPAREN JSTR_RE_ERPAREN
 #endif
 } jstr_re_errcode_ty;
+
+#ifndef __cplusplus
+
+#	define jstr_re_comp_chk(errcode) jstr_unlikely(errcode != JSTR_RE_RET_NOERROR)
+#	define jstr_re_exec_chk(errcode) (jstr_re_comp_chk(errcode) && jstr_unlikely(errcode != JSTR_RE_RET_NOMATCH))
+
+#else
+
+JSTR_INLINE
+JSTR_FUNC_CONST
+static int
+jstr_re_comp_chk(const jstr_re_errcode_ty errcode)
+JSTR_NOEXCEPT
+{
+	return jstr_unlikely(errcode != JSTR_RE_RET_NOERROR);
+}
+
+JSTR_INLINE
+JSTR_FUNC_CONST
+static int
+jstr_re_exec_chk(const jstr_re_errcode_ty errcode)
+JSTR_NOEXCEPT
+{
+	return jstr_unlikely(errcode != JSTR_RE_RET_NOERROR) && jstr_unlikely(errcode != JSTR_RE_RET_NOMATCH);
+}
+
+#endif
 
 JSTR_INLINE
 JSTR_FUNC_VOID
@@ -784,7 +808,7 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, 1);
 }
 
-PJSTR_END_DECLS
+PJSTR_END_NAMESPACE
 
 #undef R
 

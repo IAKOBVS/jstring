@@ -33,7 +33,7 @@
 		0   \
 	}
 
-PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_NAMESPACE
 
 typedef struct jstr_l_ty {
 	jstr_ty *data;
@@ -560,7 +560,7 @@ JSTR_NOEXCEPT
 
 #undef PJSTR_DELETE
 
-PJSTR_END_DECLS
+PJSTR_END_NAMESPACE
 
 #undef R
 

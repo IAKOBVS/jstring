@@ -16,7 +16,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_NAMESPACE
 
 /* basename() for non nul-terminated strings. */
 JSTR_FUNC_PURE
@@ -1629,7 +1629,7 @@ JSTR_NOEXCEPT
 	return cnt;
 }
 
-PJSTR_END_DECLS
+PJSTR_END_NAMESPACE
 
 #undef R
 

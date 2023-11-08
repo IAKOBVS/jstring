@@ -61,8 +61,6 @@ PJSTR_END_DECLS
 
 #define JSTR_MIN_ALLOC(cap)      (((cap) > JSTR_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
 #define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
-#define jstr_err(msg)            pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
-#define jstr_err_exit(msg)       pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
 
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define PJSTR_EXIT_MAYBE() jstr_err_exit("")
@@ -89,7 +87,35 @@ PJSTR_END_DECLS
 #define PJSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 
-PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_NAMESPACE
+
+#ifndef __cplusplus
+
+#	define jstr_err(msg)      pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
+#	define jstr_err_exit(msg) pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
+
+#else
+
+JSTR_NOINLINE
+JSTR_COLD
+static void
+jstr_err(const char *msg)
+JSTR_NOEXCEPT
+{
+	fprintf(stderr, "%s: %s\n", strerror(errno), msg);
+}
+
+JSTR_NOINLINE
+JSTR_COLD
+static void
+jstr_err_exit(const char *msg)
+JSTR_NOEXCEPT
+{
+	fprintf(stderr, "%s: %s\n", strerror(errno), msg);
+	exit(EXIT_FAILURE);
+}
+
+#endif
 
 JSTR_NOINLINE
 JSTR_COLD
@@ -1398,7 +1424,7 @@ err_free:
 	return 0;
 }
 
-PJSTR_END_DECLS
+PJSTR_END_NAMESPACE
 
 #undef R
 
