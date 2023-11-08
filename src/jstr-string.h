@@ -608,7 +608,7 @@ JSTR_NOEXCEPT
 {
 	const uint16_t nw = (uint32_t)L(n[0]) << 8 | L(n[1]);
 	uint16_t hw = (uint32_t)L(h[0]) << 8 | L(h[1]);
-	for (++h; hw != nw && *h; hw = hw << 8 | L(*++h))
+	for (++h; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
 	return hw == nw ? (char *)(h - 1) : NULL;
 }
@@ -622,7 +622,7 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
-	for (h += 2; hw != nw && *h; hw = (hw | L(*++h)) << 8)
+	for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)
 		;
 	return hw == nw ? (char *)(h - 2) : NULL;
 }
@@ -636,7 +636,7 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
-	for (h += 3; hw != nw && *h; hw = hw << 8 | L(*++h))
+	for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
 	return hw == nw ? (char *)(h - 3) : NULL;
 }
