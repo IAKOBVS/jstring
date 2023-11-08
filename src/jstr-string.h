@@ -473,7 +473,7 @@ jstr_cmpcaseeq(const char *R s1,
                const size_t s2_len)
 JSTR_NOEXCEPT
 {
-	return (s1_len == s2_len) ? jstr_strcasecmp(s1, s2) : 1;
+	return (s1_len == s2_len) ? jstr_strcasecmpeq(s1, s2) : 1;
 }
 
 JSTR_FUNC_PURE
