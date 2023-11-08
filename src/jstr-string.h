@@ -1421,7 +1421,7 @@ jstr_endscase_len(const char *R hs,
                   const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmp_len(hs + hs_len - ne_len, ne, ne_len) : 0;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmpeq_len(hs + hs_len - ne_len, ne, ne_len) : 0;
 }
 
 /*
@@ -1489,7 +1489,7 @@ jstr_startscase_len(const char *R hs,
                     const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmp_len(hs, ne, ne_len) : 0;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmpeq_len(hs, ne, ne_len) : 0;
 }
 
 /*
@@ -1505,7 +1505,7 @@ jstr_startscase(const char *R hs,
                 const char *R ne)
 JSTR_NOEXCEPT
 {
-	return (jstr_tolower(*hs) == jstr_tolower(*ne)) ? !jstr_strcasecmp_len(hs, ne, strlen(ne)) : (*ne == '\0');
+	return (jstr_tolower(*hs) == jstr_tolower(*ne)) ? !jstr_strcasecmpeq_len(hs, ne, strlen(ne)) : (*ne == '\0');
 }
 
 /*
