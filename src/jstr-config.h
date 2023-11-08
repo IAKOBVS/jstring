@@ -13,12 +13,12 @@
 
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
-#	define JSTR_ENDIAN_BIG	   0
+#	define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
-#	define JSTR_ENDIAN_BIG	   1
+#	define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_BIG    1
 #endif
 
 #define JSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 16)

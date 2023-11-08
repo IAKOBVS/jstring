@@ -26,8 +26,8 @@ JSTR_FUNC
 JSTR_INLINE
 static void *
 jstr_mempset(void *s,
-	     const int c,
-	     const size_t sz)
+             const int c,
+             const size_t sz)
 {
 	return (char *)memset(s, c, sz) + sz;
 }
@@ -36,8 +36,8 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_stpset_len(char *s,
-		const int c,
-		const size_t sz)
+                const int c,
+                const size_t sz)
 {
 	return (char *)memset(s, c, sz) + sz;
 }
@@ -46,7 +46,7 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
 jstr_stpset(char *R s,
-	    const int c)
+            const int c)
 JSTR_NOEXCEPT
 {
 	return jstr_stpset_len(s, c, strlen(s));
@@ -56,7 +56,7 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_bzero(void *R s,
-	   const size_t sz)
+           const size_t sz)
 JSTR_NOEXCEPT
 {
 	memset(s, 0, sz);
@@ -66,8 +66,8 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_bcmp(const void *R s1,
-	  const void *R s2,
-	  const size_t n)
+          const void *R s2,
+          const size_t n)
 JSTR_NOEXCEPT
 {
 	return memcmp(s1, s2, n);
@@ -99,7 +99,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static size_t
 jstr_strnlen(const char *R s,
-	     const size_t maxlen)
+             const size_t maxlen)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRNLEN
@@ -116,8 +116,8 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *R s,
-	     const int c,
-	     const size_t sz)
+             const int c,
+             const size_t sz)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
@@ -156,7 +156,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strchrnul(const char *R s,
-	       const int c)
+               const int c)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
@@ -171,9 +171,9 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
 jstr_memnchr(const void *R s,
-	     const int c,
-	     const size_t sz,
-	     const size_t n)
+             const int c,
+             const size_t sz,
+             const size_t n)
 JSTR_NOEXCEPT
 {
 	return (void *)memchr(s, c, JSTR_MIN(n, sz));
@@ -183,9 +183,9 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strnchr_len(const void *R s,
-		 const int c,
-		 const size_t sz,
-		 const size_t n)
+                 const int c,
+                 const size_t sz,
+                 const size_t n)
 JSTR_NOEXCEPT
 {
 	return (char *)jstr_memnchr(s, c, sz, n);
@@ -205,8 +205,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *R s,
-	     const int c,
-	     const size_t n)
+             const int c,
+             const size_t n)
 JSTR_NOEXCEPT
 {
 	/* Based on glibc memchr and strchrnul released under the terms of the GNU Lesser General Public License.
@@ -247,8 +247,8 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
 jstr_memchrnul(const void *R s,
-	       const int c,
-	       const size_t sz)
+               const int c,
+               const size_t sz)
 JSTR_NOEXCEPT
 {
 	const void *const p = jstr_memrchr(s, c, sz);
@@ -263,8 +263,8 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static void *
 jstr_mempcpy(void *R dst,
-	     const void *R src,
-	     const size_t sz)
+             const void *R src,
+             const size_t sz)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMPCPY
@@ -278,8 +278,8 @@ JSTR_FUNC
 JSTR_INLINE
 static void *
 jstr_mempmove(void *dst,
-	      const void *src,
-	      const size_t sz)
+              const void *src,
+              const size_t sz)
 JSTR_NOEXCEPT
 {
 	return (char *)memmove(dst, src, sz) + sz;
@@ -289,8 +289,8 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_strmove_len(void *dst,
-		 const void *src,
-		 const size_t sz)
+                 const void *src,
+                 const size_t sz)
 JSTR_NOEXCEPT
 {
 	*(char *)jstr_mempmove(dst, src, sz) = '\0';
@@ -300,7 +300,7 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_strmove(void *dst,
-	     const void *src)
+             const void *src)
 JSTR_NOEXCEPT
 {
 	*(char *)jstr_mempmove(dst, src, strlen((char *)src)) = '\0';
@@ -310,8 +310,8 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_stpmove_len(void *dst,
-		 const void *src,
-		 const size_t sz)
+                 const void *src,
+                 const size_t sz)
 JSTR_NOEXCEPT
 {
 	jstr_strmove_len(dst, src, sz);
@@ -322,7 +322,7 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_stpmove(void *dst,
-	     const void *src)
+             const void *src)
 JSTR_NOEXCEPT
 {
 	return jstr_stpmove_len(dst, src, strlen((char *)src));
@@ -332,8 +332,8 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_strcpy_len(void *R dst,
-		const void *R src,
-		const size_t sz)
+                const void *R src,
+                const size_t sz)
 JSTR_NOEXCEPT
 {
 	*(char *)jstr_mempcpy(dst, src, sz) = '\0';
@@ -343,8 +343,8 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static char *
 jstr_stpcpy_len(void *R dst,
-		const void *R src,
-		const size_t sz)
+                const void *R src,
+                const size_t sz)
 JSTR_NOEXCEPT
 {
 	jstr_strcpy_len(dst, src, sz);
@@ -359,7 +359,7 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 jstr_stpcpy(char *R dst,
-	    const char *R src)
+            const char *R src)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STPCPY
@@ -374,9 +374,9 @@ JSTR_FUNC
 JSTR_INLINE
 static void *
 jstr_memccpy(void *R dst,
-	     const void *R src,
-	     const int c,
-	     const size_t sz)
+             const void *R src,
+             const int c,
+             const size_t sz)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMCCPY
@@ -399,7 +399,7 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 jstr_stpcat(char *R dst,
-	    const char *R src)
+            const char *R src)
 JSTR_NOEXCEPT
 {
 	dst += strlen(dst);
@@ -426,7 +426,7 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_memdup(const char *R s,
-	    const size_t sz)
+            const size_t sz)
 JSTR_NOEXCEPT
 {
 	char *const p = (char *)malloc(sz);
@@ -442,7 +442,7 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_strdup_len(const char *R s,
-		const size_t sz)
+                const size_t sz)
 JSTR_NOEXCEPT
 {
 	char *const p = (char *)malloc(sz + 1);
@@ -465,7 +465,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strpbrk(const char *R s,
-	     const char *R accept)
+             const char *R accept)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRPBRK_OPTIMIZED

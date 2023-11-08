@@ -15,8 +15,8 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define PJARR_DATA_NAME	    data
-#define PJARR_SIZE_NAME	    size
+#define PJARR_DATA_NAME     data
+#define PJARR_SIZE_NAME     size
 #define PJARR_CAPACITY_NAME capacity
 
 #define JARR_INIT \
@@ -33,18 +33,18 @@ PJSTR_END_DECLS
 	jarr_##name##_ty name
 
 #define PJARR_ELEMSZ(j) (sizeof((PJARR_DATA(j))[0]))
-#define PJARR_ARRSZ(j)	(sizeof(PJARR_DATA(j)) / sizeof((PJARR_DATA(j))[0]))
-#define PJARR_DATA(j)	((j)->PJARR_DATA_NAME)
-#define PJARR_SZ(j)	((j)->PJARR_SIZE_NAME)
-#define PJARR_CAP(j)	((j)->PJARR_CAPACITY_NAME)
+#define PJARR_ARRSZ(j)  (sizeof(PJARR_DATA(j)) / sizeof((PJARR_DATA(j))[0]))
+#define PJARR_DATA(j)   ((j)->PJARR_DATA_NAME)
+#define PJARR_SZ(j)     ((j)->PJARR_SIZE_NAME)
+#define PJARR_CAP(j)    ((j)->PJARR_CAPACITY_NAME)
 
 #define PJARR_MIN_CAP(j) (JSTR_MIN_CAP / PJARR_ELEMSZ(j))
 
 #define PJARR_MEMMOVE(j, dst, src, n) memmove(dst, src, (n)*PJARR_ELEMSZ(j))
 #define PJARR_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*PJARR_ELEMSZ(j))
 
-#define jarr_chk(j)	   (jstr_unlikely(PJARR_DATA(j) == NULL))
-#define jarr_err(msg)	   jstr_err(msg)
+#define jarr_chk(j)        (jstr_unlikely(PJARR_DATA(j) == NULL))
+#define jarr_err(msg)      jstr_err(msg)
 #define jarr_err_exit(msg) jstr_err_exit(msg)
 
 #define PJARR_ALIGN_UP(j, base) ((PJARR_ELEMSZ(j) < (sizeof(size_t) + sizeof(size_t))) ? JSTR_ALIGN_UP_STR(base) : base)
@@ -203,7 +203,7 @@ PJSTR_END_DECLS
 	for (size_t iterator = 0, _max_elem_##iterator = (j)->size; iterator < _max_elem_##iterator; ++iterator)
 
 #define jarr_start(j, p) PJARR_DATA(j)
-#define jarr_end(j, p)	 (PJARR_DATA(j) + PJARR_SZ(j))
+#define jarr_end(j, p)   (PJARR_DATA(j) + PJARR_SZ(j))
 
 #if JSTR_DEBUG
 #	define jarr_at(j, idx) \
@@ -220,8 +220,8 @@ JSTR_NOINLINE
 JSTR_COLD
 static void
 PJARR_ERR(const char *JSTR_RESTRICT FILE_,
-	  const int LINE_,
-	  const char *JSTR_RESTRICT func_)
+          const int LINE_,
+          const char *JSTR_RESTRICT func_)
 {
 	fprintf(stderr, "%s:%d:%s\n", FILE_, LINE_, func_);
 }
@@ -231,9 +231,9 @@ JSTR_NOINLINE
 JSTR_COLD
 static void
 PJARR_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
-	       const int LINE_,
-	       const char *JSTR_RESTRICT func_,
-	       const char *JSTR_RESTRICT msg)
+               const int LINE_,
+               const char *JSTR_RESTRICT func_,
+               const char *JSTR_RESTRICT msg)
 {
 	fprintf(stderr, "%s:%d:%s:%s\n", FILE_, LINE_, func_, msg);
 	exit(EXIT_FAILURE);

@@ -19,12 +19,12 @@
 #endif
 
 #define JSTR_CONCAT_HELPER(x, y) x##y
-#define JSTR_CONCAT(x, y)	 JSTR_CONCAT_HELPER(x, y)
-#define JSTR_STRINGIFY(x)	 #x
+#define JSTR_CONCAT(x, y)        JSTR_CONCAT_HELPER(x, y)
+#define JSTR_STRINGIFY(x)        #x
 
 #define JSTR_ARRAY_SIZE(array) (sizeof(array) / sizeof(*(array)))
 
-#define JSTR_ALIGN_UP_STR(base)	      JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_UP_STR(base)       JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
@@ -47,8 +47,8 @@
 #	define JSTR_GLIBC_PREREQ(maj, min) 0
 #endif
 
-#define JSTR_MAX(x, y)	   (((x) > (y)) ? (x) : (y))
-#define JSTR_MIN(x, y)	   (((x) < (y)) ? (x) : (y))
+#define JSTR_MAX(x, y)     (((x) > (y)) ? (x) : (y))
+#define JSTR_MIN(x, y)     (((x) < (y)) ? (x) : (y))
 #define JSTR_MIN3(x, y, z) (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
 #define JSTR_MAX3(x, y, z) (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
 #define JSTR_MID3(x, y, z) (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
@@ -77,11 +77,11 @@
 #ifdef static_assert
 #	include <assert.h>
 #	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_ASSERT(expr, msg)	static_assert(expr, msg)
+#	define JSTR_ASSERT(expr, msg)  static_assert(expr, msg)
 #elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	include <assert.h>
 #	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_ASSERT(expr, msg)	_Static_assert(expr, msg)
+#	define JSTR_ASSERT(expr, msg)  _Static_assert(expr, msg)
 #else
 #	define JSTR_ASSERT(expr, msg) \
 		do {                   \
@@ -92,13 +92,13 @@
 #	define JSTR_GENERIC_CASE_SIZE(expr)                           \
 		int : expr,                                            \
 		      unsigned int : expr,                             \
-				     size_t : expr,                    \
-					      long : expr,             \
-						     long long : expr, \
-								 unsigned long long : expr
+		                     size_t : expr,                    \
+		                              long : expr,             \
+		                                     long long : expr, \
+		                                                 unsigned long long : expr
 #	define JSTR_GENERIC_CASE_STR(bool_) \
 		char * : bool_,              \
-			 const char * : bool_
+		         const char * : bool_
 #	define JSTR_GENERIC_CASE_STR_STACK(bool_, s) \
 		char(*)[sizeof(s)] : 1,               \
 		const char(*)[sizeof(s)] : 1
@@ -186,15 +186,15 @@
 #endif
 
 #if defined __glibc_unlikely && defined __glibc_likely
-#	define jstr_likely(x)	 __glibc_likely(x)
+#	define jstr_likely(x)   __glibc_likely(x)
 #	define jstr_unlikely(x) __glibc_unlikely(x)
 #elif (defined __GNUC__ && (__GNUC__ >= 3)) || (defined __clang__)
 #	if JSTR_HAS_BUILTIN(__builtin_expect)
-#		define jstr_likely(x)	 __builtin_expect((x), 1)
+#		define jstr_likely(x)   __builtin_expect((x), 1)
 #		define jstr_unlikely(x) __builtin_expect((x), 0)
 #	endif
 #else
-#	define jstr_likely(x)	 (x)
+#	define jstr_likely(x)   (x)
 #	define jstr_unlikely(x) (x)
 #endif /* unlikely */
 
@@ -264,12 +264,12 @@
 #		define JSTR_NONNULL(args)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
-#		define JSTR_MALLOC				      __attribute__((__malloc__))
-#		define JSTR_MALLOC_DEALLOC(deallocator)	      __attribute__((__malloc__, deallocator))
+#		define JSTR_MALLOC                                   __attribute__((__malloc__))
+#		define JSTR_MALLOC_DEALLOC(deallocator)              __attribute__((__malloc__, deallocator))
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__, deallocator, ptr_idx))
 #	elif JSTR_HAS_ATTRIBUTE(malloc)
-#		define JSTR_MALLOC				      __attribute__((malloc))
-#		define JSTR_MALLOC_DEALLOC(deallocator)	      __attribute__((malloc, deallocator))
+#		define JSTR_MALLOC                                   __attribute__((malloc))
+#		define JSTR_MALLOC_DEALLOC(deallocator)              __attribute__((malloc, deallocator))
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
@@ -301,10 +301,10 @@
 #		define JSTR_NOTHROW
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__may_alias__)
-#		define JSTR_MAY_ALIAS		 __attribute__((__may_alias__))
+#		define JSTR_MAY_ALIAS           __attribute__((__may_alias__))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	elif JSTR_HAS_ATTRIBUTE(may_alias)
-#		define JSTR_MAY_ALIAS		 __attribute__((may_alias))
+#		define JSTR_MAY_ALIAS           __attribute__((may_alias))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	else
 #		define JSTR_MAY_ALIAS
@@ -368,20 +368,20 @@
 #define JSTR_ALPHA_VOWEL_UPPER_STR     "AIUEO"
 #define JSTR_ALPHA_CONSONANT_LOWER_STR "bcdfghjklmnpqrstvwxyz"
 #define JSTR_ALPHA_CONSONANT_UPPER_STR "BCDFGHJKLMNPQRSTVWXYZ"
-#define JSTR_DIGIT_STR		       "0123456789"
-#define JSTR_SPACE_STR		       " \t\n\r\f\v"
-#define JSTR_PUNCT_STR		       "!\"#$%&\()*+,-./:;<=>?@[\\]^_`{|}~";
-#define JSTR_XDIGIT_LOWER_STR	       JSTR_DIGIT_STR "abcdef"
-#define JSTR_XDIGIT_UPPER_STR	       JSTR_DIGIT_STR "ABCDEF"
-#define JSTR_XDIGIT_STR		       JSTR_DIGIT_STR "abcdefABCDEF"
-#define JSTR_ALPHA_VOWEL_STR	       JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_VOWEL_UPPER_STR
+#define JSTR_DIGIT_STR                 "0123456789"
+#define JSTR_SPACE_STR                 " \t\n\r\f\v"
+#define JSTR_PUNCT_STR                 "!\"#$%&\()*+,-./:;<=>?@[\\]^_`{|}~";
+#define JSTR_XDIGIT_LOWER_STR          JSTR_DIGIT_STR "abcdef"
+#define JSTR_XDIGIT_UPPER_STR          JSTR_DIGIT_STR "ABCDEF"
+#define JSTR_XDIGIT_STR                JSTR_DIGIT_STR "abcdefABCDEF"
+#define JSTR_ALPHA_VOWEL_STR           JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_VOWEL_UPPER_STR
 #define JSTR_ALPHA_CONSONANT_STR       JSTR_ALPHA_CONSONANT_LOWER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
-#define JSTR_ALPHA_LOWER_STR	       JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_CONSONANT_LOWER_STR
-#define JSTR_ALPHA_UPPER_STR	       JSTR_ALPHA_VOWEL_UPPER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
-#define JSTR_ALPHA_STR		       JSTR_ALPHA_LOWER_STR JSTR_ALPHA_UPPER_STR
-#define JSTR_ALNUM_LOWER_STR	       JSTR_ALPHA_LOWER_STR JSTR_DIGIT_STR
-#define JSTR_ALNUM_UPPER_STR	       JSTR_ALPHA_UPPER_STR JSTR_DIGIT_STR
-#define JSTR_ALNUM_STR		       JSTR_ALPHA_STR JSTR_DIGIT_STR
+#define JSTR_ALPHA_LOWER_STR           JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_CONSONANT_LOWER_STR
+#define JSTR_ALPHA_UPPER_STR           JSTR_ALPHA_VOWEL_UPPER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
+#define JSTR_ALPHA_STR                 JSTR_ALPHA_LOWER_STR JSTR_ALPHA_UPPER_STR
+#define JSTR_ALNUM_LOWER_STR           JSTR_ALPHA_LOWER_STR JSTR_DIGIT_STR
+#define JSTR_ALNUM_UPPER_STR           JSTR_ALPHA_UPPER_STR JSTR_DIGIT_STR
+#define JSTR_ALNUM_STR                 JSTR_ALPHA_STR JSTR_DIGIT_STR
 
 #define JSTR_ALPHA_VOWEL_LOWER_CASE \
 case 'a':                           \
@@ -683,9 +683,9 @@ case '~':
 #endif /* Misc || Xopen */
 
 #ifdef _GNU_SOURCE
-#	define JSTR_HAVE_MEMMEM	    1
-#	define JSTR_HAVE_MEMRCHR	    1
-#	define JSTR_HAVE_STRCHRNUL	    1
+#	define JSTR_HAVE_MEMMEM            1
+#	define JSTR_HAVE_MEMRCHR           1
+#	define JSTR_HAVE_STRCHRNUL         1
 #	define JSTR_HAVE_FGETS_UNLOCKED    1
 #	define JSTR_HAVE_FPUTS_UNLOCKED    1
 #	define JSTR_HAVE_GETWC_UNLOCKED    1
@@ -695,17 +695,17 @@ case '~':
 #	define JSTR_HAVE_PUTWCHAR_UNLOCKED 1
 #	define JSTR_HAVE_FGETWS_UNLOCKED   1
 #	define JSTR_HAVE_FPUTWS_UNLOCKED   1
-#	define JSTR_HAVE_WMEMPCPY	    1
-#	define JSTR_HAVE_MEMPCPY	    1
-#	define JSTR_HAVE_STRCASESTR	    1
+#	define JSTR_HAVE_WMEMPCPY          1
+#	define JSTR_HAVE_MEMPCPY           1
+#	define JSTR_HAVE_STRCASESTR        1
 #endif /* Gnu */
 
 #if ((JSTR_GLIBC_PREREQ(2, 24)) && _POSIX_C_SOURCE >= 199309L)                                                     \
 || ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE) \
 || (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
-#	define JSTR_HAVE_GETC_UNLOCKED	   1
+#	define JSTR_HAVE_GETC_UNLOCKED    1
 #	define JSTR_HAVE_GETCHAR_UNLOCKED 1
-#	define JSTR_HAVE_PUTC_UNLOCKED	   1
+#	define JSTR_HAVE_PUTC_UNLOCKED    1
 #	define JSTR_HAVE_PUTCHAR_UNLOCKED 1
 #endif /* Posix || Bsd  */
 
@@ -716,7 +716,7 @@ case '~':
 #	define JSTR_HAVE_FPUTC_UNLOCKED    1
 #	define JSTR_HAVE_FGETC_UNLOCKED    1
 #	define JSTR_HAVE_CLEARERR_UNLOCKED 1
-#	define JSTR_HAVE_FEOF_UNLOCKED	    1
+#	define JSTR_HAVE_FEOF_UNLOCKED     1
 #	define JSTR_HAVE_FERROR_UNLOCKED   1
 #	define JSTR_HAVE_FILENO_UNLOCKED   1
 #	define JSTR_HAVE_FFLUSH_UNLOCKED   1
@@ -742,7 +742,7 @@ case '~':
 
 #if (defined __GLIBC__ && (__GLIBC__ < 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _BSD_SOURCE || defined _SVID_SOURCE) \
 || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2)
-#	define JSTR_HAVE_POPEN	 1
+#	define JSTR_HAVE_POPEN  1
 #	define JSTR_HAVE_PCLOSE 1
 #endif
 
@@ -772,7 +772,7 @@ case '~':
 #endif
 
 #if defined _DEFAULT_SOURCE || !defined __USE_XOPEN2K8
-#	define JSTR_HAVE_BCMP	1
+#	define JSTR_HAVE_BCMP  1
 #	define JSTR_HAVE_BCOPY 1
 #	define JSTR_HAVE_BZERO 1
 #endif
@@ -852,7 +852,7 @@ case '~':
 	|| defined __MIBSEB__
 #		undef JSTR_ENDIAN_BIG
 #		undef JSTR_ENDIAN_LITTLE
-#		define JSTR_ENDIAN_BIG	   1
+#		define JSTR_ENDIAN_BIG    1
 #		define JSTR_ENDIAN_LITTLE 0
 #	elif __BYTE_ORDER == __LITTLE_ENDIAN \
 	|| defined __LITTLE_ENDIAN__          \
@@ -865,22 +865,22 @@ case '~':
 #		undef JSTR_ENDIAN_LITTLE
 #		undef JSTR_ENDIAN_BIG
 #		define JSTR_ENDIAN_LITTLE 1
-#		define JSTR_ENDIAN_BIG	   0
+#		define JSTR_ENDIAN_BIG    0
 #	endif
 #endif
 
 #define JSTR_FUNC_VOID_MAY_NULL JSTR_NOTHROW JSTR_MAYBE_UNUSED
-#define JSTR_FUNC_VOID		JSTR_FUNC_VOID_MAY_NULL JSTR_NONNULL_ALL
-#define JSTR_FUNC_MAY_NULL	JSTR_FUNC_VOID_MAY_NULL JSTR_WARN_UNUSED
-#define JSTR_FUNC		JSTR_FUNC_MAY_NULL JSTR_NONNULL_ALL
-#define JSTR_FUNC_CONST		JSTR_FUNC JSTR_CONST
-#define JSTR_FUNC_PURE		JSTR_FUNC JSTR_PURE
+#define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_NONNULL_ALL
+#define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_WARN_UNUSED
+#define JSTR_FUNC               JSTR_FUNC_MAY_NULL JSTR_NONNULL_ALL
+#define JSTR_FUNC_CONST         JSTR_FUNC JSTR_CONST
+#define JSTR_FUNC_PURE          JSTR_FUNC JSTR_PURE
 #define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_PURE
-#define JSTR_FUNC_RET_NONNULL	JSTR_FUNC JSTR_RETURNS_NONNULL
+#define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS extern "C" {
-#	define PJSTR_END_DECLS	  }
+#	define PJSTR_END_DECLS   }
 #else
 #	define PJSTR_BEGIN_DECLS
 #	define PJSTR_END_DECLS
@@ -1038,11 +1038,11 @@ PJSTR_CAST(T, Other other)
 #endif /* __cpluslus */
 
 #define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                  \
-				     ? (memset(array, c, 64),                \
-					memset(array + 64, c, 64),           \
-					memset(array + 64 + 64, c, 64),      \
-					memset(array + 64 + 64 + 64, c, 64)) \
-				     : memset(array, c, sizeof(array)))
+	                             ? (memset(array, c, 64),                \
+	                                memset(array + 64, c, 64),           \
+	                                memset(array + 64 + 64, c, 64),      \
+	                                memset(array + 64 + 64 + 64, c, 64)) \
+	                             : memset(array, c, sizeof(array)))
 #define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
 
 #endif /* JSTR_MACROS_H */

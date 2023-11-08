@@ -25,11 +25,11 @@
 /* intptr_t if P is true, or T if P is false.  */
 #	define __integer_if_ptr_type_sub(T, P)                          \
 		__typeof__(*(0 ? (__typeof__(0 ? (T *)0 : (void *)(P)))0 \
-			       : (__typeof__(0 ? (intptr_t *)0 : (void *)(!(P))))0))
+		               : (__typeof__(0 ? (intptr_t *)0 : (void *)(!(P))))0))
 /* intptr_t if EXPR has a ptr type, or the type of EXPR otherwise.  */
 #	define __integer_if_ptr_type(expr)                                \
 		__integer_if_ptr_type_sub(__typeof__((__typeof__(expr))0), \
-					  __ptr_type(__typeof__(expr)))
+		                          __ptr_type(__typeof__(expr)))
 /* Cast an integer or a ptr VAL to integer with proper type.  */
 #	define cast_to_integer(val) ((__integer_if_ptr_type(val))(val))
 
@@ -46,12 +46,12 @@
 	((((uintptr_t)(base)) & ((size)-1)) == 0)
 /* Align a value by rounding down to closest size.
    e.g. Using size of 4096, we get this behavior:
-	{4095, 4096, 4097} = {0, 4096, 4096}.  */
+        {4095, 4096, 4097} = {0, 4096, 4096}.  */
 #define JSTR_ALIGN_DOWN(base, size) ((base) & -((uintptr_t)(size)))
 
 /* Align a value by rounding up to closest size.
    e.g. Using size of 4096, we get this behavior:
-	{4095, 4096, 4097} = {4096, 4096, 8192}.
+        {4095, 4096, 4097} = {4096, 4096, 8192}.
   Note: The size argument has side effects (expanded multiple times).  */
 #define JSTR_ALIGN_UP(base, size) JSTR_ALIGN_DOWN((base) + (size)-1, (size))
 

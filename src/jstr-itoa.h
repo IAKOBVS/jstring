@@ -26,8 +26,8 @@ JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
 jstr_ulltoa_p(unsigned long long number,
-	      char *R buf,
-	      const unsigned int base)
+              char *R buf,
+              const unsigned int base)
 JSTR_NOEXCEPT
 {
 #define LOOP_BASE(base)                                    \
@@ -70,8 +70,8 @@ JSTR_RETURNS_NONNULL
 JSTR_INLINE
 static char *
 jstr_lltoa_p(long long number,
-	     char *R buf,
-	     const unsigned int base)
+             char *R buf,
+             const unsigned int base)
 JSTR_NOEXCEPT
 {
 	if (number < 0) {
@@ -91,8 +91,8 @@ JSTR_NOEXCEPT
 	JSTR_INLINE                                             \
 	static char *                                           \
 	jstr_##name##_p(type number,                            \
-			char *R buf,                            \
-			const unsigned int base)                \
+	                char *R buf,                            \
+	                const unsigned int base)                \
 	JSTR_NOEXCEPT                                           \
 	{                                                       \
 		return jstr_##u##lltoa_p(number, buf, base);    \
@@ -114,9 +114,9 @@ JSTR_FUNC
 JSTR_RETURNS_NONNULL
 static char *
 jstr_ulltoa_p_thousep(unsigned long long number,
-		      char *R buf,
-		      const unsigned int base,
-		      const int separator)
+                      char *R buf,
+                      const unsigned int base,
+                      const int separator)
 JSTR_NOEXCEPT
 {
 #define CONV(base)                            \
@@ -169,9 +169,9 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_lltoa_p_thousep(long long number,
-		     char *R buf,
-		     const unsigned int base,
-		     const int separator)
+                     char *R buf,
+                     const unsigned int base,
+                     const int separator)
 JSTR_NOEXCEPT
 {
 	if (number < 0) {
@@ -192,9 +192,9 @@ JSTR_NOEXCEPT
 	JSTR_INLINE                                                             \
 	static char *                                                           \
 	jstr_##name##_p_thousep(type number,                                    \
-				char *R buf,                                    \
-				const unsigned int base,                        \
-				const int separator)                            \
+	                        char *R buf,                                    \
+	                        const unsigned int base,                        \
+	                        const int separator)                            \
 	JSTR_NOEXCEPT                                                           \
 	{                                                                       \
 		return jstr_##u##lltoa_p_thousep(number, buf, base, separator); \

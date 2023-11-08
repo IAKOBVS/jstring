@@ -21,9 +21,9 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 pjstr_rmallinplace(unsigned char **dst,
-		   const unsigned char **oldp,
-		   const unsigned char **p,
-		   const size_t find_len)
+                   const unsigned char **oldp,
+                   const unsigned char **p,
+                   const size_t find_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*dst != *oldp))
@@ -37,11 +37,11 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 pjstr_rplcallinplace(unsigned char **dst,
-		     const unsigned char **oldp,
-		     const unsigned char **p,
-		     const unsigned char *rplc,
-		     const size_t rplc_len,
-		     const size_t find_len)
+                     const unsigned char **oldp,
+                     const unsigned char **p,
+                     const unsigned char *rplc,
+                     const size_t rplc_len,
+                     const size_t find_len)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -64,15 +64,15 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_insert_unsafe(char *R s,
-		   const size_t at,
-		   const char *R src,
-		   const size_t sz,
-		   const size_t src_len)
+                   const size_t at,
+                   const char *R src,
+                   const size_t sz,
+                   const size_t src_len)
 JSTR_NOEXCEPT
 {
 	memmove(s + at + src_len,
-		s + at,
-		sz - at + 1);
+	        s + at,
+	        sz - at + 1);
 	memcpy(s + at, src, src_len);
 }
 
@@ -80,16 +80,16 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 pjstr_rplcat_len_unsafe(char *R s,
-			size_t *R sz,
-			const size_t at,
-			const char *R rplc,
-			const size_t rplc_len,
-			const size_t find_len)
+                        size_t *R sz,
+                        const size_t at,
+                        const char *R rplc,
+                        const size_t rplc_len,
+                        const size_t find_len)
 JSTR_NOEXCEPT
 {
 	memmove(s + at + rplc_len,
-		s + at + find_len,
-		*sz - (at + find_len) + 1);
+	        s + at + find_len,
+	        *sz - (at + find_len) + 1);
 	memcpy(s + at, rplc, rplc_len);
 	*sz += rplc_len - find_len;
 	return s + at + rplc_len;
@@ -103,11 +103,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_insert_len(char *R *R s,
-		size_t *R sz,
-		size_t *R cap,
-		const size_t at,
-		const char *R src,
-		const size_t src_len)
+                size_t *R sz,
+                size_t *R cap,
+                const size_t at,
+                const char *R src,
+                const size_t src_len)
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return 0)
@@ -120,12 +120,12 @@ JSTR_INLINE
 JSTR_FUNC
 static char *
 pjstr_rplcat_len_higher(char *R *R s,
-			size_t *R sz,
-			size_t *R cap,
-			const size_t at,
-			const char *R rplc,
-			const size_t rplc_len,
-			const size_t find_len)
+                        size_t *R sz,
+                        size_t *R cap,
+                        const size_t at,
+                        const char *R rplc,
+                        const size_t rplc_len,
+                        const size_t find_len)
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + rplc_len - find_len, return NULL)
@@ -141,12 +141,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static char *
 jstr_rplcat_len(char *R *R s,
-		size_t *R sz,
-		size_t *R cap,
-		const size_t at,
-		const char *R rplc,
-		const size_t rplc_len,
-		const size_t find_len)
+                size_t *R sz,
+                size_t *R cap,
+                const size_t at,
+                const char *R rplc,
+                const size_t rplc_len,
+                const size_t find_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplc_len == find_len)) {
@@ -166,11 +166,11 @@ JSTR_INLINE
 JSTR_FUNC
 static int
 jstr_insertafterchr_len(char *R *R s,
-			size_t *R sz,
-			size_t *R cap,
-			const int c,
-			const char *R src,
-			const size_t src_len)
+                        size_t *R sz,
+                        size_t *R cap,
+                        const int c,
+                        const char *R src,
+                        const size_t src_len)
 JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(*s, c, *sz);
@@ -187,11 +187,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_insertafterallchr_len(char *R *R s,
-			   size_t *R sz,
-			   size_t *R cap,
-			   const int c,
-			   const char *R src,
-			   const size_t src_len)
+                           size_t *R sz,
+                           size_t *R cap,
+                           const int c,
+                           const char *R src,
+                           const size_t src_len)
 JSTR_NOEXCEPT
 {
 	size_t off = 0;
@@ -213,12 +213,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_insertafter_len(char *R *R s,
-		     size_t *R sz,
-		     size_t *R cap,
-		     const char *R find,
-		     const char *R src,
-		     const size_t find_len,
-		     const size_t src_len)
+                     size_t *R sz,
+                     size_t *R cap,
+                     const char *R find,
+                     const char *R src,
+                     const size_t find_len,
+                     const size_t src_len)
 JSTR_NOEXCEPT
 {
 	if (find_len == 1)
@@ -239,12 +239,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_insertafterall_len(char *R *R s,
-			size_t *R sz,
-			size_t *R cap,
-			const char *R find,
-			const char *R src,
-			const size_t find_len,
-			const size_t src_len)
+                        size_t *R sz,
+                        size_t *R cap,
+                        const char *R find,
+                        const char *R src,
+                        const size_t find_len,
+                        const size_t src_len)
 JSTR_NOEXCEPT
 {
 	if (find_len == 1)
@@ -271,8 +271,8 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmchr_len_p(char *R s,
-		 const int c,
-		 const size_t sz)
+                 const int c,
+                 const size_t sz)
 JSTR_NOEXCEPT
 {
 	const char *const start = s;
@@ -289,7 +289,7 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmchr_p(char *R s,
-	     const int c)
+             const int c)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
@@ -306,8 +306,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcspn(char *R s,
-	     const char *R reject,
-	     const int rplc)
+             const char *R reject,
+             const int rplc)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)
@@ -323,8 +323,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rplcspn_p(char *R s,
-	       const char *R reject,
-	       const int rplc)
+               const char *R reject,
+               const int rplc)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)
@@ -343,9 +343,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rplcspn_len_p(char *R s,
-		   const char *R reject,
-		   const size_t sz,
-		   const int rplc)
+                   const char *R reject,
+                   const size_t sz,
+                   const int rplc)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)) {
@@ -368,8 +368,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rplcallspn_p(char *R s,
-		  const char *R reject,
-		  const int rplc)
+                  const char *R reject,
+                  const int rplc)
 JSTR_NOEXCEPT
 {
 	for (; *s && (*(s += strcspn(s, reject))); s = jstr_stpset_len(s, rplc, strspn(s, reject)))
@@ -385,7 +385,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmspn_p(char *R s,
-	     const char *R reject)
+             const char *R reject)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)
@@ -404,8 +404,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmspn_len_p(char *R s,
-		 const char *R reject,
-		 const size_t sz)
+                 const char *R reject,
+                 const size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)) {
@@ -426,7 +426,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallspn_p(char *R s,
-		const char *R reject)
+                const char *R reject)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -444,10 +444,10 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 pjstr_rmallchr_len_p(const int use_n,
-		     char *R s,
-		     const int c,
-		     size_t n,
-		     const size_t sz)
+                     char *R s,
+                     const int c,
+                     size_t n,
+                     const size_t sz)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -469,8 +469,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallchr_len_p(char *R s,
-		    const int c,
-		    const size_t sz)
+                    const int c,
+                    const size_t sz)
 JSTR_NOEXCEPT
 {
 	return pjstr_rmallchr_len_p(0, s, c, 0, sz);
@@ -484,7 +484,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallchr_p(char *R s,
-		const int c)
+                const int c)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
@@ -508,9 +508,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmnchr_len_p(char *R s,
-		  const int c,
-		  const size_t n,
-		  const size_t sz)
+                  const int c,
+                  const size_t n,
+                  const size_t sz)
 JSTR_NOEXCEPT
 {
 	return pjstr_rmallchr_len_p(1, s, c, n, sz);
@@ -525,8 +525,8 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmnchr_p(char *R s,
-	      const int c,
-	      size_t n)
+              const int c,
+              size_t n)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
@@ -552,7 +552,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_stripspn_p(char *R s,
-		const char *R rjct)
+                const char *R rjct)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -575,9 +575,9 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 jstr_rmat_len_p(char *R s,
-		const size_t at,
-		const size_t sz,
-		const size_t find_len)
+                const size_t at,
+                const size_t sz,
+                const size_t find_len)
 JSTR_NOEXCEPT
 {
 	memmove(s + at, s + at + find_len, (s + sz) - (s + at));
@@ -593,9 +593,9 @@ JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rm_len_p(char *R s,
-	      const char *R find,
-	      const size_t sz,
-	      const size_t find_len)
+              const char *R find,
+              const size_t sz,
+              const size_t find_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(find_len == 0))
@@ -614,9 +614,9 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_rplcchr_len(char *R s,
-		 const int find,
-		 const int rplc,
-		 const size_t sz)
+                 const int find,
+                 const int rplc,
+                 const size_t sz)
 JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, find, sz);
@@ -631,8 +631,8 @@ JSTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_rplcchr(char *R s,
-	     const int find,
-	     const int rplc)
+             const int find,
+             const int rplc)
 JSTR_NOEXCEPT
 {
 	s = strchr(s, find);
@@ -646,9 +646,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcallchr_len(char *R s,
-		    const int find,
-		    const int rplc,
-		    const size_t sz)
+                    const int find,
+                    const int rplc,
+                    const size_t sz)
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
@@ -662,8 +662,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcallchr(char *R s,
-		const int find,
-		const int rplc)
+                const int find,
+                const int rplc)
 JSTR_NOEXCEPT
 {
 	while ((s = strchr(s, find)))
@@ -676,10 +676,10 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcnchr_len(char *R s,
-		  const int find,
-		  const int rplc,
-		  size_t n,
-		  const size_t sz)
+                  const int find,
+                  const int rplc,
+                  size_t n,
+                  const size_t sz)
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
@@ -693,9 +693,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcnchr(char *R s,
-	      const int find,
-	      const int rplc,
-	      size_t n)
+              const int find,
+              const int rplc,
+              size_t n)
 JSTR_NOEXCEPT
 {
 	while (n-- && (s = strchr(s, find)))
@@ -705,13 +705,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 pjstr_rplc_len(char *R *R s,
-	       size_t *R sz,
-	       size_t *R cap,
-	       const size_t start_idx,
-	       const char *R find,
-	       const char *R rplc,
-	       const size_t find_len,
-	       const size_t rplc_len)
+               size_t *R sz,
+               size_t *R cap,
+               const size_t start_idx,
+               const char *R find,
+               const char *R rplc,
+               const size_t find_len,
+               const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplc_len == 0)) {
@@ -739,12 +739,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_rplc_len(char *R *R s,
-	      size_t *R sz,
-	      size_t *R cap,
-	      const char *R find,
-	      const char *R rplc,
-	      const size_t find_len,
-	      const size_t rplc_len)
+              size_t *R sz,
+              size_t *R cap,
+              const char *R find,
+              const char *R rplc,
+              const size_t find_len,
+              const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	return pjstr_rplc_len(s, sz, cap, 0, find, rplc, find_len, rplc_len);
@@ -758,13 +758,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_rplc_len_from(char *R *R s,
-		   size_t *R sz,
-		   size_t *R cap,
-		   const size_t start_idx,
-		   const char *R find,
-		   const char *R rplc,
-		   const size_t find_len,
-		   const size_t rplc_len)
+                   size_t *R sz,
+                   size_t *R cap,
+                   const size_t start_idx,
+                   const char *R find,
+                   const char *R rplc,
+                   const size_t find_len,
+                   const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	return pjstr_rplc_len(s, sz, cap, start_idx, find, rplc, find_len, rplc_len);
@@ -778,9 +778,9 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_rmlast_len_p(char *R s,
-		  size_t sz,
-		  const char *R find,
-		  const size_t find_len)
+                  size_t sz,
+                  const char *R find,
+                  const size_t find_len)
 JSTR_NOEXCEPT
 {
 	const char *const p = (char *)jstr_strrstr_len(s, sz, find, find_len);
@@ -796,12 +796,12 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_rplclast_len(char *R *R s,
-		  size_t *R sz,
-		  size_t *R cap,
-		  const char *R find,
-		  const char *R rplc,
-		  const size_t find_len,
-		  const size_t rplc_len)
+                  size_t *R sz,
+                  size_t *R cap,
+                  const char *R find,
+                  const char *R rplc,
+                  const size_t find_len,
+                  const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	const char *const p = (char *)jstr_strrstr_len(*s, *sz, find, find_len);
@@ -811,10 +811,10 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmn_len_p(char *R s,
-	       size_t sz,
-	       const char *R find,
-	       const size_t find_len,
-	       size_t n)
+               size_t sz,
+               const char *R find,
+               const size_t find_len,
+               size_t n)
 JSTR_NOEXCEPT
 {
 	if (find_len == 1)
@@ -842,9 +842,9 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 jstr_rmall_len_p(char *R s,
-		 size_t sz,
-		 const char *R find,
-		 const size_t find_len)
+                 size_t sz,
+                 const char *R find,
+                 const size_t find_len)
 JSTR_NOEXCEPT
 {
 	return jstr_rmn_len_p(s, sz, find, find_len, -1);
@@ -854,14 +854,14 @@ JSTR_INLINE
 JSTR_FUNC
 static int
 jstr_rplcn_len_from(char *R *R s,
-		    size_t *R sz,
-		    size_t *R cap,
-		    const size_t start_idx,
-		    const char *R find,
-		    const size_t find_len,
-		    const char *R rplc,
-		    const size_t rplc_len,
-		    size_t n)
+                    size_t *R sz,
+                    size_t *R cap,
+                    const size_t start_idx,
+                    const char *R find,
+                    const size_t find_len,
+                    const char *R rplc,
+                    const size_t rplc_len,
+                    size_t n)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -903,13 +903,13 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_rplcn_len(char *R *R s,
-	       size_t *R sz,
-	       size_t *R cap,
-	       const char *R find,
-	       const char *R rplc,
-	       size_t n,
-	       const size_t find_len,
-	       const size_t rplc_len)
+               size_t *R sz,
+               size_t *R cap,
+               const char *R find,
+               const char *R rplc,
+               size_t n,
+               const size_t find_len,
+               const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, n);
@@ -924,13 +924,13 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_rplcall_len_from(char *R *R s,
-		      size_t *R sz,
-		      size_t *R cap,
-		      const size_t start_idx,
-		      const char *R find,
-		      const char *R rplc,
-		      const size_t find_len,
-		      const size_t rplc_len)
+                      size_t *R sz,
+                      size_t *R cap,
+                      const size_t start_idx,
+                      const char *R find,
+                      const char *R rplc,
+                      const size_t find_len,
+                      const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	return jstr_rplcn_len_from(s, sz, cap, start_idx, find, find_len, rplc, rplc_len, -1);
@@ -945,12 +945,12 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_rplcall_len(char *R *R s,
-		 size_t *R sz,
-		 size_t *R cap,
-		 const char *R find,
-		 const char *R rplc,
-		 const size_t find_len,
-		 const size_t rplc_len)
+                 size_t *R sz,
+                 size_t *R cap,
+                 const char *R find,
+                 const char *R rplc,
+                 const size_t find_len,
+                 const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, -1);
@@ -962,7 +962,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rev_len(char *R s,
-	     const size_t sz)
+             const size_t sz)
 JSTR_NOEXCEPT
 {
 	int c;
@@ -1006,7 +1006,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trimend_len_p(char *R s,
-		   const size_t sz)
+                   const size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
@@ -1038,7 +1038,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trimstart_len_p(char *R s,
-		     const size_t sz)
+                     const size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
@@ -1092,7 +1092,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trim_len_p(char *R s,
-		const size_t sz)
+                const size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
@@ -1127,9 +1127,9 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_place_len_unsafe(char *R s,
-		    const size_t at,
-		    const char *R src,
-		    const size_t src_len)
+                      const size_t at,
+                      const char *R src,
+                      const size_t src_len)
 JSTR_NOEXCEPT
 {
 	memcpy(s + at, src, src_len);
@@ -1144,11 +1144,11 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_place_len(char *R *R s,
-	     size_t *R sz,
-	     size_t *R cap,
-	     const size_t at,
-	     const char *R src,
-	     const size_t src_len)
+               size_t *R sz,
+               size_t *R cap,
+               const size_t at,
+               const char *R src,
+               const size_t src_len)
 JSTR_NOEXCEPT
 {
 	if (at + src_len > *sz) {
@@ -1169,11 +1169,11 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_placeafterchr_len(char *R *R s,
-		     size_t *R sz,
-		     size_t *R cap,
-		     const int c,
-		     const char *R src,
-		     const size_t src_len)
+                       size_t *R sz,
+                       size_t *R cap,
+                       const int c,
+                       const char *R src,
+                       const size_t src_len)
 JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(*s, c, *sz);
@@ -1190,12 +1190,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_placeafter_len(char *R *R s,
-		  size_t *R sz,
-		  size_t *R cap,
-		  const char *R find,
-		  const char *R src,
-		  const size_t find_len,
-		  const size_t src_len)
+                    size_t *R sz,
+                    size_t *R cap,
+                    const char *R find,
+                    const char *R src,
+                    const size_t find_len,
+                    const size_t src_len)
 JSTR_NOEXCEPT
 {
 	if (find_len == 1)
@@ -1247,7 +1247,7 @@ start:
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_toCamelCaseCpyP(char *R dst,
-		     const char *R src)
+                     const char *R src)
 JSTR_NOEXCEPT
 {
 	for (; *src == '_'; ++src, *dst++ = '_')
@@ -1302,7 +1302,7 @@ start:
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_to_snake_case_cpy_p(char *R dst,
-			 const char *R src)
+                         const char *R src)
 JSTR_NOEXCEPT
 {
 	for (; *src == '_'; ++src, *dst++ = '_')

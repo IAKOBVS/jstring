@@ -21,12 +21,12 @@
 	PJSTR_L_RESERVE_FAIL(jstr_l_reservealways, list, new_cap, do_on_malloc_err)
 
 #define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = jstr_l_end(l); \
-				  p < jstr_l_ty_end_;                                              \
-				  ++p)
+	                          p < jstr_l_ty_end_;                                              \
+	                          ++p)
 
 #define jstr_l_foreachi(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); \
-				   i < jstr_l_ty_end_;                               \
-				   ++i)
+	                           i < jstr_l_ty_end_;                               \
+	                           ++i)
 
 #define JSTR_L_INIT \
 	{           \
@@ -81,21 +81,21 @@ static void
 jstr_l_debug(const jstr_l_ty *R l)
 {
 	fprintf(stderr, "size:%zu\n"
-			"cap:%zu\n"
-			"\n",
-		l->size,
-		l->capacity);
+	                "cap:%zu\n"
+	                "\n",
+	        l->size,
+	        l->capacity);
 	jstr_l_foreach (l, p) {
 		fprintf(stderr,
-			"idx:%zu\n"
-			"size:%zu\n"
-			"cap:%zu\n",
-			p - l->data,
-			p->size,
-			p->capacity);
+		        "idx:%zu\n"
+		        "size:%zu\n"
+		        "cap:%zu\n",
+		        p - l->data,
+		        p->size,
+		        p->capacity);
 		fprintf(stderr, "data:%s\n"
-				"\n",
-			p->data);
+		                "\n",
+		        p->data);
 	}
 }
 
@@ -103,7 +103,7 @@ JSTR_CONST
 JSTR_INLINE
 static jstr_ty *
 jstr_l_at(const jstr_l_ty *R l,
-	  const size_t idx)
+          const size_t idx)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(idx <= l->size, "Index out of bounds.");
@@ -114,7 +114,7 @@ JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
 jstr_l_index(jstr_l_ty *R l,
-	     jstr_ty *R curr)
+             jstr_ty *R curr)
 JSTR_NOEXCEPT
 {
 	return curr - l->data;
@@ -124,7 +124,7 @@ JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
 pjstr_l_grow(size_t cap,
-	     size_t new_cap)
+             size_t new_cap)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(cap == 0))
@@ -138,7 +138,7 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_l_reservealways(jstr_l_ty *R l,
-		     size_t new_cap)
+                     size_t new_cap)
 JSTR_NOEXCEPT
 {
 	new_cap = pjstr_l_grow(l->capacity, new_cap);
@@ -155,7 +155,7 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstr_l_reserve(jstr_l_ty *R l,
-	       size_t new_cap)
+               size_t new_cap)
 JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
@@ -167,10 +167,10 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 pjstr_l_alloc_assign_len(char *R *R s,
-			 size_t *R sz,
-			 size_t *R cap,
-			 const char *R src,
-			 const size_t src_len)
+                         size_t *R sz,
+                         size_t *R cap,
+                         const char *R src,
+                         const size_t src_len)
 {
 	*cap = JSTR_ALIGN_UP_STR(src_len + 1);
 	*s = (char *)malloc(*cap);
@@ -206,8 +206,8 @@ jstr_l_popfront(jstr_l_ty *R l)
 JSTR_FUNC
 static int
 jstr_l_pushfront_len_unsafe(jstr_l_ty *R l,
-			    const char *R s,
-			    const size_t s_len)
+                            const char *R s,
+                            const size_t s_len)
 {
 	if (jstr_likely(l->size))
 		memmove(l->data + 1, l->data, (jstr_l_end(l) - (l->data)) * sizeof(*l->data));
@@ -229,8 +229,8 @@ err:
 JSTR_FUNC
 static int
 jstr_l_pushfront_len(jstr_l_ty *R l,
-		     const char *R s,
-		     const size_t s_len)
+                     const char *R s,
+                     const size_t s_len)
 {
 	PJSTR_L_RESERVE(l, l->size + 1, goto err)
 	return jstr_l_pushfront_len_unsafe(l, s, s_len);
@@ -242,8 +242,8 @@ err:
 JSTR_FUNC
 static int
 jstr_l_pushback_len_unsafe(jstr_l_ty *R l,
-			   const char *R s,
-			   const size_t s_len)
+                           const char *R s,
+                           const size_t s_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
@@ -264,8 +264,8 @@ err:
 JSTR_FUNC
 static int
 jstr_l_pushback_len(jstr_l_ty *R l,
-		    const char *R s,
-		    const size_t s_len)
+                    const char *R s,
+                    const size_t s_len)
 JSTR_NOEXCEPT
 {
 	PJSTR_L_RESERVE(l, l->size + 1, goto err)
@@ -281,7 +281,7 @@ JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
 static int
 jstr_l_cat(jstr_l_ty *R l,
-	   ...)
+           ...)
 JSTR_NOEXCEPT
 {
 	va_list ap;
@@ -310,9 +310,9 @@ err_free_l:
 JSTR_FUNC
 static int
 jstr_l_assign_len(jstr_l_ty *R l,
-		  const size_t idx,
-		  const char *R s,
-		  const size_t s_len)
+                  const size_t idx,
+                  const char *R s,
+                  const size_t s_len)
 {
 	return pjstr_l_alloc_assign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
 }
@@ -320,8 +320,8 @@ jstr_l_assign_len(jstr_l_ty *R l,
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_len(const jstr_l_ty *R l,
-		const char *R s,
-		const size_t s_len)
+                const char *R s,
+                const size_t s_len)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -333,8 +333,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_case_len(const jstr_l_ty *R l,
-		     const char *R s,
-		     const size_t s_len)
+                     const char *R s,
+                     const size_t s_len)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -346,7 +346,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_strchr(const jstr_l_ty *R l,
-		   const int c)
+                   const int c)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -358,7 +358,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_strchrinv(const jstr_l_ty *R l,
-		       const int c)
+                      const int c)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -370,8 +370,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_strstr_len(const jstr_l_ty *R l,
-		       const char *R s,
-		       const size_t s_len)
+                       const char *R s,
+                       const size_t s_len)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -383,8 +383,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_strcasestr_len(const jstr_l_ty *R l,
-		      const char *R s,
-		      const size_t s_len)
+                      const char *R s,
+                      const size_t s_len)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -396,8 +396,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_starts_len(const jstr_l_ty *R l,
-		       const char *R s,
-		       const size_t s_len)
+                       const char *R s,
+                       const size_t s_len)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -409,8 +409,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_startscase_len(const jstr_l_ty *R l,
-			   const char *R s,
-			   const size_t s_len)
+                           const char *R s,
+                           const size_t s_len)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -422,8 +422,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_ends_len(const jstr_l_ty *R l,
-		     const char *R s,
-		     const size_t s_len)
+                     const char *R s,
+                     const size_t s_len)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -435,8 +435,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_find_endscase_len(const jstr_l_ty *R l,
-			 const char *R s,
-			 const size_t s_len)
+                         const char *R s,
+                         const size_t s_len)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
@@ -449,7 +449,7 @@ JSTR_FUNC_VOID_MAY_NULL
 JSTR_INLINE
 static void
 pjstr_l_delete(jstr_l_ty *l,
-	       jstr_ty *const p)
+               jstr_ty *const p)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->size) && p) {
@@ -463,8 +463,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_len_delete(jstr_l_ty *R l,
-		       const char *R s,
-		       const size_t s_len)
+                       const char *R s,
+                       const size_t s_len)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_len(l, s, s_len));
@@ -473,7 +473,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_strchr_delete(jstr_l_ty *R l,
-			  const int c)
+                          const int c)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_strchr(l, c));
@@ -482,7 +482,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_strchrinv_delete(jstr_l_ty *R l,
-			      const int c)
+                             const int c)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_strchrinv(l, c));
@@ -491,8 +491,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_strstr_len_delete(jstr_l_ty *R l,
-			      const char *R s,
-			      const size_t s_len)
+                              const char *R s,
+                              const size_t s_len)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_strstr_len(l, s, s_len));
@@ -501,8 +501,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_strcasestr_len_delete(jstr_l_ty *R l,
-			     const char *R s,
-			     const size_t s_len)
+                             const char *R s,
+                             const size_t s_len)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_strcasestr_len(l, s, s_len));
@@ -511,8 +511,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_starts_len_delete(jstr_l_ty *R l,
-			      const char *R s,
-			      const size_t s_len)
+                              const char *R s,
+                              const size_t s_len)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_starts_len(l, s, s_len));
@@ -521,8 +521,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_ends_len_delete(jstr_l_ty *R l,
-			    const char *R s,
-			    const size_t s_len)
+                            const char *R s,
+                            const size_t s_len)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_ends_len(l, s, s_len));
@@ -531,8 +531,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_case_len_delete(jstr_l_ty *R l,
-			    const char *R s,
-			    const size_t s_len)
+                            const char *R s,
+                            const size_t s_len)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_case_len(l, s, s_len));
@@ -541,8 +541,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_startscase_len_delete(jstr_l_ty *R l,
-				  const char *R s,
-				  const size_t s_len)
+                                  const char *R s,
+                                  const size_t s_len)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_startscase_len(l, s, s_len));
@@ -551,8 +551,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_l_find_endscase_len_delete(jstr_l_ty *R l,
-				const char *R s,
-				const size_t s_len)
+                                const char *R s,
+                                const size_t s_len)
 JSTR_NOEXCEPT
 {
 	pjstr_l_delete(l, jstr_l_find_endscase_len(l, s, s_len));

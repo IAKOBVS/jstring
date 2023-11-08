@@ -1210,7 +1210,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strchrnulinv(const char *R s,
-                   int c)
+                  int c)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(c == '\0'))
@@ -1230,7 +1230,7 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strchrinv(const char *R s,
-                const int c)
+               const int c)
 JSTR_NOEXCEPT
 {
 	s = jstr_strchrnulinv(s, c);
@@ -1246,8 +1246,8 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_memchrnulinv(const void *R s,
-                   int c,
-                   size_t n)
+                  int c,
+                  size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (unsigned char *)s;
@@ -1268,8 +1268,8 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
 jstr_memchrinv(const void *R s,
-                const int c,
-                const size_t n)
+               const int c,
+               const size_t n)
 JSTR_NOEXCEPT
 {
 	const void *const end = (unsigned char *)s + n;
@@ -1286,8 +1286,8 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
 jstr_memrchrinv(const void *R s,
-                 int c,
-                 const size_t n)
+                int c,
+                const size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *end = (unsigned char *)s + n - 1;
@@ -1308,8 +1308,8 @@ JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
 jstr_strrchrinv(const void *R s,
-                 int c,
-                 const size_t n)
+                int c,
+                const size_t n)
 JSTR_NOEXCEPT
 {
 	return jstr_memrchrinv((char *)s, c, n);

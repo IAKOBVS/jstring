@@ -66,7 +66,7 @@ JSTR_INLINE
 JSTR_FUNC_CONST
 static int
 jstr_isctype(const int c,
-	     const jstr_ctype_ty type)
+             const jstr_ctype_ty type)
 JSTR_NOEXCEPT
 {
 	return pjstr_ctype[(unsigned char)c] & type;
@@ -92,7 +92,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
 jstr_skipctype(const char *R s,
-	       const jstr_ctype_ty ctype)
+               const jstr_ctype_ty ctype)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
@@ -125,7 +125,7 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_isctypestr(const char *R s,
-		const jstr_ctype_ty ctype)
+                const jstr_ctype_ty ctype)
 JSTR_NOEXCEPT
 {
 	return jstr_likely(*s) && *(jstr_skipctype(s, ctype) + 1) == '\0';
@@ -151,8 +151,8 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static char *
 jstr_skipctype_rev(const char *const start,
-		   const char *end,
-		   const jstr_ctype_ty ctype)
+                   const char *end,
+                   const jstr_ctype_ty ctype)
 JSTR_NOEXCEPT
 {
 	while (start != end
@@ -167,7 +167,7 @@ JSTR_NOEXCEPT
 	JSTR_FUNC_PURE                                             \
 	static char *                                              \
 	jstr_skip##ctype##_rev(const char *const start,            \
-			       const char *end)                    \
+	                       const char *end)                    \
 	JSTR_NOEXCEPT                                              \
 	{                                                          \
 		return jstr_skipctype_rev(start, end, ctype_enum); \
@@ -207,7 +207,7 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_toupperstrcpy_p(char *R dst,
-		     const char *R src)
+                     const char *R src)
 JSTR_NOEXCEPT
 {
 	while ((*dst++ = jstr_tolower(*src++)))
@@ -223,7 +223,7 @@ JSTR_FUNC
 JSTR_INLINE
 static char *
 jstr_tolowerstrcpy_p(char *R dst,
-		     const char *R src)
+                     const char *R src)
 JSTR_NOEXCEPT
 {
 	while ((*dst++ = jstr_tolower(*src++)))

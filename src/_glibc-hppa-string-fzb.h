@@ -25,11 +25,11 @@ jstr_word_has_zero(jstr_word_ty x)
 	/* It's more useful to expose a control transfer to the compiler
 	   than to expose a proper boolean result.  */
 	asm goto("uxor,sbz %%r0,%0,%%r0\n\t"
-		 "b,n %l1"
-		 :
-		 : "r"(x)
-		 :
-		 : nbz);
+	         "b,n %l1"
+	         :
+	         : "r"(x)
+	         :
+	         : nbz);
 	return 1;
 nbz:
 	return 0;
@@ -39,11 +39,11 @@ static JSTR_INLINE int
 jstr_word_has_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	asm goto("uxor,sbz %0,%1,%%r0\n\t"
-		 "b,n %l2"
-		 :
-		 : "r"(x1), "r"(x2)
-		 :
-		 : nbz);
+	         "b,n %l2"
+	         :
+	         : "r"(x1), "r"(x2)
+	         :
+	         : nbz);
 	return 1;
 nbz:
 	return 0;
@@ -53,12 +53,12 @@ static JSTR_INLINE int
 jstr_word_has_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	asm goto("uxor,sbz %%r0,%0,%%r0\n\t"
-		 "uxor,nbz %0,%1,%%r0\n\t"
-		 "b,n %l2"
-		 :
-		 : "r"(x1), "r"(x2)
-		 :
-		 : sbz);
+	         "uxor,nbz %0,%1,%%r0\n\t"
+	         "b,n %l2"
+	         :
+	         : "r"(x1), "r"(x2)
+	         :
+	         : sbz);
 	return 0;
 sbz:
 	return 1;
