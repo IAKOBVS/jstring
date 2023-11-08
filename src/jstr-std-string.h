@@ -45,7 +45,7 @@ jstr_stpset_len(char *s,
 JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
-jstr_stpset(char *R s,
+jstr_stpset(char *s,
             const int c)
 JSTR_NOEXCEPT
 {
@@ -55,7 +55,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_bzero(void *R s,
+jstr_bzero(void *s,
            const size_t sz)
 JSTR_NOEXCEPT
 {
@@ -65,8 +65,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_bcmp(const void *R s1,
-          const void *R s2,
+jstr_bcmp(const void *s1,
+          const void *s2,
           const size_t n)
 JSTR_NOEXCEPT
 {
@@ -76,7 +76,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_strzero(char *R s)
+jstr_strzero(char *s)
 JSTR_NOEXCEPT
 {
 	memset(s, 0, strlen(s));
@@ -88,7 +88,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
-jstr_stpzero(char *R s)
+jstr_stpzero(char *s)
 JSTR_NOEXCEPT
 {
 	const size_t sz = strlen(s);
@@ -98,7 +98,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static size_t
-jstr_strnlen(const char *R s,
+jstr_strnlen(const char *s,
              const size_t maxlen)
 JSTR_NOEXCEPT
 {
@@ -155,7 +155,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static char *
-jstr_strchrnul(const char *R s,
+jstr_strchrnul(const char *s,
                const int c)
 JSTR_NOEXCEPT
 {
@@ -170,7 +170,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-jstr_memnchr(const void *R s,
+jstr_memnchr(const void *s,
              const int c,
              const size_t sz,
              const size_t n)
@@ -182,7 +182,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_strnchr_len(const void *R s,
+jstr_strnchr_len(const void *s,
                  const int c,
                  const size_t sz,
                  const size_t n)
@@ -204,7 +204,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 static char *
-jstr_strnchr(const char *R s,
+jstr_strnchr(const char *s,
              const int c,
              const size_t n)
 JSTR_NOEXCEPT
@@ -246,7 +246,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-jstr_memchrnul(const void *R s,
+jstr_memchrnul(const void *s,
                const int c,
                const size_t sz)
 JSTR_NOEXCEPT
@@ -464,8 +464,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_strpbrk(const char *R s,
-             const char *R accept)
+jstr_strpbrk(const char *s,
+             const char *accept)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRPBRK_OPTIMIZED
@@ -479,7 +479,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static int
-jstr_atoi(const char *R s)
+jstr_atoi(const char *s)
 JSTR_NOEXCEPT
 {
 	return strtol(s, NULL, 0);
@@ -488,7 +488,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static long
-jstr_atol(const char *R s)
+jstr_atol(const char *s)
 JSTR_NOEXCEPT
 {
 	return strtol(s, NULL, 0);
@@ -497,7 +497,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static long long
-jstr_atoll(const char *R s)
+jstr_atoll(const char *s)
 JSTR_NOEXCEPT
 {
 	return strtoll(s, NULL, 0);
@@ -506,7 +506,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static double
-jstr_atod(const char *R s)
+jstr_atod(const char *s)
 JSTR_NOEXCEPT
 {
 	return strtod(s, NULL);
@@ -515,7 +515,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static float
-jstr_atof(const char *R s)
+jstr_atof(const char *s)
 JSTR_NOEXCEPT
 {
 	return strtof(s, NULL);
