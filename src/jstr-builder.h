@@ -904,7 +904,8 @@ JSTR_NOEXCEPT
 {
 #if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
 || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
-	return vsnprintf(NULL, 0, fmt, ap);
+	const int ret = vsnprintf(NULL, 0, fmt, ap);
+	return (jstr_likely(ret > 0)) ? ret + 1 : ret;
 #else
 	enum {
 		NOT_LONG = 0,
