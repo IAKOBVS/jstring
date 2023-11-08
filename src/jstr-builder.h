@@ -26,6 +26,8 @@ PJSTR_END_DECLS
 		0 \
 	}
 
+#define jstr_err(msg)      pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
+#define jstr_err_exit(msg) pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); \
 	                          ptr < jstr_ty_end_;                                                       \
 	                          ++ptr)
@@ -88,34 +90,6 @@ PJSTR_END_DECLS
 	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 
 PJSTR_BEGIN_DECLS
-
-#ifndef __cplusplus
-
-#	define jstr_err(msg)      pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
-#	define jstr_err_exit(msg) pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
-
-#else
-
-JSTR_NOINLINE
-JSTR_COLD
-static void
-jstr_err(const char *msg)
-JSTR_NOEXCEPT
-{
-	fprintf(stderr, "%s: %s\n", strerror(errno), msg);
-}
-
-JSTR_NOINLINE
-JSTR_COLD
-static void
-jstr_err_exit(const char *msg)
-JSTR_NOEXCEPT
-{
-	fprintf(stderr, "%s: %s\n", strerror(errno), msg);
-	exit(EXIT_FAILURE);
-}
-
-#endif
 
 JSTR_NOINLINE
 JSTR_COLD

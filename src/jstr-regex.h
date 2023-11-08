@@ -86,32 +86,8 @@ typedef enum {
 #endif
 } jstr_re_errcode_ty;
 
-#ifndef __cplusplus
-
-#	define jstr_re_comp_chk(errcode) jstr_unlikely(errcode != JSTR_RE_RET_NOERROR)
-#	define jstr_re_exec_chk(errcode) (jstr_re_comp_chk(errcode) && jstr_unlikely(errcode != JSTR_RE_RET_NOMATCH))
-
-#else
-
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_re_comp_chk(const jstr_re_errcode_ty errcode)
-JSTR_NOEXCEPT
-{
-	return jstr_unlikely(errcode != JSTR_RE_RET_NOERROR);
-}
-
-JSTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_re_exec_chk(const jstr_re_errcode_ty errcode)
-JSTR_NOEXCEPT
-{
-	return jstr_unlikely(errcode != JSTR_RE_RET_NOERROR) && jstr_unlikely(errcode != JSTR_RE_RET_NOMATCH);
-}
-
-#endif
+#define jstr_re_comp_chk(errcode) jstr_unlikely(errcode != JSTR_RE_RET_NOERROR)
+#define jstr_re_exec_chk(errcode) (jstr_re_comp_chk(errcode) && jstr_unlikely(errcode != JSTR_RE_RET_NOMATCH))
 
 JSTR_INLINE
 JSTR_FUNC_VOID
