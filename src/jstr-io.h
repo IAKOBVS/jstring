@@ -853,7 +853,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #endif
 
 #if USE_ATFILE
-#	define STAT_ALWAYS()                                                \
+#	define STAT_ALWAYS(st)                                              \
 		do {                                                         \
 			if (jstr_unlikely(fstatat(fd, ep->d_name, st, 0))) { \
 				if (NONFATAL_ERR())                          \
@@ -862,7 +862,7 @@ typedef enum jstr_io_ftw_flag_ty {
 			}                                                    \
 		} while (0)
 #else
-#	define STAT_ALWAYS()                                 \
+#	define STAT_ALWAYS(st)                               \
 		do {                                          \
 			if (jstr_unlikely(stat(dirpath, st))) \
 				if (NONFATAL_ERR())           \
@@ -872,17 +872,17 @@ typedef enum jstr_io_ftw_flag_ty {
 #endif
 
 #if JSTR_HAVE_DIRENT_D_TYPE
-#	define ISDIR()     (ep->d_type == DT_DIR)
-#	define ISREG()     (ep->d_type == DT_REG)
-#	define FILL_PATH() FILL_PATH_ALWAYS()
-#	define STAT()      STAT_ALWAYS()
-#	define STAT_MODE() (void)(st.st_mode = DTTOIF(ep->d_type))
-#	define STAT_OR_MODE()                           \
+#	define ISDIR()       (ep->d_type == DT_DIR)
+#	define ISREG()       (ep->d_type == DT_REG)
+#	define FILL_PATH()   FILL_PATH_ALWAYS()
+#	define STAT(st)      STAT_ALWAYS(st)
+#	define STAT_MODE(st) (void)((st).st_mode = DTTOIF(ep->d_type))
+#	define STAT_OR_MODE(st)                         \
 		do {                                     \
 			if (jflags & JSTR_IO_FTW_NOSTAT) \
-				STAT_MODE();             \
+				STAT_MODE(st);           \
 			else                             \
-				STAT();                  \
+				STAT(st);                \
 		} while (0)
 #else
 #	define ISDIR() (S_ISDIR(st->st_mode))
@@ -894,14 +894,14 @@ typedef enum jstr_io_ftw_flag_ty {
 			do {        \
 			} while (0)
 #	endif
-#	define STAT() \
-		do {   \
+#	define STAT(st) \
+		do {     \
 		} while (0)
-#	define STAT_MODE() \
-		do {        \
+#	define STAT_MODE(st) \
+		do {          \
 		} while (0)
-#	define STAT_OR_MODE() \
-		do {           \
+#	define STAT_OR_MODE(st) \
+		do {             \
 		} while (0)
 #endif
 
@@ -968,7 +968,7 @@ JSTR_NOEXCEPT
 #	if !(USE_ATFILE)
 		FILL_PATH_ALWAYS();
 #	endif /* ATFILE */
-		STAT_ALWAYS();
+		STAT_ALWAYS(st);
 #endif /* D_TYPE */
 		if (ISREG())
 			goto do_reg;
@@ -996,11 +996,11 @@ do_reg:
 		}
 		if (jflags & JSTR_IO_FTW_STATREG) {
 			if (ISREG())
-				STAT();
+				STAT(st);
 			else
-				STAT_MODE();
+				STAT_MODE(st);
 		} else {
-			STAT_OR_MODE();
+			STAT_OR_MODE(st);
 		}
 		ret = fn(dirpath, path_len, st);
 		if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
@@ -1023,9 +1023,9 @@ do_dir:
 					continue;
 		FILL_PATH();
 		if (jflags & JSTR_IO_FTW_STATREG)
-			STAT_MODE();
+			STAT_MODE(st);
 		else
-			STAT_OR_MODE();
+			STAT_OR_MODE(st);
 		if (jflags & JSTR_IO_FTW_REG)
 			if (!(jflags & JSTR_IO_FTW_DIR))
 				goto CONT;
@@ -1049,11 +1049,10 @@ CONT:
 		fd = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd == -1))
 			continue;
-		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st, fd))) {
-			close(fd);
-			goto err_closedir;
-		}
+		ret = pjstr_io_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st, fd);
 		close(fd);
+		if (jstr_unlikely(!ret))
+			goto err_closedir;
 #else
 		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
 			goto err_closedir;
@@ -1130,10 +1129,8 @@ JSTR_NOEXCEPT
 		goto ftw;
 	}
 #if USE_ATFILE
-	if (jstr_unlikely(fstat(fd, &st))) {
-		close(fd);
-		return 0;
-	}
+	if (jstr_unlikely(fstat(fd, &st)))
+		goto err_close;
 #else
 	if (jstr_unlikely(stat(fulpath, &st)))
 		return 0;
@@ -1146,19 +1143,11 @@ ftw:
 		int ret;
 		ret = fn(dirpath, dlen, &st);
 		if (jstr_io_ftw_flag & JSTR_IO_FTW_ACTIONRETVAL) {
-			if (jstr_unlikely(ret != JSTR_IO_FTW_RET_CONTINUE)) {
-#if USE_ATFILE
-				close(fd);
-#endif
-				return 0;
-			}
+			if (jstr_unlikely(ret != JSTR_IO_FTW_RET_CONTINUE))
+				goto err_close;
 		} else {
-			if (jstr_unlikely(!ret)) {
-#if USE_ATFILE
-				close(fd);
-#endif
-				return 0;
-			}
+			if (jstr_unlikely(!ret))
+				goto err_close;
 		}
 CONT:
 #if USE_ATFILE
@@ -1179,9 +1168,15 @@ CONT:
 		if (fnmatch(fn_glob, fulpath, fn_flags))
 			return 1;
 	return fn(fulpath, dlen, &st);
+err_close:
+#if USE_ATFILE
+	close(fd);
+#endif
+	return 0;
 }
 
 #undef USE_ATFILE
+#undef STAT_ALWAYS
 
 /*
    Call FN() on files found recursively that matches GLOB.
