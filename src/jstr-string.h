@@ -40,7 +40,7 @@ JSTR_NOEXCEPT
 	return p ? (char *)p + 1 : NULL;
 }
 
-JSTR_FUNC
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strstr_len(const void *hs,
@@ -54,7 +54,7 @@ JSTR_NOEXCEPT
 	(void)ne_len;
 }
 
-JSTR_FUNC
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strstr(const void *hs,
@@ -64,7 +64,7 @@ JSTR_NOEXCEPT
 	return strstr((char *)hs, (char *)ne);
 }
 
-JSTR_FUNC
+JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
 jstr_strnstr_len(const void *hs,
@@ -1627,121 +1627,6 @@ JSTR_NOEXCEPT
 	while ((start = (char *)memchr(start, '\n', end - start)))
 		++start, ++cnt;
 	return cnt;
-}
-
-/*
-   Add thousand separator to NPTR.
-   Return value:
-   ptr to '\0' in NPTR.
-   For example: 1234 becomes 1,234.
-*/
-JSTR_FUNC
-static char *
-jstr_thousep_len_p(char *R nptr,
-                   const int separator,
-                   size_t sz)
-JSTR_NOEXCEPT
-{
-	char *end = nptr + sz;
-	if (*nptr == '-') {
-		++nptr;
-		--sz;
-	} else if (jstr_unlikely(sz == 0))
-		return nptr;
-	if (sz < 4)
-		return end;
-	size_t dif = (sz - 1) / 3;
-	end += dif;
-	const char *const start = nptr;
-	nptr += (sz - 1);
-	for (int n = 0; nptr >= start;) {
-		*(nptr + dif) = *nptr;
-		--nptr;
-		if (++n == 3) {
-			*(nptr + dif) = (char)separator;
-			if (jstr_unlikely(--dif == 0))
-				break;
-			n = 0;
-		}
-	}
-	*end = '\0';
-	return (char *)end;
-}
-
-/*
-   Add thousand separator to NPTR.
-   Return value:
-   ptr to '\0' in NPTR.
-   For example: 1234 becomes 1,234.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static char *
-jstr_thousep_p(char *R nptr,
-               const int separator)
-JSTR_NOEXCEPT
-{
-	return jstr_thousep_len_p(nptr, separator, strlen(nptr));
-}
-
-/*
-   Copy SRC to DST, adding thousand separator.
-   Return value:
-   ptr to '\0' in DST.
-*/
-JSTR_FUNC
-static char *
-jstr_thousepcpy_len_p(char *R dst,
-                      const char *R src,
-                      const int separator,
-                      size_t src_len)
-JSTR_NOEXCEPT
-{
-	if (*src == '-') {
-		*dst++ = '-';
-		++src;
-		--src_len;
-	}
-	if (src_len < 4) {
-		while ((*dst++ = *src++))
-			;
-		return dst - 1;
-	}
-	int i = src_len % 3;
-	for (int j = i; j--; *dst++ = *src++)
-		;
-	if (i) {
-		*dst++ = separator;
-		i = 0;
-	}
-	for (; *src; ++i) {
-		if (i == 3) {
-			*dst = separator;
-			*(dst + 1) = *src++;
-			dst += 2;
-			i = 0;
-		} else {
-			*dst++ = *src++;
-		}
-	}
-	*dst = '\0';
-	return dst;
-}
-
-/*
-   Copy SRC to DST, adding thousand separator.
-   Return value:
-   ptr to '\0' in DST.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static char *
-jstr_thousepcpy_p(char *R dst,
-                  const char *R src,
-                  const int separator)
-JSTR_NOEXCEPT
-{
-	return jstr_thousepcpy_len_p(dst, src, separator, strlen(src));
 }
 
 PJSTR_END_DECLS
