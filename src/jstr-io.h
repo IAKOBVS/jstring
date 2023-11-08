@@ -162,15 +162,19 @@ JSTR_NOEXCEPT
 		return JSTR_IO_FT_UNKNOWN;
 	int i = 0;
 	for (i = 0; i < JSTR_ARRAY_SIZE(text[idx]); ++i)
-		if (sizeof(text[idx][i]) - 1 == ext_len && !memcmp(ext, text[idx][i], ext_len))
-			return JSTR_IO_FT_TEXT;
-		else if (sizeof(text[idx][i]) - 1 > ext_len)
+		if (sizeof(text[idx][i]) - 1 == ext_len) {
+			if (!memcmp(ext, text[idx][i], ext_len))
+				return JSTR_IO_FT_TEXT;
+		} else if (jstr_unlikely(sizeof(binary[idx][i]) - 1 > ext_len)) {
 			break;
+		}
 	for (i = 0; i < JSTR_ARRAY_SIZE(binary[idx]); ++i)
-		if (sizeof(binary[idx][i]) - 1 == ext_len && !memcmp(ext, text[idx][i], ext_len))
-			return JSTR_IO_FT_TEXT;
-		else if (sizeof(binary[idx][i]) - 1 > ext_len)
+		if (sizeof(binary[idx][i]) - 1 == ext_len) {
+			if (!memcmp(ext, text[idx][i], ext_len))
+				return JSTR_IO_FT_TEXT;
+		} else if (jstr_unlikely(sizeof(binary[idx][i]) - 1 > ext_len)) {
 			break;
+		}
 	return JSTR_IO_FT_BINARY;
 }
 
