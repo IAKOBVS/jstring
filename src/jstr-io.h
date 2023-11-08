@@ -849,7 +849,7 @@ typedef enum jstr_io_ftw_flag_ty {
 			path_len = dlen + 1 + ep->d_namlen;                               \
 		} while (0)
 #else
-#	define FILL_PATH_ALWAYS() (void)(path_len = jstr_io_appendpath_p(dirpath + dlen, ep->d_name) - dirpath)
+#	define FILL_PATH_ALWAYS() ((void)(path_len = jstr_io_appendpath_p(dirpath + dlen, ep->d_name) - dirpath))
 #endif
 
 #if USE_ATFILE
@@ -876,7 +876,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define ISREG()       (ep->d_type == DT_REG)
 #	define FILL_PATH()   FILL_PATH_ALWAYS()
 #	define STAT(st)      STAT_ALWAYS(st)
-#	define STAT_MODE(st) (void)((st).st_mode = DTTOIF(ep->d_type))
+#	define STAT_MODE(st) ((void)((st).st_mode = DTTOIF(ep->d_type)))
 #	define STAT_OR_MODE(st)                         \
 		do {                                     \
 			if (jflags & JSTR_IO_FTW_NOSTAT) \
