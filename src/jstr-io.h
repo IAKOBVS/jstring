@@ -1065,6 +1065,8 @@ err_closedir:
 	return 0;
 }
 
+#undef ISDIR
+#undef ISREG
 #undef FILL_PATH
 #undef FILL_PATH_ALWAYS
 #undef STAT_OR_MODE
