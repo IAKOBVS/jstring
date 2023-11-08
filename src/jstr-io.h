@@ -834,6 +834,12 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_ACTIONRETVAL = (JSTR_IO_FTW_EXPTILDE << 1)
 } jstr_io_ftw_flag_ty;
 
+#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#	define USE_ATFILE 1
+#else
+#	define USE_ATFILE 0
+#endif
+
 #define NONFATAL_ERR() jstr_likely(errno == EACCES || errno == ENOENT)
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
@@ -846,7 +852,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define FILL_PATH_ALWAYS() (void)(path_len = jstr_io_appendpath_p(dirpath + dlen, ep->d_name) - dirpath)
 #endif
 
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if USE_ATFILE
 #	define STAT_ALWAYS()                                                \
 		do {                                                         \
 			if (jstr_unlikely(fstatat(fd, ep->d_name, st, 0))) { \
@@ -881,7 +887,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #else
 #	define ISDIR() (S_ISDIR(st->st_mode))
 #	define ISREG() (S_ISREG(st->st_mode))
-#	if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#	if USE_ATFILE
 #		define FILL_PATH() FILL_PATH_ALWAYS()
 #	else
 #		define FILL_PATH() \
@@ -915,7 +921,7 @@ pjstr_io_ftw_len(char *R dirpath,
                  const char *R fn_glob,
                  const int fn_flags,
                  struct stat *R st
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if USE_ATFILE
                  ,
                  int fd
 #endif
@@ -923,7 +929,7 @@ pjstr_io_ftw_len(char *R dirpath,
 JSTR_NOEXCEPT
 {
 	DIR *R const dp =
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if USE_ATFILE
 	fdopendir(fd);
 #else
 	opendir(dirpath);
@@ -959,7 +965,7 @@ JSTR_NOEXCEPT
 		}
 #endif
 #if !JSTR_HAVE_DIRENT_D_TYPE
-#	if !(JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE)
+#	if !(USE_ATFILE)
 		FILL_PATH_ALWAYS();
 #	endif /* ATFILE */
 		STAT_ALWAYS();
@@ -1020,27 +1026,26 @@ do_dir:
 			STAT_MODE();
 		else
 			STAT_OR_MODE();
-		do {
-			if (jflags & JSTR_IO_FTW_REG)
-				if (!(jflags & JSTR_IO_FTW_DIR))
-					break;
-			ret = fn(dirpath, dlen, st);
-			if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
-				if (ret == JSTR_IO_FTW_RET_CONTINUE)
-					continue;
-				else if (ret == JSTR_IO_FTW_RET_SKIP_SUBTREE
-				         || ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
-					break;
-				else /* RET_STOP */
-					goto err_closedir;
-			} else {
-				if (jstr_unlikely(!ret))
-					goto err_closedir;
-			}
-		} while (0);
+		if (jflags & JSTR_IO_FTW_REG)
+			if (!(jflags & JSTR_IO_FTW_DIR))
+				goto CONT;
+		ret = fn(dirpath, dlen, st);
+		if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
+			if (ret == JSTR_IO_FTW_RET_CONTINUE)
+				continue;
+			else if (ret == JSTR_IO_FTW_RET_SKIP_SUBTREE
+			         || ret == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
+				goto CONT;
+			else /* RET_STOP */
+				goto err_closedir;
+		} else {
+			if (jstr_unlikely(!ret))
+				goto err_closedir;
+		}
+CONT:
 		if (jflags & JSTR_IO_FTW_NOSUBDIR)
 			continue;
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if USE_ATFILE
 		fd = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd == -1))
 			continue;
@@ -1112,7 +1117,7 @@ JSTR_NOEXCEPT
 	} else {
 		jstr_strcpy_len(fulpath, dirpath, dlen);
 	}
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if USE_ATFILE
 	const int fd = open(fulpath, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		return 0;
@@ -1124,7 +1129,7 @@ JSTR_NOEXCEPT
 		dlen = 0;
 		goto ftw;
 	}
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if USE_ATFILE
 	if (jstr_unlikely(fstat(fd, &st))) {
 		close(fd);
 		return 0;
@@ -1135,28 +1140,28 @@ JSTR_NOEXCEPT
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
-		do {
-			if (jstr_io_ftw_flag & JSTR_IO_FTW_REG)
-				if (!(jstr_io_ftw_flag & JSTR_IO_FTW_DIR))
-					break;
-			const int ret = fn(dirpath, dlen, &st);
-			if (jstr_io_ftw_flag & JSTR_IO_FTW_ACTIONRETVAL) {
-				if (jstr_unlikely(ret != JSTR_IO_FTW_RET_CONTINUE)) {
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-					close(fd);
+		if (jstr_io_ftw_flag & JSTR_IO_FTW_REG)
+			if (!(jstr_io_ftw_flag & JSTR_IO_FTW_DIR))
+				goto CONT;
+		int ret;
+		ret = fn(dirpath, dlen, &st);
+		if (jstr_io_ftw_flag & JSTR_IO_FTW_ACTIONRETVAL) {
+			if (jstr_unlikely(ret != JSTR_IO_FTW_RET_CONTINUE)) {
+#if USE_ATFILE
+				close(fd);
 #endif
-					return 0;
-				}
-			} else {
-				if (jstr_unlikely(!ret)) {
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
-					close(fd);
-#endif
-					return 0;
-				}
+				return 0;
 			}
-		} while (0);
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+		} else {
+			if (jstr_unlikely(!ret)) {
+#if USE_ATFILE
+				close(fd);
+#endif
+				return 0;
+			}
+		}
+CONT:
+#if USE_ATFILE
 		pjstr_io_ftw_len(fulpath, dlen, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st, fd);
 		close(fd);
 #else
@@ -1164,7 +1169,7 @@ ftw:
 #endif
 		return 1;
 	}
-#if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
+#if USE_ATFILE
 	close(fd);
 #endif
 	if (jstr_io_ftw_flag & JSTR_IO_FTW_REG)
@@ -1175,6 +1180,8 @@ ftw:
 			return 1;
 	return fn(fulpath, dlen, &st);
 }
+
+#undef USE_ATFILE
 
 /*
    Call FN() on files found recursively that matches GLOB.
