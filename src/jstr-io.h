@@ -42,280 +42,146 @@ enum {
 	JSTR_IO_BINARY_CHECK_MAX = 64
 };
 
-#define S switch (*ext++)
-#define T  \
-case '\0': \
-	return JSTR_IO_FT_TEXT
-#define B  \
-case '\0': \
-	return JSTR_IO_FT_BINARY
 JSTR_FUNC_PURE
 JSTR_NOINLINE
 static jstr_io_ext_ty
-pjstr_io_ext_type(const char *R ext)
+pjstr_io_exttype_len(const char *ext,
+                     const int ext_len)
 JSTR_NOEXCEPT
 {
-	S {
-	case 'a':
-		S {
-			B; /* a */
-		}
-		break;
-	case 'b':
-		S {
-		case 'i':
-			S {
-			case 'n':
-				S {
-					B; /* bin */
-				}
-				break;
-			}
+	static const char *text[][26 * 2] = {
+		{}, /* A */
+		{}, /* B */
+		{ "C" }, /* C */
+		{}, /* D */
+		{}, /* E */
+		{}, /* F */
+		{}, /* G */
+		{}, /* H */
+		{}, /* I */
+		{}, /* J */
+		{}, /* K */
+		{}, /* L */
+		{}, /* M */
+		{}, /* N */
+		{}, /* O */
+		{}, /* P */
+		{}, /* Q */
+		{}, /* R */
+		{ "S" }, /* S */
+		{}, /* T */
+		{}, /* U */
+		{}, /* V */
+		{}, /* W */
+		{}, /* X */
+		{}, /* Y */
+		{}, /* Z */
+		{}, /* a */
+		{}, /* b */
+		{ "c", "cc", "cs", "cpp" }, /* c */
+		{}, /* d */
+		{}, /* e */
+		{}, /* f */
+		{}, /* g */
+		{ "h", "hh", "hpp", "html" }, /* h */
+		{}, /* i */
+		{ "js", "json" }, /* j */
+		{}, /* k */
+		{}, /* l */
+		{ "md" }, /* m */
+		{}, /* n */
+		{}, /* o */
+		{ "pl", "pm", "py", "pyi" }, /* p */
+		{}, /* q */
+		{ "rs" }, /* r */
+		{ "s", "sh" }, /* s */
+		{ "ts", "txt" }, /* t */
+		{}, /* u */
+		{}, /* v */
+		{}, /* w */
+		{}, /* x */
+		{}, /* y */
+		{}  /* z */
+	};
+	static const char *binary[][26 * 2] = {
+		{}, /* A */
+		{}, /* B */
+		{}, /* C */
+		{}, /* D */
+		{}, /* E */
+		{}, /* F */
+		{}, /* G */
+		{}, /* H */
+		{}, /* I */
+		{}, /* J */
+		{}, /* K */
+		{}, /* L */
+		{}, /* M */
+		{}, /* N */
+		{}, /* O */
+		{}, /* P */
+		{}, /* Q */
+		{}, /* R */
+		{}, /* S */
+		{}, /* T */
+		{}, /* U */
+		{}, /* V */
+		{}, /* W */
+		{}, /* X */
+		{}, /* Y */
+		{}, /* Z */
+		{ "a" }, /* a */
+		{ "bin" }, /* b */
+		{ "c", "cc", "cs", "cpp" }, /* c */
+		{}, /* d */
+		{}, /* e */
+		{}, /* f */
+		{ "gz" }, /* g */
+		{}, /* h */
+		{}, /* i */
+		{ "jpg", "jpeg" }, /* j */
+		{}, /* k */
+		{}, /* l */
+		{ "mkv" }, /* m */
+		{}, /* n */
+		{ "o" }, /* o */
+		{ "pdf", "png", "pyc" }, /* p */
+		{}, /* q */
+		{}, /* r */
+		{ "so" }, /* s */
+		{}, /* t */
+		{}, /* u */
+		{}, /* v */
+		{ "wav" }, /* w */
+		{}, /* x */
+		{}, /* y */
+		{}  /* z */
+	};
+	const int idx = *ext;
+	if (jstr_unlikely(!jstr_isalpha(idx)))
+		return JSTR_IO_FT_UNKNOWN;
+	int i = 0;
+	for (i = 0; i < JSTR_ARRAY_SIZE(text[idx]); ++i)
+		if (sizeof(text[idx][i]) - 1 == ext_len && !memcmp(ext, text[idx][i], ext_len))
+			return JSTR_IO_FT_TEXT;
+		else if (sizeof(text[idx][i]) - 1 > ext_len)
 			break;
-		}
-		break;
-	case 'C':
-		S {
-			T; /* C */
-		}
-		break;
-	case 'c':
-		S {
-			T; /* c */
-		case 'c':
-			S {
-				T; /* cc */
-			}
+	for (i = 0; i < JSTR_ARRAY_SIZE(binary[idx]); ++i)
+		if (sizeof(binary[idx][i]) - 1 == ext_len && !memcmp(ext, text[idx][i], ext_len))
+			return JSTR_IO_FT_TEXT;
+		else if (sizeof(binary[idx][i]) - 1 > ext_len)
 			break;
-		case 'p':
-			S {
-			case 'p':
-				S {
-					T; /* cpp */
-				}
-			}
-			break;
-		case 's':
-			S {
-				T; /* cs */
-			}
-			break;
-		}
-		break;
-	case 'm':
-		S {
-		case 'd':
-			S {
-				T; /* md */
-			}
-			break;
-		case 'k':
-			S {
-			case 'v':
-				S {
-					B; /* mkv */
-				}
-				break;
-			}
-			break;
-		}
-		break;
-	case 'g':
-		S {
-		case 'z':
-			S {
-				B; /* gz */
-			}
-			break;
-		}
-		break;
-	case 'h':
-		S {
-			T; /* h */
-		case 'h':
-			S {
-				T; /* hh */
-			}
-			break;
-		case 'p':
-			S {
-			case 'p':
-				S {
-					T; /* hpp */
-				}
-				break;
-			}
-			break;
-		case 't':
-			S {
-			case 'm':
-				S {
-				case 'l':
-					S {
-						T; /* html */
-					}
-					break;
-				}
-				break;
-			}
-			break;
-		}
-		break;
-	case 'j':
-		S {
-		case 'p':
-			S {
-			case 'g':
-				S {
-					B; /* jpg */
-				}
-				break;
-			case 'e':
-				S {
-				case 'g':
-					S {
-						B; /* jpeg */
-					}
-					break;
-				}
-				break;
-			}
-			break;
-		case 's':
-			S {
-				T; /* js */
-			case 'o':
-				S {
-				case 'n':
-					S {
-						T; /* json */
-					}
-					break;
-				}
-				break;
-			}
-			break;
-		}
-		break;
-	case 'o':
-		S {
-			B; /* o */
-		}
-		break;
-	case 'p':
-		S {
-		case 'l':
-			S {
-				T; /* pl */
-			}
-			break;
-		case 'm':
-			S {
-				T; /* pm */
-			}
-			break;
-		case 'y':
-			S {
-				T; /* py */
-			case 'i':
-				S {
-					T; /* pyi */
-				}
-				break;
-			case 'c':
-				S {
-					B; /* pyc */
-				}
-				break;
-			}
-			break;
-		case 'n':
-			S {
-			case 'g':
-				S {
-					B; /* png */
-				}
-				break;
-			}
-			break;
-		case 'd':
-			S {
-			case 'f':
-				S {
-					B; /* pdf */
-				}
-				break;
-			}
-			break;
-		}
-		break;
-	case 's':
-		S {
-		case 'h':
-			S {
-				T; /* sh */
-			}
-			break;
-		case 'o':
-			T; /* s */
-			S {
-				B; /* so */
-			}
-			break;
-		}
-		break;
-	case 'r':
-		S {
-		case 's':
-			S {
-				T; /* rs */
-			}
-			break;
-		}
-		break;
-	case 'S':
-		S {
-			T; /* S */
-		}
-		break;
-	case 't':
-		S {
-		case 's':
-			S {
-				T; /* ts */
-			}
-			break;
-		case 'x':
-			S {
-			case 't':
-				S {
-					T; /* txt */
-				}
-				break;
-			}
-			break;
-		}
-		break;
-	case 'w':
-		S {
-		case 'a':
-			S {
-			case 'v':
-				S {
-					B; /* wav */
-				}
-				break;
-			}
-			break;
-		}
-		break;
-	}
-	return JSTR_IO_FT_UNKNOWN;
+	return JSTR_IO_FT_BINARY;
 }
 
-#undef S
-#undef T
-#undef B
+JSTR_FUNC_PURE
+JSTR_NOINLINE
+static jstr_io_ext_ty
+pjstr_io_exttype(const char *ext)
+JSTR_NOEXCEPT
+{
+	return pjstr_io_exttype_len(ext, strlen(ext));
+}
 
 /*
    Return jstr_io_ext_ty based on the FNAME extension;
@@ -323,12 +189,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static jstr_io_ext_ty
-jstr_io_ext_type_len(const char *R fname,
-                     const size_t sz)
+jstr_io_exttype_len(const char *R fname,
+                    const size_t sz)
 JSTR_NOEXCEPT
 {
+	const char *const end = fname + sz;
 	fname = (char *)jstr_memrchr(fname, '.', sz);
-	return fname ? pjstr_io_ext_type(fname + 1) : JSTR_IO_FT_UNKNOWN;
+	return fname ? pjstr_io_exttype_len(fname + 1, end - (fname + 1)) : JSTR_IO_FT_UNKNOWN;
 }
 
 /*
@@ -337,11 +204,11 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_PURE
 static jstr_io_ext_ty
-jstr_io_ext_type(const char *R fname)
+jstr_io_exttype(const char *R fname)
 JSTR_NOEXCEPT
 {
 	fname = strrchr(fname, '.');
-	return fname ? pjstr_io_ext_type(fname + 1) : JSTR_IO_FT_UNKNOWN;
+	return fname ? pjstr_io_exttype(fname + 1) : JSTR_IO_FT_UNKNOWN;
 }
 
 /*
