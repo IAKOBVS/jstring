@@ -946,14 +946,14 @@ JSTR_NOEXCEPT
 		}
 #if JSTR_HAVE_DIRENT_D_NAMLEN
 		/* Exit if DIRPATH is longer than PATH_MAX. */
-		if (dlen + ep->d_namlen >= JSTR_IO_PATH_MAX) {
+		if (jstr_unlikely(dlen + ep->d_namlen >= JSTR_IO_PATH_MAX)) {
 			errno = ENAMETOOLONG;
 			goto err_closedir;
 		}
 #else
 		/* Approximate length before calling strlen(). */
 		if (jstr_unlikely(dlen >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX)
-		    && dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX) {
+		    && jstr_unlikely(dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX)) {
 			errno = ENAMETOOLONG;
 			goto err_closedir;
 		}
@@ -1053,7 +1053,6 @@ do_dir:
 		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
 			goto err_closedir;
 #endif
-		continue;
 	}
 	closedir(dp);
 	return 1;
