@@ -357,12 +357,12 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_find_strchr_inv(const jstr_l_ty *R l,
+jstr_l_find_strchrinv(const jstr_l_ty *R l,
 		       const int c)
 JSTR_NOEXCEPT
 {
 	jstr_l_foreach (l, j)
-		if (jstr_strchr_inv(j->data, c))
+		if (jstr_strchrinv(j->data, c))
 			return j;
 	return NULL;
 }
@@ -481,11 +481,11 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_l_find_strchr_inv_delete(jstr_l_ty *R l,
+jstr_l_find_strchrinv_delete(jstr_l_ty *R l,
 			      const int c)
 JSTR_NOEXCEPT
 {
-	pjstr_l_delete(l, jstr_l_find_strchr_inv(l, c));
+	pjstr_l_delete(l, jstr_l_find_strchrinv(l, c));
 }
 
 JSTR_FUNC_VOID

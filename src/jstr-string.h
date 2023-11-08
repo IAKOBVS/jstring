@@ -1209,7 +1209,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 static char *
-jstr_strchrnul_inv(const char *R s,
+jstr_strchrnulinv(const char *R s,
                    int c)
 JSTR_NOEXCEPT
 {
@@ -1229,11 +1229,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_strchr_inv(const char *R s,
+jstr_strchrinv(const char *R s,
                 const int c)
 JSTR_NOEXCEPT
 {
-	s = jstr_strchrnul_inv(s, c);
+	s = jstr_strchrnulinv(s, c);
 	return *s ? (char *)s : NULL;
 }
 
@@ -1245,7 +1245,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_memchrnul_inv(const void *R s,
+jstr_memchrnulinv(const void *R s,
                    int c,
                    size_t n)
 JSTR_NOEXCEPT
@@ -1267,13 +1267,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-jstr_memchr_inv(const void *R s,
+jstr_memchrinv(const void *R s,
                 const int c,
                 const size_t n)
 JSTR_NOEXCEPT
 {
 	const void *const end = (unsigned char *)s + n;
-	s = (void *)jstr_memchrnul_inv(s, c, n);
+	s = (void *)jstr_memchrnulinv(s, c, n);
 	return (s != end) ? (void *)s : NULL;
 }
 
@@ -1285,7 +1285,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-jstr_memrchr_inv(const void *R s,
+jstr_memrchrinv(const void *R s,
                  int c,
                  const size_t n)
 JSTR_NOEXCEPT
@@ -1307,12 +1307,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
-jstr_strrchr_inv(const void *R s,
+jstr_strrchrinv(const void *R s,
                  int c,
                  const size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_memrchr_inv((char *)s, c, n);
+	return jstr_memrchrinv((char *)s, c, n);
 }
 
 /*
@@ -1673,8 +1673,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_linenext_len_nul(const char *start,
-                      const char *const end)
+jstr_linenextnul_len(const char *start,
+                     const char *const end)
 JSTR_NOEXCEPT
 {
 	start = jstr_linenext_len(start, end);
@@ -1688,7 +1688,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_linenext_nul(const char *R s)
+jstr_linenextnul(const char *R s)
 JSTR_NOEXCEPT
 {
 	s = jstr_strchrnul(s, '\n');
