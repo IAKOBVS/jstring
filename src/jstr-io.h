@@ -49,7 +49,7 @@ pjstr_io_exttype_len(const char *ext,
                      const int ext_len)
 JSTR_NOEXCEPT
 {
-	static const char *text[][26 * 2] = {
+	static const char *text[][4] = {
 		{}, /* A */
 		{}, /* B */
 		{ "C" }, /* C */
@@ -103,7 +103,7 @@ JSTR_NOEXCEPT
 		{}, /* y */
 		{}  /* z */
 	};
-	static const char *binary[][26 * 2] = {
+	static const char *binary[][4] = {
 		{}, /* A */
 		{}, /* B */
 		{}, /* C */
