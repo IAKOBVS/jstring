@@ -29,9 +29,9 @@
 JSTR_FUNC_PURE
 JSTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
-PJSTR_MEMMEM_FN_IMPL(const unsigned char *JSTR_RESTRICT hs,
+PJSTR_MEMMEM_FN_IMPL(const unsigned char *hs,
                      const size_t hl,
-                     const unsigned char *JSTR_RESTRICT ne,
+                     const unsigned char *ne,
                      const size_t nl)
 JSTR_NOEXCEPT
 {

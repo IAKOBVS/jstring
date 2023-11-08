@@ -20,9 +20,9 @@ PJSTR_BEGIN_DECLS
 JSTR_FUNC_PURE
 JSTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
-PJSTR_MEMMEM_FN_SHORT(const unsigned char *JSTR_RESTRICT hs,
+PJSTR_MEMMEM_FN_SHORT(const unsigned char *hs,
                       const size_t hl,
-                      const unsigned char *JSTR_RESTRICT ne,
+                      const unsigned char *ne,
                       const size_t nl)
 JSTR_NOEXCEPT
 {
@@ -35,9 +35,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_NOINLINE
 static PJSTR_MEMMEM_RETTYPE
-PJSTR_MEMMEM_FN_LONG(const unsigned char *JSTR_RESTRICT hs,
+PJSTR_MEMMEM_FN_LONG(const unsigned char *hs,
                      const size_t hl,
-                     const unsigned char *JSTR_RESTRICT ne,
+                     const unsigned char *ne,
                      const size_t nl)
 JSTR_NOEXCEPT
 {
@@ -46,9 +46,9 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static PJSTR_MEMMEM_RETTYPE
-PJSTR_MEMMEM_FN(const PJSTR_MEMMEM_RETTYPE JSTR_RESTRICT hs,
+PJSTR_MEMMEM_FN(const PJSTR_MEMMEM_RETTYPE hs,
                 const size_t hl,
-                const PJSTR_MEMMEM_RETTYPE JSTR_RESTRICT ne,
+                const PJSTR_MEMMEM_RETTYPE ne,
                 const size_t nl)
 {
 	if (jstr_likely(nl < 257))

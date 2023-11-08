@@ -1320,6 +1320,167 @@ JSTR_NOEXCEPT
 	return dst;
 }
 
+/*
+   Non-destructive strtok.
+   END must be NUL terminated.
+   Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok_ne_len(const char *R *R const save_ptr,
+                   const char *R const end,
+                   const char *R ne,
+                   const size_t ne_len)
+JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	if (!strncmp(s, ne, ne_len))
+		s += ne_len;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = jstr_strstrnul_len(s, end - s, ne, ne_len);
+	return (char *)s;
+}
+
+/*
+   Non-destructive strtok.
+   Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok_ne(const char *R *R const save_ptr,
+               const char *R ne)
+JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	const size_t ne_len = strlen(ne);
+	if (!strncmp(s, ne, ne_len))
+		s += ne_len;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = jstr_strstrnul(s, ne);
+	return (char *)s;
+}
+
+/*
+   Non-destructive strtok.
+   Instead of nul-termination, use the save_ptr to know the length of the string.
+*/
+JSTR_FUNC_PURE
+static char *
+jstr_strtok(const char *R *R save_ptr,
+            const char *R delim)
+JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	s += strspn(s, delim);
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = s + strcspn(s, delim);
+	return (char *)s;
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_cpy_p(char *R dst,
+           const jstr_ty *R src)
+JSTR_NOEXCEPT
+{
+	return jstr_stpcpy_len(dst, src->data, src->size);
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+jstr_dup(jstr_ty *R dst,
+         const jstr_ty *R src)
+JSTR_NOEXCEPT
+{
+	dst->data = (char *)malloc(src->capacity);
+	PJSTR_MALLOC_ERR(dst->data, return 0);
+	dst->size = jstr_cpy_p(dst->data, dst) - dst->data;
+	dst->size = src->size;
+	dst->capacity = src->capacity;
+	return 1;
+}
+
+/* Return ptr to '\0' in DST. */
+JSTR_FUNC
+static char *
+jstr_repeat_len_unsafe_p(char *s,
+                         const size_t sz,
+                         size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(n < 2))
+		return s + sz;
+	--n;
+	if (jstr_likely(sz > 1))
+		while (n--)
+			s = (char *)jstr_mempmove(s + sz, s, sz);
+	else if (sz == 1)
+		s = (char *)memset(s, *s, n) + n;
+	*s = '\0';
+	return s;
+}
+
+/*
+   Return value:
+   0 on error;
+   1 otherwise.
+*/
+JSTR_FUNC
+static int
+jstr_repeat_len(char *R *R s,
+                size_t *R sz,
+                size_t *R cap,
+                const size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(n < 2))
+		return 1;
+	PJSTR_RESERVE(s, sz, cap, *sz * n, return 0)
+	*sz = jstr_repeat_len_unsafe_p(*s, *sz, n) - *s;
+	return 1;
+}
+
+/* Return ptr to '\0' in DST. */
+JSTR_FUNC
+static char *
+jstr_repeatcpy_len_p(char *R dst,
+                     const char *R src,
+                     const size_t src_len,
+                     size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_likely(src_len > 1))
+		while (n--)
+			dst = (char *)jstr_mempcpy(dst, src, src_len);
+	else if (src_len == 1)
+		dst = (char *)memset(dst, *src, n) + n;
+	*dst = '\0';
+	return dst;
+}
+
 PJSTR_END_DECLS
 
 #undef R
