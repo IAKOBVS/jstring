@@ -308,6 +308,35 @@ JSTR_NOEXCEPT
 
 /*
   Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+#if JSTR_HAVE_STRNCASECMP
+JSTR_INLINE
+#endif
+JSTR_FUNC_PURE
+static int
+jstr_strncasecmpeq(const char *R s1,
+                   const char *R s2,
+                   size_t n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP
+	return strncasecmp(s1, s2, n);
+#else
+	if (jstr_unlikely(n == 0))
+		return 0;
+	const unsigned char *R p1 = (unsigned char *)s1;
+	const unsigned char *R p2 = (unsigned char *)s2;
+	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n)
+		;
+	return *p1 && n;
+#endif
+}
+
+/*
+  Compare S1 with S2 case-insensitively.
   N must be lower than the _length of S1 or S2.
   Return value:
   0 if strings match;
@@ -340,6 +369,36 @@ JSTR_NOEXCEPT
 
 /*
   Compare S1 with S2 case-insensitively.
+  N must be lower than the _length of S1 or S2.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+#if JSTR_HAVE_STRNCASECMP
+JSTR_INLINE
+#endif
+JSTR_FUNC_PURE
+static int
+jstr_strcasecmpeq_len(const char *R s1,
+                      const char *R s2,
+                      size_t n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP
+	return strncasecmp(s1, s2, n);
+#else
+	if (jstr_unlikely(n == 0))
+		return 0;
+	const unsigned char *R p1 = (unsigned char *)s1;
+	const unsigned char *R p2 = (unsigned char *)s2;
+	for (; jstr_tolower(*p1++) == jstr_tolower(*p2++) && n; --n)
+		;
+	return n;
+#endif
+}
+
+/*
+  Compare S1 with S2 case-insensitively.
   Return value:
   0 if strings match;
   non-zero otherwise.
@@ -363,6 +422,33 @@ JSTR_NOEXCEPT
 	       && *p1++)
 		;
 	return ret;
+#endif
+}
+
+/*
+  Compare S1 with S2 case-insensitively.
+  Return value:
+  0 if strings match;
+  non-zero otherwise.
+*/
+JSTR_FUNC_PURE
+#if JSTR_HAVE_STRCASECMP
+JSTR_INLINE
+#endif
+static int
+jstr_strcasecmpeq(const char *R s1,
+                  const char *R s2)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRCASECMP
+	return strcasecmp(s1, s2);
+#else
+	const unsigned char *R p1 = (unsigned char *)s1;
+	const unsigned char *R p2 = (unsigned char *)s2;
+	while (jstr_tolower(*p1) == jstr_tolower(*p2++)
+	       && *p1)
+		++p1;
+	return *p1;
 #endif
 }
 
@@ -661,7 +747,7 @@ JSTR_NOEXCEPT
 #if !JSTR_HAVE_STRCASESTR_OPTIMIZED
 #	define PJSTR_MEMMEM_FN        pjstr_strcasestr
 #	define PJSTR_MEMMEM_RETTYPE   char *
-#	define PJSTR_MEMMEM_CMP_FN    jstr_strcasecmp_len
+#	define PJSTR_MEMMEM_CMP_FN    jstr_strcasecmpeq_len
 #	define PJSTR_MEMMEM_HASH2(p)  (((size_t)(jstr_tolower((p)[0])) - ((size_t)(jstr_tolower((p)[-1])) << 3)) % 256)
 #	define PJSTR_MEMMEM_CHECK_EOL (1)
 #	include "_jstr-memmem.h"
@@ -814,7 +900,7 @@ JSTR_NOEXCEPT
 #if !JSTR_HAVE_STRCASESTR_OPTIMIZED
 #	define PJSTR_MEMMEM_FN       pjstr_strcasestr_len
 #	define PJSTR_MEMMEM_RETTYPE  char *
-#	define PJSTR_MEMMEM_CMP_FN   jstr_strcasecmp_len
+#	define PJSTR_MEMMEM_CMP_FN   jstr_strcasecmpeq_len
 #	define PJSTR_MEMMEM_HASH2(p) (((size_t)(jstr_tolower((p)[0])) - ((size_t)(jstr_tolower((p)[-1])) << 3)) % 256)
 #	include "_jstr-memmem.h"
 #endif
@@ -1332,7 +1418,7 @@ jstr_endscase_len(const char *R hs,
                   const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmp_len(hs + hs_len - ne_len, ne, ne_len) : 0;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmpeq_len(hs + hs_len - ne_len, ne, ne_len) : 0;
 }
 
 /*
@@ -1400,7 +1486,7 @@ jstr_startscase_len(const char *R hs,
                     const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmp_len(hs, ne, ne_len) : 0;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmpeq_len(hs, ne, ne_len) : 0;
 }
 
 /*
@@ -1416,7 +1502,7 @@ jstr_startscase(const char *R hs,
                 const char *R ne)
 JSTR_NOEXCEPT
 {
-	return (jstr_tolower(*hs) == jstr_tolower(*ne)) ? !jstr_strcasecmp_len(hs, ne, strlen(ne)) : (*ne == '\0');
+	return (jstr_tolower(*hs) == jstr_tolower(*ne)) ? !jstr_strcasecmpeq_len(hs, ne, strlen(ne)) : (*ne == '\0');
 }
 
 /*
