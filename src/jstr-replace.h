@@ -1119,14 +1119,14 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Put SRC into DST[AT].
+  Place SRC into DST[AT].
   Assume that S have enough space for SRC.
   Return value:
 */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_put_len_unsafe(char *R s,
+jstr_place_len_unsafe(char *R s,
 		    const size_t at,
 		    const char *R src,
 		    const size_t src_len)
@@ -1136,14 +1136,14 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Put SRC into DST[AT].
+  Place SRC into DST[AT].
   Return 0 on malloc error;
   otherwise 1.
 */
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_put_len(char *R *R s,
+jstr_place_len(char *R *R s,
 	     size_t *R sz,
 	     size_t *R cap,
 	     const size_t at,
@@ -1156,19 +1156,19 @@ JSTR_NOEXCEPT
 		*sz = at + src_len;
 		*(*s + *sz) = '\0';
 	}
-	jstr_put_len_unsafe(*s, at, src, src_len);
+	jstr_place_len_unsafe(*s, at, src, src_len);
 	return 1;
 }
 
 /*
-  Put SRC after C in DST.
+  Place SRC after C in DST.
   Return 0 on malloc error;
   otherwise 1.
 */
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_putafterchr_len(char *R *R s,
+jstr_placeafterchr_len(char *R *R s,
 		     size_t *R sz,
 		     size_t *R cap,
 		     const int c,
@@ -1178,18 +1178,18 @@ JSTR_NOEXCEPT
 {
 	const char *const p = (char *)memchr(*s, c, *sz);
 	if (p != NULL)
-		return jstr_put_len(s, sz, cap, p - *s + 1, src, src_len);
+		return jstr_place_len(s, sz, cap, p - *s + 1, src, src_len);
 	return 1;
 }
 
 /*
-  Put SRC after end of NE in DST.
+  Place SRC after end of NE in DST.
   Return 0 on malloc error;
   otherwise 1.
 */
 JSTR_FUNC
 static int
-jstr_putafter_len(char *R *R s,
+jstr_placeafter_len(char *R *R s,
 		  size_t *R sz,
 		  size_t *R cap,
 		  const char *R find,
@@ -1199,12 +1199,12 @@ jstr_putafter_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (find_len == 1)
-		return jstr_putafterchr_len(s, sz, cap, *find, src, src_len);
+		return jstr_placeafterchr_len(s, sz, cap, *find, src, src_len);
 	if (jstr_unlikely(find_len == 0))
 		return 1;
 	const char *const p = jstr_strstr_len(*s, *sz, find, find_len);
 	if (p != NULL)
-		return jstr_put_len(s, sz, cap, p - *s + find_len, src, src_len);
+		return jstr_place_len(s, sz, cap, p - *s + find_len, src, src_len);
 	return 1;
 }
 
