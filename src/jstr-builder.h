@@ -849,44 +849,6 @@ JSTR_NOEXCEPT
 	return fputc('\n', fp) == '\n';
 }
 
-#if 0
-
-JSTR_FUNC
-static int
-pjstr_sprintf_count_udigits(unsigned long long number,
-			    const unsigned int base)
-{
-#	define LOOP_BASE(base)                                                              \
-		for (len = 1, ldigit = 1; (number /= base) != 0; len *= 10, ldigit = number) \
-			;                                                                    \
-		return ldigit * number
-	int len;
-	int ldigit;
-	switch (base) {
-	case 10:
-		if (number <= 9)
-			return number;
-		LOOP_BASE(10);
-	case 2: LOOP_BASE(2);
-	case 8: LOOP_BASE(8);
-	case 16: LOOP_BASE(16);
-	default: LOOP_BASE(base);
-	}
-#	undef LOOP_BASE
-}
-
-JSTR_FUNC
-static int
-pjstr_sprintf_count_digits(long long number,
-			   const unsigned int base)
-{
-	if (number < 0)
-		number = -number;
-	return pjstr_sprintf_count_udigits(number, base);
-}
-
-#endif
-
 /*
    Return size of allocation needed for sprintf.
    Return value:
