@@ -115,7 +115,7 @@ JSTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static void *
-jstr_memrchr(const void *R s,
+jstr_memrchr(const void *s,
              const int c,
              const size_t sz)
 JSTR_NOEXCEPT
