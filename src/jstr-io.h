@@ -944,6 +944,7 @@ err_closedir:
 #undef STAT_MODE
 #undef STAT
 #undef NONFATAL_ERR
+#undef STAT_ALWAYS
 
 /*
    Call FN() on files found recursively that matches GLOB.
@@ -1049,7 +1050,6 @@ err_close:
 }
 
 #undef USE_ATFILE
-#undef STAT_ALWAYS
 
 /*
    Call FN() on files found recursively that matches GLOB.
