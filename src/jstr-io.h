@@ -142,12 +142,12 @@ JSTR_NOEXCEPT
 		{ "jpg", "jpeg" }, /* j */
 		{}, /* k */
 		{}, /* l */
-		{ "mkv" }, /* m */
+		{ "mp4", "mp3", "mkv" }, /* m */
 		{}, /* n */
 		{ "o" }, /* o */
 		{ "pdf", "png", "pyc" }, /* p */
 		{}, /* q */
-		{}, /* r */
+		{ "rar" }, /* r */
 		{ "so" }, /* s */
 		{}, /* t */
 		{}, /* u */
@@ -155,31 +155,31 @@ JSTR_NOEXCEPT
 		{ "wav" }, /* w */
 		{}, /* x */
 		{}, /* y */
-		{}  /* z */
+		{ "zip" }  /* z */
 	};
 	const int idx = *ext;
 	if (jstr_unlikely(!jstr_isalpha(idx)))
 		return JSTR_IO_FT_UNKNOWN;
 	int i;
-	for (i = 0; i < JSTR_ARRAY_SIZE(text[idx]); ++i)
+	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text[idx]); ++i)
 		if (sizeof(text[idx][i]) - 1 == ext_len) {
 			if (!memcmp(ext, text[idx][i], ext_len))
 				return JSTR_IO_FT_TEXT;
-		} else if (jstr_unlikely(sizeof(binary[idx][i]) - 1 > ext_len)) {
+		} else if (jstr_unlikely((int)sizeof(binary[idx][i]) - 1 > ext_len)) {
 			break;
 		}
-	for (i = 0; i < JSTR_ARRAY_SIZE(binary[idx]); ++i)
+	for (i = 0; i < (int)JSTR_ARRAY_SIZE(binary[idx]); ++i)
 		if (sizeof(binary[idx][i]) - 1 == ext_len) {
 			if (!memcmp(ext, text[idx][i], ext_len))
 				return JSTR_IO_FT_BINARY;
-		} else if (jstr_unlikely(sizeof(binary[idx][i]) - 1 > ext_len)) {
+		} else if (jstr_unlikely((int)sizeof(binary[idx][i]) - 1 > ext_len)) {
 			break;
 		}
 	return JSTR_IO_FT_BINARY;
 }
 
 JSTR_FUNC_PURE
-JSTR_NOINLINE
+JSTR_INLINE
 static jstr_io_ext_ty
 pjstr_io_exttype(const char *ext)
 JSTR_NOEXCEPT
