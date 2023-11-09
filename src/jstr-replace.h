@@ -440,14 +440,17 @@ JSTR_NOEXCEPT
 	return (char *)p;
 }
 
+/*
+  Remove N C in S.
+  Return value:
+  Pointer to '\0' in S.
+*/
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
 static char *
-pjstr_rmallchr_len_p(const int use_n,
-                     char *R s,
-                     const int c,
-                     size_t n,
-                     const size_t sz)
+jstr_rmnchr_len_p(char *R s,
+                  const int c,
+                  const size_t sz,
+                  size_t n)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
@@ -455,8 +458,7 @@ JSTR_NOEXCEPT
 	const unsigned char *oldp = dst;
 	const unsigned char *p = dst;
 	const unsigned char *const end = dst + sz;
-	while ((use_n & 1 ? n-- : 1)
-	       && (p = (u *)memchr(p, c, end - p)))
+	while (n-- && (p = (u *)memchr(p, c, end - p)))
 		pjstr_rmallinplace(&dst, &oldp, &p, 1);
 	return (dst != (u *)s) ? jstr_stpmove_len(dst, oldp, end - oldp) : s + sz;
 }
@@ -473,47 +475,7 @@ jstr_rmallchr_len_p(char *R s,
                     const size_t sz)
 JSTR_NOEXCEPT
 {
-	return pjstr_rmallchr_len_p(0, s, c, 0, sz);
-}
-
-/*
-  Remove all C in S.
-  Return value:
-  Pointer to '\0' in S;
-*/
-JSTR_FUNC_RET_NONNULL
-static char *
-jstr_rmallchr_p(char *R s,
-                const int c)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STRCHRNUL
-	typedef unsigned char u;
-	unsigned char *dst = (u *)s;
-	const unsigned char *oldp = dst;
-	const unsigned char *p = dst;
-	while (*(p = (u *)strchrnul((char *)p, c)))
-		pjstr_rmallinplace(&dst, &oldp, &p, 1);
-	return (dst != (u *)s) ? jstr_stpmove_len(dst, oldp, p - oldp) : (char *)p;
-#else
-	return jstr_rmallchr_len_p(s, c, strlen(s));
-#endif
-}
-
-/*
-  Remove N C in S.
-  Return value:
-  Pointer to '\0' in S.
-*/
-JSTR_FUNC_RET_NONNULL
-static char *
-jstr_rmnchr_len_p(char *R s,
-                  const int c,
-                  const size_t n,
-                  const size_t sz)
-JSTR_NOEXCEPT
-{
-	return pjstr_rmallchr_len_p(1, s, c, n, sz);
+	return jstr_rmnchr_len_p(s, c, sz, -1);
 }
 
 /*
@@ -521,7 +483,6 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmnchr_p(char *R s,
@@ -542,6 +503,20 @@ JSTR_NOEXCEPT
 #else
 	return jstr_rmnchr_len_p(s, c, n, strlen(s));
 #endif /* HAVE_STRCHRNUL */
+}
+
+/*
+  Remove all C in S.
+  Return value:
+  Pointer to '\0' in S;
+*/
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_rmallchr_p(char *R s,
+                const int c)
+JSTR_NOEXCEPT
+{
+	return jstr_rmnchr_p(s, c, -1);
 }
 
 /*
@@ -589,7 +564,6 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S.
 */
-JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rm_len_p(char *R s,
