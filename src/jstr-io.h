@@ -776,6 +776,12 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
+#if USE_ATFILE
+#	define FD_PARAM , int fd
+#else
+#	define FD_PARAM
+#endif
+
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
                                    size_t dlen,
                                    const struct stat *st);
@@ -792,11 +798,7 @@ pjstr_io_ftw_len(char *R dirpath,
                  const char *R fn_glob,
                  const int fn_flags,
                  struct stat *R st
-#if USE_ATFILE
-                 ,
-                 int fd
-#endif
-                 )
+                 FD_PARAM)
 JSTR_NOEXCEPT
 {
 	DIR *R const dp =
@@ -821,20 +823,18 @@ JSTR_NOEXCEPT
 			    && (ep->d_name[1] == '\0' || (ep->d_name[1] == '.' && ep->d_name[2] == '\0')))
 				continue;
 		}
-#if JSTR_HAVE_DIRENT_D_NAMLEN
 		/* Exit if DIRPATH is longer than PATH_MAX. */
-		if (jstr_unlikely(dlen + ep->d_namlen >= JSTR_IO_PATH_MAX)) {
-			errno = ENAMETOOLONG;
-			goto err_closedir;
-		}
+		if (
+#if JSTR_HAVE_DIRENT_D_NAMLEN
+		jstr_unlikely(dlen + ep->d_namlen >= JSTR_IO_PATH_MAX)
 #else
-		/* Approximate length before calling strlen(). */
-		if (jstr_unlikely(dlen >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX)
-		    && jstr_unlikely(dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX)) {
+		jstr_unlikely(dlen >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX)
+		&& jstr_unlikely(dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX)
+#endif
+		) {
 			errno = ENAMETOOLONG;
 			goto err_closedir;
 		}
-#endif
 #if !JSTR_HAVE_DIRENT_D_TYPE
 #	if !(USE_ATFILE)
 		FILL_PATH_ALWAYS();
@@ -945,6 +945,7 @@ err_closedir:
 #undef STAT
 #undef NONFATAL_ERR
 #undef STAT_ALWAYS
+#undef FD_PARAM
 
 /*
    Call FN() on files found recursively that matches GLOB.
