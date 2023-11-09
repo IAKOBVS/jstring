@@ -3,11 +3,11 @@
 
 #if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
 #	define PJSTR_PP_HAVE_TYPEOF 1
-#endif /* PJSTR_PP_HAVE_TYPEOF */
+#endif /* HAVE_TYPEOF */
 
 #if defined __STDC_VERSION__ && (__STDC_VERSION__ >= 201112L)
 #	define PJSTR_PP_HAVE_GENERIC 1
-#endif /* PJSTR_PP_HAVE_GENERIC */
+#endif /* HAVE_GENERIC */
 
 #define PJSTR_PP_CONCAT(a, b, ...) a##b(__VA_ARGS__)
 
