@@ -652,8 +652,8 @@ static void
 jstr_rplcnchr_len(char *R s,
                   const int find,
                   const int rplc,
-                  size_t n,
-                  const size_t sz)
+                  const size_t sz,
+                  size_t n)
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
@@ -792,7 +792,7 @@ jstr_rmn_len_p(char *R s,
 JSTR_NOEXCEPT
 {
 	if (find_len == 1)
-		return pjstr_rmallchr_len_p(1, s, *find, n, sz);
+		return jstr_rmnchr_len_p(s, *find, sz, n);
 	if (jstr_unlikely(find_len == 0))
 		return s + sz;
 	typedef unsigned char u;
@@ -881,9 +881,9 @@ jstr_rplcn_len(char *R *R s,
                size_t *R cap,
                const char *R find,
                const char *R rplc,
-               size_t n,
                const size_t find_len,
-               const size_t rplc_len)
+               const size_t rplc_len,
+               size_t n)
 JSTR_NOEXCEPT
 {
 	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, n);
