@@ -792,7 +792,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (hs_len == ne_len)
 		return NULL;
-	return jstr_strstr_len(hs, hs_len, ne, ne_len);
+	return jstr_strstr_len(hs + 1, hs_len - 1, ne, ne_len);
 #endif
 }
 
@@ -851,7 +851,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs[ne_len] == '\0'))
 		return NULL;
-	return (char *)strstr(hs, ne);
+	return (char *)strstr(hs + 1, ne);
 #endif
 }
 
