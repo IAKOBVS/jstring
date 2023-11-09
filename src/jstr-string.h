@@ -165,7 +165,7 @@ JSTR_NOEXCEPT
 
 /*
   Compare S1 with S2 case-insensitively.
-  N must be lower than the _length of S1 or S2.
+  N must be lower than the length of S1 or S2.
   Return value:
   0 if strings match;
   non-zero otherwise.
@@ -197,7 +197,7 @@ JSTR_NOEXCEPT
 
 /*
   Compare S1 with S2 case-insensitively.
-  N must be lower than the _length of S1 or S2.
+  N must be lower than the length of S1 or S2.
   Return value:
   0 if strings match;
   non-zero otherwise.
