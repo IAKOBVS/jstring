@@ -12,7 +12,7 @@
 #	define PJSTR_MEMMEM_HASH2(p) (((size_t)(((p)[0])) - ((size_t)((p)[-1]) << 3)) % 256)
 #endif
 #ifndef PJSTR_MEMMEM_CHECK_EOL
-#	define PJSTR_MEMMEM_CHECK_EOL (0)
+#	define PJSTR_MEMMEM_CHECK_EOL 0
 #endif
 #ifndef PJSTR_MEMMEM_CMP_FN
 #	define PJSTR_MEMMEM_CMP_FN memcmp
