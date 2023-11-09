@@ -1,11 +1,11 @@
 #ifndef PJSTR_PP_VA_ARGS_TOOLS_H
 #define PJSTR_PP_VA_ARGS_TOOLS_H 1
 
-#if (defined(__GNUC__) && (__GNUC__ >= 4)) || (defined(__clang__) && (__clang_major__ >= 3))
+#if (defined __GNUC__ && (__GNUC__ >= 4)) || (defined __clang__ && (__clang_major__ >= 3))
 #	define PJSTR_PP_HAVE_TYPEOF 1
 #endif /* PJSTR_PP_HAVE_TYPEOF */
 
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
+#if defined __STDC_VERSION__ && (__STDC_VERSION__ >= 201112L)
 #	define PJSTR_PP_HAVE_GENERIC 1
 #endif /* PJSTR_PP_HAVE_GENERIC */
 
