@@ -447,24 +447,24 @@ pjstr_io_alloc_file_len(const int alloc_exact,
                         size_t *R sz,
                         size_t *R cap,
                         const char *R fname,
-                        const size_t filesz)
+                        const size_t file_size)
 JSTR_NOEXCEPT
 {
 	const int fd = open(fname, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
 	if (alloc_exact)
-		*cap = JSTR_MIN_ALLOCEXACT(filesz + 1);
+		*cap = JSTR_MIN_ALLOCEXACT(file_size + 1);
 	else
-		*cap = JSTR_MIN_ALLOC(filesz);
+		*cap = JSTR_MIN_ALLOC(file_size);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)malloc(*cap);
 	PJSTR_MALLOC_ERR(*s, goto err_close);
-	if (jstr_unlikely(filesz != (size_t)read(fd, *s, filesz)))
+	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
 		goto err_close_free;
 	close(fd);
-	(*s)[filesz] = '\0';
-	*sz = filesz;
+	(*s)[file_size] = '\0';
+	*sz = file_size;
 	return 1;
 err_close_free:
 	jstr_free(s, sz, cap);
@@ -485,10 +485,10 @@ jstr_io_alloc_file_len(char *R *R s,
                        size_t *R sz,
                        size_t *R cap,
                        const char *R fname,
-                       const size_t filesz)
+                       const size_t file_size)
 JSTR_NOEXCEPT
 {
-	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, filesz);
+	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, file_size);
 }
 
 /*
@@ -502,10 +502,10 @@ jstr_io_allocexact_file(char *R *R s,
                         size_t *R sz,
                         size_t *R cap,
                         const char *R fname,
-                        const size_t filesz)
+                        const size_t file_size)
 JSTR_NOEXCEPT
 {
-	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, filesz);
+	return pjstr_io_alloc_file_len(0, s, sz, cap, fname, file_size);
 }
 
 /*
