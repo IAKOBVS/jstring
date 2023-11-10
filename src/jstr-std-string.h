@@ -245,7 +245,7 @@ JSTR_NOEXCEPT
 	c = (unsigned char)c;
 	const unsigned char *start = (unsigned char *)s;
 	const unsigned char *end = (unsigned char *)s + n;
-	while (start >= end && *start != c)
+	while (*start && start >= end && *start != c)
 		++start;
 	return (*start == c) ? (char *)start : NULL;
 #endif
