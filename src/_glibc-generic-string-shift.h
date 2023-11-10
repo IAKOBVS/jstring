@@ -15,7 +15,7 @@
 #ifndef PJSTR_STRING_SHIFT_H
 #define PJSTR_STRING_SHIFT_H 1
 #include "jstr-macros.h"
-#include "jstr-string-fza.h"
+#include "_string-fza.h"
 #include <endian.h>
 #include <limits.h>
 #include <stdint.h>

@@ -18,6 +18,10 @@
 		} while (0)
 #endif
 
+#if defined __GNUC__ || defined __clang__
+#	define JSTR_HAVE_WORD_AT_A_TIME 1
+#endif
+
 #define JSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)        JSTR_CONCAT_HELPER(x, y)
 #define JSTR_STRINGIFY(x)        #x
@@ -145,7 +149,7 @@
 #	define JSTR_NOEXCEPT
 #endif
 
-#if defined __ASSERT_FUNCTION
+#ifdef __ASSERT_FUNCTION
 #	define JSTR_ASSERT_FUNC __ASSERT_FUNCTION
 #else
 #	define JSTR_ASSERT_FUNC __func__
@@ -161,7 +165,7 @@
 #	define JSTR_RESTRICT
 #endif /* restrict */
 
-#if defined __glibc_has_attribute
+#ifdef __glibc_has_attribute
 #	define JSTR_HAS_ATTRIBUTE(attr) __glibc_has_attribute(attr)
 #elif defined __has_attribute
 #	define JSTR_HAS_ATTRIBUTE(attr) __has_attribute(attr)
@@ -169,7 +173,7 @@
 #	define JSTR_HAS_ATTRIBUTE(attr) 0
 #endif
 
-#if defined __glibc_has_builtin
+#ifdef __glibc_has_builtin
 #	define JSTR_HAS_BUILTIN(name) __glibc_has_builtin(name)
 #elif defined __has_builtin
 #	define JSTR_HAS_BUILTIN(name) __has_builtin(name)
@@ -177,7 +181,7 @@
 #	define JSTR_HAS_BUILTIN(name) 0
 #endif
 
-#if defined __glibc_has_extension
+#ifdef __glibc_has_extension
 #	define JSTR_HAS_EXTENSION(ext) __glibc_has_extension(ext)
 #elif defined __has_extension
 #	define JSTR_HAS_EXTENSION(ext) __has_extension(ext)
@@ -198,11 +202,13 @@
 #	define jstr_unlikely(x) (x)
 #endif /* unlikely */
 
-#if defined __GNUC__ || defined __clang__
+#if (defined __GNUC__ || defined __clang__) && (defined __glibc_has_attribute || defined __has_attribute)
 #	if JSTR_HAS_ATTRIBUTE(__format__)
 #		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
 #	elif JSTR_HAS_ATTRIBUTE(format)
 #		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((format(archetype, string_index, first_to_check)))
+#	else
+#		define JSTR_FORMAT(archetype, string_index, first_to_check)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__always_inline__)
 #		define JSTR_INLINE __attribute__((__always_inline__)) inline
@@ -271,6 +277,10 @@
 #		define JSTR_MALLOC                                   __attribute__((malloc))
 #		define JSTR_MALLOC_DEALLOC(deallocator)              __attribute__((malloc, deallocator))
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
+#	else
+#		define JSTR_MALLOC
+#		define JSTR_MALLOC_DEALLOC(deallocator)
+#		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
 #		define JSTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))
@@ -321,11 +331,22 @@
 #	else
 #		define JSTR_BUILTIN_CONSTANT_P(p) 0
 #	endif
-#elif defined _MSC_VER
-#	define JSTR_INLINE   __forceinline inline
-#	define JSTR_NOINLINE __declspec(noinline)
-#	define JSTR_PURE     __declspec(noalias)
-#	define JSTR_CONST    __declspec(restrict)
+#else
+#	if defined _MSC_VER
+#		define JSTR_INLINE   __forceinline inline
+#		define JSTR_NOINLINE __declspec(noinline)
+#		define JSTR_PURE     __declspec(noalias)
+#		define JSTR_CONST    __declspec(restrict)
+#		define JSTR_NOTHROW  __declspec(nothrow)
+#		define JSTR_NOINLINE __delspec(noinline)
+#	else
+#		define JSTR_INLINE inline
+#		define JSTR_NOINLINE
+#		define JSTR_PURE
+#		define JSTR_CONST
+#		define JSTR_NOTHROW
+#		define JSTR_NOINLINE
+#	endif
 #	define JSTR_FLATTEN
 #	define JSTR_COLD
 #	define JSTR_SENTINEL
@@ -337,31 +358,18 @@
 #	define JSTR_RETURNS_NONNULL
 #	define JSTR_WARN_UNUSED
 #	define JSTR_DEPRECATED(msg, replacement)
-#	define JSTR_NOTHROW __declspec(nothrow)
-#	define JSTR_MAY_ALIAS
-#	define JSTR_NOINLINE __delspec(noinline)
-#	define JSTR_MAYBE_UNUSED
-#	define JSTR_BUILTIN_CONSTANT_P(p) 0
-#else
-#	define JSTR_INLINE inline
-#	define JSTR_NOINLINE
-#	define JSTR_PURE
-#	define JSTR_CONST
-#	define JSTR_FLATTEN
+#	define JSTR_FORMAT(archetype, string_index, first_to_check)
 #	define JSTR_COLD
 #	define JSTR_SENTINEL
 #	define JSTR_NONNULL_ALL
 #	define JSTR_NONNULL(args)
-#	define JSTR_MALLOC
-#	define JSTR_MALLOC_DEALLOC(deallocator)
-#	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
+#	define JSTR_RETURNS_NONNULL
 #	define JSTR_WARN_UNUSED
 #	define JSTR_DEPRECATED(msg, replacement)
-#	define JSTR_NOTHROW
 #	define JSTR_MAY_ALIAS
-#	define JSTR_NOINLINE
 #	define JSTR_MAYBE_UNUSED
 #	define JSTR_BUILTIN_CONSTANT_P(p) 0
+
 #endif /* Gnuc || clang || msvc */
 
 #define JSTR_ALPHA_VOWEL_LOWER_STR     "aiueo"
@@ -879,8 +887,8 @@ case '~':
 #define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #ifdef __cplusplus
-#	define PJSTR_BEGIN_DECLS     extern "C" {
-#	define PJSTR_END_DECLS       }
+#	define PJSTR_BEGIN_DECLS extern "C" {
+#	define PJSTR_END_DECLS   }
 #else
 #	define PJSTR_BEGIN_DECLS
 #	define PJSTR_END_DECLS

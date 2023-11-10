@@ -24,7 +24,7 @@ $file_str =~ s/(#define.*)/$1\n\n#include "jstr-macros.h"\n/ if (index($file_str
 $file_str =~ s/#\s*(ifndef|define)[ \t]*([^P]{,1}[^J][^S][^T][^R]\w*_H)/#$1 PJSTR_$2/g;
 $file_str =~ s/PJSTR__/PJSTR_/g;
 $file_str =~ s/if (__BYTE_ORDER == __LITTLE_ENDIAN)/if (JSTR_ENDIAN_LITTLE)/g;
-$file_str =~ s/include[ \t]*"string\-/include "jstr-string-/g;
+$file_str =~ s/include[ \t]*"string\-/include "_string-/g;
 $file_str =~ s/__attribute__((__may_alias__))/JSTR_MAY_ALIAS/g;
 $file_str =~ s/__attribute__((may_alias))/JSTR_MAY_ALIAS/g;
 

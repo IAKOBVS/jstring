@@ -17,8 +17,8 @@
 #include "jstr-macros.h"
 /* PowerISA 2.05 (POWER6) provides cmpb instruction.  */
 #ifdef _ARCH_PWR6
-#	include "jstr-string-misc.h"
-#	include "jstr-string-optype.h"
+#	include "_string-misc.h"
+#	include "_string-optype.h"
 /* The functions return a byte mask.  */
 /* This function returns 0xff for each byte that is
    equal between X1 and X2.  */
@@ -50,6 +50,6 @@ jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 #	define jstr_word_find_eq_low      jstr_word_find_eq_all
 #	define jstr_word_find_zero_eq_low jstr_word_find_zero_eq_all
 #else
-#	include "jstr-string-fza.h"
+#	include "_string-fza.h"
 #endif /* _ARCH_PWR6  */
 #endif /* _POWERPC_STRING_FZA_H  */

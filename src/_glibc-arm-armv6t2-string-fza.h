@@ -15,8 +15,8 @@
 #ifndef PJSTR_STRING_FZA_H
 #define PJSTR_STRING_FZA_H 1
 #include "jstr-macros.h"
-#include "jstr-string-misc.h"
-#include "jstr-string-optype.h"
+#include "_string-misc.h"
+#include "_string-optype.h"
 /* The functions return a byte mask.  */
 /* This function returns at least one bit set within every byte
    of X that is zero.  */

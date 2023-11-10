@@ -3,20 +3,12 @@
 
 #include "jstr-macros.h"
 #include "jstr-struct.h"
+#include "jstr-word-at-a-time.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
 PJSTR_END_DECLS
-
-#include "jstr-string-fza.h"
-#include "jstr-string-fzb.h"
-#include "jstr-string-fzc.h"
-#include "jstr-string-fzi.h"
-#include "jstr-string-misc.h"
-#include "jstr-string-opthr.h"
-#include "jstr-string-optype.h"
-#include "jstr-string-shift.h"
 
 #define R JSTR_RESTRICT
 
@@ -116,19 +108,19 @@ JSTR_INLINE
 JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *s,
-             const int c,
+             int c,
              const size_t sz)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, sz);
-#else
+#elif JSTR_HAVE_WORD_AT_A_TIME
 	/* Taken from glibc memrchr released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(sz == 0))
 		return NULL;
 	typedef jstr_word_ty w_ty;
-	const w_ty *word_ptr = (w_ty *)JSTR_PTR_ALIGN_UP(s + sz, sizeof(w_ty));
+	const w_ty *word_ptr = (w_ty *)JSTR_PTR_ALIGN_UP((char *)s + sz, sizeof(w_ty));
 	uintptr_t s_int = (uintptr_t)s + sz;
 	w_ty word = jstr_word_toword(--word_ptr);
 	w_ty repeated_c = jstr_word_repeat_bytes(c);
@@ -150,6 +142,13 @@ JSTR_NOEXCEPT
 			return ret;
 	}
 	return NULL;
+#else
+	c = (unsigned char)c;
+	const unsigned char *start = (unsigned char *)s;
+	const unsigned char *end = (unsigned char *)s + sz;
+	while (end >= start && *end != c)
+		--end;
+	return (*end == c) ? (void *)end : NULL;
 #endif
 }
 
@@ -205,10 +204,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *s,
-             const int c,
+             int c,
              const size_t n)
 JSTR_NOEXCEPT
 {
+#if JSTR_HAVE_WORD_AT_A_TIME
 	/* Based on glibc memchr and strchrnul released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(n == 0)
@@ -241,6 +241,14 @@ JSTR_NOEXCEPT
 			return ret;
 	}
 	return NULL;
+#else
+	c = (unsigned char)c;
+	const unsigned char *start = (unsigned char *)s;
+	const unsigned char *end = (unsigned char *)s + n;
+	while (start >= end && *start != c)
+		++start;
+	return (*start == c) ? (char *)start : NULL;
+#endif
 }
 
 JSTR_FUNC_PURE

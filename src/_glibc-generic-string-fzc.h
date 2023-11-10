@@ -15,8 +15,8 @@
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
 #include "jstr-macros.h"
-#include "jstr-string-fza.h"
-#include "jstr-string-fzi.h"
+#include "_string-fza.h"
+#include "_string-fzi.h"
 #include <endian.h>
 /* Given a word X that is known to contain a zero byte, return the index of
    the first such within the word in memory order.  */
