@@ -53,6 +53,7 @@
 
 #define JSTR_MAX(x, y)     (((x) > (y)) ? (x) : (y))
 #define JSTR_MIN(x, y)     (((x) < (y)) ? (x) : (y))
+#define JSTR_BETWEEN(x, a, b) ((a) <= (x) && (x) <= (b))
 #define JSTR_MIN3(x, y, z) (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
 #define JSTR_MAX3(x, y, z) (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
 #define JSTR_MID3(x, y, z) (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
