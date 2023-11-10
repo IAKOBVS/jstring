@@ -379,7 +379,66 @@ JSTR_NOEXCEPT
 	return jstr_io_fwrite_file(j->data, j->size, fname, modes);
 }
 
-JSTR_INLINE
+#if JSTR_HAVE_POPEN
+
+JSTR_FUNC
+static int
+jstr_io_alloc_popen(char *R *R s,
+                    size_t *R sz,
+                    size_t *R cap,
+                    const char *R cmd)
+JSTR_NOEXCEPT
+{
+	FILE *R fp = popen(cmd, "r");
+	if (jstr_unlikely(fp == NULL))
+		goto err;
+	char *p;
+	enum { MINBUF = JSTR_PAGE_SIZE };
+	char buf[MINBUF];
+	p = buf + fread(buf, 1, MINBUF, fp);
+	if (jstr_unlikely(ferror(fp)))
+		goto err_close;
+	*cap = JSTR_MIN_ALLOC(p - buf);
+	*cap = JSTR_ALIGN_UP_STR(*cap);
+	*s = (char *)malloc(*cap);
+	PJSTR_MALLOC_ERR(*s, goto err_close);
+	memcpy(*s, buf, p - buf);
+	*sz = p - buf;
+	if (jstr_unlikely(p - buf == MINBUF)) {
+		p = *s + (p - buf);
+		const char *old;
+		size_t req_size;
+		for (;;) {
+			req_size = *cap - *sz;
+			old = p;
+			p += fread(p, 1, req_size, fp);
+			*sz += (p - old);
+			if ((size_t)(p - old) < req_size)
+				break;
+			if ((size_t)(p - *s) == *cap) {
+				old = *s;
+				PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, (size_t)(*cap * JSTR_GROWTH), goto err_close)
+				p = *s + (p - old);
+			}
+		}
+		if (jstr_unlikely(ferror(fp)))
+			goto err_close_free;
+		*p = '\0';
+	} else {
+		(*s)[p - buf] = '\0';
+	}
+	pclose(fp);
+	return 1;
+err_close_free:
+	jstr_free(s, sz, cap);
+err_close:
+	pclose(fp);
+err:
+	return 0;
+}
+
+#endif
+
 JSTR_FUNC
 static int
 pjstr_io_alloc_file_len(char *R *R s,
@@ -393,12 +452,11 @@ JSTR_NOEXCEPT
 	const int fd = open(fname, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
-	if (alloc_exact)
-		*cap = JSTR_MIN_ALLOCEXACT(file_size + 1);
-	else
-		*cap = JSTR_MIN_ALLOC(file_size);
-	*cap = JSTR_ALIGN_UP_STR(*cap);
-	*s = (char *)malloc(*cap);
+	if (!alloc_exact) {
+		PJSTR_RESERVE(s, sz, cap, file_size, goto err_close;)
+	} else {
+		PJSTR_RESERVEEXACT(s, sz, cap, file_size, goto err_close;)
+	}
 	PJSTR_MALLOC_ERR(*s, goto err_close);
 	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
 		goto err_close_free;
@@ -445,7 +503,7 @@ jstr_io_allocexact_file(char *R *R s,
                         const size_t file_size)
 JSTR_NOEXCEPT
 {
-	return pjstr_io_alloc_file_len(s, sz, cap, fname, file_size, 0);
+	return pjstr_io_alloc_file_len(s, sz, cap, fname, file_size, 1);
 }
 
 /*
