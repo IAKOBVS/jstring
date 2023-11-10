@@ -9,16 +9,16 @@
 
 #define R JSTR_RESTRICT
 
-#define PJSTR_L_RESERVE_FAIL(func, list, new_cap, do_on_malloc_err) \
+#define PJSTR_L_RESERVE_FAIL(func, list, new_cap, do_on_mallocerr) \
 	if (jstr_unlikely(!func(list, new_cap))) {                  \
 		PJSTR_EXIT_MAYBE();                                 \
-		do_on_malloc_err;                                   \
+		do_on_mallocerr;                                   \
 	}
 
-#define PJSTR_L_RESERVE(list, new_cap, do_on_malloc_err) \
-	PJSTR_L_RESERVE_FAIL(jstr_l_reserve, list, new_cap, do_on_malloc_err)
-#define PJSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_malloc_err) \
-	PJSTR_L_RESERVE_FAIL(jstr_l_reservealways, list, new_cap, do_on_malloc_err)
+#define PJSTR_L_RESERVE(list, new_cap, do_on_mallocerr) \
+	PJSTR_L_RESERVE_FAIL(jstr_l_reserve, list, new_cap, do_on_mallocerr)
+#define PJSTR_L_RESERVE_ALWAYS(list, new_cap, do_on_mallocerr) \
+	PJSTR_L_RESERVE_FAIL(jstr_l_reservealways, list, new_cap, do_on_mallocerr)
 
 #define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = jstr_l_end(l); \
 	                          p < jstr_l_ty_end_;                                              \
@@ -166,7 +166,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-pjstr_l_alloc_assign_len(char *R *R s,
+pjstr_l_allocassign_len(char *R *R s,
                          size_t *R sz,
                          size_t *R cap,
                          const char *R src,
@@ -213,7 +213,7 @@ jstr_l_pushfront_len_unsafe(jstr_l_ty *R l,
 		memmove(l->data + 1, l->data, (jstr_l_end(l) - (l->data)) * sizeof(*l->data));
 	++l->size;
 	if (jstr_unlikely(
-	    !pjstr_l_alloc_assign_len(
+	    !pjstr_l_allocassign_len(
 	    &l->data->data,
 	    &l->data->size,
 	    &l->data->capacity,
@@ -247,7 +247,7 @@ jstr_l_pushback_len_unsafe(jstr_l_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
-	    !pjstr_l_alloc_assign_len(
+	    !pjstr_l_allocassign_len(
 	    &jstr_l_at(l, l->size)->data,
 	    &jstr_l_at(l, l->size)->size,
 	    &jstr_l_at(l, l->size)->capacity,
@@ -297,7 +297,7 @@ JSTR_NOEXCEPT
 	va_start(ap, l);
 	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size)
 		if (jstr_unlikely(
-		    !pjstr_l_alloc_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
+		    !pjstr_l_allocassign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
 	va_end(ap);
 	return 1;
@@ -314,7 +314,7 @@ jstr_l_assign_len(jstr_l_ty *R l,
                   const char *R s,
                   const size_t s_len)
 {
-	return pjstr_l_alloc_assign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
+	return pjstr_l_allocassign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
 }
 
 JSTR_FUNC_PURE

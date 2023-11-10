@@ -441,23 +441,17 @@ err:
 
 JSTR_FUNC
 static int
-pjstr_io_alloc_file_len(char *R *R s,
-                        size_t *R sz,
-                        size_t *R cap,
-                        const char *R fname,
-                        const size_t file_size,
-                        const int alloc_exact)
+jstr_io_readfile_len(char *R *R s,
+                     size_t *R sz,
+                     size_t *R cap,
+                     const char *R fname,
+                     const size_t file_size)
 JSTR_NOEXCEPT
 {
 	const int fd = open(fname, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
-	if (!alloc_exact) {
-		PJSTR_RESERVE(s, sz, cap, file_size, goto err_close;)
-	} else {
-		PJSTR_RESERVEEXACT(s, sz, cap, file_size, goto err_close;)
-	}
-	PJSTR_MALLOC_ERR(*s, goto err_close);
+	PJSTR_RESERVE(s, sz, cap, file_size, goto err_close;)
 	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
 		goto err_close_free;
 	close(fd);
@@ -479,69 +473,16 @@ err:
 */
 JSTR_FUNC
 static int
-jstr_io_alloc_file_len(char *R *R s,
-                       size_t *R sz,
-                       size_t *R cap,
-                       const char *R fname,
-                       const size_t file_size)
-JSTR_NOEXCEPT
-{
-	return pjstr_io_alloc_file_len(s, sz, cap, fname, file_size, 0);
-}
-
-/*
-   Return value:
-   0 on error;
-   otherwise 1.
-*/
-JSTR_FUNC
-static int
-jstr_io_allocexact_file(char *R *R s,
-                        size_t *R sz,
-                        size_t *R cap,
-                        const char *R fname,
-                        const size_t file_size)
-JSTR_NOEXCEPT
-{
-	return pjstr_io_alloc_file_len(s, sz, cap, fname, file_size, 1);
-}
-
-/*
-   Return value:
-   0 on error;
-   otherwise 1.
-*/
-JSTR_FUNC
-static int
-jstr_io_alloc_file(char *R *R s,
-                   size_t *R sz,
-                   size_t *R cap,
-                   const char *R fname,
-                   struct stat *R st)
+jstr_io_readfile(char *R *R s,
+                 size_t *R sz,
+                 size_t *R cap,
+                 const char *R fname,
+                 struct stat *R st)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(fname, st)))
 		return 0;
-	return jstr_io_alloc_file_len(s, sz, cap, fname, st->st_size);
-}
-
-/*
-   Return value:
-   0 on error;
-   otherwise 1.
-*/
-JSTR_FUNC
-static int
-jstr_io_allocexact_file_len(char *R *R s,
-                            size_t *R sz,
-                            size_t *R cap,
-                            const char *R fname,
-                            struct stat *R st)
-JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(stat(fname, st)))
-		return 0;
-	return jstr_io_allocexact_file(s, sz, cap, fname, st->st_size);
+	return jstr_io_readfile_len(s, sz, cap, fname, st->st_size);
 }
 
 /*
@@ -553,8 +494,8 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_io_expand_tilde_p_first(char *R s,
-                             const size_t sz)
+jstr_io_expandtilde_p_first(char *R s,
+                            const size_t sz)
 JSTR_NOEXCEPT
 {
 	if (*s != '~')
@@ -577,8 +518,8 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_io_expand_tilde_unsafe_p(char *R s,
-                              size_t sz)
+jstr_io_expandtilde_unsafe_p(char *R s,
+                             size_t sz)
 JSTR_NOEXCEPT
 {
 	const char *R home = getenv("HOME");
@@ -603,9 +544,9 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static int
-jstr_io_expand_tilde(char *R *R s,
-                     size_t *R sz,
-                     size_t *R cap)
+jstr_io_expandtilde(char *R *R s,
+                    size_t *R sz,
+                    size_t *R cap)
 JSTR_NOEXCEPT
 {
 	const char *R home = getenv("HOME");
