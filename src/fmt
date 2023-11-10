@@ -1,10 +1,14 @@
 #!/bin/sh
 cd "$(dirname "$0")" || exit
+if ! type clang-format >/dev/null; then
+	echo 'clang-format does not exist.'
+	exit
+fi
 for f in $(echo *.h); do
 	{
 		expr "$f" : '*-pp-*' >/dev/null && exit
 		[ "$f" = 'jstr-macros.h' ] && exit
-		clang-format -i --style=file:".clang-format" "$f"
+		clang-format -i --style=file:'.clang-format' "$f"
 	} &
 done
 wait
