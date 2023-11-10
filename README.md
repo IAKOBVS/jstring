@@ -51,7 +51,7 @@ before including any jstr-\* header. This will make them print the filename, lin
 ## Function affixes: 
 
 - \*\_mem\*(): the string need not be nul-terminated
-- \*\_len(): take the length of the nul-terminated string
+- \*\_len(): take the length of the string
 - \*str\*\_len(): the string must be nul-termimated. The size is only used to save a strlen()
 - \*stp\*(), \*\_p(), \*\P(): return a pointer to the end of the string
 - \*\_unsafe(): assume that there be enough space in the string: the string will not be grown
