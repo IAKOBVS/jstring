@@ -43,7 +43,8 @@ JSTR\_INIT is defined as {0}.
 
 0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
 
-Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit. When debugging,
+Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit.<br>
+When debugging,
 ```
 #define JSTR_DEBUG 1
 ```
