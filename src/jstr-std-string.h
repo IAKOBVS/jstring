@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef JSTR_STD_STRING_H
 #define JSTR_STD_STRING_H 1
 

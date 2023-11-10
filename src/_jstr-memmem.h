@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #include "jstr-macros.h"
 
 /* The programmer is expected to check if HAYSTACKLEN >= NEEDLELEN.

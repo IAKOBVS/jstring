@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef JSTR_H_REPLACE_DEF
 #define JSTR_H_REPLACE_DEF 1
 

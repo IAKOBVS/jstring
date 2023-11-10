@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 /* Helper macros for ptr arithmetic.
    Copyright (C) 2012-2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.

@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef JSTR_WORD_AT_A_TIME_H
 #define JSTR_WORD_AT_A_TIME_H
 

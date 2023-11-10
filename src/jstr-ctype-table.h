@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef JSTR_CTYPE_TABLE_H
 #define JSTR_CTYPE_TABLE_H 1
 

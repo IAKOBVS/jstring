@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef JSTR_LIST_H
 #define JSTR_LIST_H
 

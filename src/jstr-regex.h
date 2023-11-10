@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef JSTR_REEX_H
 #define JSTR_REEX_H 1
 

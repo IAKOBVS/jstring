@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef JSTR_ITOA_H
 #define JSTR_ITOA_H 1
 

@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #include "jstr-macros.h"
 #include "jstr-std-string.h"
 #include <string.h>

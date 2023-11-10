@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef PJSTR_SELECTOR_STRING_MISC_H
 #define PJSTR_SELECTOR_STRING_MISC_H 1
 #include "jstr-macros.h"

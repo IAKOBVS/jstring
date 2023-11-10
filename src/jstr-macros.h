@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef JSTR_MACROS_H
 #define JSTR_MACROS_H 1
 

@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #ifndef PJSTR_PP_ARRCPY_VA_ARGS_H
 #define PJSTR_PP_ARRCPY_VA_ARGS_H 1
 
