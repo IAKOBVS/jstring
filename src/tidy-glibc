@@ -2,6 +2,6 @@
 cd "$(dirname "$0")" || exit
 for file in $(echo _glibc-*.h); do
 	#shellcheck disable=SC2005
-	echo "$(perl tidy-glibc.pl "$file")" >"$file" &
+	echo "$(perl ./tidy-glibc.pl "$file")" >"$file" &
 done
 wait

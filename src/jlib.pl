@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+
+# See LICENSE file for copyright and license details.
+
 use strict;
 use warnings;
 

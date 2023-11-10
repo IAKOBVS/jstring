@@ -1,0 +1,3 @@
+#!/bin/sh
+#shellcheck disable=SC2005
+echo "$(perl ./update-copyright.pl ./LICENSE)" >./LICENSE

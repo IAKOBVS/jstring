@@ -11,7 +11,7 @@ update_if_needed()
 	if expr "$in_fname" : '^_' >/dev/null; then
 		cp -f "$in_fname" "$out_fname"
 	else
-		perl gen-func.pl "$in_fname" >"$out_fname"
+		perl ./gen-func.pl "$in_fname" >"$out_fname"
 	fi
 	echo "Built $in_fname."
 }
