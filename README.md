@@ -39,21 +39,22 @@ jstr_ty j = {0};
 ```
 JSTR\_INIT is defined as {0}.
 
-## Error handling: 
+## Error handling: errno
+
 0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
 
-Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit. For more comprehensive error messages, use the \*\_debug\(\) functions or
+Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit. When debugging,
 ```
 #define JSTR_DEBUG 1
 ```
-before including any jstr-\* header. This will make them print the filename, line number, and function in which the error occured.
+before including any jstr-\* header to automatically call jstr\_err\_exit() on errors.
 
 ## Function affixes: 
 
 - \*\_mem\*(): the string need not be nul-terminated
 - \*\_len(): take the length of the string
 - \*str\*\_len(): the string must be nul-termimated. The size is only used to save a strlen()
-- \*stp\*(), \*\_p(), \*\P(): return a pointer to the end of the string
+- \*stp\*(), \*\_p(), \*P(): return a pointer to the end of the string
 - \*\_unsafe(): assume that there be enough space in the string: the string will not be grown
 - \*\_from(): instead of searching the whole string, start the search from an index.<br>
 The index passed by the user is assumed to be not out of bounds.
