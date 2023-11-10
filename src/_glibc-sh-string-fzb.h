@@ -14,8 +14,8 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZB_H
 #define PJSTR_STRING_FZB_H 1
-#include "jstr-macros.h"
 #include "_string-optype.h"
+#include "jstr-macros.h"
 #include <sys/cdefs.h>
 /* Determine if any bytes within X1 and X2 are equal.  */
 static JSTR_INLINE int

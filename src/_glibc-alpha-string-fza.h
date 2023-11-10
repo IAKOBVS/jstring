@@ -14,9 +14,9 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZA_H
 #define PJSTR_STRING_FZA_H 1
-#include "jstr-macros.h"
 #include "_string-misc.h"
 #include "_string-optype.h"
+#include "jstr-macros.h"
 /* The CMPBGE instruction creates a bit mask rather than a byte mask.
    However, if we narrow jstr_word_ty to either 'int' or 'uint8_t', we get
    unnecessary truncation instructions from the 'unsigned long' type

@@ -14,8 +14,8 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZC_H
 #define PJSTR_STRING_FZC_H 1
-#include "jstr-macros.h"
 #include "_string-optype.h"
+#include "jstr-macros.h"
 _Static_assert(sizeof(jstr_word_ty) == 4, "64-bit not supported");
 /* Given a word X that is known to contain a zero byte, return the
    index of the first such within the long in memory order.  */

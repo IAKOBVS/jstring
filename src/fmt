@@ -1,17 +1,10 @@
 #!/bin/sh
 cd "$(dirname "$0")" || exit
-fmt()
-{
-	clang-format -i --style=file:".clang-format" "$1"
-}
-fmt_if_needed()
-{
-	case $1 in
-	*_pp_*) ;;
-	*) fmt "$1" & ;;
-	esac
-}
-for f in $(echo *.h *.c); do
-	fmt_if_needed "$f" &
+for f in $(echo *.h); do
+	{
+		expr "$f" : '*-pp-*' >/dev/null && exit
+		[ "$f" = 'jstr-macros.h' ] && exit
+		clang-format -i --style=file:".clang-format" "$f"
+	} &
 done
 wait

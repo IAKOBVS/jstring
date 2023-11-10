@@ -14,9 +14,9 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZI_H
 #define PJSTR_STRING_FZI_H
-#include "jstr-macros.h"
 #include "_string-fza.h"
 #include "_string-optype.h"
+#include "jstr-macros.h"
 #include <stdint.h>
 /* Note that since CMPBGE creates a bit mask rather than a byte mask,
    we cannot simply provide a target-specific string-fza.h.  */

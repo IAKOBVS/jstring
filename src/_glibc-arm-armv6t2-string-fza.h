@@ -14,9 +14,9 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZA_H
 #define PJSTR_STRING_FZA_H 1
-#include "jstr-macros.h"
 #include "_string-misc.h"
 #include "_string-optype.h"
+#include "jstr-macros.h"
 /* The functions return a byte mask.  */
 /* This function returns at least one bit set within every byte
    of X that is zero.  */

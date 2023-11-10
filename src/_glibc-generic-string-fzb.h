@@ -14,8 +14,8 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZB_H
 #define PJSTR_STRING_FZB_H 1
-#include "jstr-macros.h"
 #include "_string-fza.h"
+#include "jstr-macros.h"
 #include <endian.h>
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 static JSTR_INLINE int

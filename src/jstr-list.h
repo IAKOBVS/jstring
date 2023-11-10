@@ -10,8 +10,8 @@
 #define R JSTR_RESTRICT
 
 #define PJSTR_L_RESERVE_FAIL(func, list, new_cap, do_on_mallocerr) \
-	if (jstr_unlikely(!func(list, new_cap))) {                  \
-		PJSTR_EXIT_MAYBE();                                 \
+	if (jstr_unlikely(!func(list, new_cap))) {                 \
+		PJSTR_EXIT_MAYBE();                                \
 		do_on_mallocerr;                                   \
 	}
 
@@ -167,10 +167,10 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 pjstr_l_allocassign_len(char *R *R s,
-                         size_t *R sz,
-                         size_t *R cap,
-                         const char *R src,
-                         const size_t src_len)
+                        size_t *R sz,
+                        size_t *R cap,
+                        const char *R src,
+                        const size_t src_len)
 {
 	*cap = JSTR_ALIGN_UP_STR(src_len + 1);
 	*s = (char *)malloc(*cap);

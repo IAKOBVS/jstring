@@ -14,8 +14,8 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZB_H
 #define PJSTR_STRING_FZB_H 1
-#include "jstr-macros.h"
 #include "_string-optype.h"
+#include "jstr-macros.h"
 #include <sys/cdefs.h>
 _Static_assert(sizeof(jstr_word_ty) == 4, "64-bit not supported");
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */

@@ -14,9 +14,9 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_FZI_H
 #define PJSTR_STRING_FZI_H 1
-#include "jstr-macros.h"
 #include "_string-fza.h"
 #include "_string-optype.h"
+#include "jstr-macros.h"
 _Static_assert(sizeof(jstr_word_ty) == 4, "64-bit not supported");
 static JSTR_INLINE unsigned int
 jstr_word_index_first(jstr_word_ty c)

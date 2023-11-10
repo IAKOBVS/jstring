@@ -14,8 +14,8 @@
    <http://www.gnu.org/licenses/>.  */
 #ifndef PJSTR_STRING_MISC_H
 #define PJSTR_STRING_MISC_H 1
-#include "jstr-macros.h"
 #include "_string-optype.h"
+#include "jstr-macros.h"
 #include <endian.h>
 #include <limits.h>
 /* Extract the byte at index IDX from word X, with index 0 being the
