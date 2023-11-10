@@ -51,12 +51,12 @@
 #	define JSTR_GLIBC_PREREQ(maj, min) 0
 #endif
 
-#define JSTR_MAX(x, y)     (((x) > (y)) ? (x) : (y))
-#define JSTR_MIN(x, y)     (((x) < (y)) ? (x) : (y))
-#define JSTR_BETWEEN(x, a, b) ((a) <= (x) && (x) <= (b))
-#define JSTR_MIN3(x, y, z) (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
-#define JSTR_MAX3(x, y, z) (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
-#define JSTR_MID3(x, y, z) (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
+#define JSTR_MAX(x, y)        (((x) > (y)) ? (x) : (y))
+#define JSTR_MIN(x, y)        (((x) < (y)) ? (x) : (y))
+#define JSTR_BETWEEN(x, a, b) (((a) <= (x)) && ((x) <= (b)))
+#define JSTR_MIN3(x, y, z)    (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
+#define JSTR_MAX3(x, y, z)    (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
+#define JSTR_MID3(x, y, z)    (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
 
 #if !defined __cplusplus && defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1
