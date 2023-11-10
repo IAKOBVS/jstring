@@ -1081,7 +1081,7 @@ pjstr_sprintf_err(char *R *R s,
    %llu - unsigned long long.
    %p - ptr.
    %n - chars written.
-   %m - strlen of errno string.
+   %m - errno string.
    Otherwise, return 0 and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 4, 5)
