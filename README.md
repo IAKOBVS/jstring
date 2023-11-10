@@ -9,18 +9,6 @@
 - extensions to standard string functions: strnstr(), strnchr(), strcasestr\_len()
 - string formatting: asprintf() (implemented with vsprintf, which is standard) and vsprintf\_strlen() for checking the size of allocation needed for sprintf()
 
-## Disclaimer:
-
-- jstr\_ty, jstr\_l\_ty must be initialized with zeros.
-```
-jstr_ty j = JSTR_INIT;
-```
-or
-```
-jstr_ty j = {0};
-```
-JSTR\_INIT is defined as {0}.
-
 ## Installation:
 
 ```
@@ -38,6 +26,18 @@ or
 ```
 
 Some headers may need to be explicitly included since they rely on POSIX.
+
+## Disclaimer:
+
+- jstr\_ty, jstr\_l\_ty must be initialized with zeros.
+```
+jstr_ty j = JSTR_INIT;
+```
+or
+```
+jstr_ty j = {0};
+```
+JSTR\_INIT is defined as {0}.
 
 ## Error handling: 
 0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
