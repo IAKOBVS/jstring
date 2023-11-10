@@ -637,13 +637,13 @@ typedef enum jstr_io_ftw_flag_ty {
 #define NONFATAL_ERR() jstr_likely(errno == EACCES || errno == ENOENT)
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-#	define FILL_PATH_ALWAYS()                                                        \
-		do {                                                                      \
-			jstr_io_appendpath_len(dirpath + dlen, ep->d_name, ep->d_namlen); \
-			path_len = dlen + 1 + ep->d_namlen;                               \
+#	define FILL_PATH_ALWAYS()                                                               \
+		do {                                                                             \
+			jstr_io_appendpath_len(dirpath + dirpath_len, ep->d_name, ep->d_namlen); \
+			path_len = dirpath_len + 1 + ep->d_namlen;                               \
 		} while (0)
 #else
-#	define FILL_PATH_ALWAYS() ((void)(path_len = jstr_io_appendpath_p(dirpath + dlen, ep->d_name) - dirpath))
+#	define FILL_PATH_ALWAYS() ((void)(path_len = jstr_io_appendpath_p(dirpath + dirpath_len, ep->d_name) - dirpath))
 #endif
 
 #if USE_ATFILE
@@ -708,7 +708,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #endif
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
-                                   size_t dlen,
+                                   size_t dirpath_len,
                                    const struct stat *st);
 
 JSTR_FUNC_VOID_MAY_NULL
@@ -717,7 +717,7 @@ JSTR_NONNULL(3)
 JSTR_NONNULL(7)
 static int
 pjstr_io_ftw_len(char *R dirpath,
-                 const size_t dlen,
+                 const size_t dirpath_len,
                  int (*fn)(const char *, size_t, const struct stat *),
                  const int jflags,
                  const char *R fn_glob,
@@ -751,10 +751,10 @@ JSTR_NOEXCEPT
 		/* Exit if DIRPATH is longer than PATH_MAX. */
 		if (
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-		jstr_unlikely(dlen + ep->d_namlen >= JSTR_IO_PATH_MAX)
+		jstr_unlikely(dirpath_len + ep->d_namlen >= JSTR_IO_PATH_MAX)
 #else
-		jstr_unlikely(dlen >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX)
-		&& jstr_unlikely(dlen + strlen(ep->d_name) >= JSTR_IO_PATH_MAX)
+		jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX)
+		&& jstr_unlikely(dirpath_len + strlen(ep->d_name) >= JSTR_IO_PATH_MAX)
 #endif
 		) {
 			errno = ENAMETOOLONG;
@@ -825,7 +825,7 @@ do_dir:
 		if (jflags & JSTR_IO_FTW_REG)
 			if (!(jflags & JSTR_IO_FTW_DIR))
 				goto CONT;
-		ret = fn(dirpath, dlen, st);
+		ret = fn(dirpath, dirpath_len, st);
 		if (jflags & JSTR_IO_FTW_ACTIONRETVAL) {
 			if (ret == JSTR_IO_FTW_RET_CONTINUE)
 				continue;
@@ -885,24 +885,24 @@ JSTR_NONNULL(1)
 JSTR_NONNULL(3)
 static int
 jstr_io_ftw_len(const char *R dirpath,
-                size_t dlen,
+                size_t dirpath_len,
                 int (*fn)(const char *, size_t, const struct stat *),
                 const int jstr_io_ftw_flag,
                 const char *R fn_glob,
                 const int fn_flags)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(dlen == 0)) {
+	if (jstr_unlikely(dirpath_len == 0)) {
 		errno = ENOENT;
 		return 0;
 	}
-	if (jstr_unlikely(dlen >= JSTR_IO_PATH_MAX)) {
+	if (jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX)) {
 		errno = ENAMETOOLONG;
 		return 0;
 	}
-	while (dlen != 1
-	       && dirpath[dlen - 1] == '/')
-		--dlen;
+	while (dirpath_len != 1
+	       && dirpath[dirpath_len - 1] == '/')
+		--dirpath_len;
 	char fulpath[JSTR_IO_PATH_MAX];
 	if (jstr_io_ftw_flag & JSTR_IO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {
@@ -910,11 +910,11 @@ JSTR_NOEXCEPT
 			if (jstr_unlikely(home == NULL))
 				return 0;
 			const size_t homelen = jstr_stpcpy(fulpath, home) - fulpath;
-			memcpy(fulpath + homelen, dirpath + 1, dlen);
-			dlen += homelen - 1;
+			memcpy(fulpath + homelen, dirpath + 1, dirpath_len);
+			dirpath_len += homelen - 1;
 		}
 	} else {
-		jstr_strcpy_len(fulpath, dirpath, dlen);
+		jstr_strcpy_len(fulpath, dirpath, dirpath_len);
 	}
 #if USE_ATFILE
 	const int fd = open(fulpath, O_RDONLY);
@@ -923,9 +923,9 @@ JSTR_NOEXCEPT
 #endif
 	struct stat st;
 	/* This avoids things like //usr/cache. */
-	if (jstr_unlikely(dlen == 1)
+	if (jstr_unlikely(dirpath_len == 1)
 	    && jstr_unlikely(*dirpath == '/')) {
-		dlen = 0;
+		dirpath_len = 0;
 		goto ftw;
 	}
 #if USE_ATFILE
@@ -941,7 +941,7 @@ ftw:
 			if (!(jstr_io_ftw_flag & JSTR_IO_FTW_DIR))
 				goto CONT;
 		int ret;
-		ret = fn(dirpath, dlen, &st);
+		ret = fn(dirpath, dirpath_len, &st);
 		if (jstr_io_ftw_flag & JSTR_IO_FTW_ACTIONRETVAL) {
 			if (jstr_unlikely(ret != JSTR_IO_FTW_RET_CONTINUE))
 				goto err_close;
@@ -950,7 +950,7 @@ ftw:
 				goto err_close;
 		}
 CONT:
-		pjstr_io_ftw_len(fulpath, dlen, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st FD_ARG);
+		pjstr_io_ftw_len(fulpath, dirpath_len, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st FD_ARG);
 #if USE_ATFILE
 		close(fd);
 #endif
@@ -965,7 +965,7 @@ CONT:
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
 			return 1;
-	return fn(fulpath, dlen, &st);
+	return fn(fulpath, dirpath_len, &st);
 err_close:
 #if USE_ATFILE
 	close(fd);
@@ -975,29 +975,6 @@ err_close:
 
 #undef USE_ATFILE
 #undef FD_ARG
-
-/*
-   Call FN() on files found recursively that matches GLOB.
-   If FN() returns 0, stop processing.
-   Return value:
-   0 on error;
-   1 on success or non-fatal errors (EACCES or ENOENT) encountered on some entries.
-   If a non-fatal error is encountered, continue processing other entries.
-*/
-JSTR_FUNC_MAY_NULL
-JSTR_NONNULL(1)
-JSTR_NONNULL(2)
-JSTR_INLINE
-static int
-jstr_io_ftw(const char *R dirpath,
-            int (*fn)(const char *, size_t, const struct stat *),
-            const int jstr_io_ftw_flag,
-            const char *R fn_glob,
-            const int fn_flags)
-JSTR_NOEXCEPT
-{
-	return jstr_io_ftw_len(dirpath, strlen(dirpath), fn, jstr_io_ftw_flag, fn_glob, fn_flags);
-}
 
 PJSTR_END_DECLS
 
