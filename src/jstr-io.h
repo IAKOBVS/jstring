@@ -235,10 +235,33 @@ JSTR_NOEXCEPT
 	return 0;
 }
 
-#define PJSTR_ELF    "\x7f\ELF"
-#define PJSTR_ELF_SZ (sizeof("\x7f\ELF") - 1)
-#define PJSTR_UTF    "\xEF\xBB\xBF"
-#define PJSTR_UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
+#define ELF    "\x7f\ELF"
+#define ELF_SZ (sizeof("\x7f\ELF") - 1)
+#define UTF    "\xEF\xBB\xBF"
+#define UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
+
+JSTR_FUNC
+JSTR_INLINE
+static int
+pjstr_io_isbinarysignature(const char *R buf,
+                           const size_t sz)
+{
+	if (jstr_likely(sz > ELF_SZ - 1)) {
+		if (jstr_unlikely(!memcmp(buf, ELF, ELF_SZ)))
+			return 1;
+check_utf:;
+		if (!memcmp(buf, UTF, UTF_SZ))
+			return 0;
+	} else if (jstr_likely(sz == UTF_SZ)) {
+		goto check_utf;
+	}
+	return -1;
+}
+
+#undef ELF
+#undef ELF_SZ
+#undef UTF
+#undef UTF_SZ
 
 /*
    Check if the first JSTR_IO_BINARY_CHECK_MAX bytes or fewer contain any unprintable character.
@@ -249,39 +272,17 @@ jstr_io_isbinary_maybe(const char *R buf,
                        const size_t sz)
 JSTR_NOEXCEPT
 {
-#define JSTR_BINARY_CHECK()                                                       \
-	do {                                                                      \
-		if (jstr_likely(sz > PJSTR_ELF_SZ - 1)) {                         \
-			if (jstr_unlikely(!memcmp(buf, PJSTR_ELF, PJSTR_ELF_SZ))) \
-				return 1;                                         \
-check_utf:;                                                                       \
-			if (!memcmp(buf, PJSTR_UTF, PJSTR_UTF_SZ))                \
-				return 0;                                         \
-		} else if (jstr_likely(sz == PJSTR_UTF_SZ)) {                     \
-			goto check_utf;                                           \
-		}                                                                 \
-	} while (0)
 	if (jstr_unlikely(sz == 0))
 		return 0;
-	JSTR_BINARY_CHECK();
+	const int ret = pjstr_io_isbinarysignature(buf, sz);
+	if (ret != -1)
+		return ret;
 	const unsigned char *const end = (unsigned char *)buf + JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
 		if (pjstr_io_reject_table[*s++])
 			return 1;
 	return 0;
-}
-
-/*
-   Check if the first 32 bytes or fewer contain any unprintable character.
-*/
-JSTR_FUNC_PURE
-JSTR_INLINE
-static int
-jstr_io_isbinary_maybe_j(jstr_ty *R j)
-JSTR_NOEXCEPT
-{
-	return jstr_io_isbinary_maybe(j->data, j->size);
 }
 
 /*
@@ -294,27 +295,10 @@ jstr_io_isbinary(const char *R buf,
                  const size_t sz)
 JSTR_NOEXCEPT
 {
-	JSTR_BINARY_CHECK();
+	const int ret = pjstr_io_isbinarysignature(buf, sz);
+	if (ret != -1)
+		return ret;
 	return strlen(buf) != sz;
-}
-
-#undef JSTR_BINARY_CHECK
-#undef PJSTR_ELF
-#undef PJSTR_ELF_SZ
-#undef PJSTR_UTF
-#undef PJSTR_UTF_SZ
-
-/*
-   Check the whole file for any unprintable character.
-   File must be nul terminated.
-*/
-JSTR_FUNC_PURE
-JSTR_INLINE
-static int
-jstr_io_isbinary_j(jstr_ty *R j)
-JSTR_NOEXCEPT
-{
-	return jstr_io_isbinary(j->data, j->size);
 }
 
 JSTR_FUNC
@@ -717,8 +701,10 @@ typedef enum jstr_io_ftw_flag_ty {
 
 #if USE_ATFILE
 #	define FD_PARAM , int fd
+#	define FD_ARG   , fd
 #else
 #	define FD_PARAM
+#	define FD_ARG
 #endif
 
 typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
@@ -964,11 +950,9 @@ ftw:
 				goto err_close;
 		}
 CONT:
+		pjstr_io_ftw_len(fulpath, dlen, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st FD_ARG);
 #if USE_ATFILE
-		pjstr_io_ftw_len(fulpath, dlen, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st, fd);
 		close(fd);
-#else
-		pjstr_io_ftw_len(fulpath, dlen, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st);
 #endif
 		return 1;
 	}
@@ -990,6 +974,7 @@ err_close:
 }
 
 #undef USE_ATFILE
+#undef FD_ARG
 
 /*
    Call FN() on files found recursively that matches GLOB.
