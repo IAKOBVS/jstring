@@ -22,11 +22,11 @@ sudo ./install
 or
 
 ```
-sudo ./install-to /path/to/library
+sudo ./install-to /path/to/some/dir
 ```
 
 ```
-#include "/path/to/library/jstr/jstr.h"
+#include "/path/to/some/dir/jstr.h"
 ```
 
 Some headers may need to be explicitly included since they rely on POSIX.
