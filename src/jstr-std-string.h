@@ -117,7 +117,8 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, sz);
 #elif JSTR_HAVE_WORD_AT_A_TIME
-	/* Taken from glibc memrchr released under the terms of the GNU Lesser General Public License.
+	/* The following is based on the implementation of memrchr() from the GNU C
+	   Library released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(sz == 0))
 		return NULL;
@@ -211,7 +212,8 @@ jstr_strnchr(const char *s,
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_WORD_AT_A_TIME
-	/* Based on glibc memchr and strchrnul released under the terms of the GNU Lesser General Public License.
+	/* The following is based on the implementation of memrchr() and strchrnul() from the
+	   GNU C Library released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	if (jstr_unlikely(n == 0)
 	    || jstr_unlikely(*s == '\0'))
