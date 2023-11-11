@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 #include "jstr-macros.h"
-#include "jstr-std-string.h"
+#include "jstr-stdstring.h"
 #include <string.h>
 
 #ifndef PJSTR_MEMMEM_RETTYPE
