@@ -39,7 +39,7 @@ jstr_ty j = {0};
 ```
 JSTR\_INIT is defined as {0}.
 
-## Error handling: errno
+## Error handling:
 
 0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
 
