@@ -37,6 +37,6 @@ my $file_str;
 
 for (my $i = 0; $i < scalar(@builtins); ++$i) {
 	if (index($file_str, $builtins[$i]) == -1) {
-		die "$builtins[$i] from $filenames[$i] isn't checked for in $fname\n";
+		die "$builtins[$i] from $filenames[$i] isn't checked for in $fname for JSTR_HAVE_WORD_AT_A_TIME.\n";
 	}
 }
