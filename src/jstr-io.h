@@ -51,6 +51,7 @@ pjstr_io_exttype_len(const char *ext,
                      const int ext_len)
 JSTR_NOEXCEPT
 {
+	/* From shortest to longest extension. */
 	static const char *text[][4] = {
 		{}, /* A */
 		{}, /* B */
