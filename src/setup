@@ -4,3 +4,4 @@ cd "$(dirname "$0")" || exit
 ./check-little-endian
 ./check-page-size
 ./check-builtins || exit
+./check-word-at-a-time-inclusion || exit
