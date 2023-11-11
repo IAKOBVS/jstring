@@ -583,8 +583,8 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
-JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
 static char *
 jstr_io_appendpath_len_p(char *R path,
                          const size_t path_len,
@@ -596,8 +596,8 @@ jstr_io_appendpath_len_p(char *R path,
 	return path + path_len + 1 + fname_len;
 }
 
-JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
 static char *
 jstr_io_appendpath_p(char *R path,
                      const size_t path_len,
