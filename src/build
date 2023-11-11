@@ -1,6 +1,6 @@
 #!/bin/sh
 cd "$(dirname "$0")" || exit
-./before-build
+./setup || exit
 mkdir -p ../jstr
 update_if_needed()
 {
