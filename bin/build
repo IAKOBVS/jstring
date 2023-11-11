@@ -1,5 +1,5 @@
 #!/bin/sh
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit
 for file in $(echo *.c); do
 	{
 	bin="${file%.*}"
