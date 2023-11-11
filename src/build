@@ -19,9 +19,15 @@ for file in $(echo *.h); do
 	update_if_needed "$file" &
 done
 wait
-TMP=/tmp/__jstr_tmp_obj__
+compile()
 {
-	echo '#include "../jstr/jstr.h"'
-	echo 'int main() { return 0; }'
-} | cc -x c -o $TMP - || exit
+	cc -x c -o "$1" -
+}
+file_str='#include "../jstr/jstr.h"
+int main() {return 0;}'
+TMP=/tmp/__jstr_tmp_obj__
+echo "$file_str" | compile "$TMP" || exit
+file_str="#define __STRICT_ANSI__
+$file_str"
+echo "$file_str" | compile "$TMP" || exit
 rm -f $TMP
