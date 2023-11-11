@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef JSTR_REEX_H
-#define JSTR_REEX_H 1
+#ifndef JSTR_RE_H
+#define JSTR_RE_H 1
 
 #include "jstr-macros.h"
 
@@ -793,4 +793,4 @@ PJSTR_END_DECLS
 #undef JSTR_PRINT_LOG
 #undef JSTR_RE_DEBUG
 
-#endif /* JSTR_REEX_H */
+#endif /* JSTR_RE_H */
