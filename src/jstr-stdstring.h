@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef JSTR_STD_STRING_H
-#define JSTR_STD_STRING_H 1
+#ifndef JSTR_STDSTRING_H
+#define JSTR_STDSTRING_H 1
 
 #include "jstr-macros.h"
 #include "jstr-struct.h"
@@ -537,4 +537,4 @@ PJSTR_END_DECLS
 
 #undef R
 
-#endif /* JSTR_STD_STRING_H */
+#endif /* JSTR_STDSTRING_H */
