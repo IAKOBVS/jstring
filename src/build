@@ -19,8 +19,9 @@ for file in $(echo *.h); do
 	update_if_needed "$file" &
 done
 wait
+TMP=/tmp/__jstr_tmp_obj__
 {
 	echo '#include "../jstr/jstr.h"'
 	echo 'int main() { return 0; }'
-} | cc -x c -o /tmp/__jstr_tmp_obj__ - || exit
-rm /tmp/__jstr_tmp_obj__
+} | cc -x c -o $TMP - || exit
+rm -f $TMP
