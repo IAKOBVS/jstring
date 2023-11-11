@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $file_str;
+
+while (glob('_string-*.h')) {
+	local $/;
+	open(my $FH, '<', $_);
+	$file_str .= <$FH>;
+	close($FH);
+}
+
+while (glob('_glibc-*.h')) {
+	die "$_ isn't included in any _string-* file.\n" if (index($file_str, $_) == -1);
+}
