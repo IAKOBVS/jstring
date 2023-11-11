@@ -1,0 +1,42 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my @builtins;
+my @filenames;
+
+sub in_array {
+	my ($arr_ref, $val) = @_;
+	foreach (@$arr_ref) {
+		return 1 if ($val eq $_);
+	}
+	return 0;
+}
+
+while (glob('_glibc-*.h')) {
+	my $fname = $_;
+	open(my $FH, '<', $fname) or die "Can't open $fname\n";
+	while (<$FH>) {
+		if (/(__builtin\w*)/ && !in_array(\@builtins, $1)) {
+			push(@builtins,  $1);
+			push(@filenames, $fname);
+		}
+	}
+	close($FH);
+}
+
+my $fname = './jstr-macros.h';
+my $file_str;
+{
+	local $/;
+	open(my $FH, '<', $fname) or die "Can't open $fname\n";
+	$file_str = <$FH>;
+	close($FH);
+}
+
+for (my $i = 0; $i < scalar(@builtins); ++$i) {
+	if (index($file_str, $builtins[$i]) == -1) {
+		die "$builtins[$i] from $filenames[$i] isn't checked for in $fname\n";
+	}
+}
