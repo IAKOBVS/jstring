@@ -481,8 +481,8 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_io_expandtilde_p_first(char *R s,
-                            const size_t sz)
+jstr_io_expandtildefirst_len_unsafe_p(char *R s,
+                                      const size_t sz)
 JSTR_NOEXCEPT
 {
 	if (*s != '~')
@@ -497,6 +497,33 @@ JSTR_NOEXCEPT
 }
 
 /*
+   Expand ~/some_dir to /home/username/some_dir.
+   Assume that S has enough space.
+   Return value:
+   ptr to '\0' in S.
+   NULL on error.
+*/
+JSTR_FUNC
+static int
+jstr_io_expandtildefirst_p(char *R *R s,
+                           size_t *R sz,
+                           size_t *R cap)
+JSTR_NOEXCEPT
+{
+	if (**s != '~')
+		return 1;
+	const char *R home = getenv("HOME");
+	if (jstr_unlikely(home == NULL))
+		return 0;
+	const size_t len = strlen(home);
+	PJSTR_RESERVE(s, sz, cap, *sz + len, return 0);
+	jstr_strmove_len(*s + len, *s + 1, (*s + *sz) - (*s + 1));
+	memcpy(*s, home, len);
+	*sz += len;
+	return 1;
+}
+
+/*
    Expand every ~ to /home/username.
    Assume that S has enough space.
    Return value:
@@ -505,8 +532,8 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_io_expandtilde_unsafe_p(char *R s,
-                             size_t sz)
+jstr_io_expandtilde_len_unsafe_p(char *R s,
+                                 size_t sz)
 JSTR_NOEXCEPT
 {
 	const char *R home = getenv("HOME");
@@ -559,8 +586,32 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_io_appendpath_p(char *R path_end,
+jstr_io_appendpath_len_p(char *R path,
+                         const size_t path_len,
+                         const char *R fname,
+                         const size_t fname_len)
+{
+	*path = '/';
+	jstr_strcpy_len(path + path_len + 1, fname, fname_len);
+	return path + path_len + 1 + fname_len;
+}
+
+JSTR_INLINE
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_io_appendpath_p(char *R path,
+                     const size_t path_len,
                      const char *R fname)
+{
+	*(path + path_len) = '/';
+	return jstr_stpcpy(path + path_len + 1, fname);
+}
+
+JSTR_INLINE
+JSTR_FUNC_RET_NONNULL
+static char *
+pjstr_io_appendpath_p(char *R path_end,
+                      const char *R fname)
 JSTR_NOEXCEPT
 {
 	*path_end = '/';
@@ -570,9 +621,9 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-jstr_io_appendpath_len(char *R path_end,
-                       const char *R fname,
-                       const size_t flen)
+pjstr_io_appendpath_len(char *R path_end,
+                        const char *R fname,
+                        const size_t flen)
 JSTR_NOEXCEPT
 {
 	*path_end = '/';
@@ -640,13 +691,13 @@ typedef enum jstr_io_ftw_flag_ty {
 #define NONFATAL_ERR() jstr_likely(errno == EACCES || errno == ENOENT)
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-#	define FILL_PATH_ALWAYS()                                                               \
-		do {                                                                             \
-			jstr_io_appendpath_len(dirpath + dirpath_len, ep->d_name, ep->d_namlen); \
-			path_len = dirpath_len + 1 + ep->d_namlen;                               \
+#	define FILL_PATH_ALWAYS()                                                                \
+		do {                                                                              \
+			pjstr_io_appendpath_len(dirpath + dirpath_len, ep->d_name, ep->d_namlen); \
+			path_len = dirpath_len + 1 + ep->d_namlen;                                \
 		} while (0)
 #else
-#	define FILL_PATH_ALWAYS() ((void)(path_len = jstr_io_appendpath_p(dirpath + dirpath_len, ep->d_name) - dirpath))
+#	define FILL_PATH_ALWAYS() ((void)(path_len = pjstr_io_appendpath_p(dirpath + dirpath_len, ep->d_name) - dirpath))
 #endif
 
 #if USE_ATFILE
