@@ -105,6 +105,16 @@ JSTR_NOEXCEPT
 	*cap = 0;
 }
 
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstr_empty(char *R s,
+           size_t *R sz)
+{
+	*s = '\0';
+	*sz = 0;
+}
+
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t

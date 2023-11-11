@@ -370,10 +370,10 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static int
-jstr_io_alloc_popen(char *R *R s,
-                    size_t *R sz,
-                    size_t *R cap,
-                    const char *R cmd)
+jstr_io_readpopen(char *R *R s,
+                  size_t *R sz,
+                  size_t *R cap,
+                  const char *R cmd)
 JSTR_NOEXCEPT
 {
 	FILE *R fp = popen(cmd, "r");
@@ -385,10 +385,7 @@ JSTR_NOEXCEPT
 	p = buf + fread(buf, 1, MINBUF, fp);
 	if (jstr_unlikely(ferror(fp)))
 		goto err_close;
-	*cap = JSTR_MIN_ALLOC(p - buf);
-	*cap = JSTR_ALIGN_UP_STR(*cap);
-	*s = (char *)malloc(*cap);
-	PJSTR_MALLOC_ERR(*s, goto err_close);
+	PJSTR_RESERVE(s, sz, cap, p - buf, goto err_close);
 	memcpy(*s, buf, p - buf);
 	*sz = p - buf;
 	if (jstr_unlikely(p - buf == MINBUF)) {
