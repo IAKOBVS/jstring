@@ -547,11 +547,10 @@ JSTR_NOEXCEPT
 	case 4: {
 		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		for (h -= 3; h >= start; hw = hw << 8 | *--h) {
+		for (h -= 3; h >= start; hw = hw << 8 | *--h)
 			if (hw == nw)
 				if (ne_len == 4 || !memcmp(h, n, ne_len))
 					return (char *)h;
-		}
 	}
 	}
 	return NULL;
