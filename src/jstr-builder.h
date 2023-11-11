@@ -111,6 +111,7 @@ JSTR_INLINE
 static void
 jstr_empty(char *R s,
            size_t *R sz)
+JSTR_NOEXCEPT
 {
 	*s = '\0';
 	*sz = 0;
