@@ -4,6 +4,6 @@ for file in $(echo *.c); do
 	{
 	bin="${file%.*}"
 	test -e "$bin" && test "$file" -ot "$bin" && exit 0
-	cc -O3 "$file" -o "$bin"
+	cc "$file" -o "$bin"
 	} &
 done
