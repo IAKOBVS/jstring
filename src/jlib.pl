@@ -208,12 +208,7 @@ sub jl_fn_get {
 sub jl_fn_to_string {
 	my ($attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref) = @_;
 	my $arg = jl_arg_to_string($arg_arr_ref);
-	return
-		$$attr_ref . "\n"
-	  . $$rettype_ref . "\n"
-	  . $$name_ref . '('
-	  . $arg . ")\n{"
-	  . $$body_ref . "}";
+	return "$$attr_ref\n$$rettype_ref\n$$name_ref($arg)\n{ $$body_ref }";
 }
 
 # @param {$} name_ref
