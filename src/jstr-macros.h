@@ -1044,12 +1044,12 @@ PJSTR_CAST(T, Other other)
 #	define PJSTR_CAST(T, other) (other)
 #endif /* __cpluslus */
 
-#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                  \
-	                             ? (memset(array, c, 64),                \
-	                                memset(array + 64, c, 64),           \
-	                                memset(array + 64 + 64, c, 64),      \
-	                                memset(array + 64 + 64 + 64, c, 64)) \
-	                             : memset(array, c, sizeof(array)))
+#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                      \
+	                             ? (memset((array), (c), 64),                \
+	                                memset((array) + 64, (c), 64),           \
+	                                memset((array) + 64 + 64, (c), 64),      \
+	                                memset((array) + 64 + 64 + 64, (c), 64)) \
+	                             : memset((array), (c), sizeof((array))))
 #define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
 
 #if JSTR_ARCH_ALPHA
