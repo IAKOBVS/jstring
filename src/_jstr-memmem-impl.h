@@ -89,7 +89,7 @@ start:;
 		do {
 			hs += m1;
 			tmp = shift[PJSTR_MEMMEM_HASH2(hs)];
-		} while (!tmp & (hs <= end));
+		} while (!tmp && (hs <= end));
 		hs -= tmp;
 		if (tmp < m1)
 			continue;
