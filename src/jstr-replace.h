@@ -950,15 +950,6 @@ JSTR_NOEXCEPT
 	}
 }
 
-JSTR_INLINE
-JSTR_MAYBE_UNUSED
-static void
-jstr_rev(char *R s)
-JSTR_NOEXCEPT
-{
-	jstr_rev_len(s, strlen(s));
-}
-
 /*
   Reverse S.
   Return value:
