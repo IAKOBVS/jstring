@@ -48,7 +48,8 @@ JSTR_NOEXCEPT
 	typedef size_t idx_ty;
 	typedef size_t arr_ty;
 #endif
-	/* Based on glibc memmem and strstr released under the terms of the GNU Lesser General Public License.
+	/* The following is based on the implementation of memmem() and strstr() from the
+	   GNU C Library released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	const unsigned char *end = hs + hl - nl;
 	size_t tmp;
