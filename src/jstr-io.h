@@ -584,24 +584,24 @@ JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 jstr_io_appendpath_len_p(char *R path,
-                         const size_t path_len,
+                         const size_t sz,
                          const char *R fname,
                          const size_t fname_len)
 {
 	*path = '/';
-	jstr_strcpy_len(path + path_len + 1, fname, fname_len);
-	return path + path_len + 1 + fname_len;
+	jstr_strcpy_len(path + sz + 1, fname, fname_len);
+	return path + sz + 1 + fname_len;
 }
 
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
 jstr_io_appendpath_p(char *R path,
-                     const size_t path_len,
+                     const size_t sz,
                      const char *R fname)
 {
-	*(path + path_len) = '/';
-	return jstr_stpcpy(path + path_len + 1, fname);
+	*(path + sz) = '/';
+	return jstr_stpcpy(path + sz + 1, fname);
 }
 
 JSTR_INLINE
@@ -620,11 +620,11 @@ JSTR_FUNC_VOID
 static void
 pjstr_io_appendpath_len(char *R path_end,
                         const char *R fname,
-                        const size_t flen)
+                        const size_t fname_len)
 JSTR_NOEXCEPT
 {
 	*path_end = '/';
-	jstr_strcpy_len(path_end + 1, fname, flen);
+	jstr_strcpy_len(path_end + 1, fname, fname_len);
 }
 
 #ifdef _DIRENT_HAVE_D_NAMLEN

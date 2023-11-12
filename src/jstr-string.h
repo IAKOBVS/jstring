@@ -997,8 +997,8 @@ jstr_strrpbrk_len(const char *s,
                   const size_t sz)
 JSTR_NOEXCEPT
 {
-	const size_t _len = jstr_strrcspn_len(s, accept, sz);
-	return (_len != sz) ? (char *)(s + sz - _len) : NULL;
+	const size_t len = jstr_strrcspn_len(s, accept, sz);
+	return (len != sz) ? (char *)(s + sz - len) : NULL;
 }
 
 /*
