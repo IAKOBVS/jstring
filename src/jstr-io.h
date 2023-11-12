@@ -163,15 +163,14 @@ JSTR_NOEXCEPT
 	const int idx = *ext;
 	if (jstr_unlikely(!jstr_isalpha(idx)))
 		return JSTR_IO_FT_UNKNOWN;
-	int i;
-	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text[idx]); ++i)
+	for (int i = 0; i < (int)JSTR_ARRAY_SIZE(text[idx]); ++i)
 		if (sizeof(text[idx][i]) - 1 == ext_len) {
 			if (!memcmp(ext, text[idx][i], ext_len))
 				return JSTR_IO_FT_TEXT;
 		} else if (jstr_unlikely((int)sizeof(binary[idx][i]) - 1 > ext_len)) {
 			break;
 		}
-	for (i = 0; i < (int)JSTR_ARRAY_SIZE(binary[idx]); ++i)
+	for (int i = 0; i < (int)JSTR_ARRAY_SIZE(binary[idx]); ++i)
 		if (sizeof(binary[idx][i]) - 1 == ext_len) {
 			if (!memcmp(ext, text[idx][i], ext_len))
 				return JSTR_IO_FT_BINARY;
