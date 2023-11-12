@@ -20,7 +20,7 @@
 #	define PJSTR_MEMMEM_CMP_FN memcmp
 #endif
 
-#if PJSTR_MEMMEM_HASH2_CASE
+#if PJSTR_MEMMEM_HASH2_ICASE
 #	define PJSTR_MEMMEM_HASH2_SETUP(p, fn1, fn2) (((size_t)fn1((p)[0]) - ((size_t)fn2((p)[-1]) << 3)) % 256)
 #endif
 
@@ -58,7 +58,7 @@ JSTR_NOEXCEPT
 	arr_ty shift[256];
 	JSTR_BZERO_ARRAY(shift);
 	for (idx_ty i = 1; i < (idx_ty)m1; ++i) {
-#if PJSTR_MEMMEM_HASH2_CASE
+#if PJSTR_MEMMEM_HASH2_ICASE
 		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, , )] = i;
 		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, jstr_tolower)] = i;
 		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, )] = i;

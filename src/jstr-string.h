@@ -577,7 +577,7 @@ JSTR_NOEXCEPT
 #	define PJSTR_MEMMEM_FN        pjstr_strcasestr
 #	define PJSTR_MEMMEM_RETTYPE   char *
 #	define PJSTR_MEMMEM_CMP_FN    jstr_strcasecmpeq_len
-#	define PJSTR_MEMMEM_HASH2_CASE 1
+#	define PJSTR_MEMMEM_HASH2_ICASE 1
 #	define PJSTR_MEMMEM_CHECK_EOL 1
 #	include "_jstr-memmem.h"
 
@@ -730,7 +730,7 @@ JSTR_NOEXCEPT
 #	define PJSTR_MEMMEM_FN       pjstr_strcasestr_len
 #	define PJSTR_MEMMEM_RETTYPE  char *
 #	define PJSTR_MEMMEM_CMP_FN   jstr_strcasecmpeq_len
-#	define PJSTR_MEMMEM_HASH2_CASE 1
+#	define PJSTR_MEMMEM_HASH2_ICASE 1
 #	include "_jstr-memmem.h"
 #endif
 
