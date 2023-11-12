@@ -564,25 +564,21 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 JSTR_INLINE
-static int
+static size_t
 pjstr_re_strlenrplcdst(const regmatch_t *R rm,
                        unsigned char *R rplc,
-                       const size_t rplc_len,
-                       size_t *R rdst_len)
+                       size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	const size_t old_len = rplc_len;
 	const unsigned char *const rplc_e = rplc + rplc_len;
-	int has_bref = 0;
-	for (*rdst_len = rplc_len; (rplc = (u *)memchr(rplc, '\\', rplc_e - rplc)); ++rplc) {
+	for (; (rplc = (u *)memchr(rplc, '\\', rplc_e - rplc)); ++rplc)
 		if (jstr_likely(jstr_isdigit(*++rplc)))
-			*rdst_len += (rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so) - 2;
-		else if (jstr_unlikely(*rplc == '\0')) {
-			has_bref = 1;
+			rplc_len += (rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so) - 2;
+		else if (jstr_unlikely(*rplc == '\0'))
 			break;
-		}
-	}
-	return has_bref;
+	return (old_len != rplc_len) ? rplc_len : 0;
 }
 
 JSTR_FUNC_VOID
@@ -647,15 +643,14 @@ JSTR_NOEXCEPT
 	unsigned char *rdstp = rdst_stack;
 	unsigned char *rdst_heap = NULL;
 	size_t find_len;
-	int has_bref;
 	while (n-- && *p && jstr_re_exec_len(preg, (char *)p, (*(u **)s + *sz) - p, nmatch, rm, eflags) == JSTR_RE_RET_NOERROR) {
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		if (jstr_unlikely(find_len == 0)) {
 			++p;
 			continue;
 		}
-		has_bref = pjstr_re_strlenrplcdst(rm, (u *)rplc, rplc_len, &rdst_len);
-		if (jstr_unlikely(has_bref == 0))
+		rdst_len = pjstr_re_strlenrplcdst(rm, (u *)rplc, rplc_len);
+		if (jstr_unlikely(rdst_len == 0))
 			return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > BUFSZ))
 			if (rdst_cap < rdst_len) {
