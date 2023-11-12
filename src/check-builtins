@@ -5,22 +5,22 @@ use warnings;
 
 my @builtins;
 my @filenames;
+my @archs;
 
-sub in_array {
-	my ($arr_ref, $val) = @_;
-	foreach (@$arr_ref) {
-		return 1 if ($val eq $_);
-	}
-	return 0;
+sub get_arch {
+	my ($fname) = @_;
+	$fname =~ /_glibc-(\w*)/;
+	return $1;
 }
 
 while (glob('_glibc-*.h')) {
 	my $fname = $_;
 	open(my $FH, '<', $fname) or die "Can't open $fname\n";
 	while (<$FH>) {
-		if (/(__builtin\w*)/ && !in_array(\@builtins, $1)) {
+		if (/(__builtin\w*)/) {
 			push(@builtins,  $1);
 			push(@filenames, $fname);
+			push(@archs,     uc(get_arch($fname)));
 		}
 	}
 	close($FH);
@@ -35,8 +35,24 @@ my $file_str;
 	close($FH);
 }
 
+my $i = index($file_str, 'Check builtins');
+die if ($i == -1);
+my $j = index($file_str, "\n\n", $i);
+if ($j != -1) {
+	$file_str = substr($file_str, $i, $j);
+} else {
+	$file_str = substr($file_str, $i);
+}
+
+my @macro_blocks = split(/#(?:if|elif|else)/, $file_str);
+
 for (my $i = 0; $i < scalar(@builtins); ++$i) {
-	if (index($file_str, $builtins[$i]) == -1) {
-		die "$builtins[$i] from $filenames[$i] isn't checked for in $fname before defining JSTR_HAVE_WORD_AT_A_TIME.\n";
+	for (my $j = 0; $j < scalar(@macro_blocks); ++$j) {
+		if (index($macro_blocks[$j], $archs[$i]) != -1) {
+			if ($macro_blocks[$j] !~ /\W$builtins[$i]\W/) {
+				die
+"$builtins[$i] from $filenames[$i] isn't checked for in $fname before defining JSTR_HAVE_WORD_AT_A_TIME.\n";
+			}
+		}
 	}
 }

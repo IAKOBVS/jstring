@@ -1052,18 +1052,19 @@ PJSTR_CAST(T, Other other)
 	                             : memset((array), (c), sizeof((array))))
 #define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
 
+/* Check builtins. */
 #if JSTR_ARCH_ALPHA
 #	if (JSTR_HAS_BUILTIN(__builtin_alpha_cmpbge) || defined __builtin_alpha_cmpbge) \
-	&& (JSTR_HAS_BUILTIN(__builtin_clz) || defined __builtin_clz)                    \
-	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)
+	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)                  \
+	&& (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)
 #		define JSTR_HAVE_WORD_AT_A_TIME 1
 #	endif
 #elif JSTR_ARCH_POWERPC6
-#	if JSTR_HAS_BUILTIN(__builtin_cmpb) || defined __builtin_cmpb
+#	if (JSTR_HAS_BUILTIN(__builtin_cmpb) || defined __builtin_cmpb)
 #		define JSTR_HAVE_WORD_AT_A_TIME 1
 #	endif
-#else
-#	if (JSTR_HAS_BUILTIN(__builtin_clz) || defined __builtin_clz)    \
+#else /* JSTR_ARCH_GENERIC */
+#	if (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)  \
 	&& (JSTR_HAS_BUILTIN(__builtin_clzll) || defined __builtin_clzll) \
 	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)   \
 	&& (JSTR_HAS_BUILTIN(__builtin_ctzll) || defined __builtin_ctzll)
