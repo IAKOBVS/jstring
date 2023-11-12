@@ -68,7 +68,14 @@ JSTR_NOEXCEPT
 #endif
 	}
 	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
+#if PJSTR_MEMMEM_HASH2_ICASE
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, , )] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_tolower)] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, )] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, , jstr_tolower)] = m1;
+#else
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
+#endif
 	goto start;
 	do {
 #if PJSTR_MEMMEM_CHECK_EOL /* As in strstr() where HAYSTACKLEN needs to be updated. */
