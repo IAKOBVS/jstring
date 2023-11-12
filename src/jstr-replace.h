@@ -118,8 +118,8 @@ JSTR_NOEXCEPT
 	return 1;
 }
 
-JSTR_INLINE
 JSTR_FUNC
+JSTR_INLINE
 static char *
 pjstr_rplcat_len_higher(char *R *R s,
                         size_t *R sz,
@@ -930,6 +930,30 @@ jstr_rplcall_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, -1);
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_revcpy_len(char *R dst,
+                char *R src,
+                size_t src_len)
+JSTR_NOEXCEPT
+{
+	src += src_len - 1;
+	while (src_len--)
+		*dst++ = *src--;
+	*dst = '\0';
+}
+
+JSTR_FUNC
+JSTR_INLINE
+static char *
+jstr_revcpy_p(char *R dst,
+              char *R src)
+{
+	const size_t len = strlen(src);
+	jstr_revcpy_len(dst, src, len);
+	return dst + len;
 }
 
 /*
