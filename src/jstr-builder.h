@@ -1082,6 +1082,7 @@ pjstr_sprintf_err(char *R *R s,
 
 /*
    Return 0 on error.
+   Referencing arguments with $ is not supported.
    Supported conversions:
    %s - string.
    %c - char.
