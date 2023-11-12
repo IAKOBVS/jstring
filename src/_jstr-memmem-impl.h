@@ -11,13 +11,17 @@
 #	define PJSTR_MEMMEM_FN pjstr_memmem_impl
 #endif
 #ifndef PJSTR_MEMMEM_HASH2
-#	define PJSTR_MEMMEM_HASH2(p) (((size_t)(((p)[0])) - ((size_t)((p)[-1]) << 3)) % 256)
+#	define PJSTR_MEMMEM_HASH2(p) (((size_t)((p)[0]) - ((size_t)((p)[-1]) << 3)) % 256)
 #endif
 #ifndef PJSTR_MEMMEM_CHECK_EOL
 #	define PJSTR_MEMMEM_CHECK_EOL 0
 #endif
 #ifndef PJSTR_MEMMEM_CMP_FN
 #	define PJSTR_MEMMEM_CMP_FN memcmp
+#endif
+
+#if PJSTR_MEMMEM_HASH2_CASE
+#	define PJSTR_MEMMEM_HASH2_SETUP(p, fn1, fn2) (((size_t)fn1((p)[0]) - ((size_t)fn2((p)[-1]) << 3)) % 256)
 #endif
 
 #if PJSTR_MEMMEM_SHORT_NEEDLE
@@ -52,8 +56,16 @@ JSTR_NOEXCEPT
 	size_t off = 0;
 	arr_ty shift[256];
 	JSTR_BZERO_ARRAY(shift);
-	for (idx_ty i = 1; i < (idx_ty)m1; ++i)
+	for (idx_ty i = 1; i < (idx_ty)m1; ++i) {
+#if PJSTR_MEMMEM_HASH2_CASE
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, , )] = i;
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, jstr_tolower)] = i;
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, )] = i;
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, , jstr_tolower)] = i;
+#else
 		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
+#endif
+	}
 	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
 	goto start;
