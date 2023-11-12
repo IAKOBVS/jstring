@@ -181,8 +181,13 @@ sub jl_fn_get {
 /^((?:.|\n)*?(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/
 	  )
 	{
-		$$name_ref = $3 if (defined($name_ref));
-		if (   $$name_ref eq 'if'
+		$$attr_ref    = $1                   if (defined($attr_ref));
+		$$rettype_ref = $2                   if (defined($rettype_ref));
+		$$name_ref    = $3                   if (defined($name_ref));
+		@$arg_arr_ref = jl_arg_to_array(\$4) if (defined($arg_arr_ref));
+		$$body_ref    = $5                   if (defined($body_ref));
+		if (   $rettype_ref eq 'define'
+			|| $$name_ref eq 'if'
 			|| $$name_ref eq 'else if'
 			|| $$name_ref eq 'switch'
 			|| $$name_ref eq 'for'
@@ -190,10 +195,6 @@ sub jl_fn_get {
 		{
 			return 0;
 		}
-		@$arg_arr_ref = jl_arg_to_array(\$4) if (defined($arg_arr_ref));
-		$$attr_ref    = $1                   if (defined($attr_ref));
-		$$rettype_ref = $2                   if (defined($rettype_ref));
-		$$body_ref    = $5                   if (defined($body_ref));
 		return 1;
 	}
 	return 0;
