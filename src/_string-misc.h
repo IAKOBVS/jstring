@@ -11,7 +11,7 @@ PJSTR_END_DECLS
 
 #include "_glibc-generic-string-misc.h"
 
-#if __GNUC__ || defined __clang__
+#if defined __GNUC__ || defined __clang__
 #	pragma GCC diagnostic ignored "-Wshift-count-overflow"
 #	pragma GCC diagnostic push
 #endif
@@ -103,7 +103,7 @@ JSTR_NOEXCEPT
 
 PJSTR_END_DECLS
 
-#if __GNUC__ || defined __clang__
+#if defined __GNUC__ || defined __clang__
 #	pragma GCC diagnostic pop
 #endif
 

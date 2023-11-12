@@ -672,24 +672,24 @@ JSTR_NOEXCEPT
 		}
 		pjstr_re_creatrplcbref((u *)p, rm, (u *)rdstp, (u *)rplc, rplc_len);
 		p += rm[0].rm_so;
+		if (rdst_len <= find_len) {
 #ifdef __clang__
-#	pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#	pragma GCC diagnostic push
+#	pragma clang diagnostic ignored "-Wunknown-pragmas"
+#	pragma clang diagnostic push
 #elif defined __GNUC__
 #	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #	pragma GCC diagnostic push
 #endif
-		if (rdst_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const u **)&p, rdstp, rdst_len, find_len); /* false-positive? */
-		else if (*cap > *sz + rdst_len - find_len)
-			pjstr_re_rplcall_small_rplc(*(u **)s, sz, &dst, &oldp, &p, rdstp, rdst_len, find_len);
-		else if (jstr_unlikely(!pjstr_re_rplcall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
-			goto err_free;
 #ifdef __clang__
-#	pragma GCC diagnostic pop
+#	pragma clang diagnostic pop
 #elif defined __GNUC__
 #	pragma GCC diagnostic pop
 #endif
+		} else if (*cap > *sz + rdst_len - find_len)
+			pjstr_re_rplcall_small_rplc(*(u **)s, sz, &dst, &oldp, &p, rdstp, rdst_len, find_len);
+		else if (jstr_unlikely(!pjstr_re_rplcall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
+			goto err_free;
 	}
 	if (dst != oldp)
 		*sz = jstr_stpmove_len(dst, oldp, (*(u **)s + *sz) - oldp) - *s;
