@@ -1335,7 +1335,7 @@ JSTR_NOEXCEPT
 	return 1;
 err_free_set_errno:
 	errno = ret;
-	if (ret != EINVAL)
+	if (jstr_unlikely(ret != EINVAL))
 		pjstr_sprintf_err(s, sz, cap);
 	return 0;
 }
@@ -1362,7 +1362,7 @@ JSTR_NOEXCEPT
 	return 1;
 err_free_set_errno:
 	errno = ret;
-	if (ret != EINVAL)
+	if (jstr_unlikely(ret != EINVAL))
 		pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
 	return 0;
 }
@@ -1392,7 +1392,7 @@ JSTR_NOEXCEPT
 	return 1;
 err_free_set_errno:
 	errno = ret;
-	if (ret != EINVAL)
+	if (jstr_unlikely(ret != EINVAL))
 		pjstr_sprintf_err(s, sz, cap);
 	return 0;
 }
@@ -1420,7 +1420,7 @@ JSTR_NOEXCEPT
 	return 1;
 err_free_set_errno:
 	errno = ret;
-	if (ret != EINVAL)
+	if (jstr_unlikely(ret != EINVAL))
 		pjstr_sprintf_err(&j->data, &j->size, &j->capacity);
 	return 0;
 }
