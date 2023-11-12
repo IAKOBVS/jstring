@@ -956,6 +956,7 @@ JSTR_NOEXCEPT
   ptr to '\0' in S.
 */
 JSTR_FUNC_RET_NONNULL
+JSTR_INLINE
 static char *
 jstr_rev_p(char *R s)
 JSTR_NOEXCEPT
