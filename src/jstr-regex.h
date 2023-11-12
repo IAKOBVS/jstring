@@ -641,7 +641,7 @@ JSTR_NOEXCEPT
 	const unsigned char *oldp = p;
 	regmatch_t rm[10];
 	size_t rdst_len;
-	size_t rdstcap = 0;
+	size_t rdst_cap = 0;
 	enum { BUFSZ = 256 };
 	unsigned char rdst_stack[BUFSZ];
 	unsigned char *rdstp = rdst_stack;
@@ -657,36 +657,18 @@ JSTR_NOEXCEPT
 		has_bref = pjstr_re_strlenrplcdst(rm, (u *)rplc, rplc_len, &rdst_len);
 		if (jstr_unlikely(has_bref == 0))
 			return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
-		if (jstr_unlikely(rdst_len > BUFSZ)) {
-			if (jstr_unlikely(rdst_heap == NULL)) {
-				rdstcap = JSTR_PTR_ALIGN_UP(rdst_len, PJSTR_MALLOC_ALIGNMENT);
-				rdst_heap = (u *)malloc(rdstcap);
-				PJSTR_MALLOC_ERR(rdst_heap, goto err);
-				rdstp = rdst_heap;
-			} else if (rdstcap < rdst_len) {
-				rdstcap = pjstr_grow(rdstcap, rdst_len);
-				rdst_heap = (u *)realloc(rdst_heap, rdstcap);
+		if (jstr_unlikely(rdst_len > BUFSZ))
+			if (rdst_cap < rdst_len) {
+				rdst_cap = pjstr_grow(rdst_cap, rdst_len);
+				rdst_heap = (u *)realloc(rdst_heap, rdst_cap);
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
 				rdstp = rdst_heap;
 			}
-		}
 		pjstr_re_creatrplcbref((u *)p, rm, (u *)rdstp, (u *)rplc, rplc_len);
 		p += rm[0].rm_so;
-		if (rdst_len <= find_len) {
-#ifdef __clang__
-#	pragma clang diagnostic ignored "-Wunknown-pragmas"
-#	pragma clang diagnostic push
-#elif defined __GNUC__
-#	pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#	pragma GCC diagnostic push
-#endif
-			pjstr_rplcallinplace(&dst, &oldp, (const u **)&p, rdstp, rdst_len, find_len); /* false-positive? */
-#ifdef __clang__
-#	pragma clang diagnostic pop
-#elif defined __GNUC__
-#	pragma GCC diagnostic pop
-#endif
-		} else if (*cap > *sz + rdst_len - find_len)
+		if (rdst_len <= find_len)
+			pjstr_rplcallinplace(&dst, &oldp, (const u **)&p, rdstp, rdst_len, find_len);
+		else if (*cap > *sz + rdst_len - find_len)
 			pjstr_re_rplcall_small_rplc(*(u **)s, sz, &dst, &oldp, &p, rdstp, rdst_len, find_len);
 		else if (jstr_unlikely(!pjstr_re_rplcall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
 			goto err_free;
