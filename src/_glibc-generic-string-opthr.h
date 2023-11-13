@@ -11,13 +11,17 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-   
+
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
+
 #ifndef PJSTR_STRING_OPTHR_H
 #define PJSTR_STRING_OPTHR_H 1
+
 #include "jstr-macros.h"
+
 /* Threshold value for when to enter the unrolled loops.  */
-#define JSTR_WORD_THRES 16
+#define JSTR_WORD_THRES	16
+
 #endif /* string-opthr.h */

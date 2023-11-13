@@ -11,12 +11,16 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-   
+
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
+
 #ifndef PJSTR_STRING_OPTYPE_H
 #define PJSTR_STRING_OPTYPE_H 1
+
 #include "jstr-macros.h"
-typedef unsigned long int JSTR_MAY_ALIAS jstr_word_ty;
+
+typedef unsigned long int __attribute__ ((__may_alias__)) jstr_word_ty;
+
 #endif /* string-optype.h */

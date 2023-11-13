@@ -1,9 +1,11 @@
 #!/usr/bin/perl
-
-# See LICENSE file for copyright and license details.
-
 use strict;
 use warnings;
+
+sub replaceall {
+	my ($str_ref, $find_ref, $replace_ref) = @_;
+	$$str_ref =~ s/(^|\W)$$find_ref($|\W)/$1$$replace_ref$2/g;
+}
 
 my $file_str;
 {
@@ -14,21 +16,21 @@ my $file_str;
 	close($FH);
 }
 
-$file_str =~ s/#[ \t]*include[ \t]*<(.*string.*)>/#include "$1"/g;
-$file_str =~ s/(^|\W)find_t($|\W)/$1jstr_word_ty$2/g;
-$file_str =~ s/(^|\W)op_t($|\W)/$1jstr_word_ty$2/g;
+if (index($file_str, "\"jstr-macros.h\"") == -1) {
+	$file_str =~ s/(#define.*)/$1\n\n#include "jstr-macros.h"\n/;
+}
+
+replaceall(\$file_str, \'(?:find_t|op_t)',                                  \'jstr_word_ty');
+replaceall(\$file_str, \'(?:_Bool|bool)',                                   \'int');
+replaceall(\$file_str, \'OP_T_THRES',                                       \'JSTR_WORD_THRES');
+replaceall(\$file_str, \'__attribute__\(\((?:__may_alias__|may_alias)\)\)', \'JSTR_MAY_ALIAS');
+replaceall(\$file_str, \'__always_inline',                                  \'JSTR_INLINE');
+replaceall(\$file_str, \'if\s*\(__BYTE_ORDER\s*==\s*__LITTLE_ENDIAN\)',     \'if (JSTR_ENDIAN_LITTLE)');
 $file_str =~ s/(^|\W)((?:repeat_bytes|extractbyte|shift|find_index|has|clz|ctz)\w*)($|\W)/$1jstr_word_$2$3/g;
-$file_str =~ s/(^|\W)_Bool($|\W)/$1int$2/g;
-$file_str =~ s/(^|\W)OP_T_THRES($|\W)/$1JSTR_WORD_THRES$2/g;
-$file_str =~ s/.*typedef jstr_word_ty jstr_word_ty;.*//g;
-$file_str =~ s/__always_inline/JSTR_INLINE/g;
-$file_str =~ s/sysdeps\/generic\///;
-$file_str =~ s/(#define.*)/$1\n\n#include "jstr-macros.h"\n/ if (index($file_str, "\"jstr-macros.h\"") == -1);
-$file_str =~ s/#\s*(ifndef|define)[ \t]*([^P]{,1}[^J][^S][^T][^R]\w*_H)/#$1 PJSTR_$2/g;
-$file_str =~ s/PJSTR__/PJSTR_/g;
-$file_str =~ s/if (__BYTE_ORDER == __LITTLE_ENDIAN)/if (JSTR_ENDIAN_LITTLE)/g;
-$file_str =~ s/include[ \t]*"string\-/include "_string-/g;
-$file_str =~ s/__attribute__\(\(__may_alias__\)\)/JSTR_MAY_ALIAS/g;
-$file_str =~ s/__attribute__\(\(may_alias\)\)/JSTR_MAY_ALIAS/g;
+$file_str =~ s/\n[ \t]*typedef jstr_word_ty jstr_word_ty;\s*\n/\n/g;
+$file_str =~ s/#[ \t]*(ifndef|define)[ \t]*_{,1}(\w*_H)/#$1 PJSTR_$2/g;
+$file_str =~ s/include[ \t]*<string\-([-._A-Za-z0-9]*)>/include "_string-$1"/g;
+$file_str =~ s/include[ \t]*<sysdeps\/generic\/([-._A-Za-z0-9]*)>/include "_glibc_generic-$1"/g;
+$file_str =~ s/\n\n\n/\n\n/g;
 
 print $file_str;
