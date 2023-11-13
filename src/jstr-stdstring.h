@@ -474,21 +474,6 @@ JSTR_NOEXCEPT
 	return jstr_strdup_len(s, strlen(s));
 }
 
-JSTR_FUNC_PURE
-JSTR_INLINE
-static char *
-jstr_strpbrk(const char *s,
-             const char *accept)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STRPBRK_OPTIMIZED
-	return (char *)strpbrk(s, accept);
-#else
-	s += strcspn(s, accept);
-	return *s ? (char *)s : NULL;
-#endif
-}
-
 #define PJSTR_ATOI(T, name, func)  \
 	JSTR_FUNC_PURE             \
 	JSTR_INLINE                \
