@@ -786,12 +786,9 @@ case '~':
 
 #if defined __amd64__ || defined __amd64  \
 || defined _M_AMD64 || defined __x86_64__ \
-|| defined __x86_64 || defined _M_X64
+|| defined __x86_64 || defined _M_X64     \
+|| defined _M_X64
 #	define JSTR_ARCH_X86_64 1
-#elif defined i386 || defined __i386__ \
-|| defined __i386 || defined _M_IX86   \
-|| defined _ILP32 || defined __ILP32__
-#	define JSTR_ARCH_X86_32 1
 #elif defined __aarch64__ || defined _M_ARM64
 #	define JSTR_ARCH_ARM64 1
 #elif defined __arm__ || defined __arm \
@@ -888,6 +885,10 @@ case '~':
 || defined __IA64__ || defined __ia64   \
 || defined _M_IA64 || defined __itanium__
 #	define JSTR_ARCH_IA64 1
+#elif defined i386 || defined __i386__ \
+|| defined __i386 || defined _M_IX86   \
+|| defined _ILP32 || defined __ILP32__
+#	define JSTR_ARCH_X86_32 1
 #else
 #	define JSTR_ARCH_GENERIC 1
 #endif
