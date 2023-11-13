@@ -29,27 +29,27 @@
    unnecessary truncation instructions from the 'unsigned long' type
    returned by __builtin_alpha_cmpbge.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x)
+jstr_word_find_zero_all(jstr_word_ty x)
 {
   return __builtin_alpha_cmpbge (0, x);
 }
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1 ^ x2);
+  return jstr_word_find_zero_all(x1 ^ x2);
 }
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1) | jstr_word_find(x1 ^ x2);
+  return jstr_word_find_zero_all(x1) | jstr_word_find_zero_all(x1 ^ x2);
 }
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1) | (jstr_word_find(x1 ^ x2) ^ 0xff);
+  return jstr_word_find_zero_all(x1) | (jstr_word_find_zero_all(x1 ^ x2) ^ 0xff);
 }
 
 /* Define the "inexact" versions in terms of the exact versions.  */

@@ -29,7 +29,7 @@
    More specifically, at least one bit set within the least significant
    byte that was zero; other bytes within the word are indeterminate.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x)
+jstr_word_find_zero_low(jstr_word_ty x)
 {
   /* This expression comes from
        https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
@@ -45,7 +45,7 @@ jstr_word_find(jstr_word_ty x)
    are determinate.  This is usually used for finding the index of the
    most significant byte that was zero.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x)
+jstr_word_find_zero_all(jstr_word_ty x)
 {
   /* For each byte, find not-zero by
      (0) And 0x7f so that we cannot carry between bytes,
@@ -58,35 +58,35 @@ jstr_word_find(jstr_word_ty x)
 
 /* With similar caveats, identify bytes that are equal between X1 and X2.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_low(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1 ^ x2);
+  return jstr_word_find_zero_low(x1 ^ x2);
 }
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1 ^ x2);
+  return jstr_word_find_zero_all(x1 ^ x2);
 }
 
 /* With similar caveats, identify zero bytes in X1 and bytes that are
    equal between in X1 and X2.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_low(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1) | jstr_word_find(x1 ^ x2);
+  return jstr_word_find_zero_low(x1) | jstr_word_find_zero_low(x1 ^ x2);
 }
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1) | jstr_word_find(x1 ^ x2);
+  return jstr_word_find_zero_all(x1) | jstr_word_find_zero_all(x1 ^ x2);
 }
 
 /* With similar caveats, identify zero bytes in X1 and bytes that are
    not equal between in X1 and X2.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
   jstr_word_ty m = jstr_word_repeat_bytes(0x7f);
   jstr_word_ty eq = x1 ^ x2;

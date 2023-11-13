@@ -47,7 +47,7 @@ jstr_word_ctz(jstr_word_ty c)
    the (memory order) index of the first byte (in memory order) that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-jstr_word_index(jstr_word_ty c)
+jstr_word_index_first(jstr_word_ty c)
 {
   int r;
   if (JSTR_ENDIAN_LITTLE)
@@ -60,7 +60,7 @@ jstr_word_index(jstr_word_ty c)
 /* Similarly, but return the (memory order) index of the last byte that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-jstr_word_index(jstr_word_ty c)
+jstr_word_index_last(jstr_word_ty c)
 {
   int r;
   if (JSTR_ENDIAN_LITTLE)

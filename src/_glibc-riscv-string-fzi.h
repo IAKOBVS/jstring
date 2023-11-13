@@ -29,7 +29,7 @@
 # include "_string-optype.h"
 
 static JSTR_INLINE unsigned int
-jstr_word_index(jstr_word_ty c)
+jstr_word_index_first(jstr_word_ty c)
 {
   if (c & 0x80U)
     return 0;
@@ -53,7 +53,7 @@ jstr_word_index(jstr_word_ty c)
 }
 
 static JSTR_INLINE unsigned int
-jstr_word_index(jstr_word_ty c)
+jstr_word_index_last(jstr_word_ty c)
 {
   if (sizeof (jstr_word_ty) == 8)
     {

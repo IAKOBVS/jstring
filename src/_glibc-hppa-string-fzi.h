@@ -27,7 +27,7 @@
 _Static_assert (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 
 static JSTR_INLINE unsigned int
-jstr_word_index(jstr_word_ty c)
+jstr_word_index_first(jstr_word_ty c)
 {
   unsigned int ret;
 
@@ -45,7 +45,7 @@ jstr_word_index(jstr_word_ty c)
 }
 
 static JSTR_INLINE unsigned int
-jstr_word_index(jstr_word_ty c)
+jstr_word_index_last(jstr_word_ty c)
 {
   unsigned int ret;
 

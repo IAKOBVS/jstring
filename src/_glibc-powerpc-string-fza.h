@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef JSTRP__POWERPC_STRING_FZA_H
-#define JSTRP__POWERPC_STRING_FZA_H 1
+#ifndef JSTRP_POWERPC_STRING_FZA_H
+#define JSTRP_POWERPC_STRING_FZA_H 1
 
 #include "jstr-macros.h"
 
@@ -31,7 +31,7 @@
    equal between X1 and X2.  */
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
   return __builtin_cmpb (x1, x2);
 }
@@ -39,25 +39,25 @@ jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
 /* This function returns 0xff for each byte that is zero in X.  */
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x)
+jstr_word_find_zero_all(jstr_word_ty x)
 {
-  return jstr_word_find(x, 0);
+  return jstr_word_find_eq_all(x, 0);
 }
 
 /* Identify zero bytes in X1 or equality between X1 and X2.  */
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1) | jstr_word_find(x1, x2);
+  return jstr_word_find_zero_all(x1) | jstr_word_find_eq_all(x1, x2);
 }
 
 /* Identify zero bytes in X1 or inequality between X1 and X2.  */
 
 static JSTR_INLINE jstr_word_ty
-jstr_word_find(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find(x1) | ~jstr_word_find(x1, x2);
+  return jstr_word_find_zero_all(x1) | ~jstr_word_find_eq_all(x1, x2);
 }
 
 /* Define the "inexact" versions in terms of the exact versions.  */
