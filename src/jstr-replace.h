@@ -841,7 +841,7 @@ jstr_rplcn_len_from(char *R *R s,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	unsigned char *dst = *(u **)s + start_idx;
+	unsigned char *dst = (u *)*s + start_idx;
 	if (jstr_unlikely(rplc_len == 0)) {
 		*sz = jstr_rmn_len_p((char *)dst, *sz - start_idx, find, find_len, n) - *s;
 		return 1;
@@ -859,14 +859,14 @@ JSTR_NOEXCEPT
 		if (rplc_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, &p, (u *)rplc, rplc_len, find_len);
 		else
-			p = (u *)pjstr_rplcat_len_higher(s, sz, cap, p - *(u **)s, rplc, rplc_len, find_len);
+			p = (u *)pjstr_rplcat_len_higher(s, sz, cap, p - (u *)*s, rplc, rplc_len, find_len);
 		if (jstr_unlikely(p == NULL))
 			return 0;
 	}
-	if (jstr_unlikely(dst == *(u **)s))
+	if (jstr_unlikely(dst == (u *)*s))
 		return 1;
 	if (rplc_len < find_len)
-		*sz = jstr_stpmove_len(dst, oldp, *(u **)s + *sz - oldp) - *s;
+		*sz = jstr_stpmove_len(dst, oldp, (u *)*s + *sz - oldp) - *s;
 	return 1;
 }
 
