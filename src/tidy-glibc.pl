@@ -16,7 +16,7 @@ my $file_str;
 	close($FH);
 }
 
-if (index($file_str, "\"jstr-macros.h\"") == -1) {
+if (index($file_str, '"jstr-macros.h"') == -1) {
 	$file_str =~ s/(#define.*)/$1\n\n#include "jstr-macros.h"\n/;
 }
 
