@@ -887,7 +887,8 @@ case '~':
 #	define JSTR_ARCH_IA64 1
 #elif defined i386 || defined __i386__ \
 || defined __i386 || defined _M_IX86   \
-|| defined _ILP32 || defined __ILP32__
+#	define JSTR_ARCH_I386 1
+#elif defined _ILP32 || defined __ILP32__
 #	define JSTR_ARCH_X86_32 1
 #else
 #	define JSTR_ARCH_GENERIC 1
@@ -1041,9 +1042,6 @@ case '~':
 #	define JSTR_HAVE_MEMMEM_OPTIMIZED 1
 #endif
 
-#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_SPARC || JSTR_ARCH_M68K || JSTR_ARCH_ARM6 || JSTR_ARCH_POWERPC64)
-#endif
-
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
 #endif
@@ -1073,11 +1071,11 @@ enum {
 #	endif
 #endif
 
-#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_X86_32 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
+#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 #	define JSTR_HAVE_STRCSPN_OPTIMIZED 1
 #endif
 
-#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_X86_32 || JSTR_ARCH_SPARC || JSTR_ARCH_ARM6 || JSTR_ARCH_POWERPC64)
+#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_ARM6 || JSTR_ARCH_POWERPC64)
 #	define JSTR_HAVE_STRPBRK_OPTIMIZED 1
 #endif
 
