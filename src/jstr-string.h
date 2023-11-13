@@ -1478,7 +1478,7 @@ JSTR_NOEXCEPT
 {
 	size_t cnt = 0;
 	const char *const end = s + sz;
-	while (*s && (s = (char *)memchr(s, c, end - s)))
+	while ((s = (char *)memchr(s, c, end - s)))
 		++s, ++cnt;
 	return cnt;
 }
@@ -1624,8 +1624,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(start == end))
 		return 0;
 	size_t cnt = 1;
-	while ((start = (char *)memchr(start, '\n', end - start)))
-		++start, ++cnt;
+	for (; (start = (char *)memchr(start, '\n', end - start)); ++start, ++cnt)
+		;
 	return cnt;
 }
 
