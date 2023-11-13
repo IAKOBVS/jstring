@@ -736,7 +736,7 @@ case '~':
 #	define JSTR_HAVE_STRNDUP 1
 #endif /* Posix || Gnu */
 
-#if defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 500                                                                  \
+#if (defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 500)                                                                  \
 || (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19 && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
 || (JSTR_GLIBC_PREREQ(2, 12) && __POSIX_C_SOURCE >= 200809L)
 #	define JSTR_HAVE_STRDUP 1
@@ -763,15 +763,15 @@ case '~':
 #	define JSTR_HAVE_FCVT 1
 #endif
 
-#if JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE \
-|| defined __GLIBC__ && defined _SVID_SOURCE
+#if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
+|| (defined __GLIBC__ && defined _SVID_SOURCE)
 #	define JSTR_HAVE_QECVT 1
 #	define JSTR_HAVE_QFCVT 1
 #	define JSTR_HAVE_QGCVT 1
 #endif
 
-#if JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE \
-|| defined __GLIBC__ && (_SVID_SOURCE || defined _BSD_SOURCE)
+#if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
+|| (defined __GLIBC__ && (_SVID_SOURCE || defined _BSD_SOURCE))
 #	define JSTR_HAVE_QECVT_R 1
 #	define JSTR_HAVE_QFCVT_R 1
 #	define JSTR_HAVE_ECVT_R  1
