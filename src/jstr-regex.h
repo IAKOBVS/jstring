@@ -565,20 +565,20 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static size_t
-pjstr_re_strlenrplcdst(const regmatch_t *R rm,
+pjstr_re_strlenrplcbref(const regmatch_t *R rm,
                        unsigned char *R rplc,
                        size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	const size_t old_len = rplc_len;
 	const unsigned char *const rplc_e = rplc + rplc_len;
-	for (; (rplc = (u *)memchr(rplc, '\\', rplc_e - rplc)); ++rplc)
+	int has_bref = 0;
+	for (; (rplc = (u *)memchr(rplc, '\\', rplc_e - rplc)); ++rplc, has_bref = 1)
 		if (jstr_likely(jstr_isdigit(*++rplc)))
 			rplc_len += (rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so) - 2;
 		else if (jstr_unlikely(*rplc == '\0'))
 			break;
-	return (old_len != rplc_len) ? rplc_len : 0;
+	return (has_bref) ? rplc_len : 0;
 }
 
 JSTR_FUNC_VOID
@@ -649,7 +649,7 @@ JSTR_NOEXCEPT
 			++p;
 			continue;
 		}
-		rdst_len = pjstr_re_strlenrplcdst(rm, (u *)rplc, rplc_len);
+		rdst_len = pjstr_re_strlenrplcbref(rm, (u *)rplc, rplc_len);
 		if (jstr_unlikely(rdst_len == 0))
 			return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > BUFSZ))
