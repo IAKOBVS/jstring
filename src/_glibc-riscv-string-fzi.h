@@ -1,4 +1,4 @@
-/* Zero byte detection; indexes.  RISCV version.
+/* Zero byte detection; jstr_word_indexes.  RISCV version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -24,12 +24,12 @@
 #if defined __riscv_zbb || defined __riscv_xtheadbb
 # include "_glibc_generic-string-fzi.h"
 #else
-/* Without bitmap clz/ctz extensions, it is faster to direct test the bits
+/* Without bitmap jstr_word_clz/jstr_word_ctz extensions, it is faster to direct test the bits
    instead of calling compiler auxiliary functions.  */
 # include "_string-optype.h"
 
 static JSTR_INLINE unsigned int
-jstr_word_index_first(jstr_word_ty c)
+jstr_word_index_first (jstr_word_ty c)
 {
   if (c & 0x80U)
     return 0;
@@ -53,7 +53,7 @@ jstr_word_index_first(jstr_word_ty c)
 }
 
 static JSTR_INLINE unsigned int
-jstr_word_index_last(jstr_word_ty c)
+jstr_word_index_last (jstr_word_ty c)
 {
   if (sizeof (jstr_word_ty) == 8)
     {

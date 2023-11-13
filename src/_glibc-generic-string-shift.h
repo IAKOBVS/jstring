@@ -26,10 +26,10 @@
 #include <stdint.h>
 #include "_string-fza.h"
 
-/* Return the mask WORD shifted based on S_INT address value, to ignore
+/* Return the mask WORD jstr_word_shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_shift_find(jstr_word_ty word, uintptr_t s)
+jstr_word_shift_find (jstr_word_ty word, uintptr_t s)
 {
   if (JSTR_ENDIAN_LITTLE)
     return word >> (CHAR_BIT * (s % sizeof (jstr_word_ty)));
@@ -40,7 +40,7 @@ jstr_word_shift_find(jstr_word_ty word, uintptr_t s)
 /* Mask off the bits defined for the S alignment value, or return WORD if
    S is 0.  */
 static JSTR_INLINE jstr_word_ty
-jstr_word_shift_find_last(jstr_word_ty word, uintptr_t s)
+jstr_word_shift_find_last (jstr_word_ty word, uintptr_t s)
 {
   s = s % sizeof (jstr_word_ty);
   if (s == 0)

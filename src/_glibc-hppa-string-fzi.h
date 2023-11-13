@@ -1,4 +1,4 @@
-/* string-fzi.h -- zero byte indexes.  HPPA version.
+/* string-fzi.h -- zero byte jstr_word_indexes.  HPPA version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -27,11 +27,11 @@
 _Static_assert (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 
 static JSTR_INLINE unsigned int
-jstr_word_index_first(jstr_word_ty c)
+jstr_word_index_first (jstr_word_ty c)
 {
   unsigned int ret;
 
-  /* Since we have no clz insn, direct tests of the bytes is faster
+  /* Since we have no jstr_word_clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,= %1,23,8,%%r0\n\t"
        "ldi 2,%0\n\t"
@@ -45,11 +45,11 @@ jstr_word_index_first(jstr_word_ty c)
 }
 
 static JSTR_INLINE unsigned int
-jstr_word_index_last(jstr_word_ty c)
+jstr_word_index_last (jstr_word_ty c)
 {
   unsigned int ret;
 
-  /* Since we have no ctz insn, direct tests of the bytes is faster
+  /* Since we have no jstr_word_ctz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,= %1,15,8,%%r0\n\t"
        "ldi 1,%0\n\t"

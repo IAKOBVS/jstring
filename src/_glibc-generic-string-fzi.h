@@ -1,4 +1,4 @@
-/* Zero byte detection; indexes.  Generic C version.
+/* Zero byte detection; jstr_word_indexes.  Generic C version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -26,7 +26,7 @@
 #include "_string-fza.h"
 
 static JSTR_INLINE int
-jstr_word_clz(jstr_word_ty c)
+jstr_word_clz (jstr_word_ty c)
 {
   if (sizeof (jstr_word_ty) == sizeof (unsigned long))
     return __builtin_clzl (c);
@@ -35,7 +35,7 @@ jstr_word_clz(jstr_word_ty c)
 }
 
 static JSTR_INLINE int
-jstr_word_ctz(jstr_word_ty c)
+jstr_word_ctz (jstr_word_ty c)
 {
   if (sizeof (jstr_word_ty) == sizeof (unsigned long))
     return __builtin_ctzl (c);
@@ -43,30 +43,30 @@ jstr_word_ctz(jstr_word_ty c)
     return __builtin_ctzll (c);
 }
 
-/* A subroutine for the index_zero functions.  Given a test word C, return
-   the (memory order) index of the first byte (in memory order) that is
+/* A subroutine for the jstr_word_index_zero functions.  Given a test word C, return
+   the (memory order) jstr_word_index of the first byte (in memory order) that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-jstr_word_index_first(jstr_word_ty c)
+jstr_word_index_first (jstr_word_ty c)
 {
   int r;
   if (JSTR_ENDIAN_LITTLE)
-    r = jstr_word_ctz(c);
+    r = jstr_word_ctz (c);
   else
-    r = jstr_word_clz(c);
+    r = jstr_word_clz (c);
   return r / CHAR_BIT;
 }
 
-/* Similarly, but return the (memory order) index of the last byte that is
+/* Similarly, but return the (memory order) jstr_word_index of the last byte that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-jstr_word_index_last(jstr_word_ty c)
+jstr_word_index_last (jstr_word_ty c)
 {
   int r;
   if (JSTR_ENDIAN_LITTLE)
-    r = jstr_word_clz(c);
+    r = jstr_word_clz (c);
   else
-    r = jstr_word_ctz(c);
+    r = jstr_word_ctz (c);
   return sizeof (jstr_word_ty) - 1 - (r / CHAR_BIT);
 }
 

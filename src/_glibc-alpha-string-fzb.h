@@ -30,7 +30,7 @@
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 
 static JSTR_INLINE int
-jstr_word_has_zero(jstr_word_ty x)
+jstr_word_has_zero (jstr_word_ty x)
 {
   return __builtin_alpha_cmpbge (0, x) != 0;
 }
@@ -38,17 +38,17 @@ jstr_word_has_zero(jstr_word_ty x)
 /* Likewise, but for byte equality between X1 and X2.  */
 
 static JSTR_INLINE int
-jstr_word_has_eq(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_has_eq (jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_has_zero(x1 ^ x2);
+  return jstr_word_has_zero (x1 ^ x2);
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
 
 static JSTR_INLINE int
-jstr_word_has_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_has_zero_eq (jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_has_zero(x1) | jstr_word_has_eq(x1, x2);
+  return jstr_word_has_zero (x1) | jstr_word_has_eq (x1, x2);
 }
 
 #endif /* _STRING_FZB_H */
