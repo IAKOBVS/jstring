@@ -53,130 +53,134 @@ JSTR_NOEXCEPT
 {
 	/* From shortest to longest extension. */
 	static const char *text[][4] = {
-		{}, /* A */
-		{}, /* B */
+		{ NULL }, /* A */
+		{ NULL }, /* B */
 		{ "C" }, /* C */
-		{}, /* D */
-		{}, /* E */
-		{}, /* F */
-		{}, /* G */
-		{}, /* H */
-		{}, /* I */
-		{}, /* J */
-		{}, /* K */
-		{}, /* L */
-		{}, /* M */
-		{}, /* N */
-		{}, /* O */
-		{}, /* P */
-		{}, /* Q */
-		{}, /* R */
+		{ NULL }, /* D */
+		{ NULL }, /* E */
+		{ NULL }, /* F */
+		{ NULL }, /* G */
+		{ NULL }, /* H */
+		{ NULL }, /* I */
+		{ NULL }, /* J */
+		{ NULL }, /* K */
+		{ NULL }, /* L */
+		{ NULL }, /* M */
+		{ NULL }, /* N */
+		{ NULL }, /* O */
+		{ NULL }, /* P */
+		{ NULL }, /* Q */
+		{ NULL }, /* R */
 		{ "S" }, /* S */
-		{}, /* T */
-		{}, /* U */
-		{}, /* V */
-		{}, /* W */
-		{}, /* X */
-		{}, /* Y */
-		{}, /* Z */
-		{}, /* a */
-		{}, /* b */
+		{ NULL }, /* T */
+		{ NULL }, /* U */
+		{ NULL }, /* V */
+		{ NULL }, /* W */
+		{ NULL }, /* X */
+		{ NULL }, /* Y */
+		{ NULL }, /* Z */
+		{ NULL }, /* a */
+		{ NULL }, /* b */
 		{ "c", "cc", "cs", "cpp" }, /* c */
-		{}, /* d */
-		{}, /* e */
-		{}, /* f */
-		{}, /* g */
+		{ NULL }, /* d */
+		{ NULL }, /* e */
+		{ NULL }, /* f */
+		{ NULL }, /* g */
 		{ "h", "hh", "hpp", "html" }, /* h */
-		{}, /* i */
+		{ NULL }, /* i */
 		{ "js", "json" }, /* j */
-		{}, /* k */
-		{}, /* l */
+		{ NULL }, /* k */
+		{ NULL }, /* l */
 		{ "md" }, /* m */
-		{}, /* n */
-		{}, /* o */
+		{ NULL }, /* n */
+		{ NULL }, /* o */
 		{ "pl", "pm", "py", "pyi" }, /* p */
-		{}, /* q */
+		{ NULL }, /* q */
 		{ "rs" }, /* r */
 		{ "s", "sh" }, /* s */
 		{ "ts", "txt" }, /* t */
-		{}, /* u */
-		{}, /* v */
-		{}, /* w */
-		{}, /* x */
-		{}, /* y */
-		{}  /* z */
+		{ NULL }, /* u */
+		{ NULL }, /* v */
+		{ NULL }, /* w */
+		{ NULL }, /* x */
+		{ NULL }, /* y */
+		{ NULL }  /* z */
 	};
 	static const char *binary[][4] = {
-		{}, /* A */
-		{}, /* B */
-		{}, /* C */
-		{}, /* D */
-		{}, /* E */
-		{}, /* F */
-		{}, /* G */
-		{}, /* H */
-		{}, /* I */
-		{}, /* J */
-		{}, /* K */
-		{}, /* L */
-		{}, /* M */
-		{}, /* N */
-		{}, /* O */
-		{}, /* P */
-		{}, /* Q */
-		{}, /* R */
-		{}, /* S */
-		{}, /* T */
-		{}, /* U */
-		{}, /* V */
-		{}, /* W */
-		{}, /* X */
-		{}, /* Y */
-		{}, /* Z */
+		{ NULL }, /* A */
+		{ NULL }, /* B */
+		{ NULL }, /* C */
+		{ NULL }, /* D */
+		{ NULL }, /* E */
+		{ NULL }, /* F */
+		{ NULL }, /* G */
+		{ NULL }, /* H */
+		{ NULL }, /* I */
+		{ NULL }, /* J */
+		{ NULL }, /* K */
+		{ NULL }, /* L */
+		{ NULL }, /* M */
+		{ NULL }, /* N */
+		{ NULL }, /* O */
+		{ NULL }, /* P */
+		{ NULL }, /* Q */
+		{ NULL }, /* R */
+		{ NULL }, /* S */
+		{ NULL }, /* T */
+		{ NULL }, /* U */
+		{ NULL }, /* V */
+		{ NULL }, /* W */
+		{ NULL }, /* X */
+		{ NULL }, /* Y */
+		{ NULL }, /* Z */
 		{ "a" }, /* a */
 		{ "bin" }, /* b */
 		{ "c", "cc", "cs", "cpp" }, /* c */
-		{}, /* d */
-		{}, /* e */
-		{}, /* f */
+		{ NULL }, /* d */
+		{ NULL }, /* e */
+		{ NULL }, /* f */
 		{ "gz" }, /* g */
-		{}, /* h */
-		{}, /* i */
+		{ NULL }, /* h */
+		{ NULL }, /* i */
 		{ "jpg", "jpeg" }, /* j */
-		{}, /* k */
-		{}, /* l */
+		{ NULL }, /* k */
+		{ NULL }, /* l */
 		{ "mp4", "mp3", "mkv" }, /* m */
-		{}, /* n */
+		{ NULL }, /* n */
 		{ "o" }, /* o */
 		{ "pdf", "png", "pyc" }, /* p */
-		{}, /* q */
+		{ NULL }, /* q */
 		{ "rar" }, /* r */
 		{ "so" }, /* s */
-		{}, /* t */
-		{}, /* u */
-		{}, /* v */
+		{ NULL }, /* t */
+		{ NULL }, /* u */
+		{ NULL }, /* v */
 		{ "wav" }, /* w */
-		{}, /* x */
-		{}, /* y */
+		{ NULL }, /* x */
+		{ NULL }, /* y */
 		{ "zip" }  /* z */
 	};
 	const int idx = *ext;
 	if (jstr_unlikely(!jstr_isalpha(idx)))
 		return JSTR_IO_FT_UNKNOWN;
-	for (int i = 0; i < (int)JSTR_ARRAY_SIZE(text[idx]); ++i)
-		if (sizeof(text[idx][i]) - 1 == ext_len) {
-			if (!memcmp(ext, text[idx][i], ext_len))
-				return JSTR_IO_FT_TEXT;
-		} else if (jstr_unlikely((int)sizeof(binary[idx][i]) - 1 > ext_len)) {
-			break;
-		}
-	for (int i = 0; i < (int)JSTR_ARRAY_SIZE(binary[idx]); ++i)
-		if (sizeof(binary[idx][i]) - 1 == ext_len) {
-			if (!memcmp(ext, text[idx][i], ext_len))
-				return JSTR_IO_FT_BINARY;
-		} else if (jstr_unlikely((int)sizeof(binary[idx][i]) - 1 > ext_len)) {
-			break;
-		}
+	if (text[idx][0]) {
+		for (int i = 0; i < (int)JSTR_ARRAY_SIZE(text[idx]); ++i)
+			if (sizeof(text[idx][i]) - 1 == ext_len) {
+				if (!memcmp(ext, text[idx][i], ext_len))
+					return JSTR_IO_FT_TEXT;
+			} else if (jstr_unlikely((int)sizeof(binary[idx][i]) - 1 > ext_len)) {
+				break;
+			}
+	}
+	if (binary[idx][0]) {
+		for (int i = 0; i < (int)JSTR_ARRAY_SIZE(binary[idx]); ++i)
+			if (sizeof(binary[idx][i]) - 1 == ext_len) {
+				if (!memcmp(ext, text[idx][i], ext_len))
+					return JSTR_IO_FT_BINARY;
+			} else if (jstr_unlikely((int)sizeof(binary[idx][i]) - 1 > ext_len)) {
+				break;
+			}
+	}
 	return JSTR_IO_FT_BINARY;
 }
 
@@ -229,7 +233,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
-	const unsigned char *const end = (unsigned char *)buf + JSTR_MIN(n, sz);
+	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(n, sz);
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
 		if (pjstr_io_reject_table[*s++])
@@ -279,7 +283,7 @@ JSTR_NOEXCEPT
 	const int ret = pjstr_io_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
-	const unsigned char *const end = (unsigned char *)buf + JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX) + 1;
+	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
 		if (pjstr_io_reject_table[*s++])
