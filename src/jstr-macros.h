@@ -784,41 +784,61 @@ case '~':
 #	define JSTR_HAVE_BZERO 1
 #endif
 
-#if defined __x86_64__ || defined _M_X64
+#if defined __amd64__ || defined __amd64 || defined _M_AMD64 \
+|| defined __x86_64__ || defined __x86_64 || defined _M_X64
 #	define JSTR_ARCH_X86_64 1
-#elif defined i386 || defined __i386__ || defined __i386 || defined _M_IX86
+#elif defined i386 || defined __i386__ \
+|| defined __i386 || defined _M_IX86
 #	define JSTR_ARCH_X86_32 1
-#elif defined __ARM_ARCH_2__
-#	define JSTR_ARCH_ARM2 1
-#elif defined __ARM_ARCH_3__ || defined __ARM_ARCH_3M__
-#	define JSTR_ARCH_ARM3 1
-#elif defined __ARM_ARCH_4T__ || defined __TARGET_ARM_4T
-#	define JSTR_ARCH_ARM4T 1
-#elif __ARM_ARCH_5__ || defined __ARM_ARCH_5E__      \
-|| defined__ARM_ARCH_5T__ || defined__ARM_ARCH_5TE__ \
-|| defined__ARM_ARCH_5TEJ__
-#	define JSTR_ARCH_ARM5 1
-#elif defined __ARM_ARCH_6T2_ || defined __ARM_ARCH_6T2_
-#	define JSTR_ARCH_ARM6T2 1
-#elif __ARM_ARCH_6__ || defined__ARM_ARCH_6J__       \
-|| defined__ARM_ARCH_6Z__ || defined__ARM_ARCH_6ZK__ \
-|| defined__ARM_ARCH_6K__ || defined__ARM_ARCH_6T2__
-#	define JSTR_ARCH_ARM6 1
-#elif __ARM_ARCH_7__ || defined__ARM_ARCH_7A__      \
-|| defined__ARM_ARCH_7R__ || defined__ARM_ARCH_7M__ \
-|| defined__ARM_ARCH_7EM__ || defined __ARM_ARCH_7S__
-#	define JSTR_ARCH_ARM7 1
 #elif defined __aarch64__ || defined _M_ARM64
 #	define JSTR_ARCH_ARM64 1
-#elif defined mips || defined __mips__ || defined __mips
+#elif defined __arm__ || defined __arm \
+|| defined __thumb__ || defined _ARM   \
+|| defined _M_ARM || defined _M_ARM_T
+#	define JSTR_ARCH_ARM 1
+#	if defined __ARM_ARCH_2__
+#		define JSTR_ARCH_ARM2 1
+#	elif defined __ARM_ARCH_3__ || defined __ARM_ARCH_3M__
+#		define JSTR_ARCH_ARM3 1
+#	elif defined __ARM_ARCH_4T__ || defined __TARGET_ARM_4T
+#		define JSTR_ARCH_ARM4T 1
+#	elif defined __ARM_ARCH_5__ || defined __ARM_ARCH_5E__ \
+	|| defined __ARM_ARCH_5T__ || defined __ARM_ARCH_5TE__  \
+	|| defined __ARM_ARCH_5TEJ__
+#		define JSTR_ARCH_ARM5 1
+#	elif defined __ARM_ARCH_6T2__
+#		define JSTR_ARCH_ARM6T2 1
+#	elif defined __ARM_ARCH_6__ || defined __ARM_ARCH_6J__ \
+	|| defined __ARM_ARCH_6Z__ || defined __ARM_ARCH_6ZK__  \
+	|| defined __ARM_ARCH_6K__
+#		define JSTR_ARCH_ARM6 1
+#	elif defined __ARM_ARCH_7__ || defined __ARM_ARCH_7A__ \
+	|| defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__   \
+	|| defined __ARM_ARCH_7EM__ || defined __ARM_ARCH_7S__
+#		define JSTR_ARCH_ARM7 1
+#	endif
+#elif defined mips || defined __mips__ \
+|| defined __mips || defined __MIPS__
 #	define JSTR_ARCH_MIPS 1
 #elif defined __sh__
 #	define JSTR_ARCH_SH 1
-#elif defined __powerpc || defined __powerpc__  \
-|| defined __powerpc64__ || defined __POWERPC__ \
-|| defined __ppc__ || defined __PPC__ || defined _ARCH_PPC
+#	if defined __sh1__
+#		define JSTR_ARCH_SH1 1
+#	elif defined __sh2__
+#		define JSTR_ARCH_SH2 1
+#	elif defined __sh3__
+#		define JSTR_ARCH_SH3 1
+#	elif defined __sh4__
+#		define JSTR_ARCH_SH4 1
+#	elif defined __sh5__
+#		define JSTR_ARCH_SH5 1
+#	endif
+#elif defined __powerpc || defined __powerpc__ \
+|| defined __POWERPC__ || defined __ppc__      \
+|| defined __PPC__ || defined _ARCH_PPC
 #	define JSTR_ARCH_POWERPC 1
-#elif defined __PPC64__ || defined __ppc64__ || defined _ARCH_PPC64
+#elif defined __PPC64__ || defined __ppc64__ \
+|| defined _ARCH_PPC64 || defined __powerpc64__
 #	define JSTR_ARCH_POWERPC64 1
 #elif defined _ARCH_PWR4
 #	define JSTR_ARCH_POWERPC4 1
@@ -834,16 +854,38 @@ case '~':
 #	define JSTR_ARCH_POWERPC9 1
 #elif defined __sparc__ || defined __sparc
 #	define JSTR_ARCH_SPARC 1
-#elif defined __m68k__
+#	if defined __sparc_v8__ || defined __sparcv8
+#		define JSTR_ARCH_SPARCV8 1
+#	elif defined __sparc_v9__ || defined __sparcv9
+#		define JSTR_ARCH_SPARCV9 1
+#	endif
+#elif defined __m68k__ || defined M68000 || defined __MC68K__
 #	define JSTR_ARCH_M68K 1
-#elif defined __alpha__
+#elif defined __alpha__ || defined __alpha || defined _M_ALPHA
 #	define JSTR_ARCH_ALPHA 1
-#elif defined __hppa__
+#	if defined __alpha_ev4__
+#		define JSTR_ARCH_ALPHA 1
+#	elif defined __alpha_ev5__
+#	elif defined __alpha_ev6__
+#	endif
+#elif defined __hppa__ || defined __hppa || defined __HPPA__
 #	define JSTR_ARCH_HPPA 1
+#	if defined _PA_RISC1_0
+#		define JSTR_ARCH_HPPA_RISC1_0 1
+#	elif defined _PA_RISC1_1 || defined __HPPA11__ || defined __PA7100__
+#		define JSTR_ARCH_HPPA_RISC1_1 1
+#	elif defined _PA_RISC2_0 || defined __RISC2_0__ \
+	|| defined __HPPA20__ || defined __PA8000__
+#		define JSTR_ARCH_HPPA_RISC2_0 1
+#	endif
 #elif defined __riscv_zbb || defined __riscv_xtheadbb
 #	define JSTR_ARCH_RISCV 1
-#elif defined __s390x__
+#elif defined __s390x__ || defined __s390__
 #	define JSTR_ARCH_S390 1
+#elif defined __ia64__ || defined _IA64 \
+|| defined __IA64__ || defined __ia64   \
+|| defined _M_IA64 || defined __itanium__
+#	define JSTR_ARCH_IA64 1
 #else
 #	define JSTR_ARCH_GENERIC 1
 #endif
@@ -996,6 +1038,9 @@ case '~':
 #	define JSTR_HAVE_MEMMEM_OPTIMIZED 1
 #endif
 
+#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_SPARC || JSTR_ARCH_M68K || JSTR_ARCH_ARM6 || JSTR_ARCH_POWERPC64)
+#endif
+
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390)
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
 #endif
@@ -1029,7 +1074,7 @@ enum {
 #	define JSTR_HAVE_STRCSPN_OPTIMIZED 1
 #endif
 
-#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_X86_32 || JSTR_ARCH_SPARC)
+#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_X86_32 || JSTR_ARCH_SPARC || JSTR_ARCH_ARM6 || JSTR_ARCH_POWERPC64)
 #	define JSTR_HAVE_STRPBRK_OPTIMIZED 1
 #endif
 

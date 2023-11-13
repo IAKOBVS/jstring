@@ -165,7 +165,8 @@ JSTR_NOEXCEPT
 	return (char *)strchrnul(s, c);
 #else
 	const char *const start = s;
-	return (char *)((s = strchr(s, c)) ? s : start + strlen(start));
+	s = strchr(s, c);
+	return (char *)(s ? s : start + strlen(start));
 #endif
 }
 
