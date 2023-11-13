@@ -53,8 +53,8 @@ sub grepped {
 usage();
 
 my $file_str1     = jl_file_get_str(\$fname);
-my @ignore_prefix = ("PJSTR", "pjstr", "JSTR", "jstr");
-jl_file_namespace_macros(\$file_str1, \"PJSTR_", \@ignore_prefix);
+my @ignore_prefix = ("JSTRP", "jstrp", "JSTR", "jstr");
+jl_file_namespace_macros(\$file_str1, \"JSTRP_", \@ignore_prefix);
 my $file_str2 = '';
 my @func_arr;
 
