@@ -27,8 +27,6 @@
 # include "_string-optype.h"
 
 /* The functions return a byte mask.  */
-typedef jstr_word_ty find_t;
-
 /* This function returns 0xff for each byte that is zero in X.  */
 static JSTR_INLINE jstr_word_ty
 find_zero_all (jstr_word_ty x)

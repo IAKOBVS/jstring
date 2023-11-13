@@ -25,8 +25,6 @@
 #include "_string-optype.h"
 
 /* The function return a byte mask.  */
-typedef jstr_word_ty find_t;
-
 /* This function returns non-zero if any byte in X is zero.
    More specifically, at least one bit set within the least significant
    byte that was zero; other bytes within the word are indeterminate.  */

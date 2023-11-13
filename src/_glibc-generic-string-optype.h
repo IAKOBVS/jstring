@@ -21,6 +21,6 @@
 
 #include "jstr-macros.h"
 
-typedef unsigned long int __attribute__ ((__may_alias__)) jstr_word_ty;
+typedef unsigned long int JSTR_MAY_ALIAS jstr_word_ty;
 
 #endif /* string-optype.h */
