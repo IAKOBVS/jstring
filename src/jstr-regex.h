@@ -565,7 +565,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static size_t
-pjstr_re_strlenrplcbref(const regmatch_t *R rm,
+pjstr_re_brefrplcstrlen(const regmatch_t *R rm,
                        unsigned char *R rplc,
                        size_t rplc_len)
 JSTR_NOEXCEPT
@@ -584,7 +584,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-pjstr_re_creatrplcbref(const unsigned char *R mtc,
+pjstr_re_brefrplccreat(const unsigned char *R mtc,
                        const regmatch_t *R rm,
                        unsigned char *R rdst,
                        unsigned char *R rplc,
@@ -649,7 +649,7 @@ JSTR_NOEXCEPT
 			++p;
 			continue;
 		}
-		rdst_len = pjstr_re_strlenrplcbref(rm, (u *)rplc, rplc_len);
+		rdst_len = pjstr_re_brefrplcstrlen(rm, (u *)rplc, rplc_len);
 		if (jstr_unlikely(rdst_len == 0))
 			return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > BUFSZ))
@@ -659,7 +659,7 @@ JSTR_NOEXCEPT
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
 				rdstp = rdst_heap;
 			}
-		pjstr_re_creatrplcbref((u *)p, rm, (u *)rdstp, (u *)rplc, rplc_len);
+		pjstr_re_brefrplccreat((u *)p, rm, (u *)rdstp, (u *)rplc, rplc_len);
 		p += rm[0].rm_so;
 		if (rdst_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const u **)&p, rdstp, rdst_len, find_len);

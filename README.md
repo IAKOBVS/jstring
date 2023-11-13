@@ -7,7 +7,7 @@
 - reverse standard string functions: memrchr(), strrstr(), strrspn(), strrcspn()
 - standard string functions for non-nul terminated strings: memspn(), memcspn(), mempbrk()
 - extensions to standard string functions: strnstr(), strnchr(), strcasestr\_len()
-- string formatting: asprintf() and vsprintf\_strlen() which returns the number of characters vsprintf will write excluding the nul.
+- string formatting: asprintf() and vsprintfstrlen() which returns the number of characters vsprintf will write excluding the nul.
 
 ## Installation:
 

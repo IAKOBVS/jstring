@@ -875,7 +875,7 @@ JSTR_FUNC
 JSTR_INLINE
 #endif
 static int
-jstr_vsprintf_strlen(va_list ap, const char *R fmt)
+jstr_vsprintfstrlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
 #if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
@@ -1111,7 +1111,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arg_len = jstr_vsprintf_strlen(ap, fmt);
+	int arg_len = jstr_vsprintfstrlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
@@ -1144,7 +1144,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintf_strlen(ap, fmt);
+	int ret = jstr_vsprintfstrlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1181,7 +1181,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintf_strlen(ap, fmt);
+	int ret = jstr_vsprintfstrlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1217,7 +1217,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintf_strlen(ap, fmt);
+	int ret = jstr_vsprintfstrlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1255,7 +1255,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintf_strlen(ap, fmt);
+	int ret = jstr_vsprintfstrlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1291,7 +1291,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintf_strlen(ap, fmt);
+	int ret = jstr_vsprintfstrlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
