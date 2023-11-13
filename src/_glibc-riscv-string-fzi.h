@@ -24,12 +24,12 @@
 #if defined __riscv_zbb || defined __riscv_xtheadbb
 # include "_glibc_generic-string-fzi.h"
 #else
-/* Without bitmap jstr_word_clz/ctz extensions, it is faster to direct test the bits
+/* Without bitmap clz/ctz extensions, it is faster to direct test the bits
    instead of calling compiler auxiliary functions.  */
 # include "_string-optype.h"
 
 static JSTR_INLINE unsigned int
-index_first (jstr_word_ty c)
+jstr_word_index(jstr_word_ty c)
 {
   if (c & 0x80U)
     return 0;
@@ -53,7 +53,7 @@ index_first (jstr_word_ty c)
 }
 
 static JSTR_INLINE unsigned int
-index_last (jstr_word_ty c)
+jstr_word_index(jstr_word_ty c)
 {
   if (sizeof (jstr_word_ty) == 8)
     {

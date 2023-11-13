@@ -28,11 +28,11 @@ _Static_assert (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 /* Given a word X that is known to contain a zero byte, return the
    index of the first such within the long in memory order.  */
 static JSTR_INLINE unsigned int
-index_first_zero (jstr_word_ty x)
+jstr_word_index(jstr_word_ty x)
 {
   unsigned int ret;
 
-  /* Since we have no jstr_word_clz insn, direct tests of the bytes is faster
+  /* Since we have no clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %1,23,8,%%r0\n\t"
        "ldi 2,%0\n\t"
@@ -47,19 +47,19 @@ index_first_zero (jstr_word_ty x)
 
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
 static JSTR_INLINE unsigned int
-index_first_eq (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_index(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return index_first_zero (x1 ^ x2);
+  return jstr_word_index(x1 ^ x2);
 }
 
 /* Similarly, but perform the search for zero within X1 or
    equality between X1 and X2.  */
 static JSTR_INLINE unsigned int
-index_first_zero_eq (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_index(jstr_word_ty x1, jstr_word_ty x2)
 {
   unsigned int ret;
 
-  /* Since we have no jstr_word_clz insn, direct tests of the bytes is faster
+  /* Since we have no clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,= %1,23,8,%%r0\n\t"
        "extrw,u,<> %2,23,8,%%r0\n\t"
@@ -78,11 +78,11 @@ index_first_zero_eq (jstr_word_ty x1, jstr_word_ty x2)
 /* Similarly, but perform the search for zero within X1 or
    inequality between X1 and X2. */
 static JSTR_INLINE unsigned int
-index_first_zero_ne (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_index(jstr_word_ty x1, jstr_word_ty x2)
 {
   unsigned int ret;
 
-  /* Since we have no jstr_word_clz insn, direct tests of the bytes is faster
+  /* Since we have no clz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %2,23,8,%%r0\n\t"
        "extrw,u,<> %1,23,8,%%r0\n\t"
@@ -100,11 +100,11 @@ index_first_zero_ne (jstr_word_ty x1, jstr_word_ty x2)
 
 /* Similarly, but search for the last zero within X.  */
 static JSTR_INLINE unsigned int
-index_last_zero (jstr_word_ty x)
+jstr_word_index(jstr_word_ty x)
 {
   unsigned int ret;
 
-  /* Since we have no jstr_word_ctz insn, direct tests of the bytes is faster
+  /* Since we have no ctz insn, direct tests of the bytes is faster
      than loading up the constants to do the masking.  */
   asm ("extrw,u,<> %1,15,8,%%r0\n\t"
        "ldi 1,%0\n\t"
@@ -118,9 +118,9 @@ index_last_zero (jstr_word_ty x)
 }
 
 static JSTR_INLINE unsigned int
-index_last_eq (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_index(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return index_last_zero (x1 ^ x2);
+  return jstr_word_index(x1 ^ x2);
 }
 
 #endif /* _STRING_FZC_H */

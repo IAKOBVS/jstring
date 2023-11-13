@@ -31,7 +31,7 @@
 /* A subroutine for the index_zero functions.  Given a bitmask C,
    return the index of the first bit set in memory order.  */
 static JSTR_INLINE unsigned int
-index_first (jstr_word_ty c)
+jstr_word_index(jstr_word_ty c)
 {
 #ifdef __alpha_cix__
   return __builtin_ctzl (c);
@@ -45,7 +45,7 @@ index_first (jstr_word_ty c)
    that is non-zero.  Note that only the least 8 bits may be nonzero.  */
 
 static JSTR_INLINE unsigned int
-index_last (jstr_word_ty x)
+jstr_word_index(jstr_word_ty x)
 {
 #ifdef __alpha_cix__
   return __builtin_clzl (x) ^ 63;
