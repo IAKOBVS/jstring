@@ -69,7 +69,7 @@ before including any jstr-\* header to automatically call jstr\_err\_exit() on e
 The index passed by the user is assumed to be not out of bounds.
 - \*\_bref(): enable backreferences for the replacement string.<br>
 \\0 is interpreted as referring to the whole matched string
-- P_\*(), p\*(): private functions or macros used internally
+- *namespace*p\*(), *NAMESPACE*P\*(): private functions or macros used internally
 
 ## Scripts:
 

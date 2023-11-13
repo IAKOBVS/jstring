@@ -5,10 +5,10 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+JSTRP_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-PJSTR_END_DECLS
+JSTRP_END_DECLS
 
 #include "_jstr-pp-arrcpy-va-args.h"
 #include "jstr-builder.h"
@@ -80,7 +80,7 @@ PJSTR_END_DECLS
 		do                                                          \
 			(old_cap) *= PJARR_GROWTH;                          \
 		while ((old_cap) < (new_cap));                              \
-		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
+		(old_cap) = JSTR_ALIGN_UP(old_cap, JSTRP_MALLOC_ALIGNMENT); \
 	} while (0)
 #define jarr_reserve(j, new_cap)                                                                                   \
 	do {                                                                                                       \
@@ -89,7 +89,7 @@ PJSTR_END_DECLS
 			PJARR_CAP(j) = JSTR_MIN_CAP / PJARR_ELEMSZ(j);                                             \
 		PJARR_GROW(PJARR_CAP(j), new_cap);                                                                 \
 		PJARR_CAP(j) = PJARR_ALIGN_UP(j, PJARR_CAP(j) * PJARR_ELEMSZ(j));                                  \
-		PJARR_DATA(j) = PJSTR_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
+		PJARR_DATA(j) = JSTRP_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
 		if (jarr_chk(j))                                                                                   \
 			break;                                                                                     \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                   \
@@ -98,7 +98,7 @@ PJSTR_END_DECLS
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
 		PJARR_CAP(j) = PJARR_ALIGN_UP(j, PJARR_CAP(j) * PJARR_ELEMSZ(j));                                  \
-		PJARR_DATA(j) = PJSTR_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
+		PJARR_DATA(j) = JSTRP_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
 		if (jarr_chk(j))                                                                                   \
 			break;                                                                                     \
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                   \
@@ -132,26 +132,26 @@ PJSTR_END_DECLS
 #define jarr_assign(j, ...)                                                     \
 	do {                                                                    \
 		PJARR_CHECK_ARG(j);                                             \
-		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));            \
-		if (jstr_unlikely(PJARR_CAP(j) < PJSTR_PP_NARG(__VA_ARGS__))) { \
-			jarr_reserve(j, PJSTR_PP_NARG(__VA_ARGS__));            \
+		PJARR_CHECK_VAL(j, JSTRP_PP_FIRST_ARG(__VA_ARGS__));            \
+		if (jstr_unlikely(PJARR_CAP(j) < JSTRP_PP_NARG(__VA_ARGS__))) { \
+			jarr_reserve(j, JSTRP_PP_NARG(__VA_ARGS__));            \
 			PJARR_MALLOC_ERR(j, break)                              \
 		}                                                               \
-		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_SZ(j), __VA_ARGS__);              \
-		PJARR_SZ(j) = PJSTR_PP_NARG(__VA_ARGS__);                       \
+		JSTRP_PP_ARRCPY_VA_ARGS(PJARR_SZ(j), __VA_ARGS__);              \
+		PJARR_SZ(j) = JSTRP_PP_NARG(__VA_ARGS__);                       \
 	} while (0)
 
 /* Add elements to end of PTR. */
 #define jarr_cat(j, ...)                                                                        \
 	do {                                                                                    \
 		PJARR_CHECK_ARG(j);                                                             \
-		PJARR_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                            \
-		if (jstr_unlikely(PJARR_CAP(j) < (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)))) { \
-			jarr_reserve(j, (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)));            \
+		PJARR_CHECK_VAL(j, JSTRP_PP_FIRST_ARG(__VA_ARGS__));                            \
+		if (jstr_unlikely(PJARR_CAP(j) < (PJARR_SZ(j) + JSTRP_PP_NARG(__VA_ARGS__)))) { \
+			jarr_reserve(j, (PJARR_SZ(j) + JSTRP_PP_NARG(__VA_ARGS__)));            \
 			PJARR_MALLOC_ERR(j, break)                                              \
 		}                                                                               \
-		PJSTR_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);              \
-		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                      \
+		JSTRP_PP_ARRCPY_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);              \
+		PJARR_SZ(j) += JSTRP_PP_NARG(__VA_ARGS__);                                      \
 	} while (0)
 /* Pop PTR[0]. */
 #define jarr_popfront(j)                                                  \
@@ -215,7 +215,7 @@ PJSTR_END_DECLS
 		(PJARR_DATA(j) + (idx))
 #endif
 
-PJSTR_BEGIN_DECLS
+JSTRP_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
@@ -241,7 +241,7 @@ PJARR_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
 	exit(EXIT_FAILURE);
 }
 
-PJSTR_END_DECLS
+JSTRP_END_DECLS
 
 #undef R
 

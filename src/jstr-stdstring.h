@@ -7,14 +7,14 @@
 #include "jstr-struct.h"
 #include "jstr-word-at-a-time.h"
 
-PJSTR_BEGIN_DECLS
+JSTRP_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-PJSTR_END_DECLS
+JSTRP_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+JSTRP_BEGIN_DECLS
 
 JSTR_FUNC
 JSTR_INLINE
@@ -196,7 +196,7 @@ JSTR_NOEXCEPT
 
 JSTR_INLINE
 static const char *
-pjstr_sadd(uintptr_t x, uintptr_t y)
+jstrp_sadd(uintptr_t x, uintptr_t y)
 JSTR_NOEXCEPT
 {
 	return (const char *)(y > UINTPTR_MAX - x ? UINTPTR_MAX : x + y);
@@ -224,7 +224,7 @@ JSTR_NOEXCEPT
 	uintptr_t s_int = (uintptr_t)s;
 	w_ty word = jstr_word_toword(word_ptr);
 	w_ty repeated_c = jstr_word_repeat_bytes(c);
-	const char *const lbyte = pjstr_sadd(s_int, n - 1);
+	const char *const lbyte = jstrp_sadd(s_int, n - 1);
 	const w_ty *const lword = (w_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(w_ty));
 	w_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
@@ -474,7 +474,7 @@ JSTR_NOEXCEPT
 	return jstr_strdup_len(s, strlen(s));
 }
 
-#define PJSTR_ATOI(T, name, func)  \
+#define JSTRP_ATOI(T, name, func)  \
 	JSTR_FUNC_PURE             \
 	JSTR_INLINE                \
 	static T                   \
@@ -484,15 +484,15 @@ JSTR_NOEXCEPT
 		return func;       \
 	}
 
-PJSTR_ATOI(int, atoi, strtol(s, NULL, 0))
-PJSTR_ATOI(long, atol, strtol(s, NULL, 0))
-PJSTR_ATOI(long long, atoll, strtol(s, NULL, 0))
-PJSTR_ATOI(double, atod, strtod(s, NULL))
-PJSTR_ATOI(float, atof, strtof(s, NULL))
+JSTRP_ATOI(int, atoi, strtol(s, NULL, 0))
+JSTRP_ATOI(long, atol, strtol(s, NULL, 0))
+JSTRP_ATOI(long long, atoll, strtol(s, NULL, 0))
+JSTRP_ATOI(double, atod, strtod(s, NULL))
+JSTRP_ATOI(float, atof, strtof(s, NULL))
 
-#undef PJSTR_ATOI
+#undef JSTRP_ATOI
 
-PJSTR_END_DECLS
+JSTRP_END_DECLS
 
 #undef R
 

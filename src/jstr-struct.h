@@ -5,11 +5,11 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+JSTRP_BEGIN_DECLS
 #include <stddef.h>
-PJSTR_END_DECLS
+JSTRP_END_DECLS
 
-PJSTR_BEGIN_DECLS
+JSTRP_BEGIN_DECLS
 
 typedef struct jstr_ty {
 	char *data;
@@ -17,6 +17,6 @@ typedef struct jstr_ty {
 	size_t capacity;
 } jstr_ty;
 
-PJSTR_END_DECLS
+JSTRP_END_DECLS
 
 #endif /* JSTR_STRUCT_H */
