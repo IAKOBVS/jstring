@@ -736,7 +736,7 @@ case '~':
 #	define JSTR_HAVE_STRNDUP 1
 #endif /* Posix || Gnu */
 
-#if (defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 500)                                                                  \
+#if (defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 500)                                                                \
 || (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19 && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
 || (JSTR_GLIBC_PREREQ(2, 12) && __POSIX_C_SOURCE >= 200809L)
 #	define JSTR_HAVE_STRDUP 1
@@ -784,9 +784,11 @@ case '~':
 #	define JSTR_HAVE_BZERO 1
 #endif
 
-#if defined __amd64__ || defined __amd64  \
-|| defined _M_AMD64 || defined __x86_64__ \
-|| defined __x86_64 || defined _M_X64     \
+#if (defined __x86_64 || defined __x86_64__) && (defined _ILP32 || defined __ILP32__)
+#	define JSTR_ARCH_X86_32 1
+#elif defined __amd64__ || defined __amd64 \
+|| defined _M_AMD64 || defined __x86_64__  \
+|| defined __x86_64 || defined _M_X64      \
 || defined _M_X64
 #	define JSTR_ARCH_X86_64 1
 #elif defined __aarch64__ || defined _M_ARM64
@@ -886,10 +888,8 @@ case '~':
 || defined _M_IA64 || defined __itanium__
 #	define JSTR_ARCH_IA64 1
 #elif defined i386 || defined __i386__ \
-|| defined __i386 || defined _M_IX86   \
+|| defined __i386 || defined _M_IX86
 #	define JSTR_ARCH_I386 1
-#elif defined _ILP32 || defined __ILP32__
-#	define JSTR_ARCH_X86_32 1
 #else
 #	define JSTR_ARCH_GENERIC 1
 #endif
