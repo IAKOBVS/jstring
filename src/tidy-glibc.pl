@@ -20,12 +20,12 @@ if (index($file_str, "\"jstr-macros.h\"") == -1) {
 	$file_str =~ s/(#define.*)/$1\n\n#include "jstr-macros.h"\n/;
 }
 
-replaceall(\$file_str, \'(?:find_t|op_t)',                                  \'jstr_word_ty');
-replaceall(\$file_str, \'(?:_Bool|bool)',                                   \'int');
-replaceall(\$file_str, \'OP_T_THRES',                                       \'JSTR_WORD_THRES');
-replaceall(\$file_str, \'__attribute__\(\((?:__may_alias__|may_alias)\)\)', \'JSTR_MAY_ALIAS');
-replaceall(\$file_str, \'__always_inline',                                  \'JSTR_INLINE');
-replaceall(\$file_str, \'if\s*\(__BYTE_ORDER\s*==\s*__LITTLE_ENDIAN\)',     \'if (JSTR_ENDIAN_LITTLE)');
+replaceall(\$file_str, \'if\s*\(__BYTE_ORDER\s*==\s*__LITTLE_ENDIAN\)',              \'if (JSTR_ENDIAN_LITTLE)');
+replaceall(\$file_str, \'(?:find_t|op_t)',                                           \'jstr_word_ty');
+replaceall(\$file_str, \'(?:_Bool|bool)',                                            \'int');
+replaceall(\$file_str, \'OP_T_THRES',                                                \'JSTR_WORD_THRES');
+replaceall(\$file_str, \'__attribute__\s*\(\(\s*(?:__may_alias__|may_alias)\s*\)\)', \'JSTR_MAY_ALIAS');
+replaceall(\$file_str, \'__always_inline',                                           \'JSTR_INLINE');
 $file_str =~ s/(^|\W)((?:repeat_bytes|extractbyte|shift|find_index|has|clz|ctz)\w*)($|\W)/$1jstr_word_$2$3/g;
 $file_str =~ s/\n[ \t]*typedef jstr_word_ty jstr_word_ty;\s*\n/\n/g;
 $file_str =~ s/#[ \t]*(ifndef|define)[ \t]*_{,1}(\w*_H)/#$1 PJSTR_$2/g;
