@@ -46,18 +46,18 @@ JSTR_NOEXCEPT
 	return jstrp_ctype_tolower[(unsigned char)c];
 }
 
-#define JSTRP_REPEAT_CTYPE(FUNC)    \
-	FUNC(alpha, JSTR_ISALPHA)   \
-	FUNC(lower, JSTR_ISLOWER)   \
-	FUNC(upper, JSTR_ISUPPER)   \
-	FUNC(space, JSTR_ISSPACE)   \
-	FUNC(blank, JSTR_ISBLANK)   \
-	FUNC(digit, JSTR_ISDIGIT)   \
-	FUNC(xdigit, JSTR_ISXDIGIT) \
-	FUNC(punct, JSTR_ISPUNCT)   \
-	FUNC(graph, JSTR_ISGRAPH)   \
-	FUNC(print, JSTR_ISPRINT)   \
-	FUNC(cntrl, JSTR_ISCNTRL)   \
+#define JSTRP_DEFINE_REPEAT_CTYPE(FUNC) \
+	FUNC(alpha, JSTR_ISALPHA)       \
+	FUNC(lower, JSTR_ISLOWER)       \
+	FUNC(upper, JSTR_ISUPPER)       \
+	FUNC(space, JSTR_ISSPACE)       \
+	FUNC(blank, JSTR_ISBLANK)       \
+	FUNC(digit, JSTR_ISDIGIT)       \
+	FUNC(xdigit, JSTR_ISXDIGIT)     \
+	FUNC(punct, JSTR_ISPUNCT)       \
+	FUNC(graph, JSTR_ISGRAPH)       \
+	FUNC(print, JSTR_ISPRINT)       \
+	FUNC(cntrl, JSTR_ISCNTRL)       \
 	FUNC(word, JSTR_ISWORD)
 
 /*
@@ -74,7 +74,7 @@ JSTR_NOEXCEPT
 	return jstrp_ctype[(unsigned char)c] & type;
 }
 
-#define JSTRP_ISCTYPE(ctype, ctype_enum)            \
+#define JSTRP_DEFINE_ISCTYPE(ctype, ctype_enum)     \
 	/* ASCII. */                                \
 	JSTR_INLINE                                 \
 	JSTR_FUNC_CONST                             \
@@ -85,9 +85,9 @@ JSTR_NOEXCEPT
 		return jstr_isctype(c, ctype_enum); \
 	}
 
-JSTRP_REPEAT_CTYPE(JSTRP_ISCTYPE);
+JSTRP_DEFINE_REPEAT_CTYPE(JSTRP_DEFINE_ISCTYPE);
 
-#undef JSTRP_ISCTYPE
+#undef JSTRP_DEFINE_ISCTYPE
 
 /* ASCII. */
 JSTR_INLINE
@@ -107,7 +107,7 @@ JSTR_NOEXCEPT
 	return (char *)s - 1;
 }
 
-#define JSTRP_SKIP_CTYPE(ctype, ctype_enum)           \
+#define JSTRP_DEFINE_SKIP_CTYPE(ctype, ctype_enum)    \
 	/* ASCII. */                                  \
 	JSTR_INLINE                                   \
 	JSTR_FUNC_PURE                                \
@@ -118,9 +118,9 @@ JSTR_NOEXCEPT
 		return jstr_skipctype(s, ctype_enum); \
 	}
 
-JSTRP_REPEAT_CTYPE(JSTRP_SKIP_CTYPE)
+JSTRP_DEFINE_REPEAT_CTYPE(JSTRP_DEFINE_SKIP_CTYPE)
 
-#undef JSTRP_SKIP_CTYPE
+#undef JSTRP_DEFINE_SKIP_CTYPE
 
 /* ASCII. */
 JSTR_INLINE
@@ -133,7 +133,7 @@ JSTR_NOEXCEPT
 	return jstr_likely(*s) && *(jstr_skipctype(s, ctype) + 1) == '\0';
 }
 
-#define JSTRP_ISCTYPE_STR(ctype, ctype_enum)           \
+#define JSTRP_DEFINE_ISCTYPE_STR(ctype, ctype_enum)    \
 	/* ASCII. */                                   \
 	JSTR_INLINE                                    \
 	JSTR_FUNC_PURE                                 \
@@ -144,9 +144,9 @@ JSTR_NOEXCEPT
 		return jstr_isctypestr(s, ctype_enum); \
 	}
 
-JSTRP_REPEAT_CTYPE(JSTRP_ISCTYPE_STR)
+JSTRP_DEFINE_REPEAT_CTYPE(JSTRP_DEFINE_ISCTYPE_STR)
 
-#undef JSTRP_ISCTYPE_STR
+#undef JSTRP_DEFINE_ISCTYPE_STR
 
 /* ASCII. */
 JSTR_INLINE
@@ -163,7 +163,7 @@ JSTR_NOEXCEPT
 	return (char *)end;
 }
 
-#define JSTRP_SKIP_CTYPE_REV(ctype, ctype_enum)                    \
+#define JSTRP_DEFINE_SKIP_CTYPE_REV(ctype, ctype_enum)             \
 	/* ASCII. */                                               \
 	JSTR_INLINE                                                \
 	JSTR_FUNC_PURE                                             \
@@ -175,9 +175,9 @@ JSTR_NOEXCEPT
 		return jstr_skipctype_rev(start, end, ctype_enum); \
 	}
 
-JSTRP_REPEAT_CTYPE(JSTRP_SKIP_CTYPE_REV)
+JSTRP_DEFINE_REPEAT_CTYPE(JSTRP_DEFINE_SKIP_CTYPE_REV)
 
-#undef JSTRP_SKIP_CTYPE_REV
+#undef JSTRP_DEFINE_SKIP_CTYPE_REV
 
 /* ASCII. */
 JSTR_FUNC_VOID
@@ -235,7 +235,7 @@ JSTR_NOEXCEPT
 
 JSTRP_END_DECLS
 
-#undef JSTRP_REPEAT_CTYPE
+#undef JSTRP_DEFINE_REPEAT_CTYPE
 #undef R
 
 #endif /* JSTR_CTYPE_H */
