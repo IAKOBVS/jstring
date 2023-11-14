@@ -11,42 +11,42 @@
 
 #define R JSTR_RESTRICT
 
-#define JSTRP_L_RESERVE_FAIL(func, list, new_cap, do_on_mallocerr) \
+#define JSTRLP_RESERVE_FAIL(func, list, new_cap, do_on_mallocerr) \
 	if (jstr_unlikely(!func(list, new_cap))) {                 \
 		JSTRP_EXIT_MAYBE();                                \
 		do_on_mallocerr;                                   \
 	}
 
-#define JSTRP_L_RESERVE(list, new_cap, do_on_mallocerr) \
-	JSTRP_L_RESERVE_FAIL(jstr_l_reserve, list, new_cap, do_on_mallocerr)
-#define JSTRP_L_RESERVE_ALWAYS(list, new_cap, do_on_mallocerr) \
-	JSTRP_L_RESERVE_FAIL(jstr_l_reservealways, list, new_cap, do_on_mallocerr)
+#define JSTRLP_RESERVE(list, new_cap, do_on_mallocerr) \
+	JSTRLP_RESERVE_FAIL(jstrl_reserve, list, new_cap, do_on_mallocerr)
+#define JSTRLP_RESERVE_ALWAYS(list, new_cap, do_on_mallocerr) \
+	JSTRLP_RESERVE_FAIL(jstrl_reservealways, list, new_cap, do_on_mallocerr)
 
-#define jstr_l_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstr_l_ty_end_ = jstr_l_end(l); \
-	                          p < jstr_l_ty_end_;                                              \
+#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstrl_ty_end_ = jstrl_end(l); \
+	                          p < jstrl_ty_end_;                                              \
 	                          ++p)
 
-#define jstr_l_foreachi(l, i) for (size_t i = 0, const jstr_l_ty_end_ = ((l)->size); \
-	                           i < jstr_l_ty_end_;                               \
+#define jstrl_foreachi(l, i) for (size_t i = 0, const jstrl_ty_end_ = ((l)->size); \
+	                           i < jstrl_ty_end_;                               \
 	                           ++i)
 
-#define JSTR_L_INIT \
+#define JSTRL_INIT \
 	{           \
 		0   \
 	}
 
 JSTRP_BEGIN_DECLS
 
-typedef struct jstr_l_ty {
+typedef struct jstrl_ty {
 	jstr_ty *data;
 	size_t size;
 	size_t capacity;
-} jstr_l_ty;
+} jstrl_ty;
 
 JSTR_FUNC_CONST
 JSTR_INLINE
 static jstr_ty *
-jstr_l_start(const jstr_l_ty *R l)
+jstrl_start(const jstrl_ty *R l)
 JSTR_NOEXCEPT
 {
 	return l->data;
@@ -55,7 +55,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_CONST
 JSTR_INLINE
 static jstr_ty *
-jstr_l_end(const jstr_l_ty *R l)
+jstrl_end(const jstrl_ty *R l)
 JSTR_NOEXCEPT
 {
 	return l->data + l->size;
@@ -64,11 +64,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_l_free(jstr_l_ty *R l)
+jstrl_free(jstrl_ty *R l)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
-		jstr_l_foreach (l, p)
+		jstrl_foreach (l, p)
 			free(p->data);
 		free(l->data);
 		l->data = NULL;
@@ -80,14 +80,14 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstr_l_debug(const jstr_l_ty *R l)
+jstrl_debug(const jstrl_ty *R l)
 {
 	fprintf(stderr, "size:%zu\n"
 	                "cap:%zu\n"
 	                "\n",
 	        l->size,
 	        l->capacity);
-	jstr_l_foreach (l, p) {
+	jstrl_foreach (l, p) {
 		fprintf(stderr,
 		        "idx:%zu\n"
 		        "size:%zu\n"
@@ -104,7 +104,7 @@ jstr_l_debug(const jstr_l_ty *R l)
 JSTR_CONST
 JSTR_INLINE
 static jstr_ty *
-jstr_l_at(const jstr_l_ty *R l,
+jstrl_at(const jstrl_ty *R l,
           const size_t idx)
 JSTR_NOEXCEPT
 {
@@ -115,7 +115,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
-jstr_l_index(jstr_l_ty *R l,
+jstrl_index(jstrl_ty *R l,
              jstr_ty *R curr)
 JSTR_NOEXCEPT
 {
@@ -125,7 +125,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
-jstrp_l_grow(size_t cap,
+jstrlp_grow(size_t cap,
              size_t new_cap)
 JSTR_NOEXCEPT
 {
@@ -139,11 +139,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_l_reservealways(jstr_l_ty *R l,
+jstrl_reservealways(jstrl_ty *R l,
                      size_t new_cap)
 JSTR_NOEXCEPT
 {
-	new_cap = jstrp_l_grow(l->capacity, new_cap);
+	new_cap = jstrlp_grow(l->capacity, new_cap);
 	l->data = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
 	JSTRP_MALLOC_ERR(l->data, goto err);
 	l->capacity = new_cap;
@@ -156,19 +156,19 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_l_reserve(jstr_l_ty *R l,
+jstrl_reserve(jstrl_ty *R l,
                size_t new_cap)
 JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
-		JSTRP_L_RESERVE_ALWAYS(l, new_cap, return 0);
+		JSTRLP_RESERVE_ALWAYS(l, new_cap, return 0);
 	return 1;
 }
 
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstrp_l_allocassign_len(char *R *R s,
+jstrlp_allocassign_len(char *R *R s,
                         size_t *R sz,
                         size_t *R cap,
                         const char *R src,
@@ -187,35 +187,35 @@ err:
 
 JSTR_FUNC_VOID
 static void
-jstr_l_popback(jstr_l_ty *R l)
+jstrl_popback(jstrl_ty *R l)
 {
 	if (jstr_likely(l->size))
-		free(jstr_l_at(l, --l->size)->data);
+		free(jstrl_at(l, --l->size)->data);
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_popfront(jstr_l_ty *R l)
+jstrl_popfront(jstrl_ty *R l)
 {
 	if (jstr_likely(l->size)) {
 		free(l->data->data);
 		if (jstr_likely(l->size > 1))
-			memmove(l->data, l->data + 1, (jstr_l_end(l) - (l->data + 1)) * sizeof(*l->data));
+			memmove(l->data, l->data + 1, (jstrl_end(l) - (l->data + 1)) * sizeof(*l->data));
 		--l->size;
 	}
 }
 
 JSTR_FUNC
 static int
-jstr_l_pushfront_len_unsafe(jstr_l_ty *R l,
+jstrl_pushfront_len_unsafe(jstrl_ty *R l,
                             const char *R s,
                             const size_t s_len)
 {
 	if (jstr_likely(l->size))
-		memmove(l->data + 1, l->data, (jstr_l_end(l) - (l->data)) * sizeof(*l->data));
+		memmove(l->data + 1, l->data, (jstrl_end(l) - (l->data)) * sizeof(*l->data));
 	++l->size;
 	if (jstr_unlikely(
-	    !jstrp_l_allocassign_len(
+	    !jstrlp_allocassign_len(
 	    &l->data->data,
 	    &l->data->size,
 	    &l->data->capacity,
@@ -224,56 +224,56 @@ jstr_l_pushfront_len_unsafe(jstr_l_ty *R l,
 		goto err;
 	return 1;
 err:
-	jstr_l_free(l);
+	jstrl_free(l);
 	return 0;
 }
 
 JSTR_FUNC
 static int
-jstr_l_pushfront_len(jstr_l_ty *R l,
+jstrl_pushfront_len(jstrl_ty *R l,
                      const char *R s,
                      const size_t s_len)
 {
-	JSTRP_L_RESERVE(l, l->size + 1, goto err)
-	return jstr_l_pushfront_len_unsafe(l, s, s_len);
+	JSTRLP_RESERVE(l, l->size + 1, goto err)
+	return jstrl_pushfront_len_unsafe(l, s, s_len);
 err:
-	jstr_l_free(l);
+	jstrl_free(l);
 	return 0;
 }
 
 JSTR_FUNC
 static int
-jstr_l_pushback_len_unsafe(jstr_l_ty *R l,
+jstrl_pushback_len_unsafe(jstrl_ty *R l,
                            const char *R s,
                            const size_t s_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
-	    !jstrp_l_allocassign_len(
-	    &jstr_l_at(l, l->size)->data,
-	    &jstr_l_at(l, l->size)->size,
-	    &jstr_l_at(l, l->size)->capacity,
+	    !jstrlp_allocassign_len(
+	    &jstrl_at(l, l->size)->data,
+	    &jstrl_at(l, l->size)->size,
+	    &jstrl_at(l, l->size)->capacity,
 	    s,
 	    s_len)))
 		goto err;
 	++l->size;
 	return 1;
 err:
-	jstr_l_free(l);
+	jstrl_free(l);
 	return 0;
 }
 
 JSTR_FUNC
 static int
-jstr_l_pushback_len(jstr_l_ty *R l,
+jstrl_pushback_len(jstrl_ty *R l,
                     const char *R s,
                     const size_t s_len)
 JSTR_NOEXCEPT
 {
-	JSTRP_L_RESERVE(l, l->size + 1, goto err)
-	return jstr_l_pushback_len_unsafe(l, s, s_len);
+	JSTRLP_RESERVE(l, l->size + 1, goto err)
+	return jstrl_pushback_len_unsafe(l, s, s_len);
 err:
-	jstr_l_free(l);
+	jstrl_free(l);
 	return 0;
 }
 
@@ -282,7 +282,7 @@ JSTR_SENTINEL
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
 static int
-jstr_l_cat(jstr_l_ty *R l,
+jstrl_cat(jstrl_ty *R l,
            ...)
 JSTR_NOEXCEPT
 {
@@ -295,38 +295,38 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return 1;
-	JSTRP_L_RESERVE(l, l->size + argc, return 0)
+	JSTRLP_RESERVE(l, l->size + argc, return 0)
 	va_start(ap, l);
 	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size)
 		if (jstr_unlikely(
-		    !jstrp_l_allocassign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
+		    !jstrlp_allocassign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
 	va_end(ap);
 	return 1;
 err_free_l:
-	jstr_l_free(l);
+	jstrl_free(l);
 	va_end(ap);
 	return 0;
 }
 
 JSTR_FUNC
 static int
-jstr_l_assign_len(jstr_l_ty *R l,
+jstrl_assign_len(jstrl_ty *R l,
                   const size_t idx,
                   const char *R s,
                   const size_t s_len)
 {
-	return jstrp_l_allocassign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
+	return jstrlp_allocassign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
 }
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_find_len(const jstr_l_ty *R l,
+jstrl_find_len(const jstrl_ty *R l,
                 const char *R s,
                 const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (!jstr_cmpeq(s, s_len, j->data, j->size))
 			return j;
 	return NULL;
@@ -334,12 +334,12 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_findcase_len(const jstr_l_ty *R l,
+jstrl_findcase_len(const jstrl_ty *R l,
                     const char *R s,
                     const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (!jstr_cmpcaseeq(s, s_len, j->data, j->size))
 			return j;
 	return NULL;
@@ -347,11 +347,11 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_findstrchr(const jstr_l_ty *R l,
+jstrl_findstrchr(const jstrl_ty *R l,
                   const int c)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (memchr(j->data, c, j->size))
 			return j;
 	return NULL;
@@ -359,11 +359,11 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_findstrchrinv(const jstr_l_ty *R l,
+jstrl_findstrchrinv(const jstrl_ty *R l,
                      const int c)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (jstr_strchrinv(j->data, c))
 			return j;
 	return NULL;
@@ -371,12 +371,12 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_findstrstr_len(const jstr_l_ty *R l,
+jstrl_findstrstr_len(const jstrl_ty *R l,
                       const char *R s,
                       const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (jstr_strstr_len(j->data, j->size, s, s_len))
 			return j;
 	return NULL;
@@ -384,12 +384,12 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_strcasestr_len(const jstr_l_ty *R l,
+jstrl_strcasestr_len(const jstrl_ty *R l,
                       const char *R s,
                       const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (jstr_strcasestr_len(j->data, j->size, s, s_len))
 			return j;
 	return NULL;
@@ -397,12 +397,12 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_findstarts_len(const jstr_l_ty *R l,
+jstrl_findstarts_len(const jstrl_ty *R l,
                       const char *R s,
                       const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (jstr_starts_len(j->data, j->size, s, s_len))
 			return j;
 	return NULL;
@@ -410,12 +410,12 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_findstartscase_len(const jstr_l_ty *R l,
+jstrl_findstartscase_len(const jstrl_ty *R l,
                           const char *R s,
                           const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (jstr_startscase_len(j->data, j->size, s, s_len))
 			return j;
 	return NULL;
@@ -423,12 +423,12 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_findends_len(const jstr_l_ty *R l,
+jstrl_findends_len(const jstrl_ty *R l,
                     const char *R s,
                     const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (jstr_ends_len(j->data, j->size, s, s_len))
 			return j;
 	return NULL;
@@ -436,12 +436,12 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static jstr_ty *
-jstr_l_findendscase_len(const jstr_l_ty *R l,
+jstrl_findendscase_len(const jstrl_ty *R l,
                         const char *R s,
                         const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
+	jstrl_foreach (l, j)
 		if (jstr_endscase_len(j->data, j->size, s, s_len))
 			return j;
 	return NULL;
@@ -450,114 +450,114 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_INLINE
 static void
-jstrp_l_delete(jstr_l_ty *l,
+jstrlp_delete(jstrl_ty *l,
                jstr_ty *const p)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->size) && p) {
 		free(p->data);
-		if (jstr_likely(p != jstr_l_end(l)))
-			memmove(p, p + 1, (jstr_l_end(l) - (p + 1)) * sizeof(jstr_l_ty));
+		if (jstr_likely(p != jstrl_end(l)))
+			memmove(p, p + 1, (jstrl_end(l) - (p + 1)) * sizeof(jstrl_ty));
 		--l->size;
 	}
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_find_len_delete(jstr_l_ty *R l,
+jstrl_find_len_delete(jstrl_ty *R l,
                        const char *R s,
                        const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_find_len(l, s, s_len));
+	jstrlp_delete(l, jstrl_find_len(l, s, s_len));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_findstrchr_delete(jstr_l_ty *R l,
+jstrl_findstrchr_delete(jstrl_ty *R l,
                          const int c)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_findstrchr(l, c));
+	jstrlp_delete(l, jstrl_findstrchr(l, c));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_findstrchrinv_delete(jstr_l_ty *R l,
+jstrl_findstrchrinv_delete(jstrl_ty *R l,
                             const int c)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_findstrchrinv(l, c));
+	jstrlp_delete(l, jstrl_findstrchrinv(l, c));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_findstrstr_len_delete(jstr_l_ty *R l,
+jstrl_findstrstr_len_delete(jstrl_ty *R l,
                              const char *R s,
                              const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_findstrstr_len(l, s, s_len));
+	jstrlp_delete(l, jstrl_findstrstr_len(l, s, s_len));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_strcasestr_len_delete(jstr_l_ty *R l,
+jstrl_strcasestr_len_delete(jstrl_ty *R l,
                              const char *R s,
                              const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_strcasestr_len(l, s, s_len));
+	jstrlp_delete(l, jstrl_strcasestr_len(l, s, s_len));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_findstarts_len_delete(jstr_l_ty *R l,
+jstrl_findstarts_len_delete(jstrl_ty *R l,
                              const char *R s,
                              const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_findstarts_len(l, s, s_len));
+	jstrlp_delete(l, jstrl_findstarts_len(l, s, s_len));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_findends_len_delete(jstr_l_ty *R l,
+jstrl_findends_len_delete(jstrl_ty *R l,
                            const char *R s,
                            const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_findends_len(l, s, s_len));
+	jstrlp_delete(l, jstrl_findends_len(l, s, s_len));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_findcase_len_delete(jstr_l_ty *R l,
+jstrl_findcase_len_delete(jstrl_ty *R l,
                            const char *R s,
                            const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_findcase_len(l, s, s_len));
+	jstrlp_delete(l, jstrl_findcase_len(l, s, s_len));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_findstartscase_len_delete(jstr_l_ty *R l,
+jstrl_findstartscase_len_delete(jstrl_ty *R l,
                                  const char *R s,
                                  const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_findstartscase_len(l, s, s_len));
+	jstrlp_delete(l, jstrl_findstartscase_len(l, s, s_len));
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_l_findendscase_len_delete(jstr_l_ty *R l,
+jstrl_findendscase_len_delete(jstrl_ty *R l,
                                const char *R s,
                                const size_t s_len)
 JSTR_NOEXCEPT
 {
-	jstrp_l_delete(l, jstr_l_findendscase_len(l, s, s_len));
+	jstrlp_delete(l, jstrl_findendscase_len(l, s, s_len));
 }
 
 #undef JSTRP_DELETE
