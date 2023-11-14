@@ -253,6 +253,21 @@ jstrl_popback(jstrlist_ty *R l)
 }
 
 JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstrlp_memmove(jstr_ty *const dst,
+               const jstr_ty *const src,
+               const size_t n)
+{
+	memmove(dst, src, n);
+#if JSTRL_LAZY_FREE
+	dst->data = NULL;
+	dst->capacity = 0;
+	dst->size = 0;
+#endif
+}
+
+JSTR_FUNC_VOID
 static void
 jstrl_popfront(jstrlist_ty *R l)
 {
@@ -263,14 +278,8 @@ jstrl_popfront(jstrlist_ty *R l)
 #else
 		free(l->data->data);
 #endif
-		if (jstr_likely(l->size > 1)) {
-			memmove(l->data, l->data + 1, (l->size - 1) * sizeof(*l->data));
-#if JSTRL_LAZY_FREE
-			l->data->data = NULL;
-			l->data->size = 0;
-			l->data->capacity = 0;
-#endif
-		}
+		if (jstr_likely(l->size > 1))
+			jstrlp_memmove(l->data, l->data + 1, (l->size - 1) * sizeof(*l->data));
 		--l->size;
 #if JSTRL_LAZY_FREE
 		jstrlp_elemmove(l, &tmp);
@@ -284,14 +293,8 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
                            const char *R s,
                            const size_t s_len)
 {
-	if (jstr_likely(l->size)) {
-		memmove(l->data + 1, l->data, l->size * sizeof(*l->data));
-#if JSTRL_LAZY_FREE
-		l->data->data = NULL;
-		l->data->size = 0;
-		l->data->capacity = 0;
-#endif
-	}
+	if (jstr_likely(l->size))
+		jstrlp_memmove(l->data + 1, l->data, l->size * sizeof(*l->data));
 	++l->size;
 	if (jstr_unlikely(
 	    !jstrlp_assign_len(
@@ -544,14 +547,8 @@ JSTR_NOEXCEPT
 #else
 		free(p->data);
 #endif
-		if (jstr_likely(p != jstrl_end(l))) {
-			memmove(p, p + 1, (jstrl_end(l) - (p + 1)) * sizeof(*l->data));
-#if JSTRL_LAZY_FREE
-			l->data->data = NULL;
-			l->data->size = 0;
-			l->data->capacity = 0;
-#endif
-		}
+		if (jstr_likely(p != jstrl_end(l)))
+			jstrlp_memmove(p, p + 1, (jstrl_end(l) - (p + 1)) * sizeof(*l->data));
 		--l->size;
 #if JSTRL_LAZY_FREE
 		jstrlp_elemmove(l, &tmp);
