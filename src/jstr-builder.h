@@ -1181,7 +1181,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += *sz;
-	JSTRP__RESERVE(s, sz, cap, ret * JSTRP__ALLOC_MULTIPLIER, goto err)
+	JSTRP__RESERVE(s, sz, cap, ret, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
@@ -1217,7 +1217,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += j->size;
-	JSTRP__RESERVE(&j->data, &j->size, &j->capacity, ret * JSTRP__ALLOC_MULTIPLIER, goto err)
+	JSTRP__RESERVE(&j->data, &j->size, &j->capacity, ret, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
@@ -1255,7 +1255,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += start_idx;
-	JSTRP__RESERVE(s, sz, cap, ret * JSTRP__ALLOC_MULTIPLIER, goto err)
+	JSTRP__RESERVE(s, sz, cap, ret, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
@@ -1291,7 +1291,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += start_idx;
-	JSTRP__RESERVE(&j->data, &j->size, &j->capacity, ret * JSTRP__ALLOC_MULTIPLIER, goto err)
+	JSTRP__RESERVE(&j->data, &j->size, &j->capacity, ret, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
