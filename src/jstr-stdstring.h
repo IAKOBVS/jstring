@@ -394,10 +394,9 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_MEMCCPY
 	return memccpy(dst, src, c, sz);
 #else
-	const void *const p = (void *)memchr(src, c, sz);
-	if (p != NULL) {
-		return jstr_stpcpy_len(dst, src, (const char *)p - (const char *)src);
-	}
+	char *p = (char *)memchr(src, c, sz);
+	if (p != NULL)
+		return jstr_stpcpy_len(dst, src, p - (char *)src);
 	memcpy(dst, src, sz);
 	return NULL;
 #endif /* HAVE_MEMCPY */
