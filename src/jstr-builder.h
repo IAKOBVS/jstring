@@ -731,7 +731,7 @@ jstr_assign_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (*cap < src_len)
-		JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, src_len * JSTR_ALLOC_MULTIPLIER, return 0)
+		JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, src_len * JSTRP_ALLOC_MULTIPLIER, return 0)
 	*sz = jstr_assign_len_unsafe_p(*s, src, src_len) - *s;
 	return 1;
 }
@@ -1112,7 +1112,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
-	JSTRP_RESERVEEXACT(s, sz, cap, arg_len * JSTR_ALLOC_MULTIPLIER, goto err)
+	JSTRP_RESERVEEXACT(s, sz, cap, arg_len * JSTRP_ALLOC_MULTIPLIER, goto err)
 	va_start(ap, fmt);
 	arg_len = vsprintf(*s, fmt, ap);
 	va_end(ap);
@@ -1145,7 +1145,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
-	JSTRP_RESERVEEXACT(&j->data, &j->size, &j->capacity, ret * JSTR_ALLOC_MULTIPLIER, goto err)
+	JSTRP_RESERVEEXACT(&j->data, &j->size, &j->capacity, ret * JSTRP_ALLOC_MULTIPLIER, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(j->data, fmt, ap);
 	va_end(ap);
@@ -1183,7 +1183,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += *sz;
-	JSTRP_RESERVE(s, sz, cap, ret * JSTR_ALLOC_MULTIPLIER, goto err)
+	JSTRP_RESERVE(s, sz, cap, ret * JSTRP_ALLOC_MULTIPLIER, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
@@ -1219,7 +1219,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += j->size;
-	JSTRP_RESERVE(&j->data, &j->size, &j->capacity, ret * JSTR_ALLOC_MULTIPLIER, goto err)
+	JSTRP_RESERVE(&j->data, &j->size, &j->capacity, ret * JSTRP_ALLOC_MULTIPLIER, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
@@ -1257,7 +1257,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += start_idx;
-	JSTRP_RESERVE(s, sz, cap, ret * JSTR_ALLOC_MULTIPLIER, goto err)
+	JSTRP_RESERVE(s, sz, cap, ret * JSTRP_ALLOC_MULTIPLIER, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
@@ -1293,7 +1293,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += start_idx;
-	JSTRP_RESERVE(&j->data, &j->size, &j->capacity, ret * JSTR_ALLOC_MULTIPLIER, goto err)
+	JSTRP_RESERVE(&j->data, &j->size, &j->capacity, ret * JSTRP_ALLOC_MULTIPLIER, goto err)
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
