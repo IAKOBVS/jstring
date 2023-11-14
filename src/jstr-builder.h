@@ -261,9 +261,7 @@ JSTR_NOEXCEPT
 	if (jstr_likely(*s != NULL))
 		return 1;
 	jstrp__nullify_members(sz, cap);
-#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
-	jstr_err_exit("");
-#endif
+	JSTRP__EXIT_MAYBE();
 	return 0;
 }
 
