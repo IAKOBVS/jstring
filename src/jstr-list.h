@@ -266,14 +266,14 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstrlp_memmove(jstr_ty *const dst,
-               const jstr_ty *const src,
+               jstr_ty *const src,
                const size_t n)
 {
 	memmove(dst, src, n);
 #if JSTRL_LAZY_FREE
-	dst->data = NULL;
-	dst->capacity = 0;
-	dst->size = 0;
+	src->data = NULL;
+	src->capacity = 0;
+	src->size = 0;
 #endif
 }
 
