@@ -18,7 +18,7 @@
 #define JSTRP_MIN_CAP          ((sizeof(size_t) == 8) ? 24 : 16)
 #define JSTRP_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
-/* allocate more than needed. */
+/* Allocate more than needed for the initial malloc(). */
 #ifndef JSTRP_ALLOC_MULTIPLIER
 #	define JSTRP_ALLOC_MULTIPLIER 2
 #endif
@@ -38,7 +38,9 @@
 #endif
 
 /* You shouldn't mess with these. */
-#define JSTR_ENDIAN_LITTLE 1
+#if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
+#	define JSTR_ENDIAN_LITTLE 1
+#endif
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
 #	define JSTR_ENDIAN_LITTLE 1
