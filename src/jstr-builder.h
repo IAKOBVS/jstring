@@ -77,8 +77,6 @@ JSTRP_END_DECLS
 		do_on_malloc_err;                                       \
 	}
 
-#define JSTRP_RESERVE_ALWAYS_NOMALLOC(s, sz, cap, new_cap, do_on_malloc_err) \
-	JSTRP_RESERVE_FAIL(jstr_reservealways_nomalloc, s, sz, cap, new_cap, do_on_malloc_err)
 #define JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
 	JSTRP_RESERVE_FAIL(jstr_reserveexact_always, s, sz, cap, new_cap, do_on_malloc_err)
 #define JSTRP_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err) \
@@ -312,21 +310,6 @@ jstr_reservealways(char *R *R s,
 JSTR_NOEXCEPT
 {
 	return jstrp_realloc_may_zero(s, sz, cap, new_cap + 1);
-}
-
-/*
-   Return 0 on malloc error.
-*/
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstr_reservealways_nomalloc(char *R *R s,
-                            size_t *R sz,
-                            size_t *R cap,
-                            const size_t new_cap)
-JSTR_NOEXCEPT
-{
-	return jstrp_realloc(s, sz, cap, new_cap + 1);
 }
 
 /*
