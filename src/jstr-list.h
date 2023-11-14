@@ -26,6 +26,10 @@
 	                         p < jstrlist_ty_end_;                                             \
 	                         ++p)
 
+#define jstrlp_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const jstrlist_ty_end_ = ((l)->data) + ((l)->capacity); \
+	                              p < jstrlist_ty_end_;                                                              \
+	                              ++p)
+
 #define jstrl_foreachi(l, i) for (size_t i = 0, const jstrlist_ty_end_ = ((l)->size); \
 	                          i < jstrlist_ty_end_;                               \
 	                          ++i)
@@ -42,6 +46,30 @@ typedef struct jstrlist_ty {
 	size_t size;
 	size_t capacity;
 } jstrlist_ty;
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstrlp_elemstore(jstr_ty *R dst,
+                 const jstr_ty *R src)
+{
+	dst->data = src->data;
+	dst->capacity = src->capacity;
+	dst->size = 0;
+}
+
+JSTR_FUNC_VOID
+JSTR_INLINE
+static void
+jstrlp_elemmove(jstrlist_ty *R l,
+                const jstr_ty *R elem)
+{
+	jstr_ty *curr = l->data + l->size;
+	const jstr_ty *const end = l->data + l->capacity;
+	for (; curr < end && curr->data; ++curr)
+		;
+	*curr = *elem;
+}
 
 JSTR_FUNC_CONST
 JSTR_INLINE
@@ -69,8 +97,8 @@ JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
 #if JSTRL_LAZY_FREE
-		for (size_t i = 0; i < l->capacity; ++i)
-			free(l->data[i].data);
+		jstrlp_foreach_cap (l, p)
+			free(p->data);
 #else
 		jstrl_foreach (l, p)
 			free(p->data);
@@ -201,8 +229,13 @@ JSTR_FUNC_VOID
 static void
 jstrl_popback(jstrlist_ty *R l)
 {
-	if (jstr_likely(l->size))
+	if (jstr_likely(l->size)) {
+#if JSTRL_LAZY_FREE
+		jstrl_at(l, --l->size)->size = 0;
+#else
 		free(jstrl_at(l, --l->size)->data);
+#endif
+	}
 }
 
 JSTR_FUNC_VOID
@@ -210,10 +243,18 @@ static void
 jstrl_popfront(jstrlist_ty *R l)
 {
 	if (jstr_likely(l->size)) {
+#if JSTRL_LAZY_FREE
+		jstr_ty tmp;
+		jstrlp_elemstore(&tmp, l->data);
+#else
 		free(l->data->data);
+#endif
 		if (jstr_likely(l->size > 1))
 			memmove(l->data, l->data + 1, (jstrl_end(l) - (l->data + 1)) * sizeof(*l->data));
 		--l->size;
+#if JSTRL_LAZY_FREE
+		jstrlp_elemmove(l, &tmp);
+#endif
 	}
 }
 
@@ -328,7 +369,11 @@ jstrl_assign_len(jstrlist_ty *R l,
                  const char *R s,
                  const size_t s_len)
 {
-	return jstrlp_assign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
+	const int ret = jstrlp_assign_len(&jstrl_at(l, idx)->data, &jstrl_at(l, idx)->size, &jstrl_at(l, idx)->capacity, s, s_len);
+	if (jstr_likely(ret == 1))
+		return 1;
+	jstrl_free(l);
+	return 0;
 }
 
 JSTR_FUNC_PURE
