@@ -1169,9 +1169,7 @@ jstr_memchrnulinv(const void *s,
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (unsigned char *)s;
-	const unsigned char *end = p + n;
-	while (p != end
-	       && *p == (unsigned char)c)
+	while (n-- && *p == (unsigned char)c)
 		++p;
 	return (char *)p;
 }
