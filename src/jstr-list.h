@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef JSTR_LIST_H
-#define JSTR_LIST_H
+#ifndef JSTRL_H
+#define JSTRL_H
 
 #include "jstr-macros.h"
 
@@ -184,7 +184,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(cap == 0))
 		cap = JSTRP_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
-	while ((cap *= JSTR_GROWTH) < new_cap)
+	while ((cap *= JSTRLP_GROWTH) < new_cap)
 		;
 	return cap;
 }
@@ -670,4 +670,4 @@ JSTRP_END_DECLS
 
 #undef R
 
-#endif /* JSTR_LIST_H */
+#endif /* JSTRL_H */

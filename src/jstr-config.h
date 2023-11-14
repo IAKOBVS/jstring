@@ -18,6 +18,26 @@
 /* Call exit() on fatal errors. */
 /* #define JSTR_EXIT_ON_ERROR 1 */
 
+#ifndef JARRP_GROWTH
+#	define JARRP_GROWTH 1.5
+#endif
+
+#ifndef JSTR_ALLOC_MULTIPLIER
+#	define JSTR_ALLOC_MULTIPLIER 2
+#endif
+
+#ifndef JARRP_ALLOC_MULTIPLIER
+#	define JARRP_ALLOC_MULTIPLIER 1.5
+#endif
+
+#ifndef JSTRP_GROWTH
+#	define JSTRP_GROWTH 1.5
+#endif
+
+#ifndef JSTRLP_GROWTH
+#	define JSTRLP_GROWTH 1.5
+#endif
+
 #define JSTR_ENDIAN_LITTLE 1
 
 #if JSTR_ENDIAN_LITTLE
@@ -26,24 +46,8 @@
 #	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#	define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 0
 #	define JSTR_ENDIAN_BIG    1
-#endif
-
-#ifndef JARRP_GROWTH
-#	define JARRP_GROWTH 1.5
-#endif
-
-#ifndef JARRP_ALLOC_MULTIPLIER
-#	define JARRP_ALLOC_MULTIPLIER 1.5
-#endif
-
-#ifndef JSTR_GROWTH
-#	define JSTR_GROWTH 1.5
-#endif
-
-#ifndef JSTR_ALLOC_MULTIPLIER
-#	define JSTR_ALLOC_MULTIPLIER 2
 #endif
 
 #endif /* JSTR_CONFIG_H */

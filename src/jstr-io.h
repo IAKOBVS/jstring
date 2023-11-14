@@ -404,7 +404,7 @@ JSTR_NOEXCEPT
 				break;
 			if ((size_t)(p - *s) == *cap) {
 				old = *s;
-				JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, (size_t)(*cap * JSTR_GROWTH), goto err_close)
+				JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, (size_t)(*cap * JSTRP_GROWTH), goto err_close)
 				p = *s + (p - old);
 			}
 		}

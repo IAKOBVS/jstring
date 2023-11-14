@@ -63,9 +63,6 @@ JSTRP_END_DECLS
 		} while (0)
 #endif
 
-#define JSTR_MIN_ALLOC(cap)      (((cap) > JSTRP_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTRP_MIN_CAP))
-#define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTRP_MIN_CAP) ? (cap) : (JSTRP_MIN_CAP))
-
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define JSTRP_EXIT_MAYBE() jstr_err_exit("")
 #else
@@ -124,7 +121,7 @@ jstrp_grow(size_t cap,
            const size_t new_cap)
 JSTR_NOEXCEPT
 {
-	while ((cap *= JSTR_GROWTH) < new_cap)
+	while ((cap *= JSTRP_GROWTH) < new_cap)
 		;
 	return JSTR_ALIGN_UP(cap, JSTRP_MALLOC_ALIGNMENT);
 }
@@ -769,7 +766,7 @@ jstr_pushback(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0)
+		JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTRP_GROWTH, return 0)
 	*sz = jstr_pushback_unsafe_p(*s, *sz, c) - *s;
 	return 1;
 }
@@ -804,7 +801,7 @@ jstr_pushfront(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTR_GROWTH, return 0)
+		JSTRP_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * JSTRP_GROWTH, return 0)
 	*sz = jstr_pushfront_unsafe_p(*s, *sz, c) - *s;
 	return 1;
 }
