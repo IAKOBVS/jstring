@@ -63,7 +63,7 @@ jstr_strstr(const char *hs,
             const char *ne)
 JSTR_NOEXCEPT
 {
-	return strstr(hs, ne);
+	return (char *)strstr(hs, ne);
 }
 
 JSTR_FUNC_PURE
