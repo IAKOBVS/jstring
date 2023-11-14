@@ -3,13 +3,9 @@
 #ifndef JSTR_CONFIG_H
 #define JSTR_CONFIG_H 1
 
-#ifndef JSTR_DEBUG
-#	define JSTR_DEBUG 0
-#endif
-
-#ifndef JARR_DEBUG
-#	define JARR_DEBUG 0
-#endif
+/* #define JSTR_DEBUG 1 */
+/* #define JARR_DEBUG 1 */
+/* #define JSTRL_LAZY_FREE 1 */
 
 #define JSTR_ENDIAN_LITTLE 1
 

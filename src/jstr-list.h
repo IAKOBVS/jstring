@@ -48,6 +48,16 @@ typedef struct jstrlist_ty {
 } jstrlist_ty;
 
 JSTR_FUNC_VOID
+JSTR_NOINLINE
+JSTR_COLD
+static void
+jstrlp_nullify_members(jstrlist_ty *R l)
+{
+	l->size = 0;
+	l->capacity = 0;
+}
+
+JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstrlp_elemstore(jstr_ty *R dst,
@@ -89,16 +99,40 @@ JSTR_NOEXCEPT
 	return l->data + l->size;
 }
 
-JSTR_FUNC_VOID
+JSTR_CONST
 JSTR_INLINE
+static jstr_ty *
+jstrl_at(const jstrlist_ty *R l,
+         const size_t idx)
+JSTR_NOEXCEPT
+{
+#if JSTRL_LAZY_FREE
+	JSTR_ASSERT_DEBUG(idx <= l->capacity, "Index out of bounds.");
+#else
+	JSTR_ASSERT_DEBUG(idx <= l->size, "Index out of bounds.");
+#endif
+	return l->data + idx;
+}
+
+JSTR_FUNC_CONST
+JSTR_INLINE
+static size_t
+jstrl_index(jstrlist_ty *R l,
+            jstr_ty *R curr)
+JSTR_NOEXCEPT
+{
+	return curr - l->data;
+}
+
+JSTR_FUNC_VOID
 static void
 jstrl_free(jstrlist_ty *R l)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
 #if JSTRL_LAZY_FREE
-		jstrlp_foreach_cap (l, p)
-			free(p->data);
+		for (size_t i = 0; i < l->capacity; ++i)
+			free(jstrl_at(l, i)->data);
 #else
 		jstrl_foreach (l, p)
 			free(p->data);
@@ -134,27 +168,6 @@ jstrl_debug(const jstrlist_ty *R l)
 	}
 }
 
-JSTR_CONST
-JSTR_INLINE
-static jstr_ty *
-jstrl_at(const jstrlist_ty *R l,
-         const size_t idx)
-JSTR_NOEXCEPT
-{
-	JSTR_ASSERT_DEBUG(idx <= l->size, "Index out of bounds.");
-	return l->data + idx;
-}
-
-JSTR_FUNC_CONST
-JSTR_INLINE
-static size_t
-jstrl_index(jstrlist_ty *R l,
-            jstr_ty *R curr)
-JSTR_NOEXCEPT
-{
-	return curr - l->data;
-}
-
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
@@ -177,15 +190,16 @@ jstrl_reservealways(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	new_cap = jstrlp_grow(l->capacity, new_cap);
-	l->data = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
-	JSTRP_MALLOC_ERR(l->data, goto err);
+	jstr_ty *tmp = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
+	JSTRP_MALLOC_ERR(tmp, goto err);
+	l->data = tmp;
 #if JSTRL_LAZY_FREE
 	memset(l->data + l->capacity, 0, (new_cap - l->capacity) * sizeof(*l->data));
 #endif
 	l->capacity = new_cap;
 	return 1;
 err:
-	jstrp_nullify_members(&l->size, &l->capacity);
+	jstrl_free(l);
 	return 0;
 }
 
@@ -249,8 +263,14 @@ jstrl_popfront(jstrlist_ty *R l)
 #else
 		free(l->data->data);
 #endif
-		if (jstr_likely(l->size > 1))
-			memmove(l->data, l->data + 1, (jstrl_end(l) - (l->data + 1)) * sizeof(*l->data));
+		if (jstr_likely(l->size > 1)) {
+			memmove(l->data, l->data + 1, (l->size - 1) * sizeof(*l->data));
+#if JSTRL_LAZY_FREE
+			l->data->data = NULL;
+			l->data->size = 0;
+			l->data->capacity = 0;
+#endif
+		}
 		--l->size;
 #if JSTRL_LAZY_FREE
 		jstrlp_elemmove(l, &tmp);
@@ -264,8 +284,14 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
                            const char *R s,
                            const size_t s_len)
 {
-	if (jstr_likely(l->size))
-		memmove(l->data + 1, l->data, (jstrl_end(l) - (l->data)) * sizeof(*l->data));
+	if (jstr_likely(l->size)) {
+		memmove(l->data + 1, l->data, l->size * sizeof(*l->data));
+#if JSTRL_LAZY_FREE
+		l->data->data = NULL;
+		l->data->size = 0;
+		l->data->capacity = 0;
+#endif
+	}
 	++l->size;
 	if (jstr_unlikely(
 	    !jstrlp_assign_len(
@@ -513,22 +539,22 @@ JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->size) && p) {
 #if JSTRL_LAZY_FREE
-		char *const tmp_data = p->data;
-		const size_t tmp_cap = p->capacity;
+		jstr_ty tmp;
+		jstrlp_elemstore(&tmp, p);
 #else
 		free(p->data);
 #endif
-		if (jstr_likely(p != jstrl_end(l)))
-			memmove(p, p + 1, (jstrl_end(l) - (p + 1)) * sizeof(jstrlist_ty));
+		if (jstr_likely(p != jstrl_end(l))) {
+			memmove(p, p + 1, (jstrl_end(l) - (p + 1)) * sizeof(*l->data));
+#if JSTRL_LAZY_FREE
+			l->data->data = NULL;
+			l->data->size = 0;
+			l->data->capacity = 0;
+#endif
+		}
 		--l->size;
 #if JSTRL_LAZY_FREE
-		p = jstrl_end(l);
-		const jstr_ty *const end = l->data + l->capacity;
-		for (; p < end && p->data; ++p)
-			;
-		p->data = tmp_data;
-		p->capacity = tmp_cap;
-		p->size = 0;
+		jstrlp_elemmove(l, &tmp);
 #endif
 	}
 }
