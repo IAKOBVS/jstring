@@ -106,11 +106,18 @@ jstrl_at(const jstrlist_ty *R l,
          const size_t idx)
 JSTR_NOEXCEPT
 {
-#if JSTRL_LAZY_FREE
-	JSTR_ASSERT_DEBUG(idx <= l->capacity, "Index out of bounds.");
-#else
 	JSTR_ASSERT_DEBUG(idx <= l->size, "Index out of bounds.");
-#endif
+	return l->data + idx;
+}
+
+JSTR_CONST
+JSTR_INLINE
+static jstr_ty *
+jstrlp_at(const jstrlist_ty *R l,
+          const size_t idx)
+JSTR_NOEXCEPT
+{
+	JSTR_ASSERT_DEBUG(idx <= l->capacity, "Index out of bounds.");
 	return l->data + idx;
 }
 
@@ -132,7 +139,7 @@ JSTR_NOEXCEPT
 	if (jstr_likely(l->data != NULL)) {
 #if JSTRL_LAZY_FREE
 		for (size_t i = 0; i < l->capacity; ++i)
-			free(jstrl_at(l, i)->data);
+			free(jstrlp_at(l, i)->data);
 #else
 		jstrl_foreach (l, p)
 			free(p->data);
@@ -245,9 +252,9 @@ jstrl_popback(jstrlist_ty *R l)
 {
 	if (jstr_likely(l->size)) {
 #if JSTRL_LAZY_FREE
-		jstrl_at(l, --l->size)->size = 0;
+		jstrlp_at(l, --l->size)->size = 0;
 #else
-		free(jstrl_at(l, --l->size)->data);
+		free(jstrlp_at(l, --l->size)->data);
 #endif
 	}
 }
@@ -332,9 +339,9 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
 	    !jstrlp_assign_len(
-	    &jstrl_at(l, l->size)->data,
-	    &jstrl_at(l, l->size)->size,
-	    &jstrl_at(l, l->size)->capacity,
+	    &jstrlp_at(l, l->size)->data,
+	    &jstrlp_at(l, l->size)->size,
+	    &jstrlp_at(l, l->size)->capacity,
 	    s,
 	    s_len)))
 		goto err;
@@ -398,7 +405,7 @@ jstrl_assign_len(jstrlist_ty *R l,
                  const char *R s,
                  const size_t s_len)
 {
-	const int ret = jstrlp_assign_len(&jstrl_at(l, idx)->data, &jstrl_at(l, idx)->size, &jstrl_at(l, idx)->capacity, s, s_len);
+	const int ret = jstrlp_assign_len(&jstrlp_at(l, idx)->data, &jstrlp_at(l, idx)->size, &jstrlp_at(l, idx)->capacity, s, s_len);
 	if (jstr_likely(ret == 1))
 		return 1;
 	jstrl_free(l);
