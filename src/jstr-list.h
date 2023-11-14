@@ -452,10 +452,10 @@ PJSTRL_DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 		return NULL;                                  \
 	}
 
-PJSTRL_DEFINE_FIND(find, !jstr_cmpeq)
 PJSTRL_DEFINE_FIND(findcase, !jstr_cmpcaseeq)
-PJSTRL_DEFINE_FIND(findstrstr, jstr_strstr_len)
 PJSTRL_DEFINE_FIND(findstrcasestr, jstr_strcasestr_len)
+PJSTRL_DEFINE_FIND(find, !jstr_cmpeq)
+PJSTRL_DEFINE_FIND(findstrstr, jstr_strstr_len)
 PJSTRL_DEFINE_FIND(findstarts, jstr_starts_len)
 PJSTRL_DEFINE_FIND(findstartscase, jstr_startscase_len)
 PJSTRL_DEFINE_FIND(findends, jstr_ends_len)

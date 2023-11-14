@@ -28,8 +28,8 @@ jstr_basename_len(const char *fname,
                   const size_t sz)
 JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(fname, '/', sz);
-	return p ? (char *)p + 1 : NULL;
+	char *p = (char *)memchr(fname, '/', sz);
+	return p ? p + 1 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -38,8 +38,8 @@ static char *
 jstr_basename(const char *fname)
 JSTR_NOEXCEPT
 {
-	const char *const p = strchr(fname, '/');
-	return p ? (char *)p + 1 : NULL;
+	char *p = (char *)strchr(fname, '/');
+	return p ? p + 1 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -59,11 +59,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_INLINE
 static char *
-jstr_strstr(const void *hs,
-            const void *ne)
+jstr_strstr(const char *hs,
+            const char *ne)
 JSTR_NOEXCEPT
 {
-	return strstr((char *)hs, (char *)ne);
+	return strstr(hs, ne);
 }
 
 JSTR_FUNC_PURE
@@ -88,8 +88,8 @@ jstr_strstrnul_len(const char *hs,
                    const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	const char *const p = jstr_strstr_len(hs, hs_len, ne, ne_len);
-	return (char *)((p) ? p : hs + hs_len);
+	char *p = jstr_strstr_len(hs, hs_len, ne, ne_len);
+	return p ? p : (char *)hs + hs_len;
 	(void)ne_len;
 }
 
