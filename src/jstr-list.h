@@ -380,7 +380,7 @@ JSTR_NOEXCEPT
 	const char *R arg;
 	va_start(ap, l);
 	int argc = 0;
-	for (; va_arg(ap, char *); ++argc)
+	for (; va_arg(ap, void *); ++argc)
 		;
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
