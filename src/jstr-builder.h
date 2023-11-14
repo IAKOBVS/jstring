@@ -412,7 +412,7 @@ JSTR_NOEXCEPT
 	JSTRP__RESERVE(s, sz, cap, *sz + arg_len, return 0)
 	p = *s + *sz;
 	*sz += arg_len;
-	for (const char *R arg; (arg = va_arg(ap, char *)); p = jstr_stpcpy(p, arg))
+	for (const char *R arg; (arg = va_arg(ap, const char *)); p = jstr_stpcpy(p, arg))
 		;
 	return 1;
 }
@@ -438,7 +438,7 @@ JSTR_NOEXCEPT
 	va_list ap;
 	va_start(ap, cap);
 	size_t arg_len = 0;
-	for (const char *R arg; (arg = va_arg(ap, char *)); arg_len += strlen(arg))
+	for (const char *R arg; (arg = va_arg(ap, const char *)); arg_len += strlen(arg))
 		;
 	va_end(ap);
 	if (jstr_unlikely(arg_len == 0))
@@ -466,7 +466,7 @@ JSTR_NOEXCEPT
 	va_list ap;
 	va_start(ap, j);
 	size_t arg_len = 0;
-	for (const char *R arg; (arg = va_arg(ap, char *)); arg_len += strlen(arg))
+	for (const char *R arg; (arg = va_arg(ap, const char *)); arg_len += strlen(arg))
 		;
 	va_end(ap);
 	if (jstr_unlikely(arg_len == 0))

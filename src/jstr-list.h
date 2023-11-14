@@ -377,7 +377,6 @@ jstrl_cat(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	va_list ap;
-	const char *R arg;
 	va_start(ap, l);
 	int argc = 0;
 	for (; va_arg(ap, void *); ++argc)
@@ -387,7 +386,8 @@ JSTR_NOEXCEPT
 		return 1;
 	JSTRLP__RESERVE(l, l->size + argc, return 0)
 	va_start(ap, l);
-	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size)
+	const char *R arg;
+	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, const char *)); ++j, ++l->size)
 		if (jstr_unlikely(
 		    !jstrlp__assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
