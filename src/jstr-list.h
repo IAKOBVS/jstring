@@ -152,7 +152,7 @@ JSTR_NOEXCEPT
 	l->data = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
 	JSTRP_MALLOC_ERR(l->data, goto err);
 #if JSTRL_LAZY_FREE
-	memset(l->data + l->capacity, 0, new_cap - l->capacity);
+	memset(l->data + l->capacity, 0, (new_cap - l->capacity) * sizeof(*l->data));
 #endif
 	l->capacity = new_cap;
 	return 1;
@@ -176,12 +176,15 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstrlp_allocassign_len(char *R *R s,
-                       size_t *R sz,
-                       size_t *R cap,
-                       const char *R src,
-                       const size_t src_len)
+jstrlp_assign_len(char *R *R s,
+                  size_t *R sz,
+                  size_t *R cap,
+                  const char *R src,
+                  const size_t src_len)
 {
+#if JSTRL_LAZY_FREE
+	return jstr_assign_len(s, sz, cap, src, src_len);
+#else
 	*cap = JSTR_ALIGN_UP_STR(src_len + 1);
 	*s = (char *)malloc(*cap);
 	JSTRP_MALLOC_ERR(*s, goto err);
@@ -191,6 +194,7 @@ jstrlp_allocassign_len(char *R *R s,
 err:
 	jstrp_nullify_members(sz, cap);
 	return 0;
+#endif
 }
 
 JSTR_FUNC_VOID
@@ -223,7 +227,7 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
 		memmove(l->data + 1, l->data, (jstrl_end(l) - (l->data)) * sizeof(*l->data));
 	++l->size;
 	if (jstr_unlikely(
-	    !jstrlp_allocassign_len(
+	    !jstrlp_assign_len(
 	    &l->data->data,
 	    &l->data->size,
 	    &l->data->capacity,
@@ -257,7 +261,7 @@ jstrl_pushback_len_unsafe(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
-	    !jstrlp_allocassign_len(
+	    !jstrlp_assign_len(
 	    &jstrl_at(l, l->size)->data,
 	    &jstrl_at(l, l->size)->size,
 	    &jstrl_at(l, l->size)->capacity,
@@ -307,7 +311,7 @@ JSTR_NOEXCEPT
 	va_start(ap, l);
 	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size)
 		if (jstr_unlikely(
-		    !jstrlp_allocassign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
+		    !jstrlp_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
 	va_end(ap);
 	return 1;
@@ -324,7 +328,7 @@ jstrl_assign_len(jstrlist_ty *R l,
                  const char *R s,
                  const size_t s_len)
 {
-	return jstrlp_allocassign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
+	return jstrlp_assign_len(&(l->data + idx)->data, &(l->data + idx)->size, &(l->data + idx)->capacity, s, s_len);
 }
 
 JSTR_FUNC_PURE
@@ -479,6 +483,7 @@ JSTR_NOEXCEPT
 			;
 		p->data = tmp_data;
 		p->capacity = tmp_cap;
+		p->size = 0;
 #endif
 	}
 }
