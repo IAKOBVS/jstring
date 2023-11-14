@@ -432,7 +432,7 @@ JSTR_NOEXCEPT
 {
 	const char *oldp = s;
 	const char *p = s;
-	for (; *p && (*(p += strcspn((char *)p, reject))); jstrp__rmallinplace((char **)&s, &oldp, &p, strspn((char *)p, reject)))
+	for (; *p && (*(p += strcspn(p, reject))); jstrp__rmallinplace((char **)&s, &oldp, &p, strspn((char *)p, reject)))
 		;
 	if (jstr_likely(p != oldp))
 		return jstr_stpmove_len(s, oldp, p - oldp);
@@ -753,7 +753,7 @@ jstr_rmlast_len_p(char *R s,
                   const size_t find_len)
 JSTR_NOEXCEPT
 {
-	const char *const p = (char *)jstr_strrstr_len(s, sz, find, find_len);
+	const char *const p = jstr_strrstr_len(s, sz, find, find_len);
 	return p ? jstr_rmat_len_p(s, p - s, sz, find_len) : s + sz;
 }
 
@@ -774,7 +774,7 @@ jstr_rplclast_len(char *R *R s,
                   const size_t rplc_len)
 JSTR_NOEXCEPT
 {
-	const char *const p = (char *)jstr_strrstr_len(*s, *sz, find, find_len);
+	const char *const p = jstr_strrstr_len(*s, *sz, find, find_len);
 	return p && jstr_rplcat_len(s, sz, cap, p - *s, rplc, rplc_len, find_len);
 }
 

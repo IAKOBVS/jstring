@@ -312,10 +312,10 @@ JSTR_FUNC_VOID
 JSTR_INLINE
 static void
 jstr_strmove(char *dst,
-             const void *src)
+             const char *src)
 JSTR_NOEXCEPT
 {
-	*(char *)jstr_mempmove(dst, src, strlen((char *)src)) = '\0';
+	*(char *)jstr_mempmove(dst, src, strlen(src)) = '\0';
 }
 
 JSTR_FUNC
