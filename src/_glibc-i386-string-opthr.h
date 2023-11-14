@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef JSTRP_I386_STRING_OPTHR_H
-#define JSTRP_I386_STRING_OPTHR_H 1
+#ifndef JSTRP__I386_STRING_OPTHR_H
+#define JSTRP__I386_STRING_OPTHR_H 1
 
 #include "jstr-macros.h"
 

@@ -16,23 +16,23 @@
 */
 /* #define JSTRL_LAZY_FREE 1 */
 
-#define JSTRP_MIN_CAP          ((sizeof(size_t) == 8) ? 24 : 16)
-#define JSTRP_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
+#define JSTRP__MIN_CAP          ((sizeof(size_t) == 8) ? 24 : 16)
+#define JSTRP__MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
 /* Allocate more than needed for the initial malloc(). */
-#ifndef JSTRP_ALLOC_MULTIPLIER
-#	define JSTRP_ALLOC_MULTIPLIER 2
+#ifndef JSTRP__ALLOC_MULTIPLIER
+#	define JSTRP__ALLOC_MULTIPLIER 2
 #endif
 #ifndef JARRP_ALLOC_MULTIPLIER
 #	define JARRP_ALLOC_MULTIPLIER 1.5
 #endif
 
 /* Growth factor. */
-#ifndef JSTRP_GROWTH
-#	define JSTRP_GROWTH 1.5
+#ifndef JSTRP__GROWTH
+#	define JSTRP__GROWTH 1.5
 #endif
-#ifndef JSTRLP_GROWTH
-#	define JSTRLP_GROWTH 1.5
+#ifndef JSTRLP__GROWTH
+#	define JSTRLP__GROWTH 1.5
 #endif
 #ifndef JARRP_GROWTH
 #	define JARRP_GROWTH 1.5

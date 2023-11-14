@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef JSTRP_POWERPC_STRING_FZA_H
-#define JSTRP_POWERPC_STRING_FZA_H 1
+#ifndef JSTRP__POWERPC_STRING_FZA_H
+#define JSTRP__POWERPC_STRING_FZA_H 1
 
 #include "jstr-macros.h"
 

@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef JSTRP_STRING_FZB_H
-#define JSTRP_STRING_FZB_H 1
+#ifndef JSTRP__STRING_FZB_H
+#define JSTRP__STRING_FZB_H 1
 
 #include "jstr-macros.h"
 

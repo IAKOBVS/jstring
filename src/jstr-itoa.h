@@ -5,20 +5,20 @@
 
 #include "jstr-macros.h"
 
-JSTRP_BEGIN_DECLS
+JSTRP__BEGIN_DECLS
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-JSTRP_END_DECLS
+JSTRP__END_DECLS
 
 #include "jstr-replace.h"
 
 #define R JSTR_RESTRICT
 
-JSTRP_BEGIN_DECLS
+JSTRP__BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
-static const char jstrp_itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+static const char jstrp__itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 /*
    Return value:
@@ -34,7 +34,7 @@ JSTR_NOEXCEPT
 {
 #define LOOP_BASE(base)                                    \
 	do                                                 \
-		*buf++ = jstrp_itoa_digits[number % base]; \
+		*buf++ = jstrp__itoa_digits[number % base]; \
 	while ((number /= base) != 0);                     \
 	break
 	char *start = buf;
@@ -83,7 +83,7 @@ JSTR_NOEXCEPT
 	return jstr_ulltoa_p(number, buf, base);
 }
 
-#define JSTRP_ULLTOA(type, name, u)                             \
+#define JSTRP__ULLTOA(type, name, u)                             \
 	/*                                                      \
 	   Return value:                                        \
 	   ptr to '\0' after the last digit in the DEST string. \
@@ -100,12 +100,12 @@ JSTR_NOEXCEPT
 		return jstr_##u##lltoa_p(number, buf, base);    \
 	}
 
-JSTRP_ULLTOA(unsigned long, ultoa, u)
-JSTRP_ULLTOA(unsigned int, utoa, u)
-JSTRP_ULLTOA(long, ltoa, )
-JSTRP_ULLTOA(int, itoa, )
+JSTRP__ULLTOA(unsigned long, ultoa, u)
+JSTRP__ULLTOA(unsigned int, utoa, u)
+JSTRP__ULLTOA(long, ltoa, )
+JSTRP__ULLTOA(int, itoa, )
 
-#undef JSTRP_ULLTOA
+#undef JSTRP__ULLTOA
 
 /*
    Convert number to string with thousand separator.
@@ -122,7 +122,7 @@ jstr_ulltoa_p_thousep(unsigned long long number,
 JSTR_NOEXCEPT
 {
 #define CONV(base)                            \
-	c = jstrp_itoa_digits[number % base]; \
+	c = jstrp__itoa_digits[number % base]; \
 	loop = number /= base;                \
 	break
 	if (number <= 999)
@@ -183,7 +183,7 @@ JSTR_NOEXCEPT
 	return jstr_ulltoa_p_thousep(number, buf, base, separator);
 }
 
-#define JSTRP_ULLTOA_SEP(type, name, u)                                         \
+#define JSTRP__ULLTOA_SEP(type, name, u)                                         \
 	/*                                                                      \
 	   Convert number to string with thousand separator.                    \
 	   Return value:                                                        \
@@ -202,14 +202,14 @@ JSTR_NOEXCEPT
 		return jstr_##u##lltoa_p_thousep(number, buf, base, separator); \
 	}
 
-JSTRP_ULLTOA_SEP(unsigned long, ultoa, u)
-JSTRP_ULLTOA_SEP(unsigned int, utoa, u)
-JSTRP_ULLTOA_SEP(long, ltoa, )
-JSTRP_ULLTOA_SEP(int, itoa, )
+JSTRP__ULLTOA_SEP(unsigned long, ultoa, u)
+JSTRP__ULLTOA_SEP(unsigned int, utoa, u)
+JSTRP__ULLTOA_SEP(long, ltoa, )
+JSTRP__ULLTOA_SEP(int, itoa, )
 
-#undef JSTRP_ULLTOA_SEP
+#undef JSTRP__ULLTOA_SEP
 
-JSTRP_END_DECLS
+JSTRP__END_DECLS
 
 #undef R
 

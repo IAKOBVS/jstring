@@ -11,22 +11,22 @@
 
 #define R JSTR_RESTRICT
 
-#define JSTRLP_RESERVE_FAIL(func, list, new_cap, do_on_mallocerr) \
+#define JSTRLP__RESERVE_FAIL(func, list, new_cap, do_on_mallocerr) \
 	if (jstr_unlikely(!func(list, new_cap))) {                \
-		JSTRP_EXIT_MAYBE();                               \
+		JSTRP__EXIT_MAYBE();                               \
 		do_on_mallocerr;                                  \
 	}
 
-#define JSTRLP_RESERVE(list, new_cap, do_on_mallocerr) \
-	JSTRLP_RESERVE_FAIL(jstrl_reserve, list, new_cap, do_on_mallocerr)
-#define JSTRLP_RESERVE_ALWAYS(list, new_cap, do_on_mallocerr) \
-	JSTRLP_RESERVE_FAIL(jstrl_reservealways, list, new_cap, do_on_mallocerr)
+#define JSTRLP__RESERVE(list, new_cap, do_on_mallocerr) \
+	JSTRLP__RESERVE_FAIL(jstrl_reserve, list, new_cap, do_on_mallocerr)
+#define JSTRLP__RESERVEALWAYS(list, new_cap, do_on_mallocerr) \
+	JSTRLP__RESERVE_FAIL(jstrl_reservealways, list, new_cap, do_on_mallocerr)
 
 #define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstrlist_ty_end_ = jstrl_end(l); \
 	                         p < jstrlist_ty_end_;                                             \
 	                         ++p)
 
-#define jstrlp_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const jstrlist_ty_end_ = ((l)->data) + ((l)->capacity); \
+#define jstrlp__foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const jstrlist_ty_end_ = ((l)->data) + ((l)->capacity); \
 	                              p < jstrlist_ty_end_;                                                              \
 	                              ++p)
 
@@ -39,7 +39,7 @@
 		0  \
 	}
 
-JSTRP_BEGIN_DECLS
+JSTRP__BEGIN_DECLS
 
 typedef struct jstrlist_ty {
 	jstr_ty *data;
@@ -51,7 +51,7 @@ JSTR_FUNC_VOID
 JSTR_NOINLINE
 JSTR_COLD
 static void
-jstrlp_nullify_members(jstrlist_ty *R l)
+jstrlp__nullify_members(jstrlist_ty *R l)
 {
 	l->size = 0;
 	l->capacity = 0;
@@ -60,7 +60,7 @@ jstrlp_nullify_members(jstrlist_ty *R l)
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstrlp_elemstore(jstr_ty *R dst,
+jstrlp__elemstore(jstr_ty *R dst,
                  const jstr_ty *R src)
 {
 	dst->data = src->data;
@@ -71,7 +71,7 @@ jstrlp_elemstore(jstr_ty *R dst,
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstrlp_elemmove(jstrlist_ty *R l,
+jstrlp__elemmove(jstrlist_ty *R l,
                 const jstr_ty *R elem)
 {
 	jstr_ty *curr = l->data + l->size;
@@ -113,7 +113,7 @@ JSTR_NOEXCEPT
 JSTR_CONST
 JSTR_INLINE
 static jstr_ty *
-jstrlp_at(const jstrlist_ty *R l,
+jstrlp__at(const jstrlist_ty *R l,
           const size_t idx)
 JSTR_NOEXCEPT
 {
@@ -138,7 +138,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
 #if JSTRL_LAZY_FREE
-		jstrlp_foreach_cap (l, p)
+		jstrlp__foreach_cap (l, p)
 			free(p->data);
 #else
 		jstrl_foreach (l, p)
@@ -178,13 +178,13 @@ jstrl_debug(const jstrlist_ty *R l)
 JSTR_FUNC_CONST
 JSTR_INLINE
 static size_t
-jstrlp_grow(size_t cap,
+jstrlp__grow(size_t cap,
             size_t new_cap)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(cap == 0))
-		cap = JSTRP_MIN_CAP / JSTRP_ALLOC_MULTIPLIER;
-	while ((cap *= JSTRLP_GROWTH) < new_cap)
+		cap = JSTRP__MIN_CAP / JSTRP__ALLOC_MULTIPLIER;
+	while ((cap *= JSTRLP__GROWTH) < new_cap)
 		;
 	return cap;
 }
@@ -196,9 +196,9 @@ jstrl_reservealways(jstrlist_ty *R l,
                     size_t new_cap)
 JSTR_NOEXCEPT
 {
-	new_cap = jstrlp_grow(l->capacity, new_cap);
+	new_cap = jstrlp__grow(l->capacity, new_cap);
 	jstr_ty *tmp = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
-	JSTRP_MALLOC_ERR(tmp, goto err);
+	JSTRP__MALLOC_ERR(tmp, goto err);
 	l->data = tmp;
 #if JSTRL_LAZY_FREE
 	memset(l->data + l->capacity, 0, (new_cap - l->capacity) * sizeof(*l->data));
@@ -221,14 +221,14 @@ jstrl_reserve(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
-		JSTRLP_RESERVE_ALWAYS(l, new_cap, return 0);
+		JSTRLP__RESERVEALWAYS(l, new_cap, return 0);
 	return 1;
 }
 
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstrlp_assign_len(char *R *R s,
+jstrlp__assign_len(char *R *R s,
                   size_t *R sz,
                   size_t *R cap,
                   const char *R src,
@@ -239,12 +239,12 @@ jstrlp_assign_len(char *R *R s,
 #else
 	*cap = JSTR_ALIGN_UP_STR(src_len + 1);
 	*s = (char *)malloc(*cap);
-	JSTRP_MALLOC_ERR(*s, goto err);
+	JSTRP__MALLOC_ERR(*s, goto err);
 	jstr_strcpy_len(*s, src, src_len);
 	*sz = src_len;
 	return 1;
 err:
-	jstrp_nullify_members(sz, cap);
+	jstrp__nullify_members(sz, cap);
 	return 0;
 #endif
 }
@@ -255,9 +255,9 @@ jstrl_popback(jstrlist_ty *R l)
 {
 	if (jstr_likely(l->size)) {
 #if JSTRL_LAZY_FREE
-		jstrlp_at(l, --l->size)->size = 0;
+		jstrlp__at(l, --l->size)->size = 0;
 #else
-		free(jstrlp_at(l, --l->size)->data);
+		free(jstrlp__at(l, --l->size)->data);
 #endif
 	}
 }
@@ -265,7 +265,7 @@ jstrl_popback(jstrlist_ty *R l)
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstrlp_memmove(jstr_ty *const dst,
+jstrlp__memmove(jstr_ty *const dst,
                jstr_ty *const src,
                const size_t n)
 {
@@ -284,15 +284,15 @@ jstrl_popfront(jstrlist_ty *R l)
 	if (jstr_likely(l->size)) {
 #if JSTRL_LAZY_FREE
 		jstr_ty tmp;
-		jstrlp_elemstore(&tmp, l->data);
+		jstrlp__elemstore(&tmp, l->data);
 #else
 		free(l->data->data);
 #endif
 		if (jstr_likely(l->size > 1))
-			jstrlp_memmove(l->data, l->data + 1, (l->size - 1) * sizeof(*l->data));
+			jstrlp__memmove(l->data, l->data + 1, (l->size - 1) * sizeof(*l->data));
 		--l->size;
 #if JSTRL_LAZY_FREE
-		jstrlp_elemmove(l, &tmp);
+		jstrlp__elemmove(l, &tmp);
 #endif
 	}
 }
@@ -304,10 +304,10 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
                            const size_t s_len)
 {
 	if (jstr_likely(l->size))
-		jstrlp_memmove(l->data + 1, l->data, l->size * sizeof(*l->data));
+		jstrlp__memmove(l->data + 1, l->data, l->size * sizeof(*l->data));
 	++l->size;
 	if (jstr_unlikely(
-	    !jstrlp_assign_len(
+	    !jstrlp__assign_len(
 	    &l->data->data,
 	    &l->data->size,
 	    &l->data->capacity,
@@ -326,7 +326,7 @@ jstrl_pushfront_len(jstrlist_ty *R l,
                     const char *R s,
                     const size_t s_len)
 {
-	JSTRLP_RESERVE(l, l->size + 1, goto err)
+	JSTRLP__RESERVE(l, l->size + 1, goto err)
 	return jstrl_pushfront_len_unsafe(l, s, s_len);
 err:
 	jstrl_free(l);
@@ -341,10 +341,10 @@ jstrl_pushback_len_unsafe(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(
-	    !jstrlp_assign_len(
-	    &jstrlp_at(l, l->size)->data,
-	    &jstrlp_at(l, l->size)->size,
-	    &jstrlp_at(l, l->size)->capacity,
+	    !jstrlp__assign_len(
+	    &jstrlp__at(l, l->size)->data,
+	    &jstrlp__at(l, l->size)->size,
+	    &jstrlp__at(l, l->size)->capacity,
 	    s,
 	    s_len)))
 		goto err;
@@ -362,7 +362,7 @@ jstrl_pushback_len(jstrlist_ty *R l,
                    const size_t s_len)
 JSTR_NOEXCEPT
 {
-	JSTRLP_RESERVE(l, l->size + 1, goto err)
+	JSTRLP__RESERVE(l, l->size + 1, goto err)
 	return jstrl_pushback_len_unsafe(l, s, s_len);
 err:
 	jstrl_free(l);
@@ -387,11 +387,11 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return 1;
-	JSTRLP_RESERVE(l, l->size + argc, return 0)
+	JSTRLP__RESERVE(l, l->size + argc, return 0)
 	va_start(ap, l);
 	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, char *)); ++j, ++l->size)
 		if (jstr_unlikely(
-		    !jstrlp_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
+		    !jstrlp__assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
 	va_end(ap);
 	return 1;
@@ -408,14 +408,14 @@ jstrl_assign_len(jstrlist_ty *R l,
                  const char *R s,
                  const size_t s_len)
 {
-	const int ret = jstrlp_assign_len(&jstrlp_at(l, idx)->data, &jstrlp_at(l, idx)->size, &jstrlp_at(l, idx)->capacity, s, s_len);
+	const int ret = jstrlp__assign_len(&jstrlp__at(l, idx)->data, &jstrlp__at(l, idx)->size, &jstrlp__at(l, idx)->capacity, s, s_len);
 	if (jstr_likely(ret == 1))
 		return 1;
 	jstrl_free(l);
 	return 0;
 }
 
-#define JSTRLP_DEFINE_FIND_LEN(name, func)                    \
+#define JSTRLP__DEFINE_FIND_LEN(name, func)                    \
 	JSTR_FUNC_PURE                                        \
 	static jstr_ty *                                      \
 	jstrl_##name(const jstrlist_ty *R l,                  \
@@ -429,18 +429,18 @@ jstrl_assign_len(jstrlist_ty *R l,
 		return NULL;                                  \
 	}
 
-JSTRLP_DEFINE_FIND_LEN(find_len, !jstr_cmpeq)
-JSTRLP_DEFINE_FIND_LEN(findcase_len, !jstr_cmpcaseeq)
-JSTRLP_DEFINE_FIND_LEN(findstrstr_len, jstr_strstr_len)
-JSTRLP_DEFINE_FIND_LEN(findstrcasestr_len, jstr_strcasestr_len)
-JSTRLP_DEFINE_FIND_LEN(findstarts_len, jstr_starts_len)
-JSTRLP_DEFINE_FIND_LEN(findstartscase_len, jstr_startscase_len)
-JSTRLP_DEFINE_FIND_LEN(findends_len, jstr_ends_len)
-JSTRLP_DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
+JSTRLP__DEFINE_FIND_LEN(find_len, !jstr_cmpeq)
+JSTRLP__DEFINE_FIND_LEN(findcase_len, !jstr_cmpcaseeq)
+JSTRLP__DEFINE_FIND_LEN(findstrstr_len, jstr_strstr_len)
+JSTRLP__DEFINE_FIND_LEN(findstrcasestr_len, jstr_strcasestr_len)
+JSTRLP__DEFINE_FIND_LEN(findstarts_len, jstr_starts_len)
+JSTRLP__DEFINE_FIND_LEN(findstartscase_len, jstr_startscase_len)
+JSTRLP__DEFINE_FIND_LEN(findends_len, jstr_ends_len)
+JSTRLP__DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 
-#undef JSTRLP_DEFINE_FIND_LEN
+#undef JSTRLP__DEFINE_FIND_LEN
 
-#define JSTRLP_DEFINE_FIND(name, func)                        \
+#define JSTRLP__DEFINE_FIND(name, func)                        \
 	JSTR_FUNC_PURE                                        \
 	static jstr_ty *                                      \
 	jstrl_##name(const jstrlist_ty *R l,                  \
@@ -454,16 +454,16 @@ JSTRLP_DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 		return NULL;                                  \
 	}
 
-JSTRLP_DEFINE_FIND(find, !jstr_cmpeq)
-JSTRLP_DEFINE_FIND(findcase, !jstr_cmpcaseeq)
-JSTRLP_DEFINE_FIND(findstrstr, jstr_strstr_len)
-JSTRLP_DEFINE_FIND(findstrcasestr, jstr_strcasestr_len)
-JSTRLP_DEFINE_FIND(findstarts, jstr_starts_len)
-JSTRLP_DEFINE_FIND(findstartscase, jstr_startscase_len)
-JSTRLP_DEFINE_FIND(findends, jstr_ends_len)
-JSTRLP_DEFINE_FIND(findendscase, jstr_endscase_len)
+JSTRLP__DEFINE_FIND(find, !jstr_cmpeq)
+JSTRLP__DEFINE_FIND(findcase, !jstr_cmpcaseeq)
+JSTRLP__DEFINE_FIND(findstrstr, jstr_strstr_len)
+JSTRLP__DEFINE_FIND(findstrcasestr, jstr_strcasestr_len)
+JSTRLP__DEFINE_FIND(findstarts, jstr_starts_len)
+JSTRLP__DEFINE_FIND(findstartscase, jstr_startscase_len)
+JSTRLP__DEFINE_FIND(findends, jstr_ends_len)
+JSTRLP__DEFINE_FIND(findendscase, jstr_endscase_len)
 
-#undef JSTRLP_DEFINE_FIND
+#undef JSTRLP__DEFINE_FIND
 
 JSTR_FUNC_PURE
 static jstr_ty *
@@ -492,27 +492,27 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_INLINE
 static void
-jstrlp_delete(jstrlist_ty *l,
+jstrlp__delete(jstrlist_ty *l,
               jstr_ty *p)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->size) && p) {
 #if JSTRL_LAZY_FREE
 		jstr_ty tmp;
-		jstrlp_elemstore(&tmp, p);
+		jstrlp__elemstore(&tmp, p);
 #else
 		free(p->data);
 #endif
 		if (jstr_likely(p != jstrl_end(l)))
-			jstrlp_memmove(p, p + 1, (jstrl_end(l) - (p + 1)) * sizeof(*l->data));
+			jstrlp__memmove(p, p + 1, (jstrl_end(l) - (p + 1)) * sizeof(*l->data));
 		--l->size;
 #if JSTRL_LAZY_FREE
-		jstrlp_elemmove(l, &tmp);
+		jstrlp__elemmove(l, &tmp);
 #endif
 	}
 }
 
-#define JSTRLP_DEFINE_DELETE_LEN(name, func) \
+#define JSTRLP__DEFINE_DELETE_LEN(name, func) \
 	JSTR_FUNC_VOID                       \
 	static void                          \
 	jstrl_##name(jstrlist_ty *R l,       \
@@ -520,21 +520,21 @@ JSTR_NOEXCEPT
 	             const size_t s_len)     \
 	JSTR_NOEXCEPT                        \
 	{                                    \
-		jstrlp_delete(l, func);      \
+		jstrlp__delete(l, func);      \
 	}
 
-JSTRLP_DEFINE_DELETE_LEN(delete_len, jstrl_find_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE_LEN(deletecase_len, jstrl_findcase_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE_LEN(deletestrstr_len, jstrl_findstrstr_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE_LEN(deletestrcasestr_len, jstrl_findstrcasestr_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE_LEN(deletestarts_len, jstrl_findstarts_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE_LEN(deletestartscase_len, jstrl_findstartscase_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE_LEN(deleteends_len, jstrl_findends_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE_LEN(deleteendscase_len, jstrl_findendscase_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE_LEN(delete_len, jstrl_find_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE_LEN(deletecase_len, jstrl_findcase_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE_LEN(deletestrstr_len, jstrl_findstrstr_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE_LEN(deletestrcasestr_len, jstrl_findstrcasestr_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE_LEN(deletestarts_len, jstrl_findstarts_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE_LEN(deletestartscase_len, jstrl_findstartscase_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE_LEN(deleteends_len, jstrl_findends_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE_LEN(deleteendscase_len, jstrl_findendscase_len(l, s, s_len))
 
-#undef JSTRLP_DEFINE_DELETE_LEN
+#undef JSTRLP__DEFINE_DELETE_LEN
 
-#define JSTRLP_DEFINE_DELETE(name, func)        \
+#define JSTRLP__DEFINE_DELETE(name, func)        \
 	JSTR_FUNC_VOID                          \
 	static void                             \
 	jstrl_##name(jstrlist_ty *R l,          \
@@ -542,19 +542,19 @@ JSTRLP_DEFINE_DELETE_LEN(deleteendscase_len, jstrl_findendscase_len(l, s, s_len)
 	JSTR_NOEXCEPT                           \
 	{                                       \
 		const size_t s_len = strlen(s); \
-		jstrlp_delete(l, func);         \
+		jstrlp__delete(l, func);         \
 	}
 
-JSTRLP_DEFINE_DELETE(delete, jstrl_find_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE(deletecase, jstrl_findcase_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE(deletestrstr, jstrl_findstrstr_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE(deletestrcasestr, jstrl_findstrcasestr_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE(deletestarts, jstrl_findstarts_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE(deletestartscase, jstrl_findstartscase_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE(deleteends, jstrl_findends_len(l, s, s_len))
-JSTRLP_DEFINE_DELETE(deleteendscase, jstrl_findendscase_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE(delete, jstrl_find_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE(deletecase, jstrl_findcase_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE(deletestrstr, jstrl_findstrstr_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE(deletestrcasestr, jstrl_findstrcasestr_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE(deletestarts, jstrl_findstarts_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE(deletestartscase, jstrl_findstartscase_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE(deleteends, jstrl_findends_len(l, s, s_len))
+JSTRLP__DEFINE_DELETE(deleteendscase, jstrl_findendscase_len(l, s, s_len))
 
-#undef JSTRLP_DEFINE_DELETE
+#undef JSTRLP__DEFINE_DELETE
 
 JSTR_FUNC_VOID
 static void
@@ -562,10 +562,10 @@ jstrl_deletestrchr(jstrlist_ty *R l,
                    const int c)
 JSTR_NOEXCEPT
 {
-	jstrlp_delete(l, jstrl_findstrchr(l, c));
+	jstrlp__delete(l, jstrl_findstrchr(l, c));
 }
 
-JSTRP_END_DECLS
+JSTRP__END_DECLS
 
 #undef R
 
