@@ -3,13 +3,16 @@
 #ifndef JSTR_CONFIG_H
 #define JSTR_CONFIG_H 1
 
-#define JSTR_MIN_CAP           ((sizeof(size_t) == 8) ? 24 : 16)
+#define JSTRP_MIN_CAP          ((sizeof(size_t) == 8) ? 24 : 16)
 #define JSTRP_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
 /* #define JSTR_DEBUG 1 */
 /* #define JARR_DEBUG 1 */
 
-/* Reuse strings. */
+/*
+   When removing a string (jstr_ty) from a string list (jstrlist_ty), don't immediately call free().
+   This may result in fewer allocations when strings are often added to and removed from the list.
+*/
 /* #define JSTRL_LAZY_FREE 1 */
 
 /* Call exit() on fatal errors. */

@@ -63,8 +63,8 @@ JSTRP_END_DECLS
 		} while (0)
 #endif
 
-#define JSTR_MIN_ALLOC(cap)      (((cap) > JSTR_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTR_MIN_CAP))
-#define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTR_MIN_CAP) ? (cap) : (JSTR_MIN_CAP))
+#define JSTR_MIN_ALLOC(cap)      (((cap) > JSTRP_MIN_CAP) ? ((cap)*JSTR_ALLOC_MULTIPLIER) : (JSTRP_MIN_CAP))
+#define JSTR_MIN_ALLOCEXACT(cap) (((cap) > JSTRP_MIN_CAP) ? (cap) : (JSTRP_MIN_CAP))
 
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define JSTRP_EXIT_MAYBE() jstr_err_exit("")
@@ -258,7 +258,7 @@ jstrp_reallocexact(char *R *R s,
                    size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*cap = JSTR_MAX(JSTR_MIN_CAP, new_cap);
+	*cap = JSTR_MAX(JSTRP_MIN_CAP, new_cap);
 	*cap = JSTR_ALIGN_UP_STR(*cap);
 	*s = (char *)realloc(*s, *cap);
 	if (jstr_likely(*s != NULL))
@@ -298,7 +298,7 @@ jstrp_realloc_may_zero(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*sz != 0))
-		*cap = JSTR_MIN_CAP / 1.5;
+		*cap = JSTRP_MIN_CAP / 1.5;
 	return jstrp_reallocexact(s, sz, cap, new_cap + 1);
 }
 

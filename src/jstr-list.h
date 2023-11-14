@@ -183,7 +183,7 @@ jstrlp_grow(size_t cap,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(cap == 0))
-		cap = JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
+		cap = JSTRP_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
 	while ((cap *= JSTR_GROWTH) < new_cap)
 		;
 	return cap;

@@ -40,7 +40,7 @@ JSTRP_END_DECLS
 #define JARRP_SZ(j)     ((j)->JARRP_SIZE_NAME)
 #define JARRP_CAP(j)    ((j)->JARRP_CAPACITY_NAME)
 
-#define JARRP_MIN_CAP(j) (JSTR_MIN_CAP / JARRP_ELEMSZ(j))
+#define JARRP_MIN_CAP(j) (JSTRP_MIN_CAP / JARRP_ELEMSZ(j))
 
 #define JARRP_MEMMOVE(j, dst, src, n) memmove(dst, src, (n)*JARRP_ELEMSZ(j))
 #define JARRP_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*JARRP_ELEMSZ(j))
@@ -76,7 +76,7 @@ JSTRP_END_DECLS
 		JSTR_ASSERT_IS_SIZE(old_cap);                               \
 		JSTR_ASSERT_IS_SIZE(new_cap);                               \
 		if (jstr_unlikely(old_cap == 0))                            \
-			old_cap = JSTR_MIN_CAP / JARRP_ALLOC_MULTIPLIER;    \
+			old_cap = JSTRP_MIN_CAP / JARRP_ALLOC_MULTIPLIER;    \
 		do                                                          \
 			(old_cap) *= JARRP_GROWTH;                          \
 		while ((old_cap) < (new_cap));                              \
@@ -86,7 +86,7 @@ JSTRP_END_DECLS
 	do {                                                                                                       \
 		JARRP_CHECK_ARG(j);                                                                                \
 		if (jstr_unlikely(JARRP_CAP(j) == 0))                                                              \
-			JARRP_CAP(j) = JSTR_MIN_CAP / JARRP_ELEMSZ(j);                                             \
+			JARRP_CAP(j) = JSTRP_MIN_CAP / JARRP_ELEMSZ(j);                                             \
 		JARRP_GROW(JARRP_CAP(j), new_cap);                                                                 \
 		JARRP_CAP(j) = JARRP_ALIGN_UP(j, JARRP_CAP(j) * JARRP_ELEMSZ(j));                                  \
 		JARRP_DATA(j) = JSTRP_CAST(JARRP_DATA(j), realloc(JARRP_DATA(j), JARRP_CAP(j) * JARRP_ELEMSZ(j))); \
