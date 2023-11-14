@@ -8,7 +8,11 @@
 
 /* #define JSTR_DEBUG 1 */
 /* #define JARR_DEBUG 1 */
+
+/* Reuse strings. */
 /* #define JSTRL_LAZY_FREE 1 */
+
+/* Call exit() on fatal errors. */
 /* #define JSTR_EXIT_ON_ERROR 1 */
 
 #define JSTR_ENDIAN_LITTLE 1
