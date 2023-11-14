@@ -30,12 +30,12 @@ JSTRP__END_DECLS
 
 #define jstr_err(msg)        jstrp__err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
 #define jstr_err_exit(msg)   jstrp__err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
-#define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstr_ty_end_ = ((j)->data) + ((j)->size); \
-	                          ptr < jstr_ty_end_;                                                       \
+#define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const jstrp__foreach_end_##j##_##ptr = ((j)->data) + ((j)->size); \
+	                          ptr < jstrp__foreach_end_##j##_##ptr;                                                       \
 	                          ++ptr)
 
-#define jstr_foreachi(j, i) for (size_t i = 0, const jstr_j_ty_end_ = ((j)->size); \
-	                         i < jstr_j_ty_end_;                               \
+#define jstr_foreachi(j, i) for (size_t i = 0, const jstrp__foreach_end_##j##_##ptr = ((j)->size); \
+	                         i < jstrp__foreach_end_##j##_##ptr;                               \
 	                         ++i)
 
 #if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
@@ -319,9 +319,9 @@ JSTR_FUNC
 JSTR_INLINE
 static int
 jstrp__reservealwaysnomalloc(char *R *R s,
-                              size_t *R sz,
-                              size_t *R cap,
-                              const size_t new_cap)
+                             size_t *R sz,
+                             size_t *R cap,
+                             const size_t new_cap)
 JSTR_NOEXCEPT
 {
 	return jstrp__realloc(s, sz, cap, new_cap);
