@@ -565,8 +565,6 @@ JSTR_NOEXCEPT
 	jstrlp_delete(l, jstrl_findstrchr(l, c));
 }
 
-#undef JSTRP_DELETE
-
 JSTRP_END_DECLS
 
 #undef R
