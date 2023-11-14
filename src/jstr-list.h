@@ -138,8 +138,8 @@ JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
 #if JSTRL_LAZY_FREE
-		for (size_t i = 0; i < l->capacity; ++i)
-			free(jstrlp_at(l, i)->data);
+		jstrlp_foreach_cap (l, p)
+			free(p->data);
 #else
 		jstrl_foreach (l, p)
 			free(p->data);
