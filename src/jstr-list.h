@@ -207,6 +207,9 @@ JSTR_NOEXCEPT
 	return 1;
 err:
 	jstrl_free(l);
+#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+	jstr_err_exit("");
+#endif
 	return 0;
 }
 
