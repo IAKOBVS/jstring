@@ -365,7 +365,7 @@ JSTR_NOEXCEPT
 	uint16_t hw = (uint16_t)h[0] << 8 | h[1];
 	for (++h, --l; l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (char *)(h - 1) : NULL;
+	return hw == nw ? (unsigned char *)(h - 1) : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -380,7 +380,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8;
 	for (h += 2, l -= 2; l-- && hw != nw; hw = (hw | *++h) << 8)
 		;
-	return hw == nw ? (char *)(h - 2) : NULL;
+	return hw == nw ? (unsigned char *)(h - 2) : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -395,7 +395,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (char *)(h - 3) : NULL;
+	return hw == nw ? (unsigned char *)(h - 3) : NULL;
 }
 
 #endif
