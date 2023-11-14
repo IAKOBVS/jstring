@@ -1191,7 +1191,7 @@ jstr_memchrinv(const void *s,
 JSTR_NOEXCEPT
 {
 	const void *const end = (unsigned char *)s + n;
-	s = (void *)jstr_memchrnulinv(s, c, n);
+	s = jstr_memchrnulinv(s, c, n);
 	return (s != end) ? (void *)s : NULL;
 }
 
