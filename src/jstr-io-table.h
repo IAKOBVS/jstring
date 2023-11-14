@@ -6,7 +6,7 @@
 #include "jstr-macros.h"
 
 JSTR_MAYBE_UNUSED
-static const unsigned char jstrp__io_reject_table[256] = {
+static const unsigned char pjstr_io_reject_table[256] = {
 	1, /* 0 */
 	1, /* 1 */
 	1, /* 2 */

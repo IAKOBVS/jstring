@@ -26,9 +26,9 @@
 
 #define JSTR_ARRAY_SIZE(array) (sizeof(array) / sizeof(*(array)))
 
-#define JSTR_ALIGN_UP_STR(base)       JSTR_ALIGN_UP((uintptr_t)base, JSTRP__MALLOC_ALIGNMENT)
-#define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, JSTRP__MALLOC_ALIGNMENT)
-#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, JSTRP__MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_UP_STR(base)       JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
 #if !(defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__)
 #	define JSTR_HAVE_VLA 1
@@ -69,12 +69,12 @@
 #	define JSTR_SAME_TYPE(x, y) _Generic((x), \
 	__typeof__(y): 1,                          \
 	default: 0)
-#	define JSTRP__IS_TYPE(T, x) _Generic((x), \
+#	define PJSTR_IS_TYPE(T, x) _Generic((x), \
 	T: 1,                                     \
 	default: 0)
 #else
 #	define JSTR_SAME_TYPE(x, y) 1
-#	define JSTRP__IS_TYPE(T, x)  1
+#	define PJSTR_IS_TYPE(T, x)  1
 #endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #ifdef static_assert
@@ -108,34 +108,34 @@
 #	define JSTR_GENERIC_CASE_CHAR(bool_) \
 		char : bool_,                 \
 		       const char : bool_
-#	define JSTRP__IS_SIZE(expr) _Generic((expr), \
+#	define PJSTR_IS_SIZE(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_SIZE(1),                   \
 	default: 0)
-#	define JSTRP__IS_STR(expr) _Generic((expr), \
+#	define PJSTR_IS_STR(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_STR(1),                   \
 	default: 0)
-#	define JSTRP__IS_STR_STACK(expr) _Generic((expr), \
+#	define PJSTR_IS_STR_STACK(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_STR_STACK(1, expr),             \
 	default: 0)
-#	define JSTRP__IS_CHAR(expr) _Generic((expr), \
+#	define PJSTR_IS_CHAR(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_CHAR(1),                   \
 	default: 0)
 #	define JSTR_ASSERT_IS_SIZE(expr) \
-		JSTR_ASSERT(JSTRP__IS_SIZE(expr), "Passing non-number as number argument!");
+		JSTR_ASSERT(PJSTR_IS_SIZE(expr), "Passing non-number as number argument!");
 #	define JSTR_ASSERT_IS_STR(expr) \
-		JSTR_ASSERT(JSTRP__IS_STR(expr), "Passing non-string as string argument!");
+		JSTR_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
 #	define JSTR_ASSERT_IS_CHAR(expr) \
-		JSTR_ASSERT(JSTRP__IS_CHAR(expr), "Passing non-char as char argument!");
+		JSTR_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
 #	define JSTR_ASSERT_TYPECHECK(expr_ty, expr) \
 		JSTR_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
 #else
 #	define JSTR_GENERIC_CASE_SIZE(expr)
 #	define JSTR_GENERIC_CASE_STR(bool)
 #	define JSTR_GENERIC_CASE_CHAR(bool)
-#	define JSTRP__IS_SIZE(expr)
-#	define JSTRP__IS_STR(expr)
-#	define JSTRP__IS_STR_STACK(expr)
-#	define JSTRP__IS_CHAR(expr)
+#	define PJSTR_IS_SIZE(expr)
+#	define PJSTR_IS_STR(expr)
+#	define PJSTR_IS_STR_STACK(expr)
+#	define PJSTR_IS_CHAR(expr)
 #	define JSTR_ASSERT_IS_SIZE(expr)
 #	define JSTR_ASSERT_IS_STR(expr)
 #	define JSTR_ASSERT_IS_CHAR(expr)
@@ -932,11 +932,11 @@ case '~':
 #define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #ifdef __cplusplus
-#	define JSTRP__BEGIN_DECLS extern "C" {
-#	define JSTRP__END_DECLS   }
+#	define PJSTR_BEGIN_DECLS extern "C" {
+#	define PJSTR_END_DECLS   }
 #else
-#	define JSTRP__BEGIN_DECLS
-#	define JSTRP__END_DECLS
+#	define PJSTR_BEGIN_DECLS
+#	define PJSTR_END_DECLS
 #endif
 
 #if __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8
@@ -1082,12 +1082,12 @@ enum {
 #ifdef __cplusplus
 template <typename T, typename Other>
 static T
-JSTRP__CAST(T, Other other)
+PJSTR_CAST(T, Other other)
 {
 	return (T)other;
 }
 #else
-#	define JSTRP__CAST(T, other) (other)
+#	define PJSTR_CAST(T, other) (other)
 #endif /* __cpluslus */
 
 #define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                      \

@@ -1,13 +1,13 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef JSTRP__SELECTOR_STRING_MISC_H
-#define JSTRP__SELECTOR_STRING_MISC_H 1
+#ifndef PJSTR_SELECTOR_STRING_MISC_H
+#define PJSTR_SELECTOR_STRING_MISC_H 1
 #include "jstr-macros.h"
 
-JSTRP__BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <endian.h>
 #include <limits.h>
-JSTRP__END_DECLS
+PJSTR_END_DECLS
 
 #include "_glibc-generic-string-misc.h"
 
@@ -16,7 +16,7 @@ JSTRP__END_DECLS
 #	pragma GCC diagnostic push
 #endif
 
-JSTRP__BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 /* P must be aligned to sizeof(jstr_word_ty). */
 JSTR_INLINE
@@ -101,10 +101,10 @@ JSTR_NOEXCEPT
 #endif
 }
 
-JSTRP__END_DECLS
+PJSTR_END_DECLS
 
 #if defined __GNUC__ || defined __clang__
 #	pragma GCC diagnostic pop
 #endif
 
-#endif /* JSTRP__STRING_MISC_H */
+#endif /* PJSTR_STRING_MISC_H */

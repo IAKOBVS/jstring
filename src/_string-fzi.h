@@ -1,9 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef JSTRP__SELECTOR_STRING_FZI_H
-#define JSTRP__SELECTOR_STRING_FZI_H 1
+#ifndef PJSTR_SELECTOR_STRING_FZI_H
+#define PJSTR_SELECTOR_STRING_FZI_H 1
 #include "jstr-macros.h"
-JSTRP__BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #if JSTR_ARCH_HPPA
 #	include "_glibc-hppa-string-fzi.h"
 #elif JSTR_ARCH_ALPHA
@@ -13,5 +13,5 @@ JSTRP__BEGIN_DECLS
 #else
 #	include "_glibc-generic-string-fzi.h"
 #endif
-JSTRP__END_DECLS
-#endif /* JSTRP__SELECTOR_STRING_FZI_H */
+PJSTR_END_DECLS
+#endif /* PJSTR_SELECTOR_STRING_FZI_H */

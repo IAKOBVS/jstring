@@ -4,44 +4,44 @@
 #include "jstr-stdstring.h"
 #include <string.h>
 
-#ifndef JSTRP__MEMMEM_RETTYPE
-#	define JSTRP__MEMMEM_RETTYPE unsigned char *
+#ifndef PJSTR_MEMMEM_RETTYPE
+#	define PJSTR_MEMMEM_RETTYPE unsigned char *
 #endif
-#ifndef JSTRP__MEMMEM_FN
-#	define JSTRP__MEMMEM_FN jstrp__memmem_impl
+#ifndef PJSTR_MEMMEM_FN
+#	define PJSTR_MEMMEM_FN pjstr_memmem_impl
 #endif
-#ifndef JSTRP__MEMMEM_HASH2
-#	define JSTRP__MEMMEM_HASH2(p) (((size_t)((p)[0]) - ((size_t)((p)[-1]) << 3)) % 256)
+#ifndef PJSTR_MEMMEM_HASH2
+#	define PJSTR_MEMMEM_HASH2(p) (((size_t)((p)[0]) - ((size_t)((p)[-1]) << 3)) % 256)
 #endif
-#ifndef JSTRP__MEMMEM_CHECK_EOL
-#	define JSTRP__MEMMEM_CHECK_EOL 0
+#ifndef PJSTR_MEMMEM_CHECK_EOL
+#	define PJSTR_MEMMEM_CHECK_EOL 0
 #endif
-#ifndef JSTRP__MEMMEM_CMP_FN
-#	define JSTRP__MEMMEM_CMP_FN memcmp
-#endif
-
-#if JSTRP__MEMMEM_HASH2_ICASE
-#	define JSTRP__MEMMEM_HASH2_SETUP(p, fn1, fn2) (((size_t)fn1((p)[0]) - ((size_t)fn2((p)[-1]) << 3)) % 256)
+#ifndef PJSTR_MEMMEM_CMP_FN
+#	define PJSTR_MEMMEM_CMP_FN memcmp
 #endif
 
-#if JSTRP__MEMMEM_SHORT_NEEDLE
-#	undef JSTRP__MEMMEM_FN_IMPL
-#	define JSTRP__MEMMEM_FN_IMPL JSTR_CONCAT(JSTRP__, JSTR_CONCAT(JSTRP__MEMMEM_FN, _short_ne_impl))
+#if PJSTR_MEMMEM_HASH2_ICASE
+#	define PJSTR_MEMMEM_HASH2_SETUP(p, fn1, fn2) (((size_t)fn1((p)[0]) - ((size_t)fn2((p)[-1]) << 3)) % 256)
+#endif
+
+#if PJSTR_MEMMEM_SHORT_NEEDLE
+#	undef PJSTR_MEMMEM_FN_IMPL
+#	define PJSTR_MEMMEM_FN_IMPL JSTR_CONCAT(PJSTR_, JSTR_CONCAT(PJSTR_MEMMEM_FN, _short_ne_impl))
 #else
-#	undef JSTRP__MEMMEM_FN_IMPL
-#	define JSTRP__MEMMEM_FN_IMPL JSTR_CONCAT(JSTRP__, JSTR_CONCAT(JSTRP__MEMMEM_FN, _long_ne_impl))
+#	undef PJSTR_MEMMEM_FN_IMPL
+#	define PJSTR_MEMMEM_FN_IMPL JSTR_CONCAT(PJSTR_, JSTR_CONCAT(PJSTR_MEMMEM_FN, _long_ne_impl))
 #endif
 
 JSTR_FUNC_PURE
 JSTR_INLINE
-static JSTRP__MEMMEM_RETTYPE
-JSTRP__MEMMEM_FN_IMPL(const unsigned char *hs,
+static PJSTR_MEMMEM_RETTYPE
+PJSTR_MEMMEM_FN_IMPL(const unsigned char *hs,
                      const size_t hl,
                      const unsigned char *ne,
                      const size_t nl)
 JSTR_NOEXCEPT
 {
-#if JSTRP__MEMMEM_SHORT_NEEDLE
+#if PJSTR_MEMMEM_SHORT_NEEDLE
 	typedef int idx_ty;
 	typedef uint8_t arr_ty;
 #else
@@ -58,27 +58,27 @@ JSTR_NOEXCEPT
 	arr_ty shift[256];
 	JSTR_BZERO_ARRAY(shift);
 	for (idx_ty i = 1; i < (idx_ty)m1; ++i) {
-#if JSTRP__MEMMEM_HASH2_ICASE
-		shift[JSTRP__MEMMEM_HASH2_SETUP(ne + i, , )] = i;
-		shift[JSTRP__MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, jstr_tolower)] = i;
-		shift[JSTRP__MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, )] = i;
-		shift[JSTRP__MEMMEM_HASH2_SETUP(ne + i, , jstr_tolower)] = i;
+#if PJSTR_MEMMEM_HASH2_ICASE
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, , )] = i;
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, jstr_tolower)] = i;
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, )] = i;
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, , jstr_tolower)] = i;
 #else
-		shift[JSTRP__MEMMEM_HASH2(ne + i)] = i;
+		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
 #endif
 	}
-	const size_t shift1 = m1 - shift[JSTRP__MEMMEM_HASH2(ne + m1)];
-#if JSTRP__MEMMEM_HASH2_ICASE
-	shift[JSTRP__MEMMEM_HASH2_SETUP(ne + m1, , )] = m1;
-	shift[JSTRP__MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_tolower)] = m1;
-	shift[JSTRP__MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, )] = m1;
-	shift[JSTRP__MEMMEM_HASH2_SETUP(ne + m1, , jstr_tolower)] = m1;
+	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
+#if PJSTR_MEMMEM_HASH2_ICASE
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, , )] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_tolower)] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, )] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, , jstr_tolower)] = m1;
 #else
-	shift[JSTRP__MEMMEM_HASH2(ne + m1)] = m1;
+	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
 #endif
 	goto start;
 	do {
-#if JSTRP__MEMMEM_CHECK_EOL /* As in strstr() where HAYSTACKLEN needs to be updated. */
+#if PJSTR_MEMMEM_CHECK_EOL /* As in strstr() where HAYSTACKLEN needs to be updated. */
 		if (jstr_unlikely(hs > end)) {
 			end += jstr_strnlen((char *)(end + m1), 2048);
 			if (hs > end)
@@ -88,14 +88,14 @@ JSTR_NOEXCEPT
 start:;
 		do {
 			hs += m1;
-			tmp = shift[JSTRP__MEMMEM_HASH2(hs)];
+			tmp = shift[PJSTR_MEMMEM_HASH2(hs)];
 		} while (!tmp && hs <= end);
 		hs -= tmp;
 		if (tmp < m1)
 			continue;
-		if (m1 < 15 || !JSTRP__MEMMEM_CMP_FN((char *)(hs + off), (char *)(ne + off), 8)) {
-			if (!JSTRP__MEMMEM_CMP_FN((char *)hs, (char *)ne, m1))
-				return (JSTRP__MEMMEM_RETTYPE)hs;
+		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FN((char *)(hs + off), (char *)(ne + off), 8)) {
+			if (!PJSTR_MEMMEM_CMP_FN((char *)hs, (char *)ne, m1))
+				return (PJSTR_MEMMEM_RETTYPE)hs;
 			off = (off >= 8 ? off : m1) - 8;
 		}
 		hs += shift1;

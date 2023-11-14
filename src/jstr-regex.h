@@ -5,12 +5,12 @@
 
 #include "jstr-macros.h"
 
-JSTRP__BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-JSTRP__END_DECLS
+PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
@@ -34,7 +34,7 @@ JSTRP__END_DECLS
 #	define JSTRRE_EF_STARTEND REG_STARTEND
 #endif /* REG_STARTEND */
 
-JSTRP__BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 #ifdef REG_ENOSYS
@@ -104,8 +104,8 @@ JSTR_COLD
 JSTR_FUNC_VOID
 JSTR_NOINLINE
 static void
-jstrrep__err_print(const int errcode,
-                   const regex_t *R preg)
+pjstrre_err_print(const int errcode,
+                  const regex_t *R preg)
 JSTR_NOEXCEPT
 {
 	char buf[64];
@@ -117,8 +117,8 @@ JSTR_COLD
 JSTR_FUNC_VOID
 JSTR_NOINLINE
 static void
-jstrrep__err_exit_print(const int errcode,
-                        const regex_t *R preg)
+pjstrre_err_exit_print(const int errcode,
+                       const regex_t *R preg)
 JSTR_NOEXCEPT
 {
 	char buf[64];
@@ -135,7 +135,7 @@ jstrre_err_exit(jstrre_errcode_ty errcode,
 JSTR_NOEXCEPT
 {
 	if (jstrre_exec_chk(errcode))
-		jstrrep__err_exit_print(errcode, preg);
+		pjstrre_err_exit_print(errcode, preg);
 }
 
 JSTR_FUNC_VOID
@@ -146,7 +146,7 @@ jstrre_err_print(jstrre_errcode_ty errcode,
 JSTR_NOEXCEPT
 {
 	if (jstrre_exec_chk(errcode))
-		jstrrep__err_print(errcode, preg);
+		pjstrre_err_print(errcode, preg);
 }
 
 JSTR_FUNC_VOID
@@ -299,7 +299,7 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(find_len == 0))
 			++p;
 		else
-			jstrp__rmallinplace(&dst, &oldp, &p, find_len);
+			pjstr_rmallinplace(&dst, &oldp, &p, find_len);
 		if (jstr_unlikely(*p == '\0'))
 			break;
 	}
@@ -374,14 +374,14 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstrrep__rplcall_small_rplc(char *s,
-                            size_t *R sz,
-                            char **dst,
-                            const char **oldp,
-                            char **p,
-                            const char *R rplc,
-                            const size_t rplc_len,
-                            const size_t find_len)
+pjstrre_rplcall_small_rplc(char *s,
+                           size_t *R sz,
+                           char **dst,
+                           const char **oldp,
+                           char **p,
+                           const char *R rplc,
+                           const size_t rplc_len,
+                           const size_t find_len)
 {
 	if (*dst != *oldp) {
 		*dst = (char *)jstr_mempmove(*dst, *oldp, *p - *oldp);
@@ -403,20 +403,20 @@ jstrrep__rplcall_small_rplc(char *s,
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstrrep__rplcall_big_rplc(char *R *R s,
-                          size_t *R sz,
-                          size_t *R cap,
-                          char **dst,
-                          const char **oldp,
-                          char **p,
-                          const char *R rplc,
-                          const size_t rplc_len,
-                          const size_t find_len)
+pjstrre_rplcall_big_rplc(char *R *R s,
+                         size_t *R sz,
+                         size_t *R cap,
+                         char **dst,
+                         const char **oldp,
+                         char **p,
+                         const char *R rplc,
+                         const size_t rplc_len,
+                         const size_t find_len)
 {
 	if (*dst != *oldp)
 		memmove(*dst, *oldp, *p - *oldp);
 	const char *tmp = *s;
-	JSTRP__RESERVEALWAYSNOMALLOC(s, sz, cap, *sz + rplc_len - find_len, return 0)
+	PJSTR_RESERVEALWAYSNOMALLOC(s, sz, cap, *sz + rplc_len - find_len, return 0)
 	jstr_strmove_len(*p + rplc_len,
 	                 *p + find_len,
 	                 (tmp + *sz) - (*p + find_len));
@@ -459,11 +459,11 @@ JSTR_NOEXCEPT
 			continue;
 		}
 		if (rplc_len <= find_len)
-			jstrp__rplcallinplace(&dst, &oldp, (const char **)&p, rplc, rplc_len, find_len);
+			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rplc, rplc_len, find_len);
 		else if (*cap > *sz + rplc_len - find_len)
-			jstrrep__rplcall_small_rplc(*s, sz, &dst, &oldp, &p, rplc, rplc_len, find_len);
-		else if (jstr_unlikely(!jstrrep__rplcall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, rplc, rplc_len, find_len)))
-				goto err;
+			pjstrre_rplcall_small_rplc(*s, sz, &dst, &oldp, &p, rplc, rplc_len, find_len);
+		else if (jstr_unlikely(!pjstrre_rplcall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, rplc, rplc_len, find_len)))
+			goto err;
 	}
 	if (dst != oldp)
 		*sz = jstr_stpmove_len(dst, oldp, (*s + *sz) - oldp) - *s;
@@ -555,9 +555,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static size_t
-jstrrep__brefrplcstrlen(const regmatch_t *R rm,
-                        const char *R rplc,
-                        size_t rplc_len)
+pjstrre_brefrplcstrlen(const regmatch_t *R rm,
+                       const char *R rplc,
+                       size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	const char *const rplc_e = rplc + rplc_len;
@@ -573,11 +573,11 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstrrep__brefrplccreat(const char *R mtc,
-                       const regmatch_t *R rm,
-                       char *R rdst,
-                       const char *R rplc,
-                       const size_t rplc_len)
+pjstrre_brefrplccreat(const char *R mtc,
+                      const regmatch_t *R rm,
+                      char *R rdst,
+                      const char *R rplc,
+                      const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	const char *rold;
@@ -636,23 +636,23 @@ JSTR_NOEXCEPT
 			++p;
 			continue;
 		}
-		rdst_len = jstrrep__brefrplcstrlen(rm, rplc, rplc_len);
+		rdst_len = pjstrre_brefrplcstrlen(rm, rplc, rplc_len);
 		if (jstr_unlikely(rdst_len == 0))
 			return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > BUFSZ))
 			if (rdst_cap < rdst_len) {
-				rdst_cap = jstrp__grow(rdst_cap, rdst_len);
+				rdst_cap = pjstr_grow(rdst_cap, rdst_len);
 				rdst_heap = (char *)realloc(rdst_heap, rdst_cap);
-				JSTRP__MALLOC_ERR(rdst_heap, goto err);
+				PJSTR_MALLOC_ERR(rdst_heap, goto err);
 				rdstp = rdst_heap;
 			}
-		jstrrep__brefrplccreat(p, rm, rdstp, rplc, rplc_len);
+		pjstrre_brefrplccreat(p, rm, rdstp, rplc, rplc_len);
 		p += rm[0].rm_so;
 		if (rdst_len <= find_len)
-			jstrp__rplcallinplace(&dst, &oldp, (const char **)&p, rdstp, rdst_len, find_len);
+			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rdstp, rdst_len, find_len);
 		else if (*cap > *sz + rdst_len - find_len)
-			jstrrep__rplcall_small_rplc(*s, sz, &dst, &oldp, &p, rdstp, rdst_len, find_len);
-		else if (jstr_unlikely(!jstrrep__rplcall_big_rplc(s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
+			pjstrre_rplcall_small_rplc(*s, sz, &dst, &oldp, &p, rdstp, rdst_len, find_len);
+		else if (jstr_unlikely(!pjstrre_rplcall_big_rplc(s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
 			goto err_free;
 	}
 	if (dst != oldp)
@@ -750,7 +750,7 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, 1);
 }
 
-JSTRP__END_DECLS
+PJSTR_END_DECLS
 
 #undef R
 

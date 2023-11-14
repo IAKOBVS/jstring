@@ -5,10 +5,10 @@
 
 #include "jstr-macros.h"
 
-JSTRP__BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
-JSTRP__END_DECLS
+PJSTR_END_DECLS
 
 #include "_jstr-pp-arrcpy-va-args.h"
 #include "jstr-builder.h"
@@ -40,7 +40,7 @@ JSTRP__END_DECLS
 #define JARRP_SZ(j)     ((j)->JARRP_SIZE_NAME)
 #define JARRP_CAP(j)    ((j)->JARRP_CAPACITY_NAME)
 
-#define JARRP_MIN_CAP(j) (JSTRP__MIN_CAP / JARRP_ELEMSZ(j))
+#define JARRP_MIN_CAP(j) (PJSTR_MIN_CAP / JARRP_ELEMSZ(j))
 
 #define JARRP_MEMMOVE(j, dst, src, n) memmove(dst, src, (n)*JARRP_ELEMSZ(j))
 #define JARRP_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*JARRP_ELEMSZ(j))
@@ -76,20 +76,20 @@ JSTRP__END_DECLS
 		JSTR_ASSERT_IS_SIZE(old_cap);                               \
 		JSTR_ASSERT_IS_SIZE(new_cap);                               \
 		if (jstr_unlikely(old_cap == 0))                            \
-			old_cap = JSTRP__MIN_CAP / JARRP_ALLOC_MULTIPLIER;    \
+			old_cap = PJSTR_MIN_CAP / JARRP_ALLOC_MULTIPLIER;   \
 		do                                                          \
 			(old_cap) *= JARRP_GROWTH;                          \
 		while ((old_cap) < (new_cap));                              \
-		(old_cap) = JSTR_ALIGN_UP(old_cap, JSTRP__MALLOC_ALIGNMENT); \
+		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define jarr_reserve(j, new_cap)                                                                                   \
 	do {                                                                                                       \
 		JARRP_CHECK_ARG(j);                                                                                \
 		if (jstr_unlikely(JARRP_CAP(j) == 0))                                                              \
-			JARRP_CAP(j) = JSTRP__MIN_CAP / JARRP_ELEMSZ(j);                                             \
+			JARRP_CAP(j) = PJSTR_MIN_CAP / JARRP_ELEMSZ(j);                                            \
 		JARRP_GROW(JARRP_CAP(j), new_cap);                                                                 \
 		JARRP_CAP(j) = JARRP_ALIGN_UP(j, JARRP_CAP(j) * JARRP_ELEMSZ(j));                                  \
-		JARRP_DATA(j) = JSTRP__CAST(JARRP_DATA(j), realloc(JARRP_DATA(j), JARRP_CAP(j) * JARRP_ELEMSZ(j))); \
+		JARRP_DATA(j) = PJSTR_CAST(JARRP_DATA(j), realloc(JARRP_DATA(j), JARRP_CAP(j) * JARRP_ELEMSZ(j))); \
 		if (jarr_chk(j))                                                                                   \
 			break;                                                                                     \
 		JARRP_CAP(j) /= JARRP_ELEMSZ(j);                                                                   \
@@ -98,7 +98,7 @@ JSTRP__END_DECLS
 	do {                                                                                                       \
 		JARRP_CHECK_ARG(j);                                                                                \
 		JARRP_CAP(j) = JARRP_ALIGN_UP(j, JARRP_CAP(j) * JARRP_ELEMSZ(j));                                  \
-		JARRP_DATA(j) = JSTRP__CAST(JARRP_DATA(j), realloc(JARRP_DATA(j), JARRP_CAP(j) * JARRP_ELEMSZ(j))); \
+		JARRP_DATA(j) = PJSTR_CAST(JARRP_DATA(j), realloc(JARRP_DATA(j), JARRP_CAP(j) * JARRP_ELEMSZ(j))); \
 		if (jarr_chk(j))                                                                                   \
 			break;                                                                                     \
 		JARRP_CAP(j) /= JARRP_ELEMSZ(j);                                                                   \
@@ -132,26 +132,26 @@ JSTRP__END_DECLS
 #define jarr_assign(j, ...)                                                     \
 	do {                                                                    \
 		JARRP_CHECK_ARG(j);                                             \
-		JARRP_CHECK_VAL(j, JSTRP__PP_FIRST_ARG(__VA_ARGS__));            \
-		if (jstr_unlikely(JARRP_CAP(j) < JSTRP__PP_NARG(__VA_ARGS__))) { \
-			jarr_reserve(j, JSTRP__PP_NARG(__VA_ARGS__));            \
+		JARRP_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));            \
+		if (jstr_unlikely(JARRP_CAP(j) < PJSTR_PP_NARG(__VA_ARGS__))) { \
+			jarr_reserve(j, PJSTR_PP_NARG(__VA_ARGS__));            \
 			JARRP_MALLOC_ERR(j, break)                              \
 		}                                                               \
-		JSTRP__PP_ARRCPY_VA_ARGS(JARRP_SZ(j), __VA_ARGS__);              \
-		JARRP_SZ(j) = JSTRP__PP_NARG(__VA_ARGS__);                       \
+		PJSTR_PP_ARRCPY_VA_ARGS(JARRP_SZ(j), __VA_ARGS__);              \
+		JARRP_SZ(j) = PJSTR_PP_NARG(__VA_ARGS__);                       \
 	} while (0)
 
 /* Add elements to end of PTR. */
 #define jarr_cat(j, ...)                                                                        \
 	do {                                                                                    \
 		JARRP_CHECK_ARG(j);                                                             \
-		JARRP_CHECK_VAL(j, JSTRP__PP_FIRST_ARG(__VA_ARGS__));                            \
-		if (jstr_unlikely(JARRP_CAP(j) < (JARRP_SZ(j) + JSTRP__PP_NARG(__VA_ARGS__)))) { \
-			jarr_reserve(j, (JARRP_SZ(j) + JSTRP__PP_NARG(__VA_ARGS__)));            \
+		JARRP_CHECK_VAL(j, PJSTR_PP_FIRST_ARG(__VA_ARGS__));                            \
+		if (jstr_unlikely(JARRP_CAP(j) < (JARRP_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)))) { \
+			jarr_reserve(j, (JARRP_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)));            \
 			JARRP_MALLOC_ERR(j, break)                                              \
 		}                                                                               \
-		JSTRP__PP_ARRCPY_VA_ARGS(JARRP_DATA(j) + JARRP_SZ(j), __VA_ARGS__);              \
-		JARRP_SZ(j) += JSTRP__PP_NARG(__VA_ARGS__);                                      \
+		PJSTR_PP_ARRCPY_VA_ARGS(JARRP_DATA(j) + JARRP_SZ(j), __VA_ARGS__);              \
+		JARRP_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                      \
 	} while (0)
 /* Pop PTR[0]. */
 #define jarr_popfront(j)                                                  \
@@ -215,7 +215,7 @@ JSTRP__END_DECLS
 		(JARRP_DATA(j) + (idx))
 #endif
 
-JSTRP__BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
 JSTR_NOINLINE
@@ -241,7 +241,7 @@ JARRP_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
 	exit(EXIT_FAILURE);
 }
 
-JSTRP__END_DECLS
+PJSTR_END_DECLS
 
 #undef R
 

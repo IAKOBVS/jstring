@@ -5,7 +5,7 @@
 
 #include "jstr-macros.h"
 
-JSTRP__BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 	JSTR_ISALNUM = (1),
@@ -25,7 +25,7 @@ typedef enum {
 } jstr_ctype_ty;
 
 JSTR_MAYBE_UNUSED
-static const uint16_t jstrp__ctype[256] = {
+static const uint16_t pjstr_ctype[256] = {
 	/* NUL, control codes */
 	JSTR_ISCNTRL,
 	JSTR_ISCNTRL,
@@ -172,7 +172,7 @@ static const uint16_t jstrp__ctype[256] = {
 };
 
 JSTR_MAYBE_UNUSED
-static const unsigned char jstrp__ctype_tolower[256] = {
+static const unsigned char pjstr_ctype_tolower[256] = {
 	0,
 	1,
 	2,
@@ -433,7 +433,7 @@ static const unsigned char jstrp__ctype_tolower[256] = {
 };
 
 JSTR_MAYBE_UNUSED
-static const unsigned char jstrp__ctype_toupper[256] = {
+static const unsigned char pjstr_ctype_toupper[256] = {
 	0,
 	1,
 	2,
@@ -693,6 +693,6 @@ static const unsigned char jstrp__ctype_toupper[256] = {
 	255,
 };
 
-JSTRP__END_DECLS
+PJSTR_END_DECLS
 
 #endif /* JSTR_CTYPE_TABLE_H */

@@ -16,12 +16,12 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef JSTRP__STRING_OPTHR_H
-#define JSTRP__STRING_OPTHR_H 1
+#ifndef PJSTR_STRING_OPTHR_H
+#define PJSTR_STRING_OPTHR_H 1
 
 #include "jstr-macros.h"
 
 /* Threshold value for when to enter the unrolled loops.  */
-#define JSTR_WORD_THRES	16
+#define JSTR_WORD_THRES 16
 
 #endif /* string-opthr.h */

@@ -16,58 +16,58 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef JSTRP__STRING_FZI_H
-#define JSTRP__STRING_FZI_H 1
+#ifndef PJSTR_STRING_FZI_H
+#define PJSTR_STRING_FZI_H 1
 
 #include "jstr-macros.h"
 
-#include <limits.h>
-#include <endian.h>
 #include "_string-fza.h"
+#include <endian.h>
+#include <limits.h>
 
 static JSTR_INLINE int
-jstr_word_clz (jstr_word_ty c)
+jstr_word_clz(jstr_word_ty c)
 {
-  if (sizeof (jstr_word_ty) == sizeof (unsigned long))
-    return __builtin_clzl (c);
-  else
-    return __builtin_clzll (c);
+	if (sizeof(jstr_word_ty) == sizeof(unsigned long))
+		return __builtin_clzl(c);
+	else
+		return __builtin_clzll(c);
 }
 
 static JSTR_INLINE int
-jstr_word_ctz (jstr_word_ty c)
+jstr_word_ctz(jstr_word_ty c)
 {
-  if (sizeof (jstr_word_ty) == sizeof (unsigned long))
-    return __builtin_ctzl (c);
-  else
-    return __builtin_ctzll (c);
+	if (sizeof(jstr_word_ty) == sizeof(unsigned long))
+		return __builtin_ctzl(c);
+	else
+		return __builtin_ctzll(c);
 }
 
 /* A subroutine for the jstr_word_index_zero functions.  Given a test word C, return
    the (memory order) jstr_word_index of the first byte (in memory order) that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-jstr_word_index_first (jstr_word_ty c)
+jstr_word_index_first(jstr_word_ty c)
 {
-  int r;
-  if (JSTR_ENDIAN_LITTLE)
-    r = jstr_word_ctz (c);
-  else
-    r = jstr_word_clz (c);
-  return r / CHAR_BIT;
+	int r;
+	if (JSTR_ENDIAN_LITTLE)
+		r = jstr_word_ctz(c);
+	else
+		r = jstr_word_clz(c);
+	return r / CHAR_BIT;
 }
 
 /* Similarly, but return the (memory order) jstr_word_index of the last byte that is
    non-zero.  */
 static JSTR_INLINE unsigned int
-jstr_word_index_last (jstr_word_ty c)
+jstr_word_index_last(jstr_word_ty c)
 {
-  int r;
-  if (JSTR_ENDIAN_LITTLE)
-    r = jstr_word_clz (c);
-  else
-    r = jstr_word_ctz (c);
-  return sizeof (jstr_word_ty) - 1 - (r / CHAR_BIT);
+	int r;
+	if (JSTR_ENDIAN_LITTLE)
+		r = jstr_word_clz(c);
+	else
+		r = jstr_word_ctz(c);
+	return sizeof(jstr_word_ty) - 1 - (r / CHAR_BIT);
 }
 
 #endif /* STRING_FZI_H */

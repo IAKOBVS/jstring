@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef JSTRP__SELECTOR_STRING_OPTYPE_H
-#define JSTRP__SELECTOR_STRING_OPTYPE_H 1
+#ifndef PJSTR_SELECTOR_STRING_OPTYPE_H
+#define PJSTR_SELECTOR_STRING_OPTYPE_H 1
 
 #include "jstr-macros.h"
 
@@ -11,4 +11,4 @@
 #	include "_glibc-generic-string-optype.h"
 #endif
 
-#endif /* JSTRP__SELECTOR_STRING_OPTYPE_H */
+#endif /* PJSTR_SELECTOR_STRING_OPTYPE_H */
