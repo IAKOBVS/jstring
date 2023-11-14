@@ -294,7 +294,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*sz != 0))
 		*cap = PJSTR_MIN_CAP / 1.5;
-	return pjstr_reallocexact(s, sz, cap, new_cap + 1);
+	return pjstr_reallocexact(s, sz, cap, new_cap);
 }
 
 /*
@@ -324,7 +324,7 @@ pjstr_reservealwaysnomalloc(char *R *R s,
                             const size_t new_cap)
 JSTR_NOEXCEPT
 {
-	return pjstr_realloc(s, sz, cap, new_cap);
+	return pjstr_realloc(s, sz, cap, new_cap + 1);
 }
 
 /*
@@ -357,7 +357,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return 1;
-	return jstr_reservealways(s, sz, cap, new_cap);
+	return jstr_reservealways(s, sz, cap, new_cap + 1);
 }
 
 /*
@@ -375,7 +375,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return 1;
-	return jstr_reserveexact_always(s, sz, cap, new_cap);
+	return jstr_reserveexact_always(s, sz, cap, new_cap + 1);
 }
 
 JSTR_FUNC
@@ -385,7 +385,7 @@ jstr_shrink_to_fit(char *R *R s,
                    size_t *R sz,
                    size_t *R cap)
 {
-	PJSTR_RESERVEEXACT(s, sz, cap, *sz + 1, return 0)
+	PJSTR_RESERVEEXACT(s, sz, cap, *sz, return 0)
 	return 1;
 }
 
