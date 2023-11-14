@@ -4,11 +4,11 @@ if ! type clang-format >/dev/null; then
 	echo 'clang-format does not exist.'
 	exit
 fi
-for f in $(echo *.h); do
+for file in $@; do
 	{
-		expr "$f" : '*-pp-*' >/dev/null && exit
-		[ "$f" = 'jstr-macros.h' ] && exit
-		clang-format -i --style=file:'.clang-format' "$f"
+		expr "$file" : '*-pp-*' >/dev/null && exit
+		[ "$file" = 'jstr-macros.h' ] && exit
+		clang-format -i --style=file:'.clang-format' "$file"
 	} &
 done
 wait

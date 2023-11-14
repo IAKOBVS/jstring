@@ -2,13 +2,6 @@
 cd "$(dirname "$0")" || exit
 INSTALL_DIR=/usr/local/include
 [ $# -eq 1 ] && INSTALL_DIR=$1
-if [ "$(echo ./*.h)" -ne "$(echo ../jstr/*.h)" ]; then
-	if type clang-format >/dev/null; then
-		for file in $(echo ../jstr/*.h); do
-			clang-format -i --style=file:".clang-format" "$file" &
-		done
-		wait
-	fi
-	./build
-fi
-sudo cp -rf jstr "$INSTALL_DIR"
+./build
+./fmt ../jstr/*.h
+sudo cp -rf ../jstr "$INSTALL_DIR"
