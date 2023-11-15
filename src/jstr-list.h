@@ -490,8 +490,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_INLINE
 static void
-pjstrl_delete(jstrlist_ty *l,
-              jstr_ty *p)
+pjstrl_delete(jstrlist_ty *R l,
+              jstr_ty *R p)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->size) && p) {
