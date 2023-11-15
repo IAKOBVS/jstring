@@ -55,14 +55,14 @@ JSTR_NOEXCEPT
 	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY };
 	int i;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i)
-		if (ext_len == sizeof(text[i]) - 1)
-			if (!memcmp(ext, text[i], ext_len))
-				return JSTRIO_FT_TEXT;
+		if (ext_len == sizeof(text[i]) - 1
+		    && !memcmp(ext, text[i], ext_len))
+			return JSTRIO_FT_TEXT;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(binary); ++i)
-		if (ext_len == sizeof(binary[i]) - 1)
-			if (!memcmp(ext, binary[i], ext_len))
-				return JSTRIO_FT_BINARY;
-	return JSTRIO_FT_BINARY;
+		if (ext_len == sizeof(binary[i]) - 1
+		    && !memcmp(ext, binary[i], ext_len))
+			return JSTRIO_FT_BINARY;
+	return JSTRIO_FT_UNKNOWN;
 }
 
 JSTR_FUNC_PURE
