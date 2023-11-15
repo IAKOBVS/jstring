@@ -125,8 +125,8 @@ JSTR_NOEXCEPT
 #else
 	if (jstr_unlikely(n == 0))
 		return 0;
-	const unsigned char *p1 = (unsigned char *)s1;
-	const unsigned char *p2 = (unsigned char *)s2;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
 	int ret;
 	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++))
 	       && *p1++
@@ -157,8 +157,8 @@ JSTR_NOEXCEPT
 #else
 	if (jstr_unlikely(n == 0))
 		return 0;
-	const unsigned char *p1 = (unsigned char *)s1;
-	const unsigned char *p2 = (unsigned char *)s2;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n)
 		;
 	return *p1 && n;
