@@ -1524,8 +1524,8 @@ JSTR_NOEXCEPT
 		return 0;
 	const size_t find_len = strlen(find);
 	size_t cnt = 0;
-	while ((s = strstr(s, find)))
-		++cnt, s += find_len;
+	for (; (s = strstr(s, find)); ++cnt, s += find_len)
+		;
 	return cnt;
 }
 
