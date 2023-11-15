@@ -900,7 +900,8 @@ CONT:
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
 			return 1;
-	return fn(fulpath, dirpath_len, &st);
+	fn(fulpath, dirpath_len, &st);
+	return 1;
 err_close:
 #if USE_ATFILE
 	close(fd);
