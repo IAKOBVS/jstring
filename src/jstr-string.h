@@ -589,7 +589,7 @@ JSTR_NOEXCEPT
 		return (char *)h;
 	if (hs_len == ne_len)
 		return NULL;
-	return pjstr_strcasestr(h, hs_len, n, ne_len);
+	return pjstr_strcasestr(h + 1, hs_len - 1, n, ne_len);
 }
 
 #	define L(c) jstr_tolower(c)
