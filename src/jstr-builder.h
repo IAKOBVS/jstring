@@ -837,7 +837,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_io_fwrite(const char *R s,
+jstrio_fwrite(const char *R s,
                const size_t sz,
                FILE *R fp)
 JSTR_NOEXCEPT
@@ -848,7 +848,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_io_fwriteln(const char *R s,
+jstrio_fwriteln(const char *R s,
                  const size_t sz,
                  FILE *R fp)
 JSTR_NOEXCEPT

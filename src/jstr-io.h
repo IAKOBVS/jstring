@@ -28,7 +28,7 @@ typedef enum {
 	JSTR_IO_FT_UNKNOWN = 0,
 	JSTR_IO_FT_TEXT,
 	JSTR_IO_FT_BINARY
-} jstr_io_ext_ty;
+} jstrio_ext_ty;
 
 enum {
 #ifdef PATH_MAX
@@ -46,8 +46,8 @@ enum {
 
 JSTR_FUNC_PURE
 JSTR_NOINLINE
-static jstr_io_ext_ty
-pjstr_io_exttype_len(const char *ext,
+static jstrio_ext_ty
+pjstrio_exttype_len(const char *ext,
                      const int ext_len)
 JSTR_NOEXCEPT
 {
@@ -186,39 +186,39 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 JSTR_INLINE
-static jstr_io_ext_ty
-pjstr_io_exttype(const char *ext)
+static jstrio_ext_ty
+pjstrio_exttype(const char *ext)
 JSTR_NOEXCEPT
 {
-	return pjstr_io_exttype_len(ext, strlen(ext));
+	return pjstrio_exttype_len(ext, strlen(ext));
 }
 
 /*
-   Return jstr_io_ext_ty based on the FNAME extension;
+   Return jstrio_ext_ty based on the FNAME extension;
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
-static jstr_io_ext_ty
-jstr_io_exttype_len(const char *R fname,
+static jstrio_ext_ty
+jstrio_exttype_len(const char *R fname,
                     const size_t sz)
 JSTR_NOEXCEPT
 {
 	const char *const end = fname + sz;
 	fname = (char *)jstr_memrchr(fname, '.', sz);
-	return fname ? pjstr_io_exttype_len(fname + 1, end - (fname + 1)) : JSTR_IO_FT_UNKNOWN;
+	return fname ? pjstrio_exttype_len(fname + 1, end - (fname + 1)) : JSTR_IO_FT_UNKNOWN;
 }
 
 /*
-   Return jstr_io_ext_ty based on the FNAME extension;
+   Return jstrio_ext_ty based on the FNAME extension;
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
-static jstr_io_ext_ty
-jstr_io_exttype(const char *R fname)
+static jstrio_ext_ty
+jstrio_exttype(const char *R fname)
 JSTR_NOEXCEPT
 {
 	fname = strrchr(fname, '.');
-	return fname ? pjstr_io_exttype(fname + 1) : JSTR_IO_FT_UNKNOWN;
+	return fname ? pjstrio_exttype(fname + 1) : JSTR_IO_FT_UNKNOWN;
 }
 
 /*
@@ -236,7 +236,7 @@ JSTR_NOEXCEPT
 	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(n, sz);
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
-		if (pjstr_io_reject_table[*s++])
+		if (pjstrio_reject_table[*s++])
 			return 1;
 	return 0;
 }
@@ -249,7 +249,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_INLINE
 static int
-pjstr_io_isbinarysignature(const char *R buf,
+pjstrio_isbinarysignature(const char *R buf,
                            const size_t sz)
 {
 	if (jstr_likely(sz > ELF_SZ - 1)) {
@@ -274,19 +274,19 @@ check_utf:;
 */
 JSTR_FUNC
 static int
-jstr_io_isbinary_maybe(const char *R buf,
+jstrio_isbinary_maybe(const char *R buf,
                        const size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
-	const int ret = pjstr_io_isbinarysignature(buf, sz);
+	const int ret = pjstrio_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
 	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
-		if (pjstr_io_reject_table[*s++])
+		if (pjstrio_reject_table[*s++])
 			return 1;
 	return 0;
 }
@@ -297,11 +297,11 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 static int
-jstr_io_isbinary(const char *R buf,
+jstrio_isbinary(const char *R buf,
                  const size_t sz)
 JSTR_NOEXCEPT
 {
-	const int ret = pjstr_io_isbinarysignature(buf, sz);
+	const int ret = pjstrio_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
 	return strlen(buf) != sz;
@@ -309,7 +309,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static int
-jstr_io_write_file(const char *R s,
+jstrio_write_file(const char *R s,
                    const size_t sz,
                    const char *R fname,
                    const int oflag)
@@ -330,17 +330,17 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_io_write_file_j(const jstr_ty *R j,
+jstrio_write_file_j(const jstr_ty *R j,
                      const char *R fname,
                      const int oflag)
 JSTR_NOEXCEPT
 {
-	return jstr_io_write_file(j->data, j->size, fname, oflag);
+	return jstrio_write_file(j->data, j->size, fname, oflag);
 }
 
 JSTR_FUNC
 static int
-jstr_io_fwrite_file(const char *R s,
+jstrio_fwrite_file(const char *R s,
                     const size_t sz,
                     const char *R fname,
                     const char *R modes)
@@ -349,7 +349,7 @@ JSTR_NOEXCEPT
 	FILE *R fp = fopen(fname, modes);
 	if (jstr_unlikely(fp == NULL))
 		return 0;
-	if (jstr_unlikely(!jstr_io_fwrite(s, sz, fp)))
+	if (jstr_unlikely(!jstrio_fwrite(s, sz, fp)))
 		goto err;
 	fclose(fp);
 	return 1;
@@ -361,19 +361,19 @@ err:
 JSTR_FUNC
 JSTR_INLINE
 static int
-jstr_io_fwrite_file_j(const jstr_ty *R j,
+jstrio_fwrite_file_j(const jstr_ty *R j,
                       const char *R fname,
                       const char *R modes)
 JSTR_NOEXCEPT
 {
-	return jstr_io_fwrite_file(j->data, j->size, fname, modes);
+	return jstrio_fwrite_file(j->data, j->size, fname, modes);
 }
 
 #if JSTR_HAVE_POPEN
 
 JSTR_FUNC
 static int
-jstr_io_readpopen(char *R *R s,
+jstrio_readpopen(char *R *R s,
                   size_t *R sz,
                   size_t *R cap,
                   const char *R cmd)
@@ -428,7 +428,7 @@ err:
 
 JSTR_FUNC
 static int
-jstr_io_readfile_len(char *R *R s,
+jstrio_readfile_len(char *R *R s,
                      size_t *R sz,
                      size_t *R cap,
                      const char *R fname,
@@ -460,7 +460,7 @@ err:
 */
 JSTR_FUNC
 static int
-jstr_io_readfile(char *R *R s,
+jstrio_readfile(char *R *R s,
                  size_t *R sz,
                  size_t *R cap,
                  const char *R fname,
@@ -469,7 +469,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(fname, st)))
 		return 0;
-	return jstr_io_readfile_len(s, sz, cap, fname, st->st_size);
+	return jstrio_readfile_len(s, sz, cap, fname, st->st_size);
 }
 
 /*
@@ -481,7 +481,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_io_expandtildefirst_len_unsafe_p(char *R s,
+jstrio_expandtildefirst_len_unsafe_p(char *R s,
                                       const size_t sz)
 JSTR_NOEXCEPT
 {
@@ -505,7 +505,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static int
-jstr_io_expandtildefirst_p(char *R *R s,
+jstrio_expandtildefirst_p(char *R *R s,
                            size_t *R sz,
                            size_t *R cap)
 JSTR_NOEXCEPT
@@ -532,7 +532,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static char *
-jstr_io_expandtilde_len_unsafe_p(char *R s,
+jstrio_expandtilde_len_unsafe_p(char *R s,
                                  size_t sz)
 JSTR_NOEXCEPT
 {
@@ -558,7 +558,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static int
-jstr_io_expandtilde(char *R *R s,
+jstrio_expandtilde(char *R *R s,
                     size_t *R sz,
                     size_t *R cap)
 JSTR_NOEXCEPT
@@ -586,7 +586,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
-jstr_io_appendpath_len_p(char *R path,
+jstrio_appendpath_len_p(char *R path,
                          const size_t sz,
                          const char *R fname,
                          const size_t fname_len)
@@ -599,7 +599,7 @@ jstr_io_appendpath_len_p(char *R path,
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static char *
-jstr_io_appendpath_p(char *R path,
+jstrio_appendpath_p(char *R path,
                      const size_t sz,
                      const char *R fname)
 {
@@ -610,7 +610,7 @@ jstr_io_appendpath_p(char *R path,
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
-pjstr_io_appendpath_p(char *R path_end,
+pjstrio_appendpath_p(char *R path_end,
                       const char *R fname)
 JSTR_NOEXCEPT
 {
@@ -621,7 +621,7 @@ JSTR_NOEXCEPT
 JSTR_INLINE
 JSTR_FUNC_VOID
 static void
-pjstr_io_appendpath_len(char *R path_end,
+pjstrio_appendpath_len(char *R path_end,
                         const char *R fname,
                         const size_t fname_len)
 JSTR_NOEXCEPT
@@ -652,16 +652,16 @@ JSTR_NOEXCEPT
 #endif
 
 /* If JSTR_IO_ACTION_RETVAL is passed, use these as return values of FN(). */
-typedef enum jstr_io_ftw_actionretval_ty {
+typedef enum jstrio_ftw_actionretval_ty {
 	JSTR_IO_FTW_RET_STOP = 0,
 	JSTR_IO_FTW_RET_CONTINUE,
 	/* Skip sibling entries. */
 	JSTR_IO_FTW_RET_SKIP_SIBLINGS,
 	/* Skip subdirectories. */
 	JSTR_IO_FTW_RET_SKIP_SUBTREE,
-} jstr_io_ftw_actionretval_ty;
+} jstrio_ftw_actionretval_ty;
 
-typedef enum jstr_io_ftw_flag_ty {
+typedef enum jstrio_ftw_flag_ty {
 	/* Match glob with FULPATH instead of d_name. */
 	JSTR_IO_FTW_MATCHPATH = (1),
 	/* Call FN() on regular files. */
@@ -678,9 +678,9 @@ typedef enum jstr_io_ftw_flag_ty {
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STATREG << 1),
 	/* Expand ~/ to /home/username/ if the first char is '~'. */
 	JSTR_IO_FTW_EXPTILDE = (JSTR_IO_FTW_NOHIDDEN << 1),
-	/* Handle FN() return value according to jstr_io_ftw_actionretval_ty. */
+	/* Handle FN() return value according to jstrio_ftw_actionretval_ty. */
 	JSTR_IO_FTW_ACTIONRETVAL = (JSTR_IO_FTW_EXPTILDE << 1)
-} jstr_io_ftw_flag_ty;
+} jstrio_ftw_flag_ty;
 
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
 #	define USE_ATFILE 1
@@ -693,11 +693,11 @@ typedef enum jstr_io_ftw_flag_ty {
 #if JSTR_HAVE_DIRENT_D_NAMLEN
 #	define FILL_PATHALWAYS()                                                                 \
 		do {                                                                              \
-			pjstr_io_appendpath_len(dirpath + dirpath_len, ep->d_name, ep->d_namlen); \
+			pjstrio_appendpath_len(dirpath + dirpath_len, ep->d_name, ep->d_namlen); \
 			path_len = dirpath_len + 1 + ep->d_namlen;                                \
 		} while (0)
 #else
-#	define FILL_PATHALWAYS() ((void)(path_len = pjstr_io_appendpath_p(dirpath + dirpath_len, ep->d_name) - dirpath))
+#	define FILL_PATHALWAYS() ((void)(path_len = pjstrio_appendpath_p(dirpath + dirpath_len, ep->d_name) - dirpath))
 #endif
 
 #if USE_ATFILE
@@ -761,7 +761,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define FD_ARG
 #endif
 
-typedef int (*jstr_io_ftw_func_ty)(const char *dirpath,
+typedef int (*jstrio_ftw_func_ty)(const char *dirpath,
                                    size_t dirpath_len,
                                    const struct stat *st);
 
@@ -770,7 +770,7 @@ JSTR_NONNULL(1)
 JSTR_NONNULL(3)
 JSTR_NONNULL(7)
 static int
-pjstr_io_ftw_len(char *R dirpath,
+pjstrio_ftw_len(char *R dirpath,
                  const size_t dirpath_len,
                  int (*fn)(const char *, size_t, const struct stat *),
                  const int jflags,
@@ -899,12 +899,12 @@ CONT:
 		fd = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd == -1))
 			continue;
-		ret = pjstr_io_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st, fd);
+		ret = pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st, fd);
 		close(fd);
 		if (jstr_unlikely(!ret))
 			goto err_closedir;
 #else
-		if (jstr_unlikely(!pjstr_io_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
+		if (jstr_unlikely(!pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
 			goto err_closedir;
 #endif
 	}
@@ -938,10 +938,10 @@ JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(1)
 JSTR_NONNULL(3)
 static int
-jstr_io_ftw_len(const char *R dirpath,
+jstrio_ftw_len(const char *R dirpath,
                 size_t dirpath_len,
                 int (*fn)(const char *, size_t, const struct stat *),
-                const int jstr_io_ftw_flag,
+                const int jstrio_ftw_flag,
                 const char *R fn_glob,
                 const int fn_flags)
 JSTR_NOEXCEPT
@@ -958,7 +958,7 @@ JSTR_NOEXCEPT
 	       && dirpath[dirpath_len - 1] == '/')
 		--dirpath_len;
 	char fulpath[JSTR_IO_PATH_MAX];
-	if (jstr_io_ftw_flag & JSTR_IO_FTW_EXPTILDE) {
+	if (jstrio_ftw_flag & JSTR_IO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {
 			const char *R home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
@@ -991,12 +991,12 @@ JSTR_NOEXCEPT
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
-		if (jstr_io_ftw_flag & JSTR_IO_FTW_REG)
-			if (!(jstr_io_ftw_flag & JSTR_IO_FTW_DIR))
+		if (jstrio_ftw_flag & JSTR_IO_FTW_REG)
+			if (!(jstrio_ftw_flag & JSTR_IO_FTW_DIR))
 				goto CONT;
 		int ret;
 		ret = fn(dirpath, dirpath_len, &st);
-		if (jstr_io_ftw_flag & JSTR_IO_FTW_ACTIONRETVAL) {
+		if (jstrio_ftw_flag & JSTR_IO_FTW_ACTIONRETVAL) {
 			if (jstr_unlikely(ret != JSTR_IO_FTW_RET_CONTINUE))
 				goto err_close;
 		} else {
@@ -1004,7 +1004,7 @@ ftw:
 				goto err_close;
 		}
 CONT:
-		pjstr_io_ftw_len(fulpath, dirpath_len, fn, jstr_io_ftw_flag, fn_glob, fn_flags, &st FD_ARG);
+		pjstrio_ftw_len(fulpath, dirpath_len, fn, jstrio_ftw_flag, fn_glob, fn_flags, &st FD_ARG);
 #if USE_ATFILE
 		close(fd);
 #endif
@@ -1013,7 +1013,7 @@ CONT:
 #if USE_ATFILE
 	close(fd);
 #endif
-	if (jstr_io_ftw_flag & JSTR_IO_FTW_REG)
+	if (jstrio_ftw_flag & JSTR_IO_FTW_REG)
 		if (jstr_unlikely(!S_ISREG(st.st_mode)))
 			return 1;
 	if (fn_glob != NULL)

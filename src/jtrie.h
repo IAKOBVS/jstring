@@ -38,13 +38,13 @@ JSTR_NOEXCEPT
 JSTR_MAYBE_UNUSED
 JSTR_NOTHROW
 static void
-p_jtrie_free_recur(jtrie_node_ty *R node)
+pjtrie_free_recur(jtrie_node_ty *R node)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(node == NULL))
 		return;
 	for (int i = 0; i != JTRIE_ASCII_SIZE - 1; ++i)
-		p_jtrie_free_recur(node->child[i]);
+		pjtrie_free_recur(node->child[i]);
 	free(node);
 	node = NULL;
 }
@@ -55,7 +55,7 @@ static void
 jtrie_free(jtrie_node_ty *R *R node)
 JSTR_NOEXCEPT
 {
-	p_jtrie_free_recur(*node);
+	pjtrie_free_recur(*node);
 }
 
 JSTR_INLINE
@@ -85,15 +85,15 @@ JSTR_NOEXCEPT
 typedef enum {
 	PJTRIE_FLAG_REMOVE_NOT_PREFIXES = 0,
 	PJTRIE_FLAG_REMOVE_PREFIXES = 1
-} p_jtrie_flag_remove_prefixes_ty;
+} pjtrie_flag_remove_prefixes_ty;
 
 JSTR_NONNULL_ALL
 JSTR_INLINE
 JSTR_NOTHROW
 static void
-p_jtrie_remove(p_jtrie_flag_remove_prefixes_ty flag,
-               jtrie_node_ty *R root,
-               const char *R word)
+pjtrie_remove(pjtrie_flag_remove_prefixes_ty flag,
+              jtrie_node_ty *R root,
+              const char *R word)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*word == '\0'))
@@ -118,7 +118,7 @@ jtrie_remove(jtrie_node_ty *R root,
              const char *R word)
 JSTR_NOEXCEPT
 {
-	return p_jtrie_remove(PJTRIE_FLAG_REMOVE_NOT_PREFIXES, root, word);
+	return pjtrie_remove(PJTRIE_FLAG_REMOVE_NOT_PREFIXES, root, word);
 }
 
 JSTR_NONNULL_ALL
@@ -129,7 +129,7 @@ jtrie_removeprefixes(jtrie_node_ty *R root,
                      const char *R word)
 JSTR_NOEXCEPT
 {
-	return p_jtrie_remove(PJTRIE_FLAG_REMOVE_PREFIXES, root, word);
+	return pjtrie_remove(PJTRIE_FLAG_REMOVE_PREFIXES, root, word);
 }
 
 /*
