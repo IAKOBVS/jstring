@@ -539,7 +539,7 @@ typedef enum jstrio_ftw_actionretval_ty {
 	/* Skip sibling entries. */
 	JSTRIO_FTW_RET_SKIP_SIBLINGS,
 	/* Skip subdirectories. */
-	JSTRIO_FTW_RET_SKIP_SUBTREE,
+	JSTRIO_FTW_RET_SKIP_SUBTREE
 } jstrio_ftw_actionretval_ty;
 
 typedef enum jstrio_ftw_flag_ty {
