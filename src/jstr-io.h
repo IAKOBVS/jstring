@@ -103,7 +103,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Check MIN(N, SZ) bytes for any unprintable character.
+   Check MIN(N, SZ) bytes for any unprintable char.
 */
 JSTR_FUNC
 static int
@@ -151,7 +151,7 @@ check_utf:;
 #undef UTF_SZ
 
 /*
-   Check if the first JSTRIO_BINARY_CHECK_MAX bytes or fewer contain any unprintable character.
+   Check if the first JSTRIO_BINARY_CHECK_MAX bytes or fewer contain any unprintable char.
 */
 JSTR_FUNC
 static int
@@ -557,7 +557,7 @@ typedef enum jstrio_ftw_flag_ty {
 	JSTRIO_FTW_STATREG = (JSTRIO_FTW_NOSTAT << 1),
 	/* Ignore hidden entries. */
 	JSTRIO_FTW_NOHIDDEN = (JSTRIO_FTW_STATREG << 1),
-	/* Expand ~/ to /home/username/ if the first char is '~'. */
+	/* Expand ~/somepath to $HOME/somepath if ~ is the first char. */
 	JSTRIO_FTW_EXPTILDE = (JSTRIO_FTW_NOHIDDEN << 1),
 	/* Handle FN() return value according to jstrio_ftw_actionretval_ty. */
 	JSTRIO_FTW_ACTIONRETVAL = (JSTRIO_FTW_EXPTILDE << 1)

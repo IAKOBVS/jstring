@@ -517,7 +517,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-  Remove characters in REJECT in S.
+  Remove chars in REJECT in S.
   Return value:
   Pointer to '\0' in S.
 */

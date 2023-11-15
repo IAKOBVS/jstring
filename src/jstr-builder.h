@@ -102,7 +102,7 @@ JSTR_NOEXCEPT
 	*cap = 0;
 }
 
-/* Set first character to NUL and size to zero. */
+/* Set first char to NUL and size to zero. */
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
