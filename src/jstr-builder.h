@@ -72,7 +72,7 @@ PJSTR_END_DECLS
 #endif
 
 #define PJSTR_RESERVE_FAIL(func, s, sz, cap, new_cap, do_on_malloc_err) \
-	if (jstr_unlikely(!func(s, sz, cap, new_cap))) {                \
+	if (jstr_chk(func(s, sz, cap, new_cap))) {                \
 		PJSTR_EXIT_MAYBE();                                     \
 		do_on_malloc_err;                                       \
 	}
@@ -298,7 +298,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Return 0 on malloc error.
+   Return JSTR_ERR on malloc error.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -313,7 +313,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Return 0 on malloc error.
+   Return JSTR_ERR on malloc error.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -328,7 +328,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Return 0 on malloc error.
+   Return JSTR_ERR on malloc error.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -344,7 +344,7 @@ JSTR_NOEXCEPT
 
 /*
    Do nothing if new_cap < cap.
-   Return 0 on malloc error.
+   Return JSTR_ERR on malloc error.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -362,7 +362,7 @@ JSTR_NOEXCEPT
 
 /*
    Do nothing if new_cap < cap.
-   Return 0 on malloc error.
+   Return JSTR_ERR on malloc error.
 */
 JSTR_FUNC
 JSTR_INLINE
@@ -385,7 +385,7 @@ jstr_shrink_to_fit(char *R *R s,
                    size_t *R sz,
                    size_t *R cap)
 {
-	PJSTR_RESERVEEXACT(s, sz, cap, *sz, return 0)
+	PJSTR_RESERVEEXACT(s, sz, cap, *sz, return JSTR_ERR)
 	return JSTR_SUCC;
 }
 
@@ -409,7 +409,7 @@ pjstr_cat(char *R *R s,
 JSTR_NOEXCEPT
 {
 	char *p;
-	PJSTR_RESERVE(s, sz, cap, *sz + arg_len, return 0)
+	PJSTR_RESERVE(s, sz, cap, *sz + arg_len, return JSTR_ERR)
 	p = *s + *sz;
 	*sz += arg_len;
 	for (const char *R arg; (arg = va_arg(ap, const char *)); p = jstr_stpcpy(p, arg))
@@ -420,7 +420,7 @@ JSTR_NOEXCEPT
 /*
    Last arg must be NULL.
    Return value:
-   0 on malloc error;
+   JSTR_ERR on malloc error;
    otherwise JSTR_SUCC.
 */
 JSTR_SENTINEL
@@ -452,7 +452,7 @@ JSTR_NOEXCEPT
 /*
    Last arg must be NULL.
    Return value:
-   0 on malloc error;
+   JSTR_ERR on malloc error;
    otherwise JSTR_SUCC.
 */
 JSTR_SENTINEL
@@ -516,7 +516,7 @@ JSTR_NOEXCEPT
 /*
    Append SRC to DST.
    Return value:
-   0 on malloc error;
+   JSTR_ERR on malloc error;
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -529,7 +529,7 @@ jstr_append_len(char *R *R s,
                 const size_t src_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return 0)
+	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return JSTR_ERR)
 	*sz = jstr_append_len_unsafe_p(*s, *sz, src, src_len) - *s;
 	return JSTR_SUCC;
 }
@@ -573,7 +573,7 @@ jstr_assignnchr(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (n > *sz) {
-		PJSTR_RESERVE(s, sz, cap, n, return 0)
+		PJSTR_RESERVE(s, sz, cap, n, return JSTR_ERR)
 		memset(*s, c, n);
 		*(*s + n) = '\0';
 		*sz = n;
@@ -609,7 +609,7 @@ jstr_pushbackn(char *R *R s,
                const size_t n)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + n, return 0)
+	PJSTR_RESERVE(s, sz, cap, *sz + n, return JSTR_ERR)
 	*sz = jstr_pushbackn_len_unsafe_p(*s, *sz, c, n) - *s;
 	return JSTR_SUCC;
 }
@@ -646,7 +646,7 @@ jstr_pushfrontn(char *R *R s,
                 const size_t n)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + n, return 0)
+	PJSTR_RESERVE(s, sz, cap, *sz + n, return JSTR_ERR)
 	*sz = jstr_pushfrontn_len_unsafe_p(*s, *sz, c, n) - *s;
 	return JSTR_SUCC;
 }
@@ -654,7 +654,7 @@ JSTR_NOEXCEPT
 /*
    Only prepend NUL if S is empty.
    Return value:
-   0 on malloc error;
+   JSTR_ERR on malloc error;
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -677,7 +677,7 @@ JSTR_NOEXCEPT
 /*
    Only prepend NUL if S is empty.
    Return value:
-   0 on malloc error;
+   JSTR_ERR on malloc error;
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -690,7 +690,7 @@ jstr_prepend_len(char *R *R s,
                  const size_t src_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return 0)
+	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return JSTR_ERR)
 	*sz = jstr_prepend_len_unsafe_p(*s, *sz, src, src_len) - *s;
 	return JSTR_SUCC;
 }
@@ -715,7 +715,7 @@ JSTR_NOEXCEPT
    Assign SRC to DST.
    S is NUL terminated.
    Return value:
-   0 on malloc error
+   JSTR_ERR on malloc error
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -729,7 +729,7 @@ jstr_assign_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (*cap < src_len)
-		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, src_len * PJSTR_ALLOC_MULTIPLIER, return 0)
+		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, src_len * PJSTR_ALLOC_MULTIPLIER, return JSTR_ERR)
 	*sz = jstr_assign_len_unsafe_p(*s, src, src_len) - *s;
 	return JSTR_SUCC;
 }
@@ -751,7 +751,7 @@ JSTR_NOEXCEPT
    Push C to end of S.
    S is NUL terminated.
    Return value:
-   0 on malloc error;
+   JSTR_ERR on malloc error;
    otherwise JSTR_SUCC.
 */
 JSTR_INLINE
@@ -764,7 +764,7 @@ jstr_pushback(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, return 0)
+		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, return JSTR_ERR)
 	*sz = jstr_pushback_unsafe_p(*s, *sz, c) - *s;
 	return JSTR_SUCC;
 }
@@ -786,7 +786,7 @@ JSTR_NOEXCEPT
    Push C to end of S.
    S is NUL terminated.
    Return value:
-   0 on malloc error;
+   JSTR_ERR on malloc error;
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -799,7 +799,7 @@ jstr_pushfront(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, return 0)
+		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, return JSTR_ERR)
 	*sz = jstr_pushfront_unsafe_p(*s, *sz, c) - *s;
 	return JSTR_SUCC;
 }
@@ -862,7 +862,7 @@ JSTR_NOEXCEPT
    Return size of allocation needed for sprintf.
    Return value:
    size of allocation;
-   -1 on error.
+   -1 on error and errno is set.
 */
 JSTR_FUNC
 #if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
@@ -1076,7 +1076,7 @@ pjstr_sprintf_err(char *R *R s,
 }
 
 /*
-   Return 0 on error.
+   Return JSTR_ERR on error.
    Referencing arguments with $ is not supported.
    Supported conversions:
    %s - string.
@@ -1092,7 +1092,7 @@ pjstr_sprintf_err(char *R *R s,
    %p - ptr.
    %n - chars written.
    %m - errno string.
-   Otherwise, return 0 and set errno to EINVAL.
+   Otherwise, return JSTR_ERR and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
@@ -1125,9 +1125,9 @@ err:
 }
 
 /*
-   Return 0 on error.
+   Return JSTR_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, return 0 and set errno to EINVAL.
+   Otherwise, return JSTR_ERR and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
@@ -1160,9 +1160,9 @@ err:
 
 /*
    Append ... to end of S.
-   Return 0 on error.
+   Return JSTR_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, return 0 and set errno to EINVAL.
+   Otherwise, return JSTR_ERR and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
@@ -1198,9 +1198,9 @@ err:
 
 /*
    Append ... to end of S.
-   Return 0 on error.
+   Return JSTR_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, return 0 and set errno to EINVAL.
+   Otherwise, return JSTR_ERR and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
@@ -1233,9 +1233,9 @@ err:
 }
 
 /*
-   Return 0 on error.
+   Return JSTR_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, return 0 and set errno to EINVAL.
+   Otherwise, return JSTR_ERR and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
@@ -1271,9 +1271,9 @@ err:
 }
 
 /*
-   Return 0 on error.
+   Return JSTR_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, return 0 and set errno to EINVAL.
+   Otherwise, return JSTR_ERR and set errno to EINVAL.
 */
 JSTR_FORMAT(printf, 3, 4)
 JSTR_FUNC

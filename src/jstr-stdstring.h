@@ -100,7 +100,7 @@ JSTR_NOEXCEPT
 	return strnlen(s, maxlen);
 #else
 	const char *const p = (char *)memchr(s, '\0', maxlen);
-	return p ? (size_t)(p - s) : maxlen;
+	return p ? (p - s) : maxlen;
 #endif
 }
 

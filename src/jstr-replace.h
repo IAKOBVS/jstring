@@ -98,7 +98,7 @@ JSTR_NOEXCEPT
 
 /*
   Insert SRC into DST[AT].
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -160,7 +160,7 @@ JSTR_NOEXCEPT
 
 /*
   Insert SRC after C in DST.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_INLINE
@@ -182,7 +182,7 @@ JSTR_NOEXCEPT
 
 /*
   Insert SRC after all C in DST.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -208,7 +208,7 @@ JSTR_NOEXCEPT
 
 /*
   Insert SRC after end of NE in DST.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -234,7 +234,7 @@ JSTR_NOEXCEPT
 
 /*
   Insert SRC after all end of NE in DST.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -703,7 +703,7 @@ JSTR_NOEXCEPT
 
 /*
   Replace first SEARCH in S with REPLACE.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -722,7 +722,7 @@ JSTR_NOEXCEPT
 
 /*
   Replace first SEARCH in S with REPLACE.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -759,7 +759,7 @@ JSTR_NOEXCEPT
 
 /*
   Replace last SEARCH in S with REPLACE.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -864,7 +864,7 @@ JSTR_NOEXCEPT
 
 /*
   Replace N SEARCH in S with REPLACE.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -885,7 +885,7 @@ JSTR_NOEXCEPT
 
 /*
   Replace all SEARCH in S with REPLACE.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -906,7 +906,7 @@ JSTR_NOEXCEPT
 
 /*
   Replace N SEARCH in S with REPLACE.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise, 1.
 */
 JSTR_FUNC
@@ -1121,7 +1121,7 @@ JSTR_NOEXCEPT
 
 /*
   Place SRC into DST[AT].
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -1146,7 +1146,7 @@ JSTR_NOEXCEPT
 
 /*
   Place SRC after C in DST.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -1168,7 +1168,7 @@ JSTR_NOEXCEPT
 
 /*
   Place SRC after end of NE in DST.
-  Return 0 on malloc error;
+  Return JSTR_ERR on malloc error;
   otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -1429,7 +1429,7 @@ JSTR_NOEXCEPT
 
 /*
    Return value:
-   0 on error;
+   JSTR_ERR on error;
    1 otherwise.
 */
 JSTR_FUNC

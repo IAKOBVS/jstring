@@ -12,7 +12,7 @@
 #define R JSTR_RESTRICT
 
 #define PJSTRL_RESERVE_FAIL(func, list, new_cap, do_on_mallocerr) \
-	if (jstr_unlikely(!func(list, new_cap))) {                \
+	if (jstr_chk(func(list, new_cap))) {                      \
 		PJSTR_EXIT_MAYBE();                               \
 		do_on_mallocerr;                                  \
 	}
@@ -219,7 +219,7 @@ jstrl_reserve(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
-		PJSTRL_RESERVEALWAYS(l, new_cap, return 0);
+		PJSTRL_RESERVEALWAYS(l, new_cap, return JSTR_ERR);
 	return JSTR_SUCC;
 }
 
@@ -396,12 +396,11 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return JSTR_SUCC;
-	PJSTRL_RESERVE(l, l->size + argc, return 0)
+	PJSTRL_RESERVE(l, l->size + argc, return JSTR_ERR)
 	va_start(ap, l);
 	const char *R arg;
 	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, const char *)); ++j, ++l->size)
-		if (jstr_unlikely(
-		    !pjstrl_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
+		if (jstr_chk(pjstrl_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
 	va_end(ap);
 	return JSTR_SUCC;
@@ -418,8 +417,7 @@ jstrl_assign_len(jstrlist_ty *R l,
                  const char *R s,
                  const size_t s_len)
 {
-	const int ret = pjstrl_assign_len(&pjstrl_at(l, idx)->data, &pjstrl_at(l, idx)->size, &pjstrl_at(l, idx)->capacity, s, s_len);
-	if (jstr_likely(ret == 1))
+	if (jstr_likely(pjstrl_assign_len(&pjstrl_at(l, idx)->data, &pjstrl_at(l, idx)->size, &pjstrl_at(l, idx)->capacity, s, s_len) == JSTR_SUCC))
 		return JSTR_SUCC;
 	jstrl_free(l);
 	return JSTR_ERR;

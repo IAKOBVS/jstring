@@ -199,7 +199,7 @@ JSTR_NOEXCEPT
 	const int fd = open(fname, oflag | O_WRONLY);
 	if (jstr_unlikely(fd == -1))
 		return JSTR_ERR;
-	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
+	if (jstr_unlikely(write(fd, s, sz) != sz))
 		goto err;
 	close(fd);
 	return JSTR_SUCC;
@@ -283,7 +283,7 @@ JSTR_NOEXCEPT
 			if (readsz < reqsz)
 				break;
 			if (*sz == *cap)
-				PJSTR_RESERVEEXACTALWAYS(s, sz, cap, (size_t)(*cap * PJSTR_GROWTH), goto err_close)
+				PJSTR_RESERVEEXACTALWAYS(s, sz, cap, (*cap * PJSTR_GROWTH), goto err_close)
 		}
 	}
 	*(*s + *sz) = '\0';
@@ -312,7 +312,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(fd == -1))
 		goto err;
 	PJSTR_RESERVE(s, sz, cap, file_size, goto err_close;)
-	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
+	if (jstr_unlikely(file_size != read(fd, *s, file_size)))
 		goto err_close_free;
 	close(fd);
 	(*s)[file_size] = '\0';
@@ -328,7 +328,7 @@ err:
 
 /*
    Return value:
-   0 on error;
+   JSTR_ERR on error;
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -426,7 +426,7 @@ JSTR_NOEXCEPT
 /*
    Expand every ~ to /home/username.
    Return value:
-   0 on error;
+   JSTR_ERR on error;
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
@@ -660,7 +660,7 @@ JSTR_NOEXCEPT
 	opendir(dirpath);
 #endif
 	if (jstr_unlikely(dp == NULL))
-		return NONFATAL_ERR();
+		return NONFATAL_ERR() ? JSTR_SUCC : JSTR_ERR;
 	size_t path_len = 0;
 	const struct dirent *R ep;
 	int ret;
@@ -774,7 +774,7 @@ CONT:
 			continue;
 		ret = pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st, fd);
 		close(fd);
-		if (jstr_unlikely(!ret))
+		if (jstr_chk(ret))
 			goto err_closedir;
 #else
 		if (jstr_unlikely(!pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
@@ -803,8 +803,8 @@ err_closedir:
    Call FN() on files found recursively that matches GLOB.
    If FN() returns 0, stop processing.
    Return value:
-   0 on error;
-   1 on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;
+   JSTR_ERR on error;
+   JSTR_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;
    or the return value of FN() if DIRPATH is not a directory and FN() is executed.
    If a non-fatal error is encountered, continue processing other entries.
 */
@@ -874,7 +874,7 @@ ftw:
 			if (jstr_unlikely(ret != JSTRIO_FTW_RET_CONTINUE))
 				goto err_close;
 		} else {
-			if (jstr_unlikely(!ret))
+			if (jstr_chk(ret))
 				goto err_close;
 		}
 CONT:

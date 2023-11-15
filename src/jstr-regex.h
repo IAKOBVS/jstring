@@ -416,7 +416,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 	if (*dst != *oldp)
 		memmove(*dst, *oldp, *p - *oldp);
 	const char *tmp = *s;
-	PJSTR_RESERVEALWAYSNOMALLOC(s, sz, cap, *sz + rplc_len - find_len, return 0)
+	PJSTR_RESERVEALWAYSNOMALLOC(s, sz, cap, *sz + rplc_len - find_len, return JSTR_ERR)
 	jstr_strmove_len(*p + rplc_len,
 	                 *p + find_len,
 	                 (tmp + *sz) - (*p + find_len));
@@ -426,7 +426,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 	*oldp = *dst;
 	*sz += rplc_len - find_len;
 	*p += rplc_len;
-	return 1;
+	return JSTR_SUCC;
 }
 
 JSTR_FUNC
@@ -462,7 +462,7 @@ JSTR_NOEXCEPT
 			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rplc, rplc_len, find_len);
 		else if (*cap > *sz + rplc_len - find_len)
 			pjstrre_rplcallsmallerrplc(*s, sz, &dst, &oldp, &p, rplc, rplc_len, find_len);
-		else if (jstr_unlikely(!pjstrre_rplcallbiggerrplc((u **)s, sz, cap, &dst, &oldp, &p, rplc, rplc_len, find_len)))
+		else if (jstr_chk(pjstrre_rplcallbiggerrplc((u **)s, sz, cap, &dst, &oldp, &p, rplc, rplc_len, find_len)))
 			goto err;
 	}
 	if (dst != oldp)
@@ -652,7 +652,7 @@ JSTR_NOEXCEPT
 			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rdstp, rdst_len, find_len);
 		else if (*cap > *sz + rdst_len - find_len)
 			pjstrre_rplcallsmallerrplc(*s, sz, &dst, &oldp, &p, rdstp, rdst_len, find_len);
-		else if (jstr_unlikely(!pjstrre_rplcallbiggerrplc(s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
+		else if (jstr_chk(pjstrre_rplcallbiggerrplc(s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
 			goto err_free;
 	}
 	if (dst != oldp)
