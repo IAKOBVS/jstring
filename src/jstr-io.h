@@ -260,41 +260,33 @@ jstrio_readpopen(char *R *R s,
                  const char *R cmd)
 JSTR_NOEXCEPT
 {
+	enum { MINBUF = JSTR_PAGE_SIZE };
 	FILE *R fp = popen(cmd, "r");
 	if (jstr_unlikely(fp == NULL))
-		goto err;
-	char *p;
-	enum { MINBUF = JSTR_PAGE_SIZE };
+		return 0;
 	char buf[MINBUF];
-	p = buf + fread(buf, 1, MINBUF, fp);
-	if (jstr_unlikely(ferror(fp)))
+	size_t readsz;
+	readsz = fread(buf, 1, sizeof(buf), fp);
+	if (jstr_unlikely(readsz == -1))
 		goto err_close;
-	PJSTR_RESERVE(s, sz, cap, p - buf, goto err_close);
-	memcpy(*s, buf, p - buf);
-	*sz = p - buf;
-	if (jstr_unlikely(p - buf == MINBUF)) {
-		p = *s + (p - buf);
-		const char *old;
-		size_t req_size;
+	PJSTR_RESERVE(s, sz, cap, readsz * 2, goto err_close);
+	memcpy(*s, buf, readsz);
+	*sz = readsz;
+	if (jstr_unlikely(readsz == MINBUF)) {
+		size_t reqsz;
 		for (;;) {
-			req_size = *cap - *sz;
-			old = p;
-			p += fread(p, 1, req_size, fp);
-			*sz += (p - old);
-			if ((size_t)(p - old) < req_size)
+			reqsz = *cap - *sz;
+			readsz = fread(*s + *sz, 1, reqsz, fp);
+			if (jstr_unlikely(readsz == -1))
+				goto err_close_free;
+			*sz += readsz;
+			if (readsz < reqsz)
 				break;
-			if ((size_t)(p - *s) == *cap) {
-				old = *s;
+			if (*sz == *cap)
 				PJSTR_RESERVEEXACTALWAYS(s, sz, cap, (size_t)(*cap * PJSTR_GROWTH), goto err_close)
-				p = *s + (p - old);
-			}
 		}
-		if (jstr_unlikely(ferror(fp)))
-			goto err_close_free;
-		*p = '\0';
-	} else {
-		(*s)[p - buf] = '\0';
 	}
+	*(*s + *sz) = '\0';
 	pclose(fp);
 	return 1;
 err_close_free:
@@ -696,7 +688,7 @@ JSTR_NOEXCEPT
 			goto err_closedir;
 		}
 #if !JSTR_HAVE_DIRENT_D_TYPE
-#	if !(USE_ATFILE)
+#	if !USE_ATFILE
 		FILL_PATHALWAYS();
 #	endif /* ATFILE */
 		STATALWAYS(st);
