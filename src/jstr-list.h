@@ -22,16 +22,16 @@
 #define PJSTRL_RESERVEALWAYS(list, new_cap, do_on_mallocerr) \
 	PJSTRL_RESERVE_FAIL(jstrl_reservealways, list, new_cap, do_on_mallocerr)
 
-#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const jstrl__foreach_end_##l##_##p = jstrl_end(l); \
-	                         p < jstrl__foreach_end_##l##_##p;                                             \
+#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##l##_##p = jstrl_end(l); \
+	                         p < pjstrl_foreach_end_##l##_##p;                                             \
 	                         ++p)
 
-#define pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const jstrl__foreach_end_##l##_##p = ((l)->data) + ((l)->capacity); \
-	                              p < jstrl__foreach_end_##l##_##p;                                                              \
+#define pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##l##_##p = ((l)->data) + ((l)->capacity); \
+	                              p < pjstrl_foreach_end_##l##_##p;                                                              \
 	                              ++p)
 
-#define jstrl_foreachi(l, i) for (size_t i = 0, const jstrl__foreach_end_##l##_##p = ((l)->size); \
-	                          i < jstrl__foreach_end_##l##_##p;                               \
+#define jstrl_foreachi(l, i) for (size_t i = 0, const pjstrl_foreach_end_##l##_##p = ((l)->size); \
+	                          i < pjstrl_foreach_end_##l##_##p;                               \
 	                          ++i)
 
 #define JSTRL_INIT \
