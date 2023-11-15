@@ -157,9 +157,8 @@ jstr_skipctype_rev(const char *const start,
                    const jstr_ctype_ty ctype)
 JSTR_NOEXCEPT
 {
-	while (start != end
-	       && jstr_isctype(*end, ctype))
-		--end;
+	for (; start != end && jstr_isctype(*end, ctype); --end)
+		;
 	return (char *)end;
 }
 
