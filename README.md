@@ -49,7 +49,7 @@ JSTR\_INIT is defined as {0}.
 
 ## Error handling:
 
-0 is returned as error unless the function is returning a numeric value. The programmer is expected to check the return value.<br>
+JSTR\_ERR is returned as error. The programmer is expected to check the return value of every function call.<br>
 
 Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit.<br>
 When debugging,
