@@ -53,9 +53,6 @@ JSTR_NOEXCEPT
 {
 	static const char *text[] = { PJSTRIO_EXT_ARRAY_FT_TEXT };
 	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY };
-	const int idx = *ext;
-	if (jstr_unlikely(!jstr_isalpha(idx)))
-		return JSTRIO_FT_UNKNOWN;
 	int i;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i)
 		if (ext_len == sizeof(text[i]) - 1)
