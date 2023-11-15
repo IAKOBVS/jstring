@@ -217,30 +217,6 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-JSTR_MAYBE_UNUSED
-JSTR_NOINLINE
-JSTR_COLD
-static void
-JARRP_ERR(const char *JSTR_RESTRICT FILE_,
-          const int LINE_,
-          const char *JSTR_RESTRICT func_)
-{
-	fprintf(stderr, "%s:%d:%s\n", FILE_, LINE_, func_);
-}
-
-JSTR_MAYBE_UNUSED
-JSTR_NOINLINE
-JSTR_COLD
-static void
-JARRP_ERR_EXIT(const char *JSTR_RESTRICT FILE_,
-               const int LINE_,
-               const char *JSTR_RESTRICT func_,
-               const char *JSTR_RESTRICT msg)
-{
-	fprintf(stderr, "%s:%d:%s:%s\n", FILE_, LINE_, func_, msg);
-	exit(EXIT_FAILURE);
-}
-
 PJSTR_END_DECLS
 
 #undef R
