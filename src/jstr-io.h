@@ -735,7 +735,7 @@ do_reg:
 			else /* RET_STOP */
 				goto err_closedir;
 		} else {
-			if (jstr_unlikely(!ret))
+			if (jstr_chk(ret))
 				goto err_closedir;
 		}
 		continue;
@@ -762,7 +762,7 @@ do_dir:
 			else /* RET_STOP */
 				goto err_closedir;
 		} else {
-			if (jstr_unlikely(!ret))
+			if (jstr_chk(ret))
 				goto err_closedir;
 		}
 CONT:
@@ -777,7 +777,7 @@ CONT:
 		if (jstr_chk(ret))
 			goto err_closedir;
 #else
-		if (jstr_unlikely(!pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
+		if (jstr_chk(pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
 			goto err_closedir;
 #endif
 	}
@@ -801,7 +801,7 @@ err_closedir:
 
 /*
    Call FN() on files found recursively that matches GLOB.
-   If FN() returns 0, stop processing.
+   If FN() returns JSTR_ERR, stop processing.
    Return value:
    JSTR_ERR on error;
    JSTR_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;

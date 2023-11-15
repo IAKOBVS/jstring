@@ -199,7 +199,7 @@ JSTR_NOEXCEPT
 	const char *p;
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
 		off = p - *s;
-		if (jstr_unlikely(!jstr_insert_len(s, sz, cap, off, src, src_len)))
+		if (jstr_chk(jstr_insert_len(s, sz, cap, off, src, src_len)))
 			return JSTR_ERR;
 		off += src_len + 1;
 	}
@@ -256,7 +256,7 @@ JSTR_NOEXCEPT
 	const char *p;
 	while ((p = jstr_strstr_len(*s + off, *sz - off, find, find_len))) {
 		off = p - *s;
-		if (jstr_unlikely(!jstr_insert_len(s, sz, cap, p - *s + find_len, src, src_len)))
+		if (jstr_chk(jstr_insert_len(s, sz, cap, p - *s + find_len, src, src_len)))
 			return JSTR_ERR;
 		off += find_len + src_len;
 	}
