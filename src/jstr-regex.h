@@ -374,7 +374,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-pjstrre_rplcall_small_rplc(char *s,
+pjstrre_rplcallsmallerrplc(char *s,
                            size_t *R sz,
                            char **dst,
                            const char **oldp,
@@ -403,15 +403,15 @@ pjstrre_rplcall_small_rplc(char *s,
 JSTR_FUNC
 JSTR_INLINE
 static int
-pjstrre_rplcall_big_rplc(char *R *R s,
-                         size_t *R sz,
-                         size_t *R cap,
-                         char **dst,
-                         const char **oldp,
-                         char **p,
-                         const char *R rplc,
-                         const size_t rplc_len,
-                         const size_t find_len)
+pjstrre_rplcallbiggerrplc(char *R *R s,
+                          size_t *R sz,
+                          size_t *R cap,
+                          char **dst,
+                          const char **oldp,
+                          char **p,
+                          const char *R rplc,
+                          const size_t rplc_len,
+                          const size_t find_len)
 {
 	if (*dst != *oldp)
 		memmove(*dst, *oldp, *p - *oldp);
@@ -461,8 +461,8 @@ JSTR_NOEXCEPT
 		if (rplc_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rplc, rplc_len, find_len);
 		else if (*cap > *sz + rplc_len - find_len)
-			pjstrre_rplcall_small_rplc(*s, sz, &dst, &oldp, &p, rplc, rplc_len, find_len);
-		else if (jstr_unlikely(!pjstrre_rplcall_big_rplc((u **)s, sz, cap, &dst, &oldp, &p, rplc, rplc_len, find_len)))
+			pjstrre_rplcallsmallerrplc(*s, sz, &dst, &oldp, &p, rplc, rplc_len, find_len);
+		else if (jstr_unlikely(!pjstrre_rplcallbiggerrplc((u **)s, sz, cap, &dst, &oldp, &p, rplc, rplc_len, find_len)))
 			goto err;
 	}
 	if (dst != oldp)
@@ -651,8 +651,8 @@ JSTR_NOEXCEPT
 		if (rdst_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rdstp, rdst_len, find_len);
 		else if (*cap > *sz + rdst_len - find_len)
-			pjstrre_rplcall_small_rplc(*s, sz, &dst, &oldp, &p, rdstp, rdst_len, find_len);
-		else if (jstr_unlikely(!pjstrre_rplcall_big_rplc(s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
+			pjstrre_rplcallsmallerrplc(*s, sz, &dst, &oldp, &p, rdstp, rdst_len, find_len);
+		else if (jstr_unlikely(!pjstrre_rplcallbiggerrplc(s, sz, cap, &dst, &oldp, &p, rdstp, rdst_len, find_len)))
 			goto err_free;
 	}
 	if (dst != oldp)
