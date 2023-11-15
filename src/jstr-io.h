@@ -812,7 +812,8 @@ err_closedir:
    If FN() returns 0, stop processing.
    Return value:
    0 on error;
-   1 on success or non-fatal errors (EACCES or ENOENT) encountered on some entries.
+   1 on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;
+   or the return value of FN() if DIRPATH is not a directory and FN() is executed.
    If a non-fatal error is encountered, continue processing other entries.
 */
 JSTR_FUNC_MAY_NULL
