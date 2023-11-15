@@ -563,6 +563,15 @@ JSTR_NOEXCEPT
 	pjstrl_delete(l, jstrl_findstrchr(l, c));
 }
 
+JSTR_FUNC_VOID
+static void
+jstrl_deletestrcasechr(jstrlist_ty *R l,
+                       const int c)
+JSTR_NOEXCEPT
+{
+	pjstrl_delete(l, jstrl_findstrcasechr(l, c));
+}
+
 PJSTR_END_DECLS
 
 #undef R
