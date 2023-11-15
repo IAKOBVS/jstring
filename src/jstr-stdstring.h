@@ -472,23 +472,23 @@ JSTR_NOEXCEPT
 	return jstr_strdup_len(s, strlen(s));
 }
 
-#define PJSTR_ATOI(T, name, func)  \
-	JSTR_FUNC_PURE             \
-	JSTR_INLINE                \
-	static T                   \
-	jstr_##name(const char *s) \
-	JSTR_NOEXCEPT              \
-	{                          \
-		return func;       \
+#define PJSTR_DEFINE_ATOI(T, name, func) \
+	JSTR_FUNC_PURE                   \
+	JSTR_INLINE                      \
+	static T                         \
+	jstr_##name(const char *s)       \
+	JSTR_NOEXCEPT                    \
+	{                                \
+		return func;             \
 	}
 
-PJSTR_ATOI(int, atoi, strtol(s, NULL, 0))
-PJSTR_ATOI(long, atol, strtol(s, NULL, 0))
-PJSTR_ATOI(long long, atoll, strtol(s, NULL, 0))
-PJSTR_ATOI(double, atod, strtod(s, NULL))
-PJSTR_ATOI(float, atof, strtof(s, NULL))
+PJSTR_DEFINE_ATOI(int, atoi, strtol(s, NULL, 0))
+PJSTR_DEFINE_ATOI(long, atol, strtol(s, NULL, 0))
+PJSTR_DEFINE_ATOI(long long, atoll, strtol(s, NULL, 0))
+PJSTR_DEFINE_ATOI(double, atod, strtod(s, NULL))
+PJSTR_DEFINE_ATOI(float, atof, strtof(s, NULL))
 
-#undef PJSTR_ATOI
+#undef PJSTR_DEFINE_ATOI
 
 PJSTR_END_DECLS
 
