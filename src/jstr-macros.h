@@ -15,6 +15,8 @@
 #define JSTR_ERR 0
 #define JSTR_SUCC 1
 
+#define jstr_chk(ret) jstr_unlikely(ret == JSTR_ERR)
+
 #if JSTR_DEBUG
 #	define JSTR_PRINT_LOG(...) fprintf(stderr, __VA_ARGS__)
 #else
