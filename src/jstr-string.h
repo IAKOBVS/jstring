@@ -585,7 +585,7 @@ JSTR_NOEXCEPT
 	const size_t hs_len = jstr_strnlen(h, ne_len | 512);
 	if (hs_len < ne_len)
 		return NULL;
-	if (!jstr_strcasecmp_len(h, n, ne_len))
+	if (!jstr_strcasecmpeq_len(h, n, ne_len))
 		return (char *)h;
 	if (hs_len == ne_len)
 		return NULL;
@@ -1344,7 +1344,7 @@ jstr_startscasenul_len(const char *hs,
                        const size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmp_len(hs, ne, ne_len) : ne_len;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmpeq_len(hs, ne, ne_len) : ne_len;
 }
 
 /*
