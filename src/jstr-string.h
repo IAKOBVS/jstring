@@ -648,10 +648,10 @@ pjstr_strcasechr_generic(const char *s,
 JSTR_NOEXCEPT
 {
 	c = jstr_tolower(c);
-	const unsigned char *us = (unsigned char *)s;
-	for (; *us && jstr_tolower(*us) != c; ++us)
+	const unsigned char *p = (unsigned char *)s;
+	for (; *p && jstr_tolower(*p) != c; ++p)
 		;
-	return *us ? (char *)us : NULL;
+	return *p ? (char *)p : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -663,10 +663,10 @@ jstr_memcasechr(const void *s,
 JSTR_NOEXCEPT
 {
 	c = jstr_tolower(c);
-	const unsigned char *us = (unsigned char *)s;
-	for (; n-- && jstr_tolower(*us) != c; ++us)
+	const unsigned char *p = (unsigned char *)s;
+	for (; n-- && jstr_tolower(*p) != c; ++p)
 		;
-	return n ? (char *)us : NULL;
+	return n ? (char *)p : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -1114,9 +1114,9 @@ jstr_mempbrk(const void *s,
              const size_t sz)
 JSTR_NOEXCEPT
 {
-	const unsigned char *us = (unsigned char *)s;
-	us += jstr_memcspn(us, accept, sz);
-	return *us ? (char *)us : NULL;
+	const unsigned char *p = (unsigned char *)s;
+	p += jstr_memcspn(p, accept, sz);
+	return *p ? (char *)p : NULL;
 }
 
 /*
