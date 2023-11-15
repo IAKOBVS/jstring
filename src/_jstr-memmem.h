@@ -54,8 +54,8 @@ PJSTR_MEMMEM_FN(const PJSTR_MEMMEM_RETTYPE hs,
                 const size_t nl)
 {
 	if (jstr_likely(nl < 257))
-		return PJSTR_MEMMEM_FN_SHORT((unsigned char *)hs, hl, (unsigned char *)ne, nl);
-	return PJSTR_MEMMEM_FN_LONG((unsigned char *)hs, hl, (unsigned char *)ne, nl);
+		return PJSTR_MEMMEM_FN_SHORT((const unsigned char *)hs, hl, (const unsigned char *)ne, nl);
+	return PJSTR_MEMMEM_FN_LONG((const unsigned char *)hs, hl, (const unsigned char *)ne, nl);
 }
 
 PJSTR_END_DECLS
