@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef JSTR_IO_TABLE_H
-#define JSTR_IO_TABLE_H 1
+#ifndef JSTRIO_TABLE_H
+#define JSTRIO_TABLE_H 1
 
 #include "jstr-macros.h"
 
@@ -142,4 +142,4 @@ static const unsigned char pjstrio_reject_table[256] = {
 	1, /* 127 */
 };
 
-#endif /* JSTR_IO_TABLE_H */
+#endif /* JSTRIO_TABLE_H */

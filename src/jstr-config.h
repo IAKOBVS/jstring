@@ -38,17 +38,26 @@
 #	define JARRP_GROWTH 1.5
 #endif
 
+#ifndef PJSTRIO_EXT_ARRAY_FT_TEXT
+/* Extensions interpreted as text files. */
+#	define PJSTRIO_EXT_ARRAY_FT_TEXT "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt"
+#endif
+#ifndef PJSTRIO_EXT_ARRAY_FT_BINARY
+/* Extensions interpreted as binary files. */
+#	define PJSTRIO_EXT_ARRAY_FT_BINARY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
+#endif
+
 /* You shouldn't mess with these. */
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #endif
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    1
 #endif
 
