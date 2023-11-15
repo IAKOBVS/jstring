@@ -19,7 +19,7 @@
 
 #if 0
 
-/* 1 if 'type' is a ptr type, 0 otherwise.  */
+/* JSTR_SUCC if 'type' is a ptr type, 0 otherwise.  */
 #	define __ptr_type(type) (__builtin_classify_type((type)0) == 5)
 
 /* intptr_t if P is true, or T if P is false.  */

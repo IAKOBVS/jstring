@@ -107,7 +107,7 @@ JSTR_NOEXCEPT
 /*
   Compare S1 with S2 case-insensitively.
   Return value:
-  0 if strings match;
+  JSTR_ERR if strings match;
   non-zero otherwise.
 */
 #if JSTR_HAVE_STRNCASECMP
@@ -139,7 +139,7 @@ JSTR_NOEXCEPT
 /*
   Compare S1 with S2 case-insensitively.
   Return value:
-  0 if strings match;
+  JSTR_ERR if strings match;
   non-zero otherwise.
 */
 #if JSTR_HAVE_STRNCASECMP
@@ -169,7 +169,7 @@ JSTR_NOEXCEPT
   Compare S1 with S2 case-insensitively.
   N must be lower than the length of S1 or S2.
   Return value:
-  0 if strings match;
+  JSTR_ERR if strings match;
   non-zero otherwise.
 */
 #if JSTR_HAVE_STRNCASECMP
@@ -201,7 +201,7 @@ JSTR_NOEXCEPT
   Compare S1 with S2 case-insensitively.
   N must be lower than the length of S1 or S2.
   Return value:
-  0 if strings match;
+  JSTR_ERR if strings match;
   non-zero otherwise.
 */
 #if JSTR_HAVE_STRNCASECMP
@@ -230,7 +230,7 @@ JSTR_NOEXCEPT
 /*
   Compare S1 with S2 case-insensitively.
   Return value:
-  0 if strings match;
+  JSTR_ERR if strings match;
   non-zero otherwise.
 */
 JSTR_FUNC_PURE
@@ -257,7 +257,7 @@ JSTR_NOEXCEPT
 /*
   Compare S1 with S2 case-insensitively.
   Return value:
-  0 if strings match;
+  JSTR_ERR if strings match;
   non-zero otherwise.
 */
 JSTR_FUNC_PURE
@@ -1228,8 +1228,8 @@ JSTR_NOEXCEPT
 /*
   Check if S2 is in end of S1.
   Return value:
-  1 if true;
-  0 if false.
+  JSTR_SUCC if true;
+  JSTR_ERR if false.
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
@@ -1246,8 +1246,8 @@ JSTR_NOEXCEPT
 /*
   Check if S2 is in end of S1.
   Return value:
-  1 if true;
-  0 if false.
+  JSTR_SUCC if true;
+  JSTR_ERR if false.
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
@@ -1262,8 +1262,8 @@ JSTR_NOEXCEPT
 /*
   Check if S2 is in end of S1.
   Return value:
-  1 if true;
-  0 if false.
+  JSTR_SUCC if true;
+  JSTR_ERR if false.
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
@@ -1280,8 +1280,8 @@ JSTR_NOEXCEPT
 /*
   Check if S2 is in end of S1.
   Return value:
-  1 if true;
-  0 if false.
+  JSTR_SUCC if true;
+  JSTR_ERR if false.
 */
 JSTR_INLINE
 JSTR_FUNC_PURE
@@ -1296,8 +1296,8 @@ JSTR_NOEXCEPT
 /*
   Check if S1 starts with S2 case-insensitively.
   Return value:
-  1 if true;
-  0 if false.
+  JSTR_SUCC if true;
+  JSTR_ERR if false.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1314,8 +1314,8 @@ JSTR_NOEXCEPT
 /*
   Check if S1 starts with S2 case-insensitively.
   Return value:
-  1 if true;
-  0 if false.
+  JSTR_SUCC if true;
+  JSTR_ERR if false.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1331,7 +1331,7 @@ JSTR_NOEXCEPT
   Check if S1 starts with S2 case-insensitively.
   Return value:
   NELEN if true;
-  0 if false.
+  JSTR_ERR if false.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1349,7 +1349,7 @@ JSTR_NOEXCEPT
   Check if S1 starts with S2 case-insensitively.
   Return value:
   NELEN if true;
-  0 if false.
+  JSTR_ERR if false.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1370,7 +1370,7 @@ JSTR_NOEXCEPT
   Check if S1 starts with S2.
   Return value:
   NELEN if true;
-  0 if false.
+  JSTR_ERR if false.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1388,7 +1388,7 @@ JSTR_NOEXCEPT
   Check if S1 starts with S2.
   Return value:
   NELEN if true;
-  0 if false.
+  JSTR_ERR if false.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1408,8 +1408,8 @@ JSTR_NOEXCEPT
 /*
   Check if S1 starts with S2.
   Return value:
-  1 if true;
-  0 if false.
+  JSTR_SUCC if true;
+  JSTR_ERR if false.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1426,8 +1426,8 @@ JSTR_NOEXCEPT
 /*
   Check if S1 starts with S2.
   Return value:
-  1 if true;
-  0 if false.
+  JSTR_SUCC if true;
+  JSTR_ERR if false.
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
@@ -1607,7 +1607,7 @@ JSTR_NOEXCEPT
 
 /*
    Return the number of newlines + 1.
-   Return 0 if string is empty.
+   Return JSTR_ERR if string is empty.
 */
 JSTR_FUNC_PURE
 static size_t

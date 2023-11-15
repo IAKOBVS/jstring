@@ -204,11 +204,11 @@ JSTR_NOEXCEPT
 	memset(l->data + l->capacity, 0, (new_cap - l->capacity) * sizeof(*l->data));
 #endif
 	l->capacity = new_cap;
-	return 1;
+	return JSTR_SUCC;
 err:
 	jstrl_free(l);
 	PJSTR_EXIT_MAYBE();
-	return 0;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC
@@ -220,7 +220,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
 		PJSTRL_RESERVEALWAYS(l, new_cap, return 0);
-	return 1;
+	return JSTR_SUCC;
 }
 
 JSTR_FUNC
@@ -240,10 +240,10 @@ pjstrl_assign_len(char *R *R s,
 	PJSTR_MALLOC_ERR(*s, goto err);
 	jstr_strcpy_len(*s, src, src_len);
 	*sz = src_len;
-	return 1;
+	return JSTR_SUCC;
 err:
 	pjstr_nullify_members(sz, cap);
-	return 0;
+	return JSTR_ERR;
 #endif
 }
 
@@ -324,10 +324,10 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
 #elif defined __GNUC__
 #	pragma GCC diagnostic pop
 #endif
-	return 1;
+	return JSTR_SUCC;
 err:
 	jstrl_free(l);
-	return 0;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC
@@ -340,7 +340,7 @@ jstrl_pushfront_len(jstrlist_ty *R l,
 	return jstrl_pushfront_len_unsafe(l, s, s_len);
 err:
 	jstrl_free(l);
-	return 0;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC
@@ -359,10 +359,10 @@ JSTR_NOEXCEPT
 	    s_len)))
 		goto err;
 	++l->size;
-	return 1;
+	return JSTR_SUCC;
 err:
 	jstrl_free(l);
-	return 0;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC
@@ -376,7 +376,7 @@ JSTR_NOEXCEPT
 	return jstrl_pushback_len_unsafe(l, s, s_len);
 err:
 	jstrl_free(l);
-	return 0;
+	return JSTR_ERR;
 }
 
 /* Last arg must be NULL. */
@@ -395,7 +395,7 @@ JSTR_NOEXCEPT
 		;
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
-		return 1;
+		return JSTR_SUCC;
 	PJSTRL_RESERVE(l, l->size + argc, return 0)
 	va_start(ap, l);
 	const char *R arg;
@@ -404,11 +404,11 @@ JSTR_NOEXCEPT
 		    !pjstrl_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
 	va_end(ap);
-	return 1;
+	return JSTR_SUCC;
 err_free_l:
 	jstrl_free(l);
 	va_end(ap);
-	return 0;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC
@@ -420,9 +420,9 @@ jstrl_assign_len(jstrlist_ty *R l,
 {
 	const int ret = pjstrl_assign_len(&pjstrl_at(l, idx)->data, &pjstrl_at(l, idx)->size, &pjstrl_at(l, idx)->capacity, s, s_len);
 	if (jstr_likely(ret == 1))
-		return 1;
+		return JSTR_SUCC;
 	jstrl_free(l);
-	return 0;
+	return JSTR_ERR;
 }
 
 #define PJSTRL_DEFINE_FIND_LEN(name, func)                    \

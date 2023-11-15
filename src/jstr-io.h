@@ -113,13 +113,13 @@ jstr_isbinary(const char *R buf,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
-		return 0;
+		return JSTR_ERR;
 	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(n, sz);
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
 		if (pjstrio_reject_table[*s++])
-			return 1;
-	return 0;
+			return JSTR_SUCC;
+	return JSTR_ERR;
 }
 
 #define ELF    "\x7f\ELF"
@@ -135,10 +135,10 @@ pjstrio_isbinarysignature(const char *R buf,
 {
 	if (jstr_likely(sz > ELF_SZ - 1)) {
 		if (jstr_unlikely(!memcmp(buf, ELF, ELF_SZ)))
-			return 1;
+			return JSTR_SUCC;
 check_utf:;
 		if (!memcmp(buf, UTF, UTF_SZ))
-			return 0;
+			return JSTR_ERR;
 	} else if (jstr_likely(sz == UTF_SZ)) {
 		goto check_utf;
 	}
@@ -160,7 +160,7 @@ jstrio_isbinary_maybe(const char *R buf,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
-		return 0;
+		return JSTR_ERR;
 	const int ret = pjstrio_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
@@ -168,8 +168,8 @@ JSTR_NOEXCEPT
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
 		if (pjstrio_reject_table[*s++])
-			return 1;
-	return 0;
+			return JSTR_SUCC;
+	return JSTR_ERR;
 }
 
 /*
@@ -198,14 +198,14 @@ JSTR_NOEXCEPT
 {
 	const int fd = open(fname, oflag | O_WRONLY);
 	if (jstr_unlikely(fd == -1))
-		return 0;
+		return JSTR_ERR;
 	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
 		goto err;
 	close(fd);
-	return 1;
+	return JSTR_SUCC;
 err:
 	close(fd);
-	return 0;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC
@@ -229,14 +229,14 @@ JSTR_NOEXCEPT
 {
 	FILE *R fp = fopen(fname, modes);
 	if (jstr_unlikely(fp == NULL))
-		return 0;
+		return JSTR_ERR;
 	if (jstr_unlikely(!jstrio_fwrite(s, sz, fp)))
 		goto err;
 	fclose(fp);
-	return 1;
+	return JSTR_SUCC;
 err:
 	fclose(fp);
-	return 0;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC
@@ -263,7 +263,7 @@ JSTR_NOEXCEPT
 	enum { MINBUF = JSTR_PAGE_SIZE };
 	FILE *R fp = popen(cmd, "r");
 	if (jstr_unlikely(fp == NULL))
-		return 0;
+		return JSTR_ERR;
 	char buf[MINBUF];
 	size_t readsz;
 	readsz = fread(buf, 1, sizeof(buf), fp);
@@ -288,13 +288,13 @@ JSTR_NOEXCEPT
 	}
 	*(*s + *sz) = '\0';
 	pclose(fp);
-	return 1;
+	return JSTR_SUCC;
 err_close_free:
 	jstr_free(s, sz, cap);
 err_close:
 	pclose(fp);
 err:
-	return 0;
+	return JSTR_ERR;
 }
 
 #endif
@@ -317,19 +317,19 @@ JSTR_NOEXCEPT
 	close(fd);
 	(*s)[file_size] = '\0';
 	*sz = file_size;
-	return 1;
+	return JSTR_SUCC;
 err_close_free:
 	jstr_free(s, sz, cap);
 err_close:
 	close(fd);
 err:
-	return 0;
+	return JSTR_ERR;
 }
 
 /*
    Return value:
    0 on error;
-   otherwise 1.
+   otherwise JSTR_SUCC.
 */
 JSTR_FUNC
 static int
@@ -341,7 +341,7 @@ jstrio_readfile(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(fname, st)))
-		return 0;
+		return JSTR_ERR;
 	return jstrio_readfile_len(s, sz, cap, fname, st->st_size);
 }
 
@@ -384,16 +384,16 @@ jstrio_expandtildefirst_p(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (**s != '~')
-		return 1;
+		return JSTR_SUCC;
 	const char *R home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
-		return 0;
+		return JSTR_ERR;
 	const size_t len = strlen(home);
-	PJSTR_RESERVE(s, sz, cap, *sz + len, return 0);
+	PJSTR_RESERVE(s, sz, cap, *sz + len, return JSTR_ERR);
 	jstr_strmove_len(*s + len, *s + 1, (*s + *sz) - (*s + 1));
 	memcpy(*s, home, len);
 	*sz += len;
-	return 1;
+	return JSTR_SUCC;
 }
 
 /*
@@ -427,7 +427,7 @@ JSTR_NOEXCEPT
    Expand every ~ to /home/username.
    Return value:
    0 on error;
-   otherwise 1.
+   otherwise JSTR_SUCC.
 */
 JSTR_FUNC
 static int
@@ -438,14 +438,14 @@ JSTR_NOEXCEPT
 {
 	const char *R home = getenv("HOME");
 	if (jstr_unlikely(home == NULL))
-		return 0;
+		return JSTR_ERR;
 	const size_t len = strlen(home);
 	const char *tmp;
 	char *p = *s;
 	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
-			PJSTR_RESERVEALWAYS(s, sz, cap, *sz + len, return 0)
+			PJSTR_RESERVEALWAYS(s, sz, cap, *sz + len, return JSTR_ERR)
 			p = *s + (p - tmp);
 		}
 		jstr_strmove_len(p + len, p + 1, (*s + *sz) - (p + 1));
@@ -453,7 +453,7 @@ JSTR_NOEXCEPT
 		p += len;
 		*sz += (len - 1);
 	}
-	return 1;
+	return JSTR_SUCC;
 }
 
 JSTR_FUNC_RET_NONNULL
@@ -579,7 +579,7 @@ typedef enum jstrio_ftw_flag_ty {
 			if (jstr_unlikely(fstatat(fd, ep->d_name, st, 0))) { \
 				if (NONFATAL_ERR())                          \
 					continue;                            \
-				return 0;                                    \
+				return JSTR_ERR;                             \
 			}                                                    \
 		} while (0)
 #else
@@ -588,7 +588,7 @@ typedef enum jstrio_ftw_flag_ty {
 			if (jstr_unlikely(stat(dirpath, st))) \
 				if (NONFATAL_ERR())           \
 					continue;             \
-			return 0;                             \
+			return JSTR_ERR;                      \
 		} while (0)
 #endif
 
@@ -782,10 +782,10 @@ CONT:
 #endif
 	}
 	closedir(dp);
-	return 1;
+	return JSTR_SUCC;
 err_closedir:
 	closedir(dp);
-	return 0;
+	return JSTR_ERR;
 }
 
 #undef ISDIR
@@ -822,11 +822,11 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dirpath_len == 0)) {
 		errno = ENOENT;
-		return 0;
+		return JSTR_ERR;
 	}
 	if (jstr_unlikely(dirpath_len >= JSTRIO_PATH_MAX)) {
 		errno = ENAMETOOLONG;
-		return 0;
+		return JSTR_ERR;
 	}
 	while (dirpath_len != 1
 	       && dirpath[dirpath_len - 1] == '/')
@@ -836,7 +836,7 @@ JSTR_NOEXCEPT
 		if (*dirpath == '~') {
 			const char *R home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
-				return 0;
+				return JSTR_ERR;
 			const size_t homelen = jstr_stpcpy(fulpath, home) - fulpath;
 			memcpy(fulpath + homelen, dirpath + 1, dirpath_len);
 			dirpath_len += homelen - 1;
@@ -847,7 +847,7 @@ JSTR_NOEXCEPT
 #if USE_ATFILE
 	const int fd = open(fulpath, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
-		return 0;
+		return JSTR_ERR;
 #endif
 	struct stat st;
 	/* This avoids things like //usr/cache. */
@@ -861,7 +861,7 @@ JSTR_NOEXCEPT
 		goto err_close;
 #else
 	if (jstr_unlikely(stat(fulpath, &st)))
-		return 0;
+		return JSTR_ERR;
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
 ftw:
@@ -882,23 +882,23 @@ CONT:
 #if USE_ATFILE
 		close(fd);
 #endif
-		return 1;
+		return JSTR_SUCC;
 	}
 #if USE_ATFILE
 	close(fd);
 #endif
 	if (jstrio_ftw_flag & JSTRIO_FTW_REG)
 		if (jstr_unlikely(!S_ISREG(st.st_mode)))
-			return 1;
+			return JSTR_SUCC;
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
-			return 1;
+			return JSTR_SUCC;
 	return fn(fulpath, dirpath_len, &st);
 err_close:
 #if USE_ATFILE
 	close(fd);
 #endif
-	return 0;
+	return JSTR_ERR;
 }
 
 #undef USE_ATFILE

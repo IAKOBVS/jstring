@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include <sys/cdefs.h>
 
+#define JSTR_ERR 0
+#define JSTR_SUCC 1
+
 #if JSTR_DEBUG
 #	define JSTR_PRINT_LOG(...) fprintf(stderr, __VA_ARGS__)
 #else
