@@ -842,9 +842,8 @@ JSTR_NOEXCEPT
 		errno = ENAMETOOLONG;
 		return JSTR_ERR;
 	}
-	while (dirpath_len != 1
-	       && dirpath[dirpath_len - 1] == '/')
-		--dirpath_len;
+	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/'; --dirpath_len)
+		;
 	char fulpath[JSTRIO_PATH_MAX];
 	if (jstrio_ftw_flag & JSTRIO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {

@@ -152,8 +152,8 @@ JSTR_NOEXCEPT
 	const jtrie_node_ty *curr = root->child[*w];
 	if (jstr_unlikely(curr == NULL))
 		return NULL;
-	while (*++w && curr->child[*w])
-		curr = curr->child[*w];
+	for (; *++w && curr->child[*w]; curr = curr->child[*w])
+		;
 	return (jtrie_node_ty *)curr;
 }
 

@@ -98,8 +98,8 @@ jstr_skipctype(const char *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
-		while (*s && jstr_isctype(*s, ctype))
-			++s;
+		for (; *s && jstr_isctype(*s, ctype); ++s)
+			;
 		return (char *)s;
 	}
 	while (jstr_isctype(*s++, ctype))
@@ -185,8 +185,8 @@ static void
 jstr_toupperstr(char *R s)
 JSTR_NOEXCEPT
 {
-	while ((*s = jstr_toupper(*s)))
-		++s;
+	for (; (*s = jstr_toupper(*s)); ++s)
+		;
 }
 
 /* ASCII. */
@@ -196,8 +196,8 @@ static void
 jstr_tolowerstr(char *R s)
 JSTR_NOEXCEPT
 {
-	while ((*s = jstr_tolower(*s)))
-		++s;
+	for (; (*s = jstr_tolower(*s)); ++s)
+		;
 }
 
 /*

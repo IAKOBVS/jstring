@@ -456,8 +456,8 @@ JSTR_NOEXCEPT
 	const char *oldp = dst;
 	const char *p = dst;
 	const char *const end = dst + sz;
-	while (n-- && (p = (char *)memchr(p, c, end - p)))
-		pjstr_rmallinplace(&dst, &oldp, &p, 1);
+	for (; n-- && (p = (char *)memchr(p, c, end - p)); pjstr_rmallinplace(&dst, &oldp, &p, 1))
+		;
 	return (dst != s) ? jstr_stpmove_len(dst, oldp, end - oldp) : s + sz;
 }
 
@@ -492,8 +492,8 @@ JSTR_NOEXCEPT
 	char *dst = s;
 	const char *oldp = dst;
 	const char *p = dst;
-	while (n-- && *(p = strchrnul((char *)p, c)))
-		pjstr_rmallinplace(&dst, &oldp, &p, 1);
+	for (; n-- && *(p = strchrnul((char *)p, c)); pjstr_rmallinplace(&dst, &oldp, &p, 1))
+		;
 	if (jstr_unlikely(dst == s))
 		return s + n;
 	return jstr_stpmove_len(dst, oldp, p - oldp);
@@ -530,8 +530,8 @@ JSTR_NOEXCEPT
 	char *dst = s;
 	const char *oldp = dst;
 	const char *p = dst;
-	while (*(p += strcspn(p, rjct)))
-		pjstr_rmallinplace(&dst, &oldp, &p, 1);
+	for (; *(p += strcspn(p, rjct)); pjstr_rmallinplace(&dst, &oldp, &p, 1))
+		;
 	if (jstr_likely(p != oldp))
 		return jstr_stpmove_len(dst, oldp, p - oldp);
 	return (char *)p;
@@ -622,8 +622,8 @@ jstr_rplcallchr_len(char *R s,
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
-	while ((s = (char *)memchr(s, find, end - s)))
-		*s++ = rplc;
+	for (; (s = (char *)memchr(s, find, end - s)); *s++ = rplc)
+		;
 }
 
 /*
@@ -636,8 +636,8 @@ jstr_rplcallchr(char *R s,
                 const int rplc)
 JSTR_NOEXCEPT
 {
-	while ((s = strchr(s, find)))
-		*s++ = rplc;
+	for (; (s = strchr(s, find)); *s++ = rplc)
+		;
 }
 
 /*
@@ -653,8 +653,8 @@ jstr_rplcnchr_len(char *R s,
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
-	while (n-- && (s = (char *)memchr(s, find, end - s)))
-		*s++ = rplc;
+	for (; n-- && (s = (char *)memchr(s, find, end - s)); *s++ = rplc)
+		;
 }
 
 /*
@@ -668,8 +668,8 @@ jstr_rplcnchr(char *R s,
               size_t n)
 JSTR_NOEXCEPT
 {
-	while (n-- && (s = strchr(s, find)))
-		*s++ = rplc;
+	for (; n-- && (s = strchr(s, find)); *s++ = rplc)
+		;
 }
 
 JSTR_FUNC
@@ -795,8 +795,8 @@ JSTR_NOEXCEPT
 	const char *oldp = dst;
 	const char *p = dst;
 	const char *const end = dst + sz;
-	while (n-- && (p = jstr_strstr_len(p, end - p, find, find_len)))
-		pjstr_rmallinplace(&dst, &oldp, &p, find_len);
+	for (; n-- && (p = jstr_strstr_len(p, end - p, find, find_len)); pjstr_rmallinplace(&dst, &oldp, &p, find_len))
+		;
 	if (jstr_unlikely(dst == s))
 		return s + sz;
 	return jstr_stpmove_len(dst, oldp, end - oldp);
@@ -932,8 +932,8 @@ jstr_revcpy_len(char *R dst,
 JSTR_NOEXCEPT
 {
 	src += src_len - 1;
-	while (src_len--)
-		*dst++ = *src--;
+	for (; src_len--; *dst++ = *src--)
+		;
 	*dst = '\0';
 }
 

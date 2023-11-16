@@ -872,7 +872,7 @@ JSTR_NOEXCEPT
 		return sz;
 	if (jstr_unlikely(reject[1] == '\0')) {
 		const char *const p = (char *)jstr_memrchr(s, *reject, sz);
-		return p ? (p - s) : sz;
+		return p ? (size_t)(p - s) : sz;
 	}
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
@@ -1166,8 +1166,8 @@ jstr_memchrnulinv(const void *s,
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (unsigned char *)s;
-	while (n-- && *p == (unsigned char)c)
-		++p;
+	for (; n-- && *p == (unsigned char)c; ++p)
+		;
 	return (char *)p;
 }
 
@@ -1452,8 +1452,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return 0;
 	size_t cnt = 0;
-	while ((s = strchr(s, c)))
-		++s, ++cnt;
+	for (; (s = strchr(s, c)); ++s, ++cnt)
+		;
 	return cnt;
 }
 
@@ -1471,8 +1471,8 @@ JSTR_NOEXCEPT
 {
 	size_t cnt = 0;
 	const char *const end = s + sz;
-	while ((s = (const char *)memchr(s, c, end - s)))
-		++s, ++cnt;
+	for (; (s = (const char *)memchr(s, c, end - s)); ++s, ++cnt)
+		;
 	return cnt;
 }
 
