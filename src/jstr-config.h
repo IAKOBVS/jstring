@@ -39,11 +39,11 @@
 #endif
 
 #ifndef PJSTRIO_EXT_ARRAY_FT_TEXT
-/* Extensions interpreted as text files. */
+/* File extensions interpreted as text files. */
 #	define PJSTRIO_EXT_ARRAY_FT_TEXT "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt"
 #endif
 #ifndef PJSTRIO_EXT_ARRAY_FT_BINARY
-/* Extensions interpreted as binary files. */
+/* File extensions interpreted as binary files. */
 #	define PJSTRIO_EXT_ARRAY_FT_BINARY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
