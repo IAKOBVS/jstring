@@ -190,10 +190,10 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static int
-jstrio_write_file(const char *R s,
-                  const size_t sz,
-                  const char *R fname,
-                  const int oflag)
+jstrio_writefile(const char *R s,
+                 const size_t sz,
+                 const char *R fname,
+                 const int oflag)
 JSTR_NOEXCEPT
 {
 	const int fd = open(fname, oflag | O_WRONLY);
@@ -210,22 +210,11 @@ err:
 }
 
 JSTR_FUNC
-JSTR_INLINE
 static int
-jstrio_write_file_j(const jstr_ty *R j,
-                    const char *R fname,
-                    const int oflag)
-JSTR_NOEXCEPT
-{
-	return jstrio_write_file(j->data, j->size, fname, oflag);
-}
-
-JSTR_FUNC
-static int
-jstrio_fwrite_file(const char *R s,
-                   const size_t sz,
-                   const char *R fname,
-                   const char *R modes)
+jstrio_fwritefile(const char *R s,
+                  const size_t sz,
+                  const char *R fname,
+                  const char *R modes)
 JSTR_NOEXCEPT
 {
 	FILE *R fp = fopen(fname, modes);
@@ -239,17 +228,6 @@ err_close:
 	fclose(fp);
 err:
 	return JSTR_ERR;
-}
-
-JSTR_FUNC
-JSTR_INLINE
-static int
-jstrio_fwrite_file_j(const jstr_ty *R j,
-                     const char *R fname,
-                     const char *R modes)
-JSTR_NOEXCEPT
-{
-	return jstrio_fwrite_file(j->data, j->size, fname, modes);
 }
 
 #if JSTR_HAVE_POPEN
@@ -332,7 +310,7 @@ jstrio_readfile_len(char *R *R s,
                     const size_t file_size)
 JSTR_NOEXCEPT
 {
-	int fd = open(fname, O_RDONLY);
+	const int fd = open(fname, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
 	if (jstr_chk(pjstrio_readfile_len(s, sz, cap, fd, file_size)))
