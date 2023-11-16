@@ -231,10 +231,10 @@ err:
 
 JSTR_FUNC
 static int
-jstrio_readpopen(char *R *R s,
-                 size_t *R sz,
-                 size_t *R cap,
-                 const char *R cmd)
+jstrio_readsystem(char *R *R s,
+                  size_t *R sz,
+                  size_t *R cap,
+                  const char *R cmd)
 JSTR_NOEXCEPT
 {
 	enum { MINBUF = JSTR_PAGE_SIZE };
