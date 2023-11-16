@@ -91,13 +91,12 @@ pjstrio_extget_len(const char *fname,
 JSTR_FUNC_PURE
 JSTR_INLINE
 static jstrio_ext_ty
-jstrio_exttype_len(const char *R fname,
-                   const size_t sz)
+jstrio_exttype(const char *R fname,
+               const size_t sz)
 JSTR_NOEXCEPT
 {
-	const char *const end = fname + sz;
-	const char *p = (char *)pjstrio_extget_len(fname, sz);
-	return p ? pjstrio_exttype(p + 1) : JSTRIO_FT_UNKNOWN;
+	fname = (char *)pjstrio_extget_len(fname, sz);
+	return fname ? pjstrio_exttype(fname + 1) : JSTRIO_FT_UNKNOWN;
 }
 
 /*
