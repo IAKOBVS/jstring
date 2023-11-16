@@ -51,8 +51,6 @@ pjstrio_exttype_len(const char *ext,
                     const size_t ext_len)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(ext_len == 0))
-		return JSTRIO_FT_UNKNOWN;
 	static const char *text[] = { PJSTRIO_EXT_ARRAY_FT_TEXT };
 	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY };
 	int i;
