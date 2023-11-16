@@ -105,19 +105,6 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Return jstrio_ext_ty based on the FNAME extension;
-*/
-JSTR_INLINE
-JSTR_FUNC_PURE
-static jstrio_ext_ty
-jstrio_exttype(const char *R fname)
-JSTR_NOEXCEPT
-{
-	char *p = (char *)strrchr(fname, '.');
-	return p ? pjstrio_exttype(p + 1) : JSTRIO_FT_UNKNOWN;
-}
-
-/*
    Check MIN(N, SZ) bytes for any unprintable char.
 */
 JSTR_FUNC
