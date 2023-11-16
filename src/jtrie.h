@@ -1,8 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef JSTR_H
+#ifndef JTRIE_H
+#define JTRIE_H 1
 
-#define JSTR_H 1
 #include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
@@ -16,8 +16,8 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 typedef enum {
-	JTRIE_RET_NOERROR = 0,
-	JTRIE_RET_MALLOC_ERROR = 1
+	JTRIE_RET_SUCC = 0,
+	JTRIE_RET_ERR = 1
 } jtrie_errcode_ty;
 
 typedef struct jtrie_node_ty {
@@ -68,7 +68,7 @@ jtrie_add(jtrie_node_ty *R root,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*word == '\0'))
-		return JTRIE_RET_NOERROR;
+		return JTRIE_RET_SUCC;
 	const unsigned char *w = (unsigned char *)word;
 	jtrie_node_ty *curr = root;
 	for (; *w; ++w) {
@@ -76,10 +76,10 @@ JSTR_NOEXCEPT
 			curr->child[*w] = jtrie_init();
 		curr = curr->child[*w];
 		if (jstr_unlikely(curr == NULL))
-			return JTRIE_RET_MALLOC_ERROR;
+			return JTRIE_RET_ERR;
 	}
 	curr->EOW = 1;
-	return JTRIE_RET_NOERROR;
+	return JTRIE_RET_SUCC;
 }
 
 typedef enum {
@@ -178,4 +178,4 @@ PJSTR_END_DECLS
 
 #undef R
 
-#endif /* JSTR_H */
+#endif /* JTRIE_H */
