@@ -567,7 +567,7 @@ JSTR_NOEXCEPT
 			rplc_len += (rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so) - 2;
 		else if (jstr_unlikely(*rplc == '\0'))
 			break;
-	return (has_bref) ? rplc_len : 0;
+	return has_bref ? rplc_len : 0;
 }
 
 JSTR_FUNC_VOID
