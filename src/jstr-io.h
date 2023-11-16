@@ -45,33 +45,32 @@ enum {
 };
 
 JSTR_FUNC_PURE
+JSTR_INLINE
+static int
+pjstrio_strcmp(const char *s1,
+               const char *s2)
+{
+	while ((*s1++ == *s2++))
+		;
+	return *(s2 - 1);
+}
+
+JSTR_FUNC_PURE
 JSTR_NOINLINE
 static jstrio_ext_ty
-pjstrio_exttype_len(const char *ext,
-                    const size_t ext_len)
+pjstrio_exttype(const char *ext)
 JSTR_NOEXCEPT
 {
 	static const char *text[] = { PJSTRIO_EXT_ARRAY_FT_TEXT };
 	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY };
 	int i;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i)
-		if (ext_len == strlen(text[i])
-		    && !memcmp(ext, text[i], ext_len))
+		if (!pjstrio_strcmp(ext, text[i]))
 			return JSTRIO_FT_TEXT;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(binary); ++i)
-		if (ext_len == strlen(binary[i])
-		    && !memcmp(ext, binary[i], ext_len))
-			return JSTRIO_FT_BINARY;
+		if (!pjstrio_strcmp(ext, binary[i]))
+			return JSTRIO_FT_TEXT;
 	return JSTRIO_FT_UNKNOWN;
-}
-
-JSTR_FUNC_PURE
-JSTR_INLINE
-static jstrio_ext_ty
-pjstrio_exttype(const char *ext)
-JSTR_NOEXCEPT
-{
-	return pjstrio_exttype_len(ext, strlen(ext));
 }
 
 JSTR_FUNC_PURE
@@ -98,7 +97,7 @@ JSTR_NOEXCEPT
 {
 	const char *const end = fname + sz;
 	const char *p = (char *)pjstrio_extget_len(fname, sz);
-	return p ? pjstrio_exttype_len(p + 1, end - (p + 1)) : JSTRIO_FT_UNKNOWN;
+	return p ? pjstrio_exttype(p + 1) : JSTRIO_FT_UNKNOWN;
 }
 
 /*
