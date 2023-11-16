@@ -517,7 +517,7 @@ JSTR_NOEXCEPT
 	const unsigned char *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
 	if (h == NULL || ne_len == 1)
 		return (char *)h;
-	if (h + 1 - (u *)hs < ne_len)
+	if ((uintptr_t)(h + 1 - (u *)hs) < ne_len)
 		return NULL;
 	const unsigned char *const start = (const u *)hs;
 	const unsigned char *const n = (const u *)ne;

@@ -196,7 +196,7 @@ JSTR_NOEXCEPT
 	const int fd = open(fname, oflag | O_WRONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
-	if (jstr_unlikely(write(fd, s, sz) != sz))
+	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
 		goto err_close;
 	close(fd);
 	return JSTR_SUCC;
@@ -244,7 +244,7 @@ JSTR_NOEXCEPT
 	char buf[MINBUF];
 	size_t readsz;
 	readsz = fread(buf, 1, sizeof(buf), fp);
-	if (jstr_unlikely(readsz == -1))
+	if (jstr_unlikely(readsz == (size_t)-1))
 		goto err_close;
 	PJSTR_RESERVE(s, sz, cap, readsz * 2, goto err_close);
 	memcpy(*s, buf, readsz);
@@ -254,7 +254,7 @@ JSTR_NOEXCEPT
 		for (;;) {
 			reqsz = *cap - *sz;
 			readsz = fread(*s + *sz, 1, reqsz, fp);
-			if (jstr_unlikely(readsz == -1))
+			if (jstr_unlikely(readsz == (size_t)-1))
 				goto err_close_free;
 			*sz += readsz;
 			if (readsz < reqsz)
@@ -287,7 +287,7 @@ pjstrio_readfile_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, file_size, goto err)
-	if (jstr_unlikely(file_size != read(fd, *s, file_size)))
+	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
 		goto err_free;
 	*(*s + file_size) = '\0';
 	*sz = file_size;
