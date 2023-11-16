@@ -131,7 +131,7 @@ pjstrio_isbinarysignature(const char *R buf,
                           const size_t sz)
 {
 	if (jstr_likely(sz > ELF_SZ - 1)) {
-		if (jstr_unlikely(!memcmp(buf, ELF, ELF_SZ)))
+		if (!memcmp(buf, ELF, ELF_SZ))
 			return JSTR_SUCC;
 check_utf:;
 		if (!memcmp(buf, UTF, UTF_SZ))
