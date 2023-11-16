@@ -52,7 +52,7 @@ pjstrio_strcmp(const char *s1,
 {
 	while ((*s1++ == *s2++))
 		;
-	return *(s2 - 1);
+	return *s2;
 }
 
 JSTR_FUNC_PURE
