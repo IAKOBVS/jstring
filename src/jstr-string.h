@@ -1204,9 +1204,8 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *end = (unsigned char *)s + n - 1;
 	const unsigned char *const start = (unsigned char *)s;
-	while (end >= start
-	       && *end == (unsigned char)c)
-		--end;
+	for (; end >= start && *end == (unsigned char)c; --end)
+		;
 	return (end >= start) ? (void *)end : NULL;
 }
 
