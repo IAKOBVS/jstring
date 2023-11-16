@@ -77,6 +77,18 @@ JSTR_NOEXCEPT
 	return pjstrio_exttype_len(ext, strlen(ext));
 }
 
+JSTR_FUNC_PURE
+JSTR_INLINE
+static char *
+pjstrio_extget_len(const char *fname,
+                   const size_t sz)
+{
+	const char *p = fname + sz - 1;
+	for (; p > fname && *p != '.' && *p != '/'; --p)
+		;
+	return (*p == '.' && p > fname) ? (char *)p : NULL;
+}
+
 /*
    Return jstrio_ext_ty based on the FNAME extension;
 */
@@ -88,8 +100,8 @@ jstrio_exttype_len(const char *R fname,
 JSTR_NOEXCEPT
 {
 	const char *const end = fname + sz;
-	const char *p = (char *)jstr_memrchr(fname, '.', sz);
-	return (p && p != fname) ? pjstrio_exttype_len(p + 1, end - (p + 1)) : JSTRIO_FT_UNKNOWN;
+	const char *p = (char *)pjstrio_extget_len(fname, sz);
+	return p ? pjstrio_exttype_len(p + 1, end - (p + 1)) : JSTRIO_FT_UNKNOWN;
 }
 
 /*
@@ -102,7 +114,7 @@ jstrio_exttype(const char *R fname)
 JSTR_NOEXCEPT
 {
 	char *p = (char *)strrchr(fname, '.');
-	return (p && p != fname) ? pjstrio_exttype(p + 1) : JSTRIO_FT_UNKNOWN;
+	return p ? pjstrio_exttype(p + 1) : JSTRIO_FT_UNKNOWN;
 }
 
 /*
