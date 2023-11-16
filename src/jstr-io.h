@@ -48,16 +48,19 @@ JSTR_FUNC_PURE
 JSTR_NOINLINE
 static jstrio_ext_ty
 pjstrio_exttype_len(const char *ext,
-                    const int ext_len)
+                    const size_t ext_len)
 JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(ext_len == 0))
+		return JSTRIO_FT_UNKNOWN;
 	static const char *text[] = { PJSTRIO_EXT_ARRAY_FT_TEXT };
 	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY };
 	int i;
-	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i)
+	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i) {
 		if (ext_len == sizeof(text[i]) - 1
 		    && !memcmp(ext, text[i], ext_len))
 			return JSTRIO_FT_TEXT;
+	}
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(binary); ++i)
 		if (ext_len == sizeof(binary[i]) - 1
 		    && !memcmp(ext, binary[i], ext_len))
@@ -85,8 +88,8 @@ jstrio_exttype_len(const char *R fname,
 JSTR_NOEXCEPT
 {
 	const char *const end = fname + sz;
-	fname = (char *)jstr_memrchr(fname, '.', sz);
-	return fname ? pjstrio_exttype_len(fname + 1, end - (fname + 1)) : JSTRIO_FT_UNKNOWN;
+	const char *p = (char *)jstr_memrchr(fname, '.', sz);
+	return (p && p != fname) ? pjstrio_exttype_len(p + 1, end - (p + 1)) : JSTRIO_FT_UNKNOWN;
 }
 
 /*
@@ -98,8 +101,8 @@ static jstrio_ext_ty
 jstrio_exttype(const char *R fname)
 JSTR_NOEXCEPT
 {
-	fname = strrchr(fname, '.');
-	return fname ? pjstrio_exttype(fname + 1) : JSTRIO_FT_UNKNOWN;
+	char *p = (char *)strrchr(fname, '.');
+	return (p && p != fname) ? pjstrio_exttype(p + 1) : JSTRIO_FT_UNKNOWN;
 }
 
 /*
