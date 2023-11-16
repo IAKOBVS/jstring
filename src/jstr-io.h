@@ -481,6 +481,19 @@ jstrio_appendpath_p(char *R path,
 	return jstr_stpcpy(path + sz + 1, fname);
 }
 
+JSTR_FUNC
+static int
+jstrio_appendpath_len(char *R *R s,
+                      size_t *R sz,
+                      size_t *R cap,
+                      const char *R fname,
+                      const size_t fname_len)
+{
+	PJSTR_RESERVE(s, sz, cap, *sz + fname_len, return JSTR_ERR);
+	*sz = jstrio_appendpath_len_p(*s, *sz, fname, fname_len) - *s;
+	return JSTR_SUCC;
+}
+
 JSTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
