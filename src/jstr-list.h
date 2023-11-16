@@ -504,7 +504,7 @@ pjstrl_delete(jstrlist_ty *R l,
               jstr_ty *R p)
 JSTR_NOEXCEPT
 {
-	if (p && jstr_likely(l->size)) {
+	if (p) {
 #if JSTRL_LAZY_FREE
 		jstr_ty tmp;
 		pjstrl_elemstore(&tmp, p);
