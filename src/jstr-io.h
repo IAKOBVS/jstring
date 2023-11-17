@@ -890,10 +890,10 @@ JSTR_NOEXCEPT
 		return JSTR_ERR;
 #endif
 	if (jstr_likely(S_ISDIR(st.st_mode))) {
+ftw:;
 		if (jstrio_ftw_flag & JSTRIO_FTW_REG)
 			if (!(jstrio_ftw_flag & JSTRIO_FTW_DIR))
 				goto CONT;
-ftw:;
 		int ret;
 		ret = fn(dirpath, dirpath_len, &st);
 		if (jstrio_ftw_flag & JSTRIO_FTW_ACTIONRETVAL) {
