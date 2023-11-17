@@ -131,20 +131,10 @@ pjstrio_isbinarysignature(const char *R buf,
                           const size_t sz)
 {
 	if (jstr_likely(sz >= ELF_SZ)) {
-#if JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32
-		if (!memcmp(buf, ELF, ELF_SZ))
-#else
 		if (!pjstrio_strcmpeq(buf, ELF))
-#endif
 			return JSTR_SUCC;
 check_utf:;
 		if (!pjstrio_strcmpeq(buf, UTF))
-			return JSTR_ERR;
-#if JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32
-		if (!memcmp(buf, UTF, UTF_SZ))
-#else
-		if (!pjstrio_strcmpeq(buf, UTF))
-#endif
 			return JSTR_ERR;
 	} else if (jstr_likely(sz == UTF_SZ)) {
 		goto check_utf;
