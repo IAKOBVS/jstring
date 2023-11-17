@@ -40,11 +40,11 @@
 
 /* File extensions interpreted as text files. */
 #ifndef PJSTRIO_EXT_ARRAY_FT_TEXT
-#	define PJSTRIO_EXT_ARRAY_FT_TEXT_NULL "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt", NULL
+#	define PJSTRIO_EXT_ARRAY_FT_TEXT "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt"
 #endif
 /* File extensions interpreted as binary files. */
 #ifndef PJSTRIO_EXT_ARRAY_FT_BINARY
-#	define PJSTRIO_EXT_ARRAY_FT_BINARY_NULL "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip", NULL
+#	define PJSTRIO_EXT_ARRAY_FT_BINARY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
 /* You shouldn't mess with these. */
