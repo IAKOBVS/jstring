@@ -814,15 +814,15 @@ err_closedir:
 	return JSTR_ERR;
 }
 
+#undef NONFATAL_ERR
 #undef IS_DIR
 #undef IS_REG
 #undef FILL_PATH
 #undef FILL_PATHALWAYS
-#undef STAT_OR_MODE
-#undef STAT_MODE
 #undef STAT
-#undef NONFATAL_ERR
 #undef STAT_ALWAYS
+#undef STAT_MODE
+#undef STAT_OR_MODE
 #undef FD_PARAM
 
 /*
