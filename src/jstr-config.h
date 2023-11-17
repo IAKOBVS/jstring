@@ -38,13 +38,17 @@
 #	define JARRP_GROWTH 1.5
 #endif
 
-#ifndef PJSTRIO_EXT_ARRAY_FT_TEXT
 /* File extensions interpreted as text files. */
-#	define PJSTRIO_EXT_ARRAY_FT_TEXT "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt"
+#ifdef PJSTRIO_EXT_ARRAY_FT_TEXT
+#	define PJSTRIO_EXT_ARRAY_FT_TEXT_NULL PJSTRIO_EXT_ARRAY_FT_TEXT, NULL
+#else
+#	define PJSTRIO_EXT_ARRAY_FT_TEXT_NULL "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt", NULL
 #endif
-#ifndef PJSTRIO_EXT_ARRAY_FT_BINARY
 /* File extensions interpreted as binary files. */
-#	define PJSTRIO_EXT_ARRAY_FT_BINARY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
+#ifdef PJSTRIO_EXT_ARRAY_FT_BINARY
+#	define PJSTRIO_EXT_ARRAY_FT_BINARY_NULL PJSTRIO_EXT_ARRAY_FT_BINARY, NULL
+#else
+#	define PJSTRIO_EXT_ARRAY_FT_BINARY_NULL "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip", NULL
 #endif
 
 /* You shouldn't mess with these. */
