@@ -134,12 +134,12 @@ pjstrio_isbinarysignature(const char *R buf,
 		/* ELF */
 		if (p[0] == 0x7 && p[1] == 'E' && p[2] == 'L' && p[3] == 'F')
 			return JSTR_ERR;
-check_elf:;
+check_utf:
 		/* UTF */
 		if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
 			return JSTR_SUCC;
 	} else if (jstr_likely(sz == UTFSZ)) {
-		goto check_elf;
+		goto check_utf;
 	}
 	return -1;
 }
