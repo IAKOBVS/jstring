@@ -127,20 +127,21 @@ static int
 pjstrio_isbinarysignature(const char *R buf,
                           const size_t sz)
 {
-#define ELF "\x7f\ELF"
-#define UTF "\xEF\xBB\xBF"
-	if (jstr_likely(sz >= sizeof(ELF) - 1)) {
-		if (!pjstrio_strcmpeq(buf, ELF))
+	enum { ELFSZ = 4,
+	       UTFSZ = 3 };
+	const unsigned char *p = (const unsigned char *)buf;
+	if (jstr_likely(sz >= ELFSZ)) {
+		/* UTF */
+		if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
 			return JSTR_SUCC;
 check_utf:;
-		if (!pjstrio_strcmpeq(buf, UTF))
+		/* ELF */
+		if (p[0] == 0x7 && p[1] == 'E' && p[2] == 'L' && p[3] == 'F')
 			return JSTR_ERR;
-	} else if (jstr_likely(sz == sizeof(UTF) - 1)) {
+	} else if (jstr_likely(sz == UTFSZ)) {
 		goto check_utf;
 	}
 	return -1;
-#undef ELF
-#undef UTF
 }
 
 /*
