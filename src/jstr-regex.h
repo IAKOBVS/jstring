@@ -471,6 +471,7 @@ JSTR_NOEXCEPT
 err:
 	jstrre_free(preg);
 	jstr_free(s, sz, cap);
+	PJSTR_EXIT_MAYBE();
 	return JSTRRE_RET_ESPACE;
 }
 
@@ -664,6 +665,7 @@ err_free:
 err:
 	jstrre_free(preg);
 	jstr_free(s, sz, cap);
+	PJSTR_EXIT_MAYBE();
 	return JSTRRE_RET_ESPACE;
 }
 

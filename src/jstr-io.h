@@ -200,6 +200,7 @@ JSTR_NOEXCEPT
 err_close:
 	close(fd);
 err:
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
@@ -222,6 +223,7 @@ JSTR_NOEXCEPT
 err_close:
 	fclose(fp);
 err:
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
@@ -270,6 +272,7 @@ err_close_free:
 err_close:
 	pclose(fp);
 err:
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
@@ -294,6 +297,7 @@ JSTR_NOEXCEPT
 err_free:
 	jstr_free(s, sz, cap);
 err:
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
@@ -317,6 +321,7 @@ JSTR_NOEXCEPT
 err_close:
 	close(fd);
 err:
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
@@ -343,6 +348,7 @@ JSTR_NOEXCEPT
 err_close:
 	close(fd);
 err:
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 

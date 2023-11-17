@@ -254,6 +254,7 @@ pjstrl_assign_len(char *R *R s,
 	return JSTR_SUCC;
 err:
 	pjstr_nullify_members(sz, cap);
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 #endif
 }
@@ -338,6 +339,7 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
 	return JSTR_SUCC;
 err:
 	jstrl_free(l);
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
@@ -351,6 +353,7 @@ jstrl_pushfront_len(jstrlist_ty *R l,
 	return jstrl_pushfront_len_unsafe(l, s, s_len);
 err:
 	jstrl_free(l);
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
@@ -373,6 +376,7 @@ JSTR_NOEXCEPT
 	return JSTR_SUCC;
 err:
 	jstrl_free(l);
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
@@ -387,6 +391,7 @@ JSTR_NOEXCEPT
 	return jstrl_pushback_len_unsafe(l, s, s_len);
 err:
 	jstrl_free(l);
+	PJSTR_EXIT_MAYBE();
 	return JSTR_ERR;
 }
 
