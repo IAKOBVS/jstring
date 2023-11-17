@@ -5,7 +5,7 @@
 
 #define JSTR_DEBUG 0
 
-/* Call exit() on errors and print error message. */
+/* Print error message and call exit() on errors. */
 #define JSTR_PANIC 0
 
 /*
