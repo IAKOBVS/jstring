@@ -51,7 +51,7 @@ PJSTR_END_DECLS
 
 #define PJARR_ALIGN_UP(j, base) ((PJARR_ELEMSZ(j) < (sizeof(size_t) + sizeof(size_t))) ? JSTR_ALIGN_UP_STR(base) : base)
 
-#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+#if JSTR_DEBUG || JSTR_PANIC
 #	define PJARR_MALLOC_ERR(j, do_on_malloc_err)         \
 		if (jstr_unlikely((PJARR_DATA(j)) == NULL)) { \
 			PJARR_NULLIFY_MEMBERS(j);             \
@@ -207,7 +207,7 @@ PJSTR_END_DECLS
 #define jarr_start(j, p) PJARR_DATA(j)
 #define jarr_end(j, p)   (PJARR_DATA(j) + PJARR_SZ(j))
 
-#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+#if JSTR_DEBUG || JSTR_PANIC
 #	define jarr_at(j, idx) \
 		(jstr_likely(idx < PJARR_SZ(j)) ? (PJARR_DATA(j) + (idx)) : (jstr_err_exit("Index out of bounds."), PJARR_DATA(j)))
 #else

@@ -38,7 +38,7 @@ PJSTR_END_DECLS
 	                         i < pjstr_foreach_end_##j##_##ptr;                               \
 	                         ++i)
 
-#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+#if JSTR_DEBUG || JSTR_PANIC
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
@@ -63,7 +63,7 @@ PJSTR_END_DECLS
 		} while (0)
 #endif
 
-#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
+#if JSTR_DEBUG || JSTR_PANIC
 #	define PJSTR_EXIT_MAYBE() jstr_err_exit("")
 #else
 #	define PJSTR_EXIT_MAYBE() \
