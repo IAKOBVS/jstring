@@ -584,7 +584,7 @@ typedef enum jstrio_ftw_flag_ty {
 #endif
 
 #if USE_ATFILE
-#	define STATALWAYS(st)                                               \
+#	define STAT_ALWAYS(st)                                              \
 		do {                                                         \
 			if (jstr_unlikely(fstatat(fd, ep->d_name, st, 0))) { \
 				if (NONFATAL_ERR())                          \
@@ -592,22 +592,24 @@ typedef enum jstrio_ftw_flag_ty {
 				return JSTR_ERR;                             \
 			}                                                    \
 		} while (0)
+#	define CLOSE_IFATFILE(fd) close(fd)
 #else
-#	define STATALWAYS(st)                                \
+#	define STAT_ALWAYS(st)                               \
 		do {                                          \
 			if (jstr_unlikely(stat(dirpath, st))) \
 				if (NONFATAL_ERR())           \
 					continue;             \
 			return JSTR_ERR;                      \
 		} while (0)
+#	define CLOSE_IFATFILE(fd)
 #endif
 
 #if JSTR_HAVE_DIRENT_D_TYPE
-#	define ISDIR()       (ep->d_type == DT_DIR)
-#	define ISREG()       (ep->d_type == DT_REG)
-#	define FILL_PATH()   FILL_PATHALWAYS()
-#	define STAT(st)      STATALWAYS(st)
-#	define STAT_MODE(st) ((void)((st).st_mode = DTTOIF(ep->d_type)))
+#	define IS_DIR(ep, st) ((ep)->d_type == DT_DIR)
+#	define IS_REG(ep, st) ((ep)->d_type == DT_REG)
+#	define FILL_PATH()    FILL_PATHALWAYS()
+#	define STAT(st)       STAT_ALWAYS(st)
+#	define STAT_MODE(st)  ((void)((st).st_mode = DTTOIF(ep->d_type)))
 #	define STAT_OR_MODE(st)                        \
 		do {                                    \
 			if (jflags & JSTRIO_FTW_NOSTAT) \
@@ -616,8 +618,8 @@ typedef enum jstrio_ftw_flag_ty {
 				STAT(st);               \
 		} while (0)
 #else
-#	define ISDIR() (S_ISDIR(st->st_mode))
-#	define ISREG() (S_ISREG(st->st_mode))
+#	define IS_DIR(ep, st) (S_ISDIR((st)->st_mode))
+#	define IS_REG(ep, st) (S_ISREG((st)->st_mode))
 #	if USE_ATFILE
 #		define FILL_PATH() FILL_PATHALWAYS()
 #	else
@@ -685,7 +687,7 @@ JSTR_NOEXCEPT
 			    && (ep->d_name[1] == '\0' || (ep->d_name[1] == '.' && ep->d_name[2] == '\0')))
 				continue;
 		}
-		/* Exit if DIRPATH is longer than PATH_MAX. */
+		/* Stop processing if DIRPATH is longer than PATH_MAX. */
 		if (
 #if JSTR_HAVE_DIRENT_D_NAMLEN
 		jstr_unlikely(dirpath_len + ep->d_namlen >= JSTRIO_PATH_MAX)
@@ -700,12 +702,12 @@ JSTR_NOEXCEPT
 #if !JSTR_HAVE_DIRENT_D_TYPE
 #	if !USE_ATFILE
 		FILL_PATHALWAYS();
-#	endif /* ATFILE */
-		STATALWAYS(st);
-#endif /* D_TYPE */
-		if (ISREG())
+#	endif
+		STAT_ALWAYS(st);
+#endif
+		if (IS_REG(ep, st))
 			goto do_reg;
-		if (ISDIR())
+		if (IS_DIR(ep, st))
 			goto do_dir;
 		/* If true, ignore other types of files. */
 		if (jflags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
@@ -728,7 +730,7 @@ do_reg:
 			FILL_PATH();
 		}
 		if (jflags & JSTRIO_FTW_STATREG) {
-			if (ISREG())
+			if (IS_REG(ep, st))
 				STAT(st);
 			else
 				STAT_MODE(st);
@@ -784,9 +786,7 @@ CONT:
 			continue;
 #endif
 		if (jstr_chk(pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st FD_ARG))) {
-#if USE_ATFILE
-			close(fd);
-#endif
+			CLOSE_IFATFILE(fd);
 			goto err_closedir;
 		}
 	}
@@ -797,15 +797,15 @@ err_closedir:
 	return JSTR_ERR;
 }
 
-#undef ISDIR
-#undef ISREG
+#undef IS_DIR
+#undef IS_REG
 #undef FILL_PATH
 #undef FILL_PATHALWAYS
 #undef STAT_OR_MODE
 #undef STAT_MODE
 #undef STAT
 #undef NONFATAL_ERR
-#undef STATALWAYS
+#undef STAT_ALWAYS
 #undef FD_PARAM
 
 /*
@@ -887,14 +887,10 @@ ftw:
 		}
 CONT:
 		pjstrio_ftw_len(fulpath, dirpath_len, fn, jstrio_ftw_flag, fn_glob, fn_flags, &st FD_ARG);
-#if USE_ATFILE
-		close(fd);
-#endif
+		CLOSE_IFATFILE(fd);
 		return JSTR_SUCC;
 	}
-#if USE_ATFILE
-	close(fd);
-#endif
+	CLOSE_IFATFILE(fd);
 	if (jstrio_ftw_flag & JSTRIO_FTW_REG)
 		if (jstr_unlikely(!S_ISREG(st.st_mode)))
 			return JSTR_SUCC;
@@ -903,12 +899,11 @@ CONT:
 			return JSTR_SUCC;
 	return fn(fulpath, dirpath_len, &st);
 err_close:
-#if USE_ATFILE
-	close(fd);
-#endif
+	CLOSE_IFATFILE(fd);
 	return JSTR_ERR;
 }
 
+#undef CLOSE_IFATFILE
 #undef USE_ATFILE
 #undef FD_ARG
 
