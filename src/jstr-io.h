@@ -782,14 +782,13 @@ CONT:
 		fd = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd == -1))
 			continue;
-		ret = pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st, fd);
-		close(fd);
-		if (jstr_chk(ret))
-			goto err_closedir;
-#else
-		if (jstr_chk(pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st)))
-			goto err_closedir;
 #endif
+		if (jstr_chk(pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st FD_ARG))) {
+#if USE_ATFILE
+			close(fd);
+#endif
+			goto err_closedir;
+		}
 	}
 	closedir(dp);
 	return JSTR_SUCC;
