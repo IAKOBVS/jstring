@@ -672,7 +672,7 @@ JSTR_INLINE
 static char *
 pjstr_strcasechr_len(const char *s,
                      int c,
-                     const int n)
+                     const size_t n)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCSPN_OPTIMIZED
