@@ -1182,11 +1182,9 @@ case '~':
 #endif
 
 /* Only use libc strcasestr when it is implemented in assembly. */
-#if JSTR_HAVE_STRCASESTR
-#	if defined __GLIBC__ && (JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8)
-#		define JSTR_HAVE_STRCASESTR_OPTIMIZED 1
-#	endif
-#endif /* HAVE_STRCASESTR */
+#if defined __GLIBC__ && JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8)
+#	define JSTR_HAVE_STRCASESTR_OPTIMIZED 1
+#endif
 
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
 #	define JSTR_HAVE_STRCSPN_OPTIMIZED 1
@@ -1213,7 +1211,7 @@ enum {
 #	endif
 #else
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
-#endif /* HAVE_MEMMEM */
+#endif
 
 /* Check builtins. */
 #if JSTR_ARCH_ALPHA
