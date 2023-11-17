@@ -63,8 +63,8 @@ JSTR_NOEXCEPT
 {
 	enum { TEXT = 0,
 	       BINARY };
-	static const char *text[] = { PJSTRIO_EXT_ARRAY_FT_TEXT_NULL };
-	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY_NULL };
+	static const char *text[] = { PJSTRIO_EXT_ARRAY_FT_TEXT };
+	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY };
 	int i;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i)
 		if (!pjstrio_strcmpeq(ext, text[i]))
