@@ -17,13 +17,11 @@
 
 #include <stdint.h>
 
-/* Cast an integer or a ptr VAL to integer with proper type.  */
-#define JSTR_CAST_TO_INTEGER(val) ((__integer_if_ptr_type(val))(val))
-
 /* Cast an integer VAL to void * ptr.  */
-#define JSTR_CAST_TO_PTR(val) ((void *)(uintptr_t)(val))
+#define JSTR_CAST_TO_PTR(val) \
+	((void *)(uintptr_t)(val))
 
-/* Return the ptrdiff_t difference between P1 and P2.  */
+/* Return the uintptr_t difference between P1 and P2 where P1 >= P2.  */
 #define JSTR_PTR_DIFF(p1, p2) \
 	((uintptr_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 
@@ -34,13 +32,15 @@
 /* Align a value by rounding down to closest size.
    e.g. Using size of 4096, we get this behavior:
         {4095, 4096, 4097} = {0, 4096, 4096}.  */
-#define JSTR_ALIGN_DOWN(base, size) ((base) & -((uintptr_t)(size)))
+#define JSTR_ALIGN_DOWN(base, size) \
+	((base) & -((uintptr_t)(size)))
 
 /* Align a value by rounding up to closest size.
    e.g. Using size of 4096, we get this behavior:
         {4095, 4096, 4097} = {4096, 4096, 8192}.
   Note: The size argument has side effects (expanded multiple times).  */
-#define JSTR_ALIGN_UP(base, size) JSTR_ALIGN_DOWN((base) + (size)-1, (size))
+#define JSTR_ALIGN_UP(base, size) \
+	JSTR_ALIGN_DOWN((base) + (size)-1, (size))
 
 /* Same as ALIGN_DOWN(), but automatically casts when base is a ptr.  */
 #define JSTR_PTR_ALIGN_DOWN(base, size) \
