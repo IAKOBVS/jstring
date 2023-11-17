@@ -51,7 +51,12 @@ JSTR_NOEXCEPT
 	/* The following is based on the implementation of memmem() and strstr() from the
 	   GNU C Library released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-	const unsigned char *end = hs + hl - nl;
+	const unsigned char *
+#if PJSTR_MEMMEM_CHECK_EOL
+	const
+#endif
+	end
+	= hs + hl - nl;
 	size_t tmp;
 	const size_t m1 = nl - 1;
 	size_t off = 0;
