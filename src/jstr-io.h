@@ -131,13 +131,13 @@ pjstrio_isbinarysignature(const char *R buf,
 	       UTFSZ = 3 };
 	const unsigned char *p = (const unsigned char *)buf;
 	if (jstr_likely(sz >= ELFSZ)) {
-		/* UTF */
-		if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
-			return JSTR_SUCC;
-check_elf:;
 		/* ELF */
 		if (p[0] == 0x7 && p[1] == 'E' && p[2] == 'L' && p[3] == 'F')
 			return JSTR_ERR;
+check_elf:;
+		/* UTF */
+		if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
+			return JSTR_SUCC;
 	} else if (jstr_likely(sz == UTFSZ)) {
 		goto check_elf;
 	}
