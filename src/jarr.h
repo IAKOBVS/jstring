@@ -207,7 +207,7 @@ PJSTR_END_DECLS
 #define jarr_start(j, p) PJARR_DATA(j)
 #define jarr_end(j, p)   (PJARR_DATA(j) + PJARR_SZ(j))
 
-#if JSTR_DEBUG
+#if JSTR_DEBUG || JSTR_EXIT_ON_ERROR
 #	define jarr_at(j, idx) \
 		(jstr_likely(idx < PJARR_SZ(j)) ? (PJARR_DATA(j) + (idx)) : (jstr_err_exit("Index out of bounds."), PJARR_DATA(j)))
 #else
