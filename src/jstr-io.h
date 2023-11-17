@@ -120,9 +120,7 @@ JSTR_NOEXCEPT
 }
 
 #define ELF    "\x7f\ELF"
-#define ELF_SZ (sizeof("\x7f\ELF") - 1)
 #define UTF    "\xEF\xBB\xBF"
-#define UTF_SZ (sizeof("\xEF\xBB\xBF") - 1)
 
 JSTR_FUNC
 JSTR_INLINE
@@ -130,22 +128,20 @@ static int
 pjstrio_isbinarysignature(const char *R buf,
                           const size_t sz)
 {
-	if (jstr_likely(sz >= ELF_SZ)) {
+	if (jstr_likely(sz >= sizeof(ELF) - 1)) {
 		if (!pjstrio_strcmpeq(buf, ELF))
 			return JSTR_SUCC;
 check_utf:;
 		if (!pjstrio_strcmpeq(buf, UTF))
 			return JSTR_ERR;
-	} else if (jstr_likely(sz == UTF_SZ)) {
+	} else if (jstr_likely(sz == sizeof(UTF) - 1)) {
 		goto check_utf;
 	}
 	return -1;
 }
 
 #undef ELF
-#undef ELF_SZ
 #undef UTF
-#undef UTF_SZ
 
 /*
    Check if the first JSTRIO_BINARY_CHECK_MAX bytes or fewer contain any unprintable char.
