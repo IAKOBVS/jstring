@@ -101,26 +101,6 @@ JSTR_NOEXCEPT
 	return fname ? pjstrio_exttype(fname + 1) : JSTRIO_FT_UNKNOWN;
 }
 
-/*
-   Check MIN(N, SZ) bytes for any unprintable char.
-*/
-JSTR_FUNC
-static int
-jstr_isbinary(const char *R buf,
-              const size_t n,
-              const size_t sz)
-JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(sz == 0))
-		return JSTR_ERR;
-	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(n, sz);
-	const unsigned char *s = (unsigned char *)buf;
-	while (s < end)
-		if (pjstrio_reject_table[*s++])
-			return JSTR_SUCC;
-	return JSTR_ERR;
-}
-
 JSTR_FUNC
 JSTR_INLINE
 static int
@@ -180,6 +160,26 @@ JSTR_NOEXCEPT
 	if (ret != -1)
 		return ret;
 	return strlen(buf) != sz;
+}
+
+/*
+   Check MIN(N, SZ) bytes for any unprintable char.
+*/
+JSTR_FUNC
+static int
+jstr_isbinary(const char *R buf,
+              const size_t n,
+              const size_t sz)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(sz == 0))
+		return JSTR_ERR;
+	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(n, sz);
+	const unsigned char *s = (unsigned char *)buf;
+	while (s < end)
+		if (pjstrio_reject_table[*s++])
+			return JSTR_SUCC;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC
