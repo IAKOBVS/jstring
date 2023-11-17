@@ -859,7 +859,7 @@ jstrio_fwrite(const char *R s,
               FILE *R fp)
 JSTR_NOEXCEPT
 {
-	return fwrite(s, 1, sz, fp) == sz;
+	return fwrite(s, 1, sz, fp) == sz ? JSTR_SUCC : JSTR_ERR;
 }
 
 JSTR_FUNC
@@ -872,7 +872,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(fwrite(s, 1, sz, fp) != sz))
 		return JSTR_ERR;
-	return fputc('\n', fp) == '\n';
+	return fputc('\n', fp) == '\n' ? JSTR_SUCC : JSTR_ERR;
 }
 
 /*
