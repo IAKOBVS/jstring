@@ -876,7 +876,7 @@ JSTR_NOEXCEPT
 		return JSTR_ERR;
 #endif
 	struct stat st;
-	/* This avoids things like //usr/cache. */
+	/* This will avoid things like //some/path if DIRPATH is /. */
 	if (jstr_unlikely(dirpath_len == 1)
 	    && jstr_unlikely(*dirpath == '/')) {
 		dirpath_len = 0;
