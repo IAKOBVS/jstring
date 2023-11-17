@@ -6,8 +6,8 @@
 /* #define JSTR_DEBUG 1 */
 /* #define JARR_DEBUG 1 */
 
-/* Call exit() on fatal errors. */
-/* #define JSTR_EXIT_ON_ERROR 1 */
+/* Call exit() on fatal errors and print error message. */
+/* #define JSTR_PANIC 1 */
 
 /*
    When removing a string (jstr_ty) from a string list (jstrlist_ty), don't immediately
