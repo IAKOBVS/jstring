@@ -52,7 +52,7 @@ JSTR_NOEXCEPT
 	   GNU C Library released under the terms of the GNU Lesser General Public License.
 	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
 	const unsigned char *
-#if PJSTR_MEMMEM_CHECK_EOL
+#if !PJSTR_MEMMEM_CHECK_EOL
 	const
 #endif
 	end

@@ -9,6 +9,8 @@ PJSTR_BEGIN_DECLS
 #include <stddef.h>
 PJSTR_END_DECLS
 
+#define JSTR_STRUCT(j) &(j)->data, &(j)->size, &(j)->capacity
+
 PJSTR_BEGIN_DECLS
 
 typedef struct jstr_ty {
