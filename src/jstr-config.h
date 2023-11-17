@@ -3,17 +3,23 @@
 #ifndef JSTR_CONFIG_H
 #define JSTR_CONFIG_H 1
 
-#define JSTR_DEBUG 0
+#ifndef JSTR_DEBUG
+#	define JSTR_DEBUG 0
+#endif
 
 /* Print error message and call exit() on errors. */
-#define JSTR_PANIC 0
+#ifndef JSTR_PANIC
+#	define JSTR_PANIC 0
+#endif
 
 /*
    When removing a string (jstr_ty) from a string list (jstrlist_ty), don't immediately
    call free(). This may result in fewer allocations when strings are often added to
    and removed from the list. All elements are freed when jstrl_free() is called.
 */
-#define JSTRL_LAZY_FREE 0
+#ifndef JSTRL_LAZY_FREE
+#	define JSTRL_LAZY_FREE 0
+#endif
 
 #define PJSTR_MIN_CAP          ((sizeof(size_t) == 8) ? 24 : 16)
 #define PJSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
