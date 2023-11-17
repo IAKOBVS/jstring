@@ -69,7 +69,7 @@ JSTR_NOEXCEPT
 			return JSTRIO_FT_TEXT;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(binary); ++i)
 		if (!pjstrio_strcmpeq(ext, binary[i]))
-			return JSTRIO_FT_TEXT;
+			return JSTRIO_FT_BINARY;
 	return JSTRIO_FT_UNKNOWN;
 }
 
