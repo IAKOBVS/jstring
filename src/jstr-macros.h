@@ -35,6 +35,25 @@
 #define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
 #define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
 
+#ifdef __cplusplus
+template <typename T, typename Other>
+static T
+PJSTR_CAST(T, Other other)
+{
+	return (T)other;
+}
+#else
+#	define PJSTR_CAST(T, other) (other)
+#endif /* __cpluslus */
+
+#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                      \
+	                             ? (memset((array), (c), 64),                \
+	                                memset((array) + 64, (c), 64),           \
+	                                memset((array) + 64 + 64, (c), 64),      \
+	                                memset((array) + 64 + 64 + 64, (c), 64)) \
+	                             : memset((array), (c), sizeof((array))))
+#define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
+
 #define JSTR_FUNC_VOID_MAY_NULL JSTR_NOTHROW JSTR_MAYBE_UNUSED
 #define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_NONNULL_ALL
 #define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_WARN_UNUSED
@@ -162,13 +181,13 @@
 #	define JSTR_ASSERT_IS_STR(expr)
 #	define JSTR_ASSERT_IS_CHAR(expr)
 #	define JSTR_ASSERT_TYPECHECK(expr_ty, expr)
-#endif /* __GNUC__ || __clang__ */
+#endif /* __GNUC__ || __clang__ && HAVE_GENERIC */
 
 #if defined __cplusplus && __cplusplus > 199711L
 #	define JSTR_NOEXCEPT noexcept
 #else
 #	define JSTR_NOEXCEPT
-#endif
+#endif /* NOEXCEPT */
 
 #ifdef __ASSERT_FUNCTION
 #	define JSTR_ASSERT_FUNC __ASSERT_FUNCTION
@@ -184,7 +203,7 @@
 #	define JSTR_RESTRICT __restrict
 #else
 #	define JSTR_RESTRICT
-#endif /* restrict */
+#endif /* RESTRICT */
 
 #ifdef __glibc_has_attribute
 #	define JSTR_HAS_ATTRIBUTE(attr) __glibc_has_attribute(attr)
@@ -192,7 +211,7 @@
 #	define JSTR_HAS_ATTRIBUTE(attr) __has_attribute(attr)
 #else
 #	define JSTR_HAS_ATTRIBUTE(attr) 0
-#endif
+#endif /* HAS_ATTRIBUTE */
 
 #ifdef __glibc_has_builtin
 #	define JSTR_HAS_BUILTIN(name) __glibc_has_builtin(name)
@@ -200,7 +219,7 @@
 #	define JSTR_HAS_BUILTIN(name) __has_builtin(name)
 #else
 #	define JSTR_HAS_BUILTIN(name) 0
-#endif
+#endif /* HAS_BUILTIN */
 
 #ifdef __glibc_has_extension
 #	define JSTR_HAS_EXTENSION(ext) __glibc_has_extension(ext)
@@ -208,7 +227,7 @@
 #	define JSTR_HAS_EXTENSION(ext) __has_extension(ext)
 #else
 #	define JSTR_HAS_EXTENSION(ext) 0
-#endif
+#endif /* HAS_EXTENSION */
 
 #if defined __glibc_unlikely && defined __glibc_likely
 #	define jstr_likely(x)   __glibc_likely(x)
@@ -390,7 +409,6 @@
 #	define JSTR_MAY_ALIAS
 #	define JSTR_MAYBE_UNUSED
 #	define JSTR_BUILTIN_CONSTANT_P(p) 0
-
 #endif /* Gnuc || clang || msvc */
 
 #define JSTR_ALPHA_VOWEL_LOWER_STR     "aiueo"
@@ -1196,25 +1214,6 @@ enum {
 #if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC)
 #	define JSTR_HAVE_STRPBRK_OPTIMIZED 1
 #endif
-
-#ifdef __cplusplus
-template <typename T, typename Other>
-static T
-PJSTR_CAST(T, Other other)
-{
-	return (T)other;
-}
-#else
-#	define PJSTR_CAST(T, other) (other)
-#endif /* __cpluslus */
-
-#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                      \
-	                             ? (memset((array), (c), 64),                \
-	                                memset((array) + 64, (c), 64),           \
-	                                memset((array) + 64 + 64, (c), 64),      \
-	                                memset((array) + 64 + 64 + 64, (c), 64)) \
-	                             : memset((array), (c), sizeof((array))))
-#define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
 
 /* Check builtins. */
 #if JSTR_ARCH_ALPHA
