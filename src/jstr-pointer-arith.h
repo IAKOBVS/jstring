@@ -17,33 +17,20 @@
 
 #include <stdint.h>
 
-#if 0
-
-/* JSTR_SUCC if 'type' is a ptr type, 0 otherwise.  */
-#	define __ptr_type(type) (__builtin_classify_type((type)0) == 5)
-
-/* intptr_t if P is true, or T if P is false.  */
-#	define __integer_if_ptr_type_sub(T, P)                          \
-		__typeof__(*(0 ? (__typeof__(0 ? (T *)0 : (void *)(P)))0 \
-		               : (__typeof__(0 ? (intptr_t *)0 : (void *)(!(P))))0))
-/* intptr_t if EXPR has a ptr type, or the type of EXPR otherwise.  */
-#	define __integer_if_ptr_type(expr)                                \
-		__integer_if_ptr_type_sub(__typeof__((__typeof__(expr))0), \
-		                          __ptr_type(__typeof__(expr)))
 /* Cast an integer or a ptr VAL to integer with proper type.  */
-#	define cast_to_integer(val) ((__integer_if_ptr_type(val))(val))
+#define JSTR_CAST_TO_INTEGER(val) ((__integer_if_ptr_type(val))(val))
 
 /* Cast an integer VAL to void * ptr.  */
-#	define cast_to_ptr(val)     ((void *)(uintptr_t)(val))
+#define JSTR_CAST_TO_PTR(val) ((void *)(uintptr_t)(val))
 
 /* Return the ptrdiff_t difference between P1 and P2.  */
-#	define JSTR_PTR_DIFF(p1, p2) \
-		((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
-#endif
+#define JSTR_PTR_DIFF(p1, p2) \
+	((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 
 /* Check if BASE is aligned on SIZE  */
 #define JSTR_PTR_IS_ALIGNED(base, size) \
 	((((uintptr_t)(base)) & ((size)-1)) == 0)
+
 /* Align a value by rounding down to closest size.
    e.g. Using size of 4096, we get this behavior:
         {4095, 4096, 4097} = {0, 4096, 4096}.  */
@@ -58,7 +45,9 @@
 /* Same as ALIGN_DOWN(), but automatically casts when base is a ptr.  */
 #define JSTR_PTR_ALIGN_DOWN(base, size) \
 	(JSTR_ALIGN_DOWN((uintptr_t)(base), (size)))
+
 /* Same as ALIGN_UP(), but automatically casts when base is a ptr.  */
 #define JSTR_PTR_ALIGN_UP(base, size) \
 	(JSTR_ALIGN_UP((uintptr_t)(base), (size)))
+
 #endif /* PJSTR_LIBC_POINTER_ARITH_H */

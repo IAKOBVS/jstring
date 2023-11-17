@@ -44,7 +44,7 @@ PJSTR_CAST(T, Other other)
 }
 #else
 #	define PJSTR_CAST(T, other) (other)
-#endif /* __cpluslus */
+#endif /* CAST */
 
 #define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                      \
 	                             ? (memset((array), (c), 64),                \
@@ -53,15 +53,6 @@ PJSTR_CAST(T, Other other)
 	                                memset((array) + 64 + 64 + 64, (c), 64)) \
 	                             : memset((array), (c), sizeof((array))))
 #define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
-
-#define JSTR_FUNC_VOID_MAY_NULL JSTR_NOTHROW JSTR_MAYBE_UNUSED
-#define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_NONNULL_ALL
-#define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_WARN_UNUSED
-#define JSTR_FUNC               JSTR_FUNC_MAY_NULL JSTR_NONNULL_ALL
-#define JSTR_FUNC_CONST         JSTR_FUNC JSTR_CONST
-#define JSTR_FUNC_PURE          JSTR_FUNC JSTR_PURE
-#define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_PURE
-#define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS extern "C" {
@@ -181,7 +172,7 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_ASSERT_IS_STR(expr)
 #	define JSTR_ASSERT_IS_CHAR(expr)
 #	define JSTR_ASSERT_TYPECHECK(expr_ty, expr)
-#endif /* __GNUC__ || __clang__ && HAVE_GENERIC */
+#endif /* (Gnuc || clang) && HAVE_GENERIC */
 
 #if defined __cplusplus && __cplusplus > 199711L
 #	define JSTR_NOEXCEPT noexcept
@@ -410,6 +401,15 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_MAYBE_UNUSED
 #	define JSTR_BUILTIN_CONSTANT_P(p) 0
 #endif /* Gnuc || clang || msvc */
+
+#define JSTR_FUNC_VOID_MAY_NULL JSTR_NOTHROW JSTR_MAYBE_UNUSED
+#define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_NONNULL_ALL
+#define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_WARN_UNUSED
+#define JSTR_FUNC               JSTR_FUNC_MAY_NULL JSTR_NONNULL_ALL
+#define JSTR_FUNC_CONST         JSTR_FUNC JSTR_CONST
+#define JSTR_FUNC_PURE          JSTR_FUNC JSTR_PURE
+#define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_PURE
+#define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_RETURNS_NONNULL
 
 #define JSTR_ALPHA_VOWEL_LOWER_STR     "aiueo"
 #define JSTR_ALPHA_VOWEL_UPPER_STR     "AIUEO"
