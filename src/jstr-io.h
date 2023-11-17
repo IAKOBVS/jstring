@@ -194,7 +194,8 @@ JSTR_NOEXCEPT
 		goto err;
 	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
 		goto err_close;
-	close(fd);
+	if (jstr_unlikely(close(fd)))
+		goto err;
 	return JSTR_SUCC;
 err_close:
 	close(fd);
@@ -215,7 +216,8 @@ JSTR_NOEXCEPT
 		goto err;
 	if (jstr_unlikely(!jstrio_fwrite(s, sz, fp)))
 		goto err_close;
-	fclose(fp);
+	if (jstr_unlikely(fclose(fp)))
+		goto err;
 	return JSTR_SUCC;
 err_close:
 	fclose(fp);
@@ -260,7 +262,8 @@ JSTR_NOEXCEPT
 		}
 	}
 	*(*s + *sz) = '\0';
-	pclose(fp);
+	if (jstr_unlikely(pclose(fp) == -1))
+		goto err;
 	return JSTR_SUCC;
 err_close_free:
 	jstr_free(s, sz, cap);
@@ -308,7 +311,8 @@ JSTR_NOEXCEPT
 		goto err;
 	if (jstr_chk(pjstrio_readfile_len(s, sz, cap, fd, file_size)))
 		goto err_close;
-	close(fd);
+	if (jstr_unlikely(close(fd)))
+		goto err;
 	return JSTR_SUCC;
 err_close:
 	close(fd);
@@ -593,7 +597,12 @@ typedef enum jstrio_ftw_flag_ty {
 				return JSTR_ERR;                               \
 			}                                                      \
 		} while (0)
-#	define CLOSE_IFATFILE(fd) close(fd)
+#	define CLOSE_IFATFILE(fd, do_on_err)           \
+		do {                                    \
+			if (jstr_unlikely(close(fd))) { \
+				do_on_err;              \
+			}                               \
+		} while (0)
 #else
 #	define STAT_ALWAYS(st, fd, ep, dirpath)                \
 		do {                                            \
@@ -603,7 +612,7 @@ typedef enum jstrio_ftw_flag_ty {
 				return JSTR_ERR;                \
 			}                                       \
 		} while (0)
-#	define CLOSE_IFATFILE(fd)
+#	define CLOSE_IFATFILE(fd, do_on_err)
 #endif
 
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -788,7 +797,7 @@ CONT:
 			continue;
 #endif
 		if (jstr_chk(pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st FD_ARG))) {
-			CLOSE_IFATFILE(fd);
+			CLOSE_IFATFILE(fd, );
 			goto err_closedir;
 		}
 	}
@@ -889,10 +898,10 @@ ftw:
 		}
 CONT:
 		pjstrio_ftw_len(fulpath, dirpath_len, fn, jstrio_ftw_flag, fn_glob, fn_flags, &st FD_ARG);
-		CLOSE_IFATFILE(fd);
+		CLOSE_IFATFILE(fd, return JSTR_ERR);
 		return JSTR_SUCC;
 	}
-	CLOSE_IFATFILE(fd);
+	CLOSE_IFATFILE(fd, return JSTR_ERR);
 	if (jstrio_ftw_flag & JSTRIO_FTW_REG)
 		if (jstr_unlikely(!S_ISREG(st.st_mode)))
 			return JSTR_SUCC;
@@ -901,7 +910,7 @@ CONT:
 			return JSTR_SUCC;
 	return fn(fulpath, dirpath_len, &st);
 err_close:
-	CLOSE_IFATFILE(fd);
+	CLOSE_IFATFILE(fd, );
 	return JSTR_ERR;
 }
 

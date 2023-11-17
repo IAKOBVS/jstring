@@ -13,7 +13,7 @@ my $file_str;
 	open(my $FH, '<', $ARGV[0])
 	  or die "Can't open file $ARGV[0].\n";
 	$file_str = <$FH>;
-	close($FH);
+	close($FH) or die "Can't close file $ARGV[0].\n";
 }
 
 if (index($file_str, '"jstr-macros.h"') == -1) {

@@ -15,7 +15,8 @@ sub get_arch {
 
 while (glob('_glibc-*.h')) {
 	my $fname = $_;
-	open(my $FH, '<', $fname) or die "Can't open $fname\n";
+	open(my $FH, '<', $fname)
+	  or die("Can't open $fname.\n");
 	while (<$FH>) {
 		if (/(__builtin\w*)/) {
 			push(@builtins,  $1);
@@ -23,16 +24,16 @@ while (glob('_glibc-*.h')) {
 			push(@archs,     uc(get_arch($fname)));
 		}
 	}
-	close($FH);
+	close($FH) or die("Can't close $fname\n.");
 }
 
 my $fname = './jstr-macros.h';
 my $file_str;
 {
 	local $/;
-	open(my $FH, '<', $fname) or die "Can't open $fname\n";
+	open(my $FH, '<', $fname) or die("Can't open $fname.\n");
 	$file_str = <$FH>;
-	close($FH);
+	close($FH) or die("Can't close $fname.\n");
 }
 
 my $i = index($file_str, 'Check builtins');
@@ -50,8 +51,7 @@ for (my $i = 0; $i < scalar(@builtins); ++$i) {
 	for (my $j = 0; $j < scalar(@macro_blocks); ++$j) {
 		if (index($macro_blocks[$j], $archs[$i]) != -1) {
 			if ($macro_blocks[$j] !~ /\W$builtins[$i]\W/) {
-				die
-"$builtins[$i] from $filenames[$i] isn't checked for in $fname before defining JSTR_HAVE_WORD_AT_A_TIME.\n";
+				die "$builtins[$i] from $filenames[$i] isn't checked for in $fname before defining JSTR_HAVE_WORD_AT_A_TIME.\n";
 			}
 		}
 	}

@@ -11,9 +11,10 @@ sub jl_file_get_str {
 	my ($fname_ref) = @_;
 	local $/;
 	open(my $FH, '<', $$fname_ref)
-	  or die("Can't open $$fname_ref\n");
+	  or die("Can't open $$fname_ref.\n");
 	my $file_str = <$FH>;
-	close($FH);
+	close($FH)
+	  or die("Can't close $$fname_ref.\n");
 	return $file_str;
 }
 
@@ -35,8 +36,7 @@ sub jl_file_namespace_macros {
 			foreach (@$ignore_prefix_ref) {
 				my $i = index($macro, $_);
 				if ($i == -1 || $i != 0) {
-					$$file_str_ref =~
-					  s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1$$prefix_ref$macro$2/g;
+					$$file_str_ref =~ s/([^'"_0-9A-Za-z]|^)$macro([^'"_0-9A-Za-z]|$)/$1$$prefix_ref$macro$2/g;
 				}
 			}
 		}
@@ -175,12 +175,8 @@ sub jl_arg_is_ptr {
 # @param {$} body_ref
 # @returns {$}
 sub jl_fn_get {
-	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref)
-	  = @_;
-	if ($$block_str_ref =~
-/^((?:.|\n)*?(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/
-	  )
-	{
+	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref) = @_;
+	if ($$block_str_ref =~ /^((?:.|\n)*?(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/) {
 		$$attr_ref    = $1                   if (defined($attr_ref));
 		$$rettype_ref = $2                   if (defined($rettype_ref));
 		$$name_ref    = $3                   if (defined($name_ref));

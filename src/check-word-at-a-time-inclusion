@@ -7,9 +7,9 @@ my $file_str;
 
 while (glob('_string-*.h')) {
 	local $/;
-	open(my $FH, '<', $_);
+	open(my $FH, '<', $_) or die "Can't open $_.\n";
 	$file_str .= <$FH>;
-	close($FH);
+	close($FH) or die "Can't close $_.\n";
 }
 
 while (glob('_glibc-*.h')) {
