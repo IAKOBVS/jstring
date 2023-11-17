@@ -574,67 +574,69 @@ typedef enum jstrio_ftw_flag_ty {
 #define NONFATAL_ERR() jstr_likely(errno == EACCES || errno == ENOENT)
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-#	define FILL_PATHALWAYS()                                                                \
-		do {                                                                             \
-			pjstrio_appendpath_len(dirpath + dirpath_len, ep->d_name, ep->d_namlen); \
-			path_len = dirpath_len + 1 + ep->d_namlen;                               \
+#	define FILL_PATHALWAYS(dirpath, dirpath_len, ep)                                            \
+		do {                                                                                 \
+			pjstrio_appendpath_len(dirpath + dirpath_len, (ep)->d_name, (ep)->d_namlen); \
+			path_len = dirpath_len + 1 + (ep)->d_namlen;                                 \
 		} while (0)
 #else
-#	define FILL_PATHALWAYS() ((void)(path_len = pjstrio_appendpath_p(dirpath + dirpath_len, ep->d_name) - dirpath))
+#	define FILL_PATHALWAYS(dirpath, dirpath_len, ep) \
+		((void)(path_len = pjstrio_appendpath_p(dirpath + dirpath_len, (ep)->d_name) - dirpath))
 #endif
 
 #if USE_ATFILE
-#	define STAT_ALWAYS(st)                                              \
-		do {                                                         \
-			if (jstr_unlikely(fstatat(fd, ep->d_name, st, 0))) { \
-				if (NONFATAL_ERR())                          \
-					continue;                            \
-				return JSTR_ERR;                             \
-			}                                                    \
+#	define STAT_ALWAYS(st, fd, ep, dirpath)                               \
+		do {                                                           \
+			if (jstr_unlikely(fstatat(fd, (ep)->d_name, st, 0))) { \
+				if (NONFATAL_ERR())                            \
+					continue;                              \
+				return JSTR_ERR;                               \
+			}                                                      \
 		} while (0)
 #	define CLOSE_IFATFILE(fd) close(fd)
 #else
-#	define STAT_ALWAYS(st)                               \
-		do {                                          \
-			if (jstr_unlikely(stat(dirpath, st))) \
-				if (NONFATAL_ERR())           \
-					continue;             \
-			return JSTR_ERR;                      \
+#	define STAT_ALWAYS(st, fd, ep, dirpath)                \
+		do {                                            \
+			if (jstr_unlikely(stat(dirpath, st))) { \
+				if (NONFATAL_ERR())             \
+					continue;               \
+				return JSTR_ERR;                \
+			}                                       \
 		} while (0)
 #	define CLOSE_IFATFILE(fd)
 #endif
 
 #if JSTR_HAVE_DIRENT_D_TYPE
-#	define IS_DIR(ep, st) ((ep)->d_type == DT_DIR)
-#	define IS_REG(ep, st) ((ep)->d_type == DT_REG)
-#	define FILL_PATH()    FILL_PATHALWAYS()
-#	define STAT(st)       STAT_ALWAYS(st)
-#	define STAT_MODE(st)  ((void)((st).st_mode = DTTOIF(ep->d_type)))
-#	define STAT_OR_MODE(st)                        \
-		do {                                    \
-			if (jflags & JSTRIO_FTW_NOSTAT) \
-				STAT_MODE(st);          \
-			else                            \
-				STAT(st);               \
+#	define IS_DIR(ep, st)                      ((ep)->d_type == DT_DIR)
+#	define IS_REG(ep, st)                      ((ep)->d_type == DT_REG)
+#	define STAT_MODE(st, ep)                   ((void)((st)->st_mode = DTTOIF((ep)->d_type)))
+#	define FILL_PATH(dirpath, dirpath_len, ep) FILL_PATHALWAYS(dirpath, dirpath_len, ep)
+#	define STAT(st, fd, ep, dirpath)           STAT_ALWAYS(st, fd, ep, dirpath)
+#	define STAT_OR_MODE(st, fd, ep, dirpath)          \
+		do {                                       \
+			if (jflags & JSTRIO_FTW_NOSTAT)    \
+				STAT_MODE(st, ep);         \
+			else                               \
+				STAT(st, fd, ep, dirpath); \
 		} while (0)
 #else
-#	define IS_DIR(ep, st) (S_ISDIR((st)->st_mode))
-#	define IS_REG(ep, st) (S_ISREG((st)->st_mode))
+#	define IS_DIR(ep, st) S_ISDIR((st)->st_mode)
+#	define IS_REG(ep, st) S_ISREG((st)->st_mode)
 #	if USE_ATFILE
-#		define FILL_PATH() FILL_PATHALWAYS()
+#		define FILL_PATH(dirpath, dirpath_len, ep) FILL_PATHALWAYS(dirpath, dirpath_len, ep)
 #	else
-#		define FILL_PATH() \
-			do {        \
+#		define FILL_PATH(dirpath, dirpath_len, ep) \
+			do {                                \
 			} while (0)
 #	endif
-#	define STAT(st) \
-		do {     \
+#	define STAT(st, fd, ep, dirpath) \
+		do {                      \
 		} while (0)
-#	define STAT_MODE(st) \
-		do {          \
+#	define STAT_MODE(st, ep) \
+		do {              \
 		} while (0)
-#	define STAT_OR_MODE(st) \
-		do {             \
+#	define STAT_OR_MODE(st, fd, ep, dirpath) \
+		do {                              \
 		} while (0)
 #endif
 
@@ -701,9 +703,9 @@ JSTR_NOEXCEPT
 		}
 #if !JSTR_HAVE_DIRENT_D_TYPE
 #	if !USE_ATFILE
-		FILL_PATHALWAYS();
+		FILL_PATHALWAYS(dirpath, dirpath_len, ep);
 #	endif
-		STAT_ALWAYS(st);
+		STAT_ALWAYS(st, fd, ep, dirpath);
 #endif
 		if (IS_REG(ep, st))
 			goto do_reg;
@@ -718,24 +720,24 @@ do_reg:
 				continue;
 		if (fn_glob != NULL) {
 			if (jflags & JSTRIO_FTW_MATCHPATH) {
-				FILL_PATH();
+				FILL_PATH(dirpath, dirpath_len, ep);
 				if (fnmatch(fn_glob, dirpath, fn_flags))
 					continue;
 			} else {
 				if (fnmatch(fn_glob, ep->d_name, fn_flags))
 					continue;
-				FILL_PATH();
+				FILL_PATH(dirpath, dirpath_len, ep);
 			}
 		} else {
-			FILL_PATH();
+			FILL_PATH(dirpath, dirpath_len, ep);
 		}
 		if (jflags & JSTRIO_FTW_STATREG) {
 			if (IS_REG(ep, st))
-				STAT(st);
+				STAT(st, fd, ep, dirpath);
 			else
-				STAT_MODE(st);
+				STAT_MODE(st, ep);
 		} else {
-			STAT_OR_MODE(st);
+			STAT_OR_MODE(st, fd, ep, dirpath);
 		}
 		ret = fn(dirpath, path_len, st);
 		if (jflags & JSTRIO_FTW_ACTIONRETVAL) {
@@ -756,11 +758,11 @@ do_dir:
 			if (jflags & JSTRIO_FTW_REG)
 				if (!(jflags & JSTRIO_FTW_DIR))
 					continue;
-		FILL_PATH();
+		FILL_PATH(dirpath, dirpath_len, ep);
 		if (jflags & JSTRIO_FTW_STATREG)
-			STAT_MODE(st);
+			STAT_MODE(st, ep);
 		else
-			STAT_OR_MODE(st);
+			STAT_OR_MODE(st, fd, ep, dirpath);
 		if (jflags & JSTRIO_FTW_REG)
 			if (!(jflags & JSTRIO_FTW_DIR))
 				goto CONT;
