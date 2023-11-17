@@ -1181,6 +1181,21 @@ case '~':
 #	define JSTR_HAVE_STRSTR_OPTIMIZED 1
 #endif
 
+/* Only use libc strcasestr when it is implemented in assembly. */
+#if JSTR_HAVE_STRCASESTR
+#	if defined __GLIBC__ && (JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8)
+#		define JSTR_HAVE_STRCASESTR_OPTIMIZED 1
+#	endif
+#endif /* HAVE_STRCASESTR */
+
+#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
+#	define JSTR_HAVE_STRCSPN_OPTIMIZED 1
+#endif
+
+#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC)
+#	define JSTR_HAVE_STRPBRK_OPTIMIZED 1
+#endif
+
 enum {
 	/* Needle length over which memmem would be faster than strstr. */
 	JSTR_MEMMEM_THRES = 18,
@@ -1199,21 +1214,6 @@ enum {
 #else
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
 #endif /* HAVE_MEMMEM */
-
-/* Only use libc strcasestr when it is implemented in assembly. */
-#if JSTR_HAVE_STRCASESTR
-#	if JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8
-#		define JSTR_HAVE_STRCASESTR_OPTIMIZED 1
-#	endif
-#endif /* HAVE_STRCASESTR */
-
-#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8)
-#	define JSTR_HAVE_STRCSPN_OPTIMIZED 1
-#endif
-
-#if defined __GLIBC__ && (JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC)
-#	define JSTR_HAVE_STRPBRK_OPTIMIZED 1
-#endif
 
 /* Check builtins. */
 #if JSTR_ARCH_ALPHA
