@@ -72,7 +72,7 @@ PJSTR_END_DECLS
 #endif
 
 #define PJSTR_RESERVE_FAIL(func, s, sz, cap, new_cap, do_on_malloc_err) \
-	if (jstr_chk(func(s, sz, cap, new_cap))) {                \
+	if (jstr_chk(func(s, sz, cap, new_cap))) {                      \
 		PJSTR_EXIT_MAYBE();                                     \
 		do_on_malloc_err;                                       \
 	}
@@ -159,16 +159,33 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 JSTR_INLINE
-static void
+static int
 jstr_debug(const jstr_ty *R j)
 JSTR_NOEXCEPT
 {
-	fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
-	fprintf(stderr, "strlen():%zu\n", strlen(j->data));
-	fprintf(stderr, "data puts():%s\n", j->data);
-	fputs("data:", stderr);
+	int ret;
+	ret = fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
+	if (jstr_unlikely(ret < 0))
+		goto err_set_errno;
+	ret = fprintf(stderr, "strlen():%zu\n", strlen(j->data));
+	if (jstr_unlikely(ret < 0))
+		goto err_set_errno;
+	ret = fprintf(stderr, "data puts():%s\n", j->data);
+	if (jstr_unlikely(ret < 0))
+		goto err_set_errno;
+	ret = fputs("data:", stderr);
+	if (jstr_unlikely(ret < 0))
+		goto err_set_errno;
 	fwrite(j->data, 1, j->size, stderr);
-	fputc('\n', stderr);
+	if (jstr_unlikely(ferror(stderr)))
+		goto err;
+	if (jstr_unlikely(fputc('\n', stderr) == EOF))
+		goto err;
+	return JSTR_SUCC;
+err_set_errno:
+	errno = ret;
+err:
+	return JSTR_ERR;
 }
 
 JSTR_FUNC_CONST

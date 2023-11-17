@@ -153,26 +153,37 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 JSTR_INLINE
-static void
+static int
 jstrl_debug(const jstrlist_ty *R l)
 {
-	fprintf(stderr, "size:%zu\n"
-	                "cap:%zu\n"
-	                "\n",
-	        l->size,
-	        l->capacity);
+	int ret;
+	ret = fprintf(stderr, "size:%zu\n"
+	                      "cap:%zu\n"
+	                      "\n",
+	              l->size,
+	              l->capacity);
+	if (jstr_unlikely(ret < 0))
+		goto err_set_errno;
 	jstrl_foreach (l, p) {
-		fprintf(stderr,
-		        "idx:%zu\n"
-		        "size:%zu\n"
-		        "cap:%zu\n",
-		        p - l->data,
-		        p->size,
-		        p->capacity);
-		fprintf(stderr, "data:%s\n"
-		                "\n",
-		        p->data);
+		ret = fprintf(stderr,
+		              "idx:%zu\n"
+		              "size:%zu\n"
+		              "cap:%zu\n",
+		              p - l->data,
+		              p->size,
+		              p->capacity);
+		if (jstr_unlikely(ret < 0))
+			goto err_set_errno;
+		ret = fprintf(stderr, "data:%s\n"
+		                      "\n",
+		              p->data);
+		if (jstr_unlikely(ret < 0))
+			goto err_set_errno;
 	}
+	return JSTR_SUCC;
+err_set_errno:
+	errno = ret;
+	return JSTR_ERR;
 }
 
 JSTR_FUNC_CONST
