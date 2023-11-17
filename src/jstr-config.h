@@ -28,8 +28,8 @@
 #ifndef PJSTR_ALLOC_MULTIPLIER
 #	define PJSTR_ALLOC_MULTIPLIER 2
 #endif
-#ifndef JARRP_ALLOC_MULTIPLIER
-#	define JARRP_ALLOC_MULTIPLIER 1.5
+#ifndef PJARR_ALLOC_MULTIPLIER
+#	define PJARR_ALLOC_MULTIPLIER 1.5
 #endif
 
 /* Growth factor. */
@@ -39,8 +39,8 @@
 #ifndef PJSTRL_GROWTH
 #	define PJSTRL_GROWTH 1.5
 #endif
-#ifndef JARRP_GROWTH
-#	define JARRP_GROWTH 1.5
+#ifndef PJARR_GROWTH
+#	define PJARR_GROWTH 1.5
 #endif
 
 /* File extensions interpreted as text files. */
