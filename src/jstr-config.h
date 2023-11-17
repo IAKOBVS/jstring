@@ -6,7 +6,7 @@
 /* #define JSTR_DEBUG 1 */
 /* #define JARR_DEBUG 1 */
 
-/* Call exit() on fatal errors and print error message. */
+/* Call exit() on errors and print error message. */
 /* #define JSTR_PANIC 1 */
 
 /*
