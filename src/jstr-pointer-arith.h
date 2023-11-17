@@ -25,7 +25,7 @@
 
 /* Return the ptrdiff_t difference between P1 and P2.  */
 #define JSTR_PTR_DIFF(p1, p2) \
-	((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
+	((uintptr_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 
 /* Check if BASE is aligned on SIZE  */
 #define JSTR_PTR_IS_ALIGNED(base, size) \
