@@ -18,7 +18,7 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
-static const char pjstr_itoa_digits[] = "0123456789abcdef";
+static const char pjstr_itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 /*
    Return value:
