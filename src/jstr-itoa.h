@@ -128,18 +128,18 @@ PJSTR_ULLTOA(unsigned int, utoa, u)
 PJSTR_ULLTOA(long, ltoa, )
 PJSTR_ULLTOA(int, itoa, )
 
-#define PJSTR_DEFINE_UTOA_SAFE(T, name)                                                                         \
-	JSTR_FUNC_VOID                                                                                          \
-	JSTR_INLINE                                                                                             \
-	static jstr_ret_ty                                                                                      \
-	jstr_##name(char *R *R s,                                                                               \
-	            size_t *R sz,                                                                               \
-	            size_t *R cap,                                                                              \
-	            T number,                                                                                   \
-	            const unsigned int base)                                                                    \
-	{                                                                                                       \
+#define PJSTR_DEFINE_UTOA_SAFE(T, name)                                                                             \
+	JSTR_FUNC_VOID                                                                                              \
+	JSTR_INLINE                                                                                                 \
+	static jstr_ret_ty                                                                                          \
+	jstr_##name(char *R *R s,                                                                                   \
+	            size_t *R sz,                                                                                   \
+	            size_t *R cap,                                                                                  \
+	            T number,                                                                                       \
+	            const unsigned int base)                                                                        \
+	{                                                                                                           \
 		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base), return JSTR_RET_ERR); \
-		*sz = jstr_ulltoa_p(number, *s + *sz, base) - *s;                                               \
+		*sz = jstr_ulltoa_p(number, *s + *sz, base) - *s;                                                   \
 		return JSTR_RET_SUCC;                                                                               \
 	}
 
@@ -149,18 +149,18 @@ PJSTR_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 
 #undef PJSTR_DEFINE_UTOA_SAFE
 
-#define PJSTR_DEFINE_ITOA_SAFE(T, name, fn_name)                                                                                            \
-	JSTR_FUNC_VOID                                                                                                                      \
-	JSTR_INLINE                                                                                                                         \
-	static jstr_ret_ty                                                                                                                  \
-	jstr_##name(char *R *R s,                                                                                                           \
-	            size_t *R sz,                                                                                                           \
-	            size_t *R cap,                                                                                                          \
-	            T number,                                                                                                               \
-	            const unsigned int base)                                                                                                \
-	{                                                                                                                                   \
+#define PJSTR_DEFINE_ITOA_SAFE(T, name, fn_name)                                                                                                \
+	JSTR_FUNC_VOID                                                                                                                          \
+	JSTR_INLINE                                                                                                                             \
+	static jstr_ret_ty                                                                                                                      \
+	jstr_##name(char *R *R s,                                                                                                               \
+	            size_t *R sz,                                                                                                               \
+	            size_t *R cap,                                                                                                              \
+	            T number,                                                                                                                   \
+	            const unsigned int base)                                                                                                    \
+	{                                                                                                                                       \
 		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##fn_name((number < 0) ? -number : number, base), return JSTR_RET_ERR); \
-		*sz = jstr_lltoa_p(number, *s + *sz, base) - *s;                                                                            \
+		*sz = jstr_lltoa_p(number, *s + *sz, base) - *s;                                                                                \
 		return JSTR_RET_SUCC;                                                                                                           \
 	}
 

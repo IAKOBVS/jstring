@@ -54,15 +54,15 @@
 
 /* You shouldn't mess with these. */
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #endif
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    1
 #endif
 

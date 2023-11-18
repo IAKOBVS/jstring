@@ -601,7 +601,7 @@ typedef enum jstrio_ftw_flag_ty {
 			if (jstr_unlikely(fstatat(fd, (ep)->d_name, st, 0))) { \
 				if (NONFATAL_ERR())                            \
 					continue;                              \
-				return JSTR_RET_ERR;                               \
+				return JSTR_RET_ERR;                           \
 			}                                                      \
 		} while (0)
 #	define CLOSE_IFATFILE(fd, do_on_err)           \
@@ -616,7 +616,7 @@ typedef enum jstrio_ftw_flag_ty {
 			if (jstr_unlikely(stat(dirpath, st))) { \
 				if (NONFATAL_ERR())             \
 					continue;               \
-				return JSTR_RET_ERR;                \
+				return JSTR_RET_ERR;            \
 			}                                       \
 		} while (0)
 #	define CLOSE_IFATFILE(fd, do_on_err)
