@@ -6,7 +6,6 @@
 #include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 PJSTR_END_DECLS
