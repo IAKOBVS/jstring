@@ -104,10 +104,10 @@ JSTR_NOEXCEPT
 #endif
 }
 
+JSTR_FUNC_PURE
 #if JSTR_HAVE_MEMRCHR || !JSTR_HAVE_WORD_AT_A_TIME
 JSTR_INLINE
 #endif
-JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *s,
              const int c,
