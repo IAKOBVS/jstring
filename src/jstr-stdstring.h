@@ -162,10 +162,14 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(s, c);
-#else
+#elif JSTR_HAVE_STRCHR_OPTIMIZED
 	const char *const start = s;
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
+#else
+	for (; *s && *s != (char)c; ++s)
+		;
+	return (char *)s;
 #endif
 }
 
@@ -374,9 +378,13 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STPCPY
 	return stpcpy(dst, src);
-#else
+#elif JSTR_HAVE_STRCPY_OPTIMIZED && JSTR_HAVE_STRLEN_OPTIMIZED
 	return jstr_stpcpy_len(dst, src, strlen(src));
-#endif /* !JSTR_HAVE_STPCPY */
+#else
+	while ((*dst++ = *src++))
+		;
+	return dst - 1;
+#endif
 }
 
 /* Copy until either N is 0 or C is found */
