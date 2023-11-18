@@ -457,9 +457,6 @@ jstr_strnstr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	if (jstr_unlikely(n == 0)
-	    || jstr_unlikely(*hs == '\0'))
-		return NULL;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
 	const char *start = hs;
@@ -1612,8 +1609,6 @@ jstr_linenumber(const char *start,
                 const char *const end)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(start == end))
-		return 0;
 	size_t cnt = 1;
 	for (; (start = (const char *)memchr(start, '\n', end - start)); ++start, ++cnt)
 		;
