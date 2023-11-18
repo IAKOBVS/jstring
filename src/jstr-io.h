@@ -128,7 +128,7 @@ check_utf:;
    Check if the first JSTRIO_BINARY_CHECK_MAX bytes or fewer contain any unprintable char.
 */
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_isbinary_maybe(const char *R buf,
                       const size_t sz)
 JSTR_NOEXCEPT
@@ -137,7 +137,7 @@ JSTR_NOEXCEPT
 		return JSTR_ERR;
 	const int ret = pjstrio_isbinarysignature(buf, sz);
 	if (ret != -1)
-		return ret;
+		return (jstr_ret_ty)ret;
 	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(sz, JSTRIO_BINARY_CHECK_MAX) + 1;
 	const unsigned char *s = (unsigned char *)buf;
 	while (s < end)
@@ -151,22 +151,22 @@ JSTR_NOEXCEPT
    File must be nul terminated.
 */
 JSTR_FUNC_PURE
-static int
+static jstr_ret_ty
 jstrio_isbinary(const char *R buf,
                 const size_t sz)
 JSTR_NOEXCEPT
 {
 	const int ret = pjstrio_isbinarysignature(buf, sz);
 	if (ret != -1)
-		return ret;
-	return strlen(buf) != sz;
+		return (jstr_ret_ty)ret;
+	return strlen(buf) != sz ? JSTR_SUCC : JSTR_ERR;
 }
 
 /*
    Check MIN(N, SZ) bytes for any unprintable char.
 */
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstr_isbinary(const char *R buf,
               const size_t n,
               const size_t sz)
@@ -183,7 +183,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_writefile(const char *R s,
                  const size_t sz,
                  const char *R fname,
@@ -206,7 +206,7 @@ err:
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_fwritefile(const char *R s,
                   const size_t sz,
                   const char *R fname,
@@ -231,7 +231,7 @@ err:
 #if JSTR_HAVE_POPEN
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_readsystem(char *R *R s,
                   size_t *R sz,
                   size_t *R cap,
@@ -281,7 +281,7 @@ err:
 
 JSTR_FUNC
 JSTR_INLINE
-static int
+static jstr_ret_ty
 pjstrio_readfile_len(char *R *R s,
                      size_t *R sz,
                      size_t *R cap,
@@ -303,7 +303,7 @@ err:
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_readfile_len(char *R *R s,
                     size_t *R sz,
                     size_t *R cap,
@@ -332,7 +332,7 @@ err:
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_readfile(char *R *R s,
                 size_t *R sz,
                 size_t *R cap,
@@ -385,7 +385,7 @@ JSTR_NOEXCEPT
    NULL on error.
 */
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_expandtildefirst_p(char *R *R s,
                           size_t *R sz,
                           size_t *R cap)
@@ -438,7 +438,7 @@ JSTR_NOEXCEPT
    otherwise JSTR_SUCC.
 */
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_expandtilde(char *R *R s,
                    size_t *R sz,
                    size_t *R cap)
@@ -489,7 +489,7 @@ jstrio_appendpath_p(char *R path,
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrio_appendpath_len(char *R *R s,
                       size_t *R sz,
                       size_t *R cap,
@@ -672,7 +672,7 @@ JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
 JSTR_NONNULL(3)
 JSTR_NONNULL(7)
-static int
+static jstr_ret_ty
 pjstrio_ftw_len(char *R dirpath,
                 const size_t dirpath_len,
                 int (*fn)(const char *, size_t, const struct stat *),
@@ -838,7 +838,7 @@ err_closedir:
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(1)
 JSTR_NONNULL(3)
-static int
+static jstr_ret_ty
 jstrio_ftw_len(const char *R dirpath,
                size_t dirpath_len,
                int (*fn)(const char *, size_t, const struct stat *),
@@ -915,7 +915,7 @@ CONT:
 	if (fn_glob != NULL)
 		if (fnmatch(fn_glob, fulpath, fn_flags))
 			return JSTR_SUCC;
-	return fn(fulpath, dirpath_len, &st);
+	return (jstr_ret_ty)fn(fulpath, dirpath_len, &st);
 err_close:
 	CLOSE_IFATFILE(fd, );
 	return JSTR_ERR;

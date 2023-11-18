@@ -86,7 +86,7 @@ typedef enum {
 	JSTRRE_ERPAREN = REG_RET_ERPAREN
 #	define JSTRRE_ERPAREN JSTRRE_ERPAREN
 #endif
-} jstrre_errcode_ty;
+} jstrre_ret_ty;
 
 #define jstrre_comp_chk(errcode) jstr_unlikely(errcode != JSTRRE_RET_NOERROR)
 #define jstrre_exec_chk(errcode) (jstrre_comp_chk(errcode) && jstr_unlikely(errcode != JSTRRE_RET_NOMATCH))
@@ -130,7 +130,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstrre_err_exit(jstrre_errcode_ty errcode,
+jstrre_err_exit(jstrre_ret_ty errcode,
                 const regex_t *R preg)
 JSTR_NOEXCEPT
 {
@@ -141,7 +141,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstrre_err_print(jstrre_errcode_ty errcode,
+jstrre_err_print(jstrre_ret_ty errcode,
                  const regex_t *R preg)
 JSTR_NOEXCEPT
 {
@@ -152,7 +152,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
-jstrre_err(jstrre_errcode_ty errcode,
+jstrre_err(jstrre_ret_ty errcode,
            const regex_t *R preg,
            char *R errbuf,
            const size_t errbuf_size)
@@ -164,13 +164,13 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_comp(regex_t *R preg,
             const char *R ptn,
             const int cflags)
 JSTR_NOEXCEPT
 {
-	return (jstrre_errcode_ty)regcomp(preg, ptn, cflags);
+	return (jstrre_ret_ty)regcomp(preg, ptn, cflags);
 }
 
 JSTR_NONNULL(1)
@@ -179,7 +179,7 @@ JSTR_INLINE
 JSTR_WARN_UNUSED
 JSTR_FUNC_PURE_MAY_NULL
 JSTR_NOTHROW
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_exec(const regex_t *R preg,
             const char *R s,
             const size_t nmatch,
@@ -187,12 +187,12 @@ jstrre_exec(const regex_t *R preg,
             const int eflags)
 JSTR_NOEXCEPT
 {
-	return (jstrre_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags);
+	return (jstrre_ret_ty)regexec(preg, s, nmatch, pmatch, eflags);
 }
 
 JSTR_FUNC_PURE
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_exec_len(const regex_t *R preg,
                 const char *R s,
                 const size_t sz,
@@ -205,7 +205,7 @@ JSTR_NOEXCEPT
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
 #endif
-	return (jstrre_errcode_ty)regexec(preg, s, nmatch, pmatch, eflags | JSTRRE_EF_STARTEND);
+	return (jstrre_ret_ty)regexec(preg, s, nmatch, pmatch, eflags | JSTRRE_EF_STARTEND);
 }
 
 /*
@@ -214,7 +214,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_match(const regex_t *R preg,
              const char *R s,
              const int eflags)
@@ -230,7 +230,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_search(const regex_t *R preg,
               const char *R s,
               regmatch_t *R pmatch,
@@ -247,7 +247,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_search_len(const regex_t *R preg,
                   const char *R s,
                   const size_t sz,
@@ -264,7 +264,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_match_len(const regex_t *R preg,
                  const char *R s,
                  const size_t sz,
@@ -276,7 +276,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rmn_from(const regex_t *R preg,
                 char *R s,
                 size_t *R sz,
@@ -291,7 +291,7 @@ JSTR_NOEXCEPT
 	const char *oldp = dst;
 	const char *const end = s + *sz;
 	size_t find_len;
-	jstrre_errcode_ty ret = JSTRRE_RET_NOMATCH;
+	jstrre_ret_ty ret = JSTRRE_RET_NOMATCH;
 	while (n-- && jstrre_exec_len(preg, p, end - p, 1, &rm, eflags) == JSTRRE_RET_NOERROR) {
 		ret = JSTRRE_RET_NOERROR;
 		find_len = rm.rm_eo - rm.rm_so;
@@ -310,7 +310,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rm(const regex_t *R preg,
           char *R s,
           size_t *R sz,
@@ -322,7 +322,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rm_from(const regex_t *R preg,
                char *R s,
                size_t *R sz,
@@ -335,7 +335,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rmall(const regex_t *R preg,
              char *R s,
              size_t *R sz,
@@ -347,7 +347,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rmn(const regex_t *R preg,
            char *R s,
            size_t *R sz,
@@ -360,7 +360,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rmall_from(const regex_t *R preg,
                   char *R s,
                   size_t *R sz,
@@ -402,7 +402,7 @@ pjstrre_rplcallsmallerrplc(char *s,
 
 JSTR_FUNC
 JSTR_INLINE
-static int
+static jstr_ret_ty
 pjstrre_rplcallbiggerrplc(char *R *R s,
                           size_t *R sz,
                           size_t *R cap,
@@ -430,7 +430,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 }
 
 JSTR_FUNC
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplcn_len_from(regex_t *R preg,
                       char *R *R s,
                       size_t *R sz,
@@ -477,7 +477,7 @@ err:
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplcn_len(regex_t *R preg,
                  char *R *R s,
                  size_t *R sz,
@@ -493,7 +493,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplcall_len_from(regex_t *R preg,
                         char *R *R s,
                         size_t *R sz,
@@ -509,7 +509,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplcall_len(regex_t *R preg,
                    char *R *R s,
                    size_t *R sz,
@@ -524,7 +524,7 @@ JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_FUNC
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplc_len(regex_t *R preg,
                 char *R *R s,
                 size_t *R sz,
@@ -539,7 +539,7 @@ JSTR_NOEXCEPT
 
 JSTR_INLINE
 JSTR_FUNC
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplc_len_from(regex_t *R preg,
                      char *R *R s,
                      size_t *R sz,
@@ -605,7 +605,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplcn_bref_len_from(regex_t *R preg,
                            char *R *R s,
                            size_t *R sz,
@@ -671,7 +671,7 @@ err:
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplcall_bref_len(regex_t *R preg,
                         char *R *R s,
                         size_t *R sz,
@@ -687,7 +687,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplcall_bref_len_from(regex_t *R preg,
                              char *R *R s,
                              size_t *R sz,
@@ -704,7 +704,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplcn_bref_len(regex_t *R preg,
                       char *R *R s,
                       size_t *R sz,
@@ -721,7 +721,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplc_bref_len_from(regex_t *R preg,
                           char *R *R s,
                           size_t *R sz,
@@ -738,7 +738,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static jstrre_errcode_ty
+static jstrre_ret_ty
 jstrre_rplc_bref_len(regex_t *R preg,
                      char *R *R s,
                      size_t *R sz,

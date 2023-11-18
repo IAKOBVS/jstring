@@ -12,8 +12,20 @@
 #include <stdlib.h>
 #include <sys/cdefs.h>
 
-#define JSTR_ERR  0
-#define JSTR_SUCC 1
+#ifdef __cplusplus
+#	define PJSTR_BEGIN_DECLS extern "C" {
+#	define PJSTR_END_DECLS   }
+#else
+#	define PJSTR_BEGIN_DECLS
+#	define PJSTR_END_DECLS
+#endif
+
+PJSTR_BEGIN_DECLS
+typedef enum {
+	JSTR_ERR = 0,
+	JSTR_SUCC
+} jstr_ret_ty;
+PJSTR_END_DECLS
 
 #define jstr_chk(ret) jstr_unlikely(ret == JSTR_ERR)
 
@@ -53,14 +65,6 @@ PJSTR_CAST(T, Other other)
 	                                memset((array) + 64 + 64 + 64, (c), 64)) \
 	                             : memset((array), (c), sizeof((array))))
 #define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
-
-#ifdef __cplusplus
-#	define PJSTR_BEGIN_DECLS extern "C" {
-#	define PJSTR_END_DECLS   }
-#else
-#	define PJSTR_BEGIN_DECLS
-#	define PJSTR_END_DECLS
-#endif
 
 #if !(defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__)
 #	define JSTR_HAVE_VLA 1

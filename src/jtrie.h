@@ -18,7 +18,7 @@ PJSTR_BEGIN_DECLS
 typedef enum {
 	JTRIE_SUCC = 0,
 	JTRIE_ERR = 1
-} jtrie_errcode_ty;
+} jtrie_ret_ty;
 
 typedef struct jtrie_node_ty {
 	struct jtrie_node_ty *child[JTRIE_ASCII_SIZE];
@@ -62,7 +62,7 @@ JSTR_INLINE
 JSTR_NONNULL_ALL
 JSTR_WARN_UNUSED
 JSTR_NOTHROW
-static jtrie_errcode_ty
+static jtrie_ret_ty
 jtrie_add(jtrie_node_ty *R root,
           const char *R word)
 JSTR_NOEXCEPT

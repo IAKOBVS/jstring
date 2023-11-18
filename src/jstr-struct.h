@@ -12,13 +12,11 @@ PJSTR_END_DECLS
 #define JSTR_STRUCT(j) &(j)->data, &(j)->size, &(j)->capacity
 
 PJSTR_BEGIN_DECLS
-
 typedef struct jstr_ty {
 	char *data;
 	size_t size;
 	size_t capacity;
 } jstr_ty;
-
 PJSTR_END_DECLS
 
 #endif /* JSTR_STRUCT_H */

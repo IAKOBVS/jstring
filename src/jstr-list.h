@@ -153,7 +153,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 JSTR_INLINE
-static int
+static jstr_ret_ty
 jstrl_debug(const jstrlist_ty *R l)
 {
 	int ret;
@@ -202,7 +202,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static int
+static jstr_ret_ty
 jstrl_reservealways(jstrlist_ty *R l,
                     size_t new_cap)
 JSTR_NOEXCEPT
@@ -224,7 +224,7 @@ err:
 
 JSTR_FUNC
 JSTR_INLINE
-static int
+static jstr_ret_ty
 jstrl_reserve(jstrlist_ty *R l,
               size_t new_cap)
 JSTR_NOEXCEPT
@@ -236,7 +236,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 JSTR_INLINE
-static int
+static jstr_ret_ty
 pjstrl_assign_len(char *R *R s,
                   size_t *R sz,
                   size_t *R cap,
@@ -308,7 +308,7 @@ jstrl_popfront(jstrlist_ty *R l)
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
                            const char *R s,
                            const size_t s_len)
@@ -344,7 +344,7 @@ err:
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrl_pushfront_len(jstrlist_ty *R l,
                     const char *R s,
                     const size_t s_len)
@@ -358,7 +358,7 @@ err:
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrl_pushback_len_unsafe(jstrlist_ty *R l,
                           const char *R s,
                           const size_t s_len)
@@ -381,7 +381,7 @@ err:
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrl_pushback_len(jstrlist_ty *R l,
                    const char *R s,
                    const size_t s_len)
@@ -399,7 +399,7 @@ err:
 JSTR_SENTINEL
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
-static int
+static jstr_ret_ty
 jstrl_cat(jstrlist_ty *R l,
           ...)
 JSTR_NOEXCEPT
@@ -427,7 +427,7 @@ err_free_l:
 }
 
 JSTR_FUNC
-static int
+static jstr_ret_ty
 jstrl_assign_len(jstrlist_ty *R l,
                  const size_t idx,
                  const char *R s,
