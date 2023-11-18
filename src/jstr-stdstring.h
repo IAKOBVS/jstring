@@ -245,11 +245,10 @@ JSTR_NOEXCEPT
 	}
 	return NULL;
 #else
-	const unsigned char *start = (const unsigned char *)s;
-	const unsigned char *const end = (const unsigned char *)s + n;
-	for (; *start && start < end && *start != (unsigned char)c; ++start)
+	const char *const end = s + n;
+	for (; *s && s < end && *s != (char)c; ++s)
 		;
-	return *start ? (char *)start : NULL;
+	return *s ? (char *)s : NULL;
 #endif
 }
 
