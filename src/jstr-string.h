@@ -1449,8 +1449,6 @@ jstr_countchr(const char *s,
               const int c)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*s == '\0'))
-		return 0;
 	size_t cnt = 0;
 	for (; (s = strchr(s, c)); ++s, ++cnt)
 		;
