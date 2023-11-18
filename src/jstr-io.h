@@ -98,7 +98,7 @@ jstrio_exttype(const char *R fname,
 JSTR_NOEXCEPT
 {
 	fname = (char *)pjstrio_extget_len(fname, sz);
-	return fname ? pjstrio_exttype(fname + 1) : JSTRIO_FT_UNKNOWN;
+	return (fname && (*fname + 1)) ? pjstrio_exttype(fname + 1) : JSTRIO_FT_UNKNOWN;
 }
 
 JSTR_FUNC
