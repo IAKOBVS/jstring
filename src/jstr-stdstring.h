@@ -166,6 +166,21 @@ JSTR_NOEXCEPT
 	const char *const start = s;
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
+#elif JSTR_HAVE_WORD_AT_A_TIME
+	/* The following is the implementation of strchrnul() from the GNU C
+	   Library released under the terms of the GNU Lesser General Public License.
+	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
+	uintptr_t s_int = (uintptr_t)s;
+	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
+	jstr_word_ty word = *word_ptr;
+	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
+	if (mask != 0)
+		return (char *)s + jstr_word_index_first(mask);
+	do
+		word = *++word_ptr;
+	while (!jstr_word_has_zero_eq(word, repeated_c));
+	return (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
 #else
 	for (; *s && *s != (char)c; ++s)
 		;
