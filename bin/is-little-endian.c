@@ -1,5 +1,5 @@
 #include <stdio.h>
-int main()
+int main(void)
 {
 	const int n = 1;
 	if (*(char *)&n == 1)

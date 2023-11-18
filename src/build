@@ -25,7 +25,7 @@ compile()
 	cc -x c -o "$1" -
 }
 file_str='#include "../jstr/jstr.h"
-int main() {return 0;}'
+int main(void) {return 0;}'
 TMP=/tmp/__jstr_tmp_obj__
 echo "$file_str" | compile "$TMP" || exit
 file_str="#define __STRICT_ANSI__
