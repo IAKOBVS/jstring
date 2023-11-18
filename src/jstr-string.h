@@ -416,8 +416,6 @@ JSTR_NOEXCEPT
 	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef unsigned char u;
-	if (jstr_unlikely(ne_len == 0))
-		return (void *)hs;
 	if (ne_len == 1)
 		return (void *)memchr(hs, *(u *)ne, ne_len);
 	if (jstr_unlikely(hs_len < ne_len))
@@ -428,7 +426,9 @@ JSTR_NOEXCEPT
 		return pjstr_memmem3((u *)hs, (u *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memmem4((u *)hs, (u *)ne, hs_len);
-	return pjstr_memmem((u *)hs, hs_len, (u *)ne, ne_len);
+	if (jstr_likely(ne_len))
+		return pjstr_memmem((u *)hs, hs_len, (u *)ne, ne_len);
+	return (void *)hs;
 #endif
 }
 
