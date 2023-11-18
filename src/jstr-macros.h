@@ -3,9 +3,9 @@
 #ifndef JSTR_MACROS_H
 #define JSTR_MACROS_H 1
 
+#include "_jstr-features.h"
 #include "jstr-config.h"
 #include "jstr-pointer-arith.h"
-#include "_jstr-features.h"
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
