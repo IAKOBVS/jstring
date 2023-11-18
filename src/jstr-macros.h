@@ -6,11 +6,9 @@
 #include "jstr-config.h"
 #include "jstr-pointer-arith.h"
 #include <assert.h>
-#include <features.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/cdefs.h>
 
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS extern "C" {
