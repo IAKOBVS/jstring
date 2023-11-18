@@ -160,9 +160,9 @@ jstr_strchrnul(const char *s,
                const int c)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCHRNUL
+#if 0 && JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(s, c);
-#elif JSTR_HAVE_STRCHR_OPTIMIZED
+#elif 0 && JSTR_HAVE_STRCHR_OPTIMIZED
 	const char *const start = s;
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
@@ -173,12 +173,12 @@ JSTR_NOEXCEPT
 	uintptr_t s_int = (uintptr_t)s;
 	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
 	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	jstr_word_ty word = *word_ptr;
+	jstr_word_ty word = jstr_word_toword(word_ptr);
 	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0)
 		return (char *)s + jstr_word_index_first(mask);
 	do
-		word = *++word_ptr;
+		word = jstr_word_toword(++word_ptr);
 	while (!jstr_word_has_zero_eq(word, repeated_c));
 	return (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
 #else
