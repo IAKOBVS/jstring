@@ -56,7 +56,6 @@ pjstrio_strcmpeq(const char *s1,
 }
 
 JSTR_FUNC_PURE
-JSTR_NOINLINE
 static jstrio_ext_ty
 pjstrio_exttype(const char *ext)
 JSTR_NOEXCEPT
