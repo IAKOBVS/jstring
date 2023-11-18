@@ -138,9 +138,9 @@ PJSTR_ULLTOA(int, itoa, )
 	            T number,                                                                                   \
 	            const unsigned int base)                                                                    \
 	{                                                                                                       \
-		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base), return JSTR_ERR); \
+		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base), return JSTR_RET_ERR); \
 		*sz = jstr_ulltoa_p(number, *s + *sz, base) - *s;                                               \
-		return JSTR_SUCC;                                                                               \
+		return JSTR_RET_SUCC;                                                                               \
 	}
 
 PJSTR_DEFINE_UTOA_SAFE(unsigned int, utoa)
@@ -159,9 +159,9 @@ PJSTR_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 	            T number,                                                                                                               \
 	            const unsigned int base)                                                                                                \
 	{                                                                                                                                   \
-		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##fn_name((number < 0) ? -number : number, base), return JSTR_ERR); \
+		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##fn_name((number < 0) ? -number : number, base), return JSTR_RET_ERR); \
 		*sz = jstr_lltoa_p(number, *s + *sz, base) - *s;                                                                            \
-		return JSTR_SUCC;                                                                                                           \
+		return JSTR_RET_SUCC;                                                                                                           \
 	}
 
 PJSTR_DEFINE_ITOA_SAFE(int, itoa, utoa)

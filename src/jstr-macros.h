@@ -22,12 +22,12 @@
 
 PJSTR_BEGIN_DECLS
 typedef enum {
-	JSTR_ERR = 0,
-	JSTR_SUCC
+	JSTR_RET_ERR = 0,
+	JSTR_RET_SUCC
 } jstr_ret_ty;
 PJSTR_END_DECLS
 
-#define jstr_chk(ret) jstr_unlikely(ret == JSTR_ERR)
+#define jstr_chk(ret) jstr_unlikely(ret == JSTR_RET_ERR)
 
 #if JSTR_DEBUG
 #	define JSTR_PRINT_LOG(...) fprintf(stderr, __VA_ARGS__)

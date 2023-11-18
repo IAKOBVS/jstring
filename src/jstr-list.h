@@ -180,10 +180,10 @@ jstrl_debug(const jstrlist_ty *R l)
 		if (jstr_unlikely(ret < 0))
 			goto err_set_errno;
 	}
-	return JSTR_SUCC;
+	return JSTR_RET_SUCC;
 err_set_errno:
 	errno = ret;
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 }
 
 JSTR_FUNC_CONST
@@ -215,11 +215,11 @@ JSTR_NOEXCEPT
 	memset(l->data + l->capacity, 0, (new_cap - l->capacity) * sizeof(*l->data));
 #endif
 	l->capacity = new_cap;
-	return JSTR_SUCC;
+	return JSTR_RET_SUCC;
 err:
 	jstrl_free(l);
 	PJSTR_EXIT_MAYBE();
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 }
 
 JSTR_FUNC
@@ -230,8 +230,8 @@ jstrl_reserve(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
-		PJSTRL_RESERVEALWAYS(l, new_cap, return JSTR_ERR);
-	return JSTR_SUCC;
+		PJSTRL_RESERVEALWAYS(l, new_cap, return JSTR_RET_ERR);
+	return JSTR_RET_SUCC;
 }
 
 JSTR_FUNC
@@ -251,11 +251,11 @@ pjstrl_assign_len(char *R *R s,
 	PJSTR_MALLOC_ERR(*s, goto err);
 	jstr_strcpy_len(*s, src, src_len);
 	*sz = src_len;
-	return JSTR_SUCC;
+	return JSTR_RET_SUCC;
 err:
 	pjstr_nullify_members(sz, cap);
 	PJSTR_EXIT_MAYBE();
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 #endif
 }
 
@@ -336,11 +336,11 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
 #elif defined __GNUC__
 #	pragma GCC diagnostic pop
 #endif
-	return JSTR_SUCC;
+	return JSTR_RET_SUCC;
 err:
 	jstrl_free(l);
 	PJSTR_EXIT_MAYBE();
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 }
 
 JSTR_FUNC
@@ -354,7 +354,7 @@ jstrl_pushfront_len(jstrlist_ty *R l,
 err:
 	jstrl_free(l);
 	PJSTR_EXIT_MAYBE();
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 }
 
 JSTR_FUNC
@@ -373,11 +373,11 @@ JSTR_NOEXCEPT
 	    s_len)))
 		goto err;
 	++l->size;
-	return JSTR_SUCC;
+	return JSTR_RET_SUCC;
 err:
 	jstrl_free(l);
 	PJSTR_EXIT_MAYBE();
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 }
 
 JSTR_FUNC
@@ -392,7 +392,7 @@ JSTR_NOEXCEPT
 err:
 	jstrl_free(l);
 	PJSTR_EXIT_MAYBE();
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 }
 
 /* Last arg must be NULL. */
@@ -411,19 +411,19 @@ JSTR_NOEXCEPT
 		;
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
-		return JSTR_SUCC;
-	PJSTRL_RESERVE(l, l->size + argc, return JSTR_ERR)
+		return JSTR_RET_SUCC;
+	PJSTRL_RESERVE(l, l->size + argc, return JSTR_RET_ERR)
 	va_start(ap, l);
 	const char *R arg;
 	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, const char *)); ++j, ++l->size)
 		if (jstr_chk(pjstrl_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
 	va_end(ap);
-	return JSTR_SUCC;
+	return JSTR_RET_SUCC;
 err_free_l:
 	jstrl_free(l);
 	va_end(ap);
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 }
 
 JSTR_FUNC
@@ -433,10 +433,10 @@ jstrl_assign_len(jstrlist_ty *R l,
                  const char *R s,
                  const size_t s_len)
 {
-	if (jstr_likely(pjstrl_assign_len(&pjstrl_at(l, idx)->data, &pjstrl_at(l, idx)->size, &pjstrl_at(l, idx)->capacity, s, s_len) == JSTR_SUCC))
-		return JSTR_SUCC;
+	if (jstr_likely(pjstrl_assign_len(&pjstrl_at(l, idx)->data, &pjstrl_at(l, idx)->size, &pjstrl_at(l, idx)->capacity, s, s_len) == JSTR_RET_SUCC))
+		return JSTR_RET_SUCC;
 	jstrl_free(l);
-	return JSTR_ERR;
+	return JSTR_RET_ERR;
 }
 
 #define PJSTRL_DEFINE_FIND_LEN(name, func)                    \
