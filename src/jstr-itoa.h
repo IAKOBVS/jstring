@@ -11,6 +11,7 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
+#include "jstr-builder.h"
 #include "jstr-replace.h"
 
 #define R JSTR_RESTRICT
@@ -19,6 +20,28 @@ PJSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
 static const char pjstr_itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+#define PJSTR_DEFINE_ITOA_COUNTUDIGITS(T, name)                 \
+	JSTR_FUNC                                               \
+	JSTR_INLINE                                             \
+	static int                                              \
+	pjstr_itoa_countudigits_##name(T number,                \
+	                               const unsigned int base) \
+	{                                                       \
+		switch (base) {                                 \
+		case 10: return sizeof(number) / 10;            \
+		case 16: return sizeof(number) / 16;            \
+		case 2: return sizeof(number) / 2;              \
+		case 8: return sizeof(number) / 8;              \
+		default: return sizeof(number) / base;          \
+		}                                               \
+	}
+
+PJSTR_DEFINE_ITOA_COUNTUDIGITS(unsigned int, utoa)
+PJSTR_DEFINE_ITOA_COUNTUDIGITS(unsigned long, ultoa)
+PJSTR_DEFINE_ITOA_COUNTUDIGITS(unsigned long long, ulltoa)
+
+#undef PJSTR_DEFINE_ITOA_COUNTUDIGITS
 
 /*
    Return value:
@@ -46,9 +69,9 @@ JSTR_NOEXCEPT
 			return buf + 1;
 		}
 		LOOP_BASE(10);
+	case 16: LOOP_BASE(16);
 	case 2: LOOP_BASE(2);
 	case 8: LOOP_BASE(8);
-	case 16: LOOP_BASE(16);
 	default: LOOP_BASE(base);
 	}
 	const char *const end = buf;
@@ -105,6 +128,48 @@ PJSTR_ULLTOA(unsigned int, utoa, u)
 PJSTR_ULLTOA(long, ltoa, )
 PJSTR_ULLTOA(int, itoa, )
 
+#define PJSTR_DEFINE_UTOA_SAFE(T, name)                                                                         \
+	JSTR_FUNC_VOID                                                                                          \
+	JSTR_INLINE                                                                                             \
+	static jstr_ret_ty                                                                                      \
+	jstr_##name(char *R *R s,                                                                               \
+	            size_t *R sz,                                                                               \
+	            size_t *R cap,                                                                              \
+	            T number,                                                                                   \
+	            const unsigned int base)                                                                    \
+	{                                                                                                       \
+		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base), return JSTR_ERR); \
+		*sz = jstr_ulltoa_p(number, *s + *sz, base) - *s;                                               \
+		return JSTR_SUCC;                                                                               \
+	}
+
+PJSTR_DEFINE_UTOA_SAFE(unsigned int, utoa)
+PJSTR_DEFINE_UTOA_SAFE(unsigned long, ultoa)
+PJSTR_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
+
+#undef PJSTR_DEFINE_UTOA_SAFE
+
+#define PJSTR_DEFINE_ITOA_SAFE(T, name, fn_name)                                                                                            \
+	JSTR_FUNC_VOID                                                                                                                      \
+	JSTR_INLINE                                                                                                                         \
+	static jstr_ret_ty                                                                                                                  \
+	jstr_##name(char *R *R s,                                                                                                           \
+	            size_t *R sz,                                                                                                           \
+	            size_t *R cap,                                                                                                          \
+	            T number,                                                                                                               \
+	            const unsigned int base)                                                                                                \
+	{                                                                                                                                   \
+		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##fn_name((number < 0) ? -number : number, base), return JSTR_ERR); \
+		*sz = jstr_lltoa_p(number, *s + *sz, base) - *s;                                                                            \
+		return JSTR_SUCC;                                                                                                           \
+	}
+
+PJSTR_DEFINE_ITOA_SAFE(int, itoa, utoa)
+PJSTR_DEFINE_ITOA_SAFE(long, ltoa, ultoa)
+PJSTR_DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
+
+#undef PJSTR_DEFINE_ITOA_SAFE
+
 #undef PJSTR_ULLTOA
 
 /*
@@ -133,9 +198,9 @@ JSTR_NOEXCEPT
 	for (unsigned long long loop;;) {
 		switch (base) {
 		case 10: CONV(10);
+		case 16: CONV(16);
 		case 2: CONV(2);
 		case 8: CONV(8);
-		case 16: CONV(16);
 		default: CONV(base);
 		}
 		if (++n != 3) {
