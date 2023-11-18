@@ -208,7 +208,7 @@ JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *s,
              const int c,
-             const size_t n)
+             size_t n)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_WORD_AT_A_TIME
@@ -245,10 +245,9 @@ JSTR_NOEXCEPT
 	}
 	return NULL;
 #else
-	const char *const end = s + n;
-	for (; *s && s < end && *s != (char)c; ++s)
+	for (; n-- && *s && *s != (char)c; ++s)
 		;
-	return *s ? (char *)s : NULL;
+	return (*s == (char)c) ? (char *)s : NULL;
 #endif
 }
 
