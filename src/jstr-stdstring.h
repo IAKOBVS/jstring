@@ -104,7 +104,7 @@ JSTR_NOEXCEPT
 #endif
 }
 
-#if JSTR_HAVE_MEMRCHR
+#if JSTR_HAVE_MEMRCHR || !JSTR_HAVE_WORD_AT_A_TIME
 JSTR_INLINE
 #endif
 JSTR_FUNC_PURE
@@ -155,14 +155,17 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
+#if !JSTR_HAVE_STRCHRNUL && !JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_HAVE_WORD_AT_A_TIME
+JSTR_INLINE
+#endif
 static char *
 jstr_strchrnul(const char *s,
                const int c)
 JSTR_NOEXCEPT
 {
-#if 0 && JSTR_HAVE_STRCHRNUL
+#if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(s, c);
-#elif 0 && JSTR_HAVE_STRCHR_OPTIMIZED
+#elif JSTR_HAVE_STRCHR_OPTIMIZED
 	const char *const start = s;
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
@@ -225,6 +228,9 @@ JSTR_NOEXCEPT
    strchr() before s + N.
 */
 JSTR_FUNC_PURE
+#if !JSTR_HAVE_WORD_AT_A_TIME
+JSTR_INLINE
+#endif
 static char *
 jstr_strnchr(const char *s,
              const int c,
