@@ -5,7 +5,6 @@
 #include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
-#include <endian.h>
 #include <limits.h>
 PJSTR_END_DECLS
 

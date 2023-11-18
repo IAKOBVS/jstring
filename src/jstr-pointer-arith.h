@@ -15,7 +15,7 @@
 #ifndef PJSTR_LIBC_POINTER_ARITH_H
 #define PJSTR_LIBC_POINTER_ARITH_H 1
 
-#include <stdint.h>
+
 
 /* Cast an integer VAL to void * ptr.  */
 #define JSTR_CAST_TO_PTR(val) \

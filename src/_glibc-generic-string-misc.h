@@ -16,13 +16,11 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_MISC_H
-#define PJSTR_STRING_MISC_H 1
-
-#include "jstr-macros.h"
+#ifndef PJSTR_PJSTR_STRING_MISC_H
+#define PJSTR_PJSTR_STRING_MISC_H 1
 
 #include "_string-optype.h"
-#include <endian.h>
+#include "jstr-macros.h"
 #include <limits.h>
 
 /* Extract the byte at jstr_word_index IDX from word X, with jstr_word_index 0 being the

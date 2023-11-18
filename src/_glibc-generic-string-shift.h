@@ -16,15 +16,13 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_SHIFT_H
-#define PJSTR_STRING_SHIFT_H 1
+#ifndef PJSTR_PJSTR_STRING_SHIFT_H
+#define PJSTR_PJSTR_STRING_SHIFT_H 1
 
 #include "jstr-macros.h"
-
 #include "_string-fza.h"
-#include <endian.h>
 #include <limits.h>
-#include <stdint.h>
+
 
 /* Return the mask WORD jstr_word_shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */

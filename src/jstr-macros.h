@@ -1200,15 +1200,19 @@ case '~':
 #	define JSTR_ARCH_GENERIC 1
 #endif
 
-#if JSTR_ENV_BSD
 PJSTR_BEGIN_DECLS
-#	include <sys/endian.h>
+#if JSTR_OS_SOLARIS
+#	include <sys/int_types.h>
+#else
+#	include <stdint.h>
+#endif
 PJSTR_END_DECLS
+
+#if JSTR_ENV_BSD
+#	include <sys/endian.h>
 #elif (JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) \
 || defined _DEFAULT_SOURCE
-PJSTR_BEGIN_DECLS
 #	include <endian.h>
-PJSTR_END_DECLS
 #endif
 
 #ifdef __BYTE_ORDER

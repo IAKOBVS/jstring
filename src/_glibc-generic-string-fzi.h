@@ -16,13 +16,11 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_FZI_H
-#define PJSTR_STRING_FZI_H 1
-
-#include "jstr-macros.h"
+#ifndef PJSTR_PJSTR_STRING_FZI_H
+#define PJSTR_PJSTR_STRING_FZI_H 1
 
 #include "_string-fza.h"
-#include <endian.h>
+#include "jstr-macros.h"
 #include <limits.h>
 
 static JSTR_INLINE int
