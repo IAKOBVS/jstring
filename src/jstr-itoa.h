@@ -236,7 +236,7 @@ PJSTR_ULLTOA_SEP(int, itoa, )
 #undef PJSTR_ULLTOA_SEP
 
 #define PJSTR_DEFINE_UTOA_SAFE(T, name)                                                                             \
-	JSTR_FUNC_VOID                                                                                              \
+	JSTR_FUNC                                                                                                   \
 	JSTR_INLINE                                                                                                 \
 	static jstr_ret_ty                                                                                          \
 	jstr_##name(char *R *R s,                                                                                   \
@@ -257,7 +257,7 @@ PJSTR_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 #undef PJSTR_DEFINE_UTOA_SAFE
 
 #define PJSTR_DEFINE_ITOA_SAFE(T, name, fn_name)                                                                                                \
-	JSTR_FUNC_VOID                                                                                                                          \
+	JSTR_FUNC                                                                                                                               \
 	JSTR_INLINE                                                                                                                             \
 	static jstr_ret_ty                                                                                                                      \
 	jstr_##name(char *R *R s,                                                                                                               \
@@ -278,7 +278,7 @@ PJSTR_DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 #undef PJSTR_DEFINE_ITOA_THOUSEP_SAFE
 
 #define PJSTR_DEFINE_UTOA_THOUSEP_SAFE(T, name)                                                                     \
-	JSTR_FUNC_VOID                                                                                              \
+	JSTR_FUNC                                                                                                   \
 	JSTR_INLINE                                                                                                 \
 	static jstr_ret_ty                                                                                          \
 	jstr_##name(char *R *R s,                                                                                   \
@@ -300,7 +300,7 @@ PJSTR_DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 #undef PJSTR_DEFINE_UTOA_THOUSEP_SAFE
 
 #define PJSTR_DEFINE_ITOA_THOUSEP_SAFE(T, name, fn_name)                                                                                        \
-	JSTR_FUNC_VOID                                                                                                                          \
+	JSTR_FUNC                                                                                                                               \
 	JSTR_INLINE                                                                                                                             \
 	static jstr_ret_ty                                                                                                                      \
 	jstr_##name(char *R *R s,                                                                                                               \
