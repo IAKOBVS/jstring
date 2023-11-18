@@ -33,6 +33,6 @@ $file_str =~ s/include[ \t]*<string\-([-._A-Za-z0-9]*)>/include "_string-$1"/g;
 $file_str =~ s/include[ \t]*<sysdeps\/generic\/([-._A-Za-z0-9]*)>/include "_glibc_generic-$1"/g;
 $file_str =~ s/\n\n\n/\n\n/g;
 $file_str =~ s/(if|else if|else|for|while)\(/$1(/g;
-$file_str =~ s/[ \t]*#[ \t]*include[ \t]*<endian\.h>\n//g;
+$file_str =~ s/[ \t]*#[ \t]*include[ \t]*<(?:endian|stdint)\.h>\n//g;
 
 print $file_str;
