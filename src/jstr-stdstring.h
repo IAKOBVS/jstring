@@ -147,9 +147,10 @@ JSTR_NOEXCEPT
 #else
 	const unsigned char *const start = (const unsigned char *)s;
 	const unsigned char *end = (const unsigned char *)s + sz;
-	for (; end >= start && *end != (unsigned char)c; --end)
-		;
-	return (*end == (unsigned char)c) ? (void *)end : NULL;
+	for (; end >= start; --end)
+		if (*end == (unsigned char)c)
+			return (void *)end;
+	return NULL;
 #endif
 }
 
@@ -245,9 +246,10 @@ JSTR_NOEXCEPT
 	}
 	return NULL;
 #else
-	for (; n-- && *s && *s != (char)c; ++s)
-		;
-	return (*s == (char)c) ? (char *)s : NULL;
+	for (; n-- && *s; ++s)
+		if (*s == (char)c)
+			return (char *)s;
+	return NULL;
 #endif
 }
 

@@ -81,9 +81,10 @@ pjstrio_extget_len(const char *fname,
                    const size_t sz)
 {
 	const char *p = fname + sz - 1;
-	for (; p > fname && *p != '.' && *p != '/'; --p)
-		;
-	return (*p == '.' && p > fname) ? (char *)p : NULL;
+	for (; p > fname; --p)
+		if (*p == '.' || *p == '/')
+			return (char *)p;
+	return NULL;
 }
 
 /*
