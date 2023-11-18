@@ -105,7 +105,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-#if JSTR_HAVE_MEMRCHR || !JSTR_HAVE_WORD_AT_A_TIME
+#if JSTR_HAVE_MEMRCHR
 JSTR_INLINE
 #endif
 static void *
@@ -155,7 +155,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-#if !JSTR_HAVE_STRCHRNUL && !JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_HAVE_WORD_AT_A_TIME
+#if JSTR_HAVE_STRCHRNUL
 JSTR_INLINE
 #endif
 static char *
@@ -228,9 +228,6 @@ JSTR_NOEXCEPT
    strchr() before s + N.
 */
 JSTR_FUNC_PURE
-#if !JSTR_HAVE_WORD_AT_A_TIME
-JSTR_INLINE
-#endif
 static char *
 jstr_strnchr(const char *s,
              const int c,
