@@ -19,7 +19,7 @@
 #	define PJSTR_END_DECLS
 #endif
 
-#ifdef __gnu_linux__
+#ifdef __GLIBC__
 	PJSTR_BEGIN_DECLS
 #	include <sys/cdefs.h>
 	PJSTR_END_DECLS
