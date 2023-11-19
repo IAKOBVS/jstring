@@ -27,9 +27,9 @@ my $CAP               = 'capacity';
 my $VAR_DATA          = 's';
 my $VAR_SIZE          = 'sz';
 my $VAR_CAP           = 'cap';
-my $J_PREFIX          = '_j';
+my $PREFIX_J          = '_j';
 
-my $LEN_PREFIX = '_len';
+my $PREFIX_LEN = '_len';
 
 sub add_inline {
 	my ($attr_str_ref, $inline_attr_ref) = @_;
@@ -69,10 +69,10 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 		|| grepped(\@arg, \"...")
 		|| scalar(@arg) == 0);
 	push(@func_arr, $name);
-	next if ($name !~ /$LEN_PREFIX/o
-		|| $name =~ /$J_PREFIX$/o);
+	next if ($name !~ /$PREFIX_LEN/o
+		|| $name =~ /$PREFIX_J$/o);
 	my $base_name = $name;
-	$base_name =~ s/$LEN_PREFIX(_|$)/$1/o;
+	$base_name =~ s/$PREFIX_LEN(_|$)/$1/o;
 	next if (index($file_str1, "$base_name(") != -1);
 	add_inline(\$attr, \$ATTR_INLINE);
 	$body = (($rettype eq 'void') ? '' : 'return ') . $name . '(';
@@ -81,9 +81,9 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 		my $var = jl_arg_get_var(\$arg[$i]);
 		if (index($arg[$i], 'size_t') != -1) {
 			my $var_str;
-			if ($var =~ /$LEN_PREFIX$/o) {
+			if ($var =~ /$PREFIX_LEN$/o) {
 				my $base_var = $var;
-				$base_var =~ s/$LEN_PREFIX(_|$)$/$1/o;
+				$base_var =~ s/$PREFIX_LEN(_|$)$/$1/o;
 				my $i_str = jl_arg_index(\@arg, \$base_var);
 				if ($i_str != -1) {
 					$var_str = jl_arg_get_var(\$arg[$i_str]);
@@ -120,7 +120,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	next
 	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
 		|| $name !~ /^jstr_/
-		|| $name =~ /$J_PREFIX$/o
+		|| $name =~ /$PREFIX_J$/o
 		|| scalar(@arg) == 0
 		|| index($name, 'unsafe') != -1);
 	my $has_size_or_cap = 0;
@@ -134,7 +134,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 		}
 	}
 	next if ($has_size_or_cap == 0 || $has_variadic);
-	my $j_name = $name . $J_PREFIX;
+	my $j_name = $name . $PREFIX_J;
 	next if (grepped(\@func_arr, \($j_name)));
 	my $returns_end_ptr = 0;
 	if ($rettype eq 'void') {
