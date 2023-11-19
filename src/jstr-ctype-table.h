@@ -20,8 +20,7 @@ typedef enum {
 	JSTR_ISUPPER = (JSTR_ISSPACE << 1),
 	JSTR_ISXDIGIT = (JSTR_ISUPPER << 1),
 	JSTR_ISBLANK = (JSTR_ISXDIGIT << 1),
-	/* [_A-Za-z0-9] */
-	JSTR_ISWORD = (JSTR_ISBLANK << 1)
+	JSTR_ISWORD = (JSTR_ISBLANK << 1) /* [_0-9A-Za-z] */
 } jstr_ctype_ty;
 
 JSTR_MAYBE_UNUSED
