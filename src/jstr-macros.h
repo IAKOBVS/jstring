@@ -123,15 +123,15 @@ PJSTR_CAST(T, Other other)
 #	include <assert.h>
 	PJSTR_END_DECLS
 #	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_ASSERT(expr, msg)  static_assert(expr, msg)
+#	define JSTR_STATIC_ASSERT(expr, msg)  static_assert(expr, msg)
 #elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 	PJSTR_BEGIN_DECLS
 #	include <assert.h>
 	PJSTR_END_DECLS
 #	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_ASSERT(expr, msg)  _Static_assert(expr, msg)
+#	define JSTR_STATIC_ASSERT(expr, msg)  _Static_assert(expr, msg)
 #else
-#	define JSTR_ASSERT(expr, msg) \
+#	define JSTR_STATIC_ASSERT(expr, msg) \
 		do {                   \
 		} while (0)
 #endif /* static_assert */
@@ -165,14 +165,14 @@ PJSTR_CAST(T, Other other)
 #	define PJSTR_IS_CHAR(expr) _Generic((expr), \
 	JSTR_GENERIC_CASE_CHAR(1),                   \
 	default: 0)
-#	define JSTR_ASSERT_IS_SIZE(expr) \
-		JSTR_ASSERT(PJSTR_IS_SIZE(expr), "Passing non-number as number argument!");
-#	define JSTR_ASSERT_IS_STR(expr) \
-		JSTR_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
-#	define JSTR_ASSERT_IS_CHAR(expr) \
-		JSTR_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
-#	define JSTR_ASSERT_TYPECHECK(expr_ty, expr) \
-		JSTR_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
+#	define JSTR_STATIC_ASSERT_IS_SIZE(expr) \
+		JSTR_STATIC_ASSERT(PJSTR_IS_SIZE(expr), "Passing non-number as number argument!");
+#	define JSTR_STATIC_ASSERT_IS_STR(expr) \
+		JSTR_STATIC_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
+#	define JSTR_STATIC_ASSERT_IS_CHAR(expr) \
+		JSTR_STATIC_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
+#	define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr) \
+		JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
 #else
 #	define JSTR_GENERIC_CASE_SIZE(expr)
 #	define JSTR_GENERIC_CASE_STR(bool)
@@ -181,10 +181,10 @@ PJSTR_CAST(T, Other other)
 #	define PJSTR_IS_STR(expr)
 #	define PJSTR_IS_STR_STACK(expr)
 #	define PJSTR_IS_CHAR(expr)
-#	define JSTR_ASSERT_IS_SIZE(expr)
-#	define JSTR_ASSERT_IS_STR(expr)
-#	define JSTR_ASSERT_IS_CHAR(expr)
-#	define JSTR_ASSERT_TYPECHECK(expr_ty, expr)
+#	define JSTR_STATIC_ASSERT_IS_SIZE(expr)
+#	define JSTR_STATIC_ASSERT_IS_STR(expr)
+#	define JSTR_STATIC_ASSERT_IS_CHAR(expr)
+#	define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr)
 #endif /* (Gnuc || clang) && HAVE_GENERIC */
 
 #if defined __cplusplus && __cplusplus > 199711L
@@ -194,9 +194,9 @@ PJSTR_CAST(T, Other other)
 #endif /* NOEXCEPT */
 
 #ifdef __ASSERT_FUNCTION
-#	define JSTR_ASSERT_FUNC __ASSERT_FUNCTION
+#	define JSTR_STATIC_ASSERT_FUNC __ASSERT_FUNCTION
 #else
-#	define JSTR_ASSERT_FUNC __func__
+#	define JSTR_STATIC_ASSERT_FUNC __func__
 #endif
 
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L

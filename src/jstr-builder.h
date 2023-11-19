@@ -28,8 +28,8 @@ PJSTR_END_DECLS
 		0 \
 	}
 
-#define jstr_err(msg)        pjstr_err(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
-#define jstr_err_exit(msg)   pjstr_err_exit(__FILE__, __LINE__, JSTR_ASSERT_FUNC, msg)
+#define jstr_err(msg)        pjstr_err(__FILE__, __LINE__, JSTR_STATIC_ASSERT_FUNC, msg)
+#define jstr_err_exit(msg)   pjstr_err_exit(__FILE__, __LINE__, JSTR_STATIC_ASSERT_FUNC, msg)
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const pjstr_foreach_end_##j##_##ptr = ((j)->data) + ((j)->size); \
 	                          ptr < pjstr_foreach_end_##j##_##ptr;                                                       \
 	                          ++ptr)
@@ -46,7 +46,7 @@ PJSTR_END_DECLS
 				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
-#	define JSTR_ASSERT_DEBUG(expr, msg)        \
+#	define JSTR_STATIC_ASSERT_DEBUG(expr, msg)        \
 		do {                                \
 			if (jstr_unlikely(!(expr))) \
 				jstr_err_exit(msg); \
@@ -58,7 +58,7 @@ PJSTR_END_DECLS
 				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
-#	define JSTR_ASSERT_DEBUG(expr, msg) \
+#	define JSTR_STATIC_ASSERT_DEBUG(expr, msg) \
 		do {                         \
 		} while (0)
 #endif
@@ -196,7 +196,7 @@ jstr_at(const jstr_ty *R j,
         const size_t idx)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(idx <= j->size, "Index out of bounds.");
+	JSTR_STATIC_ASSERT_DEBUG(idx <= j->size, "Index out of bounds.");
 	return j->data + idx;
 }
 

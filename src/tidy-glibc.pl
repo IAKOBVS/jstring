@@ -20,6 +20,7 @@ if (index($file_str, '"jstr-macros.h"') == -1) {
 	$file_str =~ s/(#define.*)/$1\n\n#include "jstr-macros.h"\n/;
 }
 
+replaceall(\$file_str, \'_Static_assert', \'JSTR_STATIC_ASSERT');
 replaceall(\$file_str, \'if\s*\(__BYTE_ORDER\s*==\s*__LITTLE_ENDIAN\)',
 	\'if (JSTR_ENDIAN_LITTLE)');
 replaceall(\$file_str, \'(?:find_t|op_t)', \'jstr_word_ty');

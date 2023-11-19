@@ -106,7 +106,7 @@ jstrl_at(const jstrlist_ty *R l,
          const size_t idx)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(idx <= l->size, "Index out of bounds.");
+	JSTR_STATIC_ASSERT_DEBUG(idx <= l->size, "Index out of bounds.");
 	return l->data + idx;
 }
 
@@ -117,7 +117,7 @@ pjstrl_at(const jstrlist_ty *R l,
           const size_t idx)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(idx <= l->capacity, "Index out of bounds.");
+	JSTR_STATIC_ASSERT_DEBUG(idx <= l->capacity, "Index out of bounds.");
 	return l->data + idx;
 }
 

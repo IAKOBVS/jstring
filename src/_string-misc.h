@@ -27,7 +27,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	return *(jstr_word_ty *)p;
 #else
-	JSTR_ASSERT(sizeof(jstr_word_ty) >= 2 && sizeof(jstr_word_ty) <= 64, "");
+	JSTR_STATIC_ASSERT(sizeof(jstr_word_ty) >= 2 && sizeof(jstr_word_ty) <= 64, "");
 #	define SH(idx) \
 		(JSTR_ENDIAN_LITTLE ? ((jstr_word_ty) * ((unsigned char *)p + (idx)) << ((idx)*CHAR_BIT)) : ((jstr_word_ty) * ((unsigned char *)p + (idx)) >> ((idx)*CHAR_BIT)))
 	/* Generated with ../bin/generate-ctoword 2 64. */

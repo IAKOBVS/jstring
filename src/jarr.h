@@ -68,13 +68,13 @@ PJSTR_END_DECLS
 
 #define PJARR_CHECK_ARG(j)                         \
 	do {                                       \
-		JSTR_ASSERT_IS_SIZE(PJARR_SZ(j));  \
-		JSTR_ASSERT_IS_SIZE(PJARR_CAP(j)); \
+		JSTR_STATIC_ASSERT_IS_SIZE(PJARR_SZ(j));  \
+		JSTR_STATIC_ASSERT_IS_SIZE(PJARR_CAP(j)); \
 	} while (0)
 #define PJARR_GROW(old_cap, new_cap)                                        \
 	do {                                                                \
-		JSTR_ASSERT_IS_SIZE(old_cap);                               \
-		JSTR_ASSERT_IS_SIZE(new_cap);                               \
+		JSTR_STATIC_ASSERT_IS_SIZE(old_cap);                               \
+		JSTR_STATIC_ASSERT_IS_SIZE(new_cap);                               \
 		if (jstr_unlikely(old_cap == 0))                            \
 			old_cap = PJSTR_MIN_CAP / PJARR_ALLOC_MULTIPLIER;   \
 		do                                                          \
@@ -104,7 +104,7 @@ PJSTR_END_DECLS
 		PJARR_CAP(j) /= PJARR_ELEMSZ(j);                                                                   \
 	} while (0)
 #if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF
-#	define PJARR_CHECK_VAL(j, value) JSTR_ASSERT(JSTR_SAME_TYPE(value, *PJARR_DATA(j)), "Passing illegal value incompatible with the array type.")
+#	define PJARR_CHECK_VAL(j, value) JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(value, *PJARR_DATA(j)), "Passing illegal value incompatible with the array type.")
 #else
 #	define PJARR_CHECK_VAL(j, value) \
 		do {                      \
