@@ -16,6 +16,7 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+JSTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
 JSTR_INLINE
 static void *
@@ -26,6 +27,7 @@ jstr_mempset(void *s,
 	return (char *)memset(s, c, sz) + sz;
 }
 
+JSTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -36,6 +38,7 @@ jstr_stpset_len(char *s,
 	return (char *)memset(s, c, sz) + sz;
 }
 
+JSTR_ACCESS((__write_only__, 1, 2))
 JSTR_FUNC_VOID
 JSTR_INLINE
 static char *
@@ -46,6 +49,7 @@ JSTR_NOEXCEPT
 	return jstr_stpset_len(s, c, strlen(s));
 }
 
+JSTR_ACCESS((__write_only__, 1, 2))
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
@@ -104,6 +108,7 @@ JSTR_NOEXCEPT
 #endif
 }
 
+JSTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 #if JSTR_HAVE_MEMRCHR
 JSTR_INLINE
@@ -191,6 +196,7 @@ JSTR_NOEXCEPT
 #endif
 }
 
+JSTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
@@ -275,6 +281,7 @@ JSTR_NOEXCEPT
 #endif
 }
 
+JSTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_INLINE
 static void *
@@ -291,6 +298,7 @@ JSTR_NOEXCEPT
   Return value:
   ptr to '\0' in DST.
 */
+JSTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 JSTR_INLINE
 static void *
@@ -306,6 +314,7 @@ JSTR_NOEXCEPT
 #endif
 }
 
+JSTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
 JSTR_INLINE
 static void *
@@ -317,6 +326,7 @@ JSTR_NOEXCEPT
 	return (char *)memmove(dst, src, sz) + sz;
 }
 
+JSTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_VOID
 JSTR_INLINE
 static void
@@ -337,7 +347,7 @@ JSTR_NOEXCEPT
 {
 	*(char *)jstr_mempmove(dst, src, strlen(src)) = '\0';
 }
-
+JSTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
 JSTR_INLINE
 static char *
@@ -371,6 +381,7 @@ JSTR_NOEXCEPT
 	*(char *)jstr_mempcpy(dst, src, sz) = '\0';
 }
 
+JSTR_ACCESS((__write_only__, 1, 3))
 JSTR_INLINE
 JSTR_FUNC_VOID
 static char *
@@ -406,6 +417,7 @@ JSTR_NOEXCEPT
 }
 
 /* Copy until either N is 0 or C is found */
+JSTR_ACCESS((__write_only__, 1, 4))
 JSTR_FUNC
 JSTR_INLINE
 static void *
