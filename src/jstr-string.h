@@ -21,9 +21,9 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 /* basename() for non nul-terminated strings. */
-JSTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_basename_len(const char *fname,
                   const size_t sz)
@@ -34,7 +34,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_basename(const char *fname)
 JSTR_NOEXCEPT
@@ -43,10 +43,10 @@ JSTR_NOEXCEPT
 	return p ? p + 1 : NULL;
 }
 
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strstr_len(const char *hs,
                 const size_t hs_len,
@@ -60,7 +60,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strstr(const char *hs,
             const char *ne)
@@ -69,10 +69,10 @@ JSTR_NOEXCEPT
 	return (char *)strstr(hs, ne);
 }
 
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strnstr_len(const char *hs,
                  const size_t hs_len,
@@ -84,10 +84,10 @@ JSTR_NOEXCEPT
 	return jstr_strstr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strstrnul_len(const char *hs,
                    const size_t hs_len,
@@ -101,7 +101,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strstrnul(const char *hs,
                const char *ne)
@@ -118,7 +118,7 @@ JSTR_NOEXCEPT
   non-zero otherwise.
 */
 #if JSTR_HAVE_STRNCASECMP
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static int
@@ -150,7 +150,7 @@ JSTR_NOEXCEPT
   non-zero otherwise.
 */
 #if JSTR_HAVE_STRNCASECMP
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static int
@@ -180,7 +180,7 @@ JSTR_NOEXCEPT
   non-zero otherwise.
 */
 #if JSTR_HAVE_STRNCASECMP
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static int
@@ -212,7 +212,7 @@ JSTR_NOEXCEPT
   non-zero otherwise.
 */
 #if JSTR_HAVE_STRNCASECMP
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 JSTR_FUNC_PURE
 static int
@@ -242,7 +242,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASECMP
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 static int
 jstr_strcasecmp(const char *s1,
@@ -269,7 +269,7 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASECMP
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 static int
 jstr_strcasecmpeq(const char *s1,
@@ -288,7 +288,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 jstr_cmpeq(const void *s1,
            const size_t s1_len,
@@ -300,7 +300,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 jstr_cmpcaseeq(const char *s1,
                const size_t s1_len,
@@ -312,7 +312,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr2(const unsigned char *h,
                const unsigned char *const n,
@@ -327,7 +327,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr3(const unsigned char *h,
                const unsigned char *const n,
@@ -342,7 +342,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr4(const unsigned char *h,
                const unsigned char *const n,
@@ -359,7 +359,7 @@ JSTR_NOEXCEPT
 #if !JSTR_HAVE_MEMMEM
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void *
 pjstr_memmem2(const unsigned char *h,
               const unsigned char *const n,
@@ -374,7 +374,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void *
 pjstr_memmem3(const unsigned char *h,
               const unsigned char *const n,
@@ -389,7 +389,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void *
 pjstr_memmem4(const unsigned char *h,
               const unsigned char *const n,
@@ -411,8 +411,8 @@ JSTR_NOEXCEPT
 #	include "_jstr-memmem.h"
 #endif
 
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static void *
 jstr_memmem(const void *hs,
@@ -441,10 +441,10 @@ JSTR_NOEXCEPT
 #endif
 }
 
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void *
 jstr_memnmem(const void *hs,
              const size_t hs_len,
@@ -509,8 +509,8 @@ JSTR_NOEXCEPT
    Pointer to NE;
    NULL if not found.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
 jstr_strrstr_len(const void *hs,
@@ -564,8 +564,8 @@ JSTR_NOEXCEPT
    Pointer to NE;
    NULL if not found.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
 jstr_memrmem(const void *hs,
@@ -605,7 +605,7 @@ JSTR_NOEXCEPT
 #	define L(c) jstr_tolower(c)
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strcasestr2(const unsigned char *h,
                   const unsigned char *const n)
@@ -619,7 +619,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strcasestr3(const unsigned char *h,
                   const unsigned char *const n)
@@ -633,7 +633,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strcasestr4(const unsigned char *h,
                   const unsigned char *const n)
@@ -651,7 +651,7 @@ JSTR_NOEXCEPT
 #endif /* HAVE_STRCASESTR_OPTIMIZED */
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strcasechr_generic(const char *s,
                          int c)
@@ -664,9 +664,9 @@ JSTR_NOEXCEPT
 	return *p ? (char *)p : NULL;
 }
 
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_memcasechr(const void *s,
                 int c,
@@ -680,9 +680,9 @@ JSTR_NOEXCEPT
 	return n ? (char *)p : NULL;
 }
 
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strcasechr_len(const char *s,
                      int c,
@@ -708,9 +708,9 @@ JSTR_NOEXCEPT
    ptr to first C in S ignoring case;
    NULL if not found.
 */
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strcasechr_len(const char *s,
                     const int c,
@@ -726,7 +726,7 @@ JSTR_NOEXCEPT
    NULL if not found.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strcasechr(const char *s,
                 const int c)
@@ -749,11 +749,11 @@ JSTR_NOEXCEPT
    Pointer to NE;
    NULL if not found.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASESTR
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 static char *
 jstr_strcasestr_len(const char *hs,
@@ -816,7 +816,7 @@ STRSTR:
 */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASESTR
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 static char *
 jstr_strcasestr(const char *hs,
@@ -876,7 +876,7 @@ JSTR_NOEXCEPT
    Return the offset from S if found;
    otherwise, return S + SZ.
 */
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
 jstr_strrcspn_len(const char *s,
@@ -925,7 +925,7 @@ JSTR_NOEXCEPT
 /*
    Reverse of STRCSPN.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static size_t
 jstr_strrcspn(const char *s,
@@ -940,7 +940,7 @@ JSTR_NOEXCEPT
    Return the offset from S if found;
    otherwise, return S + SZ.
 */
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
 jstr_strrspn_len(const char *s,
@@ -993,7 +993,7 @@ JSTR_NOEXCEPT
    Return the offset from S if found;
    otherwise, return S + SZ.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static size_t
 jstr_strrspn(const char *s,
@@ -1006,9 +1006,9 @@ JSTR_NOEXCEPT
 /*
    Reverse of STRPBRK.
 */
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strrpbrk_len(const char *s,
                   const char *accept,
@@ -1023,7 +1023,7 @@ JSTR_NOEXCEPT
    Reverse of STRPBRK.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strrpbrk(const char *s,
               const char *accept)
@@ -1032,7 +1032,7 @@ JSTR_NOEXCEPT
 	return jstr_strrpbrk_len(s, accept, strlen(s));
 }
 
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
 jstr_memspn(const void *s,
@@ -1081,7 +1081,7 @@ JSTR_NOEXCEPT
 	return (cnt < sz) ? cnt : sz;
 }
 
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
 jstr_memcspn(const void *s,
@@ -1126,9 +1126,9 @@ JSTR_NOEXCEPT
 	return (cnt < sz) ? cnt : sz;
 }
 
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_mempbrk(const void *s,
              const char *accept,
@@ -1165,7 +1165,7 @@ JSTR_NOEXCEPT
    NULL if non-C is not found.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strchrinv(const char *s,
                const int c)
@@ -1180,9 +1180,9 @@ JSTR_NOEXCEPT
    ptr to first non-C in S.
    S + N if C is not found.
 */
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_memchrnulinv(const void *s,
                   const int c,
@@ -1200,9 +1200,9 @@ JSTR_NOEXCEPT
    ptr to first non-C in S.
    NULL if C is not found.
 */
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void *
 jstr_memchrinv(const void *s,
                const int c,
@@ -1219,9 +1219,9 @@ JSTR_NOEXCEPT
    ptr to first non-C in S from S + N - 1
    NULL if C is not found.
 */
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void *
 jstr_memrchrinv(const void *s,
                 const int c,
@@ -1242,7 +1242,7 @@ JSTR_NOEXCEPT
    NULL if C is not found.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void *
 jstr_strrchrinv(const char *s,
                 const int c)
@@ -1257,9 +1257,9 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
-JSTR_INLINE
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_endscase_len(const char *hs,
@@ -1277,7 +1277,7 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_endscase(const char *hs,
@@ -1293,9 +1293,9 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
-JSTR_INLINE
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_ends_len(const char *hs,
@@ -1313,7 +1313,7 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_ends(const char *hs,
@@ -1329,10 +1329,10 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 jstr_startscase_len(const char *hs,
                     const size_t hs_len,
@@ -1350,7 +1350,7 @@ JSTR_NOEXCEPT
   0 if false.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 jstr_startscase(const char *hs,
                 const char *ne)
@@ -1365,10 +1365,10 @@ JSTR_NOEXCEPT
   NELEN if true;
   0 if false.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 jstr_startscasenul_len(const char *hs,
                        const size_t hs_len,
@@ -1386,7 +1386,7 @@ JSTR_NOEXCEPT
   0 if false.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static size_t
 jstr_startscasenul(const char *hs,
                    const char *ne)
@@ -1406,10 +1406,10 @@ JSTR_NOEXCEPT
   NELEN if true;
   0 if false.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static size_t
 jstr_startsnul_len(const char *hs,
                    const size_t hs_len,
@@ -1427,7 +1427,7 @@ JSTR_NOEXCEPT
   0 if false.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static size_t
 jstr_startsnul(const char *hs,
                const char *ne)
@@ -1447,10 +1447,10 @@ JSTR_NOEXCEPT
   1 if true;
   0 if false.
 */
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 jstr_starts_len(const char *hs,
                 const size_t hs_len,
@@ -1468,7 +1468,7 @@ JSTR_NOEXCEPT
   0 if false.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 jstr_starts(const char *hs,
             const char *ne)
@@ -1499,7 +1499,7 @@ JSTR_NOEXCEPT
   Return value:
   Occurences of C in S.
 */
-JSTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
 jstr_countchr_len(const char *s,
@@ -1520,8 +1520,8 @@ JSTR_NOEXCEPT
   occurences of NE in HS.
 */
 JSTR_FUNC_PURE
-JSTR_ACCESS((__read_only__, 1, 2))
-JSTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 static size_t
 jstr_count_len(const char *s,
                const size_t sz,
@@ -1574,7 +1574,7 @@ JSTR_NOEXCEPT
    BEGIN if no newline was found.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_linestart(const char *const start,
                const char *end)
@@ -1590,7 +1590,7 @@ JSTR_NOEXCEPT
    NULL if no newline was found.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_linenext_len(const char *start,
                   const char *const end)
@@ -1606,7 +1606,7 @@ JSTR_NOEXCEPT
    NULL if no newline was found.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_linenext(const char *R s)
 JSTR_NOEXCEPT
@@ -1620,7 +1620,7 @@ JSTR_NOEXCEPT
    ptr to next line or '\0'.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_linenextnul_len(const char *start,
                      const char *const end)
@@ -1635,7 +1635,7 @@ JSTR_NOEXCEPT
    ptr to next line or '\0'.
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_linenextnul(const char *R s)
 JSTR_NOEXCEPT

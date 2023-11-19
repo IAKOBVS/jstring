@@ -45,7 +45,7 @@ enum {
 };
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 pjstrio_strcmpeq(const char *s1,
                  const char *s2)
@@ -75,7 +75,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstrio_extget_len(const char *fname,
                    const size_t sz)
@@ -91,7 +91,7 @@ pjstrio_extget_len(const char *fname,
    Return jstrio_ext_ty based on the FNAME extension;
 */
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstrio_ext_ty
 jstrio_exttype(const char *R fname,
                const size_t sz)
@@ -102,7 +102,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static int
 pjstrio_isbinarysignature(const char *R buf,
                           const size_t sz)
@@ -280,7 +280,7 @@ err:
 #endif
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 pjstrio_readfile_len(char *R *R s,
                      size_t *R sz,
@@ -465,7 +465,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstrio_appendpath_len_p(char *R path,
                         const size_t sz,
@@ -478,7 +478,7 @@ jstrio_appendpath_len_p(char *R path,
 }
 
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstrio_appendpath_p(char *R path,
                     const size_t sz,
@@ -501,7 +501,7 @@ jstrio_appendpath_len(char *R *R s,
 	return JSTR_RET_SUCC;
 }
 
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 pjstrio_appendpath_p(char *R path_end,
@@ -512,7 +512,7 @@ JSTR_NOEXCEPT
 	return jstr_stpcpy(path_end + 1, fname);
 }
 
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 pjstrio_appendpath_len(char *R path_end,

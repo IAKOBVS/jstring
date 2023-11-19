@@ -39,7 +39,7 @@ PJSTR_END_DECLS
 	                         ++i)
 
 #if JSTR_DEBUG || JSTR_PANIC
-#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
+#	define PJSTR_ATTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
 				jstr_err_exit("");        \
@@ -52,7 +52,7 @@ PJSTR_END_DECLS
 				jstr_err_exit(msg); \
 		} while (0)
 #else
-#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
+#	define PJSTR_ATTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
 				do_on_malloc_err;         \
@@ -90,8 +90,8 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-JSTR_NOINLINE
-JSTR_COLD
+JSTR_ATTR_NOINLINE
+JSTR_ATTR_COLD
 JSTR_FUNC_VOID
 static void
 pjstr_nullify_members(size_t *R sz,
@@ -104,7 +104,7 @@ JSTR_NOEXCEPT
 
 /* Set first char to NUL and size to zero. */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_empty(char *R s,
            size_t *R sz)
@@ -115,7 +115,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_CONST
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static size_t
 pjstr_grow(size_t cap,
            const size_t new_cap)
@@ -123,14 +123,14 @@ JSTR_NOEXCEPT
 {
 	while ((cap *= PJSTR_GROWTH) < new_cap)
 		;
-	return JSTR_ALIGN_UP(cap, PJSTR_MALLOC_ALIGNMENT);
+	return JSTR_ALIGN_UP(cap, PJSTR_ATTR_MALLOC_ALIGNMENT);
 }
 
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
 JSTR_NONNULL(3)
-JSTR_NOINLINE
-JSTR_COLD
+JSTR_ATTR_NOINLINE
+JSTR_ATTR_COLD
 static void
 pjstr_err_exit(const char *R filename,
                const unsigned int line,
@@ -145,8 +145,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
 JSTR_NONNULL(3)
-JSTR_NOINLINE
-JSTR_COLD
+JSTR_ATTR_NOINLINE
+JSTR_ATTR_COLD
 static void
 pjstr_err(const char *R filename,
           const unsigned int line,
@@ -158,7 +158,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_debug(const jstr_ty *R j)
 JSTR_NOEXCEPT
@@ -190,7 +190,7 @@ err:
 }
 
 JSTR_FUNC_CONST
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_at(const jstr_ty *R j,
         const size_t idx)
@@ -201,7 +201,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_CONST
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static size_t
 jstr_index(const jstr_ty *R j,
            const char *R curr)
@@ -213,7 +213,7 @@ jstr_index(const jstr_ty *R j,
   free(p) and set p to NULL.
 */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_free(char *R *R s,
           size_t *R sz,
@@ -227,7 +227,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_NOINLINE
+JSTR_ATTR_NOINLINE
 static void
 pjstr_free_err(char *R *R s,
                size_t *R sz,
@@ -240,7 +240,7 @@ pjstr_free_err(char *R *R s,
   free(p) and set p to NULL.
 */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_free_j(jstr_ty *R j)
 JSTR_NOEXCEPT
@@ -249,7 +249,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ty *
 jstr_start(const jstr_ty *R j)
 {
@@ -257,7 +257,7 @@ jstr_start(const jstr_ty *R j)
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ty *
 jstr_end(const jstr_ty *R j)
 {
@@ -265,7 +265,7 @@ jstr_end(const jstr_ty *R j)
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 pjstr_reallocexact(char *R *R s,
                    size_t *R sz,
@@ -284,7 +284,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 pjstr_realloc(char *R *R s,
               size_t *R sz,
@@ -302,7 +302,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 pjstr_realloc_may_zero(char *R *R s,
                        size_t *R sz,
@@ -319,7 +319,7 @@ JSTR_NOEXCEPT
    Return JSTR_RET_ERR on malloc error.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reservealways(char *R *R s,
                    size_t *R sz,
@@ -334,7 +334,7 @@ JSTR_NOEXCEPT
    Return JSTR_RET_ERR on malloc error.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 pjstr_reservealwaysnomalloc(char *R *R s,
                             size_t *R sz,
@@ -349,7 +349,7 @@ JSTR_NOEXCEPT
    Return JSTR_RET_ERR on malloc error.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reserveexact_always(char *R *R s,
                          size_t *R sz,
@@ -365,7 +365,7 @@ JSTR_NOEXCEPT
    Return JSTR_RET_ERR on malloc error.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reserve(char *R *R s,
              size_t *R sz,
@@ -383,7 +383,7 @@ JSTR_NOEXCEPT
    Return JSTR_RET_ERR on malloc error.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reserveexact(char *R *R s,
                   size_t *R sz,
@@ -397,7 +397,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_shrink_to_fit(char *R *R s,
                    size_t *R sz,
@@ -408,7 +408,7 @@ jstr_shrink_to_fit(char *R *R s,
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_print(const jstr_ty *R j)
 JSTR_NOEXCEPT
@@ -417,7 +417,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 pjstr_cat(char *R *R s,
           size_t *R sz,
@@ -441,7 +441,7 @@ JSTR_NOEXCEPT
    JSTR_RET_ERR on malloc error;
    otherwise JSTR_RET_SUCC.
 */
-JSTR_SENTINEL
+JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(1)
 JSTR_NONNULL(2)
@@ -473,7 +473,7 @@ JSTR_NOEXCEPT
    JSTR_RET_ERR on malloc error;
    otherwise JSTR_RET_SUCC.
 */
-JSTR_SENTINEL
+JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL(1)
 static jstr_ret_ty
@@ -497,7 +497,7 @@ JSTR_NOEXCEPT
 
 /* Return ptr to '\0' in S. */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_append_len_unsafe_p(char *R s,
                          const size_t sz,
@@ -509,7 +509,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_append_unsafe(char *R s,
                    const size_t sz,
@@ -521,7 +521,7 @@ JSTR_NOEXCEPT
 
 /* Return ptr to '\0' in S. */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_append_unsafe_p(char *R s,
                      const size_t sz,
@@ -538,7 +538,7 @@ JSTR_NOEXCEPT
    otherwise JSTR_RET_SUCC.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_append_len(char *R *R s,
                 size_t *R sz,
@@ -553,7 +553,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_strset(char *R s,
             const int c)
@@ -564,7 +564,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_assignnchr_unsafe_p(char *R s,
                          const size_t sz,
@@ -581,7 +581,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_assignnchr(char *R *R s,
                 size_t *R sz,
@@ -603,7 +603,7 @@ JSTR_NOEXCEPT
 
 /* Append N Cs to end of S. */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_pushbackn_len_unsafe_p(char *R s,
                             const size_t sz,
@@ -618,7 +618,7 @@ JSTR_NOEXCEPT
    Append N Cs to end of S.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_pushbackn(char *R *R s,
                size_t *R sz,
@@ -636,7 +636,7 @@ JSTR_NOEXCEPT
    Prepend N Cs to S.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_pushfrontn_len_unsafe_p(char *R s,
                              const size_t sz,
@@ -655,7 +655,7 @@ JSTR_NOEXCEPT
    Prepend N Cs to S.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_pushfrontn(char *R *R s,
                 size_t *R sz,
@@ -676,7 +676,7 @@ JSTR_NOEXCEPT
    otherwise JSTR_RET_SUCC.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_prepend_len_unsafe_p(char *R s,
                           const size_t sz,
@@ -699,7 +699,7 @@ JSTR_NOEXCEPT
    otherwise JSTR_RET_SUCC.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_prepend_len(char *R *R s,
                  size_t *R sz,
@@ -719,7 +719,7 @@ JSTR_NOEXCEPT
    Return ptr to '\0' in S.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_assign_len_unsafe_p(char *R s,
                          const char *R src,
@@ -737,7 +737,7 @@ JSTR_NOEXCEPT
    otherwise JSTR_RET_SUCC.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_assign_len(char *R *R s,
                 size_t *R sz,
@@ -752,7 +752,7 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static char *
 jstr_pushback_unsafe_p(char *R s,
@@ -772,7 +772,7 @@ JSTR_NOEXCEPT
    JSTR_RET_ERR on malloc error;
    otherwise JSTR_RET_SUCC.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
 jstr_pushback(char *R *R s,
@@ -788,7 +788,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_pushfront_unsafe_p(char *R s,
                         const size_t sz,
@@ -808,7 +808,7 @@ JSTR_NOEXCEPT
    otherwise JSTR_RET_SUCC.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_pushfront(char *R *R s,
                size_t *R sz,
@@ -824,7 +824,7 @@ JSTR_NOEXCEPT
 
 /* Pop s[size]. */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_popback_p(char *R s,
                const size_t sz)
@@ -839,7 +839,7 @@ JSTR_NOEXCEPT
 
 /* Pop s[0]. */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_popfront_p(char *R s,
                 const size_t sz)
@@ -853,7 +853,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstrio_fwrite(const char *R s,
               const size_t sz,
@@ -864,7 +864,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstrio_fwriteln(const char *R s,
                 const size_t sz,
@@ -885,7 +885,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 #if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
 || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
-JSTR_INLINE
+JSTR_ATTR_INLINE
 #endif
 static int
 jstr_vsprintfstrlen(va_list ap, const char *R fmt)
@@ -1128,7 +1128,7 @@ get_arg:
 }
 
 JSTR_FUNC_VOID
-JSTR_NOINLINE
+JSTR_ATTR_NOINLINE
 static void
 pjstr_sprintf_err(char *R *R s,
                   size_t *R sz,
@@ -1158,7 +1158,7 @@ pjstr_sprintf_err(char *R *R s,
    %m - errno string.
    Otherwise, return JSTR_RET_ERR and set errno to EINVAL.
 */
-JSTR_FORMAT(printf, 4, 5)
+JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_asprintf(char *R *R s,
@@ -1193,7 +1193,7 @@ err:
    Supports only some conversions: see jstr_asprintf().
    Otherwise, return JSTR_RET_ERR and set errno to EINVAL.
 */
-JSTR_FORMAT(printf, 2, 3)
+JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_asprintf_j(jstr_ty *R j,
@@ -1228,7 +1228,7 @@ err:
    Supports only some conversions: see jstr_asprintf().
    Otherwise, return JSTR_RET_ERR and set errno to EINVAL.
 */
-JSTR_FORMAT(printf, 4, 5)
+JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_asprintf_append(char *R *R s,
@@ -1266,7 +1266,7 @@ err:
    Supports only some conversions: see jstr_asprintf().
    Otherwise, return JSTR_RET_ERR and set errno to EINVAL.
 */
-JSTR_FORMAT(printf, 2, 3)
+JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_asprintf_append_j(jstr_ty *R j,
@@ -1301,7 +1301,7 @@ err:
    Supports only some conversions: see jstr_asprintf().
    Otherwise, return JSTR_RET_ERR and set errno to EINVAL.
 */
-JSTR_FORMAT(printf, 5, 6)
+JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_asprintf_from(char *R *R s,
@@ -1339,7 +1339,7 @@ err:
    Supports only some conversions: see jstr_asprintf().
    Otherwise, return JSTR_RET_ERR and set errno to EINVAL.
 */
-JSTR_FORMAT(printf, 3, 4)
+JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_asprintf_from_j(jstr_ty *R j,
@@ -1374,7 +1374,7 @@ err:
    Assume that S has enough space.
    Use jstr_asprintf() to grow S.
 */
-JSTR_FORMAT(printf, 4, 5)
+JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_sprintf(char *R *R s,
@@ -1402,7 +1402,7 @@ err_free_set_errno:
    Assume that S has enough space.
    Use jstr_asprintf() to grow S.
 */
-JSTR_FORMAT(printf, 2, 3)
+JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_sprintf_j(jstr_ty *R j,
@@ -1428,7 +1428,7 @@ err_free_set_errno:
    Assume that S has enough space.
    Use jstr_asprintf() to grow S.
 */
-JSTR_FORMAT(printf, 5, 6)
+JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_sprintf_from(char *R *R s,
@@ -1457,7 +1457,7 @@ err_free_set_errno:
    Assume that S has enough space.
    Use jstr_asprintf() to grow S.
 */
-JSTR_FORMAT(printf, 3, 4)
+JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_sprintf_from_j(jstr_ty *R j,

@@ -20,7 +20,7 @@
 PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FN_SHORT(const unsigned char *hs,
                       const size_t hl,
@@ -35,7 +35,7 @@ JSTR_NOEXCEPT
 #include "_jstr-memmem-impl.h"
 
 JSTR_FUNC_PURE
-JSTR_NOINLINE
+JSTR_ATTR_NOINLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FN_LONG(const unsigned char *hs,
                      const size_t hl,

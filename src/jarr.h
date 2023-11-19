@@ -80,7 +80,7 @@ PJSTR_END_DECLS
 		do                                                          \
 			(old_cap) *= PJARR_GROWTH;                          \
 		while ((old_cap) < (new_cap));                              \
-		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_MALLOC_ALIGNMENT); \
+		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_ATTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define jarr_reserve(j, new_cap)                                                                                   \
 	do {                                                                                                       \

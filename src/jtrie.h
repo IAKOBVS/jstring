@@ -25,9 +25,9 @@ typedef struct jtrie_node_ty {
 	unsigned int EOW;
 } jtrie_node_ty;
 
-JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_ATTR_INLINE
+JSTR_ATTR_WARN_UNUSED
+JSTR_ATTR_NOTHROW
 static jtrie_node_ty *
 jtrie_init(void)
 JSTR_NOEXCEPT
@@ -36,7 +36,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_ATTR_NOTHROW
 static void
 pjtrie_free_recur(jtrie_node_ty *R node)
 JSTR_NOEXCEPT
@@ -50,7 +50,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_MAYBE_UNUSED
-JSTR_NOTHROW
+JSTR_ATTR_NOTHROW
 static void
 jtrie_free(jtrie_node_ty *R *R node)
 JSTR_NOEXCEPT
@@ -58,10 +58,10 @@ JSTR_NOEXCEPT
 	pjtrie_free_recur(*node);
 }
 
-JSTR_INLINE
-JSTR_NONNULL_ALL
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_ATTR_INLINE
+JSTR_ATTR_NONNULL_ALL
+JSTR_ATTR_WARN_UNUSED
+JSTR_ATTR_NOTHROW
 static jtrie_ret_ty
 jtrie_add(jtrie_node_ty *R root,
           const char *R word)
@@ -87,9 +87,9 @@ typedef enum {
 	PJTRIE_FLAG_REMOVE_PREFIXES = 1
 } pjtrie_flag_remove_prefixes_ty;
 
-JSTR_NONNULL_ALL
-JSTR_INLINE
-JSTR_NOTHROW
+JSTR_ATTR_NONNULL_ALL
+JSTR_ATTR_INLINE
+JSTR_ATTR_NOTHROW
 static void
 pjtrie_remove(pjtrie_flag_remove_prefixes_ty flag,
               jtrie_node_ty *R root,
@@ -110,9 +110,9 @@ JSTR_NOEXCEPT
 	curr->EOW = 0;
 }
 
-JSTR_NONNULL_ALL
-JSTR_INLINE
-JSTR_NOTHROW
+JSTR_ATTR_NONNULL_ALL
+JSTR_ATTR_INLINE
+JSTR_ATTR_NOTHROW
 static void
 jtrie_remove(jtrie_node_ty *R root,
              const char *R word)
@@ -121,9 +121,9 @@ JSTR_NOEXCEPT
 	return pjtrie_remove(PJTRIE_FLAG_REMOVE_NOT_PREFIXES, root, word);
 }
 
-JSTR_NONNULL_ALL
-JSTR_INLINE
-JSTR_NOTHROW
+JSTR_ATTR_NONNULL_ALL
+JSTR_ATTR_INLINE
+JSTR_ATTR_NOTHROW
 static void
 jtrie_removeprefixes(jtrie_node_ty *R root,
                      const char *R word)
@@ -137,10 +137,10 @@ JSTR_NOEXCEPT
    Pointer to node with last letter of WORD.
    NULL if not found.
 */
-JSTR_NONNULL_ALL
-JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_ATTR_NONNULL_ALL
+JSTR_ATTR_INLINE
+JSTR_ATTR_WARN_UNUSED
+JSTR_ATTR_NOTHROW
 static jtrie_node_ty *
 jtrie_starts(const jtrie_node_ty *R root,
              const char *R word)
@@ -162,10 +162,10 @@ JSTR_NOEXCEPT
    1 if matches;
    0 otherwise.
 */
-JSTR_NONNULL_ALL
-JSTR_INLINE
-JSTR_WARN_UNUSED
-JSTR_NOTHROW
+JSTR_ATTR_NONNULL_ALL
+JSTR_ATTR_INLINE
+JSTR_ATTR_WARN_UNUSED
+JSTR_ATTR_NOTHROW
 static int
 jtrie_match(const jtrie_node_ty *R root,
             const char *R word)

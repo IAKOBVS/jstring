@@ -28,7 +28,7 @@
    instead of calling compiler auxiliary functions.  */
 #	include "_string-optype.h"
 
-static JSTR_INLINE unsigned int
+static JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first(jstr_word_ty c)
 {
 	if (c & 0x80U)
@@ -52,7 +52,7 @@ jstr_word_index_first(jstr_word_ty c)
 	return 7;
 }
 
-static JSTR_INLINE unsigned int
+static JSTR_ATTR_INLINE unsigned int
 jstr_word_index_last(jstr_word_ty c)
 {
 	if (sizeof(jstr_word_ty) == 8) {

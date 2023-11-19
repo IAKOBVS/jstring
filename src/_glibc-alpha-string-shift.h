@@ -27,14 +27,14 @@
 
 /* Return the mask WORD jstr_word_shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
-static JSTR_INLINE jstr_word_ty
+static JSTR_ATTR_INLINE jstr_word_ty
 jstr_word_shift_find(jstr_word_ty word, uintptr_t s)
 {
 	return word >> (s % sizeof(jstr_word_ty));
 }
 
 /* Mask off the bits defined the the S alignment value.  */
-static JSTR_INLINE jstr_word_ty
+static JSTR_ATTR_INLINE jstr_word_ty
 jstr_word_shift_find_last(jstr_word_ty word, uintptr_t s)
 {
 	s = s % sizeof(jstr_word_ty);

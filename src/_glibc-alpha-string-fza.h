@@ -30,25 +30,25 @@
    returned by __builtin_alpha_cmpbge.  */
 typedef jstr_word_ty jstr_word_find_t;
 
-static JSTR_INLINE jstr_word_ty
+static JSTR_ATTR_INLINE jstr_word_ty
 jstr_word_find_zero_all(jstr_word_ty x)
 {
 	return __builtin_alpha_cmpbge(0, x);
 }
 
-static JSTR_INLINE jstr_word_ty
+static JSTR_ATTR_INLINE jstr_word_ty
 jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
 	return jstr_word_find_zero_all(x1 ^ x2);
 }
 
-static JSTR_INLINE jstr_word_ty
+static JSTR_ATTR_INLINE jstr_word_ty
 jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
 	return jstr_word_find_zero_all(x1) | jstr_word_find_zero_all(x1 ^ x2);
 }
 
-static JSTR_INLINE jstr_word_ty
+static JSTR_ATTR_INLINE jstr_word_ty
 jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
 	return jstr_word_find_zero_all(x1) | (jstr_word_find_zero_all(x1 ^ x2) ^ 0xff);

@@ -23,7 +23,7 @@ PJSTR_BEGIN_DECLS
    Will NOT handle EOF correctly.
    toupper(EOF) != EOF;
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_CONST
 static int
 jstr_toupper(const int c)
@@ -37,7 +37,7 @@ JSTR_NOEXCEPT
    Will NOT handle EOF correctly.
    tolower(EOF) != EOF;
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_CONST
 static int
 jstr_tolower(const int c)
@@ -64,7 +64,7 @@ JSTR_NOEXCEPT
    ASCII.
    For example: jstr_isctype(C, JSTR_ISLOWER | JSTR_ISDIGIT) checks if C is either lowercase or a digit.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_CONST
 static int
 jstr_isctype(const int c,
@@ -76,7 +76,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_ISCTYPE(ctype, ctype_enum)     \
 	/* ASCII. */                                \
-	JSTR_INLINE                                 \
+	JSTR_ATTR_INLINE                                 \
 	JSTR_FUNC_CONST                             \
 	static int                                  \
 	jstr_is##ctype(const int c)                 \
@@ -90,7 +90,7 @@ PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_ISCTYPE);
 #undef PJSTR_DEFINE_ISCTYPE
 
 /* ASCII. */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static char *
 jstr_skipctype(const char *R s,
@@ -109,7 +109,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_SKIP_CTYPE(ctype, ctype_enum)    \
 	/* ASCII. */                                  \
-	JSTR_INLINE                                   \
+	JSTR_ATTR_INLINE                                   \
 	JSTR_FUNC_PURE                                \
 	static char *                                 \
 	jstr_skip##ctype(const char *R s)             \
@@ -123,7 +123,7 @@ PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_SKIP_CTYPE)
 #undef PJSTR_DEFINE_SKIP_CTYPE
 
 /* ASCII. */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_isctypestr(const char *R s,
@@ -135,7 +135,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_ISCTYPE_STR(ctype, ctype_enum)    \
 	/* ASCII. */                                   \
-	JSTR_INLINE                                    \
+	JSTR_ATTR_INLINE                                    \
 	JSTR_FUNC_PURE                                 \
 	static int                                     \
 	jstr_is##ctype##str(const char *R s)           \
@@ -149,7 +149,7 @@ PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_ISCTYPE_STR)
 #undef PJSTR_DEFINE_ISCTYPE_STR
 
 /* ASCII. */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static char *
 jstr_skipctype_rev(const char *const start,
@@ -164,7 +164,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_SKIP_CTYPE_REV(ctype, ctype_enum)             \
 	/* ASCII. */                                               \
-	JSTR_INLINE                                                \
+	JSTR_ATTR_INLINE                                                \
 	JSTR_FUNC_PURE                                             \
 	static char *                                              \
 	jstr_skip##ctype##_rev(const char *const start,            \
@@ -180,7 +180,7 @@ PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_SKIP_CTYPE_REV)
 
 /* ASCII. */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_toupperstr(char *R s)
 JSTR_NOEXCEPT
@@ -191,7 +191,7 @@ JSTR_NOEXCEPT
 
 /* ASCII. */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_tolowerstr(char *R s)
 JSTR_NOEXCEPT
@@ -205,7 +205,7 @@ JSTR_NOEXCEPT
    Return pointer to '\0' in DST.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_toupperstrcpy_p(char *R dst,
                      const char *R src)
@@ -221,7 +221,7 @@ JSTR_NOEXCEPT
    Return pointer to '\0' in DST.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_tolowerstrcpy_p(char *R dst,
                      const char *R src)

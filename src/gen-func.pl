@@ -11,7 +11,8 @@ sub usage {
 }
 
 my $fname             = $ARGV[0];
-my $ATTR_INLINE       = 'JSTR_INLINE';
+my $ATTR_INLINE       = 'JSTR_ATTR_INLINE';
+my $ATTR_ACCESS       = 'JSTR_ATTR_ACCESS';
 my $ATTR_RESTRICT     = 'JSTR_RESTRICT';
 my $ATTR_DEFAULT      = 'JSTR_FUNC';
 my $ATTR_DEFAULT_VOID = 'JSTR_FUNC_VOID';
@@ -104,6 +105,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 	}
 	$body =~ s/, $//;
 	$body .= ");";
+	$attr =~ s/.*$ATTR_ACCESS.*//og;
 	$file_str2 .=
 	  jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
 	push(@func_arr, $name);
@@ -188,6 +190,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$body .= ";";
 	rm_nonnull(\$attr, \$ATTR_RET_NONNULL);
 	add_inline(\$attr, \$ATTR_INLINE);
+	$attr =~ s/.*$ATTR_ACCESS.*//og;
 	$file_str3 .=
 	  jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
 	push(@func_arr, $name);

@@ -48,9 +48,9 @@ PJSTR_END_DECLS
 
 #define JSTR_ARRAY_SIZE(array) (sizeof(array) / sizeof(*(array)))
 
-#define JSTR_ALIGN_UP_STR(base)       JSTR_ALIGN_UP((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
-#define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_MALLOC_ALIGNMENT)
-#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_UP_STR(base)       JSTR_ALIGN_UP((uintptr_t)base, PJSTR_ATTR_MALLOC_ALIGNMENT)
+#define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_ATTR_MALLOC_ALIGNMENT)
+#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_ATTR_MALLOC_ALIGNMENT)
 
 #ifdef __cplusplus
 template <typename T, typename Other>
@@ -246,179 +246,179 @@ PJSTR_CAST(T, Other other)
 #	define jstr_unlikely(x) (x)
 #endif /* unlikely */
 
-#ifndef PJSTR_INLINE
+#ifndef PJSTR_ATTR_INLINE
 #	if (defined __cplusplus						\
         || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
-#		define PJSTR_INLINE inline
+#		define PJSTR_ATTR_INLINE inline
 #	else
-#		define PJSTR_INLINE
+#		define PJSTR_ATTR_INLINE
 #	endif
 #endif
 
 #if (defined __GNUC__ || defined __clang__) && (defined __glibc_has_attribute || defined __has_attribute)
 #	if JSTR_HAS_ATTRIBUTE(__format__)
-#		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
+#		define JSTR_ATTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__always_inline__)
-#		define JSTR_INLINE __attribute__((__always_inline__)) PJSTR_INLINE
+#		define JSTR_ATTR_INLINE __attribute__((__always_inline__)) PJSTR_ATTR_INLINE
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__noinline__)
-#		define JSTR_NOINLINE __attribute__((__noinline__))
+#		define JSTR_ATTR_NOINLINE __attribute__((__noinline__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__pure__)
-#		define JSTR_PURE __attribute__((__pure__))
+#		define JSTR_ATTR_PURE __attribute__((__pure__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__const__)
-#		define JSTR_CONST __attribute__((__const__))
+#		define JSTR_ATTR_CONST __attribute__((__const__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__flatten__)
-#		define JSTR_FLATTEN __attribute__((__flatten__))
+#		define JSTR_ATTR_FLATTEN __attribute__((__flatten__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__cold__)
-#		define JSTR_COLD __attribute__((__cold__))
+#		define JSTR_ATTR_COLD __attribute__((__cold__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__sentinel__)
-#		define JSTR_SENTINEL __attribute__((__sentinel__))
+#		define JSTR_ATTR_SENTINEL __attribute__((__sentinel__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__nonnull__)
-#		define JSTR_NONNULL_ALL   __attribute__((__nonnull__))
+#		define JSTR_ATTR_NONNULL_ALL   __attribute__((__nonnull__))
 #		define JSTR_NONNULL(args) __attribute__((__nonnull__(args)))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
-#		define JSTR_MALLOC                                   __attribute__((__malloc__))
-#		define JSTR_MALLOC_DEALLOC(deallocator)              __attribute__((__malloc__, deallocator))
-#		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__, deallocator, ptr_idx))
+#		define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))
+#		define JSTR_ATTR_MALLOC_DEALLOC(deallocator)              __attribute__((__malloc__, deallocator))
+#		define JSTR_ATTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__, deallocator, ptr_idx))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
-#		define JSTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))
+#		define JSTR_ATTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__warn_unused_result__)
-#		define JSTR_WARN_UNUSED __attribute__((__warn_unused_result__))
+#		define JSTR_ATTR_WARN_UNUSED __attribute__((__warn_unused_result__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__deprecated__)
-#		define JSTR_DEPRECATED(msg) __attribute__((__deprecated__(msg)))
+#		define JSTR_ATTR_DEPRECATED(msg) __attribute__((__deprecated__(msg)))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__nothrow__)
-#		define JSTR_NOTHROW __attribute__((__nothrow__))
+#		define JSTR_ATTR_NOTHROW __attribute__((__nothrow__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__may_alias__)
-#		define JSTR_MAY_ALIAS           __attribute__((__may_alias__))
+#		define JSTR_ATTR_MAY_ALIAS           __attribute__((__may_alias__))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__access__)
-#		define JSTR_ACCESS(x) __attribute__((__access__ x))
+#		define JSTR_ATTR_ACCESS(x) __attribute__((__access__ x))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__unused__)
 #		define JSTR_MAYBE_UNUSED __attribute__((__unused__))
 #	endif
 #	if JSTR_HAS_BUILTIN(__builtin_constant_p)
-#		define JSTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
+#		define JSTR_ATTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
 #	endif
 #elif defined _MSC_VER
-#	define JSTR_NOINLINE __declspec(noinline)
-#	define JSTR_PURE     __declspec(noalias)
-#	define JSTR_CONST    __declspec(restrict)
-#	define JSTR_NOTHROW  __declspec(nothrow)
-#	define JSTR_NOINLINE __delspec(noinline)
+#	define JSTR_ATTR_NOINLINE __declspec(noinline)
+#	define JSTR_ATTR_PURE     __declspec(noalias)
+#	define JSTR_ATTR_CONST    __declspec(restrict)
+#	define JSTR_ATTR_NOTHROW  __declspec(nothrow)
+#	define JSTR_ATTR_NOINLINE __delspec(noinline)
 #endif /* Gnuc || clang || msvc */
 
-#ifndef JSTR_INLINE
-#	define JSTR_INLINE PJSTR_INLINE
+#ifndef JSTR_ATTR_INLINE
+#	define JSTR_ATTR_INLINE PJSTR_ATTR_INLINE
 #endif
-#ifndef JSTR_NOINLINE
-#	define JSTR_NOINLINE
+#ifndef JSTR_ATTR_NOINLINE
+#	define JSTR_ATTR_NOINLINE
 #endif
-#ifndef JSTR_PURE
-#	define JSTR_PURE
+#ifndef JSTR_ATTR_PURE
+#	define JSTR_ATTR_PURE
 #endif
-#ifndef JSTR_CONST
-#	define JSTR_CONST
+#ifndef JSTR_ATTR_CONST
+#	define JSTR_ATTR_CONST
 #endif
-#ifndef JSTR_NOTHROW
-#	define JSTR_NOTHROW
+#ifndef JSTR_ATTR_NOTHROW
+#	define JSTR_ATTR_NOTHROW
 #endif
-#ifndef JSTR_NOINLINE
-#	define JSTR_NOINLINE
+#ifndef JSTR_ATTR_NOINLINE
+#	define JSTR_ATTR_NOINLINE
 #endif
-#ifndef JSTR_FLATTEN
-#	define JSTR_FLATTEN
+#ifndef JSTR_ATTR_FLATTEN
+#	define JSTR_ATTR_FLATTEN
 #endif
-#ifndef JSTR_COLD
-#	define JSTR_COLD
+#ifndef JSTR_ATTR_COLD
+#	define JSTR_ATTR_COLD
 #endif
-#ifndef JSTR_SENTINEL
-#	define JSTR_SENTINEL
+#ifndef JSTR_ATTR_SENTINEL
+#	define JSTR_ATTR_SENTINEL
 #endif
-#ifndef JSTR_NONNULL_ALL
-#	define JSTR_NONNULL_ALL
-#endif
-#ifndef JSTR_NONNULL
-#	define JSTR_NONNULL(args)
-#endif
-#ifndef JSTR_MALLOC
-#	define JSTR_MALLOC
-#endif
-#ifndef JSTR_MALLOC_DEALLOC
-#	define JSTR_MALLOC_DEALLOC(deallocator)
-#endif
-#ifndef JSTR_MALLOC_DEALLOC_PTR
-#	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
-#endif
-#ifndef JSTR_RETURNS_NONNULL
-#	define JSTR_RETURNS_NONNULL
-#endif
-#ifndef JSTR_WARN_UNUSED
-#	define JSTR_WARN_UNUSED
-#endif
-#ifndef JSTR_DEPRECATED
-#	define JSTR_DEPRECATED(msg, replacement)
-#endif
-#ifndef JSTR_FORMAT
-#	define JSTR_FORMAT(archetype, string_index, first_to_check)
-#endif
-#ifndef JSTR_COLD
-#	define JSTR_COLD
-#endif
-#ifndef JSTR_SENTINEL
-#	define JSTR_SENTINEL
-#endif
-#ifndef JSTR_NONNULL_ALL
-#	define JSTR_NONNULL_ALL
+#ifndef JSTR_ATTR_NONNULL_ALL
+#	define JSTR_ATTR_NONNULL_ALL
 #endif
 #ifndef JSTR_NONNULL
 #	define JSTR_NONNULL(args)
 #endif
-#ifndef JSTR_RETURNS_NONNULL
-#	define JSTR_RETURNS_NONNULL
+#ifndef JSTR_ATTR_MALLOC
+#	define JSTR_ATTR_MALLOC
 #endif
-#ifndef JSTR_WARN_UNUSED
-#	define JSTR_WARN_UNUSED
+#ifndef JSTR_ATTR_MALLOC_DEALLOC
+#	define JSTR_ATTR_MALLOC_DEALLOC(deallocator)
 #endif
-#ifndef JSTR_DEPRECATED
-#	define JSTR_DEPRECATED(msg, replacement)
+#ifndef JSTR_ATTR_MALLOC_DEALLOC_PTR
+#	define JSTR_ATTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #endif
-#ifndef JSTR_MAY_ALIAS
-#	define JSTR_MAY_ALIAS
+#ifndef JSTR_ATTR_RETURNS_NONNULL
+#	define JSTR_ATTR_RETURNS_NONNULL
+#endif
+#ifndef JSTR_ATTR_WARN_UNUSED
+#	define JSTR_ATTR_WARN_UNUSED
+#endif
+#ifndef JSTR_ATTR_DEPRECATED
+#	define JSTR_ATTR_DEPRECATED(msg, replacement)
+#endif
+#ifndef JSTR_ATTR_FORMAT
+#	define JSTR_ATTR_FORMAT(archetype, string_index, first_to_check)
+#endif
+#ifndef JSTR_ATTR_COLD
+#	define JSTR_ATTR_COLD
+#endif
+#ifndef JSTR_ATTR_SENTINEL
+#	define JSTR_ATTR_SENTINEL
+#endif
+#ifndef JSTR_ATTR_NONNULL_ALL
+#	define JSTR_ATTR_NONNULL_ALL
+#endif
+#ifndef JSTR_NONNULL
+#	define JSTR_NONNULL(args)
+#endif
+#ifndef JSTR_ATTR_RETURNS_NONNULL
+#	define JSTR_ATTR_RETURNS_NONNULL
+#endif
+#ifndef JSTR_ATTR_WARN_UNUSED
+#	define JSTR_ATTR_WARN_UNUSED
+#endif
+#ifndef JSTR_ATTR_DEPRECATED
+#	define JSTR_ATTR_DEPRECATED(msg, replacement)
+#endif
+#ifndef JSTR_ATTR_MAY_ALIAS
+#	define JSTR_ATTR_MAY_ALIAS
 #	define JSTR_HAVE_ATTR_MAY_ALIAS 0
 #endif
 #ifndef JSTR_MAYBE_UNUSED
 #	define JSTR_MAYBE_UNUSED
 #endif
-#ifndef JSTR_BUILTIN_CONSTANT_P
-#	define JSTR_BUILTIN_CONSTANT_P(p) 0
+#ifndef JSTR_ATTR_BUILTIN_CONSTANT_P
+#	define JSTR_ATTR_BUILTIN_CONSTANT_P(p) 0
 #endif
-#ifndef JSTR_ACCESS
-#	define JSTR_ACCESS(x)
+#ifndef JSTR_ATTR_ACCESS
+#	define JSTR_ATTR_ACCESS(x)
 #endif
 
-#define JSTR_FUNC_VOID_MAY_NULL JSTR_NOTHROW JSTR_MAYBE_UNUSED
-#define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_NONNULL_ALL
-#define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_WARN_UNUSED
-#define JSTR_FUNC               JSTR_FUNC_MAY_NULL JSTR_NONNULL_ALL
-#define JSTR_FUNC_CONST         JSTR_FUNC JSTR_CONST
-#define JSTR_FUNC_PURE          JSTR_FUNC JSTR_PURE
-#define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_PURE
-#define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_RETURNS_NONNULL
+#define JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NOTHROW JSTR_MAYBE_UNUSED
+#define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NONNULL_ALL
+#define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WARN_UNUSED
+#define JSTR_FUNC               JSTR_FUNC_MAY_NULL JSTR_ATTR_NONNULL_ALL
+#define JSTR_FUNC_CONST         JSTR_FUNC JSTR_ATTR_CONST
+#define JSTR_FUNC_PURE          JSTR_FUNC JSTR_ATTR_PURE
+#define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_ATTR_PURE
+#define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_ATTR_RETURNS_NONNULL
 
 #define JSTR_ALPHA_VOWEL_LOWER_STR     "aiueo"
 #define JSTR_ALPHA_VOWEL_UPPER_STR     "AIUEO"

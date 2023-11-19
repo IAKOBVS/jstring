@@ -30,7 +30,7 @@
 
 /* A subroutine for the jstr_word_index_zero functions.  Given a bitmask C,
    return the jstr_word_index of the first bit set in memory order.  */
-static JSTR_INLINE unsigned int
+static JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first(jstr_word_ty c)
 {
 #ifdef __alpha_cix__
@@ -44,7 +44,7 @@ jstr_word_index_first(jstr_word_ty c)
 /* Similarly, but return the (memory order) jstr_word_index of the last bit
    that is non-zero.  Note that only the least 8 bits may be nonzero.  */
 
-static JSTR_INLINE unsigned int
+static JSTR_ATTR_INLINE unsigned int
 jstr_word_index_last(jstr_word_ty x)
 {
 #ifdef __alpha_cix__

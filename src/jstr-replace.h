@@ -20,7 +20,7 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 pjstr_rmallinplace(char **dst,
                    const char **oldp,
@@ -36,7 +36,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 pjstr_rplcallinplace(char **dst,
                      const char **oldp,
@@ -61,7 +61,7 @@ JSTR_NOEXCEPT
   ptr to '\0' in S.
   Assume that S have enough space for SRC.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_insert_unsafe(char *R s,
@@ -77,7 +77,7 @@ JSTR_NOEXCEPT
 	memcpy(s + at, src, src_len);
 }
 
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 pjstr_rplcat_len_unsafe(char *R s,
@@ -118,7 +118,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 pjstr_rplcat_len_higher(char *R *R s,
                         size_t *R sz,
@@ -163,7 +163,7 @@ JSTR_NOEXCEPT
   Return JSTR_RET_ERR on malloc error;
   otherwise, 1.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insertafterchr_len(char *R *R s,
@@ -268,7 +268,7 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmchr_len_p(char *R s,
@@ -286,7 +286,7 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmchr_p(char *R s,
@@ -543,7 +543,7 @@ JSTR_NOEXCEPT
   Pointer to '\0' in S.
 */
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_rmat_len_p(char *R s,
                 const size_t at,
@@ -580,7 +580,7 @@ JSTR_NOEXCEPT
 /*
   Replace first SEARCH in REPLACE.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_rplcchr_len(char *R s,
@@ -597,7 +597,7 @@ JSTR_NOEXCEPT
 /*
   Replace first SEARCH in REPLACE.
 */
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_rplcchr(char *R s,
@@ -746,7 +746,7 @@ JSTR_NOEXCEPT
   Return ptr to '\0' in S.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_rmlast_len_p(char *R s,
                   size_t sz,
@@ -764,7 +764,7 @@ JSTR_NOEXCEPT
   otherwise, 1.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_rplclast_len(char *R *R s,
                   size_t *R sz,
@@ -809,7 +809,7 @@ JSTR_NOEXCEPT
   Pointer to '\0' in S.
 */
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_rmall_len_p(char *R s,
                  size_t sz,
@@ -820,7 +820,7 @@ JSTR_NOEXCEPT
 	return jstr_rmn_len_p(s, sz, find, find_len, -1);
 }
 
-JSTR_INLINE
+JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
 jstr_rplcn_len_from(char *R *R s,
@@ -869,7 +869,7 @@ JSTR_NOEXCEPT
   otherwise, 1.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_rplcn_len(char *R *R s,
                size_t *R sz,
@@ -890,7 +890,7 @@ JSTR_NOEXCEPT
   otherwise, 1.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_rplcall_len_from(char *R *R s,
                       size_t *R sz,
@@ -911,7 +911,7 @@ JSTR_NOEXCEPT
   otherwise, 1.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_rplcall_len(char *R *R s,
                  size_t *R sz,
@@ -939,7 +939,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_revcpy_p(char *R dst,
               char *R src)
@@ -973,7 +973,7 @@ JSTR_NOEXCEPT
   ptr to '\0' in S.
 */
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_rev_p(char *R s)
 JSTR_NOEXCEPT
@@ -1007,7 +1007,7 @@ JSTR_NOEXCEPT
   ptr to '\0' in S;
 */
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_trimend_p(char *R s)
 JSTR_NOEXCEPT
@@ -1040,7 +1040,7 @@ JSTR_NOEXCEPT
   ptr to '\0' in S;
 */
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_trimstart_p(char *R s)
 JSTR_NOEXCEPT
@@ -1057,7 +1057,7 @@ JSTR_NOEXCEPT
   Trim leading jstr_isspace() chars in S.
 */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_trimstart(char *R s)
 JSTR_NOEXCEPT
@@ -1095,7 +1095,7 @@ JSTR_NOEXCEPT
   ptr to '\0' in S;
 */
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_trim_p(char *R s)
 JSTR_NOEXCEPT
@@ -1109,7 +1109,7 @@ JSTR_NOEXCEPT
   Return value:
 */
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 jstr_place_len_unsafe(char *R s,
                       const size_t at,
@@ -1126,7 +1126,7 @@ JSTR_NOEXCEPT
   otherwise JSTR_RET_SUCC.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_place_len(char *R *R s,
                size_t *R sz,
@@ -1151,7 +1151,7 @@ JSTR_NOEXCEPT
   otherwise JSTR_RET_SUCC.
 */
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_placeafterchr_len(char *R *R s,
                        size_t *R sz,
@@ -1384,7 +1384,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_cpy_p(char *R dst,
            const jstr_ty *R src)
@@ -1394,14 +1394,14 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_dup(jstr_ty *R dst,
          const jstr_ty *R src)
 JSTR_NOEXCEPT
 {
 	dst->data = (char *)malloc(src->capacity);
-	PJSTR_MALLOC_ERR(dst->data, return JSTR_RET_ERR);
+	PJSTR_ATTR_MALLOC_ERR(dst->data, return JSTR_RET_ERR);
 	dst->size = jstr_cpy_p(dst->data, dst) - dst->data;
 	dst->size = src->size;
 	dst->capacity = src->capacity;
@@ -1512,7 +1512,7 @@ JSTR_NOEXCEPT
    For example: 1234 becomes 1,234.
 */
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_thousep_p(char *R nptr,
                const int separator)
@@ -1571,7 +1571,7 @@ JSTR_NOEXCEPT
    ptr to '\0' in DST.
 */
 JSTR_FUNC_RET_NONNULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_thousepcpy_p(char *R dst,
                   const char *R src,

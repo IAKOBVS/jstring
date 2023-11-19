@@ -48,8 +48,8 @@ typedef struct jstrlist_ty {
 } jstrlist_ty;
 
 JSTR_FUNC_VOID
-JSTR_NOINLINE
-JSTR_COLD
+JSTR_ATTR_NOINLINE
+JSTR_ATTR_COLD
 static void
 pjstrl_nullify_members(jstrlist_ty *R l)
 {
@@ -58,7 +58,7 @@ pjstrl_nullify_members(jstrlist_ty *R l)
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 pjstrl_elemstore(jstr_ty *R dst,
                  const jstr_ty *R src)
@@ -69,7 +69,7 @@ pjstrl_elemstore(jstr_ty *R dst,
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 pjstrl_elemmove(jstrlist_ty *R l,
                 const jstr_ty *R elem)
@@ -82,7 +82,7 @@ pjstrl_elemmove(jstrlist_ty *R l,
 }
 
 JSTR_FUNC_CONST
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ty *
 jstrl_start(const jstrlist_ty *R l)
 JSTR_NOEXCEPT
@@ -91,7 +91,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_CONST
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ty *
 jstrl_end(const jstrlist_ty *R l)
 JSTR_NOEXCEPT
@@ -99,8 +99,8 @@ JSTR_NOEXCEPT
 	return l->data + l->size;
 }
 
-JSTR_CONST
-JSTR_INLINE
+JSTR_ATTR_CONST
+JSTR_ATTR_INLINE
 static jstr_ty *
 jstrl_at(const jstrlist_ty *R l,
          const size_t idx)
@@ -110,8 +110,8 @@ JSTR_NOEXCEPT
 	return l->data + idx;
 }
 
-JSTR_CONST
-JSTR_INLINE
+JSTR_ATTR_CONST
+JSTR_ATTR_INLINE
 static jstr_ty *
 pjstrl_at(const jstrlist_ty *R l,
           const size_t idx)
@@ -122,7 +122,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_CONST
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static size_t
 jstrl_index(jstrlist_ty *R l,
             jstr_ty *R curr)
@@ -152,7 +152,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstrl_debug(const jstrlist_ty *R l)
 {
@@ -187,7 +187,7 @@ err_set_errno:
 }
 
 JSTR_FUNC_CONST
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static size_t
 pjstrl_grow(size_t cap,
             size_t new_cap)
@@ -201,7 +201,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstrl_reservealways(jstrlist_ty *R l,
                     size_t new_cap)
@@ -209,7 +209,7 @@ JSTR_NOEXCEPT
 {
 	new_cap = pjstrl_grow(l->capacity, new_cap);
 	jstr_ty *tmp = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
-	PJSTR_MALLOC_ERR(tmp, goto err);
+	PJSTR_ATTR_MALLOC_ERR(tmp, goto err);
 	l->data = tmp;
 #if JSTRL_LAZY_FREE
 	memset(l->data + l->capacity, 0, (new_cap - l->capacity) * sizeof(*l->data));
@@ -223,7 +223,7 @@ err:
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstrl_reserve(jstrlist_ty *R l,
               size_t new_cap)
@@ -235,7 +235,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static jstr_ret_ty
 pjstrl_assign_len(char *R *R s,
                   size_t *R sz,
@@ -248,7 +248,7 @@ pjstrl_assign_len(char *R *R s,
 #else
 	*cap = JSTR_ALIGN_UP_STR(src_len + 1);
 	*s = (char *)malloc(*cap);
-	PJSTR_MALLOC_ERR(*s, goto err);
+	PJSTR_ATTR_MALLOC_ERR(*s, goto err);
 	jstr_strcpy_len(*s, src, src_len);
 	*sz = src_len;
 	return JSTR_RET_SUCC;
@@ -273,7 +273,7 @@ jstrl_popback(jstrlist_ty *R l)
 }
 
 JSTR_FUNC_VOID
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 pjstrl_memmove(jstr_ty *const dst,
                jstr_ty *const src,
@@ -396,7 +396,7 @@ err:
 }
 
 /* Last arg must be NULL. */
-JSTR_SENTINEL
+JSTR_ATTR_SENTINEL
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL(1)
 static jstr_ret_ty
@@ -514,7 +514,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID_MAY_NULL
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static void
 pjstrl_delete(jstrlist_ty *R l,
               jstr_ty *R p)

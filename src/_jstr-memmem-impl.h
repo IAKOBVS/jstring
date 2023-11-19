@@ -33,7 +33,7 @@
 #endif
 
 JSTR_FUNC_PURE
-JSTR_INLINE
+JSTR_ATTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FN_IMPL(const unsigned char *hs,
                      const size_t hl,
