@@ -282,7 +282,7 @@ PJSTR_CAST(T, Other other)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__nonnull__)
 #		define JSTR_ATTR_NONNULL_ALL   __attribute__((__nonnull__))
-#		define JSTR_NONNULL(args) __attribute__((__nonnull__(args)))
+#		define JSTR_NONNULL(args) __attribute__((__nonnull__ args))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
 #		define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))

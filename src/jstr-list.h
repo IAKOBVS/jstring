@@ -398,7 +398,7 @@ err:
 /* Last arg must be NULL. */
 JSTR_ATTR_SENTINEL
 JSTR_FUNC_VOID_MAY_NULL
-JSTR_NONNULL(1)
+JSTR_NONNULL((1))
 static jstr_ret_ty
 jstrl_cat(jstrlist_ty *R l,
           ...)
