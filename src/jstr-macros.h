@@ -19,6 +19,12 @@
 #	define PJSTR_END_DECLS
 #endif
 
+#ifdef __gnu_linux__
+	PJSTR_BEGIN_DECLS
+#	include <sys/cdefs.h>
+	PJSTR_END_DECLS
+#endif
+
 PJSTR_BEGIN_DECLS
 typedef enum {
 	JSTR_RET_ERR = 0,
@@ -113,11 +119,15 @@ PJSTR_CAST(T, Other other)
 #endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #ifdef static_assert
+	PJSTR_BEGIN_DECLS
 #	include <assert.h>
+	PJSTR_END_DECLS
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)  static_assert(expr, msg)
 #elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
+	PJSTR_BEGIN_DECLS
 #	include <assert.h>
+	PJSTR_END_DECLS
 #	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_ASSERT(expr, msg)  _Static_assert(expr, msg)
 #else
@@ -241,57 +251,41 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
 #	elif JSTR_HAS_ATTRIBUTE(format)
 #		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((format(archetype, string_index, first_to_check)))
-#	else
-#		define JSTR_FORMAT(archetype, string_index, first_to_check)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__always_inline__)
 #		define JSTR_INLINE __attribute__((__always_inline__)) inline
 #	elif JSTR_HAS_ATTRIBUTE(always_inline)
 #		define JSTR_INLINE always_inline((always_inline)) inline
-#	else
-#		define JSTR_INLINE inline
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__noinline__)
 #		define JSTR_NOINLINE __attribute__((__noinline__))
 #	elif JSTR_HAS_ATTRIBUTE(noinline)
 #		define JSTR_NOINLINE __attribute__((noinline))
-#	else
-#		define JSTR_NOINLINE
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__pure__)
 #		define JSTR_PURE __attribute__((__pure__))
 #	elif JSTR_HAS_ATTRIBUTE(pure)
 #		define JSTR_PURE __attribute__((pure))
-#	else
-#		define JSTR_PURE
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__const__)
 #		define JSTR_CONST __attribute__((__const__))
 #	elif JSTR_HAS_ATTRIBUTE(const)
 #		define JSTR_CONST __attribute__((const))
-#	else
-#		define JSTR_CONST
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__flatten__)
 #		define JSTR_FLATTEN __attribute__((__flatten__))
 #	elif JSTR_HAS_ATTRIBUTE(flatten)
 #		define JSTR_FLATTEN __attribute__((flatten))
-#	else
-#		define JSTR_FLATTEN
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__cold__)
 #		define JSTR_COLD __attribute__((__cold__))
 #	elif JSTR_HAS_ATTRIBUTE(cold)
 #		define JSTR_COLD __attribute__((cold))
-#	else
-#		define JSTR_COLD
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__sentinel__)
 #		define JSTR_SENTINEL __attribute__((__sentinel__))
 #	elif JSTR_HAS_ATTRIBUTE(sentinel)
 #		define JSTR_SENTINEL __attribute__((sentinel))
-#	else
-#		define JSTR_SENTINEL
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__nonnull__)
 #		define JSTR_NONNULL_ALL   __attribute__((__nonnull__))
@@ -299,8 +293,6 @@ PJSTR_CAST(T, Other other)
 #	elif JSTR_HAS_ATTRIBUTE(nonnull)
 #		define JSTR_NONNULL_ALL   __attribute__((nonnull))
 #		define JSTR_NONNULL(args) __attribute__((nonnull(args)))
-#	else
-#		define JSTR_NONNULL_ALL
 #		define JSTR_NONNULL(args)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
@@ -311,8 +303,6 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_MALLOC                                   __attribute__((malloc))
 #		define JSTR_MALLOC_DEALLOC(deallocator)              __attribute__((malloc, deallocator))
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
-#	else
-#		define JSTR_MALLOC
 #		define JSTR_MALLOC_DEALLOC(deallocator)
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #	endif
@@ -320,29 +310,21 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))
 #	elif JSTR_HAS_ATTRIBUTE(returns_nonnull)
 #		define JSTR_RETURNS_NONNULL __attribute__((returns_nonnull))
-#	else
-#		define JSTR_RETURNS_NONNULL
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__warn_unused_result__)
 #		define JSTR_WARN_UNUSED __attribute__((__warn_unused_result__))
 #	elif JSTR_HAS_ATTRIBUTE(warn_unused_result)
 #		define JSTR_WARN_UNUSED __attribute__((warn_unused_result))
-#	else
-#		define JSTR_WARN_UNUSED
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__deprecated__)
 #		define JSTR_DEPRECATED(msg) __attribute__((__deprecated__(msg)))
 #	elif JSTR_HAS_ATTRIBUTE(deprecated)
 #		define JSTR_DEPRECATED(msg) __attribute__((deprecated(msg)))
-#	else
-#		define JSTR_DEPRECATED(msg, replacement)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__nothrow__)
 #		define JSTR_NOTHROW __attribute__((__nothrow__))
 #	elif JSTR_HAS_ATTRIBUTE(nothrow)
 #		define JSTR_NOTHROW __attribute__((nothrow))
-#	else
-#		define JSTR_NOTHROW
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__may_alias__)
 #		define JSTR_MAY_ALIAS           __attribute__((__may_alias__))
@@ -350,60 +332,114 @@ PJSTR_CAST(T, Other other)
 #	elif JSTR_HAS_ATTRIBUTE(may_alias)
 #		define JSTR_MAY_ALIAS           __attribute__((may_alias))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
-#	else
-#		define JSTR_MAY_ALIAS
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__unused__)
 #		define JSTR_MAYBE_UNUSED __attribute__((__unused__))
 #	elif JSTR_HAS_ATTRIBUTE(unused)
 #		define JSTR_MAYBE_UNUSED __attribute__((unused))
-#	else
-#		define JSTR_MAYBE_UNUSED
 #	endif
 #	if JSTR_HAS_BUILTIN(__builtin_constant_p)
 #		define JSTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
-#	else
-#		define JSTR_BUILTIN_CONSTANT_P(p) 0
 #	endif
-#else
-#	if defined _MSC_VER
-#		define JSTR_INLINE   __forceinline inline
-#		define JSTR_NOINLINE __declspec(noinline)
-#		define JSTR_PURE     __declspec(noalias)
-#		define JSTR_CONST    __declspec(restrict)
-#		define JSTR_NOTHROW  __declspec(nothrow)
-#		define JSTR_NOINLINE __delspec(noinline)
-#	else
-#		define JSTR_INLINE inline
-#		define JSTR_NOINLINE
-#		define JSTR_PURE
-#		define JSTR_CONST
-#		define JSTR_NOTHROW
-#		define JSTR_NOINLINE
-#	endif
-#	define JSTR_FLATTEN
-#	define JSTR_COLD
-#	define JSTR_SENTINEL
-#	define JSTR_NONNULL_ALL
-#	define JSTR_NONNULL(args)
-#	define JSTR_MALLOC
-#	define JSTR_MALLOC_DEALLOC(deallocator)
-#	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
-#	define JSTR_RETURNS_NONNULL
-#	define JSTR_WARN_UNUSED
-#	define JSTR_DEPRECATED(msg, replacement)
-#	define JSTR_FORMAT(archetype, string_index, first_to_check)
-#	define JSTR_COLD
-#	define JSTR_SENTINEL
-#	define JSTR_NONNULL_ALL
-#	define JSTR_NONNULL(args)
-#	define JSTR_RETURNS_NONNULL
-#	define JSTR_WARN_UNUSED
-#	define JSTR_DEPRECATED(msg, replacement)
-#	define JSTR_MAY_ALIAS
-#	define JSTR_MAYBE_UNUSED
-#	define JSTR_BUILTIN_CONSTANT_P(p) 0
+#elif defined _MSC_VER
+#	define JSTR_INLINE   __forceinline inline
+#	define JSTR_NOINLINE __declspec(noinline)
+#	define JSTR_PURE     __declspec(noalias)
+#	define JSTR_CONST    __declspec(restrict)
+#	define JSTR_NOTHROW  __declspec(nothrow)
+#	define JSTR_NOINLINE __delspec(noinline)
 #endif /* Gnuc || clang || msvc */
+
+#ifndef JSTR_INLINE
+#	if (defined __cplusplus						\
+        || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+#		define JSTR_INLINE inline
+#	else
+#		define JSTR_INLINE
+#	endif
+#endif
+#ifndef JSTR_NOINLINE
+#	define JSTR_NOINLINE
+#endif
+#ifndef JSTR_PURE
+#	define JSTR_PURE
+#endif
+#ifndef JSTR_CONST
+#	define JSTR_CONST
+#endif
+#ifndef JSTR_NOTHROW
+#	define JSTR_NOTHROW
+#endif
+#ifndef JSTR_NOINLINE
+#	define JSTR_NOINLINE
+#endif
+#ifndef JSTR_FLATTEN
+#	define JSTR_FLATTEN
+#endif
+#ifndef JSTR_COLD
+#	define JSTR_COLD
+#endif
+#ifndef JSTR_SENTINEL
+#	define JSTR_SENTINEL
+#endif
+#ifndef JSTR_NONNULL_ALL
+#	define JSTR_NONNULL_ALL
+#endif
+#ifndef JSTR_NONNULL
+#	define JSTR_NONNULL(args)
+#endif
+#ifndef JSTR_MALLOC
+#	define JSTR_MALLOC
+#endif
+#ifndef JSTR_MALLOC_DEALLOC
+#	define JSTR_MALLOC_DEALLOC(deallocator)
+#endif
+#ifndef JSTR_MALLOC_DEALLOC_PTR
+#	define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
+#endif
+#ifndef JSTR_RETURNS_NONNULL
+#	define JSTR_RETURNS_NONNULL
+#endif
+#ifndef JSTR_WARN_UNUSED
+#	define JSTR_WARN_UNUSED
+#endif
+#ifndef JSTR_DEPRECATED
+#	define JSTR_DEPRECATED(msg, replacement)
+#endif
+#ifndef JSTR_FORMAT
+#	define JSTR_FORMAT(archetype, string_index, first_to_check)
+#endif
+#ifndef JSTR_COLD
+#	define JSTR_COLD
+#endif
+#ifndef JSTR_SENTINEL
+#	define JSTR_SENTINEL
+#endif
+#ifndef JSTR_NONNULL_ALL
+#	define JSTR_NONNULL_ALL
+#endif
+#ifndef JSTR_NONNULL
+#	define JSTR_NONNULL(args)
+#endif
+#ifndef JSTR_RETURNS_NONNULL
+#	define JSTR_RETURNS_NONNULL
+#endif
+#ifndef JSTR_WARN_UNUSED
+#	define JSTR_WARN_UNUSED
+#endif
+#ifndef JSTR_DEPRECATED
+#	define JSTR_DEPRECATED(msg, replacement)
+#endif
+#ifndef JSTR_MAY_ALIAS
+#	define JSTR_MAY_ALIAS
+#	define JSTR_HAVE_ATTR_MAY_ALIAS 0
+#endif
+#ifndef JSTR_MAYBE_UNUSED
+#	define JSTR_MAYBE_UNUSED
+#endif
+#ifndef JSTR_BUILTIN_CONSTANT_P
+#	define JSTR_BUILTIN_CONSTANT_P(p) 0
+#endif
 
 #define JSTR_FUNC_VOID_MAY_NULL JSTR_NOTHROW JSTR_MAYBE_UNUSED
 #define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_NONNULL_ALL
@@ -1098,10 +1134,14 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #if JSTR_ENV_BSD
+	PJSTR_BEGIN_DECLS
 #	include <sys/endian.h>
+	PJSTR_END_DECLS
 #elif (JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) \
 || defined _DEFAULT_SOURCE
+	PJSTR_BEGIN_DECLS
 #	include <endian.h>
+	PJSTR_END_DECLS
 #endif
 
 #ifdef __BYTE_ORDER
