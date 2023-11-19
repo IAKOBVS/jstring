@@ -303,8 +303,6 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_MALLOC                                   __attribute__((malloc))
 #		define JSTR_MALLOC_DEALLOC(deallocator)              __attribute__((malloc, deallocator))
 #		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((malloc, deallocator, ptr_idx))
-#		define JSTR_MALLOC_DEALLOC(deallocator)
-#		define JSTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
 #		define JSTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))
