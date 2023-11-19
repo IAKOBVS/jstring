@@ -314,7 +314,7 @@ PJSTR_CAST(T, Other other)
 #	if JSTR_HAS_BUILTIN(__builtin_constant_p)
 #		define JSTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
 #	endif
-#elif
+#elif defined _MSC_VER
 #	define JSTR_NOINLINE __declspec(noinline)
 #	define JSTR_PURE     __declspec(noalias)
 #	define JSTR_CONST    __declspec(restrict)
