@@ -471,12 +471,12 @@ JSTR_NOEXCEPT
 JSTR_ATTR_MALLOC
 JSTR_FUNC
 JSTR_ATTR_INLINE
-static char *
-jstr_memdup(const char *R s,
+static void *
+jstr_memdup(const void *R s,
             const size_t sz)
 JSTR_NOEXCEPT
 {
-	char *const p = (char *)malloc(sz);
+	void *p = (char *)malloc(sz);
 	if (jstr_likely(p != NULL)) {
 		memcpy(p, s, sz);
 		return p;

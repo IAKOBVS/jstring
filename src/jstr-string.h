@@ -567,7 +567,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-static char *
+static void *
 jstr_memrmem(const void *hs,
              const size_t hs_len,
              const void *ne,
@@ -667,7 +667,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
-static char *
+static void *
 jstr_memcasechr(const void *s,
                 int c,
                 size_t n)
@@ -677,7 +677,7 @@ JSTR_NOEXCEPT
 	const unsigned char *p = (unsigned char *)s;
 	for (; n-- && jstr_tolower(*p) != c; ++p)
 		;
-	return n ? (char *)p : NULL;
+	return n ? (void *)p : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -1183,7 +1183,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
-static char *
+static void *
 jstr_memchrnulinv(const void *s,
                   const int c,
                   size_t n)
@@ -1192,7 +1192,7 @@ JSTR_NOEXCEPT
 	const unsigned char *p = (unsigned char *)s;
 	for (; n-- && *p == (unsigned char)c; ++p)
 		;
-	return (char *)p;
+	return (void *)p;
 }
 
 /*
