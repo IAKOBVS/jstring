@@ -28,7 +28,6 @@ my $VAR_DATA          = 's';
 my $VAR_SIZE          = 'sz';
 my $VAR_CAP           = 'cap';
 my $PREFIX_J          = '_j';
-
 my $PREFIX_LEN = '_len';
 
 sub add_inline {
