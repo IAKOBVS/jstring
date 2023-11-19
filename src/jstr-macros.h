@@ -20,9 +20,9 @@
 #endif
 
 #ifdef __GLIBC__
-	PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #	include <sys/cdefs.h>
-	PJSTR_END_DECLS
+PJSTR_END_DECLS
 #endif
 
 PJSTR_BEGIN_DECLS
@@ -119,20 +119,20 @@ PJSTR_CAST(T, Other other)
 #endif /* HAVE_TYPEOF && HAVE_GENERIC */
 
 #ifdef static_assert
-	PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #	include <assert.h>
-	PJSTR_END_DECLS
-#	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_STATIC_ASSERT(expr, msg)  static_assert(expr, msg)
+PJSTR_END_DECLS
+#	define JSTR_HAVE_STATIC_ASSERT       1
+#	define JSTR_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
 #elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
-	PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #	include <assert.h>
-	PJSTR_END_DECLS
-#	define JSTR_HAVE_STATIC_ASSERT 1
-#	define JSTR_STATIC_ASSERT(expr, msg)  _Static_assert(expr, msg)
+PJSTR_END_DECLS
+#	define JSTR_HAVE_STATIC_ASSERT       1
+#	define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define JSTR_STATIC_ASSERT(expr, msg) \
-		do {                   \
+		do {                          \
 		} while (0)
 #endif /* static_assert */
 
@@ -247,8 +247,8 @@ PJSTR_CAST(T, Other other)
 #endif /* unlikely */
 
 #ifndef PJSTR_ATTR_INLINE
-#	if (defined __cplusplus						\
-        || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+#	if (defined __cplusplus \
+	     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 #		define PJSTR_ATTR_INLINE inline
 #	else
 #		define PJSTR_ATTR_INLINE
@@ -281,8 +281,8 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_ATTR_SENTINEL __attribute__((__sentinel__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__nonnull__)
-#		define JSTR_ATTR_NONNULL_ALL   __attribute__((__nonnull__))
-#		define JSTR_NONNULL(args) __attribute__((__nonnull__ args))
+#		define JSTR_ATTR_NONNULL_ALL __attribute__((__nonnull__))
+#		define JSTR_NONNULL(args)    __attribute__((__nonnull__ args))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
 #		define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))
@@ -302,7 +302,7 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_ATTR_NOTHROW __attribute__((__nothrow__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__may_alias__)
-#		define JSTR_ATTR_MAY_ALIAS           __attribute__((__may_alias__))
+#		define JSTR_ATTR_MAY_ALIAS      __attribute__((__may_alias__))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__access__)
@@ -1104,36 +1104,54 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #if JSTR_ENV_BSD
-	PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #	include <sys/endian.h>
-	PJSTR_END_DECLS
+PJSTR_END_DECLS
 #elif (JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) \
 || defined _DEFAULT_SOURCE
-	PJSTR_BEGIN_DECLS
+PJSTR_BEGIN_DECLS
 #	include <endian.h>
-	PJSTR_END_DECLS
+PJSTR_END_DECLS
 #endif
 
 #ifdef __BYTE_ORDER
-#	if __BYTE_ORDER == __BIG_ENDIAN \
-	|| defined __BIG_ENDIAN__        \
-	|| defined __ARMEB__             \
-	|| defined __THUMBEB__           \
-	|| defined __AARCH64EB__         \
-	|| defined _MIBSEB               \
-	|| defined __MIBSEB              \
+#	define JSTR_BYTE_ORDER __BYTE_ORDER
+#elif defined _BYTE_ORDER
+#	define JSTR_BYTE_ORDER _BYTE_ORDER
+#endif
+
+#ifdef __BIG_ENDIAN
+#	define JSTR_BIG_ENDIAN __BIG_ENDIAN
+#elif defined _BIG_ENDIAN
+#	define JSTR_BIG_ENDIAN _BIG_ENDIAN
+#endif
+
+#ifdef __LITTLE_ENDIAN
+#	define JSTR_LITTLE_ENDIAN __LITTLE_ENDIAN
+#elif defined _LITTLE_ENDIAN
+#	define JSTR_LITTLE_ENDIAN _LITTLE_ENDIAN
+#endif
+
+#ifdef JSTR_BYTE_ORDER
+#	if JSTR_BYTE_ORDER == JSTR_BIG_ENDIAN \
+	|| defined __BIG_ENDIAN__              \
+	|| defined __ARMEB__                   \
+	|| defined __THUMBEB__                 \
+	|| defined __AARCH64EB__               \
+	|| defined _MIBSEB                     \
+	|| defined __MIBSEB                    \
 	|| defined __MIBSEB__
 #		undef JSTR_ENDIAN_BIG
 #		undef JSTR_ENDIAN_LITTLE
 #		define JSTR_ENDIAN_BIG    1
 #		define JSTR_ENDIAN_LITTLE 0
-#	elif __BYTE_ORDER == __LITTLE_ENDIAN \
-	|| defined __LITTLE_ENDIAN__          \
-	|| defined __ARMEL__                  \
-	|| defined __THUMBEL__                \
-	|| defined __AARCH64EL__              \
-	|| defined _MIPSEL                    \
-	|| defined __MIPSEL                   \
+#	elif JSTR_BYTE_ORDER == JSTR_LITTLE_ENDIAN \
+	|| defined __LITTLE_ENDIAN__                \
+	|| defined __ARMEL__                        \
+	|| defined __THUMBEL__                      \
+	|| defined __AARCH64EL__                    \
+	|| defined _MIPSEL                          \
+	|| defined __MIPSEL                         \
 	|| defined __MIPSEL__
 #		undef JSTR_ENDIAN_LITTLE
 #		undef JSTR_ENDIAN_BIG
@@ -1216,49 +1234,49 @@ PJSTR_END_DECLS
 #endif
 
 #ifdef __GLIBC__
-#	 ifdef _DIRENT_HAVE_D_TYPE
+#	ifdef _DIRENT_HAVE_D_TYPE
 #		define JSTR_HAVE_DIRENT_D_TYPE 1
-#	 else
+#	else
 #		define JSTR_HAVE_DIRENT_D_TYPE 0
-#	 endif
-#	 ifdef _DIRENT_HAVE_D_RECLEN
+#	endif
+#	ifdef _DIRENT_HAVE_D_RECLEN
 #		define JSTR_HAVE_DIRENT_D_RECLEN 1
-#	 else
+#	else
 #		define JSTR_HAVE_DIRENT_D_RECLEN 0
-#	 endif
-#	 ifdef _DIRENT_HAVE_D_NAMLEN
+#	endif
+#	ifdef _DIRENT_HAVE_D_NAMLEN
 #		define JSTR_HAVE_DIRENT_D_NAMLEN 1
-#	 else
+#	else
 #		define JSTR_HAVE_DIRENT_D_NAMLEN 0
-#	 endif
-#	 if JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
-#		define JSTR_HAVE_MEMMEM_OPTIMIZED 1
-#	 endif
-#endif
+#	endif
+#endif /* DIRENT_HAVE */
 
 #ifdef __GLIBC__
-#	 if JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390
+#	if JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
+#		define JSTR_HAVE_MEMMEM_OPTIMIZED 1
+#	endif
+#	if JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390
 #		define JSTR_HAVE_STRSTR_OPTIMIZED 1
-#	 endif
-#	 if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8)
+#	endif
+#	if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8)
 #		define JSTR_HAVE_STRCASESTR_OPTIMIZED 1
-#	 endif
-#	 if JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8
+#	endif
+#	if JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8
 #		define JSTR_HAVE_STRCSPN_OPTIMIZED 1
-#	 endif
-#	 if JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC
+#	endif
+#	if JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC
 #		define JSTR_HAVE_STRPBRK_OPTIMIZED 1
-#	 endif
-#	 if JSTR_ARCH_ARM64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_M68K || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_S390 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_SPARC
+#	endif
+#	if JSTR_ARCH_ARM64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_M68K || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_S390 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_SPARC
 #		define JSTR_HAVE_STRCHR_OPTIMIZED 1
-#	 endif
-#	 if JSTR_ARCH_ARM64 || JSTR_ARCH_ARM6 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_IA64 || JSTR_ARCH_I386 || JSTR_ARCH_S390 || JSTR_ARCH_SPARC || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_CSKY
+#	endif
+#	if JSTR_ARCH_ARM64 || JSTR_ARCH_ARM6 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_IA64 || JSTR_ARCH_I386 || JSTR_ARCH_S390 || JSTR_ARCH_SPARC || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_CSKY
 #		define JSTR_HAVE_STRCPY_OPTIMIZED 1
-#	 endif
-#	 if JSTR_ARCH_ARM6T2 || JSTR_ARCH_ARM6 || JSTR_ARCH_ARM || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_SH || JSTR_ARCH_SPARC || JSTR_ARCH_CSKY
+#	endif
+#	if JSTR_ARCH_ARM6T2 || JSTR_ARCH_ARM6 || JSTR_ARCH_ARM || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_SH || JSTR_ARCH_SPARC || JSTR_ARCH_CSKY
 #		define JSTR_HAVE_STRLEN_OPTIMIZED 1
-#	 endif
-#endif
+#	endif
+#endif /* HAVE_OPTIMIZED */
 
 enum {
 	/* Needle length over which memmem would be faster than strstr. */
