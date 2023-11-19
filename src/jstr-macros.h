@@ -246,6 +246,15 @@ PJSTR_CAST(T, Other other)
 #	define jstr_unlikely(x) (x)
 #endif /* unlikely */
 
+#ifndef PJSTR_INLINE
+#	if (defined __cplusplus						\
+        || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+#		define PJSTR_INLINE inline
+#	else
+#		define PJSTR_INLINE
+#	endif
+#endif
+
 #if (defined __GNUC__ || defined __clang__) && (defined __glibc_has_attribute || defined __has_attribute)
 #	if JSTR_HAS_ATTRIBUTE(__format__)
 #		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
@@ -253,9 +262,9 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_FORMAT(archetype, string_index, first_to_check) __attribute__((format(archetype, string_index, first_to_check)))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__always_inline__)
-#		define JSTR_INLINE __attribute__((__always_inline__)) inline
+#		define JSTR_INLINE __attribute__((__always_inline__)) PJSTR_INLINE
 #	elif JSTR_HAS_ATTRIBUTE(always_inline)
-#		define JSTR_INLINE always_inline((always_inline)) inline
+#		define JSTR_INLINE always_inline((always_inline)) PJSTR_INLINE
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__noinline__)
 #		define JSTR_NOINLINE __attribute__((__noinline__))
@@ -340,7 +349,7 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
 #	endif
 #elif defined _MSC_VER
-#	define JSTR_INLINE   __forceinline inline
+#	define JSTR_INLINE   __forceinline PJSTR_INLINE
 #	define JSTR_NOINLINE __declspec(noinline)
 #	define JSTR_PURE     __declspec(noalias)
 #	define JSTR_CONST    __declspec(restrict)
@@ -349,12 +358,7 @@ PJSTR_CAST(T, Other other)
 #endif /* Gnuc || clang || msvc */
 
 #ifndef JSTR_INLINE
-#	if (defined __cplusplus						\
-        || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
-#		define JSTR_INLINE inline
-#	else
-#		define JSTR_INLINE
-#	endif
+#	define JSTR_INLINE PJSTR_INLINE
 #endif
 #ifndef JSTR_NOINLINE
 #	define JSTR_NOINLINE
