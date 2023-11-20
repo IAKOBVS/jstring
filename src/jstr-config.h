@@ -21,7 +21,7 @@
 #	define JSTRL_LAZY_FREE 0
 #endif
 
-#define PJSTR_MIN_CAP          ((sizeof(size_t) == 8) ? 24 : 16)
+#define PJSTR_MIN_CAP               ((sizeof(size_t) == 8) ? 24 : 16)
 #define PJSTR_ATTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
 /* Allocate more than needed for the initial malloc(). */
@@ -53,18 +53,20 @@
 #endif
 
 /* You shouldn't mess with these. */
-#define JSTR_USE_LGPL 1
+#ifndef JSTR_USE_LGPL
+#	define JSTR_USE_LGPL 1
+#endif
 
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #endif
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    1
 #endif
 
