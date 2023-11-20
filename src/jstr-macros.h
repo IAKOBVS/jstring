@@ -5,7 +5,7 @@
 
 #include "_jstr-features.h"
 #include "jstr-config.h"
-#include "jstr-pointer-arith.h"
+#include "jstr-ptr-arith.h"
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
