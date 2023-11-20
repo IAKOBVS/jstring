@@ -132,7 +132,7 @@ JSTR_NOEXCEPT
 #	endif
 }
 #else
-#	include "_lgpl-memrchr.c"
+#	include "_lgpl-memrchr.h"
 #endif
 
 #if JSTR_HAVE_STRCHRNUL || !JSTR_HAVE_WORD_AT_A_TIME
@@ -158,7 +158,7 @@ JSTR_NOEXCEPT
 #	endif
 }
 #else
-#	include "_lgpl-strchrnul.c"
+#	include "_lgpl-strchrnul.h"
 #endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -202,7 +202,7 @@ JSTR_NOEXCEPT
 	return NULL;
 }
 #else
-#	include "_lgpl-strnchr.c"
+#	include "_lgpl-strnchr.h"
 #endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
