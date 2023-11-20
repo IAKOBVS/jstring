@@ -1671,11 +1671,12 @@ JSTR_NOEXCEPT
 	size_t cnt = 0;
 #if JSTR_HAVE_MEMMEM
 	const char *const end = s + sz;
-	while (*s && (s = jstr_strstr_len(s, end - s, find, find_len)))
+	for (; *s && (s = jstr_strstr_len(s, end - s, find, find_len)); ++cnt, s += find_len)
+		;
 #else
-	while (*s && (s = strstr(s, find)))
+	for (; *s && (s = strstr(s, find)); ++cnt, s += find_len)
+		;
 #endif
-		++cnt, s += find_len;
 	return cnt;
 }
 
