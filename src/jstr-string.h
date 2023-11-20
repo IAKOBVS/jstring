@@ -884,11 +884,9 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (ne_len > 4)
 #	if JSTR_USE_LGPL
+	if (ne_len > 4)
 		return pjstr_strcasestr_len(hs, hs_len, ne, ne_len);
-#	else
-		return pjstr_strcasestr5andmore_len((const u *)hs, (const u *)ne, ne_len);
 #	endif
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
@@ -900,6 +898,10 @@ JSTR_NOEXCEPT
 	hs_len -= hs - start;
 	if (hs_len < ne_len)
 		return NULL;
+#	if !JSTR_USE_LGPL
+	if (ne_len > 4)
+		return pjstr_strcasestr5andmore_len((const u *)hs, (const u *)ne, ne_len);
+#	endif
 	is_alpha |= jstr_isalpha(ne[1]);
 	if (ne_len == 2) {
 		if (is_alpha)
