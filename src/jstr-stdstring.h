@@ -108,93 +108,58 @@ JSTR_NOEXCEPT
 #endif
 }
 
+#if JSTR_HAVE_MEMRCHR || !JSTR_HAVE_WORD_AT_A_TIME
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-#if JSTR_HAVE_MEMRCHR
+#	if JSTR_HAVE_MEMRCHR
 JSTR_ATTR_INLINE
-#endif
+#	endif
 static void *
 jstr_memrchr(const void *s,
              const int c,
              const size_t sz)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMRCHR
+#	if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, sz);
-#elif JSTR_HAVE_WORD_AT_A_TIME
-	/* The following is based on the implementation of memrchr() from the GNU C
-	   Library released under the terms of the GNU Lesser General Public License.
-	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-	if (jstr_unlikely(sz == 0))
-		return NULL;
-	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((const char *)s + sz, sizeof(jstr_word_ty));
-	uintptr_t s_int = (uintptr_t)s + sz;
-	jstr_word_ty word = jstr_word_toword(--word_ptr);
-	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	const jstr_word_ty *const sword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	jstr_word_ty mask = jstr_word_shift_find_last(jstr_word_find_eq_all(word, repeated_c), s_int);
-	if (mask != 0) {
-		char *ret = (char *)word_ptr + jstr_word_index_last(mask);
-		return ret >= (char *)s ? ret : NULL;
-	}
-	if (word_ptr == sword)
-		return NULL;
-	word = jstr_word_toword(--word_ptr);
-	for (; word_ptr != sword; word = jstr_word_toword(--word_ptr))
-		if (jstr_word_has_eq(word, repeated_c))
-			return (char *)word_ptr + jstr_word_index_last_eq(word, repeated_c);
-	if (jstr_word_has_eq(word, repeated_c)) {
-		char *ret = (char *)word_ptr + jstr_word_index_last_eq(word, repeated_c);
-		if (ret >= (char *)s)
-			return ret;
-	}
-	return NULL;
-#else
+#	else
 	const unsigned char *const start = (const unsigned char *)s;
 	const unsigned char *end = (const unsigned char *)s + sz;
 	for (; end >= start; --end)
 		if (*end == (unsigned char)c)
 			return (void *)end;
 	return NULL;
-#endif
+#	endif
 }
-
-JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCHRNUL
-JSTR_ATTR_INLINE
+#else
+#	include "_lgpl-memrchr.c"
 #endif
+
+#if JSTR_HAVE_STRCHRNUL || !JSTR_HAVE_WORD_AT_A_TIME
+JSTR_FUNC_PURE
+#	if JSTR_HAVE_STRCHRNUL
+JSTR_ATTR_INLINE
+#	endif
 static char *
 jstr_strchrnul(const char *s,
                const int c)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCHRNUL
+#	if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(s, c);
-#elif JSTR_HAVE_STRCHR_OPTIMIZED
+#	elif JSTR_HAVE_STRCHR_OPTIMIZED
 	const char *const start = s;
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
-#elif JSTR_HAVE_WORD_AT_A_TIME
-	/* The following is the implementation of strchrnul() from the GNU C
-	   Library released under the terms of the GNU Lesser General Public License.
-	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-	uintptr_t s_int = (uintptr_t)s;
-	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	jstr_word_ty word = jstr_word_toword(word_ptr);
-	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
-	if (mask != 0)
-		return (char *)s + jstr_word_index_first(mask);
-	do
-		word = jstr_word_toword(++word_ptr);
-	while (!jstr_word_has_zero_eq(word, repeated_c));
-	return (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
-#else
+#	else
 	for (; *s && *s != (char)c; ++s)
 		;
 	return (char *)s;
-#endif
+#	endif
 }
+#else
+#	include "_lgpl-strchrnul.c"
+#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
@@ -220,16 +185,7 @@ JSTR_NOEXCEPT
 {
 	return (char *)jstr_memnchr(s, c, sz, n);
 }
-
-JSTR_ATTR_INLINE
-static const char *
-pjstr_sadd(const uintptr_t x,
-           const uintptr_t y)
-JSTR_NOEXCEPT
-{
-	return (const char *)(y > UINTPTR_MAX - x ? UINTPTR_MAX : x + y);
-}
-
+#if !JSTR_HAVE_WORD_AT_A_TIME
 /*
    strchr() before s + N.
 */
@@ -240,46 +196,14 @@ jstr_strnchr(const char *s,
              size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_WORD_AT_A_TIME
-	/* The following is based on the implementation of memrchr() and strchrnul() from the
-	   GNU C Library released under the terms of the GNU Lesser General Public License.
-	   Copyright (C) 1991-2023 Free Software Foundation, Inc. */
-	if (jstr_unlikely(n == 0)
-	    || jstr_unlikely(*s == '\0'))
-		return NULL;
-	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	uintptr_t s_int = (uintptr_t)s;
-	jstr_word_ty word = jstr_word_toword(word_ptr);
-	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	const char *const lbyte = pjstr_sadd(s_int, n - 1);
-	const jstr_word_ty *const lword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
-	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
-	if (mask != 0) {
-		char *ret = (char *)s + jstr_word_index_first(mask);
-		return (ret <= lbyte && *ret) ? ret : NULL;
-	}
-	if (word_ptr == lword)
-		return NULL;
-	word = jstr_word_toword(++word_ptr);
-	for (; word_ptr != lword; word = jstr_word_toword(++word_ptr)) {
-		if (jstr_word_has_zero_eq(word, repeated_c)) {
-			char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
-			return *ret ? ret : NULL;
-		}
-	}
-	if (jstr_word_has_zero_eq(word, repeated_c)) {
-		char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
-		if (ret <= lbyte && *ret)
-			return ret;
-	}
-	return NULL;
-#else
 	for (; n-- && *s; ++s)
 		if (*s == (char)c)
 			return (char *)s;
 	return NULL;
-#endif
 }
+#else
+#	include "_lgpl-strnchr.c"
+#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
@@ -510,7 +434,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_ATOI(T, name, func) \
 	JSTR_FUNC_PURE                   \
-	JSTR_ATTR_INLINE                      \
+	JSTR_ATTR_INLINE                 \
 	static T                         \
 	jstr_##name(const char *s)       \
 	JSTR_NOEXCEPT                    \
