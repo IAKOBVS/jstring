@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# See LICENSE file for copyright and license details.
+
 cd "$(dirname "$0")" || exit
 if [ -e glibc ]; then
 	cd glibc && git pull | grep -q 'string-[_0-9A-Za-z]*\.h' || exit 1

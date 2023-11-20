@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# See LICENSE file for copyright and license details.
+
 cd "$(dirname "$0")" || exit
 ./clone-glibc || exit 1
 perl ./update-glibc.pl

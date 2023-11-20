@@ -1,2 +1,5 @@
 #!/bin/sh
+
+# See LICENSE file for copyright and license details.
+
 ./src/build

@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# See LICENSE file for copyright and license details.
+
 cd "$(dirname "$0")" || exit
 [ -e ../bin/is-little-endian ] || ../bin/build
 # shellcheck disable=SC2005

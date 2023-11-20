@@ -1,9 +1,13 @@
 #!/bin/sh
+
+# See LICENSE file for copyright and license details.
+
 cd "$(dirname "$0")" || exit
 if ! type clang-format >/dev/null; then
 	echo 'clang-format does not exist.'
 	exit
 fi
+#shellcheck disable=SC2068
 for file in $@; do
 	{
 		expr "$file" : '*-pp-*' >/dev/null && exit
