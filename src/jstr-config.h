@@ -53,7 +53,7 @@
 #endif
 
 /* You shouldn't mess with these. */
-#define JSTR_USE_LGPL 1
+#define JSTR_USE_LGPL 0
 
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
 #define JSTR_ENDIAN_LITTLE 1

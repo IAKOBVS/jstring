@@ -323,7 +323,7 @@ JSTR_NOEXCEPT
 	uint16_t hw = (uint16_t)h[0] << 8 | h[1];
 	for (++h, --l; *h && l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (char *)(h - 1) : NULL;
+	return hw == nw ? (char *)h - 1 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -338,7 +338,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8;
 	for (h += 2, l -= 2; *h && l-- && hw != nw; hw = (hw | *++h) << 8)
 		;
-	return hw == nw ? (char *)(h - 2) : NULL;
+	return hw == nw ? (char *)h - 2 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -353,7 +353,25 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, l -= 3; *h && l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (char *)(h - 3) : NULL;
+	return hw == nw ? (char *)h - 3 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+pjstr_strnstr5andmore(const unsigned char *h,
+                      const unsigned char *const n,
+                      size_t l,
+                      const size_t ne_len)
+JSTR_NOEXCEPT
+{
+	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
+	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
+	for (h += 3, l -= 3; *h && l--; hw = hw << 8 | *++h)
+		if (hw == nw)
+			if (!memcmp(h - 3, n, ne_len))
+				return (char *)h - 3;
+	return NULL;
 }
 
 #if !JSTR_HAVE_MEMMEM
@@ -370,7 +388,7 @@ JSTR_NOEXCEPT
 	uint16_t hw = (uint16_t)h[0] << 8 | h[1];
 	for (++h, --l; l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (unsigned char *)(h - 1) : NULL;
+	return hw == nw ? (void *)(h - 1) : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -385,8 +403,10 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8;
 	for (h += 2, l -= 2; l-- && hw != nw; hw = (hw | *++h) << 8)
 		;
-	return hw == nw ? (unsigned char *)(h - 2) : NULL;
+	return hw == nw ? (void *)(h - 2) : NULL;
 }
+
+#	if JSTR_USE_LGPL
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -400,15 +420,36 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (unsigned char *)(h - 3) : NULL;
+	return hw == nw ? (void *)(h - 3) : NULL;
 }
+
+#	else
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+pjstr_memmem4andmore(const unsigned char *h,
+                     const unsigned char *const n,
+                     size_t l,
+                     const size_t ne_len)
+JSTR_NOEXCEPT
+{
+	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
+	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
+	for (h += 3, l -= 3; l--; hw = hw << 8 | *++h)
+		if (hw == nw && !memcmp(h - 3, n, ne_len))
+			return (void *)(h - 3);
+	return NULL;
+}
+
+#	endif
 
 #endif
 
 #if !JSTR_HAVE_MEMMEM
 #	define PJSTR_MEMMEM_FN      pjstr_memmem
 #	define PJSTR_MEMMEM_RETTYPE void *
-#	include "_jstr-memmem.h"
+#	include "_lgpl-memmem.h"
 #endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -426,18 +467,22 @@ JSTR_NOEXCEPT
 #else
 	typedef unsigned char u;
 	if (ne_len == 1)
-		return (void *)memchr(hs, *(u *)ne, ne_len);
+		return (void *)memchr(hs, *(const u *)ne, ne_len);
 	if (jstr_unlikely(ne_len == 0))
 		return (void *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (ne_len == 2)
-		return pjstr_memmem2((u *)hs, (u *)ne, hs_len);
+		return pjstr_memmem2((const u *)hs, (const u *)ne, hs_len);
 	if (ne_len == 3)
-		return pjstr_memmem3((u *)hs, (u *)ne, hs_len);
+		return pjstr_memmem3((const u *)hs, (const u *)ne, hs_len);
+#	if JSTR_USE_LGPL
 	if (ne_len == 4)
-		return pjstr_memmem4((u *)hs, (u *)ne, hs_len);
-	return pjstr_memmem((u *)hs, hs_len, (u *)ne, ne_len);
+		return pjstr_memmem4((const u *)hs, (const u *)ne, hs_len);
+	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
+#	else
+	return pjstr_memmem4andmore((const u *)hs, (const u *)ne, hs_len, ne_len);
+#	endif
 #endif
 }
 
@@ -458,7 +503,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_MEMMEM_FN      pjstr_strnstr
 #define PJSTR_MEMMEM_RETTYPE char *
-#include "_jstr-memmem.h"
+#include "_lgpl-memmem.h"
 
 JSTR_FUNC_PURE
 static char *
@@ -478,15 +523,16 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
 	if (ne[2] == '\0')
-		return pjstr_strnstr2((u *)hs, (u *)ne, n);
+		return pjstr_strnstr2((const u *)hs, (const u *)ne, n);
 	if (jstr_unlikely(hs[2] == '\0'))
 		return NULL;
 	if (ne[3] == '\0')
-		return pjstr_strnstr3((u *)hs, (u *)ne, n);
+		return pjstr_strnstr3((const u *)hs, (const u *)ne, n);
 	if (jstr_unlikely(hs[3] == '\0'))
 		return NULL;
 	if (ne[4] == '\0')
-		return pjstr_strnstr4((u *)hs, (u *)ne, n);
+		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
+#if JSTR_USE_LGPL
 	const size_t ne_len = strlen(ne);
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
@@ -501,6 +547,9 @@ JSTR_NOEXCEPT
 	--hs_len;
 	hs_len += jstr_strnlen(hs + hs_len, n - hs_len);
 	return pjstr_strnstr(hs, hs_len, ne, ne_len);
+#else
+	return pjstr_strnstr5andmore((const u *)hs, (const u *)ne, n, (ne[4] == '\0') ? 4 : strlen(ne));
+#endif
 }
 
 /*
@@ -527,7 +576,7 @@ JSTR_NOEXCEPT
 	const unsigned char *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
 	if (h == NULL || ne_len == 1)
 		return (char *)h;
-	if (JSTR_PTR_DIFF(h + 1, (u *)hs) < ne_len)
+	if (JSTR_PTR_DIFF(h + 1, (const u *)hs) < ne_len)
 		return NULL;
 	const unsigned char *const start = (const u *)hs;
 	const unsigned char *const n = (const u *)ne;
@@ -583,7 +632,7 @@ JSTR_NOEXCEPT
 #	define PJSTR_MEMMEM_CMP_FN      jstr_strcasecmpeq_len
 #	define PJSTR_MEMMEM_HASH2_ICASE 1
 #	define PJSTR_MEMMEM_CHECK_EOL   1
-#	include "_jstr-memmem.h"
+#	include "_lgpl-memmem.h"
 
 JSTR_FUNC_PURE
 static char *
@@ -615,7 +664,7 @@ JSTR_NOEXCEPT
 	uint16_t hw = (uint32_t)L(h[0]) << 8 | L(h[1]);
 	for (++h; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
-	return hw == nw ? (char *)(h - 1) : NULL;
+	return hw == nw ? (char *)h - 1 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -629,7 +678,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
 	for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)
 		;
-	return hw == nw ? (char *)(h - 2) : NULL;
+	return hw == nw ? (char *)h - 2 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -643,8 +692,51 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
 	for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
-	return hw == nw ? (char *)(h - 3) : NULL;
+	return hw == nw ? (char *)h - 3 : NULL;
 }
+
+#	if !JSTR_USE_LGPL
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+pjstr_strcasestr5andmore(const unsigned char *h,
+                         const unsigned char *const n)
+JSTR_NOEXCEPT
+{
+	const unsigned char *hp;
+	const unsigned char *np;
+	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
+	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
+	for (h += 3; *h; hw = hw << 8 | L(*++h))
+		if (hw == nw) {
+			for (hp = h - 3 + 4, np = n + 4; jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np)
+				;
+			if (*np == '\0')
+				return (char *)h - 3;
+			if (*hp == '\0')
+				return NULL;
+		}
+	return NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+pjstr_strcasestr5andmore_len(const unsigned char *h,
+                             const unsigned char *const n,
+                             const size_t ne_len)
+JSTR_NOEXCEPT
+{
+	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
+	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
+	for (h += 3; *h; hw = hw << 8 | L(*++h))
+		if (hw == nw && !jstr_strcasecmpeq_len((char *)h - 3, (char *)n, ne_len))
+			return (char *)h - 3;
+	return NULL;
+}
+
+#	endif
 
 #	undef L
 
@@ -740,7 +832,7 @@ JSTR_NOEXCEPT
 #	define PJSTR_MEMMEM_RETTYPE     char *
 #	define PJSTR_MEMMEM_CMP_FN      jstr_strcasecmpeq_len
 #	define PJSTR_MEMMEM_HASH2_ICASE 1
-#	include "_jstr-memmem.h"
+#	include "_lgpl-memmem.h"
 #endif
 
 /*
@@ -771,7 +863,11 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (ne_len > 4)
+#	if JSTR_USE_LGPL
 		return pjstr_strcasestr_len(hs, hs_len, ne, ne_len);
+#	else
+		return pjstr_strcasestr5andmore_len((const u *)hs, (const u *)ne, ne_len);
+#	endif
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
 	int is_alpha = jstr_isalpha(*ne);
@@ -861,7 +957,11 @@ JSTR_NOEXCEPT
 			return pjstr_strcasestr4((const u *)hs, (const u *)ne);
 		is_alpha = 4;
 	} else {
+#	if JSTR_USE_LGPL
 		return pjstr_strcasestr_bmh(hs, ne);
+#	else
+		return pjstr_strcasestr5andmore((const u *)hs, (const u *)ne);
+#	endif
 	}
 	if (!memcmp(hs, ne, is_alpha))
 		return (char *)hs;
