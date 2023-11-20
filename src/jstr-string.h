@@ -710,7 +710,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
 	for (h += 3; *h; hw = hw << 8 | L(*++h))
 		if (hw == nw) {
-			for (hp = h - 3 + 4, np = n + 4; jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np)
+			for (hp = h - 3 + 4, np = n + 4; L(*hp) == L(*np) && *hp; ++hp, ++np)
 				;
 			if (*np == '\0')
 				return (char *)h - 3;
