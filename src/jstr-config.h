@@ -53,7 +53,10 @@
 #	define PJSTRIO_EXT_ARRAY_FT_BINARY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
-/* ./remove-lgpl will remove all LGPL code from ./jstr. */
+/*
+   ./remove-lgpl will remove all LGPL code from ./jstr.
+   Defining JSTR_USE_LGPL as 0 will exclude all LGPL code from being included.
+*/
 #ifndef JSTR_USE_LGPL
 #	define JSTR_USE_LGPL 1
 #endif
