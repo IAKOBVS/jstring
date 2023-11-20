@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_PJSTR_STRING_FZI_H
-#define PJSTR_PJSTR_STRING_FZI_H
+#ifndef PJSTR_STRING_FZI_H
+#define PJSTR_STRING_FZI_H
 
 #include "jstr-macros.h"
 
