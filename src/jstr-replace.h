@@ -28,10 +28,11 @@ pjstr_rmallinplace(char **dst,
                    const size_t find_len)
 JSTR_NOEXCEPT
 {
+	const size_t n = *p - *oldp;
 	if (jstr_likely(*dst != *oldp))
-		memmove(*dst, *oldp, *p - *oldp);
-	*dst += *p - *oldp;
-	*oldp += *p - *oldp;
+		memmove(*dst, *oldp, n);
+	*dst += n;
+	*oldp += n;
 	*p += find_len;
 }
 
@@ -46,11 +47,12 @@ pjstr_rplcallinplace(char **dst,
                      const size_t find_len)
 JSTR_NOEXCEPT
 {
+	const size_t n = *p - *oldp;
 	if (jstr_likely(find_len != rplc_len)
 	    && jstr_likely(*dst != *oldp))
-		memmove(*dst, *oldp, *p - *oldp);
-	*dst = (char *)jstr_mempcpy(*dst + (*p - *oldp), rplc, rplc_len);
-	*oldp += (*p - *oldp) + find_len;
+		memmove(*dst, *oldp, n);
+	*dst = (char *)jstr_mempcpy(*dst + n, rplc, rplc_len);
+	*oldp += n + find_len;
 	*p += find_len;
 }
 
@@ -1388,7 +1390,7 @@ jstr_dup(jstr_ty *R dst,
 JSTR_NOEXCEPT
 {
 	dst->data = (char *)malloc(src->capacity);
-	PJSTR_ATTR_MALLOC_ERR(dst->data, return JSTR_RET_ERR);
+	PJSTR_MALLOC_ERR(dst->data, return JSTR_RET_ERR);
 	dst->size = jstr_cpy_p(dst->data, dst) - dst->data;
 	dst->size = src->size;
 	dst->capacity = src->capacity;

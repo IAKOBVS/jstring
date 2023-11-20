@@ -415,17 +415,19 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 {
 	if (*dst != *oldp)
 		memmove(*dst, *oldp, *p - *oldp);
-	const char *tmp = *s;
-	PJSTR_RESERVEALWAYSNOMALLOC(s, sz, cap, *sz + rplc_len - find_len, return JSTR_RET_ERR)
+	if (*cap <= *sz + rplc_len - find_len) {
+		const char *tmp = *s;
+		PJSTR_RESERVEALWAYSNOMALLOC(s, sz, cap, *sz + rplc_len - find_len, return JSTR_RET_ERR);
+		*p = *s + (*p - tmp);
+		*dst = *s + (*dst - tmp);
+	}
 	jstr_strmove_len(*p + rplc_len,
 	                 *p + find_len,
-	                 (tmp + *sz) - (*p + find_len));
-	memcpy(*p, rplc, rplc_len);
-	*p = *s + (*p - tmp);
-	*dst = *s + (*dst - tmp) + rplc_len;
+	                 (*s + *sz) - (*p + find_len));
+	*p = (char *)jstr_mempcpy(*p, rplc, rplc_len);
+	*dst += rplc_len;
 	*oldp = *dst;
 	*sz += rplc_len - find_len;
-	*p += rplc_len;
 	return JSTR_RET_SUCC;
 }
 
@@ -644,7 +646,7 @@ JSTR_NOEXCEPT
 			if (rdst_cap < rdst_len) {
 				rdst_cap = pjstr_grow(rdst_cap, rdst_len);
 				rdst_heap = (char *)realloc(rdst_heap, rdst_cap);
-				PJSTR_ATTR_MALLOC_ERR(rdst_heap, goto err);
+				PJSTR_MALLOC_ERR(rdst_heap, goto err);
 				rdstp = rdst_heap;
 			}
 		pjstrre_brefrplccreat(p, rm, rdstp, rplc, rplc_len);

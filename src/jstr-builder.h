@@ -39,12 +39,12 @@ PJSTR_END_DECLS
 	                         ++i)
 
 #if JSTR_DEBUG || JSTR_PANIC
-#	define PJSTR_ATTR_MALLOC_ERR(p, do_on_malloc_err)     \
-		do {                                      \
-			if (jstr_unlikely((p) == NULL)) { \
-				jstr_err_exit("");        \
-				do_on_malloc_err;         \
-			}                                 \
+#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err) \
+		do {                                       \
+			if (jstr_unlikely((p) == NULL)) {  \
+				jstr_err_exit("");         \
+				do_on_malloc_err;          \
+			}                                  \
 		} while (0)
 #	define JSTR_ASSERT_DEBUG(expr, msg)        \
 		do {                                \
@@ -52,11 +52,11 @@ PJSTR_END_DECLS
 				jstr_err_exit(msg); \
 		} while (0)
 #else
-#	define PJSTR_ATTR_MALLOC_ERR(p, do_on_malloc_err)     \
-		do {                                      \
-			if (jstr_unlikely((p) == NULL)) { \
-				do_on_malloc_err;         \
-			}                                 \
+#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err) \
+		do {                                       \
+			if (jstr_unlikely((p) == NULL)) {  \
+				do_on_malloc_err;          \
+			}                                  \
 		} while (0)
 #	define JSTR_ASSERT_DEBUG(expr, msg) \
 		do {                         \
@@ -273,8 +273,8 @@ pjstr_reallocexact(char *R *R s,
                    size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*cap = JSTR_MAX(PJSTR_MIN_CAP, new_cap);
-	*cap = JSTR_ALIGN_UP_STR(*cap);
+	new_cap = JSTR_MAX(PJSTR_MIN_CAP, new_cap);
+	*cap = JSTR_ALIGN_UP_STR(new_cap);
 	*s = (char *)realloc(*s, *cap);
 	if (jstr_likely(*s != NULL))
 		return JSTR_RET_SUCC;
@@ -310,9 +310,9 @@ pjstr_realloc_may_zero(char *R *R s,
                        size_t new_cap)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*sz != 0))
+	if (jstr_unlikely(*cap == 0))
 		*cap = PJSTR_MIN_CAP / 1.5;
-	return pjstr_reallocexact(s, sz, cap, new_cap);
+	return pjstr_realloc(s, sz, cap, new_cap);
 }
 
 /*
@@ -743,11 +743,10 @@ jstr_assign_len(char *R *R s,
                 size_t *R sz,
                 size_t *R cap,
                 const char *R src,
-                const size_t src_len)
+                size_t src_len)
 JSTR_NOEXCEPT
 {
-	if (*cap < src_len)
-		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, src_len * PJSTR_ALLOC_MULTIPLIER, return JSTR_RET_ERR)
+	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return JSTR_RET_ERR)
 	*sz = jstr_assign_len_unsafe_p(*s, src, src_len) - *s;
 	return JSTR_RET_SUCC;
 }
