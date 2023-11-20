@@ -1,6 +1,8 @@
 #ifndef JSTR_TEST_H
 #define JSTR_TEST_H
 
+#define __STRICT_ANSI__
+
 #include "../src/jstr.h"
 #include <assert.h>
 

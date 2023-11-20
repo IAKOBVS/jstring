@@ -1,5 +1,3 @@
-#define __STRICT_ANSI__
-
 #include "test.h"
 
 #define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
@@ -100,6 +98,7 @@ jstr_strrstr(const char *h, const char *n)
 
 #define T_STRSTR(fn, simple_fn)                                                           \
 	do {                                                                              \
+		TESTING(fn);                                                              \
 		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {                     \
 			const char *const result = fn(hs_ne[i].hs, hs_ne[i].ne);          \
 			const char *const expected = simple_fn(hs_ne[i].hs, hs_ne[i].ne); \
@@ -109,6 +108,7 @@ jstr_strrstr(const char *h, const char *n)
 
 #define T_STRSTR_LEN(fn, simple_fn)                                                                                                 \
 	do {                                                                                                                        \
+		TESTING(fn);                                                                                                        \
 		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {                                                               \
 			const char *const result = fn(hs_ne[i].hs, strlen(hs_ne[i].hs), hs_ne[i].ne, strlen(hs_ne[i].ne));          \
 			const char *const expected = simple_fn(hs_ne[i].hs, strlen(hs_ne[i].hs), hs_ne[i].ne, strlen(hs_ne[i].ne)); \
