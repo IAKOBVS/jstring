@@ -300,7 +300,7 @@ PJSTR_END_DECLS
 #		define JSTR_ATTR_NONNULL(params) __nonnull(params)
 #	elif JSTR_HAS_ATTRIBUTE(__nonnull__)
 #		define JSTR_ATTR_NONNULL_ALL __attribute__((__nonnull__))
-#		define JSTR_NONNULL(params)    __attribute__((__nonnull__ params))
+#		define JSTR_ATTR_NONNULL(params)    __attribute__((__nonnull__ params))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
 #		define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))
@@ -318,9 +318,7 @@ PJSTR_END_DECLS
 #	if JSTR_HAS_ATTRIBUTE(__deprecated__)
 #		define JSTR_ATTR_DEPRECATED(msg) __attribute__((__deprecated__(msg)))
 #	endif
-#	ifdef __THROWNL
-#		define JSTR_ATTR_NOTHROW __THROWNL
-#	elif JSTR_HAS_ATTRIBUTE(__nothrow__)
+#	if JSTR_HAS_ATTRIBUTE(__nothrow__)
 #		define JSTR_ATTR_NOTHROW __attribute__((__nothrow__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__may_alias__)

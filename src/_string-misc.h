@@ -18,8 +18,8 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 /* P must be aligned to sizeof(jstr_word_ty). */
+JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
-JSTR_FUNC_PURE
 static jstr_word_ty
 jstr_word_toword(const void *JSTR_RESTRICT p)
 JSTR_NOEXCEPT
