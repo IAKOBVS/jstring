@@ -17,7 +17,7 @@ while (<$FH>) {
 		if (defined($last_year) && $curr_year gt $last_year
 			|| $curr_year gt $first_year)
 		{
-			s/Copyright \(c\) [-0-9]*/Copyright (c) $first_year-$curr_year/;
+			s/(Copyright \(c\)) [-0-9]*/$1 $first_year-$curr_year/;
 		}
 	}
 	$str .= $_;
