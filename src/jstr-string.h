@@ -446,7 +446,7 @@ JSTR_NOEXCEPT
 
 #endif
 
-#if !JSTR_HAVE_MEMMEM
+#if JSTR_USE_LGPL && !JSTR_HAVE_MEMMEM
 #	define PJSTR_MEMMEM_FN      pjstr_memmem
 #	define PJSTR_MEMMEM_RETTYPE void *
 #	include "_lgpl-memmem.h"
@@ -501,9 +501,11 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#define PJSTR_MEMMEM_FN      pjstr_strnstr
-#define PJSTR_MEMMEM_RETTYPE char *
-#include "_lgpl-memmem.h"
+#if JSTR_USE_LGPL
+#	define PJSTR_MEMMEM_FN      pjstr_strnstr
+#	define PJSTR_MEMMEM_RETTYPE char *
+#	include "_lgpl-memmem.h"
+#endif
 
 JSTR_FUNC_PURE
 static char *
@@ -626,7 +628,7 @@ JSTR_NOEXCEPT
 	return jstr_strrstr_len(hs, hs_len, ne, ne_len);
 }
 
-#if !JSTR_HAVE_STRCASESTR_OPTIMIZED
+#if JSTR_USE_LGPL && !JSTR_HAVE_STRCASESTR_OPTIMIZED
 #	define PJSTR_MEMMEM_FN          pjstr_strcasestr
 #	define PJSTR_MEMMEM_RETTYPE     char *
 #	define PJSTR_MEMMEM_CMP_FN      jstr_strcasecmpeq_len
@@ -827,7 +829,7 @@ JSTR_NOEXCEPT
 	return jstr_isalpha(c) ? pjstr_strcasechr_generic(s, c) : (char *)strchr(s, c);
 }
 
-#if !JSTR_HAVE_STRCASESTR_OPTIMIZED
+#if JSTR_USE_LGPL && !JSTR_HAVE_STRCASESTR_OPTIMIZED
 #	define PJSTR_MEMMEM_FN          pjstr_strcasestr_len
 #	define PJSTR_MEMMEM_RETTYPE     char *
 #	define PJSTR_MEMMEM_CMP_FN      jstr_strcasecmpeq_len
