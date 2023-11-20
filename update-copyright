@@ -3,7 +3,7 @@
 # See LICENSE file for copyright and license details.
 
 #shellcheck disable=SC2005
-for file in $(LICENSE ./src/_lgpl-*.h); do
+for file in $(LICENSE ./src/*.h); do
 	echo "$(perl ./update-copyright.pl "$file")" >"$file"
 done
 wait
