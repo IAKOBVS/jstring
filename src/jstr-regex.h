@@ -90,6 +90,7 @@ typedef enum {
 
 #define jstrre_comp_chk(errcode) jstr_unlikely(errcode != JSTRRE_RET_NOERROR)
 #define jstrre_exec_chk(errcode) (jstrre_comp_chk(errcode) && jstr_unlikely(errcode != JSTRRE_RET_NOMATCH))
+#define jstrre_chk(errcode)      jstr_unlikely(errcode != JSTRRE_RET_NOERROR)
 
 JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
