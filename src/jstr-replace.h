@@ -29,7 +29,8 @@ pjstr_rmallinplace(char **dst,
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*dst != *oldp))
-		*dst = (char *)jstr_mempmove(*dst, *oldp, *p - *oldp);
+		memmove(*dst, *oldp, *p - *oldp);
+	*dst += *p - *oldp;
 	*oldp += *p - *oldp;
 	*p += find_len;
 }
