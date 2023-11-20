@@ -5,7 +5,9 @@
 cd "$(dirname "$0")" || exit
 for file in $(echo ./jstr/*.h); do
 	{
-		expr "$file" : '*_lgpl*.h' && rm "$file" && exit
+		case "$file" in
+		*_lgpl*.h | *_glibc*.h) rm "$file" && exit ;;
+		esac
 		#shellcheck disable=SC2005
 		echo "$(perl ./remove-lgpl.pl "$file")" >"$file"
 	} &

@@ -33,6 +33,8 @@ Some headers may need to be explicitly included since they rely on POSIX.
 
 ## Disclaimer:
 
+Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 or use ./remove-lgpl to exclude the LGPL code<br>.
+
 - jstr\_ty, jstr\_l\_ty must be initialized with zeros.
 
 ```
@@ -52,11 +54,7 @@ JSTR\_INIT is defined as {0}.
 JSTR\_ERR is returned as error. The programmer is expected to check the return value of every function call.<br>
 
 Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit.<br>
-When debugging,
-```
-#define JSTR_DEBUG 1
-```
-before including any jstr-\* header to automatically call jstr\_err\_exit() on errors.
+When debugging, you may want to define JSTR\_DEBUG or JSTR\_PANIC as 1 to automatically call jstr\_err\_exit() on errors.
 
 ## Function affixes: 
 
