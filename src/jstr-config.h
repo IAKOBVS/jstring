@@ -3,13 +3,14 @@
 #ifndef JSTR_CONFIG_H
 #define JSTR_CONFIG_H 1
 
-#ifndef JSTR_DEBUG
-#	define JSTR_DEBUG 0
-#endif
-
 /* Print error message and call exit() on errors. */
 #ifndef JSTR_PANIC
 #	define JSTR_PANIC 0
+#endif
+
+/* Behave as JSTR_PANIC would and print debug messages. */
+#ifndef JSTR_DEBUG
+#	define JSTR_DEBUG 0
 #endif
 
 /*
