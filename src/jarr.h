@@ -201,11 +201,11 @@ PJSTR_END_DECLS
 		*PJARR_DATA(j) = (value);                                          \
 	} while (0)
 
-#define jarr_foreachi(j, iterator) \
-	for (size_t iterator = 0, pjarr_max_elem_##j##_##iterator = (j)->size; iterator < pjarr_max_elem_##j##_##iterator; ++iterator)
+#define jarr_foreachi(j, i) \
+	for (size_t i = 0, pjarr_max_elem_##j##_##i = (j)->size; i < pjarr_max_elem_##j##_##i; ++i)
 
-#define jarr_start(j, p) PJARR_DATA(j)
-#define jarr_end(j, p)   (PJARR_DATA(j) + PJARR_SZ(j))
+#define jarr_start(j) PJARR_DATA(j)
+#define jarr_end(j)   (PJARR_DATA(j) + PJARR_SZ(j))
 
 #if JSTR_DEBUG || JSTR_PANIC
 #	define jarr_at(j, idx) \

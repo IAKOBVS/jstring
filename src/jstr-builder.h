@@ -248,7 +248,7 @@ JSTR_NOEXCEPT
 	jstr_free(&j->data, &j->size, &j->capacity);
 }
 
-JSTR_FUNC
+JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static jstr_ty *
 jstr_start(const jstr_ty *R j)
@@ -256,7 +256,7 @@ jstr_start(const jstr_ty *R j)
 	return (jstr_ty *)j->data;
 }
 
-JSTR_FUNC
+JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static jstr_ty *
 jstr_end(const jstr_ty *R j)
