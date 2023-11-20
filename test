@@ -4,12 +4,14 @@
 
 cd "$(dirname "$0")" || exit
 for header in $(echo ./tests/*.c); do
+	basename=${header%.*}
 	{
-		basename=${header%.*}
 		cc "$header" -o "$basename"
 		./"$basename"
-		cc "$header" -o "$basename" -DJSTR_USE_LGPL=0
-		./"$basename"
+	} &
+	{
+		cc "$header" -o "$basename"_nolgpl -DJSTR_USE_LGPL=0
+		./"$basename"_nolgpl
 	} &
 done
 wait
