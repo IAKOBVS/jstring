@@ -6,8 +6,8 @@
 	do {                                                                                           \
 		TESTING(fn);                                                                           \
 		ret = fn(__VA_ARGS__);                                                                 \
-		if (ret == 0) {                                                                        \
-			fprintf(stderr, "%s", JSTR_STRINGIFY(fn) "()");                                \
+		if (ret == JSTR_RET_ERR) {                                                                        \
+			fprintf(stderr, "%s", JSTR_STRING(fn) "()");                                \
 			jstr_err_exit("");                                                             \
 		}                                                                                      \
 		ASSERT(strcmp(j.data, expected) == 0, j.data, expected);                               \
@@ -36,11 +36,11 @@ main(int argc, char **argv)
 	T_APPEND(jstr_assign_len, &j.data, &j.size, &j.capacity, expected, strlen(expected));
 
 	const char *hello4 = "hello hello hello hello";
-	assert(jstr_assign_len(&j.data, &j.size, &j.capacity, hello4, strlen(hello4)));
+	assert(JSTR_RET_SUCC == jstr_assign_len(&j.data, &j.size, &j.capacity, hello4, strlen(hello4)));
 	expected = "world hello hello hello";
 	T_APPEND(jstr_rplc_len, &j.data, &j.size, &j.capacity, "hello", "world", strlen("hello"), strlen("world"));
 
-	assert(jstr_assign_len(&j.data, &j.size, &j.capacity, hello4, strlen(hello4)));
+	assert(JSTR_RET_SUCC == jstr_assign_len(&j.data, &j.size, &j.capacity, hello4, strlen(hello4)));
 	expected = "world world world world";
 	T_APPEND(jstr_rplcall_len, &j.data, &j.size, &j.capacity, "hello", "world", strlen("hello"), strlen("world"));
 
