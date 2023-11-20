@@ -52,12 +52,13 @@
 #	define PJSTRIO_EXT_ARRAY_FT_BINARY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
-/* You shouldn't mess with these. */
+/* ./remove-lgpl will remove all LGPL code from ./jstr. */
 #ifndef JSTR_USE_LGPL
 #	define JSTR_USE_LGPL 1
 #endif
 
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
+/* This is defined by ./check-little-endian. */
 #	define JSTR_ENDIAN_LITTLE 1
 #endif
 #if JSTR_ENDIAN_LITTLE
