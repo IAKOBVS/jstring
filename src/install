@@ -2,6 +2,5 @@
 cd "$(dirname "$0")" || exit
 INSTALL_DIR=/usr/local/include
 [ $# -eq 1 ] && INSTALL_DIR=$1
-./build
 ./fmt ../jstr/*.h
 sudo cp -rf ../jstr "$INSTALL_DIR"
