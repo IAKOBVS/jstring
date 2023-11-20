@@ -48,10 +48,6 @@ PJSTR_END_DECLS
 
 #define JSTR_ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
 
-#define JSTR_ALIGN_UP_STR(base)       JSTR_ALIGN_UP((uintptr_t)base, PJSTR_ATTR_MALLOC_ALIGNMENT)
-#define JSTR_ALIGN_DOWN_STR(base)     JSTR_ALIGN_DOWN((uintptr_t)base, PJSTR_ATTR_MALLOC_ALIGNMENT)
-#define JSTR_PTR_IS_ALIGNED_STR(base) JSTR_PTR_IS_ALIGNED(base, PJSTR_ATTR_MALLOC_ALIGNMENT)
-
 #ifdef __cplusplus
 template <typename T, typename Other>
 static T
@@ -1315,6 +1311,10 @@ enum {
 	&& (JSTR_HAS_BUILTIN(__builtin_ctzll) || defined __builtin_ctzll)
 #		define JSTR_HAVE_WORD_AT_A_TIME 1
 #	endif
+#endif
+
+#if !JSTR_USE_LGPL
+#	undef JSTR_HAVE_WORD_AT_A_TIME
 #endif
 
 #endif /* JSTR_MACROS_H */

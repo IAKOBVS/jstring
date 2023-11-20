@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for file in $(echo ./jstr/*.h); do
+	#shellcheck disable=SC2005
+	echo "$(perl ./remove-lgpl.pl "$file")" >"$file"
+done
