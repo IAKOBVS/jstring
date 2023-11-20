@@ -42,7 +42,8 @@ PJSTR_END_DECLS
 		} while (0)
 #endif
 
-#define JSTR_CONCAT(x, y)        x ## y
+#define PJSTR_CONCAT_HELPER(x, y) x ## y
+#define JSTR_CONCAT(x, y)        PJSTR_CONCAT_HELPER(x, y)
 #define JSTR_STRING(x)        #x
 
 #define JSTR_ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
@@ -317,8 +318,8 @@ PJSTR_END_DECLS
 #	if JSTR_HAS_ATTRIBUTE(__deprecated__)
 #		define JSTR_ATTR_DEPRECATED(msg) __attribute__((__deprecated__(msg)))
 #	endif
-#	ifdef __THROW
-#		define JSTR_ATTR_NOTHROW __THROW
+#	ifdef __THROWNL
+#		define JSTR_ATTR_NOTHROW __THROWNL
 #	elif JSTR_HAS_ATTRIBUTE(__nothrow__)
 #		define JSTR_ATTR_NOTHROW __attribute__((__nothrow__))
 #	endif
