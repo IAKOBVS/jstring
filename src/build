@@ -36,4 +36,5 @@ TMP=/tmp/__jstr_tmp_obj__
 echo "$file_str" | compile "$TMP" || exit &
 echo "$file_str" | compile "$TMP" -D__STRICT_ANSI__ || exit &
 echo "$file_str" | compile "$TMP" -DJSTR_USE_LGPL=0 || exit &
+wait
 rm -f $TMP
