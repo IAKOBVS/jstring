@@ -276,20 +276,19 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-static void
-jstrre_rmn_from(const regex_t *R preg,
-                char *R s,
-                size_t *R sz,
-                const size_t start_idx,
-                const int eflags,
-                size_t n)
+static char *
+jstrre_rmn_p(const regex_t *R preg,
+             char *R s,
+             const size_t sz,
+             const int eflags,
+             size_t n)
 JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	char *dst = s + start_idx;
+	char *dst = s;
 	const char *p = dst;
 	const char *oldp = dst;
-	const char *const end = s + *sz;
+	const char *const end = s + sz;
 	size_t find_len;
 	while (n-- && jstrre_exec_len(preg, p, end - p, 1, &rm, eflags) == JSTRRE_RET_NOERROR) {
 		find_len = rm.rm_eo - rm.rm_so;
@@ -302,70 +301,32 @@ JSTR_NOEXCEPT
 			break;
 	}
 	if (jstr_likely(dst != oldp))
-		*sz = jstr_stpmove_len(dst, oldp, end - oldp) - s;
+		return jstr_stpmove_len(dst, oldp, end - oldp);
+	return (char *)end;
 }
 
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
-static void
-jstrre_rm(const regex_t *R preg,
-          char *R s,
-          size_t *R sz,
-          const int eflags)
+static char *
+jstrre_rm_p(const regex_t *R preg,
+            char *R s,
+            const size_t sz,
+            const int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rmn_from(preg, s, sz, 0, eflags, 1);
+	return jstrre_rmn_p(preg, s, sz, eflags, 1);
 }
 
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
-static void
-jstrre_rm_from(const regex_t *R preg,
+static char *
+jstrre_rmall_p(const regex_t *R preg,
                char *R s,
-               size_t *R sz,
-               const size_t start_idx,
+               const size_t sz,
                const int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rmn_from(preg, s, sz, start_idx, eflags, 1);
-}
-
-JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
-static void 
-jstrre_rmall(const regex_t *R preg,
-             char *R s,
-             size_t *R sz,
-             const int eflags)
-JSTR_NOEXCEPT
-{
-	return jstrre_rmn_from(preg, s, sz, 0, eflags, -1);
-}
-
-JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
-static void 
-jstrre_rmn(const regex_t *R preg,
-           char *R s,
-           size_t *R sz,
-           const size_t n,
-           const int eflags)
-JSTR_NOEXCEPT
-{
-	return jstrre_rmn_from(preg, s, sz, n, eflags, n);
-}
-
-JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
-static void 
-jstrre_rmall_from(const regex_t *R preg,
-                  char *R s,
-                  size_t *R sz,
-                  const size_t start_idx,
-                  const int eflags)
-JSTR_NOEXCEPT
-{
-	return jstrre_rmn_from(preg, s, sz, start_idx, eflags, -1);
+	return jstrre_rmn_p(preg, s, sz, eflags, -1);
 }
 
 JSTR_FUNC_VOID
@@ -442,11 +403,11 @@ jstrre_rplcn_len_from(regex_t *R preg,
 JSTR_NOEXCEPT
 {
 	typedef char u;
+	char *dst = *s + start_idx;
 	if (jstr_unlikely(rplc_len == 0)) {
-		jstrre_rmall_from(preg, *s, sz, start_idx, eflags);
+		*sz = jstrre_rmn_p(preg, dst, *sz - start_idx, eflags, n) - *s;
 		return JSTRRE_RET_NOERROR;
 	}
-	char *dst = *s + start_idx;
 	char *p = dst;
 	const char *oldp = dst;
 	size_t find_len;
@@ -621,7 +582,7 @@ JSTR_NOEXCEPT
 {
 	char *p = *s + start_idx;
 	if (jstr_unlikely(rplc_len == 0)) {
-		jstrre_rmn_from(preg, *s, sz, start_idx, eflags, n);
+		*sz = jstrre_rmn_p(preg, p, *sz - start_idx, eflags, n) - *s;
 		return JSTRRE_RET_NOERROR;
 	}
 	char *dst = p;
