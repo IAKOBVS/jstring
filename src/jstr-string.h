@@ -359,7 +359,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strnstr4andmore(const unsigned char *h,
+pjstr_strnstr5andmore(const unsigned char *h,
                       const unsigned char *const n,
                       size_t l,
                       const size_t ne_len)
@@ -369,7 +369,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, l -= 3; *h && l--; hw = hw << 8 | *++h)
 		if (hw == nw)
-			if (ne_len == 4 || !memcmp(h - 3, n, ne_len))
+			if (!memcmp(h - 3, n, ne_len))
 				return (char *)h - 3;
 	return NULL;
 }
@@ -428,7 +428,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-pjstr_memmem4andmore(const unsigned char *h,
+pjstr_memmem5andmore(const unsigned char *h,
                      const unsigned char *const n,
                      size_t l,
                      const size_t ne_len)
@@ -490,12 +490,12 @@ JSTR_NOEXCEPT
 		return pjstr_memmem2((const u *)hs, (const u *)ne, hs_len);
 	if (ne_len == 3)
 		return pjstr_memmem3((const u *)hs, (const u *)ne, hs_len);
-#	if JSTR_USE_LGPL
 	if (ne_len == 4)
 		return pjstr_memmem4((const u *)hs, (const u *)ne, hs_len);
+#	if JSTR_USE_LGPL
 	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
 #	else
-	return pjstr_memmem4andmore((const u *)hs, (const u *)ne, hs_len, ne_len);
+	return pjstr_memmem5andmore((const u *)hs, (const u *)ne, hs_len, ne_len);
 #	endif
 #endif
 }
@@ -546,9 +546,9 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr3((const u *)hs, (const u *)ne, n);
 	if (jstr_unlikely(hs[3] == '\0'))
 		return NULL;
-#if JSTR_USE_LGPL
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
+#if JSTR_USE_LGPL
 	const size_t ne_len = strlen(ne);
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
@@ -564,7 +564,7 @@ JSTR_NOEXCEPT
 	hs_len += jstr_strnlen(hs + hs_len, n - hs_len);
 	return pjstr_strnstr(hs, hs_len, ne, ne_len);
 #else
-	return pjstr_strnstr4andmore((const u *)hs, (const u *)ne, n, (ne[4] == '\0') ? 4 : strlen(ne));
+	return pjstr_strnstr5andmore((const u *)hs, (const u *)ne, n, strlen(ne));
 #endif
 }
 
@@ -610,14 +610,20 @@ JSTR_NOEXCEPT
 			;
 		if (hw == nw)
 			return (char *)h;
+	} else if (ne_len == 4) {
+		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
+		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
+		for (h -= 3; h >= start; hw = hw << 8 | *--h)
+			;
+		if (hw == nw)
+			return (char *)h;
 	} else {
-		if (ne_len != 4)
-			h -= (ne_len - 4);
+		h -= ne_len - 4;
 		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
 		for (h -= 3; h >= start; hw = hw << 8 | *--h)
 			if (hw == nw)
-				if (ne_len == 4 || !memcmp(h, n, ne_len))
+				if (!memcmp(h, n, ne_len))
 					return (char *)h;
 	}
 	return NULL;
