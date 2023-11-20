@@ -820,7 +820,6 @@ JSTR_NOEXCEPT
 	return jstr_rmn_len_p(s, sz, find, find_len, -1);
 }
 
-JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
 jstr_rplcn_len_from(char *R *R s,

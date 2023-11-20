@@ -16,7 +16,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #ifndef JSTR_FEATURES_H
-#define JSTR_FEATURES_H
+#define JSTR_FEATURES_H 1
 
 /* This is to enable the ISO C11 extension.  */
 #if (defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE \

@@ -1313,7 +1313,6 @@ JSTR_NOEXCEPT
 */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 jstr_memchrnulinv(const void *s,
                   const int c,
@@ -1352,7 +1351,6 @@ JSTR_NOEXCEPT
 */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 jstr_memrchrinv(const void *s,
                 const int c,

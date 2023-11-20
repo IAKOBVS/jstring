@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 #ifndef JSTRL_H
-#define JSTRL_H
+#define JSTRL_H 1
 
 #include "jstr-macros.h"
 
