@@ -16,8 +16,8 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 typedef enum {
-	JTRIE_SUCC = 0,
-	JTRIE_ERR = 1
+	JTRIE_RET_SUCC = 0,
+	JTRIE_RET_ERR = 1
 } jtrie_ret_ty;
 
 typedef struct jtrie_node_ty {
@@ -62,7 +62,7 @@ jtrie_add(jtrie_node_ty *R root,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*word == '\0'))
-		return JTRIE_SUCC;
+		return JTRIE_RET_SUCC;
 	const unsigned char *w = (unsigned char *)word;
 	jtrie_node_ty *curr = root;
 	for (; *w; ++w) {
@@ -70,10 +70,10 @@ JSTR_NOEXCEPT
 			curr->child[*w] = jtrie_init();
 		curr = curr->child[*w];
 		if (jstr_unlikely(curr == NULL))
-			return JTRIE_ERR;
+			return JTRIE_RET_ERR;
 	}
 	curr->EOW = 1;
-	return JTRIE_SUCC;
+	return JTRIE_RET_SUCC;
 }
 
 typedef enum {
