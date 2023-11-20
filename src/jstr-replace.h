@@ -77,25 +77,6 @@ JSTR_NOEXCEPT
 	memcpy(s + at, src, src_len);
 }
 
-JSTR_ATTR_INLINE
-JSTR_FUNC_RET_NONNULL
-static char *
-pjstr_rplcat_len_unsafe(char *R s,
-                        size_t *R sz,
-                        const size_t at,
-                        const char *R rplc,
-                        const size_t rplc_len,
-                        const size_t find_len)
-JSTR_NOEXCEPT
-{
-	memmove(s + at + rplc_len,
-	        s + at + find_len,
-	        *sz - (at + find_len) + 1);
-	memcpy(s + at, rplc, rplc_len);
-	*sz += rplc_len - find_len;
-	return s + at + rplc_len;
-}
-
 /*
   Insert SRC into DST[AT].
   Return JSTR_RET_ERR on malloc error;
@@ -129,8 +110,13 @@ pjstr_rplcat_len_higher(char *R *R s,
                         const size_t find_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + rplc_len - find_len, return NULL)
-	return pjstr_rplcat_len_unsafe(*s, sz, at, rplc, rplc_len, find_len);
+	PJSTR_RESERVE(s, sz, cap, *sz + rplc_len - find_len, return NULL);
+	jstr_strmove_len(*s + at + rplc_len,
+	        *s + at + find_len,
+	        *sz - (at + find_len));
+	memcpy(*s + at, rplc, rplc_len);
+	*sz += rplc_len - find_len;
+	return *s + at + rplc_len;
 }
 
 /*
@@ -150,12 +136,14 @@ jstr_rplcat_len(char *R *R s,
                 const size_t find_len)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(rplc_len == find_len)) {
-		memcpy(*s + at, rplc, rplc_len);
-		*sz += rplc_len - find_len;
-		return *s + at + rplc_len;
-	}
-	return pjstr_rplcat_len_higher(s, sz, cap, at, rplc, rplc_len, find_len);
+	PJSTR_RESERVE(s, sz, cap, *sz + rplc_len - find_len, return NULL);
+	if (rplc_len != find_len)
+		jstr_strmove_len(*s + at + rplc_len,
+		*s + at + find_len,
+		*sz - (at + find_len));
+	memcpy(*s + at, rplc, rplc_len);
+	*sz += rplc_len - find_len;
+	return *s + at + rplc_len;
 }
 
 /*
