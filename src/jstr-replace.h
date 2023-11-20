@@ -47,9 +47,10 @@ pjstr_rplcallinplace(char **dst,
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(find_len != rplc_len)
-	    && jstr_likely(*dst != *oldp))
+	    && jstr_likely(*dst != *oldp)) {
 		memmove(*dst, *oldp, *p - *oldp);
-	*dst += *p - *oldp;
+		*dst += *p - *oldp;
+	}
 	*oldp += (*p - *oldp) + find_len;
 	*p += find_len;
 	*dst = (char *)jstr_mempcpy(*dst, rplc, rplc_len);
