@@ -22,6 +22,7 @@
 #include "jstr-word-at-a-time.h"
 
 JSTR_ATTR_INLINE
+JSTR_FUNC_CONST
 static const char *
 pjstr_sadd(const uintptr_t x,
            const uintptr_t y)
