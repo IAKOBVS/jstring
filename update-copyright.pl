@@ -9,7 +9,7 @@ my $curr_year = `date +%Y`;
 chomp $curr_year;
 
 my $str = '';
-open(my $FH, '<', './LICENSE');
+open(my $FH, '<', $ARGV[0]) or die "Can't open $ARGV[0].\n";
 while (<$FH>) {
 	if (/Copyright \(c\) ([0-9]*)(?:\-([0-9]*)){,1}/) {
 		my $first_year = $1;
@@ -22,5 +22,5 @@ while (<$FH>) {
 	}
 	$str .= $_;
 }
-close($FH);
+close($FH) or die "Can't close $ARGV[0].\n";
 print $str;
