@@ -66,20 +66,20 @@ PJSTR_END_DECLS
 		}
 #endif
 
-#define PJARR_CHECK_ARG(j)                         \
-	do {                                       \
+#define PJARR_CHECK_ARG(j)                                \
+	do {                                              \
 		JSTR_STATIC_ASSERT_IS_SIZE(PJARR_SZ(j));  \
 		JSTR_STATIC_ASSERT_IS_SIZE(PJARR_CAP(j)); \
 	} while (0)
-#define PJARR_GROW(old_cap, new_cap)                                        \
-	do {                                                                \
-		JSTR_STATIC_ASSERT_IS_SIZE(old_cap);                               \
-		JSTR_STATIC_ASSERT_IS_SIZE(new_cap);                               \
-		if (jstr_unlikely(old_cap == 0))                            \
-			old_cap = PJSTR_MIN_CAP / PJARR_ALLOC_MULTIPLIER;   \
-		do                                                          \
-			(old_cap) *= PJARR_GROWTH;                          \
-		while ((old_cap) < (new_cap));                              \
+#define PJARR_GROW(old_cap, new_cap)                                             \
+	do {                                                                     \
+		JSTR_STATIC_ASSERT_IS_SIZE(old_cap);                             \
+		JSTR_STATIC_ASSERT_IS_SIZE(new_cap);                             \
+		if (jstr_unlikely(old_cap == 0))                                 \
+			old_cap = PJSTR_MIN_CAP / PJARR_ALLOC_MULTIPLIER;        \
+		do                                                               \
+			(old_cap) *= PJARR_GROWTH;                               \
+		while ((old_cap) < (new_cap));                                   \
 		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_ATTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define jarr_reserve(j, new_cap)                                                                                   \
