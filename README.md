@@ -12,7 +12,7 @@
 ## Installation:
 
 ```
-sudo ./install
+./build && sudo ./install
 ```
 
 ```
@@ -22,7 +22,7 @@ sudo ./install
 or
 
 ```
-sudo ./install-to /path/to/some/dir
+./build && sudo ./install-to /path/to/some/dir
 ```
 
 ```
