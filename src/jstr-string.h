@@ -466,14 +466,16 @@ JSTR_NOEXCEPT
 	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef unsigned char u;
-	if (jstr_unlikely(ne_len == 0))
-		return (void *)hs;
 #	if JSTR_USE_LGPL
 	if (ne_len == 1)
 		return (void *)memchr(hs, *(const u *)ne, hs_len);
+	if (jstr_unlikely(ne_len == 0))
+		return (void *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 #	else
+	if (jstr_unlikely(ne_len == 0))
+		return (void *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	const void *const start = (const void *)hs;
