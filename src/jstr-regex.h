@@ -376,7 +376,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 		memmove(*dst, *oldp, *p - *oldp);
 	if (*cap <= *sz + rplc_len - find_len) {
 		const char *tmp = *s;
-		PJSTR_RESERVEALWAYSNOMALLOC(s, sz, cap, *sz + rplc_len - find_len, return JSTR_RET_ERR);
+		PJSTR_RESERVEALWAYS(s, sz, cap, *sz + rplc_len - find_len, return JSTR_RET_ERR)
 		*p = *s + (*p - tmp);
 		*dst = *s + (*dst - tmp);
 	}
@@ -608,7 +608,7 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(rdst_len > BUFSZ))
 			if (rdst_cap < rdst_len) {
 				if (jstr_unlikely(rdst_cap == 0))
-					rdst_cap = PJSTR_MIN_CAP / 1.5;
+					rdst_cap = BUFSZ;
 				rdst_cap = pjstr_grow(rdst_cap, rdst_len);
 				rdst_heap = (char *)realloc(rdst_heap, rdst_cap);
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
