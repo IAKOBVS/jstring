@@ -3,8 +3,6 @@
 #ifndef JSTR_POINTER_ARITH_H
 #define JSTR_POINTER_ARITH_H 1
 
-#define JSTR_CAST_TO_PTR(val) \
-	((void *)(uintptr_t)(val))
 #define JSTR_PTR_DIFF(p1, p2) \
 	((uintptr_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
 #define JSTR_PTR_IS_ALIGNED(base, size) \
