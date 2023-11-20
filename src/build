@@ -25,13 +25,15 @@ done
 wait
 compile()
 {
-	cc -x c -o "$1" -
+	file=$1
+	shift
+	#shellcheck disable=SC2068
+	cc -x c -o $@ -
 }
 file_str='#include "../jstr/jstr.h"
 int main(void) {return 0;}'
 TMP=/tmp/__jstr_tmp_obj__
-echo "$file_str" | compile "$TMP" || exit
-file_str="#define __STRICT_ANSI__
-$file_str"
-echo "$file_str" | compile "$TMP" || exit
+echo "$file_str" | compile "$TMP" || exit &
+echo "$file_str" | compile "$TMP" -D__STRICT_ANSI__ || exit &
+echo "$file_str" | compile "$TMP" -DJSTR_USE_LGPL=0 || exit &
 rm -f $TMP
