@@ -46,7 +46,7 @@ PJSTR_END_DECLS
 				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
-#	define JSTR_STATIC_ASSERT_DEBUG(expr, msg)        \
+#	define JSTR_ASSERT_DEBUG(expr, msg)        \
 		do {                                \
 			if (jstr_unlikely(!(expr))) \
 				jstr_err_exit(msg); \
@@ -58,7 +58,7 @@ PJSTR_END_DECLS
 				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
-#	define JSTR_STATIC_ASSERT_DEBUG(expr, msg) \
+#	define JSTR_ASSERT_DEBUG(expr, msg) \
 		do {                         \
 		} while (0)
 #endif
@@ -196,7 +196,7 @@ jstr_at(const jstr_ty *R j,
         const size_t idx)
 JSTR_NOEXCEPT
 {
-	JSTR_STATIC_ASSERT_DEBUG(idx <= j->size, "Index out of bounds.");
+	JSTR_ASSERT_DEBUG(idx <= j->size, "Index out of bounds.");
 	return j->data + idx;
 }
 
