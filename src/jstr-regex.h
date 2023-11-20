@@ -607,6 +607,8 @@ JSTR_NOEXCEPT
 			return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > BUFSZ))
 			if (rdst_cap < rdst_len) {
+				if (jstr_unlikely(rdst_cap == 0))
+					rdst_cap = PJSTR_MIN_CAP / 1.5;
 				rdst_cap = pjstr_grow(rdst_cap, rdst_len);
 				rdst_heap = (char *)realloc(rdst_heap, rdst_cap);
 				PJSTR_MALLOC_ERR(rdst_heap, goto err);
