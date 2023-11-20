@@ -10,9 +10,7 @@
 #ifndef PJSTR_MEMMEM_FN
 #	define PJSTR_MEMMEM_FN pjstr_memmem_impl
 #endif
-#ifndef PJSTR_MEMMEM_HASH2
-#	define PJSTR_MEMMEM_HASH2(p) (((size_t)((p)[0]) - ((size_t)((p)[-1]) << 3)) % 256)
-#endif
+#define PJSTR_MEMMEM_HASH2(p) (((size_t)((p)[0]) - ((size_t)((p)[-1]) << 3)) % 256)
 #ifndef PJSTR_MEMMEM_CHECK_EOL
 #	define PJSTR_MEMMEM_CHECK_EOL 0
 #endif
