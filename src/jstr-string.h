@@ -368,9 +368,8 @@ JSTR_NOEXCEPT
 	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, l -= 3; *h && l--; hw = hw << 8 | *++h)
-		if (hw == nw)
-			if (!memcmp(h - 3, n, ne_len))
-				return (char *)h - 3;
+		if (hw == nw && !memcmp(h - 3, n, ne_len))
+			return (char *)h - 3;
 	return NULL;
 }
 
@@ -406,8 +405,6 @@ JSTR_NOEXCEPT
 	return hw == nw ? (void *)(h - 2) : NULL;
 }
 
-#	if JSTR_USE_LGPL
-
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
@@ -423,7 +420,7 @@ JSTR_NOEXCEPT
 	return hw == nw ? (void *)(h - 3) : NULL;
 }
 
-#	else
+#	if !JSTR_USE_LGPL
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -613,7 +610,7 @@ JSTR_NOEXCEPT
 	} else if (ne_len == 4) {
 		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		for (h -= 3; h >= start; hw = hw << 8 | *--h)
+		for (h -= 3; h >= start && hw != nw; hw = hw << 8 | *--h)
 			;
 		if (hw == nw)
 			return (char *)h;
@@ -622,9 +619,8 @@ JSTR_NOEXCEPT
 		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
 		for (h -= 3; h >= start; hw = hw << 8 | *--h)
-			if (hw == nw)
-				if (!memcmp(h, n, ne_len))
-					return (char *)h;
+			if (hw == nw && !memcmp(h, n, ne_len))
+				return (char *)h;
 	}
 	return NULL;
 }
