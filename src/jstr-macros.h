@@ -42,9 +42,8 @@ PJSTR_END_DECLS
 		} while (0)
 #endif
 
-#define JSTR_CONCAT_HELPER(x, y) x##y
-#define JSTR_CONCAT(x, y)        JSTR_CONCAT_HELPER(x, y)
-#define JSTR_STRINGIFY(x)        #x
+#define JSTR_CONCAT(x, y)        x ## y
+#define JSTR_STRING(x)        #x
 
 #define JSTR_ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
 
@@ -198,7 +197,7 @@ PJSTR_END_DECLS
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #	define JSTR_RESTRICT restrict
 #elif defined __GNUC__ || defined __clang__
-#	define JSTR_RESTRICT __restrict__
+#	define JSTR_RESTRICT __restrict
 #elif defined _MSC_VER
 #	define JSTR_RESTRICT __restrict
 #else
