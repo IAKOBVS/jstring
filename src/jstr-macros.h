@@ -242,7 +242,9 @@ PJSTR_END_DECLS
 #endif /* unlikely */
 
 #ifndef PJSTR_ATTR_INLINE
-#	if (defined __cplusplus \
+#	ifdef __inline
+#		define PJSTR_ATTR_INLINE __inline
+#	elif (defined __cplusplus \
 	     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 #		define PJSTR_ATTR_INLINE inline
 #	else
@@ -250,34 +252,54 @@ PJSTR_END_DECLS
 #	endif
 #endif
 
-#if (defined __GNUC__ || defined __clang__) && (defined __glibc_has_attribute || defined __has_attribute)
+#if defined _MSC_VER
+#	define JSTR_ATTR_NOINLINE __declspec(noinline)
+#	define JSTR_ATTR_PURE     __declspec(noalias)
+#	define JSTR_ATTR_CONST    __declspec(restrict)
+#	define JSTR_ATTR_NOTHROW  __declspec(nothrow)
+#	define JSTR_ATTR_NOINLINE __delspec(noinline)
+#else
 #	if JSTR_HAS_ATTRIBUTE(__format__)
 #		define JSTR_ATTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__always_inline__)
+#	ifdef __always_inline
+#		define JSTR_ATTR_INLINE __always_inline
+#	elif JSTR_HAS_ATTRIBUTE(__always_inline__)
 #		define JSTR_ATTR_INLINE __attribute__((__always_inline__)) PJSTR_ATTR_INLINE
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__noinline__)
+#	ifdef __attribute_noinline__
+#		define JSTR_ATTR_NOINLINE __attribute_noinline__
+#	elif JSTR_HAS_ATTRIBUTE(__noinline__)
 #		define JSTR_ATTR_NOINLINE __attribute__((__noinline__))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__pure__)
+#	ifdef __attribute_pure__
+#		define JSTR_ATTR_PURE __attribute_pure__
+#	elif JSTR_HAS_ATTRIBUTE(__pure__)
 #		define JSTR_ATTR_PURE __attribute__((__pure__))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__const__)
+#	ifdef __attribute_const__
+#		define JSTR_ATTR_CONST __attribute_const__
+#	elif JSTR_HAS_ATTRIBUTE(__const__)
 #		define JSTR_ATTR_CONST __attribute__((__const__))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__flatten__)
+#	ifdef __attribute_flatten__
+#		define JSTR_ATTR_FLATTEN __attribute_flatten__
+#	elif JSTR_HAS_ATTRIBUTE(__flatten__)
 #		define JSTR_ATTR_FLATTEN __attribute__((__flatten__))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__cold__)
+#	ifdef __COLD
+#		define JSTR_ATTR_COLD __COLD
+#	elif JSTR_HAS_ATTRIBUTE(__cold__)
 #		define JSTR_ATTR_COLD __attribute__((__cold__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__sentinel__)
 #		define JSTR_ATTR_SENTINEL __attribute__((__sentinel__))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__nonnull__)
+#	if defined __attribute_nonnull__ && defined __nonnull
+#		define JSTR_ATTR_NONNULL(params) __nonnull(params)
+#	elif JSTR_HAS_ATTRIBUTE(__nonnull__)
 #		define JSTR_ATTR_NONNULL_ALL __attribute__((__nonnull__))
-#		define JSTR_NONNULL(args)    __attribute__((__nonnull__ args))
+#		define JSTR_NONNULL(params)    __attribute__((__nonnull__ params))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
 #		define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))
@@ -287,35 +309,37 @@ PJSTR_END_DECLS
 #	if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
 #		define JSTR_ATTR_RETURNS_NONNULL __attribute__((__returns_nonnull__))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__warn_unused_result__)
+#	ifdef __attribute_warn_unused_result__
+#		define JSTR_ATTR_WARN_UNUSED __attribute_warn_unused_result__
+#	elif JSTR_HAS_ATTRIBUTE(__warn_unused_result__)
 #		define JSTR_ATTR_WARN_UNUSED __attribute__((__warn_unused_result__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__deprecated__)
 #		define JSTR_ATTR_DEPRECATED(msg) __attribute__((__deprecated__(msg)))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__nothrow__)
+#	ifdef __THROW
+#		define JSTR_ATTR_NOTHROW __THROW
+#	elif JSTR_HAS_ATTRIBUTE(__nothrow__)
 #		define JSTR_ATTR_NOTHROW __attribute__((__nothrow__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__may_alias__)
 #		define JSTR_ATTR_MAY_ALIAS      __attribute__((__may_alias__))
 #		define JSTR_HAVE_ATTR_MAY_ALIAS 1
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__access__)
+#	ifdef __attr_access
+#		define JSTR_ATTR_ACCESS(x) __attr_access(x)
+#	elif JSTR_HAS_ATTRIBUTE(__access__)
 #		define JSTR_ATTR_ACCESS(x) __attribute__((__access__ x))
 #	endif
-#	if JSTR_HAS_ATTRIBUTE(__unused__)
+#	ifdef __attribute_maybe_unused__
+#		define JSTR_MAYBE_UNUSED __attribute_maybe_unused__
+#	elif JSTR_HAS_ATTRIBUTE(__unused__)
 #		define JSTR_MAYBE_UNUSED __attribute__((__unused__))
 #	endif
 #	if JSTR_HAS_BUILTIN(__builtin_constant_p)
 #		define JSTR_ATTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
 #	endif
-#elif defined _MSC_VER
-#	define JSTR_ATTR_NOINLINE __declspec(noinline)
-#	define JSTR_ATTR_PURE     __declspec(noalias)
-#	define JSTR_ATTR_CONST    __declspec(restrict)
-#	define JSTR_ATTR_NOTHROW  __declspec(nothrow)
-#	define JSTR_ATTR_NOINLINE __delspec(noinline)
-#endif /* Gnuc || clang || msvc */
+#endif
 
 #ifndef JSTR_ATTR_INLINE
 #	define JSTR_ATTR_INLINE PJSTR_ATTR_INLINE
