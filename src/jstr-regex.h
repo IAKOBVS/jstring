@@ -298,6 +298,8 @@ JSTR_NOEXCEPT
 			++p;
 		else
 			pjstr_rmallinplace(&dst, &oldp, &p, find_len);
+		fprintf(stderr, "s:%s\n", s);
+		fprintf(stderr, "dst:%s\n", dst);
 	}
 	if (dst != oldp)
 		return jstr_stpmove_len(dst, oldp, end - oldp);

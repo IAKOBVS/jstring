@@ -32,7 +32,7 @@ JSTR_NOEXCEPT
 	if (jstr_likely(*dst != *oldp))
 		memmove(*dst, *oldp, n);
 	*dst += n;
-	*oldp += n;
+	*oldp += n + find_len;
 	*p += find_len;
 }
 
@@ -668,8 +668,8 @@ pjstr_rplc_len(char *R *R s,
                size_t *R cap,
                const size_t start_idx,
                const char *R find,
-               const char *R rplc,
                const size_t find_len,
+               const char *R rplc,
                const size_t rplc_len)
 JSTR_NOEXCEPT
 {
@@ -703,11 +703,11 @@ jstr_rplc_len(char *R *R s,
               size_t *R cap,
               const char *R find,
               const char *R rplc,
-              const size_t find_len,
-              const size_t rplc_len)
+              const size_t rplc_len,
+              const size_t find_len)
 JSTR_NOEXCEPT
 {
-	return pjstr_rplc_len(s, sz, cap, 0, find, rplc, find_len, rplc_len);
+	return pjstr_rplc_len(s, sz, cap, 0, find, find_len, rplc, rplc_len);
 }
 
 /*
@@ -727,7 +727,7 @@ jstr_rplc_len_from(char *R *R s,
                    const size_t rplc_len)
 JSTR_NOEXCEPT
 {
-	return pjstr_rplc_len(s, sz, cap, start_idx, find, rplc, find_len, rplc_len);
+	return pjstr_rplc_len(s, sz, cap, start_idx, find, find_len, rplc, rplc_len);
 }
 
 /*
@@ -864,8 +864,8 @@ jstr_rplcn_len(char *R *R s,
                size_t *R sz,
                size_t *R cap,
                const char *R find,
-               const char *R rplc,
                const size_t find_len,
+               const char *R rplc,
                const size_t rplc_len,
                size_t n)
 JSTR_NOEXCEPT
@@ -886,8 +886,8 @@ jstr_rplcall_len_from(char *R *R s,
                       size_t *R cap,
                       const size_t start_idx,
                       const char *R find,
-                      const char *R rplc,
                       const size_t find_len,
+                      const char *R rplc,
                       const size_t rplc_len)
 JSTR_NOEXCEPT
 {
@@ -906,8 +906,8 @@ jstr_rplcall_len(char *R *R s,
                  size_t *R sz,
                  size_t *R cap,
                  const char *R find,
-                 const char *R rplc,
                  const size_t find_len,
+                 const char *R rplc,
                  const size_t rplc_len)
 JSTR_NOEXCEPT
 {
@@ -1167,8 +1167,8 @@ jstr_placeafter_len(char *R *R s,
                     size_t *R sz,
                     size_t *R cap,
                     const char *R find,
-                    const char *R src,
                     const size_t find_len,
+                    const char *R src,
                     const size_t src_len)
 JSTR_NOEXCEPT
 {
