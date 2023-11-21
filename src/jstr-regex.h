@@ -291,17 +291,15 @@ JSTR_NOEXCEPT
 	const char *oldp = dst;
 	const char *const end = s + sz;
 	size_t find_len;
-	while (n-- && jstrre_exec_len(preg, p, end - p, 1, &rm, eflags) == JSTRRE_RET_NOERROR) {
+	while (n-- && *p && jstrre_exec_len(preg, p, end - p, 1, &rm, eflags) == JSTRRE_RET_NOERROR) {
 		find_len = rm.rm_eo - rm.rm_so;
-		p = p + rm.rm_so;
+		p += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
 			++p;
 		else
 			pjstr_rmallinplace(&dst, &oldp, &p, find_len);
-		if (jstr_unlikely(*p == '\0'))
-			break;
 	}
-	if (jstr_likely(dst != oldp))
+	if (dst != oldp)
 		return jstr_stpmove_len(dst, oldp, end - oldp);
 	return (char *)end;
 }
@@ -416,11 +414,8 @@ JSTR_NOEXCEPT
 	while (n-- && *p && jstrre_exec_len(preg, p, (*s + *sz) - p, 1, &rm, eflags) == JSTRRE_RET_NOERROR) {
 		find_len = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
-		if (jstr_unlikely(find_len == 0)) {
-			if (jstr_unlikely(*++p == '\0'))
-				break;
+		if (jstr_unlikely(find_len == 0))
 			continue;
-		}
 		if (rplc_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rplc, rplc_len, find_len);
 		else if (*cap > *sz + rplc_len - find_len)

@@ -1,17 +1,3 @@
 #!/bin/sh
 
-# See LICENSE file for copyright and license details.
-
-cd "$(dirname "$0")" || exit
-for header in $(echo ./tests/*.c); do
-	basename=${header%.*}
-	{
-		cc "$header" -o "$basename"
-		./"$basename"
-	} &
-	{
-		cc "$header" -o "$basename"_nolgpl -DJSTR_USE_LGPL=0
-		./"$basename"_nolgpl
-	} &
-done
-wait
+./tests/test

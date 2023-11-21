@@ -13,7 +13,7 @@
 	fprintf(stdout, fmt, __VA_ARGS__)
 
 #define SUCCESS() \
-	PRINT("%s succeeded.\n", argv[0])
+	PRINTERR("%s succeeded.\n", argv[0])
 
 #define ASSERT(expr, result, expected)            \
 	do {                                      \
@@ -26,6 +26,6 @@
 		}                                 \
 	} while (0)
 
-#define TESTING(func) PRINT("Testing %s.\n", JSTR_STRING(func) "()")
+#define TESTING(func) PRINTERR("Testing %s.\n", JSTR_STRING(func) "()")
 
 #endif /* JSTR_TEST_H */

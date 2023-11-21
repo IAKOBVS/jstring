@@ -423,7 +423,7 @@ JSTR_NOEXCEPT
 	const char *p = s;
 	for (; *p && (*(p += strcspn(p, reject))); pjstr_rmallinplace((char **)&s, &oldp, &p, strspn((char *)p, reject)))
 		;
-	if (jstr_likely(p != oldp))
+	if (p != oldp)
 		return jstr_stpmove_len(s, oldp, p - oldp);
 	return (char *)p;
 }
@@ -521,7 +521,7 @@ JSTR_NOEXCEPT
 	const char *p = dst;
 	for (; *(p += strcspn(p, rjct)); pjstr_rmallinplace(&dst, &oldp, &p, 1))
 		;
-	if (jstr_likely(p != oldp))
+	if (p != oldp)
 		return jstr_stpmove_len(dst, oldp, p - oldp);
 	return (char *)p;
 }
@@ -1018,7 +1018,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	const char *const start = jstr_skipspace(s);
-	if (jstr_likely(s != start))
+	if (s != start)
 		return jstr_stpmove_len(s, start, (s + sz) - start);
 	return s + sz;
 }
@@ -1037,7 +1037,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	const char *const start = jstr_skipspace(s);
-	if (jstr_likely(s != start))
+	if (s != start)
 		return jstr_stpmove_len(s, start, strlen(start));
 	return s + strlen(start);
 }
@@ -1054,7 +1054,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return;
 	const char *const start = jstr_skipspace(s);
-	if (jstr_likely(s != start))
+	if (s != start)
 		jstr_strmove_len(s, start, strlen(start));
 }
 
@@ -1073,7 +1073,7 @@ JSTR_NOEXCEPT
 		return s;
 	const char *const end = jstr_skipspace_rev(s, s + sz - 1) + 1;
 	const char *const start = jstr_skipspace(s);
-	if (jstr_likely(start != s))
+	if (start != s)
 		return jstr_stpmove_len(s, start, end - start);
 	return s + sz;
 }
