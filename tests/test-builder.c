@@ -1,5 +1,4 @@
 #define JSTR_DEBUG 1
-#define _FORTIFY_SOURCE 3
 
 #include "../src/jstr-regex.h"
 #include "test.h"
@@ -28,25 +27,25 @@ main(int argc, char **argv)
 {
 	const char *expected;
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_cat, &j.data, &j.size, &j.capacity, "hello", " ", "world", NULL);
+	T_APPEND(JSTR_RET_SUCC, jstr_cat, JSTR_STRUCT(&j), "hello", " ", "world", NULL);
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_append_len, &j.data, &j.size, &j.capacity, expected, strlen(expected));
+	T_APPEND(JSTR_RET_SUCC, jstr_append_len, JSTR_STRUCT(&j), expected, strlen(expected));
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_prepend_len, &j.data, &j.size, &j.capacity, expected, strlen(expected));
+	T_APPEND(JSTR_RET_SUCC, jstr_prepend_len, JSTR_STRUCT(&j), expected, strlen(expected));
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_assign_len, &j.data, &j.size, &j.capacity, expected, strlen(expected));
+	T_APPEND(JSTR_RET_SUCC, jstr_assign_len, JSTR_STRUCT(&j), expected, strlen(expected));
 
 	const char *hello4 = "hello hello hello hello";
-	assert(JSTR_RET_SUCC == jstr_assign_len(&j.data, &j.size, &j.capacity, hello4, strlen(hello4)));
+	assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&j), hello4, strlen(hello4)));
 	expected = "world hello hello hello";
-	T_APPEND(JSTR_RET_SUCC, jstr_rplc_len, &j.data, &j.size, &j.capacity, "hello", strlen("hello"), "world", strlen("world"));
+	T_APPEND(JSTR_RET_SUCC, jstr_rplc_len, JSTR_STRUCT(&j), "hello", strlen("hello"), "world", strlen("world"));
 
-	assert(JSTR_RET_SUCC == jstr_assign_len(&j.data, &j.size, &j.capacity, hello4, strlen(hello4)));
+	assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&j), hello4, strlen(hello4)));
 	expected = "world world world world";
-	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, &j.data, &j.size, &j.capacity, "hello", strlen("hello"), "world", strlen("world"));
+	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), "hello", strlen("hello"), "world", strlen("world"));
 
 	expected = "   ";
-	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, &j.data, &j.size, &j.capacity, "world", strlen("world"), "", strlen(""));
+	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), "world", strlen("world"), "", strlen(""));
 
 	SUCCESS();
 	return 0;
