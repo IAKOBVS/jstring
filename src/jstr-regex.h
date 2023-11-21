@@ -376,7 +376,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 		memmove(*dst, *oldp, *p - *oldp);
 	if (*cap <= *sz + rplc_len - find_len) {
 		const char *tmp = *s;
-		PJSTR_RESERVEALWAYS(s, sz, cap, *sz + rplc_len - find_len, return JSTR_RET_ERR)
+		PJSTR_RESERVE_ALWAYS(s, sz, cap, *sz + rplc_len - find_len, return JSTR_RET_ERR)
 		*p = *s + (*p - tmp);
 		*dst = *s + (*dst - tmp);
 	}

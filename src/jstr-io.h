@@ -261,7 +261,7 @@ JSTR_NOEXCEPT
 			if (readsz < reqsz)
 				break;
 			if (*sz == *cap)
-				PJSTR_RESERVEEXACTALWAYS(s, sz, cap, (*cap * PJSTR_GROWTH), goto err_close)
+				PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, (*cap * PJSTR_GROWTH), goto err_close)
 		}
 	}
 	*(*s + *sz) = '\0';
@@ -453,7 +453,7 @@ JSTR_NOEXCEPT
 	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
-			PJSTR_RESERVEALWAYS(s, sz, cap, *sz + len, return JSTR_RET_ERR)
+			PJSTR_RESERVE_ALWAYS(s, sz, cap, *sz + len, return JSTR_RET_ERR)
 			p = *s + (p - tmp);
 		}
 		jstr_strmove_len(p + len, p + 1, (*s + *sz) - (p + 1));
@@ -585,13 +585,13 @@ typedef enum jstrio_ftw_flag_ty {
 #define NONFATAL_ERR() jstr_likely(errno == EACCES || errno == ENOENT)
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-#	define FILL_PATHALWAYS(dirpath, dirpath_len, ep)                                            \
+#	define FILL_PATH_ALWAYS(dirpath, dirpath_len, ep)                                            \
 		do {                                                                                 \
 			pjstrio_appendpath_len(dirpath + dirpath_len, (ep)->d_name, (ep)->d_namlen); \
 			path_len = dirpath_len + 1 + (ep)->d_namlen;                                 \
 		} while (0)
 #else
-#	define FILL_PATHALWAYS(dirpath, dirpath_len, ep) \
+#	define FILL_PATH_ALWAYS(dirpath, dirpath_len, ep) \
 		((void)(path_len = pjstrio_appendpath_p(dirpath + dirpath_len, (ep)->d_name) - dirpath))
 #endif
 
@@ -626,7 +626,7 @@ typedef enum jstrio_ftw_flag_ty {
 #	define IS_DIR(ep, st)                      ((ep)->d_type == DT_DIR)
 #	define IS_REG(ep, st)                      ((ep)->d_type == DT_REG)
 #	define STAT_MODE(st, ep)                   ((void)((st)->st_mode = DTTOIF((ep)->d_type)))
-#	define FILL_PATH(dirpath, dirpath_len, ep) FILL_PATHALWAYS(dirpath, dirpath_len, ep)
+#	define FILL_PATH(dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(dirpath, dirpath_len, ep)
 #	define STAT(st, fd, ep, dirpath)           STAT_ALWAYS(st, fd, ep, dirpath)
 #	define STAT_OR_MODE(st, fd, ep, dirpath)          \
 		do {                                       \
@@ -639,7 +639,7 @@ typedef enum jstrio_ftw_flag_ty {
 #	define IS_DIR(ep, st) S_ISDIR((st)->st_mode)
 #	define IS_REG(ep, st) S_ISREG((st)->st_mode)
 #	if USE_ATFILE
-#		define FILL_PATH(dirpath, dirpath_len, ep) FILL_PATHALWAYS(dirpath, dirpath_len, ep)
+#		define FILL_PATH(dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(dirpath, dirpath_len, ep)
 #	else
 #		define FILL_PATH(dirpath, dirpath_len, ep) \
 			do {                                \
@@ -719,7 +719,7 @@ JSTR_NOEXCEPT
 		}
 #if !JSTR_HAVE_DIRENT_D_TYPE
 #	if !USE_ATFILE
-		FILL_PATHALWAYS(dirpath, dirpath_len, ep);
+		FILL_PATH_ALWAYS(dirpath, dirpath_len, ep);
 #	endif
 		STAT_ALWAYS(st, fd, ep, dirpath);
 #endif
@@ -819,7 +819,7 @@ err_closedir:
 #undef IS_DIR
 #undef IS_REG
 #undef FILL_PATH
-#undef FILL_PATHALWAYS
+#undef FILL_PATH_ALWAYS
 #undef STAT
 #undef STAT_ALWAYS
 #undef STAT_MODE

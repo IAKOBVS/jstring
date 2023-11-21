@@ -1126,7 +1126,7 @@ jstr_place_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (at + src_len > *sz) {
-		PJSTR_RESERVEALWAYS(s, sz, cap, at + src_len, return JSTR_RET_ERR)
+		PJSTR_RESERVE_ALWAYS(s, sz, cap, at + src_len, return JSTR_RET_ERR)
 		*sz = at + src_len;
 		*(*s + *sz) = '\0';
 	}

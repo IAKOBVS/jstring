@@ -81,9 +81,9 @@ PJSTR_END_DECLS
 	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 #define PJSTR_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact, s, sz, cap, new_cap, do_on_malloc_err)
-#define PJSTR_RESERVEALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
+#define PJSTR_RESERVE_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserve_always, s, sz, cap, new_cap, do_on_malloc_err)
-#define PJSTR_RESERVEEXACTALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
+#define PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact_always, s, sz, cap, new_cap, do_on_malloc_err)
 
 PJSTR_BEGIN_DECLS
@@ -345,7 +345,7 @@ jstr_shrink_to_fit(char *R *R s,
                    size_t *R sz,
                    size_t *R cap)
 {
-	PJSTR_RESERVEEXACTALWAYS(s, sz, cap, *sz, return JSTR_RET_ERR)
+	PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz, return JSTR_RET_ERR)
 	return JSTR_RET_SUCC;
 }
 
@@ -533,7 +533,7 @@ jstr_assignnchr(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (n > *sz) {
-		PJSTR_RESERVEALWAYS(s, sz, cap, n, return JSTR_RET_ERR)
+		PJSTR_RESERVE_ALWAYS(s, sz, cap, n, return JSTR_RET_ERR)
 		memset(*s, c, n);
 		*(*s + n) = '\0';
 		*sz = n;
@@ -723,7 +723,7 @@ jstr_pushback(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, return JSTR_RET_ERR)
+		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, return JSTR_RET_ERR)
 	*sz = jstr_pushback_unsafe_p(*s, *sz, c) - *s;
 	return JSTR_RET_SUCC;
 }
@@ -758,7 +758,7 @@ jstr_pushfront(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		PJSTR_RESERVEEXACTALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, return JSTR_RET_ERR)
+		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, return JSTR_RET_ERR)
 	*sz = jstr_pushfront_unsafe_p(*s, *sz, c) - *s;
 	return JSTR_RET_SUCC;
 }

@@ -19,7 +19,7 @@
 
 #define PJSTRL_RESERVE(list, new_cap, do_on_mallocerr) \
 	PJSTRL_RESERVE_FAIL(jstrl_reserve, list, new_cap, do_on_mallocerr)
-#define PJSTRL_RESERVEALWAYS(list, new_cap, do_on_mallocerr) \
+#define PJSTRL_RESERVE_ALWAYS(list, new_cap, do_on_mallocerr) \
 	PJSTRL_RESERVE_FAIL(jstrl_reservealways, list, new_cap, do_on_mallocerr)
 
 #define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##l##_##p = jstrl_end(l); \
@@ -230,7 +230,7 @@ jstrl_reserve(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
-		PJSTRL_RESERVEALWAYS(l, new_cap, return JSTR_RET_ERR);
+		PJSTRL_RESERVE_ALWAYS(l, new_cap, return JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
 }
 
