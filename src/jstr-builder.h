@@ -273,7 +273,7 @@ jstr_reserve_always(char *R *R s,
                     size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*s = (char *)realloc(*s, *cap = *cap ? pjstr_grow(*cap, new_cap) : new_cap * PJSTR_ALLOC_MULTIPLIER);
+	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? pjstr_grow(*cap, new_cap) : new_cap * PJSTR_ALLOC_MULTIPLIER);
 	PJSTR_MALLOC_ERR(*s, goto err);
 	return JSTR_RET_SUCC;
 err:
@@ -311,7 +311,7 @@ jstr_reserveexact_always(char *R *R s,
                          const size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*s = (char *)realloc(*s, *cap = *cap ? new_cap + 1 : new_cap * PJSTR_ALLOC_MULTIPLIER);
+	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? new_cap + 1 : new_cap * PJSTR_ALLOC_MULTIPLIER);
 	PJSTR_MALLOC_ERR(*s, goto err);
 	return JSTR_RET_SUCC;
 err:
