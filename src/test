@@ -3,4 +3,4 @@
 # See LICENSE file for copyright and license details.
 
 ./setup || exit
-../test
+../tests/test
