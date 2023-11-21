@@ -6,6 +6,7 @@
 #define T_APPEND(ret, fn, ...)                                                                         \
 	do {                                                                                           \
 		TESTING(fn);                                                                           \
+			jstr_debug(&j);                                                                \
 		if (ret != fn(__VA_ARGS__)) {                                                          \
 			fprintf(stderr, "%s", JSTR_STRING(fn) "()");                                   \
 			jstr_err_exit("");                                                             \
