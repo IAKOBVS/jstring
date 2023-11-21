@@ -24,7 +24,6 @@
 #include "_string-fza.h"
 #include <limits.h>
 
-
 /* Return the mask WORD jstr_word_shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
 static JSTR_ATTR_INLINE jstr_word_ty

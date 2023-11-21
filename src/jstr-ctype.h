@@ -76,7 +76,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_ISCTYPE(ctype, ctype_enum)     \
 	/* ASCII. */                                \
-	JSTR_ATTR_INLINE                                 \
+	JSTR_ATTR_INLINE                            \
 	JSTR_FUNC_CONST                             \
 	static int                                  \
 	jstr_is##ctype(const int c)                 \
@@ -109,7 +109,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_SKIP_CTYPE(ctype, ctype_enum)    \
 	/* ASCII. */                                  \
-	JSTR_ATTR_INLINE                                   \
+	JSTR_ATTR_INLINE                              \
 	JSTR_FUNC_PURE                                \
 	static char *                                 \
 	jstr_skip##ctype(const char *R s)             \
@@ -135,7 +135,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_ISCTYPE_STR(ctype, ctype_enum)    \
 	/* ASCII. */                                   \
-	JSTR_ATTR_INLINE                                    \
+	JSTR_ATTR_INLINE                               \
 	JSTR_FUNC_PURE                                 \
 	static int                                     \
 	jstr_is##ctype##str(const char *R s)           \
@@ -164,7 +164,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_DEFINE_SKIP_CTYPE_REV(ctype, ctype_enum)             \
 	/* ASCII. */                                               \
-	JSTR_ATTR_INLINE                                                \
+	JSTR_ATTR_INLINE                                           \
 	JSTR_FUNC_PURE                                             \
 	static char *                                              \
 	jstr_skip##ctype##_rev(const char *const start,            \

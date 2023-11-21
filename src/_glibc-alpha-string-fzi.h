@@ -24,7 +24,6 @@
 #include "_string-fza.h"
 #include "_string-optype.h"
 
-
 /* Note that since CMPBGE creates a bit mask rather than a byte mask,
    we cannot simply provide a target-specific string-fza.h.  */
 

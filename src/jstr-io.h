@@ -585,7 +585,7 @@ typedef enum jstrio_ftw_flag_ty {
 #define NONFATAL_ERR() jstr_likely(errno == EACCES || errno == ENOENT)
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-#	define FILL_PATH_ALWAYS(dirpath, dirpath_len, ep)                                            \
+#	define FILL_PATH_ALWAYS(dirpath, dirpath_len, ep)                                           \
 		do {                                                                                 \
 			pjstrio_appendpath_len(dirpath + dirpath_len, (ep)->d_name, (ep)->d_namlen); \
 			path_len = dirpath_len + 1 + (ep)->d_namlen;                                 \
