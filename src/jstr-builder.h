@@ -39,12 +39,12 @@ PJSTR_END_DECLS
 	                         ++i)
 
 #if JSTR_DEBUG || JSTR_PANIC
-#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err) \
-		do {                                       \
-			if (jstr_unlikely((p) == NULL)) {  \
-				jstr_err_exit("");         \
-				do_on_malloc_err;          \
-			}                                  \
+#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
+		do {                                      \
+			if (jstr_unlikely((p) == NULL)) { \
+				jstr_err_exit("");        \
+				do_on_malloc_err;         \
+			}                                 \
 		} while (0)
 #	define JSTR_ASSERT_DEBUG(expr, msg)        \
 		do {                                \
@@ -52,11 +52,11 @@ PJSTR_END_DECLS
 				jstr_err_exit(msg); \
 		} while (0)
 #else
-#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err) \
-		do {                                       \
-			if (jstr_unlikely((p) == NULL)) {  \
-				do_on_malloc_err;          \
-			}                                  \
+#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
+		do {                                      \
+			if (jstr_unlikely((p) == NULL)) { \
+				do_on_malloc_err;         \
+			}                                 \
 		} while (0)
 #	define JSTR_ASSERT_DEBUG(expr, msg) \
 		do {                         \
@@ -77,16 +77,14 @@ PJSTR_END_DECLS
 		do_on_malloc_err;                                       \
 	}
 
-#define PJSTR_RESERVEEXACTALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserveexact_always, s, sz, cap, new_cap, do_on_malloc_err)
+#define PJSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
+	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
 #define PJSTR_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err) \
 	PJSTR_RESERVE_FAIL(jstr_reserveexact, s, sz, cap, new_cap, do_on_malloc_err)
 #define PJSTR_RESERVEALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reservealways, s, sz, cap, new_cap, do_on_malloc_err)
-#define PJSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
-#define PJSTR_RESERVEALWAYSNOMALLOC(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(pjstr_reservealwaysnomalloc, s, sz, cap, new_cap, do_on_malloc_err)
+	PJSTR_RESERVE_FAIL(jstr_reserve_always, s, sz, cap, new_cap, do_on_malloc_err)
+#define PJSTR_RESERVEEXACTALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
+	PJSTR_RESERVE_FAIL(jstr_reserveexact_always, s, sz, cap, new_cap, do_on_malloc_err)
 
 PJSTR_BEGIN_DECLS
 
@@ -264,100 +262,25 @@ jstr_end(const jstr_ty *R j)
 	return (jstr_ty *)j->data + j->size;
 }
 
+/*
+   Do nothing if new_cap < cap.
+   Return JSTR_RET_ERR on malloc error.
+*/
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-pjstr_reallocexact(char *R *R s,
-                   size_t *R sz,
-                   size_t *R cap,
-                   size_t new_cap)
+jstr_reserve_always(char *R *R s,
+                    size_t *R sz,
+                    size_t *R cap,
+                    size_t new_cap)
 JSTR_NOEXCEPT
 {
-	new_cap = JSTR_MAX(PJSTR_MIN_CAP, new_cap);
-	*cap = JSTR_ALIGN_UP_STR(new_cap);
-	*s = (char *)realloc(*s, *cap);
-	if (jstr_likely(*s != NULL))
-		return JSTR_RET_SUCC;
+	*s = (char *)realloc(*s, *cap = *cap ? pjstr_grow(*cap, new_cap) : new_cap * PJSTR_ALLOC_MULTIPLIER);
+	PJSTR_MALLOC_ERR(*s, goto err);
+	return JSTR_RET_SUCC;
+err:
 	pjstr_nullify_members(sz, cap);
-	PJSTR_EXIT_MAYBE();
 	return JSTR_RET_ERR;
-}
-
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-pjstr_realloc(char *R *R s,
-              size_t *R sz,
-              size_t *R cap,
-              size_t new_cap)
-JSTR_NOEXCEPT
-{
-	*cap = pjstr_grow(*cap, new_cap);
-	*s = (char *)realloc(*s, *cap);
-	if (jstr_likely(*s != NULL))
-		return JSTR_RET_SUCC;
-	pjstr_nullify_members(sz, cap);
-	PJSTR_EXIT_MAYBE();
-	return JSTR_RET_ERR;
-}
-
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-pjstr_realloc_may_zero(char *R *R s,
-                       size_t *R sz,
-                       size_t *R cap,
-                       size_t new_cap)
-JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(*cap == 0))
-		*cap = PJSTR_MIN_CAP / 1.5;
-	return pjstr_realloc(s, sz, cap, new_cap);
-}
-
-/*
-   Return JSTR_RET_ERR on malloc error.
-*/
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-jstr_reservealways(char *R *R s,
-                   size_t *R sz,
-                   size_t *R cap,
-                   const size_t new_cap)
-JSTR_NOEXCEPT
-{
-	return pjstr_realloc_may_zero(s, sz, cap, new_cap + 1);
-}
-
-/*
-   Return JSTR_RET_ERR on malloc error.
-*/
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-pjstr_reservealwaysnomalloc(char *R *R s,
-                            size_t *R sz,
-                            size_t *R cap,
-                            const size_t new_cap)
-JSTR_NOEXCEPT
-{
-	return pjstr_realloc(s, sz, cap, new_cap + 1);
-}
-
-/*
-   Return JSTR_RET_ERR on malloc error.
-*/
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-jstr_reserveexact_always(char *R *R s,
-                         size_t *R sz,
-                         size_t *R cap,
-                         const size_t new_cap)
-JSTR_NOEXCEPT
-{
-	return pjstr_reallocexact(s, sz, cap, new_cap + 1);
 }
 
 /*
@@ -370,12 +293,33 @@ static jstr_ret_ty
 jstr_reserve(char *R *R s,
              size_t *R sz,
              size_t *R cap,
-             const size_t new_cap)
+             size_t new_cap)
 JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
-	return jstr_reservealways(s, sz, cap, new_cap + 1);
+	return jstr_reserve_always(s, sz, cap, new_cap);
+}
+
+/*
+   Do nothing if new_cap < cap.
+   Return JSTR_RET_ERR on malloc error.
+*/
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstr_reserveexact_always(char *R *R s,
+                         size_t *R sz,
+                         size_t *R cap,
+                         const size_t new_cap)
+JSTR_NOEXCEPT
+{
+	*s = (char *)realloc(*s, *cap = *cap ? new_cap + 1 : new_cap * PJSTR_ALLOC_MULTIPLIER);
+	PJSTR_MALLOC_ERR(*s, goto err);
+	return JSTR_RET_SUCC;
+err:
+	pjstr_nullify_members(sz, cap);
+	return JSTR_RET_ERR;
 }
 
 /*
@@ -393,7 +337,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
-	return jstr_reserveexact_always(s, sz, cap, new_cap + 1);
+	return jstr_reserveexact_always(s, sz, cap, new_cap);
 }
 
 JSTR_FUNC
@@ -890,35 +834,35 @@ static int
 jstr_vsprintfstrlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
-/* #if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \ */
-/* || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) */
-/* 	const int ret = vsnprintf(NULL, 0, fmt, ap); */
-/* 	if (jstr_likely(ret > 0)) */
-/* 		return ret + 1; */
-/* 	errno = ret; */
-/* 	return -1; */
-/* #else */
-#define PJSTR_COUNTDIGITS(lflag, base)               \
-	if (lflag == L_INT)                          \
-		arg_len += INT / base;               \
-	else {                                       \
-		if (lflag == L_LONG)                 \
-			arg_len += LONG / base;      \
-		else if (lflag == L_LONG_LONG)       \
-			arg_len += LONG_LONG / base; \
-		else                                 \
-			goto einval;                 \
-		lflag = L_INT;                       \
-	}
-#define PJSTR_GETMAXDIGITS(length)                                                 \
-	do {                                                                       \
-		if (base == B_DEC)                                                 \
-			arg_len += (is_thousep) ? DEC_##length : 2 * DEC_##length; \
-		else if (base == B_HEX)                                            \
-			arg_len += (is_thousep) ? HEX_##length : 2 * DEC_##length; \
-		else                                                               \
-			arg_len += (is_thousep) ? OCT_##length : 2 * DEC_##length; \
-	} while (0)
+#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
+|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
+	const int ret = vsnprintf(NULL, 0, fmt, ap);
+	if (jstr_likely(ret > 0))
+		return ret + 1;
+	errno = ret;
+	return -1;
+#else
+#	define PJSTR_COUNTDIGITS(lflag, base)               \
+		if (lflag == L_INT)                          \
+			arg_len += INT / base;               \
+		else {                                       \
+			if (lflag == L_LONG)                 \
+				arg_len += LONG / base;      \
+			else if (lflag == L_LONG_LONG)       \
+				arg_len += LONG_LONG / base; \
+			else                                 \
+				goto einval;                 \
+			lflag = L_INT;                       \
+		}
+#	define PJSTR_GETMAXDIGITS(length)                                                 \
+		do {                                                                       \
+			if (base == B_DEC)                                                 \
+				arg_len += (is_thousep) ? DEC_##length : 2 * DEC_##length; \
+			else if (base == B_HEX)                                            \
+				arg_len += (is_thousep) ? HEX_##length : 2 * DEC_##length; \
+			else                                                               \
+				arg_len += (is_thousep) ? OCT_##length : 2 * DEC_##length; \
+		} while (0)
 	enum {
 		B_DEC = 10,
 		B_OCT = 8,
@@ -1121,9 +1065,9 @@ get_arg:
 	if (jstr_unlikely(arg_len > INT_MAX))
 		arg_len = INT_MAX;
 	return arg_len;
-#undef PJSTR_COUNTDIGITS
-#undef PJSTR_GETMAXDIGITS
-	/* #endif */
+#	undef PJSTR_COUNTDIGITS
+#	undef PJSTR_GETMAXDIGITS
+#endif
 }
 
 JSTR_FUNC_VOID
