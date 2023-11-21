@@ -206,8 +206,8 @@ jstr_insertafter_len(char *R *R s,
                      size_t *R sz,
                      size_t *R cap,
                      const char *R find,
-                     const char *R src,
                      const size_t find_len,
+                     const char *R src,
                      const size_t src_len)
 JSTR_NOEXCEPT
 {
@@ -232,8 +232,8 @@ jstr_insertafterall_len(char *R *R s,
                         size_t *R sz,
                         size_t *R cap,
                         const char *R find,
-                        const char *R src,
                         const size_t find_len,
+                        const char *R src,
                         const size_t src_len)
 JSTR_NOEXCEPT
 {
@@ -702,8 +702,8 @@ jstr_rplc_len(char *R *R s,
               size_t *R sz,
               size_t *R cap,
               const char *R find,
-              const char *R rplc,
               const size_t rplc_len,
+              const char *R rplc,
               const size_t find_len)
 JSTR_NOEXCEPT
 {
@@ -722,8 +722,8 @@ jstr_rplc_len_from(char *R *R s,
                    size_t *R cap,
                    const size_t start_idx,
                    const char *R find,
-                   const char *R rplc,
                    const size_t find_len,
+                   const char *R rplc,
                    const size_t rplc_len)
 JSTR_NOEXCEPT
 {
@@ -759,8 +759,8 @@ jstr_rplclast_len(char *R *R s,
                   size_t *R sz,
                   size_t *R cap,
                   const char *R find,
-                  const char *R rplc,
                   const size_t find_len,
+                  const char *R rplc,
                   const size_t rplc_len)
 JSTR_NOEXCEPT
 {
