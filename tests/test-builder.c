@@ -1,4 +1,5 @@
 #define JSTR_DEBUG 1
+#define _FORTIFY_SOURCE 3
 
 #include "../src/jstr-regex.h"
 #include "test.h"
@@ -6,9 +7,9 @@
 #define T_APPEND(ret, fn, ...)                                                                         \
 	do {                                                                                           \
 		TESTING(fn);                                                                           \
-			jstr_debug(&j);                                                                \
 		if (ret != fn(__VA_ARGS__)) {                                                          \
-			fprintf(stderr, "%s", JSTR_STRING(fn) "()");                                   \
+			fprintf(stderr, "%s\n", JSTR_STRING(fn) "()");                                 \
+			jstr_debug(&j);                                                                \
 			jstr_err_exit("");                                                             \
 		}                                                                                      \
 		ASSERT(strcmp(j.data, expected) == 0, j.data, expected);                               \
@@ -46,11 +47,6 @@ main(int argc, char **argv)
 
 	expected = "   ";
 	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, &j.data, &j.size, &j.capacity, "world", strlen("world"), "", strlen(""));
-
-	/* regex_t r; */
-	/* expected = "   "; */
-	/* assert(!jstrre_comp_chk(jstrre_comp(&r, "[0-9A-Za-z]*", 0))); */
-	/* T_APPEND(JSTRRE_RET_NOERROR, jstrre_rplcall_len, &r, &j.data, &j.size, &j.capacity, "", strlen(""), 0); */
 
 	SUCCESS();
 	return 0;
