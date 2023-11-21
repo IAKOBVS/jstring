@@ -263,7 +263,6 @@ jstr_end(const jstr_ty *R j)
 }
 
 /*
-   Do nothing if new_cap < cap.
    Return JSTR_RET_ERR on malloc error.
 */
 JSTR_FUNC
@@ -302,7 +301,6 @@ JSTR_NOEXCEPT
 }
 
 /*
-   Do nothing if new_cap < cap.
    Return JSTR_RET_ERR on malloc error.
 */
 JSTR_FUNC
@@ -347,7 +345,7 @@ jstr_shrink_to_fit(char *R *R s,
                    size_t *R sz,
                    size_t *R cap)
 {
-	PJSTR_RESERVEEXACT(s, sz, cap, *sz, return JSTR_RET_ERR)
+	PJSTR_RESERVEEXACTALWAYS(s, sz, cap, *sz, return JSTR_RET_ERR)
 	return JSTR_RET_SUCC;
 }
 
