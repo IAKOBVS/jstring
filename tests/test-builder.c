@@ -26,6 +26,8 @@ int
 main(int argc, char **argv)
 {
 	const char *expected;
+	const char *find;
+	const char *rplc;
 	expected = "hello world";
 	T_APPEND(JSTR_RET_SUCC, jstr_cat, JSTR_STRUCT(&j), "hello", " ", "world", NULL);
 	expected = "hello world";
@@ -37,15 +39,21 @@ main(int argc, char **argv)
 
 	const char *hello4 = "hello hello hello hello";
 	assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&j), hello4, strlen(hello4)));
+	find = "hello";
+	rplc = "world";
 	expected = "world hello hello hello";
-	T_APPEND(JSTR_RET_SUCC, jstr_rplc_len, JSTR_STRUCT(&j), "hello", strlen("hello"), "world", strlen("world"));
+	T_APPEND(JSTR_RET_SUCC, jstr_rplc_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc));
 
 	assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&j), hello4, strlen(hello4)));
+	find = "hello";
+	rplc = "world";
 	expected = "world world world world";
-	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), "hello", strlen("hello"), "world", strlen("world"));
+	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc));
 
+	find = "world";
+	rplc = "";
 	expected = "   ";
-	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), "world", strlen("world"), "", strlen(""));
+	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc));
 
 	SUCCESS();
 	return 0;
