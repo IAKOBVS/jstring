@@ -276,6 +276,7 @@ JSTR_NOEXCEPT
 	return jstrre_exec_len(preg, s, sz, 0, &rm, eflags | JSTRRE_EF_STARTEND);
 }
 
+JSTR_ATTR_ACCESS((__read_write__, 2, 3))
 JSTR_FUNC_VOID
 static char *
 jstrre_rmn_p(const regex_t *R preg,
@@ -304,6 +305,7 @@ JSTR_NOEXCEPT
 	return (char *)end;
 }
 
+JSTR_ATTR_ACCESS((__read_write__, 2, 3))
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *
@@ -316,6 +318,7 @@ JSTR_NOEXCEPT
 	return jstrre_rmn_p(preg, s, sz, eflags, 1);
 }
 
+JSTR_ATTR_ACCESS((__read_write__, 2, 3))
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *

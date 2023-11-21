@@ -62,13 +62,15 @@ JSTR_NOEXCEPT
   ptr to '\0' in S.
   Assume that S have enough space for SRC.
 */
+JSTR_ATTR_ACCESS((__read_write__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_insert_unsafe(char *R s,
+                   const size_t sz,
                    const size_t at,
                    const char *R src,
-                   const size_t sz,
                    const size_t src_len)
 JSTR_NOEXCEPT
 {
@@ -94,7 +96,7 @@ jstr_insert_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return JSTR_RET_ERR)
-	jstr_insert_unsafe(*s, at, src, *sz, src_len);
+	jstr_insert_unsafe(*s, *sz, at, src, src_len);
 	*sz += src_len;
 	return JSTR_RET_SUCC;
 }
@@ -257,8 +259,9 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_ATTR_INLINE
+JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_RET_NONNULL
+JSTR_ATTR_INLINE
 static char *
 jstr_rmchr_len_p(char *R s,
                  const int c,
@@ -275,8 +278,8 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S;
 */
-JSTR_ATTR_INLINE
 JSTR_FUNC_RET_NONNULL
+JSTR_ATTR_INLINE
 static char *
 jstr_rmchr_p(char *R s,
              const int c)
@@ -391,6 +394,7 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S;
 */
+JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmspn_len_p(char *R s,
@@ -433,6 +437,7 @@ JSTR_NOEXCEPT
   Return value:
   Pointer to '\0' in S.
 */
+JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmnchr_len_p(char *R s,
@@ -1515,6 +1520,7 @@ JSTR_NOEXCEPT
    Return value:
    ptr to '\0' in DST.
 */
+JSTR_ATTR_ACCESS((__read_only__, 2, 4))
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_thousepcpy_len_p(char *R dst,
