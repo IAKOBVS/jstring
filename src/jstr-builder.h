@@ -64,15 +64,19 @@ PJSTR_END_DECLS
 
 #if JSTR_DEBUG || JSTR_PANIC
 #	define PJSTR_EXIT_MAYBE() jstr_err_exit("")
+#	define PJSTR_ERR_MAYBE()  jstr_err("")
 #else
 #	define PJSTR_EXIT_MAYBE() \
 		do {               \
+		} while (0)
+#	define PJSTR_ERR_MAYBE() \
+		do {              \
 		} while (0)
 #endif
 
 #define PJSTR_RESERVE_FAIL(func, s, sz, cap, new_cap, do_on_malloc_err) \
 	if (jstr_chk(func(s, sz, cap, new_cap))) {                      \
-		PJSTR_EXIT_MAYBE();                                     \
+		PJSTR_ERR_MAYBE();                                      \
 		do_on_malloc_err;                                       \
 	}
 
