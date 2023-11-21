@@ -591,7 +591,7 @@ jstr_assignnchr(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (n > *sz) {
-		PJSTR_RESERVE(s, sz, cap, n, return JSTR_RET_ERR)
+		PJSTR_RESERVEALWAYS(s, sz, cap, n, return JSTR_RET_ERR)
 		memset(*s, c, n);
 		*(*s + n) = '\0';
 		*sz = n;
