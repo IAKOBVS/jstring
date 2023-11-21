@@ -441,6 +441,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return ptr to '\0' in S. */
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -620,6 +621,7 @@ JSTR_NOEXCEPT
    JSTR_RET_ERR on malloc error;
    otherwise JSTR_RET_SUCC.
 */
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *

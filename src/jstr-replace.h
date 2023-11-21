@@ -62,7 +62,6 @@ JSTR_NOEXCEPT
   ptr to '\0' in S.
   Assume that S have enough space for SRC.
 */
-JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
@@ -1469,8 +1468,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_thousep_len_p(char *R nptr,
-                   const int separator,
-                   size_t sz)
+                   size_t sz,
+                   const int separator)
 JSTR_NOEXCEPT
 {
 	char *end = nptr + sz;
@@ -1512,7 +1511,7 @@ jstr_thousep_p(char *R nptr,
                const int separator)
 JSTR_NOEXCEPT
 {
-	return jstr_thousep_len_p(nptr, separator, strlen(nptr));
+	return jstr_thousep_len_p(nptr, strlen(nptr), separator);
 }
 
 /*
@@ -1525,8 +1524,8 @@ JSTR_FUNC_RET_NONNULL
 static char *
 jstr_thousepcpy_len_p(char *R dst,
                       const char *R src,
-                      const int separator,
-                      size_t src_len)
+                      size_t src_len,
+                      const int separator)
 JSTR_NOEXCEPT
 {
 	if (*src == '-') {
@@ -1573,7 +1572,7 @@ jstr_thousepcpy_p(char *R dst,
                   const int separator)
 JSTR_NOEXCEPT
 {
-	return jstr_thousepcpy_len_p(dst, src, separator, strlen(src));
+	return jstr_thousepcpy_len_p(dst, src, strlen(src), separator);
 }
 
 PJSTR_END_DECLS
