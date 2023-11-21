@@ -33,7 +33,6 @@ PJSTR_END_DECLS
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const pjstr_foreach_end_##j##_##ptr = ((j)->data) + ((j)->size); \
 	                          ptr < pjstr_foreach_end_##j##_##ptr;                                                       \
 	                          ++ptr)
-
 #define jstr_foreachi(j, i) for (size_t i = 0, const pjstr_foreach_end_##j##_##ptr = ((j)->size); \
 	                         i < pjstr_foreach_end_##j##_##ptr;                               \
 	                         ++i)
