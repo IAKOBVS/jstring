@@ -42,7 +42,7 @@ static void
 pjstr_rplcallinplace(char **dst,
                      const char **oldp,
                      const char **p,
-                     const char *rplc,
+                     const char *R rplc,
                      const size_t rplc_len,
                      const size_t find_len)
 JSTR_NOEXCEPT
