@@ -26,8 +26,8 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
 jstr_memrchr(const void *s,
-             const int c,
-             const size_t sz)
+             int c,
+             size_t sz)
 JSTR_NOEXCEPT
 {
 	const jstr_word_ty *word_ptr;

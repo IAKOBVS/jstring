@@ -36,9 +36,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FN_IMPL(const unsigned char *hs,
-                     const size_t hl,
+                     size_t hl,
                      const unsigned char *ne,
-                     const size_t nl)
+                     size_t nl)
 JSTR_NOEXCEPT
 {
 #if PJSTR_MEMMEM_SHORT_NEEDLE

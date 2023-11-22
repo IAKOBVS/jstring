@@ -27,7 +27,7 @@ JSTR_ATTR_INLINE
 #endif
 static char *
 jstr_strchrnul(const char *s,
-               const int c)
+               int c)
 JSTR_NOEXCEPT
 {
 	uintptr_t s_int = (uintptr_t)s;

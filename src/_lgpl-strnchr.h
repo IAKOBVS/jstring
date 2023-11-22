@@ -34,7 +34,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *s,
-             const int c,
+             int c,
              size_t n)
 JSTR_NOEXCEPT
 {

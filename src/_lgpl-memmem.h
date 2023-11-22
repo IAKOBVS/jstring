@@ -23,9 +23,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FN_SHORT(const unsigned char *hs,
-                      const size_t hl,
+                      size_t hl,
                       const unsigned char *ne,
-                      const size_t nl)
+                      size_t nl)
 JSTR_NOEXCEPT
 {
 	return PJSTR_MEMMEM_FN_IMPL(hs, hl, ne, nl);
@@ -38,9 +38,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NOINLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FN_LONG(const unsigned char *hs,
-                     const size_t hl,
+                     size_t hl,
                      const unsigned char *ne,
-                     const size_t nl)
+                     size_t nl)
 JSTR_NOEXCEPT
 {
 	return PJSTR_MEMMEM_FN_IMPL(hs, hl, ne, nl);
@@ -49,9 +49,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FN(const PJSTR_MEMMEM_RETTYPE hs,
-                const size_t hl,
+                size_t hl,
                 const PJSTR_MEMMEM_RETTYPE ne,
-                const size_t nl)
+                size_t nl)
 {
 	if (jstr_likely(nl < 257))
 		return PJSTR_MEMMEM_FN_SHORT((const unsigned char *)hs, hl, (const unsigned char *)ne, nl);

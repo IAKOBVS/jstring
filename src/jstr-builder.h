@@ -119,7 +119,7 @@ JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static size_t
 pjstr_grow(size_t cap,
-           const size_t new_cap)
+           size_t new_cap)
 JSTR_NOEXCEPT
 {
 	while ((cap *= PJSTR_GROWTH) < new_cap)
@@ -194,7 +194,7 @@ JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static char *
 jstr_at(const jstr_ty *R j,
-        const size_t idx)
+        size_t idx)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(idx <= j->size, "Index out of bounds.");
@@ -312,7 +312,7 @@ static jstr_ret_ty
 jstr_reserveexact_always(char *R *R s,
                          size_t *R sz,
                          size_t *R cap,
-                         const size_t new_cap)
+                         size_t new_cap)
 JSTR_NOEXCEPT
 {
 	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? new_cap + 1 : new_cap * PJSTR_ALLOC_MULTIPLIER);
@@ -333,7 +333,7 @@ static jstr_ret_ty
 jstr_reserveexact(char *R *R s,
                   size_t *R sz,
                   size_t *R cap,
-                  const size_t new_cap)
+                  size_t new_cap)
 JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
@@ -368,7 +368,7 @@ pjstr_cat(char *R *R s,
           size_t *R sz,
           size_t *R cap,
           va_list ap,
-          const size_t arg_len)
+          size_t arg_len)
 JSTR_NOEXCEPT
 {
 	char *p;
@@ -446,9 +446,9 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_append_len_unsafe_p(char *R s,
-                         const size_t sz,
+                         size_t sz,
                          const char *R src,
-                         const size_t src_len)
+                         size_t src_len)
 JSTR_NOEXCEPT
 {
 	return jstr_stpcpy_len(s + sz, src, src_len);
@@ -458,7 +458,7 @@ JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
 jstr_append_unsafe(char *R s,
-                   const size_t sz,
+                   size_t sz,
                    const char *R src)
 JSTR_NOEXCEPT
 {
@@ -470,7 +470,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_append_unsafe_p(char *R s,
-                     const size_t sz,
+                     size_t sz,
                      const char *R src)
 JSTR_NOEXCEPT
 {
@@ -490,7 +490,7 @@ jstr_append_len(char *R *R s,
                 size_t *R sz,
                 size_t *R cap,
                 const char *R src,
-                const size_t src_len)
+                size_t src_len)
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return JSTR_RET_ERR)
@@ -502,7 +502,7 @@ JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
 jstr_strset(char *R s,
-            const int c)
+            int c)
 JSTR_NOEXCEPT
 {
 	const size_t len = strlen(s);
@@ -513,9 +513,9 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_assignnchr_unsafe_p(char *R s,
-                         const size_t sz,
-                         const int c,
-                         const size_t n)
+                         size_t sz,
+                         int c,
+                         size_t n)
 JSTR_NOEXCEPT
 {
 	memset(s, c, n);
@@ -532,8 +532,8 @@ static jstr_ret_ty
 jstr_assignnchr(char *R *R s,
                 size_t *R sz,
                 size_t *R cap,
-                const int c,
-                const size_t n)
+                int c,
+                size_t n)
 JSTR_NOEXCEPT
 {
 	if (n > *sz) {
@@ -552,9 +552,9 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_pushbackn_len_unsafe_p(char *R s,
-                            const size_t sz,
-                            const int c,
-                            const size_t n)
+                            size_t sz,
+                            int c,
+                            size_t n)
 JSTR_NOEXCEPT
 {
 	return (char *)memset(s + sz, c, n) + n;
@@ -569,8 +569,8 @@ static jstr_ret_ty
 jstr_pushbackn(char *R *R s,
                size_t *R sz,
                size_t *R cap,
-               const int c,
-               const size_t n)
+               int c,
+               size_t n)
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + n, return JSTR_RET_ERR)
@@ -585,9 +585,9 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_pushfrontn_len_unsafe_p(char *R s,
-                             const size_t sz,
-                             const int c,
-                             const size_t n)
+                             size_t sz,
+                             int c,
+                             size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0))
@@ -606,8 +606,8 @@ static jstr_ret_ty
 jstr_pushfrontn(char *R *R s,
                 size_t *R sz,
                 size_t *R cap,
-                const int c,
-                const size_t n)
+                int c,
+                size_t n)
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + n, return JSTR_RET_ERR)
@@ -626,9 +626,9 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_prepend_len_unsafe_p(char *R s,
-                          const size_t sz,
+                          size_t sz,
                           const char *R src,
-                          const size_t src_len)
+                          size_t src_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s != 0))
@@ -652,7 +652,7 @@ jstr_prepend_len(char *R *R s,
                  size_t *R sz,
                  size_t *R cap,
                  const char *R src,
-                 const size_t src_len)
+                 size_t src_len)
 JSTR_NOEXCEPT
 {
 	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return JSTR_RET_ERR)
@@ -670,7 +670,7 @@ JSTR_ATTR_INLINE
 static char *
 jstr_assign_len_unsafe_p(char *R s,
                          const char *R src,
-                         const size_t src_len)
+                         size_t src_len)
 JSTR_NOEXCEPT
 {
 	return jstr_stpcpy_len(s, src, src_len);
@@ -702,8 +702,8 @@ JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static char *
 jstr_pushback_unsafe_p(char *R s,
-                       const size_t sz,
-                       const char c)
+                       size_t sz,
+                       char c)
 JSTR_NOEXCEPT
 {
 	*(s + sz) = c;
@@ -724,7 +724,7 @@ static jstr_ret_ty
 jstr_pushback(char *R *R s,
               size_t *R sz,
               size_t *R cap,
-              const char c)
+              char c)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
@@ -737,8 +737,8 @@ JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *
 jstr_pushfront_unsafe_p(char *R s,
-                        const size_t sz,
-                        const char c)
+                        size_t sz,
+                        char c)
 JSTR_NOEXCEPT
 {
 	jstr_strmove_len(s + 1, s, sz);
@@ -759,7 +759,7 @@ static jstr_ret_ty
 jstr_pushfront(char *R *R s,
                size_t *R sz,
                size_t *R cap,
-               const char c)
+               char c)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
@@ -773,7 +773,7 @@ JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *
 jstr_popback_p(char *R s,
-               const size_t sz)
+               size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0)) {
@@ -788,7 +788,7 @@ JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *
 jstr_popfront_p(char *R s,
-                const size_t sz)
+                size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0)) {
@@ -802,7 +802,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstrio_fwrite(const char *R s,
-              const size_t sz,
+              size_t sz,
               FILE *R fp)
 JSTR_NOEXCEPT
 {
@@ -813,7 +813,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstrio_fwriteln(const char *R s,
-                const size_t sz,
+                size_t sz,
                 FILE *R fp)
 JSTR_NOEXCEPT
 {
@@ -1253,7 +1253,7 @@ static jstr_ret_ty
 jstr_asprintf_from(char *R *R s,
                    size_t *R sz,
                    size_t *R cap,
-                   const size_t start_idx,
+                   size_t start_idx,
                    const char *R fmt,
                    ...)
 JSTR_NOEXCEPT
@@ -1289,7 +1289,7 @@ JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_asprintf_from_j(jstr_ty *R j,
-                     const size_t start_idx,
+                     size_t start_idx,
                      const char *R fmt,
                      ...)
 JSTR_NOEXCEPT
@@ -1380,7 +1380,7 @@ static jstr_ret_ty
 jstr_sprintf_from(char *R *R s,
                   size_t *R sz,
                   size_t *R cap,
-                  const size_t start_idx,
+                  size_t start_idx,
                   const char *R fmt,
                   ...)
 JSTR_NOEXCEPT
@@ -1407,7 +1407,7 @@ JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_sprintf_from_j(jstr_ty *R j,
-                    const size_t start_idx,
+                    size_t start_idx,
                     const char *R fmt,
                     ...)
 JSTR_NOEXCEPT

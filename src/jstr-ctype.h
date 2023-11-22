@@ -26,7 +26,7 @@ PJSTR_BEGIN_DECLS
 JSTR_ATTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_toupper(const int c)
+jstr_toupper(int c)
 JSTR_NOEXCEPT
 {
 	return pjstr_ctype_toupper[(unsigned char)c];
@@ -40,7 +40,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_tolower(const int c)
+jstr_tolower(int c)
 JSTR_NOEXCEPT
 {
 	return pjstr_ctype_tolower[(unsigned char)c];
@@ -67,7 +67,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_INLINE
 JSTR_FUNC_CONST
 static int
-jstr_isctype(const int c,
+jstr_isctype(int c,
              const jstr_ctype_ty type)
 JSTR_NOEXCEPT
 {
@@ -79,7 +79,7 @@ JSTR_NOEXCEPT
 	JSTR_ATTR_INLINE                            \
 	JSTR_FUNC_CONST                             \
 	static int                                  \
-	jstr_is##ctype(const int c)                 \
+	jstr_is##ctype(int c)                 \
 	JSTR_NOEXCEPT                               \
 	{                                           \
 		return jstr_isctype(c, ctype_enum); \
