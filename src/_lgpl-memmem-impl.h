@@ -58,6 +58,7 @@ JSTR_NOEXCEPT
 	const size_t m1 = nl - 1;
 	size_t off = 0;
 	arr_ty shift[256];
+	size_t shift1;
 	JSTR_BZERO_ARRAY(shift);
 	for (idx_ty i = 1; i < (idx_ty)m1; ++i) {
 		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
@@ -67,7 +68,7 @@ JSTR_NOEXCEPT
 		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, jstr_tolower)] = i;
 #endif
 	}
-	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
+	shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
 #if PJSTR_MEMMEM_HASH2_ICASE
 	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, )] = m1;

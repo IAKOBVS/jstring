@@ -38,18 +38,26 @@ jstr_strnchr(const char *s,
              size_t n)
 JSTR_NOEXCEPT
 {
+	const jstr_word_ty *word_ptr;
+	uintptr_t s_int;
+	jstr_word_ty word;
+	jstr_word_ty repeated_c;
+	const char *lbyte;
+	const jstr_word_ty *lword;
+	char *ret;
+	jstr_word_ty mask;
 	if (jstr_unlikely(n == 0)
 	    || jstr_unlikely(*s == '\0'))
 		return NULL;
-	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	uintptr_t s_int = (uintptr_t)s;
-	jstr_word_ty word = jstr_word_toword(word_ptr);
-	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	const char *const lbyte = pjstr_sadd(s_int, n - 1);
-	const jstr_word_ty *const lword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
-	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
+	word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	s_int = (uintptr_t)s;
+	word = jstr_word_toword(word_ptr);
+	repeated_c = jstr_word_repeat_bytes(c);
+	lbyte = pjstr_sadd(s_int, n - 1);
+	lword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
+	mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
-		char *ret = (char *)s + jstr_word_index_first(mask);
+		ret = (char *)s + jstr_word_index_first(mask);
 		return (ret <= lbyte && *ret) ? ret : NULL;
 	}
 	if (word_ptr == lword)
@@ -57,12 +65,12 @@ JSTR_NOEXCEPT
 	word = jstr_word_toword(++word_ptr);
 	for (; word_ptr != lword; word = jstr_word_toword(++word_ptr)) {
 		if (jstr_word_has_zero_eq(word, repeated_c)) {
-			char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
+			ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
 			return *ret ? ret : NULL;
 		}
 	}
 	if (jstr_word_has_zero_eq(word, repeated_c)) {
-		char *ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
+		ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
 		if (ret <= lbyte && *ret)
 			return ret;
 	}

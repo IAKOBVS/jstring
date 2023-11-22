@@ -130,11 +130,11 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
-	if (jstr_unlikely(n == 0))
-		return 0;
+	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	int ret;
+	if (jstr_unlikely(n == 0))
+		return 0;
 	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++))
 	       && *p1++
 	       && n--)
@@ -162,10 +162,10 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
-	if (jstr_unlikely(n == 0))
-		return 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
+	if (jstr_unlikely(n == 0))
+		return 0;
 	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n)
 		;
 	return *p1 && n;
@@ -192,11 +192,11 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
-	if (jstr_unlikely(n == 0))
-		return 0;
+	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	int ret;
+	if (jstr_unlikely(n == 0))
+		return 0;
 	while (!(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++))
 	       && n--)
 		;
@@ -224,10 +224,10 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
-	if (jstr_unlikely(n == 0))
-		return 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
+	if (jstr_unlikely(n == 0))
+		return 0;
 	for (; jstr_tolower(*p1++) == jstr_tolower(*p2++) && n; --n)
 		;
 	return n;
@@ -526,9 +526,11 @@ jstr_strnstr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	size_t ne_len;
+	size_t hs_len;
+	const char *start = hs;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
-	const char *start = hs;
 	hs = jstr_strnchr(hs, *ne, n);
 	n -= hs - start;
 	if (hs == NULL || ne[1] == '\0')
@@ -546,10 +548,10 @@ JSTR_NOEXCEPT
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
 #if JSTR_USE_LGPL
-	const size_t ne_len = strlen(ne);
+	ne_len = strlen(ne);
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
-	size_t hs_len = jstr_strnlen(hs, ne_len);
+	hs_len = jstr_strnlen(hs, ne_len);
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (!memcmp(hs, ne, ne_len))
@@ -582,17 +584,20 @@ jstr_strrstr_len(const void *hs,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	const unsigned char *h;
+	const unsigned char *start;
+	const unsigned char *n;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	const unsigned char *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
+	h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
 	if (h == NULL || ne_len == 1)
 		return (char *)h;
 	if (JSTR_PTR_DIFF(h + 1, (const u *)hs) < ne_len)
 		return NULL;
-	const unsigned char *const start = (const u *)hs;
-	const unsigned char *const n = (const u *)ne;
+	start = (const u *)hs;
+	n = (const u *)ne;
 	if (ne_len == 2) {
 		const uint16_t nw = (uint16_t)n[1] << 8 | n[0];
 		uint16_t hw = (uint16_t)h[0] << 8 | h[-1];
@@ -615,9 +620,11 @@ JSTR_NOEXCEPT
 		if (hw == nw)
 			return (char *)h;
 	} else {
+		uint32_t nw;
+		uint32_t hw;
 		h -= ne_len - 4;
-		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
-		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
+		nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
+		hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
 		for (h -= 3; h >= start; hw = hw << 8 | *--h)
 			if (hw == nw && !memcmp(h, n, ne_len))
 				return (char *)h;
@@ -774,8 +781,8 @@ pjstr_strcasechr_generic(const char *s,
                          int c)
 JSTR_NOEXCEPT
 {
-	c = jstr_tolower(c);
 	const unsigned char *p = (unsigned char *)s;
+	c = jstr_tolower(c);
 	for (; *p && jstr_tolower(*p) != c; ++p)
 		;
 	return *p ? (char *)p : NULL;
@@ -790,8 +797,8 @@ jstr_memcasechr(const void *s,
                 size_t n)
 JSTR_NOEXCEPT
 {
-	c = jstr_tolower(c);
 	const unsigned char *p = (unsigned char *)s;
+	c = jstr_tolower(c);
 	for (; n-- && jstr_tolower(*p) != c; ++p)
 		;
 	return n ? (void *)p : NULL;
@@ -808,10 +815,13 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCSPN_OPTIMIZED
 	if (n > JSTR_STRCASECHR_THRES * 2) {
+		char a[3];
 		c = jstr_tolower(c);
 		if (jstr_tolower(*s) == c)
 			return (char *)s;
-		const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0' };
+		a[0] = (char)c;
+		a[1] = (char)(c - 'a' + 'A');
+		a[2] = '\0';
 		s += strcspn(s, a);
 		return *s ? (char *)s : NULL;
 	}
