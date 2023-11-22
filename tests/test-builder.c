@@ -1,4 +1,5 @@
 #define JSTR_DEBUG 1
+#define JSTR_PANIC 1
 
 #include "../src/jstr-regex.h"
 #include "test.h"
@@ -18,7 +19,9 @@
 		jstr_free_j(&j);                                                                       \
 	} while (0)
 
-jstr_ty j = { 0 };
+#define FILL(j, str) assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&(j)), str, strlen(str)))
+
+jstr_ty j = JSTR_INIT;
 
 char buf[4096] = { 0 };
 
@@ -28,6 +31,7 @@ main(int argc, char **argv)
 	const char *expected;
 	const char *find;
 	const char *rplc;
+	regex_t preg;
 	expected = "hello world";
 	T_APPEND(JSTR_RET_SUCC, jstr_cat, JSTR_STRUCT(&j), "hello", " ", "world", NULL);
 	expected = "hello world";
@@ -36,30 +40,38 @@ main(int argc, char **argv)
 	T_APPEND(JSTR_RET_SUCC, jstr_prepend_len, JSTR_STRUCT(&j), expected, strlen(expected));
 	expected = "hello world";
 	T_APPEND(JSTR_RET_SUCC, jstr_assign_len, JSTR_STRUCT(&j), expected, strlen(expected));
-
-	const char *hello4 = "hello hello hello hello";
-	assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&j), hello4, strlen(hello4)));
+	FILL(j, "hello hello hello hello");
 	find = "hello";
 	rplc = "world";
 	expected = "world hello hello hello";
 	T_APPEND(JSTR_RET_SUCC, jstr_rplc_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc));
-
-/* 	assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&j), hello4, strlen(hello4))); */
-/* 	find = "hello"; */
-/* 	rplc = "world"; */
-/* 	expected = "world world world world"; */
-/* 	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc)); */
-
-	find = "world";
-	rplc = "";
-	expected = " world world world";
-	T_APPEND(JSTR_RET_SUCC, jstr_rplc_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc));
-
-	find = "world";
+	FILL(j, "hello hello hello hello");
+	find = "hello";
+	rplc = "world";
+	expected = "world world world world";
+	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc));
+	FILL(j, "hello hello hello hello");
+	find = "hello";
 	rplc = "";
 	expected = "   ";
 	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc));
-
+	FILL(j, "hello hello hello hello");
+	find = "hello";
+	rplc = "";
+	expected = "   ";
+	T_APPEND(JSTR_RET_SUCC, jstr_rplcall_len, JSTR_STRUCT(&j), find, strlen(find), rplc, strlen(rplc));
+	FILL(j, "hello hello hello hello");
+	find = "[0-9A-Za-z]*";
+	rplc = "";
+	expected = "   ";
+	assert(!jstrre_comp_chk(jstrre_comp(&preg, find, 0)));
+	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0);
+	FILL(j, "hello hello hello hello");
+	find = "\\([0-9A-Za-z]*\\)";
+	rplc = "\\1\\2";
+	expected = "hellohello hellohello hellohello hellohello";
+	assert(!jstrre_comp_chk(jstrre_comp(&preg, find, 0)));
+	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0, 3);
 	SUCCESS();
 	return 0;
 }

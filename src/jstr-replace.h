@@ -1519,7 +1519,7 @@ JSTR_NOEXCEPT
    Return value:
    ptr to '\0' in DST.
 */
-JSTR_ATTR_ACCESS((__read_only__, 2, 4))
+JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_thousepcpy_len_p(char *R dst,

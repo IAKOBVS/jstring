@@ -9,9 +9,9 @@ for header in $(echo *.c); do
 		cc "$header" -o "$basename"
 		./"$basename"
 	} &
-	{
-		cc "$header" -o "$basename"_nolgpl -DJSTR_USE_LGPL=0
-		./"$basename"_nolgpl
-	} &
+	# {
+	# 	cc "$header" -o "$basename"_nolgpl -DJSTR_USE_LGPL=0
+	# 	./"$basename"_nolgpl
+	# } &
 done
 wait

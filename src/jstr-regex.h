@@ -376,7 +376,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 	if (*dst != *oldp)
 		memmove(*dst, *oldp, *p - *oldp);
 	if (*cap <= *sz + rplc_len - find_len) {
-		const char *tmp = *s;
+		const char *const tmp = *s;
 		PJSTR_RESERVE_ALWAYS(s, sz, cap, *sz + rplc_len - find_len, return JSTR_RET_ERR)
 		*p = *s + (*p - tmp);
 		*dst = *s + (*dst - tmp);
@@ -547,6 +547,8 @@ JSTR_NOEXCEPT
 	for (;; ++rplc) {
 		rold = rplc;
 		rplc = (const char *)memchr(rplc, '\\', rplc_e - rplc);
+		if (rplc == NULL)
+			break;
 		if (jstr_likely(jstr_isdigit(*++rplc))) {
 			if (jstr_likely(rplc != rold)) {
 				rdst = (char *)jstr_mempmove(rdst, rold, (rplc - 1) - rold);
@@ -561,7 +563,7 @@ JSTR_NOEXCEPT
 			rdst += 2;
 		}
 	}
-	if (jstr_unlikely(rplc == NULL))
+	if (rdst != rold)
 		memcpy(rdst, rold, rplc_e - rold);
 }
 
@@ -614,6 +616,7 @@ JSTR_NOEXCEPT
 			}
 		pjstrre_brefrplccreat(p, rm, rdstp, rplc, rplc_len);
 		p += rm[0].rm_so;
+		find_len = rm[0].rm_eo - rm[0].rm_so;
 		if (rdst_len <= find_len)
 			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rdstp, rdst_len, find_len);
 		else if (*cap > *sz + rdst_len - find_len)
