@@ -168,10 +168,19 @@ JSTR_NOEXCEPT
 	ret = fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
-	ret = fprintf(stderr, "strlen():%zu\n", strlen(j->data));
+	const char *data;
+	size_t size;
+	if (jstr_likely(j->data != NULL)) {
+		data = j->data;
+		size = strlen(data);
+	} else {
+		data = "(null)";
+		size = 0;
+	}
+	ret = fprintf(stderr, "strlen():%zu\n", size);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
-	ret = fprintf(stderr, "data puts():%s\n", j->data);
+	ret = fprintf(stderr, "data puts():%s\n", data);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
 	ret = fputs("data:", stderr);

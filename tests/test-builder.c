@@ -16,7 +16,8 @@
 		ASSERT(j.size == strlen(expected), j.data, expected);                                  \
 		ASSERT(memcmp(j.data, expected, j.size) == 0, j.data, expected);                       \
 		ASSERT(strlen(expected) != 0 && j.size != 0 && j.capacity > j.size, j.data, expected); \
-		jstr_free_j(&j);                                                                       \
+		j.size = 0;                                                                            \
+		*j.data = '\0';                                                                        \
 	} while (0)
 
 #define FILL(j, str) assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&(j)), str, strlen(str)))
@@ -72,6 +73,7 @@ main(int argc, char **argv)
 	expected = "hellohello hellohello hellohello hellohello";
 	assert(!jstrre_comp_chk(jstrre_comp(&preg, find, 0)));
 	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0, 3);
+	jstr_free_j(&j);
 	SUCCESS();
 	return 0;
 }
