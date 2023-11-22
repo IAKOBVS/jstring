@@ -79,7 +79,7 @@ JSTR_NOEXCEPT
 	JSTR_ATTR_INLINE                            \
 	JSTR_FUNC_CONST                             \
 	static int                                  \
-	jstr_is##ctype(int c)                 \
+	jstr_is##ctype(int c)                       \
 	JSTR_NOEXCEPT                               \
 	{                                           \
 		return jstr_isctype(c, ctype_enum); \

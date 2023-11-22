@@ -444,7 +444,7 @@ jstrl_assign_len(jstrlist_ty *R l,
 	static jstr_ty *                                      \
 	jstrl_##name(const jstrlist_ty *R l,                  \
 	             const char *R s,                         \
-	             size_t s_len)                      \
+	             size_t s_len)                            \
 	JSTR_NOEXCEPT                                         \
 	{                                                     \
 		jstrl_foreach (l, j)                          \
@@ -541,7 +541,7 @@ JSTR_NOEXCEPT
 	static void                          \
 	jstrl_##name(jstrlist_ty *R l,       \
 	             const char *R s,        \
-	             size_t s_len)     \
+	             size_t s_len)           \
 	JSTR_NOEXCEPT                        \
 	{                                    \
 		pjstrl_delete(l, func);      \

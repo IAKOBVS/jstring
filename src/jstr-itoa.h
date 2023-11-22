@@ -222,7 +222,7 @@ JSTR_NOEXCEPT
 	jstr_##name##_thousep_p(type number,                                    \
 	                        char *R buf,                                    \
 	                        const unsigned int base,                        \
-	                        int separator)                            \
+	                        int separator)                                  \
 	JSTR_NOEXCEPT                                                           \
 	{                                                                       \
 		return jstr_##u##lltoa_thousep_p(number, buf, base, separator); \
@@ -286,7 +286,7 @@ PJSTR_DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 	            size_t *R cap,                                                                                  \
 	            T number,                                                                                       \
 	            const unsigned int base,                                                                        \
-	            int separator)                                                                            \
+	            int separator)                                                                                  \
 	{                                                                                                           \
 		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base), return JSTR_RET_ERR); \
 		*sz = jstr_##name##_p(number, *s + *sz, base, separator) - *s;                                      \
@@ -308,7 +308,7 @@ PJSTR_DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 	            size_t *R cap,                                                                                                              \
 	            T number,                                                                                                                   \
 	            const unsigned int base,                                                                                                    \
-	            int separator)                                                                                                        \
+	            int separator)                                                                                                              \
 	{                                                                                                                                       \
 		PJSTR_RESERVE(s, sz, cap, *sz + pjstr_itoa_countudigits_##fn_name((number < 0) ? -number : number, base), return JSTR_RET_ERR); \
 		*sz = jstr_##name##_p(number, *s + *sz, base, separator) - *s;                                                                  \
