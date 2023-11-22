@@ -354,7 +354,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_MEMCCPY
 	return memccpy(dst, src, c, sz);
 #else
-	char *p = (char *)memchr(src, c, sz);
+	const char *const p = (char *)memchr(src, c, sz);
 	if (p != NULL)
 		return jstr_stpcpy_len(dst, src, p - (char *)src);
 	memcpy(dst, src, sz);
@@ -377,21 +377,6 @@ JSTR_NOEXCEPT
 	return jstr_stpcpy(dst, src);
 }
 
-/*
-   Return ptr to '\0' in *s.
-*/
-JSTR_ATTR_MALLOC
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static char *
-jstr_strdup_p(const char *R *R s)
-JSTR_NOEXCEPT
-{
-	size_t sz = strlen(*s);
-	char *const p = (char *)malloc(sz + 1);
-	return (jstr_likely(p != NULL)) ? jstr_stpcpy_len(p, *s, sz) : NULL;
-}
-
 JSTR_ATTR_MALLOC
 JSTR_FUNC
 JSTR_ATTR_INLINE
@@ -400,12 +385,8 @@ jstr_memdup(const void *R s,
             size_t sz)
 JSTR_NOEXCEPT
 {
-	void *p = (char *)malloc(sz);
-	if (jstr_likely(p != NULL)) {
-		memcpy(p, s, sz);
-		return p;
-	}
-	return NULL;
+	void *p = malloc(sz);
+	return (jstr_likely(p != NULL)) ? memcpy(p, s, sz) : NULL;
 }
 
 JSTR_ATTR_MALLOC

@@ -813,7 +813,7 @@ JSTR_NOEXCEPT
 		c = jstr_tolower(c);
 		if (jstr_tolower(*s) == c)
 			return (char *)s;
-		const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0'};
+		const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0' };
 		s += strcspn(s, a);
 		return *s ? (char *)s : NULL;
 	}
