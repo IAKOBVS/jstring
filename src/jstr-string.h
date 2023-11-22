@@ -526,11 +526,9 @@ jstr_strnstr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	size_t ne_len;
-	size_t hs_len;
-	const char *start = hs;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
+	const char *const start = hs;
 	hs = jstr_strnchr(hs, *ne, n);
 	n -= hs - start;
 	if (hs == NULL || ne[1] == '\0')
@@ -548,10 +546,10 @@ JSTR_NOEXCEPT
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
 #if JSTR_USE_LGPL
-	ne_len = strlen(ne);
+	size_t ne_len = strlen(ne);
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
-	hs_len = jstr_strnlen(hs, ne_len);
+	size_t hs_len = jstr_strnlen(hs, ne_len);
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (!memcmp(hs, ne, ne_len))
@@ -584,20 +582,17 @@ jstr_strrstr_len(const void *hs,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
-	const unsigned char *h;
-	const unsigned char *start;
-	const unsigned char *n;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
+	const unsigned char *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
 	if (h == NULL || ne_len == 1)
 		return (char *)h;
 	if (JSTR_PTR_DIFF(h + 1, (const u *)hs) < ne_len)
 		return NULL;
-	start = (const u *)hs;
-	n = (const u *)ne;
+	const unsigned char *const start = (const u *)hs;
+	const unsigned char *const n = (const u *)ne;
 	if (ne_len == 2) {
 		const uint16_t nw = (uint16_t)n[1] << 8 | n[0];
 		uint16_t hw = (uint16_t)h[0] << 8 | h[-1];
@@ -815,13 +810,10 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCSPN_OPTIMIZED
 	if (n > JSTR_STRCASECHR_THRES * 2) {
-		char a[3];
 		c = jstr_tolower(c);
 		if (jstr_tolower(*s) == c)
 			return (char *)s;
-		a[0] = (char)c;
-		a[1] = (char)(c - 'a' + 'A');
-		a[2] = '\0';
+		const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0'};
 		s += strcspn(s, a);
 		return *s ? (char *)s : NULL;
 	}
