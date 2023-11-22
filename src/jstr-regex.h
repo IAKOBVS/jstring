@@ -524,11 +524,16 @@ JSTR_NOEXCEPT
 {
 	const char *const rplc_e = rplc + rplc_len;
 	int has_bref = 0;
-	for (; (rplc = (char *)memchr(rplc, '\\', rplc_e - rplc)); ++rplc, has_bref = 1)
-		if (jstr_likely(jstr_isdigit(*++rplc)))
-			rplc_len += (rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so) - 2;
-		else if (jstr_unlikely(*rplc == '\0'))
+	int c;
+	for (; (rplc = (char *)memchr(rplc, '\\', rplc_e - rplc)); ++rplc, has_bref = 1) {
+		c = *++rplc;
+		if (jstr_likely(jstr_isdigit(c))) {
+			c -= '0';
+			rplc_len += (rm[c].rm_eo - rm[c].rm_so) - 2;
+		} else if (jstr_unlikely(*rplc == '\0')) {
 			break;
+		}
+	}
 	return has_bref ? rplc_len : 0;
 }
 
