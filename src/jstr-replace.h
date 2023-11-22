@@ -706,9 +706,9 @@ jstr_rplc_len(char *R *R s,
               size_t *R sz,
               size_t *R cap,
               const char *R find,
-              const size_t rplc_len,
+              const size_t find_len,
               const char *R rplc,
-              const size_t find_len)
+              const size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	return pjstr_rplc_len(s, sz, cap, 0, find, find_len, rplc, rplc_len);
