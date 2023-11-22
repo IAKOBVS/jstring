@@ -544,17 +544,20 @@ JSTR_NOEXCEPT
 {
 	const char *rold;
 	const char *const rplc_e = rplc + rplc_len;
+	int c;
 	for (;; ++rplc) {
 		rold = rplc;
 		rplc = (const char *)memchr(rplc, '\\', rplc_e - rplc);
 		if (rplc == NULL)
 			break;
-		if (jstr_likely(jstr_isdigit(*++rplc))) {
-			if (jstr_likely(rplc != rold)) {
+		c = *++rplc;
+		if (jstr_likely(jstr_isdigit(c))) {
+			if (jstr_likely(rdst == rold)) {
 				rdst = (char *)jstr_mempmove(rdst, rold, (rplc - 1) - rold);
 				rplc += (rplc - 1) - rold - 1;
 			}
-			rdst = (char *)jstr_mempcpy(rdst, mtc + rm[*rplc - '0'].rm_so, rm[*rplc - '0'].rm_eo - rm[*rplc - '0'].rm_so);
+			c -= '0';
+			rdst = (char *)jstr_mempcpy(rdst, mtc + rm[c].rm_so, rm[c].rm_eo - rm[c].rm_so);
 		} else if (jstr_unlikely(*rplc == '\0')) {
 			break;
 		} else {
@@ -587,7 +590,7 @@ JSTR_NOEXCEPT
 		return JSTRRE_RET_NOERROR;
 	}
 	char *dst = p;
-	const char *oldp = p;
+	const char *oldp = (const char *)p;
 	regmatch_t rm[10];
 	size_t rdst_len;
 	size_t rdst_cap = 0;
