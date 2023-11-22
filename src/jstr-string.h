@@ -1660,7 +1660,7 @@ jstr_count_len(const char *s,
                size_t find_len)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(find_len == 1))
+	if (find_len == 1)
 		return jstr_countchr_len(s, *find, sz);
 	if (jstr_unlikely(find_len == 0))
 		return 0;
