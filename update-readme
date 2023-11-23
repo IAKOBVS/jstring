@@ -1,2 +1,2 @@
 #!/bin/sh
-./updatereadme.awk README> README.md
+./update-readme.awk README> README.md
