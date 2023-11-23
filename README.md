@@ -1,4 +1,4 @@
-# jstring
+# jstring<br>
 
 ## Features:
 - works with any string type: functions will take a pointer to string, size, and capacity.<br>
@@ -33,8 +33,8 @@ jstr_ty j = JSTR_INIT;
 ```
 
 ## Error handling:
-JSTR\_ERR is returned as error. The programmer is expected to check the return value of every function call.<br>
-When a memory error is encountered, all related resources will be freed by the function in which that error occured.<br>
+JSTR\_ERR is returned as error. The programmer is expected to check the return value and handle the error.<br>
+When a memory error is encountered, all related resources will be freed by the function in which the error occured.<br>
 Use jstr\_err\(\) to print the error message or jstr\_err\_exit() to also exit.<br>
 When debugging, you may want to define JSTR\_PANIC as 1 to automatically call jstr\_err\_exit() on errors.<br>
 
