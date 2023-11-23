@@ -7,6 +7,7 @@
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
+#include "jstr-replace.h"
 #include "jstr-string.h"
 
 #define R JSTR_RESTRICT
@@ -596,6 +597,24 @@ jstrl_deletestrcasechr(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	pjstrl_delete(l, jstrl_findstrcasechr(l, c));
+}
+
+JSTR_FUNC
+static jstr_ret_ty
+jstrl_split_len(jstrlist_ty *R l,
+            const jstr_ty *R j,
+            const char *split,
+	    size_t split_len)
+{
+	const char *save = j->data;
+	const char *end = j->data + j->size;
+	const char *tok;
+	while ((tok = jstr_strtok_ne_len(&save, end, split, split_len)))
+		if (jstr_unlikely(JSTR_RET_ERR == jstrl_pushback_len(l, tok, save - tok - split_len)))
+			goto err;
+err:
+	jstrl_free(l);
+	return JSTR_RET_ERR;
 }
 
 PJSTR_END_DECLS

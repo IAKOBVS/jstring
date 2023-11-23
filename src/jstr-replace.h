@@ -1312,17 +1312,11 @@ jstr_strtok_ne_len(const char *R *R const save_ptr,
 JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
-	if (jstr_unlikely(*s == '\0')) {
-		*save_ptr = s;
+	if (jstr_unlikely(*s == '\0'))
 		return NULL;
-	}
-	if (!strncmp(s, ne, ne_len))
-		s += ne_len;
-	if (jstr_unlikely(*s == '\0')) {
-		*save_ptr = s;
-		return NULL;
-	}
 	*save_ptr = jstr_strstrnul_len(s, end - s, ne, ne_len);
+	if (jstr_likely(**save_ptr != '\0'))
+		*save_ptr += ne_len;
 	return (char *)s;
 }
 
@@ -1337,18 +1331,11 @@ jstr_strtok_ne(const char *R *R const save_ptr,
 JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
-	if (jstr_unlikely(*s == '\0')) {
-		*save_ptr = s;
+	if (jstr_unlikely(*s == '\0'))
 		return NULL;
-	}
-	const size_t ne_len = strlen(ne);
-	if (!strncmp(s, ne, ne_len))
-		s += ne_len;
-	if (jstr_unlikely(*s == '\0')) {
-		*save_ptr = s;
-		return NULL;
-	}
 	*save_ptr = jstr_strstrnul(s, ne);
+	if (jstr_likely(**save_ptr != '\0'))
+		*save_ptr += strlen(ne);
 	return (char *)s;
 }
 
@@ -1363,10 +1350,8 @@ jstr_strtok(const char *R *R save_ptr,
 JSTR_NOEXCEPT
 {
 	const char *s = *save_ptr;
-	if (jstr_unlikely(*s == '\0')) {
-		*save_ptr = s;
+	if (jstr_unlikely(*s == '\0'))
 		return NULL;
-	}
 	s += strspn(s, delim);
 	if (jstr_unlikely(*s == '\0')) {
 		*save_ptr = s;

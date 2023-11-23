@@ -1269,6 +1269,7 @@ PJSTR_END_DECLS
 #	endif
 #endif /* DIRENT_HAVE */
 
+/* Check optimizations. */
 #ifdef __GLIBC__
 #	if JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
 #		define JSTR_HAVE_MEMMEM_OPTIMIZED 1
