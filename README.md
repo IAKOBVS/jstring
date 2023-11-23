@@ -43,7 +43,7 @@ When debugging, you may want to define JSTR\_PANIC as 1 to automatically call js
 The index passed by the user is assumed to be not out of bounds.<br>
 - \*\_bref(): enable backreferences for the replacement string.<br>
 \\0 is interpreted as referring to the whole matched string<br>
-- *namespace*[Pp]\_\_\*(): private functions or macros used internally<br>
+- [Pp]namespace\_\*(): private functions or macros used internally<br>
 
 ## Scripts:
 - build: generate functions<br>
