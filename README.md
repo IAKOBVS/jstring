@@ -1,4 +1,4 @@
-# jstring<br>
+# jstring
 
 ## Features:
 - works with any string type: functions will take a pointer to string, size, and capacity.<br>
