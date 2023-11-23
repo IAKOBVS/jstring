@@ -38,7 +38,7 @@ When a memory error is encountered, all related resources will be freed by the f
 Use jstr_err() to print the error message or jstr_err_exit() to also exit.
 When debugging, you may want to define JSTR_PANIC as 1 to automatically call jstr_err_exit() on errors.
 
--- Function affixes: 
+-- Function affixes:
 - *_mem*(): the string need not be nul-terminated.
 - *_len(): take the length of the string.
 - *str*_len(): the string must be nul-termimated. The size is only used to save a strlen().
