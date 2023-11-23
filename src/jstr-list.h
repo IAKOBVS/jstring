@@ -314,15 +314,11 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
                            const char *R s,
                            size_t s_len)
 {
+	jstr_ty *const lp = l->data;
 	if (jstr_likely(l->size))
-		pjstrl_memmove(l->data + 1, l->data, l->size * sizeof(*l->data));
+		pjstrl_memmove(lp + 1, lp, l->size * sizeof(*lp));
 	++l->size;
-	if (jstr_chk(pjstrl_assign_len(
-	    &l->data->data,
-	    &l->data->size,
-	    &l->data->capacity,
-	    s,
-	    s_len)))
+	if (jstr_chk(pjstrl_assign_len(&lp->data, &lp->size, &lp->capacity, s, s_len)))
 		goto err;
 	return JSTR_RET_SUCC;
 err:
@@ -352,10 +348,11 @@ jstrl_pushback_len_unsafe(jstrlist_ty *R l,
                           size_t s_len)
 JSTR_NOEXCEPT
 {
+	jstr_ty *const p = l->data + l->size;
 	if (jstr_chk(pjstrl_assign_len(
-	    &pjstrl_at(l, l->size)->data,
-	    &pjstrl_at(l, l->size)->size,
-	    &pjstrl_at(l, l->size)->capacity,
+	    &p->data,
+	    &p->size,
+	    &p->capacity,
 	    s,
 	    s_len)))
 		goto err;
@@ -420,7 +417,8 @@ jstrl_assign_len(jstrlist_ty *R l,
                  const char *R s,
                  size_t s_len)
 {
-	if (jstr_likely(pjstrl_assign_len(&pjstrl_at(l, idx)->data, &pjstrl_at(l, idx)->size, &pjstrl_at(l, idx)->capacity, s, s_len) == JSTR_RET_SUCC))
+	jstr_ty *const p = l->data + idx;
+	if (jstr_likely(pjstrl_assign_len(&p->data, &p->size, &p->capacity, s, s_len) == JSTR_RET_SUCC))
 		return JSTR_RET_SUCC;
 	jstrl_free(l);
 	return JSTR_RET_ERR;
