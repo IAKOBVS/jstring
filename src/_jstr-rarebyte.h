@@ -1,8 +1,8 @@
 #ifndef JSTR_RAREBYTE_H
 #define JSTR_RAREBYTE_H
 
-#include "jstr-macros.h"
 #include "jstr-ctype-table.h"
+#include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
 
