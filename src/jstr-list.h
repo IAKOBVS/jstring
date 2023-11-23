@@ -598,6 +598,7 @@ JSTR_NOEXCEPT
 	pjstrl_delete(l, jstrl_findstrcasechr(l, c));
 }
 
+/* Split SRC into a string list with SPLIT as delimiter. */
 JSTR_FUNC
 static jstr_ret_ty
 jstrl_split_len(jstrlist_ty *R l,
