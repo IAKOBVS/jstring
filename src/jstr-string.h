@@ -711,7 +711,7 @@ JSTR_NOEXCEPT
 				;
 			if (*np == '\0')
 				return (char *)h - 3;
-			if (*hp == '\0')
+			if (jstr_unlikely(*hp == '\0'))
 				return NULL;
 		}
 	return NULL;
