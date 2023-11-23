@@ -11,12 +11,12 @@
 -- Installation:
 //
 ./build && sudo ./install
----include <jstr/jstr.h>
+#include <jstr/jstr.h>
 //
 or
 //
 ./build && sudo ./install-to /path/to/some/dir
----include "/path/to/some/dir/jstr.h"
+#include "/path/to/some/dir/jstr.h"
 //
 Some headers may need to be explicitly included since they rely on POSIX.
 
