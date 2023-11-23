@@ -10,17 +10,17 @@
 
 ## Installation:<br>
 
-```<br>
+```
 ./build && sudo ./install<br>
 #include <jstr/jstr.h><br>
-```<br>
+```
 
 or<br>
 
-```<br>
+```
 ./build && sudo ./install-to /path/to/some/dir<br>
 #include "/path/to/some/dir/jstr.h"<br>
-```<br>
+```
 
 Some headers may need to be explicitly included since they rely on POSIX.<br>
 
@@ -28,9 +28,9 @@ Some headers may need to be explicitly included since they rely on POSIX.<br>
 Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 or use ./remove-lgpl to exclude the LGPL code.<br>
 jstr\_ty, jstrl\_ty must be initialized with zeros.<br>
 
-```<br>
+```
 jstr\_ty j = JSTR\_INIT;<br>
-```<br>
+```
 
 ## Error handling:<br>
 JSTR\_ERR is returned as error. The programmer is expected to check the return value and handle the error.<br>
@@ -60,6 +60,6 @@ The index passed by the user is assumed to be not out of bounds.<br>
 - remove-lgpl: remove LGPL code from ./jstr. Use this before ./install and after ./build.<br>
 For example:<br>
 
-```<br>
+```
 ./build && ./remove-lgpl && sudo ./install<br>
-```<br>
+```
