@@ -742,6 +742,11 @@ JSTR_NOEXCEPT
 #		define PJSTR_MEMMEM_HASH2_ICASE 1
 #		define PJSTR_MEMMEM_CHECK_EOL   1
 #		include "_lgpl-memmem.h"
+#else
+#		define PJSTR_RAREBYTE_FN pjstr_strcasestr
+#		define PJSTR_RAREBYTE_CMPFN jstr_strcasecmpeq
+#		define PJSTR_RAREBYTE_GET pjstr_rarebytegetcase
+#		define PJSTR_RAREBYTE_USE_LEN 0
 #	endif
 
 JSTR_FUNC_PURE
@@ -761,7 +766,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	return pjstr_strcasestr(h + 1, hs_len - 1, n, ne_len);
 #	else
-	return pjstr_strcasestr5andmore((const unsigned char *)h + 1, (const unsigned char *)n);
+	return pjstr_strcasestr5andmore((const unsigned char *)h, (const unsigned char *)n);
 #	endif
 }
 
