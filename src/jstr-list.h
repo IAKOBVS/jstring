@@ -399,7 +399,8 @@ JSTR_NOEXCEPT
 	PJSTRL_RESERVE(l, l->size + argc, return JSTR_RET_ERR)
 	va_start(ap, l);
 	const char *R arg;
-	for (jstr_ty *j = l->data + l->size; (arg = va_arg(ap, const char *)); ++j, ++l->size)
+	jstr_ty *j = l->data + l->size;
+	for (; (arg = va_arg(ap, const char *)); ++j, ++l->size)
 		if (jstr_chk(pjstrl_assign_len(&j->data, &j->size, &j->capacity, arg, strlen(arg))))
 			goto err_free_l;
 	va_end(ap);

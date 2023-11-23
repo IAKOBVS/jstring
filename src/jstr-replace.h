@@ -1469,7 +1469,8 @@ JSTR_NOEXCEPT
 	end += dif;
 	const char *const start = nptr;
 	nptr += (sz - 1);
-	for (int n = 0; nptr >= start;) {
+	int n;
+	for (n = 0; nptr >= start;) {
 		*(nptr + dif) = *nptr;
 		--nptr;
 		if (++n == 3) {
