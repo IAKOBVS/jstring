@@ -22,7 +22,7 @@ Some headers may need to be explicitly included since they rely on POSIX.<br>
 
 ## Disclaimer:
 Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 or use ./remove-lgpl to exclude the LGPL code.<br>
-- jstr\_ty, jstrl\_ty must be initialized with zeros.<br>
+jstr\_ty, jstrl\_ty must be initialized with zeros.<br>
 ```
 jstr_ty j = JSTR_INIT;
 ```
