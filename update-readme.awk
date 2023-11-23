@@ -9,12 +9,8 @@ BEGIN {
 {
 	gsub(/^\/\//, "```")
 	curr = ($0 ~ /^```/)
-	if (curr) {
-		if (in_code)
-			in_code = 0;
-		else
-			in_code = 1;
-	}
+	if (curr)
+		in_code = (in_code) ? 0 : 1;
 	if (!in_code) {
 		gsub(/\*/, "\\*")
 		gsub(/_/, "\\_")
