@@ -750,7 +750,6 @@ JSTR_NOEXCEPT
 #	else
 #		define PJSTR_RAREBYTE_FN       pjstr_strcasestr
 #		define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq
-#		define PJSTR_RAREBYTE_GET      pjstr_rarebytegetcase
 #		define PJSTR_RAREBYTE_USE_LEN  0
 #		include "_jstr-rarebyte-impl.h"
 #	endif
@@ -878,7 +877,6 @@ JSTR_NOEXCEPT
 #else
 #	define PJSTR_RAREBYTE_FN       pjstr_strcasestr_len
 #	define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
-#	define PJSTR_RAREBYTE_GET      pjstr_rarebytegetcase
 #	include "_jstr-rarebyte-impl.h"
 #endif
 
