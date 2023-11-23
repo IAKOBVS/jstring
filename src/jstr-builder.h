@@ -30,11 +30,11 @@ PJSTR_END_DECLS
 
 #define jstr_err(msg)        pjstr_err(__FILE__, __LINE__, JSTR_STATIC_ASSERT_FUNC, msg)
 #define jstr_err_exit(msg)   pjstr_err_exit(__FILE__, __LINE__, JSTR_STATIC_ASSERT_FUNC, msg)
-#define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const pjstr_foreach_end_##j##_##ptr = ((j)->data) + ((j)->size); \
-	                          ptr < pjstr_foreach_end_##j##_##ptr;                                                       \
+#define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const pjstr_foreach_end_##ptr = ((j)->data) + ((j)->size); \
+	                          ptr < pjstr_foreach_end_##ptr;                                                       \
 	                          ++ptr)
-#define jstr_foreachi(j, i) for (size_t i = 0, const pjstr_foreach_end_##j##_##ptr = ((j)->size); \
-	                         i < pjstr_foreach_end_##j##_##ptr;                               \
+#define jstr_foreachi(j, i) for (size_t i = 0, const pjstr_foreach_end_##ptr = ((j)->size); \
+	                         i < pjstr_foreach_end_##ptr;                               \
 	                         ++i)
 
 #if JSTR_DEBUG || JSTR_PANIC

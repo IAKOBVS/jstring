@@ -23,16 +23,16 @@
 #define PJSTRL_RESERVE_ALWAYS(list, new_cap, do_on_mallocerr) \
 	PJSTRL_RESERVE_FAIL(jstrl_reservealways, list, new_cap, do_on_mallocerr)
 
-#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##l##_##p = jstrl_end(l); \
-	                         p < pjstrl_foreach_end_##l##_##p;                                             \
+#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##p = jstrl_end(l); \
+	                         p < pjstrl_foreach_end_##p;                                             \
 	                         ++p)
 
-#define pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##l##_##p = ((l)->data) + ((l)->capacity); \
-	                              p < pjstrl_foreach_end_##l##_##p;                                                              \
+#define pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##p = ((l)->data) + ((l)->capacity); \
+	                              p < pjstrl_foreach_end_##p;                                                              \
 	                              ++p)
 
-#define jstrl_foreachi(l, i) for (size_t i = 0, const pjstrl_foreach_end_##l##_##p = ((l)->size); \
-	                          i < pjstrl_foreach_end_##l##_##p;                               \
+#define jstrl_foreachi(l, i) for (size_t i = 0, const pjstrl_foreach_end_##p = ((l)->size); \
+	                          i < pjstrl_foreach_end_##p;                               \
 	                          ++i)
 
 #define JSTRL_INIT \
@@ -602,12 +602,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static jstr_ret_ty
 jstrl_split_len(jstrlist_ty *R l,
-            const jstr_ty *R j,
-            const char *split,
-	    size_t split_len)
+                const char *src,
+                size_t src_len,
+                const char *split,
+                size_t split_len)
 {
-	const char *save = j->data;
-	const char *end = j->data + j->size;
+	const char *save = src;
+	const char *end = src + src_len;
 	const char *tok;
 	while ((tok = jstr_strtok_ne_len(&save, end, split, split_len)))
 		if (jstr_unlikely(JSTR_RET_ERR == jstrl_pushback_len(l, tok, save - tok - split_len)))

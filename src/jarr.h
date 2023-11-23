@@ -202,7 +202,7 @@ PJSTR_END_DECLS
 	} while (0)
 
 #define jarr_foreachi(j, i) \
-	for (size_t i = 0, pjarr_max_elem_##j##_##i = (j)->size; i < pjarr_max_elem_##j##_##i; ++i)
+	for (size_t i = 0, pjarr_max_elem_##i = (j)->size; i < pjarr_max_elem_##i; ++i)
 
 #define jarr_start(j) PJARR_DATA(j)
 #define jarr_end(j)   (PJARR_DATA(j) + PJARR_SZ(j))
