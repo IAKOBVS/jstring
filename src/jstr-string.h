@@ -881,7 +881,7 @@ jstr_strcasestr_len(const char *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR_OPTIMIZED
+#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED || !JSTR_USE_LGPL)
 	return (char *)strcasestr(hs, ne);
 	(void)hs_len;
 	(void)ne_len;
@@ -952,7 +952,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR_OPTIMIZED
+#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED || !JSTR_USE_LGP)
 	return (char *)strcasestr(hs, ne);
 #else
 	if (jstr_unlikely(ne[0] == '\0'))
