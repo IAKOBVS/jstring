@@ -139,7 +139,7 @@ static const unsigned char pjstrio_reject_table[256] = {
 	0, /* 124 */
 	0, /* 125 */
 	0, /* 126 */
-	1, /* 127 */
+	1 /* 127 */
 };
 
 #endif /* JSTRIO_TABLE_H */
