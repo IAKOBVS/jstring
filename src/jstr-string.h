@@ -952,7 +952,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED || !JSTR_USE_LGP)
+#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED || !JSTR_USE_LGPL)
 	return (char *)strcasestr(hs, ne);
 #else
 	if (jstr_unlikely(ne[0] == '\0'))
