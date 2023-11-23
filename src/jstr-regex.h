@@ -88,17 +88,21 @@ typedef enum {
 #endif
 } jstrre_ret_ty;
 
-#define jstrre_comp_chk(errcode) jstr_unlikely(errcode != JSTRRE_RET_NOERROR)
-#define jstrre_exec_chk(errcode) (jstrre_comp_chk(errcode) && jstr_unlikely(errcode != JSTRRE_RET_NOMATCH))
-#define jstrre_chk(errcode)      jstrre_comp_chk(errcode)
+#define jstrre_chkcomp(errcode) jstr_unlikely(errcode != JSTRRE_RET_NOERROR)
+#define jstrre_chkexec(errcode) (jstrre_chkcomp(errcode) && jstr_unlikely(errcode != JSTRRE_RET_NOMATCH))
+#define jstrre_chk(errcode)     jstrre_chkcomp(errcode)
 
-#define PJSTRRE_ERR(errcode, do_on_error)                          \
-	if (jstr_likely(errcode == JSTRRE_RET_NOERROR)) {          \
-		;                                                  \
-	} else if (jstr_unlikely(errcode == JSTRRE_RET_NOMATCH)) { \
-		break;                                             \
-	} else {                                                   \
-		do_on_error;                                       \
+#define PJSTRRE_ERR_EXEC_HANDLE(errcode, do_on_error, do_on_memory_error) \
+	if (jstr_likely(errcode == JSTRRE_RET_NOERROR)) {                 \
+		;                                                         \
+	} else if (errcode == JSTRRE_RET_NOMATCH) {                       \
+		break;                                                    \
+	} else {                                                          \
+		if (jstr_unlikely(errcode == JSTRRE_RET_ESPACE)) {        \
+			do_on_memory_error;                               \
+		} else {                                                  \
+			do_on_error;                                      \
+		}                                                         \
 	}
 
 JSTR_ATTR_INLINE
@@ -144,7 +148,7 @@ jstrre_err_exit(jstrre_ret_ty errcode,
                 const regex_t *R preg)
 JSTR_NOEXCEPT
 {
-	if (jstrre_exec_chk(errcode))
+	if (jstrre_chkexec(errcode))
 		pjstrre_err_exit_print(errcode, preg);
 }
 
@@ -155,7 +159,7 @@ jstrre_err_print(jstrre_ret_ty errcode,
                  const regex_t *R preg)
 JSTR_NOEXCEPT
 {
-	if (jstrre_exec_chk(errcode))
+	if (jstrre_chkexec(errcode))
 		pjstrre_err_print(errcode, preg);
 }
 
@@ -168,7 +172,7 @@ jstrre_err(jstrre_ret_ty errcode,
            size_t errbuf_size)
 JSTR_NOEXCEPT
 {
-	if (jstrre_exec_chk(errcode))
+	if (jstrre_chkexec(errcode))
 		regerror(errcode, preg, errbuf, errbuf_size);
 }
 
@@ -305,7 +309,7 @@ JSTR_NOEXCEPT
 	jstrre_ret_ty ret;
 	while (n-- && *p) {
 		ret = jstrre_exec_len(preg, p, end - p, 1, &rm, eflags);
-		PJSTRRE_ERR(ret, goto err);
+		PJSTRRE_ERR_EXEC_HANDLE(ret, return ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -472,17 +476,22 @@ JSTR_NOEXCEPT
 	const char *oldp = dst;
 	size_t find_len;
 	regmatch_t rm;
-	while (n-- && *p && jstrre_exec_len(preg, p, (*s + *sz) - p, 1, &rm, eflags) == JSTRRE_RET_NOERROR) {
+	jstrre_ret_ty ret;
+	while (n-- && *p) {
+		ret = jstrre_exec_len(preg, p, (*s + *sz) - p, 1, &rm, eflags);
+		PJSTRRE_ERR_EXEC_HANDLE(ret, return ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
 		p += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
 			continue;
-		if (rplc_len <= find_len)
+		if (rplc_len <= find_len) {
 			pjstr_rplcallinplace(&dst, &oldp, (const char **)&p, rplc, rplc_len, find_len);
-		else if (*cap > *sz + rplc_len - find_len)
+		} else if (*cap > *sz + rplc_len - find_len) {
 			pjstrre_rplcallsmallerrplc(*s, sz, &dst, &oldp, &p, rplc, rplc_len, find_len);
-		else if (jstr_chk(pjstrre_rplcallbiggerrplc((u **)s, sz, cap, &dst, &oldp, &p, rplc, rplc_len, find_len)))
+		} else if (jstr_chk(pjstrre_rplcallbiggerrplc((u **)s, sz, cap, &dst, &oldp, &p, rplc, rplc_len, find_len))) {
+			ret = JSTRRE_RET_ESPACE;
 			goto err;
+		}
 	}
 	if (dst != oldp)
 		*sz = jstr_stpmove_len(dst, oldp, (*s + *sz) - oldp) - *s;
@@ -491,7 +500,7 @@ err:
 	jstrre_free(preg);
 	jstr_free(s, sz, cap);
 	PJSTR_EXIT_MAYBE();
-	return JSTRRE_RET_ESPACE;
+	return ret;
 }
 
 JSTR_FUNC
@@ -663,12 +672,7 @@ JSTR_NOEXCEPT
 	jstrre_ret_ty ret;
 	while (n-- && *p) {
 		ret = jstrre_exec_len(preg, p, (*s + *sz) - p, nmatch, rm, eflags);
-		if (jstr_likely(ret == JSTRRE_RET_NOERROR))
-			;
-		else if (jstr_unlikely(ret == JSTRRE_RET_NOMATCH))
-			break;
-		else
-			goto err;
+		PJSTRRE_ERR_EXEC_HANDLE(ret, return ret, goto err);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		if (jstr_unlikely(find_len == 0)) {
 			++p;
