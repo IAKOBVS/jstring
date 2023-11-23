@@ -143,7 +143,8 @@ JSTR_ATTR_INLINE
 static unsigned char *
 pjstr_rarebyteget(const unsigned char *n)
 {
-	for (int c; (c = *n); ++n)
+	int c;
+	for (; (c = *n); ++n)
 		if (pjstr_rarebyte_table[c])
 			return (unsigned char *)n;
 	return NULL;
@@ -154,7 +155,8 @@ JSTR_ATTR_INLINE
 static unsigned char *
 pjstr_rarebytegetcase(const unsigned char *n)
 {
-	for (int c; (c = *n); ++n)
+	int c;
+	for (; (c = *n); ++n)
 		if (pjstr_ctype[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
 			return (unsigned char *)n;
 	return NULL;
