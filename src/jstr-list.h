@@ -365,8 +365,7 @@ jstrl_pushback_len_unsafe(jstrlist_ty *R l,
                           size_t s_len)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(
-	    !pjstrl_assign_len(
+	if (jstr_chk(pjstrl_assign_len(
 	    &pjstrl_at(l, l->size)->data,
 	    &pjstrl_at(l, l->size)->size,
 	    &pjstrl_at(l, l->size)->capacity,
@@ -611,8 +610,9 @@ jstrl_split_len(jstrlist_ty *R l,
 	const char *end = src + src_len;
 	const char *tok;
 	while ((tok = jstr_strtok_ne_len(&save, end, split, split_len)))
-		if (jstr_unlikely(JSTR_RET_ERR == jstrl_pushback_len(l, tok, save - tok - split_len)))
+		if (jstr_chk(jstrl_pushback_len(l, tok, save - tok - split_len)))
 			goto err;
+	return JSTR_RET_SUCC;
 err:
 	jstrl_free(l);
 	return JSTR_RET_ERR;
