@@ -1053,7 +1053,9 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (u *)s + sz - 1;
-	for (int i = 0, n = sz % 4;; --i) {
+	int i = 0;
+	int n = sz % 4;
+	for (;; --i) {
 		if (t[p[i]])
 			return (p + i) - (u *)s;
 		if (--n == 0) {
@@ -1119,7 +1121,9 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (u *)s + sz - 1;
-	for (int i = 0, n = sz % 4;; --i) {
+	int i = 0;
+	int n = sz % 4;
+	for (;; --i) {
 		if (!t[p[i]])
 			return (p + i) - (u *)s;
 		if (--n == 0) {
@@ -1211,7 +1215,9 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (u *)s;
-	for (int i = 0, n = sz % 4;; ++i) {
+	int i = 0;
+	int n = sz % 4;
+	for (;; ++i) {
 		if (!t[p[i]])
 			return (p + i) - (u *)s;
 		if (--n == 0) {
@@ -1256,7 +1262,9 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (u *)s + sz - 1;
-	for (int i = 0, n = sz % 4;; ++i) {
+	int i = 0;
+	int n = sz % 4;
+	for (;; ++i) {
 		if (t[p[i]])
 			return (p + i) - (u *)s;
 		if (--n == 0) {
