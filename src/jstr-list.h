@@ -317,26 +317,13 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
 	if (jstr_likely(l->size))
 		pjstrl_memmove(l->data + 1, l->data, l->size * sizeof(*l->data));
 	++l->size;
-#ifdef __clang__
-#	pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#	pragma GCC diagnostic push
-#elif defined __GNUC__
-#	pragma GCC diagnostic ignored "-Wanalyzer-null-argument"
-#	pragma GCC diagnostic push
-#endif
-	if (jstr_unlikely(
-	    !pjstrl_assign_len(
+	if (jstr_chk(pjstrl_assign_len(
 	    &l->data->data,
 	    &l->data->size,
 	    &l->data->capacity,
 	    s,
 	    s_len)))
 		goto err;
-#ifdef __clang__
-#	pragma GCC diagnostic pop
-#elif defined __GNUC__
-#	pragma GCC diagnostic pop
-#endif
 	return JSTR_RET_SUCC;
 err:
 	jstrl_free(l);
