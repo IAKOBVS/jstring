@@ -1,7 +1,7 @@
 # jstring
 
 ## Features:
-- works with any C string type: functions will take a pointer to string, size, and capacity.<br>
+- works with any string type: functions will take a pointer to string, size, and capacity.<br>
 - in-place literal string and regex replacement: supports backreferences and searching from a specified index.<br>
 - reverse standard string functions: memrchr(), strrstr(), strrspn(), strrcspn().<br>
 - standard string functions for non-nul terminated strings: memspn(), memcspn(), mempbrk().<br>
