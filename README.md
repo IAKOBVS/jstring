@@ -58,7 +58,7 @@ is assumed to be within bounds.
 - \*\_bref\(\): Enable backreferences for the replacement string. \0 is interpreted
 as referring to the whole matched string.
 - \*\_at\(\): Return an element of from an array type. When JSTR\_PANIC is defined as
-1, it will do a bounds check at runtime.
+1, do a bounds check at runtime.
 - \*\_chk\*\(\): Evaluate to true if the value passed is an error value.
 - \*\_err\(\): Print an error message.
 - \*\_errdie\(\): Print an error message and exit\(\).
