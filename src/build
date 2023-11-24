@@ -28,7 +28,7 @@ compile()
 	file=$1
 	shift
 	#shellcheck disable=SC2068
-	cc -x c -o $@ -
+	cc -x c $@ -o "$file" -
 }
 file_str='#include "../jstr/jstr.h"
 int main(void) {return 0;}'
