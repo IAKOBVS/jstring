@@ -66,8 +66,12 @@ PJSTR_END_DECLS
 #endif
 
 #if JSTR_PANIC
-#	define JSTR_DEBUG_PRINT(...)    fprintf(stderr, __VA_ARGS__)
-#	define JSTR_RETURN_ERR(errcode) jstr_errdie("")
+#	define JSTR_DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
+#	define JSTR_RETURN_ERR(errcode) \
+		do {                     \
+			jstr_errdie(""); \
+			return errcode;  \
+		} while (0)
 #else
 /* clang-format off */
 #	define JSTR_DEBUG_PRINT(...) do {} while (0)

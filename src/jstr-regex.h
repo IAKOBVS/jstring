@@ -113,6 +113,7 @@ typedef enum {
 		do {                               \
 			jstrre_err(errcode, preg); \
 			jstr_errdie("");           \
+			return errcode;            \
 		} while (0)
 #else
 #	define JSTRRE_RETURN_ERR(errcode, preg) return errcode
