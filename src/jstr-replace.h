@@ -1383,7 +1383,8 @@ jstr_dup(jstr_ty *R dst,
 JSTR_NOEXCEPT
 {
 	dst->data = (char *)malloc(src->capacity);
-	PJSTR_MALLOC_ERR(dst->data, return JSTR_RET_ERR);
+	if (jstr_nullchk(dst->data))
+		return JSTR_RET_ERR;
 	dst->size = jstr_cpy_p(dst->data, dst) - dst->data;
 	dst->size = src->size;
 	dst->capacity = src->capacity;

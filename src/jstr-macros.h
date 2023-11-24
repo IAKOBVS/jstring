@@ -18,10 +18,11 @@
 
 #define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_SIZE(array)    (sizeof(array) / sizeof(array[0]))
+#define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
+#define jstr_nullchk(p) jstr_unlikely((p) == NULL)
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
 #define JSTR_STRING(x)            #x
-#define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 
 #define JSTR_MEMSET_ARRAY(array, c) ((JSTR_ARRAY_SIZE(array) == 256)             \
 	                             ? (memset((array), (c), 64),                \
@@ -66,24 +67,12 @@ PJSTR_END_DECLS
 
 #if JSTR_PANIC
 #	define JSTR_DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
-#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
-		do {                                      \
-			if (jstr_unlikely((p) == NULL)) { \
-				do_on_malloc_err;         \
-			}                                 \
-		} while (0)
 #	define JSTR_RETURN_ERR(errcode) jstr_errdie("")
 #else
 /* clang-format off */
 #	define JSTR_DEBUG_PRINT(...) do {} while (0)
-#define JSTR_RETURN_ERR(errcode) return errcode
 /* clang-format on */
-#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
-		do {                                      \
-			if (jstr_unlikely((p) == NULL)) { \
-				do_on_malloc_err;         \
-			}                                 \
-		} while (0)
+#define JSTR_RETURN_ERR(errcode) return errcode
 #endif
 
 #ifdef __cplusplus

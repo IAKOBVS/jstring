@@ -197,7 +197,8 @@ JSTR_NOEXCEPT
 {
 	new_cap = pjstrl_grow(l->capacity, new_cap);
 	jstr_ty *tmp = (jstr_ty *)realloc(l->data, new_cap * sizeof(*l->data));
-	PJSTR_MALLOC_ERR(tmp, goto err);
+	if (jstr_nullchk(tmp))
+		goto err;
 	l->data = tmp;
 #if JSTRL_LAZY_FREE
 	memset(l->data + l->capacity, 0, (new_cap - l->capacity) * sizeof(*l->data));
@@ -236,7 +237,8 @@ pjstrl_assign_len(char *R *R s,
 #else
 	*cap = JSTR_ALIGN_UP_STR(src_len + 1);
 	*s = (char *)malloc(*cap);
-	PJSTR_MALLOC_ERR(*s, goto err);
+	if (jstr_nullchk(*s))
+		goto err;
 	jstr_strcpy_len(*s, src, src_len);
 	*sz = src_len;
 	return JSTR_RET_SUCC;

@@ -278,6 +278,7 @@ jstrre_rmn_from(regex_t *R preg,
                 size_t n)
 JSTR_NOEXCEPT
 {
+	JSTR_ASSERT_DEBUG(start_idx <= *sz, "Index out of bounds");
 	regmatch_t rm;
 	char *dst = *s + start_idx;
 	const char *p = dst;
@@ -447,6 +448,7 @@ jstrre_rplcn_len_from(regex_t *R preg,
                       size_t n)
 JSTR_NOEXCEPT
 {
+	JSTR_ASSERT_DEBUG(start_idx <= *sz, "Index out of bounds");
 	typedef char u;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
@@ -635,6 +637,7 @@ jstrre_rplcn_bref_len_from(regex_t *R preg,
                            size_t n)
 JSTR_NOEXCEPT
 {
+	JSTR_ASSERT_DEBUG(start_idx <= *sz, "Index out of bounds");
 	char *p = *s + start_idx;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
@@ -666,7 +669,10 @@ JSTR_NOEXCEPT
 					rdst_cap = BUFSZ;
 				rdst_cap = pjstr_grow(rdst_cap, rdst_len);
 				rdst_heap = (char *)realloc(rdst_heap, rdst_cap);
-				PJSTR_MALLOC_ERR(rdst_heap, ret = JSTRRE_RET_ESPACE; goto err_free);
+				if (jstr_nullchk(rdst_heap)) {
+					ret = JSTRRE_RET_ESPACE;
+					goto err_free;
+				}
 				rdstp = rdst_heap;
 			}
 		pjstrre_brefrplccreat(p, rm, rdstp, rplc, rplc_len);
