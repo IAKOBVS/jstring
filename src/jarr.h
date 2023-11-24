@@ -47,16 +47,16 @@ PJSTR_END_DECLS
 
 #define jarr_chk(j)        (jstr_unlikely(PJARR_DATA(j) == NULL))
 #define jarr_err(msg)      jstr_err(msg)
-#define jarr_err_exit(msg) jstr_err_exit(msg)
+#define jarr_errdie(msg) jstr_errdie(msg)
 
 #define PJARR_ALIGN_UP(j, base) ((PJARR_ELEMSZ(j) < (sizeof(size_t) + sizeof(size_t))) ? JSTR_ALIGN_UP_STR(base) : base)
 
-#if JSTR_DEBUG || JSTR_PANIC
+#if JSTR_PANIC
 #	define PJARR_MALLOC_ERR(j, do_on_malloc_err)         \
 		if (jstr_unlikely((PJARR_DATA(j)) == NULL)) { \
 			PJARR_NULLIFY_MEMBERS(j);             \
 			do_on_malloc_err;                     \
-			jstr_err_exit("");                    \
+			jstr_errdie("");                    \
 		}
 #else
 #	define PJARR_MALLOC_ERR(j, do_on_malloc_err)         \
@@ -207,9 +207,9 @@ PJSTR_END_DECLS
 #define jarr_start(j) PJARR_DATA(j)
 #define jarr_end(j)   (PJARR_DATA(j) + PJARR_SZ(j))
 
-#if JSTR_DEBUG || JSTR_PANIC
+#if JSTR_DEBUG
 #	define jarr_at(j, idx) \
-		(jstr_likely(idx < PJARR_SZ(j)) ? (PJARR_DATA(j) + (idx)) : (jstr_err_exit("Index out of bounds."), PJARR_DATA(j)))
+		(jstr_likely(idx < PJARR_SZ(j)) ? (PJARR_DATA(j) + (idx)) : (jstr_errdie("Index out of bounds."), PJARR_DATA(j)))
 #else
 #	define jarr_at(j, idx) \
 		(PJARR_DATA(j) + (idx))

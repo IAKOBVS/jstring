@@ -11,6 +11,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if JSTR_DEBUG
+#	undef JSTR_PANIC
+#	define JSTR_PANIC 1
+#endif
+
+#define JSTR_PAGE_SIZE            4096
+#define JSTR_ARRAY_SIZE(array)    (sizeof(array) / sizeof(array[0]))
+#define PJSTR_CONCAT_HELPER(x, y) x##y
+#define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
+#define JSTR_STRING(x)            #x
+#define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
+
+#define JSTR_MEMSET_ARRAY(array, c) ((JSTR_ARRAY_SIZE(array) == 256)             \
+	                             ? (memset((array), (c), 64),                \
+	                                memset((array) + 64, (c), 64),           \
+	                                memset((array) + 64 + 64, (c), 64),      \
+	                                memset((array) + 64 + 64 + 64, (c), 64)) \
+	                             : memset((array), (c), sizeof((array))))
+#define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
+
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS extern "C" {
 #	define PJSTR_END_DECLS   }
@@ -32,21 +52,48 @@ typedef enum {
 } jstr_ret_ty;
 PJSTR_END_DECLS
 
-#define jstr_chk(ret) jstr_unlikely(ret == JSTR_RET_ERR)
-
 #if JSTR_DEBUG
-#	define JSTR_PRINT_LOG(...) fprintf(stderr, __VA_ARGS__)
+#	define JSTR_ASSERT_DEBUG(expr, msg)        \
+		do {                                \
+			if (jstr_unlikely(!(expr))) \
+				jstr_errdie(msg);   \
+		} while (0)
 #else
-#	define JSTR_PRINT_LOG(...) \
-		do {                \
+/* clang-format off */
+#	define JSTR_ASSERT_DEBUG(expr, msg) do {} while (0)
+/* clang-format on */
+#endif
+
+#if JSTR_PANIC
+#	define PJSTR_EXIT_MAYBE()  jstr_errdie("")
+#	define PJSTR_ERR_MAYBE()   jstr_err("")
+#	define JSTR_PRINT_LOG(...) fprintf(stderr, __VA_ARGS__)
+#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
+		do {                                      \
+			if (jstr_unlikely((p) == NULL)) { \
+				jstr_errdie("");          \
+				do_on_malloc_err;         \
+			}                                 \
+		} while (0)
+#else
+/* clang-format off */
+#	define PJSTR_EXIT_MAYBE() do {} while (0)
+#	define PJSTR_ERR_MAYBE() do {} while (0)
+#	define JSTR_PRINT_LOG(...) do {} while (0)
+/* clang-format on */
+#	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
+		do {                                      \
+			if (jstr_unlikely((p) == NULL)) { \
+				do_on_malloc_err;         \
+			}                                 \
 		} while (0)
 #endif
 
-#define PJSTR_CONCAT_HELPER(x, y) x ## y
-#define JSTR_CONCAT(x, y)        PJSTR_CONCAT_HELPER(x, y)
-#define JSTR_STRING(x)        #x
-
-#define JSTR_ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
+#define JSTR_RETURN_ERR(errcode)    \
+	do {                        \
+		PJSTR_EXIT_MAYBE(); \
+		return errcode;     \
+	} while (0)
 
 #ifdef __cplusplus
 template <typename T, typename Other>
@@ -57,15 +104,7 @@ PJSTR_CAST(T, Other other)
 }
 #else
 #	define PJSTR_CAST(T, other) (other)
-#endif /* CAST */
-
-#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                      \
-	                             ? (memset((array), (c), 64),                \
-	                                memset((array) + 64, (c), 64),           \
-	                                memset((array) + 64 + 64, (c), 64),      \
-	                                memset((array) + 64 + 64 + 64, (c), 64)) \
-	                             : memset((array), (c), sizeof((array))))
-#define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
+#endif /* cast */
 
 #if !(defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__)
 #	define JSTR_HAVE_VLA 1
@@ -74,8 +113,6 @@ PJSTR_CAST(T, Other other)
 #if defined _GNU_SOURCE || defined alloca
 #	define JSTR_HAVE_ALLOCA 1
 #endif
-
-#define JSTR_PAGE_SIZE 4096
 
 #ifdef __GLIBC_PREREQ
 #	define JSTR_GLIBC_PREREQ(maj, min) __GLIBC_PREREQ(maj, min)
@@ -95,12 +132,12 @@ PJSTR_CAST(T, Other other)
 
 #if !defined __cplusplus && defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1
-#endif /* HAVE_GENERIC */
+#endif /* have_generic */
 
 #if (defined __GNUC__ && (__GNUC__ >= 4)) \
 || (defined __clang__ && (__clang_major__ >= 3))
 #	define JSTR_HAVE_TYPEOF 1
-#endif /* HAVE_TYPEOF */
+#endif /* have_typeof */
 
 #if JSTR_HAVE_TYPEOF && JSTR_HAVE_GENERIC
 #	define JSTR_SAME_TYPE(x, y) _Generic((x), \
@@ -112,7 +149,7 @@ PJSTR_CAST(T, Other other)
 #else
 #	define JSTR_SAME_TYPE(x, y) 1
 #	define PJSTR_IS_TYPE(T, x)  1
-#endif /* HAVE_TYPEOF && HAVE_GENERIC */
+#endif /* have_typeof && have_generic */
 
 #ifdef static_assert
 PJSTR_BEGIN_DECLS
@@ -127,52 +164,29 @@ PJSTR_END_DECLS
 #	define JSTR_HAVE_STATIC_ASSERT       1
 #	define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
-#	define JSTR_STATIC_ASSERT(expr, msg) \
-		do {                          \
-		} while (0)
+/* clang-format off */
+#	define JSTR_STATIC_ASSERT(expr, msg) do {} while (0)
+/* clang-format on */
 #endif /* static_assert */
 
-#if (defined __GNUC__ || defined __clang__) && JSTR_HAVE_GENERIC
-#	define JSTR_GENERIC_CASE_SIZE(expr)                           \
-		int : expr,                                            \
-		      unsigned int : expr,                             \
-		                     size_t : expr,                    \
-		                              long : expr,             \
-		                                     long long : expr, \
-		                                                 unsigned long long : expr
-#	define JSTR_GENERIC_CASE_STR(bool_) \
-		char * : bool_,              \
-		         const char * : bool_
-#	define JSTR_GENERIC_CASE_STR_STACK(bool_, s) \
-		char(*)[sizeof(s)] : 1,               \
-		const char(*)[sizeof(s)] : 1
-#	define JSTR_GENERIC_CASE_CHAR(bool_) \
-		char : bool_,                 \
-		       const char : bool_
-#	define PJSTR_IS_SIZE(expr) _Generic((expr), \
-	JSTR_GENERIC_CASE_SIZE(1),                   \
-	default: 0)
-#	define PJSTR_IS_STR(expr) _Generic((expr), \
-	JSTR_GENERIC_CASE_STR(1),                   \
-	default: 0)
-#	define PJSTR_IS_STR_STACK(expr) _Generic((expr), \
-	JSTR_GENERIC_CASE_STR_STACK(1, expr),             \
-	default: 0)
-#	define PJSTR_IS_CHAR(expr) _Generic((expr), \
-	JSTR_GENERIC_CASE_CHAR(1),                   \
-	default: 0)
-#	define JSTR_STATIC_ASSERT_IS_SIZE(expr) \
-		JSTR_STATIC_ASSERT(PJSTR_IS_SIZE(expr), "Passing non-number as number argument!");
-#	define JSTR_STATIC_ASSERT_IS_STR(expr) \
-		JSTR_STATIC_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
-#	define JSTR_STATIC_ASSERT_IS_CHAR(expr) \
-		JSTR_STATIC_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
-#	define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr) \
-		JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
+#if JSTR_HAVE_GENERIC
+#	define JSTR_GENERIC_CASE_SIZE(bool_)               int : bool_, unsigned int : bool_, size_t : bool_, long : bool_, long long : bool_, unsigned long long : bool_
+#	define JSTR_GENERIC_CASE_STR(bool_)                char * : bool_, const char * : bool_
+#	define JSTR_GENERIC_CASE_STR_STACK(bool_, s)       char(*)[sizeof(s)] : bool_, const char(*)[sizeof(s)] : bool_
+#	define JSTR_GENERIC_CASE_CHAR(bool_)               char : bool_, const char : bool_
+#	define PJSTR_IS_SIZE(expr)                         _Generic((expr), JSTR_GENERIC_CASE_SIZE(1), default: 0)
+#	define PJSTR_IS_STR(expr)                          _Generic((expr), JSTR_GENERIC_CASE_STR(1), default: 0)
+#	define PJSTR_IS_STR_STACK(expr)                    _Generic((expr), JSTR_GENERIC_CASE_STR_STACK(1, expr), default: 0)
+#	define PJSTR_IS_CHAR(expr)                         _Generic((expr), JSTR_GENERIC_CASE_CHAR(1), default: 0)
+#	define JSTR_STATIC_ASSERT_IS_SIZE(expr)            JSTR_STATIC_ASSERT(PJSTR_IS_SIZE(expr), "Passing non-size_type as number argument!");
+#	define JSTR_STATIC_ASSERT_IS_STR(expr)             JSTR_STATIC_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
+#	define JSTR_STATIC_ASSERT_IS_CHAR(expr)            JSTR_STATIC_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
+#	define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr) JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
 #else
-#	define JSTR_GENERIC_CASE_SIZE(expr)
-#	define JSTR_GENERIC_CASE_STR(bool)
-#	define JSTR_GENERIC_CASE_CHAR(bool)
+#	define JSTR_GENERIC_CASE_SIZE(bool_)
+#	define JSTR_GENERIC_CASE_STR(bool_)
+#	define JSTR_GENERIC_CASE_STR_STACK(bool_, s)
+#	define JSTR_GENERIC_CASE_CHAR(bool_)
 #	define PJSTR_IS_SIZE(expr)
 #	define PJSTR_IS_STR(expr)
 #	define PJSTR_IS_STR_STACK(expr)
@@ -181,13 +195,13 @@ PJSTR_END_DECLS
 #	define JSTR_STATIC_ASSERT_IS_STR(expr)
 #	define JSTR_STATIC_ASSERT_IS_CHAR(expr)
 #	define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr)
-#endif /* (Gnuc || clang) && HAVE_GENERIC */
+#endif /* have_generic */
 
 #if defined __cplusplus && __cplusplus > 199711L
 #	define JSTR_NOEXCEPT noexcept
 #else
 #	define JSTR_NOEXCEPT
-#endif /* NOEXCEPT */
+#endif /* noexcept */
 
 #ifdef __ASSERT_FUNCTION
 #	define JSTR_STATIC_ASSERT_FUNC __ASSERT_FUNCTION
@@ -203,7 +217,7 @@ PJSTR_END_DECLS
 #	define JSTR_RESTRICT __restrict
 #else
 #	define JSTR_RESTRICT
-#endif /* RESTRICT */
+#endif /* restrict */
 
 #ifdef __glibc_has_attribute
 #	define JSTR_HAS_ATTRIBUTE(attr) __glibc_has_attribute(attr)
@@ -211,7 +225,7 @@ PJSTR_END_DECLS
 #	define JSTR_HAS_ATTRIBUTE(attr) __has_attribute(attr)
 #else
 #	define JSTR_HAS_ATTRIBUTE(attr) 0
-#endif /* HAS_ATTRIBUTE */
+#endif /* has_attribute */
 
 #ifdef __glibc_has_builtin
 #	define JSTR_HAS_BUILTIN(name) __glibc_has_builtin(name)
@@ -219,7 +233,7 @@ PJSTR_END_DECLS
 #	define JSTR_HAS_BUILTIN(name) __has_builtin(name)
 #else
 #	define JSTR_HAS_BUILTIN(name) 0
-#endif /* HAS_BUILTIN */
+#endif /* has_builtin */
 
 #ifdef __glibc_has_extension
 #	define JSTR_HAS_EXTENSION(ext) __glibc_has_extension(ext)
@@ -227,7 +241,7 @@ PJSTR_END_DECLS
 #	define JSTR_HAS_EXTENSION(ext) __has_extension(ext)
 #else
 #	define JSTR_HAS_EXTENSION(ext) 0
-#endif /* HAS_EXTENSION */
+#endif /* has_extension */
 
 #if defined __glibc_unlikely && defined __glibc_likely
 #	define jstr_likely(x)   __glibc_likely(x)
@@ -246,7 +260,7 @@ PJSTR_END_DECLS
 #	ifdef __inline
 #		define PJSTR_ATTR_INLINE __inline
 #	elif (defined __cplusplus \
-	     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+	       || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 #		define PJSTR_ATTR_INLINE inline
 #	else
 #		define PJSTR_ATTR_INLINE
@@ -299,8 +313,8 @@ PJSTR_END_DECLS
 #	if defined __attribute_nonnull__ && defined __nonnull
 #		define JSTR_ATTR_NONNULL(params) __nonnull(params)
 #	elif JSTR_HAS_ATTRIBUTE(__nonnull__)
-#		define JSTR_ATTR_NONNULL_ALL __attribute__((__nonnull__))
-#		define JSTR_ATTR_NONNULL(params)    __attribute__((__nonnull__ params))
+#		define JSTR_ATTR_NONNULL_ALL     __attribute__((__nonnull__))
+#		define JSTR_ATTR_NONNULL(params) __attribute__((__nonnull__ params))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
 #		define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))
@@ -339,7 +353,6 @@ PJSTR_END_DECLS
 #		define JSTR_ATTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
 #	endif
 #endif
-
 #ifndef JSTR_ATTR_INLINE
 #	define JSTR_ATTR_INLINE PJSTR_ATTR_INLINE
 #endif
@@ -428,7 +441,6 @@ PJSTR_END_DECLS
 #ifndef JSTR_ATTR_ACCESS
 #	define JSTR_ATTR_ACCESS(x)
 #endif
-
 #define JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NOTHROW JSTR_MAYBE_UNUSED
 #define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NONNULL_ALL
 #define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WARN_UNUSED
@@ -976,7 +988,7 @@ case '~':
 #	define JSTR_OS_Z 1
 #else
 #	define JSTR_OS_GENERIC 1
-#endif
+#endif /* os */
 
 #if defined __unix__ || defined __unix
 #	define JSTR_ENV_UNIX 1
@@ -995,7 +1007,7 @@ case '~':
 #endif
 #if defined _UWIN
 #	define JSTR_ENV_UWIN 1
-#endif
+#endif /* env */
 
 #if (defined __x86_64 || defined __x86_64__) && (defined _ILP32 || defined __ILP32__)
 #	define JSTR_ARCH_X86_32 1
@@ -1111,7 +1123,7 @@ case '~':
 #	define JSTR_ARCH_CSKY 1
 #else
 #	define JSTR_ARCH_GENERIC 1
-#endif
+#endif /* arch */
 
 PJSTR_BEGIN_DECLS
 #if JSTR_OS_SOLARIS
@@ -1176,7 +1188,7 @@ PJSTR_END_DECLS
 #		define JSTR_ENDIAN_LITTLE 1
 #		define JSTR_ENDIAN_BIG    0
 #	endif
-#endif
+#endif /* byte_order */
 
 #if !JSTR_ENDIAN_BIG && !JSTR_ENDIAN_LITTLE
 #	error "Can't detect endianness."
@@ -1249,7 +1261,7 @@ PJSTR_END_DECLS
 #	if JSTR_HAVE_FFLUSH_UNLOCKED
 #		define fflush(stream) fflush_unlocked(stream)
 #	endif
-#endif
+#endif /* have_unlocked_io */
 
 #ifdef __GLIBC__
 #	ifdef _DIRENT_HAVE_D_TYPE
@@ -1267,7 +1279,7 @@ PJSTR_END_DECLS
 #	else
 #		define JSTR_HAVE_DIRENT_D_NAMLEN 0
 #	endif
-#endif /* DIRENT_HAVE */
+#endif /* dirent_have */
 
 /* Check optimizations. */
 #ifdef __GLIBC__
@@ -1295,7 +1307,7 @@ PJSTR_END_DECLS
 #	if JSTR_ARCH_ARM6T2 || JSTR_ARCH_ARM6 || JSTR_ARCH_ARM || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_SH || JSTR_ARCH_SPARC || JSTR_ARCH_CSKY
 #		define JSTR_HAVE_STRLEN_OPTIMIZED 1
 #	endif
-#endif /* HAVE_OPTIMIZED */
+#endif /* have_optimized */
 
 enum {
 	/* Needle length over which memmem would be faster than strstr. */
@@ -1327,17 +1339,17 @@ enum {
 #	if (JSTR_HAS_BUILTIN(__builtin_cmpb) || defined __builtin_cmpb)
 #		define JSTR_HAVE_WORD_AT_A_TIME 1
 #	endif
-#else /* JSTR_ARCH_GENERIC */
+#else /* jstr_arch_generic */
 #	if (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)  \
 	&& (JSTR_HAS_BUILTIN(__builtin_clzll) || defined __builtin_clzll) \
 	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)   \
 	&& (JSTR_HAS_BUILTIN(__builtin_ctzll) || defined __builtin_ctzll)
 #		define JSTR_HAVE_WORD_AT_A_TIME 1
 #	endif
-#endif
+#endif /* have_word_at_a_time */
 
 #if !JSTR_USE_LGPL
 #	undef JSTR_HAVE_WORD_AT_A_TIME
 #endif
 
-#endif /* JSTR_MACROS_H */
+#endif /* jstr_macros_h */

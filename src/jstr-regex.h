@@ -17,6 +17,10 @@ PJSTR_END_DECLS
 #include "jstr-replace.h"
 #include "jstr-string.h"
 
+#define jstrre_chkcomp(errcode) jstr_unlikely(errcode != JSTRRE_RET_NOERROR)
+#define jstrre_chkexec(errcode) (jstrre_chkcomp(errcode) && jstr_unlikely(errcode != JSTRRE_RET_NOMATCH))
+#define jstrre_chk(errcode)     jstrre_chkcomp(errcode)
+
 #define R JSTR_RESTRICT
 
 /* POSIX cflags */
@@ -29,10 +33,10 @@ PJSTR_END_DECLS
 #define JSTRRE_EF_NOTBOL REG_NOTBOL
 #define JSTRRE_EF_NOTEOL REG_NOTEOL
 
-/* BSD extension */
+/* BSD eflags */
 #ifdef REG_STARTEND
 #	define JSTRRE_EF_STARTEND REG_STARTEND
-#endif /* REG_STARTEND */
+#endif
 
 PJSTR_BEGIN_DECLS
 
@@ -71,26 +75,25 @@ typedef enum {
 #define JSTRRE_RET_ERANGE JSTRRE_RET_ERANGE
 	JSTRRE_RET_ESPACE = REG_ESPACE,
 #define JSTRRE_RET_ESPACE JSTRRE_RET_ESPACE
-	JSTRRE_RET_BADRPT = REG_BADRPT,
+	JSTRRE_RET_BADRPT = REG_BADRPT
 #define JSTRRE_RET_BADRPT JSTRRE_RET_BADRPT
 /* GNU regcomp returns */
-#ifdef REG_RET_EEND
-	JSTRRE_EEND = REG_RET_EEND,
-#	define JSTRRE_EEND JSTRRE_EEND
+#ifdef REG_EEND
+	,
+	JSTRRE_RET_EEND = REG_EEND
+#	define JSTRRE_RET_EEND JSTRRE_RET_EEND
 #endif
-#ifdef REG_RET_ESIZE
-	JSTRRE_ESIZE = REG_RET_ESIZE,
-#	define JSTRRE_ESIZE JSTRRE_ESIZE
+#ifdef REG_ESIZE
+	,
+	JSTRRE_RET_ESIZE = REG_ESIZE
+#	define JSTRRE_RET_ESIZE REG_ESIZE
 #endif
-#ifdef REG_RET_ERPAREN
-	JSTRRE_ERPAREN = REG_RET_ERPAREN
-#	define JSTRRE_ERPAREN JSTRRE_ERPAREN
+#ifdef REG_ERPAREN
+	,
+	JSTRRE_RET_ERPAREN = REG_ERPAREN
+#	define JSTRRE_RET_ERPAREN REG_ERPAREN
 #endif
 } jstrre_ret_ty;
-
-#define jstrre_chkcomp(errcode) jstr_unlikely(errcode != JSTRRE_RET_NOERROR)
-#define jstrre_chkexec(errcode) (jstrre_chkcomp(errcode) && jstr_unlikely(errcode != JSTRRE_RET_NOMATCH))
-#define jstrre_chk(errcode)     jstrre_chkcomp(errcode)
 
 #define PJSTRRE_ERR_EXEC_HANDLE(errcode, do_on_error, do_on_memory_error) \
 	if (jstr_likely(errcode == JSTRRE_RET_NOERROR)) {                 \
@@ -131,8 +134,8 @@ JSTR_ATTR_COLD
 JSTR_FUNC_VOID
 JSTR_ATTR_NOINLINE
 static void
-pjstrre_err_exit_print(int errcode,
-                       const regex_t *R preg)
+pjstrre_errdie_print(int errcode,
+                     const regex_t *R preg)
 JSTR_NOEXCEPT
 {
 	char buf[64];
@@ -144,12 +147,12 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-jstrre_err_exit(jstrre_ret_ty errcode,
-                const regex_t *R preg)
+jstrre_errdie(jstrre_ret_ty errcode,
+              const regex_t *R preg)
 JSTR_NOEXCEPT
 {
 	if (jstrre_chkexec(errcode))
-		pjstrre_err_exit_print(errcode, preg);
+		pjstrre_errdie_print(errcode, preg);
 }
 
 JSTR_FUNC_VOID
