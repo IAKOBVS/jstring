@@ -23,8 +23,6 @@ PJSTR_END_DECLS
 #	define PJSTR_RAREBYTE_NELEN
 #endif
 
-#include "_jstr-rarebyte.h"
-
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 #if PJSTR_RAREBYTE_USE_LEN

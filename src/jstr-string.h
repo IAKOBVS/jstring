@@ -13,6 +13,7 @@ PJSTR_END_DECLS
 #include "jstr-builder.h"
 #include "jstr-config.h"
 #include "jstr-stdstring.h"
+#include "jstr-rarebyte.h"
 
 #define R JSTR_RESTRICT
 
@@ -492,7 +493,7 @@ JSTR_NOEXCEPT
 #	if JSTR_USE_LGPL
 	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
 #	else
-	const unsigned char *const p = pjstr_rarebyteget((const u *)ne);
+	const unsigned char *const p = jstr_rarebyteget((const u *)ne);
 	if (p)
 		return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, p);
 	return pjstr_memmem5andmore((const u *)hs, hs_len, (const u *)ne, ne_len);
@@ -516,9 +517,36 @@ JSTR_NOEXCEPT
 }
 
 #if JSTR_USE_LGPL
-#	define PJSTR_MEMMEM_FUNC      pjstr_strnstr
+#	define PJSTR_MEMMEM_FUNC    pjstr_strnstr
 #	define PJSTR_MEMMEM_RETTYPE char *
 #	include "_lgpl-memmem.h"
+#else
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+pjstr_strnstr(const unsigned char *hs,
+              const unsigned char *ne,
+              const unsigned char *rarebyte,
+	      size_t n)
+{
+	typedef unsigned char u;
+	const unsigned char *hp, *np;
+	const unsigned char *const end = hs + n;
+	const int c = *(u *)rarebyte;
+	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
+	hs += idx;
+	for (; (hs = (const u *)jstr_strnchr((char *)hs, c, end - hs)); ++hs) {
+		for (hp = hs + 1, np = ne + 1; *hp == *np && *hp && hp < end; ++hp, ++np)
+			;
+		if (*np == '\0')
+			return (char *)hs - 1;
+		if (jstr_unlikely(*hp == '\0'))
+			return NULL;
+	}
+	return NULL;
+}
+
 #endif
 
 JSTR_FUNC_PURE
@@ -564,6 +592,9 @@ JSTR_NOEXCEPT
 	hs_len += jstr_strnlen(hs + hs_len, n - hs_len);
 	return pjstr_strnstr(hs, hs_len, ne, ne_len);
 #else
+	const unsigned char *const p = jstr_rarebyteget((const unsigned char *)n);
+	if (p)
+		return pjstr_strnstr((const u *)hs, (const u *)ne, p, n);
 	return pjstr_strnstr5andmore((const u *)hs, (const u *)ne, n, strlen(ne));
 #endif
 }
@@ -739,18 +770,39 @@ JSTR_NOEXCEPT
 #	endif
 
 #	if JSTR_USE_LGPL
-#		define PJSTR_MEMMEM_FUNC          pjstr_strcasestr
+#		define PJSTR_MEMMEM_FUNC        pjstr_strcasestr
 #		define PJSTR_MEMMEM_RETTYPE     char *
-#		define PJSTR_MEMMEM_CMP_FUNC      jstr_strcasecmpeq_len
+#		define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
 #		define PJSTR_MEMMEM_HASH2_ICASE 1
 #		define PJSTR_MEMMEM_CHECK_EOL   1
 #		include "_lgpl-memmem.h"
 #	else
-#		define PJSTR_RAREBYTE_FUNC       pjstr_strcasestr
-#		define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq
-#		define PJSTR_RAREBYTE_USE_LEN  0
-#		include "_jstr-rarebyte-impl.h"
+
+JSTR_FUNC_PURE
+static char *
+pjstr_strcasestr(const unsigned char *h,
+                 const unsigned char *n,
+                 const unsigned char *rarebyte)
+{
+	typedef unsigned char u;
+	const unsigned char *hp, *np;
+	const int c = *(u *)rarebyte;
+	const size_t idx = JSTR_PTR_DIFF(rarebyte, n);
+	h += idx;
+	for (; (h = (const u *)strchr((char *)h, c)); ++h) {
+		for (hp = h + 1, np = n + 1; L(*hp) == L(*np) && *hp; ++hp, ++np)
+			;
+		if (*np == '\0')
+			return (char *)h - 1;
+		if (jstr_unlikely(*hp == '\0'))
+			return NULL;
+	}
+	return NULL;
+}
+
 #	endif
+
+#	undef L
 
 JSTR_FUNC_PURE
 static char *
@@ -770,14 +822,12 @@ JSTR_NOEXCEPT
 	return pjstr_strcasestr(h + 1, hs_len - 1, n, ne_len);
 #	else
 	typedef unsigned char u;
-	const u *const p = pjstr_rarebytegetcase((const u *)n);
+	const u *const p = jstr_rarebytegetcase((const u *)n);
 	if (p)
 		return pjstr_strcasestr((const u *)h, (const u *)n, (const u *)p);
 	return pjstr_strcasestr5andmore((const u *)h, (const u *)n);
 #	endif
 }
-
-#	undef L
 
 #endif /* HAVE_STRCASESTR_OPTIMIZED */
 
@@ -867,13 +917,13 @@ JSTR_NOEXCEPT
 }
 
 #if JSTR_USE_LGPL && !JSTR_HAVE_STRCASESTR_OPTIMIZED
-#	define PJSTR_MEMMEM_FUNC          pjstr_strcasestr_len
+#	define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len
 #	define PJSTR_MEMMEM_RETTYPE     char *
-#	define PJSTR_MEMMEM_CMP_FUNC      jstr_strcasecmpeq_len
+#	define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
 #	define PJSTR_MEMMEM_HASH2_ICASE 1
 #	include "_lgpl-memmem.h"
 #else
-#	define PJSTR_RAREBYTE_FUNC       pjstr_strcasestr_len
+#	define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len
 #	define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
 #	include "_jstr-rarebyte-impl.h"
 #endif
@@ -909,7 +959,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (ne_len > 4) {
 #	if !JSTR_USE_LGPL
-		const u *const p = pjstr_rarebytegetcase((const u *)ne);
+		const u *const p = jstr_rarebytegetcase((const u *)ne);
 		if (p)
 			return pjstr_strcasestr_len((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)ne);
 #	else
