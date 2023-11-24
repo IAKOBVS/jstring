@@ -245,7 +245,8 @@ JSTR_NOEXCEPT
 	readsz = fread(buf, 1, sizeof(buf), fp);
 	if (jstr_unlikely(readsz == (size_t)-1))
 		goto err_close;
-	PJSTR_RESERVE(s, sz, cap, readsz * 2, goto err_close);
+	if (jstr_chk(jstr_reserve(s, sz, cap, readsz * 2)))
+		goto err_close;
 	memcpy(*s, buf, readsz);
 	*sz = readsz;
 	if (jstr_unlikely(readsz == MINBUF)) {
@@ -259,7 +260,8 @@ JSTR_NOEXCEPT
 			if (readsz < reqsz)
 				break;
 			if (*sz == *cap)
-				PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, (*cap * PJSTR_GROWTH), goto err_close)
+				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (*cap * PJSTR_GROWTH))))
+					goto err_close;
 		}
 	}
 	*(*s + *sz) = '\0';
@@ -286,7 +288,8 @@ pjstrio_readfile_len(char *R *R s,
                      size_t file_size)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, file_size, goto err)
+	if (jstr_chk(jstr_reserve(s, sz, cap, file_size)))
+		goto err;
 	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
 		goto err_free;
 	*(*s + file_size) = '\0';
@@ -391,7 +394,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(home == NULL))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	const size_t len = strlen(home);
-	PJSTR_RESERVE(s, sz, cap, *sz + len, JSTR_RETURN_ERR(JSTR_RET_ERR));
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + len)))
+		return JSTR_RET_ERR;
 	jstr_strmove_len(*s + len, *s + 1, (*s + *sz) - (*s + 1));
 	memcpy(*s, home, len);
 	*sz += len;
@@ -447,7 +451,8 @@ JSTR_NOEXCEPT
 	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
-			PJSTR_RESERVE_ALWAYS(s, sz, cap, *sz + len, JSTR_RETURN_ERR(JSTR_RET_ERR))
+			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + len)))
+				return JSTR_RET_ERR;
 			p = *s + (p - tmp);
 		}
 		jstr_strmove_len(p + len, p + 1, (*s + *sz) - (p + 1));
@@ -490,7 +495,8 @@ jstrio_appendpath_len(char *R *R s,
                       const char *R fname,
                       size_t fname_len)
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + fname_len, JSTR_RETURN_ERR(JSTR_RET_ERR));
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len)))
+		return JSTR_RET_ERR;
 	*sz = jstrio_appendpath_len_p(*s, *sz, fname, fname_len) - *s;
 	return JSTR_RET_SUCC;
 }

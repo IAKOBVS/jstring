@@ -67,11 +67,10 @@ PJSTR_END_DECLS
 #if JSTR_PANIC
 #	define PJSTR_EXIT_MAYBE()  jstr_errdie("")
 #	define PJSTR_ERR_MAYBE()   jstr_err("")
-#	define JSTR_PRINT_LOG(...) fprintf(stderr, __VA_ARGS__)
+#	define JSTR_DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
 			if (jstr_unlikely((p) == NULL)) { \
-				jstr_errdie("");          \
 				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
@@ -79,7 +78,7 @@ PJSTR_END_DECLS
 /* clang-format off */
 #	define PJSTR_EXIT_MAYBE() do {} while (0)
 #	define PJSTR_ERR_MAYBE() do {} while (0)
-#	define JSTR_PRINT_LOG(...) do {} while (0)
+#	define JSTR_DEBUG_PRINT(...) do {} while (0)
 /* clang-format on */
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \

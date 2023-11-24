@@ -94,7 +94,8 @@ jstr_insert_len(char *R *R s,
                 size_t src_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + src_len, return JSTR_RET_ERR)
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len)))
+		return JSTR_RET_ERR;
 	jstr_insert_unsafe(*s, *sz, at, src, src_len);
 	*sz += src_len;
 	return JSTR_RET_SUCC;
@@ -112,7 +113,8 @@ pjstr_rplcat_len_higher(char *R *R s,
                         size_t find_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + rplc_len - find_len, return NULL);
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + rplc_len - find_len)))
+		return NULL;
 	jstr_strmove_len(*s + at + rplc_len,
 	                 *s + at + find_len,
 	                 *sz - (at + find_len));
@@ -138,7 +140,8 @@ jstr_rplcat_len(char *R *R s,
                 size_t find_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + rplc_len - find_len, return NULL);
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + rplc_len - find_len)))
+		return NULL;
 	if (rplc_len != find_len)
 		jstr_strmove_len(*s + at + rplc_len,
 		                 *s + at + find_len,
@@ -1130,7 +1133,8 @@ jstr_place_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (at + src_len > *sz) {
-		PJSTR_RESERVE_ALWAYS(s, sz, cap, at + src_len, return JSTR_RET_ERR)
+		if (jstr_chk(jstr_reservealways(s, sz, cap, at + src_len)))
+			return JSTR_RET_ERR;
 		*sz = at + src_len;
 		*(*s + *sz) = '\0';
 	}
@@ -1421,7 +1425,8 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n <= 1))
 		return JSTR_RET_SUCC;
-	PJSTR_RESERVE(s, sz, cap, *sz * n, return JSTR_RET_ERR)
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * n)))
+		return JSTR_RET_ERR;
 	*sz = jstr_repeat_len_unsafe_p(*s, *sz, n) - *s;
 	return JSTR_RET_SUCC;
 }

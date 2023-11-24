@@ -37,21 +37,6 @@ PJSTR_END_DECLS
 	                         i < pjstr_foreach_end_##ptr;                               \
 	                         ++i)
 
-#define PJSTR_RESERVE_FAIL(func, s, sz, cap, new_cap, do_on_malloc_err) \
-	if (jstr_chk(func(s, sz, cap, new_cap))) {                      \
-		PJSTR_ERR_MAYBE();                                      \
-		do_on_malloc_err;                                       \
-	}
-
-#define PJSTR_RESERVE(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserve, s, sz, cap, new_cap, do_on_malloc_err)
-#define PJSTR_RESERVEEXACT(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserveexact, s, sz, cap, new_cap, do_on_malloc_err)
-#define PJSTR_RESERVE_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserve_always, s, sz, cap, new_cap, do_on_malloc_err)
-#define PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, new_cap, do_on_malloc_err) \
-	PJSTR_RESERVE_FAIL(jstr_reserveexact_always, s, sz, cap, new_cap, do_on_malloc_err)
-
 PJSTR_BEGIN_DECLS
 
 /* Set first char to NUL and size to zero. */
@@ -236,10 +221,10 @@ jstr_end(const jstr_ty *R j)
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstr_reserve_always(char *R *R s,
-                    size_t *R sz,
-                    size_t *R cap,
-                    size_t new_cap)
+jstr_reservealways(char *R *R s,
+                   size_t *R sz,
+                   size_t *R cap,
+                   size_t new_cap)
 JSTR_NOEXCEPT
 {
 	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? pjstr_grow(*cap, new_cap) : new_cap * PJSTR_ALLOC_MULTIPLIER);
@@ -265,7 +250,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
-	return jstr_reserve_always(s, sz, cap, new_cap);
+	return jstr_reservealways(s, sz, cap, new_cap);
 }
 
 /*
@@ -274,10 +259,10 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstr_reserveexact_always(char *R *R s,
-                         size_t *R sz,
-                         size_t *R cap,
-                         size_t new_cap)
+jstr_reserveexactalways(char *R *R s,
+                        size_t *R sz,
+                        size_t *R cap,
+                        size_t new_cap)
 JSTR_NOEXCEPT
 {
 	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? new_cap + 1 : new_cap * PJSTR_ALLOC_MULTIPLIER);
@@ -303,7 +288,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
-	return jstr_reserveexact_always(s, sz, cap, new_cap);
+	return jstr_reserveexactalways(s, sz, cap, new_cap);
 }
 
 JSTR_FUNC
@@ -313,7 +298,8 @@ jstr_shrink_to_fit(char *R *R s,
                    size_t *R sz,
                    size_t *R cap)
 {
-	PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz, JSTR_RETURN_ERR(JSTR_RET_ERR))
+	if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz)))
+		return JSTR_RET_ERR;
 	return JSTR_RET_SUCC;
 }
 
@@ -337,7 +323,8 @@ pjstr_cat(char *R *R s,
 JSTR_NOEXCEPT
 {
 	char *p;
-	PJSTR_RESERVE(s, sz, cap, *sz + arg_len, JSTR_RETURN_ERR(JSTR_RET_ERR))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + arg_len)))
+		return JSTR_RET_ERR;
 	p = *s + *sz;
 	*sz += arg_len;
 	const char *R arg;
@@ -461,7 +448,8 @@ jstr_append_len(char *R *R s,
                 size_t src_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + src_len, JSTR_RETURN_ERR(JSTR_RET_ERR))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len)))
+		return JSTR_RET_ERR;
 	*sz = jstr_append_len_unsafe_p(*s, *sz, src, src_len) - *s;
 	return JSTR_RET_SUCC;
 }
@@ -505,7 +493,8 @@ jstr_assignnchr(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (n > *sz) {
-		PJSTR_RESERVE_ALWAYS(s, sz, cap, n, JSTR_RETURN_ERR(JSTR_RET_ERR))
+		if (jstr_chk(jstr_reservealways(s, sz, cap, n)))
+			return JSTR_RET_ERR;
 		memset(*s, c, n);
 		*(*s + n) = '\0';
 		*sz = n;
@@ -541,7 +530,8 @@ jstr_pushbackn(char *R *R s,
                size_t n)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + n, JSTR_RETURN_ERR(JSTR_RET_ERR))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n)))
+		return JSTR_RET_ERR;
 	*sz = jstr_pushbackn_len_unsafe_p(*s, *sz, c, n) - *s;
 	return JSTR_RET_SUCC;
 }
@@ -578,7 +568,8 @@ jstr_pushfrontn(char *R *R s,
                 size_t n)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + n, JSTR_RETURN_ERR(JSTR_RET_ERR))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n)))
+		return JSTR_RET_ERR;
 	*sz = jstr_pushfrontn_len_unsafe_p(*s, *sz, c, n) - *s;
 	return JSTR_RET_SUCC;
 }
@@ -623,7 +614,8 @@ jstr_prepend_len(char *R *R s,
                  size_t src_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + src_len, JSTR_RETURN_ERR(JSTR_RET_ERR))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len)))
+		return JSTR_RET_ERR;
 	*sz = jstr_prepend_len_unsafe_p(*s, *sz, src, src_len) - *s;
 	return JSTR_RET_SUCC;
 }
@@ -661,7 +653,8 @@ jstr_assign_len(char *R *R s,
                 size_t src_len)
 JSTR_NOEXCEPT
 {
-	PJSTR_RESERVE(s, sz, cap, *sz + src_len, JSTR_RETURN_ERR(JSTR_RET_ERR))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len)))
+		return JSTR_RET_ERR;
 	*sz = jstr_assign_len_unsafe_p(*s, src, src_len) - *s;
 	return JSTR_RET_SUCC;
 }
@@ -696,7 +689,8 @@ jstr_pushback(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, JSTR_RETURN_ERR(JSTR_RET_ERR))
+		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz * PJSTR_GROWTH)))
+			return JSTR_RET_ERR;
 	*sz = jstr_pushback_unsafe_p(*s, *sz, c) - *s;
 	return JSTR_RET_SUCC;
 }
@@ -731,7 +725,8 @@ jstr_pushfront(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		PJSTR_RESERVEEXACT_ALWAYS(s, sz, cap, *sz * PJSTR_GROWTH, JSTR_RETURN_ERR(JSTR_RET_ERR))
+		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz * PJSTR_GROWTH)))
+			return JSTR_RET_ERR;
 	*sz = jstr_pushfront_unsafe_p(*s, *sz, c) - *s;
 	return JSTR_RET_SUCC;
 }
@@ -1058,7 +1053,7 @@ get_arg:
    %p - ptr.
    %n - chars written.
    %m - errno string.
-   Otherwise, JSTR_RETURN_ERR(JSTR_RET_ERR) and set errno to EINVAL.
+   Otherwise, JSTR_RET_ERR and set errno to EINVAL.
 */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
@@ -1076,7 +1071,8 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
-	PJSTR_RESERVEEXACT(s, sz, cap, arg_len * PJSTR_ALLOC_MULTIPLIER, goto err)
+	if (jstr_chk(jstr_reserveexact(s, sz, cap, arg_len * PJSTR_ALLOC_MULTIPLIER)))
+		goto err;
 	va_start(ap, fmt);
 	arg_len = vsprintf(*s, fmt, ap);
 	va_end(ap);
@@ -1093,7 +1089,7 @@ err:
 /*
    Return JSTR_RET_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RETURN_ERR(JSTR_RET_ERR) and set errno to EINVAL.
+   Otherwise, JSTR_RET_ERR and set errno to EINVAL.
 */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
@@ -1109,7 +1105,8 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
-	PJSTR_RESERVEEXACT(&j->data, &j->size, &j->capacity, ret * PJSTR_ALLOC_MULTIPLIER, goto err)
+	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, ret * PJSTR_ALLOC_MULTIPLIER)))
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data, fmt, ap);
 	va_end(ap);
@@ -1128,7 +1125,7 @@ err:
    Append ... to end of S.
    Return JSTR_RET_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RETURN_ERR(JSTR_RET_ERR) and set errno to EINVAL.
+   Otherwise, JSTR_RET_ERR and set errno to EINVAL.
 */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
@@ -1147,7 +1144,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += *sz;
-	PJSTR_RESERVE(s, sz, cap, ret, goto err)
+	if (jstr_chk(jstr_reserve(s, sz, cap, ret)))
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
@@ -1166,7 +1164,7 @@ err:
    Append ... to end of S.
    Return JSTR_RET_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RETURN_ERR(JSTR_RET_ERR) and set errno to EINVAL.
+   Otherwise, JSTR_RET_ERR and set errno to EINVAL.
 */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
@@ -1183,7 +1181,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += j->size;
-	PJSTR_RESERVE(&j->data, &j->size, &j->capacity, ret, goto err)
+	if (jstr_chk(jstr_reserve(&j->data, &j->size, &j->capacity, ret)))
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
@@ -1201,7 +1200,7 @@ err:
 /*
    Return JSTR_RET_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RETURN_ERR(JSTR_RET_ERR) and set errno to EINVAL.
+   Otherwise, JSTR_RET_ERR and set errno to EINVAL.
 */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
@@ -1221,7 +1220,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += start_idx;
-	PJSTR_RESERVE(s, sz, cap, ret, goto err)
+	if (jstr_chk(jstr_reserve(s, sz, cap, ret)))
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
@@ -1239,7 +1239,7 @@ err:
 /*
    Return JSTR_RET_ERR on error.
    Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RETURN_ERR(JSTR_RET_ERR) and set errno to EINVAL.
+   Otherwise, JSTR_RET_ERR and set errno to EINVAL.
 */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
@@ -1257,7 +1257,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	ret += start_idx;
-	PJSTR_RESERVE(&j->data, &j->size, &j->capacity, ret, goto err)
+	if (jstr_chk(jstr_reserve(&j->data, &j->size, &j->capacity, ret)))
+		goto err;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);

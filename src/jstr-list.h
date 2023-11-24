@@ -12,33 +12,20 @@
 
 #define R JSTR_RESTRICT
 
-#define PJSTRL_RESERVE_FAIL(func, list, new_cap, do_on_mallocerr) \
-	if (jstr_chk(func(list, new_cap))) {                      \
-		PJSTR_EXIT_MAYBE();                               \
-		do_on_mallocerr;                                  \
-	}
-
-#define PJSTRL_RESERVE(list, new_cap, do_on_mallocerr) \
-	PJSTRL_RESERVE_FAIL(jstrl_reserve, list, new_cap, do_on_mallocerr)
-#define PJSTRL_RESERVE_ALWAYS(list, new_cap, do_on_mallocerr) \
-	PJSTRL_RESERVE_FAIL(jstrl_reservealways, list, new_cap, do_on_mallocerr)
-
-#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##p = jstrl_end(l); \
-	                         p < pjstrl_foreach_end_##p;                                             \
-	                         ++p)
-
-#define pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##p = ((l)->data) + ((l)->capacity); \
-	                              p < pjstrl_foreach_end_##p;                                                              \
-	                              ++p)
-
-#define jstrl_foreachi(l, i) for (size_t i = 0, const pjstrl_foreach_end_##p = ((l)->size); \
-	                          i < pjstrl_foreach_end_##p;                               \
-	                          ++i)
-
 #define JSTRL_INIT \
 	{          \
 		0  \
 	}
+
+#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##p = jstrl_end(l); \
+	                         p < pjstrl_foreach_end_##p;                                             \
+	                         ++p)
+#define pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##p = ((l)->data) + ((l)->capacity); \
+	                              p < pjstrl_foreach_end_##p;                                                              \
+	                              ++p)
+#define jstrl_foreachi(l, i) for (size_t i = 0, const pjstrl_foreach_end_##p = ((l)->size); \
+	                          i < pjstrl_foreach_end_##p;                               \
+	                          ++i)
 
 PJSTR_BEGIN_DECLS
 
@@ -47,16 +34,6 @@ typedef struct jstrlist_ty {
 	size_t size;
 	size_t capacity;
 } jstrlist_ty;
-
-JSTR_FUNC_VOID
-JSTR_ATTR_NOINLINE
-JSTR_ATTR_COLD
-static void
-pjstrl_nullify_members(jstrlist_ty *R l)
-{
-	l->size = 0;
-	l->capacity = 0;
-}
 
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
@@ -139,8 +116,8 @@ JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
 #if JSTRL_LAZY_FREE
-		pjstrl_foreach_cap(l, p)
-		free(p->data);
+		pjstrl_foreach_cap (l, p)
+			free(p->data);
 #else
 		jstrl_foreach (l, p)
 			free(p->data);
@@ -150,6 +127,16 @@ JSTR_NOEXCEPT
 		l->size = 0;
 		l->capacity = 0;
 	}
+}
+
+JSTR_FUNC_VOID
+JSTR_ATTR_COLD
+JSTR_ATTR_NOINLINE
+static void
+jstrl_free_noinline(jstrlist_ty *R l)
+JSTR_NOEXCEPT
+{
+	return jstrl_free(l);
 }
 
 JSTR_FUNC_VOID
@@ -184,7 +171,7 @@ jstrl_debug(const jstrlist_ty *R l)
 	return JSTR_RET_SUCC;
 err_set_errno:
 	errno = ret;
-	return JSTR_RET_ERR;
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC_CONST
@@ -218,9 +205,8 @@ JSTR_NOEXCEPT
 	l->capacity = new_cap;
 	return JSTR_RET_SUCC;
 err:
-	jstrl_free(l);
-	PJSTR_EXIT_MAYBE();
-	return JSTR_RET_ERR;
+	jstrl_free_noinline(l);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -231,7 +217,8 @@ jstrl_reserve(jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	if (new_cap > l->capacity)
-		PJSTRL_RESERVE_ALWAYS(l, new_cap, return JSTR_RET_ERR);
+		if (jstr_chk(jstrl_reservealways(l, new_cap)))
+			return JSTR_RET_ERR;
 	return JSTR_RET_SUCC;
 }
 
@@ -254,9 +241,8 @@ pjstrl_assign_len(char *R *R s,
 	*sz = src_len;
 	return JSTR_RET_SUCC;
 err:
-	pjstr_nullify_members(sz, cap);
-	PJSTR_EXIT_MAYBE();
-	return JSTR_RET_ERR;
+	jstr_free_noinline(s, sz, cap);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 #endif
 }
 
@@ -322,9 +308,8 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
 		goto err;
 	return JSTR_RET_SUCC;
 err:
-	jstrl_free(l);
-	PJSTR_EXIT_MAYBE();
-	return JSTR_RET_ERR;
+	jstrl_free_noinline(l);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -333,12 +318,12 @@ jstrl_pushfront_len(jstrlist_ty *R l,
                     const char *R s,
                     size_t s_len)
 {
-	PJSTRL_RESERVE(l, l->size + 1, goto err)
+	if (jstr_chk(jstrl_reserve(l, l->size + 1)))
+		goto err;
 	return jstrl_pushfront_len_unsafe(l, s, s_len);
 err:
-	jstrl_free(l);
-	PJSTR_EXIT_MAYBE();
-	return JSTR_RET_ERR;
+	jstrl_free_noinline(l);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -359,9 +344,8 @@ JSTR_NOEXCEPT
 	++l->size;
 	return JSTR_RET_SUCC;
 err:
-	jstrl_free(l);
-	PJSTR_EXIT_MAYBE();
-	return JSTR_RET_ERR;
+	jstrl_free_noinline(l);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -371,12 +355,12 @@ jstrl_pushback_len(jstrlist_ty *R l,
                    size_t s_len)
 JSTR_NOEXCEPT
 {
-	PJSTRL_RESERVE(l, l->size + 1, goto err)
+	if (jstr_chk(jstrl_reserve(l, l->size + 1)))
+		goto err;
 	return jstrl_pushback_len_unsafe(l, s, s_len);
 err:
-	jstrl_free(l);
-	PJSTR_EXIT_MAYBE();
-	return JSTR_RET_ERR;
+	jstrl_free_noinline(l);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 /* Last arg must be NULL. */
@@ -396,7 +380,8 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return JSTR_RET_SUCC;
-	PJSTRL_RESERVE(l, l->size + argc, return JSTR_RET_ERR)
+	if (jstr_chk(jstrl_reserve(l, l->size + argc)))
+		return JSTR_RET_ERR;
 	va_start(ap, l);
 	const char *R arg;
 	jstr_ty *j = l->data + l->size;
@@ -406,9 +391,9 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	return JSTR_RET_SUCC;
 err_free_l:
-	jstrl_free(l);
+	jstrl_free_noinline(l);
 	va_end(ap);
-	return JSTR_RET_ERR;
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -421,8 +406,8 @@ jstrl_assign_len(jstrlist_ty *R l,
 	jstr_ty *const p = l->data + idx;
 	if (jstr_likely(pjstrl_assign_len(&p->data, &p->size, &p->capacity, s, s_len) == JSTR_RET_SUCC))
 		return JSTR_RET_SUCC;
-	jstrl_free(l);
-	return JSTR_RET_ERR;
+	jstrl_free_noinline(l);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 #define PJSTRL_DEFINE_FIND_LEN(name, func)                    \
@@ -601,8 +586,8 @@ jstrl_split_len(jstrlist_ty *R l,
 			goto err;
 	return JSTR_RET_SUCC;
 err:
-	jstrl_free(l);
-	return JSTR_RET_ERR;
+	jstrl_free_noinline(l);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 PJSTR_END_DECLS
