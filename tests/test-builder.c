@@ -10,7 +10,7 @@
 		if (ret != fn(__VA_ARGS__)) {                                                          \
 			fprintf(stderr, "%s\n", JSTR_STRING(fn) "()");                                 \
 			jstr_debug(&j);                                                                \
-			jstr_err_exit("");                                                             \
+			jstr_errdie("");                                                               \
 		}                                                                                      \
 		ASSERT(strcmp(j.data, expected) == 0, j.data, expected);                               \
 		ASSERT(j.size == strlen(expected), j.data, expected);                                  \
@@ -65,13 +65,13 @@ main(int argc, char **argv)
 	find = "[0-9A-Za-z]*";
 	rplc = "";
 	expected = "   ";
-	assert(!jstrre_comp_chk(jstrre_comp(&preg, find, 0)));
+	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
 	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0);
 	FILL(j, "hello hello hello hello");
 	find = "\\([0-9A-Za-z]*\\)";
 	rplc = "\\1\\1";
 	expected = "hellohello hellohello hellohello hellohello";
-	assert(!jstrre_comp_chk(jstrre_comp(&preg, find, 0)));
+	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
 	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0, 3);
 	jstr_free_j(&j);
 	SUCCESS();
