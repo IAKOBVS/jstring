@@ -9,8 +9,8 @@
 #ifndef PJSTR_MEMMEM_RETTYPE
 #	define PJSTR_MEMMEM_RETTYPE unsigned char *
 #endif
-#ifndef PJSTR_MEMMEM_FN
-#	define PJSTR_MEMMEM_FN pjstr_memmem_impl
+#ifndef PJSTR_MEMMEM_FUNC
+#	define PJSTR_MEMMEM_FUNC pjstr_memmem_impl
 #endif
 #define PJSTR_MEMMEM_HASH2(p) (((size_t)((p)[0]) - ((size_t)((p)[-1]) << 3)) % 256)
 #ifndef PJSTR_MEMMEM_CHECK_EOL
@@ -25,17 +25,17 @@
 #endif
 
 #if PJSTR_MEMMEM_SHORT_NEEDLE
-#	undef PJSTR_MEMMEM_FN_IMPL
-#	define PJSTR_MEMMEM_FN_IMPL JSTR_CONCAT(PJSTR_MEMMEM_FN, _short_ne_impl)
+#	undef PJSTR_MEMMEM_FUNC_IMPL
+#	define PJSTR_MEMMEM_FUNC_IMPL JSTR_CONCAT(PJSTR_MEMMEM_FUNC, _short_ne_impl)
 #else
-#	undef PJSTR_MEMMEM_FN_IMPL
-#	define PJSTR_MEMMEM_FN_IMPL JSTR_CONCAT(PJSTR_MEMMEM_FN, _long_ne_impl)
+#	undef PJSTR_MEMMEM_FUNC_IMPL
+#	define PJSTR_MEMMEM_FUNC_IMPL JSTR_CONCAT(PJSTR_MEMMEM_FUNC, _long_ne_impl)
 #endif
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
-PJSTR_MEMMEM_FN_IMPL(const unsigned char *hs,
+PJSTR_MEMMEM_FUNC_IMPL(const unsigned char *hs,
                      size_t hl,
                      const unsigned char *ne,
                      size_t nl)
