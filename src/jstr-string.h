@@ -548,7 +548,6 @@ pjstr_strnstr(const unsigned char *hs,
 }
 
 #endif
-
 JSTR_FUNC_PURE
 static char *
 jstr_strnstr(const char *hs,
