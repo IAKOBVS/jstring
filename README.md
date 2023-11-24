@@ -1,17 +1,16 @@
 # jstring
 
 ## Features:
-- works with any string type: Functions will take a pointer to string, size,
-and capacity.
+- works with any string type: Functions take a pointer to string, size, and capacity.
 - in-place literal string and regex replacement: Supports backreferences and
 searching from a specified index.
-- reverse standard string functions: Memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
+- reverse standard string functions: memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
 etc.
 - standard string functions for non-nul terminated strings: Memspn\(\), memcspn\(\),
 mempbrk\(\), etc.
-- extensions to standard string functions: Strnstr\(\), strnchr\(\), strcasestr\_len\(\).
-- string formatting: Asprintf\(\) and vsprintfstrlen\(\) which returns the number
-of characters vsprintf will write excluding the nul.
+- extensions to standard string functions: strnstr\(\), strnchr\(\), strcasestr\_len\(\).
+- string formatting: asprintf\(\) and vsprintfstrlen\(\), which returns the maximum
+number of characters \(not the exact number\) vsprintf will write including the nul.
 
 ## Installation:
 
@@ -31,8 +30,8 @@ Some headers may need to be explicitly included since they rely on POSIX.
 
 ## Disclaimer:
 Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 or
-use ./remove-lgpl to exclude the LGPL code. jstr\_ty, jstrl\_ty, and jarr\_ty must
-be initialized with zeros.
+use ./remove-lgpl after ./build to exclude the LGPL code. jstr\_ty, jstrl\_ty, and
+jarr\_ty must be initialized with zeros.
 
 ```
 jstr_ty j = JSTR_INIT;
