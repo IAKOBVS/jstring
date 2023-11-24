@@ -62,7 +62,7 @@ pjstrl_elemmove(jstrlist_ty *R l,
 JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static jstr_ty *
-jstrl_start(const jstrlist_ty *R l)
+jstrl_start(const jstrlist_ty *R const l)
 JSTR_NOEXCEPT
 {
 	return l->data;
@@ -71,7 +71,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static jstr_ty *
-jstrl_end(const jstrlist_ty *R l)
+jstrl_end(const jstrlist_ty *R const l)
 JSTR_NOEXCEPT
 {
 	return l->data + l->size;
@@ -102,8 +102,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static size_t
-jstrl_index(jstrlist_ty *R l,
-            jstr_ty *R curr)
+jstrl_index(jstrlist_ty *R const l,
+            jstr_ty *R const curr)
 JSTR_NOEXCEPT
 {
 	return curr - l->data;

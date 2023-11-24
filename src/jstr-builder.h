@@ -148,8 +148,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static size_t
-jstr_index(const jstr_ty *R j,
-           const char *R curr)
+jstr_index(const jstr_ty *R const j,
+           const char *R const curr)
 {
 	return curr - j->data;
 }
@@ -201,7 +201,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static jstr_ty *
-jstr_start(const jstr_ty *R j)
+jstr_start(const jstr_ty *R const j)
 {
 	return (jstr_ty *)j->data;
 }
@@ -209,7 +209,7 @@ jstr_start(const jstr_ty *R j)
 JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
 static jstr_ty *
-jstr_end(const jstr_ty *R j)
+jstr_end(const jstr_ty *R const j)
 {
 	return (jstr_ty *)j->data + j->size;
 }

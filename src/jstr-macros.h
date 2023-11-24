@@ -252,7 +252,6 @@ PJSTR_END_DECLS
 #	define JSTR_ATTR_PURE     __declspec(noalias)
 #	define JSTR_ATTR_CONST    __declspec(restrict)
 #	define JSTR_ATTR_NOTHROW  __declspec(nothrow)
-#	define JSTR_ATTR_NOINLINE __delspec(noinline)
 #else
 #	if JSTR_HAS_ATTRIBUTE(__format__)
 #		define JSTR_ATTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
