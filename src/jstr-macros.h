@@ -65,8 +65,6 @@ PJSTR_END_DECLS
 #endif
 
 #if JSTR_PANIC
-#	define PJSTR_EXIT_MAYBE()  jstr_errdie("")
-#	define PJSTR_ERR_MAYBE()   jstr_err("")
 #	define JSTR_DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
@@ -74,11 +72,11 @@ PJSTR_END_DECLS
 				do_on_malloc_err;         \
 			}                                 \
 		} while (0)
+#	define JSTR_RETURN_ERR(errcode) jstr_errdie("")
 #else
 /* clang-format off */
-#	define PJSTR_EXIT_MAYBE() do {} while (0)
-#	define PJSTR_ERR_MAYBE() do {} while (0)
 #	define JSTR_DEBUG_PRINT(...) do {} while (0)
+#define JSTR_RETURN_ERR(errcode) return errcode
 /* clang-format on */
 #	define PJSTR_MALLOC_ERR(p, do_on_malloc_err)     \
 		do {                                      \
@@ -87,12 +85,6 @@ PJSTR_END_DECLS
 			}                                 \
 		} while (0)
 #endif
-
-#define JSTR_RETURN_ERR(errcode)    \
-	do {                        \
-		PJSTR_EXIT_MAYBE(); \
-		return errcode;     \
-	} while (0)
 
 #ifdef __cplusplus
 template <typename T, typename Other>

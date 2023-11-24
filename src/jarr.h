@@ -45,8 +45,8 @@ PJSTR_END_DECLS
 #define PJARR_MEMMOVE(j, dst, src, n) memmove(dst, src, (n)*PJARR_ELEMSZ(j))
 #define PJARR_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*PJARR_ELEMSZ(j))
 
-#define jarr_chk(j)        (jstr_unlikely(PJARR_DATA(j) == NULL))
-#define jarr_err(msg)      jstr_err(msg)
+#define jarr_chk(j)      (jstr_unlikely(PJARR_DATA(j) == NULL))
+#define jarr_err(msg)    jstr_err(msg)
 #define jarr_errdie(msg) jstr_errdie(msg)
 
 #define PJARR_ALIGN_UP(j, base) ((PJARR_ELEMSZ(j) < (sizeof(size_t) + sizeof(size_t))) ? JSTR_ALIGN_UP_STR(base) : base)
@@ -56,7 +56,7 @@ PJSTR_END_DECLS
 		if (jstr_unlikely((PJARR_DATA(j)) == NULL)) { \
 			PJARR_NULLIFY_MEMBERS(j);             \
 			do_on_malloc_err;                     \
-			jstr_errdie("");                    \
+			jstr_errdie("");                      \
 		}
 #else
 #	define PJARR_MALLOC_ERR(j, do_on_malloc_err)         \

@@ -131,7 +131,6 @@ JSTR_NOEXCEPT
 err_set_errno:
 	errno = ret;
 err:
-	PJSTR_EXIT_MAYBE();
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
