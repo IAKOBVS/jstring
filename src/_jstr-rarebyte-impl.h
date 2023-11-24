@@ -32,7 +32,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 #endif
 static PJSTR_RAREBYTE_RETTYPE
-PJSTR_RAREBYTE_FN(const unsigned char *h, PJSTR_RAREBYTE_HSLEN const unsigned char *n, PJSTR_RAREBYTE_NELEN const unsigned char *rarebyte)
+PJSTR_RAREBYTE_FN(const unsigned char *JSTR_RESTRICT h, PJSTR_RAREBYTE_HSLEN const unsigned char *JSTR_RESTRICT n, PJSTR_RAREBYTE_NELEN const unsigned char *rarebyte)
 {
 #if PJSTR_RAREBYTE_USE_LEN
 	if (jstr_unlikely(hs_len < ne_len))
