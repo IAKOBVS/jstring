@@ -26,7 +26,6 @@
 cd "$(dirname "$0")" || exit
 ./setup || exit
 mkdir -p ../jstr
-cp ../LICENSE ../jstr 2>/dev/null
 update_if_needed()
 {
 	in_fname=$1
