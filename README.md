@@ -25,20 +25,23 @@ or
 Some headers may need to be explicitly included since they rely on POSIX.
 
 ## Disclaimer:
-Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 or use ./remove-lgpl to exclude the LGPL code.
-jstr\_ty, jstrl\_ty must be initialized with zeros.
+Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 or
+use ./remove-lgpl to exclude the LGPL code. jstr\_ty, jstrl\_ty must be initialized
+with zeros.
 
 ```
 jstr_ty j = JSTR_INIT;
 ```
 
 ## Error handling:
-JSTR\_ERR is returned as error. The programmer is expected to check the return value and handle the error.
-When a memory error is encountered, all related resources will be freed by the function in which the error occured.
-Use jstr\_err\(\) to print the error message or jstr\_errdie\(\) to also exit.
-When debugging, you may want to define JSTR\_PANIC as 1 to automatically call jstr\_errdie\(\) on errors.
+JSTR\_ERR is returned as error. The programmer is expected to check the return value
+and handle the error. When a memory error is encountered, all related resources will
+be freed by the function in which the error occured. Use jstr\_err\(\) to print the
+error message or jstr\_errdie\(\) to also exit. When debugging, you may want to define
+JSTR\_PANIC as 1 to automatically call jstr\_errdie\(\) on errors.
 
-## Function affixes:
+## Naming conventions
+### Functions:
 - \*\_mem\*\(\): the string need not be nul-terminated.
 - \*\_len\(\): take the length of the string.
 - \*str\*\_len\(\): the string must be nul-termimated. The size is only used to save a strlen\(\).
@@ -46,9 +49,10 @@ When debugging, you may want to define JSTR\_PANIC as 1 to automatically call js
 - \*\_unsafe\(\): assume that there be enough space in the string: the string will not be grown.
 - \*\_from\(\): operate starting from a specified index.
 The index passed by the user is assumed to be not out of bounds.
-- \*\_bref\(\): enable backreferences for the replacement string.
-\0 is interpreted as referring to the whole matched string.
-- [Pp]namespace\_\*\(\): private functions or macros used internally.
+- \*\_bref\(\): enable backreferences for the replacement string. \0 is interpreted as referring
+to the whole matched string.
+- [Pp]namespace\_\*\(\): private functions or macros used internally. These are supposed to be
+invisible to the user.
 
 ## Scripts:
 - build: generate functions.
