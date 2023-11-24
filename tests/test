@@ -2,16 +2,20 @@
 
 # See LICENSE file for copyright and license details.
 
+compile()
+{
+	file=$1
+	out=$2
+	shift 2
+	#shellcheck disable=SC2068
+	cc "$file" -o "$out" $@
+	./"$out"
+}
+
 cd "$(dirname "$0")" || exit
 for header in $(echo *.c); do
 	basename=${header%.*}
-	{
-		cc "$header" -o "$basename"
-		./"$basename"
-	} &
-	# {
-	# 	cc "$header" -o "$basename"_nolgpl -DJSTR_USE_LGPL=0
-	# 	./"$basename"_nolgpl
-	# } &
+	compile "$header" "$basename" &
+	compile "$header" "$basename"_nolgpl -DJSTR_USE_LGPL=0 &
 done
 wait
