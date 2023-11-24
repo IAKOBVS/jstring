@@ -18,7 +18,7 @@
 or
 
 //
-./build && sudo ./install-to /path/to/some/dir
+./build && ./install-to /path/to/some/dir
 #include "/path/to/some/dir/jstr.h"
 //
 
