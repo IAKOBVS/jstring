@@ -1,16 +1,16 @@
 /* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, and to permit persons to whom the Software is
    furnished to do so, subject to the following conditions:
-   
+
    The above copyright notice and this permission notice shall be included in all
    copies or substantial portions of the Software.
-   
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -18,7 +18,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.
-   
+
    MIT License (Expat) */
 
 #ifndef JSTR_CONFIG_H
@@ -84,15 +84,15 @@
 
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
 /* This is defined by ./check-little-endian. */
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #endif
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    1
 #endif
 

@@ -1,16 +1,16 @@
 /* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, and to permit persons to whom the Software is
    furnished to do so, subject to the following conditions:
-   
+
    The above copyright notice and this permission notice shall be included in all
    copies or substantial portions of the Software.
-   
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -18,7 +18,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.
-   
+
    MIT License (Expat) */
 
 #include "jstr-macros.h"
@@ -44,9 +44,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FUNC_SHORT(const unsigned char *hs,
-                      size_t hl,
-                      const unsigned char *ne,
-                      size_t nl)
+                        size_t hl,
+                        const unsigned char *ne,
+                        size_t nl)
 JSTR_NOEXCEPT
 {
 	return PJSTR_MEMMEM_FUNC_IMPL(hs, hl, ne, nl);
@@ -59,9 +59,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NOINLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FUNC_LONG(const unsigned char *hs,
-                     size_t hl,
-                     const unsigned char *ne,
-                     size_t nl)
+                       size_t hl,
+                       const unsigned char *ne,
+                       size_t nl)
 JSTR_NOEXCEPT
 {
 	return PJSTR_MEMMEM_FUNC_IMPL(hs, hl, ne, nl);
@@ -70,9 +70,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FUNC(const PJSTR_MEMMEM_RETTYPE hs,
-                size_t hl,
-                const PJSTR_MEMMEM_RETTYPE ne,
-                size_t nl)
+                  size_t hl,
+                  const PJSTR_MEMMEM_RETTYPE ne,
+                  size_t nl)
 {
 	if (jstr_likely(nl < 257))
 		return PJSTR_MEMMEM_FUNC_SHORT((const unsigned char *)hs, hl, (const unsigned char *)ne, nl);
