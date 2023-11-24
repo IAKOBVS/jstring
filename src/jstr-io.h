@@ -641,7 +641,9 @@ typedef enum jstrio_ftw_flag_ty {
 				goto err_closedir;              \
 			}                                       \
 		} while (0)
-#	define CLOSE_IFATFILE(fd, do_on_err)
+/* clang-format off */
+#	define CLOSE_IFATFILE(fd, do_on_err) do {} while (0)
+/* clang-format on */
 #endif
 
 #if JSTR_HAVE_DIRENT_D_TYPE
