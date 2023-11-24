@@ -442,10 +442,10 @@ JSTR_NOEXCEPT
 #endif
 
 #if JSTR_USE_LGPL && !JSTR_HAVE_MEMMEM
-#	define PJSTR_MEMMEM_FN pjstr_memmem
+#	define PJSTR_MEMMEM_FUNC pjstr_memmem
 #	include "_lgpl-memmem.h"
 #else
-#	define PJSTR_RAREBYTE_FN pjstr_memmem
+#	define PJSTR_RAREBYTE_FUNC pjstr_memmem
 #	include "_jstr-rarebyte-impl.h"
 #endif
 
@@ -516,7 +516,7 @@ JSTR_NOEXCEPT
 }
 
 #if JSTR_USE_LGPL
-#	define PJSTR_MEMMEM_FN      pjstr_strnstr
+#	define PJSTR_MEMMEM_FUNC      pjstr_strnstr
 #	define PJSTR_MEMMEM_RETTYPE char *
 #	include "_lgpl-memmem.h"
 #endif
@@ -739,14 +739,14 @@ JSTR_NOEXCEPT
 #	endif
 
 #	if JSTR_USE_LGPL
-#		define PJSTR_MEMMEM_FN          pjstr_strcasestr
+#		define PJSTR_MEMMEM_FUNC          pjstr_strcasestr
 #		define PJSTR_MEMMEM_RETTYPE     char *
 #		define PJSTR_MEMMEM_CMP_FUNC      jstr_strcasecmpeq_len
 #		define PJSTR_MEMMEM_HASH2_ICASE 1
 #		define PJSTR_MEMMEM_CHECK_EOL   1
 #		include "_lgpl-memmem.h"
 #	else
-#		define PJSTR_RAREBYTE_FN       pjstr_strcasestr
+#		define PJSTR_RAREBYTE_FUNC       pjstr_strcasestr
 #		define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq
 #		define PJSTR_RAREBYTE_USE_LEN  0
 #		include "_jstr-rarebyte-impl.h"
@@ -867,13 +867,13 @@ JSTR_NOEXCEPT
 }
 
 #if JSTR_USE_LGPL && !JSTR_HAVE_STRCASESTR_OPTIMIZED
-#	define PJSTR_MEMMEM_FN          pjstr_strcasestr_len
+#	define PJSTR_MEMMEM_FUNC          pjstr_strcasestr_len
 #	define PJSTR_MEMMEM_RETTYPE     char *
 #	define PJSTR_MEMMEM_CMP_FUNC      jstr_strcasecmpeq_len
 #	define PJSTR_MEMMEM_HASH2_ICASE 1
 #	include "_lgpl-memmem.h"
 #else
-#	define PJSTR_RAREBYTE_FN       pjstr_strcasestr_len
+#	define PJSTR_RAREBYTE_FUNC       pjstr_strcasestr_len
 #	define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
 #	include "_jstr-rarebyte-impl.h"
 #endif
