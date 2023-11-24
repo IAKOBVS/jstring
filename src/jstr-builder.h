@@ -1073,14 +1073,16 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
 	if (jstr_chk(jstr_reserveexact(s, sz, cap, arg_len * PJSTR_ALLOC_MULTIPLIER)))
-		goto err;
+		goto err_free;
 	va_start(ap, fmt);
 	arg_len = vsprintf(*s, fmt, ap);
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
-		goto err_free;
+		goto err_free_set_errno;
 	*sz = arg_len;
 	return JSTR_RET_SUCC;
+err_free_set_errno:
+	errno = arg_len;
 err_free:
 	jstr_free_noinline(s, sz, cap);
 err:
@@ -1107,7 +1109,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret < 0))
 		goto err;
 	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, ret * PJSTR_ALLOC_MULTIPLIER)))
-		goto err;
+		goto err_free;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data, fmt, ap);
 	va_end(ap);
@@ -1117,6 +1119,7 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 err_free_set_errno:
 	errno = ret;
+err_free:
 	jstr_free_noinline(&j->data, &j->size, &j->capacity);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -1146,7 +1149,7 @@ JSTR_NOEXCEPT
 		goto err;
 	ret += *sz;
 	if (jstr_chk(jstr_reserve(s, sz, cap, ret)))
-		goto err;
+		goto err_free;
 	va_start(ap, fmt);
 	ret = vsprintf(*s + *sz, fmt, ap);
 	va_end(ap);
@@ -1156,6 +1159,7 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 err_free_set_errno:
 	errno = ret;
+err_free:
 	jstr_free_noinline(s, sz, cap);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -1183,7 +1187,7 @@ JSTR_NOEXCEPT
 		goto err;
 	ret += j->size;
 	if (jstr_chk(jstr_reserve(&j->data, &j->size, &j->capacity, ret)))
-		goto err;
+		goto err_free;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + j->size, fmt, ap);
 	va_end(ap);
@@ -1193,6 +1197,7 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 err_free_set_errno:
 	errno = ret;
+err_free:
 	jstr_free_noinline(&j->data, &j->size, &j->capacity);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -1222,7 +1227,7 @@ JSTR_NOEXCEPT
 		goto err;
 	ret += start_idx;
 	if (jstr_chk(jstr_reserve(s, sz, cap, ret)))
-		goto err;
+		goto err_free;
 	va_start(ap, fmt);
 	ret = vsprintf(*s + start_idx, fmt, ap);
 	va_end(ap);
@@ -1232,6 +1237,7 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 err_free_set_errno:
 	errno = ret;
+err_free:
 	jstr_free_noinline(s, sz, cap);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -1259,7 +1265,7 @@ JSTR_NOEXCEPT
 		goto err;
 	ret += start_idx;
 	if (jstr_chk(jstr_reserve(&j->data, &j->size, &j->capacity, ret)))
-		goto err;
+		goto err_free;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data + start_idx, fmt, ap);
 	va_end(ap);
@@ -1269,6 +1275,7 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 err_free_set_errno:
 	errno = ret;
+err_free:
 	jstr_free_noinline(&j->data, &j->size, &j->capacity);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
