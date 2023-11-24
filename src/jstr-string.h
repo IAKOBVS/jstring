@@ -389,7 +389,7 @@ JSTR_NOEXCEPT
 	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, l -= 3; *h && l--; hw = hw << 8 | *++h)
-		if (hw == nw && !memcmp(h - 3, n, ne_len))
+		if (hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4))
 			return (char *)h - 3;
 	return NULL;
 }
@@ -455,7 +455,7 @@ JSTR_NOEXCEPT
 	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, hl -= 3; hl--; hw = hw << 8 | *++h)
-		if (hw == nw && !memcmp(h - 3, n, nl))
+		if (hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4))
 			return (void *)(h - 3);
 	return NULL;
 }
@@ -559,7 +559,9 @@ pjstr_strnstr(const unsigned char *hs,
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
 	for (; (hs = (const u *)jstr_strnchr((char *)hs, c, end - hs)); ++hs) {
-		for (hp = hs + 1, np = ne + 1; *hp == *np && *hp && hp < end; ++hp, ++np)
+		hp = hs + 1;
+		np = ne + 1;
+		for (; *hp == *np && *hp && hp < end; ++hp, ++np)
 			;
 		if (*np == '\0')
 			return (char *)hs - 1;
@@ -762,7 +764,9 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
 	for (h += 3; *h; hw = hw << 8 | L(*++h))
 		if (hw == nw) {
-			for (hp = h - 3 + 4, np = n + 4; L(*hp) == L(*np) && *hp; ++hp, ++np)
+			hp = h - 3 + 4;
+			np = n + 4;
+			for (; L(*hp) == L(*np) && *hp; ++hp, ++np)
 				;
 			if (*np == '\0')
 				return (char *)h - 3;
@@ -783,7 +787,7 @@ JSTR_NOEXCEPT
 	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
 	for (h += 3; *h; hw = hw << 8 | L(*++h))
-		if (hw == nw && !jstr_strcasecmpeq_len((char *)h - 3, (char *)n, ne_len))
+		if (hw == nw && !jstr_strcasecmpeq_len((char *)h - 3 + 4, (char *)n + 4, ne_len - 4))
 			return (char *)h - 3;
 	return NULL;
 }
@@ -811,7 +815,9 @@ pjstr_strcasestr(const unsigned char *h,
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, n);
 	h += idx;
 	for (; (h = (const u *)strchr((char *)h, c)); ++h) {
-		for (hp = h + 1, np = n + 1; L(*hp) == L(*np) && *hp; ++hp, ++np)
+		hp = h + 1;
+		np = n + 1;
+		for (; L(*hp) == L(*np) && *hp; ++hp, ++np)
 			;
 		if (*np == '\0')
 			return (char *)h - 1;
