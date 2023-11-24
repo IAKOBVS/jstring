@@ -741,7 +741,7 @@ JSTR_NOEXCEPT
 #	if JSTR_USE_LGPL
 #		define PJSTR_MEMMEM_FN          pjstr_strcasestr
 #		define PJSTR_MEMMEM_RETTYPE     char *
-#		define PJSTR_MEMMEM_CMP_FN      jstr_strcasecmpeq_len
+#		define PJSTR_MEMMEM_CMP_FUNC      jstr_strcasecmpeq_len
 #		define PJSTR_MEMMEM_HASH2_ICASE 1
 #		define PJSTR_MEMMEM_CHECK_EOL   1
 #		include "_lgpl-memmem.h"
@@ -869,7 +869,7 @@ JSTR_NOEXCEPT
 #if JSTR_USE_LGPL && !JSTR_HAVE_STRCASESTR_OPTIMIZED
 #	define PJSTR_MEMMEM_FN          pjstr_strcasestr_len
 #	define PJSTR_MEMMEM_RETTYPE     char *
-#	define PJSTR_MEMMEM_CMP_FN      jstr_strcasecmpeq_len
+#	define PJSTR_MEMMEM_CMP_FUNC      jstr_strcasecmpeq_len
 #	define PJSTR_MEMMEM_HASH2_ICASE 1
 #	include "_lgpl-memmem.h"
 #else

@@ -8,7 +8,7 @@
    PJSTR_MEMMEM_RETTYPE    Return type.
    PJSTR_MEMMEM_HASH2      Hash function.
    PJSTR_MEMMEM_CHECK_EOL  If HAYSTACKLEN is not constant, as in the case of strstr, we are going to check for the end of the HAYSTACK.
-   PJSTR_MEMMEM_CMP_FN     Comparison function used to compare HAYSTACK with NEEDLE.
+   PJSTR_MEMMEM_CMP_FUNC     Comparison function used to compare HAYSTACK with NEEDLE.
    If the above macros are not defined, it will default to memmem. */
 
 #define PJSTR_MEMMEM_FN_SHORT JSTR_CONCAT(PJSTR_MEMMEM_FN, _short_ne)
@@ -66,4 +66,4 @@ PJSTR_END_DECLS
 #undef PJSTR_MEMMEM_HASH2_ICASE
 #undef PJSTR_MEMMEM_HASH2_SETUP
 #undef PJSTR_MEMMEM_CHECK_EOL
-#undef PJSTR_MEMMEM_CMP_FN
+#undef PJSTR_MEMMEM_CMP_FUNC

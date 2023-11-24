@@ -16,8 +16,8 @@
 #ifndef PJSTR_MEMMEM_CHECK_EOL
 #	define PJSTR_MEMMEM_CHECK_EOL 0
 #endif
-#ifndef PJSTR_MEMMEM_CMP_FN
-#	define PJSTR_MEMMEM_CMP_FN memcmp
+#ifndef PJSTR_MEMMEM_CMP_FUNC
+#	define PJSTR_MEMMEM_CMP_FUNC memcmp
 #endif
 
 #if PJSTR_MEMMEM_HASH2_ICASE
@@ -93,8 +93,8 @@ start:;
 		hs -= tmp;
 		if (tmp < m1)
 			continue;
-		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FN((char *)(hs + off), (char *)(ne + off), 8)) {
-			if (!PJSTR_MEMMEM_CMP_FN((char *)hs, (char *)ne, m1))
+		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FUNC((char *)(hs + off), (char *)(ne + off), 8)) {
+			if (!PJSTR_MEMMEM_CMP_FUNC((char *)hs, (char *)ne, m1))
 				return (PJSTR_MEMMEM_RETTYPE)hs;
 			off = (off >= 8 ? off : m1) - 8;
 		}
