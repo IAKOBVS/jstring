@@ -493,7 +493,7 @@ JSTR_NOEXCEPT
 #	if JSTR_USE_LGPL
 	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
 #	else
-	const unsigned char *const p = jstr_rarebyteget((const u *)ne);
+	const unsigned char *const p = jstr_rarebyteget_len((const u *)ne, ne_len);
 	if (p)
 		return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, p);
 	return pjstr_memmem5andmore((const u *)hs, hs_len, (const u *)ne, ne_len);
@@ -959,7 +959,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (ne_len > 4) {
 #	if !JSTR_USE_LGPL
-		const u *const p = jstr_rarebytegetcase((const u *)ne);
+		const u *const p = jstr_rarebytegetcase_len((const u *)ne, ne_len);
 		if (p)
 			return pjstr_strcasestr_len((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)ne);
 #	else
