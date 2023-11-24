@@ -16,10 +16,10 @@
 #	define JSTR_PANIC 1
 #endif
 
+#define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
+#define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
 #define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_SIZE(array)    (sizeof(array) / sizeof(array[0]))
-#define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
-#define jstr_nullchk(p) jstr_unlikely((p) == NULL)
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
 #define JSTR_STRING(x)            #x
@@ -66,13 +66,13 @@ PJSTR_END_DECLS
 #endif
 
 #if JSTR_PANIC
-#	define JSTR_DEBUG_PRINT(...) fprintf(stderr, __VA_ARGS__)
+#	define JSTR_DEBUG_PRINT(...)    fprintf(stderr, __VA_ARGS__)
 #	define JSTR_RETURN_ERR(errcode) jstr_errdie("")
 #else
 /* clang-format off */
 #	define JSTR_DEBUG_PRINT(...) do {} while (0)
 /* clang-format on */
-#define JSTR_RETURN_ERR(errcode) return errcode
+#	define JSTR_RETURN_ERR(errcode) return errcode
 #endif
 
 #ifdef __cplusplus
