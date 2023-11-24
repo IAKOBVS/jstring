@@ -2,17 +2,17 @@
 
 # Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
 # This file is part of the jstring library.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-# 
+#
 # MIT License (Expat)
 
 use strict;
@@ -44,25 +44,19 @@ if (index($file_str, '"jstr-macros.h"') == -1) {
 	$file_str =~ s/(#define.*)/$1\n\n#include "jstr-macros.h"\n/;
 }
 
-replaceall(\$file_str, \'_Static_assert', \'JSTR_STATIC_ASSERT');
-replaceall(\$file_str, \'if\s*\(__BYTE_ORDER\s*==\s*__LITTLE_ENDIAN\)',
-	\'if (JSTR_ENDIAN_LITTLE)');
-replaceall(\$file_str, \'(?:find_t|op_t)', \'jstr_word_ty');
-replaceall(\$file_str, \'(?:_Bool|bool)',  \'int');
-replaceall(\$file_str, \'OP_T_THRES',      \'JSTR_WORD_THRES');
-replaceall(\$file_str,
-	\'__attribute__\s*\(\(\s*(?:__may_alias__|may_alias)\s*\)\)',
-	\'JSTR_ATTR_MAY_ALIAS');
-replaceall(\$file_str, \'__always_inline', \'JSTR_ATTR_INLINE');
-$file_str =~
-s/(^|\W)((?:repeat_bytes|extractbyte|shift|find|index|has|clz|ctz)\w*)/$1jstr_word_$2/g;
+replaceall(\$file_str, \'_Static_assert',                                            \'JSTR_STATIC_ASSERT');
+replaceall(\$file_str, \'if\s*\(__BYTE_ORDER\s*==\s*__LITTLE_ENDIAN\)',              \'if (JSTR_ENDIAN_LITTLE)');
+replaceall(\$file_str, \'(?:find_t|op_t)',                                           \'jstr_word_ty');
+replaceall(\$file_str, \'(?:_Bool|bool)',                                            \'int');
+replaceall(\$file_str, \'OP_T_THRES',                                                \'JSTR_WORD_THRES');
+replaceall(\$file_str, \'__attribute__\s*\(\(\s*(?:__may_alias__|may_alias)\s*\)\)', \'JSTR_ATTR_MAY_ALIAS');
+replaceall(\$file_str, \'__always_inline',                                           \'JSTR_ATTR_INLINE');
+$file_str =~ s/(^|\W)((?:repeat_bytes|extractbyte|shift|find|index|has|clz|ctz)\w*)/$1jstr_word_$2/g;
 $file_str =~ s/\n[ \t]*typedef jstr_word_ty find_t;\s*\n/\n/g;
-$file_str =~
-  s/#[ \t]*(ifndef|define)[ \t]*_{,1}([^J][^S][^T][^R][^P]\w*_H)/#$1 JSTR_$2/g;
+$file_str =~ s/#[ \t]*(ifndef|define)[ \t]*_{,1}([^J][^S][^T][^R][^P]\w*_H)/#$1 JSTR_$2/g;
 replaceall(\$file_str, \'JSTR_JSTR', \'JSTR');
 $file_str =~ s/include[ \t]*<string\-([-._A-Za-z0-9]*)>/include "_string-$1"/g;
-$file_str =~
-s/include[ \t]*<sysdeps\/generic\/([-._A-Za-z0-9]*)>/include "_glibc_generic-$1"/g;
+$file_str =~ s/include[ \t]*<sysdeps\/generic\/([-._A-Za-z0-9]*)>/include "_glibc_generic-$1"/g;
 $file_str =~ s/\n\n\n/\n\n/g;
 $file_str =~ s/(if|else if|else|for|while)\(/$1(/g;
 $file_str =~ s/[ \t]*#[ \t]*include[ \t]*<(?:endian|stdint)\.h>\n//g;
