@@ -763,7 +763,7 @@ do_reg:
 			else /* RET_STOP */
 				goto err_closedir;
 		} else {
-			if (jstr_chk(ret))
+			if (ret == JSTRIO_FTW_RET_STOP)
 				goto err_closedir;
 		}
 		continue;
@@ -790,7 +790,7 @@ do_dir:
 			else /* RET_STOP */
 				goto err_closedir;
 		} else {
-			if (jstr_chk(ret))
+			if (ret == JSTRIO_FTW_RET_STOP)
 				goto err_closedir;
 		}
 CONT:
