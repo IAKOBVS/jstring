@@ -80,11 +80,10 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT h,
 #ifndef PJSTR_RAREBYTE_CMP_FUNC
 	const int skip_bytes = (ne_len < 8) ? 4 : 8;
 	u64 ne_align;
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
-	ne_align = (ne_len < 8) ? (u32 *)ne : (u64 *)ne;
-#	else
-	ne_align = (ne_len < 8) ? TOWORD32(ne) : TOWORD64(ne);
-#	endif
+	if (JSTR_HAVE_ATTR_MAY_ALIAS)
+		ne_align = (ne_len < 8) ? (u32 *)ne : (u64 *)ne;
+	else
+		ne_align = (ne_len < 8) ? TOWORD32(ne) : TOWORD64(ne);
 #endif
 	const unsigned char *end = (u *)h + h_len - n_len + 1;
 	for (; (h = (const u *)memchr(h, c, end - h)); ++h)
