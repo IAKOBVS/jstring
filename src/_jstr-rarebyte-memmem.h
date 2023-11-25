@@ -89,8 +89,8 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT h,
 #endif
 	const unsigned char *end = (u *)h + h_len - n_len + 1;
 	for (; (h = (const u *)memchr(h, c, end - h)); ++h)
-	/* If using memcmp, compare DWORDs or QWORDs */
 #if USE_UNALIGNED
+	/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
 		if (EQ(h - idx, ne_align, n_len))
 			if (!CMP_FUNC((char *)h - idx, (char *)nlast, nlast_len))
 				return (PJSTR_RAREBYTE_RETTYPE)(h - idx);
