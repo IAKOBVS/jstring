@@ -95,15 +95,15 @@ JSTR_NOEXCEPT
 	return pjstr_ctype[(unsigned char)c] & type;
 }
 
-#define PJSTR_DEFINE_ISCTYPE(ctype, ctype_enum)     \
-	/* ASCII. */                                \
-	JSTR_ATTR_INLINE                            \
-	JSTR_FUNC_CONST                             \
-	static int                                  \
-	jstr_is##ctype(int c)                       \
-	JSTR_NOEXCEPT                               \
-	{                                           \
-		return jstr_isctype(c, ctype_enum); \
+#define PJSTR_DEFINE_ISCTYPE(ctype, ctype_enum)                    \
+	/* ASCII. */                                               \
+	JSTR_ATTR_INLINE                                           \
+	JSTR_FUNC_CONST                                            \
+	static int                                                 \
+	jstr_is##ctype(int c)                                      \
+	JSTR_NOEXCEPT                                              \
+	{                                                          \
+		return pjstr_ctype[(unsigned char)c] & ctype_enum; \
 	}
 
 PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_ISCTYPE);
@@ -118,14 +118,15 @@ jstr_skipctype(const char *R s,
                const jstr_ctype_ty ctype)
 JSTR_NOEXCEPT
 {
+	const unsigned char *p = (const unsigned char *)s;
 	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
-		for (; *s && jstr_isctype(*s, ctype); ++s)
+		for (; *p && pjstr_ctype[*p] & ctype; ++p)
 			;
-		return (char *)s;
+		return (char *)p;
 	}
-	while (jstr_isctype(*s++, ctype))
+	while (pjstr_ctype[*p++] & ctype)
 		;
-	return (char *)s - 1;
+	return (char *)p - 1;
 }
 
 #define PJSTR_DEFINE_SKIP_CTYPE(ctype, ctype_enum)    \
@@ -178,9 +179,10 @@ jstr_skipctype_rev(const char *const start,
                    const jstr_ctype_ty ctype)
 JSTR_NOEXCEPT
 {
-	for (; start != end && jstr_isctype(*end, ctype); --end)
+	const unsigned char *p = (const unsigned char *)end;
+	for (; (const unsigned char *)start != p && (pjstr_ctype[*p] & ctype); --p)
 		;
-	return (char *)end;
+	return (char *)p;
 }
 
 #define PJSTR_DEFINE_SKIP_CTYPE_REV(ctype, ctype_enum)             \
