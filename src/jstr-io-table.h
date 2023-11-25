@@ -26,6 +26,7 @@
 
 #include "jstr-macros.h"
 
+/* Do not pass a non-unsigned char. */
 JSTR_MAYBE_UNUSED
 static const unsigned char pjstrio_binary_table[256] = {
 	1, /* 0 */

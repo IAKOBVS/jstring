@@ -29,6 +29,7 @@
 
 PJSTR_BEGIN_DECLS
 
+/* Do not pass a non-unsigned char. */
 JSTR_MAYBE_UNUSED
 static const unsigned char jstr_rarebyte_table[256] = {
 	0, /* 0 */
