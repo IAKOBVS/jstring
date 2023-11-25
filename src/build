@@ -59,8 +59,10 @@ compile()
 file_str='#include "../jstr/jstr.h"
 int main(void) {return 0;}'
 TMP=/tmp/__jstr_tmp_obj__
-echo "$file_str" | compile "$TMP" || exit &
-echo "$file_str" | compile "$TMP" -D__STRICT_ANSI__ || exit &
-echo "$file_str" | compile "$TMP" -DJSTR_USE_LGPL=0 || exit &
+echo "$file_str" | compile "$TMP"1 || exit &
+echo "$file_str" | compile "$TMP"2 -D__STRICT_ANSI__ || exit &
+echo "$file_str" | compile "$TMP"3 -DJSTR_USE_LGPL=0 || exit &
 wait
-rm -f $TMP
+rm -f "$TMP"1
+rm -f "$TMP"2
+rm -f "$TMP"3
