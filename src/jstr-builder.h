@@ -682,16 +682,17 @@ JSTR_NOEXCEPT
 }
 
 JSTR_ATTR_INLINE
-JSTR_FUNC_VOID
+JSTR_FUNC
 static char *
 jstr_pushback_unsafe_p(char *R s,
                        size_t sz,
                        char c)
 JSTR_NOEXCEPT
 {
-	*(s + sz) = c;
-	*(s + sz) = '\0';
-	return s + sz + 1;
+	s += sz;
+	*s = c;
+	*++s = '\0';
+	return s;
 }
 
 /*
