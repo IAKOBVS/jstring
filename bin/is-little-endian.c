@@ -25,10 +25,8 @@
 int
 main(void)
 {
-	const int n = 1;
-	if (*(unsigned char *)&n == 1)
-		putchar('1');
-	else
-		putchar('0');
+	int n;
+	n = 1;
+	putchar((*(unsigned char *)&n == 1) + '0');
 	return 0;
 }
