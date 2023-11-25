@@ -25,6 +25,7 @@
 
 cd "$(dirname "$0")" || exit
 ./setup || exit
+./test || exit
 mkdir -p ../jstr
 update_if_needed()
 {
