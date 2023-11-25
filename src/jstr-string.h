@@ -469,7 +469,7 @@ JSTR_NOEXCEPT
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
 	const unsigned char *const nelast = ne + 4;
-	const size_t nelast_len = ne_len - 4;
+	const size_t nelast_len = nel - 4;
 	for (hs += 3, hsl -= 3; hsl--; hw = hw << 8 | *++hs)
 		if (hw == nw && !memcmp(hs - 3 + 4, nelast, nelast_len))
 			goto ret;
@@ -1017,7 +1017,7 @@ JSTR_NOEXCEPT
 #	if !JSTR_USE_LGPL
 		const u *const p = (const u *)jstr_rarebytegetcase_len(ne, ne_len);
 		if (p)
-			return pjstr_strcasestr_len((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)ne);
+			return pjstr_strcasestr_len((const u *)hs, hs_len, (const u *)ne, ne_len, p);
 		return pjstr_strcasestr5plus_len((const u *)hs, (const u *)ne, ne_len);
 #	else
 		return pjstr_strcasestr_len(hs, hs_len, ne, ne_len);
