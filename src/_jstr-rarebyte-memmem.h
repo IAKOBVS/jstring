@@ -52,11 +52,9 @@ PJSTR_END_DECLS
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
 #		define EQ64(hs, ne_align)       (*(u64 *)(hs) == ne_align)
 #		define EQ32(hs, ne_align)       (*(u32 *)(hs) == ne_align)
-#		define EQ(hs, ne_align, ne_len) ((ne_len < 8) ? EQ32(hs, ne_align) : EQ64(hs, ne_align))
 #	else
 #		define EQ64(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), 8)
 #		define EQ32(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), 4)
-#		define EQ(hs, ne_align, ne_len)   !memcmp(hs, &(ne_align), (ne_len < 8) ? 4 : 8)
 #	endif
 #endif
 #define CMP_FUNC PJSTR_RAREBYTE_CMP_FUNC
@@ -120,7 +118,8 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 #undef USE_MEMCMP
 #undef USE_UNALIGNED
 #undef CMP_FUNC
-#undef EQ
+#undef EQ32
+#undef EQ64
 #undef TOWORD64
 #undef TOWORD32
 #undef SH
