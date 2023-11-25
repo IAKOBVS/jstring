@@ -151,11 +151,11 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
+	if (jstr_unlikely(n == 0))
+		return 0;
 	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	if (jstr_unlikely(n == 0))
-		return 0;
 	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++))
 	       && *p1++
 	       && n--)
@@ -183,10 +183,10 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
-	const unsigned char *p1 = (const unsigned char *)s1;
-	const unsigned char *p2 = (const unsigned char *)s2;
 	if (jstr_unlikely(n == 0))
 		return 0;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n)
 		;
 	return *p1 && n;
@@ -213,11 +213,11 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
+	if (jstr_unlikely(n == 0))
+		return 0;
 	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	if (jstr_unlikely(n == 0))
-		return 0;
 	while (!(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++))
 	       && n--)
 		;
@@ -245,10 +245,10 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP
 	return strncasecmp(s1, s2, n);
 #else
-	const unsigned char *p1 = (const unsigned char *)s1;
-	const unsigned char *p2 = (const unsigned char *)s2;
 	if (jstr_unlikely(n == 0))
 		return 0;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; jstr_tolower(*p1++) == jstr_tolower(*p2++) && n; --n)
 		;
 	return n;
