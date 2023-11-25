@@ -163,38 +163,41 @@ static const unsigned char pjstr_rarebyte_table[256] = {
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
-static unsigned char *
+static void *
 jstr_rarebyteget_len(const unsigned char *ne,
                      size_t n)
 {
 	int c;
-	for (; n-- && (c = *ne); ++ne)
+	const unsigned char *p = (const unsigned char *)ne;
+	for (; n-- && (c = *p); ++p)
 		if (pjstr_rarebyte_table[c])
-			return (unsigned char *)ne;
+			return (unsigned char *)p;
+	return NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+jstr_rarebyteget(const char *n)
+{
+	const unsigned char *p = (const unsigned char *)n;
+	int c;
+	for (; (c = *p); ++p)
+		if (pjstr_rarebyte_table[c])
+			return (char *)p;
 	return NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static unsigned char *
-jstr_rarebyteget(const unsigned char *n)
+jstr_rarebytegetcase(const char *n)
 {
+	const unsigned char *p = (const unsigned char *)n;
 	int c;
-	for (; (c = *n); ++n)
-		if (pjstr_rarebyte_table[c])
-			return (unsigned char *)n;
-	return NULL;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static unsigned char *
-jstr_rarebytegetcase(const unsigned char *n)
-{
-	int c;
-	for (; (c = *n); ++n)
+	for (; (c = *p); ++p)
 		if (pjstr_ctype[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
-			return (unsigned char *)n;
+			return (unsigned char *)p;
 	return NULL;
 }
 
@@ -204,10 +207,11 @@ static unsigned char *
 jstr_rarebytegetcase_len(const unsigned char *ne,
                          size_t n)
 {
+	const unsigned char *p = (const unsigned char *)ne;
 	int c;
-	for (; n-- && (c = *ne); ++ne)
+	for (; n-- && (c = *p); ++p)
 		if (pjstr_ctype[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
-			return (unsigned char *)ne;
+			return (unsigned char *)p;
 	return NULL;
 }
 

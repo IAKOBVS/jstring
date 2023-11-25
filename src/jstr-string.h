@@ -524,7 +524,7 @@ JSTR_NOEXCEPT
 #	if JSTR_USE_LGPL
 	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
 #	else
-	const unsigned char *const p = jstr_rarebyteget_len((const u *)ne, ne_len);
+	const u *const p = (const u *)jstr_rarebyteget_len(ne, ne_len);
 	if (p)
 		return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, p);
 	return pjstr_memmem5plus((const u *)hs, hs_len, (const u *)ne, ne_len);
@@ -624,7 +624,7 @@ JSTR_NOEXCEPT
 	hs_len += jstr_strnlen(hs + hs_len, n - hs_len);
 	return pjstr_strnstr(hs, hs_len, ne, ne_len);
 #else
-	const unsigned char *const p = jstr_rarebyteget((const unsigned char *)n);
+	const u *const p = (const u *)jstr_rarebyteget(n);
 	if (p)
 		return pjstr_strnstr((const u *)hs, (const u *)ne, p, n);
 	return pjstr_strnstr5plus((const u *)hs, (const u *)ne, n, strlen(ne));
@@ -858,7 +858,7 @@ JSTR_NOEXCEPT
 	return pjstr_strcasestr(h + 1, hs_len - 1, n, ne_len);
 #	else
 	typedef unsigned char u;
-	const u *const p = jstr_rarebytegetcase((const u *)n);
+	const u *const p = (const u *)jstr_rarebytegetcase(n);
 	if (p)
 		return pjstr_strcasestr((const u *)h, (const u *)n, (const u *)p);
 	return pjstr_strcasestr5plus((const u *)h, (const u *)n);
@@ -997,7 +997,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (ne_len > 4) {
 #	if !JSTR_USE_LGPL
-		const u *const p = jstr_rarebytegetcase_len((const u *)ne, ne_len);
+		const u *const p = (const u *)jstr_rarebytegetcase_len(ne, ne_len);
 		if (p)
 			return pjstr_strcasestr_len((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)ne);
 		return pjstr_strcasestr5plus_len((const u *)hs, (const u *)ne, ne_len);
