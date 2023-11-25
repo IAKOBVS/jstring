@@ -23,4 +23,5 @@
 # 
 # MIT License (Expat)
 
+cd "$(dirname "$0")" || exit
 ./src/clean

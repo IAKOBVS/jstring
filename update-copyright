@@ -23,6 +23,7 @@
 # 
 # MIT License (Expat)
 
+cd "$(dirname "$0")" || exit
 #shellcheck disable=SC2005
 for file in $(echo * ./src/* ./bin/* ./tests/*); do
 	test -e "$file" && echo "$(perl ./update-copyright.pl "$file")" >"$file" &
