@@ -24,7 +24,7 @@
 #ifndef JSTR_MACROS_H
 #define JSTR_MACROS_H 1
 
-#include "_jstr-features.h"
+#include "_jstr-macros-features.h"
 #include "jstr-config.h"
 #include "jstr-ptr-arith.h"
 #include <assert.h>
