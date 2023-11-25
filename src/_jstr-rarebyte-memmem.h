@@ -34,8 +34,10 @@ PJSTR_END_DECLS
 #ifndef PJSTR_RAREBYTE_FUNC
 #	define PJSTR_RAREBYTE_FUNC pjstr_memmem
 #endif
-#ifndef PJSTR_RAREBYTE_CMP_FUNC
+
+#if !defined PJSTR_RAREBYTE_CMP_FUNC && JSTR_HAVE_UNALIGNED_ACCESS
 #	define PJSTR_RAREBYTE_CMP_FUNC memcmp
+#	define USE_UNALIGNED           1
 #	if JSTR_ENDIAN_LITTLE
 #		define SH <<
 #	elif JSTR_ENDIAN_BIG
@@ -43,14 +45,12 @@ PJSTR_END_DECLS
 #	else
 #		error "Can't detect endianness!"
 #	endif
-#	define TOWORD32(x) ((u64)x[3] SH 24 | (u64)x[2] SH 16 | (u64)x[1] SH 8 | (u64)x[0])
+#	define TOWORD32(x) ((u32)x[3] SH 24 | (u32)x[2] SH 16 | (u32)x[1] SH 8 | (u32)x[0])
 #	define TOWORD64(x) ((u64)x[7] SH 56 | (u64)x[6] SH 48 | (u64)x[5] SH 40 | (u64)x[4] SH 32 | TOWORD32(x))
-#	if JSTR_HAVE_UNALIGNED_ACCESS
-#		if JSTR_HAVE_ATTR_MAY_ALIAS
-#			define EQ(hs, ne_align, ne_len) (ne_len < 8) ? ((u32 *)hs == ne_align) : ((u64 *)hs == ne_align)
-#		else
-#			define EQ(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), (ne_len < 8) ? 4 : 8)
-#		endif
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
+#		define EQ(hs, ne_align, ne_len) (ne_len < 8) ? (*(u32 *)hs == ne_align) : (*(u64 *)hs == ne_align)
+#	else
+#		define EQ(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), (ne_len < 8) ? 4 : 8)
 #	endif
 #endif
 #define CMP_FUNC PJSTR_RAREBYTE_CMP_FUNC
@@ -66,7 +66,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT h,
                     size_t n_len,
                     const unsigned char *rarebyte)
 {
-#ifndef PJSTR_RAREBYTE_CMP_FUNC
+#if USE_UNALIGNED
 	typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
 	typedef uint64_t u64 JSTR_ATTR_MAY_ALIAS;
 #endif
@@ -77,20 +77,23 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT h,
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, n);
 	c = *(u *)rarebyte;
 	h += idx;
-#ifndef PJSTR_RAREBYTE_CMP_FUNC
-	const int skip_bytes = (ne_len < 8) ? 4 : 8;
+#if USE_UNALIGNED
+	const int skip_bytes = (n_len < 8) ? 4 : 8;
+	const unsigned char *nlast = n + skip_bytes;
+	const size_t nlast_len = n_len - skip_bytes;
 	u64 ne_align;
 	if (JSTR_HAVE_ATTR_MAY_ALIAS)
-		ne_align = (ne_len < 8) ? (u32 *)ne : (u64 *)ne;
+		ne_align = (n_len < 8) ? (u64) * (u32 *)n : *(u64 *)n;
 	else
-		ne_align = (ne_len < 8) ? TOWORD32(ne) : TOWORD64(ne);
+		ne_align = (n_len < 8) ? (u64)TOWORD32(n) : TOWORD64(n);
 #endif
 	const unsigned char *end = (u *)h + h_len - n_len + 1;
 	for (; (h = (const u *)memchr(h, c, end - h)); ++h)
-#ifndef PJSTR_RAREBYTE_CMP_FUNC
+	/* If using memcmp, compare DWORDs or QWORDs */
+#if USE_UNALIGNED
 		if (EQ(h - idx, ne_align, n_len))
-			if (!CMP_FUNC((char *)h - idx, (char *)n + skip_bytes, nlast_len - skip_bytes))
-				return (PJSTR_RAREBYTE_RETTYPE)h - idx;
+			if (!CMP_FUNC((char *)h - idx, (char *)nlast, nlast_len))
+				return (PJSTR_RAREBYTE_RETTYPE)(h - idx);
 #else
 		if (!CMP_FUNC((char *)h - idx, (char *)n, n_len))
 			return (PJSTR_RAREBYTE_RETTYPE)(h - idx);
