@@ -61,9 +61,9 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static PJSTR_RAREBYTE_RETTYPE
-PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT hs,
+PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
                     size_t hs_len,
-                    const unsigned char *JSTR_RESTRICT ne,
+                    const unsigned char *ne,
                     size_t ne_len,
                     const unsigned char *const rarebyte)
 {
