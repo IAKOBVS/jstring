@@ -233,7 +233,7 @@ JSTR_NOEXCEPT
 {
 	return (char *)jstr_memnchr(s, c, sz, n);
 }
-#if !JSTR_HAVE_WORD_AT_A_TIME
+#if !JSTR_HAVE_WORD_AT_A_TIME || 1
 /*
    strchr() before s + N.
 */
