@@ -832,7 +832,6 @@ pjstr_strcasestr(const unsigned char *hs,
 	}
 	return NULL;
 }
-
 #	endif
 
 #	undef L
