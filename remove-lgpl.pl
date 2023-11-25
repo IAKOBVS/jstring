@@ -34,5 +34,6 @@ my $file_str;
 	close($FH) or die "Can't close $ARGV[0].\n";
 }
 
-$file_str =~ s/(JSTR_USE_LGPL\s*)1/$1 0/ if ($ARGV[0] eq 'jstr-config.h');
-$file_str =~ s/\n.*#.*include.*"_lgpl[^"]*"//g;
+$file_str =~ s/(#[ \t]*define[ \t]*JSTR_USE_LGPL[ \t]*)1/$1 0/ if ($ARGV[0] =~ 'jstr-config.h');
+$file_str =~ s/\n.*#.*include.*"_lgpl.*"//g;
+print $file_str;
