@@ -36,26 +36,24 @@ PJSTR_END_DECLS
 #endif
 #ifndef PJSTR_RAREBYTE_CMP_FUNC
 #	define PJSTR_RAREBYTE_CMP_FUNC memcmp
-#endif
-#define CMP_FUNC PJSTR_RAREBYTE_CMP_FUNC
-
-#if JSTR_ENDIAN_LITTLE
-#	define SH <<
-#elif JSTR_ENDIAN_BIG
-#	define SH >>
-#else
-#	error "Can't detect endianness!"
-#endif
-#define TOWORD32(x) ((u64)x[3] SH 24 | (u64)x[2] SH 16 | (u64)x[1] SH 8 | (u64)x[0])
-#define TOWORD64(x) ((u64)x[7] SH 56 | (u64)x[6] SH 48 | (u64)x[5] SH 40 | (u64)x[4] SH 32 | TOWORD32(x))
-
-#if JSTR_HAVE_UNALIGNED_ACCESS
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
-#		define EQ(hs, ne_align, ne_len) (ne_len < 8) ? ((u32 *)hs == ne_align) : ((u64 *)hs == ne_align)
+#	if JSTR_ENDIAN_LITTLE
+#		define SH <<
+#	elif JSTR_ENDIAN_BIG
+#		define SH >>
 #	else
-#		define EQ(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), (ne_len < 8) ? 4 : 8)
+#		error "Can't detect endianness!"
+#	endif
+#	define TOWORD32(x) ((u64)x[3] SH 24 | (u64)x[2] SH 16 | (u64)x[1] SH 8 | (u64)x[0])
+#	define TOWORD64(x) ((u64)x[7] SH 56 | (u64)x[6] SH 48 | (u64)x[5] SH 40 | (u64)x[4] SH 32 | TOWORD32(x))
+#	if JSTR_HAVE_UNALIGNED_ACCESS
+#		if JSTR_HAVE_ATTR_MAY_ALIAS
+#			define EQ(hs, ne_align, ne_len) (ne_len < 8) ? ((u32 *)hs == ne_align) : ((u64 *)hs == ne_align)
+#		else
+#			define EQ(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), (ne_len < 8) ? 4 : 8)
+#		endif
 #	endif
 #endif
+#define CMP_FUNC PJSTR_RAREBYTE_CMP_FUNC
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
