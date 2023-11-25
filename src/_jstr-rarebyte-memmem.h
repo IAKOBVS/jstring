@@ -23,6 +23,7 @@
 
 #include "jstr-ctype.h"
 #include "jstr-macros.h"
+#include "jstr-stdstring.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdint.h>
@@ -49,9 +50,13 @@ PJSTR_END_DECLS
 #	define TOWORD32(x) ((uint32_t)(x)[3] SH 24 | (uint32_t)(x)[2] SH 16 | (uint32_t)(x)[1] SH 8 | (uint32_t)(x)[0])
 #	define TOWORD64(x) ((uint64_t)(x)[7] SH 56 | (uint64_t)(x)[6] SH 48 | (uint64_t)(x)[5] SH 40 | (uint64_t)(x)[4] SH 32 | TOWORD32((x)))
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
-#		define EQ(hs, ne_align, ne_len) (ne_len < 8) ? (*(u32 *)(hs) == ne_align) : (*(u64 *)(hs) == ne_align)
+#		define EQ64(hs, ne_align)       (*(u64 *)(hs) == ne_align)
+#		define EQ32(hs, ne_align)       (*(u32 *)(hs) == ne_align)
+#		define EQ(hs, ne_align, ne_len) ((ne_len < 8) ? EQ32(hs, ne_align) : EQ64(hs, ne_align))
 #	else
-#		define EQ(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), (ne_len < 8) ? 4 : 8)
+#		define EQ64(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), 8)
+#		define EQ32(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), 4)
+#		define EQ(hs, ne_align, ne_len)   !memcmp(hs, &(ne_align), (ne_len < 8) ? 4 : 8)
 #	endif
 #endif
 #define CMP_FUNC PJSTR_RAREBYTE_CMP_FUNC
@@ -77,19 +82,34 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	c = *(u *)rarebyte;
 	hs += idx;
 #if USE_UNALIGNED
-	u64 ne_align = (JSTR_HAVE_ATTR_MAY_ALIAS)
-	               ? ((ne_len < 8) ? (u64) * (u32 *)ne : *(u64 *)ne)
-	               : ((ne_len < 8) ? (u64)TOWORD32(ne) : TOWORD64(ne));
-	const unsigned char *const nelast = ne + ((ne_len < 8) ? 4 : 8);
+	u64 ne_align;
+	const unsigned char *nelast;
+	if (ne_len < 8) {
+		nelast = ne + 4;
+		if (JSTR_HAVE_ATTR_MAY_ALIAS)
+			ne_align = (u64) * (u32 *)ne;
+		else
+			ne_align = (u64)TOWORD32(ne);
+	} else {
+		nelast = ne + 8;
+		if (JSTR_HAVE_ATTR_MAY_ALIAS)
+			ne_align = *(u64 *)ne;
+		else
+			ne_align = TOWORD64(ne);
+	}
 	const size_t nelast_len = ne_len - (nelast - ne);
 #endif
 	const unsigned char *end = (u *)hs + hs_len - ne_len + 1;
 	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs)
 #if USE_UNALIGNED
 		/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
-		if (EQ(hs - idx, ne_align, ne_len))
-			if (!CMP_FUNC((char *)hs - idx, (char *)nelast, nelast_len))
-				return (PJSTR_RAREBYTE_RETTYPE)(hs - idx);
+		if (ne_len < 8) {
+			if (EQ32(hs - idx, ne_align) && !jstr_memcmpeq_loop(hs - idx + 4, nelast, nelast_len))
+				return (char *)hs - idx;
+		} else {
+			if (EQ64(hs - idx, ne_align) && !memcmp(hs - idx + 8, nelast, nelast_len))
+				return (char *)hs - idx;
+		}
 #else
 		if (!CMP_FUNC((char *)hs - idx, (char *)ne, ne_len))
 			return (PJSTR_RAREBYTE_RETTYPE)(hs - idx);

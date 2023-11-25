@@ -451,6 +451,33 @@ PJSTR_DEFINE_ATOI(double, atod, strtod(s, NULL))
 PJSTR_DEFINE_ATOI(float, atof, strtof(s, NULL))
 
 #undef PJSTR_DEFINE_ATOI
+	
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static int
+jstr_strcmpeq_loop(const char *s1,
+                   const char *s2)
+{
+	while ((*s1++ == *s2++))
+		;
+	return *s2;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static int
+jstr_memcmpeq_loop(const void *s1,
+                   const void *s2,
+                   size_t n)
+{
+	if (jstr_unlikely(n == 0))
+		return 0;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	for (; n && (*p1++ == *p2++); --n)
+		;
+	return n;
+}
 
 PJSTR_END_DECLS
 

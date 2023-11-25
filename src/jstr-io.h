@@ -40,6 +40,7 @@ PJSTR_END_DECLS
 #include "jstr-builder.h"
 #include "jstr-io-table.h"
 #include "jstr-string.h"
+#include "jstr-stdstring.h"
 
 #define R JSTR_RESTRICT
 
@@ -66,17 +67,6 @@ enum {
 };
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static int
-pjstrio_strcmpeq(const char *s1,
-                 const char *s2)
-{
-	while ((*s1++ == *s2++))
-		;
-	return *s2;
-}
-
-JSTR_FUNC_PURE
 static jstrio_ext_ty
 pjstrio_exttype(const char *ext)
 JSTR_NOEXCEPT
@@ -87,10 +77,10 @@ JSTR_NOEXCEPT
 	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY };
 	int i;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i)
-		if (!pjstrio_strcmpeq(ext, text[i]))
+		if (!jstr_strcmpeq_loop(ext, text[i]))
 			return JSTRIO_FT_TEXT;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(binary); ++i)
-		if (!pjstrio_strcmpeq(ext, binary[i]))
+		if (!jstr_strcmpeq_loop(ext, binary[i]))
 			return JSTRIO_FT_BINARY;
 	return JSTRIO_FT_UNKNOWN;
 }
