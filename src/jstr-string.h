@@ -808,15 +808,7 @@ JSTR_NOEXCEPT
 
 #	endif
 
-#	if JSTR_USE_LGPL
-#		define PJSTR_MEMMEM_FUNC        pjstr_strcasestr
-#		define PJSTR_MEMMEM_RETTYPE     char *
-#		define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
-#		define PJSTR_MEMMEM_HASH2_ICASE 1
-#		define PJSTR_MEMMEM_CHECK_EOL   1
-#		include "_lgpl-memmem.h"
-#	else
-
+#	if !JSTR_USE_LGPL
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr(const unsigned char *hs,
@@ -844,6 +836,15 @@ pjstr_strcasestr(const unsigned char *hs,
 #	endif
 
 #	undef L
+
+#	if JSTR_USE_LGPL
+#		define PJSTR_MEMMEM_FUNC        pjstr_strcasestr
+#		define PJSTR_MEMMEM_RETTYPE     char *
+#		define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
+#		define PJSTR_MEMMEM_HASH2_ICASE 1
+#		define PJSTR_MEMMEM_CHECK_EOL   1
+#		include "_lgpl-memmem.h"
+#	endif
 
 JSTR_FUNC_PURE
 static char *
