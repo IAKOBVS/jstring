@@ -573,12 +573,12 @@ pjstr_strnstr(const unsigned char *hs,
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
 	for (; (hs = (const u *)jstr_strnchr((char *)hs, c, end - hs)); ++hs) {
-		hp = hs + 1;
-		np = ne + 1;
+		hp = hs - idx;
+		np = ne - idx;
 		for (; *hp == *np && *hp && hp < end; ++hp, ++np)
 			;
 		if (*np == '\0')
-			return (char *)hs - 1;
+			return (char *)hs - idx;
 		if (jstr_unlikely(*hp == '\0'))
 			return NULL;
 	}
@@ -829,12 +829,12 @@ pjstr_strcasestr(const unsigned char *hs,
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
 	for (; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
-		hp = hs + 1;
-		np = ne + 1;
+		hp = hs - idx;
+		np = ne - idx;
 		for (; L(*hp) == L(*np) && *hp; ++hp, ++np)
 			;
 		if (*np == '\0')
-			return (char *)hs - 1;
+			return (char *)hs - idx;
 		if (jstr_unlikely(*hp == '\0'))
 			return NULL;
 	}
