@@ -26,6 +26,7 @@
 
 PJSTR_BEGIN_DECLS
 #include <string.h>
+#include <stdint.h>
 PJSTR_END_DECLS
 
 #ifndef PJSTR_RAREBYTE_RETTYPE
@@ -45,8 +46,8 @@ PJSTR_END_DECLS
 #	else
 #		error "Can't detect endianness!"
 #	endif
-#	define TOWORD32(x) ((u32)(x)[3] SH 24 | (u32)(x)[2] SH 16 | (u32)(x)[1] SH 8 | (u32)(x)[0])
-#	define TOWORD64(x) ((u64)(x)[7] SH 56 | (u64)(x)[6] SH 48 | (u64)(x)[5] SH 40 | (u64)(x)[4] SH 32 | TOWORD32((x)))
+#	define TOWORD32(x) ((uint32_t)(x)[3] SH 24 | (uint32_t)(x)[2] SH 16 | (uint32_t)(x)[1] SH 8 | (uint32_t)(x)[0])
+#	define TOWORD64(x) ((uint64_t)(x)[7] SH 56 | (uint64_t)(x)[6] SH 48 | (uint64_t)(x)[5] SH 40 | (uint64_t)(x)[4] SH 32 | TOWORD32((x)))
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
 #		define EQ(hs, ne_align, ne_len) (ne_len < 8) ? (*(u32 *)(hs) == ne_align) : (*(u64 *)(hs) == ne_align)
 #	else
