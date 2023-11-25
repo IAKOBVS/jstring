@@ -2,17 +2,17 @@
 
 # Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
 # This file is part of the jstring library.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-# 
+#
 # MIT License (Expat)
 
 use strict;
@@ -75,7 +75,7 @@ sub grepped {
 
 usage();
 
-my $file_str1     = jl_file_get_str(\$fname);
+my $file_str1 = jl_file_get_str(\$fname);
 my $file_str2 = '';
 my @func_arr;
 
@@ -83,10 +83,9 @@ my @func_arr;
 foreach (jl_file_to_blocks(\$file_str1)) {
 	$file_str2 .= "$_\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
-	next
-	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
-		|| $name !~ /^jstr_/
-		|| grepped(\@arg, \"...")
+	next if (!jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
+		|| $name !~ /^jstr\w*_/
+		|| grepped(\@arg, \'..')
 		|| scalar(@arg) == 0);
 	push(@func_arr, $name);
 	next if ($name !~ /$PREFIX_LEN/o
