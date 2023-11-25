@@ -327,11 +327,24 @@ jstr_shrink_to_fit(char *R *R s,
 
 JSTR_FUNC
 JSTR_ATTR_INLINE
-static int
-jstr_print(const jstr_ty *R j)
+static jstr_ret_ty
+jstrio_print(const jstr_ty *R j)
 JSTR_NOEXCEPT
 {
-	return jstrio_fwrite(j->data, 1, j->size, stdout) != j->size;
+	return jstrio_fwrite(j->data, 1, j->size, stdout) != j->size ? JSTR_RET_SUCC : JSTR_RET_ERR;
+}
+
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstrio_println(const jstr_ty *R j)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(jstrio_fwrite(j->data, 1, j->size, stdout) != j->size))
+		return JSTR_RET_ERR;
+	if (jstr_unlikely(jstrio_putchar('\n') == EOF))
+		return JSTR_RET_ERR;
+	return JSTR_RET_SUCC;
 }
 
 JSTR_FUNC

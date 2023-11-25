@@ -32,273 +32,542 @@ PJSTR_BEGIN_DECLS
 typedef enum {
 	JSTR_RAREBYTE_NUL = 0,
 	JSTR_RAREBYTE_GENERIC,
+	JSTR_RAREBYTE_RAREALPHA,
 	JSTR_RAREBYTE_UPPER,
 	JSTR_RAREBYTE_DIGIT,
-	JSTR_RAREBYTE_EXTENDEDASCII,
 	JSTR_RAREBYTE_NONCHARACTER,
 	JSTR_RAREBYTE_SYMBOL,
+	JSTR_RAREBYTE_EXTENDEDASCII,
 	JSTR_RAREBYTE_END
 } jstr_rarebyte_ty;
 
-/* Do not pass a non-unsigned char. */
+/*
+   Do not pass a non-unsigned char.
+   Lower is rarer.
+*/
 JSTR_MAYBE_UNUSED
 static const unsigned char jstr_rarebyte_table[256] = {
-	JSTR_RAREBYTE_NUL, /* 0 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 1 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 2 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 3 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 4 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 5 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 6 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 7 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 8 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 9 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 10 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 11 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 12 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 13 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 14 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 15 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 16 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 17 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 18 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 19 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 20 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 21 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 22 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 23 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 24 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 25 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 26 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 27 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 28 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 29 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 30 */
-	JSTR_RAREBYTE_NONCHARACTER, /* 31 */
-	JSTR_RAREBYTE_SYMBOL, /* ' ' */
-	JSTR_RAREBYTE_SYMBOL, /* '!' */
-	JSTR_RAREBYTE_SYMBOL, /* '"' */
-	JSTR_RAREBYTE_SYMBOL, /* '#' */
-	JSTR_RAREBYTE_SYMBOL, /* '$' */
-	JSTR_RAREBYTE_SYMBOL, /* '%' */
-	JSTR_RAREBYTE_SYMBOL, /* '&' */
-	JSTR_RAREBYTE_SYMBOL, /* '\'' */
-	JSTR_RAREBYTE_SYMBOL, /* '(' */
-	JSTR_RAREBYTE_SYMBOL, /* ')' */
-	JSTR_RAREBYTE_SYMBOL, /* '*' */
-	JSTR_RAREBYTE_SYMBOL, /* '+' */
-	JSTR_RAREBYTE_SYMBOL, /* '', */
-	JSTR_RAREBYTE_SYMBOL, /* '-' */
-	JSTR_RAREBYTE_SYMBOL, /* '.' */
-	JSTR_RAREBYTE_SYMBOL, /* '/' */
-	JSTR_RAREBYTE_DIGIT, /* '0' */
-	JSTR_RAREBYTE_DIGIT, /* '1' */
-	JSTR_RAREBYTE_DIGIT, /* '2' */
-	JSTR_RAREBYTE_DIGIT, /* '3' */
-	JSTR_RAREBYTE_DIGIT, /* '4' */
-	JSTR_RAREBYTE_DIGIT, /* '5' */
-	JSTR_RAREBYTE_DIGIT, /* '6' */
-	JSTR_RAREBYTE_DIGIT, /* '7' */
-	JSTR_RAREBYTE_DIGIT, /* '8' */
-	JSTR_RAREBYTE_DIGIT, /* '9' */
-	JSTR_RAREBYTE_SYMBOL, /* ':' */
-	JSTR_RAREBYTE_SYMBOL, /* ';' */
-	JSTR_RAREBYTE_SYMBOL, /* '<' */
-	JSTR_RAREBYTE_SYMBOL, /* '=' */
-	JSTR_RAREBYTE_SYMBOL, /* '>' */
-	JSTR_RAREBYTE_SYMBOL, /* '?' */
-	JSTR_RAREBYTE_SYMBOL, /* '@' */
-	JSTR_RAREBYTE_UPPER, /* 'A' */
-	JSTR_RAREBYTE_UPPER, /* 'B' */
-	JSTR_RAREBYTE_UPPER, /* 'C' */
-	JSTR_RAREBYTE_UPPER, /* 'D' */
-	JSTR_RAREBYTE_UPPER, /* 'E' */
-	JSTR_RAREBYTE_UPPER, /* 'F' */
-	JSTR_RAREBYTE_UPPER, /* 'G' */
-	JSTR_RAREBYTE_UPPER, /* 'H' */
-	JSTR_RAREBYTE_UPPER, /* 'I' */
-	JSTR_RAREBYTE_UPPER, /* 'J' */
-	JSTR_RAREBYTE_UPPER, /* 'K' */
-	JSTR_RAREBYTE_UPPER, /* 'L' */
-	JSTR_RAREBYTE_UPPER, /* 'M' */
-	JSTR_RAREBYTE_UPPER, /* 'N' */
-	JSTR_RAREBYTE_UPPER, /* 'O' */
-	JSTR_RAREBYTE_UPPER, /* 'P' */
-	JSTR_RAREBYTE_UPPER, /* 'Q' */
-	JSTR_RAREBYTE_UPPER, /* 'R' */
-	JSTR_RAREBYTE_UPPER, /* 'S' */
-	JSTR_RAREBYTE_UPPER, /* 'T' */
-	JSTR_RAREBYTE_UPPER, /* 'U' */
-	JSTR_RAREBYTE_UPPER, /* 'V' */
-	JSTR_RAREBYTE_UPPER, /* 'W' */
-	JSTR_RAREBYTE_UPPER, /* 'X' */
-	JSTR_RAREBYTE_UPPER, /* 'Y' */
-	JSTR_RAREBYTE_UPPER, /* 'Z' */
-	JSTR_RAREBYTE_SYMBOL, /* '[' */
-	JSTR_RAREBYTE_SYMBOL, /* '\\' */
-	JSTR_RAREBYTE_SYMBOL, /* ']' */
-	JSTR_RAREBYTE_SYMBOL, /* '^' */
-	JSTR_RAREBYTE_SYMBOL, /* '_' */
-	JSTR_RAREBYTE_SYMBOL, /* '`' */
-	0, /* 'a' */
-	0, /* 'b' */
-	0, /* 'c' */
-	0, /* 'd' */
-	0, /* 'e' */
-	0, /* 'f' */
-	0, /* 'g' */
-	0, /* 'h' */
-	0, /* 'i' */
-	1, /* 'j' */
-	0, /* 'k' */
-	0, /* 'l' */
-	0, /* 'm' */
-	0, /* 'n' */
-	0, /* 'o' */
-	0, /* 'p' */
-	1, /* 'q' */
-	0, /* 'r' */
-	0, /* 's' */
-	0, /* 't' */
-	0, /* 'u' */
-	0, /* 'v' */
-	0, /* 'w' */
-	1, /* 'x' */
-	0, /* 'y' */
-	1, /* 'z' */
-	JSTR_RAREBYTE_SYMBOL, /* '{' */
-	JSTR_RAREBYTE_SYMBOL, /* '|' */
-	JSTR_RAREBYTE_SYMBOL, /* '}' */
-	JSTR_RAREBYTE_SYMBOL, /* '~' */
-	JSTR_RAREBYTE_NONCHARACTER, /* 127 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 128 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 129 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 130 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 131 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 132 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 133 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 134 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 135 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 136 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 137 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 138 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 139 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 140 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 141 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 142 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 143 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 144 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 145 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 146 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 147 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 148 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 149 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 150 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 151 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 152 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 153 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 154 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 155 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 156 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 157 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 158 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 159 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 160 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 161 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 162 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 163 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 164 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 165 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 166 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 167 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 168 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 169 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 170 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 171 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 172 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 173 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 174 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 175 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 176 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 177 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 178 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 179 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 180 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 181 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 182 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 183 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 184 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 185 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 186 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 187 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 188 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 189 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 190 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 191 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 192 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 193 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 194 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 195 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 196 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 197 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 198 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 199 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 200 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 201 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 202 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 203 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 204 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 205 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 206 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 207 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 208 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 209 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 210 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 211 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 212 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 213 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 214 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 215 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 216 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 217 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 218 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 219 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 220 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 221 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 222 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 223 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 224 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 225 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 226 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 227 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 228 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 229 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 230 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 231 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 232 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 233 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 234 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 235 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 236 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 237 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 238 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 239 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 240 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 241 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 242 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 243 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 244 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 245 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 246 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 247 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 248 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 249 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 250 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 251 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 252 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 253 */
-	JSTR_RAREBYTE_EXTENDEDASCII, /* 254 */
-	JSTR_RAREBYTE_EXTENDEDASCII /* 255 */
+	0, /* 0 */
+	1, /* 1 */
+	13, /* 2 */
+	56, /* 3 */
+	59, /* 4 */
+	60, /* 5 */
+	61, /* 6 */
+	62, /* 7 */
+	63, /* 8 */
+	232, /* 9 */
+	248, /* 10 */
+	2, /* 11 */
+	158, /* 12 */
+	4, /* 13 */
+	5, /* 14 */
+	6, /* 15 */
+	7, /* 16 */
+	8, /* 17 */
+	9, /* 18 */
+	10, /* 19 */
+	14, /* 20 */
+	20, /* 21 */
+	26, /* 22 */
+	29, /* 23 */
+	37, /* 24 */
+	46, /* 25 */
+	52, /* 26 */
+	53, /* 27 */
+	54, /* 28 */
+	55, /* 29 */
+	57, /* 30 */
+	58, /* 31 */
+	255, /* 32 */
+	172, /* 33 */
+	242, /* 34 */
+	193, /* 35 */
+	162, /* 36 */
+	174, /* 37 */
+	178, /* 38 */
+	182, /* 39 */
+	218, /* 40 */
+	219, /* 41 */
+	212, /* 42 */
+	180, /* 43 */
+	249, /* 44 */
+	197, /* 45 */
+	221, /* 46 */
+	210, /* 47 */
+	253, /* 48 */
+	231, /* 49 */
+	230, /* 50 */
+	224, /* 51 */
+	225, /* 52 */
+	226, /* 53 */
+	227, /* 54 */
+	223, /* 55 */
+	222, /* 56 */
+	220, /* 57 */
+	176, /* 58 */
+	213, /* 59 */
+	184, /* 60 */
+	229, /* 61 */
+	188, /* 62 */
+	164, /* 63 */
+	159, /* 64 */
+	209, /* 65 */
+	181, /* 66 */
+	203, /* 67 */
+	189, /* 68 */
+	216, /* 69 */
+	196, /* 70 */
+	192, /* 71 */
+	185, /* 72 */
+	205, /* 73 */
+	161, /* 74 */
+	168, /* 75 */
+	215, /* 76 */
+	187, /* 77 */
+	211, /* 78 */
+	194, /* 79 */
+	195, /* 80 */
+	165, /* 81 */
+	206, /* 82 */
+	204, /* 83 */
+	214, /* 84 */
+	198, /* 85 */
+	173, /* 86 */
+	179, /* 87 */
+	175, /* 88 */
+	183, /* 89 */
+	167, /* 90 */
+	202, /* 91 */
+	239, /* 92 */
+	201, /* 93 */
+	160, /* 94 */
+	241, /* 95 */
+	163, /* 96 */
+	246, /* 97 */
+	233, /* 98 */
+	238, /* 99 */
+	240, /* 100 */
+	254, /* 101 */
+	237, /* 102 */
+	208, /* 103 */
+	234, /* 104 */
+	250, /* 105 */
+	169, /* 106 */
+	186, /* 107 */
+	236, /* 108 */
+	217, /* 109 */
+	245, /* 110 */
+	243, /* 111 */
+	228, /* 112 */
+	170, /* 113 */
+	247, /* 114 */
+	244, /* 115 */
+	251, /* 116 */
+	235, /* 117 */
+	199, /* 118 */
+	200, /* 119 */
+	252, /* 120 */
+	207, /* 121 */
+	177, /* 122 */
+	191, /* 123 */
+	171, /* 124 */
+	190, /* 125 */
+	166, /* 126 */
+	3, /* 127 */
+	140, /* 128 */
+	134, /* 129 */
+	124, /* 130 */
+	126, /* 131 */
+	86, /* 132 */
+	128, /* 133 */
+	95, /* 134 */
+	117, /* 135 */
+	114, /* 136 */
+	93, /* 137 */
+	81, /* 138 */
+	87, /* 139 */
+	132, /* 140 */
+	96, /* 141 */
+	112, /* 142 */
+	97, /* 143 */
+	103, /* 144 */
+	82, /* 145 */
+	139, /* 146 */
+	89, /* 147 */
+	98, /* 148 */
+	88, /* 149 */
+	119, /* 150 */
+	74, /* 151 */
+	156, /* 152 */
+	115, /* 153 */
+	104, /* 154 */
+	75, /* 155 */
+	120, /* 156 */
+	106, /* 157 */
+	76, /* 158 */
+	155, /* 159 */
+	90, /* 160 */
+	122, /* 161 */
+	107, /* 162 */
+	125, /* 163 */
+	152, /* 164 */
+	145, /* 165 */
+	136, /* 166 */
+	137, /* 167 */
+	101, /* 168 */
+	116, /* 169 */
+	102, /* 170 */
+	108, /* 171 */
+	99, /* 172 */
+	141, /* 173 */
+	77, /* 174 */
+	78, /* 175 */
+	118, /* 176 */
+	79, /* 177 */
+	109, /* 178 */
+	100, /* 179 */
+	150, /* 180 */
+	73, /* 181 */
+	94, /* 182 */
+	72, /* 183 */
+	121, /* 184 */
+	151, /* 185 */
+	113, /* 186 */
+	135, /* 187 */
+	110, /* 188 */
+	105, /* 189 */
+	83, /* 190 */
+	91, /* 191 */
+	11, /* 192 */
+	12, /* 193 */
+	64, /* 194 */
+	149, /* 195 */
+	146, /* 196 */
+	111, /* 197 */
+	65, /* 198 */
+	69, /* 199 */
+	66, /* 200 */
+	15, /* 201 */
+	16, /* 202 */
+	17, /* 203 */
+	18, /* 204 */
+	19, /* 205 */
+	130, /* 206 */
+	92, /* 207 */
+	144, /* 208 */
+	123, /* 209 */
+	21, /* 210 */
+	22, /* 211 */
+	23, /* 212 */
+	24, /* 213 */
+	131, /* 214 */
+	133, /* 215 */
+	127, /* 216 */
+	142, /* 217 */
+	25, /* 218 */
+	70, /* 219 */
+	129, /* 220 */
+	27, /* 221 */
+	28, /* 222 */
+	67, /* 223 */
+	153, /* 224 */
+	84, /* 225 */
+	143, /* 226 */
+	138, /* 227 */
+	147, /* 228 */
+	157, /* 229 */
+	148, /* 230 */
+	68, /* 231 */
+	71, /* 232 */
+	30, /* 233 */
+	31, /* 234 */
+	32, /* 235 */
+	33, /* 236 */
+	34, /* 237 */
+	35, /* 238 */
+	36, /* 239 */
+	154, /* 240 */
+	38, /* 241 */
+	39, /* 242 */
+	40, /* 243 */
+	41, /* 244 */
+	42, /* 245 */
+	80, /* 246 */
+	43, /* 247 */
+	44, /* 248 */
+	45, /* 249 */
+	47, /* 250 */
+	48, /* 251 */
+	85, /* 252 */
+	49, /* 253 */
+	50, /* 254 */
+	51, /* 255 */
+};
+
+/*
+   Do not pass a non-unsigned char.
+   Ignore alpha chars.
+   Lower is rarer.
+*/
+JSTR_MAYBE_UNUSED
+static const unsigned char jstr_rarebyte_table_case[256] = {
+	0, /* 0 */
+	1, /* 1 */
+	13, /* 2 */
+	56, /* 3 */
+	59, /* 4 */
+	60, /* 5 */
+	61, /* 6 */
+	62, /* 7 */
+	63, /* 8 */
+	232, /* 9 */
+	248, /* 10 */
+	2, /* 11 */
+	158, /* 12 */
+	4, /* 13 */
+	5, /* 14 */
+	6, /* 15 */
+	7, /* 16 */
+	8, /* 17 */
+	9, /* 18 */
+	10, /* 19 */
+	14, /* 20 */
+	20, /* 21 */
+	26, /* 22 */
+	29, /* 23 */
+	37, /* 24 */
+	46, /* 25 */
+	52, /* 26 */
+	53, /* 27 */
+	54, /* 28 */
+	55, /* 29 */
+	57, /* 30 */
+	58, /* 31 */
+	255, /* 32 */
+	172, /* 33 */
+	242, /* 34 */
+	193, /* 35 */
+	162, /* 36 */
+	174, /* 37 */
+	178, /* 38 */
+	182, /* 39 */
+	218, /* 40 */
+	219, /* 41 */
+	212, /* 42 */
+	180, /* 43 */
+	249, /* 44 */
+	197, /* 45 */
+	221, /* 46 */
+	210, /* 47 */
+	253, /* 48 */
+	231, /* 49 */
+	230, /* 50 */
+	224, /* 51 */
+	225, /* 52 */
+	226, /* 53 */
+	227, /* 54 */
+	223, /* 55 */
+	222, /* 56 */
+	220, /* 57 */
+	176, /* 58 */
+	213, /* 59 */
+	184, /* 60 */
+	229, /* 61 */
+	188, /* 62 */
+	164, /* 63 */
+	159, /* 64 */
+	0, /* 65 */
+	0, /* 66 */
+	0, /* 67 */
+	0, /* 68 */
+	0, /* 69 */
+	0, /* 70 */
+	0, /* 71 */
+	0, /* 72 */
+	0, /* 73 */
+	0, /* 74 */
+	0, /* 75 */
+	0, /* 76 */
+	0, /* 77 */
+	0, /* 78 */
+	0, /* 79 */
+	0, /* 80 */
+	0, /* 81 */
+	0, /* 82 */
+	0, /* 83 */
+	0, /* 84 */
+	0, /* 85 */
+	0, /* 86 */
+	0, /* 87 */
+	0, /* 88 */
+	0, /* 89 */
+	0, /* 90 */
+	202, /* 91 */
+	239, /* 92 */
+	201, /* 93 */
+	160, /* 94 */
+	241, /* 95 */
+	163, /* 96 */
+	0, /* 97 */
+	0, /* 98 */
+	0, /* 99 */
+	0, /* 100 */
+	0, /* 101 */
+	0, /* 102 */
+	0, /* 103 */
+	0, /* 104 */
+	0, /* 105 */
+	0, /* 106 */
+	0, /* 107 */
+	0, /* 108 */
+	0, /* 109 */
+	0, /* 110 */
+	0, /* 111 */
+	0, /* 112 */
+	0, /* 113 */
+	0, /* 114 */
+	0, /* 115 */
+	0, /* 116 */
+	0, /* 117 */
+	0, /* 118 */
+	0, /* 119 */
+	0, /* 120 */
+	0, /* 121 */
+	0, /* 122 */
+	191, /* 123 */
+	171, /* 124 */
+	190, /* 125 */
+	166, /* 126 */
+	3, /* 127 */
+	140, /* 128 */
+	134, /* 129 */
+	124, /* 130 */
+	126, /* 131 */
+	86, /* 132 */
+	128, /* 133 */
+	95, /* 134 */
+	117, /* 135 */
+	114, /* 136 */
+	93, /* 137 */
+	81, /* 138 */
+	87, /* 139 */
+	132, /* 140 */
+	96, /* 141 */
+	112, /* 142 */
+	97, /* 143 */
+	103, /* 144 */
+	82, /* 145 */
+	139, /* 146 */
+	89, /* 147 */
+	98, /* 148 */
+	88, /* 149 */
+	119, /* 150 */
+	74, /* 151 */
+	156, /* 152 */
+	115, /* 153 */
+	104, /* 154 */
+	75, /* 155 */
+	120, /* 156 */
+	106, /* 157 */
+	76, /* 158 */
+	155, /* 159 */
+	90, /* 160 */
+	122, /* 161 */
+	107, /* 162 */
+	125, /* 163 */
+	152, /* 164 */
+	145, /* 165 */
+	136, /* 166 */
+	137, /* 167 */
+	101, /* 168 */
+	116, /* 169 */
+	102, /* 170 */
+	108, /* 171 */
+	99, /* 172 */
+	141, /* 173 */
+	77, /* 174 */
+	78, /* 175 */
+	118, /* 176 */
+	79, /* 177 */
+	109, /* 178 */
+	100, /* 179 */
+	150, /* 180 */
+	73, /* 181 */
+	94, /* 182 */
+	72, /* 183 */
+	121, /* 184 */
+	151, /* 185 */
+	113, /* 186 */
+	135, /* 187 */
+	110, /* 188 */
+	105, /* 189 */
+	83, /* 190 */
+	91, /* 191 */
+	11, /* 192 */
+	12, /* 193 */
+	64, /* 194 */
+	149, /* 195 */
+	146, /* 196 */
+	111, /* 197 */
+	65, /* 198 */
+	69, /* 199 */
+	66, /* 200 */
+	15, /* 201 */
+	16, /* 202 */
+	17, /* 203 */
+	18, /* 204 */
+	19, /* 205 */
+	130, /* 206 */
+	92, /* 207 */
+	144, /* 208 */
+	123, /* 209 */
+	21, /* 210 */
+	22, /* 211 */
+	23, /* 212 */
+	24, /* 213 */
+	131, /* 214 */
+	133, /* 215 */
+	127, /* 216 */
+	142, /* 217 */
+	25, /* 218 */
+	70, /* 219 */
+	129, /* 220 */
+	27, /* 221 */
+	28, /* 222 */
+	67, /* 223 */
+	153, /* 224 */
+	84, /* 225 */
+	143, /* 226 */
+	138, /* 227 */
+	147, /* 228 */
+	157, /* 229 */
+	148, /* 230 */
+	68, /* 231 */
+	71, /* 232 */
+	30, /* 233 */
+	31, /* 234 */
+	32, /* 235 */
+	33, /* 236 */
+	34, /* 237 */
+	35, /* 238 */
+	36, /* 239 */
+	154, /* 240 */
+	38, /* 241 */
+	39, /* 242 */
+	40, /* 243 */
+	41, /* 244 */
+	42, /* 245 */
+	80, /* 246 */
+	43, /* 247 */
+	44, /* 248 */
+	45, /* 249 */
+	47, /* 250 */
+	48, /* 251 */
+	85, /* 252 */
+	49, /* 253 */
+	50, /* 254 */
+	51, /* 255 */
 };
 
 JSTR_FUNC_PURE
@@ -308,37 +577,49 @@ jstr_rarebyteget_len(const void *ne,
                      size_t n)
 {
 	int c;
+	int state = 0;
+	const void *save;
 	const unsigned char *p = (const unsigned char *)ne;
-	for (; n-- && (c = *p); ++p)
-		if (jstr_rarebyte_table[c])
-			return (unsigned char *)p;
-	return NULL;
+	for (; n-- && (c = jstr_rarebyte_table[*p]); ++p)
+		if (c < state) {
+			state = c;
+			save = (const void *)p;
+		}
+	return state ? (void *)save : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-jstr_rarebyteget(const char *n)
+jstr_rarebyteget(const char *ne)
 {
-	const unsigned char *p = (const unsigned char *)n;
 	int c;
-	for (; (c = *p); ++p)
-		if (jstr_rarebyte_table[c])
-			return (char *)p;
-	return NULL;
+	int state = 0;
+	const char *save;
+	const unsigned char *p = (const unsigned char *)ne;
+	for (; (c = jstr_rarebyte_table[*p]); ++p)
+		if (c < state) {
+			state = c;
+			save = (char *)p;
+		}
+	return state ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-jstr_rarebytegetcase(const char *n)
+jstr_rarebytegetcase(const char *ne)
 {
-	const unsigned char *p = (const unsigned char *)n;
 	int c;
-	for (; (c = *p); ++p)
-		if (jstr_ctype_table[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
-			return (char *)p;
-	return NULL;
+	int state = 0;
+	const char *save;
+	const unsigned char *p = (const unsigned char *)ne;
+	for (; (c = jstr_rarebyte_table_case[*p]); ++p)
+		if (c < state) {
+			state = c;
+			save = (char *)p;
+		}
+	return state ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -347,12 +628,16 @@ static char *
 jstr_rarebytegetcase_len(const void *ne,
                          size_t n)
 {
-	const unsigned char *p = (const unsigned char *)ne;
 	int c;
-	for (; n-- && (c = *p); ++p)
-		if (jstr_ctype_table[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
-			return (char *)p;
-	return NULL;
+	int state = 0;
+	const char *save;
+	const unsigned char *p = (const unsigned char *)ne;
+	for (; n-- && (c = jstr_rarebyte_table_case[*p]); ++p)
+		if (c < state) {
+			state = c;
+			save = (char *)p;
+		}
+	return state ? (char *)save : NULL;
 }
 
 PJSTR_END_DECLS
