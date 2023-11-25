@@ -381,9 +381,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr5plus(const unsigned char *h,
-                      const unsigned char *const n,
-                      size_t l,
-                      size_t ne_len)
+                   const unsigned char *const n,
+                   size_t l,
+                   size_t ne_len)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
@@ -391,7 +391,7 @@ JSTR_NOEXCEPT
 	for (h += 3, l -= 3; l-- && *h; hw = hw << 8 | *++h)
 		if (hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4))
 			return (char *)h - 3;
-	return (*h && hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4)) ? (char *)h - 3: NULL;
+	return (*h && hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4)) ? (char *)h - 3 : NULL;
 }
 
 #if !JSTR_HAVE_MEMMEM
@@ -447,9 +447,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 pjstr_memmem5plus(const unsigned char *h,
-                     size_t hl,
-                     const unsigned char *const n,
-                     size_t nl)
+                  size_t hl,
+                  const unsigned char *const n,
+                  size_t nl)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
@@ -457,19 +457,23 @@ JSTR_NOEXCEPT
 	for (h += 3, hl -= 3; hl--; hw = hw << 8 | *++h)
 		if (hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4))
 			return (void *)(h - 3);
-	return (hw == nw) && !memcmp(h - 3 + 4, n + 4, nl - 4) : (void *)(h - 3) : NULL;
+	return (hw == nw) && !memcmp(h - 3 + 4, n + 4, nl - 4)
+	        : (void *)(h - 3)
+	        : NULL;
 }
 
 #	endif
 
 #endif
 
-#if JSTR_USE_LGPL && !JSTR_HAVE_MEMMEM
-#	define PJSTR_MEMMEM_FUNC pjstr_memmem
-#	include "_lgpl-memmem.h"
-#else
-#	define PJSTR_RAREBYTE_FUNC pjstr_memmem
-#	include "_jstr-rarebyte-memmem.h"
+#if !JSTR_HAVE_MEMMEM
+#	if JSTR_USE_LGPL
+#		define PJSTR_MEMMEM_FUNC pjstr_memmem
+#		include "_lgpl-memmem.h"
+#	else
+#		define PJSTR_RAREBYTE_FUNC pjstr_memmem
+#		include "_jstr-rarebyte-memmem.h"
+#	endif
 #endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -755,7 +759,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 pjstr_strcasestr5plus(const unsigned char *h,
-                         const unsigned char *const n)
+                      const unsigned char *const n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *hp;
@@ -780,8 +784,8 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 pjstr_strcasestr5plus_len(const unsigned char *h,
-                             const unsigned char *const n,
-                             size_t ne_len)
+                          const unsigned char *const n,
+                          size_t ne_len)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
@@ -943,16 +947,18 @@ JSTR_NOEXCEPT
 	return jstr_isalpha(c) ? pjstr_strcasechr_generic(s, c) : (char *)strchr(s, c);
 }
 
-#if JSTR_USE_LGPL && !JSTR_HAVE_STRCASESTR_OPTIMIZED
-#	define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len
-#	define PJSTR_MEMMEM_RETTYPE     char *
-#	define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
-#	define PJSTR_MEMMEM_HASH2_ICASE 1
-#	include "_lgpl-memmem.h"
-#else
-#	define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len
-#	define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
-#	include "_jstr-rarebyte-memmem.h"
+#if !JSTR_HAVE_STRCASESTR_OPTIMIZED
+#	if JSTR_USE_LGPL
+#		define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len
+#		define PJSTR_MEMMEM_RETTYPE     char *
+#		define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
+#		define PJSTR_MEMMEM_HASH2_ICASE 1
+#		include "_lgpl-memmem.h"
+#	else
+#		define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len
+#		define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
+#		include "_jstr-rarebyte-memmem.h"
+#	endif
 #endif
 
 /*
