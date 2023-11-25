@@ -391,7 +391,7 @@ JSTR_NOEXCEPT
 	for (h += 3, l -= 3; *h && l--; hw = hw << 8 | *++h)
 		if (hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4))
 			return (char *)h - 3;
-	return NULL;
+	return *h && hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4) ? (char *)h - 3: NULL;
 }
 
 #if !JSTR_HAVE_MEMMEM
@@ -457,7 +457,7 @@ JSTR_NOEXCEPT
 	for (h += 3, hl -= 3; hl--; hw = hw << 8 | *++h)
 		if (hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4))
 			return (void *)(h - 3);
-	return NULL;
+	return hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4) : (void *)(h - 3) : NULL;
 }
 
 #	endif
