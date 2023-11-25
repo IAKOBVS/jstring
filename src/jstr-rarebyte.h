@@ -190,20 +190,20 @@ jstr_rarebyteget(const char *n)
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
-static unsigned char *
+static char *
 jstr_rarebytegetcase(const char *n)
 {
 	const unsigned char *p = (const unsigned char *)n;
 	int c;
 	for (; (c = *p); ++p)
 		if (pjstr_ctype[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
-			return (unsigned char *)p;
+			return (char *)p;
 	return NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
-static unsigned char *
+static char *
 jstr_rarebytegetcase_len(const unsigned char *ne,
                          size_t n)
 {
@@ -211,7 +211,7 @@ jstr_rarebytegetcase_len(const unsigned char *ne,
 	int c;
 	for (; n-- && (c = *p); ++p)
 		if (pjstr_ctype[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
-			return (unsigned char *)p;
+			return (char *)p;
 	return NULL;
 }
 
