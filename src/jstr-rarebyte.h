@@ -624,20 +624,20 @@ jstr_rarebytegetcase(const char *ne)
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
-static char *
+static void *
 jstr_rarebytegetcase_len(const void *ne,
                          size_t n)
 {
 	int c;
 	int state = 0;
-	const char *save;
+	const void *save;
 	const unsigned char *p = (const unsigned char *)ne;
 	for (; n-- && (c = jstr_rarebyte_table_case[*p]); ++p)
 		if (c < state) {
 			state = c;
-			save = (char *)p;
+			save = (void *)p;
 		}
-	return state ? (char *)save : NULL;
+	return state ? (void *)save : NULL;
 }
 
 PJSTR_END_DECLS
