@@ -727,7 +727,7 @@ JSTR_NOEXCEPT
 
 #if !JSTR_HAVE_STRCASESTR_OPTIMIZED
 
-#	define L(c) jstr_tolower(c)
+#	define L(c) jstr_ctype_table_tolower[c]
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
