@@ -332,6 +332,7 @@ JSTR_NOEXCEPT
 	return (s1_len == s2_len) ? jstr_strcasecmpeq(s1, s2) : 1;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -347,6 +348,7 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (char *)hs - 1 : NULL;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -362,6 +364,7 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (char *)hs - 2 : NULL;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -377,6 +380,7 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (char *)hs - 3 : NULL;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 2, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
