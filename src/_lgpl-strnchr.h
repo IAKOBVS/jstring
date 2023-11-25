@@ -15,22 +15,15 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef JSTR_STRNCHR_H
-#define JSTR_STRNCHR_H 1
+#ifndef JSTR_LGPL_STRNCHR_H
+#define JSTR_LGPL_STRNCHR_H 1
 
 #include "jstr-macros.h"
 #include "jstr-word-at-a-time.h"
 
-JSTR_ATTR_INLINE
-JSTR_FUNC_CONST
-static const char *
-pjstr_sadd(const uintptr_t x,
-           const uintptr_t y)
-JSTR_NOEXCEPT
-{
-	return (const char *)(y > UINTPTR_MAX - x ? UINTPTR_MAX : x + y);
-}
+#define PJSTR_SADD(x, y) (const char *)((uintptr_t)(y) > UINTPTR_MAX - (uintptr_t)(x) ? UINTPTR_MAX : (uintptr_t)(x) + (uintptr_t)(y))
 
+#ifndef JSTR_LGPL_IMPL
 JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *s,
@@ -38,6 +31,7 @@ jstr_strnchr(const char *s,
              size_t n)
 JSTR_NOEXCEPT
 {
+#endif
 	if (jstr_unlikely(n == 0)
 	    || jstr_unlikely(*s == '\0'))
 		return NULL;
@@ -45,7 +39,7 @@ JSTR_NOEXCEPT
 	const uintptr_t s_int = (uintptr_t)s;
 	jstr_word_ty word = jstr_word_toword(word_ptr);
 	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	const char *const lbyte = pjstr_sadd(s_int, n - 1);
+	const char *const lbyte = PJSTR_SADD(s_int, n - 1);
 	const jstr_word_ty *const lword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
 	const jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	char *ret;
@@ -68,6 +62,8 @@ JSTR_NOEXCEPT
 			return ret;
 	}
 	return NULL;
+#ifndef JSTR_LGPL_IMPL
 }
+#endif
 
-#endif /* JSTR_STRNCHR_H */
+#endif /* JSTR_LGPL_STRNCHR_H */

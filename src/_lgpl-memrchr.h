@@ -16,12 +16,13 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef JSTR_MEMRCHR_H
-#define JSTR_MEMRCHR_H 1
+#ifndef JSTR_LGPL_MEMRCHR_H
+#define JSTR_LGPL_MEMRCHR_H 1
 
 #include "jstr-macros.h"
 #include "jstr-word-at-a-time.h"
 
+#ifndef JSTR_LGPL_IMPL
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
@@ -30,6 +31,7 @@ jstr_memrchr(const void *s,
              size_t sz)
 JSTR_NOEXCEPT
 {
+#endif
 	if (jstr_unlikely(sz == 0))
 		return NULL;
 	char *ret;
@@ -55,6 +57,8 @@ JSTR_NOEXCEPT
 			return ret;
 	}
 	return NULL;
+#ifndef JSTR_LGPL_IMPL
 }
+#endif
 
-#endif /* JSTR_MEMRCHR_H */
+#endif /* JSTR_LGPL_MEMRCHR_H */

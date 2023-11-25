@@ -15,21 +15,20 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef JSTR_STRCHRNUL_H
-#define JSTR_STRCHRNUL_H 1
+#ifndef JSTR_LGPL_STRCHRNUL_H
+#define JSTR_LGPL_STRCHRNUL_H 1
 
 #include "jstr-macros.h"
 #include "jstr-word-at-a-time.h"
 
+#ifndef JSTR_LGPL_IMPL
 JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCHRNUL
-JSTR_ATTR_INLINE
-#endif
 static char *
 jstr_strchrnul(const char *s,
                int c)
 JSTR_NOEXCEPT
 {
+#endif
 	const uintptr_t s_int = (uintptr_t)s;
 	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
 	const jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
@@ -41,6 +40,8 @@ JSTR_NOEXCEPT
 		word = jstr_word_toword(++word_ptr);
 	while (!jstr_word_has_zero_eq(word, repeated_c));
 	return (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
+#ifndef JSTR_LGPL_IMPL
 }
+#endif
 
-#endif /* JSTR_STRCHRNUL_H */
+#endif /* JSTR_LGPL_STRCHRNUL_H */

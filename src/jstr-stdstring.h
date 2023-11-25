@@ -34,6 +34,7 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
+#define JSTR_LGPL_IMPL
 
 PJSTR_BEGIN_DECLS
 
@@ -156,58 +157,57 @@ JSTR_NOEXCEPT
 #endif
 }
 
-#if JSTR_HAVE_MEMRCHR || !JSTR_HAVE_WORD_AT_A_TIME
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-#	if JSTR_HAVE_MEMRCHR
+#if JSTR_HAVE_MEMRCHR
 JSTR_ATTR_INLINE
-#	endif
+#endif
 static void *
 jstr_memrchr(const void *s,
              int c,
              size_t sz)
 JSTR_NOEXCEPT
 {
-#	if JSTR_HAVE_MEMRCHR
+#if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, sz);
-#	else
+#elif JSTR_HAVE_WORD_AT_A_TIME
+#	include "_lgpl-memrchr.h"
+#else
 	const unsigned char *const start = (const unsigned char *)s;
 	const unsigned char *end = (const unsigned char *)s + sz;
 	for (; end >= start; --end)
 		if (*end == (unsigned char)c)
 			return (void *)end;
 	return NULL;
-#	endif
-}
-#else
-#	include "_lgpl-memrchr.h"
 #endif
+}
 
-#if JSTR_HAVE_STRCHRNUL || !JSTR_HAVE_WORD_AT_A_TIME
+#undef JSTR_HAVE_STRCHRNUL
+#undef JSTR_HAVE_STRCHR_OPTIMIZED
+
 JSTR_FUNC_PURE
-#	if JSTR_HAVE_STRCHRNUL
+#if JSTR_HAVE_STRCHRNUL
 JSTR_ATTR_INLINE
-#	endif
+#endif
 static char *
 jstr_strchrnul(const char *s,
                int c)
 JSTR_NOEXCEPT
 {
-#	if JSTR_HAVE_STRCHRNUL
+#if JSTR_HAVE_STRCHRNUL
 	return (char *)strchrnul(s, c);
-#	elif JSTR_HAVE_STRCHR_OPTIMIZED
+#elif JSTR_HAVE_STRCHR_OPTIMIZED
 	const char *const start = s;
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
-#	else
+#elif JSTR_USE_LGPL
+#	include "_lgpl-strchrnul.h"
+#else
 	for (; *s && *s != (char)c; ++s)
 		;
 	return (char *)s;
-#	endif
-}
-#else
-#	include "_lgpl-strchrnul.h"
 #endif
+}
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
@@ -233,7 +233,7 @@ JSTR_NOEXCEPT
 {
 	return (char *)jstr_memnchr(s, c, sz, n);
 }
-#if !JSTR_HAVE_WORD_AT_A_TIME || 1
+
 /*
    strchr() before s + N.
 */
@@ -244,14 +244,15 @@ jstr_strnchr(const char *s,
              size_t n)
 JSTR_NOEXCEPT
 {
+#if JSTR_HAVE_WORD_AT_A_TIME || 1 /* Broken? */
+#	include "_lgpl-strnchr.h"
+#else
 	for (; n-- && *s; ++s)
 		if (*s == (char)c)
 			return (char *)s;
 	return NULL;
-}
-#else
-#	include "_lgpl-strnchr.h"
 #endif
+}
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
