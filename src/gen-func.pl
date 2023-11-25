@@ -40,7 +40,7 @@ my $ATTR_DEFAULT      = 'JSTR_FUNC';
 my $ATTR_DEFAULT_VOID = 'JSTR_FUNC_VOID';
 my $ATTR_RET_NONNULL  = 'JSTR_FUNC_RET_NONNULL';
 my $JSTRING           = 'jstr_ty';
-my $JSTRING_LIST      = 'jstr_l_ty';
+my $JSTRING_LIST      = 'jstrlist_ty';
 my $VAR_JSTRING       = 'j';
 my $VAR_JSTRING_LIST  = 'l';
 my $DATA              = 'data';
@@ -137,7 +137,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	my ($attr, $rettype, $name, @arg, $body);
 	next
 	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
-		|| $name !~ /^jstr_/
+		|| $name !~ /^jstr\w*_/
 		|| $name =~ /$PREFIX_J$/o
 		|| scalar(@arg) == 0
 		|| index($name, 'unsafe') != -1);
