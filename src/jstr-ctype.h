@@ -89,7 +89,7 @@ JSTR_ATTR_INLINE
 JSTR_FUNC_CONST
 static int
 jstr_isctype(int c,
-             const jstr_ctype_ty type)
+             int type)
 JSTR_NOEXCEPT
 {
 	return pjstr_ctype[(unsigned char)c] & type;
@@ -115,7 +115,7 @@ JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static char *
 jstr_skipctype(const char *R s,
-               const jstr_ctype_ty ctype)
+               int ctype)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -149,7 +149,7 @@ JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_isctypestr(const char *R s,
-                const jstr_ctype_ty ctype)
+                int ctype)
 JSTR_NOEXCEPT
 {
 	return jstr_likely(*s) && *(jstr_skipctype(s, ctype) + 1) == '\0';
