@@ -1,16 +1,16 @@
 /* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, and to permit persons to whom the Software is
    furnished to do so, subject to the following conditions:
-   
+
    The above copyright notice and this permission notice shall be included in all
    copies or substantial portions of the Software.
-   
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -18,7 +18,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.
-   
+
    MIT License (Expat) */
 
 #ifndef JSTR_MACROS_H
@@ -39,7 +39,7 @@
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_SIZE(array)    (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -1194,7 +1194,11 @@ PJSTR_END_DECLS
 #	endif
 #endif /* byte_order */
 
-#if !JSTR_ENDIAN_BIG && !JSTR_ENDIAN_LITTLE
+#if JSTR_ENDIAN_LITTLE
+#	define JSTR_ENDIAN_BIG 0
+#elif JSTR_ENDIAN_BIG
+#	define JSTR_ENDIAN_LITTLE 0
+#else
 #	error "Can't detect endianness."
 #endif
 
@@ -1332,28 +1336,32 @@ enum {
 #	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
 #endif
 
-/* Check builtins. */
-#if JSTR_ARCH_ALPHA
-#	if (JSTR_HAS_BUILTIN(__builtin_alpha_cmpbge) || defined __builtin_alpha_cmpbge) \
-	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)                  \
-	&& (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)
-#		define JSTR_HAVE_WORD_AT_A_TIME 1
-#	endif
-#elif JSTR_ARCH_POWERPC6
-#	if (JSTR_HAS_BUILTIN(__builtin_cmpb) || defined __builtin_cmpb)
-#		define JSTR_HAVE_WORD_AT_A_TIME 1
-#	endif
-#else /* jstr_arch_generic */
-#	if (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)  \
-	&& (JSTR_HAS_BUILTIN(__builtin_clzll) || defined __builtin_clzll) \
-	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)   \
-	&& (JSTR_HAS_BUILTIN(__builtin_ctzll) || defined __builtin_ctzll)
-#		define JSTR_HAVE_WORD_AT_A_TIME 1
-#	endif
-#endif /* have_word_at_a_time */
+#if JSTR_ARCH_I386 || JSTR_ARCH_X86_64 || defined __s390x__ || JSTR_ARCH_ARM64
+#	define JSTR_HAVE_UNALIGNED_ACCESS 1
+#endif
 
-#if !JSTR_USE_LGPL
-#	undef JSTR_HAVE_WORD_AT_A_TIME
+#if JSTR_USE_LGPL
+
+/* Check builtins. */
+#	if JSTR_ARCH_ALPHA
+#		if (JSTR_HAS_BUILTIN(__builtin_alpha_cmpbge) || defined __builtin_alpha_cmpbge) \
+		&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)                  \
+		&& (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)
+#			define JSTR_HAVE_WORD_AT_A_TIME 1
+#		endif
+#	elif JSTR_ARCH_POWERPC6
+#		if (JSTR_HAS_BUILTIN(__builtin_cmpb) || defined __builtin_cmpb)
+#			define JSTR_HAVE_WORD_AT_A_TIME 1
+#		endif
+#	else /* jstr_arch_generic */
+#		if (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)  \
+		&& (JSTR_HAS_BUILTIN(__builtin_clzll) || defined __builtin_clzll) \
+		&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)   \
+		&& (JSTR_HAS_BUILTIN(__builtin_ctzll) || defined __builtin_ctzll)
+#			define JSTR_HAVE_WORD_AT_A_TIME 1
+#		endif
+#	endif /* have_word_at_a_time */
+
 #endif
 
 #endif /* jstr_macros_h */
