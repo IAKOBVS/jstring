@@ -344,7 +344,7 @@ JSTR_NOEXCEPT
 	uint16_t hw = (uint16_t)h[0] << 8 | h[1];
 	for (++h, --l; *h && l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (char *)h - 1 : NULL;
+	return (hw == nw) ? (char *)h - 1 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -359,7 +359,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8;
 	for (h += 2, l -= 2; *h && l-- && hw != nw; hw = (hw | *++h) << 8)
 		;
-	return hw == nw ? (char *)h - 2 : NULL;
+	return (hw == nw) ? (char *)h - 2 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -374,7 +374,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, l -= 3; *h && l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (char *)h - 3 : NULL;
+	return (hw == nw) ? (char *)h - 3 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -391,7 +391,7 @@ JSTR_NOEXCEPT
 	for (h += 3, l -= 3; *h && l--; hw = hw << 8 | *++h)
 		if (hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4))
 			return (char *)h - 3;
-	return *h && hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4) ? (char *)h - 3: NULL;
+	return (*h && hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4)) ? (char *)h - 3: NULL;
 }
 
 #if !JSTR_HAVE_MEMMEM
@@ -408,7 +408,7 @@ JSTR_NOEXCEPT
 	uint16_t hw = (uint16_t)h[0] << 8 | h[1];
 	for (++h, --l; l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (void *)(h - 1) : NULL;
+	return (hw == nw) ? (void *)(h - 1) : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -423,7 +423,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8;
 	for (h += 2, l -= 2; l-- && hw != nw; hw = (hw | *++h) << 8)
 		;
-	return hw == nw ? (void *)(h - 2) : NULL;
+	return (hw == nw) ? (void *)(h - 2) : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -438,7 +438,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | *++h)
 		;
-	return hw == nw ? (void *)(h - 3) : NULL;
+	return (hw == nw) ? (void *)(h - 3) : NULL;
 }
 
 #	if !JSTR_USE_LGPL
@@ -457,7 +457,7 @@ JSTR_NOEXCEPT
 	for (h += 3, hl -= 3; hl--; hw = hw << 8 | *++h)
 		if (hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4))
 			return (void *)(h - 3);
-	return hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4) : (void *)(h - 3) : NULL;
+	return (hw == nw) && !memcmp(h - 3 + 4, n + 4, nl - 4) : (void *)(h - 3) : NULL;
 }
 
 #	endif
@@ -718,7 +718,7 @@ JSTR_NOEXCEPT
 	uint16_t hw = (uint32_t)L(h[0]) << 8 | L(h[1]);
 	for (++h; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
-	return hw == nw ? (char *)h - 1 : NULL;
+	return (hw == nw) ? (char *)h - 1 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -732,7 +732,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
 	for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)
 		;
-	return hw == nw ? (char *)h - 2 : NULL;
+	return (hw == nw) ? (char *)h - 2 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -746,7 +746,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
 	for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))
 		;
-	return hw == nw ? (char *)h - 3 : NULL;
+	return (hw == nw) ? (char *)h - 3 : NULL;
 }
 
 #	if !JSTR_USE_LGPL
