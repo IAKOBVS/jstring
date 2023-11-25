@@ -24,16 +24,16 @@
 #ifndef JSTR_TEST_H
 #define JSTR_TEST_H
 
-#define __STRICT_ANSI__
+/* #define __STRICT_ANSI__ */
 
 #include "../src/jstr.h"
 #include <assert.h>
 
-#define PRINT(fmt, ...) \
-	printf(fmt, __VA_ARGS__)
+#define PRINT(...) \
+	printf(__VA_ARGS__)
 
-#define PRINTERR(fmt, ...) \
-	fprintf(stdout, fmt, __VA_ARGS__)
+#define PRINTERR(...) \
+	fprintf(stderr, __VA_ARGS__)
 
 #define SUCCESS() \
 	PRINTERR("%s succeeded.\n", argv[0])
@@ -42,9 +42,9 @@
 	do {                                      \
 		if (jstr_unlikely(!(expr))) {     \
 			PRINTERR("result:%s\n"    \
-				 "expected:%s\n", \
-				 result,          \
-				 expected);       \
+			         "expected:%s\n", \
+			         result,          \
+			         expected);       \
 			assert(expr);             \
 		}                                 \
 	} while (0)

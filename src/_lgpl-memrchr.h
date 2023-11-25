@@ -30,21 +30,15 @@ jstr_memrchr(const void *s,
              size_t sz)
 JSTR_NOEXCEPT
 {
-	const jstr_word_ty *word_ptr;
-	uintptr_t s_int;
-	jstr_word_ty word;
-	jstr_word_ty repeated_c;
-	jstr_word_ty mask;
-	const jstr_word_ty *sword;
-	char *ret;
 	if (jstr_unlikely(sz == 0))
 		return NULL;
-	word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((const char *)s + sz, sizeof(jstr_word_ty));
-	s_int = (uintptr_t)s + sz;
-	word = jstr_word_toword(--word_ptr);
-	repeated_c = jstr_word_repeat_bytes(c);
-	sword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	mask = jstr_word_shift_find_last(jstr_word_find_eq_all(word, repeated_c), s_int);
+	char *ret;
+	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((const char *)s + sz, sizeof(jstr_word_ty));
+	const uintptr_t s_int = (uintptr_t)s + sz;
+	jstr_word_ty word = jstr_word_toword(--word_ptr);
+	const jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
+	const jstr_word_ty *const sword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
+	const jstr_word_ty mask = jstr_word_shift_find_last(jstr_word_find_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
 		ret = (char *)word_ptr + jstr_word_index_last(mask);
 		return ret >= (char *)s ? ret : NULL;

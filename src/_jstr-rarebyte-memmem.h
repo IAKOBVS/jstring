@@ -50,8 +50,8 @@ PJSTR_END_DECLS
 #	define TOWORD32(x) ((uint32_t)(x)[3] SH 24 | (uint32_t)(x)[2] SH 16 | (uint32_t)(x)[1] SH 8 | (uint32_t)(x)[0])
 #	define TOWORD64(x) ((uint64_t)(x)[7] SH 56 | (uint64_t)(x)[6] SH 48 | (uint64_t)(x)[5] SH 40 | (uint64_t)(x)[4] SH 32 | TOWORD32((x)))
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
-#		define EQ64(hs, ne_align)       (*(u64 *)(hs) == ne_align)
-#		define EQ32(hs, ne_align)       (*(u32 *)(hs) == ne_align)
+#		define EQ64(hs, ne_align) (*(u64 *)(hs) == ne_align)
+#		define EQ32(hs, ne_align) (*(u32 *)(hs) == ne_align)
 #	else
 #		define EQ64(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), 8)
 #		define EQ32(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), 4)
@@ -82,20 +82,22 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 #if USE_UNALIGNED
 	u64 ne_align;
 	const unsigned char *nelast;
+	size_t nelast_len;
 	if (ne_len < 8) {
 		nelast = ne + 4;
+		nelast_len = ne_len - 4;
 		if (JSTR_HAVE_ATTR_MAY_ALIAS)
 			ne_align = (u64) * (u32 *)ne;
 		else
 			ne_align = (u64)TOWORD32(ne);
 	} else {
 		nelast = ne + 8;
+		nelast_len = ne_len - 8;
 		if (JSTR_HAVE_ATTR_MAY_ALIAS)
 			ne_align = *(u64 *)ne;
 		else
 			ne_align = TOWORD64(ne);
 	}
-	const size_t nelast_len = ne_len - (nelast - ne);
 #endif
 	const unsigned char *end = (u *)hs + hs_len - ne_len + 1;
 	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs)

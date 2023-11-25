@@ -68,6 +68,14 @@ simple_memmem(const char *h,
 }
 
 char *
+simple_strnstr(const char *hs,
+               const char *ne,
+               size_t n)
+{
+	return (char *)memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
+}
+
+char *
 simple_strstr(const char *h,
               const char *n)
 {
@@ -139,6 +147,33 @@ jstr_strrstr(const char *h, const char *n)
 		}                                                                                                                   \
 	} while (0)
 
+#define T_STRNSTR(fn, simple_fn)                                            \
+	do {                                                                \
+		size_t n;                                                   \
+		const char *hs, *ne, *result, *expected;                    \
+		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {       \
+			n = strlen(hs_ne[i].hs);                            \
+			n = JSTR_MIN(n, i);                                 \
+			hs = hs_ne[i].hs;                                   \
+			ne = hs_ne[i].ne;                                   \
+			result = fn(hs, ne, n);                             \
+			expected = simple_fn(hs, ne, n);                    \
+			if (jstr_unlikely(result != expected)) {            \
+				TESTING(fn);                                \
+				PRINTERR("hs:%s\n", hs);                    \
+				PRINTERR("hsn:");                           \
+				fwrite(hs, 1, jstr_strnlen(hs, n), stderr); \
+				PRINTERR("\n");                             \
+				PRINTERR("ne:%s\n", ne);                    \
+				PRINTERR("hs_len:%zu\n", strlen(hs));       \
+				PRINTERR("n:%zu\n", n);                     \
+				PRINTERR("expected:%s\n", result);          \
+				PRINTERR("result:%s\n", expected);          \
+				assert(result == expected);                 \
+			}                                                   \
+		}                                                           \
+	} while (0)
+
 int
 main(int argc, char **argv)
 {
@@ -159,9 +194,23 @@ main(int argc, char **argv)
 		{ "yxyyyxxxyxxxxyyyy",
                  "yyyyy"		                                                                                                                                                                                                                                                    },
 		{ "yxxyyyyxyxxxxy",
+                 "xxxxx"		                                                                                                                                                                                                                                                    },
+		{ "yxxyyyyxyxxxxy",
+                 "xyyyx"		                                                                                                                                                                                                                                                    },
+		{ "yxxyyyyxyxxxxy",
+                 "xyyyy"		                                                                                                                                                                                                                                                    },
+		{ "yxxyyyyxyxxxxy",
                  "yyyyy"		                                                                                                                                                                                                                                                    },
 		{ "yyyyyxxxyxxxxy",
                  "yyyyy"		                                                                                                                                                                                                                                                    },
+		{ "hello world",
+                 "hello"		                                                                                                                                                                                                                                                    },
+		{ "hello world",
+                 "world"		                                                                                                                                                                                                                                                    },
+		{ "hello world",
+                 "o w"		                                                                                                                                                                                                                                                      },
+		{ "hello world",
+                 "hel"		                                                                                                                                                                                                                                                      },
 		{ "yxxxyxxxxy",
                  "xxxx"		                                                                                                                                                                                                                                                     },
 		{ "yxxxyxxxxy",
@@ -187,6 +236,7 @@ main(int argc, char **argv)
 	T_STRSTR_LEN(jstr_strcasestr_len, simple_strcasestr_len);
 	T_STRSTR_LEN(jstr_memmem, simple_memmem);
 	T_STRSTR_LEN(jstr_strrstr_len, simple_strrstr_len);
+	T_STRNSTR(jstr_strnstr, simple_strnstr);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }

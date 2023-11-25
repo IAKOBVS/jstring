@@ -30,11 +30,11 @@ jstr_strchrnul(const char *s,
                int c)
 JSTR_NOEXCEPT
 {
-	uintptr_t s_int = (uintptr_t)s;
+	const uintptr_t s_int = (uintptr_t)s;
 	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
+	const jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
 	jstr_word_ty word = jstr_word_toword(word_ptr);
-	jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
+	const jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0)
 		return (char *)s + jstr_word_index_first(mask);
 	do

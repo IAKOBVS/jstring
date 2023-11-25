@@ -385,10 +385,9 @@ JSTR_ATTR_INLINE
 static int
 pjstr_strnstrcmpeq(const unsigned char *hs,
                    const unsigned char *ne,
-                   size_t ne_len)
+                   size_t n)
 {
-	const unsigned char *const end = hs + ne_len;
-	for (; *hs == *ne && *hs && hs < end; ++hs, ++ne)
+	for (; n-- && *hs == *ne && *hs; ++hs, ++ne)
 		;
 	if (*ne == '\0')
 		return 0;
@@ -585,11 +584,7 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#if JSTR_USE_LGPL
-#	define PJSTR_MEMMEM_FUNC    pjstr_strnstr
-#	define PJSTR_MEMMEM_RETTYPE char *
-#	include "_lgpl-memmem.h"
-#else
+#if !JSTR_USE_LGPL
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -607,20 +602,24 @@ pjstr_strnstr(const unsigned char *hs,
 	const int c = *(u *)rarebyte;
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
-	for (
-	(hs = (const u *)jstr_strnchr((char *)hs, c, end - hs));
-	++hs) {
+	for (; (hs = (const u *)jstr_strnchr((char *)hs, c, end - hs)); ++hs) {
 		for (hp = hs - idx, np = ne;
-		     *hp == *np && *hp && hp < end;
-		     ++hp, ++np)
-			;
-		if (*np == '\0')
-			return (char *)hs - idx;
-		if (jstr_unlikely(*hp == '\0'))
-			return NULL;
+		     *hp == *np;
+		     ++hp, ++np) {
+			if (*np == '\0' || hp <= end)
+				return (char *)hs - idx;
+			if (jstr_unlikely(*hp == '\0'))
+				return NULL;
+		}
 	}
 	return NULL;
 }
+
+#else
+
+#	define PJSTR_MEMMEM_FUNC    pjstr_strnstr
+#	define PJSTR_MEMMEM_RETTYPE char *
+#	include "_lgpl-memmem.h"
 
 #endif
 
@@ -636,9 +635,11 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	const char *const start = hs;
 	hs = jstr_strnchr(hs, *ne, n);
-	n -= hs - start;
 	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
+	n -= hs - start;
+	if (jstr_unlikely(jstr_strnlen(hs, n) < strlen(ne)))
+		return NULL;
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
 	if (ne[2] == '\0')
@@ -651,6 +652,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
+	return (char *)jstr_memmem(hs, strlen(hs), ne, strlen(ne));
 #if JSTR_USE_LGPL
 	size_t ne_len = strlen(ne);
 	if (jstr_unlikely(n < ne_len))
@@ -816,8 +818,8 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
 	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
 		if (hw == nw) {
-			for (hp = hs - 3 + 4;
-			     np = ne + 4;
+			for (hp = hs - 3 + 4,
+			    np = ne + 4;
 			     L(*hp) == L(*np) && *hp;
 			     ++hp, ++np)
 				;
@@ -861,7 +863,7 @@ pjstr_strcasestr(const unsigned char *hs,
 	const int c = *(u *)rarebyte;
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
-	for ((hs = (const u *)strchr((char *)hs, c)); ++hs) {
+	for (; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
 		for (hp = hs - idx, np = ne;
 		     L(*hp) == L(*np) && *hp;
 		     ++hp, ++np)
