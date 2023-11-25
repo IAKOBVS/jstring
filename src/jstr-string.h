@@ -388,10 +388,12 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
+	const unsigned char *const nelast = ne + 4;
+	const size_t nelast_len = ne_len - 4;
 	for (hs += 3, l -= 3; l-- && *hs; hw = hw << 8 | *++hs)
-		if (hw == nw && !memcmp(hs - 3 + 4, ne + 4, ne_len - 4))
+		if (hw == nw && !memcmp(hs - 3 + 4, nelast, nelast_len))
 			goto ret;
-	if (*hs && hw == nw && !memcmp(hs - 3 + 4, ne + 4, ne_len - 4))
+	if (*hs && hw == nw && !memcmp(hs - 3 + 4, nelast, nelast_len))
 ret:
 		return (char *)hs - 3;
 	return NULL;
@@ -462,10 +464,12 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
+	const unsigned char *const nelast = ne + 4;
+	const size_t nelast_len = ne_len - 4;
 	for (hs += 3, hsl -= 3; hsl--; hw = hw << 8 | *++hs)
-		if (hw == nw && !memcmp(hs - 3 + 4, ne + 4, nel - 4))
+		if (hw == nw && !memcmp(hs - 3 + 4, nelast, nelast_len))
 			goto ret;
-	if (hw == nw && !memcmp(hs - 3 + 4, ne + 4, nel - 4))
+	if (hw == nw && !memcmp(hs - 3 + 4, nelast, nelast_len))
 ret:
 		return (void *)(hs - 3);
 	return NULL;
@@ -800,8 +804,10 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
+	const char *const nelast = (const char *)ne + 4;
+	const size_t nelast_len = ne_len - 4;
 	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
-		if (hw == nw && !jstr_strcasecmpeq_len((char *)hs - 3 + 4, (char *)ne + 4, ne_len - 4))
+		if (hw == nw && !jstr_strcasecmpeq_len((char *)hs - 3 + 4, nelast, nelast_len))
 			return (char *)hs - 3;
 	return NULL;
 }
