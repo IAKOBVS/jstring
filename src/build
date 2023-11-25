@@ -31,10 +31,10 @@ update_if_needed()
 	in_fname=$1
 	out_fname=../jstr/$in_fname
 	test -e "$out_fname" && test "$in_fname" -ot "$out_fname" && exit 0
-	if [ "$in_fname" = 'jstr-macros.h' ] || expr "$in_fname" : '^_' >/dev/null; then
-		cp -f "$in_fname" "$out_fname"
-	else
+	if expr "$in_fname" : '*jstr*' >/dev/null && ! expr "$in_fname" : '*jstr-macros.h'; then
 		perl ./gen-func.pl "$in_fname" >"$out_fname"
+	else
+		cp -f "$in_fname" "$out_fname"
 	fi
 	echo "Built $in_fname."
 }

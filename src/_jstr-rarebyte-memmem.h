@@ -45,10 +45,10 @@ PJSTR_END_DECLS
 #	else
 #		error "Can't detect endianness!"
 #	endif
-#	define TOWORD32(x) ((u32)x[3] SH 24 | (u32)x[2] SH 16 | (u32)x[1] SH 8 | (u32)x[0])
-#	define TOWORD64(x) ((u64)x[7] SH 56 | (u64)x[6] SH 48 | (u64)x[5] SH 40 | (u64)x[4] SH 32 | TOWORD32(x))
+#	define TOWORD32(x) ((u32)(x)[3] SH 24 | (u32)(x)[2] SH 16 | (u32)(x)[1] SH 8 | (u32)(x)[0])
+#	define TOWORD64(x) ((u64)(x)[7] SH 56 | (u64)(x)[6] SH 48 | (u64)(x)[5] SH 40 | (u64)(x)[4] SH 32 | TOWORD32((x)))
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
-#		define EQ(hs, ne_align, ne_len) (ne_len < 8) ? (*(u32 *)hs == ne_align) : (*(u64 *)hs == ne_align)
+#		define EQ(hs, ne_align, ne_len) (ne_len < 8) ? (*(u32 *)(hs) == ne_align) : (*(u64 *)(hs) == ne_align)
 #	else
 #		define EQ(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), (ne_len < 8) ? 4 : 8)
 #	endif
@@ -60,11 +60,11 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static PJSTR_RAREBYTE_RETTYPE
-PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT h,
-                    size_t h_len,
-                    const unsigned char *JSTR_RESTRICT n,
-                    size_t n_len,
-                    const unsigned char *rarebyte)
+PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT hs,
+                    size_t hs_len,
+                    const unsigned char *JSTR_RESTRICT ne,
+                    size_t ne_len,
+                    const unsigned char *const rarebyte)
 {
 #if USE_UNALIGNED
 	typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
@@ -72,31 +72,33 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT h,
 #endif
 	typedef unsigned char u;
 	int c;
-	const size_t idx = JSTR_PTR_DIFF(rarebyte, n);
+	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	c = *(u *)rarebyte;
-	h += idx;
+	hs += idx;
 #if USE_UNALIGNED
 	u64 ne_align = (JSTR_HAVE_ATTR_MAY_ALIAS)
-	               ? ((n_len < 8) ? (u64) * (u32 *)n : *(u64 *)n)
-	               : ((n_len < 8) ? (u64)TOWORD32(n) : TOWORD64(n));
-	const int skip_bytes = (n_len < 8) ? 4 : 8;
-	const unsigned char *nlast = n + skip_bytes;
-	const size_t nlast_len = n_len - skip_bytes;
+	               ? ((ne_len < 8) ? (u64) * (u32 *)ne : *(u64 *)ne)
+	               : ((ne_len < 8) ? (u64)TOWORD32(ne) : TOWORD64(ne));
+	const int skip_bytes = (ne_len < 8) ? 4 : 8;
+	const unsigned char *nlast = ne + skip_bytes;
+	const size_t nlast_len = ne_len - skip_bytes;
 #endif
-	const unsigned char *end = (u *)h + h_len - n_len + 1;
-	for (; (h = (const u *)memchr(h, c, end - h)); ++h)
+	const unsigned char *end = (u *)hs + hs_len - ne_len + 1;
+	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs)
 #if USE_UNALIGNED
 		/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
-		if (EQ(h - idx, ne_align, n_len))
-			if (!CMP_FUNC((char *)h - idx, (char *)nlast, nlast_len))
-				return (PJSTR_RAREBYTE_RETTYPE)(h - idx);
+		if (EQ(hs - idx, ne_align, ne_len))
+			if (!CMP_FUNC((char *)hs - idx, (char *)nlast, nlast_len))
+				return (PJSTR_RAREBYTE_RETTYPE)(hs - idx);
 #else
-		if (!CMP_FUNC((char *)h - idx, (char *)n, n_len))
-			return (PJSTR_RAREBYTE_RETTYPE)(h - idx);
+		if (!CMP_FUNC((char *)hs - idx, (char *)ne, ne_len))
+			return (PJSTR_RAREBYTE_RETTYPE)(hs - idx);
 #endif
 	return NULL;
 }
 
+#undef USE_MEMCMP
+#undef USE_UNALIGNED
 #undef CMP_FUNC
 #undef EQ
 #undef TOWORD64
@@ -104,3 +106,4 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT h,
 #undef SH
 #undef PJSTR_RAREBYTE_FUNC
 #undef PJSTR_RAREBYTE_CMP_FUNC
+#undef PJSTR_RAREBYTE_RETTYPE

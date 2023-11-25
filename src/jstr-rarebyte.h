@@ -164,7 +164,7 @@ static const unsigned char pjstr_rarebyte_table[256] = {
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_rarebyteget_len(const unsigned char *ne,
+jstr_rarebyteget_len(const void *ne,
                      size_t n)
 {
 	int c;
@@ -204,7 +204,7 @@ jstr_rarebytegetcase(const char *n)
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-jstr_rarebytegetcase_len(const unsigned char *ne,
+jstr_rarebytegetcase_len(const void *ne,
                          size_t n)
 {
 	const unsigned char *p = (const unsigned char *)ne;

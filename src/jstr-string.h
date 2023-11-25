@@ -335,65 +335,65 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strnstr2(const unsigned char *h,
-               const unsigned char *const n,
+pjstr_strnstr2(const unsigned char *hs,
+               const unsigned char *const ne,
                size_t l)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = (uint16_t)n[0] << 8 | n[1];
-	uint16_t hw = (uint16_t)h[0] << 8 | h[1];
-	for (++h, --l; l-- && *h && hw != nw; hw = hw << 8 | *++h)
+	const uint16_t nw = (uint16_t)ne[0] << 8 | ne[1];
+	uint16_t hw = (uint16_t)hs[0] << 8 | hs[1];
+	for (++hs, --l; l-- && *hs && hw != nw; hw = hw << 8 | *++hs)
 		;
-	return (hw == nw) ? (char *)h - 1 : NULL;
+	return (hw == nw) ? (char *)hs - 1 : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strnstr3(const unsigned char *h,
-               const unsigned char *const n,
+pjstr_strnstr3(const unsigned char *hs,
+               const unsigned char *const ne,
                size_t l)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8;
-	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8;
-	for (h += 2, l -= 2; l-- && *h && hw != nw; hw = (hw | *++h) << 8)
+	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
+	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
+	for (hs += 2, l -= 2; l-- && *hs && hw != nw; hw = (hw | *++hs) << 8)
 		;
-	return (hw == nw) ? (char *)h - 2 : NULL;
+	return (hw == nw) ? (char *)hs - 2 : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strnstr4(const unsigned char *h,
-               const unsigned char *const n,
+pjstr_strnstr4(const unsigned char *hs,
+               const unsigned char *const ne,
                size_t l)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
-	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
-	for (h += 3, l -= 3; l-- && *h && hw != nw; hw = hw << 8 | *++h)
+	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
+	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
+	for (hs += 3, l -= 3; l-- && *hs && hw != nw; hw = hw << 8 | *++hs)
 		;
-	return (hw == nw) ? (char *)h - 3 : NULL;
+	return (hw == nw) ? (char *)hs - 3 : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strnstr5plus(const unsigned char *h,
-                   const unsigned char *const n,
+pjstr_strnstr5plus(const unsigned char *hs,
+                   const unsigned char *const ne,
                    size_t l,
                    size_t ne_len)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
-	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
-	for (h += 3, l -= 3; l-- && *h; hw = hw << 8 | *++h)
-		if (hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4))
+	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
+	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
+	for (hs += 3, l -= 3; l-- && *hs; hw = hw << 8 | *++hs)
+		if (hw == nw && !memcmp(hs - 3 + 4, ne + 4, ne_len - 4))
 			goto ret;
-	if (*h && hw == nw && !memcmp(h - 3 + 4, n + 4, ne_len - 4))
+	if (*hs && hw == nw && !memcmp(hs - 3 + 4, ne + 4, ne_len - 4))
 ret:
-		return (char *)h - 3;
+		return (char *)hs - 3;
 	return NULL;
 }
 
@@ -403,48 +403,48 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-pjstr_memmem2(const unsigned char *h,
-              const unsigned char *const n,
+pjstr_memmem2(const unsigned char *hs,
+              const unsigned char *const ne,
               size_t l)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = (uint16_t)n[0] << 8 | n[1];
-	uint16_t hw = (uint16_t)h[0] << 8 | h[1];
-	for (++h, --l; l-- && hw != nw; hw = hw << 8 | *++h)
+	const uint16_t nw = (uint16_t)ne[0] << 8 | ne[1];
+	uint16_t hw = (uint16_t)hs[0] << 8 | hs[1];
+	for (++hs, --l; l-- && hw != nw; hw = hw << 8 | *++hs)
 		;
-	return (hw == nw) ? (void *)(h - 1) : NULL;
+	return (hw == nw) ? (void *)(hs - 1) : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-pjstr_memmem3(const unsigned char *h,
-              const unsigned char *const n,
+pjstr_memmem3(const unsigned char *hs,
+              const unsigned char *const ne,
               size_t l)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8;
-	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8;
-	for (h += 2, l -= 2; l-- && hw != nw; hw = (hw | *++h) << 8)
+	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
+	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
+	for (hs += 2, l -= 2; l-- && hw != nw; hw = (hw | *++hs) << 8)
 		;
-	return (hw == nw) ? (void *)(h - 2) : NULL;
+	return (hw == nw) ? (void *)(hs - 2) : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-pjstr_memmem4(const unsigned char *h,
-              const unsigned char *const n,
+pjstr_memmem4(const unsigned char *hs,
+              const unsigned char *const ne,
               size_t l)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
-	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
-	for (h += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | *++h)
+	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
+	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
+	for (hs += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | *++hs)
 		;
-	return (hw == nw) ? (void *)(h - 3) : NULL;
+	return (hw == nw) ? (void *)(hs - 3) : NULL;
 }
 
 #	if !JSTR_USE_LGPL
@@ -454,20 +454,20 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-pjstr_memmem5plus(const unsigned char *h,
-                  size_t hl,
-                  const unsigned char *const n,
-                  size_t nl)
+pjstr_memmem5plus(const unsigned char *hs,
+                  size_t hsl,
+                  const unsigned char *const ne,
+                  size_t nel)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)n[0] << 24 | n[1] << 16 | n[2] << 8 | n[3];
-	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
-	for (h += 3, hl -= 3; hl--; hw = hw << 8 | *++h)
-		if (hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4))
+	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
+	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
+	for (hs += 3, hsl -= 3; hsl--; hw = hw << 8 | *++hs)
+		if (hw == nw && !memcmp(hs - 3 + 4, ne + 4, nel - 4))
 			goto ret;
-	if (hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4))
+	if (hw == nw && !memcmp(hs - 3 + 4, ne + 4, nel - 4))
 ret:
-		return (void *)(h - 3);
+		return (void *)(hs - 3);
 	return NULL;
 }
 
@@ -480,6 +480,7 @@ ret:
 #		define PJSTR_MEMMEM_FUNC pjstr_memmem
 #		include "_lgpl-memmem.h"
 #	else
+#		define PJSTR_RAREBYTE_RETTYPE void *
 #		define PJSTR_RAREBYTE_FUNC pjstr_memmem
 #		include "_jstr-rarebyte-memmem.h"
 #	endif
@@ -628,7 +629,7 @@ JSTR_NOEXCEPT
 	hs_len += jstr_strnlen(hs + hs_len, n - hs_len);
 	return pjstr_strnstr(hs, hs_len, ne, ne_len);
 #else
-	const u *const p = (const u *)jstr_rarebyteget(n);
+	const u *const p = (const u *)jstr_rarebyteget(ne);
 	if (p)
 		return pjstr_strnstr((const u *)hs, (const u *)ne, p, n);
 	return pjstr_strnstr5plus((const u *)hs, (const u *)ne, n, strlen(ne));
@@ -723,43 +724,43 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasestr2(const unsigned char *h,
-                  const unsigned char *const n)
+pjstr_strcasestr2(const unsigned char *hs,
+                  const unsigned char *const ne)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = (uint32_t)L(n[0]) << 8 | L(n[1]);
-	uint16_t hw = (uint32_t)L(h[0]) << 8 | L(h[1]);
-	for (++h; *h && hw != nw; hw = hw << 8 | L(*++h))
+	const uint16_t nw = (uint32_t)L(ne[0]) << 8 | L(ne[1]);
+	uint16_t hw = (uint32_t)L(hs[0]) << 8 | L(hs[1]);
+	for (++hs; *hs && hw != nw; hw = hw << 8 | L(*++hs))
 		;
-	return (hw == nw) ? (char *)h - 1 : NULL;
+	return (hw == nw) ? (char *)hs - 1 : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasestr3(const unsigned char *h,
-                  const unsigned char *const n)
+pjstr_strcasestr3(const unsigned char *hs,
+                  const unsigned char *const ne)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8;
-	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8;
-	for (h += 2; *h && hw != nw; hw = (hw | L(*++h)) << 8)
+	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8;
+	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8;
+	for (hs += 2; *hs && hw != nw; hw = (hw | L(*++hs)) << 8)
 		;
-	return (hw == nw) ? (char *)h - 2 : NULL;
+	return (hw == nw) ? (char *)hs - 2 : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasestr4(const unsigned char *h,
-                  const unsigned char *const n)
+pjstr_strcasestr4(const unsigned char *hs,
+                  const unsigned char *const ne)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
-	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
-	for (h += 3; *h && hw != nw; hw = hw << 8 | L(*++h))
+	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
+	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
+	for (hs += 3; *hs && hw != nw; hw = hw << 8 | L(*++hs))
 		;
-	return (hw == nw) ? (char *)h - 3 : NULL;
+	return (hw == nw) ? (char *)hs - 3 : NULL;
 }
 
 #	if !JSTR_USE_LGPL
@@ -767,22 +768,22 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasestr5plus(const unsigned char *h,
-                      const unsigned char *const n)
+pjstr_strcasestr5plus(const unsigned char *hs,
+                      const unsigned char *const ne)
 JSTR_NOEXCEPT
 {
 	const unsigned char *hp;
 	const unsigned char *np;
-	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
-	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
-	for (h += 3; *h; hw = hw << 8 | L(*++h))
+	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
+	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
+	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
 		if (hw == nw) {
-			hp = h - 3 + 4;
-			np = n + 4;
+			hp = hs - 3 + 4;
+			np = ne + 4;
 			for (; L(*hp) == L(*np) && *hp; ++hp, ++np)
 				;
 			if (*np == '\0')
-				return (char *)h - 3;
+				return (char *)hs - 3;
 			if (jstr_unlikely(*hp == '\0'))
 				return NULL;
 		}
@@ -792,16 +793,16 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasestr5plus_len(const unsigned char *h,
-                          const unsigned char *const n,
+pjstr_strcasestr5plus_len(const unsigned char *hs,
+                          const unsigned char *const ne,
                           size_t ne_len)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)L(n[0]) << 24 | L(n[1]) << 16 | L(n[2]) << 8 | L(n[3]);
-	uint32_t hw = (uint32_t)L(h[0]) << 24 | L(h[1]) << 16 | L(h[2]) << 8 | L(h[3]);
-	for (h += 3; *h; hw = hw << 8 | L(*++h))
-		if (hw == nw && !jstr_strcasecmpeq_len((char *)h - 3 + 4, (char *)n + 4, ne_len - 4))
-			return (char *)h - 3;
+	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
+	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
+	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
+		if (hw == nw && !jstr_strcasecmpeq_len((char *)hs - 3 + 4, (char *)ne + 4, ne_len - 4))
+			return (char *)hs - 3;
 	return NULL;
 }
 
@@ -818,22 +819,22 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasestr(const unsigned char *h,
-                 const unsigned char *n,
+pjstr_strcasestr(const unsigned char *hs,
+                 const unsigned char *ne,
                  const unsigned char *rarebyte)
 {
 	typedef unsigned char u;
 	const unsigned char *hp, *np;
 	const int c = *(u *)rarebyte;
-	const size_t idx = JSTR_PTR_DIFF(rarebyte, n);
-	h += idx;
-	for (; (h = (const u *)strchr((char *)h, c)); ++h) {
-		hp = h + 1;
-		np = n + 1;
+	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
+	hs += idx;
+	for (; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
+		hp = hs + 1;
+		np = ne + 1;
 		for (; L(*hp) == L(*np) && *hp; ++hp, ++np)
 			;
 		if (*np == '\0')
-			return (char *)h - 1;
+			return (char *)hs - 1;
 		if (jstr_unlikely(*hp == '\0'))
 			return NULL;
 	}
@@ -966,6 +967,7 @@ JSTR_NOEXCEPT
 #		define PJSTR_MEMMEM_HASH2_ICASE 1
 #		include "_lgpl-memmem.h"
 #	else
+#		define PJSTR_RAREBYTE_RETTYPE char *
 #		define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len
 #		define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
 #		include "_jstr-rarebyte-memmem.h"
