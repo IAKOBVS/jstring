@@ -331,7 +331,7 @@ static int
 jstr_print(const jstr_ty *R j)
 JSTR_NOEXCEPT
 {
-	return fwrite(j->data, 1, j->size, stdout) != j->size;
+	return jstrio_fwrite(j->data, 1, j->size, stdout) != j->size;
 }
 
 JSTR_FUNC
