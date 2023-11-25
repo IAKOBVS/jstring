@@ -784,30 +784,6 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-jstrio_fwrite(const char *R s,
-              size_t sz,
-              FILE *R fp)
-JSTR_NOEXCEPT
-{
-	return fwrite(s, 1, sz, fp) == sz ? JSTR_RET_SUCC : JSTR_RET_ERR;
-}
-
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-jstrio_fwriteln(const char *R s,
-                size_t sz,
-                FILE *R fp)
-JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(fwrite(s, 1, sz, fp) != sz))
-		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	return fputc('\n', fp) == '\n' ? JSTR_RET_SUCC : JSTR_RET_ERR;
-}
-
 /*
    Return size of allocation needed for sprintf.
    Return value:

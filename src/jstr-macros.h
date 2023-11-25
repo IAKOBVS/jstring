@@ -39,7 +39,7 @@
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_SIZE(array)    (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -1215,72 +1215,116 @@ PJSTR_END_DECLS
 
 #ifdef JSTR_USE_UNLOCKED_IO
 #	if JSTR_HAVE_FGETS_UNLOCKED
-#		define fgets(s, n, stream) fgets_unlocked(s, n, stream)
+#		define jstrio_fgets(s, n, stream) fgets_unlocked(s, n, stream)
+#	else
+#		define jstrio_fgets(s, n, stream) fgets(s, n, stream)
 #	endif
 #	if JSTR_HAVE_FPUTS_UNLOCKED
-#		define fputs(s, stream) fputs_unlocked(s, stream)
+#		define jstrio_fputs(s, stream) fputs_unlocked(s, stream)
+#	else
+#		define jstrio_fputs(s, stream) fputs(s, stream)
 #	endif
 #	if JSTR_HAVE_GETWC_UNLOCKED
-#		define getwc(stream) getwc_unlocked(stream)
+#		define jstrio_getwc(stream) getwc_unlocked(stream)
+#	else
+#		define jstrio_getwc(stream) getwc(stream)
 #	endif
 #	if JSTR_HAVE_GETWCHAR_UNLOCKED
-#		define getwchar() getwchar_unlocked()
+#		define jstrio_getwchar() getwchar_unlocked()
+#	else
+#		define jstrio_getwchar() getwchar()
 #	endif
 #	if JSTR_HAVE_FGETWC_UNLOCKED
-#		define fgetwc(stream) fgetwc_unlocked(stream)
+#		define jstrio_fgetwc(stream) fgetwc_unlocked(stream)
+#	else
+#		define jstrio_fgetwc(stream) fgetwc(stream)
 #	endif
 #	if JSTR_HAVE_FPUTWC_UNLOCKED
-#		define fputwc(wc, stream) fputwc_unlocked(wc, stream)
+#		define jstrio_fputwc(wc, stream) fputwc_unlocked(wc, stream)
+#	else
+#		define jstrio_fputwc(wc, stream) fputwc(wc, stream)
 #	endif
 #	if JSTR_HAVE_PUTWCHAR_UNLOCKED
-#		define putwchar(wc) putwchar_unlocked(wc)
+#		define jstrio_putwchar(wc) putwchar_unlocked(wc)
+#	else
+#		define jstrio_putwchar(wc) putwchar(wc)
 #	endif
 #	if JSTR_HAVE_FGETWS_UNLOCKED
-#		define fgetws(ws, n, stream) fgetws_unlocked(ws, n, stream)
+#		define jstrio_fgetws(ws, n, stream) fgetws_unlocked(ws, n, stream)
+#	else
+#		define jstrio_fgetws(ws, n, stream) fgetws(ws, n, stream)
 #	endif
 #	if JSTR_HAVE_FPUTWS_UNLOCKED
-#		define fputws(ws, stream) fputws_unlocked(ws, stream)
+#		define jstrio_fputws(ws, stream) fputws_unlocked(ws, stream)
+#	else
+#		define jstrio_fputws(ws, stream) fputws(ws, stream)
 #	endif
 #	if JSTR_HAVE_GETC_UNLOCKED
-#		define getc(stream) getc_unlocked(stream)
+#		define jstrio_getc(stream) getc_unlocked(stream)
+#	else
+#		define jstrio_getc(stream) getc(stream)
 #	endif
 #	if JSTR_HAVE_GETCHAR_UNLOCKED
-#		define getchar() getchar_unlocked()
+#		define jstrio_getchar() getchar_unlocked()
+#	else
+#		define jstrio_getchar() getchar()
 #	endif
 #	if JSTR_HAVE_PUTC_UNLOCKED
-#		define putc(c, stream) putc_unlocked(c, stream)
+#		define jstrio_putc(c, stream) putc_unlocked(c, stream)
+#	else
+#		define jstrio_putc(c, stream) putc(c, stream)
 #	endif
 #	if JSTR_HAVE_PUTCHAR_UNLOCKED
-#		define putchar(c) putchar_unlocked(c)
+#		define jstrio_putchar(c) putchar_unlocked(c)
+#	else
+#		define jstrio_putchar(c) putchar(c)
 #	endif
 #	if JSTR_HAVE_FREAD_UNLOCKED
-#		define fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
+#		define jstrio_fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
+#	else
+#		define jstrio_fread(ptr, size, n, stream) fread(ptr, size, n, stream)
 #	endif
 #	if JSTR_HAVE_FWRITE_UNLOCKED
-#		define fwrite(ptr, size, n, stream) fwrite_unlocked(ptr, size, n, stream)
+#		define jstrio_fwrite(ptr, size, n, stream) fwrite_unlocked(ptr, size, n, stream)
+#	else
+#		define jstrio_fwrite(ptr, size, n, stream) fwrite(ptr, size, n, stream)
 #	endif
 #	if JSTR_HAVE_FPUTC_UNLOCKED
-#		define fputc(c, stream) fputc_unlocked(c, stream)
+#		define jstrio_fputc(c, stream) fputc_unlocked(c, stream)
+#	else
+#		define jstrio_fputc(c, stream) fputc(c, stream)
 #	endif
 #	if JSTR_HAVE_FGETC_UNLOCKED
-#		define fgetc(stream) fgetc_unlocked(stream)
+#		define jstrio_fgetc(stream) fgetc_unlocked(stream)
+#	else
+#		define jstrio_fgetc(stream) fgetc(stream)
 #	endif
 #	if JSTR_HAVE_CLEARERR_UNLOCKED
-#		define clearerr(stream) clearerr_unlocked(stream)
+#		define jstrio_clearerr(stream) clearerr_unlocked(stream)
+#	else
+#		define jstrio_clearerr(stream) clearerr(stream)
 #	endif
 #	if JSTR_HAVE_FEOF_UNLOCKED
-#		define feof(stream) feof_unlocked(stream)
+#		define jstrio_feof(stream) feof_unlocked(stream)
+#	else
+#		define jstrio_feof(stream) feof(stream)
 #	endif
 #	if JSTR_HAVE_FERROR_UNLOCKED
-#		define ferror(stream) ferror_unlocked(stream)
+#		define jstrio_ferror(stream) ferror_unlocked(stream)
+#	else
+#		define jstrio_ferror(stream) ferror(stream)
 #	endif
 #	if JSTR_HAVE_FILENO_UNLOCKED
-#		define fileno(stream) fileno_unlocked(stream)
+#		define jstrio_fileno(stream) fileno_unlocked(stream)
+#	else
+#		define jstrio_fileno(stream) fileno(stream)
 #	endif
 #	if JSTR_HAVE_FFLUSH_UNLOCKED
-#		define fflush(stream) fflush_unlocked(stream)
+#		define jstrio_fflush(stream) fflush_unlocked(stream)
+#	else
+#		define jstrio_fflush(stream) fflush(stream)
 #	endif
-#endif /* have_unlocked_io */
+#endif
 
 #ifdef __GLIBC__
 #	ifdef _DIRENT_HAVE_D_TYPE
