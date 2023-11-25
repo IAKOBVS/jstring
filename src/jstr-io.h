@@ -686,7 +686,7 @@ JSTR_NONNULL((7))
 static jstr_ret_ty
 pjstrio_ftw_len(char *R dirpath,
                 size_t dirpath_len,
-                int (*fn)(const char *, size_t, const struct stat *),
+                jstrio_ftw_func_ty fn,
                 int jflags,
                 const char *R fn_glob,
                 int fn_flags,
@@ -855,7 +855,7 @@ JSTR_NONNULL((3))
 static jstr_ret_ty
 jstrio_ftw_len(const char *R dirpath,
                size_t dirpath_len,
-               int (*fn)(const char *, size_t, const struct stat *),
+               jstrio_ftw_func_ty fn,
                int jstrio_ftw_flag,
                const char *R fn_glob,
                int fn_flags)

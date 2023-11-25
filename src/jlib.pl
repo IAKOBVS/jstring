@@ -197,7 +197,7 @@ sub jl_arg_is_ptr {
 # @returns {$}
 sub jl_fn_get {
 	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref) = @_;
-	if ($$block_str_ref =~ /^([^{}]*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(((?:.|\n)*?)\)(?:.|\n)*?\{((?:.|\n)*)\}/) {
+	if ($$block_str_ref =~ /^([^{}]*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(([^{}]*)\)[^{}}]*\{((?:.|\n)*)\}/) {
 		$$attr_ref    = $1                   if (defined($attr_ref));
 		$$rettype_ref = $2                   if (defined($rettype_ref));
 		$$name_ref    = $3                   if (defined($name_ref));
