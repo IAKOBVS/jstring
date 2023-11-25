@@ -427,8 +427,6 @@ ret:
 	return (char *)hs - 3;
 }
 
-#if !JSTR_HAVE_MEMMEM
-
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -476,6 +474,8 @@ JSTR_NOEXCEPT
 		;
 	return (hw == nw) ? (void *)(hs - 3) : NULL;
 }
+
+#if !JSTR_HAVE_MEMMEM
 
 #	if !JSTR_USE_LGPL
 
@@ -647,15 +647,15 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (ne[2] == '\0')
-		return pjstr_strnstr2((const u *)hs, (const u *)ne, hs_len);
+		return (char *)pjstr_memmem2((const u *)hs, (const u *)ne, hs_len);
 	if (jstr_unlikely(hs[2] == '\0'))
 		return NULL;
 	if (ne[3] == '\0')
-		return pjstr_strnstr3((const u *)hs, (const u *)ne, hs_len);
+		return (char *)pjstr_memmem3((const u *)hs, (const u *)ne, hs_len);
 	if (jstr_unlikely(hs[3] == '\0'))
 		return NULL;
 	if (ne[4] == '\0')
-		return pjstr_strnstr4((const u *)hs, (const u *)ne, hs_len);
+		return (char *)pjstr_memmem4((const u *)hs, (const u *)ne, hs_len);
 	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 #if 0
 #if JSTR_USE_LGPL
