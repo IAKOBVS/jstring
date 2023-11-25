@@ -469,7 +469,7 @@ JSTR_NOEXCEPT
 #	include "_lgpl-memmem.h"
 #else
 #	define PJSTR_RAREBYTE_FUNC pjstr_memmem
-#	include "_jstr-rarebyte-impl.h"
+#	include "_jstr-rarebyte-memmem.h"
 #endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -952,7 +952,7 @@ JSTR_NOEXCEPT
 #else
 #	define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len
 #	define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
-#	include "_jstr-rarebyte-impl.h"
+#	include "_jstr-rarebyte-memmem.h"
 #endif
 
 /*
