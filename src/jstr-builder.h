@@ -143,7 +143,7 @@ JSTR_NOEXCEPT
 	ret = fputs("data:", stderr);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
-	fwrite(j->data, 1, j->size, stderr);
+	jstrio_fwrite(j->data, 1, j->size, stderr);
 	if (jstr_unlikely(ferror(stderr)))
 		goto err;
 	if (jstr_unlikely(fputc('\n', stderr) == EOF))

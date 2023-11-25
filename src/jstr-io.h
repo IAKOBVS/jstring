@@ -226,7 +226,7 @@ JSTR_NOEXCEPT
 	FILE *R fp = fopen(fname, modes);
 	if (jstr_unlikely(fp == NULL))
 		goto err;
-	if (jstr_unlikely(!jstrio_fwrite(s, sz, fp)))
+	if (jstr_unlikely(jstrio_fwrite(s, 1, sz, fp) != sz))
 		goto err_close;
 	if (jstr_unlikely(fclose(fp)))
 		goto err;
