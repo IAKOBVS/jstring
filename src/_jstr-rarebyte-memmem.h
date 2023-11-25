@@ -80,7 +80,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT hs,
 	u64 ne_align = (JSTR_HAVE_ATTR_MAY_ALIAS)
 	               ? ((ne_len < 8) ? (u64) * (u32 *)ne : *(u64 *)ne)
 	               : ((ne_len < 8) ? (u64)TOWORD32(ne) : TOWORD64(ne));
-	const unsigned char *nelast = ne + ((ne_len < 8) ? 4 : 8);
+	const unsigned char *const nelast = ne + ((ne_len < 8) ? 4 : 8);
 	const size_t nlast_len = ne_len - (nelast - ne);
 #endif
 	const unsigned char *end = (u *)hs + hs_len - ne_len + 1;
