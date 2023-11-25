@@ -461,10 +461,11 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)h[0] << 24 | h[1] << 16 | h[2] << 8 | h[3];
 	for (h += 3, hl -= 3; hl--; hw = hw << 8 | *++h)
 		if (hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4))
-			return (void *)(h - 3);
-	return (hw == nw) && !memcmp(h - 3 + 4, n + 4, nl - 4)
-	        : (void *)(h - 3)
-	        : NULL;
+			goto ret;
+	if (hw == nw && !memcmp(h - 3 + 4, n + 4, nl - 4))
+ret:
+		return (void *)(h - 3);
+	return NULL;
 }
 
 #	endif
