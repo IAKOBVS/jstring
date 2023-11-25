@@ -638,9 +638,12 @@ JSTR_NOEXCEPT
 	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
 	n -= hs - start;
-	if (jstr_unlikely(jstr_strnlen(hs, n) < strlen(ne)))
-		return NULL;
 	if (jstr_unlikely(hs[1] == '\0'))
+		return NULL;
+	return (char *)jstr_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
+	size_t hs_len = jstr_strnlen(hs, n);
+	const size_t ne_len = strlen(ne);
+	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (ne[2] == '\0')
 		return pjstr_strnstr2((const u *)hs, (const u *)ne, n);
@@ -652,14 +655,8 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
-	return (char *)jstr_memmem(hs, strlen(hs), ne, strlen(ne));
+	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 #if JSTR_USE_LGPL
-	size_t ne_len = strlen(ne);
-	if (jstr_unlikely(n < ne_len))
-		return NULL;
-	size_t hs_len = jstr_strnlen(hs, ne_len);
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
 	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
 	if (hs_len == ne_len)
@@ -672,7 +669,7 @@ JSTR_NOEXCEPT
 	const u *const p = (const u *)jstr_rarebyteget(ne);
 	if (p)
 		return pjstr_strnstr((const u *)hs, (const u *)ne, p, n);
-	return pjstr_strnstr5plus((const u *)hs, (const u *)ne, n, strlen(ne));
+	return pjstr_strnstr5plus((const u *)hs, (const u *)ne, n, ne_len);
 #endif
 }
 
