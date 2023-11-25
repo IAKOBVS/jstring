@@ -302,7 +302,7 @@ static const unsigned char jstr_rarebyte_table[256] = {
 	85, /* 252 */
 	49, /* 253 */
 	50, /* 254 */
-	51, /* 255 */
+	51 /* 255 */
 };
 
 /*
@@ -567,7 +567,7 @@ static const unsigned char jstr_rarebyte_table_case[256] = {
 	85, /* 252 */
 	49, /* 253 */
 	50, /* 254 */
-	51, /* 255 */
+	51 /* 255 */
 };
 
 JSTR_FUNC_PURE
