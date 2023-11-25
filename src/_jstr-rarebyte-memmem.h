@@ -79,11 +79,9 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT h,
 	const int skip_bytes = (n_len < 8) ? 4 : 8;
 	const unsigned char *nlast = n + skip_bytes;
 	const size_t nlast_len = n_len - skip_bytes;
-	u64 ne_align;
-	if (JSTR_HAVE_ATTR_MAY_ALIAS)
-		ne_align = (n_len < 8) ? (u64) * (u32 *)n : *(u64 *)n;
-	else
-		ne_align = (n_len < 8) ? (u64)TOWORD32(n) : TOWORD64(n);
+	u64 ne_align = (JSTR_HAVE_ATTR_MAY_ALIAS)
+	               ? ((n_len < 8) ? (u64) * (u32 *)n : *(u64 *)n)
+	               : ((n_len < 8) ? (u64)TOWORD32(n) : TOWORD64(n));
 #endif
 	const unsigned char *end = (u *)h + h_len - n_len + 1;
 	for (; (h = (const u *)memchr(h, c, end - h)); ++h)
