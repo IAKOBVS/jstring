@@ -595,7 +595,7 @@ pjstr_strnstr(const unsigned char *hs,
               size_t n)
 {
 	typedef unsigned char u;
-	if (jstr_unlikely(n < strlen(rarebyte) + rarebyte - ne))
+	if (jstr_unlikely(n < strlen((char *)rarebyte) + (size_t)(rarebyte - ne)))
 		return NULL;
 	const unsigned char *hp, *np;
 	const unsigned char *const end = hs + n;
