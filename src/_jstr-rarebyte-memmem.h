@@ -80,16 +80,15 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *JSTR_RESTRICT hs,
 	u64 ne_align = (JSTR_HAVE_ATTR_MAY_ALIAS)
 	               ? ((ne_len < 8) ? (u64) * (u32 *)ne : *(u64 *)ne)
 	               : ((ne_len < 8) ? (u64)TOWORD32(ne) : TOWORD64(ne));
-	const int skip_bytes = (ne_len < 8) ? 4 : 8;
-	const unsigned char *nlast = ne + skip_bytes;
-	const size_t nlast_len = ne_len - skip_bytes;
+	const unsigned char *nelast = ne + ((ne_len < 8) ? 4 : 8);
+	const size_t nlast_len = ne_len - (nelast - ne);
 #endif
 	const unsigned char *end = (u *)hs + hs_len - ne_len + 1;
 	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs)
 #if USE_UNALIGNED
 		/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
 		if (EQ(hs - idx, ne_align, ne_len))
-			if (!CMP_FUNC((char *)hs - idx, (char *)nlast, nlast_len))
+			if (!CMP_FUNC((char *)hs - idx, (char *)nelast, nlast_len))
 				return (PJSTR_RAREBYTE_RETTYPE)(hs - idx);
 #else
 		if (!CMP_FUNC((char *)hs - idx, (char *)ne, ne_len))
