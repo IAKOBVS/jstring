@@ -338,12 +338,12 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr2(const unsigned char *hs,
                const unsigned char *const ne,
-               size_t l)
+               size_t n)
 JSTR_NOEXCEPT
 {
 	const uint16_t nw = (uint16_t)ne[0] << 8 | ne[1];
 	uint16_t hw = (uint16_t)hs[0] << 8 | hs[1];
-	for (++hs, --l; l-- && *hs && hw != nw; hw = hw << 8 | *++hs)
+	for (++hs, --n; n-- && *hs && hw != nw; hw = hw << 8 | *++hs)
 		;
 	return (hw == nw) ? (char *)hs - 1 : NULL;
 }
@@ -354,12 +354,12 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr3(const unsigned char *hs,
                const unsigned char *const ne,
-               size_t l)
+               size_t n)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
-	for (hs += 2, l -= 2; l-- && *hs && hw != nw; hw = (hw | *++hs) << 8)
+	for (hs += 2, n -= 2; n-- && *hs && hw != nw; hw = (hw | *++hs) << 8)
 		;
 	return (hw == nw) ? (char *)hs - 2 : NULL;
 }
@@ -370,14 +370,31 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr4(const unsigned char *hs,
                const unsigned char *const ne,
-               size_t l)
+               size_t n)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	for (hs += 3, l -= 3; l-- && *hs && hw != nw; hw = hw << 8 | *++hs)
+	for (hs += 3, n -= 3; n-- && *hs && hw != nw; hw = hw << 8 | *++hs)
 		;
 	return (hw == nw) ? (char *)hs - 3 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static int
+pjstr_strnstrcmpeq(const unsigned char *hs,
+                   const unsigned char *ne,
+                   size_t ne_len)
+{
+	const unsigned char *const end = hs + ne_len;
+	for (; *hs == *ne && *hs && hs < end; ++hs, ++ne)
+		;
+	if (*ne == '\0')
+		return 0;
+	if (jstr_unlikely(*hs == '\0'))
+		return -1;
+	return 1;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 4))
@@ -386,7 +403,7 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr5plus(const unsigned char *hs,
                    const unsigned char *const ne,
-                   size_t l,
+                   size_t n,
                    size_t ne_len)
 JSTR_NOEXCEPT
 {
@@ -394,13 +411,21 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
 	const unsigned char *const nelast = ne + 4;
 	const size_t nelast_len = ne_len - 4;
-	for (hs += 3, l -= 3; l-- && *hs; hw = hw << 8 | *++hs)
-		if (hw == nw && !memcmp(hs - 3 + 4, nelast, nelast_len))
+	int ret;
+	for (hs += 3, n -= 3; n-- && *hs; hw = hw << 8 | *++hs)
+		if (hw == nw) {
+			ret = pjstr_strnstrcmpeq(hs - 3 + 4, nelast, nelast_len);
+			if (ret == 0)
+				goto ret;
+			if (jstr_unlikely(ret == -1))
+				return NULL;
+		}
+	if (*hs && hw == nw)
+		if (!pjstr_strnstrcmpeq(hs - 3 + 4, nelast, nelast_len))
 			goto ret;
-	if (*hs && hw == nw && !memcmp(hs - 3 + 4, nelast, nelast_len))
-ret:
-		return (char *)hs - 3;
 	return NULL;
+ret:
+	return (char *)hs - 3;
 }
 
 #if !JSTR_HAVE_MEMMEM
@@ -575,15 +600,19 @@ pjstr_strnstr(const unsigned char *hs,
               size_t n)
 {
 	typedef unsigned char u;
+	if (jstr_unlikely(n < strlen(rarebyte) + rarebyte - ne))
+		return NULL;
 	const unsigned char *hp, *np;
 	const unsigned char *const end = hs + n;
 	const int c = *(u *)rarebyte;
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
-	for (hp = hs - idx, np = ne - idx;
-	     (hs = (const u *)jstr_strnchr((char *)hs, c, end - hs));
-	     ++hs) {
-		for (; *hp == *np && *hp && hp < end; ++hp, ++np)
+	for (
+	(hs = (const u *)jstr_strnchr((char *)hs, c, end - hs));
+	++hs) {
+		for (hp = hs - idx, np = ne;
+		     *hp == *np && *hp && hp < end;
+		     ++hp, ++np)
 			;
 		if (*np == '\0')
 			return (char *)hs - idx;
@@ -594,6 +623,7 @@ pjstr_strnstr(const unsigned char *hs,
 }
 
 #endif
+
 JSTR_FUNC_PURE
 static char *
 jstr_strnstr(const char *hs,
@@ -786,9 +816,10 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
 	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
 		if (hw == nw) {
-			hp = hs - 3 + 4;
-			np = ne + 4;
-			for (; L(*hp) == L(*np) && *hp; ++hp, ++np)
+			for (hp = hs - 3 + 4;
+			     np = ne + 4;
+			     L(*hp) == L(*np) && *hp;
+			     ++hp, ++np)
 				;
 			if (*np == '\0')
 				return (char *)hs - 3;
@@ -830,10 +861,10 @@ pjstr_strcasestr(const unsigned char *hs,
 	const int c = *(u *)rarebyte;
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
-	for (hp = hs - idx, np = ne - idx;
-	     (hs = (const u *)strchr((char *)hs, c));
-	     ++hs) {
-		for (; L(*hp) == L(*np) && *hp; ++hp, ++np)
+	for ((hs = (const u *)strchr((char *)hs, c)); ++hs) {
+		for (hp = hs - idx, np = ne;
+		     L(*hp) == L(*np) && *hp;
+		     ++hp, ++np)
 			;
 		if (*np == '\0')
 			return (char *)hs - idx;
