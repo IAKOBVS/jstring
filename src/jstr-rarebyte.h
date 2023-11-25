@@ -30,7 +30,7 @@
 PJSTR_BEGIN_DECLS
 
 JSTR_MAYBE_UNUSED
-static const unsigned char pjstr_rarebyte_table[256] = {
+static const unsigned char jstr_rarebyte_table[256] = {
 	0, /* 0 */
 	0, /* 1 */
 	0, /* 2 */
@@ -170,7 +170,7 @@ jstr_rarebyteget_len(const void *ne,
 	int c;
 	const unsigned char *p = (const unsigned char *)ne;
 	for (; n-- && (c = *p); ++p)
-		if (pjstr_rarebyte_table[c])
+		if (jstr_rarebyte_table[c])
 			return (unsigned char *)p;
 	return NULL;
 }
@@ -183,7 +183,7 @@ jstr_rarebyteget(const char *n)
 	const unsigned char *p = (const unsigned char *)n;
 	int c;
 	for (; (c = *p); ++p)
-		if (pjstr_rarebyte_table[c])
+		if (jstr_rarebyte_table[c])
 			return (char *)p;
 	return NULL;
 }
