@@ -481,7 +481,7 @@ ret:
 #		include "_lgpl-memmem.h"
 #	else
 #		define PJSTR_RAREBYTE_RETTYPE void *
-#		define PJSTR_RAREBYTE_FUNC pjstr_memmem
+#		define PJSTR_RAREBYTE_FUNC    pjstr_memmem
 #		include "_jstr-rarebyte-memmem.h"
 #	endif
 #endif
@@ -572,9 +572,9 @@ pjstr_strnstr(const unsigned char *hs,
 	const int c = *(u *)rarebyte;
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
-	for (; (hs = (const u *)jstr_strnchr((char *)hs, c, end - hs)); ++hs) {
-		hp = hs - idx;
-		np = ne - idx;
+	for (hp = hs - idx, np = ne - idx;
+	     (hs = (const u *)jstr_strnchr((char *)hs, c, end - hs));
+	     ++hs) {
 		for (; *hp == *np && *hp && hp < end; ++hp, ++np)
 			;
 		if (*np == '\0')
@@ -828,9 +828,9 @@ pjstr_strcasestr(const unsigned char *hs,
 	const int c = *(u *)rarebyte;
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	hs += idx;
-	for (; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
-		hp = hs - idx;
-		np = ne - idx;
+	for (hp = hs - idx, np = ne - idx;
+	     (hs = (const u *)strchr((char *)hs, c));
+	     ++hs) {
 		for (; L(*hp) == L(*np) && *hp; ++hp, ++np)
 			;
 		if (*np == '\0')
@@ -967,7 +967,7 @@ JSTR_NOEXCEPT
 #		define PJSTR_MEMMEM_HASH2_ICASE 1
 #		include "_lgpl-memmem.h"
 #	else
-#		define PJSTR_RAREBYTE_RETTYPE char *
+#		define PJSTR_RAREBYTE_RETTYPE  char *
 #		define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len
 #		define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
 #		include "_jstr-rarebyte-memmem.h"
