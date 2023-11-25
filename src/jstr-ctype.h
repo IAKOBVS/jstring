@@ -50,7 +50,7 @@ static int
 jstr_toupper(int c)
 JSTR_NOEXCEPT
 {
-	return pjstr_ctype_toupper[(unsigned char)c];
+	return jstr_ctype_table_toupper[(unsigned char)c];
 }
 
 /*
@@ -64,7 +64,7 @@ static int
 jstr_tolower(int c)
 JSTR_NOEXCEPT
 {
-	return pjstr_ctype_tolower[(unsigned char)c];
+	return jstr_ctype_table_tolower[(unsigned char)c];
 }
 
 #define PJSTR_DEFINE_REPEAT_CTYPE(FUNC) \
@@ -92,7 +92,7 @@ jstr_isctype(int c,
              int type)
 JSTR_NOEXCEPT
 {
-	return pjstr_ctype[(unsigned char)c] & type;
+	return jstr_ctype_table[(unsigned char)c] & type;
 }
 
 #define PJSTR_DEFINE_ISCTYPE(ctype, ctype_enum)                    \
@@ -103,7 +103,7 @@ JSTR_NOEXCEPT
 	jstr_is##ctype(int c)                                      \
 	JSTR_NOEXCEPT                                              \
 	{                                                          \
-		return pjstr_ctype[(unsigned char)c] & ctype_enum; \
+		return jstr_ctype_table[(unsigned char)c] & ctype_enum; \
 	}
 
 PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_ISCTYPE);
@@ -120,11 +120,11 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
-		for (; *p && pjstr_ctype[*p] & ctype; ++p)
+		for (; *p && jstr_ctype_table[*p] & ctype; ++p)
 			;
 		return (char *)p;
 	}
-	while (pjstr_ctype[*p++] & ctype)
+	while (jstr_ctype_table[*p++] & ctype)
 		;
 	return (char *)p - 1;
 }
@@ -180,7 +180,7 @@ jstr_skipctype_rev(const char *const start,
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)end;
-	for (; (const unsigned char *)start != p && (pjstr_ctype[*p] & ctype); --p)
+	for (; (const unsigned char *)start != p && (jstr_ctype_table[*p] & ctype); --p)
 		;
 	return (char *)p;
 }

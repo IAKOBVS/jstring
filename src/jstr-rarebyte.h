@@ -196,7 +196,7 @@ jstr_rarebytegetcase(const char *n)
 	const unsigned char *p = (const unsigned char *)n;
 	int c;
 	for (; (c = *p); ++p)
-		if (pjstr_ctype[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
+		if (jstr_ctype_table[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
 			return (char *)p;
 	return NULL;
 }
@@ -210,7 +210,7 @@ jstr_rarebytegetcase_len(const void *ne,
 	const unsigned char *p = (const unsigned char *)ne;
 	int c;
 	for (; n-- && (c = *p); ++p)
-		if (pjstr_ctype[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
+		if (jstr_ctype_table[c] & (JSTR_ISDIGIT | JSTR_ISPUNCT))
 			return (char *)p;
 	return NULL;
 }
