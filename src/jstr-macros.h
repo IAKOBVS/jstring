@@ -45,6 +45,17 @@
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
 #define JSTR_STRING(x)            #x
 
+#define JSTRIO_KB (1000)
+#define JSTRIO_MB (JSTRIO_KB * 10)
+#define JSTRIO_GB (JSTRIO_MB * 10)
+#define JSTRIO_TB (JSTRIO_GB * 10)
+#define JSTRIO_PB (JSTRIO_TB * 10)
+#define JSTRIO_EB (JSTRIO_PB * 10)
+#define JSTRIO_ZB (JSTRIO_EB * 10)
+#define JSTRIO_YB (JSTRIO_ZB * 10)
+#define JSTRIO_RB (JSTRIO_YB * 10)
+#define JSTRIO_QB (JSTRIO_RB * 10)
+
 #define JSTR_MEMSET_ARRAY(array, c) ((JSTR_ARRAY_SIZE(array) == 256)             \
 	                             ? (memset((array), (c), 64),                \
 	                                memset((array) + 64, (c), 64),           \
