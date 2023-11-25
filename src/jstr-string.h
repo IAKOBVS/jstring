@@ -1000,6 +1000,7 @@ JSTR_NOEXCEPT
 		const u *const p = jstr_rarebytegetcase_len((const u *)ne, ne_len);
 		if (p)
 			return pjstr_strcasestr_len((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)ne);
+		return pjstr_strcasestr5plus_len((const u *)hs, (const u *)ne, ne_len);
 #	else
 		return pjstr_strcasestr_len(hs, hs_len, ne, ne_len);
 #	endif
