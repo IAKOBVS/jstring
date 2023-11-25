@@ -396,6 +396,7 @@ JSTR_NOEXCEPT
 
 #if !JSTR_HAVE_MEMMEM
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
@@ -411,6 +412,7 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (void *)(h - 1) : NULL;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
@@ -426,6 +428,7 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (void *)(h - 2) : NULL;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
@@ -443,6 +446,8 @@ JSTR_NOEXCEPT
 
 #	if !JSTR_USE_LGPL
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
