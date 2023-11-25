@@ -563,7 +563,7 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_strnstr(const unsigned char *hs,
               const unsigned char *ne,
-              const unsigned char *rarebyte,
+              const unsigned char *const rarebyte,
               size_t n)
 {
 	typedef unsigned char u;
@@ -821,7 +821,7 @@ JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr(const unsigned char *hs,
                  const unsigned char *ne,
-                 const unsigned char *rarebyte)
+                 const unsigned char *const rarebyte)
 {
 	typedef unsigned char u;
 	const unsigned char *hp, *np;
