@@ -325,13 +325,13 @@ jstr_shrink_to_fit(char *R *R s,
 	return JSTR_RET_SUCC;
 }
 
-JSTR_FUNC_VOID
+JSTR_FUNC
 JSTR_ATTR_INLINE
-static void
+static int
 jstr_print(const jstr_ty *R j)
 JSTR_NOEXCEPT
 {
-	fwrite(j->data, 1, j->size, stdout);
+	return fwrite(j->data, 1, j->size, stdout) != j->size;
 }
 
 JSTR_FUNC
