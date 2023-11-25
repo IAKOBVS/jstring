@@ -25,8 +25,8 @@
 #include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
 PJSTR_END_DECLS
 
 #ifndef PJSTR_RAREBYTE_RETTYPE
