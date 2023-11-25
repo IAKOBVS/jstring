@@ -846,26 +846,28 @@ pjstr_strcasestr(const unsigned char *h,
 
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasestr_bmh(const char *h,
-                     const char *n)
+pjstr_strcasestr_bmh(const char *hs,
+                     const char *ne)
 JSTR_NOEXCEPT
 {
 #	if JSTR_USE_LGPL
-	const size_t ne_len = strlen(n);
-	const size_t hs_len = jstr_strnlen(h, ne_len | 512);
+	const size_t ne_len = strlen(ne);
+	const size_t hs_len = jstr_strnlen(hs, ne_len | 512);
 	if (hs_len < ne_len)
 		return NULL;
-	if (!jstr_strcasecmpeq_len(h, n, ne_len))
-		return (char *)h;
+	if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
+		return (char *)hs;
 	if (hs_len == ne_len)
 		return NULL;
-	return pjstr_strcasestr(h + 1, hs_len - 1, n, ne_len);
+	return pjstr_strcasestr(hs + 1, hs_len - 1, ne, ne_len);
 #	else
 	typedef unsigned char u;
-	const u *const p = (const u *)jstr_rarebytegetcase(n);
+	if (jstr_unlikely(*ne == '\0'))
+		return (char *)hs;
+	const u *const p = (const u *)jstr_rarebytegetcase(ne);
 	if (p)
-		return pjstr_strcasestr((const u *)h, (const u *)n, (const u *)p);
-	return pjstr_strcasestr5plus((const u *)h, (const u *)n);
+		return pjstr_strcasestr((const u *)hs, (const u *)ne, (const u *)p);
+	return pjstr_strcasestr5plus((const u *)hs, (const u *)ne);
 #	endif
 }
 
@@ -1104,11 +1106,7 @@ JSTR_NOEXCEPT
 			return pjstr_strcasestr4((const u *)hs, (const u *)ne);
 		is_alpha = 4;
 	} else {
-#	if JSTR_USE_LGPL
 		return pjstr_strcasestr_bmh(hs, ne);
-#	else
-		return pjstr_strcasestr5plus((const u *)hs, (const u *)ne);
-#	endif
 	}
 	if (!memcmp(hs, ne, is_alpha))
 		return (char *)hs;
