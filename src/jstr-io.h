@@ -39,8 +39,8 @@ PJSTR_END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-io-table.h"
-#include "jstr-string.h"
 #include "jstr-stdstring.h"
+#include "jstr-string.h"
 
 #define R JSTR_RESTRICT
 
@@ -675,6 +675,9 @@ typedef enum jstrio_ftw_flag_ty {
 typedef int (*jstrio_ftw_func_ty)(const char *dirpath,
                                   size_t dirpath_len,
                                   const struct stat *st);
+
+#define JSTRIO_FTW_FUNC(func_name, dirpath, dirpath_len, st) \
+	int func_name(const char *dirpath, size_t dirpath_len, const struct stat *st)
 
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL((1))
