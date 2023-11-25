@@ -394,9 +394,9 @@ JSTR_NOEXCEPT
 */
 JSTR_FUNC
 static jstr_ret_ty
-jstrio_expandtildefirst_p(char *R *R s,
-                          size_t *R sz,
-                          size_t *R cap)
+jstrio_expandtildefirst(char *R *R s,
+                        size_t *R sz,
+                        size_t *R cap)
 JSTR_NOEXCEPT
 {
 	if (**s != '~')
