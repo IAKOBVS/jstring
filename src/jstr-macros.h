@@ -117,6 +117,13 @@
 #	define PJSTR_END_DECLS
 #endif
 
+PJSTR_BEGIN_DECLS
+typedef enum {
+	JSTR_RET_ERR = -1,
+	JSTR_RET_SUCC = 0
+} jstr_ret_ty;
+PJSTR_END_DECLS
+
 #ifdef __GLIBC__
 PJSTR_BEGIN_DECLS
 #	include <sys/cdefs.h>
@@ -134,17 +141,6 @@ PJSTR_END_DECLS
 #	define JSTR_STATIC_ASSERT(expr, msg)
 /* clang-format on */
 #endif /* static_assert */
-
-#ifdef __GNUC__
-JSTR_STATIC_ASSERT(JSTR_GROWTH > 1 && JSTRL_GROWTH > 1 && JARR_GROWTH > 1, "Growth factor must be larger than 1.");
-#endif
-
-PJSTR_BEGIN_DECLS
-typedef enum {
-	JSTR_RET_ERR = -1,
-	JSTR_RET_SUCC = 0
-} jstr_ret_ty;
-PJSTR_END_DECLS
 
 #if JSTR_DEBUG
 #	define JSTR_ASSERT_DEBUG(expr, msg)        \
