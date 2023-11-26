@@ -203,8 +203,8 @@ pjstrl_grow(size_t cap,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(cap == 0))
-		cap = PJSTR_MIN_CAP / PJSTR_ALLOC_MULTIPLIER;
-	while ((cap *= PJSTRL_GROWTH) < new_cap)
+		cap = JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
+	while ((cap *= JSTRL_GROWTH) < new_cap)
 		;
 	return cap;
 }

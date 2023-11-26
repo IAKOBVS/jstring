@@ -81,8 +81,8 @@ JSTR_NOEXCEPT
 {
 	enum { TEXT = 0,
 	       BINARY };
-	static const char *text[] = { PJSTRIO_EXT_ARRAY_FT_TEXT };
-	static const char *binary[] = { PJSTRIO_EXT_ARRAY_FT_BINARY };
+	static const char *text[] = { JSTRIO_FT_TEXT_ARRAY };
+	static const char *binary[] = { JSTRIO_FT_BINARY_ARRAY };
 	int i;
 	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i)
 		if (!jstr_strcmpeq_loop(ext, text[i]))
@@ -279,7 +279,7 @@ JSTR_NOEXCEPT
 			if (readsz < reqsz)
 				break;
 			if (*sz == *cap)
-				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (*cap * PJSTR_GROWTH))))
+				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (*cap * JSTR_GROWTH))))
 					goto err_close;
 		}
 	}

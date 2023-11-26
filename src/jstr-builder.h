@@ -79,9 +79,9 @@ pjstr_grow(size_t cap,
            size_t new_cap)
 JSTR_NOEXCEPT
 {
-	while ((cap *= PJSTR_GROWTH) < new_cap)
+	while ((cap = (size_t)(cap * JSTR_GROWTH)) < new_cap)
 		;
-	return JSTR_ALIGN_UP(cap, PJSTR_ATTR_MALLOC_ALIGNMENT);
+	return JSTR_ALIGN_UP(cap, JSTR_MALLOC_ALIGNMENT);
 }
 
 JSTR_FUNC_VOID_MAY_NULL
@@ -247,7 +247,7 @@ jstr_reservealways(char *R *R s,
                    size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? pjstr_grow(*cap, new_cap) : new_cap * PJSTR_ALLOC_MULTIPLIER);
+	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? pjstr_grow(*cap, new_cap) : new_cap * JSTR_ALLOC_MULTIPLIER);
 	if (jstr_nullchk(*s))
 		goto err;
 	return JSTR_RET_SUCC;
@@ -286,7 +286,7 @@ jstr_reserveexactalways(char *R *R s,
                         size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? new_cap + 1 : new_cap * PJSTR_ALLOC_MULTIPLIER);
+	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? new_cap + 1 : new_cap * JSTR_ALLOC_MULTIPLIER);
 	if (jstr_nullchk(*s))
 		goto err;
 	return JSTR_RET_SUCC;
@@ -725,7 +725,7 @@ jstr_pushback(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz * PJSTR_GROWTH)))
+		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz * JSTR_GROWTH)))
 			return JSTR_RET_ERR;
 	*sz = jstr_pushback_unsafe_p(*s, *sz, c) - *s;
 	return JSTR_RET_SUCC;
@@ -761,7 +761,7 @@ jstr_pushfront(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz * PJSTR_GROWTH)))
+		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz * JSTR_GROWTH)))
 			return JSTR_RET_ERR;
 	*sz = jstr_pushfront_unsafe_p(*s, *sz, c) - *s;
 	return JSTR_RET_SUCC;
@@ -1083,7 +1083,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
-	if (jstr_chk(jstr_reserveexact(s, sz, cap, arg_len * PJSTR_ALLOC_MULTIPLIER)))
+	if (jstr_chk(jstr_reserveexact(s, sz, cap, arg_len * JSTR_ALLOC_MULTIPLIER)))
 		goto err_free;
 	va_start(ap, fmt);
 	arg_len = vsprintf(*s, fmt, ap);
@@ -1119,7 +1119,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
-	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, ret * PJSTR_ALLOC_MULTIPLIER)))
+	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, ret * JSTR_ALLOC_MULTIPLIER)))
 		goto err_free;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data, fmt, ap);

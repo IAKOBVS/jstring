@@ -43,35 +43,35 @@
 #	define JSTRL_LAZY_FREE 0
 #endif
 
-#define PJSTR_MIN_CAP               ((sizeof(size_t) == 8) ? 24 : 16)
-#define PJSTR_ATTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
+#define JSTR_MIN_CAP               ((sizeof(size_t) == 8) ? 24 : 16)
+#define JSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
 /* Allocate more than needed for the initial malloc(). */
-#ifndef PJSTR_ALLOC_MULTIPLIER
-#	define PJSTR_ALLOC_MULTIPLIER 2
+#ifndef JSTR_ALLOC_MULTIPLIER
+#	define JSTR_ALLOC_MULTIPLIER 2
 #endif
-#ifndef PJARR_ALLOC_MULTIPLIER
-#	define PJARR_ALLOC_MULTIPLIER 1.5
+#ifndef JARR_ALLOC_MULTIPLIER
+#	define JARR_ALLOC_MULTIPLIER 1.5
 #endif
 
 /* Growth factor. */
-#ifndef PJSTR_GROWTH
-#	define PJSTR_GROWTH 1.5
+#ifndef JSTR_GROWTH
+#	define JSTR_GROWTH 1.5
 #endif
-#ifndef PJSTRL_GROWTH
-#	define PJSTRL_GROWTH 1.5
+#ifndef JSTRL_GROWTH
+#	define JSTRL_GROWTH 1.5
 #endif
-#ifndef PJARR_GROWTH
-#	define PJARR_GROWTH 1.5
+#ifndef JARR_GROWTH
+#	define JARR_GROWTH 1.5
 #endif
 
 /* File extensions interpreted as text files. */
-#ifndef PJSTRIO_EXT_ARRAY_FT_TEXT
-#	define PJSTRIO_EXT_ARRAY_FT_TEXT "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt"
+#ifndef JSTRIO_FT_TEXT_ARRAY
+#	define JSTRIO_FT_TEXT_ARRAY "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt"
 #endif
 /* File extensions interpreted as binary files. */
-#ifndef PJSTRIO_EXT_ARRAY_FT_BINARY
-#	define PJSTRIO_EXT_ARRAY_FT_BINARY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
+#ifndef JSTRIO_FT_BINARY_ARRAY
+#	define JSTRIO_FT_BINARY_ARRAY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
 /*

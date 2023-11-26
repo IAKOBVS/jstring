@@ -61,7 +61,7 @@ PJSTR_END_DECLS
 #define PJARR_SZ(j)     ((j)->PJARR_SIZE_NAME)
 #define PJARR_CAP(j)    ((j)->PJARR_CAPACITY_NAME)
 
-#define PJARR_MIN_CAP(j) (PJSTR_MIN_CAP / PJARR_ELEMSZ(j))
+#define PJARR_MIN_CAP(j) (JSTR_MIN_CAP / PJARR_ELEMSZ(j))
 
 #define PJARR_MEMMOVE(j, dst, src, n) memmove(dst, src, (n)*PJARR_ELEMSZ(j))
 #define PJARR_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*PJARR_ELEMSZ(j))
@@ -97,17 +97,17 @@ PJSTR_END_DECLS
 		JSTR_STATIC_ASSERT_IS_SIZE(old_cap);                             \
 		JSTR_STATIC_ASSERT_IS_SIZE(new_cap);                             \
 		if (jstr_unlikely(old_cap == 0))                                 \
-			old_cap = PJSTR_MIN_CAP / PJARR_ALLOC_MULTIPLIER;        \
+			old_cap = JSTR_MIN_CAP / JARR_ALLOC_MULTIPLIER;        \
 		do                                                               \
-			(old_cap) *= PJARR_GROWTH;                               \
+			(old_cap) *= JARR_GROWTH;                               \
 		while ((old_cap) < (new_cap));                                   \
-		(old_cap) = JSTR_ALIGN_UP(old_cap, PJSTR_ATTR_MALLOC_ALIGNMENT); \
+		(old_cap) = JSTR_ALIGN_UP(old_cap, JSTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define jarr_reserve(j, new_cap)                                                                                   \
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
 		if (jstr_unlikely(PJARR_CAP(j) == 0))                                                              \
-			PJARR_CAP(j) = PJSTR_MIN_CAP / PJARR_ELEMSZ(j);                                            \
+			PJARR_CAP(j) = JSTR_MIN_CAP / PJARR_ELEMSZ(j);                                            \
 		PJARR_GROW(PJARR_CAP(j), new_cap);                                                                 \
 		PJARR_CAP(j) = PJARR_ALIGN_UP(j, PJARR_CAP(j) * PJARR_ELEMSZ(j));                                  \
 		PJARR_DATA(j) = PJSTR_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
@@ -202,7 +202,7 @@ PJSTR_END_DECLS
 		if (jstr_unlikely(PJARR_CAP(j) < PJARR_SZ(j) + 1)) {       \
 			if (jstr_unlikely(PJARR_CAP(j) == 0))              \
 				PJARR_CAP(j) = PJARR_MIN_CAP(j);           \
-			jarr_reserveexact(j, PJARR_CAP(j) * PJARR_GROWTH); \
+			jarr_reserveexact(j, PJARR_CAP(j) * JARR_GROWTH); \
 			PJARR_MALLOC_ERR(j, break)                         \
 		}                                                          \
 		*(PJARR_DATA(j) + PJARR_SZ(j)++) = (value);                \
@@ -215,7 +215,7 @@ PJSTR_END_DECLS
 		if (jstr_unlikely(PJARR_CAP(j) < PJARR_SZ(j) + 1)) {               \
 			if (jstr_unlikely(PJARR_CAP(j) == 0))                      \
 				PJARR_CAP(j) = PJARR_MIN_CAP(j);                   \
-			jarr_reserveexact(j, PJARR_CAP(j) * PJARR_GROWTH);         \
+			jarr_reserveexact(j, PJARR_CAP(j) * JARR_GROWTH);         \
 			PJARR_MALLOC_ERR(j, break)                                 \
 		}                                                                  \
 		PJARR_MEMMOVE(j, PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++); \

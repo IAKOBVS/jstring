@@ -78,6 +78,26 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 #endif
 
+#ifdef static_assert
+PJSTR_BEGIN_DECLS
+#	include <assert.h>
+PJSTR_END_DECLS
+#	define JSTR_HAVE_STATIC_ASSERT       1
+#	define JSTR_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
+#elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
+PJSTR_BEGIN_DECLS
+#	include <assert.h>
+PJSTR_END_DECLS
+#	define JSTR_HAVE_STATIC_ASSERT       1
+#	define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
+#else
+/* clang-format off */
+#	define JSTR_STATIC_ASSERT(expr, msg)
+/* clang-format on */
+#endif /* static_assert */
+
+JSTR_STATIC_ASSERT(JSTR_GROWTH > 1 && JSTRL_GROWTH > 1 && JARR_GROWTH > 1, "Growth factor must be larger than 1.");
+
 PJSTR_BEGIN_DECLS
 typedef enum {
 	JSTR_RET_ERR = -1,
@@ -166,24 +186,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_SAME_TYPE(x, y) 1
 #	define PJSTR_IS_TYPE(T, x)  1
 #endif /* have_typeof && have_generic */
-
-#ifdef static_assert
-PJSTR_BEGIN_DECLS
-#	include <assert.h>
-PJSTR_END_DECLS
-#	define JSTR_HAVE_STATIC_ASSERT       1
-#	define JSTR_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
-#elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
-PJSTR_BEGIN_DECLS
-#	include <assert.h>
-PJSTR_END_DECLS
-#	define JSTR_HAVE_STATIC_ASSERT       1
-#	define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
-#else
-/* clang-format off */
-#	define JSTR_STATIC_ASSERT(expr, msg) do {} while (0)
-/* clang-format on */
-#endif /* static_assert */
 
 #if JSTR_HAVE_GENERIC
 #	define JSTR_GENERIC_CASE_SIZE(bool_)               int : bool_, unsigned int : bool_, size_t : bool_, long : bool_, long long : bool_, unsigned long long : bool_
