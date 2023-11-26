@@ -49,8 +49,8 @@ PJSTR_END_DECLS
 		0 \
 	}
 
-#define jstr_err(msg)        pjstr_err(__FILE__, __LINE__, JSTR_STATIC_ASSERT_FUNC, msg)
-#define jstr_errdie(msg)     pjstr_errdie(__FILE__, __LINE__, JSTR_STATIC_ASSERT_FUNC, msg)
+#define jstr_err(msg)        pjstr_err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
+#define jstr_errdie(msg)     pjstr_errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
 #define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const pjstr_foreach_end_##ptr = ((j)->data) + ((j)->size); \
 	                          ptr < pjstr_foreach_end_##ptr;                                                       \
 	                          ++ptr)
