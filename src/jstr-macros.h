@@ -181,18 +181,20 @@ PJSTR_CAST(T, Other other)
 #endif /* have_typeof && have_generic */
 
 #if JSTR_HAVE_GENERIC
-#	define JSTR_GENERIC_CASE_SIZE(bool_)               int : bool_, unsigned int : bool_, size_t : bool_, long : bool_, long long : bool_, unsigned long long : bool_
-#	define JSTR_GENERIC_CASE_STR(bool_)                char * : bool_, const char * : bool_
-#	define JSTR_GENERIC_CASE_STR_STACK(bool_, s)       char(*)[sizeof(s)] : bool_, const char(*)[sizeof(s)] : bool_
-#	define JSTR_GENERIC_CASE_CHAR(bool_)               char : bool_, const char : bool_
-#	define PJSTR_IS_SIZE(expr)                         _Generic((expr), JSTR_GENERIC_CASE_SIZE(1), default: 0)
-#	define PJSTR_IS_STR(expr)                          _Generic((expr), JSTR_GENERIC_CASE_STR(1), default: 0)
-#	define PJSTR_IS_STR_STACK(expr)                    _Generic((expr), JSTR_GENERIC_CASE_STR_STACK(1, expr), default: 0)
-#	define PJSTR_IS_CHAR(expr)                         _Generic((expr), JSTR_GENERIC_CASE_CHAR(1), default: 0)
-#	define JSTR_STATIC_ASSERT_IS_SIZE(expr)            JSTR_STATIC_ASSERT(PJSTR_IS_SIZE(expr), "Passing non-size_type as number argument!");
-#	define JSTR_STATIC_ASSERT_IS_STR(expr)             JSTR_STATIC_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
-#	define JSTR_STATIC_ASSERT_IS_CHAR(expr)            JSTR_STATIC_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
+/* clang-format off */
+#	define JSTR_GENERIC_CASE_SIZE(bool_) int : bool_, unsigned int : bool_, size_t : bool_, long : bool_, long long : bool_, unsigned long long : bool_
+#	define JSTR_GENERIC_CASE_STR(bool_) char * : bool_, const char * : bool_
+#	define JSTR_GENERIC_CASE_STR_STACK(bool_, s) char(*)[sizeof(s)] : bool_, const char(*)[sizeof(s)] : bool_
+#	define JSTR_GENERIC_CASE_CHAR(bool_) char : bool_, const char : bool_
+#	define PJSTR_IS_SIZE(expr) _Generic((expr), JSTR_GENERIC_CASE_SIZE(1), default: 0)
+#	define PJSTR_IS_STR(expr) _Generic((expr), JSTR_GENERIC_CASE_STR(1), default: 0)
+#	define PJSTR_IS_STR_STACK(expr) _Generic((expr), JSTR_GENERIC_CASE_STR_STACK(1, expr), default: 0)
+#	define PJSTR_IS_CHAR(expr) _Generic((expr), JSTR_GENERIC_CASE_CHAR(1), default: 0)
+#	define JSTR_STATIC_ASSERT_IS_SIZE(expr) JSTR_STATIC_ASSERT(PJSTR_IS_SIZE(expr), "Passing non-size_type as number argument!");
+#	define JSTR_STATIC_ASSERT_IS_STR(expr) JSTR_STATIC_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
+#	define JSTR_STATIC_ASSERT_IS_CHAR(expr) JSTR_STATIC_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
 #	define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr) JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
+/* clang-format on */
 #else
 #	define JSTR_GENERIC_CASE_SIZE(bool_)
 #	define JSTR_GENERIC_CASE_STR(bool_)
@@ -460,319 +462,50 @@ PJSTR_CAST(T, Other other)
 #define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_ATTR_PURE
 #define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_ATTR_RETURNS_NONNULL
 
-#define JSTR_ALPHA_VOWEL_LOWER_STR     "aiueo"
-#define JSTR_ALPHA_VOWEL_UPPER_STR     "AIUEO"
+/* clang-format off */
+#define JSTR_ALPHA_VOWEL_LOWER_STR "aiueo"
+#define JSTR_ALPHA_VOWEL_UPPER_STR "AIUEO"
 #define JSTR_ALPHA_CONSONANT_LOWER_STR "bcdfghjklmnpqrstvwxyz"
 #define JSTR_ALPHA_CONSONANT_UPPER_STR "BCDFGHJKLMNPQRSTVWXYZ"
-#define JSTR_DIGIT_STR                 "0123456789"
-#define JSTR_SPACE_STR                 " \t\n\r\f\v"
-#define JSTR_PUNCT_STR                 "!\"#$%&\()*+,-./:;<=>?@[\\]^_`{|}~";
-#define JSTR_XDIGIT_LOWER_STR          JSTR_DIGIT_STR "abcdef"
-#define JSTR_XDIGIT_UPPER_STR          JSTR_DIGIT_STR "ABCDEF"
-#define JSTR_XDIGIT_STR                JSTR_DIGIT_STR "abcdefABCDEF"
-#define JSTR_ALPHA_VOWEL_STR           JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_VOWEL_UPPER_STR
-#define JSTR_ALPHA_CONSONANT_STR       JSTR_ALPHA_CONSONANT_LOWER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
-#define JSTR_ALPHA_LOWER_STR           JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_CONSONANT_LOWER_STR
-#define JSTR_ALPHA_UPPER_STR           JSTR_ALPHA_VOWEL_UPPER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
-#define JSTR_ALPHA_STR                 JSTR_ALPHA_LOWER_STR JSTR_ALPHA_UPPER_STR
-#define JSTR_ALNUM_LOWER_STR           JSTR_ALPHA_LOWER_STR JSTR_DIGIT_STR
-#define JSTR_ALNUM_UPPER_STR           JSTR_ALPHA_UPPER_STR JSTR_DIGIT_STR
-#define JSTR_ALNUM_STR                 JSTR_ALPHA_STR JSTR_DIGIT_STR
-
-#define JSTR_ALPHA_VOWEL_LOWER_CASE \
-case 'a':                           \
-case 'i':                           \
-case 'u':                           \
-case 'e':                           \
-case 'o':
-
-#define JSTR_ALPHA_VOWEL_UPPER_CASE \
-case 'A':                           \
-case 'I':                           \
-case 'U':                           \
-case 'E':                           \
-case 'O':
-
-#define JSTR_ALPHA_CONSONANT_LOWER_CASE \
-case 'b':                               \
-case 'c':                               \
-case 'd':                               \
-case 'f':                               \
-case 'g':                               \
-case 'h':                               \
-case 'j':                               \
-case 'k':                               \
-case 'l':                               \
-case 'm':                               \
-case 'n':                               \
-case 'p':                               \
-case 'q':                               \
-case 'r':                               \
-case 's':                               \
-case 't':                               \
-case 'v':                               \
-case 'w':                               \
-case 'x':                               \
-case 'y':                               \
-case 'z':
-
-#define JSTR_ALPHA_CONSONANT_UPPER_CASE \
-case 'B':                               \
-case 'C':                               \
-case 'D':                               \
-case 'F':                               \
-case 'G':                               \
-case 'H':                               \
-case 'J':                               \
-case 'K':                               \
-case 'L':                               \
-case 'M':                               \
-case 'N':                               \
-case 'P':                               \
-case 'Q':                               \
-case 'R':                               \
-case 'S':                               \
-case 'T':                               \
-case 'V':                               \
-case 'W':                               \
-case 'X':                               \
-case 'Y':                               \
-case 'Z':
-
-#define JSTR_DIGIT_CASE \
-case '0':               \
-case '1':               \
-case '2':               \
-case '3':               \
-case '4':               \
-case '5':               \
-case '6':               \
-case '7':               \
-case '8':               \
-case '9':
-
-#define JSTR_ALPHA_LOWER_CASE \
-	JSTR_VOWEL_LOWER_CASE JSTR_CONSONANT_LOWER_CASE
-
-#define JSTR_ALPHA_UPPER_CASE \
-	JSTR_VOWEL_UPPER_CASE JSTR_CONSONANT_UPPER_CASE
-
-#define JSTR_XDIGIT_CASE \
-	JSTR_DIGIT_CASE  \
-case 'a':                \
-case 'b':                \
-case 'c':                \
-case 'd':                \
-case 'e':                \
-case 'f':                \
-case 'A':                \
-case 'B':                \
-case 'C':                \
-case 'D':                \
-case 'E':                \
-case 'F':
-
-#define JSTR_BLANK_CASE \
-case '\t':              \
-case ' ':
-
-#define JSTR_SPACE_CASE \
-	JSTR_BLANK_CASE \
-case '\n':              \
-case '\v':              \
-case '\f':              \
-case '\r':
-
-#define JSTR_GRAPH_CASE \
-case 33:                \
-case 34:                \
-case 35:                \
-case 36:                \
-case 37:                \
-case 38:                \
-case 39:                \
-case 40:                \
-case 41:                \
-case 42:                \
-case 43:                \
-case 44:                \
-case 45:                \
-case 46:                \
-case 47:                \
-case 48:                \
-case 49:                \
-case 50:                \
-case 51:                \
-case 52:                \
-case 53:                \
-case 54:                \
-case 55:                \
-case 56:                \
-case 57:                \
-case 58:                \
-case 59:                \
-case 60:                \
-case 61:                \
-case 62:                \
-case 63:                \
-case 64:                \
-case 65:                \
-case 66:                \
-case 67:                \
-case 68:                \
-case 69:                \
-case 70:                \
-case 71:                \
-case 72:                \
-case 73:                \
-case 74:                \
-case 75:                \
-case 76:                \
-case 77:                \
-case 78:                \
-case 79:                \
-case 80:                \
-case 81:                \
-case 82:                \
-case 83:                \
-case 84:                \
-case 85:                \
-case 86:                \
-case 87:                \
-case 88:                \
-case 89:                \
-case 90:                \
-case 91:                \
-case 92:                \
-case 93:                \
-case 94:                \
-case 95:                \
-case 96:                \
-case 97:                \
-case 98:                \
-case 99:                \
-case 100:               \
-case 101:               \
-case 102:               \
-case 103:               \
-case 104:               \
-case 105:               \
-case 106:               \
-case 107:               \
-case 108:               \
-case 109:               \
-case 110:               \
-case 111:               \
-case 112:               \
-case 113:               \
-case 114:               \
-case 115:               \
-case 116:               \
-case 117:               \
-case 118:               \
-case 119:               \
-case 120:               \
-case 121:               \
-case 122:               \
-case 123:               \
-case 124:               \
-case 125:               \
-case 126:
-
-#define JSTR_PRINT_CASE \
-	JSTR_GRAPH_CASE \
-case 32:
-
-#define JSTR_CNTRL_CASE \
-case 0:                 \
-case 1:                 \
-case 2:                 \
-case 3:                 \
-case 4:                 \
-case 5:                 \
-case 6:                 \
-case 7:                 \
-case 8:                 \
-case 9:                 \
-case 10:                \
-case 11:                \
-case 12:                \
-case 13:                \
-case 14:                \
-case 15:                \
-case 16:                \
-case 17:                \
-case 18:                \
-case 19:                \
-case 20:                \
-case 21:                \
-case 22:                \
-case 23:                \
-case 24:                \
-case 25:                \
-case 26:                \
-case 27:                \
-case 28:                \
-case 29:                \
-case 30:                \
-case 31:                \
-case 127:
-
-#define JSTR_PUNCT_CASE \
-case '!':               \
-case '"':               \
-case '#':               \
-case '$':               \
-case '%':               \
-case '&':               \
-case '\'':              \
-case '(':               \
-case ')':               \
-case '*':               \
-case '+':               \
-case ',':               \
-case '-':               \
-case '.':               \
-case '/':               \
-                        \
-case ':':               \
-case ';':               \
-case '<':               \
-case '=':               \
-case '>':               \
-case '?':               \
-case '@':               \
-                        \
-case '[':               \
-case '\\':              \
-case ']':               \
-case '^':               \
-case '_':               \
-case '`':               \
-                        \
-case '{':               \
-case '|':               \
-case '}':               \
-case '~':
-
-#define JSTR_VOWEL_CASE             \
-	JSTR_VOWEL_ALPHA_UPPER_CASE \
-	JSTR_VOWEL_ALPHA_LOWER_CASE
-#define JSTR_CONSONANT_CASE             \
-	JSTR_CONSONANT_ALPHA_UPPER_CASE \
-	JSTR_CONSONANT_ALPHA_LOWER_CASE
-#define JSTR_ALPHA_CASE       \
-	JSTR_ALPHA_LOWER_CASE \
-	JSTR_ALPHA_UPPER_CASE
-#define JSTR_ALNUM_CASE \
-	JSTR_DIGIT_CASE \
-	JSTR_ALPHA_CASE
+#define JSTR_DIGIT_STR "0123456789"
+#define JSTR_SPACE_STR " \t\n\r\f\v"
+#define JSTR_PUNCT_STR "!\"#$%&\()*+,-./:;<=>?@[\\]^_`{|}~";
+#define JSTR_XDIGIT_LOWER_STR JSTR_DIGIT_STR "abcdef"
+#define JSTR_XDIGIT_UPPER_STR JSTR_DIGIT_STR "ABCDEF"
+#define JSTR_XDIGIT_STR JSTR_DIGIT_STR "abcdefABCDEF"
+#define JSTR_ALPHA_VOWEL_STR JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_VOWEL_UPPER_STR
+#define JSTR_ALPHA_CONSONANT_STR JSTR_ALPHA_CONSONANT_LOWER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
+#define JSTR_ALPHA_LOWER_STR JSTR_ALPHA_VOWEL_LOWER_STR JSTR_ALPHA_CONSONANT_LOWER_STR
+#define JSTR_ALPHA_UPPER_STR JSTR_ALPHA_VOWEL_UPPER_STR JSTR_ALPHA_CONSONANT_UPPER_STR
+#define JSTR_ALPHA_STR JSTR_ALPHA_LOWER_STR JSTR_ALPHA_UPPER_STR
+#define JSTR_ALNUM_LOWER_STR JSTR_ALPHA_LOWER_STR JSTR_DIGIT_STR
+#define JSTR_ALNUM_UPPER_STR JSTR_ALPHA_UPPER_STR JSTR_DIGIT_STR
+#define JSTR_ALNUM_STR JSTR_ALPHA_STR JSTR_DIGIT_STR
+#define JSTR_DIGIT_CASE case'0':case'1':case'2':case'3':case'4':case'5':case'6':case'7':case'8':case'9':
+#define JSTR_ALPHA_VOWEL_LOWER_CASE case'a':case'i':case'u':case'e':case'o':
+#define JSTR_ALPHA_VOWEL_UPPER_CASE case'A':case'I':case'U':case'E':case'O':
+#define JSTR_ALPHA_CONSONANT_LOWER_CASE case'b':case'c':case'd':case'f':case'g':case'h':case'j':case'k':case'l':case'm':case'n':case'p':case'q':case'r':case's':case't':case'v':case'w':case'x':case'y':case'z':
+#define JSTR_ALPHA_CONSONANT_UPPER_CASE case'B':case'C':case'D':case'F':case'G':case'H':case'J':case'K':case'L':case'M':case'N':case'P':case'Q':case'R':case'S':case'T':case'V':case'W':case'X':case'Y':case'Z':
+#define JSTR_XDIGIT_CASE JSTR_DIGIT_CASE case'a':case'b':case'c':case'd':case'e':case'f':case'A':case'B':case'C':case'D':case'E':case'F':
+#define JSTR_BLANK_CASE case'\t':case' ':
+#define JSTR_SPACE_CASE	JSTR_BLANK_CASE case'\n':case'\v':case'\f':case'\r':
+#define JSTR_GRAPH_CASE case 33:case 34:case 35:case 36:case 37:case 38:case 39:case 40:case 41:case 42:case 43:case 44:case 45:case 46:case 47:case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:case 58:case 59:case 60:case 61:case 62:case 63:case 64:case 65:case 66:case 67:case 68:case 69:case 70:case 71:case 72:case 73:case 74:case 75:case 76:case 77:case 78:case 79:case 80:case 81:case 82:case 83:case 84:case 85:case 86:case 87:case 88:case 89:case 90:case 91:case 92:case 93:case 94:case 95:case 96:case 97:case 98:case 99:case 100:case 101:case 102:case 103:case 104:case 105:case 106:case 107:case 108:case 109:case 110:case 111:case 112:case 113:case 114:case 115:case 116:case 117:case 118:case 119:case 120:case 121:case 122:case 123:case 124:case 125:case 126:
+#define JSTR_PRINT_CASE	JSTR_GRAPH_CASE case 32:
+#define JSTR_CNTRL_CASE case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19:case 20:case 21:case 22:case 23:case 24:case 25:case 26:case 27:case 28:case 29:case 30:case 31:case 127:
+#define JSTR_PUNCT_CASE case'!':case'"':case'#':case'$':case'%':case'&':case'\'':case'(':case')':case'*':case'+':case',':case'-':case'.':case'/':case':':case';':case'<':case'=':case'>':case'?':case'@':case'[':case'\\':case']':case'^':case'_':case'`':case'{':case'|':case'}':case'~':
+#define JSTR_ALPHA_LOWER_CASE JSTR_VOWEL_LOWER_CASE JSTR_CONSONANT_LOWER_CASE
+#define JSTR_ALPHA_UPPER_CASE JSTR_VOWEL_UPPER_CASE JSTR_CONSONANT_UPPER_CASE
+#define JSTR_VOWEL_CASE JSTR_VOWEL_ALPHA_UPPER_CASE JSTR_VOWEL_ALPHA_LOWER_CASE
+#define JSTR_CONSONANT_CASE JSTR_CONSONANT_ALPHA_UPPER_CASE JSTR_CONSONANT_ALPHA_LOWER_CASE
+#define JSTR_ALPHA_CASE JSTR_ALPHA_LOWER_CASE JSTR_ALPHA_UPPER_CASE
+#define JSTR_ALNUM_CASE JSTR_DIGIT_CASE JSTR_ALPHA_CASE
+/* clang-format on */
 
 #if ((defined __GLIBC__ && __GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19)) && defined _BSD_SOURCE) \
 || defined _DEFAULT_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1
 #	define JSTR_HAVE_STRNCASECMP 1
-#endif
+#endif /* Bsd || Default */
 
 #ifdef _XOPEN_SOURCE
 #	define JSTR_HAVE_MEMCCPY 1
@@ -924,29 +657,29 @@ PJSTR_END_DECLS
 
 #ifdef JSTR_BYTE_ORDER
 #	if JSTR_BYTE_ORDER == JSTR_BIG_ENDIAN \
-	|| defined __BIG_ENDIAN__              \
-	|| defined __ARMEB__                   \
-	|| defined __THUMBEB__                 \
-	|| defined __AARCH64EB__               \
-	|| defined _MIBSEB                     \
-	|| defined __MIBSEB                    \
+	|| defined __BIG_ENDIAN__\
+	|| defined __ARMEB__\
+	|| defined __THUMBEB__\
+	|| defined __AARCH64EB__\
+	|| defined _MIBSEB\
+	|| defined __MIBSEB\
 	|| defined __MIBSEB__
-#		undef JSTR_ENDIAN_BIG
-#		undef JSTR_ENDIAN_LITTLE
-#		define JSTR_ENDIAN_BIG    1
-#		define JSTR_ENDIAN_LITTLE 0
+#undef JSTR_ENDIAN_BIG
+#undef JSTR_ENDIAN_LITTLE
+#define JSTR_ENDIAN_BIG    1
+#define JSTR_ENDIAN_LITTLE 0
 #	elif JSTR_BYTE_ORDER == JSTR_LITTLE_ENDIAN \
-	|| defined __LITTLE_ENDIAN__                \
-	|| defined __ARMEL__                        \
-	|| defined __THUMBEL__                      \
-	|| defined __AARCH64EL__                    \
-	|| defined _MIPSEL                          \
-	|| defined __MIPSEL                         \
+	|| defined __LITTLE_ENDIAN__\
+	|| defined __ARMEL__\
+	|| defined __THUMBEL__\
+	|| defined __AARCH64EL__\
+	|| defined _MIPSEL\
+	|| defined __MIPSEL\
 	|| defined __MIPSEL__
-#		undef JSTR_ENDIAN_LITTLE
-#		undef JSTR_ENDIAN_BIG
-#		define JSTR_ENDIAN_LITTLE 1
-#		define JSTR_ENDIAN_BIG    0
+#undef JSTR_ENDIAN_LITTLE
+#undef JSTR_ENDIAN_BIG
+#define JSTR_ENDIAN_LITTLE 1
+#define JSTR_ENDIAN_BIG    0
 #	endif
 #endif /* byte_order */
 
