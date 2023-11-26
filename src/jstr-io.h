@@ -628,10 +628,9 @@ typedef enum jstrio_ftw_flag_ty {
 #endif
 
 #if USE_ATFILE
-#	define STAT_ALWAYS(st, st_state, st_state, fd, ep, dirpath)           \
+#	define STAT_ALWAYS(st, st_state, fd, ep, dirpath)                     \
 		do {                                                           \
 			if (jstr_unlikely(fstatat(fd, (ep)->d_name, st, 0))) { \
-				close(fd);                                     \
 				if (NONFATAL_ERR()) {                          \
 					st_state = JSTRIO_FTW_STATE_NS;        \
 					goto do_fn;                            \
@@ -639,11 +638,23 @@ typedef enum jstrio_ftw_flag_ty {
 				goto err_closedir;                             \
 			}                                                      \
 		} while (0)
-#	define CLOSE_IFATFILE(fd, do_on_err)           \
+#	define OPENAT(fd, file, oflag, do_on_err)                          \
+		do {                                                        \
+			if (jstr_unlikely(openat(fd, file, oflag) == -1)) { \
+				do_on_err;                                  \
+			}                                                   \
+		} while (0)
+#	define CLOSE(fd, do_on_err)                    \
 		do {                                    \
 			if (jstr_unlikely(close(fd))) { \
 				do_on_err;              \
 			}                               \
+		} while (0)
+#	define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                             \
+		do {                                                                     \
+			if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) == -1)) { \
+				do_on_err;                                               \
+			}                                                                \
 		} while (0)
 #else
 #	define STAT_ALWAYS(st, st_state, fd, ep, dirpath)              \
@@ -657,7 +668,8 @@ typedef enum jstrio_ftw_flag_ty {
 			}                                               \
 		} while (0)
 /* clang-format off */
-#	define CLOSE_IFATFILE(fd, do_on_err) do {} while (0)
+#	define OPENAT(dstfd, srcfd, file, oflag, do_on_err) do {} while (0)
+#	define CLOSE(fd, do_on_err) do {} while (0)
 /* clang-format on */
 #endif
 
@@ -736,6 +748,12 @@ struct pjstrio_ftw_data {
 #define JSTRIO_FTW_FUNC(func_name, dirpath, dirpath_len, st) \
 	int func_name(const char *dirpath, size_t dirpath_len, const struct stat *st)
 
+#ifdef O_DIRECTORY
+#	define PJSTR_O_DIRECTORY O_DIRECTORY
+#else
+#	define PJSTR_O_DIRECTORY 0
+#endif
+
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((3))
@@ -764,7 +782,7 @@ JSTR_NOEXCEPT
 	}
 	size_t newpath_len = 0;
 	const struct dirent *R ep;
-	int ret;
+	int tmp;
 	while ((ep = readdir(dp)) != NULL) {
 		if (a->ftw_flags & JSTRIO_FTW_NOHIDDEN) {
 			/* Ignore hidden files. */
@@ -831,17 +849,17 @@ do_reg:
 			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->dirpath);
 		}
 do_fn:
-		ret = a->fn(&a->ftw, a->fn_arg);
+		tmp = a->fn(&a->ftw, a->fn_arg);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
-			if (ret == JSTRIO_FTW_RET_CONTINUE
-			    || ret == JSTRIO_FTW_RET_SKIP_SUBTREE)
+			if (tmp == JSTRIO_FTW_RET_CONTINUE
+			    || tmp == JSTRIO_FTW_RET_SKIP_SUBTREE)
 				continue;
-			else if (ret == JSTRIO_FTW_RET_SKIP_SIBLINGS)
+			else if (tmp == JSTRIO_FTW_RET_SKIP_SIBLINGS)
 				break;
 			else /* RET_STOP */
 				goto err_closedir;
 		} else {
-			if (jstr_chk(ret))
+			if (jstr_chk(tmp))
 				goto err_closedir;
 		}
 		continue;
@@ -858,29 +876,25 @@ do_dir:
 		if (a->ftw_flags & JSTRIO_FTW_REG)
 			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 				goto CONT;
-		ret = a->fn(&a->ftw, a->fn_arg);
+		tmp = a->fn(&a->ftw, a->fn_arg);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
-			if (ret == JSTRIO_FTW_RET_CONTINUE)
+			if (tmp == JSTRIO_FTW_RET_CONTINUE)
 				continue;
-			else if (ret == JSTRIO_FTW_RET_SKIP_SUBTREE
-			         || ret == JSTRIO_FTW_RET_SKIP_SIBLINGS)
+			else if (tmp == JSTRIO_FTW_RET_SKIP_SUBTREE
+			         || tmp == JSTRIO_FTW_RET_SKIP_SIBLINGS)
 				goto CONT;
 			else /* RET_STOP */
 				goto err_closedir;
 		} else {
-			if (jstr_chk(ret))
+			if (jstr_chk(tmp))
 				goto err_closedir;
 		}
 CONT:
 		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
 			continue;
-#if USE_ATFILE
-		fd = openat(fd, ep->d_name, O_RDONLY);
-		if (jstr_unlikely(fd == -1))
-			continue;
-#endif
+		OPENAT(tmp, fd, ep->d_name, O_RDONLY | PJSTR_O_DIRECTORY | O_NONBLOCK, continue);
 		if (jstr_chk(pjstrio_ftw_len(a, newpath_len FD_ARG))) {
-			CLOSE_IFATFILE(FD, );
+			CLOSE(FD, );
 			goto err_closedir;
 		}
 	}
@@ -997,11 +1011,11 @@ CONT:;
 		data.fn_flags = jstrio_ftw_flags;
 		data.ftw_flags = jstrio_ftw_flags;
 		pjstrio_ftw_len(&data, dirpath_len);
-		CLOSE_IFATFILE(fd, goto err);
+		CLOSE(fd, goto err);
 		return JSTR_RET_SUCC;
 	}
 fn:
-	CLOSE_IFATFILE(fd, goto err);
+	CLOSE(fd, goto err);
 	if (jstrio_ftw_flags & JSTRIO_FTW_REG)
 		if (jstr_unlikely(!S_ISREG(data.ftw.st->st_mode)))
 			return JSTR_RET_SUCC;
@@ -1023,12 +1037,12 @@ fnmatch_path:
 	}
 	return (jstr_ret_ty)fn(&data.ftw, fn_arg);
 err_close:
-	CLOSE_IFATFILE(fd, );
+	CLOSE(fd, );
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-#undef CLOSE_IFATFILE
+#undef CLOSE
 #undef USE_ATFILE
 #undef FD_ARG
 
