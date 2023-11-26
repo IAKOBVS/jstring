@@ -755,10 +755,8 @@ struct pjstrio_ftw_data {
 #	define PJSTR_O_DIRECTORY 0
 #endif
 
-JSTR_FUNC_VOID_MAY_NULL
+JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
-JSTR_NONNULL((3))
-JSTR_NONNULL((7))
 static int
 pjstrio_ftw_len(struct pjstrio_ftw_data *a,
                 size_t dirpath_len
@@ -926,6 +924,7 @@ err_closedir:
 #undef FD
 #undef FD_ARG
 #undef FD_PARAM
+#undef PJSTR_O_DIRECTORY
 
 /*
    Call FN() on files found recursively that matches GLOB.
@@ -939,8 +938,8 @@ err_closedir:
 */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
-JSTR_NONNULL((3))
-static jstr_ret_ty
+JSTR_NONNULL((4))
+static int
 jstrio_ftw_len(const char *R dirpath,
                size_t dirpath_len,
                jstrio_ftw_func_ty fn,
@@ -1004,14 +1003,14 @@ ftw:;
 		if (jstrio_ftw_flags & JSTRIO_FTW_REG)
 			if (!(jstrio_ftw_flags & JSTRIO_FTW_DIR))
 				goto CONT;
-		int ret;
+		int tmp;
 		data.ftw.ftw_state = JSTRIO_FTW_STATE_D;
-		ret = fn(&data.ftw, fn_arg);
+		tmp = fn(&data.ftw, fn_arg);
 		if (jstrio_ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
-			if (jstr_unlikely(ret != JSTRIO_FTW_RET_CONTINUE))
+			if (jstr_unlikely(tmp != JSTRIO_FTW_RET_CONTINUE))
 				goto err_close;
 		} else {
-			if (jstr_chk(ret))
+			if (jstr_chk(tmp))
 				goto err_close;
 		}
 CONT:;
@@ -1020,9 +1019,9 @@ CONT:;
 		data.fnm_glob = fnm_glob;
 		data.fnm_flags = jstrio_ftw_flags;
 		data.ftw_flags = jstrio_ftw_flags;
-		pjstrio_ftw_len(&data, dirpath_len);
+		tmp = pjstrio_ftw_len(&data, dirpath_len);
 		CLOSE(fd, goto err);
-		return JSTR_RET_SUCC;
+		return tmp;
 	}
 fn:
 	CLOSE(fd, goto err);
@@ -1056,7 +1055,6 @@ err:
 #undef OPENAT
 #undef CLOSE
 #undef USE_ATFILE
-#undef PJSTR_O_DIRECTORY
 
 PJSTR_END_DECLS
 
