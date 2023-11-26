@@ -638,23 +638,23 @@ typedef enum jstrio_ftw_flag_ty {
 				goto err_closedir;                             \
 			}                                                      \
 		} while (0)
-#	define OPENAT(fd, file, oflag, do_on_err)                          \
-		do {                                                        \
-			if (jstr_unlikely(openat(fd, file, oflag) == -1)) { \
-				do_on_err;                                  \
-			}                                                   \
+#	define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                             \
+		do {                                                                     \
+			if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) == -1)) { \
+				do_on_err;                                               \
+			}                                                                \
+		} while (0)
+#	define OPEN(fd, file, oflag, do_on_err)                             \
+		do {                                                         \
+			if (jstr_unlikely((fd = open(file, oflag)) == -1)) { \
+				do_on_err;                                   \
+			}                                                    \
 		} while (0)
 #	define CLOSE(fd, do_on_err)                    \
 		do {                                    \
 			if (jstr_unlikely(close(fd))) { \
 				do_on_err;              \
 			}                               \
-		} while (0)
-#	define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                             \
-		do {                                                                     \
-			if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) == -1)) { \
-				do_on_err;                                               \
-			}                                                                \
 		} while (0)
 #else
 #	define STAT_ALWAYS(st, st_state, fd, ep, dirpath)              \
@@ -669,6 +669,7 @@ typedef enum jstrio_ftw_flag_ty {
 		} while (0)
 /* clang-format off */
 #	define OPENAT(dstfd, srcfd, file, oflag, do_on_err) do {} while (0)
+#	define OPEN(fd, file, oflag, do_on_err) do {} while (0)
 #	define CLOSE(fd, do_on_err) do {} while (0)
 /* clang-format on */
 #endif
@@ -922,6 +923,8 @@ err_closedir:
 #undef STAT_ALWAYS
 #undef STAT_MODE
 #undef STAT_OR_MODE
+#undef FD
+#undef FD_ARG
 #undef FD_PARAM
 
 /*
@@ -971,10 +974,8 @@ JSTR_NOEXCEPT
 	}
 #if USE_ATFILE
 	int fd;
-	fd = open(fulpath, O_RDONLY);
-	if (jstr_unlikely(fd == -1))
-		goto err;
 #endif
+	OPEN(fd, fulpath, O_RDONLY | O_NONBLOCK, goto err);
 	struct stat st;
 	struct pjstrio_ftw_data data;
 	data.dirpath = fulpath;
@@ -1050,9 +1051,11 @@ err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
+#undef OPEN
+#undef OPENAT
 #undef CLOSE
 #undef USE_ATFILE
-#undef FD_ARG
+#undef PJSTR_O_DIRECTORY
 
 PJSTR_END_DECLS
 
