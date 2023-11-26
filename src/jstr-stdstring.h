@@ -60,7 +60,7 @@ jstr_memcmpeq_loop(const void *s1,
 		return 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; (*p1++ == *p2++) && n--;)
+	for (; n && (*p1++ == *p2++); --n)
 		;
 	return n;
 }

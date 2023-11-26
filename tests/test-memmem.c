@@ -137,18 +137,32 @@ jstr_strrstr(const char *h, const char *n)
 		}                                                                         \
 	} while (0)
 
-#define T_STRSTR_LEN(fn, simple_fn)                                                                                                 \
-	do {                                                                                                                        \
-		TESTING(fn);                                                                                                        \
-		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {                                                               \
-			const char *const result = fn(hs_ne[i].hs, strlen(hs_ne[i].hs), hs_ne[i].ne, strlen(hs_ne[i].ne));          \
-			const char *const expected = simple_fn(hs_ne[i].hs, strlen(hs_ne[i].hs), hs_ne[i].ne, strlen(hs_ne[i].ne)); \
-			ASSERT(result == expected, result, expected);                                                               \
-		}                                                                                                                   \
+#define T_STRSTR_LEN(fn, simple_fn)                                   \
+	do {                                                          \
+		TESTING(fn);                                          \
+		const char *hs, *ne, *result, *expected;              \
+		size_t hs_len, ne_len;                                \
+		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) { \
+			hs = hs_ne[i].hs;                             \
+			ne = hs_ne[i].ne;                             \
+			hs_len = strlen(hs);                          \
+			ne_len = strlen(ne);                          \
+			result = fn(hs, hs_len, ne, ne_len);          \
+			expected = simple_fn(hs, hs_len, ne, ne_len); \
+			if (jstr_unlikely(result != expected)) {      \
+				PRINTERR("hs:%s\n", hs);              \
+				PRINTERR("ne:%s\n", ne);              \
+				PRINTERR("hs_len:%zu\n", hs_len);     \
+				PRINTERR("expected:%s\n", expected);  \
+				PRINTERR("result:%s\n", result);      \
+				assert(result == expected);           \
+			}                                             \
+		}                                                     \
 	} while (0)
 
 #define T_STRNSTR(fn, simple_fn)                                            \
 	do {                                                                \
+		TESTING(fn);                                                \
 		size_t n;                                                   \
 		const char *hs, *ne, *result, *expected;                    \
 		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {       \
@@ -159,7 +173,6 @@ jstr_strrstr(const char *h, const char *n)
 			result = fn(hs, ne, n);                             \
 			expected = simple_fn(hs, ne, n);                    \
 			if (jstr_unlikely(result != expected)) {            \
-				TESTING(fn);                                \
 				PRINTERR("hs:%s\n", hs);                    \
 				PRINTERR("hsn:");                           \
 				fwrite(hs, 1, jstr_strnlen(hs, n), stderr); \
@@ -167,8 +180,8 @@ jstr_strrstr(const char *h, const char *n)
 				PRINTERR("ne:%s\n", ne);                    \
 				PRINTERR("hs_len:%zu\n", strlen(hs));       \
 				PRINTERR("n:%zu\n", n);                     \
-				PRINTERR("expected:%s\n", result);          \
-				PRINTERR("result:%s\n", expected);          \
+				PRINTERR("expected:%s\n", expected);        \
+				PRINTERR("result:%s\n", result);            \
 				assert(result == expected);                 \
 			}                                                   \
 		}                                                           \

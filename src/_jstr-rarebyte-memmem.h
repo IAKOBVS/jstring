@@ -100,7 +100,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	}
 #endif
 	const unsigned char *end = (u *)hs + hs_len - ne_len + 1;
-	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs)
+	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs) {
 #if USE_UNALIGNED
 		/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
 		if (ne_len < 8) {
@@ -114,6 +114,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 		if (!CMP_FUNC((char *)hs - idx, (char *)ne, ne_len))
 			return (PJSTR_RAREBYTE_RETTYPE)(hs - idx);
 #endif
+	}
 	return NULL;
 }
 
