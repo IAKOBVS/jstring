@@ -33,18 +33,6 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-typedef enum {
-	JSTR_RAREBYTE_NUL = 0,
-	JSTR_RAREBYTE_GENERIC,
-	JSTR_RAREBYTE_RAREALPHA,
-	JSTR_RAREBYTE_UPPER,
-	JSTR_RAREBYTE_DIGIT,
-	JSTR_RAREBYTE_NONCHARACTER,
-	JSTR_RAREBYTE_SYMBOL,
-	JSTR_RAREBYTE_EXTENDEDASCII,
-	JSTR_RAREBYTE_END
-} jstr_rarebyte_ty;
-
 /*
    Do not pass a non-unsigned char.
    Lower is rarer.
@@ -311,8 +299,8 @@ static const unsigned char jstr_rarebyte_table[256] = {
 
 /*
    Do not pass a non-unsigned char.
-   Ignore alpha chars.
    Lower is rarer.
+   Ignore alpha chars.
 */
 JSTR_MAYBE_UNUSED
 static const unsigned char jstr_rarebyte_table_case[256] = {
@@ -587,7 +575,7 @@ jstr_rarebytefind_len(const void *ne,
 	for (; n-- && (c = jstr_rarebyte_table[*p]); ++p)
 		if (c < *save)
 			save = p;
-	return *save != (unsigned char)-1 ? (char *)save : NULL;
+	return save != &i ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -602,7 +590,7 @@ jstr_rarebytefind(const char *ne)
 	for (; (c = jstr_rarebyte_table[*p]); ++p)
 		if (c < *save)
 			save = p;
-	return *save != (unsigned char)-1 ? (char *)save : NULL;
+	return save != &i ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -617,7 +605,7 @@ jstr_rarebytefindcase(const char *ne)
 	for (; (c = jstr_rarebyte_table_case[*p]); ++p)
 		if (c < *save)
 			save = p;
-	return *save != (unsigned char)-1 ? (char *)save : NULL;
+	return save != &i ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -633,7 +621,7 @@ jstr_rarebytefindcase_len(const void *ne,
 	for (; n-- && (c = jstr_rarebyte_table_case[*p]); ++p)
 		if (c < *save)
 			save = p;
-	return *save != (unsigned char)-1 ? (void *)save : NULL;
+	return save != &i ? (void *)save : NULL;
 }
 
 PJSTR_END_DECLS
