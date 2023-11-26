@@ -573,7 +573,7 @@ static const unsigned char jstr_rarebyte_table_case[256] = {
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_rarebyteget_len(const void *ne,
+jstr_rarebytefind_len(const void *ne,
                      size_t n)
 {
 	int c;
@@ -591,7 +591,7 @@ jstr_rarebyteget_len(const void *ne,
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-jstr_rarebyteget(const char *ne)
+jstr_rarebytefind(const char *ne)
 {
 	int c;
 	int state = (unsigned char)-1;
@@ -608,7 +608,7 @@ jstr_rarebyteget(const char *ne)
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-jstr_rarebytegetcase(const char *ne)
+jstr_rarebytefindcase(const char *ne)
 {
 	int c;
 	int state = (unsigned char)-1;
@@ -625,7 +625,7 @@ jstr_rarebytegetcase(const char *ne)
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_rarebytegetcase_len(const void *ne,
+jstr_rarebytefindcase_len(const void *ne,
                          size_t n)
 {
 	int c;
