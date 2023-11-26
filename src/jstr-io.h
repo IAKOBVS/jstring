@@ -748,7 +748,7 @@ struct pjstrio_ftw_data {
 };
 
 #define JSTRIO_FTW_FUNC(func_name, ftw, fn_args) \
-	int func_name(const struct JSTRIO_FTW *ftw, void *fn_arg)
+	int func_name(const struct JSTRIO_FTW *ftw, void *fn_args)
 
 #ifdef O_DIRECTORY
 #	define PJSTR_O_DIRECTORY O_DIRECTORY
