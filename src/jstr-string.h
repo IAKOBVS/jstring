@@ -848,9 +848,9 @@ JSTR_NOEXCEPT
 	return pjstr_strcasestr(hs + 1, hs_len - 1, ne, ne_len);
 #	else
 	typedef unsigned char u;
-	const u *const p = (const u *)jstr_rarebytefindcase(ne);
-	if (p)
-		return pjstr_strcasestr((const u *)hs, (const u *)ne, (const u *)p);
+	const size_t ne_len = strlen(ne + 4);
+	if (jstr_unlikely(jstr_strnlen(hs + 4, ne_len)) != ne_len)
+		return NULL;
 	return pjstr_strcasestr5plus((const u *)hs, (const u *)ne);
 #	endif
 }
@@ -1074,53 +1074,57 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	const u *p = (const u *)jstr_rarebytefindeither(ne);
 	const size_t shift = JSTR_PTR_DIFF(p, ne);
+	if (jstr_unlikely(jstr_strnlen(hs, shift) != shift))
+		return NULL;
 	if (!jstr_isalpha(*p)) {
-		if (jstr_unlikely(jstr_strnlen(hs, shift) != shift))
-			return NULL;
 		const int c = *p;
 		for (; (hs = (char *)strchr(hs, c)); ++hs)
 			if (!jstr_strcasecmpeq_loop(hs - shift, ne))
 				return (char *)hs - shift;
 		return NULL;
 	}
-	int is_alpha = jstr_isalpha(*ne);
-	hs = is_alpha ? pjstr_strcasechr_generic(hs, *ne) : strchr(hs, *ne);
+	hs = pjstr_strcasechr_generic(hs, *ne);
 	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
-	typedef unsigned char u;
+	hs -= shift;
+	if (jstr_unlikely(hs[1] == '\0'))
+		return NULL;
+	unsigned int ne_len;
 	if (ne[2] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0'))
-			return NULL;
-		if (is_alpha
+		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1]))
 			return pjstr_strcasestr2((const u *)hs, (const u *)ne);
-		is_alpha = 2;
-	} else if (ne[3] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0')
-		    || jstr_unlikely(hs[2] == '\0'))
-			return NULL;
-		if (is_alpha
+		ne_len = 2;
+		goto STRSTR;
+	}
+	if (jstr_unlikely(hs[2] == '\0'))
+		return NULL;
+	if (ne[3] == '\0') {
+		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((const u *)hs, (const u *)ne);
-		is_alpha = 3;
-	} else if (ne[4] == '\0') {
-		if (jstr_unlikely(hs[1] == '\0')
-		    || jstr_unlikely(hs[2] == '\0')
-		    || jstr_unlikely(hs[3] == '\0'))
-			return NULL;
-		if (is_alpha
+		ne_len = 3;
+		goto STRSTR;
+	}
+	if (jstr_unlikely(hs[3] == '\0'))
+		return NULL;
+	if (ne[4] == '\0') {
+		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2])
 		    | jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((const u *)hs, (const u *)ne);
-		is_alpha = 4;
-	} else {
-		return pjstr_strcasestr_bmh(hs, ne);
+		ne_len = 4;
+		goto STRSTR;
 	}
-	if (!memcmp(hs, ne, is_alpha))
+	if (jstr_unlikely(hs[4] == '\0'))
+		return NULL;
+	return pjstr_strcasestr_bmh(hs, ne);
+STRSTR:
+	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
-	if (jstr_unlikely(hs[is_alpha] == '\0'))
+	if (jstr_unlikely(hs[ne_len] == '\0'))
 		return NULL;
 	return (char *)strstr(hs + 1, ne);
 #endif
