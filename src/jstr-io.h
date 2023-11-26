@@ -38,7 +38,6 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #include "jstr-builder.h"
-#include "jstr-io-table.h"
 #include "jstr-stdstring.h"
 #include "jstr-string.h"
 
@@ -142,6 +141,22 @@ check_utf:;
 	}
 	return -1;
 }
+
+/* clang-format off */
+
+#if JSTR_OS_WINDOWS || JSTR_OS_WINDOWSCE
+#	define PJSTRIO_USE_FORM_FEED 1
+#else
+#	define PJSTRIO_USE_FORM_FEED 0
+#endif
+
+/* Do not pass a non-unsigned char. */
+JSTR_MAYBE_UNUSED
+static const unsigned char pjstrio_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,1,PJSTRIO_USE_FORM_FEED,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1};
+
+#undef PJSTRIO_USE_FORM_FEED
+
+/* clang-format on */
 
 /*
    Check if the first JSTRIO_BINARY_CHECK_MAX bytes or fewer contain any unprintable char.
