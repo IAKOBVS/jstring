@@ -1025,8 +1025,7 @@ JSTR_NOEXCEPT
 	if (hs_len < ne_len)
 		return NULL;
 	hs -= shift;
-	int is_alpha = jstr_isalpha(*ne);
-	is_alpha |= jstr_isalpha(ne[1]);
+	int is_alpha = jstr_isalpha(*ne) | jstr_isalpha(ne[1]);
 	if (ne_len == 2) {
 		if (is_alpha)
 			return pjstr_strcasestr2((const u *)hs, (const u *)ne);
@@ -1072,6 +1071,18 @@ JSTR_NOEXCEPT
 #else
 	if (jstr_unlikely(ne[0] == '\0'))
 		return (char *)hs;
+	typedef unsigned char u;
+	const u *p = (const u *)jstr_rarebytefindeither(ne);
+	const size_t shift = JSTR_PTR_DIFF(p, ne);
+	if (!jstr_isalpha(*p)) {
+		if (jstr_unlikely(jstr_strnlen(hs, shift) != shift))
+			return NULL;
+		const int c = *p;
+		for (; (hs = (char *)strchr(hs, c)); ++hs)
+			if (!jstr_strcasecmpeq_loop(hs - shift, ne))
+				return (char *)hs - shift;
+		return NULL;
+	}
 	int is_alpha = jstr_isalpha(*ne);
 	hs = is_alpha ? pjstr_strcasechr_generic(hs, *ne) : strchr(hs, *ne);
 	if (hs == NULL || ne[1] == '\0')
