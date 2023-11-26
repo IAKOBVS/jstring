@@ -340,7 +340,7 @@ jstr_stpmove(char *dst,
              const char *src)
 JSTR_NOEXCEPT
 {
-	return jstr_stpmove_len(dst, src, strlen((char *)src));
+	return jstr_stpmove_len(dst, src, strlen((const char *)src));
 }
 
 JSTR_ATTR_INLINE

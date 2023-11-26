@@ -617,23 +617,25 @@ typedef enum jstrio_ftw_flag_ty {
 #define NONFATAL_ERR() (jstr_likely(errno == EACCES) || jstr_likely(errno == ENOENT))
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-#	define FILL_PATH_ALWAYS(dirpath, dirpath_len, ep)                                           \
+#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                              \
 		do {                                                                                 \
 			pjstrio_appendpath_len(dirpath + dirpath_len, (ep)->d_name, (ep)->d_namlen); \
-			path_len = dirpath_len + 1 + (ep)->d_namlen;                                 \
+			newpath_len = dirpath_len + 1 + (ep)->d_namlen;                              \
 		} while (0)
 #else
-#	define FILL_PATH_ALWAYS(dirpath, dirpath_len, ep) \
-		((void)(path_len = pjstrio_appendpath_p(dirpath + dirpath_len, (ep)->d_name) - dirpath))
+#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep) \
+		((void)(newpath_len = pjstrio_appendpath_p(dirpath + dirpath_len, (ep)->d_name) - dirpath))
 #endif
 
 #if USE_ATFILE
-#	define STAT_ALWAYS(st, fd, ep, dirpath)                               \
+#	define STAT_ALWAYS(st, st_state, st_state, fd, ep, dirpath)           \
 		do {                                                           \
 			if (jstr_unlikely(fstatat(fd, (ep)->d_name, st, 0))) { \
 				close(fd);                                     \
-				if (NONFATAL_ERR())                            \
-					continue;                              \
+				if (NONFATAL_ERR()) {                          \
+					st_state = JSTRIO_FTW_STATE_NS;        \
+					goto do_fn;                            \
+				}                                              \
 				goto err_closedir;                             \
 			}                                                      \
 		} while (0)
@@ -644,13 +646,15 @@ typedef enum jstrio_ftw_flag_ty {
 			}                               \
 		} while (0)
 #else
-#	define STAT_ALWAYS(st, fd, ep, dirpath)                \
-		do {                                            \
-			if (jstr_unlikely(stat(dirpath, st))) { \
-				if (NONFATAL_ERR())             \
-					continue;               \
-				goto err_closedir;              \
-			}                                       \
+#	define STAT_ALWAYS(st, st_state, fd, ep, dirpath)              \
+		do {                                                    \
+			if (jstr_unlikely(stat(dirpath, st))) {         \
+				if (NONFATAL_ERR()) {                   \
+					st_state = JSTRIO_FTW_STATE_NS; \
+					goto do_fn;                     \
+				}                                       \
+				goto err_closedir;                      \
+			}                                               \
 		} while (0)
 /* clang-format off */
 #	define CLOSE_IFATFILE(fd, do_on_err) do {} while (0)
@@ -658,47 +662,42 @@ typedef enum jstrio_ftw_flag_ty {
 #endif
 
 #if JSTR_HAVE_DIRENT_D_TYPE
-#	define IS_DIR(ep, st)                      ((ep)->d_type == DT_DIR)
-#	define IS_REG(ep, st)                      ((ep)->d_type == DT_REG)
-#	define STAT_MODE(st, ep)                   ((void)((st)->st_mode = DTTOIF((ep)->d_type)))
-#	define FILL_PATH(dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(dirpath, dirpath_len, ep)
-#	define STAT(st, fd, ep, dirpath)           STAT_ALWAYS(st, fd, ep, dirpath)
-#	define STAT_OR_MODE(st, fd, ep, dirpath)          \
-		do {                                       \
-			if (jflags & JSTRIO_FTW_NOSTAT)    \
-				STAT_MODE(st, ep);         \
-			else                               \
-				STAT(st, fd, ep, dirpath); \
+#	define IS_DIR(ep, st)                                   ((ep)->d_type == DT_DIR)
+#	define IS_REG(ep, st)                                   ((ep)->d_type == DT_REG)
+#	define STAT_MODE(st, st_state, ep)                      ((void)((st)->st_mode = DTTOIF((ep)->d_type)))
+#	define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)
+#	define STAT(st, st_state, fd, ep, dirpath)              STAT_ALWAYS(st, fd, ep, dirpath)
+#	define STAT_OR_MODE(st, st_state, fd, ep, dirpath)          \
+		do {                                                 \
+			if (jflags & JSTRIO_FTW_NOSTAT)              \
+				STAT_MODE(st, st_state, ep);         \
+			else                                         \
+				STAT(st, st_state, fd, ep, dirpath); \
 		} while (0)
 #else
 #	define IS_DIR(ep, st) S_ISDIR((st)->st_mode)
 #	define IS_REG(ep, st) S_ISREG((st)->st_mode)
 #	if USE_ATFILE
-#		define FILL_PATH(dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(dirpath, dirpath_len, ep)
+#		define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)
 #	else
 /* clang-format off */
-#		define FILL_PATH(dirpath, dirpath_len, ep) do {} while (0)
+#		define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) do {} while (0)
 #	endif
-#	define STAT(st, fd, ep, dirpath) do {} while (0)
-#	define STAT_MODE(st, ep) do {} while (0)
-#	define STAT_OR_MODE(st, fd, ep, dirpath) do {} while (0)
+#	define STAT(st, st_state, fd, ep, dirpath) do {} while (0)
+#	define STAT_MODE(st, st_state, ep) do {} while (0)
+#	define STAT_OR_MODE(st, st_state, fd, ep, dirpath) do {} while (0)
 /* clang-format on */
 #endif
 
 #if USE_ATFILE
+#	define FD       fd
 #	define FD_PARAM , int fd
-#	define FD_ARG   , fd
+#	define FD_ARG   , (a)->(fd)
 #else
+#	define FD
 #	define FD_PARAM
 #	define FD_ARG
 #endif
-
-typedef int (*jstrio_ftw_func_ty)(const char *dirpath,
-                                  size_t dirpath_len,
-                                  const struct stat *st);
-
-#define JSTRIO_FTW_FUNC(func_name, dirpath, dirpath_len, st) \
-	int func_name(const char *dirpath, size_t dirpath_len, const struct stat *st)
 
 typedef enum {
 	JSTRIO_FTW_STATE_F,
@@ -716,23 +715,34 @@ typedef enum {
 } jstrio_ftw_state_ty;
 
 struct JSTRIO_FTW {
-	char *dirpath;
+	const char *dirpath;
 	size_t dirpath_len;
 	const struct stat *st;
+	int ftw_state;
 };
+
+typedef int (*jstrio_ftw_func_ty)(const struct JSTRIO_FTW *ftw, const void *arg);
+
+struct pjstrio_ftw_data {
+	char *dirpath;
+	const char *fnm_glob;
+	jstrio_ftw_func_ty fn;
+	const void *fn_arg;
+	struct JSTRIO_FTW ftw;
+	int ftw_flags;
+	int fn_flags;
+};
+
+#define JSTRIO_FTW_FUNC(func_name, dirpath, dirpath_len, st) \
+	int func_name(const char *dirpath, size_t dirpath_len, const struct stat *st)
 
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((3))
 JSTR_NONNULL((7))
 static jstr_ret_ty
-pjstrio_ftw_len(char *R dirpath,
-                size_t dirpath_len,
-                jstrio_ftw_func_ty fn,
-                int jflags,
-                const char *R fn_glob,
-                int fn_flags,
-                struct stat *R st
+pjstrio_ftw_len(struct pjstrio_ftw_data *a,
+                size_t dirpath_len
                 FD_PARAM)
 JSTR_NOEXCEPT
 {
@@ -740,18 +750,23 @@ JSTR_NOEXCEPT
 #if USE_ATFILE
 	fdopendir(fd);
 #else
-	opendir(dirpath);
+	opendir(a->dirpath);
 #endif
 	if (jstr_unlikely(dp == NULL)) {
-		if (NONFATAL_ERR())
+		if (jstr_likely(errno == EACCES)) {
+			a->ftw.dirpath = a->dirpath;
+			a->ftw.dirpath_len = dirpath_len;
+			a->ftw.ftw_state = JSTRIO_FTW_STATE_DNR;
+			a->fn(&a->ftw, a->fn_arg);
 			return JSTR_RET_SUCC;
+		}
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	size_t path_len = 0;
+	size_t newpath_len = 0;
 	const struct dirent *R ep;
 	int ret;
 	while ((ep = readdir(dp)) != NULL) {
-		if (jflags & JSTRIO_FTW_NOHIDDEN) {
+		if (a->ftw_flags & JSTRIO_FTW_NOHIDDEN) {
 			/* Ignore hidden files. */
 			if (ep->d_name[0] == '.')
 				continue;
@@ -775,44 +790,49 @@ JSTR_NOEXCEPT
 		}
 #if !JSTR_HAVE_DIRENT_D_TYPE
 #	if !USE_ATFILE
-		FILL_PATH_ALWAYS(dirpath, dirpath_len, ep);
+		FILL_PATH_ALWAYS(newpath_len, a->dirpath, dirpath_len, ep);
 #	endif
-		STAT_ALWAYS(st, fd, ep, dirpath);
+		STAT_ALWAYS((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->dirpath);
 #endif
-		if (IS_REG(ep, st))
+		if (IS_REG(ep, a->ftw.st)) {
+			a->ftw.ftw_state = JSTRIO_FTW_STATE_F;
 			goto do_reg;
-		if (IS_DIR(ep, st))
+		}
+		if (IS_DIR(ep, a->ftw.st)) {
+			a->ftw.ftw_state = JSTRIO_FTW_STATE_D;
 			goto do_dir;
+		}
 		/* If true, ignore other types of files. */
-		if (jflags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
+		if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
 			continue;
 do_reg:
-		if (jflags & JSTRIO_FTW_DIR)
-			if (!(jflags & JSTRIO_FTW_REG))
+		if (a->ftw_flags & JSTRIO_FTW_DIR)
+			if (!(a->ftw_flags & JSTRIO_FTW_REG))
 				continue;
-		if (fn_glob != NULL) {
-			if (jflags & JSTRIO_FTW_MATCHPATH) {
-				FILL_PATH(dirpath, dirpath_len, ep);
-				if (fnmatch(fn_glob, dirpath, fn_flags))
+		if (a->fnm_glob != NULL) {
+			if (a->ftw_flags & JSTRIO_FTW_MATCHPATH) {
+				FILL_PATH(newpath_len, a->dirpath, dirpath_len, ep);
+				if (fnmatch(a->fnm_glob, a->dirpath, a->fn_flags))
 					continue;
 			} else {
-				if (fnmatch(fn_glob, ep->d_name, fn_flags))
+				if (fnmatch(a->fnm_glob, ep->d_name, a->fn_flags))
 					continue;
-				FILL_PATH(dirpath, dirpath_len, ep);
+				FILL_PATH(newpath_len, a->dirpath, dirpath_len, ep);
 			}
 		} else {
-			FILL_PATH(dirpath, dirpath_len, ep);
+			FILL_PATH(newpath_len, a->dirpath, dirpath_len, ep);
 		}
-		if (jflags & JSTRIO_FTW_STATREG) {
-			if (IS_REG(ep, st))
-				STAT(st, fd, ep, dirpath);
+		if (a->ftw_flags & JSTRIO_FTW_STATREG) {
+			if (IS_REG(ep, a->ftw.st))
+				STAT(a->ftw.st, a->ftw.ftw_state, fd, ep, a->dirpath);
 			else
-				STAT_MODE(st, ep);
+				STAT_MODE(a->ftw.st, a->ftw.ftw_state, ep);
 		} else {
-			STAT_OR_MODE(st, fd, ep, dirpath);
+			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->dirpath);
 		}
-		ret = fn(dirpath, path_len, st);
-		if (jflags & JSTRIO_FTW_ACTIONRETVAL) {
+do_fn:
+		ret = a->fn(&a->ftw, a->fn_arg);
+		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (ret == JSTRIO_FTW_RET_CONTINUE
 			    || ret == JSTRIO_FTW_RET_SKIP_SUBTREE)
 				continue;
@@ -826,20 +846,20 @@ do_reg:
 		}
 		continue;
 do_dir:
-		if (jflags & JSTRIO_FTW_NOSUBDIR)
-			if (jflags & JSTRIO_FTW_REG)
-				if (!(jflags & JSTRIO_FTW_DIR))
+		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
+			if (a->ftw_flags & JSTRIO_FTW_REG)
+				if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 					continue;
-		FILL_PATH(dirpath, dirpath_len, ep);
-		if (jflags & JSTRIO_FTW_STATREG)
-			STAT_MODE(st, ep);
+		FILL_PATH(newpath_len, a->dirpath, dirpath_len, ep);
+		if (a->ftw_flags & JSTRIO_FTW_STATREG)
+			STAT_MODE(a->ftw.st, a->ftw.ftw_state, ep);
 		else
-			STAT_OR_MODE(st, fd, ep, dirpath);
-		if (jflags & JSTRIO_FTW_REG)
-			if (!(jflags & JSTRIO_FTW_DIR))
+			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->dirpath);
+		if (a->ftw_flags & JSTRIO_FTW_REG)
+			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 				goto CONT;
-		ret = fn(dirpath, dirpath_len, st);
-		if (jflags & JSTRIO_FTW_ACTIONRETVAL) {
+		ret = a->fn(&a->ftw, a->fn_arg);
+		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (ret == JSTRIO_FTW_RET_CONTINUE)
 				continue;
 			else if (ret == JSTRIO_FTW_RET_SKIP_SUBTREE
@@ -852,15 +872,15 @@ do_dir:
 				goto err_closedir;
 		}
 CONT:
-		if (jflags & JSTRIO_FTW_NOSUBDIR)
+		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
 			continue;
 #if USE_ATFILE
 		fd = openat(fd, ep->d_name, O_RDONLY);
 		if (jstr_unlikely(fd == -1))
 			continue;
 #endif
-		if (jstr_chk(pjstrio_ftw_len(dirpath, path_len, fn, jflags, fn_glob, fn_flags, st FD_ARG))) {
-			CLOSE_IFATFILE(fd, );
+		if (jstr_chk(pjstrio_ftw_len(a, newpath_len FD_ARG))) {
+			CLOSE_IFATFILE(FD, );
 			goto err_closedir;
 		}
 	}
@@ -898,9 +918,10 @@ static jstr_ret_ty
 jstrio_ftw_len(const char *R dirpath,
                size_t dirpath_len,
                jstrio_ftw_func_ty fn,
-               int jstrio_ftw_flag,
-               const char *R fn_glob,
-               int fn_flags)
+               const void *fn_arg,
+               int jstrio_ftw_flags,
+               const char *R fnm_glob,
+               int fnm_flags)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dirpath_len == 0)) {
@@ -914,7 +935,7 @@ JSTR_NOEXCEPT
 	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/'; --dirpath_len)
 		;
 	char fulpath[JSTRIO_PATH_MAX];
-	if (jstrio_ftw_flag & JSTRIO_FTW_EXPTILDE) {
+	if (jstrio_ftw_flags & JSTRIO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {
 			const char *R home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
@@ -927,51 +948,80 @@ JSTR_NOEXCEPT
 		jstr_strcpy_len(fulpath, dirpath, dirpath_len);
 	}
 #if USE_ATFILE
-	const int fd = open(fulpath, O_RDONLY);
+	int fd;
+	fd = open(fulpath, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
 #endif
 	struct stat st;
+	struct pjstrio_ftw_data data;
+	data.dirpath = fulpath;
+	data.ftw.dirpath = fulpath;
+	data.ftw.st = &st;
 	/* This will avoid things like //some/path if DIRPATH is /. */
 	if (jstr_unlikely(dirpath_len == 1)
 	    && jstr_unlikely(*dirpath == '/')) {
-		dirpath_len = 0;
+		data.ftw.dirpath_len = 0;
 		goto ftw;
 	}
+	data.ftw.dirpath_len = dirpath_len;
+	if (jstr_unlikely(
 #if USE_ATFILE
-	if (jstr_unlikely(fstat(fd, &st)))
-		goto err_close;
+	    fstat(fd, &st)
 #else
-	if (jstr_unlikely(stat(fulpath, &st)))
-		goto err;
+	    stat(fulpath, &st)
 #endif
-	if (jstr_likely(S_ISDIR(st.st_mode))) {
+	    )) {
+		data.ftw.ftw_state = JSTRIO_FTW_STATE_NS;
+		goto fn;
+	}
+	if (jstr_likely(S_ISDIR(data.ftw.st->st_mode))) {
 ftw:;
-		if (jstrio_ftw_flag & JSTRIO_FTW_REG)
-			if (!(jstrio_ftw_flag & JSTRIO_FTW_DIR))
+		if (jstrio_ftw_flags & JSTRIO_FTW_REG)
+			if (!(jstrio_ftw_flags & JSTRIO_FTW_DIR))
 				goto CONT;
 		int ret;
-		ret = fn(dirpath, dirpath_len, &st);
-		if (jstrio_ftw_flag & JSTRIO_FTW_ACTIONRETVAL) {
+		data.ftw.ftw_state = JSTRIO_FTW_STATE_D;
+		ret = fn(&data.ftw, fn_arg);
+		if (jstrio_ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (jstr_unlikely(ret != JSTRIO_FTW_RET_CONTINUE))
 				goto err_close;
 		} else {
 			if (jstr_chk(ret))
 				goto err_close;
 		}
-CONT:
-		pjstrio_ftw_len(fulpath, dirpath_len, fn, jstrio_ftw_flag, fn_glob, fn_flags, &st FD_ARG);
+CONT:;
+		data.fn = fn;
+		data.fn_arg = fn_arg;
+		data.fnm_glob = fnm_glob;
+		data.fn_flags = jstrio_ftw_flags;
+		data.ftw_flags = jstrio_ftw_flags;
+		pjstrio_ftw_len(&data, dirpath_len);
 		CLOSE_IFATFILE(fd, goto err);
 		return JSTR_RET_SUCC;
 	}
+fn:
 	CLOSE_IFATFILE(fd, goto err);
-	if (jstrio_ftw_flag & JSTRIO_FTW_REG)
-		if (jstr_unlikely(!S_ISREG(st.st_mode)))
+	if (jstrio_ftw_flags & JSTRIO_FTW_REG)
+		if (jstr_unlikely(!S_ISREG(data.ftw.st->st_mode)))
 			return JSTR_RET_SUCC;
-	if (fn_glob != NULL)
-		if (fnmatch(fn_glob, fulpath, fn_flags))
-			return JSTR_RET_SUCC;
-	return (jstr_ret_ty)fn(fulpath, dirpath_len, &st);
+	data.ftw.ftw_state = JSTRIO_FTW_STATE_F;
+	if (fnm_glob != NULL) {
+		if (jstrio_ftw_flags & JSTRIO_FTW_MATCHPATH) {
+fnmatch_path:
+			if (fnmatch(fnm_glob, fulpath, fnm_flags))
+				return JSTR_RET_SUCC;
+		} else {
+			dirpath = (char *)jstr_memrchr(fulpath, '/', dirpath_len);
+			if (dirpath && *++dirpath) {
+				if (fnmatch(fnm_glob, dirpath, fnm_flags))
+					return JSTR_RET_SUCC;
+			} else {
+				goto fnmatch_path;
+			}
+		}
+	}
+	return (jstr_ret_ty)fn(&data.ftw, fn_arg);
 err_close:
 	CLOSE_IFATFILE(fd, );
 err:
