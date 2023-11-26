@@ -742,7 +742,7 @@ struct pjstrio_ftw_data {
 	const void *fn_arg;
 	struct JSTRIO_FTW ftw;
 	int ftw_flags;
-	int fn_flags;
+	int fnm_flags;
 };
 
 #define JSTRIO_FTW_FUNC(func_name, dirpath, dirpath_len, st) \
@@ -758,7 +758,7 @@ JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((3))
 JSTR_NONNULL((7))
-static jstr_ret_ty
+static int
 pjstrio_ftw_len(struct pjstrio_ftw_data *a,
                 size_t dirpath_len
                 FD_PARAM)
@@ -830,10 +830,10 @@ do_reg:
 		if (a->fnm_glob != NULL) {
 			if (a->ftw_flags & JSTRIO_FTW_MATCHPATH) {
 				FILL_PATH(newpath_len, a->dirpath, dirpath_len, ep);
-				if (fnmatch(a->fnm_glob, a->dirpath, a->fn_flags))
+				if (fnmatch(a->fnm_glob, a->dirpath, a->fnm_flags))
 					continue;
 			} else {
-				if (fnmatch(a->fnm_glob, ep->d_name, a->fn_flags))
+				if (fnmatch(a->fnm_glob, ep->d_name, a->fnm_flags))
 					continue;
 				FILL_PATH(newpath_len, a->dirpath, dirpath_len, ep);
 			}
@@ -857,7 +857,7 @@ do_fn:
 			else if (tmp == JSTRIO_FTW_RET_SKIP_SIBLINGS)
 				break;
 			else /* RET_STOP */
-				goto err_closedir;
+				goto ret_stop;
 		} else {
 			if (jstr_chk(tmp))
 				goto err_closedir;
@@ -875,31 +875,39 @@ do_dir:
 			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->dirpath);
 		if (a->ftw_flags & JSTRIO_FTW_REG)
 			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
-				goto CONT;
+				goto skip_fn;
 		tmp = a->fn(&a->ftw, a->fn_arg);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE)
 				continue;
 			else if (tmp == JSTRIO_FTW_RET_SKIP_SUBTREE
 			         || tmp == JSTRIO_FTW_RET_SKIP_SIBLINGS)
-				goto CONT;
+				break;
 			else /* RET_STOP */
-				goto err_closedir;
+				goto ret_stop;
 		} else {
 			if (jstr_chk(tmp))
 				goto err_closedir;
 		}
-CONT:
+skip_fn:
 		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
 			continue;
 		OPENAT(tmp, fd, ep->d_name, O_RDONLY | PJSTR_O_DIRECTORY | O_NONBLOCK, continue);
 		tmp = pjstrio_ftw_len(a, newpath_len FD_ARG);
 		CLOSE(FD, );
-		if (jstr_chk(tmp))
-			goto err_closedir;
+		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
+			if (jstr_unlikely(tmp == JSTRIO_FTW_RET_STOP))
+				goto ret_stop;
+		} else {
+			if (jstr_chk(tmp))
+				goto err_closedir;
+		}
 	}
 	closedir(dp);
 	return JSTR_RET_SUCC;
+ret_stop:
+	closedir(dp);
+	return JSTRIO_FTW_RET_STOP;
 err_closedir:
 	closedir(dp);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -1008,7 +1016,7 @@ CONT:;
 		data.fn = fn;
 		data.fn_arg = fn_arg;
 		data.fnm_glob = fnm_glob;
-		data.fn_flags = jstrio_ftw_flags;
+		data.fnm_flags = jstrio_ftw_flags;
 		data.ftw_flags = jstrio_ftw_flags;
 		pjstrio_ftw_len(&data, dirpath_len);
 		CLOSE(fd, goto err);
