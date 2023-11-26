@@ -21,8 +21,8 @@
 
    MIT License (Expat) */
 
-#ifndef JSTR_PP_ARRCPY_VA_ARGS_H
-#define JSTR_PP_ARRCPY_VA_ARGS_H 1
+#ifndef PJSTR_PP_ARRCPY_VA_ARGS_H
+#define PJSTR_PP_ARRCPY_VA_ARGS_H 1
 
 #include "_jstr-macros-pp-va-args-tools.h"
 
@@ -8540,4 +8540,4 @@
 #define PJSTR_PP_ARRCPY_VA_ARGS_HELPER(DEST, NUM_ARGS, ...) PJSTR_PP_CONCAT(PJSTR_PP_ARRCPY_VA_ARGS_, NUM_ARGS, DEST, __VA_ARGS__)
 #define PJSTR_PP_ARRCPY_VA_ARGS(DEST, ...)                  PJSTR_PP_ARRCPY_VA_ARGS_HELPER(DEST, PJSTR_PP_NARG(__VA_ARGS__), __VA_ARGS__)
 
-#endif /* JSTR_PP_ARRCPY_VA_ARGS_H */
+#endif /* PJSTR_PP_ARRCPY_VA_ARGS_H */
