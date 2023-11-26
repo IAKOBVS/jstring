@@ -642,7 +642,7 @@ PJSTR_END_DECLS
 
 #if JSTR_ENV_BSD
 PJSTR_BEGIN_DECLS
-#	include <sys/endian.h>
+#	include <sys/types.h>
 PJSTR_END_DECLS
 #elif (JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) \
 || defined _DEFAULT_SOURCE
