@@ -572,9 +572,11 @@ jstr_rarebytefind_len(const void *ne,
 	const unsigned char *save = &i;
 	const unsigned char *p = (const unsigned char *)ne;
 	int c;
-	for (; n-- && (c = jstr_rarebyte_table[*p]); ++p)
+	for (; n--; ++p) {
+		c = jstr_rarebyte_table[*p];
 		if (c < *save)
 			save = p;
+	}
 	return save != &i ? (char *)save : NULL;
 }
 
@@ -618,10 +620,51 @@ jstr_rarebytefindcase_len(const void *ne,
 	const unsigned char *save = &i;
 	const unsigned char *p = (const unsigned char *)ne;
 	int c;
-	for (; n-- && (c = jstr_rarebyte_table_case[*p]); ++p)
+	for (; n--; ++p) {
+		c = jstr_rarebyte_table_case[*p];
 		if (c < *save)
 			save = p;
+	}
 	return save != &i ? (void *)save : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+jstr_rarebytefindeither(const void *ne)
+{
+	const unsigned char i = (unsigned char)-1;
+	const unsigned char *save = &i;
+	const unsigned char *save_backup = (const unsigned char *)ne;
+	const unsigned char *p = (const unsigned char *)ne;
+	int c;
+	for (; (c = jstr_rarebyte_table_case[*p]); ++p)
+		if (c < *save)
+			save = p;
+		else
+			save_backup = p;
+	return (void *)(save != &i ? save : save_backup);
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+jstr_rarebytefindeither_len(const void *ne,
+                            size_t n)
+{
+	const unsigned char i = (unsigned char)-1;
+	const unsigned char *save = &i;
+	const unsigned char *save_backup = (const unsigned char *)ne;
+	const unsigned char *p = (const unsigned char *)ne;
+	int c;
+	for (; n--; ++p) {
+		c = jstr_rarebyte_table_case[*p];
+		if (c < *save)
+			save = p;
+		else
+			save_backup = p;
+	}
+	return (void *)(save != &i ? save : save_backup);
 }
 
 PJSTR_END_DECLS
