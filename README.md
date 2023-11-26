@@ -28,6 +28,9 @@ or
 
 Some headers may need to be explicitly included because they rely on POSIX.
 
+## Examples:
+https://github.com/IAKOBVS/rarebyte
+
 ## Disclaimer:
 Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 or
 use ./remove-lgpl after ./build to exclude the LGPL code. jstr\_ty, jstrl\_ty, and
