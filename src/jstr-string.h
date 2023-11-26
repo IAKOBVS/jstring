@@ -791,6 +791,7 @@ JSTR_NOEXCEPT
 #	endif
 
 #	if !JSTR_USE_LGPL
+
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr(const unsigned char *hs,
@@ -798,11 +799,12 @@ pjstr_strcasestr(const unsigned char *hs,
                  const unsigned char *const rarebyte)
 {
 	typedef unsigned char u;
+	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
+	if (jstr_unlikely(jstr_strnlen(hs, idx) != idx))
+		return NULL;
 	const unsigned char *hp, *np;
 	const int c = *(u *)rarebyte;
-	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
-	hs += idx;
-	for (; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
+	for (hs += idx; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
 		for (hp = hs - idx, np = ne;
 		     L(*hp) == L(*np) && *hp;
 		     ++hp, ++np)
@@ -814,6 +816,7 @@ pjstr_strcasestr(const unsigned char *hs,
 	}
 	return NULL;
 }
+
 #	endif
 
 #	undef L
