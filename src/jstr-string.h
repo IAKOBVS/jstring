@@ -548,7 +548,7 @@ JSTR_NOEXCEPT
 	hs = (void *)memchr(hs, *(const u *)ne, hs_len);
 	if (hs == NULL || ne_len == 1)
 		return (void *)hs;
-	hs_len -= hs - start;
+	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (hs_len < ne_len)
 		return NULL;
 #	endif
