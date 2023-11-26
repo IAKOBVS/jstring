@@ -549,7 +549,7 @@ JSTR_NOEXCEPT
 	hs = (void *)memchr(hs, *p, hs_len);
 	if (hs == NULL || ne_len == 1)
 		return (void *)hs;
-	hs_len += shift;
+	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	if (hs_len < ne_len)
 		return NULL;
 	hs -= shift;
@@ -996,22 +996,19 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr_len(hs, hs_len, ne, ne_len);
 #	endif
 	}
-	int is_alpha = jstr_isalpha(*ne);
+	const u *const p = (const u *)jstr_rarebytefindeither_len(ne, ne_len);
+	const size_t shift = JSTR_PTR_DIFF(p, ne);
+	hs += shift;
+	hs_len -= shift;
 	const char *const start = hs;
-	hs = is_alpha ? pjstr_strcasechr_len(hs, *ne, ne_len) : (char *)memchr(hs, *ne, hs_len);
+	hs = jstr_isalpha(*p) ? pjstr_strcasechr_len(hs, *p, hs_len) : (char *)memchr(hs, *p, hs_len);
 	if (hs == NULL || ne_len == 1)
 		return (char *)hs;
-	hs_len -= hs - start;
+	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	if (hs_len < ne_len)
 		return NULL;
-#	if !JSTR_USE_LGPL
-	if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
-		return (char *)hs;
-	if (hs_len == ne_len)
-		return NULL;
-	if (ne_len > 4)
-		return pjstr_strcasestr5plus_len((const u *)hs, (const u *)ne, ne_len);
-#	endif
+	hs += shift;
+	int is_alpha = jstr_isalpha(*ne);
 	is_alpha |= jstr_isalpha(ne[1]);
 	if (ne_len == 2) {
 		if (is_alpha)
