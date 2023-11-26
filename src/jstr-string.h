@@ -396,31 +396,28 @@ pjstr_strnstrcmpeq(const unsigned char *hs,
 	return 1;
 }
 
-JSTR_ATTR_ACCESS((__read_only__, 2, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strnstr5plus(const unsigned char *hs,
-                   const unsigned char *const ne,
-                   size_t n,
-                   size_t ne_len)
+pjstr_strnstr(const unsigned char *hs,
+              const unsigned char *const ne,
+              size_t n)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
 	const unsigned char *const nelast = ne + 4;
-	const size_t nelast_len = ne_len - 4;
 	int ret;
 	for (hs += 3, n -= 3; n-- && *hs; hw = hw << 8 | *++hs)
 		if (hw == nw) {
-			ret = pjstr_strnstrcmpeq(hs - 3 + 4, nelast, nelast_len);
+			ret = pjstr_strnstrcmpeq(hs - 3 + 4, nelast, n);
 			if (ret == 0)
 				goto ret;
 			if (jstr_unlikely(ret == -1))
 				return NULL;
 		}
 	if (*hs && hw == nw)
-		if (!pjstr_strnstrcmpeq(hs - 3 + 4, nelast, nelast_len))
+		if (!pjstr_strnstrcmpeq(hs - 3 + 4, nelast, n))
 			goto ret;
 	return NULL;
 ret:
@@ -544,13 +541,18 @@ JSTR_NOEXCEPT
 		return (void *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	const unsigned char *const p = (const u *)jstr_rarebytefind_len(ne, ne_len);
+	const size_t shift = JSTR_PTR_DIFF(p, ne);
+	hs += shift;
+	hs_len -= shift;
 	const void *const start = (const void *)hs;
-	hs = (void *)memchr(hs, *(const u *)ne, hs_len);
+	hs = (void *)memchr(hs, *p, hs_len);
 	if (hs == NULL || ne_len == 1)
 		return (void *)hs;
-	hs_len -= JSTR_PTR_DIFF(hs, start);
+	hs_len += shift;
 	if (hs_len < ne_len)
 		return NULL;
+	hs -= shift;
 #	endif
 	if (ne_len == 2)
 		return pjstr_memmem2((const u *)hs, (const u *)ne, hs_len);
@@ -561,7 +563,7 @@ JSTR_NOEXCEPT
 #	if JSTR_USE_LGPL
 	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
 #	else
-	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)jstr_rarebytefind_len(ne, ne_len));
+	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, p);
 #	endif
 #endif
 }
@@ -581,45 +583,6 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#if !JSTR_USE_LGPL
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strnstr(const unsigned char *hs,
-              const unsigned char *ne,
-              const unsigned char *const rarebyte,
-              size_t n)
-{
-	typedef unsigned char u;
-	if (jstr_unlikely(n < strlen((const char *)rarebyte) + (size_t)(rarebyte - ne)))
-		return NULL;
-	const unsigned char *hp, *np;
-	const unsigned char *const end = hs + n;
-	const int c = *(u *)rarebyte;
-	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
-	hs += idx;
-	for (; (hs = (const u *)jstr_strnchr((char *)hs, c, end - hs)); ++hs) {
-		for (hp = hs - idx, np = ne;
-		     *hp == *np;
-		     ++hp, ++np) {
-			if (*np == '\0' || hp <= end)
-				return (char *)hs - idx;
-			if (jstr_unlikely(*hp == '\0'))
-				return NULL;
-		}
-	}
-	return NULL;
-}
-
-#else
-
-#	define PJSTR_MEMMEM_FUNC    pjstr_strnstr
-#	define PJSTR_MEMMEM_RETTYPE char *
-#	include "_lgpl-memmem.h"
-
-#endif
-
 JSTR_FUNC_PURE
 static char *
 jstr_strnstr(const char *hs,
@@ -627,7 +590,29 @@ jstr_strnstr(const char *hs,
              size_t n)
 JSTR_NOEXCEPT
 {
-	return (char *)jstr_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
+	typedef const unsigned char cu;
+	if (jstr_unlikely(*ne == '\0'))
+		return (char *)hs;
+	const char *const start = hs;
+	hs = jstr_strnchr(hs, *ne, n);
+	if (hs == NULL || ne[1] == '\0')
+		return (char *)hs;
+	n -= hs - start;
+	if (jstr_unlikely(hs[1] == '\0'))
+		return NULL;
+	if (ne[2] == '\0')
+		return pjstr_strnstr2((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[2] == '\0'))
+		return NULL;
+	if (ne[3] == '\0')
+		return pjstr_strnstr3((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[3] == '\0'))
+		return NULL;
+	if (ne[4] == '\0')
+		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[4] == '\0'))
+		return NULL;
+	return pjstr_strnstr((cu *)hs, (cu *)ne, n);
 }
 
 /*
