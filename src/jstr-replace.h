@@ -864,7 +864,7 @@ JSTR_NOEXCEPT
 		return JSTR_RET_SUCC;
 	const char *p = dst;
 	const char *oldp = p;
-	while (n-- && (p = jstr_strstr_len(p, (*s + *sz) - (char *)p, find, find_len))) {
+	while (n-- && (p = jstr_strstr_len(p, (*s + *sz) - p, find, find_len))) {
 		if (rplc_len <= find_len) {
 			pjstr_rplcallinplace(&dst, &oldp, &p, rplc, rplc_len, find_len);
 		} else {
