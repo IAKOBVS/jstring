@@ -639,10 +639,12 @@ jstr_rarebytefindeither(const void *ne)
 	const unsigned char *p = (const unsigned char *)ne;
 	int c;
 	for (; (c = jstr_rarebyte_table_case[*p]); ++p)
-		if (c < *save)
-			save = p;
-		else
-			save_backup = p;
+		if (c < *save) {
+			if (jstr_ctype_table[c] & JSTR_ISALPHA)
+				save_backup = p;
+			else
+				save = p;
+		}
 	return (void *)(save != &i ? save : save_backup);
 }
 
@@ -659,10 +661,12 @@ jstr_rarebytefindeither_len(const void *ne,
 	int c;
 	for (; n--; ++p) {
 		c = jstr_rarebyte_table_case[*p];
-		if (c < *save)
-			save = p;
-		else
-			save_backup = p;
+		if (c < *save) {
+			if (jstr_ctype_table[c] & JSTR_ISALPHA)
+				save_backup = p;
+			else
+				save = p;
+		}
 	}
 	return (void *)(save != &i ? save : save_backup);
 }
