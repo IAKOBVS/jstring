@@ -22,6 +22,10 @@
 #include "jstr-macros.h"
 #include "jstr-word-at-a-time.h"
 
+PJSTR_BEGIN_DECLS
+#include <stddef.h>
+PJSTR_END_DECLS
+
 #ifndef JSTR_LGPL_IMPL
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
@@ -37,7 +41,7 @@ JSTR_NOEXCEPT
 	char *ret;
 	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((const char *)s + sz, sizeof(jstr_word_ty));
 	const uintptr_t s_int = (uintptr_t)s + sz;
-	jstr_word_ty word = jstr_word_toword(--word_ptr);
+	jstr_word_ty word = *--word_ptr;
 	const jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
 	const jstr_word_ty *const sword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
 	const jstr_word_ty mask = jstr_word_shift_find_last(jstr_word_find_eq_all(word, repeated_c), s_int);
@@ -47,8 +51,8 @@ JSTR_NOEXCEPT
 	}
 	if (word_ptr == sword)
 		return NULL;
-	word = jstr_word_toword(--word_ptr);
-	for (; word_ptr != sword; word = jstr_word_toword(--word_ptr))
+	word = *--word_ptr;
+	for (; word_ptr != sword; word = *--word_ptr)
 		if (jstr_word_has_eq(word, repeated_c))
 			return (char *)word_ptr + jstr_word_index_last_eq(word, repeated_c);
 	if (jstr_word_has_eq(word, repeated_c)) {

@@ -32,12 +32,12 @@ JSTR_NOEXCEPT
 	const uintptr_t s_int = (uintptr_t)s;
 	const jstr_word_ty *word_ptr = (const jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
 	const jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	jstr_word_ty word = jstr_word_toword(word_ptr);
+	jstr_word_ty word = *word_ptr;
 	const jstr_word_ty mask = jstr_word_shift_find(jstr_word_find_zero_eq_all(word, repeated_c), s_int);
 	if (mask != 0)
 		return (char *)s + jstr_word_index_first(mask);
 	do
-		word = jstr_word_toword(++word_ptr);
+		word = *++word_ptr;
 	while (!jstr_word_has_zero_eq(word, repeated_c));
 	return (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
 #ifndef JSTR_LGPL_IMPL

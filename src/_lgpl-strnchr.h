@@ -21,6 +21,10 @@
 #include "jstr-macros.h"
 #include "jstr-word-at-a-time.h"
 
+PJSTR_BEGIN_DECLS
+#include <stddef.h>
+PJSTR_END_DECLS
+
 #define PJSTR_SADD(x, y) (const char *)((uintptr_t)(y) > UINTPTR_MAX - (uintptr_t)(x) ? UINTPTR_MAX : (uintptr_t)(x) + (uintptr_t)(y))
 
 #ifndef JSTR_LGPL_IMPL
@@ -37,7 +41,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
 	const uintptr_t s_int = (uintptr_t)s;
-	jstr_word_ty word = jstr_word_toword(word_ptr);
+	jstr_word_ty word = *word_ptr;
 	jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
 	const char *const lbyte = PJSTR_SADD(s_int, n - 1);
 	const jstr_word_ty *const lword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(lbyte, sizeof(jstr_word_ty));
@@ -49,8 +53,8 @@ JSTR_NOEXCEPT
 	}
 	if (word_ptr == lword)
 		return NULL;
-	word = jstr_word_toword(++word_ptr);
-	for (; word_ptr != lword; word = jstr_word_toword(++word_ptr)) {
+	word = *++word_ptr;
+	for (; word_ptr != lword; word = *++word_ptr) {
 		if (jstr_word_has_zero_eq(word, repeated_c)) {
 			ret = (char *)word_ptr + jstr_word_index_first_zero_eq(word, repeated_c);
 			return *ret ? ret : NULL;

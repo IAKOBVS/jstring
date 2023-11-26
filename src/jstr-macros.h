@@ -877,7 +877,7 @@ enum {
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1
 #endif
 
-#if JSTR_USE_LGPL
+#if JSTR_USE_LGPL && JSTR_HAVE_ATTR_MAY_ALIAS
 
 /* Check builtins. */
 #	if JSTR_ARCH_ALPHA
