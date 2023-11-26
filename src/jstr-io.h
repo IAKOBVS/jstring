@@ -933,6 +933,7 @@ err_closedir:
    Return value:
    JSTR_RET_ERR on error;
    JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;
+   JSTR_RET_STOP if FN() returns RET_STOP and JSTRIO_FTW_ACTIONRETVAL is used.
    or the return value of FN() if DIRPATH is not a directory and FN() is executed.
    If a non-fatal error is encountered, continue processing other entries.
 */
