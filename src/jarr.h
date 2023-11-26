@@ -31,7 +31,7 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "_jstr-macros-pp-arrcpy-va-args.h"
+#include "_jstr-macros-pp-arrcp-va-args.h"
 #include "jstr-builder.h"
 #include "jstr-config.h"
 #include "jstr-macros.h"
@@ -92,22 +92,22 @@ PJSTR_END_DECLS
 		JSTR_STATIC_ASSERT_IS_SIZE(PJARR_SZ(j));  \
 		JSTR_STATIC_ASSERT_IS_SIZE(PJARR_CAP(j)); \
 	} while (0)
-#define PJARR_GROW(old_cap, new_cap)                                             \
-	do {                                                                     \
-		JSTR_STATIC_ASSERT_IS_SIZE(old_cap);                             \
-		JSTR_STATIC_ASSERT_IS_SIZE(new_cap);                             \
-		if (jstr_unlikely(old_cap == 0))                                 \
-			old_cap = JSTR_MIN_CAP / JARR_ALLOC_MULTIPLIER;        \
-		do                                                               \
-			(old_cap) *= JARR_GROWTH;                               \
-		while ((old_cap) < (new_cap));                                   \
+#define PJARR_GROW(old_cap, new_cap)                                       \
+	do {                                                               \
+		JSTR_STATIC_ASSERT_IS_SIZE(old_cap);                       \
+		JSTR_STATIC_ASSERT_IS_SIZE(new_cap);                       \
+		if (jstr_unlikely(old_cap == 0))                           \
+			old_cap = JSTR_MIN_CAP / JARR_ALLOC_MULTIPLIER;    \
+		do                                                         \
+			(old_cap) *= JARR_GROWTH;                          \
+		while ((old_cap) < (new_cap));                             \
 		(old_cap) = JSTR_ALIGN_UP(old_cap, JSTR_MALLOC_ALIGNMENT); \
 	} while (0)
 #define jarr_reserve(j, new_cap)                                                                                   \
 	do {                                                                                                       \
 		PJARR_CHECK_ARG(j);                                                                                \
 		if (jstr_unlikely(PJARR_CAP(j) == 0))                                                              \
-			PJARR_CAP(j) = JSTR_MIN_CAP / PJARR_ELEMSZ(j);                                            \
+			PJARR_CAP(j) = JSTR_MIN_CAP / PJARR_ELEMSZ(j);                                             \
 		PJARR_GROW(PJARR_CAP(j), new_cap);                                                                 \
 		PJARR_CAP(j) = PJARR_ALIGN_UP(j, PJARR_CAP(j) * PJARR_ELEMSZ(j));                                  \
 		PJARR_DATA(j) = PJSTR_CAST(PJARR_DATA(j), realloc(PJARR_DATA(j), PJARR_CAP(j) * PJARR_ELEMSZ(j))); \
@@ -127,9 +127,9 @@ PJSTR_END_DECLS
 #if JSTR_HAVE_GENERIC && JSTR_HAVE_TYPEOF
 #	define PJARR_CHECK_VAL(j, value) JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(value, *PJARR_DATA(j)), "Passing illegal value incompatible with the array type.")
 #else
-#	define PJARR_CHECK_VAL(j, value) \
-		do {                      \
-		} while (0)
+/* clang-format off */
+#	define PJARR_CHECK_VAL(j, value) do {} while (0)
+/* clang-format on */
 #endif
 
 #define PJARR_NULLIFY_MEMBERS(j)  \
@@ -195,17 +195,17 @@ PJSTR_END_DECLS
 		*(PJARR_DATA(j) + --PJARR_SZ(j)) = '\0'; \
 	} while (0)
 /* Push VAL to back of PTR. */
-#define jarr_pushback(j, value)                                            \
-	do {                                                               \
-		PJARR_CHECK_ARG(j);                                        \
-		PJARR_CHECK_VAL(j, value);                                 \
-		if (jstr_unlikely(PJARR_CAP(j) < PJARR_SZ(j) + 1)) {       \
-			if (jstr_unlikely(PJARR_CAP(j) == 0))              \
-				PJARR_CAP(j) = PJARR_MIN_CAP(j);           \
+#define jarr_pushback(j, value)                                           \
+	do {                                                              \
+		PJARR_CHECK_ARG(j);                                       \
+		PJARR_CHECK_VAL(j, value);                                \
+		if (jstr_unlikely(PJARR_CAP(j) < PJARR_SZ(j) + 1)) {      \
+			if (jstr_unlikely(PJARR_CAP(j) == 0))             \
+				PJARR_CAP(j) = PJARR_MIN_CAP(j);          \
 			jarr_reserveexact(j, PJARR_CAP(j) * JARR_GROWTH); \
-			PJARR_MALLOC_ERR(j, break)                         \
-		}                                                          \
-		*(PJARR_DATA(j) + PJARR_SZ(j)++) = (value);                \
+			PJARR_MALLOC_ERR(j, break)                        \
+		}                                                         \
+		*(PJARR_DATA(j) + PJARR_SZ(j)++) = (value);               \
 	} while (0)
 /* Push VAL to front of P. */
 #define jarr_pushfront(j, value)                                                   \
@@ -215,7 +215,7 @@ PJSTR_END_DECLS
 		if (jstr_unlikely(PJARR_CAP(j) < PJARR_SZ(j) + 1)) {               \
 			if (jstr_unlikely(PJARR_CAP(j) == 0))                      \
 				PJARR_CAP(j) = PJARR_MIN_CAP(j);                   \
-			jarr_reserveexact(j, PJARR_CAP(j) * JARR_GROWTH);         \
+			jarr_reserveexact(j, PJARR_CAP(j) * JARR_GROWTH);          \
 			PJARR_MALLOC_ERR(j, break)                                 \
 		}                                                                  \
 		PJARR_MEMMOVE(j, PJARR_DATA(j) + 1, PJARR_DATA(j), PJARR_SZ(j)++); \
