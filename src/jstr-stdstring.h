@@ -247,9 +247,12 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_WORD_AT_A_TIME && 0 /* Broken? */
 #	include "_lgpl-strnchr.h"
 #else
-	for (; n-- && *s; ++s)
+	for (; n--; ++s) {
 		if (*s == (char)c)
 			return (char *)s;
+		if (jstr_unlikely(*s == '\0'))
+			break;
+	}
 	return NULL;
 #endif
 }
