@@ -893,10 +893,10 @@ CONT:
 		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
 			continue;
 		OPENAT(tmp, fd, ep->d_name, O_RDONLY | PJSTR_O_DIRECTORY | O_NONBLOCK, continue);
-		if (jstr_chk(pjstrio_ftw_len(a, newpath_len FD_ARG))) {
-			CLOSE(FD, );
+		tmp = pjstrio_ftw_len(a, newpath_len FD_ARG);
+		CLOSE(FD, );
+		if (jstr_chk(tmp))
 			goto err_closedir;
-		}
 	}
 	closedir(dp);
 	return JSTR_RET_SUCC;
