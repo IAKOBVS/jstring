@@ -26,11 +26,10 @@
 
 #include "_jstr-macros-features.h"
 #include "jstr-config.h"
+#include "jstr-macros-arch.h"
+#include "jstr-macros-os.h"
 #include "jstr-ptr-arith.h"
 #include <assert.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #if JSTR_DEBUG
 #	undef JSTR_PANIC
@@ -39,7 +38,7 @@
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_SIZE(array)    (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -79,15 +78,9 @@ PJSTR_END_DECLS
 #endif
 
 #ifdef static_assert
-PJSTR_BEGIN_DECLS
-#	include <assert.h>
-PJSTR_END_DECLS
 #	define JSTR_HAVE_STATIC_ASSERT       1
 #	define JSTR_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
 #elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
-PJSTR_BEGIN_DECLS
-#	include <assert.h>
-PJSTR_END_DECLS
 #	define JSTR_HAVE_STATIC_ASSERT       1
 #	define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
@@ -891,256 +884,6 @@ case '~':
 #if JSTR_USE_XOPEN2K8
 #	define JSTR_HAVE_FDOPENDIR 1
 #endif
-
-#if defined __linux__ || defined linux || defined __linux
-#	define JSTR_OS_LINUX 1
-#	if defined __gnu_linux__
-#		define JSTR_OS_GNULINUX 1
-#	elif defined __ANDROID__
-#		define JSTR_OS_ANDROID 1
-#	endif
-#elif defined __FreeBSD__
-#	define JSTR_OS_FREEBSD 1
-#elif defined __NetBSD__
-#	define JSTR_OS_NETBSD 1
-#elif defined __OpenBSD__
-#	define JSTR_OS_OPENBSD 1
-#elif defined __bsdi__
-#	define JSTR_OS_BSDI 1
-#elif defined __DragonFly__
-#	define JSTR_OS_DRAGONFLYBSD 1
-#elif defined _AIX || defined __TOS_AIX__
-#	define JSTR_OS_AIX 1
-#elif defined UTS
-#	define JSTR_OS_UTS 1
-#elif defined AMIGA || defined __amigaos__
-#	define JSTR_OS_AMIGA 1
-#elif defined aegis
-#	define JSTR_OS_APOLLOAEGIS 1
-#elif defined apollo
-#	define JSTR_OS_APOLLODOMAIN 1
-#elif defined __BEOS__
-#	define JSTR_OS_BE 1
-#elif defined __bg__ || defined __THW_BLUEGEN__
-#	define JSTR_OS_BLUEGENE 1
-#elif defined __convex__
-#	define JSTR_OS_CONVEX 1
-#elif defined DGUX || defined __DGUX__ || defined __dgux__
-#	define JSTR_OS_DGUX 1
-#elif defined _SEQUENT_ || defined sequent
-#	define JSTR_OS_DYNIXPTX 1
-#elif defined __EMX__
-#	define JSTR_OS_EMX 1
-#elif defined __GNU__ || defined __gnu_hurd__
-#	define JSTR_OS_GNUHURD 1
-#elif defined __FreeBSD_kernel__ && defined __GLIBC__
-#	define JSTR_OS_GNUKFREEBSD 1
-#elif defined __hiuxmpp
-#	define JSTR_OS_HIUXMPP 1
-#elif defined _hpux || defined hpux || defined __hpux
-#	define JSTR_OS_HPUX 1
-#elif defined __OS400__
-#	define JSTR_OS_IBMOS400 1
-#elif defined sgi || defined __sgi
-#	define JSTR_OS_IRIX 1
-#elif defined __Lynx__
-#	define JSTR_OS_LYNX 1
-#elif defined macintosh || defined Macintosh || (defined __APPLE__ && defined __MACH__)
-#	define JSTR_OS_MAC 1
-#elif defined __minix
-#	define JSTR_OS_MINIX 1
-#elif defined __MORPHOS__
-#	define JSTR_OS_MORPH 1
-#elif defined mpeix || defined __mpexl
-#	define JSTR_OS_MPEIX 1
-#elif defined MSDOS || defined __MSDOS__ || defined _MSDOS || defined __DOS__
-#	define JSTR_OS_MSDOS 1
-#elif defined __TANDEM
-#	define JSTR_OS_NONSTOP 1
-#elif defined OS2 || defined _OS2 || defined __OS2__ || defined __TOS_OS2__
-#	define JSTR_OS_OS2 1
-#elif defined __palmos__
-#	define JSTR_OS_PALM 1
-#elif defined EPLAN9
-#	define JSTR_OS_PLAN9 1
-#elif defined pyr
-#	define JSTR_OS_PYRAMIDDCOSX 1
-#elif defined __QNX__ || defined __QNXNTO__
-#	define JSTR_OS_QNSX 1
-#elif defined sinux
-#	define JSTR_OS_RELIANTUNIX 1
-#elif defined M_I386 || defined M_XENIX || defined _SCO_DS
-#	define JSTR_OS_SCOOPENSERVER 1
-#elif defined sun || defined __sun
-#	if defined __SVR4 || defined __svr4__
-#		define JSTR_OS_SOLARIS 1
-#	else
-#		define JSTR_OS_SUNOS 1
-#	endif
-#elif defined __VOS__
-#	define JSTR_OS_STRATUSVOX 1
-#elif defined __SYLLABLE__
-#	define JSTR_OS_SYLLABLE 1
-#elif defined __SYMBIAN32__
-#	define JSTR_OS_SYMBIAN 1
-#elif defined __osf__ || defined __osf
-#	define JSTR_OS_TRU64OSF1 1
-#elif defined ultrix || defined __ultrix || defined __ultrix__ || (defined unix && defined vax)
-#	define JSTR_OS_ULTRIX 1
-#elif defined _UNICOS
-#	define JSTR_OS_UNIC 1
-#elif defined sco || defined _UNIXWARE7
-#	define JSTR_OS_UNIXWARE 1
-#elif defined VMS || defined __VMS
-#	define JSTR_OS_VMS 1
-#elif defined __VXWORKS__ || defined __vxworks
-#	define JSTR_OS_VXWORKS 1
-#elif defined _WIN16 || defined _WIN32 || defined _WIN64 || defined __WIN32__ || defined __TOS_WIN__ || defined __WINDOWS__
-#	define JSTR_OS_WINDOWS 1
-#elif defined _WIN32_WCE
-#	define JSTR_OS_WINDOWSCE 1
-#elif defined _WINDU_SOURCE
-#	define JSTR_OS_WINDU 1
-#elif defined __MVS__ || defined __HOS_MVS__ || defined __TOS_MVS__
-#	define JSTR_OS_Z 1
-#else
-#	define JSTR_OS_GENERIC 1
-#endif /* os */
-
-#if defined __unix__ || defined __unix
-#	define JSTR_ENV_UNIX 1
-#endif
-#if defined __FreeBSD__ || defined __NetBSD__ || defined __OpenBSD__ || defined __bsdi__ || defined __DragonFly__ || defined _SYSTYPE_BSD
-#	define JSTR_ENV_BSD 1
-#endif
-#ifdef __CYGWIN__
-#	define JSTR_ENV_CYGWIN 1
-#endif
-#ifdef __INTERIX
-#	define JSTR_ENV_INTERIX 1
-#endif
-#if defined __sysv__ || defined __SVR4 || defined __svr4__ || defined _SYSTYPE_SRV4
-#	define JSTR_ENV_SVR4 1
-#endif
-#if defined _UWIN
-#	define JSTR_ENV_UWIN 1
-#endif /* env */
-
-#if (defined __x86_64 || defined __x86_64__) && (defined _ILP32 || defined __ILP32__)
-#	define JSTR_ARCH_X86_32 1
-#elif defined __amd64__ || defined __amd64 \
-|| defined _M_AMD64 || defined __x86_64__  \
-|| defined __x86_64 || defined _M_X64      \
-|| defined _M_X64
-#	define JSTR_ARCH_X86_64 1
-#elif defined __aarch64__ || defined _M_ARM64
-#	define JSTR_ARCH_ARM64 1
-#elif defined __arm__ || defined __arm \
-|| defined __thumb__ || defined _ARM   \
-|| defined _M_ARM || defined _M_ARM_T
-#	define JSTR_ARCH_ARM 1
-#	if defined __ARM_ARCH_2__
-#		define JSTR_ARCH_ARM2 1
-#	elif defined __ARM_ARCH_3__ || defined __ARM_ARCH_3M__
-#		define JSTR_ARCH_ARM3 1
-#	elif defined __ARM_ARCH_4T__ || defined __TARGET_ARM_4T
-#		define JSTR_ARCH_ARM4T 1
-#	elif defined __ARM_ARCH_5__ || defined __ARM_ARCH_5E__ \
-	|| defined __ARM_ARCH_5T__ || defined __ARM_ARCH_5TE__  \
-	|| defined __ARM_ARCH_5TEJ__
-#		define JSTR_ARCH_ARM5 1
-#	elif defined __ARM_ARCH_6T2__
-#		define JSTR_ARCH_ARM6T2 1
-#	elif defined __ARM_ARCH_6__ || defined __ARM_ARCH_6J__ \
-	|| defined __ARM_ARCH_6Z__ || defined __ARM_ARCH_6ZK__  \
-	|| defined __ARM_ARCH_6K__
-#		define JSTR_ARCH_ARM6 1
-#	elif defined __ARM_ARCH_7__ || defined __ARM_ARCH_7A__ \
-	|| defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__   \
-	|| defined __ARM_ARCH_7EM__ || defined __ARM_ARCH_7S__
-#		define JSTR_ARCH_ARM7 1
-#	endif
-#elif defined mips || defined __mips__ \
-|| defined __mips || defined __MIPS__
-#	define JSTR_ARCH_MIPS 1
-#elif defined __sh__
-#	define JSTR_ARCH_SH 1
-#	if defined __sh1__
-#		define JSTR_ARCH_SH1 1
-#	elif defined __sh2__
-#		define JSTR_ARCH_SH2 1
-#	elif defined __sh3__
-#		define JSTR_ARCH_SH3 1
-#	elif defined __sh4__
-#		define JSTR_ARCH_SH4 1
-#	elif defined __sh5__
-#		define JSTR_ARCH_SH5 1
-#	endif
-#elif defined __powerpc || defined __powerpc__ \
-|| defined __POWERPC__ || defined __ppc__      \
-|| defined __PPC__ || defined _ARCH_PPC
-#	define JSTR_ARCH_POWERPC 1
-#elif defined __PPC64__ || defined __ppc64__ \
-|| defined _ARCH_PPC64 || defined __powerpc64__
-#	define JSTR_ARCH_POWERPC64 1
-#elif defined _ARCH_PWR4
-#	define JSTR_ARCH_POWERPC4 1
-#elif defined _ARCH_PWR5X
-#	define JSTR_ARCH_POWERPC5X 1
-#elif defined _ARCH_PWR6
-#	define JSTR_ARCH_POWERPC6 1
-#elif defined _ARCH_PWR7
-#	define JSTR_ARCH_POWERPC7 1
-#elif defined _ARCH_PWR8
-#	define JSTR_ARCH_POWERPC8 1
-#elif defined _ARCH_PWR9
-#	define JSTR_ARCH_POWERPC9 1
-#elif defined __sparc__ || defined __sparc
-#	define JSTR_ARCH_SPARC 1
-#	if defined __sparc_v8__ || defined __sparcv8
-#		define JSTR_ARCH_SPARCV8 1
-#	elif defined __sparc_v9__ || defined __sparcv9
-#		define JSTR_ARCH_SPARCV9 1
-#	endif
-#elif defined __m68k__ || defined M68000 || defined __MC68K__
-#	define JSTR_ARCH_M68K 1
-#elif defined __alpha__ || defined __alpha || defined _M_ALPHA
-#	define JSTR_ARCH_ALPHA 1
-#	if defined __alpha_ev4__
-#		define JSTR_ARCH_ALPHA 1
-#	elif defined __alpha_ev5__
-#	elif defined __alpha_ev6__
-#	endif
-#elif defined __hppa__ || defined __hppa || defined __HPPA__
-#	define JSTR_ARCH_HPPA 1
-#	if defined _PA_RISC1_0
-#		define JSTR_ARCH_HPPA_RISC1_0 1
-#	elif defined _PA_RISC1_1 || defined __HPPA11__ || defined __PA7100__
-#		define JSTR_ARCH_HPPA_RISC1_1 1
-#	elif defined _PA_RISC2_0 || defined __RISC2_0__ \
-	|| defined __HPPA20__ || defined __PA8000__
-#		define JSTR_ARCH_HPPA_RISC2_0 1
-#	endif
-#elif defined __riscv_zbb || defined __riscv_xtheadbb
-#	define JSTR_ARCH_RISCV 1
-#elif defined __s390x__ || defined __s390__
-#	define JSTR_ARCH_S390 1
-#elif defined __ia64__ || defined _IA64 \
-|| defined __IA64__ || defined __ia64   \
-|| defined _M_IA64 || defined __itanium__
-#	define JSTR_ARCH_IA64 1
-#elif defined i386 || defined __i386__ \
-|| defined __i386 || defined _M_IX86
-#	define JSTR_ARCH_I386 1
-#elif defined __loongarch64
-#	define JSTR_ARCH_LOONGARCH64 1
-#elif defined __loongarch__
-#	define JSTR_ARCH_LOONGARCH 1
-#elif defined __CSKY__
-#	define JSTR_ARCH_CSKY 1
-#else
-#	define JSTR_ARCH_GENERIC 1
-#endif /* arch */
 
 PJSTR_BEGIN_DECLS
 #if JSTR_OS_SOLARIS

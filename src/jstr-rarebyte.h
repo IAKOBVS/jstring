@@ -28,6 +28,10 @@
 #include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
+#include <stddef.h>
+PJSTR_END_DECLS
+
+PJSTR_BEGIN_DECLS
 
 typedef enum {
 	JSTR_RAREBYTE_NUL = 0,
@@ -574,18 +578,16 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 jstr_rarebytefind_len(const void *ne,
-                     size_t n)
+                      size_t n)
 {
-	int c;
-	int state = (unsigned char)-1;
-	const void *save;
+	const unsigned char i = (unsigned char)-1;
+	const unsigned char *save = &i;
 	const unsigned char *p = (const unsigned char *)ne;
+	int c;
 	for (; n-- && (c = jstr_rarebyte_table[*p]); ++p)
-		if (c < state) {
-			state = c;
-			save = (const void *)p;
-		}
-	return state != (unsigned char)-1 ? (void *)save : NULL;
+		if (c < *save)
+			save = p;
+	return *save != (unsigned char)-1 ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -593,16 +595,14 @@ JSTR_ATTR_INLINE
 static char *
 jstr_rarebytefind(const char *ne)
 {
-	int c;
-	int state = (unsigned char)-1;
-	const char *save;
+	const unsigned char i = (unsigned char)-1;
+	const unsigned char *save = &i;
 	const unsigned char *p = (const unsigned char *)ne;
+	int c;
 	for (; (c = jstr_rarebyte_table[*p]); ++p)
-		if (c < state) {
-			state = c;
-			save = (char *)p;
-		}
-	return state != (unsigned char)-1 ? (char *)save : NULL;
+		if (c < *save)
+			save = p;
+	return *save != (unsigned char)-1 ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -610,34 +610,30 @@ JSTR_ATTR_INLINE
 static char *
 jstr_rarebytefindcase(const char *ne)
 {
-	int c;
-	int state = (unsigned char)-1;
-	const char *save;
+	const unsigned char i = (unsigned char)-1;
+	const unsigned char *save = &i;
 	const unsigned char *p = (const unsigned char *)ne;
+	int c;
 	for (; (c = jstr_rarebyte_table_case[*p]); ++p)
-		if (c < state) {
-			state = c;
-			save = (char *)p;
-		}
-	return state != (unsigned char)-1 ? (char *)save : NULL;
+		if (c < *save)
+			save = p;
+	return *save != (unsigned char)-1 ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 jstr_rarebytefindcase_len(const void *ne,
-                         size_t n)
+                          size_t n)
 {
-	int c;
-	int state = (unsigned char)-1;
-	const void *save;
+	const unsigned char i = (unsigned char)-1;
+	const unsigned char *save = &i;
 	const unsigned char *p = (const unsigned char *)ne;
+	int c;
 	for (; n-- && (c = jstr_rarebyte_table_case[*p]); ++p)
-		if (c < state) {
-			state = c;
-			save = (void *)p;
-		}
-	return state != (unsigned char)-1 ? (void *)save : NULL;
+		if (c < *save)
+			save = p;
+	return *save != (unsigned char)-1 ? (void *)save : NULL;
 }
 
 PJSTR_END_DECLS
