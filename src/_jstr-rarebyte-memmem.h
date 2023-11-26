@@ -100,7 +100,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 			ne_align = TOWORD64(ne);
 	}
 #endif
-	const unsigned char *end = (u *)hs + (hs_len - idx) - (ne_len - idx) + 1;
+	const unsigned char *const end = (u *)hs + (hs_len - idx) - (ne_len - idx) + 1;
 	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs) {
 #if USE_UNALIGNED
 		/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
