@@ -63,6 +63,8 @@ jstr_strcasecmpeq_loop(const char *s1,
 	return *(p2 - 1);
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int
@@ -79,6 +81,7 @@ jstr_memcmpeq_loop(const void *s1,
 	return n;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int
