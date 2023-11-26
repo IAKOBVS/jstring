@@ -627,10 +627,7 @@ jstr_strnstr(const char *hs,
              size_t n)
 JSTR_NOEXCEPT
 {
-	const char *p = jstr_strnchr(hs, *ne, n);
-	if (p)
-		return (char *)jstr_memmem(p, jstr_strnlen(hs, p - hs), ne, strlen(ne));
-	return NULL;
+	return (char *)jstr_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 }
 
 /*
