@@ -1007,7 +1007,7 @@ JSTR_NOEXCEPT
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	if (hs_len < ne_len)
 		return NULL;
-	hs += shift;
+	hs -= shift;
 	int is_alpha = jstr_isalpha(*ne);
 	is_alpha |= jstr_isalpha(ne[1]);
 	if (ne_len == 2) {
