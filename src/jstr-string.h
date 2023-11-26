@@ -800,7 +800,7 @@ pjstr_strcasestr(const unsigned char *hs,
 {
 	typedef unsigned char u;
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
-	if (jstr_unlikely(jstr_strnlen(hs, idx) != idx))
+	if (jstr_unlikely(jstr_strnlen((char *)hs, idx) != idx))
 		return NULL;
 	const unsigned char *hp, *np;
 	const int c = *(u *)rarebyte;
