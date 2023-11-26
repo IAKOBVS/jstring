@@ -26,14 +26,14 @@
 
 /* This is to enable the ISO C99 extension.  */
 #if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE \
-     || defined _ISOC2X_SOURCE                        \
+     || defined _ISOC2X_SOURCE \
      || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 #	define JSTR_USE_ISOC99 1
 #endif
 
 /* This is to enable the ISO C90 Amendment 1:1995 extension.  */
 #if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE \
-     || defined _ISOC2X_SOURCE                        \
+     || defined _ISOC2X_SOURCE \
      || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199409L))
 #	define JSTR_USE_ISOC95 1
 #endif
@@ -60,7 +60,7 @@
 #	endif
 #endif
 
-#if (defined _POSIX_SOURCE                                \
+#if (defined _POSIX_SOURCE \
      || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1) \
      || defined _XOPEN_SOURCE)
 #	define JSTR_USE_POSIX 1
