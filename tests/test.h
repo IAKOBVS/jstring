@@ -24,7 +24,7 @@
 #ifndef JSTR_TEST_H
 #define JSTR_TEST_H
 
-/* #define __STRICT_ANSI__ */
+#define JSTR_DISABLE_NONSTANDARD 1
 
 #include "../src/jstr.h"
 #include <assert.h>
