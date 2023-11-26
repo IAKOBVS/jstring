@@ -38,7 +38,7 @@
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_SIZE(array)    (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -135,7 +135,9 @@ PJSTR_END_DECLS
 /* clang-format on */
 #endif /* static_assert */
 
+#ifdef __GNUC__
 JSTR_STATIC_ASSERT(JSTR_GROWTH > 1 && JSTRL_GROWTH > 1 && JARR_GROWTH > 1, "Growth factor must be larger than 1.");
+#endif
 
 PJSTR_BEGIN_DECLS
 typedef enum {

@@ -221,18 +221,18 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
-static jstr_ty *
+static char *
 jstr_start(const jstr_ty *R const j)
 {
-	return (jstr_ty *)j->data;
+	return j->data;
 }
 
 JSTR_FUNC_CONST
 JSTR_ATTR_INLINE
-static jstr_ty *
+static char *
 jstr_end(const jstr_ty *R const j)
 {
-	return (jstr_ty *)j->data + j->size;
+	return j->data + j->size;
 }
 
 /*

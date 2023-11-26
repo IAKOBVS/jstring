@@ -543,7 +543,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	const unsigned char *const p = (const u *)jstr_rarebytefind_len(ne, ne_len);
 	const size_t shift = JSTR_PTR_DIFF(p, ne);
-	hs += shift;
+	hs = (const u *)hs + shift;
 	hs_len -= shift;
 	const void *const start = (const void *)hs;
 	hs = (void *)memchr(hs, *p, hs_len - (ne_len - shift) + 1);
@@ -552,7 +552,7 @@ JSTR_NOEXCEPT
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	if (hs_len < ne_len)
 		return NULL;
-	hs -= shift;
+	hs = (const u *)hs - shift;
 #	endif
 	if (ne_len == 2)
 		return pjstr_memmem2((const u *)hs, (const u *)ne, hs_len);
@@ -864,7 +864,7 @@ pjstr_strcasechr_generic(const char *s,
                          int c)
 JSTR_NOEXCEPT
 {
-	const unsigned char *p = (unsigned char *)s;
+	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 	for (; *p && jstr_tolower(*p) != c; ++p)
 		;
@@ -880,7 +880,7 @@ jstr_memcasechr(const void *s,
                 size_t n)
 JSTR_NOEXCEPT
 {
-	const unsigned char *p = (unsigned char *)s;
+	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 	for (; n-- && jstr_tolower(*p) != c; ++p)
 		;
@@ -1156,7 +1156,7 @@ JSTR_NOEXCEPT
 	    || jstr_unlikely(sz == 0))
 		return sz;
 	if (jstr_unlikely(reject[1] == '\0')) {
-		const char *const p = (char *)jstr_memrchr(s, *reject, sz);
+		const char *const p = (const char *)jstr_memrchr(s, *reject, sz);
 		return p ? (size_t)(p - s) : sz;
 	}
 	unsigned char t[256];
@@ -1340,7 +1340,7 @@ JSTR_NOEXCEPT
 		}
 	}
 	p = (u *)JSTR_PTR_ALIGN_DOWN(p, 4);
-	const unsigned char *const end = (u *)s + sz;
+	const unsigned char *const end = (const u *)s + sz;
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
@@ -1370,7 +1370,7 @@ JSTR_NOEXCEPT
 		return (char *)jstr_memchrnul(s, *reject, sz) - (char *)s;
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
-	const unsigned char *p = (u *)reject;
+	const unsigned char *p = (const u *)reject;
 	do
 		t[*p] = 1;
 	while (*p++);
@@ -1410,7 +1410,7 @@ jstr_mempbrk(const void *s,
              size_t sz)
 JSTR_NOEXCEPT
 {
-	const unsigned char *p = (unsigned char *)s;
+	const unsigned char *p = (const unsigned char *)s;
 	p += jstr_memcspn(p, accept, sz);
 	return *p ? (char *)p : NULL;
 }
@@ -1463,7 +1463,7 @@ jstr_memchrnulinv(const void *s,
                   size_t n)
 JSTR_NOEXCEPT
 {
-	const unsigned char *p = (unsigned char *)s;
+	const unsigned char *p = (const unsigned char *)s;
 	for (; n-- && *p == (unsigned char)c; ++p)
 		;
 	return (void *)p;
@@ -1483,7 +1483,7 @@ jstr_memchrinv(const void *s,
                size_t n)
 JSTR_NOEXCEPT
 {
-	const void *const end = (unsigned char *)s + n;
+	const void *const end = (const unsigned char *)s + n;
 	s = jstr_memchrnulinv(s, c, n);
 	return (s != end) ? (void *)s : NULL;
 }
@@ -1501,8 +1501,8 @@ jstr_memrchrinv(const void *s,
                 size_t n)
 JSTR_NOEXCEPT
 {
-	const unsigned char *end = (unsigned char *)s + n - 1;
-	const unsigned char *const start = (unsigned char *)s;
+	const unsigned char *end = (const unsigned char *)s + n - 1;
+	const unsigned char *const start = (const unsigned char *)s;
 	for (; end >= start; --end)
 		if (*end != (unsigned char)c)
 			return (void *)end;
