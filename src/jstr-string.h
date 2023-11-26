@@ -536,9 +536,9 @@ JSTR_NOEXCEPT
 		goto MEMMEM;
 #	endif
 	const unsigned char *p;
-	if (jstr_unlikely(ne_len == 0))
-		return (void *)hs;
 	p = (const u *)jstr_rarebytefind_len(ne, ne_len);
+	if (jstr_unlikely(p == NULL))
+		return (void *)hs;
 	size_t shift;
 	shift = JSTR_PTR_DIFF(p, ne);
 	hs = (const u *)hs + shift;
