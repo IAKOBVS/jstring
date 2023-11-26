@@ -47,9 +47,15 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 typedef enum {
+	/* Unknown file type. */
 	JSTRIO_FT_UNKNOWN = 0,
+#define JSTRIO_FT_UNKNOWN JSTRIO_FT_UNKNOWN
+	/* Text file type. */
 	JSTRIO_FT_TEXT,
+#define JSTRIO_FT_TEXT JSTRIO_FT_TEXT
+	/* Binary file type. */
 	JSTRIO_FT_BINARY
+#define JSTRIO_FT_BINARY JSTRIO_FT_BINARY
 } jstrio_ext_ty;
 
 enum {
@@ -58,11 +64,13 @@ enum {
 #else
 	JSTRIO_PATH_MAX = 4096,
 #endif
+#define JSTRIO_PATH_MAX JSTRIO_PATH_MAX
 #ifdef NAME_MAX
 	JSTRIO_NAME_MAX = NAME_MAX,
 #else
 	JSTRIO_NAME_MAX = 255,
 #endif
+#define JSTRIO_NAME_MAX JSTRIO_NAME_MAX
 	JSTRIO_BINARY_CHECK_MAX = 64
 };
 
@@ -559,32 +567,45 @@ JSTR_NOEXCEPT
 /* If JSTRIO_ACTION_RETVAL is passed, use these as return values of FN(). */
 typedef enum jstrio_ftw_actionretval_ty {
 	JSTRIO_FTW_RET_STOP = 0,
+#define JSTRIO_FTW_RET_STOP JSTRIO_FTW_RET_STOP
 	JSTRIO_FTW_RET_CONTINUE,
+#define JSTRIO_FTW_RET_CONTINUE JSTRIO_FTW_RET_CONTINUE
 	/* Skip sibling entries. */
 	JSTRIO_FTW_RET_SKIP_SIBLINGS,
+#define JSTRIO_FTW_RET_SKIP_SIBLINGS JSTRIO_FTW_RET_SKIP_SIBLINGS
 	/* Skip subdirectories. */
 	JSTRIO_FTW_RET_SKIP_SUBTREE
+#define JSTRIO_FTW_RET_SKIP_SUBTREE JSTRIO_FTW_RET_SKIP_SUBTREE
 } jstrio_ftw_actionretval_ty;
 
 typedef enum jstrio_ftw_flag_ty {
 	/* Match glob with FULPATH instead of d_name. */
 	JSTRIO_FTW_MATCHPATH = (1),
+#define JSTRIO_FTW_MATCHPATH JSTRIO_FTW_MATCHPATH
 	/* Call FN() on regular files. */
 	JSTRIO_FTW_REG = (JSTRIO_FTW_MATCHPATH << 1),
+#define JSTRIO_FTW_REG JSTRIO_FTW_REG
 	/* Call FN() on directories. */
 	JSTRIO_FTW_DIR = (JSTRIO_FTW_REG << 1),
+#define JSTRIO_FTW_DIR JSTRIO_FTW_DIR
 	/* Do not traverse subdirectories. */
 	JSTRIO_FTW_NOSUBDIR = (JSTRIO_FTW_DIR << 1),
+#define JSTRIO_FTW_NOSUBDIR JSTRIO_FTW_NOSUBDIR
 	/* Do not call stat. Only st.st_mode is defined. */
 	JSTRIO_FTW_NOSTAT = (JSTRIO_FTW_NOSUBDIR << 1),
+#define JSTRIO_FTW_NOSTAT JSTRIO_FTW_NOSTAT
 	/* Only call stat on regular files. */
 	JSTRIO_FTW_STATREG = (JSTRIO_FTW_NOSTAT << 1),
+#define JSTRIO_FTW_STATREG JSTRIO_FTW_STATREG
 	/* Ignore hidden entries. */
 	JSTRIO_FTW_NOHIDDEN = (JSTRIO_FTW_STATREG << 1),
+#define JSTRIO_FTW_NOHIDDEN JSTRIO_FTW_NOHIDDEN
 	/* Expand ~/somepath to $HOME/somepath if ~ is the first char. */
 	JSTRIO_FTW_EXPTILDE = (JSTRIO_FTW_NOHIDDEN << 1),
+#define JSTRIO_FTW_EXPTILDE JSTRIO_FTW_EXPTILDE
 	/* Handle FN() return value according to jstrio_ftw_actionretval_ty. */
 	JSTRIO_FTW_ACTIONRETVAL = (JSTRIO_FTW_EXPTILDE << 1)
+#define JSTRIO_FTW_ACTIONRETVAL JSTRIO_FTW_ACTIONRETVAL
 } jstrio_ftw_flag_ty;
 
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
@@ -678,6 +699,27 @@ typedef int (*jstrio_ftw_func_ty)(const char *dirpath,
 
 #define JSTRIO_FTW_FUNC(func_name, dirpath, dirpath_len, st) \
 	int func_name(const char *dirpath, size_t dirpath_len, const struct stat *st)
+
+typedef enum {
+	JSTRIO_FTW_STATE_F,
+#define JSTRIO_FTW_STATE_F JSTRIO_FTW_STATE_F
+	JSTRIO_FTW_STATE_D,
+#define JSTRIO_FTW_STATE_D JSTRIO_FTW_STATE_D
+	JSTRIO_FTW_STATE_DNR,
+#define JSTRIO_FTW_STATE_DNR JSTRIO_FTW_STATE_DNR
+	JSTRIO_FTW_STATE_NS,
+#define JSTRIO_FTW_STATE_NS JSTRIO_FTW_STATE_NS
+	JSTRIO_FTW_STATE_SL,
+#define JSTRIO_FTW_STATE_SL JSTRIO_FTW_STATE_SL
+	JSTRIO_FTW_STATE_SLN,
+#define JSTRIO_FTW_STATE_SLN JSTRIO_FTW_STATE_SLN
+} jstrio_ftw_state_ty;
+
+struct JSTRIO_FTW {
+	char *dirpath;
+	size_t dirpath_len;
+	const struct stat *st;
+};
 
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL((1))

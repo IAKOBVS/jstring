@@ -577,7 +577,7 @@ jstr_rarebyteget_len(const void *ne,
                      size_t n)
 {
 	int c;
-	int state = 0;
+	int state = (unsigned char)-1;
 	const void *save;
 	const unsigned char *p = (const unsigned char *)ne;
 	for (; n-- && (c = jstr_rarebyte_table[*p]); ++p)
@@ -585,7 +585,7 @@ jstr_rarebyteget_len(const void *ne,
 			state = c;
 			save = (const void *)p;
 		}
-	return state ? (void *)save : NULL;
+	return state != (unsigned char)-1 ? (void *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -594,7 +594,7 @@ static char *
 jstr_rarebyteget(const char *ne)
 {
 	int c;
-	int state = 0;
+	int state = (unsigned char)-1;
 	const char *save;
 	const unsigned char *p = (const unsigned char *)ne;
 	for (; (c = jstr_rarebyte_table[*p]); ++p)
@@ -602,7 +602,7 @@ jstr_rarebyteget(const char *ne)
 			state = c;
 			save = (char *)p;
 		}
-	return state ? (char *)save : NULL;
+	return state != (unsigned char)-1 ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -611,7 +611,7 @@ static char *
 jstr_rarebytegetcase(const char *ne)
 {
 	int c;
-	int state = 0;
+	int state = (unsigned char)-1;
 	const char *save;
 	const unsigned char *p = (const unsigned char *)ne;
 	for (; (c = jstr_rarebyte_table_case[*p]); ++p)
@@ -619,7 +619,7 @@ jstr_rarebytegetcase(const char *ne)
 			state = c;
 			save = (char *)p;
 		}
-	return state ? (char *)save : NULL;
+	return state != (unsigned char)-1 ? (char *)save : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -629,7 +629,7 @@ jstr_rarebytegetcase_len(const void *ne,
                          size_t n)
 {
 	int c;
-	int state = 0;
+	int state = (unsigned char)-1;
 	const void *save;
 	const unsigned char *p = (const unsigned char *)ne;
 	for (; n-- && (c = jstr_rarebyte_table_case[*p]); ++p)
@@ -637,7 +637,7 @@ jstr_rarebytegetcase_len(const void *ne,
 			state = c;
 			save = (void *)p;
 		}
-	return state ? (void *)save : NULL;
+	return state != (unsigned char)-1 ? (void *)save : NULL;
 }
 
 PJSTR_END_DECLS
