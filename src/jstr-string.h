@@ -529,23 +529,22 @@ JSTR_NOEXCEPT
 	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef unsigned char u;
+	if (jstr_unlikely(hs_len < ne_len))
+		return NULL;
 #	if JSTR_USE_LGPL
-	if (ne_len == 1)
-		return (void *)memchr(hs, *(const u *)ne, hs_len);
-	if (jstr_unlikely(ne_len == 0))
+	if (jstr_unlikely(ne_len >= 100))
+		goto MEMMEM;
+#	endif
+	const unsigned char *p;
+	p = (const u *)jstr_rarebytefind_len(ne, ne_len);
+	if (jstr_unlikely(p == NULL))
 		return (void *)hs;
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
-#	else
-	if (jstr_unlikely(ne_len == 0))
-		return (void *)hs;
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
-	const unsigned char *const p = (const u *)jstr_rarebytefind_len(ne, ne_len);
-	const size_t shift = JSTR_PTR_DIFF(p, ne);
+	size_t shift;
+	shift = JSTR_PTR_DIFF(p, ne);
 	hs = (const u *)hs + shift;
 	hs_len -= shift;
-	const void *const start = (const void *)hs;
+	const void *start;
+	start = (const void *)hs;
 	hs = (void *)memchr(hs, *p, hs_len - (ne_len - shift) + 1);
 	if (hs == NULL || ne_len == 1)
 		return (void *)hs;
@@ -553,7 +552,6 @@ JSTR_NOEXCEPT
 	if (hs_len < ne_len)
 		return NULL;
 	hs = (const u *)hs - shift;
-#	endif
 	if (ne_len == 2)
 		return pjstr_memmem2((const u *)hs, (const u *)ne, hs_len);
 	if (ne_len == 3)
@@ -561,6 +559,7 @@ JSTR_NOEXCEPT
 	if (ne_len == 4)
 		return pjstr_memmem4((const u *)hs, (const u *)ne, hs_len);
 #	if JSTR_USE_LGPL
+MEMMEM:
 	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
 #	else
 	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, p);
@@ -976,7 +975,7 @@ jstr_strcasestr_len(const char *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_DISABLE_NONSTANDARD
+#if JSTR_HAVE_STRCASESTR && JSTR_HAVE_STRCASESTR_OPTIMIZED && !JSTR_DISABLE_NONSTANDARD
 	return (char *)strcasestr(hs, ne);
 	(void)hs_len;
 	(void)ne_len;
