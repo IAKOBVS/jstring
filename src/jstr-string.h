@@ -996,22 +996,21 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr_len(hs, hs_len, ne, ne_len);
 #	endif
 	}
-	const u *const p = (const u *)jstr_rarebytefindeither_len(ne, ne_len);
+	const u *p = (const u *)jstr_rarebytefindeither_len(ne, ne_len);
 	const size_t shift = JSTR_PTR_DIFF(p, ne);
 	hs += shift;
 	hs_len -= shift;
 	const char *const start = hs;
 	if (!jstr_isalpha(*p)) {
+		const int c = *p;
 		const u *end = (const u *)hs + hs_len - (ne_len - shift) + 1;
-		const u *p1;
 		const u *p2;
 		size_t n;
-		const int c = *p;
 		for (; (hs = (char *)memchr(hs, c, end - (u *)hs)); ++hs) {
-			p1 = (const u *)hs - shift;
+			p = (const u *)hs - shift;
 			p2 = (const u *)ne;
 			n = ne_len;
-			for (; n && (jstr_tolower(*p1++) == jstr_tolower(*p2++)); --n)
+			for (; n && (jstr_tolower(*p++) == jstr_tolower(*p2++)); --n)
 				;
 			if (n == 0)
 				return (char *)hs - shift;
