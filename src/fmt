@@ -31,8 +31,9 @@ fi
 #shellcheck disable=SC2068
 for file in $@; do
 	{
-		expr "$file" : '*-pp-*' >/dev/null && exit
-		[ "$file" = 'jstr-macros.h' ] && exit
+		case "$file" in
+			*_jstr* | *pp* | *macros* ) exit ;;
+		esac
 		clang-format -i --style=file:'.clang-format' "$file"
 	} &
 done
