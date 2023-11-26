@@ -741,14 +741,14 @@ struct pjstrio_ftw_data {
 	char *dirpath;
 	const char *fnm_glob;
 	jstrio_ftw_func_ty fn;
-	const void *fn_arg;
+	const void *fn_args;
 	struct JSTRIO_FTW ftw;
 	int ftw_flags;
 	int fnm_flags;
 };
 
-#define JSTRIO_FTW_FUNC(func_name, dirpath, dirpath_len, st) \
-	int func_name(const char *dirpath, size_t dirpath_len, const struct stat *st)
+#define JSTRIO_FTW_FUNC(ftw, fn_args) \
+	int func_name(const struct JSTRIO_FTW *ftw, void *fn_arg)
 
 #ifdef O_DIRECTORY
 #	define PJSTR_O_DIRECTORY O_DIRECTORY
@@ -775,7 +775,7 @@ JSTR_NOEXCEPT
 			a->ftw.dirpath = a->dirpath;
 			a->ftw.dirpath_len = dirpath_len;
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_DNR;
-			a->fn(&a->ftw, a->fn_arg);
+			a->fn(&a->ftw, a->fn_args);
 			return JSTR_RET_SUCC;
 		}
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -859,7 +859,7 @@ do_reg:
 			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->dirpath);
 		}
 do_fn:
-		tmp = a->fn(&a->ftw, a->fn_arg);
+		tmp = a->fn(&a->ftw, a->fn_args);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE
 			    || tmp == JSTRIO_FTW_RET_SKIP_SUBTREE)
@@ -886,7 +886,7 @@ do_dir:
 		if (a->ftw_flags & JSTRIO_FTW_REG)
 			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 				goto skip_fn;
-		tmp = a->fn(&a->ftw, a->fn_arg);
+		tmp = a->fn(&a->ftw, a->fn_args);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE)
 				continue;
@@ -954,7 +954,7 @@ static int
 jstrio_ftw_len(const char *R dirpath,
                size_t dirpath_len,
                jstrio_ftw_func_ty fn,
-               const void *fn_arg,
+               const void *fn_args,
                int jstrio_ftw_flags,
                const char *R fnm_glob,
                int fnm_flags)
@@ -1016,7 +1016,7 @@ ftw:;
 				goto CONT;
 		int tmp;
 		data.ftw.ftw_state = JSTRIO_FTW_STATE_D;
-		tmp = fn(&data.ftw, fn_arg);
+		tmp = fn(&data.ftw, fn_args);
 		if (jstrio_ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (jstr_unlikely(tmp != JSTRIO_FTW_RET_CONTINUE))
 				goto err_close;
@@ -1026,7 +1026,7 @@ ftw:;
 		}
 CONT:;
 		data.fn = fn;
-		data.fn_arg = fn_arg;
+		data.fn_args = fn_args;
 		data.fnm_glob = fnm_glob;
 		data.fnm_flags = jstrio_ftw_flags;
 		data.ftw_flags = jstrio_ftw_flags;
@@ -1055,7 +1055,7 @@ fnmatch_path:
 			}
 		}
 	}
-	return (jstr_ret_ty)fn(&data.ftw, fn_arg);
+	return (jstr_ret_ty)fn(&data.ftw, fn_args);
 err_close:
 	CLOSE(fd, );
 err:
