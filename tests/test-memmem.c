@@ -21,6 +21,8 @@
 
    MIT License (Expat) */
 
+#define JSTR_DISABLE_NONSTANDARD 1
+
 #include "test.h"
 
 #define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
@@ -153,6 +155,7 @@ jstr_strrstr(const char *h, const char *n)
 				PRINTERR("hs:%s\n", hs);              \
 				PRINTERR("ne:%s\n", ne);              \
 				PRINTERR("hs_len:%zu\n", hs_len);     \
+				PRINTERR("ne_len:%zu\n", ne_len);     \
 				PRINTERR("expected:%s\n", expected);  \
 				PRINTERR("result:%s\n", result);      \
 				assert(result == expected);           \
@@ -165,11 +168,14 @@ jstr_strrstr(const char *h, const char *n)
 		TESTING(fn);                                                \
 		size_t n;                                                   \
 		const char *hs, *ne, *result, *expected;                    \
+		size_t hs_len, ne_len;                                      \
 		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {       \
 			n = strlen(hs_ne[i].hs);                            \
 			n = JSTR_MIN(n, i);                                 \
 			hs = hs_ne[i].hs;                                   \
 			ne = hs_ne[i].ne;                                   \
+			hs_len = strlen(hs);                                \
+			ne_len = strlen(ne);                                \
 			result = fn(hs, ne, n);                             \
 			expected = simple_fn(hs, ne, n);                    \
 			if (jstr_unlikely(result != expected)) {            \
@@ -178,7 +184,8 @@ jstr_strrstr(const char *h, const char *n)
 				fwrite(hs, 1, jstr_strnlen(hs, n), stderr); \
 				PRINTERR("\n");                             \
 				PRINTERR("ne:%s\n", ne);                    \
-				PRINTERR("hs_len:%zu\n", strlen(hs));       \
+				PRINTERR("hs_len:%zu\n", hs_len);           \
+				PRINTERR("ne_len:%zu\n", ne_len);           \
 				PRINTERR("n:%zu\n", n);                     \
 				PRINTERR("expected:%s\n", expected);        \
 				PRINTERR("result:%s\n", result);            \
@@ -198,20 +205,24 @@ main(int argc, char **argv)
                  "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
 		{ "xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
                  "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
+		{ "xxyyyy,yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+                 "yyyyyyyyyyyyyyyyy,yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
 		{ "xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxx",
                  "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
 		{ "yxxyyyyxyxxxxy",
                  "yyyyy"		                                                                                                                                                                                                                                                    },
-		{ "yyyyyxxxyxxxxy",
-                 "yyyyy"		                                                                                                                                                                                                                                                    },
+		{ ",yyy,xxxyxxxxy",
+                 ",yyy,"		                                                                                                                                                                                                                                                    },
 		{ "yxyyyxxxyxxxxyyyy",
                  "yyyyy"		                                                                                                                                                                                                                                                    },
 		{ "yxxyyyyxyxxxxy",
                  "xxxxx"		                                                                                                                                                                                                                                                    },
 		{ "yxxyyyyxyxxxxy",
                  "xyyyx"		                                                                                                                                                                                                                                                    },
-		{ "yxxyyyyxyxxxxy",
-                 "xyyyy"		                                                                                                                                                                                                                                                    },
+		{ ",xxyyyyxyxxxxy",
+                 "xyy,y"		                                                                                                                                                                                                                                                    },
+		{ "yxheL,yyyyxyxxxxy",
+                 "yyheL,"		                                                                                                                                                                                                                                                   },
 		{ "yxxyyyyxyxxxxy",
                  "yyyyy"		                                                                                                                                                                                                                                                    },
 		{ "yyyyyxxxyxxxxy",
@@ -224,6 +235,8 @@ main(int argc, char **argv)
                  "o w"		                                                                                                                                                                                                                                                      },
 		{ "hello world",
                  "hel"		                                                                                                                                                                                                                                                      },
+		{ "yxxx,xxxxy",
+                 "xxx,"		                                                                                                                                                                                                                                                     },
 		{ "yxxxyxxxxy",
                  "xxxx"		                                                                                                                                                                                                                                                     },
 		{ "yxxxyxxxxy",
@@ -236,6 +249,8 @@ main(int argc, char **argv)
                  "x"		                                                                                                                                                                                                                                                        },
 		{ "xxx",
                  "yyy"		                                                                                                                                                                                                                                                      },
+		{ ",",
+                 "x,x"		                                                                                                                                                                                                                                                      },
 		{ "x",
                  "xxx"		                                                                                                                                                                                                                                                      },
 		{ "xxx",

@@ -504,7 +504,7 @@ ret:
 
 #endif
 
-#if !JSTR_HAVE_MEMMEM
+#if !JSTR_HAVE_MEMMEM || JSTR_DISABLE_NONSTANDARD
 #	if JSTR_USE_LGPL
 #		define PJSTR_MEMMEM_FUNC pjstr_memmem
 #		include "_lgpl-memmem.h"
@@ -525,7 +525,7 @@ jstr_memmem(const void *hs,
             size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMMEM
+#if JSTR_HAVE_MEMMEM && !JSTR_DISABLE_NONSTANDARD
 	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef unsigned char u;
@@ -612,7 +612,7 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
 	if (jstr_unlikely(hs[4] == '\0'))
 		return NULL;
-	return pjstr_strnstr((cu *)hs, (cu *)ne, n);
+	return (char *)jstr_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 }
 
 /*
@@ -976,7 +976,7 @@ jstr_strcasestr_len(const char *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED || !JSTR_USE_LGPL)
+#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_DISABLE_NONSTANDARD
 	return (char *)strcasestr(hs, ne);
 	(void)hs_len;
 	(void)ne_len;
@@ -1066,7 +1066,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED || !JSTR_USE_LGPL)
+#if JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED || !JSTR_USE_LGPL) && !JSTR_DISABLE_NONSTANDARD
 	return (char *)strcasestr(hs, ne);
 #else
 	if (jstr_unlikely(ne[0] == '\0'))
@@ -1078,9 +1078,17 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (!jstr_isalpha(*p)) {
 		const int c = *p;
-		for (; (hs = (char *)strchr(hs, c)); ++hs)
-			if (!jstr_strcasecmpeq_loop(hs - shift, ne))
+		const u *p2;
+		for (; (hs = (char *)strchr(hs, c)); ++hs) {
+			p = (const u *)hs - shift;
+			p2 = (const u *)ne;
+			for (; jstr_tolower(*p) == jstr_tolower(*p2++) && *p; ++p)
+				;
+			if (*(p2 - 1) == '\0')
 				return (char *)hs - shift;
+			if (*p == '\0')
+				return NULL;
+		}
 		return NULL;
 	}
 	hs = pjstr_strcasechr_generic(hs, *ne);
