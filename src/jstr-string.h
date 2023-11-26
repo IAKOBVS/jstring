@@ -546,7 +546,7 @@ JSTR_NOEXCEPT
 	hs += shift;
 	hs_len -= shift;
 	const void *const start = (const void *)hs;
-	hs = (void *)memchr(hs, *p, hs_len);
+	hs = (void *)memchr(hs, *p, hs_len - (ne_len - shift) + 1);
 	if (hs == NULL || ne_len == 1)
 		return (void *)hs;
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
@@ -1001,7 +1001,25 @@ JSTR_NOEXCEPT
 	hs += shift;
 	hs_len -= shift;
 	const char *const start = hs;
-	hs = jstr_isalpha(*p) ? pjstr_strcasechr_len(hs, *p, hs_len) : (char *)memchr(hs, *p, hs_len);
+	if (!jstr_isalpha(*p)) {
+		const u *end = (const u *)hs + hs_len - (ne_len - shift) + 1;
+		const u *p1;
+		const u *p2;
+		size_t n;
+		const int c = *p;
+		for (; (hs = (char *)memchr(hs, c, end - (u *)hs)); ++hs) {
+			p1 = (const u *)hs - shift;
+			p2 = (const u *)ne;
+			n = ne_len;
+			for (; n && (jstr_tolower(*p1++) == jstr_tolower(*p2++)); --n)
+				;
+			if (n == 0)
+				return (char *)hs - shift;
+		}
+		return NULL;
+	} else {
+		hs = pjstr_strcasechr_len(hs, *p, hs_len);
+	}
 	if (hs == NULL || ne_len == 1)
 		return (char *)hs;
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;

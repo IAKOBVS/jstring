@@ -24,6 +24,7 @@
 #ifndef JSTR_STDSTRING_H
 #define JSTR_STDSTRING_H 1
 
+#include "jstr-ctype-table.h"
 #include "jstr-macros.h"
 #include "jstr-struct.h"
 #include "jstr-word-at-a-time.h"
@@ -52,6 +53,19 @@ jstr_strcmpeq_loop(const char *s1,
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int
+jstr_strcasecmpeq_loop(const char *s1,
+                       const char *s2)
+{
+	const unsigned char *p1 = (unsigned char *)s1;
+	const unsigned char *p2 = (unsigned char *)s2;
+	while ((jstr_ctype_table_tolower[*p1++] == jstr_ctype_table_tolower[*p2++]))
+		;
+	return *s2;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static int
 jstr_memcmpeq_loop(const void *s1,
                    const void *s2,
                    size_t n)
@@ -61,6 +75,22 @@ jstr_memcmpeq_loop(const void *s1,
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; n && (*p1++ == *p2++); --n)
+		;
+	return n;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static int
+jstr_strcasecmpeq_len_loop(const void *s1,
+                           const void *s2,
+                           size_t n)
+{
+	if (jstr_unlikely(n == 0))
+		return 0;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	for (; n && (jstr_ctype_table_tolower[*p1++] == jstr_ctype_table_tolower[*p2++]); --n)
 		;
 	return n;
 }
