@@ -6,7 +6,7 @@
    in the Software without restriction, including without limitation the rights
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, and to permit persons to whom the Software is
-   furnished to do so, subject to the following conditions:
+   furnished to do so, subject to the following conditions:\n
 
    The above copyright notice and this permission notice shall be included in all
    copies or substantial portions of the Software.
@@ -139,59 +139,61 @@ jstr_strrstr(const char *h, const char *n)
 		}                                                                         \
 	} while (0)
 
-#define T_STRSTR_LEN(fn, simple_fn)                                   \
-	do {                                                          \
-		TESTING(fn);                                          \
-		const char *hs, *ne, *result, *expected;              \
-		size_t hs_len, ne_len;                                \
-		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) { \
-			hs = hs_ne[i].hs;                             \
-			ne = hs_ne[i].ne;                             \
-			hs_len = strlen(hs);                          \
-			ne_len = strlen(ne);                          \
-			result = fn(hs, hs_len, ne, ne_len);          \
-			expected = simple_fn(hs, hs_len, ne, ne_len); \
-			if (jstr_unlikely(result != expected)) {      \
-				PRINTERR("hs:%s\n", hs);              \
-				PRINTERR("ne:%s\n", ne);              \
-				PRINTERR("hs_len:%zu\n", hs_len);     \
-				PRINTERR("ne_len:%zu\n", ne_len);     \
-				PRINTERR("expected:%s\n", expected);  \
-				PRINTERR("result:%s\n", result);      \
-				assert(result == expected);           \
-			}                                             \
-		}                                                     \
+#define T_STRSTR_LEN(fn, simple_fn)                                    \
+	do {                                                           \
+		TESTING(fn);                                           \
+		const char *hs, *ne, *result, *expected;               \
+		size_t hs_len, ne_len;                                 \
+		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {  \
+			hs = hs_ne[i].hs;                              \
+			ne = hs_ne[i].ne;                              \
+			hs_len = strlen(hs);                           \
+			ne_len = strlen(ne);                           \
+			result = fn(hs, hs_len, ne, ne_len);           \
+			expected = simple_fn(hs, hs_len, ne, ne_len);  \
+			if (jstr_unlikely(result != expected)) {       \
+				PRINTERR("hs:\n%s\n", hs);             \
+				PRINTERR("ne:\n%s\n", ne);             \
+				PRINTERR("hs_len:\n%zu\n", hs_len);    \
+				PRINTERR("ne_len:\n%zu\n", ne_len);    \
+				PRINTERR("expected:\n%s\n", expected); \
+				PRINTERR("result:\n%s\n", result);     \
+				PRINTERR("result_len:\n%zu\n", strlen(result)); \
+				assert(result == expected);            \
+			}                                              \
+		}                                                      \
 	} while (0)
 
-#define T_STRNSTR(fn, simple_fn)                                            \
-	do {                                                                \
-		TESTING(fn);                                                \
-		size_t n;                                                   \
-		const char *hs, *ne, *result, *expected;                    \
-		size_t hs_len, ne_len;                                      \
-		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {       \
-			n = strlen(hs_ne[i].hs);                            \
-			n = JSTR_MIN(n, i);                                 \
-			hs = hs_ne[i].hs;                                   \
-			ne = hs_ne[i].ne;                                   \
-			hs_len = strlen(hs);                                \
-			ne_len = strlen(ne);                                \
-			result = fn(hs, ne, n);                             \
-			expected = simple_fn(hs, ne, n);                    \
-			if (jstr_unlikely(result != expected)) {            \
-				PRINTERR("hs:%s\n", hs);                    \
-				PRINTERR("hsn:");                           \
-				fwrite(hs, 1, jstr_strnlen(hs, n), stderr); \
-				PRINTERR("\n");                             \
-				PRINTERR("ne:%s\n", ne);                    \
-				PRINTERR("hs_len:%zu\n", hs_len);           \
-				PRINTERR("ne_len:%zu\n", ne_len);           \
-				PRINTERR("n:%zu\n", n);                     \
-				PRINTERR("expected:%s\n", expected);        \
-				PRINTERR("result:%s\n", result);            \
-				assert(result == expected);                 \
-			}                                                   \
-		}                                                           \
+#define T_STRNSTR(fn, simple_fn)                                                \
+	do {                                                                    \
+		TESTING(fn);                                                    \
+		size_t n;                                                       \
+		const char *hs, *ne, *result, *expected;                        \
+		size_t hs_len, ne_len;                                          \
+		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {           \
+			n = strlen(hs_ne[i].hs);                                \
+			n = JSTR_MIN(n, i);                                     \
+			hs = hs_ne[i].hs;                                       \
+			ne = hs_ne[i].ne;                                       \
+			hs_len = strlen(hs);                                    \
+			ne_len = strlen(ne);                                    \
+			result = fn(hs, ne, n);                                 \
+			expected = simple_fn(hs, ne, n);                        \
+			if (jstr_unlikely(result != expected)) {                \
+				PRINTERR("hs:\n%s\n", hs);                      \
+				PRINTERR("hsn:\n");                             \
+				fwrite(hs, 1, jstr_strnlen(hs, n), stderr);     \
+				PRINTERR("\n");                                 \
+				PRINTERR("ne:\n%s\n", ne);                      \
+				PRINTERR("hs_len:\n%zu\n", hs_len);             \
+				PRINTERR("ne_len:\n%zu\n", ne_len);             \
+				PRINTERR("n:\n%zu\n", n);                       \
+				PRINTERR("expected:\n%s\n", expected);          \
+				PRINTERR("result:\n%s\n", result);              \
+				PRINTERR("result_len:\n%zu\n", strlen(result)); \
+				assert(result == expected);                     \
+			}                                                       \
+		}                                                               \
 	} while (0)
 
 int

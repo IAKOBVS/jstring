@@ -952,7 +952,7 @@ JSTR_NOEXCEPT
 #	else
 #		define PJSTR_RAREBYTE_RETTYPE  char *
 #		define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len
-#		define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
+#		define PJSTR_RAREBYTE_CMP_FUNC strncasecmp
 #		include "_jstr-rarebyte-memmem.h"
 #	endif
 #endif
