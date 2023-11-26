@@ -26,7 +26,7 @@ AlignConsecutiveMacros:
   AcrossComments:  false
   AlignCompound:   false
   PadOperators:    false
-AlignEscapedNewlines: DontAlign
+AlignEscapedNewlines: Right
 AlignOperands:   Align
 AlignTrailingComments: false
 AllowAllArgumentsOnNextLine: true
