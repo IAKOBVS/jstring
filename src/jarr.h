@@ -55,20 +55,17 @@ PJSTR_END_DECLS
 	} jarr_##name##_ty;                 \
 	jarr_##name##_ty name
 
+#define jarr_chk(j)      (jstr_unlikely(PJARR_DATA(j) == NULL))
+#define jarr_err(msg)    jstr_err(msg)
+#define jarr_errdie(msg) jstr_errdie(msg)
 #define PJARR_ELEMSZ(j) (sizeof((PJARR_DATA(j))[0]))
 #define PJARR_ARRSZ(j)  (sizeof(PJARR_DATA(j)) / sizeof((PJARR_DATA(j))[0]))
 #define PJARR_DATA(j)   ((j)->PJARR_DATA_NAME)
 #define PJARR_SZ(j)     ((j)->PJARR_SIZE_NAME)
 #define PJARR_CAP(j)    ((j)->PJARR_CAPACITY_NAME)
-
 #define PJARR_MIN_CAP(j) (JSTR_MIN_CAP / PJARR_ELEMSZ(j))
-
 #define PJARR_MEMMOVE(j, dst, src, n) memmove(dst, src, (n)*PJARR_ELEMSZ(j))
 #define PJARR_MEMCPY(j, dst, src, n)  memcpy(dst, src, (n)*PJARR_ELEMSZ(j))
-
-#define jarr_chk(j)      (jstr_unlikely(PJARR_DATA(j) == NULL))
-#define jarr_err(msg)    jstr_err(msg)
-#define jarr_errdie(msg) jstr_errdie(msg)
 
 #define PJARR_ALIGN_UP(j, base) ((PJARR_ELEMSZ(j) < (sizeof(size_t) + sizeof(size_t))) ? JSTR_ALIGN_UP_STR(base) : base)
 
