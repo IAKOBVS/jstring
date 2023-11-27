@@ -16,9 +16,12 @@ compile()
 flags='-fsanitize=address'
 
 cd "$(dirname "$0")" || exit
-for header in $(echo *.c); do
-	basename=${header%.*}
-	compile "$header" "$basename" &
-	compile "$header" "$basename"_nolgpl -DJSTR_USE_LGPL=0 &
-done
+# for header in $(echo *.c); do
+# 	basename=${header%.*}
+# 	compile "$header" "$basename" &
+# 	compile "$header" "$basename"_nolgpl -DJSTR_USE_LGPL=0 &
+# done
+# wait
+compile ./test-memmem.c ./test-memmem &
+# compile ./test-memmem.c ./test-memmem_nolgpl -DJSTR_USE_LGPL=0 &
 wait

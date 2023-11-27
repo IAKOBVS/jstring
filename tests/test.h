@@ -25,6 +25,7 @@
 #define JSTR_TEST_H
 
 #define JSTR_DISABLE_NONSTANDARD 1
+#define _GNU_SOURCE
 
 #include "../src/jstr.h"
 #include <assert.h>

@@ -642,11 +642,68 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	const u *h = (const u *)hs + hs_len - ne_len;
-	const int c = *(const u *)ne;
-	for (; h >= (const u *)hs; --h)
-		if (*h == c && !memcmp(h, ne, ne_len))
+	const u *h = (const u *)jstr_memrchr(hs, *(const u *)ne, hs_len - ne_len + 1);
+	if (h == NULL || ne_len == 1)
+		return (char *)h;
+	const u *n = (const u *)ne;
+	if (ne_len == 2) {
+		h += 2;
+		const uint16_t nw = (uint16_t)n[1] << 8 | n[0];
+		uint16_t hw = (uint16_t)h[0] << 8 | h[-1];
+		for (--h; h >= (const u *)hs && hw != nw; hw = hw << 8 | *--h)
+			;
+		if (hw == nw)
 			return (char *)h;
+	} else if (ne_len == 3) {
+		h += 3;
+		const uint32_t nw = (uint32_t)n[2] << 24 | n[1] << 16 | n[0] << 8;
+		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8;
+		for (h -= 2; h >= (const u *)hs && hw != nw; hw = (hw | *--h) << 8)
+			;
+		if (hw == nw)
+			return (char *)h;
+	} else if (ne_len == 4) {
+		h += 4;
+		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
+		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
+		for (h -= 3; h >= (const u *)hs && hw != nw; hw = hw << 8 | *--h)
+			;
+		if (hw == nw)
+			return (char *)h;
+	} else {
+		int c = *(const u *)ne;
+#if JSTR_ENDIAN_LITTLE
+#	define SH <<
+#elif JSTR_ENDIAN_BIG
+#	define SH >>
+#endif
+#if JSTR_HAVE_ATTR_MAY_ALIAS
+#	define EQ32(hs, ne_align) (*(u32 *)(hs) == (uint32_t)ne_align)
+#	define TOWORD32(x)        ((uint32_t)(x)[0] SH 0 * 8 | (uint32_t)(x)[1] SH 1 * 8 | (uint32_t)(x)[2] SH 2 * 8 | (uint32_t)(x)[3] SH 3 * 8)
+#else
+#	define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
+#	define TOWORD32(x)        ((uint32_t)(x)[0] SH 0 * 8 | (uint32_t)(x)[1] SH 1 * 8 | (uint32_t)(x)[2] SH 2 * 8 | (uint32_t)(x)[3] SH 3 * 8)
+#endif
+		typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
+		const uint32_t ne_align = (JSTR_HAVE_ATTR_MAY_ALIAS) ? *(u32 *)n : TOWORD32(n);
+		if (JSTR_HAVE_ATTR_MAY_ALIAS) {
+			ne_len -= 4;
+			ne = (const u *)ne + 4;
+		}
+		for (; h >= (const unsigned char *)hs; --h)
+			if (*h == c) {
+				if (JSTR_HAVE_ATTR_MAY_ALIAS) {
+					if (EQ32(h, ne_align) && !memcmp(h + 4, ne, ne_len))
+						return (char *)h;
+				} else {
+					if (!memcmp(h, ne, ne_len))
+						return (char *)h;
+				}
+			}
+#undef TOWORD32
+#undef EQ32
+#undef SH
+	}
 	return NULL;
 }
 
