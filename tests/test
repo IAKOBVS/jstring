@@ -8,20 +8,15 @@ compile()
 	out=$2
 	shift 2
 	#shellcheck disable=SC2068
-	cc "$file" -o "$out" $@ $flags
+	cc "$file" -o "$out" $@
 	./"$out"
 	rm ./"$out"
 }
 
-flags='-fsanitize=address'
-
 cd "$(dirname "$0")" || exit
-# for header in $(echo *.c); do
-# 	basename=${header%.*}
-# 	compile "$header" "$basename" &
-# 	compile "$header" "$basename"_nolgpl -DJSTR_USE_LGPL=0 &
-# done
-# wait
-compile ./test-memmem.c ./test-memmem &
-# compile ./test-memmem.c ./test-memmem_nolgpl -DJSTR_USE_LGPL=0 &
+for header in $(echo *.c); do
+	basename=${header%.*}
+	compile "$header" "$basename" &
+	compile "$header" "$basename"_nolgpl -DJSTR_USE_LGPL=0 &
+done
 wait
