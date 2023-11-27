@@ -1,0 +1,5 @@
+#!/bin/sh
+for pattern in $(grep 'JSTR_HAVE_.*1' ./jstr-macros.h | sed 's/.*#.*define.*JSTR_//; s/[ \t]*1//g' | sort | uniq); do
+	grep -q "${pattern}[ \t]*0" jstr-macros.h || { echo "$pattern is not defined."; exit 1; } &
+done
+wait
