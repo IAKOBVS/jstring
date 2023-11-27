@@ -882,9 +882,9 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasechr_len(const char *s,
-                     int c,
-                     size_t n)
+pjstr_strcasechr_alpha(const char *s,
+                       int c,
+                       size_t n)
 JSTR_NOEXCEPT
 {
 	if (JSTR_HAVE_STRCSPN_OPTIMIZED) {
@@ -914,7 +914,7 @@ jstr_strcasechr_len(const char *s,
                     size_t n)
 JSTR_NOEXCEPT
 {
-	return (jstr_isalpha(c)) ? pjstr_strcasechr_len(s, c, n) : (char *)memchr(s, c, n);
+	return (jstr_isalpha(c)) ? pjstr_strcasechr_alpha(s, c, n) : (char *)memchr(s, c, n);
 }
 
 /*
@@ -995,7 +995,7 @@ JSTR_NOEXCEPT
 					return (char *)hs - shift;
 			return NULL;
 		} else {
-			hs = pjstr_strcasechr_len(hs, *p, hs_len);
+			hs = pjstr_strcasechr_alpha(hs, *p, hs_len);
 		}
 		if (hs == NULL || ne_len == 1)
 			return (char *)hs;
