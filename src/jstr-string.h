@@ -508,13 +508,13 @@ JSTR_NOEXCEPT
 		enum { MEMCHR_IS_SLOWER = 100 };
 		if (jstr_unlikely(hs_len < ne_len))
 			return NULL;
+		if (jstr_unlikely(ne_len == 0))
+			return (char *)hs;
 		if (JSTR_USE_LGPL)
 			if (jstr_unlikely(ne_len >= MEMCHR_IS_SLOWER))
 				goto MEMMEM;
 		const unsigned char *rare;
 		rare = (const u *)jstr_rarebytefind_len(ne, ne_len);
-		if (jstr_unlikely(rare == NULL))
-			return (void *)hs;
 		size_t shift;
 		shift = JSTR_PTR_DIFF(rare, ne);
 		hs = (const u *)hs + shift;
