@@ -487,8 +487,8 @@ JSTR_NOEXCEPT
 			return pjstr_memmem3((const u *)hs, (const u *)ne, hs_len);
 		if (ne_len == 4)
 			return pjstr_memmem4((const u *)hs, (const u *)ne, hs_len);
-		if (JSTR_USE_LGPL)
 MEMMEM:
+		if (JSTR_USE_LGPL)
 			return pjstr_memmem_lgpl((const u *)hs, hs_len, (const u *)ne, ne_len);
 		else
 			return pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, rare);
