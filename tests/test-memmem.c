@@ -21,8 +21,6 @@
 
    MIT License (Expat) */
 
-#define JSTR_DISABLE_NONSTANDARD k
-
 #include "test.h"
 
 #define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
