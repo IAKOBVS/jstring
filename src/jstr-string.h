@@ -692,7 +692,7 @@ JSTR_NOEXCEPT
 		}
 		for (; h >= (const unsigned char *)hs; --h)
 			if (*h == c) {
-				if (JSTR_HAVE_ATTR_MAY_ALIAS) {
+				if (JSTR_HAVE_UNALIGNED_ACCESS) {
 					if (EQ32(h, ne_align) && !memcmp(h + 4, ne, ne_len))
 						return (char *)h;
 				} else {
