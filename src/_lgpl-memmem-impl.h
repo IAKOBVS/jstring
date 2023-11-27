@@ -10,7 +10,7 @@
 #	define PJSTR_MEMMEM_RETTYPE unsigned char *
 #endif
 #ifndef PJSTR_MEMMEM_FUNC
-#	define PJSTR_MEMMEM_FUNC pjstr_memmem_impl
+#	define PJSTR_MEMMEM_FUNC pjstr_memmem_lgpl
 #endif
 #define PJSTR_MEMMEM_HASH2(p) (((size_t)((p)[0]) - ((size_t)((p)[-1]) << 3)) % 256)
 #ifndef PJSTR_MEMMEM_CHECK_EOL

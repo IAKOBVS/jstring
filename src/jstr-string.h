@@ -435,6 +435,7 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (void *)(hs - 3) : NULL;
 }
 
+#define PJSTR_MEMMEM_RETTYPE void *
 #define PJSTR_MEMMEM_FUNC pjstr_memmem_lgpl
 #include "_lgpl-memmem.h"
 

@@ -54,8 +54,8 @@ PJSTR_END_DECLS
 #		define EQ32(hs, ne_align) (*(u32 *)(hs) == (uint32_t)ne_align)
 #		define EQ64(hs, ne_align) (*(u64 *)(hs) == ne_align)
 #	else
-#		define EQ64(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), 8)
-#		define EQ32(hs, ne_align, ne_len) !memcmp(hs, &(ne_align), 4)
+#		define EQ64(hs, ne_align) !memcmp(hs, &(ne_align), 8)
+#		define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
 #	endif
 #endif
 #define CMP_FUNC PJSTR_RAREBYTE_CMP_FUNC
@@ -79,12 +79,14 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	typedef unsigned char u;
 	int c = *(u *)rarebyte;
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
-	const u *const end = (hs += shift) + (hs_len - shift) - (ne_len - shift) + 1;
+	const u *const end = hs + hs_len - (ne_len - shift) + 1;
+	hs += shift;
 #if USE_UNALIGNED
 	typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
 	typedef uint64_t u64 JSTR_ATTR_MAY_ALIAS;
 	uint64_t ne_align;
-	if (ne_len < 8) {
+	int short_ne = ne_len < 8;
+	if (short_ne) {
 		if (JSTR_HAVE_ATTR_MAY_ALIAS)
 			ne_align = (uint64_t) * (u32 *)ne;
 		else
@@ -103,7 +105,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs) {
 #if USE_UNALIGNED
 		/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
-		if (ne_len < 8) {
+		if (short_ne) {
 			if (EQ32(hs - shift, ne_align) && !jstr_memcmpeq_loop(hs - shift + 4, ne, ne_len))
 				return (ret_ty)(hs - shift);
 		} else {
