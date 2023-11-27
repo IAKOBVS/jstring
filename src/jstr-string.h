@@ -253,11 +253,9 @@ JSTR_NOEXCEPT
 		return strncasecmp(s1, s2, n);
 #endif
 	} else {
-		if (jstr_unlikely(n == 0))
-			return 0;
 		const unsigned char *p1 = (const unsigned char *)s1;
 		const unsigned char *p2 = (const unsigned char *)s2;
-		for (; jstr_tolower(*p1++) == jstr_tolower(*p2++) && n; --n)
+		for (; n && jstr_tolower(*p1++) == jstr_tolower(*p2++); --n)
 			;
 		return n;
 	}
@@ -582,7 +580,7 @@ JSTR_NOEXCEPT
 		;
 	if (*np == '\0')
 		return (char *)hs;
-	if (*hp == '\0')
+	if (jstr_unlikely(*hp == '\0'))
 		return NULL;
 	tmp = JSTR_PTR_DIFF(np, ne);
 	if (JSTR_USE_LGPL) {
@@ -991,18 +989,10 @@ JSTR_NOEXCEPT
 		const char *const start = hs;
 		if (!jstr_isalpha(*p)) {
 			const u *end = (const u *)hs + hs_len - (ne_len - shift) + 1;
-			const u *p2;
 			const int c = *p;
-			size_t n;
-			for (; (hs = (char *)memchr(hs, c, end - (u *)hs)); ++hs) {
-				p = (const u *)hs - shift;
-				p2 = (const u *)ne;
-				n = ne_len;
-				for (; n && (jstr_tolower(*p++) == jstr_tolower(*p2++)); --n)
-					;
-				if (n == 0)
+			for (; (hs = (char *)memchr(hs, c, end - (u *)hs)); ++hs)
+				if (!jstr_strcasecmpeq_len_loop(hs - shift, ne, ne_len))
 					return (char *)hs - shift;
-			}
 			return NULL;
 		} else {
 			hs = pjstr_strcasechr_len(hs, *p, hs_len);
@@ -1076,7 +1066,7 @@ JSTR_NOEXCEPT
 					;
 				if (*(p2 - 1) == '\0')
 					return (char *)hs - shift;
-				if (*p == '\0')
+				if (jstr_unlikely(*p == '\0'))
 					return NULL;
 			}
 			return NULL;
