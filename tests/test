@@ -8,10 +8,12 @@ compile()
 	out=$2
 	shift 2
 	#shellcheck disable=SC2068
-	cc "$file" -o "$out" $@
+	cc "$file" -o "$out" $@ $flags
 	./"$out"
 	rm ./"$out"
 }
+
+flags='-fsanitize=address'
 
 cd "$(dirname "$0")" || exit
 for header in $(echo *.c); do

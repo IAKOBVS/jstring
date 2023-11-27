@@ -436,7 +436,7 @@ JSTR_NOEXCEPT
 }
 
 #define PJSTR_MEMMEM_RETTYPE void *
-#define PJSTR_MEMMEM_FUNC pjstr_memmem_lgpl
+#define PJSTR_MEMMEM_FUNC    pjstr_memmem_lgpl
 #include "_lgpl-memmem.h"
 
 #define PJSTR_RAREBYTE_RETTYPE void *
@@ -642,46 +642,11 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	const u *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
-	if (h == NULL || ne_len == 1)
-		return (char *)h;
-	if (JSTR_PTR_DIFF(h + 1, (const u *)hs) < ne_len)
-		return NULL;
-	const u *const start = (const u *)hs;
-	const u *n = (const u *)ne;
-	if (ne_len == 2) {
-		const uint16_t nw = (uint16_t)n[1] << 8 | n[0];
-		uint16_t hw = (uint16_t)h[0] << 8 | h[-1];
-		for (--h; h >= start && hw != nw; hw = hw << 8 | *--h)
-			;
-		if (hw == nw)
+	const u *h = (const u *)hs + hs_len - ne_len;
+	const int c = *(const u *)ne;
+	for (; h >= (const u *)hs; --h)
+		if (*h == c && !memcmp(h, ne, ne_len))
 			return (char *)h;
-	} else if (ne_len == 3) {
-		const uint32_t nw = (uint32_t)n[2] << 24 | n[1] << 16 | n[0] << 8;
-		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8;
-		for (h -= 2; h >= start && hw != nw; hw = (hw | *--h) << 8)
-			;
-		if (hw == nw)
-			return (char *)h;
-	} else if (ne_len == 4) {
-		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
-		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		for (h -= 3; h >= start && hw != nw; hw = hw << 8 | *--h)
-			;
-		if (hw == nw)
-			return (char *)h;
-	} else {
-		uint32_t nw;
-		uint32_t hw;
-		h -= ne_len - 4;
-		nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
-		hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		n = (const u *)n + 4;
-		ne_len -= 4;
-		for (h -= 3; h >= start; hw = hw << 8 | *--h)
-			if (hw == nw && !memcmp(h + 4, n, ne_len))
-				return (char *)h;
-	}
 	return NULL;
 }
 

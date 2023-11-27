@@ -45,13 +45,13 @@
 
 #define FILL(j, str) assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&(j)), str, strlen(str)))
 
-jstr_ty j = JSTR_INIT;
 
 char buf[4096] = { 0 };
 
 int
 main(int argc, char **argv)
 {
+	jstr_ty j = JSTR_INIT;
 	START();
 	const char *expected;
 	const char *find;

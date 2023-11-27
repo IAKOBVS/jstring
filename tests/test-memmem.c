@@ -32,6 +32,8 @@ simple_strrstr_len(const char *h,
                    const char *n,
                    const size_t nl)
 {
+	if (nl == 0)
+		return (char *)h + hl;
 	if (hl < nl)
 		return NULL;
 	const char *p = h + hl - nl;
