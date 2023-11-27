@@ -48,7 +48,7 @@ PJSTR_END_DECLS
 #		error "Can't detect endianness!"
 #	endif
 #	define TOWORD32(x) ((uint32_t)(x)[3] SH 24 | (uint32_t)(x)[2] SH 16 | (uint32_t)(x)[1] SH 8 | (uint32_t)(x)[0])
-#	define TOWORD64(x) (uint64_t)((uint64_t)(x)[7] SH 56 | (uint64_t)(x)[6] SH 48 | (uint64_t)(x)[5] SH 40 | (uint64_t)(x)[4] SH 32 | (uint64_t)TOWORD32((x)))
+#	define TOWORD64(x) ((uint64_t)(x)[7] SH 56 | (uint64_t)(x)[6] SH 48 | (uint64_t)(x)[5] SH 40 | (uint64_t)(x)[4] SH 32 | (uint64_t)TOWORD32((x)))
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
 #		define EQ32(hs, ne_align) (*(u32 *)(hs) == (uint32_t)ne_align)
 #		define EQ64(hs, ne_align) (*(u64 *)(hs) == ne_align)
@@ -81,9 +81,9 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	u64 ne_align;
 	if (ne_len < 8) {
 		if (JSTR_HAVE_ATTR_MAY_ALIAS)
-			ne_align = (u64) * (u32 *)ne;
+			ne_align = (uint64_t) * (u32 *)ne;
 		else
-			ne_align = (u64)TOWORD32(ne);
+			ne_align = (uint64_t)TOWORD32(ne);
 		ne += 4;
 		ne_len -= 4;
 	} else {
