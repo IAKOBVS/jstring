@@ -560,21 +560,29 @@ JSTR_NOEXCEPT
 
 #ifdef _DIRENT_HAVE_D_NAMLEN
 #	ifndef _D_EXACT_NAMLEN
-#		define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
+#		define JSTR_DIRENT_D_EXACT_NAMLEN(d) ((d)->d_namlen)
+#	else
+#		define JSTR_DIRENT_D_EXACT_NAMLEN(d) _D_EXACT_NAMLEN(d)
 #	endif
 #	ifndef _D_ALLOC_NAMLEN
-#		define _D_ALLOC_NAMLEN(d) (_D_EXACT_NAMLEN(d) + 1)
+#		define JSTR_DIRENT_D_ALLOC_NAMLEN(d) (JSTR_DIRENT_D_EXACT_NAMLEN(d) + 1)
+#	else
+#		define JSTR_DIRENT_D_ALLOC_NAMLEN(d) _D_ALLOC_NAMLEN(d)
 #	endif
 #else
 #	ifndef _D_EXACT_NAMLEN
-#		define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
+#		define JSTR_DIRENT_D_EXACT_NAMLEN(d) (strlen((d)->d_name))
+#	else
+#		define JSTR_DIRENT_D_EXACT_NAMLEN(d) _D_EXACT_NAMLEN(d)
 #	endif
 #	ifndef _D_ALLOC_NAMLEN
+#		define JSTR_DIRENT_D_ALLOC_NAMLEN(c) _D_ALLOC_NAMLEN(d)
+#	else
 #		ifdef _DIRENT_HAVE_D_RECLEN
-#			define _D_ALLOC_NAMLEN(d) (((char *)(d) + (d)->d_reclen) - &(d)->d_name[0])
+#			define JSTR_DIRENT_D_ALLOC_NAMLEN(d) (((char *)(d) + (d)->d_reclen) - &(d)->d_name[0])
 #		else
-#			define _D_ALLOC_NAMLEN(d) (sizeof(d)->d_name > 1 ? sizeof(d)->d_name \
-				                                          : _D_EXACT_NAMLEN(d) + 1)
+#			define JSTR_DIRENT_D_ALLOC_NAMLEN(d) (sizeof(d)->d_name > 1 ? sizeof(d)->d_name \
+				                                                     : JSTR_DIRENT_D_EXACT_NAMLEN(d) + 1)
 #		endif
 #	endif
 #endif
@@ -810,33 +818,33 @@ JSTR_NOEXCEPT
 				continue;
 		}
 		/* Stop processing if DIRPATH is longer than PATH_MAX. */
-		if (
-#if JSTR_HAVE_DIRENT_D_NAMLEN
-		jstr_unlikely(dirpath_len + ep->d_namlen >= JSTRIO_PATH_MAX)
-#else
-		jstr_unlikely(dirpath_len >= JSTRIO_PATH_MAX - JSTRIO_NAME_MAX)
-		&& jstr_unlikely(dirpath_len + strlen(ep->d_name) >= JSTRIO_PATH_MAX)
-#endif
-		) {
-			errno = ENAMETOOLONG;
-			goto err_closedir;
+		if (JSTR_HAVE_DIRENT_D_NAMLEN) {
+			if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(ep) >= JSTRIO_PATH_MAX)) {
+				errno = ENAMETOOLONG;
+				goto err_closedir;
+			}
+		} else {
+			if (jstr_unlikely(dirpath_len >= JSTRIO_PATH_MAX - JSTRIO_NAME_MAX)
+			    && jstr_unlikely(dirpath_len + strlen(ep->d_name) >= JSTRIO_PATH_MAX)) {
+				errno = ENAMETOOLONG;
+				goto err_closedir;
+			}
 		}
-#if !JSTR_HAVE_DIRENT_D_TYPE
-#	if !USE_ATFILE
-		FILL_PATH_ALWAYS(newpath_len, a->dirpath, dirpath_len, ep);
-#	endif
-		STAT_DO((struct stat *)a->ftw.st,
-		        a->ftw.ftw_state,
-		        fd,
-		        ep,
-		        a->dirpath,
-		        if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) {
-			        continue;
-		        } else {
-			        a->ftw.ftw_state = JSTRIO_FTW_STATE_NS;
-			        goto do_fn;
-		        });
-#endif
+		if (!JSTR_HAVE_DIRENT_D_TYPE) {
+			if (!USE_ATFILE)
+				FILL_PATH_ALWAYS(newpath_len, a->dirpath, dirpath_len, ep);
+			STAT_DO((struct stat *)a->ftw.st,
+			        a->ftw.ftw_state,
+			        fd,
+			        ep,
+			        a->dirpath,
+			        if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) {
+				        continue;
+			        } else {
+				        a->ftw.ftw_state = JSTRIO_FTW_STATE_NS;
+				        goto do_fn;
+			        });
+		}
 		if (IS_REG(ep, a->ftw.st)) {
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_F;
 			goto do_reg;
