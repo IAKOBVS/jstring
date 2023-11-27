@@ -685,7 +685,7 @@ JSTR_NOEXCEPT
 #endif
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define EQ32(hs, ne_align) (*(u32 *)(hs) == (uint32_t)ne_align)
-#	define TOWORD32(x)        ((uint32_t)(x)[0] SH 0 * 8 | (uint32_t)(x)[1] SH 1 * 8 | (uint32_t)(x)[2] SH 2 * 8 | (uint32_t)(x)[3] SH 3 * 8)
+#	define TOWORD32(x)        (*(u32 *)x)
 #else
 #	define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
 #	define TOWORD32(x)        ((uint32_t)(x)[0] SH 0 * 8 | (uint32_t)(x)[1] SH 1 * 8 | (uint32_t)(x)[2] SH 2 * 8 | (uint32_t)(x)[3] SH 3 * 8)
@@ -696,7 +696,7 @@ JSTR_NOEXCEPT
 			ne_len -= 4;
 			ne = (const u *)ne + 4;
 		}
-		for (; h >= (const unsigned char *)hs; --h)
+		for (; h >= (const u *)hs; --h)
 			if (*h == c) {
 				if (JSTR_HAVE_UNALIGNED_ACCESS) {
 					if (EQ32(h, ne_align) && !memcmp(h + 4, ne, ne_len))
@@ -779,8 +779,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasestr5plus(const unsigned char *hs,
-                      const unsigned char *const ne)
+pjstr_strcasestr_nolgpl(const unsigned char *hs,
+                        const unsigned char *const ne)
 JSTR_NOEXCEPT
 {
 	const unsigned char *hp;
@@ -861,8 +861,8 @@ pjstr_strcasestr_long(const char *hs,
 JSTR_NOEXCEPT
 {
 	if (JSTR_USE_LGPL) {
-		const size_t ne_len = strlen(ne);
-		const size_t hs_len = jstr_strnlen(hs, ne_len | 512);
+		const size_t ne_len = 4 + strlen(ne + 4);
+		const size_t hs_len = 4 + jstr_strnlen(hs + 4, ne_len | 512);
 		if (hs_len < ne_len)
 			return NULL;
 		if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
@@ -872,10 +872,10 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr_lgpl(hs + 1, hs_len - 1, ne, ne_len);
 	} else {
 		typedef unsigned char u;
-		const size_t ne_len = strlen(ne + 4);
-		if (jstr_unlikely(jstr_strnlen(hs + 4, ne_len) != ne_len))
+		const size_t ne_len = 4 + strlen(ne + 4);
+		if (jstr_unlikely(4 + jstr_strnlen(hs + 4, ne_len) != ne_len))
 			return NULL;
-		return pjstr_strcasestr5plus((const u *)hs, (const u *)ne);
+		return pjstr_strcasestr_nolgpl((const u *)hs, (const u *)ne);
 	}
 }
 
@@ -1019,7 +1019,7 @@ JSTR_NOEXCEPT
 		hs_len -= shift;
 		const char *const start = hs;
 		if (!jstr_isalpha(*p)) {
-			const u *end = (const u *)hs + hs_len - (ne_len - shift) + 1;
+			const u *const end = (const u *)hs + hs_len - (ne_len - shift) + 1;
 			const int c = *p;
 			for (; (hs = (char *)memchr(hs, c, end - (u *)hs)); ++hs)
 				if (!jstr_strcasecmpeq_len_loop(hs - shift, ne, ne_len))
