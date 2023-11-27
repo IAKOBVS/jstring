@@ -34,7 +34,7 @@ PJSTR_END_DECLS
 #	define PJSTR_RAREBYTE_RETTYPE void *
 #endif
 #ifndef PJSTR_RAREBYTE_FUNC
-#	define PJSTR_RAREBYTE_FUNC pjstr_memmem
+#	define PJSTR_RAREBYTE_FUNC pjstr_memmem_rarebyte
 #endif
 
 #if !defined PJSTR_RAREBYTE_CMP_FUNC && JSTR_HAVE_UNALIGNED_ACCESS
@@ -77,7 +77,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 {
 	typedef PJSTR_RAREBYTE_RETTYPE ret_ty;
 	typedef unsigned char u;
-	int c = *(u *)rarebyte;
+	const int c = *(u *)rarebyte;
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
 	const u *const end = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
@@ -85,7 +85,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
 	typedef uint64_t u64 JSTR_ATTR_MAY_ALIAS;
 	uint64_t ne_align;
-	int short_ne = ne_len < 8;
+	const int short_ne = ne_len < 8;
 	if (short_ne) {
 		if (JSTR_HAVE_ATTR_MAY_ALIAS)
 			ne_align = (uint64_t) * (u32 *)ne;

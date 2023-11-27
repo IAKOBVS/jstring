@@ -621,6 +621,12 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
+#if 0
+#	define PJSTR_RAREBYTE_RETTYPE char *
+#	define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
+#	include "_jstr-rarebyte-strrstr.h"
+#endif
+
 /*
    Find last NE in HS.
    Return value:
@@ -671,7 +677,7 @@ JSTR_NOEXCEPT
 		if (hw == nw)
 			return (char *)h;
 	} else {
-		int c = *(const u *)ne;
+		const int c = *(const u *)ne;
 #if JSTR_ENDIAN_LITTLE
 #	define SH <<
 #elif JSTR_ENDIAN_BIG
