@@ -775,7 +775,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasestr5plus_len(const unsigned char *hs,
+pjstr_strcasestr_len_rarebyte_notfound(const unsigned char *hs,
                           const unsigned char *ne,
                           size_t ne_len)
 JSTR_NOEXCEPT
@@ -826,7 +826,7 @@ pjstr_strcasestr(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasestr_bmh(const char *hs,
+pjstr_strcasestr_long(const char *hs,
                      const char *ne)
 JSTR_NOEXCEPT
 {
@@ -980,7 +980,7 @@ JSTR_NOEXCEPT
 				const u *const p = (const u *)jstr_rarebytefindcase_len(ne, ne_len);
 				if (p)
 					return pjstr_strcasestr_len_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, p);
-				return pjstr_strcasestr5plus_len((const u *)hs, (const u *)ne, ne_len);
+				return pjstr_strcasestr_len_rarebyte_notfound((const u *)hs, (const u *)ne, ne_len);
 			}
 		}
 		const u *p = (const u *)jstr_rarebytefindeither_len(ne, ne_len);
@@ -1053,7 +1053,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_STRCASESTR && (JSTR_HAVE_STRCASESTR_OPTIMIZED || !JSTR_USE_LGPL) && !JSTR_DISABLE_NONSTANDARD) {
+	if (JSTR_HAVE_STRCASESTR && JSTR_HAVE_STRCASESTR_OPTIMIZED && !JSTR_DISABLE_NONSTANDARD) {
 #if JSTR_HAVE_STRCASESTR
 		return (char *)strcasestr(hs, ne);
 #endif
@@ -1117,11 +1117,11 @@ JSTR_NOEXCEPT
 		}
 		if (jstr_unlikely(hs[4] == '\0'))
 			return NULL;
-		return pjstr_strcasestr_bmh(hs, ne);
+		return pjstr_strcasestr_long(hs, ne);
 STRSTR:
 		if (!memcmp(hs, ne, ne_len))
 			return (char *)hs;
-		if (jstr_unlikely(hs[ne_len] == '\0'))
+		if (hs[ne_len] == '\0')
 			return NULL;
 		return (char *)strstr(hs + 1, ne);
 	}

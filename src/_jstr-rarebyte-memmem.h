@@ -60,6 +60,10 @@ PJSTR_END_DECLS
 #endif
 #define CMP_FUNC PJSTR_RAREBYTE_CMP_FUNC
 
+#ifndef USE_UNALIGNED
+#	define USE_UNALIGNED 0
+#endif
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
