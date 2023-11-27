@@ -511,17 +511,17 @@ JSTR_NOEXCEPT
 		if (JSTR_USE_LGPL)
 			if (jstr_unlikely(ne_len >= MEMCHR_IS_SLOWER))
 				goto MEMMEM;
-		const unsigned char *p;
-		p = (const u *)jstr_rarebytefind_len(ne, ne_len);
-		if (jstr_unlikely(p == NULL))
+		const unsigned char *rare;
+		rare = (const u *)jstr_rarebytefind_len(ne, ne_len);
+		if (jstr_unlikely(rare == NULL))
 			return (void *)hs;
 		size_t shift;
-		shift = JSTR_PTR_DIFF(p, ne);
+		shift = JSTR_PTR_DIFF(rare, ne);
 		hs = (const u *)hs + shift;
 		hs_len -= shift;
 		const void *start;
 		start = (const void *)hs;
-		hs = (void *)memchr(hs, *p, hs_len - (ne_len - shift) + 1);
+		hs = (void *)memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
 		if (hs == NULL || ne_len == 1)
 			return (void *)hs;
 		hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
@@ -538,7 +538,7 @@ JSTR_NOEXCEPT
 MEMMEM:
 			return pjstr_memmem_lgpl((const u *)hs, hs_len, (const u *)ne, ne_len);
 		else
-			return pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, p);
+			return pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, rare);
 	}
 }
 
@@ -592,14 +592,14 @@ JSTR_NOEXCEPT
 			return NULL;
 		return (char *)pjstr_memmem_lgpl((const u *)hs, hs_len, (const u *)ne, ne_len);
 	} else {
-		const u *const p = (const u *)jstr_rarebytefind(ne);
-		const size_t ne_len = (p > np) ? (strlen((char *)p) + JSTR_PTR_DIFF(p, ne)) : (strlen((char *)np) + tmp);
+		const u *const rare = (const u *)jstr_rarebytefind(ne);
+		const size_t ne_len = (rare > np) ? (strlen((char *)rare) + JSTR_PTR_DIFF(rare, ne)) : (strlen((char *)np) + tmp);
 		if (jstr_unlikely(n < ne_len))
 			return NULL;
 		const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
 		if (jstr_unlikely(hs_len < ne_len))
 			return NULL;
-		return (char *)pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, p);
+		return (char *)pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, rare);
 	}
 }
 
