@@ -47,8 +47,9 @@ PJSTR_END_DECLS
 #	else
 #		error "Can't detect endianness."
 #	endif
-#	define TOWORD32(x) ((uint32_t)(x)[3] SH 24 | (uint32_t)(x)[2] SH 16 | (uint32_t)(x)[1] SH 8 | (uint32_t)(x)[0])
-#	define TOWORD64(x) ((uint64_t)(x)[7] SH 56 | (uint64_t)(x)[6] SH 48 | (uint64_t)(x)[5] SH 40 | (uint64_t)(x)[4] SH 32 | (uint64_t)TOWORD32((x)))
+#	define I(i)        (i * 8)
+#	define TOWORD32(x) ((uint32_t)(x)[0] SH I(0) | (uint32_t)(x)[1] SH I(1) | (uint32_t)(x)[2] SH I(2) | (uint32_t)(x)[3] SH I(3))
+#	define TOWORD64(x) ((uint64_t)TOWORD32((x)) | (uint64_t)(x)[4] SH I(4) | (uint64_t)(x)[5] SH I(5) | (uint64_t)(x)[6] SH I(6) | (uint64_t)(x)[7] SH I(7))
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
 #		define EQ32(hs, ne_align) (*(u32 *)(hs) == (uint32_t)ne_align)
 #		define EQ64(hs, ne_align) (*(u64 *)(hs) == ne_align)
