@@ -604,6 +604,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
 	const size_t hs_len = jstr_strnlen(hs, n);
+	if (jstr_unlikely(hs_len < ne_len))
+		return NULL;
 	return (char *)pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
 #	else
 	const u *const p = jstr_rarebytefind(ne);
@@ -611,7 +613,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
 	const size_t hs_len = jstr_strnlen(hs, n);
-	if (jstr_unlikely(jstr_strnlen(hs, ne_len) != ne_len))
+	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	return (char *)pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, p);
 #	endif
