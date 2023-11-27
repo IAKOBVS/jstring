@@ -506,11 +506,11 @@ ret:
 
 #if !JSTR_HAVE_MEMMEM || JSTR_DISABLE_NONSTANDARD
 #	if JSTR_USE_LGPL
-#		define PJSTR_MEMMEM_FUNC pjstr_memmem
+#		define PJSTR_MEMMEM_FUNC pjstr_memmem_lgpl
 #		include "_lgpl-memmem.h"
 #	else
 #		define PJSTR_RAREBYTE_RETTYPE void *
-#		define PJSTR_RAREBYTE_FUNC    pjstr_memmem
+#		define PJSTR_RAREBYTE_FUNC    pjstr_memmem_rarebyte
 #		include "_jstr-rarebyte-memmem.h"
 #	endif
 #endif
@@ -560,9 +560,9 @@ JSTR_NOEXCEPT
 		return pjstr_memmem4((const u *)hs, (const u *)ne, hs_len);
 #	if JSTR_USE_LGPL
 MEMMEM:
-	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
+	return pjstr_memmem_lgpl((const u *)hs, hs_len, (const u *)ne, ne_len);
 #	else
-	return pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, p);
+	return pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, p);
 #	endif
 #endif
 }
@@ -599,11 +599,21 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_MEMMEM
 	return (char *)memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 #else
+	const u *hp = (const u *)hs;
+	const u *np = (const u *)ne;
+	size_t tmp = n;
+	for (; tmp-- && *hp == *np && *hp; ++hp, ++np)
+		;
+	if (*np == '\0')
+		return (char *)hs;
+	if (*hp == '\0')
+		return NULL;
 #	if JSTR_USE_LGPL
-	const size_t ne_len = strlen(ne);
+	tmp = JSTR_PTR_DIFF(np, ne);
+	const size_t ne_len = strlen((char *)np) + tmp;
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
-	const size_t hs_len = jstr_strnlen(hs, n);
+	const size_t hs_len = jstr_strnlen(hs + tmp, n - tmp) + tmp;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	return (char *)pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
