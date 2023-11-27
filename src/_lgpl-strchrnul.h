@@ -18,10 +18,10 @@
 #ifndef JSTR_LGPL_STRCHRNUL_H
 #define JSTR_LGPL_STRCHRNUL_H 1
 
-#include "jstr-macros.h"
-#include "jstr-word-at-a-time.h"
-
 #ifndef JSTR_LGPL_IMPL
+#	include "jstr-macros.h"
+#	include "jstr-word-at-a-time.h"
+
 JSTR_FUNC_PURE
 static char *
 jstr_strchrnul(const char *s,

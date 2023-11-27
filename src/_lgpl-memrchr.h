@@ -22,11 +22,11 @@
 #include "jstr-macros.h"
 #include "jstr-word-at-a-time.h"
 
+#ifndef JSTR_LGPL_IMPL
 PJSTR_BEGIN_DECLS
-#include <stddef.h>
+#	include <stddef.h>
 PJSTR_END_DECLS
 
-#ifndef JSTR_LGPL_IMPL
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *

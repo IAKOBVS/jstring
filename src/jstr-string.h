@@ -589,7 +589,7 @@ jstr_strnstr(const char *hs,
              size_t n)
 JSTR_NOEXCEPT
 {
-	typedef const unsigned char cu;
+	typedef unsigned char u;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
 	const char *const start = hs;
@@ -600,17 +600,18 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
 	if (ne[2] == '\0')
-		return pjstr_strnstr2((cu *)hs, (cu *)ne, n);
+		return pjstr_strnstr2((const u*)hs, (const u*)ne, n);
 	if (jstr_unlikely(hs[2] == '\0'))
 		return NULL;
 	if (ne[3] == '\0')
-		return pjstr_strnstr3((cu *)hs, (cu *)ne, n);
+		return pjstr_strnstr3((const u*)hs, (const u*)ne, n);
 	if (jstr_unlikely(hs[3] == '\0'))
 		return NULL;
 	if (ne[4] == '\0')
-		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
+		return pjstr_strnstr4((const u*)hs, (const u*)ne, n);
 	if (jstr_unlikely(hs[4] == '\0'))
 		return NULL;
+	/* return pjstr_strnstr((const u *)hs, (const u *)ne, n); */
 	return (char *)jstr_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 }
 

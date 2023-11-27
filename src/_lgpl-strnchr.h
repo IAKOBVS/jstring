@@ -18,16 +18,15 @@
 #ifndef JSTR_LGPL_STRNCHR_H
 #define JSTR_LGPL_STRNCHR_H 1
 
-#include "jstr-macros.h"
-#include "jstr-word-at-a-time.h"
-
-PJSTR_BEGIN_DECLS
-#include <stddef.h>
-PJSTR_END_DECLS
-
 #define PJSTR_SADD(x, y) (const char *)((uintptr_t)(y) > UINTPTR_MAX - (uintptr_t)(x) ? UINTPTR_MAX : (uintptr_t)(x) + (uintptr_t)(y))
 
 #ifndef JSTR_LGPL_IMPL
+#	include "jstr-macros.h"
+#	include "jstr-word-at-a-time.h"
+PJSTR_BEGIN_DECLS
+#	include <stddef.h>
+PJSTR_END_DECLS
+
 JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *s,
