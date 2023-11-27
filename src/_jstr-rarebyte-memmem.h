@@ -114,14 +114,14 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	return NULL;
 }
 
-#undef USE_MEMCMP
 #undef USE_UNALIGNED
-#undef CMP_FUNC
 #undef EQ32
 #undef EQ64
 #undef TOWORD64
 #undef TOWORD32
+#undef I
 #undef SH
 #undef PJSTR_RAREBYTE_FUNC
 #undef PJSTR_RAREBYTE_CMP_FUNC
+#undef CMP_FUNC
 #undef PJSTR_RAREBYTE_RETTYPE
