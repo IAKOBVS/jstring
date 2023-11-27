@@ -584,8 +584,8 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (*hp == '\0')
 		return NULL;
+	tmp = JSTR_PTR_DIFF(np, ne);
 	if (JSTR_USE_LGPL) {
-		tmp = JSTR_PTR_DIFF(np, ne);
 		const size_t ne_len = strlen((char *)np) + tmp;
 		if (jstr_unlikely(n < ne_len))
 			return NULL;
@@ -595,10 +595,10 @@ JSTR_NOEXCEPT
 		return (char *)pjstr_memmem_lgpl((const u *)hs, hs_len, (const u *)ne, ne_len);
 	} else {
 		const u *const p = (const u *)jstr_rarebytefind(ne);
-		const size_t ne_len = strlen((char *)(char *)p) + JSTR_PTR_DIFF(p, ne);
+		const size_t ne_len = (p > np) ? (strlen((char *)p) + JSTR_PTR_DIFF(p, ne)) : (strlen((char *)np) + tmp);
 		if (jstr_unlikely(n < ne_len))
 			return NULL;
-		const size_t hs_len = jstr_strnlen(hs, n);
+		const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
 		if (jstr_unlikely(hs_len < ne_len))
 			return NULL;
 		return (char *)pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, p);
