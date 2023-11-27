@@ -75,11 +75,19 @@
 #endif
 
 /*
-   ./remove-lgpl will remove all LGPL code from ./jstr.
    Defining JSTR_USE_LGPL as 0 will exclude all LGPL code from being included.
 */
 #ifndef JSTR_USE_LGPL
 #	define JSTR_USE_LGPL 1
+#endif
+
+/*
+   Always prefer standard functions over user functions.
+   For example, use libc strcasestr() if available over
+   our own strcasestr() in jstr_strcasestr().
+*/
+#ifndef JSTR_USE_STANDARD_ALWAYS
+#	define JSTR_USE_STANDARD_ALWAYS 0
 #endif
 
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG

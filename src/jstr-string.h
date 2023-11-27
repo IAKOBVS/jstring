@@ -453,7 +453,7 @@ jstr_memmem(const void *hs,
             size_t ne_len)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_MEMMEM && !JSTR_DISABLE_NONSTANDARD) {
+	if (JSTR_HAVE_MEMMEM && JSTR_USE_STANDARD_ALWAYS && !JSTR_DISABLE_NONSTANDARD) {
 #if JSTR_HAVE_MEMMEM
 		return memmem(hs, hs_len, ne, ne_len);
 #endif
@@ -965,7 +965,7 @@ jstr_strcasestr_len(const char *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_STRCASESTR && JSTR_HAVE_STRCASESTR_OPTIMIZED && !JSTR_DISABLE_NONSTANDARD) {
+	if (JSTR_HAVE_STRCASESTR && JSTR_USE_STANDARD_ALWAYS && JSTR_HAVE_STRCASESTR_OPTIMIZED && !JSTR_DISABLE_NONSTANDARD) {
 #if JSTR_HAVE_STRCASESTR
 		return (char *)strcasestr(hs, ne);
 #endif
@@ -1047,7 +1047,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_STRCASESTR && JSTR_HAVE_STRCASESTR_OPTIMIZED && !JSTR_DISABLE_NONSTANDARD) {
+	if (JSTR_HAVE_STRCASESTR && JSTR_USE_STANDARD_ALWAYS && JSTR_HAVE_STRCASESTR_OPTIMIZED && !JSTR_DISABLE_NONSTANDARD) {
 #if JSTR_HAVE_STRCASESTR
 		return (char *)strcasestr(hs, ne);
 #endif
