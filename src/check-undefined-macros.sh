@@ -23,6 +23,12 @@
 #
 # MIT License (Expat)
 
-cd "$(dirname "$0")" || exit
-./check-undefined-macros.sh 'JSTR_HAVE' ./jstr-macros.h
-./check-undefined-macros.sh 'JSTR_OS' ./jstr-macros-os.h
+prefix=$1
+file=$2
+for pattern in $(grep "${prefix}_.*1" "$file" | sed 's/.*#.*define.*JSTR_//; s/[ \t][ \t]*1//g' | sort | uniq); do
+	if ! grep -q "${pattern}[ \t]*0" "$file"; then
+		echo "$pattern is not defined in $file."
+		exit 1
+	fi &
+done
+wait

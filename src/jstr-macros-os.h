@@ -26,136 +26,306 @@
 
 #if defined __linux__ || defined linux || defined __linux
 #	define JSTR_OS_LINUX 1
-#	if defined __gnu_linux__
-#		define JSTR_OS_GNULINUX 1
-#	elif defined __ANDROID__
-#		define JSTR_OS_ANDROID 1
-#	endif
-#elif defined __FreeBSD__
+#else
+#	define JSTR_OS_LINUX 0
+#endif
+#if defined __gnu_linux__
+#	define JSTR_OS_GNULINUX 1
+#else
+#	define JSTR_OS_GNULINUX 0
+#endif
+#if defined __ANDROID__
+#	define JSTR_OS_ANDROID 1
+#else
+#	define JSTR_OS_ANDROID 0
+#endif
+#if defined __FreeBSD__
 #	define JSTR_OS_FREEBSD 1
-#elif defined __NetBSD__
+#else
+#	define JSTR_OS_FREEBSD 0
+#endif
+#if defined __NetBSD__
 #	define JSTR_OS_NETBSD 1
-#elif defined __OpenBSD__
+#else
+#	define JSTR_OS_NETBSD 0
+#endif
+#if defined __OpenBSD__
 #	define JSTR_OS_OPENBSD 1
-#elif defined __bsdi__
+#else
+#	define JSTR_OS_OPENBSD 0
+#endif
+#if defined __bsdi__
 #	define JSTR_OS_BSDI 1
-#elif defined __DragonFly__
+#else
+#	define JSTR_OS_BSDI 0
+#endif
+#if defined __DragonFly__
 #	define JSTR_OS_DRAGONFLYBSD 1
-#elif defined _AIX || defined __TOS_AIX__
+#else
+#	define JSTR_OS_DRAGONFLYBSD 0
+#endif
+#if defined _AIX || defined __TOS_AIX__
 #	define JSTR_OS_AIX 1
-#elif defined UTS
+#else
+#	define JSTR_OS_AIX 0
+#endif
+#if defined UTS
 #	define JSTR_OS_UTS 1
-#elif defined AMIGA || defined __amigaos__
+#else
+#	define JSTR_OS_UTS 0
+#endif
+#if defined AMIGA || defined __amigaos__
 #	define JSTR_OS_AMIGA 1
-#elif defined aegis
+#else
+#	define JSTR_OS_AMIGA 0
+#endif
+#if defined aegis
 #	define JSTR_OS_APOLLOAEGIS 1
-#elif defined apollo
+#else
+#	define JSTR_OS_APOLLOAEGIS 0
+#endif
+#if defined apollo
 #	define JSTR_OS_APOLLODOMAIN 1
-#elif defined __BEOS__
+#else
+#	define JSTR_OS_APOLLODOMAIN 0
+#endif
+#if defined __BEOS__
 #	define JSTR_OS_BE 1
-#elif defined __bg__ || defined __THW_BLUEGEN__
+#else
+#	define JSTR_OS_BE 0
+#endif
+#if defined __bg__ || defined __THW_BLUEGEN__
 #	define JSTR_OS_BLUEGENE 1
-#elif defined __convex__
+#else
+#	define JSTR_OS_BLUEGENE 0
+#endif
+#if defined __convex__
 #	define JSTR_OS_CONVEX 1
-#elif defined DGUX || defined __DGUX__ || defined __dgux__
+#else
+#	define JSTR_OS_CONVEX 0
+#endif
+#if defined DGUX || defined __DGUX__ || defined __dgux__
 #	define JSTR_OS_DGUX 1
-#elif defined _SEQUENT_ || defined sequent
+#else
+#	define JSTR_OS_DGUX 0
+#endif
+#if defined _SEQUENT_ || defined sequent
 #	define JSTR_OS_DYNIXPTX 1
-#elif defined __EMX__
+#else
+#	define JSTR_OS_DYNIXPTX 0
+#endif
+#if defined __EMX__
 #	define JSTR_OS_EMX 1
-#elif defined __GNU__ || defined __gnu_hurd__
+#else
+#	define JSTR_OS_EMX 0
+#endif
+#if defined __GNU__ || defined __gnu_hurd__
 #	define JSTR_OS_GNUHURD 1
-#elif defined __FreeBSD_kernel__ && defined __GLIBC__
+#else
+#	define JSTR_OS_GNUHURD 0
+#endif
+#if defined __FreeBSD_kernel__ && defined __GLIBC__
 #	define JSTR_OS_GNUKFREEBSD 1
-#elif defined __hiuxmpp
+#else
+#	define JSTR_OS_GNUKFREEBSD 0
+#endif
+#if defined __hiuxmpp
 #	define JSTR_OS_HIUXMPP 1
-#elif defined _hpux || defined hpux || defined __hpux
+#else
+#	define JSTR_OS_HIUXMPP 0
+#endif
+#if defined _hpux || defined hpux || defined __hpux
 #	define JSTR_OS_HPUX 1
-#elif defined __OS400__
+#else
+#	define JSTR_OS_HPUX 0
+#endif
+#if defined __OS400__
 #	define JSTR_OS_IBMOS400 1
-#elif defined sgi || defined __sgi
+#else
+#	define JSTR_OS_IBMOS400 0
+#endif
+#if defined sgi || defined __sgi
 #	define JSTR_OS_IRIX 1
-#elif defined __Lynx__
+#else
+#	define JSTR_OS_IRIX 0
+#endif
+#if defined __Lynx__
 #	define JSTR_OS_LYNX 1
-#elif defined macintosh || defined Macintosh || (defined __APPLE__ && defined __MACH__)
+#else
+#	define JSTR_OS_LYNX 0
+#endif
+#if defined macintosh || defined Macintosh || (defined __APPLE__ && defined __MACH__)
 #	define JSTR_OS_MAC 1
-#elif defined __minix
+#else
+#	define JSTR_OS_MAC 0
+#endif
+#if defined __minix
 #	define JSTR_OS_MINIX 1
-#elif defined __MORPHOS__
+#else
+#	define JSTR_OS_MINIX 0
+#endif
+#if defined __MORPHOS__
 #	define JSTR_OS_MORPH 1
-#elif defined mpeix || defined __mpexl
+#else
+#	define JSTR_OS_MORPH 0
+#endif
+#if defined mpeix || defined __mpexl
 #	define JSTR_OS_MPEIX 1
-#elif defined MSDOS || defined __MSDOS__ || defined _MSDOS || defined __DOS__
+#else
+#	define JSTR_OS_MPEIX 0
+#endif
+#if defined MSDOS || defined __MSDOS__ || defined _MSDOS || defined __DOS__
 #	define JSTR_OS_MSDOS 1
-#elif defined __TANDEM
+#else
+#	define JSTR_OS_MSDOS 0
+#endif
+#if defined __TANDEM
 #	define JSTR_OS_NONSTOP 1
-#elif defined OS2 || defined _OS2 || defined __OS2__ || defined __TOS_OS2__
+#else
+#	define JSTR_OS_NONSTOP 0
+#endif
+#if defined OS2 || defined _OS2 || defined __OS2__ || defined __TOS_OS2__
 #	define JSTR_OS_OS2 1
-#elif defined __palmos__
+#else
+#	define JSTR_OS_OS2 0
+#endif
+#if defined __palmos__
 #	define JSTR_OS_PALM 1
-#elif defined EPLAN9
+#else
+#	define JSTR_OS_PALM 0
+#endif
+#if defined EPLAN9
 #	define JSTR_OS_PLAN9 1
-#elif defined pyr
+#else
+#	define JSTR_OS_PLAN9 0
+#endif
+#if defined pyr
 #	define JSTR_OS_PYRAMIDDCOSX 1
-#elif defined __QNX__ || defined __QNXNTO__
+#else
+#	define JSTR_OS_PYRAMIDDCOSX 0
+#endif
+#if defined __QNX__ || defined __QNXNTO__
 #	define JSTR_OS_QNSX 1
-#elif defined sinux
+#else
+#	define JSTR_OS_QNSX 0
+#endif
+#if defined sinux
 #	define JSTR_OS_RELIANTUNIX 1
-#elif defined M_I386 || defined M_XENIX || defined _SCO_DS
+#else
+#	define JSTR_OS_RELIANTUNIX 0
+#endif
+#if defined M_I386 || defined M_XENIX || defined _SCO_DS
 #	define JSTR_OS_SCOOPENSERVER 1
-#elif defined sun || defined __sun
+#else
+#	define JSTR_OS_SCOOPENSERVER 0
+#endif
+#if defined sun || defined __sun
 #	if defined __SVR4 || defined __svr4__
 #		define JSTR_OS_SOLARIS 1
+#		define JSTR_OS_SUNOS   0
 #	else
-#		define JSTR_OS_SUNOS 1
+#		define JSTR_OS_SOLARIS 0
+#		define JSTR_OS_SUNOS   1
 #	endif
-#elif defined __VOS__
+#else
+#	define JSTR_OS_SOLARIS 0
+#	define JSTR_OS_SUNOS   0
+#endif
+#if defined __VOS__
 #	define JSTR_OS_STRATUSVOX 1
-#elif defined __SYLLABLE__
+#else
+#	define JSTR_OS_STRATUSVOX 0
+#endif
+#if defined __SYLLABLE__
 #	define JSTR_OS_SYLLABLE 1
-#elif defined __SYMBIAN32__
+#else
+#	define JSTR_OS_SYLLABLE 0
+#endif
+#if defined __SYMBIAN32__
 #	define JSTR_OS_SYMBIAN 1
-#elif defined __osf__ || defined __osf
+#else
+#	define JSTR_OS_SYMBIAN 0
+#endif
+#if defined __osf__ || defined __osf
 #	define JSTR_OS_TRU64OSF1 1
-#elif defined ultrix || defined __ultrix || defined __ultrix__ || (defined unix && defined vax)
+#else
+#	define JSTR_OS_TRU64OSF1 0
+#endif
+#if defined ultrix || defined __ultrix || defined __ultrix__ || (defined unix && defined vax)
 #	define JSTR_OS_ULTRIX 1
-#elif defined _UNICOS
+#else
+#	define JSTR_OS_ULTRIX 0
+#endif
+#if defined _UNICOS
 #	define JSTR_OS_UNIC 1
-#elif defined sco || defined _UNIXWARE7
+#else
+#	define JSTR_OS_UNIC 0
+#endif
+#if defined sco || defined _UNIXWARE7
 #	define JSTR_OS_UNIXWARE 1
-#elif defined VMS || defined __VMS
+#else
+#	define JSTR_OS_UNIXWARE 0
+#endif
+#if defined VMS || defined __VMS
 #	define JSTR_OS_VMS 1
-#elif defined __VXWORKS__ || defined __vxworks
+#else
+#	define JSTR_OS_VMS 0
+#endif
+#if defined __VXWORKS__ || defined __vxworks
 #	define JSTR_OS_VXWORKS 1
-#elif defined _WIN16 || defined _WIN32 || defined _WIN64 || defined __WIN32__ || defined __TOS_WIN__ || defined __WINDOWS__
+#else
+#	define JSTR_OS_VXWORKS 0
+#endif
+#if defined _WIN16 || defined _WIN32 || defined _WIN64 || defined __WIN32__ || defined __TOS_WIN__ || defined __WINDOWS__
 #	define JSTR_OS_WINDOWS 1
-#elif defined _WIN32_WCE
+#else
+#	define JSTR_OS_WINDOWS 0
+#endif
+#if defined _WIN32_WCE
 #	define JSTR_OS_WINDOWSCE 1
-#elif defined _WINDU_SOURCE
+#else
+#	define JSTR_OS_WINDOWSCE 0
+#endif
+#if defined _WINDU_SOURCE
 #	define JSTR_OS_WINDU 1
-#elif defined __MVS__ || defined __HOS_MVS__ || defined __TOS_MVS__
+#else
+#	define JSTR_OS_WINDU 0
+#endif
+#if defined __MVS__ || defined __HOS_MVS__ || defined __TOS_MVS__
 #	define JSTR_OS_Z 1
 #else
-#	define JSTR_OS_GENERIC 1
-#endif /* os */
+#	define JSTR_OS_Z 0
+#endif
 
 #if defined __unix__ || defined __unix
 #	define JSTR_ENV_UNIX 1
+#else
+#	define JSTR_ENV_UNIX 0
 #endif
 #if defined __FreeBSD__ || defined __NetBSD__ || defined __OpenBSD__ || defined __bsdi__ || defined __DragonFly__ || defined _SYSTYPE_BSD
 #	define JSTR_ENV_BSD 1
+#else
+#	define JSTR_ENV_BSD 0
 #endif
 #ifdef __CYGWIN__
 #	define JSTR_ENV_CYGWIN 1
+#else
+#	define JSTR_ENV_CYGWIN 0
 #endif
 #ifdef __INTERIX
 #	define JSTR_ENV_INTERIX 1
+#else
+#	define JSTR_ENV_INTERIX 0
 #endif
 #if defined __sysv__ || defined __SVR4 || defined __svr4__ || defined _SYSTYPE_SRV4
 #	define JSTR_ENV_SVR4 1
+#else
+#	define JSTR_ENV_SVR4 0
 #endif
 #if defined _UWIN
 #	define JSTR_ENV_UWIN 1
+#else
+#	define JSTR_ENV_UWIN 0
 #endif /* env */
 
 #endif /* JSTR_MACROS_OS_H */
