@@ -33,5 +33,6 @@ for file in $@; do
 		if ! grep -q "^[ \t]*#[ \t]*undef[ \t][ \t]*$macro" "$file"; then
 			echo "$macro is not undef'd after used in $file"
 		fi
-	done
+	done &
 done
+wait
