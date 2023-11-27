@@ -507,10 +507,11 @@ JSTR_NOEXCEPT
 #endif
 	} else {
 		typedef unsigned char u;
+		enum { MEMCHR_IS_SLOWER = 100 };
 		if (jstr_unlikely(hs_len < ne_len))
 			return NULL;
 		if (JSTR_USE_LGPL)
-			if (jstr_unlikely(ne_len >= 100))
+			if (jstr_unlikely(ne_len >= MEMCHR_IS_SLOWER))
 				goto MEMMEM;
 		const unsigned char *p;
 		p = (const u *)jstr_rarebytefind_len(ne, ne_len);
@@ -776,8 +777,8 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 pjstr_strcasestr_len_rarebyte_notfound(const unsigned char *hs,
-                          const unsigned char *ne,
-                          size_t ne_len)
+                                       const unsigned char *ne,
+                                       size_t ne_len)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
@@ -827,7 +828,7 @@ pjstr_strcasestr(const unsigned char *hs,
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasestr_long(const char *hs,
-                     const char *ne)
+                      const char *ne)
 JSTR_NOEXCEPT
 {
 	if (JSTR_USE_LGPL) {
