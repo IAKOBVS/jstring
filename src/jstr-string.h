@@ -312,9 +312,9 @@ JSTR_NOEXCEPT
 	} else {
 		const unsigned char *p1 = (const unsigned char *)s1;
 		const unsigned char *p2 = (const unsigned char *)s2;
-		while (jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++)
+		for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++; ++p2)
 			;
-		return *(p2 - 1);
+		return *p2;
 	}
 }
 
@@ -766,7 +766,7 @@ JSTR_NOEXCEPT
 			if (*np == '\0')
 				return (char *)hs - 3;
 			if (jstr_unlikely(*hp == '\0'))
-				return NULL;
+				break;
 		}
 	return NULL;
 }
@@ -796,20 +796,20 @@ pjstr_strcasestr(const unsigned char *hs,
                  const unsigned char *const rarebyte)
 {
 	typedef unsigned char u;
-	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
-	if (jstr_unlikely(jstr_strnlen((char *)hs, idx) != idx))
+	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
+	if (jstr_unlikely(jstr_strnlen((char *)hs, shift) != shift))
 		return NULL;
 	const u *hp, *np;
 	const int c = *(u *)rarebyte;
-	for (hs += idx; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
-		for (hp = hs - idx, np = ne;
+	for (hs += shift; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
+		for (hp = hs - shift, np = ne;
 		     L(*hp) == L(*np) && *hp;
 		     ++hp, ++np)
 			;
 		if (*np == '\0')
-			return (char *)hs - idx;
+			return (char *)hs - shift;
 		if (jstr_unlikely(*hp == '\0'))
-			return NULL;
+			break;
 	}
 	return NULL;
 }
@@ -1056,18 +1056,19 @@ JSTR_NOEXCEPT
 		const size_t shift = JSTR_PTR_DIFF(p, ne);
 		if (jstr_unlikely(jstr_strnlen(hs, shift) != shift))
 			return NULL;
+		hs += shift;
 		if (!jstr_isalpha(*p)) {
 			const int c = *p;
 			const u *p2;
 			for (; (hs = (char *)strchr(hs, c)); ++hs) {
 				p = (const u *)hs - shift;
 				p2 = (const u *)ne;
-				for (; jstr_tolower(*p) == jstr_tolower(*p2++) && *p; ++p)
+				for (; jstr_tolower(*p) == jstr_tolower(*p2) && *p; ++p, ++p2)
 					;
-				if (*(p2 - 1) == '\0')
+				if (*p2 == '\0')
 					return (char *)hs - shift;
 				if (jstr_unlikely(*p == '\0'))
-					return NULL;
+					break;
 			}
 			return NULL;
 		}

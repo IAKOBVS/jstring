@@ -95,14 +95,14 @@ JSTR_NOEXCEPT
 	return jstr_ctype_table[(unsigned char)c] & type;
 }
 
-#define PJSTR_DEFINE_ISCTYPE(ctype, ctype_enum)                    \
-	/* ASCII. */                                               \
-	JSTR_ATTR_INLINE                                           \
-	JSTR_FUNC_CONST                                            \
-	static int                                                 \
-	jstr_is##ctype(int c)                                      \
-	JSTR_NOEXCEPT                                              \
-	{                                                          \
+#define PJSTR_DEFINE_ISCTYPE(ctype, ctype_enum)                         \
+	/* ASCII. */                                                    \
+	JSTR_ATTR_INLINE                                                \
+	JSTR_FUNC_CONST                                                 \
+	static int                                                      \
+	jstr_is##ctype(int c)                                           \
+	JSTR_NOEXCEPT                                                   \
+	{                                                               \
 		return jstr_ctype_table[(unsigned char)c] & ctype_enum; \
 	}
 

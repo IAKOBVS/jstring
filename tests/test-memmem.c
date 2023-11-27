@@ -127,80 +127,91 @@ jstr_strrstr(const char *h, const char *n)
 	return jstr_strrstr_len(h, strlen(h), n, strlen(n));
 }
 
-#define T_STRSTR(fn, simple_fn)                                                           \
-	do {                                                                              \
-		TESTING(fn);                                                              \
-		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {                     \
-			const char *const result = fn(hs_ne[i].hs, hs_ne[i].ne);          \
-			const char *const expected = simple_fn(hs_ne[i].hs, hs_ne[i].ne); \
-			ASSERT(result == expected, result, expected);                     \
-		}                                                                         \
+#define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)        \
+	if (jstr_unlikely(result != expected)) {                    \
+		PRINTERR("hsn:\n");                                 \
+		PRINTERR("hs:\n%s\n", hs);                          \
+		PRINTERR("ne:\n%s\n", ne);                          \
+		fwrite(hs, 1, jstr_strnlen(hs, n), stderr);         \
+		PRINTERR("\n");                                     \
+		PRINTERR("hs_len:\n%zu\n", hs_len);                 \
+		PRINTERR("ne_len:\n%zu\n", ne_len);                 \
+		PRINTERR("expected:\n%s\n", expected);              \
+		PRINTERR("expected_len:\n%zu\n", strlen(expected)); \
+		PRINTERR("result:\n%s\n", result);                  \
+		PRINTERR("result_len:\n%zu\n", strlen(result));     \
+		assert(result == expected);                         \
+	}
+
+#define T_FOREACHI(array, i) for (size_t i = 0; i < JSTR_ARRAY_SIZE(array); ++i)
+#define T_HS(test, i)        ((test)[i].hs)
+#define T_NE(test, i)        ((test)[i].ne)
+
+#define T_STRSTR(fn, simple_fn)                         \
+	do {                                            \
+		TESTING(fn);                            \
+		T_FOREACHI(test, i)                     \
+		{                                       \
+			const char *hs = T_HS(test, i); \
+			const char *ne = T_NE(test, i); \
+			T_DEBUG(hs,                     \
+			        ne,                     \
+			        strlen(hs),             \
+			        strlen(ne),             \
+			        0,                      \
+			        fn(hs, ne),             \
+			        simple_fn(hs, ne));     \
+		}                                       \
 	} while (0)
 
-#define T_STRSTR_LEN(fn, simple_fn)                                    \
-	do {                                                           \
-		TESTING(fn);                                           \
-		const char *hs, *ne, *result, *expected;               \
-		size_t hs_len, ne_len;                                 \
-		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {  \
-			hs = hs_ne[i].hs;                              \
-			ne = hs_ne[i].ne;                              \
-			hs_len = strlen(hs);                           \
-			ne_len = strlen(ne);                           \
-			result = fn(hs, hs_len, ne, ne_len);           \
-			expected = simple_fn(hs, hs_len, ne, ne_len);  \
-			if (jstr_unlikely(result != expected)) {       \
-				PRINTERR("hs:\n%s\n", hs);             \
-				PRINTERR("ne:\n%s\n", ne);             \
-				PRINTERR("hs_len:\n%zu\n", hs_len);    \
-				PRINTERR("ne_len:\n%zu\n", ne_len);    \
-				PRINTERR("expected:\n%s\n", expected); \
-				PRINTERR("result:\n%s\n", result);     \
-				PRINTERR("result_len:\n%zu\n", strlen(result)); \
-				assert(result == expected);            \
-			}                                              \
-		}                                                      \
+#define T_STRSTR_LEN(fn, simple_fn)                                               \
+	do {                                                                      \
+		TESTING(fn);                                                      \
+		T_FOREACHI(test, i)                                               \
+		{                                                                 \
+			const char *hs = T_HS(test, i);                           \
+			const char *ne = T_NE(test, i);                           \
+			const size_t hs_len = strlen(hs);                         \
+			const size_t ne_len = strlen(ne);                         \
+			T_DEBUG(hs,                                               \
+			        ne,                                               \
+			        hs_len,                                           \
+			        ne_len,                                           \
+			        0,                                                \
+			        (const char *)fn(hs, hs_len, ne, ne_len),         \
+			        (const char *)simple_fn(hs, hs_len, ne, ne_len)); \
+		}                                                                 \
 	} while (0)
 
-#define T_STRNSTR(fn, simple_fn)                                                \
-	do {                                                                    \
-		TESTING(fn);                                                    \
-		size_t n;                                                       \
-		const char *hs, *ne, *result, *expected;                        \
-		size_t hs_len, ne_len;                                          \
-		for (size_t i = 0; i < JSTR_ARRAY_SIZE(hs_ne); ++i) {           \
-			n = strlen(hs_ne[i].hs);                                \
-			n = JSTR_MIN(n, i);                                     \
-			hs = hs_ne[i].hs;                                       \
-			ne = hs_ne[i].ne;                                       \
-			hs_len = strlen(hs);                                    \
-			ne_len = strlen(ne);                                    \
-			result = fn(hs, ne, n);                                 \
-			expected = simple_fn(hs, ne, n);                        \
-			if (jstr_unlikely(result != expected)) {                \
-				PRINTERR("hs:\n%s\n", hs);                      \
-				PRINTERR("hsn:\n");                             \
-				fwrite(hs, 1, jstr_strnlen(hs, n), stderr);     \
-				PRINTERR("\n");                                 \
-				PRINTERR("ne:\n%s\n", ne);                      \
-				PRINTERR("hs_len:\n%zu\n", hs_len);             \
-				PRINTERR("ne_len:\n%zu\n", ne_len);             \
-				PRINTERR("n:\n%zu\n", n);                       \
-				PRINTERR("expected:\n%s\n", expected);          \
-				PRINTERR("result:\n%s\n", result);              \
-				PRINTERR("result_len:\n%zu\n", strlen(result)); \
-				assert(result == expected);                     \
-			}                                                       \
-		}                                                               \
+#define T_STRNSTR(fn, simple_fn)                                     \
+	do {                                                         \
+		TESTING(fn);                                         \
+		T_FOREACHI(test, i)                                  \
+		{                                                    \
+			size_t n = strlen(test[i].hs);               \
+			n = JSTR_MIN(n, i);                          \
+			const char *hs = T_HS(test, i);              \
+			const char *ne = T_NE(test, i);              \
+			const size_t hs_len = strlen(hs);            \
+			const size_t ne_len = strlen(ne);            \
+			T_DEBUG(hs,                                  \
+			        ne,                                  \
+			        hs_len,                              \
+			        ne_len,                              \
+			        n,                                   \
+			        (const char *)fn(hs, ne, n),         \
+			        (const char *)simple_fn(hs, ne, n)); \
+		}                                                    \
 	} while (0)
 
 int
 main(int argc, char **argv)
 {
-	struct hs_ne_ty {
+	START();
+	struct test_ty {
 		const char *hs;
 		const char *ne;
-	} hs_ne[] = {
+	} test[] = {
 		{"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
                  "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
 		{ "xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
@@ -227,14 +238,14 @@ main(int argc, char **argv)
                  "yyyyy"		                                                                                                                                                                                                                                                    },
 		{ "yyyyyxxxyxxxxy",
                  "yyyyy"		                                                                                                                                                                                                                                                    },
-		{ "hello world",
-                 "hello"		                                                                                                                                                                                                                                                    },
-		{ "hello world",
-                 "world"		                                                                                                                                                                                                                                                    },
-		{ "hello world",
+		{ "he11o wor1d",
+                 "he11o"		                                                                                                                                                                                                                                                    },
+		{ "he11o wor1d",
+                 "wor1d"		                                                                                                                                                                                                                                                    },
+		{ "he11o wor1d",
                  "o w"		                                                                                                                                                                                                                                                      },
-		{ "hello world",
-                 "hel"		                                                                                                                                                                                                                                                      },
+		{ "he11o wor1d",
+                 "he1"		                                                                                                                                                                                                                                                      },
 		{ "yxxx,xxxxy",
                  "xxx,"		                                                                                                                                                                                                                                                     },
 		{ "yxxxyxxxxy",
@@ -257,6 +268,20 @@ main(int argc, char **argv)
                  ""		                                                                                                                                                                                                                                                         },
 		{ "",
                  "xxx"		                                                                                                                                                                                                                                                      },
+		{ "he11o",
+                 "he11o"		                                                                                                                                                                                                                                                    },
+		{ " he11o",
+                 "he11o"		                                                                                                                                                                                                                                                    },
+		{ "he11o ",
+                 "he11o"		                                                                                                                                                                                                                                                    },
+		{ " he11o ",
+                 "he11o"		                                                                                                                                                                                                                                                    },
+		{ "  he11o ",
+                 "he11o"		                                                                                                                                                                                                                                                    },
+		{ "he11o  ",
+                 "he11o"		                                                                                                                                                                                                                                                    },
+		{ "he11o  ",
+                 "he11o     "		                                                                                                                                                                                                                                               },
 		{ "",
                  ""		                                                                                                                                                                                                                                                         }
 	};

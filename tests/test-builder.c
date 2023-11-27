@@ -52,6 +52,7 @@ char buf[4096] = { 0 };
 int
 main(int argc, char **argv)
 {
+	START();
 	const char *expected;
 	const char *find;
 	const char *rplc;

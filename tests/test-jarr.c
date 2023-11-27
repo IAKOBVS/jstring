@@ -36,6 +36,7 @@
 int
 main(int argc, char **argv)
 {
+	START();
 	jarr_ty(int, j) = JARR_INIT;
 	TESTING(jarr_cat);
 	T(jarr_cat(&j, 1, 2, 3, 4, 5),

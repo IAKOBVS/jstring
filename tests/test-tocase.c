@@ -51,6 +51,7 @@
 int
 main(int argc, char **argv)
 {
+	START();
 	TESTING(jstr_toCamelCaseP);
 	T(jstr_toCamelCaseP, "", "");
 	T(jstr_toCamelCaseP, "hello", "hello");

@@ -43,7 +43,7 @@
 #	define JSTRL_LAZY_FREE 0
 #endif
 
-#define JSTR_MIN_CAP               ((sizeof(size_t) == 8) ? 24 : 16)
+#define JSTR_MIN_CAP          ((sizeof(size_t) == 8) ? 24 : 16)
 #define JSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 
 /* Allocate more than needed for the initial malloc(). */

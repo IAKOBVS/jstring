@@ -155,7 +155,7 @@ PJSTR_END_DECLS
 			jarr_reserve(j, PJSTR_PP_NARG(__VA_ARGS__));            \
 			PJARR_MALLOC_ERR(j, break)                              \
 		}                                                               \
-		PJSTR_PP_ARRCP_VA_ARGS(PJARR_SZ(j), __VA_ARGS__);              \
+		PJSTR_PP_ARRCP_VA_ARGS(PJARR_SZ(j), __VA_ARGS__);               \
 		PJARR_SZ(j) = PJSTR_PP_NARG(__VA_ARGS__);                       \
 	} while (0)
 
@@ -168,7 +168,7 @@ PJSTR_END_DECLS
 			jarr_reserve(j, (PJARR_SZ(j) + PJSTR_PP_NARG(__VA_ARGS__)));            \
 			PJARR_MALLOC_ERR(j, break)                                              \
 		}                                                                               \
-		PJSTR_PP_ARRCP_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);              \
+		PJSTR_PP_ARRCP_VA_ARGS(PJARR_DATA(j) + PJARR_SZ(j), __VA_ARGS__);               \
 		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                      \
 	} while (0)
 /* Pop PTR[0]. */

@@ -29,10 +29,11 @@
 #include "../src/jstr.h"
 #include <assert.h>
 
-#define PRINT(...) printf(__VA_ARGS__)
+#define PRINT(...)    printf(__VA_ARGS__)
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
-#define SUCCESS() PRINT("%s succeeded.\n", argv[0])
-#define TESTING(func) PRINT("Testing %s.\n", JSTR_STRING(func) "()")
+#define START()       PRINT("%s starting.\n", argv[0])
+#define SUCCESS()     PRINT("%s succeeded.\n\n", argv[0])
+#define TESTING(func) PRINT("Testing %s\n", JSTR_STRING(func) "()")
 
 #define ASSERT(expr, result, expected)            \
 	do {                                      \

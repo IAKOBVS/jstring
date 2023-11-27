@@ -58,9 +58,9 @@ jstr_strcasecmpeq_loop(const char *s1,
 {
 	const unsigned char *p1 = (unsigned char *)s1;
 	const unsigned char *p2 = (unsigned char *)s2;
-	while ((jstr_ctype_table_tolower[*p1] == jstr_ctype_table_tolower[*p2++] && *p1++))
+	for (; (jstr_ctype_table_tolower[*p1] == jstr_ctype_table_tolower[*p2++] && *p1++); ++p2)
 		;
-	return *(p2 - 1);
+	return *p2;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))

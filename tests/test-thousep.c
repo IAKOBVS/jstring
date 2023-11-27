@@ -36,6 +36,7 @@
 int
 main(int argc, char **argv)
 {
+	START();
 	TESTING(jstr_thousep_p);
 	TESTING(jstr_thousepcpy_p);
 	T("1", "1");
