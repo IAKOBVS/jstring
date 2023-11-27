@@ -955,21 +955,11 @@ PJSTR_END_DECLS
 enum {
 	/* Needle length over which memmem would be faster than strstr. */
 	JSTR_MEMMEM_THRES = 18,
+#define JSTR_MEMMEM_THRES JSTR_MEMMEM_THRES
 	/* Number of iterations over which an optimized strcspn would be faster than a byte loop. */
 	JSTR_STRCASECHR_THRES = 24
+#define JSTR_STRCASECHR_THRES JSTR_STRCASECHR_THRES
 };
-
-/* Only use memmem for long needles or when it is implemented in assembly.
-   It seems to be slower than strstr for short needles. */
-#if JSTR_HAVE_MEMMEM
-#	if JSTR_HAVE_MEMMEM_OPTIMIZED || !JSTR_HAVE_STRSTR_OPTIMIZED
-#		define JSTR_MEMMEM(hs, hslen, ne, nelen) memmem(hs, hslen, ne, nelen)
-#	else
-#		define JSTR_MEMMEM(hs, hslen, ne, nelen) ((nelen < JSTR_MEMMEM_THRES) ? strstr(hs, ne) : memmem(hs, hslen, ne, nelen))
-#	endif
-#else
-#	define JSTR_MEMMEM(hs, hslen, ne, nelen) strstr(hs, ne)
-#endif
 
 #if JSTR_ARCH_I386 || JSTR_ARCH_X86_64 || defined __s390x__ || JSTR_ARCH_ARM64
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1

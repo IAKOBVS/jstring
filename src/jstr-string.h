@@ -64,22 +64,6 @@ JSTR_NOEXCEPT
 	return p ? p + 1 : NULL;
 }
 
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strstr_len(const char *hs,
-                size_t hs_len,
-                const char *ne,
-                size_t ne_len)
-JSTR_NOEXCEPT
-{
-	return (char *)JSTR_MEMMEM(hs, hs_len, ne, ne_len);
-	(void)hs_len;
-	(void)ne_len;
-}
-
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -88,37 +72,6 @@ jstr_strstr(const char *hs,
 JSTR_NOEXCEPT
 {
 	return (char *)strstr(hs, ne);
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strnstr_len(const char *hs,
-                 size_t hs_len,
-                 const char *ne,
-                 size_t ne_len,
-                 size_t n)
-JSTR_NOEXCEPT
-{
-	return jstr_strstr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strstrnul_len(const char *hs,
-                   size_t hs_len,
-                   const char *ne,
-                   size_t ne_len)
-JSTR_NOEXCEPT
-{
-	char *p = jstr_strstr_len(hs, hs_len, ne, ne_len);
-	return p ? p : (char *)hs + hs_len;
-	(void)ne_len;
 }
 
 JSTR_FUNC_PURE
@@ -540,6 +493,55 @@ MEMMEM:
 		else
 			return pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, rare);
 	}
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+jstr_strstr_len(const char *hs,
+                size_t hs_len,
+                const char *ne,
+                size_t ne_len)
+JSTR_NOEXCEPT
+{
+	/* Only use memmem() for long needles or when it is implemented in assembly.
+   	It seems to be slower than an assembly optimized strstr() for short needles. */
+	if (JSTR_HAVE_STRSTR_OPTIMIZED && ne_len < JSTR_MEMMEM_THRES)
+		return (char *)strstr(hs, ne);
+	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+jstr_strnstr_len(const char *hs,
+                 size_t hs_len,
+                 const char *ne,
+                 size_t ne_len,
+                 size_t n)
+JSTR_NOEXCEPT
+{
+	return jstr_strstr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+jstr_strstrnul_len(const char *hs,
+                   size_t hs_len,
+                   const char *ne,
+                   size_t ne_len)
+JSTR_NOEXCEPT
+{
+	char *p = jstr_strstr_len(hs, hs_len, ne, ne_len);
+	return p ? p : (char *)hs + hs_len;
+	(void)ne_len;
 }
 
 JSTR_FUNC_PURE
