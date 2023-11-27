@@ -78,7 +78,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 #if USE_UNALIGNED
 	typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
 	typedef uint64_t u64 JSTR_ATTR_MAY_ALIAS;
-	u64 ne_align;
+	uint64_t ne_align;
 	if (ne_len < 8) {
 		if (JSTR_HAVE_ATTR_MAY_ALIAS)
 			ne_align = (uint64_t) * (u32 *)ne;

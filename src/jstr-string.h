@@ -1003,9 +1003,9 @@ JSTR_NOEXCEPT
 	hs_len -= shift;
 	const char *const start = hs;
 	if (!jstr_isalpha(*p)) {
-		const int c = *p;
 		const u *end = (const u *)hs + hs_len - (ne_len - shift) + 1;
 		const u *p2;
+		const int c = *p;
 		size_t n;
 		for (; (hs = (char *)memchr(hs, c, end - (u *)hs)); ++hs) {
 			p = (const u *)hs - shift;
