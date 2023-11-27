@@ -39,25 +39,6 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#ifndef JSTR_HAVE_MEMMEM
-#	define JSTR_HAVE_MEMMEM 0
-#endif
-#ifndef JSTR_HAVE_STRCASECMP
-#	define JSTR_HAVE_STRCASECMP 0
-#endif
-#ifndef JSTR_HAVE_STRNCASECMP
-#	define JSTR_HAVE_STRNCASECMP 0
-#endif
-#ifndef JSTR_HAVE_STRCSPN_OPTIMIZED
-#	define JSTR_HAVE_STRCSPN_OPTIMIZED 0
-#endif
-#ifndef JSTR_HAVE_STRCASESTR
-#	define JSTR_HAVE_STRCASESTR 0
-#endif
-#ifndef JSTR_HAVE_STRCASESTR_OPTIMIZED
-#	define JSTR_HAVE_STRCASESTR_OPTIMIZED 0
-#endif
-
 PJSTR_BEGIN_DECLS
 
 /* basename() for non nul-terminated strings. */
