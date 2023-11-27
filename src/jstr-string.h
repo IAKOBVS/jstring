@@ -567,21 +567,6 @@ MEMMEM:
 #endif
 }
 
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-jstr_memnmem(const void *hs,
-             size_t hs_len,
-             const void *ne,
-             size_t ne_len,
-             size_t n)
-JSTR_NOEXCEPT
-{
-	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
-}
-
 JSTR_FUNC_PURE
 static char *
 jstr_strnstr(const char *hs,
@@ -600,19 +585,52 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs[1] == '\0'))
 		return NULL;
 	if (ne[2] == '\0')
-		return pjstr_strnstr2((const u*)hs, (const u*)ne, n);
+		return pjstr_strnstr2((const u *)hs, (const u *)ne, n);
 	if (jstr_unlikely(hs[2] == '\0'))
 		return NULL;
 	if (ne[3] == '\0')
-		return pjstr_strnstr3((const u*)hs, (const u*)ne, n);
+		return pjstr_strnstr3((const u *)hs, (const u *)ne, n);
 	if (jstr_unlikely(hs[3] == '\0'))
 		return NULL;
 	if (ne[4] == '\0')
-		return pjstr_strnstr4((const u*)hs, (const u*)ne, n);
+		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
 	if (jstr_unlikely(hs[4] == '\0'))
 		return NULL;
-	/* return pjstr_strnstr((const u *)hs, (const u *)ne, n); */
-	return (char *)jstr_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
+#if JSTR_HAVE_MEMMEM
+	return (char *)memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
+#else
+#	if JSTR_USE_LGPL
+	const size_t ne_len = strlen(ne);
+	if (jstr_unlikely(n < ne_len))
+		return NULL;
+	const size_t hs_len = jstr_strnlen(hs, n);
+	return (char *)pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len);
+#	else
+	const u *const p = jstr_rarebytefind(ne);
+	const size_t ne_len = strlen(p) + JSTR_PTR_DIFF(p, ne);
+	if (jstr_unlikely(n < ne_len))
+		return NULL;
+	const size_t hs_len = jstr_strnlen(hs, n);
+	if (jstr_unlikely(jstr_strnlen(hs, ne_len) != ne_len))
+		return NULL;
+	return (char *)pjstr_memmem((const u *)hs, hs_len, (const u *)ne, ne_len, p);
+#	endif
+#endif
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+jstr_memnmem(const void *hs,
+             size_t hs_len,
+             const void *ne,
+             size_t ne_len,
+             size_t n)
+JSTR_NOEXCEPT
+{
+	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
 /*
