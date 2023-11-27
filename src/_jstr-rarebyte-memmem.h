@@ -74,7 +74,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	typedef unsigned char u;
 	int c = *(u *)rarebyte;
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
-	const unsigned char *const end = (hs += idx) + (hs_len - idx) - (ne_len - idx) + 1;
+	const u *const end = (hs += idx) + (hs_len - idx) - (ne_len - idx) + 1;
 #if USE_UNALIGNED
 	typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
 	typedef uint64_t u64 JSTR_ATTR_MAY_ALIAS;

@@ -635,13 +635,13 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	const unsigned char *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
+	const u *h = (const u *)jstr_memrchr(hs, *((char *)ne + ne_len - 1), hs_len);
 	if (h == NULL || ne_len == 1)
 		return (char *)h;
 	if (JSTR_PTR_DIFF(h + 1, (const u *)hs) < ne_len)
 		return NULL;
-	const unsigned char *const start = (const u *)hs;
-	const unsigned char *n = (const u *)ne;
+	const u *const start = (const u *)hs;
+	const u *n = (const u *)ne;
 	if (ne_len == 2) {
 		const uint16_t nw = (uint16_t)n[1] << 8 | n[0];
 		uint16_t hw = (uint16_t)h[0] << 8 | h[-1];
@@ -803,7 +803,7 @@ pjstr_strcasestr(const unsigned char *hs,
 	const size_t idx = JSTR_PTR_DIFF(rarebyte, ne);
 	if (jstr_unlikely(jstr_strnlen((char *)hs, idx) != idx))
 		return NULL;
-	const unsigned char *hp, *np;
+	const u *hp, *np;
 	const int c = *(u *)rarebyte;
 	for (hs += idx; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
 		for (hp = hs - idx, np = ne;
@@ -1160,9 +1160,9 @@ JSTR_NOEXCEPT
 		const char *const p = (const char *)jstr_memrchr(s, *reject, sz);
 		return p ? (size_t)(p - s) : sz;
 	}
-	unsigned char t[256];
+	u t[256];
 	JSTR_BZERO_ARRAY(t);
-	const unsigned char *p = (const u *)reject;
+	const u *p = (const u *)reject;
 	do
 		t[*p] = 1;
 	while (*p++);
@@ -1228,8 +1228,8 @@ JSTR_NOEXCEPT
 			--p;
 		return p - s;
 	}
-	const unsigned char *p = (u *)accept;
-	unsigned char t[256];
+	const u *p = (u *)accept;
+	u t[256];
 	JSTR_BZERO_ARRAY(t);
 	do
 		t[*p++] = 1;
@@ -1322,8 +1322,8 @@ JSTR_NOEXCEPT
 			;
 		return p - (char *)s;
 	}
-	const unsigned char *p = (u *)accept;
-	unsigned char t[256];
+	const u *p = (u *)accept;
+	u t[256];
 	JSTR_BZERO_ARRAY(t);
 	do
 		t[*p++] = 1;
@@ -1341,7 +1341,7 @@ JSTR_NOEXCEPT
 		}
 	}
 	p = (u *)JSTR_PTR_ALIGN_DOWN(p, 4);
-	const unsigned char *const end = (const u *)s + sz;
+	const u *const end = (const u *)s + sz;
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
