@@ -101,19 +101,19 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	}
 #endif
 	for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs) {
-		if (USE_UNALIGNED) {
-			/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
-			if (ne_len < 8) {
-				if (EQ32(hs - idx, ne_align) && !jstr_memcmpeq_loop(hs - idx + 4, ne, ne_len))
-					return (ret_ty)(hs - idx);
-			} else {
-				if (EQ64(hs - idx, ne_align) && !memcmp(hs - idx + 8, ne, ne_len))
-					return (ret_ty)(hs - idx);
-			}
+#if USE_UNALIGNED
+		/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
+		if (ne_len < 8) {
+			if (EQ32(hs - idx, ne_align) && !jstr_memcmpeq_loop(hs - idx + 4, ne, ne_len))
+				return (ret_ty)(hs - idx);
 		} else {
-			if (!CMP_FUNC((char *)hs - idx, (char *)ne, ne_len))
+			if (EQ64(hs - idx, ne_align) && !memcmp(hs - idx + 8, ne, ne_len))
 				return (ret_ty)(hs - idx);
 		}
+#else
+		if (!CMP_FUNC((char *)hs - idx, (char *)ne, ne_len))
+			return (ret_ty)(hs - idx);
+#endif
 	}
 	return NULL;
 }
