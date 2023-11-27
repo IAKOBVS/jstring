@@ -35,6 +35,22 @@
 #endif
 
 /*
+   Defining JSTR_USE_LGPL as 0 will exclude all LGPL code from being included.
+*/
+#ifndef JSTR_USE_LGPL
+#	define JSTR_USE_LGPL 1
+#endif
+
+/*
+   Always prefer standard functions over user functions.
+   For example, use libc strcasestr() if available over
+   our own strcasestr() in jstr_strcasestr().
+*/
+#ifndef JSTR_USE_STANDARD_ALWAYS
+#	define JSTR_USE_STANDARD_ALWAYS 0
+#endif
+
+/*
    When removing a string (jstr_ty) from a string list (jstrlist_ty), don't immediately
    call free(). This may result in fewer allocations when strings are often added to
    and removed from the list. All elements are freed when jstrl_free() is called.
@@ -74,33 +90,17 @@
 #	define JSTRIO_FT_BINARY_ARRAY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
-/*
-   Defining JSTR_USE_LGPL as 0 will exclude all LGPL code from being included.
-*/
-#ifndef JSTR_USE_LGPL
-#	define JSTR_USE_LGPL 1
-#endif
-
-/*
-   Always prefer standard functions over user functions.
-   For example, use libc strcasestr() if available over
-   our own strcasestr() in jstr_strcasestr().
-*/
-#ifndef JSTR_USE_STANDARD_ALWAYS
-#	define JSTR_USE_STANDARD_ALWAYS 0
-#endif
-
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
 /* This is defined by ./check-little-endian. */
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #endif
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    1
 #endif
 
