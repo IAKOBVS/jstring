@@ -45,7 +45,7 @@ PJSTR_END_DECLS
 #	elif JSTR_ENDIAN_BIG
 #		define SH >>
 #	else
-#		error "Can't detect endianness!"
+#		error "Can't detect endianness."
 #	endif
 #	define TOWORD32(x) ((uint32_t)(x)[3] SH 24 | (uint32_t)(x)[2] SH 16 | (uint32_t)(x)[1] SH 8 | (uint32_t)(x)[0])
 #	define TOWORD64(x) ((uint64_t)(x)[7] SH 56 | (uint64_t)(x)[6] SH 48 | (uint64_t)(x)[5] SH 40 | (uint64_t)(x)[4] SH 32 | (uint64_t)TOWORD32((x)))
