@@ -36,6 +36,10 @@
 #	define JSTR_PANIC 1
 #endif
 
+#ifndef JSTR_DISABLE_NONSTANDARD
+#	define JSTR_DISABLE_NONSTANDARD 0
+#endif
+
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
 #define JSTR_PAGE_SIZE 4096
