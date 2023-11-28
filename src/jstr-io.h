@@ -679,7 +679,7 @@ typedef enum jstrio_ftw_flag_ty {
 			}                               \
 		} while (0)
 #	define STAT_ALWAYS(st, ftw_state, fd, ep, dirpath) STAT_DO(st, ftw_state, fd, ep, dirpath, ftw_state = JSTRIO_FTW_STATE_NS; goto do_fn)
-#	define OPENDIR(fd, filename) fdopendir(fd)
+#	define OPENDIR(fd, filename)                       fdopendir(fd)
 #else
 #	define STAT_DO(st, ftw_state, fd, ep, dirpath, do_on_nonfatal_err) \
 		do {                                                        \
@@ -826,6 +826,10 @@ JSTR_NOEXCEPT
 				goto err_closedir;
 			}
 		}
+		/*
+		   We must [f]stat() to get the type. If !USE_ATFILE, we must construct the full path for stat().
+		   FILL_PATH() will construct the full path if USE_ATFILE or HAVE_DIRENT_D_TYPE.
+		*/
 		if (!JSTR_HAVE_DIRENT_D_TYPE) {
 			if (!USE_ATFILE)
 				FILL_PATH_ALWAYS(newpath_len, a->dirpath, dirpath_len, ep);
