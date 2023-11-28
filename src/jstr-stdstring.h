@@ -229,7 +229,7 @@ JSTR_NOEXCEPT
 	const char *const start = s;
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
-#elif JSTR_USE_LGPL
+#elif JSTR_HAVE_WORD_AT_A_TIME
 #	include "_lgpl-strchrnul.h"
 #else
 	for (; *s && *s != (char)c; ++s)

@@ -687,8 +687,8 @@ JSTR_NOEXCEPT
 #	define EQ32(hs, ne_align) (JSTR_BYTE_UTOWORD32(hs) == (uint32_t)ne_align)
 #	define EQ64(hs, ne_align) (JSTR_BYTE_UTOWORD64(hs) == ne_align)
 #else
-#	define EQ64(hs, ne_align) !memcmp(hs, &(ne_align), 8)
-#	define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
+#	define EQ64(hs, ne_align) (!memcmp(hs, &(ne_align), 8))
+#	define EQ32(hs, ne_align) (!memcmp(hs, &(ne_align), 4))
 #endif
 			uint64_t ne_align;
 			const int short_ne = ne_len < 8;

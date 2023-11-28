@@ -972,10 +972,12 @@ enum {
 #else
 #	define JSTR_BYTE_SH >>
 #endif
-#define JSTR_BYTE_SHIFT(x, i) ((x)JSTR_BYTE_SH(i * 8))
+#define JSTR_BYTE_SHIFT(x, i)   ((x)JSTR_BYTE_SH(i * 8))
+#define JSTR_BYTE_SHIFT32(x, i) ((uint32_t)((x)[i])JSTR_BYTE_SH(i * 8))
+#define JSTR_BYTE_SHIFT64(x, i) ((uint64_t)((x)[i])JSTR_BYTE_SH(i * 8))
 typedef uint32_t jstr_u32u_ty JSTR_ATTR_MAY_ALIAS;
 typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
-#if JSTR_HAVE_ATTR_MAY_ALIAS
+#if JSTR_HAVE_ATTR_MAY_ALIAS && 0
 #	define JSTR_BYTE_UTOWORD32(x)   (*(jstr_u32u_ty *)(x))
 #	define JSTR_BYTE_UTOWORD64(x)   (*(jstr_u64u_ty *)(x))
 #	define JSTR_BYTE_UCMPEQ32(x, y) (JSTR_BYTE_UTOWORD32(x) == JSTR_BYTE_UTOWORD32(y))
@@ -985,14 +987,14 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #	define JSTR_BYTE_CMPEQ32(x)     (JSTR_BYTE_TOWORD32(x) == JSTR_BYTE_TOWORD32(y))
 #	define JSTR_BYTE_CMPEQ64(x)     (JSTR_BYTE_TOWORD64(x) == JSTR_BYTE_TOWORD64(y))
 #else
-#	define JSTR_BYTE_UTOWORD32(x)   ((uint32_t)(x)[0] JSTR_BYTE_SH I(0) | (uint32_t)(x)[1] JSTR_BYTE_SH I(1) | (uint32_t)(x)[2] JSTR_BYTE_SH I(2) | (uint32_t)(x)[3] JSTR_BYTE_SH I(3))
-#	define JSTR_BYTE_UTOWORD64(x)   ((uint64_t)TOWORD32((x)) | (uint64_t)(x)[4] JSTR_BYTE_SH I(4) | (uint64_t)(x)[5] JSTR_BYTE_SH I(5) | (uint64_t)(x)[6] JSTR_BYTE_SH I(6) | (uint64_t)(x)[7] JSTR_BYTE_SH I(7))
+#	define JSTR_BYTE_UTOWORD32(x)   (JSTR_BYTE_SHIFT32(x, 0) | JSTR_BYTE_SHIFT32(x, 1) | JSTR_BYTE_SHIFT32(x, 2) | JSTR_BYTE_SHIFT32(x, 3))
+#	define JSTR_BYTE_UTOWORD64(x)   ((uint64_t)JSTR_BYTE_UTOWORD32(x) | JSTR_BYTE_SHIFT64(x, 4) | JSTR_BYTE_SHIFT64(x, 5) | JSTR_BYTE_SHIFT64(x, 6) | JSTR_BYTE_SHIFT64(x, 7))
 #	define JSTR_BYTE_UCMPEQ32(x, y) !memcmp(x, y, 4)
 #	define JSTR_BYTE_UCMPEQ64(x, y) !memcmp(x, y, 8)
-#	define JSTR_BYTE_TOWORD32(x)   JSTR_BYTE_UTOWORD32(x)
-#	define JSTR_BYTE_TOWORD64(x)   JSTR_BYTE_UTOWORD64(x)
-#	define JSTR_BYTE_CMPEQ32(x, y) JSTR_BYTE_UCMPEQ32(x, y)
-#	define JSTR_BYTE_CMPEQ64(x, y) JSTR_BYTE_UCMPEQ64(x, y)
+#	define JSTR_BYTE_TOWORD32(x)    JSTR_BYTE_UTOWORD32(x)
+#	define JSTR_BYTE_TOWORD64(x)    JSTR_BYTE_UTOWORD64(x)
+#	define JSTR_BYTE_CMPEQ32(x, y)  JSTR_BYTE_UCMPEQ32(x, y)
+#	define JSTR_BYTE_CMPEQ64(x, y)  JSTR_BYTE_UCMPEQ64(x, y)
 #endif
 
 #if JSTR_USE_LGPL && JSTR_HAVE_ATTR_MAY_ALIAS
