@@ -621,9 +621,7 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#if 0
-#	define JSTR_USE_STRRSTR
-#endif
+#define JSTR_USE_STRRSTR
 
 #ifdef JSTR_USE_STRRSTR /* Broken. */
 #	define PJSTR_RAREBYTE_RETTYPE char *
