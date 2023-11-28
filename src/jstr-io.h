@@ -289,7 +289,7 @@ JSTR_NOEXCEPT
 			reqsz = *cap - *sz;
 			readsz = fread(*s + *sz, 1, reqsz, fp);
 			if (jstr_unlikely(readsz == (size_t)-1))
-				goto err_close_free;
+				goto err_close;
 			*sz += readsz;
 			if (readsz < reqsz)
 				break;
@@ -303,7 +303,7 @@ JSTR_NOEXCEPT
 		goto err;
 	return JSTR_RET_SUCC;
 err_close_free:
-	jstr_free(s, sz, cap);
+	jstr_free_noinline(s, sz, cap);
 err_close:
 	pclose(fp);
 err:
@@ -315,22 +315,37 @@ err:
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-pjstrio_readfile_len(char *R *R s,
-                     size_t *R sz,
-                     size_t *R cap,
-                     int fd,
-                     size_t file_size)
+jstrio_readfilefd_len(char *R *R s,
+                      size_t *R sz,
+                      size_t *R cap,
+                      int fd,
+                      size_t file_size)
 JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, file_size)))
 		goto err;
 	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
-		goto err_free;
+		goto err;
 	*(*s + file_size) = '\0';
 	*sz = file_size;
 	return JSTR_RET_SUCC;
-err_free:
-	jstr_free(s, sz, cap);
+err:
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
+}
+
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstrio_readfilefd(char *R *R s,
+                  size_t *R sz,
+                  size_t *R cap,
+                  int fd,
+                  struct stat *st)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(fstat(fd, st)))
+		goto err;
+	return jstrio_readfilefd_len(s, sz, cap, fd, st->st_size);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
@@ -347,7 +362,7 @@ JSTR_NOEXCEPT
 	const int fd = open(fname, O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
-	if (jstr_chk(pjstrio_readfile_len(s, sz, cap, fd, file_size)))
+	if (jstr_chk(jstrio_readfilefd_len(s, sz, cap, fd, file_size)))
 		goto err_close;
 	if (jstr_unlikely(close(fd)))
 		goto err;

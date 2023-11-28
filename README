@@ -41,10 +41,10 @@ jstr_ty j = JSTR_INIT;
 
 --- Error handling:
 JSTR_ERR is returned as error. The programmer is expected to check the return value
-and handle the error. When a memory error is encountered, all related resources will
-be freed by the function in which the error occured. Use jstr_err() to print the
-error message or jstr_errdie() to also exit. When debugging, you may want to define
-JSTR_PANIC as 1 to automatically call jstr_errdie() on errors.
+and handle the error. When a memory error is encountered, the user is expected to free
+all the related resources. Use jstr_err() to print the error message or jstr_errdie()
+to also exit. When debugging, you may want to define JSTR_PANIC as 1 to automatically
+call jstr_errdie() on errors.
 
 --- Naming conventions
 -- Functions or macros:
