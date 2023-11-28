@@ -713,9 +713,7 @@ JSTR_NOEXCEPT
 				n += 8;
 				ne_len -= 8;
 			}
-			goto start;
 			for (; h >= (const u *)hs; --h) {
-start:
 				if (short_ne) {
 					if (EQ32(h, ne_align) && !jstr_memcmpeq_loop(h + 4, n, ne_len))
 						return (char *)h;
