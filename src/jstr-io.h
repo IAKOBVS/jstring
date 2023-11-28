@@ -145,16 +145,16 @@ check_utf:;
 /* clang-format off */
 
 #if JSTR_OS_WINDOWS || JSTR_OS_WINDOWSCE
-#	define PJSTRIO_USE_FORM_FEED 1
+#	define USE_FORM_FEED 1
 #else
-#	define PJSTRIO_USE_FORM_FEED 0
+#	define USE_FORM_FEED 0
 #endif
 
 /* Do not pass a non-unsigned char. */
 JSTR_MAYBE_UNUSED
-static const unsigned char pjstrio_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,1,PJSTRIO_USE_FORM_FEED,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1};
+static const unsigned char pjstrio_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,1,USE_FORM_FEED,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1};
 
-#undef PJSTRIO_USE_FORM_FEED
+#undef USE_FORM_FEED
 
 /* clang-format on */
 
@@ -774,9 +774,9 @@ struct pjstrio_ftw_data {
 	int func_name(const struct JSTRIO_FTW *ftw, const void *fn_args)
 
 #ifdef O_DIRECTORY
-#	define PJSTR_O_DIRECTORY O_DIRECTORY
+#	define PJSTRIO_O_DIRECTORY O_DIRECTORY
 #else
-#	define PJSTR_O_DIRECTORY 0
+#	define PJSTRIO_O_DIRECTORY 0
 #endif
 
 JSTR_FUNC_MAY_NULL
@@ -925,7 +925,7 @@ do_dir:
 skip_fn:
 		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
 			continue;
-		OPENAT(tmp, fd, ep->d_name, O_RDONLY | PJSTR_O_DIRECTORY | O_NONBLOCK, continue);
+		OPENAT(tmp, fd, ep->d_name, O_RDONLY | PJSTRIO_O_DIRECTORY | O_NONBLOCK, continue);
 		tmp = pjstrio_ftw_len(a, newpath_len FD_ARG);
 		CLOSE(FD, );
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
@@ -958,7 +958,7 @@ err_closedir:
 #undef FD
 #undef FD_ARG
 #undef FD_PARAM
-#undef PJSTR_O_DIRECTORY
+#undef PJSTRIO_O_DIRECTORY
 
 /*
    Call FN() on files found recursively that matches GLOB.
