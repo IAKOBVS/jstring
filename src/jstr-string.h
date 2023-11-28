@@ -767,7 +767,7 @@ JSTR_NOEXCEPT
 	const unsigned char *np;
 	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
-	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
+	for (hs += 3; *hs; hw = hw << 8 | L(*++hs)) {
 		if (hw == nw) {
 			for (hp = hs - 3 + 4,
 			    np = ne + 4;
@@ -779,6 +779,7 @@ JSTR_NOEXCEPT
 			if (jstr_unlikely(*hp == '\0'))
 				break;
 		}
+	}
 	return NULL;
 }
 
@@ -835,6 +836,7 @@ pjstr_strcasestr(const unsigned char *hs,
 #include "_lgpl-memmem.h"
 
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strcasestr_long(const char *hs,
                       const char *ne)
@@ -852,9 +854,6 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr_lgpl(hs + 1, hs_len - 1, ne, ne_len);
 	} else {
 		typedef unsigned char u;
-		const size_t ne_len = 4 + strlen(ne + 4);
-		if (jstr_unlikely(4 + jstr_strnlen(hs + 4, ne_len) < ne_len))
-			return NULL;
 		return pjstr_strcasestr_nolgpl((const u *)hs, (const u *)ne);
 	}
 }
