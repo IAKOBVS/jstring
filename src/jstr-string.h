@@ -694,11 +694,13 @@ JSTR_NOEXCEPT
 #	define EQ64(hs, ne_align) !memcmp(hs, &(ne_align), 8)
 #	define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
 #endif
-		const int c = *n;
 		typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
 		typedef uint64_t u64 JSTR_ATTR_MAY_ALIAS;
 		uint64_t ne_align;
 		const int short_ne = ne_len < 8;
+#if !JSTR_HAVE_UNALIGNED_ACCESS
+		const int c = *n;
+#endif
 		if (short_ne) {
 			if (JSTR_HAVE_ATTR_MAY_ALIAS)
 				ne_align = (uint64_t) * (u32 *)n;
@@ -714,21 +716,22 @@ JSTR_NOEXCEPT
 			n += 8;
 			ne_len -= 8;
 		}
-		for (; h >= (const u *)hs; --h)
-			if (*h == c) {
-				if (JSTR_HAVE_UNALIGNED_ACCESS) {
-					if (short_ne) {
-						if (EQ32(h, ne_align) && !jstr_memcmpeq_loop(h + 4, n, ne_len))
-							return (char *)h;
-					} else {
-						if (EQ64(h, ne_align) && !memcmp(h + 8, n, ne_len))
-							return (char *)h;
-					}
+		for (; h >= (const u *)hs; --h) {
+			if (JSTR_HAVE_UNALIGNED_ACCESS) {
+				if (short_ne) {
+					if (EQ32(h, ne_align) && !jstr_memcmpeq_loop(h + 4, n, ne_len))
+						return (char *)h;
 				} else {
-					if (!memcmp(h, ne, ne_len))
+					if (EQ64(h, ne_align) && !memcmp(h + 8, n, ne_len))
 						return (char *)h;
 				}
+			} else {
+#if !JSTR_HAVE_UNALIGNED_ACCESS
+				if (*h == c && !memcmp(h, ne, ne_len))
+					return (char *)h;
+#endif
 			}
+		}
 #undef TOWORD64
 #undef TOWORD32
 #undef EQ64
