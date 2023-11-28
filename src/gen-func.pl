@@ -135,7 +135,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	if ($rettype eq 'void') {
 		$body = '';
 	} else {
-		if ($name =~ /_p(?:_|$)/) {
+		if ($name =~ /_p(?:_|$)/ && $rettype ne 'void') {
 			$returns_end_ptr = 1;
 			$body            = "$VAR_JSTRING->$SIZE = ";
 			$rettype         = 'void';
@@ -149,39 +149,32 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$body .= $name . '(';
 	$name = $j_name;
 	$name =~ s/_p(_|$)/$1/;
-	my $VAR_STRUCT;
+	my $has_data = 0;
 	for (my $i = 0; $i < scalar(@arg); ++$i) {
 		my $var = jl_arg_get_var(\$arg[$i]);
-		if ($i == 0) {
+		if ($var eq $VAR_DATA) {
+			$has_data = 1;
 			my $deref = (jl_arg_is_ptr_ptr(\$arg[$i]) ? '&' : '');
-			my $STRUCT;
-			if (index($arg[0], $JSTRING_LIST) != -1) {
-				$STRUCT = $JSTRING_LIST;
-				$body .= "$deref$VAR_JSTRING";
-				$VAR_STRUCT = $VAR_JSTRING_LIST;
-			} else {
-				$STRUCT = $JSTRING;
-				$body .= "$deref$VAR_JSTRING->$DATA";
-				$VAR_STRUCT = $VAR_JSTRING;
-			}
+			$body .= "$deref$VAR_JSTRING->$DATA";
 			$arg[$i] = jl_arg_is_const(\$arg[$i]) ? 'const ' : '';
-			$arg[$i] .= "$STRUCT *$ATTR_RESTRICT j";
+			$arg[$i] .= "$JSTRING *$ATTR_RESTRICT j";
 		} elsif ($var eq $VAR_SIZE) {
 			my $deref = (jl_arg_is_ptr(\$arg[$i]) ? '&' : '');
-			$body .= "$deref$VAR_STRUCT->$SIZE";
+			$body .= "$deref$VAR_JSTRING->$SIZE";
 			splice(@arg, $i--, 1);
 		} elsif ($var eq $VAR_CAP) {
 			my $deref = (jl_arg_is_ptr(\$arg[$i]) ? '&' : '');
-			$body .= "$deref$VAR_STRUCT->$CAP";
+			$body .= "$deref$VAR_JSTRING->$CAP";
 			splice(@arg, $i--, 1);
 		} else {
 			$body .= $var;
 		}
 		$body .= ', ';
 	}
+	next if (!$has_data);
 	$body =~ s/, $//;
 	$body .= ')';
-	$body .= " - $VAR_STRUCT->$DATA" if ($returns_end_ptr);
+	$body .= " - $VAR_JSTRING->$DATA" if ($returns_end_ptr);
 	$body .= ";";
 	rm_nonnull(\$attr, \$ATTR_RET_NONNULL);
 	add_inline(\$attr);

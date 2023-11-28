@@ -21,7 +21,7 @@
 
    MIT License (Expat) */
 
-#include "../src/jarr.h"
+#include "../jstr/jarr.h"
 #include "test.h"
 
 #define ASZ(arr) (sizeof(arr) / sizeof(arr[0]))
