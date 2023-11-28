@@ -74,7 +74,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	const unsigned char *p = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
 	if (!USE_UNALIGNED) {
-		for (; (p = (const u *)memchr(p, c, hs - p)); ++p)
+		for (; (p = (const u *)jstr_memrchr(p, c, hs - p)); --p)
 			if (!CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
 				return (ret_ty)(p - shift);
 	} else {
