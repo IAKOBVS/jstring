@@ -137,7 +137,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_SIZE(array)    (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -477,8 +477,10 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_ATTR_NOTHROW __attribute__((__nothrow__))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__may_alias__)
-#		define JSTR_ATTR_MAY_ALIAS      __attribute__((__may_alias__))
-#		define JSTR_HAVE_ATTR_MAY_ALIAS 1
+#		define JSTR_ATTR_MAY_ALIAS __attribute__((__may_alias__))
+#		ifndef JSTR_HAVE_ATTR_MAY_ALIAS
+#			define JSTR_HAVE_ATTR_MAY_ALIAS 1
+#		endif
 #	endif
 #	ifdef __attr_access
 #		define JSTR_ATTR_ACCESS(x) __attr_access(x)
@@ -977,7 +979,7 @@ enum {
 #define JSTR_BYTE_SHIFT64(x, i) ((uint64_t)((x)[i])JSTR_BYTE_SH(i * 8))
 typedef uint32_t jstr_u32u_ty JSTR_ATTR_MAY_ALIAS;
 typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
-#if JSTR_HAVE_ATTR_MAY_ALIAS && 0
+#if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define JSTR_BYTE_UTOWORD32(x)   (*(jstr_u32u_ty *)(x))
 #	define JSTR_BYTE_UTOWORD64(x)   (*(jstr_u64u_ty *)(x))
 #	define JSTR_BYTE_UCMPEQ32(x, y) (JSTR_BYTE_UTOWORD32(x) == JSTR_BYTE_UTOWORD32(y))

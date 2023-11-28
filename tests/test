@@ -20,5 +20,6 @@ for header in $(echo *.c); do
 	basename=${header%.*}
 	compile "$header" "$basename" &
 	compile "$header" "$basename"_nolgpl -DJSTR_USE_LGPL=0 &
+	compile "$header" "$basename"_no_alias -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
 done
 wait
