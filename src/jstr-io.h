@@ -639,7 +639,6 @@ typedef enum jstrio_ftw_flag_ty {
 
 #define NONFATAL_ERR() (jstr_likely(errno == EACCES) || jstr_likely(errno == ENOENT))
 
-/* clang-format off */
 #if JSTR_HAVE_DIRENT_D_NAMLEN
 #	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                              \
 		do {                                                                                 \
@@ -691,11 +690,13 @@ typedef enum jstrio_ftw_flag_ty {
 				goto err_closedir;                          \
 			}                                                   \
 		} while (0)
+/* clang-format off */
 #	define STAT_ALWAYS(st, ftw_state, fd, ep, dirpath) STAT_DO(st, ftw_state, fd, ep, dirpath, ftw_state = JSTRIO_FTW_STATE_NS; goto do_fn)
 #	define OPENDIR(fd, filename) opendir(filename)
 #	define OPENAT(dstfd, srcfd, file, oflag, do_on_err) do {} while (0)
 #	define OPEN(fd, file, oflag, do_on_err) do {} while (0)
 #	define CLOSE(fd, do_on_err) do {} while (0)
+/* clang-format on */
 #endif
 
 #if JSTR_HAVE_DIRENT_D_TYPE
@@ -717,6 +718,7 @@ typedef enum jstrio_ftw_flag_ty {
 #	if USE_ATFILE
 #		define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)
 #	else
+/* clang-format off */
 #		define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) do {} while (0)
 #	endif
 #	define STAT(st, ftw_state, fd, ep, dirpath) do {} while (0)
@@ -940,11 +942,13 @@ err_closedir:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
+#undef OPENDIR
 #undef NONFATAL_ERR
 #undef IS_DIR
 #undef IS_REG
 #undef FILL_PATH
 #undef FILL_PATH_ALWAYS
+#undef STAT_DO
 #undef STAT
 #undef STAT_ALWAYS
 #undef STAT_MODE
