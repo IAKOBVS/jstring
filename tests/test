@@ -19,7 +19,7 @@ cd "$(dirname "$0")" || exit
 for header in $(echo *.c); do
 	basename=${header%.*}
 	compile "$header" "$basename" &
-	compile "$header" "$basename"_nolgpl -DJSTR_USE_LGPL=0 &
-	compile "$header" "$basename"_no_alias -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
+	compile "$header" "$basename"_JSTR_USE_LGPL_0 -DJSTR_USE_LGPL=0 &
+	compile "$header" "$basename"_JSTR_HAVE_ATTR_MAY_ALIAS_0 -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
 done
 wait
