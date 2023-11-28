@@ -1051,7 +1051,6 @@ get_arg:
 	}
 #undef PJSTR_COUNTDIGITS
 #undef PJSTR_GETMAXDIGITS
-#endif
 }
 
 /*
