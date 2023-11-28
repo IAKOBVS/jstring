@@ -621,7 +621,7 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#if 0
+#if 0 /* Broken. */
 #	define PJSTR_RAREBYTE_RETTYPE char *
 #	define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
 #	include "_jstr-rarebyte-strrstr.h"
