@@ -797,6 +797,13 @@ JSTR_NOEXCEPT
 	return s;
 }
 
+#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
+|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
+#	define JSTR_HAVE_SNPRINTF_STRLEN 1
+#else
+#	define JSTR_HAVE_SNPRINTF_STRLEN 0
+#endif
+
 /*
    Return size of allocation needed for sprintf.
    Return value:
@@ -804,247 +811,246 @@ JSTR_NOEXCEPT
    -1 on error and errno is set.
 */
 JSTR_FUNC
-#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
-|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
+#if JSTR_HAVE_SNPRINTF_STRLEN
 JSTR_ATTR_INLINE
 #endif
 static int
 jstr_vsprintfstrlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
-#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
-|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
-	const int ret = vsnprintf(NULL, 0, fmt, ap);
-	if (jstr_likely(ret > 0))
-		return ret + 1;
-	errno = ret;
-	return -1;
-#else
-#	define PJSTR_COUNTDIGITS(lflag, base)               \
-		if (lflag == L_INT)                          \
-			arg_len += INT / base;               \
-		else {                                       \
-			if (lflag == L_LONG)                 \
-				arg_len += LONG / base;      \
-			else if (lflag == L_LONG_LONG)       \
-				arg_len += LONG_LONG / base; \
-			else                                 \
-				goto einval;                 \
-			lflag = L_INT;                       \
-		}
-#	define PJSTR_GETMAXDIGITS(length)                                                 \
-		do {                                                                       \
-			if (base == B_DEC)                                                 \
-				arg_len += (is_thousep) ? DEC_##length : 2 * DEC_##length; \
-			else if (base == B_HEX)                                            \
-				arg_len += (is_thousep) ? HEX_##length : 2 * DEC_##length; \
-			else                                                               \
-				arg_len += (is_thousep) ? OCT_##length : 2 * DEC_##length; \
-		} while (0)
-	enum {
-		B_DEC = 10,
-		B_OCT = 8,
-		B_HEX = 16,
-	}; /* base */
-	enum {
-		L_INT = 0,
-		L_LONG,
-		L_LONG_LONG,
-	}; /* lflag */
-	enum {
-		WINT = CHAR_BIT * sizeof(wint_t),
-		INT = CHAR_BIT * sizeof(int),
-		LONG = CHAR_BIT * sizeof(long),
-		LONG_LONG = CHAR_BIT * sizeof(long long),
-		SIZE = CHAR_BIT * sizeof(size_t),
-		UINTPTR = CHAR_BIT * sizeof(uintptr_t),
-		FLOAT = 1 + CHAR_BIT * sizeof(float),
-		DOUBLE = 1 + CHAR_BIT * sizeof(double),
-		DOUBLE_LONG = 1 + CHAR_BIT * sizeof(long double),
-		DEC_WINT = 1 + WINT / 10,
-		DEC_INT = 1 + INT / 10,
-		DEC_LONG = 1 + LONG / 10,
-		DEC_LONG_LONG = 1 + LONG_LONG / 10,
-		DEC_SIZE = 1 + SIZE / 10,
-		DEC_UINTPTR = 1 + UINTPTR / 10,
-		OCT_WINT = 1 + WINT / 8,
-		OCT_INT = 1 + INT / 8,
-		OCT_LONG = 1 + LONG / 8,
-		OCT_LONG_LONG = 1 + LONG_LONG / 8,
-		OCT_SIZE = 1 + SIZE / 8,
-		OCT_UINTPTR = 1 + UINTPTR / 8,
-		HEX_WINT = 1 + WINT / 16,
-		HEX_INT = 1 + INT / 16,
-		HEX_LONG = 1 + LONG / 16,
-		HEX_LONG_LONG = 1 + LONG_LONG / 16,
-		HEX_SIZE = 1 + SIZE / 16,
-		HEX_UINTPTR = 1 + UINTPTR / 16,
-	}; /* sizeof */
-	/* Use size_t because we are calculating the length for the buffer conservatively
-	   and it may be much larger than the actual length. */
-	size_t arg_len = 0;
-	const char *arg;
-	int errno_len = 0;
-	int lflag = L_INT; /* long flag */
-	int is_pad = 0;
-	int is_thousep = 0;
-	unsigned int padlen;
-	unsigned int base;
-	for (;; ++fmt) {
-		if (*fmt == '%') {
-cont_switch:
-			switch (*++fmt) {
-			case 's':
-				arg = va_arg(ap, const char *);
-				arg_len += jstr_likely(arg != NULL) ? strlen(arg) : sizeof("(null)") - 1;
-				break;
-			case 'c':
-				if (jstr_likely(lflag == L_INT)) {
-					++arg_len;
-				} else if (lflag == LONG) {
-					arg_len += INT;
-					lflag = L_INT;
-				} else {
-					goto einval;
-				}
-				goto get_arg;
-				/* int */
-			case 'u':
-			case 'd':
-			case 'i':
-				base = B_DEC;
-				goto check_integer;
-			case 'x':
-			case 'X':
-				base = B_HEX;
-				goto check_integer;
-			case 'o':
-				base = B_OCT;
-				goto check_integer;
-check_integer:
-				if (lflag == L_INT) {
-					PJSTR_GETMAXDIGITS(INT);
-				} else {
-					if (lflag == LONG)
-						PJSTR_GETMAXDIGITS(LONG);
-					else if (lflag == LONG_LONG)
-						PJSTR_GETMAXDIGITS(LONG_LONG);
-					else
-						goto einval;
-					lflag = L_INT;
-				}
-				goto get_arg;
-				/* ptr */
-			case 'p':
-				/* max + 2 to make room for the 0x at the start of the number. */
-				arg_len += jstr_likely(va_arg(ap, const void *) != NULL) ? (HEX_UINTPTR + sizeof("0x") - 1) : sizeof("(nil)") - 1;
-				break;
-				/* chars written */
-			case 'n':
-				arg_len += INT;
-				break;
-				/* double */
-			case 'a':
-			case 'A':
-			case 'e':
-			case 'E':
-			case 'f':
-			case 'F':
-			case 'g':
-			case 'G':
-				if (lflag == L_INT) {
-					arg_len += DOUBLE;
-				} else if (lflag == LONG) {
-					arg_len += DOUBLE_LONG;
-					lflag = L_INT;
-				} else {
-					goto einval;
-				}
-				goto get_arg;
-			case '%':
-				arg_len += 2;
-				break;
-			case 'm':
-				if (errno_len == 0)
-					arg_len += strlen(strerror(errno));
-				else
-					arg_len += errno_len;
-				break;
-			/* padding */
-			case '*':
-				/* Get length of padding from argument. */
-				arg_len += va_arg(ap, int);
-				goto cont_switch;
-			case '-':
-				is_pad = 1;
-			/* flags */
-			case '+':
-			case '#':
-			case '0':
-			case ' ':
-				goto cont_switch;
-			case '\'':
-				is_thousep = 1;
-			/* precision */
-			case '.':
-				goto cont_switch;
-			/* length modifier */
-			case 'l':
-				++lflag;
-				goto cont_switch;
-			case 't':
-				lflag = UINTPTR;
-				goto cont_switch;
-			case 'z':
-				lflag = SIZE;
-				goto cont_switch;
-			case 'h':
-			case 'j':
-				goto cont_switch;
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-				if (is_pad) {
-					padlen = *fmt - '0' + (*fmt != 9);
-					for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
-						;
-					if (jstr_unlikely(padlen > INT_MAX)) {
-						errno = EOVERFLOW;
-						return -1;
-					}
-					arg_len += padlen;
-					is_pad = 0;
-				}
-				goto cont_switch;
-einval:
-			/* case '\0': */
-			default:
-				errno = EINVAL;
-				return -1;
-get_arg:
-				va_arg(ap, void *);
-				break;
-			}
-			is_pad = 0;
-			is_thousep = 0;
-		} else {
-			++arg_len;
-			if (jstr_unlikely(*fmt == '\0'))
-				break;
-		}
+	if (JSTR_HAVE_SNPRINTF_STRLEN) {
+		const int ret = vsnprintf(NULL, 0, fmt, ap);
+		if (jstr_likely(ret > 0))
+			return ret + 1;
+		errno = ret;
+		return -1;
+	} else {
+#define PJSTR_COUNTDIGITS(lflag, base)               \
+	if (lflag == L_INT)                          \
+		arg_len += INT / base;               \
+	else {                                       \
+		if (lflag == L_LONG)                 \
+			arg_len += LONG / base;      \
+		else if (lflag == L_LONG_LONG)       \
+			arg_len += LONG_LONG / base; \
+		else                                 \
+			goto einval;                 \
+		lflag = L_INT;                       \
 	}
-	++arg_len;
-	if (jstr_unlikely(arg_len > INT_MAX))
-		arg_len = INT_MAX;
-	return arg_len;
-#	undef PJSTR_COUNTDIGITS
-#	undef PJSTR_GETMAXDIGITS
+#define PJSTR_GETMAXDIGITS(length)                                                 \
+	do {                                                                       \
+		if (base == B_DEC)                                                 \
+			arg_len += (is_thousep) ? DEC_##length : 2 * DEC_##length; \
+		else if (base == B_HEX)                                            \
+			arg_len += (is_thousep) ? HEX_##length : 2 * DEC_##length; \
+		else                                                               \
+			arg_len += (is_thousep) ? OCT_##length : 2 * DEC_##length; \
+	} while (0)
+		enum {
+			B_DEC = 10,
+			B_OCT = 8,
+			B_HEX = 16,
+		}; /* base */
+		enum {
+			L_INT = 0,
+			L_LONG,
+			L_LONG_LONG,
+		}; /* lflag */
+		enum {
+			WINT = CHAR_BIT * sizeof(wint_t),
+			INT = CHAR_BIT * sizeof(int),
+			LONG = CHAR_BIT * sizeof(long),
+			LONG_LONG = CHAR_BIT * sizeof(long long),
+			SIZE = CHAR_BIT * sizeof(size_t),
+			UINTPTR = CHAR_BIT * sizeof(uintptr_t),
+			FLOAT = 1 + CHAR_BIT * sizeof(float),
+			DOUBLE = 1 + CHAR_BIT * sizeof(double),
+			DOUBLE_LONG = 1 + CHAR_BIT * sizeof(long double),
+			DEC_WINT = 1 + WINT / 10,
+			DEC_INT = 1 + INT / 10,
+			DEC_LONG = 1 + LONG / 10,
+			DEC_LONG_LONG = 1 + LONG_LONG / 10,
+			DEC_SIZE = 1 + SIZE / 10,
+			DEC_UINTPTR = 1 + UINTPTR / 10,
+			OCT_WINT = 1 + WINT / 8,
+			OCT_INT = 1 + INT / 8,
+			OCT_LONG = 1 + LONG / 8,
+			OCT_LONG_LONG = 1 + LONG_LONG / 8,
+			OCT_SIZE = 1 + SIZE / 8,
+			OCT_UINTPTR = 1 + UINTPTR / 8,
+			HEX_WINT = 1 + WINT / 16,
+			HEX_INT = 1 + INT / 16,
+			HEX_LONG = 1 + LONG / 16,
+			HEX_LONG_LONG = 1 + LONG_LONG / 16,
+			HEX_SIZE = 1 + SIZE / 16,
+			HEX_UINTPTR = 1 + UINTPTR / 16,
+		}; /* sizeof */
+		/* Use size_t because we are calculating the length for the buffer conservatively
+		   and it may be much larger than the actual length. */
+		size_t arg_len = 0;
+		const char *arg;
+		int errno_len = 0;
+		int lflag = L_INT; /* long flag */
+		int is_pad = 0;
+		int is_thousep = 0;
+		unsigned int padlen;
+		unsigned int base;
+		for (;; ++fmt) {
+			if (*fmt == '%') {
+cont_switch:
+				switch (*++fmt) {
+				case 's':
+					arg = va_arg(ap, const char *);
+					arg_len += jstr_likely(arg != NULL) ? strlen(arg) : sizeof("(null)") - 1;
+					break;
+				case 'c':
+					if (jstr_likely(lflag == L_INT)) {
+						++arg_len;
+					} else if (lflag == LONG) {
+						arg_len += INT;
+						lflag = L_INT;
+					} else {
+						goto einval;
+					}
+					goto get_arg;
+					/* int */
+				case 'u':
+				case 'd':
+				case 'i':
+					base = B_DEC;
+					goto check_integer;
+				case 'x':
+				case 'X':
+					base = B_HEX;
+					goto check_integer;
+				case 'o':
+					base = B_OCT;
+					goto check_integer;
+check_integer:
+					if (lflag == L_INT) {
+						PJSTR_GETMAXDIGITS(INT);
+					} else {
+						if (lflag == LONG)
+							PJSTR_GETMAXDIGITS(LONG);
+						else if (lflag == LONG_LONG)
+							PJSTR_GETMAXDIGITS(LONG_LONG);
+						else
+							goto einval;
+						lflag = L_INT;
+					}
+					goto get_arg;
+					/* ptr */
+				case 'p':
+					/* max + 2 to make room for the 0x at the start of the number. */
+					arg_len += jstr_likely(va_arg(ap, const void *) != NULL) ? (HEX_UINTPTR + sizeof("0x") - 1) : sizeof("(nil)") - 1;
+					break;
+					/* chars written */
+				case 'n':
+					arg_len += INT;
+					break;
+					/* double */
+				case 'a':
+				case 'A':
+				case 'e':
+				case 'E':
+				case 'f':
+				case 'F':
+				case 'g':
+				case 'G':
+					if (lflag == L_INT) {
+						arg_len += (is_thousep) ? DOUBLE * 2 : DOUBLE;
+					} else if (lflag == LONG) {
+						arg_len += (is_thousep) ? DOUBLE_LONG * 2 : DOUBLE_LONG;
+						lflag = L_INT;
+					} else {
+						goto einval;
+					}
+					goto get_arg;
+				case '%':
+					arg_len += 2;
+					break;
+				case 'm':
+					if (errno_len == 0)
+						arg_len += strlen(strerror(errno));
+					else
+						arg_len += errno_len;
+					break;
+				/* padding */
+				case '*':
+					/* Get length of padding from argument. */
+					arg_len += va_arg(ap, int);
+					goto cont_switch;
+				case '-':
+					is_pad = 1;
+				/* flags */
+				case '+':
+				case '#':
+				case '0':
+				case ' ':
+					goto cont_switch;
+				case '\'':
+					is_thousep = 1;
+				/* precision */
+				case '.':
+					goto cont_switch;
+				/* length modifier */
+				case 'l':
+					++lflag;
+					goto cont_switch;
+				case 't':
+					lflag = UINTPTR;
+					goto cont_switch;
+				case 'z':
+					lflag = SIZE;
+					goto cont_switch;
+				case 'h':
+				case 'j':
+					goto cont_switch;
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					if (is_pad) {
+						padlen = *fmt - '0' + (*fmt != 9);
+						for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
+							;
+						if (jstr_unlikely(padlen > INT_MAX)) {
+							errno = EOVERFLOW;
+							return -1;
+						}
+						arg_len += padlen;
+						is_pad = 0;
+					}
+					goto cont_switch;
+einval:
+				/* case '\0': */
+				default:
+					errno = EINVAL;
+					return -1;
+get_arg:
+					va_arg(ap, void *);
+					break;
+				}
+				is_pad = 0;
+				is_thousep = 0;
+			} else {
+				++arg_len;
+				if (jstr_unlikely(*fmt == '\0'))
+					break;
+			}
+		}
+		++arg_len;
+		if (jstr_unlikely(arg_len > INT_MAX))
+			arg_len = INT_MAX;
+		return arg_len;
+	}
+#undef PJSTR_COUNTDIGITS
+#undef PJSTR_GETMAXDIGITS
 #endif
 }
 
