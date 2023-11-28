@@ -28,7 +28,7 @@ for file in $@; do
 	case "$file" in
 		*macro*.h | *_glibc*.h ) continue ;;
 	esac
-	macros=$(grep '^.*define[ \t][ \t]*[A-Z]' "$file" | sed 's/^.*#.*define[ \t]*\([A-Z]*\)/\1/; s/[ \t(].*//' | grep -v -e '_H$' -e '^JSTR' -e '^PJSTR' -e '^JARR' -e '^PJARR' -e '^JTRIE' -e '^PJTRIE')
+	macros=$(grep '^.*define[ \t\/\*][ \t]*[A-Z]' "$file" | sed 's/^.*#.*define[ \t]*\([A-Z]*\)/\1/; s/[ \t(].*//' | grep -v -e '_H$' -e '^JSTR' -e '^PJSTR' -e '^JARR' -e '^PJARR' -e '^JTRIE' -e '^PJTRIE')
 	for macro in $macros; do
 		if ! grep -q "^[ \t]*#[ \t]*undef[ \t][ \t]*$macro" "$file"; then
 			echo "$macro is not undef'd after used in $file"
