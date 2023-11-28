@@ -659,12 +659,9 @@ JSTR_NOEXCEPT
 	const u *h = (const u *)hs + hs_len - ne_len;
 	const u *n = (const u *)ne;
 	/* TODO: use memrchr(). */
-	for (;; --h) {
+	for (; *h != *n; --h)
 		if (jstr_unlikely(h < (const u *)hs))
 			return NULL;
-		if (*h == *n)
-			break;
-	}
 	if (ne_len == 1) {
 		return (char *)h;
 	} else if (ne_len == 2) {
