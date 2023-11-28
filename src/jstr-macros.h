@@ -978,8 +978,8 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define JSTR_BYTE_UTOWORD32(x)   (*(jstr_u32u_ty *)(x))
 #	define JSTR_BYTE_UTOWORD64(x)   (*(jstr_u64u_ty *)(x))
-#	define JSTR_BYTE_UCMPEQ32(x, y) (JSTR_BYTE_UTOWORD32(x) == JSTR_BYTE_TOWORD32(y))
-#	define JSTR_BYTE_UCMPEQ64(x, y) (JSTR_BYTE_UTOWORD64(x) == JSTR_BYTE_TOWORD64(y))
+#	define JSTR_BYTE_UCMPEQ32(x, y) (JSTR_BYTE_UTOWORD32(x) == JSTR_BYTE_UTOWORD32(y))
+#	define JSTR_BYTE_UCMPEQ64(x, y) (JSTR_BYTE_UTOWORD64(x) == JSTR_BYTE_UTOWORD64(y))
 #	define JSTR_BYTE_TOWORD32(x)    (*(uint32_t *)(x))
 #	define JSTR_BYTE_TOWORD64(x)    (*(uint64_t *)(x))
 #	define JSTR_BYTE_CMPEQ32(x)     (JSTR_BYTE_TOWORD32(x) == JSTR_BYTE_TOWORD32(y))
