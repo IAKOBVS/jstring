@@ -24,8 +24,9 @@
 #ifndef JSTR_TEST_H
 #define JSTR_TEST_H
 
+#define _FORTIFY_SOURCE 3
 #define JSTR_DISABLE_NONSTANDARD 1
-#define _GNU_SOURCE
+#define JSTR_PANIC 1
 
 #include "../src/jstr.h"
 #include <assert.h>

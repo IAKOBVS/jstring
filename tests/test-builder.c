@@ -91,12 +91,14 @@ main(int argc, char **argv)
 	expected = "   ";
 	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
 	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0);
+	jstrre_free(&preg);
 	FILL(j, "hello hello hello hello");
 	find = "\\([0-9A-Za-z]*\\)";
 	rplc = "\\1\\1";
 	expected = "hellohello hellohello hellohello hellohello";
 	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
 	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0, 3);
+	jstrre_free(&preg);
 	jstr_free_j(&j);
 	SUCCESS();
 	return 0;

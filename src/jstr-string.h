@@ -648,7 +648,7 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	const u *h = (const u *)jstr_memrchr(hs, *(const u *)ne, hs_len - ne_len + 1);
+	const u *h = (const u *)jstr_memrchr(hs, *(const u *)ne, hs_len - ne_len);
 	if (h == NULL || ne_len == 1)
 		return (char *)h;
 	const u *n = (const u *)ne;
