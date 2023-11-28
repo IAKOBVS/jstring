@@ -32,7 +32,6 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-
 #ifndef PJSTR_RAREBYTE_RETTYPE
 #	define PJSTR_RAREBYTE_RETTYPE void *
 #endif
@@ -90,7 +89,9 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 			ne += 8;
 			ne_len -= 8;
 		}
-		for (; (p = (const u *)jstr_memrchr(p, c, p - hs)); --p) {
+		for (;
+		     (p = (const u *)jstr_memrchr(p, c, p - hs));
+		     --p) {
 			/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
 			if (short_ne) {
 				if (EQ32(p - shift, ne_align) && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
@@ -98,11 +99,6 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 			} else {
 				if (EQ64(p - shift, ne_align) && !memcmp(p - shift + 8, ne, ne_len))
 					return (ret_ty)(p - shift);
-				printf("p:%p\n", p);
-				printf("p:%p\n", hs);
-				printf("p_len:%zu\n", strlen((char *)p));
-				printf("hs_len:%zu\n", strlen((char *)hs));
-				printf("ne_len:%zu\n\n", strlen((char *)ne));
 			}
 		}
 	}

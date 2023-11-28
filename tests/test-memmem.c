@@ -138,9 +138,9 @@ jstr_strrstr(const char *h, const char *n)
 		PRINTERR("\n");                                     \
 		PRINTERR("hs_len:\n%zu\n", hs_len);                 \
 		PRINTERR("ne_len:\n%zu\n", ne_len);                 \
-		PRINTERR("expected:\n%s\n", expected);              \
+		PRINTERR("expected:\n%s\n", N(expected));           \
 		PRINTERR("expected_len:\n%zu\n", strlen(expected)); \
-		PRINTERR("result:\n%s\n", result);                  \
+		PRINTERR("result:\n%s\n", N(result));               \
 		PRINTERR("result_len:\n%zu\n", strlen(result));     \
 		assert(result == expected);                         \
 	}
@@ -161,49 +161,49 @@ jstr_strrstr(const char *h, const char *n)
 			        strlen(hs),             \
 			        strlen(ne),             \
 			        0,                      \
-			        fn(hs, ne),             \
-			        simple_fn(hs, ne));     \
+			        N(fn(hs, ne)),          \
+			        N(simple_fn(hs, ne)));  \
 		}                                       \
 	} while (0)
 
-#define T_STRSTR_LEN(fn, simple_fn)                                               \
-	do {                                                                      \
-		TESTING(fn);                                                      \
-		T_FOREACHI(test, i)                                               \
-		{                                                                 \
-			const char *hs = T_HS(test, i);                           \
-			const char *ne = T_NE(test, i);                           \
-			const size_t hs_len = strlen(hs);                         \
-			const size_t ne_len = strlen(ne);                         \
-			T_DEBUG(hs,                                               \
-			        ne,                                               \
-			        hs_len,                                           \
-			        ne_len,                                           \
-			        0,                                                \
-			        (const char *)fn(hs, hs_len, ne, ne_len),         \
-			        (const char *)simple_fn(hs, hs_len, ne, ne_len)); \
-		}                                                                 \
+#define T_STRSTR_LEN(fn, simple_fn)                                                  \
+	do {                                                                         \
+		TESTING(fn);                                                         \
+		T_FOREACHI(test, i)                                                  \
+		{                                                                    \
+			const char *hs = T_HS(test, i);                              \
+			const char *ne = T_NE(test, i);                              \
+			const size_t hs_len = strlen(hs);                            \
+			const size_t ne_len = strlen(ne);                            \
+			T_DEBUG(hs,                                                  \
+			        ne,                                                  \
+			        hs_len,                                              \
+			        ne_len,                                              \
+			        0,                                                   \
+			        N((const char *)fn(hs, hs_len, ne, ne_len)),         \
+			        N((const char *)simple_fn(hs, hs_len, ne, ne_len))); \
+		}                                                                    \
 	} while (0)
 
-#define T_STRNSTR(fn, simple_fn)                                     \
-	do {                                                         \
-		TESTING(fn);                                         \
-		T_FOREACHI(test, i)                                  \
-		{                                                    \
-			size_t n = strlen(test[i].hs);               \
-			n = JSTR_MIN(n, i);                          \
-			const char *hs = T_HS(test, i);              \
-			const char *ne = T_NE(test, i);              \
-			const size_t hs_len = strlen(hs);            \
-			const size_t ne_len = strlen(ne);            \
-			T_DEBUG(hs,                                  \
-			        ne,                                  \
-			        hs_len,                              \
-			        ne_len,                              \
-			        n,                                   \
-			        (const char *)fn(hs, ne, n),         \
-			        (const char *)simple_fn(hs, ne, n)); \
-		}                                                    \
+#define T_STRNSTR(fn, simple_fn)                                        \
+	do {                                                            \
+		TESTING(fn);                                            \
+		T_FOREACHI(test, i)                                     \
+		{                                                       \
+			size_t n = strlen(test[i].hs);                  \
+			n = JSTR_MIN(n, i);                             \
+			const char *hs = T_HS(test, i);                 \
+			const char *ne = T_NE(test, i);                 \
+			const size_t hs_len = strlen(hs);               \
+			const size_t ne_len = strlen(ne);               \
+			T_DEBUG(hs,                                     \
+			        ne,                                     \
+			        hs_len,                                 \
+			        ne_len,                                 \
+			        n,                                      \
+			        N((const char *)fn(hs, ne, n)),         \
+			        N((const char *)simple_fn(hs, ne, n))); \
+		}                                                       \
 	} while (0)
 
 int
