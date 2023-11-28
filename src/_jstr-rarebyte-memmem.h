@@ -69,7 +69,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	typedef unsigned char u;
 	const int c = *(u *)rarebyte;
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
-	const u *const end = hs + hs_len - (ne_len - shift);
+	const u *const end = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
 	if (!USE_UNALIGNED) {
 		for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs)
