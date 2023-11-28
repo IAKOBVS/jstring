@@ -677,36 +677,61 @@ JSTR_NOEXCEPT
 		if (hw == nw)
 			return (char *)h;
 	} else {
-		const int c = *(const u *)ne;
 #if JSTR_ENDIAN_LITTLE
 #	define SH <<
 #elif JSTR_ENDIAN_BIG
 #	define SH >>
+#else
+#	error "Can't detect endianness."
 #endif
+#define I(i)        (i * 8)
+#define TOWORD32(x) ((uint32_t)(x)[0] SH I(0) | (uint32_t)(x)[1] SH I(1) | (uint32_t)(x)[2] SH I(2) | (uint32_t)(x)[3] SH I(3))
+#define TOWORD64(x) ((uint64_t)TOWORD32((x)) | (uint64_t)(x)[4] SH I(4) | (uint64_t)(x)[5] SH I(5) | (uint64_t)(x)[6] SH I(6) | (uint64_t)(x)[7] SH I(7))
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define EQ32(hs, ne_align) (*(u32 *)(hs) == (uint32_t)ne_align)
-#	define TOWORD32(x)        (*(u32 *)x)
+#	define EQ64(hs, ne_align) (*(u64 *)(hs) == ne_align)
 #else
+#	define EQ64(hs, ne_align) !memcmp(hs, &(ne_align), 8)
 #	define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
-#	define TOWORD32(x)        ((uint32_t)(x)[0] SH 0 * 8 | (uint32_t)(x)[1] SH 1 * 8 | (uint32_t)(x)[2] SH 2 * 8 | (uint32_t)(x)[3] SH 3 * 8)
 #endif
+		const int c = *n;
 		typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
-		const uint32_t ne_align = (JSTR_HAVE_ATTR_MAY_ALIAS) ? *(u32 *)n : TOWORD32(n);
-		if (JSTR_HAVE_ATTR_MAY_ALIAS) {
+		typedef uint64_t u64 JSTR_ATTR_MAY_ALIAS;
+		uint64_t ne_align;
+		const int short_ne = ne_len < 8;
+		if (short_ne) {
+			if (JSTR_HAVE_ATTR_MAY_ALIAS)
+				ne_align = (uint64_t) * (u32 *)n;
+			else
+				ne_align = (uint64_t)TOWORD32(n);
+			n += 4;
 			ne_len -= 4;
-			ne = (const u *)ne + 4;
+		} else {
+			if (JSTR_HAVE_ATTR_MAY_ALIAS)
+				ne_align = *(u64 *)n;
+			else
+				ne_align = TOWORD64(n);
+			n += 8;
+			ne_len -= 8;
 		}
 		for (; h >= (const u *)hs; --h)
 			if (*h == c) {
 				if (JSTR_HAVE_UNALIGNED_ACCESS) {
-					if (EQ32(h, ne_align) && !memcmp(h + 4, ne, ne_len))
-						return (char *)h;
+					if (short_ne) {
+						if (EQ32(h, ne_align) && !jstr_memcmpeq_loop(h + 4, n, ne_len))
+							return (char *)h;
+					} else {
+						if (EQ64(h, ne_align) && !memcmp(h + 8, n, ne_len))
+							return (char *)h;
+					}
 				} else {
 					if (!memcmp(h, ne, ne_len))
 						return (char *)h;
 				}
 			}
+#undef TOWORD64
 #undef TOWORD32
+#undef EQ64
 #undef EQ32
 #undef SH
 	}
