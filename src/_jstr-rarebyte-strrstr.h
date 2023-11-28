@@ -108,8 +108,6 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 #undef EQ64
 #undef TOWORD64
 #undef TOWORD32
-#undef I
-#undef SH
 #undef PJSTR_RAREBYTE_FUNC
 #undef PJSTR_RAREBYTE_CMP_FUNC
 #undef CMP_FUNC
