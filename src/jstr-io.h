@@ -842,24 +842,26 @@ JSTR_NOEXCEPT
 				        continue;
 			        } else {
 				        a->ftw.ftw_state = JSTRIO_FTW_STATE_NS;
-				        goto do_fn;
+				        goto fn;
 			        });
 		}
 		if (IS_REG(ep, a->ftw.st)) {
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_F;
-			goto do_reg;
+			goto reg;
 		}
 		if (IS_DIR(ep, a->ftw.st)) {
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_D;
-			goto do_dir;
+			goto dir;
 		}
 		/* If true, ignore other types of files. */
 		if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
 			continue;
-do_reg:
+		goto do_reg;
+reg:
 		if (a->ftw_flags & JSTRIO_FTW_DIR)
 			if (!(a->ftw_flags & JSTRIO_FTW_REG))
 				continue;
+do_reg:
 		if (a->fnm_glob != NULL) {
 			if (a->ftw_flags & JSTRIO_FTW_MATCHPATH) {
 				FILL_PATH(newpath_len, a->dirpath, dirpath_len, ep);
@@ -881,7 +883,7 @@ do_reg:
 		} else {
 			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->dirpath);
 		}
-do_fn:
+fn:
 		tmp = a->fn(&a->ftw, a->fn_args);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE
@@ -896,7 +898,7 @@ do_fn:
 				goto err_closedir;
 		}
 		continue;
-do_dir:
+dir:
 		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
 			if (a->ftw_flags & JSTRIO_FTW_REG)
 				if (!(a->ftw_flags & JSTRIO_FTW_DIR))
@@ -925,7 +927,7 @@ do_dir:
 skip_fn:
 		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
 			continue;
-		OPENAT(tmp, fd, ep->d_name, O_RDONLY | PJSTRIO_O_DIRECTORY | O_NONBLOCK, continue);
+		OPENAT(tmp, fd, ep->d_name, O_RDONLY | O_NONBLOCK | PJSTRIO_O_DIRECTORY, continue);
 		tmp = pjstrio_ftw_len(a, newpath_len FD_ARG);
 		CLOSE(FD, );
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
