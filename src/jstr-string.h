@@ -507,8 +507,8 @@ jstr_strstr_len(const char *hs,
                 size_t ne_len)
 JSTR_NOEXCEPT
 {
-	/* Only use memmem() for long needles or when it is implemented in assembly.
-	It seems to be slower than an assembly optimized strstr() for short needles. */
+	/* Only use memmem() for long needles or when it is implemented in assembly
+	as it seems to be slower than an assembly optimized strstr() for short needles. */
 	if (JSTR_HAVE_STRSTR_OPTIMIZED)
 		if (ne_len < JSTR_MEMMEM_THRES)
 			return (char *)strstr(hs, ne);
