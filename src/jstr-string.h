@@ -662,9 +662,9 @@ JSTR_NOEXCEPT
 		if (*h == *n)
 			break;
 	}
-	if (ne_len == 1)
+	if (ne_len == 1) {
 		return (char *)h;
-	if (ne_len == 2) {
+	} else if (ne_len == 2) {
 		h += 2;
 		const uint16_t nw = (uint16_t)n[1] << 8 | n[0];
 		uint16_t hw = (uint16_t)h[0] << 8 | h[-1];
