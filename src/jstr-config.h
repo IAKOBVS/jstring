@@ -43,8 +43,8 @@
 
 /*
    Always prefer standard functions over user functions.
-   For example, use libc strcasestr() if available over
-   our own strcasestr() in jstr_strcasestr().
+   For example, use libc strcasestr() when available
+   over our own strcasestr() in jstr_strcasestr().
 */
 #ifndef JSTR_USE_STANDARD_ALWAYS
 #	define JSTR_USE_STANDARD_ALWAYS 0
