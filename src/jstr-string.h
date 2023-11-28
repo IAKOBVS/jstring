@@ -656,6 +656,7 @@ JSTR_NOEXCEPT
 #endif
 	const u *h = (const u *)hs + hs_len - ne_len;
 	const u *n = (const u *)ne;
+	/* TODO: use memrchr(). */
 	for (;; --h) {
 		if (jstr_unlikely(h < (const u *)hs))
 			return NULL;
