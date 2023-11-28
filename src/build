@@ -54,7 +54,7 @@ compile()
 	file=$1
 	shift
 	#shellcheck disable=SC2068
-	cc -x c $@ -o -Wall -Wextra "$file" -
+	cc -x c $@ -Wall -Wextra -o "$file" -
 }
 file_str='#include "../jstr/jstr.h"
 int main(void) {return 0;}'
@@ -66,3 +66,4 @@ wait
 rm -f "$TMP"1
 rm -f "$TMP"2
 rm -f "$TMP"3
+echo 'Built to jstr.'
