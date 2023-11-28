@@ -622,13 +622,11 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-/* #define JSTR_USE_STRRSTR */
+#define JSTR_USE_STRRSTR
 
-#ifdef JSTR_USE_STRRSTR /* Broken. */
-#	define PJSTR_RAREBYTE_RETTYPE char *
-#	define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
-#	include "_jstr-rarebyte-strrstr.h"
-#endif
+#define PJSTR_RAREBYTE_RETTYPE char *
+#define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
+#include "_jstr-rarebyte-strrstr.h"
 
 /*
    Find last NE in HS.
@@ -651,10 +649,11 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-#ifdef JSTR_USE_STRRSTR
-	if (ne_len > 4)
+	if (ne_len > 4) {
+		if (!memcmp(hs, ne, ne_len))
+			return (char *)hs;
 		return pjstr_strrstr_len_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)jstr_rarebytefind_len(ne, ne_len));
-#endif
+	}
 	const u *h = (const u *)hs + hs_len - ne_len;
 	const u *n = (const u *)ne;
 	/* TODO: use memrchr(). */
@@ -682,7 +681,7 @@ JSTR_NOEXCEPT
 			;
 		if (hw == nw)
 			return (char *)h;
-	} else if (ne_len == 4) {
+	} else /* ne_len == 4 */ {
 		h += 4;
 		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
 		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
@@ -690,43 +689,6 @@ JSTR_NOEXCEPT
 			;
 		if (hw == nw)
 			return (char *)h;
-	} else {
-		if (!JSTR_HAVE_UNALIGNED_ACCESS || (!JSTR_HAVE_ATTR_MAY_ALIAS && !JSTR_HAVE_BUILTIN_MEMCMP)) {
-			const int c = *n;
-			for (; h >= (const u *)hs; --h)
-				if (*h == c && !memcmp(h, ne, ne_len))
-					return (char *)h;
-		} else {
-#if JSTR_HAVE_ATTR_MAY_ALIAS
-#	define EQ32(hs, ne_align) (JSTR_BYTE_UTOWORD32(hs) == (uint32_t)ne_align)
-#	define EQ64(hs, ne_align) (JSTR_BYTE_UTOWORD64(hs) == ne_align)
-#else
-#	define EQ64(hs, ne_align) (!memcmp(hs, &(ne_align), 8))
-#	define EQ32(hs, ne_align) (!memcmp(hs, &(ne_align), 4))
-#endif
-			uint64_t ne_align;
-			const int short_ne = ne_len < 8;
-			if (short_ne) {
-				ne_align = (uint64_t)JSTR_BYTE_UTOWORD32(n);
-				n += 4;
-				ne_len -= 4;
-			} else {
-				ne_align = JSTR_BYTE_UTOWORD64(n);
-				n += 8;
-				ne_len -= 8;
-			}
-			for (; h >= (const u *)hs; --h) {
-				if (short_ne) {
-					if (EQ32(h, ne_align) && !jstr_memcmpeq_loop(h + 4, n, ne_len))
-						return (char *)h;
-				} else {
-					if (EQ64(h, ne_align) && !memcmp(h + 8, n, ne_len))
-						return (char *)h;
-				}
-			}
-#undef EQ64
-#undef EQ32
-		}
 	}
 	return NULL;
 }

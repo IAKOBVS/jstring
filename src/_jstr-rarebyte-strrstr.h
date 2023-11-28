@@ -71,10 +71,10 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	typedef unsigned char u;
 	const int c = *(u *)rarebyte;
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
-	const unsigned char *p = hs + hs_len - (ne_len - shift);
+	const unsigned char *p = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
 	if (!USE_UNALIGNED) {
-		for (; (p = (const u *)jstr_memrchr(p, c, p - hs)); --p)
+		for (; (p = (const u *)jstr_memrchr(hs, c, p - hs)); --p)
 			if (!CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
 				return (ret_ty)(p - shift);
 	} else {
@@ -89,9 +89,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 			ne += 8;
 			ne_len -= 8;
 		}
-		for (;
-		     (p = (const u *)jstr_memrchr(p, c, p - hs));
-		     --p) {
+		for (; (p = (const u *)jstr_memrchr(hs, c, p - hs)); --p) {
 			/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
 			if (short_ne) {
 				if (EQ32(p - shift, ne_align) && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
