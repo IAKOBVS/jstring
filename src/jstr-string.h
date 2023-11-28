@@ -808,7 +808,7 @@ pjstr_strcasestr(const unsigned char *hs,
 {
 	typedef unsigned char u;
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
-	if (jstr_unlikely(jstr_strnlen((char *)hs, shift) != shift))
+	if (jstr_unlikely(jstr_strnlen((char *)hs, shift) < shift))
 		return NULL;
 	const u *hp, *np;
 	const int c = *(u *)rarebyte;
@@ -853,7 +853,7 @@ JSTR_NOEXCEPT
 	} else {
 		typedef unsigned char u;
 		const size_t ne_len = 4 + strlen(ne + 4);
-		if (jstr_unlikely(4 + jstr_strnlen(hs + 4, ne_len) != ne_len))
+		if (jstr_unlikely(4 + jstr_strnlen(hs + 4, ne_len) < ne_len))
 			return NULL;
 		return pjstr_strcasestr_nolgpl((const u *)hs, (const u *)ne);
 	}
@@ -1065,7 +1065,7 @@ JSTR_NOEXCEPT
 		typedef unsigned char u;
 		const u *p = (const u *)jstr_rarebytefindeither(ne);
 		const size_t shift = JSTR_PTR_DIFF(p, ne);
-		if (jstr_unlikely(jstr_strnlen(hs, shift) != shift))
+		if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
 			return NULL;
 		hs += shift;
 		if (!jstr_isalpha(*p)) {

@@ -123,12 +123,6 @@ simple_strcasestr(const char *h,
 	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
 }
 
-char *
-jstr_strrstr(const char *h, const char *n)
-{
-	return jstr_strrstr_len(h, strlen(h), n, strlen(n));
-}
-
 #define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)        \
 	if (jstr_unlikely(result != expected)) {                    \
 		PRINTERR("hsn:\n");                                 \
@@ -269,7 +263,7 @@ main(int argc, char **argv)
 		{ "he11o  ", "he11o     "}
   /* clang-format on */
 	};
-	/* T_STRSTR(jstr_strcasestr, simple_strcasestr); */
+	T_STRSTR(jstr_strcasestr, simple_strcasestr);
 	T_STRSTR_LEN(jstr_strcasestr_len, simple_strcasestr_len);
 	T_STRSTR_LEN(jstr_memmem, simple_memmem);
 	T_STRSTR_LEN(jstr_strrstr_len, simple_strrstr_len);

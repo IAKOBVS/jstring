@@ -1,8 +1,10 @@
 #!/bin/sh
 
 cd "$(dirname "$0")" || exit
-../bin/build
-./check-little-endian
-./check-page-size
+../bin/build || exit
+./check-little-endian || exit
+./check-page-size || exit
 ./check-builtins || exit
 ./check-word-at-a-time-inclusion || exit
+./check-undefined-macros || exit
+./check-scoped-macros || exit
