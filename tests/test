@@ -18,7 +18,7 @@ flags='-fsanitize=address'
 cd "$(dirname "$0")" || exit
 for header in $(echo *.c); do
 	basename=${header%.*}
-	compile "$header" "$basename" -O1 &
-	compile "$header" "$basename"_nolgpl -O1 -DJSTR_USE_LGPL=0 &
+	compile "$header" "$basename" &
+	compile "$header" "$basename"_nolgpl -DJSTR_USE_LGPL=0 &
 done
 wait

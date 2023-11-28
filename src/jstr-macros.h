@@ -31,6 +31,55 @@
 #include "jstr-ptr-arith.h"
 #include <assert.h>
 
+#ifdef __cplusplus
+#	define PJSTR_BEGIN_DECLS extern "C" {
+#	define PJSTR_END_DECLS   }
+#else
+#	define PJSTR_BEGIN_DECLS
+#	define PJSTR_END_DECLS
+#endif
+
+PJSTR_BEGIN_DECLS
+typedef enum {
+	JSTR_RET_ERR = -1,
+	JSTR_RET_SUCC = 0
+} jstr_ret_ty;
+PJSTR_END_DECLS
+
+#ifdef __GLIBC__
+PJSTR_BEGIN_DECLS
+#	include <sys/cdefs.h>
+PJSTR_END_DECLS
+#endif
+
+PJSTR_BEGIN_DECLS
+#if JSTR_OS_SOLARIS
+#	include <sys/int_types.h>
+#else
+#	include <stdint.h>
+#endif
+PJSTR_END_DECLS
+
+#ifdef __GLIBC_PREREQ
+#	define JSTR_GLIBC_PREREQ(maj, min) __GLIBC_PREREQ(maj, min)
+#elif defined __GLIBC__
+#	define JSTR_GLIBC_PREREQ(maj, min) \
+		((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
+#else
+#	define JSTR_GLIBC_PREREQ(maj, min) 0
+#endif
+
+#if JSTR_ENV_BSD
+PJSTR_BEGIN_DECLS
+#	include <sys/types.h>
+PJSTR_END_DECLS
+#elif (JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) \
+|| defined _DEFAULT_SOURCE
+PJSTR_BEGIN_DECLS
+#	include <endian.h>
+PJSTR_END_DECLS
+#endif
+
 #if JSTR_DEBUG
 #	undef JSTR_PANIC
 #	define JSTR_PANIC 1
@@ -38,6 +87,52 @@
 
 #ifndef JSTR_DISABLE_NONSTANDARD
 #	define JSTR_DISABLE_NONSTANDARD 0
+#endif
+
+#ifdef __BYTE_ORDER
+#	define JSTR_BYTE_ORDER __BYTE_ORDER
+#elif defined _BYTE_ORDER
+#	define JSTR_BYTE_ORDER _BYTE_ORDER
+#endif
+
+#ifdef __BIG_ENDIAN
+#	define JSTR_BIG_ENDIAN __BIG_ENDIAN
+#elif defined _BIG_ENDIAN
+#	define JSTR_BIG_ENDIAN _BIG_ENDIAN
+#endif
+
+#ifdef __LITTLE_ENDIAN
+#	define JSTR_LITTLE_ENDIAN __LITTLE_ENDIAN
+#elif defined _LITTLE_ENDIAN
+#	define JSTR_LITTLE_ENDIAN _LITTLE_ENDIAN
+#endif
+
+#ifdef JSTR_BYTE_ORDER
+#	if JSTR_BYTE_ORDER == JSTR_BIG_ENDIAN                               \
+	|| defined __BIG_ENDIAN__                                            \
+	|| defined __ARMEB__ || defined __THUMBEB__ || defined __AARCH64EB__ \
+	|| defined _MIBSEB || defined __MIBSEB || defined __MIBSEB__
+#		undef JSTR_ENDIAN_BIG
+#		undef JSTR_ENDIAN_LITTLE
+#		define JSTR_ENDIAN_BIG    1
+#		define JSTR_ENDIAN_LITTLE 0
+#	elif JSTR_BYTE_ORDER == JSTR_LITTLE_ENDIAN                          \
+	|| defined __LITTLE_ENDIAN__                                         \
+	|| defined __ARMEL__ || defined __THUMBEL__ || defined __AARCH64EL__ \
+	|| defined _MIPSEL || defined __MIPSEL || defined __MIPSEL__
+#		undef JSTR_ENDIAN_LITTLE
+#		undef JSTR_ENDIAN_BIG
+#		define JSTR_ENDIAN_LITTLE 1
+#		define JSTR_ENDIAN_BIG    0
+#	endif
+#endif /* byte_order */
+
+#if JSTR_ENDIAN_LITTLE
+#	define JSTR_ENDIAN_BIG 0
+#elif JSTR_ENDIAN_BIG
+#	define JSTR_ENDIAN_LITTLE 0
+#else
+#	error "Can't detect endianness."
 #endif
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
@@ -113,27 +208,6 @@
 	                             : memset((array), (c), sizeof((array))))
 #define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
 
-#ifdef __cplusplus
-#	define PJSTR_BEGIN_DECLS extern "C" {
-#	define PJSTR_END_DECLS   }
-#else
-#	define PJSTR_BEGIN_DECLS
-#	define PJSTR_END_DECLS
-#endif
-
-PJSTR_BEGIN_DECLS
-typedef enum {
-	JSTR_RET_ERR = -1,
-	JSTR_RET_SUCC = 0
-} jstr_ret_ty;
-PJSTR_END_DECLS
-
-#ifdef __GLIBC__
-PJSTR_BEGIN_DECLS
-#	include <sys/cdefs.h>
-PJSTR_END_DECLS
-#endif
-
 #ifdef static_assert
 #	define JSTR_HAVE_STATIC_ASSERT       1
 #	define JSTR_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
@@ -194,15 +268,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_ALLOCA 1
 #else
 #	define JSTR_HAVE_ALLOCA 0
-#endif
-
-#ifdef __GLIBC_PREREQ
-#	define JSTR_GLIBC_PREREQ(maj, min) __GLIBC_PREREQ(maj, min)
-#elif defined __GLIBC__
-#	define JSTR_GLIBC_PREREQ(maj, min) \
-		((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
-#else
-#	define JSTR_GLIBC_PREREQ(maj, min) 0
 #endif
 
 #if !defined __cplusplus && defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
@@ -714,71 +779,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_FDOPENDIR 0
 #endif
 
-PJSTR_BEGIN_DECLS
-#if JSTR_OS_SOLARIS
-#	include <sys/int_types.h>
-#else
-#	include <stdint.h>
-#endif
-PJSTR_END_DECLS
-
-#if JSTR_ENV_BSD
-PJSTR_BEGIN_DECLS
-#	include <sys/types.h>
-PJSTR_END_DECLS
-#elif (JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) \
-|| defined _DEFAULT_SOURCE
-PJSTR_BEGIN_DECLS
-#	include <endian.h>
-PJSTR_END_DECLS
-#endif
-
-#ifdef __BYTE_ORDER
-#	define JSTR_BYTE_ORDER __BYTE_ORDER
-#elif defined _BYTE_ORDER
-#	define JSTR_BYTE_ORDER _BYTE_ORDER
-#endif
-
-#ifdef __BIG_ENDIAN
-#	define JSTR_BIG_ENDIAN __BIG_ENDIAN
-#elif defined _BIG_ENDIAN
-#	define JSTR_BIG_ENDIAN _BIG_ENDIAN
-#endif
-
-#ifdef __LITTLE_ENDIAN
-#	define JSTR_LITTLE_ENDIAN __LITTLE_ENDIAN
-#elif defined _LITTLE_ENDIAN
-#	define JSTR_LITTLE_ENDIAN _LITTLE_ENDIAN
-#endif
-
-#ifdef JSTR_BYTE_ORDER
-#	if JSTR_BYTE_ORDER == JSTR_BIG_ENDIAN                               \
-	|| defined __BIG_ENDIAN__                                            \
-	|| defined __ARMEB__ || defined __THUMBEB__ || defined __AARCH64EB__ \
-	|| defined _MIBSEB || defined __MIBSEB || defined __MIBSEB__
-#		undef JSTR_ENDIAN_BIG
-#		undef JSTR_ENDIAN_LITTLE
-#		define JSTR_ENDIAN_BIG    1
-#		define JSTR_ENDIAN_LITTLE 0
-#	elif JSTR_BYTE_ORDER == JSTR_LITTLE_ENDIAN                          \
-	|| defined __LITTLE_ENDIAN__                                         \
-	|| defined __ARMEL__ || defined __THUMBEL__ || defined __AARCH64EL__ \
-	|| defined _MIPSEL || defined __MIPSEL || defined __MIPSEL__
-#		undef JSTR_ENDIAN_LITTLE
-#		undef JSTR_ENDIAN_BIG
-#		define JSTR_ENDIAN_LITTLE 1
-#		define JSTR_ENDIAN_BIG    0
-#	endif
-#endif /* byte_order */
-
-#if JSTR_ENDIAN_LITTLE
-#	define JSTR_ENDIAN_BIG 0
-#elif JSTR_ENDIAN_BIG
-#	define JSTR_ENDIAN_LITTLE 0
-#else
-#	error "Can't detect endianness."
-#endif
-
 #if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FGETS_UNLOCKED
 #	define jstrio_fgets(s, n, stream) fgets_unlocked(s, n, stream)
 #else
@@ -965,6 +965,34 @@ enum {
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1
 #else
 #	define JSTR_HAVE_UNALIGNED_ACCESS 0
+#endif
+
+#if JSTR_ENDIAN_LITTLE
+#	define JSTR_BYTE_SH <<
+#else
+#	define JSTR_BYTE_SH >>
+#endif
+#define JSTR_BYTE_SHIFT(x, i) ((x)JSTR_BYTE_SH(i * 8))
+typedef uint32_t jstr_u32u_ty JSTR_ATTR_MAY_ALIAS;
+typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
+#if JSTR_HAVE_ATTR_MAY_ALIAS
+#	define JSTR_BYTE_UTOWORD32(x)   (*(jstr_u32u_ty *)(x))
+#	define JSTR_BYTE_UTOWORD64(x)   (*(jstr_u64u_ty *)(x))
+#	define JSTR_BYTE_UCMPEQ32(x, y) (JSTR_BYTE_UTOWORD32(x) == JSTR_BYTE_TOWORD32(y))
+#	define JSTR_BYTE_UCMPEQ64(x, y) (JSTR_BYTE_UTOWORD64(x) == JSTR_BYTE_TOWORD64(y))
+#	define JSTR_BYTE_TOWORD32(x)    (*(uint32_t *)(x))
+#	define JSTR_BYTE_TOWORD64(x)    (*(uint64_t *)(x))
+#	define JSTR_BYTE_CMPEQ32(x)     (JSTR_BYTE_TOWORD32(x) == JSTR_BYTE_TOWORD32(y))
+#	define JSTR_BYTE_CMPEQ64(x)     (JSTR_BYTE_TOWORD64(x) == JSTR_BYTE_TOWORD64(y))
+#else
+#	define JSTR_BYTE_TOWORD32(x)   ((uint32_t)(x)[0] JSTR_BYTE_SH I(0) | (uint32_t)(x)[1] JSTR_BYTE_SH I(1) | (uint32_t)(x)[2] JSTR_BYTE_SH I(2) | (uint32_t)(x)[3] JSTR_BYTE_SH I(3))
+#	define JSTR_BYTE_TOWORD64(x)   ((uint64_t)TOWORD32((x)) | (uint64_t)(x)[4] JSTR_BYTE_SH I(4) | (uint64_t)(x)[5] JSTR_BYTE_SH I(5) | (uint64_t)(x)[6] JSTR_BYTE_SH I(6) | (uint64_t)(x)[7] JSTR_BYTE_SH I(7))
+#	define JSTR_BYTE_CMPEQ32(x, y) !memcmp(x, y, 4)
+#	define JSTR_BYTE_CMPEQ64(x, y) !memcmp(x, y, 8)
+#	define JSTR_BYTE_TOWORD32(x)   JSTR_BYTE_UTOWORD32(x)
+#	define JSTR_BYTE_TOWORD64(x)   JSTR_BYTE_UTOWORD64(x)
+#	define JSTR_BYTE_CMPEQ32(x, y) JSTR_BYTE_UCMPEQ32(x, y)
+#	define JSTR_BYTE_CMPEQ64(x, y) JSTR_BYTE_UCMPEQ64(x, y)
 #endif
 
 #if JSTR_USE_LGPL && JSTR_HAVE_ATTR_MAY_ALIAS
