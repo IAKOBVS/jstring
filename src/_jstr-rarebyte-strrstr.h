@@ -70,43 +70,41 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 {
 	typedef PJSTR_RAREBYTE_RETTYPE ret_ty;
 	typedef unsigned char u;
-#if 1
-	int c = *(u *)rarebyte;
+	const int c = *(u *)rarebyte;
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
-	const u *p = hs + hs_len - ne_len + 1;
+	const unsigned char *p = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
-#else
-	int c = *ne;
-	const size_t shift = 0;
-	const u *p = hs + hs_len - ne_len + 1;
-#endif
-#if USE_UNALIGNED
-	uint64_t ne_align;
-	const int short_ne = ne_len < 8;
-	if (short_ne) {
-		ne_align = (uint64_t)JSTR_BYTE_UTOWORD32(ne);
-		ne += 4;
-		ne_len -= 4;
+	if (!USE_UNALIGNED) {
+		for (; (p = (const u *)memchr(p, c, hs - p)); ++p)
+			if (!CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
+				return (ret_ty)(p - shift);
 	} else {
-		ne_align = JSTR_BYTE_UTOWORD64(ne);
-		ne += 8;
-		ne_len -= 8;
-	}
-#endif
-	for (; p > hs && (p = (const u *)jstr_memrchr(hs, c, p - hs)); --p) {
-#if USE_UNALIGNED
-		/* If CMP_FUNC is memcmp(), quickly compare first 4/8 bytes before calling memcmp(). */
+		const int short_ne = ne_len < 8;
+		uint64_t ne_align;
 		if (short_ne) {
-			if (EQ32(p - shift, ne_align) && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
-				return (ret_ty)(p - shift);
+			ne_align = (uint64_t)JSTR_BYTE_UTOWORD32(ne);
+			ne += 4;
+			ne_len -= 4;
 		} else {
-			if (EQ64(p - shift, ne_align) && !memcmp(p - shift + 8, ne, ne_len))
-				return (ret_ty)(p - shift);
+			ne_align = JSTR_BYTE_UTOWORD64(ne);
+			ne += 8;
+			ne_len -= 8;
 		}
-#else
-		if (!CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
-			return (ret_ty)(p - shift);
-#endif
+		for (; (p = (const u *)jstr_memrchr(p, c, p - hs)); --p) {
+			/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
+			if (short_ne) {
+				if (EQ32(p - shift, ne_align) && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
+					return (ret_ty)(p - shift);
+			} else {
+				if (EQ64(p - shift, ne_align) && !memcmp(p - shift + 8, ne, ne_len))
+					return (ret_ty)(p - shift);
+				printf("p:%p\n", p);
+				printf("p:%p\n", hs);
+				printf("p_len:%zu\n", strlen((char *)p));
+				printf("hs_len:%zu\n", strlen((char *)hs));
+				printf("ne_len:%zu\n\n", strlen((char *)ne));
+			}
+		}
 	}
 	return NULL;
 }

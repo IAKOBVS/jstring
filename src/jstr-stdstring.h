@@ -202,11 +202,10 @@ JSTR_NOEXCEPT
 #elif JSTR_HAVE_WORD_AT_A_TIME && 0 /* Broken? */
 #	include "_lgpl-memrchr.h"
 #else
-	const unsigned char *const start = (const unsigned char *)s;
-	const unsigned char *end = (const unsigned char *)s + sz;
-	for (; end >= start; --end)
-		if (*end == (unsigned char)c)
-			return (void *)end;
+	const unsigned char *p = (const unsigned char *)s + sz;
+	for (; sz--; --p)
+		if (*p == (unsigned char)c)
+			return (void *)p;
 	return NULL;
 #endif
 }

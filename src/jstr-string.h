@@ -621,7 +621,9 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#if 0 /* Broken. */
+#define JSTR_USE_STRRSTR 1
+
+#ifdef JSTR_USE_STRRSTR /* Broken. */
 #	define PJSTR_RAREBYTE_RETTYPE char *
 #	define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
 #	include "_jstr-rarebyte-strrstr.h"
@@ -648,6 +650,10 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+#ifdef JSTR_USE_STRRSTR
+	if (ne_len > 4)
+		return pjstr_strrstr_len_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)jstr_rarebytefind_len(ne, ne_len));
+#endif
 	const u *h = (const u *)jstr_memrchr(hs, *(const u *)ne, hs_len - ne_len);
 	if (h == NULL || ne_len == 1)
 		return (char *)h;
