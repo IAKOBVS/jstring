@@ -323,7 +323,6 @@ JSTR_NOEXCEPT
 	return JSTRRE_RET_NOERROR;
 err_free:
 	jstr_free_noinline(s, sz, cap);
-	jstrre_free(preg);
 err:
 	JSTRRE_RETURN_ERR(ret, preg);
 }
@@ -500,7 +499,6 @@ JSTR_NOEXCEPT
 		*sz = jstr_stpmove_len(dst, oldp, (*s + *sz) - oldp) - *s;
 	return JSTRRE_RET_NOERROR;
 err_free:
-	jstrre_free(preg);
 	jstr_free_noinline(s, sz, cap);
 err:
 	JSTRRE_RETURN_ERR(ret, preg);
@@ -716,7 +714,6 @@ JSTR_NOEXCEPT
 err_free_rdst:
 	free(rdst_heap);
 err_free:
-	jstrre_free(preg);
 	jstr_free_noinline(s, sz, cap);
 err:
 	JSTRRE_RETURN_ERR(ret, preg);

@@ -302,8 +302,6 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(pclose(fp) == -1))
 		goto err;
 	return JSTR_RET_SUCC;
-err_close_free:
-	jstr_free_noinline(s, sz, cap);
 err_close:
 	pclose(fp);
 err:
