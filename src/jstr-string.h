@@ -509,8 +509,9 @@ JSTR_NOEXCEPT
 {
 	/* Only use memmem() for long needles or when it is implemented in assembly.
 	It seems to be slower than an assembly optimized strstr() for short needles. */
-	if (JSTR_HAVE_STRSTR_OPTIMIZED && ne_len < JSTR_MEMMEM_THRES)
-		return (char *)strstr(hs, ne);
+	if (JSTR_HAVE_STRSTR_OPTIMIZED)
+		if (ne_len < JSTR_MEMMEM_THRES)
+			return (char *)strstr(hs, ne);
 	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 }
 
