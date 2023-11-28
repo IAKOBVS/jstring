@@ -692,14 +692,10 @@ JSTR_NOEXCEPT
 #endif
 		typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
 		const uint32_t ne_align = (JSTR_HAVE_ATTR_MAY_ALIAS) ? *(u32 *)n : TOWORD32(n);
-		if (JSTR_HAVE_ATTR_MAY_ALIAS) {
-			ne_len -= 4;
-			ne = (const u *)ne + 4;
-		}
 		for (; h >= (const u *)hs; --h)
 			if (*h == c) {
 				if (JSTR_HAVE_UNALIGNED_ACCESS) {
-					if (EQ32(h, ne_align) && !memcmp(h + 4, ne, ne_len))
+					if (EQ32(h, ne_align) && !memcmp(h, ne, ne_len))
 						return (char *)h;
 				} else {
 					if (!memcmp(h, ne, ne_len))
