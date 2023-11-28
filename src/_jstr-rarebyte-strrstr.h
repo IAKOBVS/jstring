@@ -25,42 +25,33 @@
 #include "jstr-macros.h"
 #include "jstr-stdstring.h"
 
-#error "Currently broken."
+/* #error "Currently broken." */
 
 PJSTR_BEGIN_DECLS
 #include <stdint.h>
 #include <string.h>
 PJSTR_END_DECLS
 
+
 #ifndef PJSTR_RAREBYTE_RETTYPE
 #	define PJSTR_RAREBYTE_RETTYPE void *
 #endif
 #ifndef PJSTR_RAREBYTE_FUNC
-#	define PJSTR_RAREBYTE_FUNC pjstr_strrstr_len_rarebyte
+#	define PJSTR_RAREBYTE_FUNC pjstr_strrstr_rarebyte
 #endif
 
-#if !defined PJSTR_RAREBYTE_CMP_FUNC && JSTR_HAVE_UNALIGNED_ACCESS
+#if !defined PJSTR_RAREBYTE_CMP_FUNC && JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
 #	define PJSTR_RAREBYTE_CMP_FUNC memcmp
 #	define USE_UNALIGNED           1
-#	if JSTR_ENDIAN_LITTLE
-#		define SH <<
-#	elif JSTR_ENDIAN_BIG
-#		define SH >>
-#	else
-#		error "Can't detect endianness."
-#	endif
-#	define I(i)        (i * 8)
-#	define TOWORD32(x) ((uint32_t)(x)[0] SH I(0) | (uint32_t)(x)[1] SH I(1) | (uint32_t)(x)[2] SH I(2) | (uint32_t)(x)[3] SH I(3))
-#	define TOWORD64(x) ((uint64_t)TOWORD32((x)) | (uint64_t)(x)[4] SH I(4) | (uint64_t)(x)[5] SH I(5) | (uint64_t)(x)[6] SH I(6) | (uint64_t)(x)[7] SH I(7))
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
-#		define EQ32(hs, ne_align) (*(u32 *)(hs) == (uint32_t)ne_align)
-#		define EQ64(hs, ne_align) (*(u64 *)(hs) == ne_align)
-#	else
-#		define EQ64(hs, ne_align) !memcmp(hs, &(ne_align), 8)
-#		define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
-#	endif
 #endif
 #define CMP_FUNC PJSTR_RAREBYTE_CMP_FUNC
+#if JSTR_HAVE_ATTR_MAY_ALIAS
+#	define EQ32(hs, ne_align) (JSTR_BYTE_UTOWORD32(hs) == (uint32_t)ne_align)
+#	define EQ64(hs, ne_align) (JSTR_BYTE_UTOWORD64(hs) == ne_align)
+#else
+#	define EQ64(hs, ne_align) !memcmp(hs, &(ne_align), 8)
+#	define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
+#endif
 
 #ifndef USE_UNALIGNED
 #	define USE_UNALIGNED 0
@@ -90,22 +81,14 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	const u *p = hs + hs_len - ne_len + 1;
 #endif
 #if USE_UNALIGNED
-	typedef uint32_t u32 JSTR_ATTR_MAY_ALIAS;
-	typedef uint64_t u64 JSTR_ATTR_MAY_ALIAS;
 	uint64_t ne_align;
 	const int short_ne = ne_len < 8;
 	if (short_ne) {
-		if (JSTR_HAVE_ATTR_MAY_ALIAS)
-			ne_align = (uint64_t) * (u32 *)ne;
-		else
-			ne_align = (uint64_t)TOWORD32(ne);
+		ne_align = (uint64_t)JSTR_BYTE_UTOWORD32(ne);
 		ne += 4;
 		ne_len -= 4;
 	} else {
-		if (JSTR_HAVE_ATTR_MAY_ALIAS)
-			ne_align = *(u64 *)ne;
-		else
-			ne_align = TOWORD64(ne);
+		ne_align = JSTR_BYTE_UTOWORD64(ne);
 		ne += 8;
 		ne_len -= 8;
 	}

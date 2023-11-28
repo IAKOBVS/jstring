@@ -677,7 +677,7 @@ JSTR_NOEXCEPT
 		if (hw == nw)
 			return (char *)h;
 	} else {
-		if (!JSTR_HAVE_UNALIGNED_ACCESS) {
+		if (!JSTR_HAVE_UNALIGNED_ACCESS || (!JSTR_HAVE_ATTR_MAY_ALIAS && !JSTR_HAVE_BUILTIN_MEMCMP)) {
 			const int c = *n;
 			for (; h >= (const u *)hs; --h)
 				if (*h == c && !memcmp(h, ne, ne_len))

@@ -69,6 +69,15 @@ PJSTR_END_DECLS
 #	define JSTR_GLIBC_PREREQ(maj, min) 0
 #endif
 
+#ifdef __GNUC_PREREQ
+#	define JSTR_GNUC_PREREQ(maj, min) __GNUC_PREREQ(maj, min)
+#elif defined __GNUC__
+#	define JSTR_GNUC_PREREQ(maj, min) \
+		((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#else
+#	define JSTR_GNUC_PREREQ(maj, min) 0
+#endif
+
 #if JSTR_ENV_BSD
 PJSTR_BEGIN_DECLS
 #	include <sys/types.h>
@@ -962,6 +971,12 @@ enum {
 	JSTR_STRCASECHR_THRES = 24
 #define JSTR_STRCASECHR_THRES JSTR_STRCASECHR_THRES
 };
+
+#if JSTR_GNUC_PREREQ(7, 1) || defined __clang__
+#	define JSTR_HAVE_BUILTIN_MEMCMP 1
+#else
+#	define JSTR_HAVE_BUILTIN_MEMCMP 0
+#endif
 
 #if JSTR_ARCH_I386 || JSTR_ARCH_X86_64 || defined __s390x__ || JSTR_ARCH_ARM64
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1
