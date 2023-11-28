@@ -24,7 +24,7 @@
 #ifndef JSTR_TEST_H
 #define JSTR_TEST_H
 
-/* #define JSTR_DISABLE_NONSTANDARD 1 */
+#define JSTR_DISABLE_NONSTANDARD 1
 #define JSTR_PANIC 1
 
 #include "../src/jstr.h"
