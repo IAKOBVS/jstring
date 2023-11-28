@@ -273,7 +273,7 @@ jstr_strnchr(const char *s,
              size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_WORD_AT_A_TIME && 0 /* Broken. */
+#if JSTR_HAVE_WORD_AT_A_TIME && 0 /* Broken? */
 #	include "_lgpl-strnchr.h"
 #else
 	for (; n--; ++s) {
