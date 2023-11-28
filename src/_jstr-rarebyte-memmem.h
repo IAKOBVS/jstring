@@ -88,8 +88,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 			ne_len -= 8;
 		}
 		for (; (hs = (const u *)memchr(hs, c, end - hs)); ++hs) {
-			/* If CMP_FUNC is undefined, use memcmp() and quickly compare
-			   first 4/8 bytes before calling memcmp(). */
+			/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
 			if (short_ne) {
 				if (EQ32(hs - shift, ne_align) && !jstr_memcmpeq_loop(hs - shift + 4, ne, ne_len))
 					return (ret_ty)(hs - shift);
