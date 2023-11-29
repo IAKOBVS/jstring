@@ -23,30 +23,30 @@
 
 #include "test.h"
 
-#define T(func, string, expected)                                   \
-	do {                                                        \
-		char s[1024] = string;                              \
-		JSTR_STATIC_ASSERT(sizeof(s) > 2 * strlen(string)          \
-		            && sizeof(s) > 2 * strlen(expected),    \
-		            "");                                    \
-		const char *const p = func(s);                      \
-		ASSERT(strlen(s) == strlen(expected), s, expected); \
-		ASSERT(p - s == strlen(expected), s, expected);     \
-		ASSERT(!strcmp(s, expected), s, expected);          \
+#define T(func, string, expected)                                             \
+	do {                                                                  \
+		JSTR_STATIC_ASSERT(sizeof(buffer) > 2 * strlen(string)        \
+		                   && sizeof(buffer) > 2 * strlen(expected),  \
+		                   "");                                       \
+		const char *const p = func(buffer);                           \
+		ASSERT(strlen(buffer) == strlen(expected), buffer, expected); \
+		ASSERT(p - buffer == strlen(expected), buffer, expected);     \
+		ASSERT(!strcmp(buffer, expected), buffer, expected);          \
 	} while (0)
 
-#define T_CPY(func, string, expected)                                   \
-	do {                                                            \
-		char dst[1024];                                         \
-		JSTR_STATIC_ASSERT(sizeof(dst) > 2 * strlen(string)            \
-		            && sizeof(dst) > 2 * strlen(expected),      \
-		            "");                                        \
-		const char *const p = func(dst, string);                \
-		ASSERT(strlen(dst) == strlen(expected), dst, expected); \
-		ASSERT(p - dst == strlen(expected), dst, expected);     \
-		ASSERT(!strcmp(dst, expected), dst, expected);          \
-		ASSERT(!strcmp(dst, expected), dst, expected);          \
+#define T_CPY(func, string, expected)                                         \
+	do {                                                                  \
+		JSTR_STATIC_ASSERT(sizeof(buffer) > 2 * strlen(string)        \
+		                   && sizeof(buffer) > 2 * strlen(expected),  \
+		                   "");                                       \
+		const char *const p = func(buffer, string);                   \
+		ASSERT(strlen(buffer) == strlen(expected), buffer, expected); \
+		ASSERT(p - buffer == strlen(expected), buffer, expected);     \
+		ASSERT(!strcmp(buffer, expected), buffer, expected);          \
+		ASSERT(!strcmp(buffer, expected), buffer, expected);          \
 	} while (0)
+
+char buffer[4096];
 
 int
 main(int argc, char **argv)

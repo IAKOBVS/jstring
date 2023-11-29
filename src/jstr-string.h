@@ -556,7 +556,6 @@ jstr_strnstr(const char *hs,
              size_t n)
 JSTR_NOEXCEPT
 {
-	typedef unsigned char u;
 	typedef const unsigned char cu;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
