@@ -33,7 +33,7 @@ fi
 
 for file in $files; do
 	out=${file%.*}
-	compile "$file" "$TMPDIR$out" &
+	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 &
 	compile "$file" "$TMPDIR$out"_JSTR_USE_LGPL_0 -DJSTR_USE_LGPL=0 &
 	compile "$file" "$TMPDIR$out"_JSTR_HAVE_ATTR_MAY_ALIAS_0 -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
 done
