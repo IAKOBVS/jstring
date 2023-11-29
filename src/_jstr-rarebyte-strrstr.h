@@ -25,7 +25,7 @@
 #include "jstr-macros.h"
 #include "jstr-stdstring.h"
 
-/* #error "Currently broken." */
+#error "Currently broken."
 
 PJSTR_BEGIN_DECLS
 #include <stdint.h>

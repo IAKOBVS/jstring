@@ -631,11 +631,11 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#define JSTR_USE_STRRSTR
-
-#define PJSTR_RAREBYTE_RETTYPE char *
-#define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
-#include "_jstr-rarebyte-strrstr.h"
+#if 0
+#	define PJSTR_RAREBYTE_RETTYPE char *
+#	define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
+#	include "_jstr-rarebyte-strrstr.h"
+#endif
 
 /*
    Find last NE in HS.
@@ -658,47 +658,11 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (ne_len > 4) {
-		if (!memcmp(hs, ne, ne_len))
-			return (char *)hs;
-		return pjstr_strrstr_len_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, (const u *)jstr_rarebytefind_len(ne, ne_len));
-	}
 	const u *h = (const u *)hs + hs_len - ne_len;
 	const u *n = (const u *)ne;
-	/* TODO: use memrchr(). */
-	for (;; --h) {
-		if (jstr_unlikely(h < (const u *)hs))
-			return NULL;
-		if (*h == *n)
-			break;
-	}
-	if (ne_len == 1) {
-		return (char *)h;
-	} else if (ne_len == 2) {
-		h += 2;
-		const uint16_t nw = (uint16_t)n[1] << 8 | n[0];
-		uint16_t hw = (uint16_t)h[0] << 8 | h[-1];
-		for (--h; h >= (const u *)hs && hw != nw; hw = hw << 8 | *--h)
-			;
-		if (hw == nw)
+	for (; h >= (const u *)hs; --h)
+		if (*h == *n && !memcmp(h, n, ne_len))
 			return (char *)h;
-	} else if (ne_len == 3) {
-		h += 3;
-		const uint32_t nw = (uint32_t)n[2] << 24 | n[1] << 16 | n[0] << 8;
-		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8;
-		for (h -= 2; h >= (const u *)hs && hw != nw; hw = (hw | *--h) << 8)
-			;
-		if (hw == nw)
-			return (char *)h;
-	} else /* ne_len == 4 */ {
-		h += 4;
-		const uint32_t nw = (uint32_t)n[3] << 24 | n[2] << 16 | n[1] << 8 | n[0];
-		uint32_t hw = (uint32_t)h[0] << 24 | h[-1] << 16 | h[-2] << 8 | h[-3];
-		for (h -= 3; h >= (const u *)hs && hw != nw; hw = hw << 8 | *--h)
-			;
-		if (hw == nw)
-			return (char *)h;
-	}
 	return NULL;
 }
 
@@ -845,8 +809,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasechr_generic(const char *s,
-                         int c)
+jstr_strcasechr_loop(const char *s,
+                     int c)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -891,7 +855,7 @@ JSTR_NOEXCEPT
 			return *s ? (char *)s : NULL;
 		}
 	}
-	return pjstr_strcasechr_generic(s, c);
+	return jstr_strcasechr_loop(s, c);
 }
 
 /*
@@ -923,7 +887,7 @@ jstr_strcasechr(const char *s,
                 int c)
 JSTR_NOEXCEPT
 {
-	return jstr_isalpha(c) ? pjstr_strcasechr_generic(s, c) : (char *)strchr(s, c);
+	return jstr_isalpha(c) ? jstr_strcasechr_loop(s, c) : (char *)strchr(s, c);
 }
 
 #define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len_lgpl
@@ -1074,8 +1038,7 @@ JSTR_NOEXCEPT
 			return NULL;
 		if (!jstr_isalpha(*(ne + shift)))
 			return pjstr_strcasestr_rarebyte(hs, ne, shift);
-		hs += shift;
-		hs = pjstr_strcasechr_generic(hs, *(ne + shift));
+		hs = jstr_strcasechr_loop(hs + shift, *(ne + shift));
 		if (hs == NULL || ne[1] == '\0')
 			return (char *)hs;
 		hs -= shift;
@@ -1116,7 +1079,7 @@ JSTR_NOEXCEPT
 STRSTR:
 		if (!memcmp(hs, ne, ne_len))
 			return (char *)hs;
-		if (hs[ne_len] == '\0')
+		if (jstr_unlikely(hs[ne_len] == '\0'))
 			return NULL;
 		return (char *)strstr(hs + 1, ne);
 	}
