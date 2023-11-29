@@ -24,14 +24,14 @@
 #include "test.h"
 #include "../src/jarr.h"
 
-#define ASZ(arr) (sizeof(arr) / sizeof(arr[0]))
-#define T(func, ...)                                              \
-	do {                                                      \
-		TESTING(#func);                                   \
-		int expected[] = { __VA_ARGS__ };                 \
-		func;                                             \
-		assert(j.data);                                   \
-		assert(!memcmp(j.data, expected, ASZ(expected))); \
+#define T(func, ...)                                                      \
+	do {                                                              \
+		PRINT("Testing %s().\n", #func);                          \
+		int expected[] = { __VA_ARGS__ };                         \
+		func;                                                     \
+		assert(j.data);                                           \
+		assert(!memcmp(j.data, expected, sizeof(expected)));      \
+		assert(j.size == sizeof(expected) / sizeof(expected[0])); \
 	} while (0)
 
 int

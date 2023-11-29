@@ -172,23 +172,19 @@ PJSTR_END_DECLS
 		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                      \
 	} while (0)
 /* Pop PTR[0]. */
-#define jarr_popfront(j)                                                  \
-	do {                                                              \
-		PJARR_CHECK_ARG(j);                                       \
-		if (jstr_unlikely(PJARR_CAP(j) == 0)) {                   \
-			PJARR_NULLIFY_MEMBERS(j);                         \
-			break;                                            \
-		}                                                         \
-		memmove(PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j)); \
+#define jarr_popfront(j)                                                        \
+	do {                                                                    \
+		PJARR_CHECK_ARG(j);                                             \
+		if (jstr_unlikely(PJARR_SZ(j) == 0))                            \
+			break;                                                  \
+		PJARR_MEMMOVE(j, PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j)); \
 	} while (0)
 /* Pop end of PTR. */
 #define jarr_popback(j)                                  \
 	do {                                             \
 		PJARR_CHECK_ARG(j);                      \
-		if (jstr_unlikely(PJARR_CAP(j) == 0)) {  \
-			PJARR_NULLIFY_MEMBERS(j);        \
+		if (jstr_unlikely(PJARR_SZ(j) == 0))     \
 			break;                           \
-		}                                        \
 		*(PJARR_DATA(j) + --PJARR_SZ(j)) = '\0'; \
 	} while (0)
 /* Push VAL to back of PTR. */
@@ -219,8 +215,8 @@ PJSTR_END_DECLS
 		*PJARR_DATA(j) = (value);                                          \
 	} while (0)
 
-#define jarr_foreachi(j, i) \
-	for (size_t i = 0, pjarr_max_elem_##i = (j)->size; i < pjarr_max_elem_##i; ++i)
+#define jarr_foreachi(j, i) for (size_t i = 0, pjarr_max_elem_##i = (j)->size; i < pjarr_max_elem_##i; ++i)
+#define jarr_debug(j)       fprintf(stderr, "size:%zu\ncap:%zu\n", (j)->size, (j)->capacity);
 
 #define jarr_start(j) PJARR_DATA(j)
 #define jarr_end(j)   (PJARR_DATA(j) + PJARR_SZ(j))
