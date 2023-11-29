@@ -264,10 +264,10 @@ main(int argc, char **argv)
 		{ "he11o  ", "he11o     "}
   /* clang-format on */
 	};
-	/* T_STRSTR(jstr_strcasestr, simple_strcasestr); */
-	/* T_STRSTR_LEN(jstr_strcasestr_len, simple_strcasestr_len); */
-	/* T_STRSTR_LEN(jstr_memmem, simple_memmem); */
-	/* T_STRSTR_LEN(jstr_strrstr_len, simple_strrstr_len); */
+	T_STRSTR(jstr_strcasestr, simple_strcasestr);
+	T_STRSTR_LEN(jstr_strcasestr_len, simple_strcasestr_len);
+	T_STRSTR_LEN(jstr_memmem, simple_memmem);
+	T_STRSTR_LEN(jstr_strrstr_len, simple_strrstr_len);
 	T_STRNSTR(jstr_strnstr, simple_strnstr);
 	SUCCESS();
 	return EXIT_SUCCESS;
