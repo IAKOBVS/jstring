@@ -575,8 +575,6 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
 	if (jstr_unlikely(hs[4] == '\0'))
 		return NULL;
-	if (JSTR_HAVE_MEMMEM)
-		return (char *)jstr_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 	const u *hp = (const u *)hs;
 	const u *np = (const u *)ne;
 	size_t tmp = n;
@@ -587,7 +585,15 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*hp == '\0'))
 		return NULL;
 	tmp = JSTR_PTR_DIFF(np, ne);
-	if (JSTR_USE_LGPL) {
+	if (JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_DISABLE_NONSTANDARD) {
+		const size_t ne_len = strlen((char *)np) + tmp;
+		if (jstr_unlikely(n < ne_len))
+			return NULL;
+		const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
+		if (jstr_unlikely(hs_len < ne_len))
+			return NULL;
+		return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
+	} else if (JSTR_USE_LGPL) {
 		const size_t ne_len = strlen((char *)np) + tmp;
 		if (jstr_unlikely(n < ne_len))
 			return NULL;
