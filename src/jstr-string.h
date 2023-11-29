@@ -1023,6 +1023,29 @@ STRSTR:
 	}
 }
 
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+pjstr_strcasestr_rarebyte(const char *hs,
+                          const char *ne,
+                          const size_t shift)
+{
+	typedef unsigned char u;
+	const int c = *(ne + shift);
+	const u *p1, *p2;
+	for (hs += shift; (hs = (char *)strchr(hs, c)); ++hs) {
+		p1 = (const u *)hs - shift;
+		p2 = (const u *)ne;
+		for (; jstr_tolower(*p1) == jstr_tolower(*p2) && *p1; ++p1, ++p2)
+			;
+		if (*p2 == '\0')
+			return (char *)hs - shift;
+		if (jstr_unlikely(*p1 == '\0'))
+			break;
+	}
+	return NULL;
+}
+
 /*
    Find NE in HS case-insensitively.
    Return value:
@@ -1046,27 +1069,13 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(ne[0] == '\0'))
 			return (char *)hs;
 		typedef unsigned char u;
-		const u *p = (const u *)jstr_rarebytefindeither(ne);
-		const size_t shift = JSTR_PTR_DIFF(p, ne);
+		const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindeither(ne), ne);
 		if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
 			return NULL;
+		if (!jstr_isalpha(*(ne + shift)))
+			return pjstr_strcasestr_rarebyte(hs, ne, shift);
 		hs += shift;
-		if (!jstr_isalpha(*p)) {
-			const int c = *p;
-			const u *p2;
-			for (; (hs = (char *)strchr(hs, c)); ++hs) {
-				p = (const u *)hs - shift;
-				p2 = (const u *)ne;
-				for (; jstr_tolower(*p) == jstr_tolower(*p2) && *p; ++p, ++p2)
-					;
-				if (*p2 == '\0')
-					return (char *)hs - shift;
-				if (jstr_unlikely(*p == '\0'))
-					break;
-			}
-			return NULL;
-		}
-		hs = pjstr_strcasechr_generic(hs, *ne);
+		hs = pjstr_strcasechr_generic(hs, *(ne + shift));
 		if (hs == NULL || ne[1] == '\0')
 			return (char *)hs;
 		hs -= shift;
