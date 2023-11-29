@@ -661,15 +661,18 @@ jstr_strrstr_len(const void *hs,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
+#if 0 /* Fails the test for some reason? */
 	if (ne_len == 1)
-		return (char *)jstr_memrchr(hs, *(const u *)ne, hs_len);
+		return (char *)jstr_memrchr(hs, *(cu *)ne, hs_len);
+#endif
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	const u *h = (const u *)hs + hs_len - ne_len;
-	const int c = *(const u *)ne;
-	for (; h >= (const u *)hs; --h)
+	cu *h = (cu *)hs + hs_len - ne_len;
+	const int c = *(cu *)ne;
+	for (; h >= (cu *)hs; --h)
 		if (*h == c && !memcmp(h, ne, ne_len))
 			return (char *)h;
 	return NULL;

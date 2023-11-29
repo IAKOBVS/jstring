@@ -132,7 +132,7 @@ simple_strcasestr(const char *h,
 		PRINTERR("\n");                                     \
 		PRINTERR("hs_len:\n%zu\n", hs_len);                 \
 		PRINTERR("ne_len:\n%zu\n", ne_len);                 \
-		PRINTERR("n:\n%zu\n", n);                           \
+		PRINTERR("n:\n%zu\n", (size_t)n);                   \
 		PRINTERR("expected:\n%s\n", N(expected));           \
 		PRINTERR("expected_len:\n%zu\n", strlen(expected)); \
 		PRINTERR("result:\n%s\n", N(result));               \
@@ -218,50 +218,105 @@ main(int argc, char **argv)
 		{ "xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxx",
                  "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
  /* clang-format off */
-		{ "yxxyyyyxyxxxxy", "yyyyy"},
-		{ ",yyy,xxxyxxxxy", ",yyy,"},
-		{ "yxyyyxxxyxxxxyyyy", "yyyyy"},
-		{ "yxxyyyyxyxxxxy", "xxxxx"},
-		{ "yxxyyyyxyxxxxy", "xyyyx"},
-		{ ",xxyyyyxyxxxxy", "xyy,y"},
-		{ "yxheL,yyyyxyxxxxy", "yyheL,"},
-		{ "yxxyyyyxyxxxxy", "yyyyy"},
-		{ "yyyyyxxxyxxxxy", "yyyyy"},
-		{ "yxxx,xxxxy", "xxx,"},
-		{ "yxxxyxxxxy", "xxxx"},
-		{ "yxxxyxxxxy", "xxx"},
-		{ "yxxxyxxy", "xxx"},
-		{ "xxx", "xxx"},
-		{ "xxx", "x"},
-		{ "xxx", "yyy"},
-		{ ",", "x,x"},
-		{ "x", "xxx"},
-		{ "xxx", ""},
-		{ "", "xxx"},
-		{ "", ""},
-		{ " he11o wor1d", "he11o wor1d"},
-		{ "he11o wor1", "he11o wor1d"},
-		{ "he11o wor1d", "he11o wor1d"},
-		{ "he11o wor1d", "he11o wor1"},
-		{ "he11o wor1d", "he11o wor"},
-		{ "he11o wor1d", "he11o wo"},
-		{ "he11o wor1d", "he11o w"},
-		{ "he11o wor1d", "he11o "},
-		{ "he11o wor1d", "he11o"},
-		{ "he11o wor1d", "wor1d"},
-		{ "he11o wor1d", "he11o "},
-		{ "he11o wor1d", " he11o"},
-		{ "he11o wor1d", "  he11o"},
-		{ "he11o wor1d", "o w"},
-		{ "he11o wor1d", "he1"},
-		{ "he11o", "he11o"},
-		{ " he11o", "he11o "},
-		{ " he11o", "he11o"},
-		{ "he11o ", "he11o"},
-		{ " he11o ", "he11o"},
-		{ "  he11o ", "he11o"},
-		{ "he11o  ", "he11o"},
-		{ "he11o  ", "he11o     "}
+		{ "yxxyyyyxyxxxxy","yyyyy"},
+		{ ",yyy,xxxyxxxxy",",yyy,"},
+		{ "yxyyyxxxyxxxxyyyy","yyyyy"},
+		{ "yxxyyyyxyxxxxy","xxxxx"},
+		{ "yxxyyyyxyxxxxy","xyyyx"},
+		{ ",xxyyyyxyxxxxy","xyy,y"},
+		{ "yxheL,yyyyxyxxxxy","yyheL,"},
+		{ "yxxyyyyxyxxxxy","yyyyy"},
+		{ "yyyyyxxxyxxxxy","yyyyy"},
+		{ "yxxx,xxxxy","xxx,"},
+		{ "yxxxyxxxxy","xxxx"},
+		{ "yxxxyxxxxy","xxx"},
+		{ "yxxxyxxy","xxx"},
+		{ "xxx","xxx"},
+		{ "xxx","x"},
+		{ "xxx","yyy"},
+		{ ",","x,x"},
+		{ "x","xxx"},
+		{ "xxx",""},
+		{ "","xxx"},
+		{ "",""},
+		{ " he11o wor1d","he11o wor1d"},
+		{ "he11o wor1","he11o wor1d"},
+		{ "he11o wor1d","he11o wor1d"},
+		{ "he11o wor1d","he11o wor1"},
+		{ "he11o wor1d","he11o wor"},
+		{ "he11o wor1d","he11o wo"},
+		{ "he11o wor1d","he11o w"},
+		{ "he11o wor1d","he11o "},
+		{ "he11o wor1d","he11o"},
+		{ "he11o wor1d","wor1d"},
+		{ "he11o wor1d","he11o "},
+		{ "he11o wor1d"," he11o"},
+		{ "he11o wor1d","  he11o"},
+		{ "he11o wor1d","o w"},
+		{ "he11o wor1d","he1"},
+		{ "he11o","he11o"},
+		{ " he11o","he11o "},
+		{ " he11o","he11o"},
+		{ "he11o ","he11o"},
+		{ " he11o ","he11o"},
+		{ "  he11o ","he11o"},
+		{ "he11o  ","he11o"},
+		/* Some of these haystacks and needles were taken from musl's libc-test.
+
+		Permission is hereby granted, free of charge, to any person obtaining
+		a copy of this software and associated documentation files (the
+		"Software"), to deal in the Software without restriction, including
+		without limitation the rights to use, copy, modify, merge, publish,
+		distribute, sublicense, and/or sell copies of the Software, and to
+		permit persons to whom the Software is furnished to do so, subject to
+		the following conditions:
+
+		The above copyright notice and this permission notice shall be
+		included in all copies or substantial portions of the Software.
+
+		THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+		EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+		IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+		CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+		TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+		SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+		{"","a"},
+		{"a","a"},
+		{"a","b"},
+		{"aa","b"},
+		{"aa","a"},
+		{"aba","b"},
+		{"abba","b"},
+		{"abba","ba"},
+		{"abc abc","d"},
+		{"0-1-2-3-4-5-6-7-8-9",""},
+		{"0-1-2-3-4-5-6-7-8-9",""},
+		{"_ _ _\xff_ _ _","\x7f_"},
+		{"_ _ _\x7f_ _ _","\xff_"},
+		{"",""},
+		{"abcd",""},
+		{"abcd","a"},
+		{"abcd","b"},
+		{"abcd","c"},
+		{"abcd","d"},
+		{"abcd","ab"},
+		{"abcd","bc"},
+		{"abcd","cd"},
+		{"ababa","baba"},
+		{"ababab","babab"},
+		{"abababa","bababa"},
+		{"abababab","bababab"},
+		{"ababababa","babababa"},
+		{"abbababab","bababa"},
+		{"abbababab","ababab"},
+		{"abacabcabcab","abcabcab"},
+		{"nanabanabanana","aba"},
+		{"nanabanabanana","ban"},
+		{"nanabanabanana","anab"},
+		{"nanabanabanana","banana"},
+		{"_ _\xff_ _","_\xff_"},
+		{ "he11o  ","he11o     "}
   /* clang-format on */
 	};
 	T_STRSTR(jstr_strcasestr, simple_strcasestr);
