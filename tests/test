@@ -8,18 +8,27 @@ compile()
 	out=$2
 	shift 2
 	#shellcheck disable=SC2068
+	echo "cc $file -o $out $@ $flags"
 	cc "$file" -o "$out" $@ $flags
 	./"$out"
 	rm ./"$out"
 }
 
-flags="-fsanitize=address -g $@"
-
 cd "$(dirname "$0")" || exit
-for header in $(echo *.c); do
-	basename=${header%.*}
-	compile "$header" "$basename" &
-	compile "$header" "$basename"_JSTR_USE_LGPL_0 -DJSTR_USE_LGPL=0 &
-	compile "$header" "$basename"_JSTR_HAVE_ATTR_MAY_ALIAS_0 -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
+if [ $# -eq 0 ]; then
+	files=$(echo *.c)
+else
+	files=$*
+	shift
+fi
+
+flags="-fsanitize=address -g $* -O1"
+
+echo "$files"
+for file in $files; do
+	out=${file%.*}
+	compile "$file" "$out" &
+	compile "$file" "$out"_JSTR_USE_LGPL_0 -DJSTR_USE_LGPL=0 &
+	compile "$file" "$out"_JSTR_HAVE_ATTR_MAY_ALIAS_0 -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
 done
 wait

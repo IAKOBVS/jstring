@@ -983,7 +983,7 @@ JSTR_NOEXCEPT
 STRSTR:
 		if (!memcmp(hs, ne, ne_len))
 			return (char *)hs;
-		if (hs_len == ne_len)
+		if (jstr_unlikely(hs_len == ne_len))
 			return NULL;
 		return jstr_strstr_len(hs + 1, hs_len - 1, ne, ne_len);
 	}
