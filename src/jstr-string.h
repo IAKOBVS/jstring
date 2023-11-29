@@ -482,6 +482,9 @@ JSTR_NOEXCEPT
 		if (hs_len < ne_len)
 			return NULL;
 		hs = (const u *)hs - shift;
+		if (*(const u *)hs == *(const u *)ne
+		    && !memcmp(hs, ne, ne_len))
+			return (char *)hs;
 		if (ne_len == 2)
 			return pjstr_memmem2((const u *)hs, (const u *)ne, hs_len);
 		if (ne_len == 3)
@@ -807,31 +810,6 @@ JSTR_NOEXCEPT
 	return NULL;
 }
 
-JSTR_FUNC_PURE
-static char *
-pjstr_strcasestr(const unsigned char *hs,
-                 const unsigned char *ne,
-                 const unsigned char *const rarebyte)
-{
-	typedef unsigned char u;
-	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
-	if (jstr_unlikely(jstr_strnlen((char *)hs, shift) < shift))
-		return NULL;
-	const u *hp, *np;
-	const int c = *(u *)rarebyte;
-	for (hs += shift; (hs = (const u *)strchr((char *)hs, c)); ++hs) {
-		for (hp = hs - shift, np = ne;
-		     L(*hp) == L(*np) && *hp;
-		     ++hp, ++np)
-			;
-		if (*np == '\0')
-			return (char *)hs - shift;
-		if (jstr_unlikely(*hp == '\0'))
-			break;
-	}
-	return NULL;
-}
-
 #undef L
 
 #define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_lgpl
@@ -968,7 +946,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCASESTR
+#if (JSTR_HAVE_STRCASESTR && JSTR_USE_STANDARD_ALWAYS && JSTR_HAVE_STRCASESTR_OPTIMIZED && !JSTR_DISABLE_NONSTANDARD)
 JSTR_ATTR_INLINE
 #endif
 static char *
@@ -1052,7 +1030,7 @@ STRSTR:
    NULL if not found.
 */
 JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCASESTR
+#if (JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_DISABLE_NONSTANDARD)
 JSTR_ATTR_INLINE
 #endif
 static char *
