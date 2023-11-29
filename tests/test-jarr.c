@@ -26,7 +26,7 @@
 
 #define T(func, ...)                                                      \
 	do {                                                              \
-		PRINT("Testing %s().\n", #func);                          \
+		PRINT("Testing %s.\n", #func);                          \
 		int expected[] = { __VA_ARGS__ };                         \
 		func;                                                     \
 		assert(j.data);                                           \
