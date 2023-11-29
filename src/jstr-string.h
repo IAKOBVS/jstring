@@ -656,12 +656,15 @@ JSTR_NOEXCEPT
 	typedef unsigned char u;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
+	if (ne_len == 1)
+		return (char *)jstr_memrchr(hs, *(const u *)ne, hs_len);
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	const u *h = (const u *)hs + hs_len - ne_len;
 	const u *n = (const u *)ne;
+	const int c = *(const u *)ne;
 	for (; h >= (const u *)hs; --h)
-		if (*h == *n && !memcmp(h, n, ne_len))
+		if (*h == c && !memcmp(h, n, ne_len))
 			return (char *)h;
 	return NULL;
 }
