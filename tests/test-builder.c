@@ -24,20 +24,19 @@
 #include "test.h"
 #include "../src/jstr-regex.h"
 
-#define T_APPEND(ret, fn, ...)                                                                         \
-	do {                                                                                           \
-		TESTING(fn);                                                                           \
-		if (ret != fn(__VA_ARGS__)) {                                                          \
-			fprintf(stderr, "%s\n", JSTR_STRING(fn) "()");                                 \
-			jstr_debug(&j);                                                                \
-			jstr_errdie("");                                                               \
-		}                                                                                      \
-		ASSERT(strcmp(j.data, expected) == 0, j.data, expected);                               \
-		ASSERT(j.size == strlen(expected), j.data, expected);                                  \
-		ASSERT(memcmp(j.data, expected, j.size) == 0, j.data, expected);                       \
-		ASSERT(strlen(expected) != 0 && j.size != 0 && j.capacity > j.size, j.data, expected); \
-		j.size = 0;                                                                            \
-		*j.data = '\0';                                                                        \
+#define T_APPEND(ret, fn, ...)                                                         \
+	do {                                                                           \
+		TESTING(fn);                                                           \
+		if (ret != fn(__VA_ARGS__)) {                                          \
+			jstr_debug(&(j));                                              \
+			jstr_errdie("");                                               \
+		}                                                                      \
+		ASSERT(strcmp((j).data, expected) == 0, (j).data, expected);           \
+		ASSERT((j).size == strlen(expected), (j).data, expected);              \
+		ASSERT(memcmp((j).data, expected, (j).size) == 0, (j).data, expected); \
+		ASSERT((j).capacity > (j).size, (j).data, expected);                   \
+		(j).size = 0;                                                          \
+		*(j).data = '\0';                                                      \
 	} while (0)
 
 #define FILL(j, str) assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&(j)), str, strlen(str)))
