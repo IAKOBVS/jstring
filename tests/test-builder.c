@@ -24,8 +24,8 @@
 #define JSTR_DEBUG 1
 #define JSTR_PANIC 1
 
-#include "../jstr/jstr-regex.h"
 #include "test.h"
+#include "../src/jstr-regex.h"
 
 #define T_APPEND(ret, fn, ...)                                                                         \
 	do {                                                                                           \
