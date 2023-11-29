@@ -659,7 +659,6 @@ jstr_strrstr_len(const void *hs,
                  size_t ne_len)
 JSTR_NOEXCEPT
 {
-	typedef unsigned char u;
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;

@@ -1,16 +1,16 @@
 /* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, and to permit persons to whom the Software is
    furnished to do so, subject to the following conditions:
-   
+
    The above copyright notice and this permission notice shall be included in all
    copies or substantial portions of the Software.
-   
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -18,7 +18,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.
-   
+
    MIT License (Expat) */
 
 #define JSTR_DEBUG 1
@@ -45,9 +45,6 @@
 
 #define FILL(j, str) assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&(j)), str, strlen(str)))
 
-
-char buf[4096] = { 0 };
-
 int
 main(int argc, char **argv)
 {
@@ -57,6 +54,7 @@ main(int argc, char **argv)
 	const char *find;
 	const char *rplc;
 	regex_t preg;
+	/* jstr-builder tests. */
 	expected = "hello world";
 	T_APPEND(JSTR_RET_SUCC, jstr_cat, JSTR_STRUCT(&j), "hello", " ", "world", NULL);
 	expected = "hello world";
@@ -65,6 +63,7 @@ main(int argc, char **argv)
 	T_APPEND(JSTR_RET_SUCC, jstr_prepend_len, JSTR_STRUCT(&j), expected, strlen(expected));
 	expected = "hello world";
 	T_APPEND(JSTR_RET_SUCC, jstr_assign_len, JSTR_STRUCT(&j), expected, strlen(expected));
+	/* jstr-replace tests. */
 	FILL(j, "hello hello hello hello");
 	find = "hello";
 	rplc = "world";
@@ -89,15 +88,16 @@ main(int argc, char **argv)
 	find = "[0-9A-Za-z]*";
 	rplc = "";
 	expected = "   ";
+	/* jstr-regex tests. */
 	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
-	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0);
+	T_APPEND(JSTRRE_RET_NOERROR, jstrre_rplcall_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0);
 	jstrre_free(&preg);
 	FILL(j, "hello hello hello hello");
 	find = "\\([0-9A-Za-z]*\\)";
 	rplc = "\\1\\1";
 	expected = "hellohello hellohello hellohello hellohello";
 	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
-	T_APPEND(JSTR_RET_SUCC, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0, 3);
+	T_APPEND(JSTRRE_RET_NOERROR, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&j), rplc, strlen(rplc), 0, 3);
 	jstrre_free(&preg);
 	jstr_free_j(&j);
 	SUCCESS();
