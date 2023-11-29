@@ -75,7 +75,7 @@ simple_strnstr(const char *hs,
                const char *ne,
                size_t n)
 {
-	return (char *)memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
+	return (char *)simple_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 }
 
 char *
