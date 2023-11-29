@@ -2,18 +2,30 @@
 
 # See LICENSE file for copyright and license details.
 
+flags="-fsanitize=address -g $* -O1"
+
 compile()
 {
 	file=$1
 	out=$2
 	shift 2
-	#shellcheck disable=SC2068
+	#shellcheck disable=SC2068 disable=SC2086 
 	cc "$file" -o "$out" $@ $flags
-	./"$out"
-	rm ./"$out"
+	"$out"
+	rm "$out"
 }
 
 cd "$(dirname "$0")" || exit
+
+mktemp=__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
+if [ "$TMPDIR" ]; then
+	TMPDIR=$TMPDIR$mktemp
+elif [ -d /tmp ]; then
+	TMPDIR=/tmp/$mktemp
+else
+	TMPDIR=$PWD/$mktemp
+fi
+
 if [ $# -eq 0 ]; then
 	files=$(echo *.c)
 else
@@ -21,13 +33,10 @@ else
 	shift
 fi
 
-flags="-fsanitize=address -g $* -O1"
-
-echo "$files"
 for file in $files; do
 	out=${file%.*}
-	compile "$file" "$out" &
-	compile "$file" "$out"_JSTR_USE_LGPL_0 -DJSTR_USE_LGPL=0 &
-	compile "$file" "$out"_JSTR_HAVE_ATTR_MAY_ALIAS_0 -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
+	compile "$file" "$TMPDIR$out" &
+	compile "$file" "$TMPDIR$out"_JSTR_USE_LGPL_0 -DJSTR_USE_LGPL=0 &
+	compile "$file" "$TMPDIR$out"_JSTR_HAVE_ATTR_MAY_ALIAS_0 -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
 done
 wait
