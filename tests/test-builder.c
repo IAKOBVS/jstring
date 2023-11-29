@@ -21,9 +21,6 @@
 
    MIT License (Expat) */
 
-#define JSTR_DEBUG 1
-#define JSTR_PANIC 1
-
 #include "test.h"
 #include "../src/jstr-regex.h"
 
