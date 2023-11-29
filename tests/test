@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# See LICENSE file for copyright and license details.
-
 flags="-fsanitize=address -g $* -O1"
 
 compile()
