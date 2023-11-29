@@ -28,6 +28,7 @@
 		JSTR_STATIC_ASSERT(sizeof(buffer) > 2 * strlen(string)        \
 		                   && sizeof(buffer) > 2 * strlen(expected),  \
 		                   "");                                       \
+		memcpy(buffer, string, strlen(string) + 1);                   \
 		const char *const p = func(buffer);                           \
 		ASSERT(strlen(buffer) == strlen(expected), buffer, expected); \
 		ASSERT(p - buffer == strlen(expected), buffer, expected);     \
@@ -46,14 +47,16 @@
 		ASSERT(!strcmp(buffer, expected), buffer, expected);          \
 	} while (0)
 
-char buffer[4096];
+char buffer[256] = { 0 };
 
 int
 main(int argc, char **argv)
 {
 	START();
+
 	TESTING(jstr_toCamelCaseP);
 	T(jstr_toCamelCaseP, "", "");
+	T(jstr_toCamelCaseP, "_", "_");
 	T(jstr_toCamelCaseP, "hello", "hello");
 	T(jstr_toCamelCaseP, "hello_world", "helloWorld");
 	T(jstr_toCamelCaseP, "_hello", "_hello");
@@ -61,6 +64,7 @@ main(int argc, char **argv)
 
 	TESTING(jstr_tocamelCaseCpyP);
 	T_CPY(jstr_toCamelCaseCpyP, "", "");
+	T_CPY(jstr_toCamelCaseCpyP, "_", "_");
 	T_CPY(jstr_toCamelCaseCpyP, "hello", "hello");
 	T_CPY(jstr_toCamelCaseCpyP, "hello_world", "helloWorld");
 	T_CPY(jstr_toCamelCaseCpyP, "__hello", "__hello");
@@ -68,6 +72,7 @@ main(int argc, char **argv)
 
 	TESTING(jstr_to_snake_case_p);
 	T(jstr_to_snake_case_p, "", "");
+	T(jstr_to_snake_case_p, "_", "_");
 	T(jstr_to_snake_case_p, "hello", "hello");
 	T(jstr_to_snake_case_p, "helloWorld", "hello_world");
 	T(jstr_to_snake_case_p, "__hello", "__hello");
@@ -75,6 +80,7 @@ main(int argc, char **argv)
 
 	TESTING(jstr_to_snake_case_cpy_p);
 	T_CPY(jstr_to_snake_case_cpy_p, "", "");
+	T_CPY(jstr_to_snake_case_cpy_p, "_", "_");
 	T_CPY(jstr_to_snake_case_cpy_p, "hello", "hello");
 	T_CPY(jstr_to_snake_case_cpy_p, "helloWorld", "hello_world");
 	T_CPY(jstr_to_snake_case_cpy_p, "__hello", "__hello");
