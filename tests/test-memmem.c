@@ -132,6 +132,7 @@ simple_strcasestr(const char *h,
 		PRINTERR("\n");                                     \
 		PRINTERR("hs_len:\n%zu\n", hs_len);                 \
 		PRINTERR("ne_len:\n%zu\n", ne_len);                 \
+		PRINTERR("n:\n%zu\n", n);                           \
 		PRINTERR("expected:\n%s\n", N(expected));           \
 		PRINTERR("expected_len:\n%zu\n", strlen(expected)); \
 		PRINTERR("result:\n%s\n", N(result));               \
@@ -266,8 +267,8 @@ main(int argc, char **argv)
 	/* T_STRSTR(jstr_strcasestr, simple_strcasestr); */
 	/* T_STRSTR_LEN(jstr_strcasestr_len, simple_strcasestr_len); */
 	/* T_STRSTR_LEN(jstr_memmem, simple_memmem); */
-	T_STRSTR_LEN(jstr_strrstr_len, simple_strrstr_len);
-	/* T_STRNSTR(jstr_strnstr, simple_strnstr); */
+	/* T_STRSTR_LEN(jstr_strrstr_len, simple_strrstr_len); */
+	T_STRNSTR(jstr_strnstr, simple_strnstr);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }

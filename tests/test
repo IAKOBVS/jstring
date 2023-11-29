@@ -8,7 +8,6 @@ compile()
 	out=$2
 	shift 2
 	#shellcheck disable=SC2068
-	echo "cc $file -o $out $@ $flags"
 	cc "$file" -o "$out" $@ $flags
 	./"$out"
 	rm ./"$out"

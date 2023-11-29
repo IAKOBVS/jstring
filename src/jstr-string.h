@@ -350,9 +350,9 @@ pjstr_strnstrcmpeq(const unsigned char *hs,
                    const unsigned char *ne,
                    size_t n)
 {
-	for (; n-- && *hs == *ne && *hs; ++hs, ++ne)
+	for (; n && *hs && *hs == *ne; ++hs, ++ne, --n)
 		;
-	if (*ne == '\0')
+	if (*ne == '\0' || n == 0)
 		return 0;
 	if (jstr_unlikely(*hs == '\0'))
 		return -1;
@@ -362,25 +362,25 @@ pjstr_strnstrcmpeq(const unsigned char *hs,
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strnstr(const unsigned char *hs,
-              const unsigned char *ne,
-              size_t n)
+pjstr_strnstr_long(const unsigned char *hs,
+                   const unsigned char *ne,
+                   size_t n)
 JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	ne += 4;
 	int ret;
+	ne += 4;
 	for (hs += 3, n -= 3; n-- && *hs; hw = hw << 8 | *++hs)
 		if (hw == nw) {
-			ret = pjstr_strnstrcmpeq(hs - 3 + 4, ne, n);
+			ret = pjstr_strnstrcmpeq(hs - 3 + 4, ne, n - 4);
 			if (ret == 0)
 				goto ret;
 			if (jstr_unlikely(ret == -1))
 				return NULL;
 		}
 	if (*hs && hw == nw)
-		if (!pjstr_strnstrcmpeq(hs - 3 + 4, ne, n))
+		if (!pjstr_strnstrcmpeq(hs - 3 + 4, ne, n - 4))
 			goto ret;
 	return NULL;
 ret:
@@ -557,6 +557,7 @@ jstr_strnstr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	typedef const unsigned char cu;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
 	const char *const start = hs;
@@ -564,22 +565,26 @@ JSTR_NOEXCEPT
 	if (hs == NULL || ne[1] == '\0')
 		return (char *)hs;
 	n -= hs - start;
-	if (jstr_unlikely(hs[1] == '\0'))
+	if (jstr_unlikely(hs[1] == '\0')
+	|| jstr_unlikely(n == 1))
 		return NULL;
 	if (ne[2] == '\0')
-		return pjstr_strnstr2((const u *)hs, (const u *)ne, n);
-	if (jstr_unlikely(hs[2] == '\0'))
+		return pjstr_strnstr2((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[2] == '\0')
+	|| jstr_unlikely(n == 2))
 		return NULL;
 	if (ne[3] == '\0')
-		return pjstr_strnstr3((const u *)hs, (const u *)ne, n);
-	if (jstr_unlikely(hs[3] == '\0'))
+		return pjstr_strnstr3((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[3] == '\0')
+	|| jstr_unlikely(n == 3))
 		return NULL;
 	if (ne[4] == '\0')
-		return pjstr_strnstr4((const u *)hs, (const u *)ne, n);
-	if (jstr_unlikely(hs[4] == '\0'))
+		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[4] == '\0')
+	|| jstr_unlikely(n == 4))
 		return NULL;
-	const u *hp = (const u *)hs;
-	const u *np = (const u *)ne;
+	cu *hp = (cu *)hs;
+	cu *np = (cu *)ne;
 	size_t tmp = n;
 	for (; tmp-- && *hp == *np && *hp; ++hp, ++np)
 		;
@@ -603,16 +608,18 @@ JSTR_NOEXCEPT
 		const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
 		if (jstr_unlikely(hs_len < ne_len))
 			return NULL;
-		return (char *)pjstr_memmem_lgpl((const u *)hs, hs_len, (const u *)ne, ne_len);
+		return (char *)pjstr_memmem_lgpl((cu *)hs, hs_len, (cu *)ne, ne_len);
 	} else {
-		const u *const rare = (const u *)jstr_rarebytefind(ne);
-		const size_t ne_len = (rare > np) ? (strlen((char *)rare) + JSTR_PTR_DIFF(rare, ne)) : (strlen((char *)np) + tmp);
+		cu *const rare = (cu *)jstr_rarebytefind(ne);
+		const size_t ne_len = (rare > np)
+		                      ? (strlen((char *)rare) + JSTR_PTR_DIFF(rare, ne))
+		                      : (strlen((char *)np) + tmp);
 		if (jstr_unlikely(n < ne_len))
 			return NULL;
 		const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
 		if (jstr_unlikely(hs_len < ne_len))
 			return NULL;
-		return (char *)pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, rare);
+		return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
 	}
 }
 
