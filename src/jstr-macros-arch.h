@@ -27,14 +27,14 @@
 #if (defined __x86_64 || defined __x86_64__) && (defined _ILP32 || defined __ILP32__)
 #	define JSTR_ARCH_X86_32 1
 #elif defined __amd64__ || defined __amd64 \
-|| defined _M_AMD64 || defined __x86_64__ \
-|| defined __x86_64 || defined _M_X64 \
+|| defined _M_AMD64 || defined __x86_64__  \
+|| defined __x86_64 || defined _M_X64      \
 || defined _M_X64
 #	define JSTR_ARCH_X86_64 1
 #elif defined __aarch64__ || defined _M_ARM64
 #	define JSTR_ARCH_ARM64 1
 #elif defined __arm__ || defined __arm \
-|| defined __thumb__ || defined _ARM \
+|| defined __thumb__ || defined _ARM   \
 || defined _M_ARM || defined _M_ARM_T
 #	define JSTR_ARCH_ARM 1
 #	if defined __ARM_ARCH_2__
@@ -44,17 +44,17 @@
 #	elif defined __ARM_ARCH_4T__ || defined __TARGET_ARM_4T
 #		define JSTR_ARCH_ARM4T 1
 #	elif defined __ARM_ARCH_5__ || defined __ARM_ARCH_5E__ \
-	|| defined __ARM_ARCH_5T__ || defined __ARM_ARCH_5TE__ \
+	|| defined __ARM_ARCH_5T__ || defined __ARM_ARCH_5TE__  \
 	|| defined __ARM_ARCH_5TEJ__
 #		define JSTR_ARCH_ARM5 1
 #	elif defined __ARM_ARCH_6T2__
 #		define JSTR_ARCH_ARM6T2 1
 #	elif defined __ARM_ARCH_6__ || defined __ARM_ARCH_6J__ \
-	|| defined __ARM_ARCH_6Z__ || defined __ARM_ARCH_6ZK__ \
+	|| defined __ARM_ARCH_6Z__ || defined __ARM_ARCH_6ZK__  \
 	|| defined __ARM_ARCH_6K__
 #		define JSTR_ARCH_ARM6 1
 #	elif defined __ARM_ARCH_7__ || defined __ARM_ARCH_7A__ \
-	|| defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__ \
+	|| defined __ARM_ARCH_7R__ || defined __ARM_ARCH_7M__   \
 	|| defined __ARM_ARCH_7EM__ || defined __ARM_ARCH_7S__
 #		define JSTR_ARCH_ARM7 1
 #	endif
@@ -75,7 +75,7 @@
 #		define JSTR_ARCH_SH5 1
 #	endif
 #elif defined __powerpc || defined __powerpc__ \
-|| defined __POWERPC__ || defined __ppc__ \
+|| defined __POWERPC__ || defined __ppc__      \
 || defined __PPC__ || defined _ARCH_PPC
 #	define JSTR_ARCH_POWERPC 1
 #elif defined __PPC64__ || defined __ppc64__ \
@@ -124,7 +124,7 @@
 #elif defined __s390x__ || defined __s390__
 #	define JSTR_ARCH_S390 1
 #elif defined __ia64__ || defined _IA64 \
-|| defined __IA64__ || defined __ia64 \
+|| defined __IA64__ || defined __ia64   \
 || defined _M_IA64 || defined __itanium__
 #	define JSTR_ARCH_IA64 1
 #elif defined i386 || defined __i386__ \
