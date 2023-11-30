@@ -45,6 +45,7 @@ typedef int T;
 int
 main(int argc, char **argv)
 {
+	char *d, *s;
 	START();
 	jarr_ty(T, j) = JARR_INIT;
 	T(jarr_cat(&j, 1), 1);
