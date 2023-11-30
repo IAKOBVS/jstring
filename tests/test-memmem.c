@@ -174,7 +174,6 @@ t_debug(const char *hs,
 		assert(result == expected);                           \
 	}
 
-#define T_FOREACHI(array, i) for (size_t i = 0; i < JSTR_ARRAY_SIZE(array); ++i)
 #define T_HS(test, i)        ((test)[i].hs)
 #define T_NE(test, i)        ((test)[i].ne)
 #define T_S1(test, i)        ((test)[i].s2)

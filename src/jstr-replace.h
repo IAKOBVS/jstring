@@ -287,8 +287,8 @@ JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
 jstr_rmchr_len_p(char *R s,
-                 int c,
-                 size_t sz)
+                 size_t sz,
+                 int c)
 JSTR_NOEXCEPT
 {
 	const char *const start = s;
@@ -464,8 +464,8 @@ JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmnchr_len_p(char *R s,
-                  int c,
                   size_t sz,
+                  int c,
                   size_t n)
 JSTR_NOEXCEPT
 {
@@ -486,8 +486,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallchr_len_p(char *R s,
-                    int c,
-                    size_t sz)
+                    size_t sz,
+                    int c)
 JSTR_NOEXCEPT
 {
 	return jstr_rmnchr_len_p(s, c, sz, -1);
@@ -580,8 +580,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rm_len_p(char *R s,
-              const char *R find,
               size_t sz,
+              const char *R find,
               size_t find_len)
 JSTR_NOEXCEPT
 {
@@ -601,9 +601,9 @@ JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_rplcchr_len(char *R s,
+                 size_t sz,
                  int find,
-                 int rplc,
-                 size_t sz)
+                 int rplc)
 JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, find, sz);
@@ -633,9 +633,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcallchr_len(char *R s,
+                    size_t sz,
                     int find,
-                    int rplc,
-                    size_t sz)
+                    int rplc)
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
@@ -663,9 +663,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcnchr_len(char *R s,
+                  size_t sz,
                   int find,
                   int rplc,
-                  size_t sz,
                   size_t n)
 JSTR_NOEXCEPT
 {
@@ -702,7 +702,7 @@ pjstr_rplc_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(rplc_len == 0)) {
-		*sz = jstr_rm_len_p(*s + start_idx, find, *sz - start_idx, find_len) - *s;
+		*sz = jstr_rm_len_p(*s + start_idx, *sz - start_idx, find, find_len) - *s;
 		return JSTR_RET_SUCC;
 	}
 	if (find_len == 1) {

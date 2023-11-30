@@ -6,6 +6,8 @@
 #include "test.h"
 #include "../src/jstr-macros.h"
 
+#define T_FOREACHI(array, i) for (size_t i = 0; i < JSTR_ARRAY_COUNT(array); ++i)
+
 #define y256 "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
 #define GEN(hs, ne)\
 	{hs,ne},\
