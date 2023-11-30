@@ -37,17 +37,26 @@
 #define START() do{}while(0)
 #define SUCCESS()     PRINT("%s succeeded.\n", strstr(argv[0], "test-"))
 #define TESTING(func)
-/* clang-format onon  */
+/* clang-format on */
 
-#define ASSERT(expr, result, expected)            \
-	do {                                      \
-		if (jstr_unlikely(!(expr))) {     \
-			PRINTERR("result:%s\n"    \
-			         "expected:%s\n", \
-			         result,          \
-			         expected);       \
-			assert(expr);             \
-		}                                 \
+#define ASSERT_RESULT(func, expr, result, expected)                      \
+	do {                                                             \
+		if (jstr_unlikely(!(expr))) {                            \
+			PRINTERR("Assertion failure: ()%s.\nResult:%s\n" \
+			         "Expected:%s\n",                        \
+			         #func,                                  \
+			         result,                                 \
+			         expected);                              \
+			assert(expr);                                    \
+		}                                                        \
+	} while (0)
+
+#define ASSERT_ERRFUNC(func, expr)                                \
+	do {                                                      \
+		if (jstr_unlikely(!(expr))) {                     \
+			PRINTERR("Assertion failure: %s", #func); \
+			assert(expr);                             \
+		}                                                 \
 	} while (0)
 
 #endif /* JSTR_TEST_H */

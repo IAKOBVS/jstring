@@ -32,9 +32,9 @@
 		                   "");                                       \
 		memcpy(buffer, string, strlen(string) + 1);                   \
 		const char *const p = func(buffer);                           \
-		ASSERT(strlen(buffer) == strlen(expected), buffer, expected); \
-		ASSERT(p - buffer == strlen(expected), buffer, expected);     \
-		ASSERT(!strcmp(buffer, expected), buffer, expected);          \
+		ASSERT_RESULT(func, strlen(buffer) == strlen(expected), buffer, expected); \
+		ASSERT_RESULT(func, p - buffer == strlen(expected), buffer, expected);     \
+		ASSERT_RESULT(func, !strcmp(buffer, expected), buffer, expected);          \
 	} while (0)
 
 #define T_CPY(func, string, expected)                                         \
@@ -43,10 +43,10 @@
 		                   && sizeof(buffer) > 2 * strlen(expected),  \
 		                   "");                                       \
 		const char *const p = func(buffer, string);                   \
-		ASSERT(strlen(buffer) == strlen(expected), buffer, expected); \
-		ASSERT(p - buffer == strlen(expected), buffer, expected);     \
-		ASSERT(!strcmp(buffer, expected), buffer, expected);          \
-		ASSERT(!strcmp(buffer, expected), buffer, expected);          \
+		ASSERT_RESULT(func, strlen(buffer) == strlen(expected), buffer, expected); \
+		ASSERT_RESULT(func, p - buffer == strlen(expected), buffer, expected);     \
+		ASSERT_RESULT(func, !strcmp(buffer, expected), buffer, expected);          \
+		ASSERT_RESULT(func, !strcmp(buffer, expected), buffer, expected);          \
 	} while (0)
 
 char buffer[256] = { 0 };
