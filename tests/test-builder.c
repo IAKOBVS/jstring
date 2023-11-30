@@ -40,7 +40,7 @@
 		*(j).data = '\0';                                                                   \
 	} while (0)
 
-#define FILL(j, str) assert(JSTR_RET_SUCC == jstr_assign_len(JSTR_STRUCT(&(j)), str, strlen(str)))
+#define FILL(j, str) assert(!jstr_chk(jstr_assign_len(JSTR_STRUCT(&(j)), str, strlen(str))))
 
 #define T_RPLC_INIT(buf, str, str_len)                                               \
 	do {                                                                         \
