@@ -68,7 +68,8 @@ jstr_empty(char *R s,
            size_t *R sz)
 JSTR_NOEXCEPT
 {
-	*s = '\0';
+	if (jstr_likely(s != NULL))
+		*s = '\0';
 	*sz = 0;
 }
 

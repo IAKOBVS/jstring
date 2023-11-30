@@ -44,46 +44,49 @@
 
 #define T_RPLC_INIT(buf, str, s_len)                                               \
 	do {                                                                       \
-		if (buf.data)                                                      \
-			*buf.data = '\0';                                          \
-		buf.size = 0;                                                      \
+		jstr_empty(buf.data, &buf.size);                                   \
 		assert(!jstr_chk(jstr_assign_len(JSTR_STRUCT(&buf), str, s_len))); \
 		assert(buf.size == s_len);                                         \
 		assert(!memcmp(buf.data, s, s_len));                               \
 	} while (0)
 
-#define ASSERT_RESULT_CHR(func, j_result, j_expected, s, rplc, expr)      \
-	do {                                                              \
-		if (jstr_unlikely(!(expr))) {                             \
-			PRINTERR("Assertion failure: %s().\n", #func);    \
-			PRINTERR("String:%s\nReplacement:%c\n", s, rplc); \
-			PRINTERR("Result:\n");                            \
-			jstr_debug(&(j_result));                          \
-			PRINTERR("Expected:\n");                          \
-			jstr_debug(&(j_expected));                        \
-			assert(expr);                                     \
-		}                                                         \
+#define ASSERT_RESULT_CHR(func, j_result, j_expected, s, rplc, expr)   \
+	do {                                                           \
+		if (jstr_unlikely(!(expr))) {                          \
+			PRINTERR("assertion failure: %s().\n", #func); \
+			PRINTERR("string:%s\nreplace:%c\n", s, rplc);  \
+			PRINTERR("result:\n");                         \
+			jstr_debug(&(j_result));                       \
+			PRINTERR("Expected:\n");                       \
+			jstr_debug(&(j_expected));                     \
+			assert(expr);                                  \
+		}                                                      \
 	} while (0)
 
-#define T_CHR(func, simple_func)                                                                                                   \
-	do {                                                                                                                       \
-		jstr_ty buf = JSTR_INIT;                                                                                           \
-		jstr_ty s_buf = JSTR_INIT;                                                                                         \
-		T_FOREACHI(test_array_memcmp, i)                                                                                   \
-		{                                                                                                                  \
-			const char *s = test_array_memcmp[i].s1;                                                                   \
-			size_t s_len = strlen(s);                                                                                  \
-			const char rplc = *test_array_memcmp[i].s2;                                                                \
-			T_RPLC_INIT(buf, s, s_len);                                                                                \
-			T_RPLC_INIT(s_buf, s, s_len);                                                                              \
-			buf.size = func(buf.data, buf.size, rplc, i) - buf.data;                                                   \
-			s_buf.size = simple_func(s_buf.data, s_buf.size, rplc, i) - s_buf.data;                                    \
-			ASSERT_RESULT_CHR(func, buf, s_buf, s, rplc, strlen(buf.data) == strlen(s_buf.data));                      \
-			ASSERT_RESULT_CHR(func, buf, s_buf, s, rplc, buf.size == s_buf.size);                                      \
-			ASSERT_RESULT_CHR(func, buf, s_buf, s, rplc, !memcmp(buf.data, s_buf.data, buf.size * sizeof(*buf.data))); \
-		}                                                                                                                  \
-		jstr_free_j(&buf);                                                                                                 \
-		jstr_free_j(&s_buf);                                                                                               \
+#define T_CHR(func, simple_func)                                                                                                           \
+	do {                                                                                                                               \
+		jstr_ty buf = JSTR_INIT;                                                                                                   \
+		jstr_ty s_buf = JSTR_INIT;                                                                                                 \
+		T_FOREACHI(test_array_memcmp, i)                                                                                           \
+		{                                                                                                                          \
+			const char rplc = *test_array_memcmp[i].s2;                                                                        \
+			if (rplc) {                                                                                                        \
+				const char *s = test_array_memcmp[i].s1;                                                                   \
+				size_t s_len = strlen(s);                                                                                  \
+				fprintf(stderr, "string:%s.\n", s);                                                                        \
+				fprintf(stderr, "replace:%c.\n", rplc);                                                                    \
+				fprintf(stderr, "i:%zu\n", i);                                                                             \
+				T_RPLC_INIT(buf, s, s_len);                                                                                \
+				T_RPLC_INIT(s_buf, s, s_len);                                                                              \
+				buf.size = func(buf.data, buf.size, rplc, i) - buf.data;                                                   \
+				s_buf.size = simple_func(s_buf.data, s_buf.size, rplc, i) - s_buf.data;                                    \
+				ASSERT_RESULT_CHR(func, buf, s_buf, s, rplc, strlen(buf.data) == strlen(s_buf.data));                      \
+				ASSERT_RESULT_CHR(func, buf, s_buf, s, rplc, buf.size == s_buf.size);                                      \
+				ASSERT_RESULT_CHR(func, buf, s_buf, s, rplc, !memcmp(buf.data, s_buf.data, buf.size * sizeof(*buf.data))); \
+			}                                                                                                                  \
+		}                                                                                                                          \
+		jstr_free_j(&buf);                                                                                                         \
+		jstr_free_j(&s_buf);                                                                                                       \
 	} while (0)
 
 static char *
@@ -129,7 +132,7 @@ main(int argc, char **argv)
 	jstr_ty j = JSTR_INIT;
 	START();
 
-	/* T_CHR(jstr_rmnchr_len_p, simple_rmnchr); */
+	T_CHR(jstr_rmnchr_len_p, simple_rmnchr);
 
 	const char *expected;
 	const char *find;
