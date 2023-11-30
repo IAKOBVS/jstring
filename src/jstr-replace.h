@@ -312,7 +312,7 @@ JSTR_NOEXCEPT
 	s = strchrnul(s, c);
 	return *s ? jstr_stpmove_len(s, s + 1, strlen(s)) : s;
 #else
-	return jstr_rmchr_len_p(s, c, strlen(s));
+	return jstr_rmchr_len_p(s, strlen(s), c);
 #endif /* HAVE_STRCHRNUL */
 }
 
@@ -490,7 +490,7 @@ jstr_rmallchr_len_p(char *R s,
                     int c)
 JSTR_NOEXCEPT
 {
-	return jstr_rmnchr_len_p(s, c, sz, -1);
+	return jstr_rmnchr_len_p(s, sz, c, -1);
 }
 
 /*
@@ -515,7 +515,7 @@ JSTR_NOEXCEPT
 		return s + n;
 	return jstr_stpmove_len(dst, oldp, p - oldp);
 #else
-	return jstr_rmnchr_len_p(s, c, n, strlen(s));
+	return jstr_rmnchr_len_p(s, strlen(s), c, n);
 #endif /* HAVE_STRCHRNUL */
 }
 
