@@ -46,7 +46,11 @@ main(int argc, char **argv)
 	START();
 	typedef int T;
 	jarr_ty(T, j) = JARR_INIT;
+#ifndef __STRICT_ANSI__
 	T(jarr_cat(&j, 1), 1);
+#else
+	T(jarr_pushback(&j, 1), 1);
+#endif
 	T_ZERO(jarr_popback(&j));
 	T_ZERO(jarr_popback(&j));
 	T_ZERO(jarr_popfront(&j));
