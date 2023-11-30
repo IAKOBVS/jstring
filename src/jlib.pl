@@ -89,8 +89,8 @@ sub jl_arg_to_array {
 sub jl_arg_to_string {
 	my ($arg_arr_ref) = @_;
 	my $arg_str = '';
-	$arg_str .= "$_," foreach (@$arg_arr_ref);
-	$arg_str =~ s/,$//;
+	$arg_str .= "$_, " foreach (@$arg_arr_ref);
+	$arg_str =~ s/, $//;
 	return $arg_str;
 }
 

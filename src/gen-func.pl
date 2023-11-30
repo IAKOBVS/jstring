@@ -60,8 +60,8 @@ my @func_arr;
 foreach (jl_file_to_blocks(\$file_str1)) {
 	$file_str2 .= "$_\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
-	next if (!jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
-		|| $name !~ /^jstr\w*_/
+	next if (!jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef));
+	next if ($name !~ /^jstr\w*_/
 		|| grepped(\@arg, \'..')
 		|| scalar(@arg) == 0);
 	push(@func_arr, $name);
