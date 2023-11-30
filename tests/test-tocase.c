@@ -22,6 +22,8 @@
    MIT License (Expat) */
 
 #include "test.h"
+#include "../src/jstr-string.h"
+#include "../src/jstr-replace.h"
 
 #define T(func, string, expected)                                             \
 	do {                                                                  \

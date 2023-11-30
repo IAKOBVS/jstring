@@ -23,11 +23,41 @@
 
 #include "test.h"
 #include "test-haystack-needle.h"
+#include "../src/jstr-string.h"
 
 #define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
 #define TOUPPER(c) (unsigned char)(((c) >= 'a' && (c) <= 'z') ? ((c) - 'a' + 'A') : (c))
 
-char *
+JSTR_ATTR_NOINLINE
+static int
+debug(const char *hs,
+      const char *ne,
+      size_t hs_len,
+      size_t ne_len,
+      size_t n,
+      const char *result,
+      const char *expected)
+{
+	if (jstr_unlikely(result != expected)) {
+		PRINTERR("hsn:\n");
+		PRINTERR("hs:\n%s\n", hs);
+		PRINTERR("ne:\n%s\n", ne);
+		fwrite(hs, 1, jstr_strnlen(hs, n), stderr);
+		PRINTERR("\n");
+		PRINTERR("hs_len:\n%zu\n", hs_len);
+		PRINTERR("ne_len:\n%zu\n", ne_len);
+		PRINTERR("n:\n%zu\n", (size_t)n);
+		PRINTERR("expected:\n%s\n", N(expected));
+		PRINTERR("expected_len:\n%zu\n", strlen(N(expected)));
+		PRINTERR("result:\n%s\n", N(result));
+		PRINTERR("result_len:\n%zu\n", strlen(N(result)));
+		assert(result == expected);
+		return JSTR_RET_ERR;
+	}
+	return JSTR_RET_SUCC;
+}
+
+static char *
 simple_strrstr_len(const char *h,
                    const size_t hl,
                    const char *n,
@@ -44,14 +74,15 @@ simple_strrstr_len(const char *h,
 	return NULL;
 }
 
-char *
+JSTR_MAYBE_UNUSED
+static char *
 simple_strrstr(const char *h,
                const char *n)
 {
 	return simple_strrstr_len(h, strlen(h), n, strlen(n));
 }
 
-char *
+static char *
 simple_memmem(const char *h,
               const size_t hl,
               const char *n,
@@ -70,7 +101,7 @@ simple_memmem(const char *h,
 	return NULL;
 }
 
-char *
+static char *
 simple_strnstr(const char *hs,
                const char *ne,
                size_t n)
@@ -78,7 +109,8 @@ simple_strnstr(const char *hs,
 	return (char *)simple_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 }
 
-char *
+JSTR_MAYBE_UNUSED
+static char *
 simple_strstr(const char *h,
               const char *n)
 {
@@ -98,7 +130,7 @@ simple_strncasecmp(const char *s1,
 	return ret;
 }
 
-char *
+static char *
 simple_strcasestr_len(const char *h,
                       const size_t hl,
                       const char *n,
@@ -117,7 +149,7 @@ simple_strcasestr_len(const char *h,
 	return NULL;
 }
 
-char *
+static char *
 simple_strcasestr(const char *h,
                   const char *n)
 {
@@ -126,19 +158,7 @@ simple_strcasestr(const char *h,
 
 #define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)        \
 	if (jstr_unlikely(result != expected)) {                    \
-		PRINTERR("hsn:\n");                                 \
-		PRINTERR("hs:\n%s\n", hs);                          \
-		PRINTERR("ne:\n%s\n", ne);                          \
-		fwrite(hs, 1, jstr_strnlen(hs, n), stderr);         \
-		PRINTERR("\n");                                     \
-		PRINTERR("hs_len:\n%zu\n", hs_len);                 \
-		PRINTERR("ne_len:\n%zu\n", ne_len);                 \
-		PRINTERR("n:\n%zu\n", (size_t)n);                   \
-		PRINTERR("expected:\n%s\n", N(expected));           \
-		PRINTERR("expected_len:\n%zu\n", strlen(expected)); \
-		PRINTERR("result:\n%s\n", N(result));               \
-		PRINTERR("result_len:\n%zu\n", strlen(result));     \
-		assert(result == expected);                         \
+		debug(hs, ne, hs_len, ne_len, n, result, expected); \
 	}
 
 #define T_FOREACHI(array, i) for (size_t i = 0; i < JSTR_ARRAY_SIZE(array); ++i)

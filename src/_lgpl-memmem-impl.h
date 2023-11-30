@@ -59,7 +59,7 @@ JSTR_NOEXCEPT
 	size_t off = 0;
 	arr_ty shift[256];
 	size_t shift1;
-	sizeof(shift) == 256 : JSTR_BZERO_ARRAY(shift) ? memset(shift, 0, sizeof(shift));
+	JSTR_BZERO_ARRAY(shift);
 	for (idx_ty i = 1; i < (idx_ty)m1; ++i) {
 		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
 #if PJSTR_MEMMEM_HASH2_ICASE

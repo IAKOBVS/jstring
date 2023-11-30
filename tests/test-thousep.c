@@ -22,6 +22,7 @@
    MIT License (Expat) */
 
 #include "test.h"
+#include "../src/jstr-itoa.h"
 
 #define T(string, expected_result)                                                              \
 	do {                                                                                    \

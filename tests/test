@@ -1,6 +1,6 @@
 #!/bin/sh
 
-flags="-fsanitize=address -g $* -O1"
+flags="-fsanitize=address -g -O1"
 
 compile()
 {
@@ -8,7 +8,7 @@ compile()
 	out=$2
 	shift 2
 	#shellcheck disable=SC2068 disable=SC2086 
-	cc "$file" -o "$out" $@ $flags
+	cc "$file" -o "$out" $flags
 	"$out"
 	rm "$out"
 }
@@ -28,7 +28,6 @@ if [ $# -eq 0 ]; then
 	files=$(echo *.c)
 else
 	files=$*
-	shift
 fi
 
 for file in $files; do
