@@ -290,7 +290,7 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_GENERIC 0
 #endif /* have_generic */
 
-#if (defined __GNUC__ && (__GNUC__ >= 4)) \
+#if JSTR_GNUC_PREREQ(4, 0) \
 || (defined __clang__ && (__clang_major__ >= 3))
 #	define JSTR_HAVE_TYPEOF 1
 #else
