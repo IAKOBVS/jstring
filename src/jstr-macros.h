@@ -86,8 +86,7 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 #	include <sys/endian.h>
 PJSTR_END_DECLS
-#elif defined __GLIBC__ && ((JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) \
-|| defined _DEFAULT_SOURCE)
+#elif defined __GLIBC__ && ((JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) || defined _DEFAULT_SOURCE)
 PJSTR_BEGIN_DECLS
 #	include <endian.h>
 PJSTR_END_DECLS
@@ -152,8 +151,8 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
-#define JSTR_ARRAY_COUNT(array)    (sizeof(array) / sizeof(array[0]))
+#define JSTR_PAGE_SIZE            4096
+#define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
 #define JSTR_STRING(x)            #x
@@ -403,7 +402,7 @@ PJSTR_CAST(T, Other other)
 #if defined __glibc_unlikely && defined __glibc_likely
 #	define jstr_likely(x)   __glibc_likely(x)
 #	define jstr_unlikely(x) __glibc_unlikely(x)
-#elif (defined __GNUC__ && (__GNUC__ >= 3)) || (defined __clang__)
+#elif (defined __GNUC__ && (__GNUC__ >= 3)) || defined __clang__
 #	if JSTR_HAS_BUILTIN(__builtin_expect)
 #		define jstr_likely(x)   __builtin_expect((x), 1)
 #		define jstr_unlikely(x) __builtin_expect((x), 0)
@@ -608,8 +607,7 @@ PJSTR_CAST(T, Other other)
 #define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_ATTR_PURE
 #define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_ATTR_RETURNS_NONNULL
 
-#if ((defined __GLIBC__ && __GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ <= 19)) && defined _BSD_SOURCE) \
-|| defined _DEFAULT_SOURCE
+#if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) || defined _BSD_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1
 #	define JSTR_HAVE_STRNCASECMP 1
 #else
@@ -657,7 +655,7 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_STRCASESTR        0
 #endif /* Gnu */
 
-#if ((JSTR_GLIBC_PREREQ(2, 24)) && _POSIX_C_SOURCE >= 199309L)                                                     \
+#if (JSTR_GLIBC_PREREQ(2, 24) && _POSIX_C_SOURCE >= 199309L)                                                       \
 || ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE) \
 || (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
 #	define JSTR_HAVE_GETC_UNLOCKED    1
@@ -1012,8 +1010,8 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #else
 #	define JSTR_BYTE_UTOWORD32(x)   (JSTR_BYTE_SHIFT32(x, 0) | JSTR_BYTE_SHIFT32(x, 1) | JSTR_BYTE_SHIFT32(x, 2) | JSTR_BYTE_SHIFT32(x, 3))
 #	define JSTR_BYTE_UTOWORD64(x)   ((uint64_t)JSTR_BYTE_UTOWORD32(x) | JSTR_BYTE_SHIFT64(x, 4) | JSTR_BYTE_SHIFT64(x, 5) | JSTR_BYTE_SHIFT64(x, 6) | JSTR_BYTE_SHIFT64(x, 7))
-#	define JSTR_BYTE_UCMPEQ32(x, y) !memcmp(x, y, 4)
-#	define JSTR_BYTE_UCMPEQ64(x, y) !memcmp(x, y, 8)
+#	define JSTR_BYTE_UCMPEQ32(x, y) !memcmp(x, y, sizeof(uint32_t))
+#	define JSTR_BYTE_UCMPEQ64(x, y) !memcmp(x, y, sizeof(uint64_t))
 #	define JSTR_BYTE_TOWORD32(x)    JSTR_BYTE_UTOWORD32(x)
 #	define JSTR_BYTE_TOWORD64(x)    JSTR_BYTE_UTOWORD64(x)
 #	define JSTR_BYTE_CMPEQ32(x, y)  JSTR_BYTE_UCMPEQ32(x, y)
