@@ -141,13 +141,19 @@ simple_strcasestr(const char *h,
 
 #define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)           \
 	if (jstr_unlikely(result != expected)) {                       \
+		size_t hl = hs_len;                                    \
+		size_t nl = ne_len;                                    \
+		if (hs_len == 0)                                       \
+			hl = strlen(hs);                               \
+		if (ne_len == 0)                                       \
+			nl = strlen(ne);                               \
 		PRINTERR("hsn:\n");                                    \
 		PRINTERR("hs:\n%s\n", hs);                             \
 		PRINTERR("ne:\n%s\n", ne);                             \
 		fwrite(hs, 1, jstr_strnlen(hs, n), stderr);            \
 		PRINTERR("\n");                                        \
-		PRINTERR("hs_len:\n%zu\n", hs_len);                    \
-		PRINTERR("ne_len:\n%zu\n", ne_len);                    \
+		PRINTERR("hs_len:\n%zu\n", hl);                        \
+		PRINTERR("ne_len:\n%zu\n", nl);                        \
 		PRINTERR("n:\n%zu\n", (size_t)n);                      \
 		PRINTERR("expected:\n%s\n", N(expected));              \
 		PRINTERR("expected_len:\n%zu\n", strlen(N(expected))); \
@@ -162,15 +168,15 @@ simple_strcasestr(const char *h,
 #define T_S1(test, i)        ((test)[i].s2)
 #define T_S2(test, i)        ((test)[i].s2)
 
-#define T(fn, simple_fn, test_array)                                                                     \
-	do {                                                                                             \
-		TESTING(fn);                                                                             \
-		T_FOREACHI(test_array, i)                                                                \
-		{                                                                                        \
-			const char *hs = T_HS(test_array, i);                                            \
-			const char *ne = T_NE(test_array, i);                                            \
-			T_DEBUG(hs, ne, strlen(hs), strlen(ne), 0, N(fn(hs, ne)), N(simple_fn(hs, ne))); \
-		}                                                                                        \
+#define T(fn, simple_fn, test_array)                                                   \
+	do {                                                                           \
+		TESTING(fn);                                                           \
+		T_FOREACHI(test_array, i)                                              \
+		{                                                                      \
+			const char *hs = T_HS(test_array, i);                          \
+			const char *ne = T_NE(test_array, i);                          \
+			T_DEBUG(hs, ne, 0, 0, 0, N(fn(hs, ne)), N(simple_fn(hs, ne))); \
+		}                                                                      \
 	} while (0)
 
 #define T_LEN(fn, simple_fn, test_array)                                                                                                                     \
@@ -222,17 +228,15 @@ simple_strcasestr(const char *h,
 		}                                                                                                    \
 	} while (0)
 
-#define T_CMP(fn, simple_fn, test_array)                                                             \
-	do {                                                                                         \
-		TESTING(fn);                                                                         \
-		T_FOREACHI(test_array, i)                                                            \
-		{                                                                                    \
-			const char *s1 = T_S1(test_array, i);                                        \
-			const char *s2 = T_S2(test_array, i);                                        \
-			const size_t s1_len = strlen(s1);                                            \
-			const size_t s2_len = strlen(s2);                                            \
-			T_DEBUG(s1, s2, s1_len, s2_len, 0, s1 + fn(s1, s2), s1 + simple_fn(s1, s2)); \
-		}                                                                                    \
+#define T_CMP(fn, simple_fn, test_array)                                                   \
+	do {                                                                               \
+		TESTING(fn);                                                               \
+		T_FOREACHI(test_array, i)                                                  \
+		{                                                                          \
+			const char *s1 = T_S1(test_array, i);                              \
+			const char *s2 = T_S2(test_array, i);                              \
+			T_DEBUG(s1, s2, 0, 0, 0, s1 + fn(s1, s2), s1 + simple_fn(s1, s2)); \
+		}                                                                          \
 	} while (0)
 
 int
