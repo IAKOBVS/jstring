@@ -9,7 +9,7 @@ compile()
 	shift 2
 	out=$(echo "$out$*" | sed 's/[ \t]//g')
 	#shellcheck disable=SC2068 disable=SC2086 
-	cc "$file" -o "$out" $flags $@
+	tcc "$file" -o "$out" $flags $@
 	"$out"
 	rm "$out"
 }

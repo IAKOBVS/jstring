@@ -121,8 +121,6 @@ simple_strcasestr_len(const char *h,
 {
 	if (nl == 0)
 		return (char *)h;
-	if (hl == 0)
-		return NULL;
 	if (hl < nl)
 		return NULL;
 	const char *end = h + hl - nl;
