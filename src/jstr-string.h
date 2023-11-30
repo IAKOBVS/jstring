@@ -565,22 +565,22 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	n -= hs - start;
 	if (jstr_unlikely(hs[1] == '\0')
-	|| jstr_unlikely(n == 1))
+	    || jstr_unlikely(n == 1))
 		return NULL;
 	if (ne[2] == '\0')
 		return pjstr_strnstr2((cu *)hs, (cu *)ne, n);
 	if (jstr_unlikely(hs[2] == '\0')
-	|| jstr_unlikely(n == 2))
+	    || jstr_unlikely(n == 2))
 		return NULL;
 	if (ne[3] == '\0')
 		return pjstr_strnstr3((cu *)hs, (cu *)ne, n);
 	if (jstr_unlikely(hs[3] == '\0')
-	|| jstr_unlikely(n == 3))
+	    || jstr_unlikely(n == 3))
 		return NULL;
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
 	if (jstr_unlikely(hs[4] == '\0')
-	|| jstr_unlikely(n == 4))
+	    || jstr_unlikely(n == 4))
 		return NULL;
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;

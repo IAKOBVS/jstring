@@ -172,11 +172,11 @@ PJSTR_END_DECLS
 		PJARR_SZ(j) += PJSTR_PP_NARG(__VA_ARGS__);                                      \
 	} while (0)
 /* Pop PTR[0]. */
-#define jarr_popfront(j)                                                        \
-	do {                                                                    \
-		PJARR_CHECK_ARG(j);                                             \
-		if (jstr_unlikely(PJARR_SZ(j) == 0))                            \
-			break;                                                  \
+#define jarr_popfront(j)                                                           \
+	do {                                                                       \
+		PJARR_CHECK_ARG(j);                                                \
+		if (jstr_unlikely(PJARR_SZ(j) == 0))                               \
+			break;                                                     \
 		PJARR_MEMMOVE(j, PJARR_DATA(j), PJARR_DATA(j) + 1, --PJARR_SZ(j)); \
 	} while (0)
 /* Pop end of PTR. */

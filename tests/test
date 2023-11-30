@@ -1,41 +1,49 @@
-#!/bin/sh
+#!/ bin / sh
 
-flags="-fsanitize=address -g -O1"
+flags = "-fsanitize=address -g -O1"
 
-compile()
-{
-	file=$1
-	out=$2
-	shift 2
-	out=$(echo "$out$*" | sed 's/[ \t]//g')
-	#shellcheck disable=SC2068 disable=SC2086 
-	cc "$file" -o "$out" $flags $@
-	"$out"
-	rm "$out"
-}
+        compile() {
+	        file = $1
+	        out
+	        = $2
+	        shift 2 out
+	        = $(echo "$out$*" | sed 's/[ \t]//g')
+#shellcheck disable = SC2068 disable = SC2086
+	          cc "$file"
+	          - o "$out" $flags $ @
+	"$out" rm "$out"
+        }
 
-cd "$(dirname "$0")" || exit
+        cd "$(dirname " $0 ")"
+        || exit
 
-mktemp=__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
-if [ "$TMPDIR" ]; then
-	TMPDIR=$TMPDIR/$mktemp
-elif [ -d /tmp ]; then
-	TMPDIR=/tmp/$mktemp
-else
-	TMPDIR=$PWD/$mktemp
-fi
+        mktemp
+= __$(echo "$PWD" | sed 's/\///g; s/\.//g') - if["$TMPDIR"];
+then
+TMPDIR
+= $TMPDIR / $mktemp elif[-d / tmp];
+then
+TMPDIR
+= / tmp / $mktemp else TMPDIR = $PWD / $mktemp fi
 
-if [ $# -eq 0 ]; then
+                                if[$ # - eq 0]; then
 	files=$(echo *.c)
 else
 	files=$*
 fi
 
-for file in $files; do
-	out=${file%.*}
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 &
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 &
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 &
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
-done
-wait
+for file in $files;
+do
+out = $ { file %.*} compile "$file"
+                            "$TMPDIR$out"
+      - DJSTR_HAVE_ATTR_MAY_ALIAS
+= 1 - DJSTR_USE_LGPL = 1 &compile "$file"
+                                  "$TMPDIR$out"
+                       - DJSTR_HAVE_ATTR_MAY_ALIAS
+= 0 - DJSTR_USE_LGPL = 0 &compile "$file"
+                                  "$TMPDIR$out"
+                       - DJSTR_HAVE_ATTR_MAY_ALIAS
+= 0 - DJSTR_USE_LGPL = 1 &compile "$file"
+                                  "$TMPDIR$out"
+                       - DJSTR_HAVE_ATTR_MAY_ALIAS
+= 1 - DJSTR_USE_LGPL = 0 & done wait
