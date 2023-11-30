@@ -178,19 +178,20 @@ static struct test_array_memmem {
 	};
 
 #define GEN_CMP(s1, s2) \
-	{s1 y256,s2 y256}, \
-	{y256 s1,y256 s2}, \
-	{y256 s1 y256,y256 s2 y256}, \
 	{" " s1," " s2}, \
 	{s1 " ",s2 " "}, \
 	{s1 " ",s2}, \
 	{s1,s2 " "}, \
+	{s1 y256,s2 y256}, \
+	{y256 s1,y256 s2}, \
+	{y256 s1 y256,y256 s2 y256}, \
 
 JSTR_ATTR_MAYBE_UNUSED
 static struct test_array_memcmp {
 	const char *s1;
 	const char *s2;
 } test_array_memcmp[] = {
+	GEN_CMP(y256, y256)
 	GEN_CMP("","")
 	GEN_CMP("a","")
 	GEN_CMP("a","a")
