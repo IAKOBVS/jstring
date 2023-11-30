@@ -24,8 +24,6 @@
 #include "test.h"
 #include "../src/jarr.h"
 
-typedef int T;
-
 #define T_ZERO(func)                               \
 	do {                                       \
 		func;                              \
@@ -45,8 +43,8 @@ typedef int T;
 int
 main(int argc, char **argv)
 {
-	char *d, *s;
 	START();
+	typedef int T;
 	jarr_ty(T, j) = JARR_INIT;
 	T(jarr_cat(&j, 1), 1);
 	T_ZERO(jarr_popback(&j));
