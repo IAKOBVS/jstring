@@ -800,16 +800,16 @@ pjstr_strcasestr_long(const char *hs,
                       const char *ne)
 JSTR_NOEXCEPT
 {
-	if (JSTR_USE_LGPL) {
-		const size_t ne_len = 4 + strlen(ne + 4);
-		const size_t hs_len = 4 + jstr_strnlen(hs + 4, ne_len | 512);
+	if (0 && JSTR_USE_LGPL) { /* Currently doesn't pass test. */
+		const size_t ne_len = strlen(ne + 4) + 4;
+		const size_t hs_len = jstr_strnlen(hs + 4, ne_len | 512) + 4;
 		if (hs_len < ne_len)
 			return NULL;
 		if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
 			return (char *)hs;
 		if (hs_len == ne_len)
 			return NULL;
-		return pjstr_strcasestr_lgpl(hs + 1, hs_len - 1, ne, ne_len);
+		return pjstr_strcasestr_lgpl(hs, hs_len, ne, ne_len);
 	} else {
 		typedef unsigned char u;
 		return pjstr_strcasestr_nolgpl((const u *)hs, (const u *)ne);

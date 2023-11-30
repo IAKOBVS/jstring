@@ -3,58 +3,81 @@
 
 /* clang-format off */
 
+#define y256 "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+#define GEN(hs, ne)\
+	{hs,ne},\
+	{" " hs,ne},\
+	{"  " hs,ne},\
+	{"   " hs,ne},\
+	{"    " hs,ne},\
+	{hs " ",ne},\
+	{hs " ",ne},\
+	{hs "  ",ne},\
+	{hs "    ",ne},\
+	{" " hs " ",ne},\
+	{" " hs "  ",ne},\
+	{"  " hs "   ",ne},\
+	{"    " hs "    ",ne},
+
+#define NE(hs, ne)\
+	GEN(hs, ne)\
+	GEN(y256 hs, y256 ne)\
+	GEN(hs y256, ne y256)
+
 static struct test_ty {
 	const char *hs;
 	const char *ne;
 } haystacks_and_needles[] = {
-	{"yxxyyyyxyxxxxy","yyyyy"},
-	{",yyy,xxxyxxxxy",",yyy,"},
-	{"yxyyyxxxyxxxxyyyy","yyyyy"},
-	{"yxxyyyyxyxxxxy","xxxxx"},
-	{"yxxyyyyxyxxxxy","xyyyx"},
-	{",xxyyyyxyxxxxy","xyy,y"},
-	{"yxheL,yyyyxyxxxxy","yyheL,"},
-	{"yxxyyyyxyxxxxy","yyyyy"},
-	{"yyyyyxxxyxxxxy","yyyyy"},
-	{"yxxx,xxxxy","xxx,"},
-	{"yxxxyxxxxy","xxxx"},
-	{"yxxxyxxxxy","xxx"},
-	{"yxxxyxxy","xxx"},
-	{"xxx","xxx"},
-	{"xxx","x"},
-	{"xxx","yyy"},
-	{",","x,x"},
-	{"x","xxx"},
-	{"xxx",""},
-	{"","xxx"},
-	{"",""},
-	{" he11o wor1d","he11o wor1d"},
-	{"he11o wor1","he11o wor1d"},
-	{"he11o wor1d","he11o wor1d"},
-	{"he11o wor1d","he11o wor1"},
-	{"he11o wor1d","he11o wor"},
-	{"he11o wor1d","he11o wo"},
-	{"he11o wor1d","he11o w"},
-	{"he11o wor1d","he11o "},
-	{"he11o wor1d","he11o"},
-	{"he11o wor1d","wor1d"},
-	{"he11o wor1d","he11o "},
-	{"he11o wor1d"," he11o"},
-	{"he11o wor1d","  he11o"},
-	{"he11o wor1d","o w"},
-	{"he11o wor1d","he1"},
-	{"he11o","he11o"},
-	{" he11o","he11o "},
-	{" he11o","he11o"},
-	{"he11o ","he11o"},
-	{" he11o ","he11o"},
-	{"  he11o ","he11o"},
-	{"he11o  ","he11o"},
-	{"he11o  ","he11o     "},
-	{"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
-	{"xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
-	{"xxyyyy,yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyy,yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
-	{"xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxx","yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"},
+	GEN(y256, y256)
+
+	NE("yxxyyyyxyxxxxy","yyyyy")
+	NE("xyyy,xxxyxxxxy","xyyy,")
+	NE("yxyyyxxxyxxxxyyyy","yyyyy")
+	NE("yxxyyyyxyxxxxy","xxxxx")
+	NE("yxxyyyyxyxxxxy","xyyyx")
+	NE(",xxyyyyxyxxxxy","xyyxy")
+	NE("yxheLxyyyyxyxxxxy","yyheL,")
+	NE("yxxyyyyxyxxxxy","yyyyy")
+	NE("yyyyyxxxyxxxxy","yyyyy")
+	NE("yxxx,xxxxy","xxx,")
+	NE("yxxxyxxxxy","xxxx")
+	NE("yxxxyxxxxy","xxx")
+	NE("yxxxyxxy","xxx")
+	NE("xxx","xxx")
+	NE("xxx","x")
+	NE("xxx","yyy")
+	NE(",","x,x")
+	NE("x","xxx")
+	NE("xxx","")
+	NE("","xxx")
+	NE("","")
+	NE(" he11o wor1d","he11o wor1d")
+	NE("he11o wor1","he11o wor1d")
+	NE("he11o wor1d","he11o wor1d")
+	NE("he11o wor1d","he11o wor1")
+	NE("he11o wor1d","he11o wor")
+	NE("he11o wor1d","he11o wo")
+	NE("he11o wor1d","he11o w")
+	NE("he11o wor1d","he11o ")
+	NE("he11o wor1d","he11o")
+	NE("he11o wor1d","wor1d")
+	NE("he11o wor1d","he11o ")
+	NE("he11o wor1d"," he11o")
+	NE("he11o wor1d","  he11o")
+	NE("he11o wor1d","o w")
+	NE("he11o wor1d","he1")
+	NE("he11o","he11o")
+	NE(" he11o","he11o ")
+	NE(" he11o","he11o")
+	NE("he11o ","he11o")
+	NE(" he11o ","he11o")
+	NE("  he11o ","he11o")
+	NE("he11o  ","he11o")
+	NE("he11o  ","he11o     ")
+	NE("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
+	NE("xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
+	NE("xxyyyy,yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy","yyyyyyyyyyyyyyyyy,yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
+	NE("xxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxx","yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
 
 	/* Some of these haystacks and needles were taken from musl's libc-test.
 
@@ -77,12 +100,6 @@ static struct test_ty {
 	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#define y256 "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
-#define NE(hs, ne) \
-	{hs, ne}, \
-	{y256 hs, y256 ne}, \
-	{hs y256, ne y256}, \
-
 	NE("","a")
 	NE("a","a")
 	NE("a","b")
@@ -92,7 +109,6 @@ static struct test_ty {
 	NE("abba","b")
 	NE("abba","ba")
 	NE("abc abc","d")
-	NE("0-1-2-3-a-5-6-7-8-9","")
 	NE("0-1-2-3-a-5-6-7-8-9","")
 	NE("_ _ _\xff_ _ _","\x7f_")
 	NE("_ _ _\x7f_ _ _","\xff_")
@@ -128,7 +144,6 @@ static struct test_ty {
 	NE("4bb4","b")
 	NE("4bb4","b4")
 	NE("4bc 4bc","d")
-	NE("0-1-2-3-4-5-6-7-8-9","")
 	NE("0-1-2-3-4-5-6-7-8-9","")
 	NE("_ _ _\xff_ _ _","\x7f_")
 	NE("_ _ _\x7f_ _ _","\xff_")

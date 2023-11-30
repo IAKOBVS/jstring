@@ -17,7 +17,7 @@ cd "$(dirname "$0")" || exit
 
 mktemp=__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
 if [ "$TMPDIR" ]; then
-	TMPDIR=$TMPDIR$mktemp
+	TMPDIR=$TMPDIR/$mktemp
 elif [ -d /tmp ]; then
 	TMPDIR=/tmp/$mktemp
 else
@@ -33,8 +33,9 @@ fi
 
 for file in $files; do
 	out=${file%.*}
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 &
-	compile "$file" "$TMPDIR$out"_JSTR_USE_LGPL_0 -DJSTR_USE_LGPL=0 &
-	compile "$file" "$TMPDIR$out"_JSTR_HAVE_ATTR_MAY_ALIAS_0 -DJSTR_HAVE_ATTR_MAY_ALIAS=0 &
+	compile "$file" "$TMPDIR$out"_ALIAS_LGPL -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 &
+	compile "$file" "$TMPDIR$out"_ALIAS_NOLGPL -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
+	compile "$file" "$TMPDIR$out"_NOALIAS_LGPL -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 &
+	compile "$file" "$TMPDIR$out"_NOALIAS_NOLGPL -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 &
 done
 wait
