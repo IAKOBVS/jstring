@@ -26,9 +26,10 @@
 
 #define T(func, ...)                                                      \
 	do {                                                              \
-		int expected[] = { __VA_ARGS__ };                         \
+		int expected[] = { (int)__VA_ARGS__ };                    \
 		func;                                                     \
 		assert(j.data);                                           \
+		size_t arr_size, arr_length;                              \
 		assert(!memcmp(j.data, expected, sizeof(expected)));      \
 		assert(j.size == sizeof(expected) / sizeof(expected[0])); \
 	} while (0)
@@ -38,7 +39,8 @@ main(int argc, char **argv)
 {
 	START();
 	jarr_ty(int, j) = JARR_INIT;
-	T(jarr_cat(&j, 1, 2, 3, 4, 5), 1, 2, 3, 4, 5);
+	T(jarr_cat(&j, 1), 1);
+	T(jarr_popback(&j), 1, 2, 3, 4, 5);
 	T(jarr_pushback(&j, 6), 1, 2, 3, 4, 5, 6);
 	T(jarr_popback(&j), 1, 2, 3, 4, 5);
 	T(jarr_popfront(&j), 2, 3, 4, 5);

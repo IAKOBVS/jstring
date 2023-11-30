@@ -83,10 +83,10 @@ JSTR_NOEXCEPT
 	static const char *text[] = { JSTRIO_FT_TEXT_ARRAY };
 	static const char *binary[] = { JSTRIO_FT_BINARY_ARRAY };
 	int i;
-	for (i = 0; i < (int)JSTR_ARRAY_SIZE(text); ++i)
+	for (i = 0; i < (int)JSTR_ARRAY_COUNT(text); ++i)
 		if (!jstr_strcmpeq_loop(ext, text[i]))
 			return JSTRIO_FT_TEXT;
-	for (i = 0; i < (int)JSTR_ARRAY_SIZE(binary); ++i)
+	for (i = 0; i < (int)JSTR_ARRAY_COUNT(binary); ++i)
 		if (!jstr_strcmpeq_loop(ext, binary[i]))
 			return JSTRIO_FT_BINARY;
 	return JSTRIO_FT_UNKNOWN;
