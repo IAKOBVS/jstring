@@ -1,6 +1,6 @@
 #!/bin/sh
 
-flags='-fsanitize=address -g -O1 -std=c99 -Wall -Wextra -Wuninitialized -Wshadow -Warray-bounds -Wnull-dereference -Wformat -Wwrite-strings'
+flags='-fsanitize=address -g -O1 -std=c99'
 
 compile()
 {
