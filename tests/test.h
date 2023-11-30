@@ -30,12 +30,14 @@
 #define JSTR_BUILT
 #include <assert.h>
 
-#define N(p) (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
+/* clang-format off */
+#define N(p)          (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
 #define PRINT(...)    printf(__VA_ARGS__)
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
-#define START()       
-#define SUCCESS()     PRINT("%s succeeded.\n", argv[0])
-#define TESTING(func) PRINT("Testing %s().\n", #func)
+#define START() do{}while(0)
+#define SUCCESS()     PRINT("%s succeeded.\n", strstr(argv[0], "test-"))
+#define TESTING(func)
+/* clang-format onon  */
 
 #define ASSERT(expr, result, expected)            \
 	do {                                      \

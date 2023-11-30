@@ -7,8 +7,9 @@ compile()
 	file=$1
 	out=$2
 	shift 2
+	out=$(echo "$out$*" | sed 's/[ \t]//g')
 	#shellcheck disable=SC2068 disable=SC2086 
-	cc "$file" -o "$out" $flags
+	cc "$file" -o "$out" $flags $@
 	"$out"
 	rm "$out"
 }
@@ -32,9 +33,9 @@ fi
 
 for file in $files; do
 	out=${file%.*}
-	compile "$file" "$TMPDIR$out"_ALIAS_LGPL -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 &
-	compile "$file" "$TMPDIR$out"_ALIAS_NOLGPL -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
-	compile "$file" "$TMPDIR$out"_NOALIAS_LGPL -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 &
-	compile "$file" "$TMPDIR$out"_NOALIAS_NOLGPL -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 &
+	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 &
+	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 &
+	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
+	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 &
 done
 wait

@@ -152,6 +152,7 @@ simple_strcasestr(const char *h,
 
 #define T(fn, simple_fn, test_array)                          \
 	do {                                                  \
+		TESTING(fn);                                  \
 		T_FOREACHI(test_array, i)                     \
 		{                                             \
 			const char *hs = T_HS(test_array, i); \
@@ -168,6 +169,7 @@ simple_strcasestr(const char *h,
 
 #define T_LEN(fn, simple_fn, test_array)                                             \
 	do {                                                                         \
+		TESTING(fn);                                                         \
 		T_FOREACHI(test_array, i)                                            \
 		{                                                                    \
 			const char *hs = T_HS(test_array, i);                        \
@@ -186,6 +188,7 @@ simple_strcasestr(const char *h,
 
 #define T_N(fn, simple_fn, test_array)                                  \
 	do {                                                            \
+		TESTING(fn);                                            \
 		T_FOREACHI(test_array, i)                               \
 		{                                                       \
 			size_t n = strlen(test_array[i].hs);            \
@@ -206,6 +209,7 @@ simple_strcasestr(const char *h,
 
 #define T_CMP_LEN(fn, simple_fn, test_array)                                    \
 	do {                                                                    \
+		TESTING(fn);                                                    \
 		T_FOREACHI(test_array, i)                                       \
 		{                                                               \
 			const char *s1 = T_S1(test_array, i);                   \
@@ -225,6 +229,7 @@ simple_strcasestr(const char *h,
 
 #define T_CMP(fn, simple_fn, test_array)                      \
 	do {                                                  \
+		TESTING(fn);                                  \
 		T_FOREACHI(test_array, i)                     \
 		{                                             \
 			const char *s1 = T_S1(test_array, i); \
