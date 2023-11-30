@@ -31,7 +31,7 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#include "_jstr-macros-pp-arrcp-va-args.h"
+#include "_jstr-macros-pp-arrcp.h"
 #include "jstr-builder.h"
 #include "jstr-config.h"
 #include "jstr-macros.h"
