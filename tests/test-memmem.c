@@ -188,35 +188,35 @@ t_debug(const char *hs,
 		}                                                                \
 	} while (0)
 
-#define T_LEN(fn, simple_fn, test_array)                                                                                                               \
-	do {                                                                                                                                           \
-		TESTING(fn);                                                                                                                           \
-		T_FOREACHI(test_array, i)                                                                                                              \
-		{                                                                                                                                      \
-			const char *hs = T_HS(test_array, i);                                                                                          \
-			const char *ne = T_NE(test_array, i);                                                                                          \
-			const size_t hs_len = strlen(hs);                                                                                              \
-			const size_t ne_len = strlen(ne);                                                                                              \
-			T_DEBUG(hs, ne, hs_len, ne_len, 0, (const char *)fn(hs, hs_len, ne, ne_len), (const char *)simple_fn(hs, hs_len, ne, ne_len)); \
-		}                                                                                                                                      \
+#define T_LEN(fn, simple_fn, test_array)                                                                                   \
+	do {                                                                                                               \
+		TESTING(fn);                                                                                               \
+		T_FOREACHI(test_array, i)                                                                                  \
+		{                                                                                                          \
+			const char *hs = T_HS(test_array, i);                                                              \
+			const char *ne = T_NE(test_array, i);                                                              \
+			const size_t hs_len = strlen(hs);                                                                  \
+			const size_t ne_len = strlen(ne);                                                                  \
+			T_DEBUG(hs, ne, hs_len, ne_len, 0, fn(hs, hs_len, ne, ne_len), simple_fn(hs, hs_len, ne, ne_len)); \
+		}                                                                                                          \
 	} while (0)
 
-#define T_N(fn, simple_fn, test_array)                                                                                               \
-	do {                                                                                                                         \
-		TESTING(fn);                                                                                                         \
-		T_FOREACHI(test_array, i)                                                                                            \
-		{                                                                                                                    \
-			size_t n = strlen(test_array[i].hs);                                                                         \
-			const char *hs = T_HS(test_array, i);                                                                        \
-			const char *ne = T_NE(test_array, i);                                                                        \
-			const size_t hs_len = strlen(hs);                                                                            \
-			const size_t ne_len = strlen(ne);                                                                            \
-			T_DEBUG(hs, ne, hs_len, ne_len, n, (const char *)fn(hs, ne, n), (const char *)simple_fn(hs, ne, n));         \
-			if (i < n) {                                                                                                 \
-				n = i;                                                                                               \
-				T_DEBUG(hs, ne, hs_len, ne_len, n, (const char *)fn(hs, ne, n), (const char *)simple_fn(hs, ne, n)); \
-			}                                                                                                            \
-		}                                                                                                                    \
+#define T_N(fn, simple_fn, test_array)                                                                   \
+	do {                                                                                             \
+		TESTING(fn);                                                                             \
+		T_FOREACHI(test_array, i)                                                                \
+		{                                                                                        \
+			size_t n = strlen(test_array[i].hs);                                             \
+			const char *hs = T_HS(test_array, i);                                            \
+			const char *ne = T_NE(test_array, i);                                            \
+			const size_t hs_len = strlen(hs);                                                \
+			const size_t ne_len = strlen(ne);                                                \
+			T_DEBUG(hs, ne, hs_len, ne_len, n, fn(hs, ne, n), simple_fn(hs, ne, n));         \
+			if (i < n) {                                                                     \
+				n = i;                                                                   \
+				T_DEBUG(hs, ne, hs_len, ne_len, n, fn(hs, ne, n), simple_fn(hs, ne, n)); \
+			}                                                                                \
+		}                                                                                        \
 	} while (0)
 
 #define T_CMP_LEN(fn, simple_fn, test_array)                                                                         \
