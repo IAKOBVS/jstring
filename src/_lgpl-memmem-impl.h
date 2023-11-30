@@ -78,7 +78,7 @@ JSTR_NOEXCEPT
 	do {
 #if PJSTR_MEMMEM_CHECK_EOL /* As in strstr() where HAYSTACKLEN needs to be updated. */
 		if (jstr_unlikely(hs > end)) {
-			end += jstr_strnlen((char *)(end + m1), 2048);
+			end += jstr_strnlen((const char *)(end + m1), 2048);
 			if (hs > end)
 				return NULL;
 		}
@@ -91,8 +91,8 @@ start:;
 		hs -= tmp;
 		if (tmp < m1)
 			continue;
-		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FUNC((char *)(hs + off), (char *)(ne + off), 8)) {
-			if (!PJSTR_MEMMEM_CMP_FUNC((char *)hs, (char *)ne, m1))
+		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FUNC((const char *)(hs + off), (const char *)(ne + off), 8)) {
+			if (!PJSTR_MEMMEM_CMP_FUNC((const char *)hs, (const char *)ne, m1))
 				return (PJSTR_MEMMEM_RETTYPE)hs;
 			off = (off >= 8 ? off : m1) - 8;
 		}

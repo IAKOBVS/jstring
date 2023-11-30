@@ -56,8 +56,8 @@ static int
 jstr_strcasecmpeq_loop(const char *s1,
                        const char *s2)
 {
-	const unsigned char *p1 = (unsigned char *)s1;
-	const unsigned char *p2 = (unsigned char *)s2;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; jstr_ctype_table_tolower[*p1] == jstr_ctype_table_tolower[*p2++] && *p1++;)
 		;
 	return *(p2 - 1);
@@ -436,7 +436,7 @@ JSTR_NOEXCEPT
 #else
 	const char *const p = (char *)memchr(src, c, sz);
 	if (p != NULL)
-		return jstr_stpcpy_len(dst, src, p - (char *)src);
+		return jstr_stpcpy_len(dst, src, p - (const char *)src);
 	memcpy(dst, src, sz);
 	return NULL;
 #endif /* HAVE_MEMCPY */

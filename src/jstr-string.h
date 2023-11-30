@@ -267,7 +267,7 @@ JSTR_NOEXCEPT
 		const unsigned char *p2 = (const unsigned char *)s2;
 		for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++; ++p2)
 			;
-		return *p2;
+		return *(p2 - 1);
 	}
 }
 
