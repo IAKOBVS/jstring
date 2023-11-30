@@ -89,6 +89,16 @@ simple_strstr(const char *h,
 }
 
 int
+simple_strcasecmp(const char *s1,
+                  const char *s2)
+{
+	int ret;
+	for (; (ret = (TOLOWER(*s1) - TOLOWER(*s2))) == 0 && *s1; ++s1, ++s2)
+		;
+	return ret;
+}
+
+int
 simple_strncasecmp(const char *s1,
                    const char *s2,
                    size_t n)
@@ -96,8 +106,10 @@ simple_strncasecmp(const char *s1,
 	if (n == 0)
 		return 0;
 	int ret;
-	for (; (ret = (TOLOWER(*s1) - TOLOWER(*s2))) == 0 && *s1 && --n; ++s1, ++s2)
+	for (; n && (ret = (TOLOWER(*s1) - TOLOWER(*s2))) == 0 && *s1; --n, ++s1, ++s2)
 		;
+	if (n == 0)
+		return 0;
 	return ret;
 }
 
@@ -174,20 +186,22 @@ simple_strcasestr(const char *h,
 		}                                                                                                                                            \
 	} while (0)
 
-#define T_N(fn, simple_fn, test_array)                                                                                             \
-	do {                                                                                                                       \
-		TESTING(fn);                                                                                                       \
-		T_FOREACHI(test_array, i)                                                                                          \
-		{                                                                                                                  \
-			size_t n = strlen(test_array[i].hs);                                                                       \
-			const char *hs = T_HS(test_array, i);                                                                      \
-			const char *ne = T_NE(test_array, i);                                                                      \
-			const size_t hs_len = strlen(hs);                                                                          \
-			const size_t ne_len = strlen(ne);                                                                          \
-			T_DEBUG(hs, ne, hs_len, ne_len, n, N((const char *)fn(hs, ne, n)), N((const char *)simple_fn(hs, ne, n))); \
-			n = JSTR_MIN(n, i);                                                                                        \
-			T_DEBUG(hs, ne, hs_len, ne_len, n, N((const char *)fn(hs, ne, n)), N((const char *)simple_fn(hs, ne, n))); \
-		}                                                                                                                  \
+#define T_N(fn, simple_fn, test_array)                                                                                                     \
+	do {                                                                                                                               \
+		TESTING(fn);                                                                                                               \
+		T_FOREACHI(test_array, i)                                                                                                  \
+		{                                                                                                                          \
+			size_t n = strlen(test_array[i].hs);                                                                               \
+			const char *hs = T_HS(test_array, i);                                                                              \
+			const char *ne = T_NE(test_array, i);                                                                              \
+			const size_t hs_len = strlen(hs);                                                                                  \
+			const size_t ne_len = strlen(ne);                                                                                  \
+			T_DEBUG(hs, ne, hs_len, ne_len, n, N((const char *)fn(hs, ne, n)), N((const char *)simple_fn(hs, ne, n)));         \
+			if (i < n) {                                                                                                       \
+				n = i;                                                                                                     \
+				T_DEBUG(hs, ne, hs_len, ne_len, n, N((const char *)fn(hs, ne, n)), N((const char *)simple_fn(hs, ne, n))); \
+			}                                                                                                                  \
+		}                                                                                                                          \
 	} while (0)
 
 #define T_CMP_LEN(fn, simple_fn, test_array)                                                                         \
@@ -201,7 +215,7 @@ simple_strcasestr(const char *h,
 			const size_t s2_len = strlen(s2);                                                            \
 			size_t n = JSTR_MIN(s1_len, JSTR_MIN(i, s2_len));                                            \
 			T_DEBUG(s1, s2, s1_len, s2_len, n, s1 + !fn(s1, s2, n), s1 + !simple_fn(s1, s2, n));         \
-			if (n != i && i < n) {                                                                       \
+			if (i < n) {                                                                                 \
 				n = i;                                                                               \
 				T_DEBUG(s1, s2, s1_len, s2_len, n, s1 + !fn(s1, s2, n), s1 + !simple_fn(s1, s2, n)); \
 			}                                                                                            \
@@ -226,12 +240,12 @@ main(int argc, char **argv)
 {
 	START();
 	T_CMP_LEN(!jstr_memcmpeq_loop, !memcmp, test_array_memcmp);
-	T_CMP_LEN(jstr_strncasecmp, strncasecmp, test_array_memcmp);
-	T_CMP_LEN(!jstr_strcasecmpeq_len, !strncasecmp, test_array_memcmp);
-	T_CMP_LEN(!jstr_strcasecmpeq_len_loop, !strncasecmp, test_array_memcmp);
-	T_CMP(jstr_strcasecmp, strcasecmp, test_array_memcmp);
-	T_CMP(!jstr_strcasecmpeq, !strcasecmp, test_array_memcmp);
-	T_CMP(!jstr_strcasecmpeq_loop, !strcasecmp, test_array_memcmp);
+	T_CMP_LEN(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp);
+	T_CMP_LEN(!jstr_strcasecmpeq_len, !simple_strncasecmp, test_array_memcmp);
+	T_CMP_LEN(!jstr_strcasecmpeq_len_loop, !simple_strncasecmp, test_array_memcmp);
+	T_CMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp);
+	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp);
+	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
 	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
