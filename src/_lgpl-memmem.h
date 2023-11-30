@@ -25,11 +25,11 @@
 
 /* The programmer is expected to check if HAYSTACKLEN >= NEEDLELEN.
    Before including this file, define:
-   PJSTR_MEMMEM_FUNC         Unique name for the function.
-   PJSTR_MEMMEM_RETTYPE    Return type.
-   PJSTR_MEMMEM_HASH2      Hash function.
-   PJSTR_MEMMEM_CHECK_EOL  If HAYSTACKLEN is not constant, as in the case of strstr, we are going to check for the end of the HAYSTACK.
-   PJSTR_MEMMEM_CMP_FUNC     Comparison function used to compare HAYSTACK with NEEDLE.
+   PJSTR_MEMMEM_FUNC        Unique name for the function.
+   PJSTR_MEMMEM_RETTYPE     Return type.
+   PJSTR_MEMMEM_HASH_ICASE  If need to match case-insensitively.
+   PJSTR_MEMMEM_CHECK_EOL   If HAYSTACKLEN is not constant, as in the case of strstr, we are going to check for the end of the HAYSTACK.
+   PJSTR_MEMMEM_CMP_FUNC    Comparison function used to compare HAYSTACK with NEEDLE.
    If the above macros are not defined, it will default to memmem. */
 
 #define PJSTR_MEMMEM_FUNC_SHORT JSTR_CONCAT(PJSTR_MEMMEM_FUNC, _short_ne)
