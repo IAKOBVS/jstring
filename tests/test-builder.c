@@ -128,7 +128,7 @@ main(int argc, char **argv)
 	jstr_ty j = JSTR_INIT;
 	START();
 
-	/* T_CHR(jstr_rmnchr_len_p, simple_rmnchr_p); */
+	T_CHR(jstr_rmnchr_len_p, simple_rmnchr_p);
 
 	const char *expected;
 	const char *find;
