@@ -171,7 +171,7 @@ simple_rplcnchr_len(char *s,
 {
 	if (n == 0)
 		return;
-	for (; *s; ++s)
+	for (; sz--; ++s)
 		if (*s == remove) {
 			if (n-- == 0)
 				break;
@@ -264,4 +264,5 @@ main(int argc, char **argv)
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;
+	(void)argc;
 }

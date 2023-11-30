@@ -25,7 +25,6 @@
 #define PJSTR_PP_VA_ARGS_TOOLS_H 1
 
 /* clang-format off */
-#define PJSTR_PP_CONCAT(a,b,...)a##b(__VA_ARGS__)
 #define PJSTR_PP_FIRST_ARG(first,...)first
 #define PJSTR_PP_SECOND_ARG(first,second,...)second
 #define PJSTR_PP_OTHER_ARGS(first,...)__VA_ARGS__

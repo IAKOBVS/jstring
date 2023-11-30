@@ -51,4 +51,5 @@ main(int argc, char **argv)
 	T("123456789", "123,456,789");
 	SUCCESS();
 	return 0;
+	(void)argc;
 }

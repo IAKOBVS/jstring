@@ -26,10 +26,6 @@
 
 typedef int T;
 
-#define ERR(expr, func) \
-	if (!(expt)) {  \
-	}
-
 #define T_ZERO(func)                               \
 	do {                                       \
 		func;                              \
@@ -65,4 +61,5 @@ main(int argc, char **argv)
 	jarr_free(&j);
 	SUCCESS();
 	return 0;
+	(void)argc;
 }

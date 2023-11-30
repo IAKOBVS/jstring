@@ -90,4 +90,5 @@ main(int argc, char **argv)
 
 	SUCCESS();
 	return 0;
+	(void)argc;
 }
