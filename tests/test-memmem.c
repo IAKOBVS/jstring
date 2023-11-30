@@ -22,7 +22,7 @@
    MIT License (Expat) */
 
 #include "test.h"
-#include "test-haystack-needle.h"
+#include "test-array.h"
 #include "../src/jstr-string.h"
 
 #define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
