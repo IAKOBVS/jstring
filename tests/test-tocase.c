@@ -56,7 +56,6 @@ main(int argc, char **argv)
 {
 	START();
 
-	TESTING(jstr_toCamelCaseP);
 	T(jstr_toCamelCaseP, "", "");
 	T(jstr_toCamelCaseP, "_", "_");
 	T(jstr_toCamelCaseP, "hello", "hello");
@@ -64,7 +63,6 @@ main(int argc, char **argv)
 	T(jstr_toCamelCaseP, "_hello", "_hello");
 	T(jstr_toCamelCaseP, "_hello_world", "_helloWorld");
 
-	TESTING(jstr_tocamelCaseCpyP);
 	T_CPY(jstr_toCamelCaseCpyP, "", "");
 	T_CPY(jstr_toCamelCaseCpyP, "_", "_");
 	T_CPY(jstr_toCamelCaseCpyP, "hello", "hello");
@@ -72,7 +70,6 @@ main(int argc, char **argv)
 	T_CPY(jstr_toCamelCaseCpyP, "__hello", "__hello");
 	T_CPY(jstr_toCamelCaseCpyP, "__hello_world", "__helloWorld");
 
-	TESTING(jstr_to_snake_case_p);
 	T(jstr_to_snake_case_p, "", "");
 	T(jstr_to_snake_case_p, "_", "_");
 	T(jstr_to_snake_case_p, "hello", "hello");
@@ -80,7 +77,6 @@ main(int argc, char **argv)
 	T(jstr_to_snake_case_p, "__hello", "__hello");
 	T(jstr_to_snake_case_p, "__helloWorld", "__hello_world");
 
-	TESTING(jstr_to_snake_case_cpy_p);
 	T_CPY(jstr_to_snake_case_cpy_p, "", "");
 	T_CPY(jstr_to_snake_case_cpy_p, "_", "_");
 	T_CPY(jstr_to_snake_case_cpy_p, "hello", "hello");

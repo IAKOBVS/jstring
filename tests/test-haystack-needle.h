@@ -178,11 +178,13 @@ static struct test_array_memmem {
 	};
 
 #define GEN_CMP(s1, s2) \
-	{s1, s2}, \
-	{" " s1, " " s2}, \
-	{s1 " ", s2 " "}, \
-	{s1 " ", s2}, \
-	{s1, s2 " "}, \
+	{s1 y256,s2 y256}, \
+	{y256 s1,y256 s2}, \
+	{y256 s1 y256,y256 s2 y256}, \
+	{" " s1," " s2}, \
+	{s1 " ",s2 " "}, \
+	{s1 " ",s2}, \
+	{s1,s2 " "}, \
 
 JSTR_ATTR_MAYBE_UNUSED
 static struct test_array_memcmp {
@@ -192,11 +194,12 @@ static struct test_array_memcmp {
 	GEN_CMP("","")
 	GEN_CMP("a","")
 	GEN_CMP("a","a")
-	GEN_CMP("a","a" )
+	GEN_CMP("a","b" )
 	GEN_CMP("ab","ab")
-	GEN_CMP("ab","aa")
+	GEN_CMP("ab","ba")
+	GEN_CMP("abb","abb")
 	GEN_CMP("ab ","aa")
-	GEN_CMP("ab ","ab")
+	GEN_CMP("ab ","aa")
 	GEN_CMP(" ab ","aa")
 	GEN_CMP(" ab ","ab")
 };
@@ -205,5 +208,7 @@ static struct test_array_memcmp {
 #undef GEN
 #undef GEN_CMP
 #undef y256
+
+/* clang-format on */
 
 #endif /* TEST_HAYSTACK_NEEDLE_H */

@@ -26,7 +26,6 @@
 
 #define T_APPEND(ret, fn, ...)                                                         \
 	do {                                                                           \
-		TESTING(fn);                                                           \
 		if (ret != fn(__VA_ARGS__)) {                                          \
 			jstr_debug(&(j));                                              \
 			jstr_errdie("");                                               \
