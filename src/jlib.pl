@@ -188,6 +188,8 @@ sub jl_arg_is_ptr {
 	return index($$arg_str_ref, '*') != -1;
 }
 
+our $JL_FN_RE = qr/^([^{}]*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(([^{}]*)\)[^{}}]*\{((?:.|\n)*)\}/;
+
 # @param {$} block_str_ref
 # @param {$} attr_ref
 # @param {$} rettype_ref
@@ -197,7 +199,7 @@ sub jl_arg_is_ptr {
 # @returns {$}
 sub jl_fn_get {
 	my ($block_str_ref, $attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref) = @_;
-	if ($$block_str_ref =~ /^([^{}]*(?:^|\W))(\w+\s*[* \t\n]*)\s+(\w+)\s*\(([^{}]*)\)[^{}}]*\{((?:.|\n)*)\}/) {
+	if ($$block_str_ref =~ $JL_FN_RE) {
 		$$attr_ref    = $1                   if (defined($attr_ref));
 		$$rettype_ref = $2                   if (defined($rettype_ref));
 		$$name_ref    = $3                   if (defined($name_ref));
@@ -225,7 +227,11 @@ sub jl_fn_get {
 sub jl_fn_to_string {
 	my ($attr_ref, $rettype_ref, $name_ref, $arg_arr_ref, $body_ref) = @_;
 	my $arg = jl_arg_to_string($arg_arr_ref);
-	return "$$attr_ref\n$$rettype_ref\n$$name_ref($arg)\n{ $$body_ref }";
+	my $ret = "$$attr_ref\n$$rettype_ref\n$$name_ref($arg)";
+	if (defined($body_ref) && (defined($$body_ref) || $$body_ref ne '')) {
+		$ret .= "\n{ $$body_ref }";
+	}
+	return $ret;
 }
 
 # @param {$} name_ref
