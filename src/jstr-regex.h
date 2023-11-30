@@ -440,11 +440,12 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 	if (*dst != *oldp)
 		memmove(*dst, *oldp, *p - *oldp);
 	if (*cap <= *sz + rplc_len - find_len) {
-		const char *const tmp = *s;
-		if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + rplc_len - find_len)))
+		char *tmp = *s;
+		if (jstr_chk(jstr_reservealways(&tmp, sz, cap, *sz + rplc_len - find_len)))
 			return JSTR_RET_ERR;
-		*p = *s + (*p - tmp);
-		*dst = *s + (*dst - tmp);
+		*p = tmp + (*p - *s);
+		*dst = tmp + (*dst - *s);
+		*s = tmp;
 	}
 	jstr_strmove_len(*p + rplc_len,
 	                 *p + find_len,
