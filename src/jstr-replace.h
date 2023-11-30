@@ -323,7 +323,7 @@ JSTR_FUNC_VOID
 static void
 jstr_rplcspn(char *R s,
              const char *R reject,
-             int rplc)
+             char rplc)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)
@@ -340,7 +340,7 @@ JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rplcspn_p(char *R s,
                const char *R reject,
-               int rplc)
+               char rplc)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)
@@ -361,7 +361,7 @@ static char *
 jstr_rplcspn_len_p(char *R s,
                    const char *R reject,
                    size_t sz,
-                   int rplc)
+                   char rplc)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s)) {
@@ -385,7 +385,7 @@ JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rplcallspn_p(char *R s,
                   const char *R reject,
-                  int rplc)
+                  char rplc)
 JSTR_NOEXCEPT
 {
 	for (; *s && (*(s += strcspn(s, reject))); s = jstr_stpset_len(s, rplc, strspn(s, reject)))
@@ -600,8 +600,8 @@ JSTR_FUNC_VOID
 static void
 jstr_rplcchr_len(char *R s,
                  size_t sz,
-                 int find,
-                 int rplc)
+                 char find,
+                 char rplc)
 JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, find, sz);
@@ -616,8 +616,8 @@ JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_rplcchr(char *R s,
-             int find,
-             int rplc)
+             char find,
+             char rplc)
 JSTR_NOEXCEPT
 {
 	s = strchr(s, find);
@@ -632,8 +632,8 @@ JSTR_FUNC_VOID
 static void
 jstr_rplcallchr_len(char *R s,
                     size_t sz,
-                    int find,
-                    int rplc)
+                    char find,
+                    char rplc)
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
@@ -647,8 +647,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcallchr(char *R s,
-                int find,
-                int rplc)
+                char find,
+                char rplc)
 JSTR_NOEXCEPT
 {
 	for (; (s = strchr(s, find)); *s++ = rplc)
@@ -662,8 +662,8 @@ JSTR_FUNC_VOID
 static void
 jstr_rplcnchr_len(char *R s,
                   size_t sz,
-                  int find,
-                  int rplc,
+                  char find,
+                  char rplc,
                   size_t n)
 JSTR_NOEXCEPT
 {
@@ -678,8 +678,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_rplcnchr(char *R s,
-              int find,
-              int rplc,
+              char find,
+              char rplc,
               size_t n)
 JSTR_NOEXCEPT
 {

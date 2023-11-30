@@ -46,7 +46,7 @@ static const char pjstr_itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 	JSTR_ATTR_INLINE                                                               \
 	static int                                                                     \
 	pjstr_itoa_countudigits_##name(T number,                                       \
-	                               const unsigned int base)                        \
+	                               unsigned int base)                              \
 	{                                                                              \
 		switch (base) {                                                        \
 		case 10: return sizeof(number) / 10 + (is_thousep ? number / 3 : 0);   \
@@ -76,7 +76,7 @@ JSTR_ATTR_RETURNS_NONNULL
 static char *
 jstr_ulltoa_p(unsigned long long number,
               char *R buf,
-              const unsigned int base)
+              unsigned int base)
 JSTR_NOEXCEPT
 {
 #define LOOP_BASE(base)                                    \
@@ -120,7 +120,7 @@ JSTR_ATTR_INLINE
 static char *
 jstr_lltoa_p(long long number,
              char *R buf,
-             const unsigned int base)
+             unsigned int base)
 JSTR_NOEXCEPT
 {
 	if (number < 0) {
@@ -141,7 +141,7 @@ JSTR_NOEXCEPT
 	static char *                                           \
 	jstr_##name##_p(type number,                            \
 	                char *R buf,                            \
-	                const unsigned int base)                \
+	                unsigned int base)                      \
 	JSTR_NOEXCEPT                                           \
 	{                                                       \
 		return jstr_##u##lltoa_p(number, buf, base);    \
@@ -164,7 +164,7 @@ JSTR_ATTR_RETURNS_NONNULL
 static char *
 jstr_ulltoa_thousep_p(unsigned long long number,
                       char *R buf,
-                      const unsigned int base,
+                      unsigned int base,
                       int separator)
 JSTR_NOEXCEPT
 {
@@ -219,7 +219,7 @@ JSTR_ATTR_INLINE
 static char *
 jstr_lltoa_thousep_p(long long number,
                      char *R buf,
-                     const unsigned int base,
+                     unsigned int base,
                      int separator)
 JSTR_NOEXCEPT
 {
@@ -242,7 +242,7 @@ JSTR_NOEXCEPT
 	static char *                                                           \
 	jstr_##name##_thousep_p(type number,                                    \
 	                        char *R buf,                                    \
-	                        const unsigned int base,                        \
+	                        unsigned int base,                              \
 	                        int separator)                                  \
 	JSTR_NOEXCEPT                                                           \
 	{                                                                       \
@@ -264,7 +264,7 @@ PJSTR_ULLTOA_SEP(int, itoa, )
 	            size_t *R sz,                                                                           \
 	            size_t *R cap,                                                                          \
 	            T number,                                                                               \
-	            const unsigned int base)                                                                \
+	            unsigned int base)                                                                      \
 	{                                                                                                   \
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base)))) \
 			return JSTR_RET_ERR;                                                                \
@@ -286,7 +286,7 @@ PJSTR_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 	            size_t *R sz,                                                                                                       \
 	            size_t *R cap,                                                                                                      \
 	            T number,                                                                                                           \
-	            const unsigned int base)                                                                                            \
+	            unsigned int base)                                                                                                  \
 	{                                                                                                                               \
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##fn_name((number < 0) ? -number : number, base)))) \
 			return JSTR_RET_ERR;                                                                                            \
@@ -308,7 +308,7 @@ PJSTR_DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 	            size_t *R sz,                                                                           \
 	            size_t *R cap,                                                                          \
 	            T number,                                                                               \
-	            const unsigned int base,                                                                \
+	            unsigned int base,                                                                      \
 	            int separator)                                                                          \
 	{                                                                                                   \
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base)))) \
@@ -331,7 +331,7 @@ PJSTR_DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 	            size_t *R sz,                                                                                                       \
 	            size_t *R cap,                                                                                                      \
 	            T number,                                                                                                           \
-	            const unsigned int base,                                                                                            \
+	            unsigned int base,                                                                                                  \
 	            int separator)                                                                                                      \
 	{                                                                                                                               \
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##fn_name((number < 0) ? -number : number, base)))) \
