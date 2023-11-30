@@ -503,9 +503,9 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_ATTR_ACCESS(x) __attribute__((__access__ x))
 #	endif
 #	ifdef __attribute_maybe_unused__
-#		define JSTR_MAYBE_UNUSED __attribute_maybe_unused__
+#		define JSTR_ATTR_MAYBE_UNUSED __attribute_maybe_unused__
 #	elif JSTR_HAS_ATTRIBUTE(__unused__)
-#		define JSTR_MAYBE_UNUSED __attribute__((__unused__))
+#		define JSTR_ATTR_MAYBE_UNUSED __attribute__((__unused__))
 #	endif
 #	if JSTR_HAS_BUILTIN(__builtin_constant_p)
 #		define JSTR_ATTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
@@ -590,8 +590,8 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_ATTR_MAY_ALIAS
 #	define JSTR_HAVE_ATTR_MAY_ALIAS 0
 #endif
-#ifndef JSTR_MAYBE_UNUSED
-#	define JSTR_MAYBE_UNUSED
+#ifndef JSTR_ATTR_MAYBE_UNUSED
+#	define JSTR_ATTR_MAYBE_UNUSED
 #endif
 #ifndef JSTR_ATTR_BUILTIN_CONSTANT_P
 #	define JSTR_ATTR_BUILTIN_CONSTANT_P(p) 0
@@ -599,7 +599,7 @@ PJSTR_CAST(T, Other other)
 #ifndef JSTR_ATTR_ACCESS
 #	define JSTR_ATTR_ACCESS(x)
 #endif
-#define JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NOTHROW JSTR_MAYBE_UNUSED
+#define JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NOTHROW JSTR_ATTR_MAYBE_UNUSED
 #define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NONNULL_ALL
 #define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WARN_UNUSED
 #define JSTR_FUNC               JSTR_FUNC_MAY_NULL JSTR_ATTR_NONNULL_ALL

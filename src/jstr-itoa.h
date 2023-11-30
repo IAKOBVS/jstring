@@ -38,7 +38,7 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-JSTR_MAYBE_UNUSED
+JSTR_ATTR_MAYBE_UNUSED
 static const char pjstr_itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 #define PJSTR_DEFINE_ITOA_COUNTUDIGITS(T, name, is_thousep)                            \

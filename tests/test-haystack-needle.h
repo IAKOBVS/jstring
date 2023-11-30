@@ -3,6 +3,9 @@
 
 /* clang-format off */
 
+#include "test.h"
+#include "../src/jstr-macros.h"
+
 #define y256 "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
 #define GEN(hs, ne)\
 	{hs,ne},\
@@ -24,10 +27,11 @@
 	GEN(y256 hs, y256 ne)\
 	GEN(hs y256, ne y256)
 
-static struct test_ty {
+JSTR_ATTR_MAYBE_UNUSED
+static struct test_array_memmem {
 	const char *hs;
 	const char *ne;
-} haystacks_and_needles[] = {
+} test_array_memmem[] = {
 	GEN(y256, y256)
 
 	NE("yxxyyyyxyxxxxy","yyyyy")
@@ -172,5 +176,34 @@ static struct test_ty {
 
 	{"end", "EnD"}
 	};
+
+#define GEN_CMP(s1, s2) \
+	{s1, s2}, \
+	{" " s1, " " s2}, \
+	{s1 " ", s2 " "}, \
+	{s1 " ", s2}, \
+	{s1, s2 " "}, \
+
+JSTR_ATTR_MAYBE_UNUSED
+static struct test_array_memcmp {
+	const char *s1;
+	const char *s2;
+} test_array_memcmp[] = {
+	GEN_CMP("","")
+	GEN_CMP("a","")
+	GEN_CMP("a","a")
+	GEN_CMP("a","a" )
+	GEN_CMP("ab","ab")
+	GEN_CMP("ab","aa")
+	GEN_CMP("ab ","aa")
+	GEN_CMP("ab ","ab")
+	GEN_CMP(" ab ","aa")
+	GEN_CMP(" ab ","ab")
+};
+
+#undef NE
+#undef GEN
+#undef GEN_CMP
+#undef y256
 
 #endif /* TEST_HAYSTACK_NEEDLE_H */

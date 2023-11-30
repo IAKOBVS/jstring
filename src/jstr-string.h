@@ -807,7 +807,7 @@ JSTR_NOEXCEPT
 			return NULL;
 		if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
 			return (char *)hs;
-		if (hs_len == ne_len)
+		if (jstr_unlikely(hs_len == ne_len))
 			return NULL;
 		return pjstr_strcasestr_lgpl(hs, hs_len, ne, ne_len);
 	} else {

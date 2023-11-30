@@ -30,7 +30,7 @@
 #define JSTR_BUILT
 #include <assert.h>
 
-#define N(p) ((p) == (const char *)NULL ? "(null)" : (p))
+#define N(p) (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
 #define PRINT(...)    printf(__VA_ARGS__)
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
 #define START()       PRINT("%s starting.\n", argv[0])
