@@ -2,6 +2,7 @@
 
 cd "$(dirname "$0")" || exit
 ./setup || exit
+./test || exit
 mkdir -p ../jstr
 update_if_needed()
 {
@@ -22,13 +23,6 @@ update_if_needed()
 	esac
 	cp -f "$in_fname" "$out_fname"
 }
-compile()
-{
-	file=$1
-	shift
-	#shellcheck disable=SC2068
-	cc -x c $@ -Wall -Wextra -o "$file" -
-}
 mark_as_built()
 {
 	#shellcheck disable=SC2005
@@ -39,5 +33,4 @@ for file in $(echo *.h); do
 done
 wait
 mark_as_built
-./test || exit
 echo 'Built to jstr.'
