@@ -812,14 +812,14 @@ JSTR_NOEXCEPT
    -1 on error and errno is set.
 */
 JSTR_FUNC
-#if JSTR_HAVE_SNPRINTF_STRLEN
+#if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 JSTR_ATTR_INLINE
 #endif
 static int
 jstr_vsprintfstrlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_SNPRINTF_STRLEN) {
+	if (JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST) {
 		const int ret = vsnprintf(NULL, 0, fmt, ap);
 		if (jstr_likely(ret > 0))
 			return ret + 1;
@@ -1024,6 +1024,7 @@ check_integer:
 						padlen = *fmt - '0' + (*fmt != 9);
 						for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
 							;
+						--fmt;
 						if (jstr_unlikely(padlen > INT_MAX)) {
 							errno = EOVERFLOW;
 							return -1;
@@ -1032,9 +1033,9 @@ check_integer:
 						is_pad = 0;
 					}
 					goto cont_switch;
-einval:
 				/* case '\0': */
 				default:
+einval:
 					errno = EINVAL;
 					return -1;
 get_arg:
