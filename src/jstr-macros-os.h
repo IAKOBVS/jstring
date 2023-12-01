@@ -366,6 +366,4 @@
 #	define JSTR_OS_Z 0
 #endif
 
-
-
 #endif /* JSTR_MACROS_OS_H */

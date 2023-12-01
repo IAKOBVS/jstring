@@ -268,7 +268,4 @@
 #	define JSTR_ARCH_CSKY 0
 #endif
 
-
-
-
 #endif /* JSTR_MACROS_ARCH_H */
