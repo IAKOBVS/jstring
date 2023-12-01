@@ -823,6 +823,8 @@ JSTR_NOEXCEPT
 		const int ret = vsnprintf(NULL, 0, fmt, ap);
 		if (jstr_likely(ret > 0))
 			return ret + 1;
+		if (ret == 0)
+			return 0;
 		errno = ret;
 		return -1;
 	} else {
