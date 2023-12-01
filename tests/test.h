@@ -42,7 +42,7 @@
 #define ASSERT_RESULT(func, expr, result, expected)                        \
 	do {                                                               \
 		if (jstr_unlikely(!(expr))) {                              \
-			PRINTERR("Assertion failure: ()%s().\nResult:%s\n" \
+			PRINTERR("Assertion failure: %s().\nResult:%s\n" \
 			         "Expected:%s\n",                          \
 			         #func,                                    \
 			         result,                                   \
