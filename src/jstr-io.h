@@ -145,9 +145,9 @@ check_utf:;
 /* clang-format off */
 
 #if JSTR_OS_WINDOWS || JSTR_OS_WINDOWSCE
-#	define USE_FORM_FEED 1
-#else
 #	define USE_FORM_FEED 0
+#else
+#	define USE_FORM_FEED 1
 #endif
 
 /* Do not pass a non-unsigned char. */
