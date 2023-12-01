@@ -22,5 +22,4 @@ foreach (@file_lines) {
 
 my $end = rindex($file_str, "#endif");
 $file_str = substr($file_str, 0, $end) . $undef . substr($file_str, $end);
-print $undef;
-# print $file_str;
+print $file_str;

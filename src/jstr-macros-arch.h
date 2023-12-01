@@ -138,4 +138,137 @@
 #	define JSTR_ARCH_CSKY 1
 #endif /* arch */
 
+#ifndef JSTR_ARCH_X86_32
+#	define JSTR_ARCH_X86_32 0
+#endif
+#ifndef JSTR_ARCH_X86_64
+#	define JSTR_ARCH_X86_64 0
+#endif
+#ifndef JSTR_ARCH_ARM64
+#	define JSTR_ARCH_ARM64 0
+#endif
+#ifndef JSTR_ARCH_ARM
+#	define JSTR_ARCH_ARM 0
+#endif
+#ifndef JSTR_ARCH_ARM2
+#	define JSTR_ARCH_ARM2 0
+#endif
+#ifndef JSTR_ARCH_ARM3
+#	define JSTR_ARCH_ARM3 0
+#endif
+#ifndef JSTR_ARCH_ARM4T
+#	define JSTR_ARCH_ARM4T 0
+#endif
+#ifndef JSTR_ARCH_ARM5
+#	define JSTR_ARCH_ARM5 0
+#endif
+#ifndef JSTR_ARCH_ARM6T2
+#	define JSTR_ARCH_ARM6T2 0
+#endif
+#ifndef JSTR_ARCH_ARM6
+#	define JSTR_ARCH_ARM6 0
+#endif
+#ifndef JSTR_ARCH_ARM7
+#	define JSTR_ARCH_ARM7 0
+#endif
+#ifndef JSTR_ARCH_MIPS
+#	define JSTR_ARCH_MIPS 0
+#endif
+#ifndef JSTR_ARCH_SH
+#	define JSTR_ARCH_SH 0
+#endif
+#ifndef JSTR_ARCH_SH1
+#	define JSTR_ARCH_SH1 0
+#endif
+#ifndef JSTR_ARCH_SH2
+#	define JSTR_ARCH_SH2 0
+#endif
+#ifndef JSTR_ARCH_SH3
+#	define JSTR_ARCH_SH3 0
+#endif
+#ifndef JSTR_ARCH_SH4
+#	define JSTR_ARCH_SH4 0
+#endif
+#ifndef JSTR_ARCH_SH5
+#	define JSTR_ARCH_SH5 0
+#endif
+#ifndef JSTR_ARCH_POWERPC
+#	define JSTR_ARCH_POWERPC 0
+#endif
+#ifndef JSTR_ARCH_POWERPC64
+#	define JSTR_ARCH_POWERPC64 0
+#endif
+#ifndef JSTR_ARCH_POWERPC4
+#	define JSTR_ARCH_POWERPC4 0
+#endif
+#ifndef JSTR_ARCH_POWERPC5X
+#	define JSTR_ARCH_POWERPC5X 0
+#endif
+#ifndef JSTR_ARCH_POWERPC6
+#	define JSTR_ARCH_POWERPC6 0
+#endif
+#ifndef JSTR_ARCH_POWERPC7
+#	define JSTR_ARCH_POWERPC7 0
+#endif
+#ifndef JSTR_ARCH_POWERPC8
+#	define JSTR_ARCH_POWERPC8 0
+#endif
+#ifndef JSTR_ARCH_POWERPC9
+#	define JSTR_ARCH_POWERPC9 0
+#endif
+#ifndef JSTR_ARCH_SPARC
+#	define JSTR_ARCH_SPARC 0
+#endif
+#ifndef JSTR_ARCH_SPARCV8
+#	define JSTR_ARCH_SPARCV8 0
+#endif
+#ifndef JSTR_ARCH_SPARCV9
+#	define JSTR_ARCH_SPARCV9 0
+#endif
+#ifndef JSTR_ARCH_M68K
+#	define JSTR_ARCH_M68K 0
+#endif
+#ifndef JSTR_ARCH_ALPHA
+#	define JSTR_ARCH_ALPHA 0
+#endif
+#ifndef JSTR_ARCH_ALPHA
+#	define JSTR_ARCH_ALPHA 0
+#endif
+#ifndef JSTR_ARCH_HPPA
+#	define JSTR_ARCH_HPPA 0
+#endif
+#ifndef JSTR_ARCH_HPPA_RISC1_0
+#	define JSTR_ARCH_HPPA_RISC1_0 0
+#endif
+#ifndef JSTR_ARCH_HPPA_RISC1_1
+#	define JSTR_ARCH_HPPA_RISC1_1 0
+#endif
+#ifndef JSTR_ARCH_HPPA_RISC2_0
+#	define JSTR_ARCH_HPPA_RISC2_0 0
+#endif
+#ifndef JSTR_ARCH_RISCV
+#	define JSTR_ARCH_RISCV 0
+#endif
+#ifndef JSTR_ARCH_S390
+#	define JSTR_ARCH_S390 0
+#endif
+#ifndef JSTR_ARCH_IA64
+#	define JSTR_ARCH_IA64 0
+#endif
+#ifndef JSTR_ARCH_I386
+#	define JSTR_ARCH_I386 0
+#endif
+#ifndef JSTR_ARCH_LOONGARCH64
+#	define JSTR_ARCH_LOONGARCH64 0
+#endif
+#ifndef JSTR_ARCH_LOONGARCH
+#	define JSTR_ARCH_LOONGARCH 0
+#endif
+#ifndef JSTR_ARCH_CSKY
+#	define JSTR_ARCH_CSKY 0
+#endif
+
+
+
+
 #endif /* JSTR_MACROS_ARCH_H */

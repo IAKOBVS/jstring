@@ -70,7 +70,6 @@ PJSTR_END_DECLS
 #	define JSTR_GLIBC_PREREQ(maj, min) \
 		((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
 #else
-#	define JSTR_GLIBC_PREREQ(maj, min) 0
 #endif
 
 #ifdef __GNUC_PREREQ
@@ -79,7 +78,6 @@ PJSTR_END_DECLS
 #	define JSTR_GNUC_PREREQ(maj, min) \
 		((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
 #else
-#	define JSTR_GNUC_PREREQ(maj, min) 0
 #endif
 
 #if JSTR_ENV_BSD
@@ -100,7 +98,6 @@ PJSTR_END_DECLS
 #endif
 
 #ifndef JSTR_DISABLE_NONSTANDARD
-#	define JSTR_DISABLE_NONSTANDARD 0
 #endif
 
 #ifdef __BYTE_ORDER
@@ -128,8 +125,7 @@ PJSTR_END_DECLS
 	|| defined _MIBSEB || defined __MIBSEB || defined __MIBSEB__
 #		undef JSTR_ENDIAN_BIG
 #		undef JSTR_ENDIAN_LITTLE
-#		define JSTR_ENDIAN_BIG    1
-#		define JSTR_ENDIAN_LITTLE 0
+#		define JSTR_ENDIAN_BIG 1
 #	elif JSTR_BYTE_ORDER == JSTR_LITTLE_ENDIAN                          \
 	|| defined __LITTLE_ENDIAN__                                         \
 	|| defined __ARMEL__ || defined __THUMBEL__ || defined __AARCH64EL__ \
@@ -137,21 +133,18 @@ PJSTR_END_DECLS
 #		undef JSTR_ENDIAN_LITTLE
 #		undef JSTR_ENDIAN_BIG
 #		define JSTR_ENDIAN_LITTLE 1
-#		define JSTR_ENDIAN_BIG    0
 #	endif
 #endif /* byte_order */
 
 #if JSTR_ENDIAN_LITTLE
-#	define JSTR_ENDIAN_BIG 0
 #elif JSTR_ENDIAN_BIG
-#	define JSTR_ENDIAN_LITTLE 0
 #else
 #	error "Can't detect endianness."
 #endif
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -230,7 +223,6 @@ PJSTR_END_DECLS
 #	define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 /* clang-format off */
-#	define JSTR_HAVE_STATIC_ASSERT       0
 #	define JSTR_STATIC_ASSERT(expr, msg)
 /* clang-format on */
 #endif /* static_assert */
@@ -274,27 +266,19 @@ PJSTR_CAST(T, Other other)
 
 #if !(defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && __STDC_NO_VLA__)
 #	define JSTR_HAVE_VLA 1
-#else
-#	define JSTR_HAVE_VLA 0
 #endif
 
 #if defined _GNU_SOURCE || defined alloca
 #	define JSTR_HAVE_ALLOCA 1
-#else
-#	define JSTR_HAVE_ALLOCA 0
 #endif
 
 #if !defined __cplusplus && defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
 #	define JSTR_HAVE_GENERIC 1
-#else
-#	define JSTR_HAVE_GENERIC 0
 #endif /* have_generic */
 
 #if JSTR_GNUC_PREREQ(4, 0) \
 || (defined __clang__ && (__clang_major__ >= 3))
 #	define JSTR_HAVE_TYPEOF 1
-#else
-#	define JSTR_HAVE_TYPEOF 0
 #endif /* have_typeof */
 
 #if JSTR_HAVE_TYPEOF && JSTR_HAVE_GENERIC
@@ -380,7 +364,6 @@ PJSTR_CAST(T, Other other)
 #elif defined __has_attribute
 #	define JSTR_HAS_ATTRIBUTE(attr) __has_attribute(attr)
 #else
-#	define JSTR_HAS_ATTRIBUTE(attr) 0
 #endif /* has_attribute */
 
 #ifdef __glibc_has_builtin
@@ -388,7 +371,6 @@ PJSTR_CAST(T, Other other)
 #elif defined __has_builtin
 #	define JSTR_HAS_BUILTIN(name) __has_builtin(name)
 #else
-#	define JSTR_HAS_BUILTIN(name) 0
 #endif /* has_builtin */
 
 #ifdef __glibc_has_extension
@@ -396,7 +378,6 @@ PJSTR_CAST(T, Other other)
 #elif defined __has_extension
 #	define JSTR_HAS_EXTENSION(ext) __has_extension(ext)
 #else
-#	define JSTR_HAS_EXTENSION(ext) 0
 #endif /* has_extension */
 
 #if defined __glibc_unlikely && defined __glibc_likely
@@ -587,13 +568,11 @@ PJSTR_CAST(T, Other other)
 #endif
 #ifndef JSTR_ATTR_MAY_ALIAS
 #	define JSTR_ATTR_MAY_ALIAS
-#	define JSTR_HAVE_ATTR_MAY_ALIAS 0
 #endif
 #ifndef JSTR_ATTR_MAYBE_UNUSED
 #	define JSTR_ATTR_MAYBE_UNUSED
 #endif
 #ifndef JSTR_ATTR_BUILTIN_CONSTANT_P
-#	define JSTR_ATTR_BUILTIN_CONSTANT_P(p) 0
 #endif
 #ifndef JSTR_ATTR_ACCESS
 #	define JSTR_ATTR_ACCESS(x)
@@ -610,15 +589,10 @@ PJSTR_CAST(T, Other other)
 #if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) || defined _BSD_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1
 #	define JSTR_HAVE_STRNCASECMP 1
-#else
-#	define JSTR_HAVE_STRCASECMP  0
-#	define JSTR_HAVE_STRNCASECMP 0
 #endif /* Bsd || Default */
 
 #ifdef _XOPEN_SOURCE
 #	define JSTR_HAVE_MEMCCPY 1
-#else
-#	define JSTR_HAVE_MEMCCPY 0
 #endif /* Misc || Xopen */
 
 #ifdef _GNU_SOURCE
@@ -637,22 +611,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_WMEMPCPY          1
 #	define JSTR_HAVE_MEMPCPY           1
 #	define JSTR_HAVE_STRCASESTR        1
-#else
-#	define JSTR_HAVE_MEMMEM            0
-#	define JSTR_HAVE_MEMRCHR           0
-#	define JSTR_HAVE_STRCHRNUL         0
-#	define JSTR_HAVE_FGETS_UNLOCKED    0
-#	define JSTR_HAVE_FPUTS_UNLOCKED    0
-#	define JSTR_HAVE_GETWC_UNLOCKED    0
-#	define JSTR_HAVE_GETWCHAR_UNLOCKED 0
-#	define JSTR_HAVE_FGETWC_UNLOCKED   0
-#	define JSTR_HAVE_FPUTWC_UNLOCKED   0
-#	define JSTR_HAVE_PUTWCHAR_UNLOCKED 0
-#	define JSTR_HAVE_FGETWS_UNLOCKED   0
-#	define JSTR_HAVE_FPUTWS_UNLOCKED   0
-#	define JSTR_HAVE_WMEMPCPY          0
-#	define JSTR_HAVE_MEMPCPY           0
-#	define JSTR_HAVE_STRCASESTR        0
 #endif /* Gnu */
 
 #if (JSTR_GLIBC_PREREQ(2, 24) && _POSIX_C_SOURCE >= 199309L)                                                       \
@@ -662,11 +620,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_GETCHAR_UNLOCKED 1
 #	define JSTR_HAVE_PUTC_UNLOCKED    1
 #	define JSTR_HAVE_PUTCHAR_UNLOCKED 1
-#else
-#	define JSTR_HAVE_GETC_UNLOCKED    0
-#	define JSTR_HAVE_GETCHAR_UNLOCKED 0
-#	define JSTR_HAVE_PUTC_UNLOCKED    0
-#	define JSTR_HAVE_PUTCHAR_UNLOCKED 0
 #endif /* Posix || Bsd  */
 
 #if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
@@ -680,16 +633,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_FERROR_UNLOCKED   1
 #	define JSTR_HAVE_FILENO_UNLOCKED   1
 #	define JSTR_HAVE_FFLUSH_UNLOCKED   1
-#else
-#	define JSTR_HAVE_FREAD_UNLOCKED    0
-#	define JSTR_HAVE_FWRITE_UNLOCKED   0
-#	define JSTR_HAVE_FPUTC_UNLOCKED    0
-#	define JSTR_HAVE_FGETC_UNLOCKED    0
-#	define JSTR_HAVE_CLEARERR_UNLOCKED 0
-#	define JSTR_HAVE_FEOF_UNLOCKED     0
-#	define JSTR_HAVE_FERROR_UNLOCKED   0
-#	define JSTR_HAVE_FILENO_UNLOCKED   0
-#	define JSTR_HAVE_FFLUSH_UNLOCKED   0
 #endif /* Default || Svid || Bsd */
 
 #if JSTR_GLIBC_PREREQ(2, 10) && _POSIX_C_SOURCE >= 200809L \
@@ -697,35 +640,23 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_STPCPY  1
 #	define JSTR_HAVE_STRNLEN 1
 #	define JSTR_HAVE_STRNDUP 1
-#else
-#	define JSTR_HAVE_STPCPY  0
-#	define JSTR_HAVE_STRNLEN 0
-#	define JSTR_HAVE_STRNDUP 0
 #endif /* Posix || Gnu */
 
 #if (defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 500)                                                                \
 || (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19 && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
 || (JSTR_GLIBC_PREREQ(2, 12) && __POSIX_C_SOURCE >= 200809L)
 #	define JSTR_HAVE_STRDUP 1
-#else
-#	define JSTR_HAVE_STRDUP 0
 #endif /* Xopen || Bsd || Svid || Posix */
 
 #ifdef _GNU_SOURCE
 #	define JSTR_HAVE_STRDUPA  1
 #	define JSTR_HAVE_STRNDUPA 1
-#else
-#	define JSTR_HAVE_STRDUPA  0
-#	define JSTR_HAVE_STRNDUPA 0
 #endif /* Gnu */
 
 #if (defined __GLIBC__ && (__GLIBC__ < 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _BSD_SOURCE || defined _SVID_SOURCE) \
 || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2)
 #	define JSTR_HAVE_POPEN  1
 #	define JSTR_HAVE_PCLOSE 1
-#else
-#	define JSTR_HAVE_POPEN  0
-#	define JSTR_HAVE_PCLOSE 0
 #endif
 
 #if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE)                                                        \
@@ -736,10 +667,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_GCVT 1
 #	define JSTR_HAVE_ECVT 1
 #	define JSTR_HAVE_FCVT 1
-#else
-#	define JSTR_HAVE_GCVT 0
-#	define JSTR_HAVE_ECVT 0
-#	define JSTR_HAVE_FCVT 0
 #endif
 
 #if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
@@ -747,10 +674,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_QECVT 1
 #	define JSTR_HAVE_QFCVT 1
 #	define JSTR_HAVE_QGCVT 1
-#else
-#	define JSTR_HAVE_QECVT 0
-#	define JSTR_HAVE_QFCVT 0
-#	define JSTR_HAVE_QGCVT 0
 #endif
 
 #if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
@@ -759,39 +682,24 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_QFCVT_R 1
 #	define JSTR_HAVE_ECVT_R  1
 #	define JSTR_HAVE_FCVT_R  1
-#else
-#	define JSTR_HAVE_QECVT_R 0
-#	define JSTR_HAVE_QFCVT_R 0
-#	define JSTR_HAVE_ECVT_R  0
-#	define JSTR_HAVE_FCVT_R  0
 #endif
 
 #if defined _DEFAULT_SOURCE || !defined __USE_XOPEN2K8
 #	define JSTR_HAVE_BCMP  1
 #	define JSTR_HAVE_BCOPY 1
 #	define JSTR_HAVE_BZERO 1
-#else
-#	define JSTR_HAVE_BCMP  0
-#	define JSTR_HAVE_BCOPY 0
-#	define JSTR_HAVE_BZERO 0
 #endif
 
 #ifdef _ATFILE_SOURCE
 #	define JSTR_HAVE_ATFILE 1
-#else
-#	define JSTR_HAVE_ATFILE 0
 #endif
 
 #if JSTR_USE_XOPEN_EXTENDED || defined JSTR_USE_XOPEN2K8
 #	define JSTR_HAVE_FCHDIR 1
-#else
-#	define JSTR_HAVE_FCHDIR 0
 #endif
 
 #if JSTR_USE_XOPEN2K8
 #	define JSTR_HAVE_FDOPENDIR 1
-#else
-#	define JSTR_HAVE_FDOPENDIR 0
 #endif
 
 #if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FGETS_UNLOCKED
@@ -908,18 +816,12 @@ PJSTR_CAST(T, Other other)
 #ifdef __GLIBC__
 #	ifdef _DIRENT_HAVE_D_TYPE
 #		define JSTR_HAVE_DIRENT_D_TYPE 1
-#	else
-#		define JSTR_HAVE_DIRENT_D_TYPE 0
 #	endif
 #	ifdef _DIRENT_HAVE_D_RECLEN
 #		define JSTR_HAVE_DIRENT_D_RECLEN 1
-#	else
-#		define JSTR_HAVE_DIRENT_D_RECLEN 0
 #	endif
 #	ifdef _DIRENT_HAVE_D_NAMLEN
 #		define JSTR_HAVE_DIRENT_D_NAMLEN 1
-#	else
-#		define JSTR_HAVE_DIRENT_D_NAMLEN 0
 #	endif
 #endif /* dirent_have */
 
@@ -927,48 +829,30 @@ PJSTR_CAST(T, Other other)
 #ifdef __GLIBC__
 #	if JSTR_HAVE_MEMMEM && JSTR_ARCH_S390
 #		define JSTR_HAVE_MEMMEM_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_MEMMEM_OPTIMIZED 0
 #	endif
 #	if JSTR_ARCH_S390 || JSTR_ARCH_SPARC || JSTR_ARCH_X86_32 || JSTR_ARCH_X86_64 || JSTR_ARCH_ARM64 || JSTR_ARCH_ARM6 || JSTR_ARCH_ARM6T2 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_M68K || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_POWERPC10
 #		define JSTR_HAVE_MEMCHR_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_MEMCHR_OPTIMIZED 0
 #	endif
 #	if JSTR_ARCH_X86_64 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_S390
 #		define JSTR_HAVE_STRSTR_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_STRSTR_OPTIMIZED 0
 #	endif
 #	if JSTR_HAVE_STRCASESTR && (JSTR_ARCH_POWERPC64 || JSTR_ARHC_POWERPC8)
 #		define JSTR_HAVE_STRCASESTR_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_STRCASESTR_OPTIMIZED 0
 #	endif
 #	if JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC8
 #		define JSTR_HAVE_STRCSPN_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_STRCSPN_OPTIMIZED 0
 #	endif
 #	if JSTR_ARCH_X86_64 || JSTR_ARCH_S390 || JSTR_ARCH_I386 || JSTR_ARCH_SPARC
 #		define JSTR_HAVE_STRPBRK_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_STRPBRK_OPTIMIZED 0
 #	endif
 #	if JSTR_ARCH_ARM64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_M68K || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_S390 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_SPARC
 #		define JSTR_HAVE_STRCHR_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_STRCHR_OPTIMIZED 0
 #	endif
 #	if JSTR_ARCH_ARM64 || JSTR_ARCH_ARM6 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_IA64 || JSTR_ARCH_I386 || JSTR_ARCH_S390 || JSTR_ARCH_SPARC || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_CSKY
 #		define JSTR_HAVE_STRCPY_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_STRCPY_OPTIMIZED 0
 #	endif
 #	if JSTR_ARCH_ARM6T2 || JSTR_ARCH_ARM6 || JSTR_ARCH_ARM || JSTR_ARCH_POWERPC64 || JSTR_ARCH_POWERPC32 || JSTR_ARCH_POWERPC7 || JSTR_ARCH_POWERPC8 || JSTR_ARCH_POWERPC9 || JSTR_ARCH_POWERPC4 || JSTR_ARCH_LOONGARCH64 || JSTR_ARCH_ALPHA || JSTR_ARCH_I386 || JSTR_ARCH_IA64 || JSTR_ARCH_X86_64 || JSTR_ARCH_X86_32 || JSTR_ARCH_SH || JSTR_ARCH_SPARC || JSTR_ARCH_CSKY
 #		define JSTR_HAVE_STRLEN_OPTIMIZED 1
-#	else
-#		define JSTR_HAVE_STRLEN_OPTIMIZED 0
 #	endif
 #endif /* have_optimized */
 
@@ -983,14 +867,10 @@ enum {
 
 #if JSTR_GNUC_PREREQ(7, 1) || defined __clang__
 #	define JSTR_HAVE_BUILTIN_MEMCMP 1
-#else
-#	define JSTR_HAVE_BUILTIN_MEMCMP 0
 #endif
 
 #if JSTR_ARCH_I386 || JSTR_ARCH_X86_64 || defined __s390x__ || JSTR_ARCH_ARM64
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1
-#else
-#	define JSTR_HAVE_UNALIGNED_ACCESS 0
 #endif
 
 #if JSTR_ENDIAN_LITTLE
@@ -1047,6 +927,249 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 
 #endif
 
+#ifndef JSTR_PANIC
+#	define JSTR_PANIC 0
+#endif
+#ifndef JSTR_ENDIAN_BIG
+#	define JSTR_ENDIAN_BIG 0
+#endif
+#ifndef JSTR_ENDIAN_LITTLE
+#	define JSTR_ENDIAN_LITTLE 0
+#endif
+#ifndef JSTR_HAVE_STATIC_ASSERT
+#	define JSTR_HAVE_STATIC_ASSERT 0
+#endif
+#ifndef JSTR_HAVE_STATIC_ASSERT
+#	define JSTR_HAVE_STATIC_ASSERT 0
+#endif
+#ifndef JSTR_HAVE_VLA
+#	define JSTR_HAVE_VLA 0
+#endif
+#ifndef JSTR_HAVE_ALLOCA
+#	define JSTR_HAVE_ALLOCA 0
+#endif
+#ifndef JSTR_HAVE_GENERIC
+#	define JSTR_HAVE_GENERIC 0
+#endif
+#ifndef JSTR_HAVE_TYPEOF
+#	define JSTR_HAVE_TYPEOF 0
+#endif
+#ifndef JSTR_HAVE_ATTR_MAY_ALIAS
+#	define JSTR_HAVE_ATTR_MAY_ALIAS 0
+#endif
+#ifndef JSTR_HAVE_STRCASECMP
+#	define JSTR_HAVE_STRCASECMP 0
+#endif
+#ifndef JSTR_HAVE_STRNCASECMP
+#	define JSTR_HAVE_STRNCASECMP 0
+#endif
+#ifndef JSTR_HAVE_MEMCCPY
+#	define JSTR_HAVE_MEMCCPY 0
+#endif
+#ifndef JSTR_HAVE_MEMMEM
+#	define JSTR_HAVE_MEMMEM 0
+#endif
+#ifndef JSTR_HAVE_MEMRCHR
+#	define JSTR_HAVE_MEMRCHR 0
+#endif
+#ifndef JSTR_HAVE_STRCHRNUL
+#	define JSTR_HAVE_STRCHRNUL 0
+#endif
+#ifndef JSTR_HAVE_FGETS_UNLOCKED
+#	define JSTR_HAVE_FGETS_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FPUTS_UNLOCKED
+#	define JSTR_HAVE_FPUTS_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_GETWC_UNLOCKED
+#	define JSTR_HAVE_GETWC_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_GETWCHAR_UNLOCKED
+#	define JSTR_HAVE_GETWCHAR_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FGETWC_UNLOCKED
+#	define JSTR_HAVE_FGETWC_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FPUTWC_UNLOCKED
+#	define JSTR_HAVE_FPUTWC_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_PUTWCHAR_UNLOCKED
+#	define JSTR_HAVE_PUTWCHAR_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FGETWS_UNLOCKED
+#	define JSTR_HAVE_FGETWS_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FPUTWS_UNLOCKED
+#	define JSTR_HAVE_FPUTWS_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_WMEMPCPY
+#	define JSTR_HAVE_WMEMPCPY 0
+#endif
+#ifndef JSTR_HAVE_MEMPCPY
+#	define JSTR_HAVE_MEMPCPY 0
+#endif
+#ifndef JSTR_HAVE_STRCASESTR
+#	define JSTR_HAVE_STRCASESTR 0
+#endif
+#ifndef JSTR_HAVE_GETC_UNLOCKED
+#	define JSTR_HAVE_GETC_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_GETCHAR_UNLOCKED
+#	define JSTR_HAVE_GETCHAR_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_PUTC_UNLOCKED
+#	define JSTR_HAVE_PUTC_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_PUTCHAR_UNLOCKED
+#	define JSTR_HAVE_PUTCHAR_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FREAD_UNLOCKED
+#	define JSTR_HAVE_FREAD_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FWRITE_UNLOCKED
+#	define JSTR_HAVE_FWRITE_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FPUTC_UNLOCKED
+#	define JSTR_HAVE_FPUTC_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FGETC_UNLOCKED
+#	define JSTR_HAVE_FGETC_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_CLEARERR_UNLOCKED
+#	define JSTR_HAVE_CLEARERR_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FEOF_UNLOCKED
+#	define JSTR_HAVE_FEOF_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FERROR_UNLOCKED
+#	define JSTR_HAVE_FERROR_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FILENO_UNLOCKED
+#	define JSTR_HAVE_FILENO_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FFLUSH_UNLOCKED
+#	define JSTR_HAVE_FFLUSH_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_STPCPY
+#	define JSTR_HAVE_STPCPY 0
+#endif
+#ifndef JSTR_HAVE_STRNLEN
+#	define JSTR_HAVE_STRNLEN 0
+#endif
+#ifndef JSTR_HAVE_STRNDUP
+#	define JSTR_HAVE_STRNDUP 0
+#endif
+#ifndef JSTR_HAVE_STRDUP
+#	define JSTR_HAVE_STRDUP 0
+#endif
+#ifndef JSTR_HAVE_STRDUPA
+#	define JSTR_HAVE_STRDUPA 0
+#endif
+#ifndef JSTR_HAVE_STRNDUPA
+#	define JSTR_HAVE_STRNDUPA 0
+#endif
+#ifndef JSTR_HAVE_POPEN
+#	define JSTR_HAVE_POPEN 0
+#endif
+#ifndef JSTR_HAVE_PCLOSE
+#	define JSTR_HAVE_PCLOSE 0
+#endif
+#ifndef JSTR_HAVE_GCVT
+#	define JSTR_HAVE_GCVT 0
+#endif
+#ifndef JSTR_HAVE_ECVT
+#	define JSTR_HAVE_ECVT 0
+#endif
+#ifndef JSTR_HAVE_FCVT
+#	define JSTR_HAVE_FCVT 0
+#endif
+#ifndef JSTR_HAVE_QECVT
+#	define JSTR_HAVE_QECVT 0
+#endif
+#ifndef JSTR_HAVE_QFCVT
+#	define JSTR_HAVE_QFCVT 0
+#endif
+#ifndef JSTR_HAVE_QGCVT
+#	define JSTR_HAVE_QGCVT 0
+#endif
+#ifndef JSTR_HAVE_QECVT_R
+#	define JSTR_HAVE_QECVT_R 0
+#endif
+#ifndef JSTR_HAVE_QFCVT_R
+#	define JSTR_HAVE_QFCVT_R 0
+#endif
+#ifndef JSTR_HAVE_ECVT_R
+#	define JSTR_HAVE_ECVT_R 0
+#endif
+#ifndef JSTR_HAVE_FCVT_R
+#	define JSTR_HAVE_FCVT_R 0
+#endif
+#ifndef JSTR_HAVE_BCMP
+#	define JSTR_HAVE_BCMP 0
+#endif
+#ifndef JSTR_HAVE_BCOPY
+#	define JSTR_HAVE_BCOPY 0
+#endif
+#ifndef JSTR_HAVE_BZERO
+#	define JSTR_HAVE_BZERO 0
+#endif
+#ifndef JSTR_HAVE_ATFILE
+#	define JSTR_HAVE_ATFILE 0
+#endif
+#ifndef JSTR_HAVE_FCHDIR
+#	define JSTR_HAVE_FCHDIR 0
+#endif
+#ifndef JSTR_HAVE_FDOPENDIR
+#	define JSTR_HAVE_FDOPENDIR 0
+#endif
+#ifndef JSTR_HAVE_DIRENT_D_TYPE
+#	define JSTR_HAVE_DIRENT_D_TYPE 0
+#endif
+#ifndef JSTR_HAVE_DIRENT_D_RECLEN
+#	define JSTR_HAVE_DIRENT_D_RECLEN 0
+#endif
+#ifndef JSTR_HAVE_DIRENT_D_NAMLEN
+#	define JSTR_HAVE_DIRENT_D_NAMLEN 0
+#endif
+#ifndef JSTR_HAVE_MEMMEM_OPTIMIZED
+#	define JSTR_HAVE_MEMMEM_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_MEMCHR_OPTIMIZED
+#	define JSTR_HAVE_MEMCHR_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_STRSTR_OPTIMIZED
+#	define JSTR_HAVE_STRSTR_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_STRCASESTR_OPTIMIZED
+#	define JSTR_HAVE_STRCASESTR_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_STRCSPN_OPTIMIZED
+#	define JSTR_HAVE_STRCSPN_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_STRPBRK_OPTIMIZED
+#	define JSTR_HAVE_STRPBRK_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_STRCHR_OPTIMIZED
+#	define JSTR_HAVE_STRCHR_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_STRCPY_OPTIMIZED
+#	define JSTR_HAVE_STRCPY_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_STRLEN_OPTIMIZED
+#	define JSTR_HAVE_STRLEN_OPTIMIZED 0
+#endif
+#ifndef JSTR_HAVE_BUILTIN_MEMCMP
+#	define JSTR_HAVE_BUILTIN_MEMCMP 0
+#endif
+#ifndef JSTR_HAVE_UNALIGNED_ACCESS
+#	define JSTR_HAVE_UNALIGNED_ACCESS 0
+#endif
+#ifndef JSTR_HAVE_WORD_AT_A_TIME
+#	define JSTR_HAVE_WORD_AT_A_TIME 0
+#endif
+#ifndef JSTR_HAVE_WORD_AT_A_TIME
+#	define JSTR_HAVE_WORD_AT_A_TIME 0
+#endif
 #ifndef JSTR_HAVE_WORD_AT_A_TIME
 #	define JSTR_HAVE_WORD_AT_A_TIME 0
 #endif
