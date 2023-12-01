@@ -909,7 +909,7 @@ cont_switch:
 				case 'c':
 					if (jstr_likely(lflag == L_INT)) {
 						++arg_len;
-					} else if (lflag == LONG) {
+					} else if (lflag == L_LONG) {
 						arg_len += INT;
 						lflag = L_INT;
 					} else {
@@ -933,9 +933,9 @@ check_integer:
 					if (lflag == L_INT) {
 						PJSTR_GETMAXDIGITS(INT);
 					} else {
-						if (lflag == LONG)
+						if (lflag == L_LONG)
 							PJSTR_GETMAXDIGITS(LONG);
-						else if (lflag == LONG_LONG)
+						else if (lflag == L_LONG_LONG)
 							PJSTR_GETMAXDIGITS(LONG_LONG);
 						else
 							goto einval;
@@ -962,7 +962,7 @@ check_integer:
 				case 'G':
 					if (lflag == L_INT) {
 						arg_len += (is_thousep) ? DOUBLE * 2 : DOUBLE;
-					} else if (lflag == LONG) {
+					} else if (lflag == L_LONG) {
 						arg_len += (is_thousep) ? DOUBLE_LONG * 2 : DOUBLE_LONG;
 						lflag = L_INT;
 					} else {
@@ -1041,6 +1041,7 @@ get_arg:
 					va_arg(ap, void *);
 					break;
 				}
+				lflag = L_INT;
 				is_pad = 0;
 				is_thousep = 0;
 			} else {
@@ -1057,6 +1058,8 @@ get_arg:
 #undef PJSTR_COUNTDIGITS
 #undef PJSTR_GETMAXDIGITS
 }
+
+#if JSTR_HAVE_SNPRINTF_STRLEN
 
 /*
    Return JSTR_RET_ERR on error.
@@ -1301,6 +1304,8 @@ err_free:
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+
+#endif
 
 /*
    Assume that S has enough space.
