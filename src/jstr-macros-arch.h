@@ -74,8 +74,8 @@
 #	elif defined __sh5__
 #		define JSTR_ARCH_SH5 1
 #	endif
-#elif defined __powerpc || defined __powerpc__ \
-|| defined __POWERPC__ || defined __ppc__      \
+#elif defined __powerpc || defined __powerpc__      \
+|| defined __POWERPC__ || defined __ppc__ || _M_PPC \
 || defined __PPC__ || defined _ARCH_PPC
 #	define JSTR_ARCH_POWERPC 1
 #elif defined __PPC64__ || defined __ppc64__ \
@@ -136,8 +136,6 @@
 #	define JSTR_ARCH_LOONGARCH 1
 #elif defined __CSKY__
 #	define JSTR_ARCH_CSKY 1
-#else
-#	define JSTR_ARCH_GENERIC 1
 #endif /* arch */
 
 #endif /* JSTR_MACROS_ARCH_H */

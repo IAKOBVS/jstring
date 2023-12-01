@@ -1,5 +1,12 @@
 #!/bin/sh
 
+undefine()
+{
+	#shellcheck disable=SC2005
+	echo "$(perl ./check-undefined-macros.pl "$1" "$2")" >"$2"
+}
+
 cd "$(dirname "$0")" || exit
-./check-undefined-macros.sh 'JSTR_HAVE' ./jstr-macros.h
-./check-undefined-macros.sh 'JSTR_OS' ./jstr-macros-os.h
+perl ./check-undefined-macros.pl 'JSTR_' ./jstr-macros.h &
+perl ./check-undefined-macros.pl 'JSTR_ARCH' ./jstr-macros-arch.h &
+perl ./check-undefined-macros.pl 'JSTR_OS' ./jstr-macros-os.h &
