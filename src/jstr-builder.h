@@ -812,14 +812,14 @@ JSTR_NOEXCEPT
    -1 on error and errno is set.
 */
 JSTR_FUNC
-#if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
+#if JSTR_HAVE_SNPRINTF_STRLEN
 JSTR_ATTR_INLINE
 #endif
 static int
 jstr_vsprintfstrlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST) {
+	if (JSTR_HAVE_SNPRINTF_STRLEN) {
 		const int ret = vsnprintf(NULL, 0, fmt, ap);
 		if (jstr_likely(ret > 0))
 			return ret + 1;
