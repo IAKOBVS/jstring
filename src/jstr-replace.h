@@ -856,8 +856,9 @@ JSTR_NOEXCEPT
 			jstr_rplcchr_len((char *)dst, *find, *rplc, *sz - start_idx);
 			return JSTR_RET_SUCC;
 		}
-	} else if (jstr_unlikely(find_len == 0))
+	} else if (jstr_unlikely(find_len == 0)) {
 		return JSTR_RET_SUCC;
+	}
 	const char *p = dst;
 	const char *oldp = p;
 	while (n-- && (p = jstr_strstr_len(p, (*s + *sz) - p, find, find_len))) {
