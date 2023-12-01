@@ -875,10 +875,10 @@ enum {
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1
 #endif
 
-#define JSTR_BYTE_IDX(i) (i * 8)
 typedef uint16_t jstr_u16u_ty JSTR_ATTR_MAY_ALIAS;
 typedef uint32_t jstr_u32u_ty JSTR_ATTR_MAY_ALIAS;
 typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
+#define JSTR_BYTE_IDX(i) (i * 8)
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define JSTR_BYTE_UTOWORD16(x)   (*(jstr_u16u_ty *)(x))
 #	define JSTR_BYTE_UTOWORD32(x)   (*(jstr_u32u_ty *)(x))
@@ -905,28 +905,29 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #	define JSTR_BYTE_CMPEQ64(x, y)  JSTR_BYTE_UCMPEQ64(x, y)
 #endif
 
-#if JSTR_USE_LGPL && JSTR_HAVE_ATTR_MAY_ALIAS
-
 /* Check builtins. */
-#	if JSTR_ARCH_ALPHA
-#		if (JSTR_HAS_BUILTIN(__builtin_alpha_cmpbge) || defined __builtin_alpha_cmpbge) \
-		&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)                  \
-		&& (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)
-#			define JSTR_HAVE_WORD_AT_A_TIME 1
-#		endif
-#	elif JSTR_ARCH_POWERPC6
-#		if (JSTR_HAS_BUILTIN(__builtin_cmpb) || defined __builtin_cmpb)
-#			define JSTR_HAVE_WORD_AT_A_TIME 1
-#		endif
-#	else /* jstr_arch_generic */
-#		if (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)  \
-		&& (JSTR_HAS_BUILTIN(__builtin_clzll) || defined __builtin_clzll) \
-		&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)   \
-		&& (JSTR_HAS_BUILTIN(__builtin_ctzll) || defined __builtin_ctzll)
-#			define JSTR_HAVE_WORD_AT_A_TIME 1
-#		endif
-#	endif /* have_word_at_a_time */
+#if JSTR_ARCH_ALPHA
+#	if (JSTR_HAS_BUILTIN(__builtin_alpha_cmpbge) || defined __builtin_alpha_cmpbge) \
+	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)                  \
+	&& (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)
+#		define JSTR_HAVE_WORD_AT_A_TIME 1
+#	endif
+#elif JSTR_ARCH_POWERPC6
+#	if (JSTR_HAS_BUILTIN(__builtin_cmpb) || defined __builtin_cmpb)
+#		define JSTR_HAVE_WORD_AT_A_TIME 1
+#	endif
+#else /* jstr_arch_generic */
+#	if (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)  \
+	&& (JSTR_HAS_BUILTIN(__builtin_clzll) || defined __builtin_clzll) \
+	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)   \
+	&& (JSTR_HAS_BUILTIN(__builtin_ctzll) || defined __builtin_ctzll)
+#		define JSTR_HAVE_WORD_AT_A_TIME 1
+#	endif
+#endif /* have_word_at_a_time */
 
+#if !JSTR_USE_LGPL || !JSTR_HAVE_ATTR_MAY_ALIAS
+#	undef JSTR_HAVE_ATTR_MAY_ALIAS
+#	define JSTR_HAVE_ATTR_MAY_ALIAS 0
 #endif
 
 #ifndef JSTR_PANIC
