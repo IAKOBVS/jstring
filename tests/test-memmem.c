@@ -88,7 +88,7 @@ simple_strstr(const char *h,
 	return simple_memmem(h, strlen(h), n, strlen(n));
 }
 
-int
+static int
 simple_strcasecmp(const char *s1,
                   const char *s2)
 {
@@ -98,7 +98,7 @@ simple_strcasecmp(const char *s1,
 	return ret;
 }
 
-int
+static int
 simple_strncasecmp(const char *s1,
                    const char *s2,
                    size_t n)
@@ -137,39 +137,26 @@ simple_strcasestr(const char *h,
 	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
 }
 
-JSTR_ATTR_NOINLINE
-static int
-t_debug(const char *hs,
-        const char *ne,
-        size_t hs_len,
-        size_t ne_len,
-        size_t n,
-        const char *result,
-        const char *expected)
-{
-	if (hs_len == 0)
-		hs_len = strlen(hs);
-	if (ne_len == 0)
-		ne_len = strlen(ne);
-	PRINTERR("hsn:\n");
-	PRINTERR("hs:\n%s\n", hs);
-	PRINTERR("ne:\n%s\n", ne);
-	fwrite(hs, 1, jstr_strnlen(hs, n), stderr);
-	PRINTERR("\n");
-	PRINTERR("hs_len:\n%zu\n", hs_len);
-	PRINTERR("ne_len:\n%zu\n", ne_len);
-	PRINTERR("n:\n%zu\n", (size_t)n);
-	PRINTERR("expected:\n%s\n", N(expected));
-	PRINTERR("expected_len:\n%zu\n", strlen(N(expected)));
-	PRINTERR("result:\n%s\n", N(result));
-	PRINTERR("result_len:\n%zu\n", strlen(N(result)));
-	return 1;
-}
-
-#define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)          \
-	if (jstr_unlikely(result != expected)) {                      \
-		t_debug(hs, ne, hs_len, ne_len, n, result, expected); \
-		assert(result == expected);                           \
+#define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)                   \
+	if (jstr_unlikely(result != expected)) {                               \
+		size_t hl = hs_len, nl = ne_len;                               \
+		if (hl == 0)                                                   \
+			hl = strlen(hs);                                       \
+		if (nl == 0)                                                   \
+			nl = strlen(ne);                                       \
+		PRINTERR("hsn:\n");                                            \
+		PRINTERR("hs:\n%s\n", hs);                                     \
+		PRINTERR("ne:\n%s\n", ne);                                     \
+		fwrite(hs, 1, jstr_strnlen(hs, n), stderr);                    \
+		PRINTERR("\n");                                                \
+		PRINTERR("hs_len:\n%zu\n", hl);                                \
+		PRINTERR("nl:\n%zu\n", nl);                                    \
+		PRINTERR("n:\n%zu\n", (size_t)n);                              \
+		PRINTERR("expected:\n%s\n", EMPTY((char *)expected));              \
+		PRINTERR("expected_len:\n%zu\n", strlen(EMPTY((char *)expected))); \
+		PRINTERR("result:\n%s\n", EMPTY((char *)result));                  \
+		PRINTERR("result_len:\n%zu\n", strlen(EMPTY((char *)result)));     \
+		assert(result == expected);                                    \
 	}
 
 #define T_HS(test, i) ((test)[i].hs)

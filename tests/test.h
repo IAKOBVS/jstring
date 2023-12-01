@@ -31,7 +31,7 @@
 #include <assert.h>
 
 /* clang-format off */
-#define N(p)          (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
+#define EMPTY(p)          (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
 #define PRINT(...)    printf(__VA_ARGS__)
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
 #define START() do{}while(0)
