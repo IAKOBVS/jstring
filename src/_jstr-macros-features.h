@@ -5,9 +5,7 @@
 #	define JSTR_USE_ISOC11 1
 #endif
 
-/* This is to enable the ISO C99 extension.  */
-#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE \
-     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 #	define JSTR_USE_ISOC99 1
 #endif
 
