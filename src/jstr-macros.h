@@ -98,6 +98,7 @@ PJSTR_END_DECLS
 #endif
 
 #ifndef JSTR_DISABLE_NONSTANDARD
+#	define JSTR_DISABLE_NONSTANDARD 0
 #endif
 
 #ifdef __BYTE_ORDER
