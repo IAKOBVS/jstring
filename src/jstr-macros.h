@@ -587,7 +587,8 @@ PJSTR_CAST(T, Other other)
 #define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_ATTR_PURE
 #define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_ATTR_RETURNS_NONNULL
 
-#if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) || defined _BSD_SOURCE
+#if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) \
+|| defined _BSD_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1
 #	define JSTR_HAVE_STRNCASECMP 1
 #endif /* Bsd || Default */
@@ -671,14 +672,14 @@ PJSTR_CAST(T, Other other)
 #endif
 
 #if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
-|| (defined __GLIBC__ && defined _SVID_SOURCE)
+|| defined _SVID_SOURCE
 #	define JSTR_HAVE_QECVT 1
 #	define JSTR_HAVE_QFCVT 1
 #	define JSTR_HAVE_QGCVT 1
 #endif
 
 #if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
-|| (defined __GLIBC__ && (_SVID_SOURCE || defined _BSD_SOURCE))
+|| (_SVID_SOURCE || defined _BSD_SOURCE)
 #	define JSTR_HAVE_QECVT_R 1
 #	define JSTR_HAVE_QFCVT_R 1
 #	define JSTR_HAVE_ECVT_R  1
