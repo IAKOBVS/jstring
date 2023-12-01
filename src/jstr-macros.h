@@ -50,7 +50,7 @@ typedef enum {
 } jstr_ret_ty;
 PJSTR_END_DECLS
 
-#ifdef __GLIBC__
+#if defined __GLIBC__ || JSTR_ENV_BSD
 PJSTR_BEGIN_DECLS
 #	include <sys/cdefs.h>
 PJSTR_END_DECLS
@@ -95,10 +95,6 @@ PJSTR_END_DECLS
 #if JSTR_DEBUG
 #	undef JSTR_PANIC
 #	define JSTR_PANIC 1
-#endif
-
-#ifndef JSTR_DISABLE_NONSTANDARD
-#	define JSTR_DISABLE_NONSTANDARD 0
 #endif
 
 #ifdef __BYTE_ORDER
@@ -930,6 +926,10 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #	define JSTR_HAVE_ATTR_MAY_ALIAS 0
 #endif
 
+
+#ifndef JSTR_DISABLE_NONSTANDARD
+#	define JSTR_DISABLE_NONSTANDARD 0
+#endif
 #ifndef JSTR_PANIC
 #	define JSTR_PANIC 0
 #endif
