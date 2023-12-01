@@ -812,7 +812,7 @@ JSTR_NOEXCEPT
    -1 on error and errno is set.
 */
 JSTR_FUNC
-#if JSTR_HAVE_SNPRINTF_STRLEN
+#if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 JSTR_ATTR_INLINE
 #endif
 static int
