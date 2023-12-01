@@ -25,28 +25,26 @@
 #include "../src/jstr-string.h"
 #include "../src/jstr-replace.h"
 
-#define T(func, string, expected)                                                          \
+#define T_ASSERT(func, expr, expected)                                                     \
 	do {                                                                               \
-		JSTR_STATIC_ASSERT(sizeof(buffer) > 2 * strlen(string)                     \
-		                   && sizeof(buffer) > 2 * strlen(expected),               \
-		                   "");                                                    \
-		memcpy(buffer, string, strlen(string) + 1);                                \
-		const char *const p = func(buffer);                                        \
 		ASSERT_RESULT(func, strlen(buffer) == strlen(expected), buffer, expected); \
 		ASSERT_RESULT(func, p - buffer == strlen(expected), buffer, expected);     \
 		ASSERT_RESULT(func, !strcmp(buffer, expected), buffer, expected);          \
 	} while (0)
 
-#define T_CPY(func, string, expected)                                                      \
-	do {                                                                               \
-		JSTR_STATIC_ASSERT(sizeof(buffer) > 2 * strlen(string)                     \
-		                   && sizeof(buffer) > 2 * strlen(expected),               \
-		                   "");                                                    \
-		const char *const p = func(buffer, string);                                \
-		ASSERT_RESULT(func, strlen(buffer) == strlen(expected), buffer, expected); \
-		ASSERT_RESULT(func, p - buffer == strlen(expected), buffer, expected);     \
-		ASSERT_RESULT(func, !strcmp(buffer, expected), buffer, expected);          \
-		ASSERT_RESULT(func, !strcmp(buffer, expected), buffer, expected);          \
+#define T(func, string, expected)                                                                                     \
+	do {                                                                                                          \
+		JSTR_STATIC_ASSERT(sizeof(buffer) > 2 * strlen(string) && sizeof(buffer) > 2 * strlen(expected), ""); \
+		memcpy(buffer, string, strlen(string) + 1);                                                           \
+		const char *p = func(buffer);                                                                         \
+		T_ASSERT(func, expr, expected);                                                                       \
+	} while (0)
+
+#define T_CPY(func, string, expected)                                                                                 \
+	do {                                                                                                          \
+		JSTR_STATIC_ASSERT(sizeof(buffer) > 2 * strlen(string) && sizeof(buffer) > 2 * strlen(expected), ""); \
+		const char *p = func(buffer, string);                                                                 \
+		T_ASSERT(func, expr, expected);                                                                       \
 	} while (0)
 
 char buffer[256] = { 0 };

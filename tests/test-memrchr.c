@@ -24,39 +24,6 @@
 #define JSTR_BUILT
 #include "test.h"
 #include "../src/jstr.h"
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <unistd.h>
-
-#define T_LOC2(l)    __FILE__ ":" #l
-#define T_LOC1(l)    T_LOC2(l)
-#define t_error(...) t_printf(T_LOC1(__LINE__) ": " __VA_ARGS__)
-
-int
-t_printf(const char *s, ...)
-{
-	va_list ap;
-	char buf[512];
-	int n;
-
-#if 0
-	t_status = 1;
-#endif
-	va_start(ap, s);
-	n = vsnprintf(buf, sizeof buf, s, ap);
-	va_end(ap);
-	if (n < 0)
-		n = 0;
-	else if ((size_t)n >= sizeof buf) {
-		n = sizeof buf;
-		buf[n - 1] = '\n';
-		buf[n - 2] = '.';
-		buf[n - 3] = '.';
-		buf[n - 4] = '.';
-	}
-	return fwrite(buf, 1, n, stdout);
-}
 
 static char buf[512];
 
@@ -92,7 +59,6 @@ JSTR_NOEXCEPT
 /*
    strchr() before s + N.
 */
-JSTR_FUNC_PURE
 static char *
 simple_strnchr(const char *s,
                int c,
@@ -146,6 +112,9 @@ main(int argc, char **argv)
 	char a[128];
 	char s[256];
 
+	TESTING(jstr_strnchr);
+	TESTING(jstr_memrchr);
+
 	for (i = 0; i < 128; i++)
 		a[i] = (i + 1) & 127;
 	for (i = 0; i < 256; i++)
@@ -180,10 +149,6 @@ main(int argc, char **argv)
 	T(s, 0, 255);
 
 	SUCCESS();
-#if 0
-	return t_status;
-#else
-	return 0;
-#endif
+	return EXIT_SUCCESS;
 	(void)argc;
 }
