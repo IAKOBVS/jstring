@@ -882,9 +882,11 @@ enum {
 #define JSTR_BYTE_SHIFT(x, i)   ((x)JSTR_BYTE_SH(i * 8))
 #define JSTR_BYTE_SHIFT32(x, i) ((uint32_t)((x)[i])JSTR_BYTE_SH(i * 8))
 #define JSTR_BYTE_SHIFT64(x, i) ((uint64_t)((x)[i])JSTR_BYTE_SH(i * 8))
+typedef uint16_t jstr_u16u_ty JSTR_ATTR_MAY_ALIAS;
 typedef uint32_t jstr_u32u_ty JSTR_ATTR_MAY_ALIAS;
 typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #if JSTR_HAVE_ATTR_MAY_ALIAS
+#	define JSTR_BYTE_UTOWORD16(x)   (*(jstr_u16u_ty *)(x))
 #	define JSTR_BYTE_UTOWORD32(x)   (*(jstr_u32u_ty *)(x))
 #	define JSTR_BYTE_UTOWORD64(x)   (*(jstr_u64u_ty *)(x))
 #	define JSTR_BYTE_UCMPEQ32(x, y) (JSTR_BYTE_UTOWORD32(x) == JSTR_BYTE_UTOWORD32(y))

@@ -157,7 +157,7 @@ static void
 jstrl_free_noinline(jstrlist_ty *R l)
 JSTR_NOEXCEPT
 {
-	return jstrl_free(l);
+	jstrl_free(l);
 }
 
 JSTR_FUNC_VOID
