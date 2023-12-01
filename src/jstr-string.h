@@ -512,9 +512,10 @@ JSTR_NOEXCEPT
 {
 	/* Only use memmem() for long needles or when it is implemented in assembly
 	as it seems to be slower than an assembly optimized strstr() for short needles. */
-	if (JSTR_HAVE_STRSTR_OPTIMIZED)
+#if JSTR_HAVE_STRSTR_OPTIMIZED
 		if (ne_len < JSTR_MEMMEM_THRES)
 			return (char *)strstr(hs, ne);
+#endif
 	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 }
 
@@ -662,10 +663,8 @@ JSTR_NOEXCEPT
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
-#if 0 /* Fails the test for some reason? */
 	if (ne_len == 1)
 		return (char *)jstr_memrchr(hs, *(cu *)ne, hs_len);
-#endif
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	cu *h = (cu *)hs + hs_len - ne_len;
