@@ -175,10 +175,6 @@ static const struct {
 			PRINTERR("%s\n", strerror(expected));                              \
 			assert(expected != -1);                                            \
 		}                                                                          \
-		printf("result:%d\n"                                                       \
-		       "expected:%d\n\n",                                                  \
-		       result,                                                             \
-		       expected);                                                          \
 		assert(-1 != sprintf(result_num, "%d", result));                           \
 		assert(-1 != sprintf(expected_num, "%d", expected));                       \
 		if (jstr_unlikely(result < expected)) {                                    \

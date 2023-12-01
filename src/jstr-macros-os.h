@@ -141,15 +141,11 @@
 #if defined M_I386 || defined M_XENIX || defined _SCO_DS
 #	define JSTR_OS_SCOOPENSERVER 1
 #endif
-#if defined sun || defined __sun
-#	if defined __SVR4 || defined __svr4__
-#		define JSTR_OS_SOLARIS 1
-#		define JSTR_OS_SUNOS   0
-#	else
-#		define JSTR_OS_SOLARIS 0
-#		define JSTR_OS_SUNOS   1
-#	endif
-#	define JSTR_OS_SUNOS 0
+#if (defined sun || defined __sun) && (defined __SVR4 || defined __svr4__)
+#	define JSTR_OS_SOLARIS 1
+#endif
+#if (defined sun || defined __sun) && (!defined __SVR4 && !defined __svr4__)
+#	define JSTR_OS_SUNOS   1
 #endif
 #if defined __VOS__
 #	define JSTR_OS_STRATUSVOX 1
@@ -364,6 +360,31 @@
 #endif
 #ifndef JSTR_OS_Z
 #	define JSTR_OS_Z 0
+#endif
+#ifndef JSTR_OS_SOLARIS
+#	define JSTR_OS_SOLARIS 0
+#endif
+#ifndef JSTR_OS_SUNOS
+#	define JSTR_OS_SUNOS 0
+#endif
+
+#ifndef JSTR_ENV_UNIX
+#	define JSTR_ENV_UNIX 0
+#endif
+#ifndef JSTR_ENV_BSD
+#	define JSTR_ENV_BSD 0
+#endif
+#ifndef JSTR_ENV_CYGWIN
+#	define JSTR_ENV_CYGWIN 0
+#endif
+#ifndef JSTR_ENV_INTERIX
+#	define JSTR_ENV_INTERIX 0
+#endif
+#ifndef JSTR_ENV_SVR4
+#	define JSTR_ENV_SVR4 0
+#endif
+#ifndef JSTR_ENV_UWIN
+#	define JSTR_ENV_UWIN 0
 #endif
 
 #endif /* JSTR_MACROS_OS_H */
