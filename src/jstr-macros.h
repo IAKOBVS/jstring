@@ -219,9 +219,7 @@ PJSTR_END_DECLS
 #	define JSTR_HAVE_STATIC_ASSERT       1
 #	define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
-/* clang-format off */
 #	define JSTR_STATIC_ASSERT(expr, msg)
-/* clang-format on */
 #endif /* static_assert */
 
 #if JSTR_DEBUG
@@ -246,8 +244,8 @@ PJSTR_END_DECLS
 #else
 /* clang-format off */
 #	define JSTR_DEBUG_PRINT(fmt, ...) do {} while (0)
-/* clang-format on */
 #	define JSTR_RETURN_ERR(errcode) return errcode
+/* clang-format on */
 #endif
 
 #ifdef __cplusplus
