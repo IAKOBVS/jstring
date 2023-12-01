@@ -50,6 +50,6 @@ main(int argc, char **argv)
 	T("12345678", "12,345,678");
 	T("123456789", "123,456,789");
 	SUCCESS();
-	return 0;
+	return EXIT_SUCCESS;
 	(void)argc;
 }

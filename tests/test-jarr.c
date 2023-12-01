@@ -63,6 +63,6 @@ main(int argc, char **argv)
 	T_ZERO(jarr_popfront(&j));
 	jarr_free(&j);
 	SUCCESS();
-	return 0;
+	return EXIT_SUCCESS;
 	(void)argc;
 }

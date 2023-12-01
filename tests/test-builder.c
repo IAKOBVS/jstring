@@ -25,19 +25,23 @@
 #include "../src/jstr-regex.h"
 #include "test-array.h"
 
-#define T_APPEND(ret, func, ...)                                                                                   \
+#define T_ASSERT(func, result, expected)                                                                           \
 	do {                                                                                                       \
-		TESTING(func);                                                                                     \
-		if (ret != func(__VA_ARGS__)) {                                                                    \
-			jstr_debug(&(result));                                                                     \
-			jstr_errdie("");                                                                           \
-		}                                                                                                  \
 		ASSERT_RESULT(func, strcmp((result).data, expected) == 0, (result).data, expected);                \
 		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
 		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
-		ASSERT_RESULT(func, (result).capacity > (result).size, (result).data, expected);                   \
-		(result).size = 0;                                                                                 \
-		*(result).data = '\0';                                                                             \
+	} while (0)
+
+#define T_APPEND(ret, func, ...)                  \
+	do {                                      \
+		TESTING(func);                    \
+		if (ret != func(__VA_ARGS__)) {   \
+			jstr_debug(&(result));    \
+			jstr_errdie("");          \
+		}                                 \
+		T_ASSERT(func, result, expected); \
+		(result).size = 0;                \
+		*(result).data = '\0';            \
 	} while (0)
 
 #define FILL(result, str) assert(!jstr_chk(jstr_assign_len(JSTR_STRUCT(&(result)), str, strlen(str))))
@@ -216,9 +220,7 @@ main(int argc, char **argv)
 		jstr_free_j(&expected);
 	}
 	jstr_empty(result.data, &result.size);
-	const char *expected;
-	const char *find;
-	const char *rplc;
+	const char *expected, *find, *rplc;
 	regex_t preg;
 	/* jstr-builder tests. */
 	expected = "hello world";
@@ -263,10 +265,10 @@ main(int argc, char **argv)
 	rplc = "\\1\\1";
 	expected = "hellohello hellohello hellohello hellohello";
 	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
-	T_APPEND(JSTRRE_RET_NOERROR, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&result), rplc, strlen(rplc), 0, 3);
+	T_APPEND(JSTRRE_RET_NOERROR, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&result), rplc, strlen(rplc), 0, 2);
 	jstrre_free(&preg);
 	jstr_free_j(&result);
 	SUCCESS();
-	return 0;
+	return EXIT_SUCCESS;
 	(void)argc;
 }

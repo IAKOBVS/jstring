@@ -87,6 +87,6 @@ main(int argc, char **argv)
 	T_CPY(jstr_to_snake_case_cpy_p, "__helloWorld", "__hello_world");
 
 	SUCCESS();
-	return 0;
+	return EXIT_SUCCESS;
 	(void)argc;
 }
