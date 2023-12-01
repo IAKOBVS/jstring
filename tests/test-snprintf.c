@@ -161,22 +161,26 @@ static const struct {
 
 /* clang-format on */
 
-#define T(func, simple_func, ...)                                                     \
-	do {                                                                          \
-		int result, expected;                                                 \
-		result = func(0, 0, __VA_ARGS__);                                     \
-		if (jstr_unlikely(result == -1)) {                                    \
-			PRINTERR("fmt:%s\n", EMPTY(PJSTR_PP_FIRST_ARG(__VA_ARGS__))); \
-			jstr_errdie("result");                                        \
-		}                                                                     \
-		expected = simple_func(0, 0, __VA_ARGS__);                            \
-		if (jstr_unlikely(expected == -1)) {                                  \
-			PRINTERR("%s\n", strerror(expected));                         \
-			assert(expected != -1);                                       \
-		}                                                                     \
-		assert(-1 != sprintf(result_num, "%d", result));                      \
-		assert(-1 != sprintf(expected_num, "%d", expected));                  \
-		ASSERT_RESULT(func, result >= expected, result_num, expected_num);    \
+#define T(func, simple_func, ...)                                                          \
+	do {                                                                               \
+		int result, expected;                                                      \
+		result = func(0, 0, __VA_ARGS__);                                          \
+		if (jstr_unlikely(result == -1)) {                                         \
+			PRINTERR("fmt:%s\n", EMPTY(PJSTR_PP_FIRST_ARG(__VA_ARGS__)));      \
+			jstr_err("");                                                      \
+			assert(result != -1);                                              \
+		}                                                                          \
+		expected = simple_func(0, 0, __VA_ARGS__);                                 \
+		if (jstr_unlikely(expected == -1)) {                                       \
+			PRINTERR("%s\n", strerror(expected));                              \
+			assert(expected != -1);                                            \
+		}                                                                          \
+		assert(-1 != sprintf(result_num, "%d", result));                           \
+		assert(-1 != sprintf(expected_num, "%d", expected));                       \
+		if (jstr_unlikely(result < expected)) {                                    \
+			PRINTERR("fmt:%s\n", PJSTR_PP_FIRST_ARG(__VA_ARGS__));             \
+			ASSERT_RESULT(func, result >= expected, result_num, expected_num); \
+		}                                                                          \
 	} while (0)
 
 static int

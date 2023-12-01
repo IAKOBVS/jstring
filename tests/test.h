@@ -24,8 +24,8 @@
 #ifndef JSTR_TEST_H
 #define JSTR_TEST_H
 
-#define JSTR_DISABLE_NONSTANDARD 1
-#define JSTR_PANIC               1
+#define JSTR_PANIC 1
+#define JSTR_TEST  1
 
 #define JSTR_BUILT
 #include <assert.h>
@@ -39,16 +39,16 @@
 #define TESTING(func)
 /* clang-format on */
 
-#define ASSERT_RESULT(func, expr, result, expected)                        \
-	do {                                                               \
-		if (jstr_unlikely(!(expr))) {                              \
+#define ASSERT_RESULT(func, expr, result, expected)                      \
+	do {                                                             \
+		if (jstr_unlikely(!(expr))) {                            \
 			PRINTERR("Assertion failure: %s().\nResult:%s\n" \
-			         "Expected:%s\n",                          \
-			         #func,                                    \
-			         result,                                   \
-			         expected);                                \
-			assert(expr);                                      \
-		}                                                          \
+			         "Expected:%s\n",                        \
+			         #func,                                  \
+			         result,                                 \
+			         expected);                              \
+			assert(expr);                                    \
+		}                                                        \
 	} while (0)
 
 #define ASSERT_ERRFUNC(func, expr)                                     \

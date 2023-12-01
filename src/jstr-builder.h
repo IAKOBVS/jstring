@@ -819,7 +819,7 @@ static int
 jstr_vsprintfstrlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_SNPRINTF_STRLEN) {
+	if (JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST) {
 		const int ret = vsnprintf(NULL, 0, fmt, ap);
 		if (jstr_likely(ret > 0))
 			return ret + 1;
@@ -993,8 +993,10 @@ check_integer:
 					goto cont_switch;
 				case '\'':
 					is_thousep = 1;
+					goto cont_switch;
 				/* precision */
 				case '.':
+					is_pad = 1;
 					goto cont_switch;
 				/* length modifier */
 				case 'l':

@@ -141,7 +141,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -886,7 +886,7 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #else
 #	if JSTR_ENDIAN_LITTLE
 #		define JSTR_BYTE_UTOWORD32(x) (((uint32_t)(x)[0]) | ((uint32_t)(x)[1] << JSTR_BYTE_IDX(1)) | ((uint32_t)(x)[2] << JSTR_BYTE_IDX(2)) | ((uint32_t)(x)[3] << JSTR_BYTE_IDX(3)))
-#		define JSTR_BYTE_UTOWORD64(x) (uint64_t)JSTR_BYTE_UTOWORD32(x) | ((uint64_t)(x)[4] << JSTR_BYTE_IDX(4)) | ((uint64_t)(x)[5] << JSTR_BYTE_IDX(5)) | ((uint64_t)(x)[6] << JSTR_BYTE_IDX(6)) | ((uint64_t)(x)[7] << JSTR_BYTE_IDX(7))
+#		define JSTR_BYTE_UTOWORD64(x) (uint64_t) JSTR_BYTE_UTOWORD32(x) | ((uint64_t)(x)[4] << JSTR_BYTE_IDX(4)) | ((uint64_t)(x)[5] << JSTR_BYTE_IDX(5)) | ((uint64_t)(x)[6] << JSTR_BYTE_IDX(6)) | ((uint64_t)(x)[7] << JSTR_BYTE_IDX(7))
 #	else
 #		define JSTR_BYTE_UTOWORD32(x) (((uint32_t)(x)[0] >> 24) | ((uint32_t)(x)[1] >> 8) | ((uint32_t)(x)[2] << 8) | ((uint32_t)(x)[3] << 24))
 #		define JSTR_BYTE_UTOWORD64(x) ((uint64_t)(x)[0] >> 56) | ((uint64_t)(x)[1] >> 40) | ((uint64_t)(x)[2] >> 24) | ((uint64_t)(x)[3] >> 8) | ((uint64_t)(x)[4] << 8) | ((uint64_t)(x)[5] << 24) | ((uint64_t)(x)[6] << 40) | ((uint64_t)(x)[7] << 56)
@@ -924,9 +924,8 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #	define JSTR_HAVE_ATTR_MAY_ALIAS 0
 #endif
 
-
-#ifndef JSTR_DISABLE_NONSTANDARD
-#	define JSTR_DISABLE_NONSTANDARD 0
+#ifndef JSTR_TEST
+#	define JSTR_TEST 0
 #endif
 #ifndef JSTR_PANIC
 #	define JSTR_PANIC 0
