@@ -1004,12 +1004,12 @@ pjstr_strcasestr_rarebyte(const char *hs,
                           const char *ne,
                           const size_t shift)
 {
-	typedef unsigned char u;
+	typedef const unsigned char cu;
 	const int c = *(ne + shift);
-	const u *p1, *p2;
+	cu *p1, *p2;
 	for (hs += shift; (hs = (char *)strchr(hs, c)); ++hs) {
-		p1 = (const u *)hs - shift;
-		p2 = (const u *)ne;
+		p1 = (cu *)hs - shift;
+		p2 = (cu *)ne;
 		for (; jstr_tolower(*p1) == jstr_tolower(*p2) && *p1; ++p1, ++p2)
 			;
 		if (*p2 == '\0')
