@@ -1,68 +1,37 @@
-/* Copyright (C) 1991-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
-   <https://www.gnu.org/licenses/>.  */
-
 #ifndef JSTR_FEATURES_H
 #define JSTR_FEATURES_H 1
 
-/* This is to enable the ISO C11 extension.  */
-#if (defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE \
-     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L))
+#if (defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L))
 #	define JSTR_USE_ISOC11 1
 #endif
 
 /* This is to enable the ISO C99 extension.  */
-#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE \
-     || defined _ISOC2X_SOURCE \
+#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE \
      || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 #	define JSTR_USE_ISOC99 1
 #endif
 
-/* This is to enable the ISO C90 Amendment 1:1995 extension.  */
-#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE \
-     || defined _ISOC2X_SOURCE \
-     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199409L))
+#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199409L))
 #	define JSTR_USE_ISOC95 1
 #endif
 
 #ifdef __cplusplus
-/* This is to enable compatibility for ISO C++17.  */
 #	if __cplusplus >= 201703L
 #		define JSTR_USE_ISOC11 1
 #	endif
-/* This is to enable compatibility for ISO C++11.
-   Check the temporary macro for now, too.  */
 #	if __cplusplus >= 201103L || defined __GXX_EXPERIMENTAL_CXX0X__
 #		define JSTR_USE_ISOCXX11 1
 #		define JSTR_USE_ISOC99   1
 #	endif
 #endif
 
-/* If none of the ANSI/POSIX macros are defined, or if _DEFAULT_SOURCE
-   is defined, use POSIX.1-2008 (or another version depending on
-   _XOPEN_SOURCE).  */
 #ifdef _DEFAULT_SOURCE
 #	if !defined _POSIX_SOURCE && !defined _POSIX_C_SOURCE
 #		define JSTR_USE_POSIX_IMPLICITLY 1
 #	endif
 #endif
 
-#if (defined _POSIX_SOURCE \
-     || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1) \
-     || defined _XOPEN_SOURCE)
+#if (defined _POSIX_SOURCE || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1) || defined _XOPEN_SOURCE)
 #	define JSTR_USE_POSIX 1
 #endif
 
