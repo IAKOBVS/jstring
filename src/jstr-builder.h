@@ -1037,7 +1037,6 @@ check_integer:
 						}
 						printf("pad_len:%d\n", pad_len);
 						arg_len += pad_len;
-						is_pad = 0;
 					}
 					goto cont_switch;
 				/* case '\0': */
@@ -1049,7 +1048,6 @@ get_arg:
 					va_arg(ap, void *);
 					break;
 				}
-				pad_len = 0;
 				lflag = L_INT;
 				is_pad = 0;
 				is_thousep = 0;
