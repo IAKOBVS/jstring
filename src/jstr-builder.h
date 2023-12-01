@@ -1023,19 +1023,19 @@ check_integer:
 				case '8':
 				case '9':
 					if (is_pad) {
-						const char *end = fmt;
-						if (!jstr_isdigit(*end)) {
+						const unsigned char *p = (const unsigned char *)fmt;
+						if (!jstr_isdigit(*p)) {
 							pad_len = 0;
 							goto cont_switch;
 						}
-						pad_len = *end++ - '0';
-						for (; jstr_isdigit(*end); ++end)
-							pad_len = (pad_len * 10) + (*end - '0');
+						pad_len = *p++ - '0';
+						for (; jstr_isdigit(*p); ++p)
+							pad_len = (pad_len * 10) + (*p - '0');
+						fmt = (char *)p - 1;
 						if (jstr_unlikely(pad_len > INT_MAX)) {
 							errno = EOVERFLOW;
 							return -1;
 						}
-						printf("pad_len:%d\n", pad_len);
 						arg_len += pad_len;
 					}
 					goto cont_switch;
