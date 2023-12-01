@@ -503,6 +503,9 @@ JSTR_NOEXCEPT
 		return func;             \
 	}
 
+PJSTR_DEFINE_ATOI(unsigned int, atou, strtol(s, NULL, 0))
+PJSTR_DEFINE_ATOI(unsigned long, atoul, strtol(s, NULL, 0))
+PJSTR_DEFINE_ATOI(unsigned long long, atoull, strtol(s, NULL, 0))
 PJSTR_DEFINE_ATOI(int, atoi, strtol(s, NULL, 0))
 PJSTR_DEFINE_ATOI(long, atol, strtol(s, NULL, 0))
 PJSTR_DEFINE_ATOI(long long, atoll, strtol(s, NULL, 0))

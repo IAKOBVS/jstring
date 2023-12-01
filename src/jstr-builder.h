@@ -896,7 +896,7 @@ JSTR_NOEXCEPT
 		int lflag = L_INT; /* long flag */
 		int is_pad = 0;
 		int is_thousep = 0;
-		unsigned int padlen;
+		unsigned int pad_len;
 		unsigned int base;
 		for (;; ++fmt) {
 			if (*fmt == '%') {
@@ -985,6 +985,7 @@ check_integer:
 					goto cont_switch;
 				case '-':
 					is_pad = 1;
+					pad_len = 1;
 				/* flags */
 				case '+':
 				case '#':
@@ -997,6 +998,7 @@ check_integer:
 				/* precision */
 				case '.':
 					is_pad = 1;
+					pad_len = 1;
 					goto cont_switch;
 				/* length modifier */
 				case 'l':
@@ -1021,15 +1023,20 @@ check_integer:
 				case '8':
 				case '9':
 					if (is_pad) {
-						padlen = *fmt - '0' + (*fmt != 9);
-						for (; jstr_isdigit(*fmt); ++fmt, padlen *= 10)
-							;
-						--fmt;
-						if (jstr_unlikely(padlen > INT_MAX)) {
+						const char *end = fmt;
+						if (!jstr_isdigit(*end)) {
+							pad_len = 0;
+							goto cont_switch;
+						}
+						pad_len = *end++ - '0';
+						for (; jstr_isdigit(*end); ++end)
+							pad_len = (pad_len * 10) + (*end - '0');
+						if (jstr_unlikely(pad_len > INT_MAX)) {
 							errno = EOVERFLOW;
 							return -1;
 						}
-						arg_len += padlen;
+						printf("pad_len:%d\n", pad_len);
+						arg_len += pad_len;
 						is_pad = 0;
 					}
 					goto cont_switch;
@@ -1042,6 +1049,7 @@ get_arg:
 					va_arg(ap, void *);
 					break;
 				}
+				pad_len = 0;
 				lflag = L_INT;
 				is_pad = 0;
 				is_thousep = 0;
