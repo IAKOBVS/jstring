@@ -97,11 +97,11 @@ start:;
 			off = (off >= 8 ? off : m1) - 8;
 		}
 		hs += shift1;
-	} while
+	}
 #if PJSTR_MEMMEM_CHECK_EOL
-	(1);
+	while (1);
 #else
-	(hs <= end);
+	while (hs <= end);
 #endif
 	return NULL;
 }
