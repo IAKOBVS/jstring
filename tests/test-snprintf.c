@@ -198,7 +198,7 @@ jstr_sprintfstrlen(char *s, size_t n, const char *fmt, ...)
 }
 
 int
-main(void)
+main(int argc, char **argv)
 {
 	TESTING(jstr_sprintfstrlen);
 	char result_num[sizeof(unsigned long) + 1];
@@ -213,6 +213,6 @@ main(void)
 	for (int i = 0; fp_tests[i].fmt; i++)
 		T(jstr_sprintfstrlen, snprintf, fp_tests[i].fmt, fp_tests[i].f);
 	T(jstr_sprintfstrlen, snprintf, "%.4a", 1.0);
-	(void)fp_tests;
+	SUCCESS();
 	return EXIT_SUCCESS;
 }
