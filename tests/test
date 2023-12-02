@@ -15,7 +15,7 @@ compile()
 	file=$1
 	out=$2
 	shift 2
-	out=$(echo "$out$*" | sed 's/[ \t]//g; s/DJSTR_//g')
+	out=$(echo "$out$*" | sed 's/[ \t]//g')
 	#shellcheck disable=SC2068 disable=SC2086
 	cc "$file" -o "$out" $flags $@
 	"$out"
