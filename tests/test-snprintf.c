@@ -200,6 +200,7 @@ jstr_sprintfstrlen(char *s, size_t n, const char *fmt, ...)
 int
 main(int argc, char **argv)
 {
+	START();
 	TESTING(jstr_sprintfstrlen);
 	char result_num[sizeof(unsigned long) + 1];
 	char expected_num[sizeof(unsigned long) + 1];
@@ -215,4 +216,5 @@ main(int argc, char **argv)
 	T(jstr_sprintfstrlen, snprintf, "%.4a", 1.0);
 	SUCCESS();
 	return EXIT_SUCCESS;
+	(void)argc;
 }

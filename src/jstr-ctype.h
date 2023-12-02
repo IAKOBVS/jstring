@@ -32,8 +32,6 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #include "jstr-ctype-table.h"
-#include "jstr-macros.h"
-#include "jstr-stdstring.h"
 
 #define R JSTR_RESTRICT
 
@@ -204,23 +202,25 @@ PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_SKIP_CTYPE_REV)
 /* ASCII. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
-static void
-jstr_toupperstr(char *R s)
+static char *
+jstr_toupperstr_p(char *R s)
 JSTR_NOEXCEPT
 {
 	for (; (*s = jstr_toupper(*s)); ++s)
 		;
+	return s;
 }
 
 /* ASCII. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
-static void
-jstr_tolowerstr(char *R s)
+static char *
+jstr_tolowerstr_p(char *R s)
 JSTR_NOEXCEPT
 {
 	for (; (*s = jstr_tolower(*s)); ++s)
 		;
+	return s;
 }
 
 /*
