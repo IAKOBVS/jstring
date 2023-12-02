@@ -799,20 +799,20 @@ pjstr_strcasestr_long(const char *hs,
                       const char *ne)
 JSTR_NOEXCEPT
 {
-	if (0 && JSTR_USE_LGPL) { /* Doesn't pass test-memmem. */
-		const size_t ne_len = strlen(ne + 4) + 4;
-		const size_t hs_len = jstr_strnlen(hs + 4, ne_len | 512) + 4;
-		if (hs_len < ne_len)
-			return NULL;
-		if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
-			return (char *)hs;
-		if (jstr_unlikely(hs_len == ne_len))
-			return NULL;
-		return pjstr_strcasestr_lgpl(hs, hs_len, ne, ne_len);
-	} else {
-		typedef const unsigned char cu;
-		return pjstr_strcasestr_nolgpl((cu *)hs, (cu *)ne);
-	}
+#if JSTR_USE_LGPL /* Doesn't pass test-memmem. */
+	const size_t ne_len = strlen(ne + 4) + 4;
+	const size_t hs_len = jstr_strnlen(hs + 4, ne_len | 512) + 4;
+	if (hs_len < ne_len)
+		return NULL;
+	if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
+		return (char *)hs;
+	if (jstr_unlikely(hs_len == ne_len))
+		return NULL;
+	return pjstr_strcasestr_lgpl(hs, hs_len, ne, ne_len);
+#else
+	typedef const unsigned char cu;
+	return pjstr_strcasestr_nolgpl((cu *)hs, (cu *)ne);
+#endif
 }
 
 JSTR_FUNC_PURE
@@ -1026,7 +1026,7 @@ pjstr_strcasestr_rarebyte(const char *hs,
    NULL if not found.
 */
 JSTR_FUNC_PURE
-#if (JSTR_HAVE_STRCASESTR && !JSTR_TEST)
+#if (JSTR_HAVE_STRCASESTR && !JSTR_USE_STANDARD_ALWAYS && !JSTR_TEST)
 JSTR_ATTR_INLINE
 #endif
 static char *
@@ -1034,7 +1034,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_STRCASESTR && !JSTR_TEST) {
+	if (JSTR_HAVE_STRCASESTR && !JSTR_USE_STANDARD_ALWAYS && !JSTR_TEST) {
 #if JSTR_HAVE_STRCASESTR
 		return (char *)strcasestr(hs, ne);
 #endif

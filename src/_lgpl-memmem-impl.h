@@ -36,9 +36,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static PJSTR_MEMMEM_RETTYPE
 PJSTR_MEMMEM_FUNC_IMPL(const unsigned char *hs,
-                       size_t hl,
+                       size_t hs_len,
                        const unsigned char *ne,
-                       size_t nl)
+                       size_t ne_len)
 JSTR_NOEXCEPT
 {
 #if PJSTR_MEMMEM_SHORT_NEEDLE
@@ -53,9 +53,9 @@ JSTR_NOEXCEPT
 	const
 #endif
 	end
-	= hs + hl - nl;
+	= hs + hs_len - ne_len;
 	size_t tmp;
-	const size_t m1 = nl - 1;
+	const size_t m1 = ne_len - 1;
 	size_t off = 0;
 	arr_ty shift[256];
 	JSTR_BZERO_ARRAY(shift);
@@ -97,6 +97,11 @@ start:;
 			off = (off >= 8 ? off : m1) - 8;
 		}
 		hs += shift1;
-	} while (hs <= end);
+	} while
+#if PJSTR_MEMMEM_CHECK_EOL
+	(1);
+#else
+	(hs <= end);
+#endif
 	return NULL;
 }
