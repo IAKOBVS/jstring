@@ -138,7 +138,7 @@
 			size_t find_len = strlen(find);                                                                                        \
 			const char *rplc = find += find_len / 2;                                                                               \
 			size_t str_len = strlen(str);                                                                                          \
-			size_t rplc_len = rplclen(rplc);                                                                                       \
+			size_t rplc_len = strlen(rplc);                                                                                        \
 			T_RPLC_INIT((result), str, str_len);                                                                                   \
 			T_RPLC_INIT((expected), str, str_len);                                                                                 \
 			(result).size = func((result).data, (result).size, find, find_len, rplc, rplc_len, i) - (result).data;                 \
@@ -149,25 +149,25 @@
 		}                                                                                                                              \
 	} while (0)
 
-#define T_RPLC(func, simple_func)                                                                                                              \
-	do {                                                                                                                                   \
-		TESTING(func);                                                                                                                 \
-		T_FOREACHI(test_array_memcmp, i)                                                                                               \
-		{                                                                                                                              \
-			const char *str = test_array_memcmp[i].s1;                                                                             \
-			const char *find = test_array_memcmp[i].s2;                                                                            \
-			size_t find_len = strlen(find);                                                                                        \
-			const char *rplc = find += find_len / 2;                                                                               \
-			size_t str_len = strlen(str);                                                                                          \
-			size_t rplc_len = rplclen(rplc);                                                                                       \
-			T_RPLC_INIT((result), str, str_len);                                                                                   \
-			T_RPLC_INIT((expected), str, str_len);                                                                                 \
-			(result).size = ((result).data, (result).size, find, find_len, rplc, rplc_len, i) - (result).data;                     \
-			(expected).size = simple_func((expected).data, (expected).size, find, find_len, rplc, rplc_len, i) - (expected).data;  \
-			ASSERT_RESULT_RMCHR(func, str, find, strlen((result).data) == strlen((expected).data));                                \
-			ASSERT_RESULT_RMCHR(func, str, find, (result).size == (expected).size);                                                \
-			ASSERT_RESULT_RMCHR(func, str, find, !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data))); \
-		}                                                                                                                              \
+#define T_RPLC(func, simple_func)                                                                                                                       \
+	do {                                                                                                                                            \
+		TESTING(func);                                                                                                                          \
+		T_FOREACHI(test_array_memcmp, i)                                                                                                        \
+		{                                                                                                                                       \
+			const char *str = test_array_memcmp[i].s1;                                                                                      \
+			const char *find = test_array_memcmp[i].s2;                                                                                     \
+			size_t find_len = strlen(find);                                                                                                 \
+			const char *rplc = find += find_len / 2;                                                                                        \
+			size_t str_len = strlen(str);                                                                                                   \
+			size_t rplc_len = strlen(rplc);                                                                                                 \
+			T_RPLC_INIT((result), str, str_len);                                                                                            \
+			T_RPLC_INIT((expected), str, str_len);                                                                                          \
+			assert(!jstr_chk(func(&(result).data, &(result).size, &(result).capacity, 0, find, find_len, rplc, rplc_len, i)));              \
+			assert(!jstr_chk(simple_func(&(expected).data, &(expected).size, &(expected).capacity, 0, find, find_len, rplc, rplc_len, i))); \
+			ASSERT_RESULT_RPLC(func, str, find, rplc, strlen((result).data) == strlen((expected).data));                                    \
+			ASSERT_RESULT_RPLC(func, str, find, rplc, (result).size == (expected).size);                                                    \
+			ASSERT_RESULT_RPLC(func, str, find, rplc, !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data)));     \
+		}                                                                                                                                       \
 	} while (0)
 
 static void
@@ -208,6 +208,49 @@ simple_rmnchr_len_p(char *s,
 	return dst;
 }
 
+static char *
+simple_memmem(const void *hs,
+              const size_t hl,
+              const void *ne,
+              const size_t nl)
+{
+	const unsigned char *h = (const unsigned char *)hs;
+	const unsigned char *n = (const unsigned char *)ne;
+	if (nl == 0)
+		return (char *)h;
+	if (hl == 0)
+		return NULL;
+	if (hl < nl)
+		return NULL;
+	const unsigned char *const end = h + hl - nl;
+	for (; h <= end; ++h)
+		if (*h == *n && !memcmp(h, n, nl))
+			return (char *)h;
+	return NULL;
+}
+
+static int
+simple_rplcn_len_from(char **s,
+                      size_t *sz,
+                      size_t *cap,
+                      size_t start_idx,
+                      const char *find,
+                      size_t find_len,
+                      const char *rplc,
+                      size_t rplc_len,
+                      size_t n)
+{
+	size_t i = start_idx;
+	for (; n-- && (i = simple_memmem(*s + i, *sz - i, find, find_len) - *s);) {
+		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + find_len - rplc_len)))
+			return JSTR_RET_ERR;
+		*(char *)jstr_mempmove(s + i + rplc_len, s + i + find_len, *sz - (i + find_len)) = '\0';
+		memcpy(s + i, rplc, rplc_len);
+		*sz += (find_len - rplc_len);
+	}
+	return JSTR_RET_SUCC;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -217,6 +260,7 @@ main(int argc, char **argv)
 		jstr_ty expected = JSTR_INIT;
 		T_RMCHR(jstr_rmnchr_len_p, simple_rmnchr_len_p);
 		T_RPLCCHR(jstr_rplcnchr_len, simple_rplcnchr_len);
+		T_RPLC(jstr_rplcn_len_from, simple_rplcn_len_from);
 		jstr_free_j(&expected);
 	}
 	jstr_empty(result.data, &result.size);

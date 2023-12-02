@@ -26,9 +26,12 @@
 
 #define JSTR_PANIC 1
 #define JSTR_TEST  1
+#define JSTR_DEBUG 1
 
 #define JSTR_BUILT
 #include <assert.h>
+#include <stddef.h>
+#include <string.h>
 
 /* clang-format off */
 #define EMPTY(p)          (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
@@ -58,5 +61,5 @@
 			assert(expr);                                  \
 		}                                                      \
 	} while (0)
-
+				 
 #endif /* JSTR_TEST_H */

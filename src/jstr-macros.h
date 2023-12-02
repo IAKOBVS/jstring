@@ -141,7 +141,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -223,10 +223,12 @@ PJSTR_END_DECLS
 #endif /* static_assert */
 
 #if JSTR_DEBUG
-#	define JSTR_ASSERT_DEBUG(expr, msg)        \
-		do {                                \
-			if (jstr_unlikely(!(expr))) \
-				jstr_errdie(msg);   \
+#	define JSTR_ASSERT_DEBUG(expr, msg)          \
+		do {                                  \
+			if (jstr_unlikely(!(expr))) { \
+				jstr_err(msg);        \
+				assert(expr);         \
+			}                             \
 		} while (0)
 #else
 /* clang-format off */

@@ -1,6 +1,13 @@
 #!/bin/sh
 
-flags='-g -O1 -std=c99 -Wall -Wextra -Wpedantic'
+flags='
+-g
+-O1
+-std=c99
+-Wall
+-Wextra
+-Wpedantic
+'
 
 compile()
 {

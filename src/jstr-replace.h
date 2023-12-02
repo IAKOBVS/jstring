@@ -827,6 +827,8 @@ jstr_rmn_len_p(char *R s,
                size_t n)
 JSTR_NOEXCEPT
 {
+	JSTR_ASSERT_DEBUG(start_idx < sz, "");
+	JSTR_ASSERT_DEBUG(strlen(find) == find_len, "");
 	if (find_len == 1)
 		return jstr_rmnchr_len_p(s, *find, sz, n);
 	if (jstr_unlikely(find_len == 0))
@@ -870,6 +872,10 @@ jstr_rplcn_len_from(char *R *R s,
                     size_t n)
 JSTR_NOEXCEPT
 {
+	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
+	JSTR_ASSERT_DEBUG(strlen(*s) == *sz, "");
+	JSTR_ASSERT_DEBUG(strlen(find) == find_len, "");
+	JSTR_ASSERT_DEBUG(strlen(rplc) == rplc_len, "");
 	char *dst = *s + start_idx;
 	if (jstr_unlikely(rplc_len == 0)) {
 		*sz = jstr_rmn_len_p((char *)dst, *sz - start_idx, find, find_len, n) - *s;

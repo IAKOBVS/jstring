@@ -272,7 +272,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
-	return jstr_reservealways(s, sz, cap, new_cap);
+	return jstr_reservealways(s, sz, cap, new_cap + 1);
 }
 
 /*
@@ -287,7 +287,7 @@ jstr_reserveexactalways(char *R *R s,
                         size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? new_cap + 1 : new_cap * JSTR_ALLOC_MULTIPLIER);
+	*s = (char *)realloc(*s, *cap = jstr_likely(*cap) ? new_cap : new_cap * JSTR_ALLOC_MULTIPLIER);
 	if (jstr_nullchk(*s))
 		goto err;
 	return JSTR_RET_SUCC;
@@ -311,7 +311,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
-	return jstr_reserveexactalways(s, sz, cap, new_cap);
+	return jstr_reserveexactalways(s, sz, cap, new_cap + 1);
 }
 
 JSTR_FUNC
