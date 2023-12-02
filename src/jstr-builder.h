@@ -123,7 +123,7 @@ jstr_debug(const jstr_ty *R j)
 JSTR_NOEXCEPT
 {
 	int ret;
-	ret = fprintf(stderr, "size:%zu\ncapacity:%zu\n", j->size, j->capacity);
+	ret = fprintf(stderr, "size:%zu.\ncapacity:%zu.\n", j->size, j->capacity);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
 	const char *data;
@@ -135,10 +135,10 @@ JSTR_NOEXCEPT
 		data = "(null)";
 		size = 0;
 	}
-	ret = fprintf(stderr, "strlen():%zu\n", size);
+	ret = fprintf(stderr, "strlen():%zu.\n", size);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
-	ret = fprintf(stderr, "data puts():%s\n", data);
+	ret = fprintf(stderr, "data puts():%s.\n", data);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
 	ret = fputs("data:", stderr);
@@ -147,7 +147,8 @@ JSTR_NOEXCEPT
 	jstrio_fwrite(j->data, 1, j->size, stderr);
 	if (jstr_unlikely(ferror(stderr)))
 		goto err;
-	if (jstr_unlikely(fputc('\n', stderr) == EOF))
+	ret = fputs(".\n", stderr);
+	if (jstr_unlikely(ret < 0))
 		goto err;
 	return JSTR_RET_SUCC;
 err_set_errno:

@@ -54,23 +54,23 @@
 		assert(!memcmp(buf.data, str, str_len));                             \
 	} while (0)
 
-#define ASSERT_RESULT_RMCHR(func, str, rplc, expr)                     \
-	do {                                                           \
-		if (jstr_unlikely(!(expr))) {                          \
-			PRINTERR("assertion failure: %s().\n", #func); \
-			PRINTERR("string:%s.\nfind:%c.\n", str, rplc); \
-			PRINTERR("result:\n");                         \
-			jstr_debug(&(result));                         \
-			PRINTERR("expected:\n");                       \
-			jstr_debug(&(expected));                       \
-			assert(expr);                                  \
-		}                                                      \
+#define ASSERT_RESULT_RMCHR(func, str, rplc, expr)                       \
+	do {                                                             \
+		if (jstr_unlikely(!(expr))) {                            \
+			PRINTERR("\nassertion failure: %s().\n", #func); \
+			PRINTERR("string:%s.\nfind:%c.\n", str, rplc);   \
+			PRINTERR("result:\n");                           \
+			jstr_debug(&(result));                           \
+			PRINTERR("expected:\n");                         \
+			jstr_debug(&(expected));                         \
+			assert(expr);                                    \
+		}                                                        \
 	} while (0)
 
 #define ASSERT_RESULT_RPLCCHR(func, str, find, rplc, expr)                             \
 	do {                                                                           \
 		if (jstr_unlikely(!(expr))) {                                          \
-			PRINTERR("assertion failure: %s().\n", #func);                 \
+			PRINTERR("\nassertion failure: %s().\n", #func);               \
 			PRINTERR("string:%s.\nfind:%c.\nrplc:%c.\n", str, find, rplc); \
 			PRINTERR("result:\n");                                         \
 			jstr_debug(&(result));                                         \
@@ -83,7 +83,7 @@
 #define ASSERT_RESULT_RPLC(func, str, find, rplc, expr)                                \
 	do {                                                                           \
 		if (jstr_unlikely(!(expr))) {                                          \
-			PRINTERR("assertion failure: %s().\n", #func);                 \
+			PRINTERR("\nassertion failure: %s().\n", #func);               \
 			PRINTERR("string:%s.\nfind:%s.\nrplc:%s.\n", str, find, rplc); \
 			PRINTERR("result:\n");                                         \
 			jstr_debug(&(result));                                         \
@@ -128,25 +128,23 @@
 		}                                                                                                                                      \
 	} while (0)
 
-#define T_RM(func, simple_func)                                                                                                                \
-	do {                                                                                                                                   \
-		TESTING(func);                                                                                                                 \
-		T_FOREACHI(test_array_memcmp, i)                                                                                               \
-		{                                                                                                                              \
-			const char *str = test_array_memcmp[i].s1;                                                                             \
-			const char *find = test_array_memcmp[i].s2;                                                                            \
-			size_t find_len = strlen(find);                                                                                        \
-			const char *rplc = find + find_len / 2;                                                                                \
-			size_t str_len = strlen(str);                                                                                          \
-			size_t rplc_len = strlen(rplc);                                                                                        \
-			T_RPLC_INIT((result), str, str_len);                                                                                   \
-			T_RPLC_INIT((expected), str, str_len);                                                                                 \
-			(result).size = func((result).data, (result).size, find, find_len, rplc, rplc_len, i) - (result).data;                 \
-			(expected).size = simple_func((expected).data, (expected).size, find, find_len, rplc, rplc_len, i) - (expected).data;  \
-			ASSERT_RESULT_RMCHR(func, str, find, strlen((result).data) == strlen((expected).data));                                \
-			ASSERT_RESULT_RMCHR(func, str, find, (result).size == (expected).size);                                                \
-			ASSERT_RESULT_RMCHR(func, str, find, !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data))); \
-		}                                                                                                                              \
+#define T_RM(func, simple_func)                                                                                                                   \
+	do {                                                                                                                                      \
+		TESTING(func);                                                                                                                    \
+		T_FOREACHI(test_array_memcmp, i)                                                                                                  \
+		{                                                                                                                                 \
+			const char *str = test_array_memcmp[i].s1;                                                                                \
+			const char *find = test_array_memcmp[i].s2;                                                                               \
+			size_t str_len = strlen(str);                                                                                             \
+			size_t find_len = strlen(find);                                                                                           \
+			T_RPLC_INIT((result), str, str_len);                                                                                      \
+			T_RPLC_INIT((expected), str, str_len);                                                                                    \
+			(result).size = func((result).data, (result).size, find, find_len, i) - (result).data;                                    \
+			(expected).size = simple_func((expected).data, (expected).size, find, find_len, i) - (expected).data;                     \
+			ASSERT_RESULT_RPLC(func, str, find, "", strlen((result).data) == strlen((expected).data));                                \
+			ASSERT_RESULT_RPLC(func, str, find, "", (result).size == (expected).size);                                                \
+			ASSERT_RESULT_RPLC(func, str, find, "", !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data))); \
+		}                                                                                                                                 \
 	} while (0)
 
 #define T_RPLC(func, simple_func)                                                                                                                       \
@@ -237,11 +235,14 @@ simple_rmn_len_p(char *s,
                  size_t find_len,
                  size_t n)
 {
-	size_t i = 0;
-	for (; n-- && (i = simple_memmem(s + i, sz - i, find, find_len) - s);) {
-		*(char *)jstr_mempmove(s + i, s + i + find_len, sz - (i + find_len)) = '\0';
+	char *p = s;
+	for (; n-- && (p = simple_memmem(p, (s + sz) - p, find, find_len));) {
+		*(char *)jstr_mempmove(p,
+		                       p + find_len,
+		                       (s + sz) - (p + find_len))
+		= '\0';
 		sz -= find_len;
-		++i;
+		++p;
 	}
 	return s + sz;
 }
@@ -257,16 +258,11 @@ simple_rplcn_len_from(char **s,
                       size_t rplc_len,
                       size_t n)
 {
-	size_t i = start_idx;
-	for (; n-- && (i = simple_memmem(*s + i, *sz - i, find, find_len) - *s);) {
-		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + find_len - rplc_len)))
+	char *p = *s + start_idx;
+	for (; n-- && (p = simple_memmem(p, (*s + *sz) - p, find, find_len));) {
+		p = pjstr_rplcat_len_higher(s, sz, cap, p - *s, rplc, rplc_len, find_len);
+		if (jstr_unlikely(p == NULL))
 			return JSTR_RET_ERR;
-		char *dst = *s + i + rplc_len;
-		const char *src = *s + i + find_len;
-		*(char *)jstr_mempmove(dst, src, (*s + *sz) - src) = '\0';
-		memcpy(*s + i, rplc, rplc_len);
-		*sz += (find_len - rplc_len);
-		i += (find_len - rplc_len);
 	}
 	return JSTR_RET_SUCC;
 }
@@ -280,6 +276,7 @@ main(int argc, char **argv)
 		jstr_ty expected = JSTR_INIT;
 		T_RMCHR(jstr_rmnchr_len_p, simple_rmnchr_len_p);
 		T_RPLCCHR(jstr_rplcnchr_len, simple_rplcnchr_len);
+		T_RM(jstr_rmn_len_p, simple_rmn_len_p);
 		T_RPLC(jstr_rplcn_len_from, simple_rplcn_len_from);
 		jstr_free_j(&expected);
 	}
