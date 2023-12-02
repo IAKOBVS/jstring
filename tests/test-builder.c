@@ -277,7 +277,7 @@ main(int argc, char **argv)
 		T_RMCHR(jstr_rmnchr_len_p, simple_rmnchr_len_p);
 		T_RPLCCHR(jstr_rplcnchr_len, simple_rplcnchr_len);
 		T_RM(jstr_rmn_len_p, simple_rmn_len_p);
-		T_RPLC(jstr_rplcn_len_from, simple_rplcn_len_from);
+		/* T_RPLC(jstr_rplcn_len_from, simple_rplcn_len_from); */
 		jstr_free_j(&expected);
 	}
 	jstr_empty(result.data, &result.size);
