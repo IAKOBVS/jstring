@@ -472,7 +472,7 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
 	JSTR_ASSERT_DEBUG(strlen(*s) == *sz, "");
-	JSTR_ASSERT_DEBUG(strlen(rplc) >= rplc_len, "");
+	JSTR_ASSERT_DEBUG(jstr_strnlen(rplc, rplc_len) == rplc_len, "");
 	typedef char u;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
@@ -662,7 +662,7 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
 	JSTR_ASSERT_DEBUG(strlen(*s) == *sz, "");
-	JSTR_ASSERT_DEBUG(strlen(rplc) >= rplc_len, "");
+	JSTR_ASSERT_DEBUG(jstr_strnlen(rplc, rplc_len) == rplc_len, "");
 	char *p = *s + start_idx;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
