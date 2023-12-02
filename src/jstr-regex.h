@@ -585,12 +585,23 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, 1);
 }
 
+#if JSTR_DEBUG
+#	define NMATCH_PARAM , size_t nmatch
+#	define NMATCH_ARG   , nmatch
+#	define NMATCH       nmatch
+#else
+#	define NMATCH_PARAM
+#	define NMATCH_ARG
+#	define NMATCH
+#endif
+
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
 pjstrre_brefrplcstrlen(const regmatch_t *R rm,
                        const char *R rplc,
-                       size_t rplc_len)
+                       size_t rplc_len
+                       NMATCH_PARAM)
 JSTR_NOEXCEPT
 {
 	const char *const rplc_e = rplc + rplc_len;
@@ -600,6 +611,7 @@ JSTR_NOEXCEPT
 		c = *++rplc;
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
+			JSTR_ASSERT_DEBUG(c < nmatch, "Using a backreference higher than nmatch.");
 			rplc_len += (rm[c].rm_eo - rm[c].rm_so) - 2;
 		} else if (jstr_unlikely(*rplc == '\0')) {
 			break;
@@ -685,7 +697,7 @@ JSTR_NOEXCEPT
 			++p;
 			continue;
 		}
-		rdst_len = pjstrre_brefrplcstrlen(rm, rplc, rplc_len);
+		rdst_len = pjstrre_brefrplcstrlen(rm, rplc, rplc_len NMATCH_ARG);
 		if (jstr_unlikely(rdst_len == 0))
 			return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > BUFSZ))
@@ -723,6 +735,10 @@ err_free:
 err:
 	JSTRRE_RETURN_ERR(ret, preg);
 }
+
+#undef NMATCH
+#undef NMATCH_ARG
+#undef NMATCH_PARAM
 
 JSTR_FUNC
 JSTR_ATTR_INLINE
