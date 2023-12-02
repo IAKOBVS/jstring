@@ -24,7 +24,7 @@
 #ifndef JSTR_RAREBYTE_H
 #define JSTR_RAREBYTE_H
 
-#include "jstr-ctype-table.h"
+#include "jstr-ctype.h"
 #include "jstr-macros.h"
 
 PJSTR_BEGIN_DECLS
@@ -111,7 +111,7 @@ jstr_rarebytefindcase(const char *ne)
 			c_rare = c;
 		}
 	}
-	return jstr_ctype_table[*rare] & JSTR_ISALPHA ? NULL : (char *)rare;
+	return jstr_isalpha(*rare) ? NULL : (char *)rare;
 }
 
 JSTR_FUNC_PURE
@@ -131,7 +131,7 @@ jstr_rarebytefindcase_len(const void *ne,
 			c_rare = c;
 		}
 	}
-	return jstr_ctype_table[*rare] & JSTR_ISALPHA ? NULL : (char *)rare;
+	return jstr_isalpha(*rare) ? NULL : (char *)rare;
 }
 
 JSTR_FUNC_PURE
@@ -147,7 +147,7 @@ jstr_rarebytefindeither(const void *ne)
 	for (;; ++p) {
 		c = jstr_rarebyte_table[*p];
 		if (c < c_rare) {
-			if (jstr_ctype_table[*p] & JSTR_ISALPHA) {
+			if (jstr_isalpha(*p)) {
 				rare_backup = p;
 			} else {
 				if (jstr_unlikely(c == 0))
@@ -157,7 +157,7 @@ jstr_rarebytefindeither(const void *ne)
 			}
 		}
 	}
-	return (void *)(jstr_ctype_table[*rare] & JSTR_ISALPHA ? rare_backup : rare);
+	return (void *)(jstr_isalpha(*rare) ? rare_backup : rare);
 }
 
 JSTR_FUNC_PURE
@@ -174,7 +174,7 @@ jstr_rarebytefindeither_len(const void *ne,
 	for (; n--; ++p) {
 		c = jstr_rarebyte_table[*p];
 		if (c < c_rare) {
-			if (jstr_ctype_table[*p] & JSTR_ISALPHA) {
+			if (jstr_isalpha(*p)) {
 				rare_backup = p;
 			} else {
 				rare = p;
@@ -182,7 +182,7 @@ jstr_rarebytefindeither_len(const void *ne,
 			}
 		}
 	}
-	return (void *)(jstr_ctype_table[*rare] & JSTR_ISALPHA ? rare_backup : rare);
+	return (void *)(jstr_isalpha(*rare) ? rare_backup : rare);
 }
 
 PJSTR_END_DECLS

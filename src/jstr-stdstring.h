@@ -24,8 +24,8 @@
 #ifndef JSTR_STDSTRING_H
 #define JSTR_STDSTRING_H 1
 
-#include "jstr-ctype-table.h"
 #include "jstr-macros.h"
+#include "jstr-ctype.h"
 #include "jstr-struct.h"
 #include "jstr-word-at-a-time.h"
 
@@ -58,7 +58,7 @@ jstr_strcasecmpeq_loop(const char *s1,
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; jstr_ctype_table_tolower[*p1] == jstr_ctype_table_tolower[*p2++] && *p1++;)
+	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;)
 		;
 	return *(p2 - 1);
 }
@@ -89,7 +89,7 @@ jstr_strcasecmpeq_len_loop(const void *s1,
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; n && (jstr_ctype_table_tolower[*p1++] == jstr_ctype_table_tolower[*p2++]); --n)
+	for (; n && (jstr_tolower(*p1++) == jstr_tolower(*p2++)); --n)
 		;
 	return n;
 }

@@ -37,32 +37,41 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-/*
-   ASCII.
-   Will NOT handle EOF correctly.
-   toupper(EOF) != EOF;
-*/
-JSTR_ATTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_toupper(int c)
-JSTR_NOEXCEPT
-{
-	return jstr_ctype_table_toupper[(unsigned char)c];
-}
+/* Does not handle EOF. */
+#define jstr_toupper(c) jstr_ctype_table_toupper[(unsigned char)c]
+#define jstr_tolower(c) jstr_ctype_table_tolower[(unsigned char)c]
 
-/*
-   ASCII.
-   Will NOT handle EOF correctly.
-   tolower(EOF) != EOF;
-*/
+#define jstr_isctype(c, ctype) (jstr_ctype_table[(unsigned char)c] & ctype)
+#define jstr_isalpha(c)        jstr_isctype(c, JSTR_ISALPHA)
+#define jstr_islower(c)        jstr_isctype(c, JSTR_ISLOWER)
+#define jstr_isupper(c)        jstr_isctype(c, JSTR_ISUPPER)
+#define jstr_isspace(c)        jstr_isctype(c, JSTR_ISSPACE)
+#define jstr_isblank(c)        jstr_isctype(c, JSTR_ISBLANK)
+#define jstr_isdigit(c)        jstr_isctype(c, JSTR_ISDIGIT)
+#define jstr_isxdigit(c)       jstr_isctype(c, JSTR_ISXDIGIT)
+#define jstr_ispunct(c)        jstr_isctype(c, JSTR_ISPUNCT)
+#define jstr_isgraph(c)        jstr_isctype(c, JSTR_ISGRAPH)
+#define jstr_isprint(c)        jstr_isctype(c, JSTR_ISPRINT)
+#define jstr_iscntrl(c)        jstr_isctype(c, JSTR_ISCNTRL)
+#define jstr_isword(c)         jstr_isctype(c, JSTR_ISWORD)
+
+/* ASCII. */
 JSTR_ATTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_tolower(int c)
+JSTR_FUNC_PURE
+static char *
+jstr_skipctype(const char *R s,
+               int ctype)
 JSTR_NOEXCEPT
 {
-	return jstr_ctype_table_tolower[(unsigned char)c];
+	const unsigned char *p = (const unsigned char *)s;
+	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
+		for (; *p && jstr_isctype(*p, ctype); ++p)
+			;
+		return (char *)p;
+	}
+	while (jstr_isctype(*p++, ctype))
+		;
+	return (char *)p - 1;
 }
 
 #define PJSTR_DEFINE_REPEAT_CTYPE(FUNC) \
@@ -78,54 +87,6 @@ JSTR_NOEXCEPT
 	FUNC(print, JSTR_ISPRINT)       \
 	FUNC(cntrl, JSTR_ISCNTRL)       \
 	FUNC(word, JSTR_ISWORD)
-
-/*
-   ASCII.
-   For example: jstr_isctype(C, JSTR_ISLOWER | JSTR_ISDIGIT) checks if C is either lowercase or a digit.
-*/
-JSTR_ATTR_INLINE
-JSTR_FUNC_CONST
-static int
-jstr_isctype(int c,
-             int type)
-JSTR_NOEXCEPT
-{
-	return jstr_ctype_table[(unsigned char)c] & type;
-}
-
-#define PJSTR_DEFINE_ISCTYPE(ctype, ctype_enum)                         \
-	/* ASCII. */                                                    \
-	JSTR_ATTR_INLINE                                                \
-	JSTR_FUNC_CONST                                                 \
-	static int                                                      \
-	jstr_is##ctype(int c)                                           \
-	JSTR_NOEXCEPT                                                   \
-	{                                                               \
-		return jstr_ctype_table[(unsigned char)c] & ctype_enum; \
-	}
-
-PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_ISCTYPE)
-
-#undef PJSTR_DEFINE_ISCTYPE
-
-/* ASCII. */
-JSTR_ATTR_INLINE
-JSTR_FUNC_PURE
-static char *
-jstr_skipctype(const char *R s,
-               int ctype)
-JSTR_NOEXCEPT
-{
-	const unsigned char *p = (const unsigned char *)s;
-	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
-		for (; *p && jstr_ctype_table[*p] & ctype; ++p)
-			;
-		return (char *)p;
-	}
-	while (jstr_ctype_table[*p++] & ctype)
-		;
-	return (char *)p - 1;
-}
 
 #define PJSTR_DEFINE_SKIP_CTYPE(ctype, ctype_enum)    \
 	/* ASCII. */                                  \
@@ -178,7 +139,7 @@ jstr_skipctype_rev(const char *const start,
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)end;
-	for (; (const unsigned char *)start != p && (jstr_ctype_table[*p] & ctype); --p)
+	for (; (const unsigned char *)start != p && jstr_isctype(*p, ctype); --p)
 		;
 	return (char *)p;
 }
