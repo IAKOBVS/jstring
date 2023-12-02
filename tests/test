@@ -1,23 +1,22 @@
 #!/bin/sh
 
 flags='
--O1
 -g
+-O1
 -std=c99
 -Wall
 -Wextra
 -Wpedantic
--DVERBOSE=0
 '
 
 compile()
 {
 	file=$1
 	out=$2
-	shift 2
-	out=$(echo "$out$*" | sed 's/[ \t]//g')
-	#shellcheck disable=SC2068 disable=SC2086
-	cc "$file" -o "$out" $flags $@
+	args=$(echo "$*" | cut -d' ' -f3-)
+	out=$out$args
+	#shellcheck disable=disable=SC2086 
+	cc "$file" -o "$out" $flags $args
 	"$out"
 	rm "$out"
 }
@@ -40,10 +39,10 @@ else
 fi
 
 for file in $files; do
-	out=${file%.*}
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 &
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 &
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 &
-	compile "$file" "$TMPDIR$out" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
+	out_file=${file%.*}
+	compile "$file" "$TMPDIR$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 &
+	compile "$file" "$TMPDIR$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 &
+	compile "$file" "$TMPDIR$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 &
+	compile "$file" "$TMPDIR$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
 done
 wait
