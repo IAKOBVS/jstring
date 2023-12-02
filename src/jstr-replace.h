@@ -53,22 +53,22 @@ typedef struct pjstr_inplace_ty {
 
 #define PJSTR_INPLACE_RMALL(i, find_len)                             \
 	do {                                                         \
-		const size_t n_ = JSTR_PTR_DIFF((i).src_e, (i).src); \
+		const size_t _n = JSTR_PTR_DIFF((i).src_e, (i).src); \
 		if (jstr_likely((i).dst != (i).src))                 \
-			memmove((i).dst, (i).src, n_);               \
-		(i).dst += n_;                                       \
-		(i).src += n_ + find_len;                            \
+			memmove((i).dst, (i).src, _n);               \
+		(i).dst += _n;                                       \
+		(i).src += _n + find_len;                            \
 		(i).src_e += find_len;                               \
 	} while (0)
 
 #define PJSTR_INPLACE_RPLCALL(i, rplc, rplc_len, find_len)                    \
 	do {                                                                  \
-		const size_t n_ = JSTR_PTR_DIFF((i).src_e, (i).src);          \
+		const size_t _n = JSTR_PTR_DIFF((i).src_e, (i).src);          \
 		if (jstr_likely(find_len != rplc_len)                         \
 		    && jstr_likely((i).dst != (i).src))                       \
-			memmove((i).dst, (i).src, n_);                        \
-		(i).dst = (char *)jstr_mempcpy((i).dst + n_, rplc, rplc_len); \
-		(i).src += n_ + find_len;                                     \
+			memmove((i).dst, (i).src, _n);                        \
+		(i).dst = (char *)jstr_mempcpy((i).dst + _n, rplc, rplc_len); \
+		(i).src += _n + find_len;                                     \
 		(i).src_e += find_len;                                        \
 	} while (0)
 

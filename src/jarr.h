@@ -221,7 +221,7 @@ PJSTR_END_DECLS
 		*PJARR_DATA(j) = (value);                                          \
 	} while (0)
 
-#define jarr_foreachi(j, i) for (size_t i = 0, pjarr_max_elem_##i = (j)->size; i < pjarr_max_elem_##i; ++i)
+#define jarr_foreachi(j, i) for (size_t i = 0, _pjarr_foreachi_size_##i = (j)->size; i < _pjarr_foreachi_size_##i; ++i)
 #define jarr_debug(j)       fprintf(stderr, "size:%zu\ncap:%zu\n", (j)->size, (j)->capacity);
 
 #define jarr_start(j) PJARR_DATA(j)

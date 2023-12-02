@@ -49,13 +49,13 @@ PJSTR_END_DECLS
 		0 \
 	}
 
-#define jstr_err(msg)        pjstr_err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
-#define jstr_errdie(msg)     pjstr_errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
-#define jstr_foreach(j, ptr) for (char *ptr = ((j)->data), *const pjstr_foreach_end_##ptr = ((j)->data) + ((j)->size); \
-	                          ptr < pjstr_foreach_end_##ptr;                                                       \
-	                          ++ptr)
-#define jstr_foreachi(j, i) for (size_t i = 0, const pjstr_foreach_end_##ptr = ((j)->size); \
-	                         i < pjstr_foreach_end_##ptr;                               \
+#define jstr_err(msg)      pjstr_err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
+#define jstr_errdie(msg)   pjstr_errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
+#define jstr_foreach(j, p) for (char *p = ((j)->data), *const _pjstr_foreach_end_##p = ((j)->data) + ((j)->size); \
+	                        p < _pjstr_foreach_end_##p;                                                       \
+	                        ++p)
+#define jstr_foreachi(j, i) for (size_t i = 0, const _pjstr_foreachi_end_##i = ((j)->size); \
+	                         i < _pjstr_foreachi_end_##i;                               \
 	                         ++i)
 #define jstr_index(j, curr) JSTR_PTR_DIFF(curr, (j)->data)
 #define pjstr_at(j, i)      ((j)->data + (i))

@@ -38,14 +38,14 @@
 		0  \
 	}
 
-#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##p = jstrl_end(l); \
-	                         p < pjstrl_foreach_end_##p;                                             \
+#define jstrl_foreach(l, p) for (jstr_ty *p = ((l)->data), *const _pjstrl_foreach_end_##p = jstrl_end(l); \
+	                         p < _pjstrl_foreach_end_##p;                                             \
 	                         ++p)
-#define pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const pjstrl_foreach_end_##p = ((l)->data) + ((l)->capacity); \
-	                              p < pjstrl_foreach_end_##p;                                                              \
+#define _pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const _pjstrl_foreach_end_##p = ((l)->data) + ((l)->capacity); \
+	                              p < _pjstrl_foreach_end_##p;                                                              \
 	                              ++p)
-#define jstrl_foreachi(l, i) for (size_t i = 0, const pjstrl_foreach_end_##p = ((l)->size); \
-	                          i < pjstrl_foreach_end_##p;                               \
+#define jstrl_foreachi(l, i) for (size_t i = 0, const _pjstrl_foreachi_end_##i = ((l)->size); \
+	                          i < _pjstrl_foreachi_end_##i;                               \
 	                          ++i)
 #define jstrl_index(l, curr) JSTR_PTR_DIFF(curr, (l)->data)
 #define pjstrl_at(l, i)      ((l)->data + (i))
