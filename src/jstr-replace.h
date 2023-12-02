@@ -43,9 +43,9 @@ PJSTR_BEGIN_DECLS
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-pjstr_rmallinplace(char **dst,
-                   const char **oldp,
-                   const char **p,
+pjstr_rmallinplace(char **const dst,
+                   const char **const oldp,
+                   const char **const p,
                    size_t find_len)
 JSTR_NOEXCEPT
 {
@@ -60,10 +60,10 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-pjstr_rplcallinplace(char **dst,
-                     const char **oldp,
-                     const char **p,
-                     const char *R rplc,
+pjstr_rplcallinplace(char **const dst,
+                     const char **const oldp,
+                     const char **const p,
+                     const char *R const rplc,
                      size_t rplc_len,
                      size_t find_len)
 JSTR_NOEXCEPT
