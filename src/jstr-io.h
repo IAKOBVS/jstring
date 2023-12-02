@@ -78,8 +78,6 @@ static jstrio_ext_ty
 pjstrio_exttype(const char *ext)
 JSTR_NOEXCEPT
 {
-	enum { TEXT = 0,
-	       BINARY };
 	static const char *text[] = { JSTRIO_FT_TEXT_ARRAY };
 	static const char *binary[] = { JSTRIO_FT_BINARY_ARRAY };
 	int i;

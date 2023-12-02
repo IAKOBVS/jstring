@@ -823,11 +823,11 @@ JSTR_NOEXCEPT
 		else                                                               \
 			arg_len += (is_thousep) ? OCT_##length : 2 * DEC_##length; \
 	} while (0)
-		enum {
+		typedef enum {
 			B_DEC = 10,
 			B_OCT = 8,
 			B_HEX = 16,
-		}; /* base */
+		} base_ty; /* base */
 		enum {
 			L_INT = 0,
 			L_LONG,
@@ -864,14 +864,14 @@ JSTR_NOEXCEPT
 		}; /* sizeof */
 		/* Use size_t because we are calculating the length for the buffer conservatively
 		   and it may be much larger than the actual length. */
-		size_t arg_len = 0;
 		const char *arg;
+		size_t arg_len = 0;
 		unsigned int errno_len = 0;
-		int lflag = L_INT; /* long flag */
+		int lflag = L_INT;
 		int is_pad = 0;
 		int is_thousep = 0;
 		unsigned int pad_len;
-		unsigned int base;
+		base_ty base;
 		for (;; ++fmt) {
 			if (*fmt == '%') {
 cont_switch:
