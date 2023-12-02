@@ -136,7 +136,7 @@
 			const char *str = test_array_memcmp[i].s1;                                                                             \
 			const char *find = test_array_memcmp[i].s2;                                                                            \
 			size_t find_len = strlen(find);                                                                                        \
-			const char *rplc = find += find_len / 2;                                                                               \
+			const char *rplc = find + find_len / 2;                                                                                \
 			size_t str_len = strlen(str);                                                                                          \
 			size_t rplc_len = strlen(rplc);                                                                                        \
 			T_RPLC_INIT((result), str, str_len);                                                                                   \
@@ -157,7 +157,7 @@
 			const char *str = test_array_memcmp[i].s1;                                                                                      \
 			const char *find = test_array_memcmp[i].s2;                                                                                     \
 			size_t find_len = strlen(find);                                                                                                 \
-			const char *rplc = find += find_len / 2;                                                                                        \
+			const char *rplc = find + find_len / 2;                                                                                         \
 			size_t str_len = strlen(str);                                                                                                   \
 			size_t rplc_len = strlen(rplc);                                                                                                 \
 			T_RPLC_INIT((result), str, str_len);                                                                                            \
@@ -229,6 +229,23 @@ simple_memmem(const void *hs,
 	return NULL;
 }
 
+JSTR_ATTR_MAYBE_UNUSED
+static char *
+simple_rmn_len_p(char *s,
+                 size_t sz,
+                 const char *find,
+                 size_t find_len,
+                 size_t n)
+{
+	size_t i = 0;
+	for (; n-- && (i = simple_memmem(s + i, sz - i, find, find_len) - s);) {
+		*(char *)jstr_mempmove(s + i, s + i + find_len, sz - (i + find_len)) = '\0';
+		sz -= find_len;
+		++i;
+	}
+	return s + sz;
+}
+
 static int
 simple_rplcn_len_from(char **s,
                       size_t *sz,
@@ -244,9 +261,10 @@ simple_rplcn_len_from(char **s,
 	for (; n-- && (i = simple_memmem(*s + i, *sz - i, find, find_len) - *s);) {
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + find_len - rplc_len)))
 			return JSTR_RET_ERR;
-		*(char *)jstr_mempmove(s + i + rplc_len, s + i + find_len, *sz - (i + find_len)) = '\0';
-		memcpy(s + i, rplc, rplc_len);
+		*(char *)jstr_mempmove(*s + i + rplc_len, *s + i + find_len, *sz - (i + find_len)) = '\0';
+		memcpy(*s + i, rplc, rplc_len);
 		*sz += (find_len - rplc_len);
+		i += rplc_len;
 	}
 	return JSTR_RET_SUCC;
 }
@@ -314,5 +332,6 @@ main(int argc, char **argv)
 	jstr_free_j(&result);
 	SUCCESS();
 	return EXIT_SUCCESS;
+	(void)simple_rmn_len_p;
 	(void)argc;
 }
