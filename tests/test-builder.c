@@ -2,9 +2,25 @@
 #include "../src/jstr-regex.h"
 #include "test-array.h"
 
+#define T(func, expected)                                                                 \
+	do {                                                                              \
+		assert(!jstr_chk(func));                                                  \
+		ASSERT_ERRFUNC(func, (result).capacity > strlen(expected));               \
+		ASSERT_ERRFUNC(func, (result).data);                                      \
+		ASSERT_ERRFUNC(func, (result).size == strlen(expected));                  \
+		ASSERT_ERRFUNC(func, !memcmp((result).data, expected, strlen(expected))); \
+	} while (0)
+
+#define T_P(func, expected)                                                               \
+	do {                                                                              \
+		func;                                                                     \
+		ASSERT_ERRFUNC(func, (result).data);                                      \
+		ASSERT_ERRFUNC(func, (result).size == strlen(expected));                  \
+		ASSERT_ERRFUNC(func, !memcmp((result).data, expected, strlen(expected))); \
+	} while (0)
+
 #define T_ASSERT(func, result, expected)                                                                           \
 	do {                                                                                                       \
-		ASSERT_RESULT(func, strcmp((result).data, expected) == 0, (result).data, expected);                \
 		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
 		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
 	} while (0)
@@ -301,6 +317,28 @@ main(int argc, char **argv)
 	expected = "hellohello hellohello hellohello hellohello";
 	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
 	T_APPEND(JSTRRE_RET_NOERROR, jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&result), rplc, strlen(rplc), 0, 2);
+
+	jstr_empty(result.data, &result.size);
+	T(jstr_cat(JSTR_STRUCT(&result), "hello", " world", NULL), "hello world");
+	T(jstr_cat(JSTR_STRUCT(&result), "a", "b", NULL), "hello worldab");
+	T(jstr_asprintf(JSTR_STRUCT(&result), "%s", "c"), "c");
+	T(jstr_asprintf_append(JSTR_STRUCT(&result), "%s", "z"), "cz");
+	T(jstr_assign_len(JSTR_STRUCT(&result), "hello", strlen("hello")), "hello");
+	T(jstr_append_len(JSTR_STRUCT(&result), " world", strlen(" world")), "hello world");
+	jstr_empty(result.data, &result.size);
+	T_P(result.size = JSTR_PTR_DIFF(jstr_pushback_unsafe_p(result.data, result.size, 'k'), result.data), "k");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_pushfront_unsafe_p(result.data, result.size, 'l'), result.data), "lk");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "k");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "");
+	T(jstr_assign_len(JSTR_STRUCT(&result), "hello", strlen("hello")), "hello");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "hell");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "hel");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "el");
+	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "l");
+
 	jstrre_free(&preg);
 	jstr_free_j(&result);
 	SUCCESS();

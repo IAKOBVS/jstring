@@ -13,8 +13,8 @@
 		T expected[] = { (int)__VA_ARGS__ };                               \
 		func;                                                              \
 		ASSERT_ERRFUNC(func, j.data);                                      \
-		ASSERT_ERRFUNC(func, !memcmp(j.data, expected, sizeof(expected))); \
 		ASSERT_ERRFUNC(func, j.size == JSTR_ARRAY_COUNT(expected));        \
+		ASSERT_ERRFUNC(func, !memcmp(j.data, expected, sizeof(expected))); \
 	} while (0)
 
 int
