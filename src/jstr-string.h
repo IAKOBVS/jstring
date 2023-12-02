@@ -513,8 +513,8 @@ JSTR_NOEXCEPT
 	/* Only use memmem() for long needles or when it is implemented in assembly
 	as it seems to be slower than an assembly optimized strstr() for short needles. */
 #if JSTR_HAVE_STRSTR_OPTIMIZED
-		if (ne_len < JSTR_MEMMEM_THRES)
-			return (char *)strstr(hs, ne);
+	if (ne_len < JSTR_MEMMEM_THRES)
+		return (char *)strstr(hs, ne);
 #endif
 	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 }
@@ -957,7 +957,7 @@ JSTR_NOEXCEPT
 		if (!jstr_isalpha(*p)) {
 			cu *const end = (cu *)hs + hs_len - (ne_len - shift) + 1;
 			const int c = *p;
-			for (; (hs = (char *)memchr(hs, c, JSTR_PTR_DIFF(end , hs))); ++hs)
+			for (; (hs = (char *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
 				if (!jstr_strcasecmpeq_len_loop(hs - shift, ne, ne_len))
 					return (char *)hs - shift;
 			return NULL;
@@ -1026,7 +1026,7 @@ pjstr_strcasestr_rarebyte(const char *hs,
    NULL if not found.
 */
 JSTR_FUNC_PURE
-#if (JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST)
+#if (JSTR_HAVE_STRCASESTR && JSTR_USE_STANDARD_ALWAYS && !JSTR_TEST)
 JSTR_ATTR_INLINE
 #endif
 static char *
@@ -1034,7 +1034,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-	if (JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST) {
+	if (JSTR_HAVE_STRCASESTR && JSTR_HAVE_STRCASESTR_OPTIMIZED && !JSTR_TEST) {
 #if JSTR_HAVE_STRCASESTR
 		return (char *)strcasestr(hs, ne);
 #endif
@@ -1885,7 +1885,7 @@ jstr_linenumber(const char *start,
 JSTR_NOEXCEPT
 {
 	size_t cnt = 1;
-	for (; (start = (const char *)memchr(start, '\n', JSTR_PTR_DIFF(end,  start))); ++start, ++cnt)
+	for (; (start = (const char *)memchr(start, '\n', JSTR_PTR_DIFF(end, start))); ++start, ++cnt)
 		;
 	return cnt;
 }
