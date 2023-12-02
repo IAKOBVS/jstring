@@ -346,27 +346,50 @@ PJSTR_DEFINE_ITOA_THOUSEP_SAFE(long long, lltoa_thousep, ulltoa_thousep)
 
 #undef PJSTR_DEFINE_ITOA_THOUSEP_SAFE
 
-#define PJSTR_DEFINE_ATOI(T, func_name)              \
+#define PJSTR_DEFINE_ATOU(T, func_name)              \
 	JSTR_FUNC                                    \
 	T jstr_##func_name##_len(const char *R s,    \
 	                         size_t sz)          \
 	{                                            \
 		if (sz == 0)                         \
 			return 0;                    \
-		unsigned long n = *s++ - '0';        \
+		T n = *s++ - '0';                    \
 		while (--sz)                         \
 			n = (n * 10) + (*s++ - '0'); \
 		return n;                            \
 	}
 
-PJSTR_DEFINE_ATOI(unsigned int, atou)
-PJSTR_DEFINE_ATOI(unsigned long, atoul)
-PJSTR_DEFINE_ATOI(unsigned long long, atoull)
+PJSTR_DEFINE_ATOU(unsigned int, atou)
+PJSTR_DEFINE_ATOU(unsigned long, atoul)
+PJSTR_DEFINE_ATOU(unsigned long long, atoull)
+
+#undef PJSTR_DEFINE_ATOU
+
+#define PJSTR_DEFINE_ATOI(T, func_name)              \
+	JSTR_FUNC                                    \
+	JSTR_ATTR_INLINE                             \
+	T jstr_##func_name##_len(const char *R s,    \
+	                         size_t sz)          \
+	{                                            \
+		if (sz == 0)                         \
+			return 0;                    \
+		T n;                                 \
+		if (*s == '-') {                     \
+			if (jstr_unlikely(sz == 1))  \
+				return 0;            \
+			--sz;                        \
+			n = -(*s++ - '0');           \
+		} else {                             \
+			n = *s++ - '0';              \
+		}                                    \
+		while (--sz)                         \
+			n = (n * 10) + (*s++ - '0'); \
+		return n;                            \
+	}
+
 PJSTR_DEFINE_ATOI(int, atoi)
 PJSTR_DEFINE_ATOI(long, atol)
 PJSTR_DEFINE_ATOI(long long, atoll)
-
-#undef PJSTR_DEFINE_ATOI
 
 PJSTR_END_DECLS
 

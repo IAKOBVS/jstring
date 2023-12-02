@@ -300,8 +300,7 @@ jstrre_rmn_from(regex_t *R preg,
                 size_t n)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(start_idx < sz, "");
-	JSTR_ASSERT_DEBUG(strlen(find) == find_len, "");
+	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
 	regmatch_t rm;
 	char *dst = *s + start_idx;
 	const char *p = dst;
@@ -473,7 +472,6 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
 	JSTR_ASSERT_DEBUG(strlen(*s) == *sz, "");
-	JSTR_ASSERT_DEBUG(strlen(find) == find_len, "");
 	JSTR_ASSERT_DEBUG(strlen(rplc) == rplc_len, "");
 	typedef char u;
 	if (jstr_unlikely(rplc_len == 0))
@@ -664,7 +662,6 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
 	JSTR_ASSERT_DEBUG(strlen(*s) == *sz, "");
-	JSTR_ASSERT_DEBUG(strlen(find) == find_len, "");
 	JSTR_ASSERT_DEBUG(strlen(rplc) == rplc_len, "");
 	char *p = *s + start_idx;
 	if (jstr_unlikely(rplc_len == 0))

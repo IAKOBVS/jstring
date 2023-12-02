@@ -827,7 +827,6 @@ jstr_rmn_len_p(char *R s,
                size_t n)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(start_idx < sz, "");
 	JSTR_ASSERT_DEBUG(strlen(find) == find_len, "");
 	if (find_len == 1)
 		return jstr_rmnchr_len_p(s, *find, sz, n);
