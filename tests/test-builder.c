@@ -261,10 +261,12 @@ simple_rplcn_len_from(char **s,
 	for (; n-- && (i = simple_memmem(*s + i, *sz - i, find, find_len) - *s);) {
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + find_len - rplc_len)))
 			return JSTR_RET_ERR;
-		*(char *)jstr_mempmove(*s + i + rplc_len, *s + i + find_len, *sz - (i + find_len)) = '\0';
+		char *dst = *s + i + rplc_len;
+		const char *src = *s + i + find_len;
+		*(char *)jstr_mempmove(dst, src, (*s + *sz) - src) = '\0';
 		memcpy(*s + i, rplc, rplc_len);
 		*sz += (find_len - rplc_len);
-		i += rplc_len;
+		i += (find_len - rplc_len);
 	}
 	return JSTR_RET_SUCC;
 }

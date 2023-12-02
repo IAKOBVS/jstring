@@ -813,7 +813,7 @@ JSTR_NOEXCEPT
 	}
 	if (find_len == 1) {
 		if (rplc_len == 1) {
-			jstr_rplcchr_len((char *)dst, *find, *rplc, *sz - start_idx);
+			jstr_rplcnchr_len(dst, *find, *rplc, *sz - start_idx, n);
 			return JSTR_RET_SUCC;
 		}
 	} else if (jstr_unlikely(find_len == 0)) {
