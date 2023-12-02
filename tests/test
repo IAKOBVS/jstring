@@ -1,12 +1,13 @@
 #!/bin/sh
 
 flags='
--g
 -O1
+-g
 -std=c99
 -Wall
 -Wextra
 -Wpedantic
+-DVERBOSE=0
 '
 
 compile()
@@ -15,7 +16,7 @@ compile()
 	out=$2
 	shift 2
 	out=$(echo "$out$*" | sed 's/[ \t]//g')
-	#shellcheck disable=SC2068 disable=SC2086 
+	#shellcheck disable=SC2068 disable=SC2086
 	cc "$file" -o "$out" $flags $@
 	"$out"
 	rm "$out"
