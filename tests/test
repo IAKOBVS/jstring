@@ -1,22 +1,29 @@
 #!/bin/sh
 
-flags='
+FLAGS='
 -g
--O1
 -std=c99
 -Wall
 -Wextra
 -Wpedantic
 '
 
+if type clang >/dev/null 2>/dev/null; then
+	FLAGS="$FLAGS -O0"
+	CC=clang
+else
+	FLAGS="$FLAGS -O1"
+	CC=cc
+fi
+
 compile()
 {
 	file=$1
 	out=$2
 	args=$(echo "$*" | cut -d' ' -f3-)
-	out=$out$args
-	#shellcheck disable=disable=SC2086 
-	cc "$file" -o "$out" $flags $args
+	out=$out$(echo "$args" | tr -d ' ')
+	#shellcheck disable=disable=SC2086
+	$CC "$file" -o "$out" $FLAGS $args
 	"$out"
 	rm "$out"
 }

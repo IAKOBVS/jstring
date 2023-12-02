@@ -1,10 +1,20 @@
 #!/bin/sh
 
+if type clang >/dev/null 2>/dev/null; then
+	FLAGS="$FLAGS -O0"
+	CC=clang
+else
+	FLAGS="$FLAGS -O1"
+	CC=cc
+fi
+
 cd "$(dirname "$0")" || exit
 for file in $(echo *.c); do
 	{
 	bin="${file%.*}"
-	test -e "$bin" && test "$file" -ot "$bin" && exit 0
-	cc "$file" -o "$bin"
+	if test -e "$bin" && test "$file" -ot "$bin"; then
+		exit 0
+	fi
+	$CC "$file" -o "$bin"
 	} &
 done
