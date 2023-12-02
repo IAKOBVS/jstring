@@ -40,6 +40,27 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
+#define PJSTR_RMALLINPLACE(dst, oldp, p, find_len) \
+	do {                                       \
+		const size_t n_ = p - oldp;        \
+		if (jstr_likely(dst != oldp))      \
+			memmove(dst, oldp, n_);    \
+		dst += n_;                         \
+		oldp += n_ + find_len;             \
+		p += find_len;                     \
+	} while (0)
+
+#define PJSTR_RPLCALLINPLACE(dst, oldp, p, rplc, rplc_len, find_len)  \
+	do {                                                          \
+		const size_t n_ = p - oldp;                           \
+		if (jstr_likely(find_len != rplc_len)                 \
+		    && jstr_likely(dst != oldp))                      \
+			memmove(dst, oldp, n_);                       \
+		dst = (char *)jstr_mempcpy(dst + n_, rplc, rplc_len); \
+		oldp += n_ + find_len;                                \
+		p += find_len;                                        \
+	} while (0)
+
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
@@ -448,8 +469,11 @@ JSTR_NOEXCEPT
 {
 	const char *oldp = s;
 	const char *p = s;
-	for (; *p && (*(p += strcspn(p, reject))); pjstr_rmallinplace((char **)&s, &oldp, &p, strspn((char *)p, reject)))
-		;
+	size_t find_len;
+	for (; *p && (*(p += strcspn(p, reject)));) {
+		find_len = strspn(p, reject);
+		PJSTR_RMALLINPLACE(s, oldp, p, find_len);
+	}
 	if (s != oldp)
 		return jstr_stpmove_len(s, oldp, p - oldp);
 	return (char *)p;
@@ -473,8 +497,8 @@ JSTR_NOEXCEPT
 	const char *oldp = dst;
 	const char *p = dst;
 	const char *const end = dst + sz;
-	for (; n-- && (p = (char *)memchr(p, c, end - p)); pjstr_rmallinplace(&dst, &oldp, &p, 1))
-		;
+	for (; n-- && (p = (char *)memchr(p, c, end - p));)
+		PJSTR_RMALLINPLACE(dst, oldp, p, 1);
 	return (dst != oldp) ? jstr_stpmove_len(dst, oldp, end - oldp) : s + sz;
 }
 
@@ -509,8 +533,8 @@ JSTR_NOEXCEPT
 	char *dst = s;
 	const char *oldp = dst;
 	const char *p = dst;
-	for (; n-- && *(p = strchrnul((char *)p, c)); pjstr_rmallinplace(&dst, &oldp, &p, 1))
-		;
+	for (; n-- && *(p = strchrnul((char *)p, c));)
+		PJSTR_RMALLINPLACE(dst, oldp, p, 1);
 	if (jstr_unlikely(dst == s))
 		return s + n;
 	return (dst != oldp) ? jstr_stpmove_len(dst, oldp, p - oldp) : (s + n);
@@ -547,8 +571,8 @@ JSTR_NOEXCEPT
 	char *dst = s;
 	const char *oldp = dst;
 	const char *p = dst;
-	for (; *(p += strcspn(p, rjct)); pjstr_rmallinplace(&dst, &oldp, &p, 1))
-		;
+	for (; *(p += strcspn(p, rjct));)
+		PJSTR_RMALLINPLACE(dst, oldp, p, 1);
 	return (char *)((dst != oldp) ? jstr_stpmove_len(dst, oldp, p - oldp) : p);
 }
 
@@ -863,7 +887,7 @@ JSTR_NOEXCEPT
 	const char *oldp = p;
 	while (n-- && (p = jstr_strstr_len(p, (*s + *sz) - p, find, find_len))) {
 		if (rplc_len <= find_len) {
-			pjstr_rplcallinplace(&dst, &oldp, &p, rplc, rplc_len, find_len);
+			PJSTR_RPLCALLINPLACE(dst, oldp, p, rplc, rplc_len, find_len);
 		} else {
 			p = pjstr_rplcat_len_higher(s, sz, cap, p - *s, rplc, rplc_len, find_len);
 			if (jstr_unlikely(p == NULL))
