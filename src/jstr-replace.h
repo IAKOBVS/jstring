@@ -764,12 +764,12 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return s + sz;
 	char *dst = s;
-	const char *oldp = dst;
-	const char *p = dst;
+	const char *oldp = s;
+	const char *p = s;
 	const char *const end = dst + sz;
-	for (; n-- && (p = (char *)jstr_memmem(p, end - p, find, find_len)); pjstr_rmallinplace(&dst, &oldp, &p, find_len))
-		;
-	return (dst != oldp) ? jstr_stpmove_len(dst, oldp, end - oldp) : s + sz;
+	for (; n-- && (p = (char *)jstr_memmem(p, end - p, find, find_len)); )
+		PJSTR_RMALLINPLACE(dst, oldp, p, find_len);
+	return (dst != end) ? jstr_stpmove_len(dst, oldp, end - oldp) : s + sz;
 }
 
 /*
@@ -833,7 +833,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(dst == *s))
 		return JSTR_RET_SUCC;
 	if (rplc_len < find_len)
-		*sz = jstr_stpmove_len(dst, oldp, *s + *sz - oldp) - *s;
+		*sz = jstr_stpmove_len(dst, oldp, (*s + *sz) - oldp) - *s;
 	return JSTR_RET_SUCC;
 }
 
