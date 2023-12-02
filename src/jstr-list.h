@@ -47,6 +47,15 @@
 #define jstrl_foreachi(l, i) for (size_t i = 0, const pjstrl_foreach_end_##p = ((l)->size); \
 	                          i < pjstrl_foreach_end_##p;                               \
 	                          ++i)
+#define jstrl_index(l, curr) JSTR_PTR_DIFF(curr, (l)->data)
+#define pjstrl_at(l, i)      ((l)->data + (i))
+#define jstrl_start(l)       ((l)->data)
+#define jstrl_end(l)         ((l)->data + (l)->size)
+#ifdef JSTR_DEBUG
+#	define jstrl_at(l, i) ((i <= (l)->size) ? ((l)->data + (i)) : assert(i <= (l)->size), ((l)->data))
+#else
+#	define jstrl_at(l, i) ((l)->data + (i))
+#endif
 
 PJSTR_BEGIN_DECLS
 
@@ -78,56 +87,6 @@ pjstrl_elemmove(jstrlist_ty *R l,
 	for (; curr < end && curr->data; ++curr)
 		;
 	*curr = *elem;
-}
-
-JSTR_FUNC_CONST
-JSTR_ATTR_INLINE
-static jstr_ty *
-jstrl_start(const jstrlist_ty *R const l)
-JSTR_NOEXCEPT
-{
-	return l->data;
-}
-
-JSTR_FUNC_CONST
-JSTR_ATTR_INLINE
-static jstr_ty *
-jstrl_end(const jstrlist_ty *R const l)
-JSTR_NOEXCEPT
-{
-	return l->data + l->size;
-}
-
-JSTR_ATTR_CONST
-JSTR_ATTR_INLINE
-static jstr_ty *
-jstrl_at(const jstrlist_ty *R l,
-         size_t idx)
-JSTR_NOEXCEPT
-{
-	JSTR_ASSERT_DEBUG(idx <= l->size, "Index out of bounds.");
-	return l->data + idx;
-}
-
-JSTR_ATTR_CONST
-JSTR_ATTR_INLINE
-static jstr_ty *
-pjstrl_at(const jstrlist_ty *R l,
-          size_t idx)
-JSTR_NOEXCEPT
-{
-	JSTR_ASSERT_DEBUG(idx <= l->capacity, "Index out of bounds.");
-	return l->data + idx;
-}
-
-JSTR_FUNC_CONST
-JSTR_ATTR_INLINE
-static size_t
-jstrl_index(jstrlist_ty *R const l,
-            jstr_ty *R const curr)
-JSTR_NOEXCEPT
-{
-	return curr - l->data;
 }
 
 JSTR_FUNC_VOID
@@ -273,7 +232,7 @@ JSTR_FUNC_VOID
 static void
 jstrl_popback(jstrlist_ty *R l)
 {
-	if (jstr_likely(l->size)) {
+	if (jstr_likely(l->size != 0)) {
 #if JSTRL_LAZY_FREE
 		pjstrl_at(l, --l->size)->size = 0;
 #else
@@ -301,7 +260,7 @@ JSTR_FUNC_VOID
 static void
 jstrl_popfront(jstrlist_ty *R l)
 {
-	if (jstr_likely(l->size)) {
+	if (jstr_likely(l->size != 0)) {
 #if JSTRL_LAZY_FREE
 		jstr_ty tmp;
 		pjstrl_elemstore(&tmp, l->data);
@@ -324,7 +283,7 @@ jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
                            size_t s_len)
 {
 	jstr_ty *const lp = l->data;
-	if (jstr_likely(l->size))
+	if (jstr_likely(l->size != 0))
 		pjstrl_memmove(lp + 1, lp, l->size * sizeof(*lp));
 	++l->size;
 	if (jstr_chk(pjstrl_assign_len(&lp->data, &lp->size, &lp->capacity, s, s_len)))
@@ -403,7 +362,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return JSTR_RET_SUCC;
-	if (jstr_chk(jstrl_reserve(l, l->size + argc)))
+	if (jstr_chk(jstrl_reserve(l, l->size + (size_t)argc)))
 		return JSTR_RET_ERR;
 	va_start(ap, l);
 	const char *R arg;
@@ -522,7 +481,7 @@ JSTR_NOEXCEPT
 		free(p->data);
 #endif
 		if (jstr_likely(p != jstrl_end(l)))
-			pjstrl_memmove(p, p + 1, (jstrl_end(l) - (p + 1)) * sizeof(*l->data));
+			pjstrl_memmove(p, p + 1, JSTR_PTR_DIFF(jstrl_end(l), p + 1) * sizeof(*l->data));
 		--l->size;
 #if JSTRL_LAZY_FREE
 		pjstrl_elemmove(l, &tmp);
@@ -605,7 +564,7 @@ jstrl_split_len(jstrlist_ty *R l,
 	const char *end = src + src_len;
 	const char *tok;
 	while ((tok = jstr_strtok_ne_len(&save, end, split, split_len)))
-		if (jstr_chk(jstrl_pushback_len(l, tok, save - tok - split_len)))
+		if (jstr_chk(jstrl_pushback_len(l, tok, JSTR_PTR_DIFF(save, tok - split_len))))
 			goto err;
 	return JSTR_RET_SUCC;
 err:

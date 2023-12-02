@@ -30,7 +30,7 @@ static char buf[512];
 static void *
 aligned(void *p)
 {
-	return (void *)(((uintptr_t)p + 63) & -64);
+	return (void *)(((uintptr_t)p + 63) & (unsigned long)-64);
 }
 
 static void *
@@ -74,34 +74,34 @@ JSTR_NOEXCEPT
 	return NULL;
 }
 
-#define N(s, c)                                                                            \
-	do {                                                                               \
-		int align;                                                                 \
-		for (align = 0; align < 8; align++) {                                      \
-			const char *result, *expected, *p = aligncpy(s, sizeof s, align);  \
-			size_t p_len = strlen(p);                                          \
-			result = jstr_memrchr(p, c, p_len);                                \
-			expected = simple_memrchr(p, c, p_len);                            \
-			ASSERT_RESULT(jstr_memrchr, result == expected, result, expected); \
-			result = jstr_strnchr(p, c, p_len);                                \
-			expected = simple_strnchr(p, c, p_len);                            \
-			ASSERT_RESULT(jstr_strnchr, result == expected, result, expected); \
-		}                                                                          \
+#define N(s, c)                                                                                   \
+	do {                                                                                      \
+		int align;                                                                        \
+		for (align = 0; align < 8; align++) {                                             \
+			const char *result, *expected, *p = aligncpy(s, sizeof s, (size_t)align); \
+			size_t p_len = strlen(p);                                                 \
+			result = jstr_memrchr(p, c, p_len);                                       \
+			expected = simple_memrchr(p, c, p_len);                                   \
+			ASSERT_RESULT(jstr_memrchr, result == expected, result, expected);        \
+			result = jstr_strnchr(p, c, p_len);                                       \
+			expected = simple_strnchr(p, c, p_len);                                   \
+			ASSERT_RESULT(jstr_strnchr, result == expected, result, expected);        \
+		}                                                                                 \
 	} while (0)
 
-#define T(s, c, n)                                                                         \
-	do {                                                                               \
-		int align;                                                                 \
-		for (align = 0; align < 8; align++) {                                      \
-			const char *result, *expected, *p = aligncpy(s, sizeof s, align);  \
-			size_t p_len = strlen(p);                                          \
-			result = jstr_memrchr(p, c, p_len);                                \
-			expected = simple_memrchr(p, c, p_len);                            \
-			ASSERT_RESULT(jstr_memrchr, result == expected, result, expected); \
-			result = jstr_strnchr(p, c, p_len);                                \
-			expected = simple_strnchr(p, c, p_len);                            \
-			ASSERT_RESULT(jstr_strnchr, result == expected, result, expected); \
-		}                                                                          \
+#define T(s, c, n)                                                                                \
+	do {                                                                                      \
+		int align;                                                                        \
+		for (align = 0; align < 8; align++) {                                             \
+			const char *result, *expected, *p = aligncpy(s, sizeof s, (size_t)align); \
+			size_t p_len = strlen(p);                                                 \
+			result = jstr_memrchr(p, c, p_len);                                       \
+			expected = simple_memrchr(p, c, p_len);                                   \
+			ASSERT_RESULT(jstr_memrchr, result == expected, result, expected);        \
+			result = jstr_strnchr(p, c, p_len);                                       \
+			expected = simple_strnchr(p, c, p_len);                                   \
+			ASSERT_RESULT(jstr_strnchr, result == expected, result, expected);        \
+		}                                                                                 \
 	} while (0)
 
 int
@@ -111,7 +111,6 @@ main(int argc, char **argv)
 	int i;
 	char a[128];
 	char s[256];
-
 	TESTING(jstr_strnchr);
 	TESTING(jstr_memrchr);
 

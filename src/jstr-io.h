@@ -343,7 +343,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(fstat(fd, st)))
 		goto err;
-	return jstrio_readfilefd_len(s, sz, cap, fd, st->st_size);
+	return jstrio_readfilefd_len(s, sz, cap, fd, (size_t)st->st_size);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
@@ -390,7 +390,7 @@ JSTR_NOEXCEPT
 		goto err;
 	if (jstr_unlikely(fstat(fd, st)))
 		goto err_close;
-	return jstrio_readfile_len(s, sz, cap, fname, st->st_size);
+	return jstrio_readfile_len(s, sz, cap, fname, (size_t)st->st_size);
 err_close:
 	close(fd);
 err:
@@ -416,7 +416,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(home == NULL))
 		return NULL;
 	const size_t len = strlen(home);
-	jstr_strmove_len(s + len, s + 1, (s + sz) - (s + 1));
+	jstr_strmove_len(s + len, s + 1, JSTR_PTR_DIFF(s + sz, s + 1));
 	memcpy(s, home, len);
 	return s + sz + len - 1;
 }
@@ -443,7 +443,7 @@ JSTR_NOEXCEPT
 	const size_t len = strlen(home);
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + len)))
 		return JSTR_RET_ERR;
-	jstr_strmove_len(*s + len, *s + 1, (*s + *sz) - (*s + 1));
+	jstr_strmove_len(*s + len, *s + 1, JSTR_PTR_DIFF(*s + *sz, *s + 1));
 	memcpy(*s, home, len);
 	*sz += len;
 	return JSTR_RET_SUCC;
@@ -467,8 +467,8 @@ JSTR_NOEXCEPT
 		return NULL;
 	const size_t len = strlen(home);
 	char *p = s;
-	while ((p = (char *)memchr(p, '~', (s + sz) - p))) {
-		jstr_strmove_len(p + len, p + 1, (s + sz) - (p + 1));
+	while ((p = (char *)memchr(p, '~', JSTR_PTR_DIFF(s + sz, p)))) {
+		jstr_strmove_len(p + len, p + 1, JSTR_PTR_DIFF(s + sz, p + 1));
 		memcpy(p, home, len);
 		p += len;
 		sz += (len - 1);
@@ -495,14 +495,14 @@ JSTR_NOEXCEPT
 	const size_t len = strlen(home);
 	const char *tmp;
 	char *p = *s;
-	while ((p = (char *)memchr(p, '~', (*s + *sz) - p))) {
+	while ((p = (char *)memchr(p, '~', JSTR_PTR_DIFF(*s + *sz, p)))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
 			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + len)))
 				return JSTR_RET_ERR;
 			p = *s + (p - tmp);
 		}
-		jstr_strmove_len(p + len, p + 1, (*s + *sz) - (p + 1));
+		jstr_strmove_len(p + len, p + 1, JSTR_PTR_DIFF(*s + *sz, p + 1));
 		memcpy(p, home, len);
 		p += len;
 		*sz += (len - 1);
@@ -544,7 +544,7 @@ jstrio_appendpath_len(char *R *R s,
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len)))
 		return JSTR_RET_ERR;
-	*sz = jstrio_appendpath_len_p(*s, *sz, fname, fname_len) - *s;
+	*sz = JSTR_PTR_DIFF(jstrio_appendpath_len_p(*s, *sz, fname, fname_len), *s);
 	return JSTR_RET_SUCC;
 }
 
@@ -660,7 +660,7 @@ typedef enum jstrio_ftw_flag_ty {
 		} while (0)
 #else
 #	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep) \
-		((void)(newpath_len = pjstrio_appendpath_p(dirpath + dirpath_len, (ep)->d_name) - dirpath))
+		((void)(newpath_len = JSTR_PTR_DIFF(pjstrio_appendpath_p(dirpath + dirpath_len, (ep)->d_name), dirpath)))
 #endif
 
 #if USE_ATFILE
@@ -1016,7 +1016,7 @@ JSTR_NOEXCEPT
 			const char *R home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
 				goto err;
-			const size_t homelen = jstr_stpcpy(fulpath, home) - fulpath;
+			const size_t homelen = JSTR_PTR_DIFF(jstr_stpcpy(fulpath, home), fulpath);
 			memcpy(fulpath + homelen, dirpath + 1, dirpath_len);
 			dirpath_len += homelen - 1;
 		}
@@ -1039,13 +1039,13 @@ JSTR_NOEXCEPT
 		goto ftw;
 	}
 	data.ftw.dirpath_len = dirpath_len;
-	if (jstr_unlikely(
+	if (
 #if USE_ATFILE
-	    fstat(fd, &st)
+	jstr_unlikely(fstat(fd, &st))
 #else
-	    stat(fulpath, &st)
+	jstr_unlikely(stat(fulpath, &st))
 #endif
-	    )) {
+	) {
 		data.ftw.ftw_state = JSTRIO_FTW_STATE_NS;
 		goto fn;
 	}

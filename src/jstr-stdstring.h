@@ -436,7 +436,7 @@ JSTR_NOEXCEPT
 #else
 	const char *const p = (char *)memchr(src, c, sz);
 	if (p != NULL)
-		return jstr_stpcpy_len(dst, src, p - (const char *)src);
+		return jstr_stpcpy_len(dst, src, JSTR_PTR_DIFF(p, src));
 	memcpy(dst, src, sz);
 	return NULL;
 #endif /* HAVE_MEMCPY */

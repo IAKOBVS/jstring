@@ -309,9 +309,9 @@ JSTR_NOEXCEPT
 	size_t find_len;
 	jstrre_ret_ty ret;
 	while (n-- && *p) {
-		ret = jstrre_exec_len(preg, p, end - p, 1, &rm, eflags);
+		ret = jstrre_exec_len(preg, p, JSTR_PTR_DIFF(end, p), 1, &rm, eflags);
 		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err, goto err_free);
-		find_len = rm.rm_eo - rm.rm_so;
+		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		p += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
 			++p;
@@ -319,7 +319,7 @@ JSTR_NOEXCEPT
 			PJSTR_RMALLINPLACE(dst, oldp, p, find_len);
 	}
 	if (dst != oldp)
-		*sz = jstr_stpmove_len(dst, oldp, end - oldp) - *s;
+		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(dst, oldp, JSTR_PTR_DIFF(end, oldp)), *s);
 	return JSTRRE_RET_NOERROR;
 err_free:
 	jstr_free_noinline(s, sz, cap);
@@ -378,7 +378,7 @@ jstrre_rmall(regex_t *R preg,
              int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rmn_from(preg, s, sz, cap, 0, eflags, -1);
+	return jstrre_rmn_from(preg, s, sz, cap, 0, eflags, (size_t)-1);
 }
 
 JSTR_FUNC_VOID
@@ -392,7 +392,7 @@ jstrre_rmall_from(regex_t *R preg,
                   int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, -1);
+	return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, (size_t)-1);
 }
 
 JSTR_FUNC_VOID
@@ -408,16 +408,16 @@ pjstrre_rplcallsmallerrplc(char *s,
                            size_t find_len)
 {
 	if (*dst != *oldp) {
-		*dst = (char *)jstr_mempmove(*dst, *oldp, *p - *oldp);
+		*dst = (char *)jstr_mempmove(*dst, *oldp, JSTR_PTR_DIFF(*p, *oldp));
 		jstr_strmove_len(*dst + rplc_len,
 		                 *p + find_len,
-		                 (s + *sz) - (*p + find_len));
+		                 JSTR_PTR_DIFF(s + *sz, *p + find_len));
 		*dst = (char *)jstr_mempcpy(*dst, rplc, rplc_len);
 		*oldp = *dst;
 	} else {
 		jstr_strmove_len(*p + rplc_len,
 		                 *p + find_len,
-		                 s + *sz - (*p + find_len));
+		                 JSTR_PTR_DIFF(s + *sz, *p + find_len));
 		memcpy(*p, rplc, rplc_len);
 	}
 	*sz += rplc_len - find_len;
@@ -438,7 +438,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
                           size_t find_len)
 {
 	if (*dst != *oldp)
-		memmove(*dst, *oldp, *p - *oldp);
+		memmove(*dst, *oldp, JSTR_PTR_DIFF(*p, *oldp));
 	if (*cap <= *sz + rplc_len - find_len) {
 		char *tmp = *s;
 		if (jstr_chk(jstr_reservealways(&tmp, sz, cap, *sz + rplc_len - find_len)))
@@ -449,7 +449,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 	}
 	jstr_strmove_len(*p + rplc_len,
 	                 *p + find_len,
-	                 (*s + *sz) - (*p + find_len));
+	                 JSTR_PTR_DIFF(*s + *sz, *p + find_len));
 	*p = (char *)jstr_mempcpy(*p, rplc, rplc_len);
 	*dst += rplc_len;
 	*oldp = *dst;
@@ -483,9 +483,9 @@ JSTR_NOEXCEPT
 	regmatch_t rm;
 	jstrre_ret_ty ret;
 	while (n-- && *p) {
-		ret = jstrre_exec_len(preg, p, (*s + *sz) - p, 1, &rm, eflags);
+		ret = jstrre_exec_len(preg, p, JSTR_PTR_DIFF(*s + *sz, p), 1, &rm, eflags);
 		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err, goto err_free);
-		find_len = rm.rm_eo - rm.rm_so;
+		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		p += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
 			continue;
@@ -499,7 +499,7 @@ JSTR_NOEXCEPT
 		}
 	}
 	if (dst != oldp)
-		*sz = jstr_stpmove_len(dst, oldp, (*s + *sz) - oldp) - *s;
+		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(dst, oldp, JSTR_PTR_DIFF(*s + *sz, oldp)), *s);
 	return JSTRRE_RET_NOERROR;
 err_free:
 	jstr_free_noinline(s, sz, cap);
@@ -536,7 +536,7 @@ jstrre_rplcall_len_from(regex_t *R preg,
                         int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, -1);
+	return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, (size_t)-1);
 }
 
 JSTR_FUNC
@@ -551,7 +551,7 @@ jstrre_rplcall_len(regex_t *R preg,
                    int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, -1);
+	return jstrre_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, (size_t)-1);
 }
 
 JSTR_ATTR_INLINE
@@ -607,12 +607,12 @@ JSTR_NOEXCEPT
 	const char *const rplc_e = rplc + rplc_len;
 	int has_bref = 0;
 	int c;
-	for (; (rplc = (char *)memchr(rplc, '\\', rplc_e - rplc)); ++rplc, has_bref = 1) {
+	for (; (rplc = (char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); ++rplc, has_bref = 1) {
 		c = *++rplc;
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
 			JSTR_ASSERT_DEBUG((size_t)c < nmatch, "Using a backreference higher than nmatch.");
-			rplc_len += (rm[c].rm_eo - rm[c].rm_so) - 2;
+			rplc_len += (size_t)(rm[c].rm_eo - rm[c].rm_so - 2);
 		} else if (jstr_unlikely(*rplc == '\0')) {
 			break;
 		}
@@ -635,17 +635,17 @@ JSTR_NOEXCEPT
 	int c;
 	for (;; ++rplc) {
 		rold = rplc;
-		rplc = (const char *)memchr(rplc, '\\', rplc_e - rplc);
+		rplc = (const char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc));
 		if (rplc == NULL)
 			break;
 		c = *++rplc;
 		if (jstr_likely(jstr_isdigit(c))) {
 			if (jstr_likely(rdst == rold)) {
-				rdst = (char *)jstr_mempmove(rdst, rold, (rplc - 1) - rold);
+				rdst = (char *)jstr_mempmove(rdst, rold, JSTR_PTR_DIFF(rplc - 1, rold));
 				rplc += (rplc - 1) - rold - 1;
 			}
 			c -= '0';
-			rdst = (char *)jstr_mempcpy(rdst, mtc + rm[c].rm_so, rm[c].rm_eo - rm[c].rm_so);
+			rdst = (char *)jstr_mempcpy(rdst, mtc + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
 		} else if (jstr_unlikely(*rplc == '\0')) {
 			break;
 		} else {
@@ -655,7 +655,7 @@ JSTR_NOEXCEPT
 		}
 	}
 	if (rdst != rold)
-		memcpy(rdst, rold, rplc_e - rold);
+		memcpy(rdst, rold, JSTR_PTR_DIFF(rplc_e, rold));
 }
 
 JSTR_FUNC
@@ -690,9 +690,9 @@ JSTR_NOEXCEPT
 	size_t find_len;
 	jstrre_ret_ty ret;
 	while (n-- && *p) {
-		ret = jstrre_exec_len(preg, p, (*s + *sz) - p, nmatch, rm, eflags);
+		ret = jstrre_exec_len(preg, p, JSTR_PTR_DIFF(*s + *sz, p), nmatch, rm, eflags);
 		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err, goto err_free_rdst);
-		find_len = rm[0].rm_eo - rm[0].rm_so;
+		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (jstr_unlikely(find_len == 0)) {
 			++p;
 			continue;
@@ -714,7 +714,7 @@ JSTR_NOEXCEPT
 			}
 		pjstrre_brefrplccreat(p, rm, rdstp, rplc, rplc_len);
 		p += rm[0].rm_so;
-		find_len = rm[0].rm_eo - rm[0].rm_so;
+		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (rdst_len <= find_len)
 			PJSTR_RPLCALLINPLACE(dst, oldp, p, rdstp, rdst_len, find_len);
 		else if (*cap > *sz + rdst_len - find_len)
@@ -725,7 +725,7 @@ JSTR_NOEXCEPT
 		}
 	}
 	if (dst != oldp)
-		*sz = jstr_stpmove_len(dst, oldp, (*s + *sz) - oldp) - *s;
+		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(dst, oldp, JSTR_PTR_DIFF(*s + *sz, oldp)), *s);
 	free(rdst_heap);
 	return JSTRRE_RET_NOERROR;
 err_free_rdst:
@@ -753,7 +753,7 @@ jstrre_rplcall_bref_len(regex_t *R preg,
                         size_t nmatch)
 JSTR_NOEXCEPT
 {
-	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, -1);
+	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, (size_t)-1);
 }
 
 JSTR_FUNC
@@ -770,7 +770,7 @@ jstrre_rplcall_bref_len_from(regex_t *R preg,
                              size_t nmatch)
 JSTR_NOEXCEPT
 {
-	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, -1);
+	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, (size_t)-1);
 }
 
 JSTR_FUNC

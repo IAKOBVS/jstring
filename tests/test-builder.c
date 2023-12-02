@@ -103,8 +103,8 @@
 			size_t str_len = strlen(str);                                                                                          \
 			T_RPLC_INIT((result), str, str_len);                                                                                   \
 			T_RPLC_INIT((expected), str, str_len);                                                                                 \
-			(result).size = func((result).data, (result).size, find, i) - (result).data;                                           \
-			(expected).size = simple_func((expected).data, (expected).size, find, i) - (expected).data;                            \
+			(result).size = JSTR_PTR_DIFF(func((result).data, (result).size, find, i), (result).data);                             \
+			(expected).size = JSTR_PTR_DIFF(simple_func((expected).data, (expected).size, find, i), (expected).data);              \
 			ASSERT_RESULT_RMCHR(func, str, find, strlen((result).data) == strlen((expected).data));                                \
 			ASSERT_RESULT_RMCHR(func, str, find, (result).size == (expected).size);                                                \
 			ASSERT_RESULT_RMCHR(func, str, find, !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data))); \
@@ -139,8 +139,8 @@
 			size_t find_len = strlen(find);                                                                                           \
 			T_RPLC_INIT((result), str, str_len);                                                                                      \
 			T_RPLC_INIT((expected), str, str_len);                                                                                    \
-			(result).size = func((result).data, (result).size, find, find_len, i) - (result).data;                                    \
-			(expected).size = simple_func((expected).data, (expected).size, find, find_len, i) - (expected).data;                     \
+			(result).size = JSTR_PTR_DIFF(func((result).data, (result).size, find, find_len, i), (result).data);                      \
+			(expected).size = JSTR_PTR_DIFF(simple_func((expected).data, (expected).size, find, find_len, i), (expected).data);       \
 			ASSERT_RESULT_RPLC(func, str, find, "", strlen((result).data) == strlen((expected).data));                                \
 			ASSERT_RESULT_RPLC(func, str, find, "", (result).size == (expected).size);                                                \
 			ASSERT_RESULT_RPLC(func, str, find, "", !memcmp((result).data, (expected).data, (result).size * sizeof(*(result).data))); \
@@ -236,11 +236,8 @@ simple_rmn_len_p(char *s,
                  size_t n)
 {
 	char *p = s;
-	for (; n-- && (p = simple_memmem(p, (s + sz) - p, find, find_len));) {
-		*(char *)jstr_mempmove(p,
-		                       p + find_len,
-		                       (s + sz) - (p + find_len))
-		= '\0';
+	for (; n-- && (p = simple_memmem(p, JSTR_PTR_DIFF(s + sz, p), find, find_len));) {
+		*(char *)jstr_mempmove(p, p + find_len, JSTR_PTR_DIFF(s + sz, p + find_len)) = '\0';
 		sz -= find_len;
 		++p;
 	}
@@ -259,8 +256,8 @@ simple_rplcn_len_from(char **s,
                       size_t n)
 {
 	char *p = *s + start_idx;
-	for (; n-- && (p = simple_memmem(p, (*s + *sz) - p, find, find_len));) {
-		p = pjstr_rplcat_len_higher(s, sz, cap, p - *s, rplc, rplc_len, find_len);
+	for (; n-- && (p = simple_memmem(p, JSTR_PTR_DIFF(*s + *sz, p), find, find_len));) {
+		p = pjstr_rplcat_len_higher(s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len);
 		if (jstr_unlikely(p == NULL))
 			return JSTR_RET_ERR;
 	}

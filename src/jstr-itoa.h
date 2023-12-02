@@ -44,7 +44,7 @@ static const char pjstr_itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 #define PJSTR_DEFINE_ITOA_COUNTUDIGITS(T, name, is_thousep)                            \
 	JSTR_FUNC                                                                      \
 	JSTR_ATTR_INLINE                                                               \
-	static int                                                                     \
+	static size_t                                                                  \
 	pjstr_itoa_countudigits_##name(T number,                                       \
 	                               unsigned int base)                              \
 	{                                                                              \
@@ -127,7 +127,7 @@ JSTR_NOEXCEPT
 		number = -number;
 		*buf++ = '-';
 	}
-	return jstr_ulltoa_p(number, buf, base);
+	return jstr_ulltoa_p((unsigned long long)number, buf, base);
 }
 
 #define PJSTR_ULLTOA(type, name, u)                             \
@@ -165,7 +165,7 @@ static char *
 jstr_ulltoa_thousep_p(unsigned long long number,
                       char *R buf,
                       unsigned int base,
-                      int separator)
+                      char separator)
 JSTR_NOEXCEPT
 {
 #define CONV(base)                            \
@@ -220,14 +220,14 @@ static char *
 jstr_lltoa_thousep_p(long long number,
                      char *R buf,
                      unsigned int base,
-                     int separator)
+                     char separator)
 JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
 		*buf++ = '-';
 	}
-	return jstr_ulltoa_thousep_p(number, buf, base, separator);
+	return jstr_ulltoa_thousep_p((unsigned long long)number, buf, base, separator);
 }
 
 #define PJSTR_ULLTOA_SEP(type, name, u)                                         \
@@ -243,7 +243,7 @@ JSTR_NOEXCEPT
 	jstr_##name##_thousep_p(type number,                                    \
 	                        char *R buf,                                    \
 	                        unsigned int base,                              \
-	                        int separator)                                  \
+	                        char separator)                                 \
 	JSTR_NOEXCEPT                                                           \
 	{                                                                       \
 		return jstr_##u##lltoa_thousep_p(number, buf, base, separator); \
@@ -268,7 +268,7 @@ PJSTR_ULLTOA_SEP(int, itoa, )
 	{                                                                                                   \
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base)))) \
 			return JSTR_RET_ERR;                                                                \
-		*sz = jstr_##name##_p(number, *s + *sz, base) - *s;                                         \
+		*sz = JSTR_PTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);                           \
 		return JSTR_RET_SUCC;                                                                       \
 	}
 
@@ -278,20 +278,20 @@ PJSTR_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 
 #undef PJSTR_DEFINE_UTOA_SAFE
 
-#define PJSTR_DEFINE_ITOA_SAFE(T, name, func_name)                                                                                        \
-	JSTR_FUNC                                                                                                                         \
-	JSTR_ATTR_INLINE                                                                                                                  \
-	static jstr_ret_ty                                                                                                                \
-	jstr_##name(char *R *R s,                                                                                                         \
-	            size_t *R sz,                                                                                                         \
-	            size_t *R cap,                                                                                                        \
-	            T number,                                                                                                             \
-	            unsigned int base)                                                                                                    \
-	{                                                                                                                                 \
-		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##func_name((number < 0) ? -number : number, base)))) \
-			return JSTR_RET_ERR;                                                                                              \
-		*sz = jstr_##name##_p(number, *s + *sz, base) - *s;                                                                       \
-		return JSTR_RET_SUCC;                                                                                                     \
+#define PJSTR_DEFINE_ITOA_SAFE(T, name, func_name)                                                                                                                  \
+	JSTR_FUNC                                                                                                                                                   \
+	JSTR_ATTR_INLINE                                                                                                                                            \
+	static jstr_ret_ty                                                                                                                                          \
+	jstr_##name(char *R *R s,                                                                                                                                   \
+	            size_t *R sz,                                                                                                                                   \
+	            size_t *R cap,                                                                                                                                  \
+	            T number,                                                                                                                                       \
+	            unsigned int base)                                                                                                                              \
+	{                                                                                                                                                           \
+		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##func_name((number < 0) ? (unsigned T) - number : (unsigned T)number, base)))) \
+			return JSTR_RET_ERR;                                                                                                                        \
+		*sz = JSTR_PTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);                                                                                   \
+		return JSTR_RET_SUCC;                                                                                                                               \
 	}
 
 PJSTR_DEFINE_ITOA_SAFE(int, itoa, utoa)
@@ -309,11 +309,11 @@ PJSTR_DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 	            size_t *R cap,                                                                          \
 	            T number,                                                                               \
 	            unsigned int base,                                                                      \
-	            int separator)                                                                          \
+	            char separator)                                                                         \
 	{                                                                                                   \
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##name(number, base)))) \
 			return JSTR_RET_ERR;                                                                \
-		*sz = jstr_##name##_p(number, *s + *sz, base, separator) - *s;                              \
+		*sz = JSTR_PTR_DIFF(jstr_##name##_p(number, *s + *sz, base, separator), *s);                \
 		return JSTR_RET_SUCC;                                                                       \
 	}
 
@@ -323,21 +323,21 @@ PJSTR_DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 
 #undef PJSTR_DEFINE_UTOA_THOUSEP_SAFE
 
-#define PJSTR_DEFINE_ITOA_THOUSEP_SAFE(T, name, func_name)                                                                                \
-	JSTR_FUNC                                                                                                                         \
-	JSTR_ATTR_INLINE                                                                                                                  \
-	static jstr_ret_ty                                                                                                                \
-	jstr_##name(char *R *R s,                                                                                                         \
-	            size_t *R sz,                                                                                                         \
-	            size_t *R cap,                                                                                                        \
-	            T number,                                                                                                             \
-	            unsigned int base,                                                                                                    \
-	            int separator)                                                                                                        \
-	{                                                                                                                                 \
-		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##func_name((number < 0) ? -number : number, base)))) \
-			return JSTR_RET_ERR;                                                                                              \
-		*sz = jstr_##name##_p(number, *s + *sz, base, separator) - *s;                                                            \
-		return JSTR_RET_SUCC;                                                                                                     \
+#define PJSTR_DEFINE_ITOA_THOUSEP_SAFE(T, name, func_name)                                                                                                          \
+	JSTR_FUNC                                                                                                                                                   \
+	JSTR_ATTR_INLINE                                                                                                                                            \
+	static jstr_ret_ty                                                                                                                                          \
+	jstr_##name(char *R *R s,                                                                                                                                   \
+	            size_t *R sz,                                                                                                                                   \
+	            size_t *R cap,                                                                                                                                  \
+	            T number,                                                                                                                                       \
+	            unsigned int base,                                                                                                                              \
+	            char separator)                                                                                                                                 \
+	{                                                                                                                                                           \
+		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + pjstr_itoa_countudigits_##func_name((number < 0) ? (unsigned T) - number : (unsigned T)number, base)))) \
+			return JSTR_RET_ERR;                                                                                                                        \
+		*sz = JSTR_PTR_DIFF(jstr_##name##_p(number, *s + *sz, base, separator), *s);                                                                        \
+		return JSTR_RET_SUCC;                                                                                                                               \
 	}
 
 PJSTR_DEFINE_ITOA_THOUSEP_SAFE(int, itoa_thousep, utoa_thousep)
@@ -346,17 +346,17 @@ PJSTR_DEFINE_ITOA_THOUSEP_SAFE(long long, lltoa_thousep, ulltoa_thousep)
 
 #undef PJSTR_DEFINE_ITOA_THOUSEP_SAFE
 
-#define PJSTR_DEFINE_ATOU(T, func_name)              \
-	JSTR_FUNC                                    \
-	T jstr_##func_name##_len(const char *R s,    \
-	                         size_t sz)          \
-	{                                            \
-		if (sz == 0)                         \
-			return 0;                    \
-		T n = *s++ - '0';                    \
-		while (--sz)                         \
-			n = (n * 10) + (*s++ - '0'); \
-		return n;                            \
+#define PJSTR_DEFINE_ATOU(T, func_name)                 \
+	JSTR_FUNC                                       \
+	T jstr_##func_name##_len(const char *R s,       \
+	                         size_t sz)             \
+	{                                               \
+		if (sz == 0)                            \
+			return 0;                       \
+		T n = (T)(*s++ - '0');                  \
+		while (--sz)                            \
+			n = (n * 10) + (T)(*s++ - '0'); \
+		return n;                               \
 	}
 
 PJSTR_DEFINE_ATOU(unsigned int, atou)
@@ -365,26 +365,26 @@ PJSTR_DEFINE_ATOU(unsigned long long, atoull)
 
 #undef PJSTR_DEFINE_ATOU
 
-#define PJSTR_DEFINE_ATOI(T, func_name)              \
-	JSTR_FUNC                                    \
-	JSTR_ATTR_INLINE                             \
-	T jstr_##func_name##_len(const char *R s,    \
-	                         size_t sz)          \
-	{                                            \
-		if (sz == 0)                         \
-			return 0;                    \
-		T n;                                 \
-		if (*s == '-') {                     \
-			if (jstr_unlikely(sz == 1))  \
-				return 0;            \
-			--sz;                        \
-			n = -(*s++ - '0');           \
-		} else {                             \
-			n = *s++ - '0';              \
-		}                                    \
-		while (--sz)                         \
-			n = (n * 10) + (*s++ - '0'); \
-		return n;                            \
+#define PJSTR_DEFINE_ATOI(T, func_name)                 \
+	JSTR_FUNC                                       \
+	JSTR_ATTR_INLINE                                \
+	T jstr_##func_name##_len(const char *R s,       \
+	                         size_t sz)             \
+	{                                               \
+		if (sz == 0)                            \
+			return 0;                       \
+		T n;                                    \
+		if (*s == '-') {                        \
+			if (jstr_unlikely(sz == 1))     \
+				return 0;               \
+			--sz;                           \
+			n = -(*s++ - '0');              \
+		} else {                                \
+			n = (T)(*s++ - '0');            \
+		}                                       \
+		while (--sz)                            \
+			n = (n * 10) + (T)(*s++ - '0'); \
+		return n;                               \
 	}
 
 PJSTR_DEFINE_ATOI(int, atoi)
