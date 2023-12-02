@@ -6,11 +6,12 @@
 searching from a specified index.
 - reverse standard string functions: memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
 etc.
-- standard string functions for non-nul terminated strings: Memspn\(\), memcspn\(\),
+- standard string functions for non-nul terminated strings: memspn\(\), memcspn\(\),
 mempbrk\(\), etc.
 - extensions to standard string functions: strnstr\(\), strnchr\(\), strcasestr\_len\(\).
 - string formatting: asprintf\(\) and vsprintfstrlen\(\), which returns the maximum
-number of characters \(not the exact number\) vsprintf will write including the nul.
+number of characters \(not the exact number\) vsprintf will write to the buffer
+including the nul terminator.
 
 ## Installation:
 
@@ -32,8 +33,11 @@ Some headers may need to be explicitly included because they rely on POSIX.
 https://github.com/IAKOBVS/rarebyte
 
 ## Disclaimer:
-Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 to exclude them. jstr\_ty, jstrl\_ty, and
-jarr\_ty must be initialized with zeros.
+Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 to
+exclude them. jstr\_ty, jstrl\_ty, and jarr\_ty must be initialized with zeros.
+
+jstr\_tolower\(\) and jstr\_toupper\(\) will not handle EOF correctly. The tolower of
+EOF may not equal EOF.
 
 ```
 jstr_ty j = JSTR_INIT;
@@ -59,8 +63,8 @@ not be grown.
 is assumed to be within bounds.
 - \*\_bref\(\): Enable backreferences for the replacement string. \0 is interpreted
 as referring to the whole matched string.
-- \*\_at\(\): Return an element of from an array type. When JSTR\_PANIC is defined as
-1, do a bounds check at runtime.
+- \*\_at\(\): Return an element of from an array type. When JSTR\_DEBUG is defined as
+1, do bounds checking at runtime.
 - \*\_chk\*\(\): Evaluate to true if the value passed is an error value.
 - \*\_err\(\): Print an error message.
 - \*\_errdie\(\): Print an error message and exit\(\).
