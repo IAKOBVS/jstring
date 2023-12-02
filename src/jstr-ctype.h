@@ -37,7 +37,8 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-/* Does not handle EOF. */
+/* Will not handle EOF correctly.
+   tolower(EOF) != EOF */
 #define jstr_toupper(c) jstr_ctype_table_toupper[(unsigned char)c]
 #define jstr_tolower(c) jstr_ctype_table_tolower[(unsigned char)c]
 
