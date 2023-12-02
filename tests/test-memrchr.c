@@ -1,4 +1,6 @@
-/* libc-test is licensed under the following standard MIT license:
+/* Modified version of functional/strchr.c taken from musl's libc-test
+
+   libc-test is licensed under the following standard MIT license:
 
    Copyright © 2005-2013 libc-test AUTHORS
 
