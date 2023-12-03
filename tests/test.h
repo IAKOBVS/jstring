@@ -11,7 +11,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "../jstr/jstr-macros.h"
+#include "../src/jstr-macros.h"
 
 /* clang-format off */
 #define EMPTY(p)          (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
