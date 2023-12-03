@@ -90,21 +90,6 @@ JSTR_NOEXCEPT
 		}                                                                                 \
 	} while (0)
 
-#define T(s, c, n)                                                                                \
-	do {                                                                                      \
-		int align;                                                                        \
-		for (align = 0; align < 8; align++) {                                             \
-			const char *result, *expected, *p = aligncpy(s, sizeof s, (size_t)align); \
-			size_t p_len = strlen(p);                                                 \
-			result = jstr_memrchr(p, c, p_len);                                       \
-			expected = simple_memrchr(p, c, p_len);                                   \
-			ASSERT_RESULT(jstr_memrchr, result == expected, result, expected);        \
-			result = jstr_strnchr(p, c, p_len);                                       \
-			expected = simple_strnchr(p, c, p_len);                                   \
-			ASSERT_RESULT(jstr_strnchr, result == expected, result, expected);        \
-		}                                                                                 \
-	} while (0)
-
 int
 main(int argc, char **argv)
 {
@@ -128,25 +113,25 @@ main(int argc, char **argv)
 	N(a, 128);
 	N(a, 255);
 
-	T("", 0, 0);
-	T("a", 'a', 0);
-	T("a", 'a' + 256, 0);
-	T("a", 0, 1);
-	T("abb", 'b', 1);
-	T("aabb", 'b', 2);
-	T("aaabb", 'b', 3);
-	T("aaaabb", 'b', 4);
-	T("aaaaabb", 'b', 5);
-	T("aaaaaabb", 'b', 6);
-	T("abc abc", 'c', 2);
-	T(s, 1, 0);
-	T(s, 2, 1);
-	T(s, 10, 9);
-	T(s, 11, 10);
-	T(s, 127, 126);
-	T(s, 128, 127);
-	T(s, 255, 254);
-	T(s, 0, 255);
+	N("", 0);
+	N("a", 'a');
+	N("a", 'a' + 256);
+	N("a", 0);
+	N("abb", 'b');
+	N("aabb", 'b');
+	N("aaabb", 'b');
+	N("aaaabb", 'b');
+	N("aaaaabb", 'b');
+	N("aaaaaabb", 'b');
+	N("abc abc", 'c');
+	N(s, 1);
+	N(s, 2);
+	N(s, 10);
+	N(s, 11);
+	N(s, 127);
+	N(s, 128);
+	N(s, 255);
+	N(s, 0);
 
 	SUCCESS();
 	return EXIT_SUCCESS;
