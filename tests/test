@@ -6,6 +6,7 @@ FLAGS='
 -Wall
 -Wextra
 -Wpedantic
+-fsanitize=address
 '
 
 has_prog()
@@ -27,20 +28,20 @@ compile()
 		#shellcheck disable=disable=SC2086
 		$CC "$file" -o "$out" $FLAGS $args
 		"$out"
-		# rm "$out"
+		rm "$out"
 	fi
 }
 
 cd "$(dirname "$0")" || exit
 
-if has_prog tcc; then
+if false; then
 	CC=tcc
 else
 	CC=cc
 	# In GCC, -O1 compiles faster.
 	[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O1"
 	# Set the path to compile the tests to.
-	if [ "$TMPDIR" ]; then
+	if [ -z "$TMPDIR" ]; then
 		if [ -d /tmp ]; then
 			TMPDIR=/tmp/$tmp
 		else

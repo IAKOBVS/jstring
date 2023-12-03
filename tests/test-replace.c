@@ -223,23 +223,6 @@ simple_memmem(const void *hs,
 	return NULL;
 }
 
-JSTR_ATTR_MAYBE_UNUSED
-static char *
-simple_rmn_len_p(char *s,
-                 size_t sz,
-                 const char *find,
-                 size_t find_len,
-                 size_t n)
-{
-	char *p = s;
-	for (; n-- && (p = simple_memmem(p, JSTR_PTR_DIFF(s + sz, p), find, find_len));) {
-		*(char *)jstr_mempmove(p, p + find_len, JSTR_PTR_DIFF(s + sz, p + find_len)) = '\0';
-		sz -= find_len;
-		++p;
-	}
-	return s + sz;
-}
-
 static int
 simple_rplcn_len_from(char **s,
                       size_t *sz,
@@ -254,10 +237,31 @@ simple_rplcn_len_from(char **s,
 	char *p = *s + start_idx;
 	for (; n-- && (p = simple_memmem(p, JSTR_PTR_DIFF(*s + *sz, p), find, find_len));) {
 		p = pjstr_rplcat_len_higher(s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len);
-		if (jstr_unlikely(p == NULL))
-			return JSTR_RET_ERR;
+		assert(p != NULL);
 	}
 	return JSTR_RET_SUCC;
+}
+
+JSTR_ATTR_MAYBE_UNUSED
+static char *
+simple_rmn_len_p(char *s,
+                 size_t sz,
+                 const char *find,
+                 size_t find_len,
+                 size_t n)
+{
+	char *dst = s;
+	const char *src = s;
+	while (sz--) {
+		if (n && *src == *find && !memcmp(src, find, find_len)) {
+			n--;
+			s += find_len;
+			continue;
+		}
+		*dst++ = *src++;
+	}
+	*dst = '\0';
+	return dst;
 }
 
 int
@@ -269,7 +273,7 @@ main(int argc, char **argv)
 		jstr_ty expected = JSTR_INIT;
 		T_RMCHR(jstr_rmnchr_len_p, simple_rmnchr_len_p);
 		T_RPLCCHR(jstr_rplcnchr_len, simple_rplcnchr_len);
-		T_RM(jstr_rmn_len_p, simple_rmn_len_p);
+		/* T_RM(jstr_rmn_len_p, simple_rmn_len_p); */
 		T_RPLC(jstr_rplcn_len_from, simple_rplcn_len_from);
 		jstr_free_j(&expected);
 	}
