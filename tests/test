@@ -8,7 +8,7 @@ FLAGS='
 -Wpedantic
 '
 
-if type clang >/dev/null 2>/dev/null; then
+if false && type clang >/dev/null 2>/dev/null; then
 	FLAGS="$FLAGS -O0"
 	CC=clang
 else
