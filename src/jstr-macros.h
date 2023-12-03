@@ -973,8 +973,8 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #endif /* have_word_at_a_time */
 
 #if !JSTR_USE_LGPL || !JSTR_HAVE_ATTR_MAY_ALIAS
-#	undef JSTR_HAVE_ATTR_MAY_ALIAS
-#	define JSTR_HAVE_ATTR_MAY_ALIAS 0
+#	undef JSTR_HAVE_WORD_AT_A_TIME
+#	define JSTR_HAVE_WORD_AT_A_TIME 0
 #endif
 
 #ifndef JSTR_USE_UNLOCKED_IO

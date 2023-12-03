@@ -21,18 +21,19 @@ compile()
 		#shellcheck disable=disable=SC2086
 		$CC -run "$file" $FLAGS $args
 	else
+		file=$1
 		out=$2
 		out=$out$(echo "$args" | tr -d ' ')
 		#shellcheck disable=disable=SC2086
 		$CC "$file" -o "$out" $FLAGS $args
 		"$out"
-		rm "$out"
+		# rm "$out"
 	fi
 }
 
 cd "$(dirname "$0")" || exit
 
-if has_prog tcc; then
+if false || has_prog tcc; then
 	CC=tcc
 else
 	CC=cc
