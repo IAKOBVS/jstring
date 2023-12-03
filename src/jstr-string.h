@@ -436,7 +436,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST
 	return memmem(hs, hs_len, ne, ne_len);
 #else
-	typedef unsigned char u;
+	typedef const unsigned char cu;
 	enum { LONG_NE_THRES = 100 };
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
@@ -446,11 +446,11 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ne_len >= LONG_NE_THRES))
 		goto MEMMEM;
 #	endif
-	const unsigned char *rare;
-	rare = (const u *)jstr_rarebytefind_len(ne, ne_len);
+	cu *rare;
+	rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
 	size_t shift;
 	shift = JSTR_PTR_DIFF(rare, ne);
-	hs = (const u *)hs + shift;
+	hs = (cu *)hs + shift;
 	hs_len -= shift;
 	const void *start;
 	start = (const void *)hs;
@@ -460,21 +460,21 @@ JSTR_NOEXCEPT
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	if (hs_len < ne_len)
 		return NULL;
-	hs = (const u *)hs - shift;
-	if (*(const u *)hs == *(const u *)ne
+	hs = (cu *)hs - shift;
+	if (*(cu *)hs == *(cu *)ne
 	    && !memcmp(hs, ne, ne_len))
 		return (char *)hs;
 	if (ne_len == 2)
-		return pjstr_memmem2((const u *)hs, (const u *)ne, hs_len);
+		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
-		return pjstr_memmem3((const u *)hs, (const u *)ne, hs_len);
+		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
-		return pjstr_memmem4((const u *)hs, (const u *)ne, hs_len);
+		return pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
 #	if JSTR_USE_LGPL
 MEMMEM:
-	return pjstr_memmem_lgpl((const u *)hs, hs_len, (const u *)ne, ne_len);
+	return pjstr_memmem_lgpl((cu *)hs, hs_len, (cu *)ne, ne_len);
 #	else
-	return pjstr_memmem_rarebyte((const u *)hs, hs_len, (const u *)ne, ne_len, rare);
+	return pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
 #	endif
 #endif
 }
@@ -618,11 +618,9 @@ JSTR_NOEXCEPT
 	return jstr_memmem(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#if 0
-#	define PJSTR_RAREBYTE_RETTYPE char *
-#	define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
-#	include "_jstr-rarebyte-strrstr.h"
-#endif
+#define PJSTR_RAREBYTE_RETTYPE char *
+#define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
+#include "_jstr-rarebyte-strrstr.h"
 
 /* Find last NE in HS.
    Return value:
@@ -639,12 +637,16 @@ jstr_strrstr_len(const void *hs,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
+	if (ne_len == 1)
+		return (char *)jstr_memrchr(hs, *(cu *)ne, hs_len);
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (ne_len == 1)
-		return (char *)jstr_memrchr(hs, *(cu *)ne, hs_len);
+#if 0 /* Broken */
+	if (ne_len > 4)
+		return pjstr_strrstr_len_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, (cu *)jstr_rarebytefind_len(ne, ne_len));
+#endif
 	cu *h = (cu *)hs + hs_len - ne_len;
 	const int c = *(cu *)ne;
 	for (; h >= (cu *)hs; --h)
