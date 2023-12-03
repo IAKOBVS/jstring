@@ -168,9 +168,10 @@ static char *
 jstr_toupperstr_p(char *R s)
 JSTR_NOEXCEPT
 {
-	for (; (*s = jstr_toupper(*s)); ++s)
+	unsigned char *p = (unsigned char *)s;
+	for (; (*p = jstr_toupper(*p)); ++p)
 		;
-	return s;
+	return (char *)p;
 }
 
 /* ASCII. */
@@ -180,9 +181,10 @@ static char *
 jstr_tolowerstr_p(char *R s)
 JSTR_NOEXCEPT
 {
-	for (; (*s = jstr_tolower(*s)); ++s)
+	unsigned char *p = (unsigned char *)s;
+	for (; (*p = jstr_tolower(*p)); ++p)
 		;
-	return s;
+	return (char *)p;
 }
 
 /*
@@ -196,7 +198,8 @@ jstr_toupperstrcpy_p(char *R dst,
                      const char *R src)
 JSTR_NOEXCEPT
 {
-	while ((*dst++ = jstr_tolower(*src++)))
+	const unsigned char *srcp = (const unsigned char *)src;
+	while ((*dst++ = (char)jstr_tolower(*srcp++)))
 		;
 	return dst - 1;
 }
@@ -212,7 +215,8 @@ jstr_tolowerstrcpy_p(char *R dst,
                      const char *R src)
 JSTR_NOEXCEPT
 {
-	while ((*dst++ = jstr_tolower(*src++)))
+	const unsigned char *srcp = (const unsigned char *)src;
+	while ((*dst++ = (char)jstr_tolower(*srcp++)))
 		;
 	return dst - 1;
 }

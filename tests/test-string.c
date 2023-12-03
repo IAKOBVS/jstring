@@ -226,9 +226,9 @@ main(int argc, char **argv)
 	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp);
 	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
-	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
-	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
+	T_N(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
+	T_N(jstr_memmem, simple_memmem, test_array_memmem);
+	T_N(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
