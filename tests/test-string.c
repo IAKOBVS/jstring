@@ -238,5 +238,4 @@ main(int argc, char **argv)
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
-	(void)argc;
 }

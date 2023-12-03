@@ -151,5 +151,4 @@ main(int argc, char **argv)
 
 	SUCCESS();
 	return EXIT_SUCCESS;
-	(void)argc;
 }

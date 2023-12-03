@@ -41,5 +41,4 @@ main(int argc, char **argv)
 	jarr_free(&j);
 	SUCCESS();
 	return EXIT_SUCCESS;
-	(void)argc;
 }

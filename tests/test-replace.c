@@ -343,6 +343,4 @@ main(int argc, char **argv)
 	jstr_free_j(&result);
 	SUCCESS();
 	return EXIT_SUCCESS;
-	(void)simple_rmn_len_p;
-	(void)argc;
 }

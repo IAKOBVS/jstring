@@ -6,10 +6,11 @@
 #define JSTR_DEBUG 1
 
 #define JSTR_BUILT
+
 #include <assert.h>
+#include <ctype.h>
 #include <stddef.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "../src/jstr-macros.h"
 
@@ -18,7 +19,8 @@
 #define PRINT(...)    printf(__VA_ARGS__)
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
 #define START() do{}while(0)
-#define SUCCESS()     PRINT("%s succeeded.\n", strstr(argv[0], "test-"))
+#define SUCCESS()     (void)argc, (void)argv, PRINT("%s succeeded.\n", __FILE__)
+#define STRLEN(s) (sizeof(s) - 1)
 
 PJSTR_BEGIN_DECLS
 JSTR_ATTR_MAYBE_UNUSED

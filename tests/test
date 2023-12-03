@@ -8,9 +8,9 @@ FLAGS='
 -Wpedantic
 '
 
-if false && type clang >/dev/null 2>/dev/null; then
-	FLAGS="$FLAGS -O0"
-	CC=clang
+if type tcc >/dev/null 2>/dev/null; then
+	FLAGS="$FLAGS -run"
+	CC=tcc
 else
 	FLAGS="$FLAGS -O1"
 	CC=cc
@@ -19,13 +19,18 @@ fi
 compile()
 {
 	file=$1
-	out=$2
 	args=$(echo "$*" | cut -d' ' -f3-)
-	out=$out$(echo "$args" | tr -d ' ')
-	#shellcheck disable=disable=SC2086
-	$CC "$file" -o "$out" $FLAGS $args
-	"$out"
-	rm "$out"
+	if [ $CC = 'tcc' ]; then
+		#shellcheck disable=disable=SC2086
+		$CC "$file" $FLAGS $args
+	else
+		out=$2
+		out=$out$(echo "$args" | tr -d ' ')
+		#shellcheck disable=disable=SC2086
+		$CC "$file" -o "$out" $FLAGS $args
+		"$out"
+		rm "$out"
+	fi
 }
 
 cd "$(dirname "$0")" || exit
