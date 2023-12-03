@@ -29,6 +29,7 @@ PJSTR_END_DECLS
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static void *
 jstr_memrchr(const void *s,
              int c,

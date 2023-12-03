@@ -151,7 +151,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -922,9 +922,9 @@ enum {
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1
 #endif
 
-typedef uint16_t jstr_u16u_ty JSTR_ATTR_MAY_ALIAS;
-typedef uint32_t jstr_u32u_ty JSTR_ATTR_MAY_ALIAS;
-typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
+typedef uint16_t JSTR_ATTR_MAY_ALIAS jstr_u16u_ty;
+typedef uint32_t JSTR_ATTR_MAY_ALIAS jstr_u32u_ty;
+typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #define JSTR_BYTE_IDX(i) (i * 8)
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define JSTR_BYTE_UTOWORD16(x)   (*(jstr_u16u_ty *)(x))
@@ -972,7 +972,7 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #	endif
 #endif /* have_word_at_a_time */
 
-#if !JSTR_USE_LGPL || !JSTR_HAVE_ATTR_MAY_ALIAS
+#if !JSTR_HAVE_ATTR_MAY_ALIAS
 #	undef JSTR_HAVE_WORD_AT_A_TIME
 #	define JSTR_HAVE_WORD_AT_A_TIME 0
 #endif

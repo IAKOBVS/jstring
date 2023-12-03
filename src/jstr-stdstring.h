@@ -197,7 +197,7 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, sz);
-#elif JSTR_HAVE_WORD_AT_A_TIME && 0 /* Broken? */
+#elif JSTR_HAVE_WORD_AT_A_TIME
 #	include "_lgpl-memrchr.h"
 #else
 	const unsigned char *p = (const unsigned char *)s + sz;
