@@ -74,7 +74,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
 	const unsigned char *p = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
-	if (!USE_UNALIGNED) {
+	if (1 || !USE_UNALIGNED) {
 		const int c0 = *ne;
 		for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs)));)
 			if (*(p - shift) == c0 && !CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
@@ -92,12 +92,14 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 			ne_len -= 8;
 		}
 		for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs)));)
-			/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
+			/* If CMP_FUNC is not defined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
 			if (short_ne) {
-				if (EQ32(p - shift, ne_align) && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
+				if (EQ32(p - shift, ne_align)
+				    && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
 					return (ret_ty)(p - shift);
 			} else {
-				if (EQ64(p - shift, ne_align) && !memcmp(p - shift + 8, ne, ne_len))
+				if (EQ64(p - shift, ne_align)
+				    && !memcmp(p - shift + 8, ne, ne_len))
 					return (ret_ty)(p - shift);
 			}
 	}

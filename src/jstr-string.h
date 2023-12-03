@@ -628,7 +628,7 @@ JSTR_NOEXCEPT
 	hs += l - 2;
 	const uint16_t nw = (uint16_t)ne[1] << 8 | ne[0];
 	uint16_t hw = (uint16_t)hs[1] << 8 | hs[0];
-	for (--l; l-- && hw != nw; hw = hw << 8 | *--hs)
+	for (l -= 2; l-- && hw != nw; hw = hw << 8 | *--hs)
 		;
 	return (hw == nw) ? (void *)(hs) : NULL;
 }
@@ -645,7 +645,7 @@ JSTR_NOEXCEPT
 	hs += l - 3;
 	const uint32_t nw = (uint32_t)ne[2] << 24 | ne[1] << 16 | ne[0] << 8;
 	uint32_t hw = (uint32_t)hs[2] << 24 | hs[1] << 16 | hs[0] << 8;
-	for (l -= 2; l-- && hw != nw; hw = (hw | *--hs) << 8)
+	for (l -= 3; l-- && hw != nw; hw = (hw | *--hs) << 8)
 		;
 	return (hw == nw) ? (void *)(hs) : NULL;
 }
@@ -662,7 +662,7 @@ JSTR_NOEXCEPT
 	hs += l - 4;
 	const uint32_t nw = (uint32_t)ne[3] << 24 | ne[2] << 16 | ne[1] << 8 | ne[0];
 	uint32_t hw = (uint32_t)hs[3] << 24 | hs[2] << 16 | hs[1] << 8 | hs[0];
-	for (l -= 3; l-- && hw != nw; hw = hw << 8 | *--hs)
+	for (l -= 4; l-- && hw != nw; hw = hw << 8 | *--hs)
 		;
 	return (hw == nw) ? (void *)(hs) : NULL;
 }
@@ -695,7 +695,7 @@ JSTR_NOEXCEPT
 	cu *p = (cu *)jstr_memrchr(hs, *rare, hs_len - (ne_len - shift) + 1);
 	if (p == NULL || ne_len == 1)
 		return (void *)p;
-	hs_len = JSTR_PTR_DIFF(p, hs) - shift + ne_len;
+	hs_len = JSTR_PTR_DIFF(p, hs) - shift + ne_len + 1;
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)

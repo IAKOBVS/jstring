@@ -250,18 +250,10 @@ simple_rmn_len_p(char *s,
                  size_t find_len,
                  size_t n)
 {
-	char *dst = s;
-	const char *src = s;
-	while (sz--) {
-		if (n && *src == *find && !memcmp(src, find, find_len)) {
-			n--;
-			s += find_len;
-			continue;
-		}
-		*dst++ = *src++;
-	}
-	*dst = '\0';
-	return dst;
+	char *p = s;
+	for (; n-- && s + sz >= p + find_len && (p = simple_memmem(p, JSTR_PTR_DIFF(s + sz, p), find, find_len)); ++p, sz -= find_len)
+		*(char *)jstr_mempmove(p, p + find_len, JSTR_PTR_DIFF(s + sz, p + find_len)) = '\0';
+	return s + sz;
 }
 
 int
@@ -273,7 +265,7 @@ main(int argc, char **argv)
 		jstr_ty expected = JSTR_INIT;
 		T_RMCHR(jstr_rmnchr_len_p, simple_rmnchr_len_p);
 		T_RPLCCHR(jstr_rplcnchr_len, simple_rplcnchr_len);
-		/* T_RM(jstr_rmn_len_p, simple_rmn_len_p); */
+		T_RM(jstr_rmn_len_p, simple_rmn_len_p);
 		T_RPLC(jstr_rplcn_len_from, simple_rplcn_len_from);
 		jstr_free_j(&expected);
 	}
