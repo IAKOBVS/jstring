@@ -62,8 +62,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(node == NULL))
 		return;
-	int i;
-	for (i = JTRIE_ASCII_SIZE; i > 0; i--)
+	for (int i = JTRIE_ASCII_SIZE; i > 0; i--)
 		pjtrie_free_recur(node->child[i]);
 	free(node);
 	node = NULL;
