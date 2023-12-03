@@ -14,15 +14,15 @@
 
 #include "../src/jstr-macros.h"
 
-#define SUCCESS()                                     \
-	do {                                          \
-		(void)argc;                           \
-		(void)argv;                           \
-		PRINT("%s ", __FILE__);               \
-		for (; *argv; ++argv)                 \
-			if (!strncmp(*argv, "-D", 2)) \
-				PRINT("%s ", *argv);  \
-		PRINT("succeeded.\n");                \
+#define SUCCESS()                                                   \
+	do {                                                        \
+		(void)argc;                                         \
+		(void)argv;                                         \
+		PRINT("%s ", __FILE__);                             \
+		for (; *argv; ++argv)                               \
+			if (!strncmp(*argv, "-D", 2))               \
+				PRINT("%s ", *argv + STRLEN("-D")); \
+		PRINT("succeeded.\n");                              \
 	} while (0)
 
 /* clang-format off */

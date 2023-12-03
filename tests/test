@@ -19,7 +19,7 @@ compile()
 	args=$(echo "$*" | cut -d' ' -f3-)
 	if [ $CC = 'tcc' ]; then
 		#shellcheck disable=disable=SC2086
-		$CC $FLAGS $args -run "$file"
+		$CC $FLAGS $args -run "$file" $args
 	else
 		file=$1
 		out=$2
