@@ -216,20 +216,37 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static jstr_ret_ty
-jstrio_writefile(const char *R s,
-                 size_t sz,
-                 const char *R fname,
-                 int oflag)
+jstrio_writefilefd_len(const char *R s,
+                       size_t sz,
+                       int fd)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
+		goto err;
+	if (s[sz ? sz - 1 : 0] != '\n'
+	    && write(fd, "\n", sz) != 1)
+		goto err;
+	return JSTR_RET_SUCC;
+err:
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
+}
+
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstrio_writefile_len(const char *R s,
+                     size_t sz,
+                     const char *R fname,
+                     int oflag)
 JSTR_NOEXCEPT
 {
 	const int fd = open(fname, oflag | O_WRONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
-	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
+	if (jstr_chk(jstrio_writefilefd_len(s, sz, fd)))
 		goto err_close;
 	if (jstr_unlikely(close(fd)))
 		goto err;
-	return JSTR_RET_SUCC;
 err_close:
 	close(fd);
 err:
@@ -238,16 +255,33 @@ err:
 
 JSTR_FUNC
 static jstr_ret_ty
-jstrio_fwritefile(const char *R s,
-                  size_t sz,
-                  const char *R fname,
-                  const char *R modes)
+jstrio_fwritefilefp_len(const char *R s,
+                        size_t sz,
+                        FILE *fp)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(jstrio_fwrite(s, 1, sz, fp) != sz))
+		goto err;
+	if (s[sz ? sz - 1 : 0] != '\n'
+	    && jstrio_putc('\n', fp) == EOF)
+		goto err;
+	return JSTR_RET_SUCC;
+err:
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
+}
+
+JSTR_FUNC
+static jstr_ret_ty
+jstrio_fwritefile_len(const char *R s,
+                      size_t sz,
+                      const char *R fname,
+                      const char *R modes)
 JSTR_NOEXCEPT
 {
 	FILE *R fp = fopen(fname, modes);
 	if (jstr_unlikely(fp == NULL))
 		goto err;
-	if (jstr_unlikely(jstrio_fwrite(s, 1, sz, fp) != sz))
+	if (jstr_unlikely(jstrio_fwritefilefp_len(s, sz, fp)))
 		goto err_close;
 	if (jstr_unlikely(fclose(fp)))
 		goto err;
