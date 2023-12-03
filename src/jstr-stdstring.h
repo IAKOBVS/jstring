@@ -100,9 +100,9 @@ JSTR_ATTR_INLINE
 static void *
 jstr_mempset(void *s,
              int c,
-             size_t sz)
+             size_t n)
 {
-	return (char *)memset(s, c, sz) + sz;
+	return (char *)memset(s, c, n) + n;
 }
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
@@ -111,9 +111,9 @@ JSTR_ATTR_INLINE
 static char *
 jstr_stpset_len(char *s,
                 int c,
-                size_t sz)
+                size_t n)
 {
-	return (char *)memset(s, c, sz) + sz;
+	return (char *)memset(s, c, n) + n;
 }
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 2))
@@ -132,10 +132,10 @@ JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
 jstr_bzero(void *s,
-           size_t sz)
+           size_t n)
 JSTR_NOEXCEPT
 {
-	memset(s, 0, sz);
+	memset(s, 0, n);
 }
 
 JSTR_FUNC
@@ -192,16 +192,16 @@ JSTR_ATTR_INLINE
 static void *
 jstr_memrchr(const void *s,
              int c,
-             size_t sz)
+             size_t n)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(s, c, sz);
+	return (void *)memrchr(s, c, n);
 #elif JSTR_HAVE_WORD_AT_A_TIME
 #	include "_lgpl-memrchr.h"
 #else
-	const unsigned char *p = (const unsigned char *)s + sz;
-	for (; sz--;)
+	const unsigned char *p = (const unsigned char *)s + n;
+	for (; n--;)
 		if (*--p == (unsigned char)c)
 			return (void *)p;
 	return NULL;
@@ -226,10 +226,51 @@ JSTR_NOEXCEPT
 	const char *const start = s;
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
-#elif JSTR_HAVE_WORD_AT_A_TIME
-#	include "_lgpl-strchrnul.h"
 #else
-	for (; *s && *s != (char)c; ++s)
+	/* The following is taken from musl's strchrnul.
+	   Copyright © 2005-2020 Rich Felker, et al.
+
+	   Permission is hereby granted, free of charge, to any person obtaining
+	   a copy of this software and associated documentation files (the
+	   "Software"), to deal in the Software without restriction, including
+	   without limitation the rights to use, copy, modify, merge, publish,
+	   distribute, sublicense, and/or sell copies of the Software, and to
+	   permit persons to whom the Software is furnished to do so, subject to
+	   the following conditions:
+
+	   The above copyright notice and this permission notice shall be
+	   included in all copies or substantial portions of the Software.
+
+	   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+	c = (unsigned char)c;
+	if (!c)
+		return (char *)s + strlen(s);
+#	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
+#		define ALIGN      (sizeof(size_t))
+#		define ONES       ((size_t)-1 / UCHAR_MAX)
+#		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
+#		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
+	typedef size_t __attribute__((__may_alias__)) word;
+	const word *w;
+	for (; (uintptr_t)s % ALIGN; ++s)
+		if (jstr_unlikely(!*s) || *(unsigned char *)s == c)
+			return (char *)s;
+	size_t k = ONES * (unsigned char)c;
+	for (w = (word *)s; !HASZERO(*w) && !HASZERO(*w ^ k); ++w)
+		;
+	s = (char *)w;
+#		undef ALIGN
+#		undef ONES
+#		undef HIGHS
+#		undef HASZERO
+#	endif
+	for (; *s && *(unsigned char *)s != c; ++s)
 		;
 	return (char *)s;
 #endif
@@ -403,12 +444,56 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STPCPY
 	return stpcpy(dst, src);
-#elif JSTR_HAVE_STRCPY_OPTIMIZED && JSTR_HAVE_STRLEN_OPTIMIZED
+#elif 0 && JSTR_HAVE_STRCPY_OPTIMIZED && JSTR_HAVE_STRLEN_OPTIMIZED
 	return jstr_stpcpy_len(dst, src, strlen(src));
 #else
-	while ((*dst++ = *src++))
+#	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
+	/* The following is taken from musl's stpcpy.
+	   Copyright © 2005-2020 Rich Felker, et al.
+
+	   Permission is hereby granted, free of charge, to any person obtaining
+	   a copy of this software and associated documentation files (the
+	   "Software"), to deal in the Software without restriction, including
+	   without limitation the rights to use, copy, modify, merge, publish,
+	   distribute, sublicense, and/or sell copies of the Software, and to
+	   permit persons to whom the Software is furnished to do so, subject to
+	   the following conditions:
+
+	   The above copyright notice and this permission notice shall be
+	   included in all copies or substantial portions of the Software.
+
+	   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+#		define ALIGN      (sizeof(size_t))
+#		define ONES       ((size_t)-1 / UCHAR_MAX)
+#		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
+#		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
+	typedef size_t JSTR_ATTR_MAY_ALIAS word;
+	if ((uintptr_t)src % ALIGN == (uintptr_t)dst % ALIGN) {
+		for (; (uintptr_t)src % ALIGN; src++, dst++)
+			if (!(*dst = *src))
+				return dst;
+		word *wd = (word *)dst;
+		const word *ws = (const word *)src;
+		for (; !HASZERO(*ws); *wd++ = *ws++)
+			;
+		dst = (char *)wd;
+		src = (const char *)ws;
+	}
+#		undef ALIGN
+#		undef ONES
+#		undef HIGHS
+#		undef HASZERO
+#	endif
+	for (; (*dst = *src); src++, dst++)
 		;
-	return dst - 1;
+
+	return dst;
 #endif
 }
 

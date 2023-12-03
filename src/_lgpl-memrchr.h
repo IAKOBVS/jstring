@@ -33,14 +33,14 @@ JSTR_ATTR_INLINE
 static void *
 jstr_memrchr(const void *s,
              int c,
-             size_t sz)
+             size_t n)
 JSTR_NOEXCEPT
 {
 #endif
-	if (jstr_unlikely(sz == 0))
+	if (jstr_unlikely(n == 0))
 		return NULL;
-	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((const char *)s + sz, sizeof(jstr_word_ty));
-	const uintptr_t s_int = (uintptr_t)s + sz;
+	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((const char *)s + n, sizeof(jstr_word_ty));
+	const uintptr_t s_int = (uintptr_t)s + n;
 	jstr_word_ty word = *--word_ptr;
 	const jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
 	const jstr_word_ty *const sword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
