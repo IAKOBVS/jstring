@@ -14,12 +14,22 @@
 
 #include "../src/jstr-macros.h"
 
+#define SUCCESS()                                     \
+	do {                                          \
+		(void)argc;                           \
+		(void)argv;                           \
+		PRINT("%s ", __FILE__);               \
+		for (; *argv; ++argv)                 \
+			if (!strncmp(*argv, "-D", 2)) \
+				PRINT("%s ", *argv);  \
+		PRINT("succeeded.\n");                \
+	} while (0)
+
 /* clang-format off */
 #define EMPTY(p)          (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
 #define PRINT(...)    printf(__VA_ARGS__)
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
 #define START() do{}while(0)
-#define SUCCESS()     (void)argc, (void)argv, PRINT("%s succeeded.\n", __FILE__)
 #define STRLEN(s) (sizeof(s) - 1)
 
 PJSTR_BEGIN_DECLS

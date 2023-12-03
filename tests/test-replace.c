@@ -1,3 +1,6 @@
+/* Fixes regex.h problems with tcc */
+#define __STDC_NO_VLA__ 1
+
 #include "test.h"
 #include "../src/jstr-regex.h"
 #include "test-array.h"

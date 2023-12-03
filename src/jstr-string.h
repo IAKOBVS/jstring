@@ -620,7 +620,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-pjstr_strrstr2(const unsigned char *hs,
+pjstr_memrmem2(const unsigned char *hs,
                const unsigned char *const ne,
                size_t l)
 JSTR_NOEXCEPT
@@ -637,7 +637,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-pjstr_strrstr3(const unsigned char *hs,
+pjstr_memrmem3(const unsigned char *hs,
                const unsigned char *const ne,
                size_t l)
 JSTR_NOEXCEPT
@@ -654,7 +654,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-pjstr_strrstr4(const unsigned char *hs,
+pjstr_memrmem4(const unsigned char *hs,
                const unsigned char *const ne,
                size_t l)
 JSTR_NOEXCEPT
@@ -668,42 +668,8 @@ JSTR_NOEXCEPT
 }
 
 #define PJSTR_RAREBYTE_RETTYPE char *
-#define PJSTR_RAREBYTE_FUNC    pjstr_strrstr_len_rarebyte
+#define PJSTR_RAREBYTE_FUNC    pjstr_memrmem_len_rarebyte
 #include "_jstr-rarebyte-strrstr.h"
-
-/* Find last NE in HS.
-   Return value:
-   Pointer to NE;
-   NULL if not found. */
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-static void *
-jstr_strrstr_len(const void *hs,
-                 size_t hs_len,
-                 const void *ne,
-                 size_t ne_len)
-JSTR_NOEXCEPT
-{
-	typedef const unsigned char cu;
-	if (jstr_unlikely(ne_len == 0))
-		return (char *)hs + hs_len;
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
-	cu *const rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
-	const size_t shift = JSTR_PTR_DIFF(rare, ne);
-	cu *p = (cu *)jstr_memrchr(hs, *rare, hs_len - (ne_len - shift) + 1);
-	if (p == NULL || ne_len == 1)
-		return (void *)p;
-	hs_len = JSTR_PTR_DIFF(p, hs) - shift + ne_len;
-	if (ne_len == 2)
-		return pjstr_strrstr2((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 3)
-		return pjstr_strrstr3((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 4)
-		return pjstr_strrstr4((cu *)hs, (cu *)ne, hs_len);
-	return pjstr_strrstr_len_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
-}
 
 /* Find last NE in HS.
    Return value:
@@ -719,7 +685,41 @@ jstr_memrmem(const void *hs,
              size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_strrstr_len(hs, hs_len, ne, ne_len);
+	typedef const unsigned char cu;
+	if (jstr_unlikely(ne_len == 0))
+		return (char *)hs + hs_len;
+	if (jstr_unlikely(hs_len < ne_len))
+		return NULL;
+	cu *const rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
+	const size_t shift = JSTR_PTR_DIFF(rare, ne);
+	cu *p = (cu *)jstr_memrchr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	if (p == NULL || ne_len == 1)
+		return (void *)p;
+	hs_len = JSTR_PTR_DIFF(p, hs) - shift + ne_len;
+	if (ne_len == 2)
+		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 3)
+		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 4)
+		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
+	return pjstr_memrmem_len_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
+}
+
+/* Find last NE in HS.
+   Return value:
+   Pointer to NE;
+   NULL if not found. */
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+static void *
+jstr_strrstr_len(const void *hs,
+                 size_t hs_len,
+                 const void *ne,
+                 size_t ne_len)
+JSTR_NOEXCEPT
+{
+	return jstr_memrmem(hs, hs_len, ne, ne_len);
 }
 
 #define L(c) jstr_tolower(c)

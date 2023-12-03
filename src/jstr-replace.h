@@ -1130,24 +1130,25 @@ static char *
 jstr_to_snake_case_p(char *R s)
 JSTR_NOEXCEPT
 {
-	for (; *s == '_'; ++s)
+	unsigned char *p = (unsigned char *)s;
+	for (; *p == '_'; ++p)
 		;
-	*s = jstr_tolower(*s);
-	for (; *s && !jstr_isupper(*s); ++s)
+	*p = jstr_tolower(*p);
+	for (; *p && !jstr_isupper(*p); ++p)
 		;
-	if (jstr_unlikely(*s == '\0'))
-		return s;
-	const char *end = s + strlen(s);
+	if (jstr_unlikely(*p == '\0'))
+		return (char *)p;
+	const unsigned char *end = p + strlen((char *)p);
 	goto start;
-	for (; *s; ++s)
-		if (jstr_isupper(*s)) {
+	for (; *p; ++p)
+		if (jstr_isupper(*p)) {
 start:
-			jstr_strmove_len(s + 1, s, JSTR_PTR_DIFF(end++, s));
-			*s++ = '_';
-			*s = jstr_tolower(*s);
+			jstr_strmove_len((char *)p + 1, (char *)p, JSTR_PTR_DIFF(end++, p));
+			*p++ = '_';
+			*p = jstr_tolower(*p);
 		}
-	*s = '\0';
-	return s;
+	*p = '\0';
+	return (char *)p;
 }
 
 /* Convert camelCase to snake_case.
@@ -1159,19 +1160,21 @@ jstr_to_snake_case_cpy_p(char *R dst,
                          const char *R src)
 JSTR_NOEXCEPT
 {
-	for (; *src == '_'; ++src, *dst++ = '_')
+	unsigned char *d = (unsigned char *)dst;
+	const unsigned char *s = (const unsigned char *)src;
+	for (; *s == '_'; ++s, *d++ = '_')
 		;
-	*dst = jstr_tolower(*src);
-	while (*src)
-		if (!jstr_isupper(*src)) {
-			*dst++ = *src++;
+	*d = jstr_tolower(*s);
+	while (*s)
+		if (!jstr_isupper(*s)) {
+			*d++ = *s++;
 		} else {
-			*dst = '_';
-			*(dst + 1) = jstr_tolower(*src++);
-			dst += 2;
+			*d = '_';
+			*(d + 1) = jstr_tolower(*s++);
+			d += 2;
 		}
-	*dst = '\0';
-	return dst;
+	*d = '\0';
+	return (char *)d;
 }
 
 /* Non-destructive strtok.

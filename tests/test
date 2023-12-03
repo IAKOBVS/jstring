@@ -8,13 +8,10 @@ FLAGS='
 -Wpedantic
 '
 
-if type tcc >/dev/null 2>/dev/null; then
-	FLAGS="$FLAGS -run"
-	CC=tcc
-else
-	FLAGS="$FLAGS -O1"
-	CC=cc
-fi
+has_prog()
+{
+	type "$1" >/dev/null 2>/dev/null
+}
 
 compile()
 {
@@ -22,7 +19,7 @@ compile()
 	args=$(echo "$*" | cut -d' ' -f3-)
 	if [ $CC = 'tcc' ]; then
 		#shellcheck disable=disable=SC2086
-		$CC "$file" $FLAGS $args
+		$CC -run "$file" $FLAGS $args
 	else
 		out=$2
 		out=$out$(echo "$args" | tr -d ' ')
@@ -35,15 +32,24 @@ compile()
 
 cd "$(dirname "$0")" || exit
 
-mktemp=__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
-if [ "$TMPDIR" ]; then
-	TMPDIR=$TMPDIR/$mktemp
-elif [ -d /tmp ]; then
-	TMPDIR=/tmp/$mktemp
+if has_prog tcc; then
+	CC=tcc
 else
-	TMPDIR=$PWD/$mktemp
+	CC=cc
+	# In GCC, -O1 compiles faster.
+	[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O1"
+	# Set the path to compile the tests to.
+	if [ "$TMPDIR" ]; then
+		if [ -d /tmp ]; then
+			TMPDIR=/tmp/$tmp
+		else
+			TMPDIR=$PWD/$tmp
+		fi
+	fi
+	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
 fi
 
+# Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
 	files=$(echo *.c)
 else
@@ -52,9 +58,9 @@ fi
 
 for file in $files; do
 	out_file=${file%.*}
-	compile "$file" "$TMPDIR$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 &
-	compile "$file" "$TMPDIR$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 &
-	compile "$file" "$TMPDIR$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 &
-	compile "$file" "$TMPDIR$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
+	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 &
+	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 &
+	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 &
+	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
 done
 wait

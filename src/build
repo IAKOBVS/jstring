@@ -1,5 +1,10 @@
 #!/bin/sh
 
+has_prog()
+{
+	type "$1" >/dev/null 2>/dev/null
+}
+
 update_if_needed()
 {
 	in_fname=$1
@@ -36,6 +41,17 @@ for file in $(echo *.h); do
 done
 wait
 mark_as_built
-cc ../jstr/jstr.h -Wall -Wextra -Wpedantic -std=c99 -o "$TMPDIR" || exit
-rm "$TMPDIR"
+
+if [ "$TMPDIR" ]; then
+	if [ -d /tmp ]; then
+		TMPDIR=/tmp/$tmp
+	else
+		TMPDIR=$PWD/$tmp
+	fi
+fi
+tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
+FLAGS='-Wall -Wextra -Wpedantic -std=c99'
+#shellcheck disable=SC2086
+cc ../jstr/jstr.h $FLAGS -o "$tmp" || exit
+rm "$tmp"
 echo 'Built to jstr.'

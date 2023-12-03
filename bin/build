@@ -1,20 +1,25 @@
 #!/bin/sh
 
-if type clang >/dev/null 2>/dev/null; then
-	FLAGS="$FLAGS -O0"
-	CC=clang
+has_prog()
+{
+	type "$1" >/dev/null 2>/dev/null
+}
+
+need_not_compile()
+{
+	test -e "$bin" 2>/dev/null && test "$file" -ot "$bin" 2>/dev/null
+}
+
+if has_prog tcc; then
+	CC=tcc
 else
-	FLAGS="$FLAGS -O1"
 	CC=cc
 fi
 
 cd "$(dirname "$0")" || exit
 for file in $(echo *.c); do
 	{
-	bin="${file%.*}"
-	if test -e "$bin" && test "$file" -ot "$bin"; then
-		exit 0
-	fi
-	$CC "$file" -o "$bin"
+		bin="${file%.*}"
+		need_not_compile || $CC "$file" -o "$bin"
 	} &
 done
