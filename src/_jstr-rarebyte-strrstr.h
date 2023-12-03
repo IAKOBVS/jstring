@@ -68,28 +68,16 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
                     const unsigned char *const rarebyte)
 {
 	typedef PJSTR_RAREBYTE_RETTYPE ret_ty;
-	typedef unsigned char u;
 	typedef const unsigned char cu;
-	const int c = *(u *)rarebyte;
+	const int c = *rarebyte;
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
 	const unsigned char *p = hs + hs_len - (ne_len - shift) + 1;
-	if (1 || !USE_UNALIGNED) {
-		for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs))); --p)
-			if (!CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
+	hs += shift;
+	if (!USE_UNALIGNED) {
+		const int c0 = *ne;
+		for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs))); )
+			if (*(p - shift) == c0 && !memcmp((char *)p - shift, (char *)ne, ne_len))
 				return (ret_ty)(p - shift);
-			else {
-				if (!strcmp((char *)p - shift, (char *)ne))
-					fprintf(stderr, "Matches\n");
-				fprintf(stderr, "Does not match.\n"
-				       "hs:%s\n"
-				       "ne:%s\n"
-				       "hs_len:%zu\n"
-				       "ne_len:%zu\n",
-				       p - shift,
-				       ne,
-				       hs_len,
-				       ne_len);
-			}
 	} else {
 		const int short_ne = ne_len < 8;
 		uint64_t ne_align;
@@ -102,7 +90,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 			ne += 8;
 			ne_len -= 8;
 		}
-		for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs))); --p)
+		for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs))); )
 			/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
 			if (short_ne) {
 				if (EQ32(p - shift, ne_align) && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
