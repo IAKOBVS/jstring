@@ -5,9 +5,7 @@
 #define JSTR_TEST  1
 #define JSTR_DEBUG 1
 
-#ifndef JSTR_BUILT
-#	define JSTR_BUILT
-#endif
+#define JSTR_BUILT
 
 #include <assert.h>
 #include <ctype.h>
