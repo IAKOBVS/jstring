@@ -43,7 +43,7 @@ typedef enum {
 
 typedef struct jtrie_node_ty {
 	struct jtrie_node_ty *child[JTRIE_ASCII_SIZE];
-	unsigned int EOW;
+	int EOW;
 } jtrie_node_ty;
 
 JSTR_FUNC
@@ -131,7 +131,7 @@ jtrie_remove(jtrie_node_ty *R root,
              const char *R word)
 JSTR_NOEXCEPT
 {
-	return pjtrie_remove(PJTRIE_FLAG_REMOVE_NOT_PREFIXES, root, word);
+	pjtrie_remove(PJTRIE_FLAG_REMOVE_NOT_PREFIXES, root, word);
 }
 
 JSTR_FUNC_VOID
@@ -141,14 +141,12 @@ jtrie_removeprefixes(jtrie_node_ty *R root,
                      const char *R word)
 JSTR_NOEXCEPT
 {
-	return pjtrie_remove(PJTRIE_FLAG_REMOVE_PREFIXES, root, word);
+	pjtrie_remove(PJTRIE_FLAG_REMOVE_PREFIXES, root, word);
 }
 
-/*
-   Return value:
+/* Return value:
    Pointer to node with last letter of WORD.
-   NULL if not found.
-*/
+   NULL if not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static jtrie_node_ty *
@@ -167,11 +165,9 @@ JSTR_NOEXCEPT
 	return (jtrie_node_ty *)curr;
 }
 
-/*
-   Return value:
+/* Return value:
    1 if matches;
-   0 otherwise.
-*/
+   0 otherwise. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int

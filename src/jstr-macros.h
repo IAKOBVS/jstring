@@ -141,7 +141,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -700,95 +700,93 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAVE_FDOPENDIR 1
 #endif
 
-#ifndef JSTR_USE_UNLOCKED_IO
-#	define JSTR_USE_UNLOCKED_IO 0
-#endif
-
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FGETS_UNLOCKED
-#	define jstrio_fgets(s, n, stream) fgets_unlocked(s, n, stream)
-#else
-#	define jstrio_fgets(s, n, stream) fgets(s, n, stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FPUTS_UNLOCKED
-#	define jstrio_fputs(s, stream) fputs_unlocked(s, stream)
-#else
-#	define jstrio_fputs(s, stream) fputs(s, stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_GETWC_UNLOCKED
-#	define jstrio_getwc(stream) getwc_unlocked(stream)
-#else
-#	define jstrio_getwc(stream) getwc(stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_GETWCHAR_UNLOCKED
-#	define jstrio_getwchar() getwchar_unlocked()
-#else
-#	define jstrio_getwchar() getwchar()
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FGETWC_UNLOCKED
-#	define jstrio_fgetwc(stream) fgetwc_unlocked(stream)
-#else
-#	define jstrio_fgetwc(stream) fgetwc(stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FPUTWC_UNLOCKED
-#	define jstrio_fputwc(wc, stream) fputwc_unlocked(wc, stream)
-#else
-#	define jstrio_fputwc(wc, stream) fputwc(wc, stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_PUTWCHAR_UNLOCKED
-#	define jstrio_putwchar(wc) putwchar_unlocked(wc)
-#else
-#	define jstrio_putwchar(wc) putwchar(wc)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FGETWS_UNLOCKED
-#	define jstrio_fgetws(ws, n, stream) fgetws_unlocked(ws, n, stream)
-#else
-#	define jstrio_fgetws(ws, n, stream) fgetws(ws, n, stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FPUTWS_UNLOCKED
-#	define jstrio_fputws(ws, stream) fputws_unlocked(ws, stream)
-#else
-#	define jstrio_fputws(ws, stream) fputws(ws, stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_GETC_UNLOCKED
-#	define jstrio_getc(stream) getc_unlocked(stream)
-#else
-#	define jstrio_getc(stream) getc(stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_GETCHAR_UNLOCKED
-#	define jstrio_getchar() getchar_unlocked()
-#else
-#	define jstrio_getchar() getchar()
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_PUTC_UNLOCKED
-#	define jstrio_putc(c, stream) putc_unlocked(c, stream)
-#else
-#	define jstrio_putc(c, stream) putc(c, stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_PUTCHAR_UNLOCKED
-#	define jstrio_putchar(c) putchar_unlocked(c)
-#else
-#	define jstrio_putchar(c) putchar(c)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FREAD_UNLOCKED
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FREAD_UNLOCKED
 #	define jstrio_fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
 #else
 #	define jstrio_fread(ptr, size, n, stream) fread(ptr, size, n, stream)
 #endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FWRITE_UNLOCKED
-#	define jstrio_fwrite(ptr, size, n, stream) fwrite_unlocked(ptr, size, n, stream)
-#else
-#	define jstrio_fwrite(ptr, size, n, stream) fwrite(ptr, size, n, stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FPUTC_UNLOCKED
-#	define jstrio_fputc(c, stream) fputc_unlocked(c, stream)
-#else
-#	define jstrio_fputc(c, stream) fputc(c, stream)
-#endif
-#if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_FGETC_UNLOCKED
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FGETC_UNLOCKED
 #	define jstrio_fgetc(stream) fgetc_unlocked(stream)
 #else
 #	define jstrio_fgetc(stream) fgetc(stream)
 #endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FGETWS_UNLOCKED
+#	define jstrio_fgetws(ws, n, stream) fgetws_unlocked(ws, n, stream)
+#else
+#	define jstrio_fgetws(ws, n, stream) fgetws(ws, n, stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_GETC_UNLOCKED
+#	define jstrio_getc(stream) getc_unlocked(stream)
+#else
+#	define jstrio_getc(stream) getc(stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_GETCHAR_UNLOCKED
+#	define jstrio_getchar() getchar_unlocked()
+#else
+#	define jstrio_getchar() getchar()
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FGETS_UNLOCKED
+#	define jstrio_fgets(s, n, stream) fgets_unlocked(s, n, stream)
+#else
+#	define jstrio_fgets(s, n, stream) fgets(s, n, stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_GETWC_UNLOCKED
+#	define jstrio_getwc(stream) getwc_unlocked(stream)
+#else
+#	define jstrio_getwc(stream) getwc(stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_GETWCHAR_UNLOCKED
+#	define jstrio_getwchar() getwchar_unlocked()
+#else
+#	define jstrio_getwchar() getwchar()
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FGETWC_UNLOCKED
+#	define jstrio_fgetwc(stream) fgetwc_unlocked(stream)
+#else
+#	define jstrio_fgetwc(stream) fgetwc(stream)
+#endif
+
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FPUTWC_UNLOCKED
+#	define jstrio_fputwc(wc, stream) fputwc_unlocked(wc, stream)
+#else
+#	define jstrio_fputwc(wc, stream) fputwc(wc, stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_PUTWCHAR_UNLOCKED
+#	define jstrio_putwchar(wc) putwchar_unlocked(wc)
+#else
+#	define jstrio_putwchar(wc) putwchar(wc)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FPUTS_UNLOCKED
+#	define jstrio_fputs(s, stream) fputs_unlocked(s, stream)
+#else
+#	define jstrio_fputs(s, stream) fputs(s, stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FPUTWS_UNLOCKED
+#	define jstrio_fputws(ws, stream) fputws_unlocked(ws, stream)
+#else
+#	define jstrio_fputws(ws, stream) fputws(ws, stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_PUTC_UNLOCKED
+#	define jstrio_putc(c, stream) putc_unlocked(c, stream)
+#else
+#	define jstrio_putc(c, stream) putc(c, stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_PUTCHAR_UNLOCKED
+#	define jstrio_putchar(c) putchar_unlocked(c)
+#else
+#	define jstrio_putchar(c) putchar(c)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FWRITE_UNLOCKED
+#	define jstrio_fwrite(ptr, size, n, stream) fwrite_unlocked(ptr, size, n, stream)
+#else
+#	define jstrio_fwrite(ptr, size, n, stream) fwrite(ptr, size, n, stream)
+#endif
+#if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_WRITE) && JSTR_HAVE_FPUTC_UNLOCKED
+#	define jstrio_fputc(c, stream) fputc_unlocked(c, stream)
+#else
+#	define jstrio_fputc(c, stream) fputc(c, stream)
+#endif
+
 #if JSTR_USE_UNLOCKED_IO && JSTR_HAVE_CLEARERR_UNLOCKED
 #	define jstrio_clearerr(stream) clearerr_unlocked(stream)
 #else
@@ -930,6 +928,15 @@ typedef uint64_t jstr_u64u_ty JSTR_ATTR_MAY_ALIAS;
 #	define JSTR_HAVE_ATTR_MAY_ALIAS 0
 #endif
 
+#ifndef JSTR_USE_UNLOCKED_IO
+#	define JSTR_USE_UNLOCKED_IO 0
+#endif
+#ifndef JSTR_USE_UNLOCKED_IO_READ
+#	define JSTR_USE_UNLOCKED_IO_READ 0
+#endif
+#ifndef JSTR_USE_UNLOCKED_IO_WRITE
+#	define JSTR_USE_UNLOCKED_IO_WRITE 0
+#endif
 #ifndef JSTR_TEST
 #	define JSTR_TEST 0
 #endif

@@ -72,12 +72,10 @@ typedef struct pjstr_inplace_ty {
 		(i).src_e += find_len;                                        \
 	} while (0)
 
-/*
-  Insert SRC into DST[AT].
+/* Insert SRC into DST[AT].
   Return value:
   ptr to '\0' in S.
-  Assume that S have enough space for SRC.
-*/
+  Assume that S have enough space for SRC. */
 JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
@@ -95,11 +93,9 @@ JSTR_NOEXCEPT
 	memcpy(s + at, src, src_len);
 }
 
-/*
-  Insert SRC into DST[AT].
+/* Insert SRC into DST[AT].
   Return JSTR_RET_ERR on malloc error;
-  otherwise JSTR_RET_SUCC.
-*/
+  otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insert_len(char *R *R s,
@@ -139,12 +135,10 @@ JSTR_NOEXCEPT
 	return *s + at + rplc_len;
 }
 
-/*
-   Replace RPLC in S with FIND.
+/* Replace RPLC in S with FIND.
    Return value:
    ptr to RPLC in S + RPLCLEN;
-   NULL on error.
-*/
+   NULL on error. */
 JSTR_FUNC
 static char *
 jstr_rplcat_len(char *R *R s,
@@ -167,11 +161,9 @@ JSTR_NOEXCEPT
 	return *s + at + rplc_len;
 }
 
-/*
-  Insert SRC after C in DST.
+/* Insert SRC after C in DST.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
@@ -189,11 +181,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-  Insert SRC after all C in DST.
+/* Insert SRC after all C in DST.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insertafterallchr_len(char *R *R s,
@@ -215,11 +205,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-  Insert SRC after end of NE in DST.
+/* Insert SRC after end of NE in DST.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insertafter_len(char *R *R s,
@@ -241,11 +229,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-  Insert SRC after all end of NE in DST.
+/* Insert SRC after all end of NE in DST.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insertafterall_len(char *R *R s,
@@ -272,11 +258,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-  Remove first C in S.
+/* Remove first C in S.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
@@ -291,11 +275,9 @@ JSTR_NOEXCEPT
 	return s ? jstr_stpmove_len(s, s + 1, JSTR_PTR_DIFF(sz, JSTR_PTR_DIFF(s, start))) : s + sz;
 }
 
-/*
-  Remove first C in S.
+/* Remove first C in S.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -311,9 +293,7 @@ JSTR_NOEXCEPT
 #endif /* HAVE_STRCHRNUL */
 }
 
-/*
-  Replace first group of REJECT in S with RPLC.
-*/
+/* Replace first group of REJECT in S with RPLC. */
 JSTR_FUNC_VOID
 static void
 jstr_rplcspn(char *R s,
@@ -326,11 +306,9 @@ JSTR_NOEXCEPT
 		memset(s, rplc, strspn(s, reject));
 }
 
-/*
-  Replace first group of REJECT in S with RPLC.
+/* Replace first group of REJECT in S with RPLC.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rplcspn_p(char *R s,
@@ -346,11 +324,9 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-/*
-  Replace first group of REJECT in S with RPLC.
+/* Replace first group of REJECT in S with RPLC.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rplcspn_len_p(char *R s,
@@ -371,11 +347,9 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-/*
-  Replace all REJECT in S with RPLC.
+/* Replace all REJECT in S with RPLC.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rplcallspn_p(char *R s,
@@ -388,11 +362,9 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-/*
-  Remove first group of REJECT in S.
+/* Remove first group of REJECT in S.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmspn_p(char *R s,
@@ -407,11 +379,9 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-/*
-  Remove first group of REJECT in S.
+/* Remove first group of REJECT in S.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -430,11 +400,9 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-/*
-  Remove all REJECT in S.
+/* Remove all REJECT in S.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallspn_p(char *R s,
@@ -450,11 +418,9 @@ JSTR_NOEXCEPT
 	return (i.dst != i.src) ? jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(i.src_e, i.src)) : i.src_e;
 }
 
-/*
-  Remove N C in S.
+/* Remove N C in S.
   Return value:
-  Pointer to '\0' in S.
-*/
+  Pointer to '\0' in S. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -471,11 +437,9 @@ JSTR_NOEXCEPT
 	return (i.dst != i.src) ? jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)) : s + sz;
 }
 
-/*
-  Remove all C in S.
+/* Remove all C in S.
   Return value:
-  Pointer to '\0' in S.
-*/
+  Pointer to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallchr_len_p(char *R s,
@@ -486,11 +450,9 @@ JSTR_NOEXCEPT
 	return jstr_rmnchr_len_p(s, sz, c, (size_t)-1);
 }
 
-/*
-  Remove N C in S.
+/* Remove N C in S.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmnchr_p(char *R s,
@@ -512,11 +474,9 @@ JSTR_NOEXCEPT
 #endif /* HAVE_STRCHRNUL */
 }
 
-/*
-  Remove all C in S.
+/* Remove all C in S.
   Return value:
-  Pointer to '\0' in S;
-*/
+  Pointer to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rmallchr_p(char *R s,
@@ -526,11 +486,9 @@ JSTR_NOEXCEPT
 	return jstr_rmnchr_p(s, c, (size_t)-1);
 }
 
-/*
-  Remove chars in REJECT in S.
+/* Remove chars in REJECT in S.
   Return value:
-  Pointer to '\0' in S.
-*/
+  Pointer to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_stripspn_p(char *R s,
@@ -543,11 +501,9 @@ JSTR_NOEXCEPT
 	return (char *)((i.dst != i.src) ? jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(i.src_e, i.src)) : i.src_e);
 }
 
-/*
-  Remove first HS in S.
+/* Remove first HS in S.
   Return value:
-  Pointer to '\0' in S.
-*/
+  Pointer to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -561,11 +517,9 @@ JSTR_NOEXCEPT
 	return s + sz - find_len;
 }
 
-/*
-  Remove first HS in S.
+/* Remove first HS in S.
   Return value:
-  Pointer to '\0' in S.
-*/
+  Pointer to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_rm_len_p(char *R s,
@@ -583,9 +537,7 @@ JSTR_NOEXCEPT
 	return s + sz - find_len;
 }
 
-/*
-  Replace first SEARCH in REPLACE.
-*/
+/* Replace first SEARCH in REPLACE. */
 JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
@@ -600,9 +552,7 @@ JSTR_NOEXCEPT
 		*s = rplc;
 }
 
-/*
-  Replace first SEARCH in REPLACE.
-*/
+/* Replace first SEARCH in REPLACE. */
 JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
@@ -616,9 +566,7 @@ JSTR_NOEXCEPT
 		*s = rplc;
 }
 
-/*
-  Replace all SEARCH in REPLACE.
-*/
+/* Replace all SEARCH in REPLACE. */
 JSTR_FUNC_VOID
 static void
 jstr_rplcallchr_len(char *R s,
@@ -632,9 +580,7 @@ JSTR_NOEXCEPT
 		;
 }
 
-/*
-  Replace all SEARCH in REPLACE.
-*/
+/* Replace all SEARCH in REPLACE. */
 JSTR_FUNC_VOID
 static void
 jstr_rplcallchr(char *R s,
@@ -646,9 +592,7 @@ JSTR_NOEXCEPT
 		;
 }
 
-/*
-  Replace N SEARCH in REPLACE.
-*/
+/* Replace N SEARCH in REPLACE. */
 JSTR_FUNC_VOID
 static void
 jstr_rplcnchr_len(char *R s,
@@ -663,9 +607,7 @@ JSTR_NOEXCEPT
 		;
 }
 
-/*
-  Replace N SEARCH in REPLACE.
-*/
+/* Replace N SEARCH in REPLACE. */
 JSTR_FUNC_VOID
 static void
 jstr_rplcnchr(char *R s,
@@ -678,10 +620,8 @@ JSTR_NOEXCEPT
 		;
 }
 
-/*
-  Replace last SEARCH in S with REPLACE.
-  Return ptr to '\0' in S.
-*/
+/* Replace last SEARCH in S with REPLACE.
+  Return ptr to '\0' in S. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -695,11 +635,9 @@ JSTR_NOEXCEPT
 	return p ? jstr_rmat_len_p(s, sz, JSTR_PTR_DIFF(p, s), find_len) : s + sz;
 }
 
-/*
-  Replace last SEARCH in S with REPLACE.
+/* Replace last SEARCH in S with REPLACE.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -737,11 +675,9 @@ JSTR_NOEXCEPT
 	return (i.dst != end) ? jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)) : s + sz;
 }
 
-/*
-  Remove all SEARC in S.
+/* Remove all SEARC in S.
   Return value:
-  Pointer to '\0' in S.
-*/
+  Pointer to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -800,11 +736,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-  Replace N SEARCH in S with REPLACE.
+/* Replace N SEARCH in S with REPLACE.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -821,11 +755,9 @@ JSTR_NOEXCEPT
 	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, n);
 }
 
-/*
-  Replace all SEARCH in S with REPLACE.
+/* Replace all SEARCH in S with REPLACE.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -842,11 +774,9 @@ JSTR_NOEXCEPT
 	return jstr_rplcn_len_from(s, sz, cap, start_idx, find, find_len, rplc, rplc_len, (size_t)-1);
 }
 
-/*
-  Replace N SEARCH in S with REPLACE.
+/* Replace N SEARCH in S with REPLACE.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -862,11 +792,9 @@ JSTR_NOEXCEPT
 	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, (size_t)-1);
 }
 
-/*
-  Replace first SEARCH in S with REPLACE.
+/* Replace first SEARCH in S with REPLACE.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_rplc_len(char *R *R s,
@@ -881,11 +809,9 @@ JSTR_NOEXCEPT
 	return jstr_rplcn_len_from(s, sz, cap, 0, find, find_len, rplc, rplc_len, 1);
 }
 
-/*
-  Replace first SEARCH in S with REPLACE.
+/* Replace first SEARCH in S with REPLACE.
   Return JSTR_RET_ERR on malloc error;
-  otherwise, 1.
-*/
+  otherwise, 1. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_rplc_len_from(char *R *R s,
@@ -925,9 +851,7 @@ jstr_revcpy_p(char *R dst,
 	return dst + len;
 }
 
-/*
-  Reverse S.
-*/
+/* Reverse S. */
 JSTR_FUNC_VOID
 static void
 jstr_rev_len(char *R s,
@@ -943,11 +867,9 @@ JSTR_NOEXCEPT
 	}
 }
 
-/*
-  Reverse S.
+/* Reverse S.
   Return value:
-  ptr to '\0' in S.
-*/
+  ptr to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -959,11 +881,9 @@ JSTR_NOEXCEPT
 	return s + _len;
 }
 
-/*
-  Trim leading and trailing jstr_isspace() chars in S.
+/* Trim leading and trailing jstr_isspace() chars in S.
   Return value:
-  ptr to '\0' in S;
-*/
+  ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trimend_len_p(char *R s,
@@ -977,11 +897,9 @@ JSTR_NOEXCEPT
 	return end;
 }
 
-/*
-  Trim leading and trailing jstr_isspace() chars in S.
+/* Trim leading and trailing jstr_isspace() chars in S.
   Return value:
-  ptr to '\0' in S;
-*/
+  ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -991,11 +909,9 @@ JSTR_NOEXCEPT
 	return jstr_trimend_len_p(s, strlen(s));
 }
 
-/*
-  Trim leading and trailing jstr_isspace() chars in S.
+/* Trim leading and trailing jstr_isspace() chars in S.
   Return value:
-  ptr to '\0' in S;
-*/
+  ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trimstart_len_p(char *R s,
@@ -1010,11 +926,9 @@ JSTR_NOEXCEPT
 	return s + sz;
 }
 
-/*
-  Trim leading jstr_isspace() chars in S.
+/* Trim leading jstr_isspace() chars in S.
   Return value:
-  ptr to '\0' in S;
-*/
+  ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -1029,9 +943,7 @@ JSTR_NOEXCEPT
 	return s + strlen(start);
 }
 
-/*
-  Trim leading jstr_isspace() chars in S.
-*/
+/* Trim leading jstr_isspace() chars in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
@@ -1045,11 +957,9 @@ JSTR_NOEXCEPT
 		jstr_strmove_len(s, start, strlen(start));
 }
 
-/*
-  Trim leading and trailing jstr_isspace() chars in S.
+/* Trim leading and trailing jstr_isspace() chars in S.
   Return value:
-  ptr to '\0' in S;
-*/
+  ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trim_len_p(char *R s,
@@ -1065,11 +975,9 @@ JSTR_NOEXCEPT
 	return s + sz;
 }
 
-/*
-  Trim leading and trailing jstr_isspace() chars in S.
+/* Trim leading and trailing jstr_isspace() chars in S.
   Return value:
-  ptr to '\0' in S;
-*/
+  ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -1079,11 +987,9 @@ JSTR_NOEXCEPT
 	return jstr_trim_len_p(s, strlen(s));
 }
 
-/*
-  Place SRC into DST[AT].
+/* Place SRC into DST[AT].
   Assume that S have enough space for SRC.
-  Return value:
-*/
+  Return value: */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
@@ -1096,11 +1002,9 @@ JSTR_NOEXCEPT
 	memcpy(s + at, src, src_len);
 }
 
-/*
-  Place SRC into DST[AT].
+/* Place SRC into DST[AT].
   Return JSTR_RET_ERR on malloc error;
-  otherwise JSTR_RET_SUCC.
-*/
+  otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -1122,11 +1026,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-  Place SRC after C in DST.
+/* Place SRC after C in DST.
   Return JSTR_RET_ERR on malloc error;
-  otherwise JSTR_RET_SUCC.
-*/
+  otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -1144,11 +1046,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-  Place SRC after end of NE in DST.
+/* Place SRC after end of NE in DST.
   Return JSTR_RET_ERR on malloc error;
-  otherwise JSTR_RET_SUCC.
-*/
+  otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_placeafter_len(char *R *R s,
@@ -1170,11 +1070,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-   Convert snake_case to camelCase.
+/* Convert snake_case to camelCase.
    Return ptr to '\0' in S.
-   Leading underscores are preserved.
-*/
+   Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_toCamelCaseP(char *R s)
@@ -1201,11 +1099,9 @@ start:
 	return s;
 }
 
-/*
-   Convert snake_case to camelCase.
+/* Convert snake_case to camelCase.
    Return ptr to '\0' in DST.
-   Leading underscores are preserved.
-*/
+   Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_toCamelCaseCpyP(char *R dst,
@@ -1226,11 +1122,9 @@ JSTR_NOEXCEPT
 	return dst;
 }
 
-/*
-   Convert camelCase to snake_case.
+/* Convert camelCase to snake_case.
    Return ptr to '\0' in S.
-   Leading underscores are preserved.
-*/
+   Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_to_snake_case_p(char *R s)
@@ -1256,11 +1150,9 @@ start:
 	return s;
 }
 
-/*
-   Convert camelCase to snake_case.
+/* Convert camelCase to snake_case.
    Return ptr to '\0' in DST.
-   Leading underscores are preserved.
-*/
+   Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_to_snake_case_cpy_p(char *R dst,
@@ -1282,11 +1174,9 @@ JSTR_NOEXCEPT
 	return dst;
 }
 
-/*
-   Non-destructive strtok.
+/* Non-destructive strtok.
    END must be NUL terminated.
-   Instead of nul-termination, use the save_ptr to know the length of the string.
-*/
+   Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_ne_len(const char **R const save_ptr,
@@ -1304,10 +1194,8 @@ JSTR_NOEXCEPT
 	return (char *)s;
 }
 
-/*
-   Non-destructive strtok.
-   Instead of nul-termination, use the save_ptr to know the length of the string.
-*/
+/* Non-destructive strtok.
+   Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_ne(const char **R const save_ptr,
@@ -1323,10 +1211,8 @@ JSTR_NOEXCEPT
 	return (char *)s;
 }
 
-/*
-   Non-destructive strtok.
-   Instead of nul-termination, use the save_ptr to know the length of the string.
-*/
+/* Non-destructive strtok.
+   Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok(const char **R save_ptr,
@@ -1391,11 +1277,9 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-/*
-   Return value:
+/* Return value:
    JSTR_RET_ERR on error;
-   1 otherwise.
-*/
+   1 otherwise. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_repeat_len(char *R *R s,
@@ -1430,12 +1314,10 @@ JSTR_NOEXCEPT
 	return dst;
 }
 
-/*
-   Add thousand separator to NPTR.
+/* Add thousand separator to NPTR.
    Return value:
    ptr to '\0' in NPTR.
-   For example: 1234 becomes 1,234.
-*/
+   For example: 1234 becomes 1,234. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_thousep_len_p(char *R nptr,
@@ -1470,12 +1352,10 @@ JSTR_NOEXCEPT
 	return (char *)end;
 }
 
-/*
-   Add thousand separator to NPTR.
+/* Add thousand separator to NPTR.
    Return value:
    ptr to '\0' in NPTR.
-   For example: 1234 becomes 1,234.
-*/
+   For example: 1234 becomes 1,234. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -1486,11 +1366,9 @@ JSTR_NOEXCEPT
 	return jstr_thousep_len_p(nptr, strlen(nptr), separator);
 }
 
-/*
-   Copy SRC to DST, adding thousand separator.
+/* Copy SRC to DST, adding thousand separator.
    Return value:
-   ptr to '\0' in DST.
-*/
+   ptr to '\0' in DST. */
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -1531,11 +1409,9 @@ JSTR_NOEXCEPT
 	return dst;
 }
 
-/*
-   Copy SRC to DST, adding thousand separator.
+/* Copy SRC to DST, adding thousand separator.
    Return value:
-   ptr to '\0' in DST.
-*/
+   ptr to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *

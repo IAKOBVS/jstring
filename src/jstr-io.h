@@ -103,9 +103,7 @@ pjstrio_extget_len(const char *fname,
 	return NULL;
 }
 
-/*
-   Return jstrio_ext_ty based on the FNAME extension;
-*/
+/* Return jstrio_ext_ty based on the FNAME extension. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static jstrio_ext_ty
@@ -156,9 +154,7 @@ static const unsigned char pjstrio_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,
 
 /* clang-format on */
 
-/*
-   Check if the first JSTRIO_BINARY_CHECK_MAX bytes or fewer contain any unprintable char.
-*/
+/* Check if the first JSTRIO_BINARY_CHECK_MAX bytes or fewer contain any unprintable char. */
 JSTR_FUNC
 static int
 jstrio_isbinary_maybe(const char *R buf,
@@ -178,10 +174,8 @@ JSTR_NOEXCEPT
 	return 0;
 }
 
-/*
-   Check the whole file for a NUL byte.
-   File must be nul terminated.
-*/
+/* Check the whole file for a NUL byte.
+   File must be nul terminated. */
 JSTR_FUNC_PURE
 static int
 jstrio_isbinary(const char *R buf,
@@ -194,9 +188,7 @@ JSTR_NOEXCEPT
 	return strlen(buf) != sz;
 }
 
-/*
-   Check MIN(N, SZ) bytes for any unprintable char.
-*/
+/* Check MIN(N, SZ) bytes for any unprintable char. */
 JSTR_FUNC
 static int
 jstr_isbinary(const char *R buf,
@@ -403,11 +395,9 @@ err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-/*
-   Return value:
+/* Return value:
    JSTR_RET_ERR on error;
-   otherwise JSTR_RET_SUCC.
-*/
+   otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstrio_readfile(char *R *R s,
@@ -429,13 +419,11 @@ err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-/*
-   Expand ~/some_dir to /home/username/some_dir.
+/* Expand ~/some_dir to /home/username/some_dir.
    Assume that S has enough space.
    Return value:
    ptr to '\0' in S.
-   NULL on error.
-*/
+   NULL on error. */
 JSTR_FUNC
 static char *
 jstrio_expandtildefirst_len_unsafe_p(char *R s,
@@ -453,13 +441,11 @@ JSTR_NOEXCEPT
 	return s + sz + len - 1;
 }
 
-/*
-   Expand ~/some_dir to /home/username/some_dir.
+/* Expand ~/some_dir to /home/username/some_dir.
    Assume that S has enough space.
    Return value:
    ptr to '\0' in S.
-   NULL on error.
-*/
+   NULL on error. */
 JSTR_FUNC
 static jstr_ret_ty
 jstrio_expandtildefirst(char *R *R s,
@@ -481,13 +467,11 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/*
-   Expand every ~ to /home/username.
+/* Expand every ~ to /home/username.
    Assume that S has enough space.
    Return value:
    ptr to '\0' in S;
-   NULL on error.
-*/
+   NULL on error. */
 JSTR_FUNC
 static char *
 jstrio_expandtilde_len_unsafe_p(char *R s,
@@ -508,12 +492,10 @@ JSTR_NOEXCEPT
 	return s + sz;
 }
 
-/*
-   Expand every ~ to /home/username.
+/* Expand every ~ to /home/username.
    Return value:
    JSTR_RET_ERR on error;
-   otherwise JSTR_RET_SUCC.
-*/
+   otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstrio_expandtilde(char *R *R s,
@@ -871,8 +853,7 @@ JSTR_NOEXCEPT
 				goto err_closedir;
 			}
 		}
-		/*
-		   We must [f]stat() to get the type. If !USE_ATFILE, we must construct the full path for stat().
+		/* We must [f]stat() to get the type. If !USE_ATFILE, we must construct the full path for stat().
 		   FILL_PATH() will construct the full path if USE_ATFILE or HAVE_DIRENT_D_TYPE.
 		*/
 		if (!JSTR_HAVE_DIRENT_D_TYPE) {
@@ -1009,16 +990,14 @@ err_closedir:
 #undef FD_PARAM
 #undef PJSTRIO_O_DIRECTORY
 
-/*
-   Call FN() on files found recursively that matches GLOB.
+/* Call FN() on files found recursively that matches GLOB.
    If FN() returns JSTR_RET_ERR, stop processing.
    Return value:
    JSTR_RET_ERR on error;
    JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;
    JSTR_RET_STOP if FN() returns RET_STOP and JSTRIO_FTW_ACTIONRETVAL is used.
    or the return value of FN() if DIRPATH is not a directory and FN() is executed.
-   If a non-fatal error is encountered, continue processing other entries.
-*/
+   If a non-fatal error is encountered, continue processing other entries. */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((4))

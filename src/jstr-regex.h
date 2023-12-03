@@ -222,10 +222,8 @@ JSTR_NOEXCEPT
 	return (jstrre_ret_ty)regexec(preg, s, nmatch, pmatch, eflags | JSTRRE_EF_STARTEND);
 }
 
-/*
-   Check if S matches precompiled regex.
-   Return return value of regexec.
-*/
+/* Check if S matches precompiled regex.
+   Return return value of regexec. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
@@ -237,11 +235,9 @@ JSTR_NOEXCEPT
 	return jstrre_exec(preg, s, 0, NULL, eflags);
 }
 
-/*
-   Search pattern in S.
+/* Search pattern in S.
    Return return value of regexec.
-   Store offset of matched pattern in pmatch.
-*/
+   Store offset of matched pattern in pmatch. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
@@ -254,11 +250,9 @@ JSTR_NOEXCEPT
 	return jstrre_exec(preg, s, 1, pmatch, eflags);
 }
 
-/*
-   Search pattern in S.
+/* Search pattern in S.
    Return return value of regexec.
-   Store offset of matched pattern in pmatch.
-*/
+   Store offset of matched pattern in pmatch. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
@@ -272,10 +266,8 @@ JSTR_NOEXCEPT
 	return jstrre_exec_len(preg, s, sz, 1, pmatch, eflags);
 }
 
-/*
-   Check if S matches PTN.
-   Return return value of regexec or regcomp if it fails.
-*/
+/* Check if S matches PTN.
+   Return return value of regexec or regcomp if it fails. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static jstrre_ret_ty

@@ -34,33 +34,48 @@
 #	define JSTR_DEBUG 0
 #endif
 
-/*
-   Defining JSTR_USE_LGPL as 0 will exclude all LGPL code from being included.
-*/
+/* Exclude all LGPL code from being included. */
 #ifndef JSTR_USE_LGPL
 #	define JSTR_USE_LGPL 1
 #endif
 
-/*
-   Always prefer standard functions over user functions.
+/* Always prefer standard functions over user functions.
    For example, use libc strcasestr() when available
-   over our own strcasestr() in jstr_strcasestr().
-*/
+   over our own strcasestr() in jstr_strcasestr(). */
 #ifndef JSTR_USE_STANDARD_ALWAYS
 #	define JSTR_USE_STANDARD_ALWAYS 0
 #endif
 
-/*
-   When removing a string (jstr_ty) from a string list (jstrlist_ty), don't immediately
+/* jstrio_*() stdio functions and all functions which use them
+   will use the *_unlocked() versions when available. */
+#ifndef JSTR_USE_UNLOCKED_IO
+#	define JSTR_USE_UNLOCKED_IO 0
+#endif
+/* Behave as JSTR_USE_UNLOCKED_IO but only for functions that read. */
+#ifndef JSTR_USE_UNLOCKED_IO_READ
+#	define JSTR_USE_UNLOCKED_IO_READ 0
+#endif
+/* Behave as JSTR_USE_UNLOCKED_IO but only for functions that write. */
+#ifndef JSTR_USE_UNLOCKED_IO_WRITE
+#	define JSTR_USE_UNLOCKED_IO_WRITE 0
+#endif
+
+/* When removing a string (jstr_ty) from a string list (jstrlist_ty), don't immediately
    call free(). This may result in fewer allocations when strings are often added to
-   and removed from the list. All elements are freed when jstrl_free() is called.
-*/
+   and removed from the list. All elements are freed when jstrl_free() is called. */
 #ifndef JSTRL_LAZY_FREE
 #	define JSTRL_LAZY_FREE 0
 #endif
 
-#define JSTR_MIN_CAP          ((sizeof(size_t) == 8) ? 24 : 16)
-#define JSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
+/* Minimum size of allocation of malloc(). */
+#ifndef JSTR_MIN_CAP
+#	define JSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 16)
+#endif
+
+/* Allocations will be aligned to this alignment. */
+#ifndef JSTR_MALLOC_ALIGNMENT
+#	define JSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
+#endif
 
 /* Allocate more than needed for the initial malloc(). */
 #ifndef JSTR_ALLOC_MULTIPLIER
@@ -70,37 +85,42 @@
 #	define JARR_ALLOC_MULTIPLIER 1.5
 #endif
 
-/* Growth factor. */
+/* Growth factor of jstr_ty. */
 #ifndef JSTR_GROWTH
 #	define JSTR_GROWTH 1.5
 #endif
+
+/* Growth factor of jstrlist_ty. */
 #ifndef JSTRL_GROWTH
 #	define JSTRL_GROWTH 1.5
 #endif
+
+/* Growth factor of jarr_ty. */
 #ifndef JARR_GROWTH
 #	define JARR_GROWTH 1.5
 #endif
 
-/* File extensions interpreted as text files. */
+/* Filename extensions interpreted as text. */
 #ifndef JSTRIO_FT_TEXT_ARRAY
 #	define JSTRIO_FT_TEXT_ARRAY "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt"
 #endif
-/* File extensions interpreted as binary files. */
+
+/* Filename extensions interpreted as binary. */
 #ifndef JSTRIO_FT_BINARY_ARRAY
 #	define JSTRIO_FT_BINARY_ARRAY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
 /* This is defined by ./check-little-endian. */
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #endif
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    1
 #endif
 

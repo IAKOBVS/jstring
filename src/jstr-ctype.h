@@ -187,10 +187,8 @@ JSTR_NOEXCEPT
 	return (char *)p;
 }
 
-/*
-   Copy SRC to DST touppered.
-   Return pointer to '\0' in DST.
-*/
+/* Copy SRC to DST touppered.
+   Return pointer to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -204,10 +202,8 @@ JSTR_NOEXCEPT
 	return dst - 1;
 }
 
-/*
-   Copy SRC to DST tolowered.
-   Return pointer to '\0' in DST.
-*/
+/* Copy SRC to DST tolowered.
+   Return pointer to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *

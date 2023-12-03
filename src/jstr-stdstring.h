@@ -158,9 +158,7 @@ JSTR_NOEXCEPT
 	memset(s, 0, strlen(s));
 }
 
-/*
-   Return pointer to '\0' in S.
-*/
+/* Return pointer to '\0' in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *
@@ -262,9 +260,7 @@ JSTR_NOEXCEPT
 	return (char *)jstr_memnchr(s, c, sz, n);
 }
 
-/*
-   strchr() before s + N.
-*/
+/* strchr() before s + N. */
 JSTR_FUNC_PURE
 static char *
 jstr_strnchr(const char *s,
@@ -298,10 +294,8 @@ JSTR_NOEXCEPT
 	return (void *)(p ? p : (char *)s + sz);
 }
 
-/*
-  Return value:
-  ptr to '\0' in DST.
-*/
+/* Return value:
+   ptr to '\0' in DST. */
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
@@ -398,10 +392,8 @@ JSTR_NOEXCEPT
 	return (char *)dst + sz;
 }
 
-/*
-  Return value:
-  ptr to '\0' in DST.
-*/
+/* Return value:
+   ptr to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -442,10 +434,8 @@ JSTR_NOEXCEPT
 #endif /* HAVE_MEMCPY */
 }
 
-/*
-  Return value:
-  Pointer to '\0' in DST.
-*/
+/* Return value:
+   Pointer to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
