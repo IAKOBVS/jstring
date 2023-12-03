@@ -116,27 +116,29 @@ simple_strcasestr(const char *h,
 	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
 }
 
-#define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)                       \
-	if (jstr_unlikely(result != expected)) {                                   \
-		size_t hl = hs_len, nl = ne_len;                                   \
-		if (hl == 0)                                                       \
-			hl = strlen(hs);                                           \
-		if (nl == 0)                                                       \
-			nl = strlen(ne);                                           \
-		PRINTERR("hsn:\n");                                                \
-		PRINTERR("hs:\n%s\n", hs);                                         \
-		PRINTERR("ne:\n%s\n", ne);                                         \
-		fwrite(hs, 1, jstr_strnlen(hs, n), stderr);                        \
-		PRINTERR("\n");                                                    \
-		PRINTERR("hs_len:\n%zu\n", hl);                                    \
-		PRINTERR("nl:\n%zu\n", nl);                                        \
-		PRINTERR("n:\n%zu\n", (size_t)n);                                  \
-		PRINTERR("expected:\n%s\n", EMPTY((char *)expected));              \
-		PRINTERR("expected_len:\n%zu\n", strlen(EMPTY((char *)expected))); \
-		PRINTERR("result:\n%s\n", EMPTY((char *)result));                  \
-		PRINTERR("result_len:\n%zu\n", strlen(EMPTY((char *)result)));     \
-		assert(result == expected);                                        \
-	}
+#define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)                               \
+	do {                                                                               \
+		if (jstr_unlikely(result != expected)) {                                   \
+			size_t hl = hs_len, nl = ne_len;                                   \
+			if (hl == 0)                                                       \
+				hl = strlen(hs);                                           \
+			if (nl == 0)                                                       \
+				nl = strlen(ne);                                           \
+			PRINTERR("hsn:\n");                                                \
+			PRINTERR("hs:\n%s\n", hs);                                         \
+			PRINTERR("ne:\n%s\n", ne);                                         \
+			fwrite(hs, 1, jstr_strnlen(hs, n), stderr);                        \
+			PRINTERR("\n");                                                    \
+			PRINTERR("hs_len:\n%zu\n", hl);                                    \
+			PRINTERR("nl:\n%zu\n", nl);                                        \
+			PRINTERR("n:\n%zu\n", (size_t)n);                                  \
+			PRINTERR("expected:\n%s\n", EMPTY((char *)expected));              \
+			PRINTERR("expected_len:\n%zu\n", strlen(EMPTY((char *)expected))); \
+			PRINTERR("result:\n%s\n", EMPTY((char *)result));                  \
+			PRINTERR("result_len:\n%zu\n", strlen(EMPTY((char *)result)));     \
+			assert(result == expected);                                        \
+		}                                                                          \
+	} while (0)
 
 #define T_HS(test, i) ((test)[i].hs)
 #define T_NE(test, i) ((test)[i].ne)
@@ -154,17 +156,21 @@ simple_strcasestr(const char *h,
 		}                                                                \
 	} while (0)
 
-#define T_LEN(fn, simple_fn, test_array)                                                                                   \
-	do {                                                                                                               \
-		TESTING(fn);                                                                                               \
-		T_FOREACHI(test_array, i)                                                                                  \
-		{                                                                                                          \
-			const char *hs = T_HS(test_array, i);                                                              \
-			const char *ne = T_NE(test_array, i);                                                              \
-			const size_t hs_len = strlen(hs);                                                                  \
-			const size_t ne_len = strlen(ne);                                                                  \
-			T_DEBUG(hs, ne, hs_len, ne_len, 0, fn(hs, hs_len, ne, ne_len), simple_fn(hs, hs_len, ne, ne_len)); \
-		}                                                                                                          \
+#define T_LEN(fn, simple_fn, test_array)                                                                                      \
+	do {                                                                                                                  \
+		TESTING(fn);                                                                                                  \
+		T_FOREACHI(test_array, i)                                                                                     \
+		{                                                                                                             \
+			const char *hs = T_HS(test_array, i);                                                                 \
+			const char *ne = T_NE(test_array, i);                                                                 \
+			const size_t hs_len = strlen(hs);                                                                     \
+			const size_t ne_len = strlen(ne);                                                                     \
+			T_DEBUG(hs, ne, hs_len, ne_len, 0, fn(hs, hs_len, ne, ne_len), simple_fn(hs, hs_len, ne, ne_len));    \
+			if (i < hs_len)                                                                                       \
+				T_DEBUG(hs, ne, i, ne_len, 0, fn(hs, hs_len, ne, ne_len), simple_fn(hs, hs_len, ne, ne_len)); \
+			if (i < ne_len)                                                                                       \
+				T_DEBUG(hs, ne, hs_len, i, 0, fn(hs, hs_len, ne, ne_len), simple_fn(hs, hs_len, ne, ne_len)); \
+		}                                                                                                             \
 	} while (0)
 
 #define T_N(fn, simple_fn, test_array)                                                                   \
@@ -178,10 +184,12 @@ simple_strcasestr(const char *h,
 			const size_t hs_len = strlen(hs);                                                \
 			const size_t ne_len = strlen(ne);                                                \
 			T_DEBUG(hs, ne, hs_len, ne_len, n, fn(hs, ne, n), simple_fn(hs, ne, n));         \
-			if (i < n) {                                                                     \
-				n = i;                                                                   \
-				T_DEBUG(hs, ne, hs_len, ne_len, n, fn(hs, ne, n), simple_fn(hs, ne, n)); \
-			}                                                                                \
+			if (i < n)                                                                       \
+				T_DEBUG(hs, ne, hs_len, ne_len, i, fn(hs, ne, n), simple_fn(hs, ne, n)); \
+			if (i < hs_len)                                                                  \
+				T_DEBUG(hs, ne, i, ne_len, n, fn(hs, ne, n), simple_fn(hs, ne, n));      \
+			if (i < ne_len)                                                                  \
+				T_DEBUG(hs, ne, hs_len, i, n, fn(hs, ne, n), simple_fn(hs, ne, n));      \
 		}                                                                                        \
 	} while (0)
 
@@ -196,10 +204,8 @@ simple_strcasestr(const char *h,
 			const size_t s2_len = strlen(s2);                                                            \
 			size_t n = JSTR_MIN(s1_len, JSTR_MIN(i, s2_len));                                            \
 			T_DEBUG(s1, s2, s1_len, s2_len, n, s1 + !fn(s1, s2, n), s1 + !simple_fn(s1, s2, n));         \
-			if (i < n) {                                                                                 \
-				n = i;                                                                               \
-				T_DEBUG(s1, s2, s1_len, s2_len, n, s1 + !fn(s1, s2, n), s1 + !simple_fn(s1, s2, n)); \
-			}                                                                                            \
+			if (i < n)                                                                                   \
+				T_DEBUG(s1, s2, s1_len, s2_len, i, s1 + !fn(s1, s2, n), s1 + !simple_fn(s1, s2, n)); \
 		}                                                                                                    \
 	} while (0)
 
@@ -226,9 +232,9 @@ main(int argc, char **argv)
 	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp);
 	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	T_N(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
-	T_N(jstr_memmem, simple_memmem, test_array_memmem);
-	T_N(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
+	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
+	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
+	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
