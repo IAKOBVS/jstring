@@ -1,9 +1,5 @@
 #!/bin/sh
 
-cd "$(dirname "$0")" || exit
-./setup || exit
-./test || exit
-mkdir -p ../jstr
 update_if_needed()
 {
 	in_fname=$1
@@ -23,14 +19,23 @@ update_if_needed()
 	esac
 	cp -f "$in_fname" "$out_fname"
 }
+
 mark_as_built()
 {
 	#shellcheck disable=SC2005
 	echo "$(sed 's/\([ \t]*#[ \t]*ifndef[ \t]\{1,\}JSTR_BUILT\)/#define JSTR_BUILT\n\1/' ../jstr/jstr-macros.h)" >../jstr/jstr-macros.h
 }
+
+cd "$(dirname "$0")" || exit
+./setup || exit
+./test || exit
+mkdir -p ../jstr
+
 for file in $(echo *.h); do
 	update_if_needed "$file" &
 done
 wait
 mark_as_built
+cc ../jstr/jstr.h -Wall -Wextra -Wpedantic -std=c99 -o "$TMPDIR" || exit
+rm "$TMPDIR"
 echo 'Built to jstr.'
