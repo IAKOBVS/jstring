@@ -36,6 +36,7 @@ PJSTR_END_DECLS
 #include "jstr-config.h"
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
+#include "jstr-ctype.h"
 
 #define R JSTR_RESTRICT
 
@@ -685,7 +686,7 @@ JSTR_NOEXCEPT
 	return jstr_strrstr_len(hs, hs_len, ne, ne_len);
 }
 
-#define L(c) jstr_ctype_table_tolower[c]
+#define L(c) jstr_tolower(c)
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
