@@ -1084,19 +1084,20 @@ JSTR_NOEXCEPT
 		;
 	if (jstr_unlikely(*s == '\0'))
 		return s;
-	const char *src = s;
+	unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = (const unsigned char *)s;
 	goto start;
 	for (; *src; ++src)
 		if (jstr_likely(*src != '_'))
-			*s++ = *src;
+			*dst++ = *src;
 		else {
 start:
-			*s++ = jstr_toupper(*++src);
+			*dst++ = jstr_toupper(*++src);
 			if (jstr_unlikely(*src == '\0'))
 				break;
 		}
-	*s = '\0';
-	return s;
+	*dst = '\0';
+	return (char *)dst;
 }
 
 /* Convert snake_case to camelCase.
@@ -1108,18 +1109,20 @@ jstr_toCamelCaseCpyP(char *R dst,
                      const char *R src)
 JSTR_NOEXCEPT
 {
-	for (; *src == '_'; ++src, *dst++ = '_')
+	unsigned char *d = (unsigned char *)dst;
+	const unsigned char *s = (const unsigned char *)src;
+	for (; *s == '_'; ++s, *d++ = '_')
 		;
-	while (*src)
-		if (*src != '_') {
-			*dst++ = *src++;
+	while (*s)
+		if (*s != '_') {
+			*d++ = *s++;
 		} else {
-			if (jstr_unlikely(*++src == '\0'))
+			if (jstr_unlikely(*++s == '\0'))
 				break;
-			*dst++ = jstr_toupper(*src++);
+			*d++ = jstr_toupper(*s++);
 		}
-	*dst = '\0';
-	return dst;
+	*d = '\0';
+	return (char *)d;
 }
 
 /* Convert camelCase to snake_case.
