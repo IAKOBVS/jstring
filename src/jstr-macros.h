@@ -33,7 +33,6 @@
 #include "jstr-macros-arch.h"
 #include "jstr-macros-os.h"
 #include "jstr-ptr-arith.h"
-#include <assert.h>
 
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS extern "C" {
@@ -42,6 +41,14 @@
 #	define PJSTR_BEGIN_DECLS
 #	define PJSTR_END_DECLS
 #endif
+
+PJSTR_BEGIN_DECLS
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 typedef enum {
@@ -138,6 +145,9 @@ PJSTR_END_DECLS
 #else
 #	error "Can't detect endianness."
 #endif
+
+#define jstr_err(msg)    pjstr_err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
+#define jstr_errdie(msg) pjstr_errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
@@ -574,14 +584,52 @@ PJSTR_CAST(T, Other other)
 #ifndef JSTR_ATTR_ACCESS
 #	define JSTR_ATTR_ACCESS(x)
 #endif
+
 #define JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NOTHROW JSTR_ATTR_MAYBE_UNUSED
 #define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NONNULL_ALL
-#define JSTR_FUNC_MAY_NULL      JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WARN_UNUSED
-#define JSTR_FUNC               JSTR_FUNC_MAY_NULL JSTR_ATTR_NONNULL_ALL
-#define JSTR_FUNC_CONST         JSTR_FUNC JSTR_ATTR_CONST
-#define JSTR_FUNC_PURE          JSTR_FUNC JSTR_ATTR_PURE
-#define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_MAY_NULL JSTR_ATTR_PURE
-#define JSTR_FUNC_RET_NONNULL   JSTR_FUNC JSTR_ATTR_RETURNS_NONNULL
+#define JSTR_FUNC_CONST         JSTR_FUNC_VOID JSTR_ATTR_WARN_UNUSED JSTR_ATTR_CONST
+#define JSTR_FUNC_PURE          JSTR_FUNC_VOID JSTR_ATTR_WARN_UNUSED JSTR_ATTR_PURE
+#define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WARN_UNUSED JSTR_ATTR_PURE
+#if JSTR_PANIC
+#	define JSTR_FUNC_MAY_NULL    JSTR_FUNC_VOID_MAY_NULL
+#	define JSTR_FUNC             JSTR_FUNC_VOID
+#	define JSTR_FUNC_RET_NONNULL JSTR_FUNC_VOID JSTR_ATTR_RETURNS_NONNULL
+#else
+#	define JSTR_FUNC_MAY_NULL    JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WARN_UNUSED
+#	define JSTR_FUNC             JSTR_FUNC_MAY_NULL JSTR_ATTR_NONNULL_ALL
+#	define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_ATTR_RETURNS_NONNULL
+#endif
+
+JSTR_FUNC_VOID_MAY_NULL
+JSTR_NONNULL((1))
+JSTR_NONNULL((3))
+JSTR_ATTR_NOINLINE
+JSTR_ATTR_COLD
+static void
+pjstr_errdie(const char *JSTR_RESTRICT filename,
+             const unsigned int line,
+             const char *JSTR_RESTRICT func,
+             const char *JSTR_RESTRICT msg)
+JSTR_NOEXCEPT
+{
+	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
+	exit(EXIT_FAILURE);
+}
+
+JSTR_FUNC_VOID_MAY_NULL
+JSTR_NONNULL((1))
+JSTR_NONNULL((3))
+JSTR_ATTR_NOINLINE
+JSTR_ATTR_COLD
+static void
+pjstr_err(const char *JSTR_RESTRICT filename,
+          const unsigned int line,
+          const char *JSTR_RESTRICT func,
+          const char *JSTR_RESTRICT msg)
+JSTR_NOEXCEPT
+{
+	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
+}
 
 #if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) \
 || defined _BSD_SOURCE

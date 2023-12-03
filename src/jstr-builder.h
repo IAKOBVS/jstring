@@ -49,8 +49,6 @@ PJSTR_END_DECLS
 		0 \
 	}
 
-#define jstr_err(msg)      pjstr_err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
-#define jstr_errdie(msg)   pjstr_errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
 #define jstr_foreach(j, p) for (char *p = ((j)->data), *const _pjstr_foreach_end_##p = ((j)->data) + ((j)->size); \
 	                        p < _pjstr_foreach_end_##p;                                                       \
 	                        ++p)
@@ -92,37 +90,6 @@ JSTR_NOEXCEPT
 	while ((cap *= JSTR_GROWTH) < new_cap)
 		;
 	return JSTR_ALIGN_UP(cap, JSTR_MALLOC_ALIGNMENT);
-}
-
-JSTR_FUNC_VOID_MAY_NULL
-JSTR_NONNULL((1))
-JSTR_NONNULL((3))
-JSTR_ATTR_NOINLINE
-JSTR_ATTR_COLD
-static void
-pjstr_errdie(const char *R filename,
-             const unsigned int line,
-             const char *R func,
-             const char *R msg)
-JSTR_NOEXCEPT
-{
-	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
-	exit(EXIT_FAILURE);
-}
-
-JSTR_FUNC_VOID_MAY_NULL
-JSTR_NONNULL((1))
-JSTR_NONNULL((3))
-JSTR_ATTR_NOINLINE
-JSTR_ATTR_COLD
-static void
-pjstr_err(const char *R filename,
-          const unsigned int line,
-          const char *R func,
-          const char *R msg)
-JSTR_NOEXCEPT
-{
-	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
 }
 
 JSTR_FUNC_VOID
