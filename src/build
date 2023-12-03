@@ -42,16 +42,20 @@ done
 wait
 mark_as_built
 
-if [ "$TMPDIR" ]; then
-	if [ -d /tmp ]; then
-		TMPDIR=/tmp/$tmp
-	else
-		TMPDIR=$PWD/$tmp
-	fi
-fi
-tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
 FLAGS='-Wall -Wextra -Wpedantic -std=c99'
-#shellcheck disable=SC2086
-cc ../jstr/jstr.h $FLAGS -o "$tmp" || exit
-rm "$tmp"
+if has_prog tcc; then
+	printf "#include \"jstr.h\"\nint main(){return 0;}\n" | tcc -run -
+else
+	if [ "$TMPDIR" ]; then
+		if [ -d /tmp ]; then
+			TMPDIR=/tmp/$tmp
+		else
+			TMPDIR=$PWD/$tmp
+		fi
+	fi
+	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
+	#shellcheck disable=SC2086
+	cc ../jstr/jstr.h $FLAGS -o "$tmp" || exit
+	rm "$tmp"
+fi
 echo 'Built to jstr.'

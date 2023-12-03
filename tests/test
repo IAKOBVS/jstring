@@ -33,7 +33,7 @@ compile()
 
 cd "$(dirname "$0")" || exit
 
-if false || has_prog tcc; then
+if has_prog tcc; then
 	CC=tcc
 else
 	CC=cc
