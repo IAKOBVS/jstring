@@ -413,8 +413,8 @@ JSTR_NOEXCEPT
 }
 
 #define PJSTR_MEMMEM_RETTYPE void *
-#define PJSTR_MEMMEM_FUNC    pjstr_memmem_lgpl
-#include "_lgpl-memmem.h"
+#define PJSTR_MEMMEM_FUNC    pjstr_memmem_bmh
+#include "_memmem-bmh.h"
 
 #define PJSTR_RAREBYTE_RETTYPE void *
 #define PJSTR_RAREBYTE_FUNC    pjstr_memmem_rarebyte
@@ -442,10 +442,8 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
-#	if JSTR_USE_LGPL
 	if (jstr_unlikely(ne_len >= LONG_NE_THRES))
 		goto MEMMEM;
-#	endif
 	cu *rare;
 	rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
 	size_t shift;
@@ -468,12 +466,10 @@ JSTR_NOEXCEPT
 		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
-#	if JSTR_USE_LGPL
+	if (ne_len < 32)
+		return pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
 MEMMEM:
-	return pjstr_memmem_lgpl((cu *)hs, hs_len, (cu *)ne, ne_len);
-#	else
-	return pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
-#	endif
+	return pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
 }
 
@@ -571,33 +567,19 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*hp == '\0'))
 		return NULL;
 	tmp = JSTR_PTR_DIFF(np, ne);
+	const size_t ne_len = strlen((char *)np) + tmp;
+	if (jstr_unlikely(n < ne_len))
+		return NULL;
+	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
+	if (jstr_unlikely(hs_len < ne_len))
+		return NULL;
 	if (JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST) {
-		const size_t ne_len = strlen((char *)np) + tmp;
-		if (jstr_unlikely(n < ne_len))
-			return NULL;
-		const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
-		if (jstr_unlikely(hs_len < ne_len))
-			return NULL;
 		return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
-	} else if (JSTR_USE_LGPL) {
-		const size_t ne_len = strlen((char *)np) + tmp;
-		if (jstr_unlikely(n < ne_len))
-			return NULL;
-		const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
-		if (jstr_unlikely(hs_len < ne_len))
-			return NULL;
-		return (char *)pjstr_memmem_lgpl((cu *)hs, hs_len, (cu *)ne, ne_len);
 	} else {
-		cu *const rare = (cu *)jstr_rarebytefind(ne);
-		const size_t ne_len = (rare > np)
-		                      ? (strlen((char *)rare) + JSTR_PTR_DIFF(rare, ne))
-		                      : (strlen((char *)np) + tmp);
-		if (jstr_unlikely(n < ne_len))
-			return NULL;
-		const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
-		if (jstr_unlikely(hs_len < ne_len))
-			return NULL;
-		return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
+		if (ne_len < 32)
+			return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
+		else
+			return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, (cu *)jstr_rarebytefind(ne));
 	}
 }
 
@@ -811,12 +793,12 @@ JSTR_NOEXCEPT
 
 #undef L
 
-#define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_lgpl
+#define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_bmh
 #define PJSTR_MEMMEM_RETTYPE     char *
 #define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
 #define PJSTR_MEMMEM_HASH2_ICASE 1
 #define PJSTR_MEMMEM_CHECK_EOL   1
-#include "_lgpl-memmem.h"
+#include "_memmem-bmh.h"
 
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -825,7 +807,6 @@ pjstr_strcasestr_long(const char *hs,
                       const char *ne)
 JSTR_NOEXCEPT
 {
-#if JSTR_USE_LGPL
 	const size_t ne_len = strlen(ne + 4) + 4;
 	const size_t hs_len = jstr_strnlen(hs + 4, ne_len | 512) + 4;
 	if (hs_len < ne_len)
@@ -834,11 +815,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr_lgpl(hs, hs_len, ne, ne_len);
-#else
-	typedef const unsigned char cu;
-	return pjstr_strcasestr_nolgpl((cu *)hs, (cu *)ne);
-#endif
+	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
 }
 
 JSTR_FUNC_PURE
@@ -921,11 +898,11 @@ JSTR_NOEXCEPT
 	return jstr_isalpha(c) ? jstr_strcasechr_loop(s, c) : (char *)strchr(s, c);
 }
 
-#define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len_lgpl
+#define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len_bmh
 #define PJSTR_MEMMEM_RETTYPE     char *
 #define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
 #define PJSTR_MEMMEM_HASH2_ICASE 1
-#include "_lgpl-memmem.h"
+#include "_memmem-bmh.h"
 
 #define PJSTR_RAREBYTE_RETTYPE  char *
 #define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len_rarebyte
@@ -958,13 +935,14 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (ne_len > 4) {
-		if (JSTR_USE_LGPL) {
-			return pjstr_strcasestr_len_lgpl(hs, hs_len, ne, ne_len);
+		if (ne_len < 32) {
+BMH:
+			return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 		} else {
 			cu *const p = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
 			if (p)
 				return pjstr_strcasestr_len_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, p);
-			return pjstr_strcasestr_len_rarebyte_notfound((cu *)hs, (cu *)ne, ne_len);
+			goto BMH;
 		}
 	}
 	cu *rare = (cu *)jstr_rarebytefindeither_len(ne, ne_len);
