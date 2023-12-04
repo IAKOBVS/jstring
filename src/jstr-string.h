@@ -437,12 +437,13 @@ JSTR_NOEXCEPT
 	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
-	enum { LONG_NE_THRES = 100 };
+	enum { LONG_NE_THRES = 32,
+	       VERY_LONG_NE_THRES = 100 };
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
-	if (jstr_unlikely(ne_len >= LONG_NE_THRES))
+	if (jstr_unlikely(ne_len >= VERY_LONG_NE_THRES))
 		goto MEMMEM;
 	cu *rare;
 	rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
@@ -466,7 +467,7 @@ JSTR_NOEXCEPT
 		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len < 32)
+	if (ne_len < LONG_NE_THRES)
 		return pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
 MEMMEM:
 	return pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
@@ -576,7 +577,8 @@ JSTR_NOEXCEPT
 	if (JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST) {
 		return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 	} else {
-		if (ne_len < 32)
+		enum { LONG_NE_THRES = 32 };
+		if (ne_len < LONG_NE_THRES)
 			return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 		else
 			return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, (cu *)jstr_rarebytefind(ne));
