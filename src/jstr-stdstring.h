@@ -273,7 +273,7 @@ JSTR_NOEXCEPT
 	s = strchr(s, c);
 	return (char *)(s ? s : start + strlen(start));
 #else
-	/* The following is taken from musl's strchrnul().
+	/* The following is taken from musl's strchrnul() with minor modifications.
 	   Copyright © 2005-2020 Rich Felker, et al.
 
 	   Permission is hereby granted, free of charge, to any person obtaining
@@ -294,9 +294,9 @@ JSTR_NOEXCEPT
 	   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 	   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-	c = (unsigned char)c;
-	if (!c)
+	if (jstr_unlikely(c == '\0'))
 		return (char *)s + strlen(s);
+	c = (unsigned char)c;
 #	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
 #		define ALIGN      (sizeof(size_t))
 #		define ONES       ((size_t)-1 / UCHAR_MAX)
@@ -578,7 +578,7 @@ JSTR_NOEXCEPT
 #		undef HIGHS
 #		undef HASZERO
 #	endif
-	for (; (*dst++ = *src++);)
+	while ((*dst++ = *src++))
 		;
 	return dst - 1;
 #endif
