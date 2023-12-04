@@ -45,7 +45,12 @@ jstr_ty j = JSTR_INIT;
 
 --- Configuration:
 You can customize the library by defining certain macros in jstr-config.h before
-including any header.
+including any header. For example:
+
+//
+#define JSTR_USE_UNLOCKED_IO 1
+#include "jstr.h"
+//
 
 --- Error handling:
 JSTR_ERR is returned as error. The programmer is expected to check the return value
