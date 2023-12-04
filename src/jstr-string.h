@@ -827,7 +827,7 @@ pjstr_strcasestr_long(const char *hs,
                       const char *ne)
 JSTR_NOEXCEPT
 {
-#if JSTR_USE_LGPL /* Doesn't pass test-memmem. */
+#if JSTR_USE_LGPL
 	const size_t ne_len = strlen(ne + 4) + 4;
 	const size_t hs_len = jstr_strnlen(hs + 4, ne_len | 512) + 4;
 	if (hs_len < ne_len)
