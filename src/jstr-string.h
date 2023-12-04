@@ -777,7 +777,7 @@ JSTR_NOEXCEPT
 	const unsigned char *np;
 	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
-	for (hs += 3; *hs; hw = hw << 8 | L(*++hs)) {
+	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
 		if (hw == nw) {
 			for (hp = hs - 3 + 4, np = ne + 4;
 			     L(*hp) == L(*np) && *hp;
@@ -788,7 +788,6 @@ JSTR_NOEXCEPT
 			if (jstr_unlikely(*hp == '\0'))
 				break;
 		}
-	}
 	return NULL;
 }
 
