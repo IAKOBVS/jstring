@@ -72,33 +72,33 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
 	const u *const end = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
-	if (!USE_UNALIGNED) {
-		const int c0 = *ne;
-		for (; (hs = (const u *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
-			if (*(hs - shift) == c0 && !CMP_FUNC((char *)hs - shift, (char *)ne, ne_len))
-				return (ret_ty)(hs - shift);
+#if !USE_UNALIGNED
+	const int c0 = *ne;
+	for (; (hs = (const u *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
+		if (*(hs - shift) == c0 && !CMP_FUNC((char *)hs - shift, (char *)ne, ne_len))
+			return (ret_ty)(hs - shift);
+#else
+	const int short_ne = ne_len < 8;
+	uint64_t ne_align;
+	if (short_ne) {
+		ne_align = (uint64_t)JSTR_BYTE_UTOWORD32(ne);
+		ne += 4;
+		ne_len -= 4;
 	} else {
-		const int short_ne = ne_len < 8;
-		uint64_t ne_align;
-		if (short_ne) {
-			ne_align = (uint64_t)JSTR_BYTE_UTOWORD32(ne);
-			ne += 4;
-			ne_len -= 4;
-		} else {
-			ne_align = JSTR_BYTE_UTOWORD64(ne);
-			ne += 8;
-			ne_len -= 8;
-		}
-		for (; (hs = (const u *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
-			/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
-			if (short_ne) {
-				if (EQ32(hs - shift, ne_align) && !jstr_memcmpeq_loop(hs - shift + 4, ne, ne_len))
-					return (ret_ty)(hs - shift);
-			} else {
-				if (EQ64(hs - shift, ne_align) && !memcmp(hs - shift + 8, ne, ne_len))
-					return (ret_ty)(hs - shift);
-			}
+		ne_align = JSTR_BYTE_UTOWORD64(ne);
+		ne += 8;
+		ne_len -= 8;
 	}
+	for (; (hs = (const u *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
+		/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
+		if (short_ne) {
+			if (EQ32(hs - shift, ne_align) && !jstr_memcmpeq_loop(hs - shift + 4, ne, ne_len))
+				return (ret_ty)(hs - shift);
+		} else {
+			if (EQ64(hs - shift, ne_align) && !memcmp(hs - shift + 8, ne, ne_len))
+				return (ret_ty)(hs - shift);
+		}
+#endif
 	return NULL;
 }
 

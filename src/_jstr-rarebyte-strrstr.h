@@ -74,35 +74,35 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	const size_t shift = JSTR_PTR_DIFF(rarebyte, ne);
 	const unsigned char *p = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
-	if (1 || !USE_UNALIGNED) {
-		const int c0 = *ne;
-		for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs)));)
-			if (*(p - shift) == c0 && !CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
-				return (ret_ty)(p - shift);
+#if !USE_UNALIGNED
+	const int c0 = *ne;
+	for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs)));)
+		if (*(p - shift) == c0 && !CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
+			return (ret_ty)(p - shift);
+#else
+	const int short_ne = ne_len < 8;
+	uint64_t ne_align;
+	if (short_ne) {
+		ne_align = (uint64_t)JSTR_BYTE_UTOWORD32(ne);
+		ne += 4;
+		ne_len -= 4;
 	} else {
-		const int short_ne = ne_len < 8;
-		uint64_t ne_align;
-		if (short_ne) {
-			ne_align = (uint64_t)JSTR_BYTE_UTOWORD32(ne);
-			ne += 4;
-			ne_len -= 4;
-		} else {
-			ne_align = JSTR_BYTE_UTOWORD64(ne);
-			ne += 8;
-			ne_len -= 8;
-		}
-		for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs)));)
-			/* If CMP_FUNC is not defined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
-			if (short_ne) {
-				if (EQ32(p - shift, ne_align)
-				    && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
-					return (ret_ty)(p - shift);
-			} else {
-				if (EQ64(p - shift, ne_align)
-				    && !memcmp(p - shift + 8, ne, ne_len))
-					return (ret_ty)(p - shift);
-			}
+		ne_align = JSTR_BYTE_UTOWORD64(ne);
+		ne += 8;
+		ne_len -= 8;
 	}
+	for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs)));)
+		/* If CMP_FUNC is not defined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
+		if (short_ne) {
+			if (EQ32(p - shift, ne_align)
+			    && !jstr_memcmpeq_loop(p - shift + 4, ne, ne_len))
+				return (ret_ty)(p - shift);
+		} else {
+			if (EQ64(p - shift, ne_align)
+			    && !memcmp(p - shift + 8, ne, ne_len))
+				return (ret_ty)(p - shift);
+		}
+#endif
 	return NULL;
 }
 
