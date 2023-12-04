@@ -580,9 +580,9 @@ JSTR_NOEXCEPT
 #		undef HIGHS
 #		undef HASZERO
 #	endif
-	for (; (*dst = *src); src++, dst++)
+	for (; (*dst++ = *src++); )
 		;
-	return dst;
+	return dst - 1;
 #endif
 }
 
