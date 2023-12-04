@@ -928,6 +928,7 @@ enum {
 typedef uint16_t JSTR_ATTR_MAY_ALIAS jstr_u16u_ty;
 typedef uint32_t JSTR_ATTR_MAY_ALIAS jstr_u32u_ty;
 typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
+
 #define JSTR_BYTE_IDX(i) (i * 8)
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define JSTR_BYTE_UTOWORD16(x)   (*(jstr_u16u_ty *)(x))
