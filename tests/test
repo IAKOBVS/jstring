@@ -36,7 +36,7 @@ cd "$(dirname "$0")" || exit
 if
 	# false
 	has_prog tcc
-	then
+then
 	CC=tcc
 else
 	CC=cc

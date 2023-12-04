@@ -1,5 +1,12 @@
 #!/bin/sh
 
+verbose()
+{
+	echo "$*"
+	#shellcheck disable=2068
+	$@
+}
+
 has_prog()
 {
 	type "$1" >/dev/null 2>/dev/null
@@ -14,15 +21,17 @@ update_if_needed()
 	*macro*) ;;
 	*_jstr-*)
 		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		echo "perl ./namespace-macros.pl $in_fname >$out_fname"
 		exit 0
 		;;
 	*jstr-*)
 		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
+		echo "perl ./gen-func.pl $in_fname | perl ./namespace-macros.pl >$out_fname"
 		exit 0
 		;;
 	*) ;;
 	esac
-	cp -f "$in_fname" "$out_fname"
+	verbose cp -f "$in_fname" "$out_fname"
 }
 
 mark_as_built()
@@ -44,7 +53,7 @@ mark_as_built
 
 FLAGS='-Wall -Wextra -Wpedantic -std=c99'
 if has_prog tcc; then
-	printf "#include \"jstr.h\"\nint main(){return 0;}\n" | tcc -run -
+	printf "#define JSTR_BUILT\n #include \"jstr.h\"\n int main(){return 0;}\n" | tcc -run -
 else
 	if [ -z "$TMPDIR" ]; then
 		if [ -d /tmp ]; then
@@ -55,7 +64,7 @@ else
 	fi
 	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
 	#shellcheck disable=SC2086
-	cc ../jstr/jstr.h $FLAGS -o "$tmp" || exit
+	verbose cc ../jstr/jstr.h $FLAGS -o "$tmp" || exit
 	rm "$tmp"
 fi
 echo 'Built to jstr.'
