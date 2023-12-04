@@ -63,6 +63,7 @@ PJSTR_MEMMEM_FUNC_IMPL(const unsigned char *hs,
                        size_t ne_len)
 JSTR_NOEXCEPT
 {
+	typedef PJSTR_MEMMEM_RETTYPE ret_ty;
 #if PJSTR_MEMMEM_SHORT_NEEDLE
 	typedef unsigned int idx_ty;
 	typedef unsigned int size_ty;
@@ -116,7 +117,7 @@ start:;
 			continue;
 		if (m1 < 15 || !PJSTR_MEMMEM_CMP_FUNC((const char *)(hs + off), (const char *)(ne + off), 8)) {
 			if (!PJSTR_MEMMEM_CMP_FUNC((const char *)hs, (const char *)ne, m1))
-				return (PJSTR_MEMMEM_RETTYPE)hs;
+				return (ret_ty)hs;
 			off = (off >= 8 ? off : m1) - 8;
 		}
 		hs += shift1;
