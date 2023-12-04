@@ -157,7 +157,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -933,11 +933,13 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #	define JSTR_BYTE_UTOWORD16(x)   (*(jstr_u16u_ty *)(x))
 #	define JSTR_BYTE_UTOWORD32(x)   (*(jstr_u32u_ty *)(x))
 #	define JSTR_BYTE_UTOWORD64(x)   (*(jstr_u64u_ty *)(x))
+#	define JSTR_BYTE_UCMPEQ16(x, y) (JSTR_BYTE_UTOWORD16(x) == JSTR_BYTE_UTOWORD16(y))
 #	define JSTR_BYTE_UCMPEQ32(x, y) (JSTR_BYTE_UTOWORD32(x) == JSTR_BYTE_UTOWORD32(y))
 #	define JSTR_BYTE_UCMPEQ64(x, y) (JSTR_BYTE_UTOWORD64(x) == JSTR_BYTE_UTOWORD64(y))
 #	define JSTR_BYTE_TOWORD16(x)    (*(uint16_t *)(x))
 #	define JSTR_BYTE_TOWORD32(x)    (*(uint32_t *)(x))
 #	define JSTR_BYTE_TOWORD64(x)    (*(uint64_t *)(x))
+#	define JSTR_BYTE_CMPEQ16(x)     (JSTR_BYTE_TOWORD16(x) == JSTR_BYTE_TOWORD16(y))
 #	define JSTR_BYTE_CMPEQ32(x)     (JSTR_BYTE_TOWORD32(x) == JSTR_BYTE_TOWORD32(y))
 #	define JSTR_BYTE_CMPEQ64(x)     (JSTR_BYTE_TOWORD64(x) == JSTR_BYTE_TOWORD64(y))
 #else
