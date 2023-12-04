@@ -952,9 +952,9 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #		define JSTR_BYTE_UTOWORD32(x) (((uint32_t)(x)[0] >> 24) | ((uint32_t)(x)[1] >> 8) | ((uint32_t)(x)[2] << 8) | ((uint32_t)(x)[3] << 24))
 #		define JSTR_BYTE_UTOWORD64(x) ((uint64_t)(x)[0] >> 56) | ((uint64_t)(x)[1] >> 40) | ((uint64_t)(x)[2] >> 24) | ((uint64_t)(x)[3] >> 8) | ((uint64_t)(x)[4] << 8) | ((uint64_t)(x)[5] << 24) | ((uint64_t)(x)[6] << 40) | ((uint64_t)(x)[7] << 56))
 #	endif
-#	define JSTR_BYTE_UCMPEQ16(x, y) !memcmp(x, y, sizeof(uint16_t))
-#	define JSTR_BYTE_UCMPEQ32(x, y) !memcmp(x, y, sizeof(uint32_t))
-#	define JSTR_BYTE_UCMPEQ64(x, y) !memcmp(x, y, sizeof(uint64_t))
+#	define JSTR_BYTE_UCMPEQ16(x, y) (!memcmp(x, y, sizeof(uint16_t)))
+#	define JSTR_BYTE_UCMPEQ32(x, y) (!memcmp(x, y, sizeof(uint32_t)))
+#	define JSTR_BYTE_UCMPEQ64(x, y) (!memcmp(x, y, sizeof(uint64_t)))
 #	define JSTR_BYTE_TOWORD16(x)    JSTR_BYTE_UTOWORD16(x)
 #	define JSTR_BYTE_TOWORD32(x)    JSTR_BYTE_UTOWORD32(x)
 #	define JSTR_BYTE_TOWORD64(x)    JSTR_BYTE_UTOWORD64(x)
