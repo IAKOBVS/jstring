@@ -736,9 +736,16 @@ pjstr_strcasestr2(const unsigned char *hs,
                   const unsigned char *const ne)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = (uint32_t)L(ne[0]) << 8 | L(ne[1]);
-	uint16_t hw = (uint32_t)L(hs[0]) << 8 | L(hs[1]);
-	for (++hs; *hs && hw != nw; hw = hw << 8 | L(*++hs))
+#if JSTR_LP64
+	typedef uint32_t size_ty;
+	enum { SHIFT = 16 };
+#else
+	typedef uint16_t size_ty;
+	enum { SHIFT = 8 };
+#endif
+	const size_ty nw = (size_ty)L(ne[0]) << SHIFT | L(ne[1]);
+	size_ty hw = (size_ty)L(hs[0]) << SHIFT | L(hs[1]);
+	for (++hs; *hs && hw != nw; hw = hw << SHIFT | L(*++hs))
 		;
 	return (hw == nw) ? (char *)hs - 1 : NULL;
 }
