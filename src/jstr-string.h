@@ -712,14 +712,14 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-static void *
-jstr_strrstr_len(const void *hs,
+static char *
+jstr_strrstr_len(const char *hs,
                  size_t hs_len,
-                 const void *ne,
+                 const char *ne,
                  size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_memrmem(hs, hs_len, ne, ne_len);
+	return (char *)jstr_memrmem(hs, hs_len, ne, ne_len);
 }
 
 #define L(c) jstr_tolower(c)

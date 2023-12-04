@@ -29,7 +29,6 @@ PJSTR_END_DECLS
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 jstr_memrchr(const void *s,
              int c,
@@ -37,14 +36,19 @@ jstr_memrchr(const void *s,
 JSTR_NOEXCEPT
 {
 #endif
+	typedef jstr_word_ty op_t;
+	typedef jstr_word_ty find_t;
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const jstr_word_ty *word_ptr = (jstr_word_ty *)JSTR_PTR_ALIGN_UP((const char *)s + n, sizeof(jstr_word_ty));
-	const uintptr_t s_int = (uintptr_t)s + n;
-	jstr_word_ty word = *--word_ptr;
-	const jstr_word_ty repeated_c = jstr_word_repeat_bytes(c);
-	const jstr_word_ty *const sword = (jstr_word_ty *)JSTR_PTR_ALIGN_DOWN(s, sizeof(jstr_word_ty));
-	const jstr_word_ty mask = jstr_word_shift_find_last(jstr_word_find_eq_all(word, repeated_c), s_int);
+	const op_t *word_ptr = (const op_t *)JSTR_PTR_ALIGN_UP((char *)s + n, sizeof(op_t));
+	uintptr_t s_int = (uintptr_t)s + n;
+	op_t word = *--word_ptr;
+	const op_t repeated_c = jstr_word_repeat_bytes(c);
+	/* Compute the address of the word containing the initial byte. */
+	const op_t *const sword = (const op_t *)JSTR_PTR_ALIGN_DOWN(s, sizeof(op_t));
+	/* If the end of buffer is not op_t aligned, mask off the undesirable bits
+	   before find the last byte position.  */
+	const find_t mask = jstr_word_shift_find_last(jstr_word_find_eq_all(word, repeated_c), s_int);
 	if (mask != 0) {
 		char *ret = (char *)word_ptr + jstr_word_index_last(mask);
 		return ret >= (char *)s ? ret : NULL;
@@ -52,10 +56,14 @@ JSTR_NOEXCEPT
 	if (word_ptr == sword)
 		return NULL;
 	word = *--word_ptr;
-	for (; word_ptr != sword; word = *--word_ptr)
+	while (word_ptr != sword) {
 		if (jstr_word_has_eq(word, repeated_c))
 			return (char *)word_ptr + jstr_word_index_last_eq(word, repeated_c);
+		word = *--word_ptr;
+	}
 	if (jstr_word_has_eq(word, repeated_c)) {
+		/* We found a match, but it might be in a byte past the end of the
+		   array.  */
 		char *ret = (char *)word_ptr + jstr_word_index_last_eq(word, repeated_c);
 		if (ret >= (char *)s)
 			return ret;
