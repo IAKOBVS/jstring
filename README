@@ -36,12 +36,12 @@ https://github.com/IAKOBVS/rarebyte
 Some of the code are licensed under LGPL. You can define JSTR_USE_LGPL as 0 to
 exclude them. jstr_ty, jstrl_ty, and jarr_ty must be initialized with zeros.
 
-jstr_tolower() and jstr_toupper() will not handle EOF correctly. The tolower of
-EOF may not equal EOF.
-
 //
 jstr_ty j = JSTR_INIT;
 //
+
+jstr_tolower() and jstr_toupper() will not handle EOF correctly. The tolower of
+EOF may not equal EOF.
 
 --- Configuration:
 You can customize the library by defining certain macros in jstr-config.h before
