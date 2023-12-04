@@ -474,7 +474,7 @@ MEMMEM:
 #endif
 }
 
-/* HAYSTACK and NEEDLE must be nul-terminated. */
+/* HS and NE must be nul-terminated. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
