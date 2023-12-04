@@ -779,8 +779,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
 	for (hs += 3; *hs; hw = hw << 8 | L(*++hs)) {
 		if (hw == nw) {
-			for (hp = hs - 3 + 4,
-			    np = ne + 4;
+			for (hp = hs - 3 + 4, np = ne + 4;
 			     L(*hp) == L(*np) && *hp;
 			     ++hp, ++np)
 				;
@@ -969,20 +968,20 @@ JSTR_NOEXCEPT
 			return pjstr_strcasestr_len_rarebyte_notfound((cu *)hs, (cu *)ne, ne_len);
 		}
 	}
-	cu *p = (cu *)jstr_rarebytefindeither_len(ne, ne_len);
-	const size_t shift = JSTR_PTR_DIFF(p, ne);
+	cu *rare = (cu *)jstr_rarebytefindeither_len(ne, ne_len);
+	const size_t shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;
 	hs_len -= shift;
 	const char *const start = hs;
-	if (!jstr_isalpha(*p)) {
+	if (!jstr_isalpha(*rare)) {
 		cu *const end = (cu *)hs + hs_len - (ne_len - shift) + 1;
-		const int c = *p;
+		const int c = *rare;
 		for (; (hs = (char *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
 			if (!jstr_strcasecmpeq_len_loop(hs - shift, ne, ne_len))
 				return (char *)hs - shift;
 		return NULL;
 	} else {
-		hs = pjstr_strcasechr_alpha(hs, *p, hs_len);
+		hs = pjstr_strcasechr_alpha(hs, *rare, hs_len);
 	}
 	if (hs == NULL || ne_len == 1)
 		return (char *)hs;
