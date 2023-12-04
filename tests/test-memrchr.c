@@ -58,7 +58,7 @@ JSTR_NOEXCEPT
 }
 
 /*
-   strchr() before s + N.
+   strchr() before s + T.
 */
 static char *
 simple_strnchr(const char *s,
@@ -75,7 +75,16 @@ JSTR_NOEXCEPT
 	return NULL;
 }
 
-#define N(s, c)                                                                                   \
+static char *
+simple_strchrnul(const char *s,
+                 int c)
+{
+	for (; *s && *s != (char)c; ++s)
+		;
+	return (char *)s;
+}
+
+#define T(s, c)                                                                                   \
 	do {                                                                                      \
 		int align;                                                                        \
 		for (align = 0; align < 8; align++) {                                             \
@@ -87,6 +96,9 @@ JSTR_NOEXCEPT
 			result = jstr_strnchr(p, c, p_len);                                       \
 			expected = simple_strnchr(p, c, p_len);                                   \
 			ASSERT_RESULT(jstr_strnchr, result == expected, result, expected);        \
+			result = jstr_strchrnul(p, c);                                            \
+			expected = simple_strchrnul(p, c);                                        \
+			ASSERT_RESULT(jstr_strchrnul, result == expected, result, expected);      \
 		}                                                                                 \
 	} while (0)
 
@@ -105,33 +117,33 @@ main(int argc, char **argv)
 	for (i = 0; i < 256; i++)
 		*((unsigned char *)s + i) = i + 1;
 
-	N("\0aaa", 'a');
-	N("a\0bb", 'b');
-	N("ab\0c", 'c');
-	N("abc\0d", 'd');
-	N("abc abc\0x", 'x');
-	N(a, 128);
-	N(a, 255);
+	T("\0aaa", 'a');
+	T("a\0bb", 'b');
+	T("ab\0c", 'c');
+	T("abc\0d", 'd');
+	T("abc abc\0x", 'x');
+	T(a, 128);
+	T(a, 255);
 
-	N("", 0);
-	N("a", 'a');
-	N("a", 'a' + 256);
-	N("a", 0);
-	N("abb", 'b');
-	N("aabb", 'b');
-	N("aaabb", 'b');
-	N("aaaabb", 'b');
-	N("aaaaabb", 'b');
-	N("aaaaaabb", 'b');
-	N("abc abc", 'c');
-	N(s, 1);
-	N(s, 2);
-	N(s, 10);
-	N(s, 11);
-	N(s, 127);
-	N(s, 128);
-	N(s, 255);
-	N(s, 0);
+	T("", 0);
+	T("a", 'a');
+	T("a", 'a' + 256);
+	T("a", 0);
+	T("abb", 'b');
+	T("aabb", 'b');
+	T("aaabb", 'b');
+	T("aaaabb", 'b');
+	T("aaaaabb", 'b');
+	T("aaaaaabb", 'b');
+	T("abc abc", 'c');
+	T(s, 1);
+	T(s, 2);
+	T(s, 10);
+	T(s, 11);
+	T(s, 127);
+	T(s, 128);
+	T(s, 255);
+	T(s, 0);
 
 	SUCCESS();
 	return EXIT_SUCCESS;

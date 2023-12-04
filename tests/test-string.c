@@ -116,6 +116,15 @@ simple_strcasestr(const char *h,
 	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
 }
 
+static char *
+simple_stpcpy(char *d,
+              const char *s)
+{
+	while ((*d++ = *s++))
+		;
+	return d - 1;
+}
+
 #define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)                               \
 	do {                                                                               \
 		if (jstr_unlikely(result != expected)) {                                   \
@@ -144,6 +153,18 @@ simple_strcasestr(const char *h,
 #define T_NE(test, i) ((test)[i].ne)
 #define T_S1(test, i) ((test)[i].s2)
 #define T_S2(test, i) ((test)[i].s2)
+
+#define T_CPY(fn, simple_fn, test_array)                                                                                     \
+	do {                                                                                                                 \
+		TESTING(fn);                                                                                                 \
+		T_FOREACHI(test_array, i)                                                                                    \
+		{                                                                                                            \
+			const char *src = T_HS(test_array, i);                                                               \
+			T_DEBUG(buf_r, src, 0, 0, 0, fn(buf_r, src), (buf_r + JSTR_PTR_DIFF(simple_fn(buf_e, src), buf_e))); \
+			src = T_NE(test_array, i);                                                                           \
+			T_DEBUG(buf_r, src, 0, 0, 0, fn(buf_r, src), (buf_r + JSTR_PTR_DIFF(simple_fn(buf_e, src), buf_e))); \
+		}                                                                                                            \
+	} while (0)
 
 #define T(fn, simple_fn, test_array)                                             \
 	do {                                                                     \
@@ -220,6 +241,9 @@ simple_strcasestr(const char *h,
 		}                                                                          \
 	} while (0)
 
+static char buf_r[4096];
+static char buf_e[4096];
+
 int
 main(int argc, char **argv)
 {
@@ -236,6 +260,7 @@ main(int argc, char **argv)
 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
+	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }

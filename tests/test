@@ -6,7 +6,6 @@ FLAGS='
 -Wall
 -Wextra
 -Wpedantic
--fsanitize=address
 '
 
 has_prog()
@@ -34,7 +33,7 @@ compile()
 
 cd "$(dirname "$0")" || exit
 
-if false; then
+if has_prog tcc; then
 	CC=tcc
 else
 	CC=cc
