@@ -1238,7 +1238,6 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #ifndef JSTR_HAVE_WORD_AT_A_TIME
 #	define JSTR_HAVE_WORD_AT_A_TIME 0
 #endif
-
 #ifndef JSTR_LP64
 #	define JSTR_LP64 0
 #endif
@@ -1248,4 +1247,5 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #ifndef JSTR_LP_UNKNOWN
 #	define JSTR_LP_UNKNOWN 0
 #endif
+
 #endif /* jstr_macros_h */
