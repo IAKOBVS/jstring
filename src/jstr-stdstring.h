@@ -199,26 +199,26 @@ JSTR_NOEXCEPT
 	return (void *)memrchr(s, c, n);
 #else
 	/* The following is based on musl's memchr().
-	   Copyright © 2005-2020 Rich Felker, et al.
-
-	   Permission is hereby granted, free of charge, to any person obtaining
-	   a copy of this software and associated documentation files (the
-	   "Software"), to deal in the Software without restriction, including
-	   without limitation the rights to use, copy, modify, merge, publish,
-	   distribute, sublicense, and/or sell copies of the Software, and to
-	   permit persons to whom the Software is furnished to do so, subject to
-	   the following conditions:
-
-	   The above copyright notice and this permission notice shall be
-	   included in all copies or substantial portions of the Software.
-
-	   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+	 * Copyright © 2005-2020 Rich Felker, et al.
+	 *
+	 * Permission is hereby granted, free of charge, to any person obtaining
+	 * a copy of this software and associated documentation files (the
+	 * "Software"), to deal in the Software without restriction, including
+	 * without limitation the rights to use, copy, modify, merge, publish,
+	 * distribute, sublicense, and/or sell copies of the Software, and to
+	 * permit persons to whom the Software is furnished to do so, subject to
+	 * the following conditions:
+	 *
+	 * The above copyright notice and this permission notice shall be
+	 * included in all copies or substantial portions of the Software.
+	 *
+	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 	const unsigned char *p = (const unsigned char *)s + n - 1;
 	c = (unsigned char)c;
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -275,26 +275,26 @@ JSTR_NOEXCEPT
 	return (char *)(s ? s : start + strlen(start));
 #else
 	/* The following is taken from musl's strchrnul() with minor modifications.
-	   Copyright © 2005-2020 Rich Felker, et al.
-
-	   Permission is hereby granted, free of charge, to any person obtaining
-	   a copy of this software and associated documentation files (the
-	   "Software"), to deal in the Software without restriction, including
-	   without limitation the rights to use, copy, modify, merge, publish,
-	   distribute, sublicense, and/or sell copies of the Software, and to
-	   permit persons to whom the Software is furnished to do so, subject to
-	   the following conditions:
-
-	   The above copyright notice and this permission notice shall be
-	   included in all copies or substantial portions of the Software.
-
-	   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+	 * Copyright © 2005-2020 Rich Felker, et al.
+	 *
+	 * Permission is hereby granted, free of charge, to any person obtaining
+	 * a copy of this software and associated documentation files (the
+	 * "Software"), to deal in the Software without restriction, including
+	 * without limitation the rights to use, copy, modify, merge, publish,
+	 * distribute, sublicense, and/or sell copies of the Software, and to
+	 * permit persons to whom the Software is furnished to do so, subject to
+	 * the following conditions:
+	 *
+	 * The above copyright notice and this permission notice shall be
+	 * included in all copies or substantial portions of the Software.
+	 *
+	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 	if (jstr_unlikely(c == '\0'))
 		return (char *)s + strlen(s);
 	c = (unsigned char)c;
@@ -358,26 +358,26 @@ jstr_strnchr(const char *s,
 JSTR_NOEXCEPT
 {
 	/* The following is based on musl's strchr() and memchr().
-	   Copyright © 2005-2020 Rich Felker, et al.
-
-	   Permission is hereby granted, free of charge, to any person obtaining
-	   a copy of this software and associated documentation files (the
-	   "Software"), to deal in the Software without restriction, including
-	   without limitation the rights to use, copy, modify, merge, publish,
-	   distribute, sublicense, and/or sell copies of the Software, and to
-	   permit persons to whom the Software is furnished to do so, subject to
-	   the following conditions:
-
-	   The above copyright notice and this permission notice shall be
-	   included in all copies or substantial portions of the Software.
-
-	   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+	 * Copyright © 2005-2020 Rich Felker, et al.
+	 *
+	 * Permission is hereby granted, free of charge, to any person obtaining
+	 * a copy of this software and associated documentation files (the
+	 * "Software"), to deal in the Software without restriction, including
+	 * without limitation the rights to use, copy, modify, merge, publish,
+	 * distribute, sublicense, and/or sell copies of the Software, and to
+	 * permit persons to whom the Software is furnished to do so, subject to
+	 * the following conditions:
+	 *
+	 * The above copyright notice and this permission notice shall be
+	 * included in all copies or substantial portions of the Software.
+	 *
+	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 	const unsigned char *p = (const unsigned char *)s;
 	c = (unsigned char)c;
 #if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -544,26 +544,26 @@ JSTR_NOEXCEPT
 #else
 #	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
 	/* The following is taken from musl's stpcpy() with minor modifications.
-	   Copyright © 2005-2020 Rich Felker, et al.
-
-	   Permission is hereby granted, free of charge, to any person obtaining
-	   a copy of this software and associated documentation files (the
-	   "Software"), to deal in the Software without restriction, including
-	   without limitation the rights to use, copy, modify, merge, publish,
-	   distribute, sublicense, and/or sell copies of the Software, and to
-	   permit persons to whom the Software is furnished to do so, subject to
-	   the following conditions:
-
-	   The above copyright notice and this permission notice shall be
-	   included in all copies or substantial portions of the Software.
-
-	   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+	 * Copyright © 2005-2020 Rich Felker, et al.
+	 *
+	 * Permission is hereby granted, free of charge, to any person obtaining
+	 * a copy of this software and associated documentation files (the
+	 * "Software"), to deal in the Software without restriction, including
+	 * without limitation the rights to use, copy, modify, merge, publish,
+	 * distribute, sublicense, and/or sell copies of the Software, and to
+	 * permit persons to whom the Software is furnished to do so, subject to
+	 * the following conditions:
+	 *
+	 * The above copyright notice and this permission notice shall be
+	 * included in all copies or substantial portions of the Software.
+	 *
+	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #		define ALIGN      (sizeof(size_t))
 #		define ONES       ((size_t)-1 / UCHAR_MAX)
 #		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
