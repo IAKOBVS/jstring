@@ -473,6 +473,7 @@ MEMMEM:
 #endif
 }
 
+/* HAYSTACK and NEEDLE must be nul-terminated. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -484,8 +485,7 @@ jstr_strstr_len(const char *hs,
                 size_t ne_len)
 JSTR_NOEXCEPT
 {
-	/* Only use memmem() for long needles or when it is implemented in assembly
-	as it seems to be slower than an assembly optimized strstr() for short needles. */
+	/* Optimized strstr() is still faster than a C memmem(). */
 #if JSTR_HAVE_STRSTR_OPTIMIZED
 	if (ne_len < JSTR_MEMMEM_THRES)
 		return (char *)strstr(hs, ne);
