@@ -339,4 +339,6 @@ main(int argc, char **argv)
 
 	jstrre_free(&preg);
 	jstr_free_j(&result);
+	SUCCESS();
+	return EXIT_SUCCESS;
 }
