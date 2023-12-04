@@ -418,8 +418,7 @@ jstr_strset(char *R s,
             int c)
 JSTR_NOEXCEPT
 {
-	const size_t len = strlen(s);
-	memset(s, c, len);
+	memset(s, c, strlen(s));
 }
 
 JSTR_FUNC
