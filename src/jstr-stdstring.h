@@ -219,8 +219,6 @@ JSTR_NOEXCEPT
 	   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 	   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-	if (jstr_unlikely(n == 0))
-		return NULL;
 	const unsigned char *p = (const unsigned char *)s + n - 1;
 	c = (unsigned char)c;
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -538,7 +536,7 @@ JSTR_NOEXCEPT
 #	include "_lgpl-stpcpy.h"
 #else
 #	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
-	/* The following is taken from musl's stpcpy().
+	/* The following is taken from musl's stpcpy() with minor modifications.
 	   Copyright © 2005-2020 Rich Felker, et al.
 
 	   Permission is hereby granted, free of charge, to any person obtaining
@@ -580,7 +578,7 @@ JSTR_NOEXCEPT
 #		undef HIGHS
 #		undef HASZERO
 #	endif
-	for (; (*dst++ = *src++); )
+	for (; (*dst++ = *src++);)
 		;
 	return dst - 1;
 #endif
