@@ -653,7 +653,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_RAREBYTE_RETTYPE char *
 #define PJSTR_RAREBYTE_FUNC    pjstr_memrmem_len_rarebyte
-#include "_jstr-rarebyte-strrstr.h"
+#include "_jstr-memrmem-rarebyte.h"
 
 /* Find last NE in HS.
    Return value:
