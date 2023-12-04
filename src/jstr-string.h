@@ -1136,8 +1136,8 @@ JSTR_NOEXCEPT
 }
 
 /* Reverse of STRCSPN. */
-JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static size_t
 jstr_strrcspn(const char *s,
               const char *reject)
@@ -1202,8 +1202,8 @@ JSTR_NOEXCEPT
 /* Reverse of STRSPN.
    Return the offset from S if found;
    otherwise, return S + SZ. */
-JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static size_t
 jstr_strrspn(const char *s,
              const char *accept)
@@ -1354,6 +1354,7 @@ JSTR_NOEXCEPT
    ptr to '\0' if C is not found;
    S if C is '\0'; */
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static char *
 jstr_strchrnulinv(const char *s,
                   int c)
@@ -1371,6 +1372,7 @@ JSTR_NOEXCEPT
    NULL if non-C is not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
+JSTR_ATTR_INLINE
 static char *
 jstr_strchrinv(const char *s,
                int c)
@@ -1385,6 +1387,7 @@ JSTR_NOEXCEPT
    S + N if C is not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static void *
 jstr_memchrnulinv(const void *s,
                   int c,
@@ -1419,6 +1422,7 @@ JSTR_NOEXCEPT
    NULL if C is not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static void *
 jstr_memrchrinv(const void *s,
                 int c,
@@ -1668,6 +1672,7 @@ JSTR_NOEXCEPT
    Occurences of C in S. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static size_t
 jstr_countchr_len(const char *s,
                   int c,
@@ -1699,14 +1704,14 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
-	if (JSTR_HAVE_MEMMEM) {
-		const char *const end = s + sz;
-		for (; *s && (s = jstr_strstr_len(s, JSTR_PTR_DIFF(end, s), find, find_len)); ++cnt, s += find_len)
-			;
-	} else {
-		for (; *s && (s = strstr(s, find)); ++cnt, s += find_len)
-			;
-	}
+#if JSTR_HAVE_MEMMEM
+	const char *const end = s + sz;
+	for (; *s && (s = jstr_strstr_len(s, JSTR_PTR_DIFF(end, s), find, find_len)); ++cnt, s += find_len)
+		;
+#else
+	for (; *s && (s = strstr(s, find)); ++cnt, s += find_len)
+		;
+#endif
 	return cnt;
 }
 
@@ -1714,6 +1719,7 @@ JSTR_NOEXCEPT
    Return value:
    occurences of NE in HS. */
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static size_t
 jstr_count(const char *s,
            const char *find)
@@ -1801,6 +1807,7 @@ JSTR_NOEXCEPT
 /* Return the number of newlines + 1.
    Return 0 if string is empty. */
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static size_t
 jstr_linenumber(const char *start,
                 const char *const end)

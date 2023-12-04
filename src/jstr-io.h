@@ -562,29 +562,6 @@ jstrio_appendpath_len(char *R *R s,
 	return JSTR_RET_SUCC;
 }
 
-JSTR_ATTR_INLINE
-JSTR_FUNC_RET_NONNULL
-static char *
-pjstrio_appendpath_p(char *R path_end,
-                     const char *R fname)
-JSTR_NOEXCEPT
-{
-	*path_end = '/';
-	return jstr_stpcpy(path_end + 1, fname);
-}
-
-JSTR_ATTR_INLINE
-JSTR_FUNC_VOID
-static void
-pjstrio_appendpath_len(char *R path_end,
-                       const char *R fname,
-                       size_t fname_len)
-JSTR_NOEXCEPT
-{
-	*path_end = '/';
-	jstr_strcpy_len(path_end + 1, fname, fname_len);
-}
-
 #ifdef _DIRENT_HAVE_D_NAMLEN
 #	ifndef _D_EXACT_NAMLEN
 #		define JSTR_DIRENT_D_EXACT_NAMLEN(d) ((d)->d_namlen)
@@ -667,14 +644,18 @@ typedef enum jstrio_ftw_flag_ty {
 #define NONFATAL_ERR() (jstr_likely(errno == EACCES) || jstr_likely(errno == ENOENT))
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                              \
-		do {                                                                                 \
-			pjstrio_appendpath_len(dirpath + dirpath_len, (ep)->d_name, (ep)->d_namlen); \
-			newpath_len = dirpath_len + 1 + (ep)->d_namlen;                              \
+#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                           \
+		do {                                                                              \
+			*(dirpath + dirpath_len) = '/';                                           \
+			jstr_strcpy_len(dirpath + dirpath_len + 1, (ep)->d_name, (ep)->d_namlen); \
+			newpath_len = dirpath_len + 1 + (ep)->d_namlen;                           \
 		} while (0)
 #else
-#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep) \
-		((void)(newpath_len = JSTR_PTR_DIFF(pjstrio_appendpath_p(dirpath + dirpath_len, (ep)->d_name), dirpath)))
+#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                                             \
+		do {                                                                                                \
+			*(dirpath + dirpath_len) = '/';                                                             \
+			newpath_len = JSTR_PTR_DIFF(jstr_stpcpy(dirpath + dirpath_len + 1, (ep)->d_name), dirpath); \
+		} while (0)
 #endif
 
 #if USE_ATFILE
