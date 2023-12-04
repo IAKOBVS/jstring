@@ -201,7 +201,7 @@ int
 main(int argc, char **argv)
 {
 	START();
-	TESTING(jstr_sprintfstrlen);
+	TESTING(jstr_vsprintfstrlen);
 	char result_num[sizeof(unsigned long) + 1];
 	char expected_num[sizeof(unsigned long) + 1];
 	T(jstr_sprintfstrlen, snprintf, "%d", 123456);
