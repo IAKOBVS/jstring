@@ -43,6 +43,10 @@ EOF may not equal EOF.
 jstr_ty j = JSTR_INIT;
 ```
 
+## Configuration:
+You can customize the library by defining certain macros in jstr-config.h before
+including any header.
+
 ## Error handling:
 JSTR\_ERR is returned as error. The programmer is expected to check the return value
 and handle the error. When a memory error is encountered, the user is expected to free
