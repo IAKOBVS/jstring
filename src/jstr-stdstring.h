@@ -195,36 +195,8 @@ jstr_memrchr(const void *s,
              size_t n)
 JSTR_NOEXCEPT
 {
-#if 0 && JSTR_HAVE_MEMRCHR
+#if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, n);
-#elif 1
-	const unsigned char *p = (const unsigned char *)s;
-	c = (unsigned char)c;
-#	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
-#		define SS         (sizeof(size_t))
-#		define ALIGN      (sizeof(size_t) - 1)
-#		define ONES       ((size_t)-1 / UCHAR_MAX)
-#		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
-#		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-	for (; ((uintptr_t)p & ALIGN) && n && *p != c; --p, n--)
-		;
-	if (n && *p != c) {
-		typedef size_t JSTR_ATTR_MAY_ALIAS word;
-		const size_t k = ONES * (unsigned char)c;
-		const word *w = w = (const word *)p;
-		for (; n >= SS && !HASZERO(*w ^ k); --w, n -= SS)
-			;
-		p = (const unsigned char *)w;
-	}
-#		undef SS
-#		undef ALIGN
-#		undef ONES
-#		undef HIGHS
-#		undef HASZERO
-#	endif
-	for (; n && *p != c; --p, n--)
-		;
-	return n ? (void *)p : 0;
 #elif JSTR_HAVE_WORD_AT_A_TIME
 #	include "_lgpl-memrchr.h"
 #else

@@ -55,8 +55,8 @@ PJSTR_END_DECLS
 			PRINTERR("Assertion failure: %s().\nResult:%s\n" \
 			         "Expected:%s\n",                        \
 			         #func,                                  \
-			         result,                                 \
-			         expected);                              \
+			         EMPTY(result),                          \
+			         EMPTY(expected));                       \
 			assert(expr);                                    \
 		}                                                        \
 	} while (0)

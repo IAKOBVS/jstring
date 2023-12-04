@@ -43,18 +43,14 @@ aligncpy(const void *p, size_t len, size_t a)
 static void *
 simple_memrchr(const void *s,
                int c,
-               size_t sz)
+               size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(s, c, sz);
-#else
-	const unsigned char *p = (const unsigned char *)s + sz;
-	for (; sz--;)
+	const unsigned char *p = (const unsigned char *)s + n;
+	for (; n--;)
 		if (*--p == (unsigned char)c)
 			return (void *)p;
 	return NULL;
-#endif
 }
 
 /*
@@ -84,22 +80,38 @@ simple_strchrnul(const char *s,
 	return (char *)s;
 }
 
-#define T(s, c)                                                                                   \
-	do {                                                                                      \
-		int align;                                                                        \
-		for (align = 0; align < 8; align++) {                                             \
-			const char *result, *expected, *p = aligncpy(s, sizeof s, (size_t)align); \
-			size_t p_len = strlen(p);                                                 \
-			result = jstr_memrchr(p, c, p_len);                                       \
-			expected = simple_memrchr(p, c, p_len);                                   \
-			ASSERT_RESULT(jstr_memrchr, result == expected, result, expected);        \
-			result = jstr_strnchr(p, c, p_len);                                       \
-			expected = simple_strnchr(p, c, p_len);                                   \
-			ASSERT_RESULT(jstr_strnchr, result == expected, result, expected);        \
-			result = jstr_strchrnul(p, c);                                            \
-			expected = simple_strchrnul(p, c);                                        \
-			ASSERT_RESULT(jstr_strchrnul, result == expected, result, expected);      \
-		}                                                                                 \
+#define T_ASSERT(func, expr, result, expected, str, c)                              \
+	do {                                                                        \
+		if (jstr_unlikely(!(expr))) {                                       \
+			PRINTERR("result_len: %zu\n", JSTR_PTR_DIFF(result, str));  \
+			PRINTERR("str: %p\n", str);                                 \
+			PRINTERR("ptr_result: %p\n", result);                       \
+			PRINTERR("ptr_expected: %p\n", expected);                   \
+			PRINTERR("string:\n");                                      \
+			PRINTERR("string:%s\n", str);                               \
+			PRINTERR("c:%d\n", c);                                      \
+			PRINTERR("c:%c\n", c);                                      \
+			PRINTERR("string_len:%zu\n", strlen(str));                  \
+			ASSERT_RESULT(func, expr, result, expected);                \
+		}                                                                   \
+	} while (0)
+
+#define T(s, c)                                                                                    \
+	do {                                                                                       \
+		int align;                                                                         \
+		for (align = 0; align < 8; align++) {                                              \
+			const char *result, *expected, *p = aligncpy(s, sizeof(s), (size_t)align); \
+			size_t p_len = strlen(p);                                                  \
+			result = jstr_memrchr(p, c, p_len);                                        \
+			expected = simple_memrchr(p, c, p_len);                                    \
+			T_ASSERT(jstr_memrchr, result == expected, result, expected, s, c);        \
+			result = jstr_strnchr(p, c, p_len);                                        \
+			expected = simple_strnchr(p, c, p_len);                                    \
+			T_ASSERT(jstr_strnchr, result == expected, result, expected, s, c);        \
+			result = jstr_strchrnul(p, c);                                             \
+			expected = simple_strchrnul(p, c);                                         \
+			T_ASSERT(jstr_strchrnul, result == expected, result, expected, s, c);      \
+		}                                                                                  \
 	} while (0)
 
 int
@@ -124,6 +136,7 @@ main(int argc, char **argv)
 	T("ab\0c", 'c');
 	T("abc\0d", 'd');
 	T("abc abc\0x", 'x');
+
 	T(a, 128);
 	T(a, 255);
 
@@ -138,6 +151,7 @@ main(int argc, char **argv)
 	T("aaaaabb", 'b');
 	T("aaaaaabb", 'b');
 	T("abc abc", 'c');
+
 	T(s, 1);
 	T(s, 2);
 	T(s, 10);
