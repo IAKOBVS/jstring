@@ -1016,7 +1016,7 @@ JSTR_NOEXCEPT
 			const char *R home = getenv("HOME");
 			if (jstr_unlikely(home == NULL))
 				goto err;
-			const size_t homelen = JSTR_PTR_DIFF(jstr_stpcpy(fulpath, home), fulpath);
+			const jstrio_path_size_ty homelen = JSTR_PTR_DIFF(jstr_stpcpy(fulpath, home), fulpath);
 			memcpy(fulpath + homelen, dirpath + 1, dirpath_len);
 			dirpath_len += homelen - 1;
 		}
