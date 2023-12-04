@@ -298,7 +298,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(c == '\0'))
 		return (char *)s + strlen(s);
 	c = (unsigned char)c;
-#	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
 #		define ALIGN      (sizeof(size_t))
 #		define ONES       ((size_t)-1 / UCHAR_MAX)
 #		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
@@ -542,7 +542,7 @@ JSTR_NOEXCEPT
 #elif JSTR_HAVE_WORD_AT_A_TIME && JSTR_USE_LGPL
 #	include "_lgpl-stpcpy.h"
 #else
-#	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
 	/* The following is taken from musl's stpcpy() with minor modifications.
 	 * Copyright © 2005-2020 Rich Felker, et al.
 	 *
