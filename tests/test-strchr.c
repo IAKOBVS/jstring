@@ -111,6 +111,8 @@ main(int argc, char **argv)
 	char s[256];
 	TESTING(jstr_strnchr);
 	TESTING(jstr_memrchr);
+	TESTING(jstr_strnchr);
+	TESTING(jstr_strchrnul);
 
 	for (i = 0; i < 128; i++)
 		a[i] = (i + 1) & 127;
