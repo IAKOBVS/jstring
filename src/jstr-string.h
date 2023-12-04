@@ -574,15 +574,15 @@ JSTR_NOEXCEPT
 	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST) {
-		return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
-	} else {
-		enum { LONG_NE_THRES = 32 };
-		if (ne_len < LONG_NE_THRES)
-			return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
-		else
-			return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, (cu *)jstr_rarebytefind(ne));
-	}
+#if JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST
+	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
+#else
+	enum { LONG_NE_THRES = 32 };
+	if (ne_len < LONG_NE_THRES)
+		return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
+	else
+		return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, (cu *)jstr_rarebytefind(ne));
+#endif
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
