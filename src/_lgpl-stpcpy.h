@@ -32,9 +32,9 @@ char *
 stpcpy(char *dst, const char *src)
 {
 #endif
-#if JSTR_BYTE_ORDER == JSTR_LITTLE_ENDIAN
+#if JSTR_LITTLE_ENDIAN || JSTR_BYTE_ORDER == JSTR_LITTLE_ENDIAN
 #	define JSTR_WORD_MERGE(w0, sh_1, w1, sh_2) (((w0) >> (sh_1)) | ((w1) << (sh_2)))
-#elif JSTR_BYTE_ORDER == JSTR_BIG_ENDIAN
+#elif JSTR_BIG_ENDIAN || JSTR_BYTE_ORDER == JSTR_BIG_ENDIAN
 #	define JSTR_WORD_MERGE(w0, sh_1, w1, sh_2) (((w0) << (sh_1)) | ((w1) >> (sh_2)))
 #endif
 	/* Copy just a few bytes to make DEST aligned.  */
