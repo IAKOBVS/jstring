@@ -127,10 +127,10 @@
 #define T_RM(func, simple_func)                                                                                                                   \
 	do {                                                                                                                                      \
 		TESTING(func);                                                                                                                    \
-		T_FOREACHI(test_array_memcmp, i)                                                                                                  \
+		T_FOREACHI(test_array_memmem, i)                                                                                                  \
 		{                                                                                                                                 \
-			const char *str = test_array_memcmp[i].s1;                                                                                \
-			const char *find = test_array_memcmp[i].s2;                                                                               \
+			const char *str = test_array_memmem[i].hs;                                                                                \
+			const char *find = test_array_memmem[i].ne;                                                                               \
 			size_t str_len = strlen(str);                                                                                             \
 			size_t find_len = strlen(find);                                                                                           \
 			T_RPLC_INIT((result), str, str_len);                                                                                      \
@@ -146,10 +146,10 @@
 #define T_RPLC(func, simple_func)                                                                                                                                           \
 	do {                                                                                                                                                                \
 		TESTING(func);                                                                                                                                              \
-		T_FOREACHI(test_array_memcmp, i)                                                                                                                            \
+		T_FOREACHI(test_array_memmem, i)                                                                                                                            \
 		{                                                                                                                                                           \
-			const char *str = test_array_memcmp[i].s1;                                                                                                          \
-			const char *find = test_array_memcmp[i].s2;                                                                                                         \
+			const char *str = test_array_memmem[i].hs;                                                                                                          \
+			const char *find = test_array_memmem[i].ne;                                                                                                         \
 			size_t find_len = strlen(find);                                                                                                                     \
 			const char *rplc = find + find_len / 2;                                                                                                             \
 			size_t str_len = strlen(str);                                                                                                                       \
@@ -250,9 +250,8 @@ simple_rmn_len_p(char *s,
                  size_t find_len,
                  size_t n)
 {
-	char *p = s;
-	for (; n-- && s + sz >= p + find_len && (p = simple_memmem(p, JSTR_PTR_DIFF(s + sz, p), find, find_len)); ++p, sz -= find_len)
-		*(char *)jstr_mempmove(p, p + find_len, JSTR_PTR_DIFF(s + sz, p + find_len)) = '\0';
+	size_t cap = (size_t)-1;
+	simple_rplcn_len_from(&s, &sz, &cap, 0, find, find_len, "", 0, n);
 	return s + sz;
 }
 
@@ -340,6 +339,4 @@ main(int argc, char **argv)
 
 	jstrre_free(&preg);
 	jstr_free_j(&result);
-	SUCCESS();
-	return EXIT_SUCCESS;
 }
