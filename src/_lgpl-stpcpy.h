@@ -38,20 +38,21 @@ stpcpy(char *dst, const char *src)
 #	define JSTR_WORD_MERGE(w0, sh_1, w1, sh_2) (((w0) << (sh_1)) | ((w1) >> (sh_2)))
 #endif
 	/* Copy just a few bytes to make DEST aligned.  */
-	size_t len = (-(uintptr_t)dst) % sizeof(jstr_word_ty);
-	for (; len != 0; len--, ++dst) {
-		const char c = *src++;
+	unsigned int i = ((-(uintptr_t)dst) % sizeof(jstr_word_ty));
+	char c;
+	for (; i != 0; i--, ++dst) {
+		c = *src++;
 		*dst = c;
 		if (c == '\0')
 			return dst;
 	}
 	/* DEST is now aligned to jstr_word_ty , SRC may or may not be.  */
-	const uintptr_t ofs = (uintptr_t)src % sizeof(jstr_word_ty);
+	i = (uintptr_t)src % sizeof(jstr_word_ty);
 	jstr_word_ty word;
 	jstr_word_ty *d = (jstr_word_ty *)dst;
 	const jstr_word_ty *s = (jstr_word_ty *)src;
 	/* Aligned loop. */
-	if (ofs == 0) {
+	if (i == 0) {
 		for (;;) {
 			word = *s++;
 			if (jstr_word_has_zero(word))
@@ -61,7 +62,7 @@ stpcpy(char *dst, const char *src)
 	} else {
 		/* Unaligned loop. */
 		jstr_word_ty w2a = *s++;
-		uintptr_t sh_1 = ofs * CHAR_BIT;
+		uintptr_t sh_1 = (uintptr_t)i * CHAR_BIT;
 		uintptr_t sh_2 = sizeof(jstr_word_ty) * CHAR_BIT - sh_1;
 		word = JSTR_WORD_MERGE(w2a, sh_1, (jstr_word_ty)-1, sh_2);
 		if (!jstr_word_has_zero(word)) {
@@ -86,8 +87,8 @@ stpcpy(char *dst, const char *src)
 	}
 out:
 	dst = (char *)d;
-	for (size_t i = 0; i < sizeof(jstr_word_ty); i++, ++dst) {
-		const char c = (char)jstr_word_extractbyte(word, i);
+	for (i = 0; i < sizeof(jstr_word_ty); ++i, ++dst) {
+		c = (char)jstr_word_extractbyte(word, i);
 		*dst = c;
 		if (c == '\0')
 			break;

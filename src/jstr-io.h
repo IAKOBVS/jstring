@@ -80,11 +80,11 @@ JSTR_NOEXCEPT
 {
 	static const char *text[] = { JSTRIO_FT_TEXT_ARRAY };
 	static const char *binary[] = { JSTRIO_FT_BINARY_ARRAY };
-	int i;
-	for (i = 0; i < (int)JSTR_ARRAY_COUNT(text); ++i)
+	unsigned int i;
+	for (i = 0; i < JSTR_ARRAY_COUNT(text); ++i)
 		if (!jstr_strcmpeq_loop(ext, text[i]))
 			return JSTRIO_FT_TEXT;
-	for (i = 0; i < (int)JSTR_ARRAY_COUNT(binary); ++i)
+	for (i = 0; i < JSTR_ARRAY_COUNT(binary); ++i)
 		if (!jstr_strcmpeq_loop(ext, binary[i]))
 			return JSTRIO_FT_BINARY;
 	return JSTRIO_FT_UNKNOWN;
@@ -760,10 +760,18 @@ typedef enum {
 #define JSTRIO_FTW_STATE_SLN JSTRIO_FTW_STATE_SLN
 } jstrio_ftw_state_ty;
 
+#if JSTR_LP32 && JSTRIO_PATH_MAX <= 65536
+typedef uint16_t jstrio_path_size_ty;
+#elif JSTR_LP64 && JSTRIO_PATH_MAX <= 4294967296
+typedef uint32_t jstrio_path_size_ty;
+#else
+typedef size_t jstrio_path_size_ty;
+#endif
+
 struct JSTRIO_FTW {
 	const char *dirpath;
-	size_t dirpath_len;
 	const struct stat *st;
+	jstrio_path_size_ty dirpath_len;
 	int ftw_state;
 };
 
@@ -792,7 +800,7 @@ JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 static int
 pjstrio_ftw_len(struct pjstrio_ftw_data *a,
-                size_t dirpath_len
+                jstrio_path_size_ty dirpath_len
                 FD_PARAM)
 JSTR_NOEXCEPT
 {
@@ -807,7 +815,7 @@ JSTR_NOEXCEPT
 		}
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	size_t newpath_len = 0;
+	jstrio_path_size_ty newpath_len = 0;
 	const struct dirent *R ep;
 	int tmp;
 	while ((ep = readdir(dp)) != NULL) {
@@ -984,7 +992,7 @@ JSTR_NONNULL((1))
 JSTR_NONNULL((4))
 static int
 jstrio_ftw_len(const char *R dirpath,
-               size_t dirpath_len,
+               jstrio_path_size_ty dirpath_len,
                jstrio_ftw_func_ty fn,
                const void *fn_args,
                int jstrio_ftw_flags,

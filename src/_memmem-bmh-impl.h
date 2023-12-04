@@ -64,21 +64,22 @@ PJSTR_MEMMEM_FUNC_IMPL(const unsigned char *hs,
 JSTR_NOEXCEPT
 {
 #if PJSTR_MEMMEM_SHORT_NEEDLE
-	typedef int idx_ty;
+	typedef unsigned int idx_ty;
+	typedef unsigned int size_ty;
 	typedef uint8_t arr_ty;
 #else
 	typedef size_t idx_ty;
+	typedef size_t size_ty;
 	typedef size_t arr_ty;
 #endif
-	const unsigned char *
 #if !PJSTR_MEMMEM_CHECK_EOL
-	const
+	const unsigned char *const end = hs + hs_len - ne_len;
+#else
+	const unsigned char *end = hs + hs_len - ne_len;
 #endif
-	end
-	= hs + hs_len - ne_len;
-	size_t tmp;
-	const size_t m1 = ne_len - 1;
-	size_t off = 0;
+	size_ty tmp;
+	const size_ty m1 = ne_len - 1;
+	size_ty off = 0;
 	arr_ty shift[256];
 	JSTR_BZERO_ARRAY(shift);
 	for (idx_ty i = 1; i < (idx_ty)m1; ++i) {
@@ -89,7 +90,7 @@ JSTR_NOEXCEPT
 		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, jstr_tolower)] = i;
 #endif
 	}
-	const size_t shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
+	const size_ty shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
 #if PJSTR_MEMMEM_HASH2_ICASE
 	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, )] = m1;

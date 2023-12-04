@@ -281,9 +281,16 @@ pjstr_strnstr2(const unsigned char *hs,
                size_t n)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = (uint16_t)ne[0] << 8 | ne[1];
-	uint16_t hw = (uint16_t)hs[0] << 8 | hs[1];
-	for (++hs, --n; n-- && *hs && hw != nw; hw = hw << 8 | *++hs)
+#if JSTR_LP64
+	typedef uint32_t size_ty;
+	enum { SHIFT = 16 };
+#else
+	typedef uint16_t size_ty;
+	enum { SHIFT = 8 };
+#endif
+	const size_ty nw = (size_ty)ne[0] << SHIFT | ne[1];
+	size_ty hw = (size_ty)hs[0] << SHIFT | hs[1];
+	for (++hs, --n; n-- && *hs && hw != nw; hw = hw << SHIFT | *++hs)
 		;
 	return (hw == nw) ? (char *)hs - 1 : NULL;
 }
@@ -373,9 +380,16 @@ pjstr_memmem2(const unsigned char *hs,
               size_t l)
 JSTR_NOEXCEPT
 {
-	const uint16_t nw = (uint16_t)ne[0] << 8 | ne[1];
-	uint16_t hw = (uint16_t)hs[0] << 8 | hs[1];
-	for (++hs, --l; l-- && hw != nw; hw = hw << 8 | *++hs)
+#if JSTR_LP64
+	typedef uint32_t size_ty;
+	enum { SHIFT = 16 };
+#else
+	typedef uint16_t size_ty;
+	enum { SHIFT = 8 };
+#endif
+	const size_ty nw = (size_ty)ne[0] << SHIFT | ne[1];
+	size_ty hw = (size_ty)hs[0] << SHIFT | hs[1];
+	for (++hs, --l; l-- && hw != nw; hw = hw << SHIFT | *++hs)
 		;
 	return (hw == nw) ? (void *)(hs - 1) : NULL;
 }
@@ -609,10 +623,17 @@ pjstr_memrmem2(const unsigned char *hs,
                size_t l)
 JSTR_NOEXCEPT
 {
+#if JSTR_LP64
+	typedef uint32_t size_ty;
+	enum { SHIFT = 16 };
+#else
+	typedef uint16_t size_ty;
+	enum { SHIFT = 8 };
+#endif
 	hs += l - 2;
-	const uint16_t nw = (uint16_t)ne[1] << 8 | ne[0];
-	uint16_t hw = (uint16_t)hs[1] << 8 | hs[0];
-	for (l -= 2; l-- && hw != nw; hw = hw << 8 | *--hs)
+	const size_ty nw = (size_ty)ne[1] << SHIFT | ne[0];
+	size_ty hw = (size_ty)hs[1] << SHIFT | hs[0];
+	for (l -= 2; l-- && hw != nw; hw = hw << SHIFT | *--hs)
 		;
 	return (hw == nw) ? (void *)(hs) : NULL;
 }
@@ -948,7 +969,8 @@ BMH:
 		}
 	}
 	cu *rare = (cu *)jstr_rarebytefindeither_len(ne, ne_len);
-	const size_t shift = JSTR_PTR_DIFF(rare, ne);
+	/* ne_len <= 4 */
+	const unsigned int shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;
 	hs_len -= shift;
 	const char *const start = hs;

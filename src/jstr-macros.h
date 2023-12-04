@@ -50,6 +50,14 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
+#if defined _LP64 || defined __LP64__
+#	define JSTR_LP64 1
+#elif defined _ILP32 || defined __ILP32__
+#	define JSTR_LP32 1
+#else
+#	define JSTR_LP_UNKNOWN 1
+#endif
+
 PJSTR_BEGIN_DECLS
 typedef enum {
 	JSTR_RET_ERR = -1,
@@ -76,7 +84,6 @@ PJSTR_END_DECLS
 #elif defined __GLIBC__
 #	define JSTR_GLIBC_PREREQ(maj, min) \
 		((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
-#else
 #endif
 
 #ifdef __GNUC_PREREQ
@@ -84,7 +91,6 @@ PJSTR_END_DECLS
 #elif defined __GNUC__
 #	define JSTR_GNUC_PREREQ(maj, min) \
 		((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
-#else
 #endif
 
 #if JSTR_ENV_BSD
@@ -370,21 +376,18 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_HAS_ATTRIBUTE(attr) __glibc_has_attribute(attr)
 #elif defined __has_attribute
 #	define JSTR_HAS_ATTRIBUTE(attr) __has_attribute(attr)
-#else
 #endif /* has_attribute */
 
 #ifdef __glibc_has_builtin
 #	define JSTR_HAS_BUILTIN(name) __glibc_has_builtin(name)
 #elif defined __has_builtin
 #	define JSTR_HAS_BUILTIN(name) __has_builtin(name)
-#else
 #endif /* has_builtin */
 
 #ifdef __glibc_has_extension
 #	define JSTR_HAS_EXTENSION(ext) __glibc_has_extension(ext)
 #elif defined __has_extension
 #	define JSTR_HAS_EXTENSION(ext) __has_extension(ext)
-#else
 #endif /* has_extension */
 
 #if defined __glibc_unlikely && defined __glibc_likely
@@ -1236,4 +1239,13 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #	define JSTR_HAVE_WORD_AT_A_TIME 0
 #endif
 
+#ifndef JSTR_LP64
+#	define JSTR_LP64 0
+#endif
+#ifndef JSTR_LP32
+#	define JSTR_LP32 0
+#endif
+#ifndef JSTR_LP_UNKNOWN
+#	define JSTR_LP_UNKNOWN 0
+#endif
 #endif /* jstr_macros_h */
