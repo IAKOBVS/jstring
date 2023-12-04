@@ -197,7 +197,45 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, n);
-#elif JSTR_HAVE_WORD_AT_A_TIME
+#elif 0
+	enum {
+		PRINT = 1
+	};
+	typedef const unsigned char cu;
+	if (jstr_unlikely(n == 0))
+		return NULL;
+	cu *p = (cu *)s + n - 1;
+	c = (unsigned char)c;
+#	if JSTR_HAVE_ATTR_MAY_ALIAS
+#		define SS         (sizeof(size_t))
+#		define ALIGN      (sizeof(size_t) - 1)
+#		define ONES       ((size_t)-1 / UCHAR_MAX)
+#		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
+#		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
+	for (; ((uintptr_t)p & ALIGN) && n; --p, --n)
+		if (*p == c)
+			return (char *)p;
+	if (n >= SS && *p != c) {
+		typedef size_t JSTR_ATTR_MAY_ALIAS word;
+		const size_t k = ONES * (unsigned char)c;
+		const word *w = w = (const word *)p - 1;
+		for (n += SS; n >= SS; --w, n -= SS)
+			if (HASZERO(*w ^ k))
+				for (p = (cu *)w + SS - 1, n = SS; n--; --p)
+					if (*p == c)
+						return (char *)p;
+	}
+#		undef SS
+#		undef ALIGN
+#		undef ONES
+#		undef HIGHS
+#		undef HASZERO
+#	endif
+	for (; n--; --p)
+		if (*p == c)
+			return (char *)p;
+	return NULL;
+#elif JSTR_HAVE_WORD_AT_A_TIME && JSTR_USE_LGPL
 #	include "_lgpl-memrchr.h"
 #else
 	const unsigned char *p = (const unsigned char *)s + n;
@@ -486,6 +524,8 @@ JSTR_NOEXCEPT
 	return stpcpy(dst, src);
 #elif JSTR_HAVE_STRCPY_OPTIMIZED && JSTR_HAVE_STRLEN_OPTIMIZED
 	return jstr_stpcpy_len(dst, src, strlen(src));
+#elif JSTR_HAVE_WORD_AT_A_TIME && JSTR_USE_LGPL
+#	include "_lgpl-stpcpy.h"
 #else
 #	ifdef JSTR_HAVE_ATTR_MAY_ALIAS
 	/* The following is taken from musl's stpcpy().
