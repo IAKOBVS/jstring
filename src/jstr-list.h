@@ -42,8 +42,8 @@
 	                         p < _pjstrl_foreach_end_##p;                                             \
 	                         ++p)
 #define _pjstrl_foreach_cap(l, p) for (jstr_ty *p = ((l)->data), *const _pjstrl_foreach_end_##p = ((l)->data) + ((l)->capacity); \
-	                              p < _pjstrl_foreach_end_##p;                                                              \
-	                              ++p)
+	                               p < _pjstrl_foreach_end_##p;                                                              \
+	                               ++p)
 #define jstrl_foreachi(l, i) for (size_t i = 0, const _pjstrl_foreachi_end_##i = ((l)->size); \
 	                          i < _pjstrl_foreachi_end_##i;                               \
 	                          ++i)
