@@ -191,8 +191,8 @@ jstr_toupperstrcpy_p(char *R dst,
                      const char *R src)
 JSTR_NOEXCEPT
 {
-	const unsigned char *srcp = (const unsigned char *)src;
-	while ((*dst++ = (char)jstr_tolower(*srcp++))) {}
+	const unsigned char *s = (const unsigned char *)src;
+	while ((*dst++ = (char)jstr_tolower(*s++))) {}
 	return dst - 1;
 }
 
@@ -205,8 +205,8 @@ jstr_tolowerstrcpy_p(char *R dst,
                      const char *R src)
 JSTR_NOEXCEPT
 {
-	const unsigned char *srcp = (const unsigned char *)src;
-	while ((*dst++ = (char)jstr_tolower(*srcp++))) {}
+	const unsigned char *s = (const unsigned char *)src;
+	while ((*dst++ = (char)jstr_tolower(*s++))) {}
 	return dst - 1;
 }
 
