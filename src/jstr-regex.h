@@ -62,6 +62,7 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 typedef regoff_t jstrre_size_ty;
+enum { JSTRRE_SIZE_MAX = (sizeof(jstrre_size_ty) == sizeof(int) ? INT_MAX : (size_t)-1) };
 
 typedef enum {
 #ifdef REG_ENOSYS
@@ -370,7 +371,7 @@ jstrre_rmall(regex_t *R preg,
              int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rmn_from(preg, s, sz, cap, 0, eflags, (jstrre_size_ty)(unsigned)-1);
+	return jstrre_rmn_from(preg, s, sz, cap, 0, eflags, JSTRRE_SIZE_MAX);
 }
 
 JSTR_FUNC_VOID
@@ -384,7 +385,7 @@ jstrre_rmall_from(regex_t *R preg,
                   int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, (jstrre_size_ty)(unsigned)-1);
+	return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, JSTRRE_SIZE_MAX);
 }
 
 JSTR_FUNC_VOID
@@ -525,7 +526,7 @@ jstrre_rplcall_len_from(regex_t *R preg,
                         int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, (jstrre_size_ty)(unsigned)-1);
+	return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, JSTRRE_SIZE_MAX);
 }
 
 JSTR_FUNC
@@ -540,7 +541,7 @@ jstrre_rplcall_len(regex_t *R preg,
                    int eflags)
 JSTR_NOEXCEPT
 {
-	return jstrre_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, (jstrre_size_ty)(unsigned)-1);
+	return jstrre_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, JSTRRE_SIZE_MAX);
 }
 
 JSTR_ATTR_INLINE
@@ -740,7 +741,7 @@ jstrre_rplcall_bref_len(regex_t *R preg,
                         jstrre_size_ty nmatch)
 JSTR_NOEXCEPT
 {
-	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, (jstrre_size_ty)(unsigned)-1);
+	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, JSTRRE_SIZE_MAX);
 }
 
 JSTR_FUNC
@@ -757,7 +758,7 @@ jstrre_rplcall_bref_len_from(regex_t *R preg,
                              jstrre_size_ty nmatch)
 JSTR_NOEXCEPT
 {
-	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, (jstrre_size_ty)(unsigned)-1);
+	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, JSTRRE_SIZE_MAX);
 }
 
 JSTR_FUNC
