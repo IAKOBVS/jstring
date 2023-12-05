@@ -914,6 +914,7 @@ BMH:
 		break;
 	} while (0);
 #	if !JSTR_USE_NONASCIIZ
+	/* ne_len <= 4 */
 	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
