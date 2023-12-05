@@ -830,47 +830,19 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-jstr_strcasechr_loop(const char *s,
-                     int c)
-JSTR_NOEXCEPT
-{
-	const unsigned char *p = (const unsigned char *)s;
-	c = jstr_tolower(c);
-	for (; *p && jstr_tolower(*p) != c; ++p) {}
-	return *p ? (char *)p : NULL;
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-jstr_memcasechr(const void *s,
-                int c,
-                size_t n)
-JSTR_NOEXCEPT
-{
-	const unsigned char *p = (const unsigned char *)s;
-	c = jstr_tolower(c);
-	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
-	return n ? (void *)p : NULL;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
 pjstr_strcasechr(const char *s,
                  int c)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCSPN_OPTIMIZED
 	c = jstr_tolower(c);
 	if (jstr_tolower(*s) == c)
 		return (char *)s;
+#if JSTR_HAVE_STRCSPN_OPTIMIZED
 	const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0' };
 	s += strcspn(s, a);
 	return *s ? (char *)s : NULL;
 #else
-	return jstr_strcasechr_loop(s, c);
+	return pjstr_strcasechr_word(s, c);
 #endif
 }
 
@@ -1027,7 +999,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (!jstr_isalpha(*(ne + shift)))
 		return pjstr_strcasestr_rarebyte(hs, ne, shift);
-	hs = jstr_strcasechr_loop(hs + shift, *(ne + shift));
+	hs = jstr_strcasechr(hs + shift, *(ne + shift));
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	hs -= shift;

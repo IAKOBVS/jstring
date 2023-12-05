@@ -315,8 +315,6 @@ JSTR_NOEXCEPT
 #endif
 }
 
-#if 0
-
 JSTR_FUNC_PURE
 #if !JSTR_HAVE_ATTR_MAY_ALIAS
 JSTR_ATTR_INLINE
@@ -387,9 +385,9 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 #endif
 static void *
-pjstr_strcasechr_len(const void *s,
-                     int c,
-                     size_t n)
+jstr_memcasechr(const void *s,
+                int c,
+                size_t n)
 JSTR_NOEXCEPT
 {
 	/* The following is based on musl's strchrnul().
@@ -421,13 +419,16 @@ JSTR_NOEXCEPT
 #	define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	for (; (uintptr_t)p % ALIGN; ++p)
-		if (jstr_unlikely(n-- == 0) || jstr_tolower(*p) == c)
+	for (; (uintptr_t)p % ALIGN; ++p) {
+		if (jstr_unlikely(n-- == 0))
+			return NULL;
+		if (jstr_tolower(*p) == c)
 			return (char *)p;
+	}
 	const size_t k = ONES * (unsigned char)c;
-	const size_t l = ONES * jstr_tolower(c);
+	const size_t l = ONES * jstr_toupper(c);
 	const word *w = w = (word *)p;
-	for (; n && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); --n, ++w) {}
+	for (; n >= sizeof(size_t) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); n -= sizeof(size_t), ++w) {}
 	p = (unsigned char *)w;
 #	undef ALIGN
 #	undef ONES
@@ -437,8 +438,6 @@ JSTR_NOEXCEPT
 	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
 	return n ? (void *)p : NULL;
 }
-
-#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
