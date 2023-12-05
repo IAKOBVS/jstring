@@ -304,12 +304,12 @@ JSTR_NOEXCEPT
 #		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	const word *w;
 	for (; (uintptr_t)s % ALIGN; ++s)
 		if (jstr_unlikely(!*s) || *(unsigned char *)s == c)
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
-	for (w = (word *)s; !HASZERO(*w) && !HASZERO(*w ^ k); ++w)
+	const word *w = w = (word *)s;
+	for (; !HASZERO(*w) && !HASZERO(*w ^ k); ++w)
 		;
 	s = (char *)w;
 #		undef ALIGN
@@ -397,9 +397,9 @@ JSTR_NOEXCEPT
 	}
 	if (n && *p != c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
-		const word *w;
 		const size_t k = ONES * (unsigned char)c;
-		for (w = (const word *)p; n >= SS && !HASZERO(*w) && !HASZERO(*w ^ k); ++w, n -= SS)
+		const word *w = w = (const word *)p;
+		for (; n >= SS && !HASZERO(*w) && !HASZERO(*w ^ k); ++w, n -= SS)
 			;
 		p = (const unsigned char *)w;
 	}
