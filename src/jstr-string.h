@@ -432,7 +432,7 @@ jstr_memmem(const void *hs,
             size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if JSTR_USE_STANDARD_MEMMEM
+#if (JSTR_USE_STANDARD_MEMMEM || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST
 	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
