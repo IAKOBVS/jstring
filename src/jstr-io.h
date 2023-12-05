@@ -125,13 +125,23 @@ pjstrio_isbinarysignature(const char *R buf,
 	       UTFSZ = 3 };
 	const unsigned char *p = (const unsigned char *)buf;
 	if (jstr_likely(sz >= ELFSZ)) {
-		/* ELF */
+#if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
+		static unsigned char elf[] = { 0x7, 'E', 'L', 'F' };
+		if (!memcmp(p, elf, 4))
+			return 0;
+#else
 		if (p[0] == 0x7 && p[1] == 'E' && p[2] == 'L' && p[3] == 'F')
 			return 0;
+#endif
 check_utf:;
-		/* UTF */
+#if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
+		static unsigned char utf[] = { 0xEF, 0xBB }; /* 0xBF */
+		if (!memcmp(p, utf, 2) && p[2] == 0xBF)
+			return 1;
+#else
 		if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
 			return 1;
+#endif
 	} else if (jstr_likely(sz == UTFSZ)) {
 		goto check_utf;
 	}
