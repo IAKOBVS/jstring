@@ -308,7 +308,7 @@ JSTR_NOEXCEPT
 	for (; (uintptr_t)s % ALIGN; ++s)
 		if (jstr_unlikely(!*s) || *(unsigned char *)s == c)
 			return (char *)s;
-	size_t k = ONES * (unsigned char)c;
+	const size_t k = ONES * (unsigned char)c;
 	for (w = (word *)s; !HASZERO(*w) && !HASZERO(*w ^ k); ++w)
 		;
 	s = (char *)w;

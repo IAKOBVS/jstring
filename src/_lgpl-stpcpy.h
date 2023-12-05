@@ -59,7 +59,7 @@ stpcpy(char *dst, const char *src)
 				break;
 			*d++ = word;
 		}
-	} else {
+	} else {  
 		/* Unaligned loop. */
 		jstr_word_ty w2a = *s++;
 		uintptr_t sh_1 = (uintptr_t)i * CHAR_BIT;
