@@ -411,7 +411,7 @@ JSTR_NOEXCEPT
 #endif
 	for (; n && *p && *p != c; ++p, --n)
 		;
-	return n ? (char *)p : 0;
+	return n ? (char *)p : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
