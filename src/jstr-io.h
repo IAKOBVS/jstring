@@ -760,9 +760,9 @@ typedef enum {
 #define JSTRIO_FTW_STATE_SLN JSTRIO_FTW_STATE_SLN
 } jstrio_ftw_state_ty;
 
-#if JSTR_LP32 && JSTRIO_PATH_MAX <= 65536
+#if JSTRIO_PATH_MAX <= 65536
 typedef uint16_t jstrio_path_size_ty;
-#elif JSTR_LP64 && JSTRIO_PATH_MAX <= 4294967296
+#elif JSTRIO_PATH_MAX <= 4294967296
 typedef uint32_t jstrio_path_size_ty;
 #else
 typedef size_t jstrio_path_size_ty;
