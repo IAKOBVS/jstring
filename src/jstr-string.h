@@ -425,6 +425,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 #if JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST
+#	define JSTR_USE_STANDARD_MEMMEM
 JSTR_ATTR_INLINE
 #endif
 static void *
@@ -434,7 +435,7 @@ jstr_memmem(const void *hs,
             size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST
+#if JSTR_USE_STANDARD_MEMMEM
 	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
@@ -574,7 +575,7 @@ JSTR_NOEXCEPT
 	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-#if JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST
+#if JSTR_USE_STANDARD_MEMMEM
 	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 #else
 	enum { LONG_NE_THRES = 32 };
