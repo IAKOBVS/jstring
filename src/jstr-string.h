@@ -887,7 +887,7 @@ jstr_strcasestr_len(const char *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST
+#if !JSTR_USE_NONASCIIZ && JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST
 	return (char *)strcasestr(hs, ne);
 #else
 	typedef const unsigned char cu;
@@ -920,7 +920,11 @@ BMH:
 				return (char *)hs - shift;
 		return NULL;
 	} else {
+#	if JSTR_USE_NONASCIIZ
 		hs = (char *)jstr_memcasechr(hs, *rare, hs_len);
+#	else
+		hs = pjstr_strcasechr(hs, *rare);
+#	endif
 	}
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
@@ -928,28 +932,39 @@ BMH:
 	hs -= shift;
 	/* Reuse SHIFT as IS_ALPHA. */
 	shift = jstr_isalpha(*ne) | jstr_isalpha(ne[1]);
-	if (ne_len == 2) {
-		if (shift)
-			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
-		goto STRSTR;
-	}
-	shift |= jstr_isalpha(ne[2]);
-	if (ne_len == 3) {
-		if (shift)
-			return pjstr_strcasestr3((cu *)hs, (cu *)ne);
-		goto STRSTR;
-	}
-	/* ne_len == 4 */
-	if (shift
-	    | jstr_isalpha(ne[3]))
-		return pjstr_strcasestr4((cu *)hs, (cu *)ne);
-	goto STRSTR;
-STRSTR:
+	do {
+		if (ne_len == 2) {
+			if (shift)
+				return pjstr_strcasestr2((cu *)hs, (cu *)ne);
+#	if JSTR_USE_NONASCIIZ
+			return (char *)pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
+#	endif
+			break;
+		}
+		shift |= jstr_isalpha(ne[2]);
+		if (ne_len == 3) {
+			if (shift)
+				return pjstr_strcasestr3((cu *)hs, (cu *)ne);
+#	if JSTR_USE_NONASCIIZ
+			return (char *)pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
+#	endif
+			break;
+		}
+		/* ne_len == 4 */
+		if (shift | jstr_isalpha(ne[3]))
+			return pjstr_strcasestr4((cu *)hs, (cu *)ne);
+#	if JSTR_USE_NONASCIIZ
+		return (char *)pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
+#	endif
+		break;
+	} while (0);
+#	if !JSTR_USE_NONASCIIZ
 	if (!memcmp(hs, ne, ne_len))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
 	return jstr_strstr_len(hs + 1, hs_len - 1, ne, ne_len);
+#	endif
 #endif
 }
 
