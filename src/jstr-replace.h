@@ -828,7 +828,7 @@ JSTR_ATTR_INLINE
 #endif
 static void
 jstr_revcpy_len(char *R dst,
-                char *R src,
+                const char *R src,
                 size_t src_len)
 JSTR_NOEXCEPT
 {
@@ -863,7 +863,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_revcpy_p(char *R dst,
-              char *R src)
+              const char *R src)
 {
 	const size_t len = strlen(src);
 	jstr_revcpy_len(dst, src, len);
