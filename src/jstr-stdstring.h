@@ -297,7 +297,6 @@ JSTR_NOEXCEPT
 	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 	if (jstr_unlikely(c == '\0'))
 		return (char *)s + strlen(s);
-	c = (unsigned char)c;
 #	if JSTR_HAVE_ATTR_MAY_ALIAS
 #		define ALIGN      (sizeof(size_t))
 #		define ONES       ((size_t)-1 / UCHAR_MAX)
@@ -305,7 +304,7 @@ JSTR_NOEXCEPT
 #		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
 	for (; (uintptr_t)s % ALIGN; ++s)
-		if (jstr_unlikely(!*s) || *(unsigned char *)s == c)
+		if (*s == '\0' || *s == (char)c)
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
 	const word *w = w = (word *)s;
@@ -317,7 +316,7 @@ JSTR_NOEXCEPT
 #		undef HIGHS
 #		undef HASZERO
 #	endif
-	for (; *s && *(unsigned char *)s != c; ++s)
+	for (; *s && *s != (char)c; ++s)
 		;
 	return (char *)s;
 #endif
@@ -380,28 +379,26 @@ JSTR_NOEXCEPT
 	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-	const unsigned char *p = (const unsigned char *)s;
-	c = (unsigned char)c;
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define SS         (sizeof(size_t))
 #	define ALIGN      (sizeof(size_t) - 1)
 #	define ONES       ((size_t)-1 / UCHAR_MAX)
 #	define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-	for (; (uintptr_t)p & ALIGN; ++p) {
-		if (jstr_unlikely(*p == '\0')
+	for (; (uintptr_t)s & ALIGN; ++s) {
+		if (jstr_unlikely(*s == '\0')
 		    || jstr_unlikely(n-- == 0))
 			return NULL;
-		if (*p == c)
-			return (char *)p;
+		if (*s == (char)c)
+			return (char *)s;
 	}
-	if (n && *p != c) {
+	if (n && *s != (char)c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
-		const word *w = w = (const word *)p;
+		const word *w = w = (const word *)s;
 		for (; n >= SS && !HASZERO(*w) && !HASZERO(*w ^ k); ++w, n -= SS)
 			;
-		p = (const unsigned char *)w;
+		s = (const char *)w;
 	}
 #	undef SS
 #	undef ALIGN
@@ -409,9 +406,9 @@ JSTR_NOEXCEPT
 #	undef HIGHS
 #	undef HASZERO
 #endif
-	for (; n && *p && *p != c; ++p, --n)
+	for (; n && *s && *s != (char)c; ++s, --n)
 		;
-	return n ? (char *)p : NULL;
+	return n ? (char *)s : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
