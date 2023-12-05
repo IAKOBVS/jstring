@@ -755,46 +755,6 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (char *)hs - 3 : NULL;
 }
 
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasestr_nolgpl(const unsigned char *hs,
-                        const unsigned char *const ne)
-JSTR_NOEXCEPT
-{
-	const unsigned char *hp;
-	const unsigned char *np;
-	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
-	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
-	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
-		if (hw == nw) {
-			for (hp = hs - 3 + 4, np = ne + 4; L(*hp) == L(*np) && *hp; ++hp, ++np) {}
-			if (*np == '\0')
-				return (char *)hs - 3;
-			if (jstr_unlikely(*hp == '\0'))
-				break;
-		}
-	return NULL;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasestr_len_rarebyte_notfound(const unsigned char *hs,
-                                       const unsigned char *ne,
-                                       size_t ne_len)
-JSTR_NOEXCEPT
-{
-	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
-	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
-	ne += 4;
-	ne_len -= 4;
-	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
-		if (hw == nw && !jstr_strcasecmpeq_len((char *)hs - 3 + 4, (char *)ne, ne_len))
-			return (char *)hs - 3;
-	return NULL;
-}
-
 #undef L
 
 #define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_bmh
