@@ -84,8 +84,7 @@ pjstrl_elemmove(jstrlist_ty *R l,
 {
 	jstr_ty *curr = l->data + l->size;
 	const jstr_ty *const end = l->data + l->capacity;
-	for (; curr < end && curr->data; ++curr)
-		;
+	for (; curr < end && curr->data; ++curr) {}
 	*curr = *elem;
 }
 
@@ -163,8 +162,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(cap == 0))
 		cap = JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
-	while ((cap *= JSTRL_GROWTH) < new_cap)
-		;
+	while ((cap *= JSTRL_GROWTH) < new_cap) {}
 	return cap;
 }
 
@@ -357,8 +355,7 @@ JSTR_NOEXCEPT
 	va_list ap;
 	va_start(ap, l);
 	int argc = 0;
-	for (; va_arg(ap, void *); ++argc)
-		;
+	for (; va_arg(ap, void *); ++argc) {}
 	va_end(ap);
 	if (jstr_unlikely(argc == 0))
 		return JSTR_RET_SUCC;

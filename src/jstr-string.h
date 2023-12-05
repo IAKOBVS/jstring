@@ -110,8 +110,7 @@ JSTR_NOEXCEPT
 	const unsigned char *p2 = (const unsigned char *)s2;
 	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++))
 	       && *p1++
-	       && n--)
-		;
+	       && n--) {}
 	return ret;
 #endif
 }
@@ -137,8 +136,7 @@ JSTR_NOEXCEPT
 		return 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n)
-		;
+	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n) {}
 	return *p1 && n;
 #endif
 }
@@ -167,8 +165,7 @@ JSTR_NOEXCEPT
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	while (!(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++))
-	       && n--)
-		;
+	       && n--) {}
 	return ret;
 #endif
 }
@@ -193,8 +190,7 @@ JSTR_NOEXCEPT
 #else
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; n && jstr_tolower(*p1++) == jstr_tolower(*p2++); --n)
-		;
+	for (; n && jstr_tolower(*p1++) == jstr_tolower(*p2++); --n) {}
 	return n;
 #endif
 }
@@ -218,8 +214,7 @@ JSTR_NOEXCEPT
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	int ret;
-	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++)
-		;
+	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++) {}
 	return ret;
 #endif
 }
@@ -242,8 +237,7 @@ JSTR_NOEXCEPT
 #else
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;)
-		;
+	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;) {}
 	return *(p2 - 1);
 #endif
 }
@@ -290,8 +284,7 @@ JSTR_NOEXCEPT
 #endif
 	const size_ty nw = (size_ty)ne[0] << SHIFT | ne[1];
 	size_ty hw = (size_ty)hs[0] << SHIFT | hs[1];
-	for (++hs, --n; n-- && *hs && hw != nw; hw = hw << SHIFT | *++hs)
-		;
+	for (++hs, --n; n-- && *hs && hw != nw; hw = hw << SHIFT | *++hs) {}
 	return (hw == nw) ? (char *)hs - 1 : NULL;
 }
 
@@ -306,8 +299,7 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
-	for (hs += 2, n -= 2; n-- && *hs && hw != nw; hw = (hw | *++hs) << 8)
-		;
+	for (hs += 2, n -= 2; n-- && *hs && hw != nw; hw = (hw | *++hs) << 8) {}
 	return (hw == nw) ? (char *)hs - 2 : NULL;
 }
 
@@ -322,8 +314,7 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	for (hs += 3, n -= 3; n-- && *hs && hw != nw; hw = hw << 8 | *++hs)
-		;
+	for (hs += 3, n -= 3; n-- && *hs && hw != nw; hw = hw << 8 | *++hs) {}
 	return (hw == nw) ? (char *)hs - 3 : NULL;
 }
 
@@ -334,8 +325,7 @@ pjstr_strnstrcmpeq(const unsigned char *hs,
                    const unsigned char *ne,
                    size_t n)
 {
-	for (; n && *hs && *hs == *ne; ++hs, ++ne, --n)
-		;
+	for (; n && *hs && *hs == *ne; ++hs, ++ne, --n) {}
 	if (*ne == '\0' || n == 0)
 		return 0;
 	if (jstr_unlikely(*hs == '\0'))
@@ -389,8 +379,7 @@ JSTR_NOEXCEPT
 #endif
 	const size_ty nw = (size_ty)ne[0] << SHIFT | ne[1];
 	size_ty hw = (size_ty)hs[0] << SHIFT | hs[1];
-	for (++hs, --l; l-- && hw != nw; hw = hw << SHIFT | *++hs)
-		;
+	for (++hs, --l; l-- && hw != nw; hw = hw << SHIFT | *++hs) {}
 	return (hw == nw) ? (void *)(hs - 1) : NULL;
 }
 
@@ -405,8 +394,7 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
-	for (hs += 2, l -= 2; l-- && hw != nw; hw = (hw | *++hs) << 8)
-		;
+	for (hs += 2, l -= 2; l-- && hw != nw; hw = (hw | *++hs) << 8) {}
 	return (hw == nw) ? (void *)(hs - 2) : NULL;
 }
 
@@ -421,8 +409,7 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	for (hs += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | *++hs)
-		;
+	for (hs += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | *++hs) {}
 	return (hw == nw) ? (void *)(hs - 3) : NULL;
 }
 
@@ -575,8 +562,7 @@ JSTR_NOEXCEPT
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;
 	size_t tmp = n;
-	for (; tmp-- && *hp == *np && *hp; ++hp, ++np)
-		;
+	for (; tmp-- && *hp == *np && *hp; ++hp, ++np) {}
 	if (*np == '\0')
 		return (char *)hs;
 	if (jstr_unlikely(*hp == '\0'))
@@ -633,8 +619,7 @@ JSTR_NOEXCEPT
 	hs += l - 2;
 	const size_ty nw = (size_ty)ne[1] << SHIFT | ne[0];
 	size_ty hw = (size_ty)hs[1] << SHIFT | hs[0];
-	for (l -= 2; l-- && hw != nw; hw = hw << SHIFT | *--hs)
-		;
+	for (l -= 2; l-- && hw != nw; hw = hw << SHIFT | *--hs) {}
 	return (hw == nw) ? (void *)(hs) : NULL;
 }
 
@@ -650,8 +635,7 @@ JSTR_NOEXCEPT
 	hs += l - 3;
 	const uint32_t nw = (uint32_t)ne[2] << 24 | ne[1] << 16 | ne[0] << 8;
 	uint32_t hw = (uint32_t)hs[2] << 24 | hs[1] << 16 | hs[0] << 8;
-	for (l -= 3; l-- && hw != nw; hw = (hw | *--hs) << 8)
-		;
+	for (l -= 3; l-- && hw != nw; hw = (hw | *--hs) << 8) {}
 	return (hw == nw) ? (void *)(hs) : NULL;
 }
 
@@ -667,8 +651,7 @@ JSTR_NOEXCEPT
 	hs += l - 4;
 	const uint32_t nw = (uint32_t)ne[3] << 24 | ne[2] << 16 | ne[1] << 8 | ne[0];
 	uint32_t hw = (uint32_t)hs[3] << 24 | hs[2] << 16 | hs[1] << 8 | hs[0];
-	for (l -= 4; l-- && hw != nw; hw = hw << 8 | *--hs)
-		;
+	for (l -= 4; l-- && hw != nw; hw = hw << 8 | *--hs) {}
 	return (hw == nw) ? (void *)(hs) : NULL;
 }
 
@@ -745,8 +728,7 @@ JSTR_NOEXCEPT
 #endif
 	const size_ty nw = (size_ty)L(ne[0]) << SHIFT | L(ne[1]);
 	size_ty hw = (size_ty)L(hs[0]) << SHIFT | L(hs[1]);
-	for (++hs; *hs && hw != nw; hw = hw << SHIFT | L(*++hs))
-		;
+	for (++hs; *hs && hw != nw; hw = hw << SHIFT | L(*++hs)) {}
 	return (hw == nw) ? (char *)hs - 1 : NULL;
 }
 
@@ -759,8 +741,7 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8;
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8;
-	for (hs += 2; *hs && hw != nw; hw = (hw | L(*++hs)) << 8)
-		;
+	for (hs += 2; *hs && hw != nw; hw = (hw | L(*++hs)) << 8) {}
 	return (hw == nw) ? (char *)hs - 2 : NULL;
 }
 
@@ -773,8 +754,7 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
-	for (hs += 3; *hs && hw != nw; hw = hw << 8 | L(*++hs))
-		;
+	for (hs += 3; *hs && hw != nw; hw = hw << 8 | L(*++hs)) {}
 	return (hw == nw) ? (char *)hs - 3 : NULL;
 }
 
@@ -793,8 +773,7 @@ JSTR_NOEXCEPT
 		if (hw == nw) {
 			for (hp = hs - 3 + 4, np = ne + 4;
 			     L(*hp) == L(*np) && *hp;
-			     ++hp, ++np)
-				;
+			     ++hp, ++np) {}
 			if (*np == '\0')
 				return (char *)hs - 3;
 			if (jstr_unlikely(*hp == '\0'))
@@ -857,8 +836,7 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
-	for (; *p && jstr_tolower(*p) != c; ++p)
-		;
+	for (; *p && jstr_tolower(*p) != c; ++p) {}
 	return *p ? (char *)p : NULL;
 }
 
@@ -873,8 +851,7 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
-	for (; n-- && jstr_tolower(*p) != c; ++p)
-		;
+	for (; n-- && jstr_tolower(*p) != c; ++p) {}
 	return n ? (void *)p : NULL;
 }
 
@@ -1035,8 +1012,7 @@ pjstr_strcasestr_rarebyte(const char *hs,
 	for (hs += shift; (hs = (char *)strchr(hs, c)); ++hs) {
 		p1 = (cu *)hs - shift;
 		p2 = (cu *)ne;
-		for (; jstr_tolower(*p1) == jstr_tolower(*p2) && *p1; ++p1, ++p2)
-			;
+		for (; jstr_tolower(*p1) == jstr_tolower(*p2) && *p1; ++p1, ++p2) {}
 		if (*p2 == '\0')
 			return (char *)hs - shift;
 		if (jstr_unlikely(*p1 == '\0'))
@@ -1283,8 +1259,7 @@ JSTR_NOEXCEPT
 		return sz;
 	if (jstr_unlikely(accept[1] == '\0')) {
 		const char *p = (char *)s;
-		for (; sz-- && (*p == *accept); ++p)
-			;
+		for (; sz-- && (*p == *accept); ++p) {}
 		return JSTR_PTR_DIFF(p, s);
 	}
 	const u *p = (u *)accept;
@@ -1394,8 +1369,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(c == '\0'))
 		return (char *)s;
-	while (*s++ == (char)c)
-		;
+	while (*s++ == (char)c) {}
 	return (char *)s - 1;
 }
 
@@ -1427,8 +1401,7 @@ jstr_memchrnulinv(const void *s,
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
-	for (; n-- && *p == (unsigned char)c; ++p)
-		;
+	for (; n-- && *p == (unsigned char)c; ++p) {}
 	return (void *)p;
 }
 
@@ -1694,8 +1667,7 @@ jstr_countchr(const char *s,
 JSTR_NOEXCEPT
 {
 	size_t cnt = 0;
-	for (; (s = strchr(s, c)); ++s, ++cnt)
-		;
+	for (; (s = strchr(s, c)); ++s, ++cnt) {}
 	return cnt;
 }
 
@@ -1713,8 +1685,7 @@ JSTR_NOEXCEPT
 {
 	size_t cnt = 0;
 	const char *const end = s + sz;
-	for (; (s = (const char *)memchr(s, c, JSTR_PTR_DIFF(end, s))); ++s, ++cnt)
-		;
+	for (; (s = (const char *)memchr(s, c, JSTR_PTR_DIFF(end, s))); ++s, ++cnt) {}
 	return cnt;
 }
 
@@ -1738,11 +1709,9 @@ JSTR_NOEXCEPT
 	size_t cnt = 0;
 #if JSTR_HAVE_MEMMEM
 	const char *const end = s + sz;
-	for (; *s && (s = jstr_strstr_len(s, JSTR_PTR_DIFF(end, s), find, find_len)); ++cnt, s += find_len)
-		;
+	for (; *s && (s = jstr_strstr_len(s, JSTR_PTR_DIFF(end, s), find, find_len)); ++cnt, s += find_len) {}
 #else
-	for (; *s && (s = strstr(s, find)); ++cnt, s += find_len)
-		;
+	for (; *s && (s = strstr(s, find)); ++cnt, s += find_len) {}
 #endif
 	return cnt;
 }
@@ -1765,8 +1734,7 @@ JSTR_NOEXCEPT
 		return 0;
 	const size_t find_len = strlen(find);
 	size_t cnt = 0;
-	for (; (s = strstr(s, find)); ++cnt, s += find_len)
-		;
+	for (; (s = strstr(s, find)); ++cnt, s += find_len) {}
 	return cnt;
 }
 
@@ -1846,8 +1814,7 @@ jstr_linenumber(const char *start,
 JSTR_NOEXCEPT
 {
 	size_t cnt = 1;
-	for (; (start = (const char *)memchr(start, '\n', JSTR_PTR_DIFF(end, start))); ++start, ++cnt)
-		;
+	for (; (start = (const char *)memchr(start, '\n', JSTR_PTR_DIFF(end, start))); ++start, ++cnt) {}
 	return cnt;
 }
 

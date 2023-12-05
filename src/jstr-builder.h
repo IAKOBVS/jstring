@@ -87,8 +87,7 @@ pjstr_grow(size_t cap,
            size_t new_cap)
 JSTR_NOEXCEPT
 {
-	while ((cap *= JSTR_GROWTH) < new_cap)
-		;
+	while ((cap *= JSTR_GROWTH) < new_cap) {}
 	return JSTR_ALIGN_UP(cap, JSTR_MALLOC_ALIGNMENT);
 }
 
@@ -291,8 +290,7 @@ JSTR_NOEXCEPT
 	p = *s + *sz;
 	*sz += arg_len;
 	const char *R arg;
-	for (; (arg = va_arg(ap, const char *)); p = jstr_stpcpy(p, arg))
-		;
+	for (; (arg = va_arg(ap, const char *)); p = jstr_stpcpy(p, arg)) {}
 	return JSTR_RET_SUCC;
 }
 
@@ -316,8 +314,7 @@ JSTR_NOEXCEPT
 	va_start(ap, cap);
 	size_t arg_len = 0;
 	const char *R arg;
-	for (; (arg = va_arg(ap, const char *)); arg_len += strlen(arg))
-		;
+	for (; (arg = va_arg(ap, const char *)); arg_len += strlen(arg)) {}
 	va_end(ap);
 	if (jstr_unlikely(arg_len == 0))
 		return JSTR_RET_SUCC;
@@ -343,8 +340,7 @@ JSTR_NOEXCEPT
 	va_start(ap, j);
 	size_t arg_len = 0;
 	const char *R arg;
-	for (; (arg = va_arg(ap, const char *)); arg_len += strlen(arg))
-		;
+	for (; (arg = va_arg(ap, const char *)); arg_len += strlen(arg)) {}
 	va_end(ap);
 	if (jstr_unlikely(arg_len == 0))
 		return JSTR_RET_SUCC;

@@ -66,12 +66,10 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	if (jstr_unlikely(ctype & JSTR_ISCNTRL)) {
-		for (; *p && jstr_isctype(*p, ctype); ++p)
-			;
+		for (; *p && jstr_isctype(*p, ctype); ++p) {}
 		return (char *)p;
 	}
-	while (jstr_isctype(*p++, ctype))
-		;
+	while (jstr_isctype(*p++, ctype)) {}
 	return (char *)p - 1;
 }
 
@@ -140,8 +138,7 @@ jstr_skipctype_rev(const char *const start,
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)end;
-	for (; (const unsigned char *)start != p && jstr_isctype(*p, ctype); --p)
-		;
+	for (; (const unsigned char *)start != p && jstr_isctype(*p, ctype); --p) {}
 	return (char *)p;
 }
 
@@ -169,8 +166,7 @@ jstr_toupperstr_p(char *R s)
 JSTR_NOEXCEPT
 {
 	unsigned char *p = (unsigned char *)s;
-	for (; (*p = jstr_toupper(*p)); ++p)
-		;
+	for (; (*p = jstr_toupper(*p)); ++p) {}
 	return (char *)p;
 }
 
@@ -182,8 +178,7 @@ jstr_tolowerstr_p(char *R s)
 JSTR_NOEXCEPT
 {
 	unsigned char *p = (unsigned char *)s;
-	for (; (*p = jstr_tolower(*p)); ++p)
-		;
+	for (; (*p = jstr_tolower(*p)); ++p) {}
 	return (char *)p;
 }
 
@@ -197,8 +192,7 @@ jstr_toupperstrcpy_p(char *R dst,
 JSTR_NOEXCEPT
 {
 	const unsigned char *srcp = (const unsigned char *)src;
-	while ((*dst++ = (char)jstr_tolower(*srcp++)))
-		;
+	while ((*dst++ = (char)jstr_tolower(*srcp++))) {}
 	return dst - 1;
 }
 
@@ -212,8 +206,7 @@ jstr_tolowerstrcpy_p(char *R dst,
 JSTR_NOEXCEPT
 {
 	const unsigned char *srcp = (const unsigned char *)src;
-	while ((*dst++ = (char)jstr_tolower(*srcp++)))
-		;
+	while ((*dst++ = (char)jstr_tolower(*srcp++))) {}
 	return dst - 1;
 }
 

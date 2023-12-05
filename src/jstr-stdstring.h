@@ -45,8 +45,7 @@ static int
 jstr_strcmpeq_loop(const char *s1,
                    const char *s2)
 {
-	while ((*s1++ == *s2++))
-		;
+	while ((*s1++ == *s2++)) {}
 	return *(s2 - 1);
 }
 
@@ -58,8 +57,7 @@ jstr_strcasecmpeq_loop(const char *s1,
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;)
-		;
+	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;) {}
 	return *(p2 - 1);
 }
 
@@ -74,8 +72,7 @@ jstr_memcmpeq_loop(const void *s1,
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; n && (*p1++ == *p2++); --n)
-		;
+	for (; n && (*p1++ == *p2++); --n) {}
 	return n;
 }
 
@@ -89,8 +86,7 @@ jstr_strcasecmpeq_len_loop(const void *s1,
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; n && (jstr_tolower(*p1++) == jstr_tolower(*p2++)); --n)
-		;
+	for (; n && (jstr_tolower(*p1++) == jstr_tolower(*p2++)); --n) {}
 	return n;
 }
 
@@ -237,8 +233,7 @@ JSTR_NOEXCEPT
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const word *w = (const word *)(p - SS + 1);
 		const size_t k = ONES * (unsigned char)c;
-		for (; n >= SS && !HASZERO(*w ^ k); --w, n -= SS)
-			;
+		for (; n >= SS && !HASZERO(*w ^ k); --w, n -= SS) {}
 		p = (unsigned char *)w + SS - 1;
 	}
 #		undef SS
@@ -308,16 +303,14 @@ JSTR_NOEXCEPT
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
 	const word *w = w = (word *)s;
-	for (; !HASZERO(*w) && !HASZERO(*w ^ k); ++w)
-		;
+	for (; !HASZERO(*w) && !HASZERO(*w ^ k); ++w) {}
 	s = (char *)w;
 #		undef ALIGN
 #		undef ONES
 #		undef HIGHS
 #		undef HASZERO
 #	endif
-	for (; *s && *s != (char)c; ++s)
-		;
+	for (; *s && *s != (char)c; ++s) {}
 	return (char *)s;
 #endif
 }
@@ -395,8 +388,7 @@ JSTR_NOEXCEPT
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
 		const word *w = w = (const word *)s;
-		for (; n >= SS && !HASZERO(*w) && !HASZERO(*w ^ k); ++w, n -= SS)
-			;
+		for (; n >= SS && !HASZERO(*w) && !HASZERO(*w ^ k); ++w, n -= SS) {}
 		s = (const char *)w;
 	}
 #	undef SS
@@ -405,8 +397,7 @@ JSTR_NOEXCEPT
 #	undef HIGHS
 #	undef HASZERO
 #endif
-	for (; n && *s && *s != (char)c; ++s, --n)
-		;
+	for (; n && *s && *s != (char)c; ++s, --n) {}
 	return n ? (char *)s : NULL;
 }
 
@@ -573,8 +564,7 @@ JSTR_NOEXCEPT
 				return dst;
 		word *wd = (word *)dst;
 		const word *ws = (const word *)src;
-		for (; !HASZERO(*ws); *wd++ = *ws++)
-			;
+		for (; !HASZERO(*ws); *wd++ = *ws++) {}
 		dst = (char *)wd;
 		src = (const char *)ws;
 	}
@@ -583,8 +573,7 @@ JSTR_NOEXCEPT
 #		undef HIGHS
 #		undef HASZERO
 #	endif
-	while ((*dst++ = *src++))
-		;
+	while ((*dst++ = *src++)) {}
 	return dst - 1;
 #endif
 }

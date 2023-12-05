@@ -357,8 +357,7 @@ jstr_rplcallspn_p(char *R s,
                   char rplc)
 JSTR_NOEXCEPT
 {
-	for (; *s && (*(s += strcspn(s, reject))); s = jstr_stpset_len(s, rplc, strspn(s, reject)))
-		;
+	for (; *s && (*(s += strcspn(s, reject))); s = jstr_stpset_len(s, rplc, strspn(s, reject))) {}
 	return s;
 }
 
@@ -576,8 +575,7 @@ jstr_rplcallchr_len(char *R s,
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
-	for (; (s = (char *)memchr(s, find, JSTR_PTR_DIFF(end, s))); *s++ = rplc)
-		;
+	for (; (s = (char *)memchr(s, find, JSTR_PTR_DIFF(end, s))); *s++ = rplc) {}
 }
 
 /* Replace all SEARCH in REPLACE. */
@@ -588,8 +586,7 @@ jstr_rplcallchr(char *R s,
                 char rplc)
 JSTR_NOEXCEPT
 {
-	for (; (s = strchr(s, find)); *s++ = rplc)
-		;
+	for (; (s = strchr(s, find)); *s++ = rplc) {}
 }
 
 /* Replace N SEARCH in REPLACE. */
@@ -603,8 +600,7 @@ jstr_rplcnchr_len(char *R s,
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
-	for (; n-- && (s = (char *)memchr(s, find, JSTR_PTR_DIFF(end, s))); *s++ = rplc)
-		;
+	for (; n-- && (s = (char *)memchr(s, find, JSTR_PTR_DIFF(end, s))); *s++ = rplc) {}
 }
 
 /* Replace N SEARCH in REPLACE. */
@@ -616,8 +612,7 @@ jstr_rplcnchr(char *R s,
               size_t n)
 JSTR_NOEXCEPT
 {
-	for (; n-- && (s = strchr(s, find)); *s++ = rplc)
-		;
+	for (; n-- && (s = strchr(s, find)); *s++ = rplc) {}
 }
 
 /* Replace last SEARCH in S with REPLACE.
@@ -854,14 +849,12 @@ JSTR_NOEXCEPT
 			*(dw + 2) = *(sw + 2);
 			*(dw + 3) = *(sw + 3);
 		}
-		for (; src_len >= S; *dw++ = *sw++, --src_len)
-			;
+		for (; src_len >= S; *dw++ = *sw++, --src_len) {}
 		dst = (char *)dw;
 		src = (char *)sw;
 	}
 #endif
-	for (; src_len--; *dst++ = *src--)
-		;
+	for (; src_len--; *dst++ = *src--) {}
 ret:
 	*dst = '\0';
 }
@@ -1104,10 +1097,8 @@ static char *
 jstr_toCamelCaseP(char *R s)
 JSTR_NOEXCEPT
 {
-	for (; *s == '_'; ++s)
-		;
-	for (; *s && *s != '_'; ++s)
-		;
+	for (; *s == '_'; ++s) {}
+	for (; *s && *s != '_'; ++s) {}
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	unsigned char *dst = (unsigned char *)s;
@@ -1137,8 +1128,7 @@ JSTR_NOEXCEPT
 {
 	unsigned char *d = (unsigned char *)dst;
 	const unsigned char *s = (const unsigned char *)src;
-	for (; *s == '_'; ++s, *d++ = '_')
-		;
+	for (; *s == '_'; ++s, *d++ = '_') {}
 	while (*s)
 		if (*s != '_') {
 			*d++ = *s++;
@@ -1160,11 +1150,9 @@ jstr_to_snake_case_p(char *R s)
 JSTR_NOEXCEPT
 {
 	unsigned char *p = (unsigned char *)s;
-	for (; *p == '_'; ++p)
-		;
+	for (; *p == '_'; ++p) {}
 	*p = jstr_tolower(*p);
-	for (; *p && !jstr_isupper(*p); ++p)
-		;
+	for (; *p && !jstr_isupper(*p); ++p) {}
 	if (jstr_unlikely(*p == '\0'))
 		return (char *)p;
 	const unsigned char *end = p + strlen((char *)p);
@@ -1191,8 +1179,7 @@ JSTR_NOEXCEPT
 {
 	unsigned char *d = (unsigned char *)dst;
 	const unsigned char *s = (const unsigned char *)src;
-	for (; *s == '_'; ++s, *d++ = '_')
-		;
+	for (; *s == '_'; ++s, *d++ = '_') {}
 	*d = jstr_tolower(*s);
 	while (*s)
 		if (!jstr_isupper(*s)) {
@@ -1416,13 +1403,11 @@ JSTR_NOEXCEPT
 		--src_len;
 	}
 	if (src_len < 4) {
-		while ((*dst++ = *src++))
-			;
+		while ((*dst++ = *src++)) {}
 		return dst - 1;
 	}
 	int i = src_len % 3;
-	for (int j = i; j--; *dst++ = *src++)
-		;
+	for (int j = i; j--; *dst++ = *src++) {}
 	if (i) {
 		*dst++ = separator;
 		i = 0;
