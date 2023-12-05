@@ -649,7 +649,7 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STPCPY && !JSTR_TEST
 	return stpcpy(dst, src);
-#elif JSTR_HAVE_STRCPY_OPTIMIZED && JSTR_HAVE_STRLEN_OPTIMIZED && !JSTR_TEST
+#elif JSTR_HAVE_STRLEN_OPTIMIZED && !JSTR_TEST
 	/* Optimized memcpy() + strlen() is still faster than a C stpcpy(). */
 	return jstr_stpcpy_len(dst, src, strlen(src));
 #elif JSTR_HAVE_WORD_AT_A_TIME && JSTR_USE_LGPL
