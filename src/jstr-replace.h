@@ -835,8 +835,31 @@ jstr_revcpy_len(char *R dst,
 JSTR_NOEXCEPT
 {
 	src += src_len - 1;
+#if JSTR_HAVE_ATTR_MAY_ALIAS
+	typedef size_t JSTR_ATTR_MAY_ALIAS word;
+	enum { S = sizeof(word),
+	       S4 = 4 * S };
+	if ((uintptr_t)dst % S == (uintptr_t)src % S) {
+		for (; (uintptr_t)dst % S; *dst++ = *src--, --src_len)
+			if (jstr_unlikely(src_len == 0))
+				goto ret;
+		word *dw = (word *)dst;
+		const word *sw = (const word *)src;
+		for (; src_len >= S4; dw += 4, sw += 4, src_len -= 4) {
+			dw[0] = sw[0];
+			dw[1] = sw[1];
+			dw[2] = sw[2];
+			dw[3] = sw[3];
+		}
+		for (; src_len >= S; *dw++ = *sw++, --src_len)
+			;
+		dst = (char *)dw;
+		src = (char *)sw;
+	}
+#endif
 	for (; src_len--; *dst++ = *src--)
 		;
+ret:
 	*dst = '\0';
 }
 
