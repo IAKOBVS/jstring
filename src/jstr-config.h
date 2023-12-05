@@ -39,6 +39,19 @@
 #	define JSTR_USE_LGPL 1
 #endif
 
+/* Substring searcher function to be used by rplc*() and rm*() functions.
+   The searcher function's prototype must be:
+   void *fn(const char *hs, size_t hs_len, const char *ne, size_t ne_len).
+   */
+#ifndef JSTR_REPLACE_SEARCHER
+/* strstr_len() may call strstr() if it deems it to be faster than memmem().
+   HAYSTACK and NEEDLE must be nul-terminated. */
+#	define JSTR_REPLACE_SEARCHER jstr_strstr_len
+#	define JSTR_REPLACE_DEFAULT  1
+#else
+#	define JSTR_REPLACE_DEFAULT 0
+#endif
+
 /* Always prefer standard functions over user functions.
    For example, use libc strcasestr() when available
    over our own strcasestr() in jstr_strcasestr(). */
@@ -112,15 +125,15 @@
 
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
 /* This is defined by ./check-little-endian. */
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #endif
 #if JSTR_ENDIAN_LITTLE
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    0
 #else
 #	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
+#	define JSTR_ENDIAN_LITTLE 1
 #	define JSTR_ENDIAN_BIG    1
 #endif
 
