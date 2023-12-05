@@ -62,8 +62,8 @@ stpcpy(char *dst, const char *src)
 	} else {  
 		/* Unaligned loop. */
 		jstr_word_ty w2a = *s++;
-		uintptr_t sh_1 = (uintptr_t)i * CHAR_BIT;
-		uintptr_t sh_2 = sizeof(jstr_word_ty) * CHAR_BIT - sh_1;
+		const unsigned int sh_1 = (uintptr_t)i * CHAR_BIT;
+		const unsigned int sh_2 = sizeof(jstr_word_ty) * CHAR_BIT - sh_1;
 		word = JSTR_WORD_MERGE(w2a, sh_1, (jstr_word_ty)-1, sh_2);
 		if (!jstr_word_has_zero(word)) {
 			jstr_word_ty w2b;
