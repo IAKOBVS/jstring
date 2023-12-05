@@ -849,10 +849,10 @@ JSTR_NOEXCEPT
 		word *dw = (word *)dst;
 		const word *sw = (const word *)src;
 		for (; src_len >= S4; dw += 4, sw += 4, src_len -= 4) {
-			dw[0] = sw[0];
-			dw[1] = sw[1];
-			dw[2] = sw[2];
-			dw[3] = sw[3];
+			*dw = *sw;
+			*(dw + 1) = *(sw + 1);
+			*(dw + 2) = *(sw + 2);
+			*(dw + 3) = *(sw + 3);
 		}
 		for (; src_len >= S; *dw++ = *sw++, --src_len)
 			;
