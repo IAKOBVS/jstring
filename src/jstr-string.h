@@ -1632,13 +1632,18 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
-#if JSTR_HAVE_MEMMEM
-	if (find_len >= JSTR_MEMMEM_THRES)
+#if JSTR_HAVE_MEMMEM_OPTIMIZED
+	for (const char *const end = s + sz; (s = jstr_strstr_len(s, JSTR_PTR_DIFF(end, s), find, find_len)); ++cnt, s += find_len) {}
+#else
+#	if JSTR_HAVE_MEMMEM
+	if (find_len >= JSTR_MEMMEM_THRES) {
 		for (const char *const end = s + sz; (s = jstr_strstr_len(s, JSTR_PTR_DIFF(end, s), find, find_len)); ++cnt, s += find_len) {}
-	else
-#endif
-		for (; (s = strstr(s, find)); ++cnt, s += find_len) {}
+		return cnt;
+	}
+#	endif
+	for (; (s = strstr(s, find)); ++cnt, s += find_len) {}
 	return cnt;
+#endif
 }
 
 /* Count occurences of NE in HS.
