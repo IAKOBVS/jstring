@@ -108,9 +108,7 @@ JSTR_NOEXCEPT
 	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++))
-	       && *p1++
-	       && n--) {}
+	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++ && n--) {}
 	return ret;
 #endif
 }
@@ -164,8 +162,7 @@ JSTR_NOEXCEPT
 	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	while (!(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++))
-	       && n--) {}
+	while (!(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++)) && n--) {}
 	return ret;
 #endif
 }
@@ -771,9 +768,7 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
 	for (hs += 3; *hs; hw = hw << 8 | L(*++hs))
 		if (hw == nw) {
-			for (hp = hs - 3 + 4, np = ne + 4;
-			     L(*hp) == L(*np) && *hp;
-			     ++hp, ++np) {}
+			for (hp = hs - 3 + 4, np = ne + 4; L(*hp) == L(*np) && *hp; ++hp, ++np) {}
 			if (*np == '\0')
 				return (char *)hs - 3;
 			if (jstr_unlikely(*hp == '\0'))
