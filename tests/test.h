@@ -4,6 +4,8 @@
 #define JSTR_PANIC 1
 #define JSTR_TEST  1
 #define JSTR_DEBUG 1
+/* Force use of slower simple functions. */
+#define JSTR_USE_SIMPLE 0
 
 #define JSTR_BUILT
 
@@ -21,7 +23,7 @@
 		PRINT("%s ", __FILE__);                             \
 		for (; *argv; ++argv)                               \
 			if (!strncmp(*argv, "-D", 2))               \
-				PRINT("%s ", *argv + STRLEN("-D")); \
+				PRINT("%s ", *argv + strlen("-D")); \
 		PRINT("succeeded.\n");                              \
 	} while (0)
 
@@ -30,7 +32,6 @@
 #define PRINT(...)    printf(__VA_ARGS__)
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
 #define START() do{}while(0)
-#define STRLEN(s) (sizeof(s) - 1)
 
 PJSTR_BEGIN_DECLS
 JSTR_ATTR_MAYBE_UNUSED

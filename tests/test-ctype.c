@@ -11,9 +11,9 @@
 #define T_STR(func, str, result)                                                                                             \
 	do {                                                                                                                 \
 		size_t expected_len, result_len;                                                                             \
-		JSTR_STATIC_ASSERT(sizeof(buffer_expected) > STRLEN(str), "");                                               \
-		*(char *)memcpy(buffer_expected, str, STRLEN(str)) = '\0';                                                   \
-		*(char *)memcpy(buffer_result, str, STRLEN(str)) = '\0';                                                     \
+		JSTR_STATIC_ASSERT(sizeof(buffer_expected) > strlen(str), "");                                               \
+		*(char *)memcpy(buffer_expected, str, strlen(str)) = '\0';                                                   \
+		*(char *)memcpy(buffer_result, str, strlen(str)) = '\0';                                                     \
 		(void)jstr_##func(buffer_result);                                                                            \
 		(void)simple_##func(buffer_expected);                                                                        \
 		expected_len = strlen(buffer_expected);                                                                      \

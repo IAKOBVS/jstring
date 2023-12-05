@@ -46,11 +46,15 @@ simple_memrchr(const void *s,
                size_t n)
 JSTR_NOEXCEPT
 {
+#if JSTR_HAVE_MEMRCHR && !JSTR_USE_SIMPLE
+	return memrchr(s, c, n);
+#else
 	const unsigned char *p = (const unsigned char *)s + n;
 	for (; n--;)
 		if (*--p == (unsigned char)c)
 			return (void *)p;
 	return NULL;
+#endif
 }
 
 /*
@@ -75,25 +79,29 @@ static char *
 simple_strchrnul(const char *s,
                  int c)
 {
+#if JSTR_HAVE_STRCHRNUL && !JSTR_USE_SIMPLE
+	return strchrnul(s, c);
+#else
 	for (; *s && *s != (char)c; ++s)
 		;
 	return (char *)s;
+#endif
 }
 
-#define T_ASSERT(func, expr, result, expected, str, c)                              \
-	do {                                                                        \
-		if (jstr_unlikely(!(expr))) {                                       \
-			PRINTERR("result_len: %zu\n", JSTR_PTR_DIFF(result, str));  \
-			PRINTERR("str: %p\n", str);                                 \
-			PRINTERR("ptr_result: %p\n", result);                       \
-			PRINTERR("ptr_expected: %p\n", expected);                   \
-			PRINTERR("string:\n");                                      \
-			PRINTERR("string:%s\n", str);                               \
-			PRINTERR("c:%d\n", c);                                      \
-			PRINTERR("c:%c\n", c);                                      \
-			PRINTERR("string_len:%zu\n", strlen(str));                  \
-			ASSERT_RESULT(func, expr, result, expected);                \
-		}                                                                   \
+#define T_ASSERT(func, expr, result, expected, str, c)                             \
+	do {                                                                       \
+		if (jstr_unlikely(!(expr))) {                                      \
+			PRINTERR("result_len: %zu\n", JSTR_PTR_DIFF(result, str)); \
+			PRINTERR("str: %p\n", str);                                \
+			PRINTERR("ptr_result: %p\n", result);                      \
+			PRINTERR("ptr_expected: %p\n", expected);                  \
+			PRINTERR("string:\n");                                     \
+			PRINTERR("string:%s\n", str);                              \
+			PRINTERR("c:%d\n", c);                                     \
+			PRINTERR("c:%c\n", c);                                     \
+			PRINTERR("string_len:%zu\n", strlen(str));                 \
+			ASSERT_RESULT(func, expr, result, expected);               \
+		}                                                                  \
 	} while (0)
 
 #define T(s, c)                                                                                    \

@@ -36,6 +36,9 @@ simple_memmem(const void *hs,
               const void *ne,
               const size_t nl)
 {
+#if JSTR_HAVE_MEMMEM && !JSTR_USE_SIMPLE
+	return memmem(hs, hl, ne, nl);
+#else
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *n = (const unsigned char *)ne;
 	if (nl == 0)
@@ -49,6 +52,7 @@ simple_memmem(const void *hs,
 		if (*h == *n && !memcmp(h, n, nl))
 			return (char *)h;
 	return NULL;
+#endif
 }
 
 static char *
@@ -64,17 +68,25 @@ static char *
 simple_strstr(const char *h,
               const char *n)
 {
+#if JSTR_HAVE_STRSTR && !JSTR_USE_SIMPLE
+	return strstr(h, n);
+#else
 	return simple_memmem(h, strlen(h), n, strlen(n));
+#endif
 }
 
 static int
 simple_strcasecmp(const char *s1,
                   const char *s2)
 {
+#if JSTR_HAVE_STRCASECMP && !JSTR_USE_SIMPLE
+	return strcasecmp(s1, s2);
+#else
 	int ret;
 	for (; (ret = (TOLOWER(*s1) - TOLOWER(*s2))) == 0 && *s1; ++s1, ++s2)
 		;
 	return ret;
+#endif
 }
 
 static int
@@ -82,6 +94,9 @@ simple_strncasecmp(const char *s1,
                    const char *s2,
                    size_t n)
 {
+#if JSTR_HAVE_STRNCASECMP && !JSTR_USE_SIMPLE
+	return strncasecmp(s1, s2, n);
+#else
 	if (n == 0)
 		return 0;
 	int ret;
@@ -90,6 +105,7 @@ simple_strncasecmp(const char *s1,
 	if (n == 0)
 		return 0;
 	return ret;
+#endif
 }
 
 static char *
@@ -120,9 +136,9 @@ static char *
 simple_stpcpy(char *d,
               const char *s)
 {
-	while ((*d++ = *s++))
-		;
-	return d - 1;
+	const size_t len = strlen(s);
+	*((char *)memcpy(d, s, len) + len) = '\0';
+	return d + len;
 }
 
 #define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)                               \
