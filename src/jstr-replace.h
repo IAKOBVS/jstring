@@ -823,7 +823,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-#if !JSTR_HAVE_ATTR_MAY_ALIAS
+#if !JSTR_HAVE_ATTR_MAY_ALIAS && JSTR_ENDIAN_LITTLE
 JSTR_ATTR_INLINE
 #endif
 static void
@@ -833,7 +833,7 @@ jstr_revcpy_len(char *R dst,
 JSTR_NOEXCEPT
 {
 	src += src_len - 1;
-#if JSTR_HAVE_ATTR_MAY_ALIAS
+#if JSTR_HAVE_ATTR_MAY_ALIAS && JSTR_ENDIAN_LITTLE
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
 	enum { S = sizeof(word),
 	       S4 = (4 * S) };
