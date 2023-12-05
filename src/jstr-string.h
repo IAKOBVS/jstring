@@ -524,7 +524,6 @@ JSTR_NOEXCEPT
 {
 	char *p = jstr_strstr_len(hs, hs_len, ne, ne_len);
 	return p ? p : (char *)hs + hs_len;
-	(void)ne_len;
 }
 
 JSTR_FUNC_PURE
