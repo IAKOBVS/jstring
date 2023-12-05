@@ -44,7 +44,7 @@
    void *fn(const char *hs, size_t hs_len, const char *ne, size_t ne_len).
    */
 #ifndef JSTR_REPLACE_SEARCHER
-/* strstr_len() may call strstr() if it deems it to be faster than memmem().
+/* strstr_len() may call strstr() if it is deemed faster than memmem().
    HAYSTACK and NEEDLE must be nul-terminated. */
 #	define JSTR_REPLACE_SEARCHER jstr_strstr_len
 #	define JSTR_REPLACE_DEFAULT  1
