@@ -55,7 +55,7 @@ typedef enum {
 	/* Binary file type. */
 	JSTRIO_FT_BINARY
 #define JSTRIO_FT_BINARY JSTRIO_FT_BINARY
-} jstrio_ext_ty;
+} jstrio_ft_ty;
 
 enum {
 #ifdef PATH_MAX
@@ -74,7 +74,7 @@ enum {
 };
 
 JSTR_FUNC_PURE
-static jstrio_ext_ty
+static jstrio_ft_ty
 pjstrio_exttype(const char *ext)
 JSTR_NOEXCEPT
 {
@@ -103,10 +103,10 @@ pjstrio_extget_len(const char *fname,
 	return NULL;
 }
 
-/* Return jstrio_ext_ty based on the FNAME extension. */
+/* Return jstrio_ft_ty based on the FNAME extension. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
-static jstrio_ext_ty
+static jstrio_ft_ty
 jstrio_exttype(const char *R fname,
                size_t sz)
 JSTR_NOEXCEPT
