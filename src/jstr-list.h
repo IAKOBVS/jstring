@@ -458,7 +458,7 @@ jstrl_findstrcasechr(const jstrlist_ty *R l,
 JSTR_NOEXCEPT
 {
 	jstrl_foreach (l, j)
-		if (jstr_strcasechr_len(j->data, c, j->size))
+		if (jstr_strcasechr(j->data, c))
 			return j;
 	return NULL;
 }

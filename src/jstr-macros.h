@@ -501,6 +501,10 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_ATTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
 #	endif
 #endif
+
+#undef JSTR_ATTR_INLINE
+#define JSTR_ATTR_INLINE
+
 #ifndef JSTR_ATTR_INLINE
 #	define JSTR_ATTR_INLINE PJSTR_ATTR_INLINE
 #endif

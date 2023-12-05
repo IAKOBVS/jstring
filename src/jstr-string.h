@@ -851,45 +851,27 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
-	for (; n-- && jstr_tolower(*p) != c; ++p) {}
+	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
 	return n ? (void *)p : NULL;
 }
 
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasechr_alpha(const char *s,
-                       int c,
-                       size_t n)
+pjstr_strcasechr(const char *s,
+                 int c)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCSPN_OPTIMIZED
-	if (n > JSTR_STRCASECHR_THRES * 2) {
-		c = jstr_tolower(c);
-		if (jstr_tolower(*s) == c)
-			return (char *)s;
-		const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0' };
-		s += strcspn(s, a);
-		return *s ? (char *)s : NULL;
-	}
-#endif
+	c = jstr_tolower(c);
+	if (jstr_tolower(*s) == c)
+		return (char *)s;
+	const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0' };
+	s += strcspn(s, a);
+	return *s ? (char *)s : NULL;
+#else
 	return jstr_strcasechr_loop(s, c);
-}
-
-/* Return value:
-   ptr to first C in S ignoring case;
-   NULL if not found. */
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strcasechr_len(const char *s,
-                    int c,
-                    size_t n)
-JSTR_NOEXCEPT
-{
-	return (jstr_isalpha(c)) ? pjstr_strcasechr_alpha(s, c, n) : (char *)memchr(s, c, n);
+#endif
 }
 
 /* Return value:
@@ -902,7 +884,7 @@ jstr_strcasechr(const char *s,
                 int c)
 JSTR_NOEXCEPT
 {
-	return jstr_isalpha(c) ? jstr_strcasechr_loop(s, c) : (char *)strchr(s, c);
+	return jstr_isalpha(c) ? pjstr_strcasechr(s, c) : (char *)strchr(s, c);
 }
 
 #define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len_bmh
@@ -966,7 +948,7 @@ BMH:
 				return (char *)hs - shift;
 		return NULL;
 	} else {
-		hs = pjstr_strcasechr_alpha(hs, *rare, hs_len);
+		hs = (char *)jstr_memcasechr(hs, *rare, hs_len);
 	}
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;

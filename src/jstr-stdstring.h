@@ -315,13 +315,15 @@ JSTR_NOEXCEPT
 #endif
 }
 
+#if 0
+
 JSTR_FUNC_PURE
 #if !JSTR_HAVE_ATTR_MAY_ALIAS
 JSTR_ATTR_INLINE
 #endif
 static char *
-pjstr_strcasechrnul(const char *s,
-                    int c)
+pjstr_strcasechrnul_word(const char *s,
+                         int c)
 JSTR_NOEXCEPT
 {
 	/* The following is based on musl's strchrnul().
@@ -345,10 +347,6 @@ JSTR_NOEXCEPT
 	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-	if (!jstr_isalpha(c))
-		return (char *)strchr(s, c);
-	if (jstr_unlikely(c == '\0'))
-		return (char *)s + strlen(s);
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define ALIGN      (sizeof(size_t))
@@ -357,7 +355,7 @@ JSTR_NOEXCEPT
 #	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
 	for (; (uintptr_t)s % ALIGN; ++s)
-		if (*s == '\0' || jstr_tolower(*s) == (char)c)
+		if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
 	const size_t l = ONES * jstr_tolower(c);
@@ -369,19 +367,78 @@ JSTR_NOEXCEPT
 #	undef HIGHS
 #	undef HASZERO
 #endif
-	for (; *s && jstr_tolower(*s) != (char)c; ++s) {}
+	for (; *s && jstr_tolower(*s) != c; ++s) {}
 	return (char *)s;
 }
 
 JSTR_ATTR_INLINE
+JSTR_FUNC_PURE
 static char *
-pjstr_strcasechr(const char *s,
-                 int c)
+pjstr_strcasechr_word(const char *s,
+                      int c)
 JSTR_NOEXCEPT
 {
-	s = pjstr_strcasechrnul(s, c);
+	s = pjstr_strcasechrnul_word(s, c);
 	return (s && *s) ? (char *)s : NULL;
 }
+
+JSTR_FUNC_PURE
+#if !JSTR_HAVE_ATTR_MAY_ALIAS
+JSTR_ATTR_INLINE
+#endif
+static void *
+pjstr_strcasechr_len(const void *s,
+                     int c,
+                     size_t n)
+JSTR_NOEXCEPT
+{
+	/* The following is based on musl's strchrnul().
+	 * Copyright © 2005-2020 Rich Felker, et al.
+	 *
+	 * Permission is hereby granted, free of charge, to any person obtaining
+	 * a copy of this software and associated documentation files (the
+	 * "Software"), to deal in the Software without restriction, including
+	 * without limitation the rights to use, copy, modify, merge, publish,
+	 * distribute, sublicense, and/or sell copies of the Software, and to
+	 * permit persons to whom the Software is furnished to do so, subject to
+	 * the following conditions:
+	 *
+	 * The above copyright notice and this permission notice shall be
+	 * included in all copies or substantial portions of the Software.
+	 *
+	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+	const unsigned char *p = (const unsigned char *)s;
+	c = jstr_tolower(c);
+#if JSTR_HAVE_ATTR_MAY_ALIAS
+#	define ALIGN      (sizeof(size_t))
+#	define ONES       ((size_t)-1 / UCHAR_MAX)
+#	define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
+#	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
+	typedef size_t JSTR_ATTR_MAY_ALIAS word;
+	for (; (uintptr_t)p % ALIGN; ++p)
+		if (jstr_unlikely(n-- == 0) || jstr_tolower(*p) == c)
+			return (char *)p;
+	const size_t k = ONES * (unsigned char)c;
+	const size_t l = ONES * jstr_tolower(c);
+	const word *w = w = (word *)p;
+	for (; n && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); --n, ++w) {}
+	p = (unsigned char *)w;
+#	undef ALIGN
+#	undef ONES
+#	undef HIGHS
+#	undef HASZERO
+#endif
+	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
+	return n ? (void *)p : NULL;
+}
+
+#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
