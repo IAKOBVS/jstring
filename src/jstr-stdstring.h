@@ -350,7 +350,9 @@ JSTR_NOEXCEPT
 
 /* strchr() before s + N. */
 JSTR_FUNC_PURE
+#if !JSTR_HAVE_ATTR_MAY_ALIAS
 JSTR_ATTR_INLINE
+#endif
 static char *
 jstr_strnchr(const char *s,
              int c,
