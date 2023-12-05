@@ -468,7 +468,7 @@ JSTR_NOEXCEPT
 	const void *start;
 	start = (const void *)hs;
 	hs = (void *)memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
-	if (hs == NULL || ne_len == 1)
+	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (void *)hs;
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	hs = (cu *)hs - shift;
@@ -551,7 +551,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	const char *const start = hs;
 	hs = jstr_strnchr(hs, *ne, n);
-	if (hs == NULL || ne[1] == '\0')
+	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	n -= JSTR_PTR_DIFF(hs, start);
 	if (jstr_unlikely(hs[1] == '\0')
@@ -698,7 +698,7 @@ JSTR_NOEXCEPT
 	cu *const rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
 	const size_t shift = JSTR_PTR_DIFF(rare, ne);
 	cu *p = (cu *)jstr_memrchr(hs, *rare, hs_len - (ne_len - shift) + 1);
-	if (p == NULL || ne_len == 1)
+	if (jstr_unlikely(p == NULL) || ne_len == 1)
 		return (void *)p;
 	hs_len = JSTR_PTR_DIFF(p, hs) - shift + ne_len + 1;
 	if (ne_len == 2)
@@ -991,7 +991,7 @@ BMH:
 	} else {
 		hs = pjstr_strcasechr_alpha(hs, *rare, hs_len);
 	}
-	if (hs == NULL || ne_len == 1)
+	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	hs -= shift;
@@ -1070,7 +1070,7 @@ JSTR_NOEXCEPT
 	if (!jstr_isalpha(*(ne + shift)))
 		return pjstr_strcasestr_rarebyte(hs, ne, shift);
 	hs = jstr_strcasechr_loop(hs + shift, *(ne + shift));
-	if (hs == NULL || ne[1] == '\0')
+	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	hs -= shift;
 	if (jstr_unlikely(hs[1] == '\0'))

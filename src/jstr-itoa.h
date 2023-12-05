@@ -341,7 +341,7 @@ PJSTR_DEFINE_ITOA_THOUSEP_SAFE(long long, lltoa_thousep, ulltoa_thousep)
 	T jstr_##func_name##_len(const char *R s,       \
 	                         size_t sz)             \
 	{                                               \
-		if (sz == 0)                            \
+		if (jstr_unlikely(sz == 0))             \
 			return 0;                       \
 		T n = (T)(*s++ - '0');                  \
 		while (--sz)                            \
@@ -361,7 +361,7 @@ PJSTR_DEFINE_ATOU(unsigned long long, atoull)
 	T jstr_##func_name##_len(const char *R s,       \
 	                         size_t sz)             \
 	{                                               \
-		if (sz == 0)                            \
+		if (jstr_unlikely(sz == 0))             \
 			return 0;                       \
 		T n;                                    \
 		if (*s == '-') {                        \

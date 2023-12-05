@@ -531,7 +531,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return s + sz;
 	char *const p = (char *)jstr_memmem(s, sz, find, find_len);
-	if (jstr_unlikely(p == NULL))
+	if (p == NULL)
 		return s + sz;
 	memmove(p, p + find_len, JSTR_PTR_DIFF(s + sz, p));
 	return s + sz - find_len;
@@ -725,7 +725,7 @@ JSTR_NOEXCEPT
 			PJSTR_INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
 		} else {
 			i.src_e = pjstr_rplcat_len_higher(s, sz, cap, JSTR_PTR_DIFF(i.src_e, *s), rplc, rplc_len, find_len);
-			if (jstr_unlikely(i.src_e == NULL))
+			if (jstr_nullchk(i.src_e))
 				return JSTR_RET_ERR;
 		}
 	}

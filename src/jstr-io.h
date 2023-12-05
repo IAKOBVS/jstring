@@ -271,7 +271,7 @@ jstrio_fwritefile_len(const char *R s,
 JSTR_NOEXCEPT
 {
 	FILE *R fp = fopen(fname, modes);
-	if (jstr_unlikely(fp == NULL))
+	if (jstr_nullchk(fp))
 		goto err;
 	if (jstr_unlikely(jstrio_fwritefilefp_len(s, sz, fp)))
 		goto err_close;
@@ -296,7 +296,7 @@ JSTR_NOEXCEPT
 {
 	enum { MINBUF = JSTR_PAGE_SIZE };
 	FILE *R fp = popen(cmd, "r");
-	if (jstr_unlikely(fp == NULL))
+	if (jstr_nullchk(fp))
 		goto err;
 	char buf[MINBUF];
 	size_t readsz;
@@ -433,7 +433,7 @@ JSTR_NOEXCEPT
 	if (*s != '~')
 		return s + sz;
 	const char *R home = getenv("HOME");
-	if (jstr_unlikely(home == NULL))
+	if (jstr_nullchk(home))
 		return NULL;
 	const size_t len = strlen(home);
 	jstr_strmove_len(s + len, s + 1, JSTR_PTR_DIFF(s + sz, s + 1));
@@ -456,7 +456,7 @@ JSTR_NOEXCEPT
 	if (**s != '~')
 		return JSTR_RET_SUCC;
 	const char *R home = getenv("HOME");
-	if (jstr_unlikely(home == NULL))
+	if (jstr_nullchk(home))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	const size_t len = strlen(home);
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + len)))
@@ -479,7 +479,7 @@ jstrio_expandtilde_len_unsafe_p(char *R s,
 JSTR_NOEXCEPT
 {
 	const char *R home = getenv("HOME");
-	if (jstr_unlikely(home == NULL))
+	if (jstr_nullchk(home))
 		return NULL;
 	const size_t len = strlen(home);
 	char *p = s;
@@ -504,7 +504,7 @@ jstrio_expandtilde(char *R *R s,
 JSTR_NOEXCEPT
 {
 	const char *R home = getenv("HOME");
-	if (jstr_unlikely(home == NULL))
+	if (jstr_nullchk(home))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	const size_t len = strlen(home);
 	const char *tmp;
@@ -805,7 +805,7 @@ pjstrio_ftw_len(struct pjstrio_ftw_data *a,
 JSTR_NOEXCEPT
 {
 	DIR *R const dp = OPENDIR(fd, a->dirpath);
-	if (jstr_unlikely(dp == NULL)) {
+	if (jstr_nullchk(dp)) {
 		if (jstr_likely(errno == EACCES)) {
 			a->ftw.dirpath = a->dirpath;
 			a->ftw.dirpath_len = dirpath_len;
@@ -1014,7 +1014,7 @@ JSTR_NOEXCEPT
 	if (jstrio_ftw_flags & JSTRIO_FTW_EXPTILDE) {
 		if (*dirpath == '~') {
 			const char *R home = getenv("HOME");
-			if (jstr_unlikely(home == NULL))
+			if (jstr_nullchk(home))
 				goto err;
 			const jstrio_path_size_ty homelen = JSTR_PTR_DIFF(jstr_stpcpy(fulpath, home), fulpath);
 			memcpy(fulpath + homelen, dirpath + 1, dirpath_len);
