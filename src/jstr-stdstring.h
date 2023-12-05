@@ -386,8 +386,7 @@ JSTR_NOEXCEPT
 #	define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 	for (; (uintptr_t)s & ALIGN; ++s) {
-		if (jstr_unlikely(*s == '\0')
-		    || jstr_unlikely(n-- == 0))
+		if (*s == '\0' || jstr_unlikely(n-- == 0))
 			return NULL;
 		if (*s == (char)c)
 			return (char *)s;
