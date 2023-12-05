@@ -40,9 +40,8 @@
 #endif
 
 /* Substring searcher function to be used by rplc*() and rm*() functions.
-   The searcher function's prototype must be:
-   void *fn(const char *hs, size_t hs_len, const char *ne, size_t ne_len).
-   */
+   The searcher function's prototype:
+   void *(const char *, size_t, const char *, size_t). */
 #ifndef JSTR_REPLACE_SEARCHER
 /* strstr_len() may call strstr() if it is deemed faster than memmem().
    HAYSTACK and NEEDLE must be nul-terminated. */
