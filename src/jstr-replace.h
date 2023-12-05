@@ -841,7 +841,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
 	enum { S = sizeof(word),
-	       S4 = 4 * S };
+	       S4 = (4 * S) };
 	if ((uintptr_t)dst % S == (uintptr_t)src % S) {
 		for (; (uintptr_t)dst % S; *dst++ = *src--, --src_len)
 			if (jstr_unlikely(src_len == 0))
