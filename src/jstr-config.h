@@ -76,7 +76,7 @@
    call free(). This may result in fewer allocations when strings are often added to
    and removed from the list. All elements are freed when jstrl_free() is called. */
 #ifndef JSTRL_LAZY_FREE
-#	define JSTRL_LAZY_FREE 0
+#	define JSTRL_LAZY_FREE 1
 #endif
 
 /* Minimum size of allocation of malloc(). */
