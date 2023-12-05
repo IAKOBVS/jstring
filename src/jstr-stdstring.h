@@ -261,9 +261,9 @@ jstr_strchrnul(const char *s,
                int c)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
+#if 0 && JSTR_HAVE_STRCHRNUL && !JSTR_TEST
 	return (char *)strchrnul(s, c);
-#elif JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_TEST
+#elif 0 && JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_TEST
 	/* Optimized strchr() + strlen() is still faster than a C strchrnul(). */
 	const char *const start = s;
 	s = strchr(s, c);
