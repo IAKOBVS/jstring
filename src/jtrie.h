@@ -82,7 +82,7 @@ JSTR_NOEXCEPT
 		return JTRIE_RET_SUCC;
 	const unsigned char *w = (unsigned char *)word;
 	jtrie_node_ty *curr = root;
-	for (int c; (c = *w); ++w) {
+	for (int c; (c = *w++); ) {
 		if (jtrie_child(curr, c) == NULL)
 			jtrie_child(curr, c) = jtrie_init();
 		curr = jtrie_child(curr, c);
@@ -110,7 +110,7 @@ JSTR_NOEXCEPT
 	jtrie_node_ty *curr = jtrie_child(root, *w);
 	if (jstr_unlikely(curr == NULL))
 		return;
-	for (int c; (c = *++w) && jtrie_child(curr, c);) {
+	for (int c; (c = *w++) && jtrie_child(curr, c);) {
 		if (remove_prefixes)
 			curr->EOW = 0;
 		curr = jtrie_child(curr, c);
@@ -154,7 +154,7 @@ JSTR_NOEXCEPT
 	const jtrie_node_ty *curr = jtrie_child(root, *w);
 	if (jstr_unlikely(curr == NULL))
 		return NULL;
-	for (int c; (c = *++w) && (curr = jtrie_child(curr, c));) {}
+	for (int c; (c = *w++) && (curr = jtrie_child(curr, c));) {}
 	return (jtrie_node_ty *)curr;
 }
 
