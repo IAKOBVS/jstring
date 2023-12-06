@@ -962,7 +962,7 @@ pjstr_strcasestr_rarebyte(const char *hs,
    Pointer to NE;
    NULL if not found. */
 JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST
+#if JSTR_USE_STANDARD_STRCASESTR
 JSTR_ATTR_INLINE
 #endif
 static char *
@@ -970,7 +970,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST
+#if JSTR_USE_STANDARD_STRCASESTR
 	return (char *)strcasestr(hs, ne);
 #else
 	if (jstr_unlikely(ne[0] == '\0'))
