@@ -1515,43 +1515,6 @@ JSTR_NOEXCEPT
 
 /* Check if S1 starts with S2.
    Return value:
-   NELEN if true;
-   0 if false. */
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static size_t
-jstr_startsnul_len(const char *hs,
-                   size_t hs_len,
-                   const char *ne,
-                   size_t ne_len)
-JSTR_NOEXCEPT
-{
-	return jstr_likely(hs_len >= ne_len) && !memcmp(hs, ne, ne_len) ? ne_len : 0;
-}
-
-/* Check if S1 starts with S2.
-   Return value:
-   NELEN if true;
-   0 if false. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static size_t
-jstr_startsnul(const char *hs,
-               const char *ne)
-JSTR_NOEXCEPT
-{
-	if (*hs == *ne) {
-		const size_t ne_len = strlen(ne);
-		if (!strncmp(hs, ne, ne_len))
-			return ne_len;
-	}
-	return 0;
-}
-
-/* Check if S1 starts with S2.
-   Return value:
    1 if true;
    0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
