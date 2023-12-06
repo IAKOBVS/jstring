@@ -937,8 +937,8 @@ JSTR_NOEXCEPT
 		return sz;
 	if (jstr_unlikely(accept[1] == '\0')) {
 		const char *p = s + sz - 1;
-		while ((p != s) && (*p == *accept))
-			--p;
+		const int c = *accept;
+		for (; sz-- && *p == c; --p) {}
 		return JSTR_PTR_DIFF(p, s);
 	}
 	const u *p = (u *)accept;
@@ -1025,7 +1025,8 @@ JSTR_NOEXCEPT
 		return sz;
 	if (jstr_unlikely(accept[1] == '\0')) {
 		const char *p = (char *)s;
-		for (; sz-- && (*p == *accept); ++p) {}
+		const int c = *accept;
+		for (; sz-- && *p == c; ++p) {}
 		return JSTR_PTR_DIFF(p, s);
 	}
 	const u *p = (u *)accept;
