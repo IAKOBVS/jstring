@@ -30,18 +30,19 @@ or
 Some headers may need to be explicitly included because they rely on POSIX.
 
 ## Examples:
+https://github.com/IAKOBVS/find-and-replace
 https://github.com/IAKOBVS/rarebyte
 
 ## Disclaimer:
 Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 to
 exclude them. jstr\_ty, jstrl\_ty, and jarr\_ty must be initialized with zeros.
 
-jstr\_tolower\(\) and jstr\_toupper\(\) will not handle EOF correctly. The tolower of
-EOF may not equal EOF.
-
 ```
 jstr_ty j = JSTR_INIT;
 ```
+
+jstr\_tolower\(\) and jstr\_toupper\(\) will not handle EOF correctly. The tolower of
+EOF may not equal EOF.
 
 ## Configuration:
 You can customize the library by defining certain macros in jstr-config.h before
