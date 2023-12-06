@@ -40,7 +40,7 @@ stpcpy(char *dst, const char *src)
 	/* Copy just a few bytes to make DEST aligned.  */
 	unsigned int i = ((-(uintptr_t)dst) % sizeof(jstr_word_ty));
 	char c;
-	for (; i != 0; i--, ++dst) {
+	for (; i-- != 0; ++dst) {
 		c = *src++;
 		*dst = c;
 		if (c == '\0')
