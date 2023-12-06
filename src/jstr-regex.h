@@ -179,7 +179,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_comp(const regex_t *R preg,
+jstrre_comp(regex_t *R preg,
             const char *R ptn,
             int cflags)
 JSTR_NOEXCEPT
