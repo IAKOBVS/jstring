@@ -143,7 +143,7 @@ typedef enum {
 JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
-jstrre_free(regex_t *R preg)
+jstrre_free(const regex_t *R preg)
 JSTR_NOEXCEPT
 {
 	regfree(preg);
@@ -179,7 +179,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_comp(regex_t *R preg,
+jstrre_comp(const regex_t *R preg,
             const char *R ptn,
             int cflags)
 JSTR_NOEXCEPT
@@ -283,7 +283,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static jstrre_ret_ty
-jstrre_rmn_from(regex_t *R preg,
+jstrre_rmn_from(const regex_t *R preg,
                 char *R *R s,
                 size_t *R sz,
                 size_t *R cap,
@@ -320,7 +320,7 @@ err:
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rmn(regex_t *R preg,
+jstrre_rmn(const regex_t *R preg,
            char *R *R s,
            size_t *R sz,
            size_t *R cap,
@@ -334,7 +334,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rm(regex_t *R preg,
+jstrre_rm(const regex_t *R preg,
           char *R *R s,
           size_t *R sz,
           size_t *R cap,
@@ -347,7 +347,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rm_from(regex_t *R preg,
+jstrre_rm_from(const regex_t *R preg,
                char *R *R s,
                size_t *R sz,
                size_t *R cap,
@@ -361,7 +361,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rmall(regex_t *R preg,
+jstrre_rmall(const regex_t *R preg,
              char *R *R s,
              size_t *R sz,
              size_t *R cap,
@@ -374,7 +374,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rmall_from(regex_t *R preg,
+jstrre_rmall_from(const regex_t *R preg,
                   char *R *R s,
                   size_t *R sz,
                   size_t *R cap,
@@ -449,7 +449,7 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 
 JSTR_FUNC
 static jstrre_ret_ty
-jstrre_rplcn_len_from(regex_t *R preg,
+jstrre_rplcn_len_from(const regex_t *R preg,
                       char *R *R s,
                       size_t *R sz,
                       size_t *R cap,
@@ -497,7 +497,7 @@ err:
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rplcn_len(regex_t *R preg,
+jstrre_rplcn_len(const regex_t *R preg,
                  char *R *R s,
                  size_t *R sz,
                  size_t *R cap,
@@ -513,7 +513,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rplcall_len_from(regex_t *R preg,
+jstrre_rplcall_len_from(const regex_t *R preg,
                         char *R *R s,
                         size_t *R sz,
                         size_t *R cap,
@@ -529,7 +529,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rplcall_len(regex_t *R preg,
+jstrre_rplcall_len(const regex_t *R preg,
                    char *R *R s,
                    size_t *R sz,
                    size_t *R cap,
@@ -544,7 +544,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstrre_ret_ty
-jstrre_rplc_len(regex_t *R preg,
+jstrre_rplc_len(const regex_t *R preg,
                 char *R *R s,
                 size_t *R sz,
                 size_t *R cap,
@@ -559,7 +559,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstrre_ret_ty
-jstrre_rplc_len_from(regex_t *R preg,
+jstrre_rplc_len_from(const regex_t *R preg,
                      char *R *R s,
                      size_t *R sz,
                      size_t *R cap,
@@ -647,7 +647,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static jstrre_ret_ty
-jstrre_rplcn_bref_len_from(regex_t *R preg,
+jstrre_rplcn_bref_len_from(const regex_t *R preg,
                            char *R *R s,
                            size_t *R sz,
                            size_t *R cap,
@@ -728,7 +728,7 @@ err:
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rplcall_bref_len(regex_t *R preg,
+jstrre_rplcall_bref_len(const regex_t *R preg,
                         char *R *R s,
                         size_t *R sz,
                         size_t *R cap,
@@ -744,7 +744,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rplcall_bref_len_from(regex_t *R preg,
+jstrre_rplcall_bref_len_from(const regex_t *R preg,
                              char *R *R s,
                              size_t *R sz,
                              size_t *R cap,
@@ -761,7 +761,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rplcn_bref_len(regex_t *R preg,
+jstrre_rplcn_bref_len(const regex_t *R preg,
                       char *R *R s,
                       size_t *R sz,
                       size_t *R cap,
@@ -778,7 +778,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rplc_bref_len_from(regex_t *R preg,
+jstrre_rplc_bref_len_from(const regex_t *R preg,
                           char *R *R s,
                           size_t *R sz,
                           size_t *R cap,
@@ -795,7 +795,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstrre_ret_ty
-jstrre_rplc_bref_len(regex_t *R preg,
+jstrre_rplc_bref_len(const regex_t *R preg,
                      char *R *R s,
                      size_t *R sz,
                      size_t *R cap,
