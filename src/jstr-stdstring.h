@@ -90,6 +90,32 @@ jstr_strcasecmpeq_len_loop(const void *s1,
 	return n;
 }
 
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static size_t
+jstr_strnlen(const char *s,
+             size_t maxlen)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNLEN
+	return strnlen(s, maxlen);
+#else
+	const char *const p = (char *)memchr(s, '\0', maxlen);
+	return p ? (size_t)(p - s) : maxlen;
+#endif
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static size_t
+jstr_strnlen_loop(const char *s,
+                  size_t n)
+{
+	const int l = s[0] + s[1] + s[2] + s[3];
+	return l <= 4 ? (size_t)l : jstr_strnlen(s, n);
+}
+
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
 JSTR_ATTR_INLINE
@@ -163,21 +189,6 @@ JSTR_NOEXCEPT
 {
 	const size_t sz = strlen(s);
 	return (char *)memset(s, 0, sz) + sz;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static size_t
-jstr_strnlen(const char *s,
-             size_t maxlen)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STRNLEN
-	return strnlen(s, maxlen);
-#else
-	const char *const p = (char *)memchr(s, '\0', maxlen);
-	return p ? (size_t)(p - s) : maxlen;
-#endif
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
