@@ -1354,7 +1354,7 @@ jstr_memrchrinv(const void *s,
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s + n - 1;
-	for (; n && *--p != (unsigned char)c; --n) {}
+	for (; n && *p != (unsigned char)c; --n, --p) {}
 	return n ? (char *)p : NULL;
 }
 
