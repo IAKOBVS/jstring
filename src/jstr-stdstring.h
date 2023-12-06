@@ -39,14 +39,134 @@ PJSTR_END_DECLS
 
 PJSTR_BEGIN_DECLS
 
-JSTR_FUNC_PURE
+/* Compare S1 with S2 case-insensitively.
+   Return value:
+   0 if strings match;
+   non-zero otherwise. */
+#if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
+#endif
+JSTR_FUNC_PURE
 static int
-jstr_strcmpeq_loop(const char *s1,
-                   const char *s2)
+jstr_strncasecmp(const char *s1,
+                 const char *s2,
+                 size_t n)
+JSTR_NOEXCEPT
 {
-	while ((*s1 == *s2++) && *s1++) {}
-	return *(s2 - 1);
+#if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
+	return strncasecmp(s1, s2, n);
+#else
+	if (jstr_unlikely(n == 0))
+		return 0;
+	int ret;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++ && n--) {}
+	return ret;
+#endif
+}
+
+/* Compare S1 with S2 case-insensitively.
+   Return value:
+   0 if strings match;
+   non-zero otherwise. */
+#if JSTR_HAVE_STRNCASECMP
+JSTR_ATTR_INLINE
+#endif
+JSTR_FUNC_PURE
+static int
+jstr_strncasecmpeq(const char *s1,
+                   const char *s2,
+                   size_t n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
+	return strncasecmp(s1, s2, n);
+#else
+	if (jstr_unlikely(n == 0))
+		return 0;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n) {}
+	return *p1 && n;
+#endif
+}
+
+/* Compare S1 with S2 case-insensitively.
+   N must be lower than the length of S1 or S2.
+   Return value:
+   0 if strings match;
+   non-zero otherwise. */
+#if JSTR_HAVE_STRNCASECMP
+JSTR_ATTR_INLINE
+#endif
+JSTR_FUNC_PURE
+static int
+jstr_strcasecmp_len(const char *s1,
+                    const char *s2,
+                    size_t n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
+	return strncasecmp(s1, s2, n);
+#else
+	if (jstr_unlikely(n == 0))
+		return 0;
+	int ret;
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	while (!(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++)) && n--) {}
+	return ret;
+#endif
+}
+
+/* Compare S1 with S2 case-insensitively.
+   N must be lower than the length of S1 or S2.
+   Return value:
+   0 if strings match;
+   non-zero otherwise. */
+#if JSTR_HAVE_STRNCASECMP
+JSTR_ATTR_INLINE
+#endif
+JSTR_FUNC_PURE
+static int
+jstr_strcasecmpeq_len(const char *s1,
+                      const char *s2,
+                      size_t n)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
+	return strncasecmp(s1, s2, n);
+#else
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	for (; n && jstr_tolower(*p1++) == jstr_tolower(*p2++); --n) {}
+	return n;
+#endif
+}
+
+/* Compare S1 with S2 case-insensitively.
+   Return value:
+   0 if strings match;
+   non-zero otherwise. */
+JSTR_FUNC_PURE
+#if JSTR_HAVE_STRCASECMP
+JSTR_ATTR_INLINE
+#endif
+static int
+jstr_strcasecmp(const char *s1,
+                const char *s2)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRCASECMP && !JSTR_TEST
+	return strcasecmp(s1, s2);
+#else
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	int ret;
+	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++) {}
+	return ret;
+#endif
 }
 
 JSTR_FUNC_PURE
@@ -59,6 +179,39 @@ jstr_strcasecmpeq_loop(const char *s1,
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;) {}
 	return *(p2 - 1);
+}
+
+/* Compare S1 with S2 case-insensitively.
+   Return value:
+   0 if strings match;
+   non-zero otherwise. */
+JSTR_FUNC_PURE
+#if JSTR_HAVE_STRCASECMP
+JSTR_ATTR_INLINE
+#endif
+static int
+jstr_strcasecmpeq(const char *s1,
+                  const char *s2)
+JSTR_NOEXCEPT
+{
+#if JSTR_HAVE_STRCASECMP && !JSTR_TEST
+	return strcasecmp(s1, s2);
+#else
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;) {}
+	return *(p2 - 1);
+#endif
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static int
+jstr_strcmpeq_loop(const char *s1,
+                   const char *s2)
+{
+	while ((*s1 == *s2++) && *s1++) {}
+	return *(s2 - 1);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
