@@ -143,7 +143,7 @@ typedef enum {
 JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
-jstrre_free(const regex_t *R preg)
+jstrre_free(regex_t *R preg)
 JSTR_NOEXCEPT
 {
 	regfree(preg);
