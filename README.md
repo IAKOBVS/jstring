@@ -30,7 +30,9 @@ or
 Some headers may need to be explicitly included because they rely on POSIX.
 
 ## Examples:
+
 https://github.com/IAKOBVS/find-and-replace
+
 https://github.com/IAKOBVS/rarebyte
 
 ## Disclaimer:
