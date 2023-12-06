@@ -38,7 +38,7 @@ stpcpy(char *dst, const char *src)
 #	define JSTR_WORD_MERGE(w0, sh_1, w1, sh_2) (((w0) << (sh_1)) | ((w1) >> (sh_2)))
 #endif
 	/* Copy just a few bytes to make DEST aligned.  */
-	unsigned int i = ((-(uintptr_t)dst) % sizeof(jstr_word_ty));
+	unsigned int i = (-(uintptr_t)dst) % sizeof(jstr_word_ty);
 	char c;
 	for (; i-- != 0; ++dst) {
 		c = *src++;
