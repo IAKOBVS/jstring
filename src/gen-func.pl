@@ -137,7 +137,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	} else {
 		if ($name =~ /_p(?:_|$)/ && $rettype ne 'void') {
 			$returns_end_ptr = 1;
-			$body            = "$VAR_JSTRING->$SIZE = ";
+			$body            = "$VAR_JSTRING->$SIZE = JSTR_PTR_DIFF(";
 			$rettype         = 'void';
 			$attr =~ s/$ATTR_DEFAULT(\W|$)/$ATTR_DEFAULT_VOID$1/o;
 		} elsif (grepped(\@func_arr, \($name . '_p'))) {
@@ -174,7 +174,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	next if (!$has_data);
 	$body =~ s/, $//;
 	$body .= ')';
-	$body .= " - $VAR_JSTRING->$DATA" if ($returns_end_ptr);
+	$body .= " - $VAR_JSTRING->$DATA)" if ($returns_end_ptr);
 	$body .= ";";
 	rm_nonnull(\$attr, \$ATTR_RET_NONNULL);
 	add_inline(\$attr);
