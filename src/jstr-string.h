@@ -1353,12 +1353,9 @@ jstr_memrchrinv(const void *s,
                 size_t n)
 JSTR_NOEXCEPT
 {
-	const unsigned char *end = (const unsigned char *)s + n - 1;
-	const unsigned char *const start = (const unsigned char *)s;
-	for (; end >= start; --end)
-		if (*end != (unsigned char)c)
-			return (void *)end;
-	return NULL;
+	const unsigned char *p = (const unsigned char *)s + n - 1;
+	for (; n && *--p != (unsigned char)c; --n) {}
+	return n ? (char *)p : NULL;
 }
 
 /* Return value:
