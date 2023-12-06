@@ -859,6 +859,7 @@ ret:
 	*dst = '\0';
 }
 
+/* DST must not overlap with SRC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
