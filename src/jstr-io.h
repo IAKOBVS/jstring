@@ -337,11 +337,11 @@ err:
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstrio_readfilefp_len(char *R *R s,
-                      size_t *R sz,
-                      size_t *R cap,
-                      FILE *fp,
-                      size_t file_size)
+jstrio_freadfilefp_len(char *R *R s,
+                       size_t *R sz,
+                       size_t *R cap,
+                       FILE *fp,
+                       size_t file_size)
 JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, file_size)))
@@ -358,17 +358,58 @@ err:
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstrio_readfilefp(char *R *R s,
-                  size_t *R sz,
-                  size_t *R cap,
-                  const char *R filename,
-                  FILE *fp,
-                  struct stat *st)
+jstrio_freadfilefp(char *R *R s,
+                   size_t *R sz,
+                   size_t *R cap,
+                   const char *R filename,
+                   FILE *fp,
+                   struct stat *st)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(filename, st)))
 		goto err;
-	return jstrio_readfilefp_len(s, sz, cap, fp, (size_t)st->st_size);
+	return jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size);
+err:
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
+}
+
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstrio_freadfile_len(char *R *R s,
+                     size_t *R sz,
+                     size_t *R cap,
+                     const char *R filename,
+                     const size_t file_size)
+JSTR_NOEXCEPT
+{
+	FILE *fp = fopen(filename, "w");
+	if (jstr_nullchk(fp))
+		goto err;
+	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)file_size)))
+		goto err_close;
+	if (jstr_unlikely(fclose(fp)))
+		goto err;
+	return JSTR_RET_SUCC;
+err_close:
+	fclose(fp);
+err:
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
+}
+
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstrio_freadfile(char *R *R s,
+                 size_t *R sz,
+                 size_t *R cap,
+                 const char *R filename,
+                 struct stat *st)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(stat(filename, st)))
+		goto err;
+	return jstrio_freadfile_len(s, sz, cap, filename, (size_t)st->st_size);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
