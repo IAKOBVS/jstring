@@ -29,7 +29,7 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 char *
-stpcpy(char *dst, const char *src)
+stpcpy(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
 {
 #endif
 #if JSTR_LITTLE_ENDIAN || JSTR_BYTE_ORDER == JSTR_LITTLE_ENDIAN
