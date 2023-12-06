@@ -257,6 +257,25 @@ simple_stpcpy(char *d,
 		}                                                                          \
 	} while (0)
 
+static char *
+jstr_strcasestr_len_test(const char *hs,
+                         const char *ne)
+{
+	return jstr_strcasestr_len(hs, strlen(hs), ne, strlen(ne));
+}
+
+static char *
+simple_revcpy_p(char *dst,
+                char *src)
+{
+	size_t src_len = strlen(src);
+	src += src_len - 1;
+	for (; src_len--; *dst++ = *src--) {}
+ret:
+	*dst = '\0';
+	return dst;
+}
+
 static char buf_r[4096];
 static char buf_e[4096];
 
@@ -272,11 +291,13 @@ main(int argc, char **argv)
 	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp);
 	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
+	T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem);
 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
+	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
+	T_CPY(jstr_revcpy_p, simple_stpcpy, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }

@@ -1699,6 +1699,625 @@ JSTR_NOEXCEPT
 	return cnt;
 }
 
+JSTR_FUNC_VOID
+#if !(JSTR_HAVE_ATTR_MAY_ALIAS && JSTR_ENDIAN_LITTLE)
+JSTR_ATTR_INLINE
+#endif
+static void
+jstr_revcpy_len(char *R dst,
+                const char *R src,
+                size_t src_len)
+JSTR_NOEXCEPT
+{
+	src += src_len - 1;
+#if JSTR_HAVE_ATTR_MAY_ALIAS && JSTR_ENDIAN_LITTLE
+	typedef size_t JSTR_ATTR_MAY_ALIAS word;
+	enum { S = sizeof(word),
+	       S4 = (4 * S) };
+	if ((uintptr_t)dst % S == (uintptr_t)src % S) {
+		for (; (uintptr_t)dst % S; *dst++ = *src--, --src_len)
+			if (jstr_unlikely(src_len == 0))
+				goto ret;
+		word *dw = (word *)dst;
+		const word *sw = (const word *)src;
+		for (; src_len >= S4; dw += 4, sw += 4, src_len -= 4) {
+			*dw = *sw;
+			*(dw + 1) = *(sw + 1);
+			*(dw + 2) = *(sw + 2);
+			*(dw + 3) = *(sw + 3);
+		}
+		for (; src_len >= S; *dw++ = *sw++, --src_len) {}
+		dst = (char *)dw;
+		src = (char *)sw;
+	}
+#endif
+	for (; src_len--; *dst++ = *src--) {}
+ret:
+	*dst = '\0';
+}
+
+/* DST must not overlap with SRC. */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static char *
+jstr_revcpy_p(char *R dst,
+              const char *R src)
+{
+	const size_t len = strlen(src);
+	jstr_revcpy_len(dst, src, len);
+	return dst + len;
+}
+
+/* Reverse S. */
+JSTR_FUNC_VOID
+static void
+jstr_rev_len(char *R s,
+             size_t sz)
+JSTR_NOEXCEPT
+{
+	int c;
+	char *e = s + sz - 1;
+	while (s < e) {
+		c = *s;
+		*s++ = *e;
+		*e-- = c;
+	}
+}
+
+/* Reverse S.
+   Return value:
+   ptr to '\0' in S. */
+JSTR_FUNC_RET_NONNULL
+JSTR_ATTR_INLINE
+static char *
+jstr_rev_p(char *R s)
+JSTR_NOEXCEPT
+{
+	const size_t _len = strlen(s);
+	jstr_rev_len(s, _len);
+	return s + _len;
+}
+
+/* Trim leading and trailing jstr_isspace() chars in S.
+   Return value:
+   ptr to '\0' in S; */
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_trimend_len_p(char *R s,
+                   size_t sz)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	char *end = jstr_skipspace_rev(s, s + sz - 1);
+	*++end = '\0';
+	return end;
+}
+
+/* Trim leading and trailing jstr_isspace() chars in S.
+   Return value:
+   ptr to '\0' in S; */
+JSTR_FUNC_RET_NONNULL
+JSTR_ATTR_INLINE
+static char *
+jstr_trimend_p(char *R s)
+JSTR_NOEXCEPT
+{
+	return jstr_trimend_len_p(s, strlen(s));
+}
+
+/* Trim leading and trailing jstr_isspace() chars in S.
+   Return value:
+   ptr to '\0' in S; */
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_trimstart_len_p(char *R s,
+                     size_t sz)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	const char *const start = jstr_skipspace(s);
+	if (s != start)
+		return jstr_stpmove_len(s, start, JSTR_PTR_DIFF(s + sz, start));
+	return s + sz;
+}
+
+/* Trim leading jstr_isspace() chars in S.
+   Return value:
+   ptr to '\0' in S; */
+JSTR_FUNC_RET_NONNULL
+JSTR_ATTR_INLINE
+static char *
+jstr_trimstart_p(char *R s)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	const char *const start = jstr_skipspace(s);
+	if (s != start)
+		return jstr_stpmove_len(s, start, strlen(start));
+	return s + strlen(start);
+}
+
+/* Trim leading jstr_isspace() chars in S. */
+JSTR_FUNC_VOID
+JSTR_ATTR_INLINE
+static void
+jstr_trimstart(char *R s)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return;
+	const char *const start = jstr_skipspace(s);
+	if (s != start)
+		jstr_strmove_len(s, start, strlen(start));
+}
+
+/* Trim leading and trailing jstr_isspace() chars in S.
+   Return value:
+   ptr to '\0' in S; */
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_trim_len_p(char *R s,
+                size_t sz)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	const char *const end = jstr_skipspace_rev(s, s + sz - 1) + 1;
+	const char *const start = jstr_skipspace(s);
+	if (start != s)
+		return jstr_stpmove_len(s, start, JSTR_PTR_DIFF(end, start));
+	return s + sz;
+}
+
+/* Trim leading and trailing jstr_isspace() chars in S.
+   Return value:
+   ptr to '\0' in S; */
+JSTR_FUNC_RET_NONNULL
+JSTR_ATTR_INLINE
+static char *
+jstr_trim_p(char *R s)
+JSTR_NOEXCEPT
+{
+	return jstr_trim_len_p(s, strlen(s));
+}
+
+/* Place SRC into DST[AT].
+   Assume that S have enough space for SRC.
+   Return value: */
+JSTR_FUNC_VOID
+JSTR_ATTR_INLINE
+static void
+jstr_place_len_unsafe(char *R s,
+                      size_t at,
+                      const char *R src,
+                      size_t src_len)
+JSTR_NOEXCEPT
+{
+	memcpy(s + at, src, src_len);
+}
+
+/* Place SRC into DST[AT].
+   Return JSTR_RET_ERR on malloc error;
+   otherwise JSTR_RET_SUCC. */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstr_place_len(char *R *R s,
+               size_t *R sz,
+               size_t *R cap,
+               size_t at,
+               const char *R src,
+               size_t src_len)
+JSTR_NOEXCEPT
+{
+	if (at + src_len > *sz) {
+		if (jstr_chk(jstr_reservealways(s, sz, cap, at + src_len)))
+			return JSTR_RET_ERR;
+		*sz = at + src_len;
+		*(*s + *sz) = '\0';
+	}
+	jstr_place_len_unsafe(*s, at, src, src_len);
+	return JSTR_RET_SUCC;
+}
+
+/* Place SRC after C in DST.
+   Return JSTR_RET_ERR on malloc error;
+   otherwise JSTR_RET_SUCC. */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstr_placeafterchr_len(char *R *R s,
+                       size_t *R sz,
+                       size_t *R cap,
+                       int c,
+                       const char *R src,
+                       size_t src_len)
+JSTR_NOEXCEPT
+{
+	const char *const p = (char *)memchr(*s, c, *sz);
+	if (p != NULL)
+		return jstr_place_len(s, sz, cap, JSTR_PTR_DIFF(p, *s + 1), src, src_len);
+	return JSTR_RET_SUCC;
+}
+
+/* Place SRC after end of NE in DST.
+   Return JSTR_RET_ERR on malloc error;
+   otherwise JSTR_RET_SUCC. */
+JSTR_FUNC
+static jstr_ret_ty
+jstr_placeafter_len(char *R *R s,
+                    size_t *R sz,
+                    size_t *R cap,
+                    const char *R find,
+                    size_t find_len,
+                    const char *R src,
+                    size_t src_len)
+JSTR_NOEXCEPT
+{
+	if (find_len == 1)
+		return jstr_placeafterchr_len(s, sz, cap, *find, src, src_len);
+	if (jstr_unlikely(find_len == 0))
+		return JSTR_RET_SUCC;
+	const char *const p = (char *)JSTR_REPLACE_SEARCHER(*s, *sz, find, find_len);
+	if (p != NULL)
+		return jstr_place_len(s, sz, cap, JSTR_PTR_DIFF(p, *s + find_len), src, src_len);
+	return JSTR_RET_SUCC;
+}
+
+/* Convert snake_case to camelCase.
+    Return ptr to '\0' in S.
+    Leading underscores are preserved. */
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_toCamelCaseP(char *R s)
+JSTR_NOEXCEPT
+{
+	for (; *s == '_'; ++s) {}
+	for (; *s && *s != '_'; ++s) {}
+	if (jstr_unlikely(*s == '\0'))
+		return s;
+	unsigned char *dst = (unsigned char *)s;
+	const unsigned char *src = (const unsigned char *)s;
+	goto start;
+	for (; *src; ++src)
+		if (jstr_likely(*src != '_'))
+			*dst++ = *src;
+		else {
+start:
+			*dst++ = jstr_toupper(*++src);
+			if (jstr_unlikely(*src == '\0'))
+				break;
+		}
+	*dst = '\0';
+	return (char *)dst;
+}
+
+/* Convert snake_case to camelCase.
+    Return ptr to '\0' in DST.
+    Leading underscores are preserved. */
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_toCamelCaseCpyP(char *R dst,
+                     const char *R src)
+JSTR_NOEXCEPT
+{
+	unsigned char *d = (unsigned char *)dst;
+	const unsigned char *s = (const unsigned char *)src;
+	for (; *s == '_'; ++s, *d++ = '_') {}
+	while (*s)
+		if (*s != '_') {
+			*d++ = *s++;
+		} else {
+			if (jstr_unlikely(*++s == '\0'))
+				break;
+			*d++ = jstr_toupper(*s++);
+		}
+	*d = '\0';
+	return (char *)d;
+}
+
+/* Convert camelCase to snake_case.
+    Return ptr to '\0' in S.
+    Leading underscores are preserved. */
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_to_snake_case_p(char *R s)
+JSTR_NOEXCEPT
+{
+	unsigned char *p = (unsigned char *)s;
+	for (; *p == '_'; ++p) {}
+	*p = jstr_tolower(*p);
+	for (; *p && !jstr_isupper(*p); ++p) {}
+	if (jstr_unlikely(*p == '\0'))
+		return (char *)p;
+	const unsigned char *end = p + strlen((char *)p);
+	goto start;
+	for (; *p; ++p)
+		if (jstr_isupper(*p)) {
+start:
+			jstr_strmove_len((char *)p + 1, (char *)p, JSTR_PTR_DIFF(end++, p));
+			*p++ = '_';
+			*p = jstr_tolower(*p);
+		}
+	*p = '\0';
+	return (char *)p;
+}
+
+/* Convert camelCase to snake_case.
+    Return ptr to '\0' in DST.
+    Leading underscores are preserved. */
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_to_snake_case_cpy_p(char *R dst,
+                         const char *R src)
+JSTR_NOEXCEPT
+{
+	unsigned char *d = (unsigned char *)dst;
+	const unsigned char *s = (const unsigned char *)src;
+	for (; *s == '_'; ++s, *d++ = '_') {}
+	*d = jstr_tolower(*s);
+	while (*s)
+		if (!jstr_isupper(*s)) {
+			*d++ = *s++;
+		} else {
+			*d = '_';
+			*(d + 1) = jstr_tolower(*s++);
+			d += 2;
+		}
+	*d = '\0';
+	return (char *)d;
+}
+
+/* Non-destructive strtok.
+    END must be NUL terminated.
+    Instead of nul-termination, use the save_ptr to know the length of the string. */
+JSTR_FUNC_PURE
+static char *
+jstr_strtok_ne_len(const char **R const save_ptr,
+                   const char *R const end,
+                   const char *R ne,
+                   size_t ne_len)
+JSTR_NOEXCEPT
+{
+	const char *const s = *save_ptr;
+	if (jstr_unlikely(*s == '\0'))
+		return NULL;
+	*save_ptr = jstr_strstrnul_len(s, JSTR_PTR_DIFF(end, s), ne, ne_len);
+	if (jstr_likely(**save_ptr != '\0'))
+		*save_ptr += ne_len;
+	return (char *)s;
+}
+
+/* Non-destructive strtok.
+    Instead of nul-termination, use the save_ptr to know the length of the string. */
+JSTR_FUNC_PURE
+static char *
+jstr_strtok_ne(const char **R const save_ptr,
+               const char *R ne)
+JSTR_NOEXCEPT
+{
+	const char *const s = *save_ptr;
+	if (jstr_unlikely(*s == '\0'))
+		return NULL;
+	*save_ptr = jstr_strstrnul(s, ne);
+	if (jstr_likely(**save_ptr != '\0'))
+		*save_ptr += strlen(ne);
+	return (char *)s;
+}
+
+/* Non-destructive strtok.
+    Instead of nul-termination, use the save_ptr to know the length of the string. */
+JSTR_FUNC_PURE
+static char *
+jstr_strtok(const char **R save_ptr,
+            const char *R delim)
+JSTR_NOEXCEPT
+{
+	const char *s = *save_ptr;
+	if (jstr_unlikely(*s == '\0'))
+		return NULL;
+	s += strspn(s, delim);
+	if (jstr_unlikely(*s == '\0')) {
+		*save_ptr = s;
+		return NULL;
+	}
+	*save_ptr = s + strcspn(s, delim);
+	return (char *)s;
+}
+
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static char *
+jstr_cpy_p(char *R dst,
+           const jstr_ty *R src)
+JSTR_NOEXCEPT
+{
+	return jstr_stpcpy_len(dst, src->data, src->size);
+}
+
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstr_dup(jstr_ty *R dst,
+         const jstr_ty *R src)
+JSTR_NOEXCEPT
+{
+	dst->data = (char *)malloc(src->capacity);
+	if (jstr_nullchk(dst->data))
+		return JSTR_RET_ERR;
+	dst->size = JSTR_PTR_DIFF(jstr_cpy_p(dst->data, dst), dst->data);
+	dst->size = src->size;
+	dst->capacity = src->capacity;
+	return JSTR_RET_SUCC;
+}
+
+/* Return ptr to '\0' in DST. */
+JSTR_FUNC
+static char *
+jstr_repeat_len_unsafe_p(char *s,
+                         size_t sz,
+                         size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(n < 2))
+		return s + sz;
+	--n;
+	if (jstr_likely(sz > 1))
+		while (n--)
+			s = (char *)jstr_mempmove(s + sz, s, sz);
+	else if (sz == 1)
+		s = (char *)memset(s, *s, n) + n;
+	*s = '\0';
+	return s;
+}
+
+/* Return value:
+    JSTR_RET_ERR on error;
+    1 otherwise. */
+JSTR_FUNC
+static jstr_ret_ty
+jstr_repeat_len(char *R *R s,
+                size_t *R sz,
+                size_t *R cap,
+                size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(n <= 1))
+		return JSTR_RET_SUCC;
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * n)))
+		return JSTR_RET_ERR;
+	*sz = JSTR_PTR_DIFF(jstr_repeat_len_unsafe_p(*s, *sz, n), *s);
+	return JSTR_RET_SUCC;
+}
+
+/* Return ptr to '\0' in DST. */
+JSTR_FUNC
+static char *
+jstr_repeatcpy_len_p(char *R dst,
+                     const char *R src,
+                     size_t src_len,
+                     size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_likely(src_len > 1))
+		while (n--)
+			dst = (char *)jstr_mempcpy(dst, src, src_len);
+	else if (src_len == 1)
+		dst = (char *)memset(dst, *src, n) + n;
+	*dst = '\0';
+	return dst;
+}
+
+/* Add thousand separator to NPTR.
+    Return value:
+    ptr to '\0' in NPTR.
+    For example: 1234 becomes 1,234. */
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_thousep_len_p(char *R nptr,
+                   size_t sz,
+                   char separator)
+JSTR_NOEXCEPT
+{
+	char *end = nptr + sz;
+	if (*nptr == '-') {
+		++nptr;
+		--sz;
+	} else if (jstr_unlikely(sz == 0))
+		return nptr;
+	if (sz < 4)
+		return end;
+	size_t dif = (sz - 1) / 3;
+	end += dif;
+	const char *const start = nptr;
+	nptr += (sz - 1);
+	int n;
+	for (n = 0; nptr >= start;) {
+		*(nptr + dif) = *nptr;
+		--nptr;
+		if (++n == 3) {
+			*(nptr + dif) = (char)separator;
+			if (jstr_unlikely(--dif == 0))
+				break;
+			n = 0;
+		}
+	}
+	*end = '\0';
+	return (char *)end;
+}
+
+/* Add thousand separator to NPTR.
+    Return value:
+    ptr to '\0' in NPTR.
+    For example: 1234 becomes 1,234. */
+JSTR_FUNC_RET_NONNULL
+JSTR_ATTR_INLINE
+static char *
+jstr_thousep_p(char *R nptr,
+               char separator)
+JSTR_NOEXCEPT
+{
+	return jstr_thousep_len_p(nptr, strlen(nptr), separator);
+}
+
+/* Copy SRC to DST, adding thousand separator.
+    Return value:
+    ptr to '\0' in DST. */
+JSTR_ATTR_ACCESS((__read_only__, 2, 3))
+JSTR_FUNC_RET_NONNULL
+static char *
+jstr_thousepcpy_len_p(char *R dst,
+                      const char *R src,
+                      size_t src_len,
+                      char separator)
+JSTR_NOEXCEPT
+{
+	if (*src == '-') {
+		*dst++ = '-';
+		++src;
+		--src_len;
+	}
+	if (src_len < 4) {
+		while ((*dst++ = *src++)) {}
+		return dst - 1;
+	}
+	int i = src_len % 3;
+	for (int j = i; j--; *dst++ = *src++) {}
+	if (i) {
+		*dst++ = separator;
+		i = 0;
+	}
+	for (; *src; ++i) {
+		if (i == 3) {
+			*dst = separator;
+			*(dst + 1) = *src++;
+			dst += 2;
+			i = 0;
+		} else {
+			*dst++ = *src++;
+		}
+	}
+	*dst = '\0';
+	return dst;
+}
+
+/* Copy SRC to DST, adding thousand separator.
+    Return value:
+    ptr to '\0' in DST. */
+JSTR_FUNC_RET_NONNULL
+JSTR_ATTR_INLINE
+static char *
+jstr_thousepcpy_p(char *R dst,
+                  const char *R src,
+                  char separator)
+JSTR_NOEXCEPT
+{
+	return jstr_thousepcpy_len_p(dst, src, strlen(src), separator);
+}
+
 PJSTR_END_DECLS
 
 #undef R
