@@ -367,7 +367,7 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
-	const size_t l = ONES * jstr_tolower(c);
+	const size_t l = ONES * (unsigned char)jstr_toupper(c);
 	const word *w = w = (word *)s;
 	for (; !HASZERO(*w) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); ++w) {}
 	s = (char *)w;
