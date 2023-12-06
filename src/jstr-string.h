@@ -418,11 +418,16 @@ JSTR_NOEXCEPT
 #define PJSTR_RAREBYTE_FUNC    pjstr_memmem_rarebyte
 #include "_jstr-rarebyte-memmem.h"
 
+#if JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST
+#	define JSTR_USE_STANDARD_MEMMEM 1
+#else
+#	define JSTR_USE_STANDARD_MEMMEM 0
+#endif
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-#if JSTR_HAVE_MEMMEM && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_MEMMEM_OPTIMIZED) && !JSTR_TEST
-#	define JSTR_USE_STANDARD_MEMMEM
+#if JSTR_USE_STANDARD_MEMMEM
 JSTR_ATTR_INLINE
 #endif
 static void *
@@ -825,6 +830,12 @@ JSTR_NOEXCEPT
 #define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
 #include "_jstr-rarebyte-memmem.h"
 
+#if (JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST)
+#	define JSTR_USE_STANDARD_STRCASESTR 1
+#else
+#	define JSTR_USE_STANDARD_STRCASESTR 0
+#endif
+
 /* Find NE in HS case-insensitively (ASCII).
    Return value:
    Pointer to NE;
@@ -832,7 +843,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-#if (JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST)
+#if !JSTR_USE_NONASCII && JSTR_USE_STANDARD_STRCASESTR
 JSTR_ATTR_INLINE
 #endif
 static char *
@@ -842,7 +853,7 @@ jstr_strcasestr_len(const char *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if !JSTR_USE_NONASCIIZ && JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST
+#if !JSTR_USE_NONASCIIZ && JSTR_USE_STANDARD_STRCASESTR
 	return (char *)strcasestr(hs, ne);
 #else
 	typedef const unsigned char cu;
@@ -951,7 +962,7 @@ pjstr_strcasestr_rarebyte(const char *hs,
    Pointer to NE;
    NULL if not found. */
 JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCASESTR && JSTR_USE_STANDARD_ALWAYS && !JSTR_TEST
+#if JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST
 JSTR_ATTR_INLINE
 #endif
 static char *
@@ -959,7 +970,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR && JSTR_USE_STANDARD_ALWAYS && !JSTR_TEST
+#if JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST
 	return (char *)strcasestr(hs, ne);
 #else
 	if (jstr_unlikely(ne[0] == '\0'))
