@@ -1769,8 +1769,8 @@ JSTR_NOEXCEPT
 }
 
 /* Convert snake_case to camelCase.
-    Return ptr to '\0' in S.
-    Leading underscores are preserved. */
+   Return ptr to '\0' in S.
+   Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_toCamelCaseP(char *R s)
@@ -1797,8 +1797,8 @@ start:
 }
 
 /* Convert snake_case to camelCase.
-    Return ptr to '\0' in DST.
-    Leading underscores are preserved. */
+   Return ptr to '\0' in DST.
+   Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_toCamelCaseCpyP(char *R dst,
@@ -1821,8 +1821,8 @@ JSTR_NOEXCEPT
 }
 
 /* Convert camelCase to snake_case.
-    Return ptr to '\0' in S.
-    Leading underscores are preserved. */
+   Return ptr to '\0' in S.
+   Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_to_snake_case_p(char *R s)
@@ -1848,8 +1848,8 @@ start:
 }
 
 /* Convert camelCase to snake_case.
-    Return ptr to '\0' in DST.
-    Leading underscores are preserved. */
+   Return ptr to '\0' in DST.
+   Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_to_snake_case_cpy_p(char *R dst,
@@ -1873,8 +1873,8 @@ JSTR_NOEXCEPT
 }
 
 /* Non-destructive strtok.
-    END must be NUL terminated.
-    Instead of nul-termination, use the save_ptr to know the length of the string. */
+   END must be NUL terminated.
+   Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_ne_len(const char **R const save_ptr,
@@ -1893,7 +1893,7 @@ JSTR_NOEXCEPT
 }
 
 /* Non-destructive strtok.
-    Instead of nul-termination, use the save_ptr to know the length of the string. */
+   Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_ne(const char **R const save_ptr,
@@ -1910,7 +1910,7 @@ JSTR_NOEXCEPT
 }
 
 /* Non-destructive strtok.
-    Instead of nul-termination, use the save_ptr to know the length of the string. */
+   Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok(const char **R save_ptr,
@@ -1976,8 +1976,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-    JSTR_RET_ERR on error;
-    1 otherwise. */
+   JSTR_RET_ERR on error;
+   JSTR_RET_SUCC otherwise. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_repeat_len(char *R *R s,
@@ -2013,9 +2013,9 @@ JSTR_NOEXCEPT
 }
 
 /* Add thousand separator to NPTR.
-    Return value:
-    ptr to '\0' in NPTR.
-    For example: 1234 becomes 1,234. */
+   Return value:
+   ptr to '\0' in NPTR.
+   For example: 1234 becomes 1,234. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_thousep_len_p(char *R nptr,
@@ -2051,9 +2051,9 @@ JSTR_NOEXCEPT
 }
 
 /* Add thousand separator to NPTR.
-    Return value:
-    ptr to '\0' in NPTR.
-    For example: 1234 becomes 1,234. */
+   Return value:
+   ptr to '\0' in NPTR.
+   For example: 1234 becomes 1,234. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -2065,8 +2065,8 @@ JSTR_NOEXCEPT
 }
 
 /* Copy SRC to DST, adding thousand separator.
-    Return value:
-    ptr to '\0' in DST. */
+   Return value:
+   ptr to '\0' in DST. */
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -2106,8 +2106,8 @@ JSTR_NOEXCEPT
 }
 
 /* Copy SRC to DST, adding thousand separator.
-    Return value:
-    ptr to '\0' in DST. */
+   Return value:
+   ptr to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *

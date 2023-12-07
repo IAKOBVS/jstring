@@ -163,7 +163,7 @@ JSTR_NOEXCEPT
 
 /* Insert SRC after C in DST.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
@@ -183,7 +183,7 @@ JSTR_NOEXCEPT
 
 /* Insert SRC after all C in DST.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insertafterallchr_len(char *R *R s,
@@ -207,7 +207,7 @@ JSTR_NOEXCEPT
 
 /* Insert SRC after end of NE in DST.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insertafter_len(char *R *R s,
@@ -231,7 +231,7 @@ JSTR_NOEXCEPT
 
 /* Insert SRC after all end of NE in DST.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insertafterall_len(char *R *R s,
@@ -632,7 +632,7 @@ JSTR_NOEXCEPT
 
 /* Replace last SEARCH in S with REPLACE.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -733,7 +733,7 @@ JSTR_NOEXCEPT
 
 /* Replace N SEARCH in S with REPLACE.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -752,7 +752,7 @@ JSTR_NOEXCEPT
 
 /* Replace all SEARCH in S with REPLACE.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -771,7 +771,7 @@ JSTR_NOEXCEPT
 
 /* Replace N SEARCH in S with REPLACE.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -789,7 +789,7 @@ JSTR_NOEXCEPT
 
 /* Replace first SEARCH in S with REPLACE.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_rplc_len(char *R *R s,
@@ -806,7 +806,7 @@ JSTR_NOEXCEPT
 
 /* Replace first SEARCH in S with REPLACE.
    Return JSTR_RET_ERR on malloc error;
-   otherwise, 1. */
+   otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_rplc_len_from(char *R *R s,
