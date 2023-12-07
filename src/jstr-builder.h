@@ -592,7 +592,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len)))
 		return JSTR_RET_ERR;
-	jstr_stpcpy_len(*s, src, src_len);
+	jstr_strcpy_len(*s, src, src_len);
 	*sz = src_len;
 	return JSTR_RET_SUCC;
 }
