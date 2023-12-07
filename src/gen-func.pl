@@ -36,12 +36,6 @@ sub add_inline {
 		&& index($$attr_str_ref, $ATTR_NOINLINE) == -1);
 }
 
-sub rm_nonnull {
-	my ($attr_str_ref, $ret_nonnull_attr_ref) = @_;
-	$$attr_str_ref =~ s/$$ret_nonnull_attr_ref//;
-	$$attr_str_ref =~ s/\n\n\n//;
-}
-
 sub grepped {
 	my ($arr_ref, $str_ref) = @_;
 	foreach (@$arr_ref) {
@@ -176,7 +170,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$body .= ')';
 	$body .= ", $VAR_JSTRING->$DATA)" if ($returns_end_ptr);
 	$body .= ";";
-	rm_nonnull(\$attr, \$ATTR_RET_NONNULL);
+	$attr =~ s/$ATTR_RET_NONNULL/$ATTR_DEFAULT_VOID/;
 	add_inline(\$attr);
 	$attr =~ s/\s*$ATTR_ACCESS\(\(.*?\)\)//og;
 	$file_str3 .= jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
