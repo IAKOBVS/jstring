@@ -157,6 +157,8 @@ main(int argc, char **argv)
 	TESTING(jstr_memrchr);
 	TESTING(jstr_strnchr);
 	TESTING(jstr_strchrnul);
+	TESTING(jstr_strcasechr);
+	TESTING(jstr_strcasechrnul);
 
 	for (i = 0; i < 128; i++)
 		a[i] = (i + 1) & 127;
