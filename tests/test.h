@@ -16,9 +16,6 @@
 
 #include "../src/jstr-macros.h"
 
-#define TOLOWER(c) (unsigned char)(((unsigned char)(c) >= 'A' && (unsigned char)(c) <= 'Z') ? ((unsigned char)(c) - 'A' + 'a') : (unsigned char)(c))
-#define TOUPPER(c) (unsigned char)(((unsigned char)(c) >= 'a' && (unsigned char)(c) <= 'z') ? ((unsigned char)(c) - 'a' + 'A') : (unsigned char)(c))
-
 #define SUCCESS()                                                   \
 	do {                                                        \
 		(void)argc;                                         \
@@ -36,7 +33,20 @@
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
 #define START() do{}while(0)
 
-PJSTR_BEGIN_DECLS
+JSTR_ATTR_MAYBE_UNUSED
+static int TOLOWER(int c)
+{
+	c = (char)c;
+	return (unsigned char)(c >= 'A' && c <= 'Z' ? c - 'A' + 'a' : c);
+}
+
+JSTR_ATTR_MAYBE_UNUSED
+static int TOUPPER(int c)
+{
+	c = (char)c;
+	return (unsigned char)(c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c);
+}
+
 JSTR_ATTR_MAYBE_UNUSED
 JSTR_ATTR_INLINE
 static char *clean_func(const char *func)
