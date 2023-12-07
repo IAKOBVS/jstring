@@ -25,7 +25,7 @@
 #include "_string-fza.h"
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
-clz (jstr_word_ty c)
+jstr_word_clz (jstr_word_ty c)
 {
   if (sizeof (jstr_word_ty) == sizeof (unsigned long))
     return __builtin_clzl (c);
@@ -34,7 +34,7 @@ clz (jstr_word_ty c)
 }
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
-ctz (jstr_word_ty c)
+jstr_word_ctz (jstr_word_ty c)
 {
   if (sizeof (jstr_word_ty) == sizeof (unsigned long))
     return __builtin_ctzl (c);
@@ -46,26 +46,26 @@ ctz (jstr_word_ty c)
    the (memory order) index of the first byte (in memory order) that is
    non-zero.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-index_first (jstr_word_ty c)
+jstr_word_index_first (jstr_word_ty c)
 {
   int r;
   if (JSTR_ENDIAN_LITTLE)
-    r = ctz (c);
+    r = jstr_word_ctz (c);
   else
-    r = clz (c);
+    r = jstr_word_clz (c);
   return r / CHAR_BIT;
 }
 
 /* Similarly, but return the (memory order) index of the last byte that is
    non-zero.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-index_last (jstr_word_ty c)
+jstr_word_index_last (jstr_word_ty c)
 {
   int r;
   if (JSTR_ENDIAN_LITTLE)
-    r = clz (c);
+    r = jstr_word_clz (c);
   else
-    r = ctz (c);
+    r = jstr_word_ctz (c);
   return sizeof (jstr_word_ty) - 1 - (r / CHAR_BIT);
 }
 

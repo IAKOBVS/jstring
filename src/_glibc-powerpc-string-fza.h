@@ -33,7 +33,7 @@ typedef jstr_word_ty find_t;
    equal between X1 and X2.  */
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-find_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_all (jstr_word_ty x1, jstr_word_ty x2)
 {
   return __builtin_cmpb (x1, x2);
 }
@@ -41,25 +41,25 @@ find_eq_all (jstr_word_ty x1, jstr_word_ty x2)
 /* This function returns 0xff for each byte that is zero in X.  */
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-find_zero_all (jstr_word_ty x)
+jstr_word_find_zero_all (jstr_word_ty x)
 {
-  return find_eq_all (x, 0);
+  return jstr_word_find_eq_all (x, 0);
 }
 
 /* Identify zero bytes in X1 or equality between X1 and X2.  */
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-find_zero_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_all (jstr_word_ty x1, jstr_word_ty x2)
 {
-  return find_zero_all (x1) | find_eq_all (x1, x2);
+  return jstr_word_find_zero_all (x1) | jstr_word_find_eq_all (x1, x2);
 }
 
 /* Identify zero bytes in X1 or inequality between X1 and X2.  */
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-find_zero_ne_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_ne_all (jstr_word_ty x1, jstr_word_ty x2)
 {
-  return find_zero_all (x1) | ~find_eq_all (x1, x2);
+  return jstr_word_find_zero_all (x1) | ~jstr_word_find_eq_all (x1, x2);
 }
 
 /* Define the "inexact" versions in terms of the exact versions.  */
