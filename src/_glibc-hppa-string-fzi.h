@@ -1,4 +1,4 @@
-/* string-fzi.h -- zero byte jstr_word_indexes.  HPPA version.
+/* string-fzi.h -- zero byte indexes.  HPPA version.
    Copyright (C) 2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,52 +16,50 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_FZI_H
-#define PJSTR_STRING_FZI_H 1
+#ifndef JSTR_STRING_FZI_H
+#define JSTR_STRING_FZI_H 1
 
 #include "jstr-macros.h"
 
-#include "_string-fza.h"
 #include "_string-optype.h"
+#include "_string-fza.h"
 
-_Static_assert(sizeof(jstr_word_ty) == 4, "64-bit not supported");
+JSTR_STATIC_ASSERT (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-jstr_word_index_first(jstr_word_ty c)
+index_first (jstr_word_ty c)
 {
-	unsigned int ret;
+  unsigned int ret;
 
-	/* Since we have no jstr_word_clz insn, direct tests of the bytes is faster
-	   than loading up the constants to do the masking.  */
-	asm("extrw,u,= %1,23,8,%%r0\n\t"
-	    "ldi 2,%0\n\t"
-	    "extrw,u,= %1,15,8,%%r0\n\t"
-	    "ldi 1,%0\n\t"
-	    "extrw,u,= %1,7,8,%%r0\n\t"
-	    "ldi 0,%0"
-	    : "=r"(ret)
-	    : "r"(c), "0"(3));
+  /* Since we have no clz insn, direct tests of the bytes is faster
+     than loading up the constants to do the masking.  */
+  asm ("extrw,u,= %1,23,8,%%r0\n\t"
+       "ldi 2,%0\n\t"
+       "extrw,u,= %1,15,8,%%r0\n\t"
+       "ldi 1,%0\n\t"
+       "extrw,u,= %1,7,8,%%r0\n\t"
+       "ldi 0,%0"
+       : "=r"(ret) : "r"(c), "0"(3));
 
-	return ret;
+  return ret;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-jstr_word_index_last(jstr_word_ty c)
+index_last (jstr_word_ty c)
 {
-	unsigned int ret;
+  unsigned int ret;
 
-	/* Since we have no jstr_word_ctz insn, direct tests of the bytes is faster
-	   than loading up the constants to do the masking.  */
-	asm("extrw,u,= %1,15,8,%%r0\n\t"
-	    "ldi 1,%0\n\t"
-	    "extrw,u,= %1,23,8,%%r0\n\t"
-	    "ldi 2,%0\n\t"
-	    "extrw,u,= %1,31,8,%%r0\n\t"
-	    "ldi 3,%0"
-	    : "=r"(ret)
-	    : "r"(c), "0"(0));
+  /* Since we have no ctz insn, direct tests of the bytes is faster
+     than loading up the constants to do the masking.  */
+  asm ("extrw,u,= %1,15,8,%%r0\n\t"
+       "ldi 1,%0\n\t"
+       "extrw,u,= %1,23,8,%%r0\n\t"
+       "ldi 2,%0\n\t"
+       "extrw,u,= %1,31,8,%%r0\n\t"
+       "ldi 3,%0"
+       : "=r"(ret) : "r"(c), "0"(0));
 
-	return ret;
+  return ret;
 }
 
 #endif /* _STRING_FZI_H */

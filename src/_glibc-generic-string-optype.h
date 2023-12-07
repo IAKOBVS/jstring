@@ -16,8 +16,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef PJSTR_STRING_OPTYPE_H
-#define PJSTR_STRING_OPTYPE_H 1
+#ifndef JSTR_STRING_OPTYPE_H
+#define JSTR_STRING_OPTYPE_H 1
 
 #include "jstr-macros.h"
 
