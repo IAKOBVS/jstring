@@ -631,7 +631,7 @@ JSTR_NOEXCEPT
 	if (jstr_tolower(*s) == c)
 		return (char *)s;
 	s = pjstr_strcasechrnul(s, c);
-	return jstr_tolower(*s) == (char)c ? (char *)s : NULL;
+	return jstr_tolower(*s) == c ? (char *)s : NULL;
 }
 
 /* Return value:
