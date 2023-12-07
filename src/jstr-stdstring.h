@@ -807,16 +807,6 @@ JSTR_NOEXCEPT
 	*(char *)jstr_mempmove(dst, src, n) = '\0';
 }
 
-JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
-static void
-jstr_strmove(char *dst,
-             const char *src)
-JSTR_NOEXCEPT
-{
-	*(char *)jstr_mempmove(dst, src, strlen(src)) = '\0';
-}
-
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
 JSTR_ATTR_INLINE
