@@ -174,7 +174,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	next if (!$has_data);
 	$body =~ s/, $//;
 	$body .= ')';
-	$body .= " - $VAR_JSTRING->$DATA)" if ($returns_end_ptr);
+	$body .= ", $VAR_JSTRING->$DATA)" if ($returns_end_ptr);
 	$body .= ";";
 	rm_nonnull(\$attr, \$ATTR_RET_NONNULL);
 	add_inline(\$attr);
