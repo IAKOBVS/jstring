@@ -383,7 +383,7 @@ jstrio_freadfile_len(char *R *R s,
                      const size_t file_size)
 JSTR_NOEXCEPT
 {
-	FILE *fp = fopen(filename, "w");
+	FILE *fp = fopen(filename, "r");
 	if (jstr_nullchk(fp))
 		goto err;
 	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)file_size)))
