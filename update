@@ -1,5 +1,6 @@
 #!/bin/sh
 
+cd "$(dirname "$0")" || exit
 if git status -uno | grep -qF 'up to date'; then
 	git pull && ./test && ./build
 fi
