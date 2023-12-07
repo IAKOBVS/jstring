@@ -826,11 +826,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	return pjstr_strcasestr_long(hs, ne);
 STRSTR:
-	if (!jstr_memcmpeq_loop(hs, ne, shift))
-		return (char *)hs;
-	if (jstr_unlikely(hs[shift] == '\0'))
-		return NULL;
-	return (char *)strstr(hs + 1, ne);
+	return (char *)strstr(hs, ne);
 #endif
 }
 
