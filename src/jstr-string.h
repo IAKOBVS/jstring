@@ -634,38 +634,6 @@ JSTR_NOEXCEPT
 	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
 }
 
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasechr(const char *s,
-                 int c)
-JSTR_NOEXCEPT
-{
-	c = jstr_tolower(c);
-	if (jstr_tolower(*s) == c)
-		return (char *)s;
-#if JSTR_HAVE_STRCSPN_OPTIMIZED
-	const char a[] = { (char)c, (char)(c - 'a' + 'A'), '\0' };
-	s += strcspn(s, a);
-	return *s ? (char *)s : NULL;
-#else
-	return pjstr_strcasechr_word(s, c);
-#endif
-}
-
-/* Return value:
-   ptr to first C in S ignoring case;
-   NULL if not found. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strcasechr(const char *s,
-                int c)
-JSTR_NOEXCEPT
-{
-	return jstr_isalpha(c) ? pjstr_strcasechr(s, c) : (char *)strchr(s, c);
-}
-
 #define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len_bmh
 #define PJSTR_MEMMEM_RETTYPE     char *
 #define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
