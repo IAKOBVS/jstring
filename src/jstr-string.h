@@ -393,6 +393,7 @@ jstr_strnstr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
+	enum { LONG_NE_THRES = 32 };
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
 	const char *const start = hs;
@@ -436,11 +437,10 @@ JSTR_NOEXCEPT
 #if JSTR_USE_STANDARD_MEMMEM
 	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 #else
-	enum { LONG_NE_THRES = 32 };
 	if (ne_len < LONG_NE_THRES)
-		return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
-	else
 		return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, (cu *)jstr_rarebytefind(ne));
+	else
+		return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
 }
 
@@ -682,20 +682,18 @@ JSTR_NOEXCEPT
 	return (char *)strcasestr(hs, ne);
 #else
 	typedef const unsigned char cu;
+	enum { LONG_NE_THRES = 32 };
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (ne_len > 4) {
-		if (ne_len < 32) {
-BMH:
-			return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
-		} else {
+		if (ne_len < LONG_NE_THRES) {
 			cu *const p = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
 			if (p)
 				return pjstr_strcasestr_len_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, p);
-			goto BMH;
 		}
+		return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 	}
 	cu *rare = (cu *)jstr_rarebytefindeither_len(ne, ne_len);
 	/* ne_len <= 4 */
