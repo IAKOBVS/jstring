@@ -91,9 +91,9 @@ static char *
 simple_strcasechrnul(const char *s,
                      int c)
 {
-	c = jstr_tolower(c);
+	c = TOLOWER(c);
 	for (;; ++s)
-		if (jstr_tolower(*s) == c || *s == '\0')
+		if (TOLOWER(*s) == c || *s == '\0')
 			break;
 	return (char *)s;
 }
@@ -103,7 +103,7 @@ simple_strcasechr(const char *s,
                   int c)
 {
 	s = simple_strcasechrnul(s, c);
-	return jstr_tolower(*s) == jstr_tolower(c) ? (char *)s : NULL;
+	return TOLOWER(*s) == TOLOWER(c) ? (char *)s : NULL;
 }
 
 #define T_ASSERT(func, expr, result, expected, str, c)                             \
