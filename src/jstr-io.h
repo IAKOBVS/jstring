@@ -137,7 +137,7 @@ pjstrio_isbinarysignature(const char *R buf,
 check_utf:;
 #if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
 		static unsigned char utf[] = { 0xEF, 0xBB }; /* 0xBF */
-		JSTR_STATIC_ASSERT(sizeof(utf) == UTFSZ, "");
+		JSTR_STATIC_ASSERT(sizeof(utf) == UTFSZ + 1, "");
 		if (!memcmp(p, utf, 2) && p[2] == 0xBF)
 			return 1;
 #else
