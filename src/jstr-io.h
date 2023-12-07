@@ -228,7 +228,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
 		goto err;
 	if (s[sz ? sz - 1 : 0] != '\n'
-	    && write(fd, "\n", sz) != 1)
+	    && write(fd, "\n", 1) != 1)
 		goto err;
 	return JSTR_RET_SUCC;
 err:
