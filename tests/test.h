@@ -16,8 +16,8 @@
 
 #include "../src/jstr-macros.h"
 
-#define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
-#define TOUPPER(c) (unsigned char)(((c) >= 'a' && (c) <= 'z') ? ((c) - 'a' + 'A') : (c))
+#define TOLOWER(c) (unsigned char)(((unsigned char)(c) >= 'A' && (unsigned char)(c) <= 'Z') ? ((unsigned char)(c) - 'A' + 'a') : (unsigned char)(c))
+#define TOUPPER(c) (unsigned char)(((unsigned char)(c) >= 'a' && (unsigned char)(c) <= 'z') ? ((unsigned char)(c) - 'a' + 'A') : (unsigned char)(c))
 
 #define SUCCESS()                                                   \
 	do {                                                        \
