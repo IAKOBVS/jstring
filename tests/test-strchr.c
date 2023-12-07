@@ -91,10 +91,10 @@ static char *
 simple_strcasechrnul(const char *s,
                      int c)
 {
-	if (jstr_unlikely(c == '\0'))
-		return (char *)s + strlen(s);
 	c = jstr_tolower(c);
-	for (; jstr_tolower(*s) == c || *s == '\0'; ++s) {}
+	for (;; ++s)
+		if (jstr_tolower(*s) == c || *s == '\0')
+			break;
 	return (char *)s;
 }
 
@@ -102,12 +102,8 @@ static char *
 simple_strcasechr(const char *s,
                   int c)
 {
-	if (jstr_unlikely(*s == '\0'))
-		return NULL;
-	if (jstr_unlikely(c == '\0'))
-		return (char *)s + strlen(s);
 	s = simple_strcasechrnul(s, c);
-	return *s ? (char *)s : NULL;
+	return *s == (char)c ? (char *)s : NULL;
 }
 
 #define T_ASSERT(func, expr, result, expected, str, c)                             \
