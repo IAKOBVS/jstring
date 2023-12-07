@@ -27,7 +27,7 @@
 _Static_assert(sizeof(jstr_word_ty) == 4, "64-bit not supported");
 
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
-static JSTR_ATTR_INLINE int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
 jstr_word_has_zero(jstr_word_ty x)
 {
 	/* It's more useful to expose a control transfer to the compiler
@@ -44,7 +44,7 @@ nbz:
 }
 
 /* Likewise, but for byte equality between X1 and X2.  */
-static JSTR_ATTR_INLINE int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
 jstr_word_has_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	asm goto("uxor,sbz %0,%1,%%r0\n\t"
@@ -59,7 +59,7 @@ nbz:
 }
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
-static JSTR_ATTR_INLINE int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
 jstr_word_has_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	asm goto("uxor,sbz %%r0,%0,%%r0\n\t"

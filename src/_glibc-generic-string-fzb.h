@@ -24,7 +24,7 @@
 #include "_string-fza.h"
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 
-static JSTR_ATTR_INLINE int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
 jstr_word_has_zero(jstr_word_ty x)
 {
 	return jstr_word_find_zero_low(x) != 0;
@@ -32,7 +32,7 @@ jstr_word_has_zero(jstr_word_ty x)
 
 /* Likewise, but for byte equality between X1 and X2.  */
 
-static JSTR_ATTR_INLINE int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
 jstr_word_has_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	return jstr_word_find_eq_low(x1, x2) != 0;
@@ -40,7 +40,7 @@ jstr_word_has_eq(jstr_word_ty x1, jstr_word_ty x2)
 
 /* Likewise, but for zeros in X1 and equal bytes between X1 and X2.  */
 
-static JSTR_ATTR_INLINE int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
 jstr_word_has_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	return jstr_word_find_zero_eq_low(x1, x2);

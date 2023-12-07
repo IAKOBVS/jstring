@@ -27,7 +27,7 @@ replaceall(\$file_str, \'(?:find_t|op_t)',                                      
 replaceall(\$file_str, \'(?:_Bool|bool)',                                            \'int');
 replaceall(\$file_str, \'OP_T_THRES',                                                \'JSTR_WORD_THRES');
 replaceall(\$file_str, \'__attribute__\s*\(\(\s*(?:__may_alias__|may_alias)\s*\)\)', \'JSTR_ATTR_MAY_ALIAS');
-replaceall(\$file_str, \'__always_inline',                                           \'JSTR_ATTR_INLINE');
+replaceall(\$file_str, \'__always_inline',                                           \'JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE');
 $file_str =~ s/(^|\W)((?:repeat_bytes|extractbyte|shift|find|index|has|clz|ctz)\w*)/$1jstr_word_$2/g;
 $file_str =~ s/\n[ \t]*typedef jstr_word_ty find_t;\s*\n/\n/g;
 $file_str =~ s/#[ \t]*(ifndef|define)[ \t]*_{,1}([^P][^J][^S][^T][^R]\w*_H)/#$1 JSTR_$2/g;

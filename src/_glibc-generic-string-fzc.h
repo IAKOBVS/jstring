@@ -25,7 +25,7 @@
 #include "_string-fzi.h"
 /* Given a word X that is known to contain a zero byte, return the jstr_word_index of
    the first such within the word in memory order.  */
-static JSTR_ATTR_INLINE unsigned int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first_zero(jstr_word_ty x)
 {
 	if (JSTR_ENDIAN_LITTLE)
@@ -36,7 +36,7 @@ jstr_word_index_first_zero(jstr_word_ty x)
 }
 
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
-static JSTR_ATTR_INLINE unsigned int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	if (JSTR_ENDIAN_LITTLE)
@@ -48,7 +48,7 @@ jstr_word_index_first_eq(jstr_word_ty x1, jstr_word_ty x2)
 
 /* Similarly, but perform the search for zero within X1 or equality between
    X1 and X2.  */
-static JSTR_ATTR_INLINE unsigned int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	if (JSTR_ENDIAN_LITTLE)
@@ -60,14 +60,14 @@ jstr_word_index_first_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 
 /* Similarly, but perform the search for zero within X1 or inequality between
    X1 and X2.  */
-static JSTR_ATTR_INLINE unsigned int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first_zero_ne(jstr_word_ty x1, jstr_word_ty x2)
 {
 	return jstr_word_index_first(jstr_word_find_zero_ne_all(x1, x2));
 }
 
 /* Similarly, but search for the last zero within X.  */
-static JSTR_ATTR_INLINE unsigned int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_last_zero(jstr_word_ty x)
 {
 	if (JSTR_ENDIAN_LITTLE)
@@ -77,7 +77,7 @@ jstr_word_index_last_zero(jstr_word_ty x)
 	return jstr_word_index_last(x);
 }
 
-static JSTR_ATTR_INLINE unsigned int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_last_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
 	return jstr_word_index_last_zero(x1 ^ x2);

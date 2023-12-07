@@ -23,7 +23,7 @@
 #include "jstr-macros.h"
 #include <limits.h>
 
-static JSTR_ATTR_INLINE int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
 jstr_word_clz(jstr_word_ty c)
 {
 	if (sizeof(jstr_word_ty) == sizeof(unsigned long))
@@ -32,7 +32,7 @@ jstr_word_clz(jstr_word_ty c)
 		return __builtin_clzll(c);
 }
 
-static JSTR_ATTR_INLINE int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
 jstr_word_ctz(jstr_word_ty c)
 {
 	if (sizeof(jstr_word_ty) == sizeof(unsigned long))
@@ -44,7 +44,7 @@ jstr_word_ctz(jstr_word_ty c)
 /* A subroutine for the jstr_word_index_zero functions.  Given a test word C, return
    the (memory order) jstr_word_index of the first byte (in memory order) that is
    non-zero.  */
-static JSTR_ATTR_INLINE unsigned int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first(jstr_word_ty c)
 {
 	int r;
@@ -57,7 +57,7 @@ jstr_word_index_first(jstr_word_ty c)
 
 /* Similarly, but return the (memory order) jstr_word_index of the last byte that is
    non-zero.  */
-static JSTR_ATTR_INLINE unsigned int
+static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_last(jstr_word_ty c)
 {
 	int r;
