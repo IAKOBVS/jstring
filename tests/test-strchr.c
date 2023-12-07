@@ -103,7 +103,7 @@ simple_strcasechr(const char *s,
                   int c)
 {
 	s = simple_strcasechrnul(s, c);
-	return *s == (char)c ? (char *)s : NULL;
+	return jstr_tolower(*s) == jstr_tolower(c) ? (char *)s : NULL;
 }
 
 #define T_ASSERT(func, expr, result, expected, str, c)                             \

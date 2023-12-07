@@ -574,6 +574,8 @@ JSTR_NOEXCEPT
 	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+	if (jstr_unlikely(c == '\0'))
+		return (char *)s + jstr_strnlen((char *)s, n);
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -629,7 +631,7 @@ JSTR_NOEXCEPT
 	if (jstr_tolower(*s) == c)
 		return (char *)s;
 	s = pjstr_strcasechrnul(s, c);
-	return *s == (char)c ? (char *)s : NULL;
+	return jstr_tolower(*s) == (char)c ? (char *)s : NULL;
 }
 
 /* Return value:
@@ -659,7 +661,9 @@ JSTR_NOEXCEPT
 {
 	if (jstr_isalpha(c))
 		return pjstr_strcasechrnul(s, c);
-	return jstr_strchrnul(s, c);
+	if (jstr_likely(c))
+		return jstr_strchrnul(s, c);
+	return (char *)s + strlen(s);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
