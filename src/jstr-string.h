@@ -479,7 +479,7 @@ JSTR_NOEXCEPT
 	const size_ty nw = (size_ty)ne[1] << SHIFT | ne[0];
 	size_ty hw = (size_ty)hs[1] << SHIFT | hs[0];
 	for (l -= 2; l-- && hw != nw; hw = hw << SHIFT | *--hs) {}
-	return (hw == nw) ? (void *)(hs) : NULL;
+	return (hw == nw) ? (void *)hs : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -495,7 +495,7 @@ JSTR_NOEXCEPT
 	const uint32_t nw = (uint32_t)ne[2] << 24 | ne[1] << 16 | ne[0] << 8;
 	uint32_t hw = (uint32_t)hs[2] << 24 | hs[1] << 16 | hs[0] << 8;
 	for (l -= 3; l-- && hw != nw; hw = (hw | *--hs) << 8) {}
-	return (hw == nw) ? (void *)(hs) : NULL;
+	return (hw == nw) ? (void *)hs : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -511,7 +511,7 @@ JSTR_NOEXCEPT
 	const uint32_t nw = (uint32_t)ne[3] << 24 | ne[2] << 16 | ne[1] << 8 | ne[0];
 	uint32_t hw = (uint32_t)hs[3] << 24 | hs[2] << 16 | hs[1] << 8 | hs[0];
 	for (l -= 4; l-- && hw != nw; hw = hw << 8 | *--hs) {}
-	return (hw == nw) ? (void *)(hs) : NULL;
+	return (hw == nw) ? (void *)hs : NULL;
 }
 
 #define PJSTR_RAREBYTE_RETTYPE char *
