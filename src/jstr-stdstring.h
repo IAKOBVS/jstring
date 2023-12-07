@@ -269,7 +269,7 @@ jstr_strnlen_loop(const char *s,
 	return l <= 4 ? (size_t)l : jstr_strnlen(s, n);
 }
 
-JSTR_ATTR_ACCESS((__write_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static void *
@@ -280,7 +280,7 @@ jstr_mempset(void *s,
 	return (char *)memset(s, c, n) + n;
 }
 
-JSTR_ATTR_ACCESS((__write_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -291,7 +291,7 @@ jstr_stpset_len(char *s,
 	return (char *)memset(s, c, n) + n;
 }
 
-JSTR_ATTR_ACCESS((__write_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *
@@ -302,7 +302,7 @@ JSTR_NOEXCEPT
 	return jstr_stpset_len(s, c, strlen(s));
 }
 
-JSTR_ATTR_ACCESS((__write_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
