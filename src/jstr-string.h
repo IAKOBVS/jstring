@@ -1290,24 +1290,6 @@ JSTR_NOEXCEPT
    Return value:
    NELEN if true;
    0 if false. */
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static int
-jstr_startscasenul_len(const char *hs,
-                       size_t hs_len,
-                       const char *ne,
-                       size_t ne_len)
-JSTR_NOEXCEPT
-{
-	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmpeq_len(hs, ne, ne_len) : ne_len;
-}
-
-/* Check if S1 starts with S2 case-insensitively.
-   Return value:
-   NELEN if true;
-   0 if false. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
