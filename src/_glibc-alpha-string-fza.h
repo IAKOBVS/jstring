@@ -28,7 +28,6 @@
    However, if we narrow jstr_word_ty to either 'int' or 'uint8_t', we get
    unnecessary truncation instructions from the 'unsigned long' type
    returned by __builtin_alpha_cmpbge.  */
-typedef jstr_word_ty jstr_word_find_t;
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
 jstr_word_find_zero_all(jstr_word_ty x)
@@ -58,5 +57,8 @@ jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 #define jstr_word_find_zero_low    jstr_word_find_zero_all
 #define jstr_word_find_eq_low      jstr_word_find_eq_all
 #define jstr_word_find_zero_eq_low jstr_word_find_zero_eq_all
+
+#endif /* _STRING_FZA_H */
+ero_eq_all
 
 #endif /* _STRING_FZA_H */

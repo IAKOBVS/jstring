@@ -25,7 +25,6 @@
 #include "_string-optype.h"
 
 /* The function return a byte mask.  */
-typedef jstr_word_ty jstr_word_find_t;
 
 /* This function returns non-zero if any byte in X is zero.
    More specifically, at least one bit set within the least significant
@@ -95,6 +94,10 @@ jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 	jstr_word_ty nz1 = ((x1 & m) + m) | x1;
 	jstr_word_ty ne2 = ((eq & m) + m) | eq;
 	return (ne2 | ~nz1) & ~m;
+}
+
+#endif /* _STRING_FZA_H */
+1) & ~m;
 }
 
 #endif /* _STRING_FZA_H */

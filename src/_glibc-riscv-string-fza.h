@@ -27,7 +27,6 @@
 #	include "_string-optype.h"
 
 /* The functions return a byte mask.  */
-typedef jstr_word_ty jstr_word_find_t;
 
 /* This function returns 0xff for each byte that is zero in X.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
@@ -76,5 +75,8 @@ jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 #else
 #	include "_glibc_generic-string-fza.h"
 #endif
+
+#endif /* _RISCV_STRING_FZA_H  */
+dif
 
 #endif /* _RISCV_STRING_FZA_H  */

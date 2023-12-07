@@ -27,7 +27,6 @@
 #	include "_string-optype.h"
 
 /* The functions return a byte mask.  */
-typedef jstr_word_ty jstr_word_find_t;
 
 /* This function returns 0xff for each byte that is
    equal between X1 and X2.  */
@@ -69,5 +68,8 @@ jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 #else
 #	include "_glibc_generic-string-fza.h"
 #endif /* _ARCH_PWR6  */
+
+#endif /* _POWERPC_STRING_FZA_H  */
+/
 
 #endif /* _POWERPC_STRING_FZA_H  */
