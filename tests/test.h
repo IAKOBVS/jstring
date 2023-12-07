@@ -16,6 +16,9 @@
 
 #include "../src/jstr-macros.h"
 
+#define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
+#define TOUPPER(c) (unsigned char)(((c) >= 'a' && (c) <= 'z') ? ((c) - 'a' + 'A') : (c))
+
 #define SUCCESS()                                                   \
 	do {                                                        \
 		(void)argc;                                         \
@@ -36,7 +39,7 @@
 PJSTR_BEGIN_DECLS
 JSTR_ATTR_MAYBE_UNUSED
 JSTR_ATTR_INLINE
-char *clean_func(const char *func)
+static char *clean_func(const char *func)
 {
 	for (; !isalpha(*func); ++func);
 	return (char *)func;

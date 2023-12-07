@@ -82,10 +82,15 @@ simple_strchrnul(const char *s,
 #if JSTR_HAVE_STRCHRNUL && !JSTR_USE_SIMPLE
 	return strchrnul(s, c);
 #else
-	for (; *s && *s != (char)c; ++s)
-		;
-	return (char *)s;
+	const char *const p = strchr(s, c);
+	return (char *)(p ? p : s + strlen(s));
 #endif
+}
+
+static char *
+simple_strcasechrnul(const char *s,
+                     int c)
+{
 }
 
 #define T_ASSERT(func, expr, result, expected, str, c)                             \

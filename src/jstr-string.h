@@ -309,15 +309,22 @@ JSTR_NOEXCEPT
 		return (void *)hs;
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	hs = (cu *)hs - shift;
-	if (*(cu *)hs == *(cu *)ne
-	    && !memcmp(hs, ne, ne_len))
-		return (char *)hs;
 	if (ne_len == 2)
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
 		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
+#	if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
+	/* Compare first four bytes before calling memcmp(). */
+	if (JSTR_BYTE_CMPEQU64(hs, ne) && !memcmp(hs, ne, ne_len))
+		return (char *)hs;
+#	else
+	if (*(cu *)hs == *(cu *)ne && !memcmp(hs, ne, ne_len))
+		return (char *)hs;
+#	endif
+	if (jstr_unlikely(hs_len == ne_len))
+		return NULL;
 	if (ne_len < LONG_NE_THRES)
 		return pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
 MEMMEM:
@@ -627,7 +634,7 @@ JSTR_NOEXCEPT
 	const size_t hs_len = jstr_strnlen(hs + 4, ne_len | 512) + 4;
 	if (hs_len < ne_len)
 		return NULL;
-	if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
+	if (jstr_tolower(*hs) == jstr_tolower(*ne) && !jstr_strcasecmpeq_len(hs, ne, ne_len))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
@@ -725,7 +732,7 @@ BMH:
 		return pjstr_strcasestr4((cu *)hs, (cu *)ne);
 	goto STRSTR;
 STRSTR:
-	if (!memcmp(hs, ne, ne_len))
+	if (!jstr_memcmpeq_loop(hs, ne, ne_len))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
