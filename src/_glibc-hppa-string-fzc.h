@@ -23,7 +23,7 @@
 
 #include "_string-optype.h"
 
-JSTR_STATIC_ASSERT (sizeof (jstr_word_ty) == 4, "64-bit not supported");
+_Static_assert (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 
 /* Given a word X that is known to contain a zero byte, return the
    index of the first such within the long in memory order.  */
@@ -124,3 +124,4 @@ jstr_word_index_last_eq (jstr_word_ty x1, jstr_word_ty x2)
 }
 
 #endif /* _STRING_FZC_H */
+ */

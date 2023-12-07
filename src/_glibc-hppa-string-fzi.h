@@ -24,7 +24,7 @@
 #include "_string-optype.h"
 #include "_string-fza.h"
 
-JSTR_STATIC_ASSERT (sizeof (jstr_word_ty) == 4, "64-bit not supported");
+_Static_assert (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first (jstr_word_ty c)
@@ -63,3 +63,4 @@ jstr_word_index_last (jstr_word_ty c)
 }
 
 #endif /* _STRING_FZI_H */
+ */

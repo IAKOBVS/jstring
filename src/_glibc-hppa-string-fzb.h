@@ -24,7 +24,7 @@
 #include <sys/cdefs.h>
 #include "_string-optype.h"
 
-JSTR_STATIC_ASSERT (sizeof (jstr_word_ty) == 4, "64-bit not supported");
+_Static_assert (sizeof (jstr_word_ty) == 4, "64-bit not supported");
 
 /* Determine if any byte within X is zero.  This is a pure boolean test.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE int
@@ -63,3 +63,4 @@ jstr_word_has_zero_eq (jstr_word_ty x1, jstr_word_ty x2)
 }
 
 #endif /* _STRING_FZB_H */
+ */
