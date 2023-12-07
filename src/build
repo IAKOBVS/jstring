@@ -55,7 +55,7 @@ FLAGS='-Wall -Wextra -Wpedantic -std=c99'
 if has_prog tcc; then
 	printf "#define JSTR_BUILT\n #include \"jstr.h\"\n int main(){return 0;}\n" | tcc -run - || exit
 	#shellcheck disable=SC2028
-	echo 'printf #define JSTR_BUILT\n #include \"jstr.h\"\n int main(){return 0;}\n' | tcc -run -
+	echo 'printf #define JSTR_BUILT\n #include \"jstr.h\"\n int main(){return 0;}\n | tcc -run -'
 else
 	if [ -z "$TMPDIR" ]; then
 		if [ -d /tmp ]; then
