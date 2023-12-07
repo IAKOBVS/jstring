@@ -2,9 +2,6 @@
 #include "test-array.h"
 #include "../src/jstr-string.h"
 
-#define TOLOWER(c) (unsigned char)(((c) >= 'A' && (c) <= 'Z') ? ((c) - 'A' + 'a') : (c))
-#define TOUPPER(c) (unsigned char)(((c) >= 'a' && (c) <= 'z') ? ((c) - 'a' + 'A') : (c))
-
 static char *
 simple_strrstr_len(const char *h,
                    const size_t hl,
