@@ -23,8 +23,8 @@
 
 /* PowerISA 2.05 (POWER6) provides cmpb instruction.  */
 #ifdef _ARCH_PWR6
-# include "_string-misc.h"
-# include "_string-optype.h"
+#	include "_string-misc.h"
+#	include "_string-optype.h"
 
 /* The functions return a byte mask.  */
 typedef jstr_word_ty find_t;
@@ -33,41 +33,41 @@ typedef jstr_word_ty find_t;
    equal between X1 and X2.  */
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return __builtin_cmpb (x1, x2);
+	return __builtin_cmpb(x1, x2);
 }
 
 /* This function returns 0xff for each byte that is zero in X.  */
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_all (jstr_word_ty x)
+jstr_word_find_zero_all(jstr_word_ty x)
 {
-  return jstr_word_find_eq_all (x, 0);
+	return jstr_word_find_eq_all(x, 0);
 }
 
 /* Identify zero bytes in X1 or equality between X1 and X2.  */
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1) | jstr_word_find_eq_all (x1, x2);
+	return jstr_word_find_zero_all(x1) | jstr_word_find_eq_all(x1, x2);
 }
 
 /* Identify zero bytes in X1 or inequality between X1 and X2.  */
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_ne_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1) | ~jstr_word_find_eq_all (x1, x2);
+	return jstr_word_find_zero_all(x1) | ~jstr_word_find_eq_all(x1, x2);
 }
 
 /* Define the "inexact" versions in terms of the exact versions.  */
-# define find_zero_low		find_zero_all
-# define find_eq_low		find_eq_all
-# define find_zero_eq_low	find_zero_eq_all
+#	define find_zero_low    find_zero_all
+#	define find_eq_low      find_eq_all
+#	define find_zero_eq_low find_zero_eq_all
 #else
-# include "_glibc_generic-string-fza.h"
+#	include "_glibc_generic-string-fza.h"
 #endif /* _ARCH_PWR6  */
 
 #endif /* _POWERPC_STRING_FZA_H  */

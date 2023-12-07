@@ -27,61 +27,61 @@
 /* Given a word X that is known to contain a zero byte, return the index of
    the first such within the word in memory order.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-jstr_word_index_first_zero (jstr_word_ty x)
+jstr_word_index_first_zero(jstr_word_ty x)
 {
-  if (JSTR_ENDIAN_LITTLE)
-    x = jstr_word_find_zero_low (x);
-  else
-    x = jstr_word_find_zero_all (x);
-  return jstr_word_index_first (x);
+	if (JSTR_ENDIAN_LITTLE)
+		x = jstr_word_find_zero_low(x);
+	else
+		x = jstr_word_find_zero_all(x);
+	return jstr_word_index_first(x);
 }
 
 /* Similarly, but perform the search for byte equality between X1 and X2.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-jstr_word_index_first_eq (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_index_first_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
-  if (JSTR_ENDIAN_LITTLE)
-    x1 = jstr_word_find_eq_low (x1, x2);
-  else
-    x1 = jstr_word_find_eq_all (x1, x2);
-  return jstr_word_index_first (x1);
+	if (JSTR_ENDIAN_LITTLE)
+		x1 = jstr_word_find_eq_low(x1, x2);
+	else
+		x1 = jstr_word_find_eq_all(x1, x2);
+	return jstr_word_index_first(x1);
 }
 
 /* Similarly, but perform the search for zero within X1 or equality between
    X1 and X2.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-jstr_word_index_first_zero_eq (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_index_first_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
-  if (JSTR_ENDIAN_LITTLE)
-    x1 = jstr_word_find_zero_eq_low (x1, x2);
-  else
-    x1 = jstr_word_find_zero_eq_all (x1, x2);
-  return jstr_word_index_first (x1);
+	if (JSTR_ENDIAN_LITTLE)
+		x1 = jstr_word_find_zero_eq_low(x1, x2);
+	else
+		x1 = jstr_word_find_zero_eq_all(x1, x2);
+	return jstr_word_index_first(x1);
 }
 
 /* Similarly, but perform the search for zero within X1 or inequality between
    X1 and X2.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-jstr_word_index_first_zero_ne (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_index_first_zero_ne(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_index_first (find_zero_ne_all (x1, x2));
+	return jstr_word_index_first(find_zero_ne_all(x1, x2));
 }
 
 /* Similarly, but search for the last zero within X.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-jstr_word_index_last_zero (jstr_word_ty x)
+jstr_word_index_last_zero(jstr_word_ty x)
 {
-  if (JSTR_ENDIAN_LITTLE)
-    x = jstr_word_find_zero_all (x);
-  else
-    x = jstr_word_find_zero_low (x);
-  return jstr_word_index_last (x);
+	if (JSTR_ENDIAN_LITTLE)
+		x = jstr_word_find_zero_all(x);
+	else
+		x = jstr_word_find_zero_low(x);
+	return jstr_word_index_last(x);
 }
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
-jstr_word_index_last_eq (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_index_last_eq(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_index_last_zero (x1 ^ x2);
+	return jstr_word_index_last_zero(x1 ^ x2);
 }
 
 #endif /* STRING_FZC_H */

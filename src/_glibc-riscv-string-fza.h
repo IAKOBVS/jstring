@@ -23,54 +23,58 @@
 
 #if defined __riscv_zbb || defined __riscv_xtheadbb
 /* With bitmap extension we can use orc.b to find all zero bytes.  */
-# include "_string-misc.h"
-# include "_string-optype.h"
+#	include "_string-misc.h"
+#	include "_string-optype.h"
 
 /* The functions return a byte mask.  */
 typedef jstr_word_ty find_t;
 
 /* This function returns 0xff for each byte that is zero in X.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_all (jstr_word_ty x)
+jstr_word_find_zero_all(jstr_word_ty x)
 {
-  jstr_word_ty r;
-#ifdef __riscv_xtheadbb
-  asm ("th.tstnbz %0, %1" : "=r" (r) : "r" (x));
-  return r;
-#else
-  asm ("orc.b %0, %1" : "=r" (r) : "r" (x));
-  return ~r;
-#endif
+	jstr_word_ty r;
+#	ifdef __riscv_xtheadbb
+	asm("th.tstnbz %0, %1"
+	    : "=r"(r)
+	    : "r"(x));
+	return r;
+#	else
+	asm("orc.b %0, %1"
+	    : "=r"(r)
+	    : "r"(x));
+	return ~r;
+#	endif
 }
 
 /* This function returns 0xff for each byte that is equal between X1 and
    X2.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1 ^ x2);
+	return jstr_word_find_zero_all(x1 ^ x2);
 }
 
 /* Identify zero bytes in X1 or equality between X1 and X2.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1) | jstr_word_find_eq_all (x1, x2);
+	return jstr_word_find_zero_all(x1) | jstr_word_find_eq_all(x1, x2);
 }
 
 /* Identify zero bytes in X1 or inequality between X1 and X2.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_ne_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1) | ~jstr_word_find_eq_all (x1, x2);
+	return jstr_word_find_zero_all(x1) | ~jstr_word_find_eq_all(x1, x2);
 }
 
 /* Define the "inexact" versions in terms of the exact versions.  */
-# define find_zero_low		find_zero_all
-# define find_eq_low		find_eq_all
-# define find_zero_eq_low	find_zero_eq_all
+#	define find_zero_low    find_zero_all
+#	define find_eq_low      find_eq_all
+#	define find_zero_eq_low find_zero_eq_all
 #else
-#include "_glibc_generic-string-fza.h"
+#	include "_glibc_generic-string-fza.h"
 #endif
 
 #endif /* _RISCV_STRING_FZA_H  */

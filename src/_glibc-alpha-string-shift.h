@@ -27,19 +27,19 @@
 /* Return the mask WORD shifted based on S_INT address value, to ignore
    values not presented in the aligned word read.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_shift_find (jstr_word_ty word, uintptr_t s)
+jstr_word_shift_find(jstr_word_ty word, uintptr_t s)
 {
-  return word >> (s % sizeof (jstr_word_ty));
+	return word >> (s % sizeof(jstr_word_ty));
 }
 
 /* Mask off the bits defined the the S alignment value.  */
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_shift_find_last (jstr_word_ty word, uintptr_t s)
+jstr_word_shift_find_last(jstr_word_ty word, uintptr_t s)
 {
-  s = s % sizeof (jstr_word_ty);
-  if (s == 0)
-    return word;
-  return word & ~((jstr_word_ty)-1 << s);
+	s = s % sizeof(jstr_word_ty);
+	if (s == 0)
+		return word;
+	return word & ~((jstr_word_ty)-1 << s);
 }
 
 #endif /* _STRING_SHIFT_H */

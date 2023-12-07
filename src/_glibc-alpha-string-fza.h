@@ -31,32 +31,32 @@
 typedef jstr_word_ty find_t;
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_all (jstr_word_ty x)
+jstr_word_find_zero_all(jstr_word_ty x)
 {
-  return __builtin_alpha_cmpbge (0, x);
+	return __builtin_alpha_cmpbge(0, x);
 }
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1 ^ x2);
+	return jstr_word_find_zero_all(x1 ^ x2);
 }
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_eq_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_eq_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1) | jstr_word_find_zero_all (x1 ^ x2);
+	return jstr_word_find_zero_all(x1) | jstr_word_find_zero_all(x1 ^ x2);
 }
 
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE jstr_word_ty
-jstr_word_find_zero_ne_all (jstr_word_ty x1, jstr_word_ty x2)
+jstr_word_find_zero_ne_all(jstr_word_ty x1, jstr_word_ty x2)
 {
-  return jstr_word_find_zero_all (x1) | (jstr_word_find_zero_all (x1 ^ x2) ^ 0xff);
+	return jstr_word_find_zero_all(x1) | (jstr_word_find_zero_all(x1 ^ x2) ^ 0xff);
 }
 
 /* Define the "inexact" versions in terms of the exact versions.  */
-#define find_zero_low		find_zero_all
-#define find_eq_low		find_eq_all
-#define find_zero_eq_low	find_zero_eq_all
+#define find_zero_low    find_zero_all
+#define find_eq_low      find_eq_all
+#define find_zero_eq_low find_zero_eq_all
 
 #endif /* _STRING_FZA_H */

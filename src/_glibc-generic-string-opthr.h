@@ -22,6 +22,6 @@
 #include "jstr-macros.h"
 
 /* Threshold value for when to enter the unrolled loops.  */
-#define JSTR_WORD_THRES	16
+#define JSTR_WORD_THRES 16
 
 #endif /* string-opthr.h */
