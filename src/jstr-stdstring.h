@@ -782,10 +782,10 @@ JSTR_ATTR_INLINE
 static void *
 jstr_mempmove(void *dst,
               const void *src,
-              size_t sz)
+              size_t n)
 JSTR_NOEXCEPT
 {
-	return (char *)memmove(dst, src, sz) + sz;
+	return (char *)memmove(dst, src, n) + n;
 }
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
@@ -794,10 +794,10 @@ JSTR_ATTR_INLINE
 static void
 jstr_strmove_len(char *dst,
                  const char *src,
-                 size_t sz)
+                 size_t n)
 JSTR_NOEXCEPT
 {
-	*(char *)jstr_mempmove(dst, src, sz) = '\0';
+	*(char *)jstr_mempmove(dst, src, n) = '\0';
 }
 
 JSTR_FUNC_VOID
@@ -809,17 +809,18 @@ JSTR_NOEXCEPT
 {
 	*(char *)jstr_mempmove(dst, src, strlen(src)) = '\0';
 }
+
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_stpmove_len(char *dst,
                  const char *src,
-                 size_t sz)
+                 size_t n)
 JSTR_NOEXCEPT
 {
-	jstr_strmove_len(dst, src, sz);
-	return (char *)dst + sz;
+	jstr_strmove_len(dst, src, n);
+	return (char *)dst + n;
 }
 
 JSTR_FUNC
@@ -837,10 +838,10 @@ JSTR_FUNC_VOID
 static void
 jstr_strcpy_len(char *R dst,
                 const char *R src,
-                size_t sz)
+                size_t n)
 JSTR_NOEXCEPT
 {
-	*(char *)jstr_mempcpy(dst, src, sz) = '\0';
+	*(char *)jstr_mempcpy(dst, src, n) = '\0';
 }
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
@@ -849,11 +850,11 @@ JSTR_FUNC_VOID
 static char *
 jstr_stpcpy_len(char *R dst,
                 const char *R src,
-                size_t sz)
+                size_t n)
 JSTR_NOEXCEPT
 {
-	jstr_strcpy_len(dst, src, sz);
-	return (char *)dst + sz;
+	jstr_strcpy_len(dst, src, n);
+	return (char *)dst + n;
 }
 
 /* Return value:

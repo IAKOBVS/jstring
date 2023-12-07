@@ -342,17 +342,17 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 jstr_strstr_len(const char *hs,
-                size_t hs_len,
+                size_t hslen,
                 const char *ne,
-                size_t ne_len)
+                size_t nelen)
 JSTR_NOEXCEPT
 {
 	/* Optimized strstr() is still faster than a C memmem(). */
 #if JSTR_HAVE_STRSTR_OPTIMIZED
-	if (ne_len < JSTR_MEMMEM_THRES)
+	if (nelen < JSTR_MEMMEM_THRES)
 		return (char *)strstr(hs, ne);
 #endif
-	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
+	return (char *)jstr_memmem(hs, hslen, ne, nelen);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
