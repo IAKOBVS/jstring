@@ -1123,7 +1123,7 @@ jstr_strchrinv(const char *s,
 JSTR_NOEXCEPT
 {
 	s = jstr_strchrnulinv(s, c);
-	return *s ? (char *)s : NULL;
+	return *s != (char)c ? (char *)s : NULL;
 }
 
 /* Return value:
