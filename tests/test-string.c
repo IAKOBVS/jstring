@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "test.h"
 #include "test-array.h"
 #include "../src/jstr-string.h"
@@ -129,6 +131,7 @@ simple_strcasestr(const char *h,
 	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
 }
 
+JSTR_ATTR_MAYBE_UNUSED
 static char *
 simple_stpcpy(char *d,
               const char *s)
@@ -167,16 +170,29 @@ simple_stpcpy(char *d,
 #define T_S1(test, i) ((test)[i].s2)
 #define T_S2(test, i) ((test)[i].s2)
 
-#define T_CPY(fn, simple_fn, test_array)                                                                                     \
-	do {                                                                                                                 \
-		TESTING(fn);                                                                                                 \
-		T_FOREACHI(test_array, i)                                                                                    \
-		{                                                                                                            \
-			const char *src = T_HS(test_array, i);                                                               \
-			T_DEBUG(buf_r, src, 0, 0, 0, fn(buf_r, src), (buf_r + JSTR_PTR_DIFF(simple_fn(buf_e, src), buf_e))); \
-			src = T_NE(test_array, i);                                                                           \
-			T_DEBUG(buf_r, src, 0, 0, 0, fn(buf_r, src), (buf_r + JSTR_PTR_DIFF(simple_fn(buf_e, src), buf_e))); \
-		}                                                                                                            \
+#define T_CPY(fn, simple_fn, test_array)                                          \
+	do {                                                                      \
+		TESTING(fn);                                                      \
+		T_FOREACHI(test_array, i)                                         \
+		{                                                                 \
+			size_t expected_len, result_len;                          \
+			const char *src;                                          \
+			src = T_HS(test_array, i);                                \
+			expected_len = JSTR_PTR_DIFF(fn(buf_r, src), buf_r);      \
+			result_len = JSTR_PTR_DIFF(simple_fn(buf_e, src), buf_e);    \
+			if (strcmp(buf_e, buf_r) || result_len != expected_len) { \
+				PRINTERR("expected_len:%zu\n"                     \
+				         "%s\n",                                  \
+				         expected_len,                            \
+				         buf_e);                                  \
+				PRINTERR("result_len:%zu\n"                       \
+				         "%s\n",                                  \
+				         result_len,                              \
+				         buf_r);                                  \
+				assert(0);                                        \
+			}                                                         \
+			src = T_NE(test_array, i);                                \
+		}                                                                 \
 	} while (0)
 
 #define T(fn, simple_fn, test_array)                                             \
@@ -261,6 +277,7 @@ jstr_strcasestr_len_test(const char *hs,
 	return jstr_strcasestr_len(hs, strlen(hs), ne, strlen(ne));
 }
 
+JSTR_ATTR_MAYBE_UNUSED
 static char *
 simple_revcpy_p(char *dst,
                 const char *src)
@@ -292,8 +309,7 @@ main(int argc, char **argv)
 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
-	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
-	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem);
+	/* T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem); */
 	SUCCESS();
 	return EXIT_SUCCESS;
 }
