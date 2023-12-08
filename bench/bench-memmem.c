@@ -41,8 +41,6 @@ simple_memmem(const char *h,
 		return (char *)h;
 	if (jstr_unlikely(hl < nl))
 		return NULL;
-	const char *p1, *p2;
-	size_t k;
 	for (; hl; --hl, ++h)
 		if (*h == *n && !memcmp(h, n, nl))
 			return (char *)h;
@@ -59,8 +57,6 @@ simple_strcasestr_len(const char *h,
 		return (char *)h;
 	if (jstr_unlikely(hl < nl))
 		return NULL;
-	const char *p1, *p2;
-	size_t k;
 	const int c = jstr_tolower(*n);
 	for (; hl; --hl, ++h)
 		if (jstr_tolower(*h) == c && !memcmp(h, n, nl))
@@ -78,8 +74,6 @@ simple_strrstr_len(const char *h,
 		return (char *)h;
 	if (jstr_unlikely(hl < nl))
 		return NULL;
-	const char *p1, *p2;
-	size_t k;
 	h -= nl;
 	hl -= nl;
 	for (; hl; --hl, --h)
