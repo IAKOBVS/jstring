@@ -48,23 +48,6 @@ simple_memmem(const char *h,
 }
 
 static char *
-simple_strcasestr_len(const char *h,
-                      size_t hl,
-                      const char *n,
-                      size_t nl)
-{
-	if (jstr_unlikely(nl == 0))
-		return (char *)h;
-	if (jstr_unlikely(hl < nl))
-		return NULL;
-	const int c = jstr_tolower(*n);
-	for (; hl; --hl, ++h)
-		if (jstr_tolower(*h) == c && !memcmp(h, n, nl))
-			return (char *)h;
-	return NULL;
-}
-
-static char *
 simple_strrstr_len(const char *h,
                    size_t hl,
                    const char *n,
@@ -83,15 +66,31 @@ simple_strrstr_len(const char *h,
 }
 
 static char *
+simple_strcasestr(const char *h,
+                  const char *n)
+{
+	if (jstr_unlikely(*n == 0))
+		return (char *)h;
+	const char *p1, *p2;
+	for (; *h; ++h) {
+		for (p1 = h + 1, p2 = n + 1; *p1 && jstr_tolower(*p1) == jstr_tolower(*p2); ++p1, ++p2) {}
+		if (*p2 == '\0')
+			return (char *)h;
+		if (jstr_unlikely(*p1 == '\0'))
+			break;
+	}
+	return NULL;
+}
+
+static char *
 simple_strstr(const char *h,
               const char *n)
 {
 	if (jstr_unlikely(*n == 0))
 		return (char *)h;
 	const char *p1, *p2;
-	size_t k;
 	for (; *h; ++h) {
-		for (p1 = h, p2 = n; *p1 && *p1 == *p2; ++p1, ++p2) {}
+		for (p1 = h + 1, p2 = n + 1; *p1 && *p1 == *p2; ++p1, ++p2) {}
 		if (*p2 == '\0')
 			return (char *)h;
 		if (jstr_unlikely(*p1 == '\0'))
@@ -125,6 +124,7 @@ simple_strstr(const char *h,
 
 T_DEFINE_STRSTR(simple_strrstr_len, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(simple_memmem, haystack, strlen(haystack), needle, needle_len)
+T_DEFINE_STRSTR(simple_strcasestr, haystack, needle)
 T_DEFINE_STRSTR(simple_strstr, haystack, needle)
 T_DEFINE_STRSTR(strstr, haystack, needle)
 T_DEFINE_STRSTR(memmem, haystack, strlen(haystack), needle, needle_len)
@@ -136,8 +136,10 @@ T_DEFINE_STRSTR(jstr_strcasestr_len, haystack, strlen(haystack), needle, needle_
 T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len)
 
 #define T_STRSTR_ALL(needle)                \
+	RUN(b_simple_strcasestr, needle);   \
 	RUN(b_simple_strstr, needle);       \
 	RUN(b_simple_memmem, needle);       \
+	RUN(b_simple_strstr, needle);       \
 	RUN(b_strstr, needle);              \
 	RUN(b_memmem, needle);              \
 	RUN(b_jstr_memmem, needle);         \
