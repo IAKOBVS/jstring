@@ -50,9 +50,9 @@ stpcpy(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
 	i = (uintptr_t)src % sizeof(jstr_word_ty);
 	jstr_word_ty word;
 	jstr_word_ty *d = (jstr_word_ty *)dst;
-	const jstr_word_ty *s = (jstr_word_ty *)src;
 	/* Aligned loop. */
 	if (i == 0) {
+		const jstr_word_ty *s = (jstr_word_ty *)src;
 		for (;;) {
 			word = *s++;
 			if (jstr_word_has_zero(word))
@@ -61,8 +61,9 @@ stpcpy(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
 		}
 	} else {
 		/* Unaligned loop. */
+		const jstr_word_ty *s = (jstr_word_ty *)(src - i);
 		jstr_word_ty w2a = *s++;
-		const unsigned int sh_1 = (uintptr_t)i * CHAR_BIT;
+		const unsigned int sh_1 = i * CHAR_BIT;
 		const unsigned int sh_2 = sizeof(jstr_word_ty) * CHAR_BIT - sh_1;
 		word = JSTR_WORD_MERGE(w2a, sh_1, (jstr_word_ty)-1, sh_2);
 		if (!jstr_word_has_zero(word)) {
