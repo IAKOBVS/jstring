@@ -47,10 +47,11 @@ else
 		if [ -d /tmp ]; then
 			TMPDIR=/tmp/$tmp
 		else
-			TMPDIR=$PWD/$tmp
+			TMPDIR=$(echo "$PWD" | head -c 255)/$tmp
 		fi
 	fi
-	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
+	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
+	mkdir "$tmp" || exit
 fi
 
 # Test all files in arguments. Otherwise, test all.
@@ -68,3 +69,5 @@ for file in $files; do
 	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 &
 done
 wait
+
+[ $CC != 'tcc' ] && rm -rf "$tmp"

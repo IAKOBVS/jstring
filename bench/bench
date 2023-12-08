@@ -1,4 +1,20 @@
 #!/bin/sh
+
+# In GCC, -O1 compiles faster.
+[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O1"
+# Set the path to compile the tests to.
+if [ -z "$TMPDIR" ]; then
+	if [ -d /tmp ]; then
+		TMPDIR=/tmp/$tmp
+	else
+		TMPDIR=$PWD/$tmp
+	fi
+fi
+
+tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
+
+mkdir "$tmp" || exit
+
 for file in $(echo *.c); do
 	{
 	base=${file%.*}-exe
@@ -9,3 +25,5 @@ wait
 for file in $(echo bench-*exe); do
 	./"$file" >"$file-results"
 done
+
+rm -rf "$tmp"
