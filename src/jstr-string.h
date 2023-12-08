@@ -770,7 +770,8 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (!jstr_isalpha(*(ne + shift)))
 		return pjstr_strcasestr_rarebyte(hs, ne, shift);
-	hs = jstr_strcasechr(hs + shift, *(ne + shift));
+	else
+		hs = jstr_strcasechr(hs + shift, *(ne + shift));
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	hs -= shift;
