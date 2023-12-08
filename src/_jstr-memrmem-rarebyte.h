@@ -1,17 +1,17 @@
 /* SPDX-License-Identifier: MIT */
 /* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, and to permit persons to whom the Software is
    furnished to do so, subject to the following conditions:
-   
+
    The above copyright notice and this permission notice shall be included in all
    copies or substantial portions of the Software.
-   
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -49,10 +49,13 @@ PJSTR_END_DECLS
 #	define EQ64(hs, ne_align) !memcmp(hs, &(ne_align), 8)
 #	define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
 #endif
-
 #ifndef USE_UNALIGNED
 #	define USE_UNALIGNED 0
 #endif
+#ifndef PJSTR_RAREBYTE_CANONIZE
+#	define PJSTR_RAREBYTE_CANONIZE(x) (x)
+#endif
+#define CANONIZE PJSTR_RAREBYTE_CANONIZE
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -72,9 +75,9 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	const unsigned char *p = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
 #if !USE_UNALIGNED
-	const int c0 = *ne;
+	const int c0 = CANONIZE(*ne);
 	for (; (p = (cu *)jstr_memrchr(hs, c, JSTR_PTR_DIFF(p, hs)));)
-		if (*(p - shift) == c0 && !CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
+		if (CANONIZE(*(p - shift)) == c0 && !CMP_FUNC((char *)p - shift, (char *)ne, ne_len))
 			return (ret_ty)(p - shift);
 #else
 	const int short_ne = ne_len < 8;
@@ -112,3 +115,5 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 #undef PJSTR_RAREBYTE_CMP_FUNC
 #undef CMP_FUNC
 #undef PJSTR_RAREBYTE_RETTYPE
+#undef PJSTR_RAREBYTE_CANONIZE
+#undef CANONIZE

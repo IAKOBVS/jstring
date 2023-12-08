@@ -635,6 +635,7 @@ JSTR_NOEXCEPT
 #define PJSTR_RAREBYTE_RETTYPE  char *
 #define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len_rarebyte
 #define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
+#define PJSTR_RAREBYTE_CANONIZE jstr_tolower
 #include "_jstr-rarebyte-memmem.h"
 
 #if (JSTR_HAVE_STRCASESTR && (JSTR_USE_STANDARD_ALWAYS || JSTR_HAVE_STRCASESTR_OPTIMIZED) && !JSTR_TEST)

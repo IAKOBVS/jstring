@@ -13,7 +13,7 @@ fi
 
 tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
 
-mkdir "$tmp" || exit
+mkdir -p "$tmp"
 
 for file in $(echo *.c); do
 	{
