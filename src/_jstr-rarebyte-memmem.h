@@ -49,10 +49,13 @@ PJSTR_END_DECLS
 #	define EQ64(hs, ne_align) !memcmp(hs, &(ne_align), 8)
 #	define EQ32(hs, ne_align) !memcmp(hs, &(ne_align), 4)
 #endif
-
 #ifndef USE_UNALIGNED
 #	define USE_UNALIGNED 0
 #endif
+#ifndef PJSTR_RAREBYTE_CANONIZE
+#	define PJSTR_RAREBYTE_CANONIZE(x) (x)
+#endif
+#define CANONIZE PJSTR_RAREBYTE_CANONIZE
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -72,9 +75,9 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	const u *const end = hs + hs_len - (ne_len - shift) + 1;
 	hs += shift;
 #if !USE_UNALIGNED
-	const int c0 = *ne;
+	const int c0 = CANONIZE(*ne);
 	for (; (hs = (const u *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
-		if (*(hs - shift) == c0 && !CMP_FUNC((char *)hs - shift, (char *)ne, ne_len))
+		if (CANONIZE(*(hs - shift)) == c0 && !CMP_FUNC((char *)hs - shift, (char *)ne, ne_len))
 			return (ret_ty)(hs - shift);
 #else
 	const int short_ne = ne_len < 8;
@@ -108,3 +111,5 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 #undef PJSTR_RAREBYTE_CMP_FUNC
 #undef CMP_FUNC
 #undef PJSTR_RAREBYTE_RETTYPE
+#undef PJSTR_RAREBYTE_CANONIZE
+#undef CANONIZE
