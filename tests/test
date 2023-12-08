@@ -6,7 +6,6 @@ FLAGS='
 -Wall
 -Wextra
 -Wpedantic
--fsanitize=address
 '
 
 has_prog()
