@@ -116,6 +116,7 @@ b_memset(void *dummy)
 		memset(buf + i, i, BUFLEN - i);
 	free(buf);
 	return 0;
+	(void)dummy;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED size_t
@@ -133,6 +134,7 @@ b_strchr(void *dummy)
 	}
 	free(buf);
 	return cs;
+	(void)dummy;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED size_t
@@ -149,6 +151,7 @@ b_strlen(void *dummy)
 	}
 	free(buf);
 	return cs;
+	(void)dummy;
 }
 
 int

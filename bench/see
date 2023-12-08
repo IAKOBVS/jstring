@@ -1,2 +1,2 @@
 #!/bin/sh
-awk '{print $3, $2, $1}' "$1" | less
+awk '{gsub(/b_/, "", $1); print $3, $2, $1};' "$1" | sort -n -k1 | less

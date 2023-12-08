@@ -18,12 +18,12 @@ mkdir "$tmp" || exit
 for file in $(echo *.c); do
 	{
 	base=${file%.*}-exe
-	cc "$file" -o "$base" -O3 -march=native
+	cc "$file" -o "$tmp/$base" -O3 -march=native
 	} &
 done
 wait
-for file in $(echo bench-*exe); do
-	./"$file" >"$file-results"
+for file in $(echo "$tmp"/*-exe); do
+	"$file" >"${file##*/}-result"
 done
 
 rm -rf "$tmp"
