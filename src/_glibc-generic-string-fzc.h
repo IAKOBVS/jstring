@@ -64,7 +64,7 @@ jstr_word_index_first_zero_eq(jstr_word_ty x1, jstr_word_ty x2)
 static JSTR_ATTR_MAYBE_UNUSED JSTR_ATTR_INLINE unsigned int
 jstr_word_index_first_zero_ne(jstr_word_ty x1, jstr_word_ty x2)
 {
-	return jstr_word_index_first(find_zero_ne_all(x1, x2));
+	return jstr_word_index_first(jstr_word_find_zero_ne_all(x1, x2));
 }
 
 /* Similarly, but search for the last zero within X.  */
