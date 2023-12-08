@@ -180,53 +180,6 @@ T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len
 		T_STRSTR_ALL(DOUBLE("Azbycxdwevfugthsirjqkplomn")); \
 	} while (0)
 
-static JSTR_ATTR_MAYBE_UNUSED size_t
-b_memset(void *dummy)
-{
-	char *buf = xmalloc(BUFLEN);
-	size_t i;
-	for (i = 0; i < 100; i++)
-		memset(buf + i, i, BUFLEN - i);
-	free(buf);
-	return 0;
-	(void)dummy;
-}
-
-static JSTR_ATTR_MAYBE_UNUSED size_t
-b_strchr(void *dummy)
-{
-	char *buf = xmalloc(BUFLEN);
-	size_t i;
-	size_t cs;
-	memset(buf, 'a', BUFLEN);
-	buf[BUFLEN - 1] = 0;
-	buf[BUFLEN - 2] = 'b';
-	for (i = 0; i < 100; i++) {
-		buf[i] = '0' + i % 8;
-		cs += (int)strchr(buf, 'b');
-	}
-	free(buf);
-	return cs;
-	(void)dummy;
-}
-
-static JSTR_ATTR_MAYBE_UNUSED size_t
-b_strlen(void *dummy)
-{
-	char *buf = xmalloc(BUFLEN);
-	size_t i;
-	size_t cs = 0;
-	memset(buf, 'a', BUFLEN - 1);
-	buf[BUFLEN - 1] = 0;
-	for (i = 0; i < 100; i++) {
-		buf[i] = '0' + i % 8;
-		cs += strlen(buf);
-	}
-	free(buf);
-	return cs;
-	(void)dummy;
-}
-
 int
 main()
 {
