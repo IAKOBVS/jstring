@@ -263,12 +263,11 @@ jstr_strcasestr_len_test(const char *hs,
 
 static char *
 simple_revcpy_p(char *dst,
-                char *src)
+                const char *src)
 {
 	size_t src_len = strlen(src);
 	src += src_len - 1;
 	for (; src_len--; *dst++ = *src--) {}
-ret:
 	*dst = '\0';
 	return dst;
 }
@@ -294,7 +293,7 @@ main(int argc, char **argv)
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
-	T_CPY(jstr_revcpy_p, simple_stpcpy, test_array_memmem);
+	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }

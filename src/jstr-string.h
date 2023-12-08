@@ -1516,6 +1516,7 @@ JSTR_NOEXCEPT
 	}
 #endif
 	for (; src_len--; *dst++ = *src--) {}
+	goto ret;
 ret:
 	*dst = '\0';
 }

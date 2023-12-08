@@ -901,7 +901,7 @@ JSTR_NOEXCEPT
 #		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
 	if ((uintptr_t)src % ALIGN == (uintptr_t)dst % ALIGN) {
-		for (; (uintptr_t)src % ALIGN; src++, dst++)
+		for (; (uintptr_t)src % ALIGN; ++src, ++dst)
 			if (!(*dst = *src))
 				return dst;
 		word *wd = (word *)dst;

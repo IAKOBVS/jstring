@@ -6,6 +6,7 @@ FLAGS='
 -Wall
 -Wextra
 -Wpedantic
+-fsanitize=address
 '
 
 has_prog()
@@ -34,8 +35,8 @@ compile()
 cd "$(dirname "$0")" || exit
 
 if
-	# false
-	has_prog tcc
+	false
+	# has_prog tcc
 then
 	CC=tcc
 else
@@ -45,14 +46,15 @@ else
 	# Set the path to compile the tests to.
 	if [ -z "$TMPDIR" ]; then
 		if [ -d /tmp ]; then
-			TMPDIR=/tmp/$tmp
+			TMPDIR=/tmp
 		else
-			TMPDIR=$(echo "$PWD" | head -c 255)/$tmp
+			TMPDIR=$(echo "$PWD" | head -c 255)
 		fi
 	fi
-	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
-	mkdir "$tmp" || exit
+	tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
+	mkdir -p "$tmp"
 fi
+
 
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
