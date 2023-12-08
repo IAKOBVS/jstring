@@ -179,7 +179,10 @@ jstr_reservealways(char *R *R s,
                    size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*cap = (jstr_likely(*cap != 0) ? pjstr_grow(*cap, new_cap) : new_cap * JSTR_ALLOC_MULTIPLIER);
+	if (jstr_likely(*cap != 0))
+		*cap = pjstr_grow(*cap, new_cap);
+	else
+		*cap = new_cap * JSTR_ALLOC_MULTIPLIER;
 	*s = (char *)realloc(*s, *cap);
 	if (jstr_nullchk(*s))
 		goto err;
