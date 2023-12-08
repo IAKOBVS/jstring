@@ -1,0 +1,11 @@
+#!/bin/sh
+for file in $(echo *.c); do
+	{
+	base=${file%.*}-exe
+	cc "$file" -o "$base" -O3 -march=native
+	} &
+done
+wait
+for file in $(echo bench-*exe); do
+	./"$file" >"$file-results"
+done
