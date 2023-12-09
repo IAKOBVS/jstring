@@ -131,7 +131,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strstr2(const unsigned char *hs, const unsigned char *ne)
+pjstr_strstr2(const unsigned char *hs,
+              const unsigned char *const ne)
 {
 #if JSTR_LP64
 	typedef uint32_t size_ty;
@@ -151,7 +152,8 @@ pjstr_strstr2(const unsigned char *hs, const unsigned char *ne)
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strstr3(const unsigned char *hs, const unsigned char *ne)
+pjstr_strstr3(const unsigned char *hs,
+              const unsigned char *const ne)
 {
 	const uint32_t h1 = (uint32_t)(ne[0] << 24) | (ne[1] << 16) | (ne[2] << 8);
 	uint32_t h2 = 0;
@@ -164,7 +166,8 @@ pjstr_strstr3(const unsigned char *hs, const unsigned char *ne)
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strstr4(const unsigned char *hs, const unsigned char *ne)
+pjstr_strstr4(const unsigned char *hs,
+              const unsigned char *const ne)
 {
 	const uint32_t h1 = (uint32_t)(ne[0] << 24) | (ne[1] << 16) | (ne[2] << 8) | ne[3];
 	uint32_t h2 = 0;
