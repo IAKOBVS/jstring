@@ -140,6 +140,14 @@ simple_strcasestr(const char *h,
 #endif
 }
 
+static char *
+simple_strncasestr(const char *hs,
+                   const char *ne,
+                   size_t n)
+{
+	return (char *)simple_strcasestr_len(hs, jstr_strnlen(hs, n), ne, strlen(ne));
+}
+
 JSTR_ATTR_MAYBE_UNUSED
 static char *
 simple_stpcpy(char *d,
@@ -322,6 +330,7 @@ main(int argc, char **argv)
 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
+	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem);
 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
 	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem);
 	SUCCESS();

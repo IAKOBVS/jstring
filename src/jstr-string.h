@@ -317,7 +317,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	const char *const start = hs;
 	hs = jstr_strnchr(hs, *ne, n);
-	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
+	if (jstr_unlikely(hs == NULL) || jstr_unlikely(n == 1) || ne[1] == '\0')
 		return (char *)hs;
 	n -= JSTR_PTR_DIFF(hs, start);
 	if (jstr_unlikely(hs[1] == '\0')
@@ -566,7 +566,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	const char *const start = hs;
 	hs = jstr_strnchr(hs, *ne, n);
-	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
+	if (jstr_unlikely(hs == NULL) || jstr_unlikely(n == 1) || ne[1] == '\0')
 		return (char *)hs;
 	n -= JSTR_PTR_DIFF(hs, start);
 	if (jstr_unlikely(hs[1] == '\0')
@@ -590,7 +590,7 @@ JSTR_NOEXCEPT
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;
 	size_t tmp = n;
-	for (; tmp-- && *hp == *np && *hp; ++hp, ++np) {}
+	for (; tmp-- && jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np) {}
 	if (*np == '\0')
 		return (char *)hs;
 	if (jstr_unlikely(*hp == '\0'))
@@ -902,7 +902,6 @@ jstr_memcspn(const void *s,
              size_t sz)
 JSTR_NOEXCEPT
 {
-	typedef unsigned char u;
 	typedef const unsigned char cu;
 	if (jstr_unlikely(*reject == '\0')
 	    || jstr_unlikely(sz == 0))
