@@ -38,10 +38,10 @@ PJSTR_BEGIN_DECLS
 
 /* Will not handle EOF correctly.
    tolower(EOF) != EOF */
-#define jstr_toupper(c) jstr_ctype_table_toupper[(unsigned char)c]
-#define jstr_tolower(c) jstr_ctype_table_tolower[(unsigned char)c]
+#define jstr_toupper(c) ((int)jstr_ctype_table_toupper[(unsigned char)c])
+#define jstr_tolower(c) ((int)jstr_ctype_table_tolower[(unsigned char)c])
 
-#define jstr_isctype(c, ctype) (jstr_ctype_table[(unsigned char)c] & (ctype))
+#define jstr_isctype(c, ctype) ((int)(jstr_ctype_table[(unsigned char)c] & (ctype)))
 #define jstr_isalpha(c)        jstr_isctype(c, JSTR_ISALPHA)
 #define jstr_islower(c)        jstr_isctype(c, JSTR_ISLOWER)
 #define jstr_isupper(c)        jstr_isctype(c, JSTR_ISUPPER)
