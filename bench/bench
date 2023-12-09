@@ -23,7 +23,9 @@ for file in $(echo *.c); do
 done
 wait
 for file in $(echo "$tmp"/*-exe); do
-	"$file" >"${file##*/}-result"
+	output=$($file)
+	echo "$output"
+	echo "$output" >"$(echo "$file" | sed 's/.*\//result-/;')"
 done
 
 rm -rf "$tmp"
