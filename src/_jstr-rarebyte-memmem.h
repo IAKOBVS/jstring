@@ -1,17 +1,17 @@
 /* SPDX-License-Identifier: MIT */
 /* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, and to permit persons to whom the Software is
    furnished to do so, subject to the following conditions:
-   
+
    The above copyright notice and this permission notice shall be included in all
    copies or substantial portions of the Software.
-   
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -76,7 +76,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 	hs += shift;
 #if !USE_UNALIGNED
 	const int c0 = CANONIZE(*ne);
-	for (; (hs = (const u *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
+	for (; (hs = (const u *)JSTR_MEMCHR_MAYBE(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
 		if (CANONIZE(*(hs - shift)) == c0 && !CMP_FUNC((char *)hs - shift, (char *)ne, ne_len))
 			return (ret_ty)(hs - shift);
 #else
@@ -91,7 +91,7 @@ PJSTR_RAREBYTE_FUNC(const unsigned char *hs,
 		ne += 8;
 		ne_len -= 8;
 	}
-	for (; (hs = (const u *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
+	for (; (hs = (const u *)JSTR_MEMCHR_MAYBE(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
 		/* If CMP_FUNC is undefined, use memcmp() and quickly compare first 4/8 bytes before calling memcmp(). */
 		if (short_ne) {
 			if (EQ32(hs - shift, ne_align) && !jstr_memcmpeq_loop(hs - shift + 4, ne, ne_len))
