@@ -486,8 +486,8 @@ pjstr_strcasestr_long(const char *hs,
                       const char *ne)
 JSTR_NOEXCEPT
 {
-	const size_t ne_len = strlen(ne + 4) + 4;
-	const size_t hs_len = jstr_strnlen(hs + 4, ne_len | 512) + 4;
+	const size_t ne_len = strlen(ne);
+	const size_t hs_len = jstr_strnlen(hs, ne_len | 512);
 	if (hs_len < ne_len)
 		return NULL;
 	if (jstr_tolower(*hs) == jstr_tolower(*ne) && !jstr_strcasecmpeq_len(hs, ne, ne_len))
@@ -617,9 +617,6 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	hs -= shift;
-	if (jstr_unlikely(hs[1] == '\0'))
-		return NULL;
-	/* Reuse SHIFT variable as NE_LEN. */
 	if (ne[2] == '\0') {
 		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1]))
@@ -630,8 +627,6 @@ JSTR_NOEXCEPT
 		goto STRSTR;
 #	endif
 	}
-	if (jstr_unlikely(hs[2] == '\0'))
-		return NULL;
 	if (ne[3] == '\0') {
 		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1])
@@ -643,8 +638,6 @@ JSTR_NOEXCEPT
 		goto STRSTR;
 #	endif
 	}
-	if (jstr_unlikely(hs[3] == '\0'))
-		return NULL;
 	if (ne[4] == '\0') {
 		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1])
@@ -657,8 +650,6 @@ JSTR_NOEXCEPT
 		goto STRSTR;
 #	endif
 	}
-	if (jstr_unlikely(hs[4] == '\0'))
-		return NULL;
 	return pjstr_strcasestr_long(hs, ne);
 #	if JSTR_HAVE_STRSTR_OPTIMIZED
 STRSTR:
