@@ -540,6 +540,8 @@ JSTR_NOEXCEPT
 	if (shift | jstr_isalpha(ne[3]))
 		return pjstr_strcasestr4((cu *)hs, (cu *)ne);
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
+	goto STRSTR;
+#	else
 	return pjstr_strstr4((cu *)hs, (cu *)ne);
 #	endif
 #	if JSTR_HAVE_STRSTR_OPTIMIZED
