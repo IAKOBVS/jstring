@@ -638,7 +638,7 @@ JSTR_NOEXCEPT
 		return sz;
 	if (jstr_unlikely(reject[1] == '\0')) {
 		const char *const p = (const char *)jstr_memrchr(s, *reject, sz);
-		return p ? (size_t)(p - s) : sz;
+		return p ? JSTR_PTR_DIFF(p, s) : sz;
 	}
 	u t[256];
 	JSTR_BZERO_ARRAY(t);
@@ -650,13 +650,13 @@ JSTR_NOEXCEPT
 	int i = 0;
 	int n = sz % 4;
 	for (;; --i) {
-		if (n-- == 0) {
+		if (t[p[i]])
+			return JSTR_PTR_DIFF(p + i, s);
+		if (--n == 0) {
 			if (sz < 4)
 				return sz;
 			break;
 		}
-		if (t[p[i]])
-			return JSTR_PTR_DIFF(p + i, s);
 	}
 	p = (cu *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
@@ -715,13 +715,13 @@ JSTR_NOEXCEPT
 	int i = 0;
 	int n = sz % 4;
 	for (;; --i) {
-		if (n-- == 0) {
+		if (!t[p[i]])
+			return JSTR_PTR_DIFF(p + i, s);
+		if (--n == 0) {
 			if (sz < 4)
 				return sz;
 			break;
 		}
-		if (!t[p[i]])
-			return JSTR_PTR_DIFF(p + i, s);
 	}
 	p = (cu *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
@@ -852,13 +852,13 @@ JSTR_NOEXCEPT
 	int i = 0;
 	int n = sz % 4;
 	for (;; ++i) {
-		if (n-- == 0) {
+		if (t[p[i]])
+			return JSTR_PTR_DIFF(p + i, s);
+		if (--n == 0) {
 			if (sz < 4)
 				return sz;
 			break;
 		}
-		if (t[p[i]])
-			return JSTR_PTR_DIFF(p + i, s);
 	}
 	p = (cu *)JSTR_PTR_ALIGN_UP(p, 4);
 	cu *const end = p + sz;
