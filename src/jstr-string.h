@@ -234,7 +234,7 @@ JSTR_NOEXCEPT
 	return memmem(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
-	enum { LONG_NE_THRES = 32,
+	enum { LONG_NE_THRES = 16,
 	       VERY_LONG_NE_THRES = 100 };
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
@@ -332,7 +332,7 @@ jstr_strnstr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
-	enum { LONG_NE_THRES = 32 };
+	enum { LONG_NE_THRES = 16 };
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
 	const char *const start = hs;
@@ -622,7 +622,7 @@ JSTR_NOEXCEPT
 	return (char *)strcasestr(hs, ne);
 #else
 	typedef const unsigned char cu;
-	enum { LONG_NE_THRES = 32 };
+	enum { LONG_NE_THRES = 16 };
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
