@@ -1348,6 +1348,7 @@ jstr_revcpy_p(char *R dst,
 
 /* Reverse S. */
 JSTR_FUNC_VOID
+JSTR_ATTR_INLINE
 static void
 jstr_rev_len(char *R s,
              size_t sz)
