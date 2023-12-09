@@ -600,7 +600,7 @@ JSTR_NOEXCEPT
 		c = *++rplc;
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
-			JSTR_ASSERT_DEBUG((size_t)c < nmatch, "Using a backreference higher than nmatch.");
+			JSTR_ASSERT_DEBUG((jstrre_off_ty)c < nmatch, "Using a backreference higher than nmatch.");
 			rplc_len += (size_t)(rm[c].rm_eo - rm[c].rm_so - 2);
 		} else if (jstr_unlikely(*rplc == '\0')) {
 			break;
