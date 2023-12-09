@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # In GCC, -O1 compiles faster.
-[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O1"
+[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O3"
 # Set the path to compile the tests to.
 if [ -z "$TMPDIR" ]; then
 	if [ -d /tmp ]; then
