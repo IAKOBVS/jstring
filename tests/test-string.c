@@ -26,7 +26,11 @@ static char *
 simple_strrstr(const char *h,
                const char *n)
 {
+#if JSTR_HAVE_STRSTR && !JSTR_USE_SIMPLE
+	return strstr(h, n);
+#else
 	return simple_strrstr_len(h, strlen(h), n, strlen(n));
+#endif
 }
 
 static char *
@@ -107,6 +111,7 @@ simple_strncasecmp(const char *s1,
 #endif
 }
 
+JSTR_ATTR_MAYBE_UNUSED
 static char *
 simple_strcasestr_len(const char *h,
                       const size_t hl,
@@ -128,7 +133,11 @@ static char *
 simple_strcasestr(const char *h,
                   const char *n)
 {
+#if JSTR_HAVE_STRCASESTR && !JSTR_USE_SIMPLE
+	return strcasestr(h, n);
+#else
 	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
+#endif
 }
 
 JSTR_ATTR_MAYBE_UNUSED
@@ -136,9 +145,13 @@ static char *
 simple_stpcpy(char *d,
               const char *s)
 {
+#if JSTR_HAVE_STPCPY && !JSTR_USE_SIMPLE
+	return stpcpy(d, s);
+#else
 	const size_t len = strlen(s);
 	*((char *)memcpy(d, s, len) + len) = '\0';
 	return d + len;
+#endif
 }
 
 #define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)                               \

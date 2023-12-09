@@ -487,7 +487,7 @@ pjstr_strcasestr_long(const char *hs,
 JSTR_NOEXCEPT
 {
 	const size_t ne_len = strlen(ne);
-	const size_t hs_len = jstr_strnlen(hs, ne_len | 512);
+	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
 	if (hs_len < ne_len)
 		return NULL;
 	if (jstr_tolower(*hs) == jstr_tolower(*ne) && !jstr_strcasecmpeq_len(hs, ne, ne_len))
