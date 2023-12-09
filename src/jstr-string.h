@@ -225,8 +225,8 @@ JSTR_NOEXCEPT
 	hs = (cu *)hs + shift;
 	hs_len -= shift;
 	const void *start;
-	start = (const void *)hs;
-	hs = (void *)memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	start = hs;
+	hs = memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (void *)hs;
 	hs = (cu *)hs - shift;
