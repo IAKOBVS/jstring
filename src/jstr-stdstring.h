@@ -462,7 +462,7 @@ JSTR_NOEXCEPT
 #		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
 	for (; (uintptr_t)s % ALIGN; ++s)
-		if (*s == '\0' || *s == (char)c)
+		if (jstr_unlikely(*s == '\0') || *s == (char)c)
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
 	const word *w = w = (word *)s;
@@ -730,7 +730,7 @@ JSTR_NOEXCEPT
 #	define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 	for (; (uintptr_t)s & ALIGN; ++s) {
-		if (*s == '\0' || jstr_unlikely(n-- == 0))
+		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n-- == 0))
 			return NULL;
 		if (*s == (char)c)
 			return (char *)s;
