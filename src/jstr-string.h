@@ -115,57 +115,14 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_CANONIZE jstr_tolower
 #include "_strstr234.h"
 
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strnstr2(const unsigned char *hs,
-               const unsigned char *const ne,
-               size_t n)
-JSTR_NOEXCEPT
-{
-#if JSTR_LP64
-	typedef uint32_t size_ty;
-	enum { SHIFT = 16 };
-#else
-	typedef uint16_t size_ty;
-	enum { SHIFT = 8 };
-#endif
-	const size_ty nw = (size_ty)ne[0] << SHIFT | ne[1];
-	size_ty hw = (size_ty)hs[0] << SHIFT | hs[1];
-	for (++hs, --n; n-- && *hs && hw != nw; hw = hw << SHIFT | *++hs) {}
-	return (hw == nw) ? (char *)hs - 1 : NULL;
-}
+#define PJSTR_STRSTR234_FUNC    pjstr_strnstr
+#define PJSTR_STRSTR234_STRNSTR 1
+#include "_strstr234.h"
 
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strnstr3(const unsigned char *hs,
-               const unsigned char *const ne,
-               size_t n)
-JSTR_NOEXCEPT
-{
-	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
-	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
-	for (hs += 2, n -= 2; n-- && *hs && hw != nw; hw = (hw | *++hs) << 8) {}
-	return (hw == nw) ? (char *)hs - 2 : NULL;
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strnstr4(const unsigned char *hs,
-               const unsigned char *const ne,
-               size_t n)
-JSTR_NOEXCEPT
-{
-	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
-	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	for (hs += 3, n -= 3; n-- && *hs && hw != nw; hw = hw << 8 | *++hs) {}
-	return (hw == nw) ? (char *)hs - 3 : NULL;
-}
+#define PJSTR_STRSTR234_FUNC     pjstr_strncasestr
+#define PJSTR_STRSTR234_STRNSTR  1
+#define PJSTR_STRSTR234_CANONIZE jstr_tolower
+#include "_strstr234.h"
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
@@ -280,8 +237,13 @@ JSTR_NOEXCEPT
 		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
+#	if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
+	if (JSTR_BYTE_CMPEQU32(hs, ne) && !memcmp(hs, (cu *)ne + 4, ne_len - 4))
+		return (char *)hs;
+#	else
 	if (*(cu *)hs == *(cu *)ne && !memcmp(hs, ne, ne_len))
 		return (char *)hs;
+#	endif
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
 	hs = (char *)hs + 1;
