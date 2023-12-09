@@ -102,6 +102,10 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_FUNC pjstr_strstr
 #include "_strstr234.h"
 
+#define PJSTR_STRSTR234_MEMMEM
+#define PJSTR_STRSTR234_FUNC pjstr_memmem
+#include "_strstr234.h"
+
 #define PJSTR_STRSTR234_FUNC     pjstr_strcasestr
 #define PJSTR_STRSTR234_CANONIZE jstr_tolower
 #include "_strstr234.h"
@@ -161,58 +165,6 @@ JSTR_NOEXCEPT
 	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
 	for (hs += 3, n -= 3; n-- && *hs && hw != nw; hw = hw << 8 | *++hs) {}
 	return (hw == nw) ? (char *)hs - 3 : NULL;
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-pjstr_memmem2(const unsigned char *hs,
-              const unsigned char *const ne,
-              size_t l)
-JSTR_NOEXCEPT
-{
-#if JSTR_LP64
-	typedef uint32_t size_ty;
-	enum { SHIFT = 16 };
-#else
-	typedef uint16_t size_ty;
-	enum { SHIFT = 8 };
-#endif
-	const size_ty nw = (size_ty)ne[0] << SHIFT | ne[1];
-	size_ty hw = (size_ty)hs[0] << SHIFT | hs[1];
-	for (++hs, --l; l-- && hw != nw; hw = hw << SHIFT | *++hs) {}
-	return (hw == nw) ? (void *)(hs - 1) : NULL;
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-pjstr_memmem3(const unsigned char *hs,
-              const unsigned char *const ne,
-              size_t l)
-JSTR_NOEXCEPT
-{
-	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8;
-	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8;
-	for (hs += 2, l -= 2; l-- && hw != nw; hw = (hw | *++hs) << 8) {}
-	return (hw == nw) ? (void *)(hs - 2) : NULL;
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-pjstr_memmem4(const unsigned char *hs,
-              const unsigned char *const ne,
-              size_t l)
-JSTR_NOEXCEPT
-{
-	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
-	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	for (hs += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | *++hs) {}
-	return (hw == nw) ? (void *)(hs - 3) : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
