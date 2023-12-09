@@ -82,8 +82,7 @@ pjstrl_elemmove(jstrlist_ty *R l,
                 const jstr_ty *R elem)
 {
 	jstr_ty *curr = l->data + l->size;
-	const jstr_ty *const end = l->data + l->capacity;
-	for (; curr < end && curr->data; ++curr) {}
+	for (size_t n = l->capacity; n-- && curr->data; ++curr) {}
 	*curr = *elem;
 }
 

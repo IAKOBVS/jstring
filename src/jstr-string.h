@@ -798,7 +798,9 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (u *)s;
-	for (int i = 0, n = sz % 4;; ++i) {
+	int i = 0;
+	int n = sz % 4;
+	for (;; ++i) {
 		if (!t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
 		if (--n == 0) {
@@ -843,7 +845,9 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (u *)s + sz - 1;
-	for (int i = 0, n = sz % 4;; ++i) {
+	int i = 0;
+	int n = sz % 4;
+	for (;; ++i) {
 		if (t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
 		if (--n == 0) {
@@ -1316,9 +1320,9 @@ jstr_rev_len(char *R s,
              size_t sz)
 JSTR_NOEXCEPT
 {
-	int c;
 	char *e = s + sz - 1;
-	while (s < e) {
+	int c;
+	for (; s < e;) {
 		c = *s;
 		*s++ = *e;
 		*e-- = c;
@@ -1846,7 +1850,8 @@ JSTR_NOEXCEPT
 		return dst - 1;
 	}
 	int i = src_len % 3;
-	for (int j = i; j--; *dst++ = *src++) {}
+	int j = i;
+	for (; j--; *dst++ = *src++) {}
 	if (i) {
 		*dst++ = separator;
 		i = 0;
