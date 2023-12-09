@@ -96,6 +96,8 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 	$body =~ s/, $//;
 	$body .= ");";
 	$attr =~ s/\s*$ATTR_ACCESS\(\(.*?\)\)//og;
+	$attr =~ s/\n\n//g;
+	$attr =~ s/\n$//g;
 	$file_str2 .= jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
 	push(@func_arr, $name);
 }
@@ -173,6 +175,8 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$attr =~ s/$ATTR_RET_NONNULL/$ATTR_DEFAULT_VOID/;
 	add_inline(\$attr);
 	$attr =~ s/\s*$ATTR_ACCESS\(\(.*?\)\)//og;
+	$attr =~ s/\n\n//g;
+	$attr =~ s/\n$//g;
 	$file_str3 .= jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
 	push(@func_arr, $name);
 }

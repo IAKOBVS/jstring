@@ -229,7 +229,7 @@ sub jl_fn_to_string {
 	my $arg = jl_arg_to_string($arg_arr_ref);
 	my $ret = "$$attr_ref\n$$rettype_ref\n$$name_ref($arg)";
 	if (defined($body_ref) && (defined($$body_ref) || $$body_ref ne '')) {
-		$ret .= "\n{ $$body_ref }";
+		$ret .= " { $$body_ref }";
 	}
 	return $ret;
 }
