@@ -558,7 +558,7 @@ JSTR_NOEXCEPT
 	shift = jstr_isalpha(*ne) | jstr_isalpha(ne[1]);
 	if (ne_len == 2) {
 		if (shift)
-			return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
+			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
 		goto STRSTR;
 #	else
@@ -568,7 +568,7 @@ JSTR_NOEXCEPT
 	shift |= jstr_isalpha(ne[2]);
 	if (ne_len == 3) {
 		if (shift)
-			return pjstr_memcasemem3((cu *)hs, (cu *)ne, hs_len);
+			return pjstr_strcasestr3((cu *)hs, (cu *)ne);
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
 		goto STRSTR;
 #	else
@@ -577,7 +577,7 @@ JSTR_NOEXCEPT
 	}
 	/* ne_len == 4 */
 	if (shift | jstr_isalpha(ne[3]))
-		return pjstr_memcasemem4((cu *)hs, (cu *)ne, hs_len);
+		return pjstr_strcasestr4((cu *)hs, (cu *)ne);
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
 	return pjstr_strstr4((cu *)hs, (cu *)ne);
 #	endif
