@@ -203,8 +203,8 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static int
 jstr_isbinary(const char *R buf,
-              size_t n,
-              size_t sz)
+              size_t sz,
+              size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
