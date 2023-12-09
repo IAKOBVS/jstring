@@ -553,6 +553,21 @@ STRSTR:
 #endif
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+jstr_strncasestr_len(const char *hs,
+                     size_t hs_len,
+                     const char *ne,
+                     size_t ne_len,
+                     size_t n)
+JSTR_NOEXCEPT
+{
+	return jstr_strcasestr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
+}
+
 /* Find NE in HS case-insensitively.
    Return value:
    Pointer to NE;
