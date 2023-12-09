@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# In GCC, -O1 compiles faster.
-[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O3"
 # Set the path to compile the tests to.
 if [ -z "$TMPDIR" ]; then
 	if [ -d /tmp ]; then
@@ -12,13 +10,15 @@ if [ -z "$TMPDIR" ]; then
 fi
 
 tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
+FLAGS='-O3 -march=native'
 
 mkdir -p "$tmp"
 
 for file in $(echo *.c); do
 	{
 	base=${file%.*}-exe
-	cc "$file" -o "$tmp/$base" -O3 -march=native
+	#shellcheck disable=SC2086
+	cc "$file" -o "$tmp/$base" $FLAGS
 	} &
 done
 wait

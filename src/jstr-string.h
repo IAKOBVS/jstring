@@ -151,49 +151,6 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (char *)hs - 3 : NULL;
 }
 
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static int
-pjstr_strnstrcmpeq(const unsigned char *hs,
-                   const unsigned char *ne,
-                   size_t n)
-{
-	for (; n && *hs && *hs == *ne; ++hs, ++ne, --n) {}
-	if (*ne == '\0' || n == 0)
-		return 0;
-	if (jstr_unlikely(*hs == '\0'))
-		return -1;
-	return 1;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strnstr_long(const unsigned char *hs,
-                   const unsigned char *ne,
-                   size_t n)
-JSTR_NOEXCEPT
-{
-	const uint32_t nw = (uint32_t)ne[0] << 24 | ne[1] << 16 | ne[2] << 8 | ne[3];
-	uint32_t hw = (uint32_t)hs[0] << 24 | hs[1] << 16 | hs[2] << 8 | hs[3];
-	int ret;
-	ne += 4;
-	for (hs += 3, n -= 3; n-- && *hs; hw = hw << 8 | *++hs)
-		if (hw == nw) {
-			ret = pjstr_strnstrcmpeq(hs - 3 + 4, ne, n - 4);
-			if (ret == 0)
-				goto ret;
-			if (jstr_unlikely(ret == -1))
-				return NULL;
-		}
-	if (*hs && hw == nw)
-		if (!pjstr_strnstrcmpeq(hs - 3 + 4, ne, n - 4))
-			goto ret;
-	return NULL;
-ret:
-	return (char *)hs - 3;
-}
-
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -724,28 +681,6 @@ STRSTR:
 #endif
 }
 
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasestr_rarebyte(const char *hs,
-                          const char *ne,
-                          const size_t shift)
-{
-	typedef const unsigned char cu;
-	const int c = *(ne + shift);
-	cu *p1, *p2;
-	for (hs += shift; (hs = (char *)strchr(hs, c)); ++hs) {
-		p1 = (cu *)hs - shift;
-		p2 = (cu *)ne;
-		for (; jstr_tolower(*p1) == jstr_tolower(*p2) && *p1; ++p1, ++p2) {}
-		if (*p2 == '\0')
-			return (char *)hs - shift;
-		if (jstr_unlikely(*p1 == '\0'))
-			break;
-	}
-	return NULL;
-}
-
 /* Find NE in HS case-insensitively.
    Return value:
    Pointer to NE;
@@ -768,10 +703,7 @@ JSTR_NOEXCEPT
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindeither(ne), ne);
 	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
 		return NULL;
-	if (!jstr_isalpha(*(ne + shift)))
-		return pjstr_strcasestr_rarebyte(hs, ne, shift);
-	else
-		hs = pjstr_strcasechr(hs + shift, *(ne + shift));
+	hs = jstr_strcasechr(hs + shift, *(ne + shift));
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	hs -= shift;

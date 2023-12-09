@@ -147,8 +147,8 @@ T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len
 	RUN(b_strcasestr, needle);          \
 	RUN(b_jstr_strcasestr, needle);     \
 	RUN(b_jstr_strcasestr_len, needle); \
-	RUN(b_simple_strrstr_len, needle);  \
-	RUN(b_jstr_strrstr_len, needle);
+	/* RUN(b_simple_strrstr_len, needle);  \ */
+	/* RUN(b_jstr_strrstr_len, needle); */
 
 /* clang-format off */
 #define DOUBLE(s) s#s
