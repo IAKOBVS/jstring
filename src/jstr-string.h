@@ -639,24 +639,12 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	n -= JSTR_PTR_DIFF(hs, start);
-	if (jstr_unlikely(hs[1] == '\0')
-	    || jstr_unlikely(n == 1))
-		return NULL;
 	if (ne[2] == '\0')
 		return pjstr_strncasestr2((cu *)hs, (cu *)ne, n);
-	if (jstr_unlikely(hs[2] == '\0')
-	    || jstr_unlikely(n == 2))
-		return NULL;
 	if (ne[3] == '\0')
 		return pjstr_strncasestr3((cu *)hs, (cu *)ne, n);
-	if (jstr_unlikely(hs[3] == '\0')
-	    || jstr_unlikely(n == 3))
-		return NULL;
 	if (ne[4] == '\0')
 		return pjstr_strncasestr4((cu *)hs, (cu *)ne, n);
-	if (jstr_unlikely(hs[4] == '\0')
-	    || jstr_unlikely(n == 4))
-		return NULL;
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;
 	size_t tmp = n;
