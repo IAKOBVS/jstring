@@ -420,10 +420,11 @@ jstrio_readfile_len(char *R *R s,
                     size_t *R sz,
                     size_t *R cap,
                     const char *R fname,
+                    int oflag,
                     size_t file_size)
 JSTR_NOEXCEPT
 {
-	const int fd = open(fname, O_RDONLY);
+	const int fd = open(fname, oflag | O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
 	if (jstr_chk(jstrio_readfilefd_len(s, sz, cap, fd, file_size)))
@@ -446,15 +447,20 @@ jstrio_readfile(char *R *R s,
                 size_t *R sz,
                 size_t *R cap,
                 const char *R fname,
+                int oflag,
                 struct stat *R st)
 JSTR_NOEXCEPT
 {
-	const int fd = open(fname, O_RDONLY);
+	const int fd = open(fname, oflag | O_RDONLY);
 	if (jstr_unlikely(fd == -1))
 		goto err;
 	if (jstr_unlikely(fstat(fd, st)))
 		goto err_close;
-	return jstrio_readfile_len(s, sz, cap, fname, (size_t)st->st_size);
+	if (jstr_chk(jstrio_readfilefd_len(s, sz, cap, fd, (size_t)st->st_size)))
+		goto err_close;
+	if (jstr_unlikely(close(fd)))
+		goto err;
+	return JSTR_RET_SUCC;
 err_close:
 	close(fd);
 err:
