@@ -553,6 +553,58 @@ STRSTR:
 #endif
 }
 
+JSTR_FUNC_PURE
+static char *
+jstr_strncasestr(const char *hs,
+                 const char *const ne,
+                 size_t n)
+JSTR_NOEXCEPT
+{
+	typedef const unsigned char cu;
+	enum { LONG_NE_THRES = 16 };
+	if (jstr_unlikely(*ne == '\0'))
+		return (char *)hs;
+	const char *const start = hs;
+	hs = jstr_strnchr(hs, *ne, n);
+	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
+		return (char *)hs;
+	n -= JSTR_PTR_DIFF(hs, start);
+	if (jstr_unlikely(hs[1] == '\0')
+	    || jstr_unlikely(n == 1))
+		return NULL;
+	if (ne[2] == '\0')
+		return pjstr_strncasestr2((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[2] == '\0')
+	    || jstr_unlikely(n == 2))
+		return NULL;
+	if (ne[3] == '\0')
+		return pjstr_strncasestr3((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[3] == '\0')
+	    || jstr_unlikely(n == 3))
+		return NULL;
+	if (ne[4] == '\0')
+		return pjstr_strncasestr4((cu *)hs, (cu *)ne, n);
+	if (jstr_unlikely(hs[4] == '\0')
+	    || jstr_unlikely(n == 4))
+		return NULL;
+	cu *hp = (cu *)hs;
+	cu *np = (cu *)ne;
+	size_t tmp = n;
+	for (; tmp-- && *hp == *np && *hp; ++hp, ++np) {}
+	if (*np == '\0')
+		return (char *)hs;
+	if (jstr_unlikely(*hp == '\0'))
+		return NULL;
+	tmp = JSTR_PTR_DIFF(np, ne);
+	const size_t ne_len = strlen((char *)np) + tmp;
+	if (jstr_unlikely(n < ne_len))
+		return NULL;
+	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
+	if (jstr_unlikely(hs_len < ne_len))
+		return NULL;
+	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
+}
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
