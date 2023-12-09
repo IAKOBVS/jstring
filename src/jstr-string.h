@@ -374,7 +374,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 #if JSTR_USE_STANDARD_MEMMEM
-	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
+	return (char *)memmem(hs, hs_len, ne, ne_len);
 #else
 	if (ne_len < LONG_NE_THRES)
 		return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, (cu *)jstr_rarebytefind(ne));
@@ -1287,11 +1287,7 @@ JSTR_NOEXCEPT
 		return 0;
 	size_t cnt = 0;
 	for (const char *const end = s + sz;
-#if JSTR_HAVE_MEMMEM_OPTIMIZED
-	     (s = (char *)jstr_memmem(s, JSTR_PTR_DIFF(end, s), find, find_len));
-#else
 	     (s = jstr_strstr_len(s, JSTR_PTR_DIFF(end, s), find, find_len));
-#endif
 	     ++cnt, s += find_len)
 		;
 	return cnt;
