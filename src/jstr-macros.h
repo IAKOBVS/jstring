@@ -49,9 +49,6 @@ PJSTR_BEGIN_DECLS
 #include <string.h>
 PJSTR_END_DECLS
 
-#define memchr(s, c, n) (*(unsigned char *)s != (unsigned char)c ? memchr(s, c, n) : s)
-#define strchr(s, c)    (*(unsigned char *)s != (unsigned char)c ? strchr(s, c) : s)
-
 #if defined _LP64 || defined __LP64__
 #	define JSTR_LP64 1
 #elif defined _ILP32 || defined __ILP32__
@@ -159,7 +156,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE            4096
+#define JSTR_PAGE_SIZE 4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
