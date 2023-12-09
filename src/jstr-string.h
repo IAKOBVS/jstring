@@ -845,9 +845,7 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (u *)s;
-	int i = 0;
-	int n = sz % 4;
-	for (;; ++i) {
+	for (int i = 0, n = sz % 4;; ++i) {
 		if (!t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
 		if (--n == 0) {
@@ -892,9 +890,7 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (u *)s + sz - 1;
-	int i = 0;
-	int n = sz % 4;
-	for (;; ++i) {
+	for (int i = 0, n = sz % 4;; ++i) {
 		if (t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
 		if (--n == 0) {
