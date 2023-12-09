@@ -380,10 +380,11 @@ jstrio_freadfile_len(char *R *R s,
                      size_t *R sz,
                      size_t *R cap,
                      const char *R filename,
+                     const char *R modes,
                      const size_t file_size)
 JSTR_NOEXCEPT
 {
-	FILE *fp = fopen(filename, "r");
+	FILE *fp = fopen(filename, modes);
 	if (jstr_nullchk(fp))
 		goto err;
 	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)file_size)))
@@ -409,7 +410,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(filename, st)))
 		goto err;
-	return jstrio_freadfile_len(s, sz, cap, filename, (size_t)st->st_size);
+	return jstrio_freadfile_len(s, sz, cap, filename, "w", (size_t)st->st_size);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
