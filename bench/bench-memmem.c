@@ -153,8 +153,8 @@ T_DEFINE_STRSTR(jstr_strstr_len, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(strcasestr, haystack, needle)
 T_DEFINE_STRSTR(jstr_strcasestr, haystack, needle)
 T_DEFINE_STRSTR(jstr_strcasestr_len, haystack, strlen(haystack), needle, needle_len)
-/* T_DEFINE_STRSTR(simple_strrstr_len, haystack, strlen(haystack), needle, needle_len) */
-/* T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len) */
+T_DEFINE_STRSTR(simple_strrstr_len, haystack, strlen(haystack), needle, needle_len)
+T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len)
 
 #define T_STRSTR_ALL(needle)                \
 	RUN(b_simple_strcasestr, needle);   \
@@ -169,9 +169,9 @@ T_DEFINE_STRSTR(jstr_strcasestr_len, haystack, strlen(haystack), needle, needle_
 	RUN(b_jstr_strcasestr, needle);     \
 	RUN(b_jstr_strcasestr_len, needle); \
 	RUN(b_simple_strnstr, needle);      \
-	RUN(b_jstrjstr_strnstrr, needle);   \
-	/* RUN(b_simple_strrstr_len, needle);  \ */
-	/* RUN(b_jstr_strrstr_len, needle); */
+	RUN(b_jstr_strnstr, needle);        \
+	RUN(b_simple_strrstr_len, needle);  \
+	RUN(b_jstr_strrstr_len, needle);
 
 /* clang-format off */
 #define DOUBLE(s) s#s
