@@ -56,8 +56,8 @@ JSTR_NOEXCEPT
 #	endif
 	const size_ty nw = (size_ty)L(ne[0]) << SHIFT | L(ne[1]);
 	size_ty hw = (size_ty)L(hs[0]) << SHIFT | L(hs[1]);
-	for (++hs, --l; l-- && hw != nw; hw = hw << SHIFT | L(*++hs)) {}
-	return (hw == nw) ? (char *)(hs - 1) : NULL;
+	for (hs += 2, l -= 2; l-- && hw != nw; hw = hw << SHIFT | L(*hs++)) {}
+	return (hw == nw) ? (char *)(hs - 2) : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -71,8 +71,8 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8;
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8;
-	for (hs += 2, l -= 2; l-- && hw != nw; hw = (hw | L(*++hs)) << 8) {}
-	return (hw == nw) ? (char *)(hs - 2) : NULL;
+	for (hs += 3, l -= 3; l-- && hw != nw; hw = (hw | L(*hs++)) << 8) {}
+	return (hw == nw) ? (char *)(hs - 3) : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -86,8 +86,8 @@ JSTR_NOEXCEPT
 {
 	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
 	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
-	for (hs += 3, l -= 3; l-- && hw != nw; hw = hw << 8 | L(*++hs)) {}
-	return (hw == nw) ? (char *)(hs - 3) : NULL;
+	for (hs += 4, l -= 4; l-- && hw != nw; hw = hw << 8 | L(*hs++)) {}
+	return (hw == nw) ? (char *)(hs - 4) : NULL;
 }
 
 #else

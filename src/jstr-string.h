@@ -272,8 +272,8 @@ JSTR_NOEXCEPT
 	hs = (void *)memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (void *)hs;
-	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	hs = (cu *)hs - shift;
+	hs_len = hs_len - JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
@@ -552,13 +552,13 @@ JSTR_NOEXCEPT
 	hs = jstr_strcasechr(hs, *rare);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
-	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
 	hs -= shift;
+	hs_len = hs_len - JSTR_PTR_DIFF(hs, start);
 	/* Reuse SHIFT as IS_ALPHA. */
 	shift = jstr_isalpha(*ne) | jstr_isalpha(ne[1]);
 	if (ne_len == 2) {
 		if (shift)
-			return pjstr_memcasemem2((cu *)hs, (cu *)ne, ne_len);
+			return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
 		goto STRSTR;
 #	else
@@ -568,7 +568,7 @@ JSTR_NOEXCEPT
 	shift |= jstr_isalpha(ne[2]);
 	if (ne_len == 3) {
 		if (shift)
-			return pjstr_memcasemem3((cu *)hs, (cu *)ne, ne_len);
+			return pjstr_memcasemem3((cu *)hs, (cu *)ne, hs_len);
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
 		goto STRSTR;
 #	else
@@ -577,7 +577,7 @@ JSTR_NOEXCEPT
 	}
 	/* ne_len == 4 */
 	if (shift | jstr_isalpha(ne[3]))
-		return pjstr_memcasemem4((cu *)hs, (cu *)ne, ne_len);
+		return pjstr_memcasemem4((cu *)hs, (cu *)ne, hs_len);
 #	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
 	return pjstr_strstr4((cu *)hs, (cu *)ne);
 #	endif
@@ -1341,30 +1341,7 @@ jstr_revcpy_len(char *R dst,
 JSTR_NOEXCEPT
 {
 	src += src_len - 1;
-#if JSTR_HAVE_ATTR_MAY_ALIAS && JSTR_ENDIAN_LITTLE
-	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	enum { S = sizeof(word),
-	       S4 = (4 * S) };
-	if ((uintptr_t)dst % S == (uintptr_t)src % S) {
-		for (; (uintptr_t)dst % S; *dst++ = *src--, --src_len)
-			if (jstr_unlikely(src_len == 0))
-				goto ret;
-		word *dw = (word *)dst;
-		const word *sw = (const word *)src;
-		for (; src_len >= S4; dw += 4, sw += 4, src_len -= 4) {
-			*dw = *sw;
-			*(dw + 1) = *(sw + 1);
-			*(dw + 2) = *(sw + 2);
-			*(dw + 3) = *(sw + 3);
-		}
-		for (; src_len >= S; *dw++ = *sw++, --src_len) {}
-		dst = (char *)dw;
-		src = (char *)sw;
-	}
-#endif
 	for (; src_len--; *dst++ = *src--) {}
-	goto ret;
-ret:
 	*dst = '\0';
 }
 

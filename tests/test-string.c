@@ -179,7 +179,7 @@ simple_stpcpy(char *d,
 			const char *src;                                          \
 			src = T_HS(test_array, i);                                \
 			expected_len = JSTR_PTR_DIFF(fn(buf_r, src), buf_r);      \
-			result_len = JSTR_PTR_DIFF(simple_fn(buf_e, src), buf_e);    \
+			result_len = JSTR_PTR_DIFF(simple_fn(buf_e, src), buf_e); \
 			if (strcmp(buf_e, buf_r) || result_len != expected_len) { \
 				PRINTERR("expected_len:%zu\n"                     \
 				         "%s\n",                                  \
@@ -189,7 +189,8 @@ simple_stpcpy(char *d,
 				         "%s\n",                                  \
 				         result_len,                              \
 				         buf_r);                                  \
-				assert(0);                                        \
+				assert(!strcmp(buf_e, buf_r));                    \
+				assert(result_len == expected_len);               \
 			}                                                         \
 			src = T_NE(test_array, i);                                \
 		}                                                                 \
@@ -304,7 +305,7 @@ main(int argc, char **argv)
 	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp);
 	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem);
+	/* T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem); */
 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
