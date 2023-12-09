@@ -99,6 +99,81 @@ JSTR_NOEXCEPT
 	return (s1_len == s2_len) ? jstr_strcasecmpeq(s1, s2) : 1;
 }
 
+/* The following strstr2(), strstr3(), strstr4() functions are taken from
+   newlib's strstr.
+   Copyright (c) 2018 Arm Ltd.  All rights reserved.
+
+   BSD-3-Clause
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. The name of the company may not be used to endorse or promote
+      products derived from this software without specific prior written
+      permission.
+
+   THIS SOFTWARE IS PROVIDED BY ARM LTD ``AS IS'' AND ANY EXPRESS OR IMPLIED
+   WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL ARM LTD BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+   TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+pjstr_strstr2(const unsigned char *hs, const unsigned char *ne)
+{
+#if JSTR_LP64
+	typedef uint32_t size_ty;
+	enum { SHIFT = 16 };
+#else
+	typedef uint16_t size_ty;
+	enum { SHIFT = 8 };
+#endif
+	const size_ty h1 = (size_ty)(ne[0] << SHIFT) | ne[1];
+	size_ty h2 = 0;
+	unsigned int c;
+	for (c = hs[0]; h1 != h2 && c != 0; c = *++hs)
+		h2 = (h2 << SHIFT) | c;
+	return h1 == h2 ? (char *)hs - 2 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+pjstr_strstr3(const unsigned char *hs, const unsigned char *ne)
+{
+	const uint32_t h1 = (uint32_t)(ne[0] << 24) | (ne[1] << 16) | (ne[2] << 8);
+	uint32_t h2 = 0;
+	unsigned int c;
+	for (c = hs[0]; h1 != h2 && c != 0; c = *++hs)
+		h2 = (h2 | c) << 8;
+	return h1 == h2 ? (char *)hs - 3 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+pjstr_strstr4(const unsigned char *hs, const unsigned char *ne)
+{
+	const uint32_t h1 = (uint32_t)(ne[0] << 24) | (ne[1] << 16) | (ne[2] << 8) | ne[3];
+	uint32_t h2 = 0;
+	unsigned int c;
+	for (c = hs[0]; c != 0 && h1 != h2; c = *++hs)
+		h2 = (h2 << 8) | c;
+	return h1 == h2 ? (char *)hs - 4 : NULL;
+}
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -645,24 +720,35 @@ JSTR_NOEXCEPT
 	if (ne_len == 2) {
 		if (shift)
 			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
+#	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
 		goto STRSTR;
+#	else
+		return pjstr_strstr2((cu *)hs, (cu *)ne);
+#	endif
 	}
 	shift |= jstr_isalpha(ne[2]);
 	if (ne_len == 3) {
 		if (shift)
 			return pjstr_strcasestr3((cu *)hs, (cu *)ne);
+#	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
 		goto STRSTR;
+#	else
+		return pjstr_strstr3((cu *)hs, (cu *)ne);
+#	endif
 	}
 	/* ne_len == 4 */
 	if (shift | jstr_isalpha(ne[3]))
-		return pjstr_strcasestr4((cu *)hs, (cu *)ne);
-	goto STRSTR;
+		return pjstr_strstr4((cu *)hs, (cu *)ne);
+#	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
+	return pjstr_strstr4((cu *)hs, (cu *)ne);
+#	endif
+#	if JSTR_HAVE_STRSTR_OPTIMIZED
 STRSTR:
-	if (!jstr_memcmpeq_loop(hs, ne, ne_len))
-		return (char *)hs;
-	if (jstr_unlikely(hs_len == ne_len))
-		return NULL;
-	return jstr_strstr_len(hs + 1, hs_len - 1, ne, ne_len);
+	return (char *)strstr(hs, ne);
+#	elif JSTR_HAVE_MEMMEM_OPTIMIZED
+STRSTR:
+	return (char *)memmem(hs, hs_len, ne, ne_len);
+#	endif
 #endif
 }
 
@@ -684,7 +770,7 @@ JSTR_NOEXCEPT
 #else
 	if (jstr_unlikely(ne[0] == '\0'))
 		return (char *)hs;
-	typedef unsigned char u;
+	typedef const unsigned char cu;
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindeither(ne), ne);
 	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
 		return NULL;
@@ -698,8 +784,12 @@ JSTR_NOEXCEPT
 	if (ne[2] == '\0') {
 		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1]))
-			return pjstr_strcasestr2((const u *)hs, (const u *)ne);
+			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
+#	if !JSTR_HAVE_STRSTR_OPTIMIZED
+		return pjstr_strstr2((cu *)hs, (cu *)ne);
+#	else
 		goto STRSTR;
+#	endif
 	}
 	if (jstr_unlikely(hs[2] == '\0'))
 		return NULL;
@@ -707,8 +797,12 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2]))
-			return pjstr_strcasestr3((const u *)hs, (const u *)ne);
+			return pjstr_strcasestr3((cu *)hs, (cu *)ne);
+#	if !JSTR_HAVE_STRSTR_OPTIMIZED
+		return pjstr_strstr3((cu *)hs, (cu *)ne);
+#	else
 		goto STRSTR;
+#	endif
 	}
 	if (jstr_unlikely(hs[3] == '\0'))
 		return NULL;
@@ -717,14 +811,20 @@ JSTR_NOEXCEPT
 		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2])
 		    | jstr_isalpha(ne[3]))
-			return pjstr_strcasestr4((const u *)hs, (const u *)ne);
+			return pjstr_strcasestr4((cu *)hs, (cu *)ne);
+#	if !JSTR_HAVE_STRSTR_OPTIMIZED
+		return pjstr_strstr4((cu *)hs, (cu *)ne);
+#	else
 		goto STRSTR;
+#	endif
 	}
 	if (jstr_unlikely(hs[4] == '\0'))
 		return NULL;
 	return pjstr_strcasestr_long(hs, ne);
+#	if JSTR_HAVE_STRSTR_OPTIMIZED
 STRSTR:
 	return (char *)strstr(hs, ne);
+#	endif
 #endif
 }
 

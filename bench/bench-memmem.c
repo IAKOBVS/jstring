@@ -182,6 +182,10 @@ T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len
 		T_STRSTR_ALL("Ab");                                 \
 		T_STRSTR_ALL("Abc");                                \
 		T_STRSTR_ALL("Abcd");                               \
+		T_STRSTR_ALL("efghA");                              \
+		T_STRSTR_ALL("efghAb");                             \
+		T_STRSTR_ALL("efghAbc");                            \
+		T_STRSTR_ALL("efghAbcd");                           \
 		T_STRSTR_ALL("Abcdefghijklmnopqrstuvwxyz");         \
 		T_STRSTR_ALL("Azbycxdwevfugthsirjqkplomn");         \
 		T_STRSTR_ALL(DOUBLE("Abcdefghijklmnopqrstuvwxyz")); \

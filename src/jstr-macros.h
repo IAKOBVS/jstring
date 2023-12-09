@@ -57,6 +57,16 @@ PJSTR_END_DECLS
 #	define JSTR_LP_UNKNOWN 1
 #endif
 
+#if 0
+#	define JSTR_MEMRCHR_MAYBE(s, c, n) ((jstr_unlikely(n == 0) ? 0 : (*((unsigned char *)s + n - 1) == (unsigned char)c)) ? (s + n - 1) : jstr_memrchr(s, c, n))
+#	define JSTR_MEMCHR_MAYBE(s, c, n)  ((jstr_unlikely(n == 0) ? 0 : (*(unsigned char *)s == (unsigned char)c)) ? s : memchr(s, c, n))
+#	define JSTR_STRCHR_MAYBE(s, c)     ((*(unsigned char *)s != (unsigned char)c) ? strchr(s, c) : s)
+#else
+#	define JSTR_MEMRCHR_MAYBE(s, c, n) jstr_memrchr(s, c, n)
+#	define JSTR_MEMCHR_MAYBE(s, c, n)  memchr(s, c, n)
+#	define JSTR_STRCHR_MAYBE(s, c)     strchr(s, c)
+#endif
+
 PJSTR_BEGIN_DECLS
 typedef enum {
 	JSTR_RET_ERR = -1,
@@ -156,7 +166,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == JSTR_RET_ERR)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE            4096
+#define JSTR_PAGE_SIZE 4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)

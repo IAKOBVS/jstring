@@ -1,2 +1,2 @@
 #!/bin/sh
-awk '{gsub(/b_/, "", $1); print $3, $2, $1};' "$1" | sort -n -k1 | sed 's/0/ /g; s/\([0-9]\) /\10/g; s/"/ "/'
+awk '{gsub(/"/, ""); gsub(/b_/, "", $1); print $3, $2, $1};' "$1" | sort -n -k1
