@@ -632,6 +632,7 @@ jstr_strrcspn_len(const char *s,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	typedef const unsigned char cu;
 	if (jstr_unlikely(reject[0] == '\0')
 	    || jstr_unlikely(sz == 0))
 		return sz;
@@ -641,11 +642,11 @@ JSTR_NOEXCEPT
 	}
 	u t[256];
 	JSTR_BZERO_ARRAY(t);
-	const u *p = (const u *)reject;
+	cu *p = (cu *)reject;
 	do
 		t[*p] = 1;
 	while (*p++);
-	p = (u *)s + sz - 1;
+	p = (cu *)s + sz - 1;
 	int i = 0;
 	int n = sz % 4;
 	for (;; --i) {
@@ -657,7 +658,7 @@ JSTR_NOEXCEPT
 			break;
 		}
 	}
-	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
+	p = (cu *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
@@ -665,7 +666,7 @@ JSTR_NOEXCEPT
 		c2 = t[p[-2]];
 		c3 = t[p[-3]];
 		p -= 4;
-	} while (((p < (u *)s) | c0 | c1 | c2 | c3) == 0);
+	} while (((p < (cu *)s) | c0 | c1 | c2 | c3) == 0);
 	size_t cnt = JSTR_PTR_DIFF(s + sz, p);
 	cnt = sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
 	return (cnt < sz) ? cnt : sz;
@@ -694,6 +695,7 @@ jstr_strrspn_len(const char *s,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	typedef const unsigned char cu;
 	if (jstr_unlikely(*accept == '\0')
 	    || jstr_unlikely(sz == 0))
 		return sz;
@@ -703,13 +705,13 @@ JSTR_NOEXCEPT
 		for (; sz-- && *p == c; --p) {}
 		return JSTR_PTR_DIFF(p, s);
 	}
-	const u *p = (u *)accept;
+	cu *p = (cu *)accept;
 	u t[256];
 	JSTR_BZERO_ARRAY(t);
 	do
 		t[*p++] = 1;
 	while (*p);
-	p = (u *)s + sz - 1;
+	p = (cu *)s + sz - 1;
 	int i = 0;
 	int n = sz % 4;
 	for (;; --i) {
@@ -721,7 +723,7 @@ JSTR_NOEXCEPT
 			break;
 		}
 	}
-	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
+	p = (cu *)JSTR_PTR_ALIGN_UP(p, 4);
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
@@ -729,7 +731,7 @@ JSTR_NOEXCEPT
 		c2 = t[p[-2]];
 		c3 = t[p[-3]];
 		p -= 4;
-	} while ((p >= (u *)s) & (c0 & c1 & c2 & c3));
+	} while ((p >= (cu *)s) & (c0 & c1 & c2 & c3));
 	size_t cnt = JSTR_PTR_DIFF(s + sz, p);
 	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
 	return (cnt < sz) ? cnt : sz;
@@ -782,6 +784,7 @@ jstr_memspn(const void *s,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	typedef const unsigned char cu;
 	if (jstr_unlikely(*accept == '\0')
 	    || jstr_unlikely(sz == 0))
 		return sz;
@@ -791,13 +794,13 @@ JSTR_NOEXCEPT
 		for (; sz-- && *p == c; ++p) {}
 		return JSTR_PTR_DIFF(p, s);
 	}
-	const u *p = (u *)accept;
+	cu *p = (cu *)accept;
 	u t[256];
 	JSTR_BZERO_ARRAY(t);
 	do
 		t[*p++] = 1;
 	while (*p);
-	p = (u *)s;
+	p = (cu *)s;
 	int i = 0;
 	int n = sz % 4;
 	for (;; ++i) {
@@ -809,8 +812,8 @@ JSTR_NOEXCEPT
 			break;
 		}
 	}
-	p = (u *)JSTR_PTR_ALIGN_DOWN(p, 4);
-	const u *const end = (const u *)s + sz;
+	p = (cu *)JSTR_PTR_ALIGN_DOWN(p, 4);
+	cu *const end = (cu *)s + sz;
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
@@ -819,7 +822,7 @@ JSTR_NOEXCEPT
 		c3 = t[p[3]];
 		p += 4;
 	} while ((p < end) & (c0 & c1 & c2 & c3));
-	size_t cnt = p - (u *)p;
+	size_t cnt = p - (cu *)p;
 	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
 	return (cnt < sz) ? cnt : sz;
 }
@@ -833,6 +836,7 @@ jstr_memcspn(const void *s,
 JSTR_NOEXCEPT
 {
 	typedef unsigned char u;
+	typedef const unsigned char cu;
 	if (jstr_unlikely(*reject == '\0')
 	    || jstr_unlikely(sz == 0))
 		return sz;
@@ -840,11 +844,11 @@ JSTR_NOEXCEPT
 		return JSTR_PTR_DIFF(jstr_memchrnul(s, *reject, sz), s);
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
-	const unsigned char *p = (const u *)reject;
+	cu *p = (cu *)reject;
 	do
 		t[*p] = 1;
 	while (*p++);
-	p = (u *)s + sz - 1;
+	p = (cu *)s + sz - 1;
 	int i = 0;
 	int n = sz % 4;
 	for (;; ++i) {
@@ -856,8 +860,8 @@ JSTR_NOEXCEPT
 			break;
 		}
 	}
-	p = (u *)JSTR_PTR_ALIGN_UP(p, 4);
-	const unsigned char *const end = p + sz;
+	p = (cu *)JSTR_PTR_ALIGN_UP(p, 4);
+	cu *const end = p + sz;
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
