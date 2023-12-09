@@ -99,6 +99,25 @@ simple_strstr(const char *h,
 	return NULL;
 }
 
+static char *
+simple_strnstr(const char *hs,
+               const char *ne,
+               size_t n)
+{
+	if (jstr_unlikely(*ne == 0))
+		return (char *)hs;
+	const char *p1, *p2;
+	size_t k;
+	for (; *hs && n; ++hs, --n) {
+		for (p1 = hs + 1, p2 = ne + 1, k = n - 1; k && *p1 && *p1 == *p2; --k, ++p1, ++p2) {}
+		if (jstr_unlikely(k == 0) || *p2 == '\0')
+			return (char *)hs;
+		if (jstr_unlikely(*p1 == '\0'))
+			break;
+	}
+	return NULL;
+}
+
 #define T_DEFINE_STRSTR(impl_func, ...)                                        \
 	static JSTR_ATTR_MAYBE_UNUSED size_t                                   \
 	b_##impl_func(void *dummy)                                             \
@@ -122,9 +141,10 @@ simple_strstr(const char *h,
 		return cs;                                                     \
 	}
 
-T_DEFINE_STRSTR(simple_strrstr_len, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(simple_memmem, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(simple_strcasestr, haystack, needle)
+T_DEFINE_STRSTR(simple_strnstr, haystack, needle, strlen(haystack))
+T_DEFINE_STRSTR(jstr_strnstr, haystack, needle, strlen(haystack))
 T_DEFINE_STRSTR(simple_strstr, haystack, needle)
 T_DEFINE_STRSTR(strstr, haystack, needle)
 T_DEFINE_STRSTR(memmem, haystack, strlen(haystack), needle, needle_len)
@@ -133,7 +153,8 @@ T_DEFINE_STRSTR(jstr_strstr_len, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(strcasestr, haystack, needle)
 T_DEFINE_STRSTR(jstr_strcasestr, haystack, needle)
 T_DEFINE_STRSTR(jstr_strcasestr_len, haystack, strlen(haystack), needle, needle_len)
-T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len)
+/* T_DEFINE_STRSTR(simple_strrstr_len, haystack, strlen(haystack), needle, needle_len) */
+/* T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len) */
 
 #define T_STRSTR_ALL(needle)                \
 	RUN(b_simple_strcasestr, needle);   \
@@ -147,8 +168,10 @@ T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len
 	RUN(b_strcasestr, needle);          \
 	RUN(b_jstr_strcasestr, needle);     \
 	RUN(b_jstr_strcasestr_len, needle); \
-/* RUN(b_simple_strrstr_len, needle);  \ */
-/* RUN(b_jstr_strrstr_len, needle); */
+	RUN(b_simple_strnstr, needle);      \
+	RUN(b_jstrjstr_strnstrr, needle);   \
+	/* RUN(b_simple_strrstr_len, needle);  \ */
+	/* RUN(b_jstr_strrstr_len, needle); */
 
 /* clang-format off */
 #define DOUBLE(s) s#s
