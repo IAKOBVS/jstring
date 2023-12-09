@@ -515,7 +515,6 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	hs -= shift;
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start);
-	/* Reuse SHIFT as IS_ALPHA. */
 	shift = jstr_isalpha(*ne) | jstr_isalpha(ne[1]);
 	if (ne_len == 2) {
 		if (shift)
