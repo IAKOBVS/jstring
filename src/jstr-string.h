@@ -504,35 +504,27 @@ JSTR_NOEXCEPT
 	if (ne_len == 2) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]))
 			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
-#	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
-		goto STRSTR;
-#	else
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
 		return pjstr_strstr2((cu *)hs, (cu *)ne);
 #	endif
 	} else if (ne_len == 3) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((cu *)hs, (cu *)ne);
-#	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
-		goto STRSTR;
-#	else
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
 		return pjstr_strstr3((cu *)hs, (cu *)ne);
 #	endif
 	} else if (ne_len == 4) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((cu *)hs, (cu *)ne);
-#	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED
-		goto STRSTR;
-#	else
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
 		return pjstr_strstr4((cu *)hs, (cu *)ne);
 #	endif
 	} else {
 		return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 	}
 #	if JSTR_HAVE_STRSTR_OPTIMIZED
-STRSTR:
 	return (char *)strstr(hs, ne);
 #	elif JSTR_HAVE_MEMMEM_OPTIMIZED
-STRSTR:
 	return (char *)memmem(hs, hs_len, ne, ne_len);
 #	endif
 #endif
@@ -582,33 +574,25 @@ JSTR_NOEXCEPT
 	if (ne[2] == '\0') {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]))
 			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
-#	if JSTR_HAVE_STRSTR_OPTIMIZED
-		goto STRSTR;
-#	else
+#	if !JSTR_HAVE_STRSTR_OPTIMIZED
 		return pjstr_strstr2((cu *)hs, (cu *)ne);
 #	endif
-	}
-	if (ne[3] == '\0') {
+	} else if (ne[3] == '\0') {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((cu *)hs, (cu *)ne);
-#	if JSTR_HAVE_STRSTR_OPTIMIZED
-		goto STRSTR;
-#	else
+#	if !JSTR_HAVE_STRSTR_OPTIMIZED
 		return pjstr_strstr3((cu *)hs, (cu *)ne);
 #	endif
-	}
-	if (ne[4] == '\0') {
+	} else if (ne[4] == '\0') {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((cu *)hs, (cu *)ne);
-#	if JSTR_HAVE_STRSTR_OPTIMIZED
-		goto STRSTR;
-#	else
+#	if !JSTR_HAVE_STRSTR_OPTIMIZED
 		return pjstr_strstr4((cu *)hs, (cu *)ne);
 #	endif
+	} else {
+		return pjstr_strcasestr_long(hs, ne);
 	}
-	return pjstr_strcasestr_long(hs, ne);
 #	if JSTR_HAVE_STRSTR_OPTIMIZED
-STRSTR:
 	return (char *)strstr(hs, ne);
 #	endif
 #endif
@@ -643,24 +627,19 @@ JSTR_NOEXCEPT
 			return pjstr_strncasestr4((cu *)hs, (cu *)ne, n);
 		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
 	}
-	cu *hp;
-	hp = (cu *)hs;
-	cu *np;
-	np = (cu *)ne;
-	size_t tmp;
-	tmp = n;
+	cu *hp = (cu *)hs;
+	cu *np = (cu *)ne;
+	size_t tmp = n;
 	for (; tmp-- && jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np) {}
 	if (*np == '\0')
 		return (char *)hs;
 	if (jstr_unlikely(*hp == '\0'))
 		return NULL;
 	tmp = JSTR_PTR_DIFF(np, ne);
-	size_t ne_len;
-	ne_len = strlen((char *)np) + tmp;
+	const size_t ne_len = strlen((char *)np) + tmp;
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
-	size_t hs_len;
-	hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
+	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
