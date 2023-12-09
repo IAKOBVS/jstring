@@ -1322,9 +1322,7 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-#if !(JSTR_HAVE_ATTR_MAY_ALIAS && JSTR_ENDIAN_LITTLE)
 JSTR_ATTR_INLINE
-#endif
 static void
 jstr_revcpy_len(char *R dst,
                 const char *R src,
