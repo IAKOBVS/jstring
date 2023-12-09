@@ -627,30 +627,15 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (ne_len > 4) {
-		if (ne_len < LONG_NE_THRES) {
-			cu *const p = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
-			if (p)
-				return pjstr_strcasestr_len_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, p);
-		}
+	if (ne_len > 4)
 		return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
-	}
 	cu *rare = (cu *)jstr_rarebytefindeither_len(ne, ne_len);
 	/* ne_len <= 4 */
 	unsigned int shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;
 	hs_len -= shift;
 	const char *const start = hs;
-	if (!jstr_isalpha(*rare)) {
-		cu *const end = (cu *)hs + hs_len - (ne_len - shift) + 1;
-		const int c = *rare;
-		for (; (hs = (char *)memchr(hs, c, JSTR_PTR_DIFF(end, hs))); ++hs)
-			if (!jstr_strcasecmpeq_len_loop(hs - shift, ne, ne_len))
-				return (char *)hs - shift;
-		return NULL;
-	} else {
-		hs = pjstr_strcasechr(hs, *rare);
-	}
+	hs = jstr_strcasechr(hs, *rare);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
 	hs_len = hs_len - JSTR_PTR_DIFF(hs, start) + shift;
@@ -714,7 +699,6 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(*ne)
 		    | jstr_isalpha(ne[1]))
 			return pjstr_strcasestr2((const u *)hs, (const u *)ne);
-		shift = 2;
 		goto STRSTR;
 	}
 	if (jstr_unlikely(hs[2] == '\0'))
@@ -724,7 +708,6 @@ JSTR_NOEXCEPT
 		    | jstr_isalpha(ne[1])
 		    | jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((const u *)hs, (const u *)ne);
-		shift = 3;
 		goto STRSTR;
 	}
 	if (jstr_unlikely(hs[3] == '\0'))
@@ -735,7 +718,6 @@ JSTR_NOEXCEPT
 		    | jstr_isalpha(ne[2])
 		    | jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((const u *)hs, (const u *)ne);
-		shift = 4;
 		goto STRSTR;
 	}
 	if (jstr_unlikely(hs[4] == '\0'))
