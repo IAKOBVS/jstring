@@ -115,17 +115,13 @@ typedef enum {
 #endif
 } jstrre_ret_ty;
 
-#define PJSTRRE_ERR_EXEC_HANDLE(errcode, do_on_error, do_on_memory_error) \
-	if (jstr_likely(errcode == JSTRRE_RET_NOERROR)) {                 \
-		;                                                         \
-	} else if (errcode == JSTRRE_RET_NOMATCH) {                       \
-		break;                                                    \
-	} else {                                                          \
-		if (jstr_unlikely(errcode == JSTRRE_RET_ESPACE)) {        \
-			do_on_memory_error;                               \
-		} else {                                                  \
-			do_on_error;                                      \
-		}                                                         \
+#define PJSTRRE_ERR_EXEC_HANDLE(errcode, do_on_error)     \
+	if (jstr_likely(errcode == JSTRRE_RET_NOERROR)) { \
+		;                                         \
+	} else if (errcode == JSTRRE_RET_NOMATCH) {       \
+		break;                                    \
+	} else {                                          \
+		do_on_error;                              \
 	}
 
 #if JSTR_PANIC
@@ -302,7 +298,7 @@ JSTR_NOEXCEPT
 	size_t changed = 0;
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstrre_exec_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), 1, &rm, eflags);
-		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err, goto err_free);
+		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -315,7 +311,6 @@ JSTR_NOEXCEPT
 	return changed;
 err_free:
 	jstr_free_noinline(s, sz, cap);
-err:
 	JSTRRE_RETURN_ERR(ret, preg);
 }
 
@@ -473,7 +468,7 @@ JSTR_NOEXCEPT
 	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(*s + start_idx);
 	while (n-- && *i.src_e) {
 		ret = jstrre_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), 1, &rm, eflags);
-		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err, goto err_free);
+		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -492,7 +487,6 @@ JSTR_NOEXCEPT
 	return JSTRRE_RET_NOERROR;
 err_free:
 	jstr_free_noinline(s, sz, cap);
-err:
 	JSTRRE_RETURN_ERR(ret, preg);
 }
 
@@ -679,7 +673,7 @@ JSTR_NOEXCEPT
 	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(*s + start_idx);
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstrre_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
-		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err, goto err_free_rdst);
+		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err_free_rdst);
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (jstr_unlikely(find_len == 0)) {
 			++i.src_e;
@@ -720,7 +714,6 @@ err_free_rdst:
 	free(rdst_heap);
 err_free:
 	jstr_free_noinline(s, sz, cap);
-err:
 	JSTRRE_RETURN_ERR(ret, preg);
 }
 
