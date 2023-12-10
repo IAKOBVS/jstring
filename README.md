@@ -56,11 +56,15 @@ including any header. For example:
 ```
 
 ## Error handling:
-JSTR\_ERR is returned as error. The programmer is expected to check the return value
+A negative number is returned as error. The programmer is expected to check the return value
 and handle the error. When a memory error is encountered, the user is expected to free
 all the related resources. Use jstr\_err\(\) to print the error message or jstr\_errdie\(\)
 to also exit. When debugging, you may want to define JSTR\_PANIC as 1 to automatically
 call jstr\_errdie\(\) on errors.
+
+For jstr-regex.h, jstrre\_rm\*\(\), jstrre\_rplc\*\(\) will return a negative number indicating
+the negated value of the regex error code. To print an error message, pass the negation of
+the returned error code.
 
 ## Naming conventions
 ### Functions or macros:
