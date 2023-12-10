@@ -86,7 +86,7 @@ pjstr_grow(size_t cap,
            size_t new_cap)
 JSTR_NOEXCEPT
 {
-	while ((cap *= JSTR_GROWTH) < new_cap) {}
+	while ((cap = (size_t)(cap * JSTR_GROWTH)) < new_cap) {}
 	return JSTR_ALIGN_UP(cap, JSTR_MALLOC_ALIGNMENT);
 }
 
@@ -630,7 +630,7 @@ jstr_pushback(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz * JSTR_GROWTH)))
+		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*sz * JSTR_GROWTH))))
 			return JSTR_RET_ERR;
 	*sz = JSTR_PTR_DIFF(jstr_pushback_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;
@@ -664,7 +664,7 @@ jstr_pushfront(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*cap <= *sz))
-		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz * JSTR_GROWTH)))
+		if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*sz * JSTR_GROWTH))))
 			return JSTR_RET_ERR;
 	*sz = JSTR_PTR_DIFF(jstr_pushfront_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;

@@ -607,7 +607,7 @@ JSTR_NOEXCEPT
 			if (readsz < reqsz)
 				break;
 			if (*sz == *cap)
-				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (*cap * JSTR_GROWTH))))
+				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH))))
 					goto err_close;
 		}
 	}

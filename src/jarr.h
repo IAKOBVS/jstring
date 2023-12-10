@@ -105,7 +105,7 @@ PJSTR_END_DECLS
 		if (jstr_unlikely(old_cap == 0))                           \
 			old_cap = JSTR_MIN_CAP / JARR_ALLOC_MULTIPLIER;    \
 		do                                                         \
-			(old_cap) *= JARR_GROWTH;                          \
+			(old_cap) = (size_t)((old_cap)*JARR_GROWTH);       \
 		while ((old_cap) < (new_cap));                             \
 		(old_cap) = JSTR_ALIGN_UP(old_cap, JSTR_MALLOC_ALIGNMENT); \
 	} while (0)

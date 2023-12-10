@@ -672,8 +672,8 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (cu *)s + sz - 1;
-	int i = 0;
-	int n = sz % 4;
+	unsigned int i = 0;
+	unsigned int n = sz % 4;
 	for (;; --i) {
 		if (t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
@@ -737,8 +737,8 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (cu *)s + sz - 1;
-	int i = 0;
-	int n = sz % 4;
+	unsigned int i = 0;
+	unsigned int n = sz % 4;
 	for (;; --i) {
 		if (!t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
@@ -826,8 +826,8 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (cu *)s;
-	int i = 0;
-	int n = sz % 4;
+	unsigned int i = 0;
+	unsigned int n = sz % 4;
 	for (;; ++i) {
 		if (!t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
@@ -873,8 +873,8 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (cu *)s + sz - 1;
-	int i = 0;
-	int n = sz % 4;
+	unsigned int i = 0;
+	unsigned int n = sz % 4;
 	for (;; ++i) {
 		if (t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
@@ -1877,8 +1877,8 @@ JSTR_NOEXCEPT
 		while ((*dst++ = *src++)) {}
 		return dst - 1;
 	}
-	int i = src_len % 3;
-	int j = i;
+	unsigned int i = src_len % 3;
+	unsigned int j = i;
 	for (; j--; *dst++ = *src++) {}
 	if (i) {
 		*dst++ = separator;

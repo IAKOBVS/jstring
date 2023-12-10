@@ -160,7 +160,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(cap == 0))
 		cap = JSTR_MIN_CAP / JSTR_ALLOC_MULTIPLIER;
-	while ((cap *= JSTRL_GROWTH) < new_cap) {}
+	while ((cap = (size_t)(cap * JSTRL_GROWTH)) < new_cap) {}
 	return cap;
 }
 

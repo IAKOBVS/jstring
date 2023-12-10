@@ -9,7 +9,14 @@ PJSTR_BEGIN_DECLS
 #elif JSTR_ARCH_RISCV
 #	include "_glibc-riscv-string-fzi.h"
 #else
-#	include "_glibc-generic-string-fzi.h"
+#	if defined __GNUC__ || defined __clang__
+#		pragma GCC diagnostic ignored "-Wsign-conversion"
+#		pragma GCC diagnostic push
+
+#		include "_glibc-generic-string-fzi.h"
+
+#		pragma GCC diagnostic pop
+#	endif
 #endif
 PJSTR_END_DECLS
 #endif /* PJSTR_SELECTOR_STRING_FZI_H */
