@@ -31,6 +31,7 @@
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
