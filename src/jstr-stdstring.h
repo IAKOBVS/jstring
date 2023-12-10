@@ -733,7 +733,7 @@ JSTR_NOEXCEPT
 		if (*s == (char)c)
 			return (char *)s;
 	}
-	if (n && *s != (char)c) {
+	if (n >= SS && *s != (char)c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
 		const word *w = w = (const word *)s;
@@ -795,7 +795,7 @@ JSTR_NOEXCEPT
 		if (jstr_tolower(*s) == c)
 			return (char *)s;
 	}
-	if (n && jstr_tolower(*s) != c) {
+	if (n >= SS && jstr_tolower(*s) != c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
 		const size_t l = ONES * jstr_toupper(c);
