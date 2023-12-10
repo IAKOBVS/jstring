@@ -166,7 +166,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == -1)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE            4096
+#define JSTR_PAGE_SIZE 4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -509,10 +509,10 @@ PJSTR_CAST(T, Other other)
 #	if JSTR_HAS_BUILTIN(__builtin_constant_p)
 #		define JSTR_ATTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
 #	endif
+#	if JSTR_HAS_ATTRIBUTE(__no_sanitize_address__)
+#		define JSTR_ATTR_NO_SANITIZE_ADDRESS
+#	endif
 #endif
-
-#undef JSTR_ATTR_INLINE
-#define JSTR_ATTR_INLINE
 
 #ifndef JSTR_ATTR_INLINE
 #	define JSTR_ATTR_INLINE PJSTR_ATTR_INLINE
@@ -599,6 +599,9 @@ PJSTR_CAST(T, Other other)
 #endif
 #ifndef JSTR_ATTR_ACCESS
 #	define JSTR_ATTR_ACCESS(x)
+#endif
+#ifndef JSTR_ATTR_NO_SANITIZE_ADDRESS
+#	define JSTR_ATTR_NO_SANITIZE_ADDRESS
 #endif
 
 #define JSTR_ATTR_WUR           JSTR_ATTR_WARN_UNUSED

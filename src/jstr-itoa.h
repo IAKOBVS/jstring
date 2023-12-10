@@ -98,7 +98,7 @@ JSTR_NOEXCEPT
 	char *const end = buf;
 	*buf-- = '\0';
 	int c;
-	for (; start < buf; ) {
+	for (; start < buf;) {
 		c = *start;
 		*start++ = *buf;
 		*buf-- = c;

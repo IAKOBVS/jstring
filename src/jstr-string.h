@@ -519,6 +519,8 @@ JSTR_NOEXCEPT
 		return pjstr_strstr4((cu *)hs, (cu *)ne);
 #	endif
 	} else {
+		if (jstr_unlikely(hs_len < ne_len))
+			return NULL;
 		return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 	}
 #	if JSTR_HAVE_STRSTR_OPTIMIZED
