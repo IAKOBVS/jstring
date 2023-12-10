@@ -21,9 +21,6 @@
 #ifndef JSTR_LGPL_IMPL
 #	include "jstr-macros.h"
 #	include "jstr-word-at-a-time.h"
-#endif
-
-#ifndef JSTR_LGPL_IMPL
 PJSTR_BEGIN_DECLS
 #	include <stddef.h>
 PJSTR_END_DECLS
@@ -36,6 +33,8 @@ stpcpy(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
 #	define JSTR_WORD_MERGE(w0, sh_1, w1, sh_2) (((w0) >> (sh_1)) | ((w1) << (sh_2)))
 #elif JSTR_BIG_ENDIAN || JSTR_BYTE_ORDER == JSTR_BIG_ENDIAN
 #	define JSTR_WORD_MERGE(w0, sh_1, w1, sh_2) (((w0) << (sh_1)) | ((w1) >> (sh_2)))
+#else
+#	error "Can not detect endianness."
 #endif
 	/* Copy just a few bytes to make DEST aligned.  */
 	unsigned int i = (-(uintptr_t)dst) % sizeof(jstr_word_ty);
