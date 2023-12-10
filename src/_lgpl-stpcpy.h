@@ -21,6 +21,7 @@
 #ifndef JSTR_LGPL_IMPL
 #	include "jstr-macros.h"
 #	include "jstr-word-at-a-time.h"
+
 PJSTR_BEGIN_DECLS
 #	include <stddef.h>
 PJSTR_END_DECLS

@@ -580,7 +580,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
-size_t
+static size_t
 pjstrre_brefrplcstrlen(const regmatch_t *R rm,
                        const char *R rplc,
                        size_t rplc_len
