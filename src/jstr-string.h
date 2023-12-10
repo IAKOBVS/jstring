@@ -254,6 +254,38 @@ MEMMEM:
 #endif
 }
 
+JSTR_ATTR_MAYBE_UNUSED
+static void *
+pjstr_memmem_word(const void *hs,
+                  size_t hs_len,
+                  const void *ne,
+                  size_t ne_len)
+{
+#if JSTR_HAVE_WORD_AT_A_TIME && JSTR_USE_LGPL
+	typedef const unsigned char u;
+	if (ne_len == 1)
+		return (void *)memchr(hs, *(u *)ne, hs_len);
+	if (jstr_unlikely(hs_len < ne_len))
+		return NULL;
+	if (jstr_unlikely(ne_len == 0))
+		return (void *)hs;
+	const jstr_word_ty *h = (const jstr_word_ty *)hs;
+	const jstr_word_ty n = jstr_word_repeat_bytes(*(u *)ne);
+	hs_len -= (ne_len - 1);
+	for (; hs_len >= sizeof(jstr_word_ty); ++h, hs_len -= sizeof(jstr_word_ty))
+		if (jstr_word_has_eq(*h, n))
+			for (unsigned int i = jstr_word_index_first_eq(*h, n); (u *)h + i != (u *)(h + 1); ++i)
+				if (*((u *)h + i) == *(u *)ne && !memcmp((u *)h + i, ne, ne_len))
+					return (unsigned char *)h + i;
+	for (; hs_len--; h = (jstr_word_ty *)((u *)h + 1))
+		if (*(u *)h == *(u *)ne && !memcmp(h, ne, ne_len))
+			return (unsigned char *)h;
+	return NULL;
+#else
+	return jstr_memmem(hs, hs_len, ne, ne_len);
+#endif
+}
+
 /* HS and NE must be nul-terminated. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
