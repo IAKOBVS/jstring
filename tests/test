@@ -6,6 +6,7 @@ FLAGS='
 -Wall
 -Wextra
 -Wpedantic
+-Wconversion
 '
 
 has_prog()

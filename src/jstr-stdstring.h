@@ -141,7 +141,7 @@ JSTR_NOEXCEPT
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; n && jstr_tolower(*p1++) == jstr_tolower(*p2++); --n) {}
-	return n;
+	return n ? 1 : 0;
 #endif
 }
 
@@ -226,7 +226,7 @@ jstr_memcmpeq_loop(const void *s1,
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; n && (*p1++ == *p2++); --n) {}
-	return n;
+	return n ? 1 : 0;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -240,7 +240,7 @@ jstr_strcasecmpeq_len_loop(const void *s1,
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; n && (jstr_tolower(*p1++) == jstr_tolower(*p2++)); --n) {}
-	return n;
+	return n ? 1 : 0;
 }
 
 JSTR_FUNC_PURE
