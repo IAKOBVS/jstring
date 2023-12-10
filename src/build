@@ -1,8 +1,8 @@
 #!/bin/sh
+#shellcheck disable=SC2086,2068,2005,2028
 
 verbose()
 {
-	#shellcheck disable=2068
 	$@
 	echo "$*"
 }
@@ -36,7 +36,6 @@ update_if_needed()
 
 mark_as_built()
 {
-	#shellcheck disable=SC2005
 	echo "$(sed 's/\([ \t]*#[ \t]*ifndef[ \t]\{1,\}JSTR_BUILT\)/#define JSTR_BUILT\n\1/' ../jstr/jstr-macros.h)" >../jstr/jstr-macros.h
 }
 
@@ -54,7 +53,6 @@ mark_as_built
 FLAGS='-Wall -Wextra -Wpedantic -std=c99'
 if has_prog tcc; then
 	printf "#define JSTR_BUILT\n #include \"jstr.h\"\n int main(){return 0;}\n" | tcc -run - || exit
-	#shellcheck disable=SC2028
 	echo 'printf #define JSTR_BUILT\n #include \"jstr.h\"\n int main(){return 0;}\n | tcc -run -'
 else
 	if [ -z "$TMPDIR" ]; then
@@ -65,7 +63,6 @@ else
 		fi
 	fi
 	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
-	#shellcheck disable=SC2086
 	verbose cc ../jstr/jstr.h $FLAGS -o "$tmp" || exit
 	rm "$tmp"
 fi
