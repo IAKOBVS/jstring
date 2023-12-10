@@ -282,6 +282,9 @@ JSTR_NOEXCEPT
 	return jstrre_exec_len(preg, s, sz, 0, &rm, eflags | JSTRRE_EF_STARTEND);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 jstrre_off_ty
 jstrre_rmn_from(const regex_t *R preg,
@@ -318,6 +321,9 @@ err_free:
 	JSTRRE_RETURN_ERR(ret, preg);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -332,6 +338,9 @@ JSTR_NOEXCEPT
 	return jstrre_rmn_from(preg, s, sz, cap, 0, eflags, n);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -345,6 +354,9 @@ JSTR_NOEXCEPT
 	return jstrre_rmn_from(preg, s, sz, cap, 0, eflags, 1);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -359,6 +371,9 @@ JSTR_NOEXCEPT
 	return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, 1);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -372,6 +387,9 @@ JSTR_NOEXCEPT
 	return jstrre_rmn_from(preg, s, sz, cap, 0, eflags, (size_t)-1);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -386,6 +404,9 @@ JSTR_NOEXCEPT
 	return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, (size_t)-1);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
@@ -415,6 +436,9 @@ pjstrre_rplcallsmallerrplc(char *s,
 	*src_e += rplc_len;
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -448,6 +472,9 @@ pjstrre_rplcallbiggerrplc(char *R *R s,
 	return JSTR_RET_SUCC;
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 jstrre_off_ty
 jstrre_rplcn_len_from(const regex_t *R preg,
@@ -494,6 +521,9 @@ err_free:
 	JSTRRE_RETURN_ERR(ret, preg);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -510,6 +540,9 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, n);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -526,6 +559,9 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, (size_t)-1);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -542,6 +578,9 @@ JSTR_NOEXCEPT
 }
 
 JSTR_ATTR_INLINE
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 jstrre_off_ty
 jstrre_rplc_len(const regex_t *R preg,
@@ -557,6 +596,9 @@ JSTR_NOEXCEPT
 }
 
 JSTR_ATTR_INLINE
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 jstrre_off_ty
 jstrre_rplc_len_from(const regex_t *R preg,
@@ -582,6 +624,9 @@ JSTR_NOEXCEPT
 #	define NMATCH
 #endif
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -607,6 +652,9 @@ JSTR_NOEXCEPT
 	return has_bref ? rplc_len : 0;
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
@@ -645,6 +693,9 @@ JSTR_NOEXCEPT
 		memcpy(rdst, rold, JSTR_PTR_DIFF(rplc_e, rold));
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 jstrre_off_ty
 jstrre_rplcn_bref_len_from(const regex_t *R preg,
@@ -725,6 +776,9 @@ err_free:
 #undef NMATCH_ARG
 #undef NMATCH_PARAM
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -741,6 +795,9 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, (size_t)-1);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -758,6 +815,9 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, (size_t)-1);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -775,6 +835,9 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, n);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 jstrre_off_ty
@@ -792,6 +855,9 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, 1);
 }
 
+/* Return value:
+   on error, -errcode (negative);
+   number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 jstrre_off_ty
