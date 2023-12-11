@@ -250,7 +250,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
 	U64 hw = 0;
 	unsigned int c;
 	for (c = L(hs[0]); N c != 0 && nw != hw; c = L(*++hs))
-		hw = (hw << 8) | c << 8;
+		hw = (hw | c) << 8;
 	return nw == hw ? (char *)hs - 7 : NULL;
 }
 
