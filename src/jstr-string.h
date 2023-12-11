@@ -29,7 +29,7 @@ PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __AVX2__
+#if defined __AVX2__ || 1
 #	include <immintrin.h>
 #endif
 PJSTR_END_DECLS
@@ -257,6 +257,35 @@ MEMMEM:
 #endif
 }
 
+JSTR_FUNC_PURE
+static char *
+pjstr_strchrnul_avx2(const char *s,
+                     int c)
+{
+#ifdef __AVX2__
+	const __m256i cv = _mm256_set1_epi8(c);
+	const __m256i zv = _mm256_setzero_si256();
+	__m256i sv;
+	unsigned int m, zm;
+	for (;; s += sizeof(__m256i)) {
+		sv = _mm256_loadu_si256((const __m256i *)s);
+		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
+		zm = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		if (m) {
+			m = _tzcnt_u32(m);
+			if (zm) {
+				zm = _tzcnt_u32(zm);
+				if (jstr_unlikely(m < zm))
+					return (char *)s + zm;
+			}
+			return (char *)s + m;
+		}
+	}
+#else
+	return jstr_strchrnul(s, c);
+#endif
+}
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -277,19 +306,19 @@ pjstr_memmem_avx2(const char *hs,
 		return NULL;
 	const __m256i n0 = _mm256_set1_epi8(*(char *)ne);
 	const char *const end = hs + hs_len - ne_len;
-	unsigned int mask;
+	unsigned int m;
 	uint32_t i;
 	__m256i hv;
 	for (;; hs += sizeof(__m256i)) {
 		hv = _mm256_loadu_si256((const __m256i *)hs);
-		mask = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, n0));
-		while (mask) {
-			i = _tzcnt_u32(mask);
+		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, n0));
+		while (m) {
+			i = _tzcnt_u32(m);
 			if (jstr_unlikely(hs + i > end))
 				return NULL;
 			if (*(hs + i + 1) == *(ne + 1) && !memcmp(hs + i + 2, ne + 2, ne_len - 2))
 				return (char *)hs + i;
-			mask = _blsr_u32(mask);
+			m = _blsr_u32(m);
 		}
 	}
 	return NULL;
