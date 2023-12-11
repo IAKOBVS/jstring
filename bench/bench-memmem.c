@@ -156,7 +156,10 @@ T_DEFINE_STRSTR(jstr_strcasestr_len, haystack, strlen(haystack), needle, needle_
 T_DEFINE_STRSTR(simple_strrstr_len, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len)
 
+T_DEFINE_STRSTR(pjstr_memmem_avx2, haystack, strlen(haystack), needle, needle_len)
+
 #define T_STRSTR_ALL(needle)                \
+	RUN(b_pjstr_memmem_avx2, needle);   \
 	RUN(b_simple_strcasestr, needle);   \
 	RUN(b_simple_strstr, needle);       \
 	RUN(b_simple_memmem, needle);       \
