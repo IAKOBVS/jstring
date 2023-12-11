@@ -140,23 +140,23 @@ pjstr_memmem_avx2(const char *hs,
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	const __m256i nv = _mm256_set1_epi8(*(char *)ne);
-	const char *const end = hs + hs_len - ne_len;
+	const char *const end = hs + hs_len - ne_len - sizeof(__m256i);
 	unsigned int m;
 	uint32_t i;
 	__m256i hv;
 	for (;; hs += sizeof(__m256i)) {
 		hv = _mm256_loadu_si256((const __m256i *)hs);
 		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
-		if (m)
-			do {
-				i = _tzcnt_u32(m);
-				if (jstr_unlikely(hs + i > end))
-					return NULL;
-				if (!memcmp(hs + i, ne, ne_len))
-					return (char *)hs + i;
-				m = _blsr_u32(m);
-			} while (m);
-		else if (jstr_unlikely(hs + sizeof(__m256i) > end))
+		while (m) {
+			i = _tzcnt_u32(m);
+			if (jstr_unlikely(hs + i > end))
+				return NULL;
+			if (!memcmp(hs + i, ne, ne_len))
+				return (char *)hs + i;
+			m = _blsr_u32(m);
+		}
+		hs += sizeof(__m256i);
+		if (jstr_unlikely(hs > end))
 			return NULL;
 	}
 	return NULL;
