@@ -151,13 +151,12 @@ pjstr_memmem_avx2(const void *hs,
 	for (;;) {
 		hv = _mm256_loadu_si256((const __m256i *)h);
 		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
-		while (m) {
+		for (; m; m = _blsr_u32(m)) {
 			i = _tzcnt_u32(m);
 			if (jstr_unlikely(h + i > end))
 				return NULL;
 			if (*(h + i + 1) == c1 && !memcmp(h + i + 2, n, ne_len))
 				return (char *)h + i;
-			m = _blsr_u32(m);
 		}
 		h += sizeof(__m256i);
 		if (jstr_unlikely(h > end))
