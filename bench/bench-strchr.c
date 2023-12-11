@@ -31,6 +31,8 @@
 
 #define BUFLEN 500000
 
+char *buf;
+
 char *
 simple_strchrnul(const char *s,
                  int c)
@@ -41,8 +43,8 @@ simple_strchrnul(const char *s,
 
 void *
 simple_memrchr(const void *s,
-		int c,
-		size_t n)
+               int c,
+               size_t n)
 {
 	const unsigned char *p = (const unsigned char *)s + n;
 	while (n--)
@@ -82,6 +84,9 @@ T_DEFINE_STRCHR(simple_memrchr, buf, 'b', strlen(buf))
 int
 main()
 {
+	buf = malloc(BUFLEN);
+	assert(buf);
+
 #ifdef __AVX2__
 	RUN(b_pjstr_strchrnul_avx2, 0);
 #endif
@@ -92,4 +97,6 @@ main()
 	RUN(b_jstr_memrchr, 0);
 	RUN(b_pjstr_memrchr_avx2, 0);
 	RUN(b_simple_memrchr, 0);
+
+	free(buf);
 }
