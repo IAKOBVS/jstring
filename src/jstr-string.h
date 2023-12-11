@@ -269,7 +269,7 @@ jstr_strstr_len(const char *hs,
 JSTR_NOEXCEPT
 {
 	/* Optimized strstr() is still faster than a C memmem(). */
-#if JSTR_HAVE_STRSTR_OPTIMIZED
+#if JSTR_HAVE_STRSTR_OPTIMIZED && !defined __AVX2__
 	if (nelen < JSTR_MEMMEM_THRES)
 		return (char *)strstr(hs, ne);
 #endif

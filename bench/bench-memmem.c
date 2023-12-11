@@ -161,7 +161,7 @@ T_DEFINE_STRSTR(jstr_strrstr_len, buf, strlen(buf), needle, needle_len)
 #define T_STRSTR_ALL(needle)                                          \
 	JSTR_STATIC_ASSERT(sizeof(needle) - 1 <= (BUFLEN * CNT), ""); \
 	needle_len = sizeof(needle) - 1;                              \
-	buf = realloc(buf, needle_len + 1);                           \
+	buf = realloc(buf, needle_len * CNT + 1);                     \
 	assert(buf);                                                  \
 	T_AVX2(needle);                                               \
 	RUN(b_simple_strcasestr, needle);                             \
