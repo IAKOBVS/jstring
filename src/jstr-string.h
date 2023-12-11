@@ -257,7 +257,10 @@ MEMMEM:
 #endif
 }
 
-void *
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+static void *
 pjstr_memmem_avx2(const char *hs,
                   size_t hs_len,
                   const char *ne,
