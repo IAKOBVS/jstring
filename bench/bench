@@ -1,4 +1,5 @@
 #!/bin/sh
+#shellcheck disable=disable=SC2086
 
 # Set the path to compile the tests to.
 if [ -z "$TMPDIR" ]; then
@@ -14,7 +15,14 @@ FLAGS='-O3 -march=native'
 
 mkdir -p "$tmp"
 
-for file in $(echo *.c); do
+# Test all files in arguments. Otherwise, test all.
+if [ $# -eq 0 ]; then
+	files=$(echo *.c)
+else
+	files=$*
+fi
+
+for file in $files; do
 	{
 	base=${file%.*}-exe
 	#shellcheck disable=SC2086
@@ -22,6 +30,7 @@ for file in $(echo *.c); do
 	} &
 done
 wait
+
 for file in $(echo "$tmp"/*-exe); do
 	output=$($file)
 	echo "$output"

@@ -29,9 +29,7 @@ PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined __AVX2__ || 1
-#	include <immintrin.h>
-#endif
+#include <immintrin.h>
 PJSTR_END_DECLS
 
 #include "jstr-builder.h"
@@ -275,12 +273,16 @@ pjstr_strchrnul_avx2(const char *s,
 			m = _tzcnt_u32(m);
 			if (zm) {
 				zm = _tzcnt_u32(zm);
-				if (jstr_unlikely(m < zm))
-					return (char *)s + zm;
+				if (jstr_unlikely(m > zm))
+					break;
 			}
 			return (char *)s + m;
+		} else if (zm) {
+			zm = _tzcnt_u32(zm);
+			break;
 		}
 	}
+	return (char *)s + zm;
 #else
 	return jstr_strchrnul(s, c);
 #endif
