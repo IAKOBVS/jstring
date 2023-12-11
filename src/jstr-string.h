@@ -29,7 +29,6 @@ PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <immintrin.h>
 PJSTR_END_DECLS
 
 #include "jstr-builder.h"
