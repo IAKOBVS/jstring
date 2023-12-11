@@ -29,6 +29,9 @@ PJSTR_BEGIN_DECLS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __AVX2__
+#	include <immintrin.h>
+#endif
 PJSTR_END_DECLS
 
 #include "jstr-builder.h"
@@ -254,8 +257,6 @@ MEMMEM:
 #endif
 }
 
-#include <immintrin.h>
-
 void *
 pjstr_memmem_avx2(const char *hs,
                   size_t hs_len,
@@ -283,7 +284,7 @@ pjstr_memmem_avx2(const char *hs,
 			i = _tzcnt_u32(mask);
 			if (jstr_unlikely(hs + i > end))
 				return NULL;
-			if (*(hs + i + 1) == *(ne + 1) && !memcmp(hs + i + 1, ne + 1, ne_len - 1))
+			if (*(hs + i + 1) == *(ne + 1) && !memcmp(hs + i + 2, ne + 2, ne_len - 2))
 				return (char *)hs + i;
 			mask = _blsr_u32(mask);
 		}
