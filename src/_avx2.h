@@ -93,6 +93,18 @@ pjstr_memrchr_avx2(const void *s,
 	__m256i sv;
 	unsigned int m;
 	uint32_t i;
+	if ((uintptr_t)p & (sizeof(__m256i) - 1)) {
+		p -= sizeof(__m256i);
+		sv = _mm256_loadu_si256((const __m256i *)p);
+		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
+		if (m) {
+			i = 31 - _lzcnt_u32(m);
+			if (p + i < (unsigned char *)s)
+				return NULL;
+			return (char *)p + i;
+		}
+		p = (const unsigned char *)JSTR_PTR_ALIGN_UP(p, sizeof(__m256i));
+	}
 	for (;;) {
 		p -= sizeof(__m256i);
 		sv = _mm256_load_si256((const __m256i *)p);

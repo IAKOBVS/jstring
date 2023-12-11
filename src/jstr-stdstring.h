@@ -361,6 +361,8 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, n);
+#elif defined __AVX2__
+	return pjstr_memrchr_avx2(s, c, n);
 #else
 	/* The following is based on musl's memchr().
 	 * Copyright © 2005-2020 Rich Felker, et al.
