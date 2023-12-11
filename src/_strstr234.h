@@ -33,64 +33,17 @@
 #	define PJSTR_STRSTR234_CANONIZE(x) (x)
 #endif
 #define L PJSTR_STRSTR234_CANONIZE
+#if PJSTR_STRSTR234_STRNSTR
+#	define N_PARAM , size_t l
+#	define N       l-- &&
+#else
+#	define N_PARAM
+#	define N
+#endif
 
 #include "jstr-macros.h"
 
-#if PJSTR_STRSTR234_STRNSTR
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t n)
-{
-#	if JSTR_LP64
-	typedef uint32_t size_ty;
-	enum { SHIFT = 16 };
-#	else
-	typedef uint16_t size_ty;
-	enum { SHIFT = 8 };
-#	endif
-	const size_ty h1 = (size_ty)(L(ne[0]) << SHIFT) | L(ne[1]);
-	size_ty h2 = 0;
-	unsigned int c;
-	for (c = L(hs[0]); n-- && h1 != h2 && c != 0; c = L(*++hs))
-		h2 = (h2 << SHIFT) | c;
-	return h1 == h2 ? (char *)hs - 2 : NULL;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t n)
-{
-	const uint32_t h1 = (uint32_t)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8);
-	uint32_t h2 = 0;
-	unsigned int c;
-	for (c = L(hs[0]); n-- && h1 != h2 && c != 0; c = L(*++hs))
-		h2 = (h2 | c) << 8;
-	return h1 == h2 ? (char *)hs - 3 : NULL;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t n)
-{
-	const uint32_t h1 = (uint32_t)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8) | L(ne[3]);
-	uint32_t h2 = 0;
-	unsigned int c;
-	for (c = L(hs[0]); c != 0 && n-- && h1 != h2; c = L(*++hs))
-		h2 = (h2 << 8) | c;
-	return h1 == h2 ? (char *)hs - 4 : NULL;
-}
-
-#elif defined PJSTR_STRSTR234_MEMMEM
+#if defined PJSTR_STRSTR234_MEMMEM
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
@@ -150,7 +103,8 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
-                                     const unsigned char *const ne)
+                                     const unsigned char *const ne
+                                     N_PARAM)
 {
 #	if JSTR_LP64
 	typedef uint32_t size_ty;
@@ -162,7 +116,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
 	const size_ty h1 = (size_ty)(L(ne[0]) << SHIFT) | L(ne[1]);
 	size_ty h2 = 0;
 	unsigned int c;
-	for (c = L(hs[0]); h1 != h2 && c != 0; c = L(*++hs))
+	for (c = L(hs[0]); N h1 != h2 && c != 0; c = L(*++hs))
 		h2 = (h2 << SHIFT) | c;
 	return h1 == h2 ? (char *)hs - 2 : NULL;
 }
@@ -171,12 +125,13 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
-                                     const unsigned char *const ne)
+                                     const unsigned char *const ne
+                                     N_PARAM)
 {
 	const uint32_t h1 = (uint32_t)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8);
 	uint32_t h2 = 0;
 	unsigned int c;
-	for (c = L(hs[0]); h1 != h2 && c != 0; c = L(*++hs))
+	for (c = L(hs[0]); N h1 != h2 && c != 0; c = L(*++hs))
 		h2 = (h2 | c) << 8;
 	return h1 == h2 ? (char *)hs - 3 : NULL;
 }
@@ -185,12 +140,13 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
-                                     const unsigned char *const ne)
+                                     const unsigned char *const ne
+                                     N_PARAM)
 {
 	const uint32_t h1 = (uint32_t)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8) | L(ne[3]);
 	uint32_t h2 = 0;
 	unsigned int c;
-	for (c = L(hs[0]); c != 0 && h1 != h2; c = L(*++hs))
+	for (c = L(hs[0]); N c != 0 && h1 != h2; c = L(*++hs))
 		h2 = (h2 << 8) | c;
 	return h1 == h2 ? (char *)hs - 4 : NULL;
 }
@@ -198,6 +154,8 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
 #endif
 
 #undef L
+#undef N
+#undef N_PARAM
 #undef PJSTR_STRSTR234_FUNC
 #undef PJSTR_STRSTR234_CANONIZE
 #undef PJSTR_STRSTR234_MEMMEM
