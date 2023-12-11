@@ -23,6 +23,7 @@
 #ifndef PJSTR_STRCHRNUL_H
 #define PJSTR_STRCHRNUL_H
 
+#include <x86intrin.h>
 #include <immintrin.h>
 #include "jstr-macros.h"
 #include "jstr-ptr-arith.h"
@@ -82,13 +83,12 @@ pjstr_memrchr_avx2(const void *s,
                    int c,
                    size_t n)
 {
+	if (jstr_unlikely(n == 0))
+		return NULL;
 	const unsigned char *p = (unsigned char *)s + n - 1;
-	for (; (uintptr_t)p & (sizeof(__m256i) - 1); --p) {
-		if (jstr_unlikely(n-- == 0))
-			return NULL;
-		if (*(unsigned char *)p == (unsigned char)c)
-			return (char *)p;
-	}
+	if (*p == (unsigned char)c)
+		return (void *)p;
+	--p;
 	const __m256i cv = _mm256_set1_epi8(c);
 	__m256i sv;
 	unsigned int m;
@@ -98,8 +98,7 @@ pjstr_memrchr_avx2(const void *s,
 		sv = _mm256_load_si256((const __m256i *)p);
 		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		if (m) {
-			i = _lzcnt_u32(m);
-			printf("%s\n", p + i);
+			i = 31 - _lzcnt_u32(m);
 			if (p + i < (unsigned char *)s)
 				break;
 			return (char *)p + i;

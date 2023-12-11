@@ -128,10 +128,10 @@ simple_strcasechr(const char *s,
 			result = pjstr_strchrnul_avx2(p, c);                                        \
 			expected = simple_strchrnul(p, c);                                          \
 			T_ASSERT(pjstr_strchrnul_avx2, result == expected, result, expected, s, c); \
+			result = pjstr_memrchr_avx2(p, c, p_len);                                   \
+			expected = simple_memrchr(p, c, p_len);                                     \
+			T_ASSERT(pjstr_memrchr_avx2, result == expected, result, expected, s, c);   \
 		} while (0)
-			/* result = pjstr_memrchr_avx2(p, c, p_len);                                   \ */
-			/* expected = simple_memrchr(p, c, p_len);                                     \ */
-			/* T_ASSERT(pjstr_memrchr_avx2, result == expected, result, expected, s, c);   \ */
 #else
 #	define T_AVX2(s, c)
 #endif
