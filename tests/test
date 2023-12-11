@@ -8,6 +8,7 @@ FLAGS='
 -Wextra
 -Wpedantic
 -Wsign-conversion
+-march=native
 '
 
 has_prog()

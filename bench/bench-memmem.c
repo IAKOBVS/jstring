@@ -148,7 +148,6 @@ T_DEFINE_STRSTR(jstr_strnstr, haystack, needle, strlen(haystack))
 T_DEFINE_STRSTR(simple_strstr, haystack, needle)
 T_DEFINE_STRSTR(strstr, haystack, needle)
 T_DEFINE_STRSTR(memmem, haystack, strlen(haystack), needle, needle_len)
-T_DEFINE_STRSTR(pjstr_memmem_word, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(jstr_memmem, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(jstr_strstr_len, haystack, strlen(haystack), needle, needle_len)
 T_DEFINE_STRSTR(strcasestr, haystack, needle)
@@ -164,7 +163,6 @@ T_DEFINE_STRSTR(jstr_strrstr_len, haystack, strlen(haystack), needle, needle_len
 	RUN(b_simple_strstr, needle);       \
 	RUN(b_strstr, needle);              \
 	RUN(b_memmem, needle);              \
-	RUN(b_pjstr_memmem_word, needle);   \
 	RUN(b_jstr_memmem, needle);         \
 	RUN(b_jstr_strstr_len, needle);     \
 	RUN(b_strcasestr, needle);          \
