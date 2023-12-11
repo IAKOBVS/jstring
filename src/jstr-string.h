@@ -502,12 +502,12 @@ JSTR_NOEXCEPT
 	unsigned int shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;
 	hs_len -= shift;
-	const char *const start = hs;
+	const char *const p = hs;
 	hs = jstr_strcasechr(hs, *rare);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
 	hs -= shift;
-	hs_len = hs_len - JSTR_PTR_DIFF(hs, start);
+	hs_len = hs_len - JSTR_PTR_DIFF(hs, p);
 	if (ne_len == 2) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]))
 			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
