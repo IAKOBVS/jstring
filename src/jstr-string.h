@@ -326,6 +326,16 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr3((cu *)hs, (cu *)ne, n);
 	if (ne[4] == '\0')
 		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
+#if 0
+	if (ne[5] == '\0')
+		return pjstr_strnstr5((cu *)hs, (cu *)ne, n);
+	if (ne[6] == '\0')
+		return pjstr_strnstr6((cu *)hs, (cu *)ne, n);
+	if (ne[7] == '\0')
+		return pjstr_strnstr7((cu *)hs, (cu *)ne, n);
+	if (ne[8] == '\0')
+		return pjstr_strnstr8((cu *)hs, (cu *)ne, n);
+#endif
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;
 	size_t tmp = n;
@@ -518,6 +528,30 @@ JSTR_NOEXCEPT
 #	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
 		return pjstr_strstr4((cu *)hs, (cu *)ne);
 #	endif
+	} else if (ne_len == 5) {
+		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]))
+			return pjstr_strcasestr5((cu *)hs, (cu *)ne);
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+		return pjstr_strstr5((cu *)hs, (cu *)ne);
+#	endif
+	} else if (ne_len == 6) {
+		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]))
+			return pjstr_strcasestr6((cu *)hs, (cu *)ne);
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+		return pjstr_strstr6((cu *)hs, (cu *)ne);
+#	endif
+	} else if (ne_len == 7) {
+		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]))
+			return pjstr_strcasestr7((cu *)hs, (cu *)ne);
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+		return pjstr_strstr7((cu *)hs, (cu *)ne);
+#	endif
+	} else if (ne_len == 8) {
+		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]) || jstr_isalpha(ne[7]))
+			return pjstr_strcasestr8((cu *)hs, (cu *)ne);
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+		return pjstr_strstr8((cu *)hs, (cu *)ne);
+#	endif
 	} else {
 		if (jstr_unlikely(hs_len < ne_len))
 			return NULL;
@@ -589,6 +623,30 @@ JSTR_NOEXCEPT
 			return pjstr_strcasestr4((cu *)hs, (cu *)ne);
 #	if !JSTR_HAVE_STRSTR_OPTIMIZED
 		return pjstr_strstr4((cu *)hs, (cu *)ne);
+#	endif
+	} else if (ne[5] == '\0') {
+		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]))
+			return pjstr_strcasestr5((cu *)hs, (cu *)ne);
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+		return pjstr_strstr5((cu *)hs, (cu *)ne);
+#	endif
+	} else if (ne[6] == '\0') {
+		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]))
+			return pjstr_strcasestr6((cu *)hs, (cu *)ne);
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+		return pjstr_strstr6((cu *)hs, (cu *)ne);
+#	endif
+	} else if (ne[7] == '\0') {
+		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]))
+			return pjstr_strcasestr7((cu *)hs, (cu *)ne);
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+		return pjstr_strstr7((cu *)hs, (cu *)ne);
+#	endif
+	} else if (ne[8] == '\0') {
+		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]) || jstr_isalpha(ne[7]))
+			return pjstr_strcasestr8((cu *)hs, (cu *)ne);
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+		return pjstr_strstr8((cu *)hs, (cu *)ne);
 #	endif
 	} else {
 		return pjstr_strcasestr_long(hs, ne);

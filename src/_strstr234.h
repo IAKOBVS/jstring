@@ -76,8 +76,9 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
                                      size_t l)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8;
-	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8;
+	typedef uint32_t U32;
+	const U32 nw = (U32)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8;
+	U32 hw = (U32)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8;
 	for (hs += 3, l -= 3; l-- && hw != nw; hw = (hw | L(*hs++)) << 8) {}
 	return (hw == nw) ? (char *)(hs - 3) : NULL;
 }
@@ -91,10 +92,75 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
                                      size_t l)
 JSTR_NOEXCEPT
 {
-	const uint32_t nw = (uint32_t)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
-	uint32_t hw = (uint32_t)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
+	typedef uint32_t U32;
+	const U32 nw = (U32)L(ne[0]) << 24 | L(ne[1]) << 16 | L(ne[2]) << 8 | L(ne[3]);
+	U32 hw = (U32)L(hs[0]) << 24 | L(hs[1]) << 16 | L(hs[2]) << 8 | L(hs[3]);
 	for (hs += 4, l -= 4; l-- && hw != nw; hw = hw << 8 | L(*hs++)) {}
 	return (hw == nw) ? (char *)(hs - 4) : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 5)(const unsigned char *hs,
+                                     const unsigned char *const ne,
+                                     size_t l)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24;
+	U64 hw = (U64)L(hs[0]) << 56 | (U64)L(hs[1]) << 48 | (U64)L(hs[2]) << 40 | (U64)L(hs[3]) << 32 | (U64)L(hs[4]) << 24;
+	for (hs += 5, l -= 5; l-- && hw != nw; hw = hw << 8 | L(*hs++) << 24) {}
+	return (hw == nw) ? (char *)(hs - 5) : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 6)(const unsigned char *hs,
+                                     const unsigned char *const ne,
+                                     size_t l)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16;
+	U64 hw = (U64)L(hs[0]) << 56 | (U64)L(hs[1]) << 48 | (U64)L(hs[2]) << 40 | (U64)L(hs[3]) << 32 | (U64)L(hs[4]) << 24 | (U64)L(hs[5]) << 16;
+	for (hs += 6, l -= 6; l-- && hw != nw; hw = hw << 8 | L(*hs++) << 16) {}
+	return (hw == nw) ? (char *)(hs - 6) : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
+                                     const unsigned char *const ne,
+                                     size_t l)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16 | (U64)L(ne[6]) << 8;
+	U64 hw = (U64)L(hs[0]) << 56 | (U64)L(hs[1]) << 48 | (U64)L(hs[2]) << 40 | (U64)L(hs[3]) << 32 | (U64)L(hs[4]) << 24 | (U64)L(hs[5]) << 16 | (U64)L(hs[6]) << 8;
+	for (hs += 7, l -= 7; l-- && hw != nw; hw = (hw | L(*hs++)) << 8) {}
+	return (hw == nw) ? (char *)(hs - 7) : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 8)(const unsigned char *hs,
+                                     const unsigned char *const ne,
+                                     size_t l)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16 | (U64)L(ne[6]) << 8 | (U64)L(ne[7]);
+	U64 hw = (U64)L(hs[0]) << 56 | (U64)L(hs[1]) << 48 | (U64)L(hs[2]) << 40 | (U64)L(hs[3]) << 32 | (U64)L(hs[4]) << 24 | (U64)L(hs[5]) << 16 | (U64)L(hs[6]) << 8 | (U64)L(hs[7]);
+	for (hs += 8, l -= 8; l-- && hw != nw; hw = hw << 8 | L(*hs++)) {}
+	return (hw == nw) ? (char *)(hs - 8) : NULL;
 }
 
 #else
@@ -113,12 +179,12 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
 	typedef uint16_t size_ty;
 	enum { sh = 8 };
 #	endif
-	const size_ty h1 = (size_ty)(L(ne[0]) << sh) | L(ne[1]);
-	size_ty h2 = 0;
+	const size_ty nw = (size_ty)(L(ne[0]) << sh) | L(ne[1]);
+	size_ty hw = 0;
 	unsigned int c;
-	for (c = L(hs[0]); N h1 != h2 && c != 0; c = L(*++hs))
-		h2 = (h2 << sh) | c;
-	return h1 == h2 ? (char *)hs - 2 : NULL;
+	for (c = L(hs[0]); N nw != hw && c != 0; c = L(*++hs))
+		hw = (hw << sh) | c;
+	return nw == hw ? (char *)hs - 2 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -128,12 +194,13 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
                                      const unsigned char *const ne
                                      N_PARAM)
 {
-	const uint32_t h1 = (uint32_t)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8);
-	uint32_t h2 = 0;
+	typedef uint32_t U32;
+	const U32 nw = (U32)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8);
+	U32 hw = 0;
 	unsigned int c;
-	for (c = L(hs[0]); N h1 != h2 && c != 0; c = L(*++hs))
-		h2 = (h2 | c) << 8;
-	return h1 == h2 ? (char *)hs - 3 : NULL;
+	for (c = L(hs[0]); N nw != hw && c != 0; c = L(*++hs))
+		hw = (hw | c) << 8;
+	return nw == hw ? (char *)hs - 3 : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -143,12 +210,77 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
                                      const unsigned char *const ne
                                      N_PARAM)
 {
-	const uint32_t h1 = (uint32_t)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8) | L(ne[3]);
-	uint32_t h2 = 0;
+	typedef uint32_t U32;
+	const U32 nw = (U32)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8) | L(ne[3]);
+	U32 hw = 0;
 	unsigned int c;
-	for (c = L(hs[0]); N c != 0 && h1 != h2; c = L(*++hs))
-		h2 = (h2 << 8) | c;
-	return h1 == h2 ? (char *)hs - 4 : NULL;
+	for (c = L(hs[0]); N c != 0 && nw != hw; c = L(*++hs))
+		hw = (hw << 8) | c;
+	return nw == hw ? (char *)hs - 4 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 5)(const unsigned char *hs,
+                                     const unsigned char *const ne
+                                     N_PARAM)
+{
+	typedef uint64_t U64;
+	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24;
+	U64 hw = 0;
+	unsigned int c;
+	for (c = L(hs[0]); N c != 0 && nw != hw; c = L(*++hs))
+		hw = (hw << 8) | c << 24;
+	return nw == hw ? (char *)hs - 5 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 6)(const unsigned char *hs,
+                                     const unsigned char *const ne
+                                     N_PARAM)
+{
+	typedef uint64_t U64;
+	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16;
+	U64 hw = 0;
+	unsigned int c;
+	for (c = L(hs[0]); N c != 0 && nw != hw; c = L(*++hs))
+		hw = (hw << 8) | c << 16;
+	return nw == hw ? (char *)hs - 6 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
+                                     const unsigned char *const ne
+                                     N_PARAM)
+{
+	typedef uint64_t U64;
+	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16 | (U64)L(ne[6]) << 8;
+	U64 hw = 0;
+	unsigned int c;
+	for (c = L(hs[0]); N c != 0 && nw != hw; c = L(*++hs))
+		hw = (hw << 8) | c << 8;
+	return nw == hw ? (char *)hs - 7 : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 8)(const unsigned char *hs,
+                                     const unsigned char *const ne
+                                     N_PARAM)
+{
+	typedef uint64_t U64;
+	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16 | (U64)L(ne[6]) << 8 | (U64)L(ne[7]);
+	U64 hw = 0;
+	unsigned int c;
+	for (c = L(hs[0]); N c != 0 && nw != hw; c = L(*++hs))
+		hw = (hw << 8) | c;
+	return nw == hw ? (char *)hs - 8 : NULL;
 }
 
 #endif
