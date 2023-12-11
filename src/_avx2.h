@@ -25,19 +25,32 @@
 
 #include <immintrin.h>
 #include "jstr-macros.h"
+#include "jstr-ptr-arith.h"
 
 JSTR_FUNC_PURE
 static char *
 pjstr_strchrnul_avx2(const char *s,
-                     int c)
+                               int c)
 {
-	for (; (uintptr_t)s & (sizeof(__m256i) - 1); ++s)
-		if (*s == (char)c || jstr_unlikely(*s == '\0'))
-			return (char *)s;
 	const __m256i cv = _mm256_set1_epi8(c);
 	const __m256i zv = _mm256_setzero_si256();
-	__m256i sv;
+	__m256i sv = _mm256_loadu_si256((const __m256i *)s);
 	unsigned int m, zm;
+	m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
+	zm = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+	if (m) {
+		m = _tzcnt_u32(m);
+		if (zm) {
+			zm = _tzcnt_u32(zm);
+			if (jstr_unlikely(m > zm))
+				return (char *)s + zm;
+		}
+		return (char *)s + m;
+	} else if (zm) {
+		zm = _tzcnt_u32(zm);
+		return (char *)s + zm;
+	}
+	s = (const char *)JSTR_PTR_ALIGN_UP(s, sizeof(__m256i));
 	for (;; s += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)s);
 		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
