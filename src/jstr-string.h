@@ -255,47 +255,6 @@ MEMMEM:
 #endif
 }
 
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-static void *
-pjstr_memmem_avx2(const char *hs,
-                  size_t hs_len,
-                  const char *ne,
-                  size_t ne_len)
-{
-#ifdef __AVX2__
-	if (ne_len == 1)
-		return (void *)memchr(hs, *(unsigned char *)ne, hs_len);
-	if (jstr_unlikely(ne_len == 0))
-		return (char *)hs;
-	if (jstr_unlikely(hs_len == ne_len))
-		return !memcmp(hs, ne, ne_len) ? (void *)hs : NULL;
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
-	const __m256i n0 = _mm256_set1_epi8(*(char *)ne);
-	const char *const end = hs + hs_len - ne_len;
-	unsigned int m;
-	uint32_t i;
-	__m256i hv;
-	for (;; hs += sizeof(__m256i)) {
-		hv = _mm256_loadu_si256((const __m256i *)hs);
-		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, n0));
-		while (m) {
-			i = _tzcnt_u32(m);
-			if (jstr_unlikely(hs + i > end))
-				return NULL;
-			if (*(hs + i + 1) == *(ne + 1) && !memcmp(hs + i + 2, ne + 2, ne_len - 2))
-				return (char *)hs + i;
-			m = _blsr_u32(m);
-		}
-	}
-	return NULL;
-#else
-	return jstr_memmem(hs, hs_len, ne, ne_len);
-#endif
-}
-
 /* HS and NE must be nul-terminated. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))

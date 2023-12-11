@@ -56,16 +56,20 @@ simple_strchrnul(const char *s,
 		return cs;                                 \
 	}
 
-T_DEFINE_STRCHR(jstr_strchrnul, buf, 'b')
+#ifdef __AVX2__
 T_DEFINE_STRCHR(pjstr_strchrnul_avx2, buf, 'b')
+#endif
+T_DEFINE_STRCHR(jstr_strchrnul, buf, 'b')
 T_DEFINE_STRCHR(strchrnul, buf, 'b')
 T_DEFINE_STRCHR(simple_strchrnul, buf, 'b')
 
 int
 main()
 {
-	RUN(b_jstr_strchrnul, 0);
+#ifdef __AVX2__
 	RUN(b_pjstr_strchrnul_avx2, 0);
+#endif
+	RUN(b_jstr_strchrnul, 0);
 	RUN(b_strchrnul, 0);
 	RUN(b_simple_strchrnul, 0);
 }

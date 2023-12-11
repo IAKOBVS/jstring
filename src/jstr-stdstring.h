@@ -28,6 +28,10 @@
 #include "jstr-struct.h"
 #include "jstr-word-at-a-time.h"
 
+#ifdef __AVX2__
+#	include "_avx2.h"
+#endif
+
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
@@ -413,10 +417,6 @@ JSTR_NOEXCEPT
 #endif
 }
 
-#ifdef __AVX2__
-#	include "_strchrnul-avx2.h"
-#endif
-
 JSTR_FUNC_PURE
 JSTR_ATTR_RETURNS_NONNULL
 #if JSTR_HAVE_STRCHRNUL || JSTR_HAVE_STRCHR_OPTIMIZED || !JSTR_HAVE_ATTR_MAY_ALIAS
@@ -433,9 +433,8 @@ JSTR_NOEXCEPT
 	return pjstr_strchrnul_avx2(s, c);
 #elif JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_TEST
 	/* Optimized strchr() + strlen() is still faster than a C strchrnul(). */
-	const char *const start = s;
-	s = strchr(s, c);
-	return (char *)(s ? s : start + strlen(start));
+	char *const p = strchr(s, c);
+	return p ? p : (char *)s + strlen(s);
 #else
 	/* The following is taken from musl's strchrnul() with minor modifications.
 	 * Copyright © 2005-2020 Rich Felker, et al.

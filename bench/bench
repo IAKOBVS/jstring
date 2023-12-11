@@ -31,7 +31,7 @@ for file in $files; do
 done
 wait
 
-for file in $(echo "$tmp"/*-exe); do
+for file in $(echo $tmp/*-exe); do
 	output=$($file)
 	echo "$output"
 	echo "$output" >"$(echo "$file" | sed 's/.*\//result-/;')"
