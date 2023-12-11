@@ -147,7 +147,8 @@ pjstr_memmem_avx2(const void *hs,
 	const unsigned char *n = (const unsigned char *)ne;
 	const unsigned char *const end = h + hs_len - ne_len;
 	const int c1 = *(n + 1);
-	for (n += 2, ne_len -= 2;;) {
+	n += 2, ne_len -= 2;
+	for (;;) {
 		hv = _mm256_loadu_si256((const __m256i *)h);
 		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
 		while (m) {
