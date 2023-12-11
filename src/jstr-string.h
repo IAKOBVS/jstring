@@ -283,7 +283,7 @@ pjstr_memmem_avx2(const char *hs,
 			i = _tzcnt_u32(mask);
 			if (jstr_unlikely(hs + i > end))
 				return NULL;
-			if (*(hs + i + 1) == *(ne + 1) && !memcmp(hs + i, ne, ne_len))
+			if (*(hs + i + 1) == *(ne + 1) && !memcmp(hs + i + 1, ne + 1, ne_len - 1))
 				return (char *)hs + i;
 			mask = _blsr_u32(mask);
 		}
