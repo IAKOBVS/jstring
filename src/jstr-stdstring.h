@@ -414,34 +414,7 @@ JSTR_NOEXCEPT
 }
 
 #ifdef __AVX2__
-JSTR_FUNC_PURE
-static char *
-pjstr_strchrnul_avx2(const char *s,
-                     int c)
-{
-	const __m256i cv = _mm256_set1_epi8(c);
-	const __m256i zv = _mm256_setzero_si256();
-	__m256i sv;
-	unsigned int m, zm;
-	for (;; s += sizeof(__m256i)) {
-		sv = _mm256_loadu_si256((const __m256i *)s);
-		m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
-		zm = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
-		if (m) {
-			m = _tzcnt_u32(m);
-			if (zm) {
-				zm = _tzcnt_u32(zm);
-				if (jstr_unlikely(m > zm))
-					break;
-			}
-			return (char *)s + m;
-		} else if (zm) {
-			zm = _tzcnt_u32(zm);
-			break;
-		}
-	}
-	return (char *)s + zm;
-}
+#	include "_strchrnul-avx2.h"
 #endif
 
 JSTR_FUNC_PURE
