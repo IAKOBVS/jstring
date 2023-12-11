@@ -120,7 +120,6 @@ pjstr_memrchr_avx2(const void *s,
 	return NULL;
 }
 
-/* May not be fast for long needles. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
