@@ -77,6 +77,7 @@ pjstr_strchrnul_avx2(const char *s,
 	return (char *)s + zm;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
 pjstr_memrchr_avx2(const void *s,
@@ -119,8 +120,7 @@ pjstr_memrchr_avx2(const void *s,
 	return NULL;
 }
 
-/* pjstr_memmem_avx2 may not be fast. */
-
+/* May not be fast for long needles. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
