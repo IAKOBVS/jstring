@@ -104,7 +104,7 @@ pjstr_memrchr_avx2(const void *s,
 				return NULL;
 			return (char *)p + i;
 		}
-		p = (const unsigned char *)JSTR_PTR_ALIGN_UP(p, sizeof(__m256i));
+		p = (const unsigned char *)JSTR_PTR_ALIGN_DOWN(p, sizeof(__m256i));
 	}
 	for (;;) {
 		p -= sizeof(__m256i);
@@ -146,8 +146,23 @@ pjstr_memmem_avx2(const void *hs,
 	n += 2, ne_len -= 2;
 	__m256i hv;
 	uint32_t i, m;
-	for (;;) {
+	if ((uintptr_t)h & (sizeof(__m256i) - 1)) {
 		hv = _mm256_loadu_si256((const __m256i *)h);
+		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
+		for (; m; m = _blsr_u32(m)) {
+			i = _tzcnt_u32(m);
+			if (jstr_unlikely(h + i > end))
+				return NULL;
+			if (*(h + i + 1) == c1 && !memcmp(h + i + 2, n, ne_len))
+				return (char *)h + i;
+		}
+		h += sizeof(__m256i);
+		if (jstr_unlikely(h > end))
+			return NULL;
+		h = (const unsigned char *)JSTR_PTR_ALIGN_UP(h, sizeof(__m256i));
+	}
+	for (;;) {
+		hv = _mm256_load_si256((const __m256i *)h);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
 		for (; m; m = _blsr_u32(m)) {
 			i = _tzcnt_u32(m);
