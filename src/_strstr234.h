@@ -47,7 +47,6 @@
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
                                      const unsigned char *const ne,
@@ -69,7 +68,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
                                      const unsigned char *const ne,
@@ -85,7 +83,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
                                      const unsigned char *const ne,
@@ -101,7 +98,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 5)(const unsigned char *hs,
                                      const unsigned char *const ne,
@@ -117,7 +113,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 6)(const unsigned char *hs,
                                      const unsigned char *const ne,
@@ -133,7 +128,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
                                      const unsigned char *const ne,
@@ -149,7 +143,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 8)(const unsigned char *hs,
                                      const unsigned char *const ne,
@@ -166,7 +159,6 @@ JSTR_NOEXCEPT
 #else
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
                                      const unsigned char *const ne
@@ -188,7 +180,6 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
                                      const unsigned char *const ne
@@ -204,7 +195,6 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
                                      const unsigned char *const ne
@@ -220,7 +210,6 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 5)(const unsigned char *hs,
                                      const unsigned char *const ne
@@ -236,7 +225,6 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 5)(const unsigned char *hs,
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 6)(const unsigned char *hs,
                                      const unsigned char *const ne
@@ -252,7 +240,6 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 6)(const unsigned char *hs,
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
                                      const unsigned char *const ne
@@ -268,7 +255,6 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 8)(const unsigned char *hs,
                                      const unsigned char *const ne
