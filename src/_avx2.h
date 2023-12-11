@@ -24,8 +24,6 @@
 #define PJSTR_STRCHRNUL_H
 
 #include <immintrin.h>
-#include <x86intrin.h>
-
 #include "jstr-macros.h"
 
 JSTR_FUNC_PURE
