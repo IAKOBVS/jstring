@@ -56,14 +56,14 @@ JSTR_NOEXCEPT
 {
 #	if JSTR_LP64
 	typedef uint32_t size_ty;
-	enum { SHIFT = 16 };
+	enum { sh = 16 };
 #	else
 	typedef uint16_t size_ty;
-	enum { SHIFT = 8 };
+	enum { sh = 8 };
 #	endif
-	const size_ty nw = (size_ty)L(ne[0]) << SHIFT | L(ne[1]);
-	size_ty hw = (size_ty)L(hs[0]) << SHIFT | L(hs[1]);
-	for (hs += 2, l -= 2; l-- && hw != nw; hw = hw << SHIFT | L(*hs++)) {}
+	const size_ty nw = (size_ty)L(ne[0]) << sh | L(ne[1]);
+	size_ty hw = (size_ty)L(hs[0]) << sh | L(hs[1]);
+	for (hs += 2, l -= 2; l-- && hw != nw; hw = hw << sh | L(*hs++)) {}
 	return (hw == nw) ? (char *)(hs - 2) : NULL;
 }
 
@@ -108,16 +108,16 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
 {
 #	if JSTR_LP64
 	typedef uint32_t size_ty;
-	enum { SHIFT = 16 };
+	enum { sh = 16 };
 #	else
 	typedef uint16_t size_ty;
-	enum { SHIFT = 8 };
+	enum { sh = 8 };
 #	endif
-	const size_ty h1 = (size_ty)(L(ne[0]) << SHIFT) | L(ne[1]);
+	const size_ty h1 = (size_ty)(L(ne[0]) << sh) | L(ne[1]);
 	size_ty h2 = 0;
 	unsigned int c;
 	for (c = L(hs[0]); N h1 != h2 && c != 0; c = L(*++hs))
-		h2 = (h2 << SHIFT) | c;
+		h2 = (h2 << sh) | c;
 	return h1 == h2 ? (char *)hs - 2 : NULL;
 }
 
