@@ -30,12 +30,12 @@
 JSTR_FUNC_PURE
 static char *
 pjstr_strchrnul_avx2(const char *s,
-                               int c)
+                     int c)
 {
+	unsigned int m, zm;
 	const __m256i cv = _mm256_set1_epi8(c);
 	const __m256i zv = _mm256_setzero_si256();
 	__m256i sv = _mm256_loadu_si256((const __m256i *)s);
-	unsigned int m, zm;
 	m = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 	zm = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
 	if (m) {

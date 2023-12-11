@@ -430,7 +430,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
 	return (char *)strchrnul(s, c);
 #elif defined __AVX2__
-	return pjstr_strchrnul_avx2_unaligned(s, c);
+	return pjstr_strchrnul_avx2(s, c);
 #elif JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_TEST
 	/* Optimized strchr() + strlen() is still faster than a C strchrnul(). */
 	char *const p = strchr(s, c);
