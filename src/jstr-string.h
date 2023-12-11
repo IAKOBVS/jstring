@@ -271,15 +271,12 @@ pjstr_memmem_avx2(const char *hs,
 		return !memcmp(hs, ne, ne_len) ? (void *)hs : NULL;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	const char *const rare = jstr_rarebytefind_len(ne, ne_len);
-	const size_t shift = rare - ne;
-	const __m256i n0 = _mm256_set1_epi8(*(char *)rare);
-	/* const __m256i n0 = _mm256_set1_epi8(*(char *)ne); */
+	const __m256i n0 = _mm256_set1_epi8(*(char *)ne);
 	const char *const end = hs + hs_len - ne_len;
 	unsigned int mask;
 	uint32_t i;
 	__m256i hv;
-	for (;; hs += 32) {
+	for (;; hs += sizeof(__m256i)) {
 		hv = _mm256_loadu_si256((const __m256i *)hs);
 		mask = (unsigned int)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, n0));
 		while (mask) {
