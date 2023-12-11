@@ -498,7 +498,6 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	cu *rare = (cu *)jstr_rarebytefindeither_len(ne, ne_len);
-	/* ne_len <= 4 */
 	unsigned int shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;
 	hs_len -= shift;
