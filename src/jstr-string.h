@@ -263,10 +263,10 @@ pjstr_memmem_avx2(const char *hs,
                   size_t ne_len)
 {
 #ifdef __AVX2__
-	if (jstr_unlikely(ne_len == 0))
-		return (char *)hs;
 	if (ne_len == 1)
 		return (void *)memchr(hs, *(unsigned char *)ne, hs_len);
+	if (jstr_unlikely(ne_len == 0))
+		return (char *)hs;
 	if (hs_len == ne_len)
 		return !memcmp(hs, ne, ne_len) ? (void *)hs : NULL;
 	if (jstr_unlikely(hs_len < ne_len))
