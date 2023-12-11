@@ -150,7 +150,7 @@ pjstr_memmem_avx2(const char *hs,
 			i = _tzcnt_u32(m);
 			if (jstr_unlikely(hs + i > end))
 				return NULL;
-			if (!memcmp(hs + i + 2, ne + 2, ne_len - 2))
+			if (!memcmp(hs + i, ne, ne_len))
 				return (char *)hs + i;
 			m = _blsr_u32(m);
 		}
