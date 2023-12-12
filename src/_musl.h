@@ -51,7 +51,7 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(*s == '\0') || *s == (char)c)
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
-	const word *w = w = (word *)s;
+	const word *w = (word *)s;
 	for (; !HASZERO(*w) && !HASZERO(*w ^ k); ++w) {}
 	s = (char *)w;
 #endif
@@ -108,7 +108,7 @@ JSTR_NOEXCEPT
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
 	const size_t l = ONES * (unsigned char)jstr_toupper(c);
-	const word *w = w = (word *)s;
+	const word *w = (word *)s;
 	for (; !HASZERO(*w) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); ++w) {}
 	s = (char *)w;
 #endif
@@ -143,7 +143,7 @@ JSTR_NOEXCEPT
 		}
 		const size_t k = ONES * (unsigned char)c;
 		const size_t l = ONES * jstr_toupper(c);
-		const word *w = w = (word *)p;
+		const word *w = (word *)p;
 		for (; n >= sizeof(size_t) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); n -= sizeof(size_t), ++w) {}
 		p = (unsigned char *)w;
 	}
