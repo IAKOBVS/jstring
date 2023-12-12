@@ -9,7 +9,6 @@ FLAGS='
 -Wpedantic
 -Wsign-conversion
 -march=native
--fsanitize=address
 '
 
 has_prog()

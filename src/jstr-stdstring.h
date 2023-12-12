@@ -736,6 +736,7 @@ JSTR_NOEXCEPT
 
 /* Return value:
    ptr to '\0' in DST. */
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
