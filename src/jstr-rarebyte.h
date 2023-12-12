@@ -55,7 +55,7 @@ jstr_rarebytefind_len(const void *ne,
 {
 	const unsigned char *rare = (const unsigned char *)ne;
 	const unsigned char *p = (const unsigned char *)ne;
-	int c_rare = jstr_rarebyte_table_case[*rare];
+	int c_rare = jstr_rarebyte_table[*rare];
 	int c;
 	for (; n--; ++p) {
 		c = jstr_rarebyte_table[*p];
@@ -74,7 +74,7 @@ jstr_rarebytefind(const char *ne)
 {
 	const unsigned char *rare = (const unsigned char *)ne;
 	const unsigned char *p = (const unsigned char *)ne;
-	int c_rare = jstr_rarebyte_table_case[*rare];
+	int c_rare = jstr_rarebyte_table[*rare];
 	int c;
 	for (;; ++p) {
 		c = jstr_rarebyte_table[*p];
