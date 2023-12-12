@@ -24,8 +24,12 @@
 #define PJSTR_MUSL_H
 
 #include "jstr-macros.h"
-#include "jstr-ctype.h"
+
+PJSTR_BEGIN_DECLS
 #include <limits.h>
+PJSTR_END_DECLS
+
+#include "jstr-ctype.h"
 
 #define ONES       ((size_t)-1 / UCHAR_MAX)
 #define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
