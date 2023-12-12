@@ -249,7 +249,7 @@ JSTR_NOEXCEPT
 		return JSTR_RET_SUCC;
 	size_t off = 0;
 	const char *p;
-	while ((p = (char *)JSTR_REPLACE_SEARCHER(*s + off, *sz - off, find, find_len))) {
+	while ((p = jstr_strstr_len(*s + off, *sz - off, find, find_len))) {
 		off = JSTR_PTR_DIFF(p, *s);
 		if (jstr_chk(jstr_insert_len(s, sz, cap, JSTR_PTR_DIFF(p, *s + find_len), src, src_len)))
 			return JSTR_RET_ERR;
@@ -696,7 +696,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(find_len == 0))
 		return 0;
-	char *const p = (char *)JSTR_REPLACE_SEARCHER(s + start_idx, *sz - start_idx, find, find_len);
+	char *const p = jstr_strstr_len(s + start_idx, *sz - start_idx, find, find_len);
 	if (p == NULL)
 		return 0;
 	memmove(p, p + find_len, JSTR_PTR_DIFF(s + *sz, p));
@@ -860,7 +860,7 @@ JSTR_NOEXCEPT
 	const char *const end = s + *sz;
 	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(s + start_idx);
 	size_t changed = 0;
-	for (; n-- && (i.src_e = (char *)JSTR_REPLACE_SEARCHER(i.src_e, JSTR_PTR_DIFF(end, i.src_e), find, find_len)); ++changed)
+	for (; n-- && (i.src_e = jstr_strstr_len(i.src_e, JSTR_PTR_DIFF(end, i.src_e), find, find_len)); ++changed)
 		PJSTR_INPLACE_RMALL(i, find_len);
 	if (i.dst != end)
 		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), s);
@@ -928,7 +928,7 @@ JSTR_NOEXCEPT
 	}
 	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(*s + start_idx);
 	size_t changed = 0;
-	for (; n-- && (i.src_e = (char *)JSTR_REPLACE_SEARCHER(i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find, find_len)); ++changed) {
+	for (; n-- && (i.src_e = jstr_strstr_len(i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find, find_len)); ++changed) {
 		if (rplc_len <= find_len) {
 			PJSTR_INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
 		} else {

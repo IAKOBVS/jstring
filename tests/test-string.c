@@ -308,13 +308,6 @@ simple_stpcpy(char *d,
 		}                                                                          \
 	} while (0)
 
-static char *
-jstr_strcasestr_len_test(const char *hs,
-                         const char *ne)
-{
-	return jstr_strcasestr_len(hs, strlen(hs), ne, strlen(ne));
-}
-
 JSTR_ATTR_MAYBE_UNUSED
 static char *
 simple_revcpy_p(char *dst,
@@ -344,9 +337,13 @@ main(int argc, char **argv)
 	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
 	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem);
 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem);
 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
+
 	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem);
+	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
+
+	/* T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem); */
+
 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);

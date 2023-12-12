@@ -38,18 +38,6 @@
 #	define JSTR_USE_LGPL 1
 #endif
 
-/* Substring searcher function to be used by rplc*() and rm*() functions.
-   The searcher function's prototype:
-   void *(const char *, size_t, const char *, size_t). */
-#ifndef JSTR_REPLACE_SEARCHER
-/* strstr_len() may call strstr() if it is deemed faster than memmem().
-   HAYSTACK and NEEDLE must be nul-terminated. */
-#	define JSTR_REPLACE_SEARCHER jstr_strstr_len
-#	define JSTR_REPLACE_DEFAULT  1
-#else
-#	define JSTR_REPLACE_DEFAULT 0
-#endif
-
 /* Always prefer standard functions over user functions.
    For example, use libc strcasestr() when available
    over our own strcasestr() in jstr_strcasestr(). */
