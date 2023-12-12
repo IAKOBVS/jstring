@@ -465,9 +465,9 @@ jstr_strcasechr(const char *s,
                 int c)
 JSTR_NOEXCEPT
 {
-#if 0 && defined __AVX2__ /* Failed test. */
+#ifdef __AVX2__
 	s = pjstr_strcasechrnul_avx2(s, c);
-	return *s == (char)c ? (char *)s : NULL;
+	return jstr_tolower(*s) == jstr_tolower(c) ? (char *)s : NULL;
 #else
 	if (jstr_isalpha(c))
 		return pjstr_strcasechr(s, c);

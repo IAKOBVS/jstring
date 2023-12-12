@@ -36,7 +36,7 @@ pjstr_strchrnul_avx2(const char *s,
 {
 	if (*s == (char)c || jstr_unlikely(*s == '\0'))
 		return (char *)s;
-	uint32_t m, zm;
+	uint32_t m, zm, i, iz;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8(c);
 	const __m256i zv = _mm256_setzero_si256();
@@ -44,38 +44,26 @@ pjstr_strchrnul_avx2(const char *s,
 		sv = _mm256_loadu_si256((const __m256i *)s);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
-		if (m) {
-			m = _tzcnt_u32(m);
-			if (zm) {
-				zm = _tzcnt_u32(zm);
-				if (jstr_unlikely(m > zm))
-					return (char *)s + zm;
-			}
-			return (char *)s + m;
-		} else if (zm) {
-			zm = _tzcnt_u32(zm);
-			return (char *)s + zm;
-		}
+		i = _tzcnt_u32(m);
+		iz = _tzcnt_u32(zm);
+		if (m)
+			return (char *)s + (zm ? JSTR_MIN(i, iz) : i);
+		else if (zm)
+			return (char *)s + iz;
 		s = (const char *)JSTR_PTR_ALIGN_UP(s, sizeof(__m256i));
 	}
 	for (;; s += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)s);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
-		if (m) {
-			m = _tzcnt_u32(m);
-			if (zm) {
-				zm = _tzcnt_u32(zm);
-				if (jstr_unlikely(m > zm))
-					break;
-			}
-			return (char *)s + m;
-		} else if (zm) {
-			zm = _tzcnt_u32(zm);
-			break;
-		}
+		i = _tzcnt_u32(m);
+		iz = _tzcnt_u32(zm);
+		if (m)
+			return (char *)s + (zm ? JSTR_MIN(i, iz) : i);
+		else if (zm)
+			return (char *)s + iz;
 	}
-	return (char *)s + zm;
+	return (char *)s + iz;
 }
 
 JSTR_FUNC_PURE
@@ -94,51 +82,39 @@ pjstr_strcasechrnul_avx2(const char *s,
 	c = jstr_tolower(c);
 	if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
 		return (char *)s;
-	uint32_t m, m1, m2, zm;
+	uint32_t m, m1, m2, zm, i, iz;
 	__m256i sv;
-	const __m256i cv = _mm256_set1_epi8(c);
+	const __m256i cv = _mm256_set1_epi8((char)c);
 	const __m256i cv1 = _mm256_set1_epi8((char)jstr_toupper(c));
 	const __m256i zv = _mm256_setzero_si256();
 	if ((uintptr_t)s & (sizeof(__m256i) - 1)) {
 		sv = _mm256_loadu_si256((const __m256i *)s);
+		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
-		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		iz = _tzcnt_u32(zm);
 		m2 = m | m1;
-		if (m2) {
-			m2 = _tzcnt_u32(m2);
-			if (zm) {
-				zm = _tzcnt_u32(zm);
-				if (jstr_unlikely(m2 > zm))
-					return (char *)s + zm;
-			}
-			return (char *)s + m2;
-		} else if (zm) {
-			zm = _tzcnt_u32(zm);
-			return (char *)s + zm;
-		}
+		i = _tzcnt_u32(m2);
+		if (m)
+			return (char *)s + (zm ? JSTR_MIN(i, iz) : i);
+		if (zm)
+			return (char *)s + iz;
 		s = (const char *)JSTR_PTR_ALIGN_UP(s, sizeof(__m256i));
 	}
 	for (;; s += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)s);
+		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
-		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		iz = _tzcnt_u32(zm);
 		m2 = m | m1;
-		if (m2) {
-			m2 = _tzcnt_u32(m2);
-			if (zm) {
-				zm = _tzcnt_u32(zm);
-				if (jstr_unlikely(m2 > zm))
-					break;
-			}
-			return (char *)s + m2;
-		} else if (zm) {
-			zm = _tzcnt_u32(zm);
-			break;
-		}
+		i = _tzcnt_u32(m2);
+		if (m)
+			return (char *)s + (zm ? JSTR_MIN(i, iz) : i);
+		if (zm)
+			return (char *)s + iz;
 	}
-	return (char *)s + zm;
+	return (char *)s + iz;
 }
 
 JSTR_FUNC_PURE
@@ -157,7 +133,7 @@ pjstr_memcasechr_avx2(const void *s,
 	if (jstr_tolower(*p) == c)
 		return (char *)p;
 	const unsigned char *end = p + n;
-	uint32_t m, m1, m2, zm;
+	uint32_t m, m1, m2, i;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8(c);
 	const __m256i cv1 = _mm256_set1_epi8((char)jstr_toupper(c));
@@ -166,30 +142,21 @@ pjstr_memcasechr_avx2(const void *s,
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
 		m2 = m | m1;
-		if (m2) {
-			m2 = _tzcnt_u32(m2);
-			p += m2;
-			return p < end ? (void *)p : NULL;
-		}
+		i = _tzcnt_u32(m2);
+		if (m2)
+			return p + i < end ? (char *)p + i : NULL;
 		p = (const unsigned char *)JSTR_PTR_ALIGN_UP(p, sizeof(__m256i));
-		if (jstr_unlikely(p >= end))
-			return NULL;
 	}
-	for (;;) {
+	for (; p < end; p += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)p);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
 		m2 = m | m1;
-		if (m2) {
-			m2 = _tzcnt_u32(m2);
-			p += m2;
-			return p < end ? (void *)p : NULL;
-		}
-		p += sizeof(__m256i);
-		if (jstr_unlikely(p >= end))
-			return NULL;
+		i = _tzcnt_u32(m2);
+		if (m2)
+			return p + i < end ? (char *)p + i : NULL;
 	}
-	return (char *)p + zm;
+	return NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -213,24 +180,18 @@ pjstr_memrchr_avx2(const void *s,
 		p -= sizeof(__m256i);
 		sv = _mm256_loadu_si256((const __m256i *)p);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
-		if (m) {
-			i = 31 - _lzcnt_u32(m);
-			p += i;
-			return p >= (unsigned char *)s ? (void *)p : NULL;
-		}
+		i = 31 - _lzcnt_u32(m);
+		if (m)
+			return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
 		p = (const unsigned char *)JSTR_PTR_ALIGN_DOWN(p, sizeof(__m256i));
-		if (jstr_unlikely(p < (unsigned char *)s))
-			return NULL;
 	}
-	for (;;) {
+	while (p >= (unsigned char *)s) {
 		p -= sizeof(__m256i);
 		sv = _mm256_load_si256((const __m256i *)p);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
-		if (m) {
-			i = 31 - _lzcnt_u32(m);
-			p += i;
-			return p >= (unsigned char *)s ? (void *)p : NULL;
-		}
+		i = 31 - _lzcnt_u32(m);
+		if (m)
+			return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
 	}
 	return NULL;
 }
@@ -278,10 +239,8 @@ pjstr_memmem_avx2(const void *hs,
 				return (char *)h + i - shift;
 		}
 		h = (const unsigned char *)JSTR_PTR_ALIGN_UP(h, sizeof(__m256i));
-		if (jstr_unlikely(h - shift > end))
-			return NULL;
 	}
-	for (;;) {
+	for (; h - shift <= end; h += sizeof(__m256i)) {
 		hv = _mm256_load_si256((const __m256i *)h);
 		hv1 = _mm256_loadu_si256((const __m256i *)(h + 1));
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
@@ -295,9 +254,6 @@ pjstr_memmem_avx2(const void *hs,
 			if (!memcmp(h + i - shift, ne, ne_len))
 				return (char *)h + i - shift;
 		}
-		h += sizeof(__m256i);
-		if (jstr_unlikely(h - shift > end))
-			break;
 	}
 	return NULL;
 }
