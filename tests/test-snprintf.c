@@ -35,7 +35,6 @@
 #include <math.h>
 #include "test.h"
 #include "../src/jstr-builder.h"
-#include "../src/_jstr-macros-pp-tools.h"
 
 /* clang-format off */
 

@@ -1,5 +1,3 @@
-#define _GNU_SOURCE
-
 #include "test.h"
 #include "test-array.h"
 #include "../src/jstr-string.h"
@@ -341,8 +339,6 @@ main(int argc, char **argv)
 
 	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem);
 	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
-
-	/* T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem); */
 
 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
