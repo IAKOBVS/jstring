@@ -758,7 +758,7 @@ typedef enum jstrio_ftw_flag_ty {
 #endif
 
 #if USE_ATFILE
-#	define STAT_DO(st, ftw_state, fd, ep, do_on_nonfatal_err)             \
+#	define STAT_DO(st, ftw_state, fd, ep, dirpath, do_on_nonfatal_err)    \
 		do {                                                           \
 			if (jstr_unlikely(fstatat(fd, (ep)->d_name, st, 0))) { \
 				if (NONFATAL_ERR()) {                          \
@@ -837,7 +837,7 @@ typedef enum jstrio_ftw_flag_ty {
 #if USE_ATFILE
 #	define FD       fd
 #	define FD_PARAM , int fd
-#	define FD_ARG   , (a)->(fd)
+#	define FD_ARG   , fd
 #else
 #	define FD
 #	define FD_PARAM
@@ -1074,7 +1074,6 @@ err_closedir:
 #undef STAT_MODE
 #undef STAT_OR_MODE
 #undef FD
-#undef FD_ARG
 #undef FD_PARAM
 #undef PJSTRIO_O_DIRECTORY
 
@@ -1137,13 +1136,12 @@ JSTR_NOEXCEPT
 		goto ftw;
 	}
 	data.ftw.dirpath_len = dirpath_len;
-	if (
 #if USE_ATFILE
-	jstr_unlikely(fstat(fd, &st))
+	if (jstr_unlikely(fstat(fd, &st)))
 #else
-	jstr_unlikely(stat(fulpath, &st))
+	if (jstr_unlikely(stat(fulpath, &st)))
 #endif
-	) {
+	{
 		data.ftw.ftw_state = JSTRIO_FTW_STATE_NS;
 		goto fn;
 	}
@@ -1168,7 +1166,7 @@ CONT:;
 		data.fnm_glob = fnm_glob;
 		data.fnm_flags = jstrio_ftw_flags;
 		data.ftw_flags = jstrio_ftw_flags;
-		tmp = pjstrio_ftw_len(&data, dirpath_len);
+		tmp = pjstrio_ftw_len(&data, dirpath_len FD_ARG);
 		CLOSE(fd, goto err);
 		return tmp;
 	}
@@ -1200,6 +1198,7 @@ err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
+#undef FD_ARG
 #undef OPEN
 #undef OPENAT
 #undef CLOSE
