@@ -53,20 +53,22 @@ simple_memrchr(const void *s,
 	return NULL;
 }
 
+#define T_SETUP(buf, BUFLEN)              \
+	do {                              \
+		memset(buf, 'a', BUFLEN); \
+		buf[BUFLEN - 1] = 0;      \
+		buf[BUFLEN - 2] = 'b';    \
+	} while (0)
+
 #define T_DEFINE_STRCHR(impl_func, ...)                    \
 	size_t b_##impl_func(void *dummy)                  \
 	{                                                  \
-		char *buf = malloc(BUFLEN);                \
 		size_t i;                                  \
 		size_t cs;                                 \
-		memset(buf, 'a', BUFLEN);                  \
-		buf[BUFLEN - 1] = 0;                       \
-		buf[BUFLEN - 2] = 'b';                     \
 		for (i = 0; i < 100; i++) {                \
 			buf[i] = '0' + i % 8;              \
 			cs += (int)impl_func(__VA_ARGS__); \
 		}                                          \
-		free(buf);                                 \
 		return cs;                                 \
 	}
 
@@ -86,6 +88,8 @@ main()
 {
 	buf = malloc(BUFLEN);
 	assert(buf);
+
+	T_SETUP(buf, BUFLEN);
 
 #ifdef __AVX2__
 	RUN(b_pjstr_strchrnul_avx2, 0);
