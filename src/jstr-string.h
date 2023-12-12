@@ -196,7 +196,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-#if JSTR_USE_STANDARD_MEMMEM
+#if JSTR_USE_STANDARD_MEMMEM || defined __AVX2__
 JSTR_ATTR_INLINE
 #endif
 static void *

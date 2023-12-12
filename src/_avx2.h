@@ -30,7 +30,6 @@
 #include "jstr-rarebyte.h"
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 pjstr_strchrnul_avx2(const char *s,
                      int c)
@@ -81,7 +80,6 @@ pjstr_strchrnul_avx2(const char *s,
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 pjstr_memrchr_avx2(const void *s,
                    int c,
@@ -125,7 +123,6 @@ pjstr_memrchr_avx2(const void *s,
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 pjstr_memmem_avx2(const void *hs,
                   size_t hs_len,

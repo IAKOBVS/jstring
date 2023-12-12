@@ -32,6 +32,8 @@
 #	include "_avx2.h"
 #endif
 
+#include "_musl.h"
+
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
@@ -350,9 +352,7 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-#if JSTR_HAVE_MEMRCHR || !JSTR_HAVE_ATTR_MAY_ALIAS
 JSTR_ATTR_INLINE
-#endif
 static void *
 jstr_memrchr(const void *s,
              int c,
@@ -364,66 +364,13 @@ JSTR_NOEXCEPT
 #elif defined __AVX2__
 	return pjstr_memrchr_avx2(s, c, n);
 #else
-	/* The following is based on musl's memchr().
-	 * Copyright © 2005-2020 Rich Felker, et al.
-	 *
-	 * Permission is hereby granted, free of charge, to any person obtaining
-	 * a copy of this software and associated documentation files (the
-	 * "Software"), to deal in the Software without restriction, including
-	 * without limitation the rights to use, copy, modify, merge, publish,
-	 * distribute, sublicense, and/or sell copies of the Software, and to
-	 * permit persons to whom the Software is furnished to do so, subject to
-	 * the following conditions:
-	 *
-	 * The above copyright notice and this permission notice shall be
-	 * included in all copies or substantial portions of the Software.
-	 *
-	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-	const unsigned char *p = (const unsigned char *)s + n - 1;
-	c = (unsigned char)c;
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
-#		define SS         (sizeof(size_t))
-#		define ALIGN      (sizeof(size_t) - 1)
-#		define ONES       ((size_t)-1 / UCHAR_MAX)
-#		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
-#		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-	for (; (uintptr_t)(p + 1) & ALIGN; --p) {
-		if (jstr_unlikely(n-- == 0))
-			return NULL;
-		if (*p == c)
-			return (char *)p;
-	}
-	if (n >= SS && *p != c) {
-		typedef size_t JSTR_ATTR_MAY_ALIAS word;
-		const word *w = (const word *)(p - SS + 1);
-		const size_t k = ONES * (unsigned char)c;
-		for (; n >= SS && !HASZERO(*w ^ k); --w, n -= SS) {}
-		p = (unsigned char *)w + SS - 1;
-	}
-#		undef SS
-#		undef ALIGN
-#		undef ONES
-#		undef HIGHS
-#		undef HASZERO
-#	endif
-	for (; n--; --p)
-		if (*p == c)
-			return (char *)p;
-	return NULL;
+	return pjstr_memrchr_musl(s, c, n);
 #endif
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_RETURNS_NONNULL
-#if JSTR_HAVE_STRCHRNUL || JSTR_HAVE_STRCHR_OPTIMIZED || !JSTR_HAVE_ATTR_MAY_ALIAS
 JSTR_ATTR_INLINE
-#endif
 static char *
 jstr_strchrnul(const char *s,
                int c)
@@ -438,108 +385,22 @@ JSTR_NOEXCEPT
 	char *const p = strchr(s, c);
 	return p ? p : (char *)s + strlen(s);
 #else
-	/* The following is taken from musl's strchrnul() with minor modifications.
-	 * Copyright © 2005-2020 Rich Felker, et al.
-	 *
-	 * Permission is hereby granted, free of charge, to any person obtaining
-	 * a copy of this software and associated documentation files (the
-	 * "Software"), to deal in the Software without restriction, including
-	 * without limitation the rights to use, copy, modify, merge, publish,
-	 * distribute, sublicense, and/or sell copies of the Software, and to
-	 * permit persons to whom the Software is furnished to do so, subject to
-	 * the following conditions:
-	 *
-	 * The above copyright notice and this permission notice shall be
-	 * included in all copies or substantial portions of the Software.
-	 *
-	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-	if (jstr_unlikely(c == '\0'))
-		return (char *)s + strlen(s);
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
-#		define ALIGN      (sizeof(size_t))
-#		define ONES       ((size_t)-1 / UCHAR_MAX)
-#		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
-#		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	for (; (uintptr_t)s % ALIGN; ++s)
-		if (jstr_unlikely(*s == '\0') || *s == (char)c)
-			return (char *)s;
-	const size_t k = ONES * (unsigned char)c;
-	const word *w = w = (word *)s;
-	for (; !HASZERO(*w) && !HASZERO(*w ^ k); ++w) {}
-	s = (char *)w;
-#		undef ALIGN
-#		undef ONES
-#		undef HIGHS
-#		undef HASZERO
-#	endif
-	for (; *s && *s != (char)c; ++s) {}
-	return (char *)s;
+	return pjstr_strchrnul_musl(s, c);
 #endif
 }
 
 JSTR_FUNC_PURE
-#if !JSTR_HAVE_ATTR_MAY_ALIAS
 JSTR_ATTR_INLINE
-#endif
 static char *
 pjstr_strcasechrnul_word(const char *s,
                          int c)
 JSTR_NOEXCEPT
 {
-	/* The following is based on musl's strchrnul().
-	 * Copyright © 2005-2020 Rich Felker, et al.
-	 *
-	 * Permission is hereby granted, free of charge, to any person obtaining
-	 * a copy of this software and associated documentation files (the
-	 * "Software"), to deal in the Software without restriction, including
-	 * without limitation the rights to use, copy, modify, merge, publish,
-	 * distribute, sublicense, and/or sell copies of the Software, and to
-	 * permit persons to whom the Software is furnished to do so, subject to
-	 * the following conditions:
-	 *
-	 * The above copyright notice and this permission notice shall be
-	 * included in all copies or substantial portions of the Software.
-	 *
-	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-	c = jstr_tolower(c);
-#if JSTR_HAVE_ATTR_MAY_ALIAS
-#	define ALIGN      (sizeof(size_t))
-#	define ONES       ((size_t)-1 / UCHAR_MAX)
-#	define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
-#	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	for (; (uintptr_t)s % ALIGN; ++s)
-		if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
-			return (char *)s;
-	const size_t k = ONES * (unsigned char)c;
-	const size_t l = ONES * (unsigned char)jstr_toupper(c);
-	const word *w = w = (word *)s;
-	for (; !HASZERO(*w) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); ++w) {}
-	s = (char *)w;
-#	undef ALIGN
-#	undef ONES
-#	undef HIGHS
-#	undef HASZERO
-#endif
-	for (; *s && jstr_tolower(*s) != c; ++s) {}
-	return (char *)s;
+	return pjstr_strcasechrnul_musl(s, c);
 }
 
-JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
 static char *
 pjstr_strcasechr_word(const char *s,
                       int c)
@@ -550,64 +411,14 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-#if !JSTR_HAVE_ATTR_MAY_ALIAS
 JSTR_ATTR_INLINE
-#endif
 static void *
 jstr_memcasechr(const void *s,
                 int c,
                 size_t n)
 JSTR_NOEXCEPT
 {
-	/* The following is based on musl's strchrnul().
-	 * Copyright © 2005-2020 Rich Felker, et al.
-	 *
-	 * Permission is hereby granted, free of charge, to any person obtaining
-	 * a copy of this software and associated documentation files (the
-	 * "Software"), to deal in the Software without restriction, including
-	 * without limitation the rights to use, copy, modify, merge, publish,
-	 * distribute, sublicense, and/or sell copies of the Software, and to
-	 * permit persons to whom the Software is furnished to do so, subject to
-	 * the following conditions:
-	 *
-	 * The above copyright notice and this permission notice shall be
-	 * included in all copies or substantial portions of the Software.
-	 *
-	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-	if (jstr_unlikely(c == '\0'))
-		return (char *)s + jstr_strnlen((char *)s, n);
-	const unsigned char *p = (const unsigned char *)s;
-	c = jstr_tolower(c);
-#if JSTR_HAVE_ATTR_MAY_ALIAS
-#	define ALIGN      (sizeof(size_t))
-#	define ONES       ((size_t)-1 / UCHAR_MAX)
-#	define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
-#	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	for (; (uintptr_t)p % ALIGN; ++p) {
-		if (jstr_unlikely(n-- == 0))
-			return NULL;
-		if (jstr_tolower(*p) == c)
-			return (char *)p;
-	}
-	const size_t k = ONES * (unsigned char)c;
-	const size_t l = ONES * jstr_toupper(c);
-	const word *w = w = (word *)p;
-	for (; n >= sizeof(size_t) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); n -= sizeof(size_t), ++w) {}
-	p = (unsigned char *)w;
-#	undef ALIGN
-#	undef ONES
-#	undef HIGHS
-#	undef HASZERO
-#endif
-	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
-	return n ? (void *)p : NULL;
+	return pjstr_memcasechr_musl(s, c, n);
 }
 
 JSTR_FUNC_PURE
@@ -926,9 +737,7 @@ JSTR_NOEXCEPT
 /* Return value:
    ptr to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
-#if JSTR_HAVE_STPCPY || JSTR_HAVE_STRLEN_OPTIMIZED || !JSTR_HAVE_ATTR_MAY_ALIAS
 JSTR_ATTR_INLINE
-#endif
 static char *
 jstr_stpcpy(char *R dst,
             const char *R src)
@@ -942,50 +751,7 @@ JSTR_NOEXCEPT
 #elif JSTR_HAVE_WORD_AT_A_TIME && JSTR_USE_LGPL
 #	include "_lgpl-stpcpy.h"
 #else
-#	if JSTR_HAVE_ATTR_MAY_ALIAS
-	/* The following is taken from musl's stpcpy() with minor modifications.
-	 * Copyright © 2005-2020 Rich Felker, et al.
-	 *
-	 * Permission is hereby granted, free of charge, to any person obtaining
-	 * a copy of this software and associated documentation files (the
-	 * "Software"), to deal in the Software without restriction, including
-	 * without limitation the rights to use, copy, modify, merge, publish,
-	 * distribute, sublicense, and/or sell copies of the Software, and to
-	 * permit persons to whom the Software is furnished to do so, subject to
-	 * the following conditions:
-	 *
-	 * The above copyright notice and this permission notice shall be
-	 * included in all copies or substantial portions of the Software.
-	 *
-	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-	 * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-	 * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-	 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-	 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
-#		define ALIGN      (sizeof(size_t))
-#		define ONES       ((size_t)-1 / UCHAR_MAX)
-#		define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
-#		define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	if ((uintptr_t)src % ALIGN == (uintptr_t)dst % ALIGN) {
-		for (; (uintptr_t)src % ALIGN; ++src, ++dst)
-			if (!(*dst = *src))
-				return dst;
-		word *wd = (word *)dst;
-		const word *ws = (const word *)src;
-		for (; !HASZERO(*ws); *wd++ = *ws++) {}
-		dst = (char *)wd;
-		src = (const char *)ws;
-	}
-#		undef ALIGN
-#		undef ONES
-#		undef HIGHS
-#		undef HASZERO
-#	endif
-	while ((*dst++ = *src++)) {}
-	return dst - 1;
+	return pjstr_stpcpy_musl(dst, src);
 #endif
 }
 
