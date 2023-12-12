@@ -269,8 +269,9 @@ pjstr_memmem_avx2(const void *hs,
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv1, nv1));
 		m2 = m & m1;
-		for (; m2; m2 = _blsr_u32(m2)) {
+		while (m2) {
 			i = _tzcnt_u32(m2);
+			m2 = _blsr_u32(m2);
 			if (jstr_unlikely(h + i - shift > end))
 				return NULL;
 			if (!memcmp(h + i - shift, ne, ne_len))
@@ -286,8 +287,9 @@ pjstr_memmem_avx2(const void *hs,
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv1, nv1));
 		m2 = m & m1;
-		for (; m2; m2 = _blsr_u32(m2)) {
+		while (m2) {
 			i = _tzcnt_u32(m2);
+			m2 = _blsr_u32(m2);
 			if (jstr_unlikely(h + i - shift > end))
 				return NULL;
 			if (!memcmp(h + i - shift, ne, ne_len))
