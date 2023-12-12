@@ -371,6 +371,8 @@ JSTR_NOEXCEPT
 		return NULL;
 #if JSTR_USE_STANDARD_MEMMEM
 	return (char *)memmem(hs, hs_len, ne, ne_len);
+#elif defined __AVX2__
+	return (char *)pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
 #else
 	return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
