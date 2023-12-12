@@ -404,6 +404,10 @@ JSTR_NOEXCEPT
 	cu *p = (cu *)hs + hs_len - ne_len;
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 3)
+		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 4)
+		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
 	for (hs_len -= (ne_len - 1); hs_len--; --p)
 		if (*(cu *)p == *(cu *)ne && !memcmp(p, ne, ne_len))
 			return (char *)p;
