@@ -43,9 +43,9 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define JSTR_INIT \
-	{         \
-		0 \
+#define JSTR_INIT       \
+	{               \
+		0, 0, 0 \
 	}
 
 #define jstr_foreach(j, p) for (char *p = ((j)->data), *const _pjstr_foreach_end_##p = ((j)->data) + ((j)->size); \
