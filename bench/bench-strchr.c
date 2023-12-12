@@ -88,15 +88,19 @@ T_DEFINE_STRCHR(pjstr_memcasechr_avx2, buf, 'b', BUFLEN)
 #endif
 T_DEFINE_STRCHR(simple_strcasechrnul_strcspn, buf, 'b')
 T_DEFINE_STRCHR(jstr_strchrnul, buf, 'b')
-T_DEFINE_STRCHR(strchrnul, buf, 'b')
 T_DEFINE_STRCHR(simple_strchrnul, buf, 'b')
 T_DEFINE_STRCHR(pjstr_strchrnul_musl, buf, 'b')
-T_DEFINE_STRCHR(memrchr, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(simple_memrchr, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(pjstr_memrchr_musl, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(jstr_memrchr, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(pjstr_strcasechrnul_musl, buf, 'b')
 T_DEFINE_STRCHR(pjstr_memcasechr_musl, buf, 'b', BUFLEN)
+#if JSTR_HAVE_STRCHRNUL
+T_DEFINE_STRCHR(strchrnul, buf, 'b')
+#endif
+#if JSTR_HAVE_MEMRCHR
+T_DEFINE_STRCHR(memrchr, buf, 'b', BUFLEN)
+#endif
 
 int
 main()
@@ -116,10 +120,14 @@ main()
 	RUN(b_pjstr_memcasechr_musl, 0);
 	RUN(b_pjstr_memrchr_musl, 0);
 	RUN(b_jstr_strchrnul, 0);
+#if JSTR_HAVE_STRCHRNUL
 	RUN(b_strchrnul, 0);
+#endif
 	RUN(b_simple_strchrnul, 0);
 	RUN(b_simple_strcasechrnul_strcspn, 0);
+#if JSTR_HAVE_MEMRCHR
 	RUN(b_memrchr, 0);
+#endif
 	RUN(b_jstr_memrchr, 0);
 	RUN(b_simple_memrchr, 0);
 
