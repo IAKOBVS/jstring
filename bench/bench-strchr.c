@@ -74,32 +74,38 @@ simple_memrchr(const void *s,
 
 #ifdef __AVX2__
 T_DEFINE_STRCHR(pjstr_strchrnul_avx2, buf, 'b')
-T_DEFINE_STRCHR(pjstr_memrchr_avx2, buf, 'b', strlen(buf))
+T_DEFINE_STRCHR(pjstr_memrchr_avx2, buf, 'b', BUFLEN)
 #endif
 T_DEFINE_STRCHR(jstr_strchrnul, buf, 'b')
 T_DEFINE_STRCHR(strchrnul, buf, 'b')
 T_DEFINE_STRCHR(simple_strchrnul, buf, 'b')
-T_DEFINE_STRCHR(memrchr, buf, 'b', strlen(buf))
-T_DEFINE_STRCHR(jstr_memrchr, buf, 'b', strlen(buf))
-T_DEFINE_STRCHR(simple_memrchr, buf, 'b', strlen(buf))
+T_DEFINE_STRCHR(pjstr_strchrnul_musl, buf, 'b')
+T_DEFINE_STRCHR(memrchr, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(simple_memrchr, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(pjstr_memrchr_musl, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(jstr_memrchr, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(pjstr_strcasechrnul_musl, buf, 'b')
 
 int
 main()
 {
-	buf = malloc(BUFLEN);
+	buf = malloc(BUFLEN + 1);
 	assert(buf);
 
 	T_SETUP(buf, BUFLEN);
 
 #ifdef __AVX2__
 	RUN(b_pjstr_strchrnul_avx2, 0);
+	RUN(b_pjstr_memrchr_avx2, 0);
 #endif
+	RUN(b_pjstr_strchrnul_musl, 0);
+	RUN(b_pjstr_strcasechrnul_musl, 0);
+	RUN(b_pjstr_memrchr_musl, 0);
 	RUN(b_jstr_strchrnul, 0);
 	RUN(b_strchrnul, 0);
 	RUN(b_simple_strchrnul, 0);
 	RUN(b_memrchr, 0);
 	RUN(b_jstr_memrchr, 0);
-	RUN(b_pjstr_memrchr_avx2, 0);
 	RUN(b_simple_memrchr, 0);
 
 	free(buf);
