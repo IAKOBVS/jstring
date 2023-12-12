@@ -164,26 +164,6 @@ pjstr_memmem_avx2(const void *hs,
 			return NULL;
 		h = (const unsigned char *)JSTR_PTR_ALIGN_DOWN(h, sizeof(__m256i));
 	}
-#if 0
-	const unsigned char *rare = (const unsigned char *)jstr_rarebytefind_len(ne, ne_len);
-	const size_t shift = JSTR_PTR_DIFF(rare, ne);
-	n -= 2, ne_len += 2;
-	nv = _mm256_set1_epi8(*(char *)rare);
-	for (;;) {
-		hv = _mm256_load_si256((const __m256i *)h);
-		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
-		for (; m; m = _blsr_u32(m)) {
-			i = _tzcnt_u32(m) - shift;
-			if (jstr_unlikely(h + i > end))
-				return NULL;
-			if (!memcmp(h + i, ne, ne_len))
-				return (char *)h + i;
-		}
-		h += sizeof(__m256i);
-		if (jstr_unlikely(h - shift > end))
-			return NULL;
-	}
-#else
 	for (;;) {
 		hv = _mm256_load_si256((const __m256i *)h);
 		hv1 = _mm256_loadu_si256((const __m256i *)(h + 1));
