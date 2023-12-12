@@ -91,7 +91,6 @@ main()
 {
 	buf = malloc(BUFLEN + 1);
 	assert(buf);
-
 	T_SETUP(buf, BUFLEN);
 
 #ifdef __AVX2__

@@ -32,6 +32,7 @@ done
 wait
 
 for file in $(echo $tmp/*); do
+	echo "Running $file"
 	output=$($file)
 	echo "$output"
 	echo "$output" >"$(echo "$file" | sed 's/.*\//result-/;')"
