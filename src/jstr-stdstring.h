@@ -463,7 +463,7 @@ JSTR_NOEXCEPT
 {
 #ifdef __AVX2__
 	s = pjstr_strcasechrnul_avx2(s, c);
-	return *s == (char)c ? s : NULL;
+	return *s == (char)c ? (char *)s : NULL;
 #else
 	if (jstr_isalpha(c))
 		return pjstr_strcasechr(s, c);

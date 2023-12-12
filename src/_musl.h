@@ -172,18 +172,20 @@ JSTR_NOEXCEPT
 #	define ONES       ((size_t)-1 / UCHAR_MAX)
 #	define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #	define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	for (; (uintptr_t)p % ALIGN; ++p) {
-		if (jstr_unlikely(n-- == 0))
-			return NULL;
-		if (jstr_tolower(*p) == c)
-			return (char *)p;
+	if (n >= sizeof(size_t) && jstr_tolower(*p) != c) {
+		typedef size_t JSTR_ATTR_MAY_ALIAS word;
+		for (; (uintptr_t)p % ALIGN; ++p) {
+			if (jstr_unlikely(n-- == 0))
+				return NULL;
+			if (jstr_tolower(*p) == c)
+				return (char *)p;
+		}
+		const size_t k = ONES * (unsigned char)c;
+		const size_t l = ONES * jstr_toupper(c);
+		const word *w = w = (word *)p;
+		for (; n >= sizeof(size_t) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); n -= sizeof(size_t), ++w) {}
+		p = (unsigned char *)w;
 	}
-	const size_t k = ONES * (unsigned char)c;
-	const size_t l = ONES * jstr_toupper(c);
-	const word *w = w = (word *)p;
-	for (; n >= sizeof(size_t) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); n -= sizeof(size_t), ++w) {}
-	p = (unsigned char *)w;
 #	undef ALIGN
 #	undef ONES
 #	undef HIGHS

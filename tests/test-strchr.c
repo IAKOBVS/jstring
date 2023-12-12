@@ -106,62 +106,77 @@ simple_strcasechr(const char *s,
 	return TOLOWER(*s) == TOLOWER(c) ? (char *)s : NULL;
 }
 
-#define T_ASSERT(func, expr, result, expected, str, c)                             \
-	do {                                                                       \
-		if (jstr_unlikely(!(expr))) {                                      \
-			PRINTERR("result_len: %zu\n", JSTR_PTR_DIFF(result, str)); \
-			PRINTERR("str: %p\n", str);                                \
-			PRINTERR("ptr_result: %p\n", result);                      \
-			PRINTERR("ptr_expected: %p\n", expected);                  \
-			PRINTERR("string:\n");                                     \
-			PRINTERR("string:%s\n", str);                              \
-			PRINTERR("c:%d\n", c);                                     \
-			PRINTERR("c:%c\n", c);                                     \
-			PRINTERR("string_len:%zu\n", strlen(str));                 \
-			ASSERT_RESULT(func, expr, result, expected);               \
-		}                                                                  \
+static char *
+simple_memcasechr(const void *s,
+                  int c,
+                  size_t n)
+{
+	c = jstr_tolower(c);
+	const unsigned char *p = (const unsigned char *)s;
+	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
+	return n ? (void *)p : NULL;
+}
+
+#define T_ASSERT(func, expr, result, expected, str, c, n)                              \
+	do {                                                                           \
+		if (jstr_unlikely(!(expr))) {                                          \
+			PRINTERR("String:%s\n", str);                                  \
+			PRINTERR("C:%c\n", c);                                         \
+			PRINTERR("C ascii:%d\n", c);                                   \
+			if ((size_t)n != (size_t)-1)                                   \
+				PRINTERR("N:%zu\n", (size_t)n);                        \
+			PRINTERR("Strlen():%zu\n", strlen(str));                       \
+			PRINTERR("Result_len: %zu\n", JSTR_PTR_DIFF(result, str));     \
+			PRINTERR("Expected_len: %zu\n", JSTR_PTR_DIFF(expected, str)); \
+			PRINTERR("Ptr_result: %p\n", result);                          \
+			PRINTERR("Ptr_expected: %p\n", expected);                      \
+			ASSERT_RESULT(func, expr, result, expected);                   \
+		}                                                                      \
 	} while (0)
 
 #if defined __AVX2__
-#	define T_AVX2(s, c)                                                                            \
-		do {                                                                                    \
-			result = pjstr_strchrnul_avx2(p, c);                                            \
-			expected = simple_strchrnul(p, c);                                              \
-			T_ASSERT(pjstr_strchrnul_avx2, result == expected, result, expected, s, c);     \
-			result = pjstr_memrchr_avx2(p, c, p_len);                                       \
-			expected = simple_memrchr(p, c, p_len);                                         \
-			T_ASSERT(pjstr_memrchr_avx2, result == expected, result, expected, s, c);       \
-			result = pjstr_strcasechrnul_avx2(p, c);                                        \
-			expected = simple_strcasechrnul(p, c);                                          \
-			T_ASSERT(pjstr_strcasechrnul_avx2, result == expected, result, expected, s, c); \
+#	define T_AVX2(s, c, n)                                                                             \
+		do {                                                                                        \
+			result = pjstr_strchrnul_avx2(p, c);                                                \
+			expected = simple_strchrnul(p, c);                                                  \
+			T_ASSERT(pjstr_strchrnul_avx2, result == expected, result, expected, s, c, -1);     \
+			result = pjstr_memrchr_avx2(p, c, p_len);                                           \
+			expected = simple_memrchr(p, c, p_len);                                             \
+			T_ASSERT(pjstr_memrchr_avx2, result == expected, result, expected, s, c, p_len);    \
+			result = pjstr_strcasechrnul_avx2(p, c);                                            \
+			expected = simple_strcasechrnul(p, c);                                              \
+			T_ASSERT(pjstr_strcasechrnul_avx2, result == expected, result, expected, s, c, -1); \
+			result = pjstr_memcasechr_avx2(p, c, p_len);                                        \
+			expected = simple_memcasechr(p, c, p_len);                                          \
+			T_ASSERT(pjstr_memcasechr_avx2, result == expected, result, expected, s, c, p_len); \
 		} while (0)
 #else
-#	define T_AVX2(s, c)
+#	define T_AVX2(s, c, n)
 #endif
 
-#define T(s, c)                                                                                    \
-	do {                                                                                       \
-		int align;                                                                         \
-		for (align = 0; align < 8; align++) {                                              \
-			const char *result, *expected, *p = aligncpy(s, sizeof(s), (size_t)align); \
-			size_t p_len = strlen(p);                                                  \
-			result = jstr_memrchr(p, c, p_len);                                        \
-			expected = simple_memrchr(p, c, p_len);                                    \
-			T_ASSERT(jstr_memrchr, result == expected, result, expected, s, c);        \
-			result = jstr_strnchr(p, c, p_len);                                        \
-			expected = simple_strnchr(p, c, p_len);                                    \
-			T_ASSERT(jstr_strnchr, result == expected, result, expected, s, c);        \
-			result = jstr_strchrnul(p, c);                                             \
-			expected = simple_strchrnul(p, c);                                         \
-			T_ASSERT(jstr_strchrnul, result == expected, result, expected, s, c);      \
-			result = jstr_strcasechr(p, c);                                            \
-			expected = simple_strcasechr(p, c);                                        \
-			T_ASSERT(jstr_strcasechr, result == expected, result, expected, s, c);     \
-			result = jstr_strcasechrnul(p, c);                                         \
-			expected = simple_strcasechrnul(p, c);                                     \
-			T_ASSERT(jstr_strcasechrnul, result == expected, result, expected, s, c);  \
-			T_AVX2(s, c);                                                              \
-		}                                                                                  \
+#define T(s, c)                                                                                       \
+	do {                                                                                          \
+		int align;                                                                            \
+		for (align = 0; align < 8; align++) {                                                 \
+			const char *result, *expected, *p = aligncpy(s, sizeof(s), (size_t)align);    \
+			size_t p_len = strlen(p);                                                     \
+			result = jstr_memrchr(p, c, p_len);                                           \
+			expected = simple_memrchr(p, c, p_len);                                       \
+			T_ASSERT(jstr_memrchr, result == expected, result, expected, s, c, p_len);    \
+			result = jstr_strnchr(p, c, p_len);                                           \
+			expected = simple_strnchr(p, c, p_len);                                       \
+			T_ASSERT(jstr_strnchr, result == expected, result, expected, s, c, -1);       \
+			result = jstr_strchrnul(p, c);                                                \
+			expected = simple_strchrnul(p, c);                                            \
+			T_ASSERT(jstr_strchrnul, result == expected, result, expected, s, c, -1);     \
+			result = jstr_strcasechr(p, c);                                               \
+			expected = simple_strcasechr(p, c);                                           \
+			T_ASSERT(jstr_strcasechr, result == expected, result, expected, s, c, -1);    \
+			result = jstr_strcasechrnul(p, c);                                            \
+			expected = simple_strcasechrnul(p, c);                                        \
+			T_ASSERT(jstr_strcasechrnul, result == expected, result, expected, s, c, -1); \
+			T_AVX2(s, c, -1);                                                             \
+		}                                                                                     \
 	} while (0)
 
 int
