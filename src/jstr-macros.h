@@ -510,7 +510,9 @@ PJSTR_CAST(T, Other other)
 #		define JSTR_ATTR_BUILTIN_CONSTANT_P(p) __builtin_constant_p(p)
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__no_sanitize_address__)
-#		define JSTR_ATTR_NO_SANITIZE_ADDRESS
+#		define JSTR_ATTR_NO_SANITIZE_ADDRESS __attribute__((__no_sanitize_address__))
+#	elif JSTR_HAS_ATTRIBUTE(__no_sanitize__)
+#		define JSTR_ATTR_NO_SANITIZE_ADDRESS __attribute__((__no_sanitize__(("address"))))
 #	endif
 #endif
 
