@@ -185,7 +185,6 @@ pjstr_memmem_avx2(const void *hs,
 		if (jstr_unlikely(h - shift > end))
 			return NULL;
 	}
-	assert(0);
 	return NULL;
 }
 
