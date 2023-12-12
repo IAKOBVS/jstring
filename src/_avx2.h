@@ -143,6 +143,7 @@ pjstr_memmem_avx2(const void *hs,
 	const __m256i nv1 = _mm256_set1_epi8(*((char *)ne + 1));
 	__m256i hv, hv1;
 	uint32_t i, m, m1, m2;
+	ne = (unsigned char *)ne + 2, ne_len -= 2;
 	if ((uintptr_t)h & (sizeof(__m256i) - 1)) {
 		hv = _mm256_loadu_si256((const __m256i *)h);
 		hv1 = _mm256_loadu_si256((const __m256i *)(h + 1));
@@ -153,7 +154,7 @@ pjstr_memmem_avx2(const void *hs,
 			i = _tzcnt_u32(m2);
 			if (jstr_unlikely(h + i > end))
 				return NULL;
-			if (!memcmp(h + i, ne, ne_len))
+			if (!memcmp(h + i + 2, ne, ne_len))
 				return (char *)h + i;
 		}
 		h += sizeof(__m256i);
@@ -171,7 +172,7 @@ pjstr_memmem_avx2(const void *hs,
 			i = _tzcnt_u32(m2);
 			if (jstr_unlikely(h + i > end))
 				return NULL;
-			if (!memcmp(h + i, ne, ne_len))
+			if (!memcmp(h + i + 2, ne, ne_len))
 				return (char *)h + i;
 		}
 		h += sizeof(__m256i);
