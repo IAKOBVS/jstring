@@ -512,43 +512,43 @@ JSTR_NOEXCEPT
 	if (ne_len == 2) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]))
 			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
-#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__)
 		return pjstr_strstr2((cu *)hs, (cu *)ne);
 #	endif
 	} else if (ne_len == 3) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]))
 			return pjstr_strcasestr3((cu *)hs, (cu *)ne);
-#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__)
 		return pjstr_strstr3((cu *)hs, (cu *)ne);
 #	endif
 	} else if (ne_len == 4) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]))
 			return pjstr_strcasestr4((cu *)hs, (cu *)ne);
-#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__)
 		return pjstr_strstr4((cu *)hs, (cu *)ne);
 #	endif
 	} else if (ne_len == 5) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]))
 			return pjstr_strcasestr5((cu *)hs, (cu *)ne);
-#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__)
 		return pjstr_strstr5((cu *)hs, (cu *)ne);
 #	endif
 	} else if (ne_len == 6) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]))
 			return pjstr_strcasestr6((cu *)hs, (cu *)ne);
-#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__)
 		return pjstr_strstr6((cu *)hs, (cu *)ne);
 #	endif
 	} else if (ne_len == 7) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]))
 			return pjstr_strcasestr7((cu *)hs, (cu *)ne);
-#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__)
 		return pjstr_strstr7((cu *)hs, (cu *)ne);
 #	endif
 	} else if (ne_len == 8) {
 		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]) || jstr_isalpha(ne[7]))
 			return pjstr_strcasestr8((cu *)hs, (cu *)ne);
-#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED)
+#	if !(JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__)
 		return pjstr_strstr8((cu *)hs, (cu *)ne);
 #	endif
 	} else {
@@ -556,11 +556,7 @@ JSTR_NOEXCEPT
 			return NULL;
 		return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 	}
-#	if JSTR_HAVE_STRSTR_OPTIMIZED
-	return (char *)strstr(hs, ne);
-#	elif JSTR_HAVE_MEMMEM_OPTIMIZED
-	return (char *)memmem(hs, hs_len, ne, ne_len);
-#	endif
+	return jstr_strstr_len(hs, hs_len, ne, ne_len);
 #endif
 }
 
