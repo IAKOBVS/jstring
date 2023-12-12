@@ -208,7 +208,7 @@ JSTR_NOEXCEPT
 {
 #if JSTR_USE_STANDARD_MEMMEM
 	return memmem(hs, hs_len, ne, ne_len);
-#elif defined __AVX2__
+#elif 0 && defined __AVX2__ /* Broken. */
 	return pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
