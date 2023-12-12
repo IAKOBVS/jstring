@@ -238,7 +238,7 @@ simple_stpcpy(char *d,
 		}                                                                \
 	} while (0)
 
-#define T_FOREACH_NE(needle, needle_len) for (const char *np = needle; needle_len >= 0 && needle_len != (size_t)-1; ++np, --needle_len)
+#define T_FOREACH_NE(needle, needle_len) for (const char *np = needle; needle_len != (size_t)-1; ++np, --needle_len)
 
 #define T_LEN(fn, simple_fn, test_array)                                                                                              \
 	do {                                                                                                                          \

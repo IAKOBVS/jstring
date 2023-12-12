@@ -208,6 +208,7 @@ pjstr_memmem_avx2_rare(const void *hs,
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
+	shift = 0;
 	const __m256i nv = _mm256_set1_epi8(*((char *)ne + shift));
 	const __m256i nv1 = _mm256_set1_epi8(*((char *)ne + shift + 1));
 	__m256i hv, hv1;
