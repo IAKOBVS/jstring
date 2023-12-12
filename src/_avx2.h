@@ -169,8 +169,8 @@ pjstr_memrchr_avx2(const void *s,
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const unsigned char *p = (unsigned char *)s + n - 1;
-	if (*p == (unsigned char)c)
+	const unsigned char *p = (unsigned char *)s + n;
+	if (*--p == (unsigned char)c)
 		return (void *)p;
 	uint32_t i, m;
 	__m256i sv;
