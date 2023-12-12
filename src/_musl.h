@@ -27,9 +27,9 @@
 #include "jstr-ctype.h"
 #include <limits.h>
 
-#define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
-#define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #define ONES       ((size_t)-1 / UCHAR_MAX)
+#define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
+#define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
