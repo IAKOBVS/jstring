@@ -36,6 +36,8 @@ pjstr_strchrnul_avx2(const char *s,
 {
 	if (*s == (char)c || jstr_unlikely(*s == '\0'))
 		return (char *)s;
+	if (jstr_unlikely(*s == '\0'))
+		return (char *)s + strlen(s);
 	uint32_t m, zm;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8(c);
