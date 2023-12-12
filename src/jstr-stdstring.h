@@ -418,7 +418,11 @@ jstr_memcasechr(const void *s,
                 size_t n)
 JSTR_NOEXCEPT
 {
+#ifdef __AVX2__
+	return pjstr_memcasechr_avx2(s, c, n);
+#else
 	return pjstr_memcasechr_musl(s, c, n);
+#endif
 }
 
 JSTR_FUNC_PURE
