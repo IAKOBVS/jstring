@@ -160,7 +160,7 @@ pjstr_memmem_avx2(const void *hs,
 			return NULL;
 		h = (const unsigned char *)JSTR_PTR_ALIGN_DOWN(h, sizeof(__m256i));
 	}
-#if 1
+#if 0
 	const unsigned char *rare = (const unsigned char *)jstr_rarebytefind_len(ne, ne_len);
 	const size_t shift = JSTR_PTR_DIFF(rare, ne);
 	n -= 2, ne_len += 2;
