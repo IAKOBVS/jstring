@@ -32,10 +32,10 @@ done
 wait
 
 for file in $(echo $tmp/*); do
-	echo "Running ${file##*/}"
+	echo "Running $(echo ${file##*/} | sed 's/-[^-]*$//')"
 	output=$($file)
 	echo "$output"
-	echo "$output" >"$(echo "$file" | sed 's/.*\//result-/;')"
+	echo "$output" >"$(echo "$file" | sed 's/.*\//result-/; s/\-exe//')"
 done
 
 rm -rf "$tmp"

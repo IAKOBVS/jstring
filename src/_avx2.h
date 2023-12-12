@@ -132,7 +132,7 @@ pjstr_memcasechr_avx2(const void *s,
 	const unsigned char *p = (const unsigned char *)s;
 	if (jstr_tolower(*p) == c)
 		return (char *)p;
-	const unsigned char *end = p + n;
+	const unsigned char *const end = p + n;
 	uint32_t m, m1, m2, i;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8(c);
