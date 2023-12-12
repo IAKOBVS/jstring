@@ -142,7 +142,6 @@ pjstr_memmem_avx2(const void *hs,
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *n = (const unsigned char *)ne;
 	const unsigned char *const end = h + hs_len - ne_len;
-	const int c1 = *(n + 1);
 	n += 2, ne_len -= 2;
 	__m256i hv;
 	uint32_t i, m, m1, m2;
@@ -157,7 +156,7 @@ pjstr_memmem_avx2(const void *hs,
 			i = _tzcnt_u32(m2);
 			if (jstr_unlikely(h + i > end))
 				return NULL;
-			if (*(h + i + 1) == c1 && !memcmp(h + i + 2, n, ne_len))
+			if (!memcmp(h + i + 2, n, ne_len))
 				return (char *)h + i;
 		}
 		h += sizeof(__m256i);
