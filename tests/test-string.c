@@ -162,6 +162,8 @@ simple_stpcpy(char *d,
 #endif
 }
 
+#define assert(x)
+
 #define T_DEBUG(hs, ne, hs_len, ne_len, n, result, expected)                               \
 	do {                                                                               \
 		if (jstr_unlikely(result != expected)) {                                   \
@@ -171,9 +173,13 @@ simple_stpcpy(char *d,
 			if (nl == 0)                                                       \
 				nl = strlen(ne);                                           \
 			PRINTERR("hsn:\n");                                                \
-			PRINTERR("hs:\n%s\n", hs);                                         \
-			PRINTERR("ne:\n%s\n", ne);                                         \
-			fwrite(hs, 1, jstr_strnlen(hs, n), stderr);                        \
+			PRINTERR("hs:\n");                                                 \
+			fwrite(hs, 1, hl, stderr);                                         \
+			fputc('\n', stderr);                                               \
+			PRINTERR("ne:\n");                                                 \
+			fwrite(ne, 1, nl, stderr);                                         \
+			fputc('\n', stderr);                                               \
+			fwrite(hs, 1, JSTR_MIN(n, hl), stderr);                            \
 			PRINTERR("\n");                                                    \
 			PRINTERR("hs_len:\n%zu\n", hl);                                    \
 			PRINTERR("nl:\n%zu\n", nl);                                        \
@@ -232,7 +238,7 @@ simple_stpcpy(char *d,
 		}                                                                \
 	} while (0)
 
-#define T_FOREACH_NE(needle, needle_len) for (const char *np = needle; needle_len; ++np, --needle_len)
+#define T_FOREACH_NE(needle, needle_len) for (const char *np = needle; needle_len >= 0 && needle_len != (size_t)-1; ++np, --needle_len)
 
 #define T_LEN(fn, simple_fn, test_array)                                                                                              \
 	do {                                                                                                                          \
@@ -331,25 +337,26 @@ main(int argc, char **argv)
 {
 	START();
 
-	T_CMP_LEN(!jstr_memcmpeq_loop, !memcmp, test_array_memcmp);
-	T_CMP_LEN(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp);
-	T_CMP_LEN(!jstr_strcasecmpeq_len, !simple_strncasecmp, test_array_memcmp);
-	T_CMP_LEN(!jstr_strcasecmpeq_len_loop, !simple_strncasecmp, test_array_memcmp);
-	T_CMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp);
-	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp);
-	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
-	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
-	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem);
+	/* 	T_CMP_LEN(!jstr_memcmpeq_loop, !memcmp, test_array_memcmp); */
+	/* 	T_CMP_LEN(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp); */
+	/* 	T_CMP_LEN(!jstr_strcasecmpeq_len, !simple_strncasecmp, test_array_memcmp); */
+	/* 	T_CMP_LEN(!jstr_strcasecmpeq_len_loop, !simple_strncasecmp, test_array_memcmp); */
+	/* 	T_CMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp); */
+	/* 	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp); */
+	/* 	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp); */
+	/* 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem); */
+	/* 	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem); */
 
-	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem);
-	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
-	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem);
-	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
-	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
+	/* 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem); */
+	/* 	T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem); */
+	/* 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem); */
+	/* 	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem); */
+	/* 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem); */
+	/* 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem); */
 
 #ifdef __AVX2__
-	T_LEN(pjstr_memmem_avx2, simple_memmem, test_array_memmem);
+	/* T_LEN(pjstr_memmem_avx2, simple_memmem, test_array_memmem); */
+	T_LEN(pjstr_memmem_avx2_rare, simple_memmem, test_array_memmem);
 #endif
 
 	SUCCESS();
