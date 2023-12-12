@@ -297,7 +297,7 @@ pjstr_memmem_avx2(const void *hs,
 		}
 		h += sizeof(__m256i);
 		if (jstr_unlikely(h - shift > end))
-			return NULL;
+			break;
 	}
 	return NULL;
 }
