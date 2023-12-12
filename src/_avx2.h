@@ -139,11 +139,8 @@ pjstr_memmem_avx2(const void *hs,
 		return NULL;
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
-	size_t rare = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
-	if (!rare)
-		rare = 1;
-	const __m256i nv = _mm256_set1_epi8(*((char *)ne + rare - 1));
-	const __m256i nv1 = _mm256_set1_epi8(*(char *)ne + rare);
+	const __m256i nv = _mm256_set1_epi8(*((char *)ne));
+	const __m256i nv1 = _mm256_set1_epi8(*((char *)ne + 1));
 	__m256i hv, hv1;
 	uint32_t i, m, m1, m2;
 	if ((uintptr_t)h & (sizeof(__m256i) - 1)) {
@@ -153,14 +150,14 @@ pjstr_memmem_avx2(const void *hs,
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv1, nv1));
 		m2 = m & m1;
 		for (; m2; m2 = _blsr_u32(m2)) {
-			i = _tzcnt_u32(m2) - rare;
+			i = _tzcnt_u32(m2);
 			if (jstr_unlikely(h + i > end))
 				return NULL;
 			if (!memcmp(h + i, ne, ne_len))
 				return (char *)h + i;
 		}
 		h += sizeof(__m256i);
-		if (jstr_unlikely(h - rare > end))
+		if (jstr_unlikely(h > end))
 			return NULL;
 		h = (const unsigned char *)JSTR_PTR_ALIGN_DOWN(h, sizeof(__m256i));
 	}
@@ -171,14 +168,14 @@ pjstr_memmem_avx2(const void *hs,
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv1, nv1));
 		m2 = m & m1;
 		for (; m2; m2 = _blsr_u32(m2)) {
-			i = _tzcnt_u32(m2) - rare;
+			i = _tzcnt_u32(m2);
 			if (jstr_unlikely(h + i > end))
 				return NULL;
 			if (!memcmp(h + i, ne, ne_len))
 				return (char *)h + i;
 		}
 		h += sizeof(__m256i);
-		if (jstr_unlikely(h - rare > end))
+		if (jstr_unlikely(h > end))
 			return NULL;
 	}
 	return NULL;

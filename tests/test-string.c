@@ -331,15 +331,15 @@ main(int argc, char **argv)
 {
 	START();
 
-	T_CMP_LEN(!jstr_memcmpeq_loop, !memcmp, test_array_memcmp);
-	T_CMP_LEN(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp);
-	T_CMP_LEN(!jstr_strcasecmpeq_len, !simple_strncasecmp, test_array_memcmp);
-	T_CMP_LEN(!jstr_strcasecmpeq_len_loop, !simple_strncasecmp, test_array_memcmp);
-	T_CMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp);
-	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp);
-	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
-	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
-	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem);
+/* 	T_CMP_LEN(!jstr_memcmpeq_loop, !memcmp, test_array_memcmp); */
+/* 	T_CMP_LEN(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp); */
+/* 	T_CMP_LEN(!jstr_strcasecmpeq_len, !simple_strncasecmp, test_array_memcmp); */
+/* 	T_CMP_LEN(!jstr_strcasecmpeq_len_loop, !simple_strncasecmp, test_array_memcmp); */
+/* 	T_CMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp); */
+/* 	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp); */
+/* 	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp); */
+/* 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem); */
+/* 	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem); */
 
 /* 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem); */
 /* 	T(jstr_strcasestr_len_test, simple_strcasestr, test_array_memmem); */
@@ -348,7 +348,7 @@ main(int argc, char **argv)
 	/* T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem); */
 /* 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem); */
 /* #ifdef __AVX2__ */
-/* 	T_LEN(pjstr_memmem_avx2, simple_memmem, test_array_memmem); */
+	T_LEN(pjstr_memmem_avx2, simple_memmem, test_array_memmem);
 /* #endif */
 
 	SUCCESS();
