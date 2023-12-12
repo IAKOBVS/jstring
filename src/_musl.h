@@ -27,6 +27,7 @@
 #include "jstr-ctype.h"
 #include <limits.h>
 
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
 pjstr_strchrnul_musl(const char *s,
@@ -98,6 +99,7 @@ JSTR_NOEXCEPT
 	return NULL;
 }
 
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
 pjstr_strcasechrnul_musl(const char *s,
@@ -193,6 +195,7 @@ JSTR_NOEXCEPT
 
 /* Return value:
    ptr to '\0' in DST. */
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_RET_NONNULL
 static char *
 pjstr_stpcpy_musl(char *JSTR_RESTRICT dst,
