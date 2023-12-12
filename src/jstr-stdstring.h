@@ -361,7 +361,7 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, n);
-#elif 0 && defined __AVX2__ /* Fails test. */
+#elif defined __AVX2__
 	return pjstr_memrchr_avx2(s, c, n);
 #else
 	return pjstr_memrchr_musl(s, c, n);

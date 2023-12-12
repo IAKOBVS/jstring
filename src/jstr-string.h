@@ -403,10 +403,10 @@ JSTR_NOEXCEPT
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
 	if (ne_len == 1)
 		return jstr_memrchr(hs, *(cu *)ne, hs_len);
+	if (jstr_unlikely(hs_len < ne_len))
+		return NULL;
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)

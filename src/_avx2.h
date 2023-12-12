@@ -172,7 +172,6 @@ pjstr_memrchr_avx2(const void *s,
 	const unsigned char *p = (unsigned char *)s + n - 1;
 	if (*p == (unsigned char)c)
 		return (void *)p;
-	--p;
 	uint32_t i, m;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8(c);
