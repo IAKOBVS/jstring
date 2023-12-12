@@ -399,19 +399,13 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *const rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
-	const size_t shift = JSTR_PTR_DIFF(rare, ne);
-	cu *p = (cu *)jstr_memrchr(hs, *rare, hs_len - (ne_len - shift) + 1);
-	if (jstr_unlikely(p == NULL) || ne_len == 1)
-		return (void *)p;
-	hs_len = JSTR_PTR_DIFF(p, hs) - shift + ne_len + 1;
-	if (ne_len == 2)
-		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 3)
-		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 4)
-		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
-	return pjstr_memrmem_len_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
+	if (ne_len == 1)
+		return jstr_memrchr(hs, *(cu *)ne, hs_len);
+	cu *p = (cu *)hs + hs_len - ne_len;
+	for (hs_len -= (ne_len - 1); hs_len--; --p)
+		if (*(cu *)p == *(cu *)ne && !memcmp(p, ne, ne_len))
+			return (char *)p;
+	return NULL;
 }
 
 /* Find last NE in HS.
