@@ -212,8 +212,7 @@ JSTR_NOEXCEPT
 	return pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
-	enum { LONG_NE_THRES = 16,
-	       VERY_LONG_NE_THRES = 100 };
+	enum { VERY_LONG_NE_THRES = 100 };
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (jstr_unlikely(ne_len == 0))
@@ -249,8 +248,6 @@ JSTR_NOEXCEPT
 		return NULL;
 	hs = (char *)hs + 1;
 	--hs_len;
-	if (ne_len < LONG_NE_THRES)
-		return pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, rare);
 MEMMEM:
 	return pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
@@ -375,15 +372,12 @@ JSTR_NOEXCEPT
 #if JSTR_USE_STANDARD_MEMMEM
 	return (char *)memmem(hs, hs_len, ne, ne_len);
 #else
-	if (ne_len < LONG_NE_THRES)
-		return (char *)pjstr_memmem_rarebyte((cu *)hs, hs_len, (cu *)ne, ne_len, (cu *)jstr_rarebytefind(ne));
-	else
-		return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
+	return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
 }
 
 #define PJSTR_RAREBYTE_RETTYPE char *
-#define PJSTR_RAREBYTE_FUNC    pjstr_memrmem_len_rarebyte
+#define PJSTR_RAREBYTE_FUNC    pjstr_memrmem_rarebyte
 #include "_jstr-memrmem-rarebyte.h"
 
 /* Find last NE in HS.
