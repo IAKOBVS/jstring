@@ -53,6 +53,14 @@ simple_memrchr(const void *s,
 	return NULL;
 }
 
+char *
+simple_strcasechrnul_strcspn(const char *s,
+                             int c)
+{
+	const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
+	return (char *)s + strcspn(s, a);
+}
+
 #define T_SETUP(buf, BUFLEN)              \
 	do {                              \
 		memset(buf, 'a', BUFLEN); \
@@ -75,7 +83,9 @@ simple_memrchr(const void *s,
 #ifdef __AVX2__
 T_DEFINE_STRCHR(pjstr_strchrnul_avx2, buf, 'b')
 T_DEFINE_STRCHR(pjstr_memrchr_avx2, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(pjstr_strcasechrnul_avx2, buf, 'b')
 #endif
+T_DEFINE_STRCHR(simple_strcasechrnul_strcspn, buf, 'b')
 T_DEFINE_STRCHR(jstr_strchrnul, buf, 'b')
 T_DEFINE_STRCHR(strchrnul, buf, 'b')
 T_DEFINE_STRCHR(simple_strchrnul, buf, 'b')
@@ -94,6 +104,7 @@ main()
 	T_SETUP(buf, BUFLEN);
 
 #ifdef __AVX2__
+	RUN(b_pjstr_strcasechrnul_avx2, 0);
 	RUN(b_pjstr_strchrnul_avx2, 0);
 	RUN(b_pjstr_memrchr_avx2, 0);
 #endif
@@ -103,6 +114,7 @@ main()
 	RUN(b_jstr_strchrnul, 0);
 	RUN(b_strchrnul, 0);
 	RUN(b_simple_strchrnul, 0);
+	RUN(b_simple_strcasechrnul_strcspn, 0);
 	RUN(b_memrchr, 0);
 	RUN(b_jstr_memrchr, 0);
 	RUN(b_simple_memrchr, 0);

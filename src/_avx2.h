@@ -79,6 +79,69 @@ pjstr_strchrnul_avx2(const char *s,
 	return (char *)s + zm;
 }
 
+JSTR_FUNC_PURE
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+static char *
+pjstr_strcasechrnul_avx2(const char *s,
+                         int c)
+{
+	if (!jstr_isalpha(c))
+		return
+#if JSTR_HAVE_STRCHRNUL
+		(char *)strchrnul(s, c);
+#else
+		pjstr_strchrnul_avx2(s, c);
+#endif
+	c = jstr_tolower(c);
+	if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
+		return (char *)s;
+	uint32_t m, m1, m2, zm;
+	__m256i sv;
+	const __m256i cv = _mm256_set1_epi8(c);
+	const __m256i cv1 = _mm256_set1_epi8((char)jstr_toupper(c));
+	const __m256i zv = _mm256_setzero_si256();
+	if ((uintptr_t)s & (sizeof(__m256i) - 1)) {
+		sv = _mm256_loadu_si256((const __m256i *)s);
+		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
+		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
+		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		m2 = m | m1;
+		if (m2) {
+			m2 = _tzcnt_u32(m2);
+			if (zm) {
+				zm = _tzcnt_u32(zm);
+				if (jstr_unlikely(m2 > zm))
+					return (char *)s + zm;
+			}
+			return (char *)s + m2;
+		} else if (zm) {
+			zm = _tzcnt_u32(zm);
+			return (char *)s + zm;
+		}
+		s = (const char *)JSTR_PTR_ALIGN_UP(s, sizeof(__m256i));
+	}
+	for (;; s += sizeof(__m256i)) {
+		sv = _mm256_load_si256((const __m256i *)s);
+		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
+		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
+		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		m2 = m | m1;
+		if (m2) {
+			m2 = _tzcnt_u32(m2);
+			if (zm) {
+				zm = _tzcnt_u32(zm);
+				if (jstr_unlikely(m2 > zm))
+					break;
+			}
+			return (char *)s + m2;
+		} else if (zm) {
+			zm = _tzcnt_u32(zm);
+			break;
+		}
+	}
+	return (char *)s + zm;
+}
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
@@ -163,10 +226,9 @@ pjstr_memmem_avx2(const void *hs,
 			if (!memcmp(h + i - shift, ne, ne_len))
 				return (char *)h + i - shift;
 		}
-		h += sizeof(__m256i);
+		h = (const unsigned char *)JSTR_PTR_ALIGN_UP(h, sizeof(__m256i));
 		if (jstr_unlikely(h - shift > end))
 			return NULL;
-		h = (const unsigned char *)JSTR_PTR_ALIGN_DOWN(h, sizeof(__m256i));
 	}
 	for (;;) {
 		hv = _mm256_load_si256((const __m256i *)h);

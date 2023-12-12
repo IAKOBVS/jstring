@@ -461,9 +461,14 @@ jstr_strcasechr(const char *s,
                 int c)
 JSTR_NOEXCEPT
 {
+#ifdef __AVX2__
+	s = pjstr_strcasechrnul_avx2(s, c);
+	return *s == (char)c ? s : NULL;
+#else
 	if (jstr_isalpha(c))
 		return pjstr_strcasechr(s, c);
 	return (char *)strchr(s, c);
+#endif
 }
 
 /* Return value:
@@ -476,11 +481,15 @@ jstr_strcasechrnul(const char *s,
                    int c)
 JSTR_NOEXCEPT
 {
+#ifdef __AVX2__
+	return pjstr_strcasechrnul_avx2(s, c);
+#else
 	if (jstr_isalpha(c))
 		return pjstr_strcasechrnul(s, c);
 	if (jstr_likely(c))
 		return jstr_strchrnul(s, c);
 	return (char *)s + strlen(s);
+#endif
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))

@@ -123,14 +123,17 @@ simple_strcasechr(const char *s,
 	} while (0)
 
 #if defined __AVX2__
-#	define T_AVX2(s, c)                                                                        \
-		do {                                                                                \
-			result = pjstr_strchrnul_avx2(p, c);                                        \
-			expected = simple_strchrnul(p, c);                                          \
-			T_ASSERT(pjstr_strchrnul_avx2, result == expected, result, expected, s, c); \
-			result = pjstr_memrchr_avx2(p, c, p_len);                                   \
-			expected = simple_memrchr(p, c, p_len);                                     \
-			T_ASSERT(pjstr_memrchr_avx2, result == expected, result, expected, s, c);   \
+#	define T_AVX2(s, c)                                                                            \
+		do {                                                                                    \
+			result = pjstr_strchrnul_avx2(p, c);                                            \
+			expected = simple_strchrnul(p, c);                                              \
+			T_ASSERT(pjstr_strchrnul_avx2, result == expected, result, expected, s, c);     \
+			result = pjstr_memrchr_avx2(p, c, p_len);                                       \
+			expected = simple_memrchr(p, c, p_len);                                         \
+			T_ASSERT(pjstr_memrchr_avx2, result == expected, result, expected, s, c);       \
+			result = pjstr_strcasechrnul_avx2(p, c);                                        \
+			expected = simple_strcasechrnul(p, c);                                          \
+			T_ASSERT(pjstr_strcasechrnul_avx2, result == expected, result, expected, s, c); \
 		} while (0)
 #else
 #	define T_AVX2(s, c)
