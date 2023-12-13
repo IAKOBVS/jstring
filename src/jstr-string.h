@@ -663,24 +663,6 @@ JSTR_NOEXCEPT
 #define PJSTR_MEMMEM_CHECK_EOL   1
 #include "_memmem-bmh.h"
 
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasestr_long(const char *hs,
-                      const char *ne)
-JSTR_NOEXCEPT
-{
-	const size_t ne_len = strlen(ne);
-	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
-	if (hs_len < ne_len)
-		return NULL;
-	if (jstr_tolower(*hs) == jstr_tolower(*ne) && !jstr_strcasecmpeq_len(hs, ne, ne_len))
-		return (char *)hs;
-	if (jstr_unlikely(hs_len == ne_len))
-		return NULL;
-	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
-}
-
 #define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len_bmh
 #define PJSTR_MEMMEM_RETTYPE     char *
 #define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
@@ -828,8 +810,15 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
 	else if (ne[8] == '\0')
 		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
-	else
-		return pjstr_strcasestr_long(hs, ne);
+	const size_t ne_len = strlen(ne + shift) + shift;
+	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
+	if (hs_len < ne_len)
+		return NULL;
+	if (jstr_tolower(*hs) == jstr_tolower(*ne) && !jstr_strcasecmpeq_len(hs, ne, ne_len))
+		return (char *)hs;
+	if (jstr_unlikely(hs_len == ne_len))
+		return NULL;
+	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
 #endif
 }
 
