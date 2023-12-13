@@ -770,15 +770,15 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASESTR_OPTIMIZED
-	return (char *)strcasestr(hs, ne);
-#else
 	for (const char *p = ne;; ++p) {
 		if (*p == '\0')
 			return (char *)strstr(hs, ne);
 		if (jstr_isalpha(*p))
 			break;
 	}
+#if JSTR_HAVE_STRCASESTR_OPTIMIZED
+	return (char *)strcasestr(hs, ne);
+#else
 	if (jstr_unlikely(ne[0] == '\0'))
 		return (char *)hs;
 	typedef const unsigned char cu;
