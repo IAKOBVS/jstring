@@ -717,6 +717,10 @@ JSTR_NOEXCEPT
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
+	if (!jstr_strcasecmpeq_len((char *)hs, (char *)ne, ne_len))
+		return (char *)hs;
+	if (jstr_unlikely(hs_len == ne_len))
+		return NULL;
 	return pjstr_strcasestr_len_bmh((char *)hs, hs_len, (char *)ne, ne_len);
 #endif
 }
