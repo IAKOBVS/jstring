@@ -34,24 +34,13 @@ static char *
 pjstr_strchrnul_avx2(const char *s,
                      int c)
 {
-	if (*s == (char)c || jstr_unlikely(*s == '\0'))
-		return (char *)s;
+	for (; ((uintptr_t)s & (sizeof(__m256i) - 1)); ++s)
+		if (jstr_unlikely(*s == '\0') || *s == c)
+			return (char *)s;
 	uint32_t m, zm, i, iz;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8(c);
 	const __m256i zv = _mm256_setzero_si256();
-	if ((uintptr_t)s & (sizeof(__m256i) - 1)) {
-		sv = _mm256_loadu_si256((const __m256i *)s);
-		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
-		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
-		i = _tzcnt_u32(m);
-		iz = _tzcnt_u32(zm);
-		if (m)
-			return (char *)s + (zm ? JSTR_MIN(i, iz) : i);
-		else if (zm)
-			return (char *)s + iz;
-		s = (const char *)JSTR_PTR_ALIGN_UP(s, sizeof(__m256i));
-	}
 	for (;; s += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)s);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
@@ -73,34 +62,20 @@ pjstr_strcasechrnul_avx2(const char *s,
                          int c)
 {
 	if (!jstr_isalpha(c))
-		return
 #if JSTR_HAVE_STRCHRNUL
-		(char *)strchrnul(s, c);
+		return (char *)strchrnul(s, c);
 #else
-		pjstr_strchrnul_avx2(s, c);
+		return pjstr_strchrnul_avx2(s, c);
 #endif
 	c = jstr_tolower(c);
-	if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
-		return (char *)s;
+	for (; ((uintptr_t)s & (sizeof(__m256i) - 1)); ++s)
+		if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
+			return (char *)s;
 	uint32_t m, m1, m2, zm, i, iz;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8((char)c);
 	const __m256i cv1 = _mm256_set1_epi8((char)jstr_toupper(c));
 	const __m256i zv = _mm256_setzero_si256();
-	if ((uintptr_t)s & (sizeof(__m256i) - 1)) {
-		sv = _mm256_loadu_si256((const __m256i *)s);
-		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
-		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
-		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
-		iz = _tzcnt_u32(zm);
-		m2 = m | m1;
-		i = _tzcnt_u32(m2);
-		if (m)
-			return (char *)s + (zm ? JSTR_MIN(i, iz) : i);
-		if (zm)
-			return (char *)s + iz;
-		s = (const char *)JSTR_PTR_ALIGN_UP(s, sizeof(__m256i));
-	}
 	for (;; s += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)s);
 		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
@@ -130,23 +105,17 @@ pjstr_memcasechr_avx2(const void *s,
 		return NULL;
 	c = jstr_tolower(c);
 	const unsigned char *p = (const unsigned char *)s;
-	if (jstr_tolower(*p) == c)
-		return (char *)p;
 	const unsigned char *const end = p + n;
+	for (; ((uintptr_t)p & (sizeof(__m256i) - 1)); ++p) {
+		if (jstr_unlikely(p >= end))
+			return NULL;
+		if (jstr_tolower(*p) == c)
+			return (void *)p;
+	}
 	uint32_t m, m1, m2, i;
 	__m256i sv;
-	const __m256i cv = _mm256_set1_epi8(c);
+	const __m256i cv = _mm256_set1_epi8((char)c);
 	const __m256i cv1 = _mm256_set1_epi8((char)jstr_toupper(c));
-	if ((uintptr_t)p & (sizeof(__m256i) - 1)) {
-		sv = _mm256_loadu_si256((const __m256i *)p);
-		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
-		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
-		m2 = m | m1;
-		i = _tzcnt_u32(m2);
-		if (m2)
-			return p + i < end ? (char *)p + i : NULL;
-		p = (const unsigned char *)JSTR_PTR_ALIGN_UP(p, sizeof(__m256i));
-	}
 	for (; p < end; p += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)p);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
@@ -170,20 +139,16 @@ pjstr_memrchr_avx2(const void *s,
 	if (jstr_unlikely(n == 0))
 		return NULL;
 	const unsigned char *p = (unsigned char *)s + n;
-	if (*--p == (unsigned char)c)
-		return (void *)p;
+	for (; ((uintptr_t)p & (sizeof(__m256i) - 1)); ) {
+		--p;
+		if (jstr_unlikely(p < (unsigned char *)s))
+			return NULL;
+		if (*p == (unsigned char)c)
+			return (void *)p;
+	}
 	uint32_t i, m;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8(c);
-	if ((uintptr_t)p & (sizeof(__m256i) - 1)) {
-		p -= sizeof(__m256i);
-		sv = _mm256_loadu_si256((const __m256i *)p);
-		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
-		i = 31 - _lzcnt_u32(m);
-		if (m)
-			return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
-		p = (const unsigned char *)JSTR_PTR_ALIGN_DOWN(p, sizeof(__m256i));
-	}
 	while (p >= (unsigned char *)s) {
 		p -= sizeof(__m256i);
 		sv = _mm256_load_si256((const __m256i *)p);
@@ -209,8 +174,6 @@ pjstr_memmem_avx2(const void *hs,
 		return (void *)memchr(hs, *(unsigned char *)ne, hs_len);
 	if (jstr_unlikely(ne_len == 0))
 		return (void *)hs;
-	if (jstr_unlikely(hs_len == ne_len))
-		return !memcmp(hs, ne, ne_len) ? (void *)hs : NULL;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	const unsigned char *h = (const unsigned char *)hs;
@@ -218,27 +181,17 @@ pjstr_memmem_avx2(const void *hs,
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
+	h += shift;
+	for (; ((uintptr_t)h & (sizeof(__m256i) - 1)); ++h) {
+		if (jstr_unlikely(h - shift > end))
+			return NULL;
+		if (*h == *((unsigned char *)ne + shift) && !memcmp(h - shift, ne, ne_len))
+			return (void *)(h - shift);
+	}
 	const __m256i nv = _mm256_set1_epi8(*((char *)ne + shift));
 	const __m256i nv1 = _mm256_set1_epi8(*((char *)ne + shift + 1));
 	__m256i hv, hv1;
 	uint32_t i, m, m1, m2;
-	h += shift;
-	if ((uintptr_t)h & (sizeof(__m256i) - 1)) {
-		hv = _mm256_loadu_si256((const __m256i *)h);
-		hv1 = _mm256_loadu_si256((const __m256i *)(h + 1));
-		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
-		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv1, nv1));
-		m2 = m & m1;
-		while (m2) {
-			i = _tzcnt_u32(m2);
-			m2 = _blsr_u32(m2);
-			if (jstr_unlikely(h + i - shift > end))
-				return NULL;
-			if (!memcmp(h + i - shift, ne, ne_len))
-				return (char *)h + i - shift;
-		}
-		h = (const unsigned char *)JSTR_PTR_ALIGN_UP(h, sizeof(__m256i));
-	}
 	for (; h - shift <= end; h += sizeof(__m256i)) {
 		hv = _mm256_load_si256((const __m256i *)h);
 		hv1 = _mm256_loadu_si256((const __m256i *)(h + 1));
