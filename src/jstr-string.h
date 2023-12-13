@@ -719,15 +719,8 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	hs = (cu *)hs - shift;
 	hs_len -= JSTR_PTR_DIFF(hs, start);
-	if (ne_len == 2) {
-		if (jstr_isalpha(*(cu *)ne) || jstr_isalpha(*((cu *)ne + 1)))
-			return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
-#	if JSTR_USE_MEMMEM_OPTIMIZED
-		return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
-#	else
-		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
-#	endif
-	}
+	if (ne_len == 2)
+		return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
 	return pjstr_strcasestr_len_bmh((char *)hs, hs_len, (char *)ne, ne_len);
 #endif
 }
