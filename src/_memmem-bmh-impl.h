@@ -65,11 +65,9 @@ JSTR_NOEXCEPT
 {
 	typedef PJSTR_MEMMEM_RETTYPE ret_ty;
 #if PJSTR_MEMMEM_SHORT_NEEDLE
-	typedef unsigned int idx_ty;
 	typedef unsigned int size_ty;
 	typedef uint8_t arr_ty;
 #else
-	typedef size_t idx_ty;
 	typedef size_t size_ty;
 	typedef size_t arr_ty;
 #endif
@@ -83,7 +81,7 @@ JSTR_NOEXCEPT
 	size_ty off = 0;
 	arr_ty shift[256];
 	JSTR_BZERO_ARRAY(shift);
-	for (idx_ty i = 1; i < (idx_ty)m1; ++i) {
+	for (size_ty i = 1; i < m1; ++i) {
 #if !PJSTR_MEMMEM_HASH2_ICASE
 		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
 #else
@@ -97,10 +95,10 @@ JSTR_NOEXCEPT
 #if !PJSTR_MEMMEM_HASH2_ICASE
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
 #else
-	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_toupper, jstr_toupper)] = i;
-	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_tolower)] = i;
-	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_toupper)] = i;
-	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_toupper, jstr_tolower)] = i;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_toupper, jstr_toupper)] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_tolower)] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_toupper)] = m1;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_toupper, jstr_tolower)] = m1;
 #endif
 	goto start;
 	do {
