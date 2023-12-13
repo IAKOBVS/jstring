@@ -35,11 +35,11 @@ pjstr_strchrnul_avx2(const char *s,
                      int c)
 {
 	for (; ((uintptr_t)s & (sizeof(__m256i) - 1)); ++s)
-		if (jstr_unlikely(*s == '\0') || *s == c)
+		if (jstr_unlikely(*s == '\0') || *s == (char)c)
 			return (char *)s;
 	uint32_t m, zm, i, iz;
 	__m256i sv;
-	const __m256i cv = _mm256_set1_epi8(c);
+	const __m256i cv = _mm256_set1_epi8((char)c);
 	const __m256i zv = _mm256_setzero_si256();
 	for (;; s += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)s);
@@ -68,7 +68,7 @@ pjstr_strcasechrnul_avx2(const char *s,
 		return pjstr_strchrnul_avx2(s, c);
 #endif
 	c = jstr_tolower(c);
-	for (; ((uintptr_t)s & (sizeof(__m256i) - 1)); ++s)
+	for (; JSTR_PTR_IS_NOT_ALIGNED(s, sizeof(__m256i)); ++s)
 		if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
 			return (char *)s;
 	uint32_t m, m1, m2, zm, i, iz;
@@ -106,7 +106,7 @@ pjstr_memcasechr_avx2(const void *s,
 	c = jstr_tolower(c);
 	const unsigned char *p = (const unsigned char *)s;
 	const unsigned char *const end = p + n;
-	for (; ((uintptr_t)p & (sizeof(__m256i) - 1)); ++p) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i)); ++p) {
 		if (jstr_unlikely(p >= end))
 			return NULL;
 		if (jstr_tolower(*p) == c)
@@ -139,7 +139,7 @@ pjstr_memrchr_avx2(const void *s,
 	if (jstr_unlikely(n == 0))
 		return NULL;
 	const unsigned char *p = (unsigned char *)s + n;
-	for (; ((uintptr_t)p & (sizeof(__m256i) - 1)); ) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i));) {
 		--p;
 		if (jstr_unlikely(p < (unsigned char *)s))
 			return NULL;
@@ -148,7 +148,7 @@ pjstr_memrchr_avx2(const void *s,
 	}
 	uint32_t i, m;
 	__m256i sv;
-	const __m256i cv = _mm256_set1_epi8(c);
+	const __m256i cv = _mm256_set1_epi8((char)c);
 	while (p >= (unsigned char *)s) {
 		p -= sizeof(__m256i);
 		sv = _mm256_load_si256((const __m256i *)p);
@@ -182,7 +182,7 @@ pjstr_memmem_avx2(const void *hs,
 	if (shift == ne_len - 1)
 		--shift;
 	h += shift;
-	for (; ((uintptr_t)h & (sizeof(__m256i) - 1)); ++h) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(h, sizeof(__m256i)); ++h) {
 		if (jstr_unlikely(h - shift > end))
 			return NULL;
 		if (*h == *((unsigned char *)ne + shift) && !memcmp(h - shift, ne, ne_len))

@@ -84,19 +84,23 @@ JSTR_NOEXCEPT
 	arr_ty shift[256];
 	JSTR_BZERO_ARRAY(shift);
 	for (idx_ty i = 1; i < (idx_ty)m1; ++i) {
+#if !PJSTR_MEMMEM_HASH2_ICASE
 		shift[PJSTR_MEMMEM_HASH2(ne + i)] = i;
-#if PJSTR_MEMMEM_HASH2_ICASE
-		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, )] = i;
-		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, , jstr_tolower)] = i;
+#else
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_toupper, jstr_toupper)] = i;
 		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, jstr_tolower)] = i;
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_tolower, jstr_toupper)] = i;
+		shift[PJSTR_MEMMEM_HASH2_SETUP(ne + i, jstr_toupper, jstr_tolower)] = i;
 #endif
 	}
 	const size_ty shift1 = m1 - shift[PJSTR_MEMMEM_HASH2(ne + m1)];
+#if !PJSTR_MEMMEM_HASH2_ICASE
 	shift[PJSTR_MEMMEM_HASH2(ne + m1)] = m1;
-#if PJSTR_MEMMEM_HASH2_ICASE
-	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, )] = m1;
-	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, , jstr_tolower)] = m1;
-	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_tolower)] = m1;
+#else
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_toupper, jstr_toupper)] = i;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_tolower)] = i;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_tolower, jstr_toupper)] = i;
+	shift[PJSTR_MEMMEM_HASH2_SETUP(ne + m1, jstr_toupper, jstr_tolower)] = i;
 #endif
 	goto start;
 	do {

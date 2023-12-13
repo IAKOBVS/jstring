@@ -5,7 +5,13 @@
 #define JSTR_TEST  1
 #define JSTR_DEBUG 1
 /* Force use of slower simple functions. */
-#define JSTR_USE_SIMPLE 0
+#ifndef JSTR_USE_SIMPLE
+#	define JSTR_USE_SIMPLE 0
+#endif
+/* Do more tests. */
+#ifndef JSTR_TEST_SLOW
+#	define JSTR_TEST_SLOW 0
+#endif
 
 #define JSTR_BUILT
 

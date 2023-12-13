@@ -196,6 +196,8 @@ T_DEBUG(const char *func, const char *hs, const char *ne, size_t hs_len, size_t 
 #define T_S1(test, i) ((test)[i].s2)
 #define T_S2(test, i) ((test)[i].s2)
 
+#define T_FOREACH_NE(needle, needle_len) for (const char *np = needle; needle_len != (size_t)-1; ++np, --needle_len)
+
 #define T_CPY(fn, simple_fn, test_array)                                                  \
 	do {                                                                              \
 		TESTING(fn);                                                              \
@@ -222,6 +224,8 @@ T_DEBUG(const char *func, const char *hs, const char *ne, size_t hs_len, size_t 
 					assert(result_len == expected_len);               \
 				}                                                         \
 				src = T_NE(test_array, i);                                \
+				if (JSTR_TEST_SLOW == 0)                                  \
+					break;                                            \
 			}                                                                 \
 		}                                                                         \
 	} while (0)
@@ -236,8 +240,6 @@ T_DEBUG(const char *func, const char *hs, const char *ne, size_t hs_len, size_t 
 			T_DEBUG(#fn, hs, ne, 0, 0, 0, fn(hs, ne), simple_fn(hs, ne)); \
 		}                                                                     \
 	} while (0)
-
-#define T_FOREACH_NE(needle, needle_len) for (const char *np = needle; needle_len != (size_t)-1; ++np, --needle_len)
 
 #define T_LEN(fn, simple_fn, test_array)                                                                                                   \
 	do {                                                                                                                               \
@@ -255,6 +257,8 @@ T_DEBUG(const char *func, const char *hs, const char *ne, size_t hs_len, size_t 
 					T_DEBUG(#fn, hs, ne, i, ne_len, 0, fn(hs, hs_len, ne, ne_len), simple_fn(hs, hs_len, ne, ne_len)); \
 				if (i < ne_len)                                                                                            \
 					T_DEBUG(#fn, hs, ne, hs_len, i, 0, fn(hs, hs_len, ne, ne_len), simple_fn(hs, hs_len, ne, ne_len)); \
+				if (JSTR_TEST_SLOW == 0)                                                                                   \
+					break;                                                                                             \
 			}                                                                                                                  \
 		}                                                                                                                          \
 	} while (0)
@@ -278,6 +282,8 @@ T_DEBUG(const char *func, const char *hs, const char *ne, size_t hs_len, size_t 
 					T_DEBUG(#fn, hs, np, i, ne_len, n, fn(hs, np, n), simple_fn(hs, np, n));      \
 				if (i < ne_len)                                                                       \
 					T_DEBUG(#fn, hs, np, hs_len, i, n, fn(hs, np, n), simple_fn(hs, np, n));      \
+				if (JSTR_TEST_SLOW == 0)                                                              \
+					break;                                                                        \
 			}                                                                                             \
 		}                                                                                                     \
 	} while (0)
