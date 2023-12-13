@@ -67,11 +67,13 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 	add_inline(\$attr);
 	$body = (($rettype eq 'void') ? '' : 'return ') . $name . '(';
 	$name = $base_name;
+	my $dont_make_func = 1;
 	for (my $i = 0; $i < scalar(@arg); ++$i) {
 		my $var = jl_arg_get_var(\$arg[$i]);
 		if (index($arg[$i], 'size_t') != -1) {
 			my $var_str;
 			if ($var =~ /$PREFIX_LEN$/o) {
+				$dont_make_func = 0;
 				my $base_var = $var;
 				$base_var =~ s/$PREFIX_LEN(_|$)$/$1/o;
 				my $i_str = jl_arg_index(\@arg, \$base_var);
@@ -81,6 +83,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 					goto DO_NOTHING;
 				}
 			} elsif ($var =~ /^[^*]$VAR_SIZE$/o) {
+				$dont_make_func = 0;
 				$var_str = jl_arg_get_var(\$arg[0]);
 			} else {
 				goto DO_NOTHING;
@@ -93,6 +96,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 		}
 		$body .= ', ';
 	}
+	next if $dont_make_func;
 	$body =~ s/, $//;
 	$body .= ");";
 	$attr =~ s/\s*$ATTR_ACCESS\(\(.*?\)\)//og;

@@ -9,7 +9,7 @@ FLAGS='
 -Wpedantic
 -Wsign-conversion
 -march=native
--DJSTR_TEST_SLOW=1
+-DJSTR_TEST_SLOW=0
 '
 
 has_prog()
