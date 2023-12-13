@@ -222,7 +222,7 @@ pjstr_strcasestr_avx2(const void *hs,
                       size_t ne_len)
 {
 	if (ne_len == 1)
-		return (void *)memchr(hs, *(unsigned char *)ne, hs_len);
+		return (void *)pjstr_memcasechr_avx2(hs, *(unsigned char *)ne, hs_len);
 	if (jstr_unlikely(ne_len == 0))
 		return (void *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
