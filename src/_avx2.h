@@ -27,7 +27,6 @@
 
 PJSTR_BEGIN_DECLS
 #include <immintrin.h>
-PJSTR_END_DECLS
 
 #include "jstr-ptr-arith.h"
 #include "jstr-rarebyte.h"
@@ -280,57 +279,6 @@ pjstr_strcasestr_len_avx2(const void *hs,
 	return NULL;
 }
 
-JSTR_FUNC_PURE
-JSTR_ATTR_NO_SANITIZE_ADDRESS
-static char *
-pjstr_strcasestr_avx2(const char *hs,
-                      const char *ne)
-{
-	if (*ne == '\0')
-		return (char *)hs;
-	if (jstr_unlikely(*(ne + 1) == '\0'))
-		return (char *)pjstr_strcasechr_avx2(hs, *ne);
-	const unsigned char *h = (const unsigned char *)hs;
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
-	if (*(ne + shift + 1) == '\0')
-		--shift;
-	h += shift;
-	const char *hp, *np;
-	for (const int c = jstr_tolower(*((unsigned char *)ne + shift));
-	     JSTR_PTR_IS_NOT_ALIGNED(h, sizeof(__m256i));
-	     ++h) {
-		if (jstr_tolower(*h) == c) {
-			for (hp = (char *)h - shift, np = ne - shift; jstr_tolower(*hp) == jstr_tolower(*np); ++hp, ++np) {}
-			if (*np == '\0')
-				return (char *)h;
-			if (jstr_unlikely(*hp == '\0'))
-				return NULL;
-		}
-	}
-	const __m256i zv = _mm256_setzero_si256();
-	const __m256i nv = _mm256_set1_epi8((char)jstr_tolower(*((unsigned char *)ne + shift)));
-	const __m256i nv1 = _mm256_set1_epi8((char)jstr_toupper(*((unsigned char *)ne + shift)));
-	const __m256i nv2 = _mm256_set1_epi8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
-	const __m256i nv3 = _mm256_set1_epi8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
-	__m256i hv, hv1;
-	uint32_t i, m, zm, m1, m2, m3, m4;
-	for (;; h += sizeof(__m256i)) {
-		hv = _mm256_load_si256((const __m256i *)h);
-		hv1 = _mm256_loadu_si256((const __m256i *)(h + 1));
-		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv));
-		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv, nv1));
-		m2 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv1, nv2));
-		m3 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv1, nv3));
-		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(hv1, zv));
-		m4 = (m | m1) & (m2 | m3);
-		while (m4) {
-			i = _tzcnt_u32(m4);
-			m4 = _blsr_u32(m4);
-		}
-	}
-	return NULL;
-	(void)i;
-	(void)zm;
-}
+PJSTR_END_DECLS
 
 #endif /* PJSTR_AVX2_H* */

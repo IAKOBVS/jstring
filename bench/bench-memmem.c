@@ -188,8 +188,14 @@ T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
 	RUN(b_jstr_strrstr_len, needle);
 
 #ifdef __AVX2__
-T_DEFINE_STRSTR(pjstr_memmem_avx2, buf, strlen(buf), needle, needle_len)
-#	define T_AVX2(needle) RUN(b_pjstr_memmem_avx2, needle)
+T_DEFINE_STRSTR(pjstr_memmem_avx2, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(pjstr_strcasestr_len_avx2, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(pjstr_strcasestr_avx2, buf, needle)
+#	define T_AVX2(needle)                           \
+		RUN(b_pjstr_memmem_avx2, needle);        \
+		RUN(b_pjstr_strcasestr_len_avx2, needle);\
+		RUN(b_pjstr_strcasestr_avx2, needle)
+
 #else
 #	define T_AVX2(needle)
 #endif

@@ -777,17 +777,17 @@ JSTR_NOEXCEPT
 	hs -= shift;
 	if (ne[2] == '\0')
 		return pjstr_strcasestr2((cu *)hs, (cu *)ne);
-	else if (ne[3] == '\0')
+	if (ne[3] == '\0')
 		return pjstr_strcasestr3((cu *)hs, (cu *)ne);
-	else if (ne[4] == '\0')
+	if (ne[4] == '\0')
 		return pjstr_strcasestr4((cu *)hs, (cu *)ne);
-	else if (ne[5] == '\0')
+	if (ne[5] == '\0')
 		return pjstr_strcasestr5((cu *)hs, (cu *)ne);
-	else if (ne[6] == '\0')
+	if (ne[6] == '\0')
 		return pjstr_strcasestr6((cu *)hs, (cu *)ne);
-	else if (ne[7] == '\0')
+	if (ne[7] == '\0')
 		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
-	else if (ne[8] == '\0')
+	if (ne[8] == '\0')
 		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
 	const size_t ne_len = strlen(ne + shift) + shift;
 	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
