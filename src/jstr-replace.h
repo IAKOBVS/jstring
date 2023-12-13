@@ -1074,6 +1074,108 @@ JSTR_NOEXCEPT
 	return jstr_rplcn_len_from(s, sz, cap, start_idx, find, find_len, rplc, rplc_len, 1);
 }
 
+/* Place SRC into DST[AT].
+   Assume that S have enough space for SRC.
+   Return value: */
+JSTR_FUNC_VOID
+JSTR_ATTR_INLINE
+static void
+jstr_place_len_unsafe(char *R s,
+                      size_t at,
+                      const char *R src,
+                      size_t src_len)
+JSTR_NOEXCEPT
+{
+	memcpy(s + at, src, src_len);
+}
+
+/* Place SRC into DST[AT].
+   Return JSTR_RET_ERR on malloc error;
+   otherwise JSTR_RET_SUCC. */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstr_place_len(char *R *R s,
+               size_t *R sz,
+               size_t *R cap,
+               size_t at,
+               const char *R src,
+               size_t src_len)
+JSTR_NOEXCEPT
+{
+	if (at + src_len > *sz) {
+		if (jstr_chk(jstr_reservealways(s, sz, cap, at + src_len)))
+			return JSTR_RET_ERR;
+		*sz = at + src_len;
+		*(*s + *sz) = '\0';
+	}
+	jstr_place_len_unsafe(*s, at, src, src_len);
+	return JSTR_RET_SUCC;
+}
+
+/* Place SRC after C in DST.
+   Return JSTR_RET_ERR on malloc error;
+   otherwise JSTR_RET_SUCC. */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_ret_ty
+jstr_placeafterchr_len(char *R *R s,
+                       size_t *R sz,
+                       size_t *R cap,
+                       int c,
+                       const char *R src,
+                       size_t src_len)
+JSTR_NOEXCEPT
+{
+	const char *const p = (char *)memchr(*s, c, *sz);
+	if (p != NULL)
+		return jstr_place_len(s, sz, cap, JSTR_PTR_DIFF(p, *s + 1), src, src_len);
+	return JSTR_RET_SUCC;
+}
+
+/* Place SRC after end of NE in DST.
+   Return JSTR_RET_ERR on malloc error;
+   otherwise JSTR_RET_SUCC. */
+JSTR_FUNC
+static jstr_ret_ty
+jstr_placeafter_len(char *R *R s,
+                    size_t *R sz,
+                    size_t *R cap,
+                    const char *R find,
+                    size_t find_len,
+                    const char *R src,
+                    size_t src_len)
+JSTR_NOEXCEPT
+{
+	if (find_len == 1)
+		return jstr_placeafterchr_len(s, sz, cap, *find, src, src_len);
+	if (jstr_unlikely(find_len == 0))
+		return JSTR_RET_SUCC;
+	const char *const p = jstr_strstr_len(*s, *sz, find, find_len);
+	if (p != NULL)
+		return jstr_place_len(s, sz, cap, JSTR_PTR_DIFF(p, *s + find_len), src, src_len);
+	return JSTR_RET_SUCC;
+}
+
+/* Return value:
+   JSTR_RET_ERR on error;
+   JSTR_RET_SUCC otherwise. */
+JSTR_FUNC
+static jstr_ret_ty
+jstr_repeat_len(char *R *R s,
+                size_t *R sz,
+                size_t *R cap,
+                size_t n)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(n <= 1))
+		return JSTR_RET_SUCC;
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * n)))
+		return JSTR_RET_ERR;
+	*sz = JSTR_PTR_DIFF(jstr_repeat_len_unsafe_p(*s, *sz, n), *s);
+	return JSTR_RET_SUCC;
+}
+
 PJSTR_END_DECLS
 
 #undef R

@@ -27,6 +27,7 @@
 #include "jstr-macros.h"
 #include "jstr-ptr-arith.h"
 #include "jstr-rarebyte.h"
+#include "jstr-stdstring.h"
 
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS

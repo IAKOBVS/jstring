@@ -40,6 +40,7 @@ PJSTR_END_DECLS
 #include "jstr-ctype.h"
 #include "jstr-macros.h"
 #include "jstr-stdstring.h"
+#include "jstr-string.h"
 
 #define R JSTR_RESTRICT
 

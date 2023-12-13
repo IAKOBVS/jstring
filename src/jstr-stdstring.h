@@ -28,12 +28,6 @@
 #include "jstr-struct.h"
 #include "jstr-word-at-a-time.h"
 
-#ifdef __AVX2__
-#	include "_avx2.h"
-#endif
-
-#include "_musl.h"
-
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
@@ -41,6 +35,7 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
+
 #define JSTR_LGPL_IMPL
 
 PJSTR_BEGIN_DECLS
@@ -354,152 +349,6 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_memrchr(const void *s,
-             int c,
-             size_t n)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_MEMRCHR
-	return (void *)memrchr(s, c, n);
-#elif defined __AVX2__
-	return pjstr_memrchr_avx2(s, c, n);
-#else
-	return pjstr_memrchr_musl(s, c, n);
-#endif
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_RETURNS_NONNULL
-JSTR_ATTR_INLINE
-static char *
-jstr_strchrnul(const char *s,
-               int c)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
-	return (char *)strchrnul(s, c);
-#elif defined __AVX2__
-	return pjstr_strchrnul_avx2(s, c);
-#elif JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_TEST
-	/* Optimized strchr() + strlen() is still faster than a C strchrnul(). */
-	char *const p = strchr(s, c);
-	return p ? p : (char *)s + strlen(s);
-#else
-	return pjstr_strchrnul_musl(s, c);
-#endif
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasechrnul_word(const char *s,
-                         int c)
-JSTR_NOEXCEPT
-{
-	return pjstr_strcasechrnul_musl(s, c);
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasechr_word(const char *s,
-                      int c)
-JSTR_NOEXCEPT
-{
-	s = pjstr_strcasechrnul_word(s, c);
-	return *s == (char)c ? (char *)s : NULL;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-jstr_memcasechr(const void *s,
-                int c,
-                size_t n)
-JSTR_NOEXCEPT
-{
-#ifdef __AVX2__
-	return pjstr_memcasechr_avx2(s, c, n);
-#else
-	return pjstr_memcasechr_musl(s, c, n);
-#endif
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasechrnul(const char *s,
-                    int c)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STRCSPN_OPTIMIZED
-	const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
-	s += strcspn(s, a);
-	return (char *)s;
-#else
-	return pjstr_strcasechrnul_word(s, c);
-#endif
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasechr(const char *s,
-                 int c)
-JSTR_NOEXCEPT
-{
-	c = jstr_tolower(c);
-	if (jstr_tolower(*s) == c)
-		return (char *)s;
-	s = pjstr_strcasechrnul(s, c);
-	return jstr_tolower(*s) == c ? (char *)s : NULL;
-}
-
-/* Return value:
-   ptr to first C in S ignoring case;
-   NULL if not found. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strcasechr(const char *s,
-                int c)
-JSTR_NOEXCEPT
-{
-#ifdef __AVX2__
-	s = pjstr_strcasechrnul_avx2(s, c);
-	return jstr_tolower(*s) == jstr_tolower(c) ? (char *)s : NULL;
-#else
-	if (jstr_isalpha(c))
-		return pjstr_strcasechr(s, c);
-	return (char *)strchr(s, c);
-#endif
-}
-
-/* Return value:
-   ptr to first C in S ignoring case;
-   NULL if not found. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strcasechrnul(const char *s,
-                   int c)
-JSTR_NOEXCEPT
-{
-#ifdef __AVX2__
-	return pjstr_strcasechrnul_avx2(s, c);
-#else
-	if (jstr_isalpha(c))
-		return pjstr_strcasechrnul(s, c);
-	if (jstr_likely(c))
-		return jstr_strchrnul(s, c);
-	return (char *)s + strlen(s);
-#endif
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
 jstr_memnchr(const void *s,
              int c,
              size_t sz,
@@ -519,43 +368,6 @@ jstr_strnchr_len(const char *s,
 JSTR_NOEXCEPT
 {
 	return (char *)jstr_memnchr(s, c, sz, n);
-}
-
-/* strchr() before s + N. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strnchr(const char *s,
-             int c,
-             size_t n)
-JSTR_NOEXCEPT
-{
-	return pjstr_strnchr_musl(s, c, n);
-}
-
-/* strcasechr() before s + N. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strncasechr(const char *s,
-                 int c,
-                 size_t n)
-JSTR_NOEXCEPT
-{
-	return pjstr_strncasechr_musl(s, c, n);
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-jstr_memchrnul(const void *s,
-               int c,
-               size_t sz)
-JSTR_NOEXCEPT
-{
-	const void *const p = jstr_memrchr(s, c, sz);
-	return (void *)(p ? p : (char *)s + sz);
 }
 
 /* Return value:
@@ -647,28 +459,6 @@ JSTR_NOEXCEPT
 	return (char *)dst + n;
 }
 
-/* Return value:
-   ptr to '\0' in DST. */
-JSTR_ATTR_NO_SANITIZE_ADDRESS
-JSTR_FUNC_RET_NONNULL
-JSTR_ATTR_INLINE
-static char *
-jstr_stpcpy(char *R dst,
-            const char *R src)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STPCPY && !JSTR_TEST
-	return stpcpy(dst, src);
-#elif JSTR_HAVE_STRLEN_OPTIMIZED && !JSTR_TEST
-	/* Optimized memcpy() + strlen() is still faster than a C stpcpy(). */
-	return jstr_stpcpy_len(dst, src, strlen(src));
-#elif JSTR_HAVE_WORD_AT_A_TIME && JSTR_USE_LGPL
-#	include "_lgpl-stpcpy.h"
-#else
-	return pjstr_stpcpy_musl(dst, src);
-#endif
-}
-
 /* Copy until either N is 0 or C is found */
 JSTR_ATTR_ACCESS((__write_only__, 1, 4))
 JSTR_FUNC
@@ -689,19 +479,6 @@ JSTR_NOEXCEPT
 	memcpy(dst, src, n);
 	return NULL;
 #endif /* HAVE_MEMCPY */
-}
-
-/* Return value:
-   Pointer to '\0' in DST. */
-JSTR_FUNC_RET_NONNULL
-JSTR_ATTR_INLINE
-static char *
-jstr_stpcat(char *R dst,
-            const char *R src)
-JSTR_NOEXCEPT
-{
-	dst += strlen(dst);
-	return jstr_stpcpy(dst, src);
 }
 
 JSTR_ATTR_MALLOC
