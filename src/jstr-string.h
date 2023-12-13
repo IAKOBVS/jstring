@@ -713,6 +713,9 @@ jstr_strcasestr_len(const void *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
+#ifdef __AVX2__
+	return pjstr_strcasestr_avx2(hs, hs_len, ne, ne_len);
+#else
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
@@ -775,6 +778,7 @@ JSTR_NOEXCEPT
 	}
 #if JSTR_USE_MEMMEM_OPTIMIZED
 	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
+#endif
 #endif
 }
 
