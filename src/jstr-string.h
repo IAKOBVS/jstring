@@ -457,7 +457,7 @@ JSTR_NOEXCEPT
 	if (ne_len == 2)
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
 #	if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
-	if (JSTR_BYTE_CMPEQU32(hs, ne) && !memcmp((cu *)hs + 4, (cu *)ne + 4, ne_len - 4))
+	if (JSTR_WORD_CMPEQU32(hs, ne) && !memcmp((cu *)hs + 4, (cu *)ne + 4, ne_len - 4))
 #	else
 	if (*(cu *)hs == *(cu *)ne && !memcmp(hs, ne, ne_len))
 #	endif
