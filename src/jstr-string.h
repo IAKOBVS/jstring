@@ -187,7 +187,7 @@ JSTR_NOEXCEPT
 #if __AVX2__
 	return pjstr_memcasechr_avx2(s, c, n);
 #else
-	return pjstr_memcasechr_musl(s, c, n);
+	return jstr_isalpha(c) ? pjstr_memcasechr_musl(s, c, n) : (char *)memchr(s, c, n);
 #endif
 }
 
@@ -734,51 +734,13 @@ JSTR_NOEXCEPT
 	if (ne_len == 2) {
 		if (jstr_isalpha(*(cu *)ne) || jstr_isalpha(*((cu *)ne + 1)))
 			return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
-#	if !JSTR_USE_MEMMEM_OPTIMIZED
+#	if JSTR_USE_MEMMEM_OPTIMIZED
+		return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
+#	else
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
 #	endif
-	} else if (ne_len == 3) {
-		if (jstr_isalpha(*(cu *)ne) || jstr_isalpha(*((cu *)ne + 1)) || jstr_isalpha(*((cu *)ne + 2)))
-			return pjstr_memcasemem3((cu *)hs, (cu *)ne, hs_len);
-#	if !JSTR_USE_MEMMEM_OPTIMIZED
-		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
-#	endif
-	} else if (ne_len == 4) {
-		if (jstr_isalpha(*(cu *)ne) || jstr_isalpha(*((cu *)ne + 1)) || jstr_isalpha(*((cu *)ne + 2)) || jstr_isalpha(*((cu *)ne + 3)))
-			return pjstr_memcasemem4((cu *)hs, (cu *)ne, hs_len);
-#	if !JSTR_USE_MEMMEM_OPTIMIZED
-		return pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
-#	endif
-	} else if (ne_len == 5) {
-		if (jstr_isalpha(*(cu *)ne) || jstr_isalpha(*((cu *)ne + 1)) || jstr_isalpha(*((cu *)ne + 2)) || jstr_isalpha(*((cu *)ne + 3)) || jstr_isalpha(*((cu *)ne + 4)))
-			return pjstr_memcasemem5((cu *)hs, (cu *)ne, hs_len);
-#	if !JSTR_USE_MEMMEM_OPTIMIZED
-		return pjstr_memmem5((cu *)hs, (cu *)ne, hs_len);
-#	endif
-	} else if (ne_len == 6) {
-		if (jstr_isalpha(*(cu *)ne) || jstr_isalpha(*((cu *)ne + 1)) || jstr_isalpha(*((cu *)ne + 2)) || jstr_isalpha(*((cu *)ne + 3)) || jstr_isalpha(*((cu *)ne + 4)) || jstr_isalpha(*((cu *)ne + 5)))
-			return pjstr_memcasemem6((cu *)hs, (cu *)ne, hs_len);
-#	if !JSTR_USE_MEMMEM_OPTIMIZED
-		return pjstr_memmem6((cu *)hs, (cu *)ne, hs_len);
-#	endif
-	} else if (ne_len == 7) {
-		if (jstr_isalpha(*(cu *)ne) || jstr_isalpha(*((cu *)ne + 1)) || jstr_isalpha(*((cu *)ne + 2)) || jstr_isalpha(*((cu *)ne + 3)) || jstr_isalpha(*((cu *)ne + 4)) || jstr_isalpha(*((cu *)ne + 5)) || jstr_isalpha(*((cu *)ne + 6)))
-			return pjstr_memcasemem7((cu *)hs, (cu *)ne, hs_len);
-#	if !JSTR_USE_MEMMEM_OPTIMIZED
-		return pjstr_memmem7((cu *)hs, (cu *)ne, hs_len);
-#	endif
-	} else if (ne_len == 8) {
-		if (jstr_isalpha(*(cu *)ne) || jstr_isalpha(*((cu *)ne + 1)) || jstr_isalpha(*((cu *)ne + 2)) || jstr_isalpha(*((cu *)ne + 3)) || jstr_isalpha(*((cu *)ne + 4)) || jstr_isalpha(*((cu *)ne + 5)) || jstr_isalpha(*((cu *)ne + 6)) || jstr_isalpha(*((cu *)ne + 7)))
-			return pjstr_memcasemem8((cu *)hs, (cu *)ne, hs_len);
-#	if !JSTR_USE_MEMMEM_OPTIMIZED
-		return pjstr_memmem8((cu *)hs, (cu *)ne, hs_len);
-#	endif
-	} else {
-		return pjstr_strcasestr_len_bmh((char *)hs, hs_len, (char *)ne, ne_len);
 	}
-#	if JSTR_USE_MEMMEM_OPTIMIZED
-	return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
-#	endif
+	return pjstr_strcasestr_len_bmh((char *)hs, hs_len, (char *)ne, ne_len);
 #endif
 }
 

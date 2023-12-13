@@ -361,12 +361,12 @@ static jstr_ret_ty
 jstrio_freadfilefp(char *R *R s,
                    size_t *R sz,
                    size_t *R cap,
-                   const char *R filename,
+                   const char *R fname,
                    FILE *fp,
                    struct stat *st)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(stat(filename, st)))
+	if (jstr_unlikely(stat(fname, st)))
 		goto err;
 	return jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size);
 err:
@@ -379,12 +379,12 @@ static jstr_ret_ty
 jstrio_freadfile_len(char *R *R s,
                      size_t *R sz,
                      size_t *R cap,
-                     const char *R filename,
+                     const char *R fname,
                      const char *R modes,
                      const size_t file_size)
 JSTR_NOEXCEPT
 {
-	FILE *fp = fopen(filename, modes);
+	FILE *fp = fopen(fname, modes);
 	if (jstr_nullchk(fp))
 		goto err;
 	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)file_size)))
@@ -404,13 +404,14 @@ static jstr_ret_ty
 jstrio_freadfile(char *R *R s,
                  size_t *R sz,
                  size_t *R cap,
-                 const char *R filename,
+                 const char *R fname,
+                 const char *R modes,
                  struct stat *st)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(stat(filename, st)))
+	if (jstr_unlikely(stat(fname, st)))
 		goto err;
-	return jstrio_freadfile_len(s, sz, cap, filename, "r", (size_t)st->st_size);
+	return jstrio_freadfile_len(s, sz, cap, fname, modes, (size_t)st->st_size);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
@@ -786,7 +787,7 @@ typedef enum jstrio_ftw_flag_ty {
 			}                               \
 		} while (0)
 #	define STAT_ALWAYS(st, ftw_state, fd, ep, dirpath) STAT_DO(st, ftw_state, fd, ep, dirpath, ftw_state = JSTRIO_FTW_STATE_NS; goto do_fn)
-#	define OPENDIR(fd, filename)                       fdopendir(fd)
+#	define OPENDIR(fd, fname)                          fdopendir(fd)
 #else
 #	define STAT_DO(st, ftw_state, fd, ep, dirpath, do_on_nonfatal_err) \
 		do {                                                        \
@@ -799,7 +800,7 @@ typedef enum jstrio_ftw_flag_ty {
 		} while (0)
 /* clang-format off */
 #	define STAT_ALWAYS(st, ftw_state, fd, ep, dirpath) STAT_DO(st, ftw_state, fd, ep, dirpath, ftw_state = JSTRIO_FTW_STATE_NS; goto do_fn)
-#	define OPENDIR(fd, filename) opendir(filename)
+#	define OPENDIR(fd, fname) opendir(fname)
 #	define OPENAT(dstfd, srcfd, file, oflag, do_on_err) do {} while (0)
 #	define OPEN(fd, file, oflag, do_on_err) do {} while (0)
 #	define CLOSE(fd, do_on_err) do {} while (0)
