@@ -23,19 +23,24 @@
 #ifndef PJSTR_AVX2_H
 #define PJSTR_AVX2_H
 
-#include <immintrin.h>
 #include "jstr-macros.h"
+
+PJSTR_BEGIN_DECLS
+#include <immintrin.h>
+PJSTR_END_DECLS
+
 #include "jstr-ptr-arith.h"
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
 
+/* Unrolling doesn't seem to be worth it. */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
 pjstr_strchrnul_avx2(const char *s,
                      int c)
 {
-	for (; ((uintptr_t)s & (sizeof(__m256i) - 1)); ++s)
+	for (; JSTR_PTR_IS_NOT_ALIGNED(s, sizeof(__m256i)); ++s)
 		if (jstr_unlikely(*s == '\0') || *s == (char)c)
 			return (char *)s;
 	uint32_t m, m1, zm;
@@ -324,6 +329,8 @@ pjstr_strcasestr_avx2(const char *hs,
 		}
 	}
 	return NULL;
+	(void)i;
+	(void)zm;
 }
 
 #endif /* PJSTR_AVX2_H* */

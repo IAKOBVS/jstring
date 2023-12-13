@@ -405,10 +405,6 @@ JSTR_NOEXCEPT
 #define PJSTR_MEMMEM_FUNC    pjstr_memmem_bmh
 #include "_memmem-bmh.h"
 
-#define PJSTR_RAREBYTE_RETTYPE void *
-#define PJSTR_RAREBYTE_FUNC    pjstr_memmem_rarebyte
-#include "_jstr-rarebyte-memmem.h"
-
 #if JSTR_HAVE_MEMMEM && JSTR_HAVE_MEMMEM_OPTIMIZED && !JSTR_TEST
 #	define JSTR_USE_MEMMEM_LIBC 1
 #else
@@ -596,10 +592,6 @@ JSTR_NOEXCEPT
 #endif
 }
 
-#define PJSTR_RAREBYTE_RETTYPE char *
-#define PJSTR_RAREBYTE_FUNC    pjstr_memrmem_rarebyte
-#include "_jstr-memrmem-rarebyte.h"
-
 /* Find last NE in HS.
    Return value:
    Pointer to NE;
@@ -664,12 +656,6 @@ JSTR_NOEXCEPT
 #define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
 #define PJSTR_MEMMEM_HASH2_ICASE 1
 #include "_memmem-bmh.h"
-
-#define PJSTR_RAREBYTE_RETTYPE  char *
-#define PJSTR_RAREBYTE_FUNC     pjstr_strcasestr_len_rarebyte
-#define PJSTR_RAREBYTE_CMP_FUNC jstr_strcasecmpeq_len
-#define PJSTR_RAREBYTE_CANONIZE jstr_tolower
-#include "_jstr-rarebyte-memmem.h"
 
 #if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__
 #	define JSTR_USE_MEMMEM_OPTIMIZED 1

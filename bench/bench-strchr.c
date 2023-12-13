@@ -82,6 +82,7 @@ simple_strcasechrnul_strcspn(const char *s,
 
 #ifdef __AVX2__
 T_DEFINE_STRCHR(pjstr_strchrnul_avx2, buf, 'b')
+T_DEFINE_STRCHR(pjstr_strchrnul_avx2_unroll, buf, 'b')
 T_DEFINE_STRCHR(pjstr_memrchr_avx2, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(pjstr_strcasechrnul_avx2, buf, 'b')
 T_DEFINE_STRCHR(pjstr_memcasechr_avx2, buf, 'b', BUFLEN)
@@ -112,6 +113,7 @@ main()
 #ifdef __AVX2__
 	RUN(b_pjstr_strcasechrnul_avx2, 0);
 	RUN(b_pjstr_strchrnul_avx2, 0);
+	RUN(b_pjstr_strchrnul_avx2_unroll, 0);
 	RUN(b_pjstr_memrchr_avx2, 0);
 	RUN(b_pjstr_memcasechr_avx2, 0);
 #endif

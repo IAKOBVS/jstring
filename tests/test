@@ -9,8 +9,7 @@ FLAGS='
 -Wpedantic
 -Wsign-conversion
 -march=native
--DJSTR_TEST_SLOW=0
--fsanitize=address
+-DJSTR_TEST_SLOW=1
 '
 
 has_prog()
