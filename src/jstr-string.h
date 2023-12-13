@@ -706,13 +706,19 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-static char *
-jstr_strcasestr_len(const void *hs,
-                    size_t hs_len,
-                    const void *ne,
-                    size_t ne_len)
+static void *
+jstr_memcasemem(const void *hs,
+                size_t hs_len,
+                const void *ne,
+                size_t ne_len)
 JSTR_NOEXCEPT
 {
+	for (size_t n = 0;; ++n) {
+		if (n == ne_len)
+			return jstr_memmem(hs, hs_len, ne, ne_len);
+		if (jstr_isalpha(*((unsigned char *)ne + n)))
+			break;
+	}
 #if defined __AVX2__
 	return (char *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
 #else
@@ -742,6 +748,23 @@ JSTR_NOEXCEPT
 	}
 	return pjstr_strcasestr_len_bmh((char *)hs, hs_len, (char *)ne, ne_len);
 #endif
+}
+
+/* Find NE in HS case-insensitively (ASCII).
+   Return value:
+   Pointer to NE;
+   NULL if not found. */
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+static char *
+jstr_strcasestr_len(const char *hs,
+                    size_t hs_len,
+                    const char *ne,
+                    size_t ne_len)
+JSTR_NOEXCEPT
+{
+	return (char *)jstr_memcasemem(hs, hs_len, ne, ne_len);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -775,6 +798,12 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
+	for (const char *p = ne;; ++p) {
+		if (*p == '\0')
+			return (char *)strstr(hs, ne);
+		if (jstr_isalpha(*p))
+			break;
+	}
 	if (jstr_unlikely(ne[0] == '\0'))
 		return (char *)hs;
 	typedef const unsigned char cu;
@@ -785,54 +814,22 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	hs -= shift;
-	if (ne[2] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]))
-			return pjstr_strcasestr2((cu *)hs, (cu *)ne);
-#	if !JSTR_HAVE_STRSTR_OPTIMIZED
-		return pjstr_strstr2((cu *)hs, (cu *)ne);
-#	endif
-	} else if (ne[3] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]))
-			return pjstr_strcasestr3((cu *)hs, (cu *)ne);
-#	if !JSTR_HAVE_STRSTR_OPTIMIZED
-		return pjstr_strstr3((cu *)hs, (cu *)ne);
-#	endif
-	} else if (ne[4] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]))
-			return pjstr_strcasestr4((cu *)hs, (cu *)ne);
-#	if !JSTR_HAVE_STRSTR_OPTIMIZED
-		return pjstr_strstr4((cu *)hs, (cu *)ne);
-#	endif
-	} else if (ne[5] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]))
-			return pjstr_strcasestr5((cu *)hs, (cu *)ne);
-#	if !JSTR_HAVE_STRSTR_OPTIMIZED
-		return pjstr_strstr5((cu *)hs, (cu *)ne);
-#	endif
-	} else if (ne[6] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]))
-			return pjstr_strcasestr6((cu *)hs, (cu *)ne);
-#	if !JSTR_HAVE_STRSTR_OPTIMIZED
-		return pjstr_strstr6((cu *)hs, (cu *)ne);
-#	endif
-	} else if (ne[7] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]))
-			return pjstr_strcasestr7((cu *)hs, (cu *)ne);
-#	if !JSTR_HAVE_STRSTR_OPTIMIZED
-		return pjstr_strstr7((cu *)hs, (cu *)ne);
-#	endif
-	} else if (ne[8] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]) || jstr_isalpha(ne[7]))
-			return pjstr_strcasestr8((cu *)hs, (cu *)ne);
-#	if !JSTR_HAVE_STRSTR_OPTIMIZED
-		return pjstr_strstr8((cu *)hs, (cu *)ne);
-#	endif
-	} else {
+	if (ne[2] == '\0')
+		return pjstr_strcasestr2((cu *)hs, (cu *)ne);
+	else if (ne[3] == '\0')
+		return pjstr_strcasestr3((cu *)hs, (cu *)ne);
+	else if (ne[4] == '\0')
+		return pjstr_strcasestr4((cu *)hs, (cu *)ne);
+	else if (ne[5] == '\0')
+		return pjstr_strcasestr5((cu *)hs, (cu *)ne);
+	else if (ne[6] == '\0')
+		return pjstr_strcasestr6((cu *)hs, (cu *)ne);
+	else if (ne[7] == '\0')
+		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
+	else if (ne[8] == '\0')
+		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
+	else
 		return pjstr_strcasestr_long(hs, ne);
-	}
-#	if JSTR_HAVE_STRSTR_OPTIMIZED
-	return (char *)strstr(hs, ne);
-#	endif
 #endif
 }
 
