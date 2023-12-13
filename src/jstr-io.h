@@ -410,7 +410,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(stat(filename, st)))
 		goto err;
-	return jstrio_freadfile_len(s, sz, cap, filename, "w", (size_t)st->st_size);
+	return jstrio_freadfile_len(s, sz, cap, filename, "r", (size_t)st->st_size);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
