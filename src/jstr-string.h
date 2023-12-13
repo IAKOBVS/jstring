@@ -683,7 +683,7 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(*((unsigned char *)ne + n)))
 			break;
 	}
-#if defined __AVX2__
+#ifdef __AVX2__
 	return (char *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
