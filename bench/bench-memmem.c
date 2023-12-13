@@ -134,18 +134,18 @@ simple_strnstr(const char *hs,
 		memcpy(buf + needle_len * i, needle, needle_len + 1);     \
 	} while (0)
 
-#define T_DEFINE_STRSTR(impl_func, ...)                    \
-	static JSTR_ATTR_MAYBE_UNUSED size_t               \
-	b_##impl_func(void *dummy)                         \
-	{                                                  \
-		const char *needle = dummy;                \
-		const size_t needle_len = needle_len;      \
-		size_t cs = 0;                             \
-		for (size_t i = 0; i < 50; i++) {          \
-			buf[0] ^= 1;                       \
-			cs += (int)impl_func(__VA_ARGS__); \
-		}                                          \
-		return cs;                                 \
+#define T_DEFINE_STRSTR(impl_func, ...)                       \
+	static JSTR_ATTR_MAYBE_UNUSED size_t                  \
+	b_##impl_func(void *dummy)                            \
+	{                                                     \
+		const char *needle = dummy;                   \
+		const size_t needle_len = needle_len;         \
+		size_t cs = 0;                                \
+		for (size_t i = 0; i < 50; i++) {             \
+			buf[0] ^= 1;                          \
+			cs += (size_t)impl_func(__VA_ARGS__); \
+		}                                             \
+		return cs;                                    \
 	}
 
 T_DEFINE_STRSTR(simple_memmem, buf, buf_len, needle, needle_len)

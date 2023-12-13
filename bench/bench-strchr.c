@@ -68,16 +68,16 @@ simple_strcasechrnul_strcspn(const char *s,
 		buf[BUFLEN - 2] = 'b';    \
 	} while (0)
 
-#define T_DEFINE_STRCHR(impl_func, ...)                    \
-	size_t b_##impl_func(void *dummy)                  \
-	{                                                  \
-		size_t i;                                  \
-		size_t cs;                                 \
-		for (i = 0; i < 100; i++) {                \
-			buf[i] = '0' + i % 8;              \
-			cs += (int)impl_func(__VA_ARGS__); \
-		}                                          \
-		return cs;                                 \
+#define T_DEFINE_STRCHR(impl_func, ...)                       \
+	size_t b_##impl_func(void *dummy)                     \
+	{                                                     \
+		size_t i;                                     \
+		size_t cs;                                    \
+		for (i = 0; i < 100; i++) {                   \
+			buf[i] = '0' + i % 8;                 \
+			cs += (size_t)impl_func(__VA_ARGS__); \
+		}                                             \
+		return cs;                                    \
 	}
 
 #ifdef __AVX2__
