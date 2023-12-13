@@ -184,7 +184,7 @@ jstr_memcasechr(const void *s,
                 size_t n)
 JSTR_NOEXCEPT
 {
-#ifdef __AVX2__
+#if __AVX2__
 	return pjstr_memcasechr_avx2(s, c, n);
 #else
 	return pjstr_memcasechr_musl(s, c, n);
@@ -718,7 +718,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *rare = (cu *)jstr_rarebytefindeither_len(ne, ne_len);
+	cu *rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
 	unsigned int shift = JSTR_PTR_DIFF(rare, ne);
 	hs = (cu *)hs + shift;
 	hs_len -= shift;
@@ -812,7 +812,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ne[0] == '\0'))
 		return (char *)hs;
 	typedef const unsigned char cu;
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindeither(ne), ne);
+	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
 	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
 		return NULL;
 	hs = jstr_strcasechr(hs + shift, *(ne + shift));
