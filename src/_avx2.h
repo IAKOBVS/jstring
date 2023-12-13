@@ -38,7 +38,7 @@ pjstr_strchrnul_avx2(const char *s,
 	for (; ((uintptr_t)s & (sizeof(__m256i) - 1)); ++s)
 		if (jstr_unlikely(*s == '\0') || *s == (char)c)
 			return (char *)s;
-	uint32_t m, zm, i, iz;
+	uint32_t m, m1, zm;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8((char)c);
 	const __m256i zv = _mm256_setzero_si256();
@@ -46,14 +46,11 @@ pjstr_strchrnul_avx2(const char *s,
 		sv = _mm256_load_si256((const __m256i *)s);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
-		i = _tzcnt_u32(m);
-		iz = _tzcnt_u32(zm);
-		if (m)
-			return (char *)s + (zm ? JSTR_MIN(i, iz) : i);
-		else if (zm)
-			return (char *)s + iz;
+		m1 = m | zm;
+		if (m1)
+			break;
 	}
-	return (char *)s + iz;
+	return (char *)s + _tzcnt_u32(m1);
 }
 
 JSTR_FUNC_PURE
@@ -72,7 +69,7 @@ pjstr_strcasechrnul_avx2(const char *s,
 	for (; JSTR_PTR_IS_NOT_ALIGNED(s, sizeof(__m256i)); ++s)
 		if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
 			return (char *)s;
-	uint32_t m, m1, m2, zm, i, iz;
+	uint32_t m, m1, m2, zm;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8((char)c);
 	const __m256i cv1 = _mm256_set1_epi8((char)jstr_toupper(c));
@@ -82,15 +79,11 @@ pjstr_strcasechrnul_avx2(const char *s,
 		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
-		iz = _tzcnt_u32(zm);
-		m2 = m | m1;
-		i = _tzcnt_u32(m2);
-		if (m)
-			return (char *)s + (zm ? JSTR_MIN(i, iz) : i);
-		if (zm)
-			return (char *)s + iz;
+		m2 = m | m1 | zm;
+		if (m2)
+			break;
 	}
-	return (char *)s + iz;
+	return (char *)s + _tzcnt_u32(m2);
 }
 
 JSTR_FUNC_PURE
@@ -113,7 +106,7 @@ pjstr_memcasechr_avx2(const void *s,
 		if (jstr_tolower(*p) == c)
 			return (void *)p;
 	}
-	uint32_t m, m1, m2, i;
+	uint32_t m, m1, m2;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8((char)c);
 	const __m256i cv1 = _mm256_set1_epi8((char)jstr_toupper(c));
@@ -122,11 +115,13 @@ pjstr_memcasechr_avx2(const void *s,
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv1));
 		m2 = m | m1;
-		i = _tzcnt_u32(m2);
 		if (m2)
-			return p + i < end ? (char *)p + i : NULL;
+			goto ret;
 	}
 	return NULL;
+ret:;
+	const uint32_t i = _tzcnt_u32(m2);
+	return p + i < end ? (char *)p + i : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -147,18 +142,20 @@ pjstr_memrchr_avx2(const void *s,
 		if (*p == (unsigned char)c)
 			return (void *)p;
 	}
-	uint32_t i, m;
+	uint32_t m;
 	__m256i sv;
 	const __m256i cv = _mm256_set1_epi8((char)c);
 	while (p >= (unsigned char *)s) {
 		p -= sizeof(__m256i);
 		sv = _mm256_load_si256((const __m256i *)p);
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
-		i = 31 - _lzcnt_u32(m);
 		if (m)
-			return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
+			goto ret;
 	}
 	return NULL;
+ret:;
+	const uint32_t i = 31 - _lzcnt_u32(m);
+	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))

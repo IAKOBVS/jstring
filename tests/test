@@ -10,6 +10,7 @@ FLAGS='
 -Wsign-conversion
 -march=native
 -DJSTR_TEST_SLOW=0
+-fsanitize=address
 '
 
 has_prog()
