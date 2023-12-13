@@ -280,6 +280,57 @@ pjstr_strcasestr_len_avx2(const void *hs,
 	return NULL;
 }
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+static size_t
+pjstr_countchr_len_avx2(const void *s,
+                        int c,
+                        size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s;
+	const unsigned char *const end = p + n;
+	size_t cnt = 0;
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i)); ++p) {
+		if (jstr_unlikely(n-- == 0))
+			return cnt;
+		if (*p == (unsigned char)c)
+			++cnt;
+	}
+	const __m256i cv = _mm256_set1_epi8((char)c);
+	__m256i sv0, sv1, sv2, sv3;
+	uint32_t m0, m1, m2, m3;
+	unsigned int cnt0, cnt1, cnt2, cnt3;
+	for (;;) {
+		sv0 = _mm256_load_si256((const __m256i *)p);
+		sv1 = _mm256_load_si256((const __m256i *)p + 1);
+		sv2 = _mm256_load_si256((const __m256i *)p + 2);
+		sv3 = _mm256_load_si256((const __m256i *)p + 3);
+		m0 = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv0, cv));
+		m1 = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv1, cv));
+		m2 = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv2, cv));
+		m3 = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv3, cv));
+		cnt0 = m0 ? _tzcnt_u32(m0) : 0;
+		cnt1 = m1 ? _tzcnt_u32(m1) : 0;
+		cnt2 = m2 ? _tzcnt_u32(m2) : 0;
+		cnt3 = m3 ? _tzcnt_u32(m3) : 0;
+		p += sizeof(__m256i) * 4;
+		if (jstr_unlikely(p < end))
+			break;
+		cnt += cnt0 + cnt1 + cnt2 + cnt3;
+	}
+	/* TODO: handle tail correctly. */
+	if (m0)
+		cnt += cnt0;
+	if (m1)
+		cnt += cnt1;
+	if (m2)
+		cnt += cnt2;
+	if (m3)
+		cnt += cnt3;
+	return cnt;
+}
+
 PJSTR_END_DECLS
 
 #endif /* PJSTR_AVX2_H* */
