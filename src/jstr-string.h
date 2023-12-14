@@ -688,7 +688,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-static void *
+static char *
 jstr_strcasestr_len(const char *hs,
                     size_t hs_len,
                     const char *ne,
@@ -697,7 +697,7 @@ JSTR_NOEXCEPT
 {
 	for (size_t n = 0;; ++n) {
 		if (n == ne_len)
-			return jstr_memmem(hs, hs_len, ne, ne_len);
+			return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 		if (jstr_isalpha(*((unsigned char *)ne + n)))
 			break;
 	}
@@ -706,8 +706,6 @@ JSTR_NOEXCEPT
 		return (hs_len > ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return (void *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
 #else
-	if (jstr_unlikely(ne_len == 0))
-		return (void *)hs;
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
