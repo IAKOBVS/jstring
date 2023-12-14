@@ -809,6 +809,12 @@ jstr_strncasestr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
+	for (const char *p = ne;; ++p) {
+		if (*p == '\0')
+			return (char *)jstr_strnstr(hs, ne, n);
+		if (jstr_isalpha(*p))
+			break;
+	}
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
 	const char *const start = hs;
@@ -816,35 +822,20 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	n -= JSTR_PTR_DIFF(hs, start);
-	if (ne[2] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]))
-			return pjstr_strncasestr2((cu *)hs, (cu *)ne, n);
-		return pjstr_strnstr2((cu *)hs, (cu *)ne, n);
-	} else if (ne[3] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]))
-			return pjstr_strncasestr3((cu *)hs, (cu *)ne, n);
-		return pjstr_strnstr3((cu *)hs, (cu *)ne, n);
-	} else if (ne[4] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]))
-			return pjstr_strncasestr4((cu *)hs, (cu *)ne, n);
-		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
-	} else if (ne[5] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]))
-			return pjstr_strncasestr5((cu *)hs, (cu *)ne, n);
-		return pjstr_strnstr5((cu *)hs, (cu *)ne, n);
-	} else if (ne[6] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]))
-			return pjstr_strncasestr6((cu *)hs, (cu *)ne, n);
-		return pjstr_strnstr6((cu *)hs, (cu *)ne, n);
-	} else if (ne[7] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]))
-			return pjstr_strncasestr7((cu *)hs, (cu *)ne, n);
-		return pjstr_strnstr7((cu *)hs, (cu *)ne, n);
-	} else if (ne[8] == '\0') {
-		if (jstr_isalpha(*ne) || jstr_isalpha(ne[1]) || jstr_isalpha(ne[2]) || jstr_isalpha(ne[3]) || jstr_isalpha(ne[4]) || jstr_isalpha(ne[5]) || jstr_isalpha(ne[6]) || jstr_isalpha(ne[7]))
-			return pjstr_strncasestr8((cu *)hs, (cu *)ne, n);
-		return pjstr_strnstr8((cu *)hs, (cu *)ne, n);
-	}
+	if (ne[2] == '\0')
+		return pjstr_strncasestr2((cu *)hs, (cu *)ne, n);
+	if (ne[3] == '\0')
+		return pjstr_strncasestr3((cu *)hs, (cu *)ne, n);
+	if (ne[4] == '\0')
+		return pjstr_strncasestr4((cu *)hs, (cu *)ne, n);
+	if (ne[5] == '\0')
+		return pjstr_strncasestr5((cu *)hs, (cu *)ne, n);
+	if (ne[6] == '\0')
+		return pjstr_strncasestr6((cu *)hs, (cu *)ne, n);
+	if (ne[7] == '\0')
+		return pjstr_strncasestr7((cu *)hs, (cu *)ne, n);
+	if (ne[8] == '\0')
+		return pjstr_strncasestr8((cu *)hs, (cu *)ne, n);
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;
 	size_t tmp = n;
