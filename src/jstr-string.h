@@ -1387,7 +1387,7 @@ JSTR_NOEXCEPT
 	return pjstr_countchr_avx2(s, c);
 #else
 	size_t cnt = 0;
-	for (; (s = strchr(s, c)); ++s, ++cnt) {}
+	for (; *s; cnt += *s++ == (char)c) {}
 	return cnt;
 #endif
 }
