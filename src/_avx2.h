@@ -33,7 +33,6 @@ PJSTR_BEGIN_DECLS
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
 
-/* Unrolling doesn't seem to be worth it. */
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *

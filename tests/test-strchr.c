@@ -118,12 +118,20 @@ simple_memcasechr(const void *s,
 }
 
 static size_t
+simple_countchr_len(const char *s,
+                    int c,
+                    size_t sz)
+{
+	size_t cnt = 0;
+	for (; sz--; cnt += *s++ == (char)c) {}
+	return cnt;
+}
+
+static size_t
 simple_countchr(const char *s,
                 int c)
 {
-	size_t cnt = 0;
-	for (; *s; cnt += *s++ == (char)c) {}
-	return cnt;
+	return simple_countchr_len(s, c, strlen(s));
 }
 
 #define T_ASSERT(func, expr, result, expected, str, c, n)                              \
@@ -164,18 +172,21 @@ simple_countchr(const char *s,
 			result = pjstr_strchrnul_avx2(s, c);                                                \
 			expected = simple_strchrnul(s, c);                                                  \
 			T_ASSERT(pjstr_strchrnul_avx2, result == expected, result, expected, s, c, -1);     \
-			result = pjstr_memrchr_avx2(s, c, p_len);                                           \
-			expected = simple_memrchr(s, c, p_len);                                             \
-			T_ASSERT(pjstr_memrchr_avx2, result == expected, result, expected, s, c, p_len);    \
+			result = pjstr_memrchr_avx2(s, c, n);                                               \
+			expected = simple_memrchr(s, c, n);                                                 \
+			T_ASSERT(pjstr_memrchr_avx2, result == expected, result, expected, s, c, n);        \
 			result = pjstr_strcasechrnul_avx2(s, c);                                            \
 			expected = simple_strcasechrnul(s, c);                                              \
 			T_ASSERT(pjstr_strcasechrnul_avx2, result == expected, result, expected, s, c, -1); \
-			result = pjstr_memcasechr_avx2(s, c, p_len);                                        \
-			expected = simple_memcasechr(s, c, p_len);                                          \
-			T_ASSERT(pjstr_memcasechr_avx2, result == expected, result, expected, s, c, p_len); \
+			result = pjstr_memcasechr_avx2(s, c, n);                                            \
+			expected = simple_memcasechr(s, c, n);                                              \
+			T_ASSERT(pjstr_memcasechr_avx2, result == expected, result, expected, s, c, n);     \
 			result_len = pjstr_countchr_avx2(s, c);                                             \
 			expected_len = simple_countchr(s, c);                                               \
 			TCOUNT_ASSERT(pjstr_countchr_avx2, result_len == expected_len, s, c, -1);           \
+			result_len = pjstr_countchr_len_avx2(s, c, n);                                      \
+			expected_len = simple_countchr_len(s, c, n);                                        \
+			TCOUNT_ASSERT(pjstr_countchr_len_avx2, result_len == expected_len, s, c, n);        \
 		} while (0)
 #else
 #	define T_AVX2(s, c, n)
@@ -203,7 +214,7 @@ simple_countchr(const char *s,
 			result = jstr_strcasechrnul(p, c);                                            \
 			expected = simple_strcasechrnul(p, c);                                        \
 			T_ASSERT(jstr_strcasechrnul, result == expected, result, expected, p, c, -1); \
-			T_AVX2(p, c, -1);                                                             \
+			T_AVX2(p, c, p_len);                                                          \
 		}                                                                                     \
 	} while (0)
 
