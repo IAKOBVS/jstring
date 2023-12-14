@@ -31,12 +31,6 @@
 #define BUFLEN 500000U
 #define CNT    10000U
 
-#define R(a, b)            \
-	do {               \
-		assert(a); \
-		RUN(a, b); \
-	} while (0)
-
 size_t needle_len;
 size_t buf_len;
 char *buf;
