@@ -310,10 +310,10 @@ pjstr_countchr_len_avx2(const void *s,
 		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv1, cv));
 		m2 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv2, cv));
 		m3 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv3, cv));
-		cnt0 = m0 ? _mm_popcnt_u32(m0) : 0;
-		cnt1 = m1 ? _mm_popcnt_u32(m1) : 0;
-		cnt2 = m2 ? _mm_popcnt_u32(m2) : 0;
-		cnt3 = m3 ? _mm_popcnt_u32(m3) : 0;
+		cnt0 = m0 ? (unsigned int)_mm_popcnt_u32(m0) : 0;
+		cnt1 = m1 ? (unsigned int)_mm_popcnt_u32(m1) : 0;
+		cnt2 = m2 ? (unsigned int)_mm_popcnt_u32(m2) : 0;
+		cnt3 = m3 ? (unsigned int)_mm_popcnt_u32(m3) : 0;
 		p += sizeof(__m256i) * 4;
 		if (jstr_unlikely(p < end))
 			break;
