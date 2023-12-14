@@ -354,16 +354,16 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
-static void *
-pjstr_strcasestr_len_avx2(const void *hs,
+static char *
+pjstr_strcasestr_len_avx2(const char *hs,
                           size_t hs_len,
-                          const void *ne,
+                          const char *ne,
                           size_t ne_len)
 {
 	if (ne_len == 1)
-		return (void *)pjstr_memcasechr_avx2(hs, *(unsigned char *)ne, hs_len);
+		return (char *)pjstr_memcasechr_avx2(hs, *(unsigned char *)ne, hs_len);
 	if (jstr_unlikely(ne_len == 0))
-		return (void *)hs;
+		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	const unsigned char *h = (const unsigned char *)hs;
@@ -378,7 +378,7 @@ pjstr_strcasestr_len_avx2(const void *hs,
 		if (jstr_unlikely(h - shift > end))
 			return NULL;
 		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((const char *)h - shift, (const char *)ne, ne_len))
-			return (void *)(h - shift);
+			return (char *)(h - shift);
 	}
 	const __m256i nv = _mm256_set1_epi8((char)jstr_tolower(*((unsigned char *)ne + shift)));
 	const __m256i nv1 = _mm256_set1_epi8((char)jstr_toupper(*((unsigned char *)ne + shift)));

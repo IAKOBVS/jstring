@@ -708,7 +708,7 @@ JSTR_NOEXCEPT
 #ifdef __AVX2__
 	if (jstr_unlikely(ne_len > sizeof(__m256i) * 2))
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
-	return (void *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
+	return pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
