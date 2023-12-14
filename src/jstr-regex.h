@@ -577,10 +577,10 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, (size_t)-1);
 }
 
-JSTR_ATTR_INLINE
 /* Return value:
    on error, -errcode (negative);
    number of substrings replaced. */
+JSTR_ATTR_INLINE
 JSTR_FUNC
 jstrre_off_ty
 jstrre_rplc_len(const regex_t *R preg,
@@ -595,10 +595,10 @@ JSTR_NOEXCEPT
 	return jstrre_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, 1);
 }
 
-JSTR_ATTR_INLINE
 /* Return value:
    on error, -errcode (negative);
    number of substrings replaced. */
+JSTR_ATTR_INLINE
 JSTR_FUNC
 jstrre_off_ty
 jstrre_rplc_len_from(const regex_t *R preg,
