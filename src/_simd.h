@@ -537,7 +537,7 @@ pjstr_countchr_len_simd(const void *s,
 	if (n >= sizeof(__m128i)) {
 		const __m128i v = _mm_load_si128((const __m128i *)p);
 		m = _mm_movemask_epi8(_mm_cmpeq_epi8(v, _mm_setzero_si128()));
-		cnt += m ? __builtin_popcount(m) : 0;
+		cnt += m ? POPCNT(m) : 0;
 		p += sizeof(__m128i);
 		n -= sizeof(__m128i);
 	}
