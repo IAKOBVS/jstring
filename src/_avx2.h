@@ -36,6 +36,36 @@ PJSTR_BEGIN_DECLS
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
+pjstr_strnchr_avx2(const char *s,
+                   int c,
+                   size_t n)
+{
+	for (; JSTR_PTR_IS_NOT_ALIGNED(s, sizeof(__m256i)); ++s) {
+		if (jstr_unlikely(n-- == 0) || jstr_unlikely(*s == '\0'))
+			return NULL;
+		if (jstr_unlikely(*s == (char)c))
+			return (char *)s;
+	}
+	const char *const end = s + n;
+	uint32_t m, m1, zm;
+	__m256i sv;
+	const __m256i cv = _mm256_set1_epi8((char)c);
+	const __m256i zv = _mm256_setzero_si256();
+	for (;; s += sizeof(__m256i)) {
+		sv = _mm256_load_si256((const __m256i *)s);
+		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
+		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		m1 = m | zm;
+		if (m1 | (s < end))
+			break;
+	}
+	m = _tzcnt_u32(m1);
+	return s + m < end ? (char *)s + m : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+static char *
 pjstr_strchrnul_avx2(const char *s,
                      int c)
 {
@@ -135,8 +165,8 @@ pjstr_memcasechr_avx2(const void *s,
 	}
 	return NULL;
 ret:;
-	const uint32_t i = _tzcnt_u32(m2);
-	return p + i < end ? (char *)p + i : NULL;
+	m = _tzcnt_u32(m2);
+	return p + m < end ? (char *)p + m : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -169,8 +199,8 @@ pjstr_memrchr_avx2(const void *s,
 	}
 	return NULL;
 ret:;
-	const uint32_t i = 31 - _lzcnt_u32(m);
-	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
+	m = 31 - _lzcnt_u32(m);
+	return p + m >= (unsigned char *)s ? (char *)p + m : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
