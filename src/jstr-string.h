@@ -610,6 +610,8 @@ JSTR_NOEXCEPT
 #endif
 }
 
+/* TODO: implement memrmem with AVX2. */
+
 /* Find last NE in HS.
    Return value:
    Pointer to NE;
