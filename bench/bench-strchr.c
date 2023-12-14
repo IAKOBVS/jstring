@@ -96,31 +96,15 @@ simple_countchr(const char *s,
 		return cs;                                    \
 	}
 
-#if JSTR_HAVE_SIMD
-#	if !JSTR_HAVENT_COUNTCHR_SIMD
+#ifdef __AVX2__
 T_DEFINE_STRCHR(pjstr_countchr_simd, buf, 'b')
-#	endif
-#	if !JSTR_HAVENT_COUNTCHR_LEN_SIMD
 T_DEFINE_STRCHR(pjstr_countchr_len_simd, buf, 'b', BUFLEN)
-#	endif
-#	if !JSTR_HAVENT_STRCHRNUL_SIMD
 T_DEFINE_STRCHR(pjstr_strchrnul_simd, buf, 'b')
-#	endif
-#	if !JSTR_HAVENT_MEMRCHR_SIMD
 T_DEFINE_STRCHR(pjstr_memrchr_simd, buf, 'b', BUFLEN)
-#	endif
-#	if !JSTR_HAVENT_STRCASECHRNUL_SIMD
 T_DEFINE_STRCHR(pjstr_strcasechrnul_simd, buf, 'b')
-#	endif
-#	if !JSTR_HAVENT_MEMCASECHR_SIMD
 T_DEFINE_STRCHR(pjstr_memcasechr_simd, buf, 'b', BUFLEN)
-#	endif
-#	if !JSTR_HAVENT_STRNCHR_SIMD
 T_DEFINE_STRCHR(pjstr_strnchr_simd, buf, 'b', BUFLEN)
-#	endif
-#	if !JSTR_HAVENT_STRNCASECHR_SIMD
 T_DEFINE_STRCHR(pjstr_strncasechr_simd, buf, 'b', BUFLEN)
-#	endif
 #endif
 
 T_DEFINE_STRCHR(simple_countchr, buf, 'b')
@@ -148,31 +132,15 @@ main()
 	assert(buf);
 	T_SETUP(buf, BUFLEN);
 
-#if JSTR_HAVE_SIMD
-#	if !JSTR_HAVENT_COUNTCHR_SIMD
+#ifdef __AVX2__
 	RUN(b_pjstr_countchr_simd, 0);
-#	endif
-#	if !JSTR_HAVENT_COUNTCHR_LEN_SIMD
 	RUN(b_pjstr_countchr_len_simd, 0);
-#	endif
-#	if !JSTR_HAVENT_STRCHRNUL_SIMD
 	RUN(b_pjstr_strchrnul_simd, 0);
-#	endif
-#	if !JSTR_HAVENT_MEMRCHR_SIMD
 	RUN(b_pjstr_memrchr_simd, 0);
-#	endif
-#	if !JSTR_HAVENT_STRCASECHRNUL_SIMD
 	RUN(b_pjstr_strcasechrnul_simd, 0);
-#	endif
-#	if !JSTR_HAVENT_MEMCASECHR_SIMD
 	RUN(b_pjstr_memcasechr_simd, 0);
-#	endif
-#	if !JSTR_HAVENT_STRNCHR_SIMD
 	RUN(b_pjstr_strnchr_simd, 0);
-#	endif
-#	if !JSTR_HAVENT_STRNCASECHR_SIMD
 	RUN(b_pjstr_strncasechr_simd, 0);
-#	endif
 #endif
 
 #ifdef __AVX2__
@@ -185,6 +153,7 @@ main()
 	RUN(b_pjstr_strncasechr_simd, 0);
 	RUN(b_pjstr_strnchr_simd, 0);
 #endif
+
 	RUN(b_simple_countchr, 0);
 	RUN(b_simple_countchr_len, 0);
 	RUN(b_pjstr_strchrnul_musl, 0);

@@ -204,13 +204,9 @@ T_DEFINE_STRSTR(jstr_stpcpy, buf, buf + i)
 T_DEFINE_STRSTR(pjstr_stpcpy_musl, buf, buf + i)
 T_DEFINE_STRSTR(simple_stpcpy, buf, buf + i)
 
-#if JSTR_HAVE_SIMD
-#	if !JSTR_HAVENT_MEMMEM_SIMD
+#ifdef __AVX2__
 T_DEFINE_STRSTR(pjstr_memmem_simd, buf, buf_len, needle, needle_len)
-#	endif
-#	if !JSTR_HAVENT_STRCASESTR_LEN_SIMD
 T_DEFINE_STRSTR(pjstr_strcasestr_len_simd, buf, buf_len, needle, needle_len)
-#	endif
 T_DEFINE_STRSTR(pjstr_stpcpy_simd, buf, buf + i)
 #	define T_AVX2(needle)                    \
 		RUN(b_pjstr_memmem_simd, needle); \
