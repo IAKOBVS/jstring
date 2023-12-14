@@ -793,7 +793,7 @@ JSTR_NOEXCEPT
 	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
 	if (hs_len < ne_len)
 		return NULL;
-	if (jstr_tolower(*hs) == jstr_tolower(*ne) && !jstr_strcasecmpeq_len(hs, ne, ne_len))
+	if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
