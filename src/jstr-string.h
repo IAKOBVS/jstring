@@ -756,18 +756,16 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-	for (const char *p = ne;; ++p) {
-		if (*p == '\0')
+	typedef const unsigned char cu;
+	for (cu *np = (cu *)ne;; ++np) {
+		if (*np == '\0')
 			return (char *)strstr(hs, ne);
-		if (jstr_isalpha(*p))
+		if (jstr_isalpha(*np))
 			break;
 	}
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
-	if (jstr_unlikely(ne[0] == '\0'))
-		return (char *)hs;
-	typedef const unsigned char cu;
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
 	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
 		return NULL;
@@ -789,12 +787,14 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
 	if (ne[8] == '\0')
 		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
-	const char *hp = hs, *np = ne;
+	cu *hp = (cu *)hs;
+	cu *np = (cu *)ne;
 	for (; jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np) {}
 	if (*np == '\0')
 		return (char *)hs;
 	if (jstr_unlikely(*hp == '\0'))
 		return NULL;
+	shift = JSTR_PTR_DIFF(shift, JSTR_PTR_DIFF(np, ne));
 	const size_t ne_len = strlen(ne + shift) + shift;
 	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
 	if (hs_len < ne_len)
@@ -815,18 +815,22 @@ jstr_strncasestr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
-	for (const char *p = ne;; ++p) {
-		if (*p == '\0')
+	for (cu *np = (cu *)ne;; ++np) {
+		if (*np == '\0')
 			return (char *)jstr_strnstr(hs, ne, n);
-		if (jstr_isalpha(*p))
+		if (jstr_isalpha(*np))
 			break;
 	}
-	if (jstr_unlikely(*ne == '\0'))
-		return (char *)hs;
+
+	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
+	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift)
+	    || jstr_unlikely(n < shift))
+		return NULL;
 	const char *const start = hs;
-	hs = jstr_strncasechr(hs, *ne, n);
+	hs = jstr_strncasechr(hs + shift, *(ne + shift), n);
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
+	hs -= shift;
 	n -= JSTR_PTR_DIFF(hs, start);
 	if (ne[2] == '\0')
 		return pjstr_strncasestr2((cu *)hs, (cu *)ne, n);

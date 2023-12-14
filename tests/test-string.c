@@ -347,7 +347,9 @@ main(int argc, char **argv)
 
 /* 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem); */
 /* 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem); */
-/* 	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem); */
+
+	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem);
+
 /* 	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem); */
 
 /* 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem); */
@@ -357,7 +359,6 @@ main(int argc, char **argv)
 
 #ifdef __AVX2__
 	/* T_LEN(pjstr_memmem_avx2, simple_memmem, test_array_memmem); */
-	T(pjstr_strcasestr_avx2, simple_strcasestr, test_array_memmem);
 	/* T_LEN(pjstr_strcasestr_len_avx2, simple_strcasestr_len, test_array_memmem); */
 #endif
 
