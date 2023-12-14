@@ -306,25 +306,25 @@ pjstr_countchr_len_avx2(const void *s,
 		sv1 = _mm256_load_si256((const __m256i *)p + 1);
 		sv2 = _mm256_load_si256((const __m256i *)p + 2);
 		sv3 = _mm256_load_si256((const __m256i *)p + 3);
-		m0 = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv0, cv));
-		m1 = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv1, cv));
-		m2 = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv2, cv));
-		m3 = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv3, cv));
-		cnt0 = m0 ? _tzcnt_u32(m0) : 0;
-		cnt1 = m1 ? _tzcnt_u32(m1) : 0;
-		cnt2 = m2 ? _tzcnt_u32(m2) : 0;
-		cnt3 = m3 ? _tzcnt_u32(m3) : 0;
+		m0 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv0, cv));
+		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv1, cv));
+		m2 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv2, cv));
+		m3 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv3, cv));
+		cnt0 = m0 ? _mm_popcnt_u32(m0) : 0;
+		cnt1 = m1 ? _mm_popcnt_u32(m1) : 0;
+		cnt2 = m2 ? _mm_popcnt_u32(m2) : 0;
+		cnt3 = m3 ? _mm_popcnt_u32(m3) : 0;
 		p += sizeof(__m256i) * 4;
 		if (jstr_unlikely(p < end))
 			break;
 		cnt += cnt0 + cnt1 + cnt2 + cnt3;
 	}
 	/* TODO: handle tail correctly. */
-	if (m0)
+	if (m0 && p - sizeof(__m256i) * 3 < end)
 		cnt += cnt0;
-	if (m1)
+	if (m1 && p - sizeof(__m256i) * 2 < end)
 		cnt += cnt1;
-	if (m2)
+	if (m2 && p - sizeof(__m256i) < end)
 		cnt += cnt2;
 	if (m3)
 		cnt += cnt3;
