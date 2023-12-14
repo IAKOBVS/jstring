@@ -554,7 +554,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 static char *
 jstr_strnstr(const char *hs,
-             const char *const ne,
+             const char *ne,
              size_t n)
 JSTR_NOEXCEPT
 {
@@ -727,11 +727,11 @@ JSTR_NOEXCEPT
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
-	if (!jstr_strcasecmpeq_len((char *)hs, (char *)ne, ne_len))
+	if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr_len_bmh((char *)hs, hs_len, (char *)ne, ne_len);
+	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 #endif
 }
 
