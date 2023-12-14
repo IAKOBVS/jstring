@@ -289,7 +289,6 @@ pjstr_countchr_len_avx2(const void *s,
                         size_t n)
 {
 	const unsigned char *p = (const unsigned char *)s;
-	const unsigned char *const end = p + n;
 	size_t cnt = 0;
 	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i)); ++p) {
 		if (jstr_unlikely(n-- == 0))
@@ -298,36 +297,15 @@ pjstr_countchr_len_avx2(const void *s,
 			++cnt;
 	}
 	const __m256i cv = _mm256_set1_epi8((char)c);
-	__m256i sv0, sv1, sv2, sv3;
-	uint32_t m0, m1, m2, m3;
-	unsigned int cnt0, cnt1, cnt2, cnt3;
-	for (;;) {
+	__m256i sv0;
+	uint32_t m0;
+	for (; n >= sizeof(__m256i); n -= sizeof(__m256i), p += sizeof(__m256i)) {
 		sv0 = _mm256_load_si256((const __m256i *)p);
-		sv1 = _mm256_load_si256((const __m256i *)p + 1);
-		sv2 = _mm256_load_si256((const __m256i *)p + 2);
-		sv3 = _mm256_load_si256((const __m256i *)p + 3);
 		m0 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv0, cv));
-		m1 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv1, cv));
-		m2 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv2, cv));
-		m3 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv3, cv));
-		cnt0 = m0 ? (unsigned int)_mm_popcnt_u32(m0) : 0;
-		cnt1 = m1 ? (unsigned int)_mm_popcnt_u32(m1) : 0;
-		cnt2 = m2 ? (unsigned int)_mm_popcnt_u32(m2) : 0;
-		cnt3 = m3 ? (unsigned int)_mm_popcnt_u32(m3) : 0;
-		p += sizeof(__m256i) * 4;
-		if (jstr_unlikely(p < end))
-			break;
-		cnt += cnt0 + cnt1 + cnt2 + cnt3;
+		cnt = m0 ? (unsigned int)_mm_popcnt_u32(m0) : 0;
 	}
-	/* TODO: handle tail correctly. */
-	if (m0 && p - sizeof(__m256i) * 3 < end)
-		cnt += cnt0;
-	if (m1 && p - sizeof(__m256i) * 2 < end)
-		cnt += cnt1;
-	if (m2 && p - sizeof(__m256i) < end)
-		cnt += cnt2;
-	if (m3)
-		cnt += cnt3;
+	while (n--)
+		cnt += (*p++ == (unsigned char)c);
 	return cnt;
 }
 
