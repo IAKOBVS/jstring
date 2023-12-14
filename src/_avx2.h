@@ -33,6 +33,66 @@ PJSTR_BEGIN_DECLS
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
 
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static char *
+pjstr_stpcpy_avx2_aligned(char *JSTR_RESTRICT dst,
+                          const char *JSTR_RESTRICT src)
+{
+	__m256i sv;
+	const __m256i zv = _mm256_setzero_si256();
+	uint32_t zm;
+	for (;; src += sizeof(__m256i), dst += sizeof(__m256i)) {
+		sv = _mm256_load_si256((const __m256i *)src);
+		zm = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		if (zm)
+			break;
+		_mm256_store_si256((__m256i *)dst, sv);
+	}
+	while ((*dst++ = *src++))
+		;
+	return dst - 1;
+}
+
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static char *
+pjstr_stpcpy_avx2_unaligned_src(char *JSTR_RESTRICT dst,
+                                const char *JSTR_RESTRICT src)
+{
+	__m256i sv;
+	const __m256i zv = _mm256_setzero_si256();
+	uint32_t zm;
+	for (;; src += sizeof(__m256i), dst += sizeof(__m256i)) {
+		sv = _mm256_loadu_si256((const __m256i *)src);
+		zm = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		if (zm)
+			break;
+		_mm256_store_si256((__m256i *)dst, sv);
+	}
+	while ((*dst++ = *src++))
+		;
+	return dst - 1;
+}
+
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_FUNC
+static char *
+pjstr_stpcpy_avx2(char *JSTR_RESTRICT dst,
+                  const char *JSTR_RESTRICT src)
+{
+	while (JSTR_PTR_IS_NOT_ALIGNED(dst, sizeof(__m256i))) {
+		*dst++ = *src++;
+		if (jstr_unlikely(*src == '\0'))
+			return dst - 1;
+	}
+	if (JSTR_PTR_IS_ALIGNED(src, sizeof(__m256i)))
+		return pjstr_stpcpy_avx2_aligned(dst, src);
+	return pjstr_stpcpy_avx2_unaligned_src(dst, src);
+}
+
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *

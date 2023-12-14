@@ -8,6 +8,8 @@ if [ -z "$TMPDIR" ]; then
 	else
 		TMPDIR=$PWD/$tmp
 	fi
+else
+	TMPDIR=$TMPDIR/
 fi
 
 tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
@@ -31,7 +33,7 @@ for file in $files; do
 done
 wait
 
-for file in $(echo $tmp/*-exe); do
+for file in $(echo $tmp/*); do
 	echo "Running $(echo ${file##*/} | sed 's/-[^-]*$//')"
 	output=$($file)
 	echo "$output"

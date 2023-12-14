@@ -1,5 +1,4 @@
 /* Based on musl's libc-bench
-
    Copyright © 2011 Rich Felker
 
    Permission is hereby granted, free of charge, to any person obtaining
@@ -148,21 +147,6 @@ simple_strnstr(const char *hs,
 		return cs;                                    \
 	}
 
-T_DEFINE_STRSTR(simple_memmem, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(simple_strcasestr, buf, needle)
-T_DEFINE_STRSTR(simple_strnstr, buf, needle, buf_len)
-T_DEFINE_STRSTR(jstr_strnstr, buf, needle, buf_len)
-T_DEFINE_STRSTR(simple_strstr, buf, needle)
-T_DEFINE_STRSTR(strstr, buf, needle)
-T_DEFINE_STRSTR(memmem, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_memmem, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_strstr_len, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(strcasestr, buf, needle)
-T_DEFINE_STRSTR(jstr_strcasestr, buf, needle)
-T_DEFINE_STRSTR(jstr_strcasestr_len, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(simple_strrstr_len, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
-
 #define T_STRSTR_ALL(needle)                                          \
 	JSTR_STATIC_ASSERT(sizeof(needle) - 1 <= (BUFLEN * CNT), ""); \
 	needle_len = sizeof(needle) - 1;                              \
@@ -187,9 +171,27 @@ T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
 	RUN(b_simple_strrstr_len, needle);                            \
 	RUN(b_jstr_strrstr_len, needle);
 
+T_DEFINE_STRSTR(simple_memmem, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(simple_strcasestr, buf, needle)
+T_DEFINE_STRSTR(simple_strnstr, buf, needle, buf_len)
+T_DEFINE_STRSTR(jstr_strnstr, buf, needle, buf_len)
+T_DEFINE_STRSTR(simple_strstr, buf, needle)
+T_DEFINE_STRSTR(strstr, buf, needle)
+T_DEFINE_STRSTR(memmem, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_memmem, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_strstr_len, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(strcasestr, buf, needle)
+T_DEFINE_STRSTR(jstr_strcasestr, buf, needle)
+T_DEFINE_STRSTR(jstr_strcasestr_len, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(simple_strrstr_len, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_stpcpy, buf, buf + i)
+T_DEFINE_STRSTR(pjstr_stpcpy_musl, buf, buf + i)
+
 #ifdef __AVX2__
 T_DEFINE_STRSTR(pjstr_memmem_avx2, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(pjstr_strcasestr_len_avx2, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(pjstr_stpcpy_avx2, buf, buf + i)
 #	define T_AVX2(needle)                    \
 		RUN(b_pjstr_memmem_avx2, needle); \
 		RUN(b_pjstr_strcasestr_len_avx2, needle);
@@ -246,6 +248,13 @@ int
 main()
 {
 	T_STRSTR();
+
+#ifdef __AVX2__
+	RUN(b_pjstr_stpcpy_avx2, 0);
+#endif
+	RUN(b_pjstr_stpcpy_musl, 0);
+	RUN(b_jstr_stpcpy, 0);
+
 	free(buf);
 	return 0;
 }

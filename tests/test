@@ -51,6 +51,8 @@ else
 		else
 			TMPDIR=$(echo "$PWD" | head -c 255)
 		fi
+	else
+		TMPDIR=$TMPDIR/
 	fi
 	tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
 	mkdir -p "$tmp"

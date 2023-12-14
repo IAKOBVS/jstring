@@ -1,5 +1,4 @@
 /* Based on musl's libc-bench
-
    Copyright © 2011 Rich Felker
 
    Permission is hereby granted, free of charge, to any person obtaining
