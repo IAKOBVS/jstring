@@ -117,6 +117,15 @@ simple_memcasechr(const void *s,
 	return n ? (void *)p : NULL;
 }
 
+static size_t
+simple_countchr(const char *s,
+                int c)
+{
+	size_t cnt = 0;
+	for (; (s = strchr(s, c)); ++s, ++cnt) {}
+	return cnt;
+}
+
 #define T_ASSERT(func, expr, result, expected, str, c, n)                              \
 	do {                                                                           \
 		if (jstr_unlikely(!(expr))) {                                          \
@@ -152,6 +161,9 @@ simple_memcasechr(const void *s,
 			result = pjstr_memcasechr_avx2(p, c, p_len);                                           \
 			expected = simple_memcasechr(p, c, p_len);                                             \
 			T_ASSERT(pjstr_memcasechr_avx2, result == expected, result, expected, s, c, p_len);    \
+			result = pjstr_countchr_avx2(p, c);                                                    \
+			expected = simple_countchr(p, c);                                                      \
+			T_ASSERT(pjstr_countchr_avx2, result == expected, result, expected, s, c, -1);         \
 		} while (0)
 #else
 #	define T_AVX2(s, c, n)

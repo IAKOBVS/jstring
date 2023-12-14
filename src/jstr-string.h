@@ -1383,9 +1383,13 @@ jstr_countchr(const char *s,
               int c)
 JSTR_NOEXCEPT
 {
+#ifdef __AVX2__
+	return pjstr_countchr_avx2(s, c);
+#else
 	size_t cnt = 0;
 	for (; (s = strchr(s, c)); ++s, ++cnt) {}
 	return cnt;
+#endif
 }
 
 /* This is vectorized at -O3 (GCC >= 4.7) and -O2 (clang >= 3.9). */

@@ -39,6 +39,8 @@
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
 #define START() do{}while(0)
 
+PJSTR_BEGIN_DECLS
+
 JSTR_ATTR_MAYBE_UNUSED
 static int TOLOWER(int c)
 {
@@ -60,6 +62,7 @@ static char *clean_func(const char *func)
 	for (; !isalpha(*func); ++func);
 	return (char *)func;
 }
+
 PJSTR_END_DECLS
 
 #if VERBOSE
