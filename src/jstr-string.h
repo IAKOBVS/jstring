@@ -36,8 +36,12 @@ PJSTR_END_DECLS
 #include "jstr-stdstring.h"
 #include "jstr-ctype.h"
 
-#ifdef __AVX2__
-#	include "_avx2.h"
+#if defined __AVX2__ || defined __SSE__
+#	define JSTR_HAVE_SIMD 1
+#endif
+
+#if JSTR_HAVE_SIMD
+#	include "_simd.h"
 #endif
 #include "_musl.h"
 
@@ -56,8 +60,8 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR
 	return (void *)memrchr(s, c, n);
-#elif defined __AVX2__
-	return pjstr_memrchr_avx2(s, c, n);
+#elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMRCHR_SIMD
+	return pjstr_memrchr_simd(s, c, n);
 #else
 	return pjstr_memrchr_musl(s, c, n);
 #endif
@@ -73,8 +77,8 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
 	return (char *)strchrnul(s, c);
-#elif defined __AVX2__
-	return pjstr_strchrnul_avx2(s, c);
+#elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCHRNUL_SIMD
+	return pjstr_strchrnul_simd(s, c);
 #elif JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_TEST
 	/* Optimized strchr() + strlen() is still faster than a C strchrnul(). */
 	char *const p = strchr(s, c);
@@ -145,8 +149,8 @@ jstr_strcasechr(const char *s,
                 int c)
 JSTR_NOEXCEPT
 {
-#ifdef __AVX2__
-	s = pjstr_strcasechrnul_avx2(s, c);
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
+	s = pjstr_strcasechrnul_simd(s, c);
 	return jstr_tolower(*s) == jstr_tolower(c) ? (char *)s : NULL;
 #else
 	if (jstr_isalpha(c))
@@ -165,8 +169,8 @@ jstr_strcasechrnul(const char *s,
                    int c)
 JSTR_NOEXCEPT
 {
-#ifdef __AVX2__
-	return pjstr_strcasechrnul_avx2(s, c);
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
+	return pjstr_strcasechrnul_simd(s, c);
 #else
 	if (jstr_isalpha(c))
 		return pjstr_strcasechrnul(s, c);
@@ -184,8 +188,8 @@ jstr_memcasechr(const void *s,
                 size_t n)
 JSTR_NOEXCEPT
 {
-#if __AVX2__
-	return pjstr_memcasechr_avx2(s, c, n);
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMCASECHR_SIMD
+	return pjstr_memcasechr_simd(s, c, n);
 #else
 	return pjstr_memcasechr_musl(s, c, n);
 #endif
@@ -217,7 +221,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STPCPY && !JSTR_TEST
 	return stpcpy(dst, src);
 #elif defined __AVX2__
-	return pjstr_stpcpy_avx2(dst, src);
+	return pjstr_stpcpy_simd(dst, src);
 #elif JSTR_HAVE_STRLEN_OPTIMIZED && !JSTR_TEST
 	/* Optimized memcpy() + strlen() is still faster than a C stpcpy(). */
 	return jstr_stpcpy_len(dst, src, strlen(src));
@@ -250,8 +254,8 @@ jstr_strnchr(const char *s,
              size_t n)
 JSTR_NOEXCEPT
 {
-#ifdef __AVX2__
-	return pjstr_strnchr_avx2(s, c, n);
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCHR_SIMD
+	return pjstr_strnchr_simd(s, c, n);
 #else
 	return pjstr_strnchr_musl(s, c, n);
 #endif
@@ -266,8 +270,8 @@ jstr_strncasechr(const char *s,
                  size_t n)
 JSTR_NOEXCEPT
 {
-#ifdef __AVX2__
-	return pjstr_strncasechr_avx2(s, c, n);
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCASECHR_SIMD
+	return pjstr_strncasechr_simd(s, c, n);
 #else
 	return pjstr_strncasechr_musl(s, c, n);
 #endif
@@ -424,7 +428,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-#if JSTR_USE_MEMMEM_LIBC || defined __AVX2__
+#if JSTR_USE_MEMMEM_LIBC || !JSTR_HAVENT_MEMMEM_SIMD
 JSTR_ATTR_INLINE
 #endif
 static void *
@@ -436,10 +440,10 @@ JSTR_NOEXCEPT
 {
 #if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
-#elif defined __AVX2__
-	if (ne_len >= sizeof(__m256i) * 2)
+#elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
+	if (ne_len >= JSTR_VEC_SIZE * 2)
 		return (hs_len >= ne_len) ? pjstr_memmem_bmh(hs, hs_len, ne, ne_len) : NULL;
-	return pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
+	return pjstr_memmem_simd(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
 	enum { LONG_NE_THRES = 64 };
@@ -604,9 +608,9 @@ JSTR_NOEXCEPT
 #if JSTR_USE_STANDARD_MEMMEM
 	return (char *)memmem(hs, hs_len, ne, ne_len);
 #else
-#	if defined __AVX2__
-	if (jstr_unlikely(ne_len > sizeof(__m256i) * 2))
-		return (char *)pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
+#	if !JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
+	if (jstr_unlikely(ne_len > JSTR_VEC_SIZE * 2))
+		return (char *)pjstr_memmem_simd(hs, hs_len, ne, ne_len);
 #	endif
 	return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
@@ -705,10 +709,10 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(*((unsigned char *)ne + n)))
 			break;
 	}
-#ifdef __AVX2__
-	if (jstr_unlikely(ne_len > sizeof(__m256i) * 2))
+#if !JSTR_HAVENT_STRCASESTR_LEN_SIMD
+	if (jstr_unlikely(ne_len > JSTR_VEC_SIZE * 2))
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
-	return pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
+	return pjstr_strcasestr_len_simd(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
@@ -1395,8 +1399,8 @@ jstr_countchr(const char *s,
               int c)
 JSTR_NOEXCEPT
 {
-#ifdef __AVX2__
-	return pjstr_countchr_avx2(s, c);
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
+	return pjstr_countchr_simd(s, c);
 #else
 	size_t cnt = 0;
 	for (; *s; cnt += *s++ == (char)c) {}
@@ -1418,12 +1422,12 @@ jstr_countchr_len(const char *s,
                   size_t sz)
 JSTR_NOEXCEPT
 {
-#if JSTR_GNUC_PREREQ(4, 7) || !defined __AVX2__
+#if JSTR_GNUC_PREREQ(4, 7) || !JSTR_HAVE_SIMD || JSTR_HAVENT_COUNTCHR_LEN_SIMD
 	size_t cnt = 0;
 	for (; sz--; cnt += *s++ == (char)c) {}
 	return cnt;
 #else
-	return pjstr_countchr_len_avx2(s, c, sz);
+	return pjstr_countchr_len_simd(s, c, sz);
 #endif
 }
 
