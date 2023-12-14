@@ -558,10 +558,15 @@ JSTR_NOEXCEPT
 	enum { LONG_NE_THRES = 16 };
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
+	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
+	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift)
+	    || jstr_unlikely(n < shift))
+		return NULL;
 	const char *const start = hs;
-	hs = jstr_strnchr(hs, *ne, n);
+	hs = jstr_strnchr(hs + shift, *(ne + shift), n);
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
+	hs -= shift;
 	n -= JSTR_PTR_DIFF(hs, start);
 	if (ne[2] == '\0')
 		return pjstr_strnstr2((cu *)hs, (cu *)ne, n);
