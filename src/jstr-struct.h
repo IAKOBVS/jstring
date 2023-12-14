@@ -29,7 +29,12 @@ PJSTR_BEGIN_DECLS
 #include <stddef.h>
 PJSTR_END_DECLS
 
-#define JSTR_STRUCT(j) &(j)->data, &(j)->size, &(j)->capacity
+#define JSTR_STRUCT(j)  &(j)->data, &(j)->size, &(j)->capacity
+#define jstr_literal(s) (s), sizeof(s) - 1
+#define jstr_literal_init(s)    \
+	{                       \
+		jstr_literal(s) \
+	}
 
 PJSTR_BEGIN_DECLS
 typedef struct jstr_ty {
@@ -37,6 +42,11 @@ typedef struct jstr_ty {
 	size_t size;
 	size_t capacity;
 } jstr_ty;
+
+typedef struct jstr_literal_ty {
+	const char *const data;
+	unsigned int size;
+} jstr_literal_ty;
 PJSTR_END_DECLS
 
 #endif /* JSTR_STRUCT_H */
