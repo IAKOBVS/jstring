@@ -1,6 +1,7 @@
 # jstring
 
 ## Features:
+
 - works with any string type: Functions take a pointer to string, size, and capacity.
 - in-place literal string and regex replacement: Supports backreferences and
 searching from a specified index.
@@ -36,8 +37,12 @@ https://github.com/IAKOBVS/find-and-replace
 https://github.com/IAKOBVS/rarebyte
 
 ## Disclaimer:
+
 Some of the code are licensed under LGPL. You can define JSTR\_USE\_LGPL as 0 to
 exclude them. jstr\_ty, jstrl\_ty, and jarr\_ty must be initialized with zeros.
+
+Do not pass a string with embedded NULs to a function that takes a char \*.
+char \* implies no embedded NULs. Use ones which takes a void \*.
 
 ```
 jstr_ty j = JSTR_INIT;
@@ -47,6 +52,7 @@ jstr\_tolower\(\) and jstr\_toupper\(\) will not handle EOF correctly. The tolow
 EOF may not equal EOF.
 
 ## Configuration:
+
 You can customize the library by defining certain macros in jstr-config.h before
 including any header. For example:
 
@@ -56,6 +62,7 @@ including any header. For example:
 ```
 
 ## Error handling:
+
 A negative number is returned as error. The programmer is expected to check the return value
 and handle the error. When a memory error is encountered, the user is expected to free
 all the related resources. Use jstr\_err\(\) to print the error message or jstr\_errdie\(\)
@@ -67,6 +74,7 @@ the negated value of the regex error code. To print an error message, pass the n
 the returned error code.
 
 ## Naming conventions
+
 ### Functions or macros:
 - \*\_mem\*\(\): The string need not be nul-terminated.
 - \*\_len\(\): Take the length of the string.
@@ -89,6 +97,7 @@ as referring to the whole matched string.
 - \_\*.h: Internal headers.
 
 ## Scripts:
+
 - build: Generate functions.
 - install: Build and copy headers to /usr/local/include/jstr \(requires sudo\).
 - install-to: Install to a specified directory.
@@ -98,6 +107,7 @@ as referring to the whole matched string.
 - fmt: Format files.
 
 ## Contributing:
+
 Do not put blank lines inside a function. The perl script splits each block of
 code by blank lines. If you need to put blank lines, add a comment. For example:
 ```
