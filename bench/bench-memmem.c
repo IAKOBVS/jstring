@@ -31,6 +31,12 @@
 #define BUFLEN 500000U
 #define CNT    10000U
 
+#define R(a, b)            \
+	do {               \
+		assert(a); \
+		RUN(a, b); \
+	} while (0)
+
 size_t needle_len;
 size_t buf_len;
 char *buf;
@@ -122,6 +128,15 @@ simple_strnstr(const char *hs,
 	return NULL;
 }
 
+static char *
+simple_stpcpy(char *JSTR_RESTRICT dst,
+              const char *JSTR_RESTRICT src)
+{
+	size_t n = strlen(src);
+	*(char *)memcpy(dst, src, n) = '\0';
+	return dst + n;
+}
+
 #define T_SETUP(buf, needle, needle_len)                                  \
 	do {                                                              \
 		size_t i;                                                 \
@@ -187,6 +202,7 @@ T_DEFINE_STRSTR(simple_strrstr_len, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(jstr_stpcpy, buf, buf + i)
 T_DEFINE_STRSTR(pjstr_stpcpy_musl, buf, buf + i)
+T_DEFINE_STRSTR(simple_stpcpy, buf, buf + i)
 
 #ifdef __AVX2__
 T_DEFINE_STRSTR(pjstr_memmem_avx2, buf, buf_len, needle, needle_len)
@@ -254,6 +270,7 @@ main()
 #endif
 	RUN(b_pjstr_stpcpy_musl, 0);
 	RUN(b_jstr_stpcpy, 0);
+	RUN(b_simple_stpcpy, 0);
 
 	free(buf);
 	return 0;
