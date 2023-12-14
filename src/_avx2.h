@@ -287,11 +287,9 @@ pjstr_countchr_avx2(const void *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i));) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i)); cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(*p == '\0'))
 			return cnt;
-		cnt += *p++ == (unsigned char)c;
-	}
 	const __m256i cv = _mm256_set1_epi8((char)c);
 	const __m256i zv = _mm256_setzero_si256();
 	__m256i sv;
@@ -305,8 +303,7 @@ pjstr_countchr_avx2(const void *s,
 		if (zm)
 			break;
 	}
-	while (*p)
-		cnt += *p++ == (unsigned char)c;
+	for (; *p; cnt += *p++ == (unsigned char)c) {}
 	return cnt;
 }
 
@@ -320,11 +317,9 @@ pjstr_countchr_len_avx2(const void *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i));) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i)); cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(n-- == 0))
 			return cnt;
-		cnt += *p++ == (unsigned char)c;
-	}
 	const __m256i cv = _mm256_set1_epi8((char)c);
 	__m256i sv;
 	uint32_t m;
@@ -333,8 +328,7 @@ pjstr_countchr_len_avx2(const void *s,
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		cnt += m ? (unsigned int)_mm_popcnt_u32(m) : 0;
 	}
-	while (n--)
-		cnt += *p++ == (unsigned char)c;
+	for (; n--; cnt += *p++ == (unsigned char)c) {}
 	return cnt;
 }
 
