@@ -18,13 +18,13 @@ update_if_needed()
 	out_fname=../jstr/$in_fname
 	test -e "$out_fname" && test "$in_fname" -ot "$out_fname" && exit 0
 	case $in_fname in
-	*macro*) ;;
-	*_jstr-*)
+	*macro*.h) ;;
+	_*.h)
 		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
 		echo "perl ./namespace-macros.pl $in_fname >$out_fname"
 		exit 0
 		;;
-	*jstr-*)
+	*jstr-*.h)
 		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
 		echo "perl ./gen-func.pl $in_fname | perl ./namespace-macros.pl >$out_fname"
 		exit 0
