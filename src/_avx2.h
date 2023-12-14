@@ -65,8 +65,8 @@ pjstr_strncasechr_avx2(const char *s,
 	}
 	if (p >= end)
 		return NULL;
-	hm0 = _tzcnt_u32(m);
-	return p + hm0 < end ? (char *)p + hm0 : NULL;
+	const uint32_t i = _tzcnt_u32(m);
+	return p + i < end ? (char *)p + i : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -97,8 +97,8 @@ pjstr_strnchr_avx2(const char *s,
 	}
 	if (s >= end)
 		return NULL;
-	hm = _tzcnt_u32(m);
-	return s + hm < end ? (char *)s + hm : NULL;
+	const uint32_t i = _tzcnt_u32(m);
+	return s + i < end ? (char *)s + i : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -204,8 +204,8 @@ pjstr_memcasechr_avx2(const void *s,
 	}
 	return NULL;
 ret:;
-	m = _tzcnt_u32(m2);
-	return p + m < end ? (char *)p + m : NULL;
+	const uint32_t i = _tzcnt_u32(m2);
+	return p + i < end ? (char *)p + i : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -238,8 +238,8 @@ pjstr_memrchr_avx2(const void *s,
 	}
 	return NULL;
 ret:;
-	m = 31 - _lzcnt_u32(m);
-	return p + m >= (unsigned char *)s ? (char *)p + m : NULL;
+	const uint32_t i = 31 - _lzcnt_u32(m);
+	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))

@@ -802,7 +802,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(*hp == '\0'))
 		return NULL;
-	shift = JSTR_PTR_DIFF(shift, JSTR_PTR_DIFF(np, ne));
+	shift = JSTR_MAX(shift, JSTR_PTR_DIFF(np, ne));
 	const size_t ne_len = strlen(ne + shift) + shift;
 	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
 	if (hs_len < ne_len)
@@ -823,13 +823,15 @@ jstr_strncasestr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
+	size_t nn = n;
 	for (cu *np = (cu *)ne;; ++np) {
+		if (jstr_unlikely(nn-- == 0))
+			return NULL;
 		if (*np == '\0')
 			return (char *)jstr_strnstr(hs, ne, n);
 		if (jstr_isalpha(*np))
 			break;
 	}
-
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
 	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift)
 	    || jstr_unlikely(n < shift))
@@ -862,14 +864,14 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(*hp == '\0'))
 		return NULL;
-	tmp = JSTR_PTR_DIFF(np, ne);
+	tmp = JSTR_MAX(JSTR_PTR_DIFF(np, ne), shift);
 	const size_t ne_len = strlen((char *)np) + tmp;
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
-	n = jstr_strnlen((char *)hp, n - tmp) + tmp;
-	if (jstr_unlikely(n < ne_len))
+	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
+	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	return pjstr_strcasestr_len_bmh(hs, n, ne, ne_len);
+	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 }
 
 /* Reverse of STRCSPN.
