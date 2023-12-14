@@ -1388,7 +1388,7 @@ JSTR_NOEXCEPT
 	return cnt;
 }
 
-/* This is vectorized at -O3 (GCC) and -O2 (clang). */
+/* This is vectorized at -O3 (GCC >= 4.7) and -O2 (clang >= 3.9). */
 
 /* Count occurences of C in S.
    Return value:
@@ -1402,7 +1402,7 @@ jstr_countchr_len(const char *s,
                   size_t sz)
 JSTR_NOEXCEPT
 {
-#if JSTR_GNUC_PREREQ(4, 1)
+#if JSTR_GNUC_PREREQ(4, 7) || !defined __AVX2__
 	size_t cnt = 0;
 	for (; sz--; cnt += *s == (char)c) {}
 	return cnt;
