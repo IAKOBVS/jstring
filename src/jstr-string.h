@@ -438,7 +438,7 @@ JSTR_NOEXCEPT
 	return memmem(hs, hs_len, ne, ne_len);
 #elif defined __AVX2__
 	if (ne_len >= sizeof(__m256i) * 2)
-		return (hs_len > ne_len) ? pjstr_memmem_bmh(hs, hs_len, ne, ne_len) : NULL;
+		return (hs_len >= ne_len) ? pjstr_memmem_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
@@ -703,7 +703,7 @@ JSTR_NOEXCEPT
 	}
 #ifdef __AVX2__
 	if (ne_len >= sizeof(__m256i) * 2)
-		return (hs_len > ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
+		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return (void *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
