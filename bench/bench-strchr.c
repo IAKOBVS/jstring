@@ -104,6 +104,8 @@ T_DEFINE_STRCHR(pjstr_strchrnul_avx2, buf, 'b')
 T_DEFINE_STRCHR(pjstr_memrchr_avx2, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(pjstr_strcasechrnul_avx2, buf, 'b')
 T_DEFINE_STRCHR(pjstr_memcasechr_avx2, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(pjstr_strnchr_avx2, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(pjstr_strncasechr_avx2, buf, 'b', BUFLEN)
 #endif
 T_DEFINE_STRCHR(simple_countchr, buf, 'b')
 T_DEFINE_STRCHR(simple_countchr_len, buf, 'b', BUFLEN)
@@ -137,6 +139,8 @@ main()
 	RUN(b_pjstr_memcasechr_avx2, 0);
 	RUN(b_pjstr_countchr_avx2, 0);
 	RUN(b_pjstr_countchr_len_avx2, 0);
+	RUN(b_pjstr_strncasechr_avx2, 0);
+	RUN(b_pjstr_strnchr_avx2, 0);
 #endif
 	RUN(b_simple_countchr, 0);
 	RUN(b_simple_countchr_len, 0);
