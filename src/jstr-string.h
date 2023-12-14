@@ -823,6 +823,8 @@ jstr_strncasestr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
+	if (jstr_unlikely(*ne == '\0'))
+		return (char *)hs;
 	size_t nn = n;
 	for (cu *np = (cu *)ne;; ++np) {
 		if (jstr_unlikely(nn-- == 0))
@@ -864,7 +866,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(*hp == '\0'))
 		return NULL;
-	tmp = JSTR_MAX(JSTR_PTR_DIFF(np, ne), shift);
+	tmp = JSTR_PTR_DIFF(np, ne);
 	const size_t ne_len = strlen((char *)np) + tmp;
 	if (jstr_unlikely(n < ne_len))
 		return NULL;
