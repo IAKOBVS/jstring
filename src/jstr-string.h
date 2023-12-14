@@ -435,6 +435,8 @@ JSTR_NOEXCEPT
 #if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
 #elif defined __AVX2__
+	if (ne_len >= sizeof(__m256i) * 2)
+		return (hs_len > ne_len) ? pjstr_memmem_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
@@ -685,10 +687,10 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static void *
-jstr_memcasemem(const void *hs,
-                size_t hs_len,
-                const void *ne,
-                size_t ne_len)
+jstr_strcasestr_len(const char *hs,
+                    size_t hs_len,
+                    const char *ne,
+                    size_t ne_len)
 JSTR_NOEXCEPT
 {
 	for (size_t n = 0;; ++n) {
@@ -698,8 +700,12 @@ JSTR_NOEXCEPT
 			break;
 	}
 #ifdef __AVX2__
-	return (char *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
+	if (ne_len >= sizeof(__m256i) * 2)
+		return (hs_len > ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
+	return (void *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
 #else
+	if (jstr_unlikely(ne_len == 0))
+		return (void *)hs;
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
@@ -707,13 +713,13 @@ JSTR_NOEXCEPT
 		return NULL;
 	cu *rare = (cu *)jstr_rarebytefindprefernonalpha_len(ne, ne_len);
 	unsigned int shift = JSTR_PTR_DIFF(rare, ne);
-	hs = (cu *)hs + shift;
+	hs += shift;
 	hs_len -= shift;
 	const void *const start = hs;
-	hs = (const void *)jstr_memcasechr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	hs = (const char *)jstr_memcasechr(hs, *rare, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
-	hs = (cu *)hs - shift;
+	hs -= shift;
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
@@ -723,23 +729,6 @@ JSTR_NOEXCEPT
 		return NULL;
 	return pjstr_strcasestr_len_bmh((char *)hs, hs_len, (char *)ne, ne_len);
 #endif
-}
-
-/* Find NE in HS case-insensitively (ASCII).
-   Return value:
-   Pointer to NE;
-   NULL if not found. */
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-static char *
-jstr_strcasestr_len(const char *hs,
-                    size_t hs_len,
-                    const char *ne,
-                    size_t ne_len)
-JSTR_NOEXCEPT
-{
-	return (char *)jstr_memcasemem(hs, hs_len, ne, ne_len);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
