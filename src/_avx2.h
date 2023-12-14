@@ -83,11 +83,9 @@ static char *
 pjstr_stpcpy_avx2(char *JSTR_RESTRICT dst,
                   const char *JSTR_RESTRICT src)
 {
-	while (JSTR_PTR_IS_NOT_ALIGNED(dst, sizeof(__m256i))) {
-		*dst++ = *src++;
-		if (jstr_unlikely(*src == '\0'))
+	while (JSTR_PTR_IS_NOT_ALIGNED(dst, sizeof(__m256i)))
+		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
-	}
 	if (JSTR_PTR_IS_ALIGNED(src, sizeof(__m256i)))
 		return pjstr_stpcpy_avx2_aligned(dst, src);
 	return pjstr_stpcpy_avx2_unaligned_src(dst, src);
