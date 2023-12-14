@@ -603,9 +603,11 @@ JSTR_NOEXCEPT
 		return NULL;
 #if JSTR_USE_STANDARD_MEMMEM
 	return (char *)memmem(hs, hs_len, ne, ne_len);
-#elif defined __AVX2__
-	return (char *)pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
 #else
+#	if defined __AVX2__
+	if (jstr_unlikely(ne_len >= sizeof(__m256i) * 2))
+		return (char *)pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
+#	endif
 	return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
 }
@@ -704,7 +706,7 @@ JSTR_NOEXCEPT
 			break;
 	}
 #ifdef __AVX2__
-	if (ne_len >= sizeof(__m256i) * 2)
+	if (jstr_unlikely(ne_len >= sizeof(__m256i) * 2))
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return (void *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
 #else
