@@ -29,8 +29,8 @@ PJSTR_BEGIN_DECLS
 #include <stddef.h>
 PJSTR_END_DECLS
 
-#define jstr(j)         &(j)->data, &(j)->size, &(j)->capacity
-#define jstr_literal(s) (s), sizeof(s) - 1
+#define jstr_struct(j)  &(j)->data, &(j)->size, &(j)->capacity
+#define jstr_literal(s) (s), (sizeof(s) - 1)
 #define jstr_literal_init(s)    \
 	{                       \
 		jstr_literal(s) \

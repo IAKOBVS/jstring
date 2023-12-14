@@ -49,12 +49,12 @@
 		*(result).data = '\0';            \
 	} while (0)
 
-#define FILL(result, str) assert(!jstr_chk(jstr_assign_len(JSTR_STRUCT(&(result)), str, strlen(str))))
+#define FILL(result, str) assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str))))
 
 #define T_RPLC_INIT(buf, str, str_len)                                               \
 	do {                                                                         \
 		jstr_empty(buf.data, &buf.size);                                     \
-		assert(!jstr_chk(jstr_assign_len(JSTR_STRUCT(&buf), str, str_len))); \
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&buf), str, str_len))); \
 		assert(buf.size == str_len);                                         \
 		assert(!memcmp(buf.data, str, str_len));                             \
 	} while (0)
@@ -295,35 +295,35 @@ main(int argc, char **argv)
 
 	/* jstr-builder tests. */
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_cat, JSTR_STRUCT(&result), "hello", " ", "world", NULL);
+	T_APPEND(JSTR_RET_SUCC, jstr_cat, jstr_struct(&result), "hello", " ", "world", NULL);
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_append_len, JSTR_STRUCT(&result), expected, strlen(expected));
+	T_APPEND(JSTR_RET_SUCC, jstr_append_len, jstr_struct(&result), expected, strlen(expected));
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_prepend_len, JSTR_STRUCT(&result), expected, strlen(expected));
+	T_APPEND(JSTR_RET_SUCC, jstr_prepend_len, jstr_struct(&result), expected, strlen(expected));
 	expected = "hello world";
-	T_APPEND(JSTR_RET_SUCC, jstr_assign_len, JSTR_STRUCT(&result), expected, strlen(expected));
+	T_APPEND(JSTR_RET_SUCC, jstr_assign_len, jstr_struct(&result), expected, strlen(expected));
 
 	/* jstr-replace tests. */
 	FILL(result, "hello hello hello hello");
 	find = "hello";
 	rplc = "world";
 	expected = "world hello hello hello";
-	T_APPEND_NORET(jstr_rplc_len, JSTR_STRUCT(&result), find, strlen(find), rplc, strlen(rplc));
+	T_APPEND_NORET(jstr_rplc_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
 	FILL(result, "hello hello hello hello");
 	find = "hello";
 	rplc = "world";
 	expected = "world world world world";
-	T_APPEND_NORET(jstr_rplcall_len, JSTR_STRUCT(&result), find, strlen(find), rplc, strlen(rplc));
+	T_APPEND_NORET(jstr_rplcall_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
 	FILL(result, "hello hello hello hello");
 	find = "hello";
 	rplc = "";
 	expected = "   ";
-	T_APPEND_NORET(jstr_rplcall_len, JSTR_STRUCT(&result), find, strlen(find), rplc, strlen(rplc));
+	T_APPEND_NORET(jstr_rplcall_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
 	FILL(result, "hello hello hello hello");
 	find = "hello";
 	rplc = "";
 	expected = "   ";
-	T_APPEND_NORET(jstr_rplcall_len, JSTR_STRUCT(&result), find, strlen(find), rplc, strlen(rplc));
+	T_APPEND_NORET(jstr_rplcall_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
 	FILL(result, "hello hello hello hello");
 	find = "[0-9A-Za-z]*";
 	rplc = "";
@@ -331,22 +331,22 @@ main(int argc, char **argv)
 
 	/* jstr-regex tests. */
 	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
-	T_APPEND_NORET(jstrre_rplcall_len, &preg, JSTR_STRUCT(&result), rplc, strlen(rplc), 0);
+	T_APPEND_NORET(jstrre_rplcall_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0);
 	jstrre_free(&preg);
 	FILL(result, "hello hello hello hello");
 	find = "\\([0-9A-Za-z]*\\)";
 	rplc = "\\1\\1";
 	expected = "hellohello hellohello hellohello hellohello";
 	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
-	T_APPEND_NORET(jstrre_rplcall_bref_len, &preg, JSTR_STRUCT(&result), rplc, strlen(rplc), 0, 2);
+	T_APPEND_NORET(jstrre_rplcall_bref_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0, 2);
 
 	jstr_empty(result.data, &result.size);
-	T(jstr_cat(JSTR_STRUCT(&result), "hello", " world", NULL), "hello world");
-	T(jstr_cat(JSTR_STRUCT(&result), "a", "b", NULL), "hello worldab");
-	T(jstr_asprintf(JSTR_STRUCT(&result), "%s", "c"), "c");
-	T(jstr_asprintf_append(JSTR_STRUCT(&result), "%s", "z"), "cz");
-	T(jstr_assign_len(JSTR_STRUCT(&result), "hello", strlen("hello")), "hello");
-	T(jstr_append_len(JSTR_STRUCT(&result), " world", strlen(" world")), "hello world");
+	T(jstr_cat(jstr_struct(&result), "hello", " world", NULL), "hello world");
+	T(jstr_cat(jstr_struct(&result), "a", "b", NULL), "hello worldab");
+	T(jstr_asprintf(jstr_struct(&result), "%s", "c"), "c");
+	T(jstr_asprintf_append(jstr_struct(&result), "%s", "z"), "cz");
+	T(jstr_assign_len(jstr_struct(&result), "hello", strlen("hello")), "hello");
+	T(jstr_append_len(jstr_struct(&result), " world", strlen(" world")), "hello world");
 	jstr_empty(result.data, &result.size);
 	T_P(result.size = JSTR_PTR_DIFF(jstr_pushback_unsafe_p(result.data, result.size, 'k'), result.data), "k");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_pushfront_unsafe_p(result.data, result.size, 'l'), result.data), "lk");
@@ -355,7 +355,7 @@ main(int argc, char **argv)
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "");
-	T(jstr_assign_len(JSTR_STRUCT(&result), "hello", strlen("hello")), "hello");
+	T(jstr_assign_len(jstr_struct(&result), "hello", strlen("hello")), "hello");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "hell");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "hel");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "el");
