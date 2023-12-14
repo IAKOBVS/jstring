@@ -442,12 +442,12 @@ JSTR_NOEXCEPT
 	return pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
-	enum { VERY_LONG_NE_THRES = 100 };
+	enum { LONG_NE_THRES = 64 };
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
-	if (jstr_unlikely(ne_len >= VERY_LONG_NE_THRES))
+	if (jstr_unlikely(ne_len > LONG_NE_THRES))
 		goto MEMMEM;
 	cu *rare;
 	rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
@@ -605,7 +605,7 @@ JSTR_NOEXCEPT
 	return (char *)memmem(hs, hs_len, ne, ne_len);
 #else
 #	if defined __AVX2__
-	if (jstr_unlikely(ne_len >= sizeof(__m256i) * 2))
+	if (jstr_unlikely(ne_len > sizeof(__m256i) * 2))
 		return (char *)pjstr_memmem_avx2(hs, hs_len, ne, ne_len);
 #	endif
 	return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
@@ -706,7 +706,7 @@ JSTR_NOEXCEPT
 			break;
 	}
 #ifdef __AVX2__
-	if (jstr_unlikely(ne_len >= sizeof(__m256i) * 2))
+	if (jstr_unlikely(ne_len > sizeof(__m256i) * 2))
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return (void *)pjstr_strcasestr_len_avx2(hs, hs_len, ne, ne_len);
 #else
