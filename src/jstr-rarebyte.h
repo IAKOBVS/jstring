@@ -132,7 +132,7 @@ jstr_rarebytefindcase_len(const void *ne,
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_rarebytefindeither(const void *ne)
+jstr_rarebytefindprefernonalpha(const void *ne)
 {
 	const unsigned char *rare = (const unsigned char *)ne;
 	const unsigned char *rare_backup = (const unsigned char *)ne;
@@ -158,7 +158,7 @@ jstr_rarebytefindeither(const void *ne)
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_rarebytefindeither_len(const void *ne,
+jstr_rarebytefindprefernonalpha_len(const void *ne,
                             size_t n)
 {
 	const unsigned char *rare = (const unsigned char *)ne;

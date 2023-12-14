@@ -187,7 +187,7 @@ JSTR_NOEXCEPT
 #if __AVX2__
 	return pjstr_memcasechr_avx2(s, c, n);
 #else
-	return jstr_isalpha(c) ? pjstr_memcasechr_musl(s, c, n) : (char *)memchr(s, c, n);
+	return pjstr_memcasechr_musl(s, c, n);
 #endif
 }
 
@@ -705,7 +705,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
+	cu *rare = (cu *)jstr_rarebytefindprefernonalpha_len(ne, ne_len);
 	unsigned int shift = JSTR_PTR_DIFF(rare, ne);
 	hs = (cu *)hs + shift;
 	hs_len -= shift;
@@ -780,7 +780,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
+	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindprefernonalpha(ne), ne);
 	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
 		return NULL;
 	hs = jstr_strcasechr(hs + shift, *(ne + shift));
@@ -840,7 +840,7 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(*np))
 			break;
 	}
-	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
+	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindprefernonalpha(ne), ne);
 	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift)
 	    || jstr_unlikely(n < shift))
 		return NULL;
