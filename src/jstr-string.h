@@ -789,6 +789,12 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
 	if (ne[8] == '\0')
 		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
+	const char *hp = hs, *np = ne;
+	for (; jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np) {}
+	if (*np == '\0')
+		return (char *)hs;
+	if (jstr_unlikely(*hp == '\0'))
+		return NULL;
 	const size_t ne_len = strlen(ne + shift) + shift;
 	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
 	if (hs_len < ne_len)
@@ -1399,7 +1405,7 @@ JSTR_NOEXCEPT
 {
 #if JSTR_GNUC_PREREQ(4, 7) || !defined __AVX2__
 	size_t cnt = 0;
-	for (; sz--; cnt += *s == (char)c) {}
+	for (; sz--; cnt += *s++ == (char)c) {}
 	return cnt;
 #else
 	return pjstr_countchr_len_avx2(s, c, sz);
