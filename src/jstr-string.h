@@ -1388,6 +1388,8 @@ JSTR_NOEXCEPT
 	return cnt;
 }
 
+/* This is vectorized at -O3 (GCC) and -O2 (clang). */
+
 /* Count occurences of C in S.
    Return value:
    Occurences of C in S. */
@@ -1400,10 +1402,13 @@ jstr_countchr_len(const char *s,
                   size_t sz)
 JSTR_NOEXCEPT
 {
+#if JSTR_GNUC_PREREQ(4, 1)
 	size_t cnt = 0;
-	const char *const end = s + sz;
-	for (; (s = (const char *)memchr(s, c, JSTR_PTR_DIFF(end, s))); ++s, ++cnt) {}
+	for (; sz--; cnt += *s == (char)c) {}
 	return cnt;
+#else
+	return pjstr_countchr_len_avx2(s, c, sz);
+#endif
 }
 
 /* Count occurences of NE in HS.

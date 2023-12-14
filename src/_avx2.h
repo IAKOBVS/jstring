@@ -290,22 +290,21 @@ pjstr_countchr_len_avx2(const void *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i)); ++p) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(__m256i)); ) {
 		if (jstr_unlikely(n-- == 0))
 			return cnt;
-		if (*p == (unsigned char)c)
-			++cnt;
+		cnt += *p++ == (unsigned char)c;
 	}
 	const __m256i cv = _mm256_set1_epi8((char)c);
-	__m256i sv0;
-	uint32_t m0;
+	__m256i sv;
+	uint32_t m;
 	for (; n >= sizeof(__m256i); n -= sizeof(__m256i), p += sizeof(__m256i)) {
-		sv0 = _mm256_load_si256((const __m256i *)p);
-		m0 = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv0, cv));
-		cnt = m0 ? (unsigned int)_mm_popcnt_u32(m0) : 0;
+		sv = _mm256_load_si256((const __m256i *)p);
+		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
+		cnt += m ? (unsigned int)_mm_popcnt_u32(m) : 0;
 	}
 	while (n--)
-		cnt += (*p++ == (unsigned char)c);
+		cnt += *p++ == (unsigned char)c;
 	return cnt;
 }
 

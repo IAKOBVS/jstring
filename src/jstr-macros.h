@@ -81,15 +81,13 @@ PJSTR_END_DECLS
 #ifdef __GLIBC_PREREQ
 #	define JSTR_GLIBC_PREREQ(maj, min) __GLIBC_PREREQ(maj, min)
 #elif defined __GLIBC__
-#	define JSTR_GLIBC_PREREQ(maj, min) \
-		((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
+#	define JSTR_GLIBC_PREREQ(maj, min) ((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
 #endif
 
 #ifdef __GNUC_PREREQ
 #	define JSTR_GNUC_PREREQ(maj, min) __GNUC_PREREQ(maj, min)
 #elif defined __GNUC__
-#	define JSTR_GNUC_PREREQ(maj, min) \
-		((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#	define JSTR_GNUC_PREREQ(maj, min) ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
 #endif
 
 #if JSTR_ENV_BSD
