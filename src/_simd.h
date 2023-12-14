@@ -31,9 +31,11 @@ PJSTR_BEGIN_DECLS
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
 
+/* If AVX2 is not available, use SSE. */
+
 #ifdef __AVX2__
 #	include <immintrin.h>
-typedef __m256i VEC;
+typedef __m256i jstr_vec_ty;
 #	define MASK             uint32_t
 #	define LOAD(x)          _mm256_load_si256(x)
 #	define LOADU(x)         _mm256_loadu_si256(x)
@@ -49,7 +51,7 @@ typedef __m256i VEC;
 #	define LZCNT(x)         _lzcnt_u32(x)
 #else
 #	include <emmintrin.h>
-typedef __m128i VEC;
+typedef __m128i jstr_vec_ty;
 #	define MASK             uint16_t
 #	define LOAD(x)          _mm_load_si128(x)
 #	define LOADU(x)         _mm_loadu_si128(x)
@@ -66,7 +68,7 @@ typedef __m128i VEC;
 #		define TZCNT(x) __builtin_ia32_tzcnt_u16(x)
 #	endif
 #endif
-#define VEC      VEC
+#define VEC      jstr_vec_ty
 #define VEC_SIZE sizeof(VEC)
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
