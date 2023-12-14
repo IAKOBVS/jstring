@@ -45,7 +45,7 @@ pjstr_stpcpy_avx2_aligned(char *JSTR_RESTRICT dst,
 	uint32_t zm;
 	for (;; src += sizeof(__m256i), dst += sizeof(__m256i)) {
 		sv = _mm256_load_si256((const __m256i *)src);
-		zm = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
 		if (zm)
 			break;
 		_mm256_store_si256((__m256i *)dst, sv);
@@ -67,7 +67,7 @@ pjstr_stpcpy_avx2_unaligned_src(char *JSTR_RESTRICT dst,
 	uint32_t zm;
 	for (;; src += sizeof(__m256i), dst += sizeof(__m256i)) {
 		sv = _mm256_loadu_si256((const __m256i *)src);
-		zm = _mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
+		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
 		if (zm)
 			break;
 		_mm256_store_si256((__m256i *)dst, sv);
