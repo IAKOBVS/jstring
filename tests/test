@@ -68,10 +68,8 @@ fi
 
 for file in $files; do
 	out_file=${file%.*}
-	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=1 $FLAGS &
-	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=0 $FLAGS &
-	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=0 -DJSTR_USE_LGPL=1 $FLAGS &
-	compile "$file" "$tmp$out_file" -DJSTR_HAVE_ATTR_MAY_ALIAS=1 -DJSTR_USE_LGPL=0 $FLAGS &
+	compile "$file" "$tmp$out_file" -DJSTR_USE_LGPL=1 $FLAGS &
+	compile "$file" "$tmp$out_file" -DJSTR_USE_LGPL=0 $FLAGS &
 done
 wait
 
