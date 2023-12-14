@@ -33,7 +33,7 @@ PJSTR_BEGIN_DECLS
 
 #ifdef __AVX2__
 #	include <immintrin.h>
-typedef __m256i jstr_vec_ty;
+typedef __m256i VEC;
 #	define MASK             uint32_t
 #	define LOAD(x)          _mm256_load_si256(x)
 #	define LOADU(x)         _mm256_loadu_si256(x)
@@ -49,7 +49,7 @@ typedef __m256i jstr_vec_ty;
 #	define LZCNT(x)         _lzcnt_u32(x)
 #else
 #	include <emmintrin.h>
-typedef __m128i jstr_vec_ty;
+typedef __m128i VEC;
 #	define MASK             uint16_t
 #	define LOAD(x)          _mm_load_si128(x)
 #	define LOADU(x)         _mm_loadu_si128(x)
@@ -66,7 +66,7 @@ typedef __m128i jstr_vec_ty;
 #		define TZCNT(x) __builtin_ia32_tzcnt_u16(x)
 #	endif
 #endif
-#define VEC      jstr_vec_ty
+#define VEC      VEC
 #define VEC_SIZE sizeof(VEC)
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
@@ -76,15 +76,15 @@ static char *
 pjstr_stpcpy_simd_aligned(char *JSTR_RESTRICT dst,
                           const char *JSTR_RESTRICT src)
 {
-	jstr_vec_ty sv;
-	const jstr_vec_ty zv = SETZERO();
+	VEC sv;
+	const VEC zv = SETZERO();
 	uint32_t zm;
-	for (;; src += sizeof(jstr_vec_ty), dst += sizeof(jstr_vec_ty)) {
-		sv = LOAD((const jstr_vec_ty *)src);
+	for (;; src += VEC_SIZE, dst += VEC_SIZE) {
+		sv = LOAD((const VEC *)src);
 		zm = (uint32_t)MOVEMASK8(CMPEQ8(sv, zv));
 		if (zm)
 			break;
-		STORE((jstr_vec_ty *)dst, sv);
+		STORE((VEC *)dst, sv);
 	}
 	while ((*dst++ = *src++))
 		;
@@ -98,15 +98,15 @@ static char *
 pjstr_stpcpy_simd_unaligned_src(char *JSTR_RESTRICT dst,
                                 const char *JSTR_RESTRICT src)
 {
-	jstr_vec_ty sv;
-	const jstr_vec_ty zv = SETZERO();
+	VEC sv;
+	const VEC zv = SETZERO();
 	uint32_t zm;
-	for (;; src += sizeof(jstr_vec_ty), dst += sizeof(jstr_vec_ty)) {
-		sv = LOADU((const jstr_vec_ty *)src);
+	for (;; src += VEC_SIZE, dst += VEC_SIZE) {
+		sv = LOADU((const VEC *)src);
 		zm = (uint32_t)MOVEMASK8(CMPEQ8(sv, zv));
 		if (zm)
 			break;
-		STORE((jstr_vec_ty *)dst, sv);
+		STORE((VEC *)dst, sv);
 	}
 	while ((*dst++ = *src++))
 		;
@@ -119,10 +119,10 @@ static char *
 pjstr_stpcpy_simd(char *JSTR_RESTRICT dst,
                   const char *JSTR_RESTRICT src)
 {
-	while (JSTR_PTR_IS_NOT_ALIGNED(dst, sizeof(jstr_vec_ty)))
+	while (JSTR_PTR_IS_NOT_ALIGNED(dst, VEC_SIZE))
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
-	if (JSTR_PTR_IS_ALIGNED(src, sizeof(jstr_vec_ty)))
+	if (JSTR_PTR_IS_ALIGNED(src, VEC_SIZE))
 		return pjstr_stpcpy_simd_aligned(dst, src);
 	return pjstr_stpcpy_simd_unaligned_src(dst, src);
 }
@@ -148,7 +148,7 @@ pjstr_strncasechr_simd(const char *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(jstr_vec_ty)); ++p) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); ++p) {
 		if (jstr_unlikely(n-- == 0) || jstr_unlikely(*p == '\0'))
 			return NULL;
 		if (jstr_unlikely(jstr_tolower(*p) == c))
@@ -156,12 +156,12 @@ pjstr_strncasechr_simd(const char *s,
 	}
 	const unsigned char *const end = p + n;
 	uint32_t hm0, hm1, m, zm;
-	jstr_vec_ty sv;
-	const jstr_vec_ty cv0 = SET18((char)c);
-	const jstr_vec_ty cv1 = SET18((char)jstr_toupper(c));
-	const jstr_vec_ty zv = SETZERO();
-	for (;; p += sizeof(jstr_vec_ty)) {
-		sv = LOAD((const jstr_vec_ty *)p);
+	VEC sv;
+	const VEC cv0 = SET18((char)c);
+	const VEC cv1 = SET18((char)jstr_toupper(c));
+	const VEC zv = SETZERO();
+	for (;; p += VEC_SIZE) {
+		sv = LOAD((const VEC *)p);
 		hm0 = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv0));
 		hm1 = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv1));
 		zm = (uint32_t)MOVEMASK8(CMPEQ8(sv, zv));
@@ -182,7 +182,7 @@ pjstr_strnchr_simd(const char *s,
                    int c,
                    size_t n)
 {
-	for (; JSTR_PTR_IS_NOT_ALIGNED(s, sizeof(jstr_vec_ty)); ++s) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(s, VEC_SIZE); ++s) {
 		if (jstr_unlikely(n-- == 0) || jstr_unlikely(*s == '\0'))
 			return NULL;
 		if (jstr_unlikely(*s == (char)c))
@@ -190,11 +190,11 @@ pjstr_strnchr_simd(const char *s,
 	}
 	const char *const end = s + n;
 	uint32_t hm, m, zm;
-	jstr_vec_ty sv;
-	const jstr_vec_ty cv = SET18((char)c);
-	const jstr_vec_ty zv = SETZERO();
-	for (;; s += sizeof(jstr_vec_ty)) {
-		sv = LOAD((const jstr_vec_ty *)s);
+	VEC sv;
+	const VEC cv = SET18((char)c);
+	const VEC zv = SETZERO();
+	for (;; s += VEC_SIZE) {
+		sv = LOAD((const VEC *)s);
 		hm = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
 		zm = (uint32_t)MOVEMASK8(CMPEQ8(sv, zv));
 		m = hm | zm;
@@ -213,15 +213,15 @@ static char *
 pjstr_strchrnul_simd(const char *s,
                      int c)
 {
-	for (; JSTR_PTR_IS_NOT_ALIGNED(s, sizeof(jstr_vec_ty)); ++s)
+	for (; JSTR_PTR_IS_NOT_ALIGNED(s, VEC_SIZE); ++s)
 		if (jstr_unlikely(*s == '\0') || *s == (char)c)
 			return (char *)s;
 	uint32_t m, m1, zm;
-	jstr_vec_ty sv;
-	const jstr_vec_ty cv = SET18((char)c);
-	const jstr_vec_ty zv = SETZERO();
-	for (;; s += sizeof(jstr_vec_ty)) {
-		sv = LOAD((const jstr_vec_ty *)s);
+	VEC sv;
+	const VEC cv = SET18((char)c);
+	const VEC zv = SETZERO();
+	for (;; s += VEC_SIZE) {
+		sv = LOAD((const VEC *)s);
 		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
 		zm = (uint32_t)MOVEMASK8(CMPEQ8(sv, zv));
 		m1 = m | zm;
@@ -249,16 +249,16 @@ pjstr_strcasechrnul_simd(const char *s,
 	}
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(jstr_vec_ty)); ++p)
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); ++p)
 		if (jstr_unlikely(*p == '\0') || jstr_tolower(*p) == c)
 			return (char *)p;
 	uint32_t m, m1, m2, zm;
-	jstr_vec_ty sv;
-	const jstr_vec_ty cv0 = SET18((char)c);
-	const jstr_vec_ty cv1 = SET18((char)jstr_toupper(c));
-	const jstr_vec_ty zv = SETZERO();
-	for (;; p += sizeof(jstr_vec_ty)) {
-		sv = LOAD((const jstr_vec_ty *)p);
+	VEC sv;
+	const VEC cv0 = SET18((char)c);
+	const VEC cv1 = SET18((char)jstr_toupper(c));
+	const VEC zv = SETZERO();
+	for (;; p += VEC_SIZE) {
+		sv = LOAD((const VEC *)p);
 		zm = (uint32_t)MOVEMASK8(CMPEQ8(sv, zv));
 		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv0));
 		m1 = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv1));
@@ -294,18 +294,18 @@ pjstr_memcasechr_simd(const void *s,
 	c = jstr_tolower(c);
 	const unsigned char *p = (const unsigned char *)s;
 	const unsigned char *const end = p + n;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(jstr_vec_ty)); ++p) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); ++p) {
 		if (jstr_unlikely(p >= end))
 			return NULL;
 		if (jstr_tolower(*p) == c)
 			return (void *)p;
 	}
 	uint32_t m, m1, m2;
-	jstr_vec_ty sv;
-	const jstr_vec_ty cv = SET18((char)c);
-	const jstr_vec_ty cv1 = SET18((char)jstr_toupper(c));
-	for (; p < end; p += sizeof(jstr_vec_ty)) {
-		sv = LOAD((const jstr_vec_ty *)p);
+	VEC sv;
+	const VEC cv = SET18((char)c);
+	const VEC cv1 = SET18((char)jstr_toupper(c));
+	for (; p < end; p += VEC_SIZE) {
+		sv = LOAD((const VEC *)p);
 		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
 		m1 = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv1));
 		m2 = m | m1;
@@ -337,7 +337,7 @@ pjstr_memrchr_simd(const void *s,
 	if (jstr_unlikely(n == 0))
 		return NULL;
 	const unsigned char *p = (unsigned char *)s + n;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(jstr_vec_ty));) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE);) {
 		--p;
 		if (jstr_unlikely(p < (unsigned char *)s))
 			return NULL;
@@ -345,11 +345,11 @@ pjstr_memrchr_simd(const void *s,
 			return (void *)p;
 	}
 	uint32_t m;
-	jstr_vec_ty sv;
-	const jstr_vec_ty cv = SET18((char)c);
+	VEC sv;
+	const VEC cv = SET18((char)c);
 	while (p >= (unsigned char *)s) {
-		p -= sizeof(jstr_vec_ty);
-		sv = LOAD((const jstr_vec_ty *)p);
+		p -= VEC_SIZE;
+		sv = LOAD((const VEC *)p);
 		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
 		if (m)
 			goto ret;
@@ -391,19 +391,19 @@ pjstr_memmem_simd(const void *hs,
 	if (shift == ne_len - 1)
 		--shift;
 	h += shift;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(h, sizeof(jstr_vec_ty)); ++h) {
+	for (; JSTR_PTR_IS_NOT_ALIGNED(h, VEC_SIZE); ++h) {
 		if (jstr_unlikely(h - shift > end))
 			return NULL;
 		if (*h == *((unsigned char *)ne + shift) && !memcmp(h - shift, ne, ne_len))
 			return (void *)(h - shift);
 	}
-	const jstr_vec_ty nv = SET18(*((char *)ne + shift));
-	const jstr_vec_ty nv1 = SET18(*((char *)ne + shift + 1));
-	jstr_vec_ty hv, hv1;
+	const VEC nv = SET18(*((char *)ne + shift));
+	const VEC nv1 = SET18(*((char *)ne + shift + 1));
+	VEC hv, hv1;
 	uint32_t i, hm0, hm1, m;
-	for (; h - shift <= end; h += sizeof(jstr_vec_ty)) {
-		hv = LOAD((const jstr_vec_ty *)h);
-		hv1 = LOADU((const jstr_vec_ty *)(h + 1));
+	for (; h - shift <= end; h += VEC_SIZE) {
+		hv = LOAD((const VEC *)h);
+		hv1 = LOADU((const VEC *)(h + 1));
 		hm0 = (uint32_t)MOVEMASK8(CMPEQ8(hv, nv));
 		hm1 = (uint32_t)MOVEMASK8(CMPEQ8(hv1, nv1));
 		m = hm0 & hm1;
@@ -442,22 +442,22 @@ pjstr_strcasestr_len_simd(const char *hs,
 		--shift;
 	h += shift;
 	for (const int c = jstr_tolower(*((unsigned char *)ne + shift));
-	     JSTR_PTR_IS_NOT_ALIGNED(h, sizeof(jstr_vec_ty));
+	     JSTR_PTR_IS_NOT_ALIGNED(h, VEC_SIZE);
 	     ++h) {
 		if (jstr_unlikely(h - shift > end))
 			return NULL;
 		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((const char *)h - shift, (const char *)ne, ne_len))
 			return (char *)(h - shift);
 	}
-	const jstr_vec_ty nv = SET18((char)jstr_tolower(*((unsigned char *)ne + shift)));
-	const jstr_vec_ty nv1 = SET18((char)jstr_toupper(*((unsigned char *)ne + shift)));
-	const jstr_vec_ty nv2 = SET18((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
-	const jstr_vec_ty nv3 = SET18((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
-	jstr_vec_ty hv, hv1;
+	const VEC nv = SET18((char)jstr_tolower(*((unsigned char *)ne + shift)));
+	const VEC nv1 = SET18((char)jstr_toupper(*((unsigned char *)ne + shift)));
+	const VEC nv2 = SET18((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
+	const VEC nv3 = SET18((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
+	VEC hv, hv1;
 	uint32_t i, hm0, hm1, hm2, hm3, m;
-	for (; h - shift <= end; h += sizeof(jstr_vec_ty)) {
-		hv = LOAD((const jstr_vec_ty *)h);
-		hv1 = LOADU((const jstr_vec_ty *)(h + 1));
+	for (; h - shift <= end; h += VEC_SIZE) {
+		hv = LOAD((const VEC *)h);
+		hv1 = LOADU((const VEC *)(h + 1));
 		hm0 = (uint32_t)MOVEMASK8(CMPEQ8(hv, nv));
 		hm1 = (uint32_t)MOVEMASK8(CMPEQ8(hv, nv1));
 		hm2 = (uint32_t)MOVEMASK8(CMPEQ8(hv1, nv2));
@@ -492,16 +492,16 @@ pjstr_countchr_simd(const void *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(jstr_vec_ty)); cnt += *p++ == (unsigned char)c)
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(*p == '\0'))
 			return cnt;
-	const jstr_vec_ty cv = SET18((char)c);
-	const jstr_vec_ty zv = SETZERO();
-	jstr_vec_ty sv;
+	const VEC cv = SET18((char)c);
+	const VEC zv = SETZERO();
+	VEC sv;
 	uint32_t m, zm;
 	unsigned int cnt0;
-	for (;; p += sizeof(jstr_vec_ty), cnt += cnt0) {
-		sv = LOAD((const jstr_vec_ty *)p);
+	for (;; p += VEC_SIZE, cnt += cnt0) {
+		sv = LOAD((const VEC *)p);
 		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
 		zm = (uint32_t)MOVEMASK8(CMPEQ8(sv, zv));
 		cnt0 = m ? (unsigned int)POPCNT(m) : 0;
@@ -522,14 +522,14 @@ pjstr_countchr_len_simd(const void *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, sizeof(jstr_vec_ty)); cnt += *p++ == (unsigned char)c)
+	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(n-- == 0))
 			return cnt;
-	const jstr_vec_ty cv = SET18((char)c);
-	jstr_vec_ty sv;
+	const VEC cv = SET18((char)c);
+	VEC sv;
 	uint32_t m;
-	for (; n >= sizeof(jstr_vec_ty); n -= sizeof(jstr_vec_ty), p += sizeof(jstr_vec_ty)) {
-		sv = LOAD((const jstr_vec_ty *)p);
+	for (; n >= VEC_SIZE; n -= VEC_SIZE, p += VEC_SIZE) {
+		sv = LOAD((const VEC *)p);
 		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
 		cnt += m ? (unsigned int)POPCNT(m) : 0;
 	}
