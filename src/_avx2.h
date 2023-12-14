@@ -56,9 +56,11 @@ pjstr_strnchr_avx2(const char *s,
 		m = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, cv));
 		zm = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(sv, zv));
 		m1 = m | zm;
-		if (m1 | (s < end))
+		if (m1 | (s >= end))
 			break;
 	}
+	if (s >= end)
+		return NULL;
 	m = _tzcnt_u32(m1);
 	return s + m < end ? (char *)s + m : NULL;
 }

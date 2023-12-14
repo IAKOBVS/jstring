@@ -248,7 +248,11 @@ jstr_strnchr(const char *s,
              size_t n)
 JSTR_NOEXCEPT
 {
+#ifdef __AVX2__
+	return pjstr_strnchr_avx2(s, c, n);
+#else
 	return pjstr_strnchr_musl(s, c, n);
+#endif
 }
 
 /* strcasechr() before s + N. */

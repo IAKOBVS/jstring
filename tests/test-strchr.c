@@ -181,6 +181,9 @@ simple_countchr(const char *s,
 			result = pjstr_memcasechr_avx2(s, c, n);                                            \
 			expected = simple_memcasechr(s, c, n);                                              \
 			T_ASSERT(pjstr_memcasechr_avx2, result == expected, result, expected, s, c, n);     \
+			result = pjstr_strnchr_avx2(s, c, n);                                               \
+			expected = simple_strnchr(s, c, n);                                                 \
+			T_ASSERT(pjstr_strnchr_avx2, result == expected, result, expected, s, c, n);        \
 			result_len = pjstr_countchr_avx2(s, c);                                             \
 			expected_len = simple_countchr(s, c);                                               \
 			TCOUNT_ASSERT(pjstr_countchr_avx2, result_len == expected_len, s, c, -1);           \
@@ -199,12 +202,12 @@ simple_countchr(const char *s,
 			size_t result_len, expected_len;                                              \
 			const char *result, *expected, *p = aligncpy(s, sizeof(s), (size_t)align);    \
 			size_t p_len = strlen(p);                                                     \
-			result = jstr_memrchr(p, c, p_len);                                           \
-			expected = simple_memrchr(p, c, p_len);                                       \
-			T_ASSERT(jstr_memrchr, result == expected, result, expected, p, c, p_len);    \
 			result = jstr_strnchr(p, c, p_len);                                           \
 			expected = simple_strnchr(p, c, p_len);                                       \
 			T_ASSERT(jstr_strnchr, result == expected, result, expected, p, c, -1);       \
+			result = jstr_memrchr(p, c, p_len);                                           \
+			expected = simple_memrchr(p, c, p_len);                                       \
+			T_ASSERT(jstr_memrchr, result == expected, result, expected, p, c, p_len);    \
 			result = jstr_strchrnul(p, c);                                                \
 			expected = simple_strchrnul(p, c);                                            \
 			T_ASSERT(jstr_strchrnul, result == expected, result, expected, p, c, -1);     \
