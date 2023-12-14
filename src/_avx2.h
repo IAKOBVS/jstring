@@ -250,7 +250,7 @@ pjstr_strcasestr_len_avx2(const void *hs,
 	     ++h) {
 		if (jstr_unlikely(h - shift > end))
 			return NULL;
-		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((char *)h - shift, (char *)ne, ne_len))
+		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((const char *)h - shift, (const char *)ne, ne_len))
 			return (void *)(h - shift);
 	}
 	const __m256i nv = _mm256_set1_epi8((char)jstr_tolower(*((unsigned char *)ne + shift)));
@@ -272,7 +272,7 @@ pjstr_strcasestr_len_avx2(const void *hs,
 			m4 = _blsr_u32(m4);
 			if (jstr_unlikely(h + i - shift > end))
 				return NULL;
-			if (!jstr_strcasecmpeq_len((char *)h + i - shift, (char *)ne, ne_len))
+			if (!jstr_strcasecmpeq_len((const char *)h + i - shift, (const char *)ne, ne_len))
 				return (char *)h + i - shift;
 		}
 	}
