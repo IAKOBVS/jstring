@@ -608,7 +608,7 @@ JSTR_NOEXCEPT
 #if JSTR_USE_STANDARD_MEMMEM
 	return (char *)memmem(hs, hs_len, ne, ne_len);
 #else
-#	if !JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (jstr_unlikely(ne_len > JSTR_VEC_SIZE * 2))
 		return (char *)pjstr_memmem_simd(hs, hs_len, ne, ne_len);
 #	endif
