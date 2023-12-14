@@ -264,7 +264,11 @@ jstr_strncasechr(const char *s,
                  size_t n)
 JSTR_NOEXCEPT
 {
+#ifdef __AVX2__
+	return pjstr_strncasechr_avx2(s, c, n);
+#else
 	return pjstr_strncasechr_musl(s, c, n);
+#endif
 }
 
 /* basename() for non nul-terminated strings. */

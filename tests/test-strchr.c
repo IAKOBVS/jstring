@@ -107,6 +107,15 @@ simple_strcasechr(const char *s,
 }
 
 static char *
+simple_strncasechr(const char *s,
+                   int c,
+                   size_t n)
+{
+	const char *p = simple_strcasechrnul(s, c);
+	return p < s + n && TOLOWER(*p) == TOLOWER(c) ? (char *)p : NULL;
+}
+
+static char *
 simple_memcasechr(const void *s,
                   int c,
                   size_t n)
@@ -184,6 +193,9 @@ simple_countchr(const char *s,
 			result = pjstr_strnchr_avx2(s, c, n);                                               \
 			expected = simple_strnchr(s, c, n);                                                 \
 			T_ASSERT(pjstr_strnchr_avx2, result == expected, result, expected, s, c, n);        \
+			result = pjstr_strncasechr_avx2(s, c, n);                                           \
+			expected = simple_strncasechr(s, c, n);                                             \
+			T_ASSERT(pjstr_strncasechr_avx2, result == expected, result, expected, s, c, n);    \
 			result_len = pjstr_countchr_avx2(s, c);                                             \
 			expected_len = simple_countchr(s, c);                                               \
 			TCOUNT_ASSERT(pjstr_countchr_avx2, result_len == expected_len, s, c, -1);           \
@@ -202,6 +214,9 @@ simple_countchr(const char *s,
 			size_t result_len, expected_len;                                              \
 			const char *result, *expected, *p = aligncpy(s, sizeof(s), (size_t)align);    \
 			size_t p_len = strlen(p);                                                     \
+			result = jstr_strncasechr(p, c, p_len);                                       \
+			expected = simple_strncasechr(p, c, p_len);                                   \
+			T_ASSERT(jstr_strncasechr, result == expected, result, expected, p, c, -1);   \
 			result = jstr_strnchr(p, c, p_len);                                           \
 			expected = simple_strnchr(p, c, p_len);                                       \
 			T_ASSERT(jstr_strnchr, result == expected, result, expected, p, c, -1);       \
