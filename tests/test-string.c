@@ -358,6 +358,7 @@ main(int argc, char **argv)
 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
 
 #ifdef __AVX2__
+	T_CPY(pjstr_stpcpy_avx2, simple_stpcpy, test_array_memmem);
 	T_LEN(pjstr_memmem_avx2, simple_memmem, test_array_memmem);
 	T_LEN(pjstr_strcasestr_len_avx2, simple_strcasestr_len, test_array_memmem);
 #endif
