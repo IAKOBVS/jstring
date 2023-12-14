@@ -61,6 +61,23 @@ simple_strcasechrnul_strcspn(const char *s,
 	return (char *)s + strcspn(s, a);
 }
 
+static size_t
+simple_countchr_len(const char *s,
+                    int c,
+                    size_t sz)
+{
+	size_t cnt = 0;
+	for (; sz--; cnt += *s++ == (char)c) {}
+	return cnt;
+}
+
+static size_t
+simple_countchr(const char *s,
+                int c)
+{
+	return simple_countchr_len(s, c, strlen(s));
+}
+
 #define T_SETUP(buf, BUFLEN)              \
 	do {                              \
 		memset(buf, 'a', BUFLEN); \
@@ -81,12 +98,15 @@ simple_strcasechrnul_strcspn(const char *s,
 	}
 
 #ifdef __AVX2__
+T_DEFINE_STRCHR(pjstr_countchr_avx2, buf, 'b')
+T_DEFINE_STRCHR(pjstr_countchr_len_avx2, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(pjstr_strchrnul_avx2, buf, 'b')
-T_DEFINE_STRCHR(pjstr_strchrnul_avx2_unroll, buf, 'b')
 T_DEFINE_STRCHR(pjstr_memrchr_avx2, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(pjstr_strcasechrnul_avx2, buf, 'b')
 T_DEFINE_STRCHR(pjstr_memcasechr_avx2, buf, 'b', BUFLEN)
 #endif
+T_DEFINE_STRCHR(simple_countchr, buf, 'b')
+T_DEFINE_STRCHR(simple_countchr_len, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(simple_strcasechrnul_strcspn, buf, 'b')
 T_DEFINE_STRCHR(jstr_strchrnul, buf, 'b')
 T_DEFINE_STRCHR(simple_strchrnul, buf, 'b')
@@ -113,10 +133,13 @@ main()
 #ifdef __AVX2__
 	RUN(b_pjstr_strcasechrnul_avx2, 0);
 	RUN(b_pjstr_strchrnul_avx2, 0);
-	RUN(b_pjstr_strchrnul_avx2_unroll, 0);
 	RUN(b_pjstr_memrchr_avx2, 0);
 	RUN(b_pjstr_memcasechr_avx2, 0);
+	RUN(b_pjstr_countchr_avx2, 0);
+	RUN(b_pjstr_countchr_len_avx2, 0);
 #endif
+	RUN(b_simple_countchr, 0);
+	RUN(b_simple_countchr_len, 0);
 	RUN(b_pjstr_strchrnul_musl, 0);
 	RUN(b_pjstr_strcasechrnul_musl, 0);
 	RUN(b_pjstr_memcasechr_musl, 0);
