@@ -382,7 +382,7 @@ JSTR_NOEXCEPT
 #if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (ne_len > sizeof(jstr_vec_ty) * 2)
+	if (ne_len > 256)
 		return (hs_len >= ne_len) ? pjstr_memmem_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len) : NULL;
 	return pjstr_memmem_simd(hs, hs_len, ne, ne_len);
 #else
@@ -692,7 +692,7 @@ JSTR_NOEXCEPT
 	}
 	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
-	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty) * 2))
+	if (jstr_unlikely(ne_len > 256))
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
 	return pjstr_strcasestr_len_simd(hs, hs_len, ne, ne_len);
 #else
