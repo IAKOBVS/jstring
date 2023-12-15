@@ -703,10 +703,10 @@ JSTR_NOEXCEPT
 {
 
 	enum { LONG_NE_THRES = 64 };
-	for (size_t n = 0;; ++n) {
-		if (n == ne_len)
+	for (size_t i = 0;; ++i) {
+		if (i == ne_len)
 			return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
-		if (jstr_isalpha(*((unsigned char *)ne + n)))
+		if (jstr_isalpha(ne[i]))
 			break;
 	}
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
@@ -721,15 +721,16 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
+	cu *const rare = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
 	/* If no non-alpha character is found in NEEDLE or
 	   needle is long, don't do memchr(). */
-	/* if (rare == NULL */
-/* #	if !(JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD) */
-	/*     || jstr_unlikely(ne_len > LONG_NE_THRES) */
-/* #	endif */
-	/* ) */
-	/* 	goto STRCASESTR; */
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
+	if (rare == NULL)
+		goto STRCASESTR;
+#	else
+	if (rare == NULL && jstr_unlikely(ne_len > LONG_NE_THRES))
+		goto STRCASESTR;
+#	endif
 	size_t shift;
 	shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;

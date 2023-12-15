@@ -233,6 +233,9 @@ simple_countchr(const char *s,
 			result = jstr_strcasechrnul(p, c);                                            \
 			expected = simple_strcasechrnul(p, c);                                        \
 			T_ASSERT(jstr_strcasechrnul, result == expected, result, expected, p, c, -1); \
+			result = pjstr_memcasechr_musl(s, c, i);                                            \
+			expected = simple_memcasechr(s, c, i);                                              \
+			T_ASSERT(pjstr_memcasechr_musl, result == expected, result, expected, s, c, i);     \
 			T_AVX2(p, c, p_len);                                                          \
 		}                                                                                     \
 	} while (0)
