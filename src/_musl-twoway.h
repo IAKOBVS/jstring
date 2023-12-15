@@ -110,7 +110,7 @@ PJSTR_MUSL_FUNC_NAME(const unsigned char *h,
 			jp += k;
 			k = 1;
 			p = jp - ip;
-		} else {
+		} else /* c0 < c1 */ {
 			ip = jp++;
 			k = p = 1;
 		}
@@ -135,7 +135,7 @@ PJSTR_MUSL_FUNC_NAME(const unsigned char *h,
 			jp += k;
 			k = 1;
 			p = jp - ip;
-		} else {
+		} else /* c0 > c1 */ {
 			ip = jp++;
 			k = p = 1;
 		}
@@ -162,10 +162,11 @@ PJSTR_MUSL_FUNC_NAME(const unsigned char *h,
 		/* Update incremental end-of-haystack pointer */
 		if (JSTR_PTR_DIFF(z, h) < l) {
 			/* Fast estimate for MAX(l,63) */
+			const size_t grow =
 #	if PJSTR_MUSL_USE_N
-			const size_t grow = JSTR_MIN(l | 63, JSTR_PTR_DIFF(end, h));
+			JSTR_MIN(l | 63, JSTR_PTR_DIFF(end, h));
 #	else
-			const size_t grow = l | 63;
+			l | 63;
 #	endif
 			const unsigned char *const z2 = z + jstr_strnlen((const char *)z, grow);
 			if (z2) {
