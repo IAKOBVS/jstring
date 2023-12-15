@@ -11,10 +11,10 @@
    distribute, sublicense, and/or sell copies of the Software, and to
    permit persons to whom the Software is furnished to do so, subject to
    the following conditions:
-   
+
    The above copyright notice and this permission notice shall be
    included in all copies or substantial portions of the Software.
-   
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -47,7 +47,20 @@
 	{" " hs " ",ne},\
 	{" " hs "  ",ne},\
 	{"  " hs "   ",ne},\
-	{"    " hs "    ",ne},
+	{"    " hs "    ",ne}, \
+	{hs "Z", ne "Z"},\
+	{" " hs "Z", ne "Z"},\
+	{"  " hs "Z", ne "Z"},\
+	{"   " hs "Z", ne "Z"},\
+	{"    " hs "Z", ne "Z"},\
+	{hs " " "Z", ne "Z"},\
+	{hs " " "Z", ne "Z"},\
+	{hs "  " "Z", ne "Z"},\
+	{hs "    " "Z", ne "Z"},\
+	{" " hs " " "Z", ne "Z"},\
+	{" " hs "  " "Z", ne "Z"},\
+	{"  " hs "   " "Z", ne "Z"},\
+	{"    " hs "    " "Z", ne "Z"},
 
 #define NE(hs, ne)\
 	GEN(hs, ne)\
@@ -193,6 +206,14 @@ static struct test_array_memmem {
 	{s1 y256,s2 y256}, \
 	{y256 s1,y256 s2}, \
 	{y256 s1 y256,y256 s2 y256}, \
+	{" Z" " " s1," " s2}, \
+	{" Z" s1 " ",s2 " "}, \
+	{" Z" s1 " ",s2}, \
+	{" Z" s1,s2 " "}, \
+	{" Z" s1 y256,s2 y256}, \
+	{" Z" y256 s1,y256 s2}, \
+	{" Z" y256 s1 y256,y256 s2 y256}, \
+
 
 JSTR_ATTR_MAYBE_UNUSED
 static struct test_array_memcmp {

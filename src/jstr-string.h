@@ -58,7 +58,7 @@ jstr_memrchr(const void *s,
              size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMRCHR
+#if JSTR_HAVE_MEMRCHR && !JSTR_TEST
 	return (void *)memrchr(s, c, n);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMRCHR_SIMD
 	return pjstr_memrchr_simd(s, c, n);
@@ -441,7 +441,7 @@ JSTR_NOEXCEPT
 #if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (ne_len >= sizeof(jstr_vec_ty) * 2)
+	if (ne_len > sizeof(jstr_vec_ty) * 2)
 		return (hs_len >= ne_len) ? pjstr_memmem_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return pjstr_memmem_simd(hs, hs_len, ne, ne_len);
 #else
@@ -735,7 +735,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
+	return pjstr_strcasestr_len_bmh(hs + 1, hs_len - 1, ne, ne_len);
 #endif
 }
 
@@ -814,7 +814,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
+	return pjstr_strcasestr_bmh(hs + 1, hs_len - 1, ne, ne_len);
 #endif
 }
 

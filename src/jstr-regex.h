@@ -489,8 +489,6 @@ jstrre_rplcn_len_from(const regex_t *R preg,
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
-	JSTR_ASSERT_DEBUG(strlen(*s) == *sz, "");
-	JSTR_ASSERT_DEBUG(jstr_strnlen(rplc, rplc_len) == rplc_len, "");
 	if (jstr_unlikely(rplc_len == 0))
 		return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	size_t find_len;
@@ -711,8 +709,6 @@ jstrre_rplcn_bref_len_from(const regex_t *R preg,
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
-	JSTR_ASSERT_DEBUG(strlen(*s) == *sz, "");
-	JSTR_ASSERT_DEBUG(jstr_strnlen(rplc, rplc_len) == rplc_len, "");
 	if (jstr_unlikely(rplc_len == 0))
 		return jstrre_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	regmatch_t rm[10];

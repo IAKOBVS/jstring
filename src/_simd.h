@@ -44,7 +44,7 @@ typedef __m256i jstr_vec_ty;
 #	define MOVEMASK8(x)     _mm256_movemask_epi8(x)
 #	define CMPEQ8(x, y)     _mm256_cmpeq_epi8(x, y)
 #	define SETZERO(x)       _mm256_setzero_si256(x)
-#	define SET18(x)         _mm256_set1_epi8(x)
+#	define SETONE8(x)       _mm256_set1_epi8(x)
 #	define POPCNT(x)        _mm_popcnt_u32(x)
 #	define TZCNT(x)         _tzcnt_u32(x)
 #	define BLSR(x)          _blsr_u32(x)
@@ -60,7 +60,7 @@ typedef __m128i jstr_vec_ty;
 #	define MOVEMASK8(x)     _mm_movemask_epi8(x)
 #	define CMPEQ8(x, y)     _mm_cmpeq_epi8(x, y)
 #	define SETZERO(x)       _mm_setzero_si128(x)
-#	define SET18(x)         _mm_set1_epi8(x)
+#	define SETONE8(x)       _mm_set1_epi8(x)
 #	if JSTR_HAS_BUILTIN(__builtin_popcount)
 #		define POPCNT(x) __builtin_popcount(x)
 #	endif
@@ -159,8 +159,8 @@ pjstr_strncasechr_simd(const char *s,
 	const unsigned char *const end = p + n;
 	uint32_t hm0, hm1, m, zm;
 	VEC sv;
-	const VEC cv0 = SET18((char)c);
-	const VEC cv1 = SET18((char)jstr_toupper(c));
+	const VEC cv0 = SETONE8((char)c);
+	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
 	for (;; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
@@ -193,7 +193,7 @@ pjstr_strnchr_simd(const char *s,
 	const char *const end = s + n;
 	uint32_t hm, m, zm;
 	VEC sv;
-	const VEC cv = SET18((char)c);
+	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
@@ -220,7 +220,7 @@ pjstr_strchrnul_simd(const char *s,
 			return (char *)s;
 	uint32_t m, m1, zm;
 	VEC sv;
-	const VEC cv = SET18((char)c);
+	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
@@ -256,8 +256,8 @@ pjstr_strcasechrnul_simd(const char *s,
 			return (char *)p;
 	uint32_t m, m1, m2, zm;
 	VEC sv;
-	const VEC cv0 = SET18((char)c);
-	const VEC cv1 = SET18((char)jstr_toupper(c));
+	const VEC cv0 = SETONE8((char)c);
+	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
 	for (;; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
@@ -304,8 +304,8 @@ pjstr_memcasechr_simd(const void *s,
 	}
 	uint32_t m, m1, m2;
 	VEC sv;
-	const VEC cv = SET18((char)c);
-	const VEC cv1 = SET18((char)jstr_toupper(c));
+	const VEC cv = SETONE8((char)c);
+	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	for (; p < end; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
 		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
@@ -348,7 +348,7 @@ pjstr_memrchr_simd(const void *s,
 	}
 	uint32_t m;
 	VEC sv;
-	const VEC cv = SET18((char)c);
+	const VEC cv = SETONE8((char)c);
 	while (p >= (unsigned char *)s) {
 		p -= VEC_SIZE;
 		sv = LOAD((const VEC *)p);
@@ -399,8 +399,8 @@ pjstr_memmem_simd(const void *hs,
 		if (*h == *((unsigned char *)ne + shift) && !memcmp(h - shift, ne, ne_len))
 			return (void *)(h - shift);
 	}
-	const VEC nv = SET18(*((char *)ne + shift));
-	const VEC nv1 = SET18(*((char *)ne + shift + 1));
+	const VEC nv = SETONE8(*((char *)ne + shift));
+	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
 	VEC hv, hv1;
 	uint32_t i, hm0, hm1, m;
 	for (; h - shift <= end; h += VEC_SIZE) {
@@ -451,10 +451,10 @@ pjstr_strcasestr_len_simd(const char *hs,
 		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((const char *)h - shift, (const char *)ne, ne_len))
 			return (char *)(h - shift);
 	}
-	const VEC nv = SET18((char)jstr_tolower(*((unsigned char *)ne + shift)));
-	const VEC nv1 = SET18((char)jstr_toupper(*((unsigned char *)ne + shift)));
-	const VEC nv2 = SET18((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
-	const VEC nv3 = SET18((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
+	const VEC nv = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift)));
+	const VEC nv1 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
+	const VEC nv2 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
+	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 	VEC hv, hv1;
 	uint32_t i, hm0, hm1, hm2, hm3, m;
 	for (; h - shift <= end; h += VEC_SIZE) {
@@ -497,7 +497,7 @@ pjstr_countchr_simd(const void *s,
 	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(*p == '\0'))
 			return cnt;
-	const VEC cv = SET18((char)c);
+	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
 	VEC sv;
 	uint32_t m, zm;
@@ -527,7 +527,7 @@ pjstr_countchr_len_simd(const void *s,
 	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(n-- == 0))
 			return cnt;
-	const VEC cv = SET18((char)c);
+	const VEC cv = SETONE8((char)c);
 	VEC sv;
 	uint32_t m;
 	for (; n >= VEC_SIZE; n -= VEC_SIZE, p += VEC_SIZE) {
@@ -560,7 +560,7 @@ pjstr_countchr_len_simd(const void *s,
 #undef MOVEMASK8
 #undef CMPEQ8
 #undef SETZERO
-#undef SET18
+#undef SETONE8
 #undef POPCNT
 #undef TZCNT
 #undef BLSR

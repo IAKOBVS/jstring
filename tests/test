@@ -8,9 +8,10 @@ FLAGS='
 -Wextra
 -Wpedantic
 -Wsign-conversion
--march=native
 -DJSTR_TEST_SLOW=0
 '
+
+USE_TCC=0
 
 has_prog()
 {
@@ -35,10 +36,7 @@ compile()
 
 cd "$(dirname "$0")" || exit
 
-if
-	# false
-	has_prog tcc
-then
+if [ $USE_TCC != 0 ] && has_prog tcc; then
 	CC=tcc
 else
 	CC=cc
@@ -68,8 +66,8 @@ fi
 
 for file in $files; do
 	out_file=${file%.*}
-	compile "$file" "$tmp$out_file" -DJSTR_USE_LGPL=1 $FLAGS &
-	compile "$file" "$tmp$out_file" -DJSTR_USE_LGPL=0 $FLAGS &
+	compile "$file" "$tmp$out_file" $FLAGS &
+	compile "$file" "$tmp$out_file" $FLAGS -march=native &
 done
 wait
 

@@ -170,8 +170,8 @@ T_DEBUG(const char *func, const char *hs, const char *ne, size_t hs_len, size_t 
 			hl = strlen(hs);
 		if (nl == 0)
 			nl = strlen(ne);
-		PRINTERR("hsn:\n");
-		PRINTERR("hs:\n");
+		PRINTERR("Hsn:\n");
+		PRINTERR("Hs:\n");
 		fwrite(hs, 1, hl, stderr);
 		fputc('\n', stderr);
 		PRINTERR("ne:\n");
@@ -179,13 +179,13 @@ T_DEBUG(const char *func, const char *hs, const char *ne, size_t hs_len, size_t 
 		fputc('\n', stderr);
 		fwrite(hs, 1, JSTR_MIN(n, hl), stderr);
 		PRINTERR("\n");
-		PRINTERR("hs_len:\n%zu\n", hl);
-		PRINTERR("nl:\n%zu\n", nl);
-		PRINTERR("n:\n%zu\n", (size_t)n);
-		PRINTERR("expected:\n%s\n", EMPTY((char *)expected));
-		PRINTERR("expected_len:\n%zu\n", strlen(EMPTY((char *)expected)));
-		PRINTERR("result:\n%s\n", EMPTY((char *)result));
-		PRINTERR("result_len:\n%zu\n", strlen(EMPTY((char *)result)));
+		PRINTERR("Hs_len:\n%zu\n", hl);
+		PRINTERR("Nl:\n%zu\n", nl);
+		PRINTERR("N:\n%zu\n", (size_t)n);
+		PRINTERR("Expected:\n%s\n", EMPTY((char *)expected));
+		PRINTERR("Expected_len:\n%zu\n", strlen(EMPTY((char *)expected)));
+		PRINTERR("Result:\n%s\n", EMPTY((char *)result));
+		PRINTERR("Result_len:\n%zu\n", strlen(EMPTY((char *)result)));
 		PRINTERR("%s\n", func);
 		assert(result == expected);
 	}

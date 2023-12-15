@@ -26,21 +26,21 @@
 #include "test.h"
 #include "../src/jstr.h"
 
-static char buf[512];
+static JSTR_ATTR_MAYBE_UNUSED char buf[512];
 
-static void *
+static JSTR_ATTR_MAYBE_UNUSED void *
 aligned(void *p)
 {
 	return (void *)(((uintptr_t)p + 63) & (unsigned long)-64);
 }
 
-static void *
+static JSTR_ATTR_MAYBE_UNUSED void *
 aligncpy(const void *p, size_t len, size_t a)
 {
 	return memcpy((char *)aligned(buf) + a, p, len);
 }
 
-static void *
+static JSTR_ATTR_MAYBE_UNUSED void *
 simple_memrchr(const void *s,
                int c,
                size_t n)
@@ -60,7 +60,7 @@ JSTR_NOEXCEPT
 /*
    strchr() before s + T.
 */
-static char *
+static JSTR_ATTR_MAYBE_UNUSED char *
 simple_strnchr(const char *s,
                int c,
                size_t n)
@@ -75,7 +75,7 @@ JSTR_NOEXCEPT
 	return NULL;
 }
 
-static char *
+static JSTR_ATTR_MAYBE_UNUSED char *
 simple_strchrnul(const char *s,
                  int c)
 {
@@ -87,7 +87,7 @@ simple_strchrnul(const char *s,
 #endif
 }
 
-static char *
+static JSTR_ATTR_MAYBE_UNUSED char *
 simple_strcasechrnul(const char *s,
                      int c)
 {
@@ -98,7 +98,7 @@ simple_strcasechrnul(const char *s,
 	return (char *)s;
 }
 
-static char *
+static JSTR_ATTR_MAYBE_UNUSED char *
 simple_strcasechr(const char *s,
                   int c)
 {
@@ -106,7 +106,7 @@ simple_strcasechr(const char *s,
 	return TOLOWER(*s) == TOLOWER(c) ? (char *)s : NULL;
 }
 
-static char *
+static JSTR_ATTR_MAYBE_UNUSED char *
 simple_strncasechr(const char *s,
                    int c,
                    size_t n)
@@ -115,7 +115,7 @@ simple_strncasechr(const char *s,
 	return p < s + n && TOLOWER(*p) == TOLOWER(c) ? (char *)p : NULL;
 }
 
-static char *
+static JSTR_ATTR_MAYBE_UNUSED char *
 simple_memcasechr(const void *s,
                   int c,
                   size_t n)
@@ -126,7 +126,7 @@ simple_memcasechr(const void *s,
 	return n ? (void *)p : NULL;
 }
 
-static size_t
+static JSTR_ATTR_MAYBE_UNUSED size_t
 simple_countchr_len(const char *s,
                     int c,
                     size_t sz)
@@ -136,7 +136,7 @@ simple_countchr_len(const char *s,
 	return cnt;
 }
 
-static size_t
+static JSTR_ATTR_MAYBE_UNUSED size_t
 simple_countchr(const char *s,
                 int c)
 {
@@ -213,6 +213,7 @@ simple_countchr(const char *s,
 		for (align = 0; align < 8; align++) {                                                 \
 			size_t result_len, expected_len;                                              \
 			const char *result, *expected, *p = aligncpy(s, sizeof(s), (size_t)align);    \
+			(void)result_len, (void)expected_len;\
 			size_t p_len = strlen(p);                                                     \
 			result = jstr_strncasechr(p, c, p_len);                                       \
 			expected = simple_strncasechr(p, c, p_len);                                   \
