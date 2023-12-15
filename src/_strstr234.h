@@ -26,13 +26,13 @@
    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#ifndef PJSTR_STRSTR234_FUNC
-#	define PJSTR_STRSTR234_FUNC pjstr_strstr
+#ifndef PJSTR_STRSTR234_FUNC_NAME
+#	define PJSTR_STRSTR234_FUNC_NAME pjstr_strstr
 #endif
-#ifndef PJSTR_STRSTR234_CANONIZE
-#	define PJSTR_STRSTR234_CANONIZE(x) (x)
+#ifndef PJSTR_STRSTR234_CANON
+#	define PJSTR_STRSTR234_CANON(x) (x)
 #endif
-#define L PJSTR_STRSTR234_CANONIZE
+#define L PJSTR_STRSTR234_CANON
 #if PJSTR_STRSTR234_STRNSTR
 #	define N_PARAM , size_t l
 #	define N       l-- &&
@@ -48,9 +48,9 @@
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t l)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 2)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
 JSTR_NOEXCEPT
 {
 #	if JSTR_LP64
@@ -69,9 +69,9 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t l)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 3)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
 JSTR_NOEXCEPT
 {
 	typedef uint32_t U32;
@@ -84,9 +84,9 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t l)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 4)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
 JSTR_NOEXCEPT
 {
 	typedef uint32_t U32;
@@ -99,9 +99,9 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 5)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t l)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 5)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
@@ -114,9 +114,9 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 6)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t l)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 6)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
@@ -129,9 +129,9 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t l)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 7)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
@@ -144,9 +144,9 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 8)(const unsigned char *hs,
-                                     const unsigned char *const ne,
-                                     size_t l)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 8)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
@@ -156,13 +156,162 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (char *)(hs - 8) : NULL;
 }
 
+#elif PJSTR_STRSTR234_MEMRMEM
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 2)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
+JSTR_NOEXCEPT
+{
+#	if JSTR_LP64
+	typedef uint32_t size_ty;
+	enum { SHIFT = 16 };
+#	else
+	typedef uint16_t size_ty;
+	enum { SHIFT = 8 };
+#	endif
+	hs += l - 2;
+	const size_ty nw = (size_ty)L(ne[1]) << SHIFT | L(ne[0]);
+	size_ty hw = (size_ty)L(hs[1]) << SHIFT | L(hs[0]);
+	for (l -= 2; l-- && hw != nw; hw = hw << SHIFT | L(*--hs)) {}
+	return (hw == nw) ? (void *)hs : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 3)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
+JSTR_NOEXCEPT
+{
+	hs += l - 3;
+	const uint32_t nw = (uint32_t)L(ne[2]) << 24 | L(ne[1]) << 16 | L(ne[0]) << 8;
+	uint32_t hw = (uint32_t)L(hs[2]) << 24 | L(hs[1]) << 16 | L(hs[0]) << 8;
+	for (l -= 3; l-- && hw != nw; hw = (hw | L(*--hs)) << 8) {}
+	return (hw == nw) ? (void *)hs : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 4)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
+JSTR_NOEXCEPT
+{
+	hs += l - 4;
+	const uint32_t nw = (uint32_t)L(ne[3]) << 24 | L(ne[2]) << 16 | L(ne[1]) << 8 | L(ne[0]);
+	uint32_t hw = (uint32_t)L(hs[3]) << 24 | L(hs[2]) << 16 | L(hs[1]) << 8 | L(hs[0]);
+	for (l -= 4; l-- && hw != nw; hw = hw << 8 | L(*--hs)) {}
+	return (hw == nw) ? (void *)hs : NULL;
+}
+
+#	if 0
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 5)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	hs += l - 5;
+	const U64 nw = (U64)L(ne[4]) << 56 | (U64)L(ne[3]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[1]) << 32 | (U64)L(ne[0]) << 24;
+	U64 hw = (U64)L(hs[4]) << 56 | (U64)L(hs[3]) << 48 | (U64)L(hs[2]) << 40 | (U64)L(hs[1]) << 32 | (U64)L(hs[0]) << 24;
+	for (l -= 5; l-- && hw != nw; hw = hw << 8 | L(*--hs) << 24) {}
+	return (hw == nw) ? (void *)hs : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 6)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	hs += l - 6;
+	const U64 nw = (U64)L(ne[5]) << 56 | (U64)L(ne[4]) << 48 | (U64)L(ne[3]) << 40 | (U64)L(ne[2]) << 32 | (U64)L(ne[1]) << 24 | (U64)L(ne[0]) << 16;
+	U64 hw = (U64)L(hs[5]) << 56 | (U64)L(hs[4]) << 48 | (U64)L(hs[3]) << 40 | (U64)L(hs[2]) << 32 | (U64)L(hs[1]) << 24 | (U64)L(hs[0]) << 16;
+	for (l -= 6; l-- && hw != nw; hw = hw << 8 | L(*--hs) << 16) {}
+	return (hw == nw) ? (void *)hs : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 7)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	hs += l - 7;
+	const U64 nw = (U64)L(ne[6]) << 56 | (U64)L(ne[5]) << 48 | (U64)L(ne[4]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[2]) << 24 | (U64)L(ne[1]) << 16 | (U64)L(ne[0]) << 8;
+	U64 hw = (U64)L(hs[6]) << 56 | (U64)L(hs[5]) << 48 | (U64)L(hs[4]) << 40 | (U64)L(hs[3]) << 32 | (U64)L(hs[2]) << 24 | (U64)L(hs[1]) << 16 | (U64)L(hs[0]) << 8;
+	for (l -= 7; l-- && hw != nw; hw = (hw | L(*--hs)) << 8) {}
+	return (hw == nw) ? (void *)hs : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 8)(const unsigned char *hs,
+                                          const unsigned char *const ne,
+                                          size_t l)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	hs += l - 8;
+	const U64 nw = (U64)L(ne[7]) << 56 | (U64)L(ne[6]) << 48 | (U64)L(ne[5]) << 40 | (U64)L(ne[4]) << 32 | (U64)L(ne[3]) << 24 | (U64)L(ne[2]) << 16 | (U64)L(ne[1]) << 8 | (U64)L(ne[0]);
+	U64 hw = (U64)L(hs[7]) << 56 | (U64)L(hs[6]) << 48 | (U64)L(hs[5]) << 40 | (U64)L(hs[4]) << 32 | (U64)L(hs[3]) << 24 | (U64)L(hs[2]) << 16 | (U64)L(hs[1]) << 8 | (U64)L(hs[0]);
+	for (l -= 8; l-- && hw != nw; hw = hw << 8 | L(*--hs)) {}
+	return (hw == nw) ? (void *)hs : NULL;
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 9andmore)(const unsigned char *hs,
+                                                 size_t l,
+                                                 const unsigned char *ne,
+                                                 size_t ne_len)
+JSTR_NOEXCEPT
+{
+	typedef uint64_t U64;
+	hs += l - ne_len;
+	l -= ne_len - 1;
+	for (; l--; --hs)
+		if (*hs == *ne && !memcmp(hs, ne, ne_len))
+			return (char *)hs;
+	return NULL;
+}
+
+#	endif
+
 #else
 
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
-                                     const unsigned char *const ne
-                                     N_PARAM)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 2)(const unsigned char *hs,
+                                          const unsigned char *const ne
+                                          N_PARAM)
 {
 #	if JSTR_LP64
 	typedef uint32_t size_ty;
@@ -181,9 +330,9 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 2)(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
-                                     const unsigned char *const ne
-                                     N_PARAM)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 3)(const unsigned char *hs,
+                                          const unsigned char *const ne
+                                          N_PARAM)
 {
 	typedef uint32_t U32;
 	const U32 nw = (U32)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8);
@@ -196,9 +345,9 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 3)(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
-                                     const unsigned char *const ne
-                                     N_PARAM)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 4)(const unsigned char *hs,
+                                          const unsigned char *const ne
+                                          N_PARAM)
 {
 	typedef uint32_t U32;
 	const U32 nw = (U32)(L(ne[0]) << 24) | (L(ne[1]) << 16) | (L(ne[2]) << 8) | L(ne[3]);
@@ -211,9 +360,9 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 4)(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 5)(const unsigned char *hs,
-                                     const unsigned char *const ne
-                                     N_PARAM)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 5)(const unsigned char *hs,
+                                          const unsigned char *const ne
+                                          N_PARAM)
 {
 	typedef uint64_t U64;
 	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24;
@@ -226,9 +375,9 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 5)(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 6)(const unsigned char *hs,
-                                     const unsigned char *const ne
-                                     N_PARAM)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 6)(const unsigned char *hs,
+                                          const unsigned char *const ne
+                                          N_PARAM)
 {
 	typedef uint64_t U64;
 	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16;
@@ -241,9 +390,9 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 6)(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
-                                     const unsigned char *const ne
-                                     N_PARAM)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 7)(const unsigned char *hs,
+                                          const unsigned char *const ne
+                                          N_PARAM)
 {
 	typedef uint64_t U64;
 	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16 | (U64)L(ne[6]) << 8;
@@ -256,9 +405,9 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 7)(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 8)(const unsigned char *hs,
-                                     const unsigned char *const ne
-                                     N_PARAM)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 8)(const unsigned char *hs,
+                                          const unsigned char *const ne
+                                          N_PARAM)
 {
 	typedef uint64_t U64;
 	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16 | (U64)L(ne[6]) << 8 | (U64)L(ne[7]);
@@ -274,7 +423,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC, 8)(const unsigned char *hs,
 #undef L
 #undef N
 #undef N_PARAM
-#undef PJSTR_STRSTR234_FUNC
-#undef PJSTR_STRSTR234_CANONIZE
+#undef PJSTR_STRSTR234_FUNC_NAME
+#undef PJSTR_STRSTR234_CANON
 #undef PJSTR_STRSTR234_MEMMEM
 #undef PJSTR_STRSTR234_STRNSTR

@@ -335,85 +335,30 @@ JSTR_NOEXCEPT
 	return (s1_len == s2_len) ? jstr_strcasecmpeq(s1, s2) : 1;
 }
 
-#define PJSTR_STRSTR234_FUNC pjstr_strstr
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_strstr
 #include "_strstr234.h"
 
 #define PJSTR_STRSTR234_MEMMEM
-#define PJSTR_STRSTR234_FUNC pjstr_memmem
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_memmem
 #include "_strstr234.h"
 
-#define PJSTR_STRSTR234_FUNC     pjstr_strcasestr
-#define PJSTR_STRSTR234_CANONIZE jstr_tolower
+#define PJSTR_STRSTR234_FUNC_NAME     pjstr_strcasestr
+#define PJSTR_STRSTR234_CANON jstr_tolower
 #include "_strstr234.h"
 
 #define PJSTR_STRSTR234_MEMMEM
-#define PJSTR_STRSTR234_FUNC     pjstr_memcasemem
-#define PJSTR_STRSTR234_CANONIZE jstr_tolower
+#define PJSTR_STRSTR234_FUNC_NAME     pjstr_memcasemem
+#define PJSTR_STRSTR234_CANON jstr_tolower
 #include "_strstr234.h"
 
-#define PJSTR_STRSTR234_FUNC    pjstr_strnstr
+#define PJSTR_STRSTR234_FUNC_NAME    pjstr_strnstr
 #define PJSTR_STRSTR234_STRNSTR 1
 #include "_strstr234.h"
 
-#define PJSTR_STRSTR234_FUNC     pjstr_strncasestr
+#define PJSTR_STRSTR234_FUNC_NAME     pjstr_strncasestr
 #define PJSTR_STRSTR234_STRNSTR  1
-#define PJSTR_STRSTR234_CANONIZE jstr_tolower
+#define PJSTR_STRSTR234_CANON jstr_tolower
 #include "_strstr234.h"
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-pjstr_memrmem2(const unsigned char *hs,
-               const unsigned char *const ne,
-               size_t l)
-JSTR_NOEXCEPT
-{
-#if JSTR_LP64
-	typedef uint32_t size_ty;
-	enum { SHIFT = 16 };
-#else
-	typedef uint16_t size_ty;
-	enum { SHIFT = 8 };
-#endif
-	hs += l - 2;
-	const size_ty nw = (size_ty)ne[1] << SHIFT | ne[0];
-	size_ty hw = (size_ty)hs[1] << SHIFT | hs[0];
-	for (l -= 2; l-- && hw != nw; hw = hw << SHIFT | *--hs) {}
-	return (hw == nw) ? (void *)hs : NULL;
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-pjstr_memrmem3(const unsigned char *hs,
-               const unsigned char *const ne,
-               size_t l)
-JSTR_NOEXCEPT
-{
-	hs += l - 3;
-	const uint32_t nw = (uint32_t)ne[2] << 24 | ne[1] << 16 | ne[0] << 8;
-	uint32_t hw = (uint32_t)hs[2] << 24 | hs[1] << 16 | hs[0] << 8;
-	for (l -= 3; l-- && hw != nw; hw = (hw | *--hs) << 8) {}
-	return (hw == nw) ? (void *)hs : NULL;
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 3))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-pjstr_memrmem4(const unsigned char *hs,
-               const unsigned char *const ne,
-               size_t l)
-JSTR_NOEXCEPT
-{
-	hs += l - 4;
-	const uint32_t nw = (uint32_t)ne[3] << 24 | ne[2] << 16 | ne[1] << 8 | ne[0];
-	uint32_t hw = (uint32_t)hs[3] << 24 | hs[2] << 16 | hs[1] << 8 | hs[0];
-	for (l -= 4; l-- && hw != nw; hw = hw << 8 | *--hs) {}
-	return (hw == nw) ? (void *)hs : NULL;
-}
 
 #define PJSTR_MEMMEM_RETTYPE void *
 #define PJSTR_MEMMEM_FUNC    pjstr_memmem_bmh
@@ -471,6 +416,18 @@ JSTR_NOEXCEPT
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 3)
+		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 4)
+		return pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 5)
+		return pjstr_memmem5((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 6)
+		return pjstr_memmem6((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 7)
+		return pjstr_memmem7((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 8)
+		return pjstr_memmem8((cu *)hs, (cu *)ne, hs_len);
 #	if 0
 #		if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
 	if (JSTR_WORD_CMPEQU32(hs, ne) && !memcmp((cu *)hs, (cu *)ne, ne_len))
@@ -632,7 +589,9 @@ JSTR_NOEXCEPT
 #endif
 }
 
-/* TODO: implement memrmem with AVX2. */
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_memrmem
+#define PJSTR_STRSTR234_MEMRMEM 1
+#include "_strstr234.h"
 
 /* Find last NE in HS.
    Return value:
@@ -651,19 +610,22 @@ JSTR_NOEXCEPT
 	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs + hs_len;
-	if (ne_len == 1)
-		return jstr_memrchr(hs, *(cu *)ne, hs_len);
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	cu *const rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
+	const size_t shift = JSTR_PTR_DIFF(rare, ne);
+	cu *p = (cu *)jstr_memrchr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	if (p == NULL || ne_len == 1)
+		return (char *)p;
+	hs_len = JSTR_PTR_DIFF(p, hs) + ne_len;
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
 		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
-	cu *p = (cu *)hs + hs_len - ne_len;
-	hs_len -= (ne_len - 1);
-	for (; hs_len--; --p)
+	p -= shift;
+	for (; p >= (cu *)hs; --p)
 		if (*(cu *)p == *(cu *)ne && !memcmp(p, ne, ne_len))
 			return (char *)p;
 	return NULL;
@@ -746,11 +708,7 @@ JSTR_NOEXCEPT
 	cu *const rare = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
 	/* If no non-alpha character is found in NEEDLE or
 	   needle is long, don't do memchr(). */
-#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
-	if (rare == NULL)
-#	else
 	if (rare == NULL || jstr_unlikely(ne_len > LONG_NE_THRES))
-#	endif
 		goto STRCASESTR;
 	size_t shift;
 	shift = JSTR_PTR_DIFF(rare, ne);
@@ -765,10 +723,24 @@ JSTR_NOEXCEPT
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 3)
+		return pjstr_memcasemem3((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 4)
+		return pjstr_memcasemem4((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 5)
+		return pjstr_memcasemem5((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 6)
+		return pjstr_memcasemem6((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 7)
+		return pjstr_memcasemem7((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 8)
+		return pjstr_memcasemem8((cu *)hs, (cu *)ne, hs_len);
+#	if 0
 	if (*hs == *ne && !jstr_strcasecmpeq_len(hs, ne, ne_len))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
+#	endif
 STRCASESTR:
 #	if 1
 	return pjstr_strcasestr_len_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
