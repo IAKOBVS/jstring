@@ -728,6 +728,8 @@ JSTR_NOEXCEPT
 	if (rare == NULL)
 		goto STRCASESTR;
 #	else
+	if (rare == NULL)
+		return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 	if (rare == NULL && jstr_unlikely(ne_len > LONG_NE_THRES))
 		goto STRCASESTR;
 #	endif
