@@ -66,7 +66,7 @@ static char *clean_func(const char *func)
 PJSTR_END_DECLS
 
 #if VERBOSE
-#	define TESTING(func) PRINT("Testing %s().\n", clean_func(#func))
+#	define TESTING(func) PRINTERR("Testing %s().\n", clean_func(#func))
 #else
 #	define TESTING(func)
 #endif
