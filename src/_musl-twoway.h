@@ -82,7 +82,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
 	size_t i;
 	for (i = 0;
 #if PJSTR_MUSL_CHECK_EOL
-	     n[i];
+	     *n;
 #else
 	     i < needle_len;
 #endif
@@ -94,7 +94,8 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
-JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t, const char *haystack
+JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
+                                         const char *haystack
 #if !PJSTR_MUSL_CHECK_EOL
                                          ,
                                          const size_t haystack_len
@@ -103,29 +104,25 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t, const ch
                                          const char *needle N_PARAM)
 {
 #if PJSTR_MUSL_CHECK_EOL
+	if (jstr_unlikely(needle[t->needle_len] != '\0'))
+		return NULL;
 #	if PJSTR_MUSL_USE_N
 	if (jstr_unlikely(t->needle_len > n_limit))
 		return NULL;
-#	endif
-	if (jstr_unlikely(needle[t->needle_len] != '\0'))
-		return NULL; /* hit the end of h */
-#	if PJSTR_MUSL_USE_N
 	const unsigned char *const end = (const unsigned char *)haystack + n_limit;
 #	endif
 #endif
 	size_t ip, jp, k, l, p, ms, p0, mem, mem0;
-	const unsigned char *z, *h, *n;
+	int c0, c1;
+	const unsigned char *h, *n, *z;
 #if !PJSTR_MUSL_CHECK_EOL
 	z = (const unsigned char *)haystack + haystack_len;
 #endif
 	h = (const unsigned char *)haystack;
 	n = (const unsigned char *)needle;
 	l = t->needle_len;
-	int c0, c1;
 	/* Compute maximal suffix */
-	ip = (size_t)-1;
-	jp = 0;
-	k = p = 1;
+	ip = (size_t)-1, jp = 0, k = p = 1;
 	while (jp + k < l) {
 		c0 = CANON(n[ip + k]);
 		c1 = CANON(n[jp + k]);
