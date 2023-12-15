@@ -703,7 +703,6 @@ JSTR_NOEXCEPT
 {
 
 	enum { LONG_NE_THRES = 64 };
-	typedef const unsigned char cu;
 	for (size_t n = 0;; ++n) {
 		if (n == ne_len)
 			return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
@@ -715,6 +714,7 @@ JSTR_NOEXCEPT
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return pjstr_strcasestr_len_simd(hs, hs_len, ne, ne_len);
 #else
+	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
