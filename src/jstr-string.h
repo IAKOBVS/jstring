@@ -421,6 +421,12 @@ JSTR_NOEXCEPT
 		return pjstr_memmem7((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 8)
 		return pjstr_memmem8((cu *)hs, (cu *)ne, hs_len);
+#	if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
+	if (JSTR_WORD_CMPEQU64(hs, ne) && !memcmp((cu *)hs + 8, (cu *)ne + 8, ne_len - 8))
+#	else
+	if (*(cu *)hs == *(cu *)ne && !memcmp(hs, ne, ne_len))
+#	endif
+		return (char *)hs;
 MEMMEM:
 	return pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
@@ -537,6 +543,14 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr7((cu *)hs, (cu *)ne, n);
 	if (ne[8] == '\0')
 		return pjstr_strnstr8((cu *)hs, (cu *)ne, n);
+	cu *hp = (cu *)hs;
+	cu *np = (cu *)ne;
+	size_t nn = n;
+	for (; nn && jstr_tolower(*hp) == jstr_tolower(*np); --nn, ++hp, ++np) {}
+	if (*np == '\0' || nn == 0)
+		return (char *)hs;
+	if (jstr_unlikely(*hp == '\0'))
+		return NULL;
 	return pjstr_strnstr_musl((cu *)hs, (cu *)ne, n);
 }
 
@@ -673,6 +687,8 @@ JSTR_NOEXCEPT
 		return pjstr_memcasemem7((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 8)
 		return pjstr_memcasemem8((cu *)hs, (cu *)ne, hs_len);
+	if (jstr_tolower(*hs) == jstr_tolower(*ne) && !jstr_strcasecmpeq_len(hs, ne, ne_len))
+		return (char *)hs;
 STRCASESTR:
 	return pjstr_strcasestr_len_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
@@ -743,6 +759,13 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
 	if (ne[8] == '\0')
 		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
+	cu *hp = (cu *)hs;
+	cu *np = (cu *)ne;
+	for (; jstr_tolower(*hp) == jstr_tolower(*np); ++hp, ++np) {}
+	if (*np == '\0')
+		return (char *)hs;
+	if (jstr_unlikely(*hp == '\0'))
+		return NULL;
 	return pjstr_strcasestr_musl((cu *)hs, (cu *)ne);
 #endif
 }
@@ -765,7 +788,8 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
 	size_t nn = n;
-	for (cu *np = (cu *)ne;; ++np) {
+	cu *np = (cu *)ne;
+	for (;; ++np) {
 		if (jstr_unlikely(nn-- == 0))
 			return NULL;
 		if (*np == '\0')
@@ -797,6 +821,14 @@ JSTR_NOEXCEPT
 		return pjstr_strncasestr7((cu *)hs, (cu *)ne, n);
 	if (ne[8] == '\0')
 		return pjstr_strncasestr8((cu *)hs, (cu *)ne, n);
+	cu *hp = (cu *)hs;
+	np = (cu *)ne;
+	nn = n;
+	for (; nn && jstr_tolower(*hp) == jstr_tolower(*np); --nn, ++hp, ++np) {}
+	if (*np == '\0' || nn == 0)
+		return (char *)hs;
+	if (jstr_unlikely(*hp == '\0'))
+		return NULL;
 	return pjstr_strncasestr_musl((cu *)hs, (cu *)ne, n);
 }
 
