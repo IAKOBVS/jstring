@@ -198,16 +198,14 @@ PJSTR_MUSL_FUNC_NAME(const unsigned char *h,
 			continue;
 		}
 		/* Compare right half */
-		for (k = JSTR_MAX(ms + 1, mem); k < l && CANON(n[k]) == CANON(h[k]); ++k)
-			;
+		for (k = JSTR_MAX(ms + 1, mem); k < l && CANON(n[k]) == CANON(h[k]); ++k) {}
 		if (k < l) {
 			h += k - ms;
 			mem = 0;
 			continue;
 		}
 		/* Compare left half */
-		for (k = ms + 1; k > mem && CANON(n[k - 1]) == CANON(h[k - 1]); --k)
-			;
+		for (k = ms + 1; k > mem && CANON(n[k - 1]) == CANON(h[k - 1]); --k) {}
 		if (k <= mem)
 			return (char *)h;
 		h += p;

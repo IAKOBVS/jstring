@@ -339,22 +339,22 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memmem
 #include "_strstr234.h"
 
-#define PJSTR_STRSTR234_FUNC_NAME     pjstr_strcasestr
-#define PJSTR_STRSTR234_CANON jstr_tolower
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_strcasestr
+#define PJSTR_STRSTR234_CANON     jstr_tolower
 #include "_strstr234.h"
 
 #define PJSTR_STRSTR234_MEMMEM
-#define PJSTR_STRSTR234_FUNC_NAME     pjstr_memcasemem
-#define PJSTR_STRSTR234_CANON jstr_tolower
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_memcasemem
+#define PJSTR_STRSTR234_CANON     jstr_tolower
 #include "_strstr234.h"
 
-#define PJSTR_STRSTR234_FUNC_NAME    pjstr_strnstr
-#define PJSTR_STRSTR234_STRNSTR 1
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_strnstr
+#define PJSTR_STRSTR234_STRNSTR   1
 #include "_strstr234.h"
 
-#define PJSTR_STRSTR234_FUNC_NAME     pjstr_strncasestr
-#define PJSTR_STRSTR234_STRNSTR  1
-#define PJSTR_STRSTR234_CANON jstr_tolower
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_strncasestr
+#define PJSTR_STRSTR234_STRNSTR   1
+#define PJSTR_STRSTR234_CANON     jstr_tolower
 #include "_strstr234.h"
 
 #define PJSTR_MEMMEM_RETTYPE void *
@@ -587,7 +587,7 @@ JSTR_NOEXCEPT
 }
 
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memrmem
-#define PJSTR_STRSTR234_MEMRMEM 1
+#define PJSTR_STRSTR234_MEMRMEM   1
 #include "_strstr234.h"
 
 /* Find last NE in HS.
