@@ -477,8 +477,6 @@ JSTR_NOEXCEPT
 #	endif
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	hs = (char *)hs + 1;
-	--hs_len;
 MEMMEM:
 	return pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
@@ -703,6 +701,7 @@ jstr_strcasestr_len(const char *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
+
 	for (size_t n = 0;; ++n) {
 		if (n == ne_len)
 			return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
@@ -735,7 +734,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr_len_bmh(hs + 1, hs_len - 1, ne, ne_len);
+	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 #endif
 }
 
@@ -814,7 +813,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr_bmh(hs + 1, hs_len - 1, ne, ne_len);
+	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
 #endif
 }
 
