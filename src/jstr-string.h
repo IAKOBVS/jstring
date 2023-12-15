@@ -419,6 +419,9 @@ JSTR_NOEXCEPT
 #define PJSTR_MEMMEM_FUNC    pjstr_memmem_bmh
 #include "_memmem-bmh.h"
 
+#define PJSTR_MUSL_FUNC_NAME pjstr_memmem_musl
+#include "_musl-twoway.h"
+
 #if JSTR_HAVE_MEMMEM && JSTR_HAVE_MEMMEM_OPTIMIZED && !JSTR_TEST
 #	define JSTR_USE_MEMMEM_LIBC 1
 #else
@@ -442,7 +445,7 @@ JSTR_NOEXCEPT
 	return memmem(hs, hs_len, ne, ne_len);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (ne_len > sizeof(jstr_vec_ty) * 2)
-		return (hs_len >= ne_len) ? pjstr_memmem_bmh(hs, hs_len, ne, ne_len) : NULL;
+		return (hs_len >= ne_len) ? pjstr_memmem_musl(hs, hs_len, ne, ne_len) : NULL;
 	return pjstr_memmem_simd(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
@@ -468,17 +471,23 @@ JSTR_NOEXCEPT
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
-#	if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
+#	if 0
+#		if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
 	if (JSTR_WORD_CMPEQU32(hs, ne) && !memcmp((cu *)hs, (cu *)ne, ne_len))
 		return (char *)hs;
-#	else
+#		else
 	if (*(cu *)hs == *(cu *)ne && !memcmp(hs, ne, ne_len))
 		return (char *)hs;
-#	endif
+#		endif
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
+#	endif
 MEMMEM:
+#	if 1
+	return pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
+#	else
 	return pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
+#	endif
 #endif
 }
 
@@ -553,6 +562,11 @@ JSTR_NOEXCEPT
 	return (char *)jstr_memmemnul(hs, hs_len, ne, ne_len);
 }
 
+#define PJSTR_MUSL_FUNC_NAME pjstr_strnstr_musl
+#define PJSTR_MUSL_USE_N     1
+#define PJSTR_MUSL_CHECK_EOL 1
+#include "_musl-twoway.h"
+
 JSTR_FUNC_PURE
 static char *
 jstr_strnstr(const char *hs,
@@ -588,6 +602,9 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr7((cu *)hs, (cu *)ne, n);
 	if (ne[8] == '\0')
 		return pjstr_strnstr8((cu *)hs, (cu *)ne, n);
+#if 1
+	return pjstr_strnstr_musl((cu *)hs, (cu *)ne, n);
+#else
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;
 	size_t tmp = n;
@@ -603,14 +620,15 @@ JSTR_NOEXCEPT
 	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-#if JSTR_USE_STANDARD_MEMMEM
+#	if JSTR_USE_STANDARD_MEMMEM
 	return (char *)memmem(hs, hs_len, ne, ne_len);
-#else
-#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
+#	else
+#		if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty) * 2))
 		return (char *)pjstr_memmem_simd(hs, hs_len, ne, ne_len);
-#	endif
+#		endif
 	return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
+#	endif
 #endif
 }
 
@@ -687,6 +705,11 @@ JSTR_NOEXCEPT
 #	define JSTR_USE_MEMMEM_OPTIMIZED 0
 #endif
 
+#define PJSTR_MUSL_FUNC_NAME pjstr_strcasestr_len_musl
+#define PJSTR_MUSL_CANON     jstr_tolower
+#define PJSTR_MUSL_CMP_FUNC  jstr_strcasecmpeq_len
+#include "_musl-twoway.h"
+
 /* Find NE in HS case-insensitively (ASCII).
    Return value:
    Pointer to NE;
@@ -701,7 +724,6 @@ jstr_strcasestr_len(const char *hs,
                     size_t ne_len)
 JSTR_NOEXCEPT
 {
-
 	enum { LONG_NE_THRES = 64 };
 	for (size_t i = 0;; ++i) {
 		if (i == ne_len)
@@ -709,12 +731,12 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(ne[i]))
 			break;
 	}
+	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
 	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty) * 2))
-		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
+		return (hs_len >= ne_len) ? pjstr_strcasestr_len_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
 	return pjstr_strcasestr_len_simd(hs, hs_len, ne, ne_len);
 #else
-	typedef const unsigned char cu;
 	if (ne_len == 1)
 		return (char *)jstr_memcasechr(hs, *ne, hs_len);
 	if (jstr_unlikely(ne_len == 0))
@@ -726,30 +748,33 @@ JSTR_NOEXCEPT
 	   needle is long, don't do memchr(). */
 #	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
 	if (rare == NULL)
-		goto STRCASESTR;
 #	else
-	if (rare == NULL && jstr_unlikely(ne_len > LONG_NE_THRES))
-		goto STRCASESTR;
+	if (rare == NULL || jstr_unlikely(ne_len > LONG_NE_THRES))
 #	endif
+		goto STRCASESTR;
 	size_t shift;
 	shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;
 	hs_len -= shift;
 	const void *start;
 	start = hs;
-	hs = (const char *)jstr_memcasechr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	hs = (const char *)memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
 	hs -= shift;
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
-	if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
+	if (*hs == *ne && !jstr_strcasecmpeq_len(hs, ne, ne_len))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
 STRCASESTR:
-	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
+#	if 1
+	return pjstr_strcasestr_len_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
+#	else
+	/* return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len); */
+#	endif
 #endif
 }
 
@@ -767,6 +792,12 @@ JSTR_NOEXCEPT
 {
 	return jstr_strcasestr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
+
+#define PJSTR_MUSL_FUNC_NAME pjstr_strcasestr_musl
+#define PJSTR_MUSL_CANON     jstr_tolower
+#define PJSTR_MUSL_CMP_FUNC  jstr_strcasecmpeq_len
+#define PJSTR_MUSL_CHECK_EOL 1
+#include "_musl-twoway.h"
 
 /* Find NE in HS case-insensitively.
    Return value:
@@ -812,6 +843,10 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
 	if (ne[8] == '\0')
 		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
+#	if 1
+	return pjstr_strcasestr_musl((cu *)hs, (cu *)ne);
+#	else
+	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;
 	for (; jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np) {}
@@ -828,9 +863,16 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
-	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
+#	endif
 #endif
 }
+
+#define PJSTR_MUSL_FUNC_NAME pjstr_strncasestr_musl
+#define PJSTR_MUSL_CANON     jstr_tolower
+#define PJSTR_MUSL_CMP_FUNC  jstr_strcasecmpeq_len
+#define PJSTR_MUSL_CHECK_EOL 1
+#define PJSTR_MUSL_USE_N     1
+#include "_musl-twoway.h"
 
 JSTR_FUNC_PURE
 static char *
@@ -875,6 +917,9 @@ JSTR_NOEXCEPT
 		return pjstr_strncasestr7((cu *)hs, (cu *)ne, n);
 	if (ne[8] == '\0')
 		return pjstr_strncasestr8((cu *)hs, (cu *)ne, n);
+#if 1
+	return pjstr_strncasestr_musl((cu *)hs, (cu *)ne, n);
+#else
 	cu *hp = (cu *)hs;
 	cu *np = (cu *)ne;
 	size_t tmp = n;
@@ -891,6 +936,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
+#endif
 }
 
 /* Reverse of STRCSPN.
