@@ -159,7 +159,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 jstr_rarebytefindprefernonalpha_len(const void *ne,
-                            size_t n)
+                                    size_t n)
 {
 	const unsigned char *rare = (const unsigned char *)ne;
 	const unsigned char *rare_backup = (const unsigned char *)ne;

@@ -709,7 +709,7 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(*((unsigned char *)ne + n)))
 			break;
 	}
-#if !JSTR_HAVENT_STRCASESTR_LEN_SIMD
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
 	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty) * 2))
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return pjstr_strcasestr_len_simd(hs, hs_len, ne, ne_len);
