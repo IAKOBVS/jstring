@@ -390,7 +390,7 @@ JSTR_NOEXCEPT
 	return memmem(hs, hs_len, ne, ne_len);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (ne_len > sizeof(jstr_vec_ty) * 2)
-		return (hs_len >= ne_len) ? pjstr_memmem_musl(hs, hs_len, ne, ne_len) : NULL;
+		return (hs_len >= ne_len) ? pjstr_memmem_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len) : NULL;
 	return pjstr_memmem_simd(hs, hs_len, ne, ne_len);
 #else
 	typedef const unsigned char cu;
