@@ -220,7 +220,7 @@ JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_STPCPY && !JSTR_TEST
 	return stpcpy(dst, src);
-#elif defined __AVX2__
+#elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STPCPY_SIMD
 	return pjstr_stpcpy_simd(dst, src);
 #elif JSTR_HAVE_STRLEN_OPTIMIZED && !JSTR_TEST
 	/* Optimized memcpy() + strlen() is still faster than a C stpcpy(). */
@@ -615,7 +615,7 @@ JSTR_NOEXCEPT
 	return (char *)jstr_memrmem(hs, hs_len, ne, ne_len);
 }
 
-#if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__
+#if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || (JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD)
 #	define JSTR_USE_MEMMEM_OPTIMIZED 1
 #else
 #	define JSTR_USE_MEMMEM_OPTIMIZED 0
