@@ -25,7 +25,7 @@
 #ifdef PJSTR_MUSL_CANON
 #	define CANON PJSTR_MUSL_CANON
 #else
-#	define CANON(c0) (c0)
+#	define CANON(c) (c)
 #endif
 #ifndef PJSTR_MUSL_CMP_FUNC
 #	define PJSTR_MUSL_CMP_FUNC memcmp
