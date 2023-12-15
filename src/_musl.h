@@ -167,8 +167,8 @@ JSTR_NOEXCEPT
 	enum { ALIGN = sizeof(size_t) };
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
 	if ((uintptr_t)src % ALIGN == (uintptr_t)dst % ALIGN) {
-		for (; (uintptr_t)src % ALIGN; ++src, ++dst)
-			if (!(*dst = *src))
+		while ((uintptr_t)src % ALIGN)
+			if (jstr_unlikely((*dst++ = *src++) == '\0'))
 				return dst;
 		word *wd = (word *)dst;
 		const word *ws = (const word *)src;
