@@ -389,7 +389,7 @@ pjstr_memmem_simd(const void *hs,
 		return NULL;
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
+	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
 	h += shift;
@@ -439,7 +439,7 @@ pjstr_strcasestr_len_simd(const char *hs,
 		return NULL;
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
+	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
 	h += shift;

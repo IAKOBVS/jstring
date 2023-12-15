@@ -702,6 +702,8 @@ jstr_strcasestr_len(const char *hs,
 JSTR_NOEXCEPT
 {
 
+	enum { LONG_NE_THRES = 64 };
+	typedef const unsigned char cu;
 	for (size_t n = 0;; ++n) {
 		if (n == ne_len)
 			return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
@@ -713,16 +715,25 @@ JSTR_NOEXCEPT
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len) : NULL;
 	return pjstr_strcasestr_len_simd(hs, hs_len, ne, ne_len);
 #else
-	typedef const unsigned char cu;
 	if (jstr_unlikely(ne_len == 0))
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *rare = (cu *)jstr_rarebytefindprefernonalpha_len(ne, ne_len);
-	unsigned int shift = JSTR_PTR_DIFF(rare, ne);
+	cu *rare = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
+	/* If no non-alpha character is found in NEEDLE or
+	   needle is long, don't do memchr(). */
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
+	if (rare == NULL)
+#	else
+	if (rare == NULL || jstr_unlikely(ne_len > LONG_NE_THRES))
+#	endif
+		goto STRCASESTR;
+	size_t shift;
+	shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;
 	hs_len -= shift;
-	const void *const start = hs;
+	const void *start;
+	start = hs;
 	hs = (const char *)jstr_memcasechr(hs, *rare, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
@@ -734,6 +745,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len == ne_len))
 		return NULL;
+STRCASESTR:
 	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
 #endif
 }
@@ -776,7 +788,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindprefernonalpha(ne), ne);
+	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindprefernonalpha(ne), ne);
 	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
 		return NULL;
 	hs = jstr_strcasechr(hs + shift, *(ne + shift));
