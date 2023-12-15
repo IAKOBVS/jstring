@@ -721,22 +721,22 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *rare = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
+	cu *rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
 	/* If no non-alpha character is found in NEEDLE or
 	   needle is long, don't do memchr(). */
-	if (rare == NULL
-#	if !(JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD)
-	    || jstr_unlikely(ne_len > LONG_NE_THRES)
-#	endif
-	)
-		goto STRCASESTR;
+	/* if (rare == NULL */
+/* #	if !(JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD) */
+	/*     || jstr_unlikely(ne_len > LONG_NE_THRES) */
+/* #	endif */
+	/* ) */
+	/* 	goto STRCASESTR; */
 	size_t shift;
 	shift = JSTR_PTR_DIFF(rare, ne);
 	hs += shift;
 	hs_len -= shift;
 	const void *start;
 	start = hs;
-	hs = (const char *)memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	hs = (const char *)jstr_memcasechr(hs, *rare, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
 	hs -= shift;
