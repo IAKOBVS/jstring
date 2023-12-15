@@ -432,6 +432,28 @@ MEMMEM:
 #endif
 }
 
+JSTR_FUNC_VOID
+static void
+jstr_memmem_comp(jstr_twoway_ty *const t,
+                 const void *ne,
+                 size_t ne_len)
+JSTR_NOEXCEPT
+{
+	pjstr_memmem_musl_comp(t, (const unsigned char *)ne, ne_len);
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 2, 3))
+JSTR_FUNC_PURE
+static void *
+jstr_memmem_exec(jstr_twoway_ty *const t,
+                 const void *hs,
+                 size_t hs_len,
+                 const void *ne)
+JSTR_NOEXCEPT
+{
+	return pjstr_memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+}
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -554,6 +576,27 @@ JSTR_NOEXCEPT
 			return NULL;
 	}
 	return pjstr_strnstr_musl((cu *)hs, (cu *)ne, n);
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_strnstr_comp(jstr_twoway_ty *const t,
+                  const char *ne)
+JSTR_NOEXCEPT
+{
+	pjstr_strnstr_musl_comp(t, (const unsigned char *)ne);
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 2, 4))
+JSTR_FUNC_PURE
+static char *
+jstr_strnstr_exec(jstr_twoway_ty *const t,
+                  const char *hs,
+                  const char *ne,
+                  size_t n)
+JSTR_NOEXCEPT
+{
+	return pjstr_strnstr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne, n);
 }
 
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memrmem
@@ -774,6 +817,25 @@ JSTR_NOEXCEPT
 #endif
 }
 
+JSTR_FUNC_VOID
+static void
+jstr_strcasestr_comp(jstr_twoway_ty *const t,
+                     const char *ne)
+JSTR_NOEXCEPT
+{
+	pjstr_strcasestr_musl_comp(t, (const unsigned char *)ne);
+}
+
+JSTR_FUNC_PURE
+static char *
+jstr_strcasestr_exec(jstr_twoway_ty *const t,
+                     const char *hs,
+                     const char *ne)
+JSTR_NOEXCEPT
+{
+	return pjstr_strcasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
+}
+
 #define PJSTR_MUSL_FUNC_NAME pjstr_strncasestr_musl
 #define PJSTR_MUSL_CANON     jstr_tolower
 #define PJSTR_MUSL_CMP_FUNC  jstr_strcasecmpeq_len
@@ -836,6 +898,27 @@ JSTR_NOEXCEPT
 			return NULL;
 	}
 	return pjstr_strncasestr_musl((cu *)hs, (cu *)ne, n);
+}
+
+JSTR_FUNC_VOID
+static void
+jstr_strncasestr_comp(jstr_twoway_ty *const t,
+                      const void *ne)
+JSTR_NOEXCEPT
+{
+	pjstr_strncasestr_musl_comp(t, (const unsigned char *)ne);
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 2, 4))
+JSTR_FUNC_PURE
+static void *
+jstr_strncasestr_exec(jstr_twoway_ty *const t,
+                      const void *hs,
+                      const void *ne,
+                      size_t n)
+JSTR_NOEXCEPT
+{
+	return pjstr_strncasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne, n);
 }
 
 /* Reverse of STRCSPN.
@@ -1408,8 +1491,10 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
+	jstr_twoway_ty t;
+	jstr_memmem_comp(&t, find, find_len);
 	for (const char *const end = s + sz;
-	     (s = jstr_strstr_len(s, JSTR_PTR_DIFF(end, s), find, find_len));
+	     (s = (const char *)jstr_memmem_exec(&t, s, JSTR_PTR_DIFF(end, s), find));
 	     ++cnt, s += find_len)
 		;
 	return cnt;

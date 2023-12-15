@@ -68,58 +68,55 @@ JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
 JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
-                                         const char *needle
+                                         const unsigned char *n
 #if !PJSTR_MUSL_CHECK_EOL
                                          ,
-                                         size_t needle_len
+                                         size_t n_len
 #endif
 )
 {
 	int c;
-	const unsigned char *n = (const unsigned char *)needle;
 	memset(t->byteset, 0, sizeof(t->byteset));
-	/* Computing length of needle and fill shift table */
+	/* Computing length of n and fill shift table */
 	size_t i;
 	for (i = 0;
 #if PJSTR_MUSL_CHECK_EOL
 	     *n;
 #else
-	     i < needle_len;
+	     i < n_len;
 #endif
 	     ++i, ++n)
 		c = CANON(*n), BITOP(t->byteset, c, |=), t->shift[c] = i + 1;
 	t->needle_len = i;
 }
 
-JSTR_FUNC
+JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
-                                         const char *haystack
+                                         const unsigned char *h
 #if !PJSTR_MUSL_CHECK_EOL
                                          ,
                                          const size_t haystack_len
 #endif
                                          ,
-                                         const char *needle N_PARAM)
+                                         const unsigned char *n N_PARAM)
 {
 #if PJSTR_MUSL_CHECK_EOL
-	if (jstr_unlikely(needle[t->needle_len] != '\0'))
+	if (jstr_unlikely(n[t->needle_len] != '\0'))
 		return NULL;
 #	if PJSTR_MUSL_USE_N
 	if (jstr_unlikely(t->needle_len > n_limit))
 		return NULL;
-	const unsigned char *const end = (const unsigned char *)haystack + n_limit;
+	const unsigned char *const end = h + n_limit;
 #	endif
 #endif
 	size_t ip, jp, k, l, p, ms, p0, mem, mem0;
 	int c0, c1;
-	const unsigned char *h, *n, *z;
+	const unsigned char *z;
 #if !PJSTR_MUSL_CHECK_EOL
-	z = (const unsigned char *)haystack + haystack_len;
+	z = h + haystack_len;
 #endif
-	h = (const unsigned char *)haystack;
-	n = (const unsigned char *)needle;
 	l = t->needle_len;
 	/* Compute maximal suffix */
 	ip = (size_t)-1, jp = 0, k = p = 1;
@@ -171,7 +168,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
 		ms = ip;
 	else
 		p = p0;
-	/* Periodic needle? */
+	/* Periodic n? */
 	if (PJSTR_MUSL_CMP_FUNC((const char *)n, (const char *)n + p, ms + 1)) {
 		mem0 = 0;
 		p = JSTR_MAX(ms, l - ms - 1) + 1;
@@ -205,7 +202,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
 			}
 		}
 #else
-		/* If remainder of haystack is shorter than needle, done */
+		/* If remainder of haystack is shorter than n, done */
 		if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < l))
 			return NULL;
 #endif
@@ -258,12 +255,12 @@ PJSTR_MUSL_FUNC_NAME(const unsigned char *h
 {
 	jstr_twoway_ty t;
 	JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)
-	(&t, (char *)needle NE_LEN_ARG);
-	return JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(&t, (char *)h,
+	(&t, (const unsigned char *)needle NE_LEN_ARG);
+	return JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)h,
 #if !PJSTR_MUSL_CHECK_EOL
 	                                                HS_LEN_ARG
 #endif
-	                                                (char *) needle N_ARG);
+	                                                (const unsigned char *) needle N_ARG);
 }
 
 #undef NE_LEN_PARAM
