@@ -357,10 +357,6 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_CANON     jstr_tolower
 #include "_strstr234.h"
 
-#define PJSTR_MEMMEM_RETTYPE void *
-#define PJSTR_MEMMEM_FUNC    pjstr_memmem_bmh
-#include "_memmem-bmh.h"
-
 #define PJSTR_MUSL_FUNC_NAME pjstr_memmem_musl
 #include "_musl-twoway.h"
 
@@ -425,23 +421,8 @@ JSTR_NOEXCEPT
 		return pjstr_memmem7((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 8)
 		return pjstr_memmem8((cu *)hs, (cu *)ne, hs_len);
-#	if 0
-#		if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
-	if (JSTR_WORD_CMPEQU32(hs, ne) && !memcmp((cu *)hs, (cu *)ne, ne_len))
-		return (char *)hs;
-#		else
-	if (*(cu *)hs == *(cu *)ne && !memcmp(hs, ne, ne_len))
-		return (char *)hs;
-#		endif
-	if (jstr_unlikely(hs_len == ne_len))
-		return NULL;
-#	endif
 MEMMEM:
-#	if 1
 	return pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
-#	else
-	return pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
-#	endif
 #endif
 }
 
@@ -556,34 +537,7 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr7((cu *)hs, (cu *)ne, n);
 	if (ne[8] == '\0')
 		return pjstr_strnstr8((cu *)hs, (cu *)ne, n);
-#if 1
 	return pjstr_strnstr_musl((cu *)hs, (cu *)ne, n);
-#else
-	cu *hp = (cu *)hs;
-	cu *np = (cu *)ne;
-	size_t tmp = n;
-	for (; tmp-- && *hp == *np && *hp; ++hp, ++np) {}
-	if (*np == '\0')
-		return (char *)hs;
-	if (jstr_unlikely(*hp == '\0'))
-		return NULL;
-	tmp = JSTR_PTR_DIFF(np, ne);
-	const size_t ne_len = strlen((char *)np) + tmp;
-	if (jstr_unlikely(n < ne_len))
-		return NULL;
-	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
-#	if JSTR_USE_STANDARD_MEMMEM
-	return (char *)memmem(hs, hs_len, ne, ne_len);
-#	else
-#		if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty) * 2))
-		return (char *)pjstr_memmem_simd(hs, hs_len, ne, ne_len);
-#		endif
-	return (char *)pjstr_memmem_bmh((cu *)hs, hs_len, (cu *)ne, ne_len);
-#	endif
-#endif
 }
 
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memrmem
@@ -644,19 +598,6 @@ JSTR_NOEXCEPT
 {
 	return (char *)jstr_memrmem(hs, hs_len, ne, ne_len);
 }
-
-#define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_bmh
-#define PJSTR_MEMMEM_RETTYPE     char *
-#define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
-#define PJSTR_MEMMEM_HASH2_ICASE 1
-#define PJSTR_MEMMEM_CHECK_EOL   1
-#include "_memmem-bmh.h"
-
-#define PJSTR_MEMMEM_FUNC        pjstr_strcasestr_len_bmh
-#define PJSTR_MEMMEM_RETTYPE     char *
-#define PJSTR_MEMMEM_CMP_FUNC    jstr_strcasecmpeq_len
-#define PJSTR_MEMMEM_HASH2_ICASE 1
-#include "_memmem-bmh.h"
 
 #if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED || defined __AVX2__
 #	define JSTR_USE_MEMMEM_OPTIMIZED 1
@@ -732,18 +673,8 @@ JSTR_NOEXCEPT
 		return pjstr_memcasemem7((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 8)
 		return pjstr_memcasemem8((cu *)hs, (cu *)ne, hs_len);
-#	if 0
-	if (*hs == *ne && !jstr_strcasecmpeq_len(hs, ne, ne_len))
-		return (char *)hs;
-	if (jstr_unlikely(hs_len == ne_len))
-		return NULL;
-#	endif
 STRCASESTR:
-#	if 1
 	return pjstr_strcasestr_len_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
-#	else
-	/* return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len); */
-#	endif
 #endif
 }
 
@@ -812,27 +743,7 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
 	if (ne[8] == '\0')
 		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
-#	if 1
 	return pjstr_strcasestr_musl((cu *)hs, (cu *)ne);
-#	else
-	return pjstr_strcasestr_bmh(hs, hs_len, ne, ne_len);
-	cu *hp = (cu *)hs;
-	cu *np = (cu *)ne;
-	for (; jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np) {}
-	if (*np == '\0')
-		return (char *)hs;
-	if (jstr_unlikely(*hp == '\0'))
-		return NULL;
-	shift = JSTR_MAX(shift, JSTR_PTR_DIFF(np, ne));
-	const size_t ne_len = strlen(ne + shift) + shift;
-	const size_t hs_len = jstr_strnlen(hs, ne_len + 256);
-	if (hs_len < ne_len)
-		return NULL;
-	if (!jstr_strcasecmpeq_len(hs, ne, ne_len))
-		return (char *)hs;
-	if (jstr_unlikely(hs_len == ne_len))
-		return NULL;
-#	endif
 #endif
 }
 
@@ -886,26 +797,7 @@ JSTR_NOEXCEPT
 		return pjstr_strncasestr7((cu *)hs, (cu *)ne, n);
 	if (ne[8] == '\0')
 		return pjstr_strncasestr8((cu *)hs, (cu *)ne, n);
-#if 1
 	return pjstr_strncasestr_musl((cu *)hs, (cu *)ne, n);
-#else
-	cu *hp = (cu *)hs;
-	cu *np = (cu *)ne;
-	size_t tmp = n;
-	for (; tmp-- && jstr_tolower(*hp) == jstr_tolower(*np) && *hp; ++hp, ++np) {}
-	if (*np == '\0')
-		return (char *)hs;
-	if (jstr_unlikely(*hp == '\0'))
-		return NULL;
-	tmp = JSTR_PTR_DIFF(np, ne);
-	const size_t ne_len = strlen((char *)np) + tmp;
-	if (jstr_unlikely(n < ne_len))
-		return NULL;
-	const size_t hs_len = jstr_strnlen((char *)hp, n - tmp) + tmp;
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
-	return pjstr_strcasestr_len_bmh(hs, hs_len, ne, ne_len);
-#endif
 }
 
 /* Reverse of STRCSPN.
