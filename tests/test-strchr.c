@@ -90,6 +90,8 @@ main(int argc, char **argv)
 	TESTING(jstr_strchrnul);
 	TESTING(jstr_strcasechr);
 	TESTING(jstr_strcasechrnul);
+	TESTING(jstr_countchr);
+	TESTING(jstr_countchr_len);
 
 	for (i = 0; i < 128; i++)
 		a[i] = (i + 1) & 127;
