@@ -142,9 +142,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
 	ms = ip;
 	p0 = p;
 	/* And with the opposite comparison */
-	ip = (size_t)-1;
-	jp = 0;
-	k = p = 1;
+	ip = (size_t)-1, jp = 0, k = p = 1;
 	while (jp + k < l) {
 		c0 = CANON(n[ip + k]);
 		c1 = CANON(n[jp + k]);
@@ -186,11 +184,10 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
 		/* Update incremental end-of-haystack pointer */
 		if (JSTR_PTR_DIFF(z, h) < l) {
 			/* Fast estimate for MAX(l,63) */
-			const size_t grow =
 #	if PJSTR_MUSL_USE_N
-			JSTR_MIN(l | 63, JSTR_PTR_DIFF(end, h));
+			const size_t grow = JSTR_MIN(l | 63, JSTR_PTR_DIFF(end, h));
 #	else
-			l | 63;
+			const size_t grow = l | 63;
 #	endif
 			const unsigned char *const z2 = z + jstr_strnlen((const char *)z, grow);
 			if (z2) {
