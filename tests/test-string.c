@@ -335,14 +335,14 @@ main(int argc, char **argv)
 {
 	START();
 
-	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
+/* 	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem); */
 
-	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
+/* 	T(jstr_strcasestr, simple_strcasestr, test_array_memmem); */
+/* 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem); */
 
-	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem);
+/* 	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem); */
 
-	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
+/* 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem); */
 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 
 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);

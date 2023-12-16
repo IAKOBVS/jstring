@@ -144,9 +144,9 @@ jstr_rarebytefindprefernonalpha(const void *ne)
 		if (c < c_rare) {
 			if (jstr_isalpha(*p)) {
 				rare_backup = p;
+			} else if (jstr_unlikely(c == 0)) {
+				break;
 			} else {
-				if (jstr_unlikely(c == 0))
-					break;
 				rare = p;
 				c_rare = c;
 			}

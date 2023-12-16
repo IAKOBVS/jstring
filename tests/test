@@ -10,6 +10,7 @@ FLAGS='
 -Wsign-conversion
 -DJSTR_TEST_SLOW=1
 -DVERBOSE=1
+-fsanitize=address
 '
 
 USE_TCC=0

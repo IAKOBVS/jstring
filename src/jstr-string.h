@@ -626,13 +626,6 @@ JSTR_NOEXCEPT
 	cu *p = (cu *)jstr_memrchr(hs, *rare, hs_len - (ne_len - shift) + 1);
 	if (p == NULL || ne_len == 1)
 		return (char *)p;
-	hs_len = JSTR_PTR_DIFF(p, hs) + ne_len;
-	if (ne_len == 2)
-		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 3)
-		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 4)
-		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
 	p -= shift;
 	for (; p >= (cu *)hs; --p)
 		if (*(cu *)p == *(cu *)ne && !memcmp(p, ne, ne_len))
@@ -772,8 +765,12 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
-#if !JSTR_TEST
 	typedef const unsigned char cu;
+#if JSTR_TEST
+	if (jstr_unlikely(*ne == '\0'))
+		return (char *)hs;
+#endif
+#if !JSTR_TEST
 	for (cu *np = (cu *)ne;; ++np) {
 		if (*np == '\0')
 			return (char *)strstr(hs, ne);
@@ -854,9 +851,9 @@ JSTR_NOEXCEPT
 	typedef const unsigned char cu;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
-#if !JSTR_TEST
 	size_t nn = n;
 	cu *np = (cu *)ne;
+#if !JSTR_TEST
 	for (;; ++np) {
 		if (jstr_unlikely(nn-- == 0))
 			return NULL;

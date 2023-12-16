@@ -38,13 +38,6 @@
 #	define JSTR_USE_LGPL 1
 #endif
 
-/* Always prefer standard functions over user functions.
-   For example, use libc strcasestr() when available
-   over our own strcasestr() in jstr_strcasestr(). */
-#ifndef JSTR_USE_STANDARD_ALWAYS
-#	define JSTR_USE_STANDARD_ALWAYS 0
-#endif
-
 /* jstrio_*() stdio functions and all functions which use them
    will use the *_unlocked() versions when available. */
 #ifndef JSTR_USE_UNLOCKED_IO
