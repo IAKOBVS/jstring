@@ -35,6 +35,7 @@ PJSTR_END_DECLS
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
 #include "jstr-ctype.h"
+#include "_musl.h"
 
 #if defined __AVX2__ || defined __SSE__
 #	define JSTR_HAVE_SIMD 1
@@ -43,7 +44,6 @@ PJSTR_END_DECLS
 #if JSTR_HAVE_SIMD
 #	include "_simd.h"
 #endif
-#include "_musl.h"
 
 #define R JSTR_RESTRICT
 
