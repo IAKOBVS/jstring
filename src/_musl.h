@@ -42,8 +42,6 @@ pjstr_strchrnul_musl(const char *s,
                      int c)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(c == '\0'))
-		return (char *)s + strlen(s);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	enum { ALIGN = sizeof(size_t) };
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
@@ -126,12 +124,6 @@ JSTR_NOEXCEPT
 	enum { ALIGN = sizeof(size_t) };
 	if (!jstr_isalpha(c))
 		return (void *)memchr(s, c, n);
-	if (jstr_unlikely(c == '\0'))
-#if JSTR_HAVE_STRNLEN
-		return (char *)s + strnlen((char *)s, n);
-#else
-		return (void *)memchr(s, 0, n);
-#endif
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS

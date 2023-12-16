@@ -172,11 +172,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
 	return pjstr_strcasechrnul_simd(s, c);
 #else
-	if (jstr_isalpha(c))
-		return pjstr_strcasechrnul(s, c);
-	if (jstr_likely(c))
-		return jstr_strchrnul(s, c);
-	return (char *)s + strlen(s);
+	return jstr_isalpha(c) ? pjstr_strcasechrnul(s, c) : jstr_strchrnul(s, c);
 #endif
 }
 
