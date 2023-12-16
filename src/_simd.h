@@ -36,6 +36,7 @@ PJSTR_BEGIN_DECLS
 #ifdef __AVX2__
 #	include <immintrin.h>
 typedef __m256i jstr_vec_ty;
+typedef uint32_t jstr_vec_mask_ty;
 #	define MASK             uint32_t
 #	define LOAD(x)          _mm256_load_si256(x)
 #	define LOADU(x)         _mm256_loadu_si256(x)
@@ -52,7 +53,7 @@ typedef __m256i jstr_vec_ty;
 #else
 #	include <emmintrin.h>
 typedef __m128i jstr_vec_ty;
-#	define MASK             uint16_t
+typedef uint16_t jstr_vec_mask_ty;
 #	define LOAD(x)          _mm_load_si128(x)
 #	define LOADU(x)         _mm_loadu_si128(x)
 #	define STORE(dst, src)  _mm_store_si128(dst, src)
@@ -68,8 +69,10 @@ typedef __m128i jstr_vec_ty;
 #		define TZCNT(x) __builtin_ia32_tzcnt_u16(x)
 #	endif
 #endif
-#define VEC      jstr_vec_ty
-#define VEC_SIZE sizeof(VEC)
+#define VEC       jstr_vec_ty
+#define VEC_SIZE  sizeof(VEC)
+#define MASK      jstr_vec_mask_ty
+#define MASK_SIZE sizeof(MASK)
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
@@ -543,6 +546,7 @@ pjstr_countchr_len_simd(const void *s,
 #undef VEC
 #undef VEC_SIZE
 #undef MASK
+#undef MASK_SIZE
 #undef LOAD
 #undef LOADU
 #undef STORE
