@@ -37,7 +37,6 @@ PJSTR_BEGIN_DECLS
 #	include <immintrin.h>
 typedef __m256i jstr_vec_ty;
 typedef uint32_t jstr_vec_mask_ty;
-#	define MASK             uint32_t
 #	define LOAD(x)          _mm256_load_si256(x)
 #	define LOADU(x)         _mm256_loadu_si256(x)
 #	define STORE(dst, src)  _mm256_store_si256(dst, src)
