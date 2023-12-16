@@ -166,10 +166,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	enum { ALIGN = sizeof(size_t) };
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-#	if !JSTR_HAVE_UNALIGNED_ACCESS
-	if ((uintptr_t)src % ALIGN == (uintptr_t)dst % ALIGN)
-#	endif
-	{
+	if ((uintptr_t)dst % ALIGN == (uintptr_t)src % ALIGN) {
 		while (JSTR_PTR_IS_NOT_ALIGNED(dst, ALIGN))
 			if (jstr_unlikely((*dst++ = *src++) == '\0'))
 				return dst - 1;
