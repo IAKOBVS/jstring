@@ -339,22 +339,22 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memmem
 #include "_strstr234.h"
 
-#define PJSTR_STRSTR234_FUNC_NAME pjstr_strcasestr
 #define PJSTR_STRSTR234_CANON     jstr_tolower
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_strcasestr
 #include "_strstr234.h"
 
 #define PJSTR_STRSTR234_MEMMEM
-#define PJSTR_STRSTR234_FUNC_NAME pjstr_memcasemem
 #define PJSTR_STRSTR234_CANON     jstr_tolower
+#define PJSTR_STRSTR234_FUNC_NAME pjstr_memcasemem
 #include "_strstr234.h"
 
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_strnstr
 #define PJSTR_STRSTR234_STRNSTR   1
 #include "_strstr234.h"
 
+#define PJSTR_STRSTR234_CANON     jstr_tolower
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_strncasestr
 #define PJSTR_STRSTR234_STRNSTR   1
-#define PJSTR_STRSTR234_CANON     jstr_tolower
 #include "_strstr234.h"
 
 #define PJSTR_MUSL_FUNC_NAME pjstr_memmem_musl
@@ -542,8 +542,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
 	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
-	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift)
-	    || jstr_unlikely(n < shift))
+	if (jstr_unlikely(n < shift) || jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	const char *const start = hs;
 	hs = jstr_strnchr(hs + shift, *(ne + shift), n);
@@ -773,6 +772,7 @@ jstr_strcasestr(const char *hs,
                 const char *ne)
 JSTR_NOEXCEPT
 {
+#if !JSTR_TEST
 	typedef const unsigned char cu;
 	for (cu *np = (cu *)ne;; ++np) {
 		if (*np == '\0')
@@ -780,11 +780,12 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(*np))
 			break;
 	}
+#endif
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindprefernonalpha(ne), ne);
-	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift))
+	if (jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	hs = jstr_strcasechr(hs + shift, *(ne + shift));
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
@@ -853,6 +854,7 @@ JSTR_NOEXCEPT
 	typedef const unsigned char cu;
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
+#if !JSTR_TEST
 	size_t nn = n;
 	cu *np = (cu *)ne;
 	for (;; ++np) {
@@ -863,9 +865,9 @@ JSTR_NOEXCEPT
 		if (jstr_isalpha(*np))
 			break;
 	}
+#endif
 	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindprefernonalpha(ne), ne);
-	if (jstr_unlikely(jstr_strnlen(hs, shift) < shift)
-	    || jstr_unlikely(n < shift))
+	if (jstr_unlikely(n < shift) || jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	const char *const start = hs;
 	hs = jstr_strncasechr(hs + shift, *(ne + shift), n);

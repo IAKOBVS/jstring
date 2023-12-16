@@ -259,15 +259,15 @@ JSTR_NOEXCEPT
 #endif
 }
 
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
 jstr_strnlen_loop(const char *s,
-                  size_t n)
+                  size_t maxlen)
 {
-	const int l = s[0] + s[1] + s[2] + s[3];
-	return l <= 4 ? (size_t)l : jstr_strnlen(s, n);
+	size_t n = maxlen;
+	for (; n && *s; --n, ++s) {}
+	return maxlen - n;
 }
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
