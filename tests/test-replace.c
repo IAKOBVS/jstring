@@ -220,31 +220,6 @@ simple_rplcnchr_len(char *s,
 	return changed;
 }
 
-static char *
-simple_memmem(const void *hs,
-              const size_t hl,
-              const void *ne,
-              const size_t nl)
-{
-#if JSTR_HAVE_MEMMEM && !JSTR_USE_SIMPLE
-	return (char *)memmem(hs, hl, ne, nl);
-#else
-	const unsigned char *h = (const unsigned char *)hs;
-	const unsigned char *n = (const unsigned char *)ne;
-	if (nl == 0)
-		return (char *)h;
-	if (hl == 0)
-		return NULL;
-	if (hl < nl)
-		return NULL;
-	const unsigned char *const end = h + hl - nl;
-	for (; h <= end; ++h)
-		if (*h == *n && !memcmp(h, n, nl))
-			return (char *)h;
-	return NULL;
-#endif
-}
-
 static size_t
 simple_rplcn_len_from(char **s,
                       size_t *sz,
