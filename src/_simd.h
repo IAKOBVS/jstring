@@ -218,19 +218,19 @@ pjstr_strchrnul_simd(const char *s,
 	for (; JSTR_PTR_IS_NOT_ALIGNED(s, VEC_SIZE); ++s)
 		if (jstr_unlikely(*s == '\0') || *s == (char)c)
 			return (char *)s;
-	uint32_t m, m1, zm;
+	uint32_t cm, m, zm;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
-		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
+		cm = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
 		zm = (uint32_t)MOVEMASK8(CMPEQ8(sv, zv));
-		m1 = m | zm;
-		if (m1)
+		m = cm | zm;
+		if (m)
 			break;
 	}
-	return (char *)s + TZCNT(m1);
+	return (char *)s + TZCNT(m);
 }
 
 JSTR_FUNC_PURE
@@ -443,16 +443,15 @@ pjstr_strcasestr_len_simd(const char *hs,
 	if (shift == ne_len - 1)
 		--shift;
 	h += shift;
-	for (const int c = jstr_tolower(*((unsigned char *)ne + shift));
-	     JSTR_PTR_IS_NOT_ALIGNED(h, VEC_SIZE);
-	     ++h) {
+	const int c = jstr_tolower(*(ne + shift));
+	for (; JSTR_PTR_IS_NOT_ALIGNED(h, VEC_SIZE); ++h) {
 		if (jstr_unlikely(h - shift > end))
 			return NULL;
 		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((const char *)h - shift, (const char *)ne, ne_len))
 			return (char *)(h - shift);
 	}
-	const VEC nv = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift)));
-	const VEC nv1 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
+	const VEC nv = SETONE8((char)c);
+	const VEC nv1 = SETONE8((char)jstr_toupper(c));
 	const VEC nv2 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
 	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 	VEC hv, hv1;
