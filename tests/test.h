@@ -146,7 +146,7 @@ JSTR_ATTR_MAYBE_UNUSED
 static void
 t_init()
 {
-	t = (test_ty) { 0 };
+	memset(&t, 0, sizeof(t));
 }
 
 #define T_DEBUG(func, expr)           \

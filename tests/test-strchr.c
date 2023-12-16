@@ -148,6 +148,7 @@ simple_countchr(const char *s,
 		size_t align;                                                   \
 		for (align = 0; align < 8; align++) {                           \
 			const char *p = aligncpy(s, sizeof(s), (size_t)align);  \
+			t_init();                                               \
 			t.n = strlen(p);                                        \
 			t.result = jstr_strncasechr(p, c, t.n);                 \
 			t.expected = simple_strncasechr(p, c, t.n);             \
