@@ -621,15 +621,15 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *const rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
-	const size_t shift = JSTR_PTR_DIFF(rare, ne);
-	cu *p = (cu *)jstr_memrchr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
+	const int c = *((cu *)ne + shift);
+	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(p == NULL) || ne_len == 1)
 		return (char *)p;
-	p -= shift;
+	hs = (cu *)hs + shift;
 	for (; p >= (cu *)hs; --p)
-		if (*(cu *)p == *(cu *)ne && !memcmp(p, ne, ne_len))
-			return (char *)p;
+		if (*(cu *)p == c && !memcmp(p - shift, ne, ne_len))
+			return (char *)p - shift;
 	return NULL;
 }
 
