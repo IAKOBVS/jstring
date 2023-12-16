@@ -92,4 +92,70 @@ PJSTR_END_DECLS
 		}                                                      \
 	} while (0)
 
+#define P(fmt, x)                      \
+	do {                           \
+		PRINTERR("%s:", #fmt); \
+		PRINTERR(fmt "\n", x); \
+	} while (0)
+
+#define PS(x) P("%s", x)
+#define PZ(x) P("%zu", x)
+
+typedef struct test_ty {
+	const char *hs;
+	size_t hs_len;
+	const char *ne;
+	size_t ne_len;
+	const char *s1;
+	size_t s1_len;
+	const char *s2;
+	size_t s2_len;
+	const char *result;
+	size_t result_len;
+	const char *expected;
+	size_t expected_len;
+	size_t n;
+	size_t result_n;
+	size_t expected_n;
+	const char *src;
+	size_t src_len;
+	const char *dst;
+	size_t dst_len;
+} test_ty;
+static test_ty t;
+
+JSTR_ATTR_MAYBE_UNUSED
+static void
+t_debug(void)
+{
+	PS(t.hs);
+	PZ(t.hs_len);
+	PS(t.ne);
+	PZ(t.ne_len);
+	PS(t.result);
+	PZ(t.result_len);
+	PS(t.expected);
+	PZ(t.expected_len);
+	PS(t.s1);
+	PZ(t.s1_len);
+	PS(t.s2);
+	PZ(t.s2_len);
+}
+
+JSTR_ATTR_MAYBE_UNUSED
+static void
+t_init()
+{
+	t = (test_ty) { 0 };
+}
+
+#define T_DEBUG(func, expr)           \
+	do {                          \
+		if (!(expr)) {        \
+			PS(#func);    \
+			t_debug();    \
+			assert(expr); \
+		}                     \
+	} while (0)
+
 #endif /* JSTR_TEST_H */

@@ -56,7 +56,7 @@
 
 /* Minimum size of allocation of malloc(). */
 #ifndef JSTR_MIN_CAP
-#	define JSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 16)
+#	define JSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 12)
 #endif
 
 /* Allocations will be aligned to this alignment. */

@@ -1432,6 +1432,7 @@ JSTR_NOEXCEPT
 /* Count occurences of C in S.
    Return value:
    Occurences of C in S. */
+/* JSTR_ATTR_NO_SANITIZE_ADDRESS */
 JSTR_FUNC_PURE
 static size_t
 jstr_countchr(const char *s,
@@ -1452,6 +1453,7 @@ JSTR_NOEXCEPT
 /* Count occurences of C in S.
    Return value:
    Occurences of C in S. */
+/* JSTR_ATTR_NO_SANITIZE_ADDRESS */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
