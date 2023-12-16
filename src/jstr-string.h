@@ -225,8 +225,6 @@ JSTR_NOEXCEPT
 #elif JSTR_HAVE_STRLEN_OPTIMIZED && !JSTR_TEST
 	/* Optimized memcpy() + strlen() is still faster than a C stpcpy(). */
 	return jstr_stpcpy_len(dst, src, strlen(src));
-#elif JSTR_HAVE_WORD_AT_A_TIME && JSTR_USE_LGPL
-#	include "_lgpl-stpcpy.h"
 #else
 	return pjstr_stpcpy_musl(dst, src);
 #endif
