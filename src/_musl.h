@@ -248,8 +248,8 @@ JSTR_NOEXCEPT
 	return n ? (char *)s : NULL;
 }
 
-#undef HASZERO
-#undef HIGHS
 #undef ONES
+#undef HIGHS
+#undef HASZERO
 
 #endif /* PJSTR_MUSL_H */
