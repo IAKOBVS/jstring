@@ -26,7 +26,6 @@
 #include "jstr-macros.h"
 #include "jstr-ctype.h"
 #include "jstr-struct.h"
-#include "jstr-word-at-a-time.h"
 
 PJSTR_BEGIN_DECLS
 #include <stdlib.h>

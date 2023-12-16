@@ -10,7 +10,6 @@ FLAGS='
 -Wsign-conversion
 -DJSTR_TEST_SLOW=1
 -DVERBOSE=1
--fsanitize=address
 '
 
 USE_TCC=0
@@ -38,25 +37,21 @@ compile()
 
 cd "$(dirname "$0")" || exit
 
-if [ $USE_TCC != 0 ] && has_prog tcc; then
-	CC=tcc
-else
-	CC=cc
-	# In GCC, -O1 compiles faster.
-	[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O1"
-	# Set the path to compile the tests to.
-	if [ -z "$TMPDIR" ]; then
-		if [ -d /tmp ]; then
-			TMPDIR=/tmp
-		else
-			TMPDIR=$(echo "$PWD" | head -c 255)
-		fi
+CC=cc
+# In GCC, -O1 compiles faster.
+[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O1"
+# Set the path to compile the tests to.
+if [ -z "$TMPDIR" ]; then
+	if [ -d /tmp ]; then
+		TMPDIR=/tmp
 	else
-		TMPDIR=$TMPDIR/
+		TMPDIR=$(echo "$PWD" | head -c 255)
 	fi
-	tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
-	mkdir -p "$tmp"
+else
+	TMPDIR=$TMPDIR/
 fi
+tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
+mkdir -p "$tmp"
 
 
 # Test all files in arguments. Otherwise, test all.

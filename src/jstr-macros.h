@@ -154,7 +154,7 @@ PJSTR_END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == -1)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define PJSTR_CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         PJSTR_CONCAT_HELPER(x, y)
@@ -970,31 +970,6 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #	define JSTR_WORD_CMPEQ64(x, y)  JSTR_WORD_CMPEQU64(x, y)
 #endif
 
-/* Check builtins. */
-#if JSTR_ARCH_ALPHA
-#	if (JSTR_HAS_BUILTIN(__builtin_alpha_cmpbge) || defined __builtin_alpha_cmpbge) \
-	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)                  \
-	&& (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)
-#		define JSTR_HAVE_WORD_AT_A_TIME 1
-#	endif
-#elif JSTR_ARCH_POWERPC6
-#	if (JSTR_HAS_BUILTIN(__builtin_cmpb) || defined __builtin_cmpb)
-#		define JSTR_HAVE_WORD_AT_A_TIME 1
-#	endif
-#else /* jstr_arch_generic */
-#	if (JSTR_HAS_BUILTIN(__builtin_clzl) || defined __builtin_clzl)  \
-	&& (JSTR_HAS_BUILTIN(__builtin_clzll) || defined __builtin_clzll) \
-	&& (JSTR_HAS_BUILTIN(__builtin_ctzl) || defined __builtin_ctzl)   \
-	&& (JSTR_HAS_BUILTIN(__builtin_ctzll) || defined __builtin_ctzll)
-#		define JSTR_HAVE_WORD_AT_A_TIME 1
-#	endif
-#endif /* have_word_at_a_time */
-
-#if !JSTR_HAVE_ATTR_MAY_ALIAS
-#	undef JSTR_HAVE_WORD_AT_A_TIME
-#	define JSTR_HAVE_WORD_AT_A_TIME 0
-#endif
-
 #ifndef JSTR_USE_UNLOCKED_IO
 #	define JSTR_USE_UNLOCKED_IO 0
 #endif
@@ -1243,15 +1218,6 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #endif
 #ifndef JSTR_HAVE_UNALIGNED_ACCESS
 #	define JSTR_HAVE_UNALIGNED_ACCESS 0
-#endif
-#ifndef JSTR_HAVE_WORD_AT_A_TIME
-#	define JSTR_HAVE_WORD_AT_A_TIME 0
-#endif
-#ifndef JSTR_HAVE_WORD_AT_A_TIME
-#	define JSTR_HAVE_WORD_AT_A_TIME 0
-#endif
-#ifndef JSTR_HAVE_WORD_AT_A_TIME
-#	define JSTR_HAVE_WORD_AT_A_TIME 0
 #endif
 #ifndef JSTR_LP64
 #	define JSTR_LP64 0
