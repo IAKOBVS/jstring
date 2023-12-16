@@ -143,17 +143,6 @@ main()
 	RUN(b_pjstr_strncasechr_simd, 0);
 #endif
 
-#ifdef __AVX2__
-	RUN(b_pjstr_strcasechrnul_simd, 0);
-	RUN(b_pjstr_strchrnul_simd, 0);
-	RUN(b_pjstr_memrchr_simd, 0);
-	RUN(b_pjstr_memcasechr_simd, 0);
-	RUN(b_pjstr_countchr_simd, 0);
-	RUN(b_pjstr_countchr_len_simd, 0);
-	RUN(b_pjstr_strncasechr_simd, 0);
-	RUN(b_pjstr_strnchr_simd, 0);
-#endif
-
 	RUN(b_simple_countchr, 0);
 	RUN(b_simple_countchr_len, 0);
 	RUN(b_pjstr_strchrnul_musl, 0);

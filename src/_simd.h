@@ -401,12 +401,12 @@ pjstr_memmem_simd(const void *hs,
 	}
 	const VEC nv = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	VEC hv, hv1;
+	VEC hv0, hv1;
 	uint32_t i, hm0, hm1, m;
 	for (; h - shift <= end; h += VEC_SIZE) {
-		hv = LOAD((const VEC *)h);
+		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
-		hm0 = (uint32_t)MOVEMASK8(CMPEQ8(hv, nv));
+		hm0 = (uint32_t)MOVEMASK8(CMPEQ8(hv0, nv));
 		hm1 = (uint32_t)MOVEMASK8(CMPEQ8(hv1, nv1));
 		m = hm0 & hm1;
 		while (m) {
@@ -454,13 +454,13 @@ pjstr_strcasestr_len_simd(const char *hs,
 	const VEC nv1 = SETONE8((char)jstr_toupper(c));
 	const VEC nv2 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
 	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
-	VEC hv, hv1;
+	VEC hv0, hv1;
 	uint32_t i, hm0, hm1, hm2, hm3, m;
 	for (; h - shift <= end; h += VEC_SIZE) {
-		hv = LOAD((const VEC *)h);
+		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
-		hm0 = (uint32_t)MOVEMASK8(CMPEQ8(hv, nv));
-		hm1 = (uint32_t)MOVEMASK8(CMPEQ8(hv, nv1));
+		hm0 = (uint32_t)MOVEMASK8(CMPEQ8(hv0, nv));
+		hm1 = (uint32_t)MOVEMASK8(CMPEQ8(hv0, nv1));
 		hm2 = (uint32_t)MOVEMASK8(CMPEQ8(hv1, nv2));
 		hm3 = (uint32_t)MOVEMASK8(CMPEQ8(hv1, nv3));
 		m = (hm0 | hm1) & (hm2 | hm3);
