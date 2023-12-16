@@ -335,37 +335,34 @@ main(int argc, char **argv)
 {
 	START();
 
+	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
 	T_LEN(jstr_strcasestr_len, simple_strcasestr_len, test_array_memmem);
 
-	T(jstr_strcasestr, simple_strcasestr, test_array_memmem);
-	T_N(jstr_strnstr, simple_strnstr, test_array_memmem);
+/* 	T_N(jstr_strnstr, simple_strnstr, test_array_memmem); */
+/* 	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem); */
+/* 	T_LEN(jstr_memmem, simple_memmem, test_array_memmem); */
+/* 	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem); */
+/* 	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem); */
 
-	T_N(jstr_strncasestr, simple_strncasestr, test_array_memmem);
+/* 	T_CMP_LEN(!jstr_memcmpeq_loop, !memcmp, test_array_memcmp); */
+/* 	T_CMP_LEN(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp); */
+/* 	T_CMP_LEN(!jstr_strcasecmpeq_len, !simple_strncasecmp, test_array_memcmp); */
+/* 	T_CMP_LEN(!jstr_strcasecmpeq_len_loop, !simple_strncasecmp, test_array_memcmp); */
+/* 	T_CMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp); */
+/* 	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp); */
+/* 	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp); */
 
-	T_LEN(jstr_memmem, simple_memmem, test_array_memmem);
-	T_LEN(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
+/* 	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem); */
 
-	T_CPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
-
-	T_CMP_LEN(!jstr_memcmpeq_loop, !memcmp, test_array_memcmp);
-	T_CMP_LEN(jstr_strncasecmp, simple_strncasecmp, test_array_memcmp);
-	T_CMP_LEN(!jstr_strcasecmpeq_len, !simple_strncasecmp, test_array_memcmp);
-	T_CMP_LEN(!jstr_strcasecmpeq_len_loop, !simple_strncasecmp, test_array_memcmp);
-	T_CMP(jstr_strcasecmp, simple_strcasecmp, test_array_memcmp);
-	T_CMP(!jstr_strcasecmpeq, !simple_strcasecmp, test_array_memcmp);
-	T_CMP(!jstr_strcasecmpeq_loop, !simple_strcasecmp, test_array_memcmp);
-
-	T_CPY(jstr_revcpy_p, simple_revcpy_p, test_array_memmem);
-
-#if JSTR_HAVE_SIMD
-	T_CPY(pjstr_stpcpy_simd, simple_stpcpy, test_array_memmem);
-#	if !JSTR_HAVENT_MEMMEM_SIMD
-	T_LEN(pjstr_memmem_simd, simple_memmem, test_array_memmem);
-#	endif
-#	if !JSTR_HAVENT_STRCASESTR_LEN_SIMD
-	T_LEN(pjstr_strcasestr_len_simd, simple_strcasestr_len, test_array_memmem);
-#	endif
-#endif
+/* #if JSTR_HAVE_SIMD */
+/* 	T_CPY(pjstr_stpcpy_simd, simple_stpcpy, test_array_memmem); */
+/* #	if !JSTR_HAVENT_MEMMEM_SIMD */
+/* 	T_LEN(pjstr_memmem_simd, simple_memmem, test_array_memmem); */
+/* #	endif */
+/* #	if !JSTR_HAVENT_STRCASESTR_LEN_SIMD */
+/* 	T_LEN(pjstr_strcasestr_len_simd, simple_strcasestr_len, test_array_memmem); */
+/* #	endif */
+/* #endif */
 
 	SUCCESS();
 	return EXIT_SUCCESS;

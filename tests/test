@@ -10,6 +10,7 @@ FLAGS='
 -Wsign-conversion
 -DJSTR_TEST_SLOW=1
 -DVERBOSE=1
+-fsanitize=address
 '
 
 USE_TCC=0
@@ -23,16 +24,12 @@ compile()
 {
 	file=$1
 	args=$(echo "$*" | cut -d' ' -f3-)
-	if [ $CC = 'tcc' ]; then
-		$CC $FLAGS $args -run "$file" $args
-	else
-		file=$1
-		out=$2
-		out=$out$(echo "$args" | tr -d ' ')
-		$CC "$file" -o "$out" $FLAGS $args
-		"$out"
-		rm "$out"
-	fi
+	file=$1
+	out=$2
+	out=$out$(echo "$args" | tr -d ' ')
+	$CC "$file" -o "$out" $FLAGS $args
+	"$out"
+	rm "$out"
 }
 
 cd "$(dirname "$0")" || exit
@@ -53,7 +50,6 @@ fi
 tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
 mkdir -p "$tmp"
 
-
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
 	files=$(echo *.c)
@@ -68,4 +64,4 @@ for file in $files; do
 done
 wait
 
-[ $CC != 'tcc' ] && rm -rf "$tmp"
+rm -rf "$tmp"
