@@ -172,7 +172,7 @@ JSTR_NOEXCEPT
 	{
 		while (JSTR_PTR_IS_NOT_ALIGNED(dst, ALIGN))
 			if (jstr_unlikely((*dst++ = *src++) == '\0'))
-				return dst;
+				return dst - 1;
 		word *wd = (word *)dst;
 		const word *ws = (const word *)src;
 		for (; !HASZERO(*ws); *wd++ = *ws++) {}
