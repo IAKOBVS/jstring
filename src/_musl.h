@@ -51,9 +51,9 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(*s == '\0') || *s == (char)c)
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
-	const word *w = (word *)s;
-	for (; !HASZERO(*w) && !HASZERO(*w ^ k); ++w) {}
-	s = (char *)w;
+	const word *ws = (word *)s;
+	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k); w = *++ws) {}
+	s = (char *)ws;
 #endif
 	for (; *s && *s != (char)c; ++s) {}
 	return (char *)s;
@@ -80,10 +80,10 @@ JSTR_NOEXCEPT
 	}
 	if (n >= SS && *p != c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
-		const word *w = (const word *)(p - SS + 1);
+		const word *ws = (const word *)(p - SS + 1);
 		const size_t k = ONES * (unsigned char)c;
-		for (; n >= SS && !HASZERO(*w ^ k); --w, n -= SS) {}
-		p = (unsigned char *)w + SS - 1;
+		for (word w = *ws; n >= SS && !HASZERO(w ^ k); w = *--ws, n -= SS) {}
+		p = (unsigned char *)ws + SS - 1;
 	}
 #endif
 	for (; n--; --p)
@@ -108,9 +108,9 @@ JSTR_NOEXCEPT
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
 	const size_t l = ONES * (unsigned char)jstr_toupper(c);
-	const word *w = (word *)s;
-	for (; !HASZERO(*w) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); ++w) {}
-	s = (char *)w;
+	const word *ws = (word *)s;
+	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws) {}
+	s = (char *)ws;
 #endif
 	for (; *s && jstr_tolower(*s) != c; ++s) {}
 	return (char *)s;
@@ -145,9 +145,9 @@ JSTR_NOEXCEPT
 		}
 		const size_t k = ONES * (unsigned char)c;
 		const size_t l = ONES * jstr_toupper(c);
-		const word *w = (word *)p;
-		for (; n >= sizeof(size_t) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); n -= sizeof(size_t), ++w) {}
-		p = (unsigned char *)w;
+		const word *ws = (word *)p;
+		for (word w = *ws; n >= sizeof(size_t) && !HASZERO(w ^ k) && !HASZERO(w ^ l); n -= sizeof(size_t), w = *++ws) {}
+		p = (unsigned char *)ws;
 	}
 #endif
 	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
@@ -172,7 +172,8 @@ JSTR_NOEXCEPT
 				return dst - 1;
 		word *wd = (word *)dst;
 		const word *ws = (const word *)src;
-		for (; !HASZERO(*ws); *wd++ = *ws++) {}
+		for (word w = *ws; !HASZERO(w); w = *++ws)
+			*wd++ = w;
 		dst = (char *)wd;
 		src = (const char *)ws;
 	}
@@ -201,9 +202,9 @@ JSTR_NOEXCEPT
 	if (n >= SS && *s != (char)c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
-		const word *w = (const word *)s;
-		for (; n >= SS && !HASZERO(*w) && !HASZERO(*w ^ k); ++w, n -= SS) {}
-		s = (const char *)w;
+		const word *ws = (const word *)s;
+		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k); w = *++ws, n -= SS) {}
+		s = (const char *)ws;
 	}
 #	undef ALIGN
 #endif
@@ -235,9 +236,9 @@ JSTR_NOEXCEPT
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
 		const size_t l = ONES * jstr_toupper(c);
-		const word *w = (const word *)s;
-		for (; n >= SS && !HASZERO(*w) && !HASZERO(*w ^ k) && !HASZERO(*w ^ l); ++w, n -= SS) {}
-		s = (const char *)w;
+		const word *ws = (const word *)s;
+		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws, n -= SS) {}
+		s = (const char *)ws;
 	}
 #	undef ALIGN
 #endif
