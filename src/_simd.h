@@ -534,15 +534,6 @@ pjstr_countchr_len_simd(const void *s,
 		m = (uint32_t)MOVEMASK8(CMPEQ8(sv, cv));
 		cnt += m ? (unsigned int)POPCNT(m) : 0;
 	}
-#	ifdef __AVX2__
-	if (n >= sizeof(__m128i)) {
-		const __m128i v = _mm_load_si128((const __m128i *)p);
-		m = (uint32_t)_mm_movemask_epi8(_mm_cmpeq_epi8(v, _mm_setzero_si128()));
-		cnt += m ? (unsigned int)POPCNT(m) : 0;
-		p += sizeof(__m128i);
-		n -= sizeof(__m128i);
-	}
-#	endif
 	for (; n--; cnt += *p++ == (unsigned char)c) {}
 	return cnt;
 }
