@@ -33,11 +33,6 @@
 #	define JSTR_DEBUG 0
 #endif
 
-/* Exclude all LGPL code from being included. */
-#ifndef JSTR_USE_LGPL
-#	define JSTR_USE_LGPL 1
-#endif
-
 /* jstrio_*() stdio functions and all functions which use them
    will use the *_unlocked() versions when available. */
 #ifndef JSTR_USE_UNLOCKED_IO

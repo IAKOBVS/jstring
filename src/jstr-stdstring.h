@@ -36,8 +36,6 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-#define JSTR_LGPL_IMPL
-
 PJSTR_BEGIN_DECLS
 
 /* Compare S1 with S2 case-insensitively.

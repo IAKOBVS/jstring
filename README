@@ -38,9 +38,6 @@ https://github.com/IAKOBVS/rarebyte
 
 --- Disclaimer:
 
-Some of the code are licensed under LGPL. You can define JSTR_USE_LGPL as 0 to
-exclude them. jstr_ty, jstrl_ty, and jarr_ty must be initialized with zeros.
-
 Do not pass a string with embedded NULs to a function that takes a char *
 parameter. char * implies no embedded NULs. Use ones which takes a void *.
 
