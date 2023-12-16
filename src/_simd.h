@@ -415,7 +415,7 @@ pjstr_memmem_simd(const void *hs,
 			if (jstr_unlikely(h + i - shift > end))
 				return NULL;
 			if (!memcmp(h + i - shift, ne, ne_len))
-				return (char *)h + i - shift;
+					return (char *)h + i - shift;
 		}
 	}
 	return NULL;

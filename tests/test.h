@@ -115,6 +115,14 @@ JSTR_ATTR_MAYBE_UNUSED
 static void
 t_debug(void)
 {
+	if (t.hs)
+		t.hs_len = strlen(t.hs);
+	if (t.ne)
+		t.ne_len = strlen(t.ne);
+	if (t.result)
+		t.result_len = strlen(t.result);
+	if (t.expected)
+		t.expected_len = strlen(t.expected);
 	PS(t.hs);
 	PZ(t.hs_len);
 	PS(t.ne);

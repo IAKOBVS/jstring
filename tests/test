@@ -24,7 +24,7 @@ compile()
 	file=$1
 	out=$2
 	out=$out$(echo "$args" | tr -d ' ')
-	CC "$file" -o "$out" $FLAGS $args
+	cc "$file" -o "$out" $FLAGS $args
 	"$out"
 	rm "$out"
 }
@@ -56,7 +56,7 @@ fi
 
 for file in $files; do
 	out_file=${file%.*}
-	compile "$file" "$tmp$out_file" $FLAGS -mtune=generic &
+	# compile "$file" "$tmp$out_file" $FLAGS -mtune=generic &
 	compile "$file" "$tmp$out_file" $FLAGS -march=native &
 done
 wait
