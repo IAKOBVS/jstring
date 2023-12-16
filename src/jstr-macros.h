@@ -1263,7 +1263,4 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #	define JSTR_LP_UNKNOWN 0
 #endif
 
-#undef JSTR_ATTR_INLINE
-#define JSTR_ATTR_INLINE
-
 #endif /* jstr_macros_h */
