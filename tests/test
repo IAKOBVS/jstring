@@ -24,16 +24,16 @@ compile()
 	file=$1
 	out=$2
 	out=$out$(echo "$args" | tr -d ' ')
-	$CC "$file" -o "$out" $FLAGS $args
+	CC "$file" -o "$out" $FLAGS $args
 	"$out"
 	rm "$out"
 }
 
 cd "$(dirname "$0")" || exit
 
-CC=cc
+CC="$(readlink "$(command -v cc)")"
 # In GCC, -O1 compiles faster.
-[ "$(readlink "$(command -v cc)")" = 'gcc' ] && FLAGS="$FLAGS -O1"
+[ $CC = 'gcc' ] && FLAGS="$FLAGS -O1"
 # Set the path to compile the tests to.
 if [ -z "$TMPDIR" ]; then
 	if [ -d /tmp ]; then
