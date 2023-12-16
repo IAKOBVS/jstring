@@ -94,7 +94,7 @@ PJSTR_END_DECLS
 
 #define P(fmt, x)                      \
 	do {                           \
-		PRINTERR("%s:", #fmt); \
+		PRINTERR("%s:", #x);   \
 		PRINTERR(fmt "\n", x); \
 	} while (0)
 
