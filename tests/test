@@ -56,7 +56,7 @@ fi
 
 for file in $files; do
 	out_file=${file%.*}
-	compile "$file" "$tmp$out_file" $FLAGS &
+	compile "$file" "$tmp$out_file" $FLAGS -mtune=generic &
 	compile "$file" "$tmp$out_file" $FLAGS -march=native &
 done
 wait
