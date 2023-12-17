@@ -390,6 +390,7 @@ pjstr_memmem_simd(const void *hs,
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	const unsigned char *h = (const unsigned char *)hs;
+	const unsigned char *hp;
 	const unsigned char *const end = h + hs_len - ne_len;
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
@@ -417,17 +418,18 @@ pjstr_memmem_simd(const void *hs,
 		while (m) {
 			i = TZCNT(m);
 			m = _blsr_u32(m);
-			if (jstr_unlikely(h + i - shift > end))
+			hp = h + i - shift;
+			if (jstr_unlikely(hp > end))
 				return NULL;
-			if (JSTR_PTR_ALIGN_UP(h + i - shift, 4096) - (uintptr_t)(h + i - shift) >= VEC_SIZE) {
-				hv = LOADU((VEC *)(h + i - shift));
+			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
+				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)MOVEMASK8(CMPEQ8(hv, nv)) << sh;
 				if (cmpm == matchm)
-					if (ne_len <= VEC_SIZE || !memcmp(h + i - shift + VEC_SIZE, (const unsigned char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
-						return (void *)(h + i - shift);
+					if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const unsigned char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+						return (void *)hp;
 			} else {
-				if (!memcmp(h + i - shift, ne, ne_len))
-					return (void *)(h + i - shift);
+				if (!memcmp(hp, ne, ne_len))
+					return (void *)hp;
 			}
 		}
 	}
