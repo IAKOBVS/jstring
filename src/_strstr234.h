@@ -213,6 +213,8 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (void *)hs : NULL;
 }
 
+#	if 0
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -229,8 +231,6 @@ JSTR_NOEXCEPT
 	for (l -= 5; l-- && hw != nw; hw = hw << 8 | L(*--hs) << 24) {}
 	return (hw == nw) ? (void *)hs : NULL;
 }
-
-#	if 0
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
