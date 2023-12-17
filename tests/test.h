@@ -158,7 +158,7 @@ t_init()
 #define T_S1(test, i) ((test)[i].s2)
 #define T_S2(test, i) ((test)[i].s2)
 
-#define T_FOREACH_NE(needle, needle_len) for (const char *np = needle; needle_len != (size_t)-1; ++np, --needle_len)
+#define T_FOREACH_NE(needle, needle_len) for (; needle_len != (size_t)-1; ++needle, --needle_len)
 
 #define T_STRCPY(fn, simple_fn, test_array)                                                   \
 	do {                                                                                  \

@@ -5,17 +5,21 @@
 #include "../src/jstr-string.h"
 
 JSTR_ATTR_MAYBE_UNUSED
-static int TOLOWER(int c)
+JSTR_ATTR_INLINE
+static int
+TOLOWER(int c)
 {
 	c = (char)c;
-	return (unsigned char)(c >= 'A' && c <= 'Z' ? c - 'A' + 'a' : c);
+	return (unsigned char)((c >= 'A' && c <= 'Z') ? (c - 'A' + 'a') : c);
 }
 
 JSTR_ATTR_MAYBE_UNUSED
-static int TOUPPER(int c)
+JSTR_ATTR_INLINE
+static int
+TOUPPER(int c)
 {
 	c = (char)c;
-	return (unsigned char)(c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c);
+	return (unsigned char)((c >= 'a' && c <= 'z') ? (c - 'a' + 'A') : c);
 }
 
 JSTR_ATTR_MAYBE_UNUSED
@@ -268,7 +272,7 @@ simple_strncasechr(const char *s,
                    size_t n)
 {
 	const char *p = simple_strcasechrnul(s, c);
-	return p < s + n && TOLOWER(*p) == TOLOWER(c) ? (char *)p : NULL;
+	return (p < s + n && TOLOWER(*p) == TOLOWER(c)) ? (char *)p : NULL;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED char *
@@ -276,9 +280,9 @@ simple_memcasechr(const void *s,
                   int c,
                   size_t n)
 {
-	c = jstr_tolower(c);
+	c = TOLOWER(c);
 	const unsigned char *p = (const unsigned char *)s;
-	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
+	for (; n && TOLOWER(*p) != c; --n, ++p) {}
 	return n ? (char *)p : NULL;
 }
 
