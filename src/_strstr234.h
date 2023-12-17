@@ -213,7 +213,7 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (void *)hs : NULL;
 }
 
-#	if 0
+#	if 0 /* Broken. */
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
