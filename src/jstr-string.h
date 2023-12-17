@@ -616,6 +616,8 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	if (ne_len == 2)
+		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
 		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
@@ -625,8 +627,6 @@ JSTR_NOEXCEPT
 	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(p == NULL) || ne_len == 1)
 		return (void *)p;
-	if (ne_len == 2)
-		return pjstr_memrmem2((cu *)hs, (cu *)ne, p - (cu *)hs + shift);
 	hs = (cu *)hs + shift;
 	for (; p >= (cu *)hs; --p)
 		if (*(cu *)p == c && !memcmp(p - shift, ne, ne_len))
