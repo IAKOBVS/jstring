@@ -131,89 +131,6 @@ simple_stpcpy(char *JSTR_RESTRICT dst,
 	return dst + n;
 }
 
-#define T_SETUP(buf, needle, needle_len)                                  \
-	do {                                                              \
-		size_t i;                                                 \
-		size_t cnt = 10000;                                       \
-		for (i = 0; i < cnt - 1; i++) {                           \
-			memcpy(buf + needle_len * i, needle, needle_len); \
-			buf[needle_len * i + needle_len - 1] ^= 1;        \
-		}                                                         \
-		memcpy(buf + needle_len * i, needle, needle_len + 1);     \
-	} while (0)
-
-#define T_DEFINE_STRSTR(impl_func, ...)                       \
-	static JSTR_ATTR_MAYBE_UNUSED size_t                  \
-	b_##impl_func(void *dummy)                            \
-	{                                                     \
-		const char *needle = dummy;                   \
-		const size_t needle_len = needle_len;         \
-		size_t cs = 0;                                \
-		for (size_t i = 0; i < 50; i++) {             \
-			buf[0] ^= 1;                          \
-			cs += (size_t)impl_func(__VA_ARGS__); \
-		}                                             \
-		return cs;                                    \
-	}
-
-#define T_STRSTR_ALL(needle)                                          \
-	JSTR_STATIC_ASSERT(sizeof(needle) - 1 <= (BUFLEN * CNT), ""); \
-	needle_len = sizeof(needle) - 1;                              \
-	buf_len = needle_len * CNT;                                   \
-	buf = realloc(buf, buf_len + 1);                              \
-	assert(buf);                                                  \
-	T_SETUP(buf, needle, needle_len);                             \
-	RUN(b_simple_strcasestr, needle);                             \
-	RUN(b_simple_strstr, needle);                                 \
-	RUN(b_simple_memmem, needle);                                 \
-	RUN(b_simple_strstr, needle);                                 \
-	RUN(b_strstr, needle);                                        \
-	RUN(b_memmem, needle);                                        \
-	T_AVX2(needle);                                               \
-	RUN(b_jstr_memmem, needle);                                   \
-	RUN(b_jstr_strstr_len, needle);                               \
-	RUN(b_strcasestr, needle);                                    \
-	RUN(b_jstr_strcasestr, needle);                               \
-	RUN(b_jstr_strcasestr_len, needle);                           \
-	RUN(b_simple_strnstr, needle);                                \
-	RUN(b_jstr_strnstr, needle);                                  \
-	RUN(b_simple_strrstr_len, needle);                            \
-	RUN(b_jstr_strrstr_len, needle);
-
-T_DEFINE_STRSTR(simple_memmem, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(simple_strcasestr, buf, needle)
-T_DEFINE_STRSTR(simple_strnstr, buf, needle, buf_len)
-T_DEFINE_STRSTR(jstr_strnstr, buf, needle, buf_len)
-T_DEFINE_STRSTR(simple_strstr, buf, needle)
-T_DEFINE_STRSTR(strstr, buf, needle)
-T_DEFINE_STRSTR(memmem, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_memmem, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_strstr_len, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(strcasestr, buf, needle)
-T_DEFINE_STRSTR(jstr_strcasestr, buf, needle)
-T_DEFINE_STRSTR(jstr_strcasestr_len, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(simple_strrstr_len, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr_stpcpy, buf, buf + i)
-T_DEFINE_STRSTR(pjstr_stpcpy_musl, buf, buf + i)
-T_DEFINE_STRSTR(simple_stpcpy, buf, buf + i)
-
-#ifdef __AVX2__
-T_DEFINE_STRSTR(pjstr_memmem_simd, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(pjstr_strcasestr_len_simd, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(pjstr_stpcpy_simd, buf, buf + i)
-#	define T_AVX2(needle)                    \
-		RUN(b_pjstr_memmem_simd, needle); \
-		RUN(b_pjstr_strcasestr_len_simd, needle);
-
-#else
-#	define T_AVX2(needle)
-#endif
-
-/* clang-format off */
-#define DOUBLE(s) s#s
-/* clang-format on */
-
 #define T_STRSTR()                                                  \
 	do {                                                        \
 		T_STRSTR_ALL("a");                                  \
@@ -254,17 +171,98 @@ T_DEFINE_STRSTR(pjstr_stpcpy_simd, buf, buf + i)
 		T_STRSTR_ALL(DOUBLE("Azbycxdwevfugthsirjqkplomn")); \
 	} while (0)
 
+#define T_SETUP(buf, needle, needle_len)                                  \
+	do {                                                              \
+		size_t i;                                                 \
+		size_t cnt = 10000;                                       \
+		for (i = 0; i < cnt - 1; i++) {                           \
+			memcpy(buf + needle_len * i, needle, needle_len); \
+			buf[needle_len * i + needle_len - 1] ^= 1;        \
+		}                                                         \
+		memcpy(buf + needle_len * i, needle, needle_len + 1);     \
+	} while (0)
+
+#define T_DEFINE_STRSTR(impl_func, ...)                       \
+	static JSTR_ATTR_MAYBE_UNUSED size_t                  \
+	b_##impl_func(void *dummy)                            \
+	{                                                     \
+		const char *needle = dummy;                   \
+		const size_t needle_len = needle_len;         \
+		size_t cs = 0;                                \
+		for (size_t i = 0; i < 50; i++) {             \
+			buf[0] ^= 1;                          \
+			cs += (size_t)impl_func(__VA_ARGS__); \
+		}                                             \
+		return cs;                                    \
+	}
+
+#define T_STRSTR_ALL(needle)                                          \
+	JSTR_STATIC_ASSERT(sizeof(needle) - 1 <= (BUFLEN * CNT), ""); \
+	needle_len = sizeof(needle) - 1;                              \
+	buf_len = needle_len * CNT;                                   \
+	buf = realloc(buf, buf_len + 1);                              \
+	assert(buf);                                                  \
+	T_SETUP(buf, needle, needle_len);                             \
+	RUN(b_simple_strcasestr, needle);                             \
+	RUN(b_simple_strstr, needle);                                 \
+	RUN(b_simple_memmem, needle);                                 \
+	RUN(b_simple_strstr, needle);                                 \
+	RUN(b_strstr, needle);                                        \
+	RUN(b_memmem, needle);                                        \
+	RUN(b_jstr_memmem, needle);                                   \
+	RUN(b_jstr_strstr_len, needle);                               \
+	RUN(b_strcasestr, needle);                                    \
+	RUN(b_jstr_strcasestr, needle);                               \
+	RUN(b_jstr_strcasestr_len, needle);                           \
+	RUN(b_simple_strnstr, needle);                                \
+	RUN(b_jstr_strnstr, needle);                                  \
+	RUN(b_simple_strrstr_len, needle);                            \
+	RUN(b_jstr_strrstr_len, needle);                              \
+	T_AVX2(needle);                                               \
+	RUN(b_pjstr_stpcpy_musl, 0);                                  \
+	RUN(b_jstr_stpcpy, 0);                                        \
+	RUN(b_simple_stpcpy, 0);                                      \
+	RUN(b_simple_stpcpy, 0);
+
+T_DEFINE_STRSTR(simple_memmem, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(simple_strcasestr, buf, needle)
+T_DEFINE_STRSTR(simple_strnstr, buf, needle, buf_len)
+T_DEFINE_STRSTR(jstr_strnstr, buf, needle, buf_len)
+T_DEFINE_STRSTR(simple_strstr, buf, needle)
+T_DEFINE_STRSTR(strstr, buf, needle)
+T_DEFINE_STRSTR(memmem, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_memmem, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_strstr_len, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(strcasestr, buf, needle)
+T_DEFINE_STRSTR(jstr_strcasestr, buf, needle)
+T_DEFINE_STRSTR(jstr_strcasestr_len, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(simple_strrstr_len, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_stpcpy, buf, buf + i)
+T_DEFINE_STRSTR(pjstr_stpcpy_musl, buf, buf + i)
+T_DEFINE_STRSTR(simple_stpcpy, buf, buf + i)
+
+#ifdef __AVX2__
+T_DEFINE_STRSTR(pjstr_memmem_simd, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(pjstr_strcasestr_len_simd, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(pjstr_stpcpy_simd, buf, buf + i)
+#	define T_AVX2(needle)                            \
+		RUN(b_pjstr_memmem_simd, needle);         \
+		RUN(b_pjstr_strcasestr_len_simd, needle); \
+		RUN(b_pjstr_stpcpy_simd, 0);
+
+#else
+#	define T_AVX2(needle)
+#endif
+
+/* clang-format off */
+#define DOUBLE(s) s#s
+/* clang-format on */
+
 int
 main()
 {
 	T_STRSTR();
-
-#ifdef __AVX2__
-	RUN(b_pjstr_stpcpy_simd, 0);
-#endif
-	RUN(b_pjstr_stpcpy_musl, 0);
-	RUN(b_jstr_stpcpy, 0);
-	RUN(b_simple_stpcpy, 0);
 
 	free(buf);
 	return 0;
