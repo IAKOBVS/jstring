@@ -390,7 +390,6 @@ pjstr_memmem_simd(const void *hs,
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	const unsigned char *h = (const unsigned char *)hs;
-	const unsigned char *hp;
 	const unsigned char *const end = h + hs_len - ne_len;
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
@@ -409,6 +408,7 @@ pjstr_memmem_simd(const void *hs,
 	const MASK matchm = 0xffffffff << sh;
 	VEC hv, hv0, hv1;
 	MASK i, hm0, hm1, m, cmpm;
+	const unsigned char *hp;
 	for (; h - shift <= end; h += VEC_SIZE) {
 		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
