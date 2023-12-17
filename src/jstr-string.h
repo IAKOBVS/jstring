@@ -622,6 +622,8 @@ JSTR_NOEXCEPT
 		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 5)
+		return pjstr_memrmem5((cu *)hs, (cu *)ne, hs_len);
 	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	const int c = *((cu *)ne + shift);
 	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
