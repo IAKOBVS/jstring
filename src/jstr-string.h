@@ -1590,7 +1590,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return the number of newlines + 1.
-   Return 0 if string is empty. */
+   Return 1 if string is empty. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
