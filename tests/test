@@ -9,7 +9,7 @@ FLAGS='
 -Wpedantic
 -Wsign-conversion
 -DJSTR_TEST_SLOW=1
--DVERBOSE=1
+-DVERBOSE=0
 '
 
 has_prog()
@@ -33,7 +33,6 @@ cd "$(dirname "$0")" || exit
 
 CC="$(readlink "$(command -v cc)")"
 # In GCC, -O1 compiles faster.
-CC=tcc
 [ $CC = 'gcc' ] && FLAGS="$FLAGS -O1"
 # Set the path to compile the tests to.
 if [ -z "$TMPDIR" ]; then
