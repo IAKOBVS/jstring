@@ -182,9 +182,9 @@ pjstr_strnchr_musl(const char *s,
                    size_t n)
 JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t) };
+	enum { SS = sizeof(size_t),
+	       ALIGN = (sizeof(size_t) - 1) };
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-#	define ALIGN (sizeof(size_t) - 1)
 	for (; (uintptr_t)s & ALIGN; ++s) {
 		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n-- == 0))
 			return NULL;
@@ -198,7 +198,6 @@ JSTR_NOEXCEPT
 		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k); w = *++ws, n -= SS) {}
 		s = (const char *)ws;
 	}
-#	undef ALIGN
 #endif
 	for (; n && *s && *s != (char)c; ++s, --n) {}
 	return n ? (char *)s : NULL;
@@ -212,12 +211,12 @@ pjstr_strncasechr_musl(const char *s,
                        size_t n)
 JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t) };
+	enum { SS = sizeof(size_t),
+	       ALIGN = (sizeof(size_t) - 1) };
 	if (!jstr_isalpha(c))
 		return pjstr_strnchr_musl(s, c, n);
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-#	define ALIGN (sizeof(size_t) - 1)
 	for (; (uintptr_t)s & ALIGN; ++s) {
 		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n-- == 0))
 			return NULL;
@@ -232,7 +231,6 @@ JSTR_NOEXCEPT
 		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws, n -= SS) {}
 		s = (const char *)ws;
 	}
-#	undef ALIGN
 #endif
 	for (; n && *s && jstr_tolower(*s) != c; ++s, --n) {}
 	return n ? (char *)s : NULL;
