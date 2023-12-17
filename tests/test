@@ -24,7 +24,7 @@ compile()
 	file=$1
 	out=$2
 	out=$out$(echo "$args" | tr -d ' ')
-	cc "$file" -o "$out" $FLAGS $args
+	$CC "$file" -o "$out" $FLAGS $args
 	"$out"
 	rm "$out"
 }

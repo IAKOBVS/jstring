@@ -46,6 +46,7 @@ aligncpy(const void *p, size_t len, size_t a)
 		for (align = 0; align < 8; align++) {                           \
 			const char *p = aligncpy(s, sizeof(s), (size_t)align);  \
 			t_init();                                               \
+			t.hs = p;                                               \
 			t.n = strlen(p);                                        \
 			t.result = jstr_strncasechr(p, c, t.n);                 \
 			t.expected = simple_strncasechr(p, c, t.n);             \
@@ -65,15 +66,15 @@ aligncpy(const void *p, size_t len, size_t a)
 			t.result = jstr_strcasechrnul(p, c);                    \
 			t.expected = simple_strcasechrnul(p, c);                \
 			T_DEBUG(jstr_strcasechrnul, t.result == t.expected);    \
-			t.result = pjstr_memcasechr_musl(s, c, t.n);            \
-			t.expected = simple_memcasechr(s, c, t.n);              \
-			T_DEBUG(pjstr_memcasechr_musl, t.result == t.expected); \
 			t.result_n = jstr_countchr_len(s, c, t.n);              \
 			t.expected_n = simple_countchr_len(s, c, t.n);          \
 			T_DEBUG(jstr_countchr_len, t.result_n == t.expected_n); \
 			t.result_n = jstr_countchr(s, c);                       \
 			t.expected_n = simple_countchr(s, c);                   \
 			T_DEBUG(jstr_countchr, t.result_n == t.expected_n);     \
+			t.result = pjstr_memcasechr_musl(s, c, t.n);            \
+			t.expected = simple_memcasechr(s, c, t.n);              \
+			T_DEBUG(pjstr_memcasechr_musl, t.result == t.expected); \
 		}                                                               \
 	} while (0)
 
