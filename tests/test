@@ -19,6 +19,7 @@ has_prog()
 
 compile()
 {
+	# CC=tcc
 	file=$1
 	args=$(echo "$*" | cut -d' ' -f3-)
 	file=$1

@@ -88,55 +88,30 @@ JSTR_NOEXCEPT
 #endif
 }
 
+/* Return value:
+   ptr to first C in S ignoring case;
+   NULL if not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasechrnul_word(const char *s,
-                         int c)
+jstr_strcasechrnul(const char *s,
+                   int c)
 JSTR_NOEXCEPT
 {
-	return pjstr_strcasechrnul_musl(s, c);
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasechr_word(const char *s,
-                      int c)
-JSTR_NOEXCEPT
-{
-	s = pjstr_strcasechrnul_word(s, c);
-	return *s == (char)c ? (char *)s : NULL;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasechrnul(const char *s,
-                    int c)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_STRCSPN_OPTIMIZED
-	const char a[] = { (char)jstr_tolower(c), (char)jstr_toupper(c), '\0' };
-	s += strcspn(s, a);
+	if (!jstr_isalpha(c))
+		return jstr_strchrnul(s, c);
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
+	return pjstr_strcasechrnul_simd(s, c);
+#elif JSTR_HAVE_STRCSPN_OPTIMIZED
+	c = jstr_tolower(c);
+	if (jstr_tolower(*s) != c) {
+		const char a[] = { (char)c, (char)jstr_toupper(c), '\0' };
+		s += strcspn(s, a);
+	}
 	return (char *)s;
 #else
-	return pjstr_strcasechrnul_word(s, c);
+	return pjstr_strcasechrnul_musl(s, c);
 #endif
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-pjstr_strcasechr(const char *s,
-                 int c)
-JSTR_NOEXCEPT
-{
-	c = jstr_tolower(c);
-	if (jstr_tolower(*s) == c)
-		return (char *)s;
-	s = pjstr_strcasechrnul(s, c);
-	return jstr_tolower(*s) == c ? (char *)s : NULL;
 }
 
 /* Return value:
@@ -149,31 +124,20 @@ jstr_strcasechr(const char *s,
                 int c)
 JSTR_NOEXCEPT
 {
+	if (!jstr_isalpha(c))
+		return (char *)strchr(s, c);
+	c = jstr_tolower(c);
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
 	s = pjstr_strcasechrnul_simd(s, c);
-	return jstr_tolower(*s) == jstr_tolower(c) ? (char *)s : NULL;
+#elif JSTR_HAVE_STRCSPN_OPTIMIZED
+	if (jstr_tolower(*s) != c) {
+		const char a[] = { (char)c, (char)jstr_toupper(c), '\0' };
+		s += strcspn(s, a);
+	}
 #else
-	if (jstr_isalpha(c))
-		return pjstr_strcasechr(s, c);
-	return (char *)strchr(s, c);
+	s = pjstr_strcasechrnul_musl(s, c);
 #endif
-}
-
-/* Return value:
-   ptr to first C in S ignoring case;
-   NULL if not found. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr_strcasechrnul(const char *s,
-                   int c)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
-	return pjstr_strcasechrnul_simd(s, c);
-#else
-	return jstr_isalpha(c) ? pjstr_strcasechrnul(s, c) : jstr_strchrnul(s, c);
-#endif
+	return jstr_tolower(*s) == (char)c ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -184,6 +148,8 @@ jstr_memcasechr(const void *s,
                 size_t n)
 JSTR_NOEXCEPT
 {
+	if (!jstr_isalpha(c))
+		return (char *)memchr(s, c, n);
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMCASECHR_SIMD
 	return pjstr_memcasechr_simd(s, c, n);
 #else
@@ -195,12 +161,25 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
+jstr_memrchrnul(const void *s,
+                int c,
+                size_t sz)
+JSTR_NOEXCEPT
+{
+	const void *const p = jstr_memrchr(s, c, sz);
+	return (void *)(p ? p : (char *)s + sz);
+}
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 3))
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static void *
 jstr_memchrnul(const void *s,
                int c,
                size_t sz)
 JSTR_NOEXCEPT
 {
-	const void *const p = jstr_memrchr(s, c, sz);
+	const void *const p = memchr(s, c, sz);
 	return (void *)(p ? p : (char *)s + sz);
 }
 
@@ -264,6 +243,8 @@ jstr_strncasechr(const char *s,
                  size_t n)
 JSTR_NOEXCEPT
 {
+	if (!jstr_isalpha(c))
+		return jstr_strnchr(s, c, n);
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCASECHR_SIMD
 	return pjstr_strncasechr_simd(s, c, n);
 #else

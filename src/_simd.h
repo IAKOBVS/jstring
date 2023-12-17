@@ -241,16 +241,6 @@ static char *
 pjstr_strcasechrnul_simd(const char *s,
                          int c)
 {
-	if (!jstr_isalpha(c)) {
-#	if JSTR_HAVE_STRCHRNUL
-		return (char *)strchrnul(s, c);
-#	elif !JSTR_HAVENT_STRCHRNUL_SIMD
-		return pjstr_strchrnul_simd(s, c);
-#	else
-		char *p = strchr(s, c);
-		return *p == (char)c ? p : (char *)s + strlen(s);
-#	endif
-	}
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); ++p)
@@ -291,8 +281,6 @@ pjstr_memcasechr_simd(const void *s,
                       int c,
                       size_t n)
 {
-	if (!jstr_isalpha(c))
-		return (char *)memchr(s, c, n);
 	if (jstr_unlikely(n == 0))
 		return NULL;
 	c = jstr_tolower(c);

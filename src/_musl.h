@@ -122,8 +122,6 @@ pjstr_memcasechr_musl(const void *s,
 JSTR_NOEXCEPT
 {
 	enum { ALIGN = sizeof(size_t) };
-	if (!jstr_isalpha(c))
-		return (void *)memchr(s, c, n);
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -213,8 +211,6 @@ JSTR_NOEXCEPT
 {
 	enum { SS = sizeof(size_t),
 	       ALIGN = (sizeof(size_t) - 1) };
-	if (!jstr_isalpha(c))
-		return pjstr_strnchr_musl(s, c, n);
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	for (; (uintptr_t)s & ALIGN; ++s) {
