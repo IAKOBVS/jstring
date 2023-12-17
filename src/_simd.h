@@ -465,7 +465,7 @@ pjstr_strcasestr_len_simd(const char *hs,
 		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((const char *)h - shift, (const char *)ne, ne_len))
 			return (char *)(h - shift);
 	}
-	const VEC nv = SETONE8((char)c);
+	const VEC nv0 = SETONE8((char)c);
 	const VEC nv1 = SETONE8((char)jstr_toupper(c));
 	const VEC nv2 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
 	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
@@ -474,7 +474,7 @@ pjstr_strcasestr_len_simd(const char *hs,
 	for (; h - shift <= end; h += VEC_SIZE) {
 		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
-		hm0 = (MASK)MOVEMASK8(CMPEQ8(hv0, nv));
+		hm0 = (MASK)MOVEMASK8(CMPEQ8(hv0, nv0));
 		hm1 = (MASK)MOVEMASK8(CMPEQ8(hv0, nv1));
 		hm2 = (MASK)MOVEMASK8(CMPEQ8(hv1, nv2));
 		hm3 = (MASK)MOVEMASK8(CMPEQ8(hv1, nv3));
