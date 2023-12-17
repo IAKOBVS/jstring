@@ -1,11 +1,11 @@
-#include "test-array.h"
 #include "test.h"
+#include "test-array.h"
 
 int
 main(int argc, char **argv)
 {
 	START();
-	T_STRSTR(jstr_strcasestr, simple_strcasestr, test_array_memmem);
+	T_MEMMEM(jstr_strrstr_len, simple_strrstr_len, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }

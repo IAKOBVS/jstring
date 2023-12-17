@@ -5,7 +5,7 @@ int
 main(int argc, char **argv)
 {
 	START();
-	T_STRSTR(jstr_strcasestr, simple_strcasestr, test_array_memmem);
+	T_MEMMEM(jstr_memmem, simple_memmem, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
 }
