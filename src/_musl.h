@@ -1,4 +1,4 @@
-/* Taken from or based on musl's str*, mem* functions with modifications.
+/* Taken from or based on musl's string functions with modifications.
    Copyright © 2005-2020 Rich Felker, et al.
 
    Permission is hereby granted, free of charge, to any person obtaining
