@@ -425,7 +425,7 @@ pjstr_memmem_simd(const void *hs,
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)MOVEMASK8(CMPEQ8(hv, nv)) << sh;
 				if (cmpm == matchm)
-					if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const unsigned char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+					if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
 						return (void *)hp;
 			} else {
 				if (!memcmp(hp, ne, ne_len))
