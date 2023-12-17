@@ -1589,8 +1589,7 @@ JSTR_NOEXCEPT
 	return (char *)((*s && *(s + 1)) ? s + 1 : s);
 }
 
-/* Return the number of newlines + 1.
-   Return 1 if string is empty. */
+/* Return the number of newlines + 1. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
