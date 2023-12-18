@@ -281,30 +281,6 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (void *)hs : NULL;
 }
 
-#	if 0 /* Broken. */
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static void *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 9andmore)(const unsigned char *hs,
-                                                 size_t l,
-                                                 const unsigned char *ne,
-                                                 size_t ne_len)
-JSTR_NOEXCEPT
-{
-	typedef uint64_t U64;
-	hs += l - ne_len;
-	l -= ne_len - 1;
-	for (; l--; --hs)
-		if (*hs == *ne && !memcmp(hs, ne, ne_len))
-			return (char *)hs;
-	return NULL;
-}
-
-#	endif
-
 #else
 
 JSTR_FUNC_PURE
