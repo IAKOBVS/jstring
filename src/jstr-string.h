@@ -597,17 +597,18 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
+	const int c = *((cu *)ne + shift);
+	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
+	if (jstr_unlikely(p == NULL) || ne_len == 1)
+		return (void *)p;
+	hs_len = JSTR_PTR_DIFF(p - shift + ne_len, hs) + 1;
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
 		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
-	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
-	const int c = *((cu *)ne + shift);
-	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
-	if (jstr_unlikely(p == NULL) || ne_len == 1)
-		return (void *)p;
 	for (hs = (cu *)hs + shift; p >= (cu *)hs; --p)
 		if (*(cu *)p == c && !memcmp(p - shift, ne, ne_len))
 			return (void *)(p - shift);

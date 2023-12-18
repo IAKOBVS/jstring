@@ -167,13 +167,13 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 2)(const unsigned char *hs,
                                           size_t l)
 JSTR_NOEXCEPT
 {
-#		if JSTR_LP64
+#	if JSTR_LP64
 	typedef uint32_t size_ty;
 	enum { SHIFT = 16 };
-#		else
+#	else
 	typedef uint16_t size_ty;
 	enum { SHIFT = 8 };
-#		endif
+#	endif
 	hs += l - 2;
 	const size_ty nw = (size_ty)L(ne[1]) << SHIFT | L(ne[0]);
 	size_ty hw = (size_ty)L(hs[1]) << SHIFT | L(hs[0]);
