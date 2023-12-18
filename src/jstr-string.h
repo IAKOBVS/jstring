@@ -421,7 +421,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static void *
-jstr_memmem_exec(jstr_twoway_ty *const t,
+jstr_memmem_exec(const jstr_twoway_ty *const t,
                  const void *hs,
                  size_t hs_len,
                  const void *ne)
@@ -565,7 +565,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 2, 4))
 JSTR_FUNC_PURE
 static char *
-jstr_strnstr_exec(jstr_twoway_ty *const t,
+jstr_strnstr_exec(const jstr_twoway_ty *const t,
                   const char *hs,
                   const char *ne,
                   size_t n)
@@ -814,7 +814,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static char *
-jstr_strcasestr_exec(jstr_twoway_ty *const t,
+jstr_strcasestr_exec(const jstr_twoway_ty *const t,
                      const char *hs,
                      const char *ne)
 JSTR_NOEXCEPT
@@ -899,7 +899,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 2, 4))
 JSTR_FUNC_PURE
 static void *
-jstr_strncasestr_exec(jstr_twoway_ty *const t,
+jstr_strncasestr_exec(const jstr_twoway_ty *const t,
                       const void *hs,
                       const void *ne,
                       size_t n)
