@@ -213,8 +213,6 @@ JSTR_NOEXCEPT
 	return (hw == nw) ? (void *)hs : NULL;
 }
 
-#	if 0 /* Broken. */
-
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -296,14 +294,15 @@ JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
 	hs += l - ne_len;
-	l -= ne_len - 1;
-	for (; l--; --hs)
-		if (*hs == *ne && !memcmp(hs, ne, ne_len))
-			return (char *)hs;
-	return NULL;
+	const U64 nw = (U64)L(ne[7]) << 56 | (U64)L(ne[6]) << 48 | (U64)L(ne[5]) << 40 | (U64)L(ne[4]) << 32 | (U64)L(ne[3]) << 24 | (U64)L(ne[2]) << 16 | (U64)L(ne[1]) << 8 | (U64)L(ne[0]);
+	U64 hw = (U64)L(hs[7]) << 56 | (U64)L(hs[6]) << 48 | (U64)L(hs[5]) << 40 | (U64)L(hs[4]) << 32 | (U64)L(hs[3]) << 24 | (U64)L(hs[2]) << 16 | (U64)L(hs[1]) << 8 | (U64)L(hs[0]);
+	ne += 8;
+	ne_len -= 8;
+	for (l -= ne_len; l--; hw = hw << 8 | L(*--hs))
+		if (hw == nw && !memcmp(hs + 8, ne, ne_len))
+			return (void *)hs;
+	return (hw == nw && !memcmp(hs + 8, ne, ne_len)) ? (void *)hs : NULL;
 }
-
-#	endif
 
 #else
 

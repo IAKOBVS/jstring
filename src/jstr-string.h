@@ -609,10 +609,15 @@ JSTR_NOEXCEPT
 		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)
 		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
-	for (hs = (cu *)hs + shift; p >= (cu *)hs; --p)
-		if (*(cu *)p == c && !memcmp(p - shift, ne, ne_len))
-			return (void *)(p - shift);
-	return NULL;
+	if (ne_len == 5)
+		return pjstr_memrmem5((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 6)
+		return pjstr_memrmem6((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 7)
+		return pjstr_memrmem7((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 8)
+		return pjstr_memrmem8((cu *)hs, (cu *)ne, hs_len);
+	return pjstr_memrmem9andmore((cu *)hs, hs_len, (cu *)ne, ne_len);
 }
 
 /* Find last NE in HS.
