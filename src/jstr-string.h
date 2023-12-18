@@ -616,7 +616,7 @@ JSTR_NOEXCEPT
 	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(p == NULL) || ne_len == 1)
 		return (void *)p;
-#if JSTR_HAVE_UNALIGNED_ACCESS || (JSTR_HAVE_BUILTIN_MEMCMP || JSTR_HAVE_ATTR_MAY_ALIAS)
+#if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_BUILTIN_MEMCMP || JSTR_HAVE_ATTR_MAY_ALIAS)
 	const unsigned char *const ne_rest = (cu *)ne + 8;
 	for (ne_len -= 8, p -= shift; p >= (cu *)hs; --p)
 		if (JSTR_WORD_CMPEQU64(p, ne) && !memcmp(p + 8, ne_rest, ne_len))
