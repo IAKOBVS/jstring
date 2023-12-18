@@ -8,7 +8,7 @@ FLAGS='
 -Wextra
 -Wpedantic
 -Wsign-conversion
--DJSTR_TEST_SLOW=0
+-DJSTR_TEST_SLOW=1
 -DVERBOSE=0
 '
 
