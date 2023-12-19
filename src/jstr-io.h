@@ -28,7 +28,7 @@
 PJSTR_BEGIN_DECLS
 #include <dirent.h>
 #include <fcntl.h>
-#include <fn_match.h>
+#include <func_match.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -908,7 +908,7 @@ typedef int (*jstrio_ftw_fn_match_ty)(const char *fname, jstrio_path_size_ty fna
 struct pjstrio_ftw_data {
 	jstrio_ftw_func_ty fn;
 	const void *fn_args;
-	int (*fn_match)(const char *fname, jstrio_path_size_ty fname_len);
+	int (*func_match)(const char *fname, jstrio_path_size_ty fname_len);
 	struct JSTRIO_FTW ftw;
 	int ftw_flags;
 };
@@ -916,7 +916,7 @@ struct pjstrio_ftw_data {
 #define JSTRIO_FTW_FUNC(func_name, ftw, fn_args) \
 	int func_name(const struct JSTRIO_FTW *ftw, const void *fn_args)
 
-#define JSTRIO_FTW_MATCHFUNC(func_name, filename, filename_len) \
+#define JSTRIO_FTW_FUNC_MATCH(func_name, filename, filename_len) \
 	int func_name(const char *filename, jstrio_path_size_ty filename_len)
 
 #ifdef O_DIRECTORY
@@ -939,7 +939,7 @@ JSTR_NOEXCEPT
 			if (a->ftw_flags & JSTRIO_FTW_REG)
 				if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 					return JSTR_RET_SUCC;
-			if (a->fn_match && a->fn_match(a->ftw.dirpath, a->ftw.dirpath_len))
+			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len))
 				return JSTR_RET_SUCC;
 			a->ftw.dirpath_len = dirpath_len;
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_DNR;
@@ -1009,13 +1009,13 @@ reg:
 			if (!(a->ftw_flags & JSTRIO_FTW_REG))
 				continue;
 do_reg:
-		if (a->fn_match) {
+		if (a->func_match) {
 			if (a->ftw_flags & JSTRIO_FTW_MATCHPATH) {
 				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
-				if (a->fn_match(a->ftw.dirpath, a->ftw.dirpath_len))
+				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len))
 					continue;
 			} else {
-				if (a->fn_match(a->ftw.dirpath, a->ftw.dirpath_len))
+				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len))
 					continue;
 				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
 			}
@@ -1127,7 +1127,7 @@ jstrio_ftw_len(const char *R dirpath,
                jstrio_ftw_func_ty fn,
                const void *fn_args,
                int jstrio_ftw_flags,
-               jstrio_ftw_fn_match_ty fn_match)
+               jstrio_ftw_fn_match_ty func_match)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dirpath_len == 0)) {
@@ -1194,7 +1194,7 @@ ftw:;
 CONT:;
 		data.fn = fn;
 		data.fn_args = fn_args;
-		data.fn_match = fn_match;
+		data.func_match = func_match;
 		data.ftw_flags = jstrio_ftw_flags;
 		tmp = pjstrio_ftw_len(&data, dirpath_len FD_ARG);
 		CLOSE(fd, goto err);
@@ -1206,16 +1206,16 @@ fn:
 		if (jstr_unlikely(!S_ISREG(data.ftw.st->st_mode)))
 			return JSTR_RET_SUCC;
 	data.ftw.ftw_state = JSTRIO_FTW_STATE_F;
-	if (fn_match) {
+	if (func_match) {
 		if (jstrio_ftw_flags & JSTRIO_FTW_MATCHPATH) {
 fn_match_path:
-			if (fn_match(fulpath, dirpath_len))
+			if (func_match(fulpath, dirpath_len))
 				return JSTR_RET_SUCC;
 		} else {
 			dirpath = (char *)jstr_memrchr(fulpath, '/', dirpath_len);
 			const char *const end = (char *)dirpath + dirpath_len;
 			if (dirpath) {
-				if (*++dirpath && fn_match(dirpath, end - dirpath))
+				if (*++dirpath && func_match(dirpath, end - dirpath))
 					return JSTR_RET_SUCC;
 			} else {
 				goto fn_match_path;
