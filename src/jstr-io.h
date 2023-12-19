@@ -718,7 +718,7 @@ jstrio_appendpath_len(char *R *R s,
 #	endif
 #endif
 
-/* If JSTRIO_ACTION_RETVAL is passed, use these as return values of FN(). */
+/* If JSTRIO_ACTION_RETVAL is passed, use these as return values of FUNC(). */
 typedef enum jstrio_ftw_actionretval_ty {
 	JSTRIO_FTW_RET_STOP = 0,
 #define JSTRIO_FTW_RET_STOP JSTRIO_FTW_RET_STOP
@@ -736,10 +736,10 @@ typedef enum jstrio_ftw_flag_ty {
 	/* Match glob with FULPATH instead of d_name. */
 	JSTRIO_FTW_MATCHPATH = (1),
 #define JSTRIO_FTW_MATCHPATH JSTRIO_FTW_MATCHPATH
-	/* Call FN() on regular files. */
+	/* Call FUNC() on regular files. */
 	JSTRIO_FTW_REG = (JSTRIO_FTW_MATCHPATH << 1),
 #define JSTRIO_FTW_REG JSTRIO_FTW_REG
-	/* Call FN() on directories. */
+	/* Call FUNC() on directories. */
 	JSTRIO_FTW_DIR = (JSTRIO_FTW_REG << 1),
 #define JSTRIO_FTW_DIR JSTRIO_FTW_DIR
 	/* Do not traverse subdirectories. */
@@ -757,7 +757,7 @@ typedef enum jstrio_ftw_flag_ty {
 	/* Expand ~/somepath to $HOME/somepath if ~ is the first char. */
 	JSTRIO_FTW_EXPTILDE = (JSTRIO_FTW_NOHIDDEN << 1),
 #define JSTRIO_FTW_EXPTILDE JSTRIO_FTW_EXPTILDE
-	/* Handle FN() return value according to jstrio_ftw_actionretval_ty. */
+	/* Handle FUNC() return value according to jstrio_ftw_actionretval_ty. */
 	JSTRIO_FTW_ACTIONRETVAL = (JSTRIO_FTW_EXPTILDE << 1)
 #define JSTRIO_FTW_ACTIONRETVAL JSTRIO_FTW_ACTIONRETVAL
 } jstrio_ftw_flag_ty;
@@ -906,7 +906,7 @@ typedef int (*jstrio_ftw_func_ty)(const struct JSTRIO_FTW *ftw, const void *arg)
 typedef int (*jstrio_ftw_fn_match_ty)(const char *fname, jstrio_path_size_ty fname_len);
 
 struct pjstrio_ftw_data {
-	jstrio_ftw_func_ty fn;
+	jstrio_ftw_func_ty func;
 	const void *fn_args;
 	int (*func_match)(const char *fname, jstrio_path_size_ty fname_len);
 	struct JSTRIO_FTW ftw;
@@ -943,7 +943,7 @@ JSTR_NOEXCEPT
 				return JSTR_RET_SUCC;
 			a->ftw.dirpath_len = dirpath_len;
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_DNR;
-			a->fn(&a->ftw, a->fn_args);
+			a->func(&a->ftw, a->fn_args);
 			return JSTR_RET_SUCC;
 		}
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -989,7 +989,7 @@ JSTR_NOEXCEPT
 				        continue;
 			        } else {
 				        a->ftw.ftw_state = JSTRIO_FTW_STATE_NS;
-				        goto fn;
+				        goto func;
 			        });
 		}
 		if (IS_REG(ep, a->ftw.st)) {
@@ -1030,8 +1030,8 @@ do_reg:
 		} else {
 			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 		}
-fn:
-		tmp = a->fn(&a->ftw, a->fn_args);
+func:
+		tmp = a->func(&a->ftw, a->fn_args);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE
 			    || tmp == JSTRIO_FTW_RET_SKIP_SUBTREE)
@@ -1058,7 +1058,7 @@ dir:
 		if (a->ftw_flags & JSTRIO_FTW_REG)
 			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 				goto skip_fn;
-		tmp = a->fn(&a->ftw, a->fn_args);
+		tmp = a->func(&a->ftw, a->fn_args);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE)
 				continue;
@@ -1110,13 +1110,14 @@ err_closedir:
 #undef FD_PARAM
 #undef PJSTRIO_O_DIRECTORY
 
-/* Call FN() on files found recursively that matches GLOB.
-   If FN() returns JSTR_RET_ERR, stop processing.
+/* Call FUNC() on files found recursively where FUNC_MATCH() returns 0. 
+   If FUNC_MATCH() is NULL, it behaves as if it matches.
+   If FUNC() returns JSTR_RET_ERR, stop processing.
    Return value:
    JSTR_RET_ERR on error;
    JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;
-   JSTR_RET_STOP if FN() returns RET_STOP and JSTRIO_FTW_ACTIONRETVAL is used.
-   or the return value of FN() if DIRPATH is not a directory and FN() is executed.
+   JSTR_RET_STOP if FUNC() returns RET_STOP and JSTRIO_FTW_ACTIONRETVAL is used.
+   or the return value of FUNC() if DIRPATH is not a directory and FUNC() is executed.
    If a non-fatal error is encountered, continue processing other entries. */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
@@ -1124,7 +1125,7 @@ JSTR_NONNULL((4))
 static int
 jstrio_ftw_len(const char *R dirpath,
                jstrio_path_size_ty dirpath_len,
-               jstrio_ftw_func_ty fn,
+               jstrio_ftw_func_ty func,
                const void *fn_args,
                int jstrio_ftw_flags,
                jstrio_ftw_fn_match_ty func_match)
@@ -1174,7 +1175,7 @@ JSTR_NOEXCEPT
 #endif
 	{
 		data.ftw.ftw_state = JSTRIO_FTW_STATE_NS;
-		goto fn;
+		goto func;
 	}
 	if (jstr_likely(S_ISDIR(data.ftw.st->st_mode))) {
 ftw:;
@@ -1183,7 +1184,7 @@ ftw:;
 				goto CONT;
 		int tmp;
 		data.ftw.ftw_state = JSTRIO_FTW_STATE_D;
-		tmp = fn(&data.ftw, fn_args);
+		tmp = func(&data.ftw, fn_args);
 		if (jstrio_ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (jstr_unlikely(tmp != JSTRIO_FTW_RET_CONTINUE))
 				goto err_close;
@@ -1192,7 +1193,7 @@ ftw:;
 				goto err_close;
 		}
 CONT:;
-		data.fn = fn;
+		data.func = func;
 		data.fn_args = fn_args;
 		data.func_match = func_match;
 		data.ftw_flags = jstrio_ftw_flags;
@@ -1200,7 +1201,7 @@ CONT:;
 		CLOSE(fd, goto err);
 		return tmp;
 	}
-fn:
+func:
 	CLOSE(fd, goto err);
 	if (jstrio_ftw_flags & JSTRIO_FTW_REG)
 		if (jstr_unlikely(!S_ISREG(data.ftw.st->st_mode)))
@@ -1222,7 +1223,7 @@ fn_match_path:
 			}
 		}
 	}
-	return (jstr_ret_ty)fn(&data.ftw, fn_args);
+	return (jstr_ret_ty)func(&data.ftw, fn_args);
 err_close:
 	CLOSE(fd, );
 err:
