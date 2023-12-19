@@ -651,7 +651,7 @@ JSTR_NOEXCEPT
 #	define JSTR_HAVE_STRNCASECMP 1
 #endif /* Bsd || Default */
 
-#ifdef _XOPEN_SOURCE
+#if defined _XOPEN_SOURCE || defined _ISOC2X_SOURCE
 #	define JSTR_HAVE_MEMCCPY 1
 #endif /* Misc || Xopen */
 
@@ -702,9 +702,9 @@ JSTR_NOEXCEPT
 #	define JSTR_HAVE_STRNDUP 1
 #endif /* Posix || Gnu */
 
-#if (defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 500)                                                                \
-|| (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19 && (defined _BSD_SOURCE || defined _SVID_SOURCE)) \
-|| (JSTR_GLIBC_PREREQ(2, 12) && __POSIX_C_SOURCE >= 200809L)
+#if (defined _XOPEN_SOURCE && _XOPEN_SOURCE >= 500)          \
+|| (JSTR_GLIBC_PREREQ(2, 12) && __POSIX_C_SOURCE >= 200809L) \
+|| defined _BSD_SOURCE || defined _SVID_SOURCE
 #	define JSTR_HAVE_STRDUP 1
 #endif /* Xopen || Bsd || Svid || Posix */
 
