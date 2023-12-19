@@ -1132,7 +1132,8 @@ jstrio_ftw_len(const char *R dirpath,
                jstrio_ftw_func_ty func,
                const void *func_args,
                int jstrio_ftw_flags,
-               jstrio_ftw_func_match_ty func_match)
+               jstrio_ftw_func_match_ty func_match,
+	       const void *func_match_args)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dirpath_len == 0)) {
@@ -1201,6 +1202,7 @@ CONT:;
 		data.func_args = func_args;
 		data.func_match = func_match;
 		data.ftw_flags = jstrio_ftw_flags;
+		data.func_match_args = func_match_args;
 		tmp = pjstrio_ftw_len(&data, dirpath_len FD_ARG);
 		CLOSE(fd, goto err);
 		return tmp;
