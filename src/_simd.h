@@ -336,10 +336,12 @@ pjstr_memrchr_simd(const void *s,
 		if (*p == (unsigned char)c)
 			return (void *)p;
 	}
+	if (p == (unsigned char *)s)
+		goto ret_match;
 	MASK m;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
-	while (p >= (unsigned char *)s) {
+	while (p > (unsigned char *)s) {
 		p -= VEC_SIZE;
 		sv = LOAD((const VEC *)p);
 		m = (MASK)MOVEMASK8(CMPEQ8(sv, cv));
@@ -350,6 +352,10 @@ pjstr_memrchr_simd(const void *s,
 ret:;
 	const MASK i = 31 - _lzcnt_u32(m);
 	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
+ret_match:
+	if (*p == (unsigned char)c)
+		return (char *)p;
+	return NULL;
 }
 
 #endif
