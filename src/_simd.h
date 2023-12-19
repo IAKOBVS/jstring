@@ -126,7 +126,7 @@ pjstr_stpcpy_simd(char *JSTR_RESTRICT dst,
 	while (JSTR_PTR_IS_NOT_ALIGNED(dst, VEC_SIZE))
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
-	if (JSTR_PTR_IS_ALIGNED(src, VEC_SIZE))
+	if (JSTR_PTR_IS_ALIGNED(dst, VEC_SIZE))
 		return pjstr_stpcpy_simd_aligned(dst, src);
 	return pjstr_stpcpy_simd_unaligned_src(dst, src);
 }
