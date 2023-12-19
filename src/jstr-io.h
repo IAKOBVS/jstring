@@ -917,8 +917,8 @@ struct pjstrio_ftw_data {
 #define JSTRIO_FTW_FUNC(func_name, ftw, func_args) \
 	int func_name(const struct JSTRIO_FTW *ftw, const void *func_args)
 
-#define JSTRIO_FTW_FUNC_MATCH(func_name, filename, filename_len) \
-	int func_name(const char *filename, jstrio_path_size_ty filename_len)
+#define JSTRIO_FTW_FUNC_MATCH(func_name, filename, filename_len, args) \
+	int func_name(const char *filename, jstrio_path_size_ty filename_len, const void *args)
 
 #ifdef O_DIRECTORY
 #	define PJSTRIO_O_DIRECTORY O_DIRECTORY
