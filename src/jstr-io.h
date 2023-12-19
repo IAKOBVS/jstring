@@ -902,19 +902,20 @@ struct JSTRIO_FTW {
 	int ftw_state;
 };
 
-typedef int (*jstrio_ftw_func_ty)(const struct JSTRIO_FTW *ftw, const void *arg);
-typedef int (*jstrio_ftw_fn_match_ty)(const char *fname, jstrio_path_size_ty fname_len);
+typedef int (*jstrio_ftw_func_ty)(const struct JSTRIO_FTW *ftw, const void *args);
+typedef int (*jstrio_ftw_func_match_ty)(const char *fname, jstrio_path_size_ty fname_len, const void *args);
 
 struct pjstrio_ftw_data {
 	jstrio_ftw_func_ty func;
-	const void *fn_args;
-	int (*func_match)(const char *fname, jstrio_path_size_ty fname_len);
+	const void *func_args;
+	jstrio_ftw_func_match_ty func_match;
+	const void *func_match_args;
 	struct JSTRIO_FTW ftw;
 	int ftw_flags;
 };
 
-#define JSTRIO_FTW_FUNC(func_name, ftw, fn_args) \
-	int func_name(const struct JSTRIO_FTW *ftw, const void *fn_args)
+#define JSTRIO_FTW_FUNC(func_name, ftw, func_args) \
+	int func_name(const struct JSTRIO_FTW *ftw, const void *func_args)
 
 #define JSTRIO_FTW_FUNC_MATCH(func_name, filename, filename_len) \
 	int func_name(const char *filename, jstrio_path_size_ty filename_len)
@@ -939,11 +940,11 @@ JSTR_NOEXCEPT
 			if (a->ftw_flags & JSTRIO_FTW_REG)
 				if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 					return JSTR_RET_SUCC;
-			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len))
+			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 				return JSTR_RET_SUCC;
 			a->ftw.dirpath_len = dirpath_len;
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_DNR;
-			a->func(&a->ftw, a->fn_args);
+			a->func(&a->ftw, a->func_args);
 			return JSTR_RET_SUCC;
 		}
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -1012,11 +1013,11 @@ do_reg:
 		if (a->func_match) {
 			if (a->ftw_flags & JSTRIO_FTW_MATCHPATH) {
 				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
-				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len))
+				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 					continue;
 			} else {
 				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(d);
-				if (a->func_match(ep->d_name, fname_len))
+				if (a->func_match(ep->d_name, fname_len, a->func_match_args))
 					continue;
 #if USE_ATFILE
 				jstrio_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, ep->d_name, fname_len);
@@ -1034,7 +1035,7 @@ do_reg:
 			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 		}
 func:
-		tmp = a->func(&a->ftw, a->fn_args);
+		tmp = a->func(&a->ftw, a->func_args);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE
 			    || tmp == JSTRIO_FTW_RET_SKIP_SUBTREE)
@@ -1061,7 +1062,7 @@ dir:
 		if (a->ftw_flags & JSTRIO_FTW_REG)
 			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 				goto skip_fn;
-		tmp = a->func(&a->ftw, a->fn_args);
+		tmp = a->func(&a->ftw, a->func_args);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE)
 				continue;
@@ -1129,9 +1130,9 @@ static int
 jstrio_ftw_len(const char *R dirpath,
                jstrio_path_size_ty dirpath_len,
                jstrio_ftw_func_ty func,
-               const void *fn_args,
+               const void *func_args,
                int jstrio_ftw_flags,
-               jstrio_ftw_fn_match_ty func_match)
+               jstrio_ftw_func_match_ty func_match)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dirpath_len == 0)) {
@@ -1187,7 +1188,7 @@ ftw:;
 				goto CONT;
 		int tmp;
 		data.ftw.ftw_state = JSTRIO_FTW_STATE_D;
-		tmp = func(&data.ftw, fn_args);
+		tmp = func(&data.ftw, func_args);
 		if (jstrio_ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (jstr_unlikely(tmp != JSTRIO_FTW_RET_CONTINUE))
 				goto err_close;
@@ -1197,7 +1198,7 @@ ftw:;
 		}
 CONT:;
 		data.func = func;
-		data.fn_args = fn_args;
+		data.func_args = func_args;
 		data.func_match = func_match;
 		data.ftw_flags = jstrio_ftw_flags;
 		tmp = pjstrio_ftw_len(&data, dirpath_len FD_ARG);
@@ -1212,21 +1213,21 @@ func:
 	data.ftw.ftw_state = JSTRIO_FTW_STATE_F;
 	if (func_match) {
 		if (jstrio_ftw_flags & JSTRIO_FTW_MATCHPATH) {
-fn_match_path:
-			if (func_match(fulpath, dirpath_len))
+func_match_path:
+			if (func_match(fulpath, dirpath_len, a->func_match_args))
 				return JSTR_RET_SUCC;
 		} else {
 			dirpath = (char *)jstr_memrchr(fulpath, '/', dirpath_len);
 			const char *const end = (char *)dirpath + dirpath_len;
 			if (dirpath) {
-				if (*++dirpath && func_match(dirpath, end - dirpath))
+				if (*++dirpath && func_match(dirpath, end - dirpath, a->func_match_args))
 					return JSTR_RET_SUCC;
 			} else {
-				goto fn_match_path;
+				goto func_match_path;
 			}
 		}
 	}
-	return (jstr_ret_ty)func(&data.ftw, fn_args);
+	return (jstr_ret_ty)func(&data.ftw, func_args);
 err_close:
 	CLOSE(fd, );
 err:
