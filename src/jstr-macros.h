@@ -754,13 +754,13 @@ JSTR_NOEXCEPT
 #	define JSTR_HAVE_ATFILE 1
 #endif
 
-#if JSTR_USE_XOPEN_EXTENDED || defined JSTR_USE_XOPEN2K8
+#if defined _XOPEN_SOURCE && (defined _XOPEN_SOURCE_EXTENDED || (_XOPEN_SOURCE - 0) >= 500)
 #	define JSTR_HAVE_FCHDIR 1
-#endif
+#endif /* Xopen extended || Xopen 2k8 */
 
-#if JSTR_USE_XOPEN2K8
+#if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 700
 #	define JSTR_HAVE_FDOPENDIR 1
-#endif
+#endif /* Xopen 2k8 */
 
 #if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FREAD_UNLOCKED
 #	define jstrio_fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
