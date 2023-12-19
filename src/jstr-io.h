@@ -1015,9 +1015,12 @@ do_reg:
 				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len))
 					continue;
 			} else {
-				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len))
+				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(d);
+				if (a->func_match(ep->d_name, fname_len))
 					continue;
-				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
+#if USE_ATFILE
+				jstrio_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, ep->d_name, fname_len);
+#endif
 			}
 		} else {
 			FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
