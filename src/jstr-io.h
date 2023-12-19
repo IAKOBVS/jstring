@@ -366,11 +366,20 @@ jstrio_freadfilefp(char *R *R s,
                    struct stat *st)
 JSTR_NOEXCEPT
 {
+#if JSTR_HAVE_FILENO
+	const int fd = jstrio_fileno(fp);
+	if (jstr_unlikely(fd == -1))
+		goto err;
+	if (jstr_unlikely(fstat(fd, st)))
+		goto err;
+#else
 	if (jstr_unlikely(stat(fname, st)))
 		goto err;
+#endif
 	return jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
+	(void)fname;
 }
 
 JSTR_FUNC
@@ -409,9 +418,27 @@ jstrio_freadfile(char *R *R s,
                  struct stat *st)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(stat(fname, st)))
+	FILE *fp = fopen(fname, modes);
+	if (jstr_nullchk(fp))
 		goto err;
-	return jstrio_freadfile_len(s, sz, cap, fname, modes, (size_t)st->st_size);
+#if JSTR_HAVE_FILENO
+	int fd;
+	fd = jstrio_fileno(fp);
+	if (jstr_unlikely(fd == -1))
+		goto err_close;
+	if (jstr_unlikely(fstat(fd, st)))
+		goto err_close;
+#else
+	if (jstr_unlikely(stat(fname, st)))
+		goto err_close;
+#endif
+	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size)))
+		goto err_close;
+	if (jstr_unlikely(fclose(fp)))
+		goto err;
+	return JSTR_RET_SUCC;
+err_close:
+	fclose(fp);
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }

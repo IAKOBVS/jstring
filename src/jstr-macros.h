@@ -641,6 +641,10 @@ JSTR_NOEXCEPT
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
 }
 
+#if defined _POSIX_SOURCE || defined _POSIX_C_SOURCE || defined _XOPEN_SOURCE || defined _GNU_SOURCE || defined _BSD_SOURCE
+#	define JSTR_HAVE_FILENO 1
+#endif
+
 #if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) \
 || defined _BSD_SOURCE
 #	define JSTR_HAVE_STRCASECMP  1
@@ -733,7 +737,7 @@ JSTR_NOEXCEPT
 #endif
 
 #if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
-|| (_SVID_SOURCE || defined _BSD_SOURCE)
+|| (defined _SVID_SOURCE || defined _BSD_SOURCE)
 #	define JSTR_HAVE_QECVT_R 1
 #	define JSTR_HAVE_QFCVT_R 1
 #	define JSTR_HAVE_ECVT_R  1
@@ -1098,6 +1102,9 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #endif
 #ifndef JSTR_HAVE_FERROR_UNLOCKED
 #	define JSTR_HAVE_FERROR_UNLOCKED 0
+#endif
+#ifndef JSTR_HAVE_FILENO
+#	define JSTR_HAVE_FILENO 0
 #endif
 #ifndef JSTR_HAVE_FILENO_UNLOCKED
 #	define JSTR_HAVE_FILENO_UNLOCKED 0

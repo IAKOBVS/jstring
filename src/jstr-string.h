@@ -578,6 +578,8 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_MEMRMEM   1
 #include "_strstr234.h"
 
+/* TODO: optimize memrmem(). But how often is it really used anyway? */
+
 /* Find last NE in HS.
    Return value:
    Pointer to NE;
