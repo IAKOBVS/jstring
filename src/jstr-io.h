@@ -28,7 +28,6 @@
 PJSTR_BEGIN_DECLS
 #include <dirent.h>
 #include <fcntl.h>
-#include <func_match.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
