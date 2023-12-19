@@ -272,8 +272,7 @@ jstrl_popfront(jstrlist_ty *R l)
 	}
 }
 
-#if 0 /* Broken. */
-
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 static jstr_ret_ty
 jstrl_pushfront_len_unsafe(jstrlist_ty *R l,
@@ -305,8 +304,6 @@ err:
 	jstrl_free_noinline(l);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
-
-#endif
 
 JSTR_FUNC
 static jstr_ret_ty
