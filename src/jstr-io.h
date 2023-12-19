@@ -1015,11 +1015,11 @@ do_reg:
 				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 					continue;
 			} else {
-				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(d);
+				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(ep);
 				if (a->func_match(ep->d_name, fname_len, a->func_match_args))
 					continue;
 #if USE_ATFILE
-				jstrio_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, ep->d_name, fname_len);
+				a->ftw.dirpath_len = jstrio_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, ep->d_name, fname_len) - a->ftw.dirpath;
 #endif
 			}
 		} else {
@@ -1113,7 +1113,7 @@ err_closedir:
 #undef FD_PARAM
 #undef PJSTRIO_O_DIRECTORY
 
-/* Call FUNC() on files found recursively where FUNC_MATCH() returns 0. 
+/* Call FUNC() on files found recursively where FUNC_MATCH() returns 0.
    If FUNC_MATCH() is NULL, it behaves as if it matches.
    If FUNC() returns JSTR_RET_ERR, stop processing.
    Return value:
@@ -1132,7 +1132,7 @@ jstrio_ftw_len(const char *R dirpath,
                const void *func_args,
                int jstrio_ftw_flags,
                jstrio_ftw_func_match_ty func_match,
-	       const void *func_match_args)
+               const void *func_match_args)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(dirpath_len == 0)) {
