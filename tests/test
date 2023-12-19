@@ -1,16 +1,16 @@
 #!/bin/sh
 #shellcheck disable=disable=SC2086
 
-FLAGS='
+CFLAGS="
 -g
 -std=c99
 -Wall
 -Wextra
 -Wpedantic
 -Wsign-conversion
--DJSTR_TEST_SLOW=0
 -DVERBOSE=0
-'
+$CFLAGS
+"
 
 has_prog()
 {
@@ -24,7 +24,7 @@ compile()
 	file=$1
 	out=$2
 	out=$out$(echo "$args" | tr -d ' ')
-	$CC "$file" -o "$out" $FLAGS $args
+	$CC "$file" -o "$out" $CFLAGS $args
 	"$out"
 	rm "$out"
 }
@@ -33,7 +33,7 @@ cd "$(dirname "$0")" || exit
 
 CC="$(readlink "$(command -v cc)")"
 # In GCC, -O1 compiles faster.
-[ $CC = 'gcc' ] && FLAGS="$FLAGS -O1"
+[ $CC = 'gcc' ] && CFLAGS="$CFLAGS -O1"
 # Set the path to compile the tests to.
 if [ -z "$TMPDIR" ]; then
 	if [ -d /tmp ]; then
@@ -56,8 +56,8 @@ fi
 
 for file in $files; do
 	out_file=${file%.*}
-	compile "$file" "$tmp$out_file" $FLAGS -mtune=generic &
-	compile "$file" "$tmp$out_file" $FLAGS -march=native &
+	compile "$file" "$tmp$out_file" $CFLAGS -mtune=generic &
+	compile "$file" "$tmp$out_file" $CFLAGS -march=native &
 done
 wait
 
