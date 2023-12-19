@@ -1215,13 +1215,13 @@ func:
 	if (func_match) {
 		if (jstrio_ftw_flags & JSTRIO_FTW_MATCHPATH) {
 func_match_path:
-			if (func_match(fulpath, dirpath_len, a->func_match_args))
+			if (func_match(fulpath, dirpath_len, func_match_args))
 				return JSTR_RET_SUCC;
 		} else {
 			dirpath = (char *)jstr_memrchr(fulpath, '/', dirpath_len);
 			const char *const end = (char *)dirpath + dirpath_len;
 			if (dirpath) {
-				if (*++dirpath && func_match(dirpath, end - dirpath, a->func_match_args))
+				if (*++dirpath && func_match(dirpath, end - dirpath, func_match_args))
 					return JSTR_RET_SUCC;
 			} else {
 				goto func_match_path;
