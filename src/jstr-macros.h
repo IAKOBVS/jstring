@@ -27,7 +27,6 @@
 #	error "Including jstr.h before building."
 #endif
 
-#include "_jstr-macros-features.h"
 #include "jstr-config.h"
 #include "jstr-macros-arch.h"
 #include "jstr-macros-os.h"
