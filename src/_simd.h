@@ -358,6 +358,17 @@ pjstr_strchrnul_simd(const char *s,
 
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_INLINE
+static char *
+pjstr_strchr_simd(const char *s,
+		     int c)
+{
+	s = pjstr_strchrnul_simd(s, c);
+	return *s == (char)c ? (char *)s : NULL;
+}
+
+JSTR_FUNC_PURE
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
 pjstr_strcasechrnul_simd(const char *s,
                          int c)
