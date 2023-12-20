@@ -33,7 +33,7 @@ PJSTR_BEGIN_DECLS
 
 /* Select AVX512, AVX2, or SSE. */
 
-#if defined __AVX512F__
+#if defined __AVX512F__ || 1
 #	include <immintrin.h>
 typedef __m512i jstr_vec_ty;
 typedef uint64_t jstr_vec_mask_ty;
@@ -77,7 +77,7 @@ typedef uint16_t jstr_vec_mask_ty;
 #	if JSTR_HAS_BUILTIN(__builtin_popcount)
 #		define POPCNT(x) __builtin_popcount(x)
 #	endif
-#	if JSTR_HAS_BUILTIN(__builtin_ia32_tzcnt_u32)
+#	if JSTR_HAS_BUILTIN(__builtin_ia32_tzcnt_u16)
 #		define TZCNT(x) __builtin_ia32_tzcnt_u16(x)
 #	endif
 #endif
@@ -487,6 +487,9 @@ ret_match:
 #	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
 
 #else
+
+#	define JSTR_HAVENT_MEMMEM_SIMD         1
+#	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
