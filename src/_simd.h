@@ -482,7 +482,6 @@ ret:;
 
 #else
 
-#	define JSTR_HAVENT_MEMMEM_SIMD 1
 #	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -549,8 +548,12 @@ found_match:
 	if (h - shift <= end) {
 		hv0 = LOAD((const VEC *)h);
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) << 1;
-		m = hm0 & hm1;
+#if 0
+		/* hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) << 1; */
+		/* m = hm0 & hm1; */
+#else
+		m = hm0;
+#endif
 		if (m)
 			goto found_match;
 	}
