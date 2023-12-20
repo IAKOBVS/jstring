@@ -482,8 +482,6 @@ ret:;
 
 #else
 
-#	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
-
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -591,7 +589,7 @@ pjstr_strcasestr_len_simd(const char *hs,
 	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, hm2, hm3, m;
-	for (; h - shift <= end; h += VEC_SIZE) {
+	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
 		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
@@ -600,6 +598,7 @@ pjstr_strcasestr_len_simd(const char *hs,
 		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
 		m = (hm0 | hm1) & (hm2 | hm3);
 		while (m) {
+found_match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			if (jstr_unlikely(h + i - shift > end))
@@ -607,6 +606,16 @@ pjstr_strcasestr_len_simd(const char *hs,
 			if (!jstr_strcasecmpeq_len((const char *)h + i - shift, (const char *)ne, ne_len))
 				return (char *)h + i - shift;
 		}
+	}
+	if (h - shift <= end) {
+		hv0 = LOAD((const VEC *)h);
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
+		hm2 = (MASK)CMPEQ8_MASK(hv0, nv2) >> 1;
+		hm3 = (MASK)CMPEQ8_MASK(hv0, nv3) >> 1;
+		m = (hm0 | hm1) & (hm2 | hm3);
+		if (m)
+			goto found_match;
 	}
 	return NULL;
 }
