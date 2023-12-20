@@ -361,7 +361,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
 pjstr_strchr_simd(const char *s,
-		     int c)
+                  int c)
 {
 	s = pjstr_strchrnul_simd(s, c);
 	return *s == (char)c ? (char *)s : NULL;
@@ -536,7 +536,6 @@ pjstr_memmem_simd(const void *hs,
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
 		m = hm0 & hm1;
 		while (m) {
-found_match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			hp = h + i - shift;
@@ -559,8 +558,23 @@ found_match:
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
 		m = hm0 & hm1;
-		if (m)
-			goto found_match;
+		while (m) {
+			i = TZCNT(m);
+			m = BLSR(m);
+			hp = h + i - shift;
+			if (jstr_unlikely(hp > end))
+				return NULL;
+			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
+				hv = LOADU((VEC *)hp);
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
+				if (cmpm == matchm)
+					if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+						return (void *)hp;
+			} else {
+				if (!memcmp(hp, ne, ne_len))
+					return (void *)hp;
+			}
+		}
 	}
 	return NULL;
 }
@@ -609,7 +623,6 @@ pjstr_strcasestr_len_simd(const char *hs,
 		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
 		m = (hm0 | hm1) & (hm2 | hm3);
 		while (m) {
-found_match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			if (jstr_unlikely(h + i - shift > end))
@@ -625,8 +638,14 @@ found_match:
 		hm2 = (MASK)CMPEQ8_MASK(hv0, nv2) >> 1;
 		hm3 = (MASK)CMPEQ8_MASK(hv0, nv3) >> 1;
 		m = (hm0 | hm1) & (hm2 | hm3);
-		if (m)
-			goto found_match;
+		while (m) {
+			i = TZCNT(m);
+			m = BLSR(m);
+			if (jstr_unlikely(h + i - shift > end))
+				return NULL;
+			if (!jstr_strcasecmpeq_len((const char *)h + i - shift, (const char *)ne, ne_len))
+				return (char *)h + i - shift;
+		}
 	}
 	return NULL;
 }
