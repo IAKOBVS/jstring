@@ -548,12 +548,8 @@ found_match:
 	if (h - shift <= end) {
 		hv0 = LOAD((const VEC *)h);
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-#if 0
-		/* hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) << 1; */
-		/* m = hm0 & hm1; */
-#else
-		m = hm0;
-#endif
+		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
+		m = hm0 & hm1;
 		if (m)
 			goto found_match;
 	}
