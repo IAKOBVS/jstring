@@ -313,7 +313,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 3)(const unsigned char *hs,
                                           N_PARAM)
 {
 	typedef uint32_t U32;
-	const U32 nw = (U32)(L(ne[0]) << 24) | (U32)L((ne[1]) << 16) | (U32)L((ne[2]) << 8);
+	const U32 nw = (U32)(L(ne[0]) << 24) | (U32)L(ne[1]) << 16 | (U32)L(ne[2]) << 8;
 	U32 hw = 0;
 	unsigned int c;
 	for (c = L(hs[0]); N nw != hw && c != 0; c = L(*++hs))
@@ -328,7 +328,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 4)(const unsigned char *hs,
                                           N_PARAM)
 {
 	typedef uint32_t U32;
-	const U32 nw = (U32)(L(ne[0]) << 24) | (U32)L((ne[1]) << 16) | (U32)L((ne[2]) << 8) | (U32)L(ne[3]);
+	const U32 nw = (U32)(L(ne[0]) << 24) | (U32)L(ne[1]) << 16 | (U32)L(ne[2]) << 8 | (U32)L(ne[3]);
 	U32 hw = 0;
 	unsigned int c;
 	for (c = L(hs[0]); N c != 0 && nw != hw; c = L(*++hs))
