@@ -136,7 +136,6 @@ static char *
 pjstr_stpcpy_simd(char *JSTR_RESTRICT dst,
                   const char *JSTR_RESTRICT src)
 {
-	return strcpy(dst, src) + strlen(src);
 	while (JSTR_PTR_IS_NOT_ALIGNED(dst, VEC_SIZE))
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
@@ -144,6 +143,8 @@ pjstr_stpcpy_simd(char *JSTR_RESTRICT dst,
 		return pjstr_stpcpy_simd_aligned(dst, src);
 	return pjstr_stpcpy_simd_unaligned_src(dst, src);
 }
+
+#define JSTR_HAVENT_STPCPY_SIMD 1
 
 #ifndef TZCNT
 
