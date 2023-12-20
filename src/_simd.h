@@ -457,12 +457,10 @@ pjstr_memrchr_simd(const void *s,
 		if (*p == (unsigned char)c)
 			return (void *)p;
 	}
-	if (p == (unsigned char *)s)
-		goto ret_match;
 	MASK m;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
-	while (p > (unsigned char *)s) {
+	while (p >= (unsigned char *)s) {
 		p -= VEC_SIZE;
 		sv = LOAD((const VEC *)p);
 		m = (MASK)CMPEQ8_MASK(sv, cv);
@@ -473,10 +471,6 @@ pjstr_memrchr_simd(const void *s,
 ret:;
 	const MASK i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
 	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
-ret_match:
-	if (*p == (unsigned char)c)
-		return (char *)p;
-	return NULL;
 }
 
 #endif
@@ -488,6 +482,7 @@ ret_match:
 
 #else
 
+#	define JSTR_HAVENT_MEMMEM_SIMD 1
 #	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -553,7 +548,9 @@ found_match:
 	}
 	if (h - shift <= end) {
 		hv0 = LOAD((const VEC *)h);
-		m = (MASK)CMPEQ8_MASK(hv0, nv0);
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) << 1;
+		m = hm0 & hm1;
 		if (m)
 			goto found_match;
 	}
