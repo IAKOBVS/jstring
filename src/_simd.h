@@ -170,19 +170,19 @@ pjstr_stpcpy_simd_aligned_unroll(char *JSTR_RESTRICT dst,
 		STORE((VEC *)dst + 2, sv2);
 		STORE((VEC *)dst + 3, sv3);
 	}
-#if 0
+#if 1
 	if (zm0)
 		goto tail;
 	STORE((VEC *)dst, sv0);
-	dst += VEC_SIZE;
+	dst += VEC_SIZE, src += VEC_SIZE;
 	if (zm1)
 		goto tail;
 	STORE((VEC *)dst, sv1);
-	dst += VEC_SIZE;
+	dst += VEC_SIZE, src += VEC_SIZE;
 	if (zm2)
 		goto tail;
 	STORE((VEC *)dst, sv2);
-	dst += VEC_SIZE;
+	dst += VEC_SIZE, src += VEC_SIZE;
 	goto tail;
 tail:
 #endif
@@ -217,19 +217,19 @@ pjstr_stpcpy_simd_unaligned_src_unroll(char *JSTR_RESTRICT dst,
 		STOREU((VEC *)dst + 2, sv2);
 		STOREU((VEC *)dst + 3, sv3);
 	}
-#if 0
+#if 1
 	if (zm0)
 		goto tail;
 	STOREU((VEC *)dst, sv0);
-	dst += VEC_SIZE;
+	dst += VEC_SIZE, src += VEC_SIZE;
 	if (zm1)
 		goto tail;
 	STOREU((VEC *)dst, sv1);
-	dst += VEC_SIZE;
+	dst += VEC_SIZE, src += VEC_SIZE;
 	if (zm2)
 		goto tail;
 	STOREU((VEC *)dst, sv2);
-	dst += VEC_SIZE;
+	dst += VEC_SIZE, src += VEC_SIZE;
 	goto tail;
 tail:
 #endif
