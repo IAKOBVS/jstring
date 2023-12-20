@@ -31,36 +31,49 @@ PJSTR_BEGIN_DECLS
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
 
-/* If AVX2 is not available, use SSE. */
+/* Select AVX512, AVX2, or SSE. */
 
-#ifdef __AVX2__
+#if defined __AVX512F__
+#	include <immintrin.h>
+typedef __m512i jstr_vec_ty;
+typedef uint64_t jstr_vec_mask_ty;
+#	define LOAD(x)           _mm512_load_si512(x)
+#	define LOADU(x)          _mm512_loadu_si512(x)
+#	define STORE(dst, src)   _mm512_store_si512(dst, src)
+#	define STOREU(dst, src)  _mm512_storeu_si512(dst, src)
+#	define CMPEQ8_MASK(x, y) _mm512_cmpeq_epi8_mask(x, y)
+#	define SETZERO(x)        _mm512_setzero_si512(x)
+#	define SETONE8(x)        _mm512_set1_epi8(x)
+#	define POPCNT(x)         _mm_popcnt_u64(x)
+#	define TZCNT(x)          _tzcnt_u64(x)
+#	define BLSR(x)           _blsr_u64(x)
+#	define LZCNT(x)          _lzcnt_u64(x)
+#elif defined __AVX2__
 #	include <immintrin.h>
 typedef __m256i jstr_vec_ty;
 typedef uint32_t jstr_vec_mask_ty;
-#	define LOAD(x)          _mm256_load_si256(x)
-#	define LOADU(x)         _mm256_loadu_si256(x)
-#	define STORE(dst, src)  _mm256_store_si256(dst, src)
-#	define STOREU(dst, src) _mm256_storeu_si256(dst, src)
-#	define MOVEMASK8(x)     _mm256_movemask_epi8(x)
-#	define CMPEQ8(x, y)     _mm256_cmpeq_epi8(x, y)
-#	define SETZERO(x)       _mm256_setzero_si256(x)
-#	define SETONE8(x)       _mm256_set1_epi8(x)
-#	define POPCNT(x)        _mm_popcnt_u32(x)
-#	define TZCNT(x)         _tzcnt_u32(x)
-#	define BLSR(x)          _blsr_u32(x)
-#	define LZCNT(x)         _lzcnt_u32(x)
+#	define LOAD(x)           _mm256_load_si256(x)
+#	define LOADU(x)          _mm256_loadu_si256(x)
+#	define STORE(dst, src)   _mm256_store_si256(dst, src)
+#	define STOREU(dst, src)  _mm256_storeu_si256(dst, src)
+#	define CMPEQ8_MASK(x, y) _mm256_movemask_epi8(_mm256_cmpeq_epi8(x, y))
+#	define SETZERO(x)        _mm256_setzero_si256(x)
+#	define SETONE8(x)        _mm256_set1_epi8(x)
+#	define POPCNT(x)         _mm_popcnt_u32(x)
+#	define TZCNT(x)          _tzcnt_u32(x)
+#	define BLSR(x)           _blsr_u32(x)
+#	define LZCNT(x)          _lzcnt_u32(x)
 #elif defined __SSE__
 #	include <emmintrin.h>
 typedef __m128i jstr_vec_ty;
 typedef uint16_t jstr_vec_mask_ty;
-#	define LOAD(x)          _mm_load_si128(x)
-#	define LOADU(x)         _mm_loadu_si128(x)
-#	define STORE(dst, src)  _mm_store_si128(dst, src)
-#	define STOREU(dst, src) _mm_storeu_si128(dst, src)
-#	define MOVEMASK8(x)     _mm_movemask_epi8(x)
-#	define CMPEQ8(x, y)     _mm_cmpeq_epi8(x, y)
-#	define SETZERO(x)       _mm_setzero_si128(x)
-#	define SETONE8(x)       _mm_set1_epi8(x)
+#	define LOAD(x)           _mm_load_si128(x)
+#	define LOADU(x)          _mm_loadu_si128(x)
+#	define STORE(dst, src)   _mm_store_si128(dst, src)
+#	define STOREU(dst, src)  _mm_storeu_si128(dst, src)
+#	define CMPEQ8_MASK(x, y) _mm_movemask_epi8(_mm_cmpeq_epi8(x, y))
+#	define SETZERO(x)        _mm_setzero_si128(x)
+#	define SETONE8(x)        _mm_set1_epi8(x)
 #	if JSTR_HAS_BUILTIN(__builtin_popcount)
 #		define POPCNT(x) __builtin_popcount(x)
 #	endif
@@ -85,7 +98,7 @@ pjstr_stpcpy_simd_aligned(char *JSTR_RESTRICT dst,
 	MASK zm;
 	for (;; src += VEC_SIZE, dst += VEC_SIZE) {
 		sv = LOAD((const VEC *)src);
-		zm = (MASK)MOVEMASK8(CMPEQ8(sv, zv));
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		if (zm)
 			break;
 		STORE((VEC *)dst, sv);
@@ -107,7 +120,7 @@ pjstr_stpcpy_simd_unaligned_src(char *JSTR_RESTRICT dst,
 	MASK zm;
 	for (;; src += VEC_SIZE, dst += VEC_SIZE) {
 		sv = LOADU((const VEC *)src);
-		zm = (MASK)MOVEMASK8(CMPEQ8(sv, zv));
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		if (zm)
 			break;
 		STORE((VEC *)dst, sv);
@@ -123,6 +136,7 @@ static char *
 pjstr_stpcpy_simd(char *JSTR_RESTRICT dst,
                   const char *JSTR_RESTRICT src)
 {
+	return strcpy(dst, src) + strlen(src);
 	while (JSTR_PTR_IS_NOT_ALIGNED(dst, VEC_SIZE))
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
@@ -166,9 +180,9 @@ pjstr_strncasechr_simd(const char *s,
 	const VEC zv = SETZERO();
 	for (;; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
-		hm0 = (MASK)MOVEMASK8(CMPEQ8(sv, cv0));
-		hm1 = (MASK)MOVEMASK8(CMPEQ8(sv, cv1));
-		zm = (MASK)MOVEMASK8(CMPEQ8(sv, zv));
+		hm0 = (MASK)CMPEQ8_MASK(sv, cv0);
+		hm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		m = hm0 | hm1 | zm;
 		if (m | (p >= end))
 			break;
@@ -199,8 +213,8 @@ pjstr_strnchr_simd(const char *s,
 	const VEC zv = SETZERO();
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
-		hm = (MASK)MOVEMASK8(CMPEQ8(sv, cv));
-		zm = (MASK)MOVEMASK8(CMPEQ8(sv, zv));
+		hm = (MASK)CMPEQ8_MASK(sv, cv);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		m = hm | zm;
 		if (m | (s >= end))
 			break;
@@ -226,8 +240,8 @@ pjstr_strchrnul_simd(const char *s,
 	const VEC zv = SETZERO();
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
-		cm = (MASK)MOVEMASK8(CMPEQ8(sv, cv));
-		zm = (MASK)MOVEMASK8(CMPEQ8(sv, zv));
+		cm = (MASK)CMPEQ8_MASK(sv, cv);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		m = cm | zm;
 		if (m)
 			break;
@@ -253,9 +267,9 @@ pjstr_strcasechrnul_simd(const char *s,
 	const VEC zv = SETZERO();
 	for (;; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
-		zm = (MASK)MOVEMASK8(CMPEQ8(sv, zv));
-		m = (MASK)MOVEMASK8(CMPEQ8(sv, cv0));
-		m1 = (MASK)MOVEMASK8(CMPEQ8(sv, cv1));
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
+		m = (MASK)CMPEQ8_MASK(sv, cv0);
+		m1 = (MASK)CMPEQ8_MASK(sv, cv1);
 		m2 = m | m1 | zm;
 		if (m2)
 			break;
@@ -298,8 +312,8 @@ pjstr_memcasechr_simd(const void *s,
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	for (; p < end; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
-		m = (MASK)MOVEMASK8(CMPEQ8(sv, cv));
-		m1 = (MASK)MOVEMASK8(CMPEQ8(sv, cv1));
+		m = (MASK)CMPEQ8_MASK(sv, cv);
+		m1 = (MASK)CMPEQ8_MASK(sv, cv1);
 		m2 = m | m1;
 		if (m2)
 			goto ret;
@@ -344,13 +358,13 @@ pjstr_memrchr_simd(const void *s,
 	while (p > (unsigned char *)s) {
 		p -= VEC_SIZE;
 		sv = LOAD((const VEC *)p);
-		m = (MASK)MOVEMASK8(CMPEQ8(sv, cv));
+		m = (MASK)CMPEQ8_MASK(sv, cv);
 		if (m)
 			goto ret;
 	}
 	return NULL;
 ret:;
-	const MASK i = 31 - _lzcnt_u32(m);
+	const MASK i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
 	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
 ret_match:
 	if (*p == (unsigned char)c)
@@ -399,25 +413,25 @@ pjstr_memmem_simd(const void *hs,
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
 	const VEC nv = LOADU((VEC *)ne);
 	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
-	const MASK matchm = 0xffffffff << sh;
+	const MASK matchm = (MASK)-1 << sh;
 	VEC hv, hv0, hv1;
 	MASK i, hm0, hm1, m, cmpm;
 	const unsigned char *hp;
 	for (; h - shift <= end; h += VEC_SIZE) {
 		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
-		hm0 = (MASK)MOVEMASK8(CMPEQ8(hv0, nv0));
-		hm1 = (MASK)MOVEMASK8(CMPEQ8(hv1, nv1));
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
 		m = hm0 & hm1;
 		while (m) {
 			i = TZCNT(m);
-			m = _blsr_u32(m);
+			m = BLSR(m);
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
 				hv = LOADU((VEC *)hp);
-				cmpm = (MASK)MOVEMASK8(CMPEQ8(hv, nv)) << sh;
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
 				if (cmpm == matchm)
 					if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
 						return (void *)hp;
@@ -468,14 +482,14 @@ pjstr_strcasestr_len_simd(const char *hs,
 	for (; h - shift <= end; h += VEC_SIZE) {
 		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
-		hm0 = (MASK)MOVEMASK8(CMPEQ8(hv0, nv0));
-		hm1 = (MASK)MOVEMASK8(CMPEQ8(hv0, nv1));
-		hm2 = (MASK)MOVEMASK8(CMPEQ8(hv1, nv2));
-		hm3 = (MASK)MOVEMASK8(CMPEQ8(hv1, nv3));
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
+		hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
+		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
 		m = (hm0 | hm1) & (hm2 | hm3);
 		while (m) {
 			i = TZCNT(m);
-			m = _blsr_u32(m);
+			m = BLSR(m);
 			if (jstr_unlikely(h + i - shift > end))
 				return NULL;
 			if (!jstr_strcasecmpeq_len((const char *)h + i - shift, (const char *)ne, ne_len))
@@ -512,8 +526,8 @@ pjstr_countchr_simd(const void *s,
 	unsigned int cnt0;
 	for (;; p += VEC_SIZE, cnt += cnt0) {
 		sv = LOAD((const VEC *)p);
-		m = (MASK)MOVEMASK8(CMPEQ8(sv, cv));
-		zm = (MASK)MOVEMASK8(CMPEQ8(sv, zv));
+		m = (MASK)CMPEQ8_MASK(sv, cv);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		cnt0 = m ? (unsigned int)POPCNT(m) : 0;
 		if (zm)
 			break;
@@ -540,7 +554,7 @@ pjstr_countchr_len_simd(const void *s,
 	MASK m;
 	for (; n >= VEC_SIZE; n -= VEC_SIZE, p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
-		m = (MASK)MOVEMASK8(CMPEQ8(sv, cv));
+		m = (MASK)CMPEQ8_MASK(sv, cv);
 		cnt += m ? (unsigned int)POPCNT(m) : 0;
 	}
 	for (; n--; cnt += *p++ == (unsigned char)c) {}

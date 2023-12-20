@@ -8,7 +8,7 @@ CFLAGS="
 -Wextra
 -Wpedantic
 -Wsign-conversion
--DVERBOSE=0
+-DVERBOSE=1
 $CFLAGS
 "
 
