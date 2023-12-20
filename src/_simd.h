@@ -541,7 +541,7 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
+			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
 				if (cmpm == matchm)
@@ -564,7 +564,7 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
+			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
 				if (cmpm == matchm)
