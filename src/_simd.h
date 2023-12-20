@@ -49,7 +49,7 @@ typedef uint32_t jstr_vec_mask_ty;
 #	define TZCNT(x)         _tzcnt_u32(x)
 #	define BLSR(x)          _blsr_u32(x)
 #	define LZCNT(x)         _lzcnt_u32(x)
-#else
+#elif defined __SSE__
 #	include <emmintrin.h>
 typedef __m128i jstr_vec_ty;
 typedef uint16_t jstr_vec_mask_ty;
