@@ -1636,9 +1636,7 @@ jstr_linenumber(const char *start,
                 const char *const end)
 JSTR_NOEXCEPT
 {
-	size_t cnt = 1;
-	for (; (start = (const char *)memchr(start, '\n', JSTR_PTR_DIFF(end, start))); ++start, ++cnt) {}
-	return cnt;
+	return jstr_countchr_len(start, '\n', JSTR_PTR_DIFF(end, start)) + 1;
 }
 
 JSTR_FUNC_VOID
