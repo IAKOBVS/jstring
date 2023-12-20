@@ -488,7 +488,6 @@ ret_match:
 
 #else
 
-#	define JSTR_HAVENT_MEMMEM_SIMD         1
 #	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -527,13 +526,14 @@ pjstr_memmem_simd(const void *hs,
 	VEC hv, hv0, hv1;
 	MASK i, hm0, hm1, m, cmpm;
 	const unsigned char *hp;
-	for (; h - shift <= end; h += VEC_SIZE) {
+	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
 		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
 		m = hm0 & hm1;
 		while (m) {
+found_match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			hp = h + i - shift;
@@ -550,6 +550,12 @@ pjstr_memmem_simd(const void *hs,
 					return (void *)hp;
 			}
 		}
+	}
+	if (h - shift <= end) {
+		hv0 = LOAD((const VEC *)h);
+		m = (MASK)CMPEQ8_MASK(hv0, nv0);
+		if (m)
+			goto found_match;
 	}
 	return NULL;
 }
