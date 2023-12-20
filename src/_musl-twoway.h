@@ -39,7 +39,7 @@
 
 #if !PJSTR_MUSL_CHECK_EOL
 #	define NE_LEN_ARG , needle_len
-#	define HS_LEN_ARG haystack_len,
+#	define HS_LEN_ARG h_len,
 #else
 #	define NE_LEN_ARG
 #	define HS_LEN_ARG
@@ -57,8 +57,8 @@
 #	define PJSTR_MUSL_TWOWAY_STRUCT
 
 typedef struct jstr_twoway_ty {
-	size_t shift[256];
-	size_t byteset[32 / sizeof(size_t)];
+	size_t _shift[256];
+	size_t _byteset[32 / sizeof(size_t)];
 	size_t needle_len;
 } jstr_twoway_ty;
 
@@ -76,8 +76,8 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
 )
 {
 	int c;
-	memset(t->byteset, 0, sizeof(t->byteset));
-	/* Computing length of n and fill shift table */
+	memset(t->_byteset, 0, sizeof(t->_byteset));
+	/* Computing length of n and fill _shift table */
 	size_t i;
 	for (i = 0;
 #if PJSTR_MUSL_CHECK_EOL
@@ -86,7 +86,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
 	     i < n_len;
 #endif
 	     ++i, ++n)
-		c = CANON(*n), BITOP(t->byteset, c, |=), t->shift[c] = i + 1;
+		c = CANON(*n), BITOP(t->_byteset, c, |=), t->_shift[c] = i + 1;
 	t->needle_len = i;
 }
 
@@ -97,7 +97,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
                                          const unsigned char *h
 #if !PJSTR_MUSL_CHECK_EOL
                                          ,
-                                         const size_t haystack_len
+                                         const size_t h_len
 #endif
                                          ,
                                          const unsigned char *n N_PARAM)
@@ -110,12 +110,15 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
 		return NULL;
 	const unsigned char *const end = h + n_limit;
 #	endif
+#else
+	if (jstr_unlikely(h_len < t->needle_len))
+		return NULL;
 #endif
 	size_t ip, jp, k, l, p, ms, p0, mem, mem0;
 	int c0, c1;
 	const unsigned char *z;
 #if !PJSTR_MUSL_CHECK_EOL
-	z = h + haystack_len;
+	z = h + h_len;
 #endif
 	l = t->needle_len;
 	/* Compute maximal suffix */
@@ -203,10 +206,10 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
 		if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < l))
 			return NULL;
 #endif
-		/* Check last byte first; advance by shift on mismatch */
+		/* Check last byte first; advance by _shift on mismatch */
 		c0 = CANON(h[l - 1]);
-		if (BITOP(t->byteset, c0, &)) {
-			k = l - t->shift[c0];
+		if (BITOP(t->_byteset, c0, &)) {
+			k = l - t->_shift[c0];
 			if (k) {
 				if (k < mem)
 					k = mem;
@@ -240,7 +243,7 @@ static char *
 PJSTR_MUSL_FUNC_NAME(const unsigned char *h
 #if !PJSTR_MUSL_CHECK_EOL
                      ,
-                     const size_t haystack_len
+                     const size_t h_len
 #endif
                      ,
                      const unsigned char *needle
