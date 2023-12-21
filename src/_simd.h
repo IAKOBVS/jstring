@@ -449,13 +449,13 @@ pjstr_memcasechr_simd(const void *s,
 	const unsigned char *const end = p + n;
 	MASK cm0, cm1, m, i;
 	VEC sv;
-	const VEC cv = SETONE8((char)jstr_tolower(c));
+	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const unsigned int off = JSTR_PTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
 	if (off) {
 		p -= off;
 		sv = LOAD((const VEC *)p);
-		cm0 = (MASK)CMPEQ8_MASK(sv, cv);
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
 		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
 		m = (cm0 | cm1) >> off;
 		if (m) {
@@ -466,7 +466,7 @@ pjstr_memcasechr_simd(const void *s,
 	}
 	for (; p < end; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
-		cm0 = (MASK)CMPEQ8_MASK(sv, cv);
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
 		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
 		m = cm0 | cm1;
 		if (m)
@@ -526,14 +526,12 @@ ret:;
 
 #endif
 
-#if !(defined TZCNT && defined BLSR)
+#if !(defined TZCNT && defined BLSR) && 0
 
 #	define JSTR_HAVENT_MEMMEM_SIMD         1
 #	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
 
 #else
-
-#define USE_UNSAFE 1
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -565,22 +563,22 @@ pjstr_memmem_simd(const void *hs,
 	}
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-#if USE_UNSAFE
+	VEC hv0, hv1;
+	MASK i, hm0, hm1, m;
+	const unsigned char *hp;
+#if 0
 	VEC nv;
 	unsigned int off = JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne;
-	if (off >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096)) {
+	if ((off >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096))) {
 		nv = LOADU((VEC *)ne);
 	} else {
-		nv = LOADU((VEC *)((char *)ne - (VEC_SIZE - ne_len))) >> (VEC_SIZE - ne_len);
+		nv = LOADU((VEC *)((char *)ne - (VEC_SIZE - (VEC_SIZE - ne_len)))) >> (VEC_SIZE - (VEC_SIZE - ne_len));
 	}
 	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = (MASK)-1 << sh;
 	MASK cmpm;
 	VEC hv;
 #endif
-	VEC hv0, hv1;
-	MASK i, hm0, hm1, m;
-	const unsigned char *hp;
 	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
 		hv0 = LOAD((const VEC *)h);
 		hv1 = LOADU((const VEC *)(h + 1));
@@ -593,7 +591,7 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-#if USE_UNSAFE
+#if 0
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
@@ -621,7 +619,7 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-#if USE_UNSAFE
+#if 0
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
