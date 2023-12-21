@@ -620,8 +620,12 @@ check_match:
 	if (h - shift <= end) {
 		hv0 = LOADU((const VEC *)h);
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+#if 0
 		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
 		m = hm0 & hm1;
+#else
+		m = hm0;
+#endif
 		goto check_match;
 	}
 	return NULL;
@@ -681,6 +685,7 @@ pjstr_strcasestr_len_simd(const char *hs,
 		hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
 		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
 		m = (hm0 | hm1) & (hm2 | hm3);
+check_match:
 		while (m) {
 			i = TZCNT(m);
 			m = BLSR(m);
@@ -694,17 +699,14 @@ pjstr_strcasestr_len_simd(const char *hs,
 		hv0 = LOADU((const VEC *)h);
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
-		hm2 = (MASK)CMPEQ8_MASK(hv0, nv2) >> 1;
-		hm3 = (MASK)CMPEQ8_MASK(hv0, nv3) >> 1;
-		m = (hm0 | hm1) & (hm2 | hm3);
-		while (m) {
-			i = TZCNT(m);
-			m = BLSR(m);
-			if (jstr_unlikely(h + i - shift > end))
-				return NULL;
-			if (!jstr_strcasecmpeq_len((const char *)h + i - shift, (const char *)ne, ne_len))
-				return (char *)h + i - shift;
-		}
+#	if 0
+		hm2 = (MASK)CMPEQ8_MASK(hv0, nv2);
+		hm3 = (MASK)CMPEQ8_MASK(hv0, nv3);
+		m = (hm0 | hm1) & ((hm2 | hm3) >> 1);
+#	else
+		m = hm0 | hm1;
+#	endif
+		goto check_match;
 	}
 	return NULL;
 }
