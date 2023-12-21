@@ -566,9 +566,9 @@ pjstr_memmem_simd(const void *hs,
 		nv = LOADU((VEC *)ne);
 	else
 		memcpy(&nv, ne, JSTR_MIN(VEC_SIZE, ne_len));
-	unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	/* Used to clear matched bits that are out of bounds. */
-	const unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
+	unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
 	                          ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
 	                          : 0;
 	h -= off;
@@ -616,10 +616,16 @@ match:
 		}
 	}
 	if (h - shift <= end) {
-		off = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
+		off2 = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
-		/* Clear matched bits that are out of bounds. */
-		m = ((MASK)CMPEQ8_MASK(hv1, nv1) << off) >> off;
+		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(h, 4096)) {
+			hv0 = LOADU((const VEC *)h);
+			hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
+			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+			m = ((hm0 & hm1) << off2) >> off2;
+		} else {
+			m = ((MASK)CMPEQ8_MASK(hv1, nv1) << off2) >> off2;
+		}
 		if (m)
 			goto match;
 	}
@@ -690,12 +696,21 @@ match:
 		}
 	}
 	if (h - shift <= end) {
-		off = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
+		off2 = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
-		hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
-		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
-		/* Clear matched bits that are out of bounds. */
-		m = ((hm2 | hm3) << off) >> off;
+		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(h, 4096)) {
+			hv0 = LOADU((const VEC *)h);
+			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+			hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
+			hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
+			hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
+			m = (((hm0 | hm1) & (hm2 | hm3)) << off2) >> off2;
+		} else {
+			hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
+			hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
+			/* Clear matched bits that are out of bounds. */
+			m = ((hm2 | hm3) << off2) >> off2;
+		}
 		if (m)
 			goto match;
 	}
