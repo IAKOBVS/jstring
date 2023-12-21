@@ -557,10 +557,9 @@ pjstr_memmem_simd(const void *hs,
 	h += shift;
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	VEC hv0, hv1;
+	VEC hv0, hv1, nv;
 	MASK i, hm0, hm1, m;
 	const unsigned char *hp;
-	VEC nv;
 	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096) || ne_len >= VEC_SIZE)
 		nv = LOADU((VEC *)ne);
 	else
@@ -596,8 +595,8 @@ pjstr_memmem_simd(const void *hs,
 	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
 		hv0 = LOADU((const VEC *)h);
 		hv1 = LOAD((const VEC *)(h + 1));
-		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		m = hm0 & hm1;
 check_match:
 		while (m) {
