@@ -567,11 +567,19 @@ pjstr_memmem_simd(const void *hs,
 	}
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	const VEC nv = LOADU((VEC *)ne);
+#if 0
+	VEC nv;
+	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096)) {
+		nv = LOADU((VEC *)ne);
+	} else {
+	}
 	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = (MASK)-1 << sh;
-	VEC hv, hv0, hv1;
-	MASK i, hm0, hm1, m, cmpm;
+	MASK cmpm;
+	VEC hv;
+#endif
+	VEC hv0, hv1;
+	MASK i, hm0, hm1, m;
 	const unsigned char *hp;
 	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
 		hv0 = LOAD((const VEC *)h);
@@ -585,6 +593,10 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
+#if 1
+			if (!memcmp(hp, ne, ne_len))
+				return (void *)hp;
+#else
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
@@ -595,6 +607,7 @@ pjstr_memmem_simd(const void *hs,
 				if (!memcmp(hp, ne, ne_len))
 					return (void *)hp;
 			}
+#endif
 		}
 	}
 	if (h - shift <= end) {
@@ -608,6 +621,10 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
+#if 1
+			if (!memcmp(hp, ne, ne_len))
+				return (void *)hp;
+#else
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
@@ -618,6 +635,7 @@ pjstr_memmem_simd(const void *hs,
 				if (!memcmp(hp, ne, ne_len))
 					return (void *)hp;
 			}
+#endif
 		}
 	}
 	return NULL;
