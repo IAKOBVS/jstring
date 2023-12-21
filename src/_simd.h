@@ -622,10 +622,11 @@ match:
 			hv0 = LOADU((const VEC *)h);
 			hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
 			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-			m = ((hm0 & hm1) << off2) >> off2;
 		} else {
-			m = ((MASK)CMPEQ8_MASK(hv1, nv1) << off2) >> off2;
+			hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
+			hm0 = 1 | (MASK)CMPEQ8_MASK(hv1, nv0) << 1;
 		}
+		m = ((hm0 & hm1) << off2) >> off2;
 		if (m)
 			goto match;
 	}
@@ -660,9 +661,9 @@ pjstr_strcasestr_len_simd(const char *hs,
 	const VEC nv2 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
 	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 	h += shift;
-	unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	/* Used to clear matched bits that are out of bounds. */
-	const unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
+	unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
 	                          ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
 	                          : 0;
 	h -= off;
@@ -704,13 +705,14 @@ match:
 			hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
 			hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
 			hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
-			m = (((hm0 | hm1) & (hm2 | hm3)) << off2) >> off2;
 		} else {
+			hm0 = 1 | (MASK)CMPEQ8_MASK(hv1, nv0) << 1;
+			hm1 = (MASK)CMPEQ8_MASK(hv1, nv1) << 1;
 			hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
 			hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
 			/* Clear matched bits that are out of bounds. */
-			m = ((hm2 | hm3) << off2) >> off2;
 		}
+		m = (((hm0 | hm1) & (hm2 | hm3)) << off2) >> off2;
 		if (m)
 			goto match;
 	}
