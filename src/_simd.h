@@ -618,6 +618,7 @@ match:
 	if (h - shift <= end) {
 		off = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
+		/* Clear the matched bits that are out of bounds. */
 		m = ((MASK)CMPEQ8_MASK(hv1, nv1) << off) >> off;
 		if (m)
 			goto match;
@@ -692,6 +693,7 @@ match:
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
 		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
+		/* Clear the matched bits that are out of bounds. */
 		m = ((hm2 | hm3) << off) >> off;
 		if (m)
 			goto match;
