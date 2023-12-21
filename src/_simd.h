@@ -291,6 +291,7 @@ pjstr_strncasechr_simd(const char *s,
 			i = off + TZCNT(m);
 			goto ret_early;
 		}
+		s += VEC_SIZE;
 	}
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
@@ -333,6 +334,7 @@ pjstr_strnchr_simd(const char *s,
 			i = off + TZCNT(m);
 			goto ret_early;
 		}
+		s += VEC_SIZE;
 	}
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
@@ -368,6 +370,7 @@ pjstr_strchrnul_simd(const char *s,
 		m = (cm | zm) >> off;
 		if (m)
 			return (char *)s + off + TZCNT(m);
+		s += VEC_SIZE;
 	}
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
@@ -412,6 +415,7 @@ pjstr_strcasechrnul_simd(const char *s,
 		m = (cm0 | cm1 | zm) >> off;
 		if (m)
 			return (char *)s + off + TZCNT(m);
+		s += VEC_SIZE;
 	}
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
@@ -462,6 +466,7 @@ pjstr_memcasechr_simd(const void *s,
 			i = off + TZCNT(m);
 			goto ret_early;
 		}
+		p += VEC_SIZE;
 	}
 	for (; p < end; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
@@ -496,19 +501,22 @@ pjstr_memrchr_simd(const void *s,
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const unsigned char *p = (unsigned char *)s + n;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE);) {
-		--p;
-		if (jstr_unlikely(p < (unsigned char *)s))
-			return NULL;
-		if (*p == (unsigned char)c)
-			return (void *)p;
-	}
-	MASK m;
+	const unsigned char *p = (unsigned char *)s + n - VEC_SIZE;
+	MASK m, i;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
-	while (p >= (unsigned char *)s) {
+	const unsigned int off = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+	if (off) {
+		p += off;
+		sv = LOAD((const VEC *)p);
+		m = (MASK)CMPEQ8_MASK(sv, cv) << off;
+		if (m) {
+			i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
+			return p - off + i >= (unsigned char *)s ? (char *)p - off + i : NULL;
+		}
 		p -= VEC_SIZE;
+	}
+	for (; p + VEC_SIZE >= (unsigned char *)s; p -= VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
 		m = (MASK)CMPEQ8_MASK(sv, cv);
 		if (m)
@@ -516,7 +524,7 @@ pjstr_memrchr_simd(const void *s,
 	}
 	return NULL;
 ret:;
-	const MASK i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
+	i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
 	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
 }
 
