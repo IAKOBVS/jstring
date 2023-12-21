@@ -551,35 +551,35 @@ pjstr_memmem_simd(const void *hs,
 		return NULL;
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
+	const unsigned char *hp;
+	VEC hv0, hv1, hv, nv;
+	MASK i, hm0, hm1, m, cmpm;
+	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
+	const MASK matchm = (MASK)-1 << sh;
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
-	h += shift;
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	VEC hv0, hv1, nv;
-	MASK i, hm0, hm1, m;
-	const unsigned char *hp;
+	h += shift;
 	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096) || ne_len >= VEC_SIZE)
 		nv = LOADU((VEC *)ne);
 	else
 		memcpy(&nv, ne, JSTR_MIN(VEC_SIZE, ne_len));
-	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
-	const MASK matchm = (MASK)-1 << sh;
-	MASK cmpm;
-	VEC hv;
 	unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	/* Used to clear matched bits that are out of bounds. */
+	const unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
+	                          ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
+	                          : 0;
 	h -= off;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
-	m = (hm0 & hm1) >> off;
+	m = (((hm0 & hm1) >> off) << off2) >> off2;
 	while (m) {
 		i = TZCNT(m);
 		m = BLSR(m);
 		hp = h + off + i - shift;
-		if (jstr_unlikely(hp > end))
-			return NULL;
 		if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 			hv = LOADU((VEC *)hp);
 			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
@@ -618,7 +618,7 @@ match:
 	if (h - shift <= end) {
 		off = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
-		/* Clear the matched bits that are out of bounds. */
+		/* Clear matched bits that are out of bounds. */
 		m = ((MASK)CMPEQ8_MASK(hv1, nv1) << off) >> off;
 		if (m)
 			goto match;
@@ -642,32 +642,33 @@ pjstr_strcasestr_len_simd(const char *hs,
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	VEC hv0, hv1;
+	MASK i, hm0, hm1, hm2, hm3, m;
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
-	h += shift;
-	const int c = jstr_tolower(*(ne + shift));
-	const VEC nv0 = SETONE8((char)c);
-	const VEC nv1 = SETONE8((char)jstr_toupper(c));
+	const VEC nv0 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift)));
+	const VEC nv1 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
 	const VEC nv2 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
 	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
-	VEC hv0, hv1;
-	MASK i, hm0, hm1, hm2, hm3, m;
+	h += shift;
 	unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	/* Used to clear matched bits that are out of bounds. */
+	const unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
+	                          ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
+	                          : 0;
 	h -= off;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
-	hm2 = (MASK)CMPEQ8_MASK(hv0, nv2) >> 1;
-	hm3 = (MASK)CMPEQ8_MASK(hv0, nv3) >> 1;
-	m = ((hm0 | hm1) & (hm2 | hm3)) >> off;
+	hm2 = (MASK)CMPEQ8_MASK(hv0, nv2);
+	hm3 = (MASK)CMPEQ8_MASK(hv0, nv3);
+	m = ((((hm0 | hm1) & ((hm2 | hm3) >> 1)) >> off) << off2) >> off2;
 	while (m) {
 		i = TZCNT(m);
 		m = BLSR(m);
-		if (jstr_unlikely(h + off + i - shift > end))
-			return NULL;
 		if (!jstr_strcasecmpeq_len((const char *)h + off + i - shift, (const char *)ne, ne_len))
 			return (char *)h + off + i - shift;
 	}
@@ -693,7 +694,7 @@ match:
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
 		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
-		/* Clear the matched bits that are out of bounds. */
+		/* Clear matched bits that are out of bounds. */
 		m = ((hm2 | hm3) << off) >> off;
 		if (m)
 			goto match;
