@@ -568,7 +568,7 @@ pjstr_memmem_simd(const void *hs,
 	const MASK matchm = (MASK)-1 << sh;
 	MASK cmpm;
 	VEC hv;
-	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	h -= off;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
@@ -603,8 +603,6 @@ match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			hp = h + i - shift;
-			if (jstr_unlikely(hp > end))
-				return NULL;
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
@@ -618,8 +616,9 @@ match:
 		}
 	}
 	if (h - shift <= end) {
+		off = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
-		m = (MASK)CMPEQ8_MASK(hv1, nv1);
+		m = ((MASK)CMPEQ8_MASK(hv1, nv1) << off) >> off;
 		if (m)
 			goto match;
 	}
@@ -655,7 +654,7 @@ pjstr_strcasestr_len_simd(const char *hs,
 	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, hm2, hm3, m;
-	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	h -= off;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
@@ -684,17 +683,16 @@ pjstr_strcasestr_len_simd(const char *hs,
 match:
 			i = TZCNT(m);
 			m = BLSR(m);
-			if (jstr_unlikely(h + i - shift > end))
-				return NULL;
 			if (!jstr_strcasecmpeq_len((const char *)h + i - shift, (const char *)ne, ne_len))
 				return (char *)h + i - shift;
 		}
 	}
 	if (h - shift <= end) {
+		off = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
 		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
-		m = hm2 | hm3;
+		m = ((hm2 | hm3) << off) >> off;
 		if (m)
 			goto match;
 	}

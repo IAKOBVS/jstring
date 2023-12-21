@@ -1,3 +1,0 @@
-#!/bin/sh
-
-CFLAGS=-DJSTR_TEST_SLOW=1 ./test $@

@@ -9,6 +9,7 @@ CFLAGS="
 -Wpedantic
 -Wsign-conversion
 -DVERBOSE=1
+-DJSTR_TEST_SLOW=1
 -O2
 $CFLAGS
 "
@@ -45,6 +46,7 @@ else
 fi
 tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
 mkdir -p "$tmp"
+echo 'This might take a while.'
 
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
