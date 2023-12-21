@@ -9,6 +9,7 @@ CFLAGS="
 -Wpedantic
 -Wsign-conversion
 -DVERBOSE=1
+-O2
 $CFLAGS
 "
 
@@ -32,8 +33,6 @@ compile()
 cd "$(dirname "$0")" || exit
 
 CC="$(readlink "$(command -v cc)")"
-# In GCC, -O1 compiles faster.
-[ $CC = 'gcc' ] && CFLAGS="$CFLAGS -O3"
 # Set the path to compile the tests to.
 if [ -z "$TMPDIR" ]; then
 	if [ -d /tmp ]; then
