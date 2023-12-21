@@ -33,7 +33,7 @@ PJSTR_BEGIN_DECLS
 
 /* Select AVX512, AVX2, or SSE. */
 
-#if defined __AVX512F__ && 0
+#if defined __AVX512F__
 #	include <immintrin.h>
 typedef __m512i jstr_vec_ty;
 typedef uint64_t jstr_vec_mask_ty;
