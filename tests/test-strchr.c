@@ -72,9 +72,9 @@ aligncpy(const void *p, size_t len, size_t a)
 			t.result_n = jstr_countchr(s, c);                       \
 			t.expected_n = simple_countchr(s, c);                   \
 			T_DEBUG(jstr_countchr, t.result_n == t.expected_n);     \
-			t.result = pjstr_memcasechr_musl(s, c, t.n);            \
+			t.result = jstr_memcasechr(s, c, t.n);                 \
 			t.expected = simple_memcasechr(s, c, t.n);              \
-			T_DEBUG(pjstr_memcasechr_musl, t.result == t.expected); \
+			T_DEBUG(jstr_memcasechr, t.result == t.expected);      \
 		}                                                               \
 	} while (0)
 

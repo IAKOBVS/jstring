@@ -271,33 +271,41 @@ pjstr_strncasechr_simd(const char *s,
                        int c,
                        size_t n)
 {
-	const unsigned char *p = (const unsigned char *)s;
-	c = jstr_tolower(c);
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); ++p) {
-		if (jstr_unlikely(n-- == 0) || jstr_unlikely(*p == '\0'))
-			return NULL;
-		if (jstr_unlikely(jstr_tolower(*p) == c))
-			return (char *)p;
-	}
-	const unsigned char *const end = p + n;
-	MASK hm0, hm1, m, zm;
+	if (jstr_unlikely(n == 0))
+		return NULL;
+	const char *const end = s + n;
+	MASK cm0, cm1, m, zm, i;
 	VEC sv;
-	const VEC cv0 = SETONE8((char)c);
+	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
-	for (;; p += VEC_SIZE) {
-		sv = LOAD((const VEC *)p);
-		hm0 = (MASK)CMPEQ8_MASK(sv, cv0);
-		hm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	if (off) {
+		s -= off;
+		sv = LOAD((const VEC *)s);
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
+		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		m = hm0 | hm1 | zm;
-		if (m | (p >= end))
+		m = (cm0 | zm) >> off;
+		if (m) {
+			i = off + TZCNT(m);
+			goto ret_early;
+		}
+	}
+	for (;; s += VEC_SIZE) {
+		sv = LOAD((const VEC *)s);
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
+		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
+		m = cm0 | cm1 | zm;
+		if (m | (s >= end))
 			break;
 	}
-	if (p >= end)
+	if (s >= end)
 		return NULL;
-	const MASK i = TZCNT(m);
-	return p + i < end ? (char *)p + i : NULL;
+	i = TZCNT(m);
+ret_early:
+	return s + i < end ? (char *)s + i : NULL;
 }
 
 JSTR_FUNC_PURE
@@ -307,28 +315,37 @@ pjstr_strnchr_simd(const char *s,
                    int c,
                    size_t n)
 {
-	for (; JSTR_PTR_IS_NOT_ALIGNED(s, VEC_SIZE); ++s) {
-		if (jstr_unlikely(n-- == 0) || jstr_unlikely(*s == '\0'))
-			return NULL;
-		if (jstr_unlikely(*s == (char)c))
-			return (char *)s;
-	}
+	if (jstr_unlikely(n == 0))
+		return NULL;
 	const char *const end = s + n;
-	MASK hm, m, zm;
+	MASK cm, m, zm, i;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
+	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	if (off) {
+		s -= off;
+		sv = LOAD((const VEC *)s);
+		cm = (MASK)CMPEQ8_MASK(sv, cv);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
+		m = (cm | zm) >> off;
+		if (m) {
+			i = off + TZCNT(m);
+			goto ret_early;
+		}
+	}
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
-		hm = (MASK)CMPEQ8_MASK(sv, cv);
+		cm = (MASK)CMPEQ8_MASK(sv, cv);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		m = hm | zm;
+		m = cm | zm;
 		if (m | (s >= end))
 			break;
 	}
 	if (s >= end)
 		return NULL;
-	const MASK i = TZCNT(m);
+	i = TZCNT(m);
+ret_early:
 	return s + i < end ? (char *)s + i : NULL;
 }
 
@@ -342,13 +359,13 @@ pjstr_strchrnul_simd(const char *s,
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
-	const unsigned off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	if (off) {
 		s -= off;
 		sv = LOAD((const VEC *)s);
-		cm = (MASK)CMPEQ8_MASK(sv, cv) >> off;
-		zm = (MASK)CMPEQ8_MASK(sv, zv) >> off;
-		m = cm | zm;
+		cm = (MASK)CMPEQ8_MASK(sv, cv);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
+		m = (cm | zm) >> off;
 		if (m)
 			return (char *)s + off + TZCNT(m);
 	}
@@ -380,26 +397,32 @@ static char *
 pjstr_strcasechrnul_simd(const char *s,
                          int c)
 {
-	const unsigned char *p = (const unsigned char *)s;
-	c = jstr_tolower(c);
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); ++p)
-		if (jstr_unlikely(*p == '\0') || jstr_tolower(*p) == c)
-			return (char *)p;
-	MASK m, m1, m2, zm;
+	MASK m, cm0, cm1, zm;
 	VEC sv;
-	const VEC cv0 = SETONE8((char)c);
+	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
-	for (;; p += VEC_SIZE) {
-		sv = LOAD((const VEC *)p);
+	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	if (off) {
+		s -= off;
+		sv = LOAD((const VEC *)s);
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
+		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
+		m = (cm0 | cm1 | zm) >> off;
+		if (m)
+			return (char *)s + off + TZCNT(m);
+	}
+	for (;; s += VEC_SIZE) {
+		sv = LOAD((const VEC *)s);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		m = (MASK)CMPEQ8_MASK(sv, cv0);
-		m1 = (MASK)CMPEQ8_MASK(sv, cv1);
-		m2 = m | m1 | zm;
-		if (m2)
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv1);
+		cm1 = m | cm0 | zm;
+		if (cm1)
 			break;
 	}
-	return (char *)p + TZCNT(m2);
+	return (char *)s + TZCNT(cm1);
 }
 
 JSTR_FUNC_PURE
@@ -422,30 +445,36 @@ pjstr_memcasechr_simd(const void *s,
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	c = jstr_tolower(c);
 	const unsigned char *p = (const unsigned char *)s;
 	const unsigned char *const end = p + n;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); ++p) {
-		if (jstr_unlikely(p >= end))
-			return NULL;
-		if (jstr_tolower(*p) == c)
-			return (void *)p;
-	}
-	MASK m, m1, m2;
+	MASK cm0, cm1, m, i;
 	VEC sv;
-	const VEC cv = SETONE8((char)c);
+	const VEC cv = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
+	const unsigned int off = JSTR_PTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
+	if (off) {
+		p -= off;
+		sv = LOAD((const VEC *)p);
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv);
+		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+		m = (cm0 | cm1) >> off;
+		if (m) {
+			i = off + TZCNT(m);
+			goto ret_early;
+		}
+	}
 	for (; p < end; p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
-		m = (MASK)CMPEQ8_MASK(sv, cv);
-		m1 = (MASK)CMPEQ8_MASK(sv, cv1);
-		m2 = m | m1;
-		if (m2)
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv);
+		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+		m = cm0 | cm1;
+		if (m)
 			goto ret;
 	}
 	return NULL;
 ret:;
-	const MASK i = TZCNT(m2);
+	i = TZCNT(m);
+ret_early:
 	return p + i < end ? (char *)p + i : NULL;
 }
 
