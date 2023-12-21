@@ -538,92 +538,6 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-pjstr_memmem_simd_broken(const void *hs,
-                         size_t hs_len,
-                         const void *ne,
-                         size_t ne_len)
-{
-	if (ne_len == 1)
-		return (void *)memchr(hs, *(unsigned char *)ne, hs_len);
-	if (jstr_unlikely(ne_len == 0))
-		return (void *)hs;
-	if (jstr_unlikely(hs_len < ne_len))
-		return NULL;
-	const unsigned char *h = (const unsigned char *)hs;
-	const unsigned char *const end = h + hs_len - ne_len;
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
-	if (shift == ne_len - 1)
-		--shift;
-	h += shift;
-	const VEC nv0 = SETONE8(*((char *)ne + shift));
-	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	VEC hv0, hv1;
-	MASK i, hm0, hm1, m;
-	const unsigned char *hp;
-	unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
-	h -= off;
-	hv0 = LOAD((const VEC *)h);
-	hm0 = CMPEQ8_MASK(hv0, nv0);
-	hm1 = CMPEQ8_MASK(hv0, nv1) >> 1;
-	m = (hm0 & hm1) >> off;
-	while (m) {
-		i = TZCNT(m);
-		m = BLSR(m);
-		hp = h + off + i - shift;
-		if (jstr_unlikely(hp > end))
-			return NULL;
-		if (!memcmp(hp, ne, ne_len))
-			return (void *)hp;
-	}
-	h += VEC_SIZE - 1;
-	VEC nv;
-	off = JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne;
-	if ((off >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096))) {
-		nv = LOADU((VEC *)ne);
-	} else {
-		nv = LOADU((VEC *)((char *)ne - (VEC_SIZE - (VEC_SIZE - ne_len)))) >> (VEC_SIZE - (VEC_SIZE - ne_len));
-	}
-	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
-	const MASK matchm = (MASK)-1 << sh;
-	MASK cmpm;
-	VEC hv;
-	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
-		hv0 = LOAD((const VEC *)h);
-		hv1 = LOADU((const VEC *)(h + 1));
-		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-		m = hm0 & hm1;
-		while (m) {
-			i = TZCNT(m);
-			m = BLSR(m);
-			hp = h + i - shift;
-			if (jstr_unlikely(hp > end))
-				return NULL;
-#	if 1
-			if (!memcmp(hp, ne, ne_len))
-				return (void *)hp;
-#	else
-			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
-				hv = LOADU((VEC *)hp);
-				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
-				if (cmpm == matchm)
-					if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
-						return (void *)hp;
-			} else {
-				if (!memcmp(hp, ne, ne_len))
-					return (void *)hp;
-			}
-#	endif
-		}
-	}
-	return NULL;
-}
-
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
-JSTR_FUNC_PURE
-JSTR_ATTR_NO_SANITIZE_ADDRESS
-static void *
 pjstr_memmem_simd(const void *hs,
                   size_t hs_len,
                   const void *ne,
@@ -641,47 +555,75 @@ pjstr_memmem_simd(const void *hs,
 	if (shift == ne_len - 1)
 		--shift;
 	h += shift;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(h, VEC_SIZE); ++h) {
-		if (jstr_unlikely(h - shift > end))
-			return NULL;
-		if (*h == *((unsigned char *)ne + shift) && !memcmp(h - shift, ne, ne_len))
-			return (void *)(h - shift);
-	}
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, m;
 	const unsigned char *hp;
-	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
-		hv0 = LOAD((const VEC *)h);
-		hv1 = LOADU((const VEC *)(h + 1));
-		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-		m = hm0 & hm1;
-		while (m) {
-			i = TZCNT(m);
-			m = BLSR(m);
-			hp = h + i - shift;
-			if (jstr_unlikely(hp > end))
-				return NULL;
+	VEC nv;
+	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096) || ne_len >= VEC_SIZE)
+		nv = LOADU((VEC *)ne);
+	else
+		memcpy(&nv, ne, JSTR_MIN(VEC_SIZE, ne_len));
+	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
+	const MASK matchm = (MASK)-1 << sh;
+	MASK cmpm;
+	VEC hv;
+	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	h -= off;
+	hv0 = LOAD((const VEC *)h);
+	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
+	m = (hm0 & hm1) >> off;
+	while (m) {
+		i = TZCNT(m);
+		m = BLSR(m);
+		hp = h + off + i - shift;
+		if (jstr_unlikely(hp > end))
+			return NULL;
+		if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
+			hv = LOADU((VEC *)hp);
+			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
+			if (cmpm == matchm)
+				if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+					return (void *)hp;
+		} else {
 			if (!memcmp(hp, ne, ne_len))
 				return (void *)hp;
 		}
 	}
-	if (h - shift <= end) {
-		hv0 = LOAD((const VEC *)h);
+	h += VEC_SIZE - 1;
+	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
+		hv0 = LOADU((const VEC *)h);
+		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
+		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
 		m = hm0 & hm1;
+check_match:
 		while (m) {
 			i = TZCNT(m);
 			m = BLSR(m);
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-			if (!memcmp(hp, ne, ne_len))
-				return (void *)hp;
+			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
+				hv = LOADU((VEC *)hp);
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
+				if (cmpm == matchm)
+					if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+						return (void *)hp;
+			} else {
+				if (!memcmp(hp, ne, ne_len))
+					return (void *)hp;
+			}
 		}
+	}
+	if (h - shift <= end) {
+		hv0 = LOADU((const VEC *)h);
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
+		m = hm0 & hm1;
+		goto check_match;
 	}
 	return NULL;
 }
