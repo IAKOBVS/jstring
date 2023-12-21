@@ -549,13 +549,13 @@ pjstr_memmem_simd(const void *hs,
 		return (void *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	VEC hv0, hv1, hv, nv;
+	MASK i, hm0, hm1, m, cmpm;
+	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
+	const MASK matchm = (MASK)-1 << matchsh;
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
 	const unsigned char *hp;
-	VEC hv0, hv1, hv, nv;
-	MASK i, hm0, hm1, m, cmpm;
-	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
-	const MASK matchm = (MASK)-1 << sh;
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
@@ -582,7 +582,7 @@ pjstr_memmem_simd(const void *hs,
 		hp = h + off + i - shift;
 		if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 			hv = LOADU((VEC *)hp);
-			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
+			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 			if (cmpm == matchm)
 				if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
 					return (void *)hp;
@@ -605,7 +605,7 @@ match:
 			hp = h + i - shift;
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
-				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 				if (cmpm == matchm)
 					if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
 						return (void *)hp;
