@@ -170,7 +170,6 @@ pjstr_stpcpy_simd_aligned_unroll(char *JSTR_RESTRICT dst,
 		STORE((VEC *)dst + 2, sv2);
 		STORE((VEC *)dst + 3, sv3);
 	}
-#if 1
 	if (zm0)
 		goto tail;
 	STORE((VEC *)dst, sv0);
@@ -185,7 +184,6 @@ pjstr_stpcpy_simd_aligned_unroll(char *JSTR_RESTRICT dst,
 	dst += VEC_SIZE, src += VEC_SIZE;
 	goto tail;
 tail:
-#endif
 	while ((*dst++ = *src++))
 		;
 	return dst - 1;
@@ -217,7 +215,6 @@ pjstr_stpcpy_simd_unaligned_src_unroll(char *JSTR_RESTRICT dst,
 		STOREU((VEC *)dst + 2, sv2);
 		STOREU((VEC *)dst + 3, sv3);
 	}
-#if 1
 	if (zm0)
 		goto tail;
 	STOREU((VEC *)dst, sv0);
@@ -232,7 +229,6 @@ pjstr_stpcpy_simd_unaligned_src_unroll(char *JSTR_RESTRICT dst,
 	dst += VEC_SIZE, src += VEC_SIZE;
 	goto tail;
 tail:
-#endif
 	while ((*dst++ = *src++))
 		;
 	return dst - 1;
@@ -569,9 +565,11 @@ pjstr_memmem_simd(const void *hs,
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
 #if 0
 	VEC nv;
-	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096)) {
+	unsigned int off = JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne;
+	if (off >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096)) {
 		nv = LOADU((VEC *)ne);
 	} else {
+		nv = LOADU((VEC *)((char *)ne - (VEC_SIZE - ne_len))) >> (VEC_SIZE - ne_len);
 	}
 	const MASK sh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = (MASK)-1 << sh;
@@ -593,10 +591,7 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-#if 1
-			if (!memcmp(hp, ne, ne_len))
-				return (void *)hp;
-#else
+#if 0
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
@@ -607,6 +602,9 @@ pjstr_memmem_simd(const void *hs,
 				if (!memcmp(hp, ne, ne_len))
 					return (void *)hp;
 			}
+#else
+			if (!memcmp(hp, ne, ne_len))
+				return (void *)hp;
 #endif
 		}
 	}
@@ -621,10 +619,7 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-#if 1
-			if (!memcmp(hp, ne, ne_len))
-				return (void *)hp;
-#else
+#if 0
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
@@ -635,6 +630,9 @@ pjstr_memmem_simd(const void *hs,
 				if (!memcmp(hp, ne, ne_len))
 					return (void *)hp;
 			}
+#else
+			if (!memcmp(hp, ne, ne_len))
+				return (void *)hp;
 #endif
 		}
 	}
