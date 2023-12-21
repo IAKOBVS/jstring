@@ -533,6 +533,8 @@ ret:;
 
 #else
 
+#define USE_UNSAFE 1
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -563,7 +565,7 @@ pjstr_memmem_simd(const void *hs,
 	}
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-#if 0
+#if USE_UNSAFE
 	VEC nv;
 	unsigned int off = JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne;
 	if (off >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096)) {
@@ -591,7 +593,7 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-#if 0
+#if USE_UNSAFE
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
@@ -619,7 +621,7 @@ pjstr_memmem_simd(const void *hs,
 			hp = h + i - shift;
 			if (jstr_unlikely(hp > end))
 				return NULL;
-#if 0
+#if USE_UNSAFE
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << sh;
