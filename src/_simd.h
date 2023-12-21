@@ -650,21 +650,40 @@ pjstr_strcasestr_len_simd(const char *hs,
 		--shift;
 	h += shift;
 	const int c = jstr_tolower(*(ne + shift));
-	for (; JSTR_PTR_IS_NOT_ALIGNED(h, VEC_SIZE); ++h) {
-		if (jstr_unlikely(h - shift > end))
-			return NULL;
-		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((const char *)h - shift, (const char *)ne, ne_len))
-			return (char *)(h - shift);
-	}
+
+/* 	for (; JSTR_PTR_IS_NOT_ALIGNED(h, VEC_SIZE); ++h) { */
+/* 		if (jstr_unlikely(h - shift > end)) */
+/* 			return NULL; */
+/* 		if (jstr_tolower(*h) == c && !jstr_strcasecmpeq_len((const char *)h - shift, (const char *)ne, ne_len)) */
+/* 			return (char *)(h - shift); */
+/* 	} */
+
 	const VEC nv0 = SETONE8((char)c);
 	const VEC nv1 = SETONE8((char)jstr_toupper(c));
 	const VEC nv2 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
 	const VEC nv3 = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, hm2, hm3, m;
+
+	hv0 = LOAD((const VEC *)h);
+	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
+	hm2 = (MASK)CMPEQ8_MASK(hv0, nv2) >> 1;
+	hm3 = (MASK)CMPEQ8_MASK(hv0, nv3) >> 1;
+	m = ((hm0 | hm1) & (hm2 | hm3)) >> off;
+	while (m) {
+		i = TZCNT(m);
+		m = BLSR(m);
+		if (jstr_unlikely(h + i - shift > end))
+			return NULL;
+		if (!jstr_strcasecmpeq_len((const char *)h + i - shift, (const char *)ne, ne_len))
+			return (char *)h + i - shift;
+	}
+	h += VEC_SIZE - 1;
+
 	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
-		hv0 = LOAD((const VEC *)h);
-		hv1 = LOADU((const VEC *)(h + 1));
+		hv0 = LOADU((const VEC *)h);
+		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
 		hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
@@ -680,7 +699,7 @@ pjstr_strcasestr_len_simd(const char *hs,
 		}
 	}
 	if (h - shift <= end) {
-		hv0 = LOAD((const VEC *)h);
+		hv0 = LOADU((const VEC *)h);
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
 		hm2 = (MASK)CMPEQ8_MASK(hv0, nv2) >> 1;
