@@ -338,13 +338,20 @@ static char *
 pjstr_strchrnul_simd(const char *s,
                      int c)
 {
-	for (; JSTR_PTR_IS_NOT_ALIGNED(s, VEC_SIZE); ++s)
-		if (jstr_unlikely(*s == '\0') || *s == (char)c)
-			return (char *)s;
 	MASK cm, m, zm;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
+	const unsigned off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	if (off) {
+		s -= off;
+		sv = LOAD((const VEC *)s);
+		cm = (MASK)CMPEQ8_MASK(sv, cv) >> off;
+		zm = (MASK)CMPEQ8_MASK(sv, zv) >> off;
+		m = cm | zm;
+		if (m)
+			return (char *)s + off + TZCNT(m);
+	}
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
 		cm = (MASK)CMPEQ8_MASK(sv, cv);
