@@ -105,6 +105,12 @@ main(int argc, char **argv)
 	T("abc\0d", 'd');
 	T("abc abc\0x", 'x');
 
+	T("\0AAA", 'A');
+	T("A\0bb", 'b');
+	T("Ab\0c", 'c');
+	T("Abc\0d", 'd');
+	T("Abc Abc\0x", 'x');
+
 	T(a, 128);
 	T(a, 255);
 
@@ -119,6 +125,18 @@ main(int argc, char **argv)
 	T("aaaaabb", 'b');
 	T("aaaaaabb", 'b');
 	T("abc abc", 'c');
+
+	T("", 0);
+	T("A", 'A');
+	T("A", 'A' + 256);
+	T("A", 0);
+	T("Abb", 'b');
+	T("AAbb", 'b');
+	T("AAAbb", 'b');
+	T("AAAAbb", 'b');
+	T("AAAAAbb", 'b');
+	T("AAAAAAbb", 'b');
+	T("Abc Abc", 'c');
 
 	T(s, 1);
 	T(s, 2);

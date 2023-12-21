@@ -286,7 +286,7 @@ pjstr_strncasechr_simd(const char *s,
 		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
 		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		m = (cm0 | zm) >> off;
+		m = (cm0 | cm1 | zm) >> off;
 		if (m) {
 			i = off + TZCNT(m);
 			goto ret_early;
@@ -409,9 +409,9 @@ pjstr_strcasechrnul_simd(const char *s,
 	if (off) {
 		s -= off;
 		sv = LOAD((const VEC *)s);
+		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
 		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
-		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		m = (cm0 | cm1 | zm) >> off;
 		if (m)
 			return (char *)s + off + TZCNT(m);
@@ -420,13 +420,13 @@ pjstr_strcasechrnul_simd(const char *s,
 	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		m = (MASK)CMPEQ8_MASK(sv, cv0);
-		cm0 = (MASK)CMPEQ8_MASK(sv, cv1);
-		cm1 = m | cm0 | zm;
-		if (cm1)
+		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
+		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+		m = cm0 | cm1 | zm;
+		if (m)
 			break;
 	}
-	return (char *)s + TZCNT(cm1);
+	return (char *)s + TZCNT(m);
 }
 
 JSTR_FUNC_PURE
