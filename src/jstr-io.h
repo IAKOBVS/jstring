@@ -989,7 +989,7 @@ JSTR_NOEXCEPT
 			        ep,
 			        a->ftw.dirpath,
 			        if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) {
-				        continue;
+				        goto CONT;
 			        } else {
 				        a->ftw.ftw_state = JSTRIO_FTW_STATE_NS;
 				        goto func;
@@ -1003,7 +1003,7 @@ JSTR_NOEXCEPT
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_D;
 			goto dir;
 		}
-		/* If true, ignore other types of files. */
+		/* If true, ignore other filetypes. */
 		if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
 			continue;
 		goto do_reg;
@@ -1090,6 +1090,7 @@ skip_fn:
 			if (jstr_chk(tmp))
 				goto err_closedir;
 		}
+CONT:;
 	}
 	closedir(dp);
 	return JSTR_RET_SUCC;
