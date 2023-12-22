@@ -197,11 +197,8 @@ JSTR_NOEXCEPT
 	return stpcpy(dst, src);
 /* #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STPCPY_SIMD */
 /* 	return pjstr_stpcpy_simd(dst, src); */
-#elif JSTR_HAVE_STRLEN_OPTIMIZED && !JSTR_TEST
-	/* Optimized memcpy() + strlen() is still faster than a C stpcpy(). */
-	return jstr_stpcpy_len(dst, src, strlen(src));
 #else
-	return pjstr_stpcpy_musl(dst, src);
+	return jstr_stpcpy_len(dst, src, strlen(src));
 #endif
 }
 
