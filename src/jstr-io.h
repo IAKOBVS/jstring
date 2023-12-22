@@ -1081,7 +1081,7 @@ skip_fn:
 			continue;
 		OPENAT(tmp, fd, ep->d_name, O_RDONLY | O_NONBLOCK | PJSTRIO_O_DIRECTORY, continue);
 		tmp = pjstrio_ftw_len(a, a->ftw.dirpath_len FD_ARG);
-		CLOSE(FD, );
+		CLOSE(FD, goto err_closedir);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (jstr_unlikely(tmp == JSTRIO_FTW_RET_STOP))
 				goto ret_stop;
