@@ -276,28 +276,24 @@ pjstr_strncasechr_simd(const char *s,
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
 	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
-	if (off) {
-		s -= off;
-		sv = LOAD((const VEC *)s);
-		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
-		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
-		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		m = (cm0 | cm1 | zm) >> off;
-		if (m) {
-			i = off + TZCNT(m);
-			goto ret_early;
-		}
-		s += VEC_SIZE;
+	s -= off;
+	sv = LOAD((const VEC *)s);
+	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
+	cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+	zm = (MASK)CMPEQ8_MASK(sv, zv);
+	m = (cm0 | cm1 | zm) >> off;
+	if (m) {
+		i = off + TZCNT(m);
+		goto ret_early;
 	}
-	for (;; s += VEC_SIZE) {
+	do {
+		s += VEC_SIZE;
 		sv = LOAD((const VEC *)s);
 		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
 		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		m = cm0 | cm1 | zm;
-		if (m | (s >= end))
-			break;
-	}
+	} while (!(m | (s >= end)));
 	if (s >= end)
 		return NULL;
 	i = TZCNT(m);
@@ -320,26 +316,22 @@ pjstr_strnchr_simd(const char *s,
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
 	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
-	if (off) {
-		s -= off;
-		sv = LOAD((const VEC *)s);
-		cm = (MASK)CMPEQ8_MASK(sv, cv);
-		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		m = (cm | zm) >> off;
-		if (m) {
-			i = off + TZCNT(m);
-			goto ret_early;
-		}
-		s += VEC_SIZE;
+	s -= off;
+	sv = LOAD((const VEC *)s);
+	cm = (MASK)CMPEQ8_MASK(sv, cv);
+	zm = (MASK)CMPEQ8_MASK(sv, zv);
+	m = (cm | zm) >> off;
+	if (m) {
+		i = off + TZCNT(m);
+		goto ret_early;
 	}
-	for (;; s += VEC_SIZE) {
+	do {
+		s += VEC_SIZE;
 		sv = LOAD((const VEC *)s);
 		cm = (MASK)CMPEQ8_MASK(sv, cv);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		m = cm | zm;
-		if (m | (s >= end))
-			break;
-	}
+	} while (!(m | (s >= end)));
 	if (s >= end)
 		return NULL;
 	i = TZCNT(m);
@@ -358,24 +350,20 @@ pjstr_strchrnul_simd(const char *s,
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
 	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
-	if (off) {
-		s -= off;
-		sv = LOAD((const VEC *)s);
-		cm = (MASK)CMPEQ8_MASK(sv, cv);
-		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		m = (cm | zm) >> off;
-		if (m)
-			return (char *)s + off + TZCNT(m);
+	s -= off;
+	sv = LOAD((const VEC *)s);
+	cm = (MASK)CMPEQ8_MASK(sv, cv);
+	zm = (MASK)CMPEQ8_MASK(sv, zv);
+	m = (cm | zm) >> off;
+	if (m)
+		return (char *)s + off + TZCNT(m);
+	do {
 		s += VEC_SIZE;
-	}
-	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
 		cm = (MASK)CMPEQ8_MASK(sv, cv);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		m = cm | zm;
-		if (m)
-			break;
-	}
+	} while (!m);
 	return (char *)s + TZCNT(m);
 }
 
@@ -402,26 +390,22 @@ pjstr_strcasechrnul_simd(const char *s,
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
 	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
-	if (off) {
-		s -= off;
-		sv = LOAD((const VEC *)s);
-		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
-		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
-		m = (cm0 | cm1 | zm) >> off;
-		if (m)
-			return (char *)s + off + TZCNT(m);
+	s -= off;
+	sv = LOAD((const VEC *)s);
+	zm = (MASK)CMPEQ8_MASK(sv, zv);
+	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
+	cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+	m = (cm0 | cm1 | zm) >> off;
+	if (m)
+		return (char *)s + off + TZCNT(m);
+	do {
 		s += VEC_SIZE;
-	}
-	for (;; s += VEC_SIZE) {
 		sv = LOAD((const VEC *)s);
 		zm = (MASK)CMPEQ8_MASK(sv, zv);
 		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
 		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
 		m = cm0 | cm1 | zm;
-		if (m)
-			break;
-	}
+	} while (!m);
 	return (char *)s + TZCNT(m);
 }
 
@@ -452,19 +436,16 @@ pjstr_memcasechr_simd(const void *s,
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const unsigned int off = JSTR_PTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
-	if (off) {
-		p -= off;
-		sv = LOAD((const VEC *)p);
-		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
-		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
-		m = (cm0 | cm1) >> off;
-		if (m) {
-			i = off + TZCNT(m);
-			goto ret_early;
-		}
-		p += VEC_SIZE;
+	p -= off;
+	sv = LOAD((const VEC *)p);
+	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
+	cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
+	m = (cm0 | cm1) >> off;
+	if (m) {
+		i = off + TZCNT(m);
+		goto ret_early;
 	}
-	for (; p < end; p += VEC_SIZE) {
+	while ((p += VEC_SIZE) < end) {
 		sv = LOAD((const VEC *)p);
 		cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
 		cm1 = (MASK)CMPEQ8_MASK(sv, cv1);
