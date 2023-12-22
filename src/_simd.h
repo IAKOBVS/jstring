@@ -483,16 +483,14 @@ pjstr_memrchr_simd(const void *s,
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const unsigned int off = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
-	if (off) {
-		p += off;
-		sv = LOAD((const VEC *)p);
-		m = (MASK)CMPEQ8_MASK(sv, cv) << off;
-		if (m) {
-			i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
-			return p - off + i >= (unsigned char *)s ? (char *)p - off + i : NULL;
-		}
-		p -= VEC_SIZE;
+	p += off;
+	sv = LOAD((const VEC *)p);
+	m = (MASK)CMPEQ8_MASK(sv, cv) << off;
+	if (m) {
+		i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
+		return p - off + i >= (unsigned char *)s ? (char *)p - off + i : NULL;
 	}
+	p -= VEC_SIZE;
 	for (; p + VEC_SIZE >= (unsigned char *)s; p -= VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
 		m = (MASK)CMPEQ8_MASK(sv, cv);
