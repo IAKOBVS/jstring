@@ -35,28 +35,6 @@ PJSTR_END_DECLS
 #define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
 
-JSTR_ATTR_NO_SANITIZE_ADDRESS
-JSTR_FUNC_PURE
-static char *
-pjstr_strchrnul_musl(const char *s,
-                     int c)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_ATTR_MAY_ALIAS
-	enum { ALIGN = sizeof(size_t) };
-	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	for (; (uintptr_t)s % ALIGN; ++s)
-		if (jstr_unlikely(*s == '\0') || *s == (char)c)
-			return (char *)s;
-	const size_t k = ONES * (unsigned char)c;
-	const word *ws = (word *)s;
-	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k); w = *++ws) {}
-	s = (char *)ws;
-#endif
-	for (; *s && *s != (char)c; ++s) {}
-	return (char *)s;
-}
-
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
@@ -142,37 +120,6 @@ JSTR_NOEXCEPT
 #endif
 	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
 	return n ? (void *)p : NULL;
-}
-
-/* Return value:
-   ptr to '\0' in DST. */
-JSTR_ATTR_NO_SANITIZE_ADDRESS
-JSTR_FUNC_RET_NONNULL
-static char *
-pjstr_stpcpy_musl(char *JSTR_RESTRICT dst,
-                  const char *JSTR_RESTRICT src)
-JSTR_NOEXCEPT
-{
-#if JSTR_HAVE_ATTR_MAY_ALIAS
-	enum { ALIGN = sizeof(size_t) };
-	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-#if !JSTR_HAVE_UNALIGNED_ACCESS
-	if ((uintptr_t)dst % ALIGN == (uintptr_t)src % ALIGN)
-#endif
-	{
-		while (JSTR_PTR_IS_NOT_ALIGNED(src, ALIGN))
-			if (jstr_unlikely((*dst++ = *src++) == '\0'))
-				return dst - 1;
-		word *wd = (word *)dst;
-		const word *ws = (const word *)src;
-		for (word w = *ws; !HASZERO(w); w = *++ws)
-			*wd++ = w;
-		dst = (char *)wd;
-		src = (const char *)ws;
-	}
-#endif
-	while ((*dst++ = *src++)) {}
-	return dst - 1;
 }
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
