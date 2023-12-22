@@ -437,7 +437,7 @@ pjstr_memmem_simd(const void *hs,
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
 	h += shift;
-	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, 4096) || ne_len >= VEC_SIZE)
+	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || ne_len >= VEC_SIZE)
 		nv = LOADU((VEC *)ne);
 	else
 		memcpy(&nv, ne, JSTR_MIN(VEC_SIZE, ne_len));
@@ -455,7 +455,7 @@ pjstr_memmem_simd(const void *hs,
 		i = TZCNT(m);
 		m = BLSR(m);
 		hp = h + off + i - shift;
-		if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
+		if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
 			hv = LOADU((VEC *)hp);
 			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 			if (cmpm == matchm)
@@ -478,7 +478,7 @@ match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			hp = h + i - shift;
-			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(hp, 4096)) {
+			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 				if (cmpm == matchm)
@@ -494,7 +494,7 @@ match:
 		off2 = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(h, 4096)) {
+		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE) {
 			hv0 = LOADU((const VEC *)h);
 			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		} else {
@@ -575,7 +575,7 @@ match:
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm2 = (MASK)CMPEQ8_MASK(hv1, nv2);
 		hm3 = (MASK)CMPEQ8_MASK(hv1, nv3);
-		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(h, 4096)) {
+		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE) {
 			hv0 = LOADU((const VEC *)h);
 			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 			hm1 = (MASK)CMPEQ8_MASK(hv0, nv1);
