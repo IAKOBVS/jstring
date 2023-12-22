@@ -1003,7 +1003,7 @@ JSTR_NOEXCEPT
 			a->ftw.ftw_state = JSTRIO_FTW_STATE_D;
 			goto dir;
 		}
-		/* If true, ignore other filetypes. */
+		/* If true, ignore other types of files. */
 		if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
 			continue;
 		goto do_reg;
@@ -1021,9 +1021,8 @@ do_reg:
 				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(ep);
 				if (a->func_match(ep->d_name, fname_len, a->func_match_args))
 					continue;
-#if USE_ATFILE
-				a->ftw.dirpath_len = jstrio_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, ep->d_name, fname_len) - a->ftw.dirpath;
-#endif
+				if (USE_ATFILE)
+					a->ftw.dirpath_len = jstrio_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, ep->d_name, fname_len) - a->ftw.dirpath;
 			}
 		} else {
 			FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
