@@ -79,12 +79,9 @@ JSTR_NOEXCEPT
 	return (char *)strchrnul(s, c);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCHRNUL_SIMD
 	return pjstr_strchrnul_simd(s, c);
-#elif JSTR_HAVE_STRCHR_OPTIMIZED && !JSTR_TEST
-	/* Optimized strchr() + strlen() is still faster than a C strchrnul(). */
+#else
 	char *const p = strchr(s, c);
 	return p ? p : (char *)s + strlen(s);
-#else
-	return pjstr_strchrnul_musl(s, c);
 #endif
 }
 
