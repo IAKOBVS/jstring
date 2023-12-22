@@ -569,8 +569,8 @@ pjstr_memmem_simd(const void *hs,
 	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	/* Used to clear matched bits that are out of bounds. */
 	unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
-	                          ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
-	                          : 0;
+	                    ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
+	                    : 0;
 	h -= off;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
@@ -664,8 +664,8 @@ pjstr_strcasestr_len_simd(const char *hs,
 	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	/* Used to clear matched bits that are out of bounds. */
 	unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
-	                          ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
-	                          : 0;
+	                    ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
+	                    : 0;
 	h -= off;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
