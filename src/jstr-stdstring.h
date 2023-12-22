@@ -311,17 +311,6 @@ JSTR_NOEXCEPT
 	memset(s, 0, n);
 }
 
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static int
-jstr_bcmp(const void *s1,
-          const void *s2,
-          size_t n)
-JSTR_NOEXCEPT
-{
-	return memcmp(s1, s2, n);
-}
-
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
