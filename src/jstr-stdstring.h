@@ -123,9 +123,25 @@ JSTR_NOEXCEPT
    Return value:
    0 if strings match;
    non-zero otherwise. */
-#if JSTR_HAVE_STRNCASECMP
+JSTR_FUNC_PURE
+static int
+jstr_memcasecmpeq(const char *s1,
+                  const char *s2,
+                  size_t n)
+JSTR_NOEXCEPT
+{
+	const unsigned char *p1 = (const unsigned char *)s1;
+	const unsigned char *p2 = (const unsigned char *)s2;
+	for (; n && jstr_tolower(*p1++) == jstr_tolower(*p2++); --n) {}
+	return n ? 1 : 0;
+}
+
+/* Compare S1 with S2 case-insensitively.
+   N must be lower than the length of S1 or S2.
+   Return value:
+   0 if strings match;
+   non-zero otherwise. */
 JSTR_ATTR_INLINE
-#endif
 JSTR_FUNC_PURE
 static int
 jstr_strcasecmpeq_len(const char *s1,
@@ -136,10 +152,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
 #else
-	const unsigned char *p1 = (const unsigned char *)s1;
-	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; n && jstr_tolower(*p1++) == jstr_tolower(*p2++); --n) {}
-	return n ? 1 : 0;
+	return jstr_memcasecmpeq(s1, s2, n);
 #endif
 }
 
