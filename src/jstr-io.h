@@ -1079,7 +1079,7 @@ dir:
 skip_fn:
 		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
 			continue;
-		OPENAT(tmp, fd, ep->d_name, O_RDONLY | O_NONBLOCK | PJSTRIO_O_DIRECTORY, continue);
+		OPENAT(tmp, fd, ep->d_name, O_RDONLY | O_NONBLOCK | PJSTRIO_O_DIRECTORY, goto CONT);
 		tmp = pjstrio_ftw_len(a, a->ftw.dirpath_len FD_ARG);
 		CLOSE(FD, goto err_closedir);
 		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
