@@ -207,7 +207,7 @@ match:
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
 #if PJSTR_SIMD_USE_AS_MEMCASEMEM
-		hm1 |= (MASK)CMPEQ8_MASK(hv1, nv1u);
+		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
 		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE) {
 			hv0 = LOADU((const VEC *)h);
