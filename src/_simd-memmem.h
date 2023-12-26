@@ -70,14 +70,14 @@
 #	define MASK_SIZE sizeof(MASK)
 #endif
 
-#ifndef PJSTR_SIMD_FUNC_NAME
-#	define PJSTR_SIMD_FUNC_NAME pjstr_simd_memmem
+#ifndef PJSTR_SIMD_MEMMEM_FUNC_NAME
+#	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_simd_memmem
 #endif
-#ifndef PJSTR_SIMD_CMP_FUNC
-#	define PJSTR_SIMD_CMP_FUNC memcmp
+#ifndef PJSTR_SIMD_MEMMEM_CMP_FUNC
+#	define PJSTR_SIMD_MEMMEM_CMP_FUNC memcmp
 #endif
-#ifndef PJSTR_SIMD_MEMCASECHR
-#	define PJSTR_SIMD_MEMCASECHR pjstr_memcasechr_simd
+#ifndef PJSTR_SIMD_MEMMEM_MEMCASECHR
+#	define PJSTR_SIMD_MEMMEM_MEMCASECHR pjstr_memcasechr_simd
 #endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -85,16 +85,16 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-PJSTR_SIMD_FUNC_NAME(const void *hs,
-                     size_t hs_len,
-                     const void *ne,
-                     size_t ne_len)
+PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
+                            size_t hs_len,
+                            const void *ne,
+                            size_t ne_len)
 {
 	if (ne_len == 1)
-#if !PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 		return (void *)memchr(hs, *(unsigned char *)ne, hs_len);
 #else
-		return (void *)PJSTR_SIMD_MEMCASECHR(hs, *(unsigned char *)ne, hs_len);
+		return (void *)PJSTR_SIMD_MEMMEM_MEMCASECHR(hs, *(unsigned char *)ne, hs_len);
 #endif
 	if (jstr_unlikely(ne_len == 0))
 		return (void *)hs;
@@ -102,7 +102,7 @@ PJSTR_SIMD_FUNC_NAME(const void *hs,
 		return NULL;
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, m;
-#if !PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 	MASK cmpm;
 	VEC hv;
 #else
@@ -114,7 +114,7 @@ PJSTR_SIMD_FUNC_NAME(const void *hs,
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
-#if !PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = (MASK)-1 << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
@@ -139,7 +139,7 @@ PJSTR_SIMD_FUNC_NAME(const void *hs,
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
-#if !PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 	/* Clear matched bits that are out of bounds. */
 	m = (((hm0 & hm1) >> off) << off2) >> off2;
 #else
@@ -151,7 +151,7 @@ PJSTR_SIMD_FUNC_NAME(const void *hs,
 		i = TZCNT(m);
 		m = BLSR(m);
 		hp = h + off + i - shift;
-#if !PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 		if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
 			hv = LOADU((VEC *)hp);
 			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
@@ -163,7 +163,7 @@ PJSTR_SIMD_FUNC_NAME(const void *hs,
 				return (void *)hp;
 		}
 #else
-		if (!PJSTR_SIMD_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
+		if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
 			return (void *)hp;
 #endif
 	}
@@ -173,7 +173,7 @@ PJSTR_SIMD_FUNC_NAME(const void *hs,
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-#if !PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 		m = hm0 & hm1;
 #else
 		hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
@@ -185,19 +185,19 @@ match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			hp = h + i - shift;
-#if !PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 				if (cmpm == matchm)
-					if (ne_len <= VEC_SIZE || !PJSTR_SIMD_CMP_FUNC(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+					if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
 						return (void *)hp;
 			} else {
-				if (!PJSTR_SIMD_CMP_FUNC(hp, ne, ne_len))
+				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(hp, ne, ne_len))
 					return (void *)hp;
 			}
 #else
-			if (!PJSTR_SIMD_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
+			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
 				return (void *)hp;
 #endif
 		}
@@ -206,22 +206,22 @@ match:
 		off2 = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-#if PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
 		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE) {
 			hv0 = LOADU((const VEC *)h);
 			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-#if PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 			hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 #endif
 		} else {
 			hm0 = 1 | (MASK)CMPEQ8_MASK(hv1, nv0) << 1;
-#if PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 			hm0u = 1 | (MASK)CMPEQ8_MASK(hv1, nv0u) << 1;
 #endif
 		}
-#if !PJSTR_SIMD_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 		m = ((hm0 & hm1) << off2) >> off2;
 #else
 		m = (((hm0 | hm0u) & (hm1 | hm1u)) << off2) >> off2;
@@ -232,7 +232,7 @@ match:
 	return NULL;
 }
 
-#undef PJSTR_SIMD_FUNC_NAME
-#undef PJSTR_SIMD_CMP_FUNC
-#undef PJSTR_SIMD_USE_AS_MEMCASEMEM
-#undef PJSTR_SIMD_MEMCASECHR
+#undef PJSTR_SIMD_MEMMEM_FUNC_NAME
+#undef PJSTR_SIMD_MEMMEM_CMP_FUNC
+#undef PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+#undef PJSTR_SIMD_MEMMEM_MEMCASECHR
