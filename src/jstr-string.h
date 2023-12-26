@@ -601,6 +601,12 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
+	const int c = *((cu *)ne + shift);
+	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
+	if (jstr_unlikely(p == NULL) || ne_len == 1)
+		return (void *)p;
+	hs_len = JSTR_PTR_DIFF(p, hs) + ne_len;
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
@@ -615,11 +621,6 @@ JSTR_NOEXCEPT
 		return pjstr_memrmem7((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 8)
 		return pjstr_memrmem8((cu *)hs, (cu *)ne, hs_len);
-	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
-	const int c = *((cu *)ne + shift);
-	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
-	if (jstr_unlikely(p == NULL) || ne_len == 1)
-		return (void *)p;
 #if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_BUILTIN_MEMCMP || JSTR_HAVE_ATTR_MAY_ALIAS)
 	const unsigned char *const ne_rest = (cu *)ne + 8;
 	for (ne_len -= 8, p -= shift; p >= (cu *)hs; --p)
