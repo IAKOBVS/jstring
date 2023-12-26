@@ -80,6 +80,12 @@
 #	define PJSTR_SIMD_MEMMEM_MEMCASECHR pjstr_memcasechr_simd
 #endif
 
+#if PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#	define OR_UPPER_MASK(x) | (x)
+#else
+#	define OR_UPPER_MASK(x)
+#endif
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -91,7 +97,7 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
                             size_t ne_len)
 {
 	if (ne_len == 1)
-#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 		return (void *)memchr(hs, *(unsigned char *)ne, hs_len);
 #else
 		return (void *)PJSTR_SIMD_MEMMEM_MEMCASECHR(hs, *(unsigned char *)ne, hs_len);
@@ -102,9 +108,9 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 		return NULL;
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, m;
-#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 	MASK cmpm;
-	VEC hv;
+	VEC hv, nv;
 #else
 	MASK hm0u, hm1u;
 #endif
@@ -114,12 +120,12 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	if (shift == ne_len - 1)
 		--shift;
-#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+	h += shift;
+#if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = (MASK)-1 << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	VEC nv;
 	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || ne_len >= VEC_SIZE)
 		nv = LOADU((VEC *)ne);
 	else
@@ -130,7 +136,6 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	const VEC nv0u = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
 	const VEC nv1u = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 #endif
-	h += shift;
 	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
 	                    ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
@@ -139,19 +144,17 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
-#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
-	/* Clear matched bits that are out of bounds. */
-	m = (((hm0 & hm1) >> off) << off2) >> off2;
-#else
+#if PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 	hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 	hm1u = (MASK)CMPEQ8_MASK(hv0, nv1u) >> 1;
-	m = ((((hm0 | hm0u) & (hm1 | hm1u)) >> off) << off2) >> off2;
 #endif
+	/* Clear matched bits that are out of bounds. */
+	m = ((((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) >> off) << off2) >> off2;
 	while (m) {
 		i = TZCNT(m);
 		m = BLSR(m);
 		hp = h + off + i - shift;
-#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 		if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
 			hv = LOADU((VEC *)hp);
 			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
@@ -173,27 +176,25 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
-		m = hm0 & hm1;
-#else
+#if PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 		hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
-		m = (hm0 | hm0u) & (hm1 | hm1u);
 #endif
+		m = (hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u));
 		while (m) {
 match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			hp = h + i - shift;
-#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+#if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 				if (cmpm == matchm)
-					if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+					if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
 						return (void *)hp;
 			} else {
-				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(hp, ne, ne_len))
+				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
 					return (void *)hp;
 			}
 #else
@@ -206,26 +207,22 @@ match:
 		off2 = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-#if PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+#if PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
 		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE) {
 			hv0 = LOADU((const VEC *)h);
 			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-#if PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+#if PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 			hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 #endif
 		} else {
 			hm0 = 1 | (MASK)CMPEQ8_MASK(hv1, nv0) << 1;
-#if PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
+#if PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 			hm0u = 1 | (MASK)CMPEQ8_MASK(hv1, nv0u) << 1;
 #endif
 		}
-#if !PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
-		m = ((hm0 & hm1) << off2) >> off2;
-#else
-		m = (((hm0 | hm0u) & (hm1 | hm1u)) << off2) >> off2;
-#endif
+		m = (((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) << off2) >> off2;
 		if (m)
 			goto match;
 	}
@@ -234,5 +231,7 @@ match:
 
 #undef PJSTR_SIMD_MEMMEM_FUNC_NAME
 #undef PJSTR_SIMD_MEMMEM_CMP_FUNC
-#undef PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM
 #undef PJSTR_SIMD_MEMMEM_MEMCASECHR
+#undef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+
+#undef OR_UPPER_MASK

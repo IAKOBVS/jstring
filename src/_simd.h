@@ -408,9 +408,10 @@ ret:;
 
 #else
 
-#	define PJSTR_SIMD_MEMMEM_USE_AS_MEMCASEMEM 1
-#	define PJSTR_SIMD_MEMMEM_CMP_FUNC          jstr_strcasecmpeq_len
-#	define PJSTR_SIMD_MEMMEM_FUNC_NAME         pjstr_strcasestr_len_simd
+#	define PJSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_strcasestr_len_simd
+#	define PJSTR_SIMD_MEMMEM_USE_AS_ICASE 1
+#	define PJSTR_SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
+#	define PJSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_memcasechr_simd
 #	include "_simd-memmem.h"
 
 #	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_memmem_simd
