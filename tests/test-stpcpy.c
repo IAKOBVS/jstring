@@ -4,7 +4,6 @@ int
 main(int argc, char **argv)
 {
 	START();
-	T_STRCPY(pjstr_stpcpy_simd_unroll, simple_stpcpy, test_array_memmem);
 	T_STRCPY(jstr_stpcpy, simple_stpcpy, test_array_memmem);
 	SUCCESS();
 	return EXIT_SUCCESS;
