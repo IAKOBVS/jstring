@@ -865,13 +865,15 @@ typedef enum jstrio_ftw_flag_ty {
 #endif
 
 #if USE_ATFILE
-#	define FD       fd
-#	define FD_PARAM , int fd
-#	define FD_ARG   , fd
+#	define FD         fd
+#	define FD_PARAM   , int fd
+#	define FD_ARG     , fd
+#	define FD_DECLARE int fd;
 #else
 #	define FD
 #	define FD_PARAM
 #	define FD_ARG
+#	define FD_DECLARE
 #endif
 
 typedef enum {
@@ -1160,9 +1162,7 @@ JSTR_NOEXCEPT
 	} else {
 		jstr_strcpy_len(fulpath, dirpath, dirpath_len);
 	}
-#if USE_ATFILE
-	int fd;
-#endif
+	FD_DECLARE
 	OPEN(fd, fulpath, O_RDONLY | O_NONBLOCK, goto err);
 	struct stat st;
 	struct pjstrio_ftw_data data;
@@ -1238,11 +1238,12 @@ err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-#undef FD_ARG
 #undef OPEN
 #undef OPENAT
 #undef CLOSE
 #undef USE_ATFILE
+#undef FD_DECLARE
+#undef FD_ARG
 
 PJSTR_END_DECLS
 
