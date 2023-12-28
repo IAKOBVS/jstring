@@ -785,7 +785,7 @@ typedef enum jstrio_ftw_flag_ty {
 #endif
 
 #if USE_ATFILE
-#	define STAT_DO(st, ftw_state, fd, ep, dirpath, do_on_nonfatal_err)    \
+#	define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err)               \
 		do {                                                           \
 			if (jstr_unlikely(fstatat(fd, (ep)->d_name, st, 0))) { \
 				if (NONFATAL_ERR()) {                          \
@@ -812,20 +812,20 @@ typedef enum jstrio_ftw_flag_ty {
 				do_on_err;              \
 			}                               \
 		} while (0)
-#	define STAT_ALWAYS(st, ftw_state, fd, ep, dirpath) STAT_DO(st, ftw_state, fd, ep, dirpath, ftw_state = JSTRIO_FTW_STATE_NS; goto do_fn)
-#	define OPENDIR(fd, fname)                          fdopendir(fd)
+#	define STAT_ALWAYS(st, fd, ep, dirpath) STAT_DO(st, fd, ep, dirpath = JSTRIO_FTW_STATE_NS; goto do_fn)
+#	define OPENDIR(fd, fname)               fdopendir(fd)
 #else
-#	define STAT_DO(st, ftw_state, fd, ep, dirpath, do_on_nonfatal_err) \
-		do {                                                        \
-			if (jstr_unlikely(stat(dirpath, st))) {             \
-				if (NONFATAL_ERR()) {                       \
-					do_on_nonfatal_err;                 \
-				}                                           \
-				goto err_closedir;                          \
-			}                                                   \
+#	define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err) \
+		do {                                             \
+			if (jstr_unlikely(stat(dirpath, st))) {  \
+				if (NONFATAL_ERR()) {            \
+					do_on_nonfatal_err;      \
+				}                                \
+				goto err_closedir;               \
+			}                                        \
 		} while (0)
 /* clang-format off */
-#	define STAT_ALWAYS(st, ftw_state, fd, ep, dirpath) STAT_DO(st, ftw_state, fd, ep, dirpath, ftw_state = JSTRIO_FTW_STATE_NS; goto do_fn)
+#	define STAT_ALWAYS(st, fd, ep, dirpath) STAT_DO(st, fd, ep, dirpath = JSTRIO_FTW_STATE_NS; goto do_fn)
 #	define OPENDIR(fd, fname) opendir(fname)
 #	define OPENAT(dstfd, srcfd, file, oflag, do_on_err) do {} while (0)
 #	define OPEN(fd, file, oflag, do_on_err) do {} while (0)
@@ -836,15 +836,15 @@ typedef enum jstrio_ftw_flag_ty {
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	define IS_DIR(ep, st)                                   ((ep)->d_type == DT_DIR)
 #	define IS_REG(ep, st)                                   ((ep)->d_type == DT_REG)
-#	define STAT_MODE(st, ftw_state, ep)                     ((void)((st)->st_mode = DTTOIF((ep)->d_type)))
+#	define STAT_MODE(st, ep)                                ((void)((st)->st_mode = DTTOIF((ep)->d_type)))
 #	define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)
-#	define STAT(st, ftw_state, fd, ep, dirpath)             STAT_ALWAYS(st, fd, ep, dirpath)
-#	define STAT_OR_MODE(st, ftw_state, fd, ep, dirpath)          \
-		do {                                                  \
-			if (jflags & JSTRIO_FTW_NOSTAT)               \
-				STAT_MODE(st, ftw_state, ep);         \
-			else                                          \
-				STAT(st, ftw_state, fd, ep, dirpath); \
+#	define STAT(st, fd, ep, dirpath)                        STAT_ALWAYS(st, fd, ep, dirpath)
+#	define STAT_OR_MODE(st, fd, ep, dirpath)          \
+		do {                                       \
+			if (jflags & JSTRIO_FTW_NOSTAT)    \
+				STAT_MODE(st, ep);         \
+			else                               \
+				STAT(st, fd, ep, dirpath); \
 		} while (0)
 #else
 #	define IS_DIR(ep, st) S_ISDIR((st)->st_mode)
@@ -855,9 +855,9 @@ typedef enum jstrio_ftw_flag_ty {
 /* clang-format off */
 #		define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) do {} while (0)
 #	endif
-#	define STAT(st, ftw_state, fd, ep, dirpath) do {} while (0)
-#	define STAT_MODE(st, ftw_state, ep) do {} while (0)
-#	define STAT_OR_MODE(st, ftw_state, fd, ep, dirpath) do {} while (0)
+#	define STAT(st, fd, ep, dirpath) do {} while (0)
+#	define STAT_MODE(st, ep) do {} while (0)
+#	define STAT_OR_MODE(st, fd, ep, dirpath) do {} while (0)
 /* clang-format on */
 #endif
 
@@ -873,21 +873,6 @@ typedef enum jstrio_ftw_flag_ty {
 #	define FD_DECLARE
 #endif
 
-typedef enum {
-	JSTRIO_FTW_STATE_F,
-#define JSTRIO_FTW_STATE_F JSTRIO_FTW_STATE_F
-	JSTRIO_FTW_STATE_D,
-#define JSTRIO_FTW_STATE_D JSTRIO_FTW_STATE_D
-	JSTRIO_FTW_STATE_DNR,
-#define JSTRIO_FTW_STATE_DNR JSTRIO_FTW_STATE_DNR
-	JSTRIO_FTW_STATE_NS,
-#define JSTRIO_FTW_STATE_NS JSTRIO_FTW_STATE_NS
-	JSTRIO_FTW_STATE_SL,
-#define JSTRIO_FTW_STATE_SL JSTRIO_FTW_STATE_SL
-	JSTRIO_FTW_STATE_SLN,
-#define JSTRIO_FTW_STATE_SLN JSTRIO_FTW_STATE_SLN
-} jstrio_ftw_state_ty;
-
 #if JSTRIO_PATH_MAX <= 65536
 typedef uint16_t jstrio_path_size_ty;
 #elif JSTRIO_PATH_MAX <= 4294967296
@@ -900,7 +885,6 @@ struct JSTRIO_FTW {
 	const char *dirpath;
 	const struct stat *st;
 	jstrio_path_size_ty dirpath_len;
-	int ftw_state;
 };
 
 typedef int (*jstrio_ftw_func_ty)(const struct JSTRIO_FTW *ftw, const void *args);
@@ -946,7 +930,6 @@ JSTR_NOEXCEPT
 			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 				return JSTR_RET_SUCC;
 			a->ftw.dirpath_len = dirpath_len;
-			a->ftw.ftw_state = JSTRIO_FTW_STATE_DNR;
 			a->func(&a->ftw, a->func_args);
 			return JSTR_RET_SUCC;
 		}
@@ -985,23 +968,19 @@ JSTR_NOEXCEPT
 			if (!USE_ATFILE)
 				FILL_PATH_ALWAYS(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
 			STAT_DO((struct stat *)a->ftw.st,
-			        a->ftw.ftw_state,
 			        fd,
 			        ep,
 			        a->ftw.dirpath,
 			        if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) {
 				        goto CONT;
 			        } else {
-				        a->ftw.ftw_state = JSTRIO_FTW_STATE_NS;
 				        goto func;
 			        });
 		}
 		if (IS_REG(ep, a->ftw.st)) {
-			a->ftw.ftw_state = JSTRIO_FTW_STATE_F;
 			goto reg;
 		}
 		if (IS_DIR(ep, a->ftw.st)) {
-			a->ftw.ftw_state = JSTRIO_FTW_STATE_D;
 			goto dir;
 		}
 		/* If true, ignore other types of files. */
@@ -1030,11 +1009,11 @@ do_reg:
 		}
 		if (FLAG(JSTRIO_FTW_STATREG)) {
 			if (IS_REG(ep, a->ftw.st))
-				STAT((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+				STAT((struct stat *)a->ftw.st, fd, ep, a->ftw.dirpath);
 			else
-				STAT_MODE((struct stat *)a->ftw.st, a->ftw.ftw_state, ep);
+				STAT_MODE((struct stat *)a->ftw.st, ep);
 		} else {
-			STAT_OR_MODE((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+			STAT_OR_MODE((struct stat *)a->ftw.st, fd, ep, a->ftw.dirpath);
 		}
 func:
 		tmp = a->func(&a->ftw, a->func_args);
@@ -1058,9 +1037,9 @@ dir:
 					continue;
 		FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
 		if (FLAG(JSTRIO_FTW_STATREG))
-			STAT_MODE(a->ftw.st, a->ftw.ftw_state, ep);
+			STAT_MODE(a->ftw.st, ep);
 		else
-			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+			STAT_OR_MODE(a->ftw.st, fd, ep, a->ftw.dirpath);
 		if (FLAG(JSTRIO_FTW_REG))
 			if (!FLAG(JSTRIO_FTW_DIR))
 				goto skip_fn;
@@ -1170,7 +1149,6 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(stat(fulpath, &st)))
 #endif
 	{
-		data.ftw.ftw_state = JSTRIO_FTW_STATE_NS;
 		goto func;
 	}
 	if (jstr_likely(S_ISDIR(data.ftw.st->st_mode))) {
@@ -1179,7 +1157,6 @@ ftw:;
 			if (!(jstrio_ftw_flags & JSTRIO_FTW_DIR))
 				goto CONT;
 		int tmp;
-		data.ftw.ftw_state = JSTRIO_FTW_STATE_D;
 		tmp = func(&data.ftw, func_args);
 		if (jstrio_ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
 			if (jstr_unlikely(tmp != JSTRIO_FTW_RET_CONTINUE))
@@ -1203,7 +1180,6 @@ func:
 	if (jstrio_ftw_flags & JSTRIO_FTW_REG)
 		if (jstr_unlikely(!S_ISREG(data.ftw.st->st_mode)))
 			return JSTR_RET_SUCC;
-	data.ftw.ftw_state = JSTRIO_FTW_STATE_F;
 	if (func_match) {
 		if (jstrio_ftw_flags & JSTRIO_FTW_MATCHPATH) {
 func_match_path:
