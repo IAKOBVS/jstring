@@ -884,6 +884,7 @@ typedef size_t jstrio_path_size_ty;
 struct JSTRIO_FTW {
 	const char *dirpath;
 	const struct stat *st;
+	const struct dirent *ep;
 	jstrio_path_size_ty dirpath_len;
 };
 
@@ -935,28 +936,27 @@ JSTR_NOEXCEPT
 		}
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	const struct dirent *R ep;
 	int tmp;
-	while ((ep = readdir(dp))) {
+	while ((a->ftw.ep = readdir(dp))) {
 		if (FLAG(JSTRIO_FTW_NOHIDDEN)) {
 			/* Ignore hidden files. */
-			if (ep->d_name[0] == '.')
+			if (a->ftw.ep->d_name[0] == '.')
 				continue;
 		} else {
 			/* Ignore "." and "..". */
-			if (ep->d_name[0] == '.'
-			    && (ep->d_name[1] == '\0' || (ep->d_name[1] == '.' && ep->d_name[2] == '\0')))
+			if (a->ftw.ep->d_name[0] == '.'
+			    && (a->ftw.ep->d_name[1] == '\0' || (a->ftw.ep->d_name[1] == '.' && a->ftw.ep->d_name[2] == '\0')))
 				continue;
 		}
 		/* Stop processing if DIRPATH is longer than PATH_MAX. */
 		if (JSTR_HAVE_DIRENT_D_NAMLEN) {
-			if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(ep) >= JSTRIO_PATH_MAX)) {
+			if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTRIO_PATH_MAX)) {
 				errno = ENAMETOOLONG;
 				goto err_closedir;
 			}
 		} else {
 			if (jstr_unlikely(dirpath_len >= JSTRIO_PATH_MAX - JSTRIO_NAME_MAX)
-			    && jstr_unlikely(dirpath_len + strlen(ep->d_name) >= JSTRIO_PATH_MAX)) {
+			    && jstr_unlikely(dirpath_len + strlen(a->ftw.ep->d_name) >= JSTRIO_PATH_MAX)) {
 				errno = ENAMETOOLONG;
 				goto err_closedir;
 			}
@@ -966,10 +966,10 @@ JSTR_NOEXCEPT
 		*/
 		if (!JSTR_HAVE_DIRENT_D_TYPE) {
 			if (!USE_ATFILE)
-				FILL_PATH_ALWAYS(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
+				FILL_PATH_ALWAYS(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
 			STAT_DO((struct stat *)a->ftw.st,
 			        fd,
-			        ep,
+			        a->ftw.ep,
 			        a->ftw.dirpath,
 			        if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) {
 				        goto CONT;
@@ -977,10 +977,10 @@ JSTR_NOEXCEPT
 				        goto func;
 			        });
 		}
-		if (IS_REG(ep, a->ftw.st)) {
+		if (IS_REG(a->ftw.ep, a->ftw.st)) {
 			goto reg;
 		}
-		if (IS_DIR(ep, a->ftw.st)) {
+		if (IS_DIR(a->ftw.ep, a->ftw.st)) {
 			goto dir;
 		}
 		/* If true, ignore other types of files. */
@@ -994,26 +994,26 @@ reg:
 do_reg:
 		if (a->func_match) {
 			if (FLAG(JSTRIO_FTW_MATCHPATH)) {
-				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
+				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
 				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 					continue;
 			} else {
-				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(ep);
-				if (a->func_match(ep->d_name, fname_len, a->func_match_args))
+				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep);
+				if (a->func_match(a->ftw.ep->d_name, fname_len, a->func_match_args))
 					continue;
 				if (USE_ATFILE)
-					a->ftw.dirpath_len = jstrio_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, ep->d_name, fname_len) - a->ftw.dirpath;
+					a->ftw.dirpath_len = jstrio_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, a->ftw.ep->d_name, fname_len) - a->ftw.dirpath;
 			}
 		} else {
-			FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
+			FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
 		}
 		if (FLAG(JSTRIO_FTW_STATREG)) {
-			if (IS_REG(ep, a->ftw.st))
-				STAT((struct stat *)a->ftw.st, fd, ep, a->ftw.dirpath);
+			if (IS_REG(a->ftw.ep, a->ftw.st))
+				STAT((struct stat *)a->ftw.st, fd, a->ftw.ep, a->ftw.dirpath);
 			else
-				STAT_MODE((struct stat *)a->ftw.st, ep);
+				STAT_MODE((struct stat *)a->ftw.st, a->ftw.ep);
 		} else {
-			STAT_OR_MODE((struct stat *)a->ftw.st, fd, ep, a->ftw.dirpath);
+			STAT_OR_MODE((struct stat *)a->ftw.st, fd, a->ftw.ep, a->ftw.dirpath);
 		}
 func:
 		tmp = a->func(&a->ftw, a->func_args);
@@ -1035,11 +1035,11 @@ dir:
 			if (FLAG(JSTRIO_FTW_REG))
 				if (!FLAG(JSTRIO_FTW_DIR))
 					continue;
-		FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
+		FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
 		if (FLAG(JSTRIO_FTW_STATREG))
-			STAT_MODE(a->ftw.st, ep);
+			STAT_MODE(a->ftw.st, a->ftw.ep);
 		else
-			STAT_OR_MODE(a->ftw.st, fd, ep, a->ftw.dirpath);
+			STAT_OR_MODE(a->ftw.st, fd, a->ftw.ep, a->ftw.dirpath);
 		if (FLAG(JSTRIO_FTW_REG))
 			if (!FLAG(JSTRIO_FTW_DIR))
 				goto skip_fn;
@@ -1059,7 +1059,7 @@ dir:
 skip_fn:
 		if (FLAG(JSTRIO_FTW_NOSUBDIR))
 			continue;
-		OPENAT(tmp, fd, ep->d_name, O_RDONLY | O_NONBLOCK | PJSTRIO_O_DIRECTORY, goto CONT);
+		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | O_NONBLOCK | PJSTRIO_O_DIRECTORY, goto CONT);
 		tmp = pjstrio_ftw_len(a, a->ftw.dirpath_len FD_ARG);
 		CLOSE(FD, goto err_closedir);
 		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
