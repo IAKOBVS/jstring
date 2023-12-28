@@ -1025,9 +1025,9 @@ do_reg:
 		}
 		if (a->ftw_flags & JSTRIO_FTW_STATREG) {
 			if (IS_REG(ep, a->ftw.st))
-				STAT(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+				STAT((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 		} else {
-			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+			STAT_OR_MODE((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 		}
 func:
 		tmp = a->func(&a->ftw, a->func_args);
@@ -1051,7 +1051,7 @@ dir:
 					continue;
 		FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
 		if (!(a->ftw_flags & JSTRIO_FTW_STATREG))
-			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+			STAT_OR_MODE((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 		if (a->ftw_flags & JSTRIO_FTW_REG)
 			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 				goto skip_fn;
