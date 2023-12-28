@@ -126,7 +126,7 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	const MASK matchm = (MASK)-1 << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	if (JSTR_PTR_ALIGN_UP(ne, 4096) - (uintptr_t)ne >= VEC_SIZE || ne_len >= VEC_SIZE)
+	if (JSTR_PTR_ALIGN_UP(ne, JSTR_PAGE_SIZE) - (uintptr_t)ne >= VEC_SIZE || ne_len >= VEC_SIZE)
 		nv = LOADU((VEC *)ne);
 	else
 		memcpy(&nv, ne, JSTR_MIN(VEC_SIZE, ne_len));
@@ -155,7 +155,7 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 		m = BLSR(m);
 		hp = h + off + i - shift;
 #if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-		if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
+		if (JSTR_PTR_ALIGN_UP(hp, JSTR_PAGE_SIZE) - (uintptr_t)hp >= VEC_SIZE) {
 			hv = LOADU((VEC *)hp);
 			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 			if (cmpm == matchm)
@@ -187,7 +187,7 @@ match:
 			m = BLSR(m);
 			hp = h + i - shift;
 #if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-			if (JSTR_PTR_ALIGN_UP(hp, 4096) - (uintptr_t)hp >= VEC_SIZE) {
+			if (JSTR_PTR_ALIGN_UP(hp, JSTR_PAGE_SIZE) - (uintptr_t)hp >= VEC_SIZE) {
 				hv = LOADU((VEC *)hp);
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 				if (cmpm == matchm)
@@ -210,7 +210,7 @@ match:
 #if PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
-		if (JSTR_PTR_ALIGN_UP(h, 4096) - (uintptr_t)h >= VEC_SIZE) {
+		if (JSTR_PTR_ALIGN_UP(h, JSTR_PAGE_SIZE) - (uintptr_t)h >= VEC_SIZE) {
 			hv0 = LOADU((const VEC *)h);
 			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 #if PJSTR_SIMD_MEMMEM_USE_AS_ICASE
