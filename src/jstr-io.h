@@ -841,7 +841,7 @@ typedef enum jstrio_ftw_flag_ty {
 #	define STAT(st, fd, ep, dirpath)                        STAT_ALWAYS(st, fd, ep, dirpath)
 #	define STAT_OR_MODE(st, fd, ep, dirpath)          \
 		do {                                       \
-			if (jflags & JSTRIO_FTW_NOSTAT)    \
+			if (FLAG(JSTRIO_FTW_NOSTAT))       \
 				STAT_MODE(st, ep);         \
 			else                               \
 				STAT(st, fd, ep, dirpath); \
