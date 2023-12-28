@@ -840,7 +840,7 @@ typedef enum jstrio_ftw_flag_ty {
 #	define IS_DIR(ep, st)                                   ((ep)->d_type == DT_DIR)
 #	define IS_REG(ep, st)                                   ((ep)->d_type == DT_REG)
 #	define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)
-#	define STAT(st, ftw_state, fd, ep, dirpath)             STAT_ALWAYS(st, fd, ep, dirpath)
+#	define STAT(st, ftw_state, fd, ep, dirpath)             STAT_ALWAYS(st, ftw_state, fd, ep, dirpath)
 #	define STAT_OR_MODE(st, ftw_state, fd, ep, dirpath)          \
 		do {                                                  \
 			if (!(jflags & JSTRIO_FTW_NOSTAT))            \
