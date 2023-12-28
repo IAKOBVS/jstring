@@ -756,11 +756,8 @@ typedef enum jstrio_ftw_flag_ty {
 	/* Ignore hidden entries. */
 	JSTRIO_FTW_NOHIDDEN = (JSTRIO_FTW_STATREG << 1),
 #define JSTRIO_FTW_NOHIDDEN JSTRIO_FTW_NOHIDDEN
-	/* Expand ~/somepath to $HOME/somepath if ~ is the first char. */
-	JSTRIO_FTW_EXPTILDE = (JSTRIO_FTW_NOHIDDEN << 1),
-#define JSTRIO_FTW_EXPTILDE JSTRIO_FTW_EXPTILDE
 	/* Handle FUNC() return value according to jstrio_ftw_actionretval_ty. */
-	JSTRIO_FTW_ACTIONRETVAL = (JSTRIO_FTW_EXPTILDE << 1)
+	JSTRIO_FTW_ACTIONRETVAL = (JSTRIO_FTW_NOHIDDEN << 1)
 #define JSTRIO_FTW_ACTIONRETVAL JSTRIO_FTW_ACTIONRETVAL
 } jstrio_ftw_flag_ty;
 
@@ -1150,18 +1147,7 @@ JSTR_NOEXCEPT
 	}
 	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/'; --dirpath_len) {}
 	char fulpath[JSTRIO_PATH_MAX];
-	if (jstrio_ftw_flags & JSTRIO_FTW_EXPTILDE) {
-		if (*dirpath == '~') {
-			const char *R home = getenv("HOME");
-			if (jstr_nullchk(home))
-				goto err;
-			const jstrio_path_size_ty homelen = JSTR_PTR_DIFF(jstr_stpcpy(fulpath, home), fulpath);
-			memcpy(fulpath + homelen, dirpath + 1, dirpath_len);
-			dirpath_len += homelen - 1;
-		}
-	} else {
-		jstr_strcpy_len(fulpath, dirpath, dirpath_len);
-	}
+	jstr_strcpy_len(fulpath, dirpath, dirpath_len);
 	FD_DECLARE
 	OPEN(fd, fulpath, O_RDONLY | O_NONBLOCK, goto err);
 	struct stat st;
