@@ -927,6 +927,8 @@ struct pjstrio_ftw_data {
 #	define PJSTRIO_O_DIRECTORY 0
 #endif
 
+#define FLAG(x) ((a)->ftw_flags & (x))
+
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 static int
@@ -938,8 +940,8 @@ JSTR_NOEXCEPT
 	DIR *R const dp = OPENDIR(fd, a->ftw.dirpath);
 	if (jstr_nullchk(dp)) {
 		if (NONFATAL_ERR()) {
-			if (a->ftw_flags & JSTRIO_FTW_REG)
-				if (!(a->ftw_flags & JSTRIO_FTW_DIR))
+			if (FLAG(JSTRIO_FTW_REG))
+				if (!FLAG(JSTRIO_FTW_DIR))
 					return JSTR_RET_SUCC;
 			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 				return JSTR_RET_SUCC;
@@ -953,7 +955,7 @@ JSTR_NOEXCEPT
 	const struct dirent *R ep;
 	int tmp;
 	while ((ep = readdir(dp))) {
-		if (a->ftw_flags & JSTRIO_FTW_NOHIDDEN) {
+		if (FLAG(JSTRIO_FTW_NOHIDDEN)) {
 			/* Ignore hidden files. */
 			if (ep->d_name[0] == '.')
 				continue;
@@ -987,7 +989,7 @@ JSTR_NOEXCEPT
 			        fd,
 			        ep,
 			        a->ftw.dirpath,
-			        if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) {
+			        if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) {
 				        goto CONT;
 			        } else {
 				        a->ftw.ftw_state = JSTRIO_FTW_STATE_NS;
@@ -1003,16 +1005,16 @@ JSTR_NOEXCEPT
 			goto dir;
 		}
 		/* If true, ignore other types of files. */
-		if (a->ftw_flags & (JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
+		if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
 			continue;
 		goto do_reg;
 reg:
-		if (a->ftw_flags & JSTRIO_FTW_DIR)
-			if (!(a->ftw_flags & JSTRIO_FTW_REG))
+		if (FLAG(JSTRIO_FTW_DIR))
+			if (!(FLAG(JSTRIO_FTW_REG)))
 				continue;
 do_reg:
 		if (a->func_match) {
-			if (a->ftw_flags & JSTRIO_FTW_MATCHPATH) {
+			if (FLAG(JSTRIO_FTW_MATCHPATH)) {
 				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
 				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 					continue;
@@ -1026,7 +1028,7 @@ do_reg:
 		} else {
 			FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
 		}
-		if (a->ftw_flags & JSTRIO_FTW_STATREG) {
+		if (FLAG(JSTRIO_FTW_STATREG)) {
 			if (IS_REG(ep, a->ftw.st))
 				STAT((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 			else
@@ -1036,7 +1038,7 @@ do_reg:
 		}
 func:
 		tmp = a->func(&a->ftw, a->func_args);
-		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
+		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE
 			    || tmp == JSTRIO_FTW_RET_SKIP_SUBTREE)
 				continue;
@@ -1050,20 +1052,20 @@ func:
 		}
 		continue;
 dir:
-		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
-			if (a->ftw_flags & JSTRIO_FTW_REG)
-				if (!(a->ftw_flags & JSTRIO_FTW_DIR))
+		if (FLAG(JSTRIO_FTW_NOSUBDIR))
+			if (FLAG(JSTRIO_FTW_REG))
+				if (!FLAG(JSTRIO_FTW_DIR))
 					continue;
 		FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
-		if (a->ftw_flags & JSTRIO_FTW_STATREG)
+		if (FLAG(JSTRIO_FTW_STATREG))
 			STAT_MODE(a->ftw.st, a->ftw.ftw_state, ep);
 		else
 			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
-		if (a->ftw_flags & JSTRIO_FTW_REG)
-			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
+		if (FLAG(JSTRIO_FTW_REG))
+			if (!FLAG(JSTRIO_FTW_DIR))
 				goto skip_fn;
 		tmp = a->func(&a->ftw, a->func_args);
-		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
+		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE)
 				continue;
 			else if (tmp == JSTRIO_FTW_RET_SKIP_SUBTREE
@@ -1076,12 +1078,12 @@ dir:
 				goto err_closedir;
 		}
 skip_fn:
-		if (a->ftw_flags & JSTRIO_FTW_NOSUBDIR)
+		if (FLAG(JSTRIO_FTW_NOSUBDIR))
 			continue;
 		OPENAT(tmp, fd, ep->d_name, O_RDONLY | O_NONBLOCK | PJSTRIO_O_DIRECTORY, goto CONT);
 		tmp = pjstrio_ftw_len(a, a->ftw.dirpath_len FD_ARG);
 		CLOSE(FD, goto err_closedir);
-		if (a->ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
+		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
 			if (jstr_unlikely(tmp == JSTRIO_FTW_RET_STOP))
 				goto ret_stop;
 		} else {
@@ -1100,6 +1102,7 @@ err_closedir:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
+#undef FLAG
 #undef OPENDIR
 #undef NONFATAL_ERR
 #undef IS_DIR
