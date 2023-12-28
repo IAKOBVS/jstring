@@ -839,11 +839,14 @@ typedef enum jstrio_ftw_flag_ty {
 #if JSTR_HAVE_DIRENT_D_TYPE
 #	define IS_DIR(ep, st)                                   ((ep)->d_type == DT_DIR)
 #	define IS_REG(ep, st)                                   ((ep)->d_type == DT_REG)
+#	define STAT_MODE(st, ftw_state, ep)                     ((void)((st)->st_mode = DTTOIF((ep)->d_type)))
 #	define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)
-#	define STAT(st, ftw_state, fd, ep, dirpath)             STAT_ALWAYS(st, ftw_state, fd, ep, dirpath)
+#	define STAT(st, ftw_state, fd, ep, dirpath)             STAT_ALWAYS(st, fd, ep, dirpath)
 #	define STAT_OR_MODE(st, ftw_state, fd, ep, dirpath)          \
 		do {                                                  \
-			if (!(jflags & JSTRIO_FTW_NOSTAT))            \
+			if (jflags & JSTRIO_FTW_NOSTAT)               \
+				STAT_MODE(st, ftw_state, ep);         \
+			else                                          \
 				STAT(st, ftw_state, fd, ep, dirpath); \
 		} while (0)
 #else
@@ -856,6 +859,7 @@ typedef enum jstrio_ftw_flag_ty {
 #		define FILL_PATH(newpath_len, dirpath, dirpath_len, ep) do {} while (0)
 #	endif
 #	define STAT(st, ftw_state, fd, ep, dirpath) do {} while (0)
+#	define STAT_MODE(st, ftw_state, ep) do {} while (0)
 #	define STAT_OR_MODE(st, ftw_state, fd, ep, dirpath) do {} while (0)
 /* clang-format on */
 #endif
@@ -1025,9 +1029,11 @@ do_reg:
 		}
 		if (a->ftw_flags & JSTRIO_FTW_STATREG) {
 			if (IS_REG(ep, a->ftw.st))
-				STAT((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+				STAT(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+			else
+				STAT_MODE(a->ftw.st, a->ftw.ftw_state, ep);
 		} else {
-			STAT_OR_MODE((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 		}
 func:
 		tmp = a->func(&a->ftw, a->func_args);
@@ -1050,8 +1056,10 @@ dir:
 				if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 					continue;
 		FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, ep);
-		if (!(a->ftw_flags & JSTRIO_FTW_STATREG))
-			STAT_OR_MODE((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+		if (a->ftw_flags & JSTRIO_FTW_STATREG)
+			STAT_MODE(a->ftw.st, a->ftw.ftw_state, ep);
+		else
+			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 		if (a->ftw_flags & JSTRIO_FTW_REG)
 			if (!(a->ftw_flags & JSTRIO_FTW_DIR))
 				goto skip_fn;
@@ -1102,6 +1110,7 @@ err_closedir:
 #undef STAT_DO
 #undef STAT
 #undef STAT_ALWAYS
+#undef STAT_MODE
 #undef STAT_OR_MODE
 #undef FD
 #undef FD_PARAM
