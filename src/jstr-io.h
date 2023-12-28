@@ -1029,11 +1029,11 @@ do_reg:
 		}
 		if (a->ftw_flags & JSTRIO_FTW_STATREG) {
 			if (IS_REG(ep, a->ftw.st))
-				STAT(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+				STAT((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 			else
-				STAT_MODE(a->ftw.st, a->ftw.ftw_state, ep);
+				STAT_MODE((struct stat *)a->ftw.st, a->ftw.ftw_state, ep);
 		} else {
-			STAT_OR_MODE(a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
+			STAT_OR_MODE((struct stat *)a->ftw.st, a->ftw.ftw_state, fd, ep, a->ftw.dirpath);
 		}
 func:
 		tmp = a->func(&a->ftw, a->func_args);
