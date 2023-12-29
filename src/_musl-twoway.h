@@ -74,6 +74,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
                                          size_t n_len
 #endif
 )
+JSTR_NOEXCEPT
 {
 	int c;
 	memset(t->_byteset, 0, sizeof(t->_byteset));
@@ -101,6 +102,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
 #endif
                                          ,
                                          const unsigned char *n N_PARAM)
+JSTR_NOEXCEPT
 {
 #if PJSTR_MUSL_CHECK_EOL
 	if (jstr_unlikely(n[t->needle_len] != '\0'))
@@ -252,6 +254,7 @@ PJSTR_MUSL_FUNC_NAME(const unsigned char *h
                      const size_t needle_len
 #endif
                      N_PARAM)
+JSTR_NOEXCEPT
 {
 	jstr_twoway_ty t;
 	JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)

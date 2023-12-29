@@ -95,6 +95,7 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
                             size_t hs_len,
                             const void *ne,
                             size_t ne_len)
+JSTR_NOEXCEPT
 {
 	if (ne_len == 1)
 #if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE

@@ -311,6 +311,7 @@ static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 3)(const unsigned char *hs,
                                           const unsigned char *const ne
                                           N_PARAM)
+JSTR_NOEXCEPT
 {
 	typedef uint32_t U32;
 	const U32 nw = (U32)(L(ne[0]) << 24) | (U32)L(ne[1]) << 16 | (U32)L(ne[2]) << 8;
@@ -326,6 +327,7 @@ static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 4)(const unsigned char *hs,
                                           const unsigned char *const ne
                                           N_PARAM)
+JSTR_NOEXCEPT
 {
 	typedef uint32_t U32;
 	const U32 nw = (U32)(L(ne[0]) << 24) | (U32)L(ne[1]) << 16 | (U32)L(ne[2]) << 8 | (U32)L(ne[3]);
@@ -341,6 +343,7 @@ static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 5)(const unsigned char *hs,
                                           const unsigned char *const ne
                                           N_PARAM)
+JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
 	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24;
@@ -356,6 +359,7 @@ static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 6)(const unsigned char *hs,
                                           const unsigned char *const ne
                                           N_PARAM)
+JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
 	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16;
@@ -371,6 +375,7 @@ static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 7)(const unsigned char *hs,
                                           const unsigned char *const ne
                                           N_PARAM)
+JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
 	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16 | (U64)L(ne[6]) << 8;
@@ -386,6 +391,7 @@ static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 8)(const unsigned char *hs,
                                           const unsigned char *const ne
                                           N_PARAM)
+JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
 	const U64 nw = (U64)L(ne[0]) << 56 | (U64)L(ne[1]) << 48 | (U64)L(ne[2]) << 40 | (U64)L(ne[3]) << 32 | (U64)L(ne[4]) << 24 | (U64)L(ne[5]) << 16 | (U64)L(ne[6]) << 8 | (U64)L(ne[7]);

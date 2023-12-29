@@ -92,6 +92,7 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_stpcpy_simd_aligned(char *JSTR_RESTRICT dst,
                           const char *JSTR_RESTRICT src)
+JSTR_NOEXCEPT
 {
 	VEC sv;
 	const VEC zv = SETZERO();
@@ -114,6 +115,7 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_stpcpy_simd_unaligned_src(char *JSTR_RESTRICT dst,
                                 const char *JSTR_RESTRICT src)
+JSTR_NOEXCEPT
 {
 	VEC sv;
 	const VEC zv = SETZERO();
@@ -135,6 +137,7 @@ JSTR_FUNC
 static char *
 pjstr_stpcpy_simd(char *JSTR_RESTRICT dst,
                   const char *JSTR_RESTRICT src)
+JSTR_NOEXCEPT
 {
 	while (JSTR_PTR_IS_NOT_ALIGNED(src, VEC_SIZE))
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
@@ -162,6 +165,7 @@ static char *
 pjstr_strncasechr_simd(const char *s,
                        int c,
                        size_t n)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -203,6 +207,7 @@ static char *
 pjstr_strnchr_simd(const char *s,
                    int c,
                    size_t n)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -240,6 +245,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
 pjstr_strchrnul_simd(const char *s,
                      int c)
+JSTR_NOEXCEPT
 {
 	MASK cm, m, zm;
 	VEC sv;
@@ -269,6 +275,7 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_strchr_simd(const char *s,
                   int c)
+JSTR_NOEXCEPT
 {
 	s = pjstr_strchrnul_simd(s, c);
 	return *s == (char)c ? (char *)s : NULL;
@@ -279,6 +286,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
 pjstr_strcasechrnul_simd(const char *s,
                          int c)
+JSTR_NOEXCEPT
 {
 	MASK m, cm0, cm1, zm;
 	VEC sv;
@@ -311,6 +319,7 @@ JSTR_ATTR_INLINE
 static char *
 pjstr_strcasechr_simd(const char *s,
                       int c)
+JSTR_NOEXCEPT
 {
 	s = pjstr_strcasechrnul_simd(s, c);
 	return *s == (char)c ? (char *)s : NULL;
@@ -322,6 +331,7 @@ static void *
 pjstr_memcasechr_simd(const void *s,
                       int c,
                       size_t n)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -371,6 +381,7 @@ static void *
 pjstr_memrchr_simd(const void *s,
                    int c,
                    size_t n)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -431,6 +442,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
 pjstr_countchr_simd(const void *s,
                     int c)
+JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
@@ -461,6 +473,7 @@ static size_t
 pjstr_countchr_len_simd(const void *s,
                         int c,
                         size_t n)
+JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
