@@ -230,6 +230,24 @@ match:
 	return NULL;
 }
 
+/* Used to make these macros namespaced by the perl script.
+#undef LOAD
+#undef LOADU
+#undef STORE
+#undef STOREU
+#undef CMPEQ8_MASK
+#undef SETZERO
+#undef SETONE8
+#undef POPCNT
+#undef TZCNT
+#undef BLSR
+#undef LZCNT
+#undef VEC
+#undef VEC_SIZE
+#undef MASK
+#undef MASK_SIZE
+*/
+
 #undef PJSTR_SIMD_MEMMEM_FUNC_NAME
 #undef PJSTR_SIMD_MEMMEM_CMP_FUNC
 #undef PJSTR_SIMD_MEMMEM_MEMCASECHR
