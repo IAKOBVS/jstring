@@ -185,9 +185,9 @@ JSTR_NOEXCEPT
 	/* Search loop */
 	for (;;) {
 #if PJSTR_MUSL_CHECK_EOL
-		/* Update incremental end-of-haystack pointer */
+		/* Update incremental end-of-haystack pointer. */
 		if (JSTR_PTR_DIFF(z, h) < t->needle_len) {
-			/* Fast estimate for MAX(t->needle_len,63) */
+			/* Fast estimate for MAX(t->needle_len, 63). */
 #	if PJSTR_MUSL_USE_N
 			const size_t grow = JSTR_MIN(t->needle_len | 63, JSTR_PTR_DIFF(end, h));
 #	else
@@ -197,17 +197,17 @@ JSTR_NOEXCEPT
 			if (z2) {
 				z = z2;
 				if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len))
-					return NULL;
+					break;
 			} else {
 				z += grow;
 			}
 		}
 #else
-		/* If remainder of haystack is shorter than n, done */
+		/* If remainder of haystack is shorter than needle, done. */
 		if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len))
-			return NULL;
+			break;
 #endif
-		/* Check last byte first; advance by _shift on mismatch */
+		/* Check last byte first; advance by shift on mismatch. */
 		c0 = CANON(h[t->needle_len - 1]);
 		if (BITOP(t->_byteset, c0, &)) {
 			k = t->needle_len - t->_shift[c0];
@@ -223,20 +223,21 @@ JSTR_NOEXCEPT
 			mem = 0;
 			continue;
 		}
-		/* Compare right half */
+		/* Compare right half. */
 		for (k = JSTR_MAX(t->_ms + 1, mem); k < t->needle_len && CANON(n[k]) == CANON(h[k]); ++k) {}
 		if (k < t->needle_len) {
 			h += k - t->_ms;
 			mem = 0;
 			continue;
 		}
-		/* Compare left half */
+		/* Compare left half. */
 		for (k = t->_ms + 1; k > mem && CANON(n[k - 1]) == CANON(h[k - 1]); --k) {}
 		if (k <= mem)
 			return (char *)h;
 		h += t->_p;
 		mem = t->_mem0;
 	}
+	return NULL;
 }
 
 JSTR_FUNC_PURE
