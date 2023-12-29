@@ -781,7 +781,7 @@ JSTR_NOEXCEPT
 	if (t->needle_len == 2)
 		return hs_len >= t->needle_len ? pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len) : NULL;
 #endif
-	return pjstr_strcasestr_len_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+	return pjstr_strcasestr_len_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
