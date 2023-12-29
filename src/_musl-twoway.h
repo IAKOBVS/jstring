@@ -175,7 +175,7 @@ JSTR_NOEXCEPT
 #endif
 	size_t mem, k;
 	int c0;
-	/* Initialize end-of-haystack pointer */
+	/* Initialize end-of-haystack pointer. */
 #if PJSTR_MUSL_CHECK_EOL
 	const unsigned char *z = h;
 #else
