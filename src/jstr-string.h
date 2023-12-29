@@ -390,11 +390,10 @@ JSTR_NOEXCEPT
 		return pjstr_memmem8((cu *)hs, (cu *)ne, hs_len);
 #	if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
 	if (JSTR_WORD_CMPEQU64(hs, ne) && !memcmp((cu *)hs + 8, (cu *)ne + 8, ne_len - 8))
-		return (char *)hs;
 #	else
 	if (*(cu *)hs == *(cu *)ne && !memcmp(hs, ne, ne_len))
-		return (char *)hs;
 #	endif
+		return (char *)hs;
 MEMMEM:
 	return pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
