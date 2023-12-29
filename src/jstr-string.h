@@ -753,6 +753,11 @@ JSTR_NOEXCEPT
 		t->needle_len = ne_len;
 		return;
 	}
+#else
+	if (ne_len <= 2) {
+		t->needle_len = ne_len;
+		return;
+	}
 #endif
 	pjstr_strcasestr_len_musl_comp(t, (const unsigned char *)ne, ne_len);
 }
@@ -766,9 +771,15 @@ jstr_strcasestr_len_exec(const jstr_twoway_ty *const t,
                          const void *ne)
 JSTR_NOEXCEPT
 {
+	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
 	if (jstr_likely(t->needle_len <= 256))
 		return pjstr_strcasestr_len_simd(hs, hs_len, ne, t->needle_len);
+#else
+	if (t->needle_len == 1)
+		return (void *)jstr_memcasechr(hs, *(cu *)ne, hs_len);
+	if (t->needle_len == 2)
+		return hs_len >= t->needle_len ? pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len) : NULL;
 #endif
 	return pjstr_strcasestr_len_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 }
