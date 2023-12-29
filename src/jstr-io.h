@@ -95,7 +95,7 @@ pjstrio_extget_len(const char *fname,
                    size_t sz)
 {
 	const char *p = fname + sz - 1;
-	for (; p > fname; --p) {
+	for (; sz--; --p) {
 		if (*p == '.')
 			return (char *)p + 1;
 		if (*p == '/')
@@ -112,8 +112,6 @@ jstrio_exttype(const char *R fname,
                size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(sz == 0))
-		return JSTRIO_FT_UNKNOWN;
 	fname = (char *)pjstrio_extget_len(fname, sz);
 	return fname ? pjstrio_exttype(fname) : JSTRIO_FT_UNKNOWN;
 }
