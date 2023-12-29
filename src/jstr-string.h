@@ -430,17 +430,17 @@ jstr_memmem_exec(const jstr_twoway_ty *const t,
                  const void *ne)
 JSTR_NOEXCEPT
 {
+	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (jstr_likely(t->needle_len <= 256))
 		return pjstr_memmem_simd(hs, hs_len, ne, t->needle_len);
 #else
-	typedef const unsigned char cu;
 	if (t->needle_len == 1)
 		return (void *)memchr(hs, *(cu *)ne, hs_len);
 	if (t->needle_len == 2)
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
 #endif
-	return pjstr_memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+	return pjstr_memmem_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
