@@ -230,7 +230,7 @@ match:
 	return NULL;
 }
 
-/* Used to make these macros namespaced by the perl script.
+/* So that these macros are namespaced by the perl script.
 #undef LOAD
 #undef LOADU
 #undef STORE
