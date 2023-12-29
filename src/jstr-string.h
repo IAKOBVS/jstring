@@ -434,10 +434,12 @@ JSTR_NOEXCEPT
 	if (jstr_likely(t->needle_len <= 256))
 		return pjstr_memmem_simd(hs, hs_len, ne, t->needle_len);
 #else
-	if (t->needle_len == 1)
-		return (void *)memchr(hs, *(cu *)ne, hs_len);
-	if (t->needle_len == 2)
-		return hs_len >= t->needle_len ? pjstr_memmem2((cu *)hs, (cu *)ne, hs_len) : NULL;
+	if (t->needle_len <= 2) {
+		cu *p = (cu *)memchr(hs, *(cu *)ne, hs_len);
+		if (t->needle_len == 1)
+			return (char *)p;
+		return hs_len >= t->needle_len ? pjstr_memmem2((cu *)p, (cu *)ne, hs_len - JSTR_PTR_DIFF(p, hs)) : NULL;
+	}
 #endif
 	return pjstr_memmem_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
 }
@@ -775,10 +777,12 @@ JSTR_NOEXCEPT
 	if (jstr_likely(t->needle_len <= 256))
 		return pjstr_strcasestr_len_simd(hs, hs_len, ne, t->needle_len);
 #else
-	if (t->needle_len == 1)
-		return (void *)jstr_memcasechr(hs, *(cu *)ne, hs_len);
-	if (t->needle_len == 2)
-		return hs_len >= t->needle_len ? pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len) : NULL;
+	if (t->needle_len <= 2) {
+		cu *p = (cu *)jstr_memcasechr(hs, *(cu *)ne, hs_len);
+		if (t->needle_len == 1)
+			return (void *)p;
+		return hs_len >= t->needle_len ? pjstr_memcasemem2((cu *)p, (cu *)ne, hs_len - JSTR_PTR_DIFF(p, hs)) : NULL;
+	}
 #endif
 	return pjstr_strcasestr_len_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
 }
