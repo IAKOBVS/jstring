@@ -11,6 +11,7 @@ CFLAGS="
 -DVERBOSE=1
 -DJSTR_TEST_SLOW=1
 -O2
+-fsanitize=address
 $CFLAGS
 "
 

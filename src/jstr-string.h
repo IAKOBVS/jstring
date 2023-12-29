@@ -346,14 +346,14 @@ jstr_memmem(const void *hs,
             size_t ne_len)
 JSTR_NOEXCEPT
 {
+	typedef const unsigned char cu;
 #if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (ne_len > 256)
-		return (hs_len >= ne_len) ? pjstr_memmem_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len) : NULL;
+		return (hs_len >= ne_len) ? pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
 	return pjstr_memmem_simd(hs, hs_len, ne, ne_len);
 #else
-	typedef const unsigned char cu;
 	enum { LONG_NE_THRES = 64 };
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
@@ -438,7 +438,8 @@ JSTR_NOEXCEPT
 		cu *p = (cu *)memchr(hs, *(cu *)ne, hs_len);
 		if (t->needle_len == 1)
 			return (char *)p;
-		return hs_len >= t->needle_len ? pjstr_memmem2((cu *)p, (cu *)ne, hs_len - JSTR_PTR_DIFF(p, hs)) : NULL;
+		hs_len -= JSTR_PTR_DIFF(p, hs);
+		return hs_len >= t->needle_len ? pjstr_memmem2((cu *)p, (cu *)ne, hs_len) : NULL;
 	}
 #endif
 	return pjstr_memmem_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
@@ -632,7 +633,7 @@ JSTR_NOEXCEPT
 	if (ne_len == 8)
 		return pjstr_memrmem8((cu *)hs, (cu *)ne, hs_len);
 #if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_BUILTIN_MEMCMP || JSTR_HAVE_ATTR_MAY_ALIAS)
-	const unsigned char *const ne_rest = (cu *)ne + 8;
+	cu *const ne_rest = (cu *)ne + 8;
 	for (ne_len -= 8, p -= shift; p >= (cu *)hs; --p)
 		if (JSTR_WORD_CMPEQU64(p, ne) && !memcmp(p + 8, ne_rest, ne_len))
 			return (void *)p;
@@ -781,7 +782,8 @@ JSTR_NOEXCEPT
 		cu *p = (cu *)jstr_memcasechr(hs, *(cu *)ne, hs_len);
 		if (t->needle_len == 1)
 			return (void *)p;
-		return hs_len >= t->needle_len ? pjstr_memcasemem2((cu *)p, (cu *)ne, hs_len - JSTR_PTR_DIFF(p, hs)) : NULL;
+		hs_len -= JSTR_PTR_DIFF(p, hs);
+		return hs_len >= t->needle_len ? pjstr_memcasemem2((cu *)p, (cu *)ne, hs_len) : NULL;
 	}
 #endif
 	return pjstr_strcasestr_len_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
