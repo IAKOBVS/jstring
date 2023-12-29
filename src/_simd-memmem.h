@@ -160,10 +160,10 @@ JSTR_NOEXCEPT
 			hv = LOADU((VEC *)hp);
 			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
 			if (cmpm == matchm)
-				if (ne_len <= VEC_SIZE || !memcmp(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+				if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC(hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
 					return (void *)hp;
 		} else {
-			if (!memcmp(hp, ne, ne_len))
+			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(hp, ne, ne_len))
 				return (void *)hp;
 		}
 #else
