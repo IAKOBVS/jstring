@@ -80,7 +80,7 @@ JSTR_NOEXCEPT
 	size_t ip, jp, k, p0;
 	int c0, c1;
 	memset(t->_byteset, 0, sizeof(t->_byteset));
-	/* Computing length of n and fill _shift table */
+	/* Computing length of n and fill _shift table. */
 	for (ip = 0;
 #if PJSTR_MUSL_CHECK_EOL
 	     n[ip];
@@ -94,7 +94,7 @@ JSTR_NOEXCEPT
 #else
 	t->needle_len = n_len;
 #endif
-	/* Compute maximal suffix */
+	/* Compute maximal suffix. */
 	ip = (size_t)-1, jp = 0, k = t->_p = 1;
 	while (jp + k < t->needle_len) {
 		c0 = CANON(n[ip + k]);
@@ -117,7 +117,7 @@ JSTR_NOEXCEPT
 	}
 	t->_ms = ip;
 	p0 = t->_p;
-	/* And with the opposite comparison */
+	/* And with the opposite comparison. */
 	ip = (size_t)-1, jp = 0, k = t->_p = 1;
 	while (jp + k < t->needle_len) {
 		c0 = CANON(n[ip + k]);
@@ -142,7 +142,7 @@ JSTR_NOEXCEPT
 		t->_ms = ip;
 	else
 		t->_p = p0;
-	/* Periodic n? */
+	/* Periodic needle? */
 	if (PJSTR_MUSL_CMP_FUNC((const char *)n, (const char *)n + t->_p, t->_ms + 1)) {
 		t->_mem0 = 0;
 		t->_p = JSTR_MAX(t->_ms, t->needle_len - t->_ms - 1) + 1;
