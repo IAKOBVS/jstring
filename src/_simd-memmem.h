@@ -230,7 +230,7 @@ match:
 	return NULL;
 }
 
-/* So that these macros are namespaced by the perl script.
+/* So that these macros are namespaced by the build script.
 #undef LOAD
 #undef LOADU
 #undef STORE
