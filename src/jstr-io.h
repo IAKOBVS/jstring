@@ -112,6 +112,8 @@ jstrio_exttype(const char *R fname,
                size_t sz)
 JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(sz == 0))
+		return JSTRIO_FT_UNKNOWN;
 	fname = (char *)pjstrio_extget_len(fname, sz);
 	return fname ? pjstrio_exttype(fname) : JSTRIO_FT_UNKNOWN;
 }
