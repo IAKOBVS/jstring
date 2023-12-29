@@ -436,7 +436,7 @@ JSTR_NOEXCEPT
 #else
 	if (t->needle_len <= 2) {
 		cu *p = (cu *)memchr(hs, *(cu *)ne, hs_len);
-		if (t->needle_len == 1)
+		if (t->needle_len == 1 || p == NULL)
 			return (char *)p;
 		hs_len -= JSTR_PTR_DIFF(p, hs);
 		return hs_len >= t->needle_len ? pjstr_memmem2((cu *)p, (cu *)ne, hs_len) : NULL;
@@ -780,7 +780,7 @@ JSTR_NOEXCEPT
 #else
 	if (t->needle_len <= 2) {
 		cu *p = (cu *)jstr_memcasechr(hs, *(cu *)ne, hs_len);
-		if (t->needle_len == 1)
+		if (t->needle_len == 1 || p == NULL)
 			return (void *)p;
 		hs_len -= JSTR_PTR_DIFF(p, hs);
 		return hs_len >= t->needle_len ? pjstr_memcasemem2((cu *)p, (cu *)ne, hs_len) : NULL;
