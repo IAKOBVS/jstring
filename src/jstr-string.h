@@ -438,7 +438,7 @@ JSTR_NOEXCEPT
 	if (t->needle_len == 1)
 		return (void *)memchr(hs, *(cu *)ne, hs_len);
 	if (t->needle_len == 2)
-		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
+		return hs_len >= t->needle_len ? pjstr_memmem2((cu *)hs, (cu *)ne, hs_len) : NULL;
 #endif
 	return pjstr_memmem_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
 }
