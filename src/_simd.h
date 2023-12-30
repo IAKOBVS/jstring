@@ -503,7 +503,7 @@ JSTR_NOEXCEPT
 #undef STORE
 #undef STOREU
 #undef MOVEMASK8
-#undef CMPEQ8
+#undef CMPEQ8_MASK
 #undef SETZERO
 #undef SETONE8
 #undef POPCNT
