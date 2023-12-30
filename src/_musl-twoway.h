@@ -166,12 +166,12 @@ JSTR_NOEXCEPT
 #	if PJSTR_MUSL_USE_N
 	if (jstr_unlikely(t->needle_len > n_limit))
 		return NULL;
-	const unsigned char *const end_n = h + n_limit;
+	const unsigned char *const z_n = h + n_limit;
 #	endif
 #endif
 	size_t mem, k;
 	int c0;
-	/* Initialize end_n-of-haystack pointer. */
+	/* Initialize end-of-haystack pointer. */
 #if PJSTR_MUSL_CHECK_EOL
 	const unsigned char *z = h + jstr_strnlen((const char *)h, t->needle_len | 512);
 #else
@@ -181,11 +181,11 @@ JSTR_NOEXCEPT
 	/* Search loop */
 	for (;;) {
 #if PJSTR_MUSL_CHECK_EOL
-		/* Update incremental end_n-of-haystack pointer. */
+		/* Update incremental end-of-haystack pointer. */
 		if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
 #	if PJSTR_MUSL_USE_N
-			const size_t grow = JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(end_n, h));
+			const size_t grow = JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(z_n, h));
 #	else
 			const size_t grow = t->needle_len | 2048;
 #	endif
