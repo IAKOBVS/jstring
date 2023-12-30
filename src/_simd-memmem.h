@@ -22,8 +22,8 @@
 
 #include "jstr-macros.h"
 #include "jstr-rarebyte.h"
-
 #include <immintrin.h>
+
 #ifndef LOAD
 #	define LOAD(x) _mm256_load_si256(x)
 #endif
