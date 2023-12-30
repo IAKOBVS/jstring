@@ -25,13 +25,13 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
-
 #include "jstr-ptr-arith.h"
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
 
 /* Select AVX512, AVX2, or SSE. */
+
+PJSTR_BEGIN_DECLS
 
 #if defined __AVX512F__
 #	include <immintrin.h>

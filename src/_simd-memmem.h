@@ -22,7 +22,10 @@
 
 #include "jstr-macros.h"
 #include "jstr-rarebyte.h"
+
+PJSTR_BEGIN_DECLS
 #include <immintrin.h>
+PJSTR_END_DECLS
 
 #ifndef LOAD
 #	define LOAD(x) _mm256_load_si256(x)
@@ -79,6 +82,8 @@
 #else
 #	define OR_UPPER_MASK(x)
 #endif
+
+PJSTR_BEGIN_DECLS
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -223,6 +228,8 @@ match:
 	}
 	return NULL;
 }
+
+PJSTR_END_DECLS
 
 /* So that these macros will be namespaced by the build script.
 #undef LOAD
