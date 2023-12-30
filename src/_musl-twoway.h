@@ -255,10 +255,12 @@ JSTR_NOEXCEPT
 	 needle_len
 #endif
 	);
-	return JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack,
+	return JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
 #if !PJSTR_MUSL_CHECK_EOL
-	                                                haystack_len,
+	                                                ,
+	                                                haystack_len
 #endif
+	                                                ,
 	                                                (const unsigned char *)needle
 #if PJSTR_MUSL_USE_N
 	                                                ,
