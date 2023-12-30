@@ -45,17 +45,11 @@
 #ifndef SETONE8
 #	define SETONE8(x) _mm256_set1_epi8(x)
 #endif
-#ifndef POPCNT
-#	define POPCNT(x) _mm_popcnt_u32(x)
-#endif
 #ifndef TZCNT
 #	define TZCNT(x) _tzcnt_u32(x)
 #endif
 #ifndef BLSR
 #	define BLSR(x) _blsr_u32(x)
-#endif
-#ifndef LZCNT
-#	define LZCNT(x) _lzcnt_u32(x)
 #endif
 #ifndef VEC
 #	define VEC __m256i
@@ -238,10 +232,8 @@ match:
 #undef CMPEQ8_MASK
 #undef SETZERO
 #undef SETONE8
-#undef POPCNT
 #undef TZCNT
 #undef BLSR
-#undef LZCNT
 #undef VEC
 #undef VEC_SIZE
 #undef MASK
