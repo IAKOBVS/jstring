@@ -64,7 +64,7 @@ JSTR_NOEXCEPT
 	size_t ip, jp, k, p0;
 	int c0, c1;
 	memset(t->_byteset, 0, sizeof(t->_byteset));
-	/* Computing length of n and fill _shift table. */
+	/* Computing length of n and fill shift table. */
 	for (ip = 0;
 #if PJSTR_MUSL_CHECK_EOL
 	     n[ip];
