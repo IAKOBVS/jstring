@@ -227,13 +227,11 @@ jstrio_writefilefd_len(const char *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (s[sz ? sz - 1 : 0] != '\n'
 	    && jstr_unlikely(write(fd, "\n", 1) != 1))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -247,16 +245,14 @@ JSTR_NOEXCEPT
 {
 	const int fd = open(fname, oflag | O_WRONLY);
 	if (jstr_unlikely(fd == -1))
-		goto err;
-	if (jstr_chk(jstrio_writefilefd_len(s, sz, fd)))
-		goto err_close;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	if (jstr_chk(jstrio_writefilefd_len(s, sz, fd))) {
+		close(fd);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 	if (jstr_unlikely(close(fd)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err_close:
-	close(fd);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -267,13 +263,11 @@ jstrio_fwritefilefp_len(const char *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(jstrio_fwrite(s, 1, sz, fp) != sz))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (s[sz ? sz - 1 : 0] != '\n'
 	    && jstrio_putc('\n', fp) == EOF)
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -286,16 +280,14 @@ JSTR_NOEXCEPT
 {
 	FILE *R fp = fopen(fname, modes);
 	if (jstr_nullchk(fp))
-		goto err;
-	if (jstr_unlikely(jstrio_fwritefilefp_len(s, sz, fp)))
-		goto err_close;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	if (jstr_unlikely(jstrio_fwritefilefp_len(s, sz, fp))) {
+		fclose(fp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 	if (jstr_unlikely(fclose(fp)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err_close:
-	fclose(fp);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -309,14 +301,12 @@ jstrio_readfilefd_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, file_size)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*(*s + file_size) = '\0';
 	*sz = file_size;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -330,10 +320,8 @@ jstrio_readfilefd(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(fstat(fd, st)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return jstrio_readfilefd_len(s, sz, cap, fd, (size_t)st->st_size);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -347,14 +335,12 @@ jstrio_freadfilefp_len(char *R *R s,
 JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, file_size)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_unlikely(file_size != (size_t)jstrio_fread(*s, 1, file_size, fp)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*(*s + file_size) = '\0';
 	*sz = file_size;
 	return JSTR_RET_SUCC;
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -371,16 +357,14 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_FILENO
 	const int fd = jstrio_fileno(fp);
 	if (jstr_unlikely(fd == -1))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_unlikely(fstat(fd, st)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 #else
 	if (jstr_unlikely(stat(fname, st)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 #endif
 	return jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 	(void)fname;
 }
 
@@ -397,16 +381,14 @@ JSTR_NOEXCEPT
 {
 	FILE *fp = fopen(fname, modes);
 	if (jstr_nullchk(fp))
-		goto err;
-	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)file_size)))
-		goto err_close;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)file_size))) {
+		fclose(fp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 	if (jstr_unlikely(fclose(fp)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err_close:
-	fclose(fp);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -422,27 +404,31 @@ JSTR_NOEXCEPT
 {
 	FILE *fp = fopen(fname, modes);
 	if (jstr_nullchk(fp))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 #if JSTR_HAVE_FILENO
 	int fd;
 	fd = jstrio_fileno(fp);
-	if (jstr_unlikely(fd == -1))
-		goto err_close;
-	if (jstr_unlikely(fstat(fd, st)))
-		goto err_close;
+	if (jstr_unlikely(fd == -1)) {
+		fclose(fp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
+	if (jstr_unlikely(fstat(fd, st))) {
+		fclose(fp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 #else
-	if (jstr_unlikely(stat(fname, st)))
-		goto err_close;
+	if (jstr_unlikely(stat(fname, st))) {
+		fclose(fp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 #endif
-	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size)))
-		goto err_close;
+	if (jstr_chk(jstrio_freadfilefp_len(s, sz, cap, fp, (size_t)st->st_size))) {
+		fclose(fp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 	if (jstr_unlikely(fclose(fp)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err_close:
-	fclose(fp);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 JSTR_FUNC
@@ -457,16 +443,14 @@ JSTR_NOEXCEPT
 {
 	const int fd = open(fname, oflag | O_RDONLY);
 	if (jstr_unlikely(fd == -1))
-		goto err;
-	if (jstr_chk(jstrio_readfilefd_len(s, sz, cap, fd, file_size)))
-		goto err_close;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	if (jstr_chk(jstrio_readfilefd_len(s, sz, cap, fd, file_size))) {
+		close(fd);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 	if (jstr_unlikely(close(fd)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err_close:
-	close(fd);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 /* Return value:
@@ -484,18 +468,18 @@ JSTR_NOEXCEPT
 {
 	const int fd = open(fname, oflag | O_RDONLY);
 	if (jstr_unlikely(fd == -1))
-		goto err;
-	if (jstr_unlikely(fstat(fd, st)))
-		goto err_close;
-	if (jstr_chk(jstrio_readfilefd_len(s, sz, cap, fd, (size_t)st->st_size)))
-		goto err_close;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	if (jstr_unlikely(fstat(fd, st))) {
+		close(fd);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
+	if (jstr_chk(jstrio_readfilefd_len(s, sz, cap, fd, (size_t)st->st_size))) {
+		close(fd);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 	if (jstr_unlikely(close(fd)))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err_close:
-	close(fd);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 /* Expand ~/some_dir to /home/username/some_dir.
@@ -616,7 +600,7 @@ JSTR_NOEXCEPT
 	enum { MINBUF = JSTR_PAGE_SIZE };
 	FILE *R fp = popen(cmd, "r");
 	if (jstr_nullchk(fp))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	char buf[MINBUF];
 	size_t readsz;
 	readsz = fread(buf, 1, sizeof(buf), fp);
@@ -643,7 +627,7 @@ JSTR_NOEXCEPT
 	}
 	*(*s + *sz) = '\0';
 	if (jstr_unlikely(pclose(fp) == -1))
-		goto err;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
 err_close:
 	pclose(fp);
