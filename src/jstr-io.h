@@ -604,10 +604,14 @@ JSTR_NOEXCEPT
 	char buf[MINBUF];
 	size_t readsz;
 	readsz = fread(buf, 1, sizeof(buf), fp);
-	if (jstr_unlikely(readsz == (size_t)-1))
-		goto err_close;
-	if (jstr_chk(jstr_reserve(s, sz, cap, readsz * 2)))
-		goto err_close;
+	if (jstr_unlikely(readsz == (size_t)-1)) {
+		pclose(fp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
+	if (jstr_chk(jstr_reserve(s, sz, cap, readsz * 2))) {
+		pclose(fp);
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	}
 	memcpy(*s, buf, readsz);
 	*sz = readsz;
 	if (jstr_unlikely(readsz == MINBUF)) {
@@ -615,24 +619,24 @@ JSTR_NOEXCEPT
 		for (;;) {
 			reqsz = *cap - *sz;
 			readsz = fread(*s + *sz, 1, reqsz, fp);
-			if (jstr_unlikely(readsz == (size_t)-1))
-				goto err_close;
+			if (jstr_unlikely(readsz == (size_t)-1)) {
+				pclose(fp);
+				JSTR_RETURN_ERR(JSTR_RET_ERR);
+			}
 			*sz += readsz;
 			if (readsz < reqsz)
 				break;
 			if (*sz == *cap)
-				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH))))
-					goto err_close;
+				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH)))) {
+					pclose(fp);
+					JSTR_RETURN_ERR(JSTR_RET_ERR);
+				}
 		}
 	}
 	*(*s + *sz) = '\0';
 	if (jstr_unlikely(pclose(fp) == -1))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
-err_close:
-	pclose(fp);
-err:
-	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 #endif
