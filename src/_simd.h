@@ -29,9 +29,9 @@
 #include "jstr-rarebyte.h"
 #include "jstr-stdstring.h"
 
-/* Select AVX512, AVX2, or SSE. */
-
 PJSTR_BEGIN_DECLS
+
+/* Select AVX512, AVX2, or SSE. */
 
 #if defined __AVX512F__
 #	include <immintrin.h>
