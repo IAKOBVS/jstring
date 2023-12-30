@@ -104,8 +104,8 @@ JSTR_NOEXCEPT
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, m;
 #if !PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-	MASK cmpm;
 	VEC hv, nv;
+	MASK cmpm;
 #else
 	MASK hm0u, hm1u;
 #endif
