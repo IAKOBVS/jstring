@@ -89,11 +89,7 @@ JSTR_NOEXCEPT
 #endif
 	     ++ip)
 		c0 = CANON(n[ip]), BITOP(t->_byteset, c0, |=), t->_shift[c0] = ip + 1;
-#if PJSTR_MUSL_CHECK_EOL
 	t->needle_len = ip;
-#else
-	t->needle_len = n_len;
-#endif
 	/* Compute maximal suffix. */
 	ip = (size_t)-1, jp = 0, k = t->_p = 1;
 	while (jp + k < t->needle_len) {
