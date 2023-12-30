@@ -37,22 +37,6 @@
 #define BITOP(a, b, op) \
 	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
 
-#if !PJSTR_MUSL_CHECK_EOL
-#	define NE_LEN_ARG , needle_len
-#	define HS_LEN_ARG h_len,
-#else
-#	define NE_LEN_ARG
-#	define HS_LEN_ARG
-#endif
-
-#if PJSTR_MUSL_USE_N
-#	define N_PARAM , const size_t n_limit
-#	define N_ARG   , n_limit
-#else
-#	define N_PARAM
-#	define N_ARG
-#endif
-
 #ifndef PJSTR_MUSL_TWOWAY_STRUCT
 #	define PJSTR_MUSL_TWOWAY_STRUCT
 
@@ -157,7 +141,12 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
                                          const size_t h_len
 #endif
                                          ,
-                                         const unsigned char *n N_PARAM)
+                                         const unsigned char *n
+#if PJSTR_MUSL_USE_N
+                                         ,
+                                         size_t n_limit
+#endif
+                                         )
 JSTR_NOEXCEPT
 {
 #if PJSTR_MUSL_CHECK_EOL
@@ -240,10 +229,10 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static char *
-PJSTR_MUSL_FUNC_NAME(const unsigned char *h
+PJSTR_MUSL_FUNC_NAME(const unsigned char *haystack
 #if !PJSTR_MUSL_CHECK_EOL
                      ,
-                     const size_t h_len
+                     const size_t haystack_len
 #endif
                      ,
                      const unsigned char *needle
@@ -251,28 +240,36 @@ PJSTR_MUSL_FUNC_NAME(const unsigned char *h
                      ,
                      const size_t needle_len
 #endif
-                     N_PARAM)
+#if PJSTR_MUSL_USE_N
+                     ,
+                     size_t n_limit
+#endif
+                     )
 JSTR_NOEXCEPT
 {
 	jstr_twoway_ty t;
 	JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)
-	(&t, (const unsigned char *)needle NE_LEN_ARG);
-	return JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)h,
+	(&t, (const unsigned char *)needle
 #if !PJSTR_MUSL_CHECK_EOL
-	                                                HS_LEN_ARG
+	 ,
+	 needle_len
 #endif
-	                                                (const unsigned char *) needle N_ARG);
+	);
+	return JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack,
+#if !PJSTR_MUSL_CHECK_EOL
+	                                                haystack_len,
+#endif
+	                                                (const unsigned char *)needle
+#if PJSTR_MUSL_USE_N
+	                                                ,
+	                                                n_limit
+#endif
+	);
 }
-
-#undef NE_LEN_PARAM
-#undef NE_LEN_ARG
-#undef HS_LEN_PARAM
-#undef HS_LEN_ARG
-#undef N_PARAM
-#undef N_ARG
 
 #undef BITOP
 #undef CANON
+
 #undef PJSTR_MUSL_CHECK_EOL
 #undef PJSTR_MUSL_CANON
 #undef PJSTR_MUSL_FUNC_NAME
