@@ -157,8 +157,6 @@ JSTR_NOEXCEPT
 		return NULL;
 	const unsigned char *const z_n = h + n_limit;
 #	endif
-	const unsigned char *z2;
-	size_t grow;
 #endif
 	int c0;
 	size_t k;
@@ -176,18 +174,12 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
 #	if PJSTR_MUSL_USE_N
-			grow = JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(z_n, h));
+			z += jstr_strnlen((const char *)z, JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(z_n, h)));
 #	else
-			grow = t->needle_len | 2048;
+			z += jstr_strnlen((const char *)z, t->needle_len | 2048);
 #	endif
-			z2 = z + jstr_strnlen((const char *)z, grow);
-			if (z2) {
-				z = z2;
-				if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len))
-					break;
-			} else {
-				z += grow;
-			}
+			if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len))
+				break;
 		}
 #else
 		/* If remainder of haystack is shorter than needle, done. */
