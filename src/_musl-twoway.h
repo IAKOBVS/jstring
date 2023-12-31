@@ -149,20 +149,14 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
                                          )
 JSTR_NOEXCEPT
 {
-#if PJSTR_MUSL_CHECK_EOL
-	if (jstr_unlikely(n[t->needle_len] != '\0'))
-		return NULL;
-#	if PJSTR_MUSL_USE_N
-	if (jstr_unlikely(t->needle_len > n_limit))
-		return NULL;
-	const unsigned char *const z_n = h + n_limit;
-#	endif
-#endif
 	int c0;
 	size_t k;
 	size_t mem = 0;
 	/* Initialize end-of-haystack pointer. */
 #if PJSTR_MUSL_CHECK_EOL
+#	if PJSTR_MUSL_USE_N
+	const unsigned char *const z_n = h + n_limit;
+#	endif
 	const unsigned char *z = h + jstr_strnlen((const char *)h, t->needle_len | 512);
 #else
 	const unsigned char *const z = h + h_len;

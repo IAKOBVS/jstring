@@ -434,24 +434,14 @@ JSTR_NOEXCEPT
 	if (jstr_likely(t->needle_len <= 256))
 		return pjstr_memmem_simd(hs, hs_len, ne, t->needle_len);
 #else
+	if (jstr_unlikely(t->needle_len == 0))
+		return (char *)hs;
 	if (t->needle_len == 1)
 		return (void *)memchr(hs, *(cu *)ne, hs_len);
 	if (jstr_unlikely(hs_len < t->needle_len))
 		return NULL;
 	if (t->needle_len == 2)
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 3)
-		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 4)
-		return pjstr_memmem4((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 5)
-		return pjstr_memmem5((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 6)
-		return pjstr_memmem6((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 7)
-		return pjstr_memmem7((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 8)
-		return pjstr_memmem8((cu *)hs, (cu *)ne, hs_len);
 #endif
 	return pjstr_memmem_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
 }
@@ -585,6 +575,16 @@ jstr_strnstr_comp(jstr_twoway_ty *const t,
                   const char *ne)
 JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(ne[0] == '\0')) {
+		t->needle_len = 0;
+		return;
+	} else if (ne[1] == '\0') {
+		t->needle_len = 1;
+		return;
+	} else if (ne[2] == '\0') {
+		t->needle_len = 2;
+		return;
+	}
 	pjstr_strnstr_musl_comp(t, (const unsigned char *)ne);
 }
 
@@ -598,22 +598,12 @@ jstr_strnstr_exec(const jstr_twoway_ty *const t,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
+	if (jstr_unlikely(t->needle_len == 0))
+		return (char *)hs;
 	if (t->needle_len == 1)
 		return (char *)jstr_strnchr(hs, *(const char *)ne, n);
 	if (t->needle_len == 2)
 		return pjstr_strnstr2((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 3)
-		return pjstr_strnstr3((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 4)
-		return pjstr_strnstr4((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 5)
-		return pjstr_strnstr5((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 6)
-		return pjstr_strnstr6((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 7)
-		return pjstr_strnstr7((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 8)
-		return pjstr_strnstr8((cu *)hs, (cu *)ne, n);
 	return pjstr_strnstr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne, n);
 }
 
@@ -774,7 +764,7 @@ STRCASESTR:
 JSTR_FUNC_VOID
 static void
 jstr_strcasestr_len_comp(jstr_twoway_ty *const t,
-                         const void *ne,
+                         const char *ne,
                          size_t ne_len)
 JSTR_NOEXCEPT
 {
@@ -794,11 +784,11 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
-static void *
+static char *
 jstr_strcasestr_len_exec(const jstr_twoway_ty *const t,
-                         const void *hs,
+                         const char *hs,
                          size_t hs_len,
-                         const void *ne)
+                         const char *ne)
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
@@ -806,24 +796,14 @@ JSTR_NOEXCEPT
 	if (jstr_likely(t->needle_len <= 256))
 		return pjstr_strcasestr_len_simd(hs, hs_len, ne, t->needle_len);
 #else
+	if (jstr_unlikely(t->needle_len == 0))
+		return (char *)hs;
 	if (t->needle_len == 1)
-		return (void *)jstr_memcasechr(hs, *(cu *)ne, hs_len);
+		return (char *)jstr_memcasechr(hs, *(cu *)ne, hs_len);
 	if (jstr_unlikely(hs_len < t->needle_len))
 		return NULL;
 	if (t->needle_len == 2)
 		return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 3)
-		return pjstr_memcasemem3((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 4)
-		return pjstr_memcasemem4((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 5)
-		return pjstr_memcasemem5((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 6)
-		return pjstr_memcasemem6((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 7)
-		return pjstr_memcasemem7((cu *)hs, (cu *)ne, hs_len);
-	if (t->needle_len == 8)
-		return pjstr_memcasemem8((cu *)hs, (cu *)ne, hs_len);
 #endif
 	return pjstr_strcasestr_len_musl_exec(t, (cu *)hs, hs_len, (cu *)ne);
 }
@@ -917,6 +897,16 @@ jstr_strcasestr_comp(jstr_twoway_ty *const t,
                      const char *ne)
 JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(*ne == '\0')) {
+		t->needle_len = 0;
+		return;
+	} else if (jstr_unlikely(ne[1] == '\0')) {
+		t->needle_len = 1;
+		return;
+	} else if (jstr_unlikely(ne[2] == '\0')) {
+		t->needle_len = 2;
+		return;
+	}
 	pjstr_strcasestr_musl_comp(t, (const unsigned char *)ne);
 }
 
@@ -928,22 +918,12 @@ jstr_strcasestr_exec(const jstr_twoway_ty *const t,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
+	if (jstr_unlikely(t->needle_len == 0))
+		return (char *)hs;
 	if (t->needle_len == 1)
 		return (char *)jstr_strcasechr(hs, *ne);
 	if (t->needle_len == 2)
 		return pjstr_strcasestr2((cu *)hs, (cu *)ne);
-	if (t->needle_len == 3)
-		return pjstr_strcasestr3((cu *)hs, (cu *)ne);
-	if (t->needle_len == 4)
-		return pjstr_strcasestr4((cu *)hs, (cu *)ne);
-	if (t->needle_len == 5)
-		return pjstr_strcasestr5((cu *)hs, (cu *)ne);
-	if (t->needle_len == 6)
-		return pjstr_strcasestr6((cu *)hs, (cu *)ne);
-	if (t->needle_len == 7)
-		return pjstr_strcasestr7((cu *)hs, (cu *)ne);
-	if (t->needle_len == 8)
-		return pjstr_strcasestr8((cu *)hs, (cu *)ne);
 	return pjstr_strcasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
 }
 
@@ -1015,9 +995,19 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 static void
 jstr_strncasestr_comp(jstr_twoway_ty *const t,
-                      const void *ne)
+                      const char *ne)
 JSTR_NOEXCEPT
 {
+	if (jstr_unlikely(ne[0] == '\0')) {
+		t->needle_len = 0;
+		return;
+	} else if (ne[1] == '\0') {
+		t->needle_len = 1;
+		return;
+	} else if (ne[2] == '\0') {
+		t->needle_len = 2;
+		return;
+	}
 	pjstr_strncasestr_musl_comp(t, (const unsigned char *)ne);
 }
 
@@ -1031,22 +1021,12 @@ jstr_strncasestr_exec(const jstr_twoway_ty *const t,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
+	if (jstr_unlikely(t->needle_len == 0))
+		return (char *)hs;
 	if (t->needle_len == 1)
 		return (char *)jstr_strncasechr(hs, *(const char *)ne, n);
 	if (t->needle_len == 2)
 		return pjstr_strncasestr2((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 3)
-		return pjstr_strncasestr3((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 4)
-		return pjstr_strncasestr4((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 5)
-		return pjstr_strncasestr5((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 6)
-		return pjstr_strncasestr6((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 7)
-		return pjstr_strncasestr7((cu *)hs, (cu *)ne, n);
-	if (t->needle_len == 8)
-		return pjstr_strncasestr8((cu *)hs, (cu *)ne, n);
 	return pjstr_strncasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne, n);
 }
 
