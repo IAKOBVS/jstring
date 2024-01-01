@@ -2217,7 +2217,7 @@ jstr_unescapecpy_p(char *dst,
                    const char *src)
 JSTR_NOEXCEPT
 {
-	unsigned int o;
+	/* unsigned int o; */
 	for (;;) {
 		if (jstr_likely(*src != '\\')) {
 			if (jstr_unlikely(*src == '\0'))
@@ -2268,7 +2268,7 @@ jstr_unescapecpy_len_p(char *dst,
                        size_t n)
 JSTR_NOEXCEPT
 {
-	unsigned int o;
+	/* unsigned int o; */
 	while (n--) {
 		if (jstr_likely(*src != '\\')) {
 			if (jstr_unlikely(*src == '\0'))
