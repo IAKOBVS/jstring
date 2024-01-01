@@ -2226,7 +2226,7 @@ JSTR_NOEXCEPT
 			case '\0': goto out;
 			/* clang-format off */
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': /* clang-format on */
-				for (*dst = 0, ++src, o = 3; o-- && *src >= '0' && *src <= '7'; ++src)
+				for (*dst = 0, ++src, o = 3; o-- && *src <= '7' && *src >= '0'; ++src)
 					*dst = *dst * 8 + (*src - '0');
 				goto CONT;
 				break;
@@ -2280,7 +2280,7 @@ JSTR_NOEXCEPT
 			switch (*(src + 1)) {
 			/* clang-format off */
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': /* clang-format on */
-				for (*dst = 0, ++src, o = 3; o-- && n && *src >= '0' && *src <= '7'; ++src, --n)
+				for (*dst = 0, ++src, o = 3; o-- && n && *src <= '7' && *src >= '0'; ++src, --n)
 					*dst = *dst * 8 + (*src - '0');
 				goto CONT;
 				break;
