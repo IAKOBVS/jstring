@@ -2209,7 +2209,7 @@ JSTR_NOEXCEPT
 
 /* clang-format off */
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \", and \ooo (octal).
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
    Trailing backslashes are ignored. */
 JSTR_FUNC
 static char *
