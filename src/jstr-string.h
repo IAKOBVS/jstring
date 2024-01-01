@@ -2207,6 +2207,8 @@ JSTR_NOEXCEPT
 	return jstr_thousepcpy_len_p(dst, src, strlen(src), separator);
 }
 
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
+
 JSTR_FUNC
 static char *
 jstr_unescape_p(char *s)
