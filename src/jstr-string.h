@@ -2208,7 +2208,6 @@ JSTR_NOEXCEPT
 }
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
-
 JSTR_FUNC
 static char *
 jstr_unescapecpy_p(char *dst,
@@ -2239,6 +2238,7 @@ out:
 	return dst;
 }
 
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -2250,7 +2250,6 @@ JSTR_NOEXCEPT
 }
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
-
 JSTR_FUNC
 static char *
 jstr_unescapecpy_len_p(char *dst,
@@ -2282,6 +2281,7 @@ out:
 	return dst;
 }
 
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
 JSTR_FUNC
 static char *
 jstr_unescape_len_p(char *s,
