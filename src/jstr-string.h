@@ -2209,7 +2209,7 @@ JSTR_NOEXCEPT
 
 /* clang-format off */
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
    Trailing backslashes are ignored. */
 JSTR_FUNC
 static char *
@@ -2217,8 +2217,8 @@ jstr_unescapecpy_p(char *dst,
                    const char *src)
 JSTR_NOEXCEPT
 {
-	/* unsigned int o; */
-	for (;;) {
+	unsigned int o;
+	for (;; ++dst) {
 		if (jstr_likely(*src != '\\')) {
 			if (jstr_unlikely(*src == '\0'))
 				break;
@@ -2226,10 +2226,11 @@ JSTR_NOEXCEPT
 		} else {
 			switch (*(src + 1)) {
 			case '\0': goto out;
-			/* case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': */
-			/* 	for (*dst = 0, ++src, o = 3; o-- && *src >= '0' && *src <= '7'; ++src) */
-			/* 		*dst = *dst * 8 + (*src - '0'); */
-			/* 	break; */
+			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+				for (*dst = 0, ++src, o = 3; o-- && *src >= '0' && *src <= '7'; ++src)
+					*dst = *dst * 8 + (*src - '0');
+				goto CONT;
+				break;
 			case 'b': *dst = '\b'; break;
 			case 'f': *dst = '\f'; break;
 			case 'n': *dst = '\n'; break;
@@ -2240,14 +2241,14 @@ JSTR_NOEXCEPT
 			}
 			src += 2;
 		}
-		++dst;
+CONT:;
 	}
 out:
 	*dst = '\0';
 	return dst;
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
    Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
@@ -2259,7 +2260,7 @@ JSTR_NOEXCEPT
 	return jstr_unescapecpy_p(s, s);
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
    Trailing backslashes are ignored. */
 JSTR_FUNC
 static char *
@@ -2268,8 +2269,8 @@ jstr_unescapecpy_len_p(char *dst,
                        size_t n)
 JSTR_NOEXCEPT
 {
-	/* unsigned int o; */
-	while (n--) {
+	unsigned int o;
+	for (;n--; ++dst) {
 		if (jstr_likely(*src != '\\')) {
 			if (jstr_unlikely(*src == '\0'))
 				break;
@@ -2277,10 +2278,11 @@ JSTR_NOEXCEPT
 		} else {
 			switch (*(src + 1)) {
 			case '\0': goto out;
-			/* case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': */
-			/* 	   for (*dst = 0, ++src, o = 3; o-- && *src >= '0' && *src <= '7'; ++src, --n) */
-			/* 		   *dst = *dst * 8 + (*src - '0'); */
-			/* 	   break; */
+			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+				   for (*dst = 0, ++src, o = 3; o-- && *src >= '0' && *src <= '7'; ++src, --n)
+					   *dst = *dst * 8 + (*src - '0');
+				   goto CONT;
+				   break;
 			case 'b': *dst = '\b'; break;
 			case 'f': *dst = '\f'; break;
 			case 'n': *dst = '\n'; break;
@@ -2291,14 +2293,14 @@ JSTR_NOEXCEPT
 			}
 			src += 2;
 		}
-		++dst;
+CONT:;
 	}
 out:
 	*dst = '\0';
 	return dst;
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
    Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
