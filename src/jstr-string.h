@@ -2272,14 +2272,13 @@ JSTR_NOEXCEPT
 	unsigned int o;
 	for (;n--; ++dst) {
 		if (jstr_likely(*src != '\\')) {
-			if (jstr_unlikely(*src == '\0'))
-				break;
 			*dst = *src++;
 		} else {
+			if (jstr_unlikely(n-- == 0))
+				break;
 			switch (*(src + 1)) {
-			case '\0': goto out;
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-				   for (*dst = 0, ++src, --n, o = 3; o-- && n && *src >= '0' && *src <= '7'; ++src, --n)
+				   for (*dst = 0, ++src, o = 3; o-- && n && *src >= '0' && *src <= '7'; ++src, --n)
 					   *dst = *dst * 8 + (*src - '0');
 				   goto CONT;
 				   break;
@@ -2295,7 +2294,6 @@ JSTR_NOEXCEPT
 		}
 CONT:;
 	}
-out:
 	*dst = '\0';
 	return dst;
 }
