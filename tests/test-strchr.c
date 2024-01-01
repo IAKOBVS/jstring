@@ -40,42 +40,38 @@ aligncpy(const void *p, size_t len, size_t a)
 	return memcpy((char *)aligned(buf) + a, p, len);
 }
 
-#define T(s, c)                                                                 \
-	do {                                                                    \
-		size_t align;                                                   \
-		for (align = 0; align < 8; align++) {                           \
-			const char *p = aligncpy(s, sizeof(s), (size_t)align);  \
-			t_init();                                               \
-			t.hs = p;                                               \
-			t.n = strlen(p);                                        \
-			t.result = jstr_strncasechr(p, c, t.n);                 \
-			t.expected = simple_strncasechr(p, c, t.n);             \
-			T_DEBUG(jstr_strncasechr, t.result == t.expected);      \
-			t.result = jstr_strnchr(p, c, t.n);                     \
-			t.expected = simple_strnchr(p, c, t.n);                 \
-			T_DEBUG(jstr_strnchr, t.result == t.expected);          \
-			t.result = jstr_memrchr(p, c, t.n);                     \
-			t.expected = simple_memrchr(p, c, t.n);                 \
-			T_DEBUG(jstr_memrchr, t.result == t.expected);          \
-			t.result = jstr_strchrnul(p, c);                        \
-			t.expected = simple_strchrnul(p, c);                    \
-			T_DEBUG(jstr_strchrnul, t.result == t.expected);        \
-			t.result = jstr_strcasechr(p, c);                       \
-			t.expected = simple_strcasechr(p, c);                   \
-			T_DEBUG(jstr_strcasechr, t.result == t.expected);       \
-			t.result = jstr_strcasechrnul(p, c);                    \
-			t.expected = simple_strcasechrnul(p, c);                \
-			T_DEBUG(jstr_strcasechrnul, t.result == t.expected);    \
-			t.result_n = jstr_countchr_len(s, c, t.n);              \
-			t.expected_n = simple_countchr_len(s, c, t.n);          \
-			T_DEBUG(jstr_countchr_len, t.result_n == t.expected_n); \
-			t.result_n = jstr_countchr(s, c);                       \
-			t.expected_n = simple_countchr(s, c);                   \
-			T_DEBUG(jstr_countchr, t.result_n == t.expected_n);     \
-			t.result = jstr_memcasechr(s, c, t.n);                 \
-			t.expected = simple_memcasechr(s, c, t.n);              \
-			T_DEBUG(jstr_memcasechr, t.result == t.expected);      \
-		}                                                               \
+#define T(res, exp, ...)                                     \
+	do {                                                 \
+		t.result = (const char *)res(__VA_ARGS__);   \
+		t.expected = (const char *)exp(__VA_ARGS__); \
+		T_DEBUG(#res, t.result == t.expected);       \
+	} while (0)
+
+#define T_size(res, exp, ...)                              \
+	do {                                               \
+		t.result_n = res(__VA_ARGS__);             \
+		t.expected_n = exp(__VA_ARGS__);           \
+		T_DEBUG(#res, t.result_n == t.expected_n); \
+	} while (0)
+
+#define T_ALL(s, c)                                                                          \
+	do {                                                                                 \
+		size_t align;                                                                \
+		for (align = 0; align < 8; align++) {                                        \
+			const char *p = (const char *)aligncpy(s, sizeof(s), (size_t)align); \
+			t_init();                                                            \
+			t.hs = p;                                                            \
+			t.n = strlen(p);                                                     \
+			T(jstr_strncasechr, simple_strncasechr, p, c, t.n);                  \
+			T(jstr_strnchr, simple_strnchr, p, c, t.n);                          \
+			T(jstr_memrchr, simple_memrchr, p, c, t.n);                          \
+			T(jstr_memcasechr, simple_memcasechr, p, c, t.n);                    \
+			T(jstr_strchrnul, simple_strchrnul, p, c);                           \
+			T(jstr_strcasechr, simple_strcasechr, p, c);                         \
+			T(jstr_strcasechrnul, simple_strcasechrnul, p, c);                   \
+			T_size(jstr_countchr, simple_countchr, p, c);                        \
+			T_size(jstr_countchr_len, simple_countchr_len, p, c, t.n);           \
+		}                                                                            \
 	} while (0)
 
 int
@@ -85,67 +81,59 @@ main(int argc, char **argv)
 	int i;
 	char a[128];
 	char s[256];
-	TESTING(jstr_strnchr);
-	TESTING(jstr_memrchr);
-	TESTING(jstr_strnchr);
-	TESTING(jstr_strchrnul);
-	TESTING(jstr_strcasechr);
-	TESTING(jstr_strcasechrnul);
-	TESTING(jstr_countchr);
-	TESTING(jstr_countchr_len);
 
 	for (i = 0; i < 128; i++)
 		a[i] = (i + 1) & 127;
 	for (i = 0; i < 256; i++)
 		*((unsigned char *)s + i) = i + 1;
 
-	T("\0aaa", 'a');
-	T("a\0bb", 'b');
-	T("ab\0c", 'c');
-	T("abc\0d", 'd');
-	T("abc abc\0x", 'x');
+	T_ALL("\0aaa", 'a');
+	T_ALL("a\0bb", 'b');
+	T_ALL("ab\0c", 'c');
+	T_ALL("abc\0d", 'd');
+	T_ALL("abc abc\0x", 'x');
 
-	T("\0AAA", 'A');
-	T("A\0bb", 'b');
-	T("Ab\0c", 'c');
-	T("Abc\0d", 'd');
-	T("Abc Abc\0x", 'x');
+	T_ALL("\0AAA", 'A');
+	T_ALL("A\0bb", 'b');
+	T_ALL("Ab\0c", 'c');
+	T_ALL("Abc\0d", 'd');
+	T_ALL("Abc Abc\0x", 'x');
 
-	T(a, 128);
-	T(a, 255);
+	T_ALL(a, 128);
+	T_ALL(a, 255);
 
-	T("", 0);
-	T("a", 'a');
-	T("a", 'a' + 256);
-	T("a", 0);
-	T("abb", 'b');
-	T("aabb", 'b');
-	T("aaabb", 'b');
-	T("aaaabb", 'b');
-	T("aaaaabb", 'b');
-	T("aaaaaabb", 'b');
-	T("abc abc", 'c');
+	T_ALL("", 0);
+	T_ALL("a", 'a');
+	T_ALL("a", 'a' + 256);
+	T_ALL("a", 0);
+	T_ALL("abb", 'b');
+	T_ALL("aabb", 'b');
+	T_ALL("aaabb", 'b');
+	T_ALL("aaaabb", 'b');
+	T_ALL("aaaaabb", 'b');
+	T_ALL("aaaaaabb", 'b');
+	T_ALL("abc abc", 'c');
 
-	T("", 0);
-	T("A", 'A');
-	T("A", 'A' + 256);
-	T("A", 0);
-	T("Abb", 'b');
-	T("AAbb", 'b');
-	T("AAAbb", 'b');
-	T("AAAAbb", 'b');
-	T("AAAAAbb", 'b');
-	T("AAAAAAbb", 'b');
-	T("Abc Abc", 'c');
+	T_ALL("", 0);
+	T_ALL("A", 'A');
+	T_ALL("A", 'A' + 256);
+	T_ALL("A", 0);
+	T_ALL("Abb", 'b');
+	T_ALL("AAbb", 'b');
+	T_ALL("AAAbb", 'b');
+	T_ALL("AAAAbb", 'b');
+	T_ALL("AAAAAbb", 'b');
+	T_ALL("AAAAAAbb", 'b');
+	T_ALL("Abc Abc", 'c');
 
-	T(s, 1);
-	T(s, 2);
-	T(s, 10);
-	T(s, 11);
-	T(s, 127);
-	T(s, 128);
-	T(s, 255);
-	T(s, 0);
+	T_ALL(s, 1);
+	T_ALL(s, 2);
+	T_ALL(s, 10);
+	T_ALL(s, 11);
+	T_ALL(s, 127);
+	T_ALL(s, 128);
+	T_ALL(s, 255);
+	T_ALL(s, 0);
 
 	SUCCESS();
 	return EXIT_SUCCESS;
