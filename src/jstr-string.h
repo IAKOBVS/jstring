@@ -2207,6 +2207,69 @@ JSTR_NOEXCEPT
 	return jstr_thousepcpy_len_p(dst, src, strlen(src), separator);
 }
 
+JSTR_FUNC
+static char *
+jstr_unescape_p(char *s)
+JSTR_NOEXCEPT
+{
+	for (; *s && *s != '\\'; ++s) {}
+	char *d = s;
+	for (;;) {
+		if (*s == '\\') {
+			switch (*(s + 1)) {
+			case '\0': goto out;
+			case 'b': *d = '\b'; break;
+			case 'f': *d = '\f'; break;
+			case 'n': *d = '\n'; break;
+			case 'r': *d = '\r'; break;
+			case 't': *d = '\t'; break;
+			case 'v': *d = '\v'; break;
+			default: *d = *(s + 1); break;
+			}
+			s += 2;
+		} else if (jstr_unlikely(*s == '\0')) {
+			break;
+		} else {
+			*d = *s++;
+		}
+		++d;
+	}
+out:
+	*d = '\0';
+	return d;
+}
+
+JSTR_FUNC
+static char *
+jstr_unescape_len_p(char *s,
+                    size_t n)
+JSTR_NOEXCEPT
+{
+	for (; n && *s != '\\'; ++s, --n) {}
+	char *d = s;
+	for (; n--;) {
+		if (*s == '\\') {
+			switch (*(s + 1)) {
+			case '\0': goto out;
+			case 'b': *d = '\b'; break;
+			case 'f': *d = '\f'; break;
+			case 'n': *d = '\n'; break;
+			case 'r': *d = '\r'; break;
+			case 't': *d = '\t'; break;
+			case 'v': *d = '\v'; break;
+			default: *d = *(s + 1); break;
+			}
+			s += 2;
+		} else {
+			*d = *s++;
+		}
+		++d;
+	}
+out:
+	*d = '\0';
+	return d;
+}
+
 PJSTR_END_DECLS
 
 #undef R
