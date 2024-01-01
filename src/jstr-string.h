@@ -2211,11 +2211,10 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static char *
-jstr_unescape_p(char *s)
+jstr_unescapecpy_p(char *d,
+                   const char *s)
 JSTR_NOEXCEPT
 {
-	for (; *s && *s != '\\'; ++s) {}
-	char *d = s;
 	for (;;) {
 		if (jstr_likely(*s != '\\')) {
 			*d = *s;
@@ -2240,16 +2239,25 @@ out:
 	return d;
 }
 
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static char *
+jstr_unescape_p(char *s)
+JSTR_NOEXCEPT
+{
+	for (; *s && *s != '\\'; ++s) {}
+	return jstr_unescapecpy_p(s, s);
+}
+
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
 
 JSTR_FUNC
 static char *
-jstr_unescape_len_p(char *s,
-                    size_t n)
+jstr_unescapecpy_len_p(char *d,
+                       const char *s,
+                       size_t n)
 JSTR_NOEXCEPT
 {
-	for (; n && *s != '\\'; ++s, --n) {}
-	char *d = s;
 	for (; n--;) {
 		if (jstr_likely(*s != '\\')) {
 			*d = *s;
@@ -2272,6 +2280,16 @@ JSTR_NOEXCEPT
 	}
 out:
 	return d;
+}
+
+JSTR_FUNC
+static char *
+jstr_unescape_len_p(char *s,
+                    size_t n)
+JSTR_NOEXCEPT
+{
+	for (; n && *s != '\\'; ++s, --n) {}
+	return jstr_unescapecpy_len_p(s, s, n);
 }
 
 PJSTR_END_DECLS
