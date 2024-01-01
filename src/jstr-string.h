@@ -2211,32 +2211,32 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static char *
-jstr_unescapecpy_p(char *d,
-                   const char *s)
+jstr_unescapecpy_p(char *dst,
+                   const char *src)
 JSTR_NOEXCEPT
 {
 	for (;;) {
-		if (jstr_likely(*s != '\\')) {
-			*d = *s;
-			if (jstr_unlikely(*s++ == '\0'))
+		if (jstr_likely(*src != '\\')) {
+			*dst = *src;
+			if (jstr_unlikely(*src++ == '\0'))
 				break;
 		} else {
-			switch (*(s + 1)) {
+			switch (*(src + 1)) {
 			case '\0': goto out;
-			case 'b': *d = '\b'; break;
-			case 'f': *d = '\f'; break;
-			case 'n': *d = '\n'; break;
-			case 'r': *d = '\r'; break;
-			case 't': *d = '\t'; break;
-			case 'v': *d = '\v'; break;
-			default: *d = *(s + 1); break;
+			case 'b': *dst = '\b'; break;
+			case 'f': *dst = '\f'; break;
+			case 'n': *dst = '\n'; break;
+			case 'r': *dst = '\r'; break;
+			case 't': *dst = '\t'; break;
+			case 'v': *dst = '\v'; break;
+			default: *dst = *(src + 1); break;
 			}
-			s += 2;
+			src += 2;
 		}
-		++d;
+		++dst;
 	}
 out:
-	return d;
+	return dst;
 }
 
 JSTR_FUNC
@@ -2253,33 +2253,33 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static char *
-jstr_unescapecpy_len_p(char *d,
-                       const char *s,
+jstr_unescapecpy_len_p(char *dst,
+                       const char *src,
                        size_t n)
 JSTR_NOEXCEPT
 {
 	for (; n--;) {
-		if (jstr_likely(*s != '\\')) {
-			*d = *s;
-			if (jstr_unlikely(*s++ == '\0'))
+		if (jstr_likely(*src != '\\')) {
+			*dst = *src;
+			if (jstr_unlikely(*src++ == '\0'))
 				break;
 		} else {
-			switch (*(s + 1)) {
+			switch (*(src + 1)) {
 			case '\0': goto out;
-			case 'b': *d = '\b'; break;
-			case 'f': *d = '\f'; break;
-			case 'n': *d = '\n'; break;
-			case 'r': *d = '\r'; break;
-			case 't': *d = '\t'; break;
-			case 'v': *d = '\v'; break;
-			default: *d = *(s + 1); break;
+			case 'b': *dst = '\b'; break;
+			case 'f': *dst = '\f'; break;
+			case 'n': *dst = '\n'; break;
+			case 'r': *dst = '\r'; break;
+			case 't': *dst = '\t'; break;
+			case 'v': *dst = '\v'; break;
+			default: *dst = *(src + 1); break;
 			}
-			s += 2;
+			src += 2;
 		}
-		++d;
+		++dst;
 	}
 out:
-	return d;
+	return dst;
 }
 
 JSTR_FUNC
