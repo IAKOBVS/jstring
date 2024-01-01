@@ -1575,7 +1575,9 @@ jstr_countchr_len(const char *s,
                   size_t sz)
 JSTR_NOEXCEPT
 {
-#if JSTR_GNUC_PREREQ(4, 7) || !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
+#if (JSTR_GNUC_PREREQ(4, 7) && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 3)) \
+|| defined __clang__                                                        \
+|| !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
 	size_t cnt = 0;
 	for (; sz--; cnt += *s++ == (char)c) {}
 	return cnt;

@@ -430,7 +430,7 @@ ret:;
 
 #endif
 
-#ifndef POPCNT
+#if !defined POPCNT
 
 #	define JSTR_HAVENT_COUNTCHR_SIMD     1
 #	define JSTR_HAVENT_COUNTCHR_LEN_SIMD 1
@@ -440,7 +440,7 @@ ret:;
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-pjstr_countchr_simd(const void *s,
+pjstr_countchr_simd(const char *s,
                     int c)
 JSTR_NOEXCEPT
 {
@@ -486,7 +486,7 @@ JSTR_NOEXCEPT
 	for (; n >= VEC_SIZE; n -= VEC_SIZE, p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
 		m = (MASK)CMPEQ8_MASK(sv, cv);
-		cnt += m ? (unsigned int)POPCNT(m) : 0;
+		cnt += m ? (MASK)POPCNT(m) : 0;
 	}
 	for (; n--; cnt += *p++ == (unsigned char)c) {}
 	return cnt;

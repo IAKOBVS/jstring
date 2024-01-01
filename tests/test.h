@@ -127,6 +127,8 @@ t_debug(void)
 	PZ(t.hs_len);
 	PS(t.ne);
 	PZ(t.ne_len);
+	PZ(t.result_n);
+	PZ(t.expected_n);
 	PS(t.result);
 	PZ(t.result_len);
 	PS(t.expected);
