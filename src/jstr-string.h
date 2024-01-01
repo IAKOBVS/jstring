@@ -2207,7 +2207,8 @@ JSTR_NOEXCEPT
 	return jstr_thousepcpy_len_p(dst, src, strlen(src), separator);
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+   Trailing backslashes are ignored. */
 JSTR_FUNC
 static char *
 jstr_unescapecpy_p(char *dst,
@@ -2238,7 +2239,8 @@ out:
 	return dst;
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+   Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -2249,7 +2251,8 @@ JSTR_NOEXCEPT
 	return jstr_unescapecpy_p(s, s);
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+   Trailing backslashes are ignored. */
 JSTR_FUNC
 static char *
 jstr_unescapecpy_len_p(char *dst,
@@ -2281,7 +2284,8 @@ out:
 	return dst;
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+   Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
