@@ -2217,7 +2217,11 @@ JSTR_NOEXCEPT
 	for (; *s && *s != '\\'; ++s) {}
 	char *d = s;
 	for (;;) {
-		if (*s == '\\') {
+		if (jstr_likely(*s != '\\')) {
+			*d = *s;
+			if (jstr_unlikely(*s++ == '\0'))
+				break;
+		} else {
 			switch (*(s + 1)) {
 			case '\0': goto out;
 			case 'b': *d = '\b'; break;
@@ -2229,15 +2233,10 @@ JSTR_NOEXCEPT
 			default: *d = *(s + 1); break;
 			}
 			s += 2;
-		} else if (jstr_unlikely(*s == '\0')) {
-			break;
-		} else {
-			*d = *s++;
 		}
 		++d;
 	}
 out:
-	*d = '\0';
 	return d;
 }
 
@@ -2250,7 +2249,11 @@ JSTR_NOEXCEPT
 	for (; n && *s != '\\'; ++s, --n) {}
 	char *d = s;
 	for (; n--;) {
-		if (*s == '\\') {
+		if (jstr_likely(*s != '\\')) {
+			*d = *s;
+			if (jstr_unlikely(*s++ == '\0'))
+				break;
+		} else {
 			switch (*(s + 1)) {
 			case '\0': goto out;
 			case 'b': *d = '\b'; break;
@@ -2262,13 +2265,10 @@ JSTR_NOEXCEPT
 			default: *d = *(s + 1); break;
 			}
 			s += 2;
-		} else {
-			*d = *s++;
 		}
 		++d;
 	}
 out:
-	*d = '\0';
 	return d;
 }
 
