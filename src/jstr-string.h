@@ -2207,7 +2207,9 @@ JSTR_NOEXCEPT
 	return jstr_thousepcpy_len_p(dst, src, strlen(src), separator);
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \".
+/* clang-format off */
+
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \", and \ooo (octal).
    Trailing backslashes are ignored. */
 JSTR_FUNC
 static char *
@@ -2215,14 +2217,19 @@ jstr_unescapecpy_p(char *dst,
                    const char *src)
 JSTR_NOEXCEPT
 {
+	unsigned int o;
 	for (;;) {
 		if (jstr_likely(*src != '\\')) {
-			*dst = *src;
-			if (jstr_unlikely(*src++ == '\0'))
+			if (jstr_unlikely(*src == '\0'))
 				break;
+			*dst = *src++;
 		} else {
 			switch (*(src + 1)) {
 			case '\0': goto out;
+			/* case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': */
+			/* 	for (*dst = 0, ++src, o = 3; o-- && *src >= '0' && *src <= '7'; ++src) */
+			/* 		*dst = *dst * 8 + (*src - '0'); */
+			/* 	break; */
 			case 'b': *dst = '\b'; break;
 			case 'f': *dst = '\f'; break;
 			case 'n': *dst = '\n'; break;
@@ -2236,6 +2243,7 @@ JSTR_NOEXCEPT
 		++dst;
 	}
 out:
+	*dst = '\0';
 	return dst;
 }
 
@@ -2260,14 +2268,19 @@ jstr_unescapecpy_len_p(char *dst,
                        size_t n)
 JSTR_NOEXCEPT
 {
+	unsigned int o;
 	while (n--) {
 		if (jstr_likely(*src != '\\')) {
-			*dst = *src;
-			if (jstr_unlikely(*src++ == '\0'))
+			if (jstr_unlikely(*src == '\0'))
 				break;
+			*dst = *src++;
 		} else {
 			switch (*(src + 1)) {
 			case '\0': goto out;
+			/* case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': */
+			/* 	   for (*dst = 0, ++src, o = 3; o-- && *src >= '0' && *src <= '7'; ++src, --n) */
+			/* 		   *dst = *dst * 8 + (*src - '0'); */
+			/* 	   break; */
 			case 'b': *dst = '\b'; break;
 			case 'f': *dst = '\f'; break;
 			case 'n': *dst = '\n'; break;
@@ -2281,6 +2294,7 @@ JSTR_NOEXCEPT
 		++dst;
 	}
 out:
+	*dst = '\0';
 	return dst;
 }
 
@@ -2296,6 +2310,8 @@ JSTR_NOEXCEPT
 	for (; n && *s != '\\'; ++s, --n) {}
 	return jstr_unescapecpy_len_p(s, s, n);
 }
+
+/* clang-format on */
 
 PJSTR_END_DECLS
 
