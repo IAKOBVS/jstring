@@ -1,15 +1,17 @@
 #include "test.h"
 #include "../src/jstr-itoa.h"
 
-#define T(string, expected_result)                                                                                        \
-	do {                                                                                                              \
-		char s[1024];                                                                                             \
-		memcpy(s, string, strlen(string) + 1);                                                                    \
-		ASSERT_RESULT(jstr_thousep_p, jstr_thousep_p(s, ',') == s + strlen(s), s, expected_result);               \
-		ASSERT_RESULT(jstr_thousep_p, !strcmp(s, expected_result), s, expected_result);                           \
-		ASSERT_RESULT(jstr_thousepcpy_p, jstr_thousepcpy_p(s, string, ',') == s + strlen(s), s, expected_result); \
-		ASSERT_RESULT(jstr_thousepcpy_p, !strcmp(s, expected_result), s, expected_result);                        \
-	} while (0)
+char buf[1024];
+
+void
+T(const char *string, const char *expected_result)
+{
+	memcpy(buf, string, strlen(string) + 1);
+	ASSERT_RESULT(jstr_thousep_p, jstr_thousep_p(buf, ',') == buf + strlen(buf), buf, expected_result);
+	ASSERT_RESULT(jstr_thousep_p, !strcmp(buf, expected_result), buf, expected_result);
+	ASSERT_RESULT(jstr_thousepcpy_p, jstr_thousepcpy_p(buf, string, ',') == buf + strlen(buf), buf, expected_result);
+	ASSERT_RESULT(jstr_thousepcpy_p, !strcmp(buf, expected_result), buf, expected_result);
+}
 
 int
 main(int argc, char **argv)

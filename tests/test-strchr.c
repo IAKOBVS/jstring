@@ -54,25 +54,26 @@ aligncpy(const void *p, size_t len, size_t a)
 		T_DEBUG(#res, t.result_n == t.expected_n); \
 	} while (0)
 
-#define T_ALL(s, c)                                                                          \
-	do {                                                                                 \
-		size_t align;                                                                \
-		for (align = 0; align < 8; align++) {                                        \
-			const char *p = (const char *)aligncpy(s, sizeof(s), (size_t)align); \
-			t_init();                                                            \
-			t.hs = p;                                                            \
-			t.n = strlen(p);                                                     \
-			T(jstr_strncasechr, simple_strncasechr, p, c, t.n);                  \
-			T(jstr_strnchr, simple_strnchr, p, c, t.n);                          \
-			T(jstr_memrchr, simple_memrchr, p, c, t.n);                          \
-			T(jstr_memcasechr, simple_memcasechr, p, c, t.n);                    \
-			T(jstr_strchrnul, simple_strchrnul, p, c);                           \
-			T(jstr_strcasechr, simple_strcasechr, p, c);                         \
-			T(jstr_strcasechrnul, simple_strcasechrnul, p, c);                   \
-			T_size(jstr_countchr, simple_countchr, p, c);                        \
-			T_size(jstr_countchr_len, simple_countchr_len, p, c, t.n);           \
-		}                                                                            \
-	} while (0)
+void
+T_ALL(const char *s, int c)
+{
+	size_t align;
+	for (align = 0; align < 8; align++) {
+		const char *p = (const char *)aligncpy(s, sizeof(s), (size_t)align);
+		t_init();
+		t.hs = p;
+		t.n = strlen(p);
+		T(jstr_strncasechr, simple_strncasechr, p, c, t.n);
+		T(jstr_strnchr, simple_strnchr, p, c, t.n);
+		T(jstr_memrchr, simple_memrchr, p, c, t.n);
+		T(jstr_memcasechr, simple_memcasechr, p, c, t.n);
+		T(jstr_strchrnul, simple_strchrnul, p, c);
+		T(jstr_strcasechr, simple_strcasechr, p, c);
+		T(jstr_strcasechrnul, simple_strcasechrnul, p, c);
+		T_size(jstr_countchr, simple_countchr, p, c);
+		T_size(jstr_countchr_len, simple_countchr_len, p, c, t.n);
+	}
+}
 
 int
 main(int argc, char **argv)
