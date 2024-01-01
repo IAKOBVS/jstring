@@ -2261,6 +2261,8 @@ JSTR_NOEXCEPT
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
    Trailing backslashes are ignored. */
+JSTR_ATTR_ACCESS((__write_only__, 1, 3))
+JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC
 static char *
 jstr_unescapecpy_len_p(char *dst,
@@ -2302,6 +2304,7 @@ CONT:;
    Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
+JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 static char *
 jstr_unescape_len_p(char *s,
                     size_t n)
