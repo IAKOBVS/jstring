@@ -2283,6 +2283,7 @@ out:
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
 JSTR_FUNC
+JSTR_ATTR_INLINE
 static char *
 jstr_unescape_len_p(char *s,
                     size_t n)
