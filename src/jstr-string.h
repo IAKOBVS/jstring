@@ -2240,6 +2240,8 @@ out:
 	return d;
 }
 
+/* Unescape \b, \f, \n. \r, \t, \v, \\, \". */
+
 JSTR_FUNC
 static char *
 jstr_unescape_len_p(char *s,
