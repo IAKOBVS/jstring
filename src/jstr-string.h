@@ -1057,8 +1057,8 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (cu *)s + sz - 1;
-	unsigned int i = 0;
-	unsigned int n = sz % 4;
+	int i = 0;
+	int n = sz % 4;
 	for (;; --i) {
 		if (t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
@@ -1122,8 +1122,8 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (cu *)s + sz - 1;
-	unsigned int i = 0;
-	unsigned int n = sz % 4;
+	int i = 0;
+	int n = sz % 4;
 	for (;; --i) {
 		if (!t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
@@ -1211,8 +1211,8 @@ JSTR_NOEXCEPT
 		t[*p++] = 1;
 	while (*p);
 	p = (cu *)s;
-	unsigned int i = 0;
-	unsigned int n = sz % 4;
+	int i = 0;
+	int n = sz % 4;
 	for (;; ++i) {
 		if (!t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
@@ -1258,8 +1258,8 @@ JSTR_NOEXCEPT
 		t[*p] = 1;
 	while (*p++);
 	p = (cu *)s + sz - 1;
-	unsigned int i = 0;
-	unsigned int n = sz % 4;
+	int i = 0;
+	int n = sz % 4;
 	for (;; ++i) {
 		if (t[p[i]])
 			return JSTR_PTR_DIFF(p + i, s);
@@ -2172,8 +2172,8 @@ JSTR_NOEXCEPT
 		while ((*dst++ = *src++)) {}
 		return dst - 1;
 	}
-	unsigned int i = src_len % 3;
-	unsigned int j = i;
+	int i = src_len % 3;
+	int j = i;
 	for (; j--; *dst++ = *src++) {}
 	if (i) {
 		*dst++ = separator;
@@ -2215,7 +2215,7 @@ jstr_unescapecpy_p(char *dst,
                    const char *src)
 JSTR_NOEXCEPT
 {
-	unsigned int o;
+	int o;
 	for (;; ++dst) {
 		if (jstr_likely(*src != '\\')) {
 			if (jstr_unlikely(*src == '\0'))
@@ -2270,7 +2270,7 @@ jstr_unescapecpy_len_p(char *dst,
                        size_t n)
 JSTR_NOEXCEPT
 {
-	unsigned int o;
+	int o;
 	for (; n--; ++dst) {
 		if (jstr_likely(*src != '\\')) {
 			*dst = *src++;

@@ -139,7 +139,8 @@ pjstr_stpcpy_simd(char *JSTR_RESTRICT dst,
                   const char *JSTR_RESTRICT src)
 JSTR_NOEXCEPT
 {
-	while (JSTR_PTR_IS_NOT_ALIGNED(src, VEC_SIZE))
+	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
+	while (i--)
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
 	if (JSTR_PTR_IS_ALIGNED(dst, VEC_SIZE))
@@ -446,7 +447,8 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); cnt += *p++ == (unsigned char)c)
+	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+	for (; i--; cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(*p == '\0'))
 			return cnt;
 	const VEC cv = SETONE8((char)c);
@@ -477,7 +479,8 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	for (; JSTR_PTR_IS_NOT_ALIGNED(p, VEC_SIZE); cnt += *p++ == (unsigned char)c)
+	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+	for (; i--; cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(n-- == 0))
 			return cnt;
 	const VEC cv = SETONE8((char)c);
