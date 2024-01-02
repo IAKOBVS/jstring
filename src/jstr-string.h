@@ -388,8 +388,8 @@ JSTR_NOEXCEPT
 		return pjstr_memmem7((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 8)
 		return pjstr_memmem8((cu *)hs, (cu *)ne, hs_len);
-#	if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_ATTR_MAY_ALIAS || JSTR_HAVE_BUILTIN_MEMCMP)
-	if (JSTR_WORD_CMPEQU64(hs, ne) && !memcmp((cu *)hs + 8, (cu *)ne + 8, ne_len - 8))
+#	if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
+	if (!memcmp(hs, ne, 8) && !memcmp((cu *)hs + 8, (cu *)ne + 8, ne_len - 8))
 #	else
 	if (*(cu *)hs == *(cu *)ne && !memcmp(hs, ne, ne_len))
 #	endif
@@ -650,10 +650,10 @@ JSTR_NOEXCEPT
 		return pjstr_memrmem7((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 8)
 		return pjstr_memrmem8((cu *)hs, (cu *)ne, hs_len);
-#if JSTR_HAVE_UNALIGNED_ACCESS && (JSTR_HAVE_BUILTIN_MEMCMP || JSTR_HAVE_ATTR_MAY_ALIAS)
+#if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
 	cu *const ne_rest = (cu *)ne + 8;
 	for (ne_len -= 8, p -= shift; p >= (cu *)hs; --p)
-		if (JSTR_WORD_CMPEQU64(p, ne) && !memcmp(p + 8, ne_rest, ne_len))
+		if (!memcmp(p, ne, 8) && !memcmp(p + 8, ne_rest, ne_len))
 			return (void *)p;
 #else
 	for (hs = (cu *)hs + shift; p >= (cu *)hs; --p)
