@@ -96,6 +96,7 @@ as referring to the whole matched string.
 ## Scripts:
 
 - build: Generate functions.
+- test: Run tests.
 - install: Build and copy headers to /usr/local/include/jstr \(requires sudo\).
 - install-to: Install to a specified directory.
 - uninstall: Remove /usr/local/include/jstr \(requires sudo\).
