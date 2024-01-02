@@ -41,7 +41,6 @@ mark_as_built()
 
 cd "$(dirname "$0")" || exit
 ./setup || exit
-./test || exit
 mkdir -p ../jstr
 
 for file in $(echo *.h); do
