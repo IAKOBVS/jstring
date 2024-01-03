@@ -274,8 +274,12 @@ jstr_strstrnul(const char *hs,
                const char *ne)
 JSTR_NOEXCEPT
 {
-	const char *const p = strstr(hs, ne);
-	return (char *)(p ? p : hs + strlen(hs));
+	if (*ne && *(ne + 1)) {
+		const char *const p = strstr(hs, ne);
+		return (char *)(p ? p : hs + strlen(hs));
+	} else {
+		return jstr_strchrnul(hs, *ne);
+	}
 }
 
 JSTR_FUNC_PURE
