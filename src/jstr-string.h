@@ -2215,7 +2215,6 @@ jstr_unescapecpy_p(char *dst,
                    const char *src)
 JSTR_NOEXCEPT
 {
-	int o;
 	for (;; ++dst) {
 		if (jstr_likely(*src != '\\')) {
 			if (jstr_unlikely(*src == '\0'))
@@ -2226,10 +2225,13 @@ JSTR_NOEXCEPT
 			case '\0': goto out;
 			/* clang-format off */
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': /* clang-format on */
+			{
+				int o;
 				for (*dst = 0, ++src, o = 3; o-- && *src <= '7' && *src >= '0'; ++src)
 					*dst = *dst * 8 + (*src - '0');
 				goto CONT;
 				break;
+			}
 			case 'b': *dst = '\b'; break;
 			case 'f': *dst = '\f'; break;
 			case 'n': *dst = '\n'; break;
@@ -2270,7 +2272,6 @@ jstr_unescapecpy_len_p(char *dst,
                        size_t n)
 JSTR_NOEXCEPT
 {
-	int o;
 	for (; n--; ++dst) {
 		if (jstr_likely(*src != '\\')) {
 			*dst = *src++;
@@ -2280,10 +2281,13 @@ JSTR_NOEXCEPT
 			switch (*(src + 1)) {
 			/* clang-format off */
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': /* clang-format on */
+			{
+				int o;
 				for (*dst = 0, ++src, o = 3; o-- && n && *src <= '7' && *src >= '0'; ++src, --n)
 					*dst = *dst * 8 + (*src - '0');
 				goto CONT;
 				break;
+			}
 			case 'b': *dst = '\b'; break;
 			case 'f': *dst = '\f'; break;
 			case 'n': *dst = '\n'; break;
