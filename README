@@ -2,7 +2,7 @@
 
 --- Features:
 
-- works with any string type: Functions take a pointer to string, size, and capacity.
+- compatible with any string type: Functions take a pointer to string, size, and capacity.
 - in-place literal string and regex replacement: Supports backreferences and
 searching from a specified index.
 - reverse standard string functions: memrchr(), strrstr(), strrspn(), strrcspn(),
