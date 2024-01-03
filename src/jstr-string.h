@@ -1763,9 +1763,9 @@ static char *
 jstr_rev_p(char *R s)
 JSTR_NOEXCEPT
 {
-	const size_t _len = strlen(s);
-	jstr_rev_len(s, _len);
-	return s + _len;
+	const size_t len = strlen(s);
+	jstr_rev_len(s, len);
+	return s + len;
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
