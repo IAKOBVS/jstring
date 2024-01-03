@@ -653,9 +653,9 @@ JSTR_NOEXCEPT
 /* Return value:
    on error, -errcode (negative);
    number of substrings replaced. */
-JSTR_FUNC_VOID
+JSTR_FUNC
 JSTR_ATTR_INLINE
-static void
+static jstr_ret_ty
 pjstrre_brefrplccreat(const char *R mtc,
                       const regmatch_t *R rm,
                       char *R rdst,
@@ -680,7 +680,7 @@ JSTR_NOEXCEPT
 			c -= '0';
 			rdst = (char *)jstr_mempcpy(rdst, mtc + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
 		} else if (jstr_unlikely(*rplc == '\0')) {
-			break;
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		} else {
 			rdst[0] = rplc[-1];
 			rdst[1] = rplc[0];
@@ -689,6 +689,7 @@ JSTR_NOEXCEPT
 	}
 	if (rdst != rold)
 		memcpy(rdst, rold, JSTR_PTR_DIFF(rplc_e, rold));
+	return JSTR_RET_SUCC;
 }
 
 /* Return value:
@@ -745,7 +746,10 @@ JSTR_NOEXCEPT
 				}
 				rdstp = rdst_heap;
 			}
-		pjstrre_brefrplccreat(i.src_e, rm, rdstp, rplc, rplc_len);
+		if (jstr_chk(pjstrre_brefrplccreat(i.src_e, rm, rdstp, rplc, rplc_len))) {
+			ret = JSTRRE_RET_BADPAT;
+			goto err_free_rdst;
+		}
 		i.src_e += rm[0].rm_so;
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (rdst_len <= find_len)
