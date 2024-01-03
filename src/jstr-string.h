@@ -1945,7 +1945,7 @@ JSTR_NOEXCEPT
 	for (; *p; ++p)
 		if (jstr_isupper(*p)) {
 start:
-			jstr_strmove_len((char *)p + 1, (char *)p, JSTR_PTR_DIFF(end++, p));
+			jstr_strmove_len((char *)p + 1, (const char *)p, JSTR_PTR_DIFF(end++, p));
 			*p++ = '_';
 			*p = jstr_tolower(*p);
 		}

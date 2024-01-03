@@ -88,7 +88,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 			} else {
 				goto DO_NOTHING;
 			}
-			$body .= "strlen((char *)$var_str)";
+			$body .= "strlen((const char *)$var_str)";
 			splice(@arg, $i--, 1);
 		} else {
 		  DO_NOTHING:
