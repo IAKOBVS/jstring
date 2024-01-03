@@ -54,12 +54,10 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
 #else
-	if (jstr_unlikely(n == 0))
-		return 0;
 	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++ && n--) {}
+	while (n-- && !(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++) {}
 	return ret;
 #endif
 }
@@ -108,12 +106,10 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
 #else
-	if (jstr_unlikely(n == 0))
-		return 0;
-	int ret;
+	int ret = 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	while (!(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++)) && n--) {}
+	while (n-- && !(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++))) {}
 	return ret;
 #endif
 }
