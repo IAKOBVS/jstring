@@ -2267,43 +2267,45 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC
-static char *
-jstr_unescapecpy_len_p(char *dst,
-                       const char *src,
+static void *
+jstr_unescapecpy_len_p(void *dst,
+                       const void *src,
                        size_t n)
 JSTR_NOEXCEPT
 {
-	for (; n--; ++dst) {
-		if (jstr_likely(*src != '\\')) {
-			*dst = *src++;
+	unsigned char *d = (unsigned char *)dst;
+	const unsigned char *s = (const unsigned char *)src;
+	for (; n--; ++d) {
+		if (jstr_likely(*s != '\\')) {
+			*d = *s++;
 		} else {
 			if (jstr_unlikely(n-- == 0))
 				break;
-			switch (*(src + 1)) {
+			switch (*(s + 1)) {
 			/* clang-format off */
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': /* clang-format on */
 			{
 				int o = 3;
-				*dst = 0, ++src;
-				for (; o-- && n && *src <= '7' && *src >= '0'; ++src, --n)
-					*dst = *dst * 8 + (*src - '0');
+				*d = 0, ++s;
+				for (; o-- && n && *s <= '7' && *s >= '0'; ++s, --n)
+					*d = *d * 8 + (*s - '0');
 				goto CONT;
 				break;
 			}
-			case 'b': *dst = '\b'; break;
-			case 'f': *dst = '\f'; break;
-			case 'n': *dst = '\n'; break;
-			case 'r': *dst = '\r'; break;
-			case 't': *dst = '\t'; break;
-			case 'v': *dst = '\v'; break;
-			default: *dst = *(src + 1); break;
+			case 'b': *d = '\b'; break;
+			case 'f': *d = '\f'; break;
+			case 'n': *d = '\n'; break;
+			case 'r': *d = '\r'; break;
+			case 't': *d = '\t'; break;
+			case 'v': *d = '\v'; break;
+			default: *d = *(s + 1); break;
 			}
-			src += 2;
+			s += 2;
 		}
 CONT:;
 	}
-	*dst = '\0';
-	return dst;
+	*d = '\0';
+	return d;
 }
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
@@ -2311,13 +2313,14 @@ CONT:;
 JSTR_FUNC
 JSTR_ATTR_INLINE
 JSTR_ATTR_ACCESS((__read_write__, 1, 2))
-static char *
-jstr_unescape_len_p(char *s,
+static void *
+jstr_unescape_len_p(void *s,
                     size_t n)
 JSTR_NOEXCEPT
 {
-	for (; n && *s != '\\'; ++s, --n) {}
-	return jstr_unescapecpy_len_p(s, s, n);
+	unsigned char *p = (unsigned char *)s;
+	for (; n && *p != '\\'; ++p, --n) {}
+	return jstr_unescapecpy_len_p(p, p, n);
 }
 
 PJSTR_END_DECLS
