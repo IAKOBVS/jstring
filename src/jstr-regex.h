@@ -643,7 +643,7 @@ JSTR_NOEXCEPT
 			c -= '0';
 			JSTR_ASSERT_DEBUG((jstrre_off_ty)c < nmatch, "Using a backreference higher than nmatch.");
 			rplc_len += (size_t)(rm[c].rm_eo - rm[c].rm_so - 2);
-		} else if (jstr_unlikely(*rplc == '\0')) {
+		} else if (jstr_unlikely(c == '\0')) {
 			break;
 		}
 	}
@@ -679,7 +679,7 @@ JSTR_NOEXCEPT
 			}
 			c -= '0';
 			rdst = (char *)jstr_mempcpy(rdst, mtc + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
-		} else if (jstr_unlikely(*rplc == '\0')) {
+		} else if (jstr_unlikely(c == '\0')) {
 			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		} else {
 			rdst[0] = rplc[-1];
