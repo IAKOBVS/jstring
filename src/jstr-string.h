@@ -1779,9 +1779,9 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
 		return s;
-	char *end = jstr_skipspace_rev(s, s + sz - 1);
-	*++end = '\0';
-	return end;
+	s = jstr_skipspace_rev(s, sz);
+	*++s = '\0';
+	return s;
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
@@ -1808,8 +1808,9 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	const char *const start = jstr_skipspace(s);
+	sz = JSTR_PTR_DIFF(s + sz, start);
 	if (s != start)
-		return jstr_stpmove_len(s, start, JSTR_PTR_DIFF(s + sz, start));
+		return jstr_stpmove_len(s, start, sz);
 	return s + sz;
 }
 
@@ -1855,10 +1856,11 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
 		return s;
-	const char *const end = jstr_skipspace_rev(s, s + sz - 1) + 1;
+	const char *const end = jstr_skipspace_rev(s, sz);
 	const char *const start = jstr_skipspace(s);
+	sz = JSTR_PTR_DIFF(end, start);
 	if (start != s)
-		return jstr_stpmove_len(s, start, JSTR_PTR_DIFF(end, start));
+		return jstr_stpmove_len(s, start, sz);
 	return s + sz;
 }
 
