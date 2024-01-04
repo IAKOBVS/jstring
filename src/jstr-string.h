@@ -634,6 +634,7 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
+	/* TODO: use rarebyte. */
 	const size_t shift = 0;
 	const int c = *((cu *)ne + shift);
 	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
