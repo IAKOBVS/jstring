@@ -655,7 +655,6 @@ JSTR_NOEXCEPT
 		return pjstr_memrmem7((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 8)
 		return pjstr_memrmem8((cu *)hs, (cu *)ne, hs_len);
-	return pjstr_memrmem8more((cu *)hs, (cu *)ne, hs_len, ne_len);
 #if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
 	cu *const ne_rest = (cu *)ne + 8;
 	for (ne_len -= 8, p -= shift; p >= (cu *)hs; --p)
