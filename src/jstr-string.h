@@ -634,11 +634,12 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
+	const size_t shift = 0;
 	const int c = *((cu *)ne + shift);
 	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(p == NULL) || ne_len == 1)
 		return (void *)p;
+	p -= shift;
 	hs_len = JSTR_PTR_DIFF(p, hs) + ne_len;
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
