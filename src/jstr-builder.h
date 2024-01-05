@@ -451,12 +451,10 @@ JSTR_NOEXCEPT
 	if (n > *sz) {
 		if (jstr_chk(jstr_reservealways(s, sz, cap, n)))
 			return JSTR_RET_ERR;
-		memset(*s, c, n);
 		*(*s + n) = '\0';
 		*sz = n;
-	} else {
-		memset(*s, c, n);
 	}
+	memset(*s, c, n);
 	return JSTR_RET_SUCC;
 }
 
