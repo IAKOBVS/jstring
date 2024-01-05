@@ -1138,7 +1138,7 @@ JSTR_NOEXCEPT
 			break;
 		}
 	}
-	p = (cu *)JSTR_PTR_ALIGN_UP(p, 4);
+	p = (cu *)JSTR_PTR_ALIGN_DOWN(p, 4);
 	unsigned int c0, c1, c2, c3;
 	do {
 		c0 = t[p[0]];
@@ -1227,7 +1227,7 @@ JSTR_NOEXCEPT
 			break;
 		}
 	}
-	p = (cu *)JSTR_PTR_ALIGN_DOWN(p, 4);
+	p = (cu *)JSTR_PTR_ALIGN_UP(p, 4);
 	cu *const end = (cu *)s + sz;
 	unsigned int c0, c1, c2, c3;
 	do {
