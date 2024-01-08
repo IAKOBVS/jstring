@@ -79,17 +79,17 @@ JSTR_NOEXCEPT
 	while (jp + k < t->needle_len) {
 		c0 = CANON(n[ip + k]);
 		c1 = CANON(n[jp + k]);
-		if (c0 == c1) {
+		if (c0 > c1) {
+			jp += k;
+			k = 1;
+			t->_p = jp - ip;
+		} else if (c0 == c1) {
 			if (k == t->_p) {
 				jp += t->_p;
 				k = 1;
 			} else {
 				++k;
 			}
-		} else if (c0 > c1) {
-			jp += k;
-			k = 1;
-			t->_p = jp - ip;
 		} else /* c0 < c1 */ {
 			ip = jp++;
 			k = t->_p = 1;
@@ -102,17 +102,17 @@ JSTR_NOEXCEPT
 	while (jp + k < t->needle_len) {
 		c0 = CANON(n[ip + k]);
 		c1 = CANON(n[jp + k]);
-		if (c0 == c1) {
+		if (c0 < c1) {
+			jp += k;
+			k = 1;
+			t->_p = jp - ip;
+		} else if (c0 == c1) {
 			if (k == t->_p) {
 				jp += t->_p;
 				k = 1;
 			} else {
 				++k;
 			}
-		} else if (c0 < c1) {
-			jp += k;
-			k = 1;
-			t->_p = jp - ip;
 		} else /* c0 > c1 */ {
 			ip = jp++;
 			k = t->_p = 1;
