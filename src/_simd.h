@@ -44,10 +44,12 @@ typedef uint64_t jstr_vec_mask_ty;
 #	define CMPEQ8_MASK(x, y) _mm512_cmpeq_epi8_mask(x, y)
 #	define SETZERO(x)        _mm512_setzero_si512(x)
 #	define SETONE8(x)        _mm512_set1_epi8(x)
-#	define POPCNT(x)         _mm_popcnt_u64(x)
-#	define TZCNT(x)          _tzcnt_u64(x)
-#	define BLSR(x)           _blsr_u64(x)
-#	define LZCNT(x)          _lzcnt_u64(x)
+#	ifdef __BMI__
+#		define POPCNT(x) _mm_popcnt_u64(x)
+#		define TZCNT(x)  _tzcnt_u64(x)
+#		define BLSR(x)   _blsr_u64(x)
+#		define LZCNT(x)  _lzcnt_u64(x)
+#	endif
 #elif defined __AVX2__
 #	include <immintrin.h>
 typedef __m256i jstr_vec_ty;
@@ -59,10 +61,12 @@ typedef uint32_t jstr_vec_mask_ty;
 #	define CMPEQ8_MASK(x, y) _mm256_movemask_epi8(_mm256_cmpeq_epi8(x, y))
 #	define SETZERO(x)        _mm256_setzero_si256(x)
 #	define SETONE8(x)        _mm256_set1_epi8(x)
-#	define POPCNT(x)         _mm_popcnt_u32(x)
-#	define TZCNT(x)          _tzcnt_u32(x)
-#	define BLSR(x)           _blsr_u32(x)
-#	define LZCNT(x)          _lzcnt_u32(x)
+#	ifdef __BMI__
+#		define POPCNT(x) _mm_popcnt_u32(x)
+#		define TZCNT(x)  _tzcnt_u32(x)
+#		define BLSR(x)   _blsr_u32(x)
+#		define LZCNT(x)  _lzcnt_u32(x)
+#	endif
 #elif defined __SSE__
 #	include <emmintrin.h>
 typedef __m128i jstr_vec_ty;
@@ -74,11 +78,13 @@ typedef uint16_t jstr_vec_mask_ty;
 #	define CMPEQ8_MASK(x, y) _mm_movemask_epi8(_mm_cmpeq_epi8(x, y))
 #	define SETZERO(x)        _mm_setzero_si128(x)
 #	define SETONE8(x)        _mm_set1_epi8(x)
-#	if JSTR_HAS_BUILTIN(__builtin_popcount)
-#		define POPCNT(x) __builtin_popcount(x)
-#	endif
-#	if JSTR_HAS_BUILTIN(__builtin_ia32_tzcnt_u16)
-#		define TZCNT(x) __builtin_ia32_tzcnt_u16(x)
+#	ifdef __BMI__
+#		if JSTR_HAS_BUILTIN(__builtin_popcount)
+#			define POPCNT(x) __builtin_popcount(x)
+#		endif
+#		if JSTR_HAS_BUILTIN(__builtin_ia32_tzcnt_u16)
+#			define TZCNT(x) __builtin_ia32_tzcnt_u16(x)
+#		endif
 #	endif
 #endif
 #define VEC       jstr_vec_ty
