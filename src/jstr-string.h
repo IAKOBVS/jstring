@@ -306,7 +306,7 @@ JSTR_NOEXCEPT
 	return (s1_len == s2_len) ? jstr_strcasecmpeq(s1, s2) : 1;
 }
 
-#define PJSTR_STRSTR234_MEMMEM
+#define PJSTR_STRSTR234_MEMMEM    1
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memmem
 #include "_strstr234.h"
 
@@ -314,7 +314,7 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_strcasestr
 #include "_strstr234.h"
 
-#define PJSTR_STRSTR234_MEMMEM
+#define PJSTR_STRSTR234_MEMMEM    1
 #define PJSTR_STRSTR234_CANON     jstr_tolower
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memcasemem
 #include "_strstr234.h"
