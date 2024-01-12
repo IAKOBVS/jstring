@@ -172,8 +172,8 @@ JSTR_NOEXCEPT
 	const size_t ne_rest_len = ne_len - 8;
 	for (hs += 8, l -= ne_len; l--; hw = hw << 8 | L(*hs++))
 		if (hw == nw && !memcmp(hs, ne_rest, ne_rest_len))
-			return (void *)(hs - 8);
-	return (hw == nw && !memcmp(hs, ne_rest, ne_rest_len)) ? (void *)(hs - 8) : NULL;
+			return (char *)(hs - 8);
+	return (hw == nw && !memcmp(hs, ne_rest, ne_rest_len)) ? (char *)(hs - 8) : NULL;
 }
 
 #elif PJSTR_STRSTR234_MEMRMEM
