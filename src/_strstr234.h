@@ -302,9 +302,7 @@ JSTR_NOEXCEPT
 	for (l -= ne_len; l--; hw = hw << 8 | L(*--hs))
 		if (hw == nw && !memcmp(hs + 8, ne_rest, ne_rest_len))
 			return (void *)hs;
-	if (hw == nw && !memcmp(hs + 8, ne_rest, ne_rest_len))
-		return (void *)hs;
-	return NULL;
+	return (hw == nw && !memcmp(hs + 8, ne_rest, ne_rest_len)) ? (void *)hs : NULL;
 }
 
 #else
