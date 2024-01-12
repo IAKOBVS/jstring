@@ -636,8 +636,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	/* TODO: use rarebyte. */
 	const size_t shift = 0;
-	const int c = *((cu *)ne + shift);
-	cu *p = (cu *)jstr_memrchr(hs, c, hs_len - (ne_len - shift) + 1);
+	cu *p = (cu *)jstr_memrchr(hs, *((cu *)ne + shift), hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(p == NULL) || ne_len == 1)
 		return (void *)p;
 	hs_len = JSTR_PTR_DIFF(p, hs) + (ne_len - shift);

@@ -35,6 +35,39 @@ size_t needle_len;
 size_t buf_len;
 char *buf;
 
+void *
+memmem_vector(const void *h,
+              size_t h_l,
+              const void *n,
+              size_t n_l)
+{
+	if (jstr_unlikely(h_l == 0))
+		return (void *)h;
+	if (jstr_unlikely(h_l < n_l))
+		return NULL;
+	typedef const unsigned char cu;
+	const void *start = h;
+	h = memchr(h, *(cu *)n, h_l - n_l + 1);
+	if (h == NULL || n_l == 1)
+		return (void *)h;
+	h_l -= JSTR_PTR_DIFF(h, start);
+	if (n_l == 2)
+		return pjstr_memmem2((cu *)h, (cu *)n, h_l);
+	if (n_l == 3)
+		return pjstr_memmem3((cu *)h, (cu *)n, h_l);
+	if (n_l == 4)
+		return pjstr_memmem4((cu *)h, (cu *)n, h_l);
+	if (n_l == 5)
+		return pjstr_memmem5((cu *)h, (cu *)n, h_l);
+	if (n_l == 6)
+		return pjstr_memmem6((cu *)h, (cu *)n, h_l);
+	if (n_l == 7)
+		return pjstr_memmem7((cu *)h, (cu *)n, h_l);
+	if (n_l == 8)
+		return pjstr_memmem8((cu *)h, (cu *)n, h_l);
+	return pjstr_memmem8more((cu *)h, (cu *)n, h_l, n_l);
+}
+
 static char *
 simple_memmem(const char *h,
               size_t hl,
@@ -218,8 +251,10 @@ simple_stpcpy(char *JSTR_RESTRICT dst,
 	RUN(b_jstr_strnstr, needle);                                  \
 	RUN(b_simple_strrstr_len, needle);                            \
 	RUN(b_jstr_strrstr_len, needle);                              \
+	RUN(b_memmem_vector, needle);                                 \
 	T_AVX2(needle);
 
+T_DEFINE_STRSTR(memmem_vector, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(simple_memmem, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(simple_strcasestr, buf, needle)
 T_DEFINE_STRSTR(simple_strnstr, buf, needle, buf_len)
@@ -235,16 +270,15 @@ T_DEFINE_STRSTR(jstr_strcasestr_len, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(simple_strrstr_len, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(jstr_strrstr_len, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(jstr_stpcpy, buf, buf + i)
-T_DEFINE_STRSTR(pjstr_stpcpy_musl, buf, buf + i)
 T_DEFINE_STRSTR(simple_stpcpy, buf, buf + i)
 
 #ifdef __AVX2__
 T_DEFINE_STRSTR(pjstr_memmem_simd, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(pjstr_strcasestr_len_simd, buf, buf_len, needle, needle_len)
 T_DEFINE_STRSTR(pjstr_stpcpy_simd, buf, buf + i)
-#	define T_AVX2(needle)                            \
-		RUN(b_pjstr_memmem_simd, needle);         \
-		RUN(b_pjstr_strcasestr_len_simd, needle); \
+#	define T_AVX2(needle)                    \
+		RUN(b_pjstr_memmem_simd, needle); \
+		RUN(b_pjstr_strcasestr_len_simd, needle);
 
 #else
 #	define T_AVX2(needle)
@@ -258,7 +292,6 @@ int
 main()
 {
 	T_STRSTR();
-	RUN(b_pjstr_stpcpy_musl, 0);
 	RUN(b_jstr_stpcpy, 0);
 	RUN(b_simple_stpcpy, 0);
 	RUN(b_pjstr_stpcpy_simd, 0);
