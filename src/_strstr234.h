@@ -43,7 +43,7 @@
 
 #include "jstr-macros.h"
 
-#if defined PJSTR_STRSTR234_MEMMEM
+#ifdef PJSTR_STRSTR234_MEMMEM
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
