@@ -365,15 +365,13 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(ne_len > LONG_NE_THRES))
 		goto MEMMEM;
-	cu *rare;
-	rare = (cu *)jstr_rarebytefind_len(ne, ne_len);
 	size_t shift;
-	shift = JSTR_PTR_DIFF(rare, ne);
+	shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	hs = (cu *)hs + shift;
 	hs_len -= shift;
 	const void *start;
 	start = hs;
-	hs = memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	hs = memchr(hs, *((char *)ne + shift), hs_len - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (void *)hs;
 	hs = (cu *)hs - shift;
