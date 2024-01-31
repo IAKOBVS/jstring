@@ -429,7 +429,7 @@ ret:;
 
 #endif
 
-#if !(defined TZCNT && defined BLSR && (defined __AVX2__ || defined __AVX512F__))
+#if !(defined TZCNT && defined BLSR && (defined __AVX2__ || defined __AVX512BW__))
 
 #	define JSTR_HAVENT_MEMMEM_SIMD         1
 #	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
