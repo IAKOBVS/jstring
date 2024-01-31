@@ -37,7 +37,7 @@ PJSTR_END_DECLS
 #include "jstr-ctype.h"
 #include "_musl.h"
 
-#if defined __AVX512F__ || defined __AVX2__ || defined __SSE__
+#if defined __AVX512BW__ || defined __AVX2__ || defined __SSE2__
 #	define JSTR_HAVE_SIMD 1
 #endif
 
