@@ -37,13 +37,13 @@ PJSTR_BEGIN_DECLS
 #	include <immintrin.h>
 typedef __m512i jstr_vec_ty;
 typedef uint64_t jstr_vec_mask_ty;
-#	define LOAD(x)          _mm512_load_si512(x)
-#	define LOADU(x)         _mm512_loadu_si512(x)
-#	define STORE(dst, src)  _mm512_store_si512(dst, src)
-#	define STOREU(dst, src) _mm512_storeu_si512(dst, src)
+#	define LOAD(x)           _mm512_load_si512(x)
+#	define LOADU(x)          _mm512_loadu_si512(x)
+#	define STORE(dst, src)   _mm512_store_si512(dst, src)
+#	define STOREU(dst, src)  _mm512_storeu_si512(dst, src)
 #	define CMPEQ8_MASK(x, y) _mm512_cmpeq_epi8_mask(x, y) /* AVX512BW */
-#	define SETZERO(x) _mm512_setzero_si512(x)
-#	define SETONE8(x) _mm512_set1_epi8(x)
+#	define SETZERO(x)        _mm512_setzero_si512(x)
+#	define SETONE8(x)        _mm512_set1_epi8(x)
 #	ifdef __BMI__
 #		define BLSR(x)  _blsr_u64(x)
 #		define TZCNT(x) _tzcnt_u64(x)
@@ -91,7 +91,11 @@ typedef uint16_t jstr_vec_mask_ty;
 #		define TZCNT(x) _tzcnt_u16(x)
 #	endif
 #	ifdef __LZCNT__
-#		define LZCNT(x) __lzcnt16(x)
+#		ifdef __lzcnt16
+#			define LZCNT(x) __lzcnt16(x)
+#		else
+#			define LZCNT(x) _lzcnt_u32(x)
+#		endif
 #	endif
 #	ifdef __POPCNT__
 #		define POPCNT(x) _mm_popcnt_u32(x)
