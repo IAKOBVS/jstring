@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
+/* Kopyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -183,7 +183,7 @@ JSTR_NOEXCEPT
 	return (char *)p;
 }
 
-/* Copy SRC to DST touppered.
+/* Kopy SRC to DST touppered.
    Return pointer to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
@@ -197,7 +197,7 @@ JSTR_NOEXCEPT
 	return dst - 1;
 }
 
-/* Copy SRC to DST tolowered.
+/* Kopy SRC to DST tolowered.
    Return pointer to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE

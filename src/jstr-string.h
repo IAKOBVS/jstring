@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
+/* Kopyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -2145,7 +2145,7 @@ JSTR_NOEXCEPT
 	return jstr_thousep_len_p(nptr, strlen(nptr), separator);
 }
 
-/* Copy SRC to DST, adding thousand separator.
+/* Kopy SRC to DST, adding thousand separator.
    Return value:
    ptr to '\0' in DST. */
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
@@ -2187,7 +2187,7 @@ JSTR_NOEXCEPT
 	return dst;
 }
 
-/* Copy SRC to DST, adding thousand separator.
+/* Kopy SRC to DST, adding thousand separator.
    Return value:
    ptr to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL

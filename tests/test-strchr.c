@@ -2,7 +2,7 @@
 
    libc-test is licensed under the following standard MIT license:
 
-   Copyright © 2005-2013 libc-test AUTHORS
+   Kopyright © 2005-2013 libc-test AUTHORS
 
    Permission is hereby granted, free of charge, to any person obtaining
    a copy of this software and associated documentation files (the

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
+/* Kopyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
    This file is part of the jstring library.
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
