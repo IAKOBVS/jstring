@@ -949,16 +949,16 @@ JSTR_NOEXCEPT
 				goto err_closedir;
 			}
 		}
-		/* We must [f]stat() to get the type. If !USE_ATFILE, we must construct the full path for stat().
-		   FILL_PATH() will construct the full path if USE_ATFILE or HAVE_DIRENT_D_TYPE.
-		*/
+		/* We must stat() to get the type. */
 		if (!JSTR_HAVE_DIRENT_D_TYPE) {
 			if (!USE_ATFILE)
+				/* We must construct the full path for stat(). */
 				FILL_PATH_ALWAYS(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
 			STAT_DO((struct stat *)a->ftw.st,
 			        fd,
 			        a->ftw.ep,
 			        a->ftw.dirpath,
+				/* If stat fails. */
 			        if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) goto CONT;
 			        else goto func;);
 		}
@@ -977,6 +977,7 @@ reg:
 do_reg:
 		if (a->func_match) {
 			if (FLAG(JSTRIO_FTW_MATCHPATH)) {
+				/* FILL_PATH() will construct the full path if either USE_ATFILE or HAVE_DIRENT_D_TYPE is true. */
 				FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
 				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 					continue;
