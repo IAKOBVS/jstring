@@ -27,6 +27,15 @@ PJSTR_BEGIN_DECLS
 #include <immintrin.h>
 PJSTR_END_DECLS
 
+#ifndef VEC
+#	define VEC __m256i
+#endif
+#ifndef VEC_SIZE
+#	define VEC_SIZE sizeof(VEC)
+#endif
+#ifndef MASK
+#	define MASK uint32_t
+#endif
 #ifndef LOAD
 #	define LOAD(x) _mm256_load_si256(x)
 #endif
@@ -44,15 +53,6 @@ PJSTR_END_DECLS
 #endif
 #ifndef BLSR
 #	define BLSR(x) _blsr_u32(x)
-#endif
-#ifndef VEC
-#	define VEC __m256i
-#endif
-#ifndef VEC_SIZE
-#	define VEC_SIZE sizeof(VEC)
-#endif
-#ifndef MASK
-#	define MASK uint32_t
 #endif
 
 #ifndef PJSTR_SIMD_MEMMEM_FUNC_NAME
