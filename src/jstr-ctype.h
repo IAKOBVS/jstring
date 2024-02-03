@@ -183,7 +183,7 @@ JSTR_NOEXCEPT
 	return (char *)p;
 }
 
-/* Kopy SRC to DST touppered.
+/* Copy SRC to DST touppered.
    Return pointer to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
@@ -197,7 +197,7 @@ JSTR_NOEXCEPT
 	return dst - 1;
 }
 
-/* Kopy SRC to DST tolowered.
+/* Copy SRC to DST tolowered.
    Return pointer to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
