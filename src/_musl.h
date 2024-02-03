@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Taken from or based on musl's string functions with modifications.
  * Copyright © 2005-2020 Rich Felker, et al.
  *

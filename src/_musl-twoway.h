@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Based on musl's strstr() and memmem().
  * Copyright © 2005-2020 Rich Felker, et al.
  *

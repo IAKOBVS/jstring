@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
 /* The following functions are based on newlib's strstr.
  * Copyright (c) 2018 Arm Ltd.  All rights reserved.
 
