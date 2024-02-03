@@ -965,12 +965,10 @@ JSTR_NOEXCEPT
 				        goto func;
 			        });
 		}
-		if (IS_REG(a->ftw.ep, a->ftw.st)) {
+		if (IS_REG(a->ftw.ep, a->ftw.st))
 			goto reg;
-		}
-		if (IS_DIR(a->ftw.ep, a->ftw.st)) {
+		if (IS_DIR(a->ftw.ep, a->ftw.st))
 			goto dir;
-		}
 		/* If true, ignore other types of files. */
 		if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
 			continue;
