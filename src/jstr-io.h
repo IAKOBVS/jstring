@@ -959,11 +959,8 @@ JSTR_NOEXCEPT
 			        fd,
 			        a->ftw.ep,
 			        a->ftw.dirpath,
-			        if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) {
-				        goto CONT;
-			        } else {
-				        goto func;
-			        });
+			        if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) goto CONT;
+			        else goto func;);
 		}
 		if (IS_REG(a->ftw.ep, a->ftw.st))
 			goto reg;
