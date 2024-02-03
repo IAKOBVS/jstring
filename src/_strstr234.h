@@ -1,5 +1,5 @@
 /* The following functions are based on newlib's strstr.
-   Kopyright (c) 2018 Arm Ltd.  All rights reserved.
+   Copyright (c) 2018 Arm Ltd.  All rights reserved.
 
    BSD-3-Clause
 

@@ -1,5 +1,5 @@
 /* Based on musl's libc-bench
-   Kopyright © 2011 Rich Felker
+   Copyright © 2011 Rich Felker
 
    Permission is hereby granted, free of charge, to any person obtaining
    a copy of this software and associated documentation files (the
