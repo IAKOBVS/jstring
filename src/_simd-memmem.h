@@ -220,15 +220,15 @@ match:
 PJSTR_END_DECLS
 
 /* So that these macros will be namespaced by the build script.
+#undef VEC
+#undef VEC_SIZE
+#undef MASK
 #undef LOAD
 #undef LOADU
 #undef CMPEQ8_MASK
 #undef SETONE8
 #undef TZCNT
 #undef BLSR
-#undef VEC
-#undef VEC_SIZE
-#undef MASK
 */
 
 #undef PJSTR_SIMD_MEMMEM_FUNC_NAME
