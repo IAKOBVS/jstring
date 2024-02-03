@@ -33,17 +33,8 @@ PJSTR_END_DECLS
 #ifndef LOADU
 #	define LOADU(x) _mm256_loadu_si256(x)
 #endif
-#ifndef STORE
-#	define STORE(dst, src) _mm256_store_si256(dst, src)
-#endif
-#ifndef STOREU
-#	define STOREU(dst, src) _mm256_storeu_si256(dst, src)
-#endif
 #ifndef CMPEQ8_MASK
 #	define CMPEQ8_MASK(x, y) _mm256_movemask_epi8(_mm256_cmpeq_epi8(x, y))
-#endif
-#ifndef SETZERO
-#	define SETZERO(x) _mm256_setzero_si256(x)
 #endif
 #ifndef SETONE8
 #	define SETONE8(x) _mm256_set1_epi8(x)
@@ -62,9 +53,6 @@ PJSTR_END_DECLS
 #endif
 #ifndef MASK
 #	define MASK uint32_t
-#endif
-#ifndef MASK_SIZE
-#	define MASK_SIZE sizeof(MASK)
 #endif
 
 #ifndef PJSTR_SIMD_MEMMEM_FUNC_NAME
@@ -234,17 +222,13 @@ PJSTR_END_DECLS
 /* So that these macros will be namespaced by the build script.
 #undef LOAD
 #undef LOADU
-#undef STORE
-#undef STOREU
 #undef CMPEQ8_MASK
-#undef SETZERO
 #undef SETONE8
 #undef TZCNT
 #undef BLSR
 #undef VEC
 #undef VEC_SIZE
 #undef MASK
-#undef MASK_SIZE
 */
 
 #undef PJSTR_SIMD_MEMMEM_FUNC_NAME
