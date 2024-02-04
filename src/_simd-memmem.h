@@ -212,6 +212,7 @@ match:
 PJSTR_END_DECLS
 
 /* So that these macros will be namespaced by the build script.
+#undef ONES
 #undef VEC
 #undef VEC_SIZE
 #undef MASK
