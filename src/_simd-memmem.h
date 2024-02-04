@@ -54,6 +54,7 @@ PJSTR_END_DECLS
 #ifndef BLSR
 #	define BLSR(x) _blsr_u32(x)
 #endif
+#define ONES ((MASK)-1)
 
 #ifndef PJSTR_SIMD_MEMMEM_FUNC_NAME
 #	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_simd_memmem
@@ -111,7 +112,7 @@ JSTR_NOEXCEPT
 	h += shift;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
-	const MASK matchm = (MASK)-1 << matchsh;
+	const MASK matchm = ONES << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
 	if (JSTR_PTR_ALIGN_UP(ne, JSTR_PAGE_SIZE) - (uintptr_t)ne >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, VEC_SIZE) || ne_len >= VEC_SIZE)
