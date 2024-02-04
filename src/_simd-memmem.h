@@ -193,23 +193,14 @@ match:
 	}
 	if (h - shift <= end) {
 		off2 = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
+		hv0 = LOADU((const VEC *)h);
 		hv1 = LOAD((const VEC *)(h + 1));
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
 #ifdef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+		hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
-		if (JSTR_PTR_ALIGN_UP(h, JSTR_PAGE_SIZE) - (uintptr_t)h >= VEC_SIZE) {
-			hv0 = LOADU((const VEC *)h);
-			hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
-#ifdef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-			hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
-#endif
-		} else {
-			hm0 = 1 | (MASK)CMPEQ8_MASK(hv1, nv0) << 1;
-#ifdef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-			hm0u = 1 | (MASK)CMPEQ8_MASK(hv1, nv0u) << 1;
-#endif
-		}
 		m = (((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) << off2) >> off2;
 		if (m)
 			goto match;
