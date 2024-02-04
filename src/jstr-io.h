@@ -958,7 +958,7 @@ JSTR_NOEXCEPT
 			        fd,
 			        a->ftw.ep,
 			        a->ftw.dirpath,
-				/* If stat fails. */
+			        /* If stat fails. */
 			        if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) goto CONT;
 			        else goto func;);
 		}

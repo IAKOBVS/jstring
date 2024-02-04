@@ -105,8 +105,8 @@ JSTR_NOEXCEPT
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
 	const unsigned char *hp;
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
-	if (shift == ne_len - 1)
+	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, JSTR_MIN(ne_len, VEC_SIZE)), ne);
+	if (shift == JSTR_MIN(ne_len, VEC_SIZE) - 1)
 		--shift;
 	h += shift;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
