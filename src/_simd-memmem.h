@@ -125,11 +125,11 @@ JSTR_NOEXCEPT
 	const VEC nv0u = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
 	const VEC nv1u = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 #endif
-	const unsigned int off = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
-	unsigned int off2 = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
+	const unsigned int off_s = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	unsigned int off_e = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
 	                    ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
 	                    : 0;
-	h -= off;
+	h -= off_s;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
@@ -138,11 +138,11 @@ JSTR_NOEXCEPT
 	hm1u = (MASK)CMPEQ8_MASK(hv0, nv1u) >> 1;
 #endif
 	/* Clear matched bits that are out of bounds. */
-	m = ((((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) >> off) << off2) >> off2;
+	m = ((((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) >> off_s) << off_e) >> off_e;
 	while (m) {
 		i = TZCNT(m);
 		m = BLSR(m);
-		hp = h + off + i - shift;
+		hp = h + off_s + i - shift;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 		if (JSTR_PTR_ALIGN_UP(hp, JSTR_PAGE_SIZE) - (uintptr_t)hp >= VEC_SIZE) {
 			hv = LOADU((VEC *)hp);
@@ -193,7 +193,7 @@ match:
 		}
 	}
 	if (h - shift <= end) {
-		off2 = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
+		off_e = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv0 = LOADU((const VEC *)h);
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
@@ -202,7 +202,7 @@ match:
 		hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
-		m = (((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) << off2) >> off2;
+		m = (((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) << off_e) >> off_e;
 		if (m)
 			goto match;
 	}
