@@ -125,7 +125,7 @@ JSTR_NOEXCEPT
 	const VEC nv0u = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
 	const VEC nv1u = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 #endif
-	unsigned int off_s = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	const unsigned int off_s = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	unsigned int off_e = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
 	                    ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
 	                    : 0;
@@ -139,13 +139,28 @@ JSTR_NOEXCEPT
 #endif
 	/* Clear matched bits that are out of bounds. */
 	m = ((((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) >> off_s) << off_e) >> off_e;
-	unsigned int jump = VEC_SIZE - 1;
-	if (m)
-		goto match;
+	while (m) {
+		i = TZCNT(m);
+		m = BLSR(m);
+		hp = h + off_s + i - shift;
+#ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+		if (JSTR_PTR_ALIGN_UP(hp, JSTR_PAGE_SIZE) - (uintptr_t)hp >= VEC_SIZE) {
+			hv = LOADU((VEC *)hp);
+			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
+			if (cmpm == matchm)
+				if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
+					return (void *)hp;
+		} else {
+			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
+				return (void *)hp;
+		}
+#else
+		if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
+			return (void *)hp;
+#endif
+	}
 	h += VEC_SIZE - 1;
-	for (; h - shift + VEC_SIZE <= end; h += jump) {
-		off_s = 0;
-		jump = VEC_SIZE;
+	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
 		hv0 = LOADU((const VEC *)h);
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
@@ -159,7 +174,7 @@ JSTR_NOEXCEPT
 match:
 			i = TZCNT(m);
 			m = BLSR(m);
-			hp = h + off_s + i - shift;
+			hp = h + i - shift;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 			if (JSTR_PTR_ALIGN_UP(hp, JSTR_PAGE_SIZE) - (uintptr_t)hp >= VEC_SIZE) {
 				hv = LOADU((VEC *)hp);
@@ -178,8 +193,6 @@ match:
 		}
 	}
 	if (h - shift <= end) {
-		off_s = 0;
-		jump = VEC_SIZE;
 		off_e = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
 		hv0 = LOADU((const VEC *)h);
 		hv1 = LOAD((const VEC *)(h + 1));
