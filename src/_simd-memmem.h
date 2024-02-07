@@ -138,7 +138,7 @@ JSTR_NOEXCEPT
 	hm1u = (MASK)CMPEQ8_MASK(hv0, nv1u) >> 1;
 #endif
 	/* Clear matched bits that are out of bounds. */
-	m = ((((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) >> off_s) << off_e) >> off_e;
+	m = (((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) >> off_s) & (ONES >> off_e);
 	while (m) {
 		i = TZCNT(m);
 		m = BLSR(m);
@@ -202,7 +202,7 @@ match:
 		hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
-		m = (((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) << off_e) >> off_e;
+		m = (hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u)) & (ONES >> off_e);
 		if (m)
 			goto match;
 	}
