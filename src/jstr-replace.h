@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: MIT */
 /* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
  * This file is part of the jstring library.
  *
@@ -17,9 +18,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * MIT License (Expat) */
+ * SOFTWARE. */
 
 #ifndef JSTR_H_REPLACE_DEF
 #define JSTR_H_REPLACE_DEF 1
