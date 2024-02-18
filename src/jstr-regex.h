@@ -24,8 +24,8 @@
  * indicating the negated value of the regex error code. To print an
  * error message, pass the negation of the returned error code. */
 
-#ifndef JSTRRE_H
-#define JSTRRE_H 1
+#ifndef JSTR_REGEX_H
+#define JSTR_REGEX_H 1
 
 #include "jstr-macros.h"
 
@@ -878,4 +878,4 @@ PJSTR_END_DECLS
 
 #undef R
 
-#endif /* JSTRRE_H */
+#endif /* JSTR_REGEX_H */

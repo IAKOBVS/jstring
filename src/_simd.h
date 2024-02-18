@@ -20,8 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#ifndef PJSTR_AVX2_H
-#define PJSTR_AVX2_H
+#ifndef JSTR_SIMD_H
+#define JSTR_SIMD_H
 
 #include "jstr-macros.h"
 
@@ -536,4 +536,4 @@ JSTR_NOEXCEPT
 
 PJSTR_END_DECLS
 
-#endif /* PJSTR_AVX2_H* */
+#endif /* JSTR_SIMD_H* */

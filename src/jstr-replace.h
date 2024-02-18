@@ -20,8 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#ifndef JSTR_H_REPLACE_DEF
-#define JSTR_H_REPLACE_DEF 1
+#ifndef JSTR_REPLACE_H
+#define JSTR_REPLACE_H 1
 
 #include "jstr-macros.h"
 
@@ -1181,4 +1181,4 @@ PJSTR_END_DECLS
 
 #undef R
 
-#endif /* JSTR_H_REPLACE_DEF */
+#endif /* JSTR_REPLACE_H */
