@@ -86,8 +86,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to first C in S ignoring case;
-   NULL if not found. */
+ * ptr to first C in S ignoring case;
+ * NULL if not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -112,8 +112,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to first C in S ignoring case;
-   NULL if not found. */
+ * ptr to first C in S ignoring case;
+ * NULL if not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -181,7 +181,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to '\0' in DST. */
+ * ptr to '\0' in DST. */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
@@ -198,7 +198,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   Pointer to '\0' in DST. */
+ * Pointer to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -614,9 +614,9 @@ JSTR_NOEXCEPT
 #include "_strstr234.h"
 
 /* Find last NE in HS.
-   Return value:
-   Pointer to NE;
-   NULL if not found. */
+ * Return value:
+ * Pointer to NE;
+ * NULL if not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -656,9 +656,9 @@ JSTR_NOEXCEPT
 }
 
 /* Find last NE in HS.
-   Return value:
-   Pointer to NE;
-   NULL if not found. */
+ * Return value:
+ * Pointer to NE;
+ * NULL if not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -684,9 +684,9 @@ JSTR_NOEXCEPT
 #include "_musl-twoway.h"
 
 /* Find NE in HS case-insensitively (ASCII).
-   Return value:
-   Pointer to NE;
-   NULL if not found. */
+ * Return value:
+ * Pointer to NE;
+ * NULL if not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -822,9 +822,9 @@ JSTR_NOEXCEPT
 #include "_musl-twoway.h"
 
 /* Find NE in HS case-insensitively.
-   Return value:
-   Pointer to NE;
-   NULL if not found. */
+ * Return value:
+ * Pointer to NE;
+ * NULL if not found. */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 JSTR_ATTR_INLINE
@@ -1023,8 +1023,8 @@ JSTR_NOEXCEPT
 }
 
 /* Reverse of STRCSPN.
-   Return the offset from S if found;
-   otherwise, return S + SZ. */
+ * Return the offset from S if found;
+ * otherwise, return S + SZ. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
@@ -1086,8 +1086,8 @@ JSTR_NOEXCEPT
 }
 
 /* Reverse of STRSPN.
-   Return the offset from S if found;
-   otherwise, return S + SZ. */
+ * Return the offset from S if found;
+ * otherwise, return S + SZ. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
@@ -1140,8 +1140,8 @@ JSTR_NOEXCEPT
 }
 
 /* Reverse of STRSPN.
-   Return the offset from S if found;
-   otherwise, return S + SZ. */
+ * Return the offset from S if found;
+ * otherwise, return S + SZ. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
@@ -1291,9 +1291,9 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to first non-C in S;
-   ptr to '\0' if C is not found;
-   S if C is '\0'; */
+ * ptr to first non-C in S;
+ * ptr to '\0' if C is not found;
+ * S if C is '\0'; */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -1308,8 +1308,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to first non-C in S;
-   NULL if non-C is not found. */
+ * ptr to first non-C in S;
+ * NULL if non-C is not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 JSTR_ATTR_INLINE
@@ -1323,8 +1323,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to first non-C in S.
-   S + N if C is not found. */
+ * ptr to first non-C in S.
+ * S + N if C is not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1340,8 +1340,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to first non-C in S.
-   NULL if C is not found. */
+ * ptr to first non-C in S.
+ * NULL if C is not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1357,8 +1357,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to first non-C in S from S + N - 1
-   NULL if C is not found. */
+ * ptr to first non-C in S from S + N - 1
+ * NULL if C is not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1374,8 +1374,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to first non-C in S from S + strlen(S) - 1
-   NULL if C is not found. */
+ * ptr to first non-C in S from S + strlen(S) - 1
+ * NULL if C is not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
@@ -1387,9 +1387,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S2 is in end of S1.
-   Return value:
-   1 if true;
-   0 if false. */
+ * Return value:
+ * 1 if true;
+ * 0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_ATTR_INLINE
@@ -1405,9 +1405,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S2 is in end of S1.
-   Return value:
-   1 if true;
-   0 if false. */
+ * Return value:
+ * 1 if true;
+ * 0 if false. */
 JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
@@ -1419,9 +1419,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S2 is in end of S1.
-   Return value:
-   1 if true;
-   0 if false. */
+ * Return value:
+ * 1 if true;
+ * 0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_ATTR_INLINE
@@ -1437,9 +1437,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S2 is in end of S1.
-   Return value:
-   1 if true;
-   0 if false. */
+ * Return value:
+ * 1 if true;
+ * 0 if false. */
 JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
@@ -1451,9 +1451,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S1 starts with S2 case-insensitively.
-   Return value:
-   1 if true;
-   0 if false. */
+ * Return value:
+ * 1 if true;
+ * 0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -1469,9 +1469,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S1 starts with S2 case-insensitively.
-   Return value:
-   1 if true;
-   0 if false. */
+ * Return value:
+ * 1 if true;
+ * 0 if false. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int
@@ -1483,9 +1483,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S1 starts with S2 case-insensitively.
-   Return value:
-   NELEN if true;
-   0 if false. */
+ * Return value:
+ * NELEN if true;
+ * 0 if false. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
@@ -1502,9 +1502,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S1 starts with S2.
-   Return value:
-   1 if true;
-   0 if false. */
+ * Return value:
+ * 1 if true;
+ * 0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -1520,9 +1520,9 @@ JSTR_NOEXCEPT
 }
 
 /* Check if S1 starts with S2.
-   Return value:
-   1 if true;
-   0 if false. */
+ * Return value:
+ * 1 if true;
+ * 0 if false. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int
@@ -1534,8 +1534,8 @@ JSTR_NOEXCEPT
 }
 
 /* Count occurences of C in S.
-   Return value:
-   Occurences of C in S. */
+ * Return value:
+ * Occurences of C in S. */
 /* JSTR_ATTR_NO_SANITIZE_ADDRESS */
 JSTR_FUNC_PURE
 static size_t
@@ -1555,8 +1555,8 @@ JSTR_NOEXCEPT
 /* This is vectorized at -O3 (GCC >= 4.7) and -O2 (clang >= 3.9). */
 
 /* Count occurences of C in S.
-   Return value:
-   Occurences of C in S. */
+ * Return value:
+ * Occurences of C in S. */
 /* JSTR_ATTR_NO_SANITIZE_ADDRESS */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
@@ -1579,8 +1579,8 @@ JSTR_NOEXCEPT
 }
 
 /* Count occurences of NE in HS.
-   Return value:
-   occurences of NE in HS. */
+ * Return value:
+ * occurences of NE in HS. */
 JSTR_FUNC_PURE
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -1606,8 +1606,8 @@ JSTR_NOEXCEPT
 }
 
 /* Count occurences of NE in HS.
-   Return value:
-   occurences of NE in HS. */
+ * Return value:
+ * occurences of NE in HS. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
@@ -1628,8 +1628,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to startning of line;
-   BEGIN if no newline was found. */
+ * ptr to startning of line;
+ * BEGIN if no newline was found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -1642,8 +1642,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to next line;
-   NULL if no newline was found. */
+ * ptr to next line;
+ * NULL if no newline was found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -1656,8 +1656,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to next line;
-   NULL if no newline was found. */
+ * ptr to next line;
+ * NULL if no newline was found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -1669,7 +1669,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to next line or '\0'. */
+ * ptr to next line or '\0'. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -1682,7 +1682,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to next line or '\0'. */
+ * ptr to next line or '\0'. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
@@ -1747,8 +1747,8 @@ JSTR_NOEXCEPT
 }
 
 /* Reverse S.
-   Return value:
-   ptr to '\0' in S. */
+ * Return value:
+ * ptr to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -1761,8 +1761,8 @@ JSTR_NOEXCEPT
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
-   Return value:
-   ptr to '\0' in S; */
+ * Return value:
+ * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trimend_len_p(char *R s,
@@ -1777,8 +1777,8 @@ JSTR_NOEXCEPT
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
-   Return value:
-   ptr to '\0' in S; */
+ * Return value:
+ * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -1789,8 +1789,8 @@ JSTR_NOEXCEPT
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
-   Return value:
-   ptr to '\0' in S; */
+ * Return value:
+ * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trimstart_len_p(char *R s,
@@ -1807,8 +1807,8 @@ JSTR_NOEXCEPT
 }
 
 /* Trim leading jstr_isspace() chars in S.
-   Return value:
-   ptr to '\0' in S; */
+ * Return value:
+ * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -1838,8 +1838,8 @@ JSTR_NOEXCEPT
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
-   Return value:
-   ptr to '\0' in S; */
+ * Return value:
+ * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_trim_len_p(char *R s,
@@ -1857,8 +1857,8 @@ JSTR_NOEXCEPT
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
-   Return value:
-   ptr to '\0' in S; */
+ * Return value:
+ * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -1869,8 +1869,8 @@ JSTR_NOEXCEPT
 }
 
 /* Convert snake_case to camelCase.
-   Return ptr to '\0' in S.
-   Leading underscores are preserved. */
+ * Return ptr to '\0' in S.
+ * Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_toCamelCaseP(char *R s)
@@ -1897,8 +1897,8 @@ start:
 }
 
 /* Convert snake_case to camelCase.
-   Return ptr to '\0' in DST.
-   Leading underscores are preserved. */
+ * Return ptr to '\0' in DST.
+ * Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_toCamelCaseCpyP(char *R dst,
@@ -1921,8 +1921,8 @@ JSTR_NOEXCEPT
 }
 
 /* Convert camelCase to snake_case.
-   Return ptr to '\0' in S.
-   Leading underscores are preserved. */
+ * Return ptr to '\0' in S.
+ * Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_to_snake_case_p(char *R s)
@@ -1948,8 +1948,8 @@ start:
 }
 
 /* Convert camelCase to snake_case.
-   Return ptr to '\0' in DST.
-   Leading underscores are preserved. */
+ * Return ptr to '\0' in DST.
+ * Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_to_snake_case_cpy_p(char *R dst,
@@ -1973,8 +1973,8 @@ JSTR_NOEXCEPT
 }
 
 /* Non-destructive strtok.
-   END must be NUL terminated.
-   Instead of nul-termination, use the save_ptr to know the length of the string. */
+ * END must be NUL terminated.
+ * Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_ne_len(const char **R const save_ptr,
@@ -1993,7 +1993,7 @@ JSTR_NOEXCEPT
 }
 
 /* Non-destructive strtok.
-   Instead of nul-termination, use the save_ptr to know the length of the string. */
+ * Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok_ne(const char **R const save_ptr,
@@ -2010,7 +2010,7 @@ JSTR_NOEXCEPT
 }
 
 /* Non-destructive strtok.
-   Instead of nul-termination, use the save_ptr to know the length of the string. */
+ * Instead of nul-termination, use the save_ptr to know the length of the string. */
 JSTR_FUNC_PURE
 static char *
 jstr_strtok(const char **R save_ptr,
@@ -2094,9 +2094,9 @@ JSTR_NOEXCEPT
 }
 
 /* Add thousand separator to NPTR.
-   Return value:
-   ptr to '\0' in NPTR.
-   For example: 1234 becomes 1,234. */
+ * Return value:
+ * ptr to '\0' in NPTR.
+ * For example: 1234 becomes 1,234. */
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_thousep_len_p(char *R nptr,
@@ -2132,9 +2132,9 @@ JSTR_NOEXCEPT
 }
 
 /* Add thousand separator to NPTR.
-   Return value:
-   ptr to '\0' in NPTR.
-   For example: 1234 becomes 1,234. */
+ * Return value:
+ * ptr to '\0' in NPTR.
+ * For example: 1234 becomes 1,234. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -2146,8 +2146,8 @@ JSTR_NOEXCEPT
 }
 
 /* Copy SRC to DST, adding thousand separator.
-   Return value:
-   ptr to '\0' in DST. */
+ * Return value:
+ * ptr to '\0' in DST. */
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_RET_NONNULL
 static char *
@@ -2188,8 +2188,8 @@ JSTR_NOEXCEPT
 }
 
 /* Copy SRC to DST, adding thousand separator.
-   Return value:
-   ptr to '\0' in DST. */
+ * Return value:
+ * ptr to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -2202,7 +2202,7 @@ JSTR_NOEXCEPT
 }
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
-   Trailing backslashes are ignored. */
+ * Trailing backslashes are ignored. */
 JSTR_FUNC
 static char *
 jstr_unescapecpy_p(char *dst,
@@ -2245,7 +2245,7 @@ out:
 }
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
-   Trailing backslashes are ignored. */
+ * Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -2257,7 +2257,7 @@ JSTR_NOEXCEPT
 }
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
-   Trailing backslashes are ignored. */
+ * Trailing backslashes are ignored. */
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC
@@ -2303,7 +2303,7 @@ CONT:;
 }
 
 /* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
-   Trailing backslashes are ignored. */
+ * Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 JSTR_ATTR_ACCESS((__read_write__, 1, 2))

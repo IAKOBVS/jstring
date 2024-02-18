@@ -194,7 +194,7 @@ err:
 }
 
 /* Do nothing if new_cap < cap.
-   Return JSTR_RET_ERR on malloc error. */
+ * Return JSTR_RET_ERR on malloc error. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -229,7 +229,7 @@ err:
 }
 
 /* Do nothing if new_cap < cap.
-   Return JSTR_RET_ERR on malloc error. */
+ * Return JSTR_RET_ERR on malloc error. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -299,9 +299,9 @@ JSTR_NOEXCEPT
 }
 
 /* Last arg must be NULL.
-   Return value:
-   JSTR_RET_ERR on malloc error;
-   otherwise JSTR_RET_SUCC. */
+ * Return value:
+ * JSTR_RET_ERR on malloc error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
@@ -329,9 +329,9 @@ JSTR_NOEXCEPT
 }
 
 /* Last arg must be NULL.
-   Return value:
-   JSTR_RET_ERR on malloc error;
-   otherwise JSTR_RET_SUCC. */
+ * Return value:
+ * JSTR_RET_ERR on malloc error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
@@ -392,9 +392,9 @@ JSTR_NOEXCEPT
 }
 
 /* Append SRC to DST.
-   Return value:
-   JSTR_RET_ERR on malloc error;
-   otherwise JSTR_RET_SUCC. */
+ * Return value:
+ * JSTR_RET_ERR on malloc error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -523,9 +523,9 @@ JSTR_NOEXCEPT
 }
 
 /* Only prepend NUL if S is empty.
-   Return value:
-   JSTR_RET_ERR on malloc error;
-   otherwise JSTR_RET_SUCC. */
+ * Return value:
+ * JSTR_RET_ERR on malloc error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 JSTR_ATTR_INLINE
@@ -545,9 +545,9 @@ JSTR_NOEXCEPT
 }
 
 /* Only prepend NUL if S is empty.
-   Return value:
-   JSTR_RET_ERR on malloc error;
-   otherwise JSTR_RET_SUCC. */
+ * Return value:
+ * JSTR_RET_ERR on malloc error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -565,8 +565,8 @@ JSTR_NOEXCEPT
 }
 
 /* Assign SRC to DST.
-   S is NUL terminated.
-   Return ptr to '\0' in S. */
+ * S is NUL terminated.
+ * Return ptr to '\0' in S. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -579,10 +579,10 @@ JSTR_NOEXCEPT
 }
 
 /* Assign SRC to DST.
-   S is NUL terminated.
-   Return value:
-   JSTR_RET_ERR on malloc error
-   otherwise JSTR_RET_SUCC. */
+ * S is NUL terminated.
+ * Return value:
+ * JSTR_RET_ERR on malloc error
+ * otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -615,10 +615,10 @@ JSTR_NOEXCEPT
 }
 
 /* Push C to end of S.
-   S is NUL terminated.
-   Return value:
-   JSTR_RET_ERR on malloc error;
-   otherwise JSTR_RET_SUCC. */
+ * S is NUL terminated.
+ * Return value:
+ * JSTR_RET_ERR on malloc error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
@@ -649,10 +649,10 @@ JSTR_NOEXCEPT
 }
 
 /* Push C to end of S.
-   S is NUL terminated.
-   Return value:
-   JSTR_RET_ERR on malloc error;
-   otherwise JSTR_RET_SUCC. */
+ * S is NUL terminated.
+ * Return value:
+ * JSTR_RET_ERR on malloc error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -707,8 +707,8 @@ JSTR_NOEXCEPT
 #endif
 
 /* Return size of allocation needed for sprintf.
-   Return value:
-   size of allocation;
+ * Return value:
+ * size of allocation;
    -1 on error and errno is set. */
 JSTR_FUNC
 #if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
@@ -968,8 +968,8 @@ get_arg:
 #if JSTR_HAVE_SNPRINTF_STRLEN
 
 /* Return JSTR_RET_ERR on error.
-   Referencing arguments with $ is not supported.
-   Supported conversions:
+ * Referencing arguments with $ is not supported.
+ * Supported conversions:
    %s - string.
    %c - char.
    %% - %.
@@ -983,7 +983,7 @@ get_arg:
    %p - ptr.
    %n - chars written.
    %m - errno string.
-   Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+ * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1018,8 +1018,8 @@ err:
 }
 
 /* Return JSTR_RET_ERR on error.
-   Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+ * Supports only some conversions: see jstr_asprintf().
+ * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1052,9 +1052,9 @@ err:
 }
 
 /* Append ... to end of S.
-   Return JSTR_RET_ERR on error.
-   Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+ * Return JSTR_RET_ERR on error.
+ * Supports only some conversions: see jstr_asprintf().
+ * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1089,9 +1089,9 @@ err:
 }
 
 /* Append ... to end of S.
-   Return JSTR_RET_ERR on error.
-   Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+ * Return JSTR_RET_ERR on error.
+ * Supports only some conversions: see jstr_asprintf().
+ * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1124,8 +1124,8 @@ err:
 }
 
 /* Return JSTR_RET_ERR on error.
-   Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+ * Supports only some conversions: see jstr_asprintf().
+ * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1161,8 +1161,8 @@ err:
 }
 
 /* Return JSTR_RET_ERR on error.
-   Supports only some conversions: see jstr_asprintf().
-   Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
+ * Supports only some conversions: see jstr_asprintf().
+ * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1198,7 +1198,7 @@ err:
 #endif
 
 /* Assume that S has enough space.
-   Use jstr_asprintf() to grow S. */
+ * Use jstr_asprintf() to grow S. */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1224,7 +1224,7 @@ err_free_set_errno:
 }
 
 /* Assume that S has enough space.
-   Use jstr_asprintf() to grow S. */
+ * Use jstr_asprintf() to grow S. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1248,7 +1248,7 @@ err_free_set_errno:
 }
 
 /* Assume that S has enough space.
-   Use jstr_asprintf() to grow S. */
+ * Use jstr_asprintf() to grow S. */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 static jstr_ret_ty
@@ -1275,7 +1275,7 @@ err_free_set_errno:
 }
 
 /* Assume that S has enough space.
-   Use jstr_asprintf() to grow S. */
+ * Use jstr_asprintf() to grow S. */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static jstr_ret_ty

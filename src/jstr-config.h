@@ -34,7 +34,7 @@
 #endif
 
 /* jstrio_*() stdio functions and all functions which use them
-   will use the *_unlocked() versions when available. */
+ * will use the *_unlocked() versions when available. */
 #ifndef JSTR_USE_UNLOCKED_IO
 #	define JSTR_USE_UNLOCKED_IO 0
 #endif
@@ -48,8 +48,8 @@
 #endif
 
 /* When removing a string (jstr_ty) from a string list (jstrlist_ty), don't immediately
-   call free(). This may result in fewer allocations when strings are often added to
-   and removed from the list. All elements are freed when jstrl_free() is called. */
+ * call free(). This may result in fewer allocations when strings are often added to
+ * and removed from the list. All elements are freed when jstrl_free() is called. */
 #ifndef JSTRL_LAZY_FREE
 #	define JSTRL_LAZY_FREE 1
 #endif

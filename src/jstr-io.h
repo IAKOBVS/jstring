@@ -188,7 +188,7 @@ JSTR_NOEXCEPT
 }
 
 /* Check the whole file for a NUL byte.
-   File must be nul terminated. */
+ * File must be nul terminated. */
 JSTR_FUNC_PURE
 static int
 jstrio_isbinary(const char *R buf,
@@ -454,8 +454,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   JSTR_RET_ERR on error;
-   otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstrio_readfile(char *R *R s,
@@ -483,10 +483,10 @@ JSTR_NOEXCEPT
 }
 
 /* Expand ~/some_dir to /home/username/some_dir.
-   Assume that S has enough space.
-   Return value:
-   ptr to '\0' in S.
-   NULL on error. */
+ * Assume that S has enough space.
+ * Return value:
+ * ptr to '\0' in S.
+ * NULL on error. */
 JSTR_FUNC
 static char *
 jstrio_expandtildefirst_len_unsafe_p(char *R s,
@@ -505,10 +505,10 @@ JSTR_NOEXCEPT
 }
 
 /* Expand ~/some_dir to /home/username/some_dir.
-   Assume that S has enough space.
-   Return value:
-   ptr to '\0' in S.
-   NULL on error. */
+ * Assume that S has enough space.
+ * Return value:
+ * ptr to '\0' in S.
+ * NULL on error. */
 JSTR_FUNC
 static jstr_ret_ty
 jstrio_expandtildefirst(char *R *R s,
@@ -531,10 +531,10 @@ JSTR_NOEXCEPT
 }
 
 /* Expand every ~ to /home/username.
-   Assume that S has enough space.
-   Return value:
-   ptr to '\0' in S;
-   NULL on error. */
+ * Assume that S has enough space.
+ * Return value:
+ * ptr to '\0' in S;
+ * NULL on error. */
 JSTR_FUNC
 static char *
 jstrio_expandtilde_len_unsafe_p(char *R s,
@@ -556,9 +556,9 @@ JSTR_NOEXCEPT
 }
 
 /* Expand every ~ to /home/username.
-   Return value:
-   JSTR_RET_ERR on error;
-   otherwise JSTR_RET_SUCC. */
+ * Return value:
+ * JSTR_RET_ERR on error;
+ * otherwise JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstrio_expandtilde(char *R *R s,
@@ -1082,14 +1082,14 @@ err_closedir:
 #undef PJSTRIO_O_DIRECTORY
 
 /* Call FUNC() on files found recursively where FUNC_MATCH() returns 0.
-   If FUNC_MATCH() is NULL, it behaves as if it matches.
-   If FUNC() returns JSTR_RET_ERR, stop processing.
-   Return value:
-   JSTR_RET_ERR on error;
-   JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;
-   JSTR_RET_STOP if FUNC() returns RET_STOP and JSTRIO_FTW_ACTIONRETVAL is used.
-   or the return value of FUNC() if DIRPATH is not a directory and FUNC() is executed.
-   If a non-fatal error is encountered, continue processing other entries. */
+ * If FUNC_MATCH() is NULL, it behaves as if it matches.
+ * If FUNC() returns JSTR_RET_ERR, stop processing.
+ * Return value:
+ * JSTR_RET_ERR on error;
+ * JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered on some entries;
+ * JSTR_RET_STOP if FUNC() returns RET_STOP and JSTRIO_FTW_ACTIONRETVAL is used.
+ * or the return value of FUNC() if DIRPATH is not a directory and FUNC() is executed.
+ * If a non-fatal error is encountered, continue processing other entries. */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((4))
