@@ -37,7 +37,7 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 /* Will not handle EOF correctly.
-   tolower(EOF) != EOF */
+ * tolower(EOF) != EOF */
 #define jstr_toupper(c) ((int)jstr_ctype_table_toupper[(unsigned char)c])
 #define jstr_tolower(c) ((int)jstr_ctype_table_tolower[(unsigned char)c])
 
@@ -184,7 +184,7 @@ JSTR_NOEXCEPT
 }
 
 /* Copy SRC to DST touppered.
-   Return pointer to '\0' in DST. */
+ * Return pointer to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -198,7 +198,7 @@ JSTR_NOEXCEPT
 }
 
 /* Copy SRC to DST tolowered.
-   Return pointer to '\0' in DST. */
+ * Return pointer to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *

@@ -21,8 +21,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef PJSTR_MUSL_H
-#define PJSTR_MUSL_H
+#ifndef JSTR_MUSL_H
+#define JSTR_MUSL_H
 
 #include "jstr-macros.h"
 
@@ -187,4 +187,4 @@ JSTR_NOEXCEPT
 #undef HIGHS
 #undef HASZERO
 
-#endif /* PJSTR_MUSL_H */
+#endif /* JSTR_MUSL_H */

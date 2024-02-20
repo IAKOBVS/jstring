@@ -20,8 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#ifndef JSTRL_H
-#define JSTRL_H 1
+#ifndef JSTR_LIST_H
+#define JSTR_LIST_H 1
 
 #include "jstr-macros.h"
 
@@ -572,4 +572,4 @@ PJSTR_END_DECLS
 
 #undef R
 
-#endif /* JSTRL_H */
+#endif /* JSTR_LIST_H */

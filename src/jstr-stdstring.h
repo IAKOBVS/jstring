@@ -1,24 +1,24 @@
 /* SPDX-License-Identifier: MIT */
 /* Copyright (c) 2023 James Tirta Halim <tirtajames45 at gmail dot com>
-   This file is part of the jstring library.
-
-   Permission is hereby granted, free of charge, to any person obtaining a copy
-   of this software and associated documentation files (the "Software"), to deal
-   in the Software without restriction, including without limitation the rights
-   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-   copies of the Software, and to permit persons to whom the Software is
-   furnished to do so, subject to the following conditions:
-
-   The above copyright notice and this permission notice shall be included in all
-   copies or substantial portions of the Software.
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-   SOFTWARE. */
+ * This file is part of the jstring library.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE. */
 
 #ifndef JSTR_STDSTRING_H
 #define JSTR_STDSTRING_H 1
@@ -38,9 +38,9 @@ PJSTR_END_DECLS
 PJSTR_BEGIN_DECLS
 
 /* Compare S1 with S2 case-insensitively.
-   Return value:
-   0 if strings match;
-   non-zero otherwise. */
+ * Return value:
+ * 0 if strings match;
+ * non-zero otherwise. */
 #if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
 #endif
@@ -63,9 +63,9 @@ JSTR_NOEXCEPT
 }
 
 /* Compare S1 with S2 case-insensitively.
-   Return value:
-   0 if strings match;
-   non-zero otherwise. */
+ * Return value:
+ * 0 if strings match;
+ * non-zero otherwise. */
 #if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
 #endif
@@ -89,10 +89,10 @@ JSTR_NOEXCEPT
 }
 
 /* Compare S1 with S2 case-insensitively.
-   N must be lower than the length of S1 or S2.
-   Return value:
-   0 if strings match;
-   non-zero otherwise. */
+ * N must be lower than the length of S1 or S2.
+ * Return value:
+ * 0 if strings match;
+ * non-zero otherwise. */
 #if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
 #endif
@@ -115,10 +115,10 @@ JSTR_NOEXCEPT
 }
 
 /* Compare S1 with S2 case-insensitively.
-   N must be lower than the length of S1 or S2.
-   Return value:
-   0 if strings match;
-   non-zero otherwise. */
+ * N must be lower than the length of S1 or S2.
+ * Return value:
+ * 0 if strings match;
+ * non-zero otherwise. */
 JSTR_FUNC_PURE
 static int
 jstr_memcasecmpeq(const char *s1,
@@ -133,10 +133,10 @@ JSTR_NOEXCEPT
 }
 
 /* Compare S1 with S2 case-insensitively.
-   N must be lower than the length of S1 or S2.
-   Return value:
-   0 if strings match;
-   non-zero otherwise. */
+ * N must be lower than the length of S1 or S2.
+ * Return value:
+ * 0 if strings match;
+ * non-zero otherwise. */
 JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
@@ -153,9 +153,9 @@ JSTR_NOEXCEPT
 }
 
 /* Compare S1 with S2 case-insensitively.
-   Return value:
-   0 if strings match;
-   non-zero otherwise. */
+ * Return value:
+ * 0 if strings match;
+ * non-zero otherwise. */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASECMP
 JSTR_ATTR_INLINE
@@ -189,9 +189,9 @@ jstr_strcasecmpeq_loop(const char *s1,
 }
 
 /* Compare S1 with S2 case-insensitively.
-   Return value:
-   0 if strings match;
-   non-zero otherwise. */
+ * Return value:
+ * 0 if strings match;
+ * non-zero otherwise. */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASECMP
 JSTR_ATTR_INLINE
@@ -366,7 +366,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to '\0' in DST. */
+ * ptr to '\0' in DST. */
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE

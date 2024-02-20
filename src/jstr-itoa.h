@@ -67,7 +67,7 @@ PJSTR_DEFINE_ITOA_COUNTUDIGITS(unsigned long long, ulltoa_thousep, 1)
 #undef PJSTR_DEFINE_ITOA_COUNTUDIGITS
 
 /* Return value:
-   ptr to '\0' after the last digit in the DEST string. */
+ * ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 static char *
@@ -108,7 +108,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
-   ptr to '\0' after the last digit in the DEST string. */
+ * ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 JSTR_ATTR_INLINE
@@ -150,8 +150,8 @@ PJSTR_ULLTOA(int, itoa, )
 #undef PJSTR_ULLTOA
 
 /* Convert number to string with thousand separator.
-   Return value:
-   ptr to '\0' after the last digit in the DEST string. */
+ * Return value:
+ * ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 static char *
@@ -203,8 +203,8 @@ JSTR_NOEXCEPT
 }
 
 /* Convert number to string with thousand separator.
-   Return value:
-   ptr to '\0' after the last digit in the DEST string. */
+ * Return value:
+ * ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
