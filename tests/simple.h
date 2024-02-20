@@ -67,8 +67,6 @@ simple_memmem(const void *hs,
 	const unsigned char *n = (const unsigned char *)ne;
 	if (nl == 0)
 		return (char *)h;
-	if (hl == 0)
-		return NULL;
 	if (hl < nl)
 		return NULL;
 	const unsigned char *const end = h + hl - nl;

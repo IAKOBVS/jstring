@@ -184,16 +184,18 @@ t_init()
 		}                                                                             \
 	} while (0)
 
-#define T_STRSTR(fn, simple_fn, test_array)                                   \
-	do {                                                                  \
-		TESTING(fn);                                                  \
-		T_FOREACHI(test_array, i)                                     \
-		{                                                             \
-			t_init();                                             \
-			t.hs = T_HS(test_array, i);                           \
-			t.ne = T_NE(test_array, i);                           \
-			T_DEBUG(fn, fn(t.hs, t.ne) == simple_fn(t.hs, t.ne)); \
-		}                                                             \
+#define T_STRSTR(fn, simple_fn, test_array)                  \
+	do {                                                 \
+		TESTING(fn);                                 \
+		T_FOREACHI(test_array, i)                    \
+		{                                            \
+			t_init();                            \
+			t.hs = T_HS(test_array, i);          \
+			t.ne = T_NE(test_array, i);          \
+			t.result = fn(t.hs, t.ne);           \
+			t.expected = simple_fn(t.hs, t.ne);  \
+			T_DEBUG(fn, t.result == t.expected); \
+		}                                            \
 	} while (0)
 
 #define T_MEMMEM(fn, simple_fn, test_array)                                              \
