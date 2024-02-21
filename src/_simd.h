@@ -415,7 +415,7 @@ JSTR_NOEXCEPT
 	sv = LOAD((const VEC *)p);
 	m = (MASK)CMPEQ8_MASK(sv, cv) << off;
 	if (m) {
-		i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
+		i = (VEC_SIZE - 1) - LZCNT(m);
 		return p - off + i >= (unsigned char *)s ? (char *)p - off + i : NULL;
 	}
 	p -= VEC_SIZE;
@@ -427,7 +427,7 @@ JSTR_NOEXCEPT
 	}
 	return NULL;
 ret:;
-	i = (sizeof(MASK) * CHAR_BIT - 1) - LZCNT(m);
+	i = (VEC_SIZE - 1) - LZCNT(m);
 	return p + i >= (unsigned char *)s ? (char *)p + i : NULL;
 }
 
