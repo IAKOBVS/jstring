@@ -127,8 +127,8 @@ JSTR_NOEXCEPT
 #endif
 	const unsigned int off_s = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	unsigned int off_e = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
-	                    ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
-	                    : 0;
+	                     ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
+	                     : 0;
 	h -= off_s;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);

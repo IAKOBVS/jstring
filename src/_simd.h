@@ -20,8 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#ifndef JSTR_SIMD_H
-#define JSTR_SIMD_H
+#ifndef PJSTR_AVX2_H
+#define PJSTR_AVX2_H
 
 #include "jstr-macros.h"
 
@@ -77,6 +77,7 @@ typedef uint32_t jstr_vec_mask_ty;
 #	endif
 #elif defined __SSE2__
 #	include <emmintrin.h>
+#	include <x86intrin.h>
 typedef __m128i jstr_vec_ty;
 typedef uint16_t jstr_vec_mask_ty;
 #	define LOAD(x)           _mm_load_si128(x)
@@ -86,16 +87,20 @@ typedef uint16_t jstr_vec_mask_ty;
 #	define CMPEQ8_MASK(x, y) _mm_movemask_epi8(_mm_cmpeq_epi8(x, y))
 #	define SETZERO(x)        _mm_setzero_si128(x)
 #	define SETONE8(x)        _mm_set1_epi8(x)
+#	define BLSR(x)           ((x) & ((x)-1))
 #	ifdef __BMI__
-#		define BLSR(x)  _blsr_u32(x)
 #		define TZCNT(x) _tzcnt_u16(x)
 #	endif
 #	ifdef __LZCNT__
 #		ifdef __lzcnt16
 #			define LZCNT(x) __lzcnt16(x)
-#		else
-#			define LZCNT(x) _lzcnt_u32(x)
 #		endif
+#	endif
+#	ifndef LZCNT
+#		define LZCNT(x) ((x) ? _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
+#	endif
+#	ifndef TZCNT
+#		define TZCNT(x) ((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #	ifdef __POPCNT__
 #		define POPCNT(x) _mm_popcnt_u32(x)
@@ -536,4 +541,4 @@ JSTR_NOEXCEPT
 
 PJSTR_END_DECLS
 
-#endif /* JSTR_SIMD_H* */
+#endif /* PJSTR_AVX2_H* */

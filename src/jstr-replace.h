@@ -733,7 +733,7 @@ JSTR_NOEXCEPT
 /* Replace N SEARCH in REPLACE.
  * Return value:
  * FINDs replaced.
-*/
+ */
 JSTR_FUNC_VOID
 static size_t
 jstr_rplcnchr_len(char *R s,
