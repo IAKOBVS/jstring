@@ -87,7 +87,6 @@ typedef uint16_t jstr_vec_mask_ty;
 #	define CMPEQ8_MASK(x, y) _mm_movemask_epi8(_mm_cmpeq_epi8(x, y))
 #	define SETZERO(x)        _mm_setzero_si128(x)
 #	define SETONE8(x)        _mm_set1_epi8(x)
-#	define BLSR(x)           ((x) & ((x)-1))
 #	ifdef __BMI__
 #		define TZCNT(x) _tzcnt_u16(x)
 #	endif
@@ -95,12 +94,6 @@ typedef uint16_t jstr_vec_mask_ty;
 #		ifdef __lzcnt16
 #			define LZCNT(x) __lzcnt16(x)
 #		endif
-#	endif
-#	ifndef LZCNT
-#		define LZCNT(x) ((x) ? _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
-#	endif
-#	ifndef TZCNT
-#		define TZCNT(x) ((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #	ifdef __POPCNT__
 #		define POPCNT(x) _mm_popcnt_u32(x)
@@ -110,6 +103,15 @@ typedef uint16_t jstr_vec_mask_ty;
 #define VEC_SIZE  sizeof(VEC)
 #define MASK      jstr_vec_mask_ty
 #define MASK_SIZE sizeof(MASK)
+#ifndef LZCNT
+#	define LZCNT(x) ((x) ? _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
+#endif
+#ifndef TZCNT
+#	define TZCNT(x) ((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
+#endif
+#ifndef BLSR
+#	define BLSR(x) ((x) & ((x)-1))
+#endif
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
