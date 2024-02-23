@@ -33,6 +33,9 @@ PJSTR_BEGIN_DECLS
 
 /* Select AVX512, AVX2, or SSE. */
 
+#ifdef JSTR_ARCH_X86_64
+#	include <x86intrin.h>
+#endif
 #ifdef __AVX512BW__
 #	include <immintrin.h>
 typedef __m512i jstr_vec_ty;
@@ -77,7 +80,6 @@ typedef uint32_t jstr_vec_mask_ty;
 #	endif
 #elif defined __SSE2__
 #	include <emmintrin.h>
-#	include <x86intrin.h>
 typedef __m128i jstr_vec_ty;
 typedef uint16_t jstr_vec_mask_ty;
 #	define LOAD(x)           _mm_load_si128(x)
