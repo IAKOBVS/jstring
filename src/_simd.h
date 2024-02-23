@@ -20,8 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#ifndef PJSTR_AVX2_H
-#define PJSTR_AVX2_H
+#ifndef JSTR_SIMD_H
+#define JSTR_SIMD_H
 
 #include "jstr-macros.h"
 
@@ -451,13 +451,13 @@ ret:;
 
 #else
 
-#	define PJSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_strcasestr_len_simd
-#	define PJSTR_SIMD_MEMMEM_USE_AS_ICASE 1
-#	define PJSTR_SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
-#	define PJSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_memcasechr_simd
+#	define JSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_strcasestr_len_simd
+#	define JSTR_SIMD_MEMMEM_USE_AS_ICASE 1
+#	define JSTR_SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
+#	define JSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_memcasechr_simd
 #	include "_simd-memmem.h"
 
-#	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_memmem_simd
+#	define JSTR_SIMD_MEMMEM_FUNC_NAME pjstr_memmem_simd
 #	include "_simd-memmem.h"
 
 #endif
@@ -547,4 +547,4 @@ JSTR_NOEXCEPT
 
 PJSTR_END_DECLS
 
-#endif /* PJSTR_AVX2_H* */
+#endif /* JSTR_SIMD_H* */
