@@ -107,10 +107,10 @@ typedef uint16_t jstr_vec_mask_ty;
 #define MASK_SIZE sizeof(MASK)
 #ifdef JSTR_ARCH_X86_64
 #	ifndef LZCNT
-#		define LZCNT(x) ((x) ? _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
+#		define LZCNT(x) (MASK)((x) ? _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #	ifndef TZCNT
-#		define TZCNT(x) ((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
+#		define TZCNT(x) (MASK)((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #endif
 #ifndef BLSR
