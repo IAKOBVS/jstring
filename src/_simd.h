@@ -444,20 +444,20 @@ ret:;
 
 #endif
 
-#if !(defined TZCNT && defined BLSR && (defined __AVX2__ || defined __AVX512BW__))
+#if !(defined TZCNT && defined BLSR)
 
 #	define JSTR_HAVENT_MEMMEM_SIMD         1
 #	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
 
 #else
 
-#	define JSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_strcasestr_len_simd
-#	define JSTR_SIMD_MEMMEM_USE_AS_ICASE 1
-#	define JSTR_SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
-#	define JSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_memcasechr_simd
+#	define PJSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_strcasestr_len_simd
+#	define PJSTR_SIMD_MEMMEM_USE_AS_ICASE 1
+#	define PJSTR_SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
+#	define PJSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_memcasechr_simd
 #	include "_simd-memmem.h"
 
-#	define JSTR_SIMD_MEMMEM_FUNC_NAME pjstr_memmem_simd
+#	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_memmem_simd
 #	include "_simd-memmem.h"
 
 #endif
@@ -520,7 +520,7 @@ JSTR_NOEXCEPT
 	for (; n >= VEC_SIZE; n -= VEC_SIZE, p += VEC_SIZE) {
 		sv = LOAD((const VEC *)p);
 		m = (MASK)CMPEQ8_MASK(sv, cv);
-		cnt += m ? (MASK)POPCNT(m) : 0;
+		cnt += (MASK)POPCNT(m);
 	}
 	for (; n--; cnt += *p++ == (unsigned char)c) {}
 	return cnt;
