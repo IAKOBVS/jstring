@@ -72,6 +72,28 @@ PJSTR_END_DECLS
 #	define OR_UPPER_MASK(x)
 #endif
 
+#ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#	define FIND_MATCH()                                                                                                                                                \
+		do {                                                                                                                                                        \
+			if (JSTR_PTR_NOT_CROSSING_PAGE(hp, VEC_SIZE, JSTR_PAGE_SIZE)) {                                                                                     \
+				hv = LOADU((const VEC *)hp);                                                                                                                \
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;                                                                                                \
+				if (cmpm == matchm)                                                                                                                         \
+					if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE)) \
+						return (void *)hp;                                                                                                          \
+			} else {                                                                                                                                            \
+				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))                                                                \
+					return (void *)hp;                                                                                                                  \
+			}                                                                                                                                                   \
+		} while (0)
+#else
+#	define FIND_MATCH()                                                                         \
+		do {                                                                                 \
+			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len)) \
+				return (void *)hp;                                                   \
+		} while (0)
+#endif
+
 PJSTR_BEGIN_DECLS
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -115,7 +137,7 @@ JSTR_NOEXCEPT
 	const MASK matchm = ONES << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	if (JSTR_PTR_ALIGN_UP(ne, JSTR_PAGE_SIZE) - (uintptr_t)ne >= VEC_SIZE || JSTR_PTR_IS_ALIGNED(ne, VEC_SIZE) || ne_len >= VEC_SIZE)
+	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE) || ne_len >= VEC_SIZE)
 		nv = LOADU((const VEC *)ne);
 	else
 		memcpy(&nv, ne, JSTR_MIN(VEC_SIZE, ne_len));
@@ -143,21 +165,7 @@ JSTR_NOEXCEPT
 		i = TZCNT(m);
 		m = BLSR(m);
 		hp = h + off_s + i - shift;
-#ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-		if (JSTR_PTR_ALIGN_UP(hp, JSTR_PAGE_SIZE) - (uintptr_t)hp >= VEC_SIZE) {
-			hv = LOADU((const VEC *)hp);
-			cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
-			if (cmpm == matchm)
-				if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
-					return (void *)hp;
-		} else {
-			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
-				return (void *)hp;
-		}
-#else
-		if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
-			return (void *)hp;
-#endif
+		FIND_MATCH();
 	}
 	h += VEC_SIZE - 1;
 	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
@@ -175,21 +183,7 @@ match:
 			i = TZCNT(m);
 			m = BLSR(m);
 			hp = h + i - shift;
-#ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-			if (JSTR_PTR_ALIGN_UP(hp, JSTR_PAGE_SIZE) - (uintptr_t)hp >= VEC_SIZE) {
-				hv = LOADU((const VEC *)hp);
-				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;
-				if (cmpm == matchm)
-					if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE))
-						return (void *)hp;
-			} else {
-				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
-					return (void *)hp;
-			}
-#else
-			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))
-				return (void *)hp;
-#endif
+			FIND_MATCH();
 		}
 	}
 	if (h - shift <= end) {
@@ -229,3 +223,4 @@ PJSTR_END_DECLS
 #undef PJSTR_SIMD_MEMMEM_MEMCASECHR
 #undef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 #undef OR_UPPER_MASK
+#undef FIND_MATCH
