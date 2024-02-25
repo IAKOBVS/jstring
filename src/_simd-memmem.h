@@ -63,7 +63,7 @@ PJSTR_END_DECLS
 #	define PJSTR_SIMD_MEMMEM_CMP_FUNC memcmp
 #endif
 #ifndef PJSTR_SIMD_MEMMEM_MEMCASECHR
-#	define PJSTR_SIMD_MEMMEM_MEMCASECHR pjstr_memcasechr_simd
+#	define PJSTR_SIMD_MEMMEM_MEMCASECHR pjstr_simd_memcasechr
 #endif
 
 #ifdef PJSTR_SIMD_MEMMEM_USE_AS_ICASE

@@ -47,6 +47,9 @@ typedef uint64_t jstr_vec_mask_ty;
 #	define CMPEQ8_MASK(x, y) _mm512_cmpeq_epi8_mask(x, y) /* AVX512BW */
 #	define SETZERO(x)        _mm512_setzero_si512(x)
 #	define SETONE8(x)        _mm512_set1_epi8(x)
+#	define AND(x, y)         _mm512_and_si512(x, y)
+#	define ADD8(x, y)        _mm512_add_epi8(x, y) /* AVX512BW */
+#	define SUB8(x, y)        _mm512_sub_epi8(x, y) /* AVX512BW */
 #	ifdef __BMI__
 #		define BLSR(x)  _blsr_u64(x)
 #		define TZCNT(x) _tzcnt_u64(x)
@@ -68,6 +71,11 @@ typedef uint32_t jstr_vec_mask_ty;
 #	define CMPEQ8_MASK(x, y) _mm256_movemask_epi8(_mm256_cmpeq_epi8(x, y))
 #	define SETZERO(x)        _mm256_setzero_si256(x)
 #	define SETONE8(x)        _mm256_set1_epi8(x)
+#	define AND(x, y)         _mm256_and_si256(x, y)
+#	define ADD8(x, y)        _mm256_add_epi8(x, y)
+#	define SUB8(x, y)        _mm256_sub_epi8(x, y)
+#	define CMPGT8(x, y)      _mm256_cmpgt_epi8(x, y)
+#	define CMPLT8(x, y)      CMPGT8(y, x)
 #	ifdef __BMI__
 #		define BLSR(x)  _blsr_u32(x)
 #		define TZCNT(x) _tzcnt_u32(x)
@@ -89,6 +97,11 @@ typedef uint16_t jstr_vec_mask_ty;
 #	define CMPEQ8_MASK(x, y) _mm_movemask_epi8(_mm_cmpeq_epi8(x, y))
 #	define SETZERO(x)        _mm_setzero_si128(x)
 #	define SETONE8(x)        _mm_set1_epi8(x)
+#	define AND(x, y)         _mm_and_si128(x, y)
+#	define ADD8(x, y)        _mm_add_epi8(x, y)
+#	define SUB8(x, y)        _mm_sub_epi8(x, y)
+#	define CMPGT8(x, y)      _mm_cmpgt_epi8(x, y)
+#	define CMPLT8(x, y)      _mm_cmplt_epi8(x, y)
 #	ifdef __BMI__
 #		define TZCNT(x) _tzcnt_u16(x)
 #	endif
@@ -121,7 +134,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
-pjstr_stpcpy_simd_aligned(char *JSTR_RESTRICT dst,
+pjstr_simd_stpcpy_aligned(char *JSTR_RESTRICT dst,
                           const char *JSTR_RESTRICT src)
 JSTR_NOEXCEPT
 {
@@ -144,7 +157,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
-pjstr_stpcpy_simd_unaligned_src(char *JSTR_RESTRICT dst,
+pjstr_simd_stpcpy_unaligned_src(char *JSTR_RESTRICT dst,
                                 const char *JSTR_RESTRICT src)
 JSTR_NOEXCEPT
 {
@@ -166,7 +179,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 static char *
-pjstr_stpcpy_simd(char *JSTR_RESTRICT dst,
+pjstr_simd_stpcpy(char *JSTR_RESTRICT dst,
                   const char *JSTR_RESTRICT src)
 JSTR_NOEXCEPT
 {
@@ -175,8 +188,8 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
 	if (JSTR_PTR_IS_ALIGNED(dst, VEC_SIZE))
-		return pjstr_stpcpy_simd_aligned(dst, src);
-	return pjstr_stpcpy_simd_unaligned_src(dst, src);
+		return pjstr_simd_stpcpy_aligned(dst, src);
+	return pjstr_simd_stpcpy_unaligned_src(dst, src);
 }
 
 #ifndef TZCNT
@@ -194,7 +207,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_strncasechr_simd(const char *s,
+pjstr_simd_strncasechr(const char *s,
                        int c,
                        size_t n)
 JSTR_NOEXCEPT
@@ -236,7 +249,7 @@ ret_early:
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_strnchr_simd(const char *s,
+pjstr_simd_strnchr(const char *s,
                    int c,
                    size_t n)
 JSTR_NOEXCEPT
@@ -275,7 +288,7 @@ ret_early:
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_strchrnul_simd(const char *s,
+pjstr_simd_strchrnul(const char *s,
                      int c)
 JSTR_NOEXCEPT
 {
@@ -305,18 +318,18 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
-pjstr_strchr_simd(const char *s,
+pjstr_simd_strchr(const char *s,
                   int c)
 JSTR_NOEXCEPT
 {
-	s = pjstr_strchrnul_simd(s, c);
+	s = pjstr_simd_strchrnul(s, c);
 	return *s == (char)c ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_strcasechrnul_simd(const char *s,
+pjstr_simd_strcasechrnul(const char *s,
                          int c)
 JSTR_NOEXCEPT
 {
@@ -349,18 +362,18 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
-pjstr_strcasechr_simd(const char *s,
+pjstr_simd_strcasechr(const char *s,
                       int c)
 JSTR_NOEXCEPT
 {
-	s = pjstr_strcasechrnul_simd(s, c);
+	s = pjstr_simd_strcasechrnul(s, c);
 	return *s == (char)c ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-pjstr_memcasechr_simd(const void *s,
+pjstr_simd_memcasechr(const void *s,
                       int c,
                       size_t n)
 JSTR_NOEXCEPT
@@ -410,7 +423,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-pjstr_memrchr_simd(const void *s,
+pjstr_simd_memrchr(const void *s,
                    int c,
                    size_t n)
 JSTR_NOEXCEPT
@@ -451,13 +464,13 @@ ret:;
 
 #else
 
-#	define PJSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_strcasestr_len_simd
+#	define PJSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_simd_strcasestr_len
 #	define PJSTR_SIMD_MEMMEM_USE_AS_ICASE 1
 #	define PJSTR_SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
-#	define PJSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_memcasechr_simd
+#	define PJSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_simd_memcasechr
 #	include "_simd-memmem.h"
 
-#	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_memmem_simd
+#	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_simd_memmem
 #	include "_simd-memmem.h"
 
 #endif
@@ -472,7 +485,7 @@ ret:;
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-pjstr_countchr_simd(const char *s,
+pjstr_simd_countchr(const char *s,
                     int c)
 JSTR_NOEXCEPT
 {
@@ -503,7 +516,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-pjstr_countchr_len_simd(const void *s,
+pjstr_simd_countchr_len(const void *s,
                         int c,
                         size_t n)
 JSTR_NOEXCEPT
@@ -527,6 +540,36 @@ JSTR_NOEXCEPT
 }
 
 #endif
+
+JSTR_ATTR_CONST
+JSTR_ATTR_INLINE
+static VEC
+pjstr_simd_tolower_vec(const VEC v)
+{
+	const VEC a = SETONE8('A' - 1);
+	const VEC z = SETONE8('Z' + 1);
+	const VEC diff = SETONE8('a' - 'A');
+	const VEC gt_a = CMPGT8(v, a);
+	const VEC le_z = CMPLT8(v, z);
+	const VEC m = AND(gt_a, le_z);
+	const VEC to_add = AND(m, diff);
+	return ADD8(v, to_add);
+}
+
+JSTR_ATTR_CONST
+JSTR_ATTR_INLINE
+static VEC
+pjstr_simd_toupper_vec(const VEC v)
+{
+	const VEC a = SETONE8('a' - 1);
+	const VEC z = SETONE8('z' + 1);
+	const VEC diff = SETONE8('a' - 'A');
+	const VEC gt_a = CMPGT8(v, a);
+	const VEC le_z = CMPLT8(v, z);
+	const VEC m = AND(gt_a, le_z);
+	const VEC to_sub = AND(m, diff);
+	return SUB8(v, to_sub);
+}
 
 #undef VEC
 #undef VEC_SIZE

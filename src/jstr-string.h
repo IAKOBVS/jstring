@@ -58,7 +58,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_MEMRCHR && !JSTR_TEST
 	return (void *)memrchr(s, c, n);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMRCHR_SIMD
-	return pjstr_memrchr_simd(s, c, n);
+	return pjstr_simd_memrchr(s, c, n);
 #else
 	return pjstr_memrchr_musl(s, c, n);
 #endif
@@ -75,7 +75,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
 	return (char *)strchrnul(s, c);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCHRNUL_SIMD
-	return pjstr_strchrnul_simd(s, c);
+	return pjstr_simd_strchrnul(s, c);
 #else
 	char *const p = strchr(s, c);
 	return p ? p : (char *)s + strlen(s);
@@ -95,7 +95,7 @@ JSTR_NOEXCEPT
 	if (!jstr_isalpha(c))
 		return jstr_strchrnul(s, c);
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
-	return pjstr_strcasechrnul_simd(s, c);
+	return pjstr_simd_strcasechrnul(s, c);
 #elif JSTR_HAVE_STRCSPN_OPTIMIZED
 	c = jstr_tolower(c);
 	if (jstr_tolower(*s) != c) {
@@ -122,7 +122,7 @@ JSTR_NOEXCEPT
 		return (char *)strchr(s, c);
 	c = jstr_tolower(c);
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
-	s = pjstr_strcasechrnul_simd(s, c);
+	s = pjstr_simd_strcasechrnul(s, c);
 #elif JSTR_HAVE_STRCSPN_OPTIMIZED
 	if (jstr_tolower(*s) != c) {
 		const char a[] = { (char)c, (char)jstr_toupper(c), '\0' };
@@ -145,7 +145,7 @@ JSTR_NOEXCEPT
 	if (!jstr_isalpha(c))
 		return (char *)memchr(s, c, n);
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMCASECHR_SIMD
-	return pjstr_memcasechr_simd(s, c, n);
+	return pjstr_simd_memcasechr(s, c, n);
 #else
 	return pjstr_memcasechr_musl(s, c, n);
 #endif
@@ -217,7 +217,7 @@ jstr_strnchr(const char *s,
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCHR_SIMD
-	return pjstr_strnchr_simd(s, c, n);
+	return pjstr_simd_strnchr(s, c, n);
 #else
 	return pjstr_strnchr_musl(s, c, n);
 #endif
@@ -235,7 +235,7 @@ JSTR_NOEXCEPT
 	if (!jstr_isalpha(c))
 		return jstr_strnchr(s, c, n);
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCASECHR_SIMD
-	return pjstr_strncasechr_simd(s, c, n);
+	return pjstr_simd_strncasechr(s, c, n);
 #else
 	return pjstr_strncasechr_musl(s, c, n);
 #endif
@@ -353,7 +353,7 @@ JSTR_NOEXCEPT
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (jstr_unlikely(ne_len > sizeof (jstr_vec_ty)))
 		return (hs_len >= ne_len) ? pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
-	return pjstr_memmem_simd(hs, hs_len, ne, ne_len);
+	return pjstr_simd_memmem(hs, hs_len, ne, ne_len);
 #else
 	enum { LONG_NE_THRES = 64 };
 	if (jstr_unlikely(hs_len < ne_len))
@@ -431,7 +431,7 @@ JSTR_NOEXCEPT
 	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (jstr_likely(t->needle_len <= sizeof(jstr_vec_ty)))
-		return pjstr_memmem_simd(hs, hs_len, ne, t->needle_len);
+		return pjstr_simd_memmem(hs, hs_len, ne, t->needle_len);
 #else
 	if (jstr_unlikely(t->needle_len == 0))
 		return (char *)hs;
@@ -705,7 +705,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
 	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty)))
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
-	return (char *)pjstr_strcasestr_len_simd(hs, hs_len, ne, ne_len);
+	return (char *)pjstr_simd_strcasestr_len(hs, hs_len, ne, ne_len);
 #else
 	if (ne_len == 1)
 		return (char *)jstr_memcasechr(hs, *ne, hs_len);
@@ -783,7 +783,7 @@ JSTR_NOEXCEPT
 	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
 	if (jstr_likely(t->needle_len <= sizeof(jstr_vec_ty)))
-		return pjstr_strcasestr_len_simd(hs, hs_len, ne, t->needle_len);
+		return pjstr_simd_strcasestr_len(hs, hs_len, ne, t->needle_len);
 #else
 	if (jstr_unlikely(t->needle_len == 0))
 		return (char *)hs;
@@ -1541,7 +1541,7 @@ jstr_countchr(const char *s,
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
-	return pjstr_countchr_simd(s, c);
+	return pjstr_simd_countchr(s, c);
 #else
 	size_t cnt = 0;
 	for (; *s; cnt += *s++ == (char)c) {}
@@ -1571,7 +1571,7 @@ JSTR_NOEXCEPT
 	for (; sz--; cnt += *s++ == (char)c) {}
 	return cnt;
 #else
-	return pjstr_countchr_len_simd(s, c, sz);
+	return pjstr_simd_countchr_len(s, c, sz);
 #endif
 }
 
