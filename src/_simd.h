@@ -541,6 +541,8 @@ JSTR_NOEXCEPT
 
 #endif
 
+#if defined CMPG8 && defined CMPLT8 && defined AND && defined ADD
+
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
@@ -556,6 +558,10 @@ pjstr_simd_tolower_vec(const VEC v)
 	return ADD8(v, to_add);
 }
 
+#endif
+
+#if defined CMPG8 && defined CMPLT8 && defined AND && defined SUB
+
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
@@ -570,6 +576,8 @@ pjstr_simd_toupper_vec(const VEC v)
 	const VEC to_sub = AND(m, diff);
 	return SUB8(v, to_sub);
 }
+
+#endif
 
 #undef VEC
 #undef VEC_SIZE
