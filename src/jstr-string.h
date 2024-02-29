@@ -351,7 +351,7 @@ JSTR_NOEXCEPT
 #if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty)))
+	if (jstr_unlikely(ne_len > sizeof(jstr_vvec_ty)))
 		return (hs_len >= ne_len) ? pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
 	return pjstr_simd_memmem(hs, hs_len, ne, ne_len);
 #else
@@ -406,7 +406,7 @@ jstr_memmem_comp(jstr_twoway_ty *const t,
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (jstr_likely(ne_len <= sizeof(jstr_vec_ty))) {
+	if (jstr_likely(ne_len <= sizeof(jstr_vvec_ty))) {
 		t->needle_len = ne_len;
 		return;
 	}
@@ -430,7 +430,7 @@ JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (jstr_likely(t->needle_len <= sizeof(jstr_vec_ty)))
+	if (jstr_likely(t->needle_len <= sizeof(jstr_vvec_ty)))
 		return pjstr_simd_memmem(hs, hs_len, ne, t->needle_len);
 #else
 	if (jstr_unlikely(t->needle_len == 0))
@@ -699,7 +699,7 @@ JSTR_NOEXCEPT
 	}
 	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
-	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty)))
+	if (jstr_unlikely(ne_len > sizeof(jstr_vvec_ty)))
 		return (hs_len >= ne_len) ? pjstr_strcasestr_len_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
 	return (char *)pjstr_simd_strcasestr_len(hs, hs_len, ne, ne_len);
 #else
@@ -754,7 +754,7 @@ jstr_strcasestr_len_comp(jstr_twoway_ty *const t,
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
-	if (jstr_likely(ne_len <= sizeof(jstr_vec_ty))) {
+	if (jstr_likely(ne_len <= sizeof(jstr_vvec_ty))) {
 		t->needle_len = ne_len;
 		return;
 	}
@@ -778,7 +778,7 @@ JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD
-	if (jstr_likely(t->needle_len <= sizeof(jstr_vec_ty)))
+	if (jstr_likely(t->needle_len <= sizeof(jstr_vvec_ty)))
 		return pjstr_simd_strcasestr_len(hs, hs_len, ne, t->needle_len);
 #else
 	if (jstr_unlikely(t->needle_len == 0))

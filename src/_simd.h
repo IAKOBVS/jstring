@@ -38,8 +38,8 @@ PJSTR_BEGIN_DECLS
 #endif
 #ifdef __AVX512BW__
 #	include <immintrin.h>
-typedef __m512i jstr_vec_ty;
-typedef uint64_t jstr_vec_mask_ty;
+typedef __m512i jstr_vvec_ty;
+typedef uint64_t jstr_vmask_ty;
 #	define LOAD(x)           _mm512_load_si512(x)
 #	define LOADU(x)          _mm512_loadu_si512(x)
 #	define STORE(dst, src)   _mm512_store_si512(dst, src)
@@ -62,8 +62,8 @@ typedef uint64_t jstr_vec_mask_ty;
 #	endif
 #elif defined __AVX2__
 #	include <immintrin.h>
-typedef __m256i jstr_vec_ty;
-typedef uint32_t jstr_vec_mask_ty;
+typedef __m256i jstr_vvec_ty;
+typedef uint32_t jstr_vmask_ty;
 #	define LOAD(x)           _mm256_load_si256(x)
 #	define LOADU(x)          _mm256_loadu_si256(x)
 #	define STORE(dst, src)   _mm256_store_si256(dst, src)
@@ -88,8 +88,8 @@ typedef uint32_t jstr_vec_mask_ty;
 #	endif
 #elif defined __SSE2__
 #	include <emmintrin.h>
-typedef __m128i jstr_vec_ty;
-typedef uint16_t jstr_vec_mask_ty;
+typedef __m128i jstr_vvec_ty;
+typedef uint16_t jstr_vmask_ty;
 #	define LOAD(x)           _mm_load_si128(x)
 #	define LOADU(x)          _mm_loadu_si128(x)
 #	define STORE(dst, src)   _mm_store_si128(dst, src)
@@ -114,9 +114,9 @@ typedef uint16_t jstr_vec_mask_ty;
 #		define POPCNT(x) _mm_popcnt_u32(x)
 #	endif
 #endif
-#define VEC       jstr_vec_ty
+#define VEC       jstr_vvec_ty
 #define VEC_SIZE  sizeof(VEC)
-#define MASK      jstr_vec_mask_ty
+#define MASK      jstr_vmask_ty
 #define MASK_SIZE sizeof(MASK)
 #ifdef JSTR_ARCH_X86_64
 #	ifndef LZCNT
