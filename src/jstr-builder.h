@@ -788,7 +788,7 @@ JSTR_NOEXCEPT
 			HEX_UINTPTR = 1 + UINTPTR / 16,
 		}; /* sizeof */
 		/* Use size_t because we are calculating the length for the buffer conservatively
-		   and it may be much larger than the actual length. */
+		 * and it may be much larger than the actual length. */
 		const char *arg;
 		size_t arg_len = 0;
 		unsigned int errno_len = 0;

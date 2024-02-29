@@ -711,7 +711,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	cu *const rare = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
 	/* If no non-alpha character is found in NEEDLE or
-	   needle is long, don't do memchr(). */
+	 * needle is long, don't do memchr(). */
 	if (rare == NULL || jstr_unlikely(ne_len > LONG_NE_THRES))
 		goto STRCASESTR;
 	size_t shift;
@@ -1304,7 +1304,6 @@ JSTR_NOEXCEPT
  * ptr to first non-C in S;
  * NULL if non-C is not found. */
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 JSTR_ATTR_INLINE
 static char *
 jstr_strchrinv(const char *s,
