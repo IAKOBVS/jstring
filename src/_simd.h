@@ -110,9 +110,6 @@ typedef uint16_t jstr_vec_mask_ty;
 #			define LZCNT(x) __lzcnt16(x)
 #		endif
 #	endif
-#	ifdef __POPCNT__
-#		define POPCNT(x) _mm_popcnt_u32(x)
-#	endif
 #endif
 #define VEC       jstr_vec_ty
 #define VEC_SIZE  sizeof(VEC)
@@ -120,7 +117,7 @@ typedef uint16_t jstr_vec_mask_ty;
 #define MASK_SIZE sizeof(MASK)
 #ifdef JSTR_ARCH_X86_64
 #	ifndef LZCNT
-#		define LZCNT(x) (MASK)((x) ? _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
+#		define LZCNT(x) (MASK)((x) ? ((MASK)MASK_SIZE * CHAR_BIT - 1) - _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #	ifndef TZCNT
 #		define TZCNT(x) (MASK)((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
