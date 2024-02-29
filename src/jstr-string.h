@@ -351,7 +351,7 @@ JSTR_NOEXCEPT
 #if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (jstr_unlikely(ne_len > sizeof (jstr_vec_ty)))
+	if (jstr_unlikely(ne_len > sizeof(jstr_vec_ty)))
 		return (hs_len >= ne_len) ? pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
 	return pjstr_simd_memmem(hs, hs_len, ne, ne_len);
 #else
@@ -363,7 +363,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ne_len > LONG_NE_THRES))
 		goto MEMMEM;
 	size_t shift;
-	shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, JSTR_MIN(ne_len, 64)), ne);
+	shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
 	hs = (cu *)hs + shift;
 	hs_len -= shift;
 	const void *start;
@@ -713,7 +713,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *const rare = (cu *)jstr_rarebytefindcase_len(ne, JSTR_MIN(ne_len, 64));
+	cu *const rare = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
 	/* If no non-alpha character is found in NEEDLE or
 	   needle is long, don't do memchr(). */
 	if (rare == NULL || jstr_unlikely(ne_len > LONG_NE_THRES))
