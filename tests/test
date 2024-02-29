@@ -10,7 +10,6 @@ CFLAGS="
 -Wsign-conversion
 -DJSTR_TEST_SLOW=1
 -O2
--D_GNU_SOURCE
 $CFLAGS
 "
 
@@ -58,7 +57,7 @@ fi
 for file in $files; do
 	out_file=${file%.*}
 	compile "$file" "$tmp$out_file" $CFLAGS &
-	# compile "$file" "$tmp$out_file" $CFLAGS -march=native &
+	compile "$file" "$tmp$out_file" $CFLAGS -march=native &
 done
 wait
 
