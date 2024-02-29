@@ -536,7 +536,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n < shift) || jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	const char *const start = hs;
-	hs = jstr_strnchr(hs + shift, *(ne + shift), n);
+	hs = jstr_strnchr(hs + shift, *(ne + shift), n - shift);
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	hs -= shift;
@@ -949,7 +949,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n < shift) || jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	const char *const start = hs;
-	hs = jstr_strncasechr(hs + shift, *(ne + shift), n);
+	hs = jstr_strncasechr(hs + shift, *(ne + shift), n - shift);
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
 	hs -= shift;
