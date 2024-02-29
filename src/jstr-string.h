@@ -629,12 +629,8 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	/* TODO: use rarebyte. */
-	const size_t shift = 0;
-	cu *p = (cu *)jstr_memrchr(hs, *((cu *)ne + shift), hs_len - (ne_len - shift) + 1);
-	if (jstr_unlikely(p == NULL) || ne_len == 1)
-		return (void *)p;
-	hs_len = JSTR_PTR_DIFF(p, hs) + (ne_len - shift);
+	if (ne_len == 1)
+		return jstr_memrchr(hs, *(cu *)ne, hs_len);
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
