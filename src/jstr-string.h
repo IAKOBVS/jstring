@@ -32,7 +32,7 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #include "jstr-config.h"
-#include "jstr-rarebyte.h"
+#include "jstr-otherbyte.h"
 #include "jstr-stdstring.h"
 #include "jstr-ctype.h"
 #include "_musl.h"
@@ -363,7 +363,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ne_len > LONG_NE_THRES))
 		goto MEMMEM;
 	size_t shift;
-	shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len), ne);
+	shift = JSTR_PTR_DIFF(jstr_otherbytefind_len(ne, ne_len), ne);
 	hs = (cu *)hs + shift;
 	hs_len -= shift;
 	const void *start;
@@ -532,7 +532,7 @@ JSTR_NOEXCEPT
 	enum { LONG_NE_THRES = 16 };
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
-	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefind(ne), ne);
+	const size_t shift = JSTR_PTR_DIFF(jstr_otherbytefind(ne), ne);
 	if (jstr_unlikely(n < shift) || jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	const char *const start = hs;
@@ -709,7 +709,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *const rare = (cu *)jstr_rarebytefindcase_len(ne, ne_len);
+	cu *const rare = (cu *)jstr_otherbytefindcase_len(ne, ne_len);
 	/* If no non-alpha character is found in NEEDLE or
 	 * needle is long, don't do memchr(). */
 	if (rare == NULL || jstr_unlikely(ne_len > LONG_NE_THRES))
@@ -842,7 +842,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
-	size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindprefernonalpha(ne), ne);
+	size_t shift = JSTR_PTR_DIFF(jstr_otherbytefindprefernonalpha(ne), ne);
 	if (jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	hs = jstr_strcasechr(hs + shift, *(ne + shift));
@@ -941,7 +941,7 @@ JSTR_NOEXCEPT
 			break;
 	}
 #endif
-	const size_t shift = JSTR_PTR_DIFF(jstr_rarebytefindprefernonalpha(ne), ne);
+	const size_t shift = JSTR_PTR_DIFF(jstr_otherbytefindprefernonalpha(ne), ne);
 	if (jstr_unlikely(n < shift) || jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	const char *const start = hs;
