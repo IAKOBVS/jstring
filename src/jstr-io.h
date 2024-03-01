@@ -179,9 +179,9 @@ JSTR_NOEXCEPT
 	const int ret = pjstrio_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
-	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(sz, JSTRIO_BINARY_CHECK_MAX) + 1;
+	sz = JSTR_MIN(sz, JSTRIO_BINARY_CHECK_MAX);
 	const unsigned char *s = (unsigned char *)buf;
-	for (; s < end; ++s)
+	for (; sz--; ++s)
 		if (pjstrio_binary_table[*s])
 			return 1;
 	return 0;
