@@ -1132,9 +1132,7 @@ JSTR_NOEXCEPT
 #else
 	if (jstr_unlikely(stat(fulpath, &st)))
 #endif
-	{
 		goto func;
-	}
 	if (jstr_likely(S_ISDIR(data.ftw.st->st_mode))) {
 ftw:;
 		if (jstrio_ftw_flags & JSTRIO_FTW_REG)
