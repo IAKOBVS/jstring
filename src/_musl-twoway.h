@@ -154,6 +154,8 @@ JSTR_NOEXCEPT
 	/* Initialize end-of-haystack pointer. */
 #ifdef PJSTR_MUSL_CHECK_EOL
 #	if PJSTR_MUSL_USE_N
+	if (jstr_unlikely(t->needle_len < n_limit))
+		return NULL;
 	const unsigned char *const end_limit = hs + n_limit;
 #	endif
 	const unsigned char *end = hs + jstr_strnlen((const char *)hs, t->needle_len | 512);

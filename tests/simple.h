@@ -154,8 +154,8 @@ simple_strcasestr_len(const char *h,
 JSTR_ATTR_MAYBE_UNUSED
 static char *
 simple_strncasestr(const char *hs,
-                      const char *ne,
-                      const size_t limit)
+                   const char *ne,
+                   const size_t limit)
 {
 	if (*ne == '\0')
 		return (char *)hs;
