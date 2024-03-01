@@ -37,9 +37,13 @@
 #ifdef PJSTR_STRSTR234_STRNSTR
 #	define N_PARAM , size_t l
 #	define N       l-- &&
+#	define N_EXIT                       \
+		if (jstr_unlikely(l-- == 0)) \
+		return NULL
 #else
 #	define N_PARAM
 #	define N
+#	define N_EXIT
 #endif
 
 #include "jstr-macros.h"
@@ -92,7 +96,8 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 		uint32_t h = 0;
 		uint32_t n = 0;
 		const unsigned int shift = (sizeof(uint32_t) - ne_len) << 3;
-		for (unsigned int i = ne_len; N i-- && *hs; h = (h << 8) | L(*hs++), n = (n << 8) | L(*ne++)) {}
+		for (unsigned int i = ne_len; i-- && *hs; h = (h << 8) | L(*hs++), n = (n << 8) | L(*ne++))
+			N_EXIT;
 		h <<= shift;
 		n <<= shift;
 		for (; N h != n; h = (h << 8) | (L(*hs++) << shift)) {}
@@ -101,7 +106,8 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 		uint64_t h = 0;
 		uint64_t n = 0;
 		const unsigned int shift = (sizeof(uint64_t) - ne_len) << 3;
-		for (unsigned int i = ne_len; N i-- && *hs; h = (h << 8) | L(*hs++), n = (n << 8) | L(*ne++)) {}
+		for (unsigned int i = ne_len; i-- && *hs; h = (h << 8) | L(*hs++), n = (n << 8) | L(*ne++))
+			N_EXIT;
 		h <<= shift;
 		n <<= shift;
 		for (; N h != n; h = (h << 8) | (L(*hs++) << shift)) {}
@@ -516,6 +522,7 @@ JSTR_NOEXCEPT
 
 #undef L
 #undef N
+#undef N_EXIT
 #undef N_PARAM
 #undef PJSTR_STRSTR234_FUNC_NAME
 #undef PJSTR_STRSTR234_CANON
