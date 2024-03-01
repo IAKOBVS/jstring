@@ -555,11 +555,9 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr7((cu *)hs, (cu *)ne, n);
 	if (ne[8] == '\0')
 		return pjstr_strnstr8((cu *)hs, (cu *)ne, n);
-	if (jstr_tolower(*hs) == jstr_tolower(*ne)) {
-		cu *hp = (cu *)hs + 1;
-		cu *np = (cu *)ne + 1;
-		size_t nn = n - 1;
-		for (; nn && *np && jstr_tolower(*hp) == jstr_tolower(*np); --nn, ++hp, ++np) {}
+	cu *hp = (cu *)hs + 1;
+	cu *np = (cu *)ne + 1;
+	for (size_t nn = n; *hp == *np; ++hp, ++np) {
 		if (*np == '\0')
 			return (char *)hs;
 		if (jstr_unlikely(*hp == '\0') || jstr_unlikely(nn == 0))
