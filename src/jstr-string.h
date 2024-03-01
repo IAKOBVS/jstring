@@ -724,8 +724,6 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	hs -= shift;
 	hs_len -= JSTR_PTR_DIFF(hs, start);
-	if (ne_len <= 8)
-		return pjstr_memcasemem_lt8((cu *)hs, hs_len, (cu *)ne, ne_len);
 	if (ne_len == 2)
 		return pjstr_memcasemem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
