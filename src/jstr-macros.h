@@ -30,7 +30,7 @@
 #include "jstr-config.h"
 #include "jstr-macros-arch.h"
 #include "jstr-macros-os.h"
-#include "jstr-ptr-arith.h"
+#include "jstr-pointer-arith.h"
 
 #ifdef __cplusplus
 #	define PJSTR_BEGIN_DECLS extern "C" {

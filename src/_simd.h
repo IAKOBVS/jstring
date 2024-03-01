@@ -25,7 +25,7 @@
 
 #include "jstr-macros.h"
 
-#include "jstr-ptr-arith.h"
+#include "jstr-pointer-arith.h"
 #include "jstr-otherbyte.h"
 #include "jstr-stdstring.h"
 
