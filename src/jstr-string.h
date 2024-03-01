@@ -316,6 +316,9 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memcasemem
 #include "_strstr234.h"
 
+#define PJSTR_MUSL_FUNC_NAME pjstr_memmem_musl
+#include "_musl-twoway.h"
+
 /* FIXME */
 #if 0
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_strnstr
@@ -327,9 +330,6 @@ JSTR_NOEXCEPT
 #define PJSTR_STRSTR234_STRNSTR   1
 #include "_strstr234.h"
 #endif
-
-#define PJSTR_MUSL_FUNC_NAME pjstr_memmem_musl
-#include "_musl-twoway.h"
 
 #if JSTR_HAVE_MEMMEM && JSTR_HAVE_MEMMEM_OPTIMIZED && !JSTR_TEST
 #	define JSTR_USE_MEMMEM_LIBC 1
