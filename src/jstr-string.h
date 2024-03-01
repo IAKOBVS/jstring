@@ -629,8 +629,11 @@ JSTR_NOEXCEPT
 		return (char *)hs + hs_len;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	if (ne_len == 1)
-		return jstr_memrchr(hs, *(cu *)ne, hs_len);
+	const size_t shift = JSTR_PTR_DIFF(jstr_otherbytefind_len(ne, ne_len), ne);
+	const unsigned char *p = (const unsigned char *)jstr_memrchr((cu *)hs + shift, *(cu *)ne, (hs_len - shift) - (ne_len - shift) + 1);
+	if (p == NULL || !memcmp(p -= shift, ne, ne_len))
+		return (void *)p;
+	hs_len = JSTR_PTR_DIFF((char *)p + ne_len, hs);
 	if (ne_len == 2)
 		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
@@ -842,7 +845,7 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
-	size_t shift = JSTR_PTR_DIFF(jstr_otherbytefindprefernonalpha(ne), ne);
+	size_t shift = JSTR_PTR_DIFF(jstr_otherbytefindnonalpha(ne), ne);
 	if (jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	hs = jstr_strcasechr(hs + shift, *(ne + shift));
@@ -941,7 +944,7 @@ JSTR_NOEXCEPT
 			break;
 	}
 #endif
-	const size_t shift = JSTR_PTR_DIFF(jstr_otherbytefindprefernonalpha(ne), ne);
+	const size_t shift = JSTR_PTR_DIFF(jstr_otherbytefindnonalpha(ne), ne);
 	if (jstr_unlikely(n < shift) || jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
 		return NULL;
 	const char *const start = hs;
