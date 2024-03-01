@@ -364,11 +364,9 @@ JSTR_NOEXCEPT
 		goto MEMMEM;
 	size_t shift;
 	shift = JSTR_PTR_DIFF(jstr_otherbytefind_len(ne, ne_len), ne);
-	hs = (cu *)hs + shift;
-	hs_len -= shift;
 	const void *start;
 	start = hs;
-	hs = memchr(hs, *((char *)ne + shift), hs_len - (ne_len - shift) + 1);
+	hs = memchr((cu *)hs + shift, *((char *)ne + shift), (hs_len - shift) - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (void *)hs;
 	hs = (cu *)hs - shift;
@@ -631,7 +629,7 @@ JSTR_NOEXCEPT
 		return NULL;
 	const size_t shift = JSTR_PTR_DIFF(jstr_otherbytefind_len(ne, ne_len), ne);
 	const unsigned char *p = (const unsigned char *)jstr_memrchr((cu *)hs + shift, *(cu *)ne, (hs_len - shift) - (ne_len - shift) + 1);
-	if (p == NULL || !memcmp(p -= shift, ne, ne_len))
+	if (p == NULL || ne_len == 1)
 		return (void *)p;
 	hs_len = JSTR_PTR_DIFF((char *)p + ne_len, hs);
 	if (ne_len == 2)
@@ -718,12 +716,10 @@ JSTR_NOEXCEPT
 	if (rare == NULL || jstr_unlikely(ne_len > LONG_NE_THRES))
 		goto STRCASESTR;
 	size_t shift;
+	const char *start;
 	shift = JSTR_PTR_DIFF(rare, ne);
-	hs += shift;
-	hs_len -= shift;
-	const void *start;
 	start = hs;
-	hs = (const char *)memchr(hs, *rare, hs_len - (ne_len - shift) + 1);
+	hs = (const char *)memchr(hs + shift, *rare, (hs_len - shift) - (ne_len - shift) + 1);
 	if (jstr_unlikely(hs == NULL) || ne_len == 1)
 		return (char *)hs;
 	hs -= shift;
