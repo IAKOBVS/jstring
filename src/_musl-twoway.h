@@ -53,8 +53,8 @@ typedef struct jstr_twoway_ty {
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
-                                         const unsigned char *ne
+JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t,
+                                         const unsigned char *const ne
 #ifndef PJSTR_MUSL_CHECK_EOL
                                          ,
                                          size_t ne_len
@@ -140,7 +140,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
                                          const size_t hs_len
 #endif
                                          ,
-                                         const unsigned char *n
+                                         const unsigned char *const ne
 #ifdef PJSTR_MUSL_USE_N
                                          ,
                                          size_t n_limit
@@ -153,7 +153,7 @@ JSTR_NOEXCEPT
 	size_t memory = 0;
 	/* Initialize end-of-haystack pointer. */
 #ifdef PJSTR_MUSL_CHECK_EOL
-#	if PJSTR_MUSL_USE_N
+#	ifdef PJSTR_MUSL_USE_N
 	if (jstr_unlikely(t->needle_len < n_limit))
 		return NULL;
 	const unsigned char *const end_limit = hs + n_limit;
@@ -168,7 +168,7 @@ JSTR_NOEXCEPT
 		/* Update incremental end-of-haystack pointer. */
 		if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
-#	if PJSTR_MUSL_USE_N
+#	ifdef PJSTR_MUSL_USE_N
 			end += jstr_strnlen((const char *)end, JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(end_limit, hs)));
 #	else
 			end += jstr_strnlen((const char *)end, t->needle_len | 2048);
@@ -198,14 +198,14 @@ JSTR_NOEXCEPT
 			continue;
 		}
 		/* Compare right half. */
-		for (k = JSTR_MAX(t->_suffix + 1, memory); k < t->needle_len && CANON(n[k]) == CANON(hs[k]); ++k) {}
+		for (k = JSTR_MAX(t->_suffix + 1, memory); k < t->needle_len && CANON(ne[k]) == CANON(hs[k]); ++k) {}
 		if (k < t->needle_len) {
 			hs += k - t->_suffix;
 			memory = 0;
 			continue;
 		}
 		/* Compare left half. */
-		for (k = t->_suffix + 1; k > memory && CANON(n[k - 1]) == CANON(hs[k - 1]); --k) {}
+		for (k = t->_suffix + 1; k > memory && CANON(ne[k - 1]) == CANON(hs[k - 1]); --k) {}
 		if (k <= memory)
 			return (char *)hs;
 		hs += t->_global_period;
