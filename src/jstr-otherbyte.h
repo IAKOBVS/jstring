@@ -92,7 +92,7 @@ jstr_otherbytefindnonalpha(const char *s)
 	const unsigned char *p = (const unsigned char *)s;
 	for (; jstr_isalpha(*p); ++p) {}
 	if (jstr_unlikely(*p == '\0'))
-		--p;
+		return NULL;
 	return (char *)p;
 }
 
@@ -100,10 +100,12 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 jstr_otherbytefindnonalpha_len(const void *s,
-                                     size_t n)
+                               size_t n)
 {
 	const unsigned char *p = (const unsigned char *)s;
-	for (; n-- && jstr_isalpha(*p); ++p) {}
+	for (; n && jstr_isalpha(*p); ++p, --n) {}
+	if (jstr_unlikely(n == 0))
+		return NULL;
 	return (char *)p;
 }
 

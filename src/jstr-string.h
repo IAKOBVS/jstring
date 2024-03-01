@@ -710,7 +710,7 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
-	cu *const rare = (cu *)jstr_otherbytefindcase_len(ne, ne_len);
+	cu *const rare = (cu *)jstr_otherbytefindnonalpha_len(ne, ne_len);
 	/* If no non-alpha character is found in NEEDLE or
 	 * needle is long, don't do memchr(). */
 	if (rare == NULL || jstr_unlikely(ne_len > LONG_NE_THRES))
