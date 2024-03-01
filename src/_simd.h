@@ -464,12 +464,14 @@ ret:;
 
 #else
 
+#	define PJSTR_SIMD_RETTYPE             char *
 #	define PJSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_simd_strcasestr_len
 #	define PJSTR_SIMD_MEMMEM_USE_AS_ICASE 1
 #	define PJSTR_SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
 #	define PJSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_simd_memcasechr
 #	include "_simd-memmem.h"
 
+#	define PJSTR_SIMD_RETTYPE          void *
 #	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_simd_memmem
 #	include "_simd-memmem.h"
 

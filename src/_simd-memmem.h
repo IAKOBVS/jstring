@@ -54,6 +54,9 @@ PJSTR_END_DECLS
 #ifndef BLSR
 #	define BLSR(x) _blsr_u32(x)
 #endif
+#ifndef PJSTR_SIMD_RETTYPE
+#	define PJSTR_SIMD_RETTYPE void *
+#endif
 #define ONES ((MASK)-1)
 
 #ifndef PJSTR_SIMD_MEMMEM_FUNC_NAME
@@ -80,17 +83,17 @@ PJSTR_END_DECLS
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;                                                                                                \
 				if (cmpm == matchm)                                                                                                                         \
 					if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE)) \
-						return (void *)hp;                                                                                                          \
+						return (PJSTR_SIMD_RETTYPE)hp;                                                                                              \
 			} else {                                                                                                                                            \
 				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))                                                                \
-					return (void *)hp;                                                                                                                  \
+					return (PJSTR_SIMD_RETTYPE)hp;                                                                                                      \
 			}                                                                                                                                                   \
 		} while (0)
 #else
 #	define FIND_MATCH()                                                                         \
 		do {                                                                                 \
 			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len)) \
-				return (void *)hp;                                                   \
+				return (PJSTR_SIMD_RETTYPE)hp;                                       \
 		} while (0)
 #endif
 
@@ -100,7 +103,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
-static void *
+static PJSTR_SIMD_RETTYPE
 PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
                             size_t hs_len,
                             const void *ne,
@@ -109,12 +112,12 @@ JSTR_NOEXCEPT
 {
 	if (ne_len == 1)
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-		return (void *)memchr(hs, *(unsigned char *)ne, hs_len);
+		return (PJSTR_SIMD_RETTYPE)memchr(hs, *(unsigned char *)ne, hs_len);
 #else
-		return (void *)PJSTR_SIMD_MEMMEM_MEMCASECHR(hs, *(unsigned char *)ne, hs_len);
+		return (PJSTR_SIMD_RETTYPE)PJSTR_SIMD_MEMMEM_MEMCASECHR(hs, *(unsigned char *)ne, hs_len);
 #endif
 	if (jstr_unlikely(ne_len == 0))
-		return (void *)hs;
+		return (PJSTR_SIMD_RETTYPE)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	VEC hv0, hv1;
@@ -222,5 +225,6 @@ PJSTR_END_DECLS
 #undef PJSTR_SIMD_MEMMEM_CMP_FUNC
 #undef PJSTR_SIMD_MEMMEM_MEMCASECHR
 #undef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#undef PJSTR_SIMD_RETTYPE
 #undef OR_UPPER_MASK
 #undef FIND_MATCH
