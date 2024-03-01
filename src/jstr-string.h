@@ -841,9 +841,17 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
-	size_t shift = JSTR_PTR_DIFF(jstr_otherbytefindnonalpha(ne), ne);
-	if (jstr_unlikely(jstr_strnlen_loop(hs, shift) < shift))
-		return NULL;
+	const unsigned char *np = (const unsigned char *)ne;
+	for (const unsigned char *hp = (const unsigned char *)hs;; ++np) {
+		if (!jstr_isalpha(*np)) {
+			if (jstr_unlikely(*np == '\0'))
+				--np;
+			break;
+		}
+		if (jstr_unlikely(*hp++ == '\0'))
+			return NULL;
+	}
+	const size_t shift = JSTR_PTR_DIFF(np, ne);
 	hs = jstr_strcasechr(hs + shift, *(ne + shift));
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
