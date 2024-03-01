@@ -31,7 +31,7 @@
 
 PJSTR_BEGIN_DECLS
 
-/* Select AVX512, AVX2, or SSE. */
+/* Select AVX512, AVX2, or SSE2. */
 
 #ifdef JSTR_ARCH_X86_64
 #	include <x86intrin.h>
