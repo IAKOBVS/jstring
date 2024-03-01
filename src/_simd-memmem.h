@@ -21,7 +21,7 @@
  * SOFTWARE. */
 
 #include "jstr-macros.h"
-#include "jstr-otherbyte.h"
+#include "jstr-rarebyte.h"
 
 PJSTR_BEGIN_DECLS
 #include <immintrin.h>
@@ -131,9 +131,7 @@ JSTR_NOEXCEPT
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
 	const unsigned char *hp;
-	size_t shift = JSTR_PTR_DIFF(jstr_otherbytefind_len(ne, JSTR_MIN(ne_len, VEC_SIZE)), ne);
-	if (shift == JSTR_MIN(ne_len, VEC_SIZE) - 1)
-		--shift;
+	const size_t shift = 0;
 	h += shift;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;

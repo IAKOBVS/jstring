@@ -40,7 +40,9 @@ jstr_otherbytefind_len(const void *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	const int c = *p;
-	for (; n-- && *p != c; ++p) {}
+	if (jstr_unlikely(c == 0))
+		return (char *)s;
+	for (; n && *p != c; ++p, --n) {}
 	return (void *)p;
 }
 
@@ -52,10 +54,9 @@ jstr_otherbytefind(const char *s)
 	const int c = *s;
 	if (jstr_unlikely(c == 0))
 		return (char *)s;
-	for (; *s != c; ++s) {}
-	if (jstr_unlikely(*s == '\0'))
-		--s;
-	return (char *)s;
+	const unsigned char *p = (const unsigned char *)s;
+	for (; *p != c; ++p) {}
+	return (char *)p;
 }
 
 JSTR_FUNC_PURE
@@ -66,10 +67,9 @@ jstr_otherbytefindcase(const char *s)
 	const int c = jstr_tolower(*s);
 	if (jstr_unlikely(c == 0))
 		return (char *)s;
-	for (; jstr_tolower(*s) != c; ++s) {}
-	if (jstr_unlikely(*s == '\0'))
-		--s;
-	return (char *)s;
+	const unsigned char *p = (const unsigned char *)s;
+	for (; jstr_tolower(*p) != c; ++p) {}
+	return (char *)p;
 }
 
 JSTR_FUNC_PURE
@@ -80,7 +80,9 @@ jstr_otherbytefindcase_len(const void *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	const int c = jstr_tolower(*p);
-	for (; n-- && jstr_tolower(*p) != c; ++p) {}
+	if (jstr_unlikely(c == 0))
+		return (char *)s;
+	for (; n && jstr_tolower(*p) != c; ++p, --n) {}
 	return (char *)p;
 }
 
@@ -91,8 +93,6 @@ jstr_otherbytefindnonalpha(const char *s)
 {
 	const unsigned char *p = (const unsigned char *)s;
 	for (; jstr_isalpha(*p); ++p) {}
-	if (jstr_unlikely(*p == '\0'))
-		return NULL;
 	return (char *)p;
 }
 
@@ -104,8 +104,6 @@ jstr_otherbytefindnonalpha_len(const void *s,
 {
 	const unsigned char *p = (const unsigned char *)s;
 	for (; n && jstr_isalpha(*p); ++p, --n) {}
-	if (jstr_unlikely(n == 0))
-		return NULL;
 	return (char *)p;
 }
 

@@ -153,6 +153,24 @@ simple_strcasestr_len(const char *h,
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
+simple_strncasestr(const char *hs,
+                      const char *ne,
+                      const size_t limit)
+{
+	if (*ne == '\0')
+		return (char *)hs;
+	const size_t ne_len = strlen(ne);
+	if (ne_len < limit)
+		return NULL;
+	const char *end = hs + limit;
+	for (; *hs && hs <= end; ++hs)
+		if (!simple_strncasecmp(hs, ne, ne_len))
+			return (char *)hs;
+	return NULL;
+}
+
+JSTR_ATTR_MAYBE_UNUSED
+static char *
 simple_strcasestr(const char *h,
                   const char *n)
 {
@@ -161,15 +179,6 @@ simple_strcasestr(const char *h,
 #else
 	return simple_strcasestr_len(h, strlen(h), n, strlen(n));
 #endif
-}
-
-JSTR_ATTR_MAYBE_UNUSED
-static char *
-simple_strncasestr(const char *hs,
-                   const char *ne,
-                   size_t n)
-{
-	return (char *)simple_strcasestr_len(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 }
 
 JSTR_ATTR_MAYBE_UNUSED
