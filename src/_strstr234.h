@@ -50,7 +50,7 @@
 
 #ifdef PJSTR_STRSTR234_MEMMEM
 
-/* May not work. */
+/* DO NOT USE. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -83,7 +83,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 
 #else
 
-/* May not work. */
+/* DO NOT USE. */
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static char *
