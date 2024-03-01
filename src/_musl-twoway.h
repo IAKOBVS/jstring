@@ -45,7 +45,7 @@ typedef struct jstr_twoway_ty {
 	size_t needle_len;
 	size_t _shift[256];
 	size_t _byteset[32 / sizeof(size_t)];
-	size_t _mem0, _ms, _p;
+	size_t _memory0, _suffix, _period;
 } jstr_twoway_ty;
 
 #endif
@@ -54,81 +54,79 @@ JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
 JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
-                                         const unsigned char *n
+                                         const unsigned char *ne
 #ifndef PJSTR_MUSL_CHECK_EOL
                                          ,
-                                         size_t n_len
+                                         size_t ne_len
 #endif
                                          )
 JSTR_NOEXCEPT
 {
-	size_t ip, jp, k, p0;
-	int c0, c1;
+	size_t max_suffix, j, k, p;
+	int a, b;
 	memset(t->_byteset, 0, sizeof(t->_byteset));
-	/* Computing length of n and fill shift table. */
-	for (ip = 0;
+	/* Computing length of ne and fill shift table. */
 #ifdef PJSTR_MUSL_CHECK_EOL
-	     n[ip];
+	for (max_suffix = 0; ne[max_suffix]; ++max_suffix)
 #else
-	     ip < n_len;
+	for (max_suffix = 0; max_suffix < ne_len; ++max_suffix)
 #endif
-	     ++ip)
-		c0 = CANON(n[ip]), BITOP(t->_byteset, c0, |=), t->_shift[c0] = ip + 1;
-	t->needle_len = ip;
+		a = CANON(ne[max_suffix]), BITOP(t->_byteset, a, |=), t->_shift[a] = max_suffix + 1;
+	t->needle_len = max_suffix;
 	/* Compute maximal suffix. */
-	ip = (size_t)-1, jp = 0, k = t->_p = 1;
-	while (jp + k < t->needle_len) {
-		c0 = CANON(n[ip + k]);
-		c1 = CANON(n[jp + k]);
-		if (c0 > c1) {
-			jp += k;
+	max_suffix = (size_t)-1, j = 0, k = t->_period = 1;
+	while (j + k < t->needle_len) {
+		a = CANON(ne[max_suffix + k]);
+		b = CANON(ne[j + k]);
+		if (a > b) {
+			j += k;
 			k = 1;
-			t->_p = jp - ip;
-		} else if (c0 == c1) {
-			if (k == t->_p) {
-				jp += t->_p;
+			t->_period = j - max_suffix;
+		} else if (a == b) {
+			if (k == t->_period) {
+				j += t->_period;
 				k = 1;
 			} else {
 				++k;
 			}
-		} else /* c0 < c1 */ {
-			ip = jp++;
-			k = t->_p = 1;
+		} else /* a < b */ {
+			max_suffix = j++;
+			k = t->_period = 1;
 		}
 	}
-	t->_ms = ip;
-	p0 = t->_p;
+	t->_suffix = max_suffix;
+	p = t->_period;
 	/* And with the opposite comparison. */
-	ip = (size_t)-1, jp = 0, k = t->_p = 1;
-	while (jp + k < t->needle_len) {
-		c0 = CANON(n[ip + k]);
-		c1 = CANON(n[jp + k]);
-		if (c0 < c1) {
-			jp += k;
+	max_suffix = (size_t)-1, j = 0, k = t->_period = 1;
+	while (j + k < t->needle_len) {
+		a = CANON(ne[max_suffix + k]);
+		b = CANON(ne[j + k]);
+		if (a < b) {
+			j += k;
 			k = 1;
-			t->_p = jp - ip;
-		} else if (c0 == c1) {
-			if (k == t->_p) {
-				jp += t->_p;
+			t->_period = j - max_suffix;
+		} else if (a == b) {
+			if (k == t->_period) {
+				j += t->_period;
 				k = 1;
 			} else {
 				++k;
 			}
-		} else /* c0 > c1 */ {
-			ip = jp++;
-			k = t->_p = 1;
+		} else /* a > b */ {
+			max_suffix = j++;
+			k = t->_period = 1;
 		}
 	}
-	if (ip + 1 > t->_ms + 1)
-		t->_ms = ip;
+	if (max_suffix + 1 > t->_suffix + 1)
+		t->_suffix = max_suffix;
 	else
-		t->_p = p0;
-	/* Periodic needle? */
-	if (PJSTR_MUSL_CMP_FUNC((const char *)n, (const char *)n + t->_p, t->_ms + 1)) {
-		t->_mem0 = 0;
-		t->_p = JSTR_MAX(t->_ms, t->needle_len - t->_ms - 1) + 1;
+		t->_period = p;
+	/* Periodic ne? */
+	if (PJSTR_MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->_period, t->_suffix + 1)) {
+		t->_memory0 = 0;
+		t->_period = JSTR_MAX(t->_suffix, t->needle_len - t->_suffix - 1) + 1;
 	} else {
-		t->_mem0 = t->needle_len - t->_p;
+		t->_memory0 = t->needle_len - t->_period;
 	}
 }
 
@@ -136,10 +134,10 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
 JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
-                                         const unsigned char *h
+                                         const unsigned char *hs
 #ifndef PJSTR_MUSL_CHECK_EOL
                                          ,
-                                         const size_t h_len
+                                         const size_t hs_len
 #endif
                                          ,
                                          const unsigned char *n
@@ -150,66 +148,66 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
                                          )
 JSTR_NOEXCEPT
 {
-	int c0;
+	int c;
 	size_t k;
-	size_t mem = 0;
+	size_t memory = 0;
 	/* Initialize end-of-haystack pointer. */
 #ifdef PJSTR_MUSL_CHECK_EOL
 #	if PJSTR_MUSL_USE_N
-	const unsigned char *const z_n = h + n_limit;
+	const unsigned char *const end_limit = hs + n_limit;
 #	endif
-	const unsigned char *z = h + jstr_strnlen((const char *)h, t->needle_len | 512);
+	const unsigned char *end = hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
 #else
-	const unsigned char *const z = h + h_len;
+	const unsigned char *const end = hs + hs_len;
 #endif
 	/* Search loop */
 	for (;;) {
 #ifdef PJSTR_MUSL_CHECK_EOL
 		/* Update incremental end-of-haystack pointer. */
-		if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len)) {
+		if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
 #	if PJSTR_MUSL_USE_N
-			z += jstr_strnlen((const char *)z, JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(z_n, h)));
+			end += jstr_strnlen((const char *)end, JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(end_limit, hs)));
 #	else
-			z += jstr_strnlen((const char *)z, t->needle_len | 2048);
+			end += jstr_strnlen((const char *)end, t->needle_len | 2048);
 #	endif
-			if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len))
+			if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len))
 				break;
 		}
 #else
 		/* If remainder of haystack is shorter than needle, done. */
-		if (jstr_unlikely(JSTR_PTR_DIFF(z, h) < t->needle_len))
+		if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len))
 			break;
 #endif
 		/* Check last byte first; advance by shift on mismatch. */
-		c0 = CANON(h[t->needle_len - 1]);
-		if (BITOP(t->_byteset, c0, &)) {
-			k = t->needle_len - t->_shift[c0];
+		c = CANON(hs[t->needle_len - 1]);
+		if (BITOP(t->_byteset, c, &)) {
+			k = t->needle_len - t->_shift[c];
 			if (k) {
-				if (k < mem)
-					k = mem;
-				h += k;
-				mem = 0;
+				if (k < memory)
+					k = memory;
+				hs += k;
+				memory = 0;
 				continue;
 			}
 		} else {
-			h += t->needle_len;
-			mem = 0;
+			hs += t->needle_len;
+			memory = 0;
 			continue;
 		}
 		/* Compare right half. */
-		for (k = JSTR_MAX(t->_ms + 1, mem); k < t->needle_len && CANON(n[k]) == CANON(h[k]); ++k) {}
+		for (k = JSTR_MAX(t->_suffix + 1, memory); k < t->needle_len && CANON(n[k]) == CANON(hs[k]); ++k) {}
 		if (k < t->needle_len) {
-			h += k - t->_ms;
-			mem = 0;
+			hs += k - t->_suffix;
+			memory = 0;
 			continue;
 		}
 		/* Compare left half. */
-		for (k = t->_ms + 1; k > mem && CANON(n[k - 1]) == CANON(h[k - 1]); --k) {}
-		if (k <= mem)
-			return (char *)h;
-		h += t->_p;
-		mem = t->_mem0;
+		for (k = t->_suffix + 1; k > memory && CANON(n[k - 1]) == CANON(hs[k - 1]); --k) {}
+		if (k <= memory)
+			return (char *)hs;
+		hs += t->_period;
+		memory = t->_memory0;
 	}
 	return NULL;
 }
