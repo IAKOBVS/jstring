@@ -47,15 +47,14 @@
 #ifdef PJSTR_STRSTR234_MEMMEM
 
 /* May not work. */
-
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
-                          size_t hs_len,
-                          const unsigned char *ne,
-                          unsigned int ne_len)
+                                             size_t hs_len,
+                                             const unsigned char *ne,
+                                             unsigned int ne_len)
 {
 	if (ne_len <= 4) {
 		uint32_t h = 0;
@@ -81,14 +80,13 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 #else
 
 /* May not work. */
-
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
-                          const unsigned char *ne,
-                          unsigned int ne_len
-                          N_PARAM)
+                                             const unsigned char *ne,
+                                             unsigned int ne_len
+                                             N_PARAM)
 {
 	if (ne_len <= 4) {
 		uint32_t h = 0;
