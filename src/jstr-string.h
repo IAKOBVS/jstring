@@ -350,6 +350,7 @@ jstr_memmem(const void *hs,
             size_t ne_len)
 JSTR_NOEXCEPT
 {
+	enum { LONG_NE_THRES = 64 };
 	typedef const unsigned char cu;
 #if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
@@ -358,7 +359,6 @@ JSTR_NOEXCEPT
 		return (hs_len >= ne_len) ? pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len) : NULL;
 	return pjstr_simd_memmem(hs, hs_len, ne, ne_len);
 #else
-	enum { LONG_NE_THRES = 64 };
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (jstr_unlikely(ne_len == 0))
