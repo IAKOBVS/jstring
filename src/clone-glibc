@@ -1,8 +1,0 @@
-#!/bin/sh
-
-cd "$(dirname "$0")" || exit
-if [ -e glibc ]; then
-	cd glibc && git pull | grep -q 'string-[_0-9A-Za-z]*\.h' || exit 1
-else
-	git clone https://sourceware.org/git/glibc.git
-fi

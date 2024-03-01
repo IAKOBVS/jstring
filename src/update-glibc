@@ -1,6 +1,0 @@
-#!/bin/sh
-
-cd "$(dirname "$0")" || exit
-./clone-glibc || exit 1
-perl ./update-glibc.pl
-./tidy-glibc
