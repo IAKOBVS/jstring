@@ -45,7 +45,7 @@ typedef struct jstr_twoway_ty {
 	size_t needle_len;
 	size_t _shift[256];
 	size_t _byteset[32 / sizeof(size_t)];
-	size_t _memory0, _suffix, _period;
+	size_t _memory0, _suffix, _global_period;
 } jstr_twoway_ty;
 
 #endif
@@ -62,7 +62,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *const t,
                                          )
 JSTR_NOEXCEPT
 {
-	size_t max_suffix, j, k, p;
+	size_t max_suffix, j, k, period;
 	int a, b;
 	memset(t->_byteset, 0, sizeof(t->_byteset));
 	/* Computing length of ne and fill shift table. */
@@ -74,59 +74,59 @@ JSTR_NOEXCEPT
 		a = CANON(ne[max_suffix]), BITOP(t->_byteset, a, |=), t->_shift[a] = max_suffix + 1;
 	t->needle_len = max_suffix;
 	/* Compute maximal suffix. */
-	max_suffix = (size_t)-1, j = 0, k = t->_period = 1;
+	max_suffix = (size_t)-1, j = 0, k = t->_global_period = 1;
 	while (j + k < t->needle_len) {
 		a = CANON(ne[max_suffix + k]);
 		b = CANON(ne[j + k]);
 		if (a > b) {
 			j += k;
 			k = 1;
-			t->_period = j - max_suffix;
+			t->_global_period = j - max_suffix;
 		} else if (a == b) {
-			if (k == t->_period) {
-				j += t->_period;
+			if (k == t->_global_period) {
+				j += t->_global_period;
 				k = 1;
 			} else {
 				++k;
 			}
 		} else /* a < b */ {
 			max_suffix = j++;
-			k = t->_period = 1;
+			k = t->_global_period = 1;
 		}
 	}
 	t->_suffix = max_suffix;
-	p = t->_period;
+	period = t->_global_period;
 	/* And with the opposite comparison. */
-	max_suffix = (size_t)-1, j = 0, k = t->_period = 1;
+	max_suffix = (size_t)-1, j = 0, k = t->_global_period = 1;
 	while (j + k < t->needle_len) {
 		a = CANON(ne[max_suffix + k]);
 		b = CANON(ne[j + k]);
 		if (a < b) {
 			j += k;
 			k = 1;
-			t->_period = j - max_suffix;
+			t->_global_period = j - max_suffix;
 		} else if (a == b) {
-			if (k == t->_period) {
-				j += t->_period;
+			if (k == t->_global_period) {
+				j += t->_global_period;
 				k = 1;
 			} else {
 				++k;
 			}
 		} else /* a > b */ {
 			max_suffix = j++;
-			k = t->_period = 1;
+			k = t->_global_period = 1;
 		}
 	}
 	if (max_suffix + 1 > t->_suffix + 1)
 		t->_suffix = max_suffix;
 	else
-		t->_period = p;
+		t->_global_period = period;
 	/* Periodic ne? */
-	if (PJSTR_MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->_period, t->_suffix + 1)) {
+	if (PJSTR_MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->_global_period, t->_suffix + 1)) {
 		t->_memory0 = 0;
-		t->_period = JSTR_MAX(t->_suffix, t->needle_len - t->_suffix - 1) + 1;
+		t->_global_period = JSTR_MAX(t->_suffix, t->needle_len - t->_suffix - 1) + 1;
 	} else {
-		t->_memory0 = t->needle_len - t->_period;
+		t->_memory0 = t->needle_len - t->_global_period;
 	}
 }
 
@@ -206,7 +206,7 @@ JSTR_NOEXCEPT
 		for (k = t->_suffix + 1; k > memory && CANON(n[k - 1]) == CANON(hs[k - 1]); --k) {}
 		if (k <= memory)
 			return (char *)hs;
-		hs += t->_period;
+		hs += t->_global_period;
 		memory = t->_memory0;
 	}
 	return NULL;

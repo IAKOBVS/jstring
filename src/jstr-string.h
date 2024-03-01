@@ -373,6 +373,8 @@ JSTR_NOEXCEPT
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len == 2)
 		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
+	if (ne_len == 2)
+		return pjstr_memmem2((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 3)
 		return pjstr_memmem3((cu *)hs, (cu *)ne, hs_len);
 	if (ne_len == 4)

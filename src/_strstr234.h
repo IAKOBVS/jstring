@@ -46,6 +46,71 @@
 
 #ifdef PJSTR_STRSTR234_MEMMEM
 
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
+                          size_t hs_len,
+                          const unsigned char *ne,
+                          unsigned int ne_len)
+{
+	if (ne_len <= 4) {
+		uint32_t h = 0;
+		uint32_t n = 0;
+		const unsigned int shift = (sizeof(uint32_t) - ne_len) << 3;
+		for (unsigned int i = ne_len; i--; h = (h << 8) | L(*hs++), n = (n << 8) | L(*ne++)) {}
+		h <<= shift;
+		n <<= shift;
+		for (hs_len -= ne_len; hs_len-- && h != n; h = (h << 8) | (*hs++ << shift)) {}
+		return (h == n) ? (char *)(hs - ne_len) : NULL;
+	} else {
+		uint64_t h = 0;
+		uint64_t n = 0;
+		const unsigned int shift = (sizeof(uint64_t) - ne_len) << 3;
+		for (unsigned int i = ne_len; i--; h = (h << 8) | L(*hs++), n = (n << 8) | L(*ne++)) {}
+		h <<= shift;
+		n <<= shift;
+		for (hs_len -= ne_len; hs_len-- && h != n; h = (h << 8) | (L(*hs++) << shift)) {}
+		return (h == n) ? (char *)(hs - ne_len) : NULL;
+	}
+}
+
+#else
+
+JSTR_ATTR_ACCESS((__read_only__, 2, 3))
+JSTR_FUNC_PURE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
+                          const unsigned char *ne,
+                          unsigned int ne_len
+                          N_PARAM)
+{
+	if (ne_len <= 4) {
+		uint32_t h = 0;
+		uint32_t n = 0;
+		const unsigned int shift = (sizeof(uint32_t) - ne_len) << 3;
+		for (unsigned int i = ne_len; N i-- && *hs; h = (h << 8) | L(*hs++), n = (n << 8) | L(*ne++)) {}
+		h <<= shift;
+		n <<= shift;
+		for (; N h != n; h = (h << 8) | (L(*hs++) << shift)) {}
+		return (h == n) ? (char *)(hs - ne_len) : NULL;
+	} else {
+		uint64_t h = 0;
+		uint64_t n = 0;
+		const unsigned int shift = (sizeof(uint64_t) - ne_len) << 3;
+		for (unsigned int i = ne_len; N i-- && *hs; h = (h << 8) | L(*hs++), n = (n << 8) | L(*ne++)) {}
+		h <<= shift;
+		n <<= shift;
+		for (; N h != n; h = (h << 8) | (L(*hs++) << shift)) {}
+		return (h == n) ? (char *)(hs - ne_len) : NULL;
+	}
+}
+
+#endif
+
+#ifdef PJSTR_STRSTR234_MEMMEM
+
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static char *
