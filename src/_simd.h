@@ -26,7 +26,6 @@
 #include "jstr-macros.h"
 
 #include "jstr-pointer-arith.h"
-#include "jstr-otherbyte.h"
 #include "jstr-stdstring.h"
 
 PJSTR_BEGIN_DECLS

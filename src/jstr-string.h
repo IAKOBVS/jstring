@@ -32,7 +32,6 @@ PJSTR_BEGIN_DECLS
 PJSTR_END_DECLS
 
 #include "jstr-config.h"
-#include "jstr-otherbyte.h"
 #include "jstr-stdstring.h"
 #include "jstr-ctype.h"
 #include "_musl.h"
@@ -321,14 +320,14 @@ JSTR_NOEXCEPT
 
 /* FIXME */
 #if 0
-#define PJSTR_STRSTR234_FUNC_NAME pjstr_strnstr
-#define PJSTR_STRSTR234_STRNSTR   1
-#include "_strstr234.h"
+#	define PJSTR_STRSTR234_FUNC_NAME pjstr_strnstr
+#	define PJSTR_STRSTR234_STRNSTR   1
+#	include "_strstr234.h"
 
-#define PJSTR_STRSTR234_CANON     jstr_tolower
-#define PJSTR_STRSTR234_FUNC_NAME pjstr_strncasestr
-#define PJSTR_STRSTR234_STRNSTR   1
-#include "_strstr234.h"
+#	define PJSTR_STRSTR234_CANON     jstr_tolower
+#	define PJSTR_STRSTR234_FUNC_NAME pjstr_strncasestr
+#	define PJSTR_STRSTR234_STRNSTR   1
+#	include "_strstr234.h"
 #endif
 
 #if JSTR_HAVE_MEMMEM && JSTR_HAVE_MEMMEM_OPTIMIZED && !JSTR_TEST

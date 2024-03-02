@@ -98,7 +98,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 			N_EXIT;
 		h <<= shift;
 		n <<= shift;
-		for (; N *hs && h != n; h = (h << 8) | (L(*hs++) << shift)) {}
+		for (; N * hs && h != n; h = (h << 8) | (L(*hs++) << shift)) {}
 		return (h == n) ? (char *)(hs - ne_len) : NULL;
 	} else {
 		uint64_t h = 0;
@@ -108,7 +108,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 			N_EXIT;
 		h <<= shift;
 		n <<= shift;
-		for (; N *hs && h != n; h = (h << 8) | (L(*hs++) << shift)) {}
+		for (; N * hs && h != n; h = (h << 8) | (L(*hs++) << shift)) {}
 		return (h == n) ? (char *)(hs - ne_len) : NULL;
 	}
 }
