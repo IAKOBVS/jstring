@@ -524,10 +524,10 @@ JSTR_NOEXCEPT
 		return pjstr_strnstr2((cu *)hs, (cu *)ne, n);
 	cu *hp = (cu *)hs + 1;
 	cu *np = (cu *)ne + 1;
-	for (size_t nn = n; *hp == *np;) {
+	for (size_t i = n; *hp == *np; --i) {
 		if (*np++ == '\0')
 			return (char *)hs;
-		if (jstr_unlikely(*hp++ == '\0') || jstr_unlikely(nn-- == 0))
+		if (jstr_unlikely(*hp++ == '\0') || jstr_unlikely(i == 0))
 			return NULL;
 	}
 	return pjstr_strnstr_musl((cu *)hs, (cu *)ne, n);
@@ -609,11 +609,11 @@ JSTR_NOEXCEPT
 	n -= JSTR_PTR_DIFF(hs, start);
 	if (ne[2] == '\0')
 		return pjstr_strncasestr2((cu *)hs, (cu *)ne, n);
-	size_t nn = n - 1;
-	for (cu *hp = (cu *)hs + 1, *np = (cu *)ne + 1; jstr_tolower(*hp) == jstr_tolower(*np);) {
+	size_t i = n - 1;
+	for (cu *hp = (cu *)hs + 1, *np = (cu *)ne + 1; jstr_tolower(*hp) == jstr_tolower(*np); --i) {
 		if (*np++ == '\0')
 			return (char *)hs;
-		if (jstr_unlikely(*hp++ == '\0') || jstr_unlikely(nn-- == 0))
+		if (jstr_unlikely(*hp++ == '\0') || jstr_unlikely(i == 0))
 			return NULL;
 	}
 	return pjstr_strncasestr_musl((cu *)hs, (cu *)ne, n);

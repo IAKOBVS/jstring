@@ -49,8 +49,8 @@ JSTR_NOEXCEPT
 	const unsigned char *p = (const unsigned char *)s + n - 1;
 	c = (unsigned char)c;
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-	for (; (uintptr_t)(p + 1) & ALIGN; --p) {
-		if (jstr_unlikely(n-- == 0))
+	for (; (uintptr_t)(p + 1) & ALIGN; --n, --p) {
+		if (jstr_unlikely(n == 0))
 			return NULL;
 		if (*p == c)
 			return (char *)p;
@@ -106,8 +106,8 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	if (n >= sizeof(size_t) && jstr_tolower(*p) != c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
-		for (; (uintptr_t)p % ALIGN; ++p) {
-			if (jstr_unlikely(n-- == 0))
+		for (; (uintptr_t)p % ALIGN; --n, ++p) {
+			if (jstr_unlikely(n == 0))
 				return NULL;
 			if (jstr_tolower(*p) == c)
 				return (char *)p;
@@ -134,8 +134,8 @@ JSTR_NOEXCEPT
 	enum { SS = sizeof(size_t),
 	       ALIGN = (sizeof(size_t) - 1) };
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-	for (; (uintptr_t)s & ALIGN; ++s) {
-		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n-- == 0))
+	for (; (uintptr_t)s & ALIGN; --n, ++s) {
+		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n == 0))
 			return NULL;
 		if (*s == (char)c)
 			return (char *)s;
@@ -164,8 +164,8 @@ JSTR_NOEXCEPT
 	       ALIGN = (sizeof(size_t) - 1) };
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-	for (; (uintptr_t)s & ALIGN; ++s) {
-		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n-- == 0))
+	for (; (uintptr_t)s & ALIGN; --n, ++s) {
+		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n == 0))
 			return NULL;
 		if (jstr_tolower(*s) == c)
 			return (char *)s;

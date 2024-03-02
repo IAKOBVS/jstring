@@ -525,8 +525,8 @@ JSTR_NOEXCEPT
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
 	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
-	for (; i--; cnt += *p++ == (unsigned char)c)
-		if (jstr_unlikely(n-- == 0))
+	for (; i--; --n, cnt += *p++ == (unsigned char)c)
+		if (jstr_unlikely(n == 0))
 			return cnt;
 	const VEC cv = SETONE8((char)c);
 	VEC sv;
