@@ -28,7 +28,7 @@
 #endif
 #define L PJSTR_STRSTR234_CANON
 #ifdef PJSTR_STRSTR234_STRNSTR
-#	define N_PARAM , size_t l
+#	define N_PARAM , unsigned int l
 #	define N       l-- &&
 #	define N_EXIT                       \
 		if (jstr_unlikely(l-- == 0)) \
@@ -56,15 +56,15 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_len, const unsigned char *ne, size_t ne_len)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, unsigned int hs_len, const unsigned char *ne, unsigned int ne_len)
 {
-	uint64_t h1;
-	uint64_t h2;
+	uint64_t hw;
+	uint64_t nw;
 	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
-	for (unsigned int n = ne_len; n--; h1 = h1 << 8 | L(*hs++), h2 = h2 << 8 | L(*ne++))
+	for (unsigned int n = ne_len; n--; hw = (uint64_t)hw << 8 | L(*hs++), nw = (uint64_t)nw << 8 | L(*ne++))
 		N_EXIT;
-	for (hs_len -= ne_len, h1 &= mask, h2 &= mask; N h1 != h2 && hs_len--; h1 = (h1 << 8 | L(*hs++)) & mask) {}
-	return h1 == h2 ? (char *)(hs - ne_len) : NULL;
+	for (hs_len -= ne_len, hw &= mask, nw &= mask; N hw != nw && hs_len--; hw = (uint64_t)(hw << 8 | L(*hs++)) & mask) {}
+	return hw == nw ? (char *)(hs - ne_len) : NULL;
 }
 
 /* TODO: simplify strrstr/memrmem to accept ne_len <= 8 */
@@ -77,19 +77,19 @@ JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 2)(const unsigned char *hs,
                                           const unsigned char *const ne,
-                                          size_t l)
+                                          unsigned int l)
 JSTR_NOEXCEPT
 {
 #	if JSTR_LP64
-	typedef uint32_t size_ty;
+	typedef uint32_t unsigned inty;
 	enum { SHIFT = 16 };
 #	else
-	typedef uint16_t size_ty;
+	typedef uint16_t unsigned inty;
 	enum { SHIFT = 8 };
 #	endif
 	hs += l - 2;
-	const size_ty nw = (size_ty)L(ne[1]) << SHIFT | (size_ty)L(ne[0]);
-	size_ty hw = (size_ty)L(hs[1]) << SHIFT | (size_ty)L(hs[0]);
+	const unsigned inty nw = (unsigned inty)L(ne[1]) << SHIFT | (unsigned inty)L(ne[0]);
+	unsigned inty hw = (unsigned inty)L(hs[1]) << SHIFT | (unsigned inty)L(hs[0]);
 	for (l -= 2; l-- && hw != nw; hw = hw << SHIFT | L(*--hs)) {}
 	return (hw == nw) ? (void *)hs : NULL;
 }
@@ -100,7 +100,7 @@ JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 3)(const unsigned char *hs,
                                           const unsigned char *const ne,
-                                          size_t l)
+                                          unsigned int l)
 JSTR_NOEXCEPT
 {
 	typedef uint32_t U32;
@@ -117,7 +117,7 @@ JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 4)(const unsigned char *hs,
                                           const unsigned char *const ne,
-                                          size_t l)
+                                          unsigned int l)
 JSTR_NOEXCEPT
 {
 	typedef uint32_t U32;
@@ -134,7 +134,7 @@ JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 5)(const unsigned char *hs,
                                           const unsigned char *const ne,
-                                          size_t l)
+                                          unsigned int l)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
@@ -151,7 +151,7 @@ JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 6)(const unsigned char *hs,
                                           const unsigned char *const ne,
-                                          size_t l)
+                                          unsigned int l)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
@@ -168,7 +168,7 @@ JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 7)(const unsigned char *hs,
                                           const unsigned char *const ne,
-                                          size_t l)
+                                          unsigned int l)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
@@ -185,7 +185,7 @@ JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 8)(const unsigned char *hs,
                                           const unsigned char *const ne,
-                                          size_t l)
+                                          unsigned int l)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
@@ -202,20 +202,18 @@ JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 8more)(const unsigned char *hs,
                                               const unsigned char *const ne,
-                                              size_t l,
-                                              size_t ne_len)
+                                              unsigned int l,
+                                              unsigned int ne_len)
 JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
 	hs += l - ne_len;
 	const U64 nw = (U64)L(ne[7]) << 56 | (U64)L(ne[6]) << 48 | (U64)L(ne[5]) << 40 | (U64)L(ne[4]) << 32 | (U64)L(ne[3]) << 24 | (U64)L(ne[2]) << 16 | (U64)L(ne[1]) << 8 | (U64)L(ne[0]);
 	U64 hw = (U64)L(hs[7]) << 56 | (U64)L(hs[6]) << 48 | (U64)L(hs[5]) << 40 | (U64)L(hs[4]) << 32 | (U64)L(hs[3]) << 24 | (U64)L(hs[2]) << 16 | (U64)L(hs[1]) << 8 | (U64)L(hs[0]);
-	const unsigned char *const ne_rest = ne + 8;
-	const size_t ne_rest_len = ne_len - 8;
 	for (l -= ne_len; l--; hw = hw << 8 | L(*--hs))
-		if (hw == nw && !memcmp(hs + 8, ne_rest, ne_rest_len))
+		if (hw == nw && !memcmp(hs + 8, ne + 8, ne_len - 8))
 			return (void *)hs;
-	return (hw == nw && !memcmp(hs + 8, ne_rest, ne_rest_len)) ? (void *)hs : NULL;
+	return (hw == nw && !memcmp(hs + 8, ne + 8, ne_len - 8)) ? (void *)hs : NULL;
 }
 
 #else
@@ -223,18 +221,18 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, const unsigned char *ne, size_t ne_len)
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, const unsigned char *ne, unsigned int ne_len)
 {
-	uint64_t h1;
-	uint64_t h2;
+	uint64_t hw;
+	uint64_t nw;
 	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
-	for (; *ne; h1 = h1 << 8 | L(*hs++), h2 = h2 << 8 | L(*ne++)) {
+	for (; *ne; hw = (uint64_t)hw << 8 | L(*hs++), nw = (uint64_t)nw << 8 | L(*ne++)) {
 		N_EXIT;
 		if (jstr_unlikely(*hs == '\0'))
 			return NULL;
 	}
-	for (h1 &= mask, h2 &= mask; N h1 != h2 && *hs; h1 = (h1 << 8 | L(*hs++)) & mask) {}
-	return h1 == h2 ? (char *)(hs - ne_len) : NULL;
+	for (hw &= mask, nw &= mask; N hw != nw && *hs; hw = (uint64_t)(hw << 8 | L(*hs++)) & mask) {}
+	return hw == nw ? (char *)(hs - ne_len) : NULL;
 }
 
 #endif
