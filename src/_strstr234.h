@@ -67,6 +67,8 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_
 	return h1 == h2 ? (char *)(hs - ne_len) : NULL;
 }
 
+/* TODO: simplify memrmem to accept ne_len <= 8 */
+
 #elif PJSTR_STRSTR234_MEMRMEM
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
