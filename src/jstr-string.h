@@ -861,7 +861,7 @@ JSTR_NOEXCEPT
 	hs = jstr_strcasechr(hs, *ne);
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
-	const unsigned int ne_len = jstr_strnlen_loop(ne, 8 + 1);
+	const unsigned int ne_len = jstr_strnlen_loop(ne + 2, 8 + 1) + 2;
 	if (ne_len <= 8)
 		return pjstr_strcasestr_lt8((cu *)hs, (cu *)ne, ne_len);
 	if (jstr_tolower(*hs) == jstr_tolower(*ne)) {
