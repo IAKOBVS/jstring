@@ -60,7 +60,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_
 {
 	uint64_t h1;
 	uint64_t h2;
-	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) * 8);
+	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
 	for (unsigned int n = ne_len; n--; h1 = h1 << 8 | L(*hs++), h2 = h2 << 8 | L(*ne++))
 		N_EXIT;
 	for (hs_len -= ne_len, h1 &= mask, h2 &= mask; N h1 != h2 && hs_len--; h1 = (h1 << 8 | L(*hs++)) & mask) {}
@@ -227,7 +227,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, const unsi
 {
 	uint64_t h1;
 	uint64_t h2;
-	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) * 8);
+	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
 	for (; *ne; h1 = h1 << 8 | L(*hs++), h2 = h2 << 8 | L(*ne++)) {
 		N_EXIT;
 		if (jstr_unlikely(*hs == '\0'))

@@ -942,7 +942,7 @@ typedef uint16_t JSTR_ATTR_MAY_ALIAS jstr_u16u_ty;
 typedef uint32_t JSTR_ATTR_MAY_ALIAS jstr_u32u_ty;
 typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 
-#define JSTR_WORD_IDX(i) (i * 8)
+#define JSTR_WORD_IDX(i) (i << 3)
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 #	define JSTR_WORD_LOADU16(x)     (*(jstr_u16u_ty *)(x))
 #	define JSTR_WORD_LOADU32(x)     (*(jstr_u32u_ty *)(x))

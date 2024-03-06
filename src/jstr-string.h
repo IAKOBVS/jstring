@@ -2113,7 +2113,7 @@ JSTR_NOEXCEPT
 				int o = 3;
 				*dst = 0, ++src;
 				for (; o-- && *src <= '7' && *src >= '0'; ++src)
-					*dst = *dst * 8 + (*src - '0');
+					*dst = (*dst << 3) + (*src - '0');
 				goto CONT;
 				break;
 			}
@@ -2172,7 +2172,7 @@ JSTR_NOEXCEPT
 				int o = 3;
 				*d = 0, ++s;
 				for (; o-- && n && *s <= '7' && *s >= '0'; ++s, --n)
-					*d = *d * 8 + (*s - '0');
+					*d = (*d << 3) + (*s - '0');
 				goto CONT;
 				break;
 			}
