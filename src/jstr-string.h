@@ -304,16 +304,16 @@ JSTR_NOEXCEPT
 
 #define PJSTR_STRSTR234_MEMMEM    1
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memmem
-#include "_strstr234.h"
+#include "_strstr_lt8.h"
 
 #define PJSTR_STRSTR234_CANON     jstr_tolower
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_strcasestr
-#include "_strstr234.h"
+#include "_strstr_lt8.h"
 
 #define PJSTR_STRSTR234_MEMMEM    1
 #define PJSTR_STRSTR234_CANON     jstr_tolower
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memcasemem
-#include "_strstr234.h"
+#include "_strstr_lt8.h"
 
 #define PJSTR_MUSL_FUNC_NAME pjstr_memmem_musl
 #include "_musl-twoway.h"
@@ -322,12 +322,12 @@ JSTR_NOEXCEPT
 #if 0
 #	define PJSTR_STRSTR234_FUNC_NAME pjstr_strnstr
 #	define PJSTR_STRSTR234_STRNSTR   1
-#	include "_strstr234.h"
+#	include "_strstr_lt8.h"
 
 #	define PJSTR_STRSTR234_CANON     jstr_tolower
 #	define PJSTR_STRSTR234_FUNC_NAME pjstr_strncasestr
 #	define PJSTR_STRSTR234_STRNSTR   1
-#	include "_strstr234.h"
+#	include "_strstr_lt8.h"
 #endif
 
 #if JSTR_HAVE_MEMMEM && JSTR_HAVE_MEMMEM_OPTIMIZED && !JSTR_TEST
@@ -659,7 +659,7 @@ JSTR_NOEXCEPT
 
 #define PJSTR_STRSTR234_FUNC_NAME pjstr_memrmem
 #define PJSTR_STRSTR234_MEMRMEM   1
-#include "_strstr234.h"
+#include "_strstr_lt8.h"
 
 /* Find last NE in HS.
  * Return value:
