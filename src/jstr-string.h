@@ -372,7 +372,7 @@ JSTR_NOEXCEPT
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len <= 8)
 		return pjstr_memmem_lt8((cu *)hs, hs_len, (cu *)ne, ne_len);
-	if (!memcmp(hs, ne, ne_len))
+	if (!memcmp(hs, ne, 8) && !memcmp(hs + 8, ne + 8, ne_len - 8))
 		return (char *)hs;
 MEMMEM:
 	return pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
