@@ -141,7 +141,7 @@ t_debug(void)
 
 JSTR_ATTR_MAYBE_UNUSED
 static void
-t_init()
+t_init(void)
 {
 	memset(&t, 0, sizeof(t));
 }

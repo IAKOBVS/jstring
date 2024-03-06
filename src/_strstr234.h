@@ -43,7 +43,7 @@
 
 #ifdef __clang__
 #	pragma clang diagnostic push
-#	pragma clang diagnostic ignored "-Wunknown-pragmas"
+#	pragma clang diagnostic ignored "-Wunknown-warning-option"
 #endif
 #ifdef __GNUC__
 #	pragma GCC diagnostic push

@@ -7,7 +7,6 @@ CFLAGS="
 -Wall
 -Wextra
 -Wpedantic
--Wsign-conversion
 -DJSTR_TEST_SLOW=1
 -O2
 -U__SSE2__
