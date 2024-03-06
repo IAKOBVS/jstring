@@ -80,17 +80,11 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 2)(const unsigned char *hs,
                                           unsigned int l)
 JSTR_NOEXCEPT
 {
-#	if JSTR_LP64
-	typedef uint32_t unsigned inty;
-	enum { SHIFT = 16 };
-#	else
-	typedef uint16_t unsigned inty;
-	enum { SHIFT = 8 };
-#	endif
+	typedef uint32_t U32;
 	hs += l - 2;
-	const unsigned inty nw = (unsigned inty)L(ne[1]) << SHIFT | (unsigned inty)L(ne[0]);
-	unsigned inty hw = (unsigned inty)L(hs[1]) << SHIFT | (unsigned inty)L(hs[0]);
-	for (l -= 2; l-- && hw != nw; hw = hw << SHIFT | L(*--hs)) {}
+	const U32 nw = (U32)L(ne[1]) << 16 | (U32)L(ne[0]);
+	U32 hw = (U32)L(hs[1]) << 16 | (U32)L(hs[0]);
+	for (l -= 2; l-- && hw != nw; hw = hw << 16 | L(*--hs)) {}
 	return (hw == nw) ? (void *)hs : NULL;
 }
 
@@ -105,8 +99,8 @@ JSTR_NOEXCEPT
 {
 	typedef uint32_t U32;
 	hs += l - 3;
-	const uint32_t nw = (U32)L(ne[2]) << 24 | (U32)L(ne[1]) << 16 | (U32)L(ne[0]) << 8;
-	uint32_t hw = (U32)L(hs[2]) << 24 | (U32)L(hs[1]) << 16 | (U32)L(hs[0]) << 8;
+	const U32 nw = (U32)L(ne[2]) << 24 | (U32)L(ne[1]) << 16 | (U32)L(ne[0]) << 8;
+	U32 hw = (U32)L(hs[2]) << 24 | (U32)L(hs[1]) << 16 | (U32)L(hs[0]) << 8;
 	for (l -= 3; l-- && hw != nw; hw = (hw | L(*--hs)) << 8) {}
 	return (hw == nw) ? (void *)hs : NULL;
 }
@@ -122,8 +116,8 @@ JSTR_NOEXCEPT
 {
 	typedef uint32_t U32;
 	hs += l - 4;
-	const uint32_t nw = (U32)L(ne[3]) << 24 | (U32)L(ne[2]) << 16 | (U32)L(ne[1]) << 8 | (U32)L(ne[0]);
-	uint32_t hw = (U32)L(hs[3]) << 24 | (U32)L(hs[2]) << 16 | (U32)L(hs[1]) << 8 | (U32)L(hs[0]);
+	const U32 nw = (U32)L(ne[3]) << 24 | (U32)L(ne[2]) << 16 | (U32)L(ne[1]) << 8 | (U32)L(ne[0]);
+	U32 hw = (U32)L(hs[3]) << 24 | (U32)L(hs[2]) << 16 | (U32)L(hs[1]) << 8 | (U32)L(hs[0]);
 	for (l -= 4; l-- && hw != nw; hw = hw << 8 | L(*--hs)) {}
 	return (hw == nw) ? (void *)hs : NULL;
 }
