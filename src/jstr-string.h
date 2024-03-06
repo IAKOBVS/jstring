@@ -991,7 +991,8 @@ JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
 #if !JSTR_TEST
-	for (cu *np = (cu *)ne;; ++np) {
+	cu *np;
+	for (np = (cu *)ne;; ++np) {
 		if (*np == '\0')
 			return (char *)strstr(hs, ne);
 		if (jstr_isalpha(*np))
@@ -1004,7 +1005,6 @@ JSTR_NOEXCEPT
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
 #else
-	cu *np = (const unsigned char *)ne;
 	hs = jstr_strcasechr(hs, *ne);
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
@@ -1014,7 +1014,8 @@ JSTR_NOEXCEPT
 		return pjstr_strcasestr_lt8((cu *)hs, (cu *)ne, ne_len);
 	if (jstr_tolower(hs[1]) == jstr_tolower(ne[1])) {
 		np = (cu *)ne + 2;
-		for (cu *hp = (cu *)hs + 2;;) {
+		cu *hp = (cu *)hs + 2;
+		for (;;) {
 			if (*np == '\0')
 				return (char *)hs;
 			if (jstr_unlikely(*hp == '\0'))
