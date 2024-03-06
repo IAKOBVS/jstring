@@ -240,7 +240,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, const unsi
 #endif
 
 #ifdef __clang__
-#	pragma GCC diagnostic pop
+#	pragma clang diagnostic pop
 #endif
 #ifdef __GNUC__
 #	pragma GCC diagnostic pop
