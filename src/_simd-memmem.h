@@ -76,18 +76,17 @@ PJSTR_END_DECLS
 #endif
 
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-#	define FIND_MATCH()                                                                                                                                                \
-		do {                                                                                                                                                        \
-			if (JSTR_PTR_NOT_CROSSING_PAGE(hp, VEC_SIZE, JSTR_PAGE_SIZE)) {                                                                                     \
-				hv = LOADU((const VEC *)hp);                                                                                                                \
-				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;                                                                                                \
-				if (cmpm == matchm)                                                                                                                         \
-					if (ne_len <= VEC_SIZE || !PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp + VEC_SIZE, (const char *)ne + VEC_SIZE, ne_len - VEC_SIZE)) \
-						return (PJSTR_SIMD_RETTYPE)hp;                                                                                              \
-			} else {                                                                                                                                            \
-				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len))                                                                \
-					return (PJSTR_SIMD_RETTYPE)hp;                                                                                                      \
-			}                                                                                                                                                   \
+#	define FIND_MATCH()                                                                                 \
+		do {                                                                                         \
+			if (JSTR_PTR_NOT_CROSSING_PAGE(hp, VEC_SIZE, JSTR_PAGE_SIZE)) {                      \
+				hv = LOADU((const VEC *)hp);                                                 \
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;                                 \
+				if (cmpm == matchm)                                                          \
+					return (PJSTR_SIMD_RETTYPE)hp;                                       \
+			} else {                                                                             \
+				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len)) \
+					return (PJSTR_SIMD_RETTYPE)hp;                                       \
+			}                                                                                    \
 		} while (0)
 #else
 #	define FIND_MATCH()                                                                         \
@@ -98,6 +97,8 @@ PJSTR_END_DECLS
 #endif
 
 PJSTR_BEGIN_DECLS
+
+/* ne_len must be <= VEC_SIZE */
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -141,7 +142,7 @@ JSTR_NOEXCEPT
 	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE) || ne_len >= VEC_SIZE)
 		nv = LOADU((const VEC *)ne);
 	else
-		memcpy(&nv, ne, JSTR_MIN(VEC_SIZE, ne_len));
+		memcpy(&nv, ne, ne_len);
 #else
 	const VEC nv0 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift)));
 	const VEC nv1 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
