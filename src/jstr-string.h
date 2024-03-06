@@ -519,7 +519,7 @@ JSTR_NOEXCEPT
 	hs_len -= JSTR_PTR_DIFF(hs, start);
 	if (ne_len <= 8)
 		return pjstr_memmem_lt8((cu *)hs, hs_len, (cu *)ne, ne_len);
-	if (!memcmp(hs, ne, 8) && !memcmp(hs + 8, ne + 8, ne_len - 8))
+	if (!memcmp(hs, ne, 8) && !memcmp((cu *)hs + 8, (cu *)ne + 8, ne_len - 8))
 		return (char *)hs;
 MEMMEM:
 	return pjstr_memmem_musl((cu *)hs, hs_len, (cu *)ne, ne_len);
@@ -990,8 +990,8 @@ jstr_strcasestr(const char *hs,
 JSTR_NOEXCEPT
 {
 	typedef const unsigned char cu;
-#if !JSTR_TEST
 	cu *np;
+#if !JSTR_TEST
 	for (np = (cu *)ne;; ++np) {
 		if (*np == '\0')
 			return (char *)strstr(hs, ne);

@@ -76,7 +76,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 2)(const unsigned char *hs,
-                                          const unsigned char *const ne,
+                                          const unsigned char *ne,
                                           unsigned int l)
 JSTR_NOEXCEPT
 {
@@ -93,7 +93,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 3)(const unsigned char *hs,
-                                          const unsigned char *const ne,
+                                          const unsigned char *ne,
                                           unsigned int l)
 JSTR_NOEXCEPT
 {
@@ -110,7 +110,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 4)(const unsigned char *hs,
-                                          const unsigned char *const ne,
+                                          const unsigned char *ne,
                                           unsigned int l)
 JSTR_NOEXCEPT
 {
@@ -127,7 +127,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 5)(const unsigned char *hs,
-                                          const unsigned char *const ne,
+                                          const unsigned char *ne,
                                           unsigned int l)
 JSTR_NOEXCEPT
 {
@@ -144,7 +144,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 6)(const unsigned char *hs,
-                                          const unsigned char *const ne,
+                                          const unsigned char *ne,
                                           unsigned int l)
 JSTR_NOEXCEPT
 {
@@ -161,7 +161,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 7)(const unsigned char *hs,
-                                          const unsigned char *const ne,
+                                          const unsigned char *ne,
                                           unsigned int l)
 JSTR_NOEXCEPT
 {
@@ -178,7 +178,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 8)(const unsigned char *hs,
-                                          const unsigned char *const ne,
+                                          const unsigned char *ne,
                                           unsigned int l)
 JSTR_NOEXCEPT
 {
@@ -195,7 +195,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, 8more)(const unsigned char *hs,
-                                              const unsigned char *const ne,
+                                              const unsigned char *ne,
                                               unsigned int l,
                                               unsigned int ne_len)
 JSTR_NOEXCEPT
