@@ -32,9 +32,10 @@ or
 
 The following headers will need to be explicitly included (as they rely on POSIX):
 
+```
 jstr-io.h
-
 jstr-regex.h
+```
 
 ## Examples:
 
