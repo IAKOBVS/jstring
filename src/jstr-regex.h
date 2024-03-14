@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-/* jstrre_rm*(), jstrre_rplc*(), a negative number will be returned
+/* For jstrre_rm*(), jstrre_rplc*(), a negative number will be returned
  * indicating the negated value of the regex error code. To print an
  * error message, pass the negation of the returned error code. */
 
