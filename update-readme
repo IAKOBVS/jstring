@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd "$(dirname "$0")" || exit
-./update-readme.awk README> README.md
+sed 's/\\//g' README.md> README
