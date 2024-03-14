@@ -1,5 +1,7 @@
 # jstring
 
+jstring is a dynamic string C library which aims to simplify string handling in C.
+
 ## Features:
 
 - compatible with any string type: Functions take a pointer to string, size, and capacity.
