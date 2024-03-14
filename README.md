@@ -41,7 +41,6 @@ https://github.com/IAKOBVS/rarebyte
 ## Disclaimer:
 
 You must zero-initialize a jstr_ty string.
-
 ```
 jstr_ty j = JSTR_INIT;
 ```
@@ -56,7 +55,6 @@ parameter. char \* implies no embedded NULs. Use ones which takes a void \*.
 
 You can customize the library by defining certain macros in jstr-config.h before
 including any header. For example:
-
 ```
 #define JSTR_USE_UNLOCKED_IO 1
 #include "jstr.h"
