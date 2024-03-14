@@ -40,8 +40,7 @@ https://github.com/IAKOBVS/rarebyte
 
 ## Disclaimer:
 
-Do not pass a string with embedded NULs to a function that takes a char \*
-parameter. char \* implies no embedded NULs. Use ones which takes a void \*.
+You must zero-initialize a jstr_ty string.
 
 ```
 jstr_ty j = JSTR_INIT;
@@ -49,6 +48,9 @@ jstr_ty j = JSTR_INIT;
 
 jstr\_tolower\(\) and jstr\_toupper\(\) will not handle EOF correctly. The tolower of
 EOF may not equal EOF.
+
+Do not pass a string with embedded NULs to a function that takes a char \*
+parameter. char \* implies no embedded NULs. Use ones which takes a void \*.
 
 ## Configuration:
 
