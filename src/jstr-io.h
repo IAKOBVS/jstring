@@ -900,6 +900,8 @@ struct pjstrio_ftw_data {
 
 #define FLAG(x) ((a)->ftw_flags & (x))
 
+/* We try to avoid stat when d_type is available, and avoid constructing the
+ * full path when we can use *_at functions. */
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 static int
@@ -1232,7 +1234,6 @@ func:
 			return JSTR_RET_SUCC;
 	if (func_match) {
 		if (FLAG(JSTRIO_FTW_MATCHPATH)) {
-func_match_path:
 			if (func_match(fulpath, dirpath_len, func_match_args))
 				return JSTR_RET_SUCC;
 		} else {
@@ -1245,7 +1246,8 @@ func_match_path:
 				    dirpath, end - dirpath, func_match_args))
 					return JSTR_RET_SUCC;
 			} else {
-				goto func_match_path;
+				if (func_match(fulpath, dirpath_len, func_match_args))
+					return JSTR_RET_SUCC;
 			}
 		}
 	}
