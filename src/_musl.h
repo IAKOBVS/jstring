@@ -34,18 +34,14 @@ PJSTR_END_DECLS
 
 #define ONES       ((size_t)-1 / UCHAR_MAX)
 #define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
-#define HASZERO(x) (((x)-ONES) & ~(x)&HIGHS)
+#define HASZERO(x) (((x)-ONES) & ~(x) & HIGHS)
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
-pjstr_memrchr_musl(const void *s,
-                   int c,
-                   size_t n)
-JSTR_NOEXCEPT
+pjstr_memrchr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t),
-	       ALIGN = (sizeof(size_t) - 1) };
+	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
 	const unsigned char *p = (const unsigned char *)s + n - 1;
 	c = (unsigned char)c;
 #if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -59,7 +55,8 @@ JSTR_NOEXCEPT
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const word *ws = (const word *)(p - SS + 1);
 		const size_t k = ONES * (unsigned char)c;
-		for (word w = *ws; n >= SS && !HASZERO(w ^ k); w = *--ws, n -= SS) {}
+		for (word w = *ws; n >= SS && !HASZERO(w ^ k);
+		     w = *--ws, n -= SS) {}
 		p = (unsigned char *)ws + SS - 1;
 	}
 #endif
@@ -72,9 +69,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasechrnul_musl(const char *s,
-                         int c)
-JSTR_NOEXCEPT
+pjstr_strcasechrnul_musl(const char *s, int c) JSTR_NOEXCEPT
 {
 	enum { ALIGN = sizeof(size_t) };
 	c = jstr_tolower(c);
@@ -86,7 +81,8 @@ JSTR_NOEXCEPT
 	const size_t k = ONES * (unsigned char)c;
 	const size_t l = ONES * (unsigned char)jstr_toupper(c);
 	const word *ws = (word *)s;
-	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws) {}
+	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l);
+	     w = *++ws) {}
 	s = (char *)ws;
 #endif
 	for (; *s && jstr_tolower(*s) != c; ++s) {}
@@ -95,10 +91,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static void *
-pjstr_memcasechr_musl(const void *s,
-                      int c,
-                      size_t n)
-JSTR_NOEXCEPT
+pjstr_memcasechr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	enum { ALIGN = sizeof(size_t) };
 	const unsigned char *p = (const unsigned char *)s;
@@ -115,7 +108,9 @@ JSTR_NOEXCEPT
 		const size_t k = ONES * (unsigned char)c;
 		const size_t l = ONES * jstr_toupper(c);
 		const word *ws = (word *)p;
-		for (word w = *ws; n >= sizeof(size_t) && !HASZERO(w ^ k) && !HASZERO(w ^ l); n -= sizeof(size_t), w = *++ws) {}
+		for (word w = *ws;
+		     n >= sizeof(size_t) && !HASZERO(w ^ k) && !HASZERO(w ^ l);
+		     n -= sizeof(size_t), w = *++ws) {}
 		p = (unsigned char *)ws;
 	}
 #endif
@@ -126,13 +121,9 @@ JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-pjstr_strnchr_musl(const char *s,
-                   int c,
-                   size_t n)
-JSTR_NOEXCEPT
+pjstr_strnchr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t),
-	       ALIGN = (sizeof(size_t) - 1) };
+	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	for (; (uintptr_t)s & ALIGN; --n, ++s) {
 		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n == 0))
@@ -144,7 +135,8 @@ JSTR_NOEXCEPT
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
 		const word *ws = (const word *)s;
-		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k); w = *++ws, n -= SS) {}
+		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k);
+		     w = *++ws, n -= SS) {}
 		s = (const char *)ws;
 	}
 #endif
@@ -155,13 +147,9 @@ JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-pjstr_strncasechr_musl(const char *s,
-                       int c,
-                       size_t n)
-JSTR_NOEXCEPT
+pjstr_strncasechr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t),
-	       ALIGN = (sizeof(size_t) - 1) };
+	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	for (; (uintptr_t)s & ALIGN; --n, ++s) {
@@ -175,7 +163,9 @@ JSTR_NOEXCEPT
 		const size_t k = ONES * (unsigned char)c;
 		const size_t l = ONES * jstr_toupper(c);
 		const word *ws = (const word *)s;
-		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws, n -= SS) {}
+		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k)
+		                   && !HASZERO(w ^ l);
+		     w = *++ws, n -= SS) {}
 		s = (const char *)ws;
 	}
 #endif

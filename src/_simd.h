@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -119,10 +119,15 @@ typedef uint16_t jstr_vmask_ty;
 #define MASK_SIZE sizeof(MASK)
 #ifdef JSTR_ARCH_X86_64
 #	ifndef LZCNT
-#		define LZCNT(x) (MASK)((x) ? ((MASK)MASK_SIZE * CHAR_BIT - 1) - _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
+#		define LZCNT(x)                                               \
+			(MASK)((x) ? ((MASK)MASK_SIZE * CHAR_BIT - 1)          \
+			             - _bit_scan_reverse(x)                    \
+			           : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #	ifndef TZCNT
-#		define TZCNT(x) (MASK)((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
+#		define TZCNT(x)                                               \
+			(MASK)((x) ? _bit_scan_forward(x)                      \
+			           : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #endif
 #ifndef BLSR
@@ -134,8 +139,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 pjstr_simd_stpcpy_aligned(char *JSTR_RESTRICT dst,
-                          const char *JSTR_RESTRICT src)
-JSTR_NOEXCEPT
+                          const char *JSTR_RESTRICT src) JSTR_NOEXCEPT
 {
 	VEC sv;
 	const VEC zv = SETZERO();
@@ -157,8 +161,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 pjstr_simd_stpcpy_unaligned_src(char *JSTR_RESTRICT dst,
-                                const char *JSTR_RESTRICT src)
-JSTR_NOEXCEPT
+                                const char *JSTR_RESTRICT src) JSTR_NOEXCEPT
 {
 	VEC sv;
 	const VEC zv = SETZERO();
@@ -179,8 +182,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 static char *
 pjstr_simd_stpcpy(char *JSTR_RESTRICT dst,
-                  const char *JSTR_RESTRICT src)
-JSTR_NOEXCEPT
+                  const char *JSTR_RESTRICT src) JSTR_NOEXCEPT
 {
 	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
 	while (i--)
@@ -206,10 +208,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_simd_strncasechr(const char *s,
-                       int c,
-                       size_t n)
-JSTR_NOEXCEPT
+pjstr_simd_strncasechr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -219,7 +218,8 @@ JSTR_NOEXCEPT
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
-	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off
+	= JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
@@ -248,10 +248,7 @@ ret_early:
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_simd_strnchr(const char *s,
-                   int c,
-                   size_t n)
-JSTR_NOEXCEPT
+pjstr_simd_strnchr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -260,7 +257,8 @@ JSTR_NOEXCEPT
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
-	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off
+	= JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm = (MASK)CMPEQ8_MASK(sv, cv);
@@ -287,15 +285,14 @@ ret_early:
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_simd_strchrnul(const char *s,
-                     int c)
-JSTR_NOEXCEPT
+pjstr_simd_strchrnul(const char *s, int c) JSTR_NOEXCEPT
 {
 	MASK cm, m, zm;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
-	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off
+	= JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm = (MASK)CMPEQ8_MASK(sv, cv);
@@ -317,9 +314,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
-pjstr_simd_strchr(const char *s,
-                  int c)
-JSTR_NOEXCEPT
+pjstr_simd_strchr(const char *s, int c) JSTR_NOEXCEPT
 {
 	s = pjstr_simd_strchrnul(s, c);
 	return *s == (char)c ? (char *)s : NULL;
@@ -328,16 +323,15 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_simd_strcasechrnul(const char *s,
-                         int c)
-JSTR_NOEXCEPT
+pjstr_simd_strcasechrnul(const char *s, int c) JSTR_NOEXCEPT
 {
 	MASK m, cm0, cm1, zm;
 	VEC sv;
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
-	const unsigned int off = JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off
+	= JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	zm = (MASK)CMPEQ8_MASK(sv, zv);
@@ -361,9 +355,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
-pjstr_simd_strcasechr(const char *s,
-                      int c)
-JSTR_NOEXCEPT
+pjstr_simd_strcasechr(const char *s, int c) JSTR_NOEXCEPT
 {
 	s = pjstr_simd_strcasechrnul(s, c);
 	return *s == (char)c ? (char *)s : NULL;
@@ -372,10 +364,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-pjstr_simd_memcasechr(const void *s,
-                      int c,
-                      size_t n)
-JSTR_NOEXCEPT
+pjstr_simd_memcasechr(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -385,7 +374,8 @@ JSTR_NOEXCEPT
 	VEC sv;
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
-	const unsigned int off = JSTR_PTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
+	const unsigned int off
+	= JSTR_PTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
 	p -= off;
 	sv = LOAD((const VEC *)p);
 	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
@@ -422,10 +412,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-pjstr_simd_memrchr(const void *s,
-                   int c,
-                   size_t n)
-JSTR_NOEXCEPT
+pjstr_simd_memrchr(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -433,13 +420,15 @@ JSTR_NOEXCEPT
 	MASK m, i;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
-	const unsigned int off = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+	const unsigned int off
+	= JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
 	p += off;
 	sv = LOAD((const VEC *)p);
 	m = (MASK)CMPEQ8_MASK(sv, cv) << off;
 	if (m) {
 		i = (VEC_SIZE - 1) - LZCNT(m);
-		return p - off + i >= (unsigned char *)s ? (char *)p - off + i : NULL;
+		return p - off + i >= (unsigned char *)s ? (char *)p - off + i
+		                                         : NULL;
 	}
 	p -= VEC_SIZE;
 	for (; p + VEC_SIZE >= (unsigned char *)s; p -= VEC_SIZE) {
@@ -486,9 +475,7 @@ ret:;
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-pjstr_simd_countchr(const char *s,
-                    int c)
-JSTR_NOEXCEPT
+pjstr_simd_countchr(const char *s, int c) JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
@@ -517,10 +504,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-pjstr_simd_countchr_len(const void *s,
-                        int c,
-                        size_t n)
-JSTR_NOEXCEPT
+pjstr_simd_countchr_len(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;

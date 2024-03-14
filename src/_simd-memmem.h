@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -76,23 +76,28 @@ PJSTR_END_DECLS
 #endif
 
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-#	define FIND_MATCH()                                                                                 \
-		do {                                                                                         \
-			if (JSTR_PTR_NOT_CROSSING_PAGE(hp, VEC_SIZE, JSTR_PAGE_SIZE)) {                      \
-				hv = LOADU((const VEC *)hp);                                                 \
-				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;                                 \
-				if (cmpm == matchm)                                                          \
-					return (PJSTR_SIMD_RETTYPE)hp;                                       \
-			} else {                                                                             \
-				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len)) \
-					return (PJSTR_SIMD_RETTYPE)hp;                                       \
-			}                                                                                    \
+#	define FIND_MATCH()                                                   \
+		do {                                                           \
+			if (JSTR_PTR_NOT_CROSSING_PAGE(                        \
+			    hp, VEC_SIZE, JSTR_PAGE_SIZE)) {                   \
+				hv = LOADU((const VEC *)hp);                   \
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;   \
+				if (cmpm == matchm)                            \
+					return (PJSTR_SIMD_RETTYPE)hp;         \
+			} else {                                               \
+				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(               \
+				    (const char *)hp,                          \
+				    (const char *)ne,                          \
+				    ne_len))                                   \
+					return (PJSTR_SIMD_RETTYPE)hp;         \
+			}                                                      \
 		} while (0)
 #else
-#	define FIND_MATCH()                                                                         \
-		do {                                                                                 \
-			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC((const char *)hp, (const char *)ne, ne_len)) \
-				return (PJSTR_SIMD_RETTYPE)hp;                                       \
+#	define FIND_MATCH()                                                   \
+		do {                                                           \
+			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(                       \
+			    (const char *)hp, (const char *)ne, ne_len))       \
+				return (PJSTR_SIMD_RETTYPE)hp;                 \
 		} while (0)
 #endif
 
@@ -108,14 +113,15 @@ static PJSTR_SIMD_RETTYPE
 PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
                             size_t hs_len,
                             const void *ne,
-                            size_t ne_len)
-JSTR_NOEXCEPT
+                            size_t ne_len) JSTR_NOEXCEPT
 {
 	if (ne_len == 1)
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-		return (PJSTR_SIMD_RETTYPE)memchr(hs, *(unsigned char *)ne, hs_len);
+		return (PJSTR_SIMD_RETTYPE)memchr(
+		hs, *(unsigned char *)ne, hs_len);
 #else
-		return (PJSTR_SIMD_RETTYPE)PJSTR_SIMD_MEMMEM_MEMCASECHR(hs, *(unsigned char *)ne, hs_len);
+		return (PJSTR_SIMD_RETTYPE)PJSTR_SIMD_MEMMEM_MEMCASECHR(
+		hs, *(unsigned char *)ne, hs_len);
 #endif
 	if (jstr_unlikely(ne_len == 0))
 		return (PJSTR_SIMD_RETTYPE)hs;
@@ -132,24 +138,31 @@ JSTR_NOEXCEPT
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
 	const unsigned char *hp;
-	const unsigned int shift = JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len - 1), ne);
+	const unsigned int shift
+	= JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len - 1), ne);
 	h += shift;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = ONES << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + shift));
 	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
-	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE) || ne_len >= VEC_SIZE)
+	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE)
+	    || ne_len >= VEC_SIZE)
 		nv = LOADU((const VEC *)ne);
 	else
 		memcpy(&nv, ne, ne_len);
 #else
-	const VEC nv0 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift)));
-	const VEC nv1 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
-	const VEC nv0u = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
-	const VEC nv1u = SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
+	const VEC nv0
+	= SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift)));
+	const VEC nv1
+	= SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
+	const VEC nv0u
+	= SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
+	const VEC nv1u
+	= SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
 #endif
-	const unsigned int off_s = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	const unsigned int off_s
+	= JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
 	unsigned int off_e = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
 	                     ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
 	                     : 0;
@@ -162,7 +175,8 @@ JSTR_NOEXCEPT
 	hm1u = (MASK)CMPEQ8_MASK(hv0, nv1u) >> 1;
 #endif
 	/* Clear matched bits that are out of bounds. */
-	m = (((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) >> off_s) & (ONES >> off_e);
+	m = (((hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))) >> off_s)
+	    & (ONES >> off_e);
 	while (m) {
 		i = TZCNT(m);
 		m = BLSR(m);
@@ -198,7 +212,8 @@ match:
 		hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
-		m = (hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u)) & (ONES >> off_e);
+		m = (hm0 OR_UPPER_MASK(hm0u)) & (hm1 OR_UPPER_MASK(hm1u))
+		    & (ONES >> off_e);
 		if (m)
 			goto match;
 	}
