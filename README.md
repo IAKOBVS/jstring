@@ -40,7 +40,7 @@ https://github.com/IAKOBVS/rarebyte
 
 ## Disclaimer:
 
-You must zero-initialize a jstr_ty string.
+You must zero-initialize a jstr\_ty string.
 ```
 jstr_ty j = JSTR_INIT;
 ```
