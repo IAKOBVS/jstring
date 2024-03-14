@@ -30,7 +30,9 @@ or
 #include "/path/to/some/dir/jstr.h"
 ```
 
-Some headers may need to be explicitly included because they rely on POSIX.
+The following headers will need to be explicitly included (as they rely on POSIX):
+jstr-io.h
+jstr-regex.h
 
 ## Examples:
 
