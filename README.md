@@ -77,7 +77,8 @@ call jstr\_errdie\(\) on errors.
 
 For jstr-regex.h, jstrre\_rm\*\(\), jstrre\_rplc\*\(\) will return a negative number indicating
 the negated value of the regex error code. To print an error message, pass the negation of
-the returned error code.
+the returned error code. This is done so that we can utilize the return value of the function
+both as the number of replacements done or as error values.
 
 ## Naming conventions
 
