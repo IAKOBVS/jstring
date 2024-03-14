@@ -844,12 +844,14 @@ typedef enum jstrio_ftw_flag_ty {
 #	define FD         fd
 #	define FD_PARAM   , int fd
 #	define FD_ARG     , fd
-#	define FD_DECLARE int fd;
+#	define FD_DECLARE int fd
 #else
 #	define FD
 #	define FD_PARAM
 #	define FD_ARG
-#	define FD_DECLARE
+#	define FD_DECLARE                                                     \
+		do {                                                           \
+		} while (0)
 #endif
 
 #if JSTRIO_PATH_MAX <= 65536
@@ -923,19 +925,20 @@ pjstrio_ftw_len(struct pjstrio_ftw_data *a,
 	}
 	int tmp;
 	while ((a->ftw.ep = readdir(dp))) {
+		/* Ignore hidden files. */
 		if (FLAG(JSTRIO_FTW_NOHIDDEN)) {
-			/* Ignore hidden files. */
 			if (a->ftw.ep->d_name[0] == '.')
 				continue;
-		} else {
 			/* Ignore "." and "..". */
+		} else {
 			if (a->ftw.ep->d_name[0] == '.'
 			    && (a->ftw.ep->d_name[1] == '\0'
 			        || (a->ftw.ep->d_name[1] == '.'
 			            && a->ftw.ep->d_name[2] == '\0')))
 				continue;
 		}
-		/* Stop processing if DIRPATH is longer than PATH_MAX. */
+		/* Stop processing if DIRPATH is longer than PATH_MAX.
+		   If we don't have d_namlen, try to estimate the length. */
 		if (JSTR_HAVE_DIRENT_D_NAMLEN) {
 			if (jstr_unlikely(
 			    dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep)
@@ -946,18 +949,18 @@ pjstrio_ftw_len(struct pjstrio_ftw_data *a,
 		} else {
 			if (jstr_unlikely(dirpath_len
 			                  >= JSTRIO_PATH_MAX - JSTRIO_NAME_MAX)
-			    && jstr_unlikely(dirpath_len
-			                     + strlen(a->ftw.ep->d_name)
-			                     >= JSTRIO_PATH_MAX)) {
+			    && jstr_unlikely(
+			    dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep)
+			    >= JSTRIO_PATH_MAX)) {
 				errno = ENAMETOOLONG;
 				goto err_closedir;
 			}
 		}
-		/* We must stat() to get the type. */
+		/* We must stat to get the type if we don't have d_type. */
 		if (!JSTR_HAVE_DIRENT_D_TYPE) {
+			/* We must construct the full path for stat if we
+			 * don't have *_at functions. */
 			if (!USE_ATFILE)
-				/* We must construct the full path for stat().
-				 */
 				FILL_PATH_ALWAYS(a->ftw.dirpath_len,
 				                 (char *)a->ftw.dirpath,
 				                 dirpath_len,
@@ -987,8 +990,8 @@ do_reg:
 		if (a->func_match) {
 			if (FLAG(JSTRIO_FTW_MATCHPATH)) {
 				/* FILL_PATH() will construct the full path if
-				 * either USE_ATFILE or HAVE_DIRENT_D_TYPE is
-				 * true. */
+				 * either *_at functions or d_type aren't
+				 * available. */
 				FILL_PATH(a->ftw.dirpath_len,
 				          (char *)a->ftw.dirpath,
 				          dirpath_len,
@@ -1004,6 +1007,8 @@ do_reg:
 				                  fname_len,
 				                  a->func_match_args))
 					continue;
+				/* We haven't constructed the full path since we
+				 * have *_at functions. */
 				if (USE_ATFILE)
 					a->ftw.dirpath_len
 					= jstrio_appendpath_len_p(
@@ -1014,20 +1019,29 @@ do_reg:
 					  - a->ftw.dirpath;
 			}
 		} else {
+			/* Construct the full path when needed. If we don't have
+			 * *_at functions, we have already constructed it and
+			 * this will be a no-op. */
 			FILL_PATH(a->ftw.dirpath_len,
 			          (char *)a->ftw.dirpath,
 			          dirpath_len,
 			          a->ftw.ep);
 		}
 		if (FLAG(JSTRIO_FTW_STATREG)) {
+			/* We must stat. */
 			if (IS_REG(a->ftw.ep, a->ftw.st))
 				STAT((struct stat *)a->ftw.st,
 				     fd,
 				     a->ftw.ep,
 				     a->ftw.dirpath);
+			/* Only the st_mode is guaranteed to be initialized.
+			 * This is so that we can avoid the stat when d_type is
+			 * available. */
 			else
 				STAT_MODE((struct stat *)a->ftw.st, a->ftw.ep);
 		} else {
+			/* If the NOSTAT flag is passed, only guarantee st_mode.
+			 */
 			STAT_OR_MODE((struct stat *)a->ftw.st,
 			             fd,
 			             a->ftw.ep,
@@ -1035,13 +1049,14 @@ do_reg:
 		}
 func:
 		tmp = a->func(&a->ftw, a->func_args);
+		/* ACTIONRETVAL according to glibc ftw. */
 		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE
 			    || tmp == JSTRIO_FTW_RET_SKIP_SUBTREE)
 				continue;
 			else if (tmp == JSTRIO_FTW_RET_SKIP_SIBLINGS)
 				break;
-			else /* RET_STOP */
+			else /* tmp == RET_STOP */
 				goto ret_stop;
 		} else {
 			if (jstr_chk(tmp))
@@ -1049,10 +1064,11 @@ func:
 		}
 		continue;
 dir:
-		if (FLAG(JSTRIO_FTW_NOSUBDIR))
-			if (FLAG(JSTRIO_FTW_REG))
-				if (!FLAG(JSTRIO_FTW_DIR))
-					continue;
+		/* Go to next entry if we don't traverse subdirectories and
+		 * don't need to call FUNC on directories. */
+		if (FLAG(JSTRIO_FTW_NOSUBDIR) && FLAG(JSTRIO_FTW_REG)
+		    && !FLAG(JSTRIO_FTW_DIR))
+			continue;
 		FILL_PATH(a->ftw.dirpath_len,
 		          (char *)a->ftw.dirpath,
 		          dirpath_len,
@@ -1061,9 +1077,9 @@ dir:
 			STAT_MODE(a->ftw.st, a->ftw.ep);
 		else
 			STAT_OR_MODE(a->ftw.st, fd, a->ftw.ep, a->ftw.dirpath);
-		if (FLAG(JSTRIO_FTW_REG))
-			if (!FLAG(JSTRIO_FTW_DIR))
-				goto skip_fn;
+		/* Don't call FUNC on directory if we don't need to. */
+		if (FLAG(JSTRIO_FTW_REG) && !FLAG(JSTRIO_FTW_DIR))
+			goto skip_fn;
 		tmp = a->func(&a->ftw, a->func_args);
 		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
 			if (tmp == JSTRIO_FTW_RET_CONTINUE)
@@ -1071,21 +1087,25 @@ dir:
 			else if (tmp == JSTRIO_FTW_RET_SKIP_SUBTREE
 			         || tmp == JSTRIO_FTW_RET_SKIP_SIBLINGS)
 				break;
-			else /* RET_STOP */
+			else /* tmp == RET_STOP */
 				goto ret_stop;
 		} else {
 			if (jstr_chk(tmp))
 				goto err_closedir;
 		}
 skip_fn:
+		/* Don't traverse subdirectories when we don't need to. */
 		if (FLAG(JSTRIO_FTW_NOSUBDIR))
 			continue;
+		/* If we have *_at functions, open d_name to get the fd.
+		 * Otherwise, no-op. */
 		OPENAT(tmp,
 		       fd,
 		       a->ftw.ep->d_name,
 		       O_RDONLY | O_NONBLOCK | PJSTRIO_O_DIRECTORY,
 		       goto CONT);
 		tmp = pjstrio_ftw_len(a, a->ftw.dirpath_len FD_ARG);
+		/* Close when we have *_at functions. */
 		CLOSE(FD, goto err_closedir);
 		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
 			if (jstr_unlikely(tmp == JSTRIO_FTW_RET_STOP))
@@ -1106,7 +1126,6 @@ err_closedir:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-#undef FLAG
 #undef OPENDIR
 #undef NONFATAL_ERR
 #undef IS_DIR
@@ -1121,6 +1140,9 @@ err_closedir:
 #undef FD
 #undef FD_PARAM
 #undef PJSTRIO_O_DIRECTORY
+#undef FLAG
+
+#define FLAG(x) (jstrio_ftw_flags & (x))
 
 /* Call FUNC() on files found recursively where FUNC_MATCH() returns 0.
  * If FUNC_MATCH() is NULL, it behaves as if it matches.
@@ -1152,11 +1174,12 @@ jstrio_ftw_len(const char *R dirpath,
 		errno = ENAMETOOLONG;
 		goto err;
 	}
+	/* Don't copy trailing // to FULPATH. */
 	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/';
 	     --dirpath_len) {}
 	char fulpath[JSTRIO_PATH_MAX];
 	jstr_strcpy_len(fulpath, dirpath, dirpath_len);
-	FD_DECLARE
+	FD_DECLARE;
 	OPEN(fd, fulpath, O_RDONLY | O_NONBLOCK, goto err);
 	struct stat st;
 	struct pjstrio_ftw_data data;
@@ -1168,20 +1191,23 @@ jstrio_ftw_len(const char *R dirpath,
 		goto ftw;
 	}
 	data.ftw.dirpath_len = dirpath_len;
-#if USE_ATFILE
-	if (jstr_unlikely(fstat(fd, &st)))
-#else
-	if (jstr_unlikely(stat(fulpath, &st)))
-#endif
-		goto func;
+	if (USE_ATFILE) {
+		if (jstr_unlikely(fstat(fd, &st)))
+			goto func;
+	} else {
+		if (jstr_unlikely(stat(fulpath, &st)))
+			goto func;
+	}
+	/* If DIRPATH is a directory, call FUNC on directory when needed and
+	 * call ftw. */
 	if (jstr_likely(S_ISDIR(data.ftw.st->st_mode))) {
 ftw:;
-		if (jstrio_ftw_flags & JSTRIO_FTW_REG)
-			if (!(jstrio_ftw_flags & JSTRIO_FTW_DIR))
+		if (FLAG(JSTRIO_FTW_REG))
+			if (!FLAG(JSTRIO_FTW_DIR))
 				goto CONT;
 		int tmp;
 		tmp = func(&data.ftw, func_args);
-		if (jstrio_ftw_flags & JSTRIO_FTW_ACTIONRETVAL) {
+		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
 			if (jstr_unlikely(tmp != JSTRIO_FTW_RET_CONTINUE))
 				goto err_close;
 		} else {
@@ -1199,12 +1225,13 @@ CONT:;
 		return tmp;
 	}
 func:
+	/* DIRPATH is not a directory. */
 	CLOSE(fd, goto err);
-	if (jstrio_ftw_flags & JSTRIO_FTW_REG)
+	if (FLAG(JSTRIO_FTW_REG))
 		if (jstr_unlikely(!S_ISREG(data.ftw.st->st_mode)))
 			return JSTR_RET_SUCC;
 	if (func_match) {
-		if (jstrio_ftw_flags & JSTRIO_FTW_MATCHPATH) {
+		if (FLAG(JSTRIO_FTW_MATCHPATH)) {
 func_match_path:
 			if (func_match(fulpath, dirpath_len, func_match_args))
 				return JSTR_RET_SUCC;
@@ -1235,6 +1262,7 @@ err:
 #undef USE_ATFILE
 #undef FD_DECLARE
 #undef FD_ARG
+#undef FLAG
 
 PJSTR_END_DECLS
 
