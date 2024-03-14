@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -181,7 +181,6 @@ PJSTR_END_DECLS
 #define JSTRIO_RB (JSTRIO_YB * 10)
 #define JSTRIO_QB (JSTRIO_RB * 10)
 
-/* clang-format off */
 #define JSTR_ALPHA_VOWEL_LOWER_STR "aiueo"
 #define JSTR_ALPHA_VOWEL_UPPER_STR "AIUEO"
 #define JSTR_ALPHA_CONSONANT_LOWER_STR "bcdfghjklmnpqrstvwxyz"
@@ -218,7 +217,6 @@ PJSTR_END_DECLS
 #define JSTR_CONSONANT_CASE JSTR_CONSONANT_ALPHA_UPPER_CASE JSTR_CONSONANT_ALPHA_LOWER_CASE
 #define JSTR_ALPHA_CASE JSTR_ALPHA_LOWER_CASE JSTR_ALPHA_UPPER_CASE
 #define JSTR_ALNUM_CASE JSTR_DIGIT_CASE JSTR_ALPHA_CASE
-/* clang-format on */
 
 #define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                      \
 	                             ? (memset((array), (c), 64),                \
@@ -247,9 +245,7 @@ PJSTR_END_DECLS
 			}                             \
 		} while (0)
 #else
-/* clang-format off */
 #	define JSTR_ASSERT_DEBUG(expr, msg) do {} while (0)
-/* clang-format on */
 #endif
 
 #if JSTR_PANIC
@@ -260,10 +256,8 @@ PJSTR_END_DECLS
 			return errcode;  \
 		} while (0)
 #else
-/* clang-format off */
 #	define JSTR_DEBUG_PRINT(fmt, ...) do {} while (0)
 #	define JSTR_RETURN_ERR(errcode) return errcode
-/* clang-format on */
 #endif
 
 #ifdef __cplusplus
@@ -307,7 +301,6 @@ PJSTR_CAST(T, Other other)
 #endif /* have_typeof && have_generic */
 
 #if JSTR_HAVE_GENERIC
-/* clang-format off */
 #	define JSTR_GENERIC_CASE_SIZE(bool_) int : bool_, unsigned int : bool_, size_t : bool_, long : bool_, long long : bool_, unsigned long long : bool_
 #	define JSTR_GENERIC_CASE_STR(bool_) char * : bool_, const char * : bool_
 #	define JSTR_GENERIC_CASE_STR_STACK(bool_, s) char(*)[sizeof(s)] : bool_, const char(*)[sizeof(s)] : bool_
@@ -320,7 +313,6 @@ PJSTR_CAST(T, Other other)
 #	define JSTR_STATIC_ASSERT_IS_STR(expr) JSTR_STATIC_ASSERT(PJSTR_IS_STR(expr), "Passing non-string as string argument!");
 #	define JSTR_STATIC_ASSERT_IS_CHAR(expr) JSTR_STATIC_ASSERT(PJSTR_IS_CHAR(expr), "Passing non-char as char argument!");
 #	define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr) JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
-/* clang-format on */
 #else
 #	define JSTR_GENERIC_CASE_SIZE(bool_)
 #	define JSTR_GENERIC_CASE_STR(bool_)

@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -28,7 +28,8 @@
 #	define JSTR_PANIC 0
 #endif
 
-/* Behave as JSTR_PANIC would, activate debug asserts, and print debug messages. */
+/* Behave as JSTR_PANIC would, activate debug asserts, and print debug messages.
+ */
 #ifndef JSTR_DEBUG
 #	define JSTR_DEBUG 0
 #endif
@@ -47,9 +48,10 @@
 #	define JSTR_USE_UNLOCKED_IO_WRITE 0
 #endif
 
-/* When removing a string (jstr_ty) from a string list (jstrlist_ty), don't immediately
- * call free(). This may result in fewer allocations when strings are often added to
- * and removed from the list. All elements are freed when jstrl_free() is called. */
+/* When removing a string (jstr_ty) from a string list (jstrlist_ty), don't
+ * immediately call free(). This may result in fewer allocations when strings
+ * are often added to and removed from the list. All elements are freed when
+ * jstrl_free() is called. */
 #ifndef JSTRL_LAZY_FREE
 #	define JSTRL_LAZY_FREE 1
 #endif
@@ -89,12 +91,17 @@
 
 /* Filename extensions interpreted as text. */
 #ifndef JSTRIO_FT_TEXT_ARRAY
-#	define JSTRIO_FT_TEXT_ARRAY "C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html", "js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", "ts", "txt"
+#	define JSTRIO_FT_TEXT_ARRAY                                           \
+		"C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html",    \
+		"js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh",  \
+		"ts", "txt"
 #endif
 
 /* Filename extensions interpreted as binary. */
 #ifndef JSTRIO_FT_BINARY_ARRAY
-#	define JSTRIO_FT_BINARY_ARRAY "a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", "pdf", "png", "pyc", "rar", "so", "wav", "zip"
+#	define JSTRIO_FT_BINARY_ARRAY                                         \
+		"a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o",     \
+		"pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
 #if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG

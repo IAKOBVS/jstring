@@ -35,8 +35,9 @@
 #	define PJSTR_MUSL_FUNC_NAME pjstr_memmem_musl
 #endif
 
-#define BITOP(a, b, op) \
-	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
+#define BITOP(a, b, op)                                                        \
+	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1                     \
+	 << ((size_t)(b) % (8 * sizeof *(a))))
 
 #ifndef PJSTR_MUSL_TWOWAY_STRUCT
 #	define PJSTR_MUSL_TWOWAY_STRUCT
@@ -59,8 +60,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t,
                                          ,
                                          size_t ne_len
 #endif
-                                         )
-JSTR_NOEXCEPT
+                                         ) JSTR_NOEXCEPT
 {
 	size_t max_suffix, j, k, period;
 	int a, b;
@@ -71,7 +71,8 @@ JSTR_NOEXCEPT
 #else
 	for (max_suffix = 0; max_suffix < ne_len; ++max_suffix)
 #endif
-		a = CANON(ne[max_suffix]), BITOP(t->_byteset, a, |=), t->_shift[a] = max_suffix + 1;
+		a = CANON(ne[max_suffix]), BITOP(t->_byteset, a, |=),
+		t->_shift[a] = max_suffix + 1;
 	t->needle_len = max_suffix;
 	/* Compute maximal suffix. */
 	max_suffix = (size_t)-1, j = 0, k = t->_global_period = 1;
@@ -122,9 +123,12 @@ JSTR_NOEXCEPT
 	else
 		t->_global_period = period;
 	/* Periodic ne? */
-	if (PJSTR_MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->_global_period, t->_suffix + 1)) {
+	if (PJSTR_MUSL_CMP_FUNC((const char *)ne,
+	                        (const char *)ne + t->_global_period,
+	                        t->_suffix + 1)) {
 		t->_memory0 = 0;
-		t->_global_period = JSTR_MAX(t->_suffix, t->needle_len - t->_suffix - 1) + 1;
+		t->_global_period
+		= JSTR_MAX(t->_suffix, t->needle_len - t->_suffix - 1) + 1;
 	} else {
 		t->_memory0 = t->needle_len - t->_global_period;
 	}
@@ -145,8 +149,7 @@ JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
                                          ,
                                          size_t n_limit
 #endif
-                                         )
-JSTR_NOEXCEPT
+                                         ) JSTR_NOEXCEPT
 {
 	int c;
 	size_t k;
@@ -158,7 +161,8 @@ JSTR_NOEXCEPT
 		return NULL;
 	const unsigned char *const end_limit = hs + n_limit;
 #	endif
-	const unsigned char *end = hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
+	const unsigned char *end
+	= hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
 #else
 	const unsigned char *const end = hs + hs_len;
 #endif
@@ -169,11 +173,16 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
 #	ifdef PJSTR_MUSL_USE_N
-			end += jstr_strnlen((const char *)end, JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(end_limit, hs)));
+			end
+			+= jstr_strnlen((const char *)end,
+			                JSTR_MIN(t->needle_len | 2048,
+			                         JSTR_PTR_DIFF(end_limit, hs)));
 #	else
-			end += jstr_strnlen((const char *)end, t->needle_len | 2048);
+			end += jstr_strnlen((const char *)end,
+			                    t->needle_len | 2048);
 #	endif
-			if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len))
+			if (jstr_unlikely(JSTR_PTR_DIFF(end, hs)
+			                  < t->needle_len))
 				break;
 		}
 #else
@@ -198,14 +207,18 @@ JSTR_NOEXCEPT
 			continue;
 		}
 		/* Compare right half. */
-		for (k = JSTR_MAX(t->_suffix + 1, memory); k < t->needle_len && CANON(ne[k]) == CANON(hs[k]); ++k) {}
+		for (k = JSTR_MAX(t->_suffix + 1, memory);
+		     k < t->needle_len && CANON(ne[k]) == CANON(hs[k]);
+		     ++k) {}
 		if (k < t->needle_len) {
 			hs += k - t->_suffix;
 			memory = 0;
 			continue;
 		}
 		/* Compare left half. */
-		for (k = t->_suffix + 1; k > memory && CANON(ne[k - 1]) == CANON(hs[k - 1]); --k) {}
+		for (k = t->_suffix + 1;
+		     k > memory && CANON(ne[k - 1]) == CANON(hs[k - 1]);
+		     --k) {}
 		if (k <= memory)
 			return (char *)hs;
 		hs += t->_global_period;
@@ -231,27 +244,29 @@ PJSTR_MUSL_FUNC_NAME(const unsigned char *haystack
                      ,
                      size_t n_limit
 #endif
-                     )
-JSTR_NOEXCEPT
+                     ) JSTR_NOEXCEPT
 {
 	jstr_twoway_ty t;
 	JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _comp)
-	(&t, (const unsigned char *)needle
+	(&t,
+	 (const unsigned char *)needle
 #ifndef PJSTR_MUSL_CHECK_EOL
 	 ,
 	 needle_len
 #endif
 	);
-	return JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
+	return JSTR_CONCAT(PJSTR_MUSL_FUNC_NAME,
+	                   _exec)(&t,
+	                          (const unsigned char *)haystack
 #ifndef PJSTR_MUSL_CHECK_EOL
-	                                                ,
-	                                                haystack_len
+	                          ,
+	                          haystack_len
 #endif
-	                                                ,
-	                                                (const unsigned char *)needle
+	                          ,
+	                          (const unsigned char *)needle
 #ifdef PJSTR_MUSL_USE_N
-	                                                ,
-	                                                n_limit
+	                          ,
+	                          n_limit
 #endif
 	);
 }

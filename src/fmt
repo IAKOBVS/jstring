@@ -12,6 +12,7 @@ for file in $@; do
 			*_jstr* | *pp* | *macros* ) exit ;;
 		esac
 		clang-format -i --style=file:'.clang-format' "$file"
+		echo clang-format -i --style=file:'.clang-format' "$file"
 	} &
 done
 wait

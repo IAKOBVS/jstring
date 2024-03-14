@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -50,8 +50,7 @@ static const unsigned char jstr_rarebyte_table_case[256]={0,1,13,56,59,60,61,62,
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_rarebytefind_len(const void *ne,
-                      size_t n)
+jstr_rarebytefind_len(const void *ne, size_t n)
 {
 	const unsigned char *rare = (const unsigned char *)ne;
 	const unsigned char *p = (const unsigned char *)ne;
@@ -112,8 +111,7 @@ jstr_rarebytefindcase(const char *ne)
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_rarebytefindcase_len(const void *ne,
-                          size_t n)
+jstr_rarebytefindcase_len(const void *ne, size_t n)
 {
 	const unsigned char *rare = (const unsigned char *)ne;
 	const unsigned char *p = (const unsigned char *)ne;
@@ -158,8 +156,7 @@ jstr_rarebytefindprefernonalpha(const void *ne)
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static void *
-jstr_rarebytefindprefernonalpha_len(const void *ne,
-                                    size_t n)
+jstr_rarebytefindprefernonalpha_len(const void *ne, size_t n)
 {
 	const unsigned char *rare = (const unsigned char *)ne;
 	const unsigned char *rare_backup = (const unsigned char *)ne;
