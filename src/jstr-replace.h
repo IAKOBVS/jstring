@@ -798,6 +798,7 @@ jstr_rmn_len_from_exec(const jstr_twoway_ty *R t,
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
+JSTR_ATTR_INLINE
 static size_t
 jstr_rmn_len_exec(const jstr_twoway_ty *R t,
                   char *R s,
@@ -846,6 +847,7 @@ jstr_rmn_len_from(char *R s,
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced. */
 JSTR_FUNC_VOID
+JSTR_ATTR_INLINE
 static size_t
 jstr_rmn_len(char *R s,
              size_t *R sz,
