@@ -1246,7 +1246,8 @@ func:
 				    dirpath, end - dirpath, func_match_args))
 					return JSTR_RET_SUCC;
 			} else {
-				if (func_match(fulpath, dirpath_len, func_match_args))
+				if (func_match(
+				    fulpath, dirpath_len, func_match_args))
 					return JSTR_RET_SUCC;
 			}
 		}

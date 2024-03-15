@@ -102,9 +102,9 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 JSTR_FUNC_PURE
 static void *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs,
-                                              unsigned int hs_len,
-                                              const unsigned char *ne,
-                                              size_t ne_len) JSTR_NOEXCEPT
+                                               unsigned int hs_len,
+                                               const unsigned char *ne,
+                                               size_t ne_len) JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
 	hs += hs_len - ne_len;
