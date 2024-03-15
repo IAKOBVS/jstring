@@ -122,7 +122,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs,
 	                                                         : NULL;
 }
 
-#else
+#else /* STRRSTR */
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
