@@ -21,7 +21,6 @@
  * SOFTWARE. */
 
 #include "jstr-macros.h"
-#include "jstr-rarebyte.h"
 
 PJSTR_BEGIN_DECLS
 #include <immintrin.h>
