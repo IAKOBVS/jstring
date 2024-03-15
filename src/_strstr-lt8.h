@@ -91,7 +91,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 	uint64_t hw;
 	uint64_t nw;
 	const uint64_t mask
-	= (uint64_t)-1 << ((sizeof(uint64_t) - ne_len) << 3);
+	= (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
 	hs += hs_len - 1;
 	ne += ne_len - 1;
 	for (unsigned int n = ne_len; n--; hw = (uint64_t)hw << 8 | L(*hs--),
@@ -99,7 +99,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 		N_EXIT;
 	for (hs_len -= ne_len, hw &= mask, nw &= mask; N hw != nw && hs_len--;
 	     hw = (uint64_t)(hw << 8 | L(*hs--)) & mask) {}
-	return hw == nw ? (char *)(hs + ne_len) : NULL;
+	return hw == nw ? (char *)(hs + 1) : NULL;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
