@@ -121,7 +121,7 @@ typedef enum {
 #endif
 } jstrre_ret_ty;
 
-#define PJSTRRE_ERR_EXEC_HANDLE(errcode, do_on_error)                          \
+#define JSTRRE__ERR_EXEC_HANDLE(errcode, do_on_error)                          \
 	if (jstr_likely(errcode == JSTRRE_RET_NOERROR)) {                      \
 		;                                                              \
 	} else if (errcode == JSTRRE_RET_NOMATCH) {                            \
@@ -291,7 +291,7 @@ jstrre_rmn_from(const regex_t *R preg,
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstrre_exec_len(
 		preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), 1, &rm, eflags);
-		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err_free);
+		JSTRRE__ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -485,7 +485,7 @@ jstrre_rplcn_len_from(const regex_t *R preg,
 		                      1,
 		                      &rm,
 		                      eflags);
-		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err_free);
+		JSTRRE__ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -739,7 +739,7 @@ jstrre_rplcn_bref_len_from(const regex_t *R preg,
 		                      (size_t)nmatch,
 		                      rm,
 		                      eflags);
-		PJSTRRE_ERR_EXEC_HANDLE(ret, goto err_free_rdst);
+		JSTRRE__ERR_EXEC_HANDLE(ret, goto err_free_rdst);
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (jstr_unlikely(find_len == 0)) {
 			++i.src_e;

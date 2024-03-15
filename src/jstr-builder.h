@@ -121,7 +121,7 @@ jstr_debug(const jstr_ty *R j) JSTR_NOEXCEPT
 	ret = fputs("data:", stderr);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
-	jstrio_fwrite(j->data, 1, j->size, stderr);
+	jstr_io_fwrite(j->data, 1, j->size, stderr);
 	if (jstr_unlikely(ferror(stderr)))
 		goto err;
 	ret = fputs(".\n", stderr);
@@ -245,9 +245,9 @@ jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap)
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstrio_print(const jstr_ty *R j) JSTR_NOEXCEPT
+jstr_io_print(const jstr_ty *R j) JSTR_NOEXCEPT
 {
-	return jstrio_fwrite(j->data, 1, j->size, stdout) != j->size
+	return jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size
 	       ? JSTR_RET_SUCC
 	       : JSTR_RET_ERR;
 }
@@ -255,12 +255,12 @@ jstrio_print(const jstr_ty *R j) JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstrio_println(const jstr_ty *R j) JSTR_NOEXCEPT
+jstr_io_println(const jstr_ty *R j) JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(jstrio_fwrite(j->data, 1, j->size, stdout)
+	if (jstr_unlikely(jstr_io_fwrite(j->data, 1, j->size, stdout)
 	                  != j->size))
 		return JSTR_RET_ERR;
-	if (jstr_unlikely(jstrio_putchar('\n') == EOF))
+	if (jstr_unlikely(jstr_io_putchar('\n') == EOF))
 		return JSTR_RET_ERR;
 	return JSTR_RET_SUCC;
 }
