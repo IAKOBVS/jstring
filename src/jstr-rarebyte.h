@@ -48,7 +48,6 @@ static const unsigned char jstr_rarebyte_table_case[256]={0,1,13,56,59,60,61,62,
 /* clang-format on */
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 jstr_rarebytefind_len(const void *ne, size_t n)
 {
@@ -67,7 +66,6 @@ jstr_rarebytefind_len(const void *ne, size_t n)
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 jstr_rarebytefind(const char *ne)
 {
@@ -88,7 +86,6 @@ jstr_rarebytefind(const char *ne)
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 jstr_rarebytefindcase(const char *ne)
 {
@@ -109,7 +106,6 @@ jstr_rarebytefindcase(const char *ne)
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 jstr_rarebytefindcase_len(const void *ne, size_t n)
 {
@@ -128,7 +124,6 @@ jstr_rarebytefindcase_len(const void *ne, size_t n)
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 jstr_rarebytefindprefernonalpha(const void *ne)
 {
@@ -154,7 +149,6 @@ jstr_rarebytefindprefernonalpha(const void *ne)
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 jstr_rarebytefindprefernonalpha_len(const void *ne, size_t n)
 {
@@ -175,6 +169,20 @@ jstr_rarebytefindprefernonalpha_len(const void *ne, size_t n)
 		}
 	}
 	return (void *)(jstr_isalpha(*rare) ? rare_backup : rare);
+}
+
+JSTR_FUNC_PURE
+static void *
+jstr_anomalyfind_len(const void *s, size_t n)
+{
+	const int c = *(unsigned char *)s;
+	const unsigned char *p = (const unsigned char *)s;
+	if (jstr_unlikely(n == 0))
+		return (void *)p;
+	for ( ;n--; ++p)
+		if (*p != c)
+			return (void *)p;
+	return (void *)(p - 1);
 }
 
 PJSTR_END_DECLS
