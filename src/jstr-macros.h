@@ -34,7 +34,7 @@
 
 #ifdef __cplusplus
 #	define JSTR__BEGIN_DECLS extern "C" {
-#	define JSTR__END_DECLS   }
+#	define JSTR__END_DECLS }
 #else
 #	define JSTR__BEGIN_DECLS
 #	define JSTR__END_DECLS
@@ -42,9 +42,9 @@
 
 JSTR__BEGIN_DECLS
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
 JSTR__END_DECLS
 
@@ -106,6 +106,13 @@ JSTR__END_DECLS
 #	define JSTR_PANIC 1
 #endif
 
+#define JSTR_SWAP(T, x, y)  \
+	do {                \
+		T _TMP = x; \
+		x = y;      \
+		y = _TMP;   \
+	} while (0)
+
 #ifdef __BYTE_ORDER
 #	define JSTR_WORD_ORDER __BYTE_ORDER
 #elif defined _BYTE_ORDER
@@ -152,23 +159,23 @@ JSTR__END_DECLS
 #	error "Can't detect endianness."
 #endif
 
-#define jstr_err(msg)    jstr__err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
+#define jstr_err(msg) jstr__err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
 #define jstr_errdie(msg) jstr__errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
 
-#define jstr_chk(ret)             jstr_unlikely(ret == -1)
-#define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
+#define jstr_chk(ret) jstr_unlikely(ret == -1)
+#define jstr_nullchk(p) jstr_unlikely((p) == NULL)
 #define JSTR_PAGE_SIZE 4096
-#define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
+#define JSTR_ARRAY_COUNT(array) (sizeof(array) / sizeof(array[0]))
 #define JSTR__CONCAT_HELPER(x, y) x##y
-#define JSTR_CONCAT(x, y)         JSTR__CONCAT_HELPER(x, y)
-#define JSTR_STRING(x)            #x
+#define JSTR_CONCAT(x, y) JSTR__CONCAT_HELPER(x, y)
+#define JSTR_STRING(x) #x
 
-#define JSTR_MAX(x, y)        (((x) > (y)) ? (x) : (y))
-#define JSTR_MIN(x, y)        (((x) < (y)) ? (x) : (y))
+#define JSTR_MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define JSTR_MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define JSTR_BETWEEN(x, a, b) (((a) <= (x)) && ((x) <= (b)))
-#define JSTR_MIN3(x, y, z)    (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
-#define JSTR_MAX3(x, y, z)    (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
-#define JSTR_MID3(x, y, z)    (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
+#define JSTR_MIN3(x, y, z) (((x) < (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
+#define JSTR_MAX3(x, y, z) (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
+#define JSTR_MID3(x, y, z) (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
 
 #define JSTRIO_KB (1000)
 #define JSTRIO_MB (JSTRIO_KB * 10)
@@ -199,18 +206,257 @@ JSTR__END_DECLS
 #define JSTR_ALNUM_LOWER_STR JSTR_ALPHA_LOWER_STR JSTR_DIGIT_STR
 #define JSTR_ALNUM_UPPER_STR JSTR_ALPHA_UPPER_STR JSTR_DIGIT_STR
 #define JSTR_ALNUM_STR JSTR_ALPHA_STR JSTR_DIGIT_STR
-#define JSTR_DIGIT_CASE case'0':case'1':case'2':case'3':case'4':case'5':case'6':case'7':case'8':case'9':
-#define JSTR_ALPHA_VOWEL_LOWER_CASE case'a':case'i':case'u':case'e':case'o':
-#define JSTR_ALPHA_VOWEL_UPPER_CASE case'A':case'I':case'U':case'E':case'O':
-#define JSTR_ALPHA_CONSONANT_LOWER_CASE case'b':case'c':case'd':case'f':case'g':case'h':case'j':case'k':case'l':case'm':case'n':case'p':case'q':case'r':case's':case't':case'v':case'w':case'x':case'y':case'z':
-#define JSTR_ALPHA_CONSONANT_UPPER_CASE case'B':case'C':case'D':case'F':case'G':case'H':case'J':case'K':case'L':case'M':case'N':case'P':case'Q':case'R':case'S':case'T':case'V':case'W':case'X':case'Y':case'Z':
-#define JSTR_XDIGIT_CASE JSTR_DIGIT_CASE case'a':case'b':case'c':case'd':case'e':case'f':case'A':case'B':case'C':case'D':case'E':case'F':
-#define JSTR_BLANK_CASE case'\t':case' ':
-#define JSTR_SPACE_CASE	JSTR_BLANK_CASE case'\n':case'\v':case'\f':case'\r':
-#define JSTR_GRAPH_CASE case 33:case 34:case 35:case 36:case 37:case 38:case 39:case 40:case 41:case 42:case 43:case 44:case 45:case 46:case 47:case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:case 58:case 59:case 60:case 61:case 62:case 63:case 64:case 65:case 66:case 67:case 68:case 69:case 70:case 71:case 72:case 73:case 74:case 75:case 76:case 77:case 78:case 79:case 80:case 81:case 82:case 83:case 84:case 85:case 86:case 87:case 88:case 89:case 90:case 91:case 92:case 93:case 94:case 95:case 96:case 97:case 98:case 99:case 100:case 101:case 102:case 103:case 104:case 105:case 106:case 107:case 108:case 109:case 110:case 111:case 112:case 113:case 114:case 115:case 116:case 117:case 118:case 119:case 120:case 121:case 122:case 123:case 124:case 125:case 126:
-#define JSTR_PRINT_CASE	JSTR_GRAPH_CASE case 32:
-#define JSTR_CNTRL_CASE case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:case 18:case 19:case 20:case 21:case 22:case 23:case 24:case 25:case 26:case 27:case 28:case 29:case 30:case 31:case 127:
-#define JSTR_PUNCT_CASE case'!':case'"':case'#':case'$':case'%':case'&':case'\'':case'(':case')':case'*':case'+':case',':case'-':case'.':case'/':case':':case';':case'<':case'=':case'>':case'?':case'@':case'[':case'\\':case']':case'^':case'_':case'`':case'{':case'|':case'}':case'~':
+#define JSTR_DIGIT_CASE \
+case '0':               \
+case '1':               \
+case '2':               \
+case '3':               \
+case '4':               \
+case '5':               \
+case '6':               \
+case '7':               \
+case '8':               \
+case '9':
+#define JSTR_ALPHA_VOWEL_LOWER_CASE \
+case 'a':                           \
+case 'i':                           \
+case 'u':                           \
+case 'e':                           \
+case 'o':
+#define JSTR_ALPHA_VOWEL_UPPER_CASE \
+case 'A':                           \
+case 'I':                           \
+case 'U':                           \
+case 'E':                           \
+case 'O':
+#define JSTR_ALPHA_CONSONANT_LOWER_CASE \
+case 'b':                               \
+case 'c':                               \
+case 'd':                               \
+case 'f':                               \
+case 'g':                               \
+case 'h':                               \
+case 'j':                               \
+case 'k':                               \
+case 'l':                               \
+case 'm':                               \
+case 'n':                               \
+case 'p':                               \
+case 'q':                               \
+case 'r':                               \
+case 's':                               \
+case 't':                               \
+case 'v':                               \
+case 'w':                               \
+case 'x':                               \
+case 'y':                               \
+case 'z':
+#define JSTR_ALPHA_CONSONANT_UPPER_CASE \
+case 'B':                               \
+case 'C':                               \
+case 'D':                               \
+case 'F':                               \
+case 'G':                               \
+case 'H':                               \
+case 'J':                               \
+case 'K':                               \
+case 'L':                               \
+case 'M':                               \
+case 'N':                               \
+case 'P':                               \
+case 'Q':                               \
+case 'R':                               \
+case 'S':                               \
+case 'T':                               \
+case 'V':                               \
+case 'W':                               \
+case 'X':                               \
+case 'Y':                               \
+case 'Z':
+#define JSTR_XDIGIT_CASE  \
+JSTR_DIGIT_CASE case 'a': \
+case 'b':                 \
+case 'c':                 \
+case 'd':                 \
+case 'e':                 \
+case 'f':                 \
+case 'A':                 \
+case 'B':                 \
+case 'C':                 \
+case 'D':                 \
+case 'E':                 \
+case 'F':
+#define JSTR_BLANK_CASE \
+case '\t':              \
+case ' ':
+#define JSTR_SPACE_CASE    \
+JSTR_BLANK_CASE case '\n': \
+case '\v':                 \
+case '\f':                 \
+case '\r':
+#define JSTR_GRAPH_CASE \
+case 33:                \
+case 34:                \
+case 35:                \
+case 36:                \
+case 37:                \
+case 38:                \
+case 39:                \
+case 40:                \
+case 41:                \
+case 42:                \
+case 43:                \
+case 44:                \
+case 45:                \
+case 46:                \
+case 47:                \
+case 48:                \
+case 49:                \
+case 50:                \
+case 51:                \
+case 52:                \
+case 53:                \
+case 54:                \
+case 55:                \
+case 56:                \
+case 57:                \
+case 58:                \
+case 59:                \
+case 60:                \
+case 61:                \
+case 62:                \
+case 63:                \
+case 64:                \
+case 65:                \
+case 66:                \
+case 67:                \
+case 68:                \
+case 69:                \
+case 70:                \
+case 71:                \
+case 72:                \
+case 73:                \
+case 74:                \
+case 75:                \
+case 76:                \
+case 77:                \
+case 78:                \
+case 79:                \
+case 80:                \
+case 81:                \
+case 82:                \
+case 83:                \
+case 84:                \
+case 85:                \
+case 86:                \
+case 87:                \
+case 88:                \
+case 89:                \
+case 90:                \
+case 91:                \
+case 92:                \
+case 93:                \
+case 94:                \
+case 95:                \
+case 96:                \
+case 97:                \
+case 98:                \
+case 99:                \
+case 100:               \
+case 101:               \
+case 102:               \
+case 103:               \
+case 104:               \
+case 105:               \
+case 106:               \
+case 107:               \
+case 108:               \
+case 109:               \
+case 110:               \
+case 111:               \
+case 112:               \
+case 113:               \
+case 114:               \
+case 115:               \
+case 116:               \
+case 117:               \
+case 118:               \
+case 119:               \
+case 120:               \
+case 121:               \
+case 122:               \
+case 123:               \
+case 124:               \
+case 125:               \
+case 126:
+#define JSTR_PRINT_CASE JSTR_GRAPH_CASE case 32:
+#define JSTR_CNTRL_CASE \
+case 0:                 \
+case 1:                 \
+case 2:                 \
+case 3:                 \
+case 4:                 \
+case 5:                 \
+case 6:                 \
+case 7:                 \
+case 8:                 \
+case 9:                 \
+case 10:                \
+case 11:                \
+case 12:                \
+case 13:                \
+case 14:                \
+case 15:                \
+case 16:                \
+case 17:                \
+case 18:                \
+case 19:                \
+case 20:                \
+case 21:                \
+case 22:                \
+case 23:                \
+case 24:                \
+case 25:                \
+case 26:                \
+case 27:                \
+case 28:                \
+case 29:                \
+case 30:                \
+case 31:                \
+case 127:
+#define JSTR_PUNCT_CASE \
+case '!':               \
+case '"':               \
+case '#':               \
+case '$':               \
+case '%':               \
+case '&':               \
+case '\'':              \
+case '(':               \
+case ')':               \
+case '*':               \
+case '+':               \
+case ',':               \
+case '-':               \
+case '.':               \
+case '/':               \
+case ':':               \
+case ';':               \
+case '<':               \
+case '=':               \
+case '>':               \
+case '?':               \
+case '@':               \
+case '[':               \
+case '\\':              \
+case ']':               \
+case '^':               \
+case '_':               \
+case '`':               \
+case '{':               \
+case '|':               \
+case '}':               \
+case '~':
 #define JSTR_ALPHA_LOWER_CASE JSTR_VOWEL_LOWER_CASE JSTR_CONSONANT_LOWER_CASE
 #define JSTR_ALPHA_UPPER_CASE JSTR_VOWEL_UPPER_CASE JSTR_CONSONANT_UPPER_CASE
 #define JSTR_VOWEL_CASE JSTR_VOWEL_ALPHA_UPPER_CASE JSTR_VOWEL_ALPHA_LOWER_CASE
@@ -218,19 +464,19 @@ JSTR__END_DECLS
 #define JSTR_ALPHA_CASE JSTR_ALPHA_LOWER_CASE JSTR_ALPHA_UPPER_CASE
 #define JSTR_ALNUM_CASE JSTR_DIGIT_CASE JSTR_ALPHA_CASE
 
-#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256)                      \
-	                             ? (memset((array), (c), 64),                \
-	                                memset((array) + 64, (c), 64),           \
-	                                memset((array) + 64 + 64, (c), 64),      \
-	                                memset((array) + 64 + 64 + 64, (c), 64)) \
-	                             : memset((array), (c), sizeof((array))))
+#define JSTR_MEMSET_ARRAY(array, c) ((sizeof(array) == 256) \
+? (memset((array), (c), 64),                                \
+memset((array) + 64, (c), 64),                              \
+memset((array) + 64 + 64, (c), 64),                         \
+memset((array) + 64 + 64 + 64, (c), 64))                    \
+: memset((array), (c), sizeof((array))))
 #define JSTR_BZERO_ARRAY(array) JSTR_MEMSET_ARRAY(array, 0)
 
 #ifdef static_assert
-#	define JSTR_HAVE_STATIC_ASSERT       1
+#	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
 #elif defined _Static_assert || defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L
-#	define JSTR_HAVE_STATIC_ASSERT       1
+#	define JSTR_HAVE_STATIC_ASSERT 1
 #	define JSTR_STATIC_ASSERT(expr, msg) _Static_assert(expr, msg)
 #else
 #	define JSTR_STATIC_ASSERT(expr, msg)
@@ -245,7 +491,9 @@ JSTR__END_DECLS
 			}                             \
 		} while (0)
 #else
-#	define JSTR_ASSERT_DEBUG(expr, msg) do {} while (0)
+#	define JSTR_ASSERT_DEBUG(expr, msg) \
+		do {                         \
+		} while (0)
 #endif
 
 #if JSTR_PANIC
@@ -256,7 +504,9 @@ JSTR__END_DECLS
 			return errcode;  \
 		} while (0)
 #else
-#	define JSTR_DEBUG_PRINT(fmt, ...) do {} while (0)
+#	define JSTR_DEBUG_PRINT(fmt, ...) \
+		do {                       \
+		} while (0)
 #	define JSTR_RETURN_ERR(errcode) return errcode
 #endif
 
@@ -297,7 +547,7 @@ JSTR__CAST(T, Other other)
 	default: 0)
 #else
 #	define JSTR_SAME_TYPE(x, y) 1
-#	define JSTR__IS_TYPE(T, x)  1
+#	define JSTR__IS_TYPE(T, x) 1
 #endif /* have_typeof && have_generic */
 
 #if JSTR_HAVE_GENERIC
@@ -383,15 +633,15 @@ JSTR__CAST(T, Other other)
 #endif /* has_extension */
 
 #if defined __glibc_unlikely && defined __glibc_likely
-#	define jstr_likely(x)   __glibc_likely(x)
+#	define jstr_likely(x) __glibc_likely(x)
 #	define jstr_unlikely(x) __glibc_unlikely(x)
 #elif (defined __GNUC__ && (__GNUC__ >= 3)) || defined __clang__
 #	if JSTR_HAS_BUILTIN(__builtin_expect)
-#		define jstr_likely(x)   __builtin_expect((x), 1)
+#		define jstr_likely(x) __builtin_expect((x), 1)
 #		define jstr_unlikely(x) __builtin_expect((x), 0)
 #	endif
 #else
-#	define jstr_likely(x)   (x)
+#	define jstr_likely(x) (x)
 #	define jstr_unlikely(x) (x)
 #endif /* unlikely */
 
@@ -399,7 +649,7 @@ JSTR__CAST(T, Other other)
 #	ifdef __inline
 #		define JSTR__ATTR_INLINE __inline
 #	elif (defined __cplusplus \
-	       || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+	|| (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
 #		define JSTR__ATTR_INLINE inline
 #	else
 #		define JSTR__ATTR_INLINE
@@ -408,9 +658,9 @@ JSTR__CAST(T, Other other)
 
 #if defined _MSC_VER
 #	define JSTR_ATTR_NOINLINE __declspec(noinline)
-#	define JSTR_ATTR_PURE     __declspec(noalias)
-#	define JSTR_ATTR_CONST    __declspec(restrict)
-#	define JSTR_ATTR_NOTHROW  __declspec(nothrow)
+#	define JSTR_ATTR_PURE __declspec(noalias)
+#	define JSTR_ATTR_CONST __declspec(restrict)
+#	define JSTR_ATTR_NOTHROW __declspec(nothrow)
 #else
 #	if JSTR_HAS_ATTRIBUTE(__format__)
 #		define JSTR_ATTR_FORMAT(archetype, string_index, first_to_check) __attribute__((__format__(archetype, string_index, first_to_check)))
@@ -451,12 +701,12 @@ JSTR__CAST(T, Other other)
 #	if defined __attribute_nonnull__ && defined __nonnull
 #		define JSTR_ATTR_NONNULL(params) __nonnull(params)
 #	elif JSTR_HAS_ATTRIBUTE(__nonnull__)
-#		define JSTR_ATTR_NONNULL_ALL     __attribute__((__nonnull__))
+#		define JSTR_ATTR_NONNULL_ALL __attribute__((__nonnull__))
 #		define JSTR_ATTR_NONNULL(params) __attribute__((__nonnull__ params))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__malloc__)
-#		define JSTR_ATTR_MALLOC                                   __attribute__((__malloc__))
-#		define JSTR_ATTR_MALLOC_DEALLOC(deallocator)              __attribute__((__malloc__, deallocator))
+#		define JSTR_ATTR_MALLOC __attribute__((__malloc__))
+#		define JSTR_ATTR_MALLOC_DEALLOC(deallocator) __attribute__((__malloc__, deallocator))
 #		define JSTR_ATTR_MALLOC_DEALLOC_PTR(deallocator, ptr_idx) __attribute__((__malloc__, deallocator, ptr_idx))
 #	endif
 #	if JSTR_HAS_ATTRIBUTE(__returns_nonnull__)
@@ -589,19 +839,19 @@ JSTR__CAST(T, Other other)
 #	define JSTR_ATTR_NO_SANITIZE_ADDRESS
 #endif
 
-#define JSTR_ATTR_WUR           JSTR_ATTR_WARN_UNUSED
+#define JSTR_ATTR_WUR JSTR_ATTR_WARN_UNUSED
 #define JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NOTHROW JSTR_ATTR_MAYBE_UNUSED
-#define JSTR_FUNC_VOID          JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NONNULL_ALL
-#define JSTR_FUNC_CONST         JSTR_FUNC_VOID JSTR_ATTR_WUR JSTR_ATTR_CONST
-#define JSTR_FUNC_PURE          JSTR_FUNC_VOID JSTR_ATTR_WUR JSTR_ATTR_PURE
+#define JSTR_FUNC_VOID JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_NONNULL_ALL
+#define JSTR_FUNC_CONST JSTR_FUNC_VOID JSTR_ATTR_WUR JSTR_ATTR_CONST
+#define JSTR_FUNC_PURE JSTR_FUNC_VOID JSTR_ATTR_WUR JSTR_ATTR_PURE
 #define JSTR_FUNC_PURE_MAY_NULL JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WUR JSTR_ATTR_PURE
 #if JSTR_PANIC
-#	define JSTR_FUNC_MAY_NULL    JSTR_FUNC_VOID_MAY_NULL
-#	define JSTR_FUNC             JSTR_FUNC_VOID
+#	define JSTR_FUNC_MAY_NULL JSTR_FUNC_VOID_MAY_NULL
+#	define JSTR_FUNC JSTR_FUNC_VOID
 #	define JSTR_FUNC_RET_NONNULL JSTR_FUNC_VOID JSTR_ATTR_RETURNS_NONNULL
 #else
-#	define JSTR_FUNC_MAY_NULL    JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WUR
-#	define JSTR_FUNC             JSTR_FUNC_MAY_NULL JSTR_ATTR_NONNULL_ALL
+#	define JSTR_FUNC_MAY_NULL JSTR_FUNC_VOID_MAY_NULL JSTR_ATTR_WUR
+#	define JSTR_FUNC JSTR_FUNC_MAY_NULL JSTR_ATTR_NONNULL_ALL
 #	define JSTR_FUNC_RET_NONNULL JSTR_FUNC JSTR_ATTR_RETURNS_NONNULL
 #endif
 
@@ -612,9 +862,9 @@ JSTR_ATTR_NOINLINE
 JSTR_ATTR_COLD
 static void
 jstr__errdie(const char *JSTR_RESTRICT filename,
-             const unsigned int line,
-             const char *JSTR_RESTRICT func,
-             const char *JSTR_RESTRICT msg)
+const unsigned int line,
+const char *JSTR_RESTRICT func,
+const char *JSTR_RESTRICT msg)
 JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
@@ -628,9 +878,9 @@ JSTR_ATTR_NOINLINE
 JSTR_ATTR_COLD
 static void
 jstr__err(const char *JSTR_RESTRICT filename,
-          const unsigned int line,
-          const char *JSTR_RESTRICT func,
-          const char *JSTR_RESTRICT msg)
+const unsigned int line,
+const char *JSTR_RESTRICT func,
+const char *JSTR_RESTRICT msg)
 JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
@@ -642,7 +892,7 @@ JSTR_NOEXCEPT
 
 #if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) \
 || defined _BSD_SOURCE
-#	define JSTR_HAVE_STRCASECMP  1
+#	define JSTR_HAVE_STRCASECMP 1
 #	define JSTR_HAVE_STRNCASECMP 1
 #endif /* Bsd || Default */
 
@@ -651,48 +901,48 @@ JSTR_NOEXCEPT
 #endif /* Misc || Xopen */
 
 #ifdef _GNU_SOURCE
-#	define JSTR_HAVE_MEMMEM            1
-#	define JSTR_HAVE_MEMRCHR           1
-#	define JSTR_HAVE_STRCHRNUL         1
-#	define JSTR_HAVE_FGETS_UNLOCKED    1
-#	define JSTR_HAVE_FPUTS_UNLOCKED    1
-#	define JSTR_HAVE_GETWC_UNLOCKED    1
+#	define JSTR_HAVE_MEMMEM 1
+#	define JSTR_HAVE_MEMRCHR 1
+#	define JSTR_HAVE_STRCHRNUL 1
+#	define JSTR_HAVE_FGETS_UNLOCKED 1
+#	define JSTR_HAVE_FPUTS_UNLOCKED 1
+#	define JSTR_HAVE_GETWC_UNLOCKED 1
 #	define JSTR_HAVE_GETWCHAR_UNLOCKED 1
-#	define JSTR_HAVE_FGETWC_UNLOCKED   1
-#	define JSTR_HAVE_FPUTWC_UNLOCKED   1
+#	define JSTR_HAVE_FGETWC_UNLOCKED 1
+#	define JSTR_HAVE_FPUTWC_UNLOCKED 1
 #	define JSTR_HAVE_PUTWCHAR_UNLOCKED 1
-#	define JSTR_HAVE_FGETWS_UNLOCKED   1
-#	define JSTR_HAVE_FPUTWS_UNLOCKED   1
-#	define JSTR_HAVE_WMEMPCPY          1
-#	define JSTR_HAVE_MEMPCPY           1
-#	define JSTR_HAVE_STRCASESTR        1
+#	define JSTR_HAVE_FGETWS_UNLOCKED 1
+#	define JSTR_HAVE_FPUTWS_UNLOCKED 1
+#	define JSTR_HAVE_WMEMPCPY 1
+#	define JSTR_HAVE_MEMPCPY 1
+#	define JSTR_HAVE_STRCASESTR 1
 #endif /* Gnu */
 
 #if (JSTR_GLIBC_PREREQ(2, 24) && (_POSIX_C_SOURCE - 0) >= 199309L)                                                 \
 || ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE) \
 || (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
-#	define JSTR_HAVE_GETC_UNLOCKED    1
+#	define JSTR_HAVE_GETC_UNLOCKED 1
 #	define JSTR_HAVE_GETCHAR_UNLOCKED 1
-#	define JSTR_HAVE_PUTC_UNLOCKED    1
+#	define JSTR_HAVE_PUTC_UNLOCKED 1
 #	define JSTR_HAVE_PUTCHAR_UNLOCKED 1
 #endif /* Posix || Bsd  */
 
 #if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
 || defined _SVID_SOURCE || defined _BSD_SOURCE
-#	define JSTR_HAVE_FREAD_UNLOCKED    1
-#	define JSTR_HAVE_FWRITE_UNLOCKED   1
-#	define JSTR_HAVE_FPUTC_UNLOCKED    1
-#	define JSTR_HAVE_FGETC_UNLOCKED    1
+#	define JSTR_HAVE_FREAD_UNLOCKED 1
+#	define JSTR_HAVE_FWRITE_UNLOCKED 1
+#	define JSTR_HAVE_FPUTC_UNLOCKED 1
+#	define JSTR_HAVE_FGETC_UNLOCKED 1
 #	define JSTR_HAVE_CLEARERR_UNLOCKED 1
-#	define JSTR_HAVE_FEOF_UNLOCKED     1
-#	define JSTR_HAVE_FERROR_UNLOCKED   1
-#	define JSTR_HAVE_FILENO_UNLOCKED   1
-#	define JSTR_HAVE_FFLUSH_UNLOCKED   1
+#	define JSTR_HAVE_FEOF_UNLOCKED 1
+#	define JSTR_HAVE_FERROR_UNLOCKED 1
+#	define JSTR_HAVE_FILENO_UNLOCKED 1
+#	define JSTR_HAVE_FFLUSH_UNLOCKED 1
 #endif /* Default || Svid || Bsd */
 
 #if JSTR_GLIBC_PREREQ(2, 10) && (_POSIX_C_SOURCE - 0) >= 200809L \
 || defined _GNU_SOURCE
-#	define JSTR_HAVE_STPCPY  1
+#	define JSTR_HAVE_STPCPY 1
 #	define JSTR_HAVE_STRNLEN 1
 #	define JSTR_HAVE_STRNDUP 1
 #endif /* Posix || Gnu */
@@ -704,13 +954,13 @@ JSTR_NOEXCEPT
 #endif /* Xopen || Bsd || Svid || Posix */
 
 #ifdef _GNU_SOURCE
-#	define JSTR_HAVE_STRDUPA  1
+#	define JSTR_HAVE_STRDUPA 1
 #	define JSTR_HAVE_STRNDUPA 1
 #endif /* Gnu */
 
 #if (defined __GLIBC__ && (__GLIBC__ < 2 || __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _BSD_SOURCE || defined _SVID_SOURCE) \
 || (defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 2)
-#	define JSTR_HAVE_POPEN  1
+#	define JSTR_HAVE_POPEN 1
 #	define JSTR_HAVE_PCLOSE 1
 #endif
 
@@ -735,12 +985,12 @@ JSTR_NOEXCEPT
 || (defined _SVID_SOURCE || defined _BSD_SOURCE)
 #	define JSTR_HAVE_QECVT_R 1
 #	define JSTR_HAVE_QFCVT_R 1
-#	define JSTR_HAVE_ECVT_R  1
-#	define JSTR_HAVE_FCVT_R  1
+#	define JSTR_HAVE_ECVT_R 1
+#	define JSTR_HAVE_FCVT_R 1
 #endif
 
 #if defined _DEFAULT_SOURCE || !defined __USE_XOPEN2K8
-#	define JSTR_HAVE_BCMP  1
+#	define JSTR_HAVE_BCMP 1
 #	define JSTR_HAVE_BCOPY 1
 #	define JSTR_HAVE_BZERO 1
 #endif
@@ -936,18 +1186,18 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 
 #define JSTR_WORD_IDX(i) (i << 3)
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-#	define JSTR_WORD_LOADU16(x)     (*(jstr_u16u_ty *)(x))
-#	define JSTR_WORD_LOADU32(x)     (*(jstr_u32u_ty *)(x))
-#	define JSTR_WORD_LOADU64(x)     (*(jstr_u64u_ty *)(x))
+#	define JSTR_WORD_LOADU16(x) (*(jstr_u16u_ty *)(x))
+#	define JSTR_WORD_LOADU32(x) (*(jstr_u32u_ty *)(x))
+#	define JSTR_WORD_LOADU64(x) (*(jstr_u64u_ty *)(x))
 #	define JSTR_WORD_CMPEQU16(x, y) (JSTR_WORD_LOADU16(x) == JSTR_WORD_LOADU16(y))
 #	define JSTR_WORD_CMPEQU32(x, y) (JSTR_WORD_LOADU32(x) == JSTR_WORD_LOADU32(y))
 #	define JSTR_WORD_CMPEQU64(x, y) (JSTR_WORD_LOADU64(x) == JSTR_WORD_LOADU64(y))
-#	define JSTR_WORD_LOAD16(x)      (*(uint16_t *)(x))
-#	define JSTR_WORD_LOAD32(x)      (*(uint32_t *)(x))
-#	define JSTR_WORD_LOAD64(x)      (*(uint64_t *)(x))
-#	define JSTR_WORD_CMPEQ16(x)     (JSTR_WORD_LOAD16(x) == JSTR_WORD_LOAD16(y))
-#	define JSTR_WORD_CMPEQ32(x)     (JSTR_WORD_LOAD32(x) == JSTR_WORD_LOAD32(y))
-#	define JSTR_WORD_CMPEQ64(x)     (JSTR_WORD_LOAD64(x) == JSTR_WORD_LOAD64(y))
+#	define JSTR_WORD_LOAD16(x) (*(uint16_t *)(x))
+#	define JSTR_WORD_LOAD32(x) (*(uint32_t *)(x))
+#	define JSTR_WORD_LOAD64(x) (*(uint64_t *)(x))
+#	define JSTR_WORD_CMPEQ16(x) (JSTR_WORD_LOAD16(x) == JSTR_WORD_LOAD16(y))
+#	define JSTR_WORD_CMPEQ32(x) (JSTR_WORD_LOAD32(x) == JSTR_WORD_LOAD32(y))
+#	define JSTR_WORD_CMPEQ64(x) (JSTR_WORD_LOAD64(x) == JSTR_WORD_LOAD64(y))
 #else
 #	if JSTR_ENDIAN_LITTLE
 #		define JSTR_WORD_LOADU16(x) (((uint16_t)(x)[0]) | ((uint16_t)(x)[1] << JSTR_WORD_IDX(1)))
@@ -961,12 +1211,12 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #	define JSTR_WORD_CMPEQU16(x, y) (!memcmp(x, y, sizeof(uint16_t)))
 #	define JSTR_WORD_CMPEQU32(x, y) (!memcmp(x, y, sizeof(uint32_t)))
 #	define JSTR_WORD_CMPEQU64(x, y) (!memcmp(x, y, sizeof(uint64_t)))
-#	define JSTR_WORD_LOAD16(x)      JSTR_WORD_LOADU16(x)
-#	define JSTR_WORD_LOAD32(x)      JSTR_WORD_LOADU32(x)
-#	define JSTR_WORD_LOAD64(x)      JSTR_WORD_LOADU64(x)
-#	define JSTR_WORD_CMPEQ16(x, y)  JSTR_WORD_CMPEQU16(x, y)
-#	define JSTR_WORD_CMPEQ32(x, y)  JSTR_WORD_CMPEQU32(x, y)
-#	define JSTR_WORD_CMPEQ64(x, y)  JSTR_WORD_CMPEQU64(x, y)
+#	define JSTR_WORD_LOAD16(x) JSTR_WORD_LOADU16(x)
+#	define JSTR_WORD_LOAD32(x) JSTR_WORD_LOADU32(x)
+#	define JSTR_WORD_LOAD64(x) JSTR_WORD_LOADU64(x)
+#	define JSTR_WORD_CMPEQ16(x, y) JSTR_WORD_CMPEQU16(x, y)
+#	define JSTR_WORD_CMPEQ32(x, y) JSTR_WORD_CMPEQU32(x, y)
+#	define JSTR_WORD_CMPEQ64(x, y) JSTR_WORD_CMPEQU64(x, y)
 #endif
 
 #ifndef JSTR_USE_UNLOCKED_IO
