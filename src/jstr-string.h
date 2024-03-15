@@ -1343,6 +1343,30 @@ jstr_countchr_len(const char *s, int c, size_t sz) JSTR_NOEXCEPT
 
 /* Count occurences of NE in HS.
  * Return value:
+ * occurences of NE in HS.
+ * T must be precompiled with jstr_memmem_exec. */
+JSTR_FUNC_PURE
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+static size_t
+jstr_count_len_exec(const jstr_twoway_ty *R t, const char *s, size_t sz, const char *find, size_t find_len)
+JSTR_NOEXCEPT
+{
+	if (find_len == 1)
+		return jstr_countchr_len(s, *find, sz);
+	if (jstr_unlikely(find_len == 0))
+		return 0;
+	size_t cnt = 0;
+	for (const char *const end = s + sz;
+	     (s = (const char *)jstr_memmem_exec(
+	      t, s, JSTR_PTR_DIFF(end, s), find));
+	     ++cnt, s += find_len)
+		;
+	return cnt;
+}
+
+/* Count occurences of NE in HS.
+ * Return value:
  * occurences of NE in HS. */
 JSTR_FUNC_PURE
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -1351,19 +1375,9 @@ static size_t
 jstr_count_len(const char *s, size_t sz, const char *find, size_t find_len)
 JSTR_NOEXCEPT
 {
-	if (find_len == 1)
-		return jstr_countchr_len(s, *find, sz);
-	if (jstr_unlikely(find_len == 0))
-		return 0;
-	size_t cnt = 0;
 	jstr_twoway_ty t;
 	jstr_memmem_comp(&t, find, find_len);
-	for (const char *const end = s + sz;
-	     (s = (const char *)jstr_memmem_exec(
-	      &t, s, JSTR_PTR_DIFF(end, s), find));
-	     ++cnt, s += find_len)
-		;
-	return cnt;
+	return jstr_count_len_exec(&t, s, sz, find, find_len);
 }
 
 /* Count occurences of NE in HS.
