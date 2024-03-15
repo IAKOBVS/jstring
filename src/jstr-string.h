@@ -766,7 +766,7 @@ JSTR_NOEXCEPT
 	if (p == NULL || ne_len == 1)
 		return (void *)p;
 	hs_len = JSTR_PTR_DIFF((char *)p + ne_len, hs);
-	if (ne_len <= 8)
+	if (ne_len < 8)
 		return pjstr_memrmem_lt8((cu *)hs, hs_len, (cu *)ne, ne_len);
 	return pjstr_memrmem_8more((cu *)hs, hs_len, (cu *)ne, ne_len);
 }
