@@ -234,7 +234,7 @@ simple_rplcn_len_from(char **s,
 	char *p = *s + start_idx;
 	size_t changed = 0;
 	for (; n-- && (p = simple_memmem(p, JSTR_PTR_DIFF(*s + *sz, p), find, find_len)); ++changed) {
-		p = pjstr_rplcat_len_higher(s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len);
+		p = jstr__rplcat_len_higher(s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len);
 		assert(p != NULL);
 	}
 	return changed;
