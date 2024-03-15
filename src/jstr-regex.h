@@ -29,12 +29,12 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-config.h"
@@ -64,7 +64,7 @@ PJSTR_END_DECLS
 #	define JSTRRE_EF_STARTEND REG_STARTEND
 #endif
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 
 typedef enum {
 #ifdef REG_ENOSYS
@@ -283,7 +283,7 @@ jstrre_rmn_from(const regex_t *R preg,
 {
 	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
 	regmatch_t rm;
-	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(*s + start_idx);
+	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	const char *const end = *s + *sz;
 	size_t find_len;
 	int ret;
@@ -297,7 +297,7 @@ jstrre_rmn_from(const regex_t *R preg,
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
 		else
-			PJSTR_INPLACE_RMALL(i, find_len);
+			JSTR__INPLACE_RMALL(i, find_len);
 	}
 	if (i.dst != i.src)
 		*sz = JSTR_PTR_DIFF(
@@ -477,7 +477,7 @@ jstrre_rplcn_len_from(const regex_t *R preg,
 	size_t find_len;
 	regmatch_t rm;
 	int ret;
-	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(*s + start_idx);
+	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	while (n-- && *i.src_e) {
 		ret = jstrre_exec_len(preg,
 		                      i.src_e,
@@ -491,7 +491,7 @@ jstrre_rplcn_len_from(const regex_t *R preg,
 		if (jstr_unlikely(find_len == 0))
 			continue;
 		if (rplc_len <= find_len) {
-			PJSTR_INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
+			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
 		} else if (*cap > *sz + rplc_len - find_len) {
 			pjstrre_rplcallsmallerrplc(*s,
 			                           sz,
@@ -731,7 +731,7 @@ jstrre_rplcn_bref_len_from(const regex_t *R preg,
 	size_t find_len;
 	size_t changed = 0;
 	int ret;
-	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(*s + start_idx);
+	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstrre_exec_len(preg,
 		                      i.src_e,
@@ -754,7 +754,7 @@ jstrre_rplcn_bref_len_from(const regex_t *R preg,
 			if (rdst_cap < rdst_len) {
 				if (jstr_unlikely(rdst_cap == 0))
 					rdst_cap = BUFSZ;
-				rdst_cap = pjstr_grow(rdst_cap, rdst_len);
+				rdst_cap = jstr__grow(rdst_cap, rdst_len);
 				rdst_heap
 				= (char *)realloc(rdst_heap, rdst_cap);
 				if (jstr_nullchk(rdst_heap)) {
@@ -771,7 +771,7 @@ jstrre_rplcn_bref_len_from(const regex_t *R preg,
 		i.src_e += rm[0].rm_so;
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (rdst_len <= find_len)
-			PJSTR_INPLACE_RPLCALL(i, rdstp, rdst_len, find_len);
+			JSTR__INPLACE_RPLCALL(i, rdstp, rdst_len, find_len);
 		else if (*cap > *sz + rdst_len - find_len)
 			pjstrre_rplcallsmallerrplc(*s,
 			                           sz,
@@ -917,7 +917,7 @@ jstrre_rplc_bref_len(const regex_t *R preg,
 	preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, 1);
 }
 
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #undef R
 

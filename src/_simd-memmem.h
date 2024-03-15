@@ -22,9 +22,9 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 #include <immintrin.h>
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #ifndef VEC
 #	define VEC __m256i
@@ -53,28 +53,28 @@ PJSTR_END_DECLS
 #ifndef BLSR
 #	define BLSR(x) _blsr_u32(x)
 #endif
-#ifndef PJSTR_SIMD_RETTYPE
-#	define PJSTR_SIMD_RETTYPE void *
+#ifndef JSTR__SIMD_RETTYPE
+#	define JSTR__SIMD_RETTYPE void *
 #endif
 #define ONES ((MASK)-1)
 
-#ifndef PJSTR_SIMD_MEMMEM_FUNC_NAME
-#	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_simd_memmem
+#ifndef JSTR__SIMD_MEMMEM_FUNC_NAME
+#	define JSTR__SIMD_MEMMEM_FUNC_NAME jstr__simd_memmem
 #endif
-#ifndef PJSTR_SIMD_MEMMEM_CMP_FUNC
-#	define PJSTR_SIMD_MEMMEM_CMP_FUNC memcmp
+#ifndef JSTR__SIMD_MEMMEM_CMP_FUNC
+#	define JSTR__SIMD_MEMMEM_CMP_FUNC memcmp
 #endif
-#ifndef PJSTR_SIMD_MEMMEM_MEMCASECHR
-#	define PJSTR_SIMD_MEMMEM_MEMCASECHR pjstr_simd_memcasechr
+#ifndef JSTR__SIMD_MEMMEM_MEMCASECHR
+#	define JSTR__SIMD_MEMMEM_MEMCASECHR jstr__simd_memcasechr
 #endif
 
-#ifdef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#ifdef JSTR__SIMD_MEMMEM_USE_AS_ICASE
 #	define OR_UPPER_MASK(x) | (x)
 #else
 #	define OR_UPPER_MASK(x)
 #endif
 
-#ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#ifndef JSTR__SIMD_MEMMEM_USE_AS_ICASE
 #	define FIND_MATCH()                                                   \
 		do {                                                           \
 			if (JSTR_PTR_NOT_CROSSING_PAGE(                        \
@@ -82,25 +82,25 @@ PJSTR_END_DECLS
 				hv = LOADU((const VEC *)p);                    \
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;   \
 				if (cmpm == matchm)                            \
-					return (PJSTR_SIMD_RETTYPE)p;          \
+					return (JSTR__SIMD_RETTYPE)p;          \
 			} else {                                               \
-				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(               \
+				if (!JSTR__SIMD_MEMMEM_CMP_FUNC(               \
 				    (const char *)p,                           \
 				    (const char *)ne,                          \
 				    ne_len))                                   \
-					return (PJSTR_SIMD_RETTYPE)p;          \
+					return (JSTR__SIMD_RETTYPE)p;          \
 			}                                                      \
 		} while (0)
 #else
 #	define FIND_MATCH()                                                   \
 		do {                                                           \
-			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(                       \
+			if (!JSTR__SIMD_MEMMEM_CMP_FUNC(                       \
 			    (const char *)p, (const char *)ne, ne_len))        \
-				return (PJSTR_SIMD_RETTYPE)p;                  \
+				return (JSTR__SIMD_RETTYPE)p;                  \
 		} while (0)
 #endif
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 
 /* ne_len must be <= VEC_SIZE */
 
@@ -108,27 +108,27 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
-static PJSTR_SIMD_RETTYPE
-PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
+static JSTR__SIMD_RETTYPE
+JSTR__SIMD_MEMMEM_FUNC_NAME(const void *hs,
                             size_t hs_len,
                             const void *ne,
                             size_t ne_len) JSTR_NOEXCEPT
 {
 	if (ne_len == 1)
-#ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-		return (PJSTR_SIMD_RETTYPE)memchr(
+#ifndef JSTR__SIMD_MEMMEM_USE_AS_ICASE
+		return (JSTR__SIMD_RETTYPE)memchr(
 		hs, *(unsigned char *)ne, hs_len);
 #else
-		return (PJSTR_SIMD_RETTYPE)PJSTR_SIMD_MEMMEM_MEMCASECHR(
+		return (JSTR__SIMD_RETTYPE)JSTR__SIMD_MEMMEM_MEMCASECHR(
 		hs, *(unsigned char *)ne, hs_len);
 #endif
 	if (jstr_unlikely(ne_len == 0))
-		return (PJSTR_SIMD_RETTYPE)hs;
+		return (JSTR__SIMD_RETTYPE)hs;
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	VEC hv0, hv1;
 	MASK i, hm0, hm1, m;
-#ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#ifndef JSTR__SIMD_MEMMEM_USE_AS_ICASE
 	VEC hv, nv;
 	MASK cmpm;
 #else
@@ -144,7 +144,7 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	/* N must be the "ab", not the "bb". */
 	n = JSTR_PTR_DIFF(p, ne) - 1;
 	h += n;
-#ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#ifndef JSTR__SIMD_MEMMEM_USE_AS_ICASE
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = ONES << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + n));
@@ -172,7 +172,7 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
-#ifdef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#ifdef JSTR__SIMD_MEMMEM_USE_AS_ICASE
 	hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 	hm1u = (MASK)CMPEQ8_MASK(hv0, nv1u) >> 1;
 #endif
@@ -191,7 +191,7 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-#ifdef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#ifdef JSTR__SIMD_MEMMEM_USE_AS_ICASE
 		hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
@@ -210,7 +210,7 @@ match:
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
-#ifdef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
+#ifdef JSTR__SIMD_MEMMEM_USE_AS_ICASE
 		hm0u = (MASK)CMPEQ8_MASK(hv0, nv0u);
 		hm1u = (MASK)CMPEQ8_MASK(hv1, nv1u);
 #endif
@@ -222,7 +222,7 @@ match:
 	return NULL;
 }
 
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 /* So that these macros will be namespaced by the build script.
 #undef ONES
@@ -237,10 +237,10 @@ PJSTR_END_DECLS
 #undef BLSR
 */
 
-#undef PJSTR_SIMD_MEMMEM_FUNC_NAME
-#undef PJSTR_SIMD_MEMMEM_CMP_FUNC
-#undef PJSTR_SIMD_MEMMEM_MEMCASECHR
-#undef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
-#undef PJSTR_SIMD_RETTYPE
+#undef JSTR__SIMD_MEMMEM_FUNC_NAME
+#undef JSTR__SIMD_MEMMEM_CMP_FUNC
+#undef JSTR__SIMD_MEMMEM_MEMCASECHR
+#undef JSTR__SIMD_MEMMEM_USE_AS_ICASE
+#undef JSTR__SIMD_RETTYPE
 #undef OR_UPPER_MASK
 #undef FIND_MATCH

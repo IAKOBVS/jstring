@@ -25,7 +25,7 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 #include <dirent.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -33,7 +33,7 @@ PJSTR_BEGIN_DECLS
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #include "jstr-builder.h"
 #include "jstr-stdstring.h"
@@ -41,7 +41,7 @@ PJSTR_END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 
 typedef enum {
 	/* Unknown file type. */
@@ -1267,7 +1267,7 @@ err:
 #undef FD_ARG
 #undef FLAG
 
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #undef R
 

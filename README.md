@@ -97,7 +97,7 @@ as referring to the whole matched string.
 - \*\_chk\*\(\): evaluate to true if the value passed is an error value.
 - \*\_err\(\): print an error message.
 - \*\_errdie\(\): print an error message and exit\(\).
-- [Pp]namespace\_\*\(\): internal functions.
+- namespace\_\_\*\(\): internal functions.
 ### Headers:
 - \_\*.h: internal headers.
 

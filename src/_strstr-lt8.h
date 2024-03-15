@@ -20,14 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#ifndef PJSTR_STRSTR234_FUNC_NAME
-#	define PJSTR_STRSTR234_FUNC_NAME pjstr_strstr
+#ifndef JSTR__STRSTR234_FUNC_NAME
+#	define JSTR__STRSTR234_FUNC_NAME jstr__strstr
 #endif
-#ifndef PJSTR_STRSTR234_CANON
-#	define PJSTR_STRSTR234_CANON(x) (x)
+#ifndef JSTR__STRSTR234_CANON
+#	define JSTR__STRSTR234_CANON(x) (x)
 #endif
-#define L PJSTR_STRSTR234_CANON
-#ifdef PJSTR_STRSTR234_STRNSTR
+#define L JSTR__STRSTR234_CANON
+#ifdef JSTR__STRSTR234_STRNSTR
 #	define N_PARAM , size_t l
 #	define N       l-- &&
 #	define N_EXIT                                                         \
@@ -51,13 +51,13 @@
 #	pragma GCC diagnostic ignored "-Wuninitialized"
 #endif
 
-#ifdef PJSTR_STRSTR234_MEMMEM
+#ifdef JSTR__STRSTR234_MEMMEM
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
                                              size_t hs_len,
                                              const unsigned char *ne,
                                              unsigned int ne_len) JSTR_NOEXCEPT
@@ -74,13 +74,13 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 	return hw == nw ? (char *)(hs - ne_len) : NULL;
 }
 
-#elif PJSTR_STRSTR234_MEMRMEM
+#elif JSTR__STRSTR234_MEMRMEM
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
                                              size_t hs_len,
                                              const unsigned char *ne,
                                              unsigned int ne_len) JSTR_NOEXCEPT
@@ -101,7 +101,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static void *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs,
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs,
                                                unsigned int hs_len,
                                                const unsigned char *ne,
                                                size_t ne_len) JSTR_NOEXCEPT
@@ -127,7 +127,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs,
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
                                              const unsigned char *ne,
                                              unsigned int ne_len) JSTR_NOEXCEPT
 {
@@ -159,7 +159,7 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 #undef N
 #undef N_EXIT
 #undef N_PARAM
-#undef PJSTR_STRSTR234_FUNC_NAME
-#undef PJSTR_STRSTR234_CANON
-#undef PJSTR_STRSTR234_MEMMEM
-#undef PJSTR_STRSTR234_STRNSTR
+#undef JSTR__STRSTR234_FUNC_NAME
+#undef JSTR__STRSTR234_CANON
+#undef JSTR__STRSTR234_MEMMEM
+#undef JSTR__STRSTR234_STRNSTR
