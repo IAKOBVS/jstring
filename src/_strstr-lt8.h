@@ -58,7 +58,7 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
-                                             unsigned int hs_len,
+                                             size_t hs_len,
                                              const unsigned char *ne,
                                              unsigned int ne_len)
 {
@@ -77,6 +77,29 @@ JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 /* TODO: simplify strrstr/memrmem to accept ne_len <= 8 */
 
 #elif PJSTR_STRSTR234_MEMRMEM
+
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+static char *
+JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
+                                             size_t hs_len,
+                                             const unsigned char *ne,
+                                             unsigned int ne_len)
+{
+	uint64_t hw;
+	uint64_t nw;
+	const uint64_t mask
+	= (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
+	hs += hs_len - 1;
+	ne += ne_len - 1;
+	for (unsigned int n = ne_len; n--; hw = (uint64_t)hw << 8 | L(*hs--),
+	                  nw = (uint64_t)nw << 8 | L(*ne--))
+		N_EXIT;
+	for (hs_len -= ne_len, hw &= mask, nw &= mask; N hw != nw && hs_len--;
+	     hw = (uint64_t)(hw << 8 | L(*hs--)) & mask) {}
+	return hw == nw ? (char *)(hs + ne_len) : NULL;
+}
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
