@@ -79,25 +79,25 @@ PJSTR_END_DECLS
 #	define FIND_MATCH()                                                   \
 		do {                                                           \
 			if (JSTR_PTR_NOT_CROSSING_PAGE(                        \
-			    hp, VEC_SIZE, JSTR_PAGE_SIZE)) {                   \
-				hv = LOADU((const VEC *)hp);                   \
+			    p, VEC_SIZE, JSTR_PAGE_SIZE)) {                    \
+				hv = LOADU((const VEC *)p);                    \
 				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;   \
 				if (cmpm == matchm)                            \
-					return (PJSTR_SIMD_RETTYPE)hp;         \
+					return (PJSTR_SIMD_RETTYPE)p;          \
 			} else {                                               \
 				if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(               \
-				    (const char *)hp,                          \
+				    (const char *)p,                           \
 				    (const char *)ne,                          \
 				    ne_len))                                   \
-					return (PJSTR_SIMD_RETTYPE)hp;         \
+					return (PJSTR_SIMD_RETTYPE)p;          \
 			}                                                      \
 		} while (0)
 #else
 #	define FIND_MATCH()                                                   \
 		do {                                                           \
 			if (!PJSTR_SIMD_MEMMEM_CMP_FUNC(                       \
-			    (const char *)hp, (const char *)ne, ne_len))       \
-				return (PJSTR_SIMD_RETTYPE)hp;                 \
+			    (const char *)p, (const char *)ne, ne_len))        \
+				return (PJSTR_SIMD_RETTYPE)p;                  \
 		} while (0)
 #endif
 
@@ -137,34 +137,38 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 #endif
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
-	const unsigned char *hp;
-	const unsigned int shift
-	= JSTR_PTR_DIFF(jstr_rarebytefind_len(ne, ne_len - 1), ne);
-	h += shift;
+	/* Find first anomaly in NE. For example, "ab" is the first anomaly in
+	 * "aaaaaaaaaaaaaaaabbbbcccc". */
+	const unsigned char *p = (const unsigned char *)ne + 1;
+	size_t n = ne_len - 2;
+	for (const int c = *(unsigned char *)ne; n-- && *p == c; ++p) {}
+	if (jstr_unlikely(n == (size_t)-1))
+		--p;
+	n = JSTR_PTR_DIFF(p, ne);
+	h += n;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = ONES << matchsh;
-	const VEC nv0 = SETONE8(*((char *)ne + shift));
-	const VEC nv1 = SETONE8(*((char *)ne + shift + 1));
+	const VEC nv0 = SETONE8(*((char *)ne + n));
+	const VEC nv1 = SETONE8(*((char *)ne + n + 1));
 	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE)
 	    || ne_len >= VEC_SIZE)
 		nv = LOADU((const VEC *)ne);
 	else
 		memcpy(&nv, ne, ne_len);
 #else
-	const VEC nv0
-	= SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift)));
+	const VEC nv0 = SETONE8((char)jstr_tolower(*((unsigned char *)ne + n)));
 	const VEC nv1
-	= SETONE8((char)jstr_tolower(*((unsigned char *)ne + shift + 1)));
+	= SETONE8((char)jstr_tolower(*((unsigned char *)ne + n + 1)));
 	const VEC nv0u
-	= SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift)));
+	= SETONE8((char)jstr_toupper(*((unsigned char *)ne + n)));
 	const VEC nv1u
-	= SETONE8((char)jstr_toupper(*((unsigned char *)ne + shift + 1)));
+	= SETONE8((char)jstr_toupper(*((unsigned char *)ne + n + 1)));
 #endif
 	const unsigned int off_s
 	= JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
-	unsigned int off_e = (JSTR_PTR_DIFF(end, (h - shift)) < VEC_SIZE)
-	                     ? VEC_SIZE - (unsigned int)(end - (h - shift)) - 1
+	unsigned int off_e = (JSTR_PTR_DIFF(end, (h - n)) < VEC_SIZE)
+	                     ? VEC_SIZE - (unsigned int)(end - (h - n)) - 1
 	                     : 0;
 	h -= off_s;
 	hv0 = LOAD((const VEC *)h);
@@ -180,11 +184,11 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	while (m) {
 		i = TZCNT(m);
 		m = BLSR(m);
-		hp = h + off_s + i - shift;
+		p = h + off_s + i - n;
 		FIND_MATCH();
 	}
 	h += VEC_SIZE - 1;
-	for (; h - shift + VEC_SIZE <= end; h += VEC_SIZE) {
+	for (; h - n + VEC_SIZE <= end; h += VEC_SIZE) {
 		hv0 = LOADU((const VEC *)h);
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
@@ -198,12 +202,12 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 match:
 			i = TZCNT(m);
 			m = BLSR(m);
-			hp = h + i - shift;
+			p = h + i - n;
 			FIND_MATCH();
 		}
 	}
-	if (h - shift <= end) {
-		off_e = VEC_SIZE - (unsigned int)(end - (h - shift)) - 1;
+	if (h - n <= end) {
+		off_e = VEC_SIZE - (unsigned int)(end - (h - n)) - 1;
 		hv0 = LOADU((const VEC *)h);
 		hv1 = LOAD((const VEC *)(h + 1));
 		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
