@@ -766,26 +766,9 @@ JSTR_NOEXCEPT
 	if (p == NULL || ne_len == 1)
 		return (void *)p;
 	hs_len = JSTR_PTR_DIFF((char *)p + ne_len, hs);
-#if 0
-	if (ne_len == 2)
-		return pjstr_memrmem2((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 3)
-		return pjstr_memrmem3((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 4)
-		return pjstr_memrmem4((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 5)
-		return pjstr_memrmem5((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 6)
-		return pjstr_memrmem6((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 7)
-		return pjstr_memrmem7((cu *)hs, (cu *)ne, hs_len);
-	if (ne_len == 8)
-		return pjstr_memrmem8((cu *)hs, (cu *)ne, hs_len);
-#else
 	if (ne_len <= 8)
 		return pjstr_memrmem_lt8((cu *)hs, hs_len, (cu *)ne, ne_len);
-#endif
-	return pjstr_memrmem8more((cu *)hs, (cu *)ne, hs_len, ne_len);
+	return pjstr_memrmem_8more((cu *)hs, hs_len, (cu *)ne, ne_len);
 }
 
 /* Find last NE in HS.
