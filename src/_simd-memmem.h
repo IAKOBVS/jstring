@@ -136,12 +136,12 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 #endif
 	const unsigned char *h = (const unsigned char *)hs;
 	const unsigned char *const end = h + hs_len - ne_len;
-	/* Find first anomaly in NE. For example, "ab" is the first anomaly in
+	/* Find a unique character pair in NE. For example, "ab" in
 	 * "aaaaaaaaaaaaaaaabbbbcccc". */
 	const unsigned char *p = (const unsigned char *)ne + 1;
 	size_t n = ne_len - 2;
 	for (const int c = *(unsigned char *)ne; n-- && *p == c; ++p) {}
-	/* N must be the "abbb", not the "bbb". */
+	/* N must be the "ab", not the "bb". */
 	n = JSTR_PTR_DIFF(p, ne) - 1;
 	h += n;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
