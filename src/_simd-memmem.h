@@ -142,9 +142,8 @@ PJSTR_SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	const unsigned char *p = (const unsigned char *)ne + 1;
 	size_t n = ne_len - 2;
 	for (const int c = *(unsigned char *)ne; n-- && *p == c; ++p) {}
-	if (jstr_unlikely(n == (size_t)-1))
-		--p;
-	n = JSTR_PTR_DIFF(p, ne);
+	/* N must be the "abbb", not the "bbb". */
+	n = JSTR_PTR_DIFF(p, ne) - 1;
 	h += n;
 #ifndef PJSTR_SIMD_MEMMEM_USE_AS_ICASE
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
