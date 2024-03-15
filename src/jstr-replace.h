@@ -763,7 +763,7 @@ jstr_rplclast_len(char *R *R s,
 /* Replace N SEARCH in S with REPLACE from START_IDX.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_exec. */
+ * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
 static size_t
 jstr_rmn_len_from_exec(const jstr_twoway_ty *R t,
@@ -796,7 +796,7 @@ jstr_rmn_len_from_exec(const jstr_twoway_ty *R t,
 /* Replace N SEARCH in S with REPLACE.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_exec. */
+ * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
 static size_t
 jstr_rmn_len_exec(const jstr_twoway_ty *R t,
@@ -812,7 +812,7 @@ jstr_rmn_len_exec(const jstr_twoway_ty *R t,
 /* Replace all SEARCH in S.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_exec. */
+ * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -887,7 +887,7 @@ JSTR_NOEXCEPT
 /* Replace N SEARCH in S with REPLACE from S + START_IDX.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_exec. */
+ * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
 static size_t
 jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t,
@@ -945,7 +945,7 @@ err:
 /* Replace N SEARCH in S with REPLACE.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_exec. */
+ * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static size_t
@@ -966,7 +966,7 @@ jstr_rplcn_len_exec(const jstr_twoway_ty *R t,
 /* Replace all SEARCH in S with REPLACE.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_exec. */
+ * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static size_t
@@ -987,7 +987,7 @@ jstr_rplcall_len_from_exec(const jstr_twoway_ty *R t,
 /* Replace N SEARCH in S with REPLACE.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_exec. */
+ * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static size_t
