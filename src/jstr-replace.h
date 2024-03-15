@@ -409,7 +409,7 @@ jstr_rmallspn(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
 
 /* Remove N Cs in S from START_IDX.
  * Return value:
- * Number of number of Cs replaced. */
+ * number of Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
 static size_t
@@ -433,7 +433,7 @@ JSTR_NOEXCEPT
 
 /* Remove N Cs in S.
  * Return value:
- * Number of number of Cs replaced. */
+ * number of Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
