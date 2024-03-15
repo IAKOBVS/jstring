@@ -896,7 +896,7 @@ jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t,
 			return jstr_rplcnchr_len(
 			*s + start_idx, *sz - start_idx, *find, *rplc, n);
 	} else if (jstr_unlikely(find_len == 0)) {
-		return JSTR_RET_SUCC;
+		return 0;
 	}
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	size_t changed = 0;
