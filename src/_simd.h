@@ -28,7 +28,7 @@
 #include "jstr-pointer-arith.h"
 #include "jstr-stdstring.h"
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 
 /* Select AVX512, AVX2, or SSE2. */
 
@@ -138,7 +138,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
-pjstr_simd_stpcpy_aligned(char *JSTR_RESTRICT dst,
+jstr__simd_stpcpy_aligned(char *JSTR_RESTRICT dst,
                           const char *JSTR_RESTRICT src) JSTR_NOEXCEPT
 {
 	VEC sv;
@@ -160,7 +160,7 @@ JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
-pjstr_simd_stpcpy_unaligned_src(char *JSTR_RESTRICT dst,
+jstr__simd_stpcpy_unaligned_src(char *JSTR_RESTRICT dst,
                                 const char *JSTR_RESTRICT src) JSTR_NOEXCEPT
 {
 	VEC sv;
@@ -181,7 +181,7 @@ pjstr_simd_stpcpy_unaligned_src(char *JSTR_RESTRICT dst,
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 static char *
-pjstr_simd_stpcpy(char *JSTR_RESTRICT dst,
+jstr__simd_stpcpy(char *JSTR_RESTRICT dst,
                   const char *JSTR_RESTRICT src) JSTR_NOEXCEPT
 {
 	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
@@ -189,8 +189,8 @@ pjstr_simd_stpcpy(char *JSTR_RESTRICT dst,
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
 	if (JSTR_PTR_IS_ALIGNED(dst, VEC_SIZE))
-		return pjstr_simd_stpcpy_aligned(dst, src);
-	return pjstr_simd_stpcpy_unaligned_src(dst, src);
+		return jstr__simd_stpcpy_aligned(dst, src);
+	return jstr__simd_stpcpy_unaligned_src(dst, src);
 }
 
 #ifndef TZCNT
@@ -208,7 +208,7 @@ pjstr_simd_stpcpy(char *JSTR_RESTRICT dst,
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_simd_strncasechr(const char *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__simd_strncasechr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -248,7 +248,7 @@ ret_early:
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_simd_strnchr(const char *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__simd_strnchr(const char *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -285,7 +285,7 @@ ret_early:
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_simd_strchrnul(const char *s, int c) JSTR_NOEXCEPT
+jstr__simd_strchrnul(const char *s, int c) JSTR_NOEXCEPT
 {
 	MASK cm, m, zm;
 	VEC sv;
@@ -314,16 +314,16 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
-pjstr_simd_strchr(const char *s, int c) JSTR_NOEXCEPT
+jstr__simd_strchr(const char *s, int c) JSTR_NOEXCEPT
 {
-	s = pjstr_simd_strchrnul(s, c);
+	s = jstr__simd_strchrnul(s, c);
 	return *s == (char)c ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-pjstr_simd_strcasechrnul(const char *s, int c) JSTR_NOEXCEPT
+jstr__simd_strcasechrnul(const char *s, int c) JSTR_NOEXCEPT
 {
 	MASK m, cm0, cm1, zm;
 	VEC sv;
@@ -355,16 +355,16 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
-pjstr_simd_strcasechr(const char *s, int c) JSTR_NOEXCEPT
+jstr__simd_strcasechr(const char *s, int c) JSTR_NOEXCEPT
 {
-	s = pjstr_simd_strcasechrnul(s, c);
+	s = jstr__simd_strcasechrnul(s, c);
 	return *s == (char)c ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-pjstr_simd_memcasechr(const void *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__simd_memcasechr(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -412,7 +412,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-pjstr_simd_memrchr(const void *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__simd_memrchr(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
@@ -452,15 +452,15 @@ ret:;
 
 #else
 
-#	define PJSTR_SIMD_RETTYPE             char *
-#	define PJSTR_SIMD_MEMMEM_FUNC_NAME    pjstr_simd_strcasestr_len
-#	define PJSTR_SIMD_MEMMEM_USE_AS_ICASE 1
-#	define PJSTR_SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
-#	define PJSTR_SIMD_MEMMEM_MEMCASECHR   pjstr_simd_memcasechr
+#	define JSTR__SIMD_RETTYPE             char *
+#	define JSTR__SIMD_MEMMEM_FUNC_NAME    jstr__simd_strcasestr_len
+#	define JSTR__SIMD_MEMMEM_USE_AS_ICASE 1
+#	define JSTR__SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
+#	define JSTR__SIMD_MEMMEM_MEMCASECHR   jstr__simd_memcasechr
 #	include "_simd-memmem.h"
 
-#	define PJSTR_SIMD_RETTYPE          void *
-#	define PJSTR_SIMD_MEMMEM_FUNC_NAME pjstr_simd_memmem
+#	define JSTR__SIMD_RETTYPE          void *
+#	define JSTR__SIMD_MEMMEM_FUNC_NAME jstr__simd_memmem
 #	include "_simd-memmem.h"
 
 #endif
@@ -475,7 +475,7 @@ ret:;
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-pjstr_simd_countchr(const char *s, int c) JSTR_NOEXCEPT
+jstr__simd_countchr(const char *s, int c) JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
@@ -504,7 +504,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-pjstr_simd_countchr_len(const void *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__simd_countchr_len(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
@@ -531,7 +531,7 @@ pjstr_simd_countchr_len(const void *s, int c, size_t n) JSTR_NOEXCEPT
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
-pjstr_simd_tolower_vec(const VEC v)
+jstr__simd_tolower_vec(const VEC v)
 {
 	const VEC a = SETONE8('A' - 1);
 	const VEC z = SETONE8('Z' + 1);
@@ -550,7 +550,7 @@ pjstr_simd_tolower_vec(const VEC v)
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
-pjstr_simd_toupper_vec(const VEC v)
+jstr__simd_toupper_vec(const VEC v)
 {
 	const VEC a = SETONE8('a' - 1);
 	const VEC z = SETONE8('z' + 1);
@@ -581,6 +581,6 @@ pjstr_simd_toupper_vec(const VEC v)
 #undef BLSR
 #undef LZCNT
 
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #endif /* JSTR_SIMD_H* */

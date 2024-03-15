@@ -27,15 +27,15 @@
 #include "jstr-ctype.h"
 #include "jstr-struct.h"
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
@@ -439,23 +439,23 @@ jstr_strdup(const char *R s) JSTR_NOEXCEPT
 	return jstr_strdup_len(s, strlen(s));
 }
 
-#define PJSTR_DEFINE_ATOI(T, name, func)                                       \
+#define JSTR__DEFINE_ATOI(T, name, func)                                       \
 	JSTR_FUNC_PURE                                                         \
 	JSTR_ATTR_INLINE                                                       \
 	static T jstr_##name(const char *s) JSTR_NOEXCEPT { return func; }
 
-PJSTR_DEFINE_ATOI(unsigned int, atou, strtoul(s, NULL, 0))
-PJSTR_DEFINE_ATOI(unsigned long, atoul, strtoul(s, NULL, 0))
-PJSTR_DEFINE_ATOI(unsigned long long, atoull, strtoull(s, NULL, 0))
-PJSTR_DEFINE_ATOI(int, atoi, strtol(s, NULL, 0))
-PJSTR_DEFINE_ATOI(long, atol, strtol(s, NULL, 0))
-PJSTR_DEFINE_ATOI(long long, atoll, strtol(s, NULL, 0))
-PJSTR_DEFINE_ATOI(double, atod, strtod(s, NULL))
-PJSTR_DEFINE_ATOI(float, atof, strtof(s, NULL))
+JSTR__DEFINE_ATOI(unsigned int, atou, strtoul(s, NULL, 0))
+JSTR__DEFINE_ATOI(unsigned long, atoul, strtoul(s, NULL, 0))
+JSTR__DEFINE_ATOI(unsigned long long, atoull, strtoull(s, NULL, 0))
+JSTR__DEFINE_ATOI(int, atoi, strtol(s, NULL, 0))
+JSTR__DEFINE_ATOI(long, atol, strtol(s, NULL, 0))
+JSTR__DEFINE_ATOI(long long, atoll, strtol(s, NULL, 0))
+JSTR__DEFINE_ATOI(double, atod, strtod(s, NULL))
+JSTR__DEFINE_ATOI(float, atof, strtof(s, NULL))
 
-#undef PJSTR_DEFINE_ATOI
+#undef JSTR__DEFINE_ATOI
 
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #undef R
 

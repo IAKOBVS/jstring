@@ -25,16 +25,16 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 #include <errno.h>
 #include <string.h>
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #include "jstr-ctype-table.h"
 
 #define R JSTR_RESTRICT
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 
 /* Will not handle EOF correctly.
  * tolower(EOF) != EOF */
@@ -71,7 +71,7 @@ jstr_skipctype(const char *R s, int ctype) JSTR_NOEXCEPT
 	return (char *)p - 1;
 }
 
-#define PJSTR_DEFINE_REPEAT_CTYPE(FUNC)                                        \
+#define JSTR__DEFINE_REPEAT_CTYPE(FUNC)                                        \
 	FUNC(alpha, JSTR_ISALPHA)                                              \
 	FUNC(lower, JSTR_ISLOWER)                                              \
 	FUNC(upper, JSTR_ISUPPER)                                              \
@@ -85,7 +85,7 @@ jstr_skipctype(const char *R s, int ctype) JSTR_NOEXCEPT
 	FUNC(cntrl, JSTR_ISCNTRL)                                              \
 	FUNC(word, JSTR_ISWORD)
 
-#define PJSTR_DEFINE_SKIP_CTYPE(ctype, ctype_enum)                             \
+#define JSTR__DEFINE_SKIP_CTYPE(ctype, ctype_enum)                             \
 	/* ASCII. */                                                           \
 	JSTR_ATTR_INLINE                                                       \
 	JSTR_FUNC_PURE                                                         \
@@ -94,9 +94,9 @@ jstr_skipctype(const char *R s, int ctype) JSTR_NOEXCEPT
 		return jstr_skipctype(s, ctype_enum);                          \
 	}
 
-PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_SKIP_CTYPE)
+JSTR__DEFINE_REPEAT_CTYPE(JSTR__DEFINE_SKIP_CTYPE)
 
-#undef PJSTR_DEFINE_SKIP_CTYPE
+#undef JSTR__DEFINE_SKIP_CTYPE
 
 /* ASCII. */
 JSTR_ATTR_INLINE
@@ -107,7 +107,7 @@ jstr_isctypestr(const char *R s, int ctype) JSTR_NOEXCEPT
 	return jstr_likely(*s) && *(jstr_skipctype(s, ctype) + 1) == '\0';
 }
 
-#define PJSTR_DEFINE_ISCTYPE_STR(ctype, ctype_enum)                            \
+#define JSTR__DEFINE_ISCTYPE_STR(ctype, ctype_enum)                            \
 	/* ASCII. */                                                           \
 	JSTR_ATTR_INLINE                                                       \
 	JSTR_FUNC_PURE                                                         \
@@ -116,9 +116,9 @@ jstr_isctypestr(const char *R s, int ctype) JSTR_NOEXCEPT
 		return jstr_isctypestr(s, ctype_enum);                         \
 	}
 
-PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_ISCTYPE_STR)
+JSTR__DEFINE_REPEAT_CTYPE(JSTR__DEFINE_ISCTYPE_STR)
 
-#undef PJSTR_DEFINE_ISCTYPE_STR
+#undef JSTR__DEFINE_ISCTYPE_STR
 
 /* ASCII. */
 JSTR_ATTR_INLINE
@@ -135,7 +135,7 @@ jstr_skipctype_rev(const char *s,
 	return (char *)p;
 }
 
-#define PJSTR_DEFINE_SKIP_CTYPE_REV(ctype, ctype_enum)                         \
+#define JSTR__DEFINE_SKIP_CTYPE_REV(ctype, ctype_enum)                         \
 	/* ASCII. */                                                           \
 	JSTR_ATTR_INLINE                                                       \
 	JSTR_FUNC_PURE                                                         \
@@ -145,9 +145,9 @@ jstr_skipctype_rev(const char *s,
 		return jstr_skipctype_rev(s, ctype_enum, n);                   \
 	}
 
-PJSTR_DEFINE_REPEAT_CTYPE(PJSTR_DEFINE_SKIP_CTYPE_REV)
+JSTR__DEFINE_REPEAT_CTYPE(JSTR__DEFINE_SKIP_CTYPE_REV)
 
-#undef PJSTR_DEFINE_SKIP_CTYPE_REV
+#undef JSTR__DEFINE_SKIP_CTYPE_REV
 
 /* ASCII. */
 JSTR_FUNC_VOID
@@ -195,9 +195,9 @@ jstr_tolowerstrcpy_p(char *R dst, const char *R src) JSTR_NOEXCEPT
 	return dst - 1;
 }
 
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
-#undef PJSTR_DEFINE_REPEAT_CTYPE
+#undef JSTR__DEFINE_REPEAT_CTYPE
 #undef R
 
 #endif /* JSTR_CTYPE_H */

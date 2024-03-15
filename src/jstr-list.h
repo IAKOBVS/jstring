@@ -65,7 +65,7 @@
 #	define jstrl_at(l, i) ((l)->data + (i))
 #endif
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 
 typedef struct jstrlist_ty {
 	jstr_ty *data;
@@ -542,7 +542,7 @@ err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #undef R
 

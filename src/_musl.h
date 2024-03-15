@@ -26,9 +26,9 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 #include <limits.h>
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #include "jstr-ctype.h"
 
@@ -39,7 +39,7 @@ PJSTR_END_DECLS
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
-pjstr_memrchr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__memrchr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
 	const unsigned char *p = (const unsigned char *)s + n - 1;
@@ -69,7 +69,7 @@ pjstr_memrchr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-pjstr_strcasechrnul_musl(const char *s, int c) JSTR_NOEXCEPT
+jstr__strcasechrnul_musl(const char *s, int c) JSTR_NOEXCEPT
 {
 	enum { ALIGN = sizeof(size_t) };
 	c = jstr_tolower(c);
@@ -91,7 +91,7 @@ pjstr_strcasechrnul_musl(const char *s, int c) JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static void *
-pjstr_memcasechr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__memcasechr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	enum { ALIGN = sizeof(size_t) };
 	const unsigned char *p = (const unsigned char *)s;
@@ -121,7 +121,7 @@ pjstr_memcasechr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-pjstr_strnchr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__strnchr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
 #if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -147,7 +147,7 @@ pjstr_strnchr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-pjstr_strncasechr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__strncasechr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
 {
 	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
 	c = jstr_tolower(c);

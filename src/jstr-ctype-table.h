@@ -25,7 +25,7 @@
 
 #include "jstr-macros.h"
 
-PJSTR_BEGIN_DECLS
+JSTR__BEGIN_DECLS
 
 /* clang-format off */
 
@@ -202,6 +202,6 @@ static const uint16_t jstr_ctype_table[256]={
 
 /* clang-format on */
 
-PJSTR_END_DECLS
+JSTR__END_DECLS
 
 #endif /* JSTR_CTYPE_TABLE_H */

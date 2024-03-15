@@ -13,6 +13,6 @@ my $file_str;
 		$file_str = <>;
 	}
 }
-my @ignore_prefix = ("PJSTR", "pjstr", "JSTR", "jstr");
-jl_file_namespace_macros(\$file_str, \"PJSTR_", \@ignore_prefix);
+my @ignore_prefix = ("JSTR", "jstr");
+jl_file_namespace_macros(\$file_str, \"JSTR__", \@ignore_prefix);
 print $file_str;
