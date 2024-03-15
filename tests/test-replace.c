@@ -306,15 +306,15 @@ main(int argc, char **argv)
 	expected = "   ";
 
 	/* jstr-regex tests. */
-	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
-	T_APPEND_NORET(jstrre_rplcall_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0);
-	jstrre_free(&preg);
+	assert(!jstr_re_chkcomp(jstr_re_comp(&preg, find, 0)));
+	T_APPEND_NORET(jstr_re_rplcall_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0);
+	jstr_re_free(&preg);
 	FILL(result, "hello hello hello hello");
 	find = "\\([0-9A-Za-z]*\\)";
 	rplc = "\\1\\1";
 	expected = "hellohello hellohello hellohello hellohello";
-	assert(!jstrre_chkcomp(jstrre_comp(&preg, find, 0)));
-	T_APPEND_NORET(jstrre_rplcall_bref_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0, 2);
+	assert(!jstr_re_chkcomp(jstr_re_comp(&preg, find, 0)));
+	T_APPEND_NORET(jstr_re_rplcall_bref_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0, 2);
 
 	jstr_empty(result.data, &result.size);
 	T(jstr_cat(jstr_struct(&result), "hello", " world", NULL), "hello world");
@@ -337,7 +337,7 @@ main(int argc, char **argv)
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "el");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "l");
 
-	jstrre_free(&preg);
+	jstr_re_free(&preg);
 	jstr_free_j(&result);
 	SUCCESS();
 	return EXIT_SUCCESS;
