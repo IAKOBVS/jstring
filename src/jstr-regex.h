@@ -392,7 +392,7 @@ jstr_re_rmall_from(const regex_t *R preg,
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-jstr__rerplcallsmallerrplc(char *s,
+jstr__rplcallsmallerrplc(char *s,
                            size_t *R sz,
                            char **dst,
                            const char **src,
@@ -425,7 +425,7 @@ jstr__rerplcallsmallerrplc(char *s,
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstr__rerplcallbiggerrplc(char *R *R s,
+jstr__rplcallbiggerrplc(char *R *R s,
                           size_t *R sz,
                           size_t *R cap,
                           char **dst,
@@ -493,7 +493,7 @@ jstr_re_rplcn_len_from(const regex_t *R preg,
 		if (rplc_len <= find_len) {
 			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
 		} else if (*cap > *sz + rplc_len - find_len) {
-			jstr__rerplcallsmallerrplc(*s,
+			jstr__rplcallsmallerrplc(*s,
 			                           sz,
 			                           &i.dst,
 			                           &i.src,
@@ -501,7 +501,7 @@ jstr_re_rplcn_len_from(const regex_t *R preg,
 			                           rplc,
 			                           rplc_len,
 			                           find_len);
-		} else if (jstr_chk(jstr__rerplcallbiggerrplc(s,
+		} else if (jstr_chk(jstr__rplcallbiggerrplc(s,
 		                                              sz,
 		                                              cap,
 		                                              &i.dst,
@@ -773,7 +773,7 @@ jstr_re_rplcn_bref_len_from(const regex_t *R preg,
 		if (rdst_len <= find_len)
 			JSTR__INPLACE_RPLCALL(i, rdstp, rdst_len, find_len);
 		else if (*cap > *sz + rdst_len - find_len)
-			jstr__rerplcallsmallerrplc(*s,
+			jstr__rplcallsmallerrplc(*s,
 			                           sz,
 			                           &i.dst,
 			                           &i.src,
@@ -781,7 +781,7 @@ jstr_re_rplcn_bref_len_from(const regex_t *R preg,
 			                           rdstp,
 			                           rdst_len,
 			                           find_len);
-		else if (jstr_chk(jstr__rerplcallbiggerrplc(s,
+		else if (jstr_chk(jstr__rplcallbiggerrplc(s,
 		                                            sz,
 		                                            cap,
 		                                            &i.dst,
