@@ -1193,13 +1193,13 @@ jstrio_ftw_len(const char *R dirpath,
 		goto ftw;
 	}
 	data.ftw.dirpath_len = dirpath_len;
-	if (USE_ATFILE) {
-		if (jstr_unlikely(fstat(fd, &st)))
-			goto func;
-	} else {
-		if (jstr_unlikely(stat(fulpath, &st)))
-			goto func;
-	}
+#if USE_ATFILE
+	if (jstr_unlikely(fstat(fd, &st)))
+		goto func;
+#else
+	if (jstr_unlikely(stat(fulpath, &st)))
+		goto func;
+#endif
 	/* If DIRPATH is a directory, call FUNC on directory when needed and
 	 * call ftw. */
 	if (jstr_likely(S_ISDIR(data.ftw.st->st_mode))) {
