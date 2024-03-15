@@ -409,7 +409,7 @@ jstr_rmallspn(char *R s, size_t *R sz, const char *R reject) JSTR_NOEXCEPT
 
 /* Remove N Cs in S from START_IDX.
  * Return value:
- * Number of Cs replaced. */
+ * Number of number of Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
 static size_t
@@ -433,7 +433,7 @@ JSTR_NOEXCEPT
 
 /* Remove N Cs in S.
  * Return value:
- * Number of Cs replaced. */
+ * Number of number of Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
@@ -467,7 +467,7 @@ jstr_rmallchr_len(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
 
 /* Remove N C in S from START_IDX.
  * Return value:
- * Cs replaced.
+ * number of Cs replaced.
  * SZ is only used to save the length of S. */
 JSTR_FUNC_VOID
 static size_t
@@ -489,7 +489,7 @@ JSTR_NOEXCEPT
 
 /* Remove all C in S.
  * Return value:
- * Cs replaced. */
+ * number of Cs replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -500,7 +500,7 @@ jstr_rmnchr(char *R s, size_t *R sz, int c, size_t n) JSTR_NOEXCEPT
 
 /* Remove all C in S.
  * Return value:
- * Cs replaced. */
+ * number of Cs replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -512,7 +512,7 @@ JSTR_NOEXCEPT
 
 /* Remove all C in S.
  * Return value:
- * Cs replaced. */
+ * number of Cs replaced. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -523,7 +523,7 @@ jstr_rmallchr(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
 
 /* Remove first C in S from START_IDX.
  * Return value:
- * Cs replaced. */
+ * number of Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
@@ -536,7 +536,7 @@ JSTR_NOEXCEPT
 
 /* Remove first C in S.
  * Return value:
- * Cs replaced. */
+ * number of Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
@@ -548,7 +548,7 @@ jstr_rmchr_len(char *R s, size_t *R sz, int c) JSTR_NOEXCEPT
 
 /* Remove first C in S from START_IDX.
  * Return value:
- * Cs replaced.
+ * number of Cs replaced.
  * SZ is only used to save the length of S. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
@@ -561,7 +561,7 @@ jstr_rmchr_from(char *R s, size_t *R sz, size_t start_idx, int c) JSTR_NOEXCEPT
 
 /* Remove first C in S.
  * Return value:
- * Cs replaced.
+ * number of Cs replaced.
  * SZ is only used to save the length of S. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
