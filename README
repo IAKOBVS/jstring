@@ -41,8 +41,6 @@ jstr-regex.h
 
 https://github.com/IAKOBVS/find-and-replace
 
-https://github.com/IAKOBVS/rarebyte
-
 ## Disclaimer:
 
 You must zero-initialize a jstr_ty string.
