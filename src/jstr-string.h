@@ -1957,7 +1957,11 @@ JSTR_ATTR_INLINE
 static char *
 jstr_unescape_p(char *s) JSTR_NOEXCEPT
 {
+#if JSTR_HAVE_STRCHRNUL
+	s = strchrnul(s, '\\');
+#else
 	for (; *s && *s != '\\'; ++s) {}
+#endif
 	return jstr_unescapecpy_p(s, s);
 }
 
@@ -2013,9 +2017,9 @@ JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 static void *
 jstr_unescape_len_p(void *s, size_t n) JSTR_NOEXCEPT
 {
-	unsigned char *p = (unsigned char *)s;
-	for (; n && *p != '\\'; ++p, --n) {}
-	return jstr_unescapecpy_len_p(p, p, n);
+	unsigned char *s_e = (unsigned char *)s + n;
+	s = memchr(s, '\\', n);
+	return s ? jstr_unescapecpy_len_p(s, s, s_e - (unsigned char *)s) : s_e;
 }
 
 PJSTR_END_DECLS
