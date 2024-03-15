@@ -73,7 +73,7 @@ enum {
 
 JSTR_FUNC_PURE
 static jstr_io_ft_ty
-pjstr_io_exttype(const char *ext) JSTR_NOEXCEPT
+jstr__io_exttype(const char *ext) JSTR_NOEXCEPT
 {
 	static const char *text[] = { JSTRIO_FT_TEXT_ARRAY };
 	static const char *binary[] = { JSTRIO_FT_BINARY_ARRAY };
@@ -90,7 +90,7 @@ pjstr_io_exttype(const char *ext) JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-pjstr_io_extget_len(const char *fname, size_t sz)
+jstr__io_extget_len(const char *fname, size_t sz)
 {
 	const char *p = fname + sz - 1;
 	for (; sz--; --p) {
@@ -108,14 +108,14 @@ JSTR_ATTR_INLINE
 static jstr_io_ft_ty
 jstr_io_exttype(const char *R fname, size_t sz) JSTR_NOEXCEPT
 {
-	fname = (char *)pjstr_io_extget_len(fname, sz);
-	return fname ? pjstr_io_exttype(fname) : JSTRIO_FT_UNKNOWN;
+	fname = (char *)jstr__io_extget_len(fname, sz);
+	return fname ? jstr__io_exttype(fname) : JSTRIO_FT_UNKNOWN;
 }
 
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static int
-pjstr_io_isbinarysignature(const char *R buf, size_t sz)
+jstr__io_isbinarysignature(const char *R buf, size_t sz)
 {
 	enum { ELFSZ = 4, UTFSZ = 3 };
 	const unsigned char *p = (const unsigned char *)buf;
@@ -155,7 +155,7 @@ check_utf:;
 
 /* Do not pass a non-unsigned char. */
 JSTR_ATTR_MAYBE_UNUSED
-static const unsigned char pjstr_io_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,1,USE_FORM_FEED,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1};
+static const unsigned char jstr__io_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,1,USE_FORM_FEED,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1};
 
 /* clang-format on */
 
@@ -169,13 +169,13 @@ jstr_io_isbinary_maybe(const char *R buf, size_t sz) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
-	const int ret = pjstr_io_isbinarysignature(buf, sz);
+	const int ret = jstr__io_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
 	sz = JSTR_MIN(sz, JSTRIO_BINARY_CHECK_MAX);
 	const unsigned char *s = (unsigned char *)buf;
 	for (; sz--; ++s)
-		if (pjstr_io_binary_table[*s])
+		if (jstr__io_binary_table[*s])
 			return 1;
 	return 0;
 }
@@ -186,7 +186,7 @@ JSTR_FUNC_PURE
 static int
 jstr_io_isbinary(const char *R buf, size_t sz) JSTR_NOEXCEPT
 {
-	const int ret = pjstr_io_isbinarysignature(buf, sz);
+	const int ret = jstr__io_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
 	return strlen(buf) != sz;
@@ -203,7 +203,7 @@ jstr_isbinary(const char *R buf, size_t sz, size_t n) JSTR_NOEXCEPT
 	= (const unsigned char *)buf + JSTR_MIN(n, sz);
 	const unsigned char *s = (unsigned char *)buf;
 	for (; s < end; ++s)
-		if (pjstr_io_binary_table[*s])
+		if (jstr__io_binary_table[*s])
 			return 1;
 	return 0;
 }
@@ -875,7 +875,7 @@ typedef int (*jstr_io_ftw_func_match_ty)(const char *fname,
                                         jstr_io_path_size_ty fname_len,
                                         const void *args);
 
-struct pjstr_io_ftw_data {
+struct jstr__io_ftw_data {
 	jstr_io_ftw_func_ty func;
 	const void *func_args;
 	jstr_io_ftw_func_match_ty func_match;
@@ -905,7 +905,7 @@ struct pjstr_io_ftw_data {
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 static int
-pjstr_io_ftw_len(struct pjstr_io_ftw_data *a,
+jstr__io_ftw_len(struct jstr__io_ftw_data *a,
                 jstr_io_path_size_ty dirpath_len FD_PARAM) JSTR_NOEXCEPT
 {
 	DIR *R const dp = OPENDIR(fd, a->ftw.dirpath);
@@ -1106,7 +1106,7 @@ skip_fn:
 		       a->ftw.ep->d_name,
 		       O_RDONLY | O_NONBLOCK | JSTRIO__O_DIRECTORY,
 		       goto CONT);
-		tmp = pjstr_io_ftw_len(a, a->ftw.dirpath_len FD_ARG);
+		tmp = jstr__io_ftw_len(a, a->ftw.dirpath_len FD_ARG);
 		/* Close when we have *_at functions. */
 		CLOSE(FD, goto err_closedir);
 		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
@@ -1184,7 +1184,7 @@ jstr_io_ftw_len(const char *R dirpath,
 	FD_DECLARE;
 	OPEN(fd, fulpath, O_RDONLY | O_NONBLOCK, goto err);
 	struct stat st;
-	struct pjstr_io_ftw_data data;
+	struct jstr__io_ftw_data data;
 	data.ftw.dirpath = fulpath;
 	data.ftw.st = &st;
 	/* This will avoid things like //some/path if DIRPATH is /. */
@@ -1222,7 +1222,7 @@ CONT:;
 		data.func_match = func_match;
 		data.ftw_flags = jstr_io_ftw_flags;
 		data.func_match_args = func_match_args;
-		tmp = pjstr_io_ftw_len(&data, dirpath_len FD_ARG);
+		tmp = jstr__io_ftw_len(&data, dirpath_len FD_ARG);
 		CLOSE(fd, goto err);
 		return tmp;
 	}
