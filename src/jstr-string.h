@@ -1346,8 +1346,8 @@ jstr_countchr_len(const char *s, int c, size_t sz) JSTR_NOEXCEPT
  * occurences of NE in HS.
  * T must be precompiled with jstr_memmem_exec. */
 JSTR_FUNC_PURE
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_ATTR_ACCESS((__read_only__, 2, 3))
+JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 static size_t
 jstr_count_len_exec(const jstr_twoway_ty *R t, const char *s, size_t sz, const char *find, size_t find_len)
 JSTR_NOEXCEPT
