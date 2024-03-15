@@ -48,6 +48,7 @@
 #ifdef __GNUC__
 #	pragma GCC diagnostic push
 #	pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#	pragma GCC diagnostic ignored "-Wuninitialized"
 #endif
 
 #ifdef PJSTR_STRSTR234_MEMMEM
