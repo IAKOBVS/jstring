@@ -28,7 +28,7 @@
 #endif
 #define L PJSTR_STRSTR234_CANON
 #ifdef PJSTR_STRSTR234_STRNSTR
-#	define N_PARAM , unsigned int l
+#	define N_PARAM , size_t l
 #	define N       l-- &&
 #	define N_EXIT                                                         \
 		if (jstr_unlikely(l-- == 0))                                   \
