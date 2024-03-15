@@ -837,25 +837,9 @@ jstr_rmn_len_from(char *R s,
                   size_t find_len,
                   size_t n) JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	if (find_len == 1)
-		return jstr_rmnchr_len(s, sz, *find, n);
-	if (jstr_unlikely(find_len == 0))
-		return 0;
-	const char *const end = s + *sz;
-	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(s + start_idx);
-	size_t changed = 0;
 	jstr_twoway_ty t;
 	jstr_memmem_comp(&t, find, find_len);
-	for (; n--
-	       && (i.src_e = (char *)jstr_memmem_exec(
-	           &t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find));
-	     ++changed)
-		PJSTR_INPLACE_RMALL(i, find_len);
-	if (i.dst != end)
-		*sz = JSTR_PTR_DIFF(
-		jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), s);
-	return changed;
+	return jstr_rmn_len_from_exec(&t, s, sz, start_idx, find, find_len, n);
 }
 
 /* Replace N SEARCH in S with REPLACE.
@@ -1019,47 +1003,9 @@ jstr_rplcn_len_from(char *R *R s,
                     size_t rplc_len,
                     size_t n) JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	if (jstr_unlikely(rplc_len == 0)) {
-		return jstr_rmn_len(*s + start_idx, sz, find, find_len, n);
-	}
-	if (find_len == 1) {
-		if (rplc_len == 1)
-			return jstr_rplcnchr_len(
-			*s + start_idx, *sz - start_idx, *find, *rplc, n);
-	} else if (jstr_unlikely(find_len == 0)) {
-		return JSTR_RET_SUCC;
-	}
-	pjstr_inplace_ty i = PJSTR_INPLACE_INIT(*s + start_idx);
-	size_t changed = 0;
 	jstr_twoway_ty t;
 	jstr_memmem_comp(&t, find, find_len);
-	for (; n--
-	       && (i.src_e = (char *)jstr_memmem_exec(
-	           &t, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find));
-	     ++changed) {
-		if (rplc_len <= find_len) {
-			PJSTR_INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
-		} else {
-			i.src_e
-			= pjstr_rplcat_len_higher(s,
-			                          sz,
-			                          cap,
-			                          JSTR_PTR_DIFF(i.src_e, *s),
-			                          rplc,
-			                          rplc_len,
-			                          find_len);
-			if (jstr_nullchk(i.src_e))
-				goto err;
-		}
-	}
-	if (i.dst != i.src)
-		*sz = JSTR_PTR_DIFF(
-		jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)),
-		*s);
-	return changed;
-err:
-	JSTR_RETURN_ERR((size_t)-1);
+	return jstr_rplcn_len_from_exec(&t, s, sz, cap, start_idx, find, find_len, rplc, rplc_len, n);
 }
 
 /* Replace N SEARCH in S with REPLACE.
