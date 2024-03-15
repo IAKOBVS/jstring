@@ -782,6 +782,7 @@ JSTR_NOEXCEPT
 	if (ne_len == 8)
 		return pjstr_memrmem8((cu *)hs, (cu *)ne, hs_len);
 #else
+	/* Unfinished. */
 	if (ne_len <= 8)
 		return pjstr_memrmem_lt8((cu *)hs, hs_len, (cu *)ne, ne_len);
 #endif
