@@ -60,7 +60,7 @@ static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
                                              size_t hs_len,
                                              const unsigned char *ne,
-                                             unsigned int ne_len)
+                                             unsigned int ne_len) JSTR_NOEXCEPT
 {
 	uint64_t hw;
 	uint64_t nw;
@@ -83,7 +83,7 @@ static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
                                              size_t hs_len,
                                              const unsigned char *ne,
-                                             unsigned int ne_len)
+                                             unsigned int ne_len) JSTR_NOEXCEPT
 {
 	uint64_t hw;
 	uint64_t nw;
@@ -129,7 +129,7 @@ JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(PJSTR_STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
                                              const unsigned char *ne,
-                                             unsigned int ne_len)
+                                             unsigned int ne_len) JSTR_NOEXCEPT
 {
 	uint64_t hw;
 	uint64_t nw;
