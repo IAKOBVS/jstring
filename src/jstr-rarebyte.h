@@ -171,20 +171,6 @@ jstr_rarebytefindprefernonalpha_len(const void *ne, size_t n)
 	return (void *)(jstr_isalpha(*rare) ? rare_backup : rare);
 }
 
-JSTR_FUNC_PURE
-static void *
-jstr_anomalyfind_len(const void *s, size_t n)
-{
-	const int c = *(unsigned char *)s;
-	const unsigned char *p = (const unsigned char *)s;
-	if (jstr_unlikely(n == 0))
-		return (void *)p;
-	for ( ;n--; ++p)
-		if (*p != c)
-			return (void *)p;
-	return (void *)(p - 1);
-}
-
 PJSTR_END_DECLS
 
 #endif /* JSTR_RAREBYTE_H */
