@@ -11,7 +11,7 @@ searching from a specified index.
 etc.
 - standard string functions for non-nul terminated strings: memspn\(\), memcspn\(\),
 mempbrk\(\), etc.
-- extensions to standard string functions: strnstr\(\), strnchr\(\), strcasestr\_len\(\).
+- extensions to standard string functions: strnchr\(\), strcasestr\_len\(\).
 - string formatting: asprintf\(\) and vsprintfstrlen\(\), which returns the maximum
 number of characters to store the characters written by vsprintf including the
 nul terminator.
