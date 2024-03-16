@@ -37,27 +37,27 @@
 		0                                                              \
 	}
 
-#define jstr_l_foreach(l, p)                                                    \
+#define jstr_l_foreach(l, p)                                                   \
 	for (jstr_ty *p = ((l)->data),                                         \
-	             *const _jstr__l_foreach_end_##p = jstr_l_end(l);            \
-	     p < _jstr__l_foreach_end_##p;                                      \
+	             *const _jstr__l_foreach_end_##p = jstr_l_end(l);          \
+	     p < _jstr__l_foreach_end_##p;                                     \
 	     ++p)
-#define jstr__l_foreach_cap(l, p)                                               \
+#define jstr__l_foreach_cap(l, p)                                              \
 	for (jstr_ty *p = ((l)->data),                                         \
-	             *const _jstr__l_foreach_end_##p                            \
+	             *const _jstr__l_foreach_end_##p                           \
 	             = ((l)->data) + ((l)->capacity);                          \
-	     p < _jstr__l_foreach_end_##p;                                      \
+	     p < _jstr__l_foreach_end_##p;                                     \
 	     ++p)
-#define jstr_l_foreachi(l, i)                                                   \
-	for (size_t i = 0, const _jstr__l_foreachi_end_##i = ((l)->size);       \
-	     i < _jstr__l_foreachi_end_##i;                                     \
+#define jstr_l_foreachi(l, i)                                                  \
+	for (size_t i = 0, const _jstr__l_foreachi_end_##i = ((l)->size);      \
+	     i < _jstr__l_foreachi_end_##i;                                    \
 	     ++i)
 #define jstr_l_index(l, curr) JSTR_PTR_DIFF(curr, (l)->data)
 #define jstr__l_at(l, i)      ((l)->data + (i))
 #define jstr_l_start(l)       ((l)->data)
 #define jstr_l_end(l)         ((l)->data + (l)->size)
 #ifdef JSTR_DEBUG
-#	define jstr_l_at(l, i)                                                 \
+#	define jstr_l_at(l, i)                                                \
 		((i <= (l)->size) ? ((l)->data + (i))                          \
 		                  : assert(i <= (l)->size),                    \
 		 ((l)->data))
@@ -99,11 +99,9 @@ jstr_l_free(jstr_list_ty *R l) JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
 #if JSTRL_LAZY_FREE
-		jstr__l_foreach_cap (l, p)
-			free(p->data);
+		jstr__l_foreach_cap(l, p) free(p->data);
 #else
-		jstr_l_foreach (l, p)
-			free(p->data);
+		jstr_l_foreach(l, p) free(p->data);
 #endif
 		free(l->data);
 		l->data = NULL;
@@ -135,7 +133,8 @@ jstr_l_debug(const jstr_list_ty *R l)
 	              l->capacity);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
-	jstr_l_foreach (l, p) {
+	jstr_l_foreach(l, p)
+	{
 		ret = fprintf(stderr,
 		              "idx:%zu\n"
 		              "size:%zu\n"
@@ -303,8 +302,8 @@ err:
 JSTR_FUNC
 static jstr_ret_ty
 jstr_l_pushback_len_unsafe(jstr_list_ty *R l,
-                          const char *R s,
-                          size_t s_len) JSTR_NOEXCEPT
+                           const char *R s,
+                           size_t s_len) JSTR_NOEXCEPT
 {
 	jstr_ty *const p = l->data + l->size;
 	if (jstr_chk(
@@ -320,8 +319,8 @@ err:
 JSTR_FUNC
 static jstr_ret_ty
 jstr_l_pushback_len(jstr_list_ty *R l,
-                   const char *R s,
-                   size_t s_len) JSTR_NOEXCEPT
+                    const char *R s,
+                    size_t s_len) JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_l_reserve(l, l->size + 1)))
 		goto err;
@@ -377,18 +376,17 @@ jstr_l_assign_len(jstr_list_ty *R l, size_t idx, const char *R s, size_t s_len)
 
 #define JSTRL__DEFINE_FIND_LEN(name, func)                                     \
 	JSTR_FUNC_PURE                                                         \
-	static jstr_ty *jstr_l_##name(                                          \
-	const jstr_list_ty *R l, const char *R s, size_t s_len) JSTR_NOEXCEPT   \
+	static jstr_ty *jstr_l_##name(                                         \
+	const jstr_list_ty *R l, const char *R s, size_t s_len) JSTR_NOEXCEPT  \
 	{                                                                      \
-		jstr_l_foreach (l, j)                                           \
-			if (func(s, s_len, j->data, j->size))                  \
-				return j;                                      \
+		jstr_l_foreach(                                                \
+		l, j) if (func(s, s_len, j->data, j->size)) return j;          \
 		return NULL;                                                   \
 	}
 
 JSTRL__DEFINE_FIND_LEN(find_len, !jstr_cmpeq)
 JSTRL__DEFINE_FIND_LEN(findcase_len, !jstr_cmpcaseeq)
-JSTRL__DEFINE_FIND_LEN(findstrstr_len, jstr_strstr_len)
+JSTRL__DEFINE_FIND_LEN(findstrstr_len, jstr_memmem)
 JSTRL__DEFINE_FIND_LEN(findstrcasestr_len, jstr_strcasestr_len)
 JSTRL__DEFINE_FIND_LEN(findstarts_len, jstr_starts_len)
 JSTRL__DEFINE_FIND_LEN(findstartscase_len, jstr_startscase_len)
@@ -399,20 +397,19 @@ JSTRL__DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 
 #define JSTRL__DEFINE_FIND(name, func)                                         \
 	JSTR_FUNC_PURE                                                         \
-	static jstr_ty *jstr_l_##name(const jstr_list_ty *R l, const char *R s)  \
-	JSTR_NOEXCEPT                                                          \
+	static jstr_ty *jstr_l_##name(const jstr_list_ty *R l,                 \
+	                              const char *R s) JSTR_NOEXCEPT           \
 	{                                                                      \
 		const size_t s_len = strlen(s);                                \
-		jstr_l_foreach (l, j)                                           \
-			if (func(s, s_len, j->data, j->size))                  \
-				return j;                                      \
+		jstr_l_foreach(                                                \
+		l, j) if (func(s, s_len, j->data, j->size)) return j;          \
 		return NULL;                                                   \
 	}
 
 JSTRL__DEFINE_FIND(findcase, !jstr_cmpcaseeq)
 JSTRL__DEFINE_FIND(findstrcasestr, jstr_strcasestr_len)
 JSTRL__DEFINE_FIND(find, !jstr_cmpeq)
-JSTRL__DEFINE_FIND(findstrstr, jstr_strstr_len)
+JSTRL__DEFINE_FIND(findstrstr, jstr_memmem)
 JSTRL__DEFINE_FIND(findstarts, jstr_starts_len)
 JSTRL__DEFINE_FIND(findstartscase, jstr_startscase_len)
 JSTRL__DEFINE_FIND(findends, jstr_ends_len)
@@ -424,9 +421,7 @@ JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_findstrchr(const jstr_list_ty *R l, int c) JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
-		if (memchr(j->data, c, j->size))
-			return j;
+	jstr_l_foreach(l, j) if (memchr(j->data, c, j->size)) return j;
 	return NULL;
 }
 
@@ -434,9 +429,7 @@ JSTR_FUNC_PURE
 static jstr_ty *
 jstr_l_findstrcasechr(const jstr_list_ty *R l, int c) JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
-		if (jstr_strcasechr(j->data, c))
-			return j;
+	jstr_l_foreach(l, j) if (jstr_strcasechr(j->data, c)) return j;
 	return NULL;
 }
 
@@ -454,9 +447,9 @@ jstr__l_delete(jstr_list_ty *R l, jstr_ty *R p) JSTR_NOEXCEPT
 #endif
 		if (jstr_likely(p != jstr_l_end(l)))
 			jstr__l_memmove(p,
-			               p + 1,
-			               JSTR_PTR_DIFF(jstr_l_end(l), p + 1)
-			               * sizeof(*l->data));
+			                p + 1,
+			                JSTR_PTR_DIFF(jstr_l_end(l), p + 1)
+			                * sizeof(*l->data));
 		--l->size;
 #if JSTRL_LAZY_FREE
 		jstr__l_elemmove(l, &tmp);
@@ -466,10 +459,10 @@ jstr__l_delete(jstr_list_ty *R l, jstr_ty *R p) JSTR_NOEXCEPT
 
 #define JSTRL__DEFINE_DELETE_LEN(name, func)                                   \
 	JSTR_FUNC_VOID                                                         \
-	static void jstr_l_##name(                                              \
-	jstr_list_ty *R l, const char *R s, size_t s_len) JSTR_NOEXCEPT         \
+	static void jstr_l_##name(                                             \
+	jstr_list_ty *R l, const char *R s, size_t s_len) JSTR_NOEXCEPT        \
 	{                                                                      \
-		jstr__l_delete(l, func);                                        \
+		jstr__l_delete(l, func);                                       \
 	}
 
 JSTRL__DEFINE_DELETE_LEN(delete_len, jstr_l_find_len(l, s, s_len))
@@ -488,11 +481,11 @@ JSTRL__DEFINE_DELETE_LEN(deleteendscase_len,
 
 #define JSTRL__DEFINE_DELETE(name, func)                                       \
 	JSTR_FUNC_VOID                                                         \
-	static void jstr_l_##name(jstr_list_ty *R l, const char *R s)            \
+	static void jstr_l_##name(jstr_list_ty *R l, const char *R s)          \
 	JSTR_NOEXCEPT                                                          \
 	{                                                                      \
 		const size_t s_len = strlen(s);                                \
-		jstr__l_delete(l, func);                                        \
+		jstr__l_delete(l, func);                                       \
 	}
 
 JSTRL__DEFINE_DELETE(delete, jstr_l_find_len(l, s, s_len))
@@ -524,10 +517,10 @@ jstr_l_deletestrcasechr(jstr_list_ty *R l, int c) JSTR_NOEXCEPT
 JSTR_FUNC
 static jstr_ret_ty
 jstr_l_split_len(jstr_list_ty *R l,
-                const char *src,
-                size_t src_len,
-                const char *split,
-                size_t split_len)
+                 const char *src,
+                 size_t src_len,
+                 const char *split,
+                 size_t split_len)
 {
 	const char *save = src;
 	const char *end = src + src_len;
