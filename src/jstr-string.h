@@ -2072,7 +2072,7 @@ JSTR_NOEXCEPT
 {
 	unsigned char *s_e = (unsigned char *)s + n;
 	s = memchr(s, '\\', n);
-	return s ? jstr_unescapecpy_len_p(s, s, s_e - (unsigned char *)s) : s_e;
+	return s ? jstr_unescapecpy_len_p(s, s, JSTR_PTR_DIFF(s_e, s)) : s_e;
 }
 
 JSTR__END_DECLS

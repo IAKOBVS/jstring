@@ -873,7 +873,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n == 0))
 		return 0;
 	if (n == 1)
-		return jstr_rplc_len_from_exec(t, s, sz, cap, start_idx, find, find_len, rplc, rplc_len);
+		return (size_t)jstr_rplc_len_from_exec(t, s, sz, cap, start_idx, find, find_len, rplc, rplc_len);
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_rmn_len_from_exec(t, *s, sz, start_idx, find, find_len, n);
 	if (find_len == 1) {
