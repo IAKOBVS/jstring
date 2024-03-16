@@ -219,7 +219,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
-jstr_re_patternlengthmax(const char *pattern)
+jstr_re_patternlenmax(const char *pattern)
 {
 	int c;
 	const unsigned char *p = (const unsigned char *)pattern;
