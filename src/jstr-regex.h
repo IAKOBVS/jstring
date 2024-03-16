@@ -122,7 +122,7 @@ typedef enum {
 #endif
 } jstr_re_ret_ty;
 
-#define JSTR_RE__ERR_EXEC_HANDLE(errcode, do_on_error)     \
+#define JSTR__RE_ERR_EXEC_HANDLE(errcode, do_on_error)     \
 	if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) { \
 		;                                          \
 	} else if (errcode == JSTR_RE_RET_NOMATCH) {       \
@@ -224,7 +224,7 @@ jstr_re_patternlenmax(const char *pattern)
 	int c;
 	const unsigned char *p = (const unsigned char *)pattern;
 	/* Quickly find a special character. */
-	p = (const unsigned char *)strcspn((const char *)p, "*{}\\");
+	p = (const unsigned char *)strcspn((const char *)p, "\\*{}");
 	if (*p != '\0')
 		for (;; ++p)
 			switch (c = *p) {
@@ -308,7 +308,7 @@ JSTR_NOEXCEPT
 	size_t changed = 0;
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), 1, &rm, eflags);
-		JSTR_RE__ERR_EXEC_HANDLE(ret, goto err_free);
+		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -454,7 +454,7 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	while (n-- && *i.src_e) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), 1, &rm, eflags);
-		JSTR_RE__ERR_EXEC_HANDLE(ret, goto err_free);
+		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -635,7 +635,7 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
-		JSTR_RE__ERR_EXEC_HANDLE(ret, goto err_free_rdst);
+		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free_rdst);
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (jstr_unlikely(find_len == 0)) {
 			++i.src_e;
