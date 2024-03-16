@@ -859,8 +859,8 @@ JSTR_NOEXCEPT
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp.
  * The current implementation is O(n).
- * It does 3 * n operations:
- * n operations for memmem,
+ * It does 4 * n operations:
+ * 2 * n operations for memmem,
  * n operations for malloc,
  * n operations for replacements. */
 JSTR_FUNC
@@ -869,6 +869,8 @@ jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, 
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(n == 0))
+		return 0;
 	if (n == 1)
 		return jstr_rplc_len_from_exec(t, s, sz, cap, start_idx, find, find_len, rplc, rplc_len);
 	if (jstr_unlikely(rplc_len == 0))
@@ -889,22 +891,34 @@ JSTR_NOEXCEPT
 		if (i.dst != i.src)
 			*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), *s);
 	} else {
-		for (; n--
-		       && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find));
-		     ++changed, i.src_e += find_len) {}
+		i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find);
+		if (jstr_nullchk(i.src_e))
+			return 0;
+		char *const first = i.src_e;
+		goto loop1;
+		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find))) {
+loop1:
+		     --n;
+		     ++changed;
+		     i.src_e += find_len;
+		}
 		if (!changed)
 			return 0;
-		n = changed;
 		i.dst = NULL;
 		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, *sz + changed * (rplc_len - find_len) + 1)))
 			goto err;
 		char *const dst_s = i.dst;
 		if (start_idx)
 			i.dst = (char *)jstr_mempcpy(i.dst, *s, start_idx);
-		while (n-- && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_PTR_DIFF(*s + *sz, i.src), find))) {
+		n = changed;
+		i.src_e = first;
+		goto loop2;
+		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_PTR_DIFF(*s + *sz, i.src), find))) {
+loop2:
 			i.dst = (char *)jstr_mempcpy(i.dst, i.src, JSTR_PTR_DIFF(i.src_e, i.src));
 			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
+			--n;
 		}
 		*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), dst_s);
 		free(*s);
