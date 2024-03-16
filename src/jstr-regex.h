@@ -664,11 +664,11 @@ JSTR_NOEXCEPT
 		}
 		i.src_e += rm[0].rm_so;
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
-		if (rdst_len <= find_len)
+		if (rdst_len <= find_len) {
 			JSTR__INPLACE_RPLCALL(i, rdstp, rdst_len, find_len);
-		else if (*cap > *sz + rdst_len - find_len)
+		} else if (*cap > *sz + rdst_len - find_len) {
 			jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rdstp, rdst_len, find_len);
-		else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rdstp, rdst_len, find_len))) {
+		} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rdstp, rdst_len, find_len))) {
 			ret = JSTR_RE_RET_ESPACE;
 			goto err_free_rdst;
 		}
