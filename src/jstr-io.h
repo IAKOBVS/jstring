@@ -779,7 +779,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define STAT(st, fd, ep, dirpath) STAT_ALWAYS(st, fd, ep, dirpath)
 #	define STAT_OR_MODE(st, fd, ep, dirpath)          \
 		do {                                       \
-			if (FLAG(JSTR_IO_FTW_NOSTAT))       \
+			if (FLAG(JSTR_IO_FTW_NOSTAT))      \
 				STAT_MODE(st, ep);         \
 			else                               \
 				STAT(st, fd, ep, dirpath); \
@@ -851,9 +851,9 @@ struct jstr__io_ftw_data {
 	int func_name(const struct JSTR_IO_FTW *ftw, const void *func_args)
 
 #define JSTR_IO_FTW_FUNC_MATCH(func_name, filename, filename_len, args) \
-	int func_name(                                                 \
-	const char *filename,                                          \
-	jstr_io_path_size_ty filename_len,                             \
+	int func_name(                                                  \
+	const char *filename,                                           \
+	jstr_io_path_size_ty filename_len,                              \
 	const void *args)
 
 #ifdef O_DIRECTORY

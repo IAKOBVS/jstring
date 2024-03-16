@@ -33,8 +33,8 @@
 #define R JSTR_RESTRICT
 
 #define JSTR_L_INIT \
-	{          \
-		0  \
+	{           \
+		0   \
 	}
 
 #define jstr_l_foreach(l, p)                                          \
@@ -367,7 +367,7 @@ jstr_l_assign_len(jstr_list_ty *R l, size_t idx, const char *R s, size_t s_len)
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-#define JSTR_L__DEFINE_FIND_LEN(name, func)                         \
+#define JSTR_L__DEFINE_FIND_LEN(name, func)                        \
 	JSTR_FUNC_PURE                                             \
 	static jstr_ty *jstr_l_##name(                             \
 	const jstr_list_ty *R l,                                   \
@@ -391,7 +391,7 @@ JSTR_L__DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 
 #undef JSTR_L__DEFINE_FIND_LEN
 
-#define JSTR_L__DEFINE_FIND(name, func)                             \
+#define JSTR_L__DEFINE_FIND(name, func)                            \
 	JSTR_FUNC_PURE                                             \
 	static jstr_ty *jstr_l_##name(                             \
 	const jstr_list_ty *R l,                                   \
@@ -456,13 +456,13 @@ JSTR_NOEXCEPT
 }
 
 #define JSTR_L__DEFINE_DELETE_LEN(name, func) \
-	JSTR_FUNC_VOID                       \
-	static void jstr_l_##name(           \
-	jstr_list_ty *R l,                   \
-	const char *R s,                     \
-	size_t s_len) JSTR_NOEXCEPT          \
-	{                                    \
-		jstr__l_delete(l, func);     \
+	JSTR_FUNC_VOID                        \
+	static void jstr_l_##name(            \
+	jstr_list_ty *R l,                    \
+	const char *R s,                      \
+	size_t s_len) JSTR_NOEXCEPT           \
+	{                                     \
+		jstr__l_delete(l, func);      \
 	}
 
 JSTR_L__DEFINE_DELETE_LEN(delete_len, jstr_l_find_len(l, s, s_len))
@@ -476,7 +476,7 @@ JSTR_L__DEFINE_DELETE_LEN(deleteendscase_len, jstr_l_findendscase_len(l, s, s_le
 
 #undef JSTR_L__DEFINE_DELETE_LEN
 
-#define JSTR_L__DEFINE_DELETE(name, func)                              \
+#define JSTR_L__DEFINE_DELETE(name, func)                             \
 	JSTR_FUNC_VOID                                                \
 	static void jstr_l_##name(jstr_list_ty *R l, const char *R s) \
 	JSTR_NOEXCEPT                                                 \
