@@ -308,7 +308,7 @@ JSTR_NOEXCEPT
 	const char *const end = *s + *sz;
 	size_t find_len;
 	int ret;
-	size_t changed = 0;
+	jstr_re_off_ty changed = 0;
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), 1, &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
@@ -435,29 +435,96 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, c
 	return JSTR_RET_SUCC;
 }
 
-/* TODO: guarantee O(n) in replacement. The current implementation is O(m * n),
- * where if RPLC is longer than FIND, it will realloc and shift the rest of S
- * to make room for FIND. This is slow if we find a lot of FINDs in S. Instead,
- * we should do the replacement on a new malloc'd string. Executing the compiled
- * regex twice shouldn't be too bad. */
 /* Return value:
  * on error, -errcode (negative);
- * number of substrings replaced. */
+ * number of substrings replaced.
+ * If REG_STARTEND is available, replacement is O(n).
+ * Otherwise, search is O(n ^ 2), so just avoid searching
+ * twice. */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcn_len_from(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+#ifdef JSTR_RE_EF_STARTEND
+	if (jstr_unlikely(n == 0))
+		return 0;
+	if (jstr_unlikely(rplc_len == 0))
+		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
+	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
+	jstr_re_off_ty changed = 0;
+	const char *end = *s + *sz;
+	regmatch_t rm[10];
+	int ret;
+	ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), rm, 0);
+	if (ret == JSTR_RE_RET_NOERROR)
+		;
+	else if (ret == JSTR_RE_RET_NOMATCH)
+		return 0;
+	else
+		goto err;
+	i.src_e += rm[0].rm_so;
+	char *first;
+	first = i.src_e;
+	const char *last;
+	last = end;
+	size_t new_size;
+	new_size = *sz;
+	jstr_re_off_ty find_len;
+	goto loop1;
+	while (n) {
+loop1:
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), rm, 0);
+		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
+		find_len = rm[0].rm_eo - rm[0].rm_so;
+		i.src_e += rm[0].rm_so;
+		last = i.src_e;
+		--n;
+		++changed;
+		i.src_e += find_len;
+		new_size += rplc_len - (size_t)find_len;
+	}
+	if (!changed)
+		return 0;
+	if (last != end)
+		last += (size_t)(rm[0].rm_eo - rm[0].rm_so);
+	i.dst = NULL;
+	if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size + 1)))
+		goto err;
+	char *dst_s;
+	dst_s = i.dst;
+	if (start_idx)
+		i.dst = (char *)jstr_mempcpy(i.dst, *s, start_idx);
+	n = (size_t)changed;
+	i.src_e = first;
+	goto loop2;
+	while (n) {
+loop2:
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), rm, 0);
+		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
+		find_len = rm[0].rm_eo - rm[0].rm_so;
+		i.src_e += rm[0].rm_so;
+		--n;
+		i.dst = (char *)jstr_mempcpy(i.dst, i.src, JSTR_PTR_DIFF(i.src_e, i.src));
+		i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
+		i.src = i.src_e + find_len;
+	}
+	*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), dst_s);
+	free(*s);
+	*s = dst_s;
+	return changed;
+#else
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	size_t find_len;
 	regmatch_t rm;
 	int ret;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
-	while (n-- && *i.src_e) {
+	jstr_re_off_ty changed = 0;
+	for (; n-- && *i.src_e; ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), 1, &rm, eflags);
-		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
+		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -468,13 +535,14 @@ JSTR_NOEXCEPT
 			jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rplc, rplc_len, find_len);
 		} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rplc, rplc_len, find_len))) {
 			ret = JSTR_RE_RET_ESPACE;
-			goto err_free;
+			goto err;
 		}
 	}
 	if (i.dst != i.src)
 		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), *s);
-	return JSTR_RE_RET_NOERROR;
-err_free:
+	return changed;
+#endif
+err:
 	jstr_free_noinline(s, sz, cap);
 	JSTR_RE_RETURN_ERR(ret, preg);
 }
@@ -632,7 +700,7 @@ JSTR_NOEXCEPT
 	char *rdstp = rdst_stack;
 	char *rdst_heap = NULL;
 	size_t find_len;
-	size_t changed = 0;
+	jstr_re_off_ty changed = 0;
 	int ret;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	for (; n-- && *i.src_e; ++changed) {
