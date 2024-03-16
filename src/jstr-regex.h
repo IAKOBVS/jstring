@@ -408,8 +408,8 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, c
  * we should do the replacement on a new malloc'd string. Executing the compiled
  * regex twice shouldn't be too bad.
  *
- * Though, if REG_STARTEND is not available, regexec will always recalculate the
- * length of the string for every execution, making the search O(n ^ 2). */
+ * Though, if REG_STARTEND is not available, the search will be O(n ^ 2) since
+ * regexec will always recalculate the length of the string. */
 /* Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
