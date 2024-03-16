@@ -35,10 +35,7 @@
 #	define JSTR__MUSL_FUNC_NAME jstr__memmem_musl
 #endif
 
-#define BITOP(a, b, op)                                   \
-	(                                                 \
-	(a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 \
-	<< ((size_t)(b) % (8 * sizeof *(a))))
+#define BITOP(a, b, op) ((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
 
 #ifndef JSTR__MUSL_TWOWAY_STRUCT
 #	define JSTR__MUSL_TWOWAY_STRUCT
@@ -142,12 +139,7 @@ JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t, const un
                                          const size_t hs_len
 #endif
                                          ,
-                                         const unsigned char *const ne
-#ifdef JSTR__MUSL_USE_N
-                                         ,
-                                         size_t n_limit
-#endif
-                                         )
+                                         const unsigned char *const ne)
 JSTR_NOEXCEPT
 {
 	int c;
@@ -155,11 +147,6 @@ JSTR_NOEXCEPT
 	size_t memory = 0;
 	/* Initialize end-of-haystack pointer. */
 #ifdef JSTR__MUSL_CHECK_EOL
-#	ifdef JSTR__MUSL_USE_N
-	if (jstr_unlikely(t->needle_len < n_limit))
-		return NULL;
-	const unsigned char *const end_limit = hs + n_limit;
-#	endif
 	const unsigned char *end
 	= hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
 #else
@@ -171,11 +158,7 @@ JSTR_NOEXCEPT
 		/* Update incremental end-of-haystack pointer. */
 		if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
-#	ifdef JSTR__MUSL_USE_N
-			end += jstr_strnlen((const char *)end, JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(end_limit, hs)));
-#	else
 			end += jstr_strnlen((const char *)end, t->needle_len | 2048);
-#	endif
 			if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len))
 				break;
 		}
@@ -230,10 +213,6 @@ JSTR__MUSL_FUNC_NAME(const unsigned char *haystack
                      ,
                      const size_t needle_len
 #endif
-#ifdef JSTR__MUSL_USE_N
-                     ,
-                     size_t n_limit
-#endif
                      )
 JSTR_NOEXCEPT
 {
@@ -251,12 +230,7 @@ JSTR_NOEXCEPT
 	                                                haystack_len
 #endif
 	                                                ,
-	                                                (const unsigned char *)needle
-#ifdef JSTR__MUSL_USE_N
-	                                                ,
-	                                                n_limit
-#endif
-	);
+	                                                (const unsigned char *)needle);
 }
 
 #undef BITOP
@@ -266,4 +240,3 @@ JSTR_NOEXCEPT
 #undef JSTR__MUSL_CANON
 #undef JSTR__MUSL_FUNC_NAME
 #undef JSTR__MUSL_CMP_FUNC
-#undef JSTR__MUSL_USE_N
