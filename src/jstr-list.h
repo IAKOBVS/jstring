@@ -367,7 +367,7 @@ jstr_l_assign_len(jstr_list_ty *R l, size_t idx, const char *R s, size_t s_len)
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-#define JSTR_L__DEFINE_FIND_LEN(name, func)                        \
+#define JSTR__L_DEFINE_FIND_LEN(name, func)                        \
 	JSTR_FUNC_PURE                                             \
 	static jstr_ty *jstr_l_##name(                             \
 	const jstr_list_ty *R l,                                   \
@@ -380,18 +380,18 @@ jstr_l_assign_len(jstr_list_ty *R l, size_t idx, const char *R s, size_t s_len)
 		return NULL;                                       \
 	}
 
-JSTR_L__DEFINE_FIND_LEN(find_len, !jstr_cmpeq)
-JSTR_L__DEFINE_FIND_LEN(findcase_len, !jstr_cmpcaseeq)
-JSTR_L__DEFINE_FIND_LEN(findstrstr_len, jstr_memmem)
-JSTR_L__DEFINE_FIND_LEN(findstrcasestr_len, jstr_strcasestr_len)
-JSTR_L__DEFINE_FIND_LEN(findstarts_len, jstr_starts_len)
-JSTR_L__DEFINE_FIND_LEN(findstartscase_len, jstr_startscase_len)
-JSTR_L__DEFINE_FIND_LEN(findends_len, jstr_ends_len)
-JSTR_L__DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
+JSTR__L_DEFINE_FIND_LEN(find_len, !jstr_cmpeq)
+JSTR__L_DEFINE_FIND_LEN(findcase_len, !jstr_cmpcaseeq)
+JSTR__L_DEFINE_FIND_LEN(findstrstr_len, jstr_memmem)
+JSTR__L_DEFINE_FIND_LEN(findstrcasestr_len, jstr_strcasestr_len)
+JSTR__L_DEFINE_FIND_LEN(findstarts_len, jstr_starts_len)
+JSTR__L_DEFINE_FIND_LEN(findstartscase_len, jstr_startscase_len)
+JSTR__L_DEFINE_FIND_LEN(findends_len, jstr_ends_len)
+JSTR__L_DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 
-#undef JSTR_L__DEFINE_FIND_LEN
+#undef JSTR__L_DEFINE_FIND_LEN
 
-#define JSTR_L__DEFINE_FIND(name, func)                            \
+#define JSTR__L_DEFINE_FIND(name, func)                            \
 	JSTR_FUNC_PURE                                             \
 	static jstr_ty *jstr_l_##name(                             \
 	const jstr_list_ty *R l,                                   \
@@ -404,16 +404,16 @@ JSTR_L__DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 		return NULL;                                       \
 	}
 
-JSTR_L__DEFINE_FIND(findcase, !jstr_cmpcaseeq)
-JSTR_L__DEFINE_FIND(findstrcasestr, jstr_strcasestr_len)
-JSTR_L__DEFINE_FIND(find, !jstr_cmpeq)
-JSTR_L__DEFINE_FIND(findstrstr, jstr_memmem)
-JSTR_L__DEFINE_FIND(findstarts, jstr_starts_len)
-JSTR_L__DEFINE_FIND(findstartscase, jstr_startscase_len)
-JSTR_L__DEFINE_FIND(findends, jstr_ends_len)
-JSTR_L__DEFINE_FIND(findendscase, jstr_endscase_len)
+JSTR__L_DEFINE_FIND(findcase, !jstr_cmpcaseeq)
+JSTR__L_DEFINE_FIND(findstrcasestr, jstr_strcasestr_len)
+JSTR__L_DEFINE_FIND(find, !jstr_cmpeq)
+JSTR__L_DEFINE_FIND(findstrstr, jstr_memmem)
+JSTR__L_DEFINE_FIND(findstarts, jstr_starts_len)
+JSTR__L_DEFINE_FIND(findstartscase, jstr_startscase_len)
+JSTR__L_DEFINE_FIND(findends, jstr_ends_len)
+JSTR__L_DEFINE_FIND(findendscase, jstr_endscase_len)
 
-#undef JSTR_L__DEFINE_FIND
+#undef JSTR__L_DEFINE_FIND
 
 JSTR_FUNC_PURE
 static jstr_ty *
@@ -455,7 +455,7 @@ JSTR_NOEXCEPT
 	}
 }
 
-#define JSTR_L__DEFINE_DELETE_LEN(name, func) \
+#define JSTR__L_DEFINE_DELETE_LEN(name, func) \
 	JSTR_FUNC_VOID                        \
 	static void jstr_l_##name(            \
 	jstr_list_ty *R l,                    \
@@ -465,18 +465,18 @@ JSTR_NOEXCEPT
 		jstr__l_delete(l, func);      \
 	}
 
-JSTR_L__DEFINE_DELETE_LEN(delete_len, jstr_l_find_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE_LEN(deletecase_len, jstr_l_findcase_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE_LEN(deletestrstr_len, jstr_l_findstrstr_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE_LEN(deletestrcasestr_len, jstr_l_findstrcasestr_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE_LEN(deletestarts_len, jstr_l_findstarts_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE_LEN(deletestartscase_len, jstr_l_findstartscase_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE_LEN(deleteends_len, jstr_l_findends_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE_LEN(deleteendscase_len, jstr_l_findendscase_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE_LEN(delete_len, jstr_l_find_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE_LEN(deletecase_len, jstr_l_findcase_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE_LEN(deletestrstr_len, jstr_l_findstrstr_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE_LEN(deletestrcasestr_len, jstr_l_findstrcasestr_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE_LEN(deletestarts_len, jstr_l_findstarts_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE_LEN(deletestartscase_len, jstr_l_findstartscase_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE_LEN(deleteends_len, jstr_l_findends_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE_LEN(deleteendscase_len, jstr_l_findendscase_len(l, s, s_len))
 
-#undef JSTR_L__DEFINE_DELETE_LEN
+#undef JSTR__L_DEFINE_DELETE_LEN
 
-#define JSTR_L__DEFINE_DELETE(name, func)                             \
+#define JSTR__L_DEFINE_DELETE(name, func)                             \
 	JSTR_FUNC_VOID                                                \
 	static void jstr_l_##name(jstr_list_ty *R l, const char *R s) \
 	JSTR_NOEXCEPT                                                 \
@@ -485,16 +485,16 @@ JSTR_L__DEFINE_DELETE_LEN(deleteendscase_len, jstr_l_findendscase_len(l, s, s_le
 		jstr__l_delete(l, func);                              \
 	}
 
-JSTR_L__DEFINE_DELETE(delete, jstr_l_find_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE(deletecase, jstr_l_findcase_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE(deletestrstr, jstr_l_findstrstr_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE(deletestrcasestr, jstr_l_findstrcasestr_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE(deletestarts, jstr_l_findstarts_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE(deletestartscase, jstr_l_findstartscase_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE(deleteends, jstr_l_findends_len(l, s, s_len))
-JSTR_L__DEFINE_DELETE(deleteendscase, jstr_l_findendscase_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE(delete, jstr_l_find_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE(deletecase, jstr_l_findcase_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE(deletestrstr, jstr_l_findstrstr_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE(deletestrcasestr, jstr_l_findstrcasestr_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE(deletestarts, jstr_l_findstarts_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE(deletestartscase, jstr_l_findstartscase_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE(deleteends, jstr_l_findends_len(l, s, s_len))
+JSTR__L_DEFINE_DELETE(deleteendscase, jstr_l_findendscase_len(l, s, s_len))
 
-#undef JSTR_L__DEFINE_DELETE
+#undef JSTR__L_DEFINE_DELETE
 
 JSTR_FUNC_VOID
 static void
