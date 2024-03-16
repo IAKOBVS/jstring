@@ -1092,7 +1092,7 @@ jstr_rplc_len_from(char *R *R s,
 	jstr_twoway_ty t;
 	jstr_memmem_comp(&t, find, find_len);
 	return jstr_rplc_len_from_exec(
-	&t, s, sz, cap, 0, find, find_len, rplc, rplc_len);
+	&t, s, sz, cap, start_idx, find, find_len, rplc, rplc_len);
 }
 
 /* Replace first SEARCH in S with REPLACE.
