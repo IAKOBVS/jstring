@@ -439,8 +439,8 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, c
  * on error, -errcode (negative);
  * number of substrings replaced.
  * If REG_STARTEND is available, replacement is O(n).
- * Otherwise, search is O(n ^ 2), so just avoid searching
- * twice. */
+ * Otherwise, it is O(n ^ 2) since searching is O(n ^ 2).
+ * So we just avoid searching twice. */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcn_len_from(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n)
