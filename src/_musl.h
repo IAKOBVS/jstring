@@ -57,8 +57,7 @@ JSTR_NOEXCEPT
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const word *ws = (const word *)(p - SS + 1);
 		const size_t k = ONES * (unsigned char)c;
-		for (word w = *ws; n >= SS && !HASZERO(w ^ k);
-		     w = *--ws, n -= SS) {}
+		for (word w = *ws; n >= SS && !HASZERO(w ^ k); w = *--ws, n -= SS) {}
 		p = (unsigned char *)ws + SS - 1;
 	}
 #endif
@@ -84,8 +83,7 @@ JSTR_NOEXCEPT
 	const size_t k = ONES * (unsigned char)c;
 	const size_t l = ONES * (unsigned char)jstr_toupper(c);
 	const word *ws = (word *)s;
-	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l);
-	     w = *++ws) {}
+	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws) {}
 	s = (char *)ws;
 #endif
 	for (; *s && jstr_tolower(*s) != c; ++s) {}
@@ -112,9 +110,7 @@ JSTR_NOEXCEPT
 		const size_t k = ONES * (unsigned char)c;
 		const size_t l = ONES * jstr_toupper(c);
 		const word *ws = (word *)p;
-		for (word w = *ws;
-		     n >= sizeof(size_t) && !HASZERO(w ^ k) && !HASZERO(w ^ l);
-		     n -= sizeof(size_t), w = *++ws) {}
+		for (word w = *ws; n >= sizeof(size_t) && !HASZERO(w ^ k) && !HASZERO(w ^ l); n -= sizeof(size_t), w = *++ws) {}
 		p = (unsigned char *)ws;
 	}
 #endif
@@ -141,8 +137,7 @@ JSTR_NOEXCEPT
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
 		const word *ws = (const word *)s;
-		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k);
-		     w = *++ws, n -= SS) {}
+		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k); w = *++ws, n -= SS) {}
 		s = (const char *)ws;
 	}
 #endif
@@ -171,9 +166,7 @@ JSTR_NOEXCEPT
 		const size_t k = ONES * (unsigned char)c;
 		const size_t l = ONES * jstr_toupper(c);
 		const word *ws = (const word *)s;
-		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k)
-		                   && !HASZERO(w ^ l);
-		     w = *++ws, n -= SS) {}
+		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws, n -= SS) {}
 		s = (const char *)ws;
 	}
 #endif

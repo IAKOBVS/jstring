@@ -1090,8 +1090,7 @@ JSTR_NOEXCEPT
 		goto err;
 	}
 	/* Don't copy trailing // to FULPATH. */
-	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/';
-	     --dirpath_len) {}
+	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/'; --dirpath_len) {}
 	char fulpath[JSTR_IO_PATH_MAX];
 	jstr_strcpy_len(fulpath, dirpath, dirpath_len);
 	FD_DECLARE;

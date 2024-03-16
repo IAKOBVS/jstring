@@ -430,8 +430,7 @@ JSTR_NOEXCEPT
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
 	size_t changed = 0;
-	for (; n-- && *(i.src_e = jstr_strchrnul((char *)i.src_e, c));
-	     ++changed)
+	for (; n-- && *(i.src_e = jstr_strchrnul((char *)i.src_e, c)); ++changed)
 		JSTR__INPLACE_RMALL(i, 1);
 	if (i.dst != i.src)
 		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(i.src_e, i.src)), s);
@@ -649,8 +648,7 @@ JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
 	size_t changed = 0;
-	for (; n-- && (s = (char *)memchr(s, find, JSTR_PTR_DIFF(end, s)));
-	     *s++ = rplc, ++changed) {}
+	for (; n-- && (s = (char *)memchr(s, find, JSTR_PTR_DIFF(end, s))); *s++ = rplc, ++changed) {}
 	return changed;
 }
 
@@ -674,8 +672,7 @@ jstr_rplcallchr_len(char *R s, size_t sz, char find, char rplc)
 JSTR_NOEXCEPT
 {
 	const char *R end = s + sz;
-	for (; (s = (char *)memchr(s, find, JSTR_PTR_DIFF(end, s)));
-	     *s++ = rplc) {}
+	for (; (s = (char *)memchr(s, find, JSTR_PTR_DIFF(end, s))); *s++ = rplc) {}
 }
 
 /* Replace last SEARCH in S with REPLACE.
@@ -744,10 +741,7 @@ JSTR_NOEXCEPT
 	const char *const end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
 	size_t changed = 0;
-	for (;
-	     n--
-	     && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find));
-	     ++changed)
+	for (; n-- && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find)); ++changed)
 		JSTR__INPLACE_RMALL(i, find_len);
 	if (i.dst != end)
 		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), s);
