@@ -558,8 +558,7 @@ JSTR_NOEXCEPT
 	const char *const rplc_e = rplc + rplc_len;
 	int has_bref = 0;
 	int c;
-	for (; (rplc = (char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc)));
-	     ++rplc, has_bref = 1) {
+	for (; (rplc = (char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); ++rplc, has_bref = 1) {
 		c = *++rplc;
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';

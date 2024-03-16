@@ -1175,8 +1175,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
-	for (const char *const end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_PTR_DIFF(end, s), find));
-	     ++cnt, s += find_len)
+	for (const char *const end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_PTR_DIFF(end, s), find)); ++cnt, s += find_len)
 		;
 	return cnt;
 }
@@ -1843,8 +1842,7 @@ JSTR_NOEXCEPT
 			{
 				int o = 3;
 				*d = 0, ++s;
-				for (; o-- && n && *s <= '7' && *s >= '0';
-				     ++s, --n)
+				for (; o-- && n && *s <= '7' && *s >= '0'; ++s, --n)
 					*d = (*d << 3) + (*s - '0');
 				goto CONT;
 				break;

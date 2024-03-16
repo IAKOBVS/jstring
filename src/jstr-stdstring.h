@@ -80,8 +80,7 @@ JSTR_NOEXCEPT
 		return 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n;
-	     ++p1, --n) {}
+	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n) {}
 	return *p1 && n;
 #endif
 }

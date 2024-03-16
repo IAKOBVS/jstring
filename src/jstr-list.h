@@ -38,20 +38,11 @@
 	}
 
 #define jstr_l_foreach(l, p)                                          \
-	for (jstr_ty *p = ((l)->data),                                \
-	             *const _jstr__l_foreach_end_##p = jstr_l_end(l); \
-	     p < _jstr__l_foreach_end_##p;                            \
-	     ++p)
+	for (jstr_ty *p = ((l)->data), *const _jstr__l_foreach_end_##p = jstr_l_end(l); p < _jstr__l_foreach_end_##p; ++p)
 #define jstr__l_foreach_cap(l, p)                     \
-	for (jstr_ty *p = ((l)->data),                \
-	             *const _jstr__l_foreach_end_##p  \
-	             = ((l)->data) + ((l)->capacity); \
-	     p < _jstr__l_foreach_end_##p;            \
-	     ++p)
+	for (jstr_ty *p = ((l)->data), *const _jstr__l_foreach_end_##p = ((l)->data) + ((l)->capacity); p < _jstr__l_foreach_end_##p; ++p)
 #define jstr_l_foreachi(l, i)                                             \
-	for (size_t i = 0, const _jstr__l_foreachi_end_##i = ((l)->size); \
-	     i < _jstr__l_foreachi_end_##i;                               \
-	     ++i)
+	for (size_t i = 0, const _jstr__l_foreachi_end_##i = ((l)->size); i < _jstr__l_foreachi_end_##i; ++i)
 #define jstr_l_index(l, curr) JSTR_PTR_DIFF(curr, (l)->data)
 #define jstr__l_at(l, i)      ((l)->data + (i))
 #define jstr_l_start(l)       ((l)->data)

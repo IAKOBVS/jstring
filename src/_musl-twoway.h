@@ -201,18 +201,14 @@ JSTR_NOEXCEPT
 			continue;
 		}
 		/* Compare right half. */
-		for (k = JSTR_MAX(t->_suffix + 1, memory);
-		     k < t->needle_len && CANON(ne[k]) == CANON(hs[k]);
-		     ++k) {}
+		for (k = JSTR_MAX(t->_suffix + 1, memory); k < t->needle_len && CANON(ne[k]) == CANON(hs[k]); ++k) {}
 		if (k < t->needle_len) {
 			hs += k - t->_suffix;
 			memory = 0;
 			continue;
 		}
 		/* Compare left half. */
-		for (k = t->_suffix + 1;
-		     k > memory && CANON(ne[k - 1]) == CANON(hs[k - 1]);
-		     --k) {}
+		for (k = t->_suffix + 1; k > memory && CANON(ne[k - 1]) == CANON(hs[k - 1]); --k) {}
 		if (k <= memory)
 			return (char *)hs;
 		hs += t->_global_period;

@@ -64,11 +64,9 @@ JSTR_NOEXCEPT
 	uint64_t nw;
 	const uint64_t mask
 	= (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
-	for (unsigned int n = ne_len; n--; hw = (uint64_t)hw << 8 | L(*hs++),
-	                  nw = (uint64_t)nw << 8 | L(*ne++))
+	for (unsigned int n = ne_len; n--; hw = (uint64_t)hw << 8 | L(*hs++), nw = (uint64_t)nw << 8 | L(*ne++))
 		N_EXIT;
-	for (hs_len -= ne_len, hw &= mask, nw &= mask; N hw != nw && hs_len--;
-	     hw = (uint64_t)(hw << 8 | L(*hs++)) & mask) {}
+	for (hs_len -= ne_len, hw &= mask, nw &= mask; N hw != nw && hs_len--; hw = (uint64_t)(hw << 8 | L(*hs++)) & mask) {}
 	return hw == nw ? (char *)(hs - ne_len) : NULL;
 }
 
@@ -87,11 +85,9 @@ JSTR_NOEXCEPT
 	= (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
 	hs += hs_len - 1;
 	ne += ne_len - 1;
-	for (unsigned int n = ne_len; n--; hw = (uint64_t)hw << 8 | L(*hs--),
-	                  nw = (uint64_t)nw << 8 | L(*ne--))
+	for (unsigned int n = ne_len; n--; hw = (uint64_t)hw << 8 | L(*hs--), nw = (uint64_t)nw << 8 | L(*ne--))
 		N_EXIT;
-	for (hs_len -= ne_len, hw &= mask, nw &= mask; N hw != nw && hs_len--;
-	     hw = (uint64_t)(hw << 8 | L(*hs--)) & mask) {}
+	for (hs_len -= ne_len, hw &= mask, nw &= mask; N hw != nw && hs_len--; hw = (uint64_t)(hw << 8 | L(*hs--)) & mask) {}
 	return hw == nw ? (char *)(hs + 1) : NULL;
 }
 
@@ -128,14 +124,12 @@ JSTR_NOEXCEPT
 	uint64_t nw;
 	const uint64_t mask
 	= (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
-	for (; *ne; hw = (uint64_t)hw << 8 | L(*hs++),
-	            nw = (uint64_t)nw << 8 | L(*ne++)) {
+	for (; *ne; hw = (uint64_t)hw << 8 | L(*hs++), nw = (uint64_t)nw << 8 | L(*ne++)) {
 		N_EXIT;
 		if (jstr_unlikely(*hs == '\0'))
 			return NULL;
 	}
-	for (hw &= mask, nw &= mask; N hw != nw && *hs;
-	     hw = (uint64_t)(hw << 8 | L(*hs++)) & mask) {}
+	for (hw &= mask, nw &= mask; N hw != nw && *hs; hw = (uint64_t)(hw << 8 | L(*hs++)) & mask) {}
 	return hw == nw ? (char *)(hs - ne_len) : NULL;
 }
 
