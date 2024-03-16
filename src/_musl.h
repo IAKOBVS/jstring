@@ -39,9 +39,11 @@ JSTR__END_DECLS
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
-jstr__memrchr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__memrchr_musl(const void *s, int c, size_t n)
+JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
+	enum { SS = sizeof(size_t),
+	       ALIGN = (sizeof(size_t) - 1) };
 	const unsigned char *p = (const unsigned char *)s + n - 1;
 	c = (unsigned char)c;
 #if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -69,7 +71,8 @@ jstr__memrchr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-jstr__strcasechrnul_musl(const char *s, int c) JSTR_NOEXCEPT
+jstr__strcasechrnul_musl(const char *s, int c)
+JSTR_NOEXCEPT
 {
 	enum { ALIGN = sizeof(size_t) };
 	c = jstr_tolower(c);
@@ -91,7 +94,8 @@ jstr__strcasechrnul_musl(const char *s, int c) JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static void *
-jstr__memcasechr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__memcasechr_musl(const void *s, int c, size_t n)
+JSTR_NOEXCEPT
 {
 	enum { ALIGN = sizeof(size_t) };
 	const unsigned char *p = (const unsigned char *)s;
@@ -121,9 +125,11 @@ jstr__memcasechr_musl(const void *s, int c, size_t n) JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-jstr__strnchr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__strnchr_musl(const char *s, int c, size_t n)
+JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
+	enum { SS = sizeof(size_t),
+	       ALIGN = (sizeof(size_t) - 1) };
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	for (; (uintptr_t)s & ALIGN; --n, ++s) {
 		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n == 0))
@@ -147,9 +153,11 @@ jstr__strnchr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-jstr__strncasechr_musl(const char *s, int c, size_t n) JSTR_NOEXCEPT
+jstr__strncasechr_musl(const char *s, int c, size_t n)
+JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t), ALIGN = (sizeof(size_t) - 1) };
+	enum { SS = sizeof(size_t),
+	       ALIGN = (sizeof(size_t) - 1) };
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	for (; (uintptr_t)s & ALIGN; --n, ++s) {

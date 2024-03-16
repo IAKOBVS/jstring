@@ -31,9 +31,9 @@ JSTR__END_DECLS
 
 #define jstr_struct(j)  &(j)->data, &(j)->size, &(j)->capacity
 #define jstr_literal(s) (s), (sizeof(s) - 1)
-#define jstr_literal_init(s)                                                   \
-	{                                                                      \
-		jstr_literal(s)                                                \
+#define jstr_literal_init(s)    \
+	{                       \
+		jstr_literal(s) \
 	}
 
 JSTR__BEGIN_DECLS

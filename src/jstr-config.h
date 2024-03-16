@@ -91,16 +91,16 @@
 
 /* Filename extensions interpreted as text. */
 #ifndef JSTRIO_FT_TEXT_ARRAY
-#	define JSTRIO_FT_TEXT_ARRAY                                           \
-		"C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html",    \
-		"js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh",  \
+#	define JSTRIO_FT_TEXT_ARRAY                                          \
+		"C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html",   \
+		"js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", \
 		"ts", "txt"
 #endif
 
 /* Filename extensions interpreted as binary. */
 #ifndef JSTRIO_FT_BINARY_ARRAY
-#	define JSTRIO_FT_BINARY_ARRAY                                         \
-		"a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o",     \
+#	define JSTRIO_FT_BINARY_ARRAY                                     \
+		"a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", \
 		"pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
 
