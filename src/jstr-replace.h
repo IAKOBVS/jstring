@@ -836,7 +836,7 @@ JSTR_NOEXCEPT
 	= (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find);
 	if (p == NULL)
 		return 0;
-	if (jstr_unlikely(!jstr_rplcat_len(s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len)))
+	if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len)))
 		return -1;
 	return 1;
 }
@@ -884,27 +884,37 @@ JSTR_NOEXCEPT
 	}
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	size_t changed = 0;
+	const char *end = *s + *sz;
 	if (rplc_len <= find_len) {
 		for (; n--
-		       && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find));
+		       && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find));
 		     ++changed)
 			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
 		if (i.dst != i.src)
-			*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), *s);
+			*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), *s);
 	} else {
-		i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find);
+		i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find);
 		if (jstr_nullchk(i.src_e))
 			return 0;
 		char *const first = i.src_e;
+		const char *last = end;
 		goto loop1;
-		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find))) {
+		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find))) {
 loop1:
+			last = i.src_e;
 			--n;
 			++changed;
 			i.src_e += find_len;
 		}
 		if (!changed)
 			return 0;
+		if (changed == 1) {
+			if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_PTR_DIFF(first, *s), rplc, rplc_len, find_len)))
+				goto err;
+			return 1;
+		}
+		if (last != end)
+			last += find_len;
 		i.dst = NULL;
 		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, *sz + changed * (rplc_len - find_len) + 1)))
 			goto err;
@@ -914,14 +924,14 @@ loop1:
 		n = changed;
 		i.src_e = first;
 		goto loop2;
-		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_PTR_DIFF(*s + *sz, i.src), find))) {
+		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_PTR_DIFF(last, i.src), find))) {
 loop2:
+			--n;
 			i.dst = (char *)jstr_mempcpy(i.dst, i.src, JSTR_PTR_DIFF(i.src_e, i.src));
 			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
-			--n;
 		}
-		*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), dst_s);
+		*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), dst_s);
 		free(*s);
 		*s = dst_s;
 	}
