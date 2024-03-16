@@ -53,8 +53,6 @@
 
 #ifdef JSTR__STRSTR234_MEMMEM
 
-JSTR_ATTR_ACCESS((__read_only__, 1, 2))
-JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
 JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_len, const unsigned char *ne, unsigned int ne_len)
@@ -68,6 +66,18 @@ JSTR_NOEXCEPT
 		N_EXIT;
 	for (hs_len -= ne_len, hw &= mask, nw &= mask; N hw != nw && hs_len--; hw = (uint64_t)(hw << 8 | L(*hs++)) & mask) {}
 	return hw == nw ? (char *)(hs - ne_len) : NULL;
+}
+
+JSTR_FUNC_PURE
+static char *
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, 2)(const unsigned char *h, size_t k, const unsigned char *n)
+{
+	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
+	uint16_t hw = L(h[0]) << 8 | L(h[1]);
+	for (h += 2, k -= 2; N k-- && hw != nw; hw = hw << 8 | L(*h++))
+		if (hw == nw)
+			return (char *)h - 2;
+	return hw == nw ? (char *)h - 2 : 0;
 }
 
 #elif JSTR__STRSTR234_MEMRMEM
@@ -112,7 +122,7 @@ JSTR_NOEXCEPT
 	                                                         : NULL;
 }
 
-#else /* STRRSTR */
+#else /* STRSTR */
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
@@ -131,6 +141,16 @@ JSTR_NOEXCEPT
 	}
 	for (hw &= mask, nw &= mask; N hw != nw && *hs; hw = (uint64_t)(hw << 8 | L(*hs++)) & mask) {}
 	return hw == nw ? (char *)(hs - ne_len) : NULL;
+}
+
+JSTR_FUNC_PURE
+static char *
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, 2)(const unsigned char *h, const unsigned char *n)
+{
+	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
+	uint16_t hw = L(h[0]) << 8 | L(h[1]);
+	for (h++; N *h && hw != nw; hw = hw << 8 | L(*++h)) {}
+	return *h ? (char *)h - 1 : 0;
 }
 
 #endif

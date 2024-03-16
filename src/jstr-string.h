@@ -509,7 +509,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs_len < t->needle_len))
 		return NULL;
 	if (t->needle_len <= 2)
-		return jstr__memmem_lt8((const unsigned char *)hs, hs_len, (const unsigned char *)ne, t->needle_len);
+		return jstr__memmem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 #endif
 	return jstr__memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 }
@@ -686,7 +686,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(hs_len < t->needle_len))
 		return NULL;
 	if (t->needle_len <= 2)
-		return jstr__memcasemem_lt8((const unsigned char *)hs, hs_len, (const unsigned char *)ne, t->needle_len);
+		return jstr__memcasemem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 	return jstr__strcasestr_len_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 }
 
@@ -785,7 +785,7 @@ JSTR_NOEXCEPT
 	if (t->needle_len == 1)
 		return (char *)jstr_strcasechr(hs, *ne);
 	if (t->needle_len <= 2)
-		return jstr__strcasestr_lt8((const unsigned char *)hs, (const unsigned char *)ne, t->needle_len);
+		return jstr__strcasestr2((const unsigned char *)hs, (const unsigned char *)ne);
 	return jstr__strcasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
 }
 
