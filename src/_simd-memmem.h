@@ -75,28 +75,32 @@ JSTR__END_DECLS
 #endif
 
 #ifndef JSTR__SIMD_MEMMEM_USE_AS_ICASE
-#	define FIND_MATCH()                                                   \
-		do {                                                           \
-			if (JSTR_PTR_NOT_CROSSING_PAGE(                        \
-			    p, VEC_SIZE, JSTR_PAGE_SIZE)) {                    \
-				hv = LOADU((const VEC *)p);                    \
-				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;   \
-				if (cmpm == matchm)                            \
-					return (JSTR__SIMD_RETTYPE)p;          \
-			} else {                                               \
-				if (!JSTR__SIMD_MEMMEM_CMP_FUNC(               \
-				    (const char *)p,                           \
-				    (const char *)ne,                          \
-				    ne_len))                                   \
-					return (JSTR__SIMD_RETTYPE)p;          \
-			}                                                      \
+#	define FIND_MATCH()                                                 \
+		do {                                                         \
+			if (JSTR_PTR_NOT_CROSSING_PAGE(                      \
+			    p,                                               \
+			    VEC_SIZE,                                        \
+			    JSTR_PAGE_SIZE)) {                               \
+				hv = LOADU((const VEC *)p);                  \
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh; \
+				if (cmpm == matchm)                          \
+					return (JSTR__SIMD_RETTYPE)p;        \
+			} else {                                             \
+				if (!JSTR__SIMD_MEMMEM_CMP_FUNC(             \
+				    (const char *)p,                         \
+				    (const char *)ne,                        \
+				    ne_len))                                 \
+					return (JSTR__SIMD_RETTYPE)p;        \
+			}                                                    \
 		} while (0)
 #else
-#	define FIND_MATCH()                                                   \
-		do {                                                           \
-			if (!JSTR__SIMD_MEMMEM_CMP_FUNC(                       \
-			    (const char *)p, (const char *)ne, ne_len))        \
-				return (JSTR__SIMD_RETTYPE)p;                  \
+#	define FIND_MATCH()                                  \
+		do {                                          \
+			if (!JSTR__SIMD_MEMMEM_CMP_FUNC(      \
+			    (const char *)p,                  \
+			    (const char *)ne,                 \
+			    ne_len))                          \
+				return (JSTR__SIMD_RETTYPE)p; \
 		} while (0)
 #endif
 
@@ -109,18 +113,15 @@ JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static JSTR__SIMD_RETTYPE
-JSTR__SIMD_MEMMEM_FUNC_NAME(const void *hs,
-                            size_t hs_len,
-                            const void *ne,
-                            size_t ne_len) JSTR_NOEXCEPT
+JSTR__SIMD_MEMMEM_FUNC_NAME(const void *hs, size_t hs_len, const void *ne, size_t ne_len)
+JSTR_NOEXCEPT
 {
 	if (ne_len == 1)
 #ifndef JSTR__SIMD_MEMMEM_USE_AS_ICASE
-		return (JSTR__SIMD_RETTYPE)memchr(
-		hs, *(unsigned char *)ne, hs_len);
+		return (JSTR__SIMD_RETTYPE)memchr(hs, *(unsigned char *)ne, hs_len);
 #else
-		return (JSTR__SIMD_RETTYPE)JSTR__SIMD_MEMMEM_MEMCASECHR(
-		hs, *(unsigned char *)ne, hs_len);
+		return (JSTR__SIMD_RETTYPE)
+		JSTR__SIMD_MEMMEM_MEMCASECHR(hs, *(unsigned char *)ne, hs_len);
 #endif
 	if (jstr_unlikely(ne_len == 0))
 		return (JSTR__SIMD_RETTYPE)hs;
@@ -149,8 +150,7 @@ JSTR__SIMD_MEMMEM_FUNC_NAME(const void *hs,
 	const MASK matchm = ONES << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + n));
 	const VEC nv1 = SETONE8(*((char *)ne + n + 1));
-	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE)
-	    || ne_len >= VEC_SIZE)
+	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE) || ne_len >= VEC_SIZE)
 		nv = LOADU((const VEC *)ne);
 	else
 		memcpy(&nv, ne, ne_len);

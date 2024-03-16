@@ -35,9 +35,10 @@
 #	define JSTR__MUSL_FUNC_NAME jstr__memmem_musl
 #endif
 
-#define BITOP(a, b, op)                                                        \
-	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1                     \
-	 << ((size_t)(b) % (8 * sizeof *(a))))
+#define BITOP(a, b, op)                                   \
+	(                                                 \
+	(a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 \
+	<< ((size_t)(b) % (8 * sizeof *(a))))
 
 #ifndef JSTR__MUSL_TWOWAY_STRUCT
 #	define JSTR__MUSL_TWOWAY_STRUCT
@@ -54,13 +55,13 @@ typedef struct jstr_twoway_ty {
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t,
-                                         const unsigned char *const ne
+JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t, const unsigned char *const ne
 #ifndef JSTR__MUSL_CHECK_EOL
                                          ,
                                          size_t ne_len
 #endif
-                                         ) JSTR_NOEXCEPT
+                                         )
+JSTR_NOEXCEPT
 {
 	size_t max_suffix, j, k, period;
 	int a, b;
@@ -123,9 +124,7 @@ JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t,
 	else
 		t->_global_period = period;
 	/* Periodic ne? */
-	if (JSTR__MUSL_CMP_FUNC((const char *)ne,
-	                        (const char *)ne + t->_global_period,
-	                        t->_suffix + 1)) {
+	if (JSTR__MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->_global_period, t->_suffix + 1)) {
 		t->_memory0 = 0;
 		t->_global_period
 		= JSTR_MAX(t->_suffix, t->needle_len - t->_suffix - 1) + 1;
@@ -137,8 +136,7 @@ JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t,
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
-                                         const unsigned char *hs
+JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t, const unsigned char *hs
 #ifndef JSTR__MUSL_CHECK_EOL
                                          ,
                                          const size_t hs_len
@@ -149,7 +147,8 @@ JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
                                          ,
                                          size_t n_limit
 #endif
-                                         ) JSTR_NOEXCEPT
+                                         )
+JSTR_NOEXCEPT
 {
 	int c;
 	size_t k;
@@ -173,16 +172,11 @@ JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t,
 		if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
 #	ifdef JSTR__MUSL_USE_N
-			end
-			+= jstr_strnlen((const char *)end,
-			                JSTR_MIN(t->needle_len | 2048,
-			                         JSTR_PTR_DIFF(end_limit, hs)));
+			end += jstr_strnlen((const char *)end, JSTR_MIN(t->needle_len | 2048, JSTR_PTR_DIFF(end_limit, hs)));
 #	else
-			end += jstr_strnlen((const char *)end,
-			                    t->needle_len | 2048);
+			end += jstr_strnlen((const char *)end, t->needle_len | 2048);
 #	endif
-			if (jstr_unlikely(JSTR_PTR_DIFF(end, hs)
-			                  < t->needle_len))
+			if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len))
 				break;
 		}
 #else
@@ -244,29 +238,27 @@ JSTR__MUSL_FUNC_NAME(const unsigned char *haystack
                      ,
                      size_t n_limit
 #endif
-                     ) JSTR_NOEXCEPT
+                     )
+JSTR_NOEXCEPT
 {
 	jstr_twoway_ty t;
 	JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _comp)
-	(&t,
-	 (const unsigned char *)needle
+	(&t, (const unsigned char *)needle
 #ifndef JSTR__MUSL_CHECK_EOL
 	 ,
 	 needle_len
 #endif
 	);
-	return JSTR_CONCAT(JSTR__MUSL_FUNC_NAME,
-	                   _exec)(&t,
-	                          (const unsigned char *)haystack
+	return JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
 #ifndef JSTR__MUSL_CHECK_EOL
-	                          ,
-	                          haystack_len
+	                                                ,
+	                                                haystack_len
 #endif
-	                          ,
-	                          (const unsigned char *)needle
+	                                                ,
+	                                                (const unsigned char *)needle
 #ifdef JSTR__MUSL_USE_N
-	                          ,
-	                          n_limit
+	                                                ,
+	                                                n_limit
 #endif
 	);
 }
