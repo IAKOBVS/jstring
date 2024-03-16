@@ -177,16 +177,16 @@ JSTR__END_DECLS
 #define JSTR_MAX3(x, y, z) (((x) > (y)) ? (((x) > (z)) ? (x) : (z)) : (((y) > (z)) ? (y) : (z)))
 #define JSTR_MID3(x, y, z) (((x) > (y)) ? (((x) < (z)) ? (x) : (z)) : (((y) < (z)) ? (y) : (z)))
 
-#define JSTRIO_KB (1000)
-#define JSTRIO_MB (JSTRIO_KB * 10)
-#define JSTRIO_GB (JSTRIO_MB * 10)
-#define JSTRIO_TB (JSTRIO_GB * 10)
-#define JSTRIO_PB (JSTRIO_TB * 10)
-#define JSTRIO_EB (JSTRIO_PB * 10)
-#define JSTRIO_ZB (JSTRIO_EB * 10)
-#define JSTRIO_YB (JSTRIO_ZB * 10)
-#define JSTRIO_RB (JSTRIO_YB * 10)
-#define JSTRIO_QB (JSTRIO_RB * 10)
+#define JSTR_IO_KB (1000)
+#define JSTR_IO_MB (JSTR_IO_KB * 10)
+#define JSTR_IO_GB (JSTR_IO_MB * 10)
+#define JSTR_IO_TB (JSTR_IO_GB * 10)
+#define JSTR_IO_PB (JSTR_IO_TB * 10)
+#define JSTR_IO_EB (JSTR_IO_PB * 10)
+#define JSTR_IO_ZB (JSTR_IO_EB * 10)
+#define JSTR_IO_YB (JSTR_IO_ZB * 10)
+#define JSTR_IO_RB (JSTR_IO_YB * 10)
+#define JSTR_IO_QB (JSTR_IO_RB * 10)
 
 #define JSTR_ALPHA_VOWEL_LOWER_STR "aiueo"
 #define JSTR_ALPHA_VOWEL_UPPER_STR "AIUEO"

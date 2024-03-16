@@ -41,105 +41,105 @@ JSTR__END_DECLS
 #include "jstr-replace.h"
 #include "jstr-string.h"
 
-#define jstr_re_chkcomp(errcode) jstr_unlikely((errcode) != JSTRRE_RET_NOERROR)
+#define jstr_re_chkcomp(errcode) jstr_unlikely((errcode) != JSTR_RE_RET_NOERROR)
 #define jstr_re_chkexec(errcode) \
 	(                        \
 	jstr_re_chkcomp(errcode) \
-	&& jstr_unlikely((errcode) != JSTRRE_RET_NOMATCH))
+	&& jstr_unlikely((errcode) != JSTR_RE_RET_NOMATCH))
 #define jstr_re_chk(errcode) jstr_unlikely((errcode) < 0)
 
 #define R JSTR_RESTRICT
 
 /* POSIX cflags */
-#define JSTRRE_CF_EXTENDED REG_EXTENDED
-#define JSTRRE_CF_ICASE    REG_ICASE
-#define JSTRRE_CF_NEWLINE  REG_NEWLINE
+#define JSTR_RE_CF_EXTENDED REG_EXTENDED
+#define JSTR_RE_CF_ICASE    REG_ICASE
+#define JSTR_RE_CF_NEWLINE  REG_NEWLINE
 
 /* POSIX eflags */
-#define JSTRRE_EF_NOSUB  REG_NOSUB
-#define JSTRRE_EF_NOTBOL REG_NOTBOL
-#define JSTRRE_EF_NOTEOL REG_NOTEOL
+#define JSTR_RE_EF_NOSUB  REG_NOSUB
+#define JSTR_RE_EF_NOTBOL REG_NOTBOL
+#define JSTR_RE_EF_NOTEOL REG_NOTEOL
 
 /* BSD eflags */
 #ifdef REG_STARTEND
-#	define JSTRRE_EF_STARTEND REG_STARTEND
+#	define JSTR_RE_EF_STARTEND REG_STARTEND
 #endif
 
 JSTR__BEGIN_DECLS
 
 typedef enum {
 #ifdef REG_ENOSYS
-	JSTRRE_RET_ENOSYS = REG_ENOSYS,
+	JSTR_RE_RET_ENOSYS = REG_ENOSYS,
 #endif
 #if defined REG_NOERROR
-	JSTRRE_RET_NOERROR = REG_NOERROR,
+	JSTR_RE_RET_NOERROR = REG_NOERROR,
 #else
-	JSTRRE_RET_NOERROR = 0,
+	JSTR_RE_RET_NOERROR = 0,
 #endif
-#define JSTRRE_RET_NOERROR JSTRRE_RET_NOERROR
-	JSTRRE_RET_NOMATCH = REG_NOMATCH,
-#define JSTRRE_RET_NOMATCH JSTRRE_RET_NOMATCH
+#define JSTR_RE_RET_NOERROR JSTR_RE_RET_NOERROR
+	JSTR_RE_RET_NOMATCH = REG_NOMATCH,
+#define JSTR_RE_RET_NOMATCH JSTR_RE_RET_NOMATCH
 	/* POSIX regcomp return values */
-	JSTRRE_RET_BADPAT = REG_BADPAT,
-#define JSTRRE_RET_BADPAT JSTRRE_RET_BADPAT
-	JSTRRE_RET_ECOLLATE = REG_ECOLLATE,
-#define JSTRRE_RET_ECOLLATE JSTRRE_RET_ECOLLATE
-	JSTRRE_RET_ECTYPE = REG_ECTYPE,
-#define JSTRRE_RET_ECTYPE JSTRRE_RET_ECTYPE
-	JSTRRE_RET_EESCAPE = REG_EESCAPE,
-#define JSTRRE_RET_EESCAPE JSTRRE_RET_EESCAPE
-	JSTRRE_RET_ESUBREG = REG_ESUBREG,
-#define JSTRRE_RET_ESUBREG JSTRRE_RET_ESUBREG
-	JSTRRE_RET_EBRACK = REG_EBRACK,
-#define JSTRRE_RET_EBRACK JSTRRE_RET_EBRACK
-	JSTRRE_RET_EPAREN = REG_EPAREN,
-#define JSTRRE_RET_EPAREN JSTRRE_RET_EPAREN
-	JSTRRE_RET_EBRACE = REG_EBRACE,
-#define JSTRRE_RET_EBRACE JSTRRE_RET_EBRACE
-	JSTRRE_RET_BADBR = REG_BADBR,
-#define JSTRRE_RET_BADBR JSTRRE_RET_BADBR
-	JSTRRE_RET_ERANGE = REG_ERANGE,
-#define JSTRRE_RET_ERANGE JSTRRE_RET_ERANGE
-	JSTRRE_RET_ESPACE = REG_ESPACE,
-#define JSTRRE_RET_ESPACE JSTRRE_RET_ESPACE
-	JSTRRE_RET_BADRPT = REG_BADRPT
-#define JSTRRE_RET_BADRPT JSTRRE_RET_BADRPT
+	JSTR_RE_RET_BADPAT = REG_BADPAT,
+#define JSTR_RE_RET_BADPAT JSTR_RE_RET_BADPAT
+	JSTR_RE_RET_ECOLLATE = REG_ECOLLATE,
+#define JSTR_RE_RET_ECOLLATE JSTR_RE_RET_ECOLLATE
+	JSTR_RE_RET_ECTYPE = REG_ECTYPE,
+#define JSTR_RE_RET_ECTYPE JSTR_RE_RET_ECTYPE
+	JSTR_RE_RET_EESCAPE = REG_EESCAPE,
+#define JSTR_RE_RET_EESCAPE JSTR_RE_RET_EESCAPE
+	JSTR_RE_RET_ESUBREG = REG_ESUBREG,
+#define JSTR_RE_RET_ESUBREG JSTR_RE_RET_ESUBREG
+	JSTR_RE_RET_EBRACK = REG_EBRACK,
+#define JSTR_RE_RET_EBRACK JSTR_RE_RET_EBRACK
+	JSTR_RE_RET_EPAREN = REG_EPAREN,
+#define JSTR_RE_RET_EPAREN JSTR_RE_RET_EPAREN
+	JSTR_RE_RET_EBRACE = REG_EBRACE,
+#define JSTR_RE_RET_EBRACE JSTR_RE_RET_EBRACE
+	JSTR_RE_RET_BADBR = REG_BADBR,
+#define JSTR_RE_RET_BADBR JSTR_RE_RET_BADBR
+	JSTR_RE_RET_ERANGE = REG_ERANGE,
+#define JSTR_RE_RET_ERANGE JSTR_RE_RET_ERANGE
+	JSTR_RE_RET_ESPACE = REG_ESPACE,
+#define JSTR_RE_RET_ESPACE JSTR_RE_RET_ESPACE
+	JSTR_RE_RET_BADRPT = REG_BADRPT
+#define JSTR_RE_RET_BADRPT JSTR_RE_RET_BADRPT
 /* GNU regcomp returns */
 #ifdef REG_EEND
 	,
-	JSTRRE_RET_EEND = REG_EEND
-#	define JSTRRE_RET_EEND JSTRRE_RET_EEND
+	JSTR_RE_RET_EEND = REG_EEND
+#	define JSTR_RE_RET_EEND JSTR_RE_RET_EEND
 #endif
 #ifdef REG_ESIZE
 	,
-	JSTRRE_RET_ESIZE = REG_ESIZE
-#	define JSTRRE_RET_ESIZE REG_ESIZE
+	JSTR_RE_RET_ESIZE = REG_ESIZE
+#	define JSTR_RE_RET_ESIZE REG_ESIZE
 #endif
 #ifdef REG_ERPAREN
 	,
-	JSTRRE_RET_ERPAREN = REG_ERPAREN
-#	define JSTRRE_RET_ERPAREN REG_ERPAREN
+	JSTR_RE_RET_ERPAREN = REG_ERPAREN
+#	define JSTR_RE_RET_ERPAREN REG_ERPAREN
 #endif
 } jstr_re_ret_ty;
 
-#define JSTRRE__ERR_EXEC_HANDLE(errcode, do_on_error)     \
-	if (jstr_likely(errcode == JSTRRE_RET_NOERROR)) { \
+#define JSTR_RE__ERR_EXEC_HANDLE(errcode, do_on_error)     \
+	if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) { \
 		;                                         \
-	} else if (errcode == JSTRRE_RET_NOMATCH) {       \
+	} else if (errcode == JSTR_RE_RET_NOMATCH) {       \
 		break;                                    \
 	} else {                                          \
 		do_on_error;                              \
 	}
 
 #if JSTR_PANIC
-#	define JSTRRE_RETURN_ERR(errcode, preg)    \
+#	define JSTR_RE_RETURN_ERR(errcode, preg)    \
 		do {                                \
 			jstr_re_err(errcode, preg); \
 			jstr_errdie("");            \
 			return -(errcode);          \
 		} while (0)
 #else
-#	define JSTRRE_RETURN_ERR(errcode, preg) return -(errcode)
+#	define JSTR_RE_RETURN_ERR(errcode, preg) return -(errcode)
 #endif
 
 typedef regoff_t jstr_re_off_ty;
@@ -206,12 +206,12 @@ static jstr_re_ret_ty
 jstr_re_exec_len(const regex_t *R preg, const char *R s, size_t sz, size_t nmatch, regmatch_t *R pmatch, int eflags)
 JSTR_NOEXCEPT
 {
-#ifdef JSTRRE_EF_STARTEND
+#ifdef JSTR_RE_EF_STARTEND
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
 #endif
 	return (jstr_re_ret_ty)
-	regexec(preg, s, nmatch, pmatch, eflags | JSTRRE_EF_STARTEND);
+	regexec(preg, s, nmatch, pmatch, eflags | JSTR_RE_EF_STARTEND);
 }
 
 /* Check if S matches precompiled regex.
@@ -258,7 +258,7 @@ jstr_re_match_len(const regex_t *R preg, const char *R s, size_t sz, int eflags)
 JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	return jstr_re_exec_len(preg, s, sz, 0, &rm, eflags | JSTRRE_EF_STARTEND);
+	return jstr_re_exec_len(preg, s, sz, 0, &rm, eflags | JSTR_RE_EF_STARTEND);
 }
 
 /* Return value:
@@ -278,7 +278,7 @@ JSTR_NOEXCEPT
 	size_t changed = 0;
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), 1, &rm, eflags);
-		JSTRRE__ERR_EXEC_HANDLE(ret, goto err_free);
+		JSTR_RE__ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -291,7 +291,7 @@ JSTR_NOEXCEPT
 	return changed;
 err_free:
 	jstr_free_noinline(s, sz, cap);
-	JSTRRE_RETURN_ERR(ret, preg);
+	JSTR_RE_RETURN_ERR(ret, preg);
 }
 
 /* Return value:
@@ -424,7 +424,7 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	while (n-- && *i.src_e) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), 1, &rm, eflags);
-		JSTRRE__ERR_EXEC_HANDLE(ret, goto err_free);
+		JSTR_RE__ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		if (jstr_unlikely(find_len == 0))
@@ -434,16 +434,16 @@ JSTR_NOEXCEPT
 		} else if (*cap > *sz + rplc_len - find_len) {
 			jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rplc, rplc_len, find_len);
 		} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rplc, rplc_len, find_len))) {
-			ret = JSTRRE_RET_ESPACE;
+			ret = JSTR_RE_RET_ESPACE;
 			goto err_free;
 		}
 	}
 	if (i.dst != i.src)
 		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), *s);
-	return JSTRRE_RET_NOERROR;
+	return JSTR_RE_RET_NOERROR;
 err_free:
 	jstr_free_noinline(s, sz, cap);
-	JSTRRE_RETURN_ERR(ret, preg);
+	JSTR_RE_RETURN_ERR(ret, preg);
 }
 
 /* Return value:
@@ -605,7 +605,7 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	for (; n-- && *i.src_e; ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
-		JSTRRE__ERR_EXEC_HANDLE(ret, goto err_free_rdst);
+		JSTR_RE__ERR_EXEC_HANDLE(ret, goto err_free_rdst);
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (jstr_unlikely(find_len == 0)) {
 			++i.src_e;
@@ -623,13 +623,13 @@ JSTR_NOEXCEPT
 				rdst_heap
 				= (char *)realloc(rdst_heap, rdst_cap);
 				if (jstr_nullchk(rdst_heap)) {
-					ret = JSTRRE_RET_ESPACE;
+					ret = JSTR_RE_RET_ESPACE;
 					goto err_free;
 				}
 				rdstp = rdst_heap;
 			}
 		if (jstr_chk(jstr__rebrefrplccreat(i.src_e, rm, rdstp, rplc, rplc_len))) {
-			ret = JSTRRE_RET_BADPAT;
+			ret = JSTR_RE_RET_BADPAT;
 			goto err_free_rdst;
 		}
 		i.src_e += rm[0].rm_so;
@@ -639,7 +639,7 @@ JSTR_NOEXCEPT
 		else if (*cap > *sz + rdst_len - find_len)
 			jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rdstp, rdst_len, find_len);
 		else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rdstp, rdst_len, find_len))) {
-			ret = JSTRRE_RET_ESPACE;
+			ret = JSTR_RE_RET_ESPACE;
 			goto err_free_rdst;
 		}
 	}
@@ -651,7 +651,7 @@ err_free_rdst:
 	free(rdst_heap);
 err_free:
 	jstr_free_noinline(s, sz, cap);
-	JSTRRE_RETURN_ERR(ret, preg);
+	JSTR_RE_RETURN_ERR(ret, preg);
 }
 
 #undef NMATCH

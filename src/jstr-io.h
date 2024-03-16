@@ -45,30 +45,30 @@ JSTR__BEGIN_DECLS
 
 typedef enum {
 	/* Unknown file type. */
-	JSTRIO_FT_UNKNOWN = 0,
-#define JSTRIO_FT_UNKNOWN JSTRIO_FT_UNKNOWN
+	JSTR_IO_FT_UNKNOWN = 0,
+#define JSTR_IO_FT_UNKNOWN JSTR_IO_FT_UNKNOWN
 	/* Text file type. */
-	JSTRIO_FT_TEXT,
-#define JSTRIO_FT_TEXT JSTRIO_FT_TEXT
+	JSTR_IO_FT_TEXT,
+#define JSTR_IO_FT_TEXT JSTR_IO_FT_TEXT
 	/* Binary file type. */
-	JSTRIO_FT_BINARY
-#define JSTRIO_FT_BINARY JSTRIO_FT_BINARY
+	JSTR_IO_FT_BINARY
+#define JSTR_IO_FT_BINARY JSTR_IO_FT_BINARY
 } jstr_io_ft_ty;
 
 enum {
 #ifdef PATH_MAX
-	JSTRIO_PATH_MAX = PATH_MAX,
+	JSTR_IO_PATH_MAX = PATH_MAX,
 #else
-	JSTRIO_PATH_MAX = 4096,
+	JSTR_IO_PATH_MAX = 4096,
 #endif
-#define JSTRIO_PATH_MAX JSTRIO_PATH_MAX
+#define JSTR_IO_PATH_MAX JSTR_IO_PATH_MAX
 #ifdef NAME_MAX
-	JSTRIO_NAME_MAX = NAME_MAX,
+	JSTR_IO_NAME_MAX = NAME_MAX,
 #else
-	JSTRIO_NAME_MAX = 255,
+	JSTR_IO_NAME_MAX = 255,
 #endif
-#define JSTRIO_NAME_MAX JSTRIO_NAME_MAX
-	JSTRIO_BINARY_CHECK_MAX = 64
+#define JSTR_IO_NAME_MAX JSTR_IO_NAME_MAX
+	JSTR_IO_BINARY_CHECK_MAX = 64
 };
 
 JSTR_FUNC_PURE
@@ -76,16 +76,16 @@ static jstr_io_ft_ty
 jstr__io_exttype(const char *ext)
 JSTR_NOEXCEPT
 {
-	static const char *text[] = { JSTRIO_FT_TEXT_ARRAY };
-	static const char *binary[] = { JSTRIO_FT_BINARY_ARRAY };
+	static const char *text[] = { JSTR_IO_FT_TEXT_ARRAY };
+	static const char *binary[] = { JSTR_IO_FT_BINARY_ARRAY };
 	unsigned int i;
 	for (i = 0; i < JSTR_ARRAY_COUNT(text); ++i)
 		if (!jstr_strcmpeq_loop(ext, text[i]))
-			return JSTRIO_FT_TEXT;
+			return JSTR_IO_FT_TEXT;
 	for (i = 0; i < JSTR_ARRAY_COUNT(binary); ++i)
 		if (!jstr_strcmpeq_loop(ext, binary[i]))
-			return JSTRIO_FT_BINARY;
-	return JSTRIO_FT_UNKNOWN;
+			return JSTR_IO_FT_BINARY;
+	return JSTR_IO_FT_UNKNOWN;
 }
 
 JSTR_FUNC_PURE
@@ -111,7 +111,7 @@ jstr_io_exttype(const char *R fname, size_t sz)
 JSTR_NOEXCEPT
 {
 	fname = (char *)jstr__io_extget_len(fname, sz);
-	return fname ? jstr__io_exttype(fname) : JSTRIO_FT_UNKNOWN;
+	return fname ? jstr__io_exttype(fname) : JSTR_IO_FT_UNKNOWN;
 }
 
 JSTR_FUNC
@@ -164,7 +164,7 @@ static const unsigned char jstr__io_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1
 
 #undef USE_FORM_FEED
 
-/* Check if the first JSTRIO_BINARY_CHECK_MAX bytes or fewer contain any
+/* Check if the first JSTR_IO_BINARY_CHECK_MAX bytes or fewer contain any
  * unprintable char. */
 JSTR_FUNC
 static int
@@ -176,7 +176,7 @@ JSTR_NOEXCEPT
 	const int ret = jstr__io_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
-	sz = JSTR_MIN(sz, JSTRIO_BINARY_CHECK_MAX);
+	sz = JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX);
 	const unsigned char *s = (unsigned char *)buf;
 	for (; sz--; ++s)
 		if (jstr__io_binary_table[*s])
@@ -643,46 +643,46 @@ jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R 
 #	endif
 #endif
 
-/* If JSTRIO_ACTION_RETVAL is passed, use these as return values of FUNC(). */
+/* If JSTR_IO_ACTION_RETVAL is passed, use these as return values of FUNC(). */
 typedef enum jstr_io_ftw_actionretval_ty {
-	JSTRIO_FTW_RET_STOP = 0,
-#define JSTRIO_FTW_RET_STOP JSTRIO_FTW_RET_STOP
-	JSTRIO_FTW_RET_CONTINUE,
-#define JSTRIO_FTW_RET_CONTINUE JSTRIO_FTW_RET_CONTINUE
+	JSTR_IO_FTW_RET_STOP = 0,
+#define JSTR_IO_FTW_RET_STOP JSTR_IO_FTW_RET_STOP
+	JSTR_IO_FTW_RET_CONTINUE,
+#define JSTR_IO_FTW_RET_CONTINUE JSTR_IO_FTW_RET_CONTINUE
 	/* Skip sibling entries. */
-	JSTRIO_FTW_RET_SKIP_SIBLINGS,
-#define JSTRIO_FTW_RET_SKIP_SIBLINGS JSTRIO_FTW_RET_SKIP_SIBLINGS
+	JSTR_IO_FTW_RET_SKIP_SIBLINGS,
+#define JSTR_IO_FTW_RET_SKIP_SIBLINGS JSTR_IO_FTW_RET_SKIP_SIBLINGS
 	/* Skip subdirectories. */
-	JSTRIO_FTW_RET_SKIP_SUBTREE
-#define JSTRIO_FTW_RET_SKIP_SUBTREE JSTRIO_FTW_RET_SKIP_SUBTREE
+	JSTR_IO_FTW_RET_SKIP_SUBTREE
+#define JSTR_IO_FTW_RET_SKIP_SUBTREE JSTR_IO_FTW_RET_SKIP_SUBTREE
 } jstr_io_ftw_actionretval_ty;
 
 typedef enum jstr_io_ftw_flag_ty {
 	/* Match glob with FULPATH instead of d_name. */
-	JSTRIO_FTW_MATCHPATH = (1),
-#define JSTRIO_FTW_MATCHPATH JSTRIO_FTW_MATCHPATH
+	JSTR_IO_FTW_MATCHPATH = (1),
+#define JSTR_IO_FTW_MATCHPATH JSTR_IO_FTW_MATCHPATH
 	/* Call FUNC() on regular files. */
-	JSTRIO_FTW_REG = (JSTRIO_FTW_MATCHPATH << 1),
-#define JSTRIO_FTW_REG JSTRIO_FTW_REG
+	JSTR_IO_FTW_REG = (JSTR_IO_FTW_MATCHPATH << 1),
+#define JSTR_IO_FTW_REG JSTR_IO_FTW_REG
 	/* Call FUNC() on directories. */
-	JSTRIO_FTW_DIR = (JSTRIO_FTW_REG << 1),
-#define JSTRIO_FTW_DIR JSTRIO_FTW_DIR
+	JSTR_IO_FTW_DIR = (JSTR_IO_FTW_REG << 1),
+#define JSTR_IO_FTW_DIR JSTR_IO_FTW_DIR
 	/* Do not traverse subdirectories. */
-	JSTRIO_FTW_NOSUBDIR = (JSTRIO_FTW_DIR << 1),
-#define JSTRIO_FTW_NOSUBDIR JSTRIO_FTW_NOSUBDIR
+	JSTR_IO_FTW_NOSUBDIR = (JSTR_IO_FTW_DIR << 1),
+#define JSTR_IO_FTW_NOSUBDIR JSTR_IO_FTW_NOSUBDIR
 	/* Do not call stat. Only st.st_mode is defined. */
-	JSTRIO_FTW_NOSTAT = (JSTRIO_FTW_NOSUBDIR << 1),
-#define JSTRIO_FTW_NOSTAT JSTRIO_FTW_NOSTAT
+	JSTR_IO_FTW_NOSTAT = (JSTR_IO_FTW_NOSUBDIR << 1),
+#define JSTR_IO_FTW_NOSTAT JSTR_IO_FTW_NOSTAT
 	/* Only call stat on regular files. */
-	JSTRIO_FTW_STATREG = (JSTRIO_FTW_NOSTAT << 1),
-#define JSTRIO_FTW_STATREG JSTRIO_FTW_STATREG
+	JSTR_IO_FTW_STATREG = (JSTR_IO_FTW_NOSTAT << 1),
+#define JSTR_IO_FTW_STATREG JSTR_IO_FTW_STATREG
 	/* Ignore hidden entries. */
-	JSTRIO_FTW_NOHIDDEN = (JSTRIO_FTW_STATREG << 1),
-#define JSTRIO_FTW_NOHIDDEN JSTRIO_FTW_NOHIDDEN
+	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STATREG << 1),
+#define JSTR_IO_FTW_NOHIDDEN JSTR_IO_FTW_NOHIDDEN
 	/* Handle FUNC() return value according to jstr_io_ftw_actionretval_ty.
 	 */
-	JSTRIO_FTW_ACTIONRETVAL = (JSTRIO_FTW_NOHIDDEN << 1)
-#define JSTRIO_FTW_ACTIONRETVAL JSTRIO_FTW_ACTIONRETVAL
+	JSTR_IO_FTW_ACTIONRETVAL = (JSTR_IO_FTW_NOHIDDEN << 1)
+#define JSTR_IO_FTW_ACTIONRETVAL JSTR_IO_FTW_ACTIONRETVAL
 } jstr_io_ftw_flag_ty;
 
 #if JSTR_HAVE_FDOPENDIR && JSTR_HAVE_ATFILE
@@ -744,7 +744,7 @@ typedef enum jstr_io_ftw_flag_ty {
 			}                               \
 		} while (0)
 #	define STAT_ALWAYS(st, fd, ep, dirpath) \
-		STAT_DO(st, fd, ep, dirpath = JSTRIO_FTW_STATE_NS; goto do_fn)
+		STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
 #	define OPENDIR(fd, fname) fdopendir(fd)
 #else
 #	define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err) \
@@ -757,7 +757,7 @@ typedef enum jstr_io_ftw_flag_ty {
 			}                                        \
 		} while (0)
 #	define STAT_ALWAYS(st, fd, ep, dirpath) \
-		STAT_DO(st, fd, ep, dirpath = JSTRIO_FTW_STATE_NS; goto do_fn)
+		STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
 #	define OPENDIR(fd, fname) opendir(fname)
 #	define OPENAT(dstfd, srcfd, file, oflag, do_on_err) \
 		do {                                         \
@@ -779,7 +779,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define STAT(st, fd, ep, dirpath) STAT_ALWAYS(st, fd, ep, dirpath)
 #	define STAT_OR_MODE(st, fd, ep, dirpath)          \
 		do {                                       \
-			if (FLAG(JSTRIO_FTW_NOSTAT))       \
+			if (FLAG(JSTR_IO_FTW_NOSTAT))       \
 				STAT_MODE(st, ep);         \
 			else                               \
 				STAT(st, fd, ep, dirpath); \
@@ -820,22 +820,22 @@ typedef enum jstr_io_ftw_flag_ty {
 		} while (0)
 #endif
 
-#if JSTRIO_PATH_MAX <= 65536
+#if JSTR_IO_PATH_MAX <= 65536
 typedef uint16_t jstr_io_path_size_ty;
-#elif JSTRIO_PATH_MAX <= 4294967296
+#elif JSTR_IO_PATH_MAX <= 4294967296
 typedef uint32_t jstr_io_path_size_ty;
 #else
 typedef size_t jstr_io_path_size_ty;
 #endif
 
-struct JSTRIO_FTW {
+struct JSTR_IO_FTW {
 	const char *dirpath;
 	const struct stat *st;
 	const struct dirent *ep;
 	jstr_io_path_size_ty dirpath_len;
 };
 
-typedef int (*jstr_io_ftw_func_ty)(const struct JSTRIO_FTW *ftw, const void *args);
+typedef int (*jstr_io_ftw_func_ty)(const struct JSTR_IO_FTW *ftw, const void *args);
 typedef int (*jstr_io_ftw_func_match_ty)(const char *fname, jstr_io_path_size_ty fname_len, const void *args);
 
 struct jstr__io_ftw_data {
@@ -843,23 +843,23 @@ struct jstr__io_ftw_data {
 	const void *func_args;
 	jstr_io_ftw_func_match_ty func_match;
 	const void *func_match_args;
-	struct JSTRIO_FTW ftw;
+	struct JSTR_IO_FTW ftw;
 	int ftw_flags;
 };
 
-#define JSTRIO_FTW_FUNC(func_name, ftw, func_args) \
-	int func_name(const struct JSTRIO_FTW *ftw, const void *func_args)
+#define JSTR_IO_FTW_FUNC(func_name, ftw, func_args) \
+	int func_name(const struct JSTR_IO_FTW *ftw, const void *func_args)
 
-#define JSTRIO_FTW_FUNC_MATCH(func_name, filename, filename_len, args) \
+#define JSTR_IO_FTW_FUNC_MATCH(func_name, filename, filename_len, args) \
 	int func_name(                                                 \
 	const char *filename,                                          \
 	jstr_io_path_size_ty filename_len,                             \
 	const void *args)
 
 #ifdef O_DIRECTORY
-#	define JSTRIO__O_DIRECTORY O_DIRECTORY
+#	define JSTR_IO__O_DIRECTORY O_DIRECTORY
 #else
-#	define JSTRIO__O_DIRECTORY 0
+#	define JSTR_IO__O_DIRECTORY 0
 #endif
 
 #define FLAG(x) ((a)->ftw_flags & (x))
@@ -875,8 +875,8 @@ JSTR_NOEXCEPT
 	DIR *R const dp = OPENDIR(fd, a->ftw.dirpath);
 	if (jstr_nullchk(dp)) {
 		if (NONFATAL_ERR()) {
-			if (FLAG(JSTRIO_FTW_REG))
-				if (!FLAG(JSTRIO_FTW_DIR))
+			if (FLAG(JSTR_IO_FTW_REG))
+				if (!FLAG(JSTR_IO_FTW_DIR))
 					return JSTR_RET_SUCC;
 			if (a->func_match && a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 				return JSTR_RET_SUCC;
@@ -889,7 +889,7 @@ JSTR_NOEXCEPT
 	int tmp;
 	while ((a->ftw.ep = readdir(dp))) {
 		/* Ignore hidden files. */
-		if (FLAG(JSTRIO_FTW_NOHIDDEN)) {
+		if (FLAG(JSTR_IO_FTW_NOHIDDEN)) {
 			if (a->ftw.ep->d_name[0] == '.')
 				continue;
 			/* Ignore "." and "..". */
@@ -900,12 +900,12 @@ JSTR_NOEXCEPT
 		/* Stop processing if DIRPATH is longer than PATH_MAX.
 		   If we don't have d_namlen, try to estimate the length. */
 		if (JSTR_HAVE_DIRENT_D_NAMLEN) {
-			if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTRIO_PATH_MAX)) {
+			if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
 				errno = ENAMETOOLONG;
 				goto err_closedir;
 			}
 		} else {
-			if (jstr_unlikely(dirpath_len >= JSTRIO_PATH_MAX - JSTRIO_NAME_MAX) && jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTRIO_PATH_MAX)) {
+			if (jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX) && jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
 				errno = ENAMETOOLONG;
 				goto err_closedir;
 			}
@@ -921,7 +921,7 @@ JSTR_NOEXCEPT
 			        a->ftw.ep,
 			        a->ftw.dirpath,
 			        /* If stat fails. */
-			        if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG)) goto CONT;
+			        if (FLAG(JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG)) goto CONT;
 			        else goto func;);
 		}
 		if (IS_REG(a->ftw.ep, a->ftw.st))
@@ -929,16 +929,16 @@ JSTR_NOEXCEPT
 		if (IS_DIR(a->ftw.ep, a->ftw.st))
 			goto dir;
 		/* If true, ignore other types of files. */
-		if (FLAG(JSTRIO_FTW_DIR | JSTRIO_FTW_REG))
+		if (FLAG(JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG))
 			continue;
 		goto do_reg;
 reg:
-		if (FLAG(JSTRIO_FTW_DIR))
-			if (!(FLAG(JSTRIO_FTW_REG)))
+		if (FLAG(JSTR_IO_FTW_DIR))
+			if (!(FLAG(JSTR_IO_FTW_REG)))
 				continue;
 do_reg:
 		if (a->func_match) {
-			if (FLAG(JSTRIO_FTW_MATCHPATH)) {
+			if (FLAG(JSTR_IO_FTW_MATCHPATH)) {
 				/* FILL_PATH() will construct the full path if
 				 * either *_at functions or d_type aren't
 				 * available. */
@@ -963,7 +963,7 @@ do_reg:
 			 * this will be a no-op. */
 			FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
 		}
-		if (FLAG(JSTRIO_FTW_STATREG)) {
+		if (FLAG(JSTR_IO_FTW_STATREG)) {
 			/* We must stat. */
 			if (IS_REG(a->ftw.ep, a->ftw.st))
 				STAT((struct stat *)a->ftw.st, fd, a->ftw.ep, a->ftw.dirpath);
@@ -980,10 +980,10 @@ do_reg:
 func:
 		tmp = a->func(&a->ftw, a->func_args);
 		/* ACTIONRETVAL according to glibc ftw. */
-		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
-			if (tmp == JSTRIO_FTW_RET_CONTINUE || tmp == JSTRIO_FTW_RET_SKIP_SUBTREE)
+		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
+			if (tmp == JSTR_IO_FTW_RET_CONTINUE || tmp == JSTR_IO_FTW_RET_SKIP_SUBTREE)
 				continue;
-			else if (tmp == JSTRIO_FTW_RET_SKIP_SIBLINGS)
+			else if (tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
 				break;
 			else /* tmp == RET_STOP */
 				goto ret_stop;
@@ -995,21 +995,21 @@ func:
 dir:
 		/* Go to next entry if we don't traverse subdirectories and
 		 * don't need to call FUNC on directories. */
-		if (FLAG(JSTRIO_FTW_NOSUBDIR) && FLAG(JSTRIO_FTW_REG) && !FLAG(JSTRIO_FTW_DIR))
+		if (FLAG(JSTR_IO_FTW_NOSUBDIR) && FLAG(JSTR_IO_FTW_REG) && !FLAG(JSTR_IO_FTW_DIR))
 			continue;
 		FILL_PATH(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
-		if (FLAG(JSTRIO_FTW_STATREG))
+		if (FLAG(JSTR_IO_FTW_STATREG))
 			STAT_MODE(a->ftw.st, a->ftw.ep);
 		else
 			STAT_OR_MODE(a->ftw.st, fd, a->ftw.ep, a->ftw.dirpath);
 		/* Don't call FUNC on directory if we don't need to. */
-		if (FLAG(JSTRIO_FTW_REG) && !FLAG(JSTRIO_FTW_DIR))
+		if (FLAG(JSTR_IO_FTW_REG) && !FLAG(JSTR_IO_FTW_DIR))
 			goto skip_fn;
 		tmp = a->func(&a->ftw, a->func_args);
-		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
-			if (tmp == JSTRIO_FTW_RET_CONTINUE)
+		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
+			if (tmp == JSTR_IO_FTW_RET_CONTINUE)
 				continue;
-			else if (tmp == JSTRIO_FTW_RET_SKIP_SUBTREE || tmp == JSTRIO_FTW_RET_SKIP_SIBLINGS)
+			else if (tmp == JSTR_IO_FTW_RET_SKIP_SUBTREE || tmp == JSTR_IO_FTW_RET_SKIP_SIBLINGS)
 				break;
 			else /* tmp == RET_STOP */
 				goto ret_stop;
@@ -1019,16 +1019,16 @@ dir:
 		}
 skip_fn:
 		/* Don't traverse subdirectories when we don't need to. */
-		if (FLAG(JSTRIO_FTW_NOSUBDIR))
+		if (FLAG(JSTR_IO_FTW_NOSUBDIR))
 			continue;
 		/* If we have *_at functions, open d_name to get the fd.
 		 * Otherwise, no-op. */
-		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | O_NONBLOCK | JSTRIO__O_DIRECTORY, goto CONT);
+		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | O_NONBLOCK | JSTR_IO__O_DIRECTORY, goto CONT);
 		tmp = jstr__io_ftw_len(a, a->ftw.dirpath_len FD_ARG);
 		/* Close when we have *_at functions. */
 		CLOSE(FD, goto err_closedir);
-		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
-			if (jstr_unlikely(tmp == JSTRIO_FTW_RET_STOP))
+		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
+			if (jstr_unlikely(tmp == JSTR_IO_FTW_RET_STOP))
 				goto ret_stop;
 		} else {
 			if (jstr_chk(tmp))
@@ -1040,7 +1040,7 @@ CONT:;
 	return JSTR_RET_SUCC;
 ret_stop:
 	closedir(dp);
-	return JSTRIO_FTW_RET_STOP;
+	return JSTR_IO_FTW_RET_STOP;
 err_closedir:
 	closedir(dp);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -1059,7 +1059,7 @@ err_closedir:
 #undef STAT_OR_MODE
 #undef FD
 #undef FD_PARAM
-#undef JSTRIO__O_DIRECTORY
+#undef JSTR_IO__O_DIRECTORY
 #undef FLAG
 
 #define FLAG(x) (jstr_io_ftw_flags & (x))
@@ -1071,7 +1071,7 @@ err_closedir:
  * JSTR_RET_ERR on error;
  * JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered
  * on some entries; JSTR_RET_STOP if FUNC() returns RET_STOP and
- * JSTRIO_FTW_ACTIONRETVAL is used. or the return value of FUNC() if DIRPATH is
+ * JSTR_IO_FTW_ACTIONRETVAL is used. or the return value of FUNC() if DIRPATH is
  * not a directory and FUNC() is executed. If a non-fatal error is encountered,
  * continue processing other entries. */
 JSTR_FUNC_MAY_NULL
@@ -1085,14 +1085,14 @@ JSTR_NOEXCEPT
 		errno = ENOENT;
 		goto err;
 	}
-	if (jstr_unlikely(dirpath_len >= JSTRIO_PATH_MAX)) {
+	if (jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX)) {
 		errno = ENAMETOOLONG;
 		goto err;
 	}
 	/* Don't copy trailing // to FULPATH. */
 	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/';
 	     --dirpath_len) {}
-	char fulpath[JSTRIO_PATH_MAX];
+	char fulpath[JSTR_IO_PATH_MAX];
 	jstr_strcpy_len(fulpath, dirpath, dirpath_len);
 	FD_DECLARE;
 	OPEN(fd, fulpath, O_RDONLY | O_NONBLOCK, goto err);
@@ -1117,13 +1117,13 @@ JSTR_NOEXCEPT
 	 * call ftw. */
 	if (jstr_likely(S_ISDIR(data.ftw.st->st_mode))) {
 ftw:;
-		if (FLAG(JSTRIO_FTW_REG))
-			if (!FLAG(JSTRIO_FTW_DIR))
+		if (FLAG(JSTR_IO_FTW_REG))
+			if (!FLAG(JSTR_IO_FTW_DIR))
 				goto CONT;
 		int tmp;
 		tmp = func(&data.ftw, func_args);
-		if (FLAG(JSTRIO_FTW_ACTIONRETVAL)) {
-			if (jstr_unlikely(tmp != JSTRIO_FTW_RET_CONTINUE))
+		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
+			if (jstr_unlikely(tmp != JSTR_IO_FTW_RET_CONTINUE))
 				goto err_close;
 		} else {
 			if (jstr_chk(tmp))
@@ -1142,11 +1142,11 @@ CONT:;
 func:
 	/* DIRPATH is not a directory. */
 	CLOSE(fd, goto err);
-	if (FLAG(JSTRIO_FTW_REG))
+	if (FLAG(JSTR_IO_FTW_REG))
 		if (jstr_unlikely(!S_ISREG(data.ftw.st->st_mode)))
 			return JSTR_RET_SUCC;
 	if (func_match) {
-		if (FLAG(JSTRIO_FTW_MATCHPATH)) {
+		if (FLAG(JSTR_IO_FTW_MATCHPATH)) {
 			if (func_match(fulpath, dirpath_len, func_match_args))
 				return JSTR_RET_SUCC;
 		} else {
