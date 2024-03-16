@@ -30,8 +30,8 @@
 #ifdef JSTR__STRSTR234_STRNSTR
 #	define N_PARAM , size_t l
 #	define N       l-- &&
-#	define N_EXIT                                                         \
-		if (jstr_unlikely(l-- == 0))                                   \
+#	define N_EXIT                       \
+		if (jstr_unlikely(l-- == 0)) \
 		return NULL
 #else
 #	define N_PARAM
@@ -57,10 +57,8 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
-                                             size_t hs_len,
-                                             const unsigned char *ne,
-                                             unsigned int ne_len) JSTR_NOEXCEPT
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_len, const unsigned char *ne, unsigned int ne_len)
+JSTR_NOEXCEPT
 {
 	uint64_t hw;
 	uint64_t nw;
@@ -80,10 +78,8 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
-                                             size_t hs_len,
-                                             const unsigned char *ne,
-                                             unsigned int ne_len) JSTR_NOEXCEPT
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_len, const unsigned char *ne, unsigned int ne_len)
+JSTR_NOEXCEPT
 {
 	uint64_t hw;
 	uint64_t nw;
@@ -101,10 +97,8 @@ JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
 
 JSTR_FUNC_PURE
 static void *
-JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs,
-                                               unsigned int hs_len,
-                                               const unsigned char *ne,
-                                               size_t ne_len) JSTR_NOEXCEPT
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs, unsigned int hs_len, const unsigned char *ne, size_t ne_len)
+JSTR_NOEXCEPT
 {
 	typedef uint64_t U64;
 	hs += hs_len - ne_len;
@@ -127,9 +121,8 @@ JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _8more)(const unsigned char *hs,
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static char *
-JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs,
-                                             const unsigned char *ne,
-                                             unsigned int ne_len) JSTR_NOEXCEPT
+JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, const unsigned char *ne, unsigned int ne_len)
+JSTR_NOEXCEPT
 {
 	uint64_t hw;
 	uint64_t nw;
