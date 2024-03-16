@@ -857,7 +857,12 @@ JSTR_NOEXCEPT
 /* Replace N SEARCH in S with REPLACE from S + START_IDX.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
+ * T must be precompiled with jstr_memmem_comp.
+ * The current implementation is O(n).
+ * It does 3 * n operations:
+ * n operations for memmem,
+ * n operations for malloc,
+ * n operations for replacements. */
 JSTR_FUNC
 static size_t
 jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len, size_t n)
