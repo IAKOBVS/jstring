@@ -124,15 +124,15 @@ typedef enum {
 
 #define JSTR_RE__ERR_EXEC_HANDLE(errcode, do_on_error)     \
 	if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) { \
-		;                                         \
+		;                                          \
 	} else if (errcode == JSTR_RE_RET_NOMATCH) {       \
-		break;                                    \
-	} else {                                          \
-		do_on_error;                              \
+		break;                                     \
+	} else {                                           \
+		do_on_error;                               \
 	}
 
 #if JSTR_PANIC
-#	define JSTR_RE_RETURN_ERR(errcode, preg)    \
+#	define JSTR_RE_RETURN_ERR(errcode, preg)   \
 		do {                                \
 			jstr_re_err(errcode, preg); \
 			jstr_errdie("");            \
@@ -212,6 +212,36 @@ JSTR_NOEXCEPT
 #endif
 	return (jstr_re_ret_ty)
 	regexec(preg, s, nmatch, pmatch, eflags | JSTR_RE_EF_STARTEND);
+}
+
+/* Estimate the length of a regex pattern. If the pattern contains
+ * special characters, return (size_t)-1. */
+JSTR_FUNC_PURE
+JSTR_ATTR_INLINE
+static size_t
+jstr_re_patternlengthmax(const char *pattern)
+{
+	int c;
+	const unsigned char *p = (const unsigned char *)pattern;
+	/* Quickly find a special character. */
+	p = (const unsigned char *)strcspn((const char *)p, "*{}\\");
+	if (*p != '\0')
+		for (;; ++p)
+			switch (c = *p) {
+			case '*':
+			/* Extended regex. */
+			case '{':
+			case '}':
+				return (size_t)-1;
+			case '\\':
+				c = *(p + 1);
+				if (jstr_isdigit(c) || c == '{' || c == '}')
+					return (size_t)-1;
+				++p;
+			case '\0':
+				break;
+			}
+	return JSTR_PTR_DIFF(p, pattern);
 }
 
 /* Check if S matches precompiled regex.
