@@ -52,8 +52,8 @@
  * immediately call free(). This may result in fewer allocations when strings
  * are often added to and removed from the list. All elements are freed when
  * jstr_l_free() is called. */
-#ifndef JSTRL_LAZY_FREE
-#	define JSTRL_LAZY_FREE 1
+#ifndef JSTR_L_LAZY_FREE
+#	define JSTR_L_LAZY_FREE 1
 #endif
 
 /* Minimum size of allocation of malloc(). */
@@ -80,8 +80,8 @@
 #endif
 
 /* Growth factor of jstr_list_ty. */
-#ifndef JSTRL_GROWTH
-#	define JSTRL_GROWTH 1.5
+#ifndef JSTR_L_GROWTH
+#	define JSTR_L_GROWTH 1.5
 #endif
 
 /* Growth factor of jarr_ty. */
@@ -90,16 +90,16 @@
 #endif
 
 /* Filename extensions interpreted as text. */
-#ifndef JSTRIO_FT_TEXT_ARRAY
-#	define JSTRIO_FT_TEXT_ARRAY                                          \
+#ifndef JSTR_IO_FT_TEXT_ARRAY
+#	define JSTR_IO_FT_TEXT_ARRAY                                          \
 		"C", "S", "c", "cc", "cs", "cpp", "h", "hh", "hpp", "html",   \
 		"js", "json", "md", "pl", "pm", "py", "pyi", "rs", "s", "sh", \
 		"ts", "txt"
 #endif
 
 /* Filename extensions interpreted as binary. */
-#ifndef JSTRIO_FT_BINARY_ARRAY
-#	define JSTRIO_FT_BINARY_ARRAY                                     \
+#ifndef JSTR_IO_FT_BINARY_ARRAY
+#	define JSTR_IO_FT_BINARY_ARRAY                                     \
 		"a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", \
 		"pdf", "png", "pyc", "rar", "so", "wav", "zip"
 #endif
