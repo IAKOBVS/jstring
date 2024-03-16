@@ -220,9 +220,11 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
 jstr_re_patternlenmax(const char *pattern)
+JSTR_NOEXCEPT
 {
 	int c;
 	const unsigned char *p = (const unsigned char *)pattern;
+	int minus = *p == '^';
 	/* Quickly find a special character. */
 	p = (const unsigned char *)strcspn((const char *)p, "\\*{}");
 	if (*p != '\0')
@@ -239,9 +241,11 @@ jstr_re_patternlenmax(const char *pattern)
 					return (size_t)-1;
 				++p;
 			case '\0':
+				if (*(p - 1) == '$')
+					++minus;
 				break;
 			}
-	return JSTR_PTR_DIFF(p, pattern);
+	return JSTR_PTR_DIFF(p, pattern) - (unsigned int)minus;
 }
 
 /* Check if S matches precompiled regex.
@@ -299,7 +303,7 @@ jstr_re_off_ty
 jstr_re_rmn_from(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags, size_t n)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
+	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	regmatch_t rm;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	const char *const end = *s + *sz;
@@ -445,7 +449,7 @@ jstr_re_off_ty
 jstr_re_rplcn_len_from(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
+	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	size_t find_len;
@@ -618,7 +622,7 @@ jstr_re_off_ty
 jstr_re_rplcn_bref_len_from(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, jstr_re_off_ty nmatch, size_t n)
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(start_idx < *sz, "");
+	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	regmatch_t rm[10];

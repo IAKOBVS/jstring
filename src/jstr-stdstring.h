@@ -203,6 +203,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int
 jstr_strcmpeq_loop(const char *s1, const char *s2)
+JSTR_NOEXCEPT
 {
 	while ((*s1 == *s2++) && *s1++) {}
 	return *(s2 - 1);
@@ -214,6 +215,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int
 jstr_memcmpeq_loop(const void *s1, const void *s2, size_t n)
+JSTR_NOEXCEPT
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
@@ -226,6 +228,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static int
 jstr_strcasecmpeq_len_loop(const void *s1, const void *s2, size_t n)
+JSTR_NOEXCEPT
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
@@ -251,6 +254,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
 jstr_strnlen_loop(const char *s, size_t maxlen)
+JSTR_NOEXCEPT
 {
 	size_t n = maxlen;
 	for (; n && *s; --n, ++s) {}
@@ -262,6 +266,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static void *
 jstr_mempset(void *s, int c, size_t n)
+JSTR_NOEXCEPT
 {
 	return (char *)memset(s, c, n) + n;
 }
@@ -271,6 +276,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
 jstr_stpset_len(char *s, int c, size_t n)
+JSTR_NOEXCEPT
 {
 	return (char *)memset(s, c, n) + n;
 }
