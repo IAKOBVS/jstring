@@ -755,7 +755,7 @@ JSTR_NOEXCEPT
  * Return value:
  * Pointer to NE;
  * NULL if not found.
- * The current implementation is O(m*n). */
+ * The current implementation is O(m * n). */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
@@ -783,7 +783,7 @@ JSTR_NOEXCEPT
  * Return value:
  * Pointer to NE;
  * NULL if not found.
- * The current implementation is O(m*n). */
+ * The current implementation is O(m * n). */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
