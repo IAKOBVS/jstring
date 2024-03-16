@@ -852,7 +852,7 @@ JSTR_NOEXCEPT
  * The current implementation is O(n) where n is the length
  * of S.
  * It does 6 * n operations:
- * 4 n operations for memmem,
+ * 2 * 2 n operations for memmem,
  * n operations for malloc,
  * n operations for replacements. */
 JSTR_FUNC
