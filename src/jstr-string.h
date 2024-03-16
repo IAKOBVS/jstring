@@ -1349,8 +1349,11 @@ JSTR_FUNC_PURE
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 static size_t
-jstr_count_len_exec(const jstr_twoway_ty *R t, const char *s, size_t sz, const char *find, size_t find_len)
-JSTR_NOEXCEPT
+jstr_count_len_exec(const jstr_twoway_ty *R t,
+                    const char *s,
+                    size_t sz,
+                    const char *find,
+                    size_t find_len) JSTR_NOEXCEPT
 {
 	if (find_len == 1)
 		return jstr_countchr_len(s, *find, sz);
