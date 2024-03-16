@@ -858,7 +858,8 @@ JSTR_NOEXCEPT
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp.
- * The current implementation is O(n).
+ * The current implementation is O(n) where n is the length
+ * of S.
  * It does 4 * n operations:
  * 2 * n operations for memmem,
  * n operations for malloc,
@@ -898,9 +899,9 @@ JSTR_NOEXCEPT
 		goto loop1;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), find))) {
 loop1:
-		     --n;
-		     ++changed;
-		     i.src_e += find_len;
+			--n;
+			++changed;
+			i.src_e += find_len;
 		}
 		if (!changed)
 			return 0;
