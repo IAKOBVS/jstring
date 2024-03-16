@@ -905,6 +905,55 @@ JSTR_NOEXCEPT
 	return jstr_rmn_len(s, sz, find, find_len, (size_t)-1);
 }
 
+/* Replace first SEARCH in S with REPLACE.
+ * Return -1 on malloc error.
+ * Otherwise, number of FINDs replaced.
+ * T must be precompiled with jstr_memmem_comp. */
+JSTR_FUNC
+static int
+jstr_rplc_len_from_exec(const jstr_twoway_ty *R t,
+                        char *R *R s,
+                        size_t *R sz,
+                        size_t *R cap,
+                        size_t start_idx,
+                        const char *R find,
+                        size_t find_len,
+                        const char *R rplc,
+                        size_t rplc_len) JSTR_NOEXCEPT
+{
+	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(find_len == 0))
+		return 0;
+	char *p
+	= (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find);
+	if (p == NULL)
+		return 0;
+	if (jstr_unlikely(!jstr_rplcat_len(
+	    s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len)))
+		return -1;
+	return 1;
+}
+
+/* Replace first SEARCH in S with REPLACE.
+ * Return -1 on malloc error.
+ * Otherwise, number of FINDs replaced.
+ * T must be precompiled with jstr_memmem_comp. */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static int
+jstr_rplc_len_exec(const jstr_twoway_ty *R t,
+                   char *R *R s,
+                   size_t *R sz,
+                   size_t *R cap,
+                   const char *R find,
+                   size_t find_len,
+                   const char *R rplc,
+                   size_t rplc_len) JSTR_NOEXCEPT
+{
+	return jstr_rplc_len_from_exec(
+	t, s, sz, cap, 0, find, find_len, rplc, rplc_len);
+}
+
 /* Replace N SEARCH in S with REPLACE from S + START_IDX.
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced.
@@ -923,9 +972,12 @@ jstr_rplcn_len_from_exec(const jstr_twoway_ty *R t,
                          size_t n) JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (n == 1)
+		return jstr_rplc_len_from_exec(
+		t, s, sz, cap, start_idx, find, find_len, rplc, rplc_len);
 	if (jstr_unlikely(rplc_len == 0))
-		return jstr_rmn_len_exec(
-		t, *s + start_idx, sz, find, find_len, n);
+		return jstr_rmn_len_from_exec(
+		t, *s, sz, start_idx, find, find_len, n);
 	if (find_len == 1) {
 		if (rplc_len == 1)
 			return jstr_rplcnchr_len(
@@ -1023,54 +1075,6 @@ jstr_rplcall_len_exec(const jstr_twoway_ty *R t,
 {
 	return jstr_rplcn_len_from_exec(
 	t, s, sz, cap, 0, find, find_len, rplc, rplc_len, (size_t)-1);
-}
-
-/* Replace first SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
-JSTR_FUNC
-static int
-jstr_rplc_len_from_exec(const jstr_twoway_ty *R t,
-                        char *R *R s,
-                        size_t *R sz,
-                        size_t *R cap,
-                        size_t start_idx,
-                        const char *R find,
-                        size_t find_len,
-                        const char *R rplc,
-                        size_t rplc_len) JSTR_NOEXCEPT
-{
-	if (jstr_unlikely(find_len == 0))
-		return 0;
-	char *p
-	= (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find);
-	if (p == NULL)
-		return 0;
-	if (jstr_unlikely(!jstr_rplcat_len(
-	    s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len)))
-		return -1;
-	return 1;
-}
-
-/* Replace first SEARCH in S with REPLACE.
- * Return -1 on malloc error.
- * Otherwise, number of FINDs replaced.
- * T must be precompiled with jstr_memmem_comp. */
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static int
-jstr_rplc_len_exec(const jstr_twoway_ty *R t,
-                   char *R *R s,
-                   size_t *R sz,
-                   size_t *R cap,
-                   const char *R find,
-                   size_t find_len,
-                   const char *R rplc,
-                   size_t rplc_len) JSTR_NOEXCEPT
-{
-	return jstr_rplc_len_from_exec(
-	t, s, sz, cap, 0, find, find_len, rplc, rplc_len);
 }
 
 /* Replace first SEARCH in S with REPLACE.
