@@ -402,6 +402,11 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, c
 	return JSTR_RET_SUCC;
 }
 
+/* TODO: guarantee O(n) in replacement. The current implementation is O(m * n),
+ * where if RPLC is longer than FIND, it will realloc and shift the rest of S
+ * to make room for FIND. This is slow if we find a lot of FINDs in S. Instead,
+ * we should do the replacement on a new malloc'd string. Executing the compiled
+ * regex twice shouldn't be too bad. */
 /* Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
