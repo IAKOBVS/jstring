@@ -174,7 +174,7 @@ jstr_strcasecmpeq_loop(const char *s1, const char *s2)
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;) {}
+	while (jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++) {}
 	return *(p2 - 1);
 }
 
@@ -195,7 +195,7 @@ JSTR_NOEXCEPT
 #else
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++;) {}
+	while (jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++) {}
 	return *(p2 - 1);
 #endif
 }
