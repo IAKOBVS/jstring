@@ -210,8 +210,7 @@ JSTR_NOEXCEPT
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
 #endif
-	return (jstr_re_ret_ty)
-	regexec(preg, s, nmatch, pmatch, eflags | JSTR_RE_EF_STARTEND);
+	return (jstr_re_ret_ty)regexec(preg, s, nmatch, pmatch, eflags | JSTR_RE_EF_STARTEND);
 }
 
 /* Estimate the length of a regex pattern. If the pattern contains
