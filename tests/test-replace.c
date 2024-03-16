@@ -97,10 +97,13 @@
 	do {                                                             \
 		if (jstr_unlikely(!(expr))) {                            \
 			PRINTERR("\nAssertion failure: %s().\n", #func); \
-			PRINTERR("String:%s.\n"                          \
+			PRINTERR("string:%s.\n"                          \
 				 "find  :%s.\n"                          \
 				 "rplc  :%s.\n",                         \
 			str, find, rplc);                                \
+			PRINTERR("string len:%zu.\n", strlen(str));                          \
+			PRINTERR("find len:%zu.\n", strlen(find));                          \
+			PRINTERR("rplc len:%zu.\n", strlen(rplc));                          \
 			PRINTERR("Result:\n");                           \
 			PRINTERR("N     :%zu\n", n);                     \
 			jstr_debug(&(result));                           \
