@@ -508,7 +508,7 @@ JSTR_NOEXCEPT
 		return (void *)memchr(hs, *(const unsigned char *)ne, hs_len);
 	if (jstr_unlikely(hs_len < t->needle_len))
 		return NULL;
-	if (t->needle_len <= 2)
+	if (t->needle_len == 2)
 		return jstr__memmem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 #endif
 	return jstr__memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
@@ -685,7 +685,7 @@ JSTR_NOEXCEPT
 		return (char *)jstr_memcasechr(hs, *(const unsigned char *)ne, hs_len);
 	if (jstr_unlikely(hs_len < t->needle_len))
 		return NULL;
-	if (t->needle_len <= 2)
+	if (t->needle_len == 2)
 		return jstr__memcasemem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 	return jstr__strcasestr_len_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 }
@@ -784,9 +784,45 @@ JSTR_NOEXCEPT
 		return (char *)hs;
 	if (t->needle_len == 1)
 		return (char *)jstr_strcasechr(hs, *ne);
-	if (t->needle_len <= 2)
+	if (t->needle_len == 2)
 		return jstr__strcasestr2((const unsigned char *)hs, (const unsigned char *)ne);
 	return jstr__strcasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
+}
+
+#define JSTR__MUSL_FUNC_NAME jstr__strstr_musl
+#define JSTR__MUSL_CHECK_EOL 1
+#include "_musl-twoway.h"
+
+JSTR_FUNC_VOID
+static void
+jstr_strstr_comp(jstr_twoway_ty *const t, const char *ne)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(*ne == '\0')) {
+		t->needle_len = 0;
+		return;
+	} else if (jstr_unlikely(ne[1] == '\0')) {
+		t->needle_len = 1;
+		return;
+	} else if (jstr_unlikely(ne[2] == '\0')) {
+		t->needle_len = 2;
+		return;
+	}
+	jstr__strstr_musl_comp(t, (const unsigned char *)ne);
+}
+
+JSTR_FUNC_PURE
+static char *
+jstr_strstr_exec(const jstr_twoway_ty *const t, const char *hs, const char *ne)
+JSTR_NOEXCEPT
+{
+	if (jstr_unlikely(t->needle_len == 0))
+		return (char *)hs;
+	if (t->needle_len == 1)
+		return (char *)strchr(hs, *ne);
+	if (t->needle_len == 2)
+		return (char *)strstr(hs, ne);
+	return jstr__strstr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
 }
 
 /* Reverse of STRCSPN.
