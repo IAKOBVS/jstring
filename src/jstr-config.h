@@ -28,8 +28,7 @@
 #	define JSTR_PANIC 0
 #endif
 
-/* Behave as JSTR_PANIC would, activate debug asserts, and print debug messages.
- */
+/* Behave as JSTR_PANIC would, activate debug asserts, and print debug messages. */
 #ifndef JSTR_DEBUG
 #	define JSTR_DEBUG 0
 #endif

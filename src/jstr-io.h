@@ -679,8 +679,7 @@ typedef enum jstr_io_ftw_flag_ty {
 	/* Ignore hidden entries. */
 	JSTR_IO_FTW_NOHIDDEN = (JSTR_IO_FTW_STATREG << 1),
 #define JSTR_IO_FTW_NOHIDDEN JSTR_IO_FTW_NOHIDDEN
-	/* Handle FUNC() return value according to jstr_io_ftw_actionretval_ty.
-	 */
+	/* Handle FUNC() return value according to jstr_io_ftw_actionretval_ty. */
 	JSTR_IO_FTW_ACTIONRETVAL = (JSTR_IO_FTW_NOHIDDEN << 1)
 #define JSTR_IO_FTW_ACTIONRETVAL JSTR_IO_FTW_ACTIONRETVAL
 } jstr_io_ftw_flag_ty;
@@ -973,8 +972,7 @@ do_reg:
 			else
 				STAT_MODE((struct stat *)a->ftw.st, a->ftw.ep);
 		} else {
-			/* If the NOSTAT flag is passed, only guarantee st_mode.
-			 */
+			/* If the NOSTAT flag is passed, only guarantee st_mode. */
 			STAT_OR_MODE((struct stat *)a->ftw.st, fd, a->ftw.ep, a->ftw.dirpath);
 		}
 func:
