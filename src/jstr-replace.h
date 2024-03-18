@@ -903,22 +903,22 @@ loop1:
 		}
 		if (last != end)
 			last += find_len;
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		/* Maybe use VLA/alloca. */
-		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
 		/* Past this size, just malloc. */
-		enum { MAX_ALLOCA_SIZE = 256 };
+		enum { MAX_STACK = 256 };
+		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
 		/* The original string must fit in the stack buffer and the modified
 		 * string must fit in the original string. */
-		const int use_alloca = *sz <= MAX_ALLOCA_SIZE && *cap >= new_size;
+		const int use_stack = *sz <= MAX_STACK && *cap >= new_size;
 #	if JSTR_HAVE_VLA
-		char alloca_buf[use_alloca ? *sz : 1];
+		char stack_buf[use_stack ? *sz : 1];
 #	endif
-		/* NEW_SIZE is small enough. */
-		if (use_alloca) {
-			/* SRC is the alloca'd string. */
+		if (use_stack) { /* NEW_SIZE is small enough. */
+			/* DST is the original string. */
+			i.dst = *s;
+			/* SRC is the stack string. */
 #	if JSTR_HAVE_VLA
-			i.src = alloca_buf;
+			i.src = stack_buf;
 #	else
 			i.src = (const char *)alloca(*sz);
 #	endif
@@ -928,16 +928,12 @@ loop1:
 			first = (char *)i.src + (first - *s);
 			last = i.src + (last - *s);
 			end = i.src + (end - *s);
-			/* DST is the original string. */
-			i.dst = *s;
-		} else {
-			/* NEW_SIZE is too large for a stack buffer. */
+		} else { /* Can't use stack buffer. */
 			i.dst = NULL;
 			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
 				goto err;
 		}
-#else
-		/* We have neither VLA/alloca, so just malloc. */
+#else /* We have neither VLA/alloca, so just malloc. */
 		i.dst = NULL;
 		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, *sz + changed * (rplc_len - find_len) + 1)))
 			goto err;
@@ -956,9 +952,8 @@ loop2:
 			i.src = i.src_e + find_len;
 		}
 		*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), dst_s);
-		/* We don't need to free if we used alloca. */
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		if (!use_alloca)
+		if (!use_stack) /* We don't need to free if we used a stack buffer. */
 #endif
 		{
 			free(*s);
