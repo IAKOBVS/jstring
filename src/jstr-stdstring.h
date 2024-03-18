@@ -310,7 +310,7 @@ JSTR_NOEXCEPT
 	memset(s, 0, strlen(s));
 }
 
-/* Return pointer to '\0' in S. */
+/* Return ptr to '\0' in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *

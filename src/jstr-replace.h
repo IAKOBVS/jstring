@@ -396,7 +396,7 @@ JSTR_NOEXCEPT
 
 /* Remove all C in S from START_IDX.
  * Return value:
- * Pointer to '\0' in S. */
+ * Ptr to '\0' in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -408,7 +408,7 @@ JSTR_NOEXCEPT
 
 /* Remove all C in S.
  * Return value:
- * Pointer to '\0' in S. */
+ * Ptr to '\0' in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -559,7 +559,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S.
  * Return value:
- * Pointer to '\0' in S. */
+ * Ptr to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -572,7 +572,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S from START_IDX.
  * Return value:
- * Pointer to '\0' in S.
+ * Ptr to '\0' in S.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
 static int
@@ -592,7 +592,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S.
  * Return value:
- * Pointer to '\0' in S.
+ * Ptr to '\0' in S.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
@@ -605,7 +605,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S from START_IDX.
  * Return value:
- * Pointer to '\0' in S. */
+ * Ptr to '\0' in S. */
 JSTR_FUNC_VOID
 static int
 jstr_rm_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len)
@@ -618,7 +618,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S.
  * Return value:
- * Pointer to '\0' in S. */
+ * Ptr to '\0' in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static int
@@ -915,7 +915,7 @@ loop1:
 			i.src = (const char *)alloca(*sz);
 			/* Copy the original string to SRC. */
 			memcpy((char *)i.src, *s, *sz);
-			/* Update the pointers to point to SRC since we're modifying DST. */
+			/* Update the ptrs to point to SRC since we're modifying DST. */
 			first = (char *)i.src + (first - *s);
 			last = i.src + (last - *s);
 			end = i.src + (end - *s);
