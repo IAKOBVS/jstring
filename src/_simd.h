@@ -153,8 +153,7 @@ JSTR_NOEXCEPT
 			break;
 		STORE((VEC *)dst, sv);
 	}
-	while ((*dst++ = *src++))
-		;
+	while ((*dst++ = *src++)) {}
 	return dst - 1;
 }
 
@@ -175,8 +174,7 @@ JSTR_NOEXCEPT
 			break;
 		STOREU((VEC *)dst, sv);
 	}
-	while ((*dst++ = *src++))
-		;
+	while ((*dst++ = *src++)) {}
 	return dst - 1;
 }
 
