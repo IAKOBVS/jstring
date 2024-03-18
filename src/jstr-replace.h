@@ -906,17 +906,23 @@ loop1:
 			last += find_len;
 #if JSTR_HAVE_ALLOCA
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
-		enum {MAX_ALLOCA_SIZE = 256};
+		enum { MAX_ALLOCA_SIZE = 256 };
 		int use_alloca;
+		/* Use alloca if it fits. */
 		if (*sz <= MAX_ALLOCA_SIZE && *cap >= new_size) {
 			use_alloca = 1;
-			i.dst = *s;
+			/* SRC is the alloca'd string. */
 			i.src = (const char *)alloca(*sz);
+			/* Copy the original string to SRC. */
 			memcpy((char *)i.src, *s, *sz);
+			/* Update the pointers to point to SRC. */
 			first = (char *)i.src + (first - *s);
 			last = i.src + (last - *s);
 			end = i.src + (end - *s);
+			/* DST is the original string. */
+			i.dst = *s;
 		} else {
+			/* We must allocate. */
 			i.dst = NULL;
 			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
 				goto err;
@@ -931,7 +937,6 @@ loop1:
 		if (start_idx)
 			i.dst = (char *)jstr_mempcpy(i.dst, *s, start_idx);
 		n = changed;
-		/* This is supposed to be i.src, but that segfaults. */
 		i.src_e = first;
 		goto loop2;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_PTR_DIFF(last, i.src), find))) {
@@ -943,6 +948,7 @@ loop2:
 		}
 		*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), dst_s);
 #if JSTR_HAVE_ALLOCA
+		/* We don't need to free if we used alloca. */
 		if (!use_alloca) {
 			free(*s);
 			*s = dst_s;
