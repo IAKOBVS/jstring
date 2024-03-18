@@ -175,7 +175,7 @@ JSTR_NOEXCEPT
 }
 
 /* Copy SRC to DST touppered.
- * Return pointer to '\0' in DST. */
+ * Return ptr to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -188,7 +188,7 @@ JSTR_NOEXCEPT
 }
 
 /* Copy SRC to DST tolowered.
- * Return pointer to '\0' in DST. */
+ * Return ptr to '\0' in DST. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *

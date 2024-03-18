@@ -182,7 +182,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * Pointer to '\0' in DST. */
+ * Ptr to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -574,7 +574,7 @@ JSTR_NOEXCEPT
 
 /* Find last NE in HS.
  * Return value:
- * Pointer to NE;
+ * Ptr to NE;
  * NULL if not found.
  * The current implementation is O(m * n). */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -601,7 +601,7 @@ JSTR_NOEXCEPT
 
 /* Find last NE in HS.
  * Return value:
- * Pointer to NE;
+ * Ptr to NE;
  * NULL if not found.
  * The current implementation is O(m * n). */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -628,7 +628,7 @@ JSTR_NOEXCEPT
 
 /* Find NE in HS case-insensitively (ASCII).
  * Return value:
- * Pointer to NE;
+ * Ptr to NE;
  * NULL if not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -709,7 +709,7 @@ JSTR_NOEXCEPT
 
 /* Find NE in HS case-insensitively.
  * Return value:
- * Pointer to NE;
+ * Ptr to NE;
  * NULL if not found. */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
