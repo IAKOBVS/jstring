@@ -915,7 +915,8 @@ loop1:
 			i.src = (const char *)alloca(*sz);
 			/* Copy the original string to SRC. */
 			memcpy((char *)i.src, *s, *sz);
-			/* Update the pointers to point to SRC. */
+			/* Update the pointers to point to SRC
+			 * since we're modifying DST. */
 			first = (char *)i.src + (first - *s);
 			last = i.src + (last - *s);
 			end = i.src + (end - *s);
