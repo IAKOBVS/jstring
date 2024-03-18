@@ -904,9 +904,12 @@ loop1:
 		if (last != end)
 			last += find_len;
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		/* For small strings, avoid malloc. */
+		/* Maybe use VLA/alloca. */
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
+		/* Past this size, just malloc. */
 		enum { MAX_ALLOCA_SIZE = 256 };
+		/* The original string must fit in the stack buffer and the modified
+		 * string must fit in the original string. */
 		const int use_alloca = *sz <= MAX_ALLOCA_SIZE && *cap >= new_size;
 #	if JSTR_HAVE_VLA
 		char alloca_buf[use_alloca ? *sz : 1];
@@ -934,6 +937,7 @@ loop1:
 				goto err;
 		}
 #else
+		/* We have neither VLA/alloca, so just malloc. */
 		i.dst = NULL;
 		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, *sz + changed * (rplc_len - find_len) + 1)))
 			goto err;
@@ -952,16 +956,14 @@ loop2:
 			i.src = i.src_e + find_len;
 		}
 		*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), dst_s);
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
 		/* We don't need to free if we used alloca. */
-		if (!use_alloca) {
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
+		if (!use_alloca)
+#endif
+		{
 			free(*s);
 			*s = dst_s;
 		}
-#else
-		free(*s);
-		*s = dst_s;
-#endif
 	}
 	return changed;
 err:
