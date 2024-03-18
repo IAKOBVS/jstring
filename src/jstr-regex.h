@@ -623,7 +623,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
-jstr__rebrefrplcstrlen(const regmatch_t *R rm, const char *R rplc, size_t rplc_len NMATCH_PARAM)
+jstr__re_brefrplcstrlen(const regmatch_t *R rm, const char *R rplc, size_t rplc_len NMATCH_PARAM)
 JSTR_NOEXCEPT
 {
 	const char *const rplc_e = rplc + rplc_len;
@@ -648,7 +648,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstr__rebrefrplccreat(const char *R mtc, const regmatch_t *R rm, char *R rdst, const char *R rplc, size_t rplc_len)
+jstr__re_brefrplccreat(const char *R mtc, const regmatch_t *R rm, char *R rdst, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	const char *rold;
@@ -712,7 +712,7 @@ JSTR_NOEXCEPT
 			continue;
 		}
 		rdst_len
-		= jstr__rebrefrplcstrlen(rm, rplc, rplc_len NMATCH_ARG);
+		= jstr__re_brefrplcstrlen(rm, rplc, rplc_len NMATCH_ARG);
 		if (jstr_unlikely(rdst_len == 0))
 			return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > BUFSZ))
@@ -728,7 +728,7 @@ JSTR_NOEXCEPT
 				}
 				rdstp = rdst_heap;
 			}
-		if (jstr_chk(jstr__rebrefrplccreat(i.src_e, rm, rdstp, rplc, rplc_len))) {
+		if (jstr_chk(jstr__re_brefrplccreat(i.src_e, rm, rdstp, rplc, rplc_len))) {
 			ret = JSTR_RE_RET_BADPAT;
 			goto err_free_rdst;
 		}
