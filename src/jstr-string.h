@@ -1157,7 +1157,9 @@ JSTR_NOEXCEPT
 /* Count occurences of C in S.
  * Return value:
  * Occurences of C in S. */
-/* JSTR_ATTR_NO_SANITIZE_ADDRESS */
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+#endif
 JSTR_FUNC_PURE
 static size_t
 jstr_countchr(const char *s, int c)
@@ -1167,17 +1169,26 @@ JSTR_NOEXCEPT
 	return jstr__simd_countchr(s, c);
 #else
 	size_t cnt = 0;
-	for (; *s; cnt += *s++ == (char)c) {}
+	if (jstr_likely(c))
+		for (; (s = strchr(s, c)); ++s, ++cnt) {}
 	return cnt;
 #endif
 }
 
 /* This is vectorized at -O3 (GCC >= 4.7) and -O2 (clang >= 3.9). */
+#if (JSTR_GNUC_PREREQ(4, 7) && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 3)) \
+|| defined __clang__ || !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
+#	define JSTR_USE_COUNTCHR_LEN_C 1
+#else
+#	define JSTR_USE_COUNTCHR_LEN_C 0
+#endif
 
 /* Count occurences of C in S.
  * Return value:
  * Occurences of C in S. */
-/* JSTR_ATTR_NO_SANITIZE_ADDRESS */
+#if !JSTR_USE_COUNTCHR_LEN_C
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+#endif
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1185,8 +1196,7 @@ static size_t
 jstr_countchr_len(const char *s, int c, size_t sz)
 JSTR_NOEXCEPT
 {
-#if (JSTR_GNUC_PREREQ(4, 7) && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 3)) \
-|| defined __clang__ || !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
+#if JSTR_USE_COUNTCHR_LEN_C
 	size_t cnt = 0;
 	for (; sz--; cnt += *s++ == (char)c) {}
 	return cnt;
@@ -1211,8 +1221,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
-	for (const char *const end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_PTR_DIFF(end, s), find)); ++cnt, s += find_len)
-		;
+	for (const char *const end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_PTR_DIFF(end, s), find)); ++cnt, s += find_len) {}
 	return cnt;
 }
 
