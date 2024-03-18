@@ -1149,8 +1149,7 @@ func:
 			if (func_match(fulpath, dirpath_len, func_match_args))
 				return JSTR_RET_SUCC;
 		} else {
-			dirpath
-			= (char *)jstr_memrchr(fulpath, '/', dirpath_len);
+			dirpath = (char *)jstr_memrchr(fulpath, '/', dirpath_len);
 			const char *const end = (char *)dirpath + dirpath_len;
 			if (dirpath) {
 				if (*++dirpath && func_match(dirpath, end - dirpath, func_match_args))

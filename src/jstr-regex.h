@@ -711,8 +711,7 @@ JSTR_NOEXCEPT
 			++i.src_e;
 			continue;
 		}
-		rdst_len
-		= jstr__re_brefrplcstrlen(rm, rplc, rplc_len NMATCH_ARG);
+		rdst_len = jstr__re_brefrplcstrlen(rm, rplc, rplc_len NMATCH_ARG);
 		if (jstr_unlikely(rdst_len == 0))
 			return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 		if (jstr_unlikely(rdst_len > BUFSZ))
@@ -720,8 +719,7 @@ JSTR_NOEXCEPT
 				if (jstr_unlikely(rdst_cap == 0))
 					rdst_cap = BUFSZ;
 				rdst_cap = jstr__grow(rdst_cap, rdst_len);
-				rdst_heap
-				= (char *)realloc(rdst_heap, rdst_cap);
+				rdst_heap = (char *)realloc(rdst_heap, rdst_cap);
 				if (jstr_nullchk(rdst_heap)) {
 					ret = JSTR_RE_RET_ESPACE;
 					goto err_free;

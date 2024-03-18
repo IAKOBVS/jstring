@@ -771,8 +771,7 @@ check_integer:
 				case 'p':
 					/* max + 2 to make room for the 0x at
 					 * the start of the number. */
-					arg_len
-					+= jstr_likely(va_arg(ap, const void *) != NULL)
+					arg_len += jstr_likely(va_arg(ap, const void *) != NULL)
 					   ? (HEX_UINTPTR + sizeof("0x") - 1)
 					   : sizeof("(nil)") - 1;
 					break;
@@ -805,8 +804,7 @@ check_integer:
 				case '%': arg_len += 2; break;
 				case 'm':
 					if (errno_len == 0)
-						arg_len
-						+= strlen(strerror(errno));
+						arg_len += strlen(strerror(errno));
 					else
 						arg_len += errno_len;
 					break;
