@@ -904,6 +904,7 @@ loop1:
 		}
 		if (last != end)
 			last += find_len;
+		/* For small strings. Avoid malloc if we can use alloca. */
 #if JSTR_HAVE_ALLOCA
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
 		enum { MAX_ALLOCA_SIZE = 256 };
