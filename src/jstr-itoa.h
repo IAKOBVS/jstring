@@ -131,20 +131,18 @@ JSTR_NOEXCEPT
 	return jstr_ulltoa_p((unsigned long long)number, buf, base);
 }
 
-#define JSTR__ULLTOA(type, name, u)                             \
-	/*                                                      \
-	   Return value:                                        \
-	   ptr to '\0' after the last digit in the DEST string. \
-	*/                                                      \
-	JSTR_FUNC                                               \
-	JSTR_ATTR_RETURNS_NONNULL                               \
-	JSTR_ATTR_INLINE                                        \
-	static char *jstr_##name##_p(                           \
-	type number,                                            \
-	char *R buf,                                            \
-	unsigned int base) JSTR_NOEXCEPT                        \
-	{                                                       \
-		return jstr_##u##lltoa_p(number, buf, base);    \
+#define JSTR__ULLTOA(type, name, u)                                \
+	/* Return value:                                           \
+	   ptr to '\0' after the last digit in the DEST string. */ \
+	JSTR_FUNC                                                  \
+	JSTR_ATTR_RETURNS_NONNULL                                  \
+	JSTR_ATTR_INLINE                                           \
+	static char *jstr_##name##_p(                              \
+	type number,                                               \
+	char *R buf,                                               \
+	unsigned int base) JSTR_NOEXCEPT                           \
+	{                                                          \
+		return jstr_##u##lltoa_p(number, buf, base);       \
 	}
 
 JSTR__ULLTOA(unsigned long, ultoa, u)

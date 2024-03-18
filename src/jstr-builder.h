@@ -772,8 +772,8 @@ check_integer:
 					/* max + 2 to make room for the 0x at
 					 * the start of the number. */
 					arg_len += jstr_likely(va_arg(ap, const void *) != NULL)
-					   ? (HEX_UINTPTR + sizeof("0x") - 1)
-					   : sizeof("(nil)") - 1;
+					           ? (HEX_UINTPTR + sizeof("0x") - 1)
+					           : sizeof("(nil)") - 1;
 					break;
 					/* chars written */
 				case 'n':
@@ -810,8 +810,7 @@ check_integer:
 					break;
 				/* padding */
 				case '*':
-					/* Get length of padding from argument.
-					 */
+					/* Get length of padding from argument. */
 					arg_len += (size_t)va_arg(ap, int);
 					goto cont_switch;
 				case '-': is_pad = 1; pad_len = 1;

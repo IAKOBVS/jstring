@@ -106,11 +106,11 @@ JSTR__END_DECLS
 #	define JSTR_PANIC 1
 #endif
 
-#define JSTR_SWAP(T, x, y)  \
-	do {                \
-		T _TMP = x; \
-		x = y;      \
-		y = _TMP;   \
+#define JSTR_SWAP(T, x, y)        \
+	do {                      \
+		T const _TMP = x; \
+		x = y;            \
+		y = _TMP;         \
 	} while (0)
 
 #ifdef __BYTE_ORDER
@@ -164,7 +164,7 @@ JSTR__END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == -1)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define JSTR__CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         JSTR__CONCAT_HELPER(x, y)
