@@ -903,21 +903,22 @@ loop1:
 		}
 		if (last != end)
 			last += find_len;
-		/* For small strings, avoid malloc. */
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
+		/* For small strings, avoid malloc. */
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
 		enum { MAX_ALLOCA_SIZE = 256 };
 		const int use_alloca = *sz <= MAX_ALLOCA_SIZE && *cap >= new_size;
-#if JSTR_HAVE_VLA
+#	if JSTR_HAVE_VLA
 		char alloca_buf[use_alloca ? *sz : 1];
-#endif
+#	endif
+		/* NEW_SIZE is small enough. */
 		if (use_alloca) {
 			/* SRC is the alloca'd string. */
-#if JSTR_HAVE_VLA
+#	if JSTR_HAVE_VLA
 			i.src = alloca_buf;
-#else
+#	else
 			i.src = (const char *)alloca(*sz);
-#endif
+#	endif
 			/* Copy the original string to SRC. */
 			memcpy((char *)i.src, *s, *sz);
 			/* Update the ptrs to point to SRC since we're modifying DST. */
@@ -927,7 +928,7 @@ loop1:
 			/* DST is the original string. */
 			i.dst = *s;
 		} else {
-			/* We must allocate. */
+			/* NEW_SIZE is too large for a stack buffer. */
 			i.dst = NULL;
 			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
 				goto err;
