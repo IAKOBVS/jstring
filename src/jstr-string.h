@@ -1246,9 +1246,10 @@ JSTR_NOEXCEPT
 		return jstr_countchr(s, *find);
 	if (jstr_unlikely(*s == '\0'))
 		return 0;
-	const size_t find_len = strlen(find);
+	jstr_twoway_ty t;
+	jstr_strstr_comp(&t, find);
 	size_t cnt = 0;
-	for (; (s = strstr(s, find)); ++cnt, s += find_len) {}
+	for (; (s = jstr_strstr_exec(&t, s, find)); ++cnt, s += t.needle_len) {}
 	return cnt;
 }
 
