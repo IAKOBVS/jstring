@@ -619,7 +619,7 @@ JSTR_NOEXCEPT
 
 /* Return value:
  * on error, -errcode (negative);
- * number of substrings replaced. */
+ * length of backreference. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
