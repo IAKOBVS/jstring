@@ -882,10 +882,10 @@ JSTR_NOEXCEPT
 		if (i.dst != i.src)
 			*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), *s);
 	} else {
-		i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find);
-		if (jstr_nullchk(i.src_e))
+		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find);
+		if (jstr_nullchk(first))
 			return 0;
-		char *const first = i.src_e;
+		i.src_e = first;
 		const char *last = end;
 		goto loop1;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find))) {
@@ -904,13 +904,34 @@ loop1:
 		}
 		if (last != end)
 			last += find_len;
+#if JSTR_HAVE_ALLOCA
+		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
+		enum {MAX_ALLOCA_SIZE = 256};
+		int use_alloca;
+		if (*sz <= MAX_ALLOCA_SIZE && *cap >= new_size) {
+			use_alloca = 1;
+			i.dst = *s;
+			i.src = (const char *)alloca(*sz);
+			memcpy((char *)i.src, *s, *sz);
+			first = (char *)i.src + (first - *s);
+			last = i.src + (last - *s);
+			end = i.src + (end - *s);
+		} else {
+			i.dst = NULL;
+			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
+				goto err;
+			use_alloca = 0;
+		}
+#else
 		i.dst = NULL;
 		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, *sz + changed * (rplc_len - find_len) + 1)))
 			goto err;
+#endif
 		char *const dst_s = i.dst;
 		if (start_idx)
 			i.dst = (char *)jstr_mempcpy(i.dst, *s, start_idx);
 		n = changed;
+		/* This is supposed to be i.src, but that segfaults. */
 		i.src_e = first;
 		goto loop2;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_PTR_DIFF(last, i.src), find))) {
@@ -921,8 +942,15 @@ loop2:
 			i.src = i.src_e + find_len;
 		}
 		*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), dst_s);
+#if JSTR_HAVE_ALLOCA
+		if (!use_alloca) {
+			free(*s);
+			*s = dst_s;
+		}
+#else
 		free(*s);
 		*s = dst_s;
+#endif
 	}
 	return changed;
 err:
