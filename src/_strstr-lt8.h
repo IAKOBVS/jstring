@@ -149,7 +149,7 @@ JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, 2)(const unsigned char *h, const unsigned
 {
 	const uint16_t nw = L(n[0]) << 8 | L(n[1]);
 	uint16_t hw = L(h[0]) << 8 | L(h[1]);
-	for (h++; N *h && hw != nw; hw = hw << 8 | L(*++h)) {}
+	for (h++; N * h && hw != nw; hw = hw << 8 | L(*++h)) {}
 	return *h ? (char *)h - 1 : 0;
 }
 

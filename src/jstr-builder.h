@@ -49,9 +49,9 @@ JSTR__END_DECLS
 		0, 0, 0 \
 	}
 
-#define jstr_foreach(j, p)                                                   \
+#define jstr_foreach(j, p) \
 	for (char *p = ((j)->data), *const _jstr__foreach_end_##p = ((j)->data) + ((j)->size); p < _jstr__foreach_end_##p; ++p)
-#define jstr_foreachi(j, i)                                             \
+#define jstr_foreachi(j, i) \
 	for (size_t i = 0, const _jstr__foreachi_end_##i = ((j)->size); i < _jstr__foreachi_end_##i; ++i)
 #define jstr_index(j, curr) JSTR_PTR_DIFF(curr, (j)->data)
 #define jstr__at(j, i)      ((j)->data + (i))
