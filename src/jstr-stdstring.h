@@ -55,8 +55,7 @@ JSTR_NOEXCEPT
 	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
-	while (n-- && !(ret = jstr_tolower(*p1) - jstr_tolower(*p2++))
-	       && *p1++) {}
+	while (n-- && !(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++) {}
 	return ret;
 #endif
 }
