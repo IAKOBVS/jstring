@@ -1,6 +1,8 @@
 #!/bin/sh
 #shellcheck disable=disable=SC2086
 
+PATH_TEST=../tests/
+
 CFLAGS="
 -g
 -std=c99
@@ -49,9 +51,9 @@ echo 'This might take a while.'
 
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
-	files=$(echo *.c)
+	files=$(echo $PATH_TEST/*.c)
 else
-	files=$*
+	files=$PATH_TEST/$*
 fi
 
 for file in $files; do

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cd "$(dirname "$0")" || exit
+./build-scripts
+
+# shellcheck disable=SC2005
+PATH_CFG=../src/jstr-config.h
+[ "$(./is-little-endian)" = 1 ] && echo "$(sed 's/^#[ \t]*define[ \t]*JSTR_ENDIAN_LITTLE.*$/#define JSTR_ENDIAN_LITTLE 1/' "$PATH_CFG")" >"$PATH_CFG"

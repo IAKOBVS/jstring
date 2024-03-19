@@ -1,0 +1,3 @@
+#!/bin/sh
+
+perl ./check-scoped-macros.pl ../src/*.h | grep -q '^[^J][^S][^T][^R]' || exit 0

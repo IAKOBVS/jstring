@@ -1,6 +1,0 @@
-#!/bin/sh
-
-cd "$(dirname "$0")" || exit
-../scripts/build
-# shellcheck disable=SC2005
-[ "$(../scripts/is-little-endian)" = 1 ] && echo "$(sed 's/^#[ \t]*define[ \t]*JSTR_ENDIAN_LITTLE.*$/#define JSTR_ENDIAN_LITTLE 1/' ./jstr-config.h)" >./jstr-config.h
