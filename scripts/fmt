@@ -5,14 +5,15 @@ if ! type clang-format >/dev/null 2>/dev/null; then
 	echo 'clang-format does not exist.'
 	exit
 fi
+PATH_CLANG_FORMAT=../.clang-format
 #shellcheck disable=SC2068
 for file in $@; do
 	{
 		case "$file" in
-			*_jstr* | *pp* | *macros* ) exit ;;
+			*_jstr* | *macros* ) exit ;;
 		esac
-		clang-format -i --style=file:'.clang-format' "$file"
-		echo clang-format -i --style=file:'.clang-format' "$file"
+		clang-format -i --style=file:"$PATH_CLANG_FORMAT" "$file"
+		echo clang-format -i --style=file:$PATH_CLANG_FORMAT "$file"
 	} &
 done
 wait

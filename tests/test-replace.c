@@ -290,6 +290,8 @@ size_t n)
 int main(int argc, char **argv)
 {
 	START();
+
+	/* jstr-replace tests. */
 	jstr_ty result = JSTR_INIT;
 	{
 		jstr_ty expected = JSTR_INIT;
@@ -298,10 +300,13 @@ int main(int argc, char **argv)
 		T_RM(jstr_rmn_len, simple_rmn_len);
 		T_RPLC(jstr_rplcn_len_from, simple_rplcn_len_from);
 		jstr_free_j(&expected);
+		jstr_empty(result.data, &result.size);
 	}
-	jstr_empty(result.data, &result.size);
+
 	const char *expected, *find, *rplc;
 	regex_t preg;
+
+	/* TODO: more tests. */
 
 	/* jstr-builder tests. */
 	expected = "hello world";
@@ -350,6 +355,13 @@ int main(int argc, char **argv)
 	assert(!jstr_re_chkcomp(jstr_re_comp(&preg, find, 0)));
 	T_APPEND_NORET(jstr_re_rplcall_bref_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0, 2);
 	jstr_re_free(&preg);
+	FILL(result, "hello hello hello hello");
+	find = "\\([0-9A-Za-z]*\\)";
+	rplc = "\\1\\1";
+	expected = "hellohello hellohello hellohello hellohello";
+	assert(!jstr_re_chkcomp(jstr_re_comp(&preg, find, 0)));
+	T_APPEND_NORET(jstr_re_rplcall_bref_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0, 2);
+	jstr_re_free(&preg);
 
 	/* jstr-builder tests. */
 	jstr_empty(result.data, &result.size);
@@ -374,6 +386,7 @@ int main(int argc, char **argv)
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "l");
 
 	jstr_free_j(&result);
+
 	SUCCESS();
 	return EXIT_SUCCESS;
 }

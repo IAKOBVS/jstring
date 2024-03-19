@@ -1,25 +1,71 @@
 #!/bin/sh
+#shellcheck disable=SC2086,2068,2005,2028
+
+PATH_BUILD=../jstr
+PATH_SRC=../src
+PATH_MACROS=$PATH_BUILD/jstr-macros.h
+
+verbose()
+{
+	$@
+	echo "$*"
+}
 
 has_prog()
 {
 	type "$1" >/dev/null 2>/dev/null
 }
 
-need_not_compile()
+update_if_needed()
 {
-	test -e "$bin" 2>/dev/null && test "$file" -ot "$bin" 2>/dev/null
+	in_fname=$1
+	out_fname=$PATH_BUILD/${in_fname##*/}
+	test -e "$out_fname" && /bin/test "$in_fname" -ot "$out_fname" && exit 0
+	case $in_fname in
+	*macro*.h) ;;
+	*/_*.h)
+		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		echo "perl ./namespace-macros.pl $in_fname >$out_fname"
+		exit 0
+		;;
+	*/*jstr-*.h)
+		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
+		echo "perl ./gen-func.pl $in_fname | perl ./namespace-macros.pl >$out_fname"
+		exit 0
+		;;
+	*) ;;
+	esac
+	verbose cp -f "$in_fname" "$out_fname"
 }
 
-if has_prog tcc; then
-	CC=tcc
-else
-	CC=cc
-fi
+mark_as_built()
+{
+	echo "$(sed 's/\([ \t]*#[ \t]*ifndef[ \t]\{1,\}JSTR_BUILT\)/#define JSTR_BUILT\n\1/' "$PATH_MACROS")" >"$PATH_MACROS"
+}
 
 cd "$(dirname "$0")" || exit
-for file in $(echo *.c); do
-	{
-		bin="${file%.*}"
-		need_not_compile || $CC "$file" -o "$bin"
-	} &
+./setup || exit
+mkdir -p ../jstr
+
+for file in $(echo $PATH_SRC/*.h); do
+	update_if_needed "$file" &
 done
+wait
+mark_as_built
+
+FLAGS='-Wall -Wextra -Wpedantic -Wsign-conversion -std=c99'
+if has_prog tcc; then
+	printf "#define JSTR_BUILT\n #include \"../jstr/jstr.h\"\n int main(){return 0;}\n" | tcc -run - || exit
+else
+	if [ -z "$TMPDIR" ]; then
+		if [ -d /tmp ]; then
+			TMPDIR=/tmp/$tmp
+		else
+			TMPDIR=$PWD/$tmp
+		fi
+	fi
+	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
+	verbose cc ../jstr/jstr.h $FLAGS -o "$tmp" || exit
+	rm "$tmp"
+fi
+echo "Successfully built to $PATH_BUILD."

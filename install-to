@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd "$(dirname "$0")" || exit
-./src/install "$1"
+./scripts/install "$1"

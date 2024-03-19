@@ -1,0 +1,25 @@
+#!/bin/sh
+
+has_prog()
+{
+	type "$1" >/dev/null 2>/dev/null
+}
+
+need_not_compile()
+{
+	test -e "$bin" 2>/dev/null && test "$file" -ot "$bin" 2>/dev/null
+}
+
+if has_prog tcc; then
+	CC=tcc
+else
+	CC=cc
+fi
+
+cd "$(dirname "$0")" || exit
+for file in $(echo *.c); do
+	{
+		bin="${file%.*}"
+		need_not_compile || $CC "$file" -o "$bin"
+	} &
+done

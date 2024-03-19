@@ -1,4 +1,0 @@
-#!/bin/sh
-
-cd "$(dirname "$0")" || exit
-echo "$(sed "s/#[ \t]*define[ \t]*JSTR_PAGE_SIZE.*/#define JSTR_PAGE_SIZE $(getconf PAGE_SIZE)/" ./jstr-macros.h)" > ./jstr-macros.h
