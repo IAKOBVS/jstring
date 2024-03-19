@@ -294,7 +294,9 @@ JSTR_NOEXCEPT
 	return jstr_re_exec_len(preg, s, sz, 0, &rm, eflags | JSTR_RE_EF_STARTEND);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC_VOID
@@ -327,7 +329,9 @@ err_free:
 	JSTR_RE_RETURN_ERR(ret, preg);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC_VOID
@@ -339,7 +343,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rmn_from(preg, s, sz, cap, 0, eflags, n);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC_VOID
@@ -351,7 +357,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rmn_from(preg, s, sz, cap, 0, eflags, 1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC_VOID
@@ -363,7 +371,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, 1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC_VOID
@@ -375,7 +385,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rmn_from(preg, s, sz, cap, 0, eflags, (size_t)-1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC_VOID
@@ -435,7 +447,9 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, c
 	return JSTR_RET_SUCC;
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced.
  * If REG_STARTEND is available, replacement is O(n).
@@ -447,7 +461,7 @@ jstr_re_rplcn_len_from(const regex_t *R preg, char *R *R s, size_t *R sz, size_t
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-#ifdef JSTR_RE_EF_STARTEND
+#if JSTR_RE_EF_STARTEND
 	if (jstr_unlikely(n == 0))
 		return 0;
 	if (jstr_unlikely(rplc_len == 0))
@@ -455,16 +469,16 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	jstr_re_off_ty changed = 0;
 	const char *end = *s + *sz;
-	regmatch_t rm[10];
+	regmatch_t rm;
 	int ret;
-	ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), rm, 0);
+	ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), &rm, 0);
 	if (ret == JSTR_RE_RET_NOERROR)
 		;
 	else if (ret == JSTR_RE_RET_NOMATCH)
 		return 0;
 	else
 		goto err;
-	i.src_e += rm[0].rm_so;
+	i.src_e += rm.rm_so;
 	char *first;
 	first = i.src_e;
 	const char *last;
@@ -473,22 +487,24 @@ JSTR_NOEXCEPT
 	new_size = *sz;
 	jstr_re_off_ty find_len;
 	goto loop1;
-	while (n) {
+	while (n && i.src_e < end) {
 loop1:
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), rm, 0);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), &rm, 0);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
-		find_len = rm[0].rm_eo - rm[0].rm_so;
-		i.src_e += rm[0].rm_so;
+		find_len = rm.rm_eo - rm.rm_so;
+		i.src_e += rm.rm_so;
 		last = i.src_e;
 		--n;
 		++changed;
 		i.src_e += find_len;
 		new_size += rplc_len - (size_t)find_len;
+		if (jstr_unlikely(find_len == 0) && jstr_unlikely(rm.rm_so == 0))
+			++i.src_e;
 	}
 	if (!changed)
 		return 0;
 	if (last != end)
-		last += (size_t)(rm[0].rm_eo - rm[0].rm_so);
+		last += (size_t)(rm.rm_eo - rm.rm_so);
 	i.dst = NULL;
 	if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size + 1)))
 		goto err;
@@ -499,16 +515,18 @@ loop1:
 	n = (size_t)changed;
 	i.src_e = first;
 	goto loop2;
-	while (n) {
+	while (n && i.src_e < end) {
 loop2:
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), rm, 0);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), &rm, 0);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
-		find_len = rm[0].rm_eo - rm[0].rm_so;
-		i.src_e += rm[0].rm_so;
+		find_len = rm.rm_eo - rm.rm_so;
+		i.src_e += rm.rm_so;
 		--n;
 		i.dst = (char *)jstr_mempcpy(i.dst, i.src, JSTR_PTR_DIFF(i.src_e, i.src));
 		i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
 		i.src = i.src_e + find_len;
+		if (jstr_unlikely(find_len == 0) && jstr_unlikely(rm.rm_so == 0))
+			++i.src_e;
 	}
 	*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), dst_s);
 	free(*s);
@@ -523,19 +541,23 @@ loop2:
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	jstr_re_off_ty changed = 0;
 	for (; n-- && *i.src_e; ++changed) {
-		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), 1, &rm, eflags);
+		ret = regexec(preg, *s, 1, &rm, eflags)
+		ret
+		= jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), 1, &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
-		if (jstr_unlikely(find_len == 0))
-			continue;
 		if (rplc_len <= find_len) {
 			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
-		} else if (*cap > *sz + rplc_len - find_len) {
-			jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rplc, rplc_len, find_len);
-		} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rplc, rplc_len, find_len))) {
-			ret = JSTR_RE_RET_ESPACE;
-			goto err;
+		} else {
+			if (*cap > *sz + rplc_len - find_len) {
+				jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rplc, rplc_len, find_len);
+			} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rplc, rplc_len, find_len))) {
+				ret = JSTR_RE_RET_ESPACE;
+				goto err;
+			}
+			if (jstr_unlikely(find_len == 0) && jstr_unlikely(rm.rm_so == 0))
+				++i.src_e;
 		}
 	}
 	if (i.dst != i.src)
@@ -547,7 +569,9 @@ err:
 	JSTR_RE_RETURN_ERR(ret, preg);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
@@ -559,7 +583,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, n);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
@@ -571,7 +597,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, (size_t)-1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
@@ -583,7 +611,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, (size_t)-1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_ATTR_INLINE
@@ -595,7 +625,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, 1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_ATTR_INLINE
@@ -681,7 +713,9 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
+ * Use rplc/rm instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
@@ -756,7 +790,9 @@ err_free:
 #undef NMATCH_ARG
 #undef NMATCH_PARAM
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
@@ -768,7 +804,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, (size_t)-1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
@@ -780,7 +818,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, (size_t)-1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
@@ -792,7 +832,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_bref_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, n);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
@@ -804,7 +846,9 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_bref_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, 1);
 }
 
-/* Return value:
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
 JSTR_FUNC
