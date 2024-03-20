@@ -24,10 +24,7 @@ TOUPPER(int c)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_strrstr_len(const char *h,
-size_t hl,
-const char *n,
-size_t nl)
+simple_strrstr_len(const char *h, size_t hl, const char *n, size_t nl)
 {
 	if (nl == 0)
 		return (char *)h + hl;
@@ -43,8 +40,7 @@ size_t nl)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_strrstr(const char *h,
-const char *n)
+simple_strrstr(const char *h, const char *n)
 {
 #if JSTR_HAVE_STRSTR && !JSTR_USE_SIMPLE
 	return strstr(h, n);
@@ -55,10 +51,7 @@ const char *n)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_memmem(const void *hs,
-const size_t hl,
-const void *ne,
-const size_t nl)
+simple_memmem(const void *hs, const size_t hl, const void *ne, const size_t nl)
 {
 #if JSTR_HAVE_MEMMEM && !JSTR_USE_SIMPLE
 	return (char *)memmem(hs, hl, ne, nl);
@@ -79,17 +72,14 @@ const size_t nl)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_strnstr(const char *hs,
-const char *ne,
-size_t n)
+simple_strnstr(const char *hs, const char *ne, size_t n)
 {
 	return (char *)simple_memmem(hs, jstr_strnlen(hs, n), ne, strlen(ne));
 }
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_strstr(const char *h,
-const char *n)
+simple_strstr(const char *h, const char *n)
 {
 #if JSTR_HAVE_STRSTR && !JSTR_USE_SIMPLE
 	return strstr(h, n);
@@ -100,8 +90,7 @@ const char *n)
 
 JSTR_ATTR_MAYBE_UNUSED
 static int
-simple_strcasecmp(const char *s1,
-const char *s2)
+simple_strcasecmp(const char *s1, const char *s2)
 {
 #if JSTR_HAVE_STRCASECMP && !JSTR_USE_SIMPLE
 	return strcasecmp(s1, s2);
@@ -115,9 +104,7 @@ const char *s2)
 
 JSTR_ATTR_MAYBE_UNUSED
 static int
-simple_strncasecmp(const char *s1,
-const char *s2,
-size_t n)
+simple_strncasecmp(const char *s1, const char *s2, size_t n)
 {
 #if JSTR_HAVE_STRNCASECMP && !JSTR_USE_SIMPLE
 	return strncasecmp(s1, s2, n);
@@ -135,10 +122,7 @@ size_t n)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_strcasestr_len(const char *h,
-const size_t hl,
-const char *n,
-const size_t nl)
+simple_strcasestr_len(const char *h, const size_t hl, const char *n, const size_t nl)
 {
 	if (nl == 0)
 		return (char *)h;
@@ -153,9 +137,7 @@ const size_t nl)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_strncasestr(const char *hs,
-const char *ne,
-const size_t limit)
+simple_strncasestr(const char *hs, const char *ne, const size_t limit)
 {
 	if (*ne == '\0')
 		return (char *)hs;
@@ -171,8 +153,7 @@ const size_t limit)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_strcasestr(const char *h,
-const char *n)
+simple_strcasestr(const char *h, const char *n)
 {
 #if JSTR_HAVE_STRCASESTR && !JSTR_USE_SIMPLE
 	return (char *)strcasestr(h, n);
@@ -183,8 +164,7 @@ const char *n)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_stpcpy(char *d,
-const char *s)
+simple_stpcpy(char *d, const char *s)
 {
 #if JSTR_HAVE_STPCPY && !JSTR_USE_SIMPLE
 	return stpcpy(d, s);
@@ -197,20 +177,17 @@ const char *s)
 
 JSTR_ATTR_MAYBE_UNUSED
 static char *
-simple_revcpy_p(char *dst,
-const char *src)
+simple_revcpy_p(char *dst, const char *src)
 {
 	size_t src_len = strlen(src);
 	src += src_len - 1;
-	for (; src_len--; *dst++ = *src--) { }
+	for (; src_len--; *dst++ = *src--) {}
 	*dst = '\0';
 	return dst;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED void *
-simple_memrchr(const void *s,
-int c,
-size_t n)
+simple_memrchr(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_MEMRCHR && !JSTR_USE_SIMPLE
@@ -228,9 +205,7 @@ JSTR_NOEXCEPT
    strchr() before s + T.
 */
 static JSTR_ATTR_MAYBE_UNUSED char *
-simple_strnchr(const char *s,
-int c,
-size_t n)
+simple_strnchr(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	for (; n--; ++s) {
@@ -243,8 +218,7 @@ JSTR_NOEXCEPT
 }
 
 static JSTR_ATTR_MAYBE_UNUSED char *
-simple_strchrnul(const char *s,
-int c)
+simple_strchrnul(const char *s, int c)
 {
 #if JSTR_HAVE_STRCHRNUL && !JSTR_USE_SIMPLE
 	return (char *)strchrnul(s, c);
@@ -255,8 +229,7 @@ int c)
 }
 
 static JSTR_ATTR_MAYBE_UNUSED char *
-simple_strcasechrnul(const char *s,
-int c)
+simple_strcasechrnul(const char *s, int c)
 {
 	c = TOLOWER(c);
 	for (;; ++s)
@@ -266,46 +239,38 @@ int c)
 }
 
 static JSTR_ATTR_MAYBE_UNUSED char *
-simple_strcasechr(const char *s,
-int c)
+simple_strcasechr(const char *s, int c)
 {
 	s = simple_strcasechrnul(s, c);
 	return TOLOWER(*s) == TOLOWER(c) ? (char *)s : NULL;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED char *
-simple_strncasechr(const char *s,
-int c,
-size_t n)
+simple_strncasechr(const char *s, int c, size_t n)
 {
 	const char *p = simple_strcasechrnul(s, c);
 	return (p < s + n && TOLOWER(*p) == TOLOWER(c)) ? (char *)p : NULL;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED char *
-simple_memcasechr(const void *s,
-int c,
-size_t n)
+simple_memcasechr(const void *s, int c, size_t n)
 {
 	c = TOLOWER(c);
 	const unsigned char *p = (const unsigned char *)s;
-	for (; n && TOLOWER(*p) != c; --n, ++p) { }
+	for (; n && TOLOWER(*p) != c; --n, ++p) {}
 	return n ? (char *)p : NULL;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED size_t
-simple_countchr_len(const char *s,
-int c,
-size_t sz)
+simple_countchr_len(const char *s, int c, size_t sz)
 {
 	size_t cnt = 0;
-	for (; sz--; cnt += *s++ == (char)c) { }
+	for (; sz--; cnt += *s++ == (char)c) {}
 	return cnt;
 }
 
 static JSTR_ATTR_MAYBE_UNUSED size_t
-simple_countchr(const char *s,
-int c)
+simple_countchr(const char *s, int c)
 {
 	return simple_countchr_len(s, c, strlen(s));
 }

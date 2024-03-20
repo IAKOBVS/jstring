@@ -1231,9 +1231,6 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #ifndef JSTR_HAVE_STATIC_ASSERT
 #	define JSTR_HAVE_STATIC_ASSERT 0
 #endif
-#ifndef JSTR_HAVE_STATIC_ASSERT
-#	define JSTR_HAVE_STATIC_ASSERT 0
-#endif
 #ifndef JSTR_HAVE_VLA
 #	define JSTR_HAVE_VLA 0
 #endif

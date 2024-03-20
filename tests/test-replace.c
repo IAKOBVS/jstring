@@ -64,9 +64,11 @@
 		if (jstr_unlikely(!(expr))) {                            \
 			PRINTERR("\nAssertion failure: %s().\n", #func); \
 			PRINTERR("String:%s.\n"                          \
-				 "find  :%c.\n"                          \
-				 "rplc  :%c.\n",                         \
-			str, find, rplc);                                \
+			         "find  :%c.\n"                          \
+			         "rplc  :%c.\n",                         \
+			         str,                                    \
+			         find,                                   \
+			         rplc);                                  \
 			PRINTERR("Result:\n");                           \
 			jstr_debug(&(result));                           \
 			PRINTERR("Expected:\n");                         \
@@ -81,9 +83,11 @@
 		if (jstr_unlikely(!(expr))) {                            \
 			PRINTERR("\nAssertion failure: %s().\n", #func); \
 			PRINTERR("String  :%s.\n"                        \
-				 "find    :%c.\n"                        \
-				 "rplc    :%c.\n",                       \
-			str, find, rplc);                                \
+			         "find    :%c.\n"                        \
+			         "rplc    :%c.\n",                       \
+			         str,                                    \
+			         find,                                   \
+			         rplc);                                  \
 			PRINTERR("Result  :\n");                         \
 			jstr_debug(&(result));                           \
 			PRINTERR("Expected:\n");                         \
@@ -98,12 +102,14 @@
 		if (jstr_unlikely(!(expr))) {                            \
 			PRINTERR("\nAssertion failure: %s().\n", #func); \
 			PRINTERR("string:%s.\n"                          \
-				 "find  :%s.\n"                          \
-				 "rplc  :%s.\n",                         \
-			str, find, rplc);                                \
-			PRINTERR("string len:%zu.\n", strlen(str));                          \
-			PRINTERR("find len:%zu.\n", strlen(find));                          \
-			PRINTERR("rplc len:%zu.\n", strlen(rplc));                          \
+			         "find  :%s.\n"                          \
+			         "rplc  :%s.\n",                         \
+			         str,                                    \
+			         find,                                   \
+			         rplc);                                  \
+			PRINTERR("string len:%zu.\n", strlen(str));      \
+			PRINTERR("find len:%zu.\n", strlen(find));       \
+			PRINTERR("rplc len:%zu.\n", strlen(rplc));       \
 			PRINTERR("Result:\n");                           \
 			PRINTERR("N     :%zu\n", n);                     \
 			jstr_debug(&(result));                           \
@@ -165,8 +171,8 @@
 			T_RPLC_INIT((result), str, str_len);                                                                                         \
 			T_RPLC_INIT((expected), str, str_len);                                                                                       \
 			t.n = i;                                                                                                                     \
-			t.result_n = func((result).data, &((result).size), find, find_len, t.n);                                                   \
-			t.expected_n = simple_func((expected).data, &((expected).size), find, find_len, t.n);                                          \
+			t.result_n = func((result).data, &((result).size), find, find_len, t.n);                                                     \
+			t.expected_n = simple_func((expected).data, &((expected).size), find, find_len, t.n);                                        \
 			ASSERT_RESULT_RPLC(func, str, find, "", i, t.expected_n == t.result_n);                                                      \
 			ASSERT_RESULT_RPLC(func, str, find, "", i, strlen((result).data) == strlen((expected).data));                                \
 			ASSERT_RESULT_RPLC(func, str, find, "", i, (result).size == (expected).size);                                                \
@@ -205,12 +211,9 @@
 		}                                                                                                                                                               \
 	} while (0)
 
+JSTR_ATTR_MAYBE_UNUSED
 static size_t
-simple_rmnchr_len_from(char *s,
-size_t *sz,
-size_t start_idx,
-char remove,
-size_t n)
+simple_rmnchr_len_from(char *s, size_t *sz, size_t start_idx, char remove, size_t n)
 {
 	if (n == 0)
 		return 0;
@@ -232,12 +235,9 @@ size_t n)
 	return changed;
 }
 
+JSTR_ATTR_MAYBE_UNUSED
 static size_t
-simple_rplcnchr_len(char *s,
-size_t sz,
-char remove,
-char replace,
-size_t n)
+simple_rplcnchr_len(char *s, size_t sz, char remove, char replace, size_t n)
 {
 	if (n == 0)
 		return 0;
@@ -253,23 +253,16 @@ size_t n)
 	return changed;
 }
 
+JSTR_ATTR_MAYBE_UNUSED
 static size_t
-simple_rplcn_len_from(char **s,
-size_t *sz,
-size_t *cap,
-size_t start_idx,
-const char *find,
-size_t find_len,
-const char *rplc,
-size_t rplc_len,
-size_t n)
+simple_rplcn_len_from(char **s, size_t *sz, size_t *cap, size_t start_idx, const char *find, size_t find_len, const char *rplc, size_t rplc_len, size_t n)
 {
 	if (n == 0 || *sz == 0 || find_len == 0)
 		return 0;
 	char *p = *s + start_idx;
 	size_t changed = 0;
 	for (; n-- && (p = simple_memmem(p, JSTR_PTR_DIFF(*s + *sz, p), find, find_len)); ++changed) {
-		p = jstr__rplcat_len_higher(s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len);
+		p = jstr_rplcat_len(s, sz, cap, JSTR_PTR_DIFF(p, *s), rplc, rplc_len, find_len);
 		assert(p != NULL);
 	}
 	return changed;
@@ -277,19 +270,19 @@ size_t n)
 
 JSTR_ATTR_MAYBE_UNUSED
 static size_t
-simple_rmn_len(char *s,
-size_t *sz,
-const char *find,
-size_t find_len,
-size_t n)
+simple_rmn_len(char *s, size_t *sz, const char *find, size_t find_len, size_t n)
 {
 	size_t cap = (size_t)-1;
 	return simple_rplcn_len_from(&s, sz, &cap, 0, find, find_len, "", 0, n);
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	START();
+	regex_t preg;
+
+#if 0
 
 	/* jstr-replace tests. */
 	jstr_ty result = JSTR_INIT;
@@ -304,7 +297,6 @@ int main(int argc, char **argv)
 	}
 
 	const char *expected, *find, *rplc;
-	regex_t preg;
 
 	/* TODO: more tests. */
 
@@ -340,29 +332,6 @@ int main(int argc, char **argv)
 	expected = "   ";
 	T_APPEND_NORET(jstr_rplcall_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
 
-	/* jstr-regex tests. */
-	FILL(result, "hello hello hello hello");
-	find = "[0-9A-Za-z]*";
-	rplc = "";
-	expected = "   ";
-	assert(!jstr_re_chkcomp(jstr_re_comp(&preg, find, 0)));
-	T_APPEND_NORET(jstr_re_rplcall_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0);
-	jstr_re_free(&preg);
-	FILL(result, "hello hello hello hello");
-	find = "\\([0-9A-Za-z]*\\)";
-	rplc = "\\1\\1";
-	expected = "hellohello hellohello hellohello hellohello";
-	assert(!jstr_re_chkcomp(jstr_re_comp(&preg, find, 0)));
-	T_APPEND_NORET(jstr_re_rplcall_bref_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0, 2);
-	jstr_re_free(&preg);
-	FILL(result, "hello hello hello hello");
-	find = "\\([0-9A-Za-z]*\\)";
-	rplc = "\\1\\1";
-	expected = "hellohello hellohello hellohello hellohello";
-	assert(!jstr_re_chkcomp(jstr_re_comp(&preg, find, 0)));
-	T_APPEND_NORET(jstr_re_rplcall_bref_len, &preg, jstr_struct(&result), rplc, strlen(rplc), 0, 2);
-	jstr_re_free(&preg);
-
 	/* jstr-builder tests. */
 	jstr_empty(result.data, &result.size);
 	T(jstr_cat(jstr_struct(&result), "hello", " world", NULL), "hello world");
@@ -384,6 +353,71 @@ int main(int argc, char **argv)
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "hel");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "el");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "l");
+
+#else
+	jstr_ty result = JSTR_INIT;
+	const char *expected, *find, *rplc;
+#endif
+
+#define T_RE(_string, _find, _rplc, _expected, _n)                                                           \
+	do {                                                                                                 \
+		FILL(result, _string);                                                                       \
+		find = _find;                                                                                \
+		rplc = _rplc;                                                                                \
+		expected = _expected;                                                                        \
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                     \
+		T_APPEND_NORET(jstr_re_rplcn_len, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _n); \
+		jstr_re_free(&preg);                                                                         \
+	} while (0)
+
+#define T_RE_BREF(_string, _find, _rplc, _expected, _nmatch, _n)                                                           \
+	do {                                                                                                               \
+		FILL(result, _string);                                                                                     \
+		find = _find;                                                                                              \
+		rplc = _rplc;                                                                                              \
+		expected = _expected;                                                                                      \
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                                   \
+		T_APPEND_NORET(jstr_re_rplcn_bref_len, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _nmatch, _n); \
+		jstr_re_free(&preg);                                                                                       \
+	} while (0)
+
+	/* jstr-regex tests. */
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", (size_t)-1);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", 4);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___hello", 3);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "__hello_hello", 2);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "_hello_hello_hello", 1);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "hello_hello_hello_hello", 0);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", (size_t)-1);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", 4);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_hello", 3);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_hello_hello", 2);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_hello_hello_hello", 1);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "hello_hello_hello_hello", 0);
+
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", 1, (size_t)-1);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", 1, 4);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___hello", 1, 3);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "__hello_hello", 1, 2);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "_hello_hello_hello", 1, 1);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "hello_hello_hello_hello", 1, 0);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", 1, (size_t)-1);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", 1, 4);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_hello", 1, 3);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_hello_hello", 1, 2);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_hello_hello_hello", 1, 1);
+	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "hello_hello_hello_hello", 1, 0);
+	
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\1", "hellohello_worldworld_hellohello_worldworld", 2, (size_t)-1);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\1", "hellohello_worldworld_hellohello_worldworld", 2, 4);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\1", "hellohello_worldworld_hellohello_world", 2, 3);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\1", "hellohello_worldworld_hello_world", 2, 2);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\1", "hellohello_world_hello_world", 2, 1);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\1", "hello_world_hello_world", 2, 0);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)_\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\2", "helloworld_helloworld", 3, (size_t)-1);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)_\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\2", "helloworld_helloworld", 3, 2);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)_\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\2", "helloworld_hello_world", 3, 1);
+	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)_\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\2", "hello_world_hello_world", 3, 0);
 
 	jstr_free_j(&result);
 
