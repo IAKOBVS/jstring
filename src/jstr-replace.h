@@ -102,20 +102,6 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static char *
-jstr__rplcat_len_higher(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R rplc, size_t rplc_len, size_t find_len)
-JSTR_NOEXCEPT
-{
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + rplc_len - find_len)))
-		return NULL;
-	jstr_strmove_len(*s + at + rplc_len, *s + at + find_len, *sz - (at + find_len));
-	memcpy(*s + at, rplc, rplc_len);
-	*sz += rplc_len - find_len;
-	return *s + at + rplc_len;
-}
-
 /* Replace RPLC in S with FIND.
     Return value:
     ptr to RPLC in S + RPLCLEN;
@@ -129,9 +115,8 @@ JSTR_NOEXCEPT
 		return NULL;
 	if (rplc_len != find_len)
 		jstr_strmove_len(*s + at + rplc_len, *s + at + find_len, *sz - (at + find_len));
-	memcpy(*s + at, rplc, rplc_len);
 	*sz += rplc_len - find_len;
-	return *s + at + rplc_len;
+	return (char *)jstr_mempcpy(*s + at, rplc, rplc_len);
 }
 
 /* Insert SRC after C in DST.
@@ -371,6 +356,8 @@ jstr_rmnchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (jstr_unlikely(n == 0))
+		return 0;
 	const char *const end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
 	size_t changed = 0;
@@ -735,7 +722,7 @@ JSTR_NOEXCEPT
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	if (find_len == 1)
 		return jstr_rmnchr_len(s, sz, *find, n);
-	if (jstr_unlikely(find_len == 0))
+	if (jstr_unlikely(find_len == 0) || jstr_unlikely(n == 0))
 		return 0;
 	const char *const end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
@@ -889,9 +876,9 @@ JSTR_NOEXCEPT
 		goto loop1;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_PTR_DIFF(end, i.src_e), find))) {
 loop1:
-			last = i.src_e;
 			--n;
 			++changed;
+			last = i.src_e;
 			i.src_e += find_len;
 		}
 		if (!changed)

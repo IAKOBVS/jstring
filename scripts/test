@@ -1,7 +1,7 @@
 #!/bin/sh
 #shellcheck disable=disable=SC2086
 
-PATH_TEST=../tests/
+PATH_TEST=../tests
 
 CFLAGS="
 -g
@@ -42,8 +42,6 @@ if [ -z "$TMPDIR" ]; then
 	else
 		TMPDIR=$(echo "$PWD" | head -c 255)
 	fi
-else
-	TMPDIR=$TMPDIR/
 fi
 tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
 mkdir -p "$tmp"
@@ -53,13 +51,13 @@ echo 'This might take a while.'
 if [ $# -eq 0 ]; then
 	files=$(echo $PATH_TEST/*.c)
 else
-	files=$PATH_TEST/$*
+	files=$*
 fi
 
 for file in $files; do
-	out_file=${file%.*}
-	compile "$file" "$tmp$out_file" $CFLAGS &
-	compile "$file" "$tmp$out_file" $CFLAGS -march=native &
+	out_file=$(echo ${file%.*} | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
+	compile "$file" "$tmp/$out_file" $CFLAGS &
+	# compile "$file" "$tmp/$out_file" $CFLAGS -march=native &
 done
 wait
 
