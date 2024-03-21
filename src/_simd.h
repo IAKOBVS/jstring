@@ -456,16 +456,8 @@ ret:;
 #if !(defined TZCNT && defined BLSR)
 
 #	define JSTR_HAVENT_MEMMEM_SIMD         1
-#	define JSTR_HAVENT_STRCASESTR_LEN_SIMD 1
 
 #else
-
-#	define JSTR__SIMD_RETTYPE             char *
-#	define JSTR__SIMD_MEMMEM_FUNC_NAME    jstr__simd_strcasestr_len
-#	define JSTR__SIMD_MEMMEM_USE_AS_ICASE 1
-#	define JSTR__SIMD_MEMMEM_CMP_FUNC     jstr_strcasecmpeq_len
-#	define JSTR__SIMD_MEMMEM_MEMCASECHR   jstr__simd_memcasechr
-#	include "_simd-memmem.h"
 
 #	define JSTR__SIMD_RETTYPE          void *
 #	define JSTR__SIMD_MEMMEM_FUNC_NAME jstr__simd_memmem
