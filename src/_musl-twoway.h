@@ -156,15 +156,15 @@ JSTR_NOEXCEPT
 	for (;;) {
 #ifdef JSTR__MUSL_CHECK_EOL
 		/* Update incremental end-of-haystack pointer. */
-		if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len)) {
+		if (jstr_unlikely(JSTR_DIFF(end, hs) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
 			end += jstr_strnlen((const char *)end, t->needle_len | 2048);
-			if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len))
+			if (jstr_unlikely(JSTR_DIFF(end, hs) < t->needle_len))
 				break;
 		}
 #else
 		/* If remainder of haystack is shorter than needle, done. */
-		if (jstr_unlikely(JSTR_PTR_DIFF(end, hs) < t->needle_len))
+		if (jstr_unlikely(JSTR_DIFF(end, hs) < t->needle_len))
 			break;
 #endif
 		/* Check last byte first; advance by shift on mismatch. */

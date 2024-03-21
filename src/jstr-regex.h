@@ -278,7 +278,7 @@ JSTR_NOEXCEPT
 	int ret;
 	jstr_re_off_ty changed = 0;
 	for (; n && i.src_e < end;) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), &rm, eflags);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
@@ -289,7 +289,7 @@ JSTR_NOEXCEPT
 			++i.src_e;
 	}
 	if (i.dst != i.src)
-		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), *s);
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	return changed;
 err_free:
 	jstr_free_noinline(s, sz, cap);
@@ -376,12 +376,12 @@ jstr__rplcallsmallerrplc(char *s, size_t *R sz, char **dst, const char **src, ch
 {
 	if (*dst != *src) {
 		*dst = (char *)
-		jstr_mempmove(*dst, *src, JSTR_PTR_DIFF(*src_e, *src));
-		jstr_strmove_len(*dst + rplc_len, *src_e + find_len, JSTR_PTR_DIFF(s + *sz, *src_e + find_len));
+		jstr_mempmove(*dst, *src, JSTR_DIFF(*src_e, *src));
+		jstr_strmove_len(*dst + rplc_len, *src_e + find_len, JSTR_DIFF(s + *sz, *src_e + find_len));
 		*dst = (char *)jstr_mempcpy(*dst, rplc, rplc_len);
 		*src = *dst;
 	} else {
-		jstr_strmove_len(*src_e + rplc_len, *src_e + find_len, JSTR_PTR_DIFF(s + *sz, *src_e + find_len));
+		jstr_strmove_len(*src_e + rplc_len, *src_e + find_len, JSTR_DIFF(s + *sz, *src_e + find_len));
 		memcpy(*src_e, rplc, rplc_len);
 	}
 	*sz += rplc_len - find_len;
@@ -397,7 +397,7 @@ static jstr_ret_ty
 jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, const char **src, char **src_e, const char *R rplc, size_t rplc_len, size_t find_len)
 {
 	if (*dst != *src)
-		memmove(*dst, *src, JSTR_PTR_DIFF(*src_e, *src));
+		memmove(*dst, *src, JSTR_DIFF(*src_e, *src));
 	if (*cap <= *sz + rplc_len - find_len) {
 		char *tmp = *s;
 		if (jstr_chk(jstr_reservealways(&tmp, sz, cap, *sz + rplc_len - find_len)))
@@ -406,7 +406,7 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, c
 		*dst = tmp + (*dst - *s);
 		*s = tmp;
 	}
-	jstr_strmove_len(*src_e + rplc_len, *src_e + find_len, JSTR_PTR_DIFF(*s + *sz, *src_e + find_len));
+	jstr_strmove_len(*src_e + rplc_len, *src_e + find_len, JSTR_DIFF(*s + *sz, *src_e + find_len));
 	*src_e = (char *)jstr_mempcpy(*src_e, rplc, rplc_len);
 	*dst += rplc_len;
 	*src = *dst;
@@ -433,7 +433,7 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	jstr_re_off_ty changed = 0;
 	for (; n-- && i.src_e < *s + *sz; ++changed) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
 		i.src_e += rm.rm_so;
@@ -451,7 +451,7 @@ JSTR_NOEXCEPT
 		}
 	}
 	if (i.dst != i.src)
-		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), *s);
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), *s);
 	return changed;
 err:
 	jstr_free_noinline(s, sz, cap);
@@ -548,7 +548,7 @@ jstr__re_rplcbrefstrlen(const regmatch_t *R rm, const unsigned char *rplc, const
 JSTR_NOEXCEPT
 {
 	int c;
-	for (; (rplc = (unsigned char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); rplc += 2) {
+	for (; (rplc = (unsigned char *)memchr(rplc, '\\', JSTR_DIFF(rplc_e, rplc))); rplc += 2) {
 		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
@@ -569,7 +569,7 @@ jstr__re_rplcbreffirst(const char *bref, size_t bref_len)
 {
 	if (jstr_unlikely(bref_len < 2))
 		return NULL;
-	for (const char *bref_e = bref + bref_len - 1; (bref = (const char *)memchr(bref, '\\', JSTR_PTR_DIFF(bref_e, bref))) && !jstr_isdigit(*(bref + 1)); bref += 2) {}
+	for (const char *bref_e = bref + bref_len - 1; (bref = (const char *)memchr(bref, '\\', JSTR_DIFF(bref_e, bref))) && !jstr_isdigit(*(bref + 1)); bref += 2) {}
 	return (char *)bref;
 }
 
@@ -586,7 +586,7 @@ jstr__re_rplcbreflast(const char *bref, size_t bref_len)
 		const char *p;
 		const char *end = bref + bref_len - 1;
 		for (;; --end) {
-			p = (const char *)jstr_memrchr(bref, '\\', JSTR_PTR_DIFF(end, bref));
+			p = (const char *)jstr_memrchr(bref, '\\', JSTR_DIFF(end, bref));
 			if (jstr_unlikely(p == NULL))
 				break;
 			if (jstr_isdigit(*(p + 1)))
@@ -671,12 +671,12 @@ JSTR_NOEXCEPT
 	char *rbref_heap = NULL;
 	size_t rbref_cap = 0;
 	/* Copy the start of RPLC before any backreferences. */
-	memcpy(rbrefp, rplc, JSTR_PTR_DIFF(rplc_bref1, rplc));
+	memcpy(rbrefp, rplc, JSTR_DIFF(rplc_bref1, rplc));
 	jstr_re_off_ty find_len;
 	jstr_re_off_ty changed = 0;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	for (; n-- && i.src_e < *s + *sz; ++changed) {
-		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
+		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free_rbref);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		rbref_len = jstr__re_rplcbrefstrlen(rm, rplc_bref1, (const unsigned char *)rplc + rplc_len, rplc_len NMATCH_ARG);
@@ -693,7 +693,7 @@ JSTR_NOEXCEPT
 					}
 					/* Copy the start of RPLC before any backreferences.
 					 * We don't need to do this when realloc'ing. */
-					memcpy(rbref_heap, rplc, JSTR_PTR_DIFF(rplc_bref1, rplc));
+					memcpy(rbref_heap, rplc, JSTR_DIFF(rplc_bref1, rplc));
 				} else {
 					rbref_cap = jstr__grow(rbref_cap, rbref_len);
 					rbref_heap = (char *)realloc(rbref_heap, rbref_cap);
@@ -705,7 +705,7 @@ JSTR_NOEXCEPT
 			}
 			rbrefp = rbref_heap;
 		}
-		if (jstr_chk(jstr__re_rplcbrefcreat((const unsigned char *)i.src_e, rm, (unsigned char *)rbrefp + JSTR_PTR_DIFF(rplc_bref1, rplc), rplc_bref1, rplc_len))) {
+		if (jstr_chk(jstr__re_rplcbrefcreat((const unsigned char *)i.src_e, rm, (unsigned char *)rbrefp + JSTR_DIFF(rplc_bref1, rplc), rplc_bref1, rplc_len))) {
 			ret = JSTR_RE_RET_BADPAT;
 			goto err_free_rbref;
 		}
@@ -725,7 +725,7 @@ JSTR_NOEXCEPT
 			++i.src;
 	}
 	if (i.dst != i.src)
-		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), *s);
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), *s);
 	free(rbref_heap);
 	return changed;
 err_free_rbref:

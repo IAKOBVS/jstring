@@ -444,7 +444,7 @@ JSTR_NOEXCEPT
 	if (jstr_nullchk(home))
 		return NULL;
 	const size_t len = strlen(home);
-	jstr_strmove_len(s + len, s + 1, JSTR_PTR_DIFF(s + sz, s + 1));
+	jstr_strmove_len(s + len, s + 1, JSTR_DIFF(s + sz, s + 1));
 	memcpy(s, home, len);
 	return s + sz + len - 1;
 }
@@ -467,7 +467,7 @@ JSTR_NOEXCEPT
 	const size_t len = strlen(home);
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + len)))
 		return JSTR_RET_ERR;
-	jstr_strmove_len(*s + len, *s + 1, JSTR_PTR_DIFF(*s + *sz, *s + 1));
+	jstr_strmove_len(*s + len, *s + 1, JSTR_DIFF(*s + *sz, *s + 1));
 	memcpy(*s, home, len);
 	*sz += len;
 	return JSTR_RET_SUCC;
@@ -488,8 +488,8 @@ JSTR_NOEXCEPT
 		return NULL;
 	const size_t len = strlen(home);
 	char *p = s;
-	while ((p = (char *)memchr(p, '~', JSTR_PTR_DIFF(s + sz, p)))) {
-		jstr_strmove_len(p + len, p + 1, JSTR_PTR_DIFF(s + sz, p + 1));
+	while ((p = (char *)memchr(p, '~', JSTR_DIFF(s + sz, p)))) {
+		jstr_strmove_len(p + len, p + 1, JSTR_DIFF(s + sz, p + 1));
 		memcpy(p, home, len);
 		p += len;
 		sz += (len - 1);
@@ -512,14 +512,14 @@ JSTR_NOEXCEPT
 	const size_t len = strlen(home);
 	const char *tmp;
 	char *p = *s;
-	while ((p = (char *)memchr(p, '~', JSTR_PTR_DIFF(*s + *sz, p)))) {
+	while ((p = (char *)memchr(p, '~', JSTR_DIFF(*s + *sz, p)))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
 			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + len)))
 				return JSTR_RET_ERR;
 			p = *s + (p - tmp);
 		}
-		jstr_strmove_len(p + len, p + 1, JSTR_PTR_DIFF(*s + *sz, p + 1));
+		jstr_strmove_len(p + len, p + 1, JSTR_DIFF(*s + *sz, p + 1));
 		memcpy(p, home, len);
 		p += len;
 		*sz += (len - 1);
@@ -603,7 +603,7 @@ jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R 
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len)))
 		return JSTR_RET_ERR;
-	*sz = JSTR_PTR_DIFF(jstr_io_appendpath_len_p(*s, *sz, fname, fname_len), *s);
+	*sz = JSTR_DIFF(jstr_io_appendpath_len_p(*s, *sz, fname, fname_len), *s);
 	return JSTR_RET_SUCC;
 }
 
@@ -707,7 +707,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)       \
 		do {                                                          \
 			*(dirpath + dirpath_len) = '/';                       \
-			newpath_len = JSTR_PTR_DIFF(                          \
+			newpath_len = JSTR_DIFF(                          \
 			jstr_stpcpy(dirpath + dirpath_len + 1, (ep)->d_name), \
 			dirpath);                                             \
 		} while (0)

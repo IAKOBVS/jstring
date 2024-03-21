@@ -43,7 +43,7 @@
 	for (jstr_ty *p = ((l)->data), *const _jstr__l_foreach_end_##p = ((l)->data) + ((l)->capacity); p < _jstr__l_foreach_end_##p; ++p)
 #define jstr_l_foreachi(l, i) \
 	for (size_t i = 0, const _jstr__l_foreachi_end_##i = ((l)->size); i < _jstr__l_foreachi_end_##i; ++i)
-#define jstr_l_index(l, curr) JSTR_PTR_DIFF(curr, (l)->data)
+#define jstr_l_index(l, curr) JSTR_DIFF(curr, (l)->data)
 #define jstr__l_at(l, i)      ((l)->data + (i))
 #define jstr_l_start(l)       ((l)->data)
 #define jstr_l_end(l)         ((l)->data + (l)->size)
@@ -443,7 +443,7 @@ JSTR_NOEXCEPT
 		free(p->data);
 #endif
 		if (jstr_likely(p != jstr_l_end(l)))
-			jstr__l_memmove(p, p + 1, JSTR_PTR_DIFF(jstr_l_end(l), p + 1) * sizeof(*l->data));
+			jstr__l_memmove(p, p + 1, JSTR_DIFF(jstr_l_end(l), p + 1) * sizeof(*l->data));
 		--l->size;
 #if JSTR_L_LAZY_FREE
 		jstr__l_elemmove(l, &tmp);
@@ -517,7 +517,7 @@ jstr_l_split_len(jstr_list_ty *R l, const char *src, size_t src_len, const char 
 	const char *end = src + src_len;
 	const char *tok;
 	while ((tok = jstr_strtok_ne_len(&save, end, split, split_len)))
-		if (jstr_chk(jstr_l_pushback_len(l, tok, JSTR_PTR_DIFF(save, tok - split_len))))
+		if (jstr_chk(jstr_l_pushback_len(l, tok, JSTR_DIFF(save, tok - split_len))))
 			goto err;
 	return JSTR_RET_SUCC;
 err:
