@@ -644,32 +644,24 @@ static jstr_ret_ty
 jstr__re_brefcreat(const char *R mtc, const regmatch_t *R rm, char *R bref, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
 {
-	const char *rold;
 	const char *const rplc_e = rplc + rplc_len;
 	int c;
-	for (;; ++rplc) {
-		rold = rplc;
-		rplc = (const char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc));
-		if (rplc == NULL)
-			break;
-		c = *++rplc;
-		if (jstr_likely(jstr_isdigit(c))) {
-			if (jstr_likely(bref == rold)) {
-				bref = (char *)jstr_mempmove(bref, rold, JSTR_PTR_DIFF(rplc - 1, rold));
-				rplc += (rplc - 1) - rold - 1;
+	for (; rplc < rplc_e;) {
+		if (*rplc == '\\') {
+			c = *(rplc + 1);
+			if (jstr_isdigit(c)) {
+				bref = jstr_mempcpy(bref, mtc + rm[c- '0'].rm_so, rm[c- '0'].rm_eo - rm[c- '0'].rm_so);
+				rplc += 2;
+			} else {
+				*bref = *rplc;
+				*(bref + 1) = c;
+				bref += 2;
+				rplc += 2;
 			}
-			c -= '0';
-			bref = (char *)jstr_mempcpy(bref, mtc + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
-		} else if (jstr_unlikely(c == '\0')) {
-			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		} else {
-			bref[0] = rplc[-1];
-			bref[1] = rplc[0];
-			bref += 2;
+			*bref++ = *rplc++;
 		}
 	}
-	if (bref != rold)
-		memcpy(bref, rold, JSTR_PTR_DIFF(rplc_e, rold));
 	return JSTR_RET_SUCC;
 }
 
@@ -687,6 +679,10 @@ JSTR_NOEXCEPT
 	JSTR_ASSERT_DEBUG(nmatch >= 1, "");
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
+	if (jstr_unlikely(n == 0))
+		return 0;
+	if (jstr_nullchk(jstr__re_breffirst(rplc, rplc_len)))
+		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 	int ret;
 	regmatch_t rm[10];
 	size_t bref_len;
@@ -697,21 +693,13 @@ JSTR_NOEXCEPT
 	char *bref_heap = NULL;
 	jstr_re_off_ty find_len;
 	jstr_re_off_ty changed = 0;
-	const char *bref_first = jstr__re_breffirst(rplc, rplc_len);
-	if (jstr_nullchk(bref_first))
-		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
-	const char *bref_e = jstr__re_breflast(bref_first + 2, rplc_len - (size_t)(bref_first + 2 - rplc));
-	if (bref_e == NULL)
-		bref_e = rplc + rplc_len;
-	else
-		bref_e += 2;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	for (; n-- && i.src_e < *s + *sz; ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free_bref);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
-		bref_len = jstr__re_brefstrlen(rm, bref_first, (size_t)(bref_e - bref_first) NMATCH_ARG);
-		if (jstr_unlikely(bref_len > BUFSZ))
+		bref_len = jstr__re_brefstrlen(rm, rplc, rplc_len NMATCH_ARG);
+		if (jstr_unlikely(bref_len > BUFSZ)) {
 			if (bref_cap < bref_len) {
 				if (jstr_unlikely(bref_cap == 0))
 					bref_cap = BUFSZ;
@@ -723,10 +711,15 @@ JSTR_NOEXCEPT
 				}
 				brefp = bref_heap;
 			}
+		}
 		if (jstr_chk(jstr__re_brefcreat(i.src_e, rm, brefp, rplc, rplc_len))) {
 			ret = JSTR_RE_RET_BADPAT;
 			goto err_free_bref;
 		}
+#if 1
+		fwrite(brefp, bref_len, 1, stderr);
+		fwrite(".\n", 2, 1, stderr);
+#endif
 		i.src_e += rm[0].rm_so;
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (bref_len <= (size_t)find_len) {
