@@ -136,7 +136,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	} else {
 		if ($name =~ /_p(?:_|$)/ && $rettype ne 'void') {
 			$returns_end_ptr = 1;
-			$body            = "$VAR_JSTRING->$SIZE = JSTR_PTR_DIFF(";
+			$body            = "$VAR_JSTRING->$SIZE = JSTR_DIFF(";
 			$rettype         = 'void';
 			$attr =~ s/$ATTR_DEFAULT(\W|$)/$ATTR_DEFAULT_VOID$1/o;
 		} elsif (grepped(\@func_arr, \($name . '_p'))) {
