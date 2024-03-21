@@ -452,93 +452,13 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, c
  * Use rplc/rm instead.
  * Return value:
  * on error, -errcode (negative);
- * number of substrings replaced.
- * If REG_STARTEND is available, replacement is O(n).
- * Otherwise, it is O(n ^ 2) since searching is O(n ^ 2)
- * because of strlen. So we just avoid searching twice. */
+ * number of substrings replaced. */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_re_rplcn_len_from(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-#if JSTR_RE_EF_STARTEND
-	if (jstr_unlikely(n == 0))
-		return 0;
-	if (jstr_unlikely(rplc_len == 0))
-		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
-	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
-	jstr_re_off_ty changed = 0;
-	const char *end = *s + *sz;
-	regmatch_t rm;
-	int ret;
-	ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), &rm, 0);
-	if (ret == JSTR_RE_RET_NOERROR)
-		;
-	else if (ret == JSTR_RE_RET_NOMATCH)
-		return 0;
-	else
-		goto err;
-	jstr_re_off_ty first_find_len;
-	first_find_len = rm.rm_eo - rm.rm_so;
-	i.src_e += rm.rm_so;
-	char *first;
-	first = i.src_e;
-	const char *last;
-	last = end;
-	size_t new_size;
-	new_size = *sz;
-	jstr_re_off_ty find_len;
-	find_len = first_find_len;
-	goto loop1;
-	while (n && i.src_e < end) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_PTR_DIFF(end, i.src_e), &rm, 0);
-		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
-		find_len = rm.rm_eo - rm.rm_so;
-		i.src_e += rm.rm_so;
-		last = i.src_e;
-loop1:
-		i.src_e += find_len;
-		new_size += rplc_len - (size_t)find_len;
-		if (jstr_unlikely(find_len == 0))
-			++i.src_e;
-		--n;
-		++changed;
-	}
-	if (!changed)
-		return 0;
-	if (last != end)
-		last += (size_t)(rm.rm_eo - rm.rm_so);
-	i.dst = NULL;
-	if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size + 1)))
-		goto err;
-	char *dst_s;
-	dst_s = i.dst;
-	if (start_idx)
-		i.dst = (char *)jstr_mempcpy(i.dst, *s, start_idx);
-	n = (size_t)changed;
-	i.src_e = first;
-	find_len = first_find_len;
-	goto loop2;
-	while (n) {
-		ret = jstr_re_search_len(preg, i.src, JSTR_PTR_DIFF(last, i.src), &rm, 0);
-		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
-
-		find_len = rm.rm_eo - rm.rm_so;
-		i.src_e = (char *)i.src + rm.rm_so;
-loop2:
-		--n;
-		i.dst = (char *)jstr_mempcpy(i.dst, i.src, JSTR_PTR_DIFF(i.src_e, i.src));
-		i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
-		i.src = i.src_e + find_len;
-		if (jstr_unlikely(find_len == 0))
-			++i.src_e;
-	}
-	*sz = JSTR_PTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_PTR_DIFF(end, i.src)), dst_s);
-	free(*s);
-	*s = dst_s;
-	return changed;
-#else
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	jstr_re_off_ty find_len;
@@ -552,7 +472,7 @@ loop2:
 		find_len = rm.rm_eo - rm.rm_so;
 		i.src_e += rm.rm_so;
 		if (rplc_len <= (size_t)find_len) {
-			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
+			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, (size_t)find_len);
 		} else {
 			if (*cap > *sz + rplc_len - (size_t)find_len) {
 				jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rplc, rplc_len, (size_t)find_len);
@@ -567,7 +487,6 @@ loop2:
 	if (i.dst != i.src)
 		*sz = JSTR_PTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_PTR_DIFF(*s + *sz, i.src)), *s);
 	return changed;
-#endif
 err:
 	jstr_free_noinline(s, sz, cap);
 	JSTR_RE_RETURN_ERR(ret, preg);
