@@ -213,40 +213,6 @@ JSTR_NOEXCEPT
 	return (jstr_re_ret_ty)regexec(preg, s, nmatch, pmatch, eflags | JSTR_RE_EF_STARTEND);
 }
 
-/* Estimate the length of a regex pattern. If the pattern contains
- * special characters, return (size_t)-1. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static size_t
-jstr_re_patternlenmax(const char *pattern)
-JSTR_NOEXCEPT
-{
-	int c;
-	const unsigned char *p = (const unsigned char *)pattern;
-	int minus = *p == '^';
-	/* Quickly find a special character. */
-	p = (const unsigned char *)strcspn((const char *)p, "\\*{}");
-	if (*p != '\0')
-		for (;; ++p)
-			switch (c = *p) {
-			case '*':
-			/* Extended regex. */
-			case '{':
-			case '}':
-				return (size_t)-1;
-			case '\\':
-				c = *(p + 1);
-				if (jstr_isdigit(c) || c == '{' || c == '}')
-					return (size_t)-1;
-				++p;
-			case '\0':
-				if (*(p - 1) == '$')
-					++minus;
-				break;
-			}
-	return JSTR_PTR_DIFF(p, pattern) - (unsigned int)minus;
-}
-
 /* Check if S matches precompiled regex.
  * Return return value of regexec. */
 JSTR_FUNC_PURE
@@ -602,8 +568,7 @@ JSTR_ATTR_INLINE
 static char *
 jstr__re_breffirst(const char *bref, size_t bref_len)
 {
-	/* We've checked that the pattern
-	 * does not end with a backslash. */
+	/* We've checked that the pattern does not end with a backslash. */
 	for (const char *bref_e = bref + bref_len; (bref = (const char *)memchr(bref, '\\', JSTR_PTR_DIFF(bref_e, bref))) && !jstr_isdigit(*(bref + 1)); bref += 2) {}
 	return (char *)bref;
 }
@@ -633,6 +598,8 @@ jstr__re_breflast(const char *bref, size_t bref_len)
 
 #endif
 
+/* TODO: use memchr to find backreferences to make it faster
+ * for longer RPLCs. */
 /* Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
@@ -649,7 +616,7 @@ JSTR_NOEXCEPT
 			c1 = *(unsigned char *)(rplc + 1);
 			if (jstr_isdigit(c1)) {
 				c1 -= '0';
-				bref = (char *)jstr_mempcpy(bref, mtc + rm[c1].rm_so, rm[c1].rm_eo - rm[c1].rm_so);
+				bref = (char *)jstr_mempcpy(bref, mtc + rm[c1].rm_so, (size_t)(rm[c1].rm_eo - rm[c1].rm_so));
 				rplc += 2;
 			} else {
 				/* We don't need this because we've checked
@@ -691,7 +658,8 @@ JSTR_NOEXCEPT
 	/* Pattern cannot end with a backslash. */
 	if (jstr_unlikely(*(rplc + rplc_len - 1) == '\\'))
 		JSTR_RE_RETURN_ERR(JSTR_RE_RET_BADPAT, preg);
-	/* Check if we have backreferences in RPLC. */
+	/* Check if we have backreferences in RPLC.
+	 * If not, fallback to re_rplcn_len. */
 	if (jstr_nullchk(jstr__re_breffirst(rplc, rplc_len)))
 		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 	int ret;
