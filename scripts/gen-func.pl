@@ -63,7 +63,7 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 	my $base_name = $name;
 	$base_name =~ s/$PREFIX_LEN(_|$)/$1/o;
 	next if (index($file_str1, "$base_name(") != -1);
-	add_inline(\$attr);
+	# add_inline(\$attr);
 	$body = (($rettype eq 'void') ? '' : 'return ') . $name . '(';
 	$name = $base_name;
 	my $dont_make_func = 1;
@@ -176,7 +176,7 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$body .= ", $VAR_JSTRING->$DATA)" if ($returns_end_ptr);
 	$body .= ";";
 	$attr =~ s/$ATTR_RET_NONNULL/$ATTR_DEFAULT_VOID/;
-	add_inline(\$attr);
+	# add_inline(\$attr);
 	$attr =~ s/\s*$ATTR_ACCESS\(\(.*?\)\)//og;
 	$attr =~ s/\n\n//g;
 	$attr =~ s/\n$//g;
