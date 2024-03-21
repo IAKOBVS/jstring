@@ -617,7 +617,7 @@ JSTR_NOEXCEPT
 			} else {
 				/* We don't need this because we've checked
 				 * that the pattern does not end with a backslash.
-				if (c == '\0')
+				if (c1 == '\0')
 				        return JSTR_RET_ERR; */
 				*bref = c0;
 				*(bref + 1) = c1;
