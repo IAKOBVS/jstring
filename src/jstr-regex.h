@@ -589,9 +589,10 @@ JSTR_NOEXCEPT
 			c -= '0';
 			JSTR_ASSERT_DEBUG((size_t)c < nmatch, "Using a backreference higher than nmatch.");
 			rplc_len += (size_t)(rm[c].rm_eo - rm[c].rm_so - 2);
-		} else if (jstr_unlikely(c == '\0')) {
-			break;
-		}
+			/* We don't need this because we've checked
+			 * that the pattern do not end with a backslash. */
+		} /* else if (c == '\0')
+		     return (size_t)-1; */
 	}
 	return rplc_len;
 }
@@ -648,9 +649,11 @@ JSTR_NOEXCEPT
 				c1 -= '0';
 				bref = (char *)jstr_mempcpy(bref, mtc + rm[c1].rm_so, rm[c1].rm_eo - rm[c1].rm_so);
 				rplc += 2;
-			} else if (jstr_unlikely(c1 == '\0')) {
-				JSTR_RETURN_ERR(JSTR_RET_ERR);
 			} else {
+				/* We don't need this because we've checked
+				 * that the pattern do not end with a backslash.
+				if (c == '\0')
+				        return JSTR_RET_ERR; */
 				*bref = c0;
 				*(bref + 1) = c1;
 				bref += 2;
@@ -683,6 +686,10 @@ JSTR_NOEXCEPT
 		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	if (jstr_unlikely(n == 0))
 		return 0;
+	/* Pattern cannot end with a backslash. */
+	if (jstr_unlikely(*(rplc + rplc_len - 1) == '\\'))
+		JSTR_RE_RETURN_ERR(JSTR_RE_RET_BADPAT, preg);
+	/* Check if we have backreferences in RPLC. */
 	if (jstr_nullchk(jstr__re_breffirst(rplc, rplc_len)))
 		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 	int ret;
