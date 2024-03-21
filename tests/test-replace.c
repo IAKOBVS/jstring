@@ -282,8 +282,6 @@ main(int argc, char **argv)
 	START();
 	regex_t preg;
 
-#if 0
-
 	/* jstr-replace tests. */
 	jstr_ty result = JSTR_INIT;
 	{
@@ -353,11 +351,6 @@ main(int argc, char **argv)
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popback_p(result.data, result.size), result.data), "hel");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "el");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_popfront_p(result.data, result.size), result.data), "l");
-
-#else
-	jstr_ty result = JSTR_INIT;
-	const char *expected, *find, *rplc;
-#endif
 
 #define T_RE(_string, _find, _rplc, _expected, _n)                                                           \
 	do {                                                                                                 \
