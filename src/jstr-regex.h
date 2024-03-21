@@ -544,10 +544,9 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
-jstr__re_brefstrlen(const regmatch_t *R rm, const unsigned char *R rplc, size_t rplc_len NMATCH_PARAM)
+jstr__re_brefstrlen(const regmatch_t *R rm, const unsigned char *rplc, const unsigned char *rplc_e, size_t rplc_len NMATCH_PARAM)
 JSTR_NOEXCEPT
 {
-	const unsigned char *const rplc_e = rplc + rplc_len;
 	int c;
 	for (; (rplc = (unsigned char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); rplc += 2) {
 		c = *(rplc + 1);
@@ -568,8 +567,9 @@ JSTR_ATTR_INLINE
 static char *
 jstr__re_breffirst(const char *bref, size_t bref_len)
 {
-	/* We've checked that the pattern does not end with a backslash. */
-	for (const char *bref_e = bref + bref_len; (bref = (const char *)memchr(bref, '\\', JSTR_PTR_DIFF(bref_e, bref))) && !jstr_isdigit(*(bref + 1)); bref += 2) {}
+	if (jstr_unlikely(bref_len < 2))
+		return NULL;
+	for (const char *bref_e = bref + bref_len - 1; (bref = (const char *)memchr(bref, '\\', JSTR_PTR_DIFF(bref_e, bref))) && !jstr_isdigit(*(bref + 1)); bref += 2) {}
 	return (char *)bref;
 }
 
@@ -658,18 +658,20 @@ JSTR_NOEXCEPT
 	/* Pattern cannot end with a backslash. */
 	if (jstr_unlikely(*(rplc + rplc_len - 1) == '\\'))
 		JSTR_RE_RETURN_ERR(JSTR_RE_RET_BADPAT, preg);
-	/* Check if we have backreferences in RPLC.
-	 * If not, fallback to re_rplcn_len. */
-	if (jstr_nullchk(jstr__re_breffirst(rplc, rplc_len)))
+	/* Check if we have backreferences in RPLC. */
+	const unsigned char *rplc_bref1 = (const unsigned char *)jstr__re_breffirst(rplc, rplc_len); /* Cache the first backreference. */
+	/* If not, fallback to re_rplcn_len. */
+	if (jstr_nullchk(rplc_bref1))
 		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 	int ret;
 	regmatch_t rm[10];
 	size_t bref_len;
-	size_t bref_cap = 0;
-	enum { BUFSZ = 256 };
-	char bref_stack[BUFSZ];
+	char bref_stack[256]; /* Does not store NUL. Use this to avoid malloc'ing for small RPLC. */
 	char *brefp = bref_stack;
 	char *bref_heap = NULL;
+	size_t bref_cap = 0;
+	/* Copy the start of RPLC before any backreferences. */
+	memcpy(brefp, rplc, JSTR_PTR_DIFF(rplc_bref1, rplc));
 	jstr_re_off_ty find_len;
 	jstr_re_off_ty changed = 0;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
@@ -677,21 +679,33 @@ JSTR_NOEXCEPT
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free_bref);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
-		bref_len = jstr__re_brefstrlen(rm, (const unsigned char *)rplc, rplc_len NMATCH_ARG);
-		if (jstr_unlikely(bref_len > BUFSZ)) {
+		bref_len = jstr__re_brefstrlen(rm, rplc_bref1, (const unsigned char *)rplc + rplc_len, rplc_len NMATCH_ARG);
+		if (jstr_likely(bref_len <= sizeof(bref_stack))) {
+			brefp = bref_stack;
+		} else {
 			if (bref_cap < bref_len) {
-				if (jstr_unlikely(bref_cap == 0))
-					bref_cap = BUFSZ;
-				bref_cap = jstr__grow(bref_cap, bref_len);
-				bref_heap = (char *)realloc(bref_heap, bref_cap);
 				if (jstr_nullchk(bref_heap)) {
-					ret = JSTR_RE_RET_ESPACE;
-					goto err_free;
+					bref_cap = JSTR_ALIGN_UP_STR((size_t)(sizeof(bref_stack) * JSTR_GROWTH));
+					bref_heap = (char *)malloc(bref_cap);
+					if (jstr_nullchk(bref_heap)) {
+						ret = JSTR_RE_RET_ESPACE;
+						goto err_free;
+					}
+					/* Copy the start of RPLC before any backreferences.
+					 * We don't need to do this when realloc'ing. */
+					memcpy(bref_heap, rplc, JSTR_PTR_DIFF(rplc_bref1, rplc));
+				} else {
+					bref_cap = jstr__grow(bref_cap, bref_len);
+					bref_heap = (char *)realloc(bref_heap, bref_cap);
+					if (jstr_nullchk(bref_heap)) {
+						ret = JSTR_RE_RET_ESPACE;
+						goto err_free;
+					}
 				}
-				brefp = bref_heap;
 			}
+			brefp = bref_heap;
 		}
-		if (jstr_chk(jstr__re_brefcreat((const unsigned char *)i.src_e, rm, (unsigned char *)brefp, (const unsigned char *)rplc, rplc_len))) {
+		if (jstr_chk(jstr__re_brefcreat((const unsigned char *)i.src_e, rm, (unsigned char *)brefp + JSTR_PTR_DIFF(rplc_bref1, rplc), rplc_bref1, rplc_len))) {
 			ret = JSTR_RE_RET_BADPAT;
 			goto err_free_bref;
 		}
