@@ -608,6 +608,8 @@ jstr__re_breffirst(const char *bref, size_t bref_len)
 	return (char *)bref;
 }
 
+#if 0 /* unused */
+
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -628,6 +630,8 @@ jstr__re_breflast(const char *bref, size_t bref_len)
 	}
 	return NULL;
 }
+
+#endif
 
 /* Return value:
  * on error, -errcode (negative);
