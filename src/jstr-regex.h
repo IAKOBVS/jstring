@@ -628,9 +628,9 @@ JSTR_NOEXCEPT
 				bref += 2;
 				rplc += 2;
 			}
+		} else if (jstr_unlikely(c0 == '\0')) {
+			break;
 		} else {
-			if (jstr_unlikely(c0 == '\0'))
-				break;
 			*bref++ = c0;
 			++rplc;
 		}
