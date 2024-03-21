@@ -262,7 +262,7 @@ JSTR__ULLTOA_SEP(int, itoa, )
 		    *sz + jstr__itoa_countudigits_##name(number, base))))     \
 			return JSTR_RET_ERR;                                  \
 		*sz                                                           \
-		= JSTR_PTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s); \
+		= JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s); \
 		return JSTR_RET_SUCC;                                         \
 	}
 
@@ -292,7 +292,7 @@ JSTR__DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 		    base))))                                                   \
 			return JSTR_RET_ERR;                                   \
 		*sz                                                            \
-		= JSTR_PTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);  \
+		= JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);  \
 		return JSTR_RET_SUCC;                                          \
 	}
 
@@ -319,7 +319,7 @@ JSTR__DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 		    cap,                                                  \
 		    *sz + jstr__itoa_countudigits_##name(number, base)))) \
 			return JSTR_RET_ERR;                              \
-		*sz = JSTR_PTR_DIFF(                                      \
+		*sz = JSTR_DIFF(                                      \
 		jstr_##name##_p(number, *s + *sz, base, separator),       \
 		*s);                                                      \
 		return JSTR_RET_SUCC;                                     \
@@ -351,7 +351,7 @@ JSTR__DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 		    (number < 0) ? (unsigned T) - number : (unsigned T)number, \
 		    base))))                                                   \
 			return JSTR_RET_ERR;                                   \
-		*sz = JSTR_PTR_DIFF(                                           \
+		*sz = JSTR_DIFF(                                           \
 		jstr_##name##_p(number, *s + *sz, base, separator),            \
 		*s);                                                           \
 		return JSTR_RET_SUCC;                                          \

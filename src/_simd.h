@@ -184,7 +184,7 @@ static char *
 jstr__simd_stpcpy(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
 JSTR_NOEXCEPT
 {
-	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
+	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
 	while (i--)
 		if (jstr_unlikely((*dst++ = *src++) == '\0'))
 			return dst - 1;
@@ -220,7 +220,7 @@ JSTR_NOEXCEPT
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
 	const unsigned int off
-	= JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	= JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
@@ -260,7 +260,7 @@ JSTR_NOEXCEPT
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
 	const unsigned int off
-	= JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	= JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm = (MASK)CMPEQ8_MASK(sv, cv);
@@ -295,7 +295,7 @@ JSTR_NOEXCEPT
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
 	const unsigned int off
-	= JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	= JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm = (MASK)CMPEQ8_MASK(sv, cv);
@@ -336,7 +336,7 @@ JSTR_NOEXCEPT
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
 	const unsigned int off
-	= JSTR_PTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	= JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	zm = (MASK)CMPEQ8_MASK(sv, zv);
@@ -382,7 +382,7 @@ JSTR_NOEXCEPT
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const unsigned int off
-	= JSTR_PTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
+	= JSTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
 	p -= off;
 	sv = LOAD((const VEC *)p);
 	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
@@ -429,7 +429,7 @@ JSTR_NOEXCEPT
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const unsigned int off
-	= JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+	= JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
 	p += off;
 	sv = LOAD((const VEC *)p);
 	m = (MASK)CMPEQ8_MASK(sv, cv) << off;
@@ -488,7 +488,7 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
 	for (; i--; cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(*p == '\0'))
 			return cnt;
@@ -518,7 +518,7 @@ JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
 	size_t cnt = 0;
-	unsigned int i = JSTR_PTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
 	for (; i--; --n, cnt += *p++ == (unsigned char)c)
 		if (jstr_unlikely(n == 0))
 			return cnt;

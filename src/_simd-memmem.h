@@ -108,7 +108,7 @@ JSTR_NOEXCEPT
 	size_t n = ne_len - 2;
 	for (const int c = *(unsigned char *)ne; n-- && *p == c; ++p) {}
 	/* N must be the "ab", not the "bb". */
-	n = JSTR_PTR_DIFF(p, ne) - 1;
+	n = JSTR_DIFF(p, ne) - 1;
 	h += n;
 	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
 	const MASK matchm = ONES << matchsh;
@@ -118,8 +118,8 @@ JSTR_NOEXCEPT
 		nv = LOADU((const VEC *)ne);
 	else
 		memcpy(&nv, ne, ne_len);
-	const unsigned int off_s = JSTR_PTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
-	unsigned int off_e = (JSTR_PTR_DIFF(end, (h - n)) < VEC_SIZE) ? VEC_SIZE - (unsigned int)(end - (h - n)) - 1 : 0;
+	const unsigned int off_s = JSTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	unsigned int off_e = (JSTR_DIFF(end, (h - n)) < VEC_SIZE) ? VEC_SIZE - (unsigned int)(end - (h - n)) - 1 : 0;
 	h -= off_s;
 	hv0 = LOAD((const VEC *)h);
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);

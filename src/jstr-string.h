@@ -466,7 +466,7 @@ JSTR_NOEXCEPT
 		hs = memchr((const unsigned char *)hs, *(char *)ne, hs_len - ne_len + 1);
 		if (jstr_unlikely(hs == NULL) || ne_len == 1)
 			return (void *)hs;
-		hs_len -= JSTR_PTR_DIFF(hs, start);
+		hs_len -= JSTR_DIFF(hs, start);
 		return jstr__memmem_lt8((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
 	}
 	return jstr__memmem_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
@@ -592,7 +592,7 @@ JSTR_NOEXCEPT
 	jstr_memrchr((const unsigned char *)hs, *(const unsigned char *)ne, hs_len - ne_len + 1);
 	if (p == NULL || ne_len == 1)
 		return (void *)p;
-	hs_len = JSTR_PTR_DIFF((char *)p + ne_len, hs);
+	hs_len = JSTR_DIFF((char *)p + ne_len, hs);
 	/* Use 8more for ne_len == 8 because it's faster (avoids masking). */
 	if (ne_len < 8)
 		return jstr__memrmem_lt8((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
@@ -655,7 +655,7 @@ JSTR_NOEXCEPT
 		hs = (const char *)jstr_memcasechr(hs, *ne, hs_len - ne_len + 1);
 		if (jstr_unlikely(hs == NULL) || ne_len == 1)
 			return (char *)hs;
-		hs_len -= JSTR_PTR_DIFF(hs, start);
+		hs_len -= JSTR_DIFF(hs, start);
 		return jstr__memcasemem_lt8((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
 	}
 	return jstr__strcasestr_len_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
@@ -839,7 +839,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(reject[1] == '\0')) {
 		const char *const p
 		= (const char *)jstr_memrchr(s, *reject, sz);
-		return p ? JSTR_PTR_DIFF(p, s) : sz;
+		return p ? JSTR_DIFF(p, s) : sz;
 	}
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
@@ -852,7 +852,7 @@ JSTR_NOEXCEPT
 	int n = sz % 4;
 	for (;; --i) {
 		if (t[p[i]])
-			return JSTR_PTR_DIFF(p + i, s);
+			return JSTR_DIFF(p + i, s);
 		if (--n == 0) {
 			if (sz < 4)
 				return sz;
@@ -868,7 +868,7 @@ JSTR_NOEXCEPT
 		c3 = t[p[-3]];
 		p -= 4;
 	} while (((p < (const unsigned char *)s) | c0 | c1 | c2 | c3) == 0);
-	size_t cnt = JSTR_PTR_DIFF(s + sz, p);
+	size_t cnt = JSTR_DIFF(s + sz, p);
 	cnt = sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
 	return (cnt < sz) ? cnt : sz;
 }
@@ -898,7 +898,7 @@ JSTR_NOEXCEPT
 		const char *p = s + sz - 1;
 		const int c = *accept;
 		for (; sz-- && *p == c; --p) {}
-		return JSTR_PTR_DIFF(p, s);
+		return JSTR_DIFF(p, s);
 	}
 	const unsigned char *p = (const unsigned char *)accept;
 	unsigned char t[256];
@@ -911,7 +911,7 @@ JSTR_NOEXCEPT
 	int n = sz % 4;
 	for (;; --i) {
 		if (!t[p[i]])
-			return JSTR_PTR_DIFF(p + i, s);
+			return JSTR_DIFF(p + i, s);
 		if (--n == 0) {
 			if (sz < 4)
 				return sz;
@@ -927,7 +927,7 @@ JSTR_NOEXCEPT
 		c3 = t[p[-3]];
 		p -= 4;
 	} while ((p >= (const unsigned char *)s) & (c0 & c1 & c2 & c3));
-	size_t cnt = JSTR_PTR_DIFF(s + sz, p);
+	size_t cnt = JSTR_DIFF(s + sz, p);
 	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
 	return (cnt < sz) ? cnt : sz;
 }
@@ -978,7 +978,7 @@ JSTR_NOEXCEPT
 		const char *p = (char *)s;
 		const int c = *accept;
 		for (; sz-- && *p == c; ++p) {}
-		return JSTR_PTR_DIFF(p, s);
+		return JSTR_DIFF(p, s);
 	}
 	const unsigned char *p = (const unsigned char *)accept;
 	unsigned char t[256];
@@ -991,7 +991,7 @@ JSTR_NOEXCEPT
 	int n = sz % 4;
 	for (;; ++i) {
 		if (!t[p[i]])
-			return JSTR_PTR_DIFF(p + i, s);
+			return JSTR_DIFF(p + i, s);
 		if (--n == 0) {
 			if (sz < 4)
 				return sz;
@@ -1022,7 +1022,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*reject == '\0') || jstr_unlikely(sz == 0))
 		return sz;
 	if (jstr_unlikely(reject[1] == '\0'))
-		return JSTR_PTR_DIFF(jstr_memchrnul(s, *reject, sz), s);
+		return JSTR_DIFF(jstr_memchrnul(s, *reject, sz), s);
 	unsigned char t[256];
 	JSTR_BZERO_ARRAY(t);
 	const unsigned char *p = (const unsigned char *)reject;
@@ -1034,7 +1034,7 @@ JSTR_NOEXCEPT
 	int n = sz % 4;
 	for (;; ++i) {
 		if (t[p[i]])
-			return JSTR_PTR_DIFF(p + i, s);
+			return JSTR_DIFF(p + i, s);
 		if (--n == 0) {
 			if (sz < 4)
 				return sz;
@@ -1051,7 +1051,7 @@ JSTR_NOEXCEPT
 		c3 = t[p[3]];
 		p -= 4;
 	} while (((p >= end) | c0 | c1 | c2 | c3) == 0);
-	size_t cnt = JSTR_PTR_DIFF(p, s);
+	size_t cnt = JSTR_DIFF(p, s);
 	cnt = sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
 	return (cnt < sz) ? cnt : sz;
 }
@@ -1221,7 +1221,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
-	for (const char *const end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_PTR_DIFF(end, s), find)); ++cnt, s += find_len) {}
+	for (const char *const end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_DIFF(end, s), find)); ++cnt, s += find_len) {}
 	return cnt;
 }
 
@@ -1271,7 +1271,7 @@ static char *
 jstr_linestart(const char *const start, const char *end)
 JSTR_NOEXCEPT
 {
-	end = (char *)jstr_memrchr(start, '\n', JSTR_PTR_DIFF(end, start));
+	end = (char *)jstr_memrchr(start, '\n', JSTR_DIFF(end, start));
 	return (char *)(end ? end + 1 : start);
 }
 
@@ -1284,7 +1284,7 @@ static char *
 jstr_linenext_len(const char *start, const char *const end)
 JSTR_NOEXCEPT
 {
-	start = (char *)memchr(start, '\n', JSTR_PTR_DIFF(end, start));
+	start = (char *)memchr(start, '\n', JSTR_DIFF(end, start));
 	return (start && *(start + 1)) ? (char *)start + 1 : NULL;
 }
 
@@ -1332,7 +1332,7 @@ static size_t
 jstr_linenumber(const char *start, const char *const end)
 JSTR_NOEXCEPT
 {
-	return jstr_countchr_len(start, '\n', JSTR_PTR_DIFF(end, start)) + 1;
+	return jstr_countchr_len(start, '\n', JSTR_DIFF(end, start)) + 1;
 }
 
 JSTR_FUNC_VOID
@@ -1425,7 +1425,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(*s == '\0'))
 		return s;
 	const char *const start = jstr_skipspace(s);
-	sz = JSTR_PTR_DIFF(s + sz, start);
+	sz = JSTR_DIFF(s + sz, start);
 	if (s != start)
 		return jstr_stpmove_len(s, start, sz);
 	return s + sz;
@@ -1474,7 +1474,7 @@ JSTR_NOEXCEPT
 		return s;
 	const char *const end = jstr_skipspace_rev(s, sz);
 	const char *const start = jstr_skipspace(s);
-	sz = JSTR_PTR_DIFF(end, start);
+	sz = JSTR_DIFF(end, start);
 	if (start != s)
 		return jstr_stpmove_len(s, start, sz);
 	return s + sz;
@@ -1562,7 +1562,7 @@ JSTR_NOEXCEPT
 	for (; *p; ++p)
 		if (jstr_isupper(*p)) {
 start:
-			jstr_strmove_len((char *)p + 1, (const char *)p, JSTR_PTR_DIFF(end++, p));
+			jstr_strmove_len((char *)p + 1, (const char *)p, JSTR_DIFF(end++, p));
 			*p++ = '_';
 			*p = jstr_tolower(*p);
 		}
@@ -1606,7 +1606,7 @@ JSTR_NOEXCEPT
 	const char *const s = *save_ptr;
 	if (jstr_unlikely(*s == '\0'))
 		return NULL;
-	*save_ptr = jstr_strstrnul_len(s, JSTR_PTR_DIFF(end, s), ne, ne_len);
+	*save_ptr = jstr_strstrnul_len(s, JSTR_DIFF(end, s), ne, ne_len);
 	if (jstr_likely(**save_ptr != '\0'))
 		*save_ptr += ne_len;
 	return (char *)s;
@@ -1667,7 +1667,7 @@ JSTR_NOEXCEPT
 	dst->data = (char *)malloc(src->capacity);
 	if (jstr_nullchk(dst->data))
 		return JSTR_RET_ERR;
-	dst->size = JSTR_PTR_DIFF(jstr_cpy_p(dst->data, dst), dst->data);
+	dst->size = JSTR_DIFF(jstr_cpy_p(dst->data, dst), dst->data);
 	dst->size = src->size;
 	dst->capacity = src->capacity;
 	return JSTR_RET_SUCC;
@@ -1920,7 +1920,7 @@ JSTR_NOEXCEPT
 {
 	unsigned char *s_e = (unsigned char *)s + n;
 	s = memchr(s, '\\', n);
-	return s ? jstr_unescapecpy_len_p(s, s, JSTR_PTR_DIFF(s_e, s)) : s_e;
+	return s ? jstr_unescapecpy_len_p(s, s, JSTR_DIFF(s_e, s)) : s_e;
 }
 
 JSTR__END_DECLS
