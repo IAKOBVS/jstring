@@ -650,7 +650,7 @@ JSTR_NOEXCEPT
 		if (*rplc == '\\') {
 			c = *(rplc + 1);
 			if (jstr_isdigit(c)) {
-				bref = jstr_mempcpy(bref, mtc + rm[c- '0'].rm_so, rm[c- '0'].rm_eo - rm[c- '0'].rm_so);
+				bref = (const char *)jstr_mempcpy(bref, mtc + rm[c- '0'].rm_so, rm[c- '0'].rm_eo - rm[c- '0'].rm_so);
 				rplc += 2;
 			} else {
 				*bref = *rplc;
