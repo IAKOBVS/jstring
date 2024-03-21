@@ -590,7 +590,7 @@ JSTR_NOEXCEPT
 			JSTR_ASSERT_DEBUG((size_t)c < nmatch, "Using a backreference higher than nmatch.");
 			rplc_len += (size_t)(rm[c].rm_eo - rm[c].rm_so - 2);
 			/* We don't need this because we've checked
-			 * that the pattern do not end with a backslash. */
+			 * that the pattern does not end with a backslash. */
 		} /* else if (c == '\0')
 		     return (size_t)-1; */
 	}
@@ -602,12 +602,10 @@ JSTR_ATTR_INLINE
 static char *
 jstr__re_breffirst(const char *bref, size_t bref_len)
 {
-	if (bref_len >= 2) {
-		for (const char *bref_e = bref + bref_len - 1; (bref = (const char *)memchr(bref, '\\', JSTR_PTR_DIFF(bref_e, bref))) && !jstr_isdigit(*(bref + 1)); bref += 2) {}
-		if (jstr_likely(bref != NULL))
-			return (char *)bref;
-	}
-	return NULL;
+	/* We've checked that the pattern
+	 * does not end with a backslash. */
+	for (const char *bref_e = bref + bref_len; (bref = (const char *)memchr(bref, '\\', JSTR_PTR_DIFF(bref_e, bref))) && !jstr_isdigit(*(bref + 1)); bref += 2) {}
+	return (char *)bref;
 }
 
 JSTR_FUNC
@@ -651,7 +649,7 @@ JSTR_NOEXCEPT
 				rplc += 2;
 			} else {
 				/* We don't need this because we've checked
-				 * that the pattern do not end with a backslash.
+				 * that the pattern does not end with a backslash.
 				if (c == '\0')
 				        return JSTR_RET_ERR; */
 				*bref = c0;
