@@ -544,13 +544,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
-jstr__re_brefstrlen(const regmatch_t *R rm, const char *R rplc, size_t rplc_len NMATCH_PARAM)
+jstr__re_brefstrlen(const regmatch_t *R rm, const unsigned char *R rplc, size_t rplc_len NMATCH_PARAM)
 JSTR_NOEXCEPT
 {
-	const char *const rplc_e = rplc + rplc_len;
+	const unsigned char *const rplc_e = rplc + rplc_len;
 	int c;
-	for (; (rplc = (char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); rplc += 2) {
-		c = *(unsigned char *)(rplc + 1);
+	for (; (rplc = (unsigned char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); rplc += 2) {
+		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
 			JSTR_ASSERT_DEBUG((size_t)c < nmatch, "Using a backreference higher than nmatch.");
@@ -606,17 +606,17 @@ jstr__re_breflast(const char *bref, size_t bref_len)
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstr__re_brefcreat(const char *R mtc, const regmatch_t *R rm, char *R bref, const char *R rplc, size_t rplc_len)
+jstr__re_brefcreat(const unsigned char *R mtc, const regmatch_t *R rm, unsigned char *R bref, const unsigned char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
 {
 	int c0, c1;
 	for (;;) {
-		c0 = *(unsigned char *)rplc;
+		c0 = *rplc;
 		if (c0 == '\\') {
-			c1 = *(unsigned char *)(rplc + 1);
+			c1 = *(rplc + 1);
 			if (jstr_isdigit(c1)) {
 				c1 -= '0';
-				bref = (char *)jstr_mempcpy(bref, mtc + rm[c1].rm_so, (size_t)(rm[c1].rm_eo - rm[c1].rm_so));
+				bref = (unsigned char *)jstr_mempcpy(bref, mtc + rm[c1].rm_so, (size_t)(rm[c1].rm_eo - rm[c1].rm_so));
 				rplc += 2;
 			} else {
 				/* We don't need this because we've checked
@@ -677,7 +677,7 @@ JSTR_NOEXCEPT
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_PTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free_bref);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
-		bref_len = jstr__re_brefstrlen(rm, rplc, rplc_len NMATCH_ARG);
+		bref_len = jstr__re_brefstrlen(rm, (const unsigned char *)rplc, rplc_len NMATCH_ARG);
 		if (jstr_unlikely(bref_len > BUFSZ)) {
 			if (bref_cap < bref_len) {
 				if (jstr_unlikely(bref_cap == 0))
@@ -691,7 +691,7 @@ JSTR_NOEXCEPT
 				brefp = bref_heap;
 			}
 		}
-		if (jstr_chk(jstr__re_brefcreat(i.src_e, rm, brefp, rplc, rplc_len))) {
+		if (jstr_chk(jstr__re_brefcreat((const unsigned char *)i.src_e, rm, (unsigned char *)brefp, (const unsigned char *)rplc, rplc_len))) {
 			ret = JSTR_RE_RET_BADPAT;
 			goto err_free_bref;
 		}
