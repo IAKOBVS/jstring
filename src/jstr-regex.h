@@ -583,8 +583,8 @@ JSTR_NOEXCEPT
 {
 	const char *const rplc_e = rplc + rplc_len;
 	int c;
-	for (; (rplc = (char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); ++rplc) {
-		c = *++rplc;
+	for (; (rplc = (char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); rplc += 2) {
+		c = *(unsigned char *)(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
 			JSTR_ASSERT_DEBUG((size_t)c < nmatch, "Using a backreference higher than nmatch.");
@@ -639,25 +639,32 @@ static jstr_ret_ty
 jstr__re_brefcreat(const char *R mtc, const regmatch_t *R rm, char *R bref, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
 {
-	const char *const rplc_e = rplc + rplc_len;
-	int c;
-	for (; rplc < rplc_e;) {
-		if (*rplc == '\\') {
-			c = *(rplc + 1);
-			if (jstr_isdigit(c)) {
-				bref = (char *)jstr_mempcpy(bref, mtc + rm[c- '0'].rm_so, rm[c- '0'].rm_eo - rm[c- '0'].rm_so);
+	int c0, c1;
+	for (;;) {
+		c0 = *(unsigned char *)rplc;
+		if (c0 == '\\') {
+			c1 = *(unsigned char *)(rplc + 1);
+			if (jstr_isdigit(c1)) {
+				c1 -= '0';
+				bref = (char *)jstr_mempcpy(bref, mtc + rm[c1].rm_so, rm[c1].rm_eo - rm[c1].rm_so);
 				rplc += 2;
+			} else if (jstr_unlikely(c1 == '\0')) {
+				JSTR_RETURN_ERR(JSTR_RET_ERR);
 			} else {
-				*bref = *rplc;
-				*(bref + 1) = c;
+				*bref = c0;
+				*(bref + 1) = c1;
 				bref += 2;
 				rplc += 2;
 			}
 		} else {
-			*bref++ = *rplc++;
+			if (jstr_unlikely(c0 == '\0'))
+				break;
+			*bref++ = c0;
+			++rplc;
 		}
 	}
 	return JSTR_RET_SUCC;
+	(void)rplc_len;
 }
 
 /* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
