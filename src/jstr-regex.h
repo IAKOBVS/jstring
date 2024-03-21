@@ -42,10 +42,7 @@ JSTR__END_DECLS
 #include "jstr-string.h"
 
 #define jstr_re_chkcomp(errcode) jstr_unlikely((errcode) != JSTR_RE_RET_NOERROR)
-#define jstr_re_chkexec(errcode) \
-	(                        \
-	jstr_re_chkcomp(errcode) \
-	&& jstr_unlikely((errcode) != JSTR_RE_RET_NOMATCH))
+#define jstr_re_chkexec(errcode) (jstr_re_chkcomp(errcode) && jstr_unlikely((errcode) != JSTR_RE_RET_NOMATCH))
 #define jstr_re_chk(errcode) jstr_unlikely((errcode) < 0)
 
 #define R JSTR_RESTRICT
