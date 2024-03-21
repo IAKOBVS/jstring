@@ -598,8 +598,7 @@ jstr__re_rplcbreflast(const char *bref, size_t bref_len)
 
 #endif
 
-/* TODO: use memchr to find backreferences to make it faster
- * for longer RPLCs. */
+/* TODO: use memchr to find backreferences to make it faster for longer RPLCs. */
 /* Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
