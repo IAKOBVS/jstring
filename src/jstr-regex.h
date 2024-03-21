@@ -583,12 +583,7 @@ JSTR_NOEXCEPT
 {
 	const char *const rplc_e = rplc + rplc_len;
 	int c;
-	rplc = (char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc));
-	if (jstr_nullchk(rplc))
-		return (size_t)-1;
-	goto start;
 	for (; (rplc = (char *)memchr(rplc, '\\', JSTR_PTR_DIFF(rplc_e, rplc))); ++rplc) {
-start:
 		c = *++rplc;
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
