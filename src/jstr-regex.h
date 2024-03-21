@@ -716,10 +716,6 @@ JSTR_NOEXCEPT
 			ret = JSTR_RE_RET_BADPAT;
 			goto err_free_bref;
 		}
-#if 1
-		fwrite(brefp, bref_len, 1, stderr);
-		fwrite(".\n", 2, 1, stderr);
-#endif
 		i.src_e += rm[0].rm_so;
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (bref_len <= (size_t)find_len) {
