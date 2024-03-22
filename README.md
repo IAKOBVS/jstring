@@ -1,4 +1,4 @@
-we# jstring
+# jstring
 
 jstring is a dynamic string C library which aims to make string handling simple and efficient.
 
