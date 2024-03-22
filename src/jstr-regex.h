@@ -395,14 +395,12 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, jstr__inplace
 {
 	if (i->dst != i->src)
 		memmove(i->dst, i->src, JSTR_DIFF(i->src_e, i->src));
-	if (*cap <= *sz + rplc_len - find_len) {
-		char *tmp = *s;
-		if (jstr_chk(jstr_reservealways(&tmp, sz, cap, *sz + rplc_len - find_len)))
-			return JSTR_RET_ERR;
-		i->src_e = tmp + (i->src_e - *s);
-		i->dst = tmp + (i->dst - *s);
-		*s = tmp;
-	}
+	char *tmp = *s;
+	if (jstr_chk(jstr_reservealways(&tmp, sz, cap, *sz + rplc_len - find_len)))
+		return JSTR_RET_ERR;
+	i->src_e = tmp + (i->src_e - *s);
+	i->dst = tmp + (i->dst - *s);
+	*s = tmp;
 	jstr_strmove_len(i->src_e + rplc_len, i->src_e + find_len, JSTR_DIFF(*s + *sz, i->src_e + find_len));
 	i->src_e = (char *)jstr_mempcpy(i->src_e, rplc, rplc_len);
 	i->dst += rplc_len;
