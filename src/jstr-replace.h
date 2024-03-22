@@ -916,9 +916,8 @@ loop1:
 			first = (char *)i.src + (first - *s);
 			last = i.src + (last - *s);
 			end = i.src + (end - *s);
-		}
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
-		else if (use_stack) { /* NEW_SIZE is small enough. */
+		} else if (use_stack) { /* NEW_SIZE is small enough. */
 			/* DST is the original string. */
 			i.dst = *s;
 			/* SRC is the stack string. */
