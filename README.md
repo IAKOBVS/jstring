@@ -22,6 +22,7 @@ mempbrk\(\), etc.
 - string formatting: asprintf\(\) and vsprintfstrlen\(\), which returns the maximum
 number of characters to store the characters written by vsprintf including the
 nul terminator.
+- namespacing: the library will only use [Jj][Ss][Tt][Rr]_* prefixed identifiers.
 
 ## Installation:
 
