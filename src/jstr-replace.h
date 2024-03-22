@@ -902,8 +902,8 @@ loop1:
 #	endif
 #endif
 		/* If the original string has enough capacity to fit both
-		 * itself and the modified string. Move back the original
-		 * string to the back of the string to avoid allocation. */
+		 * itself and the modified string, avoid allocation by pushing
+		 * back the original string to make room for the modified string. */
 		if (can_fit) {
 			/* SRC is the original string + NEW_SIZE. */
 			i.src = *s + new_size;
