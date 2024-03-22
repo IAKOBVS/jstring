@@ -4,7 +4,7 @@ jstring is a dynamic string C library which aims to make string handling simple 
 
 ## Features:
 
-- literal string and regex replacement (with backreferences): literal
+- literal string and regex replacement with backreferences: literal
 replaceall is O\(n\) and does zero memory allocation if the capacity of the string is
 larger than the length of the string plus the modified string.
 - compatible with other string libraries: string functions take a pointer to string, size,
