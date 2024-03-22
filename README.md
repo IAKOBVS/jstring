@@ -15,7 +15,7 @@ strings as you can with regexes with regexec. Currently, musl's twoway strstr/me
 implementation is used.
 - path traversal: ftw\(\) that can take arguments.
 - useful return values: string functions suffixed with *_p return a pointer to the end of the processed string (like stpcpy). You are likely going to need the length of the string you just modified so this will often save an unnecessary strlen.
-- reverse standard string functions: memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
+- reverse versions of standard string functions: memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
 etc.
 - standard string functions for non-nul terminated strings: memspn\(\), memcspn\(\),
 mempbrk\(\), etc.
