@@ -13,7 +13,7 @@ and capacity.
 - fast substring matching: precompile strstr/memmem for faster substring matching on multiple
 strings as you can with regexes with regexec. Currently, musl's twoway strstr/memmem
 implementation is used.
-- path traversal: ftw\(\) that can takes arguments.
+- path traversal: ftw\(\) that can take arguments.
 - reverse standard string functions: memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
 etc.
 - standard string functions for non-nul terminated strings: memspn\(\), memcspn\(\),
