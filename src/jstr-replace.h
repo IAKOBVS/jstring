@@ -163,7 +163,7 @@ JSTR_NOEXCEPT
 		return jstr_insertafterchr_len(s, sz, cap, *find, src, src_len);
 	if (jstr_unlikely(find_len == 0))
 		return JSTR_RET_SUCC;
-	const char *const p = (char *)jstr_strstr_len(*s, *sz, find, find_len);
+	const char *const p = (char *)jstr_memmem(*s, *sz, find, find_len);
 	if (p != NULL)
 		return jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len);
 	return JSTR_RET_SUCC;
@@ -1179,7 +1179,7 @@ JSTR_NOEXCEPT
 		return jstr_placeafterchr_len(s, sz, cap, *find, src, src_len);
 	if (jstr_unlikely(find_len == 0))
 		return JSTR_RET_SUCC;
-	const char *const p = jstr_strstr_len(*s, *sz, find, find_len);
+	const char *const p = (char *)jstr_memmem(*s, *sz, find, find_len);
 	if (p != NULL)
 		return jstr_place_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len);
 	return JSTR_RET_SUCC;
