@@ -411,6 +411,7 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, jstr__inplace
 	return JSTR_RET_SUCC;
 }
 
+/* TODO: use zero allocation as does jstr_rplcn. */
 /* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
  * Use rplc/rm instead.
  * Return value:
