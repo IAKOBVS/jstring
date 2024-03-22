@@ -20,7 +20,7 @@ etc.
 - standard string functions for non-nul terminated strings: memspn\(\), memcspn\(\),
 mempbrk\(\), etc.
 - extensions to standard string functions: strnchr\(\), strcasestr\_len\(\).
-- string formatting: asprintf\(\) which returns the size of allocation and vsprintfstrlen\(\), which returns the maximum
+- string formatting: asprintf\(\) which returns the size of allocation and vsprintfstrlen\(\) which returns the maximum
 number of characters to store the characters written by vsprintf including the
 nul terminator.
 - namespacing: the library will only use [Jj][Ss][Tt][Rr]_* prefixed identifiers.
