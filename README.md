@@ -10,9 +10,9 @@ larger than the length of the string plus the modified string.
 - compatible with other string libraries: string functions take a pointer to string, size,
 and capacity.
 - string list: easily create a list of dynamic strings.
-- fast substring matching: precompile strstr/memmem for faster substring matching on multiple
-strings as you can with regexes with regexec. Currently, musl's twoway strstr/memmem
-implementation is used.
+- fast substring matching: for x86-64 and needles that fit in a simd vector, we use an O(n)
+simd implementation of memmem. For longer needles, we precompile strstr/memmem. Currently,
+we use musl's twoway strstr/memmem implementation is used.
 - path traversal: ftw\(\) that can take arguments.
 - useful return values: string functions suffixed with *_p return a pointer to the end of the processed string (like stpcpy). You are likely going to need the length of the string you just modified so this will often save an unnecessary strlen.
 - reverse versions of standard string functions: memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
