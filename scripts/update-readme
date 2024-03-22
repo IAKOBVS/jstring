@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd "$(dirname "$0")" || exit
-sed 's/\\//g' README.md> README
+sed 's/\\//g' ../README.md> ../README
