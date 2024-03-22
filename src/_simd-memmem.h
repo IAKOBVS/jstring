@@ -83,7 +83,7 @@ JSTR__BEGIN_DECLS
 
 /* ne_len must be <= VEC_SIZE.
  * Worst case: O(n).
- * Best case: O(n/VEC_SIZE). */
+ * Best case: O(n / VEC_SIZE). */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
