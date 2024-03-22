@@ -937,17 +937,16 @@ loop1:
 			i.dst = NULL;
 			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
 				goto err;
+			i.dst = (char *)jstr_mempcpy(i.dst, *s, start_idx);
 		}
 		char *const dst_s = i.dst;
-		/* We must use memmove because DST and SRC may overlap if CAN_FIT is true. */
-		if (start_idx && i.dst != *s)
-			i.dst = (char *)jstr_mempmove(i.dst, *s, start_idx);
 		n = changed;
 		i.src_e = first;
 		goto loop2;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find))) {
 loop2:
 			--n;
+			/* We must use memmove because DST and SRC may overlap if CAN_FIT is true. */
 			i.dst = (char *)jstr_mempmove(i.dst, i.src, JSTR_DIFF(i.src_e, i.src));
 			i.dst = (char *)jstr_mempmove(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
