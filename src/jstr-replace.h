@@ -890,17 +890,35 @@ loop1:
 		}
 		if (last != end)
 			last += find_len;
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
-		/* Past this size, just malloc. */
-		enum { MAX_STACK = 256 };
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
+		const int can_fit = *cap >= *sz + new_size;
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe avoid malloc. */
+		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
 		/* The original string must fit in the stack buffer and the modified
 		 * string must fit in the original string. */
 		const int use_stack = *sz <= MAX_STACK && *cap >= new_size;
 #	if JSTR_HAVE_VLA
-		char stack_buf[use_stack ? *sz : 1];
+		char stack_buf[!can_fit && use_stack ? *sz : 1];
 #	endif
-		if (use_stack) { /* NEW_SIZE is small enough. */
+#endif
+		/* If the original string has enough capacity to fit both
+		 * itself and the modified string. Move back the original
+		 * string to the back of the string to avoid allocation. */
+		if (can_fit) {
+			/* SRC is the original string + NEW_SIZE. */
+			i.src = *s + new_size;
+			/* DST is original string. */
+			i.dst = *s;
+			/* Move back the original string so we have enough
+			 * space for the modified string. */
+			memmove((void *)i.src, i.dst, *sz);
+			/* Update the ptrs to point to SRC. */
+			first = (char *)i.src + (first - *s);
+			last = i.src + (last - *s);
+			end = i.src + (end - *s);
+		}
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
+		else if (use_stack) { /* NEW_SIZE is small enough. */
 			/* DST is the original string. */
 			i.dst = *s;
 			/* SRC is the stack string. */
@@ -915,34 +933,33 @@ loop1:
 			first = (char *)i.src + (first - *s);
 			last = i.src + (last - *s);
 			end = i.src + (end - *s);
-		} else { /* Can't use stack buffer. */
+#endif
+		} else { /* Capacity is too small or we can't use a stack buffer. */
 			i.dst = NULL;
 			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
 				goto err;
 		}
-#else /* We have neither VLA/alloca, so just malloc. */
-		i.dst = NULL;
-		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, *sz + changed * (rplc_len - find_len) + 1)))
-			goto err;
-#endif
 		char *const dst_s = i.dst;
+		/* We must use memmove because DST and SRC may overlap if CAN_FIT is true. */
 		if (start_idx)
-			i.dst = (char *)jstr_mempcpy(i.dst, *s, start_idx);
+			i.dst = (char *)jstr_mempmove(i.dst, *s, start_idx);
 		n = changed;
 		i.src_e = first;
 		goto loop2;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find))) {
 loop2:
 			--n;
-			i.dst = (char *)jstr_mempcpy(i.dst, i.src, JSTR_DIFF(i.src_e, i.src));
-			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
+			i.dst = (char *)jstr_mempmove(i.dst, i.src, JSTR_DIFF(i.src_e, i.src));
+			i.dst = (char *)jstr_mempmove(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
-		*sz = JSTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
+		/* We don't need to free if we didn't malloc. */
+		if (!can_fit
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		if (!use_stack) /* We don't need to free if we used a stack buffer. */
+		    && !use_stack
 #endif
-		{
+		) {
 			free(*s);
 			*s = dst_s;
 		}
