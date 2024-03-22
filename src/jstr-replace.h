@@ -944,6 +944,7 @@ loop1:
 		}
 		char *const dst_s = i.dst;
 		n = changed;
+		/* Cache first match. */
 		i.src_e = first;
 		goto loop2;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find))) {
