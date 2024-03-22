@@ -10,6 +10,9 @@ larger than the length of the string plus the modified string.
 - compatible with other string libraries: string functions take a pointer to string, size,
 and capacity.
 - string list: easily create a list of dynamic strings.
+- fast substring matching: precompile strstr/memmem for faster substring matching on multiple
+strings as you can with regexes with regexec. Currently, musl's twoway strstr/memmem
+implementation is used.
 - path traversal: ftw() that can takes arguments.
 - reverse standard string functions: memrchr(), strrstr(), strrspn(), strrcspn(),
 etc.
