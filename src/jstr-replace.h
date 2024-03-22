@@ -888,16 +888,17 @@ loop1:
 		}
 		if (last != end)
 			last += find_len;
+		char *dst_s;
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
-		const int can_fit = *cap >= *sz + new_size;
+		const size_t first_len = *sz - JSTR_DIFF(first, *s);
+		const int can_fit = *cap >= new_size + first_len;
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe avoid malloc. */
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
 		/* The original string must fit in the stack buffer and the modified
 		 * string must fit in the original string. */
-		/* TODO: use *sz - (first - *s) instead of *sz. */
-		const int use_stack = *sz <= MAX_STACK && *cap >= new_size;
+		const int use_stack = first_len <= MAX_STACK && *cap >= new_size;
 #	if JSTR_HAVE_VLA
-		char stack_buf[!can_fit && use_stack ? *sz : 1];
+		char stack_buf[!can_fit && use_stack ? first_len : 1];
 #	endif
 #endif
 		/* If the original string has enough capacity to fit both
@@ -907,31 +908,32 @@ loop1:
 			/* SRC is the original string + NEW_SIZE. */
 			i.src = *s + new_size;
 			/* DST is original string. */
-			i.dst = *s;
+			i.dst = first;
 			/* Move back the original string so we have enough
 			 * space for the modified string. */
-			/* TODO: move *sz - (first - *s) instead of *sz */
-			memmove((void *)i.src, i.dst, *sz);
+			memmove((void *)i.src, i.dst, first_len);
 			/* Update the ptrs to point to SRC. */
-			first = (char *)i.src + (first - *s);
-			last = i.src + (last - *s);
-			end = i.src + (end - *s);
+			last = i.src + (last - first);
+			end = i.src + (end - first);
+			first = (char *)i.src;
+			dst_s = *s;
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
 		} else if (use_stack) { /* NEW_SIZE is small enough. */
 			/* DST is the original string. */
-			i.dst = *s;
+			i.dst = first;
 			/* SRC is the stack string. */
 #	if JSTR_HAVE_VLA
 			i.src = stack_buf;
 #	else
-			i.src = (const char *)alloca(*sz);
+			i.src = (const char *)alloca(first_len);
 #	endif
 			/* Copy the original string to SRC. */
-			memcpy((char *)i.src, *s, *sz);
+			memcpy((void *)i.src, i.dst, first_len);
 			/* Update the ptrs to point to SRC. */
-			first = (char *)i.src + (first - *s);
-			last = i.src + (last - *s);
-			end = i.src + (end - *s);
+			last = i.src + (last - first);
+			end = i.src + (end - first);
+			first = (char *)i.src;
+			dst_s = *s;
 #endif
 		} else { /* Capacity is too small or we can't use a stack buffer. */
 			i.dst = NULL;
@@ -939,8 +941,8 @@ loop1:
 				goto err;
 			/* Currently, i.src = *s + start_idx */
 			i.src = *s;
+			dst_s = i.dst;
 		}
-		char *const dst_s = i.dst;
 		size_t j;
 		n = changed;
 		/* Cache first match. */
