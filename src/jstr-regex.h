@@ -559,6 +559,7 @@ JSTR_NOEXCEPT
 	return rplc_len;
 }
 
+/* Return ptr to first backref. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
@@ -566,24 +567,22 @@ jstr__re_rplcbackreffirst(const char *backref, size_t backref_len)
 {
 	if (jstr_unlikely(backref_len < 2))
 		return NULL;
-	for (const char *backref_e = backref + backref_len; (backref = (const char *)memchr(backref, '\\', JSTR_DIFF(backref_e, backref))) && !jstr_isdigit(*(backref + 1)); backref += 2) {}
+	for (const char *backref_e = backref + backref_len - 1; (backref = (const char *)memchr(backref, '\\', JSTR_DIFF(backref_e, backref))) && !jstr_isdigit(*(backref + 1)); backref += 2) {}
 	return (char *)backref;
 }
 
-#if 0 /* unused */
-
+/* Return ptr to the end of the last backref. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static char *
-jstr__re_rplcbackreflast(const char *backref, size_t backref_len)
+jstr__re_rplcbackreflast(const unsigned char *backref, size_t backref_len)
 {
 	if (backref_len >= 4) {
 		backref += 2;
-		backref_len -= 2;
-		const char *p;
-		const char *end = backref + backref_len - 1;
+		const unsigned char *p;
+		const unsigned char *end = backref + backref_len - 1;
 		for (;; --end) {
-			p = (const char *)jstr_memrchr(backref, '\\', JSTR_DIFF(end, backref));
+			p = (const unsigned char *)jstr_memrchr(backref, '\\', JSTR_DIFF(end, backref));
 			if (jstr_unlikely(p == NULL))
 				break;
 			if (jstr_isdigit(*(p + 1)))
@@ -593,9 +592,6 @@ jstr__re_rplcbackreflast(const char *backref, size_t backref_len)
 	return NULL;
 }
 
-#endif
-
-/* TODO: use memchr to find backrefs to make it faster for longer RPLCs. */
 /* Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
@@ -655,6 +651,7 @@ JSTR_NOEXCEPT
 	/* If not, fallback to re_rplcn_len. */
 	if (jstr_nullchk(rplc_backref1))
 		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
+	const unsigned char *rplc_backref1_e = (const unsigned char *)jstr__re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
 	int ret;
 	regmatch_t rm[10];
 	size_t rbackref_len;
@@ -671,7 +668,7 @@ JSTR_NOEXCEPT
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free_rbackref);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
-		rbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, (const unsigned char *)rplc + rplc_len, rplc_len NMATCH_ARG);
+		rbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 		if (jstr_likely(rbackref_len <= sizeof(rbackref_stack))) {
 			rbackrefp = rbackref_stack;
 		} else {
