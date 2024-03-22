@@ -901,6 +901,7 @@ loop1:
 		char stack_buf[!can_fit && use_stack ? *sz : 1];
 #	endif
 #endif
+		/* TODO: use *sz - (first - *s) instead of *sz. */
 		/* If the original string has enough capacity to fit both
 		 * itself and the modified string, avoid allocation by pushing
 		 * back the original string to make room for the modified string. */
