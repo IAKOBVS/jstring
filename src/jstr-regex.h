@@ -369,20 +369,20 @@ JSTR_NOEXCEPT
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-jstr__rplcallsmallerrplc(char *s, size_t *R sz, char **dst, const char **src, char **src_e, const char *R rplc, size_t rplc_len, size_t find_len)
+jstr__rplcallsmallerrplc(char *s, size_t *R sz, jstr__inplace_ty *R const i, const char *R rplc, size_t rplc_len, size_t find_len)
 {
-	if (*dst != *src) {
-		*dst = (char *)
-		jstr_mempmove(*dst, *src, JSTR_DIFF(*src_e, *src));
-		jstr_strmove_len(*dst + rplc_len, *src_e + find_len, JSTR_DIFF(s + *sz, *src_e + find_len));
-		*dst = (char *)jstr_mempcpy(*dst, rplc, rplc_len);
-		*src = *dst;
+	if (i->dst != i->src) {
+		i->dst = (char *)
+		jstr_mempmove(i->dst, i->src, JSTR_DIFF(i->src_e, i->src));
+		jstr_strmove_len(i->dst + rplc_len, i->src_e + find_len, JSTR_DIFF(s + *sz, i->src_e + find_len));
+		i->dst = (char *)jstr_mempcpy(i->dst, rplc, rplc_len);
+		i->src = i->dst;
 	} else {
-		jstr_strmove_len(*src_e + rplc_len, *src_e + find_len, JSTR_DIFF(s + *sz, *src_e + find_len));
-		memcpy(*src_e, rplc, rplc_len);
+		jstr_strmove_len(i->src_e + rplc_len, i->src_e + find_len, JSTR_DIFF(s + *sz, i->src_e + find_len));
+		memcpy(i->src_e, rplc, rplc_len);
 	}
 	*sz += rplc_len - find_len;
-	*src_e += rplc_len;
+	i->src_e += rplc_len;
 }
 
 /* Return value:
@@ -391,22 +391,22 @@ jstr__rplcallsmallerrplc(char *s, size_t *R sz, char **dst, const char **src, ch
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, char **dst, const char **src, char **src_e, const char *R rplc, size_t rplc_len, size_t find_len)
+jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, jstr__inplace_ty *R const i, const char *R rplc, size_t rplc_len, size_t find_len)
 {
-	if (*dst != *src)
-		memmove(*dst, *src, JSTR_DIFF(*src_e, *src));
+	if (i->dst != i->src)
+		memmove(i->dst, i->src, JSTR_DIFF(i->src_e, i->src));
 	if (*cap <= *sz + rplc_len - find_len) {
 		char *tmp = *s;
 		if (jstr_chk(jstr_reservealways(&tmp, sz, cap, *sz + rplc_len - find_len)))
 			return JSTR_RET_ERR;
-		*src_e = tmp + (*src_e - *s);
-		*dst = tmp + (*dst - *s);
+		i->src_e = tmp + (i->src_e - *s);
+		i->dst = tmp + (i->dst - *s);
 		*s = tmp;
 	}
-	jstr_strmove_len(*src_e + rplc_len, *src_e + find_len, JSTR_DIFF(*s + *sz, *src_e + find_len));
-	*src_e = (char *)jstr_mempcpy(*src_e, rplc, rplc_len);
-	*dst += rplc_len;
-	*src = *dst;
+	jstr_strmove_len(i->src_e + rplc_len, i->src_e + find_len, JSTR_DIFF(*s + *sz, i->src_e + find_len));
+	i->src_e = (char *)jstr_mempcpy(i->src_e, rplc, rplc_len);
+	i->dst += rplc_len;
+	i->src = i->dst;
 	*sz += rplc_len - find_len;
 	return JSTR_RET_SUCC;
 }
@@ -438,8 +438,8 @@ JSTR_NOEXCEPT
 			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, (size_t)find_len);
 		} else {
 			if (*cap > *sz + rplc_len - (size_t)find_len) {
-				jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rplc, rplc_len, (size_t)find_len);
-			} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rplc, rplc_len, (size_t)find_len))) {
+				jstr__rplcallsmallerrplc(*s, sz, &i, rplc, rplc_len, (size_t)find_len);
+			} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i, rplc, rplc_len, (size_t)find_len))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
@@ -704,8 +704,8 @@ JSTR_NOEXCEPT
 			JSTR__INPLACE_RPLCALL(i, rbackrefp, rbackref_len, (size_t)find_len);
 		} else {
 			if (*cap > *sz + rbackref_len - (size_t)find_len) {
-				jstr__rplcallsmallerrplc(*s, sz, &i.dst, &i.src, &i.src_e, rbackrefp, rbackref_len, (size_t)find_len);
-			} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i.dst, &i.src, &i.src_e, rbackrefp, rbackref_len, (size_t)find_len))) {
+				jstr__rplcallsmallerrplc(*s, sz, &i, rbackrefp, rbackref_len, (size_t)find_len);
+			} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i, rbackrefp, rbackref_len, (size_t)find_len))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err_free_rbackref;
 			}
