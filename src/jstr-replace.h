@@ -60,16 +60,14 @@ typedef struct jstr__inplace_ty {
 		(i).src_e += find_len;                           \
 	} while (0)
 
-#define JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len)                    \
-	do {                                                                  \
-		const size_t _n = JSTR_DIFF((i).src_e, (i).src);              \
-		if (                                                          \
-		jstr_likely(find_len != rplc_len)                             \
-		&& jstr_likely((i).dst != (i).src))                           \
-			memmove((i).dst, (i).src, _n);                        \
-		(i).dst = (char *)jstr_mempcpy((i).dst + _n, rplc, rplc_len); \
-		(i).src += _n + find_len;                                     \
-		(i).src_e += find_len;                                        \
+#define JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len)                                \
+	do {                                                                              \
+		const size_t _n = JSTR_DIFF((i).src_e, (i).src);                          \
+		if (jstr_likely(find_len != rplc_len) && jstr_likely((i).dst != (i).src)) \
+			memmove((i).dst, (i).src, _n);                                    \
+		(i).dst = (char *)jstr_mempcpy((i).dst + _n, rplc, rplc_len);             \
+		(i).src += _n + find_len;                                                 \
+		(i).src_e += find_len;                                                    \
 	} while (0)
 
 /* Insert SRC into DST[AT].
@@ -943,6 +941,7 @@ loop1:
 			i.src = *s;
 		}
 		char *const dst_s = i.dst;
+		size_t j;
 		n = changed;
 		/* Cache first match. */
 		i.src_e = first;
@@ -950,8 +949,11 @@ loop1:
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find))) {
 loop2:
 			--n;
+			j = JSTR_DIFF(i.src_e, i.src);
 			/* We must use memmove because DST and SRC may overlap if CAN_FIT is true. */
-			i.dst = (char *)jstr_mempmove(i.dst, i.src, JSTR_DIFF(i.src_e, i.src));
+			if (jstr_likely(find_len != rplc_len))
+				memmove(i.dst, i.src, j);
+			i.dst += j;
 			i.dst = (char *)jstr_mempmove(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
