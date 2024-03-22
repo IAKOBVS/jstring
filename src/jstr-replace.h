@@ -941,7 +941,7 @@ loop1:
 		}
 		char *const dst_s = i.dst;
 		/* We must use memmove because DST and SRC may overlap if CAN_FIT is true. */
-		if (start_idx)
+		if (start_idx && i.dst != *s)
 			i.dst = (char *)jstr_mempmove(i.dst, *s, start_idx);
 		n = changed;
 		i.src_e = first;
