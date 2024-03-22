@@ -459,7 +459,6 @@ ret:;
 
 #else
 
-#	define JSTR_HAVENT_MEMMEM_SIMD         1 /* Doesn't pass test-memmem. */
 #	define JSTR__SIMD_RETTYPE          void *
 #	define JSTR__SIMD_MEMMEM_FUNC_NAME jstr__simd_memmem
 #	include "_simd-memmem.h"

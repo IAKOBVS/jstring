@@ -81,7 +81,6 @@ JSTR__END_DECLS
 
 JSTR__BEGIN_DECLS
 
-/* FIXME: this doesn't pass test-memmem */
 /* ne_len must be <= VEC_SIZE */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -127,7 +126,7 @@ JSTR_NOEXCEPT
 	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
 	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
 	/* Clear matched bits that are out of bounds. */
-	m = (hm0 & hm1 >> off_s) & (ONES >> off_e);
+	m = ((hm0 & hm1) >> off_s) & (ONES >> off_e);
 	while (m) {
 		i = TZCNT(m);
 		m = BLSR(m);
