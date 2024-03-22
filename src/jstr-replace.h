@@ -896,12 +896,12 @@ loop1:
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
 		/* The original string must fit in the stack buffer and the modified
 		 * string must fit in the original string. */
+		/* TODO: use *sz - (first - *s) instead of *sz. */
 		const int use_stack = *sz <= MAX_STACK && *cap >= new_size;
 #	if JSTR_HAVE_VLA
 		char stack_buf[!can_fit && use_stack ? *sz : 1];
 #	endif
 #endif
-		/* TODO: use *sz - (first - *s) instead of *sz. */
 		/* If the original string has enough capacity to fit both
 		 * itself and the modified string, avoid allocation by pushing
 		 * back the original string to make room for the modified string. */
@@ -912,6 +912,7 @@ loop1:
 			i.dst = *s;
 			/* Move back the original string so we have enough
 			 * space for the modified string. */
+			/* TODO: move *sz - (first - *s) instead of *sz */
 			memmove((void *)i.src, i.dst, *sz);
 			/* Update the ptrs to point to SRC. */
 			first = (char *)i.src + (first - *s);
@@ -938,7 +939,8 @@ loop1:
 			i.dst = NULL;
 			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
 				goto err;
-			i.dst = (char *)jstr_mempcpy(i.dst, *s, start_idx);
+			/* Currently, i.src = *s + start_idx */
+			i.src = *s;
 		}
 		char *const dst_s = i.dst;
 		n = changed;
