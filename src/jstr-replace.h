@@ -891,20 +891,24 @@ loop1:
 		char *dst_s;
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
 		const size_t first_len = *sz - JSTR_DIFF(first, *s);
-		const int can_fit = *cap >= new_size + first_len;
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe avoid malloc. */
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
+		enum { USE_MALLOC = 0, USE_MOVE, USE_STACK };
+		int mode = USE_MALLOC;
+		if (*cap >= new_size + first_len)
+			mode = USE_MOVE;
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe avoid malloc. */
 		/* The original string must fit in the stack buffer and the modified
 		 * string must fit in the original string. */
-		const int use_stack = first_len <= MAX_STACK && *cap >= new_size;
+		else if (!mode && first_len <= MAX_STACK && *cap >= new_size)
+			mode = USE_STACK;
 #	if JSTR_HAVE_VLA
-		char stack_buf[!can_fit && use_stack ? first_len : 1];
+		char stack_buf[mode & USE_STACK ? first_len : 1];
 #	endif
 #endif
 		/* If the original string has enough capacity to fit both
 		 * itself and the modified string, avoid allocation by pushing
 		 * back the original string to make room for the modified string. */
-		if (can_fit) {
+		if (mode == USE_MOVE) {
 			/* SRC is the original string + NEW_SIZE. */
 			i.src = *s + new_size;
 			/* DST is original string. */
@@ -918,7 +922,7 @@ loop1:
 			first = (char *)i.src;
 			dst_s = *s;
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
-		} else if (use_stack) { /* NEW_SIZE is small enough. */
+		} else if (mode == USE_STACK) { /* NEW_SIZE is small enough. */
 			/* DST is the original string. */
 			i.dst = first;
 			/* SRC is the stack string. */
@@ -961,12 +965,9 @@ loop2:
 		}
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
 		/* We don't need to free if we didn't malloc. */
-		if (!can_fit
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		    && !use_stack
-#endif
-		) {
+		if (mode == USE_MALLOC) {
 			free(*s);
+			/* *S is currently the SRC string. */
 			*s = dst_s;
 		}
 	}
