@@ -870,7 +870,7 @@ JSTR_NOEXCEPT
 		if (jstr_nullchk(first))
 			return 0;
 		i.src_e = first;
-		const char *last = end;
+		const char *last;
 		goto loop1;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find))) {
 loop1:
@@ -886,8 +886,9 @@ loop1:
 				goto err;
 			return 1;
 		}
-		if (last != end)
-			last += find_len;
+		/* Currently last points to the last match. We are going to make it point
+		 * to the end of the last match. */
+		last += find_len;
 		char *dst_s;
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
 		const size_t first_len = *sz - JSTR_DIFF(first, *s);
