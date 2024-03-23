@@ -906,7 +906,7 @@ loop1:
 		char stack_buf[mode & USE_STACK ? first_len : 1];
 #	endif
 #endif
-		/* If the original string has enough capacity to fit both
+		/* If the source string has enough capacity to fit both
 		 * itself and the destination string, avoid allocation by pushing
 		 * back the source string to make room for the destination string. */
 		if (mode == USE_MOVE) {
