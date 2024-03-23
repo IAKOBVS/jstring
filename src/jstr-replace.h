@@ -899,7 +899,7 @@ loop1:
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe avoid malloc. */
 		/* The original string must fit in the stack buffer and the modified
 		 * string must fit in the original string. */
-		else if (!mode && first_len <= MAX_STACK && *cap >= new_size)
+		else if (first_len <= MAX_STACK && *cap >= new_size)
 			mode = USE_STACK;
 #	if JSTR_HAVE_VLA
 		char stack_buf[mode & USE_STACK ? first_len : 1];
