@@ -894,9 +894,10 @@ loop1:
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
 		enum { USE_MALLOC = 0, USE_MOVE, USE_STACK };
 		int mode = USE_MALLOC;
+		/* Avoid malloc if we can fit the SRC + DST string. */
 		if (*cap >= new_size + first_len)
 			mode = USE_MOVE;
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe avoid malloc. */
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
 		/* The original string must fit in the stack buffer and the modified
 		 * string must fit in the original string. */
 		else if (first_len <= MAX_STACK && *cap >= new_size)
