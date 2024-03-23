@@ -894,12 +894,12 @@ loop1:
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
 		enum { USE_MALLOC = 0, USE_MOVE, USE_STACK };
 		int mode = USE_MALLOC;
-		/* Avoid malloc if we can fit the SRC + DST string. */
+		/* Avoid malloc if we can fit the source and destination string. */
 		if (*cap >= new_size + first_len)
 			mode = USE_MOVE;
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		/* The original string must fit in the stack buffer and the modified
-		 * string must fit in the original string. */
+		/* We can fit the source string in the stack buffer
+		 * and the destination string doesn't need realloc'ing. */
 		else if (first_len <= MAX_STACK && *cap >= new_size)
 			mode = USE_STACK;
 #	if JSTR_HAVE_VLA
@@ -907,15 +907,15 @@ loop1:
 #	endif
 #endif
 		/* If the original string has enough capacity to fit both
-		 * itself and the modified string, avoid allocation by pushing
-		 * back the original string to make room for the modified string. */
+		 * itself and the destination string, avoid allocation by pushing
+		 * back the source string to make room for the destination string. */
 		if (mode == USE_MOVE) {
-			/* SRC is the original string + NEW_SIZE. */
+			/* SRC is the source string + NEW_SIZE. */
 			i.src = *s + new_size;
-			/* DST is original string. */
+			/* DST is source string. */
 			i.dst = first;
-			/* Move back the original string so we have enough
-			 * space for the modified string. */
+			/* Move back the source string so we have enough
+			 * space for the destination string. */
 			memmove((void *)i.src, i.dst, first_len);
 			/* Update the ptrs to point to SRC. */
 			last = i.src + (last - first);
@@ -924,15 +924,15 @@ loop1:
 			dst_s = *s;
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
 		} else if (mode == USE_STACK) { /* NEW_SIZE is small enough. */
-			/* DST is the original string. */
+			/* DST is the source string. */
 			i.dst = first;
-			/* SRC is the stack string. */
+			/* SRC is the stack buffer. */
 #	if JSTR_HAVE_VLA
 			i.src = stack_buf;
 #	else
 			i.src = (const char *)alloca(first_len);
 #	endif
-			/* Copy the original string to SRC. */
+			/* Copy the source string to SRC. */
 			memcpy((void *)i.src, i.dst, first_len);
 			/* Update the ptrs to point to SRC. */
 			last = i.src + (last - first);
@@ -968,7 +968,7 @@ loop2:
 		/* We don't need to free if we didn't malloc. */
 		if (mode == USE_MALLOC) {
 			free(*s);
-			/* *S is currently the SRC string. */
+			/* *S is currently the source string. */
 			*s = dst_s;
 		}
 	}
