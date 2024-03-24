@@ -326,7 +326,7 @@ JSTR_NOEXCEPT
 		changed += find_len;
 		JSTR__INPLACE_RMALL(i, find_len);
 	}
-	if (i.dst != i.src)
+	if (changed)
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
 	return changed;
 }
@@ -361,7 +361,7 @@ JSTR_NOEXCEPT
 	size_t changed = 0;
 	for (; n-- && (i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))); ++changed)
 		JSTR__INPLACE_RMALL(i, 1);
-	if (i.dst != i.src)
+	if (changed)
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), s);
 	return changed;
 }
@@ -417,7 +417,7 @@ JSTR_NOEXCEPT
 	size_t changed = 0;
 	for (; n-- && *(i.src_e = jstr_strchrnul((char *)i.src_e, c)); ++changed)
 		JSTR__INPLACE_RMALL(i, 1);
-	if (i.dst != i.src)
+	if (changed)
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
 	return changed;
 }
@@ -525,7 +525,7 @@ JSTR_NOEXCEPT
 	size_t changed = 0;
 	for (; *(i.src_e += strcspn(i.src_e, reject)); ++changed)
 		JSTR__INPLACE_RMALL(i, 1);
-	if (i.dst != i.src)
+	if (changed)
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
 	return changed;
 }
@@ -863,7 +863,7 @@ JSTR_NOEXCEPT
 	if (rplc_len <= find_len) {
 		for (; n-- && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); ++changed)
 			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
-		if (i.dst != i.src)
+		if (changed)
 			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	} else {
 		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find);
