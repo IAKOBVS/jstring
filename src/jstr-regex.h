@@ -274,18 +274,17 @@ JSTR_NOEXCEPT
 	size_t find_len;
 	int ret;
 	jstr_re_off_ty changed = 0;
-	for (; n && i.src_e < end;) {
+	for (; n-- && i.src_e < end; ++changed) {
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		JSTR__INPLACE_RMALL(i, find_len);
 		++changed;
-		--n;
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
 	}
-	if (i.dst != i.src)
+	if (changed)
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	return changed;
 err_free:
@@ -446,7 +445,7 @@ JSTR_NOEXCEPT
 				++i.src_e;
 		}
 	}
-	if (i.dst != i.src)
+	if (changed)
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), *s);
 	return changed;
 err:
@@ -712,7 +711,7 @@ JSTR_NOEXCEPT
 		if (jstr_unlikely(find_len == 0))
 			++i.src;
 	}
-	if (i.dst != i.src)
+	if (changed)
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), *s);
 	free(rbackref_heap);
 	return changed;
