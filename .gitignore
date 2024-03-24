@@ -1,6 +1,2 @@
-t
+scripts/check-little-endian
 jstr
-legacy
-glibc
-./bin/generate-ctow
-./bin/is-little-endian
