@@ -319,15 +319,26 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
+	if (jstr_unlikely(*i.src_e == '\0')
+	    || !(*(i.src_e += strcspn(i.src_e, reject))))
+		return 0;
 	size_t find_len;
 	size_t changed = 0;
+	size_t j = JSTR_DIFF(i.src_e, i.src);
+	find_len = strspn(i.src_e, reject);
+	changed += find_len;
+	goto start;
 	while (*i.src_e && (*(i.src_e += strcspn(i.src_e, reject)))) {
 		find_len = strspn(i.src_e, reject);
 		changed += find_len;
-		JSTR__INPLACE_RMALL(i, find_len);
+		j = JSTR_DIFF(i.src_e, i.src);
+		memmove(i.dst, i.src, j);
+start:
+		i.dst += j;
+		i.src += j + find_len;
+		i.src_e += find_len;
 	}
-	if (i.dst != i.src)
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
 	return changed;
 }
 
@@ -354,15 +365,24 @@ jstr_rmnchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	if (jstr_unlikely(n == 0))
-		return 0;
 	const char *const end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
+	if (jstr_unlikely(*i.src_e == '\0')
+	    || !(i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e)))
+	    || jstr_unlikely(n == 0))
+		return 0;
 	size_t changed = 0;
-	for (; n-- && (i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))); ++changed)
-		JSTR__INPLACE_RMALL(i, 1);
-	if (i.dst != i.src)
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), s);
+	size_t j = JSTR_DIFF(i.src_e, i.src);
+	goto start;
+	for (; n && (i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))); --n, ++changed) {
+		j = JSTR_DIFF(i.src_e, i.src);
+		memmove(i.dst, i.src, j);
+start:
+		i.dst += j;
+		i.src += j + 1;
+		++i.src_e;
+	}
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), s);
 	return changed;
 }
 
@@ -414,11 +434,22 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
+	if (jstr_unlikely(*i.src_e == '\0')
+	    || !*(i.src_e = jstr_strchrnul((char *)i.src_e, c))
+	    || jstr_unlikely(n == 0))
+		return 0;
 	size_t changed = 0;
-	for (; n-- && *(i.src_e = jstr_strchrnul((char *)i.src_e, c)); ++changed)
-		JSTR__INPLACE_RMALL(i, 1);
-	if (i.dst != i.src)
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
+	size_t j = JSTR_DIFF(i.src_e, i.src);
+	goto start;
+	for (; n && *(i.src_e = jstr_strchrnul((char *)i.src_e, c)); --n, ++changed) {
+		j = JSTR_DIFF(i.src_e, i.src);
+		memmove(i.dst, i.src, j);
+start:
+		i.dst += j;
+		i.src += j + 1;
+		++i.src_e;
+	}
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
 	return changed;
 }
 
@@ -522,10 +553,21 @@ jstr_stripspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reje
 JSTR_NOEXCEPT
 {
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
+	if (jstr_unlikely(*i.src_e == '\0')
+	    || !*(i.src_e += strcspn(i.src_e, reject)))
+		return 0;
 	size_t changed = 0;
-	for (; *(i.src_e += strcspn(i.src_e, reject)); ++changed)
-		JSTR__INPLACE_RMALL(i, 1);
-	if (i.dst != i.src)
+	size_t j = JSTR_DIFF(i.src_e, i.src);
+	goto start;
+	for (; *(i.src_e += strcspn(i.src_e, reject)); ++changed) {
+		j = JSTR_DIFF(i.src_e, i.src);
+		memmove(i.dst, i.src, j);
+start:
+		i.dst += j;
+		i.src += j + 1;
+		++i.src_e;
+	}
+	if (changed)
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(i.src_e, i.src)), s);
 	return changed;
 }
@@ -720,15 +762,25 @@ JSTR_NOEXCEPT
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	if (find_len == 1)
 		return jstr_rmnchr_len(s, sz, *find, n);
-	if (jstr_unlikely(find_len == 0) || jstr_unlikely(n == 0))
+	if (jstr_unlikely(find_len == 0))
 		return 0;
 	const char *const end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
+	if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find))
+	    || jstr_unlikely(n == 0))
+		return 0;
 	size_t changed = 0;
-	for (; n-- && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); ++changed)
-		JSTR__INPLACE_RMALL(i, find_len);
-	if (i.dst != end)
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), s);
+	size_t j = JSTR_DIFF(i.src_e, i.src);
+	goto start;
+	for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); --n, ++changed) {
+		j = JSTR_DIFF(i.src_e, i.src);
+		memmove(i.dst, i.src, j);
+start:
+		i.dst += j;
+		i.src += j + find_len;
+		i.src_e += find_len;
+	}
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), s);
 	return changed;
 }
 
@@ -861,16 +913,26 @@ JSTR_NOEXCEPT
 	size_t changed = 0;
 	const char *end = *s + *sz;
 	if (rplc_len <= find_len) {
-		for (; n-- && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); ++changed)
-			JSTR__INPLACE_RPLCALL(i, rplc, rplc_len, find_len);
-		if (i.dst != i.src)
-			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
+		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
+			return 0;
+		size_t j = JSTR_DIFF(i.src_e, i.src);
+		goto start;
+		for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); --n, ++changed) {
+			j = JSTR_DIFF(i.src_e, i.src);
+			if (jstr_likely(find_len != rplc_len))
+				memmove(i.dst, i.src, j);
+start:
+			i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
+			i.src += j + find_len;
+			i.src_e += find_len;
+		}
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	} else {
 		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find);
 		if (jstr_nullchk(first))
 			return 0;
 		i.src_e = first;
-		const char *last = end;
+		const char *last;
 		goto loop1;
 		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find))) {
 loop1:
@@ -886,13 +948,16 @@ loop1:
 				goto err;
 			return 1;
 		}
-		if (last != end)
-			last += find_len;
+		/* Currently last points to the last match. We are going to make it point
+		 * to the end of the last match. */
+		last += find_len;
 		char *dst_s;
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
 		const size_t first_len = *sz - JSTR_DIFF(first, *s);
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
-		enum { USE_MALLOC = 0, USE_MOVE, USE_STACK };
+		enum { USE_MALLOC = 0,
+		       USE_MOVE,
+		       USE_STACK };
 		int mode = USE_MALLOC;
 		/* Avoid malloc if we can fit the source and destination string. */
 		if (*cap >= new_size + first_len)
