@@ -689,6 +689,7 @@ JSTR_NOEXCEPT
 	if (jstr_nullchk(rplc_backref1))
 		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 	const unsigned char *rplc_backref1_e = (const unsigned char *)jstr__re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
+	size_t j;
 	int ret;
 	regmatch_t rm[10];
 	size_t rbackref_len;
@@ -738,7 +739,12 @@ JSTR_NOEXCEPT
 		i.src_e += rm[0].rm_so;
 		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
 		if (rbackref_len <= (size_t)find_len) {
-			JSTR__INPLACE_RPLCALL(i, rbackrefp, rbackref_len, (size_t)find_len);
+			j = JSTR_DIFF(i.src_e, i.src);
+			if (jstr_likely(rbackref_len != rplc_len) && jstr_likely(i.dst != i.src))
+				memmove(i.dst, i.src, j);
+			i.dst = (char *)jstr_mempcpy(i.dst + j, rbackrefp, rplc_len);
+			i.src += j + rbackref_len;
+			i.src_e += rbackref_len;
 		} else {
 			if (*cap > *sz + rbackref_len - (size_t)find_len) {
 				jstr__rplcallsmallerrplc(*s, sz, &i, rbackrefp, rbackref_len, (size_t)find_len);

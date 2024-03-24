@@ -50,23 +50,6 @@ typedef struct jstr__inplace_ty {
 		str, str, str   \
 	}
 
-#define JSTR__INPLACE_RMALL_FIRST(i, find_len)                   \
-	do {                                                     \
-		const size_t _n = JSTR_DIFF((i).src_e, (i).src); \
-		(i).dst += _n;                                   \
-		(i).src += _n + find_len;                        \
-		(i).src_e += find_len;                           \
-	} while (0)
-
-#define JSTR__INPLACE_RMALL_LOOP(i, find_len)                    \
-	do {                                                     \
-		const size_t _n = JSTR_DIFF((i).src_e, (i).src); \
-		memmove((i).dst, (i).src, _n);                   \
-		(i).dst += _n;                                   \
-		(i).src += _n + find_len;                        \
-		(i).src_e += find_len;                           \
-	} while (0)
-
 #define JSTR__INPLACE_RMALL(i, find_len)                         \
 	do {                                                     \
 		const size_t _n = JSTR_DIFF((i).src_e, (i).src); \
