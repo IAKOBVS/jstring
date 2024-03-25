@@ -474,7 +474,6 @@ JSTR_NOEXCEPT
 	return jstr_re_rplc_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags);
 }
 
-/* TODO: use zero allocation as does jstr_rplcn. */
 /* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
  * Use rplc/rm instead.
  * Return value:
@@ -497,47 +496,43 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	jstr_re_off_ty changed = 0;
 	size_t j;
+	char *dst_s;
 	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 		find_len = rm.rm_eo - rm.rm_so;
 		i.src_e += rm.rm_so;
-		if (rplc_len <= (size_t)find_len) {
-			j = JSTR_DIFF(i.src_e, i.src);
-			goto start_small;
-		} else {
-			goto start_big;
+		j = JSTR_DIFF(i.src_e, i.src);
+		i.dst = NULL;
+		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * 2))) {
+			ret = JSTR_RE_RET_ESPACE;
+			goto err;
 		}
+		dst_s = i.dst;
+		goto start_big;
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
-	} else {
-		goto err;
 	}
+	goto err;
 	for (; n && i.src_e < *s + *sz; --n, ++changed) {
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
 		i.src_e += rm.rm_so;
-		if (rplc_len <= (size_t)find_len) {
-			j = JSTR_DIFF(i.src_e, i.src);
-			if (jstr_likely((size_t)find_len != rplc_len))
-				memmove(i.dst, i.src, j);
-start_small:
-			i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
-			i.src += j + (size_t)find_len;
-			i.src_e += find_len;
-		} else {
-start_big:
-			if (*cap > *sz + rplc_len - (size_t)find_len) {
-				jstr__rplcallsmallerrplc(*s, sz, &i, rplc, rplc_len, (size_t)find_len);
-			} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i, rplc, rplc_len, (size_t)find_len))) {
-				ret = JSTR_RE_RET_ESPACE;
-				goto err;
-			}
-			if (jstr_unlikely(find_len == 0))
-				++i.src_e;
+		j = JSTR_DIFF(i.src_e, i.src);
+		if (jstr_chk(jstr_reserve(&i.dst, sz, cap, *sz + rplc_len - (size_t)find_len))) {
+			ret = JSTR_RE_RET_ESPACE;
+			goto err;
 		}
+start_big:
+		if (jstr_likely((size_t)find_len != rplc_len))
+			memmove(i.dst, i.src, j);
+		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
+		i.src += j + (size_t)find_len;
+		i.src_e += find_len;
 	}
-	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), *s);
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), dst_s);
+	free(*s);
+	*s = dst_s;
 	return changed;
 err:
 	jstr_free_noinline(s, sz, cap);
