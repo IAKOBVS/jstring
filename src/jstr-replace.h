@@ -1024,7 +1024,7 @@ loop2:
 			if (jstr_likely(find_len != rplc_len))
 				memmove(i.dst, i.src, j);
 			i.dst += j;
-			i.dst = (char *)jstr_mempmove(i.dst, rplc, rplc_len);
+			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
 		/* Don't free if we didn't malloc. */
