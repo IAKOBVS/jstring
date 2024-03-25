@@ -1021,7 +1021,7 @@ loop2:
 			--n;
 			j = JSTR_DIFF(i.src_e, i.src);
 			/* We must use memmove because DST and SRC may overlap if CAN_FIT is true. */
-			if (jstr_likely(find_len != rplc_len))
+			if (!(mode & USE_MALLOC))
 				memmove(i.dst, i.src, j);
 			i.dst += j;
 			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
@@ -1033,8 +1033,7 @@ loop2:
 			/* *S is currently the source string. */
 			*s = dst_s;
 		}
-		if (jstr_likely(find_len != rplc_len))
-			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
 	}
 	return changed;
 err:
