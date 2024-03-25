@@ -593,7 +593,7 @@ static char *
 jstr_rmat_len_p(char *R s, size_t sz, size_t at, size_t find_len)
 JSTR_NOEXCEPT
 {
-	memmove(s + at, s + at + find_len, JSTR_DIFF(s + sz, s + at));
+	jstr_strmove_len(s + at, s + at + find_len, JSTR_DIFF(s + sz, s + at));
 	return s + sz - find_len;
 }
 
@@ -608,12 +608,10 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(find_len == 0))
 		return 0;
-	char *const p
-	= (char *)jstr_memmem_exec(t, s + start_idx, *sz - start_idx, find);
+	char *const p = (char *)jstr_memmem_exec(t, s + start_idx, *sz - start_idx, find);
 	if (p == NULL)
 		return 0;
-	memmove(p, p + find_len, JSTR_DIFF(s + *sz, p));
-	*sz -= find_len;
+	*sz = JSTR_DIFF(jstr_rmat_len_p(s, *sz, JSTR_DIFF(p, *s), find_len), *s);
 	return 1;
 }
 
