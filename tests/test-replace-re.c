@@ -9,7 +9,11 @@
 		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
 		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
 	} while (0)
-#define FILL(result, str) assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str))))
+#define FILL(result, str)                                                                     \
+	do {                                                                                  \
+		jstr_free_j(&result);                                                         \
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
+	} while (0)
 #define T_APPEND_NORET(func, ...)                 \
 	do {                                      \
 		TESTING(func);                    \
@@ -25,12 +29,12 @@
 		find = _find;                                                                                \
 		rplc = _rplc;                                                                                \
 		expected = _expected;                                                                        \
-		regex_t preg;\
+		regex_t preg;                                                                                \
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                     \
 		T_APPEND_NORET(jstr_re_rplcn_len, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _n); \
 		jstr_re_free(&preg);                                                                         \
-		(void)find;\
-		(void)rplc;\
+		(void)find;                                                                                  \
+		(void)rplc;                                                                                  \
 	} while (0)
 
 int
