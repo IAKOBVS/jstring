@@ -273,13 +273,10 @@ JSTR_NOEXCEPT
 		char *at = *s + start_idx + rm.rm_so;
 		jstr_strmove_len(at, at + rm.rm_eo, *sz - (size_t)rm.rm_eo);
 		*sz -= (size_t)(rm.rm_eo - rm.rm_so);
+		return 1;
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
-	} else {
-		goto err;
 	}
-	return 1;
-err:
 	jstr_free_noinline(s, sz, cap);
 	JSTR_RE_RETURN_ERR(ret, preg);
 }
