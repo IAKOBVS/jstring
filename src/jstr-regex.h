@@ -530,6 +530,8 @@ start_big:
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
+		if (jstr_unlikely(find_len == 0))
+			++i.src;
 	}
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), dst_s);
 	free(*s);
@@ -722,7 +724,7 @@ JSTR_NOEXCEPT
 	jstr_re_off_ty find_len;
 	jstr_re_off_ty changed = 0;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
-	for (; n-- && i.src_e < *s + *sz; ++changed) {
+	for (; n && i.src_e < *s + *sz; --n, ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free_rbackref);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
