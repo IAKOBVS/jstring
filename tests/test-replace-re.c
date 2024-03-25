@@ -11,8 +11,8 @@
 	} while (0)
 #define FILL(result, str)                                                                     \
 	do {                                                                                  \
-		jstr_free_j(&result);                                                         \
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
+		jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);                                                         \
 	} while (0)
 #define T_APPEND_NORET(func, ...)                 \
 	do {                                      \
