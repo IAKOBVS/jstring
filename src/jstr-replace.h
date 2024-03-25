@@ -111,7 +111,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + rplc_len - find_len)))
 		return NULL;
-	if (rplc_len != find_len)
+	if (jstr_likely(rplc_len != find_len))
 		jstr_strmove_len(*s + at + rplc_len, *s + at + find_len, *sz - (at + find_len));
 	*sz += rplc_len - find_len;
 	return (char *)jstr_mempcpy(*s + at, rplc, rplc_len);
@@ -859,8 +859,7 @@ JSTR_NOEXCEPT
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	if (jstr_unlikely(find_len == 0))
 		return 0;
-	char *p
-	= (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find);
+	char *p = (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find);
 	if (p == NULL)
 		return 0;
 	if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(p, *s), rplc, rplc_len, find_len)))
