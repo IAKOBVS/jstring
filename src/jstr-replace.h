@@ -593,7 +593,7 @@ static char *
 jstr_rmat_len_p(char *R s, size_t sz, size_t at, size_t find_len)
 JSTR_NOEXCEPT
 {
-	jstr_strmove_len(s + at, s + at + find_len, JSTR_DIFF(s + sz, s + at));
+	jstr_strmove_len(s + at, s + at + find_len, JSTR_DIFF(s + sz, s + at + find_len));
 	return s + sz - find_len;
 }
 
@@ -923,7 +923,8 @@ start:
 			i.src += j + find_len;
 			i.src_e += find_len;
 		}
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
+		if (jstr_likely(rplc_len != find_len))
+			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	} else {
 		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find);
 		if (jstr_nullchk(first))
@@ -1026,9 +1027,10 @@ loop2:
 			i.dst = (char *)jstr_mempmove(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
-		/* We don't need to free if we didn't malloc. */
-		if (mode == USE_MALLOC) {
+		if (mode != USE_MALLOC) {
+			if (jstr_likely(find_len != rplc_len))
+				*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
+		} else {
 			free(*s);
 			/* *S is currently the source string. */
 			*s = dst_s;
