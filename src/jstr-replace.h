@@ -1027,13 +1027,13 @@ loop2:
 			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
 		/* Don't free if we didn't malloc. */
 		if (mode == USE_MALLOC) {
 			free(*s);
 			/* *S is currently the source string. */
 			*s = dst_s;
 		}
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
 	}
 	return changed;
 err:
