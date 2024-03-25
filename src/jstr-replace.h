@@ -367,9 +367,9 @@ JSTR_NOEXCEPT
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	const char *const end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
-	if (jstr_unlikely(*i.src_e == '\0')
-	    || !(i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e)))
-	    || jstr_unlikely(n == 0))
+	if (jstr_unlikely(n == 0)
+	    || jstr_unlikely(*i.src_e == '\0')
+	    || !(i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))))
 		return 0;
 	size_t changed = 0;
 	size_t j = JSTR_DIFF(i.src_e, i.src);
@@ -434,9 +434,9 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
-	if (jstr_unlikely(*i.src_e == '\0')
-	    || !*(i.src_e = jstr_strchrnul((char *)i.src_e, c))
-	    || jstr_unlikely(n == 0))
+	if (jstr_unlikely(n == 0)
+	    || jstr_unlikely(*i.src_e == '\0')
+	    || !*(i.src_e = jstr_strchrnul((char *)i.src_e, c)))
 		return 0;
 	size_t changed = 0;
 	size_t j = JSTR_DIFF(i.src_e, i.src);
@@ -764,8 +764,8 @@ JSTR_NOEXCEPT
 		return 0;
 	const char *const end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
-	if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find))
-	    || jstr_unlikely(n == 0))
+	if (jstr_unlikely(n == 0)
+	    || !(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
 		return 0;
 	size_t changed = 0;
 	size_t j = JSTR_DIFF(i.src_e, i.src);
@@ -1027,14 +1027,14 @@ loop2:
 			i.dst = (char *)jstr_mempmove(i.dst, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
-		if (mode != USE_MALLOC) {
-			if (jstr_likely(find_len != rplc_len))
-				*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
-		} else {
+		/* Don't free if we didn't malloc. */
+		if (mode == USE_MALLOC) {
 			free(*s);
 			/* *S is currently the source string. */
 			*s = dst_s;
 		}
+		if (jstr_likely(find_len != rplc_len))
+			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
 	}
 	return changed;
 err:
