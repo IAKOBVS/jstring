@@ -176,10 +176,8 @@ static jstr_ret_ty
 jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
-	if (jstr_likely(*cap != 0))
-		*cap = jstr__grow(*cap, new_cap);
-	else
-		*cap = new_cap * JSTR_ALLOC_MULTIPLIER;
+	*cap = JSTR_MAX(*cap, JSTR_MIN_CAP);
+	*cap = jstr__grow(*cap, new_cap + 1);
 	*s = (char *)realloc(*s, *cap);
 	if (jstr_nullchk(*s))
 		goto err;
@@ -199,7 +197,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
-	return jstr_reservealways(s, sz, cap, new_cap + 1);
+	return jstr_reservealways(s, sz, cap, new_cap);
 }
 
 /* Return JSTR_RET_ERR on malloc error. */
@@ -209,7 +207,8 @@ static jstr_ret_ty
 jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*s = (char *)realloc(*s, *cap = jstr_likely(*cap != 0) ? new_cap : new_cap * JSTR_ALLOC_MULTIPLIER);
+	*cap = new_cap + 1;
+	*s = (char *)realloc(*s, *cap);
 	if (jstr_nullchk(*s))
 		goto err;
 	return JSTR_RET_SUCC;
@@ -228,7 +227,7 @@ JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
-	return jstr_reserveexactalways(s, sz, cap, new_cap + 1);
+	return jstr_reserveexactalways(s, sz, cap, new_cap);
 }
 
 JSTR_FUNC
