@@ -270,9 +270,7 @@ JSTR_NOEXCEPT
 	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags);
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
-		char *at = *s + start_idx + rm.rm_so;
-		jstr_strmove_len(at, at + rm.rm_eo, *sz - (size_t)rm.rm_eo);
-		*sz -= (size_t)(rm.rm_eo - rm.rm_so);
+		*sz = JSTR_DIFF(jstr_rmat_len_p(*s, *sz, start_idx + rm.rm_so, rm.rm_eo - rm.rm_so), *s);
 		return 1;
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
