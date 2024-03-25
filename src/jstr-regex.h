@@ -525,8 +525,7 @@ JSTR_NOEXCEPT
 			goto err;
 		}
 start_big:
-		if (jstr_likely((size_t)find_len != rplc_len))
-			memmove(i.dst, i.src, j);
+		memmove(i.dst, i.src, j);
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
