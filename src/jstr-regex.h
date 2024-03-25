@@ -503,7 +503,7 @@ JSTR_NOEXCEPT
 		i.src_e += rm.rm_so;
 		j = JSTR_DIFF(i.src_e, i.src);
 		i.dst = NULL;
-		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * 2))) {
+		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len)))) {
 			ret = JSTR_RE_RET_ESPACE;
 			goto err;
 		}
