@@ -1,7 +1,6 @@
 #!/bin/sh
 
 cd "$(dirname "$0")" || exit
-# ./check-little-endian || exit
 ./check-page-size || exit
 ./check-undefined-macros || exit
 ./check-scoped-macros || exit
