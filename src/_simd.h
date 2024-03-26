@@ -32,7 +32,7 @@ JSTR__BEGIN_DECLS
 
 /* Select AVX512, AVX2, or SSE2. */
 
-#ifdef JSTR_ARCH_X86_64
+#if JSTR_ARCH_X86_64
 #	include <x86intrin.h>
 #endif
 #ifdef __AVX512BW__
@@ -117,19 +117,12 @@ typedef uint16_t jstr_vmask_ty;
 #define VEC_SIZE  sizeof(VEC)
 #define MASK      jstr_vmask_ty
 #define MASK_SIZE sizeof(MASK)
-#ifdef JSTR_ARCH_X86_64
+#if JSTR_ARCH_X86_64
 #	ifndef LZCNT
-#		define LZCNT(x)                               \
-			(MASK)(                                \
-			(x) ? ((MASK)MASK_SIZE * CHAR_BIT - 1) \
-			      - _bit_scan_reverse(x)           \
-			    : (MASK)MASK_SIZE * CHAR_BIT)
+#		define LZCNT(x) (MASK)((x) ? ((MASK)MASK_SIZE * CHAR_BIT - 1) - _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #	ifndef TZCNT
-#		define TZCNT(x)                   \
-			(MASK)(                    \
-			(x) ? _bit_scan_forward(x) \
-			    : (MASK)MASK_SIZE * CHAR_BIT)
+#		define TZCNT(x) (MASK)((x) ? _bit_scan_forward(x) : (MASK)MASK_SIZE * CHAR_BIT)
 #	endif
 #endif
 #ifndef BLSR
@@ -455,7 +448,7 @@ ret:;
 
 #if !(defined TZCNT && defined BLSR)
 
-#	define JSTR_HAVENT_MEMMEM_SIMD         1
+#	define JSTR_HAVENT_MEMMEM_SIMD 1
 
 #else
 

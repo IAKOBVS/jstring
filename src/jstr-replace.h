@@ -1020,11 +1020,9 @@ loop1:
 loop2:
 			--n;
 			j = JSTR_DIFF(i.src_e, i.src);
-			/* We must use memmove because DST and SRC may overlap if CAN_FIT is true. */
-			if (!(mode & USE_MALLOC))
-				memmove(i.dst, i.src, j);
-			i.dst += j;
-			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
+			/* We must use memmove because DST and SRC may overlap if USE_MOVE is true. */
+			memmove(i.dst, i.src, j);
+			i.dst = (char *)jstr_mempmove(i.dst + j, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);

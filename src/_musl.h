@@ -36,6 +36,7 @@ JSTR__END_DECLS
 #define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #define HASZERO(x) (((x)-ONES) & ~(x) & HIGHS)
 
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
@@ -90,6 +91,7 @@ JSTR_NOEXCEPT
 	return (char *)s;
 }
 
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static void *
 jstr__memcasechr_musl(const void *s, int c, size_t n)
