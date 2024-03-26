@@ -84,10 +84,10 @@ JSTR__BEGIN_DECLS
 /* ne_len must be <= VEC_SIZE.
  * Worst case: O(n).
  * Best case: O(n / VEC_SIZE). */
+JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-JSTR_ATTR_NO_SANITIZE_ADDRESS
 static JSTR__SIMD_RETTYPE
 JSTR__SIMD_MEMMEM_FUNC_NAME(const void *hs, size_t hs_len, const void *ne, size_t ne_len)
 JSTR_NOEXCEPT

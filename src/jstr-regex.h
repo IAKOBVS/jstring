@@ -421,12 +421,11 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, jstr__inplace
 	if (i->dst != i->src)
 		memmove(i->dst, i->src, JSTR_DIFF(i->src_e, i->src));
 	if (*cap <= *sz + rplc_len - find_len) {
-		char *tmp = *s;
-		if (jstr_chk(jstr_reservealways(&tmp, sz, cap, *sz + rplc_len - find_len)))
+		const uintptr_t tmp = (uintptr_t)*s;
+		if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + rplc_len - find_len)))
 			return JSTR_RET_ERR;
-		i->src_e = tmp + (i->src_e - *s);
-		i->dst = tmp + (i->dst - *s);
-		*s = tmp;
+		i->src_e = *s + JSTR_DIFF(i->src_e, tmp);
+		i->dst = *s + JSTR_DIFF(i->dst, tmp);
 	}
 	jstr_strmove_len(i->src_e + rplc_len, i->src_e + find_len, JSTR_DIFF(*s + *sz, i->src_e + find_len));
 	i->src_e = (char *)jstr_mempcpy(i->src_e, rplc, rplc_len);
@@ -492,54 +491,108 @@ JSTR_NOEXCEPT
 		return jstr_re_rplc_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	if (jstr_unlikely(n == 0))
 		return 0;
-	jstr_re_off_ty find_len;
-	regmatch_t rm;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
-	jstr_re_off_ty changed = 0;
-	size_t j;
-	char *dst_s;
+	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
-	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
-		find_len = rm.rm_eo - rm.rm_so;
-		i.src_e += rm.rm_so;
-		j = JSTR_DIFF(i.src_e, i.src);
+	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
+		return 0;
+	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
+err:
+		jstr_free_noinline(s, sz, cap);
+		JSTR_RE_RETURN_ERR(ret, preg);
+	}
+	jstr_re_off_ty find_len = rm.rm_eo - rm.rm_so;
+	size_t j = JSTR_DIFF(i.src_e, i.src);
+	i.src_e += rm.rm_so;
+	jstr_re_off_ty changed = 0;
+	char *dst_s;
+	char *src_s = NULL;
+	const char *end = *s + *sz;
+	enum { USE_DST_MALLOC = 1,
+	       USE_DST_REALLOC,
+	       USE_SRC_MALLOC,
+	       USE_SRC_STACK };
+	int mode = 0;
+	/* If CAP is much larger than SIZE, consider Using
+	 * realloc instead of malloc to reuse the buffer. */
+	/* FIXME: !(mode & USE_DST_MALLOC) is broken. */
+	if (*cap < (*sz + rplc_len - (size_t)find_len) * 1.5) {
+		mode |= USE_DST_MALLOC;
+	} else {
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
+		enum { MAX_STACK = 1024 };
+		if (*sz - start_idx >= MAX_STACK)
+#endif
+			mode |= USE_SRC_MALLOC;
+	}
+#if JSTR_HAVE_VLA
+	char stack_buf[mode & USE_SRC_MALLOC ? 1 : *sz - start_idx + 1]; /* Includes NUL. */
+#endif
+	if (mode & USE_DST_MALLOC) {
 		i.dst = NULL;
-		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len)))) {
+		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
 			ret = JSTR_RE_RET_ESPACE;
 			goto err;
 		}
 		dst_s = i.dst;
+		i.src = *s;
+		src_s = (char *)i.src;
 		goto start_big;
-	} else if (ret == JSTR_RE_RET_NOMATCH) {
-		return 0;
+	} else {
+		i.dst = *s;
+		dst_s = *s;
+#if !(JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA)
+		i.src = (const char *)malloc(*sz - start_idx + 1);
+		if (jstr_nullchk(i.src))
+			goto err;
+		src_s = (char *)i.src;
+#else
+		if (mode & USE_SRC_MALLOC) {
+			i.src = (const char *)malloc(*sz - start_idx + 1);
+			if (jstr_nullchk(i.src))
+				goto err;
+			src_s = (char *)i.src;
+		} else {
+#	if JSTR_HAVE_VLA
+			i.src = stack_buf;
+#	else
+			i.src = alloca(*sz - start_idx + 1);
+#	endif
+		}
+#endif
+		/* Copy SRC to stack buffer. */
+		jstr_strcpy_len((char *)i.src, *s + start_idx, *sz - start_idx);
+		i.src_e = (char *)i.src + rm.rm_so;
+		end = i.src + *sz - start_idx;
 	}
-	goto err;
-	for (; n && i.src_e < *s + *sz; --n, ++changed) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
+	goto start_small;
+	for (; n && i.src_e < end; --n, ++changed) {
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
 		i.src_e += rm.rm_so;
 		j = JSTR_DIFF(i.src_e, i.src);
-		if (jstr_chk(jstr_reserve(&i.dst, sz, cap, *sz + rplc_len - (size_t)find_len))) {
-			ret = JSTR_RE_RET_ESPACE;
-			goto err;
+start_small:
+		if (jstr_unlikely(*cap <= *sz + rplc_len - (size_t)find_len)) {
+			const uintptr_t tmp = (uintptr_t)dst_s;
+			if (jstr_chk(jstr_reservealways(&dst_s, sz, cap, *sz + rplc_len - (size_t)find_len))) {
+				ret = JSTR_RE_RET_ESPACE;
+				goto err;
+			}
+			i.dst = dst_s + JSTR_DIFF(i.dst, tmp);
 		}
 start_big:
-		if (jstr_likely((size_t)find_len != rplc_len))
-			memmove(i.dst, i.src, j);
+		memmove(i.dst, i.src, j);
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
 		if (jstr_unlikely(find_len == 0))
 			++i.src;
 	}
-	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), dst_s);
-	free(*s);
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
+	free(src_s);
 	*s = dst_s;
 	return changed;
-err:
-	jstr_free_noinline(s, sz, cap);
-	JSTR_RE_RETURN_ERR(ret, preg);
 }
 
 /* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.

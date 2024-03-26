@@ -178,9 +178,10 @@ JSTR_NOEXCEPT
 {
 	*cap = JSTR_MAX(*cap, JSTR_MIN_CAP);
 	*cap = jstr__grow(*cap, new_cap + 1);
-	*s = (char *)realloc(*s, *cap);
-	if (jstr_nullchk(*s))
+	char *tmp = (char *)realloc(*s, *cap);
+	if (jstr_nullchk(tmp))
 		goto err;
+	*s = tmp;
 	return JSTR_RET_SUCC;
 err:
 	jstr_free_noinline(s, sz, cap);
@@ -208,9 +209,10 @@ jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_ca
 JSTR_NOEXCEPT
 {
 	*cap = new_cap + 1;
-	*s = (char *)realloc(*s, *cap);
-	if (jstr_nullchk(*s))
+	char *tmp = (char *)realloc(*s, *cap);
+	if (jstr_nullchk(tmp))
 		goto err;
+	*s = tmp;
 	return JSTR_RET_SUCC;
 err:
 	jstr_free_noinline(s, sz, cap);
