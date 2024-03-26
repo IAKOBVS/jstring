@@ -781,7 +781,7 @@ err:
 	jstr_re_off_ty changed = 0;
 	const char *end = *s + *sz;
 	i.dst = NULL;
-	if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) { /* FIXME: asan memory leak */
+	if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
 		ret = JSTR_RE_RET_ESPACE;
 		goto err;
 	}
