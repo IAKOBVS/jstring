@@ -9,8 +9,8 @@ jstring is a dynamic string C library which aims to make string handling simple 
 and capacity.
 - string list: easily create a list of dynamic strings.
 - fast substring matching: for x86-64 and needles that fit in a simd vector, use an O(n)
-simd implementation of memmem. For longer needles, precompile strstr/memmem. Currently,
-musl's twoway strstr/memmem implementation is used.
+simd implementation of memmem. For longer needles, precompile memmem. Currently, musl's
+twoway memmem implementation is used.
 - path traversal: ftw\(\) that can take arguments.
 - useful return values: string functions suffixed with *_p return a pointer to the end of the processed string (like stpcpy). You are likely going to need the length of the string you just modified so this will often save an unnecessary strlen.
 - reverse versions of standard string functions: memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
