@@ -9,7 +9,10 @@
 		ASSERT_RESULT(func, (result).size == strlen(expected), (result).data, expected);                   \
 		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
 	} while (0)
-#define FILL(result, str) assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str))))
+#define FILL(result, str)                                                                     \
+	do {                                                                                  \
+		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
+	} while (0)
 #define T_APPEND_NORET(func, ...)                 \
 	do {                                      \
 		TESTING(func);                    \
@@ -18,15 +21,15 @@
 		(result).size = 0;                \
 		*(result).data = '\0';            \
 	} while (0)
-#define T_RE_BREF(_string, _find, _rplc, _expected, _nmatch, _n)                                                           \
-	do {                                                                                                               \
-		const char *expected;                                                                                      \
-		FILL(result, _string);                                                                                     \
-		expected = _expected;                                                                                      \
-		regex_t preg;                                                                                              \
-		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                                   \
+#define T_RE_BREF(_string, _find, _rplc, _expected, _nmatch, _n)                                                              \
+	do {                                                                                                                  \
+		const char *expected;                                                                                         \
+		FILL(result, _string);                                                                                        \
+		expected = _expected;                                                                                         \
+		regex_t preg;                                                                                                 \
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                                      \
 		T_APPEND_NORET(jstr_re_rplcn_backref_len, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _nmatch, _n); \
-		jstr_re_free(&preg);                                                                                       \
+		jstr_re_free(&preg);                                                                                          \
 	} while (0)
 
 int

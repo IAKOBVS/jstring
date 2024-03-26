@@ -270,7 +270,7 @@ JSTR_NOEXCEPT
 	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags);
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
-		*sz = JSTR_DIFF(jstr_rmat_len_p(*s, *sz, start_idx + rm.rm_so, rm.rm_eo - rm.rm_so), *s);
+		*sz = JSTR_DIFF(jstr_rmat_len_p(*s, *sz, start_idx + rm.rm_so, (size_t)(rm.rm_eo - rm.rm_so)), *s);
 		return 1;
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
@@ -495,17 +495,19 @@ JSTR_NOEXCEPT
 	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
+	char *dst_heap = NULL;
+	char *src_heap = NULL;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
 err:
 		jstr_free_noinline(s, sz, cap);
+		free(dst_heap);
+		free(src_heap);
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	jstr_re_off_ty find_len = rm.rm_eo - rm.rm_so;
 	size_t j = JSTR_DIFF(i.src_e, i.src);
 	i.src_e += rm.rm_so;
 	jstr_re_off_ty changed = 0;
-	char *dst_s;
-	char *src_s;
 	const char *end = *s + *sz;
 	enum { USE_DST_MALLOC = 1,
 	       USE_DST_REALLOC,
@@ -529,28 +531,27 @@ err:
 #endif
 	if (mode & USE_DST_MALLOC) {
 		i.dst = NULL;
-		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
+		if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
 			ret = JSTR_RE_RET_ESPACE;
 			goto err;
 		}
-		dst_s = i.dst;
+		dst_heap = i.dst;
 		i.src = *s;
-		src_s = (char *)i.src;
 		goto start_big;
 	} else {
 		i.dst = *s;
-		dst_s = *s;
+		dst_heap = *s;
 #if !(JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA)
 		i.src = (const char *)malloc(*sz - start_idx + 1);
 		if (jstr_nullchk(i.src))
 			goto err;
-		src_s = (char *)i.src;
+		src_heap = (char *)i.src;
 #else
 		if (mode & USE_SRC_MALLOC) {
 			i.src = (const char *)malloc(*sz - start_idx + 1);
 			if (jstr_nullchk(i.src))
 				goto err;
-			src_s = (char *)i.src;
+			src_heap = (char *)i.src;
 		} else {
 #	if JSTR_HAVE_VLA
 			i.src = stack_buf;
@@ -573,12 +574,12 @@ err:
 		j = JSTR_DIFF(i.src_e, i.src);
 start_small:
 		if (jstr_unlikely(*cap <= *sz + rplc_len - (size_t)find_len)) {
-			const uintptr_t tmp = (uintptr_t)dst_s;
-			if (jstr_chk(jstr_reservealways(&dst_s, sz, cap, *sz + rplc_len - (size_t)find_len))) {
+			const uintptr_t tmp = (uintptr_t)dst_heap;
+			if (jstr_chk(jstr_reservealways(&dst_heap, sz, cap, *sz + rplc_len - (size_t)find_len))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
-			i.dst = dst_s + JSTR_DIFF(i.dst, tmp);
+			i.dst = dst_heap + JSTR_DIFF(i.dst, tmp);
 		}
 start_big:
 		memmove(i.dst, i.src, j);
@@ -588,9 +589,9 @@ start_big:
 		if (jstr_unlikely(find_len == 0))
 			++i.src;
 	}
-	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
-	free(src_s);
-	*s = dst_s;
+	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
+	free(src_heap);
+	*s = dst_heap;
 	return changed;
 }
 
@@ -657,15 +658,15 @@ JSTR_NOEXCEPT
 {
 	int c;
 	for (; (rplc = (unsigned char *)memchr(rplc, '\\', JSTR_DIFF(rplc_e, rplc))); rplc += 2) {
+		/* Trailing backslash error. */
+		if (jstr_unlikely(rplc == rplc_e))
+			return (size_t)-1;
 		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
 			JSTR_ASSERT_DEBUG((size_t)c < nmatch, "Using a backref higher than nmatch.");
 			rplc_len += (size_t)(rm[c].rm_eo - rm[c].rm_so - 2);
-			/* We don't need this because we've checked
-			 * that the pattern does not end with a backslash. */
-		} /* else if (c == '\0')
-		     return (size_t)-1; */
+		}
 	}
 	return rplc_len;
 }
@@ -708,7 +709,7 @@ jstr__re_rplcbackreflast(const unsigned char *backref, size_t backref_len)
  * number of substrings replaced. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
-static jstr_ret_ty
+static void
 jstr__re_rplcbackrefcreat(const unsigned char *R mtc, const regmatch_t *R rm, unsigned char *R backref, const unsigned char *R rplc, const unsigned char *rplc_e)
 JSTR_NOEXCEPT
 {
@@ -719,25 +720,24 @@ JSTR_NOEXCEPT
 		rplc = (unsigned char *)memchr(rplc, '\\', JSTR_DIFF(rplc_e, rplc));
 		if (jstr_nullchk(rplc))
 			break;
+		/* We've checked that there's no trailing backslash. */
+		/* if (rplc == rplc_e)
+		     return (size_t)-1; */
 		backref = (unsigned char *)jstr_mempcpy(backref, rplc_o, JSTR_DIFF(rplc, rplc_o));
 		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
 			backref = (unsigned char *)jstr_mempcpy(backref, mtc + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
 		} else {
-			/* We don't need this because we've checked
-			 * that the pattern does not end with a backslash. */
-			/* if (c == '\0')
-			     return (size_t)-1; */
 			*backref = '\\';
 			*(backref + 1) = c;
 			backref += 2;
 		}
 	}
 	memcpy(backref, rplc_o, JSTR_DIFF(rplc_e, rplc_o));
-	return JSTR_RET_SUCC;
 }
 
+/* TODO: prefer realloc over malloc. */
 /* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
  * Use rplc/rm instead.
  * Return value:
@@ -749,95 +749,108 @@ jstr_re_rplcn_backref_len_from(const regex_t *R preg, char *R *R s, size_t *R sz
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	JSTR_ASSERT_DEBUG(nmatch >= 1, "");
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	if (jstr_unlikely(n == 0))
 		return 0;
 	/* Check if we have backrefs in RPLC. */
 	const unsigned char *rplc_backref1 = (const unsigned char *)jstr__re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
-	/* RPLC cannot end with a backslash unless escaped with another backslash. */
-	if (jstr_unlikely(*(rplc + rplc_len - 1) == '\\')
-	    && jstr_unlikely(*(rplc + rplc_len - 2) != '\\'))
-		JSTR_RE_RETURN_ERR(JSTR_RE_RET_EESCAPE, preg);
 	/* If not, fallback to re_rplcn_len. */
 	if (jstr_nullchk(rplc_backref1))
 		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 	const unsigned char *rplc_backref1_e = (const unsigned char *)jstr__re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
-	size_t j;
-	int ret;
 	regmatch_t rm[10];
-	size_t rbackref_len;
-	char rbackref_stack[256]; /* Does not store NUL. Use this to avoid malloc'ing for small RPLC. */
-	char *rbackrefp = rbackref_stack;
-	char *rbackref_heap = NULL;
-	size_t rbackref_cap = 0;
-	/* Copy the start of RPLC before any backrefs. */
-	memcpy(rbackrefp, rplc, JSTR_DIFF(rplc_backref1, rplc));
-	jstr_re_off_ty find_len;
-	jstr_re_off_ty changed = 0;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
-	for (; n && i.src_e < *s + *sz; --n, ++changed) {
-		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), (size_t)nmatch, rm, eflags);
-		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free_rbackref);
+	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), nmatch, rm, eflags);
+	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
+		return 0;
+	char *rplcwbackref_heap = NULL;
+	char *dst_heap = NULL;
+	char *src_heap = NULL;
+	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
+err:
+		jstr_free_noinline(s, sz, cap);
+		free(rplcwbackref_heap);
+		free(src_heap);
+		free(dst_heap);
+		JSTR_RE_RETURN_ERR(ret, preg);
+	}
+	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
+	size_t j = JSTR_DIFF(i.src_e, i.src);
+	i.src_e += rm[0].rm_so;
+	jstr_re_off_ty changed = 0;
+	const char *end = *s + *sz;
+	i.dst = NULL;
+	if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) { /* FIXME: asan memory leak */
+		ret = JSTR_RE_RET_ESPACE;
+		goto err;
+	}
+	dst_heap = i.dst;
+	i.src = *s;
+	src_heap = (char *)i.src;
+	size_t rplcwbackref_len;
+	char rplcwbackref_stack[1024]; /* Does not store NUL. Use this to avoid malloc'ing for small RPLC. */
+	char *rplcwbackrefp = rplcwbackref_stack;
+	size_t rplcwbackref_cap = 0;
+	goto start_big;
+	for (; n && i.src_e < end; --n, ++changed) {
+		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
+		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
-		rbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
-		if (jstr_likely(rbackref_len <= sizeof(rbackref_stack))) {
-			rbackrefp = rbackref_stack;
+		i.src_e += rm[0].rm_so;
+		j = JSTR_DIFF(i.src_e, i.src);
+start_big:
+		rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+		if (jstr_likely(rplcwbackref_len <= sizeof(rplcwbackref_stack))) {
+			rplcwbackrefp = rplcwbackref_stack;
 		} else {
-			if (rbackref_cap < rbackref_len) {
-				if (jstr_nullchk(rbackref_heap)) {
-					rbackref_cap = jstr__grow(rbackref_cap, rbackref_len);
-					rbackref_heap = (char *)malloc(rbackref_cap);
-					if (jstr_nullchk(rbackref_heap)) {
+			/* Trailing backslash error. */
+			if (jstr_unlikely(rplcwbackref_len == (size_t)-1)) {
+				ret = JSTR_RE_RET_EESCAPE;
+				goto err;
+			}
+			if (rplcwbackref_cap < rplcwbackref_len) {
+				if (jstr_nullchk(rplcwbackref_heap)) {
+					rplcwbackref_cap = jstr__grow(rplcwbackref_cap, rplcwbackref_len);
+					rplcwbackref_heap = (char *)malloc(rplcwbackref_cap);
+					if (jstr_nullchk(rplcwbackref_heap)) {
 						ret = JSTR_RE_RET_ESPACE;
-						goto err_free;
+						goto err;
 					}
 					/* Copy the start of RPLC before any backrefs.
 					 * We don't need to do this when realloc'ing. */
-					memcpy(rbackref_heap, rplc, JSTR_DIFF(rplc_backref1, rplc));
+					memcpy(rplcwbackref_heap, rplc, JSTR_DIFF(rplc_backref1, rplc));
 				} else {
-					if (jstr_chk(jstr_reservealways(&rbackref_heap, &rbackref_len, &rbackref_cap, rbackref_len))) {
+					if (jstr_chk(jstr_reservealways(&rplcwbackref_heap, &rplcwbackref_len, &rplcwbackref_cap, rplcwbackref_len))) {
 						ret = JSTR_RE_RET_ESPACE;
-						goto err_free;
+						goto err;
 					}
 				}
 			}
-			rbackrefp = rbackref_heap;
+			rplcwbackrefp = rplcwbackref_heap;
 		}
-		if (jstr_chk(jstr__re_rplcbackrefcreat((const unsigned char *)i.src_e, rm, (unsigned char *)rbackrefp + JSTR_DIFF(rplc_backref1, rplc), rplc_backref1, (const unsigned char *)rplc + rplc_len))) {
-			ret = JSTR_RE_RET_BADPAT;
-			goto err_free_rbackref;
-		}
-		i.src_e += rm[0].rm_so;
-		find_len = (size_t)(rm[0].rm_eo - rm[0].rm_so);
-		if (rbackref_len <= (size_t)find_len) {
-			j = JSTR_DIFF(i.src_e, i.src);
-			if (jstr_likely(rbackref_len != rplc_len) && jstr_likely(i.dst != i.src))
-				memmove(i.dst, i.src, j);
-			i.dst = (char *)jstr_mempcpy(i.dst + j, rbackrefp, rplc_len);
-			i.src += j + rbackref_len;
-			i.src_e += rbackref_len;
-		} else {
-			if (*cap > *sz + rbackref_len - (size_t)find_len) {
-				jstr__rplcallsmallerrplc(*s, sz, &i, rbackrefp, rbackref_len, (size_t)find_len);
-			} else if (jstr_chk(jstr__rplcallbiggerrplc(s, sz, cap, &i, rbackrefp, rbackref_len, (size_t)find_len))) {
+		jstr__re_rplcbackrefcreat((unsigned char *)i.src_e - rm[0].rm_so, rm, (unsigned char *)rplcwbackrefp, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
+		if (jstr_unlikely(*cap <= *sz + rplc_len - (size_t)rplcwbackref_len)) {
+			const uintptr_t tmp = (uintptr_t)dst_heap;
+			if (jstr_chk(jstr_reservealways(&dst_heap, sz, cap, *sz + rplc_len - (size_t)rplcwbackref_len))) {
 				ret = JSTR_RE_RET_ESPACE;
-				goto err_free_rbackref;
+				goto err;
 			}
+			i.dst = dst_heap + JSTR_DIFF(i.dst, tmp);
 		}
+		memmove(i.dst, i.src, j);
+		i.dst += j;
+		i.dst = (char *)jstr_mempcpy(i.dst, rplcwbackrefp, rplcwbackref_len);
+		i.src += j + (size_t)find_len;
+		i.src_e += find_len;
 		if (jstr_unlikely(find_len == 0))
 			++i.src;
 	}
-	if (changed)
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(*s + *sz, i.src)), *s);
-	free(rbackref_heap);
+	*sz = JSTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
+	free(rplcwbackref_heap);
+	free(src_heap);
+	*s = dst_heap;
 	return changed;
-err_free_rbackref:
-	free(rbackref_heap);
-err_free:
-	jstr_free_noinline(s, sz, cap);
-	JSTR_RE_RETURN_ERR(ret, preg);
 }
 
 #undef NMATCH
