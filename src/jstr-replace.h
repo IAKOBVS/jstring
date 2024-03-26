@@ -909,6 +909,12 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	size_t changed = 0;
 	const char *end = *s + *sz;
+	char *dst_heap = NULL;
+	enum { USE_MALLOC = 0,
+	       USE_MOVE,
+	       USE_STACK };
+	int mode = 0;
+	char *src_heap = NULL;
 	if (rplc_len <= find_len) {
 		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
 			return 0;
@@ -949,14 +955,10 @@ loop1:
 		/* Currently last points to the last match. We are going to make it point
 		 * to the end of the last match. */
 		last += find_len;
-		char *dst_s;
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
 		const size_t first_len = *sz - JSTR_DIFF(first, *s);
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
-		enum { USE_MALLOC = 0,
-		       USE_MOVE,
-		       USE_STACK };
-		int mode = USE_MALLOC;
+		mode = USE_MALLOC;
 		/* Avoid malloc if we can fit the source and destination string. */
 		if (*cap >= new_size + first_len)
 			mode = USE_MOVE;
@@ -984,7 +986,7 @@ loop1:
 			last = i.src + (last - first);
 			end = i.src + (end - first);
 			first = (char *)i.src;
-			dst_s = *s;
+			dst_heap = *s;
 #if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
 		} else if (mode == USE_STACK) { /* NEW_SIZE is small enough. */
 			/* DST is the source string. */
@@ -1001,7 +1003,7 @@ loop1:
 			last = i.src + (last - first);
 			end = i.src + (end - first);
 			first = (char *)i.src;
-			dst_s = *s;
+			dst_heap = *s;
 #endif
 		} else { /* Capacity is too small or we can't use a stack buffer. */
 			i.dst = NULL;
@@ -1009,7 +1011,8 @@ loop1:
 				goto err;
 			/* Currently, i.src = *s + start_idx */
 			i.src = *s;
-			dst_s = i.dst;
+			dst_heap = i.dst;
+			src_heap = *s;
 		}
 		size_t j;
 		n = changed;
@@ -1025,16 +1028,15 @@ loop2:
 			i.dst = (char *)jstr_mempmove(i.dst + j, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
-		/* Don't free if we didn't malloc. */
-		if (mode == USE_MALLOC) {
-			free(*s);
-			/* *S is currently the source string. */
-			*s = dst_s;
-		}
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
+		free(src_heap);
+		*s = dst_heap;
 	}
 	return changed;
 err:
+	jstr_free_noinline(s, sz, cap);
+	free(dst_heap);
+	free(src_heap);
 	JSTR_RETURN_ERR((size_t)-1);
 }
 
