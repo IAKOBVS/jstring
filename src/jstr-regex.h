@@ -473,7 +473,6 @@ JSTR_NOEXCEPT
 	return jstr_re_rplc_len_from(preg, s, sz, cap, 0, rplc, rplc_len, eflags);
 }
 
-/* TODO: avoid malloc when possible. */
 /* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
  * Use rplc/rm instead.
  * Return value:
