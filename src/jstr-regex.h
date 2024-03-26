@@ -817,9 +817,6 @@ start_big:
 						ret = JSTR_RE_RET_ESPACE;
 						goto err;
 					}
-					/* Copy the start of RPLC before any backrefs.
-					 * We don't need to do this when realloc'ing. */
-					memcpy(rplcwbackref_heap, rplc, JSTR_DIFF(rplc_backref1, rplc));
 				} else {
 					if (jstr_chk(jstr_reservealways(&rplcwbackref_heap, &rplcwbackref_len, &rplcwbackref_cap, rplcwbackref_len))) {
 						ret = JSTR_RE_RET_ESPACE;
