@@ -785,7 +785,7 @@ JSTR_NOEXCEPT
 		} else {
 			if (rbackref_cap < rbackref_len) {
 				if (jstr_nullchk(rbackref_heap)) {
-					rbackref_cap = JSTR_ALIGN_UP_STR((size_t)(sizeof(rbackref_stack) * JSTR_GROWTH));
+					rbackref_cap = jstr__grow(rbackref_cap, rbackref_len);
 					rbackref_heap = (char *)malloc(rbackref_cap);
 					if (jstr_nullchk(rbackref_heap)) {
 						ret = JSTR_RE_RET_ESPACE;
@@ -795,9 +795,7 @@ JSTR_NOEXCEPT
 					 * We don't need to do this when realloc'ing. */
 					memcpy(rbackref_heap, rplc, JSTR_DIFF(rplc_backref1, rplc));
 				} else {
-					rbackref_cap = jstr__grow(rbackref_cap, rbackref_len);
-					rbackref_heap = (char *)realloc(rbackref_heap, rbackref_cap);
-					if (jstr_nullchk(rbackref_heap)) {
+					if (jstr_chk(jstr_reservealways(&rbackref_heap, &rbackref_len, &rbackref_cap, rbackref_len))) {
 						ret = JSTR_RE_RET_ESPACE;
 						goto err_free;
 					}
