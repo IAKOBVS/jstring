@@ -16,11 +16,11 @@ has_prog()
 	type "$1" >/dev/null 2>/dev/null
 }
 
-update_if_needed()
+update()
 {
 	in_fname=$1
 	out_fname=$PATH_BUILD/${in_fname##*/}
-	test -e "$out_fname" && /bin/test "$in_fname" -ot "$out_fname" && exit 0
+	# test -e "$out_fname" && /bin/test "$in_fname" -ot "$out_fname" && exit 0
 	case $in_fname in
 	*macro*.h) ;;
 	*/_*.h)
@@ -48,7 +48,7 @@ cd "$(dirname "$0")" || exit
 mkdir -p ../jstr
 
 for file in $(echo $PATH_SRC/*.h); do
-	update_if_needed "$file" &
+	update "$file" &
 done
 wait
 mark_as_built
