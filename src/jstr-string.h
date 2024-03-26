@@ -289,9 +289,7 @@ static int
 jstr_endscase_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hs_len >= ne_len)
-	       ? !jstr_strcasecmpeq_len(hs + hs_len - ne_len, ne, ne_len)
-	       : 0;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmpeq_len(hs + hs_len - ne_len, ne, ne_len) : 0;
 }
 
 /* Check if S2 is in end of S1.
@@ -319,9 +317,7 @@ static int
 jstr_ends_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hs_len >= ne_len)
-	       ? !memcmp(hs + hs_len - ne_len, ne, ne_len)
-	       : 0;
+	return jstr_likely(hs_len >= ne_len) ? !memcmp(hs + hs_len - ne_len, ne, ne_len) : 0;
 }
 
 /* Check if S2 is in end of S1.
@@ -349,9 +345,7 @@ static int
 jstr_startscase_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	return jstr_likely(hs_len >= ne_len)
-	       ? !jstr_strcasecmpeq_len(hs, ne, ne_len)
-	       : 0;
+	return jstr_likely(hs_len >= ne_len) ? !jstr_strcasecmpeq_len(hs, ne, ne_len) : 0;
 }
 
 /* Check if S1 starts with S2 case-insensitively.
