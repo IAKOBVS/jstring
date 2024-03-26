@@ -501,10 +501,8 @@ JSTR_NOEXCEPT
 	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 		find_len = rm.rm_eo - rm.rm_so;
-		i.src_e += rm.rm_so;
-		j = JSTR_DIFF(i.src_e, i.src);
 		i.dst = NULL;
-		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len)))) {
+		if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
 			ret = JSTR_RE_RET_ESPACE;
 			goto err;
 		}
@@ -518,13 +516,13 @@ JSTR_NOEXCEPT
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
+start_big:
 		i.src_e += rm.rm_so;
 		j = JSTR_DIFF(i.src_e, i.src);
 		if (jstr_chk(jstr_reserve(&i.dst, sz, cap, *sz + rplc_len - (size_t)find_len))) {
 			ret = JSTR_RE_RET_ESPACE;
 			goto err;
 		}
-start_big:
 		memmove(i.dst, i.src, j);
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
 		i.src += j + (size_t)find_len;
