@@ -707,7 +707,7 @@ jstr__re_rplcbackreflast(const unsigned char *backref, size_t backref_len)
 /* Return value:
  * on error, -errcode (negative);
  * number of substrings replaced. */
-JSTR_FUNC
+JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
 jstr__re_rplcbackrefcreat(const unsigned char *R mtc, const regmatch_t *R rm, unsigned char *R backref, const unsigned char *R rplc, const unsigned char *rplc_e)
