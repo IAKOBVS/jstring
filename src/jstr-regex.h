@@ -524,7 +524,8 @@ err:
 			mode |= USE_SRC_MALLOC;
 	}
 #if JSTR_HAVE_VLA
-	char stack_buf[mode & USE_SRC_MALLOC ? 1 : *sz - start_idx + 1]; /* Includes NUL. */
+	/* Includes NUL because we're passing this to regexec. */
+	char stack_buf[mode & USE_SRC_MALLOC ? 1 : *sz - start_idx + 1];
 #endif
 	if (mode & USE_DST_MALLOC) {
 		i.dst = NULL;
