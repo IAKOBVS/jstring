@@ -754,11 +754,12 @@ JSTR_NOEXCEPT
 		return jstr_re_rmn_from(preg, s, sz, cap, start_idx, eflags, n);
 	if (jstr_unlikely(n == 0))
 		return 0;
-	/* Pattern cannot end with a backslash. */
-	if (jstr_unlikely(*(rplc + rplc_len - 1) == '\\'))
-		JSTR_RE_RETURN_ERR(JSTR_RE_RET_EESCAPE, preg);
 	/* Check if we have backrefs in RPLC. */
 	const unsigned char *rplc_backref1 = (const unsigned char *)jstr__re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
+	/* RPLC cannot end with a backslash. */
+	if (jstr_unlikely(*(rplc + rplc_len - 1) == '\\')
+	    && jstr_unlikely(*(rplc + rplc_len - 2) != '\\'))
+		JSTR_RE_RETURN_ERR(JSTR_RE_RET_EESCAPE, preg);
 	/* If not, fallback to re_rplcn_len. */
 	if (jstr_nullchk(rplc_backref1))
 		return jstr_re_rplcn_len_from(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
