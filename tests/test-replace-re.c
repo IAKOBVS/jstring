@@ -48,12 +48,20 @@ main(int argc, char **argv)
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "__hello_hello", 2);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "_hello_hello_hello", 1);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "hello_hello_hello_hello", 0);
+	/* rplc_len > find_len */
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", (size_t)-1);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_world?", 4);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_world?_hello", 3);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_world?_hello_hello", 2);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "world?_hello_hello_hello", 1);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "world?", "hello_hello_hello_hello", 0);
+	/* rplc_len < find_len */
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_worl", (size_t)-1);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_worl", 4);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_worl_hello", 3);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_hello_hello", 2);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_hello_hello_hello", 1);
+	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "hello_hello_hello_hello", 0);
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;
