@@ -756,7 +756,7 @@ JSTR_NOEXCEPT
 		return 0;
 	/* Check if we have backrefs in RPLC. */
 	const unsigned char *rplc_backref1 = (const unsigned char *)jstr__re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
-	/* RPLC cannot end with a backslash. */
+	/* RPLC cannot end with a backslash unless escaped with another backslash. */
 	if (jstr_unlikely(*(rplc + rplc_len - 1) == '\\')
 	    && jstr_unlikely(*(rplc + rplc_len - 2) != '\\'))
 		JSTR_RE_RETURN_ERR(JSTR_RE_RET_EESCAPE, preg);
