@@ -755,7 +755,7 @@ JSTR_NOEXCEPT
 		return 0;
 	/* Pattern cannot end with a backslash. */
 	if (jstr_unlikely(*(rplc + rplc_len - 1) == '\\'))
-		JSTR_RE_RETURN_ERR(JSTR_RE_RET_BADPAT, preg);
+		JSTR_RE_RETURN_ERR(JSTR_RE_RET_EESCAPE, preg);
 	/* Check if we have backrefs in RPLC. */
 	const unsigned char *rplc_backref1 = (const unsigned char *)jstr__re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
 	/* If not, fallback to re_rplcn_len. */
