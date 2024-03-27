@@ -71,51 +71,6 @@ enum {
 	JSTR_IO_BINARY_CHECK_MAX = 64
 };
 
-JSTR_FUNC_PURE
-static jstr_io_ft_ty
-jstr__io_exttype(const char *ext, const char **textv, const char **binaryv)
-JSTR_NOEXCEPT
-{
-	for (; *textv; ++textv)
-		if (!jstr_strcmpeq_loop(ext, *textv))
-			return JSTR_IO_FT_TEXT;
-	for (; *binaryv; ++binaryv)
-		if (!jstr_strcmpeq_loop(ext, *binaryv))
-			return JSTR_IO_FT_TEXT;
-	return JSTR_IO_FT_UNKNOWN;
-}
-
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static char *
-jstr__io_extget_len(const char *fname, size_t sz)
-{
-	const char *p = fname + sz - 1;
-	for (; sz--; --p) {
-		if (*p == '.')
-			return (char *)p + 1;
-		if (*p == '/')
-			break;
-	}
-	return NULL;
-}
-
-/* Return jstr_io_ft_ty based on the FNAME extension.
- * TEXTV and BINARYV are NULL-terminated array of NUL-terminated
- * strings. TEXTV contains extensions that you want to interpret
- * as text. For example: c, h, py, txt.
- * BINARYV contains extensions that you want to interpret as binary.
- * For example: s, so, png, pdf. */
-JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
-static jstr_io_ft_ty
-jstr_io_exttype(const char *R fname, size_t sz, const char **textv, const char **binaryv)
-JSTR_NOEXCEPT
-{
-	fname = (char *)jstr__io_extget_len(fname, sz);
-	return fname ? jstr__io_exttype(fname, textv, binaryv) : JSTR_IO_FT_UNKNOWN;
-}
-
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static int
