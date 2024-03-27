@@ -58,10 +58,9 @@ JSTR__END_DECLS
 #define jstr_start(j)       ((j)->data)
 #define jstr_end(j)         ((j)->data + (j)->size)
 #ifdef JSTR_DEBUG
-#	define jstr_at(j, i)                                                  \
-		(                                                              \
-		(i <= (j)->size) ? ((j)->data + (i)) : assert(i <= (j)->size), \
-		((j)->data))
+#	define jstr_at(j, i)                                                   \
+		((i <= (j)->size) ? ((j)->data + (i)) : assert(i <= (j)->size), \
+		 ((j)->data))
 #else
 #	define jstr_at(j, i) ((j)->data + (i))
 #endif
