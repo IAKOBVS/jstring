@@ -574,16 +574,14 @@ jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R 
 #		define JSTR_DIRENT_D_ALLOC_NAMLEN(c) _D_ALLOC_NAMLEN(d)
 #	else
 #		ifdef _DIRENT_HAVE_D_RECLEN
-#			define JSTR_DIRENT_D_ALLOC_NAMLEN(d) \
-				(                             \
-				((char *)(d) + (d)->d_reclen) \
-				- &(d)->d_name[0])
+#			define JSTR_DIRENT_D_ALLOC_NAMLEN(d)  \
+				(((char *)(d) + (d)->d_reclen) \
+				 - &(d)->d_name[0])
 #		else
 #			define JSTR_DIRENT_D_ALLOC_NAMLEN(d) \
-				(                             \
-				sizeof(d)->d_name > 1         \
-				? sizeof(d)->d_name           \
-				: JSTR_DIRENT_D_EXACT_NAMLEN(d) + 1)
+				(sizeof(d)->d_name > 1        \
+				 ? sizeof(d)->d_name          \
+				 : JSTR_DIRENT_D_EXACT_NAMLEN(d) + 1)
 #		endif
 #	endif
 #endif
@@ -639,22 +637,18 @@ typedef enum jstr_io_ftw_flag_ty {
 	(jstr_likely(errno == EACCES) || jstr_likely(errno == ENOENT))
 
 #if JSTR_HAVE_DIRENT_D_NAMLEN
-#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep) \
-		do {                                                    \
-			*(dirpath + dirpath_len) = '/';                 \
-			jstr_strcpy_len(                                \
-			dirpath + dirpath_len + 1,                      \
-			(ep)->d_name,                                   \
-			(ep)->d_namlen);                                \
-			newpath_len = dirpath_len + 1 + (ep)->d_namlen; \
+#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                           \
+		do {                                                                              \
+			*(dirpath + dirpath_len) = '/';                                           \
+			jstr_strcpy_len(dirpath + dirpath_len + 1, (ep)->d_name, (ep)->d_namlen); \
+			newpath_len = dirpath_len + 1 + (ep)->d_namlen;                           \
 		} while (0)
 #else
-#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)       \
-		do {                                                          \
-			*(dirpath + dirpath_len) = '/';                       \
-			newpath_len = JSTR_DIFF(                              \
-			jstr_stpcpy(dirpath + dirpath_len + 1, (ep)->d_name), \
-			dirpath);                                             \
+#	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                               \
+		do {                                                                                  \
+			*(dirpath + dirpath_len) = '/';                                               \
+			newpath_len = JSTR_DIFF(jstr_stpcpy(dirpath + dirpath_len + 1, (ep)->d_name), \
+			                        dirpath);                                             \
 		} while (0)
 #endif
 
@@ -668,12 +662,11 @@ typedef enum jstr_io_ftw_flag_ty {
 				goto err_closedir;                             \
 			}                                                      \
 		} while (0)
-#	define OPENAT(dstfd, srcfd, file, oflag, do_on_err)               \
-		do {                                                       \
-			if (jstr_unlikely(                                 \
-			    (dstfd = openat(srcfd, file, oflag)) == -1)) { \
-				do_on_err;                                 \
-			}                                                  \
+#	define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                             \
+		do {                                                                     \
+			if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) == -1)) { \
+				do_on_err;                                               \
+			}                                                                \
 		} while (0)
 #	define OPEN(fd, file, oflag, do_on_err)                             \
 		do {                                                         \
@@ -795,10 +788,7 @@ struct jstr__io_ftw_data {
 	int func_name(const struct JSTR_IO_FTW *ftw, const void *func_args)
 
 #define JSTR_IO_FTW_FUNC_MATCH(func_name, filename, filename_len, args) \
-	int func_name(                                                  \
-	const char *filename,                                           \
-	jstr_io_path_size_ty filename_len,                              \
-	const void *args)
+	int func_name(const char *filename, jstr_io_path_size_ty filename_len, const void *args)
 
 #ifdef O_DIRECTORY
 #	define JSTR_IO__O_DIRECTORY O_DIRECTORY

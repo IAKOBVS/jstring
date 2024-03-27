@@ -354,15 +354,12 @@ jstr_l_assign_len(jstr_list_ty *R l, size_t idx, const char *R s, size_t s_len)
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-#define JSTR__L_DEFINE_FIND_LEN(name, func)                                          \
-	JSTR_FUNC_PURE                                                               \
-	static jstr_ty *jstr_l_##name(                                               \
-	const jstr_list_ty *R l,                                                     \
-	const char *R s,                                                             \
-	size_t s_len) JSTR_NOEXCEPT                                                  \
-	{                                                                            \
-		jstr_l_foreach(l, j) if (func(s, s_len, j->data, j->size)) return j; \
-		return NULL;                                                         \
+#define JSTR__L_DEFINE_FIND_LEN(name, func)                                                                 \
+	JSTR_FUNC_PURE                                                                                      \
+	static jstr_ty *jstr_l_##name(const jstr_list_ty *R l, const char *R s, size_t s_len) JSTR_NOEXCEPT \
+	{                                                                                                   \
+		jstr_l_foreach(l, j) if (func(s, s_len, j->data, j->size)) return j;                        \
+		return NULL;                                                                                \
 	}
 
 JSTR__L_DEFINE_FIND_LEN(find_len, !jstr_cmpeq)
@@ -376,15 +373,13 @@ JSTR__L_DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 
 #undef JSTR__L_DEFINE_FIND_LEN
 
-#define JSTR__L_DEFINE_FIND(name, func)                                              \
-	JSTR_FUNC_PURE                                                               \
-	static jstr_ty *jstr_l_##name(                                               \
-	const jstr_list_ty *R l,                                                     \
-	const char *R s) JSTR_NOEXCEPT                                               \
-	{                                                                            \
-		const size_t s_len = strlen(s);                                      \
-		jstr_l_foreach(l, j) if (func(s, s_len, j->data, j->size)) return j; \
-		return NULL;                                                         \
+#define JSTR__L_DEFINE_FIND(name, func)                                                       \
+	JSTR_FUNC_PURE                                                                        \
+	static jstr_ty *jstr_l_##name(const jstr_list_ty *R l, const char *R s) JSTR_NOEXCEPT \
+	{                                                                                     \
+		const size_t s_len = strlen(s);                                               \
+		jstr_l_foreach(l, j) if (func(s, s_len, j->data, j->size)) return j;          \
+		return NULL;                                                                  \
 	}
 
 JSTR__L_DEFINE_FIND(findcase, !jstr_cmpcaseeq)
@@ -438,14 +433,11 @@ JSTR_NOEXCEPT
 	}
 }
 
-#define JSTR__L_DEFINE_DELETE_LEN(name, func) \
-	JSTR_FUNC_VOID                        \
-	static void jstr_l_##name(            \
-	jstr_list_ty *R l,                    \
-	const char *R s,                      \
-	size_t s_len) JSTR_NOEXCEPT           \
-	{                                     \
-		jstr__l_delete(l, func);      \
+#define JSTR__L_DEFINE_DELETE_LEN(name, func)                                                     \
+	JSTR_FUNC_VOID                                                                            \
+	static void jstr_l_##name(jstr_list_ty *R l, const char *R s, size_t s_len) JSTR_NOEXCEPT \
+	{                                                                                         \
+		jstr__l_delete(l, func);                                                          \
 	}
 
 JSTR__L_DEFINE_DELETE_LEN(delete_len, jstr_l_find_len(l, s, s_len))
