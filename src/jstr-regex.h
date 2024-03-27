@@ -492,7 +492,8 @@ JSTR_NOEXCEPT
 		return 0;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	regmatch_t rm;
-	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), &rm, eflags);
+	const char *end = *s + *sz;
+	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
 	char *dst_heap = NULL;
@@ -508,7 +509,6 @@ err:
 	size_t j = JSTR_DIFF(i.src_e, i.src);
 	i.src_e += rm.rm_so;
 	jstr_re_off_ty changed = 0;
-	const char *end = *s + *sz;
 	enum { USE_DST_MALLOC = 1,
 	       USE_DST_REALLOC,
 	       USE_SRC_MALLOC,
@@ -761,7 +761,8 @@ JSTR_NOEXCEPT
 	const unsigned char *rplc_backref1_e = (const unsigned char *)jstr__re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
 	regmatch_t rm[10];
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
-	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(*s + *sz, i.src_e), nmatch, rm, eflags);
+	const char *const end = *s + *sz;
+	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
 	char *rplcwbackref_heap = NULL;
@@ -779,7 +780,6 @@ err:
 	size_t j = JSTR_DIFF(i.src_e, i.src);
 	i.src_e += rm[0].rm_so;
 	jstr_re_off_ty changed = 0;
-	const char *end = *s + *sz;
 	i.dst = NULL;
 	if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
 		ret = JSTR_RE_RET_ESPACE;

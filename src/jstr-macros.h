@@ -149,14 +149,8 @@ JSTR__END_DECLS
 #	endif
 #endif /* byte_order */
 
-#if JSTR_ENDIAN_LITTLE
-#	undef JSTR_ENDIAN_BIG
-#	define JSTR_ENDIAN_BIG 0
-#elif JSTR_ENDIAN_BIG
-#	undef JSTR_ENDIAN_LITTLE
-#	define JSTR_ENDIAN_LITTLE 0
-#else
-#	error "Can't detect endianness."
+#if !JSTR_ENDIAN_LITTLE && !JSTR_ENDIAN_BIG
+#	define JSTR_ENDIAN_UNKNOWN 1
 #endif
 
 #define jstr_err(msg)    jstr__err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
@@ -164,7 +158,7 @@ JSTR__END_DECLS
 
 #define jstr_chk(ret)             jstr_unlikely(ret == -1)
 #define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#define JSTR_PAGE_SIZE            4096
 #define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #define JSTR__CONCAT_HELPER(x, y) x##y
 #define JSTR_CONCAT(x, y)         JSTR__CONCAT_HELPER(x, y)
@@ -485,13 +479,13 @@ case '~':
 				assert(expr);         \
 			}                             \
 		} while (0)
-#	define JSTR_ASSERT_DEBUG_PRINTF(expr, ...)   \
-		do {                                  \
-			if (jstr_unlikely(!(expr))) { \
-				jstr_err("");         \
+#	define JSTR_ASSERT_DEBUG_PRINTF(expr, ...)           \
+		do {                                          \
+			if (jstr_unlikely(!(expr))) {         \
+				jstr_err("");                 \
 				fprintf(stderr, __VA_ARGS__); \
-				assert(expr);         \
-			}                             \
+				assert(expr);                 \
+			}                                     \
 		} while (0)
 #else
 #	define JSTR_ASSERT_DEBUG(expr, msg) \
@@ -1162,60 +1156,12 @@ JSTR_NOEXCEPT
 #	endif
 #endif /* have_optimized */
 
-enum {
-	/* Needle length over which memmem would be faster than strstr. */
-	JSTR_MEMMEM_THRES = 18,
-#define JSTR_MEMMEM_THRES JSTR_MEMMEM_THRES
-	/* Number of iterations over which an optimized strcspn would be faster than a byte loop. */
-	JSTR_STRCASECHR_THRES = 24
-#define JSTR_STRCASECHR_THRES JSTR_STRCASECHR_THRES
-};
-
 #if JSTR_GNUC_PREREQ(7, 1) || defined __clang__
 #	define JSTR_HAVE_BUILTIN_MEMCMP 1
 #endif
 
 #if JSTR_ARCH_I386 || JSTR_ARCH_X86_64 || defined __s390x__ || JSTR_ARCH_ARM64
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1
-#endif
-
-typedef uint16_t JSTR_ATTR_MAY_ALIAS jstr_u16u_ty;
-typedef uint32_t JSTR_ATTR_MAY_ALIAS jstr_u32u_ty;
-typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
-
-#define JSTR_WORD_IDX(i) (i << 3)
-#if JSTR_HAVE_ATTR_MAY_ALIAS
-#	define JSTR_WORD_LOADU16(x)     (*(jstr_u16u_ty *)(x))
-#	define JSTR_WORD_LOADU32(x)     (*(jstr_u32u_ty *)(x))
-#	define JSTR_WORD_LOADU64(x)     (*(jstr_u64u_ty *)(x))
-#	define JSTR_WORD_CMPEQU16(x, y) (JSTR_WORD_LOADU16(x) == JSTR_WORD_LOADU16(y))
-#	define JSTR_WORD_CMPEQU32(x, y) (JSTR_WORD_LOADU32(x) == JSTR_WORD_LOADU32(y))
-#	define JSTR_WORD_CMPEQU64(x, y) (JSTR_WORD_LOADU64(x) == JSTR_WORD_LOADU64(y))
-#	define JSTR_WORD_LOAD16(x)      (*(uint16_t *)(x))
-#	define JSTR_WORD_LOAD32(x)      (*(uint32_t *)(x))
-#	define JSTR_WORD_LOAD64(x)      (*(uint64_t *)(x))
-#	define JSTR_WORD_CMPEQ16(x)     (JSTR_WORD_LOAD16(x) == JSTR_WORD_LOAD16(y))
-#	define JSTR_WORD_CMPEQ32(x)     (JSTR_WORD_LOAD32(x) == JSTR_WORD_LOAD32(y))
-#	define JSTR_WORD_CMPEQ64(x)     (JSTR_WORD_LOAD64(x) == JSTR_WORD_LOAD64(y))
-#else
-#	if JSTR_ENDIAN_LITTLE
-#		define JSTR_WORD_LOADU16(x) (((uint16_t)(x)[0]) | ((uint16_t)(x)[1] << JSTR_WORD_IDX(1)))
-#		define JSTR_WORD_LOADU32(x) ((uint32_t)JSTR_WORD_LOADU16(x) | ((uint32_t)(x)[2] << JSTR_WORD_IDX(2)) | ((uint32_t)(x)[3] << JSTR_WORD_IDX(3)))
-#		define JSTR_WORD_LOADU64(x) ((uint64_t)JSTR_WORD_LOADU32(x) | ((uint64_t)(x)[4] << JSTR_WORD_IDX(4)) | ((uint64_t)(x)[5] << JSTR_WORD_IDX(5)) | ((uint64_t)(x)[6] << JSTR_WORD_IDX(6)) | ((uint64_t)(x)[7] << JSTR_WORD_IDX(7)))
-#	else
-#		define JSTR_WORD_LOADU16(x) (((uint16_t)(x)[0] >> 8) | ((uint16_t)(x)[1] << 8))
-#		define JSTR_WORD_LOADU32(x) (((uint32_t)(x)[0] >> 24) | ((uint32_t)(x)[1] >> 8) | ((uint32_t)(x)[2] << 8) | ((uint32_t)(x)[3] << 24))
-#		define JSTR_WORD_LOADU64(x) ((uint64_t)(x)[0] >> 56) | ((uint64_t)(x)[1] >> 40) | ((uint64_t)(x)[2] >> 24) | ((uint64_t)(x)[3] >> 8) | ((uint64_t)(x)[4] << 8) | ((uint64_t)(x)[5] << 24) | ((uint64_t)(x)[6] << 40) | ((uint64_t)(x)[7] << 56))
-#	endif
-#	define JSTR_WORD_CMPEQU16(x, y) (!memcmp(x, y, sizeof(uint16_t)))
-#	define JSTR_WORD_CMPEQU32(x, y) (!memcmp(x, y, sizeof(uint32_t)))
-#	define JSTR_WORD_CMPEQU64(x, y) (!memcmp(x, y, sizeof(uint64_t)))
-#	define JSTR_WORD_LOAD16(x)      JSTR_WORD_LOADU16(x)
-#	define JSTR_WORD_LOAD32(x)      JSTR_WORD_LOADU32(x)
-#	define JSTR_WORD_LOAD64(x)      JSTR_WORD_LOADU64(x)
-#	define JSTR_WORD_CMPEQ16(x, y)  JSTR_WORD_CMPEQU16(x, y)
-#	define JSTR_WORD_CMPEQ32(x, y)  JSTR_WORD_CMPEQU32(x, y)
-#	define JSTR_WORD_CMPEQ64(x, y)  JSTR_WORD_CMPEQU64(x, y)
 #endif
 
 #ifndef JSTR_USE_UNLOCKED_IO
@@ -1238,6 +1184,9 @@ typedef uint64_t JSTR_ATTR_MAY_ALIAS jstr_u64u_ty;
 #endif
 #ifndef JSTR_ENDIAN_LITTLE
 #	define JSTR_ENDIAN_LITTLE 0
+#endif
+#ifndef JSTR_ENDIAN_UNKNOWN
+#	define JSTR_ENDIAN_UNKNOWN 0
 #endif
 #ifndef JSTR_HAVE_STATIC_ASSERT
 #	define JSTR_HAVE_STATIC_ASSERT 0

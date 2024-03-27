@@ -40,11 +40,20 @@
 #ifndef JSTR__MUSL_TWOWAY_STRUCT
 #	define JSTR__MUSL_TWOWAY_STRUCT
 
-typedef struct jstr_twoway_ty {
-	size_t needle_len;
+typedef struct jstr__twoway_table_ty {
 	size_t _shift[256];
 	size_t _byteset[32 / sizeof(size_t)];
-	size_t _memory0, _suffix, _global_period;
+	size_t _suffix;
+	size_t _global_period;
+	size_t _memory0;
+} jstr__twoway_table_ty;
+
+typedef struct jstr_twoway_ty {
+	size_t needle_len;
+	union u {
+		jstr__twoway_table_ty t;
+		char buf[sizeof(jstr__twoway_table_ty)];
+	} u;
 } jstr_twoway_ty;
 
 #endif
@@ -62,71 +71,71 @@ JSTR_NOEXCEPT
 {
 	size_t max_suffix, j, k, period;
 	int a, b;
-	memset(t->_byteset, 0, sizeof(t->_byteset));
+	memset(t->u.t._byteset, 0, sizeof(t->u.t._byteset));
 	/* Computing length of ne and fill shift table. */
 #ifdef JSTR__MUSL_CHECK_EOL
 	for (max_suffix = 0; ne[max_suffix]; ++max_suffix)
 #else
 	for (max_suffix = 0; max_suffix < ne_len; ++max_suffix)
 #endif
-		a = CANON(ne[max_suffix]), BITOP(t->_byteset, a, |=),
-		t->_shift[a] = max_suffix + 1;
+		a = CANON(ne[max_suffix]), BITOP(t->u.t._byteset, a, |=),
+		t->u.t._shift[a] = max_suffix + 1;
 	t->needle_len = max_suffix;
 	/* Compute maximal suffix. */
-	max_suffix = (size_t)-1, j = 0, k = t->_global_period = 1;
+	max_suffix = (size_t)-1, j = 0, k = t->u.t._global_period = 1;
 	while (j + k < t->needle_len) {
 		a = CANON(ne[max_suffix + k]);
 		b = CANON(ne[j + k]);
 		if (a > b) {
 			j += k;
 			k = 1;
-			t->_global_period = j - max_suffix;
+			t->u.t._global_period = j - max_suffix;
 		} else if (a == b) {
-			if (k == t->_global_period) {
-				j += t->_global_period;
+			if (k == t->u.t._global_period) {
+				j += t->u.t._global_period;
 				k = 1;
 			} else {
 				++k;
 			}
 		} else /* a < b */ {
 			max_suffix = j++;
-			k = t->_global_period = 1;
+			k = t->u.t._global_period = 1;
 		}
 	}
-	t->_suffix = max_suffix;
-	period = t->_global_period;
+	t->u.t._suffix = max_suffix;
+	period = t->u.t._global_period;
 	/* And with the opposite comparison. */
-	max_suffix = (size_t)-1, j = 0, k = t->_global_period = 1;
+	max_suffix = (size_t)-1, j = 0, k = t->u.t._global_period = 1;
 	while (j + k < t->needle_len) {
 		a = CANON(ne[max_suffix + k]);
 		b = CANON(ne[j + k]);
 		if (a < b) {
 			j += k;
 			k = 1;
-			t->_global_period = j - max_suffix;
+			t->u.t._global_period = j - max_suffix;
 		} else if (a == b) {
-			if (k == t->_global_period) {
-				j += t->_global_period;
+			if (k == t->u.t._global_period) {
+				j += t->u.t._global_period;
 				k = 1;
 			} else {
 				++k;
 			}
 		} else /* a > b */ {
 			max_suffix = j++;
-			k = t->_global_period = 1;
+			k = t->u.t._global_period = 1;
 		}
 	}
-	if (max_suffix + 1 > t->_suffix + 1)
-		t->_suffix = max_suffix;
+	if (max_suffix + 1 > t->u.t._suffix + 1)
+		t->u.t._suffix = max_suffix;
 	else
-		t->_global_period = period;
+		t->u.t._global_period = period;
 	/* Periodic ne? */
-	if (JSTR__MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->_global_period, t->_suffix + 1)) {
-		t->_memory0 = 0;
-		t->_global_period
-		= JSTR_MAX(t->_suffix, t->needle_len - t->_suffix - 1) + 1;
+	if (JSTR__MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->u.t._global_period, t->u.t._suffix + 1)) {
+		t->u.t._memory0 = 0;
+		t->u.t._global_period
+		= JSTR_MAX(t->u.t._suffix, t->needle_len - t->u.t._suffix - 1) + 1;
 	} else {
-		t->_memory0 = t->needle_len - t->_global_period;
+		t->u.t._memory0 = t->needle_len - t->u.t._global_period;
 	}
 }
 
@@ -169,8 +178,8 @@ JSTR_NOEXCEPT
 #endif
 		/* Check last byte first; advance by shift on mismatch. */
 		c = CANON(hs[t->needle_len - 1]);
-		if (BITOP(t->_byteset, c, &)) {
-			k = t->needle_len - t->_shift[c];
+		if (BITOP(t->u.t._byteset, c, &)) {
+			k = t->needle_len - t->u.t._shift[c];
 			if (k) {
 				if (k < memory)
 					k = memory;
@@ -184,18 +193,18 @@ JSTR_NOEXCEPT
 			continue;
 		}
 		/* Compare right half. */
-		for (k = JSTR_MAX(t->_suffix + 1, memory); k < t->needle_len && CANON(ne[k]) == CANON(hs[k]); ++k) {}
+		for (k = JSTR_MAX(t->u.t._suffix + 1, memory); k < t->needle_len && CANON(ne[k]) == CANON(hs[k]); ++k) {}
 		if (k < t->needle_len) {
-			hs += k - t->_suffix;
+			hs += k - t->u.t._suffix;
 			memory = 0;
 			continue;
 		}
 		/* Compare left half. */
-		for (k = t->_suffix + 1; k > memory && CANON(ne[k - 1]) == CANON(hs[k - 1]); --k) {}
+		for (k = t->u.t._suffix + 1; k > memory && CANON(ne[k - 1]) == CANON(hs[k - 1]); --k) {}
 		if (k <= memory)
 			return (char *)hs;
-		hs += t->_global_period;
-		memory = t->_memory0;
+		hs += t->u.t._global_period;
+		memory = t->u.t._memory0;
 	}
 	return NULL;
 }

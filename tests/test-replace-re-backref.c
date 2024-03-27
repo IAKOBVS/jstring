@@ -28,7 +28,7 @@
 		expected = _expected;                                                                                         \
 		regex_t preg;                                                                                                 \
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                                      \
-		T_APPEND_NORET(jstr_re_rplcn_backref_len, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _nmatch, _n); \
+		T_APPEND_NORET(jstr_re_rplcn_backref_len_exec, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _nmatch, _n); \
 		jstr_re_free(&preg);                                                                                          \
 	} while (0)
 
