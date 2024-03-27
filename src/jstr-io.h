@@ -73,18 +73,15 @@ enum {
 
 JSTR_FUNC_PURE
 static jstr_io_ft_ty
-jstr__io_exttype(const char *ext)
+jstr__io_exttype(const char *ext, const char **textv, const char **binaryv)
 JSTR_NOEXCEPT
 {
-	static const char *text[] = { JSTR_IO_FT_TEXT_ARRAY };
-	static const char *binary[] = { JSTR_IO_FT_BINARY_ARRAY };
-	unsigned int i;
-	for (i = 0; i < JSTR_ARRAY_COUNT(text); ++i)
-		if (!jstr_strcmpeq_loop(ext, text[i]))
+	for (; *textv; ++textv)
+		if (!jstr_strcmpeq_loop(ext, *textv))
 			return JSTR_IO_FT_TEXT;
-	for (i = 0; i < JSTR_ARRAY_COUNT(binary); ++i)
-		if (!jstr_strcmpeq_loop(ext, binary[i]))
-			return JSTR_IO_FT_BINARY;
+	for (; *binaryv; ++binaryv)
+		if (!jstr_strcmpeq_loop(ext, *binaryv))
+			return JSTR_IO_FT_TEXT;
 	return JSTR_IO_FT_UNKNOWN;
 }
 
@@ -103,15 +100,20 @@ jstr__io_extget_len(const char *fname, size_t sz)
 	return NULL;
 }
 
-/* Return jstr_io_ft_ty based on the FNAME extension. */
+/* Return jstr_io_ft_ty based on the FNAME extension.
+ * TEXTV and BINARYV are NULL-terminated array of NUL-terminated
+ * strings. TEXTV contains extensions that you want to interpret
+ * as text. For example: c, h, py, txt.
+ * BINARYV contains extensions that you want to interpret as binary.
+ * For example: s, so, png, pdf. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static jstr_io_ft_ty
-jstr_io_exttype(const char *R fname, size_t sz)
+jstr_io_exttype(const char *R fname, size_t sz, const char **textv, const char **binaryv)
 JSTR_NOEXCEPT
 {
 	fname = (char *)jstr__io_extget_len(fname, sz);
-	return fname ? jstr__io_exttype(fname) : JSTR_IO_FT_UNKNOWN;
+	return fname ? jstr__io_exttype(fname, textv, binaryv) : JSTR_IO_FT_UNKNOWN;
 }
 
 JSTR_FUNC
@@ -707,7 +709,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)       \
 		do {                                                          \
 			*(dirpath + dirpath_len) = '/';                       \
-			newpath_len = JSTR_DIFF(                          \
+			newpath_len = JSTR_DIFF(                              \
 			jstr_stpcpy(dirpath + dirpath_len + 1, (ep)->d_name), \
 			dirpath);                                             \
 		} while (0)

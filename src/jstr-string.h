@@ -467,23 +467,25 @@ JSTR_NOEXCEPT
 #endif
 }
 
+/* Needles <= THRES will not compile a jstr_twoway_ty. */
+#if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
+#	define JSTR_TWOWAY_MEMMEM_THRES sizeof(jstr_vvec_ty)
+#else
+#	define JSTR_TWOWAY_MEMMEM_THRES 2
+#endif
+#define JSTR_TWOWAY_STRSTR_THRES         JSTR_TWOWAY_MEMMEM_THRES
+#define JSTR_TWOWAY_STRCASESTR_LEN_THRES 2
+#define JSTR_TWOWAY_STRCASESTR_THRES     JSTR_TWOWAY_STRCASESTR_LEN_THRES
+
 JSTR_FUNC_VOID
 static void
 jstr_memmem_comp(jstr_twoway_ty *const t, const void *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (jstr_likely(ne_len <= sizeof(jstr_vvec_ty))) {
+	if (ne_len > JSTR_TWOWAY_MEMMEM_THRES)
+		jstr__memmem_musl_comp(t, (const unsigned char *)ne, ne_len);
+	else
 		t->needle_len = ne_len;
-		return;
-	}
-#else
-	if (ne_len <= 2) {
-		t->needle_len = ne_len;
-		return;
-	}
-#endif
-	jstr__memmem_musl_comp(t, (const unsigned char *)ne, ne_len);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
@@ -492,20 +494,21 @@ static void *
 jstr_memmem_exec(const jstr_twoway_ty *const t, const void *hs, size_t hs_len, const void *ne)
 JSTR_NOEXCEPT
 {
+	if (t->needle_len > JSTR_TWOWAY_MEMMEM_THRES)
+		return jstr__memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 #if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	if (jstr_likely(t->needle_len <= sizeof(jstr_vvec_ty)))
-		return jstr__simd_memmem(hs, hs_len, ne, t->needle_len);
+	return jstr__simd_memmem(hs, hs_len, ne, t->needle_len);
 #else
-	if (jstr_unlikely(t->needle_len == 0))
-		return (char *)hs;
+	if (t->needle_len == 2) {
+		if (jstr_unlikely(hs_len < 2))
+			return NULL;
+		return jstr__memmem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+	}
 	if (t->needle_len == 1)
 		return (void *)memchr(hs, *(const unsigned char *)ne, hs_len);
-	if (jstr_unlikely(hs_len < t->needle_len))
-		return NULL;
-	if (t->needle_len == 2)
-		return jstr__memmem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+	/* t->needle_len == 0 */
+	return (char *)hs;
 #endif
-	return jstr__memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -655,16 +658,19 @@ JSTR_NOEXCEPT
 	return jstr__strcasestr_len_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
 }
 
+#if JSTR_TWOWAY_STRCASESTR_LEN_THRES > 2
+#	error "JSTR_TWOWAY_STRCASESTR_LEN_THRES is assumed to be 2."
+#endif
+
 JSTR_FUNC_VOID
 static void
 jstr_strcasestr_len_comp(jstr_twoway_ty *const t, const char *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	if (ne_len <= 2) {
+	if (ne_len > JSTR_TWOWAY_STRCASESTR_LEN_THRES)
+		jstr__strcasestr_len_musl_comp(t, (const unsigned char *)ne, ne_len);
+	else
 		t->needle_len = ne_len;
-		return;
-	}
-	jstr__strcasestr_len_musl_comp(t, (const unsigned char *)ne, ne_len);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
@@ -673,15 +679,17 @@ static char *
 jstr_strcasestr_len_exec(const jstr_twoway_ty *const t, const char *hs, size_t hs_len, const char *ne)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(t->needle_len == 0))
-		return (char *)hs;
+	if (t->needle_len > JSTR_TWOWAY_STRCASESTR_LEN_THRES)
+		return jstr__strcasestr_len_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+	if (t->needle_len == 2) {
+		if (jstr_unlikely(hs_len < 2))
+			return NULL;
+		return jstr__memcasemem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+	}
 	if (t->needle_len == 1)
 		return (char *)jstr_memcasechr(hs, *(const unsigned char *)ne, hs_len);
-	if (jstr_unlikely(hs_len < t->needle_len))
-		return NULL;
-	if (t->needle_len == 2)
-		return jstr__memcasemem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
-	return jstr__strcasestr_len_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+	/* t->needle_len == 0 */
+	return (char *)hs;
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -751,22 +759,23 @@ JSTR_NOEXCEPT
 #endif
 }
 
+#if JSTR_TWOWAY_STRCASESTR_THRES > 2
+#	error "JSTR_TWOWAY_STRCASESTR_THRES is assumed to be 2."
+#endif
+
 JSTR_FUNC_VOID
 static void
 jstr_strcasestr_comp(jstr_twoway_ty *const t, const char *ne)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*ne == '\0')) {
+	if (*ne == '\0')
 		t->needle_len = 0;
-		return;
-	} else if (jstr_unlikely(ne[1] == '\0')) {
+	else if (ne[1] == '\0')
 		t->needle_len = 1;
-		return;
-	} else if (jstr_unlikely(ne[2] == '\0')) {
+	else if (ne[2] == '\0')
 		t->needle_len = 2;
-		return;
-	}
-	jstr__strcasestr_musl_comp(t, (const unsigned char *)ne);
+	else
+		jstr__strcasestr_musl_comp(t, (const unsigned char *)ne);
 }
 
 JSTR_FUNC_PURE
@@ -774,13 +783,14 @@ static char *
 jstr_strcasestr_exec(const jstr_twoway_ty *const t, const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(t->needle_len == 0))
-		return (char *)hs;
-	if (t->needle_len == 1)
-		return (char *)jstr_strcasechr(hs, *ne);
+	if (t->needle_len > JSTR_TWOWAY_STRCASESTR_THRES)
+		return jstr__strcasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
 	if (t->needle_len == 2)
 		return jstr__strcasestr2((const unsigned char *)hs, (const unsigned char *)ne);
-	return jstr__strcasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
+	if (t->needle_len == 1)
+		return (char *)jstr_strcasechr(hs, *ne);
+	/* t->needle_len == 0 */
+	return (char *)hs;
 }
 
 #define JSTR__MUSL_FUNC_NAME jstr__strstr_musl
@@ -810,11 +820,7 @@ static char *
 jstr_strstr_exec(const jstr_twoway_ty *const t, const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(t->needle_len == 0))
-		return (char *)hs;
-	if (t->needle_len == 1)
-		return (char *)strchr(hs, *ne);
-	if (t->needle_len == 2)
+	if (t->needle_len <= JSTR_TWOWAY_STRSTR_THRES)
 		return (char *)strstr(hs, ne);
 	return jstr__strstr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
 }

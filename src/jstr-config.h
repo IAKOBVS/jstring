@@ -61,11 +61,6 @@
 #	define JSTR_L_GROWTH 1.5
 #endif
 
-/* Growth factor of jarr_ty. */
-#ifndef JARR_GROWTH
-#	define JARR_GROWTH 1.5
-#endif
-
 /* Filename extensions interpreted as text. */
 #ifndef JSTR_IO_FT_TEXT_ARRAY
 #	define JSTR_IO_FT_TEXT_ARRAY                                         \
@@ -79,20 +74,6 @@
 #	define JSTR_IO_FT_BINARY_ARRAY                                    \
 		"a", "bin", "gz", "jpg", "jpeg", "mp4", "mp3", "mkv", "o", \
 		"pdf", "png", "pyc", "rar", "so", "wav", "zip"
-#endif
-
-#if !defined JSTR_ENDIAN_LITTLE && !defined JSTR_ENDIAN_BIG
-/* This is defined by ./check-little-endian. */
-#define JSTR_ENDIAN_LITTLE 1
-#endif
-#if JSTR_ENDIAN_LITTLE
-#	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
-#	define JSTR_ENDIAN_BIG    0
-#else
-#	undef JSTR_ENDIAN_LITTLE
-#define JSTR_ENDIAN_LITTLE 1
-#	define JSTR_ENDIAN_BIG    1
 #endif
 
 #endif /* JSTR_CONFIG_H */
