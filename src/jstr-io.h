@@ -43,18 +43,6 @@ JSTR__END_DECLS
 
 JSTR__BEGIN_DECLS
 
-typedef enum {
-	/* Unknown file type. */
-	JSTR_IO_FT_UNKNOWN = 0,
-#define JSTR_IO_FT_UNKNOWN JSTR_IO_FT_UNKNOWN
-	/* Text file type. */
-	JSTR_IO_FT_TEXT,
-#define JSTR_IO_FT_TEXT JSTR_IO_FT_TEXT
-	/* Binary file type. */
-	JSTR_IO_FT_BINARY
-#define JSTR_IO_FT_BINARY JSTR_IO_FT_BINARY
-} jstr_io_ft_ty;
-
 enum {
 #ifdef PATH_MAX
 	JSTR_IO_PATH_MAX = PATH_MAX,
