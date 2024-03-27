@@ -587,7 +587,7 @@ start_big:
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
 		if (jstr_unlikely(find_len == 0))
-			++i.src;
+			++i.src_e;
 	}
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
 	free(src_heap);
@@ -659,7 +659,7 @@ JSTR_NOEXCEPT
 	int c;
 	for (; (rplc = (unsigned char *)memchr(rplc, '\\', JSTR_DIFF(rplc_e, rplc))); rplc += 2) {
 		/* Trailing backslash error. */
-		if (jstr_unlikely(rplc == rplc_e))
+		if (jstr_unlikely(rplc == rplc_e - 1))
 			return (size_t)-1;
 		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
@@ -721,7 +721,7 @@ JSTR_NOEXCEPT
 		if (jstr_nullchk(rplc))
 			break;
 		/* We've checked that there's no trailing backslash. */
-		/* if (rplc == rplc_e)
+		/* if (rplc == rplc_e - 1)
 		     return (size_t)-1; */
 		backref = (unsigned char *)jstr_mempcpy(backref, rplc_o, JSTR_DIFF(rplc, rplc_o));
 		c = *(rplc + 1);
@@ -759,6 +759,8 @@ JSTR_NOEXCEPT
 	if (jstr_nullchk(rplc_backref1))
 		return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
 	const unsigned char *rplc_backref1_e = (const unsigned char *)jstr__re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
+	if (rplc_backref1_e == NULL)
+		rplc_backref1_e = rplc_backref1 + 2;
 	regmatch_t rm[10];
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	const char *const end = *s + *sz;
@@ -827,9 +829,9 @@ start_big:
 			rplcwbackrefp = rplcwbackref_heap;
 		}
 		jstr__re_rplcbackrefcreat((unsigned char *)i.src_e - rm[0].rm_so, rm, (unsigned char *)rplcwbackrefp, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
-		if (jstr_unlikely(*cap <= *sz + rplc_len - (size_t)rplcwbackref_len)) {
+		if (jstr_unlikely(*cap <= *sz + rplcwbackref_len - (size_t)find_len)) {
 			const uintptr_t tmp = (uintptr_t)dst_heap;
-			if (jstr_chk(jstr_reservealways(&dst_heap, sz, cap, *sz + rplc_len - (size_t)rplcwbackref_len))) {
+			if (jstr_chk(jstr_reserve(&dst_heap, sz, cap, *sz + rplcwbackref_len - (size_t)find_len))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
@@ -841,7 +843,7 @@ start_big:
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
 		if (jstr_unlikely(find_len == 0))
-			++i.src;
+			++i.src_e;
 	}
 	*sz = JSTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
 	free(rplcwbackref_heap);

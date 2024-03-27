@@ -95,6 +95,12 @@ main(int argc, char **argv)
 	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)_\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\\\\\2Q", "hello\\\\worldQ_hello_world", 3, 1);
 	T_RE_BREF("hello_world_hello_world", "\\([0-9A-Za-z]\\{1,\\}\\)_\\([0-9A-Za-z]\\{1,\\}\\)", "\\1\\\\\\2Q", "hello_world_hello_world", 3, 0);
 
+	T_RE_BREF("hello_world_hello_world", "\\(.*\\)", "", "", 1, (size_t)-1);
+	T_RE_BREF("hello_world_hello_world", "\\(.*\\)", "p", "p", 1, (size_t)-1);
+	T_RE_BREF("hello_world_hello_world", "\\(.*\\)", "\\1", "hello_world_hello_world", 2, (size_t)-1);
+	T_RE_BREF("hello_world_hello_world", "\\(.*\\)", "\\1\\1", "hello_world_hello_worldhello_world_hello_world", 2, (size_t)-1);
+	T_RE_BREF("hello_world_hello_world", "\\(.*\\)", "\\1\\1", "hello_world_hello_worldhello_world_hello_world", 2, (size_t)-1);
+
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;
