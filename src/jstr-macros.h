@@ -1164,17 +1164,14 @@ JSTR_NOEXCEPT
 #	define JSTR_HAVE_UNALIGNED_ACCESS 1
 #endif
 
-#ifndef JSTR_USE_UNLOCKED_IO
-#	define JSTR_USE_UNLOCKED_IO 0
+#ifndef JSTR_LP64
+#	define JSTR_LP64 0
 #endif
-#ifndef JSTR_USE_UNLOCKED_IO_READ
-#	define JSTR_USE_UNLOCKED_IO_READ 0
+#ifndef JSTR_LP32
+#	define JSTR_LP32 0
 #endif
-#ifndef JSTR_USE_UNLOCKED_IO_WRITE
-#	define JSTR_USE_UNLOCKED_IO_WRITE 0
-#endif
-#ifndef JSTR_TEST
-#	define JSTR_TEST 0
+#ifndef JSTR_LP_UNKNOWN
+#	define JSTR_LP_UNKNOWN 0
 #endif
 #ifndef JSTR_PANIC
 #	define JSTR_PANIC 0
@@ -1187,6 +1184,9 @@ JSTR_NOEXCEPT
 #endif
 #ifndef JSTR_ENDIAN_UNKNOWN
 #	define JSTR_ENDIAN_UNKNOWN 0
+#endif
+#ifndef JSTR_HAVE_STATIC_ASSERT
+#	define JSTR_HAVE_STATIC_ASSERT 0
 #endif
 #ifndef JSTR_HAVE_STATIC_ASSERT
 #	define JSTR_HAVE_STATIC_ASSERT 0
@@ -1205,6 +1205,9 @@ JSTR_NOEXCEPT
 #endif
 #ifndef JSTR_HAVE_ATTR_MAY_ALIAS
 #	define JSTR_HAVE_ATTR_MAY_ALIAS 0
+#endif
+#ifndef JSTR_HAVE_FILENO
+#	define JSTR_HAVE_FILENO 0
 #endif
 #ifndef JSTR_HAVE_STRCASECMP
 #	define JSTR_HAVE_STRCASECMP 0
@@ -1292,9 +1295,6 @@ JSTR_NOEXCEPT
 #endif
 #ifndef JSTR_HAVE_FERROR_UNLOCKED
 #	define JSTR_HAVE_FERROR_UNLOCKED 0
-#endif
-#ifndef JSTR_HAVE_FILENO
-#	define JSTR_HAVE_FILENO 0
 #endif
 #ifndef JSTR_HAVE_FILENO_UNLOCKED
 #	define JSTR_HAVE_FILENO_UNLOCKED 0
@@ -1415,15 +1415,6 @@ JSTR_NOEXCEPT
 #endif
 #ifndef JSTR_HAVE_UNALIGNED_ACCESS
 #	define JSTR_HAVE_UNALIGNED_ACCESS 0
-#endif
-#ifndef JSTR_LP64
-#	define JSTR_LP64 0
-#endif
-#ifndef JSTR_LP32
-#	define JSTR_LP32 0
-#endif
-#ifndef JSTR_LP_UNKNOWN
-#	define JSTR_LP_UNKNOWN 0
 #endif
 
 #endif /* jstr_macros_h */

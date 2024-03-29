@@ -833,31 +833,31 @@ JSTR_NOEXCEPT
 		}
 		/* Stop processing if DIRPATH is longer than PATH_MAX.
 		   If we don't have d_namlen, try to estimate the length. */
-		if (JSTR_HAVE_DIRENT_D_NAMLEN) {
-			if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
-				errno = ENAMETOOLONG;
-				goto err_closedir;
-			}
-		} else {
-			if (jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX) && jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
-				errno = ENAMETOOLONG;
-				goto err_closedir;
-			}
+#if JSTR_HAVE_DIRENT_D_NAMLEN
+		if (jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
+			errno = ENAMETOOLONG;
+			goto err_closedir;
 		}
+#else
+		if (jstr_unlikely(dirpath_len >= JSTR_IO_PATH_MAX - JSTR_IO_NAME_MAX) && jstr_unlikely(dirpath_len + JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep) >= JSTR_IO_PATH_MAX)) {
+			errno = ENAMETOOLONG;
+			goto err_closedir;
+		}
+#endif
 		/* We must stat to get the type if we don't have d_type. */
-		if (!JSTR_HAVE_DIRENT_D_TYPE) {
-			/* We must construct the full path for stat if we
-			 * don't have *_at functions. */
-			if (!USE_ATFILE)
-				FILL_PATH_ALWAYS(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
-			STAT_DO((struct stat *)a->ftw.st,
-			        fd,
-			        a->ftw.ep,
-			        a->ftw.dirpath,
-			        /* If stat fails. */
-			        if (FLAG(JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG)) goto CONT;
-			        else goto func;);
-		}
+#if !JSTR_HAVE_DIRENT_D_TYPE
+		/* We must construct the full path for stat if we
+		 * don't have *_at functions. */
+		if (!USE_ATFILE)
+			FILL_PATH_ALWAYS(a->ftw.dirpath_len, (char *)a->ftw.dirpath, dirpath_len, a->ftw.ep);
+		STAT_DO((struct stat *)a->ftw.st,
+		        fd,
+		        a->ftw.ep,
+		        a->ftw.dirpath,
+		        /* If stat fails. */
+		        if (FLAG(JSTR_IO_FTW_DIR | JSTR_IO_FTW_REG)) goto CONT;
+		        else goto func;);
+#endif
 		if (IS_REG(a->ftw.ep, a->ftw.st))
 			goto reg;
 		if (IS_DIR(a->ftw.ep, a->ftw.st))
