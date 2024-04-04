@@ -515,8 +515,8 @@ err:
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	jstr_re_off_ty find_len = rm.rm_eo - rm.rm_so;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
 	i.src_e += rm.rm_so;
+	size_t j = JSTR_DIFF(i.src_e, i.src);
 	jstr_re_off_ty changed = 0;
 	enum { USE_DST_MALLOC = 1,
 	       USE_DST_REALLOC,
@@ -548,7 +548,7 @@ err:
 		i.src = *s;
 		goto start_big;
 	} else {
-		i.dst = *s;
+		i.dst = *s + start_idx;
 		dst_heap = *s;
 #if !(JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA)
 		i.src = (const char *)malloc(*sz - start_idx + 1);
@@ -785,8 +785,8 @@ err:
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
 	i.src_e += rm[0].rm_so;
+	size_t j = JSTR_DIFF(i.src_e, i.src);
 	jstr_re_off_ty changed = 0;
 	i.dst = NULL;
 	if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {

@@ -101,6 +101,8 @@ main(int argc, char **argv)
 	T_RE_BREF("hello_world_hello_world", "\\(.*\\)", "\\1\\1", "hello_world_hello_worldhello_world_hello_world", 2, (size_t)-1);
 	T_RE_BREF("hello_world_hello_world", "\\(.*\\)", "\\1\\1", "hello_world_hello_worldhello_world_hello_world", 2, (size_t)-1);
 
+	T_RE_BREF("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", 1, (size_t)-1);
+
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;
