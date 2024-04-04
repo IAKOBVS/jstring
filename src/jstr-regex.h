@@ -812,7 +812,9 @@ start:
 			}
 			i.dst = dst_heap + JSTR_DIFF(i.dst, tmp);
 		}
-		memmove(i.dst, i.src, j);
+		/* DST is a malloc'd string.
+		 * It's safe to do a memcpy. */
+		memcpy(i.dst, i.src, j);
 		i.dst += j;
 		jstr__re_rplcbackrefcreat((unsigned char *)i.src_e - rm[0].rm_so, rm, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
 		i.dst += rplcwbackref_len;
@@ -821,6 +823,8 @@ start:
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
 	}
+	/* DST is a malloc'd string.
+	 * It's safe to do a memcpy. */
 	*sz = JSTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
 	free(src_heap);
 	*s = dst_heap;
