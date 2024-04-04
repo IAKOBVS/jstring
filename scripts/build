@@ -45,6 +45,7 @@ mark_as_built()
 
 cd "$(dirname "$0")" || exit
 ./setup || exit
+./clean
 mkdir -p ../jstr
 
 for file in $(echo $PATH_SRC/*.h); do
