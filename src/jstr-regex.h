@@ -514,7 +514,7 @@ err:
 	       USE_SRC_MALLOC,
 	       USE_SRC_STACK };
 	int mode = 0;
-	/* If CAP is much larger than SIZE, consider Using
+	/* If CAP is much larger than SIZE, consider using
 	 * realloc instead of malloc to reuse the buffer. */
 	if (*cap < (*sz + rplc_len - (size_t)find_len) * 1.5) {
 		mode |= USE_DST_MALLOC;
@@ -737,7 +737,6 @@ JSTR_NOEXCEPT
 	memcpy(backref, rplc_o, JSTR_DIFF(rplc_e, rplc_o));
 }
 
-/* TODO: prefer realloc over malloc. */
 /* Do not pass an anchored pattern (with ^ or $) to rplcn/rplcall/rmn/rmall.
  * Use rplc/rm instead.
  * Return value:
@@ -767,13 +766,11 @@ JSTR_NOEXCEPT
 	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
-	char *rplcwbackref_heap = NULL;
 	char *dst_heap = NULL;
 	char *src_heap = NULL;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
 err:
 		jstr_free_noinline(s, sz, cap);
-		free(rplcwbackref_heap);
 		free(src_heap);
 		free(dst_heap);
 		JSTR_RE_RETURN_ERR(ret, preg);
@@ -791,9 +788,6 @@ err:
 	i.src = *s;
 	src_heap = (char *)i.src;
 	size_t rplcwbackref_len;
-	char rplcwbackref_stack[1024]; /* Does not store NUL. Use this to avoid malloc'ing for small RPLC. */
-	char *rplcwbackrefp = rplcwbackref_stack;
-	size_t rplcwbackref_cap = 0;
 	goto start_big;
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
@@ -803,32 +797,6 @@ err:
 		j = JSTR_DIFF(i.src_e, i.src);
 start_big:
 		rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
-		if (jstr_likely(rplcwbackref_len <= sizeof(rplcwbackref_stack))) {
-			rplcwbackrefp = rplcwbackref_stack;
-		} else {
-			/* Trailing backslash error. */
-			if (jstr_unlikely(rplcwbackref_len == (size_t)-1)) {
-				ret = JSTR_RE_RET_EESCAPE;
-				goto err;
-			}
-			if (rplcwbackref_cap < rplcwbackref_len) {
-				if (jstr_nullchk(rplcwbackref_heap)) {
-					rplcwbackref_cap = jstr__grow(rplcwbackref_cap, rplcwbackref_len);
-					rplcwbackref_heap = (char *)malloc(rplcwbackref_cap);
-					if (jstr_nullchk(rplcwbackref_heap)) {
-						ret = JSTR_RE_RET_ESPACE;
-						goto err;
-					}
-				} else {
-					if (jstr_chk(jstr_reservealways(&rplcwbackref_heap, &rplcwbackref_len, &rplcwbackref_cap, rplcwbackref_len))) {
-						ret = JSTR_RE_RET_ESPACE;
-						goto err;
-					}
-				}
-			}
-			rplcwbackrefp = rplcwbackref_heap;
-		}
-		jstr__re_rplcbackrefcreat((unsigned char *)i.src_e - rm[0].rm_so, rm, (unsigned char *)rplcwbackrefp, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
 		if (jstr_unlikely(*cap <= *sz + rplcwbackref_len - (size_t)find_len)) {
 			const uintptr_t tmp = (uintptr_t)dst_heap;
 			if (jstr_chk(jstr_reserve(&dst_heap, sz, cap, *sz + rplcwbackref_len - (size_t)find_len))) {
@@ -839,14 +807,14 @@ start_big:
 		}
 		memmove(i.dst, i.src, j);
 		i.dst += j;
-		i.dst = (char *)jstr_mempcpy(i.dst, rplcwbackrefp, rplcwbackref_len);
+		jstr__re_rplcbackrefcreat((unsigned char *)i.src_e - rm[0].rm_so, rm, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
+		i.dst += rplcwbackref_len;
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
 	}
 	*sz = JSTR_DIFF(jstr_stpcpy_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
-	free(rplcwbackref_heap);
 	free(src_heap);
 	*s = dst_heap;
 	return changed;
