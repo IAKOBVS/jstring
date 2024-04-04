@@ -119,6 +119,22 @@ main(int argc, char **argv)
 	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 12);
 	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 13);
 
+	T_RE_BREF("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_worl_hello_hello", 2, (size_t)-1);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_worl_hello_hello", 2, (size_t)-1, 1);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_worl_hello_hello", 2, (size_t)-1, 2);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_worl_hello_hello", 2, (size_t)-1, 3);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_worl_hello_hello", 2, (size_t)-1, 4);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_worl_hello_hello", 2, (size_t)-1, 5);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_worl_hello_hello", 2, (size_t)-1, 6);
+
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_(hello)_hello_hello", 2, (size_t)-1, 7);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_(hello)_hello_hello", 2, (size_t)-1, 8);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_(hello)_hello_hello", 2, (size_t)-1, 9);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_(hello)_hello_hello", 2, (size_t)-1, 10);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_(hello)_hello_hello", 2, (size_t)-1, 11);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_(hello)_hello_hello", 2, (size_t)-1, 12);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)\\(.\\)", "worl\\1", "hello_(hello)_hello_hello", 2, (size_t)-1, 13);
+
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;

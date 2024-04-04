@@ -516,7 +516,7 @@ err:
 	}
 	jstr_re_off_ty find_len = rm.rm_eo - rm.rm_so;
 	i.src_e += rm.rm_so;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
+	size_t j;
 	jstr_re_off_ty changed = 0;
 	enum { USE_DST_MALLOC = 1,
 	       USE_DST_REALLOC,
@@ -546,7 +546,6 @@ err:
 		}
 		dst_heap = i.dst;
 		i.src = *s;
-		goto start_big;
 	} else {
 		i.dst = *s + start_idx;
 		dst_heap = *s;
@@ -574,14 +573,14 @@ err:
 		i.src_e = (char *)i.src + rm.rm_so;
 		end = i.src + *sz - start_idx;
 	}
-	goto start_small;
+	goto start;
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
 		i.src_e += rm.rm_so;
+start:
 		j = JSTR_DIFF(i.src_e, i.src);
-start_small:
 		if (jstr_unlikely(*cap <= *sz + rplc_len - (size_t)find_len)) {
 			const uintptr_t tmp = (uintptr_t)dst_heap;
 			if (jstr_chk(jstr_reservealways(&dst_heap, sz, cap, *sz + rplc_len - (size_t)find_len))) {
@@ -590,7 +589,6 @@ start_small:
 			}
 			i.dst = dst_heap + JSTR_DIFF(i.dst, tmp);
 		}
-start_big:
 		memmove(i.dst, i.src, j);
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
 		i.src += j + (size_t)find_len;
@@ -786,9 +784,9 @@ err:
 	}
 	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
 	i.src_e += rm[0].rm_so;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
 	jstr_re_off_ty changed = 0;
 	i.dst = NULL;
+	size_t j;
 	if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
 		ret = JSTR_RE_RET_ESPACE;
 		goto err;
@@ -797,14 +795,14 @@ err:
 	i.src = *s;
 	src_heap = (char *)i.src;
 	size_t rplcwbackref_len;
-	goto start_big;
+	goto start;
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		i.src_e += rm[0].rm_so;
+start:
 		j = JSTR_DIFF(i.src_e, i.src);
-start_big:
 		rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 		if (jstr_unlikely(*cap <= *sz + rplcwbackref_len - (size_t)find_len)) {
 			const uintptr_t tmp = (uintptr_t)dst_heap;
