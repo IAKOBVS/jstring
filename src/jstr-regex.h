@@ -181,7 +181,15 @@ static jstr_re_ret_ty
 jstr_re_comp(regex_t *R preg, const char *R ptn, int cflags)
 JSTR_NOEXCEPT
 {
+#if JSTR_PANIC
+	const int ret = (jstr_re_ret_ty)regcomp(preg, ptn, cflags);
+	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
+		jstr_re_err(-ret, preg);
+		jstr_errdie("");
+	}
+#else
 	return (jstr_re_ret_ty)regcomp(preg, ptn, cflags);
+#endif
 }
 
 JSTR_NONNULL((1))
