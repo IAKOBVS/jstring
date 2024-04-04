@@ -187,6 +187,7 @@ JSTR_NOEXCEPT
 		jstr_re_err(-ret, preg);
 		jstr_errdie("");
 	}
+	return ret;
 #else
 	return (jstr_re_ret_ty)regcomp(preg, ptn, cflags);
 #endif
