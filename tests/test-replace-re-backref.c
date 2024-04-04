@@ -21,16 +21,18 @@
 		(result).size = 0;                \
 		*(result).data = '\0';            \
 	} while (0)
-#define T_RE_BREF(_string, _find, _rplc, _expected, _nmatch, _n)                                                              \
-	do {                                                                                                                  \
-		const char *expected;                                                                                         \
-		FILL(result, _string);                                                                                        \
-		expected = _expected;                                                                                         \
-		regex_t preg;                                                                                                 \
-		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                                      \
-		T_APPEND_NORET(jstr_re_rplcn_backref_len_exec, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _nmatch, _n); \
-		jstr_re_free(&preg);                                                                                          \
+#define T_RE_BREF_FROM(_string, _find, _rplc, _expected, _nmatch, _n, _start_idx)                                                                   \
+	do {                                                                                                                                        \
+		const char *expected;                                                                                                               \
+		FILL(result, _string);                                                                                                              \
+		expected = _expected;                                                                                                               \
+		regex_t preg;                                                                                                                       \
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                                                            \
+		T_APPEND_NORET(jstr_re_rplcn_backref_len_from_exec, &preg, jstr_struct(&result), _start_idx, _rplc, strlen(_rplc), 0, _nmatch, _n); \
+		jstr_re_free(&preg);                                                                                                                \
 	} while (0)
+#define T_RE_BREF(_string, _find, _rplc, _expected, _nmatch, _n) \
+	T_RE_BREF_FROM(_string, _find, _rplc, _expected, _nmatch, _n, 0)
 
 int
 main(int argc, char **argv)
@@ -102,6 +104,20 @@ main(int argc, char **argv)
 	T_RE_BREF("hello_world_hello_world", "\\(.*\\)", "\\1\\1", "hello_world_hello_worldhello_world_hello_world", 2, (size_t)-1);
 
 	T_RE_BREF("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", 1, (size_t)-1);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", 1, (size_t)-1, 1);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", 1, (size_t)-1, 2);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", 1, (size_t)-1, 3);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", 1, (size_t)-1, 4);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", 1, (size_t)-1, 5);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_worl_hello_hello", 1, (size_t)-1, 6);
+
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 7);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 8);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 9);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 10);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 11);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 12);
+	T_RE_BREF_FROM("hello_(hello)_hello_hello", "(.*)", "worl", "hello_(hello)_hello_hello", 1, (size_t)-1, 13);
 
 	jstr_free_j(&result);
 	SUCCESS();
