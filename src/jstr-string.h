@@ -1806,7 +1806,9 @@ JSTR_NOEXCEPT
 	return jstr_thousepcpy_len_p(dst, src, strlen(src), separator);
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
+/* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
+ * Otherwise, remove unescaped backslashes.
+ * For example: "\q\x" -> "qx".
  * Trailing backslashes are ignored. */
 JSTR_FUNC
 static char *
@@ -1849,7 +1851,9 @@ out:
 	return dst;
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
+/* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
+ * Otherwise, remove unescaped backslashes.
+ * For example: "\q\x" -> "qx".
  * Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
@@ -1865,7 +1869,9 @@ JSTR_NOEXCEPT
 	return jstr_unescapecpy_p(s, s);
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
+/* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
+ * Otherwise, remove unescaped backslashes.
+ * For example: "\q\x" -> "qx".
  * Trailing backslashes are ignored. */
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
@@ -1909,7 +1915,9 @@ CONT:;
 	return d;
 }
 
-/* Unescape \b, \f, \n. \r, \t, \v, \\, \", \ooo (octal).
+/* Unescape \b, \f, \n, \r, \t, \v, \\, \", \ooo (octal).
+ * Otherwise, remove unescaped backslashes.
+ * For example: "\q\x" -> "qx".
  * Trailing backslashes are ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
