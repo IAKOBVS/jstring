@@ -62,6 +62,10 @@ main(int argc, char **argv)
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_worl_hello_hello", 2);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "worl_hello_hello_hello", 1);
 	T_RE("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "worl", "hello_hello_hello_hello", 0);
+	/* .* */
+	T_RE("hello_hello_hello_hello", ".*", "worl", "worl", (size_t)-1);
+	T_RE("hello_hello_hello_hello", "(.*)", "worl", "hello_hello_hello_hello", (size_t)-1);
+	T_RE("hello_hello_hello_hello", "\\(.*\\)", "worl", "worl", (size_t)-1);
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;
