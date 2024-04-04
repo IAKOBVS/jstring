@@ -514,7 +514,7 @@ err:
 	       USE_SRC_MALLOC,
 	       USE_SRC_STACK };
 	int mode = 0;
-	/* If CAP is much larger than SIZE, consider Using
+	/* If CAP is much larger than SIZE, consider using
 	 * realloc instead of malloc to reuse the buffer. */
 	if (*cap < (*sz + rplc_len - (size_t)find_len) * 1.5) {
 		mode |= USE_DST_MALLOC;
