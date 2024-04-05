@@ -27,14 +27,12 @@ nul terminator.
 
 ```
 ./build && sudo ./install
+```
+
+## Usage:
+
+```
 #include <jstr/jstr.h>
-```
-
-or
-
-```
-./build && ./install-to /path/to/some/dir
-#include "/path/to/some/dir/jstr.h"
 ```
 
 The following headers will need to be explicitly included (as they rely on POSIX):
