@@ -171,13 +171,15 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
+/* MODE is used to specify the file permission when using O_CREAT.
+ * Otherwise, MODE is ignored. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
-jstr_io_writefile_len(const char *R s, size_t sz, const char *R fname, int oflag)
+jstr_io_writefile_len(const char *R s, size_t sz, const char *R fname, int oflag, int mode)
 JSTR_NOEXCEPT
 {
-	const int fd = open(fname, oflag | O_WRONLY);
+	const int fd = open(fname, oflag | O_WRONLY, mode);
 	if (jstr_unlikely(fd == -1))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_chk(jstr_io_writefilefd_len(s, sz, fd))) {
