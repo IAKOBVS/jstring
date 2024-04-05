@@ -332,6 +332,36 @@ main(int argc, char **argv)
 	rplc = "";
 	expected = "   ";
 	T_APPEND_NORET(jstr_rplcall_len, jstr_struct(&result), find, strlen(find), rplc, strlen(rplc));
+	FILL(result, "world hello hello hello");
+	find = "world";
+	rplc = "q";
+	expected = "world hello hello hello";
+	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
+	FILL(result, "world hello hello hello");
+	find = "world";
+	rplc = "PworldQ";
+	expected = "world hello hello hello";
+	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
+	FILL(result, "world hello hello hello");
+	find = "world";
+	rplc = "q";
+	expected = "q hello hello hello";
+	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
+	FILL(result, "world hello hello hello");
+	find = "world";
+	rplc = "PworldQ";
+	expected = "PworldQ hello hello hello";
+	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
+	FILL(result, "world hello hello hello");
+	find = "world";
+	rplc = "";
+	expected = " hello hello hello";
+	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 0, find, strlen(find), rplc, strlen(rplc));
+	FILL(result, "world hello hello hello");
+	find = "world";
+	rplc = "";
+	expected = "world hello hello hello";
+	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
 
 	/* jstr-builder tests. */
 	jstr_empty(result.data, &result.size);
