@@ -38,8 +38,8 @@ nul terminator.
 The following headers will need to be explicitly included (as they rely on POSIX):
 
 ```
-jstr-io.h
-jstr-regex.h
+#include <jstr/jstr-io.h>
+#include <jstr/jstr-regex.h>
 ```
 
 ## Examples:
