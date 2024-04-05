@@ -1648,30 +1648,6 @@ JSTR_NOEXCEPT
 	return (char *)s;
 }
 
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static char *
-jstr_cpy_p(char *R dst, const jstr_ty *R src)
-JSTR_NOEXCEPT
-{
-	return jstr_stpcpy_len(dst, src->data, src->size);
-}
-
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-jstr_dup(jstr_ty *R dst, const jstr_ty *R src)
-JSTR_NOEXCEPT
-{
-	dst->data = (char *)malloc(src->capacity);
-	if (jstr_nullchk(dst->data))
-		return JSTR_RET_ERR;
-	dst->size = JSTR_DIFF(jstr_cpy_p(dst->data, dst), dst->data);
-	dst->size = src->size;
-	dst->capacity = src->capacity;
-	return JSTR_RET_SUCC;
-}
-
 /* Return ptr to '\0' in DST. */
 JSTR_FUNC
 static char *
