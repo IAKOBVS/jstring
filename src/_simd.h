@@ -212,8 +212,7 @@ JSTR_NOEXCEPT
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
-	const unsigned int off
-	= JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off = JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
@@ -252,8 +251,7 @@ JSTR_NOEXCEPT
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
-	const unsigned int off
-	= JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off = JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm = (MASK)CMPEQ8_MASK(sv, cv);
@@ -287,8 +285,7 @@ JSTR_NOEXCEPT
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
 	const VEC zv = SETZERO();
-	const unsigned int off
-	= JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off = JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	cm = (MASK)CMPEQ8_MASK(sv, cv);
@@ -328,8 +325,7 @@ JSTR_NOEXCEPT
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
 	const VEC zv = SETZERO();
-	const unsigned int off
-	= JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
+	const unsigned int off = JSTR_DIFF(s, JSTR_PTR_ALIGN_DOWN(s, VEC_SIZE));
 	s -= off;
 	sv = LOAD((const VEC *)s);
 	zm = (MASK)CMPEQ8_MASK(sv, zv);
@@ -374,8 +370,7 @@ JSTR_NOEXCEPT
 	VEC sv;
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
 	const VEC cv1 = SETONE8((char)jstr_toupper(c));
-	const unsigned int off
-	= JSTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
+	const unsigned int off = JSTR_DIFF(p, JSTR_PTR_ALIGN_DOWN(p, VEC_SIZE));
 	p -= off;
 	sv = LOAD((const VEC *)p);
 	cm0 = (MASK)CMPEQ8_MASK(sv, cv0);
@@ -421,8 +416,7 @@ JSTR_NOEXCEPT
 	MASK m, i;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
-	const unsigned int off
-	= JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
+	const unsigned int off = JSTR_DIFF(JSTR_PTR_ALIGN_UP(p, VEC_SIZE), p);
 	p += off;
 	sv = LOAD((const VEC *)p);
 	m = (MASK)CMPEQ8_MASK(sv, cv) << off;

@@ -150,8 +150,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
-	const unsigned char *const end
-	= (const unsigned char *)buf + JSTR_MIN(n, sz);
+	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(n, sz);
 	const unsigned char *s = (unsigned char *)buf;
 	for (; s < end; ++s)
 		if (jstr__io_binary_table[*s])
@@ -882,16 +881,13 @@ do_reg:
 				if (a->func_match(a->ftw.dirpath, a->ftw.dirpath_len, a->func_match_args))
 					continue;
 			} else {
-				const size_t fname_len
-				= JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep);
+				const size_t fname_len = JSTR_DIRENT_D_EXACT_NAMLEN(a->ftw.ep);
 				if (a->func_match(a->ftw.ep->d_name, fname_len, a->func_match_args))
 					continue;
 				/* We haven't constructed the full path since we
 				 * have *_at functions. */
 				if (USE_ATFILE)
-					a->ftw.dirpath_len
-					= jstr_io_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, a->ftw.ep->d_name, fname_len)
-					  - a->ftw.dirpath;
+					a->ftw.dirpath_len = jstr_io_appendpath_len_p((char *)a->ftw.dirpath, dirpath_len, a->ftw.ep->d_name, fname_len) - a->ftw.dirpath;
 			}
 		} else {
 			/* Construct the full path when needed. If we don't have

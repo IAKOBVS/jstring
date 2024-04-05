@@ -709,8 +709,7 @@ jstr_rmlast_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R fi
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	const char *const p
-	= jstr_strrstr_len(s + start_idx, *sz - start_idx, find, find_len);
+	const char *const p = jstr_strrstr_len(s + start_idx, *sz - start_idx, find, find_len);
 	if (p) {
 		*sz = JSTR_DIFF(jstr_rmat_len_p(s, *sz, JSTR_DIFF(p, s), find_len), s);
 		return 1;

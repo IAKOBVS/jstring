@@ -132,8 +132,7 @@ JSTR_NOEXCEPT
 	/* Periodic ne? */
 	if (JSTR__MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->u.t._global_period, t->u.t._suffix + 1)) {
 		t->u.t._memory0 = 0;
-		t->u.t._global_period
-		= JSTR_MAX(t->u.t._suffix, t->needle_len - t->u.t._suffix - 1) + 1;
+		t->u.t._global_period = JSTR_MAX(t->u.t._suffix, t->needle_len - t->u.t._suffix - 1) + 1;
 	} else {
 		t->u.t._memory0 = t->needle_len - t->u.t._global_period;
 	}
@@ -156,8 +155,7 @@ JSTR_NOEXCEPT
 	size_t memory = 0;
 	/* Initialize end-of-haystack pointer. */
 #ifdef JSTR__MUSL_CHECK_EOL
-	const unsigned char *end
-	= hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
+	const unsigned char *end = hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
 #else
 	const unsigned char *const end = hs + hs_len;
 #endif

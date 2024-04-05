@@ -239,8 +239,7 @@ JSTR__ULLTOA_SEP(int, itoa, )
 	{                                                                                                      \
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + jstr__itoa_countudigits_##name(number, base))))    \
 			return JSTR_RET_ERR;                                                                   \
-		*sz                                                                                            \
-		= JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);                                      \
+		*sz = JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);                                      \
 		return JSTR_RET_SUCC;                                                                          \
 	}
 
@@ -257,8 +256,7 @@ JSTR__DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 	{                                                                                                                                                           \
 		if (jstr_chk(jstr_reserve(s, sz, cap, *sz + jstr__itoa_countudigits_##func_name((number < 0) ? (unsigned T) - number : (unsigned T)number, base)))) \
 			return JSTR_RET_ERR;                                                                                                                        \
-		*sz                                                                                                                                                 \
-		= JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);                                                                                           \
+		*sz = JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);                                                                                           \
 		return JSTR_RET_SUCC;                                                                                                                               \
 	}
 

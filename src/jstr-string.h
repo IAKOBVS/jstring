@@ -837,8 +837,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(reject[0] == '\0') || jstr_unlikely(sz == 0))
 		return sz;
 	if (jstr_unlikely(reject[1] == '\0')) {
-		const char *const p
-		= (const char *)jstr_memrchr(s, *reject, sz);
+		const char *const p = (const char *)jstr_memrchr(s, *reject, sz);
 		return p ? JSTR_DIFF(p, s) : sz;
 	}
 	unsigned char t[256];

@@ -96,8 +96,7 @@ jstr_debug(const jstr_ty *R j)
 JSTR_NOEXCEPT
 {
 	int ret;
-	ret
-	= fprintf(stderr, "size       :%zu.\n"
+	ret = fprintf(stderr, "size       :%zu.\n"
 	                  "capacity     :%zu.\n",
 	          j->size,
 	          j->capacity);
@@ -328,8 +327,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(arg_len == 0))
 		return JSTR_RET_SUCC;
 	va_start(ap, j);
-	const jstr_ret_ty ret
-	= jstr__cat(&j->data, &j->size, &j->capacity, ap, arg_len);
+	const jstr_ret_ty ret = jstr__cat(&j->data, &j->size, &j->capacity, ap, arg_len);
 	va_end(ap);
 	return ret;
 }
@@ -376,8 +374,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len)))
 		return JSTR_RET_ERR;
-	*sz
-	= JSTR_DIFF(jstr_append_len_unsafe_p(*s, *sz, src, src_len), *s);
+	*sz = JSTR_DIFF(jstr_append_len_unsafe_p(*s, *sz, src, src_len), *s);
 	return JSTR_RET_SUCC;
 }
 
@@ -501,8 +498,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len)))
 		return JSTR_RET_ERR;
-	*sz
-	= JSTR_DIFF(jstr_prepend_len_unsafe_p(*s, *sz, src, src_len), *s);
+	*sz = JSTR_DIFF(jstr_prepend_len_unsafe_p(*s, *sz, src, src_len), *s);
 	return JSTR_RET_SUCC;
 }
 
@@ -841,8 +837,7 @@ check_integer:
 			case '8':
 			case '9':
 				if (is_pad) {
-					const unsigned char *p
-					= (const unsigned char *)fmt;
+					const unsigned char *p = (const unsigned char *)fmt;
 					if (!jstr_isdigit(*p)) {
 						pad_len = 0;
 						goto cont_switch;
