@@ -362,6 +362,11 @@ main(int argc, char **argv)
 	rplc = "";
 	expected = "world hello hello hello";
 	T_APPEND_NORET(jstr_rplcall_len_from, jstr_struct(&result), 1, find, strlen(find), rplc, strlen(rplc));
+	FILL(result, "hello_world");
+	find = "abcdefghijklmnopqrstuvwxyz";
+	rplc = "q";
+	expected = "qqqqq_qqqqq";
+	T_APPEND_NORET(jstr_rplcallspn, result.data, &result.size, find, *rplc);
 
 	/* jstr-builder tests. */
 	jstr_empty(result.data, &result.size);
