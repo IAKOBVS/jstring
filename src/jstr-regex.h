@@ -767,7 +767,7 @@ JSTR_NOEXCEPT
 		rplc_backref1_e = rplc_backref1 + 2;
 	regmatch_t rm[10];
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
-	const char *const end = *s + *sz;
+	const char *end = *s + *sz;
 	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
@@ -782,16 +782,61 @@ err:
 	}
 	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
 	i.src_e += rm[0].rm_so;
-	jstr_re_off_ty changed = 0;
-	i.dst = NULL;
 	size_t j;
-	if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
-		ret = JSTR_RE_RET_ESPACE;
-		goto err;
+	jstr_re_off_ty changed = 0;
+	enum { USE_DST_MALLOC = 1,
+	       USE_DST_REALLOC = (USE_DST_MALLOC << 1),
+	       USE_SRC_MALLOC = (USE_DST_REALLOC << 1),
+	       USE_SRC_STACK = (USE_SRC_MALLOC << 1) };
+	int mode = 0;
+	/* If CAP is much larger than SIZE, consider using
+	 * realloc instead of malloc to reuse the buffer. */
+	if (*cap < (*sz + rplc_len - (size_t)find_len) * 1.5) {
+		mode |= USE_DST_MALLOC;
+	} else {
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
+		enum { MAX_STACK = 1024 };
+		if (*sz - start_idx >= MAX_STACK)
+#endif
+			mode |= USE_SRC_MALLOC;
 	}
-	dst_heap = i.dst;
-	i.src = *s;
-	src_heap = (char *)i.src;
+#if JSTR_HAVE_VLA
+	/* Includes NUL because we're passing this to regexec. */
+	char stack_buf[mode & USE_SRC_MALLOC ? 1 : *sz - start_idx + 1];
+#endif
+	if (mode & USE_DST_MALLOC) {
+		i.dst = NULL;
+		if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
+			ret = JSTR_RE_RET_ESPACE;
+			goto err;
+		}
+		dst_heap = i.dst;
+		i.src = *s;
+	} else {
+		i.dst = *s + start_idx;
+		dst_heap = *s;
+		/* If we don't have VLA or alloca, always malloc. */
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
+		if (mode & USE_SRC_MALLOC) {
+#endif
+			i.src = (const char *)malloc(*sz - start_idx + 1);
+			if (jstr_nullchk(i.src))
+				goto err;
+			src_heap = (char *)i.src;
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
+		} else {
+#	if JSTR_HAVE_VLA
+			i.src = stack_buf;
+#	else
+			i.src = alloca(*sz - start_idx + 1);
+#	endif
+		}
+#endif
+		/* Copy SRC to stack buffer. */
+		jstr_strcpy_len((char *)i.src, *s + start_idx, *sz - start_idx);
+		i.src_e = (char *)i.src + rm[0].rm_so;
+		end = i.src + *sz - start_idx;
+	}
 	size_t rplcwbackref_len;
 	goto start;
 	for (; n && i.src_e < end; --n, ++changed) {
