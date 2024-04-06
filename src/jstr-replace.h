@@ -998,6 +998,8 @@ loop1:
 			first = (char *)i.src;
 			dst_heap = *s;
 #endif
+		/* TODO: instead of having seperate allocations for SRC and DST. Realloc
+		 * DST such that SRC will fit at the end of DST. */
 		} else { /* Capacity is too small or we can't use a stack buffer. */
 			i.dst = NULL;
 			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
