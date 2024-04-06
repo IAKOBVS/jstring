@@ -549,17 +549,15 @@ err:
 	} else {
 		i.dst = *s + start_idx;
 		dst_heap = *s;
-#if !(JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA)
-		i.src = (const char *)malloc(*sz - start_idx + 1);
-		if (jstr_nullchk(i.src))
-			goto err;
-		src_heap = (char *)i.src;
-#else
+		/* If we don't have VLA or alloca, always malloc. */
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
 		if (mode & USE_SRC_MALLOC) {
+#endif
 			i.src = (const char *)malloc(*sz - start_idx + 1);
 			if (jstr_nullchk(i.src))
 				goto err;
 			src_heap = (char *)i.src;
+#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
 		} else {
 #	if JSTR_HAVE_VLA
 			i.src = stack_buf;

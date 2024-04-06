@@ -907,7 +907,7 @@ JSTR_NOEXCEPT
 	enum { USE_MALLOC = 0,
 	       USE_MOVE,
 	       USE_STACK };
-	int mode = 0;
+	int mode = USE_MALLOC;
 	char *src_heap = NULL;
 	if (rplc_len <= find_len) {
 		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
@@ -952,7 +952,6 @@ loop1:
 		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
 		const size_t first_len = *sz - JSTR_DIFF(first, *s);
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
-		mode = USE_MALLOC;
 		/* Avoid malloc if we can fit the source and destination string. */
 		if (*cap >= new_size + first_len)
 			mode = USE_MOVE;
