@@ -431,7 +431,7 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, jstr__inplace
 		memmove(i->dst, i->src, JSTR_DIFF(i->src_e, i->src));
 	if (*cap <= *sz + rplc_len - find_len) {
 		const uintptr_t tmp = (uintptr_t)*s;
-		if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + rplc_len - find_len)))
+		if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + rplc_len - find_len + 1)))
 			return JSTR_RET_ERR;
 		i->src_e = *s + JSTR_DIFF(i->src_e, tmp);
 		i->dst = *s + JSTR_DIFF(i->dst, tmp);
@@ -581,7 +581,7 @@ start:
 		j = JSTR_DIFF(i.src_e, i.src);
 		if (jstr_unlikely(*cap <= *sz + rplc_len - (size_t)find_len)) {
 			const uintptr_t tmp = (uintptr_t)dst_heap;
-			if (jstr_chk(jstr_reservealways(&dst_heap, sz, cap, *sz + rplc_len - (size_t)find_len))) {
+			if (jstr_chk(jstr_reservealways(&dst_heap, sz, cap, *sz + rplc_len - (size_t)find_len + 1))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
@@ -849,7 +849,7 @@ start:
 		rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 		if (jstr_unlikely(*cap <= *sz + rplcwbackref_len - (size_t)find_len)) {
 			const uintptr_t tmp = (uintptr_t)dst_heap;
-			if (jstr_chk(jstr_reserve(&dst_heap, sz, cap, *sz + rplcwbackref_len - (size_t)find_len))) {
+			if (jstr_chk(jstr_reserve(&dst_heap, sz, cap, *sz + rplcwbackref_len - (size_t)find_len + 1))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}

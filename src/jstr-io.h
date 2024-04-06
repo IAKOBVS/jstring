@@ -225,7 +225,7 @@ static jstr_ret_ty
 jstr_io_readfilefd_len(char *R *R s, size_t *R sz, size_t *R cap, int fd, size_t file_size)
 JSTR_NOEXCEPT
 {
-	if (jstr_chk(jstr_reserve(s, sz, cap, file_size)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, file_size + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_unlikely(file_size != (size_t)read(fd, *s, file_size)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -251,7 +251,7 @@ static jstr_ret_ty
 jstr_io_freadfilefp_len(char *R *R s, size_t *R sz, size_t *R cap, FILE *fp, size_t file_size)
 JSTR_NOEXCEPT
 {
-	if (jstr_chk(jstr_reserve(s, sz, cap, file_size)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, file_size + 1)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_unlikely(file_size != (size_t)jstr_io_fread(*s, 1, file_size, fp)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -411,7 +411,7 @@ JSTR_NOEXCEPT
 	if (jstr_nullchk(home))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	const size_t len = strlen(home);
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + len)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + len + 1)))
 		return JSTR_RET_ERR;
 	jstr_strmove_len(*s + len, *s + 1, JSTR_DIFF(*s + *sz, *s + 1));
 	memcpy(*s, home, len);
@@ -461,7 +461,7 @@ JSTR_NOEXCEPT
 	while ((p = (char *)memchr(p, '~', JSTR_DIFF(*s + *sz, p)))) {
 		if (jstr_unlikely(*sz + len >= *cap)) {
 			tmp = *s;
-			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + len)))
+			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + len + 1)))
 				return JSTR_RET_ERR;
 			p = *s + (p - tmp);
 		}
@@ -547,7 +547,7 @@ JSTR_FUNC
 static jstr_ret_ty
 jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, size_t fname_len)
 {
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len + 1)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_io_appendpath_len_p(*s, *sz, fname, fname_len), *s);
 	return JSTR_RET_SUCC;

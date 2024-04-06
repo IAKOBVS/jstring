@@ -949,7 +949,7 @@ loop1:
 		/* Currently last points to the last match. We are going to make it point
 		 * to the end of the last match. */
 		last += find_len;
-		const size_t new_size = *sz + changed * (rplc_len - find_len) + 1;
+		const size_t new_size = *sz + changed * (rplc_len - find_len);
 		const size_t first_len = *sz - JSTR_DIFF(first, *s);
 		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
 		/* Avoid malloc if we can fit the source and destination string. */
@@ -1002,7 +1002,7 @@ loop1:
 		 * DST such that SRC will fit at the end of DST. */
 		} else { /* Capacity is too small or we can't use a stack buffer. */
 			i.dst = NULL;
-			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size)))
+			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size + 1)))
 				goto err;
 			/* Currently, i.src = *s + start_idx */
 			i.src = *s;
@@ -1257,7 +1257,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n <= 1))
 		return JSTR_RET_SUCC;
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * n)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * n + 1)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_repeat_len_unsafe_p(*s, *sz, n), *s);
 	return JSTR_RET_SUCC;
