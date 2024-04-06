@@ -519,9 +519,9 @@ err:
 	size_t j;
 	jstr_re_off_ty changed = 0;
 	enum { USE_DST_MALLOC = 1,
-	       USE_DST_REALLOC,
-	       USE_SRC_MALLOC,
-	       USE_SRC_STACK };
+	       USE_DST_REALLOC = (USE_DST_MALLOC << 1),
+	       USE_SRC_MALLOC = (USE_DST_REALLOC << 1),
+	       USE_SRC_STACK = (USE_SRC_MALLOC << 1) };
 	int mode = 0;
 	/* If CAP is much larger than SIZE, consider using
 	 * realloc instead of malloc to reuse the buffer. */
