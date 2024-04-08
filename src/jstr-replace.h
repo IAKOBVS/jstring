@@ -925,14 +925,11 @@ start:
 			return 0;
 		i.src_e = first;
 		const char *last;
-		goto loop1;
-		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find))) {
-loop1:
-			--n;
+		do {
 			++changed;
 			last = i.src_e;
 			i.src_e += find_len;
-		}
+		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)));
 		if (!changed)
 			return 0;
 		if (changed == 1) {
@@ -961,20 +958,17 @@ loop1:
 		last = i.src + (last - first);
 		end = i.src + (end - first);
 		first = (char *)i.src;
-		size_t j;
 		n = changed;
 		/* Cache first match. */
 		i.src_e = first;
-		goto loop2;
-		while (n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find))) {
-loop2:
-			--n;
+		size_t j;
+		do {
 			j = JSTR_DIFF(i.src_e, i.src);
 			/* We must use memmove because DST and SRC may overlap if USE_MOVE is true. */
 			memmove(i.dst, i.src, j);
 			i.dst = (char *)jstr_mempmove(i.dst + j, rplc, rplc_len);
 			i.src = i.src_e + find_len;
-		}
+		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find)));
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	}
 	return changed;
