@@ -506,7 +506,7 @@ JSTR_NOEXCEPT
 	}
 	if (t->needle_len == 1)
 		return (void *)memchr(hs, *(const unsigned char *)ne, hs_len);
-	/* t->needle_len == 0 */
+	/* if (t->needle_len == 0) */
 	return (char *)hs;
 #endif
 }
@@ -688,7 +688,7 @@ JSTR_NOEXCEPT
 	}
 	if (t->needle_len == 1)
 		return (char *)jstr_memcasechr(hs, *(const unsigned char *)ne, hs_len);
-	/* t->needle_len == 0 */
+	/* if (t->needle_len == 0) */
 	return (char *)hs;
 }
 
@@ -789,7 +789,7 @@ JSTR_NOEXCEPT
 		return jstr__strcasestr2((const unsigned char *)hs, (const unsigned char *)ne);
 	if (t->needle_len == 1)
 		return (char *)jstr_strcasechr(hs, *ne);
-	/* t->needle_len == 0 */
+	/* if (t->needle_len == 0) */
 	return (char *)hs;
 }
 
