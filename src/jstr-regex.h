@@ -518,6 +518,10 @@ err:
 	i.src_e += rm.rm_so;
 	size_t j;
 	jstr_re_off_ty changed = 0;
+	/* TODO: mirror rplcn strategy, but put SRC before
+	 * DST, since we don't know the required length for
+	 * DST beforehand, and then move back DST after the
+	 * last substitution. */
 	enum { USE_DST_MALLOC = 1,
 	       USE_DST_REALLOC = (USE_DST_MALLOC << 1),
 	       USE_SRC_MALLOC = (USE_DST_REALLOC << 1),
