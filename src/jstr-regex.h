@@ -505,76 +505,25 @@ JSTR_NOEXCEPT
 	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
-	char *dst_heap = NULL;
-	char *src_heap = NULL;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
 err:
 		jstr_free_noinline(s, sz, cap);
-		free(dst_heap);
-		free(src_heap);
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	jstr_re_off_ty find_len = rm.rm_eo - rm.rm_so;
 	i.src_e += rm.rm_so;
 	size_t j;
 	jstr_re_off_ty changed = 0;
-	/* TODO: mirror rplcn strategy, but put SRC before
-	 * DST, since we don't know the required length for
-	 * DST beforehand, and then move back DST after the
-	 * last substitution. */
-	enum { USE_DST_MALLOC = 1,
-	       USE_DST_REALLOC = (USE_DST_MALLOC << 1),
-	       USE_SRC_MALLOC = (USE_DST_REALLOC << 1),
-	       USE_SRC_STACK = (USE_SRC_MALLOC << 1) };
-	int mode = 0;
-	/* If CAP is much larger than SIZE, consider using
-	 * realloc instead of malloc to reuse the buffer. */
-	if (*cap < (*sz + rplc_len - (size_t)find_len) * 1.5) {
-		mode |= USE_DST_MALLOC;
-	} else {
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		enum { MAX_STACK = 1024 };
-		if (*sz - start_idx >= MAX_STACK)
-#endif
-			mode |= USE_SRC_MALLOC;
-	}
-#if JSTR_HAVE_VLA
-	/* Includes NUL because we're passing this to regexec. */
-	char stack_buf[mode & USE_SRC_MALLOC ? 1 : *sz - start_idx + 1];
-#endif
-	if (mode & USE_DST_MALLOC) {
-		i.dst = NULL;
-		if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
-			ret = JSTR_RE_RET_ESPACE;
-			goto err;
-		}
-		dst_heap = i.dst;
-		i.src = *s;
-	} else {
-		i.dst = *s + start_idx;
-		dst_heap = *s;
-		/* If we don't have VLA or alloca, always malloc. */
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		if (mode & USE_SRC_MALLOC) {
-#endif
-			i.src = (const char *)malloc(*sz - start_idx + 1);
-			if (jstr_nullchk(i.src))
-				goto err;
-			src_heap = (char *)i.src;
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		} else {
-#	if JSTR_HAVE_VLA
-			i.src = stack_buf;
-#	else
-			i.src = alloca(*sz - start_idx + 1);
-#	endif
-		}
-#endif
-		/* Copy SRC to stack buffer. */
-		jstr_strcpy_len((char *)i.src, *s + start_idx, *sz - start_idx);
-		i.src_e = (char *)i.src + rm.rm_so;
-		end = i.src + *sz - start_idx;
-	}
+	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST.
+	 * Allocate enough memory for all of them and move back DST. */
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplc_len - (size_t)find_len + 1)))
+		goto err;
+	memmove(*s + *sz + 1, *s, *sz);
+	i.dst = *s + *sz + 1;
+	const char *dst_s = i.dst;
+	i.src = *s;
+	i.src_e = *s + start_idx + rm.rm_so;
+	end = *s + *sz;
 	goto start;
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
@@ -583,13 +532,14 @@ err:
 		i.src_e += rm.rm_so;
 start:
 		j = JSTR_DIFF(i.src_e, i.src);
-		if (jstr_unlikely(*cap <= *sz + rplc_len - (size_t)find_len)) {
-			const uintptr_t tmp = (uintptr_t)dst_heap;
-			if (jstr_chk(jstr_reservealways(&dst_heap, sz, cap, *sz + rplc_len - (size_t)find_len + 1))) {
+		if (jstr_unlikely(*cap < *sz * 2 + rplc_len - (size_t)find_len + 1)) {
+			const uintptr_t tmp = (uintptr_t)*s;
+			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz * 2 + rplc_len - (size_t)find_len + 1))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
-			i.dst = dst_heap + JSTR_DIFF(i.dst, tmp);
+			i.dst = *s + JSTR_DIFF(i.dst, tmp);
+			end = *s + JSTR_DIFF(end, tmp);
 		}
 		memmove(i.dst, i.src, j);
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
@@ -598,9 +548,10 @@ start:
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
 	}
-	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
-	free(src_heap);
-	*s = dst_heap;
+	*sz = JSTR_DIFF(jstr_mempmove(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
+	/* Move back DST to the start of the string since we don't need SRC
+	 * anymore. */
+	jstr_strmove_len(*s, dst_s, *sz);
 	return changed;
 }
 
