@@ -499,7 +499,8 @@ JSTR_NOEXCEPT
 		return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	if (jstr_unlikely(n == 0))
 		return 0;
-	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
+	jstr__inplace_ty i;
+	i.src_e = *s + start_idx;
 	regmatch_t rm;
 	const char *end = *s + *sz;
 	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
@@ -541,6 +542,7 @@ start:
 			i.src = *s + JSTR_DIFF(i.src, tmp);
 			i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
 			i.dst = *s + JSTR_DIFF(i.dst, tmp);
+			dst_s = *s + JSTR_DIFF(dst_s, tmp);
 			end = *s + JSTR_DIFF(end, tmp);
 			dst_s = *s + JSTR_DIFF(dst_s, tmp);
 		}
@@ -690,7 +692,7 @@ JSTR_NOEXCEPT
 		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
-			backref = (unsigned char *)jstr_mempcpy(backref, mtc + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
+			backref = (unsigned char *)jstr_mempmove(backref, mtc + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
 		} else {
 			*backref = '\\';
 			*(backref + 1) = c;
@@ -724,94 +726,53 @@ JSTR_NOEXCEPT
 	if (rplc_backref1_e == NULL)
 		rplc_backref1_e = rplc_backref1 + 2;
 	regmatch_t rm[10];
-	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
+	jstr__inplace_ty i;
+	i.src_e = *s + start_idx;
 	const char *end = *s + *sz;
 	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
-	char *dst_heap = NULL;
-	char *src_heap = NULL;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
 err:
 		jstr_free_noinline(s, sz, cap);
-		free(src_heap);
-		free(dst_heap);
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
 	i.src_e += rm[0].rm_so;
 	size_t j;
 	jstr_re_off_ty changed = 0;
-	enum { USE_DST_MALLOC = 1,
-	       USE_DST_REALLOC = (USE_DST_MALLOC << 1),
-	       USE_SRC_MALLOC = (USE_DST_REALLOC << 1),
-	       USE_SRC_STACK = (USE_SRC_MALLOC << 1) };
-	int mode = 0;
-	/* If CAP is much larger than SIZE, consider using
-	 * realloc instead of malloc to reuse the buffer. */
-	if (*cap < (*sz + rplc_len - (size_t)find_len) * 1.5) {
-		mode |= USE_DST_MALLOC;
-	} else {
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		enum { MAX_STACK = 1024 };
-		if (*sz - start_idx >= MAX_STACK)
-#endif
-			mode |= USE_SRC_MALLOC;
-	}
-#if JSTR_HAVE_VLA
-	/* Includes NUL because we're passing this to regexec. */
-	char stack_buf[mode & USE_SRC_MALLOC ? 1 : *sz - start_idx + 1];
-#endif
-	if (mode & USE_DST_MALLOC) {
-		i.dst = NULL;
-		if (jstr_chk(jstr_reservealways(&i.dst, sz, cap, (*sz + rplc_len - (size_t)find_len) * JSTR_ALLOC_MULTIPLIER))) {
-			ret = JSTR_RE_RET_ESPACE;
-			goto err;
-		}
-		dst_heap = i.dst;
-		i.src = *s;
-	} else {
-		i.dst = *s + start_idx;
-		dst_heap = *s;
-		/* If we don't have VLA or alloca, always malloc. */
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		if (mode & USE_SRC_MALLOC) {
-#endif
-			i.src = (const char *)malloc(*sz - start_idx + 1);
-			if (jstr_nullchk(i.src))
-				goto err;
-			src_heap = (char *)i.src;
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		} else {
-#	if JSTR_HAVE_VLA
-			i.src = stack_buf;
-#	else
-			i.src = alloca(*sz - start_idx + 1);
-#	endif
-		}
-#endif
-		/* Copy SRC to stack buffer. */
-		jstr_strcpy_len((char *)i.src, *s + start_idx, *sz - start_idx);
-		i.src_e = (char *)i.src + rm[0].rm_so;
-		end = i.src + *sz - start_idx;
-	}
-	size_t rplcwbackref_len;
+	size_t rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+	i.src_e += rm[0].rm_so;
+	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST.
+	 * Allocate enough memory for all of them and move back DST. */
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1)))
+		goto err;
+	memmove(*s + *sz + 1, *s, *sz);
+	i.dst = *s + *sz + 1;
+	const char *dst_s = i.dst;
+	i.src = *s;
+	i.src_e = *s + start_idx + rm[0].rm_so;
+	end = *s + *sz;
 	goto start;
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		i.src_e += rm[0].rm_so;
+		rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 start:
 		j = JSTR_DIFF(i.src_e, i.src);
-		rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
-		if (jstr_unlikely(*cap <= *sz + rplcwbackref_len - (size_t)find_len)) {
-			const uintptr_t tmp = (uintptr_t)dst_heap;
-			if (jstr_chk(jstr_reserve(&dst_heap, sz, cap, *sz + rplcwbackref_len - (size_t)find_len + 1))) {
+		if (jstr_unlikely(*cap < *sz * 2 + rplcwbackref_len - (size_t)find_len + 1)) {
+			const uintptr_t tmp = (uintptr_t)*s;
+			if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
-			i.dst = dst_heap + JSTR_DIFF(i.dst, tmp);
+			i.src = *s + JSTR_DIFF(i.src, tmp);
+			i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
+			i.dst = *s + JSTR_DIFF(i.dst, tmp);
+			dst_s = *s + JSTR_DIFF(dst_s, tmp);
+			end = *s + JSTR_DIFF(end, tmp);
 		}
 		memmove(i.dst, i.src, j);
 		i.dst += j;
@@ -822,9 +783,10 @@ start:
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
 	}
-	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
-	free(src_heap);
-	*s = dst_heap;
+	*sz = JSTR_DIFF(jstr_mempmove(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
+	/* Move back DST to the start of the string since we don't need SRC
+	 * anymore. */
+	jstr_strmove_len(*s, dst_s, *sz);
 	return changed;
 }
 
