@@ -903,12 +903,6 @@ JSTR_NOEXCEPT
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
 	size_t changed = 0;
 	const char *end = *s + *sz;
-	char *dst_heap = NULL;
-	enum { USE_MALLOC = 0,
-	       USE_MOVE,
-	       USE_STACK };
-	int mode = USE_MALLOC;
-	char *src_heap = NULL;
 	if (rplc_len <= find_len) {
 		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
 			return 0;
@@ -951,64 +945,22 @@ loop1:
 		last += find_len;
 		const size_t new_size = *sz + changed * (rplc_len - find_len);
 		const size_t first_len = *sz - JSTR_DIFF(first, *s);
-		enum { MAX_STACK = 1024 }; /* Past this size, don't use a stack buffer */
-		/* Avoid malloc if we can fit the source and destination string. */
-		if (*cap >= new_size + first_len)
-			mode = USE_MOVE;
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA
-		/* We can fit the source string in the stack buffer
-		 * and the destination string doesn't need realloc'ing. */
-		else if (first_len <= MAX_STACK && *cap >= new_size)
-			mode = USE_STACK;
-#	if JSTR_HAVE_VLA
-		char stack_buf[mode & USE_STACK ? first_len : 1];
-#	endif
-#endif
-		/* If the source string has enough capacity to fit both
-		 * itself and the destination string, avoid allocation by pushing
-		 * back the source string to make room for the destination string. */
-		if (mode == USE_MOVE) {
-			/* SRC is the source string + NEW_SIZE. */
-			i.src = *s + new_size;
-			/* DST is source string. */
-			i.dst = first;
-			/* Move back the source string so we have enough
-			 * space for the destination string. */
-			memmove((void *)i.src, i.dst, first_len);
-			/* Update the ptrs to point to SRC. */
-			last = i.src + (last - first);
-			end = i.src + (end - first);
-			first = (char *)i.src;
-			dst_heap = *s;
-#if JSTR_HAVE_VLA || JSTR_HAVE_ALLOCA /* Maybe use a stack buffer. */
-		} else if (mode == USE_STACK) { /* NEW_SIZE is small enough. */
-			/* DST is the source string. */
-			i.dst = first;
-			/* SRC is the stack buffer. */
-#	if JSTR_HAVE_VLA
-			i.src = stack_buf;
-#	else
-			i.src = (const char *)alloca(first_len);
-#	endif
-			/* Copy the source string to SRC. */
-			memcpy((void *)i.src, i.dst, first_len);
-			/* Update the ptrs to point to SRC. */
-			last = i.src + (last - first);
-			end = i.src + (end - first);
-			first = (char *)i.src;
-			dst_heap = *s;
-#endif
-		/* TODO: instead of having seperate allocations for SRC and DST. Realloc
-		 * DST such that SRC will fit at the end of DST. */
-		} else { /* Capacity is too small or we can't use a stack buffer. */
-			i.dst = NULL;
-			if (jstr_chk(jstr_reserveexactalways(&i.dst, sz, cap, new_size + 1)))
-				goto err;
-			/* Currently, i.src = *s + start_idx */
-			i.src = *s;
-			dst_heap = i.dst;
-			src_heap = *s;
-		}
+		const uintptr_t s_old = (uintptr_t)*s;
+		/* Avoid allocation by pushing back the source string to make
+		 * room for the destination string. */
+		if (jstr_chk(jstr_reserve(s, sz, cap, new_size + first_len + 1)))
+			goto err;
+		/* SRC is the source string + NEW_SIZE. */
+		i.src = *s + new_size;
+		/* DST is source string. */
+		i.dst = *s + JSTR_DIFF(first, s_old);
+		/* Move back the source string so we have enough
+		 * space for the destination string. */
+		memmove((void *)i.src, i.dst, first_len);
+		/* Update the ptrs to point to SRC. */
+		last = i.src + (last - first);
+		end = i.src + (end - first);
+		first = (char *)i.src;
 		size_t j;
 		n = changed;
 		/* Cache first match. */
@@ -1023,15 +975,11 @@ loop2:
 			i.dst = (char *)jstr_mempmove(i.dst + j, rplc, rplc_len);
 			i.src = i.src_e + find_len;
 		}
-		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_heap);
-		free(src_heap);
-		*s = dst_heap;
+		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	}
 	return changed;
 err:
 	jstr_free_noinline(s, sz, cap);
-	free(dst_heap);
-	free(src_heap);
 	JSTR_RETURN_ERR((size_t)-1);
 }
 
