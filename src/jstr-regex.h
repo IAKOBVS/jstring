@@ -538,6 +538,8 @@ start:
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
+			i.src = *s + JSTR_DIFF(i.src, tmp);
+			i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
 			i.dst = *s + JSTR_DIFF(i.dst, tmp);
 			end = *s + JSTR_DIFF(end, tmp);
 			dst_s = *s + JSTR_DIFF(dst_s, tmp);
