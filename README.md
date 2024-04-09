@@ -23,7 +23,7 @@ mempbrk\(\), etc.
 - string formatting: asprintf\(\) which returns the size of allocation and vsprintfstrlen\(\)
 which returns the maximum number of characters to store the characters written by vsprintf
 including the nul terminator.
-- namespacing: the library will only use [Jj][Ss][Tt][Rr]_* prefixed identifiers.
+- namespacing: the library will only use [Jj][Ss][Tt][Rr]\_* prefixed identifiers.
 
 ## Installation:
 
@@ -67,7 +67,7 @@ You can customize the library by defining certain macros in jstr-config.h before
 including any header. For example:
 ```
 #define JSTR_USE_UNLOCKED_IO 1
-#include "jstr.h"
+#include <jstr/jstr.h>
 ```
 
 ## Error handling:
