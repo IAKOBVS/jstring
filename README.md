@@ -8,19 +8,21 @@ jstring is a C string library which aims to make string manipulation simple and 
 - compatible with other string libraries: string functions take a pointer to string, size,
 and capacity.
 - string list: easily create a list of dynamic strings.
-- fast substring matching: for x86-64 and needles that fit in a simd vector, use an O(n)
+- fast substring matching: for x86-64 and needles that fit in a simd vector, use an O\(n\)
 simd implementation of memmem. For longer needles, precompile memmem. Currently, musl's
 twoway memmem implementation is used.
 - path traversal: ftw\(\) that can take arguments.
-- useful return values: string functions suffixed with *_p return a pointer to the end of the processed string (like stpcpy). You are likely going to need the length of the string you just modified so this will often save an unnecessary strlen.
+- useful return values: string functions suffixed with \*\_p return a pointer to the end
+of the processed string (like stpcpy). You are likely going to need the length of the
+string you just modified so this will often save an unnecessary strlen.
 - reverse versions of standard string functions: memrchr\(\), strrstr\(\), strrspn\(\), strrcspn\(\),
 etc.
 - standard string functions for non-nul terminated strings: memspn\(\), memcspn\(\),
 mempbrk\(\), etc.
 - extensions to standard string functions: strnchr\(\), strcasestr\_len\(\).
-- string formatting: asprintf\(\) which returns the size of allocation and vsprintfstrlen\(\) which returns the maximum
-number of characters to store the characters written by vsprintf including the
-nul terminator.
+- string formatting: asprintf\(\) which returns the size of allocation and vsprintfstrlen\(\)
+which returns the maximum number of characters to store the characters written by vsprintf
+including the nul terminator.
 - namespacing: the library will only use [Jj][Ss][Tt][Rr]_* prefixed identifiers.
 
 ## Installation:
@@ -35,7 +37,7 @@ nul terminator.
 #include <jstr/jstr.h>
 ```
 
-The following headers will need to be explicitly included (as they rely on POSIX):
+The following headers will need to be explicitly included \(as they rely on POSIX\):
 
 ```
 #include <jstr/jstr-io.h>
