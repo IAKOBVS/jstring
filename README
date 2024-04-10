@@ -67,7 +67,7 @@ You can customize the library by defining certain macros in jstr-config.h before
 including any header. For example:
 ```
 #define JSTR_USE_UNLOCKED_IO 1
-#include "jstr.h"
+#include <jstr/jstr.h>
 ```
 
 ## Error handling:
@@ -80,7 +80,7 @@ all the related resources. Use jstr_err() to print the error message or jstr_err
 to also exit. When debugging, you may want to define JSTR_PANIC as 1 to automatically
 call jstr_errdie() on errors.
 
-For jstr-regex.h, jstrre_rm*(), jstrre_rplc*() will return a negative number indicating
+For jstr-regex.h, jstr_re_rm*(), jstr_re_rplc*() will return a negative number indicating
 the negated value of the regex error code. To print an error message, pass the negation of
 the returned error code. This is done so that we can utilize the return value of the function
 both as the number of replacements done or as error values.
