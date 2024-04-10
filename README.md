@@ -80,7 +80,7 @@ all the related resources. Use jstr\_err\(\) to print the error message or jstr\
 to also exit. When debugging, you may want to define JSTR\_PANIC as 1 to automatically
 call jstr\_errdie\(\) on errors.
 
-For jstr-regex.h, jstrre\_rm\*\(\), jstrre\_rplc\*\(\) will return a negative number indicating
+For jstr-regex.h, jstr\_re\_rm\*\(\), jstr\_re\_rplc\*\(\) will return a negative number indicating
 the negated value of the regex error code. To print an error message, pass the negation of
 the returned error code. This is done so that we can utilize the return value of the function
 both as the number of replacements done or as error values.
