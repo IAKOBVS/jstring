@@ -1,8 +1,16 @@
 #!/bin/sh
+#shellcheck disable=SC2068
+
+verbose()
+{
+	$@
+	echo "$*"
+}
 
 cd "$(dirname "$0")" || exit
 INSTALL_DIR=/usr/local/include
 PATH_BUILD=../jstr
 [ $# -eq 1 ] && INSTALL_DIR=$1
 ./fmt "$PATH_BUILD"/*.h
-sudo cp -rf "$PATH_BUILD" "$INSTALL_DIR"
+verbose sudo cp -rf "$PATH_BUILD" "$INSTALL_DIR"
+echo "Successfully built to $INSTALL_DIR."
