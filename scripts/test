@@ -57,7 +57,7 @@ fi
 for file in $files; do
 	out_file=$(echo ${file%.*} | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
 	compile "$file" "$tmp/$out_file" $CFLAGS &
-	# compile "$file" "$tmp/$out_file" $CFLAGS -march=native &
+	compile "$file" "$tmp/$out_file" $CFLAGS -march=native &
 done
 wait
 
