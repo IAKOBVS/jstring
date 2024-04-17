@@ -964,7 +964,7 @@ start:
 		size_t j;
 		do {
 			j = JSTR_DIFF(i.src_e, i.src);
-			/* We must use memmove because DST and SRC may overlap if USE_MOVE is true. */
+			/* We must use memmove because DST and SRC overlap. */
 			memmove(i.dst, i.src, j);
 			i.dst = (char *)jstr_mempmove(i.dst + j, rplc, rplc_len);
 			i.src = i.src_e + find_len;
