@@ -189,7 +189,7 @@ jstr_sprintfstrlen(char *s, size_t n, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlen(ap, fmt);
+	int ret = jstr_vsprintfstrlenmax(ap, fmt);
 	va_end(ap);
 	return ret;
 	(void)s;
