@@ -8,9 +8,10 @@ verbose()
 }
 
 cd "$(dirname "$0")" || exit
+LIB=jstr
 INSTALL_DIR=/usr/local/include
-PATH_BUILD=../jstr
+PATH_BUILD=../$LIB
 [ $# -eq 1 ] && INSTALL_DIR=$1
 ./fmt "$PATH_BUILD"/*.h
 verbose sudo cp -rf "$PATH_BUILD" "$INSTALL_DIR"
-echo "Successfully built to $INSTALL_DIR."
+echo "Successfully built to $INSTALL_DIR/$LIB."
