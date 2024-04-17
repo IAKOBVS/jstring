@@ -358,9 +358,7 @@ static int
 jstr_startscase(const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
-	return (jstr_tolower(*hs) == jstr_tolower(*ne))
-	       ? !jstr_strcasecmpeq_len(hs, ne, strlen(ne))
-	       : (*ne == '\0');
+	return (jstr_tolower(*hs) == jstr_tolower(*ne)) ? !jstr_strcasecmpeq_len(hs, ne, strlen(ne)) : (*ne == '\0');
 }
 
 /* Check if S1 starts with S2 case-insensitively.
@@ -447,9 +445,7 @@ JSTR_NOEXCEPT
 #elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (jstr_likely(ne_len <= sizeof(jstr_vvec_ty)))
 		return jstr__simd_memmem(hs, hs_len, ne, ne_len);
-	return (hs_len >= ne_len)
-	       ? jstr__memmem_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len)
-	       : NULL;
+	return (hs_len >= ne_len) ? jstr__memmem_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len) : NULL;
 #else
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;

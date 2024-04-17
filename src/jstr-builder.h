@@ -247,9 +247,7 @@ static jstr_ret_ty
 jstr_io_print(const jstr_ty *R j)
 JSTR_NOEXCEPT
 {
-	return jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size
-	       ? JSTR_RET_SUCC
-	       : JSTR_RET_ERR;
+	return jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size ? JSTR_RET_SUCC : JSTR_RET_ERR;
 }
 
 JSTR_FUNC
@@ -628,7 +626,7 @@ JSTR_NOEXCEPT
 /* Return maximum size of allocation needed for sprintf.
  * Return value:
  * size of allocation;
-   -1 on error and errno is set. */
+ * -1 on error and errno is set. */
 JSTR_FUNC
 #if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 JSTR_ATTR_INLINE
@@ -726,9 +724,7 @@ cont_switch:
 			switch (*++fmt) {
 			case 's':
 				arg = va_arg(ap, const char *);
-				arg_len += jstr_likely(arg != NULL)
-				           ? strlen(arg)
-				           : sizeof("(null)") - 1;
+				arg_len += jstr_likely(arg != NULL) ? strlen(arg) : sizeof("(null)") - 1;
 				break;
 			case 'c':
 				if (jstr_likely(lflag == L_INT)) {
@@ -766,9 +762,7 @@ check_integer:
 			case 'p':
 				/* max + 2 to make room for the 0x at
 				 * the start of the number. */
-				arg_len += jstr_likely(va_arg(ap, const void *) != NULL)
-				           ? (HEX_UINTPTR + sizeof("0x") - 1)
-				           : sizeof("(nil)") - 1;
+				arg_len += jstr_likely(va_arg(ap, const void *) != NULL) ? (HEX_UINTPTR + sizeof("0x") - 1) : sizeof("(nil)") - 1;
 				break;
 				/* chars written */
 			case 'n':
@@ -784,13 +778,9 @@ check_integer:
 			case 'g':
 			case 'G':
 				if (lflag == L_INT) {
-					arg_len += (is_thousep)
-					           ? DOUBLE * 2
-					           : DOUBLE;
+					arg_len += (is_thousep) ? DOUBLE * 2 : DOUBLE;
 				} else if (lflag == L_LONG) {
-					arg_len += (is_thousep)
-					           ? DOUBLE_LONG * 2
-					           : DOUBLE_LONG;
+					arg_len += (is_thousep) ? DOUBLE_LONG * 2 : DOUBLE_LONG;
 					lflag = L_INT;
 				} else {
 					goto einval;
