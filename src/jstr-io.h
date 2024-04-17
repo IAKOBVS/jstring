@@ -486,12 +486,13 @@ JSTR_NOEXCEPT
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	char buf[MINBUF];
 	size_t readsz;
-	readsz = fread(buf, 1, sizeof(buf), fp);
+	readsz = jstr_io_fread(buf, 1, sizeof(buf), fp);
 	if (jstr_unlikely(readsz == (size_t)-1)) {
 		pclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	if (jstr_chk(jstr_reserve(s, sz, cap, readsz * 2))) {
+	const size_t initialsz = (size_t)readsz > sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
+	if (jstr_chk(jstr_reserve(s, sz, cap, initialsz))) {
 		pclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
@@ -501,7 +502,7 @@ JSTR_NOEXCEPT
 		size_t reqsz;
 		for (;;) {
 			reqsz = *cap - *sz;
-			readsz = fread(*s + *sz, 1, reqsz, fp);
+			readsz = jstr_io_fread(*s + *sz, 1, reqsz, fp);
 			if (jstr_unlikely(readsz == (size_t)-1)) {
 				pclose(fp);
 				JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -523,6 +524,41 @@ JSTR_NOEXCEPT
 }
 
 #endif
+
+JSTR_FUNC
+static jstr_ret_ty
+jstr_io_readstdin(char *R *R s, size_t *R sz, size_t *R cap)
+JSTR_NOEXCEPT
+{
+	enum { MINBUF = JSTR_PAGE_SIZE };
+	char buf[MINBUF];
+	ssize_t readsz;
+	readsz = read(STDIN_FILENO, buf, sizeof(buf));
+	if (jstr_unlikely(readsz == (ssize_t)-1))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	const size_t initialsz = (size_t)readsz > sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
+	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)initialsz)))
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
+	memcpy(*s, buf, (size_t)readsz);
+	*sz = (size_t)readsz;
+	if (jstr_unlikely(readsz == MINBUF)) {
+		ssize_t reqsz;
+		for (;;) {
+			reqsz = (ssize_t)(*cap - *sz);
+			readsz = read(STDIN_FILENO, *s + *sz, (size_t)reqsz);
+			if (jstr_unlikely(readsz == (ssize_t)-1))
+				JSTR_RETURN_ERR(JSTR_RET_ERR);
+			*sz += (size_t)readsz;
+			if (readsz < reqsz)
+				break;
+			if (*sz == *cap)
+				if (jstr_chk(jstr_reserveexactalways(s, sz, cap, (size_t)(*cap * JSTR_GROWTH))))
+					JSTR_RETURN_ERR(JSTR_RET_ERR);
+		}
+	}
+	*(*s + *sz) = '\0';
+	return JSTR_RET_SUCC;
+}
 
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
