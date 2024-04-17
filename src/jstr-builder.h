@@ -625,7 +625,7 @@ JSTR_NOEXCEPT
 #	define JSTR_HAVE_SNPRINTF_STRLEN 0
 #endif
 
-/* Return size of allocation needed for sprintf.
+/* Return maximum size of allocation needed for sprintf.
  * Return value:
  * size of allocation;
    -1 on error and errno is set. */
@@ -634,7 +634,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 #endif
 static int
-jstr_vsprintfstrlen(va_list ap, const char *R fmt)
+jstr_vsprintfstrlenmax(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
@@ -907,7 +907,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arg_len = jstr_vsprintfstrlen(ap, fmt);
+	int arg_len = jstr_vsprintfstrlenmax(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
@@ -939,7 +939,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlen(ap, fmt);
+	int ret = jstr_vsprintfstrlenmax(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -972,7 +972,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlen(ap, fmt);
+	int ret = jstr_vsprintfstrlenmax(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1005,7 +1005,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlen(ap, fmt);
+	int ret = jstr_vsprintfstrlenmax(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1037,7 +1037,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlen(ap, fmt);
+	int ret = jstr_vsprintfstrlenmax(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1069,7 +1069,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlen(ap, fmt);
+	int ret = jstr_vsprintfstrlenmax(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
