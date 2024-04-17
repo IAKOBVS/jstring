@@ -491,7 +491,7 @@ JSTR_NOEXCEPT
 		pclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	const size_t initialsz = (size_t)readsz > sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
+	const size_t initialsz = (size_t)readsz == sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
 	if (jstr_chk(jstr_reserve(s, sz, cap, initialsz))) {
 		pclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -536,7 +536,7 @@ JSTR_NOEXCEPT
 	readsz = read(STDIN_FILENO, buf, sizeof(buf));
 	if (jstr_unlikely(readsz == (ssize_t)-1))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	const size_t initialsz = (size_t)readsz > sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
+	const size_t initialsz = (size_t)readsz == sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
 	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)initialsz)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	memcpy(*s, buf, (size_t)readsz);
