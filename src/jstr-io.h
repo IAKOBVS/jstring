@@ -69,7 +69,7 @@ jstr__io_isbinarysignature(const char *R buf, size_t sz)
 	const unsigned char *p = (const unsigned char *)buf;
 	if (jstr_likely(sz >= ELFSZ)) {
 #if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
-		static const unsigned char elf[] = { 0x7, 'E', 'L', 'F' };
+		const unsigned char elf[] = { 0x7, 'E', 'L', 'F' };
 		JSTR_STATIC_ASSERT(sizeof(elf) == ELFSZ, "");
 		if (!memcmp(p, elf, 4))
 			return 0;
@@ -77,9 +77,11 @@ jstr__io_isbinarysignature(const char *R buf, size_t sz)
 		if (p[0] == 0x7 && p[1] == 'E' && p[2] == 'L' && p[3] == 'F')
 			return 0;
 #endif
+		goto check_utf;
+	} else if (jstr_likely(sz == UTFSZ)) {
 check_utf:;
 #if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
-		static const unsigned char utf[] = { 0xEF, 0xBB }; /* 0xBF */
+		const unsigned char utf[] = { 0xEF, 0xBB /*, 0xBF */ };
 		JSTR_STATIC_ASSERT(sizeof(utf) + 1 == UTFSZ, "");
 		if (!memcmp(p, utf, 2) && p[2] == 0xBF)
 			return 1;
@@ -87,8 +89,6 @@ check_utf:;
 		if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
 			return 1;
 #endif
-	} else if (jstr_likely(sz == UTFSZ)) {
-		goto check_utf;
 	}
 	return -1;
 }
