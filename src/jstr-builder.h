@@ -208,11 +208,13 @@ static jstr_ret_ty
 jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*cap = new_cap;
-	char *tmp = (char *)realloc(*s, *cap);
-	if (jstr_nullchk(tmp))
-		goto err;
-	*s = tmp;
+	if (jstr_likely(new_cap != 0)) {
+		*cap = new_cap;
+		char *tmp = (char *)realloc(*s, *cap);
+		if (jstr_nullchk(tmp))
+			goto err;
+		*s = tmp;
+	}
 	return JSTR_RET_SUCC;
 err:
 	jstr_free_noinline(s, sz, cap);
