@@ -101,9 +101,9 @@ JSTR_NOEXCEPT
 }
 
 /* Replace RPLC in S with FIND.
-    Return value:
-    ptr to RPLC in S + RPLCLEN;
-    NULL on error. */
+ * Return value:
+ * ptr to RPLC in S + RPLCLEN;
+ * NULL on error. */
 JSTR_FUNC
 static char *
 jstr_rplcat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R rplc, size_t rplc_len, size_t find_len)
