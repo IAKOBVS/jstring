@@ -351,8 +351,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * JSTR_RET_ERR on error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_io_readfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, int oflag, struct stat *R st)
@@ -422,7 +422,7 @@ JSTR_NOEXCEPT
 /* Expand every ~ to /home/username.
  * Assume that S has enough space.
  * Return value:
- * ptr to '\0' in S;
+ * ptr to '\0' in S.
  * NULL on error. */
 JSTR_FUNC
 static char *
@@ -445,8 +445,8 @@ JSTR_NOEXCEPT
 
 /* Expand every ~ to /home/username.
  * Return value:
- * JSTR_RET_ERR on error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_io_expandtilde(char *R *R s, size_t *R sz, size_t *R cap)
@@ -1035,9 +1035,9 @@ err_closedir:
  * If FUNC_MATCH() is NULL, it behaves as if it matches.
  * If FUNC() returns JSTR_RET_ERR, stop processing.
  * Return value:
- * JSTR_RET_ERR on error;
+ * JSTR_RET_ERR on error.
  * JSTR_RET_SUCC on success or non-fatal errors (EACCES or ENOENT) encountered
- * on some entries; JSTR_RET_STOP if FUNC() returns RET_STOP and
+ * on some entries. JSTR_RET_STOP if FUNC() returns RET_STOP and
  * JSTR_IO_FTW_ACTIONRETVAL is used. or the return value of FUNC() if DIRPATH is
  * not a directory and FUNC() is executed. If a non-fatal error is encountered,
  * continue processing other entries. */

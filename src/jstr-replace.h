@@ -87,7 +87,7 @@ JSTR_NOEXCEPT
 
 /* Insert SRC into DST[AT].
  * Return JSTR_RET_ERR on malloc error.
- * otherwise JSTR_RET_SUCC. */
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insert_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R src, size_t src_len)
@@ -401,7 +401,7 @@ JSTR_NOEXCEPT
 
 /* Remove all C in S from START_IDX.
  * Return value:
- * Ptr to '\0' in S. */
+ * ptr to '\0' in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -413,7 +413,7 @@ JSTR_NOEXCEPT
 
 /* Remove all C in S.
  * Return value:
- * Ptr to '\0' in S. */
+ * ptr to '\0' in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static size_t
@@ -586,7 +586,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S.
  * Return value:
- * Ptr to '\0' in S. */
+ * ptr to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -599,7 +599,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S from START_IDX.
  * Return value:
- * Ptr to '\0' in S.
+ * ptr to '\0' in S.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
 static int
@@ -617,7 +617,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S.
  * Return value:
- * Ptr to '\0' in S.
+ * ptr to '\0' in S.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
@@ -630,7 +630,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S from START_IDX.
  * Return value:
- * Ptr to '\0' in S. */
+ * ptr to '\0' in S. */
 JSTR_FUNC_VOID
 static int
 jstr_rm_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len)
@@ -643,7 +643,7 @@ JSTR_NOEXCEPT
 
 /* Remove first HS in S.
  * Return value:
- * Ptr to '\0' in S. */
+ * ptr to '\0' in S. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static int
@@ -1139,7 +1139,7 @@ JSTR_NOEXCEPT
 
 /* Place SRC into DST[AT].
  * Return JSTR_RET_ERR on malloc error.
- * otherwise JSTR_RET_SUCC. */
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -1158,7 +1158,7 @@ JSTR_NOEXCEPT
 
 /* Place SRC after C in DST.
  * Return JSTR_RET_ERR on malloc error.
- * otherwise JSTR_RET_SUCC. */
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -1173,7 +1173,7 @@ JSTR_NOEXCEPT
 
 /* Place SRC after end of NE in DST.
  * Return JSTR_RET_ERR on malloc error.
- * otherwise JSTR_RET_SUCC. */
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
 jstr_placeafter_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R src, size_t src_len)

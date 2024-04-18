@@ -79,7 +79,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * ptr to first C in S ignoring case;
+ * ptr to first C in S ignoring case.
  * NULL if not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -104,7 +104,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * ptr to first C in S ignoring case;
+ * ptr to first C in S ignoring case.
  * NULL if not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -182,7 +182,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * Ptr to '\0' in DST. */
+ * ptr to '\0' in DST. */
 JSTR_FUNC_RET_NONNULL
 JSTR_ATTR_INLINE
 static char *
@@ -279,7 +279,7 @@ JSTR_NOEXCEPT
 
 /* Check if S2 is in end of S1.
  * Return value:
- * 1 if true;
+ * 1 if true.
  * 0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -294,7 +294,7 @@ JSTR_NOEXCEPT
 
 /* Check if S2 is in end of S1.
  * Return value:
- * 1 if true;
+ * 1 if true.
  * 0 if false. */
 JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
@@ -307,7 +307,7 @@ JSTR_NOEXCEPT
 
 /* Check if S2 is in end of S1.
  * Return value:
- * 1 if true;
+ * 1 if true.
  * 0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -322,7 +322,7 @@ JSTR_NOEXCEPT
 
 /* Check if S2 is in end of S1.
  * Return value:
- * 1 if true;
+ * 1 if true.
  * 0 if false. */
 JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
@@ -335,7 +335,7 @@ JSTR_NOEXCEPT
 
 /* Check if S1 starts with S2 case-insensitively.
  * Return value:
- * 1 if true;
+ * 1 if true.
  * 0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -350,7 +350,7 @@ JSTR_NOEXCEPT
 
 /* Check if S1 starts with S2 case-insensitively.
  * Return value:
- * 1 if true;
+ * 1 if true.
  * 0 if false. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -363,7 +363,7 @@ JSTR_NOEXCEPT
 
 /* Check if S1 starts with S2 case-insensitively.
  * Return value:
- * NELEN if true;
+ * NELEN if true.
  * 0 if false. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -381,7 +381,7 @@ JSTR_NOEXCEPT
 
 /* Check if S1 starts with S2.
  * Return value:
- * 1 if true;
+ * 1 if true.
  * 0 if false. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -396,7 +396,7 @@ JSTR_NOEXCEPT
 
 /* Check if S1 starts with S2.
  * Return value:
- * 1 if true;
+ * 1 if true.
  * 0 if false. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -567,7 +567,7 @@ JSTR_NOEXCEPT
 
 /* Find last NE in HS.
  * Return value:
- * Ptr to NE;
+ * ptr to NE.
  * NULL if not found.
  * The current implementation is O(m * n). */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -594,7 +594,7 @@ JSTR_NOEXCEPT
 
 /* Find last NE in HS.
  * Return value:
- * Ptr to NE;
+ * ptr to NE.
  * NULL if not found.
  * The current implementation is O(m * n). */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -621,7 +621,7 @@ JSTR_NOEXCEPT
 
 /* Find NE in HS case-insensitively (ASCII).
  * Return value:
- * Ptr to NE;
+ * ptr to NE.
  * NULL if not found. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
@@ -707,7 +707,7 @@ JSTR_NOEXCEPT
 
 /* Find NE in HS case-insensitively.
  * Return value:
- * Ptr to NE;
+ * ptr to NE.
  * NULL if not found. */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASESTR_OPTIMIZED
@@ -822,8 +822,8 @@ JSTR_NOEXCEPT
 }
 
 /* Reverse of STRCSPN.
- * Return the offset from S if found;
- * otherwise, return S + SZ. */
+ * Return the offset from S if found.
+ * Otherwise, return S + SZ. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
@@ -879,8 +879,8 @@ JSTR_NOEXCEPT
 }
 
 /* Reverse of STRSPN.
- * Return the offset from S if found;
- * otherwise, return S + SZ. */
+ * Return the offset from S if found.
+ * Otherwise, return S + SZ. */
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static size_t
@@ -928,8 +928,8 @@ JSTR_NOEXCEPT
 }
 
 /* Reverse of STRSPN.
- * Return the offset from S if found;
- * otherwise, return S + SZ. */
+ * Return the offset from S if found.
+ * Otherwise, return S + SZ. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static size_t
@@ -1064,8 +1064,8 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * ptr to first non-C in S;
- * ptr to '\0' if C is not found;
+ * ptr to first non-C in S,
+ * ptr to '\0' if C is not found,
  * S if C is '\0'; */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1080,7 +1080,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * ptr to first non-C in S;
+ * ptr to first non-C in S.
  * NULL if non-C is not found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1258,7 +1258,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * ptr to startning of line;
+ * ptr to start of line.
  * BEGIN if no newline was found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1271,7 +1271,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * ptr to next line;
+ * ptr to next start of line.
  * NULL if no newline was found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1284,7 +1284,7 @@ JSTR_NOEXCEPT
 }
 
 /* Return value:
- * ptr to next line;
+ * ptr to next start of line.
  * NULL if no newline was found. */
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE

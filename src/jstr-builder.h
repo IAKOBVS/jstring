@@ -281,8 +281,8 @@ JSTR_NOEXCEPT
 
 /* Last arg must be NULL.
  * Return value:
- * JSTR_RET_ERR on malloc error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on malloc error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
@@ -308,8 +308,8 @@ JSTR_NOEXCEPT
 
 /* Last arg must be NULL.
  * Return value:
- * JSTR_RET_ERR on malloc error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on malloc error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
@@ -363,8 +363,8 @@ JSTR_NOEXCEPT
 
 /* Append SRC to DST.
  * Return value:
- * JSTR_RET_ERR on malloc error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on malloc error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -468,8 +468,8 @@ JSTR_NOEXCEPT
 
 /* Only prepend NUL if S is empty.
  * Return value:
- * JSTR_RET_ERR on malloc error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on malloc error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 JSTR_ATTR_INLINE
@@ -487,8 +487,8 @@ JSTR_NOEXCEPT
 
 /* Only prepend NUL if S is empty.
  * Return value:
- * JSTR_RET_ERR on malloc error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on malloc error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -517,7 +517,7 @@ JSTR_NOEXCEPT
  * S is NUL terminated.
  * Return value:
  * JSTR_RET_ERR on malloc error
- * otherwise JSTR_RET_SUCC. */
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -546,8 +546,8 @@ JSTR_NOEXCEPT
 /* Push C to end of S.
  * S is NUL terminated.
  * Return value:
- * JSTR_RET_ERR on malloc error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on malloc error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
@@ -574,8 +574,8 @@ JSTR_NOEXCEPT
 /* Push C to end of S.
  * S is NUL terminated.
  * Return value:
- * JSTR_RET_ERR on malloc error;
- * otherwise JSTR_RET_SUCC. */
+ * JSTR_RET_ERR on malloc error.
+ * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -625,7 +625,7 @@ JSTR_NOEXCEPT
 
 /* Return maximum size of allocation needed for sprintf.
  * Return value:
- * size of allocation;
+ * size of allocation.
  * -1 on error and errno is set. */
 JSTR_FUNC
 #if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST

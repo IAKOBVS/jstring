@@ -39,8 +39,8 @@ JSTR__BEGIN_DECLS
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
- * 0 if strings match;
- * non-zero otherwise. */
+ * 0 if strings match.
+ * Otherwise, non-zero. */
 #if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
 #endif
@@ -62,8 +62,8 @@ JSTR_NOEXCEPT
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
- * 0 if strings match;
- * non-zero otherwise. */
+ * 0 if strings match.
+ * Otherwise, non-zero. */
 #if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
 #endif
@@ -87,8 +87,8 @@ JSTR_NOEXCEPT
 /* Compare S1 with S2 case-insensitively.
  * N must be lower than the length of S1 or S2.
  * Return value:
- * 0 if strings match;
- * non-zero otherwise. */
+ * 0 if strings match.
+ * Otherwise, non-zero. */
 #if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
 #endif
@@ -111,8 +111,8 @@ JSTR_NOEXCEPT
 /* Compare S1 with S2 case-insensitively.
  * N must be lower than the length of S1 or S2.
  * Return value:
- * 0 if strings match;
- * non-zero otherwise. */
+ * 0 if strings match.
+ * Otherwise, non-zero. */
 JSTR_FUNC_PURE
 static int
 jstr_memcasecmpeq(const char *s1, const char *s2, size_t n)
@@ -127,8 +127,8 @@ JSTR_NOEXCEPT
 /* Compare S1 with S2 case-insensitively.
  * N must be lower than the length of S1 or S2.
  * Return value:
- * 0 if strings match;
- * non-zero otherwise. */
+ * 0 if strings match.
+ * Otherwise, non-zero. */
 JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
@@ -144,8 +144,8 @@ JSTR_NOEXCEPT
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
- * 0 if strings match;
- * non-zero otherwise. */
+ * 0 if strings match.
+ * Otherwise, non-zero. */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASECMP
 JSTR_ATTR_INLINE
@@ -178,8 +178,8 @@ jstr_strcasecmpeq_loop(const char *s1, const char *s2)
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
- * 0 if strings match;
- * non-zero otherwise. */
+ * 0 if strings match.
+ * Otherwise, non-zero. */
 JSTR_FUNC_PURE
 #if JSTR_HAVE_STRCASECMP
 JSTR_ATTR_INLINE
