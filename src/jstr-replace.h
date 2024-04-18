@@ -102,7 +102,7 @@ JSTR_NOEXCEPT
 
 /* Replace RPLC in S with FIND.
  * Return value:
- * ptr to RPLC in S + RPLCLEN;
+ * ptr to RPLC in S + RPLCLEN.
  * NULL on error. */
 JSTR_FUNC
 static char *
