@@ -828,9 +828,9 @@ struct jstr__io_ftw_data {
 	int func_name(const char *filename, jstr_io_path_size_ty filename_len, const void *args)
 
 #ifdef O_DIRECTORY
-#	define JSTR_IO__O_DIRECTORY O_DIRECTORY
+#	define JSTR__IO_O_DIRECTORY O_DIRECTORY
 #else
-#	define JSTR_IO__O_DIRECTORY 0
+#	define JSTR__IO_O_DIRECTORY 0
 #endif
 
 #define FLAG(x) ((a)->ftw_flags & (x))
@@ -990,7 +990,7 @@ skip_fn:
 			continue;
 		/* If we have *_at functions, open d_name to get the fd.
 		 * Otherwise, no-op. */
-		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | O_NONBLOCK | JSTR_IO__O_DIRECTORY, goto CONT);
+		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | O_NONBLOCK | JSTR__IO_O_DIRECTORY, goto CONT);
 		tmp = jstr__io_ftw_len(a, a->ftw.dirpath_len FD_ARG);
 		/* Close when we have *_at functions. */
 		CLOSE(FD, goto err_closedir);
@@ -1026,7 +1026,7 @@ err_closedir:
 #undef STAT_OR_MODE
 #undef FD
 #undef FD_PARAM
-#undef JSTR_IO__O_DIRECTORY
+#undef JSTR__IO_O_DIRECTORY
 #undef FLAG
 
 #define FLAG(x) (jstr_io_ftw_flags & (x))
