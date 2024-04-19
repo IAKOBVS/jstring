@@ -374,7 +374,8 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/* Expand ~/some_dir to /home/username/some_dir.
+/* Expand ~/some_dir to /home/username/some_dir,
+ * ~ being the first character.
  * Assume that S has enough space.
  * Return value:
  * ptr to '\0' in S.
@@ -395,8 +396,8 @@ JSTR_NOEXCEPT
 	return s + sz + len - 1;
 }
 
-/* Expand ~/some_dir to /home/username/some_dir.
- * Assume that S has enough space.
+/* Expand ~/some_dir to /home/username/some_dir,
+ * ~ being the first character.
  * Return value:
  * ptr to '\0' in S.
  * NULL on error. */
