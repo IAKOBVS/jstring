@@ -432,8 +432,7 @@ JSTR_NOEXCEPT
 	if (jstr_nullchk(fp))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	char buf[MINBUF];
-	size_t readsz;
-	readsz = jstr_io_fread(buf, 1, sizeof(buf), fp);
+	size_t readsz = jstr_io_fread(buf, 1, sizeof(buf), fp);
 	if (jstr_unlikely(readsz == (size_t)-1)) {
 		pclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -479,8 +478,7 @@ JSTR_NOEXCEPT
 {
 	enum { MINBUF = JSTR_PAGE_SIZE };
 	char buf[MINBUF];
-	ssize_t readsz;
-	readsz = read(STDIN_FILENO, buf, sizeof(buf));
+	ssize_t readsz = read(STDIN_FILENO, buf, sizeof(buf));
 	if (jstr_unlikely(readsz == (ssize_t)-1))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	const size_t initialsz = (size_t)readsz == sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
