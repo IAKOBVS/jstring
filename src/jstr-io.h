@@ -419,60 +419,6 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/* Expand every ~ to /home/username.
- * Assume that S has enough space.
- * Return value:
- * ptr to '\0' in S.
- * NULL on error. */
-JSTR_FUNC
-static char *
-jstr_io_expandtilde_len_unsafe_p(char *R s, size_t sz)
-JSTR_NOEXCEPT
-{
-	const char *R home = getenv("HOME");
-	if (jstr_nullchk(home))
-		return NULL;
-	const size_t len = strlen(home);
-	char *p = s;
-	while ((p = (char *)memchr(p, '~', JSTR_DIFF(s + sz, p)))) {
-		jstr_strmove_len(p + len, p + 1, JSTR_DIFF(s + sz, p + 1));
-		memcpy(p, home, len);
-		p += len;
-		sz += (len - 1);
-	}
-	return s + sz;
-}
-
-/* Expand every ~ to /home/username.
- * Return value:
- * JSTR_RET_ERR on error.
- * Otherwise, JSTR_RET_SUCC. */
-JSTR_FUNC
-static jstr_ret_ty
-jstr_io_expandtilde(char *R *R s, size_t *R sz, size_t *R cap)
-JSTR_NOEXCEPT
-{
-	const char *R home = getenv("HOME");
-	if (jstr_nullchk(home))
-		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	const size_t len = strlen(home);
-	const char *tmp;
-	char *p = *s;
-	while ((p = (char *)memchr(p, '~', JSTR_DIFF(*s + *sz, p)))) {
-		if (jstr_unlikely(*sz + len >= *cap)) {
-			tmp = *s;
-			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + len + 1)))
-				return JSTR_RET_ERR;
-			p = *s + (p - tmp);
-		}
-		jstr_strmove_len(p + len, p + 1, JSTR_DIFF(*s + *sz, p + 1));
-		memcpy(p, home, len);
-		p += len;
-		*sz += (len - 1);
-	}
-	return JSTR_RET_SUCC;
-}
-
 #if JSTR_HAVE_POPEN
 
 JSTR_FUNC
