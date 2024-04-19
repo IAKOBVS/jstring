@@ -94,20 +94,20 @@ check_utf:;
 }
 
 #if JSTR_OS_WINDOWS || JSTR_OS_WINDOWSCE
-#	define USE_FORM_FEED 0
+#	define FORM_FEED_IS_BINARY 0
 #else
-#	define USE_FORM_FEED 1
+#	define FORM_FEED_IS_BINARY 1
 #endif
 
 /* clang-format off */
 
 /* Do not pass a non-unsigned char. */
 JSTR_ATTR_MAYBE_UNUSED
-static const unsigned char jstr__io_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,1,USE_FORM_FEED,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1};
+static const unsigned char jstr__io_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,1,FORM_FEED_IS_BINARY,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1};
 
 /* clang-format on */
 
-#undef USE_FORM_FEED
+#undef FORM_FEED_IS_BINARY
 
 /* Check if the first JSTR_IO_BINARY_CHECK_MAX bytes or fewer contain any
  * unprintable char. */
