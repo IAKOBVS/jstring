@@ -139,6 +139,9 @@ typedef enum {
 #	define JSTR_RE_RETURN_ERR(errcode, preg) return -(errcode)
 #endif
 
+/* Check if *s + start_idx is the beginning of a string or beginning of a line. */
+#define USE_NOTBOL ((start_idx && *(*s + start_idx - 1) != '\n') ? JSTR_RE_EF_NOTBOL : 0)
+
 typedef regoff_t jstr_re_off_ty;
 
 JSTR_ATTR_INLINE
@@ -276,7 +279,7 @@ jstr_re_rm_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *
 JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags);
+	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags | USE_NOTBOL);
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 		*sz = JSTR_DIFF(jstr_rmat_len_p(*s, *sz, start_idx + (size_t)rm.rm_so, (size_t)(rm.rm_eo - rm.rm_so)), *s);
 		return 1;
@@ -317,7 +320,7 @@ JSTR_NOEXCEPT
 		return jstr_re_rm_from_exec(preg, s, sz, cap, start_idx, eflags);
 	if (jstr_unlikely(n == 0))
 		return 0;
-	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
+	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | USE_NOTBOL);
 	jstr_re_off_ty changed = 0;
 	size_t j;
 	size_t find_len;
@@ -332,7 +335,7 @@ JSTR_NOEXCEPT
 		goto err_free;
 	}
 	for (; n && i.src_e < end; --n, ++changed) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | JSTR_RE_EF_NOTBOL);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
@@ -449,7 +452,7 @@ jstr_re_rplc_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, si
 JSTR_NOEXCEPT
 {
 	regmatch_t rm;
-	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags);
+	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags | USE_NOTBOL);
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 		if (jstr_likely(jstr_rplcat_len(s, sz, cap, start_idx + (size_t)rm.rm_so, rplc, rplc_len, (size_t)(rm.rm_eo - rm.rm_so)) != NULL))
 			return 1;
@@ -494,7 +497,7 @@ JSTR_NOEXCEPT
 	i.src_e = *s + start_idx;
 	regmatch_t rm;
 	const char *end = *s + *sz;
-	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
+	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | USE_NOTBOL);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
@@ -518,7 +521,7 @@ err:
 	end = *s + *sz;
 	goto start;
 	for (; n && i.src_e < end; --n, ++changed) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | JSTR_RE_EF_NOTBOL);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
 		i.src_e += rm.rm_so;
@@ -854,5 +857,6 @@ JSTR_NOEXCEPT
 JSTR__END_DECLS
 
 #undef R
+#undef USE_NOTBOL
 
 #endif /* JSTR_REGEX_H */
