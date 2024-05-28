@@ -484,6 +484,12 @@ JSTR_NOEXCEPT
 		t->needle_len = ne_len;
 }
 
+#if (!JSTR_HAVE_SIMD || JSTR_HAVENT_MEMMEM_SIMD)
+#	if JSTR_TWOWAY_MEMMEM_THRES != 2
+#		error "JSTR_TWOWAY_MEMMEM_THRES is assumed to be 2."
+#	endif
+#endif
+
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static void *
@@ -654,10 +660,6 @@ JSTR_NOEXCEPT
 	return jstr__strcasestr_len_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
 }
 
-#if JSTR_TWOWAY_STRCASESTR_LEN_THRES > 2
-#	error "JSTR_TWOWAY_STRCASESTR_LEN_THRES is assumed to be 2."
-#endif
-
 JSTR_FUNC_VOID
 static void
 jstr_strcasestr_len_comp(jstr_twoway_ty *const t, const char *ne, size_t ne_len)
@@ -668,6 +670,10 @@ JSTR_NOEXCEPT
 	else
 		t->needle_len = ne_len;
 }
+
+#if JSTR_TWOWAY_STRCASESTR_LEN_THRES != 2
+#	error "JSTR_TWOWAY_STRCASESTR_LEN_THRES is assumed to be 2."
+#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
@@ -755,7 +761,7 @@ JSTR_NOEXCEPT
 #endif
 }
 
-#if JSTR_TWOWAY_STRCASESTR_THRES > 2
+#if JSTR_TWOWAY_STRCASESTR_THRES != 2
 #	error "JSTR_TWOWAY_STRCASESTR_THRES is assumed to be 2."
 #endif
 
