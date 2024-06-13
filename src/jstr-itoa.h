@@ -307,17 +307,17 @@ JSTR__DEFINE_ITOA_THOUSEP_SAFE(long long, lltoa_thousep, ulltoa_thousep)
 
 #undef JSTR__DEFINE_ITOA_THOUSEP_SAFE
 
-#define JSTR__DEFINE_ATOU(T, func_name)                      \
-	JSTR_FUNC                                            \
-	T jstr_##func_name##_len(const char *R s, size_t sz) \
-	JSTR_NOEXCEPT                                        \
-	{                                                    \
-		if (jstr_unlikely(sz == 0))                  \
-			return 0;                            \
-		T n = (T)(*s++ - '0');                       \
-		while (--sz)                                 \
-			n = (n * 10) + (T)(*s++ - '0');      \
-		return n;                                    \
+#define JSTR__DEFINE_ATOU(T, func_name)                             \
+	JSTR_FUNC                                                   \
+	static T jstr_##func_name##_len(const char *R s, size_t sz) \
+	JSTR_NOEXCEPT                                               \
+	{                                                           \
+		if (jstr_unlikely(sz == 0))                         \
+			return 0;                                   \
+		T n = (T)(*s++ - '0');                              \
+		while (--sz)                                        \
+			n = (n * 10) + (T)(*s++ - '0');             \
+		return n;                                           \
 	}
 
 JSTR__DEFINE_ATOU(unsigned int, atou)
@@ -326,25 +326,25 @@ JSTR__DEFINE_ATOU(unsigned long long, atoull)
 
 #undef JSTR__DEFINE_ATOU
 
-#define JSTR__DEFINE_ATOI(T, func_name)                      \
-	JSTR_FUNC                                            \
-	T jstr_##func_name##_len(const char *R s, size_t sz) \
-	JSTR_NOEXCEPT                                        \
-	{                                                    \
-		if (jstr_unlikely(sz == 0))                  \
-			return 0;                            \
-		T n;                                         \
-		if (*s == '-') {                             \
-			if (jstr_unlikely(sz == 1))          \
-				return 0;                    \
-			--sz;                                \
-			n = -(*s++ - '0');                   \
-		} else {                                     \
-			n = (T)(*s++ - '0');                 \
-		}                                            \
-		while (--sz)                                 \
-			n = (n * 10) + (T)(*s++ - '0');      \
-		return n;                                    \
+#define JSTR__DEFINE_ATOI(T, func_name)                             \
+	JSTR_FUNC                                                   \
+	static T jstr_##func_name##_len(const char *R s, size_t sz) \
+	JSTR_NOEXCEPT                                               \
+	{                                                           \
+		if (jstr_unlikely(sz == 0))                         \
+			return 0;                                   \
+		T n;                                                \
+		if (*s == '-') {                                    \
+			if (jstr_unlikely(sz == 1))                 \
+				return 0;                           \
+			--sz;                                       \
+			n = -(*s++ - '0');                          \
+		} else {                                            \
+			n = (T)(*s++ - '0');                        \
+		}                                                   \
+		while (--sz)                                        \
+			n = (n * 10) + (T)(*s++ - '0');             \
+		return n;                                           \
 	}
 
 JSTR__DEFINE_ATOI(int, atoi)
