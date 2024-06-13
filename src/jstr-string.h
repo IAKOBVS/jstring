@@ -1802,15 +1802,16 @@ JSTR_NOEXCEPT
 			case '\0':
 				goto out;
 				/* clang-format off */
-			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': /* clang-format on */
-			{
-				int o = 3;
-				*dst = 0, ++src;
-				for (; o-- && *src <= '7' && *src >= '0'; ++src)
-					*dst = (*dst << 3) + (*src - '0');
-				goto CONT;
-				break;
-			}
+			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+				/* clang-format on */
+				{
+					int o = 3;
+					*dst = 0, ++src;
+					for (; o-- && *src <= '7' && *src >= '0'; ++src)
+						*dst = (*dst << 3) + (*src - '0');
+					goto CONT;
+					break;
+				}
 			case 'b': *dst = '\b'; break;
 			case 'f': *dst = '\f'; break;
 			case 'n': *dst = '\n'; break;
@@ -1867,15 +1868,16 @@ JSTR_NOEXCEPT
 				break;
 			switch (*(s + 1)) {
 				/* clang-format off */
-			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': /* clang-format on */
-			{
-				int o = 3;
-				*d = 0, ++s;
-				for (; o-- && n && *s <= '7' && *s >= '0'; ++s, --n)
-					*d = (*d << 3) + (*s - '0');
-				goto CONT;
-				break;
-			}
+			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+				/* clang-format on */
+				{
+					int o = 3;
+					*d = 0, ++s;
+					for (; o-- && n && *s <= '7' && *s >= '0'; ++s, --n)
+						*d = (*d << 3) + (*s - '0');
+					goto CONT;
+					break;
+				}
 			case 'b': *d = '\b'; break;
 			case 'f': *d = '\f'; break;
 			case 'n': *d = '\n'; break;
