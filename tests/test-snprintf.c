@@ -201,8 +201,8 @@ main(int argc, char **argv)
 {
 	START();
 	TESTING(jstr_vsprintfstrlen);
-	char result_num[sizeof(unsigned long) + 1];
-	char expected_num[sizeof(unsigned long) + 1];
+	char result_num[sizeof(size_t) * 8 + 1];
+	char expected_num[sizeof(size_t) * 8 + 1];
 	T(jstr_sprintfstrlen, snprintf, "%d", 123456);
 	T(jstr_sprintfstrlen, snprintf, "%.4s", "hello");
 	T(jstr_sprintfstrlen, snprintf, "%.0s", "goodbye");
