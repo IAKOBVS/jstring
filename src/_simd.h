@@ -515,7 +515,7 @@ JSTR_NOEXCEPT
 
 #endif
 
-#if defined CMPG8 && defined CMPLT8 && defined AND && defined ADD
+#if defined CMPGT8 && defined CMPLT8 && defined AND && defined ADD
 
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
@@ -534,7 +534,7 @@ jstr__simd_tolower_vec(const VEC v)
 
 #endif
 
-#if defined CMPG8 && defined CMPLT8 && defined AND && defined SUB
+#if defined CMPGT8 && defined CMPLT8 && defined AND && defined SUB
 
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
