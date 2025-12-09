@@ -21,20 +21,20 @@
  * SOFTWARE. */
 
 #ifndef JSTR_STRUCT_H
-#define JSTR_STRUCT_H 1
+#	define JSTR_STRUCT_H 1
 
-#include "jstr-macros.h"
+#	include "jstr-macros.h"
 
 JSTR__BEGIN_DECLS
-#include <stddef.h>
+#	include <stddef.h>
 JSTR__END_DECLS
 
-#define jstr_struct(j)  &(j)->data, &(j)->size, &(j)->capacity
-#define jstr_literal(s) (s), (sizeof(s) - 1)
-#define jstr_literal_init(s)    \
-	{                       \
-		jstr_literal(s) \
-	}
+#	define jstr_struct(j)  &(j)->data, &(j)->size, &(j)->capacity
+#	define jstr_literal(s) (s), (sizeof(s) - 1)
+#	define jstr_literal_init(s)    \
+		{                       \
+			jstr_literal(s) \
+		}
 
 JSTR__BEGIN_DECLS
 typedef struct jstr_ty {

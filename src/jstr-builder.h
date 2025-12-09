@@ -21,49 +21,50 @@
  * SOFTWARE. */
 
 #ifndef JSTR_BUILDER_H
-#define JSTR_BUILDER_H 1
+#	define JSTR_BUILDER_H 1
 
-#include "jstr-macros.h"
-#include "jstr-struct.h"
+#	include "jstr-macros.h"
+#	include "jstr-struct.h"
 
 JSTR__BEGIN_DECLS
-#include <errno.h>
-#include <limits.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <wchar.h>
+#	include <errno.h>
+#	include <limits.h>
+#	include <stdarg.h>
+#	include <stdio.h>
+#	include <stdlib.h>
+#	include <string.h>
+#	include <wchar.h>
 JSTR__END_DECLS
 
-#include "jstr-config.h"
-#include "jstr-ctype.h"
-#include "jstr-macros.h"
-#include "jstr-stdstring.h"
-#include "jstr-string.h"
+#	include "jstr-config.h"
+#	include "jstr-ctype.h"
+#	include "jstr-macros.h"
+#	include "jstr-stdstring.h"
+#	include "jstr-string.h"
 
-#define R JSTR_RESTRICT
+#	define R JSTR_RESTRICT
 
-#define JSTR_INIT       \
-	{               \
-		0, 0, 0 \
-	}
+#	define JSTR_INIT  \
+		{          \
+			0, \
+			0, \
+			0  \
+		}
 
-#define jstr_foreach(j, p) \
-	for (char *p = ((j)->data), *const _jstr__foreach_end_##p = ((j)->data) + ((j)->size); p < _jstr__foreach_end_##p; ++p)
-#define jstr_foreachi(j, i) \
-	for (size_t i = 0, const _jstr__foreachi_end_##i = ((j)->size); i < _jstr__foreachi_end_##i; ++i)
-#define jstr_index(j, curr) JSTR_DIFF(curr, (j)->data)
-#define jstr__at(j, i)      ((j)->data + (i))
-#define jstr_start(j)       ((j)->data)
-#define jstr_end(j)         ((j)->data + (j)->size)
-#ifdef JSTR_DEBUG
-#	define jstr_at(j, i)                                                   \
-		((i <= (j)->size) ? ((j)->data + (i)) : assert(i <= (j)->size), \
-		 ((j)->data))
-#else
-#	define jstr_at(j, i) ((j)->data + (i))
-#endif
+#	define jstr_foreach(j, p) \
+		for (char *p = ((j)->data), *const _jstr__foreach_end_##p = ((j)->data) + ((j)->size); p < _jstr__foreach_end_##p; ++p)
+#	define jstr_foreachi(j, i) \
+		for (size_t i = 0, const _jstr__foreachi_end_##i = ((j)->size); i < _jstr__foreachi_end_##i; ++i)
+#	define jstr_index(j, curr) JSTR_DIFF(curr, (j)->data)
+#	define jstr__at(j, i)      ((j)->data + (i))
+#	define jstr_start(j)       ((j)->data)
+#	define jstr_end(j)         ((j)->data + (j)->size)
+#	ifdef JSTR_DEBUG
+#		define jstr_at(j, i) \
+			((i <= (j)->size) ? ((j)->data + (i)) : assert(i <= (j)->size), ((j)->data))
+#	else
+#		define jstr_at(j, i) ((j)->data + (i))
+#	endif
 
 JSTR__BEGIN_DECLS
 
@@ -97,9 +98,9 @@ JSTR_NOEXCEPT
 {
 	int ret;
 	ret = fprintf(stderr, "size       :%zu.\n"
-	                  "capacity     :%zu.\n",
-	          j->size,
-	          j->capacity);
+	                      "capacity     :%zu.\n",
+	              j->size,
+	              j->capacity);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
 	const char *data;
@@ -618,26 +619,26 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-#if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
-|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
-#	define JSTR_HAVE_SNPRINTF_STRLEN 1
-#else
-#	define JSTR_HAVE_SNPRINTF_STRLEN 0
-#endif
+#	if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
+	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
+#		define JSTR_HAVE_SNPRINTF_STRLEN 1
+#	else
+#		define JSTR_HAVE_SNPRINTF_STRLEN 0
+#	endif
 
 /* Return maximum size of allocation needed for sprintf.
  * Return value:
  * size of allocation.
  * -1 on error and errno is set. */
 JSTR_FUNC
-#if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
+#	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 JSTR_ATTR_INLINE
-#endif
+#	endif
 static int
 jstr_vsprintfstrlenmax(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
+#	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 	const int ret = vsnprintf(NULL, 0, fmt, ap);
 	if (jstr_likely(ret > 0))
 		return ret + 1;
@@ -645,31 +646,31 @@ JSTR_NOEXCEPT
 		return 0;
 	errno = ret;
 	return -1;
-#else
-#	define JSTR__COUNTDIGITS(lflag, base)               \
-		if (lflag == L_INT)                          \
-			arg_len += INT / base;               \
-		else {                                       \
-			if (lflag == L_LONG)                 \
-				arg_len += LONG / base;      \
-			else if (lflag == L_LONG_LONG)       \
-				arg_len += LONG_LONG / base; \
-			else                                 \
-				goto einval;                 \
-			lflag = L_INT;                       \
-		}
-#	define JSTR__GETMAXDIGITS(length)                                         \
-		do {                                                               \
-			if (base == B_DEC)                                         \
-				arg_len                                            \
-				+= (is_thousep) ? DEC_##length : 2 * DEC_##length; \
-			else if (base == B_HEX)                                    \
-				arg_len                                            \
-				+= (is_thousep) ? HEX_##length : 2 * DEC_##length; \
-			else                                                       \
-				arg_len                                            \
-				+= (is_thousep) ? OCT_##length : 2 * DEC_##length; \
-		} while (0)
+#	else
+#		define JSTR__COUNTDIGITS(lflag, base)               \
+			if (lflag == L_INT)                          \
+				arg_len += INT / base;               \
+			else {                                       \
+				if (lflag == L_LONG)                 \
+					arg_len += LONG / base;      \
+				else if (lflag == L_LONG_LONG)       \
+					arg_len += LONG_LONG / base; \
+				else                                 \
+					goto einval;                 \
+				lflag = L_INT;                       \
+			}
+#		define JSTR__GETMAXDIGITS(length)                                         \
+			do {                                                               \
+				if (base == B_DEC)                                         \
+					arg_len                                            \
+					+= (is_thousep) ? DEC_##length : 2 * DEC_##length; \
+				else if (base == B_HEX)                                    \
+					arg_len                                            \
+					+= (is_thousep) ? HEX_##length : 2 * DEC_##length; \
+				else                                                       \
+					arg_len                                            \
+					+= (is_thousep) ? OCT_##length : 2 * DEC_##length; \
+			} while (0)
 	typedef enum {
 		B_DEC = 10,
 		B_OCT = 8,
@@ -867,12 +868,12 @@ get_arg:
 	if (jstr_unlikely(arg_len > INT_MAX))
 		arg_len = INT_MAX;
 	return arg_len;
-#endif
-#undef JSTR__COUNTDIGITS
-#undef JSTR__GETMAXDIGITS
+#	endif
+#	undef JSTR__COUNTDIGITS
+#	undef JSTR__GETMAXDIGITS
 }
 
-#if JSTR_HAVE_SNPRINTF_STRLEN
+#	if JSTR_HAVE_SNPRINTF_STRLEN
 
 /* Return JSTR_RET_ERR on error.
  * Referencing arguments with $ is not supported.
@@ -1082,7 +1083,7 @@ err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-#endif
+#	endif
 
 /* Assume that S has enough space.
  * Use jstr_asprintf() to grow S. */
@@ -1174,6 +1175,6 @@ err_free_set_errno:
 
 JSTR__END_DECLS
 
-#undef R
+#	undef R
 
 #endif /* JSTR_BUILDER H */

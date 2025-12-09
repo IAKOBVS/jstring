@@ -21,27 +21,27 @@
  * SOFTWARE. */
 
 #ifndef JSTR_STRING_H
-#define JSTR_STRING_H 1
+#	define JSTR_STRING_H 1
 
-#include "jstr-macros.h"
+#	include "jstr-macros.h"
 
 JSTR__BEGIN_DECLS
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#	include <stdio.h>
+#	include <stdlib.h>
+#	include <string.h>
 JSTR__END_DECLS
 
-#include "jstr-config.h"
-#include "jstr-stdstring.h"
-#include "jstr-ctype.h"
-#include "_musl.h"
+#	include "jstr-config.h"
+#	include "jstr-stdstring.h"
+#	include "jstr-ctype.h"
+#	include "_musl.h"
 
-#if defined __AVX512BW__ || defined __AVX2__ || defined __SSE2__
-#	define JSTR_HAVE_SIMD 1
-#	include "_simd.h"
-#endif
+#	if defined __AVX512BW__ || defined __AVX2__ || defined __SSE2__
+#		define JSTR_HAVE_SIMD 1
+#		include "_simd.h"
+#	endif
 
-#define R JSTR_RESTRICT
+#	define R JSTR_RESTRICT
 
 JSTR__BEGIN_DECLS
 
@@ -52,13 +52,13 @@ static void *
 jstr_memrchr(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMRCHR && !JSTR_TEST
+#	if JSTR_HAVE_MEMRCHR && !JSTR_TEST
 	return (void *)memrchr(s, c, n);
-#elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMRCHR_SIMD
+#	elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMRCHR_SIMD
 	return jstr__simd_memrchr(s, c, n);
-#else
+#	else
 	return jstr__memrchr_musl(s, c, n);
-#endif
+#	endif
 }
 
 JSTR_FUNC_PURE
@@ -68,14 +68,14 @@ static char *
 jstr_strchrnul(const char *s, int c)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
+#	if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
 	return (char *)strchrnul(s, c);
-#elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCHRNUL_SIMD
+#	elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCHRNUL_SIMD
 	return jstr__simd_strchrnul(s, c);
-#else
+#	else
 	char *const p = strchr(s, c);
 	return p ? p : (char *)s + strlen(s);
-#endif
+#	endif
 }
 
 /* Return value:
@@ -89,18 +89,18 @@ JSTR_NOEXCEPT
 {
 	if (!jstr_isalpha(c))
 		return jstr_strchrnul(s, c);
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
 	return jstr__simd_strcasechrnul(s, c);
-#elif JSTR_HAVE_STRCSPN_OPTIMIZED
+#	elif JSTR_HAVE_STRCSPN_OPTIMIZED
 	c = jstr_tolower(c);
 	if (jstr_tolower(*s) != c) {
 		const char a[] = { (char)c, (char)jstr_toupper(c), '\0' };
 		s += strcspn(s, a);
 	}
 	return (char *)s;
-#else
+#	else
 	return jstr__strcasechrnul_musl(s, c);
-#endif
+#	endif
 }
 
 /* Return value:
@@ -115,16 +115,16 @@ JSTR_NOEXCEPT
 	if (!jstr_isalpha(c))
 		return (char *)strchr(s, c);
 	c = jstr_tolower(c);
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASECHRNUL_SIMD
 	s = jstr__simd_strcasechrnul(s, c);
-#elif JSTR_HAVE_STRCSPN_OPTIMIZED
+#	elif JSTR_HAVE_STRCSPN_OPTIMIZED
 	if (jstr_tolower(*s) != c) {
 		const char a[] = { (char)c, (char)jstr_toupper(c), '\0' };
 		s += strcspn(s, a);
 	}
-#else
+#	else
 	s = jstr__strcasechrnul_musl(s, c);
-#endif
+#	endif
 	return jstr_tolower(*s) == (char)c ? (char *)s : NULL;
 }
 
@@ -136,11 +136,11 @@ JSTR_NOEXCEPT
 {
 	if (!jstr_isalpha(c))
 		return (char *)memchr(s, c, n);
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMCASECHR_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMCASECHR_SIMD
 	return jstr__simd_memcasechr(s, c, n);
-#else
+#	else
 	return jstr__memcasechr_musl(s, c, n);
-#endif
+#	endif
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -174,11 +174,11 @@ static char *
 jstr_stpcpy(char *R dst, const char *R src)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STPCPY && !JSTR_TEST
+#	if JSTR_HAVE_STPCPY && !JSTR_TEST
 	return stpcpy(dst, src);
-#else
+#	else
 	return jstr_stpcpy_len(dst, src, strlen(src));
-#endif
+#	endif
 }
 
 /* Return value:
@@ -200,11 +200,11 @@ static char *
 jstr_strnchr(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCHR_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCHR_SIMD
 	return jstr__simd_strnchr(s, c, n);
-#else
+#	else
 	return jstr__strnchr_musl(s, c, n);
-#endif
+#	endif
 }
 
 /* strcasechr() before s + N. */
@@ -216,11 +216,11 @@ JSTR_NOEXCEPT
 {
 	if (!jstr_isalpha(c))
 		return jstr_strnchr(s, c, n);
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCASECHR_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_STRNCASECHR_SIMD
 	return jstr__simd_strncasechr(s, c, n);
-#else
+#	else
 	return jstr__strncasechr_musl(s, c, n);
-#endif
+#	endif
 }
 
 /* basename() for non nul-terminated strings. */
@@ -407,46 +407,46 @@ JSTR_NOEXCEPT
 	return (*hs == *ne) ? !strncmp(hs, ne, strlen(ne)) : (*ne == '\0');
 }
 
-#define JSTR__STRSTR234_MEMMEM    1
-#define JSTR__STRSTR234_FUNC_NAME jstr__memmem
-#include "_strstr-lt8.h"
+#	define JSTR__STRSTR234_MEMMEM    1
+#	define JSTR__STRSTR234_FUNC_NAME jstr__memmem
+#	include "_strstr-lt8.h"
 
-#define JSTR__STRSTR234_CANON     jstr_tolower
-#define JSTR__STRSTR234_FUNC_NAME jstr__strcasestr
-#include "_strstr-lt8.h"
+#	define JSTR__STRSTR234_CANON     jstr_tolower
+#	define JSTR__STRSTR234_FUNC_NAME jstr__strcasestr
+#	include "_strstr-lt8.h"
 
-#define JSTR__STRSTR234_MEMMEM    1
-#define JSTR__STRSTR234_CANON     jstr_tolower
-#define JSTR__STRSTR234_FUNC_NAME jstr__memcasemem
-#include "_strstr-lt8.h"
+#	define JSTR__STRSTR234_MEMMEM    1
+#	define JSTR__STRSTR234_CANON     jstr_tolower
+#	define JSTR__STRSTR234_FUNC_NAME jstr__memcasemem
+#	include "_strstr-lt8.h"
 
-#define JSTR__MUSL_FUNC_NAME jstr__memmem_musl
-#include "_musl-twoway.h"
+#	define JSTR__MUSL_FUNC_NAME jstr__memmem_musl
+#	include "_musl-twoway.h"
 
-#if JSTR_HAVE_MEMMEM && JSTR_HAVE_MEMMEM_OPTIMIZED && !JSTR_TEST
-#	define JSTR_USE_MEMMEM_LIBC 1
-#else
-#	define JSTR_USE_MEMMEM_LIBC 0
-#endif
+#	if JSTR_HAVE_MEMMEM && JSTR_HAVE_MEMMEM_OPTIMIZED && !JSTR_TEST
+#		define JSTR_USE_MEMMEM_LIBC 1
+#	else
+#		define JSTR_USE_MEMMEM_LIBC 0
+#	endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
-#if JSTR_USE_MEMMEM_LIBC || !JSTR_HAVENT_MEMMEM_SIMD
+#	if JSTR_USE_MEMMEM_LIBC || !JSTR_HAVENT_MEMMEM_SIMD
 JSTR_ATTR_INLINE
-#endif
+#	endif
 static void *
 jstr_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
 	enum { LONG_NE_THRES = 64 };
-#if JSTR_USE_MEMMEM_LIBC
+#	if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
-#elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
+#	elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	if (jstr_likely(ne_len <= sizeof(jstr_vvec_ty)))
 		return jstr__simd_memmem(hs, hs_len, ne, ne_len);
 	return (hs_len >= ne_len) ? jstr__memmem_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len) : NULL;
-#else
+#	else
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (ne_len <= 4) {
@@ -460,18 +460,18 @@ JSTR_NOEXCEPT
 		return jstr__memmem_lt8((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
 	}
 	return jstr__memmem_musl((const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
-#endif
+#	endif
 }
 
 /* Needles <= THRES will not compile a jstr_twoway_ty. */
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-#	define JSTR_TWOWAY_MEMMEM_THRES sizeof(jstr_vvec_ty)
-#else
-#	define JSTR_TWOWAY_MEMMEM_THRES 2
-#endif
-#define JSTR_TWOWAY_STRSTR_THRES         JSTR_TWOWAY_MEMMEM_THRES
-#define JSTR_TWOWAY_STRCASESTR_LEN_THRES 2
-#define JSTR_TWOWAY_STRCASESTR_THRES     JSTR_TWOWAY_STRCASESTR_LEN_THRES
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
+#		define JSTR_TWOWAY_MEMMEM_THRES sizeof(jstr_vvec_ty)
+#	else
+#		define JSTR_TWOWAY_MEMMEM_THRES 2
+#	endif
+#	define JSTR_TWOWAY_STRSTR_THRES         JSTR_TWOWAY_MEMMEM_THRES
+#	define JSTR_TWOWAY_STRCASESTR_LEN_THRES 2
+#	define JSTR_TWOWAY_STRCASESTR_THRES     JSTR_TWOWAY_STRCASESTR_LEN_THRES
 
 JSTR_FUNC_VOID
 static void
@@ -484,11 +484,11 @@ JSTR_NOEXCEPT
 		t->needle_len = ne_len;
 }
 
-#if (!JSTR_HAVE_SIMD || JSTR_HAVENT_MEMMEM_SIMD)
-#	if JSTR_TWOWAY_MEMMEM_THRES != 2
-#		error "JSTR_TWOWAY_MEMMEM_THRES is assumed to be 2."
+#	if (!JSTR_HAVE_SIMD || JSTR_HAVENT_MEMMEM_SIMD)
+#		if JSTR_TWOWAY_MEMMEM_THRES != 2
+#			error "JSTR_TWOWAY_MEMMEM_THRES is assumed to be 2."
+#		endif
 #	endif
-#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
@@ -498,9 +498,9 @@ JSTR_NOEXCEPT
 {
 	if (t->needle_len > JSTR_TWOWAY_MEMMEM_THRES)
 		return jstr__memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
 	return jstr__simd_memmem(hs, hs_len, ne, t->needle_len);
-#else
+#	else
 	if (t->needle_len == 2) {
 		if (jstr_unlikely(hs_len < 2))
 			return NULL;
@@ -510,7 +510,7 @@ JSTR_NOEXCEPT
 		return (void *)memchr(hs, *(const unsigned char *)ne, hs_len);
 	/* if (t->needle_len == 0) */
 	return (char *)hs;
-#endif
+#	endif
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
@@ -567,9 +567,9 @@ JSTR_NOEXCEPT
 	return (char *)jstr_memmemnul(hs, hs_len, ne, ne_len);
 }
 
-#define JSTR__STRSTR234_FUNC_NAME jstr__memrmem
-#define JSTR__STRSTR234_MEMRMEM   1
-#include "_strstr-lt8.h"
+#	define JSTR__STRSTR234_FUNC_NAME jstr__memrmem
+#	define JSTR__STRSTR234_MEMRMEM   1
+#	include "_strstr-lt8.h"
 
 /* Find last NE in HS.
  * Return value:
@@ -613,17 +613,17 @@ JSTR_NOEXCEPT
 	return (char *)jstr_memrmem(hs, hs_len, ne, ne_len);
 }
 
-#if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED \
-|| (JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD)
-#	define JSTR_USE_MEMMEM_OPTIMIZED 1
-#else
-#	define JSTR_USE_MEMMEM_OPTIMIZED 0
-#endif
+#	if JSTR_HAVE_MEMMEM_OPTIMIZED || JSTR_HAVE_STRSTR_OPTIMIZED \
+	|| (JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCASESTR_LEN_SIMD)
+#		define JSTR_USE_MEMMEM_OPTIMIZED 1
+#	else
+#		define JSTR_USE_MEMMEM_OPTIMIZED 0
+#	endif
 
-#define JSTR__MUSL_FUNC_NAME jstr__strcasestr_len_musl
-#define JSTR__MUSL_CANON     jstr_tolower
-#define JSTR__MUSL_CMP_FUNC  jstr_strcasecmpeq_len
-#include "_musl-twoway.h"
+#	define JSTR__MUSL_FUNC_NAME jstr__strcasestr_len_musl
+#	define JSTR__MUSL_CANON     jstr_tolower
+#	define JSTR__MUSL_CMP_FUNC  jstr_strcasecmpeq_len
+#	include "_musl-twoway.h"
 
 /* Find NE in HS case-insensitively (ASCII).
  * Return value:
@@ -637,14 +637,14 @@ jstr_strcasestr_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len
 JSTR_NOEXCEPT
 {
 	enum { LONG_NE_THRES = 64 };
-#if !JSTR_TEST
+#	if !JSTR_TEST
 	for (size_t i = 0;; ++i) {
 		if (i == ne_len)
 			return (char *)jstr_memmem(hs, hs_len, ne, ne_len);
 		if (jstr_isalpha(ne[i]))
 			break;
 	}
-#endif
+#	endif
 	if (jstr_unlikely(hs_len < ne_len))
 		return NULL;
 	if (ne_len <= 8) {
@@ -671,9 +671,9 @@ JSTR_NOEXCEPT
 		t->needle_len = ne_len;
 }
 
-#if JSTR_TWOWAY_STRCASESTR_LEN_THRES != 2
-#	error "JSTR_TWOWAY_STRCASESTR_LEN_THRES is assumed to be 2."
-#endif
+#	if JSTR_TWOWAY_STRCASESTR_LEN_THRES != 2
+#		error "JSTR_TWOWAY_STRCASESTR_LEN_THRES is assumed to be 2."
+#	endif
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
@@ -705,39 +705,39 @@ JSTR_NOEXCEPT
 	return jstr_strcasestr_len(hs, JSTR_MIN(hs_len, n), ne, ne_len);
 }
 
-#define JSTR__MUSL_FUNC_NAME jstr__strcasestr_musl
-#define JSTR__MUSL_CANON     jstr_tolower
-#define JSTR__MUSL_CMP_FUNC  jstr_strcasecmpeq_len
-#define JSTR__MUSL_CHECK_EOL 1
-#include "_musl-twoway.h"
+#	define JSTR__MUSL_FUNC_NAME jstr__strcasestr_musl
+#	define JSTR__MUSL_CANON     jstr_tolower
+#	define JSTR__MUSL_CMP_FUNC  jstr_strcasecmpeq_len
+#	define JSTR__MUSL_CHECK_EOL 1
+#	include "_musl-twoway.h"
 
 /* Find NE in HS case-insensitively.
  * Return value:
  * ptr to NE.
  * NULL if not found. */
 JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCASESTR_OPTIMIZED
+#	if JSTR_HAVE_STRCASESTR_OPTIMIZED
 JSTR_ATTR_INLINE
-#endif
+#	endif
 static char *
 jstr_strcasestr(const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
 	const unsigned char *np;
-#if !JSTR_TEST
+#	if !JSTR_TEST
 	for (np = (const unsigned char *)ne;; ++np) {
 		if (*np == '\0')
 			return (char *)strstr(hs, ne);
 		if (jstr_isalpha(*np))
 			break;
 	}
-#else
+#	else
 	if (jstr_unlikely(*ne == '\0'))
 		return (char *)hs;
-#endif
-#if JSTR_HAVE_STRCASESTR_OPTIMIZED
+#	endif
+#	if JSTR_HAVE_STRCASESTR_OPTIMIZED
 	return (char *)strcasestr(hs, ne);
-#else
+#	else
 	hs = jstr_strcasechr(hs, *ne);
 	if (jstr_unlikely(hs == NULL) || ne[1] == '\0')
 		return (char *)hs;
@@ -758,12 +758,12 @@ JSTR_NOEXCEPT
 		}
 	}
 	return jstr__strcasestr_musl((const unsigned char *)hs, (const unsigned char *)ne);
-#endif
+#	endif
 }
 
-#if JSTR_TWOWAY_STRCASESTR_THRES != 2
-#	error "JSTR_TWOWAY_STRCASESTR_THRES is assumed to be 2."
-#endif
+#	if JSTR_TWOWAY_STRCASESTR_THRES != 2
+#		error "JSTR_TWOWAY_STRCASESTR_THRES is assumed to be 2."
+#	endif
 
 JSTR_FUNC_VOID
 static void
@@ -795,9 +795,9 @@ JSTR_NOEXCEPT
 	return (char *)hs;
 }
 
-#define JSTR__MUSL_FUNC_NAME jstr__strstr_musl
-#define JSTR__MUSL_CHECK_EOL 1
-#include "_musl-twoway.h"
+#	define JSTR__MUSL_FUNC_NAME jstr__strstr_musl
+#	define JSTR__MUSL_CHECK_EOL 1
+#	include "_musl-twoway.h"
 
 JSTR_FUNC_VOID
 static void
@@ -1158,38 +1158,38 @@ JSTR_NOEXCEPT
 /* Count occurences of C in S.
  * Return value:
  * Occurences of C in S. */
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
 JSTR_ATTR_NO_SANITIZE_ADDRESS
-#endif
+#	endif
 JSTR_FUNC_PURE
 static size_t
 jstr_countchr(const char *s, int c)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
+#	if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
 	return jstr__simd_countchr(s, c);
-#else
+#	else
 	size_t cnt = 0;
 	if (jstr_likely(c))
 		for (; (s = strchr(s, c)); ++s, ++cnt) {}
 	return cnt;
-#endif
+#	endif
 }
 
 /* This is vectorized at -O3 (GCC >= 4.7) and -O2 (clang >= 3.9). */
-#if (JSTR_GNUC_PREREQ(4, 7) && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 3)) \
-|| defined __clang__ || !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
-#	define JSTR_USE_COUNTCHR_LEN_C 1
-#else
-#	define JSTR_USE_COUNTCHR_LEN_C 0
-#endif
+#	if (JSTR_GNUC_PREREQ(4, 7) && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 3)) \
+	|| defined __clang__ || !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
+#		define JSTR_USE_COUNTCHR_LEN_C 1
+#	else
+#		define JSTR_USE_COUNTCHR_LEN_C 0
+#	endif
 
 /* Count occurences of C in S.
  * Return value:
  * Occurences of C in S. */
-#if !JSTR_USE_COUNTCHR_LEN_C
+#	if !JSTR_USE_COUNTCHR_LEN_C
 JSTR_ATTR_NO_SANITIZE_ADDRESS
-#endif
+#	endif
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
@@ -1197,13 +1197,13 @@ static size_t
 jstr_countchr_len(const char *s, int c, size_t sz)
 JSTR_NOEXCEPT
 {
-#if JSTR_USE_COUNTCHR_LEN_C
+#	if JSTR_USE_COUNTCHR_LEN_C
 	size_t cnt = 0;
 	for (; sz--; cnt += *s++ == (char)c) {}
 	return cnt;
-#else
+#	else
 	return jstr__simd_countchr_len(s, c, sz);
-#endif
+#	endif
 }
 
 /* Count occurences of NE in HS.
@@ -1839,11 +1839,11 @@ static char *
 jstr_unescape_p(char *s)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCHRNUL
+#	if JSTR_HAVE_STRCHRNUL
 	s = strchrnul(s, '\\');
-#else
+#	else
 	for (; *s && *s != '\\'; ++s) {}
-#endif
+#	endif
 	return jstr_unescapecpy_p(s, s);
 }
 
@@ -1912,6 +1912,6 @@ JSTR_NOEXCEPT
 
 JSTR__END_DECLS
 
-#undef R
+#	undef R
 
 #endif /* JSTR_STRING_H */

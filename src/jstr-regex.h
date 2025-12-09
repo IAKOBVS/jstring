@@ -25,123 +25,123 @@
  * error message, pass the negation of the returned error code. */
 
 #ifndef JSTR_REGEX_H
-#define JSTR_REGEX_H 1
+#	define JSTR_REGEX_H 1
 
-#include "jstr-macros.h"
+#	include "jstr-macros.h"
 
 JSTR__BEGIN_DECLS
-#include <regex.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#	include <regex.h>
+#	include <stdio.h>
+#	include <stdlib.h>
+#	include <string.h>
 JSTR__END_DECLS
 
-#include "jstr-builder.h"
-#include "jstr-config.h"
-#include "jstr-replace.h"
-#include "jstr-string.h"
+#	include "jstr-builder.h"
+#	include "jstr-config.h"
+#	include "jstr-replace.h"
+#	include "jstr-string.h"
 
-#define jstr_re_chkcomp(errcode) jstr_unlikely((errcode) != JSTR_RE_RET_NOERROR)
-#define jstr_re_chkexec(errcode) (jstr_re_chkcomp(errcode) && jstr_unlikely((errcode) != JSTR_RE_RET_NOMATCH))
-#define jstr_re_chk(errcode)     jstr_unlikely((errcode) < 0)
+#	define jstr_re_chkcomp(errcode) jstr_unlikely((errcode) != JSTR_RE_RET_NOERROR)
+#	define jstr_re_chkexec(errcode) (jstr_re_chkcomp(errcode) && jstr_unlikely((errcode) != JSTR_RE_RET_NOMATCH))
+#	define jstr_re_chk(errcode)     jstr_unlikely((errcode) < 0)
 
-#define R JSTR_RESTRICT
+#	define R JSTR_RESTRICT
 
 /* POSIX cflags */
-#define JSTR_RE_CF_EXTENDED REG_EXTENDED
-#define JSTR_RE_CF_ICASE    REG_ICASE
-#define JSTR_RE_CF_NEWLINE  REG_NEWLINE
+#	define JSTR_RE_CF_EXTENDED REG_EXTENDED
+#	define JSTR_RE_CF_ICASE    REG_ICASE
+#	define JSTR_RE_CF_NEWLINE  REG_NEWLINE
 
 /* POSIX eflags */
-#define JSTR_RE_EF_NOSUB  REG_NOSUB
-#define JSTR_RE_EF_NOTBOL REG_NOTBOL
-#define JSTR_RE_EF_NOTEOL REG_NOTEOL
+#	define JSTR_RE_EF_NOSUB  REG_NOSUB
+#	define JSTR_RE_EF_NOTBOL REG_NOTBOL
+#	define JSTR_RE_EF_NOTEOL REG_NOTEOL
 
 /* BSD eflags */
-#ifdef REG_STARTEND
-#	define JSTR_RE_EF_STARTEND REG_STARTEND
-#endif
+#	ifdef REG_STARTEND
+#		define JSTR_RE_EF_STARTEND REG_STARTEND
+#	endif
 
 JSTR__BEGIN_DECLS
 
 typedef enum {
-#ifdef REG_ENOSYS
+#	ifdef REG_ENOSYS
 	JSTR_RE_RET_ENOSYS = REG_ENOSYS,
-#endif
-#if defined REG_NOERROR
+#	endif
+#	if defined REG_NOERROR
 	JSTR_RE_RET_NOERROR = REG_NOERROR,
-#else
+#	else
 	JSTR_RE_RET_NOERROR = 0,
-#endif
-#define JSTR_RE_RET_NOERROR JSTR_RE_RET_NOERROR
+#	endif
+#	define JSTR_RE_RET_NOERROR JSTR_RE_RET_NOERROR
 	JSTR_RE_RET_NOMATCH = REG_NOMATCH,
-#define JSTR_RE_RET_NOMATCH JSTR_RE_RET_NOMATCH
+#	define JSTR_RE_RET_NOMATCH JSTR_RE_RET_NOMATCH
 	/* POSIX regcomp return values */
 	JSTR_RE_RET_BADPAT = REG_BADPAT,
-#define JSTR_RE_RET_BADPAT JSTR_RE_RET_BADPAT
+#	define JSTR_RE_RET_BADPAT JSTR_RE_RET_BADPAT
 	JSTR_RE_RET_ECOLLATE = REG_ECOLLATE,
-#define JSTR_RE_RET_ECOLLATE JSTR_RE_RET_ECOLLATE
+#	define JSTR_RE_RET_ECOLLATE JSTR_RE_RET_ECOLLATE
 	JSTR_RE_RET_ECTYPE = REG_ECTYPE,
-#define JSTR_RE_RET_ECTYPE JSTR_RE_RET_ECTYPE
+#	define JSTR_RE_RET_ECTYPE JSTR_RE_RET_ECTYPE
 	JSTR_RE_RET_EESCAPE = REG_EESCAPE,
-#define JSTR_RE_RET_EESCAPE JSTR_RE_RET_EESCAPE
+#	define JSTR_RE_RET_EESCAPE JSTR_RE_RET_EESCAPE
 	JSTR_RE_RET_ESUBREG = REG_ESUBREG,
-#define JSTR_RE_RET_ESUBREG JSTR_RE_RET_ESUBREG
+#	define JSTR_RE_RET_ESUBREG JSTR_RE_RET_ESUBREG
 	JSTR_RE_RET_EBRACK = REG_EBRACK,
-#define JSTR_RE_RET_EBRACK JSTR_RE_RET_EBRACK
+#	define JSTR_RE_RET_EBRACK JSTR_RE_RET_EBRACK
 	JSTR_RE_RET_EPAREN = REG_EPAREN,
-#define JSTR_RE_RET_EPAREN JSTR_RE_RET_EPAREN
+#	define JSTR_RE_RET_EPAREN JSTR_RE_RET_EPAREN
 	JSTR_RE_RET_EBRACE = REG_EBRACE,
-#define JSTR_RE_RET_EBRACE JSTR_RE_RET_EBRACE
+#	define JSTR_RE_RET_EBRACE JSTR_RE_RET_EBRACE
 	JSTR_RE_RET_BADBR = REG_BADBR,
-#define JSTR_RE_RET_BADBR JSTR_RE_RET_BADBR
+#	define JSTR_RE_RET_BADBR JSTR_RE_RET_BADBR
 	JSTR_RE_RET_ERANGE = REG_ERANGE,
-#define JSTR_RE_RET_ERANGE JSTR_RE_RET_ERANGE
+#	define JSTR_RE_RET_ERANGE JSTR_RE_RET_ERANGE
 	JSTR_RE_RET_ESPACE = REG_ESPACE,
-#define JSTR_RE_RET_ESPACE JSTR_RE_RET_ESPACE
+#	define JSTR_RE_RET_ESPACE JSTR_RE_RET_ESPACE
 	JSTR_RE_RET_BADRPT = REG_BADRPT
-#define JSTR_RE_RET_BADRPT JSTR_RE_RET_BADRPT
+#	define JSTR_RE_RET_BADRPT JSTR_RE_RET_BADRPT
 /* GNU regcomp returns */
-#ifdef REG_EEND
+#	ifdef REG_EEND
 	,
 	JSTR_RE_RET_EEND = REG_EEND
-#	define JSTR_RE_RET_EEND JSTR_RE_RET_EEND
-#endif
-#ifdef REG_ESIZE
+#		define JSTR_RE_RET_EEND JSTR_RE_RET_EEND
+#	endif
+#	ifdef REG_ESIZE
 	,
 	JSTR_RE_RET_ESIZE = REG_ESIZE
-#	define JSTR_RE_RET_ESIZE REG_ESIZE
-#endif
-#ifdef REG_ERPAREN
+#		define JSTR_RE_RET_ESIZE REG_ESIZE
+#	endif
+#	ifdef REG_ERPAREN
 	,
 	JSTR_RE_RET_ERPAREN = REG_ERPAREN
-#	define JSTR_RE_RET_ERPAREN REG_ERPAREN
-#endif
+#		define JSTR_RE_RET_ERPAREN REG_ERPAREN
+#	endif
 } jstr_re_ret_ty;
 
-#define JSTR__RE_ERR_EXEC_HANDLE(errcode, do_on_error)     \
-	if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) { \
-		;                                          \
-	} else if (errcode == JSTR_RE_RET_NOMATCH) {       \
-		break;                                     \
-	} else {                                           \
-		do_on_error;                               \
-	}
+#	define JSTR__RE_ERR_EXEC_HANDLE(errcode, do_on_error)     \
+		if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) { \
+			;                                          \
+		} else if (errcode == JSTR_RE_RET_NOMATCH) {       \
+			break;                                     \
+		} else {                                           \
+			do_on_error;                               \
+		}
 
-#if JSTR_PANIC
-#	define JSTR_RE_RETURN_ERR(errcode, preg)   \
-		do {                                \
-			jstr_re_err(errcode, preg); \
-			jstr_errdie("");            \
-			return -(errcode);          \
-		} while (0)
-#else
-#	define JSTR_RE_RETURN_ERR(errcode, preg) return -(errcode)
-#endif
+#	if JSTR_PANIC
+#		define JSTR_RE_RETURN_ERR(errcode, preg)   \
+			do {                                \
+				jstr_re_err(errcode, preg); \
+				jstr_errdie("");            \
+				return -(errcode);          \
+			} while (0)
+#	else
+#		define JSTR_RE_RETURN_ERR(errcode, preg) return -(errcode)
+#	endif
 
 /* Check if *s + start_idx is the beginning of a string or beginning of a line. */
-#define IS_NOTBOL ((start_idx && *(*s + start_idx - 1) != '\n') ? JSTR_RE_EF_NOTBOL : 0)
-#define IS_NOTBOL_LOOP (*(*s - 1) != '\n' ? JSTR_RE_EF_NOTBOL : 0)
+#	define IS_NOTBOL      ((start_idx && *(*s + start_idx - 1) != '\n') ? JSTR_RE_EF_NOTBOL : 0)
+#	define IS_NOTBOL_LOOP (*(*s - 1) != '\n' ? JSTR_RE_EF_NOTBOL : 0)
 
 typedef regoff_t jstr_re_off_ty;
 
@@ -185,16 +185,16 @@ static jstr_re_ret_ty
 jstr_re_comp(regex_t *R preg, const char *R ptn, int cflags)
 JSTR_NOEXCEPT
 {
-#if JSTR_PANIC
+#	if JSTR_PANIC
 	const int ret = (jstr_re_ret_ty)regcomp(preg, ptn, cflags);
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
 		jstr_re_err(-ret, preg);
 		jstr_errdie("");
 	}
 	return ret;
-#else
+#	else
 	return (jstr_re_ret_ty)regcomp(preg, ptn, cflags);
-#endif
+#	endif
 }
 
 JSTR_NONNULL((1))
@@ -216,10 +216,10 @@ static jstr_re_ret_ty
 jstr_re_exec_len(const regex_t *R preg, const char *R s, size_t sz, size_t nmatch, regmatch_t *R pmatch, int eflags)
 JSTR_NOEXCEPT
 {
-#ifdef JSTR_RE_EF_STARTEND
+#	ifdef JSTR_RE_EF_STARTEND
 	pmatch->rm_so = 0;
 	pmatch->rm_eo = sz;
-#endif
+#	endif
 	return (jstr_re_ret_ty)regexec(preg, s, nmatch, pmatch, eflags | JSTR_RE_EF_STARTEND);
 }
 
@@ -594,15 +594,15 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, (size_t)-1);
 }
 
-#if JSTR_DEBUG
-#	define NMATCH_PARAM , size_t nmatch
-#	define NMATCH_ARG   , nmatch
-#	define NMATCH       nmatch
-#else
-#	define NMATCH_PARAM
-#	define NMATCH_ARG
-#	define NMATCH
-#endif
+#	if JSTR_DEBUG
+#		define NMATCH_PARAM , size_t nmatch
+#		define NMATCH_ARG   , nmatch
+#		define NMATCH       nmatch
+#	else
+#		define NMATCH_PARAM
+#		define NMATCH_ARG
+#		define NMATCH
+#	endif
 
 /* Return value:
  * length of backref.
@@ -781,9 +781,9 @@ start:
 	return changed;
 }
 
-#undef NMATCH
-#undef NMATCH_ARG
-#undef NMATCH_PARAM
+#	undef NMATCH
+#	undef NMATCH_ARG
+#	undef NMATCH_PARAM
 
 /* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
@@ -857,8 +857,8 @@ JSTR_NOEXCEPT
 
 JSTR__END_DECLS
 
-#undef R
-#undef IS_NOTBOL
-#undef IS_NOTBOL_LOOP
+#	undef R
+#	undef IS_NOTBOL
+#	undef IS_NOTBOL_LOOP
 
 #endif /* JSTR_REGEX_H */

@@ -126,7 +126,7 @@ typedef uint16_t jstr_vmask_ty;
 #	endif
 #endif
 #ifndef BLSR
-#	define BLSR(x) ((x) & ((x)-1))
+#	define BLSR(x) ((x) & ((x) - 1))
 #endif
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS

@@ -34,7 +34,7 @@ JSTR__END_DECLS
 
 #define ONES       ((size_t)-1 / UCHAR_MAX)
 #define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
-#define HASZERO(x) (((x)-ONES) & ~(x) & HIGHS)
+#define HASZERO(x) (((x) - ONES) & ~(x) & HIGHS)
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))

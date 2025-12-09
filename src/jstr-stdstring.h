@@ -21,19 +21,19 @@
  * SOFTWARE. */
 
 #ifndef JSTR_STDSTRING_H
-#define JSTR_STDSTRING_H 1
+#	define JSTR_STDSTRING_H 1
 
-#include "jstr-macros.h"
-#include "jstr-ctype.h"
-#include "jstr-struct.h"
+#	include "jstr-macros.h"
+#	include "jstr-ctype.h"
+#	include "jstr-struct.h"
 
 JSTR__BEGIN_DECLS
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
+#	include <stdlib.h>
+#	include <string.h>
+#	include <limits.h>
 JSTR__END_DECLS
 
-#define R JSTR_RESTRICT
+#	define R JSTR_RESTRICT
 
 JSTR__BEGIN_DECLS
 
@@ -41,47 +41,47 @@ JSTR__BEGIN_DECLS
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
-#if JSTR_HAVE_STRNCASECMP
+#	if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
-#endif
+#	endif
 JSTR_FUNC_PURE
 static int
 jstr_strncasecmp(const char *s1, const char *s2, size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
+#	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
-#else
+#	else
 	int ret;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	while (n-- && !(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++) {}
 	return ret;
-#endif
+#	endif
 }
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
-#if JSTR_HAVE_STRNCASECMP
+#	if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
-#endif
+#	endif
 JSTR_FUNC_PURE
 static int
 jstr_strncasecmpeq(const char *s1, const char *s2, size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
+#	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
-#else
+#	else
 	if (jstr_unlikely(n == 0))
 		return 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1 && n; ++p1, --n) {}
 	return *p1 && n;
-#endif
+#	endif
 }
 
 /* Compare S1 with S2 case-insensitively.
@@ -89,23 +89,23 @@ JSTR_NOEXCEPT
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
-#if JSTR_HAVE_STRNCASECMP
+#	if JSTR_HAVE_STRNCASECMP
 JSTR_ATTR_INLINE
-#endif
+#	endif
 JSTR_FUNC_PURE
 static int
 jstr_strcasecmp_len(const char *s1, const char *s2, size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
+#	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
-#else
+#	else
 	int ret = 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	while (n-- && !(ret = jstr_tolower(*p1++) - jstr_tolower(*p2++))) {}
 	return ret;
-#endif
+#	endif
 }
 
 /* Compare S1 with S2 case-insensitively.
@@ -135,11 +135,11 @@ static int
 jstr_strcasecmpeq_len(const char *s1, const char *s2, size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
+#	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
-#else
+#	else
 	return jstr_memcasecmpeq(s1, s2, n);
-#endif
+#	endif
 }
 
 /* Compare S1 with S2 case-insensitively.
@@ -147,22 +147,22 @@ JSTR_NOEXCEPT
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCASECMP
+#	if JSTR_HAVE_STRCASECMP
 JSTR_ATTR_INLINE
-#endif
+#	endif
 static int
 jstr_strcasecmp(const char *s1, const char *s2)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASECMP && !JSTR_TEST
+#	if JSTR_HAVE_STRCASECMP && !JSTR_TEST
 	return strcasecmp(s1, s2);
-#else
+#	else
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	int ret;
 	while (!(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++) {}
 	return ret;
-#endif
+#	endif
 }
 
 JSTR_FUNC_PURE
@@ -181,21 +181,21 @@ jstr_strcasecmpeq_loop(const char *s1, const char *s2)
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-#if JSTR_HAVE_STRCASECMP
+#	if JSTR_HAVE_STRCASECMP
 JSTR_ATTR_INLINE
-#endif
+#	endif
 static int
 jstr_strcasecmpeq(const char *s1, const char *s2)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRCASECMP && !JSTR_TEST
+#	if JSTR_HAVE_STRCASECMP && !JSTR_TEST
 	return strcasecmp(s1, s2);
-#else
+#	else
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	while (jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++) {}
 	return *(p2 - 1);
-#endif
+#	endif
 }
 
 JSTR_FUNC_PURE
@@ -241,12 +241,12 @@ static size_t
 jstr_strnlen(const char *s, size_t maxlen)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_STRNLEN
+#	if JSTR_HAVE_STRNLEN
 	return strnlen(s, maxlen);
-#else
+#	else
 	const char *const p = (char *)memchr(s, '\0', maxlen);
 	return p ? (size_t)(p - s) : maxlen;
-#endif
+#	endif
 }
 
 JSTR_FUNC_PURE
@@ -348,11 +348,11 @@ static void *
 jstr_mempcpy(void *R dst, const void *R src, size_t sz)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMPCPY
+#	if JSTR_HAVE_MEMPCPY
 	return mempcpy(dst, src, sz);
-#else
+#	else
 	return (char *)memcpy(dst, src, sz) + sz;
-#endif
+#	endif
 }
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
@@ -423,15 +423,15 @@ static void *
 jstr_memccpy(void *R dst, const void *R src, int c, size_t n)
 JSTR_NOEXCEPT
 {
-#if JSTR_HAVE_MEMCCPY
+#	if JSTR_HAVE_MEMCCPY
 	return memccpy(dst, src, c, n);
-#else
+#	else
 	const char *const p = (char *)memchr(src, c, n);
 	if (p != NULL)
 		return jstr_stpcpy_len(dst, src, JSTR_DIFF(p, src));
 	memcpy(dst, src, n);
 	return NULL;
-#endif /* HAVE_MEMCPY */
+#	endif /* HAVE_MEMCPY */
 }
 
 JSTR_ATTR_MALLOC
@@ -468,10 +468,10 @@ JSTR_NOEXCEPT
 	return jstr_strdup_len(s, strlen(s));
 }
 
-#define JSTR__DEFINE_ATOI(T, name, func) \
-	JSTR_FUNC_PURE                   \
-	JSTR_ATTR_INLINE                 \
-	static T jstr_##name(const char *s) JSTR_NOEXCEPT { return func; }
+#	define JSTR__DEFINE_ATOI(T, name, func) \
+		JSTR_FUNC_PURE                   \
+		JSTR_ATTR_INLINE                 \
+		static T jstr_##name(const char *s) JSTR_NOEXCEPT { return func; }
 
 JSTR__DEFINE_ATOI(unsigned int, atou, strtoul(s, NULL, 0))
 JSTR__DEFINE_ATOI(unsigned long, atoul, strtoul(s, NULL, 0))
@@ -482,10 +482,10 @@ JSTR__DEFINE_ATOI(long long, atoll, strtol(s, NULL, 0))
 JSTR__DEFINE_ATOI(double, atod, strtod(s, NULL))
 JSTR__DEFINE_ATOI(float, atof, strtof(s, NULL))
 
-#undef JSTR__DEFINE_ATOI
+#	undef JSTR__DEFINE_ATOI
 
 JSTR__END_DECLS
 
-#undef R
+#	undef R
 
 #endif /* JSTR_STDSTRING_H */

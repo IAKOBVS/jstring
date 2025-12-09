@@ -57,7 +57,7 @@ JSTR__END_DECLS
 #ifndef JSTR__SIMD_RETTYPE
 #	define JSTR__SIMD_RETTYPE void *
 #endif
-#define ONES ((MASK)-1)
+#define ONES ((MASK) - 1)
 
 #ifndef JSTR__SIMD_MEMMEM_FUNC_NAME
 #	define JSTR__SIMD_MEMMEM_FUNC_NAME jstr__simd_memmem
