@@ -82,7 +82,7 @@ JSTR__END_DECLS
 JSTR__BEGIN_DECLS
 
 /* ne_len must be <= VEC_SIZE.
- * Worst case: O(n).
+ * Worst case: O(n * VEC_SIZE).
  * Best case: O(n / VEC_SIZE). */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
