@@ -13,7 +13,7 @@ else
 fi
 
 tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
-FLAGS='-march=native'
+FLAGS='-march=native -O2'
 
 mkdir -p "$tmp"
 
