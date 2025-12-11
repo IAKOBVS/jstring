@@ -86,7 +86,7 @@ static size_t
 jstr__grow(size_t cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
-	/* FIXME: does not work if JSTR_GROWTH = 1.5 or < 2 */
+	/* FIXME: does not work if JSTR_GROWTH = 1.5 or < 2? */
 	while ((cap *= JSTR_GROWTH) < new_cap) {}
 	return cap;
 }
