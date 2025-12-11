@@ -195,7 +195,7 @@ jstr__l_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src,
 #	if JSTR_L_LAZY_FREE
 	return jstr_assign_len(s, sz, cap, src, src_len);
 #	else
-	*cap = JSTR_ALIGN_UP_STR(src_len + 1);
+	*cap = src_len + 1;
 	*s = (char *)malloc(*cap);
 	if (jstr_nullchk(*s))
 		goto err;

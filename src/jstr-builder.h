@@ -87,7 +87,7 @@ jstr__grow(size_t cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
 	while ((cap = (size_t)(cap * JSTR_GROWTH)) < new_cap) {}
-	return JSTR_ALIGN_UP(cap, JSTR_MALLOC_ALIGNMENT);
+	return cap;
 }
 
 JSTR_FUNC_VOID
