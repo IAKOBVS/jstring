@@ -53,12 +53,12 @@
 
 /* Growth factor of jstr_ty. */
 #	ifndef JSTR_GROWTH
-#		define JSTR_GROWTH 1.5
+#		define JSTR_GROWTH 2
 #	endif
 
 /* Growth factor of jstr_list_ty. */
 #	ifndef JSTR_L_GROWTH
-#		define JSTR_L_GROWTH 1.5
+#		define JSTR_L_GROWTH 2
 #	endif
 
 #endif /* JSTR_CONFIG_H */

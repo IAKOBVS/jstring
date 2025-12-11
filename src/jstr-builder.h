@@ -86,9 +86,9 @@ static size_t
 jstr__grow(size_t cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
+	/* FIXME: does not work if JSTR_GROWTH = 1.5 or < 2 */
 	while ((cap *= JSTR_GROWTH) < new_cap) {}
-	/* FIXME: does not work if align up is removed */
-	return JSTR_ALIGN_UP(cap, JSTR_MALLOC_ALIGNMENT);
+	return cap;
 }
 
 JSTR_FUNC_VOID
