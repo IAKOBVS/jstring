@@ -13,5 +13,10 @@ INSTALL_DIR=/usr/local/include
 PATH_BUILD=../$LIB
 [ $# -eq 1 ] && INSTALL_DIR=$1
 ./fmt "$PATH_BUILD"/*.h
-verbose sudo cp -rf "$PATH_BUILD" "$INSTALL_DIR"
-echo "Successfully built to $INSTALL_DIR/$LIB."
+if [ "$(id -u)" -eq 0 ]; then
+	verbose cp -rf "$PATH_BUILD" "$INSTALL_DIR"
+	echo "Successfully built to $INSTALL_DIR/$LIB."
+else
+	echo "Please run the command with sudo, as it requires permission to copy $PATH_BUILD to $INSTALL_DIR"
+	exit 1
+fi
