@@ -95,7 +95,7 @@ static jstr_ret_ty
 jstr_insert_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
 {
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		return JSTR_RET_ERR;
 	jstr_insert_unsafe(*s, *sz, at, src, src_len);
 	*sz += src_len;
@@ -111,7 +111,7 @@ static char *
 jstr_rplcat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R rplc, size_t rplc_len, size_t find_len)
 JSTR_NOEXCEPT
 {
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + rplc_len - find_len)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + rplc_len - find_len + 1)))
 		return NULL;
 	if (jstr_likely(rplc_len != find_len))
 		jstr_strmove_len(*s + at + rplc_len, *s + at + find_len, *sz - (at + find_len));
