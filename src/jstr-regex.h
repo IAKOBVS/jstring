@@ -157,25 +157,23 @@ JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
 static void
-jstr_re_errdie(jstr_re_ret_ty errcode, const regex_t *R preg)
-JSTR_NOEXCEPT
-{
-	char buf[64];
-	regerror(errcode, preg, buf, 32);
-	fprintf(stderr, "%s\n", buf);
-	exit(EXIT_FAILURE);
-}
-
-JSTR_FUNC_VOID
-JSTR_ATTR_COLD
-JSTR_ATTR_NOINLINE
-static void
 jstr_re_err(jstr_re_ret_ty errcode, const regex_t *R preg)
 JSTR_NOEXCEPT
 {
 	char buf[64];
 	regerror(errcode, preg, buf, sizeof(buf));
 	fprintf(stderr, "%s\n", buf);
+}
+
+JSTR_FUNC_VOID
+JSTR_ATTR_COLD
+JSTR_ATTR_NOINLINE
+static void
+jstr_re_errdie(jstr_re_ret_ty errcode, const regex_t *R preg)
+JSTR_NOEXCEPT
+{
+	jstr_re_err(errcode, preg);
+	exit(EXIT_FAILURE);
 }
 
 JSTR_FUNC
