@@ -140,8 +140,7 @@ typedef enum {
 #	endif
 
 /* Check if *s + start_idx is the beginning of a string or beginning of a line. */
-#	define IS_NOTBOL      ((start_idx && *(*s + start_idx - 1) != '\n') ? JSTR_RE_EF_NOTBOL : 0)
-#	define IS_NOTBOL_LOOP (*(*s - 1) != '\n' ? JSTR_RE_EF_NOTBOL : 0)
+#define IS_NOTBOL      (start_idx ? 0 : JSTR_RE_EF_NOTBOL)
 
 typedef regoff_t jstr_re_off_ty;
 
@@ -336,7 +335,7 @@ JSTR_NOEXCEPT
 		goto err_free;
 	}
 	for (; n && i.src_e < end; --n, ++changed) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL_LOOP);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | JSTR_RE_EF_NOTBOL);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
@@ -429,7 +428,7 @@ jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, jstr__inplace
 		memmove(i->dst, i->src, JSTR_DIFF(i->src_e, i->src));
 	if (*cap <= *sz + rplc_len - find_len) {
 		const uintptr_t tmp = (uintptr_t)*s;
-		if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + rplc_len - find_len + 1)))
+		if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + rplc_len - find_len + 1 + 1)))
 			return JSTR_RET_ERR;
 		i->src_e = *s + JSTR_DIFF(i->src_e, tmp);
 		i->dst = *s + JSTR_DIFF(i->dst, tmp);
@@ -510,9 +509,9 @@ err:
 	i.src_e += rm.rm_so;
 	size_t j;
 	jstr_re_off_ty changed = 0;
-	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST.
+	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST + NUL.
 	 * Allocate enough memory for all of them and move back DST. */
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplc_len - (size_t)find_len + 1)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplc_len - (size_t)find_len + 1 + 1)))
 		goto err;
 	memmove(*s + *sz + 1, *s, *sz);
 	i.dst = *s + *sz + 1;
@@ -522,7 +521,7 @@ err:
 	end = *s + *sz;
 	goto start;
 	for (; n && i.src_e < end; --n, ++changed) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL_LOOP);
+		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | JSTR_RE_EF_NOTBOL);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm.rm_eo - rm.rm_so;
 		i.src_e += rm.rm_so;
@@ -530,7 +529,7 @@ start:
 		j = JSTR_DIFF(i.src_e, i.src);
 		if (jstr_unlikely(*cap < *sz * 2 + rplc_len - (size_t)find_len + 1)) {
 			const uintptr_t tmp = (uintptr_t)*s;
-			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz * 2 + rplc_len - (size_t)find_len + 1))) {
+			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz * 2 + rplc_len - (size_t)find_len + 1 + 1))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
@@ -542,6 +541,9 @@ start:
 			dst_s = *s + JSTR_DIFF(dst_s, tmp);
 		}
 		memmove(i.dst, i.src, j);
+		/* FIXME: 
+		==71676==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x7c00167e0440 at pc 0x7fc017f1e1a7 bp 0x7ffc50a24e00 sp 0x7ffc50a245a8
+		WRITE of size 6 at 0x7c00167e0440 thread T0 */
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
@@ -736,7 +738,7 @@ err:
 	i.src_e += rm[0].rm_so;
 	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST.
 	 * Allocate enough memory for all of them and move back DST. */
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1)))
 		goto err;
 	memmove(*s + *sz + 1, *s, *sz);
 	i.dst = *s + *sz + 1;
@@ -755,7 +757,7 @@ start:
 		j = JSTR_DIFF(i.src_e, i.src);
 		if (jstr_unlikely(*cap < *sz * 2 + rplcwbackref_len - (size_t)find_len + 1)) {
 			const uintptr_t tmp = (uintptr_t)*s;
-			if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1))) {
+			if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
@@ -859,6 +861,5 @@ JSTR__END_DECLS
 
 #	undef R
 #	undef IS_NOTBOL
-#	undef IS_NOTBOL_LOOP
 
 #endif /* JSTR_REGEX_H */

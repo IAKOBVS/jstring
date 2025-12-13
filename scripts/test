@@ -11,7 +11,7 @@ CFLAGS="
 -Wpedantic
 -DJSTR_TEST_SLOW=1
 -O2
--U__SSE2__
+-fsanitize=address
 $CFLAGS
 "
 

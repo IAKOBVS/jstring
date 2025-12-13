@@ -59,7 +59,7 @@ T_ALL(const char *s, int c)
 {
 	size_t align;
 	for (align = 0; align < 8; align++) {
-		const char *p = (const char *)aligncpy(s, sizeof(s), (size_t)align);
+		const char *p = (const char *)aligncpy(s, strlen(s), (size_t)align);
 		t_init();
 		t.hs = p;
 		t.n = strlen(p);
