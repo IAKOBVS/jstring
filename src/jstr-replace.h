@@ -72,6 +72,8 @@ typedef struct jstr__inplace_ty {
 			(i).src_e += find_len;                                                    \
 		} while (0)
 
+/* TODO: optimize memory allocation for *all* functions. */
+
 /* Insert SRC into DST[AT].
  * Return value:
  * ptr to '\0' in S.
