@@ -401,7 +401,6 @@ JSTR_NOEXCEPT
 /* Return value:
  * number of substrings replaced.
  * On error, -errcode (negative). */
-JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_re_off_ty
 jstr_re_rplc_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags)
@@ -430,125 +429,6 @@ jstr_re_rplc_len_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t 
 JSTR_NOEXCEPT
 {
 	return jstr_re_rplc_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags);
-}
-
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
-JSTR_FUNC
-static jstr_re_off_ty
-jstr_re_rplcn_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n)
-JSTR_NOEXCEPT
-{
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	if (jstr_unlikely(rplc_len == 0))
-		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
-	if (n == 1)
-		return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
-	if (jstr_unlikely(n == 0))
-		return 0;
-	jstr__inplace_ty i;
-	i.src_e = *s + start_idx;
-	regmatch_t rm;
-	const char *end = *s + *sz;
-	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL);
-	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
-		return 0;
-	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
-err:
-		jstr_free_noinline(s, sz, cap);
-		JSTR_RE_RETURN_ERR(ret, preg);
-	}
-	jstr_re_off_ty find_len = rm.rm_eo - rm.rm_so;
-	i.src_e += rm.rm_so;
-	size_t j;
-	jstr_re_off_ty changed = 0;
-	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST + NUL.
-	 * Allocate enough memory for all of them and move back DST. */
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplc_len - (size_t)find_len + 1 + 1)))
-		goto err;
-	memmove(*s + *sz + 1, *s, *sz);
-	i.dst = *s + *sz + 1;
-	const char *dst_s = i.dst;
-	i.src = *s;
-	i.src_e = *s + start_idx + rm.rm_so;
-	end = *s + *sz;
-	goto start;
-	for (; n && i.src_e < end; --n, ++changed) {
-		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | JSTR_RE_EF_NOTBOL);
-		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
-		find_len = rm.rm_eo - rm.rm_so;
-		i.src_e += rm.rm_so;
-start:
-		j = JSTR_DIFF(i.src_e, i.src);
-		if (jstr_unlikely(*cap < *sz * 2 + rplc_len - (size_t)find_len + 1)) {
-			const uintptr_t tmp = (uintptr_t)*s;
-			if (jstr_chk(jstr_reservealways(s, sz, cap, *sz * 2 + rplc_len - (size_t)find_len + 1 + 1))) {
-				ret = JSTR_RE_RET_ESPACE;
-				goto err;
-			}
-			i.src = *s + JSTR_DIFF(i.src, tmp);
-			i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
-			i.dst = *s + JSTR_DIFF(i.dst, tmp);
-			dst_s = *s + JSTR_DIFF(dst_s, tmp);
-			end = *s + JSTR_DIFF(end, tmp);
-		}
-		memmove(i.dst, i.src, j);
-		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
-		i.src += j + (size_t)find_len;
-		i.src_e += find_len;
-		if (jstr_unlikely(find_len == 0))
-			++i.src_e;
-	}
-	*sz = JSTR_DIFF(jstr_mempmove(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
-	/* Move back DST to the start of the string since we don't need SRC
-	 * anymore. */
-	jstr_strmove_len(*s, dst_s, *sz);
-	return changed;
-}
-
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_re_off_ty
-jstr_re_rplcn_len_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t n)
-JSTR_NOEXCEPT
-{
-	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, n);
-}
-
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_re_off_ty
-jstr_re_rplcall_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags)
-JSTR_NOEXCEPT
-{
-	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, (size_t)-1);
-}
-
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_re_off_ty
-jstr_re_rplcall_len_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags)
-JSTR_NOEXCEPT
-{
-	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, (size_t)-1);
 }
 
 #	if JSTR_DEBUG
@@ -651,34 +531,37 @@ JSTR_NOEXCEPT
 	memcpy(backref, rplc_o, JSTR_DIFF(rplc_e, rplc_o));
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
- * Use rm/rplc instead.
- * Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
 JSTR_FUNC
 static jstr_re_off_ty
-jstr_re_rplcn_backref_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n)
+jstr__re_rplcn_backref_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
-	if (jstr_unlikely(n == 0))
+	else if (jstr_unlikely(n == 0))
 		return 0;
-	/* Check if we have backrefs in RPLC. */
-	const unsigned char *rplc_backref1 = (const unsigned char *)jstr__re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
-	/* If not, fallback to re_rplcn_len. */
-	if (jstr_nullchk(rplc_backref1))
-		return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, n);
-	const unsigned char *rplc_backref1_e = (const unsigned char *)jstr__re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
-	if (rplc_backref1_e == NULL)
-		rplc_backref1_e = rplc_backref1 + 2;
+	const unsigned char *rplc_backref1;
+	const unsigned char *rplc_backref1_e;
+	if (backref) {
+		/* Check if we have backrefs in RPLC. */
+		rplc_backref1 = (const unsigned char *)jstr__re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
+		if (jstr_nullchk(rplc_backref1)) {
+			backref = 0;
+		} else {
+			rplc_backref1_e = (const unsigned char *)jstr__re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
+			if (rplc_backref1_e == NULL)
+				rplc_backref1_e = rplc_backref1 + 2;
+		}
+	} else {
+		if (n == 1)
+			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
+	}
 	regmatch_t rm[10];
 	jstr__inplace_ty i;
 	i.src_e = *s + start_idx;
 	const char *end = *s + *sz;
-	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
+	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL);
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
@@ -690,7 +573,11 @@ err:
 	i.src_e += rm[0].rm_so;
 	size_t j;
 	jstr_re_off_ty changed = 0;
-	size_t rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+	size_t rplcwbackref_len;
+	if (backref)
+		rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+	else
+		rplcwbackref_len = rplc_len;
 	i.src_e += rm[0].rm_so;
 	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST.
 	 * Allocate enough memory for all of them and move back DST. */
@@ -704,11 +591,12 @@ err:
 	end = *s + *sz;
 	goto start;
 	for (; n && i.src_e < end; --n, ++changed) {
-		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags);
+		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | JSTR_RE_EF_NOTBOL);
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		i.src_e += rm[0].rm_so;
-		rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+		if (backref)
+			jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 start:
 		j = JSTR_DIFF(i.src_e, i.src);
 		if (jstr_unlikely(*cap < *sz * 2 + rplcwbackref_len - (size_t)find_len + 1)) {
@@ -725,8 +613,12 @@ start:
 		}
 		memmove(i.dst, i.src, j);
 		i.dst += j;
-		jstr__re_rplcbackrefcreat((unsigned char *)i.src_e - rm[0].rm_so, rm, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
-		i.dst += rplcwbackref_len;
+		if (backref) {
+			jstr__re_rplcbackrefcreat((unsigned char *)i.src_e - rm[0].rm_so, rm, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
+			i.dst += rplcwbackref_len;
+		} else {
+			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
+		}
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
 		if (jstr_unlikely(find_len == 0))
@@ -737,6 +629,75 @@ start:
 	 * anymore. */
 	jstr_strmove_len(*s, dst_s, *sz);
 	return changed;
+}
+
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
+ * number of substrings replaced.
+ * On error, -errcode (negative). */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_re_off_ty
+jstr_re_rplcn_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n)
+JSTR_NOEXCEPT
+{
+	return jstr__re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, 1, n, 0);
+}
+
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
+ * number of substrings replaced.
+ * On error, -errcode (negative). */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_re_off_ty
+jstr_re_rplcn_len_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t n)
+JSTR_NOEXCEPT
+{
+	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, n);
+}
+
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
+ * number of substrings replaced.
+ * On error, -errcode (negative). */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_re_off_ty
+jstr_re_rplcall_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags)
+JSTR_NOEXCEPT
+{
+	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, (size_t)-1);
+}
+
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
+ * number of substrings replaced.
+ * On error, -errcode (negative). */
+JSTR_FUNC
+JSTR_ATTR_INLINE
+static jstr_re_off_ty
+jstr_re_rplcall_len_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags)
+JSTR_NOEXCEPT
+{
+	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, (size_t)-1);
+}
+
+/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+ * Use rm/rplc instead.
+ * Return value:
+ * number of substrings replaced.
+ * On error, -errcode (negative). */
+JSTR_FUNC
+static jstr_re_off_ty
+jstr_re_rplcn_backref_len_from_exec(const regex_t *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n)
+JSTR_NOEXCEPT
+{
+	return jstr__re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, n, 1);
 }
 
 #	undef NMATCH

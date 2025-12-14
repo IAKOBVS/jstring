@@ -14,14 +14,14 @@
 		JSTR_STATIC_ASSERT(sizeof(buf) > 2 * strlen(string) && sizeof(buf) > 2 * strlen(expected), ""); \
 		memcpy(buf, string, strlen(string) + 1);                                                        \
 		const char *p = func(buf);                                                                      \
-		T_ASSERT(func, expr, expected);                                                                 \
+		T_ASSERT(func(buf), expr, expected);                                                                 \
 	} while (0)
 
 #define T_CPY(func, string, expected)                                                                           \
 	do {                                                                                                    \
 		JSTR_STATIC_ASSERT(sizeof(buf) > 2 * strlen(string) && sizeof(buf) > 2 * strlen(expected), ""); \
 		const char *p = func(buf, string);                                                              \
-		T_ASSERT(func, expr, expected);                                                                 \
+		T_ASSERT(func(buf, string), expr, expected);                                                                 \
 	} while (0)
 
 static char buf[256];

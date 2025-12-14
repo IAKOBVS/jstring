@@ -35,7 +35,7 @@
 			jstr_debug(&(result));    \
 			jstr_errdie("");          \
 		}                                 \
-		T_ASSERT(func, result, expected); \
+		T_ASSERT(func(__VA_ARGS__), result, expected); \
 		(result).size = 0;                \
 		*(result).data = '\0';            \
 	} while (0)
@@ -44,7 +44,7 @@
 	do {                                      \
 		TESTING(func);                    \
 		func(__VA_ARGS__);                \
-		T_ASSERT(func, result, expected); \
+		T_ASSERT(func(__VA_ARGS__), result, expected); \
 		(result).size = 0;                \
 		*(result).data = '\0';            \
 	} while (0)
