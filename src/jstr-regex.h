@@ -539,9 +539,6 @@ start:
 			dst_s = *s + JSTR_DIFF(dst_s, tmp);
 		}
 		memmove(i.dst, i.src, j);
-		/* FIXME: 
-		==71676==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x7c00167e0440 at pc 0x7fc017f1e1a7 bp 0x7ffc50a24e00 sp 0x7ffc50a245a8
-		WRITE of size 6 at 0x7c00167e0440 thread T0 */
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
 		i.src += j + (size_t)find_len;
 		i.src_e += find_len;
