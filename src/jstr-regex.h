@@ -494,7 +494,6 @@ start:
 			i.dst = *s + JSTR_DIFF(i.dst, tmp);
 			dst_s = *s + JSTR_DIFF(dst_s, tmp);
 			end = *s + JSTR_DIFF(end, tmp);
-			dst_s = *s + JSTR_DIFF(dst_s, tmp);
 		}
 		memmove(i.dst, i.src, j);
 		i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
