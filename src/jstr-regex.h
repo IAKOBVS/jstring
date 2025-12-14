@@ -631,6 +631,10 @@ start:
 	return changed;
 }
 
+#	undef NMATCH
+#	undef NMATCH_ARG
+#	undef NMATCH_PARAM
+
 /* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
@@ -699,10 +703,6 @@ JSTR_NOEXCEPT
 {
 	return jstr__re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, n, 1);
 }
-
-#	undef NMATCH
-#	undef NMATCH_ARG
-#	undef NMATCH_PARAM
 
 /* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
