@@ -579,7 +579,7 @@ err:
 	else
 		rplcwbackref_len = rplc_len;
 	i.src_e += rm[0].rm_so;
-	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST.
+	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST + NUL.
 	 * Allocate enough memory for all of them and move back DST. */
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1)))
 		goto err;
