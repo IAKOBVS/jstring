@@ -401,53 +401,6 @@ JSTR_NOEXCEPT
 /* Return value:
  * number of substrings replaced.
  * On error, -errcode (negative). */
-JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
-static void
-jstr__rplcallsmallerrplc(char *s, size_t *R sz, jstr__inplace_ty *R const i, const char *R rplc, size_t rplc_len, size_t find_len)
-{
-	if (i->dst != i->src) {
-		i->dst = (char *)
-		jstr_mempmove(i->dst, i->src, JSTR_DIFF(i->src_e, i->src));
-		jstr_strmove_len(i->dst + rplc_len, i->src_e + find_len, JSTR_DIFF(s + *sz, i->src_e + find_len));
-		i->dst = (char *)jstr_mempcpy(i->dst, rplc, rplc_len);
-		i->src = i->dst;
-	} else {
-		jstr_strmove_len(i->src_e + rplc_len, i->src_e + find_len, JSTR_DIFF(s + *sz, i->src_e + find_len));
-		memcpy(i->src_e, rplc, rplc_len);
-	}
-	*sz += rplc_len - find_len;
-	i->src_e += rplc_len;
-}
-
-/* Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static jstr_ret_ty
-jstr__rplcallbiggerrplc(char *R *R s, size_t *R sz, size_t *R cap, jstr__inplace_ty *R const i, const char *R rplc, size_t rplc_len, size_t find_len)
-{
-	if (i->dst != i->src)
-		memmove(i->dst, i->src, JSTR_DIFF(i->src_e, i->src));
-	if (*cap <= *sz + rplc_len - find_len) {
-		const uintptr_t tmp = (uintptr_t)*s;
-		if (jstr_chk(jstr_reservealways(s, sz, cap, *sz + rplc_len - find_len + 1 + 1)))
-			return JSTR_RET_ERR;
-		i->src_e = *s + JSTR_DIFF(i->src_e, tmp);
-		i->dst = *s + JSTR_DIFF(i->dst, tmp);
-	}
-	jstr_strmove_len(i->src_e + rplc_len, i->src_e + find_len, JSTR_DIFF(*s + *sz, i->src_e + find_len));
-	i->src_e = (char *)jstr_mempcpy(i->src_e, rplc, rplc_len);
-	i->dst += rplc_len;
-	i->src = i->dst;
-	*sz += rplc_len - find_len;
-	return JSTR_RET_SUCC;
-}
-
-/* Return value:
- * number of substrings replaced.
- * On error, -errcode (negative). */
 JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_re_off_ty
