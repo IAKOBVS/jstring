@@ -1178,4 +1178,4 @@ JSTR__END_DECLS
 
 #	undef R
 
-#endif /* JSTR_BUILDER H */
+#endif /* JSTR_BUILDER_H */

@@ -635,7 +635,8 @@ start:
 #	undef NMATCH_ARG
 #	undef NMATCH_PARAM
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -649,7 +650,8 @@ JSTR_NOEXCEPT
 	return jstr__re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, 1, n, 0);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -663,7 +665,8 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, n);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -677,7 +680,8 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, (size_t)-1);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -691,7 +695,8 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, (size_t)-1);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -704,7 +709,8 @@ JSTR_NOEXCEPT
 	return jstr__re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, n, 1);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -718,7 +724,8 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_backref_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, (size_t)-1);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -732,7 +739,8 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, (size_t)-1);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -746,7 +754,8 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_backref_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, n);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.
@@ -760,7 +769,8 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, 1);
 }
 
-/* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
+/* PREG must be precompiled with jstr_re_comp.
+ * Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
  * Use rm/rplc instead.
  * Return value:
  * number of substrings replaced.

@@ -1417,4 +1417,4 @@ JSTR_NOEXCEPT
 #	define JSTR_HAVE_UNALIGNED_ACCESS 0
 #endif
 
-#endif /* jstr_macros_h */
+#endif /* JSTR_MACROS_H */

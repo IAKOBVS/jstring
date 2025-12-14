@@ -572,4 +572,4 @@ jstr__simd_toupper_vec(const VEC v)
 
 JSTR__END_DECLS
 
-#endif /* JSTR_SIMD_H* */
+#endif /* JSTR_SIMD_H */

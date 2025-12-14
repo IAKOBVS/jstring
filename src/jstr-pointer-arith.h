@@ -17,4 +17,4 @@
 #	define JSTR_PTR_IS_ALIGNED_STR(base)                        JSTR_PTR_IS_ALIGNED((uintptr_t)base, JSTR_MALLOC_ALIGNMENT)
 #	define JSTR_PTR_NOT_CROSSING_PAGE(ptr, obj_size, page_size) ((size_t)JSTR_DIFF(JSTR_PTR_ALIGN_UP(ptr, page_size), ptr) >= (size_t)obj_size)
 
-#endif /* JSTR_PTR_ARITH_H */
+#endif /* JSTR_POINTER_ARITH_H */
