@@ -140,7 +140,7 @@ typedef enum {
 #	endif
 
 /* Check if *s + start_idx is the beginning of a string or beginning of a line. */
-#define IS_NOTBOL      (start_idx ? 0 : JSTR_RE_EF_NOTBOL)
+#define IS_NOTBOL      (start_idx ? JSTR_RE_EF_NOTBOL : 0)
 
 typedef regoff_t jstr_re_off_ty;
 
