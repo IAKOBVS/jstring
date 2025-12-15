@@ -14,27 +14,27 @@
 		jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
 	} while (0)
-#define T_APPEND_NORET(func, ...)                 \
-	do {                                      \
-		TESTING(func);                    \
-		func(__VA_ARGS__);                \
+#define T_APPEND_NORET(func, ...)                              \
+	do {                                                   \
+		TESTING(func);                                 \
+		func(__VA_ARGS__);                             \
 		T_ASSERT(func(__VA_ARGS__), result, expected); \
-		(result).size = 0;                \
-		*(result).data = '\0';            \
+		(result).size = 0;                             \
+		*(result).data = '\0';                         \
 	} while (0)
-#define T_RE(_string, _find, _rplc, _expected, _n)                                                           \
-	do {                                                                                                 \
-		const char *rplc, *find, *expected;                                                          \
-		FILL(result, _string);                                                                       \
-		find = _find;                                                                                \
-		rplc = _rplc;                                                                                \
-		expected = _expected;                                                                        \
-		regex_t preg;                                                                                \
-		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                     \
+#define T_RE(_string, _find, _rplc, _expected, _n)                                                                \
+	do {                                                                                                      \
+		const char *rplc, *find, *expected;                                                               \
+		FILL(result, _string);                                                                            \
+		find = _find;                                                                                     \
+		rplc = _rplc;                                                                                     \
+		expected = _expected;                                                                             \
+		jstr_re_ty preg;                                                                                  \
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                          \
 		T_APPEND_NORET(jstr_re_rplcn_len_exec, &preg, jstr_struct(&result), _rplc, strlen(_rplc), 0, _n); \
-		jstr_re_free(&preg);                                                                         \
-		(void)find;                                                                                  \
-		(void)rplc;                                                                                  \
+		jstr_re_free(&preg);                                                                              \
+		(void)find;                                                                                       \
+		(void)rplc;                                                                                       \
 	} while (0)
 
 int

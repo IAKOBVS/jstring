@@ -13,24 +13,36 @@
 	do {                                                                                  \
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
 	} while (0)
-#define T_APPEND_NORET(func, ...)                 \
-	do {                                      \
-		TESTING(func);                    \
-		func(__VA_ARGS__);                \
+#define T_APPEND_NORET(func, ...)                              \
+	do {                                                   \
+		TESTING(func);                                 \
+		func(__VA_ARGS__);                             \
 		T_ASSERT(func(__VA_ARGS__), result, expected); \
-		(result).size = 0;                \
-		*(result).data = '\0';            \
+		(result).size = 0;                             \
+		*(result).data = '\0';                         \
+	} while (0)
+#define T_RE_BREF_FROM_NEWLINE(_string, _find, _rplc, _expected, _nmatch, _n, _start_idx)                                                           \
+	do {                                                                                                                                        \
+		const char *expected;                                                                                                               \
+		FILL(result, _string);                                                                                                              \
+		expected = _expected;                                                                                                               \
+		jstr_re_ty preg;                                                                                                                    \
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, JSTR_RE_CF_NEWLINE)));                                                           \
+		T_APPEND_NORET(jstr_re_rplcn_backref_len_from_exec, &preg, jstr_struct(&result), _start_idx, _rplc, strlen(_rplc), 0, _nmatch, _n); \
+		jstr_re_free(&preg);                                                                                                                \
 	} while (0)
 #define T_RE_BREF_FROM(_string, _find, _rplc, _expected, _nmatch, _n, _start_idx)                                                                   \
 	do {                                                                                                                                        \
 		const char *expected;                                                                                                               \
 		FILL(result, _string);                                                                                                              \
 		expected = _expected;                                                                                                               \
-		regex_t preg;                                                                                                                       \
+		jstr_re_ty preg;                                                                                                                    \
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, _find, 0)));                                                                            \
 		T_APPEND_NORET(jstr_re_rplcn_backref_len_from_exec, &preg, jstr_struct(&result), _start_idx, _rplc, strlen(_rplc), 0, _nmatch, _n); \
 		jstr_re_free(&preg);                                                                                                                \
 	} while (0)
+#define T_RE_BREF_NEWLINE(_string, _find, _rplc, _expected, _nmatch, _n) \
+	T_RE_BREF_FROM_NEWLINE(_string, _find, _rplc, _expected, _nmatch, _n, 0)
 #define T_RE_BREF(_string, _find, _rplc, _expected, _nmatch, _n) \
 	T_RE_BREF_FROM(_string, _find, _rplc, _expected, _nmatch, _n, 0)
 
@@ -40,6 +52,8 @@ main(int argc, char **argv)
 	START();
 	jstr_ty result = JSTR_INIT;
 
+	T_RE_BREF_NEWLINE("\nhello_hello_hello_hello", "^[0-9A-Za-z]\\{1,\\}", "", "\n_hello_hello_hello", 1, (size_t)-1);
+	T_RE_BREF_NEWLINE("\nhello_hello_\nhello_hello", "^[0-9A-Za-z]\\{1,\\}", "", "\n_hello_\n_hello", 1, (size_t)-1);
 	T_RE_BREF("hello_hello_hello_hello", "^[0-9A-Za-z]\\{1,\\}", "", "_hello_hello_hello", 1, (size_t)-1);
 
 	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", 1, (size_t)-1);
