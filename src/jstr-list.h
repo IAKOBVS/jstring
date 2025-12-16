@@ -32,6 +32,8 @@
 
 #	define R JSTR_RESTRICT
 
+#	define JSTR_L_GROWTH 2
+
 #	define JSTR_L_INIT \
 		{           \
 			0   \
@@ -85,11 +87,11 @@ JSTR_NOEXCEPT
 {
 	if (jstr_likely(l->data != NULL)) {
 #	if JSTR_L_LAZY_FREE
-		jstr__l_foreach_cap (l, p)
-			free(p->data);
+		jstr__l_foreach_cap(l, p)
+		free(p->data);
 #	else
-		jstr_l_foreach (l, p)
-			free(p->data);
+		jstr_l_foreach(l, p)
+		free(p->data);
 #	endif
 		free(l->data);
 		l->data = NULL;
@@ -121,7 +123,8 @@ jstr_l_debug(const jstr_list_ty *R l)
 	              l->capacity);
 	if (jstr_unlikely(ret < 0))
 		goto err_set_errno;
-	jstr_l_foreach (l, p) {
+	jstr_l_foreach(l, p)
+	{
 		ret = fprintf(stderr, "idx:%zu\n"
 		                      "size:%zu\n"
 		                      "cap:%zu\n",
@@ -357,9 +360,7 @@ jstr_l_assign_len(jstr_list_ty *R l, size_t idx, const char *R s, size_t s_len)
 		JSTR_FUNC_PURE                                                                                      \
 		static jstr_ty *jstr_l_##name(const jstr_list_ty *R l, const char *R s, size_t s_len) JSTR_NOEXCEPT \
 		{                                                                                                   \
-			jstr_l_foreach (l, j)                                                                       \
-				if (func(s, s_len, j->data, j->size))                                               \
-					return j;                                                                   \
+			jstr_l_foreach(l, j) if (func(s, s_len, j->data, j->size)) return j;                        \
 			return NULL;                                                                                \
 		}
 
@@ -379,9 +380,7 @@ JSTR__L_DEFINE_FIND_LEN(findendscase_len, jstr_endscase_len)
 		static jstr_ty *jstr_l_##name(const jstr_list_ty *R l, const char *R s) JSTR_NOEXCEPT \
 		{                                                                                     \
 			const size_t s_len = strlen(s);                                               \
-			jstr_l_foreach (l, j)                                                         \
-				if (func(s, s_len, j->data, j->size))                                 \
-					return j;                                                     \
+			jstr_l_foreach(l, j) if (func(s, s_len, j->data, j->size)) return j;          \
 			return NULL;                                                                  \
 		}
 
@@ -401,9 +400,7 @@ static jstr_ty *
 jstr_l_findstrchr(const jstr_list_ty *R l, int c)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
-		if (memchr(j->data, c, j->size))
-			return j;
+	jstr_l_foreach(l, j) if (memchr(j->data, c, j->size)) return j;
 	return NULL;
 }
 
@@ -412,9 +409,7 @@ static jstr_ty *
 jstr_l_findstrcasechr(const jstr_list_ty *R l, int c)
 JSTR_NOEXCEPT
 {
-	jstr_l_foreach (l, j)
-		if (jstr_strcasechr(j->data, c))
-			return j;
+	jstr_l_foreach(l, j) if (jstr_strcasechr(j->data, c)) return j;
 	return NULL;
 }
 

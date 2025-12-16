@@ -44,6 +44,8 @@ JSTR__END_DECLS
 
 #	define R JSTR_RESTRICT
 
+#	define JSTR_GROWTH 2
+
 #	define JSTR_INIT  \
 		{          \
 			0, \
@@ -165,7 +167,7 @@ static jstr_ret_ty
 jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
-	size_t old_cap = *cap; 
+	size_t old_cap = *cap;
 	while ((old_cap *= JSTR_GROWTH) < new_cap) {}
 	char *tmp = (char *)realloc(*s, old_cap);
 	if (jstr_nullchk(tmp))

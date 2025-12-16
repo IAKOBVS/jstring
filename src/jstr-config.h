@@ -43,22 +43,4 @@
 #		define JSTR_MALLOC_ALIGNMENT (sizeof(size_t) + sizeof(size_t))
 #	endif
 
-/* Allocate more than needed for the initial malloc(). */
-#	ifndef JSTR_ALLOC_MULTIPLIER
-#		define JSTR_ALLOC_MULTIPLIER 2
-#	endif
-#	ifndef JARR_ALLOC_MULTIPLIER
-#		define JARR_ALLOC_MULTIPLIER 1.5
-#	endif
-
-/* Growth factor of jstr_ty. */
-#	ifndef JSTR_GROWTH
-#		define JSTR_GROWTH 2
-#	endif
-
-/* Growth factor of jstr_list_ty. */
-#	ifndef JSTR_L_GROWTH
-#		define JSTR_L_GROWTH 2
-#	endif
-
 #endif /* JSTR_CONFIG_H */
