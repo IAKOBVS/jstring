@@ -80,17 +80,6 @@ JSTR_NOEXCEPT
 	*sz = 0;
 }
 
-JSTR_FUNC_CONST
-JSTR_ATTR_INLINE
-static size_t
-jstr__grow(size_t cap, size_t new_cap)
-JSTR_NOEXCEPT
-{
-	/* FIXME: does not work if JSTR_GROWTH = 1.5 or < 2? */
-	while ((cap *= JSTR_GROWTH) < new_cap) {}
-	return cap;
-}
-
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static jstr_ret_ty
@@ -172,15 +161,16 @@ JSTR_NOEXCEPT
 /* Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
-	*cap = jstr__grow(JSTR_MAX(*cap, JSTR_MIN_CAP), new_cap);
-	char *tmp = (char *)realloc(*s, *cap);
+	size_t old_cap = *cap; 
+	while ((old_cap *= JSTR_GROWTH) < new_cap) {}
+	char *tmp = (char *)realloc(*s, old_cap);
 	if (jstr_nullchk(tmp))
 		goto err;
+	*cap = old_cap;
 	*s = tmp;
 	return JSTR_RET_SUCC;
 err:
@@ -192,14 +182,24 @@ err:
  * Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
 {
 	if (new_cap <= *cap)
 		return JSTR_RET_SUCC;
+	if (new_cap <= JSTR_MIN_CAP) {
+		char *tmp = (char *)realloc(*s, JSTR_MIN_CAP);
+		if (jstr_nullchk(tmp))
+			goto err;
+		*s = tmp;
+		*cap = JSTR_MIN_CAP;
+		return JSTR_RET_SUCC;
+	}
 	return jstr_reservealways(s, sz, cap, new_cap);
+err:
+	jstr_free_noinline(s, sz, cap);
+	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
 /* Return JSTR_RET_ERR on malloc error.
