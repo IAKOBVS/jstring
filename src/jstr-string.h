@@ -1166,6 +1166,9 @@ static size_t
 jstr_countchr(const char *s, int c)
 JSTR_NOEXCEPT
 {
+	s = strchr(s, c);
+	if (jstr_nullchk(s))
+		return 0;
 #	if JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_SIMD
 	return jstr__simd_countchr(s, c);
 #	else
@@ -1200,6 +1203,11 @@ static size_t
 jstr_countchr_len(const char *s, int c, size_t sz)
 JSTR_NOEXCEPT
 {
+	const char *s_e = s + sz;
+	s = (const char *)memchr(s, c, sz);
+	if (jstr_nullchk(s))
+		return 0;
+	sz = JSTR_DIFF(s_e, s);
 #	if JSTR_USE_COUNTCHR_LEN_C
 	size_t cnt = 0;
 	for (; sz--; cnt += *s++ == (char)c) {}
