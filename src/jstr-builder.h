@@ -907,7 +907,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
-	if (jstr_chk(jstr_reserveexact(s, sz, cap, (size_t)arg_len * JSTR_ALLOC_MULTIPLIER)))
+	if (jstr_chk(jstr_reserveexact(s, sz, cap, (size_t)arg_len + 1)))
 		goto err_free;
 	va_start(ap, fmt);
 	arg_len = vsprintf(*s, fmt, ap);
@@ -939,7 +939,7 @@ JSTR_NOEXCEPT
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
-	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, (size_t)ret * JSTR_ALLOC_MULTIPLIER)))
+	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, (size_t)ret + 1)))
 		goto err_free;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data, fmt, ap);
