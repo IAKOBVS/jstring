@@ -471,7 +471,7 @@ JSTR_NOEXCEPT
 /* Return value:
  * length of backref.
  * On error, -errcode (negative). */
-JSTR_FUNC_VOID
+JSTR_FUNC
 JSTR_ATTR_INLINE
 static size_t
 jstr__re_rplcbackrefstrlen(const regmatch_t *R rm, const unsigned char *rplc, const unsigned char *rplc_e, size_t rplc_len NMATCH_PARAM)
@@ -623,7 +623,7 @@ err:
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		i.src_e += rm[0].rm_so;
 		if (backref)
-			jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+			rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 start:
 		j = JSTR_DIFF(i.src_e, i.src);
 		if (jstr_unlikely(*cap < *sz * 2 + rplcwbackref_len - (size_t)find_len + 1)) {
