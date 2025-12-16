@@ -608,7 +608,8 @@ err:
 	i.src_e += rm[0].rm_so;
 	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST + NUL.
 	 * Allocate enough memory for all of them and move back DST. */
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1)))
+	size_t new_cap = *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1;
+	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap)))
 		goto err;
 	memmove(*s + *sz + 1, *s, *sz);
 	i.dst = *s + *sz + 1;
@@ -624,11 +625,10 @@ err:
 		i.src_e += rm[0].rm_so;
 		if (backref)
 			rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
-start:
-		j = JSTR_DIFF(i.src_e, i.src);
-		if (jstr_unlikely(*cap < *sz * 2 + rplcwbackref_len - (size_t)find_len + 1)) {
+		new_cap = *sz - (size_t)find_len + rplcwbackref_len + 1 + 1;
+		if (jstr_unlikely(*cap < new_cap)) {
 			const uintptr_t tmp = (uintptr_t)*s;
-			if (jstr_chk(jstr_reserve(s, sz, cap, *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1))) {
+			if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
@@ -638,6 +638,8 @@ start:
 			dst_s = *s + JSTR_DIFF(dst_s, tmp);
 			end = *s + JSTR_DIFF(end, tmp);
 		}
+start:
+		j = JSTR_DIFF(i.src_e, i.src);
 		memmove(i.dst, i.src, j);
 		i.dst += j;
 		if (backref) {
