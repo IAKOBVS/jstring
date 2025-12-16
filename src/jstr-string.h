@@ -1176,9 +1176,12 @@ JSTR_NOEXCEPT
 #	endif
 }
 
-/* This is vectorized at -O3 (GCC >= 4.7) and -O2 (clang >= 3.9). */
-#	if (JSTR_GNUC_PREREQ(4, 7) && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 3)) \
-	|| defined __clang__ || !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
+/* countchr_len is at -O3 (GCC >= 4.7) and -O2 (clang >= 3.9). */
+#	if (JSTR_GNUC_PREREQ(4, 7)                                                                                                   \
+	     && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 3))                                                                          \
+	|| ((defined __clang__ && defined __clang_major__ && __clang_major__ >= 3 && defined __clang_minor__ && __clang_minor__ >= 9) \
+	    && (defined __OPTIMIZE__ && __OPTIMIZE__ >= 2))                                                                           \
+	|| !(JSTR_HAVE_SIMD && !JSTR_HAVENT_COUNTCHR_LEN_SIMD)
 #		define JSTR_USE_COUNTCHR_LEN_C 1
 #	else
 #		define JSTR_USE_COUNTCHR_LEN_C 0
