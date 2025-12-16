@@ -439,7 +439,6 @@ static void *
 jstr_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	enum { LONG_NE_THRES = 64 };
 #	if JSTR_USE_MEMMEM_LIBC
 	return memmem(hs, hs_len, ne, ne_len);
 #	elif JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
@@ -636,7 +635,6 @@ static char *
 jstr_strcasestr_len(const char *hs, size_t hs_len, const char *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	enum { LONG_NE_THRES = 64 };
 #	if !JSTR_TEST
 	for (size_t i = 0;; ++i) {
 		if (i == ne_len)
