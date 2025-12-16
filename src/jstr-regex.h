@@ -531,7 +531,7 @@ jstr__re_rplcbackreflast(const unsigned char *backref, size_t backref_len)
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-jstr__re_rplcbackrefcreat(const unsigned char *R mtc, const regmatch_t *R rm, unsigned char *R backref, const unsigned char *R rplc, const unsigned char *rplc_e)
+jstr__re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc_src, unsigned char *R mtc_dst, const unsigned char *R rplc, const unsigned char *rplc_e)
 JSTR_NOEXCEPT
 {
 	int c;
@@ -544,18 +544,18 @@ JSTR_NOEXCEPT
 		/* We've checked that there's no trailing backslash. */
 		/* if (rplc == rplc_e - 1)
 		     return (size_t)-1; */
-		backref = (unsigned char *)jstr_mempcpy(backref, rplc_o, JSTR_DIFF(rplc, rplc_o));
+		mtc_dst = (unsigned char *)jstr_mempcpy(mtc_dst, rplc_o, JSTR_DIFF(rplc, rplc_o));
 		c = *(rplc + 1);
 		if (jstr_likely(jstr_isdigit(c))) {
 			c -= '0';
-			backref = (unsigned char *)jstr_mempmove(backref, mtc + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
+			mtc_dst = (unsigned char *)jstr_mempmove(mtc_dst, mtc_src + rm[c].rm_so, (size_t)(rm[c].rm_eo - rm[c].rm_so));
 		} else {
-			*backref = '\\';
-			*(backref + 1) = c;
-			backref += 2;
+			*mtc_dst = '\\';
+			*(mtc_dst + 1) = c;
+			mtc_dst += 2;
 		}
 	}
-	memcpy(backref, rplc_o, JSTR_DIFF(rplc_e, rplc_o));
+	memcpy(mtc_dst, rplc_o, JSTR_DIFF(rplc_e, rplc_o));
 }
 
 JSTR_FUNC
@@ -641,7 +641,7 @@ start:
 		memmove(i.dst, i.src, j);
 		i.dst += j;
 		if (backref) {
-			jstr__re_rplcbackrefcreat((unsigned char *)i.src_e - rm[0].rm_so, rm, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
+			jstr__re_rplcbackrefcpy(rm, (unsigned char *)i.src_e - rm[0].rm_so, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
 			i.dst += rplcwbackref_len;
 		} else {
 			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
