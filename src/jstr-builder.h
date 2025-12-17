@@ -644,10 +644,8 @@ JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 	const int ret = vsnprintf(NULL, 0, fmt, ap);
-	if (jstr_likely(ret > 0))
+	if (jstr_likely(ret > 0) || ret == 0)
 		return ret + 1;
-	if (ret == 0)
-		return 0;
 	errno = ret;
 	return -1;
 #	else
@@ -868,6 +866,7 @@ get_arg:
 				break;
 		}
 	}
+	++arg_len;
 	if (jstr_unlikely(arg_len > INT_MAX))
 		arg_len = INT_MAX;
 	return arg_len;
