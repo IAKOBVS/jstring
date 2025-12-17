@@ -630,6 +630,7 @@ JSTR_NOEXCEPT
 #	endif
 
 /* Return maximum size of allocation needed for sprintf.
+ * The NUL terminator is included.
  * Return value:
  * size of allocation.
  * -1 on error and errno is set. */
@@ -638,7 +639,7 @@ JSTR_FUNC
 JSTR_ATTR_INLINE
 #	endif
 static int
-jstr_vsprintfstrlenmax(va_list ap, const char *R fmt)
+jstr_vsprintf_maxlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
@@ -867,7 +868,6 @@ get_arg:
 				break;
 		}
 	}
-	++arg_len;
 	if (jstr_unlikely(arg_len > INT_MAX))
 		arg_len = INT_MAX;
 	return arg_len;
@@ -903,11 +903,11 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int arg_len = jstr_vsprintfstrlenmax(ap, fmt);
+	int arg_len = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(arg_len < 0))
 		goto err;
-	if (jstr_chk(jstr_reserveexact(s, sz, cap, (size_t)arg_len + 1)))
+	if (jstr_chk(jstr_reserveexact(s, sz, cap, (size_t)arg_len)))
 		goto err_free;
 	va_start(ap, fmt);
 	arg_len = vsprintf(*s, fmt, ap);
@@ -935,11 +935,11 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlenmax(ap, fmt);
+	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
-	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, (size_t)ret + 1)))
+	if (jstr_chk(jstr_reserveexact(&j->data, &j->size, &j->capacity, (size_t)ret)))
 		goto err_free;
 	va_start(ap, fmt);
 	ret = vsprintf(j->data, fmt, ap);
@@ -968,7 +968,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlenmax(ap, fmt);
+	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1001,7 +1001,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlenmax(ap, fmt);
+	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1033,7 +1033,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlenmax(ap, fmt);
+	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
@@ -1065,7 +1065,7 @@ JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlenmax(ap, fmt);
+	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	if (jstr_unlikely(ret < 0))
 		goto err;
