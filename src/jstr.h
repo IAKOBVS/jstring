@@ -26,7 +26,6 @@
 #	include "jstr-builder.h"
 #	include "jstr-ctype.h"
 #	include "jstr-itoa.h"
-#	include "jstr-list.h"
 #	include "jstr-macros.h"
 #	include "jstr-replace.h"
 #	include "jstr-string.h"
