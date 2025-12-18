@@ -24,7 +24,6 @@
 #	define JSTR_H 1
 
 #	include "jstr-builder.h"
-#	include "jstr-list.h"
 #	include "jstr-ctype.h"
 #	include "jstr-itoa.h"
 #	include "jstr-macros.h"
