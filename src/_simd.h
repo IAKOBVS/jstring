@@ -554,7 +554,7 @@ jstr__simd_toupper_vec(const VEC v)
 
 #endif
 
-#if (!defined(TZCNT) && !defined(BLSR))
+#if (!defined(TZCNT) || !defined(BLSR))
 #	define JSTR_HAVENT_MEMMEM_SIMD 1
 #endif
 
