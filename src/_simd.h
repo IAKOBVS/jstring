@@ -117,6 +117,7 @@ typedef uint16_t jstr_vmask_ty;
 #define VEC_SIZE  sizeof(VEC)
 #define MASK      jstr_vmask_ty
 #define MASK_SIZE sizeof(MASK)
+#define ONES      ((MASK) - 1)
 #if JSTR_ARCH_X86_64
 #	ifndef LZCNT
 #		define LZCNT(x) (MASK)((x) ? ((MASK)MASK_SIZE * CHAR_BIT - 1) - _bit_scan_reverse(x) : (MASK)MASK_SIZE * CHAR_BIT)
@@ -446,9 +447,9 @@ ret:;
 
 #else
 
-#	define JSTR__SIMD_RETTYPE          void *
-#	define JSTR__SIMD_MEMMEM_FUNC_NAME jstr__simd_memmem
-#	include "_simd-memmem.h"
+// #	define JSTR__SIMD_RETTYPE          void *
+// #	define JSTR__SIMD_MEMMEM_FUNC_NAME jstr__simd_memmem
+// #	include "_simd-memmem.h"
 
 #endif
 
@@ -553,6 +554,109 @@ jstr__simd_toupper_vec(const VEC v)
 
 #endif
 
+#if (!defined(TZCNT) && !defined(BLSR))
+#	define JSTR_HAVENT_MEMMEM_SIMD 1
+#endif
+
+#ifndef JSTR_HAVENT_MEMMEM_SIMD
+#	define FIND_MATCH()                                                            \
+		do {                                                                    \
+			if (JSTR_PTR_NOT_CROSSING_PAGE(p, VEC_SIZE, JSTR_PAGE_SIZE)) {  \
+				hv = LOADU((const VEC *)p);                             \
+				cmpm = (MASK)CMPEQ8_MASK(hv, nv) << matchsh;            \
+				if (cmpm == matchm)                                     \
+					return (ret_ty)p;                               \
+			} else {                                                        \
+				if (!memcmp((const char *)p, (const char *)ne, ne_len)) \
+					return (ret_ty)p;                               \
+			}                                                               \
+		} while (0)
+
+/* ne_len must be <= VEC_SIZE.
+ * Worst case: O(n * VEC_SIZE).
+ * Best case: O(n / VEC_SIZE). */
+JSTR_ATTR_NO_SANITIZE_ADDRESS
+JSTR_ATTR_ACCESS((__read_only__, 1, 2))
+JSTR_ATTR_ACCESS((__read_only__, 3, 4))
+JSTR_FUNC_PURE
+static void *
+jstr__simd_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len)
+JSTR_NOEXCEPT
+{
+	typedef void *ret_ty;
+	if (ne_len == 1)
+		return (ret_ty)memchr(hs, *(unsigned char *)ne, hs_len);
+	if (jstr_unlikely(ne_len == 0))
+		return (ret_ty)hs;
+	if (jstr_unlikely(hs_len < ne_len))
+		return NULL;
+	VEC hv0, hv1;
+	MASK i, hm0, hm1, m;
+	VEC hv, nv;
+	MASK cmpm;
+	const unsigned char *h = (const unsigned char *)hs;
+	const unsigned char *const end = h + hs_len - ne_len;
+	/* Find a unique character pair in NE. For example, "ab" in
+	 * "aaaaaaaaaaaaaaaabbbbcccc". */
+	const unsigned char *p = (const unsigned char *)ne + 1;
+	size_t n = ne_len - 2;
+	for (const int c = *(unsigned char *)ne; n-- && *p == c; ++p) {}
+	/* N must be the "ab", not the "bb". */
+	n = JSTR_DIFF(p, ne) - 1;
+	h += n;
+	const unsigned int matchsh = ne_len < VEC_SIZE ? VEC_SIZE - ne_len : 0;
+	const MASK matchm = ONES << matchsh;
+	const VEC nv0 = SETONE8(*((char *)ne + n));
+	const VEC nv1 = SETONE8(*((char *)ne + n + 1));
+	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE) || ne_len >= VEC_SIZE)
+		nv = LOADU((const VEC *)ne);
+	else
+		memcpy(&nv, ne, ne_len);
+	const unsigned int off_s = JSTR_DIFF(h, JSTR_PTR_ALIGN_DOWN(h, VEC_SIZE));
+	unsigned int off_e = (JSTR_DIFF(end, (h - n)) < VEC_SIZE) ? VEC_SIZE - (unsigned int)(end - (h - n)) - 1 : 0;
+	h -= off_s;
+	hv0 = LOAD((const VEC *)h);
+	hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+	hm1 = (MASK)CMPEQ8_MASK(hv0, nv1) >> 1;
+	/* Clear matched bits that are out of bounds. */
+	m = ((hm0 & hm1) >> off_s) & (ONES >> off_e);
+	while (m) {
+		i = TZCNT(m);
+		m = BLSR(m);
+		p = h + off_s + i - n;
+		FIND_MATCH();
+	}
+	h += VEC_SIZE - 1;
+	for (; h - n + VEC_SIZE <= end; h += VEC_SIZE) {
+		hv0 = LOADU((const VEC *)h);
+		hv1 = LOAD((const VEC *)(h + 1));
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
+		m = hm0 & hm1;
+		while (m) {
+match:
+			i = TZCNT(m);
+			m = BLSR(m);
+			p = h + i - n;
+			FIND_MATCH();
+		}
+	}
+	if (h - n <= end) {
+		off_e = VEC_SIZE - (unsigned int)(end - (h - n)) - 1;
+		hv0 = LOADU((const VEC *)h);
+		hv1 = LOAD((const VEC *)(h + 1));
+		hm0 = (MASK)CMPEQ8_MASK(hv0, nv0);
+		hm1 = (MASK)CMPEQ8_MASK(hv1, nv1);
+		m = hm0 & hm1 & (ONES >> off_e);
+		if (m)
+			goto match;
+	}
+	return NULL;
+}
+#endif
+
+#undef FIND_MATCH
+#undef ONES
 #undef LOAD
 #undef LOADU
 #undef STORE
