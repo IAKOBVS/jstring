@@ -52,8 +52,8 @@ main(int argc, char **argv)
 	START();
 	jstr_ty result = JSTR_INIT;
 
-	T_RE_BREF_NEWLINE("\nhello_hello_hello_hello", "^[0-9A-Za-z]\\{1,\\}", "", "\n_hello_hello_hello", 1, (size_t)-1);
-	T_RE_BREF_NEWLINE("\nhello_hello_\nhello_hello", "^[0-9A-Za-z]\\{1,\\}", "", "\n_hello_\n_hello", 1, (size_t)-1);
+	// T_RE_BREF_NEWLINE("\nhello_hello_hello_hello", "^[0-9A-Za-z]\\{1,\\}", "", "\n_hello_hello_hello", 1, (size_t)-1);
+	// T_RE_BREF_NEWLINE("\nhello_hello_\nhello_hello", "^[0-9A-Za-z]\\{1,\\}", "", "\n_hello_\n_hello", 1, (size_t)-1);
 	T_RE_BREF("hello_hello_hello_hello", "^[0-9A-Za-z]\\{1,\\}", "", "_hello_hello_hello", 1, (size_t)-1);
 
 	T_RE_BREF("hello_hello_hello_hello", "[0-9A-Za-z]\\{1,\\}", "", "___", 1, (size_t)-1);

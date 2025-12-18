@@ -28,31 +28,31 @@
 		ASSERT_RESULT(func, memcmp((result).data, expected, (result).size) == 0, (result).data, expected); \
 	} while (0)
 
-#define T_APPEND(ret, func, ...)                  \
-	do {                                      \
-		TESTING(func);                    \
-		if (ret != func(__VA_ARGS__)) {   \
-			jstr_debug(&(result));    \
-			jstr_errdie("");          \
-		}                                 \
+#define T_APPEND(ret, func, ...)                               \
+	do {                                                   \
+		TESTING(func);                                 \
+		if (ret != func(__VA_ARGS__)) {                \
+			jstr_debug(&(result));                 \
+			jstr_errdie("");                       \
+		}                                              \
 		T_ASSERT(func(__VA_ARGS__), result, expected); \
-		(result).size = 0;                \
-		*(result).data = '\0';            \
+		(result).size = 0;                             \
+		*(result).data = '\0';                         \
 	} while (0)
 
-#define T_APPEND_NORET(func, ...)                 \
-	do {                                      \
-		TESTING(func);                    \
-		func(__VA_ARGS__);                \
+#define T_APPEND_NORET(func, ...)                              \
+	do {                                                   \
+		TESTING(func);                                 \
+		func(__VA_ARGS__);                             \
 		T_ASSERT(func(__VA_ARGS__), result, expected); \
-		(result).size = 0;                \
-		*(result).data = '\0';            \
+		(result).size = 0;                             \
+		*(result).data = '\0';                         \
 	} while (0)
 
 #define FILL(result, str)                                                                     \
 	do {                                                                                  \
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
-		jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);                                                         \
+		jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
 	} while (0)
 
 #define T_RPLC_INIT(buf, str, str_len)                                               \
