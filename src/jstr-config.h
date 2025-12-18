@@ -25,14 +25,6 @@
 #		define JSTR_USE_UNLOCKED_IO_WRITE 0
 #	endif
 
-/* When removing a string (jstr_ty) from a string list (jstr_list_ty), don't
- * immediately call free(). This may result in fewer allocations when strings
- * are often added to and removed from the list. All elements are freed when
- * jstr_l_free() is called. */
-#	ifndef JSTR_L_LAZY_FREE
-#		define JSTR_L_LAZY_FREE 1
-#	endif
-
 /* Minimum size of allocation of malloc(). */
 #	ifndef JSTR_MIN_CAP
 #		define JSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 12)
