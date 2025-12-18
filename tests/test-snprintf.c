@@ -189,7 +189,7 @@ jstr_sprintfstrlen(char *s, size_t n, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	int ret = jstr_vsprintfstrlenmax(ap, fmt);
+	int ret = jstr_vsprintf_maxlen(ap, fmt);
 	va_end(ap);
 	return ret;
 	(void)s;
@@ -200,7 +200,7 @@ int
 main(int argc, char **argv)
 {
 	START();
-	TESTING(jstr_vsprintfstrlen);
+	TESTING(jstr_vsprintf_maxlen);
 	char result_num[sizeof(size_t) * 8 + 1];
 	char expected_num[sizeof(size_t) * 8 + 1];
 	T(jstr_sprintfstrlen, snprintf, "%d", 123456);

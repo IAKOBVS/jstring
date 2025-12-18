@@ -515,7 +515,7 @@ JSTR_NOEXCEPT
 
 #endif
 
-#if defined CMPGT8 && defined CMPLT8 && defined AND && defined ADD
+#if defined CMPGT8 && defined CMPLT8 && defined AND && defined ADD8
 
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
@@ -534,7 +534,7 @@ jstr__simd_tolower_vec(const VEC v)
 
 #endif
 
-#if defined CMPGT8 && defined CMPLT8 && defined AND && defined SUB
+#if defined CMPGT8 && defined CMPLT8 && defined AND && defined SUB8
 
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
@@ -553,22 +553,20 @@ jstr__simd_toupper_vec(const VEC v)
 
 #endif
 
-#undef VEC
-#undef VEC_SIZE
-#undef MASK
-#undef MASK_SIZE
 #undef LOAD
 #undef LOADU
 #undef STORE
 #undef STOREU
-#undef MOVEMASK8
 #undef CMPEQ8_MASK
 #undef SETZERO
 #undef SETONE8
-#undef POPCNT
-#undef TZCNT
+#undef AND
+#undef ADD8
+#undef SUB8
 #undef BLSR
+#undef TZCNT
 #undef LZCNT
+#undef POPCNT
 
 JSTR__END_DECLS
 
