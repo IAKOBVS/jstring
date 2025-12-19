@@ -375,7 +375,8 @@ main(int argc, char **argv)
 	T(jstr_asprintf(jstr_struct(&result), "%s", "c"), "c");
 	T(jstr_asprintf_append(jstr_struct(&result), "%s", "z"), "cz");
 	T(jstr_assign_len(jstr_struct(&result), "hello", strlen("hello")), "hello");
-	T(jstr_append_len(jstr_struct(&result), " world", strlen(" world")), "hello world");
+	T(jstr_assign_len(jstr_struct(&result), jstr_literal("hello")), "hello");
+	T(jstr_append_len(jstr_struct(&result), jstr_literal(" world")), "hello world");
 	jstr_empty(result.data, &result.size);
 	T_P(result.size = JSTR_PTR_DIFF(jstr_pushback_unsafe_p(result.data, result.size, 'k'), result.data), "k");
 	T_P(result.size = JSTR_PTR_DIFF(jstr_pushfront_unsafe_p(result.data, result.size, 'l'), result.data), "lk");
