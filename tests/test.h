@@ -1,7 +1,6 @@
 #ifndef JSTR_TEST_H
 #define JSTR_TEST_H
 
-#define JSTR_PANIC 1
 #define JSTR_TEST  1
 #define JSTR_DEBUG 1
 /* Force use of slower simple functions. */

@@ -487,16 +487,6 @@ JSTR__END_DECLS
 					assert(expr);                 \
 				}                                     \
 			} while (0)
-#	else
-#		define JSTR_ASSERT_DEBUG(expr, msg) \
-			do {                         \
-			} while (0)
-#		define JSTR_ASSERT_DEBUG_PRINTF(expr, ...) \
-			do {                                \
-			} while (0)
-#	endif
-
-#	if JSTR_PANIC
 #		define JSTR_DEBUG_PRINT(fmt, ...) fprintf(stderr, fmt, __VA_ARGS__)
 #		define JSTR_DEBUG_JSTRING(s, sz, cap)          \
 			do {                                    \
@@ -504,18 +494,28 @@ JSTR__END_DECLS
 				fprintf(stderr, "%zu.\n", sz);  \
 				fprintf(stderr, "%zu.\n", cap); \
 			} while (0)
+#	else
+#		define JSTR_ASSERT_DEBUG(expr, msg) \
+			do {                         \
+			} while (0)
+#		define JSTR_ASSERT_DEBUG_PRINTF(expr, ...) \
+			do {                                \
+			} while (0)
+#		define JSTR_DEBUG_JSTRING(s, sz, cap) \
+			do {                           \
+			} while (0)
+#		define JSTR_DEBUG_PRINT(fmt, ...) \
+			do {                       \
+			} while (0)
+#	endif
+
+#	if JSTR_PANIC
 #		define JSTR_RETURN_ERR(errcode) \
 			do {                     \
 				jstr_errdie(""); \
 				return errcode;  \
 			} while (0)
 #	else
-#		define JSTR_DEBUG_PRINT(fmt, ...) \
-			do {                       \
-			} while (0)
-#		define JSTR_DEBUG_JSTRING(s, sz, cap) \
-			do {                           \
-			} while (0)
 #		define JSTR_RETURN_ERR(errcode) return errcode
 #	endif
 

@@ -111,7 +111,7 @@ simple_strncasecmp(const char *s1, const char *s2, size_t n)
 #else
 	if (n == 0)
 		return 0;
-	int ret;
+	int ret = TOLOWER(*s1) - TOLOWER(*s2);
 	for (; n && (ret = (TOLOWER(*s1) - TOLOWER(*s2))) == 0 && *s1; --n, ++s1, ++s2)
 		;
 	if (n == 0)
