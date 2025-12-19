@@ -72,7 +72,6 @@ JSTR__BEGIN_DECLS
 
 /* Set first char to NUL and size to zero. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_empty(char *R s, size_t *R sz)
 JSTR_NOEXCEPT
@@ -83,7 +82,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_debug(const jstr_ty *R j)
 JSTR_NOEXCEPT
@@ -128,7 +126,6 @@ err:
 
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_free(char *R *R s, size_t *R sz, size_t *R cap)
 JSTR_NOEXCEPT
@@ -152,7 +149,6 @@ JSTR_NOEXCEPT
 
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_free_j(jstr_ty *R j)
 JSTR_NOEXCEPT
@@ -185,7 +181,6 @@ err:
  * Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
@@ -198,7 +193,6 @@ JSTR_NOEXCEPT
 /* Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
@@ -220,7 +214,6 @@ err:
  * Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_reserveexact(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
 JSTR_NOEXCEPT
@@ -231,7 +224,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap)
 {
@@ -239,7 +231,6 @@ jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap)
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_print(const jstr_ty *R j)
 JSTR_NOEXCEPT
@@ -248,7 +239,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_println(const jstr_ty *R j)
 JSTR_NOEXCEPT
@@ -261,7 +251,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr__cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t arg_len)
 JSTR_NOEXCEPT
@@ -331,7 +320,6 @@ JSTR_NOEXCEPT
 /* Return ptr to '\0' in S. */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_append_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
@@ -340,7 +328,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_append_unsafe(char *R s, size_t sz, const char *R src)
 JSTR_NOEXCEPT
@@ -350,7 +337,6 @@ JSTR_NOEXCEPT
 
 /* Return ptr to '\0' in S. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_append_unsafe_p(char *R s, size_t sz, const char *R src)
 JSTR_NOEXCEPT
@@ -363,7 +349,6 @@ JSTR_NOEXCEPT
  * JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
@@ -375,7 +360,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_strset(char *R s, int c)
 JSTR_NOEXCEPT
@@ -384,7 +368,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_assignnchr_unsafe_p(char *R s, size_t sz, int c, size_t n)
 JSTR_NOEXCEPT
@@ -398,7 +381,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n)
 JSTR_NOEXCEPT
@@ -415,7 +397,6 @@ JSTR_NOEXCEPT
 
 /* Append N Cs to end of S. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_pushbackn_len_unsafe_p(char *R s, size_t sz, int c, size_t n)
 JSTR_NOEXCEPT
@@ -425,7 +406,6 @@ JSTR_NOEXCEPT
 
 /* Append N Cs to end of S. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n)
 JSTR_NOEXCEPT
@@ -438,7 +418,6 @@ JSTR_NOEXCEPT
 
 /* Prepend N Cs to S. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_pushfrontn_len_unsafe_p(char *R s, size_t sz, int c, size_t n)
 JSTR_NOEXCEPT
@@ -452,7 +431,6 @@ JSTR_NOEXCEPT
 
 /* Prepend N Cs to S. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n)
 JSTR_NOEXCEPT
@@ -469,7 +447,6 @@ JSTR_NOEXCEPT
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
@@ -487,7 +464,6 @@ JSTR_NOEXCEPT
  * JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
@@ -502,7 +478,6 @@ JSTR_NOEXCEPT
  * S is NUL terminated.
  * Return ptr to '\0' in S. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
@@ -516,7 +491,6 @@ JSTR_NOEXCEPT
  * JSTR_RET_ERR on malloc error
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
@@ -528,7 +502,6 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-JSTR_ATTR_INLINE
 JSTR_FUNC
 static char *
 jstr_pushback_unsafe_p(char *R s, size_t sz, char c)
@@ -545,7 +518,6 @@ JSTR_NOEXCEPT
  * Return value:
  * JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
-JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
 jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c)
@@ -558,7 +530,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static char *
 jstr_pushfront_unsafe_p(char *R s, size_t sz, char c)
 JSTR_NOEXCEPT
@@ -574,7 +545,6 @@ JSTR_NOEXCEPT
  * JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c)
 JSTR_NOEXCEPT
@@ -585,9 +555,11 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/* Pop s[size - 1]. */
+/* Pop S[size - 1].
+ * Return value:
+ * ptr to '\0' in S.
+ * Otherwise, S. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static char *
 jstr_popback_p(char *R s, size_t sz)
 JSTR_NOEXCEPT
@@ -599,9 +571,11 @@ JSTR_NOEXCEPT
 	return s;
 }
 
-/* Pop s[0]. */
+/* Pop s[0].
+ * Return value:
+ * ptr to '\0' in S.
+ * Otherwise, S. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static char *
 jstr_popfront_p(char *R s, size_t sz)
 JSTR_NOEXCEPT
@@ -626,9 +600,6 @@ JSTR_NOEXCEPT
  * size of allocation.
  * -1 on error and errno is set. */
 JSTR_FUNC
-#	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
-JSTR_ATTR_INLINE
-#	endif
 static int
 jstr_vsprintf_maxlen(va_list ap, const char *R fmt)
 JSTR_NOEXCEPT

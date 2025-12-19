@@ -41,9 +41,6 @@ JSTR__BEGIN_DECLS
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
-#	if JSTR_HAVE_STRNCASECMP
-JSTR_ATTR_INLINE
-#	endif
 JSTR_FUNC_PURE
 static int
 jstr_strncasecmp(const char *s1, const char *s2, size_t n)
@@ -64,9 +61,6 @@ JSTR_NOEXCEPT
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
-#	if JSTR_HAVE_STRNCASECMP
-JSTR_ATTR_INLINE
-#	endif
 JSTR_FUNC_PURE
 static int
 jstr_strncasecmpeq(const char *s1, const char *s2, size_t n)
@@ -89,9 +83,6 @@ JSTR_NOEXCEPT
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
-#	if JSTR_HAVE_STRNCASECMP
-JSTR_ATTR_INLINE
-#	endif
 JSTR_FUNC_PURE
 static int
 jstr_strcasecmp_len(const char *s1, const char *s2, size_t n)
@@ -129,7 +120,6 @@ JSTR_NOEXCEPT
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
-JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_strcasecmpeq_len(const char *s1, const char *s2, size_t n)
@@ -147,9 +137,6 @@ JSTR_NOEXCEPT
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-#	if JSTR_HAVE_STRCASECMP
-JSTR_ATTR_INLINE
-#	endif
 static int
 jstr_strcasecmp(const char *s1, const char *s2)
 JSTR_NOEXCEPT
@@ -166,7 +153,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static int
 jstr_strcasecmpeq_loop(const char *s1, const char *s2)
 {
@@ -181,9 +167,6 @@ jstr_strcasecmpeq_loop(const char *s1, const char *s2)
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-#	if JSTR_HAVE_STRCASECMP
-JSTR_ATTR_INLINE
-#	endif
 static int
 jstr_strcasecmpeq(const char *s1, const char *s2)
 JSTR_NOEXCEPT
@@ -199,7 +182,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static int
 jstr_strcmpeq_loop(const char *s1, const char *s2)
 JSTR_NOEXCEPT
@@ -211,7 +193,6 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static int
 jstr_memcmpeq_loop(const void *s1, const void *s2, size_t n)
 JSTR_NOEXCEPT
@@ -224,7 +205,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static int
 jstr_strcasecmpeq_len_loop(const void *s1, const void *s2, size_t n)
 JSTR_NOEXCEPT
@@ -236,7 +216,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static size_t
 jstr_strnlen(const char *s, size_t maxlen)
 JSTR_NOEXCEPT
@@ -250,7 +229,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static size_t
 jstr_strnlen_loop(const char *s, size_t maxlen)
 JSTR_NOEXCEPT
@@ -262,7 +240,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static void *
 jstr_mempset(void *s, int c, size_t n)
 JSTR_NOEXCEPT
@@ -272,7 +249,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_stpset_len(char *s, int c, size_t n)
 JSTR_NOEXCEPT
@@ -282,7 +258,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static char *
 jstr_stpset(char *s, int c)
 JSTR_NOEXCEPT
@@ -292,7 +267,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_bzero(void *s, size_t n)
 JSTR_NOEXCEPT
@@ -301,7 +275,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_strzero(char *s)
 JSTR_NOEXCEPT
@@ -311,7 +284,6 @@ JSTR_NOEXCEPT
 
 /* Return ptr to '\0' in S. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static char *
 jstr_stpzero(char *s)
 JSTR_NOEXCEPT
@@ -322,7 +294,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static void *
 jstr_memnchr(const void *s, int c, size_t sz, size_t n)
 JSTR_NOEXCEPT
@@ -331,7 +302,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static char *
 jstr_strnchr_len(const char *s, int c, size_t sz, size_t n)
 JSTR_NOEXCEPT
@@ -343,7 +313,6 @@ JSTR_NOEXCEPT
  * ptr to '\0' in DST. */
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_RET_NONNULL
-JSTR_ATTR_INLINE
 static void *
 jstr_mempcpy(void *R dst, const void *R src, size_t sz)
 JSTR_NOEXCEPT
@@ -357,7 +326,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static void *
 jstr_mempmove(void *dst, const void *src, size_t n)
 JSTR_NOEXCEPT
@@ -367,7 +335,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_strmove_len(char *dst, const char *src, size_t n)
 JSTR_NOEXCEPT
@@ -377,7 +344,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_stpmove_len(char *dst, const char *src, size_t n)
 JSTR_NOEXCEPT
@@ -387,7 +353,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_stpmove(char *dst, const char *src)
 JSTR_NOEXCEPT
@@ -395,7 +360,6 @@ JSTR_NOEXCEPT
 	return jstr_stpmove_len(dst, src, strlen((const char *)src));
 }
 
-JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_strcpy_len(char *R dst, const char *R src, size_t n)
@@ -405,7 +369,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
-JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static char *
 jstr_stpcpy_len(char *R dst, const char *R src, size_t n)
@@ -418,7 +381,6 @@ JSTR_NOEXCEPT
 /* Copy until either N is 0 or C is found */
 JSTR_ATTR_ACCESS((__write_only__, 1, 4))
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static void *
 jstr_memccpy(void *R dst, const void *R src, int c, size_t n)
 JSTR_NOEXCEPT
@@ -436,7 +398,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_MALLOC
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static void *
 jstr_memdup(const void *R s, size_t n)
 JSTR_NOEXCEPT
@@ -447,7 +408,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_MALLOC
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_strdup_len(const char *R s, size_t n)
 JSTR_NOEXCEPT
@@ -460,7 +420,6 @@ JSTR_NOEXCEPT
 
 JSTR_ATTR_MALLOC
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_strdup(const char *R s)
 JSTR_NOEXCEPT
@@ -470,7 +429,6 @@ JSTR_NOEXCEPT
 
 #	define JSTR__DEFINE_ATOI(T, name, func) \
 		JSTR_FUNC_PURE                   \
-		JSTR_ATTR_INLINE                 \
 		static T jstr_##name(const char *s) JSTR_NOEXCEPT { return func; }
 
 JSTR__DEFINE_ATOI(unsigned int, atou, strtoul(s, NULL, 0))

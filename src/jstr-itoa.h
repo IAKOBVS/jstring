@@ -42,7 +42,6 @@ static const char jstr__itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 #	define JSTR__DEFINE_ITOA_COUNTUDIGITS(T, name, is_thousep)                       \
 		JSTR_FUNC                                                                 \
-		JSTR_ATTR_INLINE                                                          \
 		static size_t jstr__itoa_countudigits_##name(T number, unsigned int base) \
 		JSTR_NOEXCEPT                                                             \
 		{                                                                         \
@@ -118,7 +117,6 @@ JSTR_NOEXCEPT
  * ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
-JSTR_ATTR_INLINE
 static char *
 jstr_lltoa_p(long long number, char *R buf, unsigned int base)
 JSTR_NOEXCEPT
@@ -135,7 +133,6 @@ JSTR_NOEXCEPT
 		   ptr to '\0' after the last digit in the DEST string. */                \
 		JSTR_FUNC                                                                 \
 		JSTR_ATTR_RETURNS_NONNULL                                                 \
-		JSTR_ATTR_INLINE                                                          \
 		static char *jstr_##name##_p(type number, char *R buf, unsigned int base) \
 		JSTR_NOEXCEPT                                                             \
 		{                                                                         \
@@ -203,7 +200,6 @@ JSTR_NOEXCEPT
  * Return value:
  * ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_lltoa_thousep_p(long long number, char *R buf, unsigned int base, char separator)
 JSTR_NOEXCEPT
@@ -221,7 +217,6 @@ JSTR_NOEXCEPT
 		   ptr to '\0' after the last digit in the DEST string. */                                        \
 		JSTR_FUNC                                                                                         \
 		JSTR_ATTR_RETURNS_NONNULL                                                                         \
-		JSTR_ATTR_INLINE                                                                                  \
 		static char *jstr_##name##_thousep_p(type number, char *R buf, unsigned int base, char separator) \
 		JSTR_NOEXCEPT                                                                                     \
 		{                                                                                                 \
@@ -237,7 +232,6 @@ JSTR__ULLTOA_SEP(int, itoa, )
 
 #	define JSTR__DEFINE_UTOA_SAFE(T, name)                                                                         \
 		JSTR_FUNC                                                                                               \
-		JSTR_ATTR_INLINE                                                                                        \
 		static jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base)  \
 		JSTR_NOEXCEPT                                                                                           \
 		{                                                                                                       \
@@ -255,7 +249,6 @@ JSTR__DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 
 #	define JSTR__DEFINE_ITOA_SAFE(T, name, func_name)                                                                                                                      \
 		JSTR_FUNC                                                                                                                                                       \
-		JSTR_ATTR_INLINE                                                                                                                                                \
 		static jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base)                                                          \
 		JSTR_NOEXCEPT                                                                                                                                                   \
 		{                                                                                                                                                               \
@@ -273,7 +266,6 @@ JSTR__DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 
 #	define JSTR__DEFINE_UTOA_THOUSEP_SAFE(T, name)                                                                                \
 		JSTR_FUNC                                                                                                              \
-		JSTR_ATTR_INLINE                                                                                                       \
 		static jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base, char separator) \
 		JSTR_NOEXCEPT                                                                                                          \
 		{                                                                                                                      \
@@ -291,7 +283,6 @@ JSTR__DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 
 #	define JSTR__DEFINE_ITOA_THOUSEP_SAFE(T, name, func_name)                                                                                                              \
 		JSTR_FUNC                                                                                                                                                       \
-		JSTR_ATTR_INLINE                                                                                                                                                \
 		static jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base, char separator)                                          \
 		JSTR_NOEXCEPT                                                                                                                                                   \
 		{                                                                                                                                                               \

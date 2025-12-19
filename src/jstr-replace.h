@@ -79,7 +79,6 @@ typedef struct jstr__inplace_ty {
  * ptr to '\0' in S.
  * Assume that S have enough space for SRC. */
 JSTR_ATTR_ACCESS((__read_only__, 4, 5))
-JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_insert_unsafe(char *R s, size_t sz, size_t at, const char *R src, size_t src_len)
@@ -124,7 +123,6 @@ JSTR_NOEXCEPT
 /* Insert SRC after C in DST.
  * Return JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
-JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_ret_ty
 jstr_insertafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const char *R src, size_t src_len)
@@ -273,7 +271,6 @@ JSTR_NOEXCEPT
  * Characters replaced.
  * SZ is only used to save the length of S. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmspn(char *R s, size_t *R sz, const char *R reject)
 JSTR_NOEXCEPT
@@ -304,7 +301,6 @@ JSTR_NOEXCEPT
  * Return value:
  * Characters replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmspn_len(char *R s, size_t *R sz, const char *R reject)
 JSTR_NOEXCEPT
@@ -350,7 +346,6 @@ start:
  * Characters replaced.
  * SZ is only used to save the length of S. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmallspn(char *R s, size_t *R sz, const char *R reject)
 JSTR_NOEXCEPT
@@ -392,7 +387,6 @@ start:
  * Number of Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmnchr_len(char *R s, size_t *R sz, int c, size_t n)
 JSTR_NOEXCEPT
@@ -404,7 +398,6 @@ JSTR_NOEXCEPT
  * Return value:
  * ptr to '\0' in S. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmallchr_len_from(char *R s, size_t *R sz, int c)
 JSTR_NOEXCEPT
@@ -416,7 +409,6 @@ JSTR_NOEXCEPT
  * Return value:
  * ptr to '\0' in S. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmallchr_len(char *R s, size_t *R sz, int c)
 JSTR_NOEXCEPT
@@ -456,7 +448,6 @@ start:
  * Return value:
  * Cs replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmnchr(char *R s, size_t *R sz, int c, size_t n)
 JSTR_NOEXCEPT
@@ -468,7 +459,6 @@ JSTR_NOEXCEPT
  * Return value:
  * Cs replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmallchr_from(char *R s, size_t *R sz, size_t start_idx, int c)
 JSTR_NOEXCEPT
@@ -480,7 +470,6 @@ JSTR_NOEXCEPT
  * Return value:
  * Cs replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmallchr(char *R s, size_t *R sz, int c)
 JSTR_NOEXCEPT
@@ -493,7 +482,6 @@ JSTR_NOEXCEPT
  * Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c)
 JSTR_NOEXCEPT
@@ -506,7 +494,6 @@ JSTR_NOEXCEPT
  * Cs replaced. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmchr_len(char *R s, size_t *R sz, int c)
 JSTR_NOEXCEPT
@@ -520,7 +507,6 @@ JSTR_NOEXCEPT
  * SZ is only used to save the length of S. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmchr_from(char *R s, size_t *R sz, size_t start_idx, int c)
 JSTR_NOEXCEPT
@@ -534,7 +520,6 @@ JSTR_NOEXCEPT
  * SZ is only used to save the length of S. */
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmchr(char *R s, size_t *R sz, int c)
 JSTR_NOEXCEPT
@@ -586,7 +571,6 @@ JSTR_NOEXCEPT
  * Return value:
  * ptr to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
-JSTR_ATTR_INLINE
 static char *
 jstr_rmat_len_p(char *R s, size_t sz, size_t at, size_t find_len)
 JSTR_NOEXCEPT
@@ -618,7 +602,6 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static int
 jstr_rm_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const char *R find, size_t find_len)
 JSTR_NOEXCEPT
@@ -643,7 +626,6 @@ JSTR_NOEXCEPT
  * Return value:
  * ptr to '\0' in S. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static int
 jstr_rm_len(char *R s, size_t *R sz, const char *R find, size_t find_len)
 JSTR_NOEXCEPT
@@ -701,7 +683,6 @@ JSTR_NOEXCEPT
  * Return value:
  * number of number of FINDs replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static int
 jstr_rmlast_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R find, size_t find_len)
 JSTR_NOEXCEPT
@@ -719,7 +700,6 @@ JSTR_NOEXCEPT
  * Return value:
  * number of number of FINDs replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static int
 jstr_rmlast_len(char *R s, size_t *R sz, const char *R find, size_t find_len)
 JSTR_NOEXCEPT
@@ -731,7 +711,6 @@ JSTR_NOEXCEPT
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static int
 jstr_rplclast_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
@@ -783,7 +762,6 @@ start:
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmn_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const char *R find, size_t find_len, size_t n)
 JSTR_NOEXCEPT
@@ -796,7 +774,6 @@ JSTR_NOEXCEPT
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmall_len_exec(const jstr_twoway_ty *R t, char *R s, size_t *R sz, const char *R find, size_t find_len)
 JSTR_NOEXCEPT
@@ -821,7 +798,6 @@ JSTR_NOEXCEPT
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmn_len(char *R s, size_t *R sz, const char *R find, size_t find_len, size_t n)
 JSTR_NOEXCEPT
@@ -833,7 +809,6 @@ JSTR_NOEXCEPT
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static size_t
 jstr_rmall_len(char *R s, size_t *R sz, const char *R find, size_t find_len)
 JSTR_NOEXCEPT
@@ -866,7 +841,6 @@ JSTR_NOEXCEPT
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static int
 jstr_rplc_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
@@ -979,7 +953,6 @@ err:
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static size_t
 jstr_rplcn_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len, size_t n)
 JSTR_NOEXCEPT
@@ -992,7 +965,6 @@ JSTR_NOEXCEPT
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static size_t
 jstr_rplcall_len_from_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
@@ -1005,7 +977,6 @@ JSTR_NOEXCEPT
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static size_t
 jstr_rplcall_len_exec(const jstr_twoway_ty *R t, char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
@@ -1018,7 +989,6 @@ JSTR_NOEXCEPT
  * Otherwise, number of FINDs replaced.
  * T must be precompiled with jstr_memmem_comp. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static int
 jstr_rplc_len_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
@@ -1032,7 +1002,6 @@ JSTR_NOEXCEPT
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static int
 jstr_rplc_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
@@ -1056,7 +1025,6 @@ JSTR_NOEXCEPT
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static size_t
 jstr_rplcn_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len, size_t n)
 JSTR_NOEXCEPT
@@ -1068,7 +1036,6 @@ JSTR_NOEXCEPT
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static size_t
 jstr_rplcall_len_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
@@ -1080,7 +1047,6 @@ JSTR_NOEXCEPT
  * Return -1 on malloc error.
  * Otherwise, number of FINDs replaced. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static size_t
 jstr_rplcall_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
@@ -1091,7 +1057,6 @@ JSTR_NOEXCEPT
 /* Replace first SEARCH in REPLACE.
  * Return value:
  * number of FINDs replaced. */
-JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static int
 jstr_rplcchr_len(char *R s, size_t sz, char find, char rplc)
@@ -1108,7 +1073,6 @@ JSTR_NOEXCEPT
 /* Replace first SEARCH in REPLACE.
  * Return value:
  * number of FINDs replaced. */
-JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static int
 jstr_rplcchr(char *R s, char find, char rplc)
@@ -1126,7 +1090,6 @@ JSTR_NOEXCEPT
  * Assume that S have enough space for SRC.
  * Return value: */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr_place_len_unsafe(char *R s, size_t at, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
@@ -1138,7 +1101,6 @@ JSTR_NOEXCEPT
  * Return JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_place_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
@@ -1157,7 +1119,6 @@ JSTR_NOEXCEPT
  * Return JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_placeafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const char *R src, size_t src_len)
 JSTR_NOEXCEPT

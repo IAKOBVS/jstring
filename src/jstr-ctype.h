@@ -225,7 +225,6 @@ static const uint16_t jstr_ctype_table[256]={
 #	define jstr_isword(c)   jstr_isctype(c, JSTR_ISWORD)
 
 /* ASCII. */
-JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static char *
 jstr_skipctype(const char *R s, int ctype)
@@ -256,7 +255,6 @@ JSTR_NOEXCEPT
 
 #	define JSTR__DEFINE_SKIP_CTYPE(ctype, ctype_enum)                   \
 		/* ASCII. */                                                 \
-		JSTR_ATTR_INLINE                                             \
 		JSTR_FUNC_PURE                                               \
 		static char *jstr_skip##ctype(const char *R s) JSTR_NOEXCEPT \
 		{                                                            \
@@ -268,7 +266,6 @@ JSTR__DEFINE_REPEAT_CTYPE(JSTR__DEFINE_SKIP_CTYPE)
 #	undef JSTR__DEFINE_SKIP_CTYPE
 
 /* ASCII. */
-JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static int
 jstr_isctypestr(const char *R s, int ctype)
@@ -279,7 +276,6 @@ JSTR_NOEXCEPT
 
 #	define JSTR__DEFINE_ISCTYPE_STR(ctype, ctype_enum)                   \
 		/* ASCII. */                                                  \
-		JSTR_ATTR_INLINE                                              \
 		JSTR_FUNC_PURE                                                \
 		static int jstr_is##ctype##str(const char *R s) JSTR_NOEXCEPT \
 		{                                                             \
@@ -291,7 +287,6 @@ JSTR__DEFINE_REPEAT_CTYPE(JSTR__DEFINE_ISCTYPE_STR)
 #	undef JSTR__DEFINE_ISCTYPE_STR
 
 /* ASCII. */
-JSTR_ATTR_INLINE
 JSTR_FUNC_PURE
 static char *
 jstr_skipctype_rev(const char *s, const jstr_ctype_ty ctype, size_t n)
@@ -306,7 +301,6 @@ JSTR_NOEXCEPT
 
 #	define JSTR__DEFINE_SKIP_CTYPE_REV(ctype, ctype_enum)               \
 		/* ASCII. */                                                 \
-		JSTR_ATTR_INLINE                                             \
 		JSTR_FUNC_PURE                                               \
 		static char *jstr_skip##ctype##_rev(const char *s, size_t n) \
 		JSTR_NOEXCEPT                                                \
@@ -320,7 +314,6 @@ JSTR__DEFINE_REPEAT_CTYPE(JSTR__DEFINE_SKIP_CTYPE_REV)
 
 /* ASCII. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static char *
 jstr_toupperstr_p(char *R s)
 JSTR_NOEXCEPT
@@ -332,7 +325,6 @@ JSTR_NOEXCEPT
 
 /* ASCII. */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static char *
 jstr_tolowerstr_p(char *R s)
 JSTR_NOEXCEPT
@@ -345,7 +337,6 @@ JSTR_NOEXCEPT
 /* Copy SRC to DST touppered.
  * Return ptr to '\0' in DST. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_toupperstrcpy_p(char *R dst, const char *R src)
 JSTR_NOEXCEPT
@@ -358,7 +349,6 @@ JSTR_NOEXCEPT
 /* Copy SRC to DST tolowered.
  * Return ptr to '\0' in DST. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr_tolowerstrcpy_p(char *R dst, const char *R src)
 JSTR_NOEXCEPT

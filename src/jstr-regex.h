@@ -170,7 +170,6 @@ typedef struct {
 	int cflags;
 } jstr_re_ty;
 
-JSTR_ATTR_INLINE
 JSTR_FUNC_VOID
 static void
 jstr_re_free(jstr_re_ty *R preg)
@@ -203,7 +202,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_ret_ty
 jstr_re_comp(jstr_re_ty *R preg, const char *R ptn, int cflags)
 JSTR_NOEXCEPT
@@ -223,7 +221,6 @@ JSTR_NOEXCEPT
 
 JSTR_NONNULL((1))
 JSTR_NONNULL((2))
-JSTR_ATTR_INLINE
 JSTR_ATTR_WARN_UNUSED
 JSTR_FUNC_PURE_MAY_NULL
 JSTR_ATTR_NOTHROW
@@ -235,7 +232,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static jstr_re_ret_ty
 jstr_re_exec_len(const jstr_re_ty *R preg, const char *R s, size_t sz, size_t nmatch, regmatch_t *R pmatch, int eflags)
 JSTR_NOEXCEPT
@@ -250,7 +246,6 @@ JSTR_NOEXCEPT
 /* Check if S matches precompiled regex.
  * Return return value of regexec. */
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static jstr_re_ret_ty
 jstr_re_match(const jstr_re_ty *R preg, const char *R s, int eflags)
 JSTR_NOEXCEPT
@@ -262,7 +257,6 @@ JSTR_NOEXCEPT
  * Return return value of regexec.
  * Store offset of matched pattern in pmatch. */
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static jstr_re_ret_ty
 jstr_re_search(const jstr_re_ty *R preg, const char *R s, regmatch_t *R pmatch, int eflags)
 JSTR_NOEXCEPT
@@ -274,7 +268,6 @@ JSTR_NOEXCEPT
  * Return return value of regexec.
  * Store offset of matched pattern in pmatch. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_ret_ty
 jstr_re_search_len(const jstr_re_ty *R preg, const char *R s, size_t sz, regmatch_t *R pmatch, int eflags)
 JSTR_NOEXCEPT
@@ -285,7 +278,6 @@ JSTR_NOEXCEPT
 /* Check if S matches PTN.
  * Return return value of regexec or regcomp if it fails. */
 JSTR_FUNC_PURE
-JSTR_ATTR_INLINE
 static jstr_re_ret_ty
 jstr_re_match_len(const jstr_re_ty *R preg, const char *R s, size_t sz, int eflags)
 JSTR_NOEXCEPT
@@ -322,7 +314,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rm_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, int eflags)
 JSTR_NOEXCEPT
@@ -389,7 +380,6 @@ err_free:
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rmn_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, int eflags, size_t n)
 JSTR_NOEXCEPT
@@ -403,7 +393,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rmall_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, int eflags)
 JSTR_NOEXCEPT
@@ -417,7 +406,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rmall_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags)
 JSTR_NOEXCEPT
@@ -449,7 +437,6 @@ JSTR_NOEXCEPT
 /* Return value:
  * number of substrings replaced.
  * On error, -errcode (negative). */
-JSTR_ATTR_INLINE
 JSTR_FUNC
 static jstr_re_off_ty
 jstr_re_rplc_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags)
@@ -472,7 +459,6 @@ JSTR_NOEXCEPT
  * length of backref.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static size_t
 jstr__re_rplcbackrefstrlen(const regmatch_t *R rm, const unsigned char *rplc, const unsigned char *rplc_e, size_t rplc_len NMATCH_PARAM)
 JSTR_NOEXCEPT
@@ -494,7 +480,6 @@ JSTR_NOEXCEPT
 
 /* Return ptr to first backref. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr__re_rplcbackreffirst(const char *backref, size_t backref_len)
 {
@@ -506,7 +491,6 @@ jstr__re_rplcbackreffirst(const char *backref, size_t backref_len)
 
 /* Return ptr to the end of the last backref. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static char *
 jstr__re_rplcbackreflast(const unsigned char *backref, size_t backref_len)
 {
@@ -529,7 +513,6 @@ jstr__re_rplcbackreflast(const unsigned char *backref, size_t backref_len)
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC_VOID
-JSTR_ATTR_INLINE
 static void
 jstr__re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc_src, unsigned char *R mtc_dst, const unsigned char *R rplc, const unsigned char *rplc_e)
 JSTR_NOEXCEPT
@@ -671,7 +654,6 @@ start:
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplcn_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n)
 JSTR_NOEXCEPT
@@ -686,7 +668,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplcn_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t n)
 JSTR_NOEXCEPT
@@ -701,7 +682,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplcall_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags)
 JSTR_NOEXCEPT
@@ -716,7 +696,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplcall_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags)
 JSTR_NOEXCEPT
@@ -745,7 +724,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplcall_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch)
 JSTR_NOEXCEPT
@@ -760,7 +738,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplcall_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch)
 JSTR_NOEXCEPT
@@ -775,7 +752,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplcn_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n)
 JSTR_NOEXCEPT
@@ -790,7 +766,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplc_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch)
 JSTR_NOEXCEPT
@@ -805,7 +780,6 @@ JSTR_NOEXCEPT
  * number of substrings replaced.
  * On error, -errcode (negative). */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_re_off_ty
 jstr_re_rplc_backref_len_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch)
 JSTR_NOEXCEPT

@@ -60,7 +60,6 @@ enum {
 };
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static int
 jstr__io_isbinarysignature(const char *R buf, size_t sz)
 {
@@ -173,7 +172,6 @@ JSTR_NOEXCEPT
 /* MODE is used to specify the file permission when using O_CREAT.
  * Otherwise, MODE is ignored. */
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_writefile_len(const char *R s, size_t sz, const char *R fname, int oflag, int mode)
 JSTR_NOEXCEPT
@@ -220,7 +218,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_readfilefd_len(char *R *R s, size_t *R sz, size_t *R cap, int fd, size_t file_size)
 JSTR_NOEXCEPT
@@ -235,7 +232,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_readfilefd(char *R *R s, size_t *R sz, size_t *R cap, int fd, struct stat *st)
 JSTR_NOEXCEPT
@@ -246,7 +242,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_freadfilefp_len(char *R *R s, size_t *R sz, size_t *R cap, FILE *fp, size_t file_size)
 JSTR_NOEXCEPT
@@ -261,7 +256,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_freadfilefp(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, FILE *fp, struct stat *st)
 JSTR_NOEXCEPT
@@ -281,7 +275,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_freadfile_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, const char *R modes, const size_t file_size)
 JSTR_NOEXCEPT
@@ -299,7 +292,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC
-JSTR_ATTR_INLINE
 static jstr_ret_ty
 jstr_io_freadfile(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, const char *R modes, struct stat *st)
 JSTR_NOEXCEPT
@@ -506,7 +498,6 @@ JSTR_NOEXCEPT
 }
 
 JSTR_FUNC_RET_NONNULL
-JSTR_ATTR_INLINE
 static char *
 jstr_io_appendpath_len_p(char *R path, size_t sz, const char *R fname, size_t fname_len)
 {
@@ -516,7 +507,6 @@ jstr_io_appendpath_len_p(char *R path, size_t sz, const char *R fname, size_t fn
 }
 
 JSTR_FUNC_RET_NONNULL
-JSTR_ATTR_INLINE
 static char *
 jstr_io_appendpath_p(char *R path, size_t sz, const char *R fname)
 {
