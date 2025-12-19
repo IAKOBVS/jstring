@@ -585,7 +585,7 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-/* Pop s[size]. */
+/* Pop s[size - 1]. */
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static char *
