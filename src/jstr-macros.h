@@ -158,7 +158,7 @@ JSTR__END_DECLS
 
 #	define jstr_chk(ret)             jstr_unlikely(ret == -1)
 #	define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#	define JSTR_PAGE_SIZE            4096
 #	define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #	define JSTR__CONCAT_HELPER(x, y) x##y
 #	define JSTR_CONCAT(x, y)         JSTR__CONCAT_HELPER(x, y)
@@ -513,11 +513,8 @@ JSTR__END_DECLS
 #		define JSTR_DEBUG_PRINT(fmt, ...) \
 			do {                       \
 			} while (0)
-#		define JSTR_DEBUG_JSTRING(s, sz, cap)          \
-			do {                                    \
-				fprintf(stderr, "%s.\n", s);    \
-				fprintf(stderr, "%zu.\n", sz);  \
-				fprintf(stderr, "%zu.\n", cap); \
+#		define JSTR_DEBUG_JSTRING(s, sz, cap) \
+			do {                           \
 			} while (0)
 #		define JSTR_RETURN_ERR(errcode) return errcode
 #	endif
