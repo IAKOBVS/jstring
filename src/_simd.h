@@ -411,18 +411,6 @@ ret:;
 
 #endif
 
-#if !(defined TZCNT && defined BLSR)
-
-#	define JSTR_HAVENT_MEMMEM_SIMD 1
-
-#else
-
-// #	define JSTR__SIMD_RETTYPE          void *
-// #	define JSTR__SIMD_MEMMEM_FUNC_NAME jstr__simd_memmem
-// #	include "_simd-memmem.h"
-
-#endif
-
 #if !defined POPCNT
 
 #	define JSTR_HAVENT_COUNTCHR_SIMD     1
