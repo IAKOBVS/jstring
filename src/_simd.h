@@ -132,59 +132,29 @@ typedef uint16_t jstr_vmask_ty;
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
-JSTR_ATTR_INLINE
-static char *
-jstr__simd_stpcpy_aligned(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
-JSTR_NOEXCEPT
-{
-	VEC sv;
-	const VEC zv = SETZERO();
-	MASK zm;
-	for (;; src += VEC_SIZE, dst += VEC_SIZE) {
-		sv = LOAD((const VEC *)src);
-		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		if (zm)
-			break;
-		STORE((VEC *)dst, sv);
-	}
-	while ((*dst++ = *src++)) {}
-	return dst - 1;
-}
-
-JSTR_ATTR_NO_SANITIZE_ADDRESS
-JSTR_FUNC
-JSTR_ATTR_INLINE
-static char *
-jstr__simd_stpcpy_unaligned_src(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
-JSTR_NOEXCEPT
-{
-	VEC sv;
-	const VEC zv = SETZERO();
-	MASK zm;
-	for (;; src += VEC_SIZE, dst += VEC_SIZE) {
-		sv = LOAD((const VEC *)src);
-		zm = (MASK)CMPEQ8_MASK(sv, zv);
-		if (zm)
-			break;
-		STOREU((VEC *)dst, sv);
-	}
-	while ((*dst++ = *src++)) {}
-	return dst - 1;
-}
-
-JSTR_ATTR_NO_SANITIZE_ADDRESS
-JSTR_FUNC
 static char *
 jstr__simd_stpcpy(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
 JSTR_NOEXCEPT
 {
 	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
 	while (i--)
-		if (jstr_unlikely((*dst++ = *src++) == '\0'))
+		if ((*dst++ = *src++) == '\0')
 			return dst - 1;
+	VEC sv;
+	const VEC zv = SETZERO();
+	MASK zm;
 	if (JSTR_PTR_IS_ALIGNED(dst, VEC_SIZE))
-		return jstr__simd_stpcpy_aligned(dst, src);
-	return jstr__simd_stpcpy_unaligned_src(dst, src);
+		/* Aligned store to DST. */
+		for (; (zm = (MASK)CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv));
+		     src += VEC_SIZE, dst += VEC_SIZE)
+			STORE((VEC *)dst, sv);
+	else
+		/* Unaligned store to DST. */
+		for (; (zm = (MASK)CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv));
+		     src += VEC_SIZE, dst += VEC_SIZE)
+			STOREU((VEC *)dst, sv);
+	while ((*dst++ = *src++)) {}
+	return dst - 1;
 }
 
 #ifndef TZCNT
