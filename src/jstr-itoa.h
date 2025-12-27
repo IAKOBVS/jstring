@@ -37,9 +37,6 @@ JSTR__END_DECLS
 
 JSTR__BEGIN_DECLS
 
-JSTR_ATTR_MAYBE_UNUSED
-static const char jstr__itoa_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-
 #	define JSTR__DEFINE_ITOA_COUNTUDIGITS(T, name, is_thousep)                       \
 		JSTR_FUNC                                                                 \
 		static size_t jstr__itoa_countudigits_##name(T number, unsigned int base) \
@@ -82,10 +79,10 @@ static char *
 jstr_ulltoa_p(unsigned long long number, char *R buf, unsigned int base)
 JSTR_NOEXCEPT
 {
-#	define LOOP_BASE(base)                                    \
-		do                                                 \
-			*buf++ = jstr__itoa_digits[number % base]; \
-		while ((number /= base) != 0);                     \
+#	define LOOP_BASE(base)                       \
+		do                                    \
+			*buf++ = number % base + '0'; \
+		while ((number /= base) != 0);        \
 		break
 	char *start = buf;
 	switch (base) {
@@ -155,9 +152,9 @@ static char *
 jstr_ulltoa_thousep_p(unsigned long long number, char *R buf, unsigned int base, char separator)
 JSTR_NOEXCEPT
 {
-#	define CONV(base)                            \
-		c = jstr__itoa_digits[number % base]; \
-		loop = number /= base;                \
+#	define CONV(base)               \
+		c = number % base + '0'; \
+		loop = number /= base;   \
 		break
 	if (number <= 999)
 		return jstr_ulltoa_p(number, buf, base);
