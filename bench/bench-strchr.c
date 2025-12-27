@@ -66,7 +66,31 @@ simple_countchr_len(const char *s,
                     size_t sz)
 {
 	size_t cnt = 0;
+	while (sz--)
+		if (*s++ == (char)c)
+			++cnt;
+	return cnt;
+}
+
+static size_t
+simple_countchr_len_branchless(const char *s,
+                               int c,
+                               size_t sz)
+{
+	size_t cnt = 0;
 	for (; sz--; cnt += *s++ == (char)c) {}
+	return cnt;
+}
+
+static size_t
+simple_countchr_len_memchr(const char *s,
+                           int c,
+                           size_t sz)
+{
+	const char *end = s + sz;
+	size_t cnt = 0;
+	for (; (s = memchr(s, c, (size_t)(end - s))); ++s)
+		++cnt;
 	return cnt;
 }
 
@@ -75,6 +99,16 @@ simple_countchr(const char *s,
                 int c)
 {
 	return simple_countchr_len(s, c, strlen(s));
+}
+
+static size_t
+simple_countchr_strchr(const char *s,
+                       int c)
+{
+	size_t cnt = 0;
+	for (; (s = strchr(s, c)); ++s)
+		++cnt;
+	return cnt;
 }
 
 #define T_SETUP(buf, BUFLEN)              \
@@ -109,6 +143,9 @@ T_DEFINE_STRCHR(jstr__simd_strncasechr, buf, 'b', BUFLEN)
 
 T_DEFINE_STRCHR(simple_countchr, buf, 'b')
 T_DEFINE_STRCHR(simple_countchr_len, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(simple_countchr_strchr, buf, 'b')
+T_DEFINE_STRCHR(simple_countchr_len_memchr, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(simple_countchr_len_branchless, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(simple_strcasechrnul_strcspn, buf, 'b')
 T_DEFINE_STRCHR(jstr_strchrnul, buf, 'b')
 T_DEFINE_STRCHR(simple_strchrnul, buf, 'b')
@@ -145,6 +182,9 @@ main()
 
 	RUN(b_simple_countchr, 0);
 	RUN(b_simple_countchr_len, 0);
+	RUN(b_simple_countchr_strchr, 0);
+	RUN(b_simple_countchr_len_memchr, 0);
+	RUN(b_simple_countchr_len_branchless, 0);
 	/* RUN(b_jstr__strchrnul_musl, 0); */
 	RUN(b_jstr__strcasechrnul_musl, 0);
 	RUN(b_jstr__memcasechr_musl, 0);
