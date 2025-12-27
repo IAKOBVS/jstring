@@ -500,6 +500,48 @@ jstr__simd_tolower_vec(const VEC v)
 	return ADD8(v, cvt);
 }
 
+JSTR_FUNC_VOID
+static void
+jstr__simd_tolowerstr_len(char *s, size_t n)
+{
+	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
+	for (; off--; ++s) {
+		if (n-- == 0)
+			return;
+		*s = jstr_tolower(*s);
+	}
+	for (VEC sv; n >= VEC_SIZE; n -= VEC_SIZE, s += VEC_SIZE) {
+		sv = LOAD((VEC *)s);
+		sv = jstr__simd_tolower_vec(sv);
+		STORE((VEC *)s, sv);
+	}
+	for (; n--; ++s)
+		*s = jstr_tolower(*s);
+}
+
+JSTR_FUNC_VOID
+static char *
+jstr__simd_tolowerstr_p(char *s)
+{
+	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
+	for (; off--; ++s)
+		if ((*s = jstr_tolower(*s)) == '\0')
+			return s;
+	const VEC zv = SETZERO();
+	VEC sv;
+	MASK m;
+	for (;; s += VEC_SIZE) {
+		sv = LOAD((VEC *)s);
+		m = CMPEQ8_MASK(sv, zv);
+		if (jstr_unlikely(m))
+			break;
+		sv = jstr__simd_tolower_vec(LOAD((VEC *)s));
+		STORE((VEC *)s, sv);
+	}
+	for (; (*s = jstr_tolower(*s)); ++s) {}
+	return s;
+}
+
 #endif
 
 #if defined CMPGT8 && defined CMPLT8 && defined AND && defined SUB8
