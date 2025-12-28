@@ -31,10 +31,56 @@ JSTR__BEGIN_DECLS
 JSTR__END_DECLS
 
 #include "jstr-ctype.h"
+#include "jstr-stdstring.h"
 
+#define SS         (sizeof(size_t))
+#define ALIGN      (sizeof(size_t) - 1)
 #define ONES       ((size_t)-1 / UCHAR_MAX)
 #define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #define HASZERO(x) (((x) - ONES) & ~(x) & HIGHS)
+
+#define BITOP(a, b, op) \
+	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
+
+JSTR__BEGIN_DECLS
+
+JSTR_FUNC_PURE
+static size_t
+jstr__memspn_musl(const void *s, const char *c, size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s;
+	const unsigned char *a = p;
+	if (!c[0])
+		return 0;
+	if (!c[1]) {
+		for (; *p == *c; p++) {}
+		return (size_t)(p - a);
+	}
+	size_t byteset[32 / sizeof(size_t)];
+	memset(byteset, 0, sizeof byteset);
+	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++) {}
+	for (; n-- && BITOP(byteset, *(unsigned char *)p, &); p++) {}
+	return (size_t)(p - a);
+}
+
+JSTR_FUNC_PURE
+static size_t
+jstr__memcspn_musl(const void *s, const char *c, size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s;
+	const unsigned char *a = p;
+	if (!c[0] || !c[1]) {
+		p = (const unsigned char *)memchr(p, *c, n);
+		return (p ? (size_t)(p - a) : n);
+	}
+	size_t byteset[32 / sizeof(size_t)];
+	memset(byteset, 0, sizeof byteset);
+	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++) {}
+	for (; n-- && !BITOP(byteset, *(unsigned char *)p, &); p++) {}
+	return (size_t)(p - a);
+}
+
+#undef BITOP
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -43,12 +89,10 @@ static void *
 jstr__memrchr_musl(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t),
-	       ALIGN = (sizeof(size_t) - 1) };
 	const unsigned char *p = (const unsigned char *)s + n - 1;
 	c = (unsigned char)c;
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-	for (; (uintptr_t)(p + 1) & ALIGN; --n, --p) {
+	for (; (uintptr_t)(p + 1) & ALIGN; n--, p--) {
 		if (jstr_unlikely(n == 0))
 			return NULL;
 		if (*p == c)
@@ -62,7 +106,7 @@ JSTR_NOEXCEPT
 		p = (unsigned char *)ws + SS - 1;
 	}
 #endif
-	for (; n--; --p)
+	for (; n--; p--)
 		if (*p == c)
 			return (char *)p;
 	return NULL;
@@ -74,11 +118,10 @@ static char *
 jstr__strcasechrnul_musl(const char *s, int c)
 JSTR_NOEXCEPT
 {
-	enum { ALIGN = sizeof(size_t) };
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	for (; (uintptr_t)s % ALIGN; ++s)
+	for (; (uintptr_t)s % ALIGN; s++)
 		if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
 			return (char *)s;
 	const size_t k = ONES * (unsigned char)c;
@@ -87,7 +130,7 @@ JSTR_NOEXCEPT
 	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws) {}
 	s = (char *)ws;
 #endif
-	for (; *s && jstr_tolower(*s) != c; ++s) {}
+	for (; *s && jstr_tolower(*s) != c; s++) {}
 	return (char *)s;
 }
 
@@ -97,13 +140,12 @@ static void *
 jstr__memcasechr_musl(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
-	enum { ALIGN = sizeof(size_t) };
 	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	if (n >= sizeof(size_t) && jstr_tolower(*p) != c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
-		for (; (uintptr_t)p % ALIGN; --n, ++p) {
+		for (; (uintptr_t)p % ALIGN; n--, ++p) {
 			if (jstr_unlikely(n == 0))
 				return NULL;
 			if (jstr_tolower(*p) == c)
@@ -116,7 +158,7 @@ JSTR_NOEXCEPT
 		p = (unsigned char *)ws;
 	}
 #endif
-	for (; n && jstr_tolower(*p) != c; --n, ++p) {}
+	for (; n && jstr_tolower(*p) != c; n--, ++p) {}
 	return n ? (void *)p : NULL;
 }
 
@@ -126,10 +168,8 @@ static char *
 jstr__strnchr_musl(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t),
-	       ALIGN = (sizeof(size_t) - 1) };
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-	for (; (uintptr_t)s & ALIGN; --n, ++s) {
+	for (; (uintptr_t)s & ALIGN; n--, s++) {
 		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n == 0))
 			return NULL;
 		if (*s == (char)c)
@@ -143,7 +183,7 @@ JSTR_NOEXCEPT
 		s = (const char *)ws;
 	}
 #endif
-	for (; n && *s && *s != (char)c; ++s, --n) {}
+	for (; n && *s && *s != (char)c; s++, n--) {}
 	return n ? (char *)s : NULL;
 }
 
@@ -153,11 +193,9 @@ static char *
 jstr__strncasechr_musl(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
-	enum { SS = sizeof(size_t),
-	       ALIGN = (sizeof(size_t) - 1) };
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-	for (; (uintptr_t)s & ALIGN; --n, ++s) {
+	for (; (uintptr_t)s & ALIGN; n--, s++) {
 		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n == 0))
 			return NULL;
 		if (jstr_tolower(*s) == c)
@@ -172,10 +210,14 @@ JSTR_NOEXCEPT
 		s = (const char *)ws;
 	}
 #endif
-	for (; n && *s && jstr_tolower(*s) != c; ++s, --n) {}
+	for (; n && *s && jstr_tolower(*s) != c; s++, n--) {}
 	return n ? (char *)s : NULL;
 }
 
+JSTR__END_DECLS
+
+#undef SS
+#undef ALIGN
 #undef ONES
 #undef HIGHS
 #undef HASZERO

@@ -35,6 +35,22 @@ JSTR__END_DECLS
 
 #	define R JSTR_RESTRICT
 
+JSTR_FUNC_PURE
+JSTR_ATTR_RETURNS_NONNULL
+static char *
+jstr_strchrnul(const char *s, int c)
+JSTR_NOEXCEPT
+{
+#	if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
+	return (char *)strchrnul(s, c);
+#	elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCHRNUL_SIMD
+	return jstr__simd_strchrnul(s, c);
+#	else
+	char *const p = strchr(s, c);
+	return p ? p : (char *)s + strlen(s);
+#	endif
+}
+
 JSTR__BEGIN_DECLS
 
 /* Compare S1 with S2 case-insensitively.

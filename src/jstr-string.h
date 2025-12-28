@@ -60,22 +60,6 @@ JSTR_NOEXCEPT
 #	endif
 }
 
-JSTR_FUNC_PURE
-JSTR_ATTR_RETURNS_NONNULL
-static char *
-jstr_strchrnul(const char *s, int c)
-JSTR_NOEXCEPT
-{
-#	if JSTR_HAVE_STRCHRNUL && !JSTR_TEST
-	return (char *)strchrnul(s, c);
-#	elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCHRNUL_SIMD
-	return jstr__simd_strchrnul(s, c);
-#	else
-	char *const p = strchr(s, c);
-	return p ? p : (char *)s + strlen(s);
-#	endif
-}
-
 /* Return value:
  * ptr to first C in S ignoring case.
  * NULL if not found. */
@@ -930,45 +914,7 @@ static size_t
 jstr_memspn(const void *s, const char *accept, size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*accept == '\0') || jstr_unlikely(sz == 0))
-		return sz;
-	if (jstr_unlikely(accept[1] == '\0')) {
-		const char *p = (char *)s;
-		const int c = *accept;
-		for (; sz-- && *p == c; ++p) {}
-		return JSTR_DIFF(p, s);
-	}
-	const unsigned char *p = (const unsigned char *)accept;
-	unsigned char t[256];
-	JSTR_BZERO_ARRAY(t);
-	do
-		t[*p++] = 1;
-	while (*p);
-	p = (const unsigned char *)s;
-	int i = 0;
-	int n = sz % 4;
-	for (;; ++i) {
-		if (!t[p[i]])
-			return JSTR_DIFF(p + i, s);
-		if (--n == 0) {
-			if (sz < 4)
-				return sz;
-			break;
-		}
-	}
-	p = (const unsigned char *)JSTR_PTR_ALIGN_UP(p, 4);
-	const unsigned char *const end = (const unsigned char *)s + sz;
-	unsigned int c0, c1, c2, c3;
-	do {
-		c0 = t[p[0]];
-		c1 = t[p[1]];
-		c2 = t[p[2]];
-		c3 = t[p[3]];
-		p += 4;
-	} while ((p < end) & (c0 & c1 & c2 & c3));
-	size_t cnt = p - (const unsigned char *)p;
-	cnt = (sz - (((c0 & c1) == 0) ? cnt + c0 : cnt + c2 + 2));
-	return (cnt < sz) ? cnt : sz;
+	return jstr__memspn_musl((const char *)s, accept, sz);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -977,41 +923,7 @@ static size_t
 jstr_memcspn(const void *s, const char *reject, size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*reject == '\0') || jstr_unlikely(sz == 0))
-		return sz;
-	if (jstr_unlikely(reject[1] == '\0'))
-		return JSTR_DIFF(jstr_memchrnul(s, *reject, sz), s);
-	unsigned char t[256];
-	JSTR_BZERO_ARRAY(t);
-	const unsigned char *p = (const unsigned char *)reject;
-	do
-		t[*p] = 1;
-	while (*p++);
-	p = (const unsigned char *)s + sz - 1;
-	int i = 0;
-	int n = sz % 4;
-	for (;; ++i) {
-		if (t[p[i]])
-			return JSTR_DIFF(p + i, s);
-		if (--n == 0) {
-			if (sz < 4)
-				return sz;
-			break;
-		}
-	}
-	p = (const unsigned char *)JSTR_PTR_ALIGN_UP(p, 4);
-	const unsigned char *const end = p + sz;
-	unsigned int c0, c1, c2, c3;
-	do {
-		c0 = t[p[0]];
-		c1 = t[p[1]];
-		c2 = t[p[2]];
-		c3 = t[p[3]];
-		p -= 4;
-	} while (((p >= end) | c0 | c1 | c2 | c3) == 0);
-	size_t cnt = JSTR_DIFF(p, s);
-	cnt = sz - (((c0 | c1) != 0) ? cnt - c0 + 1 : cnt - c2 + 3);
-	return (cnt < sz) ? cnt : sz;
+	return jstr__memcspn_musl((const char *)s, reject, sz);
 }
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))

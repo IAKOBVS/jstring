@@ -495,14 +495,14 @@ jstr__simd_tolowerstr_len(char *s, size_t n)
 	for (; off--; ++s) {
 		if (n-- == 0)
 			return;
-		*s = jstr_tolower(*s);
+		*s = (char)jstr_tolower(*s);
 	}
 	for (VEC sv; n >= VEC_SIZE; n -= VEC_SIZE, s += VEC_SIZE) {
 		sv = LOAD((VEC *)s);
 		STORE((VEC *)s, jstr__simd_tolower_vec(sv));
 	}
 	for (; n--; ++s)
-		*s = jstr_tolower(*s);
+		*s = (char)jstr_tolower(*s);
 }
 
 JSTR_FUNC_VOID
@@ -511,12 +511,12 @@ jstr__simd_tolowerstr_p(char *s)
 {
 	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
 	for (; off--; ++s)
-		if ((*s = jstr_tolower(*s)) == '\0')
+		if ((*s = (char)jstr_tolower(*s)) == '\0')
 			return s;
 	const VEC zv = SETZERO();
 	for (VEC sv; CMPEQ8_MASK(sv = LOAD((VEC *)s), zv); s += VEC_SIZE)
 		STORE((VEC *)s, jstr__simd_tolower_vec(sv));
-	for (; (*s = jstr_tolower(*s)); ++s) {}
+	for (; (*s = (char)jstr_tolower(*s)); ++s) {}
 	return s;
 }
 
