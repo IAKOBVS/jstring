@@ -142,15 +142,14 @@ JSTR_NOEXCEPT
 			return dst - 1;
 	VEC sv;
 	const VEC zv = SETZERO();
-	MASK zm;
 	if (JSTR_PTR_IS_ALIGNED(dst, VEC_SIZE))
 		/* Aligned store to DST. */
-		for (; (zm = (MASK)CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv));
+		for (; CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv);
 		     src += VEC_SIZE, dst += VEC_SIZE)
 			STORE((VEC *)dst, sv);
 	else
 		/* Unaligned store to DST. */
-		for (; (zm = (MASK)CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv));
+		for (; CMPEQ8_MASK(sv = LOAD((const VEC *)src), zv);
 		     src += VEC_SIZE, dst += VEC_SIZE)
 			STOREU((VEC *)dst, sv);
 	while ((*dst++ = *src++)) {}
@@ -500,8 +499,7 @@ jstr__simd_tolowerstr_len(char *s, size_t n)
 	}
 	for (VEC sv; n >= VEC_SIZE; n -= VEC_SIZE, s += VEC_SIZE) {
 		sv = LOAD((VEC *)s);
-		sv = jstr__simd_tolower_vec(sv);
-		STORE((VEC *)s, sv);
+		STORE((VEC *)s, jstr__simd_tolower_vec(sv));
 	}
 	for (; n--; ++s)
 		*s = jstr_tolower(*s);
@@ -516,16 +514,8 @@ jstr__simd_tolowerstr_p(char *s)
 		if ((*s = jstr_tolower(*s)) == '\0')
 			return s;
 	const VEC zv = SETZERO();
-	VEC sv;
-	MASK m;
-	for (;; s += VEC_SIZE) {
-		sv = LOAD((VEC *)s);
-		m = CMPEQ8_MASK(sv, zv);
-		if (jstr_unlikely(m))
-			break;
-		sv = jstr__simd_tolower_vec(LOAD((VEC *)s));
-		STORE((VEC *)s, sv);
-	}
+	for (VEC sv; CMPEQ8_MASK(sv = LOAD((VEC *)s), zv); s += VEC_SIZE)
+		STORE((VEC *)s, jstr__simd_tolower_vec(sv));
 	for (; (*s = jstr_tolower(*s)); ++s) {}
 	return s;
 }
@@ -567,7 +557,7 @@ jstr__simd_toupper_vec(const VEC v)
 		} while (0)
 
 /* ne_len must be <= VEC_SIZE.
- * Worst case: O(n * VEC_SIZE).
+ * Worst case: O(n).
  * Best case: O(n / VEC_SIZE). */
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 2))
