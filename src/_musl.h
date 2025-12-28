@@ -26,6 +26,13 @@
 
 #include "jstr-macros.h"
 
+#ifndef JSTR_HAVE_SIMD
+#	if defined __AVX512BW__ || defined __AVX2__ || defined __SSE2__
+#		define JSTR_HAVE_SIMD 1
+#		include "_simd.h"
+#	endif
+#endif
+
 JSTR__BEGIN_DECLS
 #include <limits.h>
 JSTR__END_DECLS
@@ -39,48 +46,7 @@ JSTR__END_DECLS
 #define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #define HASZERO(x) (((x) - ONES) & ~(x) & HIGHS)
 
-#define BITOP(a, b, op) \
-	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
-
 JSTR__BEGIN_DECLS
-
-JSTR_FUNC_PURE
-static size_t
-jstr__memspn_musl(const void *s, const char *c, size_t n)
-{
-	const unsigned char *p = (const unsigned char *)s;
-	const unsigned char *a = p;
-	if (!c[0])
-		return 0;
-	if (!c[1]) {
-		for (; *p == *c; p++) {}
-		return (size_t)(p - a);
-	}
-	size_t byteset[32 / sizeof(size_t)];
-	memset(byteset, 0, sizeof byteset);
-	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++) {}
-	for (; n-- && BITOP(byteset, *(unsigned char *)p, &); p++) {}
-	return (size_t)(p - a);
-}
-
-JSTR_FUNC_PURE
-static size_t
-jstr__memcspn_musl(const void *s, const char *c, size_t n)
-{
-	const unsigned char *p = (const unsigned char *)s;
-	const unsigned char *a = p;
-	if (!c[0] || !c[1]) {
-		p = (const unsigned char *)memchr(p, *c, n);
-		return (p ? (size_t)(p - a) : n);
-	}
-	size_t byteset[32 / sizeof(size_t)];
-	memset(byteset, 0, sizeof byteset);
-	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++) {}
-	for (; n-- && !BITOP(byteset, *(unsigned char *)p, &); p++) {}
-	return (size_t)(p - a);
-}
-
-#undef BITOP
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
@@ -213,6 +179,99 @@ JSTR_NOEXCEPT
 	for (; n && *s && jstr_tolower(*s) != c; s++, n--) {}
 	return n ? (char *)s : NULL;
 }
+
+#define BITOP(a, b, op) \
+	((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
+
+JSTR_FUNC_PURE
+static size_t
+jstr__memspn_musl(const void *s, const char *c, size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s;
+	const unsigned char *a = p;
+	if (!c[0])
+		return 0;
+	if (!c[1]) {
+		for (; *p == *c; p++) {}
+		return (size_t)(p - a);
+	}
+	size_t byteset[32 / sizeof(size_t)];
+	memset(byteset, 0, sizeof byteset);
+	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++) {}
+	for (; n-- && BITOP(byteset, *(unsigned char *)p, &); p++) {}
+	return (size_t)(p - a);
+}
+
+JSTR_FUNC_PURE
+static size_t
+jstr__memcspn_musl(const void *s, const char *c, size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s;
+	const unsigned char *a = p;
+	if (!c[0] || !c[1]) {
+		p = (const unsigned char *)memchr(p, *c, n);
+		return (p ? (size_t)(p - a) : n);
+	}
+	size_t byteset[32 / sizeof(size_t)];
+	memset(byteset, 0, sizeof byteset);
+	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++) {}
+	for (; n-- && !BITOP(byteset, *(unsigned char *)p, &); p++) {}
+	return (size_t)(p - a);
+}
+
+JSTR_FUNC_PURE
+static size_t
+jstr__memrspn_musl(const void *s, const char *c, size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s;
+	if (!c[0])
+		return 0;
+	p += (n - 1);
+	if (!c[1]) {
+		for (; n && *p == *c; n--, p--) {}
+		return n;
+	}
+	size_t byteset[32 / sizeof(size_t)];
+	memset(byteset, 0, sizeof byteset);
+	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++) {}
+	for (; n && BITOP(byteset, *(unsigned char *)p, &); n--, p--) {}
+	return n;
+}
+
+JSTR_FUNC_PURE
+static size_t
+jstr__memrcspn_musl(const void *s, const char *c, size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s;
+	if (!c[0])
+		return n;
+	if (!c[1]) {
+#if 1
+		p += (n - 1);
+		for (; n && *p != *c; n--, p--) {}
+		return n;
+		/* TODO: figure out why using memrchr fails test */
+#else
+		const unsigned char *end = p + n;
+#	if JSTR_HAVE_MEMRCHR
+		p = (const unsigned char *)memrchr(p, *c, n);
+#	elif JSTR_HAVE_SIMD
+		p = (const unsigned char *)jstr__simd_memrchr(p, *c, n);
+#	else
+		p = (const unsigned char *)jstr__memrchr_musl(p, *c, n);
+#	endif
+		return p ? (size_t)(end - p) : 0;
+#endif
+	}
+	p += (n - 1);
+	size_t byteset[32 / sizeof(size_t)];
+	memset(byteset, 0, sizeof byteset);
+	for (; *c && BITOP(byteset, *(unsigned char *)c, |=); c++) {}
+	for (; n && !BITOP(byteset, *(unsigned char *)p, &); n--, p--) {}
+	return n;
+}
+
+#undef BITOP
 
 JSTR__END_DECLS
 

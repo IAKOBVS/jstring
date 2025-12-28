@@ -275,4 +275,29 @@ simple_countchr(const char *s, int c)
 	return simple_countchr_len(s, c, strlen(s));
 }
 
+static JSTR_ATTR_MAYBE_UNUSED size_t
+simple_memrspn(const char *s, const char *accept, size_t n)
+{
+	if (*accept == '\0')
+		return 0;
+	s += (n - 1);
+	for (; n; --s, --n)
+		if (!strchr(accept, *s))
+			break;
+	return n;
+}
+
+static JSTR_ATTR_MAYBE_UNUSED size_t
+simple_memrcspn(const char *s, const char *reject, size_t n)
+{
+	if (*reject == '\0')
+		return n;
+	s += (n - 1);
+	for (; n; --s, --n)
+		if (strchr(reject, *s))
+			break;
+	return n;
+}
+
+
 #endif /* SIMPLE_H */

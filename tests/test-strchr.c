@@ -54,6 +54,7 @@ aligncpy(const void *p, size_t len, size_t a)
 		T_DEBUG(#res, t.result_n == t.expected_n); \
 	} while (0)
 
+
 void
 T_ALL(const char *s, int c)
 {
@@ -75,6 +76,22 @@ T_ALL(const char *s, int c)
 	}
 }
 
+
+void
+T_ALL_SPN(const char *s, const char *a)
+{
+	size_t align;
+	for (align = 0; align < 8; align++) {
+		const char *p = (const char *)aligncpy(s, strlen(s), (size_t)align);
+		t_init();
+		t.hs = p;
+		t.n = strlen(p);
+		T_size(jstr_strrspn_len, simple_memrspn, p, a, t.n);
+		/* FIXME: test fails */
+		T_size(jstr_strrcspn_len, simple_memrcspn, p, a, t.n);
+	}
+}
+
 int
 main(int argc, char **argv)
 {
@@ -92,6 +109,12 @@ main(int argc, char **argv)
 	T_ALL("a\0bb", 'b');
 	T_ALL("ab\0c", 'c');
 	T_ALL("abc\0d", 'd');
+	T_ALL("abc abc\0x", 'x');
+
+	T_ALL("\0aaa", 'b');
+	T_ALL("a\0bb", 'c');
+	T_ALL("ab\0c", 'c');
+	T_ALL("abc\0d", '\0');
 	T_ALL("abc abc\0x", 'x');
 
 	T_ALL("\0AAA", 'A');
@@ -135,6 +158,32 @@ main(int argc, char **argv)
 	T_ALL(s, 128);
 	T_ALL(s, 255);
 	T_ALL(s, 0);
+
+	T_ALL_SPN("hello", "h");
+	T_ALL_SPN("hello", "he");
+	T_ALL_SPN("hello", "hel");
+	T_ALL_SPN("hello", "hell");
+	T_ALL_SPN("hello", "hello");
+
+	T_ALL_SPN("hello", "e");
+	T_ALL_SPN("hello", "el");
+	T_ALL_SPN("hello", "ell");
+	T_ALL_SPN("hello", "ello");
+
+	T_ALL_SPN("hello", "l");
+	T_ALL_SPN("hello", "ll");
+	T_ALL_SPN("hello", "llo");
+
+	T_ALL_SPN("hello", "l");
+	T_ALL_SPN("hello", "ll");
+	T_ALL_SPN("hello", "llo");
+
+	T_ALL_SPN("hello", "l");
+	T_ALL_SPN("hello", "lo");
+
+	T_ALL_SPN("hello", "o");
+
+	T_ALL_SPN("hello", "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
 	SUCCESS();
 	return EXIT_SUCCESS;
