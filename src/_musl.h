@@ -84,20 +84,21 @@ static char *
 jstr__strcasechrnul_musl(const char *s, int c)
 JSTR_NOEXCEPT
 {
+	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
 	typedef size_t JSTR_ATTR_MAY_ALIAS word;
-	for (; (uintptr_t)s % ALIGN; s++)
-		if (jstr_unlikely(*s == '\0') || jstr_tolower(*s) == c)
-			return (char *)s;
+	for (; (uintptr_t)p % ALIGN; p++)
+		if (jstr_unlikely(*p == '\0') || jstr_tolower(*p) == c)
+			return (char *)p;
 	const size_t k = ONES * (unsigned char)c;
 	const size_t l = ONES * (unsigned char)jstr_toupper(c);
-	const word *ws = (word *)s;
+	const word *ws = (word *)p;
 	for (word w = *ws; !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws) {}
-	s = (char *)ws;
+	p = (unsigned char *)ws;
 #endif
-	for (; *s && jstr_tolower(*s) != c; s++) {}
-	return (char *)s;
+	for (; *p && jstr_tolower(*p) != c; p++) {}
+	return (char *)p;
 }
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
@@ -118,7 +119,7 @@ JSTR_NOEXCEPT
 				return (char *)p;
 		}
 		const size_t k = ONES * (unsigned char)c;
-		const size_t l = ONES * jstr_toupper(c);
+		const size_t l = ONES * (unsigned char)jstr_toupper(c);
 		const word *ws = (word *)p;
 		for (word w = *ws; n >= sizeof(size_t) && !HASZERO(w ^ k) && !HASZERO(w ^ l); n -= sizeof(size_t), w = *++ws) {}
 		p = (unsigned char *)ws;
@@ -159,25 +160,26 @@ static char *
 jstr__strncasechr_musl(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
+	const unsigned char *p = (const unsigned char *)s;
 	c = jstr_tolower(c);
 #if JSTR_HAVE_ATTR_MAY_ALIAS
-	for (; (uintptr_t)s & ALIGN; n--, s++) {
-		if (jstr_unlikely(*s == '\0') || jstr_unlikely(n == 0))
+	for (; (uintptr_t)p & ALIGN; n--, p++) {
+		if (jstr_unlikely(*p == '\0') || jstr_unlikely(n == 0))
 			return NULL;
-		if (jstr_tolower(*s) == c)
-			return (char *)s;
+		if (jstr_tolower(*p) == c)
+			return (char *)p;
 	}
-	if (n >= SS && jstr_tolower(*s) != c) {
+	if (n >= SS && jstr_tolower(*p) != c) {
 		typedef size_t JSTR_ATTR_MAY_ALIAS word;
 		const size_t k = ONES * (unsigned char)c;
-		const size_t l = ONES * jstr_toupper(c);
-		const word *ws = (const word *)s;
+		const size_t l = ONES * (unsigned char)jstr_toupper(c);
+		const word *ws = (const word *)p;
 		for (word w = *ws; n >= SS && !HASZERO(w) && !HASZERO(w ^ k) && !HASZERO(w ^ l); w = *++ws, n -= SS) {}
-		s = (const char *)ws;
+		p = (const unsigned char *)ws;
 	}
 #endif
-	for (; n && *s && jstr_tolower(*s) != c; s++, n--) {}
-	return n ? (char *)s : NULL;
+	for (; n && *p && jstr_tolower(*p) != c; p++, n--) {}
+	return n ? (char *)p : NULL;
 }
 
 #define BITOP(a, b, op) \

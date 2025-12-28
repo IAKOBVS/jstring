@@ -446,7 +446,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_memmem_comp(jstr_twoway_ty *const t, const void *ne, size_t ne_len)
+jstr_memmem_comp(jstr_twoway_ty *t, const void *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
 	if (ne_len > JSTR_TWOWAY_MEMMEM_THRES)
@@ -464,7 +464,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static void *
-jstr_memmem_exec(const jstr_twoway_ty *const t, const void *hs, size_t hs_len, const void *ne)
+jstr_memmem_exec(const jstr_twoway_ty *t, const void *hs, size_t hs_len, const void *ne)
 JSTR_NOEXCEPT
 {
 	if (t->needle_len > JSTR_TWOWAY_MEMMEM_THRES)
@@ -627,7 +627,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_strcasestr_len_comp(jstr_twoway_ty *const t, const char *ne, size_t ne_len)
+jstr_strcasestr_len_comp(jstr_twoway_ty *t, const char *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
 	if (ne_len > JSTR_TWOWAY_STRCASESTR_LEN_THRES)
@@ -643,7 +643,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static char *
-jstr_strcasestr_len_exec(const jstr_twoway_ty *const t, const char *hs, size_t hs_len, const char *ne)
+jstr_strcasestr_len_exec(const jstr_twoway_ty *t, const char *hs, size_t hs_len, const char *ne)
 JSTR_NOEXCEPT
 {
 	if (t->needle_len > JSTR_TWOWAY_STRCASESTR_LEN_THRES)
@@ -728,7 +728,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_strcasestr_comp(jstr_twoway_ty *const t, const char *ne)
+jstr_strcasestr_comp(jstr_twoway_ty *t, const char *ne)
 JSTR_NOEXCEPT
 {
 	if (*ne == '\0')
@@ -743,7 +743,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static char *
-jstr_strcasestr_exec(const jstr_twoway_ty *const t, const char *hs, const char *ne)
+jstr_strcasestr_exec(const jstr_twoway_ty *t, const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
 	if (t->needle_len > JSTR_TWOWAY_STRCASESTR_THRES)
@@ -762,7 +762,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_strstr_comp(jstr_twoway_ty *const t, const char *ne)
+jstr_strstr_comp(jstr_twoway_ty *t, const char *ne)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*ne == '\0')) {
@@ -780,7 +780,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static char *
-jstr_strstr_exec(const jstr_twoway_ty *const t, const char *hs, const char *ne)
+jstr_strstr_exec(const jstr_twoway_ty *t, const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
 	if (t->needle_len <= JSTR_TWOWAY_STRSTR_THRES)
@@ -1199,11 +1199,12 @@ static char *
 jstr_trimend_len_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*s == '\0'))
+	if (jstr_unlikely(sz == 0))
 		return s;
-	s = jstr_skipspace_rev(s, sz);
-	*++s = '\0';
-	return s;
+	unsigned char *p = (unsigned char *)s + sz;
+	for (; sz-- && jstr_isspace(*(p - 1)); --p) {}
+	*p = '\0';
+	return (char *)p;
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.

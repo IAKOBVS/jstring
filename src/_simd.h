@@ -594,7 +594,7 @@ JSTR_NOEXCEPT
 	const MASK matchm = ONES << matchsh;
 	const VEC nv0 = SETONE8(*((char *)ne + n));
 	const VEC nv1 = SETONE8(*((char *)ne + n + 1));
-	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE) || ne_len >= VEC_SIZE)
+	if (JSTR_PTR_NOT_CROSSING_PAGE(ne, VEC_SIZE, JSTR_PAGE_SIZE) || ne_len == VEC_SIZE)
 		nv = LOADU((const VEC *)ne);
 	else
 		memcpy(&nv, ne, ne_len);
