@@ -61,7 +61,7 @@ enum {
 
 JSTR_FUNC
 static int
-jstr__io_isbinarysignature(const char *R buf, size_t sz)
+jstr__io_isbinarysignature(const char *buf, size_t sz)
 {
 	enum { ELFSZ = 4,
 	       UTFSZ = 3 };
@@ -112,7 +112,7 @@ static const unsigned char jstr__io_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1
  * unprintable char. */
 JSTR_FUNC
 static int
-jstr_io_isbinary_maybe(const char *R buf, size_t sz)
+jstr_io_isbinary_maybe(const char *buf, size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
@@ -132,7 +132,7 @@ JSTR_NOEXCEPT
  * File must be nul terminated. */
 JSTR_FUNC_PURE
 static int
-jstr_io_isbinary(const char *R buf, size_t sz)
+jstr_io_isbinary(const char *buf, size_t sz)
 JSTR_NOEXCEPT
 {
 	const int ret = jstr__io_isbinarysignature(buf, sz);
@@ -144,7 +144,7 @@ JSTR_NOEXCEPT
 /* Check MIN(N, SZ) bytes for any unprintable char. */
 JSTR_FUNC
 static int
-jstr_isbinary(const char *R buf, size_t sz, size_t n)
+jstr_isbinary(const char *buf, size_t sz, size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
@@ -159,7 +159,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr_io_writefilefd_len(const char *R s, size_t sz, int fd)
+jstr_io_writefilefd_len(const char *s, size_t sz, int fd)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely((size_t)write(fd, s, sz) != sz))
@@ -374,12 +374,12 @@ JSTR_NOEXCEPT
  * NULL on error. */
 JSTR_FUNC
 static char *
-jstr_io_expandtildefirst_len_unsafe_p(char *R s, size_t sz)
+jstr_io_expandtildefirst_len_unsafe_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
 	if (*s != '~')
 		return s + sz;
-	const char *R home = getenv("HOME");
+	const char *home = getenv("HOME");
 	if (jstr_nullchk(home))
 		return NULL;
 	const size_t len = strlen(home);
@@ -400,7 +400,7 @@ JSTR_NOEXCEPT
 {
 	if (**s != '~')
 		return JSTR_RET_SUCC;
-	const char *R home = getenv("HOME");
+	const char *home = getenv("HOME");
 	if (jstr_nullchk(home))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	const size_t len = strlen(home);
@@ -420,7 +420,7 @@ jstr_io_readsystem(char *R *R s, size_t *R sz, size_t *R cap, const char *R cmd)
 JSTR_NOEXCEPT
 {
 	enum { MINBUF = JSTR_PAGE_SIZE };
-	FILE *R fp = popen(cmd, "r");
+	FILE *fp = popen(cmd, "r");
 	if (jstr_nullchk(fp))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	char buf[MINBUF];
@@ -473,7 +473,7 @@ JSTR_NOEXCEPT
 	ssize_t readsz = read(STDIN_FILENO, buf, sizeof(buf));
 	if (jstr_unlikely(readsz == (ssize_t)-1))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
-	const size_t initialsz = (size_t)readsz == sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1;
+	const size_t initialsz = (size_t)(readsz == sizeof(buf) ? readsz * JSTR_GROWTH : readsz + 1);
 	if (jstr_chk(jstr_reserve(s, sz, cap, (size_t)initialsz)))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	memcpy(*s, buf, (size_t)readsz);
@@ -774,7 +774,7 @@ static int
 jstr__io_ftw_len(struct jstr__io_ftw_data *a, jstr_io_path_size_ty dirpath_len FD_PARAM)
 JSTR_NOEXCEPT
 {
-	DIR *R const dp = OPENDIR(fd, a->ftw.dirpath);
+	DIR *const dp = OPENDIR(fd, a->ftw.dirpath);
 	if (jstr_nullchk(dp)) {
 		if (NONFATAL_ERR()) {
 			if (FLAG(JSTR_IO_FTW_REG))

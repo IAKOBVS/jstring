@@ -83,7 +83,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static jstr_ret_ty
-jstr_debug(const jstr_ty *R j)
+jstr_debug(const jstr_ty *j)
 JSTR_NOEXCEPT
 {
 	int ret;
@@ -150,7 +150,7 @@ JSTR_NOEXCEPT
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
 static void
-jstr_free_j(jstr_ty *R j)
+jstr_free_j(jstr_ty *j)
 JSTR_NOEXCEPT
 {
 	jstr_free(&j->data, &j->size, &j->capacity);
@@ -232,7 +232,7 @@ jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap)
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr_io_print(const jstr_ty *R j)
+jstr_io_print(const jstr_ty *j)
 JSTR_NOEXCEPT
 {
 	return jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size ? JSTR_RET_SUCC : JSTR_RET_ERR;
@@ -240,7 +240,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr_io_println(const jstr_ty *R j)
+jstr_io_println(const jstr_ty *j)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size))
@@ -260,7 +260,7 @@ JSTR_NOEXCEPT
 		return JSTR_RET_ERR;
 	p = *s + *sz;
 	*sz += arg_len;
-	const char *R arg;
+	const char *arg;
 	for (; (arg = va_arg(ap, const char *)); p = jstr_stpcpy(p, arg)) {}
 	return JSTR_RET_SUCC;
 }
@@ -281,7 +281,7 @@ JSTR_NOEXCEPT
 	va_list ap;
 	va_start(ap, cap);
 	size_t arg_len = 0;
-	const char *R arg;
+	const char *arg;
 	for (; (arg = va_arg(ap, const char *)); arg_len += strlen(arg)) {}
 	va_end(ap);
 	if (jstr_unlikely(arg_len == 0))
@@ -300,13 +300,13 @@ JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 static jstr_ret_ty
-jstr_cat_j(jstr_ty *R j, ...)
+jstr_cat_j(jstr_ty *j, ...)
 JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, j);
 	size_t arg_len = 0;
-	const char *R arg;
+	const char *arg;
 	for (; (arg = va_arg(ap, const char *)); arg_len += strlen(arg)) {}
 	va_end(ap);
 	if (jstr_unlikely(arg_len == 0))
@@ -361,7 +361,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_strset(char *R s, int c)
+jstr_strset(char *s, int c)
 JSTR_NOEXCEPT
 {
 	memset(s, c, strlen(s));
@@ -369,7 +369,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static char *
-jstr_assignnchr_unsafe_p(char *R s, size_t sz, int c, size_t n)
+jstr_assignnchr_unsafe_p(char *s, size_t sz, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	memset(s, c, n);
@@ -398,7 +398,7 @@ JSTR_NOEXCEPT
 /* Append N Cs to end of S. */
 JSTR_FUNC
 static char *
-jstr_pushbackn_len_unsafe_p(char *R s, size_t sz, int c, size_t n)
+jstr_pushbackn_len_unsafe_p(char *s, size_t sz, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	return (char *)memset(s + sz, c, n) + n;
@@ -419,7 +419,7 @@ JSTR_NOEXCEPT
 /* Prepend N Cs to S. */
 JSTR_FUNC
 static char *
-jstr_pushfrontn_len_unsafe_p(char *R s, size_t sz, int c, size_t n)
+jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0))
@@ -504,7 +504,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static char *
-jstr_pushback_unsafe_p(char *R s, size_t sz, char c)
+jstr_pushback_unsafe_p(char *s, size_t sz, char c)
 JSTR_NOEXCEPT
 {
 	s += sz;
@@ -531,7 +531,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static char *
-jstr_pushfront_unsafe_p(char *R s, size_t sz, char c)
+jstr_pushfront_unsafe_p(char *s, size_t sz, char c)
 JSTR_NOEXCEPT
 {
 	jstr_strmove_len(s + 1, s, sz);
@@ -561,7 +561,7 @@ JSTR_NOEXCEPT
  * Otherwise, S. */
 JSTR_FUNC_VOID
 static char *
-jstr_popback_p(char *R s, size_t sz)
+jstr_popback_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0)) {
@@ -577,7 +577,7 @@ JSTR_NOEXCEPT
  * Otherwise, S. */
 JSTR_FUNC_VOID
 static char *
-jstr_popfront_p(char *R s, size_t sz)
+jstr_popfront_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0)) {
@@ -601,7 +601,7 @@ JSTR_NOEXCEPT
  * -1 on error and errno is set. */
 JSTR_FUNC
 static int
-jstr_vsprintf_maxlen(va_list ap, const char *R fmt)
+jstr_vsprintf_maxlen(va_list ap, const char *fmt)
 JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST

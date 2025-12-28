@@ -572,7 +572,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_rmat_len_p(char *R s, size_t sz, size_t at, size_t find_len)
+jstr_rmat_len_p(char *s, size_t sz, size_t at, size_t find_len)
 JSTR_NOEXCEPT
 {
 	jstr_strmove_len(s + at, s + at + find_len, JSTR_DIFF(s + sz, s + at + find_len));
@@ -636,7 +636,7 @@ JSTR_NOEXCEPT
 /* Replace all SEARCH in REPLACE. */
 JSTR_FUNC_VOID
 static void
-jstr_rplcallchr(char *R s, char find, char rplc)
+jstr_rplcallchr(char *s, char find, char rplc)
 JSTR_NOEXCEPT
 {
 	for (; (s = strchr(s, find)); *s++ = rplc) {}
@@ -647,10 +647,10 @@ JSTR_NOEXCEPT
  * number of FINDs replaced. */
 JSTR_FUNC_VOID
 static size_t
-jstr_rplcnchr_len(char *R s, size_t sz, char find, char rplc, size_t n)
+jstr_rplcnchr_len(char *s, size_t sz, char find, char rplc, size_t n)
 JSTR_NOEXCEPT
 {
-	const char *R end = s + sz;
+	const char *end = s + sz;
 	size_t changed = 0;
 	for (; n-- && (s = (char *)memchr(s, find, JSTR_DIFF(end, s))); *s++ = rplc, ++changed) {}
 	return changed;
@@ -661,7 +661,7 @@ JSTR_NOEXCEPT
  * number of FINDs replaced. */
 JSTR_FUNC_VOID
 static size_t
-jstr_rplcnchr(char *R s, char find, char rplc, size_t n)
+jstr_rplcnchr(char *s, char find, char rplc, size_t n)
 JSTR_NOEXCEPT
 {
 	size_t changed = 0;
@@ -672,10 +672,10 @@ JSTR_NOEXCEPT
 /* Replace all SEARCH in REPLACE. */
 JSTR_FUNC_VOID
 static void
-jstr_rplcallchr_len(char *R s, size_t sz, char find, char rplc)
+jstr_rplcallchr_len(char *s, size_t sz, char find, char rplc)
 JSTR_NOEXCEPT
 {
-	const char *R end = s + sz;
+	const char *end = s + sz;
 	for (; (s = (char *)memchr(s, find, JSTR_DIFF(end, s))); *s++ = rplc) {}
 }
 
@@ -1059,7 +1059,7 @@ JSTR_NOEXCEPT
  * number of FINDs replaced. */
 JSTR_FUNC_VOID
 static int
-jstr_rplcchr_len(char *R s, size_t sz, char find, char rplc)
+jstr_rplcchr_len(char *s, size_t sz, char find, char rplc)
 JSTR_NOEXCEPT
 {
 	s = (char *)memchr(s, find, sz);
@@ -1075,7 +1075,7 @@ JSTR_NOEXCEPT
  * number of FINDs replaced. */
 JSTR_FUNC_VOID
 static int
-jstr_rplcchr(char *R s, char find, char rplc)
+jstr_rplcchr(char *s, char find, char rplc)
 JSTR_NOEXCEPT
 {
 	s = strchr(s, find);

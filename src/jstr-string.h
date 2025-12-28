@@ -1028,7 +1028,7 @@ JSTR_FUNC_PURE
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_ATTR_ACCESS((__read_only__, 4, 5))
 static size_t
-jstr_count_len_exec(const jstr_twoway_ty *R t, const char *s, size_t sz, const char *find, size_t find_len)
+jstr_count_len_exec(const jstr_twoway_ty *t, const char *s, size_t sz, const char *find, size_t find_len)
 JSTR_NOEXCEPT
 {
 	if (find_len == 1)
@@ -1105,7 +1105,7 @@ JSTR_NOEXCEPT
  * NULL if no newline was found. */
 JSTR_FUNC_PURE
 static char *
-jstr_linenext(const char *R s)
+jstr_linenext(const char *s)
 JSTR_NOEXCEPT
 {
 	s = strchr(s, '\n');
@@ -1127,7 +1127,7 @@ JSTR_NOEXCEPT
  * ptr to next line or '\0'. */
 JSTR_FUNC_PURE
 static char *
-jstr_linenextnul(const char *R s)
+jstr_linenextnul(const char *s)
 JSTR_NOEXCEPT
 {
 	s = jstr_strchrnul(s, '\n');
@@ -1166,7 +1166,7 @@ jstr_revcpy_p(char *R dst, const char *R src)
 /* Reverse S. */
 JSTR_FUNC_VOID
 static void
-jstr_rev_len(char *R s, size_t sz)
+jstr_rev_len(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
 	char *e = s + sz - 1;
@@ -1183,7 +1183,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S. */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_rev_p(char *R s)
+jstr_rev_p(char *s)
 JSTR_NOEXCEPT
 {
 	const size_t len = strlen(s);
@@ -1196,7 +1196,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_trimend_len_p(char *R s, size_t sz)
+jstr_trimend_len_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
@@ -1211,7 +1211,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_trimend_p(char *R s)
+jstr_trimend_p(char *s)
 JSTR_NOEXCEPT
 {
 	return jstr_trimend_len_p(s, strlen(s));
@@ -1222,7 +1222,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_trimstart_len_p(char *R s, size_t sz)
+jstr_trimstart_len_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
@@ -1239,7 +1239,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_trimstart_p(char *R s)
+jstr_trimstart_p(char *s)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
@@ -1253,7 +1253,7 @@ JSTR_NOEXCEPT
 /* Trim leading jstr_isspace() chars in S. */
 JSTR_FUNC_VOID
 static void
-jstr_trimstart(char *R s)
+jstr_trimstart(char *s)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
@@ -1268,7 +1268,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_trim_len_p(char *R s, size_t sz)
+jstr_trim_len_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
@@ -1286,7 +1286,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' in S; */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_trim_p(char *R s)
+jstr_trim_p(char *s)
 JSTR_NOEXCEPT
 {
 	return jstr_trim_len_p(s, strlen(s));
@@ -1297,7 +1297,7 @@ JSTR_NOEXCEPT
  * Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_toCamelCaseP(char *R s)
+jstr_toCamelCaseP(char *s)
 JSTR_NOEXCEPT
 {
 	for (; *s == '_'; ++s) {}
@@ -1348,7 +1348,7 @@ JSTR_NOEXCEPT
  * Leading underscores are preserved. */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_to_snake_case_p(char *R s)
+jstr_to_snake_case_p(char *s)
 JSTR_NOEXCEPT
 {
 	unsigned char *p = (unsigned char *)s;
@@ -1488,7 +1488,7 @@ JSTR_NOEXCEPT
  * For example: 1234 becomes 1,234. */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_thousep_len_p(char *R nptr, size_t sz, char separator)
+jstr_thousep_len_p(char *nptr, size_t sz, char separator)
 JSTR_NOEXCEPT
 {
 	char *end = nptr + sz;
@@ -1524,7 +1524,7 @@ JSTR_NOEXCEPT
  * For example: 1234 becomes 1,234. */
 JSTR_FUNC_RET_NONNULL
 static char *
-jstr_thousep_p(char *R nptr, char separator)
+jstr_thousep_p(char *nptr, char separator)
 JSTR_NOEXCEPT
 {
 	return jstr_thousep_len_p(nptr, strlen(nptr), separator);

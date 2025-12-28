@@ -172,7 +172,7 @@ typedef struct {
 
 JSTR_FUNC_VOID
 static void
-jstr_re_free(jstr_re_ty *R preg)
+jstr_re_free(jstr_re_ty *preg)
 JSTR_NOEXCEPT
 {
 	regfree(&preg->reg);
@@ -182,7 +182,7 @@ JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
 static void
-jstr_re_err(jstr_re_ret_ty errcode, const jstr_re_ty *R preg)
+jstr_re_err(jstr_re_ret_ty errcode, const jstr_re_ty *preg)
 JSTR_NOEXCEPT
 {
 	char buf[64];
@@ -194,7 +194,7 @@ JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
 static void
-jstr_re_errdie(jstr_re_ret_ty errcode, const jstr_re_ty *R preg)
+jstr_re_errdie(jstr_re_ret_ty errcode, const jstr_re_ty *preg)
 JSTR_NOEXCEPT
 {
 	jstr_re_err(errcode, preg);

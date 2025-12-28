@@ -30,6 +30,8 @@
 
 JSTR__BEGIN_DECLS
 
+#define R JSTR_RESTRICT
+
 /* Select AVX512, AVX2, or SSE2. */
 
 #if JSTR_ARCH_X86_64
@@ -133,7 +135,7 @@ typedef uint16_t jstr_vmask_ty;
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 static char *
-jstr__simd_stpcpy(char *JSTR_RESTRICT dst, const char *JSTR_RESTRICT src)
+jstr__simd_stpcpy(char *R dst, const char *R src)
 JSTR_NOEXCEPT
 {
 	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
@@ -655,6 +657,8 @@ match:
 #undef TZCNT
 #undef LZCNT
 #undef POPCNT
+
+#undef R
 
 JSTR__END_DECLS
 
