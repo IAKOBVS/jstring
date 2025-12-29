@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 cd "$(dirname "$0")" || exit
 #shellcheck disable=SC2005
 for file in $(echo ../* ../src/* ../bin/* ../tests/*); do

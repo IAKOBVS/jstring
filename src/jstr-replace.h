@@ -128,7 +128,7 @@ static jstr_ret_ty
 jstr_insertafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(*s, c, *sz);
+	const char *p = (char *)memchr(*s, c, *sz);
 	if (p != NULL)
 		return jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s + 1), src, src_len);
 	return JSTR_RET_SUCC;
@@ -165,7 +165,7 @@ JSTR_NOEXCEPT
 		return jstr_insertafterchr_len(s, sz, cap, *find, src, src_len);
 	if (jstr_unlikely(find_len == 0))
 		return JSTR_RET_SUCC;
-	const char *const p = (char *)jstr_memmem(*s, *sz, find, find_len);
+	const char *p = (char *)jstr_memmem(*s, *sz, find, find_len);
 	if (p != NULL)
 		return jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len);
 	return JSTR_RET_SUCC;
@@ -363,7 +363,7 @@ jstr_rmnchr_len_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	const char *const end = s + *sz;
+	const char *end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(n == 0) || jstr_unlikely(*i.src_e == '\0') || !(i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))))
 		return 0;
@@ -590,7 +590,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(find_len == 0))
 		return 0;
-	char *const p = (char *)jstr_memmem_exec(t, s + start_idx, *sz - start_idx, find);
+	char *p = (char *)jstr_memmem_exec(t, s + start_idx, *sz - start_idx, find);
 	if (p == NULL)
 		return 0;
 	*sz = JSTR_DIFF(jstr_rmat_len_p(s, *sz, JSTR_DIFF(p, *s), find_len), *s);
@@ -688,7 +688,7 @@ jstr_rmlast_len_from(char *R s, size_t *R sz, size_t start_idx, const char *R fi
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	const char *const p = jstr_strrstr_len(s + start_idx, *sz - start_idx, find, find_len);
+	const char *p = jstr_strrstr_len(s + start_idx, *sz - start_idx, find, find_len);
 	if (p) {
 		*sz = JSTR_DIFF(jstr_rmat_len_p(s, *sz, JSTR_DIFF(p, s), find_len), s);
 		return 1;
@@ -715,7 +715,7 @@ static int
 jstr_rplclast_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find, size_t find_len, const char *R rplc, size_t rplc_len)
 JSTR_NOEXCEPT
 {
-	const char *const p = jstr_strrstr_len(*s, *sz, find, find_len);
+	const char *p = jstr_strrstr_len(*s, *sz, find, find_len);
 	if (p) {
 		if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(p, *s), rplc, rplc_len, find_len)))
 			return -1;
@@ -738,7 +738,7 @@ JSTR_NOEXCEPT
 		return jstr_rmnchr_len(s, sz, *find, n);
 	if (jstr_unlikely(find_len == 0))
 		return 0;
-	const char *const end = s + *sz;
+	const char *end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(n == 0) || !(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
 		return 0;
@@ -1123,7 +1123,7 @@ static jstr_ret_ty
 jstr_placeafterchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, const char *R src, size_t src_len)
 JSTR_NOEXCEPT
 {
-	const char *const p = (char *)memchr(*s, c, *sz);
+	const char *p = (char *)memchr(*s, c, *sz);
 	if (p != NULL)
 		return jstr_place_len(s, sz, cap, JSTR_DIFF(p, *s + 1), src, src_len);
 	return JSTR_RET_SUCC;
@@ -1141,7 +1141,7 @@ JSTR_NOEXCEPT
 		return jstr_placeafterchr_len(s, sz, cap, *find, src, src_len);
 	if (jstr_unlikely(find_len == 0))
 		return JSTR_RET_SUCC;
-	const char *const p = (char *)jstr_memmem(*s, *sz, find, find_len);
+	const char *p = (char *)jstr_memmem(*s, *sz, find, find_len);
 	if (p != NULL)
 		return jstr_place_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len);
 	return JSTR_RET_SUCC;

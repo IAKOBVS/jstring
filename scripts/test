@@ -1,6 +1,8 @@
 #!/bin/sh
 #shellcheck disable=disable=SC2086
 
+set -e
+
 PATH_TEST=../tests
 
 CFLAGS="

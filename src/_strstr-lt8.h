@@ -60,7 +60,7 @@ static char *
 JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_len, const unsigned char *ne, unsigned int ne_len)
 JSTR_NOEXCEPT
 {
-	uint64_t hw, nw;
+	uint64_t hw = 0, nw = 0;
 	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
 	for (unsigned int n = ne_len; n--; hw = (uint64_t)hw << 8 | L(*hs++), nw = (uint64_t)nw << 8 | L(*ne++))
 		N_EXIT;
@@ -89,7 +89,7 @@ static char *
 JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, size_t hs_len, const unsigned char *ne, unsigned int ne_len)
 JSTR_NOEXCEPT
 {
-	uint64_t hw, nw;
+	uint64_t hw = 0, nw = 0;
 	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
 	hs += hs_len - 1;
 	ne += ne_len - 1;
@@ -128,7 +128,7 @@ static char *
 JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, _lt8)(const unsigned char *hs, const unsigned char *ne, unsigned int ne_len)
 JSTR_NOEXCEPT
 {
-	uint64_t hw, nw;
+	uint64_t hw = 0, nw = 0;
 	const uint64_t mask = (uint64_t)-1 >> ((sizeof(uint64_t) - ne_len) << 3);
 	for (; *ne; hw = (uint64_t)hw << 8 | L(*hs++), nw = (uint64_t)nw << 8 | L(*ne++)) {
 		N_EXIT;

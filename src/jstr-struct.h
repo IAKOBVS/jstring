@@ -44,7 +44,7 @@ typedef struct jstr_ty {
 } jstr_ty;
 
 typedef struct jstr_literal_ty {
-	const char *const data;
+	const char *data;
 	const unsigned int size;
 } jstr_literal_ty;
 JSTR__END_DECLS

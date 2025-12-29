@@ -149,7 +149,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
-	const unsigned char *const end = (const unsigned char *)buf + JSTR_MIN(n, sz);
+	const unsigned char *end = (const unsigned char *)buf + JSTR_MIN(n, sz);
 	const unsigned char *s = (unsigned char *)buf;
 	for (; s < end; ++s)
 		if (jstr__io_binary_table[*s])
@@ -774,7 +774,7 @@ static int
 jstr__io_ftw_len(struct jstr__io_ftw_data *a, jstr_io_path_size_ty dirpath_len FD_PARAM)
 JSTR_NOEXCEPT
 {
-	DIR *const dp = OPENDIR(fd, a->ftw.dirpath);
+	DIR *dp = OPENDIR(fd, a->ftw.dirpath);
 	if (jstr_nullchk(dp)) {
 		if (NONFATAL_ERR()) {
 			if (FLAG(JSTR_IO_FTW_REG))
@@ -1048,7 +1048,7 @@ func:
 				return JSTR_RET_SUCC;
 		} else {
 			dirpath = (char *)jstr_memrchr(fulpath, '/', dirpath_len);
-			const char *const end = (char *)dirpath + dirpath_len;
+			const char *end = (char *)dirpath + dirpath_len;
 			if (dirpath) {
 				if (*++dirpath && func_match(dirpath, end - dirpath, func_match_args))
 					return JSTR_RET_SUCC;

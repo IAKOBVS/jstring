@@ -1,6 +1,8 @@
 #!/bin/sh
 #shellcheck disable=SC2086,2068,2005,2028
 
+set -e
+
 PATH_BUILD=../jstr
 PATH_SRC=../src
 PATH_MACROS=$PATH_BUILD/jstr-macros.h

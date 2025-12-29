@@ -178,7 +178,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const char *const end = s + n;
+	const char *end = s + n;
 	MASK cm0, cm1, m, zm, i;
 	VEC sv;
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
@@ -218,7 +218,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
 		return NULL;
-	const char *const end = s + n;
+	const char *end = s + n;
 	MASK cm, m, zm, i;
 	VEC sv;
 	const VEC cv = SETONE8((char)c);
@@ -337,7 +337,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n == 0))
 		return NULL;
 	const unsigned char *p = (const unsigned char *)s;
-	const unsigned char *const end = p + n;
+	const unsigned char *end = p + n;
 	MASK cm0, cm1, m, i;
 	VEC sv;
 	const VEC cv0 = SETONE8((char)jstr_tolower(c));
@@ -581,7 +581,7 @@ JSTR_NOEXCEPT
 	VEC hv, nv;
 	MASK cmpm;
 	const unsigned char *h = (const unsigned char *)hs;
-	const unsigned char *const end = h + hs_len - ne_len;
+	const unsigned char *end = h + hs_len - ne_len;
 	/* Find a unique character pair in NE. For example, "ab" in
 	 * "aaaaaaaaaaaaaaaabbbbcccc". */
 	const unsigned char *p = (const unsigned char *)ne + 1;

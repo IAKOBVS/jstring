@@ -334,7 +334,7 @@ JSTR_NOEXCEPT
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	regmatch_t rm;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(*s + start_idx);
-	const char *const end = *s + *sz;
+	const char *end = *s + *sz;
 	if (n == 1)
 		return jstr_re_rm_from_exec(preg, s, sz, cap, start_idx, eflags);
 	if (jstr_unlikely(n == 0))

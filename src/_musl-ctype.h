@@ -55,7 +55,7 @@ jstr_isalpha(int c)
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 int
-isdigit(int c)
+jstr_isdigit(int c)
 {
 	return ISDIGIT((unsigned char)c);
 }

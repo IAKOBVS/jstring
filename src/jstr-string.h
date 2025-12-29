@@ -56,7 +56,7 @@ JSTR_NOEXCEPT
 #	elif JSTR_HAVE_SIMD && !JSTR_HAVENT_STRCHRNUL_SIMD
 	return jstr__simd_strchrnul(s, c);
 #	else
-	char *const p = strchr(s, c);
+	char *p = strchr(s, c);
 	return p ? p : (char *)s + strlen(s);
 #	endif
 }
@@ -144,7 +144,7 @@ static void *
 jstr_memrchrnul(const void *s, int c, size_t sz)
 JSTR_NOEXCEPT
 {
-	const void *const p = jstr_memrchr(s, c, sz);
+	const void *p = jstr_memrchr(s, c, sz);
 	return (void *)(p ? p : (char *)s + sz);
 }
 
@@ -154,7 +154,7 @@ static void *
 jstr_memchrnul(const void *s, int c, size_t sz)
 JSTR_NOEXCEPT
 {
-	const void *const p = memchr(s, c, sz);
+	const void *p = memchr(s, c, sz);
 	return (void *)(p ? p : (char *)s + sz);
 }
 
@@ -238,7 +238,7 @@ jstr_strstrnul(const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
 	if (*ne && ne[1]) {
-		const char *const p = strstr(hs, ne);
+		const char *p = strstr(hs, ne);
 		return (char *)(p ? p : hs + strlen(hs));
 	} else {
 		return jstr_strchrnul(hs, *ne);
@@ -931,7 +931,7 @@ static void *
 jstr_memchrinv(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
-	const void *const end = (const unsigned char *)s + n;
+	const void *end = (const unsigned char *)s + n;
 	s = jstr_memchrnulinv(s, c, n);
 	return (s != end) ? (void *)s : NULL;
 }
@@ -1036,7 +1036,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
-	for (const char *const end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_DIFF(end, s), find)); ++cnt, s += find_len) {}
+	for (const char *end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_DIFF(end, s), find)); ++cnt, s += find_len) {}
 	return cnt;
 }
 
@@ -1081,7 +1081,7 @@ JSTR_NOEXCEPT
  * BEGIN if no newline was found. */
 JSTR_FUNC_PURE
 static char *
-jstr_linestart(const char *const start, const char *end)
+jstr_linestart(const char *start, const char *end)
 JSTR_NOEXCEPT
 {
 	end = (char *)jstr_memrchr(start, '\n', JSTR_DIFF(end, start));
@@ -1093,7 +1093,7 @@ JSTR_NOEXCEPT
  * NULL if no newline was found. */
 JSTR_FUNC_PURE
 static char *
-jstr_linenext_len(const char *start, const char *const end)
+jstr_linenext_len(const char *start, const char *end)
 JSTR_NOEXCEPT
 {
 	start = (char *)memchr(start, '\n', JSTR_DIFF(end, start));
@@ -1116,7 +1116,7 @@ JSTR_NOEXCEPT
  * ptr to next line or '\0'. */
 JSTR_FUNC_PURE
 static char *
-jstr_linenextnul_len(const char *start, const char *const end)
+jstr_linenextnul_len(const char *start, const char *end)
 JSTR_NOEXCEPT
 {
 	start = jstr_linenext_len(start, end);
@@ -1137,7 +1137,7 @@ JSTR_NOEXCEPT
 /* Return the number of newlines + 1. */
 JSTR_FUNC_PURE
 static size_t
-jstr_linenumber(const char *start, const char *const end)
+jstr_linenumber(const char *start, const char *end)
 JSTR_NOEXCEPT
 {
 	return jstr_countchr_len(start, '\n', JSTR_DIFF(end, start)) + 1;
@@ -1226,13 +1226,14 @@ static char *
 jstr_trimstart_len_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*s == '\0'))
+	if (jstr_unlikely(sz == 0))
 		return s;
-	const char *const start = jstr_skipspace(s);
-	sz = JSTR_DIFF(s + sz, start);
-	if (s != start)
-		return jstr_stpmove_len(s, start, sz);
-	return s + sz;
+	const unsigned char *p = (const unsigned char *)s;
+	for (; jstr_isspace(*p); ++p) {}
+	sz -= JSTR_DIFF(p, s);
+	if (p != (unsigned char *)s)
+		return jstr_stpmove_len(s, (const char *)p, sz);
+	return (char *)p + sz;
 }
 
 /* Trim leading jstr_isspace() chars in S.
@@ -1245,10 +1246,12 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
 		return s;
-	const char *const start = jstr_skipspace(s);
-	if (s != start)
-		return jstr_stpmove_len(s, start, strlen(start));
-	return s + strlen(start);
+	const unsigned char *p = (const unsigned char *)s;
+	for (; jstr_isspace(*p); ++p) {}
+	const size_t p_len = strlen((char *)p);
+	if (p != (unsigned char *)s)
+		return jstr_stpmove_len(s, (const char *)p, p_len);
+	return (char *)p + p_len;
 }
 
 /* Trim leading jstr_isspace() chars in S. */
@@ -1259,9 +1262,10 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(*s == '\0'))
 		return;
-	const char *const start = jstr_skipspace(s);
-	if (s != start)
-		jstr_strmove_len(s, start, strlen(start));
+	const unsigned char *p = (const unsigned char *)s;
+	for (; jstr_isspace(*p); ++p) {}
+	if (p != (unsigned char *)s)
+		jstr_strmove_len(s, (const char *)p, strlen((char *)p));
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
@@ -1272,14 +1276,8 @@ static char *
 jstr_trim_len_p(char *s, size_t sz)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*s == '\0'))
-		return s;
-	const char *const end = jstr_skipspace_rev(s, sz);
-	const char *const start = jstr_skipspace(s);
-	sz = JSTR_DIFF(end, start);
-	if (start != s)
-		return jstr_stpmove_len(s, start, sz);
-	return s + sz;
+	const char *end = jstr_trimend_len_p(s, sz);
+	return jstr_trimstart_len_p(s, JSTR_DIFF(end, s));
 }
 
 /* Trim leading and trailing jstr_isspace() chars in S.
@@ -1404,7 +1402,7 @@ static char *
 jstr_strtok_ne_len(const char **R const save_ptr, const char *R const end, const char *R ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	const char *const s = *save_ptr;
+	const char *s = *save_ptr;
 	if (jstr_unlikely(*s == '\0'))
 		return NULL;
 	*save_ptr = jstr_strstrnul_len(s, JSTR_DIFF(end, s), ne, ne_len);
@@ -1421,7 +1419,7 @@ static char *
 jstr_strtok_ne(const char **R const save_ptr, const char *R ne)
 JSTR_NOEXCEPT
 {
-	const char *const s = *save_ptr;
+	const char *s = *save_ptr;
 	if (jstr_unlikely(*s == '\0'))
 		return NULL;
 	*save_ptr = jstr_strstrnul(s, ne);
@@ -1502,7 +1500,7 @@ JSTR_NOEXCEPT
 		return end;
 	size_t dif = (sz - 1) / 3;
 	end += dif;
-	const char *const start = nptr;
+	const char *start = nptr;
 	nptr += (sz - 1);
 	int n;
 	for (n = 0; nptr >= start;) {

@@ -40,4 +40,6 @@ for file in $(echo $tmp/*); do
 	echo "$output" >"$(echo "$file" | sed 's/.*\//result-/; s/\-exe//')"
 done
 
-rm -rf "$tmp"
+if test -d "$tmp"; then
+	rm -rf "$tmp"
+fi

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 has_prog()
 {
 	type "$1" >/dev/null 2>/dev/null

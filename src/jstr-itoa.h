@@ -98,7 +98,7 @@ JSTR_NOEXCEPT
 	case 8: LOOP_BASE(8);
 	default: LOOP_BASE(base);
 	}
-	char *const end = buf;
+	char *end = buf;
 	*buf-- = '\0';
 	int c;
 	for (; start < buf;) {
@@ -182,7 +182,7 @@ JSTR_NOEXCEPT
 			n = 0;
 		}
 	}
-	const char *const end = buf;
+	const char *end = buf;
 	*buf-- = '\0';
 	while (start < buf) {
 		c = *start;

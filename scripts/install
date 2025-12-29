@@ -1,6 +1,8 @@
 #!/bin/sh
-#shellcheck disable=SC2068
 
+set -e
+
+#shellcheck disable=SC2068
 verbose()
 {
 	$@
@@ -8,9 +10,11 @@ verbose()
 }
 
 cd "$(dirname "$0")" || exit
+
 LIB=jstr
 INSTALL_DIR=/usr/local/include
 PATH_BUILD=../$LIB
+
 [ $# -eq 1 ] && INSTALL_DIR=$1
 ./fmt "$PATH_BUILD"/*.h
 if [ "$(id -u)" -eq 0 ]; then

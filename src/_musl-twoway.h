@@ -61,7 +61,7 @@ typedef struct jstr_twoway_ty {
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t, const unsigned char *const ne
+JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t, const unsigned char *ne
 #ifndef JSTR__MUSL_CHECK_EOL
                                          ,
                                          size_t ne_len
@@ -141,13 +141,13 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *const t, const unsigned char *hs
+JSTR_CONCAT(JSTR__MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *t, const unsigned char *hs
 #ifndef JSTR__MUSL_CHECK_EOL
                                          ,
                                          const size_t hs_len
 #endif
                                          ,
-                                         const unsigned char *const ne)
+                                         const unsigned char *ne)
 JSTR_NOEXCEPT
 {
 	int c;
@@ -157,7 +157,7 @@ JSTR_NOEXCEPT
 #ifdef JSTR__MUSL_CHECK_EOL
 	const unsigned char *end = hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
 #else
-	const unsigned char *const end = hs + hs_len;
+	const unsigned char *end = hs + hs_len;
 #endif
 	/* Search loop */
 	for (;;) {
