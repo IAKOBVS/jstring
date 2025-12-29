@@ -41,18 +41,6 @@
 
 #include "jstr-macros.h"
 
-/*
-#ifdef __clang__
-#	pragma clang diagnostic push
-#	pragma clang diagnostic ignored "-Wunknown-warning-option"
-#endif
-#ifdef __GNUC__
-#	pragma GCC diagnostic push
-#	pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#	pragma GCC diagnostic ignored "-Wuninitialized"
-#endif
-*/
-
 #ifdef JSTR__STRSTR234_MEMMEM
 
 JSTR_FUNC_PURE
@@ -150,15 +138,6 @@ JSTR_CONCAT(JSTR__STRSTR234_FUNC_NAME, 2)(const unsigned char *h, const unsigned
 }
 
 #endif
-
-/*
-#ifdef __clang__
-#	pragma clang diagnostic pop
-#endif
-#ifdef __GNUC__
-#	pragma GCC diagnostic pop
-#endif
-*/
 
 #undef L
 #undef N
