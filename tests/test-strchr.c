@@ -87,7 +87,6 @@ T_ALL_SPN(const char *s, const char *a)
 		t.hs = p;
 		t.n = strlen(p);
 		T_size(jstr_strrspn_len, simple_memrspn, p, a, t.n);
-		/* FIXME: test fails */
 		T_size(jstr_strrcspn_len, simple_memrcspn, p, a, t.n);
 	}
 }
