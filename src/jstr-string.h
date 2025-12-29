@@ -1229,8 +1229,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(sz == 0))
 		return s;
 	const unsigned char *p = (const unsigned char *)s;
-	for (; jstr_isspace(*p); ++p) {}
-	sz -= JSTR_DIFF(p, s);
+	for (; sz && jstr_isspace(*p); ++p, --sz) {}
 	if (p != (unsigned char *)s)
 		return jstr_stpmove_len(s, (const char *)p, sz);
 	return (char *)p + sz;
