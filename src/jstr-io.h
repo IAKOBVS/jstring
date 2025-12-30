@@ -921,7 +921,7 @@ skip_fn:
 			continue;
 		/* If we have *_at functions, open d_name to get the fd.
 		 * Otherwise, no-op. */
-		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | O_NONBLOCK | JSTR__IO_O_DIRECTORY, goto CONT);
+		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | JSTR__IO_O_DIRECTORY, goto CONT);
 		tmp = jstr__io_ftw_len(a, a->ftw.dirpath_len FD_ARG);
 		/* Close when we have *_at functions. */
 		CLOSE(FD, goto err_closedir);
@@ -992,7 +992,7 @@ JSTR_NOEXCEPT
 	char fulpath[JSTR_IO_PATH_MAX];
 	jstr_strcpy_len(fulpath, dirpath, dirpath_len);
 	FD_DECLARE;
-	OPEN(fd, fulpath, O_RDONLY | O_NONBLOCK, goto err);
+	OPEN(fd, fulpath, O_RDONLY, goto err);
 	struct stat st;
 	struct jstr__io_ftw_data data;
 	data.ftw.dirpath = fulpath;
