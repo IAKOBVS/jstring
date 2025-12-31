@@ -21,8 +21,8 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef MUSL_CTYPE_H
-#	define MUSL_CTYPE_H 1
+#ifndef JSTR_MUSL_CTYPE_H
+#	define JSTR_MUSL_CTYPE_H 1
 
 #	include "jstr-macros.h"
 
@@ -182,4 +182,4 @@ jstr_toupper(int c)
 
 JSTR__END_DECLS
 
-#endif /* MUSL_CTYPE_H */
+#endif /* JSTR_MUSL_CTYPE_H */
