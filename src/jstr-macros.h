@@ -892,7 +892,7 @@ JSTR_NOEXCEPT
 #		define JSTR_HAVE_FILENO 1
 #	endif
 
-#	if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE) \
 	|| defined _BSD_SOURCE
 #		define JSTR_HAVE_STRCASECMP  1
 #		define JSTR_HAVE_STRNCASECMP 1
@@ -920,7 +920,7 @@ JSTR_NOEXCEPT
 #		define JSTR_HAVE_STRCASESTR        1
 #	endif /* Gnu */
 
-#	if (JSTR_GLIBC_PREREQ(2, 24) && (_POSIX_C_SOURCE - 0) >= 199309L)                                                 \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 24) && (_POSIX_C_SOURCE - 0) >= 199309L)                                                 \
 	|| ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE) \
 	|| (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
 #		define JSTR_HAVE_GETC_UNLOCKED    1
@@ -929,7 +929,7 @@ JSTR_NOEXCEPT
 #		define JSTR_HAVE_PUTCHAR_UNLOCKED 1
 #	endif /* Posix || Bsd  */
 
-#	if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
 	|| defined _SVID_SOURCE || defined _BSD_SOURCE
 #		define JSTR_HAVE_FREAD_UNLOCKED    1
 #		define JSTR_HAVE_FWRITE_UNLOCKED   1
@@ -942,7 +942,7 @@ JSTR_NOEXCEPT
 #		define JSTR_HAVE_FFLUSH_UNLOCKED   1
 #	endif /* Default || Svid || Bsd */
 
-#	if JSTR_GLIBC_PREREQ(2, 10) && (_POSIX_C_SOURCE - 0) >= 200809L \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 10) && (_POSIX_C_SOURCE - 0) >= 200809L) \
 	|| defined _GNU_SOURCE
 #		define JSTR_HAVE_STPCPY  1
 #		define JSTR_HAVE_STRNLEN 1
@@ -950,7 +950,7 @@ JSTR_NOEXCEPT
 #	endif /* Posix || Gnu */
 
 #	if (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500)          \
-	|| (JSTR_GLIBC_PREREQ(2, 12) && (__POSIX_C_SOURCE - 0) >= 200809L) \
+	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && (__POSIX_C_SOURCE - 0) >= 200809L) \
 	|| defined _BSD_SOURCE || defined _SVID_SOURCE
 #		define JSTR_HAVE_STRDUP 1
 #	endif /* Xopen || Bsd || Svid || Posix */
@@ -966,24 +966,24 @@ JSTR_NOEXCEPT
 #		define JSTR_HAVE_PCLOSE 1
 #	endif
 
-#	if (JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE)                                                                    \
-	|| (JSTR_GLIBC_PREREQ(2, 19) && defined _SVID_SOURCE)                                                                        \
-	|| (JSTR_GLIBC_PREREQ(2, 17) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200809L)))                         \
-	|| (JSTR_GLIBC_PREREQ(2, 12) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200112L)) || defined _SVID_SOURCE) \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 20) && defined _DEFAULT_SOURCE)                                                                    \
+	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _SVID_SOURCE)                                                                        \
+	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 17) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200809L)))                         \
+	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && ((_XOPEN_SOURCE - 0) >= 500 && !((_POSIX_C_SOURCE - 0) >= 200112L)) || defined _SVID_SOURCE) \
 	|| (defined _SVID_SOURCE || (_XOPEN_SOURCE - 0) >= 500)
 #		define JSTR_HAVE_GCVT 1
 #		define JSTR_HAVE_ECVT 1
 #		define JSTR_HAVE_FCVT 1
 #	endif
 
-#	if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
 	|| defined _SVID_SOURCE
 #		define JSTR_HAVE_QECVT 1
 #		define JSTR_HAVE_QFCVT 1
 #		define JSTR_HAVE_QGCVT 1
 #	endif
 
-#	if (JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 19) && defined _DEFAULT_SOURCE) \
 	|| (defined _SVID_SOURCE || defined _BSD_SOURCE)
 #		define JSTR_HAVE_QECVT_R 1
 #		define JSTR_HAVE_QFCVT_R 1
