@@ -644,11 +644,9 @@ JSTR__CAST(T, Other other)
 #	if defined __glibc_unlikely && defined __glibc_likely
 #		define jstr_likely(x)   __glibc_likely(x)
 #		define jstr_unlikely(x) __glibc_unlikely(x)
-#	elif (defined __GNUC__ && (__GNUC__ >= 3)) || defined __clang__
-#		if JSTR_HAS_BUILTIN(__builtin_expect)
-#			define jstr_likely(x)   __builtin_expect((x), 1)
-#			define jstr_unlikely(x) __builtin_expect((x), 0)
-#		endif
+#	elif ((defined __GNUC__ && (__GNUC__ >= 3)) || defined __clang__) && JSTR_HAS_BUILTIN(__builtin_expect)
+#		define jstr_likely(x)   __builtin_expect((x), 1)
+#		define jstr_unlikely(x) __builtin_expect((x), 0)
 #	else
 #		define jstr_likely(x)   (x)
 #		define jstr_unlikely(x) (x)
