@@ -452,34 +452,28 @@ JSTR_NOEXCEPT
 	if (ne_len > JSTR_TWOWAY_MEMMEM_THRES)
 		jstr__memmem_musl_comp(t, (const unsigned char *)ne, ne_len);
 	else
-		t->needle_len = ne_len;
+		t->ne_len = (size_t)-1;
 }
-
-#	if (!JSTR_HAVE_SIMD || JSTR_HAVENT_MEMMEM_SIMD)
-#		if JSTR_TWOWAY_MEMMEM_THRES != 2
-#			error "JSTR_TWOWAY_MEMMEM_THRES is assumed to be 2."
-#		endif
-#	endif
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static void *
-jstr_memmem_exec(const jstr_twoway_ty *t, const void *hs, size_t hs_len, const void *ne)
+jstr_memmem_exec(const jstr_twoway_ty *t, const void *hs, size_t hs_len, const void *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	if (t->needle_len > JSTR_TWOWAY_MEMMEM_THRES)
-		return jstr__memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
+	if (ne_len > JSTR_TWOWAY_MEMMEM_THRES)
+		return jstr__memmem_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
 #	if JSTR_HAVE_SIMD && !JSTR_HAVENT_MEMMEM_SIMD
-	return jstr__simd_memmem(hs, hs_len, ne, t->needle_len);
+	return jstr__simd_memmem(hs, hs_len, ne, ne_len);
 #	else
-	if (t->needle_len == 2) {
+	if (ne_len == 2) {
 		if (jstr_unlikely(hs_len < 2))
 			return NULL;
 		return jstr__memmem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 	}
-	if (t->needle_len == 1)
+	if (ne_len == 1)
 		return (void *)memchr(hs, *(const unsigned char *)ne, hs_len);
-	/* if (t->needle_len == 0) */
+	/* if (ne_len == 0) */
 	return (char *)hs;
 #	endif
 }
@@ -633,29 +627,25 @@ JSTR_NOEXCEPT
 	if (ne_len > JSTR_TWOWAY_STRCASESTR_LEN_THRES)
 		jstr__strcasestr_len_musl_comp(t, (const unsigned char *)ne, ne_len);
 	else
-		t->needle_len = ne_len;
+		t->ne_len = (size_t)-1;
 }
-
-#	if JSTR_TWOWAY_STRCASESTR_LEN_THRES != 2
-#		error "JSTR_TWOWAY_STRCASESTR_LEN_THRES is assumed to be 2."
-#	endif
 
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
 static char *
-jstr_strcasestr_len_exec(const jstr_twoway_ty *t, const char *hs, size_t hs_len, const char *ne)
+jstr_strcasestr_len_exec(const jstr_twoway_ty *t, const char *hs, size_t hs_len, const char *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
-	if (t->needle_len > JSTR_TWOWAY_STRCASESTR_LEN_THRES)
-		return jstr__strcasestr_len_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne);
-	if (t->needle_len == 2) {
+	if (ne_len > JSTR_TWOWAY_STRCASESTR_LEN_THRES)
+		return jstr__strcasestr_len_musl_exec(t, (const unsigned char *)hs, hs_len, (const unsigned char *)ne, ne_len);
+	if (ne_len == 2) {
 		if (jstr_unlikely(hs_len < 2))
 			return NULL;
 		return jstr__memcasemem2((const unsigned char *)hs, hs_len, (const unsigned char *)ne);
 	}
-	if (t->needle_len == 1)
+	if (ne_len == 1)
 		return (char *)jstr_memcasechr(hs, *(const unsigned char *)ne, hs_len);
-	/* if (t->needle_len == 0) */
+	/* if (ne_len == 0) */
 	return (char *)hs;
 }
 
@@ -731,12 +721,8 @@ static void
 jstr_strcasestr_comp(jstr_twoway_ty *t, const char *ne)
 JSTR_NOEXCEPT
 {
-	if (*ne == '\0')
-		t->needle_len = 0;
-	else if (ne[1] == '\0')
-		t->needle_len = 1;
-	else if (ne[2] == '\0')
-		t->needle_len = 2;
+	if (jstr_unlikely(*ne == '\0') || *(ne + 1) == '\0' || *(ne + 2) == '\0')
+		t->ne_len = (size_t)-1;
 	else
 		jstr__strcasestr_musl_comp(t, (const unsigned char *)ne);
 }
@@ -746,14 +732,13 @@ static char *
 jstr_strcasestr_exec(const jstr_twoway_ty *t, const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
-	if (t->needle_len > JSTR_TWOWAY_STRCASESTR_THRES)
-		return jstr__strcasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
-	if (t->needle_len == 2)
-		return jstr__strcasestr2((const unsigned char *)hs, (const unsigned char *)ne);
-	if (t->needle_len == 1)
+	if (jstr_unlikely(*ne == '\0'))
+		return (char *)hs;
+	if (*(ne + 1) == '\0')
 		return (char *)jstr_strcasechr(hs, *ne);
-	/* if (t->needle_len == 0) */
-	return (char *)hs;
+	if (*(ne + 2) == '\0')
+		return jstr__strcasestr2((const unsigned char *)hs, (const unsigned char *)ne);
+	return jstr__strcasestr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
 }
 
 #	define JSTR__MUSL_FUNC_NAME jstr__strstr_musl
@@ -765,17 +750,10 @@ static void
 jstr_strstr_comp(jstr_twoway_ty *t, const char *ne)
 JSTR_NOEXCEPT
 {
-	if (jstr_unlikely(*ne == '\0')) {
-		t->needle_len = 0;
-		return;
-	} else if (jstr_unlikely(ne[1] == '\0')) {
-		t->needle_len = 1;
-		return;
-	} else if (jstr_unlikely(ne[2] == '\0')) {
-		t->needle_len = 2;
-		return;
-	}
-	jstr__strstr_musl_comp(t, (const unsigned char *)ne);
+	if (jstr_unlikely(*ne == '\0') || *(ne + 1) == '\0' || *(ne + 2) == '\0')
+		t->ne_len = (size_t)-1;
+	else
+		jstr__strstr_musl_comp(t, (const unsigned char *)ne);
 }
 
 JSTR_FUNC_PURE
@@ -783,7 +761,7 @@ static char *
 jstr_strstr_exec(const jstr_twoway_ty *t, const char *hs, const char *ne)
 JSTR_NOEXCEPT
 {
-	if (t->needle_len <= JSTR_TWOWAY_STRSTR_THRES)
+	if (t->ne_len <= JSTR_TWOWAY_STRSTR_THRES)
 		return (char *)strstr(hs, ne);
 	return jstr__strstr_musl_exec(t, (const unsigned char *)hs, (const unsigned char *)ne);
 }
@@ -1036,7 +1014,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	size_t cnt = 0;
-	for (const char *end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_DIFF(end, s), find)); ++cnt, s += find_len) {}
+	for (const char *end = s + sz; (s = (const char *)jstr_memmem_exec(t, s, JSTR_DIFF(end, s), find, find_len)); ++cnt, s += find_len) {}
 	return cnt;
 }
 
@@ -1072,7 +1050,8 @@ JSTR_NOEXCEPT
 	jstr_twoway_ty t;
 	jstr_strstr_comp(&t, find);
 	size_t cnt = 0;
-	for (; (s = jstr_strstr_exec(&t, s, find)); ++cnt, s += t.needle_len) {}
+	size_t find_len = t.ne_len;
+	for (; (s = jstr_strstr_exec(&t, s, find)); ++cnt, s += find_len) {}
 	return cnt;
 }
 

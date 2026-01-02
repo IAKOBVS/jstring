@@ -187,7 +187,7 @@ JSTR_NOEXCEPT
 	const char *p;
 	jstr_twoway_ty t;
 	jstr_memmem_comp(&t, find, find_len);
-	while ((p = (const char *)jstr_memmem_exec(&t, *s + off, *sz - off, find))) {
+	while ((p = (const char *)jstr_memmem_exec(&t, *s + off, *sz - off, find, find_len))) {
 		off = JSTR_DIFF(p, *s);
 		if (jstr_chk(jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len)))
 			return JSTR_RET_ERR;
@@ -590,7 +590,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(find_len == 0))
 		return 0;
-	char *p = (char *)jstr_memmem_exec(t, s + start_idx, *sz - start_idx, find);
+	char *p = (char *)jstr_memmem_exec(t, s + start_idx, *sz - start_idx, find, find_len);
 	if (p == NULL)
 		return 0;
 	*sz = JSTR_DIFF(jstr_rmat_len_p(s, *sz, JSTR_DIFF(p, *s), find_len), *s);
@@ -740,12 +740,12 @@ JSTR_NOEXCEPT
 		return 0;
 	const char *end = s + *sz;
 	jstr__inplace_ty i = JSTR__INPLACE_INIT(s + start_idx);
-	if (jstr_unlikely(n == 0) || !(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
+	if (jstr_unlikely(n == 0) || !(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)))
 		return 0;
 	size_t changed = 0;
 	size_t prev_len = JSTR_DIFF(i.src_e, i.src);
 	goto start;
-	for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); --n, ++changed) {
+	for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)); --n, ++changed) {
 		/* Length of previous SRC that needs to be copied to DST. */
 		prev_len = JSTR_DIFF(i.src_e, i.src);
 		/* Copy to DST the previous SRC. */
@@ -833,7 +833,7 @@ JSTR_NOEXCEPT
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	if (jstr_unlikely(find_len == 0))
 		return 0;
-	char *p = (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find);
+	char *p = (char *)jstr_memmem_exec(t, *s + start_idx, *sz - start_idx, find, find_len);
 	if (p == NULL)
 		return 0;
 	if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(p, *s), rplc, rplc_len, find_len)))
@@ -881,11 +881,11 @@ JSTR_NOEXCEPT
 	const char *end = *s + *sz;
 	if (rplc_len <= find_len) {
 		/* Do an in-place replacement, with no allocation. */
-		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
+		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)))
 			return 0;
 		size_t prev_len = JSTR_DIFF(i.src_e, i.src);
 		goto start;
-		for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); --n, ++changed) {
+		for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)); --n, ++changed) {
 			/* Length of previous SRC that needs to be copied to DST. */
 			prev_len = JSTR_DIFF(i.src_e, i.src);
 			/* No need to move string when FIND and RPLC have equal lengths. */
@@ -904,7 +904,7 @@ start:
 			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	} else {
 		/* May need to allocate. */
-		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find);
+		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len);
 		if (jstr_nullchk(first))
 			return 0;
 		i.src_e = first;
@@ -917,7 +917,7 @@ start:
 			++changed;
 			last = i.src_e;
 			i.src_e += find_len;
-		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)));
+		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)));
 		if (!changed)
 			return 0;
 		if (changed == 1) {
@@ -961,7 +961,7 @@ start:
 			/* Advance SRC and SRC_E to the next SRC to find. */
 			i.src += prev_len + find_len;
 			i.src_e += find_len;
-		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(last, i.src_e), find)));
+		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(last, i.src_e), find, find_len)));
 		/* Copy to DST the remaining SRC. */
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	}
