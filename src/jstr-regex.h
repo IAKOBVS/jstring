@@ -541,6 +541,10 @@ JSTR_NOEXCEPT
 	memcpy(mtc_dst, rplc_o, JSTR_DIFF(rplc_e, rplc_o));
 }
 
+/* Avoid doing O(n) replacements as do rplcn, since the O(2*n) regex matching,
+ * which is used to find the new size of the string, is likely to dominate
+ * over O(n^2) replacements. Given the growth factor, the allocation should
+ * be amortized. */
 JSTR_FUNC
 static jstr_re_off_ty
 jstr__re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref)
