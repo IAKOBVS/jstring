@@ -40,19 +40,17 @@
 #ifndef JSTR__MUSL_TWOWAY_STRUCT
 #	define JSTR__MUSL_TWOWAY_STRUCT
 
-typedef struct jstr__twoway_table_ty {
-	size_t _shift[256];
-	size_t _byteset[32 / sizeof(size_t)];
-	size_t _suffix;
-	size_t _global_period;
-	size_t _memory0;
-} jstr__twoway_table_ty;
-
 typedef struct jstr_twoway_ty {
 	size_t needle_len;
 	union u {
-		jstr__twoway_table_ty _t;
-		char _buf[sizeof(jstr__twoway_table_ty)];
+		struct _t {
+			size_t _shift[256];
+			size_t _byteset[32 / sizeof(size_t)];
+			size_t _suffix;
+			size_t _global_period;
+			size_t _memory0;
+		} _t;
+		char _buf[sizeof(struct _t)];
 	} u;
 } jstr_twoway_ty;
 
