@@ -898,6 +898,10 @@ start:
 			return 0;
 		i.src_e = first;
 		const char *last;
+		/* Do two passes, first to get the new size, second to do the replacements.
+		 * Doing O(2 * n) memmem should be fine, since good memmem implementations
+		 * should be O(n + m), whereas the O(n^2) replacements are guaranteed.
+		 * First pass, get the new size. */
 		do {
 			++changed;
 			last = i.src_e;
@@ -935,6 +939,7 @@ start:
 		/* Cache first match. */
 		i.src_e = first;
 		size_t j;
+		/* Second pass, do the replacements. */
 		do {
 			j = JSTR_DIFF(i.src_e, i.src);
 			/* We must use memmove because DST and SRC overlap. */

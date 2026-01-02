@@ -541,7 +541,7 @@ JSTR_NOEXCEPT
 	memcpy(mtc_dst, rplc_o, JSTR_DIFF(rplc_e, rplc_o));
 }
 
-/* Avoid doing O(n) replacements as do rplcn, since the O(2*n) regex matching,
+/* Avoid doing O(n) replacements as do rplcn, since doing O(2 * n) regex matching,
  * which is used to find the new size of the string, is likely to dominate
  * over O(n^2) replacements. Given the growth factor, the allocation should
  * be amortized. */
