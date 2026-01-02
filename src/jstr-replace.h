@@ -958,10 +958,10 @@ start:
 			memmove(i.dst, i.src, prev_len);
 			/* Copy to DST RPLC and advance. */
 			i.dst = (char *)jstr_mempmove(i.dst + prev_len, rplc, rplc_len);
-			/* Advance SRC to the next SRC to find. */
-			i.src = i.src_e + find_len;
-			/* FIXME: mismatch in the usage of SRC and SRC_E in the memmem is confusing. */
-		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find)));
+			/* Advance SRC and SRC_E to the next SRC to find. */
+			i.src += prev_len + find_len;
+			i.src_e += find_len;
+		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(last, i.src_e), find)));
 		/* Copy to DST the remaining SRC. */
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	}
