@@ -589,8 +589,8 @@ err:
 	else
 		rplcwbackref_len = rplc_len;
 	i.src_e += rm[0].rm_so;
-	/* DST and SRC exist in the same buffer *S, where SRC + NUL is followed by DST + NUL.
-	 * Allocate enough memory for all of them and move back DST. */
+	/* SRC and DST exist in the same buffer *S, where SRC + NUL + DST + NUL.
+	 * The size of DST may change because of backreferences. */
 	size_t new_cap = *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1;
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap)))
 		goto err;
@@ -615,6 +615,7 @@ err:
 				ret = JSTR_RE_RET_ESPACE;
 				goto err;
 			}
+			/* Update the ptrs after realloc. */
 			i.src = *s + JSTR_DIFF(i.src, tmp);
 			i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
 			i.dst = *s + JSTR_DIFF(i.dst, tmp);

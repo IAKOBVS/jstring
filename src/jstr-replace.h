@@ -875,6 +875,7 @@ JSTR_NOEXCEPT
 	size_t changed = 0;
 	const char *end = *s + *sz;
 	if (rplc_len <= find_len) {
+		/* Do an in-place replacement, with no allocation. */
 		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
 			return 0;
 		size_t j = JSTR_DIFF(i.src_e, i.src);
@@ -891,6 +892,7 @@ start:
 		if (jstr_likely(rplc_len != find_len))
 			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	} else {
+		/* May need to allocate. */
 		char *first = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find);
 		if (jstr_nullchk(first))
 			return 0;
@@ -914,14 +916,14 @@ start:
 		const size_t new_size = *sz + changed * (rplc_len - find_len);
 		const size_t first_len = *sz - JSTR_DIFF(first, *s);
 		const uintptr_t s_old = (uintptr_t)*s;
-		/* Avoid allocation by pushing back the source string to make
-		 * room for the destination string. */
+		/* Try to avoid allocation by pushing back the source string to make room
+		 * for the destination string. If need to allocate, realloc will try to
+		 * grow in-place. */
 		if (jstr_chk(jstr_reserve(s, sz, cap, new_size + first_len + 1)))
 			goto err;
-		/* SRC is the source string + NEW_SIZE. */
-		i.src = *s + new_size;
-		/* DST is source string. */
 		i.dst = *s + JSTR_DIFF(first, s_old);
+		/* DST and SRC exist in the same buffer *s, where DST + SRC + NUL. */
+		i.src = *s + new_size;
 		/* Move back the source string so we have enough
 		 * space for the destination string. */
 		memmove((void *)i.src, i.dst, first_len);
