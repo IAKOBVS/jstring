@@ -743,16 +743,21 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(n == 0) || !(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
 		return 0;
 	size_t changed = 0;
-	size_t j = JSTR_DIFF(i.src_e, i.src);
+	size_t prev_len = JSTR_DIFF(i.src_e, i.src);
 	goto start;
 	for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); --n, ++changed) {
-		j = JSTR_DIFF(i.src_e, i.src);
-		memmove(i.dst, i.src, j);
+		/* Length of previous SRC that needs to be copied to DST. */
+		prev_len = JSTR_DIFF(i.src_e, i.src);
+		/* Copy to DST the previous SRC. */
+		memmove(i.dst, i.src, prev_len);
 start:
-		i.dst += j;
-		i.src += j + find_len;
+		/* Advance DST after the copy. */
+		i.dst += prev_len;
+		/* Advance SRC and SRC_E to the next SRC to find. */
+		i.src += prev_len + find_len;
 		i.src_e += find_len;
 	}
+	/* Copy to DST the remaining SRC. */
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), s);
 	return changed;
 }
@@ -878,17 +883,23 @@ JSTR_NOEXCEPT
 		/* Do an in-place replacement, with no allocation. */
 		if (!(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)))
 			return 0;
-		size_t j = JSTR_DIFF(i.src_e, i.src);
+		size_t prev_len = JSTR_DIFF(i.src_e, i.src);
 		goto start;
 		for (; n && (i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find)); --n, ++changed) {
-			j = JSTR_DIFF(i.src_e, i.src);
+			/* Length of previous SRC that needs to be copied to DST. */
+			prev_len = JSTR_DIFF(i.src_e, i.src);
+			/* No need to move string when FIND and RPLC have equal lengths. */
 			if (jstr_likely(find_len != rplc_len))
-				memmove(i.dst, i.src, j);
+				/* Copy to DST the previous SRC. */
+				memmove(i.dst, i.src, prev_len);
 start:
-			i.dst = (char *)jstr_mempcpy(i.dst + j, rplc, rplc_len);
-			i.src += j + find_len;
+			/* Copy to DST RPLC and advance. */
+			i.dst = (char *)jstr_mempcpy(i.dst + prev_len, rplc, rplc_len);
+			/* Advance SRC and SRC_E to the next SRC to find. */
+			i.src += prev_len + find_len;
 			i.src_e += find_len;
 		}
+		/* Copy to DST the remaining SRC. */
 		if (jstr_likely(rplc_len != find_len))
 			*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	} else {
@@ -938,15 +949,20 @@ start:
 		n = changed;
 		/* Cache first match. */
 		i.src_e = first;
-		size_t j;
+		size_t prev_len;
 		/* Second pass, do the replacements. */
 		do {
-			j = JSTR_DIFF(i.src_e, i.src);
-			/* We must use memmove because DST and SRC overlap. */
-			memmove(i.dst, i.src, j);
-			i.dst = (char *)jstr_mempmove(i.dst + j, rplc, rplc_len);
+			/* Length of previous SRC that needs to be copied to DST. */
+			prev_len = JSTR_DIFF(i.src_e, i.src);
+			/* Copy to DST the previous SRC. */
+			memmove(i.dst, i.src, prev_len);
+			/* Copy to DST RPLC and advance. */
+			i.dst = (char *)jstr_mempmove(i.dst + prev_len, rplc, rplc_len);
+			/* Advance SRC to the next SRC to find. */
 			i.src = i.src_e + find_len;
+			/* FIXME: mismatch in the usage of SRC and SRC_E in the memmem is confusing. */
 		} while (--n && (i.src_e = (char *)jstr_memmem_exec(t, i.src, JSTR_DIFF(last, i.src), find)));
+		/* Copy to DST the remaining SRC. */
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	}
 	return changed;

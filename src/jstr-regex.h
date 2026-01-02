@@ -341,29 +341,37 @@ JSTR_NOEXCEPT
 		return 0;
 	int ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
 	jstr_re_off_ty changed = 0;
-	size_t j;
+	size_t prev_len;
 	size_t find_len;
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
-		j = JSTR_DIFF(i.src_e, i.src);
+		prev_len = JSTR_DIFF(i.src_e, i.src);
 		goto start;
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
 	} else {
 		goto err_free;
 	}
+	/* Use the same algorithm as rmn, only replacing memmem with regex. */
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
+		/* Get length of FIND. */
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
+		/* Advance SRC_E to the match. */
 		i.src_e += rm.rm_so;
-		j = JSTR_DIFF(i.src_e, i.src);
-		memmove(i.dst, i.src, j);
+		/* Length of previous SRC that needs to be copied to DST. */
+		prev_len = JSTR_DIFF(i.src_e, i.src);
+		/* Copy to DST the previous SRC. */
+		memmove(i.dst, i.src, prev_len);
 start:
-		i.dst += j;
-		i.src += j + find_len;
+		/* Advance DST after the copy. */
+		i.dst += prev_len;
+		/* Advance SRC and SRC_E to the next SRC to find. */
+		i.src += prev_len + find_len;
 		i.src_e += find_len;
+		/* Edge case. */
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
 	}
@@ -585,7 +593,7 @@ err:
 	}
 	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
 	i.src_e += rm[0].rm_so;
-	size_t j;
+	size_t prev_len;
 	jstr_re_off_ty changed = 0;
 	size_t rplcwbackref_len;
 	if (backref)
@@ -605,13 +613,19 @@ err:
 	i.src_e = *s + start_idx + rm[0].rm_so;
 	end = *s + *sz;
 	goto start;
+	/* Use the same algorithm as rplcn, only replacing memmem with regex,
+	 * with backreference handling. */
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
 		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
+		/* Get length of FIND. */
 		find_len = rm[0].rm_eo - rm[0].rm_so;
+		/* Advance SRC_E to the match. */
 		i.src_e += rm[0].rm_so;
+		/* Get length of RPLC. */
 		if (backref)
 			rplcwbackref_len = jstr__re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+		/* Check if needs reallocation. */
 		new_cap = *sz - (size_t)find_len + rplcwbackref_len + 1 + 1;
 		if (jstr_unlikely(*cap < new_cap)) {
 			const uintptr_t tmp = (uintptr_t)*s;
@@ -627,20 +641,27 @@ err:
 			end = *s + JSTR_DIFF(end, tmp);
 		}
 start:
-		j = JSTR_DIFF(i.src_e, i.src);
-		memmove(i.dst, i.src, j);
-		i.dst += j;
+		/* Length of previous SRC that needs to be copied to DST. */
+		prev_len = JSTR_DIFF(i.src_e, i.src);
+		/* Copy to DST the previous SRC. */
+		memmove(i.dst, i.src, prev_len);
+		/* Advance DST after the copy. */
+		i.dst += prev_len;
+		/* Copy to DST RPLC and advance. */
 		if (backref) {
 			jstr__re_rplcbackrefcpy(rm, (unsigned char *)i.src_e - rm[0].rm_so, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
 			i.dst += rplcwbackref_len;
 		} else {
 			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
 		}
-		i.src += j + (size_t)find_len;
+		/* Advance SRC and SRC_E to the next SRC to find. */
+		i.src += prev_len + (size_t)find_len;
 		i.src_e += find_len;
+		/* Edge case. */
 		if (jstr_unlikely(find_len == 0))
 			++i.src_e;
 	}
+	/* Copy to DST the remaining SRC. */
 	*sz = JSTR_DIFF(jstr_mempmove(i.dst, i.src, JSTR_DIFF(end, i.src)), dst_s);
 	/* Move back DST to the start of the string since we don't need SRC
 	 * anymore. */
