@@ -28,13 +28,15 @@ my $VAR_CAP           = 'cap';
 my $PREFIX_J          = '_j';
 my $PREFIX_LEN        = '_len';
 
+# add inline attribute
 sub add_inline {
 	my ($attr_str_ref) = @_;
 	$$attr_str_ref .= "\n" . $ATTR_INLINE
 	  if ( index($$attr_str_ref, $ATTR_INLINE) == -1
-		&& index($$attr_str_ref, $ATTR_NOINLINE) == -1);
+		&& index($$attr_str_ref, $ATTR_NOINLINE) == 0);
 }
 
+# check if value in array
 sub grepped {
 	my ($arr_ref, $str_ref) = @_;
 	foreach (@$arr_ref) {
@@ -53,24 +55,32 @@ my @func_arr;
 foreach (jl_file_to_blocks(\$file_str1)) {
 	$file_str2 .= "$_\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
+	# not a function
 	next if (!jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef));
+	# not a jstr_* function, or a variadic function
 	next if ($name !~ /^jstr\w*_/
 		|| grepped(\@arg, \'..')
 		|| scalar(@arg) == 0);
 	push(@func_arr, $name);
+	# not a jstr_* function, or a variadic function
 	next if ($name !~ /$PREFIX_LEN/o
 		|| $name =~ /$PREFIX_J$/o);
 	my $base_name = $name;
 	$base_name =~ s/$PREFIX_LEN(_|$)/$1/o;
+	# function not in file
 	next if (index($file_str1, "$base_name(") != -1);
 	# add_inline(\$attr);
+	# construct the return statement for non *_len() function
 	$body = (($rettype eq 'void') ? '' : 'return ') . $name . '(';
 	$name = $base_name;
 	my $dont_make_func = 1;
+	# parse function arguments
 	for (my $i = 0; $i < scalar(@arg); ++$i) {
 		my $var = jl_arg_get_var(\$arg[$i]);
+		# no need to make a *_len() function when there is no size_t arguments
 		if (index($arg[$i], 'size_t') != -1) {
 			my $var_str;
+			# must make *_len() function
 			if ($var =~ /$PREFIX_LEN$/o) {
 				$dont_make_func = 0;
 				my $base_var = $var;
@@ -81,9 +91,10 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 				} else {
 					goto DO_NOTHING;
 				}
+			# check if passes size pointer
 			} elsif ($var =~ /^[^*]$VAR_SIZE$/o) {
 				$dont_make_func = 0;
-				$var_str = jl_arg_get_var(\$arg[0]);
+				$var_str        = jl_arg_get_var(\$arg[0]);
 			} else {
 				goto DO_NOTHING;
 			}
@@ -96,11 +107,14 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 		$body .= ', ';
 	}
 	next if $dont_make_func;
+	# tidy
 	$body =~ s/, $//;
 	$body .= ");";
 	$attr =~ s/\s*$ATTR_ACCESS\(\(.*?\)\)//og;
 	$attr =~ s/\n\n//g;
 	$attr =~ s/\n$//g;
+	# construct the non *_len() function
+	$body =~ s/, $//;
 	$file_str2 .= jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
 	push(@func_arr, $name);
 }
@@ -111,14 +125,15 @@ my $file_str3 = '';
 foreach (jl_file_to_blocks(\$file_str2)) {
 	$file_str3 .= $_ . "\n\n";
 	my ($attr, $rettype, $name, @arg, $body);
-	next
-	  if ( !jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
+	# not a function, not a jstr_*() function, or an unsafe function
+	next if (!jl_fn_get(\$_, \$attr, \$rettype, \$name, \@arg, undef)
 		|| $name !~ /^jstr\w*_/
 		|| $name =~ /$PREFIX_J$/o
 		|| scalar(@arg) == 0
 		|| index($name, 'unsafe') != -1);
 	my $has_size_or_cap = 0;
 	my $has_variadic    = 0;
+	# parse arguments
 	foreach (@arg) {
 		if ($_ =~ /$VAR_SIZE$/ || $_ =~ /$VAR_CAP$/) {
 			$has_size_or_cap = 1;
@@ -127,10 +142,13 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 			last;
 		}
 	}
+	# is a variadic function, or does not have size or capacity
 	next if ($has_size_or_cap == 0 || $has_variadic);
 	my $j_name = $name . $PREFIX_J;
+	# *_j() function already exists
 	next if (grepped(\@func_arr, \($j_name)));
 	my $returns_end_ptr = 0;
+	# check if need to construct return string
 	if ($rettype eq 'void') {
 		$body = '';
 	} else {
@@ -149,18 +167,22 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$name = $j_name;
 	$name =~ s/_p(_|$)/$1/;
 	my $has_data = 0;
+	# parse arguments
 	for (my $i = 0; $i < scalar(@arg); ++$i) {
 		my $var = jl_arg_get_var(\$arg[$i]);
+		# data pointer
 		if ($var eq $VAR_DATA) {
 			$has_data = 1;
 			my $deref = (jl_arg_is_ptr_ptr(\$arg[$i]) ? '&' : '');
 			$body .= "$deref$VAR_JSTRING->$DATA";
 			$arg[$i] = jl_arg_is_const(\$arg[$i]) ? 'const ' : '';
 			$arg[$i] .= "$JSTRING *$ATTR_RESTRICT j";
+		# size pointer
 		} elsif ($var eq $VAR_SIZE) {
 			my $deref = (jl_arg_is_ptr(\$arg[$i]) ? '&' : '');
 			$body .= "$deref$VAR_JSTRING->$SIZE";
 			splice(@arg, $i--, 1);
+		# capacity pointer
 		} elsif ($var eq $VAR_CAP) {
 			my $deref = (jl_arg_is_ptr(\$arg[$i]) ? '&' : '');
 			$body .= "$deref$VAR_JSTRING->$CAP";
