@@ -62,6 +62,7 @@ enum {
 JSTR_FUNC
 static int
 jstr__io_isbinarysignature(const char *buf, size_t sz)
+JSTR_NOEXCEPT
 {
 	enum { ELFSZ = 4,
 	       UTFSZ = 3 };
@@ -500,6 +501,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_io_appendpath_len_p(char *R path, size_t sz, const char *R fname, size_t fname_len)
+JSTR_NOEXCEPT
 {
 	*path = '/';
 	jstr_strcpy_len(path + sz + 1, fname, fname_len);
@@ -509,6 +511,7 @@ jstr_io_appendpath_len_p(char *R path, size_t sz, const char *R fname, size_t fn
 JSTR_FUNC_RET_NONNULL
 static char *
 jstr_io_appendpath_p(char *R path, size_t sz, const char *R fname)
+JSTR_NOEXCEPT
 {
 	*(path + sz) = '/';
 	return jstr_stpcpy(path + sz + 1, fname);
@@ -517,6 +520,7 @@ jstr_io_appendpath_p(char *R path, size_t sz, const char *R fname)
 JSTR_FUNC
 static jstr_ret_ty
 jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, size_t fname_len)
+JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len + 1)))
 		return JSTR_RET_ERR;

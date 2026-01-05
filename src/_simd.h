@@ -481,6 +481,7 @@ JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
 jstr__simd_tolower_vec(const VEC v)
+JSTR_NOEXCEPT
 {
 	const VEC gt_a = CMPGT8(v, SETONE8('A' - 1));
 	const VEC le_z = CMPLT8(v, SETONE8('Z' + 1));
@@ -492,6 +493,7 @@ jstr__simd_tolower_vec(const VEC v)
 JSTR_FUNC_VOID
 static void
 jstr__simd_tolowerstr_len(char *s, size_t n)
+JSTR_NOEXCEPT
 {
 	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
 	for (; off--; ++s) {
@@ -510,6 +512,7 @@ jstr__simd_tolowerstr_len(char *s, size_t n)
 JSTR_FUNC_VOID
 static char *
 jstr__simd_tolowerstr_p(char *s)
+JSTR_NOEXCEPT
 {
 	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
 	for (; off--; ++s)
@@ -530,6 +533,7 @@ JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
 jstr__simd_toupper_vec(const VEC v)
+JSTR_NOEXCEPT
 {
 	const VEC gt_a = CMPGT8(v, SETONE8('a' - 1));
 	const VEC le_z = CMPLT8(v, SETONE8('z' + 1));

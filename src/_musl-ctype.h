@@ -48,6 +48,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isalpha(int c)
+JSTR_NOEXCEPT
 {
 	return ISALPHA((unsigned char)c);
 }
@@ -56,6 +57,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isdigit(int c)
+JSTR_NOEXCEPT
 {
 	return ISDIGIT((unsigned char)c);
 }
@@ -64,6 +66,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isalnum(int c)
+JSTR_NOEXCEPT
 {
 	return ISALNUM((unsigned char)c);
 }
@@ -72,6 +75,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isascii(int c)
+JSTR_NOEXCEPT
 {
 	return ISASCII((unsigned char)c);
 }
@@ -80,6 +84,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isblank(int c)
+JSTR_NOEXCEPT
 {
 	return ISBLANK((unsigned char)c);
 }
@@ -88,6 +93,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_iscntrl(int c)
+JSTR_NOEXCEPT
 {
 	return ISCNTRL((unsigned char)c);
 }
@@ -96,6 +102,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isgraph(int c)
+JSTR_NOEXCEPT
 {
 	return ISGRAPH((unsigned char)c);
 }
@@ -104,6 +111,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_islower(int c)
+JSTR_NOEXCEPT
 {
 	return ISLOWER((unsigned char)c);
 }
@@ -112,6 +120,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isupper(int c)
+JSTR_NOEXCEPT
 {
 	return ISUPPER((unsigned char)c);
 }
@@ -120,6 +129,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isprint(int c)
+JSTR_NOEXCEPT
 {
 	return ISPRINT((unsigned char)c);
 }
@@ -128,6 +138,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_ispunct(int c)
+JSTR_NOEXCEPT
 {
 	return ISPUNCT((unsigned char)c);
 }
@@ -136,6 +147,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isspace(int c)
+JSTR_NOEXCEPT
 {
 	return ISSPACE((unsigned char)c);
 }
@@ -144,6 +156,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_isxdigit(int c)
+JSTR_NOEXCEPT
 {
 	return ISXDIGIT((unsigned char)c);
 }
@@ -152,6 +165,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_tolower(int c)
+JSTR_NOEXCEPT
 {
 	return TOLOWER((unsigned char)c);
 }
@@ -160,6 +174,7 @@ JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
 static int
 jstr_toupper(int c)
+JSTR_NOEXCEPT
 {
 	return TOUPPER((unsigned char)c);
 }

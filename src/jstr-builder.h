@@ -227,6 +227,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static jstr_ret_ty
 jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap)
+JSTR_NOEXCEPT
 {
 	return (jstr_chk(jstr_reserveexactalways(s, sz, cap, *sz + 1))) ? JSTR_RET_ERR : JSTR_RET_SUCC;
 }

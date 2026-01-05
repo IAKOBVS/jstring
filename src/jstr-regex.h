@@ -141,6 +141,7 @@ typedef enum {
 
 static int
 jstr__re_notbol(const char *str, size_t curr_idx, int cflags)
+JSTR_NOEXCEPT
 {
 	if (curr_idx) {
 		if (cflags & JSTR_RE_CF_NEWLINE)
@@ -153,6 +154,7 @@ jstr__re_notbol(const char *str, size_t curr_idx, int cflags)
 
 static int
 jstr__re_notbol_inloop(const char *str, size_t curr_idx, int cflags)
+JSTR_NOEXCEPT
 {
 	if (cflags & JSTR_RE_CF_NEWLINE)
 		if (*(str + curr_idx - 1) == '\n')
@@ -495,6 +497,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static char *
 jstr__re_rplcbackreffirst(const char *backref, size_t backref_len)
+JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(backref_len < 2))
 		return NULL;
@@ -506,6 +509,7 @@ jstr__re_rplcbackreffirst(const char *backref, size_t backref_len)
 JSTR_FUNC
 static char *
 jstr__re_rplcbackreflast(const unsigned char *backref, size_t backref_len)
+JSTR_NOEXCEPT
 {
 	if (backref_len >= 4) {
 		backref += 2;

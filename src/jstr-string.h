@@ -34,7 +34,7 @@ JSTR__END_DECLS
 #	include "jstr-config.h"
 #	include "jstr-stdstring.h"
 #	include "jstr-ctype.h"
-#	include "_musl.h"
+#	include "_musl-stdstring.h"
 
 #	if defined __AVX512BW__ || defined __AVX2__ || defined __SSE2__
 #		define JSTR_HAVE_SIMD 1
@@ -1146,6 +1146,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 static char *
 jstr_revcpy_p(char *R dst, const char *R src)
+JSTR_NOEXCEPT
 {
 	const size_t len = strlen(src);
 	jstr_revcpy_len(dst, src, len);
