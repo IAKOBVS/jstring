@@ -384,16 +384,16 @@ JSTR_NOEXCEPT
 
 #	define JSTR__STRSTR234_MEMMEM    1
 #	define JSTR__STRSTR234_FUNC_NAME jstr__memmem
-#	include "_strstr-lt8.h"
+#	include "_musl-strstr-lt8.h"
 
 #	define JSTR__STRSTR234_CANON     jstr_tolower
 #	define JSTR__STRSTR234_FUNC_NAME jstr__strcasestr
-#	include "_strstr-lt8.h"
+#	include "_musl-strstr-lt8.h"
 
 #	define JSTR__STRSTR234_MEMMEM    1
 #	define JSTR__STRSTR234_CANON     jstr_tolower
 #	define JSTR__STRSTR234_FUNC_NAME jstr__memcasemem
-#	include "_strstr-lt8.h"
+#	include "_musl-strstr-lt8.h"
 
 #	define JSTR__MUSL_FUNC_NAME jstr__memmem_musl
 #	include "_musl-twoway.h"
@@ -529,7 +529,7 @@ JSTR_NOEXCEPT
 
 #	define JSTR__STRSTR234_FUNC_NAME jstr__memrmem
 #	define JSTR__STRSTR234_MEMRMEM   1
-#	include "_strstr-lt8.h"
+#	include "_musl-strstr-lt8.h"
 
 /* Find last NE in HS.
  * Return value:

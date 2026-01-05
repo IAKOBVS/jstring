@@ -92,7 +92,6 @@ JSTR_NOEXCEPT
 	              j->size,
 	              j->capacity);
 	if (jstr_unlikely(ret < 0)) {
-		errno = ret;
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
 	const char *data;
@@ -106,17 +105,14 @@ JSTR_NOEXCEPT
 	}
 	ret = fprintf(stderr, "strlen()   :%zu.\n", size);
 	if (jstr_unlikely(ret < 0)) {
-		errno = ret;
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
 	ret = fprintf(stderr, "data puts():%s.\n", data);
 	if (jstr_unlikely(ret < 0)) {
-		errno = ret;
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
 	ret = fputs("data       :", stderr);
 	if (jstr_unlikely(ret < 0)) {
-		errno = ret;
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
 	jstr_io_fwrite(j->data, 1, j->size, stderr);
@@ -613,7 +609,6 @@ JSTR_NOEXCEPT
 	const int ret = vsnprintf(NULL, 0, fmt, ap);
 	if (jstr_likely(ret > 0) || ret == 0)
 		return ret + 1;
-	errno = ret;
 	return -1;
 #	else
 #		define JSTR__COUNTDIGITS(lflag, base)               \
@@ -1059,7 +1054,6 @@ JSTR_NOEXCEPT
 	*sz = (size_t)ret;
 	return JSTR_RET_SUCC;
 err_free:
-	errno = ret;
 	jstr_free_noinline(s, sz, cap);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
