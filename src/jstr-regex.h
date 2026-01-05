@@ -119,13 +119,13 @@ typedef enum {
 #	endif
 } jstr_re_ret_ty;
 
-#	define JSTR__RE_ERR_EXEC_HANDLE(errcode, do_on_error)     \
-		if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) { \
-			;                                          \
-		} else if (errcode == JSTR_RE_RET_NOMATCH) {       \
-			break;                                     \
-		} else {                                           \
-			do_on_error;                               \
+#	define JSTR__RE_ERR_EXEC_HANDLE_LOOP(errcode, do_on_error) \
+		if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) {  \
+			;                                           \
+		} else if (errcode == JSTR_RE_RET_NOMATCH) {        \
+			break;                                      \
+		} else {                                            \
+			do_on_error;                                \
 		}
 
 #	if JSTR_PANIC
@@ -351,12 +351,20 @@ JSTR_NOEXCEPT
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
 	} else {
-		goto err_free;
+		jstr_free_noinline(s, sz, cap);
+		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	/* Use the same algorithm as rmn, only replacing memmem with regex. */
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_search_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), &rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
-		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err_free);
+		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
+			;
+		} else if (ret == JSTR_RE_RET_NOMATCH) {
+			break;
+		} else {
+			jstr_free_noinline(s, sz, cap);
+			JSTR_RE_RETURN_ERR(ret, preg);
+		}
 		/* Get length of FIND. */
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		/* Advance SRC_E to the match. */
@@ -377,9 +385,6 @@ start:
 	}
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	return changed;
-err_free:
-	jstr_free_noinline(s, sz, cap);
-	JSTR_RE_RETURN_ERR(ret, preg);
 }
 
 /* Do not pass an anchored pattern (with ^ or $) to rmn/rmall/rplcn/rplcall.
@@ -587,7 +592,6 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(ret == JSTR_RE_RET_NOMATCH))
 		return 0;
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR)) {
-err:
 		jstr_free_noinline(s, sz, cap);
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
@@ -604,8 +608,10 @@ err:
 	/* SRC and DST exist in the same buffer *S, where SRC + NUL + DST + NUL.
 	 * The size of DST may change because of backreferences. */
 	size_t new_cap = *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1;
-	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap)))
-		goto err;
+	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
+		jstr_free_noinline(s, sz, cap);
+		JSTR_RE_RETURN_ERR(ret, preg);
+	}
 	memmove(*s + *sz + 1, *s, *sz);
 	i.dst = *s + *sz + 1;
 	const char *dst_s = i.dst;
@@ -617,7 +623,14 @@ err:
 	 * with backreference handling. */
 	for (; n && i.src_e < end; --n, ++changed) {
 		ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL_INLOOP(i.src_e, JSTR_DIFF(i.src_e, *s), preg->cflags));
-		JSTR__RE_ERR_EXEC_HANDLE(ret, goto err);
+		if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
+			;
+		} else if (ret == JSTR_RE_RET_NOMATCH) {
+			break;
+		} else {
+			jstr_free_noinline(s, sz, cap);
+			JSTR_RE_RETURN_ERR(ret, preg);
+		}
 		/* Get length of FIND. */
 		find_len = rm[0].rm_eo - rm[0].rm_so;
 		/* Advance SRC_E to the match. */
@@ -631,7 +644,8 @@ err:
 			const uintptr_t tmp = (uintptr_t)*s;
 			if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
 				ret = JSTR_RE_RET_ESPACE;
-				goto err;
+				jstr_free_noinline(s, sz, cap);
+				JSTR_RE_RETURN_ERR(ret, preg);
 			}
 			/* Update the ptrs after realloc. */
 			i.src = *s + JSTR_DIFF(i.src, tmp);

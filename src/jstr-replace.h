@@ -921,8 +921,10 @@ start:
 		if (!changed)
 			return 0;
 		if (changed == 1) {
-			if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(first, *s), rplc, rplc_len, find_len)))
-				goto err;
+			if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(first, *s), rplc, rplc_len, find_len))) {
+				jstr_free_noinline(s, sz, cap);
+				JSTR_RETURN_ERR((size_t)-1);
+			}
 			return 1;
 		}
 		/* Currently last points to the last match. We are going to make it point
@@ -934,8 +936,10 @@ start:
 		/* Try to avoid allocation by pushing back the source string to make room
 		 * for the destination string. If need to allocate, realloc will try to
 		 * grow in-place. */
-		if (jstr_chk(jstr_reserve(s, sz, cap, new_size + first_len + 1)))
-			goto err;
+		if (jstr_chk(jstr_reserve(s, sz, cap, new_size + first_len + 1))) {
+			jstr_free_noinline(s, sz, cap);
+			JSTR_RETURN_ERR((size_t)-1);
+		}
 		i.dst = *s + JSTR_DIFF(first, s_old);
 		/* DST and SRC exist in the same buffer *s, where DST + SRC + NUL. */
 		i.src = *s + new_size;
@@ -966,9 +970,6 @@ start:
 		*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
 	}
 	return changed;
-err:
-	jstr_free_noinline(s, sz, cap);
-	JSTR_RETURN_ERR((size_t)-1);
 }
 
 /* Replace N SEARCH in S with REPLACE.
