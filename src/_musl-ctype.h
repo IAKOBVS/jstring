@@ -46,7 +46,7 @@ JSTR__BEGIN_DECLS
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isalpha(int c)
 {
 	return ISALPHA((unsigned char)c);
@@ -54,7 +54,7 @@ jstr_isalpha(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isdigit(int c)
 {
 	return ISDIGIT((unsigned char)c);
@@ -62,7 +62,7 @@ jstr_isdigit(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isalnum(int c)
 {
 	return ISALNUM((unsigned char)c);
@@ -70,7 +70,7 @@ jstr_isalnum(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isascii(int c)
 {
 	return ISASCII((unsigned char)c);
@@ -78,7 +78,7 @@ jstr_isascii(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isblank(int c)
 {
 	return ISBLANK((unsigned char)c);
@@ -86,7 +86,7 @@ jstr_isblank(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_iscntrl(int c)
 {
 	return ISCNTRL((unsigned char)c);
@@ -94,7 +94,7 @@ jstr_iscntrl(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isgraph(int c)
 {
 	return ISGRAPH((unsigned char)c);
@@ -102,7 +102,7 @@ jstr_isgraph(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_islower(int c)
 {
 	return ISLOWER((unsigned char)c);
@@ -110,7 +110,7 @@ jstr_islower(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isupper(int c)
 {
 	return ISUPPER((unsigned char)c);
@@ -118,7 +118,7 @@ jstr_isupper(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isprint(int c)
 {
 	return ISPRINT((unsigned char)c);
@@ -126,7 +126,7 @@ jstr_isprint(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_ispunct(int c)
 {
 	return ISPUNCT((unsigned char)c);
@@ -134,7 +134,7 @@ jstr_ispunct(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isspace(int c)
 {
 	return ISSPACE((unsigned char)c);
@@ -142,7 +142,7 @@ jstr_isspace(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_isxdigit(int c)
 {
 	return ISXDIGIT((unsigned char)c);
@@ -150,7 +150,7 @@ jstr_isxdigit(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_tolower(int c)
 {
 	return TOLOWER((unsigned char)c);
@@ -158,7 +158,7 @@ jstr_tolower(int c)
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
-int
+static int
 jstr_toupper(int c)
 {
 	return TOUPPER((unsigned char)c);
