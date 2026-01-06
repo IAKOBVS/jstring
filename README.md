@@ -8,7 +8,6 @@ jstring is a C string library which aims to make string manipulation simple and 
 with O(1) calls to realloc for fixed strings.
 - compatible with other string libraries: string functions take a pointer to string, size,
 and capacity.
-- string list: easily create a list of dynamic strings.
 - fast substring matching: for x86-64 and needles that fit in a simd vector, use an O\(n\)
 simd implementation of memmem. For longer needles, precompile memmem. Currently, musl's
 twoway memmem implementation is used.
