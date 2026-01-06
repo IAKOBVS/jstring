@@ -48,6 +48,7 @@ The following headers will need to be explicitly included \(as they rely on POSI
 ## Examples:
 
 https://github.com/IAKOBVS/find-and-replace
+https://github.com/IAKOBVS/rarebyte
 
 ## Disclaimer:
 
