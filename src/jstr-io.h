@@ -609,6 +609,7 @@ typedef enum jstr_io_ftw_flag_ty {
 #	define NONFATAL_ERR() \
 		(jstr_likely(errno == EACCES) || jstr_likely(errno == ENOENT))
 
+/* If have d_namlen, save a strlen. */
 #	if JSTR_HAVE_DIRENT_D_NAMLEN
 #		define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                           \
 			do {                                                                              \
@@ -616,6 +617,7 @@ typedef enum jstr_io_ftw_flag_ty {
 				jstr_strcpy_len(dirpath + dirpath_len + 1, (ep)->d_name, (ep)->d_namlen); \
 				newpath_len = dirpath_len + 1 + (ep)->d_namlen;                           \
 			} while (0)
+/* Otherwise, need to strlen. */
 #	else
 #		define FILL_PATH_ALWAYS(newpath_len, dirpath, dirpath_len, ep)                                         \
 			do {                                                                                            \
@@ -624,7 +626,9 @@ typedef enum jstr_io_ftw_flag_ty {
 			} while (0)
 #	endif
 
+/* If have *_at() functions, avoid constructing the path. */
 #	if USE_ATFILE
+#		define OPENDIR(fd, fname) fdopendir(fd)
 #		define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err)               \
 			do {                                                           \
 				if (jstr_unlikely(fstatat(fd, (ep)->d_name, st, 0))) { \
@@ -635,6 +639,8 @@ typedef enum jstr_io_ftw_flag_ty {
 					JSTR_RETURN_ERR(JSTR_RET_ERR);                 \
 				}                                                      \
 			} while (0)
+#		define STAT_ALWAYS(st, fd, ep, dirpath) \
+			STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
 #		define OPENAT(dstfd, srcfd, file, oflag, do_on_err)                             \
 			do {                                                                     \
 				if (jstr_unlikely((dstfd = openat(srcfd, file, oflag)) == -1)) { \
@@ -653,10 +659,9 @@ typedef enum jstr_io_ftw_flag_ty {
 					do_on_err;              \
 				}                               \
 			} while (0)
-#		define STAT_ALWAYS(st, fd, ep, dirpath) \
-			STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
-#		define OPENDIR(fd, fname) fdopendir(fd)
+/* Otherwise, construct path. */
 #	else
+#		define OPENDIR(fd, fname) opendir(fname)
 #		define STAT_DO(st, fd, ep, dirpath, do_on_nonfatal_err) \
 			do {                                             \
 				if (jstr_unlikely(stat(dirpath, st))) {  \
@@ -669,7 +674,6 @@ typedef enum jstr_io_ftw_flag_ty {
 			} while (0)
 #		define STAT_ALWAYS(st, fd, ep, dirpath) \
 			STAT_DO(st, fd, ep, dirpath = JSTR_IO_FTW_STATE_NS; goto do_fn)
-#		define OPENDIR(fd, fname) opendir(fname)
 #		define OPENAT(dstfd, srcfd, file, oflag, do_on_err) \
 			do {                                         \
 			} while (0)
@@ -681,6 +685,7 @@ typedef enum jstr_io_ftw_flag_ty {
 			} while (0)
 #	endif
 
+/* If have d_type, avoid calling stat to check directory type. */
 #	if JSTR_HAVE_DIRENT_D_TYPE
 #		define IS_DIR(ep, st)    ((ep)->d_type == DT_DIR)
 #		define IS_REG(ep, st)    ((ep)->d_type == DT_REG)
@@ -695,6 +700,7 @@ typedef enum jstr_io_ftw_flag_ty {
 				else                               \
 					STAT(st, fd, ep, dirpath); \
 			} while (0)
+/* Otherwise, call stat. */
 #	else
 #		define IS_DIR(ep, st) S_ISDIR((st)->st_mode)
 #		define IS_REG(ep, st) S_ISREG((st)->st_mode)
