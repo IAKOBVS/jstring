@@ -21,7 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 The implementations of standard string functions (src/_musl*) were taken
-from musl libc, with modifications, distributed under the following license:
+from musl libc, with modifications, distributed under the following standard
+MIT license:
 
 Copyright © 2005-2020 Rich Felker, et al.
 
