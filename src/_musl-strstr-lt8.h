@@ -27,7 +27,7 @@
 #ifndef JSTR__STRSTR234_CANON
 #	define JSTR__STRSTR234_CANON(x) (x)
 #endif
-#define L (unsigned) JSTR__STRSTR234_CANON
+#define L (unsigned)JSTR__STRSTR234_CANON
 #ifdef JSTR__STRSTR234_STRNSTR
 #	define N_PARAM , size_t l
 #	define N       l-- &&

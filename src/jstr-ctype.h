@@ -65,19 +65,18 @@ JSTR_NOEXCEPT
 		*p = jstr_tolower(*p);
 }
 
-#if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(15, 1))
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(15, 1))
 || defined __clang__
-#	define JSTR_HAVE_TOLOWER_AUTOVECTORIZATION 1
-#	define JSTR_HAVE_TOUPPER_AUTOVECTORIZATION 1
-#else
-#	define JSTR_HAVE_TOLOWER_AUTOVECTORIZATION 0
-#	define JSTR_HAVE_TOUPPER_AUTOVECTORIZATION 0
-#endif
+#		define JSTR_HAVE_TOLOWER_AUTOVECTORIZATION 1
+#		define JSTR_HAVE_TOUPPER_AUTOVECTORIZATION 1
+#	else
+#		define JSTR_HAVE_TOLOWER_AUTOVECTORIZATION 0
+#		define JSTR_HAVE_TOUPPER_AUTOVECTORIZATION 0
+#	endif
 
 /* Auto-vectorized at -O2 by GCC >= 15.1 and Clang >= 3.6. */
 /* ASCII. */
-JSTR_FUNC_VOID
-static void
+JSTR_FUNC_VOID static void
 jstr_tolowerstrcpy_len(char *R dst, char *R src, size_t n)
 JSTR_NOEXCEPT
 {

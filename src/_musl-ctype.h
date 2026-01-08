@@ -28,21 +28,21 @@
 
 JSTR__BEGIN_DECLS
 
-#	define ISALPHA(c) (((unsigned)c | 32) - 'a' < 26)
-#	define ISDIGIT(c) ((unsigned)c - '0' < 10)
-#	define ISGRAPH(c) ((unsigned)c - 0x21 < 0x5e)
-#	define ISASCII(c) (!(c & ~0x7f))
-#	define ISBLANK(c) ((c == ' ') | (c == '\t'))
-#	define ISCNTRL(c) ((unsigned)c < 0x20 || c == 0x7f)
-#	define ISLOWER(c) ((unsigned)c - 'a' < 26)
-#	define ISUPPER(c) ((unsigned)c - 'A' < 26)
-#	define ISPRINT(c) ((unsigned)c - 0x20 < 0x5f)
-#	define ISALNUM(c) (ISALPHA(c) | ISDIGIT(c))
-#	define ISPUNCT(c) (ISGRAPH(c) ^ ISALNUM(c))
-#	define ISSPACE(c) ((c == ' ') | ((unsigned)c - '\t' < 5))
-#	define TOLOWER(c) (c | (ISUPPER(c) ? 32 : 0))
-#	define TOUPPER(c) (c & (ISLOWER(c) ? 0x5f : (int)-1))
-#	define ISXDIGIT(c) (ISDIGIT(c) | (((unsigned)c|32)-'a' < 6))
+#	define ISALPHA(c)  (((unsigned)c | 32) - 'a' < 26)
+#	define ISDIGIT(c)  ((unsigned)c - '0' < 10)
+#	define ISGRAPH(c)  ((unsigned)c - 0x21 < 0x5e)
+#	define ISASCII(c)  (!(c & ~0x7f))
+#	define ISBLANK(c)  ((c == ' ') | (c == '\t'))
+#	define ISCNTRL(c)  ((unsigned)c < 0x20 || c == 0x7f)
+#	define ISLOWER(c)  ((unsigned)c - 'a' < 26)
+#	define ISUPPER(c)  ((unsigned)c - 'A' < 26)
+#	define ISPRINT(c)  ((unsigned)c - 0x20 < 0x5f)
+#	define ISALNUM(c)  (ISALPHA(c) | ISDIGIT(c))
+#	define ISPUNCT(c)  (ISGRAPH(c) ^ ISALNUM(c))
+#	define ISSPACE(c)  ((c == ' ') | ((unsigned)c - '\t' < 5))
+#	define TOLOWER(c)  (c | (ISUPPER(c) ? 32 : 0))
+#	define TOUPPER(c)  (c & (ISLOWER(c) ? 0x5f : (int)-1))
+#	define ISXDIGIT(c) (ISDIGIT(c) | (((unsigned)c | 32) - 'a' < 6))
 
 JSTR_ATTR_INLINE
 JSTR_ATTR_CONST
