@@ -484,8 +484,8 @@ jstr__simd_tolower_vec(const VEC v)
 JSTR_NOEXCEPT
 {
 	const VEC gt_a = CMPGT8(v, SETONE8('A' - 1));
-	const VEC le_z = CMPLT8(v, SETONE8('Z' + 1));
-	const VEC is_lower = AND(gt_a, le_z);
+	const VEC lt_z = CMPLT8(v, SETONE8('Z' + 1));
+	const VEC is_lower = AND(gt_a, lt_z);
 	const VEC cvt = AND(is_lower, SETONE8('a' - 'A'));
 	return ADD8(v, cvt);
 }
@@ -536,8 +536,8 @@ jstr__simd_toupper_vec(const VEC v)
 JSTR_NOEXCEPT
 {
 	const VEC gt_a = CMPGT8(v, SETONE8('a' - 1));
-	const VEC le_z = CMPLT8(v, SETONE8('z' + 1));
-	const VEC is_upper = AND(gt_a, le_z);
+	const VEC lt_z = CMPLT8(v, SETONE8('z' + 1));
+	const VEC is_upper = AND(gt_a, lt_z);
 	const VEC cvt = AND(is_upper, SETONE8('a' - 'A'));
 	return SUB8(v, cvt);
 }
