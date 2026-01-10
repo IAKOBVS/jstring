@@ -426,7 +426,7 @@ JSTR_NOEXCEPT
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	char buf[MINBUF];
 	size_t readsz = jstr_io_fread(buf, 1, sizeof(buf), fp);
-	if (jstr_unlikely(readsz == (size_t)-1)) {
+	if (jstr_unlikely(readsz == 0)) {
 		pclose(fp);
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
