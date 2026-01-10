@@ -99,16 +99,6 @@ check_utf:;
 #		define FORM_FEED_IS_BINARY 1
 #	endif
 
-/* clang-format off */
-
-/* Do not pass a non-unsigned char. */
-JSTR_ATTR_MAYBE_UNUSED
-static const unsigned char jstr__io_binary_table[256] = {1,1,1,1,1,1,1,1,1,0,0,1,1,FORM_FEED_IS_BINARY,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1};
-
-/* clang-format on */
-
-#	undef FORM_FEED_IS_BINARY
-
 /* Check if the first JSTR_IO_BINARY_CHECK_MAX bytes or fewer contain any
  * unprintable char. */
 JSTR_FUNC
@@ -124,7 +114,7 @@ JSTR_NOEXCEPT
 	sz = JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX);
 	const unsigned char *s = (unsigned char *)buf;
 	for (; sz--; ++s)
-		if (jstr__io_binary_table[*s])
+		if ((*s < ' ' && jstr_unlikely(*s != '\t' && *s != '\n')) || jstr_unlikely(*s == 127))
 			return 1;
 	return 0;
 }
@@ -150,10 +140,9 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
-	const unsigned char *end = (const unsigned char *)buf + JSTR_MIN(n, sz);
-	const unsigned char *s = (unsigned char *)buf;
-	for (; s < end; ++s)
-		if (jstr__io_binary_table[*s])
+	const unsigned char *s = (const unsigned char *)buf;
+	for (n = JSTR_MIN(n, sz); n--; ++s)
+		if ((*s < ' ' && jstr_unlikely(*s != '\t' && *s != '\n')) || jstr_unlikely(*s == 127))
 			return 1;
 	return 0;
 }
