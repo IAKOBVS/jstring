@@ -11,7 +11,6 @@ CFLAGS="
 -Wall
 -Wextra
 -Wpedantic
--DJSTR_TEST_SLOW=1
 -O2
 -fsanitize=address
 $CFLAGS
@@ -60,6 +59,8 @@ for file in $files; do
 	out_file=$(echo ${file%.*} | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
 	compile "$file" "$tmp/$out_file" $CFLAGS &
 	compile "$file" "$tmp/$out_file" $CFLAGS -march=native &
+	compile "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 &
+	compile "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 -march=native &
 done
 wait
 
