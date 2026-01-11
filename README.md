@@ -99,7 +99,7 @@ The size parameter is only used to potentially save a strlen\(\).
 not be grown.
 - \*\_from\(\): operate starting from a specified index. The index passed by the user
 is assumed to be within bounds.
-- \*\_bref\(\): enable backreferences for the replacement string. \0 is interpreted
+- \*\_backref\(\): enable backreferences for the replacement string. \0 is interpreted
 as referring to the whole matched string.
 - \*\_at\(\): return an element of from an array type. When JSTR\_DEBUG is defined as
 1, do bounds checking at runtime.
