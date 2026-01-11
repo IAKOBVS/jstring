@@ -19,16 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-Portions of this software are derived from third-party works licensed under
-terms compatible with the above MIT license:
-
-The implementations of standard string functions (src/_musl*) are Copyright
-© 2005-2020 Rich Felker, et al., and were taken from musl libc, with
-modifications.
-
-The tests (tests/*) are Copyright © 2005-2013 libc-test AUTHORS, and were
-taken from libc-test, with modifications.
-
-The benchmarks (bench/*) are Copyright © 2011 Rich Felker, and were taken
-from libc-bench, with modifications.
