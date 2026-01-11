@@ -345,7 +345,7 @@ JSTR_NOEXCEPT
 	jstr_re_off_ty changed = 0;
 	size_t prev_len;
 	size_t find_len;
-	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
+	if (ret == JSTR_RE_RET_NOERROR) {
 		find_len = (size_t)(rm.rm_eo - rm.rm_so);
 		i.src_e += rm.rm_so;
 		prev_len = JSTR_DIFF(i.src_e, i.src);
