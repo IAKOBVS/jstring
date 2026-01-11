@@ -889,7 +889,7 @@ JSTR_NOEXCEPT
 			/* Length of previous SRC that needs to be copied to DST. */
 			prev_len = JSTR_DIFF(i.src_e, i.src);
 			/* No need to move string when FIND and RPLC have equal lengths. */
-			if (jstr_likely(find_len != rplc_len))
+			if (find_len != rplc_len)
 				/* Copy to DST the previous SRC. */
 				memmove(i.dst, i.src, prev_len);
 start:
