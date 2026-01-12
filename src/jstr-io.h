@@ -458,8 +458,7 @@ static jstr_ret_ty
 jstr_io_readstdin(char *R *R s, size_t *R sz, size_t *R cap)
 JSTR_NOEXCEPT
 {
-	enum { MINBUF = JSTR_PAGE_SIZE };
-	char buf[MINBUF];
+	char buf[BUFSIZ];
 	ssize_t readsz = read(STDIN_FILENO, buf, sizeof(buf));
 	if (jstr_unlikely(readsz == (ssize_t)-1))
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
@@ -468,7 +467,7 @@ JSTR_NOEXCEPT
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	memcpy(*s, buf, (size_t)readsz);
 	*sz = (size_t)readsz;
-	if (jstr_unlikely(readsz == MINBUF)) {
+	if (jstr_unlikely(readsz == BUFSIZ)) {
 		ssize_t reqsz;
 		for (;;) {
 			reqsz = (ssize_t)(*cap - *sz);

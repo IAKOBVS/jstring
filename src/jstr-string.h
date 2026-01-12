@@ -967,7 +967,7 @@ JSTR_NOEXCEPT
 	return jstr__simd_countchr(s, c);
 #	else
 	size_t cnt = 0;
-	if (jstr_likely(c))
+	if (jstr_likely(c != '\0'))
 		for (; (s = strchr(s, c)); ++s, ++cnt) {}
 	return cnt;
 #	endif
