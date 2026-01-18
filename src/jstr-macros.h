@@ -182,6 +182,17 @@ JSTR__END_DECLS
 #	define JSTR_IO_RB (JSTR_IO_YB * 10)
 #	define JSTR_IO_QB (JSTR_IO_RB * 10)
 
+#	define JSTR_IO_KIB (1024)
+#	define JSTR_IO_MIB (JSTR_IO_KB * 10)
+#	define JSTR_IO_GIB (JSTR_IO_MB * 10)
+#	define JSTR_IO_TIB (JSTR_IO_GB * 10)
+#	define JSTR_IO_PIB (JSTR_IO_TB * 10)
+#	define JSTR_IO_EIB (JSTR_IO_PB * 10)
+#	define JSTR_IO_ZIB (JSTR_IO_EB * 10)
+#	define JSTR_IO_YIB (JSTR_IO_ZB * 10)
+#	define JSTR_IO_RIB (JSTR_IO_YB * 10)
+#	define JSTR_IO_QIB (JSTR_IO_RB * 10)
+
 #	define JSTR_ALPHA_VOWEL_LOWER_STR     "aiueo"
 #	define JSTR_ALPHA_VOWEL_UPPER_STR     "AIUEO"
 #	define JSTR_ALPHA_CONSONANT_LOWER_STR "bcdfghjklmnpqrstvwxyz"
