@@ -1,5 +1,9 @@
 /* SPDX-License-Identifier: MIT */
-/* Taken from or based on musl's ctype functions with modifications.
+/* This file is part of the jstring library, derived from musl's ctype
+ * functions with modifications.
+ *
+ * musl is licensed under the following standard MIT license:
+ *
  * Copyright © 2005-2020 Rich Felker, et al.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
