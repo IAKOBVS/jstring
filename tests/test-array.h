@@ -1,4 +1,6 @@
-/* Some of the test cases were taken from musl's libc-test.
+/* SPDX-License-Identifier: MIT */
+/* This file is part of the jstring library. Some of the test cases
+ * were taken from musl's libc-test.
  *
  * libc-test is licensed under the following standard MIT license:
  *

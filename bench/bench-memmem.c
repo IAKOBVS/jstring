@@ -1,4 +1,9 @@
-/* Based on musl's libc-bench
+/* SPDX-License-Identifier: MIT */
+/* This file is part of the jstring library, and is based on musl's
+ * libc-bench
+ *
+ * libc-bench is licensed under the following standard MIT license:
+ *
  * Copyright © 2011 Rich Felker
  *
  * Permission is hereby granted, free of charge, to any person obtaining

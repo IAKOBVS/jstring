@@ -1,4 +1,6 @@
-/* Modified version of functional/strchr.c taken from musl's libc-test
+/* SPDX-License-Identifier: MIT */
+/* This file is part of the jstring library, and a modified version
+ * of functional/strchr.c taken from musl's libc-test
  *
  * libc-test is licensed under the following standard MIT license:
  *

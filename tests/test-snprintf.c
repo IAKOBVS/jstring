@@ -1,4 +1,6 @@
-/* Modified version of functional/snprintf.c taken from musl's libc-test
+/* SPDX-License-Identifier: MIT */
+/* This file is part of the jstring library, and is a modified
+ * version of functional/snprintf.c taken from musl's libc-test
  *
  * libc-test is licensed under the following standard MIT license:
  *
@@ -29,7 +31,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <math.h>
