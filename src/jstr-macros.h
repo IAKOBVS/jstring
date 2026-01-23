@@ -638,18 +638,24 @@ JSTR__CAST(T, Other other)
 #		define JSTR_HAS_ATTRIBUTE(attr) __glibc_has_attribute(attr)
 #	elif defined __has_attribute
 #		define JSTR_HAS_ATTRIBUTE(attr) __has_attribute(attr)
+#	else
+#		define JSTR_HAS_ATTRIBUTE(attr) 0
 #	endif /* has_attribute */
 
 #	ifdef __glibc_has_builtin
 #		define JSTR_HAS_BUILTIN(name) __glibc_has_builtin(name)
 #	elif defined __has_builtin
 #		define JSTR_HAS_BUILTIN(name) __has_builtin(name)
+#	else
+#		define JSTR_HAS_BUILTIN(name) 0
 #	endif /* has_builtin */
 
 #	ifdef __glibc_has_extension
 #		define JSTR_HAS_EXTENSION(ext) __glibc_has_extension(ext)
 #	elif defined __has_extension
 #		define JSTR_HAS_EXTENSION(ext) __has_extension(ext)
+#	else
+#		define JSTR_HAS_EXTENSION(ext)
 #	endif /* has_extension */
 
 #	if defined __glibc_unlikely && defined __glibc_likely
