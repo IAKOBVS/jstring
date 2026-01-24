@@ -1,5 +1,5 @@
-scripts/check-little-endian
 jstr
+t
 # Prerequisites
 *.d
 
