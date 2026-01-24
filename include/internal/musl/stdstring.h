@@ -21,15 +21,15 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef JSTR_MUSL_H
-#define JSTR_MUSL_H
+#ifndef JSTR_INTERNAL_MUSL_H
+#define JSTR_INTERNAL_MUSL_H
 
-#include "jstr-macros.h"
+#include "../../macros.h"
 
 #ifndef JSTR_HAVE_SIMD
 #	if defined __AVX512BW__ || defined __AVX2__ || defined __SSE2__
 #		define JSTR_HAVE_SIMD 1
-#		include "_simd.h"
+#		include "../simd.h"
 #	endif
 #endif
 
@@ -37,8 +37,8 @@ JSTR__BEGIN_DECLS
 #include <limits.h>
 JSTR__END_DECLS
 
-#include "jstr-ctype.h"
-#include "jstr-stdstring.h"
+#include "../../ctype.h"
+#include "../../stdstring.h"
 
 #define SS         (sizeof(size_t))
 #define ALIGN      (sizeof(size_t) - 1)
@@ -287,4 +287,4 @@ JSTR__END_DECLS
 #undef HIGHS
 #undef HASZERO
 
-#endif /* JSTR_MUSL_H */
+#endif /* JSTR_INTERNAL_MUSL_H */

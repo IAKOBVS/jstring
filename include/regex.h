@@ -27,7 +27,7 @@
 #ifndef JSTR_REGEX_H
 #	define JSTR_REGEX_H 1
 
-#	include "jstr-macros.h"
+#	include "macros.h"
 
 JSTR__BEGIN_DECLS
 #	include <regex.h>
@@ -36,10 +36,10 @@ JSTR__BEGIN_DECLS
 #	include <string.h>
 JSTR__END_DECLS
 
-#	include "jstr-builder.h"
-#	include "jstr-config.h"
-#	include "jstr-replace.h"
-#	include "jstr-string.h"
+#	include "builder.h"
+#	include "config.h"
+#	include "replace.h"
+#	include "string.h"
 
 #	define jstr_re_chkcomp(errcode) jstr_unlikely((errcode) != JSTR_RE_RET_NOERROR)
 #	define jstr_re_chkexec(errcode) (jstr_re_chkcomp(errcode) && jstr_unlikely((errcode) != JSTR_RE_RET_NOMATCH))

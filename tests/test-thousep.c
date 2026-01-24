@@ -21,7 +21,7 @@
  * SOFTWARE. */
 
 #include "test.h"
-#include "../src/jstr-itoa.h"
+#include "../include/itoa.h"
 
 char buf[1024];
 

@@ -27,7 +27,7 @@
 
 #include "bench.h"
 
-#include "../src/jstr-string.h"
+#include "../include/string.h"
 
 #include <stdio.h>
 #include <stdlib.h>

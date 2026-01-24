@@ -24,7 +24,7 @@
 #define __STDC_NO_VLA__ 1
 
 #include "test.h"
-#include "../src/jstr.h"
+#include "../include/jstr.h"
 #include "test-array.h"
 
 #define T(func, expected)                                                                 \
@@ -307,7 +307,7 @@ main(int argc, char **argv)
 {
 	START();
 
-	/* jstr-replace tests. */
+	/* replace tests. */
 	jstr_ty result = JSTR_INIT;
 	{
 		jstr_ty expected = JSTR_INIT;
@@ -323,7 +323,7 @@ main(int argc, char **argv)
 
 	/* TODO: more tests. */
 
-	/* jstr-builder tests. */
+	/* builder tests. */
 	expected = "hello world";
 	T_APPEND(JSTR_RET_SUCC, jstr_cat, jstr_struct(&result), "hello", " ", "world", NULL);
 	expected = "hello world";
@@ -333,7 +333,7 @@ main(int argc, char **argv)
 	expected = "hello world";
 	T_APPEND(JSTR_RET_SUCC, jstr_assign_len, jstr_struct(&result), expected, strlen(expected));
 
-	/* jstr-replace tests. */
+	/* replace tests. */
 	FILL(result, "hello hello hello hello");
 	find = "hello";
 	rplc = "world";
@@ -390,7 +390,7 @@ main(int argc, char **argv)
 	expected = "qqqqq_qqqqq";
 	T_APPEND_NORET(jstr_rplcallspn, result.data, &result.size, find, *rplc);
 
-	/* jstr-builder tests. */
+	/* builder tests. */
 	jstr_empty(result.data, &result.size);
 	T(jstr_cat(jstr_struct(&result), "hello", " world", NULL), "hello world");
 	T(jstr_cat(jstr_struct(&result), "a", "b", NULL), "hello worldab");

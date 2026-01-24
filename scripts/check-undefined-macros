@@ -9,7 +9,7 @@ undefine()
 }
 
 cd "$(dirname "$0")" || exit
-undefine 'JSTR_' ../src/jstr-macros.h &
-undefine 'JSTR_ARCH' ../src/jstr-macros-arch.h &
-undefine 'JSTR_(?:OS|ENV)' ../src/jstr-macros-os.h &
+undefine 'JSTR_' ../include/macros.h &
+undefine 'JSTR_ARCH' ../include/macros-arch.h &
+undefine 'JSTR_(?:OS|ENV)' ../include/macros-os.h &
 wait

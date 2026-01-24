@@ -24,7 +24,7 @@
 #define SIMPLE_H
 
 #define JSTR_BUILT
-#include "../src/jstr-string.h"
+#include "../include/string.h"
 
 JSTR_ATTR_MAYBE_UNUSED
 JSTR_ATTR_INLINE

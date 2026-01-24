@@ -4,8 +4,8 @@
 set -e
 
 PATH_BUILD=../jstr
-PATH_SRC=../src
-PATH_MACROS=$PATH_BUILD/jstr-macros.h
+PATH_SRC=../include
+PATH_MACROS=$PATH_BUILD/macros.h
 
 verbose()
 {
@@ -21,16 +21,32 @@ has_prog()
 update()
 {
 	in_fname=$1
-	out_fname=$PATH_BUILD/${in_fname##*/}
+	base_fname=$(basename $in_fname)
 	# test -e "$out_fname" && /bin/test "$in_fname" -ot "$out_fname" && exit 0
 	case $in_fname in
-	*macro*.h) ;;
-	*/_*.h)
+	*/internal/musl/*.h)
+		out_fname=$PATH_BUILD/internal/musl/$base_fname
+		mkdir -p $PATH_BUILD/internal
+		mkdir -p $PATH_BUILD/internal/musl
 		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
 		echo "perl ./namespace-macros.pl $in_fname >$out_fname"
 		exit 0
 		;;
-	*/*jstr-*.h)
+	*/internal/*.h)
+		out_fname=$PATH_BUILD/internal/$base_fname
+		mkdir -p $PATH_BUILD/internal
+		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		echo "perl ./namespace-macros.pl $in_fname >$out_fname"
+		exit 0
+		;;
+	*/*macro*.h)
+		out_fname=$PATH_BUILD/$base_fname
+		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		echo "perl ./namespace-macros.pl $in_fname >$out_fname"
+		exit 0
+		;;
+	*/*.h)
+		out_fname=$PATH_BUILD/$base_fname
 		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
 		echo "perl ./gen-func.pl $in_fname | perl ./namespace-macros.pl >$out_fname"
 		exit 0
@@ -50,7 +66,7 @@ cd "$(dirname "$0")" || exit
 ./clean
 mkdir -p ../jstr
 
-for file in $(echo $PATH_SRC/*.h); do
+for file in $(find $PATH_SRC -type f); do
 	update "$file" &
 done
 wait

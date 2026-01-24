@@ -20,13 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#ifndef JSTR_SIMD_H
-#define JSTR_SIMD_H
+#ifndef JSTR_INTERNAL_SIMD_H
+#define JSTR_INTERNAL_SIMD_H
 
-#include "jstr-macros.h"
+#include "../macros.h"
 
-#include "jstr-pointer-arith.h"
-#include "jstr-stdstring.h"
+#include "../pointer-arith.h"
+#include "../stdstring.h"
 
 JSTR__BEGIN_DECLS
 
@@ -666,4 +666,4 @@ match:
 
 JSTR__END_DECLS
 
-#endif /* JSTR_SIMD_H */
+#endif /* JSTR_INTERNAL_SIMD_H */

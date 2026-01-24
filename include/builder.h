@@ -23,8 +23,8 @@
 #ifndef JSTR_BUILDER_H
 #	define JSTR_BUILDER_H 1
 
-#	include "jstr-macros.h"
-#	include "jstr-struct.h"
+#	include "macros.h"
+#	include "struct.h"
 
 JSTR__BEGIN_DECLS
 #	include <errno.h>
@@ -36,11 +36,11 @@ JSTR__BEGIN_DECLS
 #	include <wchar.h>
 JSTR__END_DECLS
 
-#	include "jstr-config.h"
-#	include "jstr-ctype.h"
-#	include "jstr-macros.h"
-#	include "jstr-stdstring.h"
-#	include "jstr-string.h"
+#	include "config.h"
+#	include "ctype.h"
+#	include "macros.h"
+#	include "stdstring.h"
+#	include "string.h"
 
 #	define R JSTR_RESTRICT
 

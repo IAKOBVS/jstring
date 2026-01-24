@@ -2,4 +2,4 @@
 
 set -e
 
-perl ./check-scoped-macros.pl ../src/*.h | grep -q '^[^J][^S][^T][^R]' || exit 0
+perl ./check-scoped-macros.pl ../include/*.h | grep -q '^[^J][^S][^T][^R]' || exit 0

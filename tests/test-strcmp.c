@@ -22,7 +22,7 @@
 
 #include "test.h"
 #include "test-array.h"
-#include "../src/jstr-string.h"
+#include "../include/string.h"
 
 int
 main(int argc, char **argv)

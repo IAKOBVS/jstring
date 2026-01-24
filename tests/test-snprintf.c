@@ -35,7 +35,7 @@
 #include <stdarg.h>
 #include <math.h>
 #include "test.h"
-#include "../src/jstr-builder.h"
+#include "../include/builder.h"
 
 /* clang-format off */
 

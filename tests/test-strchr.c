@@ -26,7 +26,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #include "test.h"
-#include "../src/jstr.h"
+#include "../include/jstr.h"
 
 static JSTR_ATTR_MAYBE_UNUSED char buf[512];
 

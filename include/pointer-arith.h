@@ -23,7 +23,7 @@
 #ifndef JSTR_PTR_ARITH_H
 #	define JSTR_PTR_ARITH_H 1
 
-#	include "jstr-config.h"
+#	include "config.h"
 
 #	define JSTR_ALIGN_DOWN(base, size)                          ((base) & -((size_t)(size)))
 #	define JSTR_ALIGN_UP(base, size)                            JSTR_ALIGN_DOWN((base) + (size_t)(size) - 1, (size))

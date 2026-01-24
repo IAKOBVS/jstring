@@ -23,7 +23,7 @@
 #ifndef JSTR_IO_H
 #	define JSTR_IO_H 1
 
-#	include "jstr-macros.h"
+#	include "macros.h"
 
 JSTR__BEGIN_DECLS
 #	include <dirent.h>
@@ -35,9 +35,9 @@ JSTR__BEGIN_DECLS
 #	include <unistd.h>
 JSTR__END_DECLS
 
-#	include "jstr-builder.h"
-#	include "jstr-stdstring.h"
-#	include "jstr-string.h"
+#	include "builder.h"
+#	include "stdstring.h"
+#	include "string.h"
 
 #	define R JSTR_RESTRICT
 

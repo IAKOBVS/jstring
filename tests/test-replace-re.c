@@ -24,7 +24,7 @@
 #define __STDC_NO_VLA__ 1
 
 #include "test.h"
-#include "../src/jstr-regex.h"
+#include "../include/regex.h"
 
 #define T_ASSERT(func, result, expected)                                                                           \
 	do {                                                                                                       \

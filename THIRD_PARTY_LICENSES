@@ -1,7 +1,7 @@
 Portions of this software are derived from third-party works licensed under
 terms compatible with the standard MIT license:
 
-The implementations of standard string functions (src/_musl*) are Copyright
+The implementations of standard string functions (include/_musl*) are Copyright
 © 2005-2020 Rich Felker, et al., and were taken from musl libc, with
 modifications.
 

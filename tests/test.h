@@ -41,7 +41,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "../src/jstr-macros.h"
+#include "../include/macros.h"
 #include "simple.h"
 
 #define SUCCESS()                                                   \

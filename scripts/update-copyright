@@ -4,7 +4,7 @@ set -e
 
 cd "$(dirname "$0")" || exit
 #shellcheck disable=SC2005
-for file in $(echo ../* ../src/* ../bin/* ../tests/*); do
+for file in $(echo ../* ../include/* ../bin/* ../tests/*); do
 	test -f "$file" && echo "$(perl ./update-copyright.pl "$file")" >"$file" &
 done
 wait

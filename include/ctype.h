@@ -20,12 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#include "_musl-ctype.h"
+#include "internal/musl/ctype.h"
 
 #ifndef JSTR_CTYPE_H
 #	define JSTR_CTYPE_H 1
 
-#	include "jstr-macros.h"
+#	include "macros.h"
 
 #	define R JSTR_RESTRICT
 

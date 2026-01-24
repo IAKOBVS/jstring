@@ -21,7 +21,7 @@
  * SOFTWARE. */
 
 #include "test.h"
-#include "../src/jstr-ctype.h"
+#include "../include/ctype.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

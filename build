@@ -1,4 +1,6 @@
 #!/bin/sh
 
+# TODO: use make
+
 cd "$(dirname "$0")" || exit
 ./scripts/build

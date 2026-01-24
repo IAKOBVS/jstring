@@ -23,7 +23,7 @@
 #ifndef JSTR_STRING_H
 #	define JSTR_STRING_H 1
 
-#	include "jstr-macros.h"
+#	include "macros.h"
 
 JSTR__BEGIN_DECLS
 #	include <stdio.h>
@@ -31,14 +31,14 @@ JSTR__BEGIN_DECLS
 #	include <string.h>
 JSTR__END_DECLS
 
-#	include "jstr-config.h"
-#	include "jstr-stdstring.h"
-#	include "jstr-ctype.h"
-#	include "_musl-stdstring.h"
+#	include "config.h"
+#	include "stdstring.h"
+#	include "ctype.h"
+#	include "internal/musl/stdstring.h"
 
 #	if defined __AVX512BW__ || defined __AVX2__ || defined __SSE2__
 #		define JSTR_HAVE_SIMD 1
-#		include "_simd.h"
+#		include "internal/simd.h"
 #	endif
 
 #	define R JSTR_RESTRICT
@@ -384,19 +384,19 @@ JSTR_NOEXCEPT
 
 #	define JSTR__STRSTR234_MEMMEM    1
 #	define JSTR__STRSTR234_FUNC_NAME jstr__memmem
-#	include "_musl-strstr-lt8.h"
+#	include "internal/musl/strstr-lt8.h"
 
 #	define JSTR__STRSTR234_CANON     jstr_tolower
 #	define JSTR__STRSTR234_FUNC_NAME jstr__strcasestr
-#	include "_musl-strstr-lt8.h"
+#	include "internal/musl/strstr-lt8.h"
 
 #	define JSTR__STRSTR234_MEMMEM    1
 #	define JSTR__STRSTR234_CANON     jstr_tolower
 #	define JSTR__STRSTR234_FUNC_NAME jstr__memcasemem
-#	include "_musl-strstr-lt8.h"
+#	include "internal/musl/strstr-lt8.h"
 
 #	define JSTR__MUSL_FUNC_NAME jstr__memmem_musl
-#	include "_musl-twoway.h"
+#	include "internal/musl/twoway.h"
 
 #	if JSTR_HAVE_MEMMEM && JSTR_HAVE_MEMMEM_OPTIMIZED && !JSTR_TEST
 #		define JSTR_USE_MEMMEM_LIBC 1
@@ -529,7 +529,7 @@ JSTR_NOEXCEPT
 
 #	define JSTR__STRSTR234_FUNC_NAME jstr__memrmem
 #	define JSTR__STRSTR234_MEMRMEM   1
-#	include "_musl-strstr-lt8.h"
+#	include "internal/musl/strstr-lt8.h"
 
 /* Find last NE in HS.
  * Return value:
@@ -583,7 +583,7 @@ JSTR_NOEXCEPT
 #	define JSTR__MUSL_FUNC_NAME jstr__strcasestr_len_musl
 #	define JSTR__MUSL_CANON     jstr_tolower
 #	define JSTR__MUSL_CMP_FUNC  jstr_strcasecmpeq_len
-#	include "_musl-twoway.h"
+#	include "internal/musl/twoway.h"
 
 /* Find NE in HS case-insensitively (ASCII).
  * Return value:
@@ -663,7 +663,7 @@ JSTR_NOEXCEPT
 #	define JSTR__MUSL_CANON     jstr_tolower
 #	define JSTR__MUSL_CMP_FUNC  jstr_strcasecmpeq_len
 #	define JSTR__MUSL_CHECK_EOL 1
-#	include "_musl-twoway.h"
+#	include "internal/musl/twoway.h"
 
 /* Find NE in HS case-insensitively.
  * Return value:
@@ -749,7 +749,7 @@ JSTR_NOEXCEPT
 
 #	define JSTR__MUSL_FUNC_NAME jstr__strstr_musl
 #	define JSTR__MUSL_CHECK_EOL 1
-#	include "_musl-twoway.h"
+#	include "internal/musl/twoway.h"
 
 JSTR_FUNC_VOID
 static void

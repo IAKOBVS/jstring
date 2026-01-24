@@ -23,9 +23,9 @@
 #ifndef JSTR_STDSTRING_H
 #	define JSTR_STDSTRING_H 1
 
-#	include "jstr-macros.h"
-#	include "jstr-ctype.h"
-#	include "jstr-struct.h"
+#	include "macros.h"
+#	include "ctype.h"
+#	include "struct.h"
 
 JSTR__BEGIN_DECLS
 #	include <stdlib.h>

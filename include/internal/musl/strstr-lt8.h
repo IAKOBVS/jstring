@@ -40,7 +40,7 @@
 #	define N_EXIT
 #endif
 
-#include "jstr-macros.h"
+#include "../../macros.h"
 
 #ifdef JSTR__STRSTR234_MEMMEM
 

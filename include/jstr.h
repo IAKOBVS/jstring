@@ -20,33 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#ifndef JSTR_STRUCT_H
-#	define JSTR_STRUCT_H 1
+#ifndef JSTR_H
+#	define JSTR_H 1
 
-#	include "jstr-macros.h"
+#	include "builder.h"
+#	include "ctype.h"
+#	include "itoa.h"
+#	include "macros.h"
+#	include "replace.h"
+#	include "string.h"
 
-JSTR__BEGIN_DECLS
-#	include <stddef.h>
-JSTR__END_DECLS
-
-#	define jstr_struct(j)  &(j)->data, &(j)->size, &(j)->capacity
-#	define jstr_literal(s) (s), (sizeof(s) - 1)
-#	define jstr_literal_init(s)    \
-		{                       \
-			jstr_literal(s) \
-		}
-
-JSTR__BEGIN_DECLS
-typedef struct jstr_ty {
-	char *data;
-	size_t size;
-	size_t capacity;
-} jstr_ty;
-
-typedef struct jstr_literal_ty {
-	const char *data;
-	const unsigned int size;
-} jstr_literal_ty;
-JSTR__END_DECLS
-
-#endif /* JSTR_STRUCT_H */
+#endif /* JSTR_H */

@@ -23,17 +23,17 @@
 #ifndef JSTR_REPLACE_H
 #	define JSTR_REPLACE_H 1
 
-#	include "jstr-macros.h"
+#	include "macros.h"
 
 JSTR__BEGIN_DECLS
 #	include <stdlib.h>
 #	include <string.h>
 JSTR__END_DECLS
 
-#	include "jstr-builder.h"
-#	include "jstr-ctype.h"
-#	include "jstr-macros.h"
-#	include "jstr-string.h"
+#	include "builder.h"
+#	include "ctype.h"
+#	include "macros.h"
+#	include "string.h"
 
 #	define R JSTR_RESTRICT
 

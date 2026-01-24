@@ -38,7 +38,7 @@
 #include <stdlib.h>
 
 #define JSTR_BUILT 1
-#include "../src/jstr-macros.h"
+#include "../include/macros.h"
 
 static JSTR_ATTR_MAYBE_UNUSED void
 print_stats(struct timespec tv0)

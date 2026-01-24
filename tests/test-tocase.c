@@ -21,8 +21,8 @@
  * SOFTWARE. */
 
 #include "test.h"
-#include "../src/jstr-string.h"
-#include "../src/jstr-replace.h"
+#include "../include/string.h"
+#include "../include/replace.h"
 
 #define T_ASSERT(func, expr, expected)                                               \
 	do {                                                                         \

@@ -1,0 +1,9 @@
+#!/bin/sh
+mkdir -p ../headers
+files=$(find ../include/ -type f -name '*h' -a ! -name '.' -a ! -name '_*')
+for file in $files; do
+	echo "perl ./gen-headers $file >> ../headers/$file.hh"
+	perl ./gen-headers.pl "$file" >> ../headers/$file.hh &
+done
+wait
+mv ../include/*.hh ../headers

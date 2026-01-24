@@ -40,8 +40,8 @@ including the nul terminator.
 The following headers will need to be explicitly included \(as they rely on POSIX\):
 
 ```
-#include <jstr/jstr-io.h>
-#include <jstr/jstr-regex.h>
+#include <jstr/io.h>
+#include <jstr/regex.h>
 ```
 
 ## Examples:
@@ -65,7 +65,7 @@ parameter. char \* implies no embedded NULs. Use ones which takes a void \*.
 
 ## Configuration:
 
-You can customize the library by defining certain macros in jstr-config.h before
+You can customize the library by defining certain macros in config.h before
 including any header. For example:
 ```
 #define JSTR_USE_UNLOCKED_IO 1
@@ -82,7 +82,7 @@ all the related resources. Use jstr\_err\(\) to print the error message or jstr\
 to also exit. When debugging, you may want to define JSTR\_PANIC as 1 to automatically
 call jstr\_errdie\(\) on errors.
 
-For jstr-regex.h, jstr\_re\_rm\*\(\), jstr\_re\_rplc\*\(\) will return a negative number indicating
+For regex.h, jstr\_re\_rm\*\(\), jstr\_re\_rplc\*\(\) will return a negative number indicating
 the negated value of the regex error code. To print an error message, pass the negation of
 the returned error code. This is done so that we can utilize the return value of the function
 both as the number of replacements done or as error values.

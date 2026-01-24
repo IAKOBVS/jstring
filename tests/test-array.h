@@ -31,7 +31,7 @@
 /* clang-format off */
 
 #include "test.h"
-#include "../src/jstr-macros.h"
+#include "../include/macros.h"
 
 #define T_FOREACHI(array, i) for (size_t i = 0; i < JSTR_ARRAY_COUNT(array); ++i)
 
