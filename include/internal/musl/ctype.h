@@ -30,7 +30,7 @@
 
 #	include "../../macros.h"
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 
 #	define ISALPHA(c)  (((unsigned)c | 32) - 'a' < 26)
 #	define ISDIGIT(c)  ((unsigned)c - '0' < 10)
@@ -199,6 +199,6 @@ JSTR_NOEXCEPT
 #	undef TOUPPER
 #	undef ISXDIGIT
 
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #endif /* JSTR_INTERNAL_MUSL_CTYPE_H */

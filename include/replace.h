@@ -25,10 +25,10 @@
 
 #	include "macros.h"
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 #	include <stdlib.h>
 #	include <string.h>
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #	include "builder.h"
 #	include "ctype.h"
@@ -37,22 +37,22 @@ JSTR_INTERNALEND_DECLS
 
 #	define R JSTR_RESTRICT
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 
-typedef struct jstr_internalinplace_ty {
+typedef struct jstr_internal_inplace_ty {
 	char *dst;
 	const char *src;
 	char *src_e;
-} jstr_internalinplace_ty;
+} jstr_internal_inplace_ty;
 
-#	define JSTR_INTERNALINPLACE_INIT(str) \
+#	define JSTR_INTERNAL_INPLACE_INIT(str) \
 		{                       \
 			str,            \
 			str,            \
 			str             \
 		}
 
-#	define JSTR_INTERNALINPLACE_RMALL(i, find_len)                         \
+#	define JSTR_INTERNAL_INPLACE_RMALL(i, find_len)                         \
 		do {                                                     \
 			const size_t _n = JSTR_DIFF((i).src_e, (i).src); \
 			if (jstr_likely((i).dst != (i).src))             \
@@ -62,7 +62,7 @@ typedef struct jstr_internalinplace_ty {
 			(i).src_e += find_len;                           \
 		} while (0)
 
-#	define JSTR_INTERNALINPLACE_RPLCALL(i, rplc, rplc_len, find_len)                                \
+#	define JSTR_INTERNAL_INPLACE_RPLCALL(i, rplc, rplc_len, find_len)                                \
 		do {                                                                              \
 			const size_t _n = JSTR_DIFF((i).src_e, (i).src);                          \
 			if (jstr_likely(find_len != rplc_len) && jstr_likely((i).dst != (i).src)) \
@@ -318,7 +318,7 @@ jstr_rmallspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reje
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	jstr_internalinplace_ty i = JSTR_INTERNALINPLACE_INIT(s + start_idx);
+	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(*i.src_e == '\0') || !(*(i.src_e += strcspn(i.src_e, reject))))
 		return 0;
 	size_t find_len;
@@ -364,7 +364,7 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	const char *end = s + *sz;
-	jstr_internalinplace_ty i = JSTR_INTERNALINPLACE_INIT(s + start_idx);
+	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(n == 0) || jstr_unlikely(*i.src_e == '\0') || !(i.src_e = (char *)memchr(i.src_e, c, JSTR_DIFF(end, i.src_e))))
 		return 0;
 	size_t changed = 0;
@@ -426,7 +426,7 @@ jstr_rmnchr_from(char *R s, size_t *R sz, size_t start_idx, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
-	jstr_internalinplace_ty i = JSTR_INTERNALINPLACE_INIT(s + start_idx);
+	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(n == 0) || jstr_unlikely(*i.src_e == '\0') || !*(i.src_e = jstr_strchrnul((char *)i.src_e, c)))
 		return 0;
 	size_t changed = 0;
@@ -536,7 +536,7 @@ static size_t
 jstr_stripspn_from(char *R s, size_t *R sz, size_t start_idx, const char *R reject)
 JSTR_NOEXCEPT
 {
-	jstr_internalinplace_ty i = JSTR_INTERNALINPLACE_INIT(s + start_idx);
+	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(*i.src_e == '\0') || !*(i.src_e += strcspn(i.src_e, reject)))
 		return 0;
 	size_t changed = 0;
@@ -739,7 +739,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(find_len == 0))
 		return 0;
 	const char *end = s + *sz;
-	jstr_internalinplace_ty i = JSTR_INTERNALINPLACE_INIT(s + start_idx);
+	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(s + start_idx);
 	if (jstr_unlikely(n == 0) || !(i.src_e = (char *)jstr_memmem_exec(t, i.src_e, JSTR_DIFF(end, i.src_e), find, find_len)))
 		return 0;
 	size_t changed = 0;
@@ -876,7 +876,7 @@ JSTR_NOEXCEPT
 	} else if (jstr_unlikely(find_len == 0)) {
 		return 0;
 	}
-	jstr_internalinplace_ty i = JSTR_INTERNALINPLACE_INIT(*s + start_idx);
+	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	size_t changed = 0;
 	const char *end = *s + *sz;
 	if (rplc_len <= find_len) {
@@ -1187,7 +1187,7 @@ JSTR_NOEXCEPT
 	return JSTR_RET_SUCC;
 }
 
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #	undef R
 

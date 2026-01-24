@@ -23,22 +23,22 @@
 
 #include "../../macros.h"
 
-#ifdef JSTR_INTERNALMUSL_CANON
-#	define CANON JSTR_INTERNALMUSL_CANON
+#ifdef JSTR_INTERNAL_MUSL_CANON
+#	define CANON JSTR_INTERNAL_MUSL_CANON
 #else
 #	define CANON(c) (c)
 #endif
-#ifndef JSTR_INTERNALMUSL_CMP_FUNC
-#	define JSTR_INTERNALMUSL_CMP_FUNC memcmp
+#ifndef JSTR_INTERNAL_MUSL_CMP_FUNC
+#	define JSTR_INTERNAL_MUSL_CMP_FUNC memcmp
 #endif
-#ifndef JSTR_INTERNALMUSL_FUNC_NAME
-#	define JSTR_INTERNALMUSL_FUNC_NAME jstr_internalmemmem_musl
+#ifndef JSTR_INTERNAL_MUSL_FUNC_NAME
+#	define JSTR_INTERNAL_MUSL_FUNC_NAME jstr_internal_memmem_musl
 #endif
 
 #define BITOP(a, b, op) ((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
 
-#ifndef JSTR_INTERNALMUSL_TWOWAY_STRUCT
-#	define JSTR_INTERNALMUSL_TWOWAY_STRUCT
+#ifndef JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
+#	define JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
 
 typedef struct jstr_twoway_ty {
 	size_t needle_len;
@@ -59,8 +59,8 @@ typedef struct jstr_twoway_ty {
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-JSTR_CONCAT(JSTR_INTERNALMUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t, const unsigned char *ne
-#ifndef JSTR_INTERNALMUSL_CHECK_EOL
+JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t, const unsigned char *ne
+#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
                                          ,
                                          size_t needle_len
 #endif
@@ -71,7 +71,7 @@ JSTR_NOEXCEPT
 	int a, b;
 	memset(t->u._t._byteset, 0, sizeof(t->u._t._byteset));
 	/* Computing length of ne and fill shift table. */
-#ifdef JSTR_INTERNALMUSL_CHECK_EOL
+#ifdef JSTR_INTERNAL_MUSL_CHECK_EOL
 	for (max_suffix = 0; ne[max_suffix]; ++max_suffix)
 #else
 	for (max_suffix = 0; max_suffix < needle_len; ++max_suffix)
@@ -127,7 +127,7 @@ JSTR_NOEXCEPT
 	else
 		t->u._t._global_period = period;
 	/* Periodic ne? */
-	if (JSTR_INTERNALMUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->u._t._global_period, t->u._t._suffix + 1)) {
+	if (JSTR_INTERNAL_MUSL_CMP_FUNC((const char *)ne, (const char *)ne + t->u._t._global_period, t->u._t._suffix + 1)) {
 		t->u._t._memory0 = 0;
 		t->u._t._global_period = JSTR_MAX(t->u._t._suffix, t->needle_len - t->u._t._suffix - 1) + 1;
 	} else {
@@ -138,14 +138,14 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-JSTR_CONCAT(JSTR_INTERNALMUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *t, const unsigned char *hs
-#ifndef JSTR_INTERNALMUSL_CHECK_EOL
+JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *t, const unsigned char *hs
+#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
                                          ,
                                          const size_t hs_len
 #endif
                                          ,
                                          const unsigned char *ne
-#ifndef JSTR_INTERNALMUSL_CHECK_EOL
+#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
                                          ,
                                          const size_t needle_len
 #endif
@@ -157,7 +157,7 @@ JSTR_NOEXCEPT
 	size_t k;
 	size_t memory = 0;
 	/* Initialize end-of-haystack pointer. */
-#ifdef JSTR_INTERNALMUSL_CHECK_EOL
+#ifdef JSTR_INTERNAL_MUSL_CHECK_EOL
 	const unsigned char *end = hs + jstr_strnlen((const char *)hs, t->needle_len | 512);
 #else
 	const unsigned char *end = hs + hs_len;
@@ -165,7 +165,7 @@ JSTR_NOEXCEPT
 #endif
 	/* Search loop */
 	for (;;) {
-#ifdef JSTR_INTERNALMUSL_CHECK_EOL
+#ifdef JSTR_INTERNAL_MUSL_CHECK_EOL
 		/* Update incremental end-of-haystack pointer. */
 		if (jstr_unlikely(JSTR_DIFF(end, hs) < t->needle_len)) {
 			/* Fast estimate for MAX(t->needle_len, 2048). */
@@ -213,14 +213,14 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static char *
-JSTR_INTERNALMUSL_FUNC_NAME(const unsigned char *haystack
-#ifndef JSTR_INTERNALMUSL_CHECK_EOL
+JSTR_INTERNAL_MUSL_FUNC_NAME(const unsigned char *haystack
+#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
                      ,
                      const size_t haystack_len
 #endif
                      ,
                      const unsigned char *needle
-#ifndef JSTR_INTERNALMUSL_CHECK_EOL
+#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
                      ,
                      const size_t needle_len
 #endif
@@ -228,21 +228,21 @@ JSTR_INTERNALMUSL_FUNC_NAME(const unsigned char *haystack
 JSTR_NOEXCEPT
 {
 	jstr_twoway_ty t;
-	JSTR_CONCAT(JSTR_INTERNALMUSL_FUNC_NAME, _comp)
+	JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)
 	(&t, (const unsigned char *)needle
-#ifndef JSTR_INTERNALMUSL_CHECK_EOL
+#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
 	 ,
 	 needle_len
 #endif
 	);
-	return JSTR_CONCAT(JSTR_INTERNALMUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
-#ifndef JSTR_INTERNALMUSL_CHECK_EOL
+	return JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(&t, (const unsigned char *)haystack
+#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
 	                                                ,
 	                                                haystack_len
 #endif
 	                                                ,
 	                                                (const unsigned char *)needle
-#ifndef JSTR_INTERNALMUSL_CHECK_EOL
+#ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
 	                                                ,
 	                                                needle_len
 #endif
@@ -252,7 +252,7 @@ JSTR_NOEXCEPT
 #undef BITOP
 #undef CANON
 
-#undef JSTR_INTERNALMUSL_CHECK_EOL
-#undef JSTR_INTERNALMUSL_CANON
-#undef JSTR_INTERNALMUSL_FUNC_NAME
-#undef JSTR_INTERNALMUSL_CMP_FUNC
+#undef JSTR_INTERNAL_MUSL_CHECK_EOL
+#undef JSTR_INTERNAL_MUSL_CANON
+#undef JSTR_INTERNAL_MUSL_FUNC_NAME
+#undef JSTR_INTERNAL_MUSL_CMP_FUNC

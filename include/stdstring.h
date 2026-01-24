@@ -27,15 +27,15 @@
 #	include "ctype.h"
 #	include "struct.h"
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 #	include <stdlib.h>
 #	include <string.h>
 #	include <limits.h>
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #	define R JSTR_RESTRICT
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
@@ -428,22 +428,22 @@ JSTR_NOEXCEPT
 	return jstr_strdup_len(s, strlen(s));
 }
 
-#	define JSTR_INTERNALDEFINE_ATOI(T, name, func) \
+#	define JSTR_INTERNAL_DEFINE_ATOI(T, name, func) \
 		JSTR_FUNC_PURE                   \
 		static T jstr_##name(const char *s) JSTR_NOEXCEPT { return func; }
 
-JSTR_INTERNALDEFINE_ATOI(unsigned int, atou, strtoul(s, NULL, 0))
-JSTR_INTERNALDEFINE_ATOI(unsigned long, atoul, strtoul(s, NULL, 0))
-JSTR_INTERNALDEFINE_ATOI(unsigned long long, atoull, strtoull(s, NULL, 0))
-JSTR_INTERNALDEFINE_ATOI(int, atoi, strtol(s, NULL, 0))
-JSTR_INTERNALDEFINE_ATOI(long, atol, strtol(s, NULL, 0))
-JSTR_INTERNALDEFINE_ATOI(long long, atoll, strtol(s, NULL, 0))
-JSTR_INTERNALDEFINE_ATOI(double, atod, strtod(s, NULL))
-JSTR_INTERNALDEFINE_ATOI(float, atof, strtof(s, NULL))
+JSTR_INTERNAL_DEFINE_ATOI(unsigned int, atou, strtoul(s, NULL, 0))
+JSTR_INTERNAL_DEFINE_ATOI(unsigned long, atoul, strtoul(s, NULL, 0))
+JSTR_INTERNAL_DEFINE_ATOI(unsigned long long, atoull, strtoull(s, NULL, 0))
+JSTR_INTERNAL_DEFINE_ATOI(int, atoi, strtol(s, NULL, 0))
+JSTR_INTERNAL_DEFINE_ATOI(long, atol, strtol(s, NULL, 0))
+JSTR_INTERNAL_DEFINE_ATOI(long long, atoll, strtol(s, NULL, 0))
+JSTR_INTERNAL_DEFINE_ATOI(double, atod, strtod(s, NULL))
+JSTR_INTERNAL_DEFINE_ATOI(float, atof, strtof(s, NULL))
 
-#	undef JSTR_INTERNALDEFINE_ATOI
+#	undef JSTR_INTERNAL_DEFINE_ATOI
 
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #	undef R
 

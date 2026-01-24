@@ -25,9 +25,9 @@
 
 #	include "macros.h"
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 #	include <stddef.h>
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #	define jstr_struct(j)  &(j)->data, &(j)->size, &(j)->capacity
 #	define jstr_literal(s) (s), (sizeof(s) - 1)
@@ -36,7 +36,7 @@ JSTR_INTERNALEND_DECLS
 			jstr_literal(s) \
 		}
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 typedef struct jstr_ty {
 	char *data;
 	size_t size;
@@ -47,6 +47,6 @@ typedef struct jstr_literal_ty {
 	const char *data;
 	const unsigned int size;
 } jstr_literal_ty;
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #endif /* JSTR_STRUCT_H */

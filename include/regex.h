@@ -29,12 +29,12 @@
 
 #	include "macros.h"
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 #	include <regex.h>
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <string.h>
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #	include "builder.h"
 #	include "config.h"
@@ -62,7 +62,7 @@ JSTR_INTERNALEND_DECLS
 #		define JSTR_RE_EF_STARTEND REG_STARTEND
 #	endif
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 
 typedef enum {
 #	ifdef REG_ENOSYS
@@ -119,7 +119,7 @@ typedef enum {
 #	endif
 } jstr_re_ret_ty;
 
-#	define JSTR_INTERNALRE_ERR_EXEC_HANDLE_LOOP(errcode, do_on_error) \
+#	define JSTR_INTERNAL_RE_ERR_EXEC_HANDLE_LOOP(errcode, do_on_error) \
 		if (jstr_likely(errcode == JSTR_RE_RET_NOERROR)) {  \
 			;                                           \
 		} else if (errcode == JSTR_RE_RET_NOMATCH) {        \
@@ -140,7 +140,7 @@ typedef enum {
 #	endif
 
 static int
-jstr_internalre_notbol(const char *str, size_t curr_idx, int cflags)
+jstr_internal_re_notbol(const char *str, size_t curr_idx, int cflags)
 JSTR_NOEXCEPT
 {
 	if (curr_idx) {
@@ -153,7 +153,7 @@ JSTR_NOEXCEPT
 }
 
 static int
-jstr_internalre_notbol_inloop(const char *str, size_t curr_idx, int cflags)
+jstr_internal_re_notbol_inloop(const char *str, size_t curr_idx, int cflags)
 JSTR_NOEXCEPT
 {
 	if (cflags & JSTR_RE_CF_NEWLINE)
@@ -163,8 +163,8 @@ JSTR_NOEXCEPT
 }
 
 /* Check if *s + start_idx is the beginning of a string or beginning of a line. */
-#	define IS_NOTBOL(str, curr_idx, cflags)        jstr_internalre_notbol(str, curr_idx, cflags)
-#	define IS_NOTBOL_INLOOP(str, curr_idx, cflags) jstr_internalre_notbol_inloop(str, curr_idx, cflags)
+#	define IS_NOTBOL(str, curr_idx, cflags)        jstr_internal_re_notbol(str, curr_idx, cflags)
+#	define IS_NOTBOL_INLOOP(str, curr_idx, cflags) jstr_internal_re_notbol_inloop(str, curr_idx, cflags)
 
 typedef regoff_t jstr_re_off_ty;
 typedef struct {
@@ -335,7 +335,7 @@ JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
 	regmatch_t rm;
-	jstr_internalinplace_ty i = JSTR_INTERNALINPLACE_INIT(*s + start_idx);
+	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	const char *end = *s + *sz;
 	if (n == 1)
 		return jstr_re_rm_from_exec(preg, s, sz, cap, start_idx, eflags);
@@ -475,7 +475,7 @@ JSTR_NOEXCEPT
  * On error, -errcode (negative). */
 JSTR_FUNC
 static size_t
-jstr_internalre_rplcbackrefstrlen(const regmatch_t *R rm, const unsigned char *rplc, const unsigned char *rplc_e, size_t rplc_len NMATCH_PARAM)
+jstr_internal_re_rplcbackrefstrlen(const regmatch_t *R rm, const unsigned char *rplc, const unsigned char *rplc_e, size_t rplc_len NMATCH_PARAM)
 JSTR_NOEXCEPT
 {
 	int c;
@@ -496,7 +496,7 @@ JSTR_NOEXCEPT
 /* Return ptr to first backref. */
 JSTR_FUNC
 static char *
-jstr_internalre_rplcbackreffirst(const char *backref, size_t backref_len)
+jstr_internal_re_rplcbackreffirst(const char *backref, size_t backref_len)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(backref_len < 2))
@@ -508,7 +508,7 @@ JSTR_NOEXCEPT
 /* Return ptr to the end of the last backref. */
 JSTR_FUNC
 static char *
-jstr_internalre_rplcbackreflast(const unsigned char *backref, size_t backref_len)
+jstr_internal_re_rplcbackreflast(const unsigned char *backref, size_t backref_len)
 JSTR_NOEXCEPT
 {
 	if (backref_len >= 4) {
@@ -531,7 +531,7 @@ JSTR_NOEXCEPT
  * On error, -errcode (negative). */
 JSTR_FUNC_VOID
 static void
-jstr_internalre_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc_src, unsigned char *R mtc_dst, const unsigned char *R rplc, const unsigned char *rplc_e)
+jstr_internal_re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc_src, unsigned char *R mtc_dst, const unsigned char *R rplc, const unsigned char *rplc_e)
 JSTR_NOEXCEPT
 {
 	int c;
@@ -564,7 +564,7 @@ JSTR_NOEXCEPT
  * be amortized. */
 JSTR_FUNC
 static jstr_re_off_ty
-jstr_internalre_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref)
+jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref)
 JSTR_NOEXCEPT
 {
 	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
@@ -576,11 +576,11 @@ JSTR_NOEXCEPT
 	const unsigned char *rplc_backref1_e;
 	if (backref) {
 		/* Check if we have backrefs in RPLC. */
-		rplc_backref1 = (const unsigned char *)jstr_internalre_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
+		rplc_backref1 = (const unsigned char *)jstr_internal_re_rplcbackreffirst(rplc, rplc_len); /* Cache the first backref. */
 		if (jstr_nullchk(rplc_backref1)) {
 			backref = 0;
 		} else {
-			rplc_backref1_e = (const unsigned char *)jstr_internalre_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
+			rplc_backref1_e = (const unsigned char *)jstr_internal_re_rplcbackreflast(rplc_backref1, rplc_len - JSTR_DIFF(rplc_backref1, rplc));
 			if (rplc_backref1_e == NULL)
 				rplc_backref1_e = rplc_backref1 + 2;
 		}
@@ -589,7 +589,7 @@ JSTR_NOEXCEPT
 			return jstr_re_rplc_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags);
 	}
 	regmatch_t rm[10];
-	jstr_internalinplace_ty i;
+	jstr_internal_inplace_ty i;
 	i.src_e = *s + start_idx;
 	const char *end = *s + *sz;
 	int ret = jstr_re_exec_len(preg, i.src_e, JSTR_DIFF(end, i.src_e), nmatch, rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
@@ -605,7 +605,7 @@ JSTR_NOEXCEPT
 	jstr_re_off_ty changed = 0;
 	size_t rplcwbackref_len;
 	if (backref)
-		rplcwbackref_len = jstr_internalre_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+		rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 	else
 		rplcwbackref_len = rplc_len;
 	i.src_e += rm[0].rm_so;
@@ -641,7 +641,7 @@ JSTR_NOEXCEPT
 		i.src_e += rm[0].rm_so;
 		/* Get length of RPLC. */
 		if (backref)
-			rplcwbackref_len = jstr_internalre_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
+			rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 		/* Check if needs reallocation. */
 		new_cap = *sz - (size_t)find_len + rplcwbackref_len + 1 + 1;
 		if (jstr_unlikely(*cap < new_cap)) {
@@ -667,7 +667,7 @@ start:
 		i.dst += prev_len;
 		/* Copy to DST RPLC and advance. */
 		if (backref) {
-			jstr_internalre_rplcbackrefcpy(rm, (unsigned char *)i.src_e - rm[0].rm_so, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
+			jstr_internal_re_rplcbackrefcpy(rm, (unsigned char *)i.src_e - rm[0].rm_so, (unsigned char *)i.dst, (unsigned char *)rplc, (unsigned char *)rplc + rplc_len);
 			i.dst += rplcwbackref_len;
 		} else {
 			i.dst = (char *)jstr_mempcpy(i.dst, rplc, rplc_len);
@@ -702,7 +702,7 @@ static jstr_re_off_ty
 jstr_re_rplcn_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_internalre_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, 1, n, 0);
+	return jstr_internal_re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, 1, n, 0);
 }
 
 /* PREG must be precompiled with jstr_re_comp.
@@ -758,7 +758,7 @@ static jstr_re_off_ty
 jstr_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n)
 JSTR_NOEXCEPT
 {
-	return jstr_internalre_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, n, 1);
+	return jstr_internal_re_rplcn_backref_len_from_exec(preg, s, sz, cap, start_idx, rplc, rplc_len, eflags, nmatch, n, 1);
 }
 
 /* PREG must be precompiled with jstr_re_comp.
@@ -831,7 +831,7 @@ JSTR_NOEXCEPT
 	return jstr_re_rplcn_backref_len_from_exec(preg, s, sz, cap, 0, rplc, rplc_len, eflags, nmatch, 1);
 }
 
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #	undef R
 #	undef IS_NOTBOL

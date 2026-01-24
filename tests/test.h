@@ -61,7 +61,7 @@
 #define PRINTERR(...) fprintf(stderr, __VA_ARGS__)
 #define START() do{}while(0)
 
-JSTR_INTERNALBEGIN_DECLS
+JSTR_INTERNAL_BEGIN_DECLS
 
 JSTR_ATTR_MAYBE_UNUSED
 JSTR_ATTR_INLINE
@@ -71,7 +71,7 @@ static char *clean_func(const char *func)
 	return (char *)func;
 }
 
-JSTR_INTERNALEND_DECLS
+JSTR_INTERNAL_END_DECLS
 
 #if VERBOSE
 #	define TESTING(func) PRINTERR("Testing %s().\n", clean_func(#func))
