@@ -108,7 +108,7 @@ as referring to the whole matched string.
 - \*\_errdie\(\): print an error message and exit\(\).
 - namespace\_\_\*\(\): internal functions.
 ### Headers:
-- \_\*.h: internal headers.
+- internal/\*.h: internal headers.
 
 ## Scripts:
 
