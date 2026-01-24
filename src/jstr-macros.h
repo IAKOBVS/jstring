@@ -1024,6 +1024,10 @@ JSTR_NOEXCEPT
 #		define JSTR_HAVE_FDOPENDIR 1
 #	endif /* Xopen 2k8 */
 
+#	if defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L
+#		define JSTR_HAVE_NANOSLEEP
+#endif /* Posix 199309L */
+
 #	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FREAD_UNLOCKED
 #		define jstr_io_fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
 #	else
