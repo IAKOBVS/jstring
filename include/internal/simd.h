@@ -28,7 +28,7 @@
 #include "../pointer-arith.h"
 #include "../stdstring.h"
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 
 #define R JSTR_RESTRICT
 
@@ -135,7 +135,7 @@ typedef uint16_t jstr_vmask_ty;
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC
 static char *
-jstr__simd_stpcpy(char *R dst, const char *R src)
+jstr_internalsimd_stpcpy(char *R dst, const char *R src)
 JSTR_NOEXCEPT
 {
 	unsigned int i = JSTR_DIFF(JSTR_PTR_ALIGN_UP(src, VEC_SIZE), src);
@@ -173,7 +173,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-jstr__simd_strncasechr(const char *s, int c, size_t n)
+jstr_internalsimd_strncasechr(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
@@ -213,7 +213,7 @@ ret_early:
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-jstr__simd_strnchr(const char *s, int c, size_t n)
+jstr_internalsimd_strnchr(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
@@ -250,7 +250,7 @@ ret_early:
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-jstr__simd_strchrnul(const char *s, int c)
+jstr_internalsimd_strchrnul(const char *s, int c)
 JSTR_NOEXCEPT
 {
 	MASK cm, m, zm;
@@ -279,17 +279,17 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
-jstr__simd_strchr(const char *s, int c)
+jstr_internalsimd_strchr(const char *s, int c)
 JSTR_NOEXCEPT
 {
-	s = jstr__simd_strchrnul(s, c);
+	s = jstr_internalsimd_strchrnul(s, c);
 	return *s == (char)c ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static char *
-jstr__simd_strcasechrnul(const char *s, int c)
+jstr_internalsimd_strcasechrnul(const char *s, int c)
 JSTR_NOEXCEPT
 {
 	MASK m, cm0, cm1, zm;
@@ -321,17 +321,17 @@ JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_INLINE
 static char *
-jstr__simd_strcasechr(const char *s, int c)
+jstr_internalsimd_strcasechr(const char *s, int c)
 JSTR_NOEXCEPT
 {
-	s = jstr__simd_strcasechrnul(s, c);
+	s = jstr_internalsimd_strcasechrnul(s, c);
 	return *s == (char)c ? (char *)s : NULL;
 }
 
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-jstr__simd_memcasechr(const void *s, int c, size_t n)
+jstr_internalsimd_memcasechr(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
@@ -379,7 +379,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static void *
-jstr__simd_memrchr(const void *s, int c, size_t n)
+jstr_internalsimd_memrchr(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(n == 0))
@@ -422,7 +422,7 @@ ret:;
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-jstr__simd_countchr(const char *s, int c)
+jstr_internalsimd_countchr(const char *s, int c)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -452,7 +452,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 static size_t
-jstr__simd_countchr_len(const void *s, int c, size_t n)
+jstr_internalsimd_countchr_len(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -480,7 +480,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
-jstr__simd_tolower_vec(const VEC v)
+jstr_internalsimd_tolower_vec(const VEC v)
 JSTR_NOEXCEPT
 {
 	const VEC gt_a = CMPGT8(v, SETONE8('A' - 1));
@@ -492,7 +492,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr__simd_tolowerstr_len(char *s, size_t n)
+jstr_internalsimd_tolowerstr_len(char *s, size_t n)
 JSTR_NOEXCEPT
 {
 	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
@@ -503,7 +503,7 @@ JSTR_NOEXCEPT
 	}
 	for (VEC sv; n >= VEC_SIZE; n -= VEC_SIZE, s += VEC_SIZE) {
 		sv = LOAD((VEC *)s);
-		STORE((VEC *)s, jstr__simd_tolower_vec(sv));
+		STORE((VEC *)s, jstr_internalsimd_tolower_vec(sv));
 	}
 	for (; n--; ++s)
 		*s = (char)jstr_tolower(*s);
@@ -511,7 +511,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static char *
-jstr__simd_tolowerstr_p(char *s)
+jstr_internalsimd_tolowerstr_p(char *s)
 JSTR_NOEXCEPT
 {
 	int off = JSTR_PTR_ALIGN_UP(s, VEC_SIZE);
@@ -520,7 +520,7 @@ JSTR_NOEXCEPT
 			return s;
 	const VEC zv = SETZERO();
 	for (VEC sv; CMPEQ8_MASK(sv = LOAD((VEC *)s), zv); s += VEC_SIZE)
-		STORE((VEC *)s, jstr__simd_tolower_vec(sv));
+		STORE((VEC *)s, jstr_internalsimd_tolower_vec(sv));
 	for (; (*s = (char)jstr_tolower(*s)); ++s) {}
 	return s;
 }
@@ -532,7 +532,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_CONST
 JSTR_ATTR_INLINE
 static VEC
-jstr__simd_toupper_vec(const VEC v)
+jstr_internalsimd_toupper_vec(const VEC v)
 JSTR_NOEXCEPT
 {
 	const VEC gt_a = CMPGT8(v, SETONE8('a' - 1));
@@ -570,7 +570,7 @@ JSTR_ATTR_ACCESS((__read_only__, 1, 2))
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC_PURE
 static void *
-jstr__simd_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len)
+jstr_internalsimd_memmem(const void *hs, size_t hs_len, const void *ne, size_t ne_len)
 JSTR_NOEXCEPT
 {
 	typedef void *ret_ty;
@@ -664,6 +664,6 @@ match:
 
 #undef R
 
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #endif /* JSTR_INTERNAL_SIMD_H */

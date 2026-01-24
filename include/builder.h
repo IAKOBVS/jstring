@@ -26,7 +26,7 @@
 #	include "macros.h"
 #	include "struct.h"
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 #	include <errno.h>
 #	include <limits.h>
 #	include <stdarg.h>
@@ -34,7 +34,7 @@ JSTR__BEGIN_DECLS
 #	include <stdlib.h>
 #	include <string.h>
 #	include <wchar.h>
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #	include "config.h"
 #	include "ctype.h"
@@ -54,11 +54,11 @@ JSTR__END_DECLS
 		}
 
 #	define jstr_foreach(j, p) \
-		for (char *p = ((j)->data), *_jstr__foreach_end_##p = ((j)->data) + ((j)->size); p < _jstr__foreach_end_##p; ++p)
+		for (char *p = ((j)->data), *_jstr_internalforeach_end_##p = ((j)->data) + ((j)->size); p < _jstr_internalforeach_end_##p; ++p)
 #	define jstr_foreachi(j, i) \
-		for (size_t i = 0, const _jstr__foreachi_end_##i = ((j)->size); i < _jstr__foreachi_end_##i; ++i)
+		for (size_t i = 0, const _jstr_internalforeachi_end_##i = ((j)->size); i < _jstr_internalforeachi_end_##i; ++i)
 #	define jstr_index(j, curr) JSTR_DIFF(curr, (j)->data)
-#	define jstr__at(j, i)      ((j)->data + (i))
+#	define jstr_internalat(j, i)      ((j)->data + (i))
 #	define jstr_start(j)       ((j)->data)
 #	define jstr_end(j)         ((j)->data + (j)->size)
 #	ifdef JSTR_DEBUG
@@ -68,7 +68,7 @@ JSTR__END_DECLS
 #		define jstr_at(j, i) ((j)->data + (i))
 #	endif
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 
 /* Set first char to NUL and size to zero. */
 JSTR_FUNC_VOID
@@ -254,7 +254,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr__cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t arg_len)
+jstr_internalcat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t arg_len)
 JSTR_NOEXCEPT
 {
 	char *p;
@@ -289,7 +289,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(arg_len == 0))
 		return JSTR_RET_SUCC;
 	va_start(ap, cap);
-	const jstr_ret_ty ret = jstr__cat(s, sz, cap, ap, arg_len);
+	const jstr_ret_ty ret = jstr_internalcat(s, sz, cap, ap, arg_len);
 	va_end(ap);
 	return ret;
 }
@@ -314,7 +314,7 @@ JSTR_NOEXCEPT
 	if (jstr_unlikely(arg_len == 0))
 		return JSTR_RET_SUCC;
 	va_start(ap, j);
-	const jstr_ret_ty ret = jstr__cat(&j->data, &j->size, &j->capacity, ap, arg_len);
+	const jstr_ret_ty ret = jstr_internalcat(&j->data, &j->size, &j->capacity, ap, arg_len);
 	va_end(ap);
 	return ret;
 }
@@ -612,7 +612,7 @@ JSTR_NOEXCEPT
 		return ret + 1;
 	return -1;
 #	else
-#		define JSTR__COUNTDIGITS(lflag, base)               \
+#		define JSTR_INTERNALCOUNTDIGITS(lflag, base)               \
 			if (lflag == L_INT)                          \
 				arg_len += INT / base;               \
 			else {                                       \
@@ -624,7 +624,7 @@ JSTR_NOEXCEPT
 					goto einval;                 \
 				lflag = L_INT;                       \
 			}
-#		define JSTR__GETMAXDIGITS(length)                                         \
+#		define JSTR_INTERNALGETMAXDIGITS(length)                                         \
 			do {                                                               \
 				if (base == B_DEC)                                         \
 					arg_len                                            \
@@ -715,12 +715,12 @@ cont_switch:
 				goto check_integer;
 check_integer:
 				if (lflag == L_INT) {
-					JSTR__GETMAXDIGITS(INT);
+					JSTR_INTERNALGETMAXDIGITS(INT);
 				} else {
 					if (lflag == L_LONG)
-						JSTR__GETMAXDIGITS(LONG);
+						JSTR_INTERNALGETMAXDIGITS(LONG);
 					else if (lflag == L_LONG_LONG)
-						JSTR__GETMAXDIGITS(LONG_LONG);
+						JSTR_INTERNALGETMAXDIGITS(LONG_LONG);
 					else
 						goto einval;
 					lflag = L_INT;
@@ -834,8 +834,8 @@ get_arg:
 		arg_len = INT_MAX;
 	return arg_len;
 #	endif
-#	undef JSTR__COUNTDIGITS
-#	undef JSTR__GETMAXDIGITS
+#	undef JSTR_INTERNALCOUNTDIGITS
+#	undef JSTR_INTERNALGETMAXDIGITS
 }
 
 #	if JSTR_HAVE_SNPRINTF_STRLEN
@@ -1122,7 +1122,7 @@ err_free:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
 
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #	undef R
 

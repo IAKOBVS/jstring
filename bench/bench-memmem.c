@@ -241,10 +241,10 @@ T_DEFINE_STRSTR(jstr_stpcpy, buf, buf + i)
 T_DEFINE_STRSTR(simple_stpcpy, buf, buf + i)
 
 #ifdef __AVX2__
-T_DEFINE_STRSTR(jstr__simd_memmem, buf, buf_len, needle, needle_len)
-T_DEFINE_STRSTR(jstr__simd_stpcpy, buf, buf + i)
+T_DEFINE_STRSTR(jstr_internalsimd_memmem, buf, buf_len, needle, needle_len)
+T_DEFINE_STRSTR(jstr_internalsimd_stpcpy, buf, buf + i)
 #	define T_AVX(needle)                    \
-		RUN(b_jstr__simd_memmem, needle); \
+		RUN(b_jstr_internalsimd_memmem, needle); \
 
 #else
 #	define T_AVX(needle)
@@ -260,7 +260,7 @@ main()
 	T_STRSTR();
 	RUN(b_jstr_stpcpy, 0);
 	RUN(b_simple_stpcpy, 0);
-	RUN(b_jstr__simd_stpcpy, 0);
+	RUN(b_jstr_internalsimd_stpcpy, 0);
 	free(buf);
 	return 0;
 }

@@ -25,7 +25,7 @@
 
 #	include "macros.h"
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 #	include <dirent.h>
 #	include <fcntl.h>
 #	include <limits.h>
@@ -33,7 +33,7 @@ JSTR__BEGIN_DECLS
 #	include <stdlib.h>
 #	include <sys/stat.h>
 #	include <unistd.h>
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #	include "builder.h"
 #	include "stdstring.h"
@@ -41,7 +41,7 @@ JSTR__END_DECLS
 
 #	define R JSTR_RESTRICT
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 
 enum {
 #	ifdef PATH_MAX
@@ -61,7 +61,7 @@ enum {
 
 JSTR_FUNC
 static int
-jstr__io_isbinarysignature(const char *buf, size_t sz)
+jstr_internalio_isbinarysignature(const char *buf, size_t sz)
 JSTR_NOEXCEPT
 {
 	enum { ELFSZ = 4,
@@ -108,7 +108,7 @@ JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(sz == 0))
 		return 0;
-	const int ret = jstr__io_isbinarysignature(buf, sz);
+	const int ret = jstr_internalio_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
 	sz = JSTR_MIN(sz, JSTR_IO_BINARY_CHECK_MAX);
@@ -126,7 +126,7 @@ static int
 jstr_io_isbinary(const char *buf, size_t sz)
 JSTR_NOEXCEPT
 {
-	const int ret = jstr__io_isbinarysignature(buf, sz);
+	const int ret = jstr_internalio_isbinarysignature(buf, sz);
 	if (ret != -1)
 		return ret;
 	return strlen(buf) != sz;
@@ -743,7 +743,7 @@ struct JSTR_IO_FTW {
 typedef int (*jstr_io_ftw_func_ty)(const struct JSTR_IO_FTW *ftw, const void *args);
 typedef int (*jstr_io_ftw_func_match_ty)(const char *fname, jstr_io_path_size_ty fname_len, const void *args);
 
-struct jstr__io_ftw_data {
+struct jstr_internalio_ftw_data {
 	jstr_io_ftw_func_ty func;
 	const void *func_args;
 	jstr_io_ftw_func_match_ty func_match;
@@ -759,9 +759,9 @@ struct jstr__io_ftw_data {
 		int func_name(const char *filename, jstr_io_path_size_ty filename_len, const void *args)
 
 #	ifdef O_DIRECTORY
-#		define JSTR__IO_O_DIRECTORY O_DIRECTORY
+#		define JSTR_INTERNALIO_O_DIRECTORY O_DIRECTORY
 #	else
-#		define JSTR__IO_O_DIRECTORY 0
+#		define JSTR_INTERNALIO_O_DIRECTORY 0
 #	endif
 
 #	define FLAG(x) ((a)->ftw_flags & (x))
@@ -771,7 +771,7 @@ struct jstr__io_ftw_data {
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 static int
-jstr__io_ftw_len(struct jstr__io_ftw_data *a, jstr_io_path_size_ty dirpath_len FD_PARAM)
+jstr_internalio_ftw_len(struct jstr_internalio_ftw_data *a, jstr_io_path_size_ty dirpath_len FD_PARAM)
 JSTR_NOEXCEPT
 {
 	DIR *dp = OPENDIR(fd, a->ftw.dirpath);
@@ -931,8 +931,8 @@ skip_fn:
 			goto next_entry;
 		/* If we have *_at functions, open d_name to get the fd.
 		 * Otherwise, no-op. */
-		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | JSTR__IO_O_DIRECTORY, goto next_entry);
-		tmp = jstr__io_ftw_len(a, a->ftw.dirpath_len FD_ARG);
+		OPENAT(tmp, fd, a->ftw.ep->d_name, O_RDONLY | JSTR_INTERNALIO_O_DIRECTORY, goto next_entry);
+		tmp = jstr_internalio_ftw_len(a, a->ftw.dirpath_len FD_ARG);
 		/* Close when we have *_at functions. */
 		CLOSE(FD, closedir(dp); JSTR_RETURN_ERR(JSTR_RET_ERR));
 		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
@@ -965,7 +965,7 @@ next_entry:;
 #	undef STAT_OR_MODE
 #	undef FD
 #	undef FD_PARAM
-#	undef JSTR__IO_O_DIRECTORY
+#	undef JSTR_INTERNALIO_O_DIRECTORY
 #	undef FLAG
 
 #	define FLAG(x) (jstr_io_ftw_flags & (x))
@@ -1002,7 +1002,7 @@ JSTR_NOEXCEPT
 	FD_DECLARE;
 	OPEN(fd, fulpath, O_RDONLY, JSTR_RETURN_ERR(JSTR_RET_ERR));
 	struct stat st;
-	struct jstr__io_ftw_data data;
+	struct jstr_internalio_ftw_data data;
 	data.ftw.dirpath = fulpath;
 	data.ftw.st = &st;
 	/* This will avoid things like //some/path if DIRPATH is /. */
@@ -1044,7 +1044,7 @@ file:;
 		data.func_match = func_match;
 		data.ftw_flags = jstr_io_ftw_flags;
 		data.func_match_args = func_match_args;
-		tmp = jstr__io_ftw_len(&data, dirpath_len FD_ARG);
+		tmp = jstr_internalio_ftw_len(&data, dirpath_len FD_ARG);
 		CLOSE(fd, JSTR_RETURN_ERR(JSTR_RET_ERR));
 		return tmp;
 	}
@@ -1081,7 +1081,7 @@ func:;
 #	undef FD_ARG
 #	undef FLAG
 
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #	undef R
 

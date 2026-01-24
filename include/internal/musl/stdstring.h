@@ -33,9 +33,9 @@
 #	endif
 #endif
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 #include <limits.h>
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #include "../../ctype.h"
 #include "../../stdstring.h"
@@ -46,13 +46,13 @@ JSTR__END_DECLS
 #define HIGHS      (ONES * (UCHAR_MAX / 2 + 1))
 #define HASZERO(x) (((x) - ONES) & ~(x) & HIGHS)
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
 static void *
-jstr__memrchr_musl(const void *s, int c, size_t n)
+jstr_internalmemrchr_musl(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s + n - 1;
@@ -81,7 +81,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-jstr__strcasechrnul_musl(const char *s, int c)
+jstr_internalstrcasechrnul_musl(const char *s, int c)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -104,7 +104,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static void *
-jstr__memcasechr_musl(const void *s, int c, size_t n)
+jstr_internalmemcasechr_musl(const void *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -132,7 +132,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-jstr__strnchr_musl(const char *s, int c, size_t n)
+jstr_internalstrnchr_musl(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 #if JSTR_HAVE_ATTR_MAY_ALIAS
@@ -157,7 +157,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_NO_SANITIZE_ADDRESS
 JSTR_FUNC_PURE
 static char *
-jstr__strncasechr_musl(const char *s, int c, size_t n)
+jstr_internalstrncasechr_musl(const char *s, int c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -187,7 +187,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static size_t
-jstr__memspn_musl(const void *s, const char *c, size_t n)
+jstr_internalmemspn_musl(const void *s, const char *c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -207,7 +207,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static size_t
-jstr__memcspn_musl(const void *s, const char *c, size_t n)
+jstr_internalmemcspn_musl(const void *s, const char *c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -225,7 +225,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static size_t
-jstr__memrspn_musl(const void *s, const char *c, size_t n)
+jstr_internalmemrspn_musl(const void *s, const char *c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -245,7 +245,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_PURE
 static size_t
-jstr__memrcspn_musl(const void *s, const char *c, size_t n)
+jstr_internalmemrcspn_musl(const void *s, const char *c, size_t n)
 JSTR_NOEXCEPT
 {
 	const unsigned char *p = (const unsigned char *)s;
@@ -262,9 +262,9 @@ JSTR_NOEXCEPT
 #	if JSTR_HAVE_MEMRCHR
 		p = (const unsigned char *)memrchr(p, *c, n);
 #	elif JSTR_HAVE_SIMD
-		p = (const unsigned char *)jstr__simd_memrchr(p, *c, n);
+		p = (const unsigned char *)jstr_internalsimd_memrchr(p, *c, n);
 #	else
-		p = (const unsigned char *)jstr__memrchr_musl(p, *c, n);
+		p = (const unsigned char *)jstr_internalmemrchr_musl(p, *c, n);
 #	endif
 		return p ? (size_t)(end - p) : 0;
 #endif
@@ -279,7 +279,7 @@ JSTR_NOEXCEPT
 
 #undef BITOP
 
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #undef SS
 #undef ALIGN

@@ -136,14 +136,14 @@ simple_countchr_strchr(const char *s,
 	}
 
 #ifdef __AVX2__
-T_DEFINE_STRCHR(jstr__simd_countchr, buf, 'b')
-T_DEFINE_STRCHR(jstr__simd_countchr_len, buf, 'b', BUFLEN)
-T_DEFINE_STRCHR(jstr__simd_strchrnul, buf, 'b')
-T_DEFINE_STRCHR(jstr__simd_memrchr, buf, 'b', BUFLEN)
-T_DEFINE_STRCHR(jstr__simd_strcasechrnul, buf, 'b')
-T_DEFINE_STRCHR(jstr__simd_memcasechr, buf, 'b', BUFLEN)
-T_DEFINE_STRCHR(jstr__simd_strnchr, buf, 'b', BUFLEN)
-T_DEFINE_STRCHR(jstr__simd_strncasechr, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(jstr_internalsimd_countchr, buf, 'b')
+T_DEFINE_STRCHR(jstr_internalsimd_countchr_len, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(jstr_internalsimd_strchrnul, buf, 'b')
+T_DEFINE_STRCHR(jstr_internalsimd_memrchr, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(jstr_internalsimd_strcasechrnul, buf, 'b')
+T_DEFINE_STRCHR(jstr_internalsimd_memcasechr, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(jstr_internalsimd_strnchr, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(jstr_internalsimd_strncasechr, buf, 'b', BUFLEN)
 #endif
 
 T_DEFINE_STRCHR(simple_countchr, buf, 'b')
@@ -154,12 +154,12 @@ T_DEFINE_STRCHR(simple_countchr_len_branchless, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(simple_strcasechrnul_strcspn, buf, 'b')
 T_DEFINE_STRCHR(jstr_strchrnul, buf, 'b')
 T_DEFINE_STRCHR(simple_strchrnul, buf, 'b')
-/* T_DEFINE_STRCHR(jstr__strchrnul_musl, buf, 'b') */
+/* T_DEFINE_STRCHR(jstr_internalstrchrnul_musl, buf, 'b') */
 T_DEFINE_STRCHR(simple_memrchr, buf, 'b', BUFLEN)
-T_DEFINE_STRCHR(jstr__memrchr_musl, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(jstr_internalmemrchr_musl, buf, 'b', BUFLEN)
 T_DEFINE_STRCHR(jstr_memrchr, buf, 'b', BUFLEN)
-T_DEFINE_STRCHR(jstr__strcasechrnul_musl, buf, 'b')
-T_DEFINE_STRCHR(jstr__memcasechr_musl, buf, 'b', BUFLEN)
+T_DEFINE_STRCHR(jstr_internalstrcasechrnul_musl, buf, 'b')
+T_DEFINE_STRCHR(jstr_internalmemcasechr_musl, buf, 'b', BUFLEN)
 #if JSTR_HAVE_STRCHRNUL
 T_DEFINE_STRCHR(strchrnul, buf, 'b')
 #endif
@@ -175,14 +175,14 @@ main()
 	T_SETUP(buf, BUFLEN);
 
 #ifdef __AVX2__
-	RUN(b_jstr__simd_countchr, 0);
-	RUN(b_jstr__simd_countchr_len, 0);
-	RUN(b_jstr__simd_strchrnul, 0);
-	RUN(b_jstr__simd_memrchr, 0);
-	RUN(b_jstr__simd_strcasechrnul, 0);
-	RUN(b_jstr__simd_memcasechr, 0);
-	RUN(b_jstr__simd_strnchr, 0);
-	RUN(b_jstr__simd_strncasechr, 0);
+	RUN(b_jstr_internalsimd_countchr, 0);
+	RUN(b_jstr_internalsimd_countchr_len, 0);
+	RUN(b_jstr_internalsimd_strchrnul, 0);
+	RUN(b_jstr_internalsimd_memrchr, 0);
+	RUN(b_jstr_internalsimd_strcasechrnul, 0);
+	RUN(b_jstr_internalsimd_memcasechr, 0);
+	RUN(b_jstr_internalsimd_strnchr, 0);
+	RUN(b_jstr_internalsimd_strncasechr, 0);
 #endif
 
 	RUN(b_simple_countchr, 0);
@@ -190,10 +190,10 @@ main()
 	RUN(b_simple_countchr_strchr, 0);
 	RUN(b_simple_countchr_len_memchr, 0);
 	RUN(b_simple_countchr_len_branchless, 0);
-	/* RUN(b_jstr__strchrnul_musl, 0); */
-	RUN(b_jstr__strcasechrnul_musl, 0);
-	RUN(b_jstr__memcasechr_musl, 0);
-	RUN(b_jstr__memrchr_musl, 0);
+	/* RUN(b_jstr_internalstrchrnul_musl, 0); */
+	RUN(b_jstr_internalstrcasechrnul_musl, 0);
+	RUN(b_jstr_internalmemcasechr_musl, 0);
+	RUN(b_jstr_internalmemrchr_musl, 0);
 	RUN(b_jstr_strchrnul, 0);
 #if JSTR_HAVE_STRCHRNUL
 	RUN(b_strchrnul, 0);

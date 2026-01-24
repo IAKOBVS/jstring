@@ -33,20 +33,20 @@
 #	include "pointer-arith.h"
 
 #	ifdef __cplusplus
-#		define JSTR__BEGIN_DECLS extern "C" {
-#		define JSTR__END_DECLS   }
+#		define JSTR_INTERNALBEGIN_DECLS extern "C" {
+#		define JSTR_INTERNALEND_DECLS   }
 #	else
-#		define JSTR__BEGIN_DECLS
-#		define JSTR__END_DECLS
+#		define JSTR_INTERNALBEGIN_DECLS
+#		define JSTR_INTERNALEND_DECLS
 #	endif
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 #	include <assert.h>
 #	include <errno.h>
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <string.h>
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #	if defined _LP64 || defined __LP64__
 #		define JSTR_LP64 1
@@ -56,26 +56,26 @@ JSTR__END_DECLS
 #		define JSTR_LP_UNKNOWN 1
 #	endif
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 typedef enum {
 	JSTR_RET_ERR = -1,
 	JSTR_RET_SUCC = 0
 } jstr_ret_ty;
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #	if defined __GLIBC__ || JSTR_ENV_BSD
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 #		include <sys/cdefs.h>
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 #	endif
 
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 #	if JSTR_OS_SOLARIS
 #		include <sys/int_types.h>
 #	else
 #		include <stdint.h>
 #	endif
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 
 #	ifdef __GLIBC_PREREQ
 #		define JSTR_GLIBC_PREREQ(maj, min) __GLIBC_PREREQ(maj, min)
@@ -90,13 +90,13 @@ JSTR__END_DECLS
 #	endif
 
 #	if JSTR_ENV_BSD
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 #		include <sys/endian.h>
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 #	elif defined __GLIBC__ && ((JSTR_GLIBC_PREREQ(2, 19) && defined _BSD_SOURCE) || defined _DEFAULT_SOURCE)
-JSTR__BEGIN_DECLS
+JSTR_INTERNALBEGIN_DECLS
 #		include <endian.h>
-JSTR__END_DECLS
+JSTR_INTERNALEND_DECLS
 #	elif JSTR_OS_MAC
 #		include <machine/endian.h>
 #	endif
@@ -153,15 +153,15 @@ JSTR__END_DECLS
 #		define JSTR_ENDIAN_UNKNOWN 1
 #	endif
 
-#	define jstr_err(msg)    jstr__err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
-#	define jstr_errdie(msg) jstr__errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
+#	define jstr_err(msg)    jstr_internalerr(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
+#	define jstr_errdie(msg) jstr_internalerrdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
 
 #	define jstr_chk(ret)             jstr_unlikely(ret == -1)
 #	define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
 #define JSTR_PAGE_SIZE 4096
 #	define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
-#	define JSTR__CONCAT_HELPER(x, y) x##y
-#	define JSTR_CONCAT(x, y)         JSTR__CONCAT_HELPER(x, y)
+#	define JSTR_INTERNALCONCAT_HELPER(x, y) x##y
+#	define JSTR_CONCAT(x, y)         JSTR_INTERNALCONCAT_HELPER(x, y)
 #	define JSTR_STRING(x)            #x
 
 #	define JSTR_MAX(x, y)        (((x) > (y)) ? (x) : (y))
@@ -533,12 +533,12 @@ JSTR__END_DECLS
 #	ifdef __cplusplus
 template <typename T, typename Other>
 static T
-JSTR__CAST(T, Other other)
+JSTR_INTERNALCAST(T, Other other)
 {
 	return (T)other;
 }
 #	else
-#		define JSTR__CAST(T, other) (other)
+#		define JSTR_INTERNALCAST(T, other) (other)
 #	endif /* cast */
 
 #	if !(defined __STDC_VERSION__ && __STDC_VERSION__ > 201000L && !defined __STDC_NO_VLA__)
@@ -564,10 +564,10 @@ JSTR__CAST(T, Other other)
 
 #	if JSTR_HAVE_TYPEOF && JSTR_HAVE_GENERIC
 #		define JSTR_SAME_TYPE(x, y) _Generic((x), __typeof__(y): 1, default: 0)
-#		define JSTR__IS_TYPE(T, x)  _Generic((x), T: 1, default: 0)
+#		define JSTR_INTERNALIS_TYPE(T, x)  _Generic((x), T: 1, default: 0)
 #	else
 #		define JSTR_SAME_TYPE(x, y) 1
-#		define JSTR__IS_TYPE(T, x)  1
+#		define JSTR_INTERNALIS_TYPE(T, x)  1
 #	endif /* have_typeof && have_generic */
 
 #	if JSTR_HAVE_GENERIC
@@ -575,23 +575,23 @@ JSTR__CAST(T, Other other)
 #		define JSTR_GENERIC_CASE_STR(bool_)                char * : bool_, const char * : bool_
 #		define JSTR_GENERIC_CASE_STR_STACK(bool_, s)       char (*)[sizeof(s)] : bool_, const char (*)[sizeof(s)] : bool_
 #		define JSTR_GENERIC_CASE_CHAR(bool_)               char : bool_, const char : bool_
-#		define JSTR__IS_SIZE(expr)                         _Generic((expr), JSTR_GENERIC_CASE_SIZE(1), default: 0)
-#		define JSTR__IS_STR(expr)                          _Generic((expr), JSTR_GENERIC_CASE_STR(1), default: 0)
-#		define JSTR__IS_STR_STACK(expr)                    _Generic((expr), JSTR_GENERIC_CASE_STR_STACK(1, expr), default: 0)
-#		define JSTR__IS_CHAR(expr)                         _Generic((expr), JSTR_GENERIC_CASE_CHAR(1), default: 0)
-#		define JSTR_STATIC_ASSERT_IS_SIZE(expr)            JSTR_STATIC_ASSERT(JSTR__IS_SIZE(expr), "Passing non-size_type as number argument!");
-#		define JSTR_STATIC_ASSERT_IS_STR(expr)             JSTR_STATIC_ASSERT(JSTR__IS_STR(expr), "Passing non-string as string argument!");
-#		define JSTR_STATIC_ASSERT_IS_CHAR(expr)            JSTR_STATIC_ASSERT(JSTR__IS_CHAR(expr), "Passing non-char as char argument!");
+#		define JSTR_INTERNALIS_SIZE(expr)                         _Generic((expr), JSTR_GENERIC_CASE_SIZE(1), default: 0)
+#		define JSTR_INTERNALIS_STR(expr)                          _Generic((expr), JSTR_GENERIC_CASE_STR(1), default: 0)
+#		define JSTR_INTERNALIS_STR_STACK(expr)                    _Generic((expr), JSTR_GENERIC_CASE_STR_STACK(1, expr), default: 0)
+#		define JSTR_INTERNALIS_CHAR(expr)                         _Generic((expr), JSTR_GENERIC_CASE_CHAR(1), default: 0)
+#		define JSTR_STATIC_ASSERT_IS_SIZE(expr)            JSTR_STATIC_ASSERT(JSTR_INTERNALIS_SIZE(expr), "Passing non-size_type as number argument!");
+#		define JSTR_STATIC_ASSERT_IS_STR(expr)             JSTR_STATIC_ASSERT(JSTR_INTERNALIS_STR(expr), "Passing non-string as string argument!");
+#		define JSTR_STATIC_ASSERT_IS_CHAR(expr)            JSTR_STATIC_ASSERT(JSTR_INTERNALIS_CHAR(expr), "Passing non-char as char argument!");
 #		define JSTR_STATIC_ASSERT_TYPECHECK(expr_ty, expr) JSTR_STATIC_ASSERT(JSTR_SAME_TYPE(expr_ty, expr), "Passing the wrong data type!");
 #	else
 #		define JSTR_GENERIC_CASE_SIZE(bool_)
 #		define JSTR_GENERIC_CASE_STR(bool_)
 #		define JSTR_GENERIC_CASE_STR_STACK(bool_, s)
 #		define JSTR_GENERIC_CASE_CHAR(bool_)
-#		define JSTR__IS_SIZE(expr)
-#		define JSTR__IS_STR(expr)
-#		define JSTR__IS_STR_STACK(expr)
-#		define JSTR__IS_CHAR(expr)
+#		define JSTR_INTERNALIS_SIZE(expr)
+#		define JSTR_INTERNALIS_STR(expr)
+#		define JSTR_INTERNALIS_STR_STACK(expr)
+#		define JSTR_INTERNALIS_CHAR(expr)
 #		define JSTR_STATIC_ASSERT_IS_SIZE(expr)
 #		define JSTR_STATIC_ASSERT_IS_STR(expr)
 #		define JSTR_STATIC_ASSERT_IS_CHAR(expr)
@@ -669,13 +669,13 @@ JSTR__CAST(T, Other other)
 #		define jstr_unlikely(x) (x)
 #	endif /* unlikely */
 
-#	ifndef JSTR__ATTR_INLINE
+#	ifndef JSTR_INTERNALATTR_INLINE
 #		ifdef __inline
-#			define JSTR__ATTR_INLINE __inline
+#			define JSTR_INTERNALATTR_INLINE __inline
 #		elif (defined __cplusplus || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
-#			define JSTR__ATTR_INLINE inline
+#			define JSTR_INTERNALATTR_INLINE inline
 #		else
-#			define JSTR__ATTR_INLINE
+#			define JSTR_INTERNALATTR_INLINE
 #		endif
 #	endif
 
@@ -691,7 +691,7 @@ JSTR__CAST(T, Other other)
 #		ifdef __always_inline
 #			define JSTR_ATTR_INLINE __always_inline
 #		elif JSTR_HAS_ATTRIBUTE(__always_inline__)
-#			define JSTR_ATTR_INLINE __attribute__((__always_inline__)) JSTR__ATTR_INLINE
+#			define JSTR_ATTR_INLINE __attribute__((__always_inline__)) JSTR_INTERNALATTR_INLINE
 #		endif
 #		ifdef __attribute_noinline__
 #			define JSTR_ATTR_NOINLINE __attribute_noinline__
@@ -773,7 +773,7 @@ JSTR__CAST(T, Other other)
 #	endif
 
 #	ifndef JSTR_ATTR_INLINE
-#		define JSTR_ATTR_INLINE JSTR__ATTR_INLINE
+#		define JSTR_ATTR_INLINE JSTR_INTERNALATTR_INLINE
 #	endif
 #	ifndef JSTR_ATTR_NOINLINE
 #		define JSTR_ATTR_NOINLINE
@@ -884,7 +884,7 @@ JSTR_NONNULL((3))
 JSTR_ATTR_NOINLINE
 JSTR_ATTR_COLD
 static void
-jstr__errdie(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg)
+jstr_internalerrdie(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg)
 JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
@@ -897,7 +897,7 @@ JSTR_NONNULL((3))
 JSTR_ATTR_NOINLINE
 JSTR_ATTR_COLD
 static void
-jstr__err(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg)
+jstr_internalerr(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg)
 JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
