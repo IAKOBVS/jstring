@@ -106,7 +106,8 @@ as referring to the whole matched string.
 - \*\_chk\*\(\): evaluate to true if the value passed is an error value.
 - \*\_err\(\): print an error message.
 - \*\_errdie\(\): print an error message and exit\(\).
-- namespace\_\_\*\(\): internal functions.
+- namespace\_internal_\*\(\): internal functions.
+- NAMESPACE\_INTERNAL_\*\(\): internal macros.
 ### Headers:
 - internal/\*.h: internal headers.
 
