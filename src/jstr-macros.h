@@ -158,7 +158,7 @@ JSTR__END_DECLS
 
 #	define jstr_chk(ret)             jstr_unlikely(ret == -1)
 #	define jstr_nullchk(p)           jstr_unlikely((p) == NULL)
-#define JSTR_PAGE_SIZE 4096
+#	define JSTR_PAGE_SIZE            4096
 #	define JSTR_ARRAY_COUNT(array)   (sizeof(array) / sizeof(array[0]))
 #	define JSTR__CONCAT_HELPER(x, y) x##y
 #	define JSTR_CONCAT(x, y)         JSTR__CONCAT_HELPER(x, y)
@@ -935,7 +935,7 @@ JSTR_NOEXCEPT
 #		define JSTR_HAVE_STRCASESTR        1
 #	endif /* Gnu */
 
-#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 24) && (_POSIX_C_SOURCE - 0) >= 199309L)                                                 \
+#	if (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 24) && (_POSIX_C_SOURCE - 0) >= 199309L)                            \
 	|| ((defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 19) && defined _SVID_SOURCE || defined _BSD_SOURCE) \
 	|| (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ <= 23 && defined _POSIX_C_SOURCE)
 #		define JSTR_HAVE_GETC_UNLOCKED    1
@@ -964,7 +964,7 @@ JSTR_NOEXCEPT
 #		define JSTR_HAVE_STRNDUP 1
 #	endif /* Posix || Gnu */
 
-#	if (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500)          \
+#	if (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500)                               \
 	|| (defined __GLIBC__ && JSTR_GLIBC_PREREQ(2, 12) && (__POSIX_C_SOURCE - 0) >= 200809L) \
 	|| defined _BSD_SOURCE || defined _SVID_SOURCE
 #		define JSTR_HAVE_STRDUP 1
@@ -1025,8 +1025,8 @@ JSTR_NOEXCEPT
 #	endif /* Xopen 2k8 */
 
 #	if defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L
-#		define JSTR_HAVE_NANOSLEEP
-#endif /* Posix 199309L */
+#		define JSTR_HAVE_NANOSLEEP 1
+#	endif /* Posix 199309L */
 
 #	if (JSTR_USE_UNLOCKED_IO || JSTR_USE_UNLOCKED_IO_READ) && JSTR_HAVE_FREAD_UNLOCKED
 #		define jstr_io_fread(ptr, size, n, stream) fread_unlocked(ptr, size, n, stream)
@@ -1440,6 +1440,9 @@ JSTR_NOEXCEPT
 #	endif
 #	ifndef JSTR_HAVE_UNALIGNED_ACCESS
 #		define JSTR_HAVE_UNALIGNED_ACCESS 0
+#	endif
+#	ifndef JSTR_HAVE_NANOSLEEP
+#		define JSTR_HAVE_NANOSLEEP 0
 #	endif
 
 #endif /* JSTR_MACROS_H */
