@@ -1,5 +1,6 @@
 jstr
 t
+bench/result-*
 # Prerequisites
 *.d
 
