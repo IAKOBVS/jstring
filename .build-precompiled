@@ -1,8 +1,0 @@
-#!/bin/sh
-
-if type gcc >/dev/null 2>/dev/null; then
-	LIB_PATH=/usr/local/include/jstr
-	sudo gcc $LIB_PATH/jstr.h
-	sudo gcc $LIB_PATH/jstr-regex.h
-	sudo gcc $LIB_PATH/jstr-io.h
-fi
