@@ -14,5 +14,5 @@ my $file_str;
 	}
 }
 my @ignore_prefix = ("JSTR", "jstr");
-jl_file_namespace_macros(\$file_str, \"JSTR_INTERNAL", \@ignore_prefix);
+jl_file_namespace_macros(\$file_str, \"JSTR_INTERNAL_", \@ignore_prefix);
 print $file_str;
