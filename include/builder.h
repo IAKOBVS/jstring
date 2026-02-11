@@ -529,6 +529,7 @@ JSTR_NOEXCEPT
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_pushback_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;
+}
 
 JSTR_FUNC_VOID
 static char *
