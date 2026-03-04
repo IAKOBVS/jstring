@@ -4,5 +4,5 @@ set -e
 
 cd "$(dirname "$0")" || exit
 PATH_MACROS=../include/macros.h
-cc ./scripts/get-page-size.c -o ./scripts/get-page-size
-echo "$(sed "s/#[ \t]*define[ \t]*JSTR_PAGE_SIZE.*/#define JSTR_PAGE_SIZE $(../scripts/get-page-size)/" "$PATH_MACROS")" > "$PATH_MACROS"
+cc ./get-page-size.c -o ./get-page-size
+echo "$(sed "s/#[ \t]*define[ \t]*JSTR_PAGE_SIZE.*/#define JSTR_PAGE_SIZE $(./get-page-size)/" "$PATH_MACROS")" > "$PATH_MACROS"
