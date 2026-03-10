@@ -28,14 +28,13 @@ compile()
 	file=$1
 	out=$2
 	out=$out$(echo "$args" | tr -d ' ')
-	$CC "$file" -o "$out" $CFLAGS $args
+	cc "$file" -o "$out" $CFLAGS $args
 	"$out"
 	rm "$out"
 }
 
 cd "$(dirname "$0")" || exit
 
-CC="$(readlink "$(command -v cc)")"
 # Set the path to compile the tests to.
 if [ -z "$TMPDIR" ]; then
 	if [ -d /tmp ]; then
@@ -45,7 +44,7 @@ if [ -z "$TMPDIR" ]; then
 	fi
 fi
 tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
-mkdir -p "$tmp"
+mkdir "$tmp" || exit
 echo 'This might take a while.'
 
 # Test all files in arguments. Otherwise, test all.

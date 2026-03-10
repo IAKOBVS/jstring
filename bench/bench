@@ -15,7 +15,7 @@ fi
 tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')
 FLAGS='-march=native -O2'
 
-mkdir -p "$tmp"
+mkdir "$tmp" || exit
 
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
