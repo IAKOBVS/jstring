@@ -31,9 +31,9 @@ compile_and_run()
 	shift
 	args=$*
 	out=$out$(echo "$args" | tr -d ' ')
-	cc "$file" -o "$out" $args
+	nice -n 19 cc "$file" -o "$out" $args
 	out_clean=$(basename $out)
-	if "$out"; then
+	if nice -n 19 "$out"; then
 		echo "PASS: $out_clean"
 	else
 		echo "FAIL: $out_clean"
