@@ -3,6 +3,8 @@
 
 set -e
 
+echo 'This might take a while...'
+
 PATH_TEST=../tests
 
 CFLAGS="
@@ -59,14 +61,20 @@ else
 	files=$*
 fi
 
+# Fast tests
 for file in $files; do
 	out_file=$(echo ${file%.*} | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
 	compile_and_run "$file" "$tmp/$out_file" $CFLAGS &
 	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -march=native &
+done
+wait
+
+# Slow tests
+for file in $files; do
+	out_file=$(echo ${file%.*} | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
 	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 &
 	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 -march=native &
 done
-echo 'This might take a while...'
 wait
 
 rmdir "$tmp"
