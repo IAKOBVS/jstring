@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+PS4='' set -ex
 
 has_prog()
 {

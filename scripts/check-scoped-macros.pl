@@ -11,7 +11,7 @@ foreach (@lines) {
 	if (/^[ \t]*#[ \t]*define[ \t]*([A-Z][A-Z0-9_]*)/) {
 		my $macro = $1;
 		if ($file_str !~ /(?:^|\n)[ \t]*#[ \t]*undef[ \t]+$macro/) {
-			print "$macro is not undefined in $fname.\n";
+			print "$macro is not defined in $fname.\n";
 		}
 	}
 }

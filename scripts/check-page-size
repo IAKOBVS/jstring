@@ -1,8 +1,10 @@
 #!/bin/sh
 
-set -e
+PS4='' set -ex
 
 cd "$(dirname "$0")" || exit
 PATH_MACROS=../include/macros.h
 cc ./get-page-size.c -o ./get-page-size
-echo "$(sed "s/#[ \t]*define[ \t]*JSTR_PAGE_SIZE.*/#define JSTR_PAGE_SIZE $(./get-page-size)/" "$PATH_MACROS")" > "$PATH_MACROS"
+mv "$PATH_MACROS" "$PATH_MACROS.bak"
+sed "s/#[ \t]*define[ \t]*JSTR_PAGE_SIZE.*/#define JSTR_PAGE_SIZE $(./get-page-size)/" "$PATH_MACROS.bak" > "$PATH_MACROS"
+rm "$PATH_MACROS.bak"

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+PS4='' set -ex
 
 cd "$(dirname "$0")" || exit
 ./check-page-size || exit

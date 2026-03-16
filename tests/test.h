@@ -44,16 +44,24 @@
 #include "../include/macros.h"
 #include "simple.h"
 
-#define SUCCESS()                                                   \
-	do {                                                        \
-		(void)argc;                                         \
-		(void)argv;                                         \
-		PRINT("%s ", __FILE__);                             \
-		for (; *argv; ++argv)                               \
-			if (!strncmp(*argv, "-D", 2))               \
-				PRINT("%s ", *argv + strlen("-D")); \
-		PRINT("succeeded.\n");                              \
-	} while (0)
+#if 0
+#	define SUCCESS()                                                   \
+		do {                                                        \
+			(void)argc;                                         \
+			(void)argv;                                         \
+			PRINT("%s ", __FILE__);                             \
+			for (; *argv; ++argv)                               \
+				if (!strncmp(*argv, "-D", 2))               \
+					PRINT("%s ", *argv + strlen("-D")); \
+			PRINT("succeeded.\n");                              \
+		} while (0)
+#else
+#	define SUCCESS()           \
+		do {                \
+			(void)argc; \
+			(void)argv; \
+		} while (0)
+#endif
 
 /* clang-format off */
 #define EMPTY(p)          (sizeof(p) == sizeof(const char *) ? ((const char *)p) == (const char *)NULL ? "(null)" : (p) : (p))
@@ -80,16 +88,16 @@ JSTR_INTERNAL_END_DECLS
 #endif
 /* clang-format on */
 
-#define ASSERT_RESULT(func, expr, result, expected)                      \
-	do {                                                             \
-		if (jstr_unlikely(!(expr))) {                            \
+#define ASSERT_RESULT(func, expr, result, expected)                       \
+	do {                                                              \
+		if (jstr_unlikely(!(expr))) {                             \
 			PRINTERR("Assertion failure: %s().\nResult:%s.\n" \
 			         "Expected:%s.\n",                        \
-			         #func,                                  \
-			         EMPTY(result),                          \
-			         EMPTY(expected));                       \
-			assert(expr);                                    \
-		}                                                        \
+			         #func,                                   \
+			         EMPTY(result),                           \
+			         EMPTY(expected));                        \
+			assert(expr);                                     \
+		}                                                         \
 	} while (0)
 
 #define ASSERT_ERRFUNC(func, expr)                                     \

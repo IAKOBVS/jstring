@@ -21,21 +21,27 @@ has_prog()
 	type "$1" >/dev/null 2>/dev/null
 }
 
-compile()
+compile_and_run()
 {
 	file=$1
-	args=$(echo "$*" | cut -d' ' -f3-)
-	file=$1
 	out=$2
+	shift
+	shift
+	args=$*
 	out=$out$(echo "$args" | tr -d ' ')
-	cc "$file" -o "$out" $CFLAGS $args
-	"$out"
+	cc "$file" -o "$out" $args
+	out_clean=$(basename $out)
+	if "$out"; then
+		echo "PASS: $out_clean"
+	else
+		echo "FAIL: $out_clean"
+	fi
 	rm "$out"
 }
 
 cd "$(dirname "$0")" || exit
 
-# Set the path to compile the tests to.
+# Set the path to compile_and_run the tests to.
 if [ -z "$TMPDIR" ]; then
 	if [ -d /tmp ]; then
 		TMPDIR=/tmp
@@ -45,7 +51,6 @@ if [ -z "$TMPDIR" ]; then
 fi
 tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
 mkdir "$tmp" || exit
-echo 'This might take a while.'
 
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
@@ -56,11 +61,12 @@ fi
 
 for file in $files; do
 	out_file=$(echo ${file%.*} | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
-	compile "$file" "$tmp/$out_file" $CFLAGS &
-	compile "$file" "$tmp/$out_file" $CFLAGS -march=native &
-	compile "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 &
-	compile "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 -march=native &
+	compile_and_run "$file" "$tmp/$out_file" $CFLAGS &
+	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -march=native &
+	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 &
+	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 -march=native &
 done
+echo 'This might take a while...'
 wait
 
-rm -rf "$tmp"
+rmdir "$tmp"

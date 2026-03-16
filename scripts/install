@@ -1,14 +1,8 @@
 #!/bin/sh
 
-set -e
+PS4='' set -ex
 
 #shellcheck disable=SC2068
-verbose()
-{
-	$@
-	echo "$*"
-}
-
 cd "$(dirname "$0")" || exit
 
 LIB=jstr
@@ -18,7 +12,7 @@ PATH_BUILD=../$LIB
 [ $# -eq 1 ] && INSTALL_DIR=$1
 ./fmt "$PATH_BUILD"/*.h
 if [ "$(id -u)" -eq 0 ]; then
-	verbose cp -rf "$PATH_BUILD" "$INSTALL_DIR"
+	cp -rf "$PATH_BUILD" "$INSTALL_DIR"
 	echo "Successfully built to $INSTALL_DIR/$LIB."
 else
 	echo "Please run the command with sudo, as it requires permission to copy $PATH_BUILD to $INSTALL_DIR"

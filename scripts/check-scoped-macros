@@ -1,5 +1,7 @@
 #!/bin/sh
 
-set -e
+PS4='' set -ex
 
-perl ./check-scoped-macros.pl ../include/*.h | grep -q '^[^J][^S][^T][^R]' || exit 0
+if perl ./check-scoped-macros.pl ../include/*.h | grep -v -q '^JSTR'; then
+	exit 1
+fi
