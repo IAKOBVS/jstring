@@ -1,0 +1,16 @@
+#!/bin/sh
+TMP_TESTDIR=$1
+file=$2
+file_fulpath=$(echo "${file%.*}" | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
+shift
+shift
+args=$*
+out=$TMP_TESTDIR/$file_fulpath\_$(echo "$args" | sed 's/ /_/g')
+cc "$file" -o "$out" $args
+out_clean=$(basename "$out" | sed 's/_/ /g')
+if "$out"; then
+	echo "PASS: $out_clean"
+else
+	echo "FAIL: $out_clean"
+fi
+rm "$out"
