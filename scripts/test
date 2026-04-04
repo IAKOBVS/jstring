@@ -8,12 +8,12 @@ echo 'This might take a while...'
 PATH_TEST=../tests
 
 CFLAGS="
--g
 -std=c99
 -Wall
 -Wextra
 -Wpedantic
 -O2
+-g
 -fsanitize=address
 $CFLAGS
 "
@@ -23,27 +23,9 @@ has_prog()
 	type "$1" >/dev/null 2>/dev/null
 }
 
-compile_and_run()
-{
-	file=$1
-	out=$2
-	shift
-	shift
-	args=$*
-	out=$out$(echo "$args" | tr -d ' ')
-	nice -n 19 cc "$file" -o "$out" $args
-	out_clean=$(basename $out)
-	if nice -n 19 "$out"; then
-		echo "PASS: $out_clean"
-	else
-		echo "FAIL: $out_clean"
-	fi
-	rm "$out"
-}
-
 cd "$(dirname "$0")" || exit
 
-# Set the path to compile_and_run the tests to.
+# Set the path to compile and run the tests to.
 if [ -z "$TMPDIR" ]; then
 	if [ -d /tmp ]; then
 		TMPDIR=/tmp
@@ -51,30 +33,43 @@ if [ -z "$TMPDIR" ]; then
 		TMPDIR=$(echo "$PWD" | head -c 255)
 	fi
 fi
-tmp="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
-mkdir "$tmp" || exit
+TMP_TESTDIR="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
+mkdir "$TMP_TESTDIR" || exit
 
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
 	files=$(echo $PATH_TEST/*.c)
 else
-	files=$*
+	files=$(echo "$*" | sed 's/ /\n/g')
 fi
 
-# Fast tests
-for file in $files; do
-	out_file=$(echo ${file%.*} | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
-	compile_and_run "$file" "$tmp/$out_file" $CFLAGS &
-	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -march=native &
-done
-wait
+tests()
+{
+	TMP_TESTDIR=$1
+	shift
+	for file in $files; do
+		# echo nice -n 19 ./test1 $TMP_TESTDIR $file $@
+		nice -n 19 ./test1 $TMP_TESTDIR $file $@ &
+	done
+}
 
-# Slow tests
-for file in $files; do
-	out_file=$(echo ${file%.*} | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
-	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 &
-	compile_and_run "$file" "$tmp/$out_file" $CFLAGS -DJSTR_TEST_SLOW=1 -march=native &
-done
-wait
+# Tests
+if command -v parallel >/dev/null && parallel --version | grep -F 'GNU' | grep -q '^/'; then
+	# Fast tests
+	printf '%s\n' $files | parallel ./test1 "$TMP_TESTDIR" {} $CFLAGS
+	printf '%s\n' $files | parallel ./test1 "$TMP_TESTDIR" {} $CFLAGS -march=native
+	# Slow tests
+	printf '%s\n' $files | parallel ./test1 "$TMP_TESTDIR" {} $CFLAGS -DJSTR_TEST_SLOW=1
+	printf '%s\n' $files | parallel ./test1 "$TMP_TESTDIR" {} $CFLAGS -DJSTR_TEST_SLOW=1 -march=native
+else
+	# Fast tests
+	tests "$TMP_TESTDIR" $CFLAGS
+	tests "$TMP_TESTDIR" $CFLAGS -march=native
+	wait
+	# Slow tests
+	tests "$TMP_TESTDIR" $CFLAGS -DJSTR_TEST_SLOW=1
+	tests "$TMP_TESTDIR" $CFLAGS -DJSTR_TEST_SLOW=1 -march=native
+	wait
+fi
 
-rmdir "$tmp"
+rmdir "$TMP_TESTDIR"
