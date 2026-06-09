@@ -56,7 +56,7 @@ tests()
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo '1')
 
 # Tests
-if xargs --version 2>/dev/null | grep -F -e 'GNU' -e 'BSD'; then
+if xargs --version 2>/dev/null | grep -q -F -e 'GNU' -e 'BSD'; then
 	# Fast tests
 	printf '%s\n' $files | xargs -P "$NPROC" -I {} ./test1 "$TMP_TESTDIR" {} $CFLAGS
 	printf '%s\n' $files | xargs -P "$NPROC" -I {} ./test1 "$TMP_TESTDIR" {} $CFLAGS -march=native
