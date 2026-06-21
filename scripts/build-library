@@ -1,0 +1,107 @@
+#!/bin/sh
+# shellcheck disable=SC2086,SC2068
+
+PS4='' set -ex
+
+cd "$(dirname "$0")" || exit
+
+# 1. Run setup checks
+./setup || exit
+
+# 2. Generate headers (same as ./build but skip final syntax check for speed)
+./clean
+PATH_BUILD=../jstr
+PATH_SRC=../include
+PATH_MACROS=$PATH_BUILD/macros.h
+CFLAGS="-Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
+
+mkdir -p $PATH_BUILD/internal
+mkdir -p $PATH_BUILD/internal/musl
+
+has_prog() { type "$1" >/dev/null 2>/dev/null; }
+
+update() {
+	in_fname=$1
+	base_fname=$(basename "$in_fname")
+	case $in_fname in
+	*/internal/musl/*.h)
+		out_fname=$PATH_BUILD/internal/musl/$base_fname
+		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		;;
+	*/internal/*.h)
+		out_fname=$PATH_BUILD/internal/$base_fname
+		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		;;
+	*/*macro*.h)
+		out_fname=$PATH_BUILD/$base_fname
+		perl ./namespace-macros.pl "$in_fname" >"$out_fname"
+		;;
+	*/*.h)
+		out_fname=$PATH_BUILD/$base_fname
+		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl | perl ./wrap-func-decls.pl >"$out_fname"
+		;;
+	*)
+		cp -f "$in_fname" "$out_fname"
+		;;
+	esac
+}
+
+OUTDIR="../out"
+LIBDIR="$OUTDIR/lib"
+SRCDIR="$OUTDIR/src"
+INCDIR="$OUTDIR/include"
+OBJDIR="$OUTDIR/obj"
+
+rm -rf "$OUTDIR"
+mkdir -p "$LIBDIR" "$SRCDIR" "$INCDIR" "$OBJDIR"
+
+# Generate headers in parallel
+for file in $(find $PATH_SRC -type f); do
+	update "$file" &
+done
+wait
+
+# 3. Copy generated headers to out/include/ (static preserved) and
+#    create per-module private copies with ^static stripped, plus .c files.
+perl ./gen-lib.pl
+
+# 4. Compile all .c files in parallel using nproc
+NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
+CFLAGS="$CFLAGS -fPIC -O2 -g"
+
+echo "Compiling with $NPROC parallel jobs..."
+
+PRIVDIR="$OUTDIR/private"
+
+for cfile in "$SRCDIR"/*.c; do
+	base=$(basename "$cfile" .c)
+	{
+		cc -c "$cfile" -o "$OBJDIR/$base.o" $CFLAGS -iquote "$PRIVDIR/$base" -iquote "$INCDIR"
+	} &
+done
+wait
+
+# Collect .o files
+OFILES=
+for o in "$OBJDIR"/*.o; do
+	[ -f "$o" ] && OFILES="$OFILES $o"
+done
+if [ -z "$OFILES" ]; then
+	echo "No object files produced."
+	exit 1
+fi
+
+# 5. Archive static library
+ar rcs "$LIBDIR/libjstr.a" $OFILES
+
+# 6. Link shared library
+cc -shared -o "$LIBDIR/libjstr.so" $OFILES
+
+# 7. Copy public headers for user convenience
+mkdir -p "$LIBDIR/../include/jstr"
+cp -r "$INCDIR"/* "$LIBDIR/../include/jstr/" 2>/dev/null || true
+
+echo "Library built successfully."
+echo "  Static:  $LIBDIR/libjstr.a"
+echo "  Shared:  $LIBDIR/libjstr.so"
+echo "  Headers: $LIBDIR/../include/jstr/"

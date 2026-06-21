@@ -1,16 +1,39 @@
 #!/bin/sh
+# test1 <tmpdir> <test.c> [cflags...]
+# Compiles, runs a single test variant. Caches .o by source+flags hash.
+# Uses JSTR_DECL_ONLY (extern declarations) and links against libjstr.so.
+
+# Locate repo root (parent of scripts/ dir where this script lives)
+SCRIPTDIR=$(cd "$(dirname "$0")" && pwd)
+REPOROOT=$(cd "$SCRIPTDIR/.." && pwd)
+
 TMP_TESTDIR=$1
 file=$2
-file_fulpath=$(echo "${file%.*}" | sed 's/^.*\/// ;s/\.//g; s/\/\//\//g')
-shift
-shift
+shift 2
 args=$*
-out=$TMP_TESTDIR/$file_fulpath\_$(echo "$args" | sed 's/ /_/g')
-cc "$file" -o "$out" $args
-out_clean=$(basename "$out" | sed 's/_/ /g')
+
+base=$(basename "$file" .c)
+flatargs=$(echo "$args" | sed 's/[[:space:]][[:space:]]*/_/g')
+
+COMPILE_ONLY_FLAGS="-DJSTR_DECL_ONLY -include $REPOROOT/jstr/jstr.h -iquote $REPOROOT/jstr"
+hash=$(echo "$file$args $COMPILE_ONLY_FLAGS" | md5sum 2>/dev/null | cut -c1-12 || echo "$file$args $COMPILE_ONLY_FLAGS" | cksum | cut -d' ' -f1)
+obj="$TMP_TESTDIR/${base}_${hash}.o"
+out="$TMP_TESTDIR/${base}_${flatargs}"
+
+# Compile .o if stale
+if [ ! -f "$obj" ] || [ "$file" -nt "$obj" ]; then
+	cc -c "$file" -o "$obj" $args $COMPILE_ONLY_FLAGS || { echo "COMPILE FAILED: $base $args" >&2; exit 1; }
+fi
+
+# Link against shared library
+cc "$obj" -o "$out" $args -L "$REPOROOT/out/lib" -ljstr -Wl,-rpath,"$REPOROOT/out/lib"
+
+# Run
+out_clean=$(echo "$out" | sed 's/.*\///' | sed 's/_/ /g')
 if "$out"; then
 	echo "PASS: $out_clean"
 else
 	echo "FAIL: $out_clean"
 fi
-rm "$out"
+
+rm -f "$out"

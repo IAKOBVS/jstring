@@ -35,19 +35,12 @@ update()
 		;;
 	*/*.h)
 		out_fname=$PATH_BUILD/$base_fname
-		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
+		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl | perl ./wrap-func-decls.pl >"$out_fname"
 		;;
 	*)
 		cp -f "$in_fname" "$out_fname"
 		;;
 	esac
-}
-
-mark_as_built()
-{
-	mv "$PATH_MACROS" "$PATH_MACROS.bak"
-	sed 's/\([ \t]*#[ \t]*ifndef[ \t]\{1,\}JSTR_BUILT\)/#define JSTR_BUILT\n\1/' "$PATH_MACROS.bak" >"$PATH_MACROS"
-	rm "$PATH_MACROS.bak"
 }
 
 cd "$(dirname "$0")" || exit
@@ -59,7 +52,6 @@ for file in $(find $PATH_SRC -type f); do
 	update "$file" &
 done
 wait
-mark_as_built
 
 if has_prog tcc; then
 	printf "#define JSTR_BUILT\n #include \"../jstr/jstr.h\"\n int main(){return 0;}\n" | tcc -run - || exit

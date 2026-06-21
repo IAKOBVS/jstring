@@ -1,4 +1,5 @@
 jstr
+out/
 t
 bench/result*
 # Prerequisites

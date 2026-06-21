@@ -31,6 +31,7 @@
 /* clang-format off */
 
 #include "test.h"
+#include "test-types.h"
 #include "../include/macros.h"
 
 #define T_FOREACHI(array, i) for (size_t i = 0; i < JSTR_ARRAY_COUNT(array); ++i)
@@ -70,10 +71,7 @@
 	GEN(hs y256, ne y256)
 
 JSTR_ATTR_MAYBE_UNUSED
-static struct test_array_memmem {
-	const char *hs;
-	const char *ne;
-} test_array_memmem[] = {
+static struct test_array_memmem test_array_memmem[] = {
 	GEN(y256, y256)
 
 	NE("","")
@@ -201,10 +199,7 @@ static struct test_array_memmem {
 
 
 JSTR_ATTR_MAYBE_UNUSED
-static struct test_array_memcmp {
-	const char *s1;
-	const char *s2;
-} test_array_memcmp[] = {
+static struct test_array_memcmp test_array_memcmp[] = {
 	GEN_CMP(y256, y256)
 	GEN_CMP("","")
 	GEN_CMP("a","")

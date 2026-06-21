@@ -3,4 +3,4 @@
 PS4='' set -ex
 
 cd "$(dirname "$0")" || exit
-rm -rf ../jstr/*.h
+rm -rf ../jstr/*.h ../out/

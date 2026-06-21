@@ -15,15 +15,17 @@ CFLAGS="
 -O2
 -g
 -fsanitize=address
+-D_XOPEN_SOURCE=700
 $CFLAGS
 "
-
-has_prog()
-{
-	type "$1" >/dev/null 2>/dev/null
-}
+# Flatten newlines to single spaces
+CFLAGS=$(echo "$CFLAGS" | tr '\n' ' ' | sed 's/  */ /g; s/^ *//; s/ *$//')
 
 cd "$(dirname "$0")" || exit
+
+# Build shared library for test linkage
+echo 'Building shared library...'
+CFLAGS="$CFLAGS -DJSTR_DEBUG=1" ./build-library
 
 # Set the path to compile and run the tests to.
 if [ -z "$TMPDIR" ]; then
@@ -34,7 +36,7 @@ if [ -z "$TMPDIR" ]; then
 	fi
 fi
 TMP_TESTDIR="$TMPDIR"/$(echo "$PWD" | sed 's/\///g; s/\.//g')
-mkdir "$TMP_TESTDIR" || exit
+mkdir -p "$TMP_TESTDIR"
 
 # Test all files in arguments. Otherwise, test all.
 if [ $# -eq 0 ]; then
@@ -43,35 +45,21 @@ else
 	files=$(echo "$*" | sed 's/ /\n/g')
 fi
 
-tests()
+NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo '1')
+
+# Generate all variant jobs and run them in a single parallel pool.
+# Each job is: ./test1 <tmpdir> <file> <cflags...>
+generate_jobs()
 {
-	TMP_TESTDIR=$1
-	shift
 	for file in $files; do
-		# echo nice -n 19 ./test1 $TMP_TESTDIR $file $@
-		nice -n 19 ./test1 $TMP_TESTDIR $file $@ &
+		echo "$file $CFLAGS"
+		echo "$file $CFLAGS -march=native"
+		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1"
+		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1 -march=native"
 	done
 }
 
-NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo '1')
+generate_jobs | xargs -P "$NPROC" -L 1 ./test1 "$TMP_TESTDIR"
 
-# Tests
-if xargs --version 2>/dev/null | grep -q -F -e 'GNU' -e 'BSD'; then
-	# Fast tests
-	printf '%s\n' $files | xargs -P "$NPROC" -I {} ./test1 "$TMP_TESTDIR" {} $CFLAGS
-	printf '%s\n' $files | xargs -P "$NPROC" -I {} ./test1 "$TMP_TESTDIR" {} $CFLAGS -march=native
-	# Slow tests
-	printf '%s\n' $files | xargs -P "$NPROC" -I {} ./test1 "$TMP_TESTDIR" {} $CFLAGS -DJSTR_TEST_SLOW=1
-	printf '%s\n' $files | xargs -P "$NPROC" -I {} ./test1 "$TMP_TESTDIR" {} $CFLAGS -DJSTR_TEST_SLOW=1 -march=native
-else
-	# Fast tests
-	tests "$TMP_TESTDIR" $CFLAGS
-	tests "$TMP_TESTDIR" $CFLAGS -march=native
-	wait
-	# Slow tests
-	tests "$TMP_TESTDIR" $CFLAGS -DJSTR_TEST_SLOW=1
-	tests "$TMP_TESTDIR" $CFLAGS -DJSTR_TEST_SLOW=1 -march=native
-	wait
-fi
-
-rmdir "$TMP_TESTDIR"
+# Remove stale executables but keep .o files for caching across runs
+find "$TMP_TESTDIR" -type f ! -name '*.o' -delete 2>/dev/null
