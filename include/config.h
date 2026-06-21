@@ -23,7 +23,7 @@
 #ifndef JSTR_CONFIG_H
 #	define JSTR_CONFIG_H 1
 
-/* Print error message and call exit() on errors. */
+/* Print error message and call exit on errors. */
 #	ifndef JSTR_PANIC
 #		define JSTR_PANIC 0
 #	endif
@@ -33,8 +33,8 @@
 #		define JSTR_DEBUG 0
 #	endif
 
-/* jstr_io_*() stdio functions and all functions which use them
- * will use the *_unlocked() versions when available. */
+/* jstr_io_* stdio functions and all functions which use them
+ * will use the *_unlocked versions when available. */
 #	ifndef JSTR_USE_UNLOCKED_IO
 #		define JSTR_USE_UNLOCKED_IO 0
 #	endif
@@ -47,7 +47,7 @@
 #		define JSTR_USE_UNLOCKED_IO_WRITE 0
 #	endif
 
-/* Minimum size of allocation of malloc(). */
+/* Minimum size of allocation of malloc. */
 #	ifndef JSTR_MIN_CAP
 #		define JSTR_MIN_CAP ((sizeof(size_t) == 8) ? 24 : 12)
 #	endif

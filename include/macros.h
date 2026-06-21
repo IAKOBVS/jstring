@@ -23,8 +23,10 @@
 #ifndef JSTR_MACROS_H
 #	define JSTR_MACROS_H 1
 
-#	ifndef JSTR_BUILT
-#		error "Including jstr.h before building."
+#	if defined(JSTR_IMPLEMENTATION)
+#		define JSTR_API
+#	else
+#		define JSTR_API static
 #	endif
 
 #	include "config.h"
@@ -886,8 +888,7 @@ JSTR_NONNULL((3))
 JSTR_ATTR_NOINLINE
 JSTR_ATTR_COLD
 static void
-jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg)
-JSTR_NOEXCEPT
+jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg) JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
 	exit(EXIT_FAILURE);
@@ -899,8 +900,7 @@ JSTR_NONNULL((3))
 JSTR_ATTR_NOINLINE
 JSTR_ATTR_COLD
 static void
-jstr_internal_err(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg)
-JSTR_NOEXCEPT
+jstr_internal_err(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg) JSTR_NOEXCEPT
 {
 	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
 }

@@ -73,8 +73,7 @@ JSTR_INTERNAL_BEGIN_DECLS
 /* Set first char to NUL and size to zero. */
 JSTR_FUNC_VOID
 static void
-jstr_empty(char *R s, size_t *R sz)
-JSTR_NOEXCEPT
+jstr_empty(char *R s, size_t *R sz) JSTR_NOEXCEPT
 {
 	if (jstr_likely(s != NULL))
 		*s = '\0';
@@ -83,8 +82,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static jstr_ret_ty
-jstr_debug(const jstr_ty *j)
-JSTR_NOEXCEPT
+jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
 {
 	int ret;
 	ret = fprintf(stderr, "size       :%zu.\n"
@@ -103,11 +101,11 @@ JSTR_NOEXCEPT
 		data = "(null)";
 		size = 0;
 	}
-	ret = fprintf(stderr, "strlen()   :%zu.\n", size);
+	ret = fprintf(stderr, "strlen.  :%zu.\n", size);
 	if (jstr_unlikely(ret < 0)) {
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
-	ret = fprintf(stderr, "data puts():%s.\n", data);
+	ret = fprintf(stderr, "data puts.%s.\n", data);
 	if (jstr_unlikely(ret < 0)) {
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	}
@@ -128,8 +126,7 @@ JSTR_NOEXCEPT
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
 static void
-jstr_free(char *R *R s, size_t *R sz, size_t *R cap)
-JSTR_NOEXCEPT
+jstr_free(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 {
 	free(*s);
 	*s = NULL;
@@ -142,8 +139,7 @@ JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
 static void
-jstr_free_noinline(char *R *R s, size_t *R sz, size_t *R cap)
-JSTR_NOEXCEPT
+jstr_free_noinline(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 {
 	jstr_free(s, sz, cap);
 }
@@ -151,8 +147,7 @@ JSTR_NOEXCEPT
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
 static void
-jstr_free_j(jstr_ty *j)
-JSTR_NOEXCEPT
+jstr_free_j(jstr_ty *j) JSTR_NOEXCEPT
 {
 	jstr_free(&j->data, &j->size, &j->capacity);
 }
@@ -161,8 +156,7 @@ JSTR_NOEXCEPT
  * NEW_CAP must include NUL. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
-JSTR_NOEXCEPT
+jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
 {
 	size_t old_cap = JSTR_MAX(*cap, JSTR_MIN_CAP);
 	while (old_cap < new_cap)
@@ -183,8 +177,7 @@ err:
  * NEW_CAP must include NUL. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
-JSTR_NOEXCEPT
+jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
 {
 	if (new_cap <= *cap)
 		return JSTR_RET_SUCC;
@@ -195,8 +188,7 @@ JSTR_NOEXCEPT
  * NEW_CAP must include NUL. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
-JSTR_NOEXCEPT
+jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
 {
 	if (jstr_likely(new_cap != 0)) {
 		*cap = new_cap;
@@ -216,8 +208,7 @@ err:
  * NEW_CAP must include NUL. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_reserveexact(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap)
-JSTR_NOEXCEPT
+jstr_reserveexact(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
@@ -226,24 +217,21 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap)
-JSTR_NOEXCEPT
+jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
 {
 	return jstr_reserveexactalways(s, sz, cap, *sz + 1);
 }
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr_io_print(const jstr_ty *j)
-JSTR_NOEXCEPT
+jstr_io_print(const jstr_ty *j) JSTR_NOEXCEPT
 {
 	return jstr_io_fwrite(j->data, 1, j->size, stdout) == j->size ? JSTR_RET_SUCC : JSTR_RET_ERR;
 }
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr_io_println(const jstr_ty *j)
-JSTR_NOEXCEPT
+jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
 {
 	if (jstr_unlikely(jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size))
 		return JSTR_RET_ERR;
@@ -254,8 +242,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t arg_len)
-JSTR_NOEXCEPT
+jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t arg_len) JSTR_NOEXCEPT
 {
 	char *p;
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + arg_len + 1)))
@@ -277,8 +264,7 @@ JSTR_NONNULL((1))
 JSTR_NONNULL((2))
 JSTR_NONNULL((3))
 static jstr_ret_ty
-jstr_cat(char *R *R s, size_t *R sz, size_t *R cap, ...)
-JSTR_NOEXCEPT
+jstr_cat(char *R *R s, size_t *R sz, size_t *R cap, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, cap);
@@ -302,8 +288,7 @@ JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 static jstr_ret_ty
-jstr_cat_j(jstr_ty *j, ...)
-JSTR_NOEXCEPT
+jstr_cat_j(jstr_ty *j, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, j);
@@ -323,16 +308,14 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 static char *
-jstr_append_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len)
-JSTR_NOEXCEPT
+jstr_append_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len) JSTR_NOEXCEPT
 {
 	return jstr_stpcpy_len(s + sz, src, src_len);
 }
 
 JSTR_FUNC_VOID
 static void
-jstr_append_unsafe(char *R s, size_t sz, const char *R src)
-JSTR_NOEXCEPT
+jstr_append_unsafe(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
 {
 	strcpy(s + sz, src);
 }
@@ -340,8 +323,7 @@ JSTR_NOEXCEPT
 /* Return ptr to '\0' in S. */
 JSTR_FUNC
 static char *
-jstr_append_unsafe_p(char *R s, size_t sz, const char *R src)
-JSTR_NOEXCEPT
+jstr_append_unsafe_p(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
 {
 	return jstr_stpcpy(s + sz, src);
 }
@@ -352,8 +334,7 @@ JSTR_NOEXCEPT
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len)
-JSTR_NOEXCEPT
+jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		return JSTR_RET_ERR;
@@ -363,16 +344,14 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static void
-jstr_strset(char *s, int c)
-JSTR_NOEXCEPT
+jstr_strset(char *s, int c) JSTR_NOEXCEPT
 {
 	memset(s, c, strlen(s));
 }
 
 JSTR_FUNC
 static char *
-jstr_assignnchr_unsafe_p(char *s, size_t sz, int c, size_t n)
-JSTR_NOEXCEPT
+jstr_assignnchr_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 {
 	memset(s, c, n);
 	if (n > sz) {
@@ -384,8 +363,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static jstr_ret_ty
-jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n)
-JSTR_NOEXCEPT
+jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (n > *sz) {
 		if (jstr_chk(jstr_reservealways(s, sz, cap, n + 1)))
@@ -400,8 +378,7 @@ JSTR_NOEXCEPT
 /* Append N Cs to end of S. */
 JSTR_FUNC
 static char *
-jstr_pushbackn_len_unsafe_p(char *s, size_t sz, int c, size_t n)
-JSTR_NOEXCEPT
+jstr_pushbackn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 {
 	return (char *)memset(s + sz, c, n) + n;
 }
@@ -409,8 +386,7 @@ JSTR_NOEXCEPT
 /* Append N Cs to end of S. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n)
-JSTR_NOEXCEPT
+jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n + 1)))
 		return JSTR_RET_ERR;
@@ -421,8 +397,7 @@ JSTR_NOEXCEPT
 /* Prepend N Cs to S. */
 JSTR_FUNC
 static char *
-jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n)
-JSTR_NOEXCEPT
+jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0))
 		jstr_strmove_len(s + n, s, sz);
@@ -434,8 +409,7 @@ JSTR_NOEXCEPT
 /* Prepend N Cs to S. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n)
-JSTR_NOEXCEPT
+jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n + 1)))
 		return JSTR_RET_ERR;
@@ -450,8 +424,7 @@ JSTR_NOEXCEPT
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
 static char *
-jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len)
-JSTR_NOEXCEPT
+jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len) JSTR_NOEXCEPT
 {
 	if (jstr_likely(*s != 0))
 		jstr_strmove_len(s + src_len, s, sz);
@@ -467,8 +440,7 @@ JSTR_NOEXCEPT
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len)
-JSTR_NOEXCEPT
+jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		return JSTR_RET_ERR;
@@ -481,8 +453,7 @@ JSTR_NOEXCEPT
  * Return ptr to '\0' in S. */
 JSTR_FUNC
 static char *
-jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len)
-JSTR_NOEXCEPT
+jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len) JSTR_NOEXCEPT
 {
 	return jstr_stpcpy_len(s, src, src_len);
 }
@@ -494,8 +465,7 @@ JSTR_NOEXCEPT
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len)
-JSTR_NOEXCEPT
+jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		return JSTR_RET_ERR;
@@ -506,8 +476,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC
 static char *
-jstr_pushback_unsafe_p(char *s, size_t sz, char c)
-JSTR_NOEXCEPT
+jstr_pushback_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
 {
 	s += sz;
 	*s = c;
@@ -522,8 +491,7 @@ JSTR_NOEXCEPT
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c)
-JSTR_NOEXCEPT
+jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + 1 + 1)))
 		return JSTR_RET_ERR;
@@ -533,8 +501,7 @@ JSTR_NOEXCEPT
 
 JSTR_FUNC_VOID
 static char *
-jstr_pushfront_unsafe_p(char *s, size_t sz, char c)
-JSTR_NOEXCEPT
+jstr_pushfront_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
 {
 	jstr_strmove_len(s + 1, s, sz);
 	*s = c;
@@ -548,8 +515,7 @@ JSTR_NOEXCEPT
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
 static jstr_ret_ty
-jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c)
-JSTR_NOEXCEPT
+jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + 1 + 1)))
 		return JSTR_RET_ERR;
@@ -563,8 +529,7 @@ JSTR_NOEXCEPT
  * Otherwise, S. */
 JSTR_FUNC_VOID
 static char *
-jstr_popback_p(char *s, size_t sz)
-JSTR_NOEXCEPT
+jstr_popback_p(char *s, size_t sz) JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0)) {
 		*(s + sz - 1) = '\0';
@@ -579,8 +544,7 @@ JSTR_NOEXCEPT
  * Otherwise, S. */
 JSTR_FUNC_VOID
 static char *
-jstr_popfront_p(char *s, size_t sz)
-JSTR_NOEXCEPT
+jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
 {
 	if (jstr_likely(sz != 0)) {
 		memmove(s, s + 1, sz);
@@ -603,8 +567,7 @@ JSTR_NOEXCEPT
  * -1 on error and errno is set. */
 JSTR_FUNC
 static int
-jstr_vsprintf_maxlen(va_list ap, const char *fmt)
-JSTR_NOEXCEPT
+jstr_vsprintf_maxlen(va_list ap, const char *fmt) JSTR_NOEXCEPT
 {
 #	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 	const int ret = vsnprintf(NULL, 0, fmt, ap);
@@ -860,8 +823,7 @@ get_arg:
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_asprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_asprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -885,13 +847,12 @@ err:
 }
 
 /* Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf().
+ * Supports only some conversions: see jstr_asprintf.
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_asprintf_j(jstr_ty *R j, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_asprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -916,13 +877,12 @@ err:
 
 /* Append ... to end of S.
  * Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf().
+ * Supports only some conversions: see jstr_asprintf.
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_asprintf_append(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_asprintf_append(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -947,13 +907,12 @@ err:
 
 /* Append ... to end of S.
  * Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf().
+ * Supports only some conversions: see jstr_asprintf.
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_asprintf_append_j(jstr_ty *R j, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_asprintf_append_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -977,13 +936,12 @@ err:
 }
 
 /* Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf().
+ * Supports only some conversions: see jstr_asprintf.
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_asprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_asprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1007,13 +965,12 @@ err:
 }
 
 /* Return JSTR_RET_ERR on error.
- * Supports only some conversions: see jstr_asprintf().
+ * Supports only some conversions: see jstr_asprintf.
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_asprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_asprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1039,12 +996,11 @@ err:
 #	endif
 
 /* Assume that S has enough space.
- * Use jstr_asprintf() to grow S. */
+ * Use jstr_asprintf.to grow S. */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_sprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_sprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1060,12 +1016,11 @@ err_free:
 }
 
 /* Assume that S has enough space.
- * Use jstr_asprintf() to grow S. */
+ * Use jstr_asprintf.to grow S. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_sprintf_j(jstr_ty *R j, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_sprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1081,12 +1036,11 @@ err_free:
 }
 
 /* Assume that S has enough space.
- * Use jstr_asprintf() to grow S. */
+ * Use jstr_asprintf.to grow S. */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_sprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_sprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1102,12 +1056,11 @@ err_free:
 }
 
 /* Assume that S has enough space.
- * Use jstr_asprintf() to grow S. */
+ * Use jstr_asprintf.to grow S. */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
 static jstr_ret_ty
-jstr_sprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...)
-JSTR_NOEXCEPT
+jstr_sprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
 {
 	va_list ap;
 	va_start(ap, fmt);

@@ -76,8 +76,7 @@ JSTR_INTERNAL_DEFINE_ITOA_COUNTUDIGITS(unsigned long long, ulltoa_thousep, 1)
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 static char *
-jstr_ulltoa_p(unsigned long long number, char *R buf, unsigned int base)
-JSTR_NOEXCEPT
+jstr_ulltoa_p(unsigned long long number, char *R buf, unsigned int base) JSTR_NOEXCEPT
 {
 #	define LOOP_BASE(base)                       \
 		do                                    \
@@ -115,8 +114,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 static char *
-jstr_lltoa_p(long long number, char *R buf, unsigned int base)
-JSTR_NOEXCEPT
+jstr_lltoa_p(long long number, char *R buf, unsigned int base) JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;
@@ -149,8 +147,7 @@ JSTR_INTERNAL_ULLTOA(int, itoa, )
 JSTR_FUNC
 JSTR_ATTR_RETURNS_NONNULL
 static char *
-jstr_ulltoa_thousep_p(unsigned long long number, char *R buf, unsigned int base, char separator)
-JSTR_NOEXCEPT
+jstr_ulltoa_thousep_p(unsigned long long number, char *R buf, unsigned int base, char separator) JSTR_NOEXCEPT
 {
 #	define CONV(base)               \
 		c = number % base + '0'; \
@@ -198,8 +195,7 @@ JSTR_NOEXCEPT
  * ptr to '\0' after the last digit in the DEST string. */
 JSTR_FUNC
 static char *
-jstr_lltoa_thousep_p(long long number, char *R buf, unsigned int base, char separator)
-JSTR_NOEXCEPT
+jstr_lltoa_thousep_p(long long number, char *R buf, unsigned int base, char separator) JSTR_NOEXCEPT
 {
 	if (number < 0) {
 		number = -number;

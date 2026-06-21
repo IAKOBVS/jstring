@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-/* Based on musl's strstr() and memmem().
+/* Based on musl's strstr and memmem.
  * Copyright © 2005-2020 Rich Felker, et al.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -152,7 +152,7 @@ JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *t, const 
                                          )
 JSTR_NOEXCEPT
 {
-	JSTR_ASSERT_DEBUG(t->needle_len != (size_t)-1, "Trying to call jstr_*exec() before compiling with jstr_*comp().");
+	JSTR_ASSERT_DEBUG(t->needle_len != (size_t)-1, "Trying to call jstr_*exec before compiling with jstr_*comp.");
 	int c;
 	size_t k;
 	size_t memory = 0;
