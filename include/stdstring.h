@@ -24,7 +24,6 @@
 #	define JSTR_STDSTRING_H 1
 
 #	include "macros.h"
-#	include "ctype.h"
 #	include "struct.h"
 
 JSTR_INTERNAL_BEGIN_DECLS
@@ -32,6 +31,12 @@ JSTR_INTERNAL_BEGIN_DECLS
 #	include <string.h>
 #	include <limits.h>
 JSTR_INTERNAL_END_DECLS
+
+#ifdef JSTR_IMPLEMENTATION
+#undef JSTR_IMPLEMENTATION
+#	include "ctype.h"
+#define JSTR_IMPLEMENTATION 1
+#endif
 
 #	define R JSTR_RESTRICT
 
@@ -42,8 +47,9 @@ JSTR_INTERNAL_BEGIN_DECLS
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-static int
+int
 jstr_strncasecmp(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
@@ -55,14 +61,18 @@ jstr_strncasecmp(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
 	return ret;
 #	endif
 }
+#else
+;
+#endif
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-static int
+int
 jstr_strncasecmpeq(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
@@ -75,6 +85,9 @@ jstr_strncasecmpeq(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
 	return *p1 && n;
 #	endif
 }
+#else
+;
+#endif
 
 /* Compare S1 with S2 case-insensitively.
  * N must be lower than the length of S1 or S2.
@@ -82,8 +95,9 @@ jstr_strncasecmpeq(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-static int
+int
 jstr_strcasecmp_len(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
@@ -95,6 +109,9 @@ jstr_strcasecmp_len(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
 	return ret;
 #	endif
 }
+#else
+;
+#endif
 
 /* Compare S1 with S2 case-insensitively.
  * N must be lower than the length of S1 or S2.
@@ -102,14 +119,18 @@ jstr_strcasecmp_len(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-static int
+int
 jstr_memcasecmpeq(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; n && jstr_tolower(*p1++) == jstr_tolower(*p2++); --n) {}
 	return n ? 1 : 0;
 }
+#else
+;
+#endif
 
 /* Compare S1 with S2 case-insensitively.
  * N must be lower than the length of S1 or S2.
@@ -117,8 +138,9 @@ jstr_memcasecmpeq(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-static int
+int
 jstr_strcasecmpeq_len(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
@@ -126,14 +148,18 @@ jstr_strcasecmpeq_len(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
 	return jstr_memcasecmpeq(s1, s2, n);
 #	endif
 }
+#else
+;
+#endif
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-static int
+int
 jstr_strcasecmp(const char *s1, const char *s2) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_STRCASECMP && !JSTR_TEST
 	return strcasecmp(s1, s2);
@@ -145,24 +171,32 @@ jstr_strcasecmp(const char *s1, const char *s2) JSTR_NOEXCEPT
 	return ret;
 #	endif
 }
+#else
+;
+#endif
 
 JSTR_FUNC_PURE
-static int
+int
 jstr_strcasecmpeq_loop(const char *s1, const char *s2) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	while (jstr_tolower(*p1) == jstr_tolower(*p2++) && *p1++) {}
 	return *(p2 - 1);
 }
+#else
+;
+#endif
 
 /* Compare S1 with S2 case-insensitively.
  * Return value:
  * 0 if strings match.
  * Otherwise, non-zero. */
 JSTR_FUNC_PURE
-static int
+int
 jstr_strcasecmpeq(const char *s1, const char *s2) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_STRCASECMP && !JSTR_TEST
 	return strcasecmp(s1, s2);
@@ -173,41 +207,57 @@ jstr_strcasecmpeq(const char *s1, const char *s2) JSTR_NOEXCEPT
 	return *(p2 - 1);
 #	endif
 }
+#else
+;
+#endif
 
 JSTR_FUNC_PURE
-static int
+int
 jstr_strcmpeq_loop(const char *s1, const char *s2) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	while ((*s1 == *s2++) && *s1++) {}
 	return *(s2 - 1);
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_ATTR_ACCESS((__read_only__, 2, 3))
 JSTR_FUNC_PURE
-static int
+int
 jstr_memcmpeq_loop(const void *s1, const void *s2, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; n && (*p1++ == *p2++); --n) {}
 	return n ? 1 : 0;
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-static int
+int
 jstr_strcasecmpeq_len_loop(const void *s1, const void *s2, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	for (; n && (jstr_tolower(*p1++) == jstr_tolower(*p2++)); --n) {}
 	return n ? 1 : 0;
 }
+#else
+;
+#endif
 
 JSTR_FUNC_PURE
-static size_t
+size_t
 jstr_strnlen(const char *s, size_t maxlen) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_STRNLEN
 	return strnlen(s, maxlen);
@@ -216,85 +266,125 @@ jstr_strnlen(const char *s, size_t maxlen) JSTR_NOEXCEPT
 	return p ? (size_t)(p - s) : maxlen;
 #	endif
 }
+#else
+;
+#endif
 
 JSTR_FUNC_PURE
-static size_t
+size_t
 jstr_strnlen_loop(const char *s, size_t maxlen) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	size_t n = maxlen;
 	for (; n && *s; --n, ++s) {}
 	return maxlen - n;
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC
-static void *
+void *
 jstr_mempset(void *s, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return (char *)memset(s, c, n) + n;
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 3))
 JSTR_FUNC
-static char *
+char *
 jstr_stpset_len(char *s, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return (char *)memset(s, c, n) + n;
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 JSTR_FUNC_VOID
-static char *
+char *
 jstr_stpset(char *s, int c) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_stpset_len(s, c, strlen(s));
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__read_write__, 1, 2))
 JSTR_FUNC_VOID
-static void
+void
 jstr_bzero(void *s, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	memset(s, 0, n);
 }
+#else
+;
+#endif
 
 JSTR_FUNC_VOID
-static void
+void
 jstr_strzero(char *s) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	memset(s, 0, strlen(s));
 }
+#else
+;
+#endif
 
 /* Return ptr to '\0' in S. */
 JSTR_FUNC_VOID
-static char *
+char *
 jstr_stpzero(char *s) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	const size_t sz = strlen(s);
 	return (char *)memset(s, 0, sz) + sz;
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__read_only__, 1, 3))
 JSTR_FUNC_PURE
-static void *
+void *
 jstr_memnchr(const void *s, int c, size_t sz, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return (void *)memchr(s, c, JSTR_MIN(n, sz));
 }
+#else
+;
+#endif
 
 JSTR_FUNC_PURE
-static char *
+char *
 jstr_strnchr_len(const char *s, int c, size_t sz, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return (char *)jstr_memnchr(s, c, sz, n);
 }
+#else
+;
+#endif
 
 /* Return value:
  * ptr to '\0' in DST. */
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_RET_NONNULL
-static void *
+void *
 jstr_mempcpy(void *R dst, const void *R src, size_t sz) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_MEMPCPY
 	return mempcpy(dst, src, sz);
@@ -302,60 +392,88 @@ jstr_mempcpy(void *R dst, const void *R src, size_t sz) JSTR_NOEXCEPT
 	return (char *)memcpy(dst, src, sz) + sz;
 #	endif
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
-static void *
+void *
 jstr_mempmove(void *dst, const void *src, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return (char *)memmove(dst, src, n) + n;
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_VOID
-static void
+void
 jstr_strmove_len(char *dst, const char *src, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	*(char *)jstr_mempmove(dst, src, n) = '\0';
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC
-static char *
+char *
 jstr_stpmove_len(char *dst, const char *src, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	jstr_strmove_len(dst, src, n);
 	return (char *)dst + n;
 }
+#else
+;
+#endif
 
 JSTR_FUNC
-static char *
+char *
 jstr_stpmove(char *dst, const char *src) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_stpmove_len(dst, src, strlen((const char *)src));
 }
+#else
+;
+#endif
 
 JSTR_FUNC_VOID
-static void
+void
 jstr_strcpy_len(char *R dst, const char *R src, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	*(char *)jstr_mempcpy(dst, src, n) = '\0';
 }
+#else
+;
+#endif
 
 JSTR_ATTR_ACCESS((__write_only__, 1, 3))
 JSTR_FUNC_VOID
-static char *
+char *
 jstr_stpcpy_len(char *R dst, const char *R src, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	jstr_strcpy_len(dst, src, n);
 	return (char *)dst + n;
 }
+#else
+;
+#endif
 
 /* Copy until either N is 0 or C is found */
 JSTR_ATTR_ACCESS((__write_only__, 1, 4))
 JSTR_FUNC
-static void *
+void *
 jstr_memccpy(void *R dst, const void *R src, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_MEMCCPY
 	return memccpy(dst, src, c, n);
@@ -367,34 +485,49 @@ jstr_memccpy(void *R dst, const void *R src, int c, size_t n) JSTR_NOEXCEPT
 	return NULL;
 #	endif /* HAVE_MEMCPY */
 }
+#else
+;
+#endif
 
 JSTR_ATTR_MALLOC
 JSTR_FUNC
-static void *
+void *
 jstr_memdup(const void *R s, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	void *p = malloc(n);
 	return (jstr_likely(p != NULL)) ? memcpy(p, s, n) : NULL;
 }
+#else
+;
+#endif
 
 JSTR_ATTR_MALLOC
 JSTR_FUNC
-static char *
+char *
 jstr_strdup_len(const char *R s, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	char *p = (char *)malloc(n + 1);
 	if (jstr_likely(p != NULL))
 		return jstr_stpcpy_len(p, s, n);
 	return NULL;
 }
+#else
+;
+#endif
 
 JSTR_ATTR_MALLOC
 JSTR_FUNC
-static char *
+char *
 jstr_strdup(const char *R s) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_strdup_len(s, strlen(s));
 }
+#else
+;
+#endif
 
 #	define JSTR_INTERNAL_DEFINE_ATOI(T, name, func) \
 		JSTR_FUNC_PURE                   \

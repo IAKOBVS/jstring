@@ -3,7 +3,7 @@
 
 set -e
 
-echo 'This might take a while...'
+echo 'This might take a while'
 
 PATH_TEST=../tests
 
@@ -24,7 +24,7 @@ CFLAGS=$(echo "$CFLAGS" | tr '\n' ' ' | sed 's/  */ /g; s/^ *//; s/ *$//')
 cd "$(dirname "$0")" || exit
 
 # Build shared library for test linkage
-echo 'Building shared library...'
+echo 'Building shared library'
 CFLAGS="$CFLAGS -DJSTR_DEBUG=1" ./build-library
 
 # Set the path to compile and run the tests to.
@@ -59,7 +59,10 @@ generate_jobs()
 	done
 }
 
-generate_jobs | xargs -P "$NPROC" -L 1 ./test1 "$TMP_TESTDIR"
+LOG="$TMP_TESTDIR/test.LOG"
+generate_jobs | xargs -P "$NPROC" -L 1 ./test1 "$TMP_TESTDIR" | tee $LOG
+printf 'PASS: %d\n' "$(grep -c -F 'PASS' $LOG)"
+printf 'FAIL: %d\n' "$(grep -c -F 'FAIL' $LOG)"
 
 # Remove stale executables but keep .o files for caching across runs
 find "$TMP_TESTDIR" -type f ! -name '*.o' -delete 2>/dev/null

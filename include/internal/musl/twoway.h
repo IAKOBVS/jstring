@@ -23,6 +23,27 @@
 
 #include "../../macros.h"
 
+#ifndef JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
+#	define JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
+
+typedef struct jstr_internal_twoway_ty {
+	size_t needle_len;
+	union u {
+		struct _t {
+			size_t _shift[256];
+			size_t _byteset[32 / sizeof(size_t)];
+			size_t _suffix;
+			size_t _global_period;
+			size_t _memory0;
+		} _t;
+		char _buf[4096 - sizeof(size_t)];
+	} u;
+} jstr_internal_twoway_ty;
+
+#endif
+
+#ifdef JSTR_IMPLEMENTATION
+
 #ifdef JSTR_INTERNAL_MUSL_CANON
 #	define CANON JSTR_INTERNAL_MUSL_CANON
 #else
@@ -37,29 +58,10 @@
 
 #define BITOP(a, b, op) ((a)[(size_t)(b) / (8 * sizeof *(a))] op(size_t) 1 << ((size_t)(b) % (8 * sizeof *(a))))
 
-#ifndef JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
-#	define JSTR_INTERNAL_MUSL_TWOWAY_STRUCT
-
-typedef struct jstr_twoway_ty {
-	size_t needle_len;
-	union u {
-		struct _t {
-			size_t _shift[256];
-			size_t _byteset[32 / sizeof(size_t)];
-			size_t _suffix;
-			size_t _global_period;
-			size_t _memory0;
-		} _t;
-		char _buf[sizeof(struct _t)];
-	} u;
-} jstr_twoway_ty;
-
-#endif
-
 JSTR_FUNC_VOID
 JSTR_ATTR_INLINE
 static void
-JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)(jstr_twoway_ty *t, const unsigned char *ne
+JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)(jstr_internal_twoway_ty *t, const unsigned char *ne
 #ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
                                          ,
                                          size_t needle_len
@@ -138,7 +140,7 @@ JSTR_NOEXCEPT
 JSTR_FUNC_PURE
 JSTR_ATTR_INLINE
 static char *
-JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(const jstr_twoway_ty *t, const unsigned char *hs
+JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _exec)(const jstr_internal_twoway_ty *t, const unsigned char *hs
 #ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
                                          ,
                                          const size_t hs_len
@@ -227,7 +229,7 @@ JSTR_INTERNAL_MUSL_FUNC_NAME(const unsigned char *haystack
                      )
 JSTR_NOEXCEPT
 {
-	jstr_twoway_ty t;
+	jstr_internal_twoway_ty t;
 	JSTR_CONCAT(JSTR_INTERNAL_MUSL_FUNC_NAME, _comp)
 	(&t, (const unsigned char *)needle
 #ifndef JSTR_INTERNAL_MUSL_CHECK_EOL
@@ -251,6 +253,8 @@ JSTR_NOEXCEPT
 
 #undef BITOP
 #undef CANON
+
+#endif
 
 #undef JSTR_INTERNAL_MUSL_CHECK_EOL
 #undef JSTR_INTERNAL_MUSL_CANON

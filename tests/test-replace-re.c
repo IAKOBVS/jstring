@@ -33,7 +33,7 @@
 	} while (0)
 #define FILL(result, str)                                                                     \
 	do {                                                                                  \
-		jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
+		(void)jstr_shrink_to_fit(&result.data, &result.size, &result.capacity);             \
 		assert(!jstr_chk(jstr_assign_len(jstr_struct(&(result)), str, strlen(str)))); \
 	} while (0)
 #define T_APPEND_NORET(func, ...)                              \

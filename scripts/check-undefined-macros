@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PS4='' set -ex
+PS4='' set -e
 
 undefine()
 {

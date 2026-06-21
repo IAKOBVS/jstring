@@ -9,6 +9,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "../include/macros.h"
+
 enum { FSTR = 256, FMEM = 128, FITER = 5000 };
 
 enum gen_mode {

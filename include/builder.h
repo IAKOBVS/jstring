@@ -36,11 +36,15 @@ JSTR_INTERNAL_BEGIN_DECLS
 #	include <wchar.h>
 JSTR_INTERNAL_END_DECLS
 
+#ifdef JSTR_IMPLEMENTATION
+#undef JSTR_IMPLEMENTATION
 #	include "config.h"
 #	include "ctype.h"
 #	include "macros.h"
 #	include "stdstring.h"
 #	include "string.h"
+#define JSTR_IMPLEMENTATION 1
+#endif
 
 #	define R JSTR_RESTRICT
 
@@ -72,17 +76,22 @@ JSTR_INTERNAL_BEGIN_DECLS
 
 /* Set first char to NUL and size to zero. */
 JSTR_FUNC_VOID
-static void
+void
 jstr_empty(char *R s, size_t *R sz) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(s != NULL))
 		*s = '\0';
 	*sz = 0;
 }
+#else
+;
+#endif
 
 JSTR_FUNC_VOID
-static jstr_ret_ty
+jstr_ret_ty
 jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	int ret;
 	ret = fprintf(stderr, "size       :%zu.\n"
@@ -122,41 +131,57 @@ jstr_debug(const jstr_ty *j) JSTR_NOEXCEPT
 	}
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
-static void
+void
 jstr_free(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	free(*s);
 	*s = NULL;
 	*cap = 0;
 	*sz = 0;
 }
+#else
+;
+#endif
 
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
 JSTR_ATTR_COLD
 JSTR_ATTR_NOINLINE
-static void
+void
 jstr_free_noinline(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	jstr_free(s, sz, cap);
 }
+#else
+;
+#endif
 
 /* free(p) and set p to NULL. */
 JSTR_FUNC_VOID
-static void
+void
 jstr_free_j(jstr_ty *j) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	jstr_free(&j->data, &j->size, &j->capacity);
 }
+#else
+;
+#endif
 
 /* Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_reservealways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	size_t old_cap = JSTR_MAX(*cap, JSTR_MIN_CAP);
 	while (old_cap < new_cap)
@@ -171,24 +196,32 @@ err:
 	jstr_free_noinline(s, sz, cap);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Do nothing if new_cap < cap.
  * Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_reserve(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (new_cap <= *cap)
 		return JSTR_RET_SUCC;
 	return jstr_reservealways(s, sz, cap, new_cap);
 }
+#else
+;
+#endif
 
 /* Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_reserveexactalways(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(new_cap != 0)) {
 		*cap = new_cap;
@@ -202,36 +235,52 @@ err:
 	jstr_free_noinline(s, sz, cap);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Do nothing if new_cap < cap.
  * Return JSTR_RET_ERR on malloc error.
  * NEW_CAP must include NUL. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_reserveexact(char *R *R s, size_t *R sz, size_t *R cap, size_t new_cap) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (new_cap < *cap)
 		return JSTR_RET_SUCC;
 	return jstr_reserveexactalways(s, sz, cap, new_cap);
 }
+#else
+;
+#endif
 
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_shrink_to_fit(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_reserveexactalways(s, sz, cap, *sz + 1);
 }
+#else
+;
+#endif
 
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_io_print(const jstr_ty *j) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_io_fwrite(j->data, 1, j->size, stdout) == j->size ? JSTR_RET_SUCC : JSTR_RET_ERR;
 }
+#else
+;
+#endif
 
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_unlikely(jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size))
 		return JSTR_RET_ERR;
@@ -239,10 +288,14 @@ jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
 		return JSTR_RET_ERR;
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t arg_len) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	char *p;
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + arg_len + 1)))
@@ -253,6 +306,9 @@ jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t 
 	for (; (arg = va_arg(ap, const char *)); p = jstr_stpcpy(p, arg)) {}
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 /* Last arg must be NULL.
  * Return value:
@@ -263,8 +319,9 @@ JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((2))
 JSTR_NONNULL((3))
-static jstr_ret_ty
+jstr_ret_ty
 jstr_cat(char *R *R s, size_t *R sz, size_t *R cap, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, cap);
@@ -279,6 +336,9 @@ jstr_cat(char *R *R s, size_t *R sz, size_t *R cap, ...) JSTR_NOEXCEPT
 	va_end(ap);
 	return ret;
 }
+#else
+;
+#endif
 
 /* Last arg must be NULL.
  * Return value:
@@ -287,8 +347,9 @@ jstr_cat(char *R *R s, size_t *R sz, size_t *R cap, ...) JSTR_NOEXCEPT
 JSTR_ATTR_SENTINEL
 JSTR_FUNC_MAY_NULL
 JSTR_NONNULL((1))
-static jstr_ret_ty
+jstr_ret_ty
 jstr_cat_j(jstr_ty *j, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, j);
@@ -303,55 +364,79 @@ jstr_cat_j(jstr_ty *j, ...) JSTR_NOEXCEPT
 	va_end(ap);
 	return ret;
 }
+#else
+;
+#endif
 
 /* Return ptr to '\0' in S. */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
-static char *
+char *
 jstr_append_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_stpcpy_len(s + sz, src, src_len);
 }
+#else
+;
+#endif
 
 JSTR_FUNC_VOID
-static void
+void
 jstr_append_unsafe(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	strcpy(s + sz, src);
 }
+#else
+;
+#endif
 
 /* Return ptr to '\0' in S. */
 JSTR_FUNC
-static char *
+char *
 jstr_append_unsafe_p(char *R s, size_t sz, const char *R src) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_stpcpy(s + sz, src);
 }
+#else
+;
+#endif
 
 /* Append SRC to DST.
  * Return value:
  * JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_append_len_unsafe_p(*s, *sz, src, src_len), *s);
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 JSTR_FUNC_VOID
-static void
+void
 jstr_strset(char *s, int c) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	memset(s, c, strlen(s));
 }
+#else
+;
+#endif
 
 JSTR_FUNC
-static char *
+char *
 jstr_assignnchr_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	memset(s, c, n);
 	if (n > sz) {
@@ -360,10 +445,14 @@ jstr_assignnchr_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 	}
 	return s + sz;
 }
+#else
+;
+#endif
 
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (n > *sz) {
 		if (jstr_chk(jstr_reservealways(s, sz, cap, n + 1)))
@@ -374,30 +463,42 @@ jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
 	memset(*s, c, n);
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 /* Append N Cs to end of S. */
 JSTR_FUNC
-static char *
+char *
 jstr_pushbackn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return (char *)memset(s + sz, c, n) + n;
 }
+#else
+;
+#endif
 
 /* Append N Cs to end of S. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n + 1)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_pushbackn_len_unsafe_p(*s, *sz, c, n), *s);
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 /* Prepend N Cs to S. */
 JSTR_FUNC
-static char *
+char *
 jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(sz != 0))
 		jstr_strmove_len(s + n, s, sz);
@@ -405,17 +506,24 @@ jstr_pushfrontn_len_unsafe_p(char *s, size_t sz, int c, size_t n) JSTR_NOEXCEPT
 		*(s + n) = '\0';
 	return (char *)memset(s, c, n) + n;
 }
+#else
+;
+#endif
 
 /* Prepend N Cs to S. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n + 1)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_pushfrontn_len_unsafe_p(*s, *sz, c, n), *s);
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 /* Only prepend NUL if S is empty.
  * Return value:
@@ -423,8 +531,9 @@ jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_ATTR_ACCESS((__read_only__, 3, 4))
 JSTR_FUNC
-static char *
+char *
 jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(*s != 0))
 		jstr_strmove_len(s + src_len, s, sz);
@@ -433,30 +542,41 @@ jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_le
 	memcpy(s, src, src_len);
 	return s + sz + src_len;
 }
+#else
+;
+#endif
 
 /* Only prepend NUL if S is empty.
  * Return value:
  * JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_prepend_len_unsafe_p(*s, *sz, src, src_len), *s);
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 /* Assign SRC to DST.
  * S is NUL terminated.
  * Return ptr to '\0' in S. */
 JSTR_FUNC
-static char *
+char *
 jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	return jstr_stpcpy_len(s, src, src_len);
 }
+#else
+;
+#endif
 
 /* Assign SRC to DST.
  * S is NUL terminated.
@@ -464,8 +584,9 @@ jstr_assign_len_unsafe_p(char *R s, const char *R src, size_t src_len) JSTR_NOEX
  * JSTR_RET_ERR on malloc error
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, size_t src_len) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
 		return JSTR_RET_ERR;
@@ -473,16 +594,23 @@ jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
 	*sz = src_len;
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 JSTR_FUNC
-static char *
+char *
 jstr_pushback_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	s += sz;
 	*s = c;
 	*++s = '\0';
 	return s;
 }
+#else
+;
+#endif
 
 /* Push C to end of S.
  * S is NUL terminated.
@@ -490,23 +618,31 @@ jstr_pushback_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
  * JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + 1 + 1)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_pushback_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 JSTR_FUNC_VOID
-static char *
+char *
 jstr_pushfront_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	jstr_strmove_len(s + 1, s, sz);
 	*s = c;
 	return s + sz + 1;
 }
+#else
+;
+#endif
 
 /* Push C to end of S.
  * S is NUL terminated.
@@ -514,22 +650,27 @@ jstr_pushfront_unsafe_p(char *s, size_t sz, char c) JSTR_NOEXCEPT
  * JSTR_RET_ERR on malloc error.
  * Otherwise, JSTR_RET_SUCC. */
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + 1 + 1)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_pushfront_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;
 }
+#else
+;
+#endif
 
 /* Pop S[size - 1].
  * Return value:
  * ptr to '\0' in S.
  * Otherwise, S. */
 JSTR_FUNC_VOID
-static char *
+char *
 jstr_popback_p(char *s, size_t sz) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(sz != 0)) {
 		*(s + sz - 1) = '\0';
@@ -537,14 +678,18 @@ jstr_popback_p(char *s, size_t sz) JSTR_NOEXCEPT
 	}
 	return s;
 }
+#else
+;
+#endif
 
 /* Pop s[0].
  * Return value:
  * ptr to '\0' in S.
  * Otherwise, S. */
 JSTR_FUNC_VOID
-static char *
+char *
 jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_likely(sz != 0)) {
 		memmove(s, s + 1, sz);
@@ -552,6 +697,9 @@ jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
 	}
 	return s;
 }
+#else
+;
+#endif
 
 #	if (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L) \
 	|| (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)
@@ -566,8 +714,9 @@ jstr_popfront_p(char *s, size_t sz) JSTR_NOEXCEPT
  * size of allocation.
  * -1 on error and errno is set. */
 JSTR_FUNC
-static int
+int
 jstr_vsprintf_maxlen(va_list ap, const char *fmt) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 #	if JSTR_HAVE_SNPRINTF_STRLEN && !JSTR_TEST
 	const int ret = vsnprintf(NULL, 0, fmt, ap);
@@ -800,6 +949,9 @@ get_arg:
 #	undef JSTR_INTERNAL_COUNTDIGITS
 #	undef JSTR_INTERNAL_GETMAXDIGITS
 }
+#else
+;
+#endif
 
 #	if JSTR_HAVE_SNPRINTF_STRLEN
 
@@ -822,8 +974,9 @@ get_arg:
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_asprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -845,14 +998,18 @@ err_free:
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Return JSTR_RET_ERR on error.
  * Supports only some conversions: see jstr_asprintf.
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_asprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -874,6 +1031,9 @@ err_free:
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Append ... to end of S.
  * Return JSTR_RET_ERR on error.
@@ -881,8 +1041,9 @@ err:
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_asprintf_append(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -904,6 +1065,9 @@ err_free:
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Append ... to end of S.
  * Return JSTR_RET_ERR on error.
@@ -911,8 +1075,9 @@ err:
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_asprintf_append_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -934,14 +1099,18 @@ err_free:
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Return JSTR_RET_ERR on error.
  * Supports only some conversions: see jstr_asprintf.
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_asprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -963,14 +1132,18 @@ err_free:
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Return JSTR_RET_ERR on error.
  * Supports only some conversions: see jstr_asprintf.
  * Otherwise, JSTR_RET_ERR and set errno to EINVAL. */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_asprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -992,6 +1165,9 @@ err_free:
 err:
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 #	endif
 
@@ -999,8 +1175,9 @@ err:
  * Use jstr_asprintf.to grow S. */
 JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_sprintf(char *R *R s, size_t *R sz, size_t *R cap, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1014,13 +1191,17 @@ err_free:
 	jstr_free_noinline(s, sz, cap);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Assume that S has enough space.
  * Use jstr_asprintf.to grow S. */
 JSTR_ATTR_FORMAT(printf, 2, 3)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_sprintf_j(jstr_ty *R j, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1034,13 +1215,17 @@ err_free:
 	jstr_free_noinline(&j->data, &j->size, &j->capacity);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Assume that S has enough space.
  * Use jstr_asprintf.to grow S. */
 JSTR_ATTR_FORMAT(printf, 5, 6)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_sprintf_from(char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1054,13 +1239,17 @@ err_free:
 	jstr_free_noinline(s, sz, cap);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 /* Assume that S has enough space.
  * Use jstr_asprintf.to grow S. */
 JSTR_ATTR_FORMAT(printf, 3, 4)
 JSTR_FUNC
-static jstr_ret_ty
+jstr_ret_ty
 jstr_sprintf_from_j(jstr_ty *R j, size_t start_idx, const char *R fmt, ...) JSTR_NOEXCEPT
+#ifdef JSTR_IMPLEMENTATION
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -1074,6 +1263,9 @@ err_free:
 	jstr_free_noinline(&j->data, &j->size, &j->capacity);
 	JSTR_RETURN_ERR(JSTR_RET_ERR);
 }
+#else
+;
+#endif
 
 JSTR_INTERNAL_END_DECLS
 

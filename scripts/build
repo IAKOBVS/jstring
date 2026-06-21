@@ -1,7 +1,7 @@
 #!/bin/sh
 #shellcheck disable=SC2086,2068,2005,2028
 
-PS4='' set -ex
+PS4='' set -e
 
 CFLAGS='-Wall -Wextra -Wpedantic -Wsign-conversion -std=c99'
 PATH_BUILD=../jstr
@@ -35,7 +35,8 @@ update()
 		;;
 	*/*.h)
 		out_fname=$PATH_BUILD/$base_fname
-		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl | perl ./wrap-func-decls.pl >"$out_fname"
+		# perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl | perl ./wrap-func-decls.pl >"$out_fname"
+		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
 		;;
 	*)
 		cp -f "$in_fname" "$out_fname"

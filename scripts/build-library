@@ -1,7 +1,7 @@
 #!/bin/sh
 # shellcheck disable=SC2086,SC2068
 
-PS4='' set -ex
+PS4='' set -e
 
 cd "$(dirname "$0")" || exit
 
@@ -38,7 +38,8 @@ update() {
 		;;
 	*/*.h)
 		out_fname=$PATH_BUILD/$base_fname
-		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl | perl ./wrap-func-decls.pl >"$out_fname"
+		perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl >"$out_fname"
+		# perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl | perl ./wrap-func-decls.pl >"$out_fname"
 		;;
 	*)
 		cp -f "$in_fname" "$out_fname"
@@ -46,7 +47,7 @@ update() {
 	esac
 }
 
-OUTDIR="../out"
+OUTDIR="../build"
 LIBDIR="$OUTDIR/lib"
 SRCDIR="$OUTDIR/src"
 INCDIR="$OUTDIR/include"
@@ -69,14 +70,20 @@ perl ./gen-lib.pl
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
 CFLAGS="$CFLAGS -fPIC -O2 -g"
 
-echo "Compiling with $NPROC parallel jobs..."
+echo 'Compiling'
+
+for file in ./../include/*.h; do
+	if ! echo $file | grep -qF -e 'struct' -e 'macros' -e 'pointer' -e 'config' -e 'jstr'; then
+		printf '#define JSTR_IMPLEMENTATION 1\n#include "../../include/%s"' "$(basename $file)" > "./../build/src/$(basename $file | sed 's/\.h$/.c/')"
+	fi
+done
 
 PRIVDIR="$OUTDIR/private"
 
 for cfile in "$SRCDIR"/*.c; do
 	base=$(basename "$cfile" .c)
 	{
-		cc -c "$cfile" -o "$OBJDIR/$base.o" $CFLAGS -iquote "$PRIVDIR/$base" -iquote "$INCDIR"
+		cc -DJSTR_IMPLEMENTATION=1 -c "$cfile" -o "$OBJDIR/$base.o" $CFLAGS
 	} &
 done
 wait
@@ -92,7 +99,7 @@ if [ -z "$OFILES" ]; then
 fi
 
 # 5. Archive static library
-ar rcs "$LIBDIR/libjstr.a" $OFILES
+# ar rcs "$LIBDIR/libjstr.a" $OFILES
 
 # 6. Link shared library
 cc -shared -o "$LIBDIR/libjstr.so" $OFILES

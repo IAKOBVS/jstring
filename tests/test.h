@@ -38,7 +38,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "../include/macros.h"
+#include "../include/jstr.h"
 #include "simple.h"
 #include "test-types.h"
 

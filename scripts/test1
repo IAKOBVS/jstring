@@ -1,4 +1,7 @@
 #!/bin/sh
+
+set -eu
+
 # test1 <tmpdir> <test.c> [cflags...]
 # Compiles, runs a single test variant. Caches .o by source+flags hash.
 # Uses JSTR_DECL_ONLY (extern declarations) and links against libjstr.so.
@@ -25,8 +28,9 @@ if [ ! -f "$obj" ] || [ "$file" -nt "$obj" ]; then
 	cc -c "$file" -o "$obj" $args $COMPILE_ONLY_FLAGS || { echo "COMPILE FAILED: $base $args" >&2; exit 1; }
 fi
 
+export LD_LIBRARY_PATH=$REPOROOT/build/lib
 # Link against shared library
-cc "$obj" -o "$out" $args -L "$REPOROOT/out/lib" -ljstr -Wl,-rpath,"$REPOROOT/out/lib"
+cc "$obj" -o "$out" $args -L"$LD_LIBRARY_PATH" -ljstr
 
 # Run
 out_clean=$(echo "$out" | sed 's/.*\///' | sed 's/_/ /g')

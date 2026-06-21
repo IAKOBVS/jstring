@@ -25,6 +25,7 @@
 
 #define JSTR_BUILT
 #include "../include/string.h"
+#include "../include/stdstring.h"
 
 JSTR_ATTR_MAYBE_UNUSED
 JSTR_ATTR_INLINE

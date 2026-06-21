@@ -31,9 +31,10 @@ my $PREFIX_LEN        = '_len';
 # add inline attribute
 sub add_inline {
 	my ($attr_str_ref) = @_;
-	$$attr_str_ref .= "\n" . $ATTR_INLINE
-	  if ( index($$attr_str_ref, $ATTR_INLINE) == -1
-		&& index($$attr_str_ref, $ATTR_NOINLINE) == 0);
+	if (index($$attr_str_ref, "static") == -1 && index($$attr_str_ref, $ATTR_INLINE) == -1) {
+		$$attr_str_ref =~ s/$ATTR_NOINLINE//;
+		$$attr_str_ref .= "\nstatic " . $ATTR_INLINE
+	}
 }
 
 # check if value in array
@@ -69,7 +70,6 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 	$base_name =~ s/$PREFIX_LEN(_|$)/$1/o;
 	# function not in file
 	next if (index($file_str1, "$base_name(") != -1);
-	# add_inline(\$attr);
 	# construct the return statement for non *_len() function
 	$body = (($rettype eq 'void') ? '' : 'return ') . $name . '(';
 	$name = $base_name;
@@ -110,9 +110,11 @@ foreach (jl_file_to_blocks(\$file_str1)) {
 	# tidy
 	$body =~ s/, $//;
 	$body .= ");";
+	$attr =~ s/^[ \t]*#.*$//gm;
 	$attr =~ s/\s*$ATTR_ACCESS\(\(.*?\)\)//og;
 	$attr =~ s/\n\n//g;
 	$attr =~ s/\n$//g;
+	add_inline(\$attr);
 	# construct the non *_len() function
 	$body =~ s/, $//;
 	$file_str2 .= jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
@@ -198,10 +200,11 @@ foreach (jl_file_to_blocks(\$file_str2)) {
 	$body .= ", $VAR_JSTRING->$DATA)" if ($returns_end_ptr);
 	$body .= ";";
 	$attr =~ s/$ATTR_RET_NONNULL/$ATTR_DEFAULT_VOID/;
-	# add_inline(\$attr);
+	$attr =~ s/^[ \t]*#.*$//gm;
 	$attr =~ s/\s*$ATTR_ACCESS\(\(.*?\)\)//og;
 	$attr =~ s/\n\n//g;
 	$attr =~ s/\n$//g;
+	add_inline(\$attr);
 	$file_str3 .= jl_fn_to_string(\$attr, \$rettype, \$name, \@arg, \$body) . "\n\n";
 	push(@func_arr, $name);
 }

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PS4='' set -ex
+PS4='' set -e
 
 cd "$(dirname "$0")" || exit
-rm -rf ../jstr/*.h ../out/
+rm -rf ../jstr/*.h ../build/

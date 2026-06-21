@@ -60,6 +60,10 @@ foreach (jl_file_to_blocks(\$file_str)) {
 		}
 		# Only wrap blocks that originated from a JSTR_FUNC annotation.
 		next unless /(?:JSTR_FUNC|JSTR_FUNC_VOID|JSTR_FUNC_PURE)/s;
+		if (/(?:JSTR_DECL_ONLY|JSTR_AS_LIBRARY)/) {
+			$out .= "$_\n\n";
+			next;
+		}
 
 		# Remove 'static' from pre-attributes
 		$pre_attr =~ s/^[ \t]*static[ \t]*\n?//gm;
@@ -90,7 +94,7 @@ foreach (jl_file_to_blocks(\$file_str)) {
 			$def = "JSTR_API $rettype\n${name}($arg_str)\n\{ $body }";
 		}
 
-		$out .= "#ifdef JSTR_DECL_ONLY\n$decl\n#else\n$def\n#endif\n\n";
+		$out .= "#if defined(JSTR_AS_LIBRARY) || defined(JSTR_DECL_ONLY)\n$decl\n#else\n$def\n#endif\n\n";
 	} else {
 		$out .= "$_\n\n";
 	}

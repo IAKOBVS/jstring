@@ -112,7 +112,7 @@ main(int argc, char **argv)
 #endif
 	if (iter < 1)
 		iter = 1;
-	PRINTERR("seed=%u iter=%zu\n", seed, iter);
+	/* PRINTERR("seed=%u iter=%zu\n", seed, iter); */
 #ifdef FUZZ_AFL
 	while (__AFL_LOOP(10000))
 #endif

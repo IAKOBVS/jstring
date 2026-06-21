@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PS4='' set -ex
+PS4='' set -e
 
 if perl ./check-scoped-macros.pl ../include/*.h | grep -v -q '^JSTR'; then
 	exit 1
