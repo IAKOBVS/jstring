@@ -62,7 +62,7 @@ wait
 
 # 3. Compile all .c files in parallel using nproc
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
-CFLAGS="$CFLAGS -fPIC -O2 -g"
+CFLAGS="$CFLAGS -fPIC -O2"
 
 echo 'Compiling'
 
