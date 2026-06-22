@@ -93,7 +93,7 @@ if [ -z "$OFILES" ]; then
 fi
 
 # 4. Archive static library
-# ar rcs "$LIBDIR/libjstr.a" $OFILES
+ar rcs "$LIBDIR/libjstr.a" $OFILES
 
 # 5. Link shared library
 cc -shared -o "$LIBDIR/libjstr.so" $OFILES
