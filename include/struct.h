@@ -25,15 +25,17 @@
 
 #	include "macros.h"
 
-#ifdef JSTR_IMPLEMENTATION
-#	undef JSTR_IMPLEMENTATION
-#	include "internal/musl/twoway.h"
-#	define JSTR_IMPLEMENTATION 1
-#endif
-
 JSTR_INTERNAL_BEGIN_DECLS
 #	include <stddef.h>
 JSTR_INTERNAL_END_DECLS
+
+#if defined(JSTR_IMPLEMENTATION)
+#	undef JSTR_IMPLEMENTATION
+#	include "internal/musl/twoway.h"
+#	define JSTR_IMPLEMENTATION 1
+#else
+#	include "internal/musl/twoway.h"
+#endif
 
 #	define jstr_struct(j)  &(j)->data, &(j)->size, &(j)->capacity
 #	define jstr_literal(s) (s), (sizeof(s) - 1)
@@ -58,23 +60,19 @@ typedef struct jstr_twoway_ty {
 	char _buf[4096];
 } jstr_twoway_ty;
 
-#ifdef JSTR_IMPLEMENTATION
 static
 JSTR_ATTR_INLINE
 void jstr_twoway_set_len(jstr_twoway_ty *t, size_t len)
 {
 	((jstr_internal_twoway_ty *)t)->needle_len = len;
 }
-#endif
 
-#ifdef JSTR_IMPLEMENTATION
 static
 JSTR_ATTR_INLINE
 size_t jstr_twoway_get_len(const jstr_twoway_ty *t)
 {
 	return ((jstr_internal_twoway_ty *)t)->needle_len;
 }
-#endif
 
 JSTR_INTERNAL_END_DECLS
 

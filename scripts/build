@@ -4,12 +4,9 @@
 PS4='' set -e
 
 CFLAGS='-Wall -Wextra -Wpedantic -Wsign-conversion -std=c99'
-PATH_BUILD=../jstr
+PATH_BUILD=../build/include/jstr
 PATH_SRC=../include
 PATH_MACROS=$PATH_BUILD/macros.h
-
-mkdir -p $PATH_BUILD/internal
-mkdir -p $PATH_BUILD/internal/musl
 
 has_prog()
 {
@@ -47,7 +44,7 @@ update()
 cd "$(dirname "$0")" || exit
 ./setup || exit
 ./clean
-mkdir -p ../jstr
+mkdir -p $PATH_BUILD $PATH_BUILD/internal $PATH_BUILD/internal/musl
 
 for file in $(find $PATH_SRC -type f); do
 	update "$file" &
@@ -55,7 +52,7 @@ done
 wait
 
 if has_prog tcc; then
-	printf "#define JSTR_BUILT\n #include \"../jstr/jstr.h\"\n int main(){return 0;}\n" | tcc -run - || exit
+	printf "#define JSTR_BUILT\n #include \"$PATH_BUILD/jstr.h\"\n int main(){return 0;}\n" | tcc -run - || exit
 else
 	if [ -z "$TMPDIR" ]; then
 		if [ -d /tmp ]; then
@@ -65,6 +62,6 @@ else
 		fi
 	fi
 	tmp="$TMPDIR"__$(echo "$PWD" | sed 's/\///g; s/\.//g')-
-	cc ../jstr/jstr.h $CFLAGS -o "$tmp" || exit
+	cc $PATH_BUILD/jstr.h $CFLAGS -o "$tmp" || exit
 	rm "$tmp"
 fi

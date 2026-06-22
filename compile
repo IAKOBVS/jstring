@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd "$(dirname "$0")" || exit
-./scripts/build-library
+./scripts/compile

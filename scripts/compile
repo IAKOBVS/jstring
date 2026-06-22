@@ -10,13 +10,10 @@ cd "$(dirname "$0")" || exit
 
 # 2. Generate headers (same as ./build but skip final syntax check for speed)
 ./clean
-PATH_BUILD=../jstr
+PATH_BUILD=../build/include/jstr
 PATH_SRC=../include
 PATH_MACROS=$PATH_BUILD/macros.h
 CFLAGS="-Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
-
-mkdir -p $PATH_BUILD/internal
-mkdir -p $PATH_BUILD/internal/musl
 
 has_prog() { type "$1" >/dev/null 2>/dev/null; }
 
@@ -55,6 +52,7 @@ OBJDIR="$OUTDIR/obj"
 
 rm -rf "$OUTDIR"
 mkdir -p "$LIBDIR" "$SRCDIR" "$INCDIR" "$OBJDIR"
+mkdir -p $PATH_BUILD $PATH_BUILD/internal $PATH_BUILD/internal/musl
 
 # Generate headers in parallel
 for file in $(find $PATH_SRC -type f); do
@@ -62,11 +60,7 @@ for file in $(find $PATH_SRC -type f); do
 done
 wait
 
-# 3. Copy generated headers to out/include/ (static preserved) and
-#    create per-module private copies with ^static stripped, plus .c files.
-perl ./gen-lib.pl
-
-# 4. Compile all .c files in parallel using nproc
+# 3. Compile all .c files in parallel using nproc
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
 CFLAGS="$CFLAGS -fPIC -O2 -g"
 
@@ -98,17 +92,17 @@ if [ -z "$OFILES" ]; then
 	exit 1
 fi
 
-# 5. Archive static library
+# 4. Archive static library
 # ar rcs "$LIBDIR/libjstr.a" $OFILES
 
-# 6. Link shared library
+# 5. Link shared library
 cc -shared -o "$LIBDIR/libjstr.so" $OFILES
 
-# 7. Copy public headers for user convenience
+# 6. Copy public headers for user convenience
 mkdir -p "$LIBDIR/../include/jstr"
 cp -r "$INCDIR"/* "$LIBDIR/../include/jstr/" 2>/dev/null || true
 
 echo "Library built successfully."
-echo "  Static:  $LIBDIR/libjstr.a"
-echo "  Shared:  $LIBDIR/libjstr.so"
-echo "  Headers: $LIBDIR/../include/jstr/"
+echo "Static:  $(realpath $LIBDIR/libjstr.a)"
+echo "Shared:  $(realpath $LIBDIR/libjstr.so)"
+echo "Headers: $(realpath $LIBDIR/../include/jstr/)"

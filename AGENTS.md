@@ -5,19 +5,21 @@
 Custom shell+Perl scripts (no Makefile, no CMake). Run from repo root:
 
 ```sh
-./build                 # generate code into jstr/ (gitignored)
+./scripts/build         # generate headers into build/include/jstr/
+./compile         # generate headers + build shared library into build/
 ./test                  # run all tests (4 variants each, via scripts/test)
-./clean                 # rm -rf jstr/*.h
-./fmt                   # clang-format (skips _jstr* and *macros* files)
-./install               # sudo cp jstr/ → /usr/local/include/jstr
+./clean                 # rm -rf build/
+./scripts/fmt [files]   # clang-format (skips _jstr* and *macros* files)
+./install               # sudo cp build/include/jstr/ → /usr/local/include/jstr
 ./install-to <dir>      # install to custom prefix
+./uninstall             # remove installed files
 ```
 
-`./build` runs `scripts/setup` first (checks page size, undefined macros, scoped macros), then generates headers via Perl (`gen-func.pl` + `namespace-macros.pl`).
+`./compile` and `./scripts/build` both run `scripts/setup` first (checks page size, undefined macros, scoped macros), then generate headers via Perl (`gen-func.pl` + `namespace-macros.pl`). `./compile` additionally compiles a shared library into `build/lib/`.
 
 ## Code generation
 
-- `include/*.h` are the source-of-truth headers; `jstr/*.h` are generated.
+- `include/*.h` are the source-of-truth headers; `build/include/jstr/*.h` are generated.
 - `gen-func.pl` converts `JSTR_FUNC`/`JSTR_FUNC_VOID` annotations into `static inline` functions and generates `jstr_*` wrappers from annotated function blocks.
 - **Do not put blank lines inside function bodies.** The Perl codegen splits blocks by blank lines.
 - `namespace-macros.pl` renames `NAMESPACE_INTERNAL_*` → `jstr_internal_*` etc.
@@ -32,13 +34,13 @@ scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
 - Every test in `tests/*.c` is compiled and run from `/tmp`.
 - Default CFLAGS: `-std=c99 -Wall -Wextra -Wpedantic -O2 -g -fsanitize=address`.
 - All 4 variants run in parallel; tests can take a while.
-- Order: `./build && ./test`.
+- Order: `./scripts/build && ./test`.
 
 ## Language & toolchain
 
 - **C99** (`-std=c99`). Flags: `-Wall -Wextra -Wpedantic -Wsign-conversion`.
 - Format: `.clang-format` (WebKit brace style, 8-wide tab indentation, Never sort includes).
-- If `tcc` is available, `./build` uses it for a syntax check instead of `cc`.
+- If `tcc` is available, `./scripts/build` uses it for a syntax check instead of `cc`.
 - libc requirement: musl's twoway `memmem` is vendored. POSIX headers (`io.h`, `regex.h`) must be included explicitly by the user.
 
 ## Key conventions

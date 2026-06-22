@@ -25,7 +25,7 @@ cd "$(dirname "$0")" || exit
 
 # Build shared library for test linkage
 echo 'Building shared library'
-CFLAGS="$CFLAGS -DJSTR_DEBUG=1" ./build-library
+CFLAGS="$CFLAGS -DJSTR_DEBUG=1" ./compile
 
 # Set the path to compile and run the tests to.
 if [ -z "$TMPDIR" ]; then

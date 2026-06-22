@@ -3,4 +3,4 @@
 PS4='' set -e
 
 cd "$(dirname "$0")" || exit
-rm -rf ../jstr/*.h ../build/
+rm -rf ../build/ ../jstr/

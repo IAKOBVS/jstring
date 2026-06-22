@@ -18,7 +18,7 @@ args=$*
 base=$(basename "$file" .c)
 flatargs=$(echo "$args" | sed 's/[[:space:]][[:space:]]*/_/g')
 
-COMPILE_ONLY_FLAGS="-DJSTR_DECL_ONLY -include $REPOROOT/jstr/jstr.h -iquote $REPOROOT/jstr"
+COMPILE_ONLY_FLAGS="-DJSTR_DECL_ONLY -include $REPOROOT/build/include/jstr/jstr.h -iquote $REPOROOT/build/include/jstr"
 hash=$(echo "$file$args $COMPILE_ONLY_FLAGS" | md5sum 2>/dev/null | cut -c1-12 || echo "$file$args $COMPILE_ONLY_FLAGS" | cksum | cut -d' ' -f1)
 obj="$TMP_TESTDIR/${base}_${hash}.o"
 out="$TMP_TESTDIR/${base}_${flatargs}"
