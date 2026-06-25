@@ -26,8 +26,8 @@
 
 #ifndef JSTR_REGEX_H
 #	define JSTR_REGEX_H 1
-#error "Does not pass test"
 
+#	error "Does not pass test!"
 #	include "macros.h"
 
 JSTR_INTERNAL_BEGIN_DECLS
