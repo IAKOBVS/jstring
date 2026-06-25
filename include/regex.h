@@ -26,6 +26,7 @@
 
 #ifndef JSTR_REGEX_H
 #	define JSTR_REGEX_H 1
+#error "Does not pass test"
 
 #	include "macros.h"
 
@@ -642,6 +643,10 @@ jstr_internal_re_rplcbackrefcpy(const regmatch_t *R rm, const unsigned char *mtc
  * matching, which is used to find the new size of the string, is likely to
  * dominate over O(n^2) replacements. Given the growth factor, the allocation
  * should be amortized. */
+/* Avoid doing O(n) replacements as does rplcn, since doing O(2 * n) regex
+ * matching, which is used to find the new size of the string, is likely to
+ * dominate over O(n^2) replacements. Given the growth factor, the allocation
+ * should be amortized. */
 JSTR_FUNC
 jstr_re_off_ty
 jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref) JSTR_NOEXCEPT
@@ -680,7 +685,6 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		JSTR_RE_RETURN_ERR(ret, preg);
 	}
 	jstr_re_off_ty find_len = rm[0].rm_eo - rm[0].rm_so;
-	i.src_e += rm[0].rm_so;
 	size_t prev_len;
 	jstr_re_off_ty changed = 0;
 	size_t rplcwbackref_len;
@@ -688,7 +692,6 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 	else
 		rplcwbackref_len = rplc_len;
-	i.src_e += rm[0].rm_so;
 	/* SRC and DST exist in the same buffer *S, where SRC + NUL + DST + NUL.
 	 * The size of DST may change because of backreferences. */
 	size_t new_cap = *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1;
@@ -722,15 +725,19 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		/* Get length of RPLC. */
 		if (backref)
 			rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
-		/* Check if needs reallocation. */
-		new_cap = *sz - (size_t)find_len + rplcwbackref_len + 1 + 1;
+		/* Check if needs reallocation. Track cumulative destination size and remaining source size. */
+		new_cap = JSTR_DIFF(i.dst, *s) + JSTR_DIFF(end, i.src) - (size_t)find_len + rplcwbackref_len + 1 + 1;
 		if (jstr_unlikely(*cap < new_cap)) {
 			const uintptr_t tmp = (uintptr_t)*s;
+			const size_t saved_sz = *sz;
+			/* Set sz to the total utilized buffer span to prevent truncation during reservation copy logic */
+			*sz = JSTR_DIFF(i.dst, *s);
 			if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
 				ret = JSTR_RE_RET_ESPACE;
 				jstr_free_noinline(s, sz, cap);
 				JSTR_RE_RETURN_ERR(ret, preg);
 			}
+			*sz = saved_sz;
 			/* Update the ptrs after realloc. */
 			i.src = *s + JSTR_DIFF(i.src, tmp);
 			i.src_e = *s + JSTR_DIFF(i.src_e, tmp);
