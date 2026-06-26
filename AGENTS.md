@@ -48,16 +48,16 @@ scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
 ## Key conventions
 
 | Pattern | Meaning |
-|---|---|---|
-| `_len` | takes explicit length parameter |
-| `_p` / `*stp*` | returns pointer to end of processed string (like stpcpy) |
-| `_unsafe` | assumes buffer has enough space (no realloc) |
-| `_from` | operates starting from a given index (in-bounds assumed) |
-| `_mem*` | string need not be NUL-terminated (takes void pointer) |
-| `_backref` | replacement string supports `\0` backreferences |
-| `_at` | indexed access (bounds-checked when `JSTR_DEBUG=1`) |
-| `_chk*` | evaluates to true if value is an error |
-| Functions without `_len` on the `str` arg | string must be NUL-terminated; size param only optimizes strlen |
+| :--- | :--- |
+| `_len` | Takes explicit length parameter. |
+| `_p` / `*stp*` | Returns pointer to end of processed string (e.g., `stpcpy`). |
+| `_unsafe` | Assumes buffer has sufficient space (no reallocation). |
+| `_from` | Operates starting from a given index (in-bounds assumed). |
+| `_mem*` | String need not be NUL-terminated (takes `void *`). |
+| `_backref` | Replacement string supports `\0` backreferences. |
+| `_at` | Indexed access (bounds-checked when `JSTR_DEBUG=1`). |
+| `_chk*` | Evaluates to true if value is an error. |
+| No `_len` on `str` arg | String must be NUL-terminated; size parameter only optimizes `strlen`. |
 
 **`char *` convention**: parameters of type `char *` imply no embedded NUL bytes
 (`strlen(str) ≤ *sz`). Functions that take `char *` + `*sz` may use `strlen`,
