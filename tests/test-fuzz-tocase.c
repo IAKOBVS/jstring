@@ -28,11 +28,58 @@ fuzz_tocase(size_t iter)
 			buf_s[j] = (char)jstr_toupper((unsigned char)buf_s[j]);
 		assert(memcmp(buf_j, buf_s, hl) == 0);
 
+		/* _p / _cpy variants stop at NUL, so only test when no embedded NULs */
+		int has_nul = (strlen(h) != hl);
+
+		if (!has_nul) {
+			/* toupperstr_p (NUL-terminated, returns end ptr) */
+			memcpy(buf_j, h, hl + 1);
+			char *ep = jstr_toupperstr_p(buf_j);
+			assert(ep == buf_j + hl);
+			assert(memcmp(buf_j, buf_s, hl) == 0);
+			assert(buf_j[hl] == '\0');
+
+			/* toupperstrcpy_p (copy + toupper) */
+			memcpy(buf_j, h, hl + 1);
+			ep = jstr_toupperstrcpy_p(buf_j, h);
+			assert(ep == buf_j + hl);
+			assert(memcmp(buf_j, buf_s, hl) == 0);
+			assert(buf_j[hl] == '\0');
+		}
+
+		/* toupperstrcpy_len (copy + toupper, explicit length) */
+		memcpy(buf_j, h, hl + 1);
+		jstr_toupperstrcpy_len(buf_j, h, hl);
+		assert(memcmp(buf_j, buf_s, hl) == 0);
+		assert(buf_j[hl] == '\0');
+
 		/* tolowerstr_len (roundtrip) */
 		jstr_tolowerstr_len(buf_j, hl);
 		for (size_t j = 0; j < hl; ++j)
 			buf_s[j] = (char)jstr_tolower((unsigned char)buf_s[j]);
 		assert(memcmp(buf_j, buf_s, hl) == 0);
+
+		if (!has_nul) {
+			/* tolowerstr_p */
+			memcpy(buf_j, buf_s, hl + 1);
+			char *ep = jstr_tolowerstr_p(buf_j);
+			assert(ep == buf_j + hl);
+			assert(memcmp(buf_j, buf_s, hl) == 0);
+			assert(buf_j[hl] == '\0');
+
+			/* tolowerstrcpy_p */
+			memcpy(buf_j, h, hl + 1);
+			ep = jstr_tolowerstrcpy_p(buf_j, h);
+			assert(ep == buf_j + hl);
+			assert(memcmp(buf_j, buf_s, hl) == 0);
+			assert(buf_j[hl] == '\0');
+		}
+
+		/* tolowerstrcpy_len */
+		memcpy(buf_j, h, hl + 1);
+		jstr_tolowerstrcpy_len(buf_j, h, hl);
+		assert(memcmp(buf_j, buf_s, hl) == 0);
+		assert(buf_j[hl] == '\0');
 	}
 }
 

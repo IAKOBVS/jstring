@@ -39,7 +39,7 @@ update() {
 		# perl ./gen-func.pl "$in_fname" | perl ./namespace-macros.pl | perl ./wrap-func-decls.pl >"$out_fname"
 		;;
 	*)
-		cp -f "$in_fname" "$out_fname"
+		return
 		;;
 	esac
 }

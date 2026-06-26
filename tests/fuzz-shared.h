@@ -75,4 +75,14 @@ fuzz_memrmem(const void *hs, size_t hl, const void *ne, size_t nl)
 	return NULL;
 }
 
+/* Shared iteration cap: NSTR caps fuzz iterations in normal (fast) mode;
+ * SLOW_MULT is the multiplier when JSTR_TEST_SLOW is defined.
+ * Each test main() may further clamp via its own limits. */
+#ifndef FUZZ_NSTR_CAP
+#	define FUZZ_NSTR_CAP 500
+#endif
+#ifndef FUZZ_SLOW_MULT
+#	define FUZZ_SLOW_MULT 10
+#endif
+
 #endif /* FUZZ_SHARED_H */
