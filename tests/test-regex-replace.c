@@ -58,11 +58,11 @@ main(int argc, char **argv)
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
 		FILL(result, "abc123def");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplc_len_exec(&preg, jstr_struct(&result), "X", 1, 0), result, "abcXdef", 1);
 
 		FILL(result, "abc");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplc_len_exec(&preg, jstr_struct(&result), "X", 1, 0), result, "abc", 0);
 
 		jstr_re_free(&preg);
@@ -72,11 +72,11 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
 		FILL(result, "abc123def456");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplc_len_from_exec(&preg, jstr_struct(&result), 6, "X", 1, 0), result, "abc123defX", 1);
 
 		FILL(result, "abc123def456");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplc_len_from_exec(&preg, jstr_struct(&result), 12, "X", 1, 0), result, "abc123def456", 0);
 
 		jstr_re_free(&preg);
@@ -86,15 +86,15 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
 		FILL(result, "1a2b3c");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcn_len_exec(&preg, jstr_struct(&result), "X", 1, 0, 2), result, "XaXb3c", 2);
 
 		FILL(result, "1a2b3c");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcn_len_exec(&preg, jstr_struct(&result), "X", 1, 0, 0), result, "1a2b3c", 0);
 
 		FILL(result, "1a2b3c");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcn_len_exec(&preg, jstr_struct(&result), "X", 1, 0, (size_t)-1), result, "XaXbXc", 3);
 
 		jstr_re_free(&preg);
@@ -104,7 +104,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
 		FILL(result, "1a2b3c4d");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcn_len_from_exec(&preg, jstr_struct(&result), 2, "X", 1, 0, 2), result, "1aXbXc4d", 2);
 
 		jstr_re_free(&preg);
@@ -114,11 +114,11 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
 		FILL(result, "1a2b3c");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "NUM", 3, 0), result, "NUMaNUMbNUMc", 3);
 
 		FILL(result, "abc");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "NUM", 3, 0), result, "abc", 0);
 
 		jstr_re_free(&preg);
@@ -128,11 +128,11 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
 		FILL(result, "1a2b3c4d");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_from_exec(&preg, jstr_struct(&result), 2, "X", 1, 0), result, "1aXbXcXd", 3);
 
 		FILL(result, "1a2b3c4d");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_from_exec(&preg, jstr_struct(&result), 0, "X", 1, 0), result, "XaXbXcXd", 4);
 
 		jstr_re_free(&preg);
@@ -142,7 +142,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{1,\\}", 0)));
 
 		FILL(result, "hello world");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "word", 4, 0), result, "word word", 2);
 
 		jstr_re_free(&preg);
@@ -152,7 +152,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "_\\{1,\\}", 0)));
 
 		FILL(result, "a_b_c");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), " ", 1, 0), result, "a b c", 2);
 
 		jstr_re_free(&preg);
@@ -162,7 +162,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
 
 		FILL(result, "abc123def");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplc_len_exec(&preg, jstr_struct(&result), "", 0, 0), result, "abcdef", 1);
 
 		jstr_re_free(&preg);
@@ -172,7 +172,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{1,\\}", 0)));
 
 		FILL(result, "a b c");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcn_len_exec(&preg, jstr_struct(&result), "long", 4, 0, 2), result, "long long c", 2);
 
 		jstr_re_free(&preg);
@@ -182,7 +182,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{4,\\}", 0)));
 
 		FILL(result, "hello_world_foo");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "x", 1, 0), result, "x_x_foo", 2);
 
 		jstr_re_free(&preg);
@@ -192,7 +192,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]+", JSTR_RE_CF_EXTENDED)));
 
 		FILL(result, "a1b2c3");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "X", 1, 0), result, "X1X2X3", 3);
 
 		jstr_re_free(&preg);
@@ -202,7 +202,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "colou?r", JSTR_RE_CF_EXTENDED)));
 
 		FILL(result, "color colour");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "X", 1, 0), result, "X X", 2);
 
 		jstr_re_free(&preg);
@@ -212,7 +212,7 @@ fprintf(stderr, ".");
 		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "hello", JSTR_RE_CF_ICASE)));
 
 		FILL(result, "Hello HELLO hello");
-fprintf(stderr, ".");
+
 		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "hi", 2, 0), result, "hi hi hi", 3);
 
 		jstr_re_free(&preg);

@@ -28,6 +28,7 @@ Custom shell+Perl scripts (no Makefile, no CMake). Run from repo root:
 
 ```sh
 ./test                  # all tests, 4 combos: {normal, -march=native} × {fast, -DJSTR_TEST_SLOW=1}
+./test-check-fail       # runs all tests, shows only failures (filters PASS)
 scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
 ```
 
@@ -35,6 +36,7 @@ scripts/test1 <tmpdir> <test.c> [cflags]  # compile & run a single test
 - Default CFLAGS: `-std=c99 -Wall -Wextra -Wpedantic -O2 -g -fsanitize=address`.
 - All 4 variants run in parallel; tests can take a while.
 - Order: `./scripts/build && ./test`.
+- Use `./test-check-fail` (not `./test`) when checking for errors — it filters out passing tests so failures are immediately visible.
 
 ## Language & toolchain
 

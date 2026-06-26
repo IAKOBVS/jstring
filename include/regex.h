@@ -342,7 +342,7 @@ jstr_re_off_ty
 jstr_re_rm_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (start_idx >= *sz)
+	if (jstr_unlikely(start_idx >= *sz))
 		return 0;
 	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
@@ -385,7 +385,7 @@ jstr_re_off_ty
 jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (start_idx >= *sz)
+	if (jstr_unlikely(start_idx >= *sz))
 		return 0;
 	regmatch_t rm;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
@@ -501,7 +501,7 @@ jstr_re_off_ty
 jstr_re_rplc_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (start_idx >= *sz)
+	if (jstr_unlikely(start_idx >= *sz))
 		return 0;
 	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
@@ -656,11 +656,11 @@ jstr_re_off_ty
 jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (start_idx >= *sz)
-		return 0;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
-	else if (jstr_unlikely(n == 0))
+	if (jstr_unlikely(n == 0))
+		return 0;
+	if (jstr_unlikely(start_idx >= *sz))
 		return 0;
 	const unsigned char *rplc_backref1;
 	const unsigned char *rplc_backref1_e;

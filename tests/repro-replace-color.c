@@ -14,8 +14,7 @@ int main(void) {
         fprintf(stderr, "assign failed\n");
         return 2;
     }
-    jstr_re_off_ty n = jstr_re_rplcall_len_exec(&preg, jstr_struct(&s), "X", 1, 0);
-    printf("ret=%jd size=%zu cap=%zu data='%s'\n", (intmax_t)n, s.size, s.capacity, s.data);
+    jstr_re_rplcall_len_exec(&preg, jstr_struct(&s), "X", 1, 0);
     jstr_free_j(&s);
     jstr_re_free(&preg);
     return 0;

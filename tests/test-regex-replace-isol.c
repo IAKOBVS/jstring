@@ -18,10 +18,7 @@ main(int argc, char **argv)
 		/* Reserve enough for the replacement */
 		size_t sz = 12, cap = 13;
 		char *s = result.data;
-		fprintf(stderr, "before: s=%p sz=%zu cap=%zu data=%s\n", (void*)s, sz, cap, s);
 		jstr_re_off_ty ret = jstr_re_rplcall_len_exec(&preg, &s, &sz, &cap, "X", 1, 0);
-		fprintf(stderr, "after: s=%p sz=%zu cap=%zu data=%s\n", (void*)s, sz, cap, s);
-		fprintf(stderr, "ret=%ld expected=2\n", (long)ret);
 		/* Adopt returned pointer into result so jstr_free_j() frees it once. */
 		result.data = s;
 		result.size = sz;
