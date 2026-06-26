@@ -15,9 +15,7 @@ int main() {
     size_t sz = 3;
     size_t cap = 10;
 
-    printf("Before: %s, sz=%zu, cap=%zu\n", buf, sz, cap);
     jstr_re_rm_exec(&preg, &buf, &sz, &cap, 0);
-    printf("After: %s, sz=%zu, cap=%zu\n", buf, sz, cap);
     assert(buf[sz] == '\0');
 
     free(buf);

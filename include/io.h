@@ -787,16 +787,6 @@ typedef enum jstr_io_ftw_flag_ty {
 			} while (0)
 #	endif
 
-#	if USE_ATFILE
-#		define FD(fd)         fd
-#		define FD_PARAM(fd)   , int fd
-#		define FD_ARG(fd)     , fd
-#	else
-#		define FD(fd)
-#		define FD_PARAM(fd)
-#		define FD_ARG(fd)
-#	endif
-
 #	if JSTR_IO_PATH_MAX <= 65536
 typedef uint16_t jstr_io_path_size_ty;
 #	elif JSTR_IO_PATH_MAX <= 4294967296
@@ -1004,10 +994,10 @@ skip_fn:
 			goto next_entry;
 		/* If we have *_at functions, open d_name to get the fd.
 		 * Otherwise, no-op. */
-		int filefd;
+		int filefd = -1;
 		(void)filefd;
 		OPENAT(filefd, dirfd, a->ftw.ep->d_name, O_RDONLY | JSTR_INTERNAL_IO_O_DIRECTORY, goto next_entry);
-		tmp = jstr_internal_io_ftw_len(a, a->ftw.dirpath_len FD_ARG(filefd));
+		tmp = jstr_internal_io_ftw_len(a, a->ftw.dirpath_len, filefd);
 		/* Close when we have *_at functions. */
 		CLOSE(filefd, closedir(dp); JSTR_RETURN_ERR(JSTR_RET_ERR));
 		if (FLAG(JSTR_IO_FTW_ACTIONRETVAL)) {
@@ -1041,8 +1031,6 @@ next_entry:;
 #	undef STAT_ALWAYS
 #	undef STAT_MODE
 #	undef STAT_OR_MODE
-#	undef FD
-#	undef FD_PARAM
 #	undef JSTR_INTERNAL_IO_O_DIRECTORY
 #	undef FLAG
 
@@ -1077,7 +1065,7 @@ jstr_io_ftw_len(const char *R dirpath, jstr_io_path_size_ty dirpath_len, jstr_io
 	for (; dirpath_len != 1 && dirpath[dirpath_len - 1] == '/'; --dirpath_len) {}
 	char fulpath[JSTR_IO_PATH_MAX];
 	jstr_strcpy_len(fulpath, dirpath, dirpath_len);
-	int dirfd;
+	int dirfd = -1;
 	(void)dirfd;
 	OPEN(dirfd, fulpath, O_RDONLY, JSTR_RETURN_ERR(JSTR_RET_ERR));
 	struct stat st;
@@ -1123,7 +1111,7 @@ file:;
 		data.func_match = func_match;
 		data.ftw_flags = jstr_io_ftw_flags;
 		data.func_match_args = func_match_args;
-		tmp = jstr_internal_io_ftw_len(&data, dirpath_len FD_ARG(dirfd));
+		tmp = jstr_internal_io_ftw_len(&data, dirpath_len, dirfd);
 		CLOSE(dirfd, JSTR_RETURN_ERR(JSTR_RET_ERR));
 		return tmp;
 	}
@@ -1159,7 +1147,6 @@ func:;
 #	undef OPENAT
 #	undef CLOSE
 #	undef USE_ATFILE
-#	undef FD_ARG
 #	undef FLAG
 
 JSTR_INTERNAL_END_DECLS

@@ -48,15 +48,17 @@ fi
 
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo '1')
 
+CFLAGS=$(echo $CFLAGS | sed 's/\-O2//g')
+
 # Generate all variant jobs and run them in a single parallel pool.
 # Each job is: ./test1 <tmpdir> <file> <cflags...>
 generate_jobs()
 {
 	for file in $files; do
-		# echo "$file $CFLAGS"
-		# echo "$file $CFLAGS -march=native"
+		echo "$file $CFLAGS"
+		echo "$file $CFLAGS -march=native"
 		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1"
-		# echo "$file $CFLAGS -DJSTR_TEST_SLOW=1 -march=native"
+		echo "$file $CFLAGS -DJSTR_TEST_SLOW=1 -march=native"
 	done
 }
 
