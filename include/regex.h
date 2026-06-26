@@ -27,7 +27,6 @@
 #ifndef JSTR_REGEX_H
 #	define JSTR_REGEX_H 1
 
-#	error "Does not pass test!"
 #	include "macros.h"
 
 JSTR_INTERNAL_BEGIN_DECLS
@@ -343,6 +342,8 @@ jstr_re_off_ty
 jstr_re_rm_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	if (start_idx >= *sz)
+		return 0;
 	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
@@ -384,7 +385,8 @@ jstr_re_off_ty
 jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, int eflags, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (start_idx >= *sz)
+		return 0;
 	regmatch_t rm;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	const char *end = *s + *sz;
@@ -499,6 +501,8 @@ jstr_re_off_ty
 jstr_re_rplc_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
+	if (start_idx >= *sz)
+		return 0;
 	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
@@ -652,7 +656,8 @@ jstr_re_off_ty
 jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_t *R cap, size_t start_idx, const char *R rplc, size_t rplc_len, int eflags, size_t nmatch, size_t n, int backref) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	JSTR_ASSERT_DEBUG(start_idx == 0 || start_idx < *sz, "");
+	if (start_idx >= *sz)
+		return 0;
 	if (jstr_unlikely(rplc_len == 0))
 		return jstr_re_rmn_from_exec(preg, s, sz, cap, start_idx, eflags, n);
 	else if (jstr_unlikely(n == 0))
@@ -694,7 +699,9 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		rplcwbackref_len = rplc_len;
 	/* SRC and DST exist in the same buffer *S, where SRC + NUL + DST + NUL.
 	 * The size of DST may change because of backreferences. */
-	size_t new_cap = *sz * 2 + rplcwbackref_len - (size_t)find_len + 1 + 1;
+	size_t new_cap = *sz * 2 + 2;
+	if (rplcwbackref_len > (size_t)find_len)
+		new_cap += rplcwbackref_len - (size_t)find_len;
 	if (jstr_chk(jstr_reserve(s, sz, cap, new_cap))) {
 		jstr_free_noinline(s, sz, cap);
 		JSTR_RE_RETURN_ERR(ret, preg);
@@ -726,7 +733,9 @@ jstr_internal_re_rplcn_backref_len_from_exec(const jstr_re_ty *R preg, char *R *
 		if (backref)
 			rplcwbackref_len = jstr_internal_re_rplcbackrefstrlen(rm, rplc_backref1, rplc_backref1_e, rplc_len NMATCH_ARG);
 		/* Check if needs reallocation. Track cumulative destination size and remaining source size. */
-		new_cap = JSTR_DIFF(i.dst, *s) + JSTR_DIFF(end, i.src) - (size_t)find_len + rplcwbackref_len + 1 + 1;
+		new_cap = JSTR_DIFF(i.dst, *s) + JSTR_DIFF(end, i.src) + 2;
+		if (rplcwbackref_len > (size_t)find_len)
+			new_cap += rplcwbackref_len - (size_t)find_len;
 		if (jstr_unlikely(*cap < new_cap)) {
 			const uintptr_t tmp = (uintptr_t)*s;
 			const size_t saved_sz = *sz;
