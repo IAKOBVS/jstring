@@ -167,8 +167,8 @@ int
 jstr_internal_re_notbol_inloop(const char *str, size_t curr_idx, int cflags) JSTR_NOEXCEPT JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (cflags & JSTR_RE_CF_NEWLINE)
-		if (*(str + curr_idx - 1) == '\n')
+	if (cflags & JSTR_RE_CF_NEWLINE && curr_idx > 0)
+		if (*(str - 1) == '\n')
 			return 0;
 	return JSTR_RE_EF_NOTBOL;
 }
