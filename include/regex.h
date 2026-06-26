@@ -28,6 +28,7 @@
 #	define JSTR_REGEX_H 1
 
 #	include "macros.h"
+#	error "Fails test!"
 
 JSTR_INTERNAL_BEGIN_DECLS
 #	include <regex.h>
