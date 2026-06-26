@@ -555,7 +555,7 @@ char *
 jstr_io_appendpath_len_p(char *R path, size_t sz, const char *R fname, size_t fname_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	*path = '/';
+	*(path + sz) = '/';
 	jstr_strcpy_len(path + sz + 1, fname, fname_len);
 	return path + sz + 1 + fname_len;
 }
@@ -580,7 +580,7 @@ jstr_ret_ty
 jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R fname, size_t fname_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len + 1)))
+	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len + 2)))
 		return JSTR_RET_ERR;
 	*sz = JSTR_DIFF(jstr_io_appendpath_len_p(*s, *sz, fname, fname_len), *s);
 	return JSTR_RET_SUCC;

@@ -535,7 +535,7 @@ char *
 jstr_prepend_len_unsafe_p(char *R s, size_t sz, const char *R src, size_t src_len) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
-	if (jstr_likely(*s != 0))
+	if (jstr_likely(sz != 0))
 		jstr_strmove_len(s + src_len, s, sz);
 	else
 		*(s + src_len) = '\0';

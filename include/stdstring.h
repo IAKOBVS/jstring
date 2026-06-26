@@ -480,7 +480,7 @@ jstr_memccpy(void *R dst, const void *R src, int c, size_t n) JSTR_NOEXCEPT
 #	else
 	const char *p = (char *)memchr(src, c, n);
 	if (p != NULL)
-		return jstr_stpcpy_len(dst, src, JSTR_DIFF(p, src));
+		return jstr_stpcpy_len(dst, src, JSTR_DIFF(p, (const char *)src) + 1);
 	memcpy(dst, src, n);
 	return NULL;
 #	endif /* HAVE_MEMCPY */
@@ -509,8 +509,10 @@ jstr_strdup_len(const char *R s, size_t n) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	char *p = (char *)malloc(n + 1);
-	if (jstr_likely(p != NULL))
-		return jstr_stpcpy_len(p, s, n);
+	if (jstr_likely(p != NULL)) {
+		jstr_stpcpy_len(p, s, n);
+		return p;
+	}
 	return NULL;
 }
 #else

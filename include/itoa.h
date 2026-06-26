@@ -186,11 +186,10 @@ jstr_ulltoa_thousep_p(unsigned long long number, char *R buf, unsigned int base,
 			if (loop == 0)
 				break;
 		} else {
-			*buf = c;
+			*buf++ = c;
 			if (loop == 0)
 				break;
-			*(buf + 1) = separator;
-			buf += 2;
+			*buf++ = separator;
 			n = 0;
 		}
 	}

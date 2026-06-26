@@ -144,7 +144,7 @@ jstr_toupperstrcpy_p(char *R dst, const char *R src) JSTR_NOEXCEPT
 {
 	unsigned char *d = (unsigned char *)dst;
 	const unsigned char *s = (const unsigned char *)src;
-	while ((*d++ = jstr_tolower(*s++))) {}
+	while ((*d++ = jstr_toupper(*s++))) {}
 	return (char *)d - 1;
 }
 #else
