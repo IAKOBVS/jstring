@@ -217,6 +217,103 @@ main(int argc, char **argv)
 
 		jstr_re_free(&preg);
 	}
+	{
+		/* _from_exec with start_idx == sz (boundary, no match possible). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "abc");
+		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 3, 0), result, "abc", 0);
+
+		FILL(result, "");
+		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 0, 0), result, "", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* _from_exec on empty string. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{1,\\}", 0)));
+
+		FILL(result, "");
+		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "", 0);
+		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "", 0);
+		T_RM(jstr_re_rmn_exec(&preg, jstr_struct(&result), 0, (size_t)-1), result, "", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rmn_from_exec with n=1 (falls through to rm_from_exec). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "a1b2c3");
+		T_RM(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 0, 0, 1), result, "ab2c3", 1);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rmn_from_exec with start_idx > sz. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "a1b2c3");
+		T_RM(jstr_re_rmn_from_exec(&preg, jstr_struct(&result), 99, 0, (size_t)-1), result, "a1b2c3", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rmall_from_exec with start_idx past end. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "a1b2c3");
+		T_RM(jstr_re_rmall_from_exec(&preg, jstr_struct(&result), 20, 0), result, "a1b2c3", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Remove first char only (pattern matches single char). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".", 0)));
+
+		FILL(result, "abc");
+		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "bc", 1);
+
+		FILL(result, "a");
+		T_RM(jstr_re_rm_exec(&preg, jstr_struct(&result), 0), result, "", 1);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Remove all individual characters (dot pattern). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, ".", 0)));
+
+		FILL(result, "abc");
+		T_RM(jstr_re_rmall_exec(&preg, jstr_struct(&result), 0), result, "", 3);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* NOTBOL with remove from mid-string. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
+
+		FILL(result, "hello hello");
+		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 1, JSTR_RE_EF_NOTBOL), result, "hello hello", 0);
+
+		/* Without NOTBOL, skips bol-only match. */
+		T_RM(jstr_re_rm_from_exec(&preg, jstr_struct(&result), 6, JSTR_RE_EF_NOTBOL), result, "hello hello", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Double free is safe (already tested). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "abc", 0)));
+		jstr_re_free(&preg);
+	}
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;

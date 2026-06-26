@@ -241,6 +241,127 @@ main(int argc, char **argv)
 
 		jstr_re_free(&preg);
 	}
+	{
+		/* Backref replacement shorter than match (rplcwbackref_len < find_len). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{4,\\}\\)", 0)));
+
+		FILL(result, "xxxx_yyyy");
+		T_RPLC_BREF(jstr_re_rplcall_backref_len_exec(&preg, jstr_struct(&result), "\\1", 2, 0, 2),
+			result, "xxxx_yyyy", 2);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref replacement longer than match. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\)", 0)));
+
+		FILL(result, "a1b");
+		T_RPLC_BREF(jstr_re_rplc_backref_len_exec(&preg, jstr_struct(&result), "\\1\\1\\1", 6, 0, 2),
+			result, "aaa1b", 1);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref with empty capture group (pattern can match empty string). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]*\\)", 0)));
+
+		FILL(result, "abc");
+		T_RPLC_BREF(jstr_re_rplc_backref_len_exec(&preg, jstr_struct(&result), "[\\1]", 4, 0, 2),
+			result, "[abc]", 1);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref with rplcn_backref_len_exec n=0 (no replacement). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\)", 0)));
+
+		FILL(result, "a_b_c");
+		T_RPLC_BREF(jstr_re_rplcn_backref_len_exec(&preg, jstr_struct(&result), "\\1\\1", 4, 0, 2, 0),
+			result, "a_b_c", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref with rplcn_backref_len_exec n=1. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\)", 0)));
+
+		FILL(result, "a_b_c");
+		T_RPLC_BREF(jstr_re_rplcn_backref_len_exec(&preg, jstr_struct(&result), "\\1\\1", 4, 0, 2, 1),
+			result, "aa_b_c", 1);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref with _from_exec start_idx == sz (boundary, no match). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\)", 0)));
+
+		FILL(result, "abc");
+		T_RPLC_BREF(jstr_re_rplc_backref_len_from_exec(&preg, jstr_struct(&result), 3, "\\1\\1", 4, 0, 2),
+			result, "abc", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref with _from_exec start_idx == sz (rplcn variant). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\)", 0)));
+
+		FILL(result, "abc");
+		T_RPLC_BREF(jstr_re_rplcn_backref_len_from_exec(&preg, jstr_struct(&result), 3, "\\1\\1", 4, 0, 2, (size_t)-1),
+			result, "abc", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref with _from_exec start_idx > sz. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\)", 0)));
+
+		FILL(result, "abc");
+		T_RPLC_BREF(jstr_re_rplc_backref_len_from_exec(&preg, jstr_struct(&result), 99, "\\1\\1", 4, 0, 2),
+			result, "abc", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref with empty haystack. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\)", 0)));
+
+		FILL(result, "");
+		T_RPLC_BREF(jstr_re_rplc_backref_len_exec(&preg, jstr_struct(&result), "\\1\\1", 4, 0, 2),
+			result, "", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref rplcall_from_exec where start_idx skips first match. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\)", 0)));
+
+		FILL(result, "a_b_c");
+		T_RPLC_BREF(jstr_re_rplcall_backref_len_from_exec(&preg, jstr_struct(&result), 2, "\\1\\1", 4, 0, 2),
+			result, "a_bb_cc", 2);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Backref rplcn_backref_len_exec with start_idx past end. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "\\([a-z]\\{1,\\}\\)", 0)));
+
+		FILL(result, "a_b_c");
+		T_RPLC_BREF(jstr_re_rplcn_backref_len_from_exec(&preg, jstr_struct(&result), 99, "\\1\\1", 4, 0, 2, (size_t)-1),
+			result, "a_b_c", 0);
+
+		jstr_re_free(&preg);
+	}
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;

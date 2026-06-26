@@ -217,6 +217,150 @@ main(int argc, char **argv)
 
 		jstr_re_free(&preg);
 	}
+	{
+		/* rplc_len < find_len: replacement shorter than match. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]\\{4,\\}", 0)));
+
+		FILL(result, "xxxx");
+		T_RPLC(jstr_re_rplc_len_exec(&preg, jstr_struct(&result), "y", 1, 0), result, "y", 1);
+
+		FILL(result, "aaaa_bbbb");
+		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "x", 1, 0), result, "x_x", 2);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rplc_len > find_len: replacement longer than match. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "a1b");
+		T_RPLC(jstr_re_rplc_len_exec(&preg, jstr_struct(&result), "long", 4, 0), result, "alongb", 1);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rplc_len == find_len: same size replacement. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "a1b2c");
+		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "X", 1, 0), result, "aXbXc", 2);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* _from_exec with start_idx == sz (boundary). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "abc");
+		T_RPLC(jstr_re_rplc_len_from_exec(&preg, jstr_struct(&result), 3, "X", 1, 0), result, "abc", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* _from_exec with start_idx > sz. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "abc");
+		T_RPLC(jstr_re_rplc_len_from_exec(&preg, jstr_struct(&result), 99, "X", 1, 0), result, "abc", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rplcn_from_exec with start_idx > sz. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "1a2b3c");
+		T_RPLC(jstr_re_rplcn_len_from_exec(&preg, jstr_struct(&result), 99, "X", 1, 0, (size_t)-1), result, "1a2b3c", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rplcall_from_exec with start_idx > sz. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "1a2b3c");
+		T_RPLC(jstr_re_rplcall_len_from_exec(&preg, jstr_struct(&result), 99, "X", 1, 0), result, "1a2b3c", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Empty haystack. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "");
+		T_RPLC(jstr_re_rplc_len_exec(&preg, jstr_struct(&result), "X", 1, 0), result, "", 0);
+		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "X", 1, 0), result, "", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rplcn with n=0 (no replacement). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "1a2b3c");
+		T_RPLC(jstr_re_rplcn_len_exec(&preg, jstr_struct(&result), "X", 1, 0, 0), result, "1a2b3c", 0);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rplcn with n=1 (single replacement via rplcn path). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "1a2b3c");
+		T_RPLC(jstr_re_rplcn_len_exec(&preg, jstr_struct(&result), "X", 1, 0, 1), result, "Xa2b3c", 1);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* rplcn with n > matches (should replace all). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{1,\\}", 0)));
+
+		FILL(result, "1a2");
+		T_RPLC(jstr_re_rplcn_len_exec(&preg, jstr_struct(&result), "X", 1, 0, 99), result, "XaX", 2);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Multiple digits vs single digit replacement (rplc_len < find_len). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[0-9]\\{2,\\}", 0)));
+
+		FILL(result, "ab12cd34e");
+		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "X", 1, 0), result, "abXcdXe", 2);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Single char match replaced with multiple chars (rplc_len > find_len). */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "[a-z]", 0)));
+
+		FILL(result, "a1b2c");
+		T_RPLC(jstr_re_rplcall_len_exec(&preg, jstr_struct(&result), "long", 4, 0), result, "long1long2long", 3);
+
+		jstr_re_free(&preg);
+	}
+	{
+		/* Pattern with boundary assertions and NOTBOL. */
+		jstr_re_ty preg;
+		assert(!jstr_re_chkcomp(jstr_re_comp(&preg, "^hello", 0)));
+
+		FILL(result, "hello hello");
+		T_RPLC(jstr_re_rplc_len_from_exec(&preg, jstr_struct(&result), 6, "X", 1, JSTR_RE_EF_NOTBOL), result, "hello hello", 0);
+
+		jstr_re_free(&preg);
+	}
 	jstr_free_j(&result);
 	SUCCESS();
 	return 0;
