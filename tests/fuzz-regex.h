@@ -9,6 +9,7 @@
 #define FUZZ_REGEX_H
 
 #include "fuzz-shared.h"
+#include <stdio.h>
 
 enum { BFUZZ = 256 };
 
@@ -68,47 +69,55 @@ fuzz_regex_patterns(size_t iter,
 			}
 
 			char *buf = (char *)malloc(BFUZZ + 1);
+			assert(buf);
 			size_t cap = BFUZZ;
 			size_t sz;
 			(void)sz;
 			for (int ei = 0; ei < 8; ++ei) {
-				int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) |
-				             ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0) |
-				             ((ei & 4) ? JSTR_RE_EF_NOSUB : 0);
+				/* eflags MUST NOT BE RE_NOSUB */
+				int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) | ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0);
 
-				memcpy(buf, h, hl + 1);
+				assert(buf);
+
+				jstr_stpcpy_len(buf, h, hl);
 				sz = hl;
 				cap = BFUZZ;
-				jstr_re_rm_exec(&preg, &buf, &sz, &cap, eflags);
+				assert(buf);
+				jstr_re_ret_ty ret;
+				ret = jstr_re_rm_exec(&preg, &buf, &sz, &cap, eflags);
+				if (ret < 0) {
+					fprintf(stderr, "ret: %d\n", ret);
+					jstr_re_errdie(-ret, &preg);
+				}
 				assert(buf[sz] == '\0');
 
-				memcpy(buf, h, hl + 1);
+				jstr_stpcpy_len(buf, h, hl);
 				sz = hl;
 				cap = BFUZZ;
 				jstr_re_rmall_exec(&preg, &buf, &sz, &cap, eflags);
 				assert(buf[sz] == '\0');
 
 				size_t n = (size_t)(rand() % 5);
-				memcpy(buf, h, hl + 1);
+				jstr_stpcpy_len(buf, h, hl);
 				sz = hl;
 				cap = BFUZZ;
 				jstr_re_rmn_exec(&preg, &buf, &sz, &cap, eflags, n);
 				assert(buf[sz] == '\0');
 
 				size_t start_idx = (size_t)(rand() % (hl + 5));
-				memcpy(buf, h, hl + 1);
+				jstr_stpcpy_len(buf, h, hl);
 				sz = hl;
 				cap = BFUZZ;
 				jstr_re_rm_from_exec(&preg, &buf, &sz, &cap, start_idx, eflags);
 				assert(buf[sz] == '\0');
 
-				memcpy(buf, h, hl + 1);
+				jstr_stpcpy_len(buf, h, hl);
 				sz = hl;
 				cap = BFUZZ;
 				jstr_re_rmn_from_exec(&preg, &buf, &sz, &cap, start_idx, eflags, n);
 				assert(buf[sz] == '\0');
 
-				memcpy(buf, h, hl + 1);
+				jstr_stpcpy_len(buf, h, hl);
 				sz = hl;
 				cap = BFUZZ;
 				jstr_re_rmall_from_exec(&preg, &buf, &sz, &cap, start_idx, eflags);
@@ -120,47 +129,63 @@ fuzz_regex_patterns(size_t iter,
 				size_t rplc_len = strlen(rplc);
 
 				for (int ei = 0; ei < 8; ++ei) {
-					int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) |
-					             ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0) |
-					             ((ei & 4) ? JSTR_RE_EF_NOSUB : 0);
+					int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) | ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0);
 
-				memcpy(buf, h, hl + 1);
-				sz = hl;
-				cap = BFUZZ;
-				{int _r = jstr_re_rplc_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags);(void)_r;}
-				assert(buf[sz] == '\0');
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+					{
+						int _r = jstr_re_rplc_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags);
+						(void)_r;
+					}
+					assert(buf[sz] == '\0');
 
-				memcpy(buf, h, hl + 1);
-				sz = hl;
-				cap = BFUZZ;
-				{int _r = jstr_re_rplcall_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags);(void)_r;}
-				assert(buf[sz] == '\0');
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+					{
+						int _r = jstr_re_rplcall_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags);
+						(void)_r;
+					}
+					assert(buf[sz] == '\0');
 
-				size_t n = (size_t)(rand() % 5);
-				memcpy(buf, h, hl + 1);
-				sz = hl;
-				cap = BFUZZ;
-				{int _r = jstr_re_rplcn_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, n);(void)_r;}
-				assert(buf[sz] == '\0');
+					size_t n = (size_t)(rand() % 5);
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+					{
+						int _r = jstr_re_rplcn_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, n);
+						(void)_r;
+					}
+					assert(buf[sz] == '\0');
 
-				size_t start_idx = (size_t)(rand() % (hl + 5));
-				memcpy(buf, h, hl + 1);
-				sz = hl;
-				cap = BFUZZ;
-				{int _r = jstr_re_rplc_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags);(void)_r;}
-				assert(buf[sz] == '\0');
+					size_t start_idx = (size_t)(rand() % (hl + 5));
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+					{
+						int _r = jstr_re_rplc_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags);
+						(void)_r;
+					}
+					assert(buf[sz] == '\0');
 
-				memcpy(buf, h, hl + 1);
-				sz = hl;
-				cap = BFUZZ;
-				{int _r = jstr_re_rplcn_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, n);(void)_r;}
-				assert(buf[sz] == '\0');
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+					{
+						int _r = jstr_re_rplcn_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, n);
+						(void)_r;
+					}
+					assert(buf[sz] == '\0');
 
-				memcpy(buf, h, hl + 1);
-				sz = hl;
-				cap = BFUZZ;
-				{int _r = jstr_re_rplcall_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags);(void)_r;}
-				assert(buf[sz] == '\0');
+					jstr_stpcpy_len(buf, h, hl);
+					sz = hl;
+					cap = BFUZZ;
+					{
+						int _r = jstr_re_rplcall_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags);
+						(void)_r;
+					}
+					assert(buf[sz] == '\0');
 				}
 			}
 
@@ -170,48 +195,64 @@ fuzz_regex_patterns(size_t iter,
 					size_t rplc_len = strlen(rplc);
 					size_t nmatch = 10;
 
-				for (int ei = 0; ei < 8; ++ei) {
-					int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) |
-					             ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0) |
-					             ((ei & 4) ? JSTR_RE_EF_NOSUB : 0);
+					for (int ei = 0; ei < 8; ++ei) {
+						int eflags = ((ei & 1) ? JSTR_RE_EF_NOTBOL : 0) | ((ei & 2) ? JSTR_RE_EF_NOTEOL : 0);
 
-					memcpy(buf, h, hl + 1);
-					sz = hl;
-					cap = BFUZZ;
-					{int _r = jstr_re_rplc_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch);(void)_r;}
-					assert(buf[sz] == '\0');
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							int _r = jstr_re_rplc_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch);
+							(void)_r;
+						}
+						assert(buf[sz] == '\0');
 
-					memcpy(buf, h, hl + 1);
-					sz = hl;
-					cap = BFUZZ;
-					{int _r = jstr_re_rplcall_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch);(void)_r;}
-					assert(buf[sz] == '\0');
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							int _r = jstr_re_rplcall_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch);
+							(void)_r;
+						}
+						assert(buf[sz] == '\0');
 
-					size_t n = (size_t)(rand() % 5);
-					memcpy(buf, h, hl + 1);
-					sz = hl;
-					cap = BFUZZ;
-					{int _r = jstr_re_rplcn_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch, n);(void)_r;}
-					assert(buf[sz] == '\0');
+						size_t n = (size_t)(rand() % 5);
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							int _r = jstr_re_rplcn_backref_len_exec(&preg, &buf, &sz, &cap, rplc, rplc_len, eflags, nmatch, n);
+							(void)_r;
+						}
+						assert(buf[sz] == '\0');
 
-					size_t start_idx = (size_t)(rand() % (hl + 5));
-					memcpy(buf, h, hl + 1);
-					sz = hl;
-					cap = BFUZZ;
-					{int _r = jstr_re_rplc_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch);(void)_r;}
-					assert(buf[sz] == '\0');
+						size_t start_idx = (size_t)(rand() % (hl + 5));
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							int _r = jstr_re_rplc_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch);
+							(void)_r;
+						}
+						assert(buf[sz] == '\0');
 
-					memcpy(buf, h, hl + 1);
-					sz = hl;
-					cap = BFUZZ;
-					{int _r = jstr_re_rplcn_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch, n);(void)_r;}
-					assert(buf[sz] == '\0');
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							int _r = jstr_re_rplcn_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch, n);
+							(void)_r;
+						}
+						assert(buf[sz] == '\0');
 
-					memcpy(buf, h, hl + 1);
-					sz = hl;
-					cap = BFUZZ;
-					{int _r = jstr_re_rplcall_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch);(void)_r;}
-					assert(buf[sz] == '\0');
+						jstr_stpcpy_len(buf, h, hl);
+						sz = hl;
+						cap = BFUZZ;
+						{
+							int _r = jstr_re_rplcall_backref_len_from_exec(&preg, &buf, &sz, &cap, start_idx, rplc, rplc_len, eflags, nmatch);
+							(void)_r;
+						}
+						assert(buf[sz] == '\0');
 					}
 				}
 			}

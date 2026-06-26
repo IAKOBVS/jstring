@@ -48,7 +48,7 @@ fuzz_snprintf(size_t iter)
 		/* Build variadic argument list values */
 		int iargs[4];
 		const char *sargs[4];
-		for (int j = 0; j < fs->nargs; ++j) {
+		for (int j = 0; j < fs->nargs && j < (int)(sizeof(iargs)/sizeof(iargs[0])); ++j) {
 			if (fs->types[j] == ARG_INT)
 				iargs[j] = (int)(rand() & 0xFFFF) - (int)(rand() & 0x7FFF);
 			else

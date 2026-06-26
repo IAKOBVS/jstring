@@ -73,7 +73,7 @@ main(int argc, char **argv)
 		jstr_re_free(&preg);
 	}
 	{
-		jstr_re_ty preg;
+		/* jstr_re_ty preg; */
 		/* jstr_re_chkexec returns false for NOERROR. */
 		assert(!jstr_re_chkexec(JSTR_RE_RET_NOERROR));
 		/* jstr_re_chkexec returns false for NOMATCH (not an error). */

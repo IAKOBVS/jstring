@@ -54,7 +54,7 @@ jstr_strncasecmp(const char *s1, const char *s2, size_t n) JSTR_NOEXCEPT
 #	if JSTR_HAVE_STRNCASECMP && !JSTR_TEST
 	return strncasecmp(s1, s2, n);
 #	else
-	int ret;
+	int ret = 0;
 	const unsigned char *p1 = (const unsigned char *)s1;
 	const unsigned char *p2 = (const unsigned char *)s2;
 	while (n-- && !(ret = jstr_tolower(*p1) - jstr_tolower(*p2++)) && *p1++) {}

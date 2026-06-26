@@ -81,12 +81,6 @@ to `void *` and use the corresponding `_mem*` / `void *` overload when available
 - `internal/*.h` are internal headers.
 - Config macros go in `config.h` before including `jstr.h` (e.g., `JSTR_USE_UNLOCKED_IO`, `JSTR_DEBUG`, `JSTR_PANIC`).
 
-Note: jstr_re_exec_len historically called regexec directly on non-NUL
-buffers which can trigger OOB reads on some platform regexec implementations.
-As a defensive measure the library now creates a short NUL-terminated copy
-of the search slice when STARTEND is not available, ensuring regexec never
-reads past the provided length. See include/regex.h for the exact behavior.
-
 ## License
 
 MIT © 2023–2026 James Tirta Halim.
