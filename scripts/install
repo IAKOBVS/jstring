@@ -17,6 +17,6 @@ if [ "$(id -u)" -eq 0 ]; then
 	cp -rf "$PATH_LIB"/. "$INSTALL_DIR/lib/"
 	echo "Successfully built to $INSTALL_DIR."
 else
-	echo "Please run the command with sudo, as it requires permission to copy $PATH_BUILD to $INSTALL_DIR"
+	echo "Please run the command with sudo, as it requires permission to install to /usr/local/"
 	exit 1
 fi
