@@ -346,12 +346,10 @@ jstr_re_rm_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size_
 		return 0;
 	assert(strlen(*s) == *sz);
 	assert(*cap > *sz);
-	/* fprintf(stderr, "Before: %s.\n", *s); */
 	regmatch_t rm;
 	int ret = jstr_re_search_len(preg, *s + start_idx, *sz - start_idx, &rm, eflags | IS_NOTBOL(*s, start_idx, preg->cflags));
 	if (jstr_likely(ret == JSTR_RE_RET_NOERROR)) {
 		*sz = JSTR_DIFF(jstr_rmat_len_p(*s, *sz, start_idx + (size_t)rm.rm_so, (size_t)(rm.rm_eo - rm.rm_so)), *s);
-		/* fprintf(stderr, "After: %s.\n", *s); */
 		return 1;
 	} else if (ret == JSTR_RE_RET_NOMATCH) {
 		return 0;
@@ -391,7 +389,6 @@ jstr_re_rmn_from_exec(const jstr_re_ty *R preg, char *R *R s, size_t *R sz, size
 {
 	if (jstr_unlikely(start_idx >= *sz))
 		return 0;
-	/* fprintf(stderr, "Before: %s.\n", *s); */
 	regmatch_t rm;
 	jstr_internal_inplace_ty i = JSTR_INTERNAL_INPLACE_INIT(*s + start_idx);
 	const char *end = *s + *sz;
@@ -444,7 +441,6 @@ start:
 			++i.src_e;
 	}
 	*sz = JSTR_DIFF(jstr_stpmove_len(i.dst, i.src, JSTR_DIFF(end, i.src)), *s);
-	/* fprintf(stderr, "After: %s.\n", *s); */
 	return changed;
 }
 #else
