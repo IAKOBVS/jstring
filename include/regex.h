@@ -139,7 +139,7 @@ typedef enum {
 #		define JSTR_RE_RETURN_ERR(errcode, preg)             \
 			do {                                          \
 				jstr_err("%s", "");                   \
-				jstr_re_err(errcode, preg, "%s", ""); \
+				jstr_re_err(errcode, preg, "%s", "\n"); \
 				return -(errcode);                    \
 			} while (0)
 #	else
@@ -264,7 +264,7 @@ jstr_re_comp(jstr_re_ty *R preg, const char *R ptn, int cflags) JSTR_NOEXCEPT
 #		if JSTR_PANIC
 	const jstr_re_ret_ty ret = (jstr_re_ret_ty)regcomp(&preg->reg, ptn, cflags);
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR))
-		jstr_re_errdie(ret, preg, "regcomp(preg, %s, %d) failed\n", ptn, cflags);
+		jstr_re_errdie(ret, preg, "regcomp(preg, pattern: \"%s\", cflags: %d) failed\n", ptn ? ptn : "(null)", cflags);
 	return ret;
 #		else
 	return (jstr_re_ret_ty)regcomp(&preg->reg, ptn, cflags);
@@ -288,7 +288,7 @@ jstr_re_exec(const jstr_re_ty *R preg, const char *R s, size_t nmatch, regmatch_
 #		if JSTR_PANIC
 	const jstr_re_ret_ty ret = (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags);
 	if (jstr_unlikely(ret != JSTR_RE_RET_NOERROR))
-		jstr_re_errdie(ret, preg, "regexec(preg, %s, %zu, pmatch, %d) failed\n", s, nmatch, eflags);
+		jstr_re_errdie(ret, preg, "regexec(preg, string: \"%.128s\", nmatch: %zu, pmatch, cflags: %d) failed\n", s ? s : "(null)", nmatch, eflags);
 	return ret;
 #		else
 	return (jstr_re_ret_ty)regexec(&preg->reg, s, nmatch, pmatch, eflags);
