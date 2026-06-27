@@ -74,12 +74,12 @@ jstr_internal_io_isbinarysignature(const char *buf, size_t sz) JSTR_NOEXCEPT
 	const unsigned char *p = (const unsigned char *)buf;
 	if (jstr_likely(sz >= ELFSZ)) {
 #		if JSTR_HAVE_UNALIGNED_ACCESS && JSTR_HAVE_BUILTIN_MEMCMP
-		const unsigned char elf[] = { 0x7, 'E', 'L', 'F' };
+		const unsigned char elf[] = { 0x7F, 'E', 'L', 'F' };
 		JSTR_STATIC_ASSERT(sizeof(elf) == ELFSZ, "");
 		if (!memcmp(p, elf, 4))
 			return 0;
 #		else
-		if (p[0] == 0x7 && p[1] == 'E' && p[2] == 'L' && p[3] == 'F')
+		if (p[0] == 0x7F && p[1] == 'E' && p[2] == 'L' && p[3] == 'F')
 			return 0;
 #		endif
 		goto check_utf;
