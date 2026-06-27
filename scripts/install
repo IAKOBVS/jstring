@@ -9,10 +9,15 @@ INSTALL_DIR='/usr/local'
 
 [ $# -eq 1 ] && INSTALL_DIR=$1
 if [ "$(id -u)" -eq 0 ]; then
-	cp -rf '../build/include' "$INSTALL_DIR"
-	cp -rf '../build/lib' "$INSTALL_DIR"
+	if command -v rsync >/dev/null; then
+		rsync -parc '../build/include' "$INSTALL_DIR"
+		rsync -parc '../build/lib' "$INSTALL_DIR"
+	else
+		cp -rf '../build/include' "$INSTALL_DIR"
+		cp -rf '../build/lib' "$INSTALL_DIR"
+	fi
 	echo "Successfully built to $INSTALL_DIR."
-	if [ "$INSTALL_DIR" = '/usr/local' ]; then
+	if [ "$INSTALL_DIR" = '/usr/local' ] && [ ! -s /usr/lib ]; then
 		sudo ln -s /usr/local/lib/libjstr.so /usr/lib
 	fi
 else
