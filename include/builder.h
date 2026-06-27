@@ -269,9 +269,9 @@ jstr_io_println(const jstr_ty *j) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_unlikely(jstr_io_fwrite(j->data, 1, j->size, stdout) != j->size))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	if (jstr_unlikely(jstr_io_putchar('\n') == EOF))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	return JSTR_RET_SUCC;
 }
 #else
@@ -285,7 +285,7 @@ jstr_internal_cat(char *R *R s, size_t *R sz, size_t *R cap, va_list ap, size_t 
 {
 	char *p;
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + arg_len + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	p = *s + *sz;
 	*sz += arg_len;
 	const char *arg;
@@ -400,7 +400,7 @@ jstr_append_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_append_len_unsafe_p(*s, *sz, src, src_len), *s);
 	return JSTR_RET_SUCC;
 }
@@ -439,7 +439,7 @@ jstr_assignnchr(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
 {
 	if (n > *sz) {
 		if (jstr_chk(jstr_reservealways(s, sz, cap, n + 1)))
-			return JSTR_RET_ERR;
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		*(*s + n) = '\0';
 		*sz = n;
 	}
@@ -469,7 +469,7 @@ jstr_pushbackn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR_
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_pushbackn_len_unsafe_p(*s, *sz, c, n), *s);
 	return JSTR_RET_SUCC;
 }
@@ -497,7 +497,7 @@ jstr_pushfrontn(char *R *R s, size_t *R sz, size_t *R cap, int c, size_t n) JSTR
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + n + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_pushfrontn_len_unsafe_p(*s, *sz, c, n), *s);
 	return JSTR_RET_SUCC;
 }
@@ -536,7 +536,7 @@ jstr_prepend_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, s
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_prepend_len_unsafe_p(*s, *sz, src, src_len), *s);
 	return JSTR_RET_SUCC;
 }
@@ -569,7 +569,7 @@ jstr_assign_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R src, si
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	jstr_strcpy_len(*s, src, src_len);
 	*sz = src_len;
 	return JSTR_RET_SUCC;
@@ -603,7 +603,7 @@ jstr_pushback(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + 1 + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_pushback_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;
 }
@@ -635,7 +635,7 @@ jstr_pushfront(char *R *R s, size_t *R sz, size_t *R cap, char c) JSTR_NOEXCEPT
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + 1 + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_pushfront_unsafe_p(*s, *sz, c), *s);
 	return JSTR_RET_SUCC;
 }
@@ -703,7 +703,7 @@ jstr_vsprintf_maxlen(va_list ap, const char *fmt) JSTR_NOEXCEPT
 	const int ret = vsnprintf(NULL, 0, fmt, ap);
 	if (jstr_likely(ret > 0) || ret == 0)
 		return ret + 1;
-	return -1;
+	JSTR_RETURN_ERR(-1);
 #	else
 #		define JSTR_INTERNAL_COUNTDIGITS(lflag, base)               \
 			if (lflag == L_INT)                          \
@@ -899,7 +899,7 @@ check_integer:
 					fmt = (char *)p - 1;
 					if (jstr_unlikely(pad_len > INT_MAX)) {
 						errno = EOVERFLOW;
-						return -1;
+						JSTR_RETURN_ERR(-1);
 					}
 					arg_len += pad_len;
 				}
@@ -908,7 +908,7 @@ check_integer:
 			default:
 einval:
 				errno = EINVAL;
-				return -1;
+				JSTR_RETURN_ERR(-1);
 get_arg:
 				va_arg(ap, void *);
 				break;

@@ -42,6 +42,7 @@ JSTR_INTERNAL_BEGIN_DECLS
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <string.h>
+#	include <stdarg.h>
 JSTR_INTERNAL_END_DECLS
 
 #	if defined _LP64 || defined __LP64__
@@ -77,7 +78,7 @@ JSTR_INTERNAL_END_DECLS
 #		define JSTR_GLIBC_PREREQ(maj, min) __GLIBC_PREREQ(maj, min)
 #	elif defined __GLIBC__
 #		define JSTR_GLIBC_PREREQ(maj, min) ((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
-#else
+#	else
 #		define JSTR_GLIBC_PREREQ(maj, min) 0
 #	endif
 
@@ -153,8 +154,8 @@ JSTR_INTERNAL_END_DECLS
 #		define JSTR_ENDIAN_UNKNOWN 1
 #	endif
 
-#	define jstr_err(msg)    jstr_internal_err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
-#	define jstr_errdie(msg) jstr_internal_errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, msg)
+#	define jstr_err(fmt, ...)    jstr_internal_err(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, fmt, __VA_ARGS__)
+#	define jstr_errdie(fmt, ...) jstr_internal_errdie(JSTR_ASSERT_FILE, JSTR_ASSERT_LINE, JSTR_ASSERT_FUNC, fmt, __VA_ARGS__)
 
 #	define jstr_chk(ret)                     jstr_unlikely(ret == -1)
 #	define jstr_nullchk(p)                   jstr_unlikely((p) == NULL)
@@ -483,17 +484,17 @@ JSTR_INTERNAL_END_DECLS
 #	endif /* static_assert */
 
 #	if JSTR_DEBUG
-#		define JSTR_ASSERT_DEBUG(expr, msg)          \
-			do {                                  \
-				if (jstr_unlikely(!(expr))) { \
-					jstr_err(msg);        \
-					assert(expr);         \
-				}                             \
+#		define JSTR_ASSERT_DEBUG(expr, msg)               \
+			do {                                       \
+				if (jstr_unlikely(!(expr))) {      \
+					jstr_err("%s\n", msg); \
+					assert(expr);              \
+				}                                  \
 			} while (0)
 #		define JSTR_ASSERT_DEBUG_PRINTF(expr, ...)           \
 			do {                                          \
 				if (jstr_unlikely(!(expr))) {         \
-					jstr_err("");                 \
+					jstr_err("%s", "");           \
 					fprintf(stderr, __VA_ARGS__); \
 					assert(expr);                 \
 				}                                     \
@@ -521,13 +522,25 @@ JSTR_INTERNAL_END_DECLS
 #	endif
 
 #	if JSTR_PANIC
-#		define JSTR_RETURN_ERR(errcode) \
-			do {                     \
-				jstr_errdie(""); \
-				return errcode;  \
+#		define JSTR_RETURN_ERR(errcode)                                   \
+			do {                                                       \
+				jstr_errdie("Returns error (%d)\n", (int)errcode); \
+				return errcode;                                    \
+			} while (0)
+#		define JSTR_RETURN_ERR_P(errcode)                                    \
+			do {                                                          \
+				jstr_errdie("Returns error (%p)\n", (void *)errcode); \
+				return errcode;                                       \
+			} while (0)
+#		define JSTR_RETURN_ERR_ZU(errcode)                                    \
+			do {                                                           \
+				jstr_errdie("Returns error (%zu)\n", (size_t)errcode); \
+				return errcode;                                        \
 			} while (0)
 #	else
-#		define JSTR_RETURN_ERR(errcode) return errcode
+#		define JSTR_RETURN_ERR(errcode)    return errcode
+#		define JSTR_RETURN_ERR_P(errcode)  return errcode
+#		define JSTR_RETURN_ERR_ZU(errcode) return errcode
 #	endif
 
 #	ifdef __cplusplus
@@ -572,7 +585,7 @@ JSTR_INTERNAL_CAST(T, Other other)
 
 #	if JSTR_HAVE_GENERIC
 #		define JSTR_GENERIC_CASE_SIZE(bool_)               int : bool_, unsigned int : bool_, size_t : bool_, long : bool_, long long : bool_, unsigned long long : bool_
-#		define JSTR_GENERIC_CASE_STR(bool_)                char * : bool_, const char * : bool_
+#		define JSTR_GENERIC_CASE_STR(bool_)                char                *: bool_, const char                *: bool_
 #		define JSTR_GENERIC_CASE_STR_STACK(bool_, s)       char (*)[sizeof(s)] : bool_, const char (*)[sizeof(s)] : bool_
 #		define JSTR_GENERIC_CASE_CHAR(bool_)               char : bool_, const char : bool_
 #		define JSTR_INTERNAL_IS_SIZE(expr)                 _Generic((expr), JSTR_GENERIC_CASE_SIZE(1), default: 0)
@@ -881,24 +894,53 @@ JSTR_INTERNAL_CAST(T, Other other)
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((3))
+JSTR_ATTR_FORMAT(printf, 4, 0)
 JSTR_ATTR_NOINLINE
 JSTR_ATTR_COLD
-static void
-jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg) JSTR_NOEXCEPT
+static int
+jstr_internal_verr(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT fmt, va_list args) JSTR_NOEXCEPT
 {
-	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
-	exit(EXIT_FAILURE);
+	int err = errno;
+	int ret;
+	ret = fprintf(stderr, "%s:%d:%s(): errno (%d): %s: ", filename, line, func, err, strerror(err));
+	if (ret < 0)
+		return -1;
+	ret = vfprintf(stderr, fmt, args);
+	if (ret < 0)
+		return -1;
+	return 0;
 }
 
 JSTR_FUNC_VOID_MAY_NULL
 JSTR_NONNULL((1))
 JSTR_NONNULL((3))
+JSTR_ATTR_FORMAT(printf, 4, 5)
+JSTR_ATTR_NOINLINE
+JSTR_ATTR_COLD
+static int
+jstr_internal_err(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT fmt, ...) JSTR_NOEXCEPT
+{
+	va_list args;
+	va_start(args, fmt);
+	const int ret = jstr_internal_verr(filename, line, func, fmt, args);
+	va_end(args);
+	return ret > 0 ? 0 : -1;
+}
+
+JSTR_FUNC_VOID_MAY_NULL
+JSTR_NONNULL((1))
+JSTR_NONNULL((3))
+JSTR_ATTR_FORMAT(printf, 4, 5)
 JSTR_ATTR_NOINLINE
 JSTR_ATTR_COLD
 static void
-jstr_internal_err(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT msg) JSTR_NOEXCEPT
+jstr_internal_errdie(const char *JSTR_RESTRICT filename, const unsigned int line, const char *JSTR_RESTRICT func, const char *JSTR_RESTRICT fmt, ...) JSTR_NOEXCEPT
 {
-	fprintf(stderr, "%s:%u:%s:%s:%s\n", filename, line, func, strerror(errno), msg);
+	va_list args;
+	va_start(args, fmt);
+	jstr_internal_verr(filename, line, func, fmt, args);
+	va_end(args);
+	exit(EXIT_FAILURE);
 }
 
 #	if defined _POSIX_SOURCE || defined _POSIX_C_SOURCE || defined _XOPEN_SOURCE || defined _GNU_SOURCE || defined _BSD_SOURCE

@@ -13,7 +13,7 @@ cd "$(dirname "$0")" || exit
 PATH_BUILD=../build/include/jstr
 PATH_SRC=../include
 PATH_MACROS=$PATH_BUILD/macros.h
-CFLAGS="-Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
+CFLAGS="-O2 -flto -Wall -Wextra -Wpedantic -Wsign-conversion -std=c99 $CFLAGS"
 
 has_prog() { type "$1" >/dev/null 2>/dev/null; }
 
@@ -61,7 +61,6 @@ wait
 
 # 3. Compile all .c files in parallel using nproc
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
-CFLAGS="$CFLAGS -O2"
 
 echo "Compiling with $CFLAGS"
 
@@ -95,7 +94,7 @@ fi
 # ar rcs "$LIBDIR/libjstr.a" $OFILES
 
 # 5. Link shared library
-cc -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
+cc -flto -shared -Wl,-soname,libjstr.so -o "$LIBDIR/libjstr.so" $OFILES
 
 echo "Library built successfully."
 # echo "Static:  $(realpath $LIBDIR/libjstr.a)"

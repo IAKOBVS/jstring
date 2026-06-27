@@ -251,7 +251,7 @@ JSTR_INTERNAL_ULLTOA_SEP(int, itoa, )
 			jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base) JSTR_NOEXCEPT   \
 			{                                                                                                               \
 				if (jstr_chk(jstr_reserve(s, sz, cap, *sz + jstr_internal_itoa_countudigits_##name(number, base) + 1))) \
-					return JSTR_RET_ERR;                                                                            \
+					JSTR_RETURN_ERR(JSTR_RET_ERR);                                                                            \
 				*sz = JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);                                           \
 				return JSTR_RET_SUCC;                                                                                   \
 			}
@@ -273,7 +273,7 @@ JSTR_INTERNAL_DEFINE_UTOA_SAFE(unsigned long long, ulltoa)
 			static jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base) JSTR_NOEXCEPT                                                    \
 			{                                                                                                                                                                       \
 				if (jstr_chk(jstr_reserve(s, sz, cap, *sz + jstr_internal_itoa_countudigits_##func_name((number < 0) ? (unsigned T) - number : (unsigned T)number, base) + 1))) \
-					return JSTR_RET_ERR;                                                                                                                                    \
+					JSTR_RETURN_ERR(JSTR_RET_ERR);                                                                                                                                    \
 				*sz = JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base), *s);                                                                                                   \
 				return JSTR_RET_SUCC;                                                                                                                                           \
 			}
@@ -295,7 +295,7 @@ JSTR_INTERNAL_DEFINE_ITOA_SAFE(long long, lltoa, ulltoa)
 			static jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base, char separator) JSTR_NOEXCEPT \
 			{                                                                                                                                    \
 				if (jstr_chk(jstr_reserve(s, sz, cap, *sz + jstr_internal_itoa_countudigits_##name(number, base) + 1)))                      \
-					return JSTR_RET_ERR;                                                                                                 \
+					JSTR_RETURN_ERR(JSTR_RET_ERR);                                                                                                 \
 				*sz = JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base, separator), *s);                                                     \
 				return JSTR_RET_SUCC;                                                                                                        \
 			}
@@ -317,7 +317,7 @@ JSTR_INTERNAL_DEFINE_UTOA_THOUSEP_SAFE(unsigned long long, ulltoa_thousep)
 			static jstr_ret_ty jstr_##name(char *R *R s, size_t *R sz, size_t *R cap, T number, unsigned int base, char separator) JSTR_NOEXCEPT                                    \
 			{                                                                                                                                                                       \
 				if (jstr_chk(jstr_reserve(s, sz, cap, *sz + jstr_internal_itoa_countudigits_##func_name((number < 0) ? (unsigned T) - number : (unsigned T)number, base) + 1))) \
-					return JSTR_RET_ERR;                                                                                                                                    \
+					JSTR_RETURN_ERR(JSTR_RET_ERR);                                                                                                                                    \
 				*sz = JSTR_DIFF(jstr_##name##_p(number, *s + *sz, base, separator), *s);                                                                                        \
 				return JSTR_RET_SUCC;                                                                                                                                           \
 			}

@@ -513,7 +513,7 @@ jstr_strdup_len(const char *R s, size_t n) JSTR_NOEXCEPT
 		jstr_stpcpy_len(p, s, n);
 		return p;
 	}
-	return NULL;
+	JSTR_RETURN_ERR_P(NULL);
 }
 #else
 ;

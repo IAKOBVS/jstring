@@ -169,7 +169,7 @@ static const struct {
 		result = func(0, 0, fmt, __VA_ARGS__);                                     \
 		if (jstr_unlikely(result == -1)) {                                         \
 			PRINTERR("fmt:%s\n", fmt);                                         \
-			jstr_err("");                                                      \
+			jstr_err("%s", "");                                                \
 			assert(result != -1);                                              \
 		}                                                                          \
 		expected = simple_func(0, 0, fmt, __VA_ARGS__);                            \

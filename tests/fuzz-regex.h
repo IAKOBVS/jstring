@@ -9,6 +9,7 @@
 #define FUZZ_REGEX_H
 
 #include "fuzz-shared.h"
+#include "../include/regex.h"
 #include <stdio.h>
 
 enum { BFUZZ = 256 };
@@ -86,8 +87,7 @@ fuzz_regex_patterns(size_t iter,
 				jstr_re_ret_ty ret;
 				ret = jstr_re_rm_exec(&preg, &buf, &sz, &cap, eflags);
 				if (ret < 0) {
-					fprintf(stderr, "ret: %d\n", ret);
-					jstr_re_errdie(-ret, &preg);
+					jstr_re_errdie(ret, &preg, "%s", "");
 				}
 				assert(buf[sz] == '\0');
 

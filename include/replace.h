@@ -106,7 +106,7 @@ jstr_insert_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + src_len + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	jstr_insert_unsafe(*s, *sz, at, src, src_len);
 	*sz += src_len;
 	return JSTR_RET_SUCC;
@@ -125,7 +125,7 @@ jstr_rplcat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char
 #ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + rplc_len - find_len + 1)))
-		return NULL;
+		JSTR_RETURN_ERR_P(NULL);
 	if (jstr_likely(rplc_len != find_len))
 		jstr_strmove_len(*s + at + rplc_len, *s + at + find_len, *sz - (at + find_len));
 	*sz += rplc_len - find_len;
@@ -165,7 +165,7 @@ jstr_insertafterallchr_len(char *R *R s, size_t *R sz, size_t *R cap, int c, con
 	while ((p = (char *)memchr(*s + off, c, *sz - off))) {
 		off = JSTR_DIFF(p, *s);
 		if (jstr_chk(jstr_insert_len(s, sz, cap, off, src, src_len)))
-			return JSTR_RET_ERR;
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		off += src_len + 1;
 	}
 	return JSTR_RET_SUCC;
@@ -214,7 +214,7 @@ jstr_insertafterall_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R
 	while ((p = (const char *)jstr_memmem_exec(&t, *s + off, *sz - off, find, find_len))) {
 		off = JSTR_DIFF(p, *s);
 		if (jstr_chk(jstr_insert_len(s, sz, cap, JSTR_DIFF(p, *s + find_len), src, src_len)))
-			return JSTR_RET_ERR;
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		off += find_len + src_len;
 	}
 	return JSTR_RET_SUCC;
@@ -854,7 +854,7 @@ jstr_rplclast_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R find,
 	const char *p = jstr_strrstr_len(*s, *sz, find, find_len);
 	if (p) {
 		if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(p, *s), rplc, rplc_len, find_len)))
-			return -1;
+			JSTR_RETURN_ERR(-1);
 		return 1;
 	}
 	return 0;
@@ -1088,7 +1088,7 @@ start:
 			return 0;
 		if (changed == 1) {
 			if (jstr_nullchk(jstr_rplcat_len(s, sz, cap, JSTR_DIFF(first, *s), rplc, rplc_len, find_len))) {
-				JSTR_RETURN_ERR((size_t)-1);
+				JSTR_RETURN_ERR_ZU((size_t)-1);
 			}
 			return 1;
 		}
@@ -1102,7 +1102,7 @@ start:
 		 * for the destination string. If need to allocate, realloc will try to
 		 * grow in-place. */
 		if (jstr_chk(jstr_reserve(s, sz, cap, new_size + first_len + 1))) {
-			JSTR_RETURN_ERR((size_t)-1);
+			JSTR_RETURN_ERR_ZU((size_t)-1);
 		}
 		i.dst = *s + JSTR_DIFF(first, s_old);
 		/* DST and SRC exist in the same buffer *s, where DST + SRC + NUL. */
@@ -1334,7 +1334,7 @@ jstr_place_len(char *R *R s, size_t *R sz, size_t *R cap, size_t at, const char 
 {
 	if (at + src_len > *sz) {
 		if (jstr_chk(jstr_reservealways(s, sz, cap, at + src_len)))
-			return JSTR_RET_ERR;
+			JSTR_RETURN_ERR(JSTR_RET_ERR);
 		*sz = at + src_len;
 		*(*s + *sz) = '\0';
 	}
@@ -1394,7 +1394,7 @@ jstr_repeat_len(char *R *R s, size_t *R sz, size_t *R cap, size_t n) JSTR_NOEXCE
 	if (jstr_unlikely(n <= 1))
 		return JSTR_RET_SUCC;
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz * n + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_repeat_len_unsafe_p(*s, *sz, n), *s);
 	return JSTR_RET_SUCC;
 }

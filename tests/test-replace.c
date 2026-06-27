@@ -55,7 +55,7 @@
 		TESTING(func);                                 \
 		if (ret != func(__VA_ARGS__)) {                \
 			jstr_debug(&(result));                 \
-			jstr_errdie("");                       \
+			jstr_errdie("%s", "");                       \
 		}                                              \
 		T_ASSERT(func(__VA_ARGS__), result, expected); \
 		(result).size = 0;                             \

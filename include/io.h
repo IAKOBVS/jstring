@@ -424,7 +424,7 @@ jstr_io_expandtildefirst_len_unsafe_p(char *s, size_t sz) JSTR_NOEXCEPT
 		return s + sz;
 	const char *home = getenv("HOME");
 	if (jstr_nullchk(home))
-		return NULL;
+		JSTR_RETURN_ERR_P(NULL);
 	const size_t len = strlen(home);
 	jstr_strmove_len(s + len, s + 1, JSTR_DIFF(s + sz, s + 1));
 	memcpy(s, home, len);
@@ -451,7 +451,7 @@ jstr_io_expandtildefirst(char *R *R s, size_t *R sz, size_t *R cap) JSTR_NOEXCEP
 		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	const size_t len = strlen(home);
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + len + 1)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	jstr_strmove_len(*s + len, *s + 1, JSTR_DIFF(*s + *sz, *s + 1));
 	memcpy(*s, home, len);
 	*sz += len;
@@ -582,7 +582,7 @@ jstr_io_appendpath_len(char *R *R s, size_t *R sz, size_t *R cap, const char *R 
 #	ifdef JSTR_IMPLEMENTATION
 {
 	if (jstr_chk(jstr_reserve(s, sz, cap, *sz + fname_len + 2)))
-		return JSTR_RET_ERR;
+		JSTR_RETURN_ERR(JSTR_RET_ERR);
 	*sz = JSTR_DIFF(jstr_io_appendpath_len_p(*s, *sz, fname, fname_len), *s);
 	return JSTR_RET_SUCC;
 }
